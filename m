@@ -1,66 +1,53 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAB8111A0;
-	Mon,  5 Feb 2024 08:39:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE04811706;
+	Mon,  5 Feb 2024 08:47:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707122380; cv=none; b=gzeZWGnz3xnA1DTuNEKRh+e6o9XV3shrsvgwgLyKfBZzw+UaCo1VP0FJgovqwoz7K0z0EST2yAPcV0lKpqVFoYmoKZbPWJt2IYDJCG4RTQysivoayyvmVARi0dZNV3HIhJNjzw5UzUeVgDffYaFAQtKfVQLWRlYFpWT3vzb8dG8=
+	t=1707122836; cv=none; b=D9GFhdXwelfey2UuvzxAx7y/pn8BKQComBDFhsfYzTsIIWenUlcplWrnii9AmCbZwmin16vVChn8O2GvLrVhsTDQ4lBIEBNCoeQXENArVm0AZ9BzgTBbEgs7UQNeOVdf1a3xGorNhOWp/hlvc6cE0wVhswyBEIpbJhAbQsy3MTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707122380; c=relaxed/simple;
-	bh=glbysHXbTHeXgr5vqZPyAXI1kRCcReCyMqy5wLvmetQ=;
+	s=arc-20240116; t=1707122836; c=relaxed/simple;
+	bh=KT1fuA8XIq4nEmCmoI5quq3KD/4nVJP7FnXjcu/kpvo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=sK6oFExT6Bd/j62uTCQkmIQ4wgHGwSOyE1Up7zjD1hNgYKRcbyIUaiJzNMfjXoPXgAdGe40KXicvY+RHdrsZpkItgEzcqvIC8xGSS1ZuYeoMUGh2Dmsh1eNUjKrOTarGmLgDeOEMEBgQKXXeQxG53W5IXuPnMKYGSxYw17g3mGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=gFzYo+ms; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1W5AvZd6; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=uJwLIJYtoZFPW6JxBcHovxr3VD0UtrgE1beCpRCKGiNJK71N14HcBGzP0LrTz0M4+PrNuzXv3IjLXmWVoUuuurdh1P+y6yHsS2tclC93M2IJVFSBLd4FjfOUBlBK08jb2Bp9DPoiRI9RnAuFFMOB69OjV1304SpDySE0p+Ege1s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lZIeGFiM; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=rUa6xTgD; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="gFzYo+ms";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1W5AvZd6"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lZIeGFiM";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rUa6xTgD"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1707122375;
+	s=2020; t=1707122833;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=410oVLaTDeyabSNXtoLd0DEYuxw6VZoAesHkjytsmkA=;
-	b=gFzYo+msOvMEqmQChOwt9aQES7HiYfENSE4iVu2jY2ht0dYMaOgcJlESbXeHr8TFE/rSPI
-	kdChic2EqUi6SYMJMLOpiHNIuBy0mR747eBjdTi1P8gkVP0Hvmxqho3Sxauacs0efjCirX
-	EBTErOi618UP4pZJ93kHE7JBatfkH6QBSbiiZuLMLTVkgUUJ3Up0+MZeeBR9T0hwZo2RW3
-	T1ILu/liVJtWjx0ZBeTRwH5ytiL70VbZQ5C7uzB7farneeZsWFuaezpGrGL0mu40MnfP6H
-	2Q715CyvsbPMi7cpEV3K2lPvJT4R3iJ7ELBmYlwJmwm7Q5tb/IMRLJL4sgWegA==
+	bh=wFpPSZx8wWDEmYm5qNrc593xG9WuuKadKajRxKukaTA=;
+	b=lZIeGFiM+WMQ7vdzk7uwOhmP/2AtEWPBgGrcZQN/HlG8WkuK0ufsH1a0oXTD5/dV4aOI8z
+	66WNLp2cHS1OKuRwu73Hx7QKc+hWHHqqzhNLfTDtiBPaDIC+g3vRMdSLbePVGX7f85GCJU
+	F8WOmM2sCIRPAoAzsArffMd3zsrDkl+W9dbZA6M4lS7vtKjnFNE/Dve+mQAxpiDGIKUWSu
+	4ShoK6+gPCg5vC4ryx39IFedknZ1L/NtodPo3E+55HS1ATvsV6aktjpdPJKNNF689we2l3
+	KjYrghb8Q2IAZNdB80Yc7tGgMIirSyQRG9WyFATJVsJ2dZRpB3ibRUyyk3VvAg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1707122375;
+	s=2020e; t=1707122833;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=410oVLaTDeyabSNXtoLd0DEYuxw6VZoAesHkjytsmkA=;
-	b=1W5AvZd6AD73J8/TVCafIxEOeHTeYFntbFzFdcKPaAtejg3RNTMWK1wKMmOZD2ZSBxdbnW
-	Et6AH5rJwsuRCpCA==
-To: Yoann Congal <yoann.congal@smile.fr>, linux-fsdevel@vger.kernel.org,
- linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, x86@kernel.org
-Cc: =?utf-8?Q?Andr=C3=A9?= Almeida <andrealmeid@igalia.com>, Borislav Petkov
- <bp@alien8.de>,
- Darren Hart <dvhart@infradead.org>, Dave Hansen
- <dave.hansen@linux.intel.com>, Davidlohr Bueso <dave@stgolabs.net>, Geert
- Uytterhoeven <geert@linux-m68k.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, "H . Peter Anvin" <hpa@zytor.com>, Ingo
- Molnar <mingo@redhat.com>, Jiri Slaby <jirislaby@kernel.org>, Josh
- Triplett <josh@joshtriplett.org>, Masahiro Yamada <masahiroy@kernel.org>,
- Matthew Wilcox <willy@infradead.org>, Peter Zijlstra
- <peterz@infradead.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
- Gleixner <tglx@linutronix.de>, Willem de Bruijn
- <willemdebruijn.kernel@gmail.com>, Yoann Congal <yoann.congal@smile.fr>,
- Vegard Nossum <vegard.nossum@oracle.com>
-Subject: Re: [PATCH v3 1/2] printk: Fix LOG_CPU_MAX_BUF_SHIFT when
- BASE_SMALL is enabled
-In-Reply-To: <20240204232945.1576403-2-yoann.congal@smile.fr>
-References: <20240204232945.1576403-1-yoann.congal@smile.fr>
- <20240204232945.1576403-2-yoann.congal@smile.fr>
-Date: Mon, 05 Feb 2024 09:45:27 +0106
-Message-ID: <87bk8vpao0.fsf@jogness.linutronix.de>
+	bh=wFpPSZx8wWDEmYm5qNrc593xG9WuuKadKajRxKukaTA=;
+	b=rUa6xTgD+PCm8udppbCC+3dwx4h16HTMaAmXjclpeXlNN4npD+ERex9Z9thZRi6RaC7ytg
+	GvltlAlHqgwXKlCw==
+To: Yicong Yang <yangyicong@huawei.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, tony@atomide.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Cc: andriy.shevchenko@linux.intel.com, tglx@linutronix.de,
+ yangyicong@hisilicon.com, linuxarm@huawei.com, prime.zeng@hisilicon.com,
+ jonathan.cameron@huawei.com, fanghao11@huawei.com
+Subject: Re: [PATCH] serial: port: Don't suspend if the port is still busy
+In-Reply-To: <20240204031957.58176-1-yangyicong@huawei.com>
+References: <20240204031957.58176-1-yangyicong@huawei.com>
+Date: Mon, 05 Feb 2024 09:53:05 +0106
+Message-ID: <878r3zpaba.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,37 +56,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On 2024-02-05, Yoann Congal <yoann.congal@smile.fr> wrote:
-> LOG_CPU_MAX_BUF_SHIFT default value depends on BASE_SMALL:
->   config LOG_CPU_MAX_BUF_SHIFT
->   	default 12 if !BASE_SMALL
->   	default 0 if BASE_SMALL
-> But, BASE_SMALL is a config of type int and "!BASE_SMALL" is always
-> evaluated to true whatever is the value of BASE_SMALL.
->
-> This patch fixes this by using BASE_FULL (type bool) which is equivalent
-> to BASE_SMALL==0.
->
-> Note: This changes CONFIG_LOG_CPU_MAX_BUF_SHIFT=12 to
-> CONFIG_LOG_CPU_MAX_BUF_SHIFT=0 for BASE_SMALL defconfigs, but that will
-> not be a big impact due to this code in kernel/printk/printk.c:
->   /* by default this will only continue through for large > 64 CPUs */
->   if (cpu_extra <= __LOG_BUF_LEN / 2)
->           return;
-> Systems using CONFIG_BASE_SMALL and having 64+ CPUs should be quite
-> rare.
->
-> John Ogness <john.ogness@linutronix.de> (printk reviewer) wrote:
->> For printk this will mean that BASE_SMALL systems were probably
->> previously allocating/using the dynamic ringbuffer and now they will
->> just continue to use the static ringbuffer. Which is fine and saves
->> memory (as it should).
->
-> Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=2XUAHascps76YQac6rdnQGhc8nop_Q@mail.gmail.com/
-> Reported-by: Vegard Nossum <vegard.nossum@oracle.com>
-> Closes: https://lore.kernel.org/all/f6856be8-54b7-0fa0-1d17-39632bf29ada@oracle.com/
-> Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
+On 2024-02-04, Yicong Yang <yangyicong@huawei.com> wrote:
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+> index 88975a4df306..60d1eec6b6b7 100644
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -46,8 +46,28 @@ static int serial_port_runtime_resume(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +static int serial_port_runtime_suspend(struct device *dev)
+> +{
+> +	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
+> +	struct uart_port *port;
+> +	unsigned long flags;
+> +
+> +	port = port_dev->port;
+> +
+> +	if (port->flags & UPF_DEAD)
+> +		return 0;
+> +
+> +	spin_lock_irqsave(&port->lock, flags);
+> +	if (__serial_port_busy(port))
+> +		pm_request_resume(dev);
+> +	spin_unlock_irqrestore(&port->lock, flags);
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Please use the wrapper functions for the uart port lock:
+
+uart_port_lock_irqsave()
+uart_port_unlock_irqrestore()
+
+John Ogness
