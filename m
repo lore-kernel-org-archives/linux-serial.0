@@ -1,59 +1,45 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E728310958
-	for <linux-serial@vger.kernel.org>; Mon,  5 Feb 2024 07:41:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A44111190;
+	Mon,  5 Feb 2024 07:56:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707118887; cv=none; b=RrlsBAsyjqxWTrYIrhIrU4DyL8bkBPgQAIrvePOB4HDaPR8NhcY+igQCDHa0/YwHH4R6x9NjSsMXGbr15CGTyw7+rlEeItv6Bsv4/AKPP8lWwlkaRFwQrI3a5kS7oO99v+GkI7yHZfwmGfzNyiUEN+cEM4/Khk26UuTJFhE9q2A=
+	t=1707119811; cv=none; b=TpOSvVOCeaLPTpGSJ8sdnZikbXK35WP/GOSeJykokZ+U0O2J6KaMHYLP1YPzY9Gkf/+ZJWEaMfI6HuIzmsdk9v53qlgxtIywpG4oFjhDENTnZ4W0sYsSDVlp4kryYMmosraNTjJIKitVscioBsrF8kigDr673b9MHDb3pKacj7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707118887; c=relaxed/simple;
-	bh=m3s8CvOnRVDd4A/sHox9BjffimSzPmxuvHxo7w6XeF4=;
+	s=arc-20240116; t=1707119811; c=relaxed/simple;
+	bh=bPBYHKOWAsw++0GbpcEfc945iVVSf64BuOwoMrpaGWk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=s1DTNWem9tPVzlaeYRZQC/lol32tRn+cIHAmXmzTjjgLRXHAWGd5ZD612bTXqxiLJT9Y5/Rciype+Q3uB0xknN6pNp8Yg41RhRuce+wfYkztaOX2baLvDPcG5/aiZFUeFRUIXERtulvxpQx8b4SnumNMFltl+P7qbC7XXWeItgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OJykxiLA; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OJykxiLA"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a30f7c9574eso543600366b.0
-        for <linux-serial@vger.kernel.org>; Sun, 04 Feb 2024 23:41:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707118884; x=1707723684; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DlKQQZ10mTGzXpOpSYWOXKuFRQr7h89RLpabq7fR/IM=;
-        b=OJykxiLA7rwtHbDP8N4ieHRTPaJgBsenL+rxy0/Q+GJuMDKxEXND5A8wsVwuLN3ztK
-         9i23hNULMKykHgEZwgzMCIOULEMmtLOkPkd2l9EOFza6k/KKUR9VJ1BCeU6N3WLoyUGn
-         aHZLQfxiPzu8N4jEwGGZ+d4AViCpSf0RhWjZspC6fUQgBNnD4YzVZmKOYNLJ9XB07Drm
-         uvcwA3HQGncXJmVgdF4wlDc/c03mGA942qhpPhZxafe2v9N08uaovP7WTBosVV99hPZk
-         6KnTCLf9mGWihgT8cvAieStMLp59YNY5WVacKPbgBB7GOCDDlTbZtn96NxvaD/5GeCqq
-         xLaw==
+	 In-Reply-To:Content-Type; b=c2tkXAD3LuIGztUeu2d6fFwVP5h3HZ7lQIL6FURgcuqveIweT1IJ0QuDx1lVSoAlHvOCw/vk/RycFc/Vw0xs7eCU5FBLPft7t6gKeVAo9gwGWbAJHcqkyJWwzf+/3ZBi3MRga8+ViSpiG4wFtqOJsGqYDSyFE5Nh8hrahbAcP5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5600c43caddso1948288a12.2;
+        Sun, 04 Feb 2024 23:56:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707118884; x=1707723684;
+        d=1e100.net; s=20230601; t=1707119807; x=1707724607;
         h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
          :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DlKQQZ10mTGzXpOpSYWOXKuFRQr7h89RLpabq7fR/IM=;
-        b=Zprp4gOK9vwYShVNW/R/f7b2wTZ80MtVhZEuCsQQNOoQAM+pBU75QadmREGvYYCb6z
-         8YWDCcQtkH05BZO9usfZVHCnfo41ay68BbhE1nBGAFXKitCgf9GinKxF8dV7YZxjZDQT
-         Ca6PJACQmgRY/oNKXS71t5M8fbDAZPUldju6nJfIjivuyT8ZhOuRcZOnYwp9AGqGl1h0
-         6imj4HvtLuWgWRVyVwDC3AV3ybgHJGTbawO6oCw1+3k6IfOPtZeQHZMo15f6Dge8jgcB
-         6EeQHtE+Bqutm+Yh9ajGYFed8jvZ6z6Ux3EMumSFSAmGyxX83ijn1N5NWPG1aBXq8Mn8
-         3AHQ==
-X-Gm-Message-State: AOJu0YyVO3E7ZEsOb5Prx3llxOBQWXb+3I7wyZZnyH608x0PITWkBNnZ
-	hNWsKXoBVL18gQgg4RWOE61MkysQed69ug+00m3oArE+jzjUZ+ts4v86PaYuios=
-X-Google-Smtp-Source: AGHT+IFsfLx61Hv2XlhZphvnONlM8hwvn6dKB4tEqBvk1rMW54gPE504ItAlIkcTvdvpM9IYn7urvA==
-X-Received: by 2002:a17:907:100b:b0:a37:c159:60a8 with SMTP id ox11-20020a170907100b00b00a37c15960a8mr1111425ejb.29.1707118884053;
-        Sun, 04 Feb 2024 23:41:24 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCX9xSUpxkOD0tREL0sDBvK0ofJvUWVdN/yAYCSI1I87SYMvYZE69rRJFj1VmKFIV9VYcMOwV9AEAogK10oX8K9AKs4DXyHt+eSU5LMZi6VXd6+aopUB4VEraJ6PZcX+S/jJdCirdHylovgfnsYO5E3HaFzcGJ3cS+y9rJ8nwZvIk4EEmZlIJZlhbfmndivjSFb5odduKI4SJLabcgnTcUevqgBXYroil7V6IGRy0jKZopPV3BmyHqRkg1TxnYnAOM1SOLysaGQPm+Izs/3Aj7EABPHt/zhtfAGOs68XSRCn0hkTS1/shxD7ofOvo801fkadh6RA1N/tcHY5j1AwoVy5xdJEdUb2ym4u3xnXOl6fMX2y0U3xphR+A6tzKsRLr4cjK/nZTUb/2QaIQR2iZ6GAaB0pLZLUNT9qPqYQcExkH8H+7Nup+s3jku0+jEDvyl2X/rCYBQ==
-Received: from [192.168.1.20] ([178.197.222.62])
-        by smtp.gmail.com with ESMTPSA id st1-20020a170907c08100b00a35aaa70875sm4017567ejc.42.2024.02.04.23.41.22
+        bh=fVcEqSZHQEPAF31Myvz/o3YQCpmBhb8/EGABHphGLK4=;
+        b=TLDL7kvBh9ePkqKW0NHPOmwkRuVp2oNnrQ9geUnLpECUwESyLi/I4mGSM/3OXd4qSF
+         j9jUrdr1cRAYH0mDuFke9pt8dTAu+u9fmiZWBoqDWT2O5T+reyIWfGPw9xdr7LUZSBdz
+         hZECBG8ktO89OUrA8qTVS6JtTmXV9y4nVB1Wo5C0DieNlIQCJh47bxWDn0UHbIhR3QUb
+         XKdJiM7m2vA3deog5IT4X0SStbIVMIVUA6DtOZFjqIKeLobD6oytXu11H/BHs5ANHGFK
+         4ZxZmZRyN5W0U5MvY4sRs0HuxCxz6E1Bzs3NERujLNSBJvfk9ThLjyLVUT3b/Fezrbpk
+         aAjw==
+X-Gm-Message-State: AOJu0Yz+gmU5pKvYmM/sDB7GJnPjcwyy/6ExCTjyocqoRpli2Y1vHcli
+	Ras0ocIJ7V4L9597uZGVlIymMqrCZWPdIaFAjkoT5cbk3qEcjx7rgbtB/pKndlc=
+X-Google-Smtp-Source: AGHT+IHgx4a0xU/ZJI1tnxm70XzfGnbd44dk0xPkLOAYvihUUHsDslqceMnZqJ9Q0ExdsptqusWGTw==
+X-Received: by 2002:a05:6402:12ca:b0:55e:b943:6277 with SMTP id k10-20020a05640212ca00b0055eb9436277mr4259119edx.22.1707119807042;
+        Sun, 04 Feb 2024 23:56:47 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWPAohRc6POrdHQc/hxOL9s8G0pPpSW/ZVv2js1BnhaK7iOQmTDXN2C3i9Exufs13XeMEL72ER1oOmu+EZ3ZVd8lOjKVVaLw4RO+wE0w1wt3u3OdGGAYm/Y1OqXiVaL0vK9ilLRdd04Rk+ZwjHo1UlU6J96yHpRdXKR8gYhrlaJ5765n5TJFrcu8cYNz3NgkNEzgG0PoHImCaSWzTfKvwcudw+MtDKnuoHLKw2iOFNqDQ4JS49rFlolVTqFrxDXevUREEGlwBfVtKtDeSaDn4spEg==
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id d17-20020aa7d5d1000000b0055eed463c4fsm3515104eds.84.2024.02.04.23.56.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Feb 2024 23:41:23 -0800 (PST)
-Message-ID: <6980c4d5-78a2-4c14-b21e-a5ed1e4d5675@linaro.org>
-Date: Mon, 5 Feb 2024 08:41:22 +0100
+        Sun, 04 Feb 2024 23:56:46 -0800 (PST)
+Message-ID: <b8325c3f-bf5b-4c55-8dce-ef395edce251@kernel.org>
+Date: Mon, 5 Feb 2024 08:56:45 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,80 +47,263 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] arm64: dts: fsd: Add fifosize for UART in Device Tree
+Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Add Burst mode
+ transmission support in uart driver for reading from FIFO
 Content-Language: en-US
-To: Tamseel Shams <m.shams@samsung.com>, alim.akhtar@samsung.com,
- linux-fsd@tesla.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20240202212448.74840-1-m.shams@samsung.com>
- <CGME20240202212459epcas5p2e1703c35ebe9302ac5b2f3d3fcd853c0@epcas5p2.samsung.com>
- <20240202212448.74840-2-m.shams@samsung.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzTRLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnp5c3p0b2Yua296bG93c2tpQGxpbmFyby5vcmc+wsGUBBMBCgA+FiEE
- m9B+DgxR+NWWd7dUG5NDfTtBYpsFAmI+BxMCGwMFCRRfreEFCwkIBwIGFQoJCAsCBBYCAwEC
- HgECF4AACgkQG5NDfTtBYptgbhAAjAGunRoOTduBeC7V6GGOQMYIT5n3OuDSzG1oZyM4kyvO
- XeodvvYv49/ng473E8ZFhXfrre+c1olbr1A8pnz9vKVQs9JGVa6wwr/6ddH7/yvcaCQnHRPK
- mnXyP2BViBlyDWQ71UC3N12YCoHE2cVmfrn4JeyK/gHCvcW3hUW4i5rMd5M5WZAeiJj3rvYh
- v8WMKDJOtZFXxwaYGbvFJNDdvdTHc2x2fGaWwmXMJn2xs1ZyFAeHQvrp49mS6PBQZzcx0XL5
- cU9ZjhzOZDn6Apv45/C/lUJvPc3lo/pr5cmlOvPq1AsP6/xRXsEFX/SdvdxJ8w9KtGaxdJuf
- rpzLQ8Ht+H0lY2On1duYhmro8WglOypHy+TusYrDEry2qDNlc/bApQKtd9uqyDZ+rx8bGxyY
- qBP6bvsQx5YACI4p8R0J43tSqWwJTP/R5oPRQW2O1Ye1DEcdeyzZfifrQz58aoZrVQq+innR
- aDwu8qDB5UgmMQ7cjDSeAQABdghq7pqrA4P8lkA7qTG+aw8Z21OoAyZdUNm8NWJoQy8m4nUP
- gmeeQPRc0vjp5JkYPgTqwf08cluqO6vQuYL2YmwVBIbO7cE7LNGkPDA3RYMu+zPY9UUi/ln5
- dcKuEStFZ5eqVyqVoZ9eu3RTCGIXAHe1NcfcMT9HT0DPp3+ieTxFx6RjY3kYTGLOwU0EVUNc
- NAEQAM2StBhJERQvgPcbCzjokShn0cRA4q2SvCOvOXD+0KapXMRFE+/PZeDyfv4dEKuCqeh0
- hihSHlaxTzg3TcqUu54w2xYskG8Fq5tg3gm4kh1Gvh1LijIXX99ABA8eHxOGmLPRIBkXHqJY
- oHtCvPc6sYKNM9xbp6I4yF56xVLmHGJ61KaWKf5KKWYgA9kfHufbja7qR0c6H79LIsiYqf92
- H1HNq1WlQpu/fh4/XAAaV1axHFt/dY/2kU05tLMj8GjeQDz1fHas7augL4argt4e+jum3Nwt
- yupodQBxncKAUbzwKcDrPqUFmfRbJ7ARw8491xQHZDsP82JRj4cOJX32sBg8nO2N5OsFJOcd
- 5IE9v6qfllkZDAh1Rb1h6DFYq9dcdPAHl4zOj9EHq99/CpyccOh7SrtWDNFFknCmLpowhct9
- 5ZnlavBrDbOV0W47gO33WkXMFI4il4y1+Bv89979rVYn8aBohEgET41SpyQz7fMkcaZU+ok/
- +HYjC/qfDxT7tjKXqBQEscVODaFicsUkjheOD4BfWEcVUqa+XdUEciwG/SgNyxBZepj41oVq
- FPSVE+Ni2tNrW/e16b8mgXNngHSnbsr6pAIXZH3qFW+4TKPMGZ2rZ6zITrMip+12jgw4mGjy
- 5y06JZvA02rZT2k9aa7i9dUUFggaanI09jNGbRA/ABEBAAHCwXwEGAEKACYCGwwWIQSb0H4O
- DFH41ZZ3t1Qbk0N9O0FimwUCYDzvagUJFF+UtgAKCRAbk0N9O0Fim9JzD/0auoGtUu4mgnna
- oEEpQEOjgT7l9TVuO3Qa/SeH+E0m55y5Fjpp6ZToc481za3xAcxK/BtIX5Wn1mQ6+szfrJQ6
- 59y2io437BeuWIRjQniSxHz1kgtFECiV30yHRgOoQlzUea7FgsnuWdstgfWi6LxstswEzxLZ
- Sj1EqpXYZE4uLjh6dW292sO+j4LEqPYr53hyV4I2LPmptPE9Rb9yCTAbSUlzgjiyyjuXhcwM
- qf3lzsm02y7Ooq+ERVKiJzlvLd9tSe4jRx6Z6LMXhB21fa5DGs/tHAcUF35hSJrvMJzPT/+u
- /oVmYDFZkbLlqs2XpWaVCo2jv8+iHxZZ9FL7F6AHFzqEFdqGnJQqmEApiRqH6b4jRBOgJ+cY
- qc+rJggwMQcJL9F+oDm3wX47nr6jIsEB5ZftdybIzpMZ5V9v45lUwmdnMrSzZVgC4jRGXzsU
- EViBQt2CopXtHtYfPAO5nAkIvKSNp3jmGxZw4aTc5xoAZBLo0OV+Ezo71pg3AYvq0a3/oGRG
- KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
- fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240202212448.74840-2-m.shams@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+To: Rengarajan S <rengarajan.s@microchip.com>,
+ kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
+ gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: UNGLinuxDriver@microchip.com
+References: <20240125100006.153342-1-rengarajan.s@microchip.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240125100006.153342-1-rengarajan.s@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 02/02/2024 22:24, Tamseel Shams wrote:
-> UART in FSD SoC has fifosize of 64 bytes.
-> Set fifosize as 64 bytes for UART from Device Tree.
+On 25. 01. 24, 11:00, Rengarajan S wrote:
+> pci1xxxx_handle_irq reads the burst status and checks if the FIFO
+> is empty and is ready to accept the incoming data. The handling is
+> done in pci1xxxx_tx_burst where each transaction processes data in
+> block of DWORDs, while any remaining bytes are processed individually,
+> one byte at a time.
 > 
-> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
 > ---
->  arch/arm64/boot/dts/tesla/fsd.dtsi | 2 ++
+>   drivers/tty/serial/8250/8250_pci1xxxx.c | 106 ++++++++++++++++++++++++
+>   1 file changed, 106 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+> index 558c4c7f3104..d53605bf908d 100644
+> --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
+> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+...
+> @@ -344,6 +348,105 @@ static void pci1xxxx_rx_burst(struct uart_port *port, u32 uart_status)
+>   	}
+>   }
+>   
+> +static void pci1xxxx_process_write_data(struct uart_port *port,
+> +					struct circ_buf *xmit,
+> +					int *data_empty_count,
 
-Please split SoC changes from patches sent to serial, so it will be easy
-to apply for Greg and others.
+count is unsigned, right?
 
-Unless you want to say that there is dependency, but there cannot be
-such - it would be a NAK.
+> +					u32 *valid_byte_count)
+> +{
+> +	u32 valid_burst_count = *valid_byte_count / UART_BURST_SIZE;
+> +
+> +	/*
+> +	 * Each transaction transfers data in DWORDs. If there are less than
+> +	 * four remaining valid_byte_count to transfer or if the circular
+> +	 * buffer has insufficient space for a DWORD, the data is transferred
+> +	 * one byte at a time.
+> +	 */
+> +	while (valid_burst_count) {
+> +		if (*data_empty_count - UART_BURST_SIZE < 0)
 
-Best regards,
-Krzysztof
+Huh?
+
+*data_empty_count < UART_BURST_SIZE
+
+instead?
+
+> +			break;
+> +		if (xmit->tail > (UART_XMIT_SIZE - UART_BURST_SIZE))
+
+Is this the same as easy to understand:
+
+CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE) < UART_BURST_SIZE
+
+?
+
+> +			break;
+> +		writel(*(unsigned int *)&xmit->buf[xmit->tail],
+> +		       port->membase + UART_TX_BURST_FIFO);
+
+What about unaligned accesses?
+
+And you really wanted to spell u32 explicitly, not uint.
+
+> +		*valid_byte_count -= UART_BURST_SIZE;
+> +		*data_empty_count -= UART_BURST_SIZE;
+> +		valid_burst_count -= UART_BYTE_SIZE;
+> +
+> +		xmit->tail = (xmit->tail + UART_BURST_SIZE) &
+> +			     (UART_XMIT_SIZE - 1);
+
+uart_xmit_advance()
+
+> +	}
+> +
+> +	while (*valid_byte_count) {
+> +		if (*data_empty_count - UART_BYTE_SIZE < 0)
+> +			break;
+> +		writeb(xmit->buf[xmit->tail], port->membase +
+> +		       UART_TX_BYTE_FIFO);
+> +		*data_empty_count -= UART_BYTE_SIZE;
+> +		*valid_byte_count -= UART_BYTE_SIZE;
+> +
+> +		/*
+> +		 * When the tail of the circular buffer is reached, the next
+> +		 * byte is transferred to the beginning of the buffer.
+> +		 */
+> +		xmit->tail = (xmit->tail + UART_BYTE_SIZE) &
+> +			     (UART_XMIT_SIZE - 1);
+
+uart_xmit_advance()
+
+> +
+> +		/*
+> +		 * If there are any pending burst count, data is handled by
+> +		 * transmitting DWORDs at a time.
+> +		 */
+> +		if (valid_burst_count && (xmit->tail <
+> +		   (UART_XMIT_SIZE - UART_BURST_SIZE)))
+> +			break;
+> +	}
+> +}
+
+This nested double loop is _really_ hard to follow. It's actually 
+terrible with cut & paste mistakes.
+
+Could these all loops be simply replaced by something like this pseudo 
+code (a single loop):
+
+while (data_empty_count) {
+   cnt = CIRC_CNT_TO_END();
+   if (!cnt)
+     break;
+   if (cnt < UART_BURST_SIZE || (tail & 3)) { // is_unaligned()
+     writeb();
+     cnt = 1;
+   } else {
+     writel()
+     cnt = UART_BURST_SIZE;
+   }
+   uart_xmit_advance(cnt);
+   data_empty_count -= cnt;
+}
+
+?
+
+
+> +static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	u32 valid_byte_count;
+> +	int data_empty_count;
+> +	struct circ_buf *xmit;
+> +
+> +	xmit = &port->state->xmit;
+> +
+> +	if (port->x_char) {
+> +		writeb(port->x_char, port->membase + UART_TX);
+> +		port->icount.tx++;
+> +		port->x_char = 0;
+> +		return;
+> +	}
+> +
+> +	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit))) {
+> +		port->ops->stop_tx(port);
+
+This looks weird standing here. You should handle this below along with RPM.
+
+> +	} else {
+
+The condition should be IMO inverted with this block in its body:
+
+> +		data_empty_count = (pci1xxxx_read_burst_status(port) &
+> +				    UART_BST_STAT_TX_COUNT_MASK) >> 8;
+> +		do {
+> +			valid_byte_count = uart_circ_chars_pending(xmit);
+> +
+> +			pci1xxxx_process_write_data(port, xmit,
+> +						    &data_empty_count,
+> +						    &valid_byte_count);
+> +
+> +			port->icount.tx++;
+
+Why do you increase the stats only once per burst? (Solved by 
+uart_xmit_advance() above.)
+
+> +			if (uart_circ_empty(xmit))
+> +				break;
+> +		} while (data_empty_count && valid_byte_count);
+> +	}
+> +
+> +	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+> +		uart_write_wakeup(port);
+> +
+> +	 /*
+> +	  * With RPM enabled, we have to wait until the FIFO is empty before
+> +	  * the HW can go idle. So we get here once again with empty FIFO and
+> +	  * disable the interrupt and RPM in __stop_tx()
+> +	  */
+> +	if (uart_circ_empty(xmit) && !(up->capabilities & UART_CAP_RPM))
+> +		port->ops->stop_tx(port);
+
+I wonder why this driver needs this and others don't? Should they be 
+fixed too?
+
+> +}
+> +
+>   static int pci1xxxx_handle_irq(struct uart_port *port)
+>   {
+>   	unsigned long flags;
+> @@ -359,6 +462,9 @@ static int pci1xxxx_handle_irq(struct uart_port *port)
+>   	if (status & UART_BST_STAT_LSR_RX_MASK)
+>   		pci1xxxx_rx_burst(port, status);
+>   
+> +	if (status & UART_BST_STAT_LSR_THRE)
+> +		pci1xxxx_tx_burst(port, status);
+> +
+>   	spin_unlock_irqrestore(&port->lock, flags);
+>   
+>   	return 1;
+
+-- 
+js
+suse labs
 
