@@ -1,95 +1,179 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50F0E12D146;
-	Tue,  6 Feb 2024 09:44:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 612F912DDB5
+	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 10:12:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707212674; cv=none; b=kYjW3RRmTCbR56TtRVKVNBDevJpTlKbUqC1HypGxlaefkttOlJTK4pJUMQD/vN5CXjIbtafnwEda1moSIZcijJMQL38VcoEGkFYPSIkdrv+kq+WmbLT51o3J5rGuDTrAWmv7JypG2vp2386VjziZhAPNseI+c6yIuRTt5XfYoSE=
+	t=1707214349; cv=none; b=kmyKeMaxcjWQBH7/hCFLt5rqcuXAwVaCJt0ZnAkgWcaIdWgFRYDVE53qsD/4UCCDZ1+nlRW1M1ADl59/F5JaH7WrVMskszbQT6n0WwPw2RSx/s2uCkv7legoJhXvWk95i2UlLyuyf9/eiM7HatFwrXdYFl2LAyixpfs9qWDesHE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707212674; c=relaxed/simple;
-	bh=tg9pHfnMgYgL/Q/jdYJ/Y5q7DJviTwxBb9aNHAB6+1o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ecTbAgfXvbJ5Gf8OQzNTMZOcIHxvEWPmri18SszTdDrd4kRw1BrnuHGfkS/W8QOlOjWOZ9A2y1tbKJpskAc+1tL4jILv7xm5QBdmgrJp1b8sdl+gjZAW9jirUSnQ3l8G8+0JDDC+92C8vW1j2h1GSZO4r8XlQsOlvmzf48yu1tk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=JO6Eluaq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707214349; c=relaxed/simple;
+	bh=2kkntFscAGFcilGUZcjv10/hbMY5Rc+m1vHakRck2HI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rVZto5IHfgc9mxaxfgCCpciDPCUffW1AuUrty3gGU3VJmKhkbjZmA6lL/zC+vjDoyfrFhvk24r1byf0g66GUYb62RXnZZu326+g7lg2r0lDrH4xjxldCuUseOjE/EzOIDHaDpPxnuWg12mo8xV3w31thgW2q5TRxQlor8Uj4S6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=WAFP24jr; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JO6Eluaq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D799C433C7;
-	Tue,  6 Feb 2024 09:44:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707212673;
-	bh=tg9pHfnMgYgL/Q/jdYJ/Y5q7DJviTwxBb9aNHAB6+1o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JO6EluaqjikBYJ17aVisH1Kw8Bz59GJOa5l880B3n3Vljz9Mc3hIDqBeHImTnC5HE
-	 cThoXmAfLV6WR9qqztBXWnZaeGOtKenm1tL19ROp28o8ziVVMJ5aEYDKJFJpe00HHE
-	 iaJzqQLoNqQg1VljCvnZAdtHl8xQcQNNaBz5z3ao=
-Date: Tue, 6 Feb 2024 09:44:30 +0000
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Yicong Yang <yangyicong@huawei.com>
-Cc: jirislaby@kernel.org, tony@atomide.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, john.ogness@linutronix.de,
-	andriy.shevchenko@linux.intel.com, tglx@linutronix.de,
-	yangyicong@hisilicon.com, linuxarm@huawei.com,
-	prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
-	fanghao11@huawei.com
-Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
-Message-ID: <2024020600-attendant-verbally-6441@gregkh>
-References: <20240206073322.5560-1-yangyicong@huawei.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WAFP24jr"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-40fc52c2ae4so37169895e9.3
+        for <linux-serial@vger.kernel.org>; Tue, 06 Feb 2024 02:12:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707214344; x=1707819144; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=s4AKQc1OU+P/MBk5ClD2FgFCHNl8qCzWMztGeRi5aeM=;
+        b=WAFP24jrTSKm52ElGepGpqZXKldNl3Am8Xrhjyr0nExC5UBiWtsD/CMDJ5N2ZWPbSa
+         8vfWffNjJBA915sFzU3mGzqLotJroGCihzV4Lbpq4cpzFmobk3163IIEslzz0nvq6JOO
+         tWToVtnJe1vOBBorA7/XZan2FhHeuXvjj/y7zRt+AS0zEtnwdlSsWqGycxKuoD7ez/I9
+         pvroZGDaJsBlq11DhMDEyxDTHvY07tstRfHgBRIBWMsy7gJ1Na56/6Y5XvMD+mca1vd8
+         HdswIKtRq46jinDyaY9ABbItwRiJRaBhsnr95nTXWwTEN6ciKSpE6784GIG8wSUiA4no
+         7Fvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707214344; x=1707819144;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=s4AKQc1OU+P/MBk5ClD2FgFCHNl8qCzWMztGeRi5aeM=;
+        b=mA6sHA2T9L2QWSCZPnRQBvOpqLGizjGYnFKRliM54Fx/eHkmOkH0DSL+ZDLSNvpGOQ
+         gXwj92Iut7WzITUZ2FkaEcUU8do5sJsfVuMAHQerjiJzr/cy4VjG+hD3Nve6r32ykvqJ
+         ZH3R5xr91JvxvPJhGR++74CGDB6lFm4nzF8x6Q1sJrPh1rRYy5z7FRlifrLstfOR3wEy
+         zepmWpXpTiRZplGN31S4w6cwZPcMvBbg9F0AHb7+dxfyi876DbfGhR1vY0EE7k3aeRb+
+         bMXvcQVIz48q3Un1EtFk1SjOtJajBPVFMHPeL7qTcUUWnzGLAnzxBqUxgTxlURcJqZQm
+         uD/w==
+X-Gm-Message-State: AOJu0YzUyAbl+mAa0BQrH9KGNFjcTiEEKxUNHy79SnmZHGzdtOZ0JB2+
+	hbH6Z7t2vkk6U7GjNoUru3lLxIcchl6iwn/7Y1KOLmlFKbTUiqMFks7rSLRI7liaB/L0M5dy9K3
+	f
+X-Google-Smtp-Source: AGHT+IHeOMyRcoLpdZuoIMq70PHMoNO6cKBr77dSUsPF029rgNy+rf9D84ozJqkx37/VLgYDecUcDQ==
+X-Received: by 2002:a05:600c:5109:b0:40e:ac4f:7156 with SMTP id o9-20020a05600c510900b0040eac4f7156mr1827991wms.5.1707214344636;
+        Tue, 06 Feb 2024 02:12:24 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWPtp3JC/ANDqq97XXixhPbVr778Ixnvi73AOPWqfvcFc08X742MHN1hZ3XwSgdTUk2nmC+rxPhDXzsauPC68M+oBZcRuO5GO/tYrLQ9iz+PhM/YZsKdXyhGWGKQnFHH+jjmaMgI9L8RflpQTfdOtQjk4fAwc0tAXvbqO1CHBHSVyZERfguh20GEUIxOGduHnkV34pdJHuM6E8DPselTMWicX5u6B/bbvQ7i/T8dYAG9DHJmBJgp3L3wvn6oBH38yxQSYKeaRE6CDvSXYr0KJ0+x9m4HBtGRvGp+kKE6YHMnMJc/hvwg9SUk4eHvP0fhE+sB9Qzbyj/8KHzrw==
+Received: from [192.168.1.20] ([178.197.222.62])
+        by smtp.gmail.com with ESMTPSA id f17-20020a05600c4e9100b0040ec66021a7sm1484053wmq.1.2024.02.06.02.12.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Feb 2024 02:12:24 -0800 (PST)
+Message-ID: <0a2604e7-8b30-4cf9-9099-ba3681bc5538@linaro.org>
+Date: Tue, 6 Feb 2024 11:12:22 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240206073322.5560-1-yangyicong@huawei.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] serial: samsung: honor fifosize from dts at first
+Content-Language: en-US
+To: Tamseel Shams <m.shams@samsung.com>, alim.akhtar@samsung.com,
+ krzysztof.kozlowski+dt@linaro.org, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <CGME20240205082441epcas5p1e904f4f95852de3fd8663742ed5131df@epcas5p1.samsung.com>
+ <20240205082434.36531-1-m.shams@samsung.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240205082434.36531-1-m.shams@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
-> From: Yicong Yang <yangyicong@hisilicon.com>
+On 05/02/2024 09:24, Tamseel Shams wrote:
+> Currently for platforms which passes UART fifosize from DT gets
+> override by local driver structure "s3c24xx_serial_drv_data",
+> which is not intended. Change the code to honor fifosize from
+> device tree at first.
 > 
-> We accidently met the issue that the bash prompt is not shown after the
-> previous command done and until the next input if there's only one CPU
-> (In our issue other CPUs are isolated by isolcpus=). Further analysis
-> shows it's because the port entering runtime suspend even if there's
-> still pending chars in the buffer and the pending chars will only be
-> processed in next device resuming. We are using amba-pl011 and the
-> problematic flow is like below:
+> Signed-off-by: Tamseel Shams <m.shams@samsung.com>
+> ---
+> Change Log:
+> v1 -> v2:
+> Acknowledged Krzysztof's comments
+> Initialized "ret" variable
 > 
-> Bash                                         kworker
-> tty_write()
->   file_tty_write()
->     n_tty_write()
->       uart_write()
->         __uart_start()
->           pm_runtime_get() // wakeup waker
->             queue_work()
->                                              pm_runtime_work()
->                                                rpm_resume()
->                                                 status = RPM_RESUMING
->                                                 serial_port_runtime_resume()
->                                                   port->ops->start_tx()
->                                                     pl011_tx_chars()
->                                                       uart_write_wakeup()
->         […]
->         __uart_start()
->           pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
->                                // later data are not commit to the port driver
->                                                 status = RPM_ACTIVE
->                                                 rpm_idle() -> rpm_suspend()
+>  drivers/tty/serial/samsung_tty.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
 > 
-> This patch tries to fix this by checking the port busy before entering
-> runtime suspending. A runtime_suspend callback is added for the port
-> driver. When entering runtime suspend the callback is invoked, if there's
-> still pending chars in the buffer then flush the buffer.
-> 
-> Cc: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+> index 71d17d804fda..e5dc2c32b1bd 100644
+> --- a/drivers/tty/serial/samsung_tty.c
+> +++ b/drivers/tty/serial/samsung_tty.c
+> @@ -1952,7 +1952,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct s3c24xx_uart_port *ourport;
+>  	int index = probe_index;
+> -	int ret, prop = 0;
+> +	int ret = 1, prop = 0;
 
-Is this a regression that was caused by the port code?  If so, what
-commit id does this fix?  Should it be backported to older kernels?
+I am sorry, but return of probe function cannot be positive.
 
-thanks,
+>  
+>  	if (np) {
+>  		ret = of_alias_get_id(np, "serial");
+> @@ -1990,8 +1990,7 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	if (np) {
+> -		of_property_read_u32(np,
+> -			"samsung,uart-fifosize", &ourport->port.fifosize);
+> +		ret = of_property_read_u32(np, "samsung,uart-fifosize", &ourport->port.fifosize);
+>  
+>  		if (of_property_read_u32(np, "reg-io-width", &prop) == 0) {
+>  			switch (prop) {
+> @@ -2009,10 +2008,13 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> -	if (ourport->drv_data->fifosize[index])
+> -		ourport->port.fifosize = ourport->drv_data->fifosize[index];
+> -	else if (ourport->info->fifosize)
+> -		ourport->port.fifosize = ourport->info->fifosize;
+> +	if (ret) {
 
-greg k-h
+Are you sure that you are checking correct ret?
+
+Best regards,
+Krzysztof
+
