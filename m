@@ -1,55 +1,57 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B15C186F
-	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 00:13:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 749813214
+	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 00:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707178435; cv=none; b=YD08MO44KjExGFeztyguCP9dHFuXUbgnZROrjGwt+esFJUGsm707ut0Wk9Ign7+1iEGSAktBDWc72AfGBR/n74OzwYIlXkTwVErYl0EMoUvDoKR37OCqTRQOHHgaT8cUQyYjNhEpbZ5mnyI9cXUvU4XDjg1jI1ho46I0y0wUGTY=
+	t=1707178436; cv=none; b=fH8xpwwSS+T21+c3UfbP3SySLPGJlIUz44GNOkUJqZiu0gg1VwNLBnx2AzUdQqu5oenQPW8OII1LZPymqivwhPHJmk/S4J3lH4J92LlAQxFTAAVqVBSHlc4RI2b70H5G1PortKwmbJXrdMVmBUQpdWJwBefe4H2ioK3hT04pQ6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707178435; c=relaxed/simple;
-	bh=qgTGi7JidDwUNcALuXCs/Aobj1U/WF9E3H5PaXfigWg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=K11OtkabNR14z1k0eEjZHSjm3OlxtRVTpy/oSZrLvjGOB70+Wmi7Hqm23wO7T2W+pYoxAHrkseLLDevBm43bvtpfAjgUDeRnHh3dq2OScJi06QNbop0FiNTHLbEjGEvBRyl/Llk/7UJoOVuBk5tc34WbUR/b3sE0VBBoPP6vtss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=C9l7b7H5; arc=none smtp.client-ip=209.85.128.49
+	s=arc-20240116; t=1707178436; c=relaxed/simple;
+	bh=cP/4/UkSs0FwG35VQ63HkqzL1J7Rzl17TzuFmKODFxM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=SCkJROtJaIyxoDo3AiOdqeLEq3osTNLzsSzm4Aen3B9wihFmGoZr8EOYV1CLN34hcQlbDa1s1GbSQGuvR995+sfV97LWwU0ccyUeBKrvJDlP/WAX3sKhSAZSWLcD8whFi6Yv+jPKkN1sMPFICpIwhEiU7EmUhAFA0huwxdYHmgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=DV73vVZ9; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="C9l7b7H5"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40fb3b5893eso40954285e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 16:13:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="DV73vVZ9"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-40fc549ab9bso32857925e9.0
+        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 16:13:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707178430; x=1707783230; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=r3al5hoYNZZk10PcQ0r4e5BeElcwyRKIKSa+2Ek/7S4=;
-        b=C9l7b7H53KP2v3EvJyWesaJRo+r7zP9Vb3KnwAWxnLdta9YrUg5xGQ+ve1f8cR2Oby
-         wpcRKQdD9Pmgq4CuDpgM6+shndCKj40IU3NldDQfGbjleLsjDqGaeGcliVneVqmtEyuj
-         0Mf+n+dyXRhq2FxAhUCxkBVgXnZpMTJq7NOd9ZGBvfwQVgAmLTWe1easadqQCBPzqrNX
-         PsXl/dIOm5zIF3Ma0iz9nVrZ+Y2+b3U9Qa1GKTxkb0cVJAx2GbFwh8ZQpUg9OOu/3i9x
-         6rbw1rRTjh8P5UlPX9QL4WMgrfhFsmYeyGb6KZn/PGalbB8Td4TFJB533rY8GD6vOcUc
-         xBTw==
+        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707178432; x=1707783232; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Gq/vJmgKCN4+43lqiOQvDvHZ5T2ZeE9RmH3a3i0S7t4=;
+        b=DV73vVZ9DKsCo1N4zXBRa20dE3xhzfBc5afhHmDAfZlwaMj0/dHt+Xtirwkkc2YErX
+         3wjEdI5FCmPq/Z/JiTVfpy8q8+rU16m5AtVa6/QGDz3cXi7/BTOwAWUVMuLQbWkYLjM3
+         cQNzRVp9UgaHbLKMhWpt/jlMsnVZKRrvZ812vUNwlB5AxKXHtSUWyl3cvlCjtTLABeZA
+         rzqxvuVPYRQpMiEQTw4qdeesteMzpS9+RUf9HoQvJ80WIG3QnDkXdGWougrMKfc3f5Ag
+         g/4XLvJkRjZEXfSm2ZhJzsRzk6KVsPyH+rq/jA3RaEy2RxVJCoB0pl1CQcgYSiypTBL9
+         HClw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707178430; x=1707783230;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=r3al5hoYNZZk10PcQ0r4e5BeElcwyRKIKSa+2Ek/7S4=;
-        b=fhyBUVg8w82lDc154UY0Rj8qajC1UejaMqmUTfU8Jb8yNzopGN+ZEFXYx/uhYZpziT
-         lQKGxmZVaA5+hRJ4eHPmvDxMXL0G7CSoYDcKeGTzTebr4wQOLaTeoGxDtx9gDdse1f4G
-         5g0qxt2AHOA17FfjgOZCO5t8EKLuRTqE62rS9pFEe3l3ICNz5RMtqB65rZ8vwiINKa5+
-         lYcQJzTkKaUboACw43FwE1Vo9UXH/DeptkTlnfyBoOt83szg2RWRzY/NMCZ4MMVoxj2G
-         5PQ8ExBMTDw6FW6hPu3GW/V0zVefw96Md7mdNFQ6ssPql4YBOH1yS0q4QCPgu2SQdIiJ
-         zk5w==
-X-Gm-Message-State: AOJu0Yx3oWfunRKYqKdlF2Ep7e3bbNNy+UWG7gob8CnzuRs61L8j/0ih
-	cxEOXR1FkIEXwPTC3y8S6mwM9k9VTId4XRjjhLMGpHQfJt02ldU8l2uCUyOf9oM=
-X-Google-Smtp-Source: AGHT+IFCim5OUOcgfTPcWA7Y6IOO0/nwwMYeV/LjPUpF6aS2P1E1QUN/ct8OXNgDJGo/eorbjUfFDQ==
-X-Received: by 2002:adf:e6cb:0:b0:33b:150e:627a with SMTP id y11-20020adfe6cb000000b0033b150e627amr32907wrm.70.1707178430299;
-        Mon, 05 Feb 2024 16:13:50 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWGGbZtGrR24l8gipVeG/n2/q6+R1SUf1M+MXyjypyn/mXeEuLCRm8v6kFtLpF74IY1NWbBNfY1X5T6nuLBRJysUAaAisMwjmSLp4Q5PwOEGmkvlybNBbMv9J3Q8dRxcOXD9sKaM/KK6C+eqomNABkluk6ej4SEGTkgxwfNxfGEb5CDl/oRNsnJJ2ql0767ogdYZRVh6u8gBKBeyehf7TojNfgS7PvqUhReBu/IAc78fD4vJAMAMY6rTYcHtg6Hh1wu3omiZffR+c3FXSQTIaAGS7wvvtKvO2o+Uvg/bWkecdP1AmdouvpaZowkyFYqufk8+G61B3KfaYfSbAylpsdeqiUN9hWQgJ5k+Z2YZkRTHdJrLjlIYPEWw491FYaF3kYgjJa6FSQTPJl0BKLqP3XUD3uZcNlyuyBe4bwyl8gQyh/j73myH9PXLdtox7QsJMNqWczKpXTV2dy1DRoAsCUL86ED+wM2A2t+DfWght/gIDhAoL5PLawCMsyR65D4TGyimPDUyzkW1HgIOZqCo42te6zULDk/ueCWSJGwnWW5cxZac71XlvK2nJEbvFAqTZpgtoDBzOQaH/1X9Pns27uRorZrx4mWcV92/97gRRpDhq4QRuAVzHeRTdnbZagQJa+7w026zTjHt1TPIpvsjSl1l5ElUDBOtkTOB5Uit+HPV+cLo9+I1cNtQi95nAfG4ATctArhvsW1se3lAmojkuuNE/dYjCN4dYdhjfxPMYMtbDTQfuOVaBiRiIfupQXscuRpQC3nlnkEjzqNz4uvYPXzECMIjeo=
+        d=1e100.net; s=20230601; t=1707178432; x=1707783232;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Gq/vJmgKCN4+43lqiOQvDvHZ5T2ZeE9RmH3a3i0S7t4=;
+        b=KedN4Kph9tczFxKqL0vk/pwVQbisTXrQHFPd7Js1s+O8tLZF+UF7pqd9YYZOBS3rBk
+         x64j9r04JUAxKjDVTvd+JgBu+YbeQA4K45vywYRa9WgDl7IaoRzZU70BWKe9YSDbxfoO
+         yxc8OJgKGru4SFovQDdVaW6maY8nSgyzMSemcu4373bDFthwoButce530HbIoLFZdygb
+         0n49VyuRsOJQ9fgP5AOwl7Me+TxrAVBmC+mXwbPyxkBVdyN+maf+b+WkhpieUOkX6S0k
+         yv1bBCOT/SEJADmJFs+JxwSpNOxEyN+G2qLwIZGnQzBtd6AR05lS7u6ORBg2AKhJpPtu
+         XqMw==
+X-Gm-Message-State: AOJu0Yz/HfnmZXPmRjs8IWtY3pU+sglaHAbebJhG4pSU9g9UZFM9TaiE
+	L1PrSRhg7zdE1Gp3boa4A2wgFod2MuzvsWDM5xWS+cEd3/M4teqWlP+nTMsx9VE=
+X-Google-Smtp-Source: AGHT+IFDZiqZCqXSW50BaIopf3+TuvOXvtTei80hIpKW62aZOXV+z3L31NeRZ68PFAmNV5ntUy8n7g==
+X-Received: by 2002:a05:600c:3110:b0:40f:b45c:85a5 with SMTP id g16-20020a05600c311000b0040fb45c85a5mr869848wmo.22.1707178432482;
+        Mon, 05 Feb 2024 16:13:52 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCXYDtvhA0Pcloza39he5JBCyZ9ZNK63hXDPbN3A6qiXjD5eegCT4Hiiui8jpxnsrU7F7VMA1rUGYPCoOpELvpUR5ft3rDzXYQPgJNjz2ZCTH/2u0nwNEupG3BYZCvz5OXQur8AZC7CGZzHJ/PseuunTs2ADo8fnXRhdQY8+6IyalM+KnM7fsi0IE3VGosiQchIFbhB98tsMdgf+7Pi6ky0SAy+VJCQVFPXmvI3q9LwnA/YN3PB1i1sX4ZEAO2i//Ud0nZ/Y7jxvOm1Yg6eVytofID/X3IVEnQR+HTZiKlk3z5yBUg47/u6uJPC0BqYAIKJ9l9C0KA4FBi8AxBW5R298mN7c0Y1PZFG3HvysZFKjD0TX/XCEC+gf/NiTIuE57Inq5TSgXFM5Nno0IrzinWh0FgcjkD08JIFQmOoECuRTvev4H77qevmMM7nEJq9Xs0vuMdxSf/d028tk5qqhQc6A+glC7zrvpOf67ulDMwIHelwOpGVxI/t8veno+pXAlTR0duQLk21qtv3JC3sodp+urRyDPz1SjfNAzmBjHzGIdrSPv+4Z8PbKZNgKGNLZV/yXIZNDx1afSLvGRmrvOhkF0BA+fWbseCXp6mDC9CRbJXFlwEGg2vjH9TB94mHntEXv47BGPvK56PiZLykunFjGzO5oQMBLvFGiG9sD1iHaygnBGLZ2kUMFMKxdeQ43/EsS/UkSsd31X29MSfAp4nO5pf7hcVQ8QJkdN2hQi+jSZgGgHgUt/Z5HGN4SzOHU70co4R1NyQwK1IVXmc4i41oaWaspAPQ=
 Received: from P-ASN-ECS-830T8C3.local ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id b17-20020a5d40d1000000b0033ae7d768b2sm686959wrq.117.2024.02.05.16.13.49
+        by smtp.gmail.com with ESMTPSA id b17-20020a5d40d1000000b0033ae7d768b2sm686959wrq.117.2024.02.05.16.13.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 16:13:50 -0800 (PST)
+        Mon, 05 Feb 2024 16:13:51 -0800 (PST)
 From: Yoann Congal <yoann.congal@smile.fr>
 To: linux-fsdevel@vger.kernel.org,
 	linux-kbuild@vger.kernel.org,
@@ -77,10 +79,12 @@ Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
 	Yoann Congal <yoann.congal@smile.fr>
-Subject: [PATCH v4 0/3] printk: CONFIG_BASE_SMALL fix for LOG_CPU_MAX_BUF_SHIFT and removal of CONFIG_BASE_FULL
-Date: Tue,  6 Feb 2024 01:13:30 +0100
-Message-Id: <20240206001333.1710070-1-yoann.congal@smile.fr>
+Subject: [PATCH v4 2/3] printk: Change type of CONFIG_BASE_SMALL to bool
+Date: Tue,  6 Feb 2024 01:13:32 +0100
+Message-Id: <20240206001333.1710070-3-yoann.congal@smile.fr>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240206001333.1710070-1-yoann.congal@smile.fr>
+References: <20240206001333.1710070-1-yoann.congal@smile.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,64 +93,161 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series focuses on CONFIG_BASE_SMALL.
-The first patch fixes LOG_CPU_MAX_BUF_SHIFT when CONFIG_BASE_SMALL is
-used.
-The second patch globally changes the type of CONFIG_BASE_SMALL and
-adapts usages.
-The third patch removes the now redundant BASE_FULL and puts BASE_SMALL
-in its place in the config menus.
+CONFIG_BASE_SMALL is currently a type int but is only used as a boolean.
 
-Thanks everyone for your reviews! :)
+So, change its type to bool and adapt all usages:
+CONFIG_BASE_SMALL == 0 becomes !IS_ENABLED(CONFIG_BASE_SMALL) and
+CONFIG_BASE_SMALL != 0 becomes  IS_ENABLED(CONFIG_BASE_SMALL).
 
-Patch history:
-v3->v4: Applied Petr Mladek's suggestion (Thanks!):
-* Keep BASE_SMALL instead of BASE_FULL
-* A patch changing the type of BASE_SMALL was added.
+Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
+---
+NB: This is preliminary work for the following patch removing
+CONFIG_BASE_FULL (now equivalent to !CONFIG_BASE_SMALL)
 
-v3 series was named "printk: CONFIG_BASE_SMALL fix for
-LOG_CPU_MAX_BUF_SHIFT and removal"
-https://lore.kernel.org/all/20240204232945.1576403-1-yoann.congal@smile.fr/
-* Patch v3 1/2:
-  * Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
-  * Reviewed-by: John Ogness <john.ogness@linutronix.de>
-  * Reviewed-by: Petr Mladek <pmladek@suse.com>
-* Patch v3 2/2:
-  * Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+v3->v4:
+* Split "switch CONFIG_BASE_SMALL to bool" (this patch) and "Remove the redundant
+  config" into two patches
+* keep CONFIG_BASE_SMALL instead of CONFIG_BASE_FULL
+---
+ arch/x86/include/asm/mpspec.h | 6 +++---
+ drivers/tty/vt/vc_screen.c    | 2 +-
+ include/linux/threads.h       | 4 ++--
+ include/linux/udp.h           | 2 +-
+ include/linux/xarray.h        | 2 +-
+ init/Kconfig                  | 8 ++++----
+ kernel/futex/core.c           | 2 +-
+ kernel/user.c                 | 2 +-
+ 8 files changed, 14 insertions(+), 14 deletions(-)
 
-v2 -> v3: Applied Luis Chamberlain's comments (Thanks!):
-* Split the single commit in two : one functional fix, one global
-  removal.
-
-v2 patch was named "printk: Remove redundant CONFIG_BASE_SMALL"
-https://lore.kernel.org/all/20240127220026.1722399-1-yoann.congal@smile.fr/
-* Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
-* Reviewed-by: John Ogness <john.ogness@linutronix.de>
-
-v1 -> v2: Applied Masahiro Yamada's comments (Thanks!):
-* Changed from "Change CONFIG_BASE_SMALL to type bool" to
-  "Remove it and switch usage to !CONFIG_BASE_FULL"
-* Fixed "Fixes:" tag and reference to the mailing list thread.
-* Added a note about CONFIG_LOG_CPU_MAX_BUF_SHIFT changing.
-
-v1 patch was named "treewide: Change CONFIG_BASE_SMALL to bool type"
-https://lore.kernel.org/all/20240126163032.1613731-1-yoann.congal@smile.fr/
-
-Yoann Congal (3):
-  printk: Fix LOG_CPU_MAX_BUF_SHIFT when BASE_SMALL is enabled
-  printk: Change type of CONFIG_BASE_SMALL to bool
-  printk: Remove redundant CONFIG_BASE_FULL
-
- arch/x86/include/asm/mpspec.h |  6 +++---
- drivers/tty/vt/vc_screen.c    |  2 +-
- include/linux/threads.h       |  4 ++--
- include/linux/udp.h           |  2 +-
- include/linux/xarray.h        |  2 +-
- init/Kconfig                  | 15 +++++----------
- kernel/futex/core.c           |  2 +-
- kernel/user.c                 |  2 +-
- 8 files changed, 15 insertions(+), 20 deletions(-)
-
+diff --git a/arch/x86/include/asm/mpspec.h b/arch/x86/include/asm/mpspec.h
+index 4b0f98a8d338d..c01d3105840cf 100644
+--- a/arch/x86/include/asm/mpspec.h
++++ b/arch/x86/include/asm/mpspec.h
+@@ -15,10 +15,10 @@ extern int pic_mode;
+  * Summit or generic (i.e. installer) kernels need lots of bus entries.
+  * Maximum 256 PCI busses, plus 1 ISA bus in each of 4 cabinets.
+  */
+-#if CONFIG_BASE_SMALL == 0
+-# define MAX_MP_BUSSES		260
+-#else
++#ifdef CONFIG_BASE_SMALL
+ # define MAX_MP_BUSSES		32
++#else
++# define MAX_MP_BUSSES		260
+ #endif
+ 
+ #define MAX_IRQ_SOURCES		256
+diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+index 67e2cb7c96eec..da33c6c4691c0 100644
+--- a/drivers/tty/vt/vc_screen.c
++++ b/drivers/tty/vt/vc_screen.c
+@@ -51,7 +51,7 @@
+ #include <asm/unaligned.h>
+ 
+ #define HEADER_SIZE	4u
+-#define CON_BUF_SIZE (CONFIG_BASE_SMALL ? 256 : PAGE_SIZE)
++#define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_SMALL) ? 256 : PAGE_SIZE)
+ 
+ /*
+  * Our minor space:
+diff --git a/include/linux/threads.h b/include/linux/threads.h
+index c34173e6c5f18..1674a471b0b4c 100644
+--- a/include/linux/threads.h
++++ b/include/linux/threads.h
+@@ -25,13 +25,13 @@
+ /*
+  * This controls the default maximum pid allocated to a process
+  */
+-#define PID_MAX_DEFAULT (CONFIG_BASE_SMALL ? 0x1000 : 0x8000)
++#define PID_MAX_DEFAULT (IS_ENABLED(CONFIG_BASE_SMALL) ? 0x1000 : 0x8000)
+ 
+ /*
+  * A maximum of 4 million PIDs should be enough for a while.
+  * [NOTE: PID/TIDs are limited to 2^30 ~= 1 billion, see FUTEX_TID_MASK.]
+  */
+-#define PID_MAX_LIMIT (CONFIG_BASE_SMALL ? PAGE_SIZE * 8 : \
++#define PID_MAX_LIMIT (IS_ENABLED(CONFIG_BASE_SMALL) ? PAGE_SIZE * 8 : \
+ 	(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT))
+ 
+ /*
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index d04188714dca1..b456417fb4515 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -24,7 +24,7 @@ static inline struct udphdr *udp_hdr(const struct sk_buff *skb)
+ }
+ 
+ #define UDP_HTABLE_SIZE_MIN_PERNET	128
+-#define UDP_HTABLE_SIZE_MIN		(CONFIG_BASE_SMALL ? 128 : 256)
++#define UDP_HTABLE_SIZE_MIN		(IS_ENABLED(CONFIG_BASE_SMALL) ? 128 : 256)
+ #define UDP_HTABLE_SIZE_MAX		65536
+ 
+ static inline u32 udp_hashfn(const struct net *net, u32 num, u32 mask)
+diff --git a/include/linux/xarray.h b/include/linux/xarray.h
+index cb571dfcf4b16..3f81ee5f9fb9c 100644
+--- a/include/linux/xarray.h
++++ b/include/linux/xarray.h
+@@ -1141,7 +1141,7 @@ static inline void xa_release(struct xarray *xa, unsigned long index)
+  * doubled the number of slots per node, we'd get only 3 nodes per 4kB page.
+  */
+ #ifndef XA_CHUNK_SHIFT
+-#define XA_CHUNK_SHIFT		(CONFIG_BASE_SMALL ? 4 : 6)
++#define XA_CHUNK_SHIFT		(IS_ENABLED(CONFIG_BASE_SMALL) ? 4 : 6)
+ #endif
+ #define XA_CHUNK_SIZE		(1UL << XA_CHUNK_SHIFT)
+ #define XA_CHUNK_MASK		(XA_CHUNK_SIZE - 1)
+diff --git a/init/Kconfig b/init/Kconfig
+index d50ebd2a2ce42..d4b16cad98502 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -734,7 +734,7 @@ config LOG_CPU_MAX_BUF_SHIFT
+ 	int "CPU kernel log buffer size contribution (13 => 8 KB, 17 => 128KB)"
+ 	depends on SMP
+ 	range 0 21
+-	default 0 if BASE_SMALL != 0
++	default 0 if BASE_SMALL
+ 	default 12
+ 	depends on PRINTK
+ 	help
+@@ -1941,9 +1941,9 @@ config RT_MUTEXES
+ 	default y if PREEMPT_RT
+ 
+ config BASE_SMALL
+-	int
+-	default 0 if BASE_FULL
+-	default 1 if !BASE_FULL
++	bool
++	default y if !BASE_FULL
++	default n
+ 
+ config MODULE_SIG_FORMAT
+ 	def_bool n
+diff --git a/kernel/futex/core.c b/kernel/futex/core.c
+index 1e78ef24321e8..06a1f091be81d 100644
+--- a/kernel/futex/core.c
++++ b/kernel/futex/core.c
+@@ -1150,7 +1150,7 @@ static int __init futex_init(void)
+ 	unsigned int futex_shift;
+ 	unsigned long i;
+ 
+-#if CONFIG_BASE_SMALL
++#ifdef CONFIG_BASE_SMALL
+ 	futex_hashsize = 16;
+ #else
+ 	futex_hashsize = roundup_pow_of_two(256 * num_possible_cpus());
+diff --git a/kernel/user.c b/kernel/user.c
+index 03cedc366dc9e..aa1162deafe49 100644
+--- a/kernel/user.c
++++ b/kernel/user.c
+@@ -88,7 +88,7 @@ EXPORT_SYMBOL_GPL(init_user_ns);
+  * when changing user ID's (ie setuid() and friends).
+  */
+ 
+-#define UIDHASH_BITS	(CONFIG_BASE_SMALL ? 3 : 7)
++#define UIDHASH_BITS	(IS_ENABLED(CONFIG_BASE_SMALL) ? 3 : 7)
+ #define UIDHASH_SZ	(1 << UIDHASH_BITS)
+ #define UIDHASH_MASK		(UIDHASH_SZ - 1)
+ #define __uidhashfn(uid)	(((uid >> UIDHASH_BITS) + uid) & UIDHASH_MASK)
 -- 
 2.39.2
 
