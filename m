@@ -1,57 +1,57 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5617E12E1FB
-	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 09:01:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 626F012D75F
+	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 09:04:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707210089; cv=none; b=chFPvAE9Yo9ztYLCcle6wbYN7GBOklV8oUGrXpieAb/mQ4hKxRn5d4+O23qbs0J4peGIpu9G7YyVBPPqSr6ci33so0l45mnPMoOklNb8lSdFooag7TdBWrUQ8l2hxHAa2Dq0kR6WqgDAFiWGGLscq6VXE66vGsjcl5N4UE1GNcM=
+	t=1707210264; cv=none; b=Yl/J+ZM90Vfo6luElwd05hB0AGoqCy4ErfPOGGqYn9kEUGjmFK2gYbVg1Gvz/VfezDDTkpQ0vK9h6YLNkCx3FvrRwyNQ7fZBYt8EmzddwJdXyiyKLKFKt7ii4wM8Vk6vLQfAbqd+4TzsznSFEDCP4bpXSXQv3rhtTYUoB0gx1j4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707210089; c=relaxed/simple;
-	bh=quQ5u1nidg/xTSCc4eiJEK0LTpVOsRry+rj1E2LYKsw=;
+	s=arc-20240116; t=1707210264; c=relaxed/simple;
+	bh=Gp35uNMc518ajDUT+cimYa69HEsvONtpg4a3sm+E5kI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eDQ/m6rzoMrtGNlDSoThFpiLdFDbx4hrhrqNN/eTVmqicdyowj//4/PwKH3SGF0WsHY6RBfFosJrqZ4JdZLz/x9E5wKiLQ4R/0/tamTAcNJdb3MfJ4Lnsd9VtDd0toqBPuhFE7o9iwv2fNpW6J3wIuFFl6a8oqQBvbDrqO51isQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=BOpuCh4h; arc=none smtp.client-ip=209.85.218.54
+	 Content-Type:Content-Disposition:In-Reply-To; b=aPHmxpqUYSxSCKtGOpABku3f34s6lcaXIEew1FHRRPFgW8kQGJqatHOFsdTzMP2eILq0DcB8eWF9j/AMZ0DnB26sFrgjAtXl+qooXikpD1idciKGZ+PKOXzF7CAMG2lsJXYASuM2fYz/mErgCCMNcac5Bb8c5ILvjPny/xXEU2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=R5ASdkTv; arc=none smtp.client-ip=209.85.218.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="BOpuCh4h"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a36126ee41eso671867466b.2
-        for <linux-serial@vger.kernel.org>; Tue, 06 Feb 2024 01:01:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="R5ASdkTv"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a26f73732c5so763656366b.3
+        for <linux-serial@vger.kernel.org>; Tue, 06 Feb 2024 01:04:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1707210083; x=1707814883; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1707210260; x=1707815060; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YDXZa34a8Tn2GI/Io/UPgHGAi1ZYTZqfLaqpPxg+uZ0=;
-        b=BOpuCh4hc1OhNJsF+tUB4//wJ7JRP7+hfZCOIYnwx0AkYzIP9U4xi/9M5KzDW9cibF
-         UXKFocUkY+URFGzVxS7AUR0+MHiFRjDMzqKQYRRkhgX2xQKJAfeqi1vRhyM+QKq3ny4C
-         iomoXvSYu8L3AN+716am/Tdeyp2rd1gliuQZLS+nOmwa/nvvtRb5ejLNfK0ywHQLZQMv
-         WpxcpbeT+BdQZecqVJeeqGD92l1tcx6OO5DpJeGPx2EciqxwDz4yHcTHxvlu3mFOFVaS
-         mxtaLnfHuAYoOxvZqtZpV3TAilZkOXfRWZJM2tsLPsUbTDpt7M2FgGUAfxB2YXzwMgaP
-         f3Dw==
+        bh=oT9eQF6EDyoyZsgVEyZNBHLPqezkyA6nguMaS8W3x+A=;
+        b=R5ASdkTvxgylxekuA9je68pNt2bL2E6YftZlDXd4F2sZ4j2dhDuZ8RxTexiVSXlI/c
+         F1+CVGN46UedV775iPAcK4YJGhxXvTVA6AxtavewWvUd5X/VmtFJA3Xib22OkcRIZsq0
+         qDv8p7XDiIxg4RgqTd+L1/MPd6whNwwKSjoN1MXHkuF/ti5Gxmj14FF/ItBqamuO+oD2
+         JGkxxjbj72gPT7v45Ayv7qWy5y/muPEs+5AZys93x4Pd/3doar+gSrSC4sak1L7JMi3G
+         urDYjL0npZeEwJxd76qI+DqzKbKuzzwXVc0fKder3l5Dp7PDe8utJ+2U45A//5p+hVt7
+         OgCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707210083; x=1707814883;
+        d=1e100.net; s=20230601; t=1707210260; x=1707815060;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YDXZa34a8Tn2GI/Io/UPgHGAi1ZYTZqfLaqpPxg+uZ0=;
-        b=r7LdYnhswBDiBAgFiBb9qxcxFuTlhlsZDSpYn751uR8QhmUxwjtHn/1FDyj8JExfr4
-         ARf3RoztMGNPZ6lTb28polu+ixxk/CLeC9zhjoEO+7o6vUr/u1X2YcpJaCF5EtvF5rK/
-         dRC9bd56Nnl2v0r2IK0I+sbA+wMaCMMioxcm2hzxpabs6CF5GqRuObbgpMecgGKHauuh
-         URHwUPypuzkxnNml0IW+AtSP1rHp+in+HuSJ3PbxcVN+SL3XA2CBolHFoYjvdzCExkSO
-         EB7pqQPGaOi9MUMmGeufw+8LEsBjuENDi0FU4nSMfwW4XiToTFZtiRVSnq7RRWJvCfAX
-         I0NA==
-X-Gm-Message-State: AOJu0YwJLv428v6QFK8WtDaY11deXp8V0Xj4w5LmB57R/J4zFVoXsqO+
-	1tccHRwjPIgQW3xSevU0eBaQApqReTVfnq5ff+kfWDkm2oG0z1B844rqfkAZaMM=
-X-Google-Smtp-Source: AGHT+IG9JUi+5IktGIG5tqEgZJOoZGAq/7lRMLCLehPiOVpCvTdNDxomqWr0Mcyzdk8qlnsNfyT4VQ==
-X-Received: by 2002:a17:907:9255:b0:a37:e980:5945 with SMTP id kb21-20020a170907925500b00a37e9805945mr743785ejb.60.1707210083598;
-        Tue, 06 Feb 2024 01:01:23 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWW7hqxsoaL16/Gy6fn4z3Q/EAd8zG+9r0X20HuS+qff/+Sh4p87Fev7M6WUDgf3HiORSSYTamMBkwYmrmlMI+9YIUjcTu59io0D0UjPO1nmbVO3D8N8zxCNxcp9gAi2uYhIR0SHT7q2OjezrtjVzeq6Vj4GAcQT7TyT+P8Ue1P1Gi0DIkeThM6lUnlGz4FYGqGj4WdRJxPW3G5YWTQxmSq0pt6SPRPrqrVMDMxmK3OoCvSliEQzUz+oqMon8uHvF4z2eL/6/BazQM8zb+iIf2zvklEC459KRExvuZQaznMM98b6vcJZaBxJfG+L1GsINR9RUzz7mtWXKUzq5F66Uk4wr775eWGZrmCsZOugj4xyJfm+hH3bo/fYszBd9vEAgfByKetlvQD5Jh3fq4491VJMN+flnJYXL6jIrQnvpFsKmB2VhSWkaSktej6XVkHBuGNuNlFC9yKpI5fxjNGPoTWIssZMFnt0mG/nnGbGUrthmioM1K969W8dJoaAd+ff8bPOhpulyO2jKpQh6Eu/5aR7Hu00TM5HPlwPbU1RSFCZ0M7kBpN8dVKROvjdUgUE7Y4jnny66lTPEsoeKLmWppYZzM7+wYwjj/6Y6EBfZX4bbLEKkRZbOqbmIwj/p5bunlLFPn0jNGPFsjCIKnYJs0yyCiYZqyMDjVEpm+t+LI6HYZCJU9k5s6k9lwOfgADd6huDdu/meuSBjmxNgtLFxdOrHMkfRutPf3VEWsfsakcaQA2iJj0HEXNpa1AG//0b1sIZFfI
+        bh=oT9eQF6EDyoyZsgVEyZNBHLPqezkyA6nguMaS8W3x+A=;
+        b=t3PkAJeoaMK+pe42rSWawa9TqyRDdfNh3LTAi34QcEktDn9Rg+Vvcr6ZKV6kJxpgJd
+         lkK5MeXfAecUCamobCX99H/dVPRojv4Fa3ypOQRkKjv3z6XGBqrUDkOKZvG85fDNcu5c
+         WWSLoRIH09dxOwoDbE7nPVH8gWjNwBjARxg3iiBPena4Z6MgCqAQZiia1IR3rrO5iy2d
+         OXoR6ECcl2LDH0nFHDhUhqm5cD1nb3mqgzckWdVxbusKEGeGs5fHUATZIZ4ImgFGrqEd
+         IUvcIzDlqzaM/d0kY9Z5AWv+dZmOsy8sBi2Lbsxboz5+bQFRsDZrcHLGUzIv2wwm3F95
+         GcSg==
+X-Gm-Message-State: AOJu0YyQ7yHwHEe2jrrA1FhojWCjwPsG2wVQaK6kTiiDanMbgFkk61HI
+	5NNoy46hY/50xB8BKhS75037G3X2q4WUAdqPuQLhpMJwcBBGxxIVaBHzbuh0lCw=
+X-Google-Smtp-Source: AGHT+IHiM9uAumR+z22zTjpJ85plFmRYDxP1RdptBN/LMoDG9XbGtOvtI9Zo9Eq/Qwcb7wfE9rDM1g==
+X-Received: by 2002:a17:906:7105:b0:a37:19f6:b4e7 with SMTP id x5-20020a170906710500b00a3719f6b4e7mr1410042ejj.24.1707210260659;
+        Tue, 06 Feb 2024 01:04:20 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWjdEfLWTNrLTJxSl//LlhmFifLaLlKWAEvnFqcOgZ3nYQJpdSh/BWOkJBb4d1XHzLKWYFcIIRXU/WnpzE8AO8b5CpNtpHpkvLeXGwZsSnMHOmMqqpu/ZbFAEctlbG9Mj1ssHOqtg7XHJeSTlOCPnlRgIX3rh1LSF67Mc4o2q8t+rw4WtOO5cZcgwPbaZiba+bM95zsK7TNNtwesWt5Mh0c4Glf7hGxwUk7+Tma8zq+IHJ6VJtb/mmjAclwRs+2DvnYrF5Wz+CUvBPenGN7QMmjzXHZrSxQkUs2226VtpmAAK+YkUysmvqdkAGBRZQOL5S+oz0FBiZ0fSFUTJkJSji1fVKfd3Z85JKJVmQv7fz4672vQdLsSCwS82/iYCzZ+jXqesZVMnnGgWeir8W6BhmcvxXhXLNcTbyExmhEeBtH58wHU/RRCio8hKhGVZESWOHwu13zFZrcPILDgdmJEWoryvO5G+zT7Q/qBiyOnHu30G/J1LonCLCo43b/cTncTgfvxSUnCEnYTeySSwlTzoaPXw+aRByfJh4M7Knqnn0aPwmNmdSzM+KFTW72QJzpKCsbxDRtZ8T6lw4jzrHd8CNE5Vma1CaA/3PVW9riG0TOYp6tpcE8zXpxJvwd8tWOPmQIN+8mXRcbLZGlCdVc/g4AXGan/3SnnlTH4kDTeeqqzmgbB5unmLTwM+fzahS5OH8jXF87900B34PFw+QwPvdOBsV8+rBrgE4Cn869eAj25FNm27N/64JXtAvfjtLbqm316h2G
 Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id bl24-20020a170906c25800b00a376758a0e9sm896042ejb.81.2024.02.06.01.01.22
+        by smtp.gmail.com with ESMTPSA id d23-20020a1709061f5700b00a377ac3730esm897261ejk.2.2024.02.06.01.04.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Feb 2024 01:01:23 -0800 (PST)
-Date: Tue, 6 Feb 2024 10:01:21 +0100
+        Tue, 06 Feb 2024 01:04:20 -0800 (PST)
+Date: Tue, 6 Feb 2024 10:04:18 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Yoann Congal <yoann.congal@smile.fr>
 Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
@@ -74,10 +74,10 @@ Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH v4 2/3] printk: Change type of CONFIG_BASE_SMALL to bool
-Message-ID: <ZcH1YewEqWsjTaMJ@alley>
+Subject: Re: [PATCH v4 3/3] printk: Remove redundant CONFIG_BASE_FULL
+Message-ID: <ZcH2ElZd4BaySeGV@alley>
 References: <20240206001333.1710070-1-yoann.congal@smile.fr>
- <20240206001333.1710070-3-yoann.congal@smile.fr>
+ <20240206001333.1710070-4-yoann.congal@smile.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -86,18 +86,42 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240206001333.1710070-3-yoann.congal@smile.fr>
+In-Reply-To: <20240206001333.1710070-4-yoann.congal@smile.fr>
 
-On Tue 2024-02-06 01:13:32, Yoann Congal wrote:
-> CONFIG_BASE_SMALL is currently a type int but is only used as a boolean.
-> 
-> So, change its type to bool and adapt all usages:
-> CONFIG_BASE_SMALL == 0 becomes !IS_ENABLED(CONFIG_BASE_SMALL) and
-> CONFIG_BASE_SMALL != 0 becomes  IS_ENABLED(CONFIG_BASE_SMALL).
+On Tue 2024-02-06 01:13:33, Yoann Congal wrote:
+> CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
+> default: CONFIG_BASE_SMALL is the special case to take care of.
+> So, remove CONFIG_BASE_FULL and move the config choice to
+> CONFIG_BASE_SMALL (which defaults to 'n')
 > 
 > Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+This might also require updatating the default config files which
+unset CONFIG_BASE_FULL. I mean:
+
+$> git grep BASE_FULL arch/
+arch/arm/configs/collie_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/keystone_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/lpc18xx_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/moxart_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/mps2_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/omap1_defconfig:# CONFIG_BASE_FULL is not set
+arch/arm/configs/stm32_defconfig:# CONFIG_BASE_FULL is not set
+arch/microblaze/configs/mmu_defconfig:# CONFIG_BASE_FULL is not set
+arch/mips/configs/rs90_defconfig:# CONFIG_BASE_FULL is not set
+arch/powerpc/configs/adder875_defconfig:# CONFIG_BASE_FULL is not set
+arch/powerpc/configs/ep88xc_defconfig:# CONFIG_BASE_FULL is not set
+arch/powerpc/configs/mpc866_ads_defconfig:# CONFIG_BASE_FULL is not set
+arch/powerpc/configs/mpc885_ads_defconfig:# CONFIG_BASE_FULL is not set
+arch/powerpc/configs/tqm8xx_defconfig:# CONFIG_BASE_FULL is not set
+arch/riscv/configs/nommu_k210_defconfig:# CONFIG_BASE_FULL is not set
+arch/riscv/configs/nommu_k210_sdcard_defconfig:# CONFIG_BASE_FULL is not set
+arch/riscv/configs/nommu_virt_defconfig:# CONFIG_BASE_FULL is not set
+arch/sh/configs/edosk7705_defconfig:# CONFIG_BASE_FULL is not set
+arch/sh/configs/se7619_defconfig:# CONFIG_BASE_FULL is not set
+arch/sh/configs/se7712_defconfig:# CONFIG_BASE_FULL is not set
+arch/sh/configs/se7721_defconfig:# CONFIG_BASE_FULL is not set
+arch/sh/configs/shmin_defconfig:# CONFIG_BASE_FULL is not set
 
 Best Regards,
 Petr
