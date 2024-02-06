@@ -1,55 +1,53 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03AE12579
-	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 00:13:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B15C186F
+	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 00:13:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707178435; cv=none; b=Z/BhYFLwGvua47f6RFHKemjpwjOw+vGBwTGn9CADHYzwfG7JNE4GPW5DFOTp/4BgEG27tgnbHzL7hZTekPwd++lFNP5vsjSMq1PjOhqIrdq0KC7lpmDycSb7W+qMaP9Njh0YWtE0pX5J1vrZct46M/rPP/eW0iWtaostBjwJMIw=
+	t=1707178435; cv=none; b=YD08MO44KjExGFeztyguCP9dHFuXUbgnZROrjGwt+esFJUGsm707ut0Wk9Ign7+1iEGSAktBDWc72AfGBR/n74OzwYIlXkTwVErYl0EMoUvDoKR37OCqTRQOHHgaT8cUQyYjNhEpbZ5mnyI9cXUvU4XDjg1jI1ho46I0y0wUGTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707178435; c=relaxed/simple;
-	bh=PZg3QWq+/GKgfZZA2qyqx39P/kRDLKfoOfmCw8uE3uc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KUkDIHci8eX1u8LNOp732UlvLCovbMSe93uPHa29eEhCx7hNYXNBX7LA4FESXyAu5qakZJKZPg9qDVVvaKcju/H491Qeb/Vq9jjrQpnUQqIOBp4SGu3Y660MPRJ/Nm0iDIbWvTEnX3mmLNaeCTuMQf3uR76zC/fG0KWqwA2ymXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=PElaE5FL; arc=none smtp.client-ip=209.85.221.49
+	bh=qgTGi7JidDwUNcALuXCs/Aobj1U/WF9E3H5PaXfigWg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=K11OtkabNR14z1k0eEjZHSjm3OlxtRVTpy/oSZrLvjGOB70+Wmi7Hqm23wO7T2W+pYoxAHrkseLLDevBm43bvtpfAjgUDeRnHh3dq2OScJi06QNbop0FiNTHLbEjGEvBRyl/Llk/7UJoOVuBk5tc34WbUR/b3sE0VBBoPP6vtss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=C9l7b7H5; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="PElaE5FL"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-33b0e5d1e89so4000817f8f.0
-        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 16:13:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="C9l7b7H5"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40fb3b5893eso40954285e9.0
+        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 16:13:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707178431; x=1707783231; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JGAprqtgwfmvAPo8XwmHq4MOLLyHp0qoLOC+fnp28mc=;
-        b=PElaE5FLEeILIlVeSxLGe4wVM5aEf37u5b3k2Qcauh07I6v6rK2PfXkoxmdkooKxcN
-         AZFOqSANlvjAbO5Wl4FMgfKUHAqErEbdLs0CY2M20hvIZmc/+n97TGqQ/LYvw2Pay62Z
-         5AHjAM64kvfbJ5x/96v0FNbqoBPtpQv+VYijhob1gEWUYFiBg4A4qMHckPET7u2ADGXO
-         uZdIyj9Q+ZClFGOvg3KBuqej2KVXvk5zd3B822rEBOhz00mcHT7tCOzKDI1zTqcT9fJa
-         aR1GgriaiZOxe5iifa9EKAx5k3lfnoxAVqegvVB7EUZtnJoaVfj4Jfv/be6eRjD+h4cO
-         9JiQ==
+        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707178430; x=1707783230; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=r3al5hoYNZZk10PcQ0r4e5BeElcwyRKIKSa+2Ek/7S4=;
+        b=C9l7b7H53KP2v3EvJyWesaJRo+r7zP9Vb3KnwAWxnLdta9YrUg5xGQ+ve1f8cR2Oby
+         wpcRKQdD9Pmgq4CuDpgM6+shndCKj40IU3NldDQfGbjleLsjDqGaeGcliVneVqmtEyuj
+         0Mf+n+dyXRhq2FxAhUCxkBVgXnZpMTJq7NOd9ZGBvfwQVgAmLTWe1easadqQCBPzqrNX
+         PsXl/dIOm5zIF3Ma0iz9nVrZ+Y2+b3U9Qa1GKTxkb0cVJAx2GbFwh8ZQpUg9OOu/3i9x
+         6rbw1rRTjh8P5UlPX9QL4WMgrfhFsmYeyGb6KZn/PGalbB8Td4TFJB533rY8GD6vOcUc
+         xBTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707178431; x=1707783231;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JGAprqtgwfmvAPo8XwmHq4MOLLyHp0qoLOC+fnp28mc=;
-        b=kSeLdhZsvfbJoI3FYzosTEWI6l/4gd2SH8fonOduDwHeQbDyibQRsUaHc9a5XOPXC+
-         +Px0nPewCYwHi+ttNfVnyR2iMdd8iegLGUFowfsjvj5P0YcjDiMhom/sdJq24PfXp1IF
-         U0ym/eA41GwgMTRlAwf4ex3tHvftc7SVrMWrNWNZFQ6/PXpn1T0M+WUrpLcCLC9/d3+R
-         qmnHK0EM8djoZTNhPXT65PPsk9Wz+VeiX+Xcm3egWzYTH6uqCblBFlB+47/adfkrRs3M
-         e3ZG5wEpEiiFDh/1zMd9ax0Q/yYA4awj06SGBww7flH7md53m/Gb9KgzLYR/y1CJOQrG
-         xraA==
-X-Gm-Message-State: AOJu0YyT4k/Z4UZqmMfmXxQijpa67xrt9MW7+PDfIAkWEpacn2A1lldv
-	l3iC7zXR09t3LyWdpSSlwReokW3GM8EtfpHwfGY7vbEnm15dl+PdfLPyvN7jsBE=
-X-Google-Smtp-Source: AGHT+IFVdveHEmqxwMT4/lrRvnliU1C6woy6CYFET1Y1uqw/pAcuN254xpaVv8itNDA24IGtf/7z3g==
-X-Received: by 2002:adf:f342:0:b0:33a:ec79:f923 with SMTP id e2-20020adff342000000b0033aec79f923mr42991wrp.54.1707178431092;
-        Mon, 05 Feb 2024 16:13:51 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCXSkm+KM6a//GM/zt8jAHlWsL+R+s9l4YXJWg1ms9wE3bjkViT7qTUvsy7b5e5PiupkD2cg693R32UTsr918zPuNWNygjG+uFSovIBuPxd5Xm7lK2IijJ2BZaSurM3ygYbTl+DotuZr2x6cWpTPXZNLyJb8/OI1MHQRo2Ghheug212Tbf6xxTZBkpMoAylnuIwCCECEsubpc09Jntn/OM89NdVfKWA3+p/ywO1gWdanNHX05R3kPNp9tFvc0P7HnuwEixWBjJX+iR3KSUD7XUrbFN6oMuhAC3uzEUTnkocCLQNsopJ3RiUcgeCAjC+Kqf8r5ORhxmxKs6nvX94tkKsvoJZBvL/rRS2V/9fmv+rg9u0A+xpyGFNPxEGRXvm1k2Y/xAcXZMlP44j9FZESuS0up5toeSJNMu1cZJ6/ggWx7n3p/ucG/mFjYeXCAM8AJDCsccm1phCeQTjjcPlgKo4jfk6EVJN0pZK2KKJpZmK0e5EvIYQ7FjcStkmYMqz00z8dmX5YR1pth/yFfrHAIch64lGYkAIMifoFVLcviHFaJ9KHw6E8/7fATdGDugocyjUvuykyXJF8ENryYOBMe7c6lkiKGYUMDp3miQX8Mgbwqp5oTYXKV9uNa6z/ANe1VjvGnwT0u1LV02nZzE11Hl84MmT5Aqgijx05nV0MLtnPuQgUHIqcXWUnqB7AwLeIIQAhAiyDEHlmhXZRxWTsboWbiDgBZksbBHmBtpJ6eEfzTHBP6/GFSaD/6Vfh1kdSf7gQdL48+HB8FBzM2VqRr0Jj6rNqZhvXiRPeQx8rcq5C/lg/qgOf9ldIZP6Tk3z8tQ==
+        d=1e100.net; s=20230601; t=1707178430; x=1707783230;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=r3al5hoYNZZk10PcQ0r4e5BeElcwyRKIKSa+2Ek/7S4=;
+        b=fhyBUVg8w82lDc154UY0Rj8qajC1UejaMqmUTfU8Jb8yNzopGN+ZEFXYx/uhYZpziT
+         lQKGxmZVaA5+hRJ4eHPmvDxMXL0G7CSoYDcKeGTzTebr4wQOLaTeoGxDtx9gDdse1f4G
+         5g0qxt2AHOA17FfjgOZCO5t8EKLuRTqE62rS9pFEe3l3ICNz5RMtqB65rZ8vwiINKa5+
+         lYcQJzTkKaUboACw43FwE1Vo9UXH/DeptkTlnfyBoOt83szg2RWRzY/NMCZ4MMVoxj2G
+         5PQ8ExBMTDw6FW6hPu3GW/V0zVefw96Md7mdNFQ6ssPql4YBOH1yS0q4QCPgu2SQdIiJ
+         zk5w==
+X-Gm-Message-State: AOJu0Yx3oWfunRKYqKdlF2Ep7e3bbNNy+UWG7gob8CnzuRs61L8j/0ih
+	cxEOXR1FkIEXwPTC3y8S6mwM9k9VTId4XRjjhLMGpHQfJt02ldU8l2uCUyOf9oM=
+X-Google-Smtp-Source: AGHT+IFCim5OUOcgfTPcWA7Y6IOO0/nwwMYeV/LjPUpF6aS2P1E1QUN/ct8OXNgDJGo/eorbjUfFDQ==
+X-Received: by 2002:adf:e6cb:0:b0:33b:150e:627a with SMTP id y11-20020adfe6cb000000b0033b150e627amr32907wrm.70.1707178430299;
+        Mon, 05 Feb 2024 16:13:50 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWGGbZtGrR24l8gipVeG/n2/q6+R1SUf1M+MXyjypyn/mXeEuLCRm8v6kFtLpF74IY1NWbBNfY1X5T6nuLBRJysUAaAisMwjmSLp4Q5PwOEGmkvlybNBbMv9J3Q8dRxcOXD9sKaM/KK6C+eqomNABkluk6ej4SEGTkgxwfNxfGEb5CDl/oRNsnJJ2ql0767ogdYZRVh6u8gBKBeyehf7TojNfgS7PvqUhReBu/IAc78fD4vJAMAMY6rTYcHtg6Hh1wu3omiZffR+c3FXSQTIaAGS7wvvtKvO2o+Uvg/bWkecdP1AmdouvpaZowkyFYqufk8+G61B3KfaYfSbAylpsdeqiUN9hWQgJ5k+Z2YZkRTHdJrLjlIYPEWw491FYaF3kYgjJa6FSQTPJl0BKLqP3XUD3uZcNlyuyBe4bwyl8gQyh/j73myH9PXLdtox7QsJMNqWczKpXTV2dy1DRoAsCUL86ED+wM2A2t+DfWght/gIDhAoL5PLawCMsyR65D4TGyimPDUyzkW1HgIOZqCo42te6zULDk/ueCWSJGwnWW5cxZac71XlvK2nJEbvFAqTZpgtoDBzOQaH/1X9Pns27uRorZrx4mWcV92/97gRRpDhq4QRuAVzHeRTdnbZagQJa+7w026zTjHt1TPIpvsjSl1l5ElUDBOtkTOB5Uit+HPV+cLo9+I1cNtQi95nAfG4ATctArhvsW1se3lAmojkuuNE/dYjCN4dYdhjfxPMYMtbDTQfuOVaBiRiIfupQXscuRpQC3nlnkEjzqNz4uvYPXzECMIjeo=
 Received: from P-ASN-ECS-830T8C3.local ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id b17-20020a5d40d1000000b0033ae7d768b2sm686959wrq.117.2024.02.05.16.13.50
+        by smtp.gmail.com with ESMTPSA id b17-20020a5d40d1000000b0033ae7d768b2sm686959wrq.117.2024.02.05.16.13.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 05 Feb 2024 16:13:50 -0800 (PST)
 From: Yoann Congal <yoann.congal@smile.fr>
@@ -78,14 +76,11 @@ Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Yoann Congal <yoann.congal@smile.fr>,
-	Vegard Nossum <vegard.nossum@oracle.com>
-Subject: [PATCH v4 1/3] printk: Fix LOG_CPU_MAX_BUF_SHIFT when BASE_SMALL is enabled
-Date: Tue,  6 Feb 2024 01:13:31 +0100
-Message-Id: <20240206001333.1710070-2-yoann.congal@smile.fr>
+	Yoann Congal <yoann.congal@smile.fr>
+Subject: [PATCH v4 0/3] printk: CONFIG_BASE_SMALL fix for LOG_CPU_MAX_BUF_SHIFT and removal of CONFIG_BASE_FULL
+Date: Tue,  6 Feb 2024 01:13:30 +0100
+Message-Id: <20240206001333.1710070-1-yoann.congal@smile.fr>
 X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240206001333.1710070-1-yoann.congal@smile.fr>
-References: <20240206001333.1710070-1-yoann.congal@smile.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -94,67 +89,64 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-LOG_CPU_MAX_BUF_SHIFT default value depends on BASE_SMALL:
-  config LOG_CPU_MAX_BUF_SHIFT
-  	default 12 if !BASE_SMALL
-  	default 0 if BASE_SMALL
-But, BASE_SMALL is a config of type int and "!BASE_SMALL" is always
-evaluated to true whatever is the value of BASE_SMALL.
+This series focuses on CONFIG_BASE_SMALL.
+The first patch fixes LOG_CPU_MAX_BUF_SHIFT when CONFIG_BASE_SMALL is
+used.
+The second patch globally changes the type of CONFIG_BASE_SMALL and
+adapts usages.
+The third patch removes the now redundant BASE_FULL and puts BASE_SMALL
+in its place in the config menus.
 
-This patch fixes this by using the correct conditional operator for int
-type : BASE_SMALL != 0.
+Thanks everyone for your reviews! :)
 
-Note: This changes CONFIG_LOG_CPU_MAX_BUF_SHIFT=12 to
-CONFIG_LOG_CPU_MAX_BUF_SHIFT=0 for BASE_SMALL defconfigs, but that will
-not be a big impact due to this code in kernel/printk/printk.c:
-  /* by default this will only continue through for large > 64 CPUs */
-  if (cpu_extra <= __LOG_BUF_LEN / 2)
-          return;
-Systems using CONFIG_BASE_SMALL and having 64+ CPUs should be quite
-rare.
+Patch history:
+v3->v4: Applied Petr Mladek's suggestion (Thanks!):
+* Keep BASE_SMALL instead of BASE_FULL
+* A patch changing the type of BASE_SMALL was added.
 
-John Ogness <john.ogness@linutronix.de> (printk reviewer) wrote:
-> For printk this will mean that BASE_SMALL systems were probably
-> previously allocating/using the dynamic ringbuffer and now they will
-> just continue to use the static ringbuffer. Which is fine and saves
-> memory (as it should).
+v3 series was named "printk: CONFIG_BASE_SMALL fix for
+LOG_CPU_MAX_BUF_SHIFT and removal"
+https://lore.kernel.org/all/20240204232945.1576403-1-yoann.congal@smile.fr/
+* Patch v3 1/2:
+  * Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+  * Reviewed-by: John Ogness <john.ogness@linutronix.de>
+  * Reviewed-by: Petr Mladek <pmladek@suse.com>
+* Patch v3 2/2:
+  * Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Petr Mladek <pmladek@suse.com> (printk maintainer) wrote:
-> More precisely, it allocated the buffer dynamically when the sum
-> of per-CPU-extra space exceeded half of the default static ring
-> buffer. This happened for systems with more than 64 CPUs with
-> the default config values.
+v2 -> v3: Applied Luis Chamberlain's comments (Thanks!):
+* Split the single commit in two : one functional fix, one global
+  removal.
 
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Closes: https://lore.kernel.org/all/CAMuHMdWm6u1wX7efZQf=2XUAHascps76YQac6rdnQGhc8nop_Q@mail.gmail.com/
-Reported-by: Vegard Nossum <vegard.nossum@oracle.com>
-Closes: https://lore.kernel.org/all/f6856be8-54b7-0fa0-1d17-39632bf29ada@oracle.com/
-Fixes: 4e244c10eab3 ("kconfig: remove unneeded symbol_empty variable")
+v2 patch was named "printk: Remove redundant CONFIG_BASE_SMALL"
+https://lore.kernel.org/all/20240127220026.1722399-1-yoann.congal@smile.fr/
+* Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+* Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
----
-v3->v4:
-* Fix BASE_SMALL usage instead of switching to BASE_FULL because
-  BASE_FULL will be removed in the next patches of this series.
----
- init/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v1 -> v2: Applied Masahiro Yamada's comments (Thanks!):
+* Changed from "Change CONFIG_BASE_SMALL to type bool" to
+  "Remove it and switch usage to !CONFIG_BASE_FULL"
+* Fixed "Fixes:" tag and reference to the mailing list thread.
+* Added a note about CONFIG_LOG_CPU_MAX_BUF_SHIFT changing.
 
-diff --git a/init/Kconfig b/init/Kconfig
-index deda3d14135bb..d50ebd2a2ce42 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -734,8 +734,8 @@ config LOG_CPU_MAX_BUF_SHIFT
- 	int "CPU kernel log buffer size contribution (13 => 8 KB, 17 => 128KB)"
- 	depends on SMP
- 	range 0 21
--	default 12 if !BASE_SMALL
--	default 0 if BASE_SMALL
-+	default 0 if BASE_SMALL != 0
-+	default 12
- 	depends on PRINTK
- 	help
- 	  This option allows to increase the default ring buffer size
+v1 patch was named "treewide: Change CONFIG_BASE_SMALL to bool type"
+https://lore.kernel.org/all/20240126163032.1613731-1-yoann.congal@smile.fr/
+
+Yoann Congal (3):
+  printk: Fix LOG_CPU_MAX_BUF_SHIFT when BASE_SMALL is enabled
+  printk: Change type of CONFIG_BASE_SMALL to bool
+  printk: Remove redundant CONFIG_BASE_FULL
+
+ arch/x86/include/asm/mpspec.h |  6 +++---
+ drivers/tty/vt/vc_screen.c    |  2 +-
+ include/linux/threads.h       |  4 ++--
+ include/linux/udp.h           |  2 +-
+ include/linux/xarray.h        |  2 +-
+ init/Kconfig                  | 15 +++++----------
+ kernel/futex/core.c           |  2 +-
+ kernel/user.c                 |  2 +-
+ 8 files changed, 15 insertions(+), 20 deletions(-)
+
 -- 
 2.39.2
 
