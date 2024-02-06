@@ -1,105 +1,182 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A61112E1CA;
-	Tue,  6 Feb 2024 10:20:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FB181353F0;
+	Tue,  6 Feb 2024 11:54:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707214856; cv=none; b=gZrnK+9G5EtwHBbL1SZ07b014g5tUd0s7XtHEpDpMI1NA9dHy3hysOKuMpMh9JZm4EZLmlvab+Mp/apAykQqtXdvTlMOjjji7EAZPuGdb+vKT2UxSkI9K1PB+SvBc8xgriWjpFr32O566leuLFZmZ/UOmWlJgb9jKmHXL+w3wb0=
+	t=1707220494; cv=none; b=VK04QASCfw0+mhMBbID/2sMlAUB1l8kjXPKbSRaou0J0jEpClI3JU02gmd6Dom4TyQ6Vo4WZ/ABEvQ44bTSabm8zmsVctpkY5+Zk1SeIjldsEFZvQGCDV/X/TgmzyCaPE125wiEPiZBvsD5ZuOOddbTWT++dRWP0IRnYcCAQcOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707214856; c=relaxed/simple;
-	bh=AT61w8PtLBkTuamoC6D2og3lYMvQu4th7vGPt3i0Pt8=;
-	h=CC:Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=B5VOWBKS7IXTe1KlM8t5UfCJYHxiyQADp41BNiRT1KbHm7QEjnJy0df58z9S8UmZvKttOxU88ufY6qK3ju3mRi/QMu6PbDthjPQDU8/6GU1ANpy9Z5CzR9oNsI6XmAsQjkZqXaazoCjliTxNLpPvr1ZP8obtyRm6Dhft79HrzOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.162.112])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4TTfNS6FHlz1gyft;
-	Tue,  6 Feb 2024 18:18:48 +0800 (CST)
-Received: from canpemm500009.china.huawei.com (unknown [7.192.105.203])
-	by mail.maildlp.com (Postfix) with ESMTPS id 64F2E140390;
-	Tue,  6 Feb 2024 18:20:44 +0800 (CST)
-Received: from [10.67.121.177] (10.67.121.177) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 6 Feb 2024 18:20:44 +0800
-CC: <yangyicong@hisilicon.com>, <jirislaby@kernel.org>, <tony@atomide.com>,
-	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
-	<tglx@linutronix.de>, <linuxarm@huawei.com>, <prime.zeng@hisilicon.com>,
-	<jonathan.cameron@huawei.com>, <fanghao11@huawei.com>
-Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
-To: Greg KH <gregkh@linuxfoundation.org>
-References: <20240206073322.5560-1-yangyicong@huawei.com>
- <2024020600-attendant-verbally-6441@gregkh>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <3512fe60-15ce-878c-8444-6dfa806921c9@huawei.com>
-Date: Tue, 6 Feb 2024 18:20:43 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	s=arc-20240116; t=1707220494; c=relaxed/simple;
+	bh=huQERr2I8KInHIO2lB1YDA3403COnVXjH7Omud6kihM=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=tKwWJ0c+GUxThh2zzt4aWx1S2/v2In6s1ukK1Zl6hzZqic912ySJJ9+0KTBsMnn6xHmZAbm/XnL0JXDX8+6QM5TEaWTUl61syuxCXb8aw19mx+83HWOHvHz19p1Pe5n+qJ3pnMOeJz50IT18vtIjXTaMQ4zYmct8thZJ6ncwTtk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FqU8FHfx; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FqU8FHfx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707220493; x=1738756493;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=huQERr2I8KInHIO2lB1YDA3403COnVXjH7Omud6kihM=;
+  b=FqU8FHfxbcXyV/7ox7zjUz/nX1jIRPL9LCxaCiz+PLYLZ95YOhPXMBPg
+   h58xbu8KNzJYMo1DQfPzkzBD8+LIeni5ZaJzzs/WAaAidU/4UfeEKAAR+
+   7LYQmrWTiic715HJt2ShjALc4O5xKWoaXvEYJQt+lnny8rRdq4poXZY3O
+   wZ7/2l/zzQLgnGHGjRxg1J0lmvZpK/ZxIjFWClHmJ281ywdbSf2ZbLRdD
+   MtelgbJJVX4YueCE0iD9qp5Jr4HbEinAWoW2gj1TCWKKE1qsUp6krOIjE
+   ANtlDe51As1UtOwkDJnbCQjR0NrfWPUmLQa6RNEUUK/tQBjNJUWmvf1j0
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10975"; a="4540214"
+X-IronPort-AV: E=Sophos;i="6.05,247,1701158400"; 
+   d="scan'208";a="4540214"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 03:54:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,247,1701158400"; 
+   d="scan'208";a="5599711"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.36.139])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 03:54:48 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 6 Feb 2024 13:54:42 +0200 (EET)
+To: Frank Li <Frank.Li@nxp.com>
+cc: alexandre.belloni@bootlin.com, conor.culhane@silvaco.com, 
+    devicetree@vger.kernel.org, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, imx@lists.linux.dev, 
+    Jiri Slaby <jirislaby@kernel.org>, joe@perches.com, 
+    krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org, 
+    linux-i3c@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, miquel.raynal@bootlin.com, 
+    robh@kernel.org, zbigniew.lukwinski@linux.intel.com
+Subject: Re: [PATCH v7 6/8] i3c: target: func: add tty driver
+In-Reply-To: <20240205233326.552576-7-Frank.Li@nxp.com>
+Message-ID: <9b5bb389-4238-0a32-5e16-3c62ea6c00e7@linux.intel.com>
+References: <20240205233326.552576-1-Frank.Li@nxp.com> <20240205233326.552576-7-Frank.Li@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <2024020600-attendant-verbally-6441@gregkh>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500009.china.huawei.com (7.192.105.203)
+Content-Type: text/plain; charset=US-ASCII
 
-On 2024/2/6 17:44, Greg KH wrote:
-> On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
->> From: Yicong Yang <yangyicong@hisilicon.com>
->>
->> We accidently met the issue that the bash prompt is not shown after the
->> previous command done and until the next input if there's only one CPU
->> (In our issue other CPUs are isolated by isolcpus=). Further analysis
->> shows it's because the port entering runtime suspend even if there's
->> still pending chars in the buffer and the pending chars will only be
->> processed in next device resuming. We are using amba-pl011 and the
->> problematic flow is like below:
->>
->> Bash                                         kworker
->> tty_write()
->>   file_tty_write()
->>     n_tty_write()
->>       uart_write()
->>         __uart_start()
->>           pm_runtime_get() // wakeup waker
->>             queue_work()
->>                                              pm_runtime_work()
->>                                                rpm_resume()
->>                                                 status = RPM_RESUMING
->>                                                 serial_port_runtime_resume()
->>                                                   port->ops->start_tx()
->>                                                     pl011_tx_chars()
->>                                                       uart_write_wakeup()
->>         […]
->>         __uart_start()
->>           pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
->>                                // later data are not commit to the port driver
->>                                                 status = RPM_ACTIVE
->>                                                 rpm_idle() -> rpm_suspend()
->>
->> This patch tries to fix this by checking the port busy before entering
->> runtime suspending. A runtime_suspend callback is added for the port
->> driver. When entering runtime suspend the callback is invoked, if there's
->> still pending chars in the buffer then flush the buffer.
->>
->> Cc: Tony Lindgren <tony@atomide.com>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+On Mon, 5 Feb 2024, Frank Li wrote:
+
+> Add tty over I3C target function driver.
 > 
-> Is this a regression that was caused by the port code?  If so, what
-> commit id does this fix?  Should it be backported to older kernels?
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> ---
 > 
+> Notes:
+>     Change from v4 to v5
+>     - remove void*
+>     - include bitfield.h
+>     - remove extra ()
+>     - oneline for struct ttyi3c_port *sport
+> 
+>  drivers/i3c/Kconfig       |   3 +
+>  drivers/i3c/Makefile      |   1 +
+>  drivers/i3c/func/Kconfig  |   9 +
+>  drivers/i3c/func/Makefile |   3 +
+>  drivers/i3c/func/tty.c    | 474 ++++++++++++++++++++++++++++++++++++++
+>  5 files changed, 490 insertions(+)
+>  create mode 100644 drivers/i3c/func/Kconfig
+>  create mode 100644 drivers/i3c/func/Makefile
+>  create mode 100644 drivers/i3c/func/tty.c
+> 
+> diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
+> index d59a7eb83d13a..fca808cda87b3 100644
+> --- a/drivers/i3c/Kconfig
+> +++ b/drivers/i3c/Kconfig
+> @@ -48,3 +48,6 @@ config I3C_TARGET_CONFIGFS
+>  	  the target function and used to bind the function with a target
+>  	  controller.
+>  
+> +if I3C_TARGET
+> +source "drivers/i3c/func/Kconfig"
+> +endif # I3C_TARGET
+> diff --git a/drivers/i3c/Makefile b/drivers/i3c/Makefile
+> index c275aeae8970c..11f026d6876fe 100644
+> --- a/drivers/i3c/Makefile
+> +++ b/drivers/i3c/Makefile
+> @@ -4,3 +4,4 @@ obj-$(CONFIG_I3C)		+= i3c.o
+>  obj-$(CONFIG_I3C_TARGET)                += target.o
+>  obj-$(CONFIG_I3C_TARGET_CONFIGFS)       += i3c-cfs.o
+>  obj-$(CONFIG_I3C)		+= master/
+> +obj-$(CONFIG_I3C_TARGET)	+= func/
+> diff --git a/drivers/i3c/func/Kconfig b/drivers/i3c/func/Kconfig
+> new file mode 100644
+> index 0000000000000..7115129eb7d5a
+> --- /dev/null
+> +++ b/drivers/i3c/func/Kconfig
+> @@ -0,0 +1,9 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +config I3C_TARGET_FUNC_TTY
+> +	tristate "I3C target tty driver"
+> +	depends on I3C_TARGET
+> +	help
+> +	  I3C Target TTY Function Driver.
+> +
+> +	  General TTY over I3C target controller function drivers.
+> diff --git a/drivers/i3c/func/Makefile b/drivers/i3c/func/Makefile
+> new file mode 100644
+> index 0000000000000..16b3b9301496b
+> --- /dev/null
+> +++ b/drivers/i3c/func/Makefile
+> @@ -0,0 +1,3 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +obj-$(CONFIG_I3C_TARGET_FUNC_TTY)              += tty.o
+> diff --git a/drivers/i3c/func/tty.c b/drivers/i3c/func/tty.c
+> new file mode 100644
+> index 0000000000000..50673bfb6a003
+> --- /dev/null
+> +++ b/drivers/i3c/func/tty.c
+> @@ -0,0 +1,474 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2023 NXP
+> + * Author: Frank Li <Frank.Li@nxp.com>
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/i3c/target.h>
+> +#include <linux/serial_core.h>
+> +#include <linux/slab.h>
+> +#include <linux/tty_flip.h>
+> +
+> +static DEFINE_IDR(i3c_tty_minors);
+> +
+> +static struct tty_driver *i3c_tty_driver;
+> +
+> +#define I3C_TTY_MINORS		8
+> +
+> +#define I3C_TX_NOEMPTY		BIT(0)
+> +#define I3C_TTY_TRANS_SIZE	16
+> +#define I3C_TTY_IBI_TX		BIT(0)
 
-Sorry for missing it. The fix tag should be:
+This is #include <linux/bits.h>
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+...which will include <vdso/bits.h> that contains the actual definition.
 
-Thanks.
+#include <bitfield.h> is for FIELD_GET/PREP(), etc.
 
+> +struct ttyi3c_port {
+> +	struct tty_port port;
+> +	int minor;
+> +	struct i3c_target_func *i3cdev;
+> +	struct completion txcomplete;
+> +	spinlock_t xlock;
+> +	void *buffer;
+> +	struct work_struct work;
+
+This file seems to also lack some includes. Please go through your 
+#include in the series and add those you use.
+
+-- 
+ i.
 
