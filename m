@@ -1,145 +1,137 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 859EA3C35
-	for <linux-serial@vger.kernel.org>; Tue,  6 Feb 2024 00:13:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380B67EEE0;
+	Tue,  6 Feb 2024 07:37:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707178438; cv=none; b=PBpiZQ26POZbXfVCIAVOtIRkNaDnmAkYWi5NTV0NY0Q9WoTUaYYQ5hKDyeZtsOSGwfwI+n6CGtYc5rmx7efJ/dlZTwhT02zgcxchaVGR7IhahI9yJiaa+tAJHP+qEs8A6+5vJ52dNgTe8+4v13KwUl65LDvjtqmaFXCJpIhxCnE=
+	t=1707205060; cv=none; b=AawgMmZRUModxbWHqFg55GZE++scZ0292SBvZ4rzeneSY46oR5KHSSrdKh+MW3SUGXlmnSTBTEKJdyEl2lVpuO0A/fPpMthw73J5xYnLhlwl5Q4xZ2v2zhFlpw0LY1fCIC9nEoU11Mi9bA6iGHL6+OriWPrK8i8M5HER1k3no0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707178438; c=relaxed/simple;
-	bh=BvD7KT+7ul13q1wVJvqPxQDUSv1WiR9wKCxQbbEr318=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=GEN4kFEQ58vzFagTaUZAb6vIUqzog6FCmTajaxXbwt8ArddjJpyQ87pG4BIxBzddkCMexCTunryS0fwZnmDOiw/Rbw6EIV91PUqNRDFhiPowSOOnQMUmVMV0Z3JpCGDf/8VwbAswe7s1fy0OAgOXDvEkjBQxA9qN3nqGAHRy8QY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=rgV6cLJB; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="rgV6cLJB"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40fe1fc7048so1168935e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 05 Feb 2024 16:13:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707178434; x=1707783234; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sFNpFi093TpETZs6mdYZEjtXAaH8xI625rElwAZwslo=;
-        b=rgV6cLJB9BmJCHfqJ7i6XQ1wFQ3K/bhMQOZuHD0bMnpzwrZjXvrpplDfavsz1jBG1l
-         nhaTW42WP5l5kiUjRYDnpH6iYluRCWnwtZcxSoxyXEuVs6RUBlKVU/uejeApAKpSrhwf
-         bT63NS4n1c8yS+FTqtCrVOpA45xwRGfaCIlJUGpn2QtiyRKb5PWNII7/Em+nzFWBmCIw
-         a5BGFEbIaiKe60WyONXW8QOsisCHHEDgPJgL+1iL2Elx+C7V40f5cCJ3KObisQIy9uZU
-         hHaQ/YT5weS9MjgRdfY+Sf7Ki4iyMViS8GUEx9mgp9zgaRew2T/6g2il60+E+VTKrxNK
-         /GOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707178434; x=1707783234;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=sFNpFi093TpETZs6mdYZEjtXAaH8xI625rElwAZwslo=;
-        b=bLZLiVZX8CR2pElhDBgYW2FR14AYnSobqgXSS2D/z00dab4Kxplz14GJQ5JVbJZ/El
-         JPQYIMbogH4MaWKFKzNsMBUS+oxWHzC3PLJ5YZLPvNIcq/MQj3Wqg5pYs1blGENXMYxM
-         X6zKozYBoMrP4CrCvDOXtxf847eK7X1V/hIpKUCMfmpfCuoYjhRG58lSDlmsMFlb7MKd
-         NuZQuqf7cbdCcdGuCB/YFEj8BGIm1JOLl5iZWzA/z2O7GDc+7xfuwteiSjnl1XFS9UCD
-         cHT65i2UIM44uw/KUkO00PTxR5Q7ZUGm4zdt9wZfLkoRThs0uJawEqr9p/p/repLOI5U
-         7R3g==
-X-Gm-Message-State: AOJu0Yz/dXiozcROutn7oGuurxLETHdWJOI9bfiwk2LisEt/9qOCef1F
-	IjK2Z7IxMRbB8WN3cjSF3YgEZpf1PbKtxKcDZVVn4bWKc/u/vnvzvNauIK3aSdk=
-X-Google-Smtp-Source: AGHT+IGxueG8VUZUtZseYHBtudaN2Dfg+xA2i2bfaWYL+JCkmwEsiBKAFZ4MHTohsZXzG6iymVm9Pw==
-X-Received: by 2002:a05:600c:3c8a:b0:40f:de23:b8f3 with SMTP id bg10-20020a05600c3c8a00b0040fde23b8f3mr267229wmb.23.1707178433811;
-        Mon, 05 Feb 2024 16:13:53 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCXWwuJ25X3TFhf5cpubZjv3P0jtvVpxgluOyArwnSdlojbnQ4acGDwOCQfPrJE6Ev1XGktp7X3OjOkNEWC2yAp9QZw3MG7u7//ot52N8OQSL6BXaarM6yxmsJrfjFOBI3LuRCJQoLhrF2rRzhxobhoeFmtq3dhpWhv723aainhkH/CRmlvbt/WWnIMyJhu2dHqJPEM7SKlViiT3cT3VWECjVsyvwwQsr0IWdLi60kkUo6P+PpKO3E4VjYcSN4hyazIpoxZyCmXReAaDPECKyQZsEyLNJDNB8dJKgLzM+t5pa9SrRRMYhCwfrxj0yDZesLWim46+bNg+5wgJJsU9kWHgZ4XVQDaGeyYaYmsN8Af4GwvMaVRAukQHsY8dwK7S/lxgFTYSy7mki4cLxPv8tNnKbbbagqoToFaJcAAP4UBOx1MaBxCr8auuEfWN0sSG6BUqCf34j2LCFBtxK/RlrgdH0CJBVnVwRW1V8MaW1H86a1L5177676DURWdKISZO0/jJGyI/khY/ovy6RBZXJUDEVJ6UW2I6Kr2RiAsWiw1N+UADfzIFEVHhwUxh9lNBVRb0gpNjzlTjH1iY8ybmRwcQPK332VQ+XaL9M8yYVZRjK/U/WWgbFVA4u2SlDpSKHLSYAaO0DiNohXVm1fxdHjyKizT+v78PdmWH9Flv891/HffxvBd89gwEerzZVYqpcyK5Osv4DD2lMhkHc7VI1A6U6icC2G1Jo2szIa8SFb5s52iftg/IU9tIE0qAfElAxQS4W8WABNAun8aUexQA4+Q0C4pODpA=
-Received: from P-ASN-ECS-830T8C3.local ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id b17-20020a5d40d1000000b0033ae7d768b2sm686959wrq.117.2024.02.05.16.13.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 16:13:53 -0800 (PST)
-From: Yoann Congal <yoann.congal@smile.fr>
-To: linux-fsdevel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	x86@kernel.org
-Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Darren Hart <dvhart@infradead.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Yoann Congal <yoann.congal@smile.fr>
-Subject: [PATCH v4 3/3] printk: Remove redundant CONFIG_BASE_FULL
-Date: Tue,  6 Feb 2024 01:13:33 +0100
-Message-Id: <20240206001333.1710070-4-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240206001333.1710070-1-yoann.congal@smile.fr>
-References: <20240206001333.1710070-1-yoann.congal@smile.fr>
+	s=arc-20240116; t=1707205060; c=relaxed/simple;
+	bh=IxrNPNPtjGZn3RxttgDRL2Vy8atvYyynJNHIEF2IW9U=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Fg3pCyV8X6NUs1/P79ImpXPwnNkTa7EClWAHHSjBGXTUS+bwr3pN3G8i9+IhjqGaj0FmZ5/98AfVmLdT+8DyZHYb6kZvdVwzURIcN42Tj9RMpgorUOCzFzH5zTyo1mM5GDSoMJ1Wyz2L4XMKrJ3J1CSZ8EpUyMi9rTMauF+eqn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.17])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4TTZmC0092z29lMf;
+	Tue,  6 Feb 2024 15:35:38 +0800 (CST)
+Received: from canpemm500009.china.huawei.com (unknown [7.192.105.203])
+	by mail.maildlp.com (Postfix) with ESMTPS id 9887B1A0172;
+	Tue,  6 Feb 2024 15:37:34 +0800 (CST)
+Received: from localhost.localdomain (10.50.165.33) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 6 Feb 2024 15:37:34 +0800
+From: Yicong Yang <yangyicong@huawei.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <tony@atomide.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+CC: <john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
+	<tglx@linutronix.de>, <yangyicong@hisilicon.com>, <linuxarm@huawei.com>,
+	<prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+	<fanghao11@huawei.com>
+Subject: [PATCH v2] serial: port: Don't suspend if the port is still busy
+Date: Tue, 6 Feb 2024 15:33:22 +0800
+Message-ID: <20240206073322.5560-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 
-CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
-default: CONFIG_BASE_SMALL is the special case to take care of.
-So, remove CONFIG_BASE_FULL and move the config choice to
-CONFIG_BASE_SMALL (which defaults to 'n')
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
+We accidently met the issue that the bash prompt is not shown after the
+previous command done and until the next input if there's only one CPU
+(In our issue other CPUs are isolated by isolcpus=). Further analysis
+shows it's because the port entering runtime suspend even if there's
+still pending chars in the buffer and the pending chars will only be
+processed in next device resuming. We are using amba-pl011 and the
+problematic flow is like below:
+
+Bash                                         kworker
+tty_write()
+  file_tty_write()
+    n_tty_write()
+      uart_write()
+        __uart_start()
+          pm_runtime_get() // wakeup waker
+            queue_work()
+                                             pm_runtime_work()
+                                               rpm_resume()
+                                                status = RPM_RESUMING
+                                                serial_port_runtime_resume()
+                                                  port->ops->start_tx()
+                                                    pl011_tx_chars()
+                                                      uart_write_wakeup()
+        […]
+        __uart_start()
+          pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
+                               // later data are not commit to the port driver
+                                                status = RPM_ACTIVE
+                                                rpm_idle() -> rpm_suspend()
+
+This patch tries to fix this by checking the port busy before entering
+runtime suspending. A runtime_suspend callback is added for the port
+driver. When entering runtime suspend the callback is invoked, if there's
+still pending chars in the buffer then flush the buffer.
+
+Cc: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
-v3->v4:
-* Split "switch CONFIG_BASE_SMALL to bool" and "Remove the redundant
-  config" (this patch) into two patches
-* keep CONFIG_BASE_SMALL instead of CONFIG_BASE_FULL
----
- init/Kconfig | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+Change since v1:
+- Use port lock wrapper per John
+- Flush the pending chars and return -EBUSY per Tony.
+Thanks.
+Link: https://lore.kernel.org/all/20240204031957.58176-1-yangyicong@huawei.com/
 
-diff --git a/init/Kconfig b/init/Kconfig
-index d4b16cad98502..4ecf2572d00ee 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1581,11 +1581,11 @@ config PCSPKR_PLATFORM
- 	  This option allows to disable the internal PC-Speaker
- 	  support, saving some memory.
+ drivers/tty/serial/serial_port.c | 26 +++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 88975a4df306..0617d5158235 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -46,8 +46,32 @@ static int serial_port_runtime_resume(struct device *dev)
+ 	return 0;
+ }
  
--config BASE_FULL
--	default y
--	bool "Enable full-sized data structures for core" if EXPERT
-+config BASE_SMALL
-+	default n
-+	bool "Enable smaller-sized data structures for core" if EXPERT
- 	help
--	  Disabling this option reduces the size of miscellaneous core
-+	  Enabling this option reduces the size of miscellaneous core
- 	  kernel data structures. This saves memory on small machines,
- 	  but may reduce performance.
++static int serial_port_runtime_suspend(struct device *dev)
++{
++	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
++	struct uart_port *port;
++	unsigned long flags;
++	int ret = 0;
++
++	port = port_dev->port;
++
++	if (port->flags & UPF_DEAD)
++		return ret;
++
++	uart_port_lock_irqsave(port, &flags);
++	if (__serial_port_busy(port)) {
++		port->ops->start_tx(port);
++		pm_runtime_mark_last_busy(dev);
++		ret = -EBUSY;
++	}
++	uart_port_unlock_irqrestore(port, flags);
++
++	return ret;
++}
++
+ static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+-				 NULL, serial_port_runtime_resume, NULL);
++				 serial_port_runtime_suspend,
++				 serial_port_runtime_resume, NULL);
  
-@@ -1940,11 +1940,6 @@ config RT_MUTEXES
- 	bool
- 	default y if PREEMPT_RT
- 
--config BASE_SMALL
--	bool
--	default y if !BASE_FULL
--	default n
--
- config MODULE_SIG_FORMAT
- 	def_bool n
- 	select SYSTEM_DATA_VERIFICATION
+ static int serial_port_probe(struct device *dev)
+ {
 -- 
-2.39.2
+2.24.0
 
