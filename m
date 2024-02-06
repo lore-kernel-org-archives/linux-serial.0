@@ -1,182 +1,189 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FB181353F0;
-	Tue,  6 Feb 2024 11:54:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92176130E2C;
+	Tue,  6 Feb 2024 13:09:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707220494; cv=none; b=VK04QASCfw0+mhMBbID/2sMlAUB1l8kjXPKbSRaou0J0jEpClI3JU02gmd6Dom4TyQ6Vo4WZ/ABEvQ44bTSabm8zmsVctpkY5+Zk1SeIjldsEFZvQGCDV/X/TgmzyCaPE125wiEPiZBvsD5ZuOOddbTWT++dRWP0IRnYcCAQcOE=
+	t=1707224981; cv=none; b=sQDI3cKotZZnmwHozdDR+LN4rtyvNDPuDrlBO4kXESK8flpgjEU1yBwv1hCb3NAPIylYFoeBeLx26qr/h3ANwu+ViLZX+m7cjygQNWX/VU3FY5ahU5kxsuQUIUqGk+vcp0GEE6RjBnwcy43hBF/W4NvWJCBWBNQ0SlMNzvoSyg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707220494; c=relaxed/simple;
-	bh=huQERr2I8KInHIO2lB1YDA3403COnVXjH7Omud6kihM=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=tKwWJ0c+GUxThh2zzt4aWx1S2/v2In6s1ukK1Zl6hzZqic912ySJJ9+0KTBsMnn6xHmZAbm/XnL0JXDX8+6QM5TEaWTUl61syuxCXb8aw19mx+83HWOHvHz19p1Pe5n+qJ3pnMOeJz50IT18vtIjXTaMQ4zYmct8thZJ6ncwTtk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FqU8FHfx; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1707224981; c=relaxed/simple;
+	bh=EIi8PsNJVlYI6YE+gaDW03VVmxtdFg+rlTNVZ23mC8I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UkDOw8exO28WbZio0MQYBVvo0+rgx2MD8P0aCgnDko1/zryp1i2tyMMLpvq0pW+uQh+QpfeTAoVpPwwMJ8Q17CHv2c9qZq+Pi2eS65aZro7e5Lly/IZyZ1sHpQroq1T6vHBvT2zkaOfWMznDNkxBh+BxB8RP4OmgeJlWHg1uPbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VTUAN+O/; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FqU8FHfx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VTUAN+O/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707220493; x=1738756493;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=huQERr2I8KInHIO2lB1YDA3403COnVXjH7Omud6kihM=;
-  b=FqU8FHfxbcXyV/7ox7zjUz/nX1jIRPL9LCxaCiz+PLYLZ95YOhPXMBPg
-   h58xbu8KNzJYMo1DQfPzkzBD8+LIeni5ZaJzzs/WAaAidU/4UfeEKAAR+
-   7LYQmrWTiic715HJt2ShjALc4O5xKWoaXvEYJQt+lnny8rRdq4poXZY3O
-   wZ7/2l/zzQLgnGHGjRxg1J0lmvZpK/ZxIjFWClHmJ281ywdbSf2ZbLRdD
-   MtelgbJJVX4YueCE0iD9qp5Jr4HbEinAWoW2gj1TCWKKE1qsUp6krOIjE
-   ANtlDe51As1UtOwkDJnbCQjR0NrfWPUmLQa6RNEUUK/tQBjNJUWmvf1j0
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10975"; a="4540214"
+  t=1707224979; x=1738760979;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=EIi8PsNJVlYI6YE+gaDW03VVmxtdFg+rlTNVZ23mC8I=;
+  b=VTUAN+O/SqqrCACwYQ1bZ0iVSO3olxxfgvg3Aoc3l232YVMzTfjplGOc
+   uSVsm0UM7M4FfOFr8cq4li1R8OE47Hxnmd0MTokOF2V9IETd/qZJvbqiC
+   lLiXVSAeHwYa58jmn6+59eNPahayaYx5T3/2LfvNhcsfcemSYMb2+rXLe
+   /ksYX+pDzca/Wcpgp1ccEWqCK0WwYuqfzLH3BQmO57GfxBlVzuyOtnidd
+   fjklqKmkvpyfnjyfw8ltt3ltyAZ6JX1F/W+IjlrU3QH3yZ6JBwmJaT36n
+   kDOhJVZnXRpXQXO3WVpZIZ/je3/aQ+zzGuY6A3PY5hnjXVnJtZlfBojGp
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10975"; a="654227"
 X-IronPort-AV: E=Sophos;i="6.05,247,1701158400"; 
-   d="scan'208";a="4540214"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 03:54:53 -0800
+   d="scan'208";a="654227"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 05:09:39 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10975"; a="824176965"
 X-IronPort-AV: E=Sophos;i="6.05,247,1701158400"; 
-   d="scan'208";a="5599711"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.36.139])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 03:54:48 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 6 Feb 2024 13:54:42 +0200 (EET)
-To: Frank Li <Frank.Li@nxp.com>
-cc: alexandre.belloni@bootlin.com, conor.culhane@silvaco.com, 
-    devicetree@vger.kernel.org, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, imx@lists.linux.dev, 
-    Jiri Slaby <jirislaby@kernel.org>, joe@perches.com, 
-    krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org, 
-    linux-i3c@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, miquel.raynal@bootlin.com, 
-    robh@kernel.org, zbigniew.lukwinski@linux.intel.com
-Subject: Re: [PATCH v7 6/8] i3c: target: func: add tty driver
-In-Reply-To: <20240205233326.552576-7-Frank.Li@nxp.com>
-Message-ID: <9b5bb389-4238-0a32-5e16-3c62ea6c00e7@linux.intel.com>
-References: <20240205233326.552576-1-Frank.Li@nxp.com> <20240205233326.552576-7-Frank.Li@nxp.com>
+   d="scan'208";a="824176965"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 05:09:35 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rXLCe-00000002LVL-1AyX;
+	Tue, 06 Feb 2024 15:09:32 +0200
+Date: Tue, 6 Feb 2024 15:09:32 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	john.ogness@linutronix.de, tglx@linutronix.de,
+	yangyicong@hisilicon.com, linuxarm@huawei.com,
+	prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
+	fanghao11@huawei.com
+Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
+Message-ID: <ZcIvjC1qzD4atwlT@smile.fi.intel.com>
+References: <20240206073322.5560-1-yangyicong@huawei.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240206073322.5560-1-yangyicong@huawei.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, 5 Feb 2024, Frank Li wrote:
-
-> Add tty over I3C target function driver.
+On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
+> From: Yicong Yang <yangyicong@hisilicon.com>
 > 
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> ---
+> We accidently met the issue that the bash prompt is not shown after the
+> previous command done and until the next input if there's only one CPU
+> (In our issue other CPUs are isolated by isolcpus=). Further analysis
+> shows it's because the port entering runtime suspend even if there's
+> still pending chars in the buffer and the pending chars will only be
+> processed in next device resuming. We are using amba-pl011 and the
+> problematic flow is like below:
 > 
-> Notes:
->     Change from v4 to v5
->     - remove void*
->     - include bitfield.h
->     - remove extra ()
->     - oneline for struct ttyi3c_port *sport
+> Bash                                         kworker
+> tty_write()
+>   file_tty_write()
+>     n_tty_write()
+>       uart_write()
+>         __uart_start()
+>           pm_runtime_get() // wakeup waker
+>             queue_work()
+>                                              pm_runtime_work()
+>                                                rpm_resume()
+>                                                 status = RPM_RESUMING
+>                                                 serial_port_runtime_resume()
+>                                                   port->ops->start_tx()
+>                                                     pl011_tx_chars()
+>                                                       uart_write_wakeup()
+>         […]
+>         __uart_start()
+>           pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
+>                                // later data are not commit to the port driver
+>                                                 status = RPM_ACTIVE
+>                                                 rpm_idle() -> rpm_suspend()
 > 
->  drivers/i3c/Kconfig       |   3 +
->  drivers/i3c/Makefile      |   1 +
->  drivers/i3c/func/Kconfig  |   9 +
->  drivers/i3c/func/Makefile |   3 +
->  drivers/i3c/func/tty.c    | 474 ++++++++++++++++++++++++++++++++++++++
->  5 files changed, 490 insertions(+)
->  create mode 100644 drivers/i3c/func/Kconfig
->  create mode 100644 drivers/i3c/func/Makefile
->  create mode 100644 drivers/i3c/func/tty.c
-> 
-> diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-> index d59a7eb83d13a..fca808cda87b3 100644
-> --- a/drivers/i3c/Kconfig
-> +++ b/drivers/i3c/Kconfig
-> @@ -48,3 +48,6 @@ config I3C_TARGET_CONFIGFS
->  	  the target function and used to bind the function with a target
->  	  controller.
->  
-> +if I3C_TARGET
-> +source "drivers/i3c/func/Kconfig"
-> +endif # I3C_TARGET
-> diff --git a/drivers/i3c/Makefile b/drivers/i3c/Makefile
-> index c275aeae8970c..11f026d6876fe 100644
-> --- a/drivers/i3c/Makefile
-> +++ b/drivers/i3c/Makefile
-> @@ -4,3 +4,4 @@ obj-$(CONFIG_I3C)		+= i3c.o
->  obj-$(CONFIG_I3C_TARGET)                += target.o
->  obj-$(CONFIG_I3C_TARGET_CONFIGFS)       += i3c-cfs.o
->  obj-$(CONFIG_I3C)		+= master/
-> +obj-$(CONFIG_I3C_TARGET)	+= func/
-> diff --git a/drivers/i3c/func/Kconfig b/drivers/i3c/func/Kconfig
-> new file mode 100644
-> index 0000000000000..7115129eb7d5a
-> --- /dev/null
-> +++ b/drivers/i3c/func/Kconfig
-> @@ -0,0 +1,9 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +config I3C_TARGET_FUNC_TTY
-> +	tristate "I3C target tty driver"
-> +	depends on I3C_TARGET
-> +	help
-> +	  I3C Target TTY Function Driver.
-> +
-> +	  General TTY over I3C target controller function drivers.
-> diff --git a/drivers/i3c/func/Makefile b/drivers/i3c/func/Makefile
-> new file mode 100644
-> index 0000000000000..16b3b9301496b
-> --- /dev/null
-> +++ b/drivers/i3c/func/Makefile
-> @@ -0,0 +1,3 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +
-> +obj-$(CONFIG_I3C_TARGET_FUNC_TTY)              += tty.o
-> diff --git a/drivers/i3c/func/tty.c b/drivers/i3c/func/tty.c
-> new file mode 100644
-> index 0000000000000..50673bfb6a003
-> --- /dev/null
-> +++ b/drivers/i3c/func/tty.c
-> @@ -0,0 +1,474 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2023 NXP
-> + * Author: Frank Li <Frank.Li@nxp.com>
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/i3c/target.h>
-> +#include <linux/serial_core.h>
-> +#include <linux/slab.h>
-> +#include <linux/tty_flip.h>
-> +
-> +static DEFINE_IDR(i3c_tty_minors);
-> +
-> +static struct tty_driver *i3c_tty_driver;
-> +
-> +#define I3C_TTY_MINORS		8
-> +
-> +#define I3C_TX_NOEMPTY		BIT(0)
-> +#define I3C_TTY_TRANS_SIZE	16
-> +#define I3C_TTY_IBI_TX		BIT(0)
+> This patch tries to fix this by checking the port busy before entering
+> runtime suspending. A runtime_suspend callback is added for the port
+> driver. When entering runtime suspend the callback is invoked, if there's
+> still pending chars in the buffer then flush the buffer.
 
-This is #include <linux/bits.h>
+...
 
-...which will include <vdso/bits.h> that contains the actual definition.
+> +static int serial_port_runtime_suspend(struct device *dev)
+> +{
+> +	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
+> +	struct uart_port *port;
+> +	unsigned long flags;
+> +	int ret = 0;
+> +
+> +	port = port_dev->port;
+> +
+> +	if (port->flags & UPF_DEAD)
+> +		return ret;
+> +
+> +	uart_port_lock_irqsave(port, &flags);
+> +	if (__serial_port_busy(port)) {
+> +		port->ops->start_tx(port);
 
-#include <bitfield.h> is for FIELD_GET/PREP(), etc.
+> +		pm_runtime_mark_last_busy(dev);
 
-> +struct ttyi3c_port {
-> +	struct tty_port port;
-> +	int minor;
-> +	struct i3c_target_func *i3cdev;
-> +	struct completion txcomplete;
-> +	spinlock_t xlock;
-> +	void *buffer;
-> +	struct work_struct work;
+Do you think we need to call this under a lock?
 
-This file seems to also lack some includes. Please go through your 
-#include in the series and add those you use.
+> +		ret = -EBUSY;
+> +	}
+> +	uart_port_unlock_irqrestore(port, flags);
+> +
+> +	return ret;
+> +}
+
+With the above I would rather write it as
+
+static int __serial_port_busy(struct uart_port *port)
+{
+	if (uart_tx_stopped(port))
+		return 0;
+
+	if (uart_circ_chars_pending(&port->state->xmit)
+		return -EBUSY;
+
+	return 0;
+}
+
+static int serial_port_runtime_suspend(struct device *dev)
+{
+	int ret;
+	...
+	uart_port_lock_irqsave(port, &flags);
+	ret = __serial_port_busy(port);
+	if (ret)
+		port->ops->start_tx(port);
+	uart_port_unlock_irqrestore(port, flags);
+
+	if (ret)
+		pm_runtime_mark_last_busy(dev);
+
+	return ret;
+}
+
+It also seems aligned with the resume implementation above.
+
+...
+
+For the consistency's sake the resume can be refactored as
+
+static int serial_port_runtime_resume(struct device *dev)
+{
+	...
+	int ret;
+	...
+	ret = __serial_port_busy(port);
+	if (ret)
+	...
+}
+
+but this can be done later.
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
+
 
