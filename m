@@ -1,50 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1008012FF97;
-	Tue,  6 Feb 2024 14:28:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C167D1E884;
+	Tue,  6 Feb 2024 14:29:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707229706; cv=none; b=oB6jhZgddSPd1/k/MjO0tIWPZfHzxlkw6JVgOlv2HU/WmUFjumnVKekBV4V83vl1RPIXotOeYA9stA+h9HahlsvbzIEUyybGQ8xM3hOyGc0C5WmfwOhCaAEnzbGBevOYsWEtR0euurokSb9E3GFubTKWByMhOB0LslbLvHmbqRk=
+	t=1707229782; cv=none; b=DBHdjC2xtCuYHyy5PYoSBFw10hEBw45CE1BFF0NVefuRBttebF6iMdsPzwPojOM1qC6Tp6NczwOIgQqLm3PzYbpVkcbT2UpAuiMIPQ/rBRjho+IsVwQ/gVUjo4fI5i5PHvkPmlAY1J7X6/plTk1UjmN3tXYojKF8Fr5epjItwjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707229706; c=relaxed/simple;
-	bh=hmXqe5k8v3i33MWN1QBzjt67fki9OQRH2STGLdo6P2E=;
+	s=arc-20240116; t=1707229782; c=relaxed/simple;
+	bh=c8qRfz32rL2kHB7TSW2aoey+/E8HYJ30tFUJcezons0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LHb02FM4JUMQJWfPcbqUOq2MrUTtG7125sW8MPwpyp7SQc+kST19f83il3btFP+ALlhrPjIix50h6ikhsJsAXEdE0VvRszndAiCnxQZT0mRVQU/z8fAzS5Q+GAoRmTkNJwiCqBl1B/HBg4DGETdY8jc1vWwuiIs2DhFHB3GtOmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=C0VHpjpJ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=a+mx3C89Y3KRbwFbsjY64O8nvo2ZGMn3EQibxV1RIOWwEXLhX4iSD/YWpmfXOzmFzplmpM2qEmx0K8aZu8eTst0P5wDu/ZOd7n/F84c/AXDNTdzW3MkYuhUGHk4dXCP1P8dpbfdJUSk48QHHkY+4H3rQxgHfnuZGX1Lot2Boq+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fRBVnbAt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="C0VHpjpJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E6DC433F1;
-	Tue,  6 Feb 2024 14:28:24 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fRBVnbAt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9B1C433F1;
+	Tue,  6 Feb 2024 14:29:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707229705;
-	bh=hmXqe5k8v3i33MWN1QBzjt67fki9OQRH2STGLdo6P2E=;
+	s=korg; t=1707229782;
+	bh=c8qRfz32rL2kHB7TSW2aoey+/E8HYJ30tFUJcezons0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=C0VHpjpJH+zUJi1bZCbGmCbKZhtveqNFuFGEb8wMS/RJ9rQiLusebqLcNa03LJiE9
-	 LgkrDycuc9x/4QX6Abyv3QQGHczPeUeFcdw4DMrawX7yV75irk21sxSaDNJyoOVvFA
-	 J92RWEQMv6Jo8/6AYtOEdOIeztMM5MBja8nH7dS8=
-Date: Tue, 6 Feb 2024 14:28:22 +0000
+	b=fRBVnbAtn9oMBr+MEG4kTB2ZGaiPPooI18dJkBGO/G5qRpmAO/d1AFRkefSi0nLMj
+	 Gl5BEYPgdaFr9vopZys5dnO1DL2+moWFLXaZQ0/OCqd2R1GTOZxuDPtkJY00mRG+aR
+	 FW4z7vX0MzwnguX5I4fchpDRrxVNGAhtanrAW7TA=
+Date: Tue, 6 Feb 2024 14:29:39 +0000
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	syzbot <syzbot+06fa1063cca8163ea541@syzkaller.appspotmail.com>,
-	syzkaller-bugs@googlegroups.com,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"Starke, Daniel" <daniel.starke@siemens.com>,
-	Lee Jones <lee@kernel.org>, Fedor Pchelkin <pchelkin@ispras.ru>,
-	linux-kernel@vger.kernel.org,
-	linux-serial <linux-serial@vger.kernel.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH] tty: n_gsm: restrict tty devices to attach
-Message-ID: <2024020615-stir-dragster-aeb6@gregkh>
-References: <00000000000039f237060f354ef7@google.com>
- <83414cb6-df16-4b6d-92e3-d54d22ba26cc@I-love.SAKURA.ne.jp>
- <9cd9d3eb-418f-44cc-afcf-7283d51252d6@I-love.SAKURA.ne.jp>
- <82aa07d4-13ac-4b1d-80cd-0970c71752a5@kernel.org>
- <7dc23b9d-5120-4966-b47b-fcabe270d498@I-love.SAKURA.ne.jp>
- <42d17017-1d30-4c54-9c28-9d9ba2494e07@I-love.SAKURA.ne.jp>
- <2024012418-passover-habitual-5a92@gregkh>
- <1eab9734-8e4a-431b-8996-fb30f0c6b173@I-love.SAKURA.ne.jp>
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: samsung: Remove superfluous braces in macro
+Message-ID: <2024020609-left-trimester-13c8@gregkh>
+References: <20240202010507.22638-1-semen.protsenko@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,66 +43,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1eab9734-8e4a-431b-8996-fb30f0c6b173@I-love.SAKURA.ne.jp>
+In-Reply-To: <20240202010507.22638-1-semen.protsenko@linaro.org>
 
-On Sat, Feb 03, 2024 at 10:45:53PM +0900, Tetsuo Handa wrote:
-> On 2024/01/24 22:14, Greg Kroah-Hartman wrote:
-> >> @@ -3630,6 +3631,17 @@ static int gsmld_open(struct tty_struct *tty)
-> >>  	if (tty->ops->write == NULL)
-> >>  		return -EINVAL;
-> >>  
-> >> +	major = tty->driver->major;
-> >> +	/* Reject Virtual consoles */
-> >> +	if (major == 4 && tty->driver->minor_start == 1)
-> >> +		return -EINVAL;
-> >> +	/* Reject Unix98 PTY masters/slaves */
-> >> +	if (major >= 128 && major <= 143)
-> >> +		return -EINVAL;
-> >> +	/* Reject BSD PTY masters/slaves */
-> >> +	if (major >= 2 && major <= 3)
-> >> +		return -EINVAL;
-> > 
-> > That is a lot of hard-coded magic numbers, why aren't these defined
-> > anywhere?
+On Thu, Feb 01, 2024 at 07:05:07PM -0600, Sam Protsenko wrote:
+> Commit 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
+> removes parameters from EXYNOS_COMMON_SERIAL_DRV_DATA() macro, but
+> leaves unnecessary empty braces. Remove those to fix the style. No
+> functional change.
 > 
-> Well, include/uapi/linux/major.h defines
-> 
->   #define TTY_MAJOR 4
->   #define UNIX98_PTY_MASTER_MAJOR 128
->   #define UNIX98_PTY_MAJOR_COUNT 8
->   #define UNIX98_PTY_SLAVE_MAJOR (UNIX98_PTY_MASTER_MAJOR+UNIX98_PTY_MAJOR_COUNT)
->   #define PTY_MASTER_MAJOR 2
->   #define PTY_SLAVE_MAJOR 3
-> 
-> but does not define end of UNIX98_PTY_SLAVE_MAJOR range, and
-> no file defines start of minor number for virtual consoles.
+> Fixes: 59f37b7370ef ("tty: serial: samsung: Remove USI initialization")
 
-Then use the ones you have, don't make us be forced to figure out what
-is going on please.
-
-> Does fixing this bug worth updating include/uapi/linux/major.h and adding
-> include/uapi/linux/minor.h ? Since these numbers won't change, I feel that
-> a line of comment is sufficient.
-
-No, don't add new ones where not needed.
-
-> > But really, this is only for fuzz testers, why can't they just not ever
-> > bind this to a console?  Why do we have to have these checks in the
-> > kernel to prevent userspace from doing dumb things that no real
-> > userspace will ever do?
-> 
-> Fuzz testing is for testing unexpected arguments. This bug is nothing but
-> missing validation that should be fixed on the kernel side rather than
-> trying to tune fuzzers.
-
-I'll push back on this, fuzzers, running as root, can easily crash the
-kernel as root can crash the kernel easily.  So trying to keep the
-kernel from hurting itself like this is odd to me.
-
-Again, just tell the fuzzers to not do this.  I don't want random
-hard-coded numbers in here, that's adding maintance requirements on us
-in the kernel for random userspace tools doing random things :(
-
-thanks,
+"no functional change" don't really deserve a "Fixes:" tag.  I'll go
+delete this when applying, thanks.
 
 greg k-h
