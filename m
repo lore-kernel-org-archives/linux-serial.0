@@ -1,473 +1,258 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D776A82C9C
-	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 17:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F99782D6C;
+	Wed,  7 Feb 2024 17:24:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707325855; cv=none; b=kQe5QnnjXdZnx97EbRC71jPG8dANw7KsxrWZze4NRssnvX27h+0QY72FUtWaudWv2rxK2EpFl3leGmU9zBe9BJ5P2u5DEA/rquXJuUkZat+8F6puQZ99lNbqEDtU6dHLFZLMmjwz3arQto7PWP4/y1/xWX/iEr0mSudvJZe0vVU=
+	t=1707326651; cv=none; b=ivn4V6+N0zxipzJmm95+N5aUF8nF5CfT+SUjQWbO3+pV0hEMVIZhxCELVqHgpSGnD/X5sEu156ahh8VZPUhPC2azByfCFEwJhMfSknorEIPGQKSevbV9LA52Wmskc+FlaF0TKlRdGrlUIFfgC355e1my4tUvDwIc4f2akZHkyeQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707325855; c=relaxed/simple;
-	bh=cSPcyud6xloE+SW7fZUt0r9oQTUtm4YjoFN2yR6+XUQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IvS6euAksOIc3G2FNI6fZfid3UwZ47V7zrU59qnR5URcuCOcBWBqMu0cTHJqKs/cTtHLh1UHBCMKqSq5RXGQ10qbtthcFfJ57soRAnzkknLKKCvfSQeeQI18EJAZy52s4Wl/Uaj65CgFFf1IUg8MMPiZcZl9GQoAiHWDKm3Y7ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=EnGpgNM8; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1707326651; c=relaxed/simple;
+	bh=x5ppnwsf4pgCGz1yIwdCpgLN6d2nBaj7v+QHJdweFuk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=msBAeduk2i2FYa0KvJlSMFZE1ylWoJlzOT2MH+tFOoKa10mJdGhMLMkTbv1zBEbUTjAgJxr6gFGmP1ITkowMY1hjJqQeDXFtmXA+3qiW8JH9mc7Chmwfv30y3n2Zw4GYGOMhRYYSCyI6lRhaEp23By9RCE+lZznQBWlUg2K0I8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X4oKTarT; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="EnGpgNM8"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-40efcb37373so7946625e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 07 Feb 2024 09:10:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1707325850; x=1707930650; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MEnld1n4J2H05K3DENQtKQhNVSdCp4/Wfk63V/2ciOQ=;
-        b=EnGpgNM8WZUL49pPnaFI7ZgtjkM32fc/eQFeDV/bAwPapyM7mWMwEN0OWK386Zsu3R
-         Z4P0P9lyWRcUPOESQgRiQ+rPL7Oi9QTlfAyasLMwF4K8bTZS74LK3PoFnYcDj1C/iBWm
-         jWyURqqXcSRiOyNAvQmhS5UE5XiEi6YTUMa5lLUGjGuP3CwGGjL3TcqnUxNItRFkuT6O
-         by5fiCShbM+SiPzGyVyOysCwAuskAUU3xrEmF0dMCiho15ukAPVH6Nvzvm89g0ua0FM2
-         CQXrlBgUvLVK+r//WnlJ1ccJUmuINNETQDxDd9qtgv3cAGM9Z7FAw5C382F3chF3C3Xg
-         RorQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707325850; x=1707930650;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=MEnld1n4J2H05K3DENQtKQhNVSdCp4/Wfk63V/2ciOQ=;
-        b=dJ/jybBqlQvAObFV3B6zKB/0E6fTo3BTZmUwn5JUKBaFOwi8o8Gi1aAgaWTwPqb+Aj
-         O/ECqCl+G7eZnFXgOB9Ftg+tb/NTLW7w73RKVfuTkuejQVpnhxSqRMlyTHRBqSZkIqbq
-         FdW21QAzPNVd8HTkxC6QN+GY+oU4e+cHBc6F9FUO/YphNkdy0P0kupWGep8LTsyzijZ3
-         qVByxi5bnILECxsNIY77UeeCm/9sZP/c15OagcAvWZ/JrOVOlj0BL2ekIjyAKWyINusA
-         BPfa6CCt4ZOJ/5WeGh6tJfY6wQ03sGGiRFrDukjQ8Y27GDAtzlPIpwxuosD+kv95mfYm
-         PUkg==
-X-Gm-Message-State: AOJu0YyA1aT2XlMXUiLLwYceUq+IUHtYzP1d03+s0GHYIbHHIFtv0Z/V
-	8im3cTcsuqleJTBGK6gr/9Gh9cW11mt2e7dkpyNxIbTb5eIe3I8C9ORQO3B15rA=
-X-Google-Smtp-Source: AGHT+IG0OQElTxeTBcaBn/XfbJCgyeS3Gr9vY9Zdbksy5JbOVMoq0BeEeKqJYtnFc9hKOySYtAKojw==
-X-Received: by 2002:a05:600c:1c9e:b0:40f:c1b7:2556 with SMTP id k30-20020a05600c1c9e00b0040fc1b72556mr5415616wms.11.1707325849823;
-        Wed, 07 Feb 2024 09:10:49 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCXKDoUCko0tABHtVDpRnJU6mOZlVn5cx1FgfcRs8MtjdpIfvWfGdJpdF3x4CcL/0RpfYOgLQ64FXhB8uqPQftDfiqqq9G1U+d/X5j3u3SIaE8/Jc4P1NWWDFXaMlIwsd6i7ylu+AU+NS6OWREHhg3AJ1HjsT2YhZnc4XlFrYlAFnt/1I6hlzWbuMS2FyYO8oVOWSFvwrXFgJsnTmpFjWflVk2z/KsdST6GrfH3aQYzeGKDm04O5W07AckOFbNIY5EIdL2DYouSOulgc75l2Jnw4yGAGi4wSzlvZ6iIAxy4YTtkepQQQM7Q2g42KqbUb/pbeZ3cf1Fu0PyBCrgv36/eXnNh71rnmUOJmgRzL06pRuAoyjy8LUjjKEn+Qn04Qv0hZTPS222kd9zPyzBUh3id66r7UuQolesT+Pafh1WE71pOEVm7X26vUoXkhomIrbLgKJ+pbu7T/R+yClJfVFRPWdjmdsyRdkdM8jokLN3tAYbbfdp9VGT/AyO1820GWnTEr0lOT/17kUONlERmb+cWw2SQpPwmsErJpwYSGLC/6zf3KkAuxIeOWgQHu44nF5gxKclsjGPLdHMyXszZ8SnL97QQoPvUw83rnmzUvVJfF84oHA6sWTPOpAW71fQ+CIhpSyyziKLJaQJWti4BFJpu0yaX4jdNcoOKBzZ1pop3P6EATEukkrYPXD041X9uRoYJaL1LLKmTOGCS2UGXBtRZNBLeBQOA79CCqOh+PA11TjlyUj2BL6EJdR4o0ivwzixh3p8NGqJi+ZxitfoiTyYws+H+Ys0k=
-Received: from P-ASN-ECS-830T8C3.idf.intranet (static-css-ccs-204145.business.bouyguestelecom.com. [176.157.204.145])
-        by smtp.gmail.com with ESMTPSA id u14-20020a05600c19ce00b0040fdf2832desm2645584wmq.12.2024.02.07.09.10.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Feb 2024 09:10:49 -0800 (PST)
-From: Yoann Congal <yoann.congal@smile.fr>
-To: linux-fsdevel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	x86@kernel.org
-Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Darren Hart <dvhart@infradead.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Yoann Congal <yoann.congal@smile.fr>
-Subject: [PATCH v5 3/3] printk: Remove redundant CONFIG_BASE_FULL
-Date: Wed,  7 Feb 2024 18:10:20 +0100
-Message-Id: <20240207171020.41036-4-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240207171020.41036-1-yoann.congal@smile.fr>
-References: <20240207171020.41036-1-yoann.congal@smile.fr>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X4oKTarT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707326649; x=1738862649;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=x5ppnwsf4pgCGz1yIwdCpgLN6d2nBaj7v+QHJdweFuk=;
+  b=X4oKTarTWUHZhNvq8YFPpHtlpoADWeyGDEKwjEwKpiJLlFL5wg5oQRZ6
+   hxm9jHJYOnG1p4wr+USexSXf+2yLFP06JfRyVnvXyc86VzzIB5Okzanxc
+   H0iR9RvXXLsxChiON36XGFgmyQwpJiKEKm1mbKQKBtkhPQ+chVYlzI2al
+   NzT89PWgCcS0NYKz54VxTZWgOr6lztDrWG6D8ie1IKQ72ZYzUB+wRheTL
+   T57esk+lKBnaaULMt22yZC/9jFi0BuoZtPMTE5g37J+NlAv+If1zvvmuJ
+   kDpE7akn6gt2Q5KC4EmPrIo1IioCdpiZX2rjPx7GUUKZP9NHRvL6m6Jvh
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="23512961"
+X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
+   d="scan'208";a="23512961"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 09:24:08 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
+   d="scan'208";a="32196969"
+Received: from lkp-server01.sh.intel.com (HELO 01f0647817ea) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 07 Feb 2024 09:24:06 -0800
+Received: from kbuild by 01f0647817ea with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rXleV-0002sS-1O;
+	Wed, 07 Feb 2024 17:24:03 +0000
+Date: Thu, 8 Feb 2024 01:23:53 +0800
+From: kernel test robot <lkp@intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH 3/4] serial: sc16is7xx: split into core and I2C/SPI parts
+ (sc16is7xx_lines)
+Message-ID: <202402080139.jQSw8VKg-lkp@intel.com>
+References: <20240206214208.2141067-4-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240206214208.2141067-4-hugo@hugovil.com>
 
-CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
-default: CONFIG_BASE_SMALL is the special case to take care of.
-So, remove CONFIG_BASE_FULL and move the config choice to
-CONFIG_BASE_SMALL (which defaults to 'n')
+Hi Hugo,
 
-For defconfigs explicitely disabling BASE_FULL, explicitely enable
-BASE_SMALL.
-For defconfigs explicitely enabling BASE_FULL, drop it as it is the
-default.
+kernel test robot noticed the following build errors:
 
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
----
-v4->v5:
-* Patch refreshed (2/3 changed)
-* Added defconfigs refresh (Petr Mladek's comment, thanks!)
-* dropped the redundant "default n" (Masahiro Yamada's comment, thanks!)
+[auto build test ERROR on 52b56990d214c7403b20f691ac61861a37c0f0db]
 
-v3->v4:
-* Split "switch CONFIG_BASE_SMALL to bool" and "Remove the redundant
-  config" (this patch) into two patches
-* keep CONFIG_BASE_SMALL instead of CONFIG_BASE_FULL
----
- arch/arm/configs/collie_defconfig                    |  2 +-
- arch/arm/configs/keystone_defconfig                  |  2 +-
- arch/arm/configs/lpc18xx_defconfig                   |  2 +-
- arch/arm/configs/moxart_defconfig                    |  2 +-
- arch/arm/configs/mps2_defconfig                      |  2 +-
- arch/arm/configs/omap1_defconfig                     |  2 +-
- arch/arm/configs/stm32_defconfig                     |  2 +-
- arch/microblaze/configs/mmu_defconfig                |  2 +-
- arch/mips/configs/rs90_defconfig                     |  2 +-
- arch/powerpc/configs/adder875_defconfig              |  2 +-
- arch/powerpc/configs/ep88xc_defconfig                |  2 +-
- arch/powerpc/configs/mpc866_ads_defconfig            |  2 +-
- arch/powerpc/configs/mpc885_ads_defconfig            |  2 +-
- arch/powerpc/configs/tqm8xx_defconfig                |  2 +-
- arch/riscv/configs/nommu_k210_defconfig              |  2 +-
- arch/riscv/configs/nommu_k210_sdcard_defconfig       |  2 +-
- arch/riscv/configs/nommu_virt_defconfig              |  2 +-
- arch/sh/configs/edosk7705_defconfig                  |  2 +-
- arch/sh/configs/se7619_defconfig                     |  2 +-
- arch/sh/configs/se7712_defconfig                     |  2 +-
- arch/sh/configs/se7721_defconfig                     |  2 +-
- arch/sh/configs/shmin_defconfig                      |  2 +-
- init/Kconfig                                         | 10 +++-------
- tools/testing/selftests/wireguard/qemu/kernel.config |  1 -
- 24 files changed, 25 insertions(+), 30 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc16is7xx-simplify-and-improve-Kconfig-help-text/20240207-061642
+base:   52b56990d214c7403b20f691ac61861a37c0f0db
+patch link:    https://lore.kernel.org/r/20240206214208.2141067-4-hugo%40hugovil.com
+patch subject: [PATCH 3/4] serial: sc16is7xx: split into core and I2C/SPI parts (sc16is7xx_lines)
+config: i386-buildonly-randconfig-003-20240207 (https://download.01.org/0day-ci/archive/20240208/202402080139.jQSw8VKg-lkp@intel.com/config)
+compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240208/202402080139.jQSw8VKg-lkp@intel.com/reproduce)
 
-diff --git a/arch/arm/configs/collie_defconfig b/arch/arm/configs/collie_defconfig
-index 01b5a5a73f037..42cb1c8541188 100644
---- a/arch/arm/configs/collie_defconfig
-+++ b/arch/arm/configs/collie_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- CONFIG_ARCH_MULTI_V4=y
- # CONFIG_ARCH_MULTI_V7 is not set
-diff --git a/arch/arm/configs/keystone_defconfig b/arch/arm/configs/keystone_defconfig
-index 59c4835ffc977..c1291ca290b23 100644
---- a/arch/arm/configs/keystone_defconfig
-+++ b/arch/arm/configs/keystone_defconfig
-@@ -12,7 +12,7 @@ CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_EXPERT=y
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/lpc18xx_defconfig b/arch/arm/configs/lpc18xx_defconfig
-index d169da9b2824d..f55c231e08708 100644
---- a/arch/arm/configs/lpc18xx_defconfig
-+++ b/arch/arm/configs/lpc18xx_defconfig
-@@ -8,7 +8,7 @@ CONFIG_BLK_DEV_INITRD=y
- # CONFIG_RD_LZ4 is not set
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/moxart_defconfig b/arch/arm/configs/moxart_defconfig
-index 1d41e73f4903c..34d079e03b3c5 100644
---- a/arch/arm/configs/moxart_defconfig
-+++ b/arch/arm/configs/moxart_defconfig
-@@ -6,7 +6,7 @@ CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
- # CONFIG_EVENTFD is not set
-diff --git a/arch/arm/configs/mps2_defconfig b/arch/arm/configs/mps2_defconfig
-index 3ed73f184d839..e995e50537efd 100644
---- a/arch/arm/configs/mps2_defconfig
-+++ b/arch/arm/configs/mps2_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=16
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/omap1_defconfig b/arch/arm/configs/omap1_defconfig
-index 729ea8157e2a5..025b595dd8375 100644
---- a/arch/arm/configs/omap1_defconfig
-+++ b/arch/arm/configs/omap1_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- # CONFIG_KALLSYMS is not set
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
-index b9fe3fbed5aec..3baec075d1efd 100644
---- a/arch/arm/configs/stm32_defconfig
-+++ b/arch/arm/configs/stm32_defconfig
-@@ -6,7 +6,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/microblaze/configs/mmu_defconfig b/arch/microblaze/configs/mmu_defconfig
-index 4da7bc4ac4a37..176314f3c9aac 100644
---- a/arch/microblaze/configs/mmu_defconfig
-+++ b/arch/microblaze/configs/mmu_defconfig
-@@ -4,7 +4,7 @@ CONFIG_AUDIT=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR=1
- CONFIG_XILINX_MICROBLAZE0_USE_PCMP_INSTR=1
-diff --git a/arch/mips/configs/rs90_defconfig b/arch/mips/configs/rs90_defconfig
-index 4b9e36d6400e0..a53dd66e9b864 100644
---- a/arch/mips/configs/rs90_defconfig
-+++ b/arch/mips/configs/rs90_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y
- # CONFIG_SGETMASK_SYSCALL is not set
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_TIMERFD is not set
- # CONFIG_AIO is not set
- # CONFIG_IO_URING is not set
-diff --git a/arch/powerpc/configs/adder875_defconfig b/arch/powerpc/configs/adder875_defconfig
-index 7f35d5bc12299..97f4d48517356 100644
---- a/arch/powerpc/configs/adder875_defconfig
-+++ b/arch/powerpc/configs/adder875_defconfig
-@@ -4,7 +4,7 @@ CONFIG_SYSVIPC=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/ep88xc_defconfig b/arch/powerpc/configs/ep88xc_defconfig
-index a98ef6a4abef6..50cc59eb36cf1 100644
---- a/arch/powerpc/configs/ep88xc_defconfig
-+++ b/arch/powerpc/configs/ep88xc_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc866_ads_defconfig b/arch/powerpc/configs/mpc866_ads_defconfig
-index 5c56d36cdfc5c..6f449411abf7b 100644
---- a/arch/powerpc/configs/mpc866_ads_defconfig
-+++ b/arch/powerpc/configs/mpc866_ads_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc885_ads_defconfig b/arch/powerpc/configs/mpc885_ads_defconfig
-index 56b876e418e91..77306be62e9ee 100644
---- a/arch/powerpc/configs/mpc885_ads_defconfig
-+++ b/arch/powerpc/configs/mpc885_ads_defconfig
-@@ -7,7 +7,7 @@ CONFIG_VIRT_CPU_ACCOUNTING_NATIVE=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- CONFIG_PERF_EVENTS=y
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/powerpc/configs/tqm8xx_defconfig b/arch/powerpc/configs/tqm8xx_defconfig
-index 083c2e57520a0..383c0966e92fd 100644
---- a/arch/powerpc/configs/tqm8xx_defconfig
-+++ b/arch/powerpc/configs/tqm8xx_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- CONFIG_MODULES=y
-diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
-index 146c46d0525b4..51ba0d1683383 100644
---- a/arch/riscv/configs/nommu_k210_defconfig
-+++ b/arch/riscv/configs/nommu_k210_defconfig
-@@ -11,7 +11,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-index 95d8d1808f194..762aea9127ae4 100644
---- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
-+++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=13
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_virt_defconfig b/arch/riscv/configs/nommu_virt_defconfig
-index b794e2f8144e6..ab6d618c1828f 100644
---- a/arch/riscv/configs/nommu_virt_defconfig
-+++ b/arch/riscv/configs/nommu_virt_defconfig
-@@ -10,7 +10,7 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
-diff --git a/arch/sh/configs/edosk7705_defconfig b/arch/sh/configs/edosk7705_defconfig
-index 9ee35269bee26..ab3bf72264df4 100644
---- a/arch/sh/configs/edosk7705_defconfig
-+++ b/arch/sh/configs/edosk7705_defconfig
-@@ -6,7 +6,7 @@
- # CONFIG_PRINTK is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/sh/configs/se7619_defconfig b/arch/sh/configs/se7619_defconfig
-index 14d0f5ead502f..4765966fec99c 100644
---- a/arch/sh/configs/se7619_defconfig
-+++ b/arch/sh/configs/se7619_defconfig
-@@ -4,7 +4,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_KALLSYMS is not set
- # CONFIG_HOTPLUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/sh/configs/se7712_defconfig b/arch/sh/configs/se7712_defconfig
-index dc854293da435..20f07aee5bde7 100644
---- a/arch/sh/configs/se7712_defconfig
-+++ b/arch/sh/configs/se7712_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/se7721_defconfig b/arch/sh/configs/se7721_defconfig
-index c891945b8a900..00862d3c030d2 100644
---- a/arch/sh/configs/se7721_defconfig
-+++ b/arch/sh/configs/se7721_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/shmin_defconfig b/arch/sh/configs/shmin_defconfig
-index e078b193a78a8..bfeb004f130ec 100644
---- a/arch/sh/configs/shmin_defconfig
-+++ b/arch/sh/configs/shmin_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_HOTPLUG is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SHMEM is not set
-diff --git a/init/Kconfig b/init/Kconfig
-index 0148229f93613..6f08c736ce799 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1581,11 +1581,10 @@ config PCSPKR_PLATFORM
- 	  This option allows to disable the internal PC-Speaker
- 	  support, saving some memory.
- 
--config BASE_FULL
--	default y
--	bool "Enable full-sized data structures for core" if EXPERT
-+config BASE_SMALL
-+	bool "Enable smaller-sized data structures for core" if EXPERT
- 	help
--	  Disabling this option reduces the size of miscellaneous core
-+	  Enabling this option reduces the size of miscellaneous core
- 	  kernel data structures. This saves memory on small machines,
- 	  but may reduce performance.
- 
-@@ -1940,9 +1939,6 @@ config RT_MUTEXES
- 	bool
- 	default y if PREEMPT_RT
- 
--config BASE_SMALL
--	def_bool !BASE_FULL
--
- config MODULE_SIG_FORMAT
- 	def_bool n
- 	select SYSTEM_DATA_VERIFICATION
-diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
-index 507555714b1d8..f314d3789f175 100644
---- a/tools/testing/selftests/wireguard/qemu/kernel.config
-+++ b/tools/testing/selftests/wireguard/qemu/kernel.config
-@@ -41,7 +41,6 @@ CONFIG_KALLSYMS=y
- CONFIG_BUG=y
- CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
- CONFIG_JUMP_LABEL=y
--CONFIG_BASE_FULL=y
- CONFIG_FUTEX=y
- CONFIG_SHMEM=y
- CONFIG_SLUB=y
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402080139.jQSw8VKg-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/serial/sc16is7xx.c:1539:23: error: call to undeclared function 'find_and_set_bit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+    1539 |                 s->p[i].port.line = find_and_set_bit(sc16is7xx_lines,
+         |                                     ^
+   drivers/tty/serial/sc16is7xx.c:1539:23: note: did you mean 'test_and_set_bit'?
+   include/asm-generic/bitops/instrumented-atomic.h:68:29: note: 'test_and_set_bit' declared here
+      68 | static __always_inline bool test_and_set_bit(long nr, volatile unsigned long *addr)
+         |                             ^
+   1 error generated.
+
+
+vim +/find_and_set_bit +1539 drivers/tty/serial/sc16is7xx.c
+
+  1462	
+  1463	int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+  1464			    struct regmap *regmaps[], int irq)
+  1465	{
+  1466		unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
+  1467		unsigned int val;
+  1468		u32 uartclk = 0;
+  1469		int i, ret;
+  1470		struct sc16is7xx_port *s;
+  1471		bool port_registered[SC16IS7XX_MAX_PORTS];
+  1472	
+  1473		for (i = 0; i < devtype->nr_uart; i++)
+  1474			if (IS_ERR(regmaps[i]))
+  1475				return PTR_ERR(regmaps[i]);
+  1476	
+  1477		/*
+  1478		 * This device does not have an identification register that would
+  1479		 * tell us if we are really connected to the correct device.
+  1480		 * The best we can do is to check if communication is at all possible.
+  1481		 *
+  1482		 * Note: regmap[0] is used in the probe function to access registers
+  1483		 * common to all channels/ports, as it is guaranteed to be present on
+  1484		 * all variants.
+  1485		 */
+  1486		ret = regmap_read(regmaps[0], SC16IS7XX_LSR_REG, &val);
+  1487		if (ret < 0)
+  1488			return -EPROBE_DEFER;
+  1489	
+  1490		/* Alloc port structure */
+  1491		s = devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);
+  1492		if (!s) {
+  1493			dev_err(dev, "Error allocating port structure\n");
+  1494			return -ENOMEM;
+  1495		}
+  1496	
+  1497		/* Always ask for fixed clock rate from a property. */
+  1498		device_property_read_u32(dev, "clock-frequency", &uartclk);
+  1499	
+  1500		s->clk = devm_clk_get_optional(dev, NULL);
+  1501		if (IS_ERR(s->clk))
+  1502			return PTR_ERR(s->clk);
+  1503	
+  1504		ret = clk_prepare_enable(s->clk);
+  1505		if (ret)
+  1506			return ret;
+  1507	
+  1508		freq = clk_get_rate(s->clk);
+  1509		if (freq == 0) {
+  1510			if (uartclk)
+  1511				freq = uartclk;
+  1512			if (pfreq)
+  1513				freq = *pfreq;
+  1514			if (freq)
+  1515				dev_dbg(dev, "Clock frequency: %luHz\n", freq);
+  1516			else
+  1517				return -EINVAL;
+  1518		}
+  1519	
+  1520		s->devtype = devtype;
+  1521		dev_set_drvdata(dev, s);
+  1522	
+  1523		kthread_init_worker(&s->kworker);
+  1524		s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
+  1525					      "sc16is7xx");
+  1526		if (IS_ERR(s->kworker_task)) {
+  1527			ret = PTR_ERR(s->kworker_task);
+  1528			goto out_clk;
+  1529		}
+  1530		sched_set_fifo(s->kworker_task);
+  1531	
+  1532		/* reset device, purging any pending irq / data */
+  1533		regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
+  1534			     SC16IS7XX_IOCONTROL_SRESET_BIT);
+  1535	
+  1536		for (i = 0; i < devtype->nr_uart; ++i) {
+  1537			port_registered[i] = false;
+  1538	
+> 1539			s->p[i].port.line = find_and_set_bit(sc16is7xx_lines,
+  1540							     SC16IS7XX_MAX_DEVS);
+  1541			if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
+  1542				ret = -ERANGE;
+  1543				goto out_ports;
+  1544			}
+  1545	
+  1546			/* Initialize port data */
+  1547			s->p[i].port.dev	= dev;
+  1548			s->p[i].port.irq	= irq;
+  1549			s->p[i].port.type	= PORT_SC16IS7XX;
+  1550			s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+  1551			s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+  1552			s->p[i].port.iobase	= i;
+  1553			/*
+  1554			 * Use all ones as membase to make sure uart_configure_port() in
+  1555			 * serial_core.c does not abort for SPI/I2C devices where the
+  1556			 * membase address is not applicable.
+  1557			 */
+  1558			s->p[i].port.membase	= (void __iomem *)~0;
+  1559			s->p[i].port.iotype	= UPIO_PORT;
+  1560			s->p[i].port.uartclk	= freq;
+  1561			s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+  1562			s->p[i].port.rs485_supported = sc16is7xx_rs485_supported;
+  1563			s->p[i].port.ops	= &sc16is7xx_ops;
+  1564			s->p[i].old_mctrl	= 0;
+  1565			s->p[i].regmap		= regmaps[i];
+  1566	
+  1567			mutex_init(&s->p[i].efr_lock);
+  1568	
+  1569			ret = uart_get_rs485_mode(&s->p[i].port);
+  1570			if (ret)
+  1571				goto out_ports;
+  1572	
+  1573			/* Disable all interrupts */
+  1574			sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
+  1575			/* Disable TX/RX */
+  1576			sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFCR_REG,
+  1577					     SC16IS7XX_EFCR_RXDISABLE_BIT |
+  1578					     SC16IS7XX_EFCR_TXDISABLE_BIT);
+  1579	
+  1580			/* Initialize kthread work structs */
+  1581			kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
+  1582			kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
+  1583			kthread_init_delayed_work(&s->p[i].ms_work, sc16is7xx_ms_proc);
+  1584	
+  1585			/* Register port */
+  1586			ret = uart_add_one_port(&sc16is7xx_uart, &s->p[i].port);
+  1587			if (ret)
+  1588				goto out_ports;
+  1589	
+  1590			port_registered[i] = true;
+  1591	
+  1592			/* Enable EFR */
+  1593			sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
+  1594					     SC16IS7XX_LCR_CONF_MODE_B);
+  1595	
+  1596			regcache_cache_bypass(regmaps[i], true);
+  1597	
+  1598			/* Enable write access to enhanced features */
+  1599			sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFR_REG,
+  1600					     SC16IS7XX_EFR_ENABLE_BIT);
+  1601	
+  1602			regcache_cache_bypass(regmaps[i], false);
+  1603	
+  1604			/* Restore access to general registers */
+  1605			sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG, 0x00);
+  1606	
+  1607			/* Go to suspend mode */
+  1608			sc16is7xx_power(&s->p[i].port, 0);
+  1609		}
+  1610	
+  1611		sc16is7xx_setup_irda_ports(s);
+  1612	
+  1613		ret = sc16is7xx_setup_mctrl_ports(s, regmaps[0]);
+  1614		if (ret)
+  1615			goto out_ports;
+  1616	
+
 -- 
-2.39.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
