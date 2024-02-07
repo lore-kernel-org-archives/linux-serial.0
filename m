@@ -1,189 +1,150 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36FF41F5F0;
-	Wed,  7 Feb 2024 07:22:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1DB42032E
+	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 08:38:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707290545; cv=none; b=j1T96wd+O0pZqkyhQOeerdLUYoGsed3tLHI/awhmZ8efW/W6thRqaeEZwc5/10b2WFCDFkmcssUnGsQCO1BWo7U/wLWnOluNBKI6qmgbSScPLvVRiq0OLHR/UxV3zwZ0k4H6iJq94IfbiMqRZ3omQr+LP5j/K3afL8qS0MdyIRs=
+	t=1707295129; cv=none; b=gLYl4wRtAFdVjOMUaXXY2vQIsAmkUWitPm4W5bKuBGVLppt59dRd2UV89U9KzFNpp6aK7af3UCKHwsK7haocT5TsFJRMOzyvev892rZNfaagBDeWn6FRVz56IwB043mslobyckJ3vDLiZxmhIWH45FiklvXCkCcKPyb71P1jG6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707290545; c=relaxed/simple;
-	bh=VVvRFG/eiBuKl5tvWu7HLckqb1fOLvTugxdSX+bh1nQ=;
-	h=CC:Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=sRKk+B9YIks+7Mh3AhlSUa5DSaflzYGQ7JNVcgOR+nLekzGTl3322sHqgqMRdsUMQl4QqNMOaNtSO8cE31HNamMHZOKKJBjVUundbFr+lbFj9N8T2leUQM5kdDdhLZVZQEQbq0w3ETqv0S3XVeWvip2L8KTrnKH0aoraio/64rI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.234])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4TVBN62G5mz1gydY;
-	Wed,  7 Feb 2024 15:20:22 +0800 (CST)
-Received: from canpemm500009.china.huawei.com (unknown [7.192.105.203])
-	by mail.maildlp.com (Postfix) with ESMTPS id 983AB1400CF;
-	Wed,  7 Feb 2024 15:22:18 +0800 (CST)
-Received: from [10.67.121.177] (10.67.121.177) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 7 Feb 2024 15:22:18 +0800
-CC: <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <tony@atomide.com>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <john.ogness@linutronix.de>,
-	<tglx@linutronix.de>, <linuxarm@huawei.com>, <prime.zeng@hisilicon.com>,
-	<jonathan.cameron@huawei.com>, <fanghao11@huawei.com>
-Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20240206073322.5560-1-yangyicong@huawei.com>
- <ZcIvjC1qzD4atwlT@smile.fi.intel.com>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <9e3d8daf-6715-bb37-125a-4141a9460417@huawei.com>
-Date: Wed, 7 Feb 2024 15:22:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	s=arc-20240116; t=1707295129; c=relaxed/simple;
+	bh=jFBlkLO+zGEktohSHqhVVqLpFHILzdE38LEOSPyY2bQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=t6hxcvCq8/CHFBjkIIGM5jDWOY2nrgIHk35MEmCWd5D/AfrDpKS/9MIGklMibxsO8XeYkYh6uvg9H6S6vtayxIuuQ9sPH8K45K7cSvZGjPoQFBX1LfGaiMxVEJvwRwLlu2jOkuj4xG5c8zkFoLvLkDnBg5B8UsoVc9/g1Cy3Csc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MiYEiwRX; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MiYEiwRX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707295127; x=1738831127;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jFBlkLO+zGEktohSHqhVVqLpFHILzdE38LEOSPyY2bQ=;
+  b=MiYEiwRXnSrUi8xPUjnrnfc8oi4Q0nNJjTSAFUW3HsNu6xm4J3xH0Gzm
+   7T/VVDvxRhIjS2COtjFWuLtNo6hP/Pk4TQdIUfh2SPBiEA5sCUBnuhK0b
+   1RRL+3Ktoff6D1mXFNFoctK7eLB5Frhy64XvnblABhIPB6LPZpYm0LQf5
+   EEo95PAoFPF5KGRHP/EKT3wmwkzukdlwYYChUZXKWoepZzQsZlGZNHjkH
+   QbCWNogcgODJRHQ8hOR6gifDwV0aZ0IYQXCBt1aMFl64UwT+NRBTBZ9tv
+   Y0Hb+plZxKZr/b8256OIE5TiprwM2BiTLd6L39/MpWrOO1Atvc2jm4pi0
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="3910283"
+X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
+   d="scan'208";a="3910283"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 00:38:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
+   d="scan'208";a="1510860"
+Received: from lkp-server01.sh.intel.com (HELO 01f0647817ea) ([10.239.97.150])
+  by fmviesa008.fm.intel.com with ESMTP; 07 Feb 2024 00:38:45 -0800
+Received: from kbuild by 01f0647817ea with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rXdS6-0002Oa-2x;
+	Wed, 07 Feb 2024 08:38:42 +0000
+Date: Wed, 7 Feb 2024 16:37:55 +0800
+From: kernel test robot <lkp@intel.com>
+To: Sreenath Vijayan <sreenath.vijayan@sony.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>,
+	John Ogness <john.ogness@linutronix.de>
+Subject: [tty:tty-testing 28/29] include/linux/printk.h:275:13: warning:
+ 'dump_printk_buffer' defined but not used
+Message-ID: <202402071643.DU2VnE06-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <ZcIvjC1qzD4atwlT@smile.fi.intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Andy,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   014e10bea593b963574d607faa34e7eaaad3c02b
+commit: 558367b641b3802572132e7ed865f5eb887c41ea [28/29] printk: Add function to dump printk buffer directly to consoles
+config: arc-randconfig-002-20240207 (https://download.01.org/0day-ci/archive/20240207/202402071643.DU2VnE06-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240207/202402071643.DU2VnE06-lkp@intel.com/reproduce)
 
-On 2024/2/6 21:09, Andy Shevchenko wrote:
-> On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
->> From: Yicong Yang <yangyicong@hisilicon.com>
->>
->> We accidently met the issue that the bash prompt is not shown after the
->> previous command done and until the next input if there's only one CPU
->> (In our issue other CPUs are isolated by isolcpus=). Further analysis
->> shows it's because the port entering runtime suspend even if there's
->> still pending chars in the buffer and the pending chars will only be
->> processed in next device resuming. We are using amba-pl011 and the
->> problematic flow is like below:
->>
->> Bash                                         kworker
->> tty_write()
->>   file_tty_write()
->>     n_tty_write()
->>       uart_write()
->>         __uart_start()
->>           pm_runtime_get() // wakeup waker
->>             queue_work()
->>                                              pm_runtime_work()
->>                                                rpm_resume()
->>                                                 status = RPM_RESUMING
->>                                                 serial_port_runtime_resume()
->>                                                   port->ops->start_tx()
->>                                                     pl011_tx_chars()
->>                                                       uart_write_wakeup()
->>         […]
->>         __uart_start()
->>           pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
->>                                // later data are not commit to the port driver
->>                                                 status = RPM_ACTIVE
->>                                                 rpm_idle() -> rpm_suspend()
->>
->> This patch tries to fix this by checking the port busy before entering
->> runtime suspending. A runtime_suspend callback is added for the port
->> driver. When entering runtime suspend the callback is invoked, if there's
->> still pending chars in the buffer then flush the buffer.
-> 
-> ...
-> 
->> +static int serial_port_runtime_suspend(struct device *dev)
->> +{
->> +	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
->> +	struct uart_port *port;
->> +	unsigned long flags;
->> +	int ret = 0;
->> +
->> +	port = port_dev->port;
->> +
->> +	if (port->flags & UPF_DEAD)
->> +		return ret;
->> +
->> +	uart_port_lock_irqsave(port, &flags);
->> +	if (__serial_port_busy(port)) {
->> +		port->ops->start_tx(port);
-> 
->> +		pm_runtime_mark_last_busy(dev);
-> 
-> Do you think we need to call this under a lock?
-> 
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402071643.DU2VnE06-lkp@intel.com/
 
-I just put this close to the ops->start_tx() where I used the device. Yes I have no
-strong reason to put it in/with the lock region, but pm_runtime_mark_last_busy()
-should be no costy and safe enough to put it in the spinlock region.
+All warnings (new ones prefixed by >>):
 
-Any thoughts?
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/arc/include/asm/bug.h:30,
+                    from include/linux/bug.h:5,
+                    from include/linux/page-flags.h:10,
+                    from kernel/bounds.c:10:
+>> include/linux/printk.h:275:13: warning: 'dump_printk_buffer' defined but not used [-Wunused-function]
+     275 | static void dump_printk_buffer(void)
+         |             ^~~~~~~~~~~~~~~~~~
+--
+   In file included from kernel/locking/lockdep.c:62:
+   kernel/locking/lockdep_internals.h:69:28: warning: 'LOCKF_USED_IN_IRQ_READ' defined but not used [-Wunused-const-variable=]
+      69 | static const unsigned long LOCKF_USED_IN_IRQ_READ =
+         |                            ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/locking/lockdep_internals.h:63:28: warning: 'LOCKF_ENABLED_IRQ_READ' defined but not used [-Wunused-const-variable=]
+      63 | static const unsigned long LOCKF_ENABLED_IRQ_READ =
+         |                            ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/locking/lockdep_internals.h:57:28: warning: 'LOCKF_USED_IN_IRQ' defined but not used [-Wunused-const-variable=]
+      57 | static const unsigned long LOCKF_USED_IN_IRQ =
+         |                            ^~~~~~~~~~~~~~~~~
+   kernel/locking/lockdep_internals.h:51:28: warning: 'LOCKF_ENABLED_IRQ' defined but not used [-Wunused-const-variable=]
+      51 | static const unsigned long LOCKF_ENABLED_IRQ =
+         |                            ^~~~~~~~~~~~~~~~~
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/arc/include/asm/bug.h:30,
+                    from include/linux/bug.h:5,
+                    from include/linux/thread_info.h:13,
+                    from include/asm-generic/current.h:6,
+                    from arch/arc/include/asm/current.h:20,
+                    from include/linux/mutex.h:14,
+                    from kernel/locking/lockdep.c:30:
+>> include/linux/printk.h:275:13: warning: 'dump_printk_buffer' defined but not used [-Wunused-function]
+     275 | static void dump_printk_buffer(void)
+         |             ^~~~~~~~~~~~~~~~~~
+--
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/arc/include/asm/bug.h:30,
+                    from include/linux/bug.h:5,
+                    from include/linux/page-flags.h:10,
+                    from kernel/bounds.c:10:
+>> include/linux/printk.h:275:13: warning: 'dump_printk_buffer' defined but not used [-Wunused-function]
+     275 | static void dump_printk_buffer(void)
+         |             ^~~~~~~~~~~~~~~~~~
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/arc/include/asm/bug.h:30,
+                    from include/linux/bug.h:5,
+                    from include/linux/thread_info.h:13,
+                    from include/asm-generic/current.h:6,
+                    from arch/arc/include/asm/current.h:20,
+                    from include/linux/sched.h:12,
+                    from arch/arc/kernel/asm-offsets.c:6:
+>> include/linux/printk.h:275:13: warning: 'dump_printk_buffer' defined but not used [-Wunused-function]
+     275 | static void dump_printk_buffer(void)
+         |             ^~~~~~~~~~~~~~~~~~
 
->> +		ret = -EBUSY;
->> +	}
->> +	uart_port_unlock_irqrestore(port, flags);
->> +
->> +	return ret;
->> +}
-> 
-> With the above I would rather write it as
-> 
-> static int __serial_port_busy(struct uart_port *port)
-> {
-> 	if (uart_tx_stopped(port))
-> 		return 0;
-> 
-> 	if (uart_circ_chars_pending(&port->state->xmit)
-> 		return -EBUSY;
 
-I'm not sure but EBUSY seems not quite match here. EBUSY for
-"Device or resource busy" so the device probably cannot be used
-but we're testing whether the port is busy here. Hope I understand it
-correctly.
+vim +/dump_printk_buffer +275 include/linux/printk.h
 
-> 
-> 	return 0;
-> }
-> 
-> static int serial_port_runtime_suspend(struct device *dev)
-> {
-> 	int ret;
-> 	...
-> 	uart_port_lock_irqsave(port, &flags);
-> 	ret = __serial_port_busy(port);
-> 	if (ret)
-> 		port->ops->start_tx(port);
-> 	uart_port_unlock_irqrestore(port, flags);
-> 
-> 	if (ret)
-> 		pm_runtime_mark_last_busy(dev);
-> 
-> 	return ret;
-> }
-> 
-> It also seems aligned with the resume implementation above.
-> 
-> ...
-> 
-> For the consistency's sake the resume can be refactored as
-> 
-> static int serial_port_runtime_resume(struct device *dev)
-> {
-> 	...
-> 	int ret;
-> 	...
-> 	ret = __serial_port_busy(port);
-> 	if (ret)
-> 	...
-> }
-> 
-> but this can be done later.
-> 
+   268	
+   269	static inline void dump_stack(void)
+   270	{
+   271	}
+   272	static inline void printk_trigger_flush(void)
+   273	{
+   274	}
+ > 275	static void dump_printk_buffer(void)
+   276	{
+   277	}
+   278	#endif
+   279	
 
-I agree the refactoring should go to a separate patch. But it doesn't seem
-to be more simpler or readable comparing to the current implementation? Just
-want to narrowing the spinlock region?
-
-Thanks.
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
