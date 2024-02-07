@@ -1,71 +1,63 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD9C7C0AB
-	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 14:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F301E7C09D;
+	Wed,  7 Feb 2024 14:47:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707317039; cv=none; b=Ul4n+NHKUCui50ZhRgT4/oAqrOU3jh9DV0WG0Lz3YWId8ewLkIxPfm/6ZnMaeoaeRpoTXnR8Jou7v8O6y02WPt1mR3bw7UGpuUTT2+O8Vr2XzgQvhYB8ZUe2STis2cg4sWD0+KK4FpGLgsAuhUnD5u/VCkJoO6ev3VZV1rAH/lA=
+	t=1707317237; cv=none; b=e22ti5fRkasDD1DzPHKqPzRK4kaagVrwXDbbPQBNzNxf9UoeX/9iEHFfQKY4JEKA0re+TvM9qTgEOqQOjNJb+QL9wpU7EpDEL5+uBwoueEDwnpyac14A/7qc5B2Ze3Z593X2d80jWjyRTgpkvLEDaVuP7jtEgrSsl6gpqCC85U0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707317039; c=relaxed/simple;
-	bh=fg1vK03qeyEYh8aWYY7ojoH+m10tqr1lJD/50h6YUrg=;
+	s=arc-20240116; t=1707317237; c=relaxed/simple;
+	bh=xjOZdcyS1ieJ1WHIh+k+fjd7wcu4iF6GD+F5MUqFzP0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ELZs4PnpV/taivfiJj+hca628eDnzplZNhceLN/txnpQfI7anCjblaVq4ZFRHRZJVtBnGQ/peHgUF/TEt0AvtpqUpNtjjLZQvldrqMImeNqMlRcUONq0QyVRgfROP9is6W+IbraoT5aG4h+TxwU5OsHH7kzFWLtT+Us40MdbJ6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WIWcj1Sv; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ptEe57+ickNKTSXd/hM7a7nnY+mqDGcOC/Vj6mV8JVKs4HIEvE4parxziNjpQwPXkLe5QG2f180/7pg44idlZVcflDdDFS5GHqZNv3lGRgLQeFRI0nX4VZFXtOuKQUYDU7awwz9lA5cK0hc2fHiGOX2AWLMxnlW+7HUBvGg2PH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AQgYnpnK; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WIWcj1Sv"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-511689cc22aso802523e87.0
-        for <linux-serial@vger.kernel.org>; Wed, 07 Feb 2024 06:43:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1707317034; x=1707921834; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ze9ZwLHA6Efy82qUcNxqthaSY7UMqDGuf7DhJv5BY3o=;
-        b=WIWcj1SvKlfzyaDRbb2cI/SL7OQAySx4g3jeiDUE5ld95631J0EO5nMCo8OTsu+xus
-         Cj7eqN+OAm2WgjmFZIHIvpTkvPH/wBbxKA9cPa8eIMo2jUxTwe1axS2hDTN7E6ONkhxs
-         U7Eyw/KLJDE7Z6J14RvirB5e7/va89EHvCygjSRN2Kww5TqjVJm8TN9GoqFU+Ty+vtzC
-         29twFWeGUSCGU9fvfcxeXk/eP6V25LXoZTLWvXSiTpuBOxO2THlEpnoujyEMaJuyknVM
-         qT7JTOT+HdPwE5NMvb5XpsFbxnZu6BoRMBVOtDI/9+jWZsQY4zGN20m4EKXAr+GxqhzR
-         nICg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707317034; x=1707921834;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ze9ZwLHA6Efy82qUcNxqthaSY7UMqDGuf7DhJv5BY3o=;
-        b=YRkivUc6Ltvr0ZT1hOqnRJ/F98FewYarIHv+t/UfL56Rcn/cvPNTVpIu9o+DOxonFK
-         CA1Zd2K6X6/nyH4cKUbJdfTbiNf3B82cAfQeNhqGyEG6FyfP5fKguji0EAQ/U+hmSCbt
-         jm3wXu1pr+uEMQR+XUndQRKh22//3uWk67Wb9fQ9UecZ0e7PqMSaMd+kHTWbvLInw4LH
-         LQ3xfRAwWFAkMeSXVFY+Yg3iP9/YbvgYdWpLBiL6wnIKnYmOGvBf8TzCM4Y819XrIJE2
-         pHKYyxgfm0zk+oQLjn8NW0Zxf2TP5p3a/UIVJPsJFR1VgoUhXm8tcZTPjTN4JKO7s8E8
-         3QgQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWivoR9W5ynpZ9M5NCqiSVylVp9EU8wOmXXq8mNb/9Kbys0IzTIDzgvXathBj0h76zN7i2HBcf6VZdVTdH+m5w/WiaS+vTtKX+gS6xr
-X-Gm-Message-State: AOJu0YyVo5URcsxAjPfedu1u1/X8EdhHRQptqZYla0Yovr44TnZ9N7jI
-	cRFX5KszoVxLCFF788T3v9tGsSjw/XR2yhWtdBmk/14FeYyMDwm5J98CcLyvT80=
-X-Google-Smtp-Source: AGHT+IG5pkdkXWGfV8yAdTjYMkiAYADdm/5219hi0EkLm9dapJXsvHjrWMaM24YHXyYPuiHR4deIvA==
-X-Received: by 2002:a05:6512:3a8c:b0:511:3c06:9369 with SMTP id q12-20020a0565123a8c00b005113c069369mr5636045lfu.12.1707317034249;
-        Wed, 07 Feb 2024 06:43:54 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUachyilhvlHEjsVwJMeBzkiDQhENc3Bye+vX++KgSwJ84OZvU6Yn2hYl1d131eryb7VCWC3dLn/rNctAbYxItdn4C60J1cyShJBqrN91EZkS/qPUX85NIjsPJxGVlyMLSs+FWpx9TgPzx3Rxm/La4SJoxYts6rog0uyZpIp1AEj9VmTGNx17blpL0Wr9wgyUbvg9GQQYVMrItn8pVSrr8D65SIqBVZ4EThM8Off2VwBX7PkONCdEsFPLg5kIHI11sumNlLDcvCGaH8akvJ8LpcN2AxCEkHNcIPP+0kzetbtKj+7WriWpcX4DcEGRm28LDjgHaIPKRfIfLiZ3sCgEwsU4cdF0sCUysAGWDlxVL+yB1MLQKSphVzhOUYqr1Kbq4BoRvpzedEGsZk0aJkI9iGNE67D4bMsQ+VTRrfztC+f//9b8dDhAlmxzQoC2Wy6XqPX6AOJKEn+xy9U3SJAG233ZOLsuYjptbU
-Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id yr2-20020a170907334200b00a379ef08ecbsm830951ejb.74.2024.02.07.06.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Feb 2024 06:43:53 -0800 (PST)
-Date: Wed, 7 Feb 2024 15:43:52 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Sreenath Vijayan <sreenath.vijayan@sony.com>
-Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
-	senozhatsky@chromium.org, linux-doc@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AQgYnpnK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707317236; x=1738853236;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xjOZdcyS1ieJ1WHIh+k+fjd7wcu4iF6GD+F5MUqFzP0=;
+  b=AQgYnpnKXFaWf3ZsC9waoWOCYll9/1Bjy9i7QNb2o11nsP+8zXUV98tX
+   9XHQsk8IdvU/CBABhczp27sktC6jPy+OTYss/lLOlX6hguUaET5te/QMo
+   /qQgnjVJ35RoUzH10dPGud3+PenFvMjx46UvE+eLWBjaHeR6nfn6oEJBi
+   yLfJivqP88pwvGPWR76Oq+IbwETl6ISH57cnNOu/4tU+slOWwbNdjGwnO
+   eIr+xVl079+Y5YriEzN/CkPp9NkW5MbrGJAHtPb79sWaxTZzwdDmucb3y
+   +HwMP/NuaGvrQg6rydQ+ev/wMmpWMymOKVxrGQPQXf1LNWhGpX5Ei4MSC
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="4866458"
+X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
+   d="scan'208";a="4866458"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 06:47:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="910010065"
+X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
+   d="scan'208";a="910010065"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 06:47:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rXjCf-00000002dEL-0rBY;
+	Wed, 07 Feb 2024 16:47:09 +0200
+Date: Wed, 7 Feb 2024 16:47:08 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: yangyicong@hisilicon.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, tony@atomide.com,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-	anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH v4 1/2] printk: Add function to dump printk buffer
- directly to consoles
-Message-ID: <ZcOXEyPsRnfewb4Y@alley>
-References: <cover.1706772349.git.sreenath.vijayan@sony.com>
- <8cb5936021c5811bd03a6bc18300b1384009ac26.1706772349.git.sreenath.vijayan@sony.com>
+	john.ogness@linutronix.de, tglx@linutronix.de, linuxarm@huawei.com,
+	prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
+	fanghao11@huawei.com
+Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
+Message-ID: <ZcOX7CXecf6pXvEW@smile.fi.intel.com>
+References: <20240206073322.5560-1-yangyicong@huawei.com>
+ <ZcIvjC1qzD4atwlT@smile.fi.intel.com>
+ <9e3d8daf-6715-bb37-125a-4141a9460417@huawei.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,160 +66,101 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8cb5936021c5811bd03a6bc18300b1384009ac26.1706772349.git.sreenath.vijayan@sony.com>
+In-Reply-To: <9e3d8daf-6715-bb37-125a-4141a9460417@huawei.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu 2024-02-01 15:53:40, Sreenath Vijayan wrote:
-> It is useful to be able to dump the printk buffer directly to
-> consoles in some situations so as to not flood the buffer.
+On Wed, Feb 07, 2024 at 03:22:17PM +0800, Yicong Yang wrote:
+> On 2024/2/6 21:09, Andy Shevchenko wrote:
+> > On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
 
-This is not longer true. I think that it was valid for
-the previous versions which used separate buffers with
-the kmsg_dump API.
+...
 
-> To do this, we reuse the CONSOLE_REPLAY_ALL mode code in
-> console_flush_on_panic() by moving the code to a helper function
-> console_rewind_all(). This is done because console_flush_on_panic()
-> sets console_may_schedule to 0 but this should not be done in our
-> case.
+> >> +		pm_runtime_mark_last_busy(dev);
+> > 
+> > Do you think we need to call this under a lock?
+> 
+> I just put this close to the ops->start_tx() where I used the device. Yes I have no
+> strong reason to put it in/with the lock region, but pm_runtime_mark_last_busy()
+> should be no costy and safe enough to put it in the spinlock region.
+> 
+> Any thoughts?
 
-Also the "c->seq = seq;" is not safe in the panic version.
-But it will be safe when called under the console_lock.
+As I mentioned before, moving it out makes it similar to the resume
+counterpart implementation.
 
-> Then console_rewind_all() is called from the new function
-> dump_printk_buffer() with console lock held to set the console
-> sequence number to oldest record in the buffer for all consoles.
-> Releasing the console lock will flush the contents of printk buffer
-> to the consoles.
+...
 
-My proposed commit message is:
+> > With the above I would rather write it as
+> > 
+> > static int __serial_port_busy(struct uart_port *port)
+> > {
+> > 	if (uart_tx_stopped(port))
+> > 		return 0;
+> > 
+> > 	if (uart_circ_chars_pending(&port->state->xmit)
+> > 		return -EBUSY;
+> 
+> I'm not sure but EBUSY seems not quite match here. EBUSY for
+> "Device or resource busy" so the device probably cannot be used
+> but we're testing whether the port is busy here. Hope I understand it
+> correctly.
 
-<proposal>
-Add a generic function for replaying the kernel log on consoles.
-It would allow seeing the the log on an unresponsive terminal
-via sysrq interface.
+Port is also "device" in the broader meaning. I don't see how this is
+problematic. Prototype is originally int (while returning boolean).
+I assume it was an idea behind similar (if not the same) as mine at
+some point, but then vanished. Yet, the function itself can be renamed
+to reflect these changes, like
+__serial_port_get_status() // 0 - idling, -EBUSY - busy
 
-Reuse the existing code from console_flush_on_panic() for
-reseting the sequence numbers. It will be safe when called
-under console_lock(). Also the console_unlock() will
-automatically flush the messages on the consoles.
+> > 	return 0;
+> > }
+> > 
+> > static int serial_port_runtime_suspend(struct device *dev)
+> > {
+> > 	int ret;
+> > 	...
+> > 	uart_port_lock_irqsave(port, &flags);
+> > 	ret = __serial_port_busy(port);
+> > 	if (ret)
+> > 		port->ops->start_tx(port);
+> > 	uart_port_unlock_irqrestore(port, flags);
+> > 
+> > 	if (ret)
+> > 		pm_runtime_mark_last_busy(dev);
+> > 
+> > 	return ret;
+> > }
+> > 
+> > It also seems aligned with the resume implementation above.
+> > 
+> > ...
+> > 
+> > For the consistency's sake the resume can be refactored as
+> > 
+> > static int serial_port_runtime_resume(struct device *dev)
+> > {
+> > 	...
+> > 	int ret;
+> > 	...
+> > 	ret = __serial_port_busy(port);
+> > 	if (ret)
+> > 	...
+> > }
+> > 
+> > but this can be done later.
+> > 
+> 
+> I agree the refactoring should go to a separate patch. But it doesn't seem
+> to be more simpler or readable comparing to the current implementation? Just
+> want to narrowing the spinlock region?
 
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3134,6 +3134,32 @@ void console_unblank(void)
->  		pr_flush(1000, true);
->  }
->  
+Yes, at bare minimum I would expect the PM call be moved out of a lock.
 
-I would call this function __console_rewind_all(void)
-because it is not safe on its own. Also It would
-deserve a comment, something like:
+As this seems a fix (and hence subject to backport) I would also minimize
+invasion.
 
-/*
- * Rewind all consoles to the oldest available record.
- *
- * IMPORTANT: The function is safe only when called under
- *            console_lock(). It is not enforced because
- *	      it is used as a best effort in panic().
- */
-static void __console_rewind_all(void)
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-This would deserve a comment because it is not safe by
-default.
-
-> +static void console_rewind_all(void)
-> +{
-> +	struct console *c;
-> +	short flags;
-> +	int cookie;
-> +	u64 seq;
-> +
-> +	seq = prb_first_valid_seq(prb);
-> +
-> +	cookie = console_srcu_read_lock();
-> +	for_each_console_srcu(c) {
-> +		flags = console_srcu_read_flags(c);
-> +
-> +		if (flags & CON_NBCON) {
-> +			nbcon_seq_force(c, seq);
-> +		} else {
-> +			/*
-> +			 * This is an unsynchronized assignment. On
-> +			 * panic legacy consoles are only best effort.
-> +			 */
-
-We should change this to something like:
-
-			/*
-			 * This assigment is safe only when called under
-			 * console_lock(). */
-			 */
-
-> +			c->seq = seq;
-> +		}
-> +	}
-> +	console_srcu_read_unlock(cookie);
-> +}
-> +
->  /**
->   * console_flush_on_panic - flush console content on panic
->   * @mode: flush all messages in buffer or just the pending ones
-> @@ -3162,30 +3188,8 @@ void console_flush_on_panic(enum con_flush_mode mode)
->  	 */
->  	console_may_schedule = 0;
->  
-> -	if (mode == CONSOLE_REPLAY_ALL) {
-> -		struct console *c;
-> -		short flags;
-> -		int cookie;
-> -		u64 seq;
-> -
-> -		seq = prb_first_valid_seq(prb);
-> -
-> -		cookie = console_srcu_read_lock();
-> -		for_each_console_srcu(c) {
-> -			flags = console_srcu_read_flags(c);
-> -
-> -			if (flags & CON_NBCON) {
-> -				nbcon_seq_force(c, seq);
-> -			} else {
-> -				/*
-> -				 * This is an unsynchronized assignment. On
-> -				 * panic legacy consoles are only best effort.
-> -				 */
-> -				c->seq = seq;
-> -			}
-> -		}
-> -		console_srcu_read_unlock(cookie);
-> -	}
-> +	if (mode == CONSOLE_REPLAY_ALL)
-> +		console_rewind_all();
->  
->  	console_flush_all(false, &next_seq, &handover);
->  }
-> @@ -4259,6 +4263,15 @@ void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
->  }
->  EXPORT_SYMBOL_GPL(kmsg_dump_rewind);
->  
-> +/**
-> + * Dump the printk ring buffer directly to consoles
-> + */
-> +void dump_printk_buffer(void)
-
-I would call this function console_replay_all(). IMHO, it better describes
-what it does.
-
-> +{
-> +	console_lock();
-> +	console_rewind_all();
-
-I would add a comment:
-
-	/* Consoles are flushed as part of console_unlock(). */
-
-> +	console_unlock();
-> +}
->  #endif
-
-Best Regards,
-Petr
