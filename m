@@ -1,63 +1,70 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F301E7C09D;
-	Wed,  7 Feb 2024 14:47:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA2B7F481
+	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 15:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707317237; cv=none; b=e22ti5fRkasDD1DzPHKqPzRK4kaagVrwXDbbPQBNzNxf9UoeX/9iEHFfQKY4JEKA0re+TvM9qTgEOqQOjNJb+QL9wpU7EpDEL5+uBwoueEDwnpyac14A/7qc5B2Ze3Z593X2d80jWjyRTgpkvLEDaVuP7jtEgrSsl6gpqCC85U0=
+	t=1707318580; cv=none; b=c/nt5MVYkGRuapDapx+nGNYYIB/R3BHuwQ0qNVRiVCNXe3N6DrcwzWMxJgSzm+MOKZnJ+2JHzO6nptdQ4zLqGdwdYxvzJYYIgMajTAewdZsHmij/dEOnxneRAT/YPgp7UnVysH/hBjrAlTfp++6zL49Rxv7PBjIX+dYgsSX6PWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707317237; c=relaxed/simple;
-	bh=xjOZdcyS1ieJ1WHIh+k+fjd7wcu4iF6GD+F5MUqFzP0=;
+	s=arc-20240116; t=1707318580; c=relaxed/simple;
+	bh=289HaGYyUFlSBzdgaJPiX1tdAh3koUayV8L35fXtBMQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ptEe57+ickNKTSXd/hM7a7nnY+mqDGcOC/Vj6mV8JVKs4HIEvE4parxziNjpQwPXkLe5QG2f180/7pg44idlZVcflDdDFS5GHqZNv3lGRgLQeFRI0nX4VZFXtOuKQUYDU7awwz9lA5cK0hc2fHiGOX2AWLMxnlW+7HUBvGg2PH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AQgYnpnK; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=eTTgN8S3t8YM1Lz/i0hHb9dfWZTLmcXf1RwHAsXrj9YOzQyaFqt45po6LPKr/m44kPstJmcJh6Zc0QhfVkABsA9Z1W+lUNVgvEzD7llzuzkrtRqJ26/RCKh0GpirbBvFN/CW2Wn3ybT41S4k8WSJvGHb5Rc+B8WqBgrE3sIl5UI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PY+GQVkB; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AQgYnpnK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707317236; x=1738853236;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xjOZdcyS1ieJ1WHIh+k+fjd7wcu4iF6GD+F5MUqFzP0=;
-  b=AQgYnpnKXFaWf3ZsC9waoWOCYll9/1Bjy9i7QNb2o11nsP+8zXUV98tX
-   9XHQsk8IdvU/CBABhczp27sktC6jPy+OTYss/lLOlX6hguUaET5te/QMo
-   /qQgnjVJ35RoUzH10dPGud3+PenFvMjx46UvE+eLWBjaHeR6nfn6oEJBi
-   yLfJivqP88pwvGPWR76Oq+IbwETl6ISH57cnNOu/4tU+slOWwbNdjGwnO
-   eIr+xVl079+Y5YriEzN/CkPp9NkW5MbrGJAHtPb79sWaxTZzwdDmucb3y
-   +HwMP/NuaGvrQg6rydQ+ev/wMmpWMymOKVxrGQPQXf1LNWhGpX5Ei4MSC
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="4866458"
-X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
-   d="scan'208";a="4866458"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 06:47:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="910010065"
-X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
-   d="scan'208";a="910010065"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 06:47:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rXjCf-00000002dEL-0rBY;
-	Wed, 07 Feb 2024 16:47:09 +0200
-Date: Wed, 7 Feb 2024 16:47:08 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Yicong Yang <yangyicong@huawei.com>
-Cc: yangyicong@hisilicon.com, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, tony@atomide.com,
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PY+GQVkB"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a389a3b9601so34924166b.1
+        for <linux-serial@vger.kernel.org>; Wed, 07 Feb 2024 07:09:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1707318577; x=1707923377; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3fOJyiQhDEQVM/OwkrnT+6+TKgKM76JkW083fWVVDBk=;
+        b=PY+GQVkBbwxWwZNCfwCthRubJa9T++UD1BCfRZdMnhgRuWB0As4VvOuMekPlhPwVHH
+         s+NMskSpxvlXsKzp0sCv+9SsErwtFOpIDfrmEhLRbLvsH7SEkG13VYhVUgQW+AbXsop0
+         mQjQttud987Oh5DIrHXZXoAQzSSnEGV7n6apJLh13NJX22EkfFrXsUv54ORBs1yfM7YJ
+         /vHcYbEJMKI9RsSlUvwOGPH4W7f76HYKeqX2UC/+0nzbCqozTFTHtxaBPdzlh2DpXazM
+         +9azSiI7vdi2Kmj/P5vtqO0kPJCGN/LIgTwmTL9bkq2QBmpoHij1hb9MnFrrOrs8o5Cs
+         gPlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707318577; x=1707923377;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3fOJyiQhDEQVM/OwkrnT+6+TKgKM76JkW083fWVVDBk=;
+        b=uPxm71luPvw7/5p97nv8EQeg2Qtr4S/lA3hVyVLUcXuWyyjjM9mZYrzMfWrKMoxfha
+         i9Mf06DaG0YuPEpP6bb2c9oY33JlUONnz1wiQGabqmfX2wXpDgopGH9/heFBel3L8ttX
+         XpSwDuHPAPY8uQYtpPVqtTfUvYWiWXSOwFOACJIfvnAjR/OFX1WlJIPLs9IVe+dYBuLi
+         0TwUgjjvqc4Tw/jBSBXIbv/GqbpXXSRPHLyIVQ3mmpGOWb2YlOG/q6V06bxWG4NQ1Lrp
+         ZkaqpiMO3zD28iYEl8hdMx/AwiP/rzhEQzI3ZofJ5QS4knidpPs4jiwrV0StOwvHAlG+
+         7kxQ==
+X-Gm-Message-State: AOJu0YydxlMktBILUvQLgj2HkDLCt1Fu0DenGHyPnA7bA9fksqgy1wv+
+	9MQFEGySRIM19+lbeOGuWT6k0yd9/Kp954qiZy+tZlR7yU52tTnxA6uRFuGiGfA=
+X-Google-Smtp-Source: AGHT+IEll9oUuMXPJPEKfzna/H4NBKn3iyg+La3JeQgNI7lqzBIfxefGwoDNHHhuwYO4qQW6EQqgRQ==
+X-Received: by 2002:a17:907:7803:b0:a34:96e9:f46c with SMTP id la3-20020a170907780300b00a3496e9f46cmr4162025ejc.31.1707318576821;
+        Wed, 07 Feb 2024 07:09:36 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUvxcgxBYzEwqY+Jl6A6mhH/kPpsJosFYLwZCqbchnZsHhP6c7ZxGSU2Pz3grVJ8cfjhumSW1VdAs+UJ7Ul6fU9s+A8UAlJhMYDdt5sCHZXd9AkWmm89A7S103tkhQ0bM9wY75FZeNX0J3e9OmLVhp5lX7s3NXsfoeD0jbChoB4GHnMC7EFZ09KXxuUag+NW2zXpd7bqdGZAQO0c5Ez/YDspt5lkcAoDjZdJJXG4Gan82yImyk3HveUAmh+IVRwaM9UxblyfwczOHmc4CSEqPIAGLoupgSWYtWvzbjXCRaR9AQXdG5d4IQIHvuwlzDnJIYTkZuZkXwsg5WUxAyMXlCDn/idLyxAzGsobpp+2fJXPKVCYSvRiibxgisv/q2wgrJ/QKOAwY0cS1PDQ+hccitcgvV2it8taIHfieBe/MRrQ54D4GGb0RkYECSF9EGJ3bo3LOJ1jC6QxXWNXbe8zCqFEYO22V2DwySm
+Received: from alley ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id cw9-20020a170907160900b00a388e24bd2fsm428980ejd.162.2024.02.07.07.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 07:09:36 -0800 (PST)
+Date: Wed, 7 Feb 2024 16:09:34 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Sreenath Vijayan <sreenath.vijayan@sony.com>
+Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
+	senozhatsky@chromium.org, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	john.ogness@linutronix.de, tglx@linutronix.de, linuxarm@huawei.com,
-	prime.zeng@hisilicon.com, jonathan.cameron@huawei.com,
-	fanghao11@huawei.com
-Subject: Re: [PATCH v2] serial: port: Don't suspend if the port is still busy
-Message-ID: <ZcOX7CXecf6pXvEW@smile.fi.intel.com>
-References: <20240206073322.5560-1-yangyicong@huawei.com>
- <ZcIvjC1qzD4atwlT@smile.fi.intel.com>
- <9e3d8daf-6715-bb37-125a-4141a9460417@huawei.com>
+	taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
+	anandakumar.balasubramaniam@sony.com
+Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
+ sysrq
+Message-ID: <ZcOdLrOPiPJmCec5@alley>
+References: <cover.1706772349.git.sreenath.vijayan@sony.com>
+ <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,101 +73,63 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9e3d8daf-6715-bb37-125a-4141a9460417@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
 
-On Wed, Feb 07, 2024 at 03:22:17PM +0800, Yicong Yang wrote:
-> On 2024/2/6 21:09, Andy Shevchenko wrote:
-> > On Tue, Feb 06, 2024 at 03:33:22PM +0800, Yicong Yang wrote:
+On Thu 2024-02-01 13:12:41, Sreenath Vijayan wrote:
+> When terminal is unresponsive, one cannot use dmesg to view printk
+> ring buffer messages. Also, syslog services may be disabled,
+> to check the messages after a reboot, especially on embedded systems.
+> In this scenario, dump the printk ring buffer messages via sysrq
+> by pressing sysrq+D.
 
-...
+I would use sysrq-R and say that it replays the kernel log on
+consoles.
 
-> >> +		pm_runtime_mark_last_busy(dev);
-> > 
-> > Do you think we need to call this under a lock?
-> 
-> I just put this close to the ops->start_tx() where I used the device. Yes I have no
-> strong reason to put it in/with the lock region, but pm_runtime_mark_last_busy()
-> should be no costy and safe enough to put it in the spinlock region.
-> 
-> Any thoughts?
+The word "dump" is ambiguous. People might thing that it calls
+dmesg dumpers.
 
-As I mentioned before, moving it out makes it similar to the resume
-counterpart implementation.
+Also the messages would be shown on the terminal only when
+console_loglevel is set to show all messages. This is done
+in __handle_sysrq(). But it is not done in the workqueue
+context.
 
-...
+Finally, the commit message should explain why workqueues are used
+and what are the limitations. Something like:
 
-> > With the above I would rather write it as
-> > 
-> > static int __serial_port_busy(struct uart_port *port)
-> > {
-> > 	if (uart_tx_stopped(port))
-> > 		return 0;
-> > 
-> > 	if (uart_circ_chars_pending(&port->state->xmit)
-> > 		return -EBUSY;
-> 
-> I'm not sure but EBUSY seems not quite match here. EBUSY for
-> "Device or resource busy" so the device probably cannot be used
-> but we're testing whether the port is busy here. Hope I understand it
-> correctly.
+<add>
+The log is replayed using workqueues. The reason is that it has to
+be done a safe way (in compare with panic context).
 
-Port is also "device" in the broader meaning. I don't see how this is
-problematic. Prototype is originally int (while returning boolean).
-I assume it was an idea behind similar (if not the same) as mine at
-some point, but then vanished. Yet, the function itself can be renamed
-to reflect these changes, like
-__serial_port_get_status() // 0 - idling, -EBUSY - busy
+This also means that the sysrq won't have the desired effect
+when the system is in so bad state that workqueues do not
+make any progress.
+</add>
 
-> > 	return 0;
-> > }
-> > 
-> > static int serial_port_runtime_suspend(struct device *dev)
-> > {
-> > 	int ret;
-> > 	...
-> > 	uart_port_lock_irqsave(port, &flags);
-> > 	ret = __serial_port_busy(port);
-> > 	if (ret)
-> > 		port->ops->start_tx(port);
-> > 	uart_port_unlock_irqrestore(port, flags);
-> > 
-> > 	if (ret)
-> > 		pm_runtime_mark_last_busy(dev);
-> > 
-> > 	return ret;
-> > }
-> > 
-> > It also seems aligned with the resume implementation above.
-> > 
-> > ...
-> > 
-> > For the consistency's sake the resume can be refactored as
-> > 
-> > static int serial_port_runtime_resume(struct device *dev)
-> > {
-> > 	...
-> > 	int ret;
-> > 	...
-> > 	ret = __serial_port_busy(port);
-> > 	if (ret)
-> > 	...
-> > }
-> > 
-> > but this can be done later.
-> > 
-> 
-> I agree the refactoring should go to a separate patch. But it doesn't seem
-> to be more simpler or readable comparing to the current implementation? Just
-> want to narrowing the spinlock region?
+Another reason might be that we do not want to do it in
+an interrupt context. But this reason is questionable.
+Many other sysrq commands do a complicate work and
+print many messages as well.
 
-Yes, at bare minimum I would expect the PM call be moved out of a lock.
+Another reason is that the function need to use console_lock()
+which can't be called in IRQ context. Maybe, we should use
+console_trylock() instead.
 
-As this seems a fix (and hence subject to backport) I would also minimize
-invasion.
+The function would replay the messages only when console_trylock()
+succeeds. Users could repeat the sysrq when it fails.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Idea:
 
+Using console_trylock() actually might be more reliable than
+workqueues. console_trylock() might fail repeatably when:
 
+    + the console_lock() owner is stuck. But workqueues would fail
+      in this case as well.
+
+    + there is a flood of messages. In this case, replaying
+      the log would not help much.
+
+Another advantage is that the consoles would be flushed
+in sysrq context with the manipulated console_loglevel.
+
+Best Regards,
+Petr
