@@ -1,58 +1,58 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F99782D6C;
-	Wed,  7 Feb 2024 17:24:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A182032C;
+	Wed,  7 Feb 2024 23:25:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707326651; cv=none; b=ivn4V6+N0zxipzJmm95+N5aUF8nF5CfT+SUjQWbO3+pV0hEMVIZhxCELVqHgpSGnD/X5sEu156ahh8VZPUhPC2azByfCFEwJhMfSknorEIPGQKSevbV9LA52Wmskc+FlaF0TKlRdGrlUIFfgC355e1my4tUvDwIc4f2akZHkyeQ=
+	t=1707348322; cv=none; b=hAtnTafb4wUQajK2OKR4cVSN6qF80tCKwM7LlS8QG+dzKF9V6GUO/uc3B8tzw9fRzg3fJwNPET5VS1EYKqALK56dRjIpanfJbJacB+wOU6+mEomtnbDBPPuAAS+H785Oe8IVsWmcK+QgnplLOqJUO7eUMj4eG3q0I78PD1Xozqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707326651; c=relaxed/simple;
-	bh=x5ppnwsf4pgCGz1yIwdCpgLN6d2nBaj7v+QHJdweFuk=;
+	s=arc-20240116; t=1707348322; c=relaxed/simple;
+	bh=X4SkoCpVYzmAbdWT963cLztid9DyxPv69M77p45tcCo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=msBAeduk2i2FYa0KvJlSMFZE1ylWoJlzOT2MH+tFOoKa10mJdGhMLMkTbv1zBEbUTjAgJxr6gFGmP1ITkowMY1hjJqQeDXFtmXA+3qiW8JH9mc7Chmwfv30y3n2Zw4GYGOMhRYYSCyI6lRhaEp23By9RCE+lZznQBWlUg2K0I8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X4oKTarT; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=FNmFmXhebSguTn1Dzk4KWK+WgBg+s60ohqntTP5co8t31pHKaRGgHxZ3m+BifXi7vQ7BbcQ8YUEbag9Dkpx/jmj2C30aAVEZKmnNZ5Xq28MyWXqpIAEqjzwtD2+X4JzaM19nnDKh/T+iH414L2O3EytHpmuZKm5v05THajVtjeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GOpF2ILk; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X4oKTarT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GOpF2ILk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707326649; x=1738862649;
+  t=1707348320; x=1738884320;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=x5ppnwsf4pgCGz1yIwdCpgLN6d2nBaj7v+QHJdweFuk=;
-  b=X4oKTarTWUHZhNvq8YFPpHtlpoADWeyGDEKwjEwKpiJLlFL5wg5oQRZ6
-   hxm9jHJYOnG1p4wr+USexSXf+2yLFP06JfRyVnvXyc86VzzIB5Okzanxc
-   H0iR9RvXXLsxChiON36XGFgmyQwpJiKEKm1mbKQKBtkhPQ+chVYlzI2al
-   NzT89PWgCcS0NYKz54VxTZWgOr6lztDrWG6D8ie1IKQ72ZYzUB+wRheTL
-   T57esk+lKBnaaULMt22yZC/9jFi0BuoZtPMTE5g37J+NlAv+If1zvvmuJ
-   kDpE7akn6gt2Q5KC4EmPrIo1IioCdpiZX2rjPx7GUUKZP9NHRvL6m6Jvh
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="23512961"
-X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
-   d="scan'208";a="23512961"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 09:24:08 -0800
+  bh=X4SkoCpVYzmAbdWT963cLztid9DyxPv69M77p45tcCo=;
+  b=GOpF2ILkwHyI6fBcogC1AYUplFFBu5Bu9x8NjjBsSmJch2tzfUJ0Qyeo
+   IRMBUcqvVawHFSCdAS5VbrK5/MLiJqNWqJQLKGQUEil08scA2qKJe4cyU
+   5eq+1ecPu2KhftCZ+UZZuCVvUz1Nhy9Eo/E15zi9ehu63UF3nUHT+JotI
+   AZ+B9kZKdkDcdEEZbhtWv/CZMzZaiBzRrTpWvd0KhS8DhhovZaCKC81XL
+   TYU4fOWYaCgZ8w55QkNL6AqCA/nHKJKqSeO2ccCMXjQUNZb4i/k2xWAjN
+   wQfUuOGKik7ZT1akGZGFruD6tgoD7/R2aTn2mTiR52qNmAdAn1TwxakkX
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="23579573"
+X-IronPort-AV: E=Sophos;i="6.05,252,1701158400"; 
+   d="scan'208";a="23579573"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 15:25:20 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
-   d="scan'208";a="32196969"
+X-IronPort-AV: E=Sophos;i="6.05,252,1701158400"; 
+   d="scan'208";a="38917118"
 Received: from lkp-server01.sh.intel.com (HELO 01f0647817ea) ([10.239.97.150])
-  by orviesa002.jf.intel.com with ESMTP; 07 Feb 2024 09:24:06 -0800
+  by orviesa001.jf.intel.com with ESMTP; 07 Feb 2024 15:25:18 -0800
 Received: from kbuild by 01f0647817ea with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rXleV-0002sS-1O;
-	Wed, 07 Feb 2024 17:24:03 +0000
-Date: Thu, 8 Feb 2024 01:23:53 +0800
+	id 1rXrI2-00038O-2L;
+	Wed, 07 Feb 2024 23:25:14 +0000
+Date: Thu, 8 Feb 2024 07:25:12 +0800
 From: kernel test robot <lkp@intel.com>
 To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
 Subject: Re: [PATCH 3/4] serial: sc16is7xx: split into core and I2C/SPI parts
  (sc16is7xx_lines)
-Message-ID: <202402080139.jQSw8VKg-lkp@intel.com>
+Message-ID: <202402080730.RUiQXpMA-lkp@intel.com>
 References: <20240206214208.2141067-4-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -74,28 +74,26 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Hugo-Villeneuve/serial-sc
 base:   52b56990d214c7403b20f691ac61861a37c0f0db
 patch link:    https://lore.kernel.org/r/20240206214208.2141067-4-hugo%40hugovil.com
 patch subject: [PATCH 3/4] serial: sc16is7xx: split into core and I2C/SPI parts (sc16is7xx_lines)
-config: i386-buildonly-randconfig-003-20240207 (https://download.01.org/0day-ci/archive/20240208/202402080139.jQSw8VKg-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240208/202402080139.jQSw8VKg-lkp@intel.com/reproduce)
+config: i386-randconfig-001-20240207 (https://download.01.org/0day-ci/archive/20240208/202402080730.RUiQXpMA-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240208/202402080730.RUiQXpMA-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202402080139.jQSw8VKg-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402080730.RUiQXpMA-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
->> drivers/tty/serial/sc16is7xx.c:1539:23: error: call to undeclared function 'find_and_set_bit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   drivers/tty/serial/sc16is7xx.c: In function 'sc16is7xx_probe':
+>> drivers/tty/serial/sc16is7xx.c:1539:37: error: implicit declaration of function 'find_and_set_bit'; did you mean 'test_and_set_bit'? [-Werror=implicit-function-declaration]
     1539 |                 s->p[i].port.line = find_and_set_bit(sc16is7xx_lines,
-         |                                     ^
-   drivers/tty/serial/sc16is7xx.c:1539:23: note: did you mean 'test_and_set_bit'?
-   include/asm-generic/bitops/instrumented-atomic.h:68:29: note: 'test_and_set_bit' declared here
-      68 | static __always_inline bool test_and_set_bit(long nr, volatile unsigned long *addr)
-         |                             ^
-   1 error generated.
+         |                                     ^~~~~~~~~~~~~~~~
+         |                                     test_and_set_bit
+   cc1: some warnings being treated as errors
 
 
-vim +/find_and_set_bit +1539 drivers/tty/serial/sc16is7xx.c
+vim +1539 drivers/tty/serial/sc16is7xx.c
 
   1462	
   1463	int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
