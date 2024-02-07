@@ -1,57 +1,58 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 619717C098
-	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 14:12:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD9C7C0AB
+	for <linux-serial@vger.kernel.org>; Wed,  7 Feb 2024 14:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707315136; cv=none; b=ZIhQhZDEehLTgMn+vU4X79DzVGyvaQqkBF20AHVK7k60gbXam2np2o7DaAvbz8NbMWhuehliHcsKjtakeDb0EOiFTwcleAcTC/jocFY9xI7CEOqgyUwQqRjEyCLqiYdCYYdo9+MqCuqEi5VRvDmzcnXcWeVBG1b3cAetVr6bmTE=
+	t=1707317039; cv=none; b=Ul4n+NHKUCui50ZhRgT4/oAqrOU3jh9DV0WG0Lz3YWId8ewLkIxPfm/6ZnMaeoaeRpoTXnR8Jou7v8O6y02WPt1mR3bw7UGpuUTT2+O8Vr2XzgQvhYB8ZUe2STis2cg4sWD0+KK4FpGLgsAuhUnD5u/VCkJoO6ev3VZV1rAH/lA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707315136; c=relaxed/simple;
-	bh=A59wshl7eo0HhYdJ5zAWlTa8zrJuvmVtrKRNgl8gKVw=;
+	s=arc-20240116; t=1707317039; c=relaxed/simple;
+	bh=fg1vK03qeyEYh8aWYY7ojoH+m10tqr1lJD/50h6YUrg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZATMKcf/sERHP+XX6xb4DC6lBiRYrXtWpjBko+QfZqGxn77YE8qvNys7TmDRMTZl2V1LaFoxDOq2B4PmW410Tu5jmKnnTpQFucj0/llS7Nsb9ptPCBt0Ki7TdeKIeUPxMIK9BxhR2sCbz6Uxkm0a0VAPu0jssWIS8fqVnBJUh6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=eg3tc4cS; arc=none smtp.client-ip=209.85.208.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=ELZs4PnpV/taivfiJj+hca628eDnzplZNhceLN/txnpQfI7anCjblaVq4ZFRHRZJVtBnGQ/peHgUF/TEt0AvtpqUpNtjjLZQvldrqMImeNqMlRcUONq0QyVRgfROP9is6W+IbraoT5aG4h+TxwU5OsHH7kzFWLtT+Us40MdbJ6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WIWcj1Sv; arc=none smtp.client-ip=209.85.167.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="eg3tc4cS"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2cf4fafa386so8441271fa.1
-        for <linux-serial@vger.kernel.org>; Wed, 07 Feb 2024 06:12:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WIWcj1Sv"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-511689cc22aso802523e87.0
+        for <linux-serial@vger.kernel.org>; Wed, 07 Feb 2024 06:43:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1707315132; x=1707919932; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1707317034; x=1707921834; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/sFTZ98VT12qZIsZV6SV4ds83O1z/KNolmGkjNhAwJs=;
-        b=eg3tc4cSybinY95doS9el+azgWLNix612LBSSnyOcBUH+RHaZeqXDfV0XiW0WSxuC6
-         HkSzYQYMh8FwhnbvkUuq+hXa+Udc9Zj9frVxWmn1Z4kRRFQfsmsZSxZJ7jFC8kUj834t
-         Dk2pay9Fx+XKjm7D1N/4IaiPA6FLg+y4MwC1aQvcqg2LA3ghWjJ0yFcr94JLHRSYrF0K
-         90CJbVFbuqy92Yc4cWP7op8fpmaTzaCOyx+Ck1BOu96djCG+4LIQtKIddyQ6fxrdnhjZ
-         URr8IXlY6llaEuFxl2fXM/QvfGycCkGJorRFEuTHh0QJEbnEp9h2oJSsii6Wc1cckiYs
-         C3Ng==
+        bh=ze9ZwLHA6Efy82qUcNxqthaSY7UMqDGuf7DhJv5BY3o=;
+        b=WIWcj1SvKlfzyaDRbb2cI/SL7OQAySx4g3jeiDUE5ld95631J0EO5nMCo8OTsu+xus
+         Cj7eqN+OAm2WgjmFZIHIvpTkvPH/wBbxKA9cPa8eIMo2jUxTwe1axS2hDTN7E6ONkhxs
+         U7Eyw/KLJDE7Z6J14RvirB5e7/va89EHvCygjSRN2Kww5TqjVJm8TN9GoqFU+Ty+vtzC
+         29twFWeGUSCGU9fvfcxeXk/eP6V25LXoZTLWvXSiTpuBOxO2THlEpnoujyEMaJuyknVM
+         qT7JTOT+HdPwE5NMvb5XpsFbxnZu6BoRMBVOtDI/9+jWZsQY4zGN20m4EKXAr+GxqhzR
+         nICg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707315132; x=1707919932;
+        d=1e100.net; s=20230601; t=1707317034; x=1707921834;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/sFTZ98VT12qZIsZV6SV4ds83O1z/KNolmGkjNhAwJs=;
-        b=Ie4J5OGqX6vJ0UH7SvC+QBTiMJr2b+SPhziYS0k09pCHUzpubzrL9U5X/dfeeHVuh+
-         zOyCZ4IrpipEAPMdy5QTBFKgwtxUniSNX5zo0FNBzLG8Yas5pEcyLdaBDsL9VzGxUT2d
-         YxUDKieZqbgZQzbqBLI9k1v39xaG3LZwn2q6HSYEnlvajkgYWCSyeyZasB6mQpegtIQk
-         ipcGMwXaXwOEl/3lmPTxqKViIHGwXvC9jv89kIIyJ1EGXBbsvBzAH1Gb7iupvXzKqBBL
-         kdPr+s0i4zJ/O0ufnLr3iZo4dRg3vRqAgShkBmNlX+O3YbLuJQN34vNDF+slg22kvI3c
-         W7LA==
-X-Gm-Message-State: AOJu0Yz4eV1ahNyq9y2XJ/5U+kKIaoz37A6iwq3G9DkP9JeGoSE9pzti
-	x6vrdxGPpe7ejfF94aoNlBHibkHZ1vrzwae29tWM9vtj8eMovFIZ7zNNzu0QTWw=
-X-Google-Smtp-Source: AGHT+IHPI/6TNW437JT4ZYNkYLwEgb/Bo0cxZJ0dxzcml09oskePxiL679oN3dh/NjYHKsnLv9rE7g==
-X-Received: by 2002:a05:651c:3cf:b0:2d0:b1ea:9a78 with SMTP id f15-20020a05651c03cf00b002d0b1ea9a78mr3747559ljp.31.1707315132366;
-        Wed, 07 Feb 2024 06:12:12 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUa53u/wbGwA/AA6SisHFZL8+YT/w/Xh3HdmPn38b3ygOJoGn8QQLuPKveBMDGXxt2xNk+NuqnXgXbwc7Q5NjeJigtPGtgUawvCOlQtFjkVWUbHNLkudj5cvFUqgteTtPZGpItrmFM7Q5wAuTCoe0U6TnBSPz/aet754ersCDiE7oO6/z2N58IBsG8mCEM6z8FrLdKkOz+cnxnF4vXIUAM5E8x+Xvh0JK98IL0oHSbN0jLCunM89GEgSoAOqB7pMtw+YAK4u21jV1ZD8j6a9JSB4Vne1UOkRWTH3VGcDeWFTr/6KYGIpLHsFk6nx5NzEPOb4pRyysY/GBLUpQJWegiNnkE+wFx99AFR2zq1+bc4FD45/q0Ymd3AJYngSmVOJBBBIu/qPnZLYcT8kQsPicQuCfy1xLEQf9hx1opWdSVQV9h6cbQLqgOR7JNAozMrL9nz/EsdxUH+HSZlCCR9t4WMiMwHn3tkkWwE
+        bh=ze9ZwLHA6Efy82qUcNxqthaSY7UMqDGuf7DhJv5BY3o=;
+        b=YRkivUc6Ltvr0ZT1hOqnRJ/F98FewYarIHv+t/UfL56Rcn/cvPNTVpIu9o+DOxonFK
+         CA1Zd2K6X6/nyH4cKUbJdfTbiNf3B82cAfQeNhqGyEG6FyfP5fKguji0EAQ/U+hmSCbt
+         jm3wXu1pr+uEMQR+XUndQRKh22//3uWk67Wb9fQ9UecZ0e7PqMSaMd+kHTWbvLInw4LH
+         LQ3xfRAwWFAkMeSXVFY+Yg3iP9/YbvgYdWpLBiL6wnIKnYmOGvBf8TzCM4Y819XrIJE2
+         pHKYyxgfm0zk+oQLjn8NW0Zxf2TP5p3a/UIVJPsJFR1VgoUhXm8tcZTPjTN4JKO7s8E8
+         3QgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWivoR9W5ynpZ9M5NCqiSVylVp9EU8wOmXXq8mNb/9Kbys0IzTIDzgvXathBj0h76zN7i2HBcf6VZdVTdH+m5w/WiaS+vTtKX+gS6xr
+X-Gm-Message-State: AOJu0YyVo5URcsxAjPfedu1u1/X8EdhHRQptqZYla0Yovr44TnZ9N7jI
+	cRFX5KszoVxLCFF788T3v9tGsSjw/XR2yhWtdBmk/14FeYyMDwm5J98CcLyvT80=
+X-Google-Smtp-Source: AGHT+IG5pkdkXWGfV8yAdTjYMkiAYADdm/5219hi0EkLm9dapJXsvHjrWMaM24YHXyYPuiHR4deIvA==
+X-Received: by 2002:a05:6512:3a8c:b0:511:3c06:9369 with SMTP id q12-20020a0565123a8c00b005113c069369mr5636045lfu.12.1707317034249;
+        Wed, 07 Feb 2024 06:43:54 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUachyilhvlHEjsVwJMeBzkiDQhENc3Bye+vX++KgSwJ84OZvU6Yn2hYl1d131eryb7VCWC3dLn/rNctAbYxItdn4C60J1cyShJBqrN91EZkS/qPUX85NIjsPJxGVlyMLSs+FWpx9TgPzx3Rxm/La4SJoxYts6rog0uyZpIp1AEj9VmTGNx17blpL0Wr9wgyUbvg9GQQYVMrItn8pVSrr8D65SIqBVZ4EThM8Off2VwBX7PkONCdEsFPLg5kIHI11sumNlLDcvCGaH8akvJ8LpcN2AxCEkHNcIPP+0kzetbtKj+7WriWpcX4DcEGRm28LDjgHaIPKRfIfLiZ3sCgEwsU4cdF0sCUysAGWDlxVL+yB1MLQKSphVzhOUYqr1Kbq4BoRvpzedEGsZk0aJkI9iGNE67D4bMsQ+VTRrfztC+f//9b8dDhAlmxzQoC2Wy6XqPX6AOJKEn+xy9U3SJAG233ZOLsuYjptbU
 Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id f1-20020aa7d841000000b00560cd4f3098sm697735eds.95.2024.02.07.06.12.11
+        by smtp.gmail.com with ESMTPSA id yr2-20020a170907334200b00a379ef08ecbsm830951ejb.74.2024.02.07.06.43.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Feb 2024 06:12:11 -0800 (PST)
-Date: Wed, 7 Feb 2024 15:12:09 +0100
+        Wed, 07 Feb 2024 06:43:53 -0800 (PST)
+Date: Wed, 7 Feb 2024 15:43:52 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: Sreenath Vijayan <sreenath.vijayan@sony.com>
 Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
@@ -60,10 +61,11 @@ Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
 	anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH v4 0/2] Add support to dump printk buffer to console via
- sysrq
-Message-ID: <ZcOPuTK4gPsDJjg8@alley>
+Subject: Re: [PATCH v4 1/2] printk: Add function to dump printk buffer
+ directly to consoles
+Message-ID: <ZcOXEyPsRnfewb4Y@alley>
 References: <cover.1706772349.git.sreenath.vijayan@sony.com>
+ <8cb5936021c5811bd03a6bc18300b1384009ac26.1706772349.git.sreenath.vijayan@sony.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,35 +74,160 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1706772349.git.sreenath.vijayan@sony.com>
+In-Reply-To: <8cb5936021c5811bd03a6bc18300b1384009ac26.1706772349.git.sreenath.vijayan@sony.com>
 
-Hi,
+On Thu 2024-02-01 15:53:40, Sreenath Vijayan wrote:
+> It is useful to be able to dump the printk buffer directly to
+> consoles in some situations so as to not flood the buffer.
 
-first, I am sorry for joining the game so late. I was sick
-and have had a lot of pending tasks after Christmas's holidays
-and the sickness.
+This is not longer true. I think that it was valid for
+the previous versions which used separate buffers with
+the kmsg_dump API.
 
-On Thu 2024-02-01 13:12:39, Sreenath Vijayan wrote:
-> Hi,
-> 
-> This patch series enables one to dump the messages in printk ring
-> buffer unless all CPUs are locked up. This is useful to view the
-> kernel messages when terminal is unresponsive to enter commands
-> like dmesg and syslog services are also disabled, especially on
-> embedded targets.
+> To do this, we reuse the CONSOLE_REPLAY_ALL mode code in
+> console_flush_on_panic() by moving the code to a helper function
+> console_rewind_all(). This is done because console_flush_on_panic()
+> sets console_may_schedule to 0 but this should not be done in our
+> case.
 
-What is the exact scenario for this feature, please?
+Also the "c->seq = seq;" is not safe in the panic version.
+But it will be safe when called under the console_lock.
 
-IMHO, rewinding the entire log on an unresponsive terminal
-has a questionable value. Most messages would scroll down
-quickly and only the last messages would stay visible.
+> Then console_rewind_all() is called from the new function
+> dump_printk_buffer() with console lock held to set the console
+> sequence number to oldest record in the buffer for all consoles.
+> Releasing the console lock will flush the contents of printk buffer
+> to the consoles.
 
-Also this code would rewind all consoles, including
-(slow) serial ones. I wonder if rewind on these consoles
-would be useful as well.
+My proposed commit message is:
 
-That said, I am not completely against this feature.
-I just want to be sure that it does what you expect.
+<proposal>
+Add a generic function for replaying the kernel log on consoles.
+It would allow seeing the the log on an unresponsive terminal
+via sysrq interface.
+
+Reuse the existing code from console_flush_on_panic() for
+reseting the sequence numbers. It will be safe when called
+under console_lock(). Also the console_unlock() will
+automatically flush the messages on the consoles.
+
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3134,6 +3134,32 @@ void console_unblank(void)
+>  		pr_flush(1000, true);
+>  }
+>  
+
+I would call this function __console_rewind_all(void)
+because it is not safe on its own. Also It would
+deserve a comment, something like:
+
+/*
+ * Rewind all consoles to the oldest available record.
+ *
+ * IMPORTANT: The function is safe only when called under
+ *            console_lock(). It is not enforced because
+ *	      it is used as a best effort in panic().
+ */
+static void __console_rewind_all(void)
+
+
+This would deserve a comment because it is not safe by
+default.
+
+> +static void console_rewind_all(void)
+> +{
+> +	struct console *c;
+> +	short flags;
+> +	int cookie;
+> +	u64 seq;
+> +
+> +	seq = prb_first_valid_seq(prb);
+> +
+> +	cookie = console_srcu_read_lock();
+> +	for_each_console_srcu(c) {
+> +		flags = console_srcu_read_flags(c);
+> +
+> +		if (flags & CON_NBCON) {
+> +			nbcon_seq_force(c, seq);
+> +		} else {
+> +			/*
+> +			 * This is an unsynchronized assignment. On
+> +			 * panic legacy consoles are only best effort.
+> +			 */
+
+We should change this to something like:
+
+			/*
+			 * This assigment is safe only when called under
+			 * console_lock(). */
+			 */
+
+> +			c->seq = seq;
+> +		}
+> +	}
+> +	console_srcu_read_unlock(cookie);
+> +}
+> +
+>  /**
+>   * console_flush_on_panic - flush console content on panic
+>   * @mode: flush all messages in buffer or just the pending ones
+> @@ -3162,30 +3188,8 @@ void console_flush_on_panic(enum con_flush_mode mode)
+>  	 */
+>  	console_may_schedule = 0;
+>  
+> -	if (mode == CONSOLE_REPLAY_ALL) {
+> -		struct console *c;
+> -		short flags;
+> -		int cookie;
+> -		u64 seq;
+> -
+> -		seq = prb_first_valid_seq(prb);
+> -
+> -		cookie = console_srcu_read_lock();
+> -		for_each_console_srcu(c) {
+> -			flags = console_srcu_read_flags(c);
+> -
+> -			if (flags & CON_NBCON) {
+> -				nbcon_seq_force(c, seq);
+> -			} else {
+> -				/*
+> -				 * This is an unsynchronized assignment. On
+> -				 * panic legacy consoles are only best effort.
+> -				 */
+> -				c->seq = seq;
+> -			}
+> -		}
+> -		console_srcu_read_unlock(cookie);
+> -	}
+> +	if (mode == CONSOLE_REPLAY_ALL)
+> +		console_rewind_all();
+>  
+>  	console_flush_all(false, &next_seq, &handover);
+>  }
+> @@ -4259,6 +4263,15 @@ void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
+>  }
+>  EXPORT_SYMBOL_GPL(kmsg_dump_rewind);
+>  
+> +/**
+> + * Dump the printk ring buffer directly to consoles
+> + */
+> +void dump_printk_buffer(void)
+
+I would call this function console_replay_all(). IMHO, it better describes
+what it does.
+
+> +{
+> +	console_lock();
+> +	console_rewind_all();
+
+I would add a comment:
+
+	/* Consoles are flushed as part of console_unlock(). */
+
+> +	console_unlock();
+> +}
+>  #endif
 
 Best Regards,
 Petr
