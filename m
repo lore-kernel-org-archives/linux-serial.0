@@ -1,120 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1D536BFC2;
-	Thu,  8 Feb 2024 10:18:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE77969300;
+	Thu,  8 Feb 2024 13:39:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707387518; cv=none; b=RExouByf9IVe7f3andPuMgQJBbTVFKQtoAUGMxW0MaAXq3MCeqGwEfMdnk1/I6CKFVKOsOoKvO9F+oKfzcYSwm+FIraBCqJUAIE3o+MWKM0vjM74uWhHiHbBRdUQFFlEK45rARwk4QpFGIdik46TiUtMxOUKJxnNkyhlQEGk/T8=
+	t=1707399598; cv=none; b=EUeFYaJmWyvarFqWHbfBqxxsZ274qHdpiURAsGq9iHDHhnhg6e7SNs9nJgPcc5TqL4mAd78rNAn7rNefEsAz/CGuyUDbaJHAxzASpQbivl/VXd1w1xzXo7iuoV6WEcTjhOG1ZvcNrvI1z2vlAWMdILl6BpcNr0hF3Y49UrmxjuQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707387518; c=relaxed/simple;
-	bh=uhvalGSkL3ej/pnChIRBm8dpvY069eIscLpqr/mfNjM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hJMnAbWFv+6h8QP/6uXjVKD4K4WvEouVBqTmdUjgPdSTttE4mPYJDGNo73vdhC2PYD5KE8cqbnCO9+004Yp27r2kDFIHBvK5Wj1hhXnr5gmREiQiQZUmJCAwHvysPvWlG+fm6o2uinOush8HbEidWq3uAE1KLBFh1FWJ3p/oD2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=C76K69iN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707399598; c=relaxed/simple;
+	bh=GAQvZFPGVkGIRHn+TfnYrCD/18BFSOgL0xVQMh03f7Q=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=F/vCsIPUHS/j5Bctc/V/xavVIjlOXg3Tt37h4mTgzC4TUVkgMqGfxDakA+eZH5GkDXcs08TpojCm+LJknxQ3ry7dXXOKrUnOHtIyzltUZ1Dtq84FfqFQfy2ISDbfY7W/63vVOd5BC74pJcUQb2tGUm1QAhfiV/ppoKl060N0BWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=iJke3Ccm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Y2wIRbRb; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="C76K69iN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88635C433F1;
-	Thu,  8 Feb 2024 10:18:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707387518;
-	bh=uhvalGSkL3ej/pnChIRBm8dpvY069eIscLpqr/mfNjM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=C76K69iNT1RPa3juo5uWTFrboEuHrqgEw71QgP8AG9z6A+XLj9N8CsuxN+ouMcMFl
-	 emRZGF8bxvsvczRwYW7qd8intl0G2z9uYZgSi5Qgv85epKaWTQ6IBI3ERkVWXbXvrb
-	 1drZVUAoJjI1k466fauUMSU0TM8IQaH8vtVHFVXc=
-Date: Thu, 8 Feb 2024 10:18:35 +0000
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sreenath Vijayan <sreenath.vijayan@sony.com>, john.ogness@linutronix.de,
-	corbet@lwn.net, jirislaby@kernel.org, rdunlap@infradead.org,
-	rostedt@goodmis.org, senozhatsky@chromium.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
-	daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="iJke3Ccm";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Y2wIRbRb"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1707399594;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JHDIQzkGG+MPwKNeQEZx8vGwHDj28JgeiF1oIt02Zz8=;
+	b=iJke3CcmBJMtWum8U7gZsj4lHvZ7Z1HEwpCpjS5J6VZV/416zRHLSESuKSLlVApH9xlhXh
+	w0Ak3425v8+HR6ct9inEZeoa9HRszriudVsxIbNId8Jo1N+rwNXidLQADuIVgvzCdPlNts
+	bJqc+71IT7NGwdGDuaN5N6cDDzgLwAgDpjNC6S4orLxCQRQ3dLDQGyhfmls6bDSDITHz/V
+	1Awd/WgChIrUxjjQAe7tnOnTBuKXuf3EuFrK74GzPTEWqo7zgeI1Z6imUuHCcWUry/YEig
+	HY/iS6bzhyp09nsQGFL8lqm98jQW444z/4rncqLfVDBPxh7tc0p83Ig3AyV8TQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1707399594;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JHDIQzkGG+MPwKNeQEZx8vGwHDj28JgeiF1oIt02Zz8=;
+	b=Y2wIRbRbEDvbBO2IyXfdji8e+QXRZPCsQg1+nF7w/n2BZeNn3qvKdVdXSv9kiDq+XqMcZb
+	NY7+ruHKvCgQJhBA==
+To: Greg KH <gregkh@linuxfoundation.org>, Petr Mladek <pmladek@suse.com>
+Cc: Sreenath Vijayan <sreenath.vijayan@sony.com>, corbet@lwn.net,
+ jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
+ senozhatsky@chromium.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
+ anandakumar.balasubramaniam@sony.com
 Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
  sysrq
-Message-ID: <2024020845-antiquely-faculty-407d@gregkh>
+In-Reply-To: <2024020845-antiquely-faculty-407d@gregkh>
 References: <cover.1706772349.git.sreenath.vijayan@sony.com>
  <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
- <ZcOdLrOPiPJmCec5@alley>
+ <ZcOdLrOPiPJmCec5@alley> <2024020845-antiquely-faculty-407d@gregkh>
+Date: Thu, 08 Feb 2024 14:45:43 +0106
+Message-ID: <87v86zt6qo.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZcOdLrOPiPJmCec5@alley>
+Content-Type: text/plain
 
-On Wed, Feb 07, 2024 at 04:09:34PM +0100, Petr Mladek wrote:
-> On Thu 2024-02-01 13:12:41, Sreenath Vijayan wrote:
-> > When terminal is unresponsive, one cannot use dmesg to view printk
-> > ring buffer messages. Also, syslog services may be disabled,
-> > to check the messages after a reboot, especially on embedded systems.
-> > In this scenario, dump the printk ring buffer messages via sysrq
-> > by pressing sysrq+D.
-> 
-> I would use sysrq-R and say that it replays the kernel log on
-> consoles.
-> 
-> The word "dump" is ambiguous. People might thing that it calls
-> dmesg dumpers.
-> 
-> Also the messages would be shown on the terminal only when
-> console_loglevel is set to show all messages. This is done
-> in __handle_sysrq(). But it is not done in the workqueue
-> context.
-> 
-> Finally, the commit message should explain why workqueues are used
-> and what are the limitations. Something like:
-> 
-> <add>
-> The log is replayed using workqueues. The reason is that it has to
-> be done a safe way (in compare with panic context).
-> 
-> This also means that the sysrq won't have the desired effect
-> when the system is in so bad state that workqueues do not
-> make any progress.
-> </add>
-> 
-> Another reason might be that we do not want to do it in
-> an interrupt context. But this reason is questionable.
-> Many other sysrq commands do a complicate work and
-> print many messages as well.
-> 
-> Another reason is that the function need to use console_lock()
-> which can't be called in IRQ context. Maybe, we should use
-> console_trylock() instead.
-> 
-> The function would replay the messages only when console_trylock()
-> succeeds. Users could repeat the sysrq when it fails.
-> 
-> Idea:
-> 
-> Using console_trylock() actually might be more reliable than
-> workqueues. console_trylock() might fail repeatably when:
-> 
->     + the console_lock() owner is stuck. But workqueues would fail
->       in this case as well.
-> 
->     + there is a flood of messages. In this case, replaying
->       the log would not help much.
-> 
-> Another advantage is that the consoles would be flushed
-> in sysrq context with the manipulated console_loglevel.
+On 2024-02-08, Greg KH <gregkh@linuxfoundation.org> wrote:
+> I just remembered all the rt-changes coming down the pipe for
+> consoles/printk, is this going to mess with that?
 
-I just remembered all the rt-changes coming down the pipe for
-consoles/printk, is this going to mess with that?
+It will not mess with the changes because we will continue to support
+the legacy consoles anyway.
 
-And in thinking about it, the workqueue is a worry, sysrq is only
-usually hit if you have a lockup, and this isn't going to work well
-here, if at all, in that situation.
+> So when this option fails when people need it the most, perhaps it's not
+> worth adding?  When else would people want to use it?
 
-So when this option fails when people need it the most, perhaps it's not
-worth adding?  When else would people want to use it?
+The feature could be massively improved once the rt-changes (atomic
+consoles) become available.
 
-thanks,
+Petr also brought up valid points about this feature (such as the
+loglevel) that should be considered. We should clarify what exactly we
+want this feature to do. The actual implementation is the easy part.
 
-greg k-h
+John
