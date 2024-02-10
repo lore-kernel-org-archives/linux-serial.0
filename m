@@ -1,157 +1,106 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E25F612DE;
-	Sat, 10 Feb 2024 21:53:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE8FD5FDC2
+	for <linux-serial@vger.kernel.org>; Sat, 10 Feb 2024 22:03:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707602035; cv=none; b=Znxb+DjdF+5rvXDJWy129mha3DhnXcVWAoSiL+3AlBSrf6DDpzSZvEY+hs8T+1hBMv3uwjh72eN6bBtS558o7nqe0MRqOx8mN1oWSNteNsy1IMoyRNkSMhGyM59lPQ6du23d4GpEFm4cHGcet/eQpqgLXLOMm2IeY8XgPLucClc=
+	t=1707602633; cv=none; b=Ae+NWGbdPJKHdIINtTNZo2Gi7op1y461B2rrjUSImXI/Palr+nhTnAWKgqAU5XwFrcQnvFezCOzX6qcNfuh8ndb4OjgYay2jgCVGsTGuap/K76YBGeGNNm+4N0Jmtq+m6Pv3fORjFNLAmHCHDWHPwx3swJyTfv/tkMVcpFnWEtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707602035; c=relaxed/simple;
-	bh=zEz90GX1NaC/1sawxLYuZ1ENoB1fBUSzM9OiDG4l96E=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=k2edn0VN9/DAS4stB7NKgYCOaE2+vZEWp6IvQnSaEyd+9Dcyxuc7ssX85bLcBW4LtJ6xdGs9EfqR1R4gLr3Gt3Vh0Af79J9X+7khuFYWL4vB42+2se8wp1ZASdMWj84x8gy51d7DGeRo8SzLGyzL4uhpf0ZEFBbuwm5bmj3JvQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d7e7IEk3; arc=none smtp.client-ip=209.85.167.52
+	s=arc-20240116; t=1707602633; c=relaxed/simple;
+	bh=hLmnNXrvbMNc5JxbNyHF5osHJhWyPyvIHRuzwIaryUE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lOj20DqXCu1o73u0fVTumcqyITxdDOZQtgPPrKGc/m1nT162Wm+4DCTohLDGbwg9Rhz5kr3lrCpKn5DZ4oz54Q3Cqoe2AQwi5UoI74OsblAgeq8HVB2yDatbVvhX8EuHl15w8BxzMmo3dkMIQ/SuvKZf1B6IfkQ5uOri1iE75fY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gZpCEoh1; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d7e7IEk3"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-51185c33626so499863e87.0;
-        Sat, 10 Feb 2024 13:53:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gZpCEoh1"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-33b28aadb28so1174122f8f.3
+        for <linux-serial@vger.kernel.org>; Sat, 10 Feb 2024 14:03:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1707602031; x=1708206831; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ocRkW8hKMfnTmReIZpRDWQim1hibbGos+/oExgJFVwc=;
-        b=d7e7IEk3Tb6vTzzFHVcmcu257aEaj9D4htLnGdvJ8Wvj+hBaW6B9nkJCmB3fTJCblO
-         bzPj9HRcH9AubPJePPEeP7Y+9U3OoCLBeCXnwIGOnMEBJusvHinJkuzpWtPT9FGkoJ+b
-         UNaKz+Dxrv9eG6PxY7orFc7A/pK7qyemwGE+7W6lqGZTQdN/CpQOjD5F7Yryr8F2jTfi
-         Dm6G9RfZqaUSMB/36n/UW2gCMNVDkmPIGrXUhRE6sm5YtgD751jrsBeUnW/iRjF7Es2q
-         aHuMGi12kmp3araHl3x4fAv1rH/NpnPyjlJMVtfTFcn2GuonxzqU9MVEZizjLhhHxGb/
-         8+Fg==
+        d=gmail.com; s=20230601; t=1707602630; x=1708207430; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qJMk4VOe8w/iZK5IGmLwHjbpqGC7v4wZlxxjo91BQxs=;
+        b=gZpCEoh1QSc/mpi+5NpAxu5FqwMj4Qm/OWqmkKOQ7nbkhd1F9uljp8ygFCw3DB6XfW
+         qMxFMk6IRM8KuZRh1OJIVozGxfAl5MntXm7UqoDGofOgXvpcxIvFWAK6o2gCjCcCUO6h
+         KGjeSVpr1NdYuDtuIwjoGobR4y/J5edSlNKvdA8z+d8BpInG9YZl2F8oAmBLVUeRMBam
+         6oKezrmIl6yeSz7V6V37VaLVyT5k+p9KP7H5kZotnO9zLmSW6J4ddJTKZNH/YAt+vk9I
+         oM2AvU3CYkWG+c2zLV0krLs7/GegZamAQNI9eCRSFSz0NwYfN0C36MV7VaxgUOHNlgp6
+         DZIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707602031; x=1708206831;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ocRkW8hKMfnTmReIZpRDWQim1hibbGos+/oExgJFVwc=;
-        b=rOP8u/VJSXvI0piH4EUz1kxlbGrFnIhtZkHQ+yVdnmLvM6kojtbK3F3KNAGtwja0NV
-         OJFTs6mLEOzmjPu9nJt9xxLG6yGidVsrQwJsipSmhnM8eCYlSRtoVaRSQ3cbUtOMLI6i
-         +Rt58JHXaCTVG9Dm9i8vchErYo4tPKMBgcJ1Gusm/dl6HbPjAO8jwaLmTpAxpFwHScRY
-         Mbxi/VJfuOfZ3uS+kdkD7JywfW4uFXUXxU9n/hdxEYD1dgj6wWkSsXoRgDr0oeJINZgQ
-         4xs7m92oNaky6PbtZEZKdvU19gFjMYD7dz0eArB6YiGrCcTwUGPg/i2iPu0AzhfuXjP6
-         a81w==
-X-Gm-Message-State: AOJu0Yw7QuFym8jw2Uga5SovWUz9Rpcuc5QkvLu7YUxmXC0kk7cu/Khn
-	I9poc4mRanaPiCvlPuw77FegyiYSfqoRLanCxkwvSxqdMgxCa2ag
-X-Google-Smtp-Source: AGHT+IH1G/GPCEZMmOHd0W54r9eeSAOb6vsJTlqzPST2fHZ7c37qvEZmVXnaIVNWWqF8h/S48dUXvg==
-X-Received: by 2002:a05:6512:12c7:b0:511:483b:91c6 with SMTP id p7-20020a05651212c700b00511483b91c6mr2449033lfg.48.1707602031347;
-        Sat, 10 Feb 2024 13:53:51 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVDCEPO8lOjIT51DzfX0Xk56jKN4j7BJTCDTbbgv/kjr9jS2Qb8UI5RVlegTY1z1aNzW5zhtij26w9ska0FnNIORTgrMFUhkdeU73HoaKq7E78ssCAL+TYVFwHZgiN2tkwDETrOtNfiZASzV5TsfqGlmnm1EkJAIjsHKpHCHEmFJSNTH3YJQTXaqVcFDZgmbiN8KAy/iJ0BBT20LsojD5/AOLKs6RjivygyScMKlIgadADWQc9bblL4g4K0DBj003uq/JH6n0S+JSJxlXYUQa4dd5haNHaAW6jh3o2LeAdv/ABrNbEKfIk2r0liYQ116ziFBB7QwyCAR28+Y/ui0jW3rBCijTBvcAh2S9dKS3uwn4FabEJMxQ==
-Received: from m2.. (89-139-223-180.bb.netvision.net.il. [89.139.223.180])
-        by smtp.googlemail.com with ESMTPSA id a7-20020a19ca07000000b0051189b53f93sm24005lfg.302.2024.02.10.13.53.49
+        d=1e100.net; s=20230601; t=1707602630; x=1708207430;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qJMk4VOe8w/iZK5IGmLwHjbpqGC7v4wZlxxjo91BQxs=;
+        b=Ehwzb7+1JVmTY2XVABZ+E4vDkE9Po4pbfJXKICEQMkMiR7FVbLo2J9YyC0+gqJPbaa
+         AX/PPNhYbIMSIpyNts62LsCtk5ywdJamPO/1d/xeEV9Kuo2AUDpNyi4JE+M9G9pxiUWa
+         gtXDvdzQUuss7RGzYlUiRfRAkHU/iJClb4VqMSiMSG5QNC5Qun9SbRHTQng6meWqBG1Z
+         cdIi0iKfy50Z3HWAhybe0tHz1SBodSx0M/GcNDh8ei+2wzg3pTWRuiBZjPTbYH07PP/3
+         8GOuvnRt3AA9Y0BJWdG848k6Bfn3ykwzN0M0U3wBMCbHtMyBpVNtjhEdffoMJ8o2UoEo
+         kGGw==
+X-Forwarded-Encrypted: i=1; AJvYcCW9EZWxL4Osvd/3B+oHxKkSL6cdy9FZjdunQW/le29abovFgj5+MFhViTWfAy9ozKcKANsirPMHcEVfzQftFl0HDmKqgq/o/rfKe16e
+X-Gm-Message-State: AOJu0Yy2u6CgJVzKTxYeSbEfGgzG1wD8ZEA5Sf71ffD+YkxRejuWlmw0
+	f8n3IPllw2zyBjlLk05W6wUTJBCRwRq7rs5GW8/ULagOPuboukp8
+X-Google-Smtp-Source: AGHT+IG1R4BMlcHSfKPiKEiU9iGz+UYYVh2OvA+kg2/wmQlsPa7hOMVKihK5aOBqaEGO6R0xwa0x/A==
+X-Received: by 2002:a5d:4987:0:b0:33b:3ad8:22c5 with SMTP id r7-20020a5d4987000000b0033b3ad822c5mr1798014wrq.68.1707602630004;
+        Sat, 10 Feb 2024 14:03:50 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVucgIu1mZoSfgkU2cUXYsn3GqpyKyYBvJhCNyrDvW+qjlh8Rzo8y+Zjy7iv39/De86QcvBA8NQasHX0NejpyIu7MzsYdSEkqCaoQRy4vxTr5DxIuXOsiJjeoSb25q1DG/322+1pq67HX/RqPsLyEUhUROZ6iGGUXt1L0BlMz/AGAxLP4qhL1cFPeAKjA0pIgMAhX15HPXhPq2mn0Hw/ilPRcathxwGS1Y3EEd7HaUGhoOor7pvu7P6qIFg+nsokJ2JCglyTuawV/JtM2rZT4qR+DKQiKs/WrN2Zl7QMpaBEW5PnmSqZfEQfby2MUwGgvzIxU+GEc8=
+Received: from m2 (89-139-223-180.bb.netvision.net.il. [89.139.223.180])
+        by smtp.gmail.com with ESMTPSA id r10-20020a056000014a00b0033b1c321070sm2779618wrx.31.2024.02.10.14.03.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Feb 2024 13:53:51 -0800 (PST)
+        Sat, 10 Feb 2024 14:03:49 -0800 (PST)
+Date: Sun, 11 Feb 2024 00:03:47 +0200
 From: Michael Zaidman <michael.zaidman@gmail.com>
-To: chrysh@christina-quast.de,
-	daniel.beer@igorinstitute.com,
-	jikos@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	ilpo.jarvinen@linux.intel.com,
-	johan@kernel.org,
-	gregkh@linuxfoundation.org,
-	equinox@diac24.net,
-	michael.zaidman@gmail.com
-Subject: [PATCH v1 19/19] hid-ft260: uart: improve write performance
-Date: Sat, 10 Feb 2024 23:51:47 +0200
-Message-Id: <20240210215147.77629-20-michael.zaidman@gmail.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20240210215147.77629-1-michael.zaidman@gmail.com>
-References: <20240210215147.77629-1-michael.zaidman@gmail.com>
+To: Christina Quast <chrysh@christina-quast.de>,
+	Jiri Kosina <jikos@kernel.org>
+Cc: daniel.beer@igorinstitute.com,
+	Christina Quast <contact@christina-quast.de>,
+	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
+	johan@kernel.org, gregkh@linuxfoundation.org,
+	David Lamparter <equinox@diac24.net>,
+	Michael Zaidman <michael.zaidman@gmail.com>
+Subject: Re: [PATCH v4 RESEND] hid-ft260: Add serial driver
+Message-ID: <Zcfyw+vjb+kNBnCC@m2>
+References: <Zab4g5PnwcaferE9@fermat.nev>
+ <Zag78CurQQGSLDW3@michael-VirtualBox>
+ <ZawT2Onn23CPMeWa@michael-VirtualBox>
+ <ZaxFkPY3W/5SFwh6@fermat.nev>
+ <ZazgFniD3qXGG1cY@michael-VirtualBox>
+ <ZbbQNEC8pWlkshgN@m2>
+ <ZbnoiUhM7sOt7/a6@fermat.nev>
+ <Zbpr531rSxCsDKck@m2>
+ <041c7445-fd59-4615-bb9a-7958b93113e8@christina-quast.de>
+ <ZbywCMJyHV8dGRSV@m2>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZbywCMJyHV8dGRSV@m2>
 
-Tx performance with the current buffer size of 256 bytes is lower when
-the data length exceeds the xmit buf size.
+On Fri, Feb 02, 2024 at 11:04:08AM +0200, Michael Zaidman wrote:
+> On Thu, Feb 01, 2024 at 02:03:25PM +0100, Christina Quast wrote:
+> > Hi Michael!
+> > 
+> > The FIXMEs should have been removed before submitting, sorry for that. They were just a reminder to myself to check the kfifo spinlocks.
+> > 
+> > The code looks good to me! What's the next steps? Should I include your uart related changes to the patch and resend it to the mailng list?
+> > 
+> 
 
-[134331.147978] ft260_uart_write: count: 288, len: 256
-[134331.157945] ft260_uart_write: count: 32, len: 32
-[134331.159977] ft260_uart_write: count: 288, len: 256
-[134331.169990] ft260_uart_write: count: 32, len: 32
+Hi Christina,
 
-1. Increase the xmit buffer size to page size as used in the serial core
-and other tty drivers.
+I did more testing and published the changes here
+https://lore.kernel.org/all/20240210215147.77629-1-michael.zaidman@gmail.com/
 
-2. Remove the xmit buffer fulness against the watermark checking and the
-tty_wakeup calling in the ft260_uart_transmit_chars routine. This code is
-taken from other drivers, but other drivers may call the routine from the
-interrupt context. In our case, this condition is always True since xmit
-buffer filling and emptying are serialized and done synchronously.
+Please review and meld them into the v5 patch.
 
-Tested with picocom ASCII file transfer by 288-byte chunks at 921600
-bauds rate with above 20% performance improvement.
-
-Before:
-2821.7 Kbytes transferred at 47367 CPS... Done.
-
-After:
-2821.7 Kbytes transferred at 57788 CPS... Done.
-
-Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
----
- drivers/hid/hid-ft260.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
-index 6b172bfa4f98..1188b8e09938 100644
---- a/drivers/hid/hid-ft260.c
-+++ b/drivers/hid/hid-ft260.c
-@@ -308,8 +308,7 @@ enum {
- #define FT260_UART_EN_PW_SAVE_BAUD	(4800)
- 
- #define UART_COUNT_MAX (4) /* Number of supported UARTs */
--#define XMIT_FIFO_SIZE (256)
--#define TTY_WAKEUP_WATERMARK (XMIT_FIFO_SIZE / 2)
-+#define XMIT_FIFO_SIZE (PAGE_SIZE)
- 
- static const struct hid_device_id ft260_devices[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_FUTURE_TECHNOLOGY,
-@@ -1211,7 +1210,7 @@ static int ft260_uart_transmit_chars(struct ft260_device *port)
- 
- 		len = kfifo_out_spinlocked(xmit, rep->data, len, &port->xmit_fifo_lock);
- 
--		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + sizeof(*rep));
-+		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + 2);
- 		if (ret < 0)
- 			goto tty_out;
- 
-@@ -1219,10 +1218,6 @@ static int ft260_uart_transmit_chars(struct ft260_device *port)
- 		port->icount.tx += len;
- 	} while (data_len > 0);
- 
--	len = kfifo_len(xmit);
--	if ((XMIT_FIFO_SIZE - len) > TTY_WAKEUP_WATERMARK)
--		tty_wakeup(tty);
--
- 	ret = 0;
- 
- tty_out:
-@@ -1546,7 +1541,7 @@ static int ft260_uart_port_activate(struct tty_port *tport, struct tty_struct *t
- 	if (baudrate > FT260_UART_EN_PW_SAVE_BAUD)
- 		ft260_uart_wakeup_workaraund_enable(port, true);
- 
--	ft260_dbg("configurd baudrate = %d", baudrate);
-+	ft260_dbg("configured baudrate = %d", baudrate);
- 
- 	mod_timer(&port->wakeup_timer, jiffies +
- 		  msecs_to_jiffies(FT260_WAKEUP_NEEDED_AFTER_MS));
--- 
-2.40.1
+Thanks,
+Michael
 
