@@ -1,68 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E38036774E;
-	Fri,  9 Feb 2024 10:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 398575C022;
+	Sat, 10 Feb 2024 21:52:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707474040; cv=none; b=NTvd0f19Gr5GjX2rcZs/WlmhTDSZ4TzrwkY36UOEFhVNYes6CvYXnkoz1wX6FDjYjNJNbjH2+MXlcFEruDT/8iJus4zKX4e8zpa+6arvFLv0OBb+mIbGeBPfAA8s/j7Ft1w5KOuYY+4LEw2lkaeRFN2qZy5syMFBsyp1sutF87k=
+	t=1707601957; cv=none; b=rhiqgo07sVk359A5hETrilPtbUGzSx+MeOCWo10/jVZS4mzXPxJapNN/DXRKLB6wdo/m04XBGvf/85RysF30O1Gghk8pXtdhX+3POSt/zw12c9k8L0vwO+wq+uwyoO3paOt9q+AY7ULYStocEx8Doc2ChFHVtqd/reUPDfGM+k8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707474040; c=relaxed/simple;
-	bh=4lgbDPmTsi0HF0ppwR3s76JThiYAeUNtCaOzdFBIPxQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Sa5RUnU9ojHpeMlWTTENrE+HlWTZED5RWYswXiasVXhrMs/pgomnjLeGp6hNPeOuSJ8yQfAroUvFmIUe0YLmbO0LI/JRE7gXIG9V0cq97valet6N1J8PeGmK+PFN8GJbz2sxoeuA1c+Qijt1GNcYNl9EluCW/RuBNbhoSH53OGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=oosSjFvC; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707601957; c=relaxed/simple;
+	bh=Ys1+3odTiU5YLEkSLRubYMf/IEMzPTkwTdS/Nel+O8k=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=HMiMRZPqAYbEYBm0cyYqMXgXypxrhxTCmy6SUHeR8fTGo2oUDsEERzS8UXvZKbdrZp2gs/FErpaDQin/B+CQZNErtbFQSi+quNCrvnXVCS3h3RYdqGAkZmWbfisx85woK3z2YtJgXoLDoLdbDQyBAZTr+8lWzrQ87CNj3Nhg1N0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sf3LnEpL; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oosSjFvC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B06C433F1;
-	Fri,  9 Feb 2024 10:20:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707474039;
-	bh=4lgbDPmTsi0HF0ppwR3s76JThiYAeUNtCaOzdFBIPxQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oosSjFvCtYMVZK5VNjKbI/h8k6RoXOGncXecgbTJW0Zjt9b1c0Rgsa/3QQgFQJH6S
-	 jiLcmsCYk4IualaYNeC+YPhjGxhv2QRyTw4kxADApFu01Wx/jXTkGZ52KC7roiYiIe
-	 KglyBDdE6Ccj8tkP++NxzHJEjhZRXX0Lg7f7bme0=
-Date: Fri, 9 Feb 2024 10:20:36 +0000
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Rengarajan.S@microchip.com, linux-serial@vger.kernel.org,
-	Kumaravel.Thiagarajan@microchip.com, linux-kernel@vger.kernel.org,
-	Tharunkumar.Pasumarthi@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Add Burst mode
- transmission support in uart driver for reading from FIFO
-Message-ID: <2024020916-barrette-okay-60f7@gregkh>
-References: <20240125100006.153342-1-rengarajan.s@microchip.com>
- <b8325c3f-bf5b-4c55-8dce-ef395edce251@kernel.org>
- <e7f29dd64829b597f3881abcf4da653156c1fe59.camel@microchip.com>
- <fa17f083805e46079bfb4ed89b83d372cfe7e77c.camel@microchip.com>
- <0c1e8d38-4b00-4738-bd05-7e36ce736681@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sf3LnEpL"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5116b540163so3043573e87.1;
+        Sat, 10 Feb 2024 13:52:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1707601954; x=1708206754; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LmCihYrQQrWYTreHIvikjN3i8HFfYK6bdj8vueCUR0A=;
+        b=Sf3LnEpLaSDbBhnXEAsf0s/64g7xc6Fe1eH+iwVw4r3EjJMjFocMlWCv8zLgd3G0Uc
+         JXXKkM3S1lubrRHDyC+T6KUeMaway3CFZNieIpv3UCS71SpIiZky4Ww7kYv7Uxfpm8Sk
+         HxYo3TtaR48ktyIIlL/0n0xx2+PfHAvgH1wmkNuJjQVO3Ub+N+CB4a8Qd50/pS/0Wpv0
+         8gfijPqh4LTA2g1m5ijq+Igcf2dpzLGGEa4mSc+yuUc3E0FRE+JYI189x6mrvfePUSh+
+         4GAuJW2VWTX/zI58+SHZ2Wjb2mNiuby3l7f4LWqlH0C+5LaU1l10JpHCqWkqbNX46GvP
+         ikQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707601954; x=1708206754;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=LmCihYrQQrWYTreHIvikjN3i8HFfYK6bdj8vueCUR0A=;
+        b=jQ4uWMdrXrgSsYcIkkNqS1eQjWQhD3WpLluoVA3Kd8zZ1n9lsbJWxqFVRVOFGOe+lQ
+         B0ph0PPMUMl/0PoFt9/NTmVVOlPW4dSxICpUdhSnfILBHovIts8scy32lA3iXIYh2SXC
+         6DZPeAsC8sAxD5/KQCc4E/n03r59Vq+uX1xpow+xEgioQNppPmDkXMKpRrJq0JOmoAFu
+         lw1XdLow40wQeMHumwA4GTmLcPZ9UZllAoYBiGT2e/4hgKsmFzpY/60FGMJ62w6KBcst
+         iXGHYcfwqyCyKRkSs8ci9QxU3HYd2wS6PBKlVbWrtW9zO+t7Q2/pOTgWX6bKqBiQYc5K
+         +SSw==
+X-Forwarded-Encrypted: i=1; AJvYcCXZpCIEvwDGtHc40xkYf4NEql6V6qtEdPxHMk7pWzW7zDk8VjzB9Lwldtpl5ULDifGHv9nSsGYAaV1VYqfTBTJJ1mG6+gXyv3+epiriyskSIOyr9f83z49FcvZcA8JqmGtCm4S90AZV6EM=
+X-Gm-Message-State: AOJu0YwW46Fnz1U4UeMuAedmJ6vpUE5j0qdCPn62ryZYnBQnmqc97PHz
+	jXTlws3+D3aLcJyvNGfy+5Tj29h/1wjy/JUUxz4I2wha/QWWGOtK
+X-Google-Smtp-Source: AGHT+IH2CP4Zj6CN+HgjYeEwvcCUyz1iGzkVAiHL9+6dGzOAf38xvhQTZCs/zh/jUGHoxfWZEFCr1g==
+X-Received: by 2002:a19:691c:0:b0:511:720b:6c93 with SMTP id e28-20020a19691c000000b00511720b6c93mr1361638lfc.27.1707601953906;
+        Sat, 10 Feb 2024 13:52:33 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUAc9M5DbfswW3g4ma45Q6szTF106PQ8Qs0T3p2yYo3Ss8KED7kJzMkicqo5YfovZ+3UadZUweVNzeI5fUHXR6z+bdkp84do/YV+UnPDx2MCXxEUkOUqaG5SPRmCTZG8o39Y7b/bx4aHv0oCnjckzDwF7TWI65VhUSEJUKAe+QoEsYVdBZFWbLf9/tZZiHnHe6/Fw9J9LQXyMCW5ES7EVKCHX2XigRoj2oPyfOOv6t+7Cx3kOJ4W8OpQVMyfN7y09Rjg5O/I5uvUSAWe80PkGBrkMRTOATOZO7oRotqUtUphIQf59r1/V3uh6SUpuOygFQdqoJ6KLqai/ThmTXDmN0iKx+xg5xbNRuOhL9+WGIxtoU7PIDSjg==
+Received: from m2.. (89-139-223-180.bb.netvision.net.il. [89.139.223.180])
+        by smtp.googlemail.com with ESMTPSA id a7-20020a19ca07000000b0051189b53f93sm24005lfg.302.2024.02.10.13.52.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Feb 2024 13:52:33 -0800 (PST)
+From: Michael Zaidman <michael.zaidman@gmail.com>
+To: chrysh@christina-quast.de,
+	daniel.beer@igorinstitute.com,
+	jikos@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	ilpo.jarvinen@linux.intel.com,
+	johan@kernel.org,
+	gregkh@linuxfoundation.org,
+	equinox@diac24.net,
+	michael.zaidman@gmail.com
+Subject: [PATCH v1 00/19] hid-ft260: Fixes for serial driver patch v4
+Date: Sat, 10 Feb 2024 23:51:28 +0200
+Message-Id: <20240210215147.77629-1-michael.zaidman@gmail.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c1e8d38-4b00-4738-bd05-7e36ce736681@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 09, 2024 at 07:38:49AM +0100, Jiri Slaby wrote:
-> On 09. 02. 24, 5:52, Rengarajan.S@microchip.com wrote:
-> > Hi Jiri Slaby,
-> > 
-> > The patch has been accepted and added in the tty-git tree and will be
-> > merged during the next merged window. Should the changes be given as a
-> > seperate incremental patch or should we re-submit this patch again.
-> 
-> Hi,
-> 
-> as you write, you cannot change the patch as it is already queued. PLease
-> submit changes on top.
+Modifications on top of "[PATCH v4 RESEND] hid-ft260: Add serial driver"
+https://lore.kernel.org/all/20231218093153.192268-1-contact@christina-quast.de/
 
-Or, if the original is so bad, we can revert them now and wait for new
-ones later, just let me know.
+They are mostly the fixes to the original v4 patch and should be melded into
+the v5 patch rather than upstreamed as separate patches.
 
-thanks,
+Michael Zaidman (19):
+  hid-ft260: fix incompatible-pointer-types error
+  hid-ft260: fix Wformat warning
+  hid-ft260: fix i2c driver regression in ft260_raw_event
+  hid-ft260: remove dead code in ft260_uart_receive_chars
+  hid-ft260: fix unprotected write_buf concurrent access
+  hid-ft260: uart: enable wakeup workaround
+  hid-ft260: depend wakeup workaround activation on uart baud rate
+  hid-ft260: depend wakeup workaround activation on eeprom config
+  hid-ft260: uart: wakeup device early to not lose rx data
+  hid-ft260: uart: do not configure baud rate twice
+  hid-ft260: uart: do not disable wakeup workaround twice
+  hid-ft260: uart: use kfifo_avail for fifo write room check
+  hid-ft260: improve usb interface type detection logic
+  hid-ft260: uart: cleanup and refactoring
+  hid-ft260: uart: remove FIXME for wake-up workaround
+  hid-ft260: uart: suppress unhandled report 0xb1 dmesg
+  hid-ft260: uart: arm wake-up timer unconditionally on tty session start
+  hid-ft260: uart: fix rx data loss after device reopening
+  hid-ft260: uart: improve write performance
 
-greg k-h
+ drivers/hid/hid-ft260.c | 330 ++++++++++++++++++++++------------------
+ 1 file changed, 185 insertions(+), 145 deletions(-)
+
+-- 
+2.40.1
+
