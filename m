@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F2195F491;
-	Tue, 13 Feb 2024 15:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CCD55F846;
+	Tue, 13 Feb 2024 15:56:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707839617; cv=none; b=k/WJm4+cvFvKbR9g6AcWwWpqEQ/IYhlCSonhosf8O6k+L7YJOLzXMXLqFo39CCX0LfxPznqb70P4N61M4Z4KojcJlqF+CtBlmPNfDEUxFqGCfecHOT/q3KXz2YaY3+/oXAcbsMIR3BQs3RzQVDk+EYwA3eqE6OSlQ+6ZXw/pmu0=
+	t=1707839797; cv=none; b=AwUaCVzOyrzvc+PEbXnVFbB/5cGhRBYy845Z8HzviCB7yc8O5bYfwzPgtSjZOrax7FtIFkKuuNypebW/fs+TTy8TxKRWSKnxdIuZJkrTfrlRj+JZ4bDkoUk4pJ4F/UVSUB6we2vH6umEjAkvsfNNhJYNTunI35lfVfXWQMyhxCk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707839617; c=relaxed/simple;
-	bh=FyA7j/DjLwdZDicaxICSIs/E+LoyuZykZwZXBepmzwc=;
+	s=arc-20240116; t=1707839797; c=relaxed/simple;
+	bh=PCShbNrnThKDCz7+yfYhrs+Gynx1qEZaMiqkRzVyOxA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CUyAF+XAXP8H59FNY6n76MYzXdvJzJBqMOcmaK/VXYuoAypQ5t7SHVjgtiBJ5lzET95T2g/CjhnPRqmF1P/disYoGRMymeyTgNkMhZkgvhczdbsyQnsmabDg0TFOIVEkIAdgbipSooT4wDoaFgxNRbwUDFLWKKezoXtLUtQPnBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j7EM3Q2q; arc=none smtp.client-ip=198.175.65.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=DZyFfNJ0oH9GNQpojQDGhKpN8KYePuQgcMhW/8p+diIIqtceMyRhEHFXjr0KhtRp6xfPfoSMf5qH6Zjt088H8m0LFmFJQqMqXNplwv3jttN73lNUJofy6CjQQdqqAAMKe7cds8ZXh/Q8lguzl9WiYe6HIEn2egYt0aDchsnkJQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XaizkOgR; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j7EM3Q2q"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XaizkOgR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707839615; x=1739375615;
+  t=1707839796; x=1739375796;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=FyA7j/DjLwdZDicaxICSIs/E+LoyuZykZwZXBepmzwc=;
-  b=j7EM3Q2qNzXJOvdZay5q6uqBDFMjvNPO7qDMoRfRK185zZKN3esNsDy7
-   j5nLLxmJ+4fcwGt12gevDwSkLzYc0PhoCFdB2zoPDVgjY4PbqlCwWnIq+
-   XuzUn3BxitKGjf+8mg6yIDisDYQRvyhztXre8z2Ze+qqstfhSPoyTnpGH
-   aGqFVylfhhR+4juyRPhlbO2GTZxnP0DPzZsiudPEZfgnN9+qW2GkiQQWy
-   jBy5X+kO8g9Q7wtIaZaFzbu/GnHttnH7gWjCgShK4OwDywQun8RRubDhS
-   x+RFJD4zzx/VQw4B+3w+rTNmAzIEpbzMGHjG7DU39ECrLS+jMh9dK8CYk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="12942894"
+  bh=PCShbNrnThKDCz7+yfYhrs+Gynx1qEZaMiqkRzVyOxA=;
+  b=XaizkOgRcoIjTZq4+oXM2D8iGzARsfj9sufl5j5pPVqInEE+3BJNUfsy
+   WDUTWpJgTUlcROMCnkn3bh6ub/WuhiGJ/ow0ftVSPTLNVuzaGqqCY6ijn
+   a+k0aPvp1z4R8+aV2Vg6XcmWUpCpHdSHIfYVJInZd77heZUujhxJ5aF2u
+   RPi7y4dOMBDELvREXeh1RsZA3dMZ54X2hPdxjkqqOqaTXUEH9GC2NTheo
+   umqwuORTaUJCQThEumDpBqCbBxVjUVoVhhTi40fkVVJ0I0c3Le8FmaWT/
+   kvGkKH0B6UqOJ66ql7o/0cRezNAgQ213NDmwY8vyIyzeuXzeeB1aiCdUy
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="1757705"
 X-IronPort-AV: E=Sophos;i="6.06,157,1705392000"; 
-   d="scan'208";a="12942894"
+   d="scan'208";a="1757705"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2024 07:53:31 -0800
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2024 07:56:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="911814661"
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="911816020"
 X-IronPort-AV: E=Sophos;i="6.06,157,1705392000"; 
-   d="scan'208";a="911814661"
+   d="scan'208";a="911816020"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2024 07:53:27 -0800
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2024 07:56:31 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rZv63-00000004G36-2bFB;
-	Tue, 13 Feb 2024 17:53:23 +0200
-Date: Tue, 13 Feb 2024 17:53:23 +0200
+	id 1rZv92-00000004G5o-1wON;
+	Tue, 13 Feb 2024 17:56:28 +0200
+Date: Tue, 13 Feb 2024 17:56:28 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Tony Lindgren <tony@atomide.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -59,11 +59,10 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 4/6] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
-Message-ID: <ZcuQc3frV99SKkXd@smile.fi.intel.com>
+Subject: Re: [PATCH v6 5/6] serial: core: Handle serial console options
+Message-ID: <ZcuRLBcXr7QQh3in@smile.fi.intel.com>
 References: <20240213084545.40617-1-tony@atomide.com>
- <20240213084545.40617-5-tony@atomide.com>
+ <20240213084545.40617-6-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,73 +71,50 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240213084545.40617-5-tony@atomide.com>
+In-Reply-To: <20240213084545.40617-6-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Tue, Feb 13, 2024 at 10:45:11AM +0200, Tony Lindgren wrote:
-> We can now add hardware based addressing for serial ports. Starting with
-> commit 84a9582fd203 ("serial: core: Start managing serial controllers to
-> enable runtime PM"), and all the related fixes to this commit, the serial
-> core now knows to which serial port controller the ports are connected.
+On Tue, Feb 13, 2024 at 10:45:12AM +0200, Tony Lindgren wrote:
+> In order to start moving the serial console quirks out of console_setup(),
+> let's add parsing for the quirks to the serial core layer. We can use
+> serial_base_add_one_prefcon() to handle the quirks.
 > 
-> The serial ports can be addressed with DEVNAME:0.0 style naming. The names
-> are something like 00:04:0.0 for a serial port on qemu, and something like
-> 2800000.serial:0.0 on platform device using systems like ARM64 for example.
-> 
-> The DEVNAME is the unique serial port hardware controller device name, AKA
-> the name for port->dev. The 0.0 are the serial core controller id and port
-> id.
-> 
-> Typically 0.0 are used for each controller and port instance unless the
-> serial port hardware controller has multiple controllers or ports.
-> 
-> Using DEVNAME:0.0 style naming actually solves two long term issues for
-> addressing the serial ports:
-> 
-> 1. According to Andy Shevchenko, using DEVNAME:0.0 style naming fixes an
->    issue where depending on the BIOS settings, the kernel serial port ttyS
->    instance number may change if HSUART is enabled
-> 
-> 2. Device tree using architectures no longer necessarily need to specify
->    aliases to find a specific serial port, and we can just allocate the
->    ttyS instance numbers dynamically in whatever probe order
-> 
-> To do this, let's match the hardware addressing style console name to
-> the character device name used, and add a preferred console using the
-> character device name.
-> 
-> Note that when using console=DEVNAME:0.0 style kernel command line, the
-> 8250 serial console gets enabled later compared to using console=ttyS
-> naming for ISA ports. This is because the serial port DEVNAME to character
-> device mapping is not known until the serial driver probe time. If used
-> together with earlycon, this issue is avoided.
+> Note that eventually we may want to set up driver specific console quirk
+> handling for the serial port device drivers to use. But we need to figure
+> out which driver(s) need to call the quirk. So for now, we just handle the
+> sparc quirk directly.
 
 ...
 
-> +int serial_base_add_preferred_console(struct uart_driver *drv,
-> +				      struct uart_port *port)
+> +static int serial_base_add_sparc_console(const char *dev_name, int idx)
 > +{
-> +	const char *port_match __free(kfree);
+> +	const char *name = NULL;
 
-= NULL
+Seems like redundant assignment.
 
-> +	int ret;
+> +	switch (idx) {
+> +	case 0:
+> +		name = "ttya";
+> +		break;
+> +	case 1:
+> +		name = "ttyb";
+> +		break;
+> +	default:
+> +		return 0;
+> +	}
 > +
-> +	ret = serial_base_add_prefcon(drv->dev_name, port->line);
-> +	if (ret)
-
-Otherwise here might be a problem.
-
-> +		return ret;
-
-> +	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
-> +			       port->ctrl_id, port->port_id);
-> +	if (!port_match)
-> +		return -ENOMEM;
-> +
-> +	/* Translate a hardware addressing style console=DEVNAME:0.0 */
-> +	return serial_base_add_one_prefcon(port_match, drv->dev_name, port->line);
+> +	return serial_base_add_one_prefcon(name, dev_name, idx);
 > +}
+
+...
+
+> +	/* Handle ttyS specific options */
+> +	if (str_has_prefix(name, "ttyS")) {
+
+Recently I have learnt that we have strstarts() which returns boolean and suits
+in cases like this. If you send a new version, you could switch to it.
+
+> +	}
 
 -- 
 With Best Regards,
