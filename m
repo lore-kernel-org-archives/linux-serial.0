@@ -1,131 +1,194 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9076024D;
-	Wed, 14 Feb 2024 15:55:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AA25C8FC;
+	Wed, 14 Feb 2024 16:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707926102; cv=none; b=IXbfysFMRzNJeRuHDJXIKMpAk6XzbC1dmwcwZIfsgqS5G+giRtWyEeFsyQl6T0pao5o4lyZ55yF++5E0OvKyspZXJD2R9une2fZmF6c/RI33mz3mrNQY9advbRI3y31xmBWdcaVG07MWiQfFo5tWd1WVLsk+XMCVzH1aDqqQrbk=
+	t=1707927362; cv=none; b=TJnoWdWK8IulI8tn292FEPARPhabNy6r3X6vsKjyxQX8FjmFSnOkgY92DCtfX6HsHCTZKyOpQ4zO4HK8kKP6B9Qmtj+gyzFX8hgZx5T8Nd41ksWNzAZDFaERr8PPvcccofp+ZZPfL06rKraD2z19Ebq4acEMxmgRtTP6mNOEBfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707926102; c=relaxed/simple;
-	bh=I5QmVlSxsPE/Gk4+HnD06ucKGeusZCkAT0pMy1rJFdk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nE+vTZTAV5yH8Eu85rN2Ncr/q3GZ5T9WXQA8shFZeYM5Afm6ZRip4fttGIkraKbn0VzY9yWBzSEKP/wF/SfE5pNvVV9WbESeXMG9XgxT7HtEg8sPDQSm9dw6SCsxh9UUAYyEZDc/gIvE5SQa5KmrmR7/CJOBhEBv7amR/7ngjwc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lvqkGmDf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707927362; c=relaxed/simple;
+	bh=1LEv6Ova+Z8khqle7qgHTwMJAqi9FazSaL1UQ9aqt4o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ash99T1gHATD+TvZeVwFuYojc9Ph08ZGStn5lxqklUcX8e289Sy+/p48PIUp3u1aEquBht8qBr824j0KnNpMB/VJIv9JoQXMFrwTuvCrtNrdCdQXZ7FTDqfWspcbPnTShorbVc+ibrKrahF7z5xCOf0Y3sCzXlti+6XI71XlWQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IF/oiU2m; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lvqkGmDf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00213C43399;
-	Wed, 14 Feb 2024 15:54:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707926102;
-	bh=I5QmVlSxsPE/Gk4+HnD06ucKGeusZCkAT0pMy1rJFdk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lvqkGmDfiWK0/udDnfCBRaDRe2kArttC6QTkDsM1BxGHPZTBnbzWYTP4veP3ZargP
-	 aa80u28eGTmb3HYZ6oGtKR65HcpjxycM1VMzPS4fYFTC0EbeI+rblhYH5Pxe8kkoTk
-	 piWqBbRlZ3WUN8Ur08uVW+pleZvBCYBuFxtDvJH0kTxKRxdrLHSaweAq9p/Ya8HFOM
-	 sD0nomU3aUbzp3g/hO/j9ABxNQ+PevDhv8jT7tFPC+GjPBI0HImRZV6jPzw3axLIAC
-	 CzUwM/eHkXlHKHd9XW1i4L3SQ30mWBeGeaEFgIOQeI9Ks+AjSmvK9B5bf7NlwGMfJr
-	 fmbaBGfW564vw==
-Date: Wed, 14 Feb 2024 15:54:57 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Palmer Dabbelt <palmer@rivosinc.com>
-Cc: linux-riscv@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>,
-	jirislaby@kernel.org, Atish Patra <atishp@rivosinc.com>,
-	ajones@ventanamicro.com, apatel@ventanamicro.com,
-	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Emil Renner Berthing <kernel@esmil.dk>
-Subject: Re: [PATCH] tty: hvc: Don't enable the RISC-V SBI console by default
-Message-ID: <20240214-impound-gumdrop-230d0725f5ce@spud>
-References: <20240214153429.16484-2-palmer@rivosinc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IF/oiU2m"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707927360; x=1739463360;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1LEv6Ova+Z8khqle7qgHTwMJAqi9FazSaL1UQ9aqt4o=;
+  b=IF/oiU2mPc6LFmtgy6syJW3B8L7Bn7fn5hL/o/MMz7R4qUJzMHz74IYA
+   SAwsed8droajK8RNDLrtmbTEbK8QxJpGSCJfljdxAFPsZC1K1ShuS25pU
+   XdtxXn+dTVSnGmtea8rZNXXLrYJEsqASem0RKCxNNGCJe+mlo5BHD1SBl
+   WZ9I+N4+IwbBrlmd4zJklzgBARg51P3qXqBaczgO8C+Nckl2rjIOxTk/9
+   DBfqKQgEDwPRrXgtHmcTOipvbHIs0AX37AB3aGjBkY3Axl5DUGZV95/a3
+   q8SRmL0fHXYowCa6/gJD8RhufkCd+Ypd0iRkHU75wUzXbn5UllGNECsmB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="27427899"
+X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
+   d="scan'208";a="27427899"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 08:15:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617078"
+X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
+   d="scan'208";a="935617078"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 08:15:57 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id C3928204; Wed, 14 Feb 2024 18:15:56 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 1/1] serial: 8250_of: Drop quirk fot NPCM from 8250_port
+Date: Wed, 14 Feb 2024 18:14:23 +0200
+Message-ID: <20240214161423.3452705-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ZpSavjsIcxHJ5llO"
-Content-Disposition: inline
-In-Reply-To: <20240214153429.16484-2-palmer@rivosinc.com>
+Content-Transfer-Encoding: 8bit
 
+We are not supposed to spread quirks in 8250_port module especially
+when we have a separate driver for the hardware in question.
 
---ZpSavjsIcxHJ5llO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Move quirk from generic module to the driver that uses it.
 
-On Wed, Feb 14, 2024 at 07:34:30AM -0800, Palmer Dabbelt wrote:
-> From: Palmer Dabbelt <palmer@rivosinc.com>
->=20
-> The new SBI console has the same problem as the old one: there's only
-> one shared backing hardware and no synchronization, so the two drivers
-> end up stepping on each other.  This was the same issue the old SBI-0.1
-> console drivers had, but that was disabled by default when SBI-0.1 was.
->=20
-> So just mark the new driver as nonportable.
->=20
-> Reported-by: Emil Renner Berthing <kernel@esmil.dk>
-> Fixes: 88ead68e764c ("tty: Add SBI debug console support to HVC SBI drive=
-r")
-> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_of.c   | 38 +++++++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c | 24 ------------------
+ 2 files changed, 38 insertions(+), 24 deletions(-)
 
-As was brought up when we covered this earlier today, if you're going to
-probe a driver based on an ecall, the same hardware should not remain
-enabled in the DT passed to the kernel.
-If you want to enable this driver in a multiplatform kernel alongside
-"real" drivers, then the solution is simple, firmware needs implementation
-needs to patch the DT and, at least, mark the uart as reserved if it is
-using it to provide the debug console. Marking this nonportable so that
-people only walk into this with their eyes open seems like a reasonable
-action to me.
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 34f17a9785e7..dc9792f919db 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -5,6 +5,7 @@
+  *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
+  */
+ #include <linux/console.h>
++#include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/serial_core.h>
+@@ -25,6 +26,36 @@ struct of_serial_info {
+ 	int line;
+ };
+ 
++/* Nuvoton NPCM timeout register */
++#define UART_NPCM_TOR          7
++#define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
++
++static int npcm_startup(struct uart_port *port)
++{
++	/*
++	 * Nuvoton calls the scratch register 'UART_TOR' (timeout
++	 * register). Enable it, and set TIOC (timeout interrupt
++	 * comparator) to be 0x20 for correct operation.
++	 */
++	serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
++
++	return serial8250_do_startup(port);
++}
++
++/* Nuvoton NPCM UARTs have a custom divisor calculation */
++static unsigned int npcm_get_divisor(struct uart_port *port, unsigned int baud,
++				     unsigned int *frac)
++{
++	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
++}
++
++static int npcm_setup(struct uart_port *port)
++{
++	port->get_divisor = npcm_get_divisor;
++	port->startup = npcm_startup;
++	return 0;
++}
++
+ /*
+  * Fill a struct uart_port for a given device node
+  */
+@@ -167,6 +198,13 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 		if (ret)
+ 			goto err_pmruntime;
+ 		break;
++	case PORT_NPCM:
++		ret = npcm_setup(port);
++		if (ret)
++			goto err_pmruntime;
++		break;
++	default:
++		break;
+ 	}
+ 
+ 	if (IS_REACHABLE(CONFIG_SERIAL_8250_FSL) &&
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index d59dc219c899..1942e57089dd 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -38,10 +38,6 @@
+ 
+ #include "8250.h"
+ 
+-/* Nuvoton NPCM timeout register */
+-#define UART_NPCM_TOR          7
+-#define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
+-
+ /*
+  * Debugging.
+  */
+@@ -2235,15 +2231,6 @@ int serial8250_do_startup(struct uart_port *port)
+ 				UART_DA830_PWREMU_MGMT_FREE);
+ 	}
+ 
+-	if (port->type == PORT_NPCM) {
+-		/*
+-		 * Nuvoton calls the scratch register 'UART_TOR' (timeout
+-		 * register). Enable it, and set TIOC (timeout interrupt
+-		 * comparator) to be 0x20 for correct operation.
+-		 */
+-		serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
+-	}
+-
+ #ifdef CONFIG_SERIAL_8250_RSA
+ 	/*
+ 	 * If this is an RSA port, see if we can kick it up to the
+@@ -2545,15 +2532,6 @@ static void serial8250_shutdown(struct uart_port *port)
+ 		serial8250_do_shutdown(port);
+ }
+ 
+-/* Nuvoton NPCM UARTs have a custom divisor calculation */
+-static unsigned int npcm_get_divisor(struct uart_8250_port *up,
+-		unsigned int baud)
+-{
+-	struct uart_port *port = &up->port;
+-
+-	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
+-}
+-
+ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
+ 					      unsigned int baud,
+ 					      unsigned int *frac)
+@@ -2598,8 +2576,6 @@ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
+ 		quot = 0x8001;
+ 	else if (magic_multiplier && baud >= port->uartclk / 12)
+ 		quot = 0x8002;
+-	else if (up->port.type == PORT_NPCM)
+-		quot = npcm_get_divisor(up, baud);
+ 	else
+ 		quot = uart_get_divisor(port, baud);
+ 
+-- 
+2.43.0.rc1.1.gbec44491f096
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-
-Cheers,
-Conor.
-
-> ---
->  drivers/tty/hvc/Kconfig | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
-> index 6e05c5c7bca1..c2a4e88b328f 100644
-> --- a/drivers/tty/hvc/Kconfig
-> +++ b/drivers/tty/hvc/Kconfig
-> @@ -108,13 +108,15 @@ config HVC_DCC_SERIALIZE_SMP
-> =20
->  config HVC_RISCV_SBI
->  	bool "RISC-V SBI console support"
-> -	depends on RISCV_SBI
-> +	depends on RISCV_SBI && NONPORTABLE
->  	select HVC_DRIVER
->  	help
->  	  This enables support for console output via RISC-V SBI calls, which
-> -	  is normally used only during boot to output printk.
-> +	  is normally used only during boot to output printk.  This driver
-> +	  conflicts with real console drivers and should not be enabled on
-> +	  systems that directly access the console.
-> =20
-> -	  If you don't know what do to here, say Y.
-> +	  If you don't know what do to here, say N.
-> =20
->  config HVCS
->  	tristate "IBM Hypervisor Virtual Console Server support"
-> --=20
-> 2.43.0
->=20
->=20
-
---ZpSavjsIcxHJ5llO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZcziUQAKCRB4tDGHoIJi
-0ha2AP4h37dfZJEi2Ma4Nfwx6PGVD0xADFSNtFYCxflzdgLW7AD+OawAfKCLrXnJ
-5fR1lKUHo+712HP3zmc1aJ6D2m0LTg8=
-=3+DZ
------END PGP SIGNATURE-----
-
---ZpSavjsIcxHJ5llO--
