@@ -1,95 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835E554FAD;
-	Wed, 14 Feb 2024 14:55:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2898754729;
+	Wed, 14 Feb 2024 15:17:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707922502; cv=none; b=M2sfTzY08UcfliR1vVvA0XFF/pbmXplMyETko+l40V49Z0+WRkVk2qhpOcuQi21qSEDZVvibjeLMnPdXqTlpgjjsduT3uRIysR78myAxrPumzcbATaZPxKH4Pi5tqfaefOeyXvySca2o+nd3fWSOGx5IM2BLPIDEFLhk20bqLQA=
+	t=1707923841; cv=none; b=QnXBOI4OkgODPrMBkznMXi1fKFe7g7n4DYbb16CJ91GnD4vyQNFwHRJN8D2B7nd8suaKtSIQWfJ333G36U1EYbIrhcHkn0M4m8Q3ShkDUC1cNGF4SLSPw0NIIM/mj8ZcRCeM54h1a6T65XZaaSLwceDho3+3doOAOfKj0obs77I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707922502; c=relaxed/simple;
-	bh=lzj2XSAw769/WZ86KuTWetUX/lYELdru1gi0Xpeqrsg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=mpmLamnwcysLzL3XsxeRDf7p+BoMf4BYGapaZuSd+JgCtvaayS1hv1hoB3LaZkfh8ITswRnwggpZyNeHDhEv+b0lGRp6G65T6heKBX44rnF4ka4CZKPPENpjT1Kxd8lq1aQAVcOv33HaySDC/zzbCwn2vQbwDoMK14mYtTszsBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FBoKTQ0F; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1707923841; c=relaxed/simple;
+	bh=ACTxwyP+4YUfgXsf/6lQTT/mpr2H2M+XUhOo0wFm+nM=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=NLL9YWyxe6QTDqQNexLUlHiwNekEBrty9Hg6Av/03l5xdcqHGpJ3CnkH83wg3EHXYVDDGvS2WFfXEssXHnH+M378bHT23uxqWhbozxqcgyZSlhORkFHTB22SCakmHFAx4UOLQe5vGW6l3k+zFCqjIMCSXDj2UCFYkxsY6B1e83U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fBfHTqq2; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FBoKTQ0F"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fBfHTqq2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707922501; x=1739458501;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=lzj2XSAw769/WZ86KuTWetUX/lYELdru1gi0Xpeqrsg=;
-  b=FBoKTQ0FpF0LBz8DzUz/IUN5H1CRBxTMDbXOCLpCXjFc/0CBRX7lLVJm
-   JZJHVCs7TxCPR2vs8Yox7+h0X6S0QAyyc3xSpQXghUjDniIKU2KFu9oGs
-   TOLmN8NtVSaO5oL9caakkGBWfBI7fVMZYA1bQudSqj6dWCg5sSdnyHMEZ
-   IOmJE7QzOkorzIqA7XVdwCIx+3Yl2Yx1XMhCq5eTi5pZQ7+KC67bSGME+
-   2VxJAsE3FVnfJRRQ2MHMp3B1ZAEY8OWQcHU8m+l0BMR3d5wNodmp1DmrE
-   4RqGuyy1WMddNmq+X8KBnMK/OzEda30j9gGrGr8C+Btti63C+If9/ZvmU
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="19480235"
+  t=1707923840; x=1739459840;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=ACTxwyP+4YUfgXsf/6lQTT/mpr2H2M+XUhOo0wFm+nM=;
+  b=fBfHTqq2e4SIm/gqJ/d8zjA9zzzYp55DZae8Qk+RPtvcUwAlrmgg/crL
+   SBwqH06U/9IyXGodapbBDVWK1BuBIrtUa+WkSnLsrrqJ8gFsIbsYlyLIA
+   9W/gt6czi4t/dn1SyU2XBOuOzQ8naLmGmHnH8nTlY4Q6aQHQ7KDWC/JC2
+   qPdF+j51yI3BUJ4zUbDbqY9za+GFY5ugRfP8oN0xmE9+KPJ+OobC4gxU5
+   jXq6p9od7NyQPzIqSM5Uh0grBlmEuqVeAy+YScCpi+cqJGVrapsy/9Db7
+   8jch6xufS1SJfGq7LTIudHL0GRgA8LQtHoqs50lcO8Ry/oX0JdWIkrXYY
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="2116100"
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="19480235"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 06:55:00 -0800
+   d="scan'208";a="2116100"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 07:17:19 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="3108826"
+   d="scan'208";a="3374125"
 Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.246.33.229])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 06:54:57 -0800
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 07:17:16 -0800
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 1/1] tty: Don't include tty_buffer.h tty.h
-Date: Wed, 14 Feb 2024 16:54:39 +0200
-Message-Id: <20240214145439.62624-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
+Date: Wed, 14 Feb 2024 17:16:16 +0200 (EET)
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH 1/1] tty: Don't include tty_buffer.h tty.h
+In-Reply-To: <20240214145439.62624-1-ilpo.jarvinen@linux.intel.com>
+Message-ID: <33f66aa5-1577-44cb-dfa6-958a18c19cf6@linux.intel.com>
+References: <20240214145439.62624-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-1708694187-1707923818=:7959"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323328-1708694187-1707923818=:7959
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-There's no need to include linux/tty_buffer.h in linux/tty.h.
-Move the include into tty_buffer.c that is actually using it.
+On Wed, 14 Feb 2024, Ilpo J=C3=A4rvinen wrote:
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/tty_buffer.c | 1 +
- include/linux/tty.h      | 1 -
- 2 files changed, 1 insertion(+), 1 deletion(-)
+Gah, I seem to have botched the shortlog while I killed linux/ prefixes=20
+from it. I'll send an update tomorrow.
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index f8883afbeeba..79f0ff94ce00 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -7,6 +7,7 @@
- #include <linux/errno.h>
- #include <linux/minmax.h>
- #include <linux/tty.h>
-+#include <linux/tty_buffer.h>
- #include <linux/tty_driver.h>
- #include <linux/tty_flip.h>
- #include <linux/timer.h>
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 8c76fd97d4ad..2b2e6f0a54d6 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -6,7 +6,6 @@
- #include <linux/major.h>
- #include <linux/termios.h>
- #include <linux/workqueue.h>
--#include <linux/tty_buffer.h>
- #include <linux/tty_driver.h>
- #include <linux/tty_ldisc.h>
- #include <linux/tty_port.h>
--- 
-2.39.2
+--=20
+ i.
 
+> There's no need to include linux/tty_buffer.h in linux/tty.h.
+> Move the include into tty_buffer.c that is actually using it.
+>=20
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> ---
+>  drivers/tty/tty_buffer.c | 1 +
+>  include/linux/tty.h      | 1 -
+>  2 files changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+> index f8883afbeeba..79f0ff94ce00 100644
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/errno.h>
+>  #include <linux/minmax.h>
+>  #include <linux/tty.h>
+> +#include <linux/tty_buffer.h>
+>  #include <linux/tty_driver.h>
+>  #include <linux/tty_flip.h>
+>  #include <linux/timer.h>
+> diff --git a/include/linux/tty.h b/include/linux/tty.h
+> index 8c76fd97d4ad..2b2e6f0a54d6 100644
+> --- a/include/linux/tty.h
+> +++ b/include/linux/tty.h
+> @@ -6,7 +6,6 @@
+>  #include <linux/major.h>
+>  #include <linux/termios.h>
+>  #include <linux/workqueue.h>
+> -#include <linux/tty_buffer.h>
+>  #include <linux/tty_driver.h>
+>  #include <linux/tty_ldisc.h>
+>  #include <linux/tty_port.h>
+>=20
+
+--8323328-1708694187-1707923818=:7959--
