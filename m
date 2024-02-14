@@ -1,35 +1,35 @@
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00B8711706;
-	Wed, 14 Feb 2024 07:59:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42340BE49;
+	Wed, 14 Feb 2024 08:49:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707897577; cv=none; b=lOcaYWwFhaDMKEU2/qiDACBLaojXZMZX0lg00vB9yXdBUuiNbOV2VMZoJDdfHLSLEZZYI7Db2spsuDaJkEBySrbzYp12JlrndMXptnpBlVo0W+LPky8oSDXE//luYDxZcowdreqZ2a3v54pNplNdQqkhXvtI2gRMmPsGYdJdUWg=
+	t=1707900582; cv=none; b=RfG4Zq/GZiO2s8BGONADmv8wSTNfutO/I+17OYoCYQhCL4n129NpAyjZdZi9TCh3X3KSakLfDgZVA+qaW+HFWaP00AAB6rMcWtvf0W00BZh9SuikDTi8tYEP/icE4SuR6i0gpjGPjvH++m2lD3ZpxZlm1Ivrg5/vpwZRSWrehts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707897577; c=relaxed/simple;
-	bh=kGkB+tECODquRq5qt8lXIgXC6l1GnX+cpabAS67lCJ4=;
+	s=arc-20240116; t=1707900582; c=relaxed/simple;
+	bh=0dKOTDFFev2XaGHESEFJjmbPJOyKhxlyotONPs2LaXw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ku5l1p39quBU16F5IwaTRgKuenEzZBDXX8SRzWsSQzqe5/s/3p/VOCqxuP1IqVJZfw3jthUNHTGqRMwINdzYxE3Vp215+sF5rXya6ZwIurwFpgvG9IRipmfCyw7tjaysfNTn+CYxGuVjHg4HBiu3u7D4/Us2Ut8BDIiNsf+B8Gs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=Bje3DTZU; arc=none smtp.client-ip=74.50.62.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=pR163+LtP6er+h/gJ74hj4+keta6+dhquMjJlr4D6iIbLzxB3nIcwUC7W1cssDK7GU70jB7Zm1o0HA4OfZ5xAHjSkhJKgEnX8UCIrj+qhRLqsOBzwCo1v1pdOomkgFDv/Rhm3YNTXVpXIPEI9oJfhQI6z9ZJVOLaE6L2/c0NudY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=Xokx9Rem; arc=none smtp.client-ip=74.50.62.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="Bje3DTZU"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="Xokx9Rem"
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id B96B9604B9;
-	Wed, 14 Feb 2024 07:59:03 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 63DE2604D9;
+	Wed, 14 Feb 2024 08:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1707897574;
-	bh=kGkB+tECODquRq5qt8lXIgXC6l1GnX+cpabAS67lCJ4=;
+	s=25mailst; t=1707900579;
+	bh=0dKOTDFFev2XaGHESEFJjmbPJOyKhxlyotONPs2LaXw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Bje3DTZUjDh7iTlRzAvqtHwvcyv9x3baWQbZbdRgTDWaKBkBU3QaLhr2E8XfMwgZa
-	 hZrAW48N9wzlAIXPd+U7/yAWVTcMIkc96xVBGTjwGOE+L9f6a3UxWNh/B8Jd0L/zmq
-	 JpM4dfP2Vc2YR3fHakxbL1qaCAHbvFBaXd/WQ1K2rT0+665SyZUC6w+eWn3LCpdpmU
-	 xdcxE0f4UjaE+SH5FbpW22lNzvquye1oGcjtXat7xglfW0r1SvdGrs6Ngwa8HZaA28
-	 JlrXkxqWETD+xeqHeWa5TgHygM9fOptdPEnImmYere8swzvRmvMIfHhlTCt3NMzyud
-	 a+nz41N/P4reQ==
-Date: Wed, 14 Feb 2024 09:59:01 +0200
+	b=Xokx9Rem2bTGe6OoCJMTUymjnOpkhfs2wKfwa81amGnWyPQNQRUCzKghQ79kHEt9l
+	 CpEFfiyJz3ULwL/CapDajR49g0HTMOqouBlfZhccDP4pHA29Zia5FiuoPlohR/sZy7
+	 gP1GlM6GqBspogeXJ+C5fBEjTjubpgmqstNLeeqRMWV401xJEobDtsWYZqdYU4NaQZ
+	 OlMiNgO9PaxUG6axd6ZxDKM5sXJZGU/KF9FlIgEiQLf2uUwb5xdPqv4/Qdbt0gjJN4
+	 lEZaMyOT9oGzrAXkFKvujbegLoNSUwK5mf1KQNaOGcyT68f1NLYQWLzggMGF1092yE
+	 C+XT+uMou7/pw==
+Date: Wed, 14 Feb 2024 10:49:05 +0200
 From: Tony Lindgren <tony@atomide.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -46,7 +46,7 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-serial@vger.kernel.org
 Subject: Re: [PATCH v6 1/6] printk: Save console options for
  add_preferred_console_match()
-Message-ID: <20240214075901.GO52537@atomide.com>
+Message-ID: <20240214084905.GP52537@atomide.com>
 References: <20240213084545.40617-1-tony@atomide.com>
  <20240213084545.40617-2-tony@atomide.com>
  <Zcub1bQrDqHE0Mkt@smile.fi.intel.com>
@@ -61,10 +61,14 @@ Content-Disposition: inline
 In-Reply-To: <Zcub1bQrDqHE0Mkt@smile.fi.intel.com>
 
 * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [240213 16:42]:
-> With fresh look at the above, can we amend it like below?
-> (dropped NULL assignment, optimized strlen(), split checks, dropped unneeded +1 in strscpy() calls)
+> 		strscpy(con->name, str, namelen);
+> 		strscpy(con->opt, opt, optlen); // not sure if emptying opt is okay
 
-Sure that's nicer :) I think opt can be empty unlike brl_opt, will test.
+The strings above now get terminated too sort with the + 1 removed,
+I suggest we use what we already do for brl_opt:
+
+		strscpy(con->name, str, CONSOLE_NAME_MAX);
+		strscpy(con->opt, opt, CONSOLE_OPT_MAX);
 
 Regards,
 
