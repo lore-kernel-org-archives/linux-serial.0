@@ -1,56 +1,56 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D5F6087C;
-	Wed, 14 Feb 2024 17:10:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0583D6088E;
+	Wed, 14 Feb 2024 17:10:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707930655; cv=none; b=cfikmelu81OGadJSceyyUNxQ+mgO//6jtn/NI3u4QJjuQcKMCaO9G4S6p8Ha+tt2w1VKO97CHM9AhQTehIXU20IfKn0wUg8jGjAsjCzdU3BdDBuIRDxxj/MgUuh3DYP9T6e9ha2ToZ0opUb/r89co2jsLkBZ0Kr+0I3z83H65mc=
+	t=1707930655; cv=none; b=olGfz4lvbVNZMXLZznOymKvl/At2ywjZ38//RAeSZuAf9oLg+X19rJN93ptnPoo7nEbnENVBFy7RVi/szbNT2zFLLpNlgagY20SQVxNYDup/k0VQgQgYTTfbSVigym/j0Nz59U71QEn9+wjVM0ZWUP0fznkd44Ikg99oWHWvCbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707930655; c=relaxed/simple;
-	bh=lh/6QP+fLjWx7NnRnuGXCG0uePmFC6Mmb21smh0lUm4=;
+	bh=6SSOUnIBqCm1UlIPDdIu3o/LhTRQZBXFqS1PUYB3XUQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KDq/szPi6ApbeqK9Gglc3t1++gEtKstOzLZc9XMPsw1KHWtDSX9C38BDaL+isA1HJAKQOHTBJAyz+ryYVxmPIvBdAXNVgkKmlyhQcdVCq4sAucoSTmmUJzTgC3LpPY/NIez67wrOnI85uP0ua+8QDRbOInSDMkY1lZwM5sZRjNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EzwMNcYx; arc=none smtp.client-ip=198.175.65.9
+	 MIME-Version; b=IvxlkhqysQyIU68Nwjlm9S8G6YFSf2zt+QfanJCOERZea3jStT7MPYp6bBaWZrh4r4tBTpU7976mUw8kxPgsXU94hzYAjHHaQndhDBCFJDCBHQrBj5y47PeDp5haqP5hc7qwO7pTzb/wLae7LeDu/scxHWdZhIF1qhus4KPmkoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jil45KuT; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EzwMNcYx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jil45KuT"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1707930654; x=1739466654;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=lh/6QP+fLjWx7NnRnuGXCG0uePmFC6Mmb21smh0lUm4=;
-  b=EzwMNcYxXHO12VzOFfLoLm3P6TmNQyy4XzYCQ7eg/Dlyo3vy61iw7UMM
-   MATd7EVwwKKDYkUf3tbosClxHNiLLI38z2l/DBpzfiDYn/EGkm4ZZASJy
-   7fihBGH6tocPhWVYybXtuW1eEDZLeRKGPCj8t13E9nnnnQ6GzKfdMAdMu
-   ytjMH/zCvmrSxEut8GLT/2olvmRbuvShjcDCHzN0m3+bPFTpV9gEwD4C0
-   QX/GGVFav5rO5oiv1h3lmEOmSY+vSqiQb9IYmG7eXZZaGRCOT48Au6psr
-   N0CS5BONn/vq58L86RUdVKuzJ4c4C2ModabF+pVRfshg3JozjdL+i2PID
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="24458020"
+  bh=6SSOUnIBqCm1UlIPDdIu3o/LhTRQZBXFqS1PUYB3XUQ=;
+  b=jil45KuTZP8wEccwSX/Avc2xP4QG07kUPh5aY1NubwKO8S5NFnIsCy9U
+   45rz8w6SXtvOjZQ+jP6XdktjgzlHgHu7jwuhGk32B1ijJeJ0vsC7yNNzu
+   y8YPSOh6RdVLbOB3okOnDE4DHvXpmGgyBbHqQYi6FRtOAUwxyY8x8PAw+
+   i+a0aqiKIBazoo9t4VCtD2G4qpIdRktTk/hL7bnTBqcVORmZeOjmPbyOV
+   Nr8boVZvrkeSH2/SjD9wIKCH/ENEgPwVBo9hs0i+S3GTcDFkmoUOiUSHR
+   Wl0Bk4BQIfpzMv8DtHsr5Zirst3dsupMPo0mUjdcqk9RzEFwGG62ZZogW
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="24458023"
 X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="24458020"
+   d="scan'208";a="24458023"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 09:10:52 -0800
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 09:10:53 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617214"
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617216"
 X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="935617214"
+   d="scan'208";a="935617216"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 09:10:49 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id BE3FC2DC; Wed, 14 Feb 2024 19:10:48 +0200 (EET)
+	id A70A6A3; Wed, 14 Feb 2024 19:10:48 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/5] serial: 8250_exar: switch to DEFINE_SIMPLE_DEV_PM_OPS()
-Date: Wed, 14 Feb 2024 19:09:36 +0200
-Message-ID: <20240214171044.3551032-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/5] serial: 8250_exar: Clear interrupts before registering handler
+Date: Wed, 14 Feb 2024 19:09:34 +0200
+Message-ID: <20240214171044.3551032-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
 References: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
@@ -62,63 +62,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SIMPLE_DEV_PM_OPS() is deprecated, replace it with DEFINE_SIMPLE_DEV_PM_OPS()
-and use pm_sleep_ptr() for setting the driver's PM routines. We can now
-remove the __maybe_unused qualifier in the suspend and resume functions.
+While now there is no issue if IRQ is fired before we clearing
+the interrupts as the handler does the same, but strictly speaking
+it might be problematic if IRQ handler wants to do something more.
+
+Move clearing interrupt code to be called before registering the
+IRQ handler.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_exar.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 7dfb995ec927..fa750c586b1f 100644
+index 23366f868ae3..32a56ce626b5 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -12,6 +12,7 @@
- #include <linux/module.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
-+#include <linux/pm.h>
- #include <linux/property.h>
- #include <linux/serial_core.h>
- #include <linux/serial_reg.h>
-@@ -757,7 +758,7 @@ static void exar_pci_remove(struct pci_dev *pcidev)
- 		priv->board->exit(pcidev);
- }
+@@ -713,14 +713,14 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 	uart.port.irq = pci_irq_vector(pcidev, 0);
+ 	uart.port.dev = &pcidev->dev;
  
--static int __maybe_unused exar_suspend(struct device *dev)
-+static int exar_suspend(struct device *dev)
- {
- 	struct pci_dev *pcidev = to_pci_dev(dev);
- 	struct exar8250 *priv = pci_get_drvdata(pcidev);
-@@ -774,7 +775,7 @@ static int __maybe_unused exar_suspend(struct device *dev)
- 	return 0;
- }
++	/* Clear interrupts */
++	exar_misc_clear(priv);
++
+ 	rc = devm_request_irq(&pcidev->dev, uart.port.irq, exar_misc_handler,
+ 			 IRQF_SHARED, "exar_uart", priv);
+ 	if (rc)
+ 		return rc;
  
--static int __maybe_unused exar_resume(struct device *dev)
-+static int exar_resume(struct device *dev)
- {
- 	struct exar8250 *priv = dev_get_drvdata(dev);
- 	unsigned int i;
-@@ -788,7 +789,7 @@ static int __maybe_unused exar_resume(struct device *dev)
- 	return 0;
- }
- 
--static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
- 
- static const struct exar8250_board pbn_fastcom335_2 = {
- 	.num_ports	= 2,
-@@ -938,7 +939,7 @@ static struct pci_driver exar_pci_driver = {
- 	.probe		= exar_pci_probe,
- 	.remove		= exar_pci_remove,
- 	.driver         = {
--		.pm     = &exar_pci_pm,
-+		.pm     = pm_sleep_ptr(&exar_pci_pm),
- 	},
- 	.id_table	= exar_pci_tbl,
- };
+-	/* Clear interrupts */
+-	exar_misc_clear(priv);
+-
+ 	for (i = 0; i < nr_ports && i < maxnr; i++) {
+ 		rc = board->setup(priv, pcidev, &uart, i);
+ 		if (rc) {
 -- 
 2.43.0.rc1.1.gbec44491f096
 
