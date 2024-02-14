@@ -1,81 +1,125 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B457B8473;
-	Wed, 14 Feb 2024 09:04:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ECA32F2F;
+	Wed, 14 Feb 2024 09:15:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707901454; cv=none; b=Vx6m8AMU92KSp/GwH3Ch1Bw8GGs7YO937vqYah/sHTKITxLnn+T/WjG6/YgzaVsvCsU9fQ8pE/0vnsQDlFAsOLg2e4NNIhVc9/OH4IE7nqQIeIb++ZAfCvKKfUM3hdpwaLPwip12STEPAPIC7zIud3m/hCs/Eukuq/ck6nY02RU=
+	t=1707902115; cv=none; b=lh/WZplEUMu/WTwBg1gbJuM/0Fu9zVgeorN9gJUgET8nByOXZM1UIxBnBVFsXf4NBenut6tYn4G9NnkQzK/D1ihk8Zw/a4pIJxkm6p8ooog3ve4h/XNZNQZmYhB7H+Fj4of3vlIS2vOWtZVzo/SPu0dNc4LnK2eACIc9qyVzn2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707901454; c=relaxed/simple;
-	bh=vuhdcyX9bdUXLdOFBo7MVnrhvcQRIzTGTAMuBGPXqzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V2EgUMaH6y5x7YGitj+6p+0R1yNKu2DksbWZQGATCjNBvQm1+WnCB9IkaB+gWxChmdPTNtfoS2C4HLZYnmfE7Go0lYf04LLd5CR6kbQXwMcFQ0XHLy/Rr1xAv1FrEiWvEIOqU99Qu8JQqlkWI5qHFhfpg1Yl0CJ5tcPd5Y0QEuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=EtEA/X/K; arc=none smtp.client-ip=74.50.62.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="EtEA/X/K"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 93C0960434;
-	Wed, 14 Feb 2024 09:03:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1707901451;
-	bh=vuhdcyX9bdUXLdOFBo7MVnrhvcQRIzTGTAMuBGPXqzw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EtEA/X/KaGOLt0Dcxqqk6BkYl7IAPJDT+yjncICRRWCMauQ5Vy6n3uxvw1TRyyNqp
-	 FVChJ5DY6p/gbhfImT/ARj2n81ay/15F/VOyKugtqlOLYjVM505iPpngN7Mawvi2Ij
-	 xw0SCEebj7xj3oXYKJcZCHLZvtT+4uJfJGxTIH7VQ2UIA796eb7y1Nic/18LbNQnQV
-	 oKoze+/XZWn1LIEuL5RJIcoJpnzaftwif21JobW8M0KxvODhq2zkUD/Y/K5glNlVRt
-	 cV+rPkSfazfB8djLJ4GUKp0uscWJ4Y8BzZ1Z4b1+OuKaUxLdmM7WHUYx6FJB+mYi3d
-	 kA6cbtkDKBaiQ==
-Date: Wed, 14 Feb 2024 11:03:30 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: oe-kbuild@lists.linux.dev,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>, lkp@intel.com,
-	oe-kbuild-all@lists.linux.dev,
-	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 4/6] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
-Message-ID: <20240214090330.GR52537@atomide.com>
-References: <20240213084545.40617-5-tony@atomide.com>
- <aa4b1b2e-50b8-419c-bf0d-526711f1aaea@moroto.mountain>
+	s=arc-20240116; t=1707902115; c=relaxed/simple;
+	bh=jYa1Lr7ZUtJC11+cRFkJLC24Hvdut98Q3M7Of/21KWM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L+O8yA6ke2X6wTNwJy2RiIVDuh9BpWk6Zy/OhqniwBxzXj1YKqy0EdyKCG41gzHX+Op85i+JdTLcFiw7ttOzvJLzHZZ9GE5mcmX37qmhrgvTHHhCCIElA6S9toowRDqpahhdDfop7zAU7R3Ieu2/SjOh+knk0IHFvr3MBmtT3rw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a26ed1e05c7so268414966b.2;
+        Wed, 14 Feb 2024 01:15:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707902112; x=1708506912;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sZRp3AjGt/6aArJlVGQphdXg07o3hYKoIqEKPDAJhb8=;
+        b=Kh3ro8QreSUhzLUF0FcxAb8tIeUH1I5WloRxFedh86nLcar61JSA/D/bpeEEdxlxBy
+         0BNhhY3Tvm3knGyIaWXhh3SeLfMIhBAxAIqFZ4WOPOEVNdxJIV+lDV/jGldrfEAZ8Hxj
+         cuqLb2wFM9o8Lk4Gp+78GOtc6ZbOAI8346tmVCg934Ut+mK0GcBcluoK994dtvhETVeN
+         VPo+0FHmP4cn5y9ACpdXQvHpMBz3zl6xMUUMjI7c+7/VRI+C/UVCVBHmo/BC4JhwPVpk
+         6QDyu2xCNvPyhwj9afRV99B2e8nXbVhT2ZMkR0aOSxY9VSaYfHgF62icn2CqrVThLBmD
+         At2A==
+X-Forwarded-Encrypted: i=1; AJvYcCUbRerckN3rX3BWvUGJXZRW/1a1DIR9Ctgq20dZbZS1Gya24R9zoBURA982G3YDl6lJtwMd1xN7Ry87hAEsOWbGafUH04TvlusJQJNWg2y5LHlOXyUtOt1wYt9CfiX4xj2q/m6ZZzWqp5sn
+X-Gm-Message-State: AOJu0Yzt0pr7tO2nyD/pIp4flr8HbqbCyWrHXs3+0g6r05Q2eCK1ilv7
+	dXVLlAGJuPUefX+0wPw5yZdKsSvDwppbrbPNTWd0B8063vBeDdQV
+X-Google-Smtp-Source: AGHT+IEmGiN8n15k8qmTNfQd9MvmpheI845EtDRGzy8SstN1IVgoAgB+d0JXaEwiQPJOL0N2eg0imA==
+X-Received: by 2002:a17:906:fb1b:b0:a38:392a:8c71 with SMTP id lz27-20020a170906fb1b00b00a38392a8c71mr1352488ejb.45.1707902111598;
+        Wed, 14 Feb 2024 01:15:11 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWRQ1qxhvE9R+51NONBVfBWDqJAEIr7y0IjfENjT7aZsD7HaErTsNqAImJJbrZPv3V1oPPjgEQuhe37QYMO1fJm5cH6Nz6VYW0JmPiWHkEAHRVwCGJwxG4DKvRMXzjsFMIsESymrPRdcFI1wVwv86s2hKhUkAb3LcL+5KAgxeRvfHgnLh4F2tBvEvgpaR90lrrHDc+SQGIHJvzkQJTdlLDyUBo1JgDrOSgEMoF+LxRB4EEiDBKDhJRG6eitrn9ewTOJv2d0G08qOw==
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id ig8-20020a1709072e0800b00a3d35bccdf0sm566236ejc.139.2024.02.14.01.15.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Feb 2024 01:15:11 -0800 (PST)
+Message-ID: <faf36cd9-00c3-4f47-acb7-64881f25d6d9@kernel.org>
+Date: Wed, 14 Feb 2024 10:15:10 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aa4b1b2e-50b8-419c-bf0d-526711f1aaea@moroto.mountain>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/1] serial: 8250_pci1xxxx: Don't use "proxy" headers
+Content-Language: en-US
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Rengarajan S <rengarajan.s@microchip.com>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+ Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>
+References: <20240213193827.3207353-1-andriy.shevchenko@linux.intel.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240213193827.3207353-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-* Dan Carpenter <dan.carpenter@linaro.org> [240214 09:00]:
-> a2020a9ccacd63 Tony Lindgren 2024-02-13  252  int serial_base_add_preferred_console(struct uart_driver *drv,
-> a2020a9ccacd63 Tony Lindgren 2024-02-13  253  				      struct uart_port *port)
-> a2020a9ccacd63 Tony Lindgren 2024-02-13  254  {
-> a2020a9ccacd63 Tony Lindgren 2024-02-13 @255  	const char *port_match __free(kfree);
+On 13. 02. 24, 20:38, Andy Shevchenko wrote:
+> Update header inclusions to follow IWYU (Include What You Use)
+> principle.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Thanks also noted by Andy.
+Looks good, but hard to tell if it is correct :P.
 
-> Someone should add this to checkpatch.  These always need to be
-> initialized to NULL.
+I like this qt-creator feature: "this header is not directly used, 
+remove?". Maybe we could extend it to the kernel somehow (as it uses 
+clang to decide, I suppose). As was shown recently, removing the 
+inclusion hell can decrease the build time significantly…
 
-Yes good idea. These are easy to miss especially if the code path changes
-for whatever reason.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Regards,
+-- 
+js
+suse labs
 
-Tony
