@@ -1,56 +1,55 @@
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D603E111B6;
-	Wed, 14 Feb 2024 07:08:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00B8711706;
+	Wed, 14 Feb 2024 07:59:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707894533; cv=none; b=lhMsgQcMJ8h2n/64iy/Dz+8aedY2QGGlPSFCHkHfaUB2NvDqIRyMAdfmLz+HC9jXt1ThUrxhmyhIx1mWX1ObwxNhXGCOXxGXfgUiSXEHTDmmCaTxTfnBHOcAaLs+hRQBihCQHX6bbC2vSgaEqcrYLyUJsOlEd+9SLGI9f9mVu3o=
+	t=1707897577; cv=none; b=lOcaYWwFhaDMKEU2/qiDACBLaojXZMZX0lg00vB9yXdBUuiNbOV2VMZoJDdfHLSLEZZYI7Db2spsuDaJkEBySrbzYp12JlrndMXptnpBlVo0W+LPky8oSDXE//luYDxZcowdreqZ2a3v54pNplNdQqkhXvtI2gRMmPsGYdJdUWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707894533; c=relaxed/simple;
-	bh=RayJ1tOkR9umoBjincQZbdFH6T7xK9Zxhq+zYYR5wd4=;
+	s=arc-20240116; t=1707897577; c=relaxed/simple;
+	bh=kGkB+tECODquRq5qt8lXIgXC6l1GnX+cpabAS67lCJ4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qEdTQNDJjnFdQk2X/DbMtPLtG+ZiK7eKsHHV37L/qPtWllSg5g3O2XmFpVkvpdSqYBeqXbUgCcVEoGQqw2zSKGME6h+ZcjZV9rHwHLIBSyINTmr6mdUBhkejq78bSPa9HaSROlQVJH0aFM40v6wUkYSyn39bh/AHRCq0AiAMY/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=QUjjJE8p; arc=none smtp.client-ip=74.50.62.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=ku5l1p39quBU16F5IwaTRgKuenEzZBDXX8SRzWsSQzqe5/s/3p/VOCqxuP1IqVJZfw3jthUNHTGqRMwINdzYxE3Vp215+sF5rXya6ZwIurwFpgvG9IRipmfCyw7tjaysfNTn+CYxGuVjHg4HBiu3u7D4/Us2Ut8BDIiNsf+B8Gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=Bje3DTZU; arc=none smtp.client-ip=74.50.62.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="QUjjJE8p"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="Bje3DTZU"
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 9123760505;
-	Wed, 14 Feb 2024 07:08:11 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id B96B9604B9;
+	Wed, 14 Feb 2024 07:59:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1707894524;
-	bh=RayJ1tOkR9umoBjincQZbdFH6T7xK9Zxhq+zYYR5wd4=;
+	s=25mailst; t=1707897574;
+	bh=kGkB+tECODquRq5qt8lXIgXC6l1GnX+cpabAS67lCJ4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QUjjJE8pNkn7mugYJDMW75jCJR2xxsI/sQ1A5kL5etzQEdtArTxJ6sn2qrOIV2HZC
-	 5JV59CiPrKsa1iTZ1aOy9KKSJ4gUx8Hsn5VpdT7mxdwKJqnMbRJI3Xc1uY2RxZBNXR
-	 csQ7KfYbn980PZV6gis8Wng5J6Kam0jFauJ5O4Ct0WDUlTlLIwVv2pCuQUlg1yrsmx
-	 073CJ+jvL9QB31jBEEfRHXqzq5m2fl62PT+nxv318+01AnRyut8Ls1BZYXdGt0bq/t
-	 JA6aiYeHfKpKnwjf3J0xz8+Gnfp6RmNC29azucOmhIw1lmCIMtanmcIrSPy9H7PXeq
-	 8S1JtoSDDgU6g==
-Date: Wed, 14 Feb 2024 09:08:08 +0200
+	b=Bje3DTZUjDh7iTlRzAvqtHwvcyv9x3baWQbZbdRgTDWaKBkBU3QaLhr2E8XfMwgZa
+	 hZrAW48N9wzlAIXPd+U7/yAWVTcMIkc96xVBGTjwGOE+L9f6a3UxWNh/B8Jd0L/zmq
+	 JpM4dfP2Vc2YR3fHakxbL1qaCAHbvFBaXd/WQ1K2rT0+665SyZUC6w+eWn3LCpdpmU
+	 xdcxE0f4UjaE+SH5FbpW22lNzvquye1oGcjtXat7xglfW0r1SvdGrs6Ngwa8HZaA28
+	 JlrXkxqWETD+xeqHeWa5TgHygM9fOptdPEnImmYere8swzvRmvMIfHhlTCt3NMzyud
+	 a+nz41N/P4reQ==
+Date: Wed, 14 Feb 2024 09:59:01 +0200
 From: Tony Lindgren <tony@atomide.com>
-To: Sebastian Reichel <sre@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Dhruva Gole <d-gole@ti.com>,
 	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
 	Johan Hovold <johan@kernel.org>,
 	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
 	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v6 4/6] serial: core: Add support for DEVNAME:0.0 style
- naming for kernel console
-Message-ID: <20240214070808.GN52537@atomide.com>
+Subject: Re: [PATCH v6 1/6] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <20240214075901.GO52537@atomide.com>
 References: <20240213084545.40617-1-tony@atomide.com>
- <20240213084545.40617-5-tony@atomide.com>
- <jnfrv7wj4wigtzsh7r7p4zgbtim64kniriwbtjc3pebznyvwtk@7l36wdfn6tja>
+ <20240213084545.40617-2-tony@atomide.com>
+ <Zcub1bQrDqHE0Mkt@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,16 +58,14 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <jnfrv7wj4wigtzsh7r7p4zgbtim64kniriwbtjc3pebznyvwtk@7l36wdfn6tja>
+In-Reply-To: <Zcub1bQrDqHE0Mkt@smile.fi.intel.com>
 
-* Sebastian Reichel <sre@kernel.org> [240213 23:58]:
-> I would expect an update to the console= section in [0] somewhere in
-> this series.
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [240213 16:42]:
+> With fresh look at the above, can we amend it like below?
+> (dropped NULL assignment, optimized strlen(), split checks, dropped unneeded +1 in strscpy() calls)
 
-Good idea, will add.
+Sure that's nicer :) I think opt can be empty unlike brl_opt, will test.
 
 Regards,
 
 Tony
-
-> [0] Documentation/admin-guide/kernel-parameters.txt
