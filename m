@@ -1,131 +1,131 @@
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 596315D912
-	for <linux-serial@vger.kernel.org>; Wed, 14 Feb 2024 15:50:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE9076024D;
+	Wed, 14 Feb 2024 15:55:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707925828; cv=none; b=lQR3ZxU9isDNrEPZ1GXLytFJjCpTjBNvN5FXSrrmYNfIuiiUjw+RTSbtKn1JR/d9hLRvv5AAAMtZvswXfhBWkZtRpdjmJvnW/YJllqSL978oRM716StD0jLFwsbxLtDDSrqR9gVL6OF0V3oVOGZv9tcycr+JiNLYdKFBNAMHcOM=
+	t=1707926102; cv=none; b=IXbfysFMRzNJeRuHDJXIKMpAk6XzbC1dmwcwZIfsgqS5G+giRtWyEeFsyQl6T0pao5o4lyZ55yF++5E0OvKyspZXJD2R9une2fZmF6c/RI33mz3mrNQY9advbRI3y31xmBWdcaVG07MWiQfFo5tWd1WVLsk+XMCVzH1aDqqQrbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707925828; c=relaxed/simple;
-	bh=3ixfx9hvHowkdPW052W2BTLyOZIPcGFLydpr9ppzU6Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mYIwlhPPqn9Fl0g7N2TLPH4mHgMa68OvLEbIAJDFkJfSGSuAUXrFNiOqwwgQxJZVfdyFKkEE0qsBPgOJe1DLf0v/JWHVUNUoCNbTkvhQc1LIgk+5nCUJ12t3b6MaDZqUvwgiBs6gd5cBP2QP78C3G/Y5XQUtF/zzOAtlzqJxrL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault-org.20230601.gappssmtp.com header.i=@brainfault-org.20230601.gappssmtp.com header.b=3FN5jaXx; arc=none smtp.client-ip=209.85.166.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
+	s=arc-20240116; t=1707926102; c=relaxed/simple;
+	bh=I5QmVlSxsPE/Gk4+HnD06ucKGeusZCkAT0pMy1rJFdk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nE+vTZTAV5yH8Eu85rN2Ncr/q3GZ5T9WXQA8shFZeYM5Afm6ZRip4fttGIkraKbn0VzY9yWBzSEKP/wF/SfE5pNvVV9WbESeXMG9XgxT7HtEg8sPDQSm9dw6SCsxh9UUAYyEZDc/gIvE5SQa5KmrmR7/CJOBhEBv7amR/7ngjwc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lvqkGmDf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault-org.20230601.gappssmtp.com header.i=@brainfault-org.20230601.gappssmtp.com header.b="3FN5jaXx"
-Received: by mail-io1-f46.google.com with SMTP id ca18e2360f4ac-7baa8097064so334750739f.3
-        for <linux-serial@vger.kernel.org>; Wed, 14 Feb 2024 07:50:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20230601.gappssmtp.com; s=20230601; t=1707925825; x=1708530625; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QSlVGbEelZs1+mCJGuJE5TbiYr0MAiLjyMJwC22PtNU=;
-        b=3FN5jaXxmOUuARuGbkAUOBRUrTUQBEbCJpSW6jE5Yor5+pG74A3QLo0dAodUMc4VnX
-         sFBGbwnzRqckIaTDnOL2ovj4OfwJZfhcC/izj+oyCtB3O1AKnfBEwoF5bgeF/8J9vgrv
-         nVO0TZ4/bknWSzncZ3m3Kt7nG9CHRRoKj7Zwm+UK6xGdGVSXR5pcM/9tvK+UbAQfPIH7
-         Pxf1wQurgOXXxFbxfpLhJ2sbOR+7n5GZdoXN2UdB68KrtE+fHK6p5kZCfMz2ttULqogj
-         9BNwZ4aom/Mk4Xgj+d8hw7rSMVX5pZVEVY8nBelbzuED7oP97L5QtEUDCVmYtR2CgBZ1
-         LlQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707925825; x=1708530625;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=QSlVGbEelZs1+mCJGuJE5TbiYr0MAiLjyMJwC22PtNU=;
-        b=KA9+gi+UTLVQau3m7MBqihhiU39Ab9OsW4660VdUxsSeMws3zzLH0/qXK203FbkGcd
-         rxg9BbIFSlMNZAYi93RxB6nh06WZFA+mx37TaCQJ6R3u+ZL92jU2J9GBnk/iiMH/y4t/
-         cXkdBh+vhiGWaM49Mb2iLZ0HJLWK+QYoTDkEZ0a3eda9At3J5V0kBJhZ+nakLZ+WbRpg
-         aOziHWfx3RARIc9iZSJvU5kA1GLnj+qLxDiVf3N/yMPb9JBE8AYhXanqo+qhDMYHflAz
-         88J+2dktC1ygqek0eafrMXXzRK0v0SmPrhSwUv4PoIrClXSgAeoB42zddaHfI6RGDl58
-         0YQg==
-X-Forwarded-Encrypted: i=1; AJvYcCU7whB/kslsfwpog0A+/XVsqXGVwGqHhS1/7O6IRzVIar85+Nljq+4Mi+nragYy4mf3ohow2L/l3R1Oji0XgiXaQcbTYK0LTGBkiZtZ
-X-Gm-Message-State: AOJu0YzVHY3ox+oQT7iYogJL3FqVmorg6q1WrWKA4bXmtwTjxX/PTxlf
-	IWtGvWaLGGJ69W8tZg6E408dJIBB+wq/08HdSSKLe2NB4AQcPwqDg4xy1nipn7VsGyr5lIH6MoM
-	eSAwuJKvRxI5+tu8beYQM4w6ZYlfdHbMtxHuNFQ==
-X-Google-Smtp-Source: AGHT+IEg1mjBag5fQq6IiYnFAmtRUKSsf1C8M5YPUMlpqUwiUYtvbiinLPu7A8tR+cYW+rVJo79k/QL1npQnEykKim4=
-X-Received: by 2002:a92:ca89:0:b0:363:d9eb:dae2 with SMTP id
- t9-20020a92ca89000000b00363d9ebdae2mr2993529ilo.13.1707925825474; Wed, 14 Feb
- 2024 07:50:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lvqkGmDf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00213C43399;
+	Wed, 14 Feb 2024 15:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707926102;
+	bh=I5QmVlSxsPE/Gk4+HnD06ucKGeusZCkAT0pMy1rJFdk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lvqkGmDfiWK0/udDnfCBRaDRe2kArttC6QTkDsM1BxGHPZTBnbzWYTP4veP3ZargP
+	 aa80u28eGTmb3HYZ6oGtKR65HcpjxycM1VMzPS4fYFTC0EbeI+rblhYH5Pxe8kkoTk
+	 piWqBbRlZ3WUN8Ur08uVW+pleZvBCYBuFxtDvJH0kTxKRxdrLHSaweAq9p/Ya8HFOM
+	 sD0nomU3aUbzp3g/hO/j9ABxNQ+PevDhv8jT7tFPC+GjPBI0HImRZV6jPzw3axLIAC
+	 CzUwM/eHkXlHKHd9XW1i4L3SQ30mWBeGeaEFgIOQeI9Ks+AjSmvK9B5bf7NlwGMfJr
+	 fmbaBGfW564vw==
+Date: Wed, 14 Feb 2024 15:54:57 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Palmer Dabbelt <palmer@rivosinc.com>
+Cc: linux-riscv@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>,
+	jirislaby@kernel.org, Atish Patra <atishp@rivosinc.com>,
+	ajones@ventanamicro.com, apatel@ventanamicro.com,
+	linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Emil Renner Berthing <kernel@esmil.dk>
+Subject: Re: [PATCH] tty: hvc: Don't enable the RISC-V SBI console by default
+Message-ID: <20240214-impound-gumdrop-230d0725f5ce@spud>
+References: <20240214153429.16484-2-palmer@rivosinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240214153429.16484-2-palmer@rivosinc.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ZpSavjsIcxHJ5llO"
+Content-Disposition: inline
 In-Reply-To: <20240214153429.16484-2-palmer@rivosinc.com>
-From: Anup Patel <anup@brainfault.org>
-Date: Wed, 14 Feb 2024 21:20:13 +0530
-Message-ID: <CAAhSdy3Tf=9jD1Cd11RjwKyDFPA_gHTqxMXSJ3HwANFFnR-8dA@mail.gmail.com>
-Subject: Re: [PATCH] tty: hvc: Don't enable the RISC-V SBI console by default
-To: Palmer Dabbelt <palmer@rivosinc.com>
-Cc: linux-riscv@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>, 
-	jirislaby@kernel.org, Atish Patra <atishp@rivosinc.com>, ajones@ventanamicro.com, 
-	apatel@ventanamicro.com, linuxppc-dev@lists.ozlabs.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Emil Renner Berthing <kernel@esmil.dk>
-Content-Type: text/plain; charset="UTF-8"
+
+
+--ZpSavjsIcxHJ5llO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 14, 2024 at 9:06=E2=80=AFPM Palmer Dabbelt <palmer@rivosinc.com=
-> wrote:
->
+On Wed, Feb 14, 2024 at 07:34:30AM -0800, Palmer Dabbelt wrote:
 > From: Palmer Dabbelt <palmer@rivosinc.com>
->
+>=20
 > The new SBI console has the same problem as the old one: there's only
 > one shared backing hardware and no synchronization, so the two drivers
 > end up stepping on each other.  This was the same issue the old SBI-0.1
 > console drivers had, but that was disabled by default when SBI-0.1 was.
->
+>=20
 > So just mark the new driver as nonportable.
->
+>=20
 > Reported-by: Emil Renner Berthing <kernel@esmil.dk>
 > Fixes: 88ead68e764c ("tty: Add SBI debug console support to HVC SBI drive=
 r")
 > Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-LTGM.
+As was brought up when we covered this earlier today, if you're going to
+probe a driver based on an ecall, the same hardware should not remain
+enabled in the DT passed to the kernel.
+If you want to enable this driver in a multiplatform kernel alongside
+"real" drivers, then the solution is simple, firmware needs implementation
+needs to patch the DT and, at least, mark the uart as reserved if it is
+using it to provide the debug console. Marking this nonportable so that
+people only walk into this with their eyes open seems like a reasonable
+action to me.
 
-Reviewed-by: Anup Patel <anup@brainfault.org>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 
-Regards,
-Anup
+Cheers,
+Conor.
 
 > ---
 >  drivers/tty/hvc/Kconfig | 8 +++++---
 >  1 file changed, 5 insertions(+), 3 deletions(-)
->
+>=20
 > diff --git a/drivers/tty/hvc/Kconfig b/drivers/tty/hvc/Kconfig
 > index 6e05c5c7bca1..c2a4e88b328f 100644
 > --- a/drivers/tty/hvc/Kconfig
 > +++ b/drivers/tty/hvc/Kconfig
 > @@ -108,13 +108,15 @@ config HVC_DCC_SERIALIZE_SMP
->
+> =20
 >  config HVC_RISCV_SBI
->         bool "RISC-V SBI console support"
-> -       depends on RISCV_SBI
-> +       depends on RISCV_SBI && NONPORTABLE
->         select HVC_DRIVER
->         help
->           This enables support for console output via RISC-V SBI calls, w=
-hich
-> -         is normally used only during boot to output printk.
-> +         is normally used only during boot to output printk.  This drive=
-r
-> +         conflicts with real console drivers and should not be enabled o=
-n
-> +         systems that directly access the console.
->
-> -         If you don't know what do to here, say Y.
-> +         If you don't know what do to here, say N.
->
+>  	bool "RISC-V SBI console support"
+> -	depends on RISCV_SBI
+> +	depends on RISCV_SBI && NONPORTABLE
+>  	select HVC_DRIVER
+>  	help
+>  	  This enables support for console output via RISC-V SBI calls, which
+> -	  is normally used only during boot to output printk.
+> +	  is normally used only during boot to output printk.  This driver
+> +	  conflicts with real console drivers and should not be enabled on
+> +	  systems that directly access the console.
+> =20
+> -	  If you don't know what do to here, say Y.
+> +	  If you don't know what do to here, say N.
+> =20
 >  config HVCS
->         tristate "IBM Hypervisor Virtual Console Server support"
-> --
+>  	tristate "IBM Hypervisor Virtual Console Server support"
+> --=20
 > 2.43.0
->
->
+>=20
+>=20
+
+--ZpSavjsIcxHJ5llO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZcziUQAKCRB4tDGHoIJi
+0ha2AP4h37dfZJEi2Ma4Nfwx6PGVD0xADFSNtFYCxflzdgLW7AD+OawAfKCLrXnJ
+5fR1lKUHo+712HP3zmc1aJ6D2m0LTg8=
+=3+DZ
+-----END PGP SIGNATURE-----
+
+--ZpSavjsIcxHJ5llO--
