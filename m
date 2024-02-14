@@ -1,130 +1,167 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9747E1CABA;
-	Wed, 14 Feb 2024 13:45:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34DD81CABA;
+	Wed, 14 Feb 2024 13:50:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707918324; cv=none; b=Lx6Ufh9fSJl7wEC6l9e/T43bBdQov9M+AKtH0GWEl+sbZNOmCONeluMDAakzbuRhJyQNU0cN4yXeOL8RweBhJu7Jzd288cikGKG0xEAY0gixUwD36FbqFRMNfKrQquNP3USSBFTAsVed27iLznNA7JXbUXkigbVOVnhJrf6NLXo=
+	t=1707918617; cv=none; b=IuJ8V84HkDw8Cr/PbJObI6EP6XPHDC6nNZMINAVycqnYJte+NY9zs+BhfSpPOXB6KmoCb0vizABG7iSHjuS9ea0JCl/a8i7N7jWrDFD6bVsL8xBJQXDxYbuHXR52oi8YsuHsa14pxZ2OiL/um6FRWJug2Bp1pNYPFWWKFtUrk7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707918324; c=relaxed/simple;
-	bh=Sm09XkASGhFVi6HsGs5xp2nue2uw0MDJruPEPfw8aLc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eWlUPO2qoxYXAmISU/pMSAqHBzAaTi8UgPVhotoClDgq8SNgL84hiqjevnoTnnXFNXNQFSKucCsjDOTZ4P1hRrzSwC0rbmSp1mQM9ohsc1cd4fX7BW4zvwudXIXvmtyH+YHZ5aLwmTJfbXhHItf1LEEavNYXQnjcQss1I6OBeVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com; spf=pass smtp.mailfrom=intel.com; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="2104668"
+	s=arc-20240116; t=1707918617; c=relaxed/simple;
+	bh=2zSiHcUofHHkfA9c7NZI3mbaPTePHSRW8IdwMe4QS0s=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=awHCTEdRWInwmzgUPCFY1IFFD/piPWaXyWCFRjrWzuGKmy1seZXd/iYHQ4FrOu+nHWGCEdTivuo7Q8tGkNYDkXkrSSYBEq3unYscfljggLuSo1JBlsT1+VbxDPYMCWYcRO/oJ4sOtFlhWq8O22PcrQCF3fT38c4hfIYxWz9RoH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VQ3gJj7H; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VQ3gJj7H"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707918615; x=1739454615;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2zSiHcUofHHkfA9c7NZI3mbaPTePHSRW8IdwMe4QS0s=;
+  b=VQ3gJj7HR63l+c8MAGxNWgdYLLPeDrT4LcS6j+NrpCOvYIWHeVohgs1W
+   E667x3W2B121nsy6lmxqyxd7TVxZz1Dghl6JIVjr5COtvsgdkREDzsaJs
+   PU+3kX1jUw1//cwe0lvSvDzRINMfSa0g5u9e1EQJmoaYLd2moXjSZL75u
+   y6n7WvaGw4GTqwA6EvreReYw43wk0gTgCszacjmjBwVH4xe2mZKy7J2hO
+   fe175yQWBsXyKyYoT6B7FORgODVhnVnnwGysrRjCJvOJEUJcAkQhtC6uR
+   d7KS+iFPhxmnamogDncNzX6NvYo7uLns/UtazlVcYHuKnBZubZblhxKAK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="2104930"
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="2104668"
+   d="scan'208";a="2104930"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 05:45:20 -0800
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 05:50:14 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="935616662"
+X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="935616681"
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="935616662"
+   d="scan'208";a="935616681"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 05:45:17 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 05:50:12 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 36400195; Wed, 14 Feb 2024 15:45:16 +0200 (EET)
-Date: Wed, 14 Feb 2024 15:45:16 +0200
-From: Andy Shevchenko <andy@black.fi.intel.com>
-To: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jslaby@suse.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Maxime Ripard <mripard@kernel.org>, Will Deacon <will@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
+	id D3940195; Wed, 14 Feb 2024 15:50:10 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Rengarajan S <rengarajan.s@microchip.com>,
+	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 1/4] serial: 8250: Add 8250 port clock update method
-Message-ID: <ZczD7KPbeRnY4CFc@black.fi.intel.com>
-References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
- <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
+Cc: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+	Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] serial: 8250_pci1xxxx: Drop quirk from 8250_port
+Date: Wed, 14 Feb 2024 15:50:09 +0200
+Message-ID: <20240214135009.3299940-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jul 23, 2020 at 03:33:54AM +0300, Serge Semin wrote:
-> Some platforms can be designed in a way so the UART port reference clock
-> might be asynchronously changed at some point. In Baikal-T1 SoC this may
-> happen due to the reference clock being shared between two UART ports, on
-> the Allwinner SoC the reference clock is derived from the CPU clock, so
-> any CPU frequency change should get to be known/reflected by/in the UART
-> controller as well. But it's not enough to just update the
-> uart_port->uartclk field of the corresponding UART port, the 8250
-> controller reference clock divisor should be altered so to preserve
-> current baud rate setting. All of these things is done in a coherent
-> way by calling the serial8250_update_uartclk() method provided in this
-> patch. Though note that it isn't supposed to be called from within the
-> UART port callbacks because the locks using to the protect the UART port
-> data are already taken in there.
+We are not supposed to spread quirks in 8250_port module especially
+when we have a separate driver for the hardware in question.
 
-...
+Move quirk from generic module to the driver that uses it.
 
-> +/*
-> + * Note in order to avoid the tty port mutex deadlock don't use the next method
-> + * within the uart port callbacks. Primarily it's supposed to be utilized to
-> + * handle a sudden reference clock rate change.
-> + */
-> +void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
-> +{
-> +	struct uart_8250_port *up = up_to_u8250p(port);
-> +	unsigned int baud, quot, frac = 0;
-> +	struct ktermios *termios;
-> +	unsigned long flags;
-> +
-> +	mutex_lock(&port->state->port.mutex);
-> +
-> +	if (port->uartclk == uartclk)
-> +		goto out_lock;
-> +
-> +	port->uartclk = uartclk;
-> +	termios = &port->state->port.tty->termios;
-> +
-> +	baud = serial8250_get_baud_rate(port, termios, NULL);
-> +	quot = serial8250_get_divisor(port, baud, &frac);
-> +
-> +	serial8250_rpm_get(up);
-> +	spin_lock_irqsave(&port->lock, flags);
-> +
-> +	uart_update_timeout(port, termios->c_cflag, baud);
-> +
-> +	serial8250_set_divisor(port, baud, quot, frac);
-> +	serial_port_out(port, UART_LCR, up->lcr);
-> +	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-> +
-> +	spin_unlock_irqrestore(&port->lock, flags);
-> +	serial8250_rpm_put(up);
-> +
-> +out_lock:
-> +	mutex_unlock(&port->state->port.mutex);
+While at it, move IO to ->set_divisor() callback as it has to be from
+day 1. ->get_divisor() is not supposed to perform any IO as UART port:
+- might not be powered on
+- is not locked by a spin lock
 
-While looking for something else I have stumbled over this function.
-My Q is, since it has some duplications with
-serial8250_do_set_termios(), can we actually call the latter (or
-derevative that can be called in both) in the above code instead of
-duplicating some lines?
+Fixes: 1ed67ecd1349 ("8250: microchip: Add 4 Mbps support in PCI1XXXX UART")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 25 ++++++++++++++++++-------
+ drivers/tty/serial/8250/8250_port.c     |  6 ------
+ 2 files changed, 18 insertions(+), 13 deletions(-)
 
-	if (port UART clock has to be updated)
-	  call (unlocked version of) serial8250_do_set_termios()
-
-Serge, what do you think?
-
-> +}
-
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 55eada1dba56..2fbb5851f788 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -94,7 +94,6 @@
+ #define UART_BIT_SAMPLE_CNT_16			16
+ #define BAUD_CLOCK_DIV_INT_MSK			GENMASK(31, 8)
+ #define ADCL_CFG_RTS_DELAY_MASK			GENMASK(11, 8)
+-#define UART_CLOCK_DEFAULT			(62500 * HZ_PER_KHZ)
+ 
+ #define UART_WAKE_REG				0x8C
+ #define UART_WAKE_MASK_REG			0x90
+@@ -227,13 +226,10 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
+ 	unsigned int uart_sample_cnt;
+ 	unsigned int quot;
+ 
+-	if (baud >= UART_BAUD_4MBPS) {
++	if (baud >= UART_BAUD_4MBPS)
+ 		uart_sample_cnt = UART_BIT_SAMPLE_CNT_8;
+-		writel(UART_BIT_DIVISOR_8, (port->membase + FRAC_DIV_CFG_REG));
+-	} else {
++	else
+ 		uart_sample_cnt = UART_BIT_SAMPLE_CNT_16;
+-		writel(UART_BIT_DIVISOR_16, (port->membase + FRAC_DIV_CFG_REG));
+-	}
+ 
+ 	/*
+ 	 * Calculate baud rate sampling period in nanoseconds.
+@@ -249,6 +245,11 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
+ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
+ 				 unsigned int quot, unsigned int frac)
+ {
++	if (baud >= UART_BAUD_4MBPS)
++		writel(UART_BIT_DIVISOR_8, port->membase + FRAC_DIV_CFG_REG);
++	else
++		writel(UART_BIT_DIVISOR_16, port->membase + FRAC_DIV_CFG_REG);
++
+ 	writel(FIELD_PREP(BAUD_CLOCK_DIV_INT_MSK, quot) | frac,
+ 	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
+ }
+@@ -619,6 +620,17 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
+ 
+ 	port->port.flags |= UPF_FIXED_TYPE | UPF_SKIP_TEST;
+ 	port->port.type = PORT_MCHP16550A;
++	/*
++	 * 8250 core considers prescaller value to be always 16.
++	 * The MCHP ports support downscaled mode and hence the
++	 * functional UART clock can be lower, i.e. 62.5MHz, than
++	 * software expects in order to support higher baud rates.
++	 * Assign here 64MHz to support 4Mbps.
++	 *
++	 * The value itself is not really used anywhere except baud
++	 * rate calculations, so we can mangle it as we wish.
++	 */
++	port->port.uartclk = 64 * HZ_PER_MHZ;
+ 	port->port.set_termios = serial8250_do_set_termios;
+ 	port->port.get_divisor = pci1xxxx_get_divisor;
+ 	port->port.set_divisor = pci1xxxx_set_divisor;
+@@ -732,7 +744,6 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
+ 
+ 	memset(&uart, 0, sizeof(uart));
+ 	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT;
+-	uart.port.uartclk = UART_CLOCK_DEFAULT;
+ 	uart.port.dev = dev;
+ 
+ 	if (num_vectors == max_vec_reqd)
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index c37905ea3cae..d59dc219c899 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2699,12 +2699,6 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+ 		max = (port->uartclk + tolerance) / 16;
+ 	}
+ 
+-	/*
+-	 * Microchip PCI1XXXX UART supports maximum baud rate up to 4 Mbps
+-	 */
+-	if (up->port.type == PORT_MCHP16550A)
+-		max = 4000000;
+-
+ 	/*
+ 	 * Ask the core to calculate the divisor for us.
+ 	 * Allow 1% tolerance at the upper limit so uart clks marginally
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0.rc1.1.gbec44491f096
 
