@@ -1,56 +1,59 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6999C5C913;
-	Wed, 14 Feb 2024 17:10:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D5F6087C;
+	Wed, 14 Feb 2024 17:10:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707930653; cv=none; b=klgZlVqAPxqJN8V4bWHxYrlWTwwlm+AHTaqF/c0w772yWh7A0wgVLDhK1IsL7AfsxwB6W27/QULRUJNb+u9z//Rmh9eFJJ8uNT3I2wI7CExWTadXPYBhbm1rIyIomEejteC2XSOiaF8LaFu3mc4aCpY9nmX0qXy6thN+j4NB9oY=
+	t=1707930655; cv=none; b=cfikmelu81OGadJSceyyUNxQ+mgO//6jtn/NI3u4QJjuQcKMCaO9G4S6p8Ha+tt2w1VKO97CHM9AhQTehIXU20IfKn0wUg8jGjAsjCzdU3BdDBuIRDxxj/MgUuh3DYP9T6e9ha2ToZ0opUb/r89co2jsLkBZ0Kr+0I3z83H65mc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707930653; c=relaxed/simple;
-	bh=8GfvwSh+N6mxrWm0DNjZ4B1zEOtjColCP5+gz3Atp9s=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Z8szbi2atgiSYrm8+MnTUr2S8BC86sDh4eiNdM3mCS7AvyuIHlZ+NrbLfE1v3pnzvcwq0hbPPivquyYOgT9ZK37M6EwTFN7zgzlIkx4WVzh8U1bD6Mjz2ZXu/90nVsheZ5GTjSwcwNB5ey/CDIWdqkjnZjTTFr8NGSlImDaTpMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ph1k09V2; arc=none smtp.client-ip=198.175.65.9
+	s=arc-20240116; t=1707930655; c=relaxed/simple;
+	bh=lh/6QP+fLjWx7NnRnuGXCG0uePmFC6Mmb21smh0lUm4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KDq/szPi6ApbeqK9Gglc3t1++gEtKstOzLZc9XMPsw1KHWtDSX9C38BDaL+isA1HJAKQOHTBJAyz+ryYVxmPIvBdAXNVgkKmlyhQcdVCq4sAucoSTmmUJzTgC3LpPY/NIez67wrOnI85uP0ua+8QDRbOInSDMkY1lZwM5sZRjNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EzwMNcYx; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ph1k09V2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EzwMNcYx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707930653; x=1739466653;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8GfvwSh+N6mxrWm0DNjZ4B1zEOtjColCP5+gz3Atp9s=;
-  b=Ph1k09V2/OIgIIcmi20X6qH8z8q57rEyv6+rolXPchJqkIvLeAOhGrD7
-   BxIbR1PMLQW6vDMpSCec0/uwlqaDJgVb47r0pFuZPEXAeJKxQ0zkVYgpv
-   Tzx2eJS/O+hOI9cNyVcdx+cCI+WXX5Z8Bc2ho6cAD1TCz+KaDDHLArKmT
-   dwHn/ln6jWWp2mkKdOJVmVI65DKbfcxQDV3MQ4dWGVDTAa9YtCrtYP6T+
-   ElLnkXNEuqWE4d/uLD/daT4G0HAzScua1abicgVV8dmHIdKkZ0hGP7vHr
-   iLoTFPBWI2wgfNNi/jwJreUfZ9N2lA50faRx1Kd3lZnuYUSU5MEQ3mYP2
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="24458016"
+  t=1707930654; x=1739466654;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lh/6QP+fLjWx7NnRnuGXCG0uePmFC6Mmb21smh0lUm4=;
+  b=EzwMNcYxXHO12VzOFfLoLm3P6TmNQyy4XzYCQ7eg/Dlyo3vy61iw7UMM
+   MATd7EVwwKKDYkUf3tbosClxHNiLLI38z2l/DBpzfiDYn/EGkm4ZZASJy
+   7fihBGH6tocPhWVYybXtuW1eEDZLeRKGPCj8t13E9nnnnQ6GzKfdMAdMu
+   ytjMH/zCvmrSxEut8GLT/2olvmRbuvShjcDCHzN0m3+bPFTpV9gEwD4C0
+   QX/GGVFav5rO5oiv1h3lmEOmSY+vSqiQb9IYmG7eXZZaGRCOT48Au6psr
+   N0CS5BONn/vq58L86RUdVKuzJ4c4C2ModabF+pVRfshg3JozjdL+i2PID
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="24458020"
 X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="24458016"
+   d="scan'208";a="24458020"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 09:10:52 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617215"
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617214"
 X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="935617215"
+   d="scan'208";a="935617214"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 09:10:49 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 9B0BD204; Wed, 14 Feb 2024 19:10:48 +0200 (EET)
+	id BE3FC2DC; Wed, 14 Feb 2024 19:10:48 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 0/5] serial: 8250_exar: A few updates to the driver
-Date: Wed, 14 Feb 2024 19:09:33 +0200
-Message-ID: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/5] serial: 8250_exar: switch to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Wed, 14 Feb 2024 19:09:36 +0200
+Message-ID: <20240214171044.3551032-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
+References: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,20 +62,63 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A few updates to the 8250 Exar driver as per new in-kernel APIs
-appeared.
+SIMPLE_DEV_PM_OPS() is deprecated, replace it with DEFINE_SIMPLE_DEV_PM_OPS()
+and use pm_sleep_ptr() for setting the driver's PM routines. We can now
+remove the __maybe_unused qualifier in the suspend and resume functions.
 
-Andy Shevchenko (5):
-  serial: 8250_exar: Clear interrupts before registering handler
-  serial: 8250_exar: Use generic function to set firmware node
-  serial: 8250_exar: switch to DEFINE_SIMPLE_DEV_PM_OPS()
-  serial: 8250_exar: Use 8250 PCI library to map and assign resources
-  serial: 8250_exar: Don't use "proxy" headers
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_exar.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
- drivers/tty/serial/8250/8250_exar.c | 43 ++++++++++++++++-------------
- drivers/tty/serial/8250/Kconfig     |  1 +
- 2 files changed, 25 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+index 7dfb995ec927..fa750c586b1f 100644
+--- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -12,6 +12,7 @@
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/pm.h>
+ #include <linux/property.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial_reg.h>
+@@ -757,7 +758,7 @@ static void exar_pci_remove(struct pci_dev *pcidev)
+ 		priv->board->exit(pcidev);
+ }
+ 
+-static int __maybe_unused exar_suspend(struct device *dev)
++static int exar_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pcidev = to_pci_dev(dev);
+ 	struct exar8250 *priv = pci_get_drvdata(pcidev);
+@@ -774,7 +775,7 @@ static int __maybe_unused exar_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused exar_resume(struct device *dev)
++static int exar_resume(struct device *dev)
+ {
+ 	struct exar8250 *priv = dev_get_drvdata(dev);
+ 	unsigned int i;
+@@ -788,7 +789,7 @@ static int __maybe_unused exar_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(exar_pci_pm, exar_suspend, exar_resume);
+ 
+ static const struct exar8250_board pbn_fastcom335_2 = {
+ 	.num_ports	= 2,
+@@ -938,7 +939,7 @@ static struct pci_driver exar_pci_driver = {
+ 	.probe		= exar_pci_probe,
+ 	.remove		= exar_pci_remove,
+ 	.driver         = {
+-		.pm     = &exar_pci_pm,
++		.pm     = pm_sleep_ptr(&exar_pci_pm),
+ 	},
+ 	.id_table	= exar_pci_tbl,
+ };
 -- 
 2.43.0.rc1.1.gbec44491f096
 
