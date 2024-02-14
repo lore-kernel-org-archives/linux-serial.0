@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D6310A36;
-	Wed, 14 Feb 2024 06:36:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D9311193;
+	Wed, 14 Feb 2024 06:36:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707892584; cv=none; b=WUULtdto2OwOC90rTzjjcflFdP7nQAVZq0iGPCnt+vDfRQXTnU+7JFR8OlpntXevD62aaronM25Dno/KqfJbHBfNPAPHUm3foDHHdgIz7dhsNGWhkBIyCzV5Mnl/3jWLzZepUA2fk+Ma8fXLq9qV4Zl1C5eTXqN2sEvHX1FgdRU=
+	t=1707892584; cv=none; b=OFmY/CXufpSBlRsBvJg8aeP/U7auRMtbWu63J2Ft0ArZtIFp7d0wnMlNuIR4TahuAeum/53kYr8pqyfX54zQJu76oXaRIIB0npTrjQPGlkZdDCbX0na5KxekiflyLTlWD1jGKYDK9NUEGl3t84oGBgGFVtsrrd+fciaq5iS5HYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707892584; c=relaxed/simple;
-	bh=WpkvpKeOfNBGl3s6SIPd42Jru7SBxmJQ0eeopGKSBh0=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=su+PzvbOm9M+m2TwYB6K95K7+zcYnHDiWj7oS/HAEv2Bwmll/R0KiHGYumHMoSVnWewPxQSJQX65GYsOS3CVx+M3fpsnY9gfwNcvSQ9WDLLWTRfwCkyEYJVskfVcNykN1+U5uh6XkhFYS339TDrwPVcYkxo42CLDvnUh5jQ6AxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eV7XWZGg; arc=none smtp.client-ip=10.30.226.201
+	bh=eMfD7O3mKBgytq6cqeXHFyoxCZgEikAzzCVwKh35KmQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=luLtjAPRmyheptS39xCkefnWHiKBvsPRetgLWqfsp/EqXjXHsOhkIOv1Vz7xLc6TSQZHLOXOQlFROUS+IktYAmK+JP6wXNUiUvbeRtYqdN+yPoYC8L8/hR9m79EFTLWAnLE8VxenqB5iVqcyPA2Anp8YbQFhpdpu2w9IAn2sOVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nkD7FZ9G; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eV7XWZGg"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AF834C433F1;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nkD7FZ9G"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CEC07C43390;
 	Wed, 14 Feb 2024 06:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1707892583;
-	bh=WpkvpKeOfNBGl3s6SIPd42Jru7SBxmJQ0eeopGKSBh0=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=eV7XWZGgcsCBWCzbwnWFvwhtnkFdx9lheIXn+t6XALWjWJ/cuAq8dcWZcnBsvWx7r
-	 +9sO0OoBQL3KVHuEM6pckQjRbkrdKjj6ofZ3t7FNO2bqZn1aZR+XMsl19E0HALUvuN
-	 ZNECPLVkUvzxAFRKl68feMOv94jvnRf+tveOLBEhgOBKGTOBzxTPt9QXntvBMTALaU
-	 A5LHbv9HFPrl/8cNhn2VwlXvNT7ObWCjVk81qHPfw1rykH9RUcX3kIWqOcsGfYN+5u
-	 fHey70CLrw0ZZwiRngcaKTMxOBcjtwbxKTjypmxjZAfhVrl0ZM5T/VM/Wty7UL8QMi
-	 qHEgAMykJ/P/w==
+	bh=eMfD7O3mKBgytq6cqeXHFyoxCZgEikAzzCVwKh35KmQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=nkD7FZ9GsL5MU5+3M1s2IwTCiv4bAdPmDDV6PpAAjtUydJ6wZhho1+vkQyVbe8IVz
+	 CYlgHW6NVlzCnP0LDTCCiZ9nf+dZTpxgAdtmpHfBmcsjcy9JgmBapGJj4AC0gTc5kq
+	 uw7jvJzDY1YRJr22WmdmmOfom5Y9w+cD2i1OQqqsWU3c57G9TwIObCPKu/ou/aIGnF
+	 gpSIwwoHuQDr5Q/qMfgU1R+WfOghHKKhN76Pq1RGcR4gMwY2qmUtLtf7GvQnjYye35
+	 XM7/p8+oq+Eb0KP/TvXzNSOP6YeAltNwkkolfX9VLHqmDbNVUw/+By1zYnmL3FPt8y
+	 7XoITRFFWI4cQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E91C4829A;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2370C48BEB;
 	Wed, 14 Feb 2024 06:36:23 +0000 (UTC)
 From: Christoph Winklhofer via B4 Relay
  <devnull+cj.winklhofer.gmail.com@kernel.org>
-Subject: [PATCH v7 0/3] w1: add UART w1 bus driver
-Date: Wed, 14 Feb 2024 07:36:12 +0100
-Message-Id: <20240214-w1-uart-v7-0-6e21fa24e066@gmail.com>
+Date: Wed, 14 Feb 2024 07:36:14 +0100
+Subject: [PATCH v7 2/3] dt-bindings: w1: UART 1-Wire bus
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,11 +41,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAF1fzGUC/13OTW6DMBCG4atEXtdo/G+66j2qLIwZB7cBV4aQV
- hF3r4mUQrPwYiQ/n94bGTFHHMnr4UYyznGMaSiHeTkQ37nhhDS25SYcuAQGkl4Zvbg8UUSrrXJ
- MOQWk/P7KGOL3fen9WO6QU0+nLqN7eMF4eQASbCUlKE0Z9R/VNQ6f5y4FzG+n3sVz5VO/DnZxn
- FL+uZfNYp19RKi/iFlQoKXDQC0ajkbvJtaIWe6d3pwszgRkwlhnG4HPTu0c3zlVHGstb0LrucP
- 62enNcag3p4sTaJTwTNas/te5LMsvFCMkVIcBAAA=
+Message-Id: <20240214-w1-uart-v7-2-6e21fa24e066@gmail.com>
+References: <20240214-w1-uart-v7-0-6e21fa24e066@gmail.com>
+In-Reply-To: <20240214-w1-uart-v7-0-6e21fa24e066@gmail.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
  Rob Herring <robh+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
  Christoph Winklhofer <cj.winklhofer@gmail.com>, 
@@ -57,11 +55,11 @@ To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-serial@vger.kernel.org, linux-doc@vger.kernel.org
 X-Mailer: b4 0.12.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1707892581; l=5348;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1707892581; l=2213;
  i=cj.winklhofer@gmail.com; s=20240104; h=from:subject:message-id;
- bh=WpkvpKeOfNBGl3s6SIPd42Jru7SBxmJQ0eeopGKSBh0=;
- b=/uU0jMlHsz8KXluEL7g+eEFniKD6PeJMvlDOYz0JZZVc1Om2voISol0iky4T3FOmNFvn6HalV
- VQFyi3MZIGDANmui+wyhL1sWAAH685itWvlVFU3U2fMWRLS6hN9Unh8
+ bh=yLV7IXmfdL8oY7fuePFUPpVLjP+tA63tYbAEut11d5g=;
+ b=92emIKE9Ak5J2oB0JGnAAtKQWiPr0DGMmL4XQKKeyWWY2JOcZvn2YQJiHdw50/TNkXo5HMTQ8
+ g0MsLndArVLDR3etY1s2hi3m7fzx/hOe9lC//yYky3eadru94LnkRzY
 X-Developer-Key: i=cj.winklhofer@gmail.com; a=ed25519;
  pk=lgjGjOt7hFKJT9UXhgUyrdthxvZ7DJ5F1U/7d9qdAsk=
 X-Endpoint-Received:
@@ -69,127 +67,83 @@ X-Endpoint-Received:
 X-Original-From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 Reply-To: <cj.winklhofer@gmail.com>
 
-Hello!
+From: Christoph Winklhofer <cj.winklhofer@gmail.com>
 
-This patch contains a driver for a 1-Wire bus over UART. The driver
-utilizes the UART interface via the Serial Device Bus to create the
-1-Wire timing patterns.
+Add device tree binding for UART 1-Wire bus.
 
-Changes in v7:
-- rename mutex to rx_mutex and comment its usage
-- fix comments and use kerneldoc for internal structs
-- Link to v6: https://lore.kernel.org/r/20240209-w1-uart-v6-0-3e753c149196@gmail.com
-Thanks Krzysztof for the review.
-
-Changes in v6:
-- change order of patches for dt-binding
-- remove unnecessary lock in remove
-- delay for 1-Wire cycle without mutex lock 
-- fix comment style and add some more comments
-- Link to v5: https://lore.kernel.org/r/20240126-w1-uart-v5-0-1d82bfdc2ae9@gmail.com
-Thanks Krzysztof and Rob for the review.
-
-Changes in v5:
-- dt-binding: allow child object for onewire and use prefix -bps for
-  baud rate configuration.
-- use type u8 for a byte, instead of unsigned char
-- use constants (NSEC_PER_SEC, BITS_PER_BYTE)
-- make delay computation from packet time more coherent
-- Link to v4: https://lore.kernel.org/r/20240106-w1-uart-v4-0-7fe1378a8b3e@gmail.com
-Thanks Jiri, Krzysztof and Rob for the review.
-
-Changes in v4:
-- rework baud-rate configuration: also check max bit-time, support higher
-  baud-rates by adding a delay to complete 1-Wire cycle.
-- dt-binding w1-uart: specify baud-rates for 1-Wire operations
-- Link to v3: https://lore.kernel.org/r/20240105-w1-uart-v3-0-8687093b2e76@gmail.com
-
-Changes in v3:
-- improve baud-rate configuration: use specific limits for 1-Wire
-  reset, touch-0 and touch-1 operation, compute in nanoseconds.
-- remove unused header atomic.h
-- use function instead of macro to compute bit-time from baud-rate
-- switch to b4 util to publish patch: missing recipients
-- Link to v2: https://lore.kernel.org/lkml/20231223100408.44056-1-cj.winklhofer@gmail.com
-
-Changes in v2:
-- add documentation for dt-binding
-- allow onewire as serial child node
-- support different baud-rates: The driver requests a baud-rate (9600
-  for reset and 115200 for write/read) and tries to adapt the
-  transmitted byte according to the actual baud-rate returned from
-  serdev.
-- fix locking problem for serdev-receive and w1-master reset/touch: The
-  received byte is now protected with a mutex - instead of the atomic,
-  which was used before due to the concurrent store and load.
-- explicit error in serdev-receive: Receiving more than one byte results
-  in an error, since the w1-uart driver is the only writer, it writes a
-  single-byte and should receive a single byte.
-- fix variable names, errno-returns, wrong define CONFIG_OF
-- fix log flooding
-- fix driver remove (error-path for rxtx-function)
-- Link to v1: https://lore.kernel.org/all/20231217122004.42795-1-cj.winklhofer@gmail.com
-Krzysztof, thank your very much for your feedback!
-
-It was tested on a "Raspberry Pi 3 Model B+" with a DS18B20 and on a
-"Variscite DART-6UL" with a DS18S20 temperature sensor.
-
-Content:
-- Patch 1: device tree binding 1-Wire
-- Patch 2: allow onewire as serial child node
-- Patch 3: driver and documentation
-
-The patch was created against the w1 subsytem tree (branch w1-next):
-  Link: https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-w1.git/
-
-The checkpatch.pl script reported the following error - which I am not
-sure how to fix:
-  WARNING: added, moved or deleted file(s), does MAINTAINERS need
-  updating?
-
-The technical details for 1-Wire over UART are in the document:
-  Link: https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
-
-  In short, the UART peripheral must support full-duplex and operate in
-open-drain mode. The timing patterns are generated by a specific
-combination of baud-rate and transmitted byte, which corresponds to a
-1-Wire read bit, write bit or reset pulse.
-
-For instance the timing pattern for a 1-Wire reset and presence detect
-uses the baud-rate 9600, i.e. 104.2 us per bit. The transmitted byte
-0xf0 over UART (least significant bit first, start-bit low) sets the
-reset low time for 1-Wire to 521 us. A present 1-Wire device changes the
-received byte by pulling the line low, which is used by the driver to
-evaluate the result of the 1-Wire operation.
-
-Similar for a 1-Wire read bit or write bit, which uses the baud-rate
-115200, i.e. 8.7 us per bit. The transmitted byte 0x00 is used for a
-Write-0 operation and the byte 0xff for Read-0, Read-1 and Write-1.
-
-Hope the driver is helpful.
-
-Thanks,
-Christoph
-
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Christoph Winklhofer <cj.winklhofer@gmail.com>
 ---
-Christoph Winklhofer (3):
-      dt-bindings: serial: allow onewire as child node
-      dt-bindings: w1: UART 1-Wire bus
-      w1: add UART w1 bus driver
+ Documentation/devicetree/bindings/w1/w1-uart.yaml | 60 +++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
- .../devicetree/bindings/serial/serial.yaml         |   2 +-
- Documentation/devicetree/bindings/w1/w1-uart.yaml  |  60 +++
- Documentation/w1/masters/index.rst                 |   1 +
- Documentation/w1/masters/w1-uart.rst               |  54 +++
- drivers/w1/masters/Kconfig                         |  10 +
- drivers/w1/masters/Makefile                        |   1 +
- drivers/w1/masters/w1-uart.c                       | 415 +++++++++++++++++++++
- 7 files changed, 542 insertions(+), 1 deletion(-)
----
-base-commit: 6613476e225e090cc9aad49be7fa504e290dd33d
-change-id: 20240104-w1-uart-ee8685a15a50
+diff --git a/Documentation/devicetree/bindings/w1/w1-uart.yaml b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+new file mode 100644
+index 000000000000..7173820c78f9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/w1/w1-uart.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/w1/w1-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: UART 1-Wire Bus
++
++maintainers:
++  - Christoph Winklhofer <cj.winklhofer@gmail.com>
++
++description: |
++  UART 1-wire bus. Utilizes the UART interface via the Serial Device Bus
++  to create the 1-Wire timing patterns.
++
++  The UART peripheral must support full-duplex and operate in open-drain
++  mode. The timing patterns are generated by a specific combination of
++  baud-rate and transmitted byte, which corresponds to a 1-Wire read bit,
++  write bit or reset pulse.
++
++  The default baud-rate for reset and presence detection is 9600 and for
++  a 1-Wire read or write operation 115200. In case the actual baud-rate
++  is different from the requested one, the transmitted byte is adapted
++  to generate the 1-Wire timing patterns.
++
++  https://www.analog.com/en/technical-articles/using-a-uart-to-implement-a-1wire-bus-master.html
++
++
++properties:
++  compatible:
++    const: w1-uart
++
++  reset-bps:
++    default: 9600
++    description:
++      The baud rate for the 1-Wire reset and presence detect.
++
++  write-0-bps:
++    default: 115200
++    description:
++      The baud rate for the 1-Wire write-0 cycle.
++
++  write-1-bps:
++    default: 115200
++    description:
++      The baud rate for the 1-Wire write-1 and read cycle.
++
++required:
++  - compatible
++
++additionalProperties:
++  type: object
++
++examples:
++  - |
++    serial {
++        onewire {
++            compatible = "w1-uart";
++        };
++    };
 
-Best regards,
 -- 
-Christoph Winklhofer <cj.winklhofer@gmail.com>
+2.43.0
 
