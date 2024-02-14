@@ -1,48 +1,42 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from gepdcl09.sg.gdce.sony.com.sg (unknown [121.100.38.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA0E125BB;
-	Wed, 14 Feb 2024 10:37:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE94618E2F;
+	Wed, 14 Feb 2024 11:14:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=121.100.38.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707907047; cv=none; b=bTRo9GTU+RLjkYHba3euREYkI96DixXRqYP3STquxBq5FdKJ9ftgF1V32g5NhsZHvfnEj0Fmc9GSHc23D1tbd2MhiDzaw27RoZnLycAadVOPrrP+rQWTxn5MWs8y1iDCKzZovVgMErIJPrZYDRrKg8V3RlrdtQgYQi10nAcvNVw=
+	t=1707909286; cv=none; b=VbFS34wa9CKuM1Gkn/dum9kSxzK3TtLPZAYpPFI49WwWDEQVr9/jqocbXlObkVWegpN77VTYbvbeqU6o/oRlYhhc7Vf6p056Umt5dRR169bU445zP+gAyC4MgEhPvt7aSbgViivrchYuewQ4bNFTiQNnnUNbYgDFEHuBg0ftOOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707907047; c=relaxed/simple;
-	bh=cxED5YPWgHhSBwJHo1owowGzFn88/peBM/syHypcwGY=;
+	s=arc-20240116; t=1707909286; c=relaxed/simple;
+	bh=l+i0yIxLpwQsUo4QfGAzTGFABUordW6G5AbZmrrcfq4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ns2VxVzMelhJnu2YVdiIs1c+0y+EJpqcEEtHJ7E+DuuYUy0jCOIJjVsswlweCwxDzp7qbSMXkS7+H8y/TQB6RQYLx+hPmMi6TxEYoN/jf3yxtG+yzaUwIOu/XwvA3pFH+/COt0qJKkvFyozH3EE2TcEI2DEj+YU7DnyD2BpYAVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=yAdiU5Zg; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yAdiU5Zg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C309C433F1;
-	Wed, 14 Feb 2024 10:37:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1707907047;
-	bh=cxED5YPWgHhSBwJHo1owowGzFn88/peBM/syHypcwGY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=yAdiU5ZgI53hqY9FwXIbYtEU1neJBgYWFVbQJYJQwKXuydESuXEAkxtgQ1Doj7u+i
-	 cWtV6GEl8rnlmooZ4HfX5YgYMbwAoMxyqATdC1vH4siqe7TubRvZGjMd0jFL5pEv2P
-	 BM0MlKnjrrgvHqS9R/ysZy5aq4ai9YmWWeaP6ePU=
-Date: Wed, 14 Feb 2024 11:37:21 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: David Laight <David.Laight@aculab.com>
-Cc: 'Segher Boessenkool' <segher@kernel.crashing.org>,
-	Arnd Bergmann <arnd@kernel.org>,
-	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Bill Wendling <morbo@google.com>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	Justin Stitt <justinstitt@google.com>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH] tty: hvc-iucv: fix function pointer casts
-Message-ID: <2024021426-unleveled-unhearing-8021@gregkh>
-References: <20240213101756.461701-1-arnd@kernel.org>
- <20240213191254.GA19790@gate.crashing.org>
- <57d72e2ccc8245fe99982613a11c461c@AcuMS.aculab.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hcgqxpawrug8kr1AdCwrUKFOZ2tVHoGLRopOwcOGHPNI/9D2wKD8+kPRKS0UAkYORTkBSWjxuu9q+o1UE/2CFbS39bnxPu0JLCxevwKhL5n4Nn52VdyDNuivIPHaL+bkHfPlqx4L+gstNcoRiEeOQV12YQb6AcyHQBjMVhbZ/ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com; spf=fail smtp.mailfrom=sony.com; arc=none smtp.client-ip=121.100.38.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=sony.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=sony.com
+Received: from gepdcl02.s.gdce.sony.com.sg (SGGDCSE1NS07.sony.com.sg [146.215.123.196])
+	by gepdcl09.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41EBE4g3027632;
+	Wed, 14 Feb 2024 19:14:16 +0800
+Received: from mail.sony.com ([43.88.80.246])
+	by gepdcl02.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41EBE2jV014297;
+	Wed, 14 Feb 2024 19:14:02 +0800
+Received: by mail.sony.com (Postfix, from userid 1000)
+	id 6BA9420C089E; Wed, 14 Feb 2024 16:42:36 +0530 (IST)
+Date: Wed, 14 Feb 2024 16:42:36 +0530
+From: Sreenath Vijayan <sreenath.vijayan@sony.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
+        anandakumar.balasubramaniam@sony.com, sreenath.vijayan@sony.com
+Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
+ sysrq
+Message-ID: <ZcygJOj9TaHZUKd-@sony.com>
+References: <cover.1706772349.git.sreenath.vijayan@sony.com>
+ <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
+ <ZcOdLrOPiPJmCec5@alley>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,34 +45,116 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <57d72e2ccc8245fe99982613a11c461c@AcuMS.aculab.com>
+In-Reply-To: <ZcOdLrOPiPJmCec5@alley>
 
-On Wed, Feb 14, 2024 at 09:46:33AM +0000, David Laight wrote:
-> From: Segher Boessenkool
-> > Sent: 13 February 2024 19:13
-> > 
-> > On Tue, Feb 13, 2024 at 11:17:49AM +0100, Arnd Bergmann wrote:
-> > > clang warns about explicitly casting between incompatible function
-> > > pointers:
-> > >
-> > > drivers/tty/hvc/hvc_iucv.c:1100:23: error: cast from 'void (*)(const void *)' to 'void (*)(struct
-> > device *)' converts to incompatible function type [-Werror,-Wcast-function-type-strict]
-> > >  1100 |         priv->dev->release = (void (*)(struct device *)) kfree;
-> > >       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > 
-> > Such a cast of course is explicitly allowed by 6.3.2.3/8, only calling a
-> > function using a non-compatible type is UB.  This warning message is
-> > quite misleading.  Doubly so because of the -Werror, as always.
+On Wed, Feb 07, 2024 at 04:09:34PM +0100, Petr Mladek wrote:
+> On Thu 2024-02-01 13:12:41, Sreenath Vijayan wrote:
+> > When terminal is unresponsive, one cannot use dmesg to view printk
+> > ring buffer messages. Also, syslog services may be disabled,
+> > to check the messages after a reboot, especially on embedded systems.
+> > In this scenario, dump the printk ring buffer messages via sysrq
+> > by pressing sysrq+D.
 > 
-> But it will get called using the wrong type.
-> And (is it) fine-ibt will reject the incorrect call.
+> I would use sysrq-R and say that it replays the kernel log on
+> consoles.
+> 
+> The word "dump" is ambiguous. People might thing that it calls
+> dmesg dumpers.
+>
 
-And rightfully so, this type of casting abuse is just that, abuse.
+Ok noted. We proposed sysrq-D as it is an alternative to dmesg
+command and might be easier to remember.
+ 
+> Also the messages would be shown on the terminal only when
+> console_loglevel is set to show all messages. This is done
+> in __handle_sysrq(). But it is not done in the workqueue
+> context.
+>
 
-Almost no one should be just calling kfree() on a device pointer, I'll
-look at the surrounding code as odds are something odd is going on.  But
-for now, this patch is correct.
+Yes, the initial implementation was using write() of consoles
+so the messages would be shown irrespective of the console log
+level. The current implementation depends on the console log
+level but many other sysrq keys dump the messages at KERN_INFO
+level. In my understanding, __handle_sysrq() dumps only the
+sysrq header at the manipulated loglevel. It restores original
+loglevel before calling callback function for the key.
+If console_loglevel is set to show KERN_INFO messages, it would
+dump most of the important printk messages in our case. Also the
+loglevel can be modified using sysrq itself now.
+ 
+> Finally, the commit message should explain why workqueues are used
+> and what are the limitations. Something like:
+> 
+> <add>
+> The log is replayed using workqueues. The reason is that it has to
+> be done a safe way (in compare with panic context).
+> 
+> This also means that the sysrq won't have the desired effect
+> when the system is in so bad state that workqueues do not
+> make any progress.
+> </add>
+> 
+> Another reason might be that we do not want to do it in
+> an interrupt context. But this reason is questionable.
+> Many other sysrq commands do a complicate work and
+> print many messages as well.
+>
 
-thanks,
+Noted. Will add this if we proceed with workqueue implementation.
+ 
+> Another reason is that the function need to use console_lock()
+> which can't be called in IRQ context. Maybe, we should use
+> console_trylock() instead.
+> 
+> The function would replay the messages only when console_trylock()
+> succeeds. Users could repeat the sysrq when it fails.
+> 
+> Idea:
+> 
+> Using console_trylock() actually might be more reliable than
+> workqueues. console_trylock() might fail repeatably when:
+> 
+>     + the console_lock() owner is stuck. But workqueues would fail
+>       in this case as well.
+> 
+>     + there is a flood of messages. In this case, replaying
+>       the log would not help much.
+> 
+> Another advantage is that the consoles would be flushed
+> in sysrq context with the manipulated console_loglevel.
+> 
+> Best Regards,
+> Petr
 
-greg k-h
+Yes, this seems to work well from interrupt context when the
+console lock owner is not stuck. We can also manipulate
+the console_loglevel. Something like this:
+
+//in printk.c
+void console_replay_all(void)
+{
+       if (console_trylock()) {
+               __console_rewind_all();
+               console_unlock();
+       }
+}
+
+//in sysrq.c
+static void sysrq_handle_dmesg_dump(u8 key)
+{
+       int orig_log_level = console_loglevel;
+       console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
+       console_replay_all();
+       console_loglevel = orig_log_level;
+}
+
+
+The downside I see is that the user may have to hit the
+key multiple times or give up trying if the console lock
+owner is busy at the time of key press. This information
+should probably be updated in the documentation.
+
+Please let me know your opinion.
+
+Regards,
+Sreenath
