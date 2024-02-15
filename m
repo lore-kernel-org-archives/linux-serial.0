@@ -1,236 +1,205 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35B73139584
-	for <linux-serial@vger.kernel.org>; Thu, 15 Feb 2024 19:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E0F139563;
+	Thu, 15 Feb 2024 19:32:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708025265; cv=none; b=Dmoq8ixJV+Hpwj4kSbGWtwuwsem71v172HfUdWhwSOJdA8BjM6t0gESUr4z2fU5d+KcTfOYTJBAYWjFbudk3RyW5UmN+KqBE2k7B7s0+x8EWIJ+MiHeiG8X/8DoExF9mpN2KtRrJuNJ1f2BkZ/1hU6CBLdBXktrijv1Au4Mdfbo=
+	t=1708025547; cv=none; b=tmn/pw9HSlcngSdxN/w6jI7p+tiWHTSE7zZcfVpsyqN36yl2mvJX6a5GNQ6fLFK+pP94Ppyn/8rmqCPkMUEmgK98wi5cei8298NWu+nRpJWnZn0EMLTGjPD07gXNfeDvDqSNd81q9ofQVh533LMN7PnPEvd07GYsWzR5iyu63Jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708025265; c=relaxed/simple;
-	bh=EGB/WwEGQPE2KkDzVr/s2KhiTvL2qUrXKNfgCDkSNkA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UUSnJG5CeL8Jb0QUbmfpi2uesHOrfG2jBwHEGb7xgo1oW3yzMgYPr0LUp6vyX+HMbe9aZZVcoTmieiYOacqea9vbkQwPHSHHJAdHXSrDd8QYtw/ZF0NlBiWhftTLPjcTx1wi4IUFfZE/Qv+6CYc+QWADSegqlfCL3Rmv/ERS5Vc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=PwXQjsTk; arc=none smtp.client-ip=209.85.128.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
+	s=arc-20240116; t=1708025547; c=relaxed/simple;
+	bh=4BcRq9RX6jvxRs95r4FuuTxSOinBoyMKdffw3BOH7Ow=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WoILwVFIphp2IN/GLsWbwO1zgRpSrZe1FY43cEbZhcv8VRTbDpXLm2qWKoSqC/kVPNZDSJszchrJ/cdLlia3iFErIiOKh1pUqFBbyjiZYjv2ipDtKmSdt0RkqlXBjEYqQVW2jfVJwO/AF6VCyPTkI6hcE0T/FcKJfDWo/oXwXJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SwmmPbss; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="PwXQjsTk"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6078c4cadd7so12774597b3.2
-        for <linux-serial@vger.kernel.org>; Thu, 15 Feb 2024 11:27:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SwmmPbss"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-51171c9f4c0so1619770e87.3;
+        Thu, 15 Feb 2024 11:32:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1708025262; x=1708630062; darn=vger.kernel.org;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ojwSJxuoWhPeigtIOvhGsSRpUFkEzb8TxTZ3LssNeDI=;
-        b=PwXQjsTku6zJHy6VJbdFDuwB1c42H0Sr4mn3hUtI2knWBV6PCIcq3TX0jEwjwhX3HJ
-         ls3wxUI/Edh0e/mH6NCdGNnvDJ6DZDCap4lj5GttsTn5gfJoYa1Rv4pL7AfVNfgUO439
-         6Mb4E3YB1ODkGxgXggDlUL8eMycKThwwyNYyA=
+        d=gmail.com; s=20230601; t=1708025542; x=1708630342; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=f4cviBjUGytaBcj0BpbY2tvrc6kLUHG8Yt6uoKR87Yo=;
+        b=SwmmPbssJKmA4OhI0MB7j+Wmn3nCMib3h+gkoT1CsT6xqowttNNz/XZqcFVjtg7EGP
+         Brs/+JR3FILGEgNmlODi02xWbQCw8uCow9ubliFow5iVl1XYVIj+mdTUketk98J7bGrR
+         fx0CHEmnti7/z4pvclaYSssw4Mk3hUJh40HEJmgBrUYOdCNMb+HUWkp+gPOWdGYQfVOY
+         LAu20eQPbSqxVahaL1skYeUXUesmdmvnfR4zRFnbvE9EUcxi9GRg9kMpwth0dTDjcylN
+         kqZYMNmnqFBC90cHg4hAIs/dISUatEYbT0QAu2nm+6PAffHaybAKgjKtjYFblS9+iddR
+         D8gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708025262; x=1708630062;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ojwSJxuoWhPeigtIOvhGsSRpUFkEzb8TxTZ3LssNeDI=;
-        b=IZ/r3P3nSrapltGFlMnOb5Kro3VUqvbzEVoNn2qXqcqbQi8kuWWnmHKbK4XQyX8+0G
-         32PoPjC/bmQ5U3+jluAMXaVioH3Wi0yPEpEJtN5oULkOsJ0X1rVQWvc/ZtcTGU6EfD8j
-         rBYtueONDf9Y//i2pcbY0LvJCL+WUd1K3FPCYJho/Sg8iNSsB3Ij/PzDsKv4u5tvAYEj
-         JiyZOeVv7WbABsLGBSqA2YG/EbPCTmWYA/Ld+Jw9jb6kocBb/WfgH3D4ot0Nm5wtehS9
-         LDRPraSoBkmEppvFEFVBDfxFXOJ9Ss1vQXSGeazTPSHEJN5zQWTnYOkYcsPVBtx47+UY
-         q2iQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWdkm6piSTrvd3+fwz7UsD8/IeOjZlWIeI/DrQoGejlPKbC+JaACDp+Ah5Xu1Y9mPK+qSY/g+/+5GM+mmoSUH8rxh1gt6zZ/vh8TuiL
-X-Gm-Message-State: AOJu0Yw4vv5znf4bk2B0ZxG2MpXQyHGLpX6uOGGsSJ6EFVvEgAyzckhz
-	tpIw6YGXWl0bEidfeq5rXC2MF8Efrmq82Mia5zPmPX1dmeKbORwtBJqaWObadQ==
-X-Google-Smtp-Source: AGHT+IFhJ+UYshiYS9uRnUt+wgoDptBTxAljTNs+nlDr/5lmMC1kiaFXtgVqI4oqrtv6Dtx+ST/iHQ==
-X-Received: by 2002:a81:af68:0:b0:607:f1a5:93ca with SMTP id x40-20020a81af68000000b00607f1a593camr666299ywj.12.1708025262144;
-        Thu, 15 Feb 2024 11:27:42 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id l10-20020ac848ca000000b0042dc8f512d7sm837615qtr.31.2024.02.15.11.27.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Feb 2024 11:27:41 -0800 (PST)
-Message-ID: <d4619f25-12d8-4f95-8e5e-e83516e8230a@broadcom.com>
-Date: Thu, 15 Feb 2024 11:27:39 -0800
+        d=1e100.net; s=20230601; t=1708025542; x=1708630342;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f4cviBjUGytaBcj0BpbY2tvrc6kLUHG8Yt6uoKR87Yo=;
+        b=lvRyQUdo24W3agsWI8RErOW1RSD80AlvmrPO8NFdYybQ7LWopW9JvQT1GjVrHLco7Q
+         FkB5E7Ll0GkwDtJIp0q5vKsGTivbYZwGCVcnF8YT/6ki+ISFGyqulurUT+icGfJc854D
+         EA8wgnzS1C0xMkRLB7PuyWzL6eKL4nxoANG0fdF79+gOD4EMUVrMk3+QoHkq4rPBbGEX
+         SAy4X9U3J3t2h7cGsFQ2Iwm3x/ksqUQWkveTKUrSU3b1DmXzNJWnKcKeqbN2MsZkq8tw
+         1iHgS4jxFOOzSHU3/a3x54jo3zHMOLRNm0Hjg46AwUNiRztu/THlrv+QmYve4EWoxtyV
+         ivew==
+X-Forwarded-Encrypted: i=1; AJvYcCVsHT/STXXZGfugL2fsjgBM/ZYsOuoeLw12clggV4K28hsIPKbKwSEOP8DVWTEM0uGQqrjMrKWi5uUHz4xa7RJ8R5xqsaHq38eH2G7wLt6x2NZ+Vlm6Au9UVXJqRZjPdUNP9DZTRO4N4MTq
+X-Gm-Message-State: AOJu0Yyz72J7FZ2YU7KW9ldhnXzkKH1jB9lAsN/7m9V/fhdUIQXn1nz4
+	CwnkRQip5SaX5NyB+59ke+K3N5teoN8Hlo824j/n0Z2/2LMj9qCa
+X-Google-Smtp-Source: AGHT+IERNQxo7hlRTgv+smihgExCW08qYzdRyPrURdgmn33GLfYE38cuaymZxnYxZPv3vY2YZoOERg==
+X-Received: by 2002:a05:6512:6ce:b0:512:8a57:d047 with SMTP id u14-20020a05651206ce00b005128a57d047mr2139221lff.47.1708025542029;
+        Thu, 15 Feb 2024 11:32:22 -0800 (PST)
+Received: from mobilestation ([178.176.56.174])
+        by smtp.gmail.com with ESMTPSA id m9-20020a056512114900b005128d529bf0sm164982lfg.115.2024.02.15.11.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Feb 2024 11:32:21 -0800 (PST)
+Date: Thu, 15 Feb 2024 22:32:18 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andy@black.fi.intel.com>
+Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>, 
+	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>, Andy Shevchenko <andy.shevchenko@gmail.com>, 
+	Maxime Ripard <mripard@kernel.org>, Will Deacon <will@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 1/4] serial: 8250: Add 8250 port clock update method
+Message-ID: <raryiklwhctwxcfj3ulbnjcl32owagiccmxpwzmszlh3vm343y@h2ehupm7uiga>
+References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
+ <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
+ <ZczD7KPbeRnY4CFc@black.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/1] serial: 8250_bcm7271: Replace custom unit
- definitions
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Al Cooper <alcooperx@gmail.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Jiri Slaby <jirislaby@kernel.org>
-References: <20240215160234.653305-1-andriy.shevchenko@linux.intel.com>
- <7132d989-533f-47ef-803b-6001de3aff33@broadcom.com>
- <Zc5kTdkTqXEE6cA3@smile.fi.intel.com>
-From: Florian Fainelli <florian.fainelli@broadcom.com>
-Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
- xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
- M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
- JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
- PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
- KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
- AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
- IQQQAQgAyxcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFrZXktdXNhZ2UtbWFz
- a0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2RpbmdAcGdwLmNvbXBn
- cG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29tLmNvbQUbAwAAAAMW
- AgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagBQJk1oG9BQkj4mj6AAoJEIEx
- tcQpvGag13gH/2VKD6nojbJ9TBHLl+lFPIlOBZJ7UeNN8Cqhi9eOuH97r4Qw6pCnUOeoMlBH
- C6Dx8AcEU+OH4ToJ9LoaKIByWtK8nShayHqDc/vVoLasTwvivMAkdhhq6EpjG3WxDfOn8s5b
- Z/omGt/D/O8tg1gWqUziaBCX+JNvrV3aHVfbDKjk7KRfvhj74WMadtH1EOoVef0eB7Osb0GH
- 1nbrPZncuC4nqzuayPf0zbzDuV1HpCIiH692Rki4wo/72z7mMJPM9bNsUw1FTM4ALWlhdVgT
- gvolQPmfBPttY44KRBhR3Ipt8r/dMOlshaIW730PU9uoTkORrfGxreOUD3XT4g8omuvOwE0E
- U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
- 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
- pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
- MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
- IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
- gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
- obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
- N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
- CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
- C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
- wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
- EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
- fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
- MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
- 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
- 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <Zc5kTdkTqXEE6cA3@smile.fi.intel.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="00000000000009ce950611709f56"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZczD7KPbeRnY4CFc@black.fi.intel.com>
 
---00000000000009ce950611709f56
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Hi Andy,
 
-On 2/15/24 11:21, Andy Shevchenko wrote:
-> On Thu, Feb 15, 2024 at 10:35:11AM -0800, Florian Fainelli wrote:
->> On 2/15/24 08:02, Andy Shevchenko wrote:
+On Wed, Feb 14, 2024 at 03:45:16PM +0200, Andy Shevchenko wrote:
+> On Thu, Jul 23, 2020 at 03:33:54AM +0300, Serge Semin wrote:
+> > Some platforms can be designed in a way so the UART port reference clock
+> > might be asynchronously changed at some point. In Baikal-T1 SoC this may
+> > happen due to the reference clock being shared between two UART ports, on
+> > the Allwinner SoC the reference clock is derived from the CPU clock, so
+> > any CPU frequency change should get to be known/reflected by/in the UART
+> > controller as well. But it's not enough to just update the
+> > uart_port->uartclk field of the corresponding UART port, the 8250
+> > controller reference clock divisor should be altered so to preserve
+> > current baud rate setting. All of these things is done in a coherent
+> > way by calling the serial8250_update_uartclk() method provided in this
+> > patch. Though note that it isn't supposed to be called from within the
+> > UART port callbacks because the locks using to the protect the UART port
+> > data are already taken in there.
 > 
 > ...
 > 
->>> -#define KHZ    1000
->>> -#define MHZ(x) ((x) * KHZ * KHZ)
->>>    static const u32 brcmstb_rate_table[] = {
->>> -	MHZ(81),
->>> -	MHZ(108),
->>> -	MHZ(64),		/* Actually 64285715 for some chips */
->>> -	MHZ(48),
->>> +	81 * HZ_PER_MHZ,
->>> +	108 * HZ_PER_MHZ,
->>> +	64 * HZ_PER_MHZ,		/* Actually 64285715 for some chips */
->>> +	48 * HZ_PER_MHZ,
->>
->> The previous notation was IMHO more readable,
+> > +/*
+> > + * Note in order to avoid the tty port mutex deadlock don't use the next method
+> > + * within the uart port callbacks. Primarily it's supposed to be utilized to
+> > + * handle a sudden reference clock rate change.
+> > + */
+> > +void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
+> > +{
+> > +	struct uart_8250_port *up = up_to_u8250p(port);
+> > +	unsigned int baud, quot, frac = 0;
+> > +	struct ktermios *termios;
+> > +	unsigned long flags;
+> > +
+> > +	mutex_lock(&port->state->port.mutex);
+> > +
+> > +	if (port->uartclk == uartclk)
+> > +		goto out_lock;
+> > +
+> > +	port->uartclk = uartclk;
+> > +	termios = &port->state->port.tty->termios;
+> > +
+> > +	baud = serial8250_get_baud_rate(port, termios, NULL);
+> > +	quot = serial8250_get_divisor(port, baud, &frac);
+> > +
+> > +	serial8250_rpm_get(up);
+> > +	spin_lock_irqsave(&port->lock, flags);
+> > +
+> > +	uart_update_timeout(port, termios->c_cflag, baud);
+> > +
+> > +	serial8250_set_divisor(port, baud, quot, frac);
+> > +	serial_port_out(port, UART_LCR, up->lcr);
+> > +	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
+> > +
+> > +	spin_unlock_irqrestore(&port->lock, flags);
+> > +	serial8250_rpm_put(up);
+> > +
+> > +out_lock:
+> > +	mutex_unlock(&port->state->port.mutex);
 > 
-> I tend to disagree as we read in plain text "frequency is 64 MHz",
-> the patch follows natural language.
+
+> While looking for something else I have stumbled over this function.
+> My Q is, since it has some duplications with
+> serial8250_do_set_termios(), can we actually call the latter (or
+> derevative that can be called in both) in the above code instead of
+> duplicating some lines?
 > 
->> can we meet in the middle and do:
->>
->> #define MHZ(x)	((x) * HZ_PER_MHZ
->>
->> and avoid touching the tables entirely?
+> 	if (port UART clock has to be updated)
+> 	  call (unlocked version of) serial8250_do_set_termios()
 > 
-> I don't like the intermediate layer which hides the implementation of MHZ().
-> What does it do exactly? You need to look at the internals, with the patch
-> applied you immediately see that these are just constants.
+> Serge, what do you think?
+
+What an old thread you've digged out.)
+
+Well, AFAIR I didn't create a common baud-rate/clock-update method
+because the baud-rate change was just a two stages action:
+1. calculate divisor+quot couple based on the new clock,
+2. update the divisor+quot (+ update the timeout).
+The first stage didn't need to have the IRQsafe lock being held and
+the runtime-PM being enabled, meanwhile the later one needed those.
+So unless the nested locking or try-lock-based pattern is implemented
+each stage required dedicated function introduced, which would have
+been an overkill for that. But even if I got to implement the
+try-lock-based solution with a single function containing both stages
+I still couldn't avoid having the serial8250_get_baud_rate() and
+serial8250_get_divisor() methods executed in the atomic context, which
+isn't required for them and which would needlessly pro-long the CPU
+executing with the IRQs disabled. As you well know it's better to
+speed up the atomic context execution as much as possible. 
+
+Secondly I didn't know much about the tty/serial subsystem internals
+back then. So I was afraid to break some parts I didn't aware of if
+the baud-rate/ref-clock change code had some implicit dependencies
+from the surrounding code and vice-versa (like the LCR DLAB flag
+state).
+
+Finally frankly it didn't seem like that much worth bothering about.
+Basically AFAICS there were only four methods which invocation I
+would have needed to move to a separate function:
+
+serial8250_get_baud_rate();
+serial8250_get_divisor();
+// spin-lock
+uart_update_timeout(port, termios->c_cflag, baud);
+serial8250_set_divisor(port, baud, quot, frac);
+// spin-unlock
+
+So I decided to take a simplest and safest path, and created a
+dedicated method for the just the ref-clock updates case leaving the
+baud-rate change task implemented in the framework of the standard
+serial8250_do_set_termios() method.
+
+
+Regarding doing vise-versa and calling the serial8250_do_set_termios()
+method from serial8250_update_uartclk() instead. To be honest I didn't
+consider that option. That might work though, but AFAICS the
+serial8250_do_set_termios() function will do much more than it's
+required in case if the ref-clock has changed.
+
+-Serge(y)
+
 > 
-
-OK, I suppose today's color is blue for the bike shed.
-
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
--- 
-Florian
-
-
---00000000000009ce950611709f56
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
-9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
-UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
-KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
-nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
-Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
-KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
-kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
-2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
-3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
-NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
-AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIkAR0WhQ1xsB1Tw
-G4TpjoucLgGw7lmwrnZ8cppHTIffMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDIxNTE5Mjc0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQA+9NlkGvKX49lCQd0A/knwVdX94uahu04h
-pZswR49EP9iLQn47cyfocsAk8ewtqnR4YVuV499v8v03rYXtlsSkcQYXIPTrYHgh+BmxafTA80+D
-DoQ2IuJtJPLYmXXos3PO548IB7g6+PNA9Dhyv247UhGCl3JOmoDnfDmkPFtDWNtnXXxD16l8/Gnk
-iRZ/bxxYjSr6Hj3QQOUJZrSjtl26HQ5KPEWOOhbvqJff9K7SC7reE2wFyzB1IPMWcPcBMr/+SeQ8
-9P3agOqGRU5L6KOqi8sFtm1PLId6xKP0UoaNxcw5H47w6beEbHDHru5wkkX/FOndbhrmlzP7d0S5
-xbv8
---00000000000009ce950611709f56--
+> > +}
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
