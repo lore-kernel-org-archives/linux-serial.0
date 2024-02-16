@@ -1,243 +1,306 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC087132477;
-	Fri, 16 Feb 2024 17:19:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3873644369
+	for <linux-serial@vger.kernel.org>; Fri, 16 Feb 2024 19:58:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708103984; cv=none; b=YPw37EmvQFNN50scF7zfPMab8yNtNpfMDET33OtSvsahCistzRv5fOCQeMKTWTZ3ODncznot9Bglypoyv2Ny+LrXpf5oP5EvgItiaoS9iZdagnaR1ttdIBiLiyjIVvaRCrpE9u0xbZ+NeDzuypnm24So3J62BWE9mcpLGpnL/Wg=
+	t=1708113516; cv=none; b=nbD03PCoGUDMnjjifzuz5PiRg4M7n9hA056gvP1dYMZ9qXErVKb49wh8a3gzlrrnJNcsKzONv19Cgclx6EQmLEv9EUgxIZZt0tJrgA6VeNAhxnL0NwfLcmjaSPEDoOMAqyOGA8Dl8lyvmNgugZG4vP+nPL/s5+GwaMcASgiMNGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708103984; c=relaxed/simple;
-	bh=4b03AODyXw2dhcerB3q+8kAAZmMbrpPoAq/Cd681M34=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hiSvviNdw+TGTgvObmYBhVzoPq7NGcDLfa6Vh0nKz1of9oOfVwk9bfFtIS8UZiBnNgPrDkTXVKuWd5yFpvdF+tbI/WQN6uFmmGwJaxgY7YFNQLEgVF/c8R4Dul7cRerKOQrJzD9grim1W6BL54Ef2Z3MPeDTwFrGhRn5u1qweiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HYmfGGwy; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1708113516; c=relaxed/simple;
+	bh=Y6CA/0eXmsk2eZWqeDuAH9gz/qp6eh4914mbH0EVdkg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Disposition; b=ZG9MSBACjnvrYiSo8u0krk4XpcmeKUsfhLiVXw0/13LSezJWPc2HWpzmEs17fGPX3a5+pfLORam28AseXeHY8DDDBlSC6pbsFpmqJ0QGOB3pVfaYKjctquWDuSN43rmCBL2HhHkfmLxaHfQA0atlTiyz3Kgp1leLgtfN5JkgES0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=f/VtZsd1; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HYmfGGwy"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5129ece824aso212615e87.3;
-        Fri, 16 Feb 2024 09:19:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708103981; x=1708708781; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HjuIYZ2/nQytOSznRzBhBURn9kSW68YW2INNoMo6hf8=;
-        b=HYmfGGwyHPNaHURe8sSawZH7ZIHMtwAteKDzzDjF31cF+NQEz7G9PtGh/e6YW/VCF8
-         C1mCm8oXxrUymBhTU4VkRv1gRJaTInxOgey6RfNNo0rXLyYlg5slZQeaRSC++2Op0waa
-         vpdrGaOLUjEEK4wrrjWp0INOS/hS2eeOjJkx1HPUr13A/z0KYSrIr1M/JRl2zdzHoj0Y
-         mS//YF9BkilTQRsdf8860B3iPzzhy+563OF/R9dWj83UK52HdCZyflZu/KcD0CHA81As
-         lMbtVUApX3ksacxjWVaXuvWIGvJLVIsyqWzkDkibvH9w3DBN8VN3cVPHPDNytkQmpXy3
-         5SNA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="f/VtZsd1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1708113511;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/Q2M0pDMLhIbJFR8+0n3bXsPc6PTg3nS9JCcltQaK0U=;
+	b=f/VtZsd1HywSq2nifyKt92kgjnri5WXurJEQmD93l9eHr7SFqFZlAHrxgD6QEQOL2h8c9U
+	gNjRnR8OBK49X2D2v32gxNiqx1I1NyKWJWhlXnG+QPTsiGidXp0hxQ4GbCQuM5B6b6xzwa
+	/6U9cBZaCWGHR3eeFrmFewRcYPIjKNA=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-149-xuOq5FevOcaNQ89w7pDmXQ-1; Fri, 16 Feb 2024 14:58:29 -0500
+X-MC-Unique: xuOq5FevOcaNQ89w7pDmXQ-1
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-3c140f965e0so1278838b6e.0
+        for <linux-serial@vger.kernel.org>; Fri, 16 Feb 2024 11:58:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708103981; x=1708708781;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HjuIYZ2/nQytOSznRzBhBURn9kSW68YW2INNoMo6hf8=;
-        b=Pv1QnykzwRlgD1SAGWl0XVjNjcfdLt2dFQRnGqogcmL1OaimdcluIaxMS68NOhviw+
-         9cipR7Q/KdVJm67SnGYMXY568vP2M2EKpwYbYgEumjC4riHIm0/nSa/YwRSJSeX7MFau
-         84MKABjO5W5+u8z6Cltj9q/eq9SVKIyK30kzw1XPKlE3f/ZyOiLWxXPfZWA04ksCSyFM
-         b3EOZIT9eRXt5T4HX6JKEXcmW+wWAdRbz4SQ+t2WQycHKvFgwo1N1GDpPDYlbH6gN05c
-         T7eGuV9m1UhW96MMpG6KK4uhcWfyfClEiZtJaBn3w/CjPor9lSRZGuW3tF0YlhthRtle
-         YcMg==
-X-Forwarded-Encrypted: i=1; AJvYcCXJX92sndfJc7dKYL9qqB+QijkAApp83lrVxlaQ51OPcpfSpC3JRNTSdvRGUlUSF9gsBzk+1zS41q5tg5VKd78E/gKoDSyBLx/XqG34l4Yvhcv8e52AGNV29Vum21ORoukYpDrtFnzAStg9
-X-Gm-Message-State: AOJu0YyzmiVgWHksFn7n08liXMQK1cda5dwP5Mj7r/TEPw/P3CxNfjpP
-	yBbY67zLelo6NwJBjZiLWVW+o+Bz/MDfnc2VxQGEFhHmdo4qWaYzeU4ocJRL
-X-Google-Smtp-Source: AGHT+IFitoiWW83Gkkzgm8QQaYKAB1Unqq6nI7A3Lq7nXl00tis9G69Rk6sgaR44qTdIHEAZ2P+IPQ==
-X-Received: by 2002:a05:6512:3c9d:b0:511:9d36:18a8 with SMTP id h29-20020a0565123c9d00b005119d3618a8mr4805581lfv.2.1708103980598;
-        Fri, 16 Feb 2024 09:19:40 -0800 (PST)
-Received: from mobilestation ([178.176.56.174])
-        by smtp.gmail.com with ESMTPSA id q4-20020a19a404000000b005117c7159a0sm21237lfc.169.2024.02.16.09.19.39
+        d=1e100.net; s=20230601; t=1708113508; x=1708718308;
+        h=content-transfer-encoding:content-disposition:mime-version
+         :references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/Q2M0pDMLhIbJFR8+0n3bXsPc6PTg3nS9JCcltQaK0U=;
+        b=v4Bpsw73loA+OX5ktlyhBKgoZH3bryooESbf/MTYTNxocS9G20kYLUHyXGnj6s0ZUo
+         zdpKFJ3yhU0yyVS02JNBc8TK48hG1NqCjTkATqbnAIsH21upreUQ5SuAKYWzxplQB0zw
+         aaRtj6+wXv/th10tg0TXvURfXuwLQLe4/yqtNGdUQ2XugSl5/DPwMIMhX+skiSEelDDy
+         B1dRMkPSrb8/k6pqKMdryO0yHkNnvQ4UbwLNlyI5WrQQM+AIvm/JAY7St5zceeqKUb9G
+         OqxvyJFzdtLXcAZ99zTFTMWmiCpe3FWQXAgzFJEg2H6DRmEvcnyGu/e06Z/3toisFKJ2
+         FqrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWQh0xVaMFeuBgp5bLuvpv6N44HT3eTTPgxmA2jtVXJPsHMwAHMrwnz2OsxyTODmwhV3730zUc2nyg5Uw66OWCfOlcTXKS+8EIuMaXD
+X-Gm-Message-State: AOJu0YwIrGoCjeGtPbb+btny3fzmWhuIFUXOgbcrzn9mMYgac+UlXvTv
+	U6x3xNZ/bUI8r2L6PP2LH2/pz/vBtUTkaivHrMiAQBzcw/YTbdmTOtUWFrCOLWPYeVbxLLFpNRW
+	JPV0Oz2dmKBf+0pAag6q4wRLDMoWxL3uBDJ5Vnvfg0UUCmfUSa7/qbvIuis7SKg==
+X-Received: by 2002:a05:6808:624d:b0:3c1:3489:f451 with SMTP id dt13-20020a056808624d00b003c13489f451mr5820939oib.54.1708113508496;
+        Fri, 16 Feb 2024 11:58:28 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IE0gISsbHtKmdg+cmjm/kbPbQhCGSpGQpDeFj7BkHPIY4wbXdxIi1dqz2qkxCbH7bT8x9gavA==
+X-Received: by 2002:a05:6808:624d:b0:3c1:3489:f451 with SMTP id dt13-20020a056808624d00b003c13489f451mr5820924oib.54.1708113508191;
+        Fri, 16 Feb 2024 11:58:28 -0800 (PST)
+Received: from LeoBras.redhat.com ([2804:1b3:a800:4770:9d0:4bac:1782:4637])
+        by smtp.gmail.com with ESMTPSA id lq4-20020a0562145b8400b0068f1275b017sm232911qvb.24.2024.02.16.11.58.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Feb 2024 09:19:40 -0800 (PST)
-Date: Fri, 16 Feb 2024 20:19:37 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Andy Shevchenko <andy@black.fi.intel.com>, 
-	Serge Semin <Sergey.Semin@baikalelectronics.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jslaby@suse.com>, Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>, 
-	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>, Maxime Ripard <mripard@kernel.org>, 
-	Will Deacon <will@kernel.org>, Russell King <linux@armlinux.org.uk>, 
-	linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 1/4] serial: 8250: Add 8250 port clock update method
-Message-ID: <ow5mvkxa4g7mub3faiytsij4cyaaralcbzyn675jny5355han7@azw65mhkpwjz>
-References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
- <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
- <ZczD7KPbeRnY4CFc@black.fi.intel.com>
- <raryiklwhctwxcfj3ulbnjcl32owagiccmxpwzmszlh3vm343y@h2ehupm7uiga>
- <Zc5oYJY6W_MCpwhN@smile.fi.intel.com>
+        Fri, 16 Feb 2024 11:58:27 -0800 (PST)
+From: Leonardo Bras <leobras@redhat.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Leonardo Bras <leobras@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Shanker Donthineni <sdonthineni@nvidia.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [RFC PATCH v2 4/4] tty/serial8250: Make use of IRQ_HANDLED_MANY interface
+Date: Fri, 16 Feb 2024 16:58:20 -0300
+Message-ID: <Zc--XMryevBFYetZ@LeoBras>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <8c080e51-6ae5-0e8a-69f6-ca3666164248@linux.intel.com>
+References: <20240216075948.131372-2-leobras@redhat.com> <20240216075948.131372-6-leobras@redhat.com> <8c080e51-6ae5-0e8a-69f6-ca3666164248@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Zc5oYJY6W_MCpwhN@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Feb 15, 2024 at 09:39:12PM +0200, Andy Shevchenko wrote:
-> On Thu, Feb 15, 2024 at 10:32:18PM +0300, Serge Semin wrote:
-> > On Wed, Feb 14, 2024 at 03:45:16PM +0200, Andy Shevchenko wrote:
-> > > On Thu, Jul 23, 2020 at 03:33:54AM +0300, Serge Semin wrote:
-> > > > Some platforms can be designed in a way so the UART port reference clock
-> > > > might be asynchronously changed at some point. In Baikal-T1 SoC this may
-> > > > happen due to the reference clock being shared between two UART ports, on
-> > > > the Allwinner SoC the reference clock is derived from the CPU clock, so
-> > > > any CPU frequency change should get to be known/reflected by/in the UART
-> > > > controller as well. But it's not enough to just update the
-> > > > uart_port->uartclk field of the corresponding UART port, the 8250
-> > > > controller reference clock divisor should be altered so to preserve
-> > > > current baud rate setting. All of these things is done in a coherent
-> > > > way by calling the serial8250_update_uartclk() method provided in this
-> > > > patch. Though note that it isn't supposed to be called from within the
-> > > > UART port callbacks because the locks using to the protect the UART port
-> > > > data are already taken in there.
+On Fri, Feb 16, 2024 at 12:12:44PM +0200, Ilpo Järvinen wrote:
+> On Fri, 16 Feb 2024, Leonardo Bras wrote:
 > 
-> ...
+> > For every TX byte an IRQ is requested.
+> > On threaded IRQs, the handler calls serial8250_tx_chars can send multiple
+> > bytes, limited to it's queue size (tx_loadsz).
 > 
-> > > > +/*
-> > > > + * Note in order to avoid the tty port mutex deadlock don't use the next method
-> > > > + * within the uart port callbacks. Primarily it's supposed to be utilized to
-> > > > + * handle a sudden reference clock rate change.
-> > > > + */
-> > > > +void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
-> > > > +{
-> > > > +	struct uart_8250_port *up = up_to_u8250p(port);
-> > > > +	unsigned int baud, quot, frac = 0;
-> > > > +	struct ktermios *termios;
-> > > > +	unsigned long flags;
-> > > > +
-> > > > +	mutex_lock(&port->state->port.mutex);
-> > > > +
-> > > > +	if (port->uartclk == uartclk)
-> > > > +		goto out_lock;
-> > > > +
-> > > > +	port->uartclk = uartclk;
-> > > > +	termios = &port->state->port.tty->termios;
-> > > > +
-> > > > +	baud = serial8250_get_baud_rate(port, termios, NULL);
-> > > > +	quot = serial8250_get_divisor(port, baud, &frac);
-> > > > +
-> > > > +	serial8250_rpm_get(up);
-> > > > +	spin_lock_irqsave(&port->lock, flags);
-> > > > +
-> > > > +	uart_update_timeout(port, termios->c_cflag, baud);
-> > > > +
-> > > > +	serial8250_set_divisor(port, baud, quot, frac);
-> > > > +	serial_port_out(port, UART_LCR, up->lcr);
-> > > > +	serial8250_out_MCR(up, UART_MCR_DTR | UART_MCR_RTS);
-> > > > +
-> > > > +	spin_unlock_irqrestore(&port->lock, flags);
-> > > > +	serial8250_rpm_put(up);
-> > > > +
-> > > > +out_lock:
-> > > > +	mutex_unlock(&port->state->port.mutex);
-> > > 
-> > 
-> > > While looking for something else I have stumbled over this function.
-> > > My Q is, since it has some duplications with
-> > > serial8250_do_set_termios(), can we actually call the latter (or
-> > > derevative that can be called in both) in the above code instead of
-> > > duplicating some lines?
-> > > 
-> > > 	if (port UART clock has to be updated)
-> > > 	  call (unlocked version of) serial8250_do_set_termios()
-> > > 
-> > > Serge, what do you think?
-> > 
-> > What an old thread you've digged out.)
+> Perhaps I'm missing something here but I don't understand what this tries 
+> to say.
 > 
-> Indeed :-)
+> - 8250 driver gets TX empty IRQ
+> - We write x bytes to FIFO
+> - UART blasts those bits to wire, eventually emptying FIFO
+> - We get the next TX empty IRQ
 > 
-> > Well, AFAIR I didn't create a common baud-rate/clock-update method
-> > because the baud-rate change was just a two stages action:
-> > 1. calculate divisor+quot couple based on the new clock,
-> > 2. update the divisor+quot (+ update the timeout).
-> > The first stage didn't need to have the IRQsafe lock being held and
-> > the runtime-PM being enabled, meanwhile the later one needed those.
-> > So unless the nested locking or try-lock-based pattern is implemented
-> > each stage required dedicated function introduced, which would have
-> > been an overkill for that. But even if I got to implement the
-> > try-lock-based solution with a single function containing both stages
-> > I still couldn't avoid having the serial8250_get_baud_rate() and
-> > serial8250_get_divisor() methods executed in the atomic context, which
-> > isn't required for them and which would needlessly pro-long the CPU
-> > executing with the IRQs disabled. As you well know it's better to
-> > speed up the atomic context execution as much as possible. 
-> > 
-> > Secondly I didn't know much about the tty/serial subsystem internals
-> > back then. So I was afraid to break some parts I didn't aware of if
-> > the baud-rate/ref-clock change code had some implicit dependencies
-> > from the surrounding code and vice-versa (like the LCR DLAB flag
-> > state).
-> > 
-> > Finally frankly it didn't seem like that much worth bothering about.
-> > Basically AFAICS there were only four methods which invocation I
-> > would have needed to move to a separate function:
-> > 
-> > serial8250_get_baud_rate();
-> > serial8250_get_divisor();
-> > // spin-lock
-> > uart_update_timeout(port, termios->c_cflag, baud);
-> > serial8250_set_divisor(port, baud, quot, frac);
-> > // spin-unlock
-> > 
-> > So I decided to take a simplest and safest path, and created a
-> > dedicated method for the just the ref-clock updates case leaving the
-> > baud-rate change task implemented in the framework of the standard
-> > serial8250_do_set_termios() method.
-> > 
-> > 
-> > Regarding doing vise-versa and calling the serial8250_do_set_termios()
-> > method from serial8250_update_uartclk() instead. To be honest I didn't
-> > consider that option. That might work though, but AFAICS the
-> > serial8250_do_set_termios() function will do much more than it's
-> > required in case if the ref-clock has changed.
+> What in this makes "for every TX byte an IRQ is requested" true? There's 
+> one IRQ only for every x bytes TX'ed as far as I can tell!?!
 > 
 
-> My point here is that the idea behind clock change is most likely to be
-> followed up by ->set_termios(). Why to do it differently if it's the case?
+Context:
+I created a C program for writting data to the serial by opening /dev/ttyS0 
+and fprintf() strings of about 100bytes to it. This fprintf() runs alone in 
+a for loop. This is compiled with GCC.
 
-Not always. IIUC what you say is just a one path of the code executed
-within the chain:
+I noticed that it will create an IRQ for every char written to ttyS0.
+Maybe I missed something, and this is not a rule, but that's what I 
+perceived as an average.
 
-dw8250_set_termios()->dw8250_do_set_termios()->serial8250_do_set_termios()
+My scenario:
+- Linux compiled with force_irqthreads = true
+- serial8250 used as a serial terminal (emulated by qemu)
 
-But another code-path will be taken if the DW UART port
-ref-clock is suddenly and asynchronously changed. In that case the
-driver is notified by means of the dw8250_clk_notifier_cb() callback,
-which doesn't need the entire set_termios() callback execution but
-only what is defined in the serial8250_update_uartclk() method:
+For non-irqthreads it works just fine.
 
-dw8250_clk_notifier_cb()
-+-> worker:: dw8250_clk_work_cb()->serial8250_update_uartclk().
+But in this (force_irqthreads = true) scenario the IRQ will get triggered a 
+lot of times, and the threaded handler runs only sometimes, which makes it 
+easy for the IRQs to be handled in batch, which is fine.
 
-> And note, ->set_termios() can be called as many times as needed, so if nothing
-> changes in between it's also fine. But this makes intention much clearer.
-> Do you agree?
+The issue: this causes irqs_unhandled to be incremented once every time 
+note_interrupt() did not perceive a change in threads_handled. Since the 
+threads_handled increments in batches, it means many of those IRQs will be 
+considered "unhandled", leading to the serial8250 IRQ to be disabled.
 
-If what you suggest is to replace the serial8250_update_uartclk() body
-with a direct uart_port::set_termios() invocation then I don't find it
-being much clearer really. The serial8250_update_uartclk() is
-currently specialized on doing one thing: adjusting the divider in
-case of the UART-clock change. If instead the entire
-serial8250_set_termios() method is called then for a reader it won't
-be easy to understand what is really required for a 8250 serial port
-to perceive the ref-clock change. But from the maintainability point
-of view I guess that it might be safer to just call
-serial8250_set_termios() indeed, since among the other things the
-later method implies the divider update too. Thus the maintainer won't
-need to support the two clock divider update implementations. From
-that perspective I agree, directly calling serial8250_set_termios()
-might be more suitable despite of it' doing more than required.
+I created a way (patches 2 & 3) to account for how many IRQ requests have 
+actually been handled by a handler, if that handler can deal with them in 
+batches. 
 
--Serge(y)
+This patch is about me trying to make serial8250 report how many IRQs it 
+handled, by using the (possibly incorrect) information that it will cause 
+1 IRQ per tx-byte.
 
-> 
+This 1 IRQ/tx-byte info was perceived by tracing the IRQ count and the 
+number of bytes sent. It was also reinforced by serial8250_tx_chars() which 
+seems to transmit 1 byte at a time, even though it repeats that up to FIFO 
+size (up->tx_loadsz) in that function.
+
+If that proves to be not correct, I will need to find a way of tracking 
+the number of IRQs handled in that scenario, so the IRQ disabling thing can 
+be avoided.
+
+Does it make sense?
+
+Thanks!
+Leo
+
 > -- 
-> With Best Regards,
-> Andy Shevchenko
+>  i.
 > 
+> > When this happens, the handler return IRQ_HANDLED with reduces the
+> > unhandled IRQ counter only by 1, even though many requests have been
+> > handled at once.
+> > 
+> > This causes the unhandled IRQ counter to go up until it reaches the maximum
+> > and causes the registered IRQ to be disabled, thus breaking the serial
+> > console.
+> > 
+> > Make use of the newly introduced IRQ_HANDLED_MANY interface to return the
+> > number of requests handled, so the unhandled IRQ counter can get decreased
+> > accordingly.
+> > 
+> > Signed-off-by: Leonardo Bras <leobras@redhat.com>
+> > ---
+> >  include/linux/serial_8250.h         |  2 +-
+> >  drivers/tty/serial/8250/8250_core.c | 13 ++++++++-----
+> >  drivers/tty/serial/8250/8250_port.c | 16 ++++++++++------
+> >  3 files changed, 19 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
+> > index ec46e3b49ee99..c9d4271b71d70 100644
+> > --- a/include/linux/serial_8250.h
+> > +++ b/include/linux/serial_8250.h
+> > @@ -200,7 +200,7 @@ int fsl8250_handle_irq(struct uart_port *port);
+> >  int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
+> >  u16 serial8250_rx_chars(struct uart_8250_port *up, u16 lsr);
+> >  void serial8250_read_char(struct uart_8250_port *up, u16 lsr);
+> > -void serial8250_tx_chars(struct uart_8250_port *up);
+> > +int serial8250_tx_chars(struct uart_8250_port *up);
+> >  unsigned int serial8250_modem_status(struct uart_8250_port *up);
+> >  void serial8250_init_port(struct uart_8250_port *up);
+> >  void serial8250_set_defaults(struct uart_8250_port *up);
+> > diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> > index ae637155fe7cd..2fab9102eec45 100644
+> > --- a/drivers/tty/serial/8250/8250_core.c
+> > +++ b/drivers/tty/serial/8250/8250_core.c
+> > @@ -110,7 +110,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+> >  {
+> >  	struct irq_info *i = dev_id;
+> >  	struct list_head *l, *end = NULL;
+> > -	int pass_counter = 0, handled = 0;
+> > +	int pass_counter = 0, handled_total = 0;
+> >  
+> >  	pr_debug("%s(%d): start\n", __func__, irq);
+> >  
+> > @@ -120,15 +120,18 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+> >  	do {
+> >  		struct uart_8250_port *up;
+> >  		struct uart_port *port;
+> > +		int handled;
+> >  
+> >  		up = list_entry(l, struct uart_8250_port, list);
+> >  		port = &up->port;
+> >  
+> > -		if (port->handle_irq(port)) {
+> > -			handled = 1;
+> > +		handled = port->handle_irq(port);
+> > +		if (handled) {
+> > +			handled_total += handled;
+> >  			end = NULL;
+> > -		} else if (end == NULL)
+> > +		} else if (end == NULL) {
+> >  			end = l;
+> > +		}
+> >  
+> >  		l = l->next;
+> >  
+> > @@ -140,7 +143,7 @@ static irqreturn_t serial8250_interrupt(int irq, void *dev_id)
+> >  
+> >  	pr_debug("%s(%d): end\n", __func__, irq);
+> >  
+> > -	return IRQ_RETVAL(handled);
+> > +	return IRQ_RETVAL_MANY(handled_total);
+> >  }
+> >  
+> >  /*
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > index f799c34f1603c..74d53507a73d4 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -1802,7 +1802,7 @@ u16 serial8250_rx_chars(struct uart_8250_port *up, u16 lsr)
+> >  }
+> >  EXPORT_SYMBOL_GPL(serial8250_rx_chars);
+> >  
+> > -void serial8250_tx_chars(struct uart_8250_port *up)
+> > +int serial8250_tx_chars(struct uart_8250_port *up)
+> >  {
+> >  	struct uart_port *port = &up->port;
+> >  	struct circ_buf *xmit = &port->state->xmit;
+> > @@ -1810,15 +1810,15 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+> >  
+> >  	if (port->x_char) {
+> >  		uart_xchar_out(port, UART_TX);
+> > -		return;
+> > +		return 0;
+> >  	}
+> >  	if (uart_tx_stopped(port)) {
+> >  		serial8250_stop_tx(port);
+> > -		return;
+> > +		return 0;
+> >  	}
+> >  	if (uart_circ_empty(xmit)) {
+> >  		__stop_tx(up);
+> > -		return;
+> > +		return 0;
+> >  	}
+> >  
+> >  	count = up->tx_loadsz;
+> > @@ -1858,6 +1858,9 @@ void serial8250_tx_chars(struct uart_8250_port *up)
+> >  	 */
+> >  	if (uart_circ_empty(xmit) && !(up->capabilities & UART_CAP_RPM))
+> >  		__stop_tx(up);
+> > +
+> > +	/* Return number of chars sent */
+> > +	return up->tx_loadsz - count;
+> >  }
+> >  EXPORT_SYMBOL_GPL(serial8250_tx_chars);
+> >  
+> > @@ -1923,6 +1926,7 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+> >  	bool skip_rx = false;
+> >  	unsigned long flags;
+> >  	u16 status;
+> > +	int handled = 0;
+> >  
+> >  	if (iir & UART_IIR_NO_INT)
+> >  		return 0;
+> > @@ -1956,14 +1960,14 @@ int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
+> >  	serial8250_modem_status(up);
+> >  	if ((status & UART_LSR_THRE) && (up->ier & UART_IER_THRI)) {
+> >  		if (!up->dma || up->dma->tx_err)
+> > -			serial8250_tx_chars(up);
+> > +			handled = serial8250_tx_chars(up);
+> >  		else if (!up->dma->tx_running)
+> >  			__stop_tx(up);
+> >  	}
+> >  
+> >  	uart_unlock_and_check_sysrq_irqrestore(port, flags);
+> >  
+> > -	return 1;
+> > +	return handled ? : 1;
+> >  }
+> >  EXPORT_SYMBOL_GPL(serial8250_handle_irq);
+> >  
+> > 
 > 
+
