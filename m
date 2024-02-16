@@ -1,99 +1,132 @@
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD74E14A4E4
-	for <linux-serial@vger.kernel.org>; Fri, 16 Feb 2024 15:17:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.62.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15DE412F58E;
+	Fri, 16 Feb 2024 15:36:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708096646; cv=none; b=R2piV0UmdAp2awdzyLfjyJw1sp9ONIZ+Z7ZtRvDqUgckrQ8uariTpN6JeySf9MKknnhctt0beLLTUMrpg4gm2/h5KxUutnh+WAnB543eyJq9KohInoigrhLkXZevcHyyTZ+xbJyUW1ofrt4Uhx719z4dy9iCxb/1YlaJJE0fxsg=
+	t=1708097807; cv=none; b=byQWZGzrDjac3uEN+fiPjj/TtzQEG8YkWCl6NA6ZPa5BY5oMt+Z3C10e3pt+Z7xQuoES6KgkeyRrKfGCzKDaR4r482GWuyn8SWWANnhK+mhS8OCinqsBkKGd90EL2RDunl1810iFdi/KE4bbfMvCCcmeT1O6Dp2W6VAYUs8YwEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708096646; c=relaxed/simple;
-	bh=c4Y77DzsyfHsAl+4rUIG/hJ7l+2EAUKx/17Pw1Uty8s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UfJMVHAp3l2GitOBgDpcoHnII87QX6Yc5jNF1QExNWc3hAkyB1da9dFoGpBUAVueQABtd//oBTPd8bRV5E7doZK+SOX7/Vt0OLg8EyGOWrD3HUNDdF7qmBdP0tbjY4Blduk7xxYjfQAd0cfPlzEFbBA8sLcEhxOVfkN5Hl9KmJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de; spf=pass smtp.mailfrom=denx.de; dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b=lqEdExUM; arc=none smtp.client-ip=85.214.62.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=denx.de
+	s=arc-20240116; t=1708097807; c=relaxed/simple;
+	bh=nx6D/LSdFMWECnG/RJwTottdK0TUpvHXvzRCViA52jc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ln2NeveJTLXAdCwwqCQMpJ0C/i5GS9npi5Q0+3tLfNIDJp+MCBIwvCjTuWQlfE+eIXEJZhYPPpSc2KRuJCr5Ttr5lwwPXfzyGVPUZMZiwE7n3Yp4c9WYJTo9DhA8YMJ6wpAMq70/TlGfoTaw7jQdyn5bbvc9VY9cH7tuHqrbIwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Euo5EcFm; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b="lqEdExUM"
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: marex@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id 8682E87D66;
-	Fri, 16 Feb 2024 16:17:16 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1708096637;
-	bh=11JafvA4+uzRF7MXkajWwtpAxYSGJpcOWG7iwu4DdZU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lqEdExUMYtCaklxOcvXX3kd/nwa0JUrWmQkltr7krIzGGgoAwsSTcXDe7JpCOJEgw
-	 6uVXNCRcf+YwSZibptBn/dOJcbNLnI7gcfgFwBllM2a5asRCCKyOgyG8/pk297P0Nv
-	 kpEH3+oqawaLE1y3+54r6HYd0HkKQNo5iTxdMMB1TqiZ2FJXXlhXXXNXRiqBhceUX+
-	 XxDk4Bur1aVz4zAlAeC+W4vX9uR7vt1i0yCAms2kIgTu0/LmxfcnB/Kcr/gFZodiIW
-	 P2Hs52vmzyFuHljOJcNrLr9YmZKiCQlebqX80oDUPw2a56/ZNUYEcT7Mrch7GZ9bYB
-	 lxFOMJlTJ5TFQ==
-Message-ID: <e39a6ecd-1250-4889-99aa-31a5a219f6a5@denx.de>
-Date: Fri, 16 Feb 2024 16:17:15 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Euo5EcFm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708097807; x=1739633807;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=nx6D/LSdFMWECnG/RJwTottdK0TUpvHXvzRCViA52jc=;
+  b=Euo5EcFmm8Imc9BaOYfsYY2yuklEQ08fwJBlefdRnVOyBZwNE1KnvMun
+   RpV2gXc0Vfkm921ghGP7AKdqfwIIvXeNbI8Z/HtK5LfdI1cftmGd6Bg7c
+   pm7TGpZ1eJzmquxdxhiM/uWsUamYsl6nmzONff1yNcy6kGzUCWyPzMpbB
+   lmNIL1zx2NY+QX5m6hFIaFFI85CrSxw6dpqwVjjaHwrcd7McnWPhWgQHN
+   c/QMGUKkCC6LbsULsQLlK/9z8kFmxdW1VD6s0TSlC4UVJOKRSsWbIa+ri
+   5nuW5Ip6Q3hZcUgLqhQ8AEwCuVnOF4XdA65lcbvO8nrcR5kE7MM4fw/H2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10986"; a="2361655"
+X-IronPort-AV: E=Sophos;i="6.06,165,1705392000"; 
+   d="scan'208";a="2361655"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2024 07:36:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10986"; a="826590448"
+X-IronPort-AV: E=Sophos;i="6.06,165,1705392000"; 
+   d="scan'208";a="826590448"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2024 07:36:41 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rb0GT-000000055Fl-3XR5;
+	Fri, 16 Feb 2024 17:36:37 +0200
+Date: Fri, 16 Feb 2024 17:36:37 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Leonardo Bras <leobras@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Shanker Donthineni <sdonthineni@nvidia.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH v2 2/4] irq/spurious: Account for multiple handles in
+ note_interrupt
+Message-ID: <Zc-BBQGauwIEJJXy@smile.fi.intel.com>
+References: <20240216075948.131372-2-leobras@redhat.com>
+ <20240216075948.131372-4-leobras@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: serial: imx: Fix broken RS485
-Content-Language: en-US
-To: Rickard Andersson <rickaran@axis.com>, linux-serial@vger.kernel.org,
- rickard314.andersson@gmail.com, gregkh@linuxfoundation.org,
- shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
- festevam@gmail.com, linux-imx@nxp.com, martin.fuzzey@flowbird.group,
- Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: kernel@axis.com
-References: <20240216124601.3752039-1-rickaran@axis.com>
-From: Marek Vasut <marex@denx.de>
-In-Reply-To: <20240216124601.3752039-1-rickaran@axis.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240216075948.131372-4-leobras@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 2/16/24 13:46, Rickard Andersson wrote:
-> From: Rickard x Andersson <rickaran@axis.com>
+On Fri, Feb 16, 2024 at 04:59:44AM -0300, Leonardo Bras wrote:
+> Currently note_interrupt() will check threads_handled for changes and use
+> it to mark an IRQ as handled, in order to avoid having a threaded
+> interrupt to falsely trigger unhandled IRQ detection.
 > 
-> When about to transmit the function imx_uart_start_tx is called and in
-> some RS485 configurations this function will call imx_uart_stop_rx. The
-> problem is that imx_uart_stop_rx will enable loopback and when loopback
-> is enabled transmitted data will just be looped to RX.
+> This detection can still be falsely triggered if we have many IRQ handled
+> accounted between each check of threads_handled, as those will be counted
+> as a single one in the unhandled IRQ detection.
 > 
-> This patch fixes the above problem by explicitly disabling loopback in
-> the case described above.
-> 
-> Signed-off-by: Rickard x Andersson <rickaran@axis.com>
+> In order to fix this, subtract from irqs_unhandled the number of IRQs
+> handled since the last check (threads_handled_last - threads_handled).
 
-Fixes: tag is missing.
+...
 
-> ---
->   drivers/tty/serial/imx.c | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 4aa72d5aeafb..899e331bdfc8 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -683,8 +683,15 @@ static void imx_uart_start_tx(struct uart_port *port)
->   			imx_uart_writel(sport, ucr2, UCR2);
->   
->   			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX) &&
-> -			    !port->rs485_rx_during_tx_gpio)
-> +			    !port->rs485_rx_during_tx_gpio) {
->   				imx_uart_stop_rx(port);
-> +				/*
-> +				 * The function imx_uart_stop_rx right above
-> +				 * will enable loopback, but since we are just
-> +				 * about to transmit then disable loopback.
-> +				 */
-> +				imx_uart_disable_loopback_rs485(sport);
-> +			}
+> +static inline int get_handled_diff(struct irq_desc *desc)
+> +{
+> +	unsigned int handled;
+> +	int diff;
+> +
+> +	handled = (unsigned int)atomic_read(&desc->threads_handled);
+> +	handled |= SPURIOUS_DEFERRED;
+> +
+> +	diff = handled - desc->threads_handled_last;
+> +	diff >>= SPURIOUS_DEFERRED_SHIFT;
+> +
+> +	/*
+> +	 * Note: We keep the SPURIOUS_DEFERRED bit set. We are handling the
+> +	 * previous invocation right now. Keep it for the current one, so the
+> +	 * next hardware interrupt will account for it.
+> +	 */
 
-Maybe it would be better to update the stop_rx and add parameter, 
-whether it should/shouldn't enable the loopback ?
+> +	if (diff != 0)
+
+	if (diff)
+
+> +		desc->threads_handled_last = handled;
+> +
+> +	return diff;
+> +}
+
+...
+
+> +			diff = get_handled_diff(desc);
+> +			if (diff > 0) {
+
+diff may not be negative as you always right shift by 1 (or more) bit. Hence
+
+			if (diff)
+
+will suffice (also be aligned with the similar check inside the helper) and
+making the helper to return unsigned value will be clearer. Am I correct?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
