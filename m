@@ -1,36 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 607687C0AE;
-	Sat, 17 Feb 2024 15:14:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1F07D3EA;
+	Sat, 17 Feb 2024 16:44:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708182841; cv=none; b=ryfZYHKLecLhUg8oD2G7Z4swI7y1Jq1+fvrQ04SqrB5vFAkseO2YA2lL96ud2ZDRITMErIvq1iI4oKa6i+3zUzkYMGQv3C4NrWCi2/evrW5PRRDGYMm/aTbz5GhNtFRbJm/jZIhyAPjYyIyV5W2BMpgbtpAhiSkNxoGIbNUUwfE=
+	t=1708188275; cv=none; b=Yl7tprGeK8/JQrAkJXaKIB2T7x57vVRL/K/lh2+hqTQAo2zy4AOAh07bRwvqA1bUiyZUNv+IIJSTjNU5G1VXhFczxFtFc883U6sf//IhyyH3lId6H5BclRLHsiptO5an2heJTdxP8vWu3/vn+iiVVhCNO9jTSC1uNq7cxgWVvL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708182841; c=relaxed/simple;
-	bh=N+7oGJ5SRLTAWb4NVnkQjUjbXXHuDex3ENh+WWZQqmk=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Z9zPIKjOAxxXxRP21NGpwGql4Q/D/EvXpwnQH6lFmgwA8m4ocKQRkH3hNq4Klx5siviaUDcxA8JdltBS6QGycilMHCJcfCvm6aRDbZbg03AI6xVgUtS7cPa3YcKMReMnz7XAWvXOICOYOwYey5zx7MNS0bAJaclMpWIjql1AZ00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=m519jL8f; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708188275; c=relaxed/simple;
+	bh=NT8S/OKI4BTTc1aSNQpV52RM8baFUiBxCd2A9Yd/1S0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P+iGJzgSzTtoGOqWubFzUXLYiYtPlJR1rarYFBsn2lW2+UbseRw7RR8Ukh4f2tKFOxTPJnwyIfdY84VxaIyv2r+hephi/FuEd9Gkd6vikjwaPI5Ifmai3SdYeIlJLkW+j+0VWzFi/1jgta3imv9HeqlptnInOM9PiQN1n6Efe8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=y//yXWlc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="m519jL8f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83125C433C7;
-	Sat, 17 Feb 2024 15:14:00 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="y//yXWlc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23950C43394;
+	Sat, 17 Feb 2024 16:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1708182840;
-	bh=N+7oGJ5SRLTAWb4NVnkQjUjbXXHuDex3ENh+WWZQqmk=;
-	h=Date:From:To:Cc:Subject:From;
-	b=m519jL8fuZuwCvx/PQY6mlHLF7L4knT6p3gs/IcAxDHOhnhThkDOSX3k4DhdizGCW
-	 GoNGSl3uCvCHtamsKU24zOA30K8V6x2/9uIE/IPmJR/fneX97rnKZ9/egXKJcp49nW
-	 KQGADznLbKH7H2o+wTcMRGFNuB6IlYkZAZWkav38=
-Date: Sat, 17 Feb 2024 16:13:58 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY/Serial driver fixes for 6.8-rc5
-Message-ID: <ZdDNNg5Gsxf2uQKh@kroah.com>
+	s=korg; t=1708188274;
+	bh=NT8S/OKI4BTTc1aSNQpV52RM8baFUiBxCd2A9Yd/1S0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=y//yXWlcSQorg2mtXC6aewIhtxTVBw/R0GVf35WO0DGEuNAmdv9/V8hn/cUjJBY0E
+	 jjdFnDf2mpcMOvrvdWcvLBFT/rECdfBZE66ke3j1ZjDuNiJA4B8gjvPwgJggqD5roI
+	 I3VYxTTfzK74p4UqHmaBNURzQvgeDh1VMwFemImA=
+Date: Sat, 17 Feb 2024 17:44:31 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 4/5] serial: 8250_exar: Use 8250 PCI library to map
+ and assign resources
+Message-ID: <2024021723-spellbind-citadel-d2c1@gregkh>
+References: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
+ <20240214171044.3551032-5-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,41 +41,18 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20240214171044.3551032-5-andriy.shevchenko@linux.intel.com>
 
-The following changes since commit 54be6c6c5ae8e0d93a6c4641cb7528eb0b6ba478:
+On Wed, Feb 14, 2024 at 07:09:37PM +0200, Andy Shevchenko wrote:
+> 8250 PCI library provides a common code to map and assign resources.
+> Use it in order to deduplicate existing code and support IO port
+> variants.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/tty/serial/8250/8250_exar.c | 10 +++++-----
+>  drivers/tty/serial/8250/Kconfig     |  1 +
+>  2 files changed, 6 insertions(+), 5 deletions(-)
 
-  Linux 6.8-rc3 (2024-02-04 12:20:36 +0000)
+Looks like you have a build error :(
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc5
-
-for you to fetch changes up to 7be50f2e8f20fc2299069b28dea59a28e3abe20a:
-
-  serial: mxs-auart: fix tx (2024-02-06 14:42:11 +0000)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 6.8-rc5
-
-Here are 3 small tty and serial driver fixes for 6.8-rc5:
-  - revert a 8250_pci1xxxx off-by-one change that was incorrect
-  - 2 changes to fix the transmit path of the mxs-auart driver, fixing a
-    regression in the 6.2 release
-
-All of these have been in linux-next for over a week with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      serial: 8250_pci1xxxx: partially revert off by one patch
-
-Jiri Slaby (SUSE) (2):
-      serial: core: introduce uart_port_tx_flags()
-      serial: mxs-auart: fix tx
-
- drivers/tty/serial/8250/8250_pci1xxxx.c |  2 +-
- drivers/tty/serial/mxs-auart.c          |  5 ++++-
- include/linux/serial_core.h             | 32 +++++++++++++++++++++++++++-----
- 3 files changed, 32 insertions(+), 7 deletions(-)
