@@ -1,55 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F02581D681;
-	Sat, 17 Feb 2024 16:48:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C2E7E0E9;
+	Sat, 17 Feb 2024 17:40:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708188518; cv=none; b=FX+LkvecxwwTPOQXczPfXABetns+sqSF8At1FRBY973h+KB+a7lkONyiY8E7GmXH9QldN1YIdn+aOyNNJEy28N0lwFO4c12Nu9QJnHsBZ3Tw/teoxFJMPKSxUF1gaHdFybPIq00guzE1w0WdPqQ8pnf+xuwt6W8MoYGx1wWZiRE=
+	t=1708191610; cv=none; b=snWLVTLIK4EbIvydQEC1AOehGVIlqr2lPUHa6MqvnHj3J9EmASbue5dG/ygOWBEkFR4LjSzFeoqMdMSJVWhE+d0kR6VNIIyf2UeBu2sjfWEJN/ZaCiK0xuR/YmtpY1noYSH6nDf5+jwMcF9pgGyIrPAV0xHVMJce3JIIa2xVz3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708188518; c=relaxed/simple;
-	bh=nlUMRV4bOjTiEhIam9kOjSfsJBtBaZN4aNAM40JaQHg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UxilaW6p/B12FRMSw4ORQgMDu5WAMUHpLRlZpVPfdl6cjeiPaU33uEvBqsWO15CUfbh+sJYCyVkyZRUtu8Luooxi84Fn9HHJhqyHwPVqdYUbc80p5ND9E9cGwSlQK0H8XDs1gmFrnieERPkMnuiLCQCQDudnUWEs5IDBAxOwHtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=1+KjMo16; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708191610; c=relaxed/simple;
+	bh=yoLdkazXlbGrb4N+FDikp7PQWXhIyfggyDKa9NmV3I4=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=G2eVLMWHnlBbUMHTPpl4I8K5q4Iswlw6YOGfp1t4Lou81TdHguPVgdjBHhndYJQqbtHPb6e5WRj0JPHw24TLUif4vus40P1zzSJEQmMTQxmrw6BoWSfX/BvldhsprgJ2ymoVGSBhg5epCDfkzgH1RmqttCMjYnunXt9+aagaSS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kgwa8Vf9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1+KjMo16"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 170A9C433C7;
-	Sat, 17 Feb 2024 16:48:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1708188517;
-	bh=nlUMRV4bOjTiEhIam9kOjSfsJBtBaZN4aNAM40JaQHg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1+KjMo16UQ/KknPdv1Lzp5O08CSY3Akt9qAcZ+tAr14NqgYh9uuiDo8g9Em/yqc/G
-	 Iy0fFwwhxnWHam3gL74L6yuWahOEuCLdKBNUF6N1XClJ4GVsqT5nVzHE9doe8lSehp
-	 +2yIpL1iZ3ohzGiV/ZwTlCh4jtSh3rGJAUuMD2zg=
-Date: Sat, 17 Feb 2024 17:48:34 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] tty: Don't include tty_buffer.h in tty.h
-Message-ID: <2024021721-banknote-pasture-52f3@gregkh>
-References: <20240215111538.1920-1-ilpo.jarvinen@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kgwa8Vf9"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C4D69C433C7;
+	Sat, 17 Feb 2024 17:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1708191609;
+	bh=yoLdkazXlbGrb4N+FDikp7PQWXhIyfggyDKa9NmV3I4=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=kgwa8Vf9KxIU/yGDG3r4FvvFV0zAoA7CuSIuRhJxoxc7TIE7niILJ47QkOIDNOfmO
+	 uSgoSlQCxGOIgtyr9CO/K1gCz6TVTtNk5vTP8G/r/Y8lSJvux73m0mYDBzN5YaTYkK
+	 ziyNUGX7h/zi9y5S/C7/BdfSBmvdhWN6QXTM+1XyGhPvK4Py7FvMBroYJnRHl5LAzN
+	 vm9gLVmgmt9HLle4xVOp7IewBjJkvdCDj1CAWhg5aW2bB+uOsfXDlltcRbatS2M0fp
+	 r3Q8XdX6Pq/rfn3M/u0QnYisfZpEyPnNf0ciV2Dn7CgmvN5FLnvZZkCvi57qMmZOdV
+	 kBUbnnt5L1BxQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8109D8C968;
+	Sat, 17 Feb 2024 17:40:09 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.8-rc5
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZdDNNg5Gsxf2uQKh@kroah.com>
+References: <ZdDNNg5Gsxf2uQKh@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZdDNNg5Gsxf2uQKh@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc5
+X-PR-Tracked-Commit-Id: 7be50f2e8f20fc2299069b28dea59a28e3abe20a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4b2981b2270d7b9be6c15f80d5c4b838ad93ceef
+Message-Id: <170819160968.11002.15824753923318986505.pr-tracker-bot@kernel.org>
+Date: Sat, 17 Feb 2024 17:40:09 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240215111538.1920-1-ilpo.jarvinen@linux.intel.com>
 
-On Thu, Feb 15, 2024 at 01:15:38PM +0200, Ilpo Järvinen wrote:
-> There's no need to include linux/tty_buffer.h in linux/tty.h.
-> Move the include into tty_buffer.c that is actually using it.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-> ---
-> v2:
-> - Fixed shortlog to make sense
+The pull request you sent on Sat, 17 Feb 2024 16:13:58 +0100:
 
-I didn't see a change in the shortlog, but hey, I trust you :)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc5
 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4b2981b2270d7b9be6c15f80d5c4b838ad93ceef
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
