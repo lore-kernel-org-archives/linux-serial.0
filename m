@@ -1,152 +1,197 @@
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01on2139.outbound.protection.outlook.com [40.107.13.139])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B420E146904;
-	Fri, 16 Feb 2024 22:48:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.13.139
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708123683; cv=fail; b=PBc1Yig+tdd4yczypqNpnqkS5TYbhlhb05Wz+3pOXQXSCRnVk27B0wiIgIDaI8IM/BPbIRh8GM7ajktiKBhoqNsMw6Dm1ge8eTKCmIahvCKhtG8LMj+s3MkNK2wIhlH0OttVgJAUpmZZaQOGFnIpwKi3VajcVcGQckOQmKuNBCo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708123683; c=relaxed/simple;
-	bh=sQNmmOqiQ+gSaPNcqFZpoXHPHkDDxxndySbu7ZpRVEo=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=tJBctfyl6X8LZIHXc+e0j655HttnqWdx7c3fvqe+C+Fee0r/fizq/fGhqPgqds3u7Hqrrhx6RQfgXDsou7qA5R+HVp20ZbH4x7192LFIdHCP4mJTBBr2uQRWC67pzjdpwd7FTUqJsvJD1x3nhge5bFDlvVY1iJVpoQIibqcLy3Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kunbus.com; spf=pass smtp.mailfrom=kunbus.com; dkim=pass (1024-bit key) header.d=kunbus.com header.i=@kunbus.com header.b=jaGS85hU; arc=fail smtp.client-ip=40.107.13.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=kunbus.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kunbus.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B100D149DE6;
+	Sat, 17 Feb 2024 04:45:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708145114; cv=none; b=UL1jn2IOXBUK6iJGQu865Ir6YUvJP320eVIbnqbUAQ5FXS3+C5l3Ihl9H66etI1y4W9hqMyjU6OosqJpOjnXkEMQxbHUISxpOVej2vQqNA5+R2RTgbTO7+N8rkcYJCe0iL8guadsD4Ggy5TVBfCpoJo9a0P+2aOqO2diDDE7CM0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708145114; c=relaxed/simple;
+	bh=sGaGGmxvGhZ1yaoNh6a7aLYC8deDiFyxQgMVF/BlA8c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JScUY6n33L7WdjqSIpTnzahz+CcHGceI96Q+8Ci/pfo/iIR3tLgPKGq0oYDGe0gUqH/sa16gEQMd6liXrn/OAU48B+tKPlvAxwWTefx77i5rXLOiWu5Wp2RLii3vxWjyTU6XoC0JC8U1ajJTcysYi369tDV0hz7cBqcgEGNNkUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=noNacYih; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=kunbus.com header.i=@kunbus.com header.b="jaGS85hU"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bsNMKYXMeq4u989EDx5QHaCRx1LC8NhiODUUP5xAEVTo0otblf+6UkkXiPj7cdWGA6PlKPzDVnYWiFPO4qfs65yDuFIZnEPSEmkUL2knCIjeVlCPBhfv23WCl5+AHlWEYpkeJz1ftxy7tagwsUm+UbYwRrWaJ3iFYb4gaPuqXZtJqyxOTopgva5Ha/sZnnfK50dW2JZi3/aIF6NH9WIb2nYHeivHSaMtT2J35WkaRc3FrREA8ARrR0m9fPuhTDT65WV0Bj6IXcC5QBtJxqerP3Ki5YuAleuBbRAPSzGJF2KhMjsKd8+aKLzmJPUdGaxWCpSpnRaM28bDih9MY+L5Tw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sQNmmOqiQ+gSaPNcqFZpoXHPHkDDxxndySbu7ZpRVEo=;
- b=Lqhv6KbRm16mv4OkVgUEWEexmm8TwLagwDYQeJbmLEXe8t8t/bTu9UnOlzkGO+K7VY53ekXjTIZiWBhrdF2eiFG4y/OQ7+FV0EVaXkRKPOrhz4Aq049vpQkC2hYLptIbLrlhB7D7lwqU6NJH1crJvl/u2cw3zQSlbcNUkJYiY8FYscWU9Ckt3E54Jid72mN5Qv9nOClDh9oN6Lvv//ygqQsCtbE7c4akZMEzu81i0NfD250XGS+AeT5aGcoxbrMBzIIOLh7qTDJFEmD44v20C47qMr10x+eZd6q698mTyAleyz6228ZBJ30Ce1j/dkI4+64Q0o8m36G2SRnO3QC2SA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=kunbus.com; dmarc=pass action=none header.from=kunbus.com;
- dkim=pass header.d=kunbus.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kunbus.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sQNmmOqiQ+gSaPNcqFZpoXHPHkDDxxndySbu7ZpRVEo=;
- b=jaGS85hUaOu2FmvFVZ9GHlTuZ6Ok7aG3se73l8iCHrFfiPMrUIuvQJqkagZEMSvzWAlLPjTrMak4OBcoeURck3MSr09VHy5xwCZwJx+62x2JB1ApkWkVbz+HYcMdGXdV2bfeUx7zE2ctZJmHYPZvECJSQI61IEa0fnBpFJ7YWLs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=kunbus.com;
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM (2603:10a6:803:4e::14)
- by PAXP193MB1872.EURP193.PROD.OUTLOOK.COM (2603:10a6:102:1c6::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.31; Fri, 16 Feb
- 2024 22:47:55 +0000
-Received: from VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::83c6:a213:7935:ae6f]) by VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- ([fe80::83c6:a213:7935:ae6f%4]) with mapi id 15.20.7292.026; Fri, 16 Feb 2024
- 22:47:55 +0000
-From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: LinoSanfilippo@gmx.de,
-	lukas@wunner.de,
-	p.rosenberger@kunbus.com,
-	ilpo.jarvinen@linux.intel.com,
-	mcoquelin.stm32@gmail.com,
-	alexandre.torgue@foss.st.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/2] serial: stm32: do not always set SER_RS485_RX_DURING_TX if RS485 is enabled
-Date: Fri, 16 Feb 2024 23:47:07 +0100
-Message-ID: <20240216224709.9928-1-l.sanfilippo@kunbus.com>
-X-Mailer: git-send-email 2.43.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain
-X-ClientProxiedBy: FR0P281CA0259.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b5::18) To VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
- (2603:10a6:803:4e::14)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="noNacYih"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708145113; x=1739681113;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sGaGGmxvGhZ1yaoNh6a7aLYC8deDiFyxQgMVF/BlA8c=;
+  b=noNacYihr8zqTy8zbikhc9KwKOocYlS0jRxBwKnf2ESdvghH9W6g+8GS
+   qfTwAfhLXxIAA1ZFhNzqEPJnnJc3Ey3gLN7AVt7f19mhjURzkLiN1qLzy
+   jeqmlfQHzbRqWgUw3fCHVmjVH73t794rJVutegfi/OZi+nKU+qHuh+3Kg
+   082I/C1LkXpm98OFXBoKgA/Gv0CeYCgtfQTXzCcmQjKi3HFuDDzP2vsgl
+   Mu0acMaTeCwfTE7wKHK+uCPAeM9nc6NL7D+Z22u62PYuwqxm6cjLpCwc2
+   EQuooC64fHLmD7XIOSvztGtTnH3m7Vg+x96GVRJtyMo8y7k+4/UMJua9m
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10986"; a="12911273"
+X-IronPort-AV: E=Sophos;i="6.06,165,1705392000"; 
+   d="scan'208";a="12911273"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2024 20:45:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,165,1705392000"; 
+   d="scan'208";a="8619674"
+Received: from lkp-server02.sh.intel.com (HELO 3c78fa4d504c) ([10.239.97.151])
+  by fmviesa003.fm.intel.com with ESMTP; 16 Feb 2024 20:45:10 -0800
+Received: from kbuild by 3c78fa4d504c with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rbCZY-0001qC-0e;
+	Sat, 17 Feb 2024 04:45:08 +0000
+Date: Sat, 17 Feb 2024 12:44:13 +0800
+From: kernel test robot <lkp@intel.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 4/5] serial: 8250_exar: Use 8250 PCI library to map
+ and assign resources
+Message-ID: <202402171225.63pAB5JS-lkp@intel.com>
+References: <20240214171044.3551032-5-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1P193MB0413:EE_|PAXP193MB1872:EE_
-X-MS-Office365-Filtering-Correlation-Id: 693dd5d1-c3ea-41f3-550b-08dc2f41502e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	w6ZMlVOi7srl3om4cqW+LtQ5EsdbDzSUanfaWfuxyQyByEVw0zYhgezWTaM36DAe4NkHGmRyJaBGL1/PZVLAzKk2FptA02/fJex3xjIZ65GuEOnE4EbK579OHjFSUIkzuwF0KB9mgYGUYbLRA+Jlei9VIpm+M+EcKjO1XCB3re3QY5BaS6ZAEWWpDJJc4Q96Kk/M4iDBexrsHDd6r5qBZ4c2rt9SljGOnHj4KN6knTBhC1gM6w6CR0w8/wCOpkyYOgSiLtINpkz8RWAZ+BMcbxmwv1oYPZ4+KcrwyHXRwtv+2cRoA4TeODFMnl3CX4gxKIQv6uH+0Cs5n3xiz1q3m2S+8BZ63XnlDOCrC3Oq0Qb1i8PtMUewr9eiVyuIoULDrx9OuyAGnM5MbQxScazUl/EJiYEUL8dUHKLmSyU8d/1ohUytOIlT1MODb6/xwsQ0IHBIEjpNwzZppmtcZuVzi96C4RIzbyk37MhCruoB5J7XGPmhkYIsbV647mTZfBo35K233SCh3zbWaLiB52ZFnRowudhf8JWummI5UolLBbzQQLODKzK/9fs0D/Etlznc
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1P193MB0413.EURP193.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(346002)(396003)(39840400004)(376002)(230922051799003)(186009)(451199024)(64100799003)(1800799012)(2906002)(66946007)(8936002)(66556008)(4326008)(66476007)(8676002)(7416002)(5660300002)(1076003)(2616005)(41300700001)(83380400001)(36756003)(316002)(6666004)(478600001)(6506007)(6486002)(52116002)(86362001)(38100700002)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?/QdQYcac3Cn9ncDCtyxZhPjVMsOQ0ipavKSRZlzLl53org6iGx9i/rDKOr3P?=
- =?us-ascii?Q?X5AWQhZK8h0gF0jmyvO5I/VQO05iyvSrriKMpRe7r5hM9XBv2H7t1/UuS+qK?=
- =?us-ascii?Q?ubmU0F9F6lAa6/mY2prJW6F8VhoiyjIkVHDgDry0LcbeDmMIz0Zjsi10N0yi?=
- =?us-ascii?Q?cCBFd9QaxfcyAwO+gtC6nCjcUesPWjaz6d/kwMWIM7o21PmW4AWVyrOJMyg4?=
- =?us-ascii?Q?EwKn7PpUUGOMz+YRxrztSu3aTuM5N6WKYdmkkAqEwAVZtkCOJlFsnSMxRAcr?=
- =?us-ascii?Q?KmzQSL51fQQ/lwKIvuI3RWdni5ccVvjuvkjJMZtQDwrjCVWoxzdqPcEVf0NI?=
- =?us-ascii?Q?XkaRtj8skj9SVWekmyJUanIkEHi06uO4ktIGhwzBR7w11woaXELKJ/0O8cr8?=
- =?us-ascii?Q?nIflNiwDb93cBLXgOpWZPZ/O/6GRmXxtBDjVgQe6DW51aqgQjDGqm+Qg4t7S?=
- =?us-ascii?Q?1piBWzkLnQKwlOf1YU81IV++NEB80sRw3cfw6H0tnbr+uleHjKpRMKNIHbt6?=
- =?us-ascii?Q?6OkZDe77815ctn3fcsf0j4LPqpT237yx2fbfB7pQ/Gg7z+0C/+oTONKJd6sE?=
- =?us-ascii?Q?245zH5qKbnWiTGNS8c6R+qdxmjCtJwb/vlwMQMD/phZIFkQrckblxzzu1nFZ?=
- =?us-ascii?Q?YBcn7L4h5b67Ngv2mHAKg3rvZN2Lm3/CHowJdunE2ezJIfWo3qM8IornFgEd?=
- =?us-ascii?Q?p8uSBQmkqBqKS+o/I3pJbwQNYv98QZsv2nnauYB6PP1ze8+PC8/xj0O3Pz1I?=
- =?us-ascii?Q?H/x3g2ng3zMcVOcNZDZTVOTproJ0d/ze3v2jylVHzqMH6uqTgDM5l/dTHuBG?=
- =?us-ascii?Q?SkZgrTY/7qoSF8L/NYFrfHZUVgzwdwHGcJXUVBHSXUXNAGBSaLnyYc633vMh?=
- =?us-ascii?Q?AK3aaAc6rVASLoSHwyztWfAQ2xt8LWE5W80Ma/OYIpnvYQXSm+Ibf9q6T50q?=
- =?us-ascii?Q?pAkiqcPongRrBb0k/VZp7Dp8BnXMvAV9g8FV7g2q0MsVbQNF8E7RSkT7gcRd?=
- =?us-ascii?Q?eUhpvxjDcrb5t7Y9HVyaPLsAMsh4ex4vDKDTB7jbuBqLwX58efgzqzAfr94n?=
- =?us-ascii?Q?gKCiWiS2UY5A9IOvwkeTyW82Ct60Bk7sgw9TEwuRXMvpXBmZV3IZxDuhKsmW?=
- =?us-ascii?Q?xQ2VgAN4Ia7F9j7ro1fTUFmILuTA1CjummCn+RHdfovbtcFt+Sk0hvwdQpdr?=
- =?us-ascii?Q?PytNkSUs/Uv8HkNw5fybFtCG9Heazl5x7MJuomSkZatz6obj4fNQHNRmPPMV?=
- =?us-ascii?Q?BiJdQqIelm68adswagrO+Z2PAfceQctdMIZ+7614zmxfnmEIRbBcnDqMGHKz?=
- =?us-ascii?Q?xfRo4M0fCt9e/vHRdzrfuLFMOVhVYIdXrOCEePkxPicY9M8IAnMRT2vMkZbB?=
- =?us-ascii?Q?HD6M2Gq2Do7Ek2hnL3RDsPRhHIyQ0gJCfSFs56iIuD1Ah+TUvX50HXKN2BIN?=
- =?us-ascii?Q?ru2ikOf6jnPTsJwPUMKhso+iZzAICL8Otyieqculeh/09HqV93fQ9r3eeA3n?=
- =?us-ascii?Q?loy1HPQJ6Wyd8B5yYH3cUemSd9Z+2OVIxaSQOTXPYvkhu/BwXGPMQPEEqq/t?=
- =?us-ascii?Q?FYmwCHVnvuYQz04+CHRGHBgfkDtv1CZyhwpvn4yGI6RxdhclPDNpDNuDWM88?=
- =?us-ascii?Q?BAbiQeVSyso77R3ZFmg6CJkUBxtd7kCSlfKGypdtZdv7bX90TOdv6krWdvj7?=
- =?us-ascii?Q?xymDHA=3D=3D?=
-X-OriginatorOrg: kunbus.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 693dd5d1-c3ea-41f3-550b-08dc2f41502e
-X-MS-Exchange-CrossTenant-AuthSource: VI1P193MB0413.EURP193.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2024 22:47:54.8566
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: aaa4d814-e659-4b0a-9698-1c671f11520b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FP6qpxMKUZlu5+UYK56t8kJRDUoyGB1DwQfVlC8W6ewPuCspG+tHh5PvDmkxvOTSiFkeTmz7L8CBYF9TahzA7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP193MB1872
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240214171044.3551032-5-andriy.shevchenko@linux.intel.com>
 
-QmVmb3JlIGNvbW1pdCAwN2MzMGVhNTg2MWYgKCJzZXJpYWw6IERvIG5vdCBob2xkIHRoZSBwb3J0
-IGxvY2sgd2hlbiBzZXR0aW5nCnJ4LWR1cmluZy10eCBHUElPIikgdGhlIFNFUl9SUzQ4NV9SWF9E
-VVJJTkdfVFggZmxhZyB3YXMgb25seSBzZXQgaWYgdGhlCnJ4LWR1cmluZy10eCBtb2RlIHdhcyBu
-b3QgY29udHJvbGxlZCBieSBhIEdQSU8uIE5vdyB0aGUgZmxhZyBpcyBzZXQKdW5jb25kaXRpb25h
-bGx5IHdoZW4gUlM0ODUgaXMgZW5hYmxlZC4gVGhpcyByZXN1bHRzIGluIGFuIGluY29ycmVjdCBz
-ZXR0aW5nCmlmIHRoZSByeC1kdXJpbmctdHggR1BJTyBpcyBub3QgYXNzZXJ0ZWQuCgpGaXggdGhp
-cyBieSBzZXR0aW5nIHRoZSBmbGFnIG9ubHkgaWYgdGhlIHJ4LWR1cmluZy10eCBtb2RlIGlzIG5v
-dApjb250cm9sbGVkIGJ5IGEgR1BJTyBhbmQgdGh1cyByZXN0b3JlIHRoZSBjb3JyZWN0IGJlaGF2
-aW91ci4KCkNjOiA8c3RhYmxlQHZnZXIua2VybmVsLm9yZz4gIyA2LjYrCkZpeGVzOiAwN2MzMGVh
-NTg2MWYgKCJzZXJpYWw6IERvIG5vdCBob2xkIHRoZSBwb3J0IGxvY2sgd2hlbiBzZXR0aW5nIHJ4
-LWR1cmluZy10eCBHUElPIikKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZp
-bGlwcG9Aa3VuYnVzLmNvbT4KLS0tCiBkcml2ZXJzL3R0eS9zZXJpYWwvc3RtMzItdXNhcnQuYyB8
-IDQgKysrLQogMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jIGIvZHJpdmVycy90
-dHkvc2VyaWFsL3N0bTMyLXVzYXJ0LmMKaW5kZXggNzk0Yjc3NTEyNzQwLi42OTNlOTMyZDZmZWIg
-MTAwNjQ0Ci0tLSBhL2RyaXZlcnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jCisrKyBiL2RyaXZl
-cnMvdHR5L3NlcmlhbC9zdG0zMi11c2FydC5jCkBAIC0yNTEsNyArMjUxLDkgQEAgc3RhdGljIGlu
-dCBzdG0zMl91c2FydF9jb25maWdfcnM0ODUoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCwgc3RydWN0
-IGt0ZXJtaW9zICp0ZXIKIAkJd3JpdGVsX3JlbGF4ZWQoY3IzLCBwb3J0LT5tZW1iYXNlICsgb2Zz
-LT5jcjMpOwogCQl3cml0ZWxfcmVsYXhlZChjcjEsIHBvcnQtPm1lbWJhc2UgKyBvZnMtPmNyMSk7
-CiAKLQkJcnM0ODVjb25mLT5mbGFncyB8PSBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYOworCQlpZiAo
-IXBvcnQtPnJzNDg1X3J4X2R1cmluZ190eF9ncGlvKQorCQkJcnM0ODVjb25mLT5mbGFncyB8PSBT
-RVJfUlM0ODVfUlhfRFVSSU5HX1RYOworCiAJfSBlbHNlIHsKIAkJc3RtMzJfdXNhcnRfY2xyX2Jp
-dHMocG9ydCwgb2ZzLT5jcjMsCiAJCQkJICAgICBVU0FSVF9DUjNfREVNIHwgVVNBUlRfQ1IzX0RF
-UCk7CgpiYXNlLWNvbW1pdDogODQxYzM1MTY5MzIzY2Q4MzMyOTQ3OThlNThiOWJmNjNmYTRmYTFk
-ZQotLSAKMi40My4wCgo=
+Hi Andy,
+
+kernel test robot noticed the following build errors:
+
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.8-rc4 next-20240216]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/serial-8250_exar-Clear-interrupts-before-registering-handler/20240215-011246
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240214171044.3551032-5-andriy.shevchenko%40linux.intel.com
+patch subject: [PATCH v1 4/5] serial: 8250_exar: Use 8250 PCI library to map and assign resources
+config: parisc-randconfig-001-20240215 (https://download.01.org/0day-ci/archive/20240217/202402171225.63pAB5JS-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240217/202402171225.63pAB5JS-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202402171225.63pAB5JS-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/clk/sprd/clk-sprd.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/dma/ti/omap-dma.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/soc/mediatek/mtk-cmdq-helper.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/soc/amlogic/meson-clk-measure.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/soc/qcom/spm.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/regulator/da9121-regulator.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/regulator/max20411-regulator.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/regulator/rt4831-regulator.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/reset/hisilicon/hi6220_reset.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/tty/serial/owl-uart.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/char/hw_random/omap-rng.o
+WARNING: modpost: drivers/char/hw_random/mxc-rnga: section mismatch in reference: mxc_rnga_driver+0x8 (section: .data) -> mxc_rnga_remove (section: .exit.text)
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/char/lp.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/base/regmap/regmap-i2c.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/block/null_blk/null_blk.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/block/ublk_drv.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mfd/arizona.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mfd/rt4831.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mfd/qcom-pm8008.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/scsi/BusLogic.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/scsi/aha1740.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/scsi/atp870u.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/auxdisplay/hd44780_common.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/host/ohci-exynos.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/host/xhci-pci-renesas.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/class/usbtmc.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/storage/uas.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/serial/ch341.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/serial/qcaux.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/serial/usb-serial-simple.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/misc/isight_firmware.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/gadget/function/u_serial.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/gadget/function/usb_f_mass_storage.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/gadget/function/usb_f_tcm.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/gadget/legacy/g_dbgp.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/usb/mon/usbmon.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/i2c/busses/i2c-ccgx-ucsi.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/i2c/busses/i2c-ali1563.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/i2c/busses/i2c-pxa.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/i2c/busses/i2c-qup.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/power/reset/piix4-poweroff.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hwmon/corsair-cpro.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-betopff.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-cherry.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-chicony.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-cypress.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-dr.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-emsff.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-elecom.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-elo.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-evision.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-holtek-kbd.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-holtek-mouse.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-lenovo.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-letsketch.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-maltron.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-mf.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-megaworld.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-ntrig.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-pl.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-petalynx.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-primax.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-retrode.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-samsung.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-sjoy.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-sony.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-speedlink.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-steelseries.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-gaff.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-uclogic.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-zpff.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-zydacron.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/hid/hid-waltop.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-light.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-power-supply.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-gbphy.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-gpio.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-i2c.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-uart.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/staging/greybus/gb-usb.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/platform/goldfish/goldfish_pipe.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mailbox/mtk-cmdq-mailbox.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/nvmem/nvmem-apple-efuses.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/nvmem/nvmem_u-boot-env.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/fsi/fsi-master-aspeed.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/fsi/fsi-master-gpio.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/fsi/fsi-master-ast-cf.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/interconnect/imx/imx-interconnect.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/interconnect/imx/imx8mq-interconnect.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/interconnect/imx/imx8mn-interconnect.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/interconnect/imx/imx8mp-interconnect.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/parport/parport.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mtd/parsers/brcm_u-boot.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mtd/parsers/tplink_safeloader.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mtd/chips/cfi_util.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mtd/chips/cfi_cmdset_0020.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/mtd/maps/map_funcs.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/greybus/greybus.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/greybus/gb-es2.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/counter/ftm-quaddec.o
+>> ERROR: modpost: module 8250_exar uses symbol serial8250_pci_setup_port from namespace SERIAL_8250_PCI, but does not import it.
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
