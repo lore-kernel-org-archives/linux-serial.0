@@ -1,123 +1,307 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8075F11CAF
-	for <linux-serial@vger.kernel.org>; Sun, 18 Feb 2024 08:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB486DCEA
+	for <linux-serial@vger.kernel.org>; Sun, 18 Feb 2024 17:02:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708246498; cv=none; b=uHcEQlO6/WoB+H2Cl5Nc8x1Dpn7RGNi7Mhx+qzA79wXsX6Ys/esutMtfGmioiW/Nb4RsG2pnUKJSrnHq0GY6lGf0YeDx6LojVokM3KeZoTezBrC297/fxsJJSxsyLF1VeLdscGpNnTLXR6lvSxV1cgywicCaPp44oIQ3zQfyXBY=
+	t=1708275760; cv=none; b=BFbh0oaVjBJL1B98w/DYOdKH8q1ocYSTV5Yt2pWlc/W+RdP+lG/6xpTWJen9JNL8LPskjw+RgvMDyGks7z7AAenouiHr2I360lWt9NM/NQkSvNqr9luvWpa5z3z+6LiUigUK4s7u3+ajcBhXBIaex8Z/M5fy8wqJxZPg5Q0t47U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708246498; c=relaxed/simple;
-	bh=AVWHhRh1rZMkwA2URNmnJI+jdTqne4a/YOWi4eegs0Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dwq0J8NrYpkL6FpzGJdn/wHaVQRLE0cD4W5FC4in7RqIcEv2xYBmoIB5zZZ+cAXGpRTHmebS45Chsv4Fn+bt3yBkhupMbdC5ciGP1KItQJ3+1WWr2mpp9EdN51n+eoOvvHKg8ahvXEvAeqi9ZivVjecXnql2NjUQwycRNi8hVT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rbcwY-0005Ao-VP; Sun, 18 Feb 2024 09:54:38 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rbcwX-001PwC-OB; Sun, 18 Feb 2024 09:54:37 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rbcwX-007555-28;
-	Sun, 18 Feb 2024 09:54:37 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	kernel@pengutronix.de,
-	linux-serial@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 3/3] serial: pmac_zilog: Convert to platform remove callback returning void
-Date: Sun, 18 Feb 2024 09:53:56 +0100
-Message-ID:  <90b9a65ad8800b4d047aa5219959008a01588a94.1708246007.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1708246007.git.u.kleine-koenig@pengutronix.de>
-References: <cover.1708246007.git.u.kleine-koenig@pengutronix.de>
+	s=arc-20240116; t=1708275760; c=relaxed/simple;
+	bh=wjO6F2mGLDZAiZoX7uOKMJIgChH3iWSy9RxA0fnDnuQ=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=jgUfbXfXkJVUcdO3sYuWMRML7oEBgl0ivKgshtvh2h3A/EWUqu1x0TPnOPxGfNalUOJmgJiYxyKMfoM2MYjB4UdwECRzmtFlImXrWdMCK5fQqA2yNjV9H5dq6NSvN8mX7OKmEpVMJ//j9IRoBqfn59UnnyI6wsRGmp8w6rjG3kA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BN2pIM9D; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BN2pIM9D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708275758; x=1739811758;
+  h=date:from:to:cc:subject:message-id;
+  bh=wjO6F2mGLDZAiZoX7uOKMJIgChH3iWSy9RxA0fnDnuQ=;
+  b=BN2pIM9DCNVFOeJzj3s8zE+ya6CAEwW8B2MEy1ddql0DjUMRnnly6wBO
+   YpNvWzuZkyFHfKN8ZUv74KwpBNJQLbSez3Z4vSMBNU3n89XMuB1R66P8j
+   cGbPapKnvCuRlRjIhAZCBBAPSc+6N8QBPVsHQra5RTc9146h2R7scznam
+   hLRpoH4TjqmsJ6wleli4D3CKNknde6ab77KK9x3uOe23h/bhUA/rjkXPy
+   pKJapA2Uf6q3jKhZNVJUqj2XBpIPyFVxTGTCr0OwCvU9Bq5gsyRrvxVK3
+   VaGL14+kfxIxBcwbnza4JPP0LWgY6HHh8NkFkrnOQs1CnakiR1zcNmA7y
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2218879"
+X-IronPort-AV: E=Sophos;i="6.06,168,1705392000"; 
+   d="scan'208";a="2218879"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2024 09:02:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,168,1705392000"; 
+   d="scan'208";a="41789636"
+Received: from lkp-server02.sh.intel.com (HELO 3c78fa4d504c) ([10.239.97.151])
+  by orviesa001.jf.intel.com with ESMTP; 18 Feb 2024 09:02:36 -0800
+Received: from kbuild by 3c78fa4d504c with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rbkYj-0003BA-0g;
+	Sun, 18 Feb 2024 17:02:33 +0000
+Date: Mon, 19 Feb 2024 01:02:00 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS WITH WARNING
+ b8badbf3b592d3f8b70efc66be2c2c4d9698de51
+Message-ID: <202402190157.iGo61bQ3-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2109; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=AVWHhRh1rZMkwA2URNmnJI+jdTqne4a/YOWi4eegs0Q=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBl0cWwLcYXBrfNVxZWHwBLLAgaMjPlcc9FbBHMN FeMh2AuxwaJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZdHFsAAKCRCPgPtYfRL+ TiUPB/9Jpv/UmaIvvyPpPatx8W987RaRSLcnwRLbsHWzG7ocK0kmC3UBgBpSt7lmw5KKbap44mp Y3ejiJws7Ocsc7SG+bR4/ADcRi5rbjw+wukP3Z+tKIjSlP5efGAFWUB/zI9hlBgMj4XjEUhah8N qICU+H1GjixDKtKN7GaPAIFfCqL8/ovjphBQae/e/scGXU/CldycRQGJyK+LFkZSoo3N1enWDvS teZp9corAPhXnL5g3Qk1jfMYb5f8prHvBG8EWO9eob29oiIHsN0MYW8Kh4BEfbQM3s+T5uHQ6sC 3X3La7Q00KbwtTt+x2izcNxFicLl/Mpmb3sFmVa35U0rFYjG
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-The .remove() callback for a platform driver returns an int which makes
-many driver authors wrongly assume it's possible to do error handling by
-returning an error code. However the value returned is ignored (apart
-from emitting a warning) and this typically results in resource leaks.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: b8badbf3b592d3f8b70efc66be2c2c4d9698de51  tty: Don't include tty_buffer.h in tty.h
 
-To improve here there is a quest to make the remove callback return
-void. In the first step of this quest all drivers are converted to
-.remove_new(), which already returns void. Eventually after all drivers
-are converted, .remove_new() will be renamed to .remove().
+Warning reports:
 
-Note that pmz_detach() is only called once pmz_attach() was successfully
-called. In that case platform_set_drvdata() was called and so
-platform_get_drvdata() won't return NULL. This allows to drop the
-respective check and so get rid of the only error path in pmz_detach().
+https://lore.kernel.org/oe-kbuild-all/202402180801.2LNKohCO-lkp@intel.com
 
-After that the driver can be trivially converted from always returning
-zero in the remove callback to the void returning variant.
+Warning: (recently discovered and may have been fixed)
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/tty/serial/pmac_zilog.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+drivers/tty/serial/st-asc.c:525:7: warning: variable 'manual_rts' is used uninitialized whenever '&&' condition is false [-Wsometimes-uninitialized]
+drivers/tty/serial/st-asc.c:525:7: warning: variable 'manual_rts' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index c8bf08c19c64..05b5b3b456ac 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1717,18 +1717,13 @@ static int __init pmz_attach(struct platform_device *pdev)
- 	return uart_add_one_port(&pmz_uart_reg, &uap->port);
- }
- 
--static int __exit pmz_detach(struct platform_device *pdev)
-+static void __exit pmz_detach(struct platform_device *pdev)
- {
- 	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
- 
--	if (!uap)
--		return -ENODEV;
--
- 	uart_remove_one_port(&pmz_uart_reg, &uap->port);
- 
- 	uap->port.dev = NULL;
--
--	return 0;
- }
- 
- #endif /* !CONFIG_PPC_PMAC */
-@@ -1797,7 +1792,7 @@ static struct macio_driver pmz_driver = {
- #else
- 
- static struct platform_driver pmz_driver = {
--	.remove		= __exit_p(pmz_detach),
-+	.remove_new	= __exit_p(pmz_detach),
- 	.driver		= {
- 		.name		= "scc",
- 	},
+Warning ids grouped by kconfigs:
+
+clang_recent_errors
+|-- arm-defconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- arm-randconfig-002-20240218
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- arm-randconfig-004-20240218
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- arm64-allmodconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- arm64-allyesconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- hexagon-allmodconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- hexagon-allyesconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- i386-buildonly-randconfig-001-20240218
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- powerpc-allyesconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- riscv-allmodconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- riscv-allyesconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- s390-allmodconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- s390-randconfig-r111-20240218
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+|-- x86_64-allmodconfig
+|   |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+|   `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+`-- x86_64-allyesconfig
+    |-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-condition-is-false
+    `-- drivers-tty-serial-st-asc.c:warning:variable-manual_rts-is-used-uninitialized-whenever-if-condition-is-false
+
+elapsed time: 1450m
+
+configs tested: 179
+configs skipped: 3
+
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                          axs103_defconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20240218   gcc  
+arc                   randconfig-002-20240218   gcc  
+arc                           tb10x_defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   clang
+arm                              allyesconfig   gcc  
+arm                                 defconfig   clang
+arm                          pxa910_defconfig   gcc  
+arm                   randconfig-003-20240218   gcc  
+arm                           sama5_defconfig   gcc  
+arm                        shmobile_defconfig   gcc  
+arm                           spitz_defconfig   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                 randconfig-004-20240218   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20240218   gcc  
+csky                  randconfig-002-20240218   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-001-20240218   clang
+i386         buildonly-randconfig-002-20240218   clang
+i386         buildonly-randconfig-003-20240218   clang
+i386         buildonly-randconfig-004-20240218   clang
+i386         buildonly-randconfig-005-20240218   clang
+i386         buildonly-randconfig-006-20240218   gcc  
+i386                                defconfig   clang
+i386                  randconfig-001-20240218   clang
+i386                  randconfig-002-20240218   gcc  
+i386                  randconfig-003-20240218   clang
+i386                  randconfig-004-20240218   clang
+i386                  randconfig-005-20240218   clang
+i386                  randconfig-006-20240218   gcc  
+i386                  randconfig-011-20240218   gcc  
+i386                  randconfig-012-20240218   gcc  
+i386                  randconfig-013-20240218   clang
+i386                  randconfig-014-20240218   gcc  
+i386                  randconfig-015-20240218   gcc  
+i386                  randconfig-016-20240218   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                        allyesconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20240218   gcc  
+loongarch             randconfig-002-20240218   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                        m5307c3_defconfig   gcc  
+m68k                        mvme147_defconfig   gcc  
+m68k                            q40_defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                  cavium_octeon_defconfig   gcc  
+mips                     cu1000-neo_defconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20240218   gcc  
+nios2                 randconfig-002-20240218   gcc  
+openrisc                         allmodconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                generic-64bit_defconfig   gcc  
+parisc                randconfig-001-20240218   gcc  
+parisc                randconfig-002-20240218   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                    ge_imp3a_defconfig   gcc  
+powerpc                      ppc64e_defconfig   gcc  
+powerpc               randconfig-001-20240218   gcc  
+powerpc               randconfig-002-20240218   gcc  
+powerpc64             randconfig-002-20240218   gcc  
+powerpc64             randconfig-003-20240218   gcc  
+riscv                            allmodconfig   clang
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   clang
+riscv                               defconfig   clang
+riscv                 randconfig-001-20240218   gcc  
+s390                             allmodconfig   clang
+s390                              allnoconfig   clang
+s390                             allyesconfig   gcc  
+s390                                defconfig   clang
+s390                  randconfig-001-20240218   gcc  
+s390                  randconfig-002-20240218   gcc  
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                          r7785rp_defconfig   gcc  
+sh                    randconfig-001-20240218   gcc  
+sh                    randconfig-002-20240218   gcc  
+sh                          rsk7203_defconfig   gcc  
+sh                           se7206_defconfig   gcc  
+sh                           se7619_defconfig   gcc  
+sh                           se7712_defconfig   gcc  
+sh                           se7721_defconfig   gcc  
+sh                   secureedge5410_defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          alldefconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20240218   gcc  
+sparc64               randconfig-002-20240218   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   gcc  
+um                                  defconfig   clang
+um                    randconfig-001-20240218   gcc  
+um                           x86_64_defconfig   clang
+x86_64                            allnoconfig   clang
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20240218   clang
+x86_64       buildonly-randconfig-002-20240218   gcc  
+x86_64       buildonly-randconfig-003-20240218   gcc  
+x86_64       buildonly-randconfig-004-20240218   clang
+x86_64       buildonly-randconfig-005-20240218   gcc  
+x86_64       buildonly-randconfig-006-20240218   gcc  
+x86_64                              defconfig   gcc  
+x86_64                randconfig-001-20240218   clang
+x86_64                randconfig-002-20240218   clang
+x86_64                randconfig-003-20240218   gcc  
+x86_64                randconfig-004-20240218   gcc  
+x86_64                randconfig-005-20240218   gcc  
+x86_64                randconfig-006-20240218   clang
+x86_64                randconfig-011-20240218   clang
+x86_64                randconfig-012-20240218   gcc  
+x86_64                randconfig-013-20240218   clang
+x86_64                randconfig-014-20240218   clang
+x86_64                randconfig-015-20240218   gcc  
+x86_64                randconfig-016-20240218   clang
+x86_64                randconfig-071-20240218   gcc  
+x86_64                randconfig-072-20240218   clang
+x86_64                randconfig-073-20240218   gcc  
+x86_64                randconfig-074-20240218   gcc  
+x86_64                randconfig-075-20240218   clang
+x86_64                randconfig-076-20240218   gcc  
+x86_64                           rhel-8.3-bpf   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                           allyesconfig   gcc  
+xtensa                randconfig-001-20240218   gcc  
+xtensa                randconfig-002-20240218   gcc  
+
 -- 
-2.43.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
