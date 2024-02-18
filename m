@@ -1,44 +1,44 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEFAD6F09B;
-	Sun, 18 Feb 2024 18:57:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A862D71B35;
+	Sun, 18 Feb 2024 19:04:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708282674; cv=none; b=AhgcbfS4eg6HlKfcNVIRC6xeRye+lEQZXd646F84cvdUimRUvJvStzmRq0oUyMvDp6MlbubOxn7fdaNlgguVjUjMQYBp7uk+gI2lSHAXc9tLzSa44G+hA5VZAX2upyIqDVWJBiHO+T7d/7zEQpI6ORJPY/zTNmmSqtEnGUGCvBA=
+	t=1708283075; cv=none; b=LzSIsjVjU01EgH+UhpArRIBW+cwraqci/+/xd+3977Ou4bISM/mjZSym3Igv7GurW37Svg9t5GCsr8Q9eOmEW0u+f1HvZblMAxtJiHOA7AVqUOq9gYhXNWnP3mkauYViQpZlbQvyrFh1y4BP9zTdgDcGzjTQ23U4c2ne/1AlUIA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708282674; c=relaxed/simple;
-	bh=Uh1a7N6liYSzDazmzjchFNl1uPkqsuEMN7I6bWMM5lg=;
+	s=arc-20240116; t=1708283075; c=relaxed/simple;
+	bh=MO6Y8tj0NIiymjFHpZwGZycpK1m0Vc+X7D6vRJLm6OQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=F8VK+cZaI17xAQQkQ98GiMYBrhgiKM39ALgkY1ZNze7Dlyr2qCWltIHKtAYy8v1sad4izTkuDFauF7DQPvwUD2bV35QWVSQVKFuheOVyozVa0R4Ay1EulMEGreVrdJerJZDb1rZn6v1Ho3bDzvBEeovBI7AxVc8jiz9Ja2EuFEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OxRI2d34; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Rsnkb8W7; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=HrEYbWttJArkFXIjF+xMLBpbPbfDh/5zC83kX4/AaxPiAyfZCfYDJZoaTZKSn960hiak/SKfzRTNF6nXvzezIDcwxPeaKpYv3UBWl39HByt0fI57OCCuHe+YWHgoU5I7W3oZZ2KZNtood2uRjhGOxySf4M7xlA4jwFqevOQabEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=GM/VNnAa; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=j01hjXjY; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OxRI2d34";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Rsnkb8W7"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="GM/VNnAa";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="j01hjXjY"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1708282671;
+	s=2020; t=1708282668;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=xrTMG/IO2xEuBdqD5OxQ1/ULXhRtRhpYhyRMl+KnF7w=;
-	b=OxRI2d34d6eZ84FJ7ek1LsuerkJcVIohMxOCIEONANmxjad1y70ujK/AQkOy/143chnRYk
-	axXq9ozPgZaRTxPS2OU7FU/O2GmA4dQqaDAYVnThA0KVqDRntfohKh/LtQmkD6y6C6/PpO
-	w5Mo7Fvy6+2N6uBZjtL8dfWxrur03oO6Riby83YgQu9pWCnLN3iuAnBMI0QZ8lP6gIHFqN
-	wI3gEXimzNOiRYIOXA7IuqqFHlIQPWrFitlcfb249CDX8ATU6Ne+IliEJ+ba6VDCwX+OcB
-	8aTaUpAxr18hbUGOGraqr3e+Caqa7suhJtJvrivhatX1a6gL7hZM8e7x1aOLqg==
+	bh=7K5mFiabL7N74FJZwx3sG2fqkTYhk/mX6rh+7t2HHdE=;
+	b=GM/VNnAaXsfrk931JW7tOsC8rSnrcoVqetLvg7dHTNoaA0biAHVOo0QDOQZHWoeseZkkwM
+	mRFZ9mcxot4t+TcgT/BPvpiknWQs1OH99Fhd8aPFXFwDfpRwYOpkc7KYUHJfcOa5N4nPDe
+	pwPSogdC84OLic8N43gLNsWNSSyLgBEKssAc9aR2Ts/+DmFWiYxqhtAHK6nP47dn9C2iUv
+	xiRwnf80gRKlr8q8/oWpv3LOCgWxj8qd1UJmWMqWjLMZ0Rb1zHUS2ogv/C4SVqphfIdATV
+	Sd2b+8wJRFJh+jdsehIsvBCLThyeZsFXpZQFuJqj+fdo8czdgU31ep9pzrk0Cg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1708282671;
+	s=2020e; t=1708282668;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=xrTMG/IO2xEuBdqD5OxQ1/ULXhRtRhpYhyRMl+KnF7w=;
-	b=Rsnkb8W7+dOJGMPJ0e2uA0Qw+jE3lvQlvn7hjAPcJzTKGdemWwBwLWErNiRpjvS9iouHHa
-	VyIr8Gp7jlbNNSAg==
+	bh=7K5mFiabL7N74FJZwx3sG2fqkTYhk/mX6rh+7t2HHdE=;
+	b=j01hjXjY0lEpNjUkrWN71FG4yDfhUXPiKRay1EPW8PknNnIXHNnQV9wJESzRbUmBKK7NOA
+	lIzvZldl2ebOclBw==
 To: Petr Mladek <pmladek@suse.com>
 Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
@@ -46,16 +46,11 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Justin Chen <justin.chen@broadcom.com>,
-	Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH printk v2 08/26] printk: nbcon: Implement processing in port->lock wrapper
-Date: Sun, 18 Feb 2024 20:03:08 +0106
-Message-Id: <20240218185726.1994771-9-john.ogness@linutronix.de>
+	linux-serial@vger.kernel.org,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH printk v2 02/26] serial: core: Use lock wrappers
+Date: Sun, 18 Feb 2024 20:03:02 +0106
+Message-Id: <20240218185726.1994771-3-john.ogness@linutronix.de>
 In-Reply-To: <20240218185726.1994771-1-john.ogness@linutronix.de>
 References: <20240218185726.1994771-1-john.ogness@linutronix.de>
 Precedence: bulk
@@ -64,255 +59,99 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Currently the port->lock wrappers uart_port_lock(),
-uart_port_unlock() (and their variants) only lock/unlock
-the spin_lock.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-If the port is an nbcon console, the wrappers must also
-acquire/release the console and mark the region as unsafe. This
-allows general port->lock synchronization to be synchronized
-with the nbcon console ownership.
+mainline commit: c5cbdb76e8e33ce90fec2946e8eee7d71d68e57a
 
-Add a flag to struct uart_port to track nbcon console ownership.
+When a serial port is used for kernel console output, then all
+modifications to the UART registers which are done from other contexts,
+e.g. getty, termios, are interference points for the kernel console.
 
+So far this has been ignored and the printk output is based on the
+principle of hope. The rework of the console infrastructure which aims to
+support threaded and atomic consoles, requires to mark sections which
+modify the UART registers as unsafe. This allows the atomic write function
+to make informed decisions and eventually to restore operational state. It
+also allows to prevent the regular UART code from modifying UART registers
+while printk output is in progress.
+
+All modifications of UART registers are guarded by the UART port lock,
+which provides an obvious synchronization point with the console
+infrastructure.
+
+To avoid adding this functionality to all UART drivers, wrap the
+spin_[un]lock*() invocations for uart_port::lock into helper functions
+which just contain the spin_[un]lock*() invocations for now. In a
+subsequent step these helpers will gain the console synchronization
+mechanisms.
+
+Converted with coccinelle. No functional change.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20230914183831.587273-3-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |  1 +
- include/linux/printk.h              | 13 +++++
- include/linux/serial_core.h         | 19 ++++++-
- kernel/printk/nbcon.c               | 77 +++++++++++++++++++++++++++++
- 4 files changed, 108 insertions(+), 2 deletions(-)
+ include/linux/serial_core.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 141627370aab..16e2705b4867 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3284,6 +3284,7 @@ void serial8250_init_port(struct uart_8250_port *up)
- 	struct uart_port *port = &up->port;
- 
- 	spin_lock_init(&port->lock);
-+	port->nbcon_locked_port = false;
- 	port->ctrl_id = 0;
- 	port->pm = NULL;
- 	port->ops = &serial8250_pops;
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 8d5c5588eec9..ef57a4d93ae2 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -9,6 +9,8 @@
- #include <linux/ratelimit_types.h>
- #include <linux/once_lite.h>
- 
-+struct uart_port;
-+
- extern const char linux_banner[];
- extern const char linux_proc_banner[];
- 
-@@ -195,6 +197,8 @@ void show_regs_print_info(const char *log_lvl);
- extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
- extern asmlinkage void dump_stack(void) __cold;
- void printk_trigger_flush(void);
-+extern void uart_nbcon_acquire(struct uart_port *up);
-+extern void uart_nbcon_release(struct uart_port *up);
- #else
- static inline __printf(1, 0)
- int vprintk(const char *s, va_list args)
-@@ -274,6 +278,15 @@ static inline void dump_stack(void)
- static inline void printk_trigger_flush(void)
- {
- }
-+
-+static inline void uart_nbcon_acquire(struct uart_port *up)
-+{
-+}
-+
-+static inline void uart_nbcon_release(struct uart_port *up)
-+{
-+}
-+
- #endif
- 
- bool this_cpu_in_panic(void);
 diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 89f7b6c63598..d4b93d721715 100644
+index f1d5c0d1568c..3091c62ec37b 100644
 --- a/include/linux/serial_core.h
 +++ b/include/linux/serial_core.h
-@@ -488,6 +488,7 @@ struct uart_port {
- 	struct uart_icount	icount;			/* statistics */
+@@ -1035,14 +1035,14 @@ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
+ 	u8 sysrq_ch;
  
- 	struct console		*cons;			/* struct console, if any */
-+	bool			nbcon_locked_port;	/* True, if the port is locked by nbcon */
- 	/* flags must be updated while holding port mutex */
- 	upf_t			flags;
+ 	if (!port->has_sysrq) {
+-		spin_unlock(&port->lock);
++		uart_port_unlock(port);
+ 		return;
+ 	}
  
-@@ -595,6 +596,7 @@ struct uart_port {
- static inline void uart_port_lock(struct uart_port *up)
+ 	sysrq_ch = port->sysrq_ch;
+ 	port->sysrq_ch = 0;
+ 
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
+ 
+ 	if (sysrq_ch)
+ 		handle_sysrq(sysrq_ch);
+@@ -1054,14 +1054,14 @@ static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port
+ 	u8 sysrq_ch;
+ 
+ 	if (!port->has_sysrq) {
+-		spin_unlock_irqrestore(&port->lock, flags);
++		uart_port_unlock_irqrestore(port, flags);
+ 		return;
+ 	}
+ 
+ 	sysrq_ch = port->sysrq_ch;
+ 	port->sysrq_ch = 0;
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	if (sysrq_ch)
+ 		handle_sysrq(sysrq_ch);
+@@ -1077,12 +1077,12 @@ static inline int uart_prepare_sysrq_char(struct uart_port *port, u8 ch)
+ }
+ static inline void uart_unlock_and_check_sysrq(struct uart_port *port)
  {
- 	spin_lock(&up->lock);
-+	uart_nbcon_acquire(up);
+-	spin_unlock(&port->lock);
++	uart_port_unlock(port);
  }
- 
- /**
-@@ -604,6 +606,7 @@ static inline void uart_port_lock(struct uart_port *up)
- static inline void uart_port_lock_irq(struct uart_port *up)
+ static inline void uart_unlock_and_check_sysrq_irqrestore(struct uart_port *port,
+ 		unsigned long flags)
  {
- 	spin_lock_irq(&up->lock);
-+	uart_nbcon_acquire(up);
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
  }
+ #endif	/* CONFIG_MAGIC_SYSRQ_SERIAL */
  
- /**
-@@ -614,6 +617,7 @@ static inline void uart_port_lock_irq(struct uart_port *up)
- static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
- {
- 	spin_lock_irqsave(&up->lock, *flags);
-+	uart_nbcon_acquire(up);
- }
- 
- /**
-@@ -624,7 +628,11 @@ static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *f
-  */
- static inline bool uart_port_trylock(struct uart_port *up)
- {
--	return spin_trylock(&up->lock);
-+	if (!spin_trylock(&up->lock))
-+		return false;
-+
-+	uart_nbcon_acquire(up);
-+	return true;
- }
- 
- /**
-@@ -636,7 +644,11 @@ static inline bool uart_port_trylock(struct uart_port *up)
-  */
- static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
- {
--	return spin_trylock_irqsave(&up->lock, *flags);
-+	if (!spin_trylock_irqsave(&up->lock, *flags))
-+		return false;
-+
-+	uart_nbcon_acquire(up);
-+	return true;
- }
- 
- /**
-@@ -645,6 +657,7 @@ static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long
-  */
- static inline void uart_port_unlock(struct uart_port *up)
- {
-+	uart_nbcon_release(up);
- 	spin_unlock(&up->lock);
- }
- 
-@@ -654,6 +667,7 @@ static inline void uart_port_unlock(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irq(struct uart_port *up)
- {
-+	uart_nbcon_release(up);
- 	spin_unlock_irq(&up->lock);
- }
- 
-@@ -664,6 +678,7 @@ static inline void uart_port_unlock_irq(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned long flags)
- {
-+	uart_nbcon_release(up);
- 	spin_unlock_irqrestore(&up->lock, flags);
- }
- 
-diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index 8ecd76aa22e6..02e8fdc1ea43 100644
---- a/kernel/printk/nbcon.c
-+++ b/kernel/printk/nbcon.c
-@@ -6,6 +6,7 @@
- #include <linux/console.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
-+#include <linux/serial_core.h>
- #include "internal.h"
- /*
-  * Printk console printing implementation for consoles which does not depend
-@@ -995,3 +996,79 @@ void nbcon_free(struct console *con)
- 
- 	con->pbufs = NULL;
- }
-+
-+static inline bool uart_is_nbcon(struct uart_port *up)
-+{
-+	int cookie;
-+	bool ret;
-+
-+	if (!uart_console(up))
-+		return false;
-+
-+	cookie = console_srcu_read_lock();
-+	ret = (console_srcu_read_flags(up->cons) & CON_NBCON);
-+	console_srcu_read_unlock(cookie);
-+	return ret;
-+}
-+
-+/**
-+ * uart_nbcon_acquire - The second half of the port locking wrapper
-+ * @up:		The uart port whose @lock was locked
-+ *
-+ * The uart_port_lock() wrappers will first lock the spin_lock @up->lock.
-+ * Then this function is called to implement nbcon-specific processing.
-+ *
-+ * If @up is an nbcon console, this console will be acquired and marked as
-+ * unsafe. Otherwise this function does nothing.
-+ */
-+void uart_nbcon_acquire(struct uart_port *up)
-+{
-+	struct console *con = up->cons;
-+	struct nbcon_context ctxt;
-+
-+	if (!uart_is_nbcon(up))
-+		return;
-+
-+	WARN_ON_ONCE(up->nbcon_locked_port);
-+
-+	do {
-+		do {
-+			memset(&ctxt, 0, sizeof(ctxt));
-+			ctxt.console	= con;
-+			ctxt.prio	= NBCON_PRIO_NORMAL;
-+		} while (!nbcon_context_try_acquire(&ctxt));
-+
-+	} while (!nbcon_context_enter_unsafe(&ctxt));
-+
-+	up->nbcon_locked_port = true;
-+}
-+EXPORT_SYMBOL_GPL(uart_nbcon_acquire);
-+
-+/**
-+ * uart_nbcon_release - The first half of the port unlocking wrapper
-+ * @up:		The uart port whose @lock is about to be unlocked
-+ *
-+ * The uart_port_unlock() wrappers will first call this function to implement
-+ * nbcon-specific processing. Then afterwards the uart_port_unlock() wrappers
-+ * will unlock the spin_lock @up->lock.
-+ *
-+ * If @up is an nbcon console, the console will be marked as safe and
-+ * released. Otherwise this function does nothing.
-+ */
-+void uart_nbcon_release(struct uart_port *up)
-+{
-+	struct console *con = up->cons;
-+	struct nbcon_context ctxt = {
-+		.console	= con,
-+		.prio		= NBCON_PRIO_NORMAL,
-+	};
-+
-+	if (!up->nbcon_locked_port)
-+		return;
-+
-+	if (nbcon_context_exit_unsafe(&ctxt))
-+		nbcon_context_release(&ctxt);
-+
-+	up->nbcon_locked_port = false;
-+}
-+EXPORT_SYMBOL_GPL(uart_nbcon_release);
 -- 
 2.39.2
 
