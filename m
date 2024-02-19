@@ -1,177 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B51D83D3AE;
-	Mon, 19 Feb 2024 16:29:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11DF140BEB
+	for <linux-serial@vger.kernel.org>; Mon, 19 Feb 2024 16:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708360166; cv=none; b=Igfozwc7NR3P9LDXLLB8bNPzGDCpC0Bt+9JLeQF59hgASNK5gQx3VKNEOCgNb1MvIsVflI+X1rk+/+wHWYlhAZUkag7un6HP2If18HN5b+9/ACF/BDKPI04fCwI2CVZgOvSEzTfLHIClYPVeQIwKbFZ7ElYo4qaikOnRnToT2rM=
+	t=1708360812; cv=none; b=pb6ExnusLmSBs9I8O0Nzs3vj5i6fGulu9lym+k2/5f+fnw+II/dD6SFA0M67k/0il99m7IdT8hTbWL0hPY6WfDY/UFz9a8GmMSp7xL36020CAPh1K8GDIFSkYVyGSq9Kc5Y+Tiu4W88AHlJRZ7QhpEbGV7KioE5esadSPxxhzZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708360166; c=relaxed/simple;
-	bh=W4/kGjT53spVGkI433QKff0LENTori6sITEsXM46mBs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FacrgABsLHkZOBFDMgdGXZT/MOCXc8SCJXsn8AFhFAzf+NUnlI5DtLyfNCw46n+Lj58HcXYhPzzBJTqLHH1SvXjE/kof9dSoH9kY0D3yIuUDzwFmQO2+bJ7pt92QEfjFy1PXRSEeLYiOBTNpf+Hdbanx2xizOC0p0tuu/oZs4Rc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Sc5qEz2n; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708360812; c=relaxed/simple;
+	bh=95GvX6IkRKyNVrApn51thQj4Nye8v5hz784wB2DCO04=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=P1K1DVztDQqXJ99WOh/nOsuUX0Sy/4i3CsjMP3/MX200zuB7a9x5hYtStSJz7FBV+vtzVR9Pwl02dVBdCTALXxdQZaAXJx56XpV3cUbGvzzyC0OAUX2a1gSGXdIF8m61YQyHZ5sip66rdCKnR4yjqIL76YCkOdtKlSYWEGQ4t5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Oh0242Ia; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Sc5qEz2n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708360164; x=1739896164;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=W4/kGjT53spVGkI433QKff0LENTori6sITEsXM46mBs=;
-  b=Sc5qEz2n1gOkEJtGvLhFPJHA8jNxh4SHi0hVi0Z/x66foWbInXejt6Pq
-   kiqsM3FNEWIG8IMpGlg4PgGOezEpQOlow5mGqtxMRic2OBSkfuCbBF/01
-   H8NGkveKe4on2vPkiMhbQWv/BON9FysO0P4AQ6Q4vXq6S+3yog09WPeBT
-   lxA2daNNhpmQJCW7RsXGzdEFxsqu0g+t5DShIMqI9/oyS8hYbGrkR4hqs
-   R+WIcGgMkxd9MDNuNSKyFMc2NDvvZvqFJZsY0OMEKnpRJNIeq5cYAyE6l
-   qXANm6A8KAw+Iprs2kl2/cW6EFPFsTeUFtwshwkopKUIJxahMV7tNMHPo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="12995340"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="12995340"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 08:29:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="827022505"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="827022505"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 19 Feb 2024 08:29:21 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 5E79E305; Mon, 19 Feb 2024 18:29:20 +0200 (EET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-	Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Oh0242Ia"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1708360809;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=aWnNccAiTUjVXKX2RmHz2334a0dYfqfAPgkPcqZqo7E=;
+	b=Oh0242IaUhEVwk1yJM5JhU/UkIjjXIjWBd5PJYc3fp1ws0p/u8f6zlZMX+BOABoTCMRCrq
+	vopZd5xOSq8aGUNauf5tCSVnsmCLew2+ubsaKHM424eyBLh8U8bdj2TLTnnWEV6Qvp+3PQ
+	MW//R7TAGr+SzUf7i9pFXUd26o84R80=
+Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
+ by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-301-vNaxvvWQOqem7xRflWcJIQ-1; Mon,
+ 19 Feb 2024 11:40:05 -0500
+X-MC-Unique: vNaxvvWQOqem7xRflWcJIQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F0B3C280FEC9;
+	Mon, 19 Feb 2024 16:40:04 +0000 (UTC)
+Received: from thuth-p1g4.redhat.com (unknown [10.39.192.115])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id A15F6492BE3;
+	Mon, 19 Feb 2024 16:40:03 +0000 (UTC)
+From: Thomas Huth <thuth@redhat.com>
+To: linux-m68k@lists.linux-m68k.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Greg Ungerer <gerg@linux-m68k.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] serial: 8250_pci1xxxx: Drop quirk from 8250_port
-Date: Mon, 19 Feb 2024 18:28:34 +0200
-Message-ID: <20240219162917.2159736-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] drivers/tty/serial: Remove unused function early_mcf_setup
+Date: Mon, 19 Feb 2024 17:40:02 +0100
+Message-ID: <20240219164002.520342-1-thuth@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.10
 
-We are not supposed to spread quirks in 8250_port module especially
-when we have a separate driver for the hardware in question.
+Compiling a kernel for the ColdFire causes a compiler warning:
 
-Move quirk from generic module to the driver that uses it.
+drivers/tty/serial/mcf.c:473:12: warning: no previous prototype for
+ ‘early_mcf_setup’ [-Wmissing-prototypes]
+  473 | int __init early_mcf_setup(struct mcf_platform_uart *platp)
+      |            ^~~~~~~~~~~~~~~
 
-While at it, move IO to ->set_divisor() callback as it has to be from
-day 1. ->get_divisor() is not supposed to perform any IO as UART port:
-- might not be powered on
-- is not locked by a spin lock
+This function seems to be completely unused, so let's remove it
+to silence the warning.
 
-Fixes: 1ed67ecd1349 ("8250: microchip: Add 4 Mbps support in PCI1XXXX UART")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Rengarajan S <rengarajan.s@microchip.com>
+Signed-off-by: Thomas Huth <thuth@redhat.com>
 ---
-v2: fixed compile warning (Greg), added tag (Rengarajan)
- drivers/tty/serial/8250/8250_pci1xxxx.c | 25 ++++++++++++++++++-------
- drivers/tty/serial/8250/8250_port.c     |  7 -------
- 2 files changed, 18 insertions(+), 14 deletions(-)
+ drivers/tty/serial/mcf.c | 27 ---------------------------
+ 1 file changed, 27 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 55eada1dba56..2fbb5851f788 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -94,7 +94,6 @@
- #define UART_BIT_SAMPLE_CNT_16			16
- #define BAUD_CLOCK_DIV_INT_MSK			GENMASK(31, 8)
- #define ADCL_CFG_RTS_DELAY_MASK			GENMASK(11, 8)
--#define UART_CLOCK_DEFAULT			(62500 * HZ_PER_KHZ)
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index 8690a45239e09..b0604d6da0257 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -470,33 +470,6 @@ static struct mcf_uart mcf_ports[4];
+ #if defined(CONFIG_SERIAL_MCF_CONSOLE)
+ /****************************************************************************/
  
- #define UART_WAKE_REG				0x8C
- #define UART_WAKE_MASK_REG			0x90
-@@ -227,13 +226,10 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
- 	unsigned int uart_sample_cnt;
- 	unsigned int quot;
- 
--	if (baud >= UART_BAUD_4MBPS) {
-+	if (baud >= UART_BAUD_4MBPS)
- 		uart_sample_cnt = UART_BIT_SAMPLE_CNT_8;
--		writel(UART_BIT_DIVISOR_8, (port->membase + FRAC_DIV_CFG_REG));
--	} else {
-+	else
- 		uart_sample_cnt = UART_BIT_SAMPLE_CNT_16;
--		writel(UART_BIT_DIVISOR_16, (port->membase + FRAC_DIV_CFG_REG));
--	}
- 
- 	/*
- 	 * Calculate baud rate sampling period in nanoseconds.
-@@ -249,6 +245,11 @@ static unsigned int pci1xxxx_get_divisor(struct uart_port *port,
- static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
- 				 unsigned int quot, unsigned int frac)
- {
-+	if (baud >= UART_BAUD_4MBPS)
-+		writel(UART_BIT_DIVISOR_8, port->membase + FRAC_DIV_CFG_REG);
-+	else
-+		writel(UART_BIT_DIVISOR_16, port->membase + FRAC_DIV_CFG_REG);
-+
- 	writel(FIELD_PREP(BAUD_CLOCK_DIV_INT_MSK, quot) | frac,
- 	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
- }
-@@ -619,6 +620,17 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
- 
- 	port->port.flags |= UPF_FIXED_TYPE | UPF_SKIP_TEST;
- 	port->port.type = PORT_MCHP16550A;
-+	/*
-+	 * 8250 core considers prescaller value to be always 16.
-+	 * The MCHP ports support downscaled mode and hence the
-+	 * functional UART clock can be lower, i.e. 62.5MHz, than
-+	 * software expects in order to support higher baud rates.
-+	 * Assign here 64MHz to support 4Mbps.
-+	 *
-+	 * The value itself is not really used anywhere except baud
-+	 * rate calculations, so we can mangle it as we wish.
-+	 */
-+	port->port.uartclk = 64 * HZ_PER_MHZ;
- 	port->port.set_termios = serial8250_do_set_termios;
- 	port->port.get_divisor = pci1xxxx_get_divisor;
- 	port->port.set_divisor = pci1xxxx_set_divisor;
-@@ -732,7 +744,6 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev,
- 
- 	memset(&uart, 0, sizeof(uart));
- 	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT;
--	uart.port.uartclk = UART_CLOCK_DEFAULT;
- 	uart.port.dev = dev;
- 
- 	if (num_vectors == max_vec_reqd)
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 86c22f22e7a9..56a137603dea 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2620,7 +2620,6 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 					     struct ktermios *termios,
- 					     const struct ktermios *old)
- {
--	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned int tolerance = port->uartclk / 100;
- 	unsigned int min;
- 	unsigned int max;
-@@ -2638,12 +2637,6 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
- 		max = (port->uartclk + tolerance) / 16;
- 	}
- 
--	/*
--	 * Microchip PCI1XXXX UART supports maximum baud rate up to 4 Mbps
--	 */
--	if (up->port.type == PORT_MCHP16550A)
--		max = 4000000;
+-int __init early_mcf_setup(struct mcf_platform_uart *platp)
+-{
+-	struct uart_port *port;
+-	int i;
 -
- 	/*
- 	 * Ask the core to calculate the divisor for us.
- 	 * Allow 1% tolerance at the upper limit so uart clks marginally
+-	for (i = 0; ((i < MCF_MAXPORTS) && (platp[i].mapbase)); i++) {
+-		port = &mcf_ports[i].port;
+-
+-		port->line = i;
+-		port->type = PORT_MCF;
+-		port->mapbase = platp[i].mapbase;
+-		port->membase = (platp[i].membase) ? platp[i].membase :
+-			(unsigned char __iomem *) port->mapbase;
+-		port->iotype = SERIAL_IO_MEM;
+-		port->irq = platp[i].irq;
+-		port->uartclk = MCF_BUSCLK;
+-		port->flags = UPF_BOOT_AUTOCONF;
+-		port->rs485_config = mcf_config_rs485;
+-		port->rs485_supported = mcf_rs485_supported;
+-		port->ops = &mcf_uart_ops;
+-	}
+-
+-	return 0;
+-}
+-
+-/****************************************************************************/
+-
+ static void mcf_console_putc(struct console *co, const char c)
+ {
+ 	struct uart_port *port = &(mcf_ports + co->index)->port;
 -- 
-2.43.0.rc1.1.gbec44491f096
+2.43.2
 
