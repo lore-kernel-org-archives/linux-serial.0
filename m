@@ -1,106 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 159E13A264;
-	Mon, 19 Feb 2024 15:11:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DD04436D;
+	Mon, 19 Feb 2024 16:19:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708355493; cv=none; b=kf6dF+2Gsg/MQXIt3tHxgoBsO0Za5wkMUg6L8yr2H85zCDWtnQCTR1YEMEqTtulBBTahkycYpqWctfc+W+OHNWtZbbaS60DHmlpPQ2yIWe/c1U8PL53Ly2IKCjj6+7OBBtzqUYh1f1BXHtA7FzEMiaztphuXEqZ3rTr6v4nod1U=
+	t=1708359589; cv=none; b=kJZ1It/q/PlR7W5y5qR5su8b5pImKQRPZDK+bClJq7El8fiTX13bQLuntoqqTHnTJheu8cfnqWjyPwvIqpgbJfvu84+ySeNRUvI9DdZkPWxLvqeD5Kf6HKbI9tyhJcwpZYrhWfR1qZ9MtbP7jHN+5H6PeWJ1xxYblEFh4RBvHgc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708355493; c=relaxed/simple;
-	bh=ayLLTpEgKqvBUDQj5moMFIOBncxte1r8rIs7zb2L0nI=;
+	s=arc-20240116; t=1708359589; c=relaxed/simple;
+	bh=RdNZuOtLOx4IGGS9wQnvPIdnfB7/swLpF9VOXubJEbY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CZOi2PPqBIeVydNBg5MAhpA/GQdn68olzudgsZJJiYPClazSaWNhRibllHf8ZM5cD/SZxs9xYQEUnzvrZIXlB2KoVBnYlDOlQdZygQZVecfVsA4jT+NhhHTStrtKoC5bYf/xBLfMRp78cCMqpQYgiIrhFlufCrMUsrix49hESdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Io3ipe+f; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=VukkZfcHNba1bnVL+xZ5mTzU2q9Psf3FDvGqespga4w+LnsdpCpDlquiy0FMHXhtB0COvfT6VL3vZ0lxo5jg3yRGIffdNmaG5ptnis0J0/3guHzXtuA2ZSe5+LN3q0F+ITtdmR/cwm1Pqudo1ZL44nGXGPqCh0bxErYMc/VLi4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j+y64Myy; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Io3ipe+f"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j+y64Myy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708355492; x=1739891492;
+  t=1708359588; x=1739895588;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ayLLTpEgKqvBUDQj5moMFIOBncxte1r8rIs7zb2L0nI=;
-  b=Io3ipe+fSuBs3WX/JSX180EOJd+mCC1pJdAUW7hTI0SHzuwXM585dJWv
-   +Kep0tqLlqM+9zHh+l4U0sNl5bc1JaO4v6JyjR1rcRQZJzVaPj5cjfzAY
-   OGZ6fmhVo8OjhNBaDAVYg0HigMe4nLkoS7bJMKjG6ogS9mI4HhYC2Jkf7
-   yqK3BnToKe5vSa4fiNVImSvFmMJ/MblO36i7T2GcEraY2t4iLJ5SN1GdI
-   AFucmw9p+nqK+Mwnnq9CS+y9nYAqJPFtJqUfKtPCo9/XCz8sAIhlljzbn
-   xr0s9AWyqu7JaA3cC+yJmoBTPsk5v6r0WOp+JYWnO2PG1vb0Ox3YLsh3z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2545654"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=RdNZuOtLOx4IGGS9wQnvPIdnfB7/swLpF9VOXubJEbY=;
+  b=j+y64MyylHLQhdgPVh9Ok9lGppgeAGMQtg1jES2Z8B8rpjR5ABnJIa8Q
+   U29tDtqg5wJkrUfN9hfzb4hJeF6cwIlmabVwkhlyV7o5eO/4+RQ/HX64O
+   ijVeY+bBFKPYyrwZii3+mFQ2Gacj/iYiotpEVi7UVHLsKD0m5miHL3ems
+   Ldf6x5QK5baV1MiNrxPwoU1JJRN7dhvQcESXKfcHXrmA7d9gYKZnoltk4
+   NERmi2r88J7GA3xXwgtdlGiqB+6SCsHy7WkElmM//6shbAKIfBIeGKbP+
+   P32gutfb+HFJNS0LWXpfQTthGGGKkm5ku1UV6c2YGe7ifaPHUhB1LM0iM
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2308988"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2545654"
+   d="scan'208";a="2308988"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 07:09:02 -0800
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 08:19:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="912890661"
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="912900937"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="912890661"
+   d="scan'208";a="912900937"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 07:08:57 -0800
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 08:19:45 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rc5GI-00000005qqV-1fic;
-	Mon, 19 Feb 2024 17:08:54 +0200
-Date: Mon, 19 Feb 2024 17:08:54 +0200
+	id 1rc6Mo-00000005rnm-2qGX;
+	Mon, 19 Feb 2024 18:19:42 +0200
+Date: Mon, 19 Feb 2024 18:19:42 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Andy Shevchenko <andy@black.fi.intel.com>,
-	Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jslaby@suse.com>,
-	Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-	Maxime Ripard <mripard@kernel.org>, Will Deacon <will@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 1/4] serial: 8250: Add 8250 port clock update method
-Message-ID: <ZdNvBtOlxo4FlLUH@smile.fi.intel.com>
-References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
- <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
- <ZczD7KPbeRnY4CFc@black.fi.intel.com>
- <raryiklwhctwxcfj3ulbnjcl32owagiccmxpwzmszlh3vm343y@h2ehupm7uiga>
- <Zc5oYJY6W_MCpwhN@smile.fi.intel.com>
- <ow5mvkxa4g7mub3faiytsij4cyaaralcbzyn675jny5355han7@azw65mhkpwjz>
+To: Rengarajan.S@microchip.com
+Cc: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+	Kumaravel.Thiagarajan@microchip.com,
+	Tharunkumar.Pasumarthi@microchip.com
+Subject: Re: [PATCH v1 1/1] serial: 8250_pci1xxxx: Drop quirk from 8250_port
+Message-ID: <ZdN_npTcCfz0cI_g@smile.fi.intel.com>
+References: <20240214135009.3299940-1-andriy.shevchenko@linux.intel.com>
+ <063a1804732c619bc4a5c801c9881fedd92ad745.camel@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <ow5mvkxa4g7mub3faiytsij4cyaaralcbzyn675jny5355han7@azw65mhkpwjz>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <063a1804732c619bc4a5c801c9881fedd92ad745.camel@microchip.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Feb 16, 2024 at 08:19:37PM +0300, Serge Semin wrote:
-> On Thu, Feb 15, 2024 at 09:39:12PM +0200, Andy Shevchenko wrote:
+On Thu, Feb 15, 2024 at 09:26:21AM +0000, Rengarajan.S@microchip.com wrote:
+> On Wed, 2024-02-14 at 15:50 +0200, Andy Shevchenko wrote:
 
 ...
 
-(thanks for the detailed explanation why you have done it that way)
+> > +       /*
+> > +        * 8250 core considers prescaller value to be always 16.
+> > +        * The MCHP ports support downscaled mode and hence the
+> > +        * functional UART clock can be lower, i.e. 62.5MHz, than
+> > +        * software expects in order to support higher baud rates.
+> > +        * Assign here 64MHz to support 4Mbps.
+> > +        *
+> > +        * The value itself is not really used anywhere except baud
+> > +        * rate calculations, so we can mangle it as we wish.
+> > +        */
+> > +       port->port.uartclk = 64 * HZ_PER_MHZ;
+> 
+> As per internal MCHP DOS, PCI1XXXX driver uses a simple method of
+> converting "legacy 16 bit baud rate generator" to a "32 bit fractional
+> baud rate generator" which enables generation of an acceptable baud
+> rate from any valuable frequency.
+> 
+> This is applicable only when the baud clock selected is 62.5 MHz, so
+> when we configure the baud clock to 64 MHz(as above) will it be
+> downscaled to 62.5 MHz, thus supporting the above feature? 
 
-> If what you suggest is to replace the serial8250_update_uartclk() body
-> with a direct uart_port::set_termios() invocation then I don't find it
-> being much clearer really. The serial8250_update_uartclk() is
-> currently specialized on doing one thing: adjusting the divider in
-> case of the UART-clock change. If instead the entire
-> serial8250_set_termios() method is called then for a reader it won't
-> be easy to understand what is really required for a 8250 serial port
-> to perceive the ref-clock change. But from the maintainability point
-> of view I guess that it might be safer to just call
-> serial8250_set_termios() indeed, since among the other things the
-> later method implies the divider update too. Thus the maintainer won't
-> need to support the two clock divider update implementations.
+I specifically added the above comment. If you look closer, your driver does
+not use this value at all, the 8250 port code uses it in several places:
 
-> From that perspective I agree, directly calling serial8250_set_termios()
-> might be more suitable despite of it' doing more than required.
+- 8250_rsa case (not applicable to your driver)
 
-Would it be possible for you to cook the patch (and test on your HW,
-since it seems the only user of that)?
+- probe_baud() call (applicable iff the kernel command line misses the
+  baudrate, but even without this patch it's broken for your driver)
+
+- serial8250_update_uartclk() call (not applicable to your driver)
+
+- serial8250_get_baud_rate() call (only to get max and min range;
+  my change will have an effect on min (max is exactly what your
+  quirk is doing right no), so 62500000/16/65535 ~= 59.6, while
+  with my change 64000000/16/65535 ~= 61.0, but standard baudrate
+  here is 50 and 75, the former isn't supported by the existing
+  code either
+
+- serial8250_do_get_divisor() call when magic_multiplier supplied
+  (not applicable to your driver)
+
+- autoconfig_16550a() call (not applicable to your driver)
+
+Hope this clarifies the case.
+
+Of course if you able to test, will be even better.
+But wait for v2 where I update what Greg caught.
+
+...
+
+> Acked-by: Rengarajan S <rengarajan.s@microchip.com>
+
+Thank you!
 
 -- 
 With Best Regards,
