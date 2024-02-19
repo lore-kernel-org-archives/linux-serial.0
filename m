@@ -1,84 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 429C4282E2;
-	Mon, 19 Feb 2024 13:29:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3806136125;
+	Mon, 19 Feb 2024 14:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708349348; cv=none; b=NSvoBhjKbE8luSqK5U6ITj+XMgI//M0TeT1T4eXlWAxIIY9Cv7cPBHmrVdn5Fb5o8EZONt+vsr7pbquFNGVDtnqK+EKD8mm3OmT06sYLIclRZMXBL8v+/TfjbdLrTGwrWgmlDookQMEJi6C6QSJO/I/4uvnQGvS8E0Aw71uATXU=
+	t=1708352352; cv=none; b=WJC6YBvks1A2wnVttiBO6szzhtBzhdn0dsakPDH4OcVp/CA6u+IH92Mx/L/PoLJH6BPbbbuZfMxW5yWdhbY3aol4cG3OJx4AW+Ms/5Mr5zIM+pzWtShsMw2ModlB0Xo4a4IMIXmUTEAdc6WfAtWdpAQW3aUrIXyAe6gtzH43J2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708349348; c=relaxed/simple;
-	bh=wlw1F94G/Aq1BD/qlvGvrNwe+KTsxSdkouhURA34fik=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XFGfkwCznrFQ1wR+PYQA7CVEq5kwmjdy8RK61i/9nUXQ+aFsR2m4jPitU3Pbu2DlGBZ71xNSQ+pY118VZN4jCBWdj9oNmchLNryHL8kZueTfnX4UreRvLbMe59V/2kK4w/iH5+pEzRRAPLBN8x/e5SzVL89oPp5+0ztNDjbuhUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WqnPE57M; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708352352; c=relaxed/simple;
+	bh=UQ/xCts5Y5EfjSUtaYYjNcAkUaWSg2td0YATorNw3O4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=EDi8nIKtp5971lGIO6hpa8qJ4V6uitTHoKWlvuOTxMp5AHIt2H8bc6rrFkZR1FUsnkdYzDj4057LNfbammCVBgcPcewRiSu6mH743JRxh0+KDLiHPOxohrx5Jh/qxA7UrZ5ClD1hcKuKsWVs/MRokYvckdHNMwt4M/NTcN9XqqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=o4wiG68G; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=6+VI/+M0; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WqnPE57M"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708349347; x=1739885347;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=wlw1F94G/Aq1BD/qlvGvrNwe+KTsxSdkouhURA34fik=;
-  b=WqnPE57MmkliMP2zmtA0xk1yHzChpnAGaQAsSkFIc5TSx+JbGFZg83AF
-   UWU5OEocVx223nom72zVVs2UuLT3RYsgCyDgl5Fq381B/Xkh7j+huaVoF
-   uPv1eRn4HfHTFzXpyQekegy575w8nfw7Gu6944megCNgU7Ysf8VJfjE3o
-   DJyo8lmSwArn40IO4bKbcMl1xH8iTsnrHwIlhCInO4IO/7oEvoTJ8GNtr
-   V8XeF+7dc+fzVnqWX7QHVFdduGx6fE3W3bWeKoxcl2+pECvAhtLqPRNc5
-   P3zC2NEpFr/gjTUiwgTMCupOWSYVOqAVeDXFkVB+N+jL3zYnOW4wIX6ba
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2873920"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2873920"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 05:29:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="912877099"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="912877099"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 05:29:05 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rc3he-00000005pan-3kCr;
-	Mon, 19 Feb 2024 15:29:02 +0200
-Date: Mon, 19 Feb 2024 15:29:02 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 4/5] serial: 8250_exar: Use 8250 PCI library to map
- and assign resources
-Message-ID: <ZdNXnoQ4vEr4irIm@smile.fi.intel.com>
-References: <20240214171044.3551032-1-andriy.shevchenko@linux.intel.com>
- <20240214171044.3551032-5-andriy.shevchenko@linux.intel.com>
- <2024021723-spellbind-citadel-d2c1@gregkh>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="o4wiG68G";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="6+VI/+M0"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1708352349;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tE619jYxrVp6c5yjL2tj6k7CJfD9ZPT5Mqi5c3cAKts=;
+	b=o4wiG68G1+RfjcQEcbQSppRlkxePd/m3kWrBNAkq/rgLKWfSSujGjeyI79HP3Zt4EuRFlT
+	q0e5hvIRjvJG5NybPuHrxOsSWjZRz7Mqtr0Vp3JeledKb9Vw+UPMAQkQjIaGYFQXYojmjQ
+	vWOvMbasO1wbPo5a1gRyRkWXE/hXksBM81j1Fqpc4r2dM6c2XW0Wz/EewItOe8iHoyGrJl
+	e1klsPW8Nvgl4/kkZ9ML5rwpCI6799R9NNVL8NY9VNSGBYn5Or8AY867EAaaz6hyuFXZnV
+	S4vWBZJ2rRxHdJFEqZzygXQT0H1lLrDQYkKEXrD4nyfHmeUnUEHnLSrCGaDSYQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1708352349;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=tE619jYxrVp6c5yjL2tj6k7CJfD9ZPT5Mqi5c3cAKts=;
+	b=6+VI/+M05xsyzqQWw+k8n8bS94a1/I202cPn8dzJahoY/xp/eS3fBMtKmL59Y8qqFUDTRO
+	8L2zsrbtUhG1RoAw==
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
+ Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>,
+ Tony Lindgren <tony@atomide.com>, Geert Uytterhoeven
+ <geert+renesas@glider.be>, Justin Chen <justin.chen@broadcom.com>, Jiaqing
+ Zhao <jiaqing.zhao@linux.intel.com>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
+ port->lock wrapper
+In-Reply-To: <ZdNGlzwqwdsfwwab@smile.fi.intel.com>
+References: <20240218185726.1994771-1-john.ogness@linutronix.de>
+ <20240218185726.1994771-9-john.ogness@linutronix.de>
+ <ZdNGlzwqwdsfwwab@smile.fi.intel.com>
+Date: Mon, 19 Feb 2024 15:24:47 +0106
+Message-ID: <87jzn0bkqg.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2024021723-spellbind-citadel-d2c1@gregkh>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 
-On Sat, Feb 17, 2024 at 05:44:31PM +0100, Greg Kroah-Hartman wrote:
-> On Wed, Feb 14, 2024 at 07:09:37PM +0200, Andy Shevchenko wrote:
-> > 8250 PCI library provides a common code to map and assign resources.
-> > Use it in order to deduplicate existing code and support IO port
-> > variants.
-> 
-> Looks like you have a build error :(
+On 2024-02-19, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>> --- a/kernel/printk/nbcon.c
+>> +++ b/kernel/printk/nbcon.c
+>> @@ -6,6 +6,7 @@
+>>  #include <linux/console.h>
+>>  #include <linux/delay.h>
+>>  #include <linux/slab.h>
+>> +#include <linux/serial_core.h>
+>
+> The headers in this file is a mess. But here you can at least keep the
+> piece ordered, can you?
 
-Indeed, somehow I messed up with branches I have compiled.
-v2 will be issued soon.
+Just to clarify, you would like to see this ordering and inclusion?
 
--- 
-With Best Regards,
-Andy Shevchenko
+#include <linux/bug.h>
+#include <linux/console.h>
+#include <linux/delay.h>
+#include <linux/export.h>
+#include <linux/kernel.h>
+#include <linux/serial_core.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+#include "internal.h"
 
+>> +	ret = (console_srcu_read_flags(up->cons) & CON_NBCON);
+>
+> The outer parentheses are redundant.
 
+Ack.
+
+Thanks.
+
+John
