@@ -1,56 +1,56 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C94F38F80;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09BE439AEB;
 	Mon, 19 Feb 2024 15:06:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708355198; cv=none; b=J5fzb3ToWcyQCgdhj9Ob24z1hqiuW19eDY7lLbKyAzqcuWTfnzgUsRLIsO4mCNw2F+DwPHAQNUTRDepwh7MifeniYWE73UlaO+zRi85n/LmLPUuPMi3fyUEfM7mVtded2yfP4YW9WqLtd+wI5yeCi5l2dRL6pfkFnf9qJW3iN/A=
+	t=1708355198; cv=none; b=eGSwEG/9zOigdwygqg2gXv3SQBLHebPTnhpuui33PIW1ZCG1JFPAVGeSMvKydvc7f/SMvh6EIs0jgUAMCoTgjAjlscf5LJFHFYmmAz4vHHoLAMElMj4eGq4d/3ysnVau+Ta+rfKMuhiI1d31PopOh3vzK98gbjew4AUjChOaguU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1708355198; c=relaxed/simple;
-	bh=82ATjiA+fWRlO+HzDk15/yNSFBbE2hQxY9S14sFvXLs=;
+	bh=XhwsDorFFCDFsHo4F14gBApk9LhtQz1RvNmzKOWEAn8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jrb7oexmK5SNPmsxOzPctSyJvUml+OQionLuGNrtrlX9tpStD0WZEFrIRoAOlOirkYWyzURuuZzSONFtrpbS2+bFRpZxqY59JfJBGL8/CTfHgUXEE4Tj6DN3Ir8r0WLjR1tb4O5s/39r6hDwJ2Q4JhFEjOJn34s9dCHzvHhh5RY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XrYqS8b+; arc=none smtp.client-ip=198.175.65.18
+	 MIME-Version; b=lBBV+riIx1NOz/4VlvY0lk1aA+upB8KtwEb+s3cUUYnukJeaRrh2PL8cM3880kshlQ9fNfViYKcdchfOI6NLleeh4tO4ixBJ6xjk5mZQllhIx8V3KDr1PTFCvQUNLI4RuBjsT3a9w/W4qfXdQdt1h3dByUNKrV25l2AVKKMp1Z4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VBFgojoN; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XrYqS8b+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VBFgojoN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1708355197; x=1739891197;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=82ATjiA+fWRlO+HzDk15/yNSFBbE2hQxY9S14sFvXLs=;
-  b=XrYqS8b+fs09PdbIJVRt/UAeBsS+WTU9bcGeI3pO01nLcd5xOAtSM+DO
-   1lCUOtU5bxDAs94VQcrIAIGsQ+3aiuBJjvGGjxAhNhFY29JH/1z+aJZBB
-   gnsIScVX7oeVVINbQCnUtHkSC74HuhnnuwnjwtEV1CT+Esg8JORkvmrbN
-   fIVDKq1n/izAJZHkdIFY06kJa/S9yDYKYgltdZLMXt89zCWaw2EGMvFvd
-   fMEyMBABCBLehuFD3lFhNbwveq2vAf1IWY2W+z1TY2pbwo/C70fnvPmxI
-   gnWYYBQegS1Ix7SDlyl4STplvJty2LohK7CYzHCEBDnDhPFBLBRsoefEh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2543777"
+  bh=XhwsDorFFCDFsHo4F14gBApk9LhtQz1RvNmzKOWEAn8=;
+  b=VBFgojoNeCZtFyl9GsHBi9ZivZcGZbUDzFwwaPHc1S8x+5qHisxxeMLb
+   FV+I94GHi/hQUphR/DvYJY1mwhRClIzvZoay8EfSiBhOZ4iNV7GFW6Rk5
+   tRgzCBztj2rDDXx6KAqKa+n2isj+JmGJvQVgPJGopeofz67vSKBnD8AWh
+   qS313h+9AzBrQaLwxrsE89h7Lm01zTrPNkl6qW71p8E8wnOMJnLgIEZNZ
+   HYp6D4NgZr8N9p4INkfDe6SLx3T7jJGVhg0qly5xCRHNiIwwip9YbbRMU
+   yXiYTEq09uDZPO9JpobqS4XV64EQg3m/aJGcg3bUGRbwcLgGYR7s1cs5z
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2543791"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2543777"
+   d="scan'208";a="2543791"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 07:06:32 -0800
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 07:06:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="936302991"
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="936302994"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="936302991"
+   d="scan'208";a="936302994"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 19 Feb 2024 07:06:30 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 19 Feb 2024 07:06:32 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id DA9152BE; Mon, 19 Feb 2024 17:06:28 +0200 (EET)
+	id 2A45E456; Mon, 19 Feb 2024 17:06:29 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v2 1/7] serial: 8250_exar: Don't remove GPIO device on suspend
-Date: Mon, 19 Feb 2024 17:04:57 +0200
-Message-ID: <20240219150627.2101198-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 6/7] serial: 8250_exar: Use 8250 PCI library to map and assign resources
+Date: Mon, 19 Feb 2024 17:05:02 +0200
+Message-ID: <20240219150627.2101198-7-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240219150627.2101198-1-andriy.shevchenko@linux.intel.com>
 References: <20240219150627.2101198-1-andriy.shevchenko@linux.intel.com>
@@ -62,40 +62,66 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It seems a copy&paste mistake that suspend callback removes the GPIO
-device. There is no counterpart of this action, means once suspended
-there is no more GPIO device available untile full unbind-bind cycle
-is performed. Remove suspicious GPIO device removal in suspend.
+8250 PCI library provides a common code to map and assign resources.
+Use it in order to deduplicate existing code and support IO port
+variants.
 
-Fixes: d0aeaa83f0b0 ("serial: exar: split out the exar code from 8250_pci")
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_exar.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 11 ++++++-----
+ drivers/tty/serial/8250/Kconfig     |  1 +
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 1be838122bca..6580265e1763 100644
+index 53c5ff49e83c..cf1abe2fc28a 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -741,6 +741,7 @@ static void exar_pci_remove(struct pci_dev *pcidev)
- 	for (i = 0; i < priv->nr; i++)
- 		serial8250_unregister_port(priv->line[i]);
+@@ -24,6 +24,7 @@
+ #include <asm/byteorder.h>
  
-+	/* Ensure that every init quirk is properly torn down */
- 	if (priv->board->exit)
- 		priv->board->exit(pcidev);
- }
-@@ -755,10 +756,6 @@ static int __maybe_unused exar_suspend(struct device *dev)
- 		if (priv->line[i] >= 0)
- 			serial8250_suspend_port(priv->line[i]);
+ #include "8250.h"
++#include "8250_pcilib.h"
  
--	/* Ensure that every init quirk is properly torn down */
--	if (priv->board->exit)
--		priv->board->exit(pcidev);
--
- 	return 0;
- }
+ #define PCI_DEVICE_ID_ACCESSIO_COM_2S		0x1052
+ #define PCI_DEVICE_ID_ACCESSIO_COM_4S		0x105d
+@@ -219,13 +220,12 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+ 			 struct uart_8250_port *port)
+ {
+ 	const struct exar8250_board *board = priv->board;
+-	unsigned int bar = 0;
+ 	unsigned char status;
++	int err;
  
+-	port->port.iotype = UPIO_MEM;
+-	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
+-	port->port.membase = priv->virt + offset;
+-	port->port.regshift = board->reg_shift;
++	err = serial8250_pci_setup_port(pcidev, port, 0, offset, board->reg_shift);
++	if (err)
++		return err;
+ 
+ 	/*
+ 	 * XR17V35x UARTs have an extra divisor register, DLD that gets enabled
+@@ -929,6 +929,7 @@ static struct pci_driver exar_pci_driver = {
+ };
+ module_pci_driver(exar_pci_driver);
+ 
++MODULE_IMPORT_NS(SERIAL_8250_PCI);
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Exar Serial Driver");
+ MODULE_AUTHOR("Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>");
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 8b9a2c4902e2..47ff50763c04 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -149,6 +149,7 @@ config SERIAL_8250_PCI
+ config SERIAL_8250_EXAR
+ 	tristate "8250/16550 Exar/Commtech PCI/PCIe device support"
+ 	depends on SERIAL_8250 && PCI
++	select SERIAL_8250_PCILIB
+ 	default SERIAL_8250
+ 	help
+ 	  This builds support for XR17C1xx, XR17V3xx and some Commtech
 -- 
 2.43.0.rc1.1.gbec44491f096
 
