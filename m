@@ -1,158 +1,110 @@
-Received: from mx2.securetransport.de (mx2.securetransport.de [188.68.39.254])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4A0863117
-	for <linux-serial@vger.kernel.org>; Tue, 20 Feb 2024 10:07:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.68.39.254
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 303CA60ED2;
+	Tue, 20 Feb 2024 10:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708423637; cv=none; b=fJsF6n4Wk/NqN1qGUXGwNkpKSclRwJw2D9XfktTrs425TQDHcOlRXiK9Vx3xPoaL+YVk1w+jqSGp1mQFHohkxu+MeDwaXVQY1ewu8+AYWjk7E+CHRsxbErEuGOdWJ6EJdC/GIklzfpKV9CoN1aaiUYo2z1UQaqMwrF5VNbrSkt4=
+	t=1708424613; cv=none; b=a62xCIvRqBPOPacboigiNac9Q3Auw76qHL/Y3pp2cwuJviZgtCkc155M0TjFbEgvI7tVn8ckMXOeKR8rwghlDzH1B4u/yK0FXZmHeM+0bMAVx4YS5KM4XzGLcP6utUQeMxn4OI/LOq8DW0obe2IPwVeJsSuXiO1BkTZEdx93j9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708423637; c=relaxed/simple;
-	bh=M0XpZ6HeNRNkfmIx1EpJxFW7bfcbGOXlwT4M/XUtYAc=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kFTVjhjsfZEWWaV0X0+5EKdFD7NjJA/3oT0COK1rR+L1cNzj1WUiNP2mpDRsKH9A39QP3g+ptw5xk42V0m5Pa4CSRCsFrdznqOqNgyAjGHiRSxFc6jtfSRheLw/R3fScS19XAnpy2oeOjxIGFSz094TGhaSA3vC5p5HNN16xWmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=SxaLS9cp; arc=none smtp.client-ip=188.68.39.254
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="SxaLS9cp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1708422961;
-	bh=VkKll6ojm8/6jsuBX35DZl8SrdiDN3/71mYSJ8DLSzY=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-	b=SxaLS9cplPu3dzm8qnbvvj0G4043gcBc/p7uhxB735T2odgEEFJkhFkRyHK8ekP4r
-	 ZKocJtn6GkHIIMa4zrpdOaCfLElZsWnKKubqlakgyiguzRTAdtC/pJFggNkQb8mQcQ
-	 bXXcjTJ3iDUp3Qyt/OYGcXh1r3du/z+J9uJMGqDFfai8+1jrPAfHIsZXMZJH2fRdFh
-	 E5eZz4dGxN8T5zZ9fNEPnGBkD0MeegzpNG4rXvKF8Z8WRyP3jLKn++7gbaMSjhvN9h
-	 ocWFc/URAQVxHk5aN2FemrOKG0tJ3FbaQnLU7qAxjMG0dJMNhdY72ttjij3eTbrVjL
-	 tou6RK6kbj7MQ==
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To: <linux-serial@vger.kernel.org>
-CC: Christoph Niedermaier <cniedermaier@dh-electronics.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Marek Vasut
-	<marex@denx.de>, Fabio Estevam <festevam@denx.de>, Sascha Hauer
-	<s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>,
-	NXP Linux Team <linux-imx@nxp.com>, Sergey Organov <sorganov@gmail.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Rob
- Herring <robh@kernel.org>, =?UTF-8?q?Ilpo=20J=C3=A4rvinen?=
-	<ilpo.jarvinen@linux.intel.com>, Tom Rix <trix@redhat.com>, Thomas Gleixner
-	<tglx@linutronix.de>, Lukas Wunner <lukas@wunner.de>
-Subject: [RFC][PATCH] serial: imx: Fix RS485 behaviour on disabled RX_DURING_TX
-Date: Tue, 20 Feb 2024 10:55:40 +0100
-Message-ID: <20240220095540.3352-1-cniedermaier@dh-electronics.com>
-X-klartext: yes
-In-Reply-To: <20240220061243.4169045-1-rickaran@axis.com>
-References: <20240220061243.4169045-1-rickaran@axis.com>
+	s=arc-20240116; t=1708424613; c=relaxed/simple;
+	bh=mLt4xmejzlrsSSdRTa1yS9wn+ZVm8cOBAXhmP0gRgxs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nKcRq9dN+pwtx+i1/jDVn97FUNEggL/+ZMrv0tAqgxeghgdq+2QyOryo400NW0SNd5TJZwdQUbY18360ZnmwU+hTzyrOtBgZ4AlLGFwKLZy3R7MzAd4DvJGpKmmApkzesRuhKZVcvl2os4IL697seMZQS7N9SaZ9B6cuXgAhU/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-603fd31f5c2so52743127b3.0;
+        Tue, 20 Feb 2024 02:23:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708424609; x=1709029409;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=12Kyp8aB3rpgIdqlByHzUCQrNKWenvMCDuD+CWYwf7E=;
+        b=ErrwAcfSwPedBNUHJVGu3hzP3G6tpDriLPnHaM+cfoUJPJG6u90d6vy/GJxNw00S2+
+         +v3UojF/1PBzdsLoT1z1FNufj9UOsB3/qKt5YPOM+z8fEEOMwPxEQ3KpvkIk7cPvGWFV
+         R+MsdpJ1vQwebP2VJEeWLBIfI0wvmnOMyIdFTZmlN0nImFDNVzDGmza35Pl/pvu6idf2
+         iroPLopv1i780m2GCSF52TIPzmR3uzdOnj/c4WOGMe3fxujjWP+Oyz6Os8Ao5TUjS090
+         v8wEQqjfOTQLiUegM+YdCteeUy1DPvaIFzphZ4fPKMZhRxEA9bieAW2vZcXSkqY8eELw
+         w7Tg==
+X-Forwarded-Encrypted: i=1; AJvYcCWmg4cxqEYlrx0U15sJ7+9abb4BcJSQjxWW+IvkMGAUfjA46X1uE8L17TjoZGTon2toH+jliQzJixeR37ounzV3MvWhM72BUpBa8nP28YGui+dosG9tWeI4HrBkXZXaKhdOzrIyOSU19Yre
+X-Gm-Message-State: AOJu0YyzpJEbbBpexvdpW0mPnaUgKa968EmUHi0RFEfp9HYqPXwqbG8R
+	EXq6o+rtGnfkANF0aqeMIbP/4YIbi4IUQEhluEbQrdW242owlphPPUuYDUoGckQ=
+X-Google-Smtp-Source: AGHT+IG/bCk4kIW9NyrCSQ6KIPPrgxsc/22TJV8EHDe4dT1Ty8hdJebdL39GxuNsH4o+UyZWeccXhw==
+X-Received: by 2002:a05:690c:d1a:b0:607:7bce:fe28 with SMTP id cn26-20020a05690c0d1a00b006077bcefe28mr10471026ywb.13.1708424608744;
+        Tue, 20 Feb 2024 02:23:28 -0800 (PST)
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com. [209.85.128.179])
+        by smtp.gmail.com with ESMTPSA id j126-20020a819284000000b005ff98d9a7b8sm2045385ywg.19.2024.02.20.02.23.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Feb 2024 02:23:28 -0800 (PST)
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-607eefeea90so38019587b3.1;
+        Tue, 20 Feb 2024 02:23:28 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCXlmEqZNdZ9RzyaYKredLH0J3NmRXlJAgQF9l7zRUYxCf6+cnTTPvZAL29NsiW83HQhY5UsP3x3I4PXI5rsFSbDI6fSlQYReNN9TWaMHWQxkmTEgc4JwK46wNsC4i05U8yBgEjzU/BvqS2m
+X-Received: by 2002:a81:4f84:0:b0:607:df5f:5e0c with SMTP id
+ d126-20020a814f84000000b00607df5f5e0cmr9142339ywb.3.1708424607929; Tue, 20
+ Feb 2024 02:23:27 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20240219164002.520342-1-thuth@redhat.com> <c44bfc7f-7b06-4985-953d-185f8b576a5b@kernel.org>
+In-Reply-To: <c44bfc7f-7b06-4985-953d-185f8b576a5b@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 20 Feb 2024 11:23:15 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
+Message-ID: <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
+Subject: Re: [PATCH] drivers/tty/serial: Remove unused function early_mcf_setup
+To: Jiri Slaby <jirislaby@kernel.org>, Greg Ungerer <gerg@linux-m68k.org>
+Cc: Thomas Huth <thuth@redhat.com>, linux-m68k@lists.linux-m68k.org, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-I have made a patch that does not enable the loopback when
-the RX_DURING_TX flag is disabled. Would you be so kind to
-test my patch to see if it also solves your problem.
+On Tue, Feb 20, 2024 at 6:11=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> w=
+rote:
+> On 19. 02. 24, 17:40, Thomas Huth wrote:
+> > Compiling a kernel for the ColdFire causes a compiler warning:
+> >
+> > drivers/tty/serial/mcf.c:473:12: warning: no previous prototype for
+> >   =E2=80=98early_mcf_setup=E2=80=99 [-Wmissing-prototypes]
+> >    473 | int __init early_mcf_setup(struct mcf_platform_uart *platp)
+> >        |            ^~~~~~~~~~~~~~~
+> >
+> > This function seems to be completely unused, so let's remove it
+> > to silence the warning.
+>
+> And it seems so since the driver addition in 2007 by:
+> commit 49aa49bfd40d718095669c1c70c9d167b814e29b
+> Author: Greg Ungerer <gerg@snapgear.com>
+> Date:   Tue Oct 23 14:37:54 2007 +1000
+>
+>      m68knommu: new style ColdFire UART driver
 
-Regards
-Christoph
+Indeed.
 
+Looks like the "changes to the ColdFire based m68knommu systems
+to use a platform model at init, and this is used there" from [1]
+never materialized on any public mailing list?
 
-Commit 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal active high")
-activated the loopback mode for RS485 controlled by UART CTS_B when the
-function imx_uart_stop_rx() is called. But through that changes the RS485
-flag RX_DURING_TX isn’t able to turn off the receiver anymore. If the flag
-RX_DURING_TX is disabled everything that was sent will be received due to
-the active loopback. To turn off the receiver in this case the function
-imx_uart_stop_rx() is extended by a wrapper function
-imx_uart_stop_rx_with_loopback_rs485_ctrl() for the use of RS485 with
-disabled flag RX_DURING_TX, where the receiver is turn off. For all other
-cases there aren’t a functional change.
+Greg: does it still make sense to add them? If not:
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-When the receiver is turned off the UART CTS_B signal is always high. To
-ensure that the RS485 bus won’t blocked by a disabled receiver caused by a
-high UART CTS_B signal the function imx_uart_shutdown() is extended. So in
-RS485 loopback mode the receiver is always on after shutdown the device.
+[1] https://lore.kernel.org/all/47254BEB.2040609@snapgear.com/
 
-Fixes: 79d0224f6bf2 ("tty: serial: imx: Handle RS485 DE signal active high")
-Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
----
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Fabio Estevam <festevam@denx.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Sergey Organov <sorganov@gmail.com>
-Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
-Cc: Rob Herring <robh@kernel.org>
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Tom Rix <trix@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Lukas Wunner <lukas@wunner.de>
-To: linux-serial@vger.kernel.org
----
- drivers/tty/serial/imx.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+Gr{oetje,eeting}s,
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 4aa72d5aeafb..222e2c929bd7 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -463,7 +463,8 @@ static void imx_uart_stop_tx(struct uart_port *port)
- }
- 
- /* called with port.lock taken and irqs off */
--static void imx_uart_stop_rx(struct uart_port *port)
-+static void imx_uart_stop_rx_with_loopback_rs485_ctrl(struct uart_port *port,
-+						  bool loopback_rs485_enable)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
- 	u32 ucr1, ucr2, ucr4, uts;
-@@ -483,7 +484,7 @@ static void imx_uart_stop_rx(struct uart_port *port)
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	/* See SER_RS485_ENABLED/UTS_LOOP comment in imx_uart_probe() */
--	if (port->rs485.flags & SER_RS485_ENABLED &&
-+	if (port->rs485.flags & SER_RS485_ENABLED && loopback_rs485_enable &&
- 	    port->rs485.flags & SER_RS485_RTS_ON_SEND &&
- 	    sport->have_rtscts && !sport->have_rtsgpio) {
- 		uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
-@@ -498,6 +499,12 @@ static void imx_uart_stop_rx(struct uart_port *port)
- }
- 
- /* called with port.lock taken and irqs off */
-+static void imx_uart_stop_rx(struct uart_port *port)
-+{
-+	imx_uart_stop_rx_with_loopback_rs485_ctrl(port, 1);
-+}
-+
-+/* called with port.lock taken and irqs off */
- static void imx_uart_enable_ms(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
-@@ -684,7 +691,7 @@ static void imx_uart_start_tx(struct uart_port *port)
- 
- 			if (!(port->rs485.flags & SER_RS485_RX_DURING_TX) &&
- 			    !port->rs485_rx_during_tx_gpio)
--				imx_uart_stop_rx(port);
-+				imx_uart_stop_rx_with_loopback_rs485_ctrl(port, 0);
- 
- 			sport->tx_state = WAIT_AFTER_RTS;
- 
-@@ -1596,6 +1603,9 @@ static void imx_uart_shutdown(struct uart_port *port)
- 		uts = imx_uart_readl(sport, imx_uart_uts_reg(sport));
- 		uts |= UTS_LOOP;
- 		imx_uart_writel(sport, uts, imx_uart_uts_reg(sport));
-+		ucr2 = imx_uart_readl(sport, UCR2);
-+		ucr2 |= UCR2_RXEN;
-+		imx_uart_writel(sport, ucr2, UCR2);
- 		ucr1 |= UCR1_UARTEN;
- 	} else {
- 		ucr1 &= ~UCR1_UARTEN;
--- 
-2.11.0
+                        Geert
 
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
