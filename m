@@ -1,175 +1,94 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F389657DF
-	for <linux-serial@vger.kernel.org>; Tue, 20 Feb 2024 11:34:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A3E6A8CB;
+	Tue, 20 Feb 2024 13:55:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708428856; cv=none; b=RyoPt9IRnFKMVvDL+BI5Y9Oro2IsVp8pjQLeU5zhTAQg1jkj5ehIqSdpgqZaC0tfRXQ4azDbTzJ1C7CbFa/c2fg/i2h7JP9AzxXurMY5smhiFbt4aIjtxWAzfU4nxxJFDVWIDfFHTRHE9p9L7tBrEqKgkhTJCN0CW01WjEJ4iF8=
+	t=1708437353; cv=none; b=uy8HdoPaIMTr3TDh0zSfdJfqMcta1HyIuWEmK2yU+QcISghoiNwPJoN0sZqmY0dHzWFv9QUmNkLd/4DpF+HFtx9iGNtr4IItX5Rr+WaFewIyjbKE5a3eaEUmU3SOgJBxAbOFN2texrB/oDWnRyIkGiX+LcvYhKGiR02NFv2leY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708428856; c=relaxed/simple;
-	bh=wpwueLBxQ8g7CUCfsdr3qWaKkli08BlyZt5JJx5mm44=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Z0zITqtcIm8L4cWWB5O2SuHyqwH75fbwYB+5G0w2LxKlmz+Z+E5YNZgwBmHhUfGzp5S9zHI3Kyjn9QQ2yapKnV4a5T1ufnvONQy7I0hvoLvqbwMVmvXEsVpUIQCV2zlc7OWnZ3BCnDMPj72WHHIaE3FS9oROjvwa7aHZHza+YGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=JY3TL8T6; arc=none smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="JY3TL8T6"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-33d36736d4eso1783460f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 20 Feb 2024 03:34:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1708428853; x=1709033653; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=z3Pvq3RdfRBYI8uAK+HiNG4SvbmBg/H4jDL+WIUGvTg=;
-        b=JY3TL8T6o5kXF3AWKRtemKT3kWNyEr9MsBv20xU0ab+XgBFQfi/7jWFxu3lBe76vCD
-         Q0MM1IcSjNTmldkfCKIk+tnE9maiw/lYszVPAhZnW1SpHVMVVycGI8ZzOZ03g0uAhwXP
-         aLgMFHqGUvtzWkABiIxZ4G28Z83d54jnROk+Cr4ykALbAHPxwk6muM4DX2hzdnhi3bhG
-         1rvvJMFqkiRp1V23nl5VJSNp+JHGd2vPxL8By7VGGxg2bvNeNDuxlvt+qheOBY0KeJcw
-         EnOVpSeXQLDE1M33h4r8tATV52BpCzkW8mWjG2CyFFQcoQET5wj2j5z8Rb/28Ym1kkt/
-         rzlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708428853; x=1709033653;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=z3Pvq3RdfRBYI8uAK+HiNG4SvbmBg/H4jDL+WIUGvTg=;
-        b=Dk4sVlILQtnf4yawGBViyJKkxzmQJf3Z09POBMB2SCzJ5fMolpA9v/GJYwGOZTUUqh
-         twf55KbtO9+HSrTL2XbDwCC8IzEenpEQNRxiQwvt53FrKXsRn848OsHojSa19U4VAX/z
-         +MOkDji42+Ni/5FOiO7YcfZ/R7EoRYI1upW0Rc052xrUuzJPN9C7rFzG9KngRa9xybOH
-         ctkovv9NRTVh+Bj+UCyRZ7HIavxoIVRAQKm3JRqgsy2IiSMCi7t/wmC/zDMDBHPmpd5C
-         REvTOJ7Y9extXPj/ItRYCKKfNXVpKVWTWrMl4HbrPZpGl2hR7mBiNnxhn3KPwgDa9PHu
-         q/1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXiBpEvlK/CsPVkk/fXfPM4GosJ/d50r5ThtUgX+bSB0qYCm9m+j6izbk8SnNjGr03Z5cChtnYafC4gwhZ+EyV9vmwPp8dL5gX5Tzhr
-X-Gm-Message-State: AOJu0YwfOe83xhVWHYRncQyIKVN7ZSik0hOyWi9SZGrXdtxYoSbLA8Gn
-	/j9vIQJ3U3p1ixrX5ecI3+xrCf1LJbutAP69j5c3bNfkZ1dhtBPSqFDyqOX4LIs=
-X-Google-Smtp-Source: AGHT+IGw3UcTIT75fBKm4X2nkb9oIu2VZFCfSYXoNynHzrGBcjbo7mcmn9zo6bBaGcO1zeNFNAaYPg==
-X-Received: by 2002:a05:6000:1843:b0:33d:4fca:a47f with SMTP id c3-20020a056000184300b0033d4fcaa47fmr3907939wri.18.1708428853091;
-        Tue, 20 Feb 2024 03:34:13 -0800 (PST)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:c6ce:c6a0:43ac:8f8e])
-        by smtp.gmail.com with ESMTPSA id bn28-20020a056000061c00b0033d6fe3f6absm1063006wrb.62.2024.02.20.03.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Feb 2024 03:34:12 -0800 (PST)
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-To: Patrice Chotard <patrice.chotard@foss.st.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Dan Carpenter <dan.carpenter@linaro.org>,
-	Linus Walleij <linus.walleij@linaro.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v3] serial: st-asc: don't get/put GPIOs in atomic context
-Date: Tue, 20 Feb 2024 12:34:10 +0100
-Message-Id: <20240220113410.16613-1-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.40.1
+	s=arc-20240116; t=1708437353; c=relaxed/simple;
+	bh=CFBAEkF/q8ncI+9sPI0M6RjIXSeHLouADi9KF1CiGh4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ThO3+11ZO/P7C1mYNYC0Q6/yGpmMC9RBTLX4ykvsVpe415jw2Kd3Ez6Gj0H1FGcgva1MTpfE287wWZSC/qHTnsQGkCXYp0ZPPI0hrV+vijgA+LnvNGqbS6eZGXLEHwxRBfNT6rutsbwyuIen57ZFU+ALaQ1CuQ2jobqJZ+gLmHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7567DC433C7;
+	Tue, 20 Feb 2024 13:55:51 +0000 (UTC)
+Message-ID: <590107ef-16f1-4680-8fd6-11df838ce14a@linux-m68k.org>
+Date: Tue, 20 Feb 2024 23:55:48 +1000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] drivers/tty/serial: Remove unused function
+ early_mcf_setup
+To: Geert Uytterhoeven <geert@linux-m68k.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Thomas Huth <thuth@redhat.com>, linux-m68k@lists.linux-m68k.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240219164002.520342-1-thuth@redhat.com>
+ <c44bfc7f-7b06-4985-953d-185f8b576a5b@kernel.org>
+ <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
+Content-Language: en-US
+From: Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Since commit 1f2bcb8c8ccd ("gpio: protect the descriptor label with
-SRCU") gpiod_set_consumer_name() calls synchronize_srcu() which led to
-a "sleeping in atomic context" smatch warning.
+On 20/2/24 20:23, Geert Uytterhoeven wrote:
+> On Tue, Feb 20, 2024 at 6:11 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+>> On 19. 02. 24, 17:40, Thomas Huth wrote:
+>>> Compiling a kernel for the ColdFire causes a compiler warning:
+>>>
+>>> drivers/tty/serial/mcf.c:473:12: warning: no previous prototype for
+>>>    ‘early_mcf_setup’ [-Wmissing-prototypes]
+>>>     473 | int __init early_mcf_setup(struct mcf_platform_uart *platp)
+>>>         |            ^~~~~~~~~~~~~~~
+>>>
+>>> This function seems to be completely unused, so let's remove it
+>>> to silence the warning.
+>>
+>> And it seems so since the driver addition in 2007 by:
+>> commit 49aa49bfd40d718095669c1c70c9d167b814e29b
+>> Author: Greg Ungerer <gerg@snapgear.com>
+>> Date:   Tue Oct 23 14:37:54 2007 +1000
+>>
+>>       m68knommu: new style ColdFire UART driver
+> 
+> Indeed.
+> 
+> Looks like the "changes to the ColdFire based m68knommu systems
+> to use a platform model at init, and this is used there" from [1]
+> never materialized on any public mailing list?
+> 
+> Greg: does it still make sense to add them?
 
-This function (along with gpiod_get/put() and all other GPIO APIs apart
-from gpiod_get/set_value() and gpiod_direction_input/output()) should
-have never been called with a spinlock taken. We're only fixing this now
-as GPIOLIB has been rebuilt to use SRCU for access serialization which
-uncovered this problem.
+No, it never really turned out to be useful enough to anyone,
+so I never really pushed it out or progressed it any further.
 
-Move the calls to gpiod_get/put() outside the spinlock critical section.
+So I am fine with removing this now:
 
-Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-Closes: https://lore.kernel.org/linux-gpio/deee1438-efc1-47c4-8d80-0ab2cf01d60a@moroto.mountain/
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
-v2 -> v3:
-- we only need to change the GPIO configuration for RTS in certain situations
-  so use a separate variable for storing that information; if we don't then we
-  may end up putting the descriptor when setting a different option
-- I dropped Linus tag as the code change significantly
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
 
-v1 -> v2:
-- initialize the 'manual_rts' variable to false as we don't always get to
-  the place where it's set
+I can take it via the m68knommu git tree if no one else wants to
+pick it up.
 
- drivers/tty/serial/st-asc.c | 40 ++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 16 deletions(-)
+Regards
+Greg
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index bbb5595d7e24..a23e59551848 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -465,6 +465,7 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 			    const struct ktermios *old)
- {
- 	struct asc_port *ascport = to_asc_port(port);
-+	bool manual_rts, toggle_rts = false;
- 	struct gpio_desc *gpiod;
- 	unsigned int baud;
- 	u32 ctrl_val;
-@@ -518,25 +519,13 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 		/* If flow-control selected, stop handling RTS manually */
- 		if (ascport->rts) {
--			devm_gpiod_put(port->dev, ascport->rts);
--			ascport->rts = NULL;
--
--			pinctrl_select_state(ascport->pinctrl,
--					     ascport->states[DEFAULT]);
-+			toggle_rts = true;
-+			manual_rts = false;
- 		}
- 	} else {
- 		/* If flow-control disabled, it's safe to handle RTS manually */
--		if (!ascport->rts && ascport->states[NO_HW_FLOWCTRL]) {
--			pinctrl_select_state(ascport->pinctrl,
--					     ascport->states[NO_HW_FLOWCTRL]);
--
--			gpiod = devm_gpiod_get(port->dev, "rts", GPIOD_OUT_LOW);
--			if (!IS_ERR(gpiod)) {
--				gpiod_set_consumer_name(gpiod,
--						port->dev->of_node->name);
--				ascport->rts = gpiod;
--			}
--		}
-+		if (!ascport->rts && ascport->states[NO_HW_FLOWCTRL])
-+			manual_rts = toggle_rts = true;
- 	}
- 
- 	if ((baud < 19200) && !ascport->force_m1) {
-@@ -595,6 +584,25 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 	asc_out(port, ASC_CTL, (ctrl_val | ASC_CTL_RUN));
- 
- 	uart_port_unlock_irqrestore(port, flags);
-+
-+	if (toggle_rts) {
-+		if (manual_rts) {
-+			pinctrl_select_state(ascport->pinctrl,
-+					     ascport->states[NO_HW_FLOWCTRL]);
-+
-+			gpiod = devm_gpiod_get(port->dev, "rts", GPIOD_OUT_LOW);
-+			if (!IS_ERR(gpiod)) {
-+				gpiod_set_consumer_name(gpiod,
-+							port->dev->of_node->name);
-+				ascport->rts = gpiod;
-+			}
-+		} else {
-+				devm_gpiod_put(port->dev, ascport->rts);
-+				ascport->rts = NULL;
-+				pinctrl_select_state(ascport->pinctrl,
-+						     ascport->states[DEFAULT]);
-+		}
-+	}
- }
- 
- static const char *asc_type(struct uart_port *port)
--- 
-2.40.1
 
+
+> If not:
+> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> 
+> [1] https://lore.kernel.org/all/47254BEB.2040609@snapgear.com/
+> 
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
