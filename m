@@ -1,94 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A3E6A8CB;
-	Tue, 20 Feb 2024 13:55:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7327467E6E;
+	Tue, 20 Feb 2024 14:21:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708437353; cv=none; b=uy8HdoPaIMTr3TDh0zSfdJfqMcta1HyIuWEmK2yU+QcISghoiNwPJoN0sZqmY0dHzWFv9QUmNkLd/4DpF+HFtx9iGNtr4IItX5Rr+WaFewIyjbKE5a3eaEUmU3SOgJBxAbOFN2texrB/oDWnRyIkGiX+LcvYhKGiR02NFv2leY0=
+	t=1708438865; cv=none; b=u1TdqP8u9heL7lhcmhqzixSnEVHIxRkfNeeMm3PskROa7R4suS73TJNqasLuDo2ff6jKuySrfbwXTzARzn1tr/dH9hTeIC/uqyx1u7nMq4kMrXFBzvmN8xZ0IiJtV3xjywriojvOHX4juBNso8baXkQMi0a7gkMVlYazLFXJGig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708437353; c=relaxed/simple;
-	bh=CFBAEkF/q8ncI+9sPI0M6RjIXSeHLouADi9KF1CiGh4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ThO3+11ZO/P7C1mYNYC0Q6/yGpmMC9RBTLX4ykvsVpe415jw2Kd3Ez6Gj0H1FGcgva1MTpfE287wWZSC/qHTnsQGkCXYp0ZPPI0hrV+vijgA+LnvNGqbS6eZGXLEHwxRBfNT6rutsbwyuIen57ZFU+ALaQ1CuQ2jobqJZ+gLmHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7567DC433C7;
-	Tue, 20 Feb 2024 13:55:51 +0000 (UTC)
-Message-ID: <590107ef-16f1-4680-8fd6-11df838ce14a@linux-m68k.org>
-Date: Tue, 20 Feb 2024 23:55:48 +1000
+	s=arc-20240116; t=1708438865; c=relaxed/simple;
+	bh=2/sNuZhDDW4BKax5wLDrsdyxDXb0JpkYm8vXKo6XHAQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tv3A9VUywDiC++R5oElzABKXjyPcXKx9FoeRlsqqa/sPS4NGw/DxViEu579P78qOnRlbzxHlCpBFvtt87aCDSxWXbYaaW0gYD/s7yaw5b6VPoffFz0S/Mj7clX0UKSYV+7aYz3IQ7kxwStfWarb1HWrr2rMLdulwJKTHEO6zoms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WMSQxj8R; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WMSQxj8R"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708438862; x=1739974862;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=2/sNuZhDDW4BKax5wLDrsdyxDXb0JpkYm8vXKo6XHAQ=;
+  b=WMSQxj8RvHSy5mOiymDmSjbNxtzDMpmItitbAzeRfnJRVqEyY4XcJ9ea
+   j3nKoRWGQ/2yqoKsDNEWXBq0M/fyjtzbo9Qx5xoys3O+5sPAjidHi71L7
+   vYrapdwaOtMlkJH46pWBkUU9fSrADBNFD7PO0it26RBxVO3cjdaw2LDuz
+   jt6A+A9JxkmjhC7p9x6AmJFbyaxcQiVip65/uCY1c75A/Ige8CjW3WmRO
+   KNC1VHA5vR9to2mTHuJSc0tHhpgf3/vL8YP1lt2MLhpH/KsD48eCBg5g7
+   shINsF8qQeFV05Gp11osaKAMYgIxUB3QJ/18iJ1b27GdAZ9ZD3NYYTFei
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="5499039"
+X-IronPort-AV: E=Sophos;i="6.06,172,1705392000"; 
+   d="scan'208";a="5499039"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2024 06:21:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="913083829"
+X-IronPort-AV: E=Sophos;i="6.06,172,1705392000"; 
+   d="scan'208";a="913083829"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2024 06:20:59 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rcQzR-000000066Sa-1IE7;
+	Tue, 20 Feb 2024 16:20:57 +0200
+Date: Tue, 20 Feb 2024 16:20:57 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rengarajan.S@microchip.com
+Cc: linux-serial@vger.kernel.org, jirislaby@kernel.org,
+	gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+	Kumaravel.Thiagarajan@microchip.com,
+	Tharunkumar.Pasumarthi@microchip.com
+Subject: Re: [PATCH v1 1/1] serial: 8250_pci1xxxx: Drop quirk from 8250_port
+Message-ID: <ZdS1Se4bVvuKDd6-@smile.fi.intel.com>
+References: <20240214135009.3299940-1-andriy.shevchenko@linux.intel.com>
+ <063a1804732c619bc4a5c801c9881fedd92ad745.camel@microchip.com>
+ <ZdN_npTcCfz0cI_g@smile.fi.intel.com>
+ <9ae91cfc2ca24d23c5f3bc16208e5d59eccba076.camel@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] drivers/tty/serial: Remove unused function
- early_mcf_setup
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Thomas Huth <thuth@redhat.com>, linux-m68k@lists.linux-m68k.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240219164002.520342-1-thuth@redhat.com>
- <c44bfc7f-7b06-4985-953d-185f8b576a5b@kernel.org>
- <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
-Content-Language: en-US
-From: Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <CAMuHMdXc=rR9udEmMsCJof+sCxdoJryF49-Gy9j=DJqiHyUsvQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9ae91cfc2ca24d23c5f3bc16208e5d59eccba076.camel@microchip.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
+On Tue, Feb 20, 2024 at 04:21:59AM +0000, Rengarajan.S@microchip.com wrote:
+> On Mon, 2024-02-19 at 18:19 +0200, Andy Shevchenko wrote:
+> > On Thu, Feb 15, 2024 at 09:26:21AM +0000,
+> > Rengarajan.S@microchip.com wrote:
+> > > On Wed, 2024-02-14 at 15:50 +0200, Andy Shevchenko wrote:
 
-On 20/2/24 20:23, Geert Uytterhoeven wrote:
-> On Tue, Feb 20, 2024 at 6:11â€¯AM Jiri Slaby <jirislaby@kernel.org> wrote:
->> On 19. 02. 24, 17:40, Thomas Huth wrote:
->>> Compiling a kernel for the ColdFire causes a compiler warning:
->>>
->>> drivers/tty/serial/mcf.c:473:12: warning: no previous prototype for
->>>    â€˜early_mcf_setupâ€™ [-Wmissing-prototypes]
->>>     473 | int __init early_mcf_setup(struct mcf_platform_uart *platp)
->>>         |            ^~~~~~~~~~~~~~~
->>>
->>> This function seems to be completely unused, so let's remove it
->>> to silence the warning.
->>
->> And it seems so since the driver addition in 2007 by:
->> commit 49aa49bfd40d718095669c1c70c9d167b814e29b
->> Author: Greg Ungerer <gerg@snapgear.com>
->> Date:   Tue Oct 23 14:37:54 2007 +1000
->>
->>       m68knommu: new style ColdFire UART driver
+...
+
+> > > > +       /*
+> > > > +        * 8250 core considers prescaller value to be always 16.
+> > > > +        * The MCHP ports support downscaled mode and hence the
+> > > > +        * functional UART clock can be lower, i.e. 62.5MHz, than
+> > > > +        * software expects in order to support higher baud
+> > > > rates.
+> > > > +        * Assign here 64MHz to support 4Mbps.
+> > > > +        *
+> > > > +        * The value itself is not really used anywhere except
+> > > > baud
+> > > > +        * rate calculations, so we can mangle it as we wish.
+> > > > +        */
+> > > > +       port->port.uartclk = 64 * HZ_PER_MHZ;
+> > > 
+> > > As per internal MCHP DOS, PCI1XXXX driver uses a simple method of
+> > > converting "legacy 16 bit baud rate generator" to a "32 bit
+> > > fractional
+> > > baud rate generator" which enables generation of an acceptable baud
+> > > rate from any valuable frequency.
+> > > 
+> > > This is applicable only when the baud clock selected is 62.5 MHz,
+> > > so
+> > > when we configure the baud clock to 64 MHz(as above) will it be
+> > > downscaled to 62.5 MHz, thus supporting the above feature?
+> > 
+> > I specifically added the above comment. If you look closer, your
+> > driver does
+> > not use this value at all, the 8250 port code uses it in several
+> > places:
+> > 
+> > - 8250_rsa case (not applicable to your driver)
+> > 
+> > - probe_baud() call (applicable iff the kernel command line misses
+> > the
+> >   baudrate, but even without this patch it's broken for your driver)
+> > 
+> > - serial8250_update_uartclk() call (not applicable to your driver)
+> > 
+> > - serial8250_get_baud_rate() call (only to get max and min range;
+> >   my change will have an effect on min (max is exactly what your
+> >   quirk is doing right no), so 62500000/16/65535 ~= 59.6, while
+> >   with my change 64000000/16/65535 ~= 61.0, but standard baudrate
+> >   here is 50 and 75, the former isn't supported by the existing
+> >   code either
+> > 
+> > - serial8250_do_get_divisor() call when magic_multiplier supplied
+> >   (not applicable to your driver)
+> > 
+> > - autoconfig_16550a() call (not applicable to your driver)
+> > 
+> > Hope this clarifies the case.
+> > 
+> > Of course if you able to test, will be even better.
+> > But wait for v2 where I update what Greg caught.
 > 
-> Indeed.
-> 
-> Looks like the "changes to the ColdFire based m68knommu systems
-> to use a platform model at init, and this is used there" from [1]
-> never materialized on any public mailing list?
-> 
-> Greg: does it still make sense to add them?
+> Thanks for the clarification Andy. Will start with the testing after v2
+> patch.
 
-No, it never really turned out to be useful enough to anyone,
-so I never really pushed it out or progressed it any further.
+v2 is here:
 
-So I am fine with removing this now:
+https://lore.kernel.org/r/20240219162917.2159736-1-andriy.shevchenko@linux.intel.com
 
-Acked-by: Greg Ungerer <gerg@linux-m68k.org>
-
-I can take it via the m68knommu git tree if no one else wants to
-pick it up.
-
-Regards
-Greg
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-> If not:
-> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> 
-> [1] https://lore.kernel.org/all/47254BEB.2040609@snapgear.com/
-> 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
