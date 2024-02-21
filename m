@@ -1,127 +1,261 @@
-Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD9873161
-	for <linux-serial@vger.kernel.org>; Wed, 21 Feb 2024 13:22:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.31.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE4D28063C;
+	Wed, 21 Feb 2024 15:41:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708521762; cv=none; b=JSTeo+HrZrQIdbwfeB+yYIfU6f7ylIazJPBvMLQ8LevBLctyXlImerQWlQ8LfWO6f1x8iWiS+gUtfZjnYL2oRIW6/i/c30mCVOF/OWNI++QxT5ooKOB5XMvv26q351Zo4R8oLlHg48wNS857ktq6MIusyB9bCx0bYr5Bovkg0TQ=
+	t=1708530085; cv=none; b=g/Vl4M6EKMo8W7buzeKaMvXfic2MHAfvc5O+zlhwcKqCQe8Pbs9oUG6qoXpUsFx/jW1SWsb7XmosZyklJkzwfwpBrIQzgNCpfX+Md0KnQ15t/NioFKv//AqLduqYRYIR17wSdLgDVxl1Om8wfKJuff7wSlEUsF7Yz/+5bHKLfPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708521762; c=relaxed/simple;
-	bh=CIiz4rZoO8sk2Y7xgiCZtFUEC5rr8VM4HAsayBrF2U4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=tRyiB6XoUcwVls3oNNf3C1+fpFOdvcgZMp6VYiryeb8Ypv65QwJ8hasktuDXIc7C7XRPDTe/US+tNTfp1u9YgW1fvl85ea9D8IYGYQCW/VHeYYehPy81EVmN96gYPzoSVE51YslPch5AxBwoGrvNiNzXulZ7NYXV1reKjUdngCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=tcyr0kRV; arc=none smtp.client-ip=116.203.31.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
+	s=arc-20240116; t=1708530085; c=relaxed/simple;
+	bh=4WpiUaYI+0VESJus3SFDYesW7a2uVC3cvmvJ5OG3Lko=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=awaKMMgELeA4e1QWo4uWp8j3RloWmmSCkL1Qepg26Sp8H73I9n2PEtFJB9BfiZTWDPlNJszwan3qFhYofY3yk181l/djq6hSiw3qT3dGAyWtSrlLOMO0bwB6HfkPmCB7tCNO291hPx/NGXVyo4qduFTMHo3qI8I2JoeD+VIDTls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ZblUllhk; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OJnOGZeE; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="tcyr0kRV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-	s=dhelectronicscom; t=1708521243;
-	bh=CIiz4rZoO8sk2Y7xgiCZtFUEC5rr8VM4HAsayBrF2U4=;
-	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-	b=tcyr0kRVmED4/5zxR1M20rxljj+iPk6ywrBBqkvoIOaysabdly8SZdf7aUP0CHnww
-	 VTuoW12PM8nM5Zf7JZlD4obZNNL8ICrdGA6PWgiy7i6YMcZWbgg9+yn5rMmL3uPGdE
-	 tk+sHN47ySHb0JfSL9uxpKhce4sPnV8buu+53FfA2Sw0kMt6zvGO7LGgLjFigvXM2Y
-	 /HRsFLdlUs9mahwfebdN51HfojCly6wIk00NdOU95mx+CIHMpnTjM3GbyBN3khPk3V
-	 cG9CQAlooLwmfacJnrXpg0zdOlGtz2YDyYijEOphu+7G3rAmQD+Qr3dDoOFhsoXV5c
-	 dk8zP9cpCIPEw==
-X-secureTransport-forwarded: yes
-From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Complaints-To: abuse@cubewerk.de
-To: Rickard Andersson <rickaran@axis.com>, "rickard314.andersson@gmail.com"
-	<rickard314.andersson@gmail.com>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"shawnguo@kernel.org" <shawnguo@kernel.org>, "s.hauer@pengutronix.de"
-	<s.hauer@pengutronix.de>, "kernel@pengutronix.de" <kernel@pengutronix.de>,
-	"festevam@gmail.com" <festevam@gmail.com>, "linux-imx@nxp.com"
-	<linux-imx@nxp.com>, "martin.fuzzey@flowbird.group"
-	<martin.fuzzey@flowbird.group>, "marex@denx.de" <marex@denx.de>,
-	"kernel@axis.com" <kernel@axis.com>
-Subject: RE: [PATCH v3] tty: serial: imx: Fix broken RS485
-Thread-Topic: [PATCH v3] tty: serial: imx: Fix broken RS485
-Thread-Index: AQHaZLyX00YXFUb0zUaBIWsbLR08rrEUxAYw
-Date: Wed, 21 Feb 2024 13:14:00 +0000
-Message-ID: <188a1900e8db435c840ae72478d4d5ac@dh-electronics.com>
-References: <20240221115304.509811-1-rickaran@axis.com>
-In-Reply-To: <20240221115304.509811-1-rickaran@axis.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZblUllhk";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OJnOGZeE"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1708530080;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=fqlpy9KL3u0uJLsW4Cc4qf151yuYzQL09JO0sHcv9PQ=;
+	b=ZblUllhkt5YbGRE7ZfwS5niAPcBNQUrIIIdB1BmNeA3kyCbQCM2TMEgnIiPfMYTzTu6l6Q
+	BMcayDQNzJpUZwpsUB+dwzHrlg4LAD8yOKf7taTauwcukKULKRnuhTWd5/WaKJ5l7AwpDK
+	J+Gq/mmsxtqBrwBJuajODVkrNuZ2oHNjpRV0/r23C5x3an1HMR5UFd7PPrUmHJ+44osCgD
+	s+CdUMOp/kruCfv9MeyiiCJRme9k6oowDv09t33I4u0RPvkhkn7xDWQ6+bWpzWbta3trCL
+	BXWrqG0th0mjJFfQGE26uVdbuZuqELhi/QIVMp3jfh9JHUrs5nRT3ycxzEXn9A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1708530080;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=fqlpy9KL3u0uJLsW4Cc4qf151yuYzQL09JO0sHcv9PQ=;
+	b=OJnOGZeEd2tKraVHqyoXE6MrUjcGLpty9CQg6vVNwFIc572sjh+EOcPUB8tJM4j2szW3e7
+	xdKfCdXf6Tg/41DQ==
+To: Leonardo Bras <leobras@redhat.com>
+Cc: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Tony
+ Lindgren <tony@atomide.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, John Ogness
+ <john.ogness@linutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, Florian Fainelli
+ <florian.fainelli@broadcom.com>, Shanker Donthineni
+ <sdonthineni@nvidia.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
+In-Reply-To: <ZdWMja3BfCZsbF_q@LeoBras>
+References: <20240216075948.131372-2-leobras@redhat.com>
+ <20240216075948.131372-5-leobras@redhat.com> <87zfvwai62.ffs@tglx>
+ <87v86kaf84.ffs@tglx> <ZdWMja3BfCZsbF_q@LeoBras>
+Date: Wed, 21 Feb 2024 16:41:20 +0100
+Message-ID: <87edd5hljz.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain
 
-RnJvbTogUmlja2FyZCBBbmRlcnNzb24gPHJpY2thcmFuQGF4aXMuY29tPg0KU2VudDogV2VkbmVz
-ZGF5LCBGZWJydWFyeSAyMSwgMjAyNCAxMjo1MyBQTQ0KPiANCj4gRnJvbTogUmlja2FyZCB4IEFu
-ZGVyc3NvbiA8cmlja2FyYW5AYXhpcy5jb20+DQo+IA0KPiBXaGVuIGFib3V0IHRvIHRyYW5zbWl0
-IHRoZSBmdW5jdGlvbiBpbXhfdWFydF9zdGFydF90eCBpcyBjYWxsZWQgYW5kIGluDQo+IHNvbWUg
-UlM0ODUgY29uZmlndXJhdGlvbnMgdGhpcyBmdW5jdGlvbiB3aWxsIGNhbGwgaW14X3VhcnRfc3Rv
-cF9yeC4gVGhlDQo+IHByb2JsZW0gaXMgdGhhdCBpbXhfdWFydF9zdG9wX3J4IHdpbGwgZW5hYmxl
-IGxvb3BiYWNrIGluIG9yZGVyIHRvDQo+IHJlbGVhc2UgdGhlIFJTNDg1IGJ1cywgYnV0IHdoZW4g
-bG9vcGJhY2sgaXMgZW5hYmxlZCB0cmFuc21pdHRlZCBkYXRhDQo+IHdpbGwganVzdCBiZSBsb29w
-ZWQgdG8gUlguDQo+IA0KPiBUaGlzIHBhdGNoIGZpeGVzIHRoZSBhYm92ZSBwcm9ibGVtIGJ5IG5v
-dCBlbmFibGluZyBsb29wYmFjayB3aGVuIGFib3V0DQo+IHRvIHRyYW5zbWl0Lg0KPiANCj4gVGhp
-cyBkcml2ZXIgbm93IHdvcmtzIHdlbGwgd2hlbiB1c2VkIGZvciBSUzQ4NSBoYWxmIGR1cGxleCBt
-YXN0ZXINCj4gY29uZmlndXJhdGlvbnMuDQo+IA0KPiBGaXhlczogNzlkMDIyNGY2YmYyICgidHR5
-OiBzZXJpYWw6IGlteDogSGFuZGxlIFJTNDg1IERFIHNpZ25hbCBhY3RpdmUgaGlnaCIpDQo+IFNp
-Z25lZC1vZmYtYnk6IFJpY2thcmQgeCBBbmRlcnNzb24gPHJpY2thcmFuQGF4aXMuY29tPg0KPiAt
-LS0NCj4gVjIgLT4gVjM6IEFkZGVkIHdyYXBwZXIgZnVuY3Rpb24NCj4gVjEgLT4gVjI6IEFkZGVk
-IGZpeGVzIHRhZw0KPiAgZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIHwgMjIgKysrKysrKysrKysr
-KysrKysrLS0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDE4IGluc2VydGlvbnMoKyksIDQgZGVsZXRp
-b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2lteC5jIGIvZHJp
-dmVycy90dHkvc2VyaWFsL2lteC5jDQo+IGluZGV4IDRhYTcyZDVhZWFmYi4uZTE0ODEzMjUwNjE2
-IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvaW14LmMNCj4gKysrIGIvZHJpdmVy
-cy90dHkvc2VyaWFsL2lteC5jDQo+IEBAIC00NjIsOCArNDYyLDcgQEAgc3RhdGljIHZvaWQgaW14
-X3VhcnRfc3RvcF90eChzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0KQ0KPiAgICAgICAgIH0NCj4gIH0N
-Cj4gDQo+IC0vKiBjYWxsZWQgd2l0aCBwb3J0LmxvY2sgdGFrZW4gYW5kIGlycXMgb2ZmICovDQo+
-IC1zdGF0aWMgdm9pZCBpbXhfdWFydF9zdG9wX3J4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQo+
-ICtzdGF0aWMgdm9pZCBpbXhfdWFydF9zdG9wX3J4X3dpdGhfbG9vcGJhY2tfY3RybChzdHJ1Y3Qg
-dWFydF9wb3J0ICpwb3J0LCBib29sIGxvb3BiYWNrKQ0KPiAgew0KPiAgICAgICAgIHN0cnVjdCBp
-bXhfcG9ydCAqc3BvcnQgPSAoc3RydWN0IGlteF9wb3J0ICopcG9ydDsNCj4gICAgICAgICB1MzIg
-dWNyMSwgdWNyMiwgdWNyNCwgdXRzOw0KPiBAQCAtNDg1LDcgKzQ4NCw3IEBAIHN0YXRpYyB2b2lk
-IGlteF91YXJ0X3N0b3Bfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4gICAgICAgICAvKiBT
-ZWUgU0VSX1JTNDg1X0VOQUJMRUQvVVRTX0xPT1AgY29tbWVudCBpbiBpbXhfdWFydF9wcm9iZSgp
-ICovDQo+ICAgICAgICAgaWYgKHBvcnQtPnJzNDg1LmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQg
-JiYNCj4gICAgICAgICAgICAgcG9ydC0+cnM0ODUuZmxhZ3MgJiBTRVJfUlM0ODVfUlRTX09OX1NF
-TkQgJiYNCj4gLSAgICAgICAgICAgc3BvcnQtPmhhdmVfcnRzY3RzICYmICFzcG9ydC0+aGF2ZV9y
-dHNncGlvKSB7DQo+ICsgICAgICAgICAgIHNwb3J0LT5oYXZlX3J0c2N0cyAmJiAhc3BvcnQtPmhh
-dmVfcnRzZ3BpbyAmJiBsb29wYmFjaykgew0KPiAgICAgICAgICAgICAgICAgdXRzID0gaW14X3Vh
-cnRfcmVhZGwoc3BvcnQsIGlteF91YXJ0X3V0c19yZWcoc3BvcnQpKTsNCj4gICAgICAgICAgICAg
-ICAgIHV0cyB8PSBVVFNfTE9PUDsNCj4gICAgICAgICAgICAgICAgIGlteF91YXJ0X3dyaXRlbChz
-cG9ydCwgdXRzLCBpbXhfdWFydF91dHNfcmVnKHNwb3J0KSk7DQo+IEBAIC00OTcsNiArNDk2LDE2
-IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3N0b3Bfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkN
-Cj4gICAgICAgICBpbXhfdWFydF93cml0ZWwoc3BvcnQsIHVjcjIsIFVDUjIpOw0KPiAgfQ0KPiAN
-Cj4gKy8qIGNhbGxlZCB3aXRoIHBvcnQubG9jayB0YWtlbiBhbmQgaXJxcyBvZmYgKi8NCj4gK3N0
-YXRpYyB2b2lkIGlteF91YXJ0X3N0b3Bfcngoc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkNCj4gK3sN
-Cj4gKyAgICAgICAvKg0KPiArICAgICAgICAqIFN0b3AgUlggYW5kIGVuYWJsZSBsb29wYmFjayBp
-biBvcmRlciB0byBtYWtlIHN1cmUgUlM0ODUgYnVzDQo+ICsgICAgICAgICogaXMgbm90IGJsb2Nr
-ZWQuIFNlIGNvbW1lbnQgaW4gaW14X3VhcnRfcHJvYmUoKS4NCj4gKyAgICAgICAgKi8NCj4gKyAg
-ICAgICBpbXhfdWFydF9zdG9wX3J4X3dpdGhfbG9vcGJhY2tfY3RybChwb3J0LCB0cnVlKTsNCj4g
-K30NCj4gKw0KPiAgLyogY2FsbGVkIHdpdGggcG9ydC5sb2NrIHRha2VuIGFuZCBpcnFzIG9mZiAq
-Lw0KPiAgc3RhdGljIHZvaWQgaW14X3VhcnRfZW5hYmxlX21zKHN0cnVjdCB1YXJ0X3BvcnQgKnBv
-cnQpDQo+ICB7DQo+IEBAIC02ODIsOSArNjkxLDE0IEBAIHN0YXRpYyB2b2lkIGlteF91YXJ0X3N0
-YXJ0X3R4KHN0cnVjdCB1YXJ0X3BvcnQgKnBvcnQpDQo+ICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgaW14X3VhcnRfcnRzX2luYWN0aXZlKHNwb3J0LCAmdWNyMik7DQo+ICAgICAgICAg
-ICAgICAgICAgICAgICAgIGlteF91YXJ0X3dyaXRlbChzcG9ydCwgdWNyMiwgVUNSMik7DQo+IA0K
-PiArICAgICAgICAgICAgICAgICAgICAgICAvKg0KPiArICAgICAgICAgICAgICAgICAgICAgICAg
-KiBTaW5jZSB3ZSBhcmUgYWJvdXQgdG8gdHJhbnNtaXQgd2UgY2FuIG5vdCBzdG9wIFJYDQo+ICsg
-ICAgICAgICAgICAgICAgICAgICAgICAqIHdpdGggbG9vcGJhY2sgZW5hYmxlZCBiZWNhdXNlIHRo
-YXQgd2lsbCBtYWtlIG91cg0KPiArICAgICAgICAgICAgICAgICAgICAgICAgKiB0cmFuc21pdHRl
-ZCBkYXRhIGJlaW5nIGp1c3QgbG9vcGVkIHRvIFJYLg0KPiArICAgICAgICAgICAgICAgICAgICAg
-ICAgKi8NCj4gICAgICAgICAgICAgICAgICAgICAgICAgaWYgKCEocG9ydC0+cnM0ODUuZmxhZ3Mg
-JiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKSAmJg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIXBvcnQtPnJzNDg1X3J4X2R1cmluZ190eF9ncGlvKQ0KPiAtICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIGlteF91YXJ0X3N0b3BfcngocG9ydCk7DQo+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgaW14X3VhcnRfc3RvcF9yeF93aXRoX2xvb3BiYWNrX2N0cmwocG9ydCwg
-ZmFsc2UpOw0KPiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgc3BvcnQtPnR4X3N0YXRlID0g
-V0FJVF9BRlRFUl9SVFM7DQo+IA0KDQpUZXN0ZWQtYnk6IENocmlzdG9waCBOaWVkZXJtYWllciA8
-Y25pZWRlcm1haWVyQGRoLWVsZWN0cm9uaWNzLmNvbT4NCg0KVGVzdGVkIG9uIGEgREhDT00gaS5N
-WDZVTEwgU29NLg0KDQpSZWdhcmRzDQpDaHJpc3RvcGgNCg==
+On Wed, Feb 21 2024 at 02:39, Leonardo Bras wrote:
+> On Mon, Feb 19, 2024 at 12:03:07PM +0100, Thomas Gleixner wrote:
+>> >> Is scenarios where there is no need to keep track of IRQ handled, convert
+>> >> it back to IRQ_HANDLED.
+>> >
+>> > That's not really workable as you'd have to update tons of drivers just
+>> > to deal with that corner case. That's error prone and just extra
+>> > complexity all over the place.
+>
+> I agree, that's a downside of this implementation. 
+
+A serious one which is not really workable. See below.
+
+> I agree the above may be able to solve the issue, but it would make 2 extra 
+> atomic ops necessary in the thread handling the IRQ, as well as one extra 
+> atomic operation in note_interrupt(), which could increase latency on this 
+> IRQ deferring the handler to a thread.
+>
+> I mean, yes, the cpu running note_interrupt() would probably already have 
+> exclusiveness for this cacheline, but it further increases cacheline 
+> bouncing and also adds the mem barriers that incur on atomic operations, 
+> even if we use an extra bit from threads_handled instead of allocate a new 
+> field for threads_running.
+
+I think that's a strawman. Atomic operations can of course be more
+expensive than non-atomic ones, but they only start to make a difference
+when the cache line is contended. That's not the case here for the
+normal operations.
+
+Interrupts and their threads are strictly targeted to a single CPU and
+the cache line is already hot and had to be made exclusive because of
+other write operations to it.
+
+There is usually no concurrency at all, except for administrative
+operations like enable/disable or affinity changes. Those administrative
+operations are not high frequency and the resulting cache line bouncing
+is unavoidable even without that change. But does it matter in the
+larger picture? I don't think so.
+
+> On top of that, let's think on a scenario where the threaded handler will 
+> solve a lot of requests, but not necessarily spend a lot of time doing so.
+> This allows the thread to run for little time while solving a lot of 
+> requests.
+>
+> In this scenario, note_interrupt() could return without incrementing 
+> irqs_unhandled for those IRQ that happen while the brief thread is running, 
+> but every other IRQ would cause note_interrupt() to increase 
+> irqs_unhandled, which would cause the bug to still reproduce.
+
+In theory yes. Does it happen in practice?
+
+But that exposes a flaw in the actual detection code. The code is
+unconditionally accumulating if there is an unhandled interrupt within
+100ms after the last unhandled one. IOW, if there is a periodic
+unhandled one every 50ms, the interrupt will be shut down after 100000 *
+50ms = 5000s ~= 83.3m ~= 1.4h. And it neither cares about the number of
+actually handled interrupts.
+
+The spurious detector is really about runaway interrupts which hog a CPU
+completely, but the above is not what we want to protect against.
+
+> I understand my suggested change increases irq_return complexity, but it
+> should not increase much of the overhead in both IRQ deferring and IRQ 
+> thread handling. Also, since it accounts for every IRQ actually handled, it 
+> does not matter how long the handler thread runs, it still avoids the
+> bug.
+
+I'm not worried about the extra complexity in note_interrupt(). That's
+fine and I don't have a strong opinion whether using your patch 2/4 or
+the simpler one I suggested.
+
+> As you previously noted, the main issue in my suggestion is about changing 
+> drivers' code. But while this change is optional, I wonder how many 
+> drivers handle IRQs that:
+> - use edge type interrupts, and
+
+It's not up to the driver to decide that. That's a platform property and
+the driver does not even know and they should not care because all what
+matters for the driver is that it gets the interrupts and does not lose
+anything.
+
+> - can trigger really fast, many many times, and
+
+That's a hardware or emulation property and I don't know how many
+devices would expose this behaviour.
+
+> - can run in force-thread mode, and
+
+Almost all drivers.
+
+> - have handlers that are able to deal with multiple IRQs per call.
+
+Pretty much every driver which has to deal with queues, FIFOs
+etc. That's a lot of them.
+
+> About solving it directly in generic code, I agree it would be the ideal 
+> scenario. That's why I suggested that in RFCv1: if the thread handles a 
+> single IRQ, we reset irqs_unhandled to zero. That's a good pointer on the 
+> thread being stuck, and TBH I don't think this is too far away from the 
+> current 100/100k if we consider some of those handlers can handle multiple 
+> IRQs at once.
+
+It has the downside that a scenario where there is a spurious interrupt
+flood with an occasional one inbetween which is handled by the thread
+will not be detected anymore. The accumulation and time period tracking
+are there for a reason.
+
+But as I pointed out above the detection logic is flawed due to the
+unconditional accumulation. Can you give the uncompiled below a test
+ride with your scenario?
+
+Thanks,
+
+        tglx
+---
+ include/linux/irqdesc.h |    2 ++
+ kernel/irq/spurious.c   |   33 +++++++++++++++++++++++++++++----
+ 2 files changed, 31 insertions(+), 4 deletions(-)
+
+--- a/include/linux/irqdesc.h
++++ b/include/linux/irqdesc.h
+@@ -29,6 +29,7 @@ struct pt_regs;
+  * @wake_depth:		enable depth, for multiple irq_set_irq_wake() callers
+  * @tot_count:		stats field for non-percpu irqs
+  * @irq_count:		stats field to detect stalled irqs
++ * @first_unhandled:	Timestamp of the first unhandled interrupt
+  * @last_unhandled:	aging timer for unhandled count
+  * @irqs_unhandled:	stats field for spurious unhandled interrupts
+  * @threads_handled:	stats field for deferred spurious detection of threaded handlers
+@@ -64,6 +65,7 @@ struct irq_desc {
+ 	unsigned int		wake_depth;	/* nested wake enables */
+ 	unsigned int		tot_count;
+ 	unsigned int		irq_count;	/* For detecting broken IRQs */
++	unsigned long		first_unhandled;
+ 	unsigned long		last_unhandled;	/* Aging timer for unhandled count */
+ 	unsigned int		irqs_unhandled;
+ 	atomic_t		threads_handled;
+--- a/kernel/irq/spurious.c
++++ b/kernel/irq/spurious.c
+@@ -390,9 +390,14 @@ void note_interrupt(struct irq_desc *des
+ 		 * working systems
+ 		 */
+ 		if (time_after(jiffies, desc->last_unhandled + HZ/10))
+-			desc->irqs_unhandled = 1;
+-		else
+-			desc->irqs_unhandled++;
++			desc->irqs_unhandled = 0;
++
++		if (!desc->irqs_unhandled) {
++			desc->irq_count = 0;
++			desc->first_unhandled = jiffies;
++		}
++
++		desc->irqs_unhandled++;
+ 		desc->last_unhandled = jiffies;
+ 	}
+ 
+@@ -411,9 +416,27 @@ void note_interrupt(struct irq_desc *des
+ 	if (likely(desc->irq_count < 100000))
+ 		return;
+ 
+-	desc->irq_count = 0;
+ 	if (unlikely(desc->irqs_unhandled > 99900)) {
+ 		/*
++		 * Validate that this is actually an interrupt storm, which
++		 * happens to:
++		 *
++		 *  - increment the unhandled count to ~100k within 10 seconds
++		 *    which means there is an spurious interrupt every 50us
++		 *  - have an unhandled to handled ratio > 2
++		 *
++		 * Otherwise reset the detector and start over. This also
++		 * covers the case where a threaded handler consumes
++		 * several hard interrupts in one go which would otherwise
++		 * accumulate to 99900 over time and trigger a false positive.
++		 */
++		unsigned long td = desc->last_unhandled - desc->first_unhandled;
++		unsigned int handled = desc->irq_count - desc->irqs_unhandled;
++
++		if (td > 5 * HZ || desc->irqs_unhandled / handled < 3)
++			goto out;
++
++		/*
+ 		 * The interrupt is stuck
+ 		 */
+ 		__report_bad_irq(desc, action_ret);
+@@ -428,7 +451,9 @@ void note_interrupt(struct irq_desc *des
+ 		mod_timer(&poll_spurious_irq_timer,
+ 			  jiffies + POLL_SPURIOUS_IRQ_INTERVAL);
+ 	}
++out:
+ 	desc->irqs_unhandled = 0;
++	desc->irq_count = 0;
+ }
+ 
+ bool noirqdebug __read_mostly;
