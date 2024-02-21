@@ -1,87 +1,122 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E73E83A12;
-	Wed, 21 Feb 2024 17:04:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E3671097B;
+	Wed, 21 Feb 2024 18:34:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708535067; cv=none; b=SEW6jGQhmOkTqSLa9xI9ikXaXRDBCPDPZxqQ3XF2YpDA66jiinLdQUKbIMebVmQFn2/V2iX9Ef1G2mckrS+EqtxdpLwijoJWEQmfWz1R0qwIpnIjbSFuqIEj5PxfqQq035RAPqp5kIM3CXKUHNykmteVqoU9afw1NSd9LTz4vHg=
+	t=1708540497; cv=none; b=bpxMIzJAnsRzdkz9w/ItRz15lybubQQvRmajyP3TmyLc7WHBkf1c5eI0fR9gqnBaNsjXgO0NZx6xjEjLBTpy0kO4eyhXmzZEF+S13A+VYuaK+sDIM12rhvb4aDt6Pgv0uKm/UKqLpLcEJHo573jErp7ZDA3HEgbPrUtcAJOxgiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708535067; c=relaxed/simple;
-	bh=I9BPIMQV8ivzAq2sUNXIWktFBAZhuoYcLn9hK+92n3c=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=DX83b1WvCU1idgVqBLTwr+BqH5vBrmQBOsdE1Kdb08xi7hhyx3C96LNCw2WHKfcyuYGKf26LhCJeb16jDb9ID7vtREg+mZ/5/6foswpS20tdCYHxsTTkLozA5TypoTNNNlJFuv/fj86WKwBzDeyV+KAd5CbVREOssmrN0RFENwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=kKF9hTRn; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=rLHUGzek; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1708540497; c=relaxed/simple;
+	bh=SXh9o6lcdXir6m04bi7g64vXsMqCpE0OVYelVUUwvJE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=C7jDY3Oj9gF54nsxZiBCoaacZnhy/bBVqDZWWfa0bD1M89uDrVp81jQctZqYksyyfddRcj/y4o1xFMUwXz59atYLtd5Iu9rQynmVOwoO2g2HKhQjafGOwTa/HKIgkf0auBYZ/NcAg4BnL4JNBTtIt+d7KUq7Sm9184N/xBcYxjU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hm8Ta5Av; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="kKF9hTRn";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="rLHUGzek"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1708535062;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5/2PXeUtYZN5Banhfqv2e+wEkrcm+AGTORes2hTmKPk=;
-	b=kKF9hTRn/NdeRVN/fjSQ36SK7Zt7CiVyKGHrDJzYPqU0cXodAWIB/lUF9AjSYLYhDC5pHM
-	VR++i0UzTHTD7IfjU2W0BA8BIpmXWPOOxssJfqsDArwrdX0FXqQNO79viSVqzcxO0uIddu
-	jWKpkJlGMoatTw6CVsY7Py1oVOMmVpAU4sq0iWXsZ2aM1ewa1WNBJphhA/Ih7GtU74xcQs
-	sogpPaxc9Endjt9XGRmJs+kJxrAUqCqvipRfyjWHFFV11pxFisAkrpzpCB0jUoUW5gg8/R
-	qSSi9iXBJHCt36FSNo5la0FOTGGFSzfTf+T6ioISkGwD/wcyNeaoSjCNWDXTDA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1708535062;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5/2PXeUtYZN5Banhfqv2e+wEkrcm+AGTORes2hTmKPk=;
-	b=rLHUGzek8UDGvurt1OgFa5LrZ4A+qJ29OC7ELGvQHxrIjqGY/PneNNgi5prXv4tdqQJbZh
-	O/aOtUoeywd5CUCg==
-To: Leonardo Bras <leobras@redhat.com>
-Cc: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Tony
- Lindgren <tony@atomide.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, John Ogness
- <john.ogness@linutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Florian Fainelli
- <florian.fainelli@broadcom.com>, Shanker Donthineni
- <sdonthineni@nvidia.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-In-Reply-To: <87edd5hljz.ffs@tglx>
-References: <20240216075948.131372-2-leobras@redhat.com>
- <20240216075948.131372-5-leobras@redhat.com> <87zfvwai62.ffs@tglx>
- <87v86kaf84.ffs@tglx> <ZdWMja3BfCZsbF_q@LeoBras> <87edd5hljz.ffs@tglx>
-Date: Wed, 21 Feb 2024 18:04:21 +0100
-Message-ID: <87bk89hhpm.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hm8Ta5Av"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708540496; x=1740076496;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=SXh9o6lcdXir6m04bi7g64vXsMqCpE0OVYelVUUwvJE=;
+  b=Hm8Ta5AvbyPfws3ExSEsD4tx48RydUqtvKZ0z7Qgojt0Rk0bF7Xv869o
+   6X2ALCdlnJWaBt6n4vP2i4dYlPm20sdlaJjEvkO79RfAscYjJLVxrQxca
+   B868aFyJ7cklN2lo1sAxSJjuDCcj527uZ2t2u1261AVxQMWqDX0IF40jZ
+   EimihVwygUSRteB6f62iUkE0H6n1YDLZodpx2UI/j/2bu7RELfSvBuq0w
+   qa8s3YOdTOLaEfRwnafxEaGpbRW2FBRiRoSv3wKZzZi8MyRxPN4eIbZtc
+   bKAK/Mto/BswmibRUDplkE5W6oV25UA7hCB5mQLQnJS3CJSqnSlIOvgf3
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="28164672"
+X-IronPort-AV: E=Sophos;i="6.06,176,1705392000"; 
+   d="scan'208";a="28164672"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2024 10:34:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="936684737"
+X-IronPort-AV: E=Sophos;i="6.06,176,1705392000"; 
+   d="scan'208";a="936684737"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2024 10:34:47 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id A7CB11FD; Wed, 21 Feb 2024 20:34:46 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [rft, PATCH v1 00/14]  serial: Add a helper to parse device properties and more
+Date: Wed, 21 Feb 2024 20:31:16 +0200
+Message-ID: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 21 2024 at 16:41, Thomas Gleixner wrote:
-> On Wed, Feb 21 2024 at 02:39, Leonardo Bras wrote:
-> But as I pointed out above the detection logic is flawed due to the
-> unconditional accumulation. Can you give the uncompiled below a test
-> ride with your scenario?
+I have noticed that many drivers are using the subset of the common
+properties and IRQ retrieval code. With the moving it to one place
+we have got a common parser one for many.
 
-Bah. Ignore this. I misread the code completely. No idea where my brain
-was.
+Tested on Intel Apollo Lake with DesingWare 8250 UARTs.
+The rest has been compile tested on x86_64 with clang.
 
-This thing triggers only when there are 100K interrupts and 99.9k of
-them unhandled. The 100k total resets the unhandled counts.
+Andy Shevchenko (14):
+  serial: core: Move struct uart_port::quirks closer to possible values
+  serial: core: Add UPIO_UNSET constant for unset port type
+  serial: port: Introduce a common helper to read properties
+  serial: 8250_aspeed_vuart: Switch to use uart_read_port_properties()
+  serial: 8250_bcm2835aux: Switch to use uart_read_port_properties()
+  serial: 8250_bcm7271: Switch to use uart_read_port_properties()
+  serial: 8250_dw: Switch to use uart_read_port_properties()
+  serial: 8250_ingenic: Switch to use uart_read_port_properties()
+  serial: 8250_lpc18xx: Switch to use uart_read_port_properties()
+  serial: 8250_of: Switch to use uart_read_port_properties()
+  serial: 8250_omap: Switch to use uart_read_port_properties()
+  serial: 8250_pxa: Switch to use uart_read_port_properties()
+  serial: 8250_tegra: Switch to use uart_read_port_properties()
+  serial: 8250_uniphier: Switch to use uart_read_port_properties()
 
-Though one thing which strikes me odd is that this actually triggers at
-all because it needs 99.9k unhandled out of 100k total. That means on
-average every thread handler invocation handles 1000 hardware interrupts
-in one go. Is that even realistic?
+ drivers/tty/serial/8250/8250_aspeed_vuart.c |  50 +++-----
+ drivers/tty/serial/8250/8250_bcm2835aux.c   |  92 ++++++-------
+ drivers/tty/serial/8250/8250_bcm7271.c      |  53 +++-----
+ drivers/tty/serial/8250/8250_dw.c           |  67 ++++------
+ drivers/tty/serial/8250/8250_ingenic.c      |  20 +--
+ drivers/tty/serial/8250/8250_lpc18xx.c      |  20 ++-
+ drivers/tty/serial/8250/8250_of.c           | 105 ++++-----------
+ drivers/tty/serial/8250/8250_omap.c         |  29 ++---
+ drivers/tty/serial/8250/8250_pxa.c          |  22 ++--
+ drivers/tty/serial/8250/8250_tegra.c        |  26 ++--
+ drivers/tty/serial/8250/8250_uniphier.c     |  17 +--
+ drivers/tty/serial/serial_port.c            | 135 ++++++++++++++++++++
+ include/linux/serial_core.h                 |  10 +-
+ 13 files changed, 313 insertions(+), 333 deletions(-)
 
-Thanks,
-
-        tglx
-
+-- 
+2.43.0.rc1.1.gbec44491f096
 
