@@ -1,230 +1,185 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBDD339FEF
-	for <linux-serial@vger.kernel.org>; Wed, 21 Feb 2024 05:39:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E6F34C61B;
+	Wed, 21 Feb 2024 09:54:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708493988; cv=none; b=STkJJqlkxymO69sLcpqSNgygjARZC7o4E6NqLO7encr/LSLlrs+yhc0mGpNrM8DolHzvV0xwtGjAbW3N9iH3vBi+BCV7aJAux7oAqOqDclCIrwwrH/DBvKleASyabdZ/eviH9DJ2nm98iEI3gSycXCSj7uvlrrUce2g8yPCNnCc=
+	t=1708509272; cv=none; b=lys0VGLjXYoj47V6Q8zCjWv48rIbVUVHrylavSTxj194fBIGBktE908AcPZPKX1fShlo7sN75EWaptGKFatnBZWQMktBEzH+VicoeHVnQNBokK0EVz0psWDetruN9DizNtCbTybahwPowIjy1ugCVxNpIrb174J2+m2L5GlUS5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708493988; c=relaxed/simple;
-	bh=+TbXERsFDqvDHIsuaYvrIBRok6TpjQ5bwI6401S0zcE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Disposition; b=UMQhmhYSOB7YYzsJhMnU2lqvXU24fRvr9cO1zumuRqQCZrquKAo6lvrrbJzehbI73oLyuMSn7BaiMkiGnYtbd42OwwFB8AGwxUlJPKgeESqIoQLlYqm1tPX9Rf1ZjrkA8DLeCJTGs3ns3LWPw1/RLEvyH8yPrRg1IIV8VVohIY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NPy/t3bg; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1708509272; c=relaxed/simple;
+	bh=D4a6qDhm/r1zitj6K4QT5PaTygu+/3cz0YZaNV8v6hc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=ZCwPbDh2mQLCd/rJfkDWS56niQxqsp/JzjgHZSc0fxaAycD79SBfmi4VkGSD/o3sfqTpi1qNBFh06ohb7frcCTpq3puTNaMDXyufjoosgDnqdKKYhivzNhyTFJ2RSkMq1jPuEBuQy3BZhkrQBircvstgO+sd7AZZLP6wt0Jxdu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=CmKjDyny; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NPy/t3bg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1708493978;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=B7eEgHWxIovYcamm60n9/RVTiHoef/c1v6/MT8PkoZc=;
-	b=NPy/t3bgBYarFzhcnmH4eP0GexS8KI3AQSJQZd2frl99Zny07Z7bNlp+7dvLw3Bjv7mb7k
-	rb8afBlipLILlMtiHkvU+iaMFTDiZZTvThJBJb3X3SRVtpW5tKEFWUoUqOPiifaLA4Kd51
-	4CVhCXqJ9ZpWJ9kwGrlOnI1XVmXBXD0=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-606-ZITFYRXgMNmzmXmF6kbVqw-1; Wed, 21 Feb 2024 00:39:36 -0500
-X-MC-Unique: ZITFYRXgMNmzmXmF6kbVqw-1
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7872ef032c6so1123013385a.0
-        for <linux-serial@vger.kernel.org>; Tue, 20 Feb 2024 21:39:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708493976; x=1709098776;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=B7eEgHWxIovYcamm60n9/RVTiHoef/c1v6/MT8PkoZc=;
-        b=Q34GIHAmewBvtZ4e8Lz/B/JikAlOh6K8JgK3uBC3XVjrAC7GUUFrCI85iVwqxB+S3K
-         EYYb4+e8tfql0RCEYc5tlMOuptlQzuB3a9VsFWrA/zYsfnA08Ec9NIVS4+MDY6QzfDmD
-         myQiAo8QywjyAdwttJt36TZaIe6Wxf/2tEkA3jivqIosN3yks4cue+b91ASD1F/hWQ3i
-         95WVkdjsBpP8UA/eeEsKPwotsmXq04WJ8Ixj9LkoSnmBZmqfV6qDenNRLLWl7IbVsAzd
-         ECZeHzW6xHkBb+yx3I3bEfgKeRyowuzubGbulf55Lo8/H2s+rHlknXP3PK9XfS0Rz3pw
-         OazA==
-X-Forwarded-Encrypted: i=1; AJvYcCXNzMl/2e41IMydhrRoEvkzgBwAlikPSvbw66umOe27sFIaAJsD/5YsqzEwuEl3bqb84acoIX/usCia5P1Dr8eeqD49TGwd6OS/q0xH
-X-Gm-Message-State: AOJu0YxKGenFNderUfPKrLJk4qdpuhpV+qRWk6pqSWHeUlQOWabKmnee
-	7PFiUMjmCIrFTcl1sPf7N0Y4+cqs/HyeDGc9TvV5hqPIsxEPvMw5WGEF0dUDSpDtyo29S7GW9oK
-	GU96D3H9ibDDlmVevlp8eGswF0grIrmHRSEqyfAmV20RClKjtRQYQ07AbUKA53A==
-X-Received: by 2002:a05:620a:2496:b0:787:6fa6:7c9d with SMTP id i22-20020a05620a249600b007876fa67c9dmr8883000qkn.29.1708493975788;
-        Tue, 20 Feb 2024 21:39:35 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGogavJfEFgbd7NSRnzSxkCs77pNldCfbStHLnMwlTGdsEi2OSZgGGNU/73RTXrgtqPRZ/Qgw==
-X-Received: by 2002:a05:620a:2496:b0:787:6fa6:7c9d with SMTP id i22-20020a05620a249600b007876fa67c9dmr8882983qkn.29.1708493975484;
-        Tue, 20 Feb 2024 21:39:35 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:431:c7ec:a28e:99bd:8c92:cf80:d1bd])
-        by smtp.gmail.com with ESMTPSA id i11-20020ac871cb000000b0042dfb466c85sm3481262qtp.64.2024.02.20.21.39.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Feb 2024 21:39:34 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Leonardo Bras <leobras@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-Date: Wed, 21 Feb 2024 02:39:25 -0300
-Message-ID: <ZdWMja3BfCZsbF_q@LeoBras>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <87v86kaf84.ffs@tglx>
-References: <20240216075948.131372-2-leobras@redhat.com> <20240216075948.131372-5-leobras@redhat.com> <87zfvwai62.ffs@tglx> <87v86kaf84.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="CmKjDyny"
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41L7H87L021527;
+	Wed, 21 Feb 2024 10:54:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	selector1; bh=tGWKi3XRrYtmuARfCajUNkylogiWFbJvSMiv0BOvGE0=; b=Cm
+	KjDyny3E82jh462D50nD6iH3WH8IaDkECoKy3+F033mPxLSmyHaUAygGk1paftxf
+	MdF55AHvDGSZCeDkJW/NX1eyDd7G60FM75zwN9VQH4FtsyP1Np+yGhRaOCRrH3k2
+	Mo9dw/mXq3vDQ8AvOC8s1PkuL+No2LCrlfX+dY8fJL9zQ4qxywJ+oLKNkA1lKiXe
+	9bQX1nPAeNNote3eo1xc2jvtmV9FnPg+0FhXwiUL1CjPIREecsoC4koOcKLcubwY
+	k/GZM3Azom3PgBwKH2L0+7c2tGXM9oHcQhtAIvVFuLRWITnPFx63KBf1eSJrSSC7
+	ygbIBPzWT4bfebdCkVsg==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3wd202tjj1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 21 Feb 2024 10:54:07 +0100 (CET)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 801B540051;
+	Wed, 21 Feb 2024 10:53:49 +0100 (CET)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A5ADB232FEA;
+	Wed, 21 Feb 2024 10:53:13 +0100 (CET)
+Received: from [10.201.20.71] (10.201.20.71) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.27; Wed, 21 Feb
+ 2024 10:53:13 +0100
+Message-ID: <b381cb72-943d-473f-b2f2-eb288132aaac@foss.st.com>
+Date: Wed, 21 Feb 2024 10:53:12 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-
-On Mon, Feb 19, 2024 at 12:03:07PM +0100, Thomas Gleixner wrote:
-> On Mon, Feb 19 2024 at 10:59, Thomas Gleixner wrote:
-
-Hi Thomas, thanks for reviewing!
-
-> > On Fri, Feb 16 2024 at 04:59, Leonardo Bras wrote:
-> >
-> >> In threaded IRQs, some irq handlers are able to handle many requests at a
-> >> single run, but this is only accounted as a single IRQ_HANDLED when
-> >> increasing threads_handled.
-> >>
-> >> In order to fix this, introduce IRQ_HANDLED_MANY, so the returned value of
-> >> those IRQ handlers are able to signal that many IRQs got handled at that
-> >> run.
-> >>
-> >> Is scenarios where there is no need to keep track of IRQ handled, convert
-> >> it back to IRQ_HANDLED.
-> >
-> > That's not really workable as you'd have to update tons of drivers just
-> > to deal with that corner case. That's error prone and just extra
-> > complexity all over the place.
-
-I agree, that's a downside of this implementation. 
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] serial: st-asc: don't get/put GPIOs in atomic context
+To: Bartosz Golaszewski <brgl@bgdev.pl>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Dan
+ Carpenter <dan.carpenter@linaro.org>,
+        Linus Walleij
+	<linus.walleij@linaro.org>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Bartosz
+ Golaszewski <bartosz.golaszewski@linaro.org>
+References: <20240220113410.16613-1-brgl@bgdev.pl>
+Content-Language: en-US
+From: Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20240220113410.16613-1-brgl@bgdev.pl>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SHFCAS1NODE2.st.com (10.75.129.73) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-20_06,2024-02-20_01,2023-05-22_02
 
 
-> >
-> > This really needs to be solved in the core code.
+
+On 2/20/24 12:34, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Something like the uncompiled below should do the trick.
+> Since commit 1f2bcb8c8ccd ("gpio: protect the descriptor label with
+> SRCU") gpiod_set_consumer_name() calls synchronize_srcu() which led to
+> a "sleeping in atomic context" smatch warning.
 > 
-> Thanks,
+> This function (along with gpiod_get/put() and all other GPIO APIs apart
+> from gpiod_get/set_value() and gpiod_direction_input/output()) should
+> have never been called with a spinlock taken. We're only fixing this now
+> as GPIOLIB has been rebuilt to use SRCU for access serialization which
+> uncovered this problem.
 > 
->         tglx
+> Move the calls to gpiod_get/put() outside the spinlock critical section.
+> 
+> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+> Closes: https://lore.kernel.org/linux-gpio/deee1438-efc1-47c4-8d80-0ab2cf01d60a@moroto.mountain/
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > ---
-> --- a/include/linux/irqdesc.h
-> +++ b/include/linux/irqdesc.h
-> @@ -38,7 +38,8 @@ struct pt_regs;
->   * @affinity_notify:	context for notification of affinity changes
->   * @pending_mask:	pending rebalanced interrupts
->   * @threads_oneshot:	bitfield to handle shared oneshot threads
-> - * @threads_active:	number of irqaction threads currently running
-> + * @threads_active:	number of irqaction threads currently activated
-> + * @threads_running:	number of irqaction threads currently running
->   * @wait_for_threads:	wait queue for sync_irq to wait for threaded handlers
->   * @nr_actions:		number of installed actions on this descriptor
->   * @no_suspend_depth:	number of irqactions on a irq descriptor with
-> @@ -80,6 +81,7 @@ struct irq_desc {
->  #endif
->  	unsigned long		threads_oneshot;
->  	atomic_t		threads_active;
-> +	atomic_t		threads_running;
->  	wait_queue_head_t       wait_for_threads;
->  #ifdef CONFIG_PM_SLEEP
->  	unsigned int		nr_actions;
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -1194,9 +1194,11 @@ irq_forced_thread_fn(struct irq_desc *de
->  	local_bh_disable();
->  	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
->  		local_irq_disable();
-> +	atomic_inc(&desc->threads_running);
->  	ret = action->thread_fn(action->irq, action->dev_id);
->  	if (ret == IRQ_HANDLED)
->  		atomic_inc(&desc->threads_handled);
-> +	atomic_dec(&desc->threads_running);
->  
->  	irq_finalize_oneshot(desc, action);
->  	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
-> --- a/kernel/irq/spurious.c
-> +++ b/kernel/irq/spurious.c
-> @@ -350,6 +350,12 @@ void note_interrupt(struct irq_desc *des
->  				desc->threads_handled_last = handled;
->  			} else {
->  				/*
-> +				 * Avoid false positives when there is
-> +				 * actually a thread running.
-> +				 */
-> +				if (atomic_read(&desc->threads_running))
-> +					return;
-> +				/*
->  				 * None of the threaded handlers felt
->  				 * responsible for the last interrupt
->  				 *
+> v2 -> v3:
+> - we only need to change the GPIO configuration for RTS in certain situations
+>   so use a separate variable for storing that information; if we don't then we
+>   may end up putting the descriptor when setting a different option
+> - I dropped Linus tag as the code change significantly
 > 
+> v1 -> v2:
+> - initialize the 'manual_rts' variable to false as we don't always get to
+>   the place where it's set
+> 
+>  drivers/tty/serial/st-asc.c | 40 ++++++++++++++++++++++---------------
+>  1 file changed, 24 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+> index bbb5595d7e24..a23e59551848 100644
+> --- a/drivers/tty/serial/st-asc.c
+> +++ b/drivers/tty/serial/st-asc.c
+> @@ -465,6 +465,7 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+>  			    const struct ktermios *old)
+>  {
+>  	struct asc_port *ascport = to_asc_port(port);
+> +	bool manual_rts, toggle_rts = false;
+>  	struct gpio_desc *gpiod;
+>  	unsigned int baud;
+>  	u32 ctrl_val;
+> @@ -518,25 +519,13 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+>  
+>  		/* If flow-control selected, stop handling RTS manually */
+>  		if (ascport->rts) {
+> -			devm_gpiod_put(port->dev, ascport->rts);
+> -			ascport->rts = NULL;
+> -
+> -			pinctrl_select_state(ascport->pinctrl,
+> -					     ascport->states[DEFAULT]);
+> +			toggle_rts = true;
+> +			manual_rts = false;
+>  		}
+>  	} else {
+>  		/* If flow-control disabled, it's safe to handle RTS manually */
+> -		if (!ascport->rts && ascport->states[NO_HW_FLOWCTRL]) {
+> -			pinctrl_select_state(ascport->pinctrl,
+> -					     ascport->states[NO_HW_FLOWCTRL]);
+> -
+> -			gpiod = devm_gpiod_get(port->dev, "rts", GPIOD_OUT_LOW);
+> -			if (!IS_ERR(gpiod)) {
+> -				gpiod_set_consumer_name(gpiod,
+> -						port->dev->of_node->name);
+> -				ascport->rts = gpiod;
+> -			}
+> -		}
+> +		if (!ascport->rts && ascport->states[NO_HW_FLOWCTRL])
+> +			manual_rts = toggle_rts = true;
+>  	}
+>  
+>  	if ((baud < 19200) && !ascport->force_m1) {
+> @@ -595,6 +584,25 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+>  	asc_out(port, ASC_CTL, (ctrl_val | ASC_CTL_RUN));
+>  
+>  	uart_port_unlock_irqrestore(port, flags);
+> +
+> +	if (toggle_rts) {
+> +		if (manual_rts) {
+> +			pinctrl_select_state(ascport->pinctrl,
+> +					     ascport->states[NO_HW_FLOWCTRL]);
+> +
+> +			gpiod = devm_gpiod_get(port->dev, "rts", GPIOD_OUT_LOW);
+> +			if (!IS_ERR(gpiod)) {
+> +				gpiod_set_consumer_name(gpiod,
+> +							port->dev->of_node->name);
+> +				ascport->rts = gpiod;
+> +			}
+> +		} else {
+> +				devm_gpiod_put(port->dev, ascport->rts);
+> +				ascport->rts = NULL;
+> +				pinctrl_select_state(ascport->pinctrl,
+> +						     ascport->states[DEFAULT]);
+> +		}
+> +	}
+>  }
+>  
+>  static const char *asc_type(struct uart_port *port)
 
-I agree the above may be able to solve the issue, but it would make 2 extra 
-atomic ops necessary in the thread handling the IRQ, as well as one extra 
-atomic operation in note_interrupt(), which could increase latency on this 
-IRQ deferring the handler to a thread.
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-I mean, yes, the cpu running note_interrupt() would probably already have 
-exclusiveness for this cacheline, but it further increases cacheline 
-bouncing and also adds the mem barriers that incur on atomic operations, 
-even if we use an extra bit from threads_handled instead of allocate a new 
-field for threads_running. 
-
-
-On top of that, let's think on a scenario where the threaded handler will 
-solve a lot of requests, but not necessarily spend a lot of time doing so.
-This allows the thread to run for little time while solving a lot of 
-requests.
-
-In this scenario, note_interrupt() could return without incrementing 
-irqs_unhandled for those IRQ that happen while the brief thread is running, 
-but every other IRQ would cause note_interrupt() to increase 
-irqs_unhandled, which would cause the bug to still reproduce.
-
-
-I understand my suggested change increases irq_return complexity, but it
-should not increase much of the overhead in both IRQ deferring and IRQ 
-thread handling. Also, since it accounts for every IRQ actually handled, it 
-does not matter how long the handler thread runs, it still avoids the bug.
-
-As you previously noted, the main issue in my suggestion is about changing 
-drivers' code. But while this change is optional, I wonder how many 
-drivers handle IRQs that:
-- use edge type interrupts, and
-- can trigger really fast, many many times, and
-- can run in force-thread mode, and
-- have handlers that are able to deal with multiple IRQs per call.
-
-If there aren't many that met this requirement, I could try to tackle them 
-as they become a problem.
-
-
-About solving it directly in generic code, I agree it would be the ideal 
-scenario. That's why I suggested that in RFCv1: if the thread handles a 
-single IRQ, we reset irqs_unhandled to zero. That's a good pointer on the 
-thread being stuck, and TBH I don't think this is too far away from the 
-current 100/100k if we consider some of those handlers can handle multiple 
-IRQs at once.
-
-
-What are your thoughts on that?
-
-Thanks!
-Leo
-
+Thanks
+Patrice
