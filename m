@@ -1,127 +1,127 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC27760873
-	for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 14:25:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A58E23DB9A;
+	Thu, 22 Feb 2024 14:51:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708611956; cv=none; b=tg7ZUm6YCLpCgMQIxFMMYD2csJPcaNGxGc10uOxWfwhGRZzx+/iyBEQod5TCEeQYnBBWEOAwkgeQqy/22N3Yv6NZ+9Yi8wbmmSjYO7ek5ltFP6feImJCdwxD5m6xiqT5Zd/0i+GHjRLeXBELuZtuszvIjAsytmse00yqrvUnWQA=
+	t=1708613469; cv=none; b=qctVClt5+ISAPipuAf3Mcxcf0DYXAY1GqAMRS7nia6vfLhJu51bKKbNxCSAPJtHdxXgXP9fA7mjkHSzbT4Kvo0On4JbPeF6qOgZGtH/Uaz727GNxQR8R9vcSb6wrUInuebQYi1tPD7TfPstS96HDFv90OlfU4LUMyk8IBd52va8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708611956; c=relaxed/simple;
-	bh=Gu3qoE0LKg1NeLvl/FhgL1yHAZRpFB74K5aTVZvcbC4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r2NHDA65Xo3iOrmZsLEm5zTEEcucY9vNyQcGjN3BZynQ8noXV+hWtb1la/RvG4mSmsfHsJRR2LQKCckAeI7MwRc/IpjqoSHKA0cRPNMm6CuVmifzW89wff7/a75ddHHsERcobH6GgW10ZRsCxT7UUkBni8JvKA9NCv9TzYTPwUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rdA1B-0004EF-Kr; Thu, 22 Feb 2024 15:25:45 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rdA1A-002FWm-RG; Thu, 22 Feb 2024 15:25:44 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rdA1A-009UCH-2T;
-	Thu, 22 Feb 2024 15:25:44 +0100
-Date: Thu, 22 Feb 2024 15:24:31 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
- baudclk failed
-Message-ID: <weizcvfyvimmwzem2huhtrtd77twp4x2vwblnamqcmuchjzqyn@xizla7laqmew>
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
- <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com>
- <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
- <3dca13d5-6ee4-e417-577f-79a5b16eb469@linux.intel.com>
+	s=arc-20240116; t=1708613469; c=relaxed/simple;
+	bh=QaAhI/wbbBAuiLt9QHQSbVsKeYt5VzZ02DUcj9u9Pa4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Jw8kpqrAV6uXBAdizr/RS66X87IbmW3Zgk+wj3LWrS3FwtjPbyh240cZfat0mlaZnRD5nx3YOvEkqchSDcqDWxoyi8wZJ5m8lbF5+rQJ/IIH0iD5QDVjhk4CzV1g/ykY0gsHQwragZ7jVQmBn3cEnWP28TuxeSLXh78AYGErQBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fw8pHSsc; arc=none smtp.client-ip=209.85.167.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fw8pHSsc"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-512d8fe4fceso1201538e87.3;
+        Thu, 22 Feb 2024 06:51:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708613466; x=1709218266; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=W+We9WJEv1KV+ZKPjgcW2YQTM92TLBV7sBEUyk52zXI=;
+        b=Fw8pHSsc0Kosu5HrpS+o79ue4mSs+mk9KBkNPr1tN598JcgcoYnXQbtNFUFVMMjFrH
+         UlaJK8oJXusmUzLciyPf76O5G0MgejbNvPUwSEg7+Xq63lxh3TXi7J1jT7MGdzlDCUiB
+         XUuqm6HrpWaXA26ILQrOU/vpbtJdrTAOT1TpYydwk4KlAtq9ELoNgXZIQfjeF/zq7RX6
+         cQZ5173R4/XBgd4RGrvtl1fhuSqO/pCPqBLDayL8tEBQ8jPzfRotjkbowFLHNMYtNx/G
+         YCYpxk8o5g6XoyaeLgBwgdXdDuy/I9iy67yyyAghE/CMCv7aQaQhM/eVopGbiTxIEcrC
+         vPMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708613466; x=1709218266;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=W+We9WJEv1KV+ZKPjgcW2YQTM92TLBV7sBEUyk52zXI=;
+        b=ppus9Sg8l3bfpyr6bBYyPkbVKL4zYcpPBW46eeleL/XojhFZkWEUqt0UmUk42t9Pr4
+         TWXQqzGFGX3Ps8vX3fIpYc1oCfIsbCiXBaoYNwCw5UBepZb6xLWbCYabdcIYLrSoqrO7
+         9e1B0uT2OI9c3Ek63O//fOcscimECuJDgVex5QFEMQQQwUq1bmjWC1wNogrXGvIGvHqu
+         G0no7CQ2PLUKBQgrvzFKhqZOOE+AGhyQZGEGM1a8mPGZH9G4yzFGjaddj8NzGGdCV4t/
+         oYd0kldNJx9xT6IiLSIeHBq2v4HH6QhdeAlZSo8AsoT1tplxjNDcJXqby7IOeLYZiVyg
+         olZg==
+X-Forwarded-Encrypted: i=1; AJvYcCV7BLEPbdQT8u26DoCIyyUGb2+l8KlycizPRdqXTeWKS0qEGi/i6rAn4BS5UHyOODxYeg9Kjg6hfRVm2dpayNoA+IZV4h3EevbfH7ltlaBCtZ0l6VWSYupo7098vIH1NRQ/xnQP1Ukah2ZD
+X-Gm-Message-State: AOJu0Yz0eq5QR9WrYNBD7LlW8Z4B4TvvB7iQrDAcnFi6Kq3TxXFzGISk
+	P3r26bUmjZisxUNaN4vrqnoPfX3YvbCc7zVfYJn9uysv7jT5oJbpX0AdFx2XCqM=
+X-Google-Smtp-Source: AGHT+IF0dVYPTtTO9cnO6b9aLE7e/Kms6Qc0pHEV290SQdeghRfb5j3grfWht7aqt+2H3RhR89xc3g==
+X-Received: by 2002:a05:6512:6d5:b0:512:df5b:ee91 with SMTP id u21-20020a05651206d500b00512df5bee91mr1366298lff.30.1708613465620;
+        Thu, 22 Feb 2024 06:51:05 -0800 (PST)
+Received: from localhost ([178.176.56.174])
+        by smtp.gmail.com with ESMTPSA id r8-20020ac25f88000000b0051144c7cf9esm2085194lfe.265.2024.02.22.06.51.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Feb 2024 06:51:05 -0800 (PST)
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250: Use serial8250_do_set_termios for uartclk updating
+Date: Thu, 22 Feb 2024 17:50:56 +0300
+Message-ID: <20240222145058.28307-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="z4if6sljxn6gtfze"
-Content-Disposition: inline
-In-Reply-To: <3dca13d5-6ee4-e417-577f-79a5b16eb469@linux.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 
+The serial8250_update_uartclk() body was created based on the several
+method calls copied from the serial8250_do_set_termios() function. Seeing
+aside with some other things the later method can update the baud rate
+based on the new reference clock let's just call it instead thus
+simplifying the code a bit.
 
---z4if6sljxn6gtfze
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/linux-serial/ZczD7KPbeRnY4CFc@black.fi.intel.com
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 20 +-------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
 
-Hello,
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8ca061d3bbb9..a74d39846dd4 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2714,12 +2714,8 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
+  */
+ void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
+ {
+-	struct uart_8250_port *up = up_to_u8250p(port);
+ 	struct tty_port *tport = &port->state->port;
+-	unsigned int baud, quot, frac = 0;
+-	struct ktermios *termios;
+ 	struct tty_struct *tty;
+-	unsigned long flags;
+ 
+ 	tty = tty_port_tty_get(tport);
+ 	if (!tty) {
+@@ -2740,21 +2736,7 @@ void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
+ 	if (!tty_port_initialized(tport))
+ 		goto out_unlock;
+ 
+-	termios = &tty->termios;
+-
+-	baud = serial8250_get_baud_rate(port, termios, NULL);
+-	quot = serial8250_get_divisor(port, baud, &frac);
+-
+-	serial8250_rpm_get(up);
+-	uart_port_lock_irqsave(port, &flags);
+-
+-	uart_update_timeout(port, termios->c_cflag, baud);
+-
+-	serial8250_set_divisor(port, baud, quot, frac);
+-	serial_port_out(port, UART_LCR, up->lcr);
+-
+-	uart_port_unlock_irqrestore(port, flags);
+-	serial8250_rpm_put(up);
++	serial8250_do_set_termios(port, &tty->termios, NULL);
+ 
+ out_unlock:
+ 	mutex_unlock(&tport->mutex);
+-- 
+2.43.0
 
-On Thu, Feb 22, 2024 at 03:48:48PM +0200, Ilpo J=E4rvinen wrote:
-> On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
-> > On Thu, Feb 22, 2024 at 01:50:40PM +0200, Ilpo J=E4rvinen wrote:
-> > > On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
-> > >=20
-> > > > Instead of silently giving up, at least tell what the problem is.
-> > > >=20
-> > > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > > > ---
-> > > >  drivers/tty/serial/8250/8250_dw.c | 3 ++-
-> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > >=20
-> > > > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial=
-/8250/8250_dw.c
-> > > > index 2d1f350a4bea..94aa3dddb71e 100644
-> > > > --- a/drivers/tty/serial/8250/8250_dw.c
-> > > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > > > @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device =
-*pdev)
-> > > >  	if (data->clk =3D=3D NULL)
-> > > >  		data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
-> > > >  	if (IS_ERR(data->clk))
-> > > > -		return PTR_ERR(data->clk);
-> > > > +		return dev_err_probe(dev, PTR_ERR(data->clk),
-> > > > +				     "failed to get baudclk\n");
-> > >=20
-> > > Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> >=20
-> > Thanks. Is the expectation now with your tag that Greg (added to Cc:)
-> > picks up this patch?=20
->=20
-> Yes, Greg handles applying serial patches. There's just too low volume of=
-=20
-> patches for it be useful for me to setup some an intermediate tree for=20
-> 8250_dw/lpss only.
-
-Yeah, I thought so, I just wondered if that also works if Greg isn't in
-the list of recipents. But that should be fixed now, too.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---z4if6sljxn6gtfze
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmXXWRwACgkQj4D7WH0S
-/k5Tiwf+MSX0/BKPBkD+GtUph0RT7BelumqitVcNB/IGRvNPfdGCMIOD+mWR853S
-ofmntMM7ZlrBJ0r/p8qwYoeNhmMdFalqfmkEwOmacWLNrCva3ABPP6pKhYNhKKU0
-k2KWvLP3FkO6ezxvZCLoX43LDm2DN5X95O8CbqrABvAOug/deyoLqwi4D1qDbNYe
-QiZhRY4wuWqXSglbtEk6QCaR4o1ETkNLUGCDfiHuBnPQcl285yhNShhK8IG71jPp
-QqBinfkuDbs4NBB2f00oQ6Lwlu/NtFewy6PHFfAWT1EXRArCM3GwYcyF1Z0wenRX
-rJ5WsegpqDIZtDNuYgCsjtosiKQy3w==
-=k8vF
------END PGP SIGNATURE-----
-
---z4if6sljxn6gtfze--
