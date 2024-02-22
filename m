@@ -1,106 +1,171 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6EA50A98
-	for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 13:49:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C1F1487FA;
+	Thu, 22 Feb 2024 13:52:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708609743; cv=none; b=e2av1nHxHbwHOELkfIyKHoaVDTaHuKrg0bx/iCQQaTK0PaC0aKiUOnVJy+TWdw2xDQcT/Y5nMPFFYnNI8lYUALvv1IYLrS7yvwIUkVh7VmBmJ16OT7ydW3xNVumQQOZW/VkwI+RoHjTKd7SceFu8FDcHEhBiy6aAY+xJ9ijlVsE=
+	t=1708609953; cv=none; b=QiLAML+8OjIEHFIoPA7WV8hYXrYdq24NUQrp1wxZJnU52eZnYoepJWJqkfcRGo+aKRGKeAur/UyCIqfburJVBnUQpr9azOOX2ZUZunmi+XOkPtd2lVb4fy3rjdmMS4a4aLNLUt/aeNJ02x/0yQ61IAloSKDHtmVqnloMR+jx4b4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708609743; c=relaxed/simple;
-	bh=dgZsJm7uByRNfxMMtDbX4WJFJ73AthIJb5A2+iWbWp4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=G7J7dBrfrOdq9hlH7qK292ln8nuhb/Df+uAOXJBQCRRnILiXbJyRR/Pla/z/iHMgFDULHpmVPT/CQjvNJmL1QNJTD5A2QlGxDKEhANb3hToFlLo0Wk1Mu/mF3zZ+pwMJ9sKBktltE3X83teMeXeq088hgASLCBW19CxVI3qjWSI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ql432YWo; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708609953; c=relaxed/simple;
+	bh=IzJkKWwTvYMWgJmqreb1lep+2WnW6qA832pfbNZn5ws=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IbDfzfRWdy9Jix16EOlQbgBdzZt3h5gAuq+L3RDGxmqbzE6Oa5CuI7TTKQoXPhGwA8tTTz0/w7a55n4qwOvJaR+Y69XFQ6csMm+KVXc4oWDo/fHI8zrTn0IgiGpAGmAFJGOwDCEKEQZQQ/yt0KGT90iji5GhIBPZsUbfxD8ZvKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=g9IdMt7h; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ql432YWo"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="g9IdMt7h"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708609742; x=1740145742;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=dgZsJm7uByRNfxMMtDbX4WJFJ73AthIJb5A2+iWbWp4=;
-  b=Ql432YWoIsS19FM2sxtlyLeO07RL9h2pg5uR7kf2E3CXZF327IVXM+16
-   zyHLT0En5VtUcEQ4mkD4UA69czAmopviv2hRsphBTcQgpK3GcZg+OxEhm
-   L5jQAwLMPwFHqEJ3H004qpqLlUXrpHkdYxLG2SP9hw6ZfrIPm3c7Q/9Nw
-   JX9fyj1VcSG8HVzb/yTEul9aaGZR2DaM7y3eTSZQQiVlYMrQnHmcRNKD8
-   y0bR2UrduFc9x+++uRWbEnnQqnfjhRtuRmUXyqCxQ1VuAS3v+z5K0eLP9
-   8GTspUw06k520uz+VLgxi2+wEwwAjaqteqeix5s0jJUXhkLrZR2wXD3u1
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="20267483"
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="20267483"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:49:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="36331154"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.94.249.55])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:49:00 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 22 Feb 2024 15:48:48 +0200 (EET)
-To: =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
- baudclk failed
-In-Reply-To: <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
-Message-ID: <3dca13d5-6ee4-e417-577f-79a5b16eb469@linux.intel.com>
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de> <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com> <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1708609951; x=1740145951;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IzJkKWwTvYMWgJmqreb1lep+2WnW6qA832pfbNZn5ws=;
+  b=g9IdMt7hShkUpGBHjDT0xqX8Ebo7pewxMCAKE/VF9S1acEi3eSjMsD3z
+   JcnARzM22mXtToZ3BXl5B7Mkh2u2dyE6dUDOfFMk324qm1IeGvd7R9Gjt
+   bK0gtgDzZj33JvQxiDPIlQOtJQSbTnLXjmxvDFsNYDl7PeaWO+9QOxw91
+   nZC6gnBw1tUKjIuhqgGvPHVbjvegjd6qdtn9hRB/wWyH3ff1UQWK2ME4U
+   LNXiVxSTZ4etku9E+ntUQOtHHsinjInDIIRFSakQ+szikVNXYaxfSorcg
+   RxD5gnFI0UNhAd9lyvZ2sAk8O3sePolgRe0cPMvxanlRZBs87zcYKNLUD
+   Q==;
+X-CSE-ConnectionGUID: 1g9PJo2cQYm6idtRWmCp+g==
+X-CSE-MsgGUID: 1gv/w4ieQJC6rO5afeWlOQ==
+X-IronPort-AV: E=Sophos;i="6.06,177,1705388400"; 
+   d="scan'208";a="16659544"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Feb 2024 06:52:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 22 Feb 2024 06:51:49 -0700
+Received: from che-dk-ungapp03lx.microchip.com (10.10.85.11) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Thu, 22 Feb 2024 06:51:46 -0700
+From: Rengarajan S <rengarajan.s@microchip.com>
+To: <kumaravel.thiagarajan@microchip.com>,
+	<tharunkumar.pasumarthi@microchip.com>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <linux-serial@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <unglinuxdriver@microchip.com>
+CC: <rengarajan.s@microchip.com>
+Subject: [PATCH v1 tty] 8250: microchip: pci1xxxx: Refactor TX Burst code to use pre-existing APIs
+Date: Thu, 22 Feb 2024 19:19:44 +0530
+Message-ID: <20240222134944.1131952-1-rengarajan.s@microchip.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1411230698-1708609728=:1961"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Updated the TX Burst implementation by changing the circular buffer
+processing with the pre-existing APIs in kernel. Also updated conditional
+statements and alignment issues for better readability.
 
---8323328-1411230698-1708609728=:1961
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
+---
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 39 ++++++++++++-------------
+ 1 file changed, 19 insertions(+), 20 deletions(-)
 
-On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
-> On Thu, Feb 22, 2024 at 01:50:40PM +0200, Ilpo J=E4rvinen wrote:
-> > On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
-> >=20
-> > > Instead of silently giving up, at least tell what the problem is.
-> > >=20
-> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > > ---
-> > >  drivers/tty/serial/8250/8250_dw.c | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >=20
-> > > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8=
-250/8250_dw.c
-> > > index 2d1f350a4bea..94aa3dddb71e 100644
-> > > --- a/drivers/tty/serial/8250/8250_dw.c
-> > > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > > @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device *p=
-dev)
-> > >  =09if (data->clk =3D=3D NULL)
-> > >  =09=09data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
-> > >  =09if (IS_ERR(data->clk))
-> > > -=09=09return PTR_ERR(data->clk);
-> > > +=09=09return dev_err_probe(dev, PTR_ERR(data->clk),
-> > > +=09=09=09=09     "failed to get baudclk\n");
-> >=20
-> > Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
->=20
-> Thanks. Is the expectation now with your tag that Greg (added to Cc:)
-> picks up this patch?=20
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index 6cfeba058dba..84e0a0725f41 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -374,7 +374,7 @@ static void pci1xxxx_rx_burst(struct uart_port *port, u32 uart_status)
+ 
+ static void pci1xxxx_process_write_data(struct uart_port *port,
+ 					struct circ_buf *xmit,
+-					int *data_empty_count,
++					u32 *data_empty_count,
+ 					u32 *valid_byte_count)
+ {
+ 	u32 valid_burst_count = *valid_byte_count / UART_BURST_SIZE;
+@@ -386,22 +386,24 @@ static void pci1xxxx_process_write_data(struct uart_port *port,
+ 	 * one byte at a time.
+ 	 */
+ 	while (valid_burst_count) {
+-		if (*data_empty_count - UART_BURST_SIZE < 0)
++		if (*data_empty_count < UART_BURST_SIZE)
+ 			break;
+-		if (xmit->tail > (UART_XMIT_SIZE - UART_BURST_SIZE))
++
++		if (CIRC_CNT_TO_END(xmit->head, xmit->tail, UART_XMIT_SIZE) <
++		    UART_BURST_SIZE)
+ 			break;
+-		writel(*(unsigned int *)&xmit->buf[xmit->tail],
++
++		writel(*(u32 *)&xmit->buf[xmit->tail],
+ 		       port->membase + UART_TX_BURST_FIFO);
+ 		*valid_byte_count -= UART_BURST_SIZE;
+ 		*data_empty_count -= UART_BURST_SIZE;
+ 		valid_burst_count -= UART_BYTE_SIZE;
+ 
+-		xmit->tail = (xmit->tail + UART_BURST_SIZE) &
+-			     (UART_XMIT_SIZE - 1);
++		uart_xmit_advance(port, UART_BURST_SIZE);
+ 	}
+ 
+ 	while (*valid_byte_count) {
+-		if (*data_empty_count - UART_BYTE_SIZE < 0)
++		if (*data_empty_count < UART_BYTE_SIZE)
+ 			break;
+ 		writeb(xmit->buf[xmit->tail], port->membase +
+ 		       UART_TX_BYTE_FIFO);
+@@ -412,8 +414,7 @@ static void pci1xxxx_process_write_data(struct uart_port *port,
+ 		 * When the tail of the circular buffer is reached, the next
+ 		 * byte is transferred to the beginning of the buffer.
+ 		 */
+-		xmit->tail = (xmit->tail + UART_BYTE_SIZE) &
+-			     (UART_XMIT_SIZE - 1);
++		uart_xmit_advance(port, UART_BYTE_SIZE);
+ 
+ 		/*
+ 		 * If there are any pending burst count, data is handled by
+@@ -434,16 +435,7 @@ static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
+ 
+ 	xmit = &port->state->xmit;
+ 
+-	if (port->x_char) {
+-		writeb(port->x_char, port->membase + UART_TX);
+-		port->icount.tx++;
+-		port->x_char = 0;
+-		return;
+-	}
+-
+-	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit))) {
+-		port->ops->stop_tx(port);
+-	} else {
++	if (!(port->x_char)) {
+ 		data_empty_count = (pci1xxxx_read_burst_status(port) &
+ 				    UART_BST_STAT_TX_COUNT_MASK) >> 8;
+ 		do {
+@@ -453,15 +445,22 @@ static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
+ 						    &data_empty_count,
+ 						    &valid_byte_count);
+ 
+-			port->icount.tx++;
+ 			if (uart_circ_empty(xmit))
+ 				break;
+ 		} while (data_empty_count && valid_byte_count);
++	} else {
++		writeb(port->x_char, port->membase + UART_TX);
++		port->icount.tx++;
++		port->x_char = 0;
++		return;
+ 	}
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+ 		uart_write_wakeup(port);
+ 
++	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit)))
++		port->ops->stop_tx(port);
++
+ 	 /*
+ 	  * With RPM enabled, we have to wait until the FIFO is empty before
+ 	  * the HW can go idle. So we get here once again with empty FIFO and
+-- 
+2.25.1
 
-Yes, Greg handles applying serial patches. There's just too low volume of=
-=20
-patches for it be useful for me to setup some an intermediate tree for=20
-8250_dw/lpss only.
-
---=20
- i.
-
---8323328-1411230698-1708609728=:1961--
