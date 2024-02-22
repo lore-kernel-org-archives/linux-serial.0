@@ -1,127 +1,120 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A58E23DB9A;
-	Thu, 22 Feb 2024 14:51:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB59146016;
+	Thu, 22 Feb 2024 14:56:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708613469; cv=none; b=qctVClt5+ISAPipuAf3Mcxcf0DYXAY1GqAMRS7nia6vfLhJu51bKKbNxCSAPJtHdxXgXP9fA7mjkHSzbT4Kvo0On4JbPeF6qOgZGtH/Uaz727GNxQR8R9vcSb6wrUInuebQYi1tPD7TfPstS96HDFv90OlfU4LUMyk8IBd52va8=
+	t=1708613765; cv=none; b=KmAJUjegpi2EkwqlUHU9Y5cmhhTVUEG1q0WVC627Q0vCrXkPxzaCovIrNgQjevUO8GOYTu4itUzi2TE315o18Y/mBr6RBvx/hy/9BTm83rlDEO9LyLEZzs7nf2sD25n7Kv+Y1nbfdPiy/h9jm1x76F+oLqdc3uyd3tR98rPucJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708613469; c=relaxed/simple;
-	bh=QaAhI/wbbBAuiLt9QHQSbVsKeYt5VzZ02DUcj9u9Pa4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Jw8kpqrAV6uXBAdizr/RS66X87IbmW3Zgk+wj3LWrS3FwtjPbyh240cZfat0mlaZnRD5nx3YOvEkqchSDcqDWxoyi8wZJ5m8lbF5+rQJ/IIH0iD5QDVjhk4CzV1g/ykY0gsHQwragZ7jVQmBn3cEnWP28TuxeSLXh78AYGErQBs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fw8pHSsc; arc=none smtp.client-ip=209.85.167.42
+	s=arc-20240116; t=1708613765; c=relaxed/simple;
+	bh=ecw4lqubRpOHc/IfijyA/TcpxTcfIAKGIF8jGm3nfpk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MHt83FcTAiMNnCdQXU2/nQjv84KVDdJ1LrWaPVQl1MsSWxal65VznoBGPrP9VY7fuWUEr74rdhPZiyWCTZIU5DgMSWwlP3lLsQFS2iR0NDK+0z1gQAMjdqf2KXiSEH9CvOgW61yRk82rkBqOyK4uBCBgrR+NiQQ0CFC+daKaeNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kDY6U8s/; arc=none smtp.client-ip=209.85.167.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fw8pHSsc"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-512d8fe4fceso1201538e87.3;
-        Thu, 22 Feb 2024 06:51:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kDY6U8s/"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-512d6bcd696so951094e87.1;
+        Thu, 22 Feb 2024 06:56:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708613466; x=1709218266; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=W+We9WJEv1KV+ZKPjgcW2YQTM92TLBV7sBEUyk52zXI=;
-        b=Fw8pHSsc0Kosu5HrpS+o79ue4mSs+mk9KBkNPr1tN598JcgcoYnXQbtNFUFVMMjFrH
-         UlaJK8oJXusmUzLciyPf76O5G0MgejbNvPUwSEg7+Xq63lxh3TXi7J1jT7MGdzlDCUiB
-         XUuqm6HrpWaXA26ILQrOU/vpbtJdrTAOT1TpYydwk4KlAtq9ELoNgXZIQfjeF/zq7RX6
-         cQZ5173R4/XBgd4RGrvtl1fhuSqO/pCPqBLDayL8tEBQ8jPzfRotjkbowFLHNMYtNx/G
-         YCYpxk8o5g6XoyaeLgBwgdXdDuy/I9iy67yyyAghE/CMCv7aQaQhM/eVopGbiTxIEcrC
-         vPMA==
+        d=gmail.com; s=20230601; t=1708613762; x=1709218562; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=z7WYw3+2f5P/txmKRfw5XaSYS9W+HgJcTS8hlvbh0fM=;
+        b=kDY6U8s/r7YD64k+TQtWhcCBJPH0JZpURuWNPKVvafOpI3YUGR8f8AmFzygVNqTgWH
+         6s3jxf8lfxa8j1Aym0J9cSUrZt96ki0AqCApCafCj/4NR+cH1r5FMueaMt7c4QHQNYSJ
+         Dx1NYMJxSXgA4UHlxbn9kJtUlmGbUWrmche7MUAyhtr8sVkoBU7FpkO681NtEUMcphWQ
+         5a0zbw6JZ5sIwCvzcUSeyeeHvy7XNO+w8WFXfjj9QglGPBCsMr+aUqgFt7pUfvCXXH7t
+         L9PPU93uP5zP5b6YitdyTdcwaNq21oAcfIvsuFRRV2Ra4bYXR8oRUiunZS+JHzKiTl6Y
+         GEOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708613466; x=1709218266;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=W+We9WJEv1KV+ZKPjgcW2YQTM92TLBV7sBEUyk52zXI=;
-        b=ppus9Sg8l3bfpyr6bBYyPkbVKL4zYcpPBW46eeleL/XojhFZkWEUqt0UmUk42t9Pr4
-         TWXQqzGFGX3Ps8vX3fIpYc1oCfIsbCiXBaoYNwCw5UBepZb6xLWbCYabdcIYLrSoqrO7
-         9e1B0uT2OI9c3Ek63O//fOcscimECuJDgVex5QFEMQQQwUq1bmjWC1wNogrXGvIGvHqu
-         G0no7CQ2PLUKBQgrvzFKhqZOOE+AGhyQZGEGM1a8mPGZH9G4yzFGjaddj8NzGGdCV4t/
-         oYd0kldNJx9xT6IiLSIeHBq2v4HH6QhdeAlZSo8AsoT1tplxjNDcJXqby7IOeLYZiVyg
-         olZg==
-X-Forwarded-Encrypted: i=1; AJvYcCV7BLEPbdQT8u26DoCIyyUGb2+l8KlycizPRdqXTeWKS0qEGi/i6rAn4BS5UHyOODxYeg9Kjg6hfRVm2dpayNoA+IZV4h3EevbfH7ltlaBCtZ0l6VWSYupo7098vIH1NRQ/xnQP1Ukah2ZD
-X-Gm-Message-State: AOJu0Yz0eq5QR9WrYNBD7LlW8Z4B4TvvB7iQrDAcnFi6Kq3TxXFzGISk
-	P3r26bUmjZisxUNaN4vrqnoPfX3YvbCc7zVfYJn9uysv7jT5oJbpX0AdFx2XCqM=
-X-Google-Smtp-Source: AGHT+IF0dVYPTtTO9cnO6b9aLE7e/Kms6Qc0pHEV290SQdeghRfb5j3grfWht7aqt+2H3RhR89xc3g==
-X-Received: by 2002:a05:6512:6d5:b0:512:df5b:ee91 with SMTP id u21-20020a05651206d500b00512df5bee91mr1366298lff.30.1708613465620;
-        Thu, 22 Feb 2024 06:51:05 -0800 (PST)
-Received: from localhost ([178.176.56.174])
-        by smtp.gmail.com with ESMTPSA id r8-20020ac25f88000000b0051144c7cf9esm2085194lfe.265.2024.02.22.06.51.05
+        d=1e100.net; s=20230601; t=1708613762; x=1709218562;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z7WYw3+2f5P/txmKRfw5XaSYS9W+HgJcTS8hlvbh0fM=;
+        b=vVtMXXVbFbiOqiMSm63Zy9fapWiA+adtisy4xo85OeuEc9ElNWj6ZFztwdN8bw0Int
+         pEUYOnxVmcwD9hhlKWgTkwKOGW7G4HOn8TxK7eI/b/0ijD9QykwlhPudejnNCBs8f4qP
+         NaYsffEm22Cp6Mtn9zT6nWWUgqS/k5afJdAiz+A+GJNxxveYiYf9x9iwew0pYMsbazxP
+         N2PPwfD3taQ1PxZYqjlNbbyeejKzR75mz331VzzN4C4fa3l8R0p/U91ZJKYKVk6D3XrY
+         q8Nx63TVJOoZ+9Ajm7l97foBIfZeek8LCZjggQ3/ZPSyjNXbmQhXDBvks7vGDCHzT/zG
+         RVVw==
+X-Forwarded-Encrypted: i=1; AJvYcCW9tTqxqHs0TbNAmkuvXzVMrg6yboUwyAE8puW9JVPz1/U9Lc6mlzC957K+EdVHe/IYpK7amGyePZ6R3igJUcaiW1/rpB2DYk6zLHTzbu9QT6KrabOBzkNBZTLbHrMlqZaDCP2zKUrpuMrH
+X-Gm-Message-State: AOJu0Yx7oaXMu+sTzCpK55niwoux72PZjrXP/8qR1H5fHtjAIUhTLjq/
+	6GgthckvxXycjcktk6YiSDg/B6dnOvwDAU/wDajqHDrj+gB8o91Q
+X-Google-Smtp-Source: AGHT+IFRoCgfm1uvbmwVo7lh58a1qPSYdaOpXyxm9ct+rmRpcg5TutslbWsddQGijspE3jTC1HwWZg==
+X-Received: by 2002:ac2:4244:0:b0:512:bf09:9316 with SMTP id m4-20020ac24244000000b00512bf099316mr1009742lfl.8.1708613762208;
+        Thu, 22 Feb 2024 06:56:02 -0800 (PST)
+Received: from mobilestation ([178.176.56.174])
+        by smtp.gmail.com with ESMTPSA id e3-20020ac25463000000b00512da71b15dsm354732lfn.105.2024.02.22.06.56.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Feb 2024 06:51:05 -0800 (PST)
+        Thu, 22 Feb 2024 06:56:01 -0800 (PST)
+Date: Thu, 22 Feb 2024 17:55:58 +0300
 From: Serge Semin <fancer.lancer@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: 8250: Use serial8250_do_set_termios for uartclk updating
-Date: Thu, 22 Feb 2024 17:50:56 +0300
-Message-ID: <20240222145058.28307-1-fancer.lancer@gmail.com>
-X-Mailer: git-send-email 2.43.0
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Andy Shevchenko <andy@black.fi.intel.com>, 
+	Serge Semin <Sergey.Semin@baikalelectronics.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jslaby@suse.com>, Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>, 
+	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>, Maxime Ripard <mripard@kernel.org>, 
+	Will Deacon <will@kernel.org>, Russell King <linux@armlinux.org.uk>, 
+	linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v9 1/4] serial: 8250: Add 8250 port clock update method
+Message-ID: <v26ilx3hggj37wlsgoeyzcedv2doa54vevjqlhmklambdvzkzt@xa2gsjoselyc>
+References: <20200723003357.26897-1-Sergey.Semin@baikalelectronics.ru>
+ <20200723003357.26897-2-Sergey.Semin@baikalelectronics.ru>
+ <ZczD7KPbeRnY4CFc@black.fi.intel.com>
+ <raryiklwhctwxcfj3ulbnjcl32owagiccmxpwzmszlh3vm343y@h2ehupm7uiga>
+ <Zc5oYJY6W_MCpwhN@smile.fi.intel.com>
+ <ow5mvkxa4g7mub3faiytsij4cyaaralcbzyn675jny5355han7@azw65mhkpwjz>
+ <ZdNvBtOlxo4FlLUH@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZdNvBtOlxo4FlLUH@smile.fi.intel.com>
 
-The serial8250_update_uartclk() body was created based on the several
-method calls copied from the serial8250_do_set_termios() function. Seeing
-aside with some other things the later method can update the baud rate
-based on the new reference clock let's just call it instead thus
-simplifying the code a bit.
+On Mon, Feb 19, 2024 at 05:08:54PM +0200, Andy Shevchenko wrote:
+> On Fri, Feb 16, 2024 at 08:19:37PM +0300, Serge Semin wrote:
+> > On Thu, Feb 15, 2024 at 09:39:12PM +0200, Andy Shevchenko wrote:
+> 
+> ...
+> 
+> (thanks for the detailed explanation why you have done it that way)
+> 
+> > If what you suggest is to replace the serial8250_update_uartclk() body
+> > with a direct uart_port::set_termios() invocation then I don't find it
+> > being much clearer really. The serial8250_update_uartclk() is
+> > currently specialized on doing one thing: adjusting the divider in
+> > case of the UART-clock change. If instead the entire
+> > serial8250_set_termios() method is called then for a reader it won't
+> > be easy to understand what is really required for a 8250 serial port
+> > to perceive the ref-clock change. But from the maintainability point
+> > of view I guess that it might be safer to just call
+> > serial8250_set_termios() indeed, since among the other things the
+> > later method implies the divider update too. Thus the maintainer won't
+> > need to support the two clock divider update implementations.
+> 
+> > From that perspective I agree, directly calling serial8250_set_termios()
+> > might be more suitable despite of it' doing more than required.
+> 
+> Would it be possible for you to cook the patch (and test on your HW,
+> since it seems the only user of that)?
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/linux-serial/ZczD7KPbeRnY4CFc@black.fi.intel.com
-Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
----
- drivers/tty/serial/8250/8250_port.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+Agreed. The patch should have been just landed on your work and
+private inboxes.
+Link: https://lore.kernel.org/linux-serial/20240222145058.28307-1-fancer.lancer@gmail.com
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 8ca061d3bbb9..a74d39846dd4 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2714,12 +2714,8 @@ static unsigned int serial8250_get_baud_rate(struct uart_port *port,
-  */
- void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
- {
--	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct tty_port *tport = &port->state->port;
--	unsigned int baud, quot, frac = 0;
--	struct ktermios *termios;
- 	struct tty_struct *tty;
--	unsigned long flags;
- 
- 	tty = tty_port_tty_get(tport);
- 	if (!tty) {
-@@ -2740,21 +2736,7 @@ void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
- 	if (!tty_port_initialized(tport))
- 		goto out_unlock;
- 
--	termios = &tty->termios;
--
--	baud = serial8250_get_baud_rate(port, termios, NULL);
--	quot = serial8250_get_divisor(port, baud, &frac);
--
--	serial8250_rpm_get(up);
--	uart_port_lock_irqsave(port, &flags);
--
--	uart_update_timeout(port, termios->c_cflag, baud);
--
--	serial8250_set_divisor(port, baud, quot, frac);
--	serial_port_out(port, UART_LCR, up->lcr);
--
--	uart_port_unlock_irqrestore(port, flags);
--	serial8250_rpm_put(up);
-+	serial8250_do_set_termios(port, &tty->termios, NULL);
- 
- out_unlock:
- 	mutex_unlock(&tport->mutex);
--- 
-2.43.0
+-Serge(y)
 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
