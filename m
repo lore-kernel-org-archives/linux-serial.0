@@ -1,230 +1,153 @@
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DBC32919;
-	Thu, 22 Feb 2024 00:37:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.29.241.158
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AAA3101C2;
+	Thu, 22 Feb 2024 06:58:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708562238; cv=none; b=S3Jl15s4L4uajISXtCyNOYCwA/6rAnWW7ulWhvr9HOMklX2utFRIc7qm1s4YfCSkAkyscuzI8w7lAT3Kb6Jfx52dUN4Db9JgyoAn4h4Y+uc2HssG0Eh/qnUQMXQpDgxjxfbhpzE3glILWb9BpVSpDV/ho/npazzuxTgu9sUrwzY=
+	t=1708585118; cv=none; b=T7TILLORkVgVD1Rz3HxNJA1vkGZ93J1Q158ucR/RFr49m11LTGtPvCgXQpad4z2qzctjQw//KIMd1+XBImnq+CXo82dDrNXFPPflQrGb3eqYuSfy3Uh3bnOK0Fg6tMLndVRmQ5Smyzz1F1UPuGOYKrzNiDFECvMmZ/LgK5dWWMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708562238; c=relaxed/simple;
-	bh=72568EdCiYr/Ee53OvndWrLqSBEKVDxonZRvv5ly7cw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=VMxA0w681aOYKKawmrIcJ87DOVmh/QVBp5QRpWHGZ1u3KbXEr/DmNO+Ui3D3OnEdPRSzBgh/eBqort9M1m+4q84412SsddxO1NgvX/0JyKbkmkpSlQL5EWJt/LBrNVIlogzVRrocv6DoP0l7AQYXh51Gts6apRZThmRDzbOx+HQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au; spf=pass smtp.mailfrom=codeconstruct.com.au; dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b=CmmEc1xT; arc=none smtp.client-ip=203.29.241.158
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b="CmmEc1xT"
-Received: from [192.168.68.112] (ppp118-210-142-230.adl-adc-lon-bras33.tpg.internode.on.net [118.210.142.230])
-	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 6CD8920075;
-	Thu, 22 Feb 2024 08:37:08 +0800 (AWST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=codeconstruct.com.au; s=2022a; t=1708562233;
-	bh=Tp6DArOflTs0IxRQ/vtC4XqHHWEiEpMTXjecUx41ktE=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References;
-	b=CmmEc1xTLF/47r0FbvgXVMfG/s0UF5gFIXu0OQi+0aGHqpxv9o4fLPpjZt7unPgk9
-	 QjjYzFS9F9NpwaiyRJkfTCCRy0r3ebcPw2NdJ8midm71ShT/oFgQSugG5pHldiZrSs
-	 448/E0cB5PG1P5uUYW1Pwnbi4NNBPIIb1675kLOttyiSU0tqQX9EUX8xLksNBpvRhH
-	 5qzDXeTHTKEMj8zyLbfIqqCqFcp3m/NPW8611Gz89SxaUgJ88DWfSENa00b6U+CJg0
-	 FUP3rEezZXwhY+mbtulKfbHhMULDahRTmP623sTfJ2br6vHr/7djx5soQ3xxdeAR+b
-	 NVDF2j7A4rCsw==
-Message-ID: <0a828f2c50de712940fb9a881702ac1678a35b7c.camel@codeconstruct.com.au>
-Subject: Re: [PATCH v1 10/14] serial: 8250_of: Switch to use
- uart_read_port_properties()
-From: Andrew Jeffery <andrew@codeconstruct.com.au>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
-	 <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org, 
-	linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-tegra@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,  Broadcom
- internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Al
- Cooper <alcooperx@gmail.com>,  Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Paul Cercueil <paul@crapouillou.net>, 
- Vladimir Zapolskiy <vz@mleia.com>, Thierry Reding
- <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,  Masami Hiramatsu
- <mhiramat@kernel.org>, Andi Shyti <andi.shyti@linux.intel.com>
-Date: Thu, 22 Feb 2024 11:07:05 +1030
-In-Reply-To: <20240221183442.4124354-11-andriy.shevchenko@linux.intel.com>
-References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
-	 <20240221183442.4124354-11-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+	s=arc-20240116; t=1708585118; c=relaxed/simple;
+	bh=8jNUR1QUpSx19cQNGXxmdSHKqS3IlVyUM8XQh6VBHWw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=R9rgrKiGu3f2q5j2pGyeb3fHtfNrBFAODrpI4zFuIc4vtKAR/MI309bu/NlzVbK/ofOnBBNmxJwqjWcfwvcz50x2yYnHIdoR3oVF9nJXRB+qqo8EhyYYyvCGTKAzBLQHpsRAg09fSiBwRtbflHHtU3cI1yUB/j+1aWZGBDezQdw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-33d2b354c72so3577552f8f.1;
+        Wed, 21 Feb 2024 22:58:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708585115; x=1709189915;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7ZncrEUsUC9sjkZ2Qw0MyfZjlW0xqX3HQAFV3fa9mKE=;
+        b=URP23pg35BhTFTY6LLWarqZzqmObH0jmVmIXfqs1IENusdpYVvcWxDKDl+jCgMP1jz
+         tKlVMN6lrDxCWcCDPjwL3Rg+QeLSV2O4UF0/5BxVmu0ixdf9PAyzVlW4soOpEgRD1Rjv
+         G8Ozxn61NiAnJ8xT9Neuud92k0ITn3eDZV0+kkgQOvslJ9M3WWBt/m0xVAv+8wuBz9HL
+         j6hVx9d7TRV9ZpNJcE1Ovo15bB3ZN9Pmi3bqw0OFZReVp8oo/olWJE6JxX1bKBedT/JX
+         BV4TFIp0HjoaUIS8hUrBxscxJJ71IuTfe7mil/qfY8QE0rAGZykO/Gz6/Z9RaOW4s5RI
+         ujlQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX8ruGmRAUSLhCyL4PG7naRzcTvA8igPz7XNdBj1SNkWOZlyZkDekX7Xqm68mxEF6ehGAksQd+iHunmm5ar+En2EPZe9bibMGhrsGJRxKrKRMFvdz2OIsyUlbgn7mMkC4WR9aBBi+CMJcqh36q6uDgByvGfgTIdW4TfYBUJelWjSEpBC6whT3yAhj6Wfgbl3qtarMSc+wnFp9gVGeQeVKCuJDvu
+X-Gm-Message-State: AOJu0Yza0VoVqrc3Ywe2eR0YcJmsx47OSpNi1foYdjYaP+39S1FS9XNT
+	CWo2aa5CdSDbEzYj2GjyEC8+Fd/dfejk4kEhbSVgvDC+ea+neGMN
+X-Google-Smtp-Source: AGHT+IElwd1EMDO5q3nyarlzMgj0iaTDvX/TQ9BRCGYwPuplfypb6Dkh109SxeNySGYBP+MKoYNmJw==
+X-Received: by 2002:a5d:68cc:0:b0:33d:209a:ecf3 with SMTP id p12-20020a5d68cc000000b0033d209aecf3mr11854918wrw.20.1708585115176;
+        Wed, 21 Feb 2024 22:58:35 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id ay3-20020a5d6f03000000b0033d1b760125sm19954711wrb.92.2024.02.21.22.58.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Feb 2024 22:58:34 -0800 (PST)
+Message-ID: <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
+Date: Thu, 22 Feb 2024 07:58:32 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
+ port type
+Content-Language: en-US
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+ linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org
+Cc: Joel Stanley <joel@jms.id.au>,
+ Andrew Jeffery <andrew@codeconstruct.com.au>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Al Cooper <alcooperx@gmail.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Paul Cercueil <paul@crapouillou.net>, Vladimir Zapolskiy <vz@mleia.com>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+ <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2024-02-21 at 20:31 +0200, Andy Shevchenko wrote:
-> Since we have now a common helper to read port properties
-> use it instead of sparse home grown solution.
+On 21. 02. 24, 19:31, Andy Shevchenko wrote:
+> In some APIs we would like to assign the special value to iotype
+> and compare against it in another places. Introduce UPIO_UNSET
+> for this purpose.
+> 
+> Note, we can't use 0, because it's a valid value for IO port access.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   include/linux/serial_core.h | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 2d2ec99eca93..2b0526ae1fac 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -470,6 +470,7 @@ struct uart_port {
+>   
+>   	unsigned char		iotype;			/* io access style */
+>   
+> +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
 
-I did some brief testing of the series for the Aspeed machines under
-qemu, building them on top of v6.8-rc5:
+Perhaps making the var u8 and this U8_MAX then? It would make more sense 
+to me.
 
-export ARCH=3Darm
-export CROSS_COMPILE=3Darm-linux-gnueabihf-
-make aspeed_g5_defconfig
-make -j$(nproc)
-qemu-system-arm -M rainier-bmc -nographic -no-reboot -kernel arch/arm/boot/=
-zImage -dtb arch/arm/boot/dts/aspeed/aspeed-bmc-ibm-rainier.dtb -initrd ...
+>   #define UPIO_PORT		(SERIAL_IO_PORT)	/* 8b I/O port access */
+>   #define UPIO_HUB6		(SERIAL_IO_HUB6)	/* Hub6 ISA card */
+>   #define UPIO_MEM		(SERIAL_IO_MEM)		/* driver-specific */
 
-I got an oops during boot, which bisected to this change:
-
-[    0.314946] 8<--- cut here ---
-[    0.315051] Unable to handle kernel paging request at virtual address fe=
-e00000 when write
-[    0.315201] [fee00000] *pgd=3D00000000
-[    0.315593] Internal error: Oops: 805 [#1] SMP ARM
-[    0.315847] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.8.0-rc5-00010-g8=
-a2c8fe174cf #13
-[    0.316071] Hardware name: Generic DT based system
-[    0.316216] PC is at io_serial_out+0x18/0x20
-[    0.316677] LR is at serial8250_do_set_mctrl+0x54/0x90
-[    0.316781] pc : [<8060eea8>]    lr : [<806108b0>]    psr: 40000093
-[    0.316891] sp : bf815b08  ip : 00000000  fp : 00000026
-[    0.316987] r10: 81698240  r9 : 40000013  r8 : 81cae600
-[    0.317087] r7 : 81d7d1a8  r6 : 81d7d110  r5 : 81008158  r4 : 00000000
-[    0.317197] r3 : fee00000  r2 : 00000000  r1 : 00000004  r0 : 81008158
-[    0.317350] Flags: nZcv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segmen=
-t none
-[    0.317471] Control: 10c5387d  Table: 8000406a  DAC: 00000051
-[    0.317593] Register r0 information: non-slab/vmalloc memory
-[    0.317892] Register r1 information: non-paged memory
-[    0.317996] Register r2 information: NULL pointer
-[    0.318080] Register r3 information: vmalloc memory
-[    0.318176] Register r4 information: NULL pointer
-[    0.318264] Register r5 information: non-slab/vmalloc memory
-[    0.318362] Register r6 information: slab kmalloc-2k start 81d7d000 poin=
-ter offset 272 size 2048
-[    0.318701] Register r7 information: slab kmalloc-2k start 81d7d000 poin=
-ter offset 424 size 2048
-[    0.318860] Register r8 information: slab kmalloc-512 start 81cae600 poi=
-nter offset 0 size 512
-[    0.319095] Register r9 information: non-paged memory
-[    0.319194] Register r10 information: slab kmalloc-64 start 81698240 poi=
-nter offset 0 size 64
-[    0.319266] Freeing initrd memory: 13684K
-[    0.319384] Register r11 information: non-paged memory
-[    0.319593] Register r12 information: NULL pointer
-[    0.319703] Process swapper/0 (pid: 1, stack limit =3D 0x(ptrval))
-[    0.320006] Stack: (0xbf815b08 to 0xbf816000)
-[    0.320157] 5b00:                   81008158 80f85a88 81d7d110 8060cb78 =
-bf815b34 00000026
-[    0.320313] 5b20: 0016e360 80cba110 81e65e80 80cfcdf4 00000003 204f2f49 =
-00307830 00000000
-[    0.320457] 5b40: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.320600] 5b60: 00000000 00000000 00000000 00000000 00000000 ed1677db =
-81008158 81008158
-[    0.320744] 5b80: bf815c00 81e5c5c0 81008304 81007f58 bf815d2c bf815dac =
-00000000 8060e1f4
-[    0.320890] 5ba0: 80cba4ec 8081e2c4 bf815dfc 00000001 00000000 81cf5400 =
-81cf5410 81e65e00
-[    0.321030] 5bc0: 00000004 00000000 00000001 80616538 00000000 00000000 =
-00000000 00000000
-[    0.321176] 5be0: 1e784000 1e784fff bd7c1a94 00000200 00000000 00000000 =
-00000000 00000000
-[    0.321325] 5c00: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.321469] 5c20: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.321624] 5c40: 00000000 00000000 8060fb34 00000000 00000000 00000000 =
-00000026 00000000
-[    0.321777] 5c60: 016e3600 00000000 00000200 00000000 00000000 00000000 =
-00000000 00000000
-[    0.321920] 5c80: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.322063] 5ca0: 00000000 00000000 b9000040 00000000 00000000 00000000 =
-00000000 00000000
-[    0.322204] 5cc0: 00000004 00000000 00000000 00000004 00000000 1e784000 =
-00001000 81cf5410
-[    0.322347] 5ce0: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.322492] 5d00: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000037
-[    0.322640] 5d20: 00000001 00000001 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.322800] 5d40: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.322957] 5d60: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.323114] 5d80: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.323271] 5da0: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.323422] 5dc0: 00000000 00000000 806111c8 80610eb4 00000000 00000000 =
-00000000 00000000
-[    0.323573] 5de0: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.323723] 5e00: 00000000 ed1677db 00000000 81cf5410 80f85cf8 00000000 =
-00000000 81e5c638
-[    0.323878] 5e20: 80e66f48 8067f888 81cf5410 00000000 80f85cf8 00000000 =
-00000000 8067ca08
-[    0.324029] 5e40: 81cf5410 00000000 81cf5410 81cf5410 80f85cf8 81cf5454 =
-81cf5410 8067cda8
-[    0.324181] 5e60: 60000013 81e5c638 81008d4c 81008d54 81cf5454 81cf5410 =
-00000000 8067cf3c
-[    0.324337] 5e80: 81cf5410 80f85cf8 81cf5454 814cec00 00000000 8067d21c =
-00000000 80f85cf8
-[    0.324494] 5ea0: 8067d11c 8067aa04 814cec00 814cec58 816a4bb4 ed1677db =
-814cec00 81e5c600
-[    0.324646] 5ec0: 00000000 80f85cf8 814cec00 8067bc6c 80cba524 00000000 =
-00000006 80f85cf8
-[    0.324795] 5ee0: 8158b480 00000006 bf815f14 00000000 80d19438 8067e284 =
-80e221c4 8158b480
-[    0.324945] 5f00: 00000006 80e01414 80d2d3b0 000000db 8173ad17 00000000 =
-00000000 00000000
-[    0.325096] 5f20: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.325247] 5f40: 00000000 00000000 00000000 00000000 00000000 ed1677db =
-8173ad00 00000020
-[    0.325403] 5f60: 00000006 80e3b83c 80e3b860 80e01750 00000006 00000006 =
-00000000 80e004f8
-[    0.325553] 5f80: 80f05cc0 80a50e18 00000000 00000000 00000000 00000000 =
-00000000 80a50e34
-[    0.325699] 5fa0: 00000000 80a50e18 00000000 8010016c 00000000 00000000 =
-00000000 00000000
-[    0.325848] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.325995] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000 =
-00000000 00000000
-[    0.326531]  io_serial_out from serial8250_do_set_mctrl+0x54/0x90
-[    0.326761]  serial8250_do_set_mctrl from serial_core_register_port+0x4c=
-4/0x694
-[    0.326917]  serial_core_register_port from serial8250_register_8250_por=
-t+0x310/0x4bc
-[    0.327063]  serial8250_register_8250_port from of_platform_serial_probe=
-+0x300/0x45c
-[    0.327242]  of_platform_serial_probe from platform_probe+0x60/0xb8
-[    0.327367]  platform_probe from really_probe+0xd4/0x3e4
-[    0.327471]  really_probe from __driver_probe_device+0x90/0x1ec
-[    0.327568]  __driver_probe_device from driver_probe_device+0x38/0xd0
-[    0.327674]  driver_probe_device from __driver_attach+0x100/0x1dc
-[    0.327793]  __driver_attach from bus_for_each_dev+0x84/0xd4
-[    0.327906]  bus_for_each_dev from bus_add_driver+0xec/0x1f0
-[    0.328015]  bus_add_driver from driver_register+0x84/0x11c
-[    0.328126]  driver_register from do_one_initcall+0x84/0x1c8
-[    0.328297]  do_one_initcall from kernel_init_freeable+0x19c/0x22c
-[    0.328419]  kernel_init_freeable from kernel_init+0x1c/0x138
-[    0.328534]  kernel_init from ret_from_fork+0x14/0x28
-[    0.328656] Exception stack(0xbf815fb0 to 0xbf815ff8)
-[    0.328755] 5fa0:                                     00000000 00000000 =
-00000000 00000000
-[    0.328901] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000 00000000
-[    0.329112] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[    0.329413] Code: e3a03000 ee073f9a e2433612 e6ef2072 (e5c32000)
-[    0.329824] ---[ end trace 0000000000000000 ]---
-[    0.336692] Kernel panic - not syncing: Fatal exception
-
-Andrew
+thanks,
+-- 
+js
+suse labs
 
