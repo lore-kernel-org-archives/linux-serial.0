@@ -1,114 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20CEE138496;
-	Thu, 22 Feb 2024 16:01:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DAAA1509AF;
+	Thu, 22 Feb 2024 16:43:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708617717; cv=none; b=CQOWRz6kGPqxRvg3NpvLIuBamKO60+7NMY5SPrSy9LZXwZIrkKwu9Z844ZCvRFUPEHchQ882JBfsha2TsGClSDLbHP7JL6B0qKmdEkE2m3IsnYzJfxTsjfhnpziN/dZ5A73vWjzQCC0e2ktO2hPiUldCWI5lK5YwwRheyei+GgI=
+	t=1708620201; cv=none; b=FWNN6/xM9fx7eiFo9w8BLLYBEJQdOK9mxDuQDWjIZlkF2IJu5GqdAR30aXq4Cs5L/itS/kAIfh9g5ue9GHtI719BFTnRLzRujdh7QHq4UiWvSBoafmMXwu8uICL7fVydd0D5Y8Z7QnaG7wr9kUH03TAXcgwQKf9zztA9sKCpJGw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708617717; c=relaxed/simple;
-	bh=SUuCGHBfr+e9wXEmhb8mV4moLDcmcxBNTGHyspNshv4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=G9eD+SUel+Fwy1lL7gdr+/5ko6V/80dp+YZH89GQPL8IvhqkHcdchKO0q+n5UMTyAweopdA0/TQd/vnHJZ9rHmDuaii6XmZ3HIevpyj2kz6vmOR09gkZZbd2UL1z0S/JY8hBrpDXIr9x1GqgbEZYyYaIOamnUv9m5pubgaqad8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bN9vPhX5; arc=none smtp.client-ip=192.198.163.13
+	s=arc-20240116; t=1708620201; c=relaxed/simple;
+	bh=6cgmf39JYiDBELE0+UskrRn1VRCO10hey7B1q9DlcUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ugdgTFs0yf7ePBTkZspsU9UlUtMNT5+tq0CtS89kI2By9RjsLs+ihqo8oS25a79Vjavh5omajhRMFmyC6+h7bKJhDJTtMS/8444cC6eup0ymfd7znTSicw/exOuQaHzoaLutgC54pW99toyb6ptftOGaXptrY8QvGZCtNwOK89U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eb9YQ+hx; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bN9vPhX5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eb9YQ+hx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708617716; x=1740153716;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=SUuCGHBfr+e9wXEmhb8mV4moLDcmcxBNTGHyspNshv4=;
-  b=bN9vPhX5RQymB4F+Z9mwZMpt3PpHyWTh3eFFHXIpR2vzqansK3HVahdU
-   KPosKJsl8bnPrzoSa4HbalO+pK0RpLBLIMV6mAoG1PnJpmgsHGVy10rN+
-   /sBZ4UT2bCwuxXg4dHDHFKwynyHkxAUs2mapH3JbmG6crVNz4AxV8zc9c
-   Uk63pRLbO6qv071RSP9j+ZuO6V5NAHz9Qu9geVikT+rQVXkDWNOj7qHJX
-   6msGTCIaerZA+ChJtqBz2G7wK+G8ioej3+Z2dhVcm9yel2u98iQ0LdUaY
-   UmmYO8wQONRq2y0R44m01kT0V7PQL8Vfc+8xdTbpQYNH08RaH0qRroaq+
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="5801777"
+  t=1708620199; x=1740156199;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6cgmf39JYiDBELE0+UskrRn1VRCO10hey7B1q9DlcUg=;
+  b=eb9YQ+hxdf6ULUtsTYZHluOpaVl/bLYGvyVAE5ZWSFZooN9oCYi+Mviw
+   ujP42Gdg8yNJw0nHRiR68PtbNYdC+md2sSy4NLk0F8Vhuz51+RJWhWkId
+   2FGA/R7RcSS440US8nKMpqpAKOXSaAp5b8sZaExReXwnf+Y28KVwsgRyo
+   7Od41Ih8ri7qAJkl5p4CfN9gQNLGYMxWWpy/Wf6JYZElQ8l7A4Nxy7ppG
+   KUwOhsWIw1/3zO3anWG0D3W8O45mv1lLAHmlW/Qd3xWq8Nm6AkyOvMXFK
+   PGDw7py7bvVf15MtYRExXZ4d183v4lR6Qu5oWtse2E37F9Nw6CjJbwWel
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="2731286"
 X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="5801777"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 08:01:43 -0800
+   d="scan'208";a="2731286"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 08:43:18 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="913553362"
 X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="36363798"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.94.249.55])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 08:01:39 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 22 Feb 2024 18:01:34 +0200 (EET)
-To: Rengarajan S <rengarajan.s@microchip.com>
-cc: kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com, 
-    gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    unglinuxdriver@microchip.com
-Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Refactor TX Burst code
- to use pre-existing APIs
-In-Reply-To: <20240222134944.1131952-1-rengarajan.s@microchip.com>
-Message-ID: <37490c91-a48f-e0a1-ec92-2307c08260e2@linux.intel.com>
-References: <20240222134944.1131952-1-rengarajan.s@microchip.com>
+   d="scan'208";a="913553362"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 08:43:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rdCA8-00000006g8k-1nva;
+	Thu, 22 Feb 2024 18:43:08 +0200
+Date: Thu, 22 Feb 2024 18:43:07 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andrew Jeffery <andrew@codeconstruct.com.au>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Andi Shyti <andi.shyti@linux.intel.com>
+Subject: Re: [PATCH v1 10/14] serial: 8250_of: Switch to use
+ uart_read_port_properties()
+Message-ID: <Zdd5m2xIPlGI0_Qv@smile.fi.intel.com>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+ <20240221183442.4124354-11-andriy.shevchenko@linux.intel.com>
+ <0a828f2c50de712940fb9a881702ac1678a35b7c.camel@codeconstruct.com.au>
+ <ZddKzHplwOX7naLv@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZddKzHplwOX7naLv@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, 22 Feb 2024, Rengarajan S wrote:
-
-> Updated the TX Burst implementation by changing the circular buffer
-> processing with the pre-existing APIs in kernel. Also updated conditional
-> statements and alignment issues for better readability.
+On Thu, Feb 22, 2024 at 03:23:24PM +0200, Andy Shevchenko wrote:
+> On Thu, Feb 22, 2024 at 11:07:05AM +1030, Andrew Jeffery wrote:
+> > On Wed, 2024-02-21 at 20:31 +0200, Andy Shevchenko wrote:
+> > > Since we have now a common helper to read port properties
+> > > use it instead of sparse home grown solution.
+> > 
+> > I did some brief testing of the series for the Aspeed machines under
+> > qemu, building them on top of v6.8-rc5:
+> > 
+> > export ARCH=arm
+> > export CROSS_COMPILE=arm-linux-gnueabihf-
+> > make aspeed_g5_defconfig
+> > make -j$(nproc)
+> > qemu-system-arm -M rainier-bmc -nographic -no-reboot -kernel arch/arm/boot/zImage -dtb arch/arm/boot/dts/aspeed/aspeed-bmc-ibm-rainier.dtb -initrd ...
+> > 
+> > I got an oops during boot, which bisected to this change:
 > 
-> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
-> ---
+> Thank you for prompt testing! I will look at it.
 
-> @@ -434,16 +435,7 @@ static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
->  
->  	xmit = &port->state->xmit;
->  
-> -	if (port->x_char) {
-> -		writeb(port->x_char, port->membase + UART_TX);
-> -		port->icount.tx++;
-> -		port->x_char = 0;
-> -		return;
-> -	}
-> -
-> -	if ((uart_tx_stopped(port)) || (uart_circ_empty(xmit))) {
-> -		port->ops->stop_tx(port);
-> -	} else {
-> +	if (!(port->x_char)) {
->  		data_empty_count = (pci1xxxx_read_burst_status(port) &
->  				    UART_BST_STAT_TX_COUNT_MASK) >> 8;
->  		do {
-> @@ -453,15 +445,22 @@ static void pci1xxxx_tx_burst(struct uart_port *port, u32 uart_status)
->  						    &data_empty_count,
->  						    &valid_byte_count);
->  
-> -			port->icount.tx++;
->  			if (uart_circ_empty(xmit))
->  				break;
->  		} while (data_empty_count && valid_byte_count);
-> +	} else {
-> +		writeb(port->x_char, port->membase + UART_TX);
-> +		port->icount.tx++;
-> +		port->x_char = 0;
-> +		return;
-
-Why you made this reorganization for x_char handling?? It seems 
-entirely wrong thing to do, x_char should have precendence over 
-sending normal chars.
-
-This patch would have been some much simpler to review if it would have 
-not attempted to n things in one go, please try to split into sensible 
-changes.
-
+I found the issue, will be fixed in next version.
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
+
 
