@@ -1,94 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A48C405D4
-	for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 11:50:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A29133983;
+	Thu, 22 Feb 2024 13:21:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708602660; cv=none; b=pX2FG5WHABy4dPrLE5vQRklaQJDKmN0apN9ObVNdG2EEfCDx46CVBfy80YKobT+/1W/6AZxnbjt8jAlenlqmuQL5aqwjDRDE7UowUpnIRs+z5jq8O+USgZVBKUlrT8UBpLI6P/tRdTwXbcyIdV/KM78Aejy3zIJjayQquKlEslo=
+	t=1708608117; cv=none; b=mcn8sDrs/1Da2iVwVqp7HwWpImpt55E9b8wKq9VjufuL/9/VI5An4F/NgyscHyNcWPwTFl3eElJKyJ7IXBvs+afwqEF2dUn1pwLXKLUU2c+GEUOzyHZXvz9BV07jD/tQZQbjREOUdas7AUcPLLtPYsBtcMoAFcg4Kr91pA33Ujs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708602660; c=relaxed/simple;
-	bh=qLlceQD+Oshb2W8mI2LctKIWi22jw8YBT0lMFC8oZQU=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=nH/GXUkwqIiG537dfVJ3fLQ0Ko8TV8Z2tx9fH6MQlz1yq7Tz0WOCGPTD9CDh/4LqAxSQGtUgyI90Uj6nffWiWOf3fxAMr5LdrrpBLAbfft7OwkE1rhZeksyVn9du6W/44XLtGmtDUfCH7SAG4+SL0syxl8geVFZaUt9YEXLP/uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j3GRDEol; arc=none smtp.client-ip=192.198.163.16
+	s=arc-20240116; t=1708608117; c=relaxed/simple;
+	bh=LUP/1Bq8oCXj+CsYBpJOUqAEbKSgM+4ilo2mGVOjFxQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EHzSsy3SsND5p7rPsvHhypkz0HsOhLvp2DKKutnqngCM5++Qo0rhJ3NHzUCXoBW1aDONj+kM3qopGYauduQz6M6St4bOzDXTUaPW+mKu57oRJlq6XaTefH/vCeduppe3aBTYJkzRDz5//wlp5F74B/PlFPrF6FSpaS2Qw2jWLkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VRmSJ3m1; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j3GRDEol"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VRmSJ3m1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708602659; x=1740138659;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=qLlceQD+Oshb2W8mI2LctKIWi22jw8YBT0lMFC8oZQU=;
-  b=j3GRDEolcK51MaB8xvdJd8y2RfQjY5gOXY/Hu1gtk27cPjUN4sjC/SGo
-   bVIOg7Nooy86dF2eU29TF1bHYvn0c7FB8nSVxb5pN+mqVaADSNT7O25EM
-   mt7oD3rkAefIxFctXZ60uLPzMrDSYEbc5C9bWCuwVRvS7EGyqeKRD0UVx
-   zUuvedOKl8ulmUC7G5xoe2/a2h2JTMvn3Bf7ZRpr1WvxM37v45KJm6SVe
-   Ggek/qYrdZPX62j6eSrCoaxDpX+ku7i0pwCD2s0nRVrOfF8hqSBvCfhXi
-   HuXfrYQOMMqe8tU1qeqmpkcJbi4246Cu5khk/mHwIgU5whZMfhkuZXbTu
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="3317879"
+  t=1708608115; x=1740144115;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LUP/1Bq8oCXj+CsYBpJOUqAEbKSgM+4ilo2mGVOjFxQ=;
+  b=VRmSJ3m1CPbF8brZL8s+uSfURQSgB4g3OBwSSCIAFElJPfz5SnuOA6gM
+   XDexW3TAnmdyeX4KcVccD4uTKcMJqp0p5LoXM+axxHC5+D7Wvz0OLXWzQ
+   rg/ad0g9ECRoONwuD/D3p1r3nczFOHmYIzJvs40G039Bxumi91dqVDFha
+   2Lo0mjOW0yn+/uHXnqd9XIzkdh2uOk+hGBCFjIVO8gJG/pRMC4yKoEJ/f
+   RUMXJo6CktXKzRO8NmhNp8hsaktk7i60kwDFa0rNovYo4/+KGNGxH6XJO
+   7BvKNt8bfH7onOb0+t+BKt8ZQEOgYGufujGQdVarW72F+yshUyDL8v/FG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="25291944"
 X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="3317879"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 03:50:58 -0800
+   d="scan'208";a="25291944"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:21:54 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="913523354"
 X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="5448410"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.94.249.55])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 03:50:56 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 22 Feb 2024 13:50:40 +0200 (EET)
-To: =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
- baudclk failed
-In-Reply-To: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
-Message-ID: <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com>
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
+   d="scan'208";a="913523354"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:21:49 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rd91F-00000006dVC-3OPd;
+	Thu, 22 Feb 2024 15:21:45 +0200
+Date: Thu, 22 Feb 2024 15:21:45 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
+ port type
+Message-ID: <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+ <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
+ <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-829560837-1708602640=:1961"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, Feb 22, 2024 at 07:58:32AM +0100, Jiri Slaby wrote:
+> On 21. 02. 24, 19:31, Andy Shevchenko wrote:
 
---8323328-829560837-1708602640=:1961
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+...
 
-On Thu, 22 Feb 2024, Uwe Kleine-K=C3=B6nig wrote:
+> >   	unsigned char		iotype;			/* io access style */
+> > +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
+> 
+> Perhaps making the var u8 and this U8_MAX then? It would make more sense to
+> me.
 
-> Instead of silently giving up, at least tell what the problem is.
->=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
-8250_dw.c
-> index 2d1f350a4bea..94aa3dddb71e 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device *pdev)
->  =09if (data->clk =3D=3D NULL)
->  =09=09data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
->  =09if (IS_ERR(data->clk))
-> -=09=09return PTR_ERR(data->clk);
-> +=09=09return dev_err_probe(dev, PTR_ERR(data->clk),
-> +=09=09=09=09     "failed to get baudclk\n");
+WFM, should it be a separate change? Btw, how can I justify it?
 
-Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+-- 
+With Best Regards,
+Andy Shevchenko
 
---=20
- i.
 
---8323328-829560837-1708602640=:1961--
