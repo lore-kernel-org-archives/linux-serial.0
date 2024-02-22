@@ -1,115 +1,106 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BA7012FF73
-	for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 13:36:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6EA50A98
+	for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 13:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708608994; cv=none; b=U5TDbq3ACAQeKOeBjYq18e5Q39HYdb0e9kd+kQqoA/Q6+1sd9zOU6QH0sajYcDwXdEOORvg4UZShlg8+XPkmURSZB3z64ttN6Su8h3bsh2uwZRR3UwaTzjRA5rof418GFp5wJvSEKFrbL3ZH696iXBPvSoX2HcFtfFHRJh1eyzY=
+	t=1708609743; cv=none; b=e2av1nHxHbwHOELkfIyKHoaVDTaHuKrg0bx/iCQQaTK0PaC0aKiUOnVJy+TWdw2xDQcT/Y5nMPFFYnNI8lYUALvv1IYLrS7yvwIUkVh7VmBmJ16OT7ydW3xNVumQQOZW/VkwI+RoHjTKd7SceFu8FDcHEhBiy6aAY+xJ9ijlVsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708608994; c=relaxed/simple;
-	bh=irxjJD3PiynDP0wfUrxD1irszzq83N2k/2Mbrj2bvRw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A2hfLfRFaZ1e0i2S0W1Q6k4ZNbz08mH6y9X+SQEw4ASZeEjv+fja0cp7YZaMiHL1RZuFbkDbNQUGA8q+amA2tIPa7R85H0fwT+bIbtFPjN6dEDZdP5RU3m8Gm31L56//NeGNw5ltlK2VQpgwTsXUEMiMoTWOZgjrqHvrvugmxzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rd9FP-0005EE-Sf; Thu, 22 Feb 2024 14:36:23 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rd9FP-002F3W-2Y; Thu, 22 Feb 2024 14:36:23 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rd9FO-009RoR-3C;
-	Thu, 22 Feb 2024 14:36:23 +0100
-Date: Thu, 22 Feb 2024 14:36:22 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+	s=arc-20240116; t=1708609743; c=relaxed/simple;
+	bh=dgZsJm7uByRNfxMMtDbX4WJFJ73AthIJb5A2+iWbWp4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=G7J7dBrfrOdq9hlH7qK292ln8nuhb/Df+uAOXJBQCRRnILiXbJyRR/Pla/z/iHMgFDULHpmVPT/CQjvNJmL1QNJTD5A2QlGxDKEhANb3hToFlLo0Wk1Mu/mF3zZ+pwMJ9sKBktltE3X83teMeXeq088hgASLCBW19CxVI3qjWSI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ql432YWo; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ql432YWo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708609742; x=1740145742;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=dgZsJm7uByRNfxMMtDbX4WJFJ73AthIJb5A2+iWbWp4=;
+  b=Ql432YWoIsS19FM2sxtlyLeO07RL9h2pg5uR7kf2E3CXZF327IVXM+16
+   zyHLT0En5VtUcEQ4mkD4UA69czAmopviv2hRsphBTcQgpK3GcZg+OxEhm
+   L5jQAwLMPwFHqEJ3H004qpqLlUXrpHkdYxLG2SP9hw6ZfrIPm3c7Q/9Nw
+   JX9fyj1VcSG8HVzb/yTEul9aaGZR2DaM7y3eTSZQQiVlYMrQnHmcRNKD8
+   y0bR2UrduFc9x+++uRWbEnnQqnfjhRtuRmUXyqCxQ1VuAS3v+z5K0eLP9
+   8GTspUw06k520uz+VLgxi2+wEwwAjaqteqeix5s0jJUXhkLrZR2wXD3u1
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="20267483"
+X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
+   d="scan'208";a="20267483"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:49:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
+   d="scan'208";a="36331154"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.94.249.55])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 05:49:00 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Thu, 22 Feb 2024 15:48:48 +0200 (EET)
+To: =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
  baudclk failed
-Message-ID: <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
- <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com>
+In-Reply-To: <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
+Message-ID: <3dca13d5-6ee4-e417-577f-79a5b16eb469@linux.intel.com>
+References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de> <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com> <rxbnydqttxdduseprrnugirdvndznbfpi3q2nxctxdelhoc6t6@7aj4jmzvorv4>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="pqsfx2obw3z65pwc"
-Content-Disposition: inline
-In-Reply-To: <786cecc3-4723-4b96-679e-1ea9736d3f6b@linux.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: multipart/mixed; boundary="8323328-1411230698-1708609728=:1961"
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
---pqsfx2obw3z65pwc
+--8323328-1411230698-1708609728=:1961
 Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Hello Ilpo,
-
-On Thu, Feb 22, 2024 at 01:50:40PM +0200, Ilpo J=E4rvinen wrote:
-> On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
->=20
-> > Instead of silently giving up, at least tell what the problem is.
+On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
+> On Thu, Feb 22, 2024 at 01:50:40PM +0200, Ilpo J=E4rvinen wrote:
+> > On Thu, 22 Feb 2024, Uwe Kleine-K=F6nig wrote:
 > >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> >  drivers/tty/serial/8250/8250_dw.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > Instead of silently giving up, at least tell what the problem is.
+> > >=20
+> > > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_dw.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8=
+250/8250_dw.c
+> > > index 2d1f350a4bea..94aa3dddb71e 100644
+> > > --- a/drivers/tty/serial/8250/8250_dw.c
+> > > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > > @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device *p=
+dev)
+> > >  =09if (data->clk =3D=3D NULL)
+> > >  =09=09data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
+> > >  =09if (IS_ERR(data->clk))
+> > > -=09=09return PTR_ERR(data->clk);
+> > > +=09=09return dev_err_probe(dev, PTR_ERR(data->clk),
+> > > +=09=09=09=09     "failed to get baudclk\n");
 > >=20
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-> > index 2d1f350a4bea..94aa3dddb71e 100644
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device *pde=
-v)
-> >  	if (data->clk =3D=3D NULL)
-> >  		data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
-> >  	if (IS_ERR(data->clk))
-> > -		return PTR_ERR(data->clk);
-> > +		return dev_err_probe(dev, PTR_ERR(data->clk),
-> > +				     "failed to get baudclk\n");
+> > Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 >=20
-> Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> Thanks. Is the expectation now with your tag that Greg (added to Cc:)
+> picks up this patch?=20
 
-Thanks. Is the expectation now with your tag that Greg (added to Cc:)
-picks up this patch?=20
-
-Best regards
-Uwe
+Yes, Greg handles applying serial patches. There's just too low volume of=
+=20
+patches for it be useful for me to setup some an intermediate tree for=20
+8250_dw/lpss only.
 
 --=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+ i.
 
---pqsfx2obw3z65pwc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmXXTcoACgkQj4D7WH0S
-/k5Aywf+Lqow6tzHRgitfvEXVhTH6mXofzh9JtYRp+VSEZ0mf85SsOR4RpkANj7V
-VlZ42VQoKBpudJ1u+1AGqSUUW07T6x6iM+VDAP/rMu8t0vEWD1zPd/Et3yBNDFeH
-EIHIrle47bFwFU9Gc8ysPOgzn7lDZVVoZWieWPACZgXNc1ny9HxnpsKsulMozxpH
-CRYDx2mRfvlbbwAitTNi4YsixHdO0LmAwtvKMP1EfGZ+ueScz9RUHFAYG+HWZfzm
-zFbeq8e54j6Qh36GljBL5/NmFi/1BgQSxTKbYFfu6jdtDnIHS0XDL3I4sMY3P+V5
-xjaN4I0SZh0RUqv/mNwTdikldyoJaw==
-=SMa7
------END PGP SIGNATURE-----
-
---pqsfx2obw3z65pwc--
+--8323328-1411230698-1708609728=:1961--
