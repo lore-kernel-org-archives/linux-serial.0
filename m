@@ -1,108 +1,145 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FDE712F5B5;
-	Fri, 23 Feb 2024 17:26:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E4AA1DDC3;
+	Fri, 23 Feb 2024 21:22:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708709174; cv=none; b=KE/kqRDwqZMTEv7I69wu2of8BGsSS60Pylc/qd9l1rHw58g2a6J8PobObiZfaeAKIfdKmT3FGVv4weiAnVKQDx1v40Fy1lX1+79SKK3f5906ncrYc69Zs2hSlEtVQLwjyA0wz8YZccKnxOz29e+2w9qrjyt9M5Y/7KXSphhU3i8=
+	t=1708723374; cv=none; b=CtFUqnZ5x/i8fHA6KnA/6iN13Mt9efV3m0IouhYvjVAWlUfLC4nGuiKRTuHg8LYRId0B1L7qwpqkGFbOyeh7h2Zw5eX3ValNMOxCbImmNC9x7TgtfkyLmbNWSZbutNANF4MlBeI0IcTKJ2VJBkyezBz91LoICcAPN8Xo5sKpK70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708709174; c=relaxed/simple;
-	bh=BZJTjqUHwuQlXlsd7x2WfXnXThGZTz45hMZUxsxzH20=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hH5+ZjcTB5YAdxD+XhhsFKR/TD+2BARsuGJM7Bqr4HBjeGedg8qSvM+5GrsrxtUBYnbo4rAMzYb64Cqke7KFJUBa08P092I1iSm+UnMcqDJbU17x2rn5YxQziDnMAUaJVrkO+sZzY+UsDT6k0n9MYEowX5/aU09RsEZc7OPhwjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=2C9F9l/s; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1708723374; c=relaxed/simple;
+	bh=D9xlkAwetO2YYsp4AzG3YrTgZ6UnVD1pIb+/R0M9yxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yj+McLpI1k0DtHEsR237Xpr/OUhNUUlZnJUl2L424EMs2nzsTcaWPSOgjjKeB5Uv85ryJlhxm8KSmloyhdP+KL4MQLqhJXqAMFZt2UtcFUqwqDmAhv6DTvn3NhIqjl6AsmLF1NR5cBM2Et47sYPJxxA7iJVaXKTW4m9Lnziwt88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O2quoiZY; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="2C9F9l/s"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1708709172; x=1740245172;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BZJTjqUHwuQlXlsd7x2WfXnXThGZTz45hMZUxsxzH20=;
-  b=2C9F9l/sKx+IpXU2K7JoS5ggXsuZHhLsLYsugjmNCx85baycCgX8XKiQ
-   vUKhIQLVHzceQGG1fbCBa2BgOsSFcFfK0qUL6rfyIA2i+TPP3+OI0Lg9C
-   nemNzF312XF5Uo3Elh5z5cQG5Gd2/joER1Nx95Hjin+AJqsPAlJXzdwVi
-   21iuW4H9toZihm3QWOTD6Sx8YGzIsr39vdoDy6GDOHpD/fJMDmZPe3rd6
-   jgREmh05+NjVSdZ+D2kj35xSndZy/IlFWa0dwmtvaOQfMjcPtVNDSP5cY
-   hMX5KcZQGxAMnQcpzALSYmiYVgTTHKk2zKAAHJkWwD+OEPy3LD/1sqO9a
-   w==;
-X-CSE-ConnectionGUID: Ely1r2TiR4Wv3Obixr7frw==
-X-CSE-MsgGUID: M4vXw7loRkeKQ5VN/WOdcQ==
-X-IronPort-AV: E=Sophos;i="6.06,180,1705388400"; 
-   d="scan'208";a="16735843"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Feb 2024 10:26:10 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 23 Feb 2024 10:26:08 -0700
-Received: from che-lt-i67070.microchip.com (10.10.85.11) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Fri, 23 Feb 2024 10:26:02 -0700
-From: Varshini Rajendran <varshini.rajendran@microchip.com>
-To: <radu_nicolae.pirea@upb.ro>, <richard.genoud@gmail.com>,
-	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <robh+dt@kernel.org>,
-	<krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
-	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-	<claudiu.beznea@tuxon.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-CC: <varshini.rajendran@microchip.com>
-Subject: [PATCH v4 12/39] dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7.
-Date: Fri, 23 Feb 2024 22:55:59 +0530
-Message-ID: <20240223172559.672142-1-varshini.rajendran@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240223171342.669133-1-varshini.rajendran@microchip.com>
-References: <20240223171342.669133-1-varshini.rajendran@microchip.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O2quoiZY"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-33d0a7f2424so606389f8f.0;
+        Fri, 23 Feb 2024 13:22:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708723371; x=1709328171; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FighQhaXjcHvzu/cP/qcaVJd6ZUW+O6jZf8uJbTD2qg=;
+        b=O2quoiZYslg1y0C5mMQHU1y3J2iUBMxdsgxy0W2Hk76Brzj5DrhGjUqIanNSS6K/Os
+         3SmKU9aUWk22o7bh14DURBbd0SQzPqTFZC3DkLYxdZPys27+wfJPYPdjLNSIK/DISLIL
+         cSDqokRsVPvnlVHvRcufjcnwCgJwPjMqOBPlCzFLyBAcsvbHG0fl9TYhsGq/XbFkLm6S
+         Yzysz8uOSxX8cezfzFnyBIngvyWzOUkxu1gUirvdEDs4HGx26he4pFqeoLlMq7W1ZN6T
+         zNeS2IKnG/0p8/QlxHxFS0+gWy8Xy0Fm6rpwgGoYSo/s1LFHgeadi0vl7sXqZcvT6SYt
+         B1jQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708723371; x=1709328171;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FighQhaXjcHvzu/cP/qcaVJd6ZUW+O6jZf8uJbTD2qg=;
+        b=ACwWfzaT9zpB0NOu/0buJ39VHSZryCl2S0cHs3AiDA9r0uGck2OSpf1LO5KTQL5sAR
+         pXar4xh5lhplwelTSI071mr0EZFGLVfFABRXh2drqqZqlESwqamC+gjKi8lH/52y24Q0
+         KcRzFVR6qpicFtYQFN2d0JqYOwxwv0ivu5r/K2HbJCENkJuEWQcTEoAO04zMkFsXLst2
+         8YksjaP+DXoNWT1X8/xdlEFJgC1TFJnAzOZxjE8phJ+7OfuboFLstoTpbjq8xRDAYcr/
+         cZQUy+zjjee2Cw1M0K1FLXrdBTPJmQesaNyAJnnKAZKeDrXYGVJJVVrHS1DPgLLT+Tx2
+         m08A==
+X-Forwarded-Encrypted: i=1; AJvYcCX73zVzPwNydoSczZcgnjVXMHhPJK6iyyqjFxx0NaLwjXq0t+2ZMAnxgKxwUtf10xHKiZaWOEJbXSxVuUxV7HWu+mxvu/vPjEGLy4lofxnkB2uDVVCNpNldk1z5hmsIjz3XZbnT8qUShxo=
+X-Gm-Message-State: AOJu0Yxp8lnELeRQiYwQ9YBHBJLwA7ozF6NB49le7lyFGQIQfW5A5ved
+	fzi46wOA4cEGAmL/n9QW8qgUD3RZHuGn1FPrhdj14y79SNpXYUom
+X-Google-Smtp-Source: AGHT+IFDBAaVDq0LkSeFnlg7HBYqY64qEoifclU9wuWbudpVFSVqQQA6UsymPdnn6EifuGspZgNgMA==
+X-Received: by 2002:adf:f98a:0:b0:33d:adce:568a with SMTP id f10-20020adff98a000000b0033dadce568amr606581wrr.33.1708723370468;
+        Fri, 23 Feb 2024 13:22:50 -0800 (PST)
+Received: from m2 (89-139-223-180.bb.netvision.net.il. [89.139.223.180])
+        by smtp.gmail.com with ESMTPSA id y10-20020a5d470a000000b0033d640c8942sm4062605wrq.10.2024.02.23.13.22.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Feb 2024 13:22:49 -0800 (PST)
+Date: Fri, 23 Feb 2024 23:22:47 +0200
+From: Michael Zaidman <michael.zaidman@gmail.com>
+To: chrysh@christina-quast.de, daniel.beer@igorinstitute.com,
+	jikos@kernel.org, michael.zaidman@gmail.com
+Cc: linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
+	johan@kernel.org, gregkh@linuxfoundation.org, equinox@diac24.net
+Subject: Re: [PATCH v1 19/19] hid-ft260: uart: improve write performance
+Message-ID: <ZdkMpwA1ZPWRUvWM@m2>
+References: <20240210215147.77629-1-michael.zaidman@gmail.com>
+ <20240210215147.77629-20-michael.zaidman@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240210215147.77629-20-michael.zaidman@gmail.com>
 
-Add sam9x7 compatible to DT bindings documentation.
+On Sat, Feb 10, 2024 at 11:51:47PM +0200, Michael Zaidman wrote:
+> Tx performance with the current buffer size of 256 bytes is lower when
+> the data length exceeds the xmit buf size.
+> 
+> [134331.147978] ft260_uart_write: count: 288, len: 256
+> [134331.157945] ft260_uart_write: count: 32, len: 32
+> [134331.159977] ft260_uart_write: count: 288, len: 256
+> [134331.169990] ft260_uart_write: count: 32, len: 32
+> 
+> 1. Increase the xmit buffer size to page size as used in the serial core
+> and other tty drivers.
+> 
+> 2. Remove the xmit buffer fulness against the watermark checking and the
+> tty_wakeup calling in the ft260_uart_transmit_chars routine. This code is
+> taken from other drivers, but other drivers may call the routine from the
+> interrupt context. In our case, this condition is always True since xmit
+> buffer filling and emptying are serialized and done synchronously.
+> 
+> Tested with picocom ASCII file transfer by 288-byte chunks at 921600
+> bauds rate with above 20% performance improvement.
+> 
+> Before:
+> 2821.7 Kbytes transferred at 47367 CPS... Done.
+> 
+> After:
+> 2821.7 Kbytes transferred at 57788 CPS... Done.
+> 
 
-Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
----
-Changes in v4:
-- Fixed the wrong addition of compatible
-- Added further compatibles that are possible correct (as per DT)
----
- .../devicetree/bindings/serial/atmel,at91-usart.yaml | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Besides the performance improvement, it fixes the bug of outputting
+characters to the local terminal when local echo is disabled and
+printing every character twice with local echo enabled.
 
-diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-index 65cb2e5c5eee..30af537e8e81 100644
---- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-+++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-@@ -23,11 +23,17 @@ properties:
-           - const: atmel,at91sam9260-dbgu
-           - const: atmel,at91sam9260-usart
-       - items:
--          - const: microchip,sam9x60-usart
-+          - enum:
-+              - microchip,sam9x60-usart
-+              - microchip,sam9x7-usart
-           - const: atmel,at91sam9260-usart
-       - items:
--          - const: microchip,sam9x60-dbgu
--          - const: microchip,sam9x60-usart
-+          - enum:
-+              - microchip,sam9x60-dbgu
-+              - microchip,sam9x7-dbgu
-+          - enum:
-+              - microchip,sam9x60-usart
-+              - microchip,sam9x7-usart
-           - const: atmel,at91sam9260-dbgu
-           - const: atmel,at91sam9260-usart
- 
--- 
-2.25.1
-
+> Signed-off-by: Michael Zaidman <michael.zaidman@gmail.com>
+> ---
+>  drivers/hid/hid-ft260.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/hid/hid-ft260.c b/drivers/hid/hid-ft260.c
+> index 6b172bfa4f98..1188b8e09938 100644
+> --- a/drivers/hid/hid-ft260.c
+> +++ b/drivers/hid/hid-ft260.c
+> @@ -308,8 +308,7 @@ enum {
+>  #define FT260_UART_EN_PW_SAVE_BAUD	(4800)
+>  
+>  #define UART_COUNT_MAX (4) /* Number of supported UARTs */
+> -#define XMIT_FIFO_SIZE (256)
+> -#define TTY_WAKEUP_WATERMARK (XMIT_FIFO_SIZE / 2)
+> +#define XMIT_FIFO_SIZE (PAGE_SIZE)
+>  
+>  static const struct hid_device_id ft260_devices[] = {
+>  	{ HID_USB_DEVICE(USB_VENDOR_ID_FUTURE_TECHNOLOGY,
+> @@ -1211,7 +1210,7 @@ static int ft260_uart_transmit_chars(struct ft260_device *port)
+>  
+>  		len = kfifo_out_spinlocked(xmit, rep->data, len, &port->xmit_fifo_lock);
+>  
+> -		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + sizeof(*rep));
+> +		ret = ft260_hid_output_report(hdev, (u8 *)rep, len + 2);
+>  		if (ret < 0)
+>  			goto tty_out;
+>  
+> @@ -1219,10 +1218,6 @@ static int ft260_uart_transmit_chars(struct ft260_device *port)
+>  		port->icount.tx += len;
+>  	} while (data_len > 0);
+>  
+> -	len = kfifo_len(xmit);
+> -	if ((XMIT_FIFO_SIZE - len) > TTY_WAKEUP_WATERMARK)
+> -		tty_wakeup(tty);
+> -
+>  	ret = 0;
+>  
+>  tty_out:
