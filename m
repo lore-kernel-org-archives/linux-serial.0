@@ -1,45 +1,45 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA7012B6C;
-	Fri, 23 Feb 2024 06:08:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D45B0125DD
+	for <linux-serial@vger.kernel.org>; Fri, 23 Feb 2024 06:42:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708668541; cv=none; b=QqYG5kBav9lxngwkKgST+qah1jpX+iB8k0E9/LUiIiMuSjC1psxNamQ9RwqP48dDhFe15wMfVZ28jZY63W8yfOxlG4qfvYVRqE/um7oH5OrciTNkXQ6YfzXUXTFiHqQ5Cp7acCSnrqrBRVNv/Rd0B2rEwlkYeUcdkqBtOxVCsS0=
+	t=1708670532; cv=none; b=EwJnKYNa4GMBscf8HGrBLhRJvi6/FqS6r6WetdQmIuReKoY1Qsr/mkkWSVA+k+0KuCm0eBoy/HBriiFSIwaLWxu2Grl0EmHtLtXXVuRnPIAb1QY4IwsRmzwjpARiII0JhkRfO7AiIlMxLfL3KQOBmiwTuD37N51jrZmA01FCHHE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708668541; c=relaxed/simple;
-	bh=LE9cCs5zo8ObahidSfS5icMmo+bY1MKluVpvXGuxyb4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=YfF59NH5eSTB/LmMtqOsQXtFVp9g5238n6aVb08Sez6kc+EdznFZNPmK7JLxAshM0bwpgFn3MnQKBb3wcqhmL559vZp/O7/TnFZjQRuMPxJF7uheRVj+xdB4oWO5G6fP7regbc8U9J/Uh5o3azLtlAId0G+XF8DwZEMDkjaMxn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1708670532; c=relaxed/simple;
+	bh=WfcVna4D9/Fitjx5Zx2KhnKgcEj+rDkoCRY2w+9h/EY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OOzpkU0A/txAfMTexXoeJqfQMWxffmnEyphrhZ8/LOu9/MmP/Ft2MYAaJPuqj0dfblLtYvnE650V+EKe4lBUCfnlF1OV1Xgxj4KZ6xvfZKjQh3HJQZ+ZskP+1VvcXmSOt4zPvOU9Nq7HHyo0qhXjx/vrqNhOngZncsEjZiPkDGQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4128f5ec9b7so3479115e9.3;
-        Thu, 22 Feb 2024 22:08:49 -0800 (PST)
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2d22fa5c822so7304031fa.2
+        for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 22:42:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708668526; x=1709273326;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1708670529; x=1709275329;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9rB/xBYOoLz2xFv+ZmS6qsvslM8+03lHX0mUb5mst/8=;
-        b=Kmx0KsO+vPgjmswFrDQTShSVGAEgHnNOgCN/00fN48kU5yMSCOS8+X89qx6TRy9/pX
-         J60bXTq1LjevVH+czAmWObvKg50RiYU/jhFnkPVPEQE4ahqJ/q7L4Fh+snF1jX7M7bQ+
-         DdO4xvS5CttAw/M+zSVpPL2oTksxPalKZip9PxXK/9LeZs2iiUkj47ImhNM5vRpCcs31
-         NGCpLqn96oeUV9EjJBiMM5M4HRS2BEBEDa3cwr4VonKWtOcQ/Xu5Zt0i7dh95Qdt0muF
-         eE2AumIOBEamFtvKSzuBaRfDkFCp2jlsiZiAVTOHembMQ2uX5h+bl5xcWxQ46uhMWZk9
-         3Lmg==
-X-Forwarded-Encrypted: i=1; AJvYcCWpzI2uZ0rsJ+hc86FaACv34wFG76XegmoEJYtVTBnbktaKJAUdgldhoh8VQ7/6J/Z911U5zthJ9JpAYigkwiGT9cl28W9S9hHfMiyilX57xPNxBPcr8obpX29+6QCY7bJkD1q4bpp3pjlZ
-X-Gm-Message-State: AOJu0YxLuoSQ/54rG3ftP6UR2et05wOLbTUw3VKGaiT8Ur+z16bzJLm5
-	4kJPJtzcoT+2MC87clw2LjLviuLKeY4r15G6ZGc6Zlw6ylDZaB2A
-X-Google-Smtp-Source: AGHT+IEJqqAyMSTndj13S6s/HHhcn7IJAh5o/FuZq7UzAKaq3aOaBE2nr7X0ndZEfl0GA9EmAJ54kA==
-X-Received: by 2002:a05:600c:470f:b0:412:415a:43ac with SMTP id v15-20020a05600c470f00b00412415a43acmr528947wmo.15.1708668525900;
-        Thu, 22 Feb 2024 22:08:45 -0800 (PST)
+        bh=87rNbzQXWBuxzBiyrHT0FGAnir2v/SVomTZ+ou/qdfQ=;
+        b=N0WpNcGK+QEVufOTe0zlTm2vHMRn69eTsdVGEYagUlt35eh8W/aEVa2JGIvCDAIGax
+         2JwVMlWqMuGFgj9P0dWybcQpjJLquSYFWgiC9b+FpRoGXVaxEOrXkoRjpWdwUY2to3DQ
+         NKhQ6oeJyeVfu5bULwSN5Xq/U5KX3XGwm4iStdsSA8oNb7cdRC2D/Carf/ksxvtXxZBP
+         MRGaqredgATuhUgL/2Qa+GfVwNGum0A9N97/rMn+6KaxZswJFjXIaey/eCBWcuTKE2+M
+         4mZO++yzZLVKKzFJaXQXv9O/sNe/uGqEPLxDksKRFQGii5plphcJs+RfJd6gQEsJZllG
+         SDww==
+X-Forwarded-Encrypted: i=1; AJvYcCXJ1LyOisSkRRYSKVz2j1EJ91/GZWiHTBZA3EpMj1f2WCDG15IE7ZQDCvt/S/Jw7rOAjuOmwip10TPIOuGLr7ku8I2R1WcCDQ20GNN7
+X-Gm-Message-State: AOJu0YxeBd3rcpA2DsDlAz/XF51T3xM9o3qmbu/bgq7mdLo6V07uKnxM
+	1ExHDOyB+Bmnp6vZrR7bGlUeZYwVGt/C3AlpAKo7+gJIPVVVPpUW
+X-Google-Smtp-Source: AGHT+IE86VQtqZilxBOVVy8dU63e31TQmrYQxzkEV6tLxM3EDk/Cr6WQSTslkC68yUSoBc2FWX1x2Q==
+X-Received: by 2002:a2e:9051:0:b0:2d2:7392:5057 with SMTP id n17-20020a2e9051000000b002d273925057mr196673ljg.30.1708670528726;
+        Thu, 22 Feb 2024 22:42:08 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id p2-20020a5d4582000000b0033da1c4c29csm1452241wrq.91.2024.02.22.22.08.44
+        by smtp.gmail.com with ESMTPSA id bi13-20020a05600c3d8d00b004128808db91sm1155744wmb.23.2024.02.22.22.42.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Feb 2024 22:08:45 -0800 (PST)
-Message-ID: <5bf4ba6d-d8e3-4ba6-a889-cfae8c3ddabe@kernel.org>
-Date: Fri, 23 Feb 2024 07:08:43 +0100
+        Thu, 22 Feb 2024 22:42:07 -0800 (PST)
+Message-ID: <751d67fe-59e5-4159-b674-924de4dfb959@kernel.org>
+Date: Fri, 23 Feb 2024 07:42:06 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,14 +47,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Refactor TX Burst code
- to use pre-existing APIs
+Subject: Re: serial:support: Using 8250 driver With MOXA CP-132EL Device
 Content-Language: en-US
-To: Rengarajan S <rengarajan.s@microchip.com>,
- kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
- gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, unglinuxdriver@microchip.com
-References: <20240222134944.1131952-1-rengarajan.s@microchip.com>
+To: andy.shevchenko@gmail.com
+Cc: Federico Vaga <federico.vaga@cern.ch>, linux-serial@vger.kernel.org,
+ gregkh@linuxfoundation.org, Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+References: <zmry3u7l7dzh2iqqonxyombv4v2nzpr3fccoe677laxc2jn6nm@mo4afecdt45o>
+ <v7jpnrrgmjqgmtwrahwmd6vouv2opuhwxaeo6ouimojql7lv3j@zqhwaky2lqki>
+ <ZdfKxqwuJZodRDbz@surfacebook.localdomain>
+ <ZdfL68clwFIYI4tG@surfacebook.localdomain>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -98,19 +99,88 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240222134944.1131952-1-rengarajan.s@microchip.com>
+In-Reply-To: <ZdfL68clwFIYI4tG@surfacebook.localdomain>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 22. 02. 24, 14:49, Rengarajan S wrote:
-> Updated the TX Burst implementation by changing the circular buffer
-> processing with the pre-existing APIs in kernel. Also updated conditional
-> statements and alignment issues for better readability.
+Ccing Crescent.
 
-Hi,
+On 22. 02. 24, 23:34, andy.shevchenko@gmail.com wrote:
+> Fri, Feb 23, 2024 at 12:29:26AM +0200, andy.shevchenko@gmail.com kirjoitti:
+>> Thu, Feb 22, 2024 at 10:21:38AM +0100, Federico Vaga kirjoitti:
+>>> On Mon, Jan 22, 2024 at 11:52:15AM +0100, Federico Vaga wrote:
+> 
+> ...
+> 
+>>>> I'm having problems in trying to use the MOXA CP-132EL card with the 8250 driver
+>>>> on the stable kernel 5.10.192 (but I also tried the 6.1.70). It seems not to
+>>>> work. As a note, to do my tests, I have a loop cable connecting the two on-board
+>>>> serial ports.
+>>>>
+>>>> I see this device should be supported by the 8250 code, in particular this
+>>>> appears in 8250_pci.c
+>>>>
+>>>> ```
+>>>> $ git grep 132EL drivers/tty/
+>>>> drivers/tty/serial/8250/8250_pci.c:#define PCI_DEVICE_ID_MOXA_CP132EL   0x1322
+>>>> drivers/tty/serial/8250/8250_pci.c:     { PCI_VDEVICE(MOXA, PCI_DEVICE_ID_MOXA_CP132EL),    pbn_moxa_2 },
+>>>> ```
+>>>>
+>>>> At boot time the device is correctly discovered, and it matches the driver.
+>>>> Indeed two new tty interfaces appear under `/dev`
+>>>>
+>>>> ```
+>>>> $ dmesg | grep 0d:00.0
+>>>> [    0.196175] pci 0000:0d:00.0: [1393:1322] type 00 class 0x070002
+>>>> [    0.196350] pci 0000:0d:00.0: reg 0x10: [io  0x4000-0x403f]
+>>>> [    0.196448] pci 0000:0d:00.0: reg 0x14: [mem 0xb0100000-0xb0100fff]
+>>>> [    0.196534] pci 0000:0d:00.0: reg 0x18: [io  0x4040-0x404f]
+>>>> [    0.197474] pci 0000:0d:00.0: supports D1 D2
+>>>> [    0.197475] pci 0000:0d:00.0: PME# supported from D3hot
+>>>> [    0.371301] 0000:0d:00.0: ttyS2 at MMIO 0xb0100000 (irq = 16, base_baud = 921600) is a ST16650
+>>>> [    0.371832] 0000:0d:00.0: ttyS3 at MMIO 0xb0100200 (irq = 16, base_baud = 921600) is a ST16650
+>>>>
+>>>> ```
+>>>>
+>>>> The communication seems not to work. However, the communication works when using
+>>>> the driver provided by MOXA (``mxupcie.ko``).
+>>
+>> Shouldn't we use mxser in the kernel for MOXA?
+>>
+>>          { PCI_DEVICE_DATA(MOXA, CP132,          2) },
+> 
+> Ah, letters matter, we have only these there
+> 
+> #define PCI_DEVICE_ID_MOXA_CP132        0x1320
+> #define PCI_DEVICE_ID_MOXA_CP132U       0x1321
+> 
+> But maybe it should also support 0x1322? Dunno, I believe Jiri knows better.
 
-so why are you keeping the nested double loop?
+No, it's a different kind of devices. There are moxa and mxser drivers 
+for specific devices and then 8250-akin moxa devices handled by 8250 
+(like this one).
 
+The support seems to be incomplete though. 132EL seems to be a 
+422/485-only device, but 8250 doesn't care.
+
+Does it magically start working if you set 422/485 manually via 
+TIOCSRS485? But I doubt SER_RS485_ENABLED is set anywhere...
+
+Crescent how are these 422/485 devices supposed to work?
+
+Oh wait, you may need:
+commit 43f012df3c1e979966524f79b5371fde6545488a
+Author: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Date:   Thu Dec 14 14:02:34 2023 +0800
+
+     tty: serial: 8250: Set RS422 interface by default to fix Moxa 
+RS422/RS485 PCIe boards
+
+
+
+which landed only to 6.7.4. Care to try that out?
+
+thanks,
 -- 
 js
 suse labs
