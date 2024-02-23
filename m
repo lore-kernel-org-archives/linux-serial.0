@@ -1,22 +1,22 @@
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE4A75C61F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BE5455C8E3;
 	Fri, 23 Feb 2024 09:19:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.175.24.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708679969; cv=none; b=Gd3XEreIpvCUgMy62kxyTdbkrXLyyzmJAWuKjPa43op9w7EH7Orf9/dXFJfOhkz7xRd8i8S+XBa2QH8crG+YiBTihrMeWAMbf7ONBBdnv94EBswyi4jaIxmjONF0us5K4vIH2ZCnUujEOlR71rlHHx9G69h8io5vSsjG73eSOpM=
+	t=1708679969; cv=none; b=Jhb+yuGufTpRYZ4jS76Mhcyu0LECz+4/XzfFNKZoU/6AeGdM2ozPHaicXXUUWIlFhxxRz9BOscMwvJ/n7dORcoWCsoRSmRuLbvgvq3+Rba5VSuQyaga+d+KqYchnmIZYU5uSb6ECTsurtrMO55nVSCiefqgQGe02C0V5h3kWIes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1708679969; c=relaxed/simple;
-	bh=6CMFof3aEOjiVtZ6J4iQukC3w3fqUlorNiOBhG5SfRM=;
+	bh=mqL0eakhk7VpDDSz5MotaLvd3eO0HeCgpKFAvIq9lmg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TFnvUCXRlwTDURFCjOl+oMKx1Q0/W7y6I0Xa4KneWgUmV+YLftv59A59ObTVZBPRzjM8zbjch14Atrz1vpyq3rC4DodFE6NSiNuvVOIlSqxgB5cvIAjFc00u/kVpqaTfBygtTr+8sMJoQurzy2yV+RvtDWTpPDHy9W1HsPw67fg=
+	 Content-Type:Content-Disposition:In-Reply-To; b=bC9o58o+mVrsXlcyuZgfuw+m1N7zITuBPTbszcLN1vkj95gL7tZ2Lmh+ZvFALaCbtf9G9U36Fc1gPCCli10r4mssF0vQsFlAYsjhqrsnnJFKCN9vnkhQ/w221N/ILBJoy+Zi2qabLGq1V0H1G+LO8uTqNDcePUHA9n4aO/w5OIA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alpha.franken.de; spf=pass smtp.mailfrom=alpha.franken.de; arc=none smtp.client-ip=193.175.24.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alpha.franken.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alpha.franken.de
 Received: from uucp by elvis.franken.de with local-rmail (Exim 3.36 #1)
-	id 1rdRi6-0003J9-00; Fri, 23 Feb 2024 10:19:14 +0100
+	id 1rdRi6-0003JF-00; Fri, 23 Feb 2024 10:19:14 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-	id 089C8C0267; Fri, 23 Feb 2024 10:06:33 +0100 (CET)
-Date: Fri, 23 Feb 2024 10:06:33 +0100
+	id BD759C069B; Fri, 23 Feb 2024 10:18:38 +0100 (CET)
+Date: Fri, 23 Feb 2024 10:18:38 +0100
 From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To: Serge Semin <fancer.lancer@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -27,64 +27,58 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	linux-mips@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] mips: cm: Add CM GCR and L2-sync base address
- getters declarations
-Message-ID: <ZdhgGRknaFmxKvfI@alpha.franken.de>
+Subject: Re: [PATCH 4/4] tty: mips_ejtag_fdc: Fix passing incompatible
+ pointer type warning
+Message-ID: <Zdhi7otmi4OQWxZ1@alpha.franken.de>
 References: <20240215171740.14550-1-fancer.lancer@gmail.com>
- <20240215171740.14550-3-fancer.lancer@gmail.com>
- <ZdTgSZRTDkakekkd@alpha.franken.de>
- <difioxc7b7e2ic2p4om36l6vu4vkud6qa6t3aeikxzkhlqhgqb@zsx3dmjcofw4>
+ <20240215171740.14550-5-fancer.lancer@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <difioxc7b7e2ic2p4om36l6vu4vkud6qa6t3aeikxzkhlqhgqb@zsx3dmjcofw4>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240215171740.14550-5-fancer.lancer@gmail.com>
 
-On Wed, Feb 21, 2024 at 09:39:58PM +0300, Serge Semin wrote:
-> On Tue, Feb 20, 2024 at 06:24:25PM +0100, Thomas Bogendoerfer wrote:
-> > On Thu, Feb 15, 2024 at 08:17:27PM +0300, Serge Semin wrote:
-> > > Based on the design pattern utilized in the CM GCR and L2-sync base
-> > > address getters implementation the platform-specific code is capable to
-> > > re-define the getters and re-use the weakly defined initial versions. But
-> > > since the re-definition is supposed to be done in another source file the
-> > > interface methods have been globally defined which in its turn causes the
-> > > "no previous prototype" warning printed should the re-definition is
-> > > finally introduced. Since without the global declarations the pattern can
-> > > be considered as incomplete and causing the warning printed, fix it by
-> > > providing the respective methods prototype declarations in
-> > > "arch/mips/include/asm/mips-cm.h".
-> > > 
-> > > Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> > > 
-> > > ---
-> > > 
-> > > Note as I mentioned in the previous patch, since the weak implementation
-> > > of the getters isn't utilized other than as a default implementation of
-> > > the original methods, we can convert the denoted pattern to a simple
-> > > __weak attributed methods. Let me know if that would be more preferable.
-> > 
+On Thu, Feb 15, 2024 at 08:17:29PM +0300, Serge Semin wrote:
+> mips_ejtag_fdc_encode() method expects having a first argument passed of
+> the "u8 **" type, meanwhile the driver passes the "const char **" type.
+> That causes the next build-warning:
 > 
-> > how about simply remove __mips_cm_l2sync_phys_base() and do everything
-> > via mips_cm_phys_base(). And at the moment without anyone overriding
-> > mips_cm_phys_base I tend to keep static without __weak. If someone
-> > needs, we can change it. Does this make sense ?
+> drivers/tty/mips_ejtag_fdc.c: In function ‘mips_ejtag_fdc_console_write’:
+> drivers/tty/mips_ejtag_fdc.c:343:32: error: passing argument 1 of ‘mips_ejtag_fdc_encode’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+>    word = mips_ejtag_fdc_encode(&buf_ptr, &buf_len, 1);
+>                                 ^
+> drivers/tty/mips_ejtag_fdc.c:216:24: note: expected ‘const u8 ** {aka const unsigned char **}’ but argument is of type ‘const char **’
+>  static struct fdc_word mips_ejtag_fdc_encode(const u8 **ptrs,
+>                         ^~~~~~~~~~~~~~~~~~~~~
 > 
-> To be honest my arch code (not submitted yet) do override the
-> mips_cm_l2sync_phys_base() method. The memory just behind the CM2
+> Fix it by altering the type of the pointer which is passed to the
+> mips_ejtag_fdc_encode() method.
+> 
+> Fixes: ce7cbd9a6c81 ("tty: mips_ejtag_fdc: use u8 for character pointers")
+> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+> ---
+>  drivers/tty/mips_ejtag_fdc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
+> index aac80b69a069..afbf7738c7c4 100644
+> --- a/drivers/tty/mips_ejtag_fdc.c
+> +++ b/drivers/tty/mips_ejtag_fdc.c
+> @@ -309,7 +309,7 @@ static void mips_ejtag_fdc_console_write(struct console *c, const char *s,
+>  	unsigned int i, buf_len, cpu;
+>  	bool done_cr = false;
+>  	char buf[4];
+> -	const char *buf_ptr = buf;
+> +	const u8 *buf_ptr = buf;
+>  	/* Number of bytes of input data encoded up to each byte in buf */
+>  	u8 inc[4];
 
-that's fine, I just wanted to know a reason for having it provided as
-weak symbol.
-
-> What about instead of that I'll just convert both mips_cm_phys_base()
-> and mips_cm_l2sync_phys_base() to being defined with the underscored
-> methods body and assign the __weak attribute to them?
-
-works for me ;-) I'll pick patch 3/4 of this series, so no need to
-resend them.
+applied to mips-next.
 
 Thomas.
 
