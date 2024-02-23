@@ -1,135 +1,149 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57CE2125B0
-	for <linux-serial@vger.kernel.org>; Fri, 23 Feb 2024 04:52:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D974F12E54;
+	Fri, 23 Feb 2024 05:42:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708663954; cv=none; b=ao3faqVT1WNEFxzv4E1p0s0waKEd034jHC2tyrj64S0HAFNQU6xShdNWp/3maS/BNMt5kuu2sd88/VJZVB9YPGDGO9ZgTUya9PgpFljHnLJsc53TaPgnHQuRJIW8uQAYvrpXfs1pLFdiyMf1PMHhjdXeXg0kfdXlZTT8xlhoDGI=
+	t=1708666941; cv=none; b=JztDm0pfo/laP0qbVI7Gx32EGhCNoF8c5StjzuRI9rYk22W+IWZiXS3ZPJh1imIN4youkyjBW2jv6B7digfg7Zg7B7PX0GzfdDPiSSNzydt85EiBNxsmj2m5HYfkr7hmKo8swD0R31MLCeg3MCetpaZIPxHcYZfL34ytyaQ25uA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708663954; c=relaxed/simple;
-	bh=XkHvRIn9l8T02N+1IdFfX69n71P34OHEy6ZzjjC0NSI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Disposition; b=gXP6MjUHhKUIkfZYEbrNsdASysf1Ws8PRukWs7ayMZhnUeI/ZNNGxX7YMKrl302bP+bQvP2KRH3UyesqC+KV0bEV1rcyyd/xmijP3pStZNVtR+PO3haXF8yVe+L28jygp9CAG7DX6TuoYW8A+Bpq9Nv7n2ePqaRcpKEc3ew7Cso=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IJqm+O3N; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IJqm+O3N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1708663951;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=G2a79SnguKy7LS5/McK8Bl18qsnHZ6N+ea/bVlJ73jc=;
-	b=IJqm+O3NTp/xygN4ssLrnwTwvgcXaUl0om/4sLcAPFdk3zieWRdui8rH7msGKUmniUx9Zm
-	PaGmDMzYIKsr4e3U7QeIGG5QA2GCLXawdrvsgpyGSc4Mr0rM7KzdjTEGm9oXvCGLFAHrw9
-	OsxSdJaDSR7wAYE7LMFS6j0CRNawWwA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-595-2rAtadi-MYSOKJI2rqrw9A-1; Thu, 22 Feb 2024 23:52:30 -0500
-X-MC-Unique: 2rAtadi-MYSOKJI2rqrw9A-1
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4297db4eba1so4446541cf.2
-        for <linux-serial@vger.kernel.org>; Thu, 22 Feb 2024 20:52:29 -0800 (PST)
+	s=arc-20240116; t=1708666941; c=relaxed/simple;
+	bh=b/iRBuxfuwlp3wxx3egxrn06Tj+jjVs9XIQQVj34xwY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WaZenATkYRYpIeZrOvDdh8kBH/xsz+3RHvGlCQeFWpRJP4RO82R/p5rl4PYKvVwEBrwEAT0ZstnemiZJLJeeLan8rsgVhAel1hOKnH88lPdIPSSMgymwim/mzxkg5FdHLn7aNypmqBJEMMGpK+OGQl28s5ATTK9mKiRvTHQNh90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2d2509c66daso6733551fa.3;
+        Thu, 22 Feb 2024 21:42:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708663949; x=1709268749;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=G2a79SnguKy7LS5/McK8Bl18qsnHZ6N+ea/bVlJ73jc=;
-        b=vcQLOjF0jyyJZfF9T5yrevpsY7Sa27v9/kHnQ2p4VEpZQo4eCrudWImdd62UN3ZFi9
-         6zoBOjqLmO1js885FrfKCeO0qdI/7qdofk/nUSA5kHfCwxVvxJKdw84MEGCxLrybm+P+
-         IMsnMKfLtpITjuiwXvxb6f1k+PY4Xxu2yHynTSZyddviWmDOYTUdtiG98yjjifijDHv2
-         BwVXvqlvOIfYxlrtlCuOL/z7QkgsNRp2eTRCmCdYGOSC/m+puTcpVSjsHo+AyI7x0o6M
-         5EoKVLxUCv9RngqTAUePRYm5fLlojamh6OzW6k/VgPdkBdYSpE5DatM4nTpjwTZSy67q
-         EUsA==
-X-Forwarded-Encrypted: i=1; AJvYcCUPKEVLC3NJi1jSQLO0+vgNLi3RThAJRNlvXU6SLmXh7n/wedxCvY9KIr0mUyea7RJIGFl8CLb0JFyr301dkUrUiuLKaGzWldeDnVg8
-X-Gm-Message-State: AOJu0YwFqz1tloy6qXivQoZwOhAh+JpQoMdehCIqzLkp+HWGnqOYZlIa
-	7+GHoijO7FH3Am+noUARqOlYs7wV3KOPmKrvQvOnOtyNtQZp6mbgSj3Ztz51bLpSz5hh90u8KTS
-	3nw7mF79eZjsEEjOm64mLVOIlXvurfKGR7gEqRRBJ9DIE7GMwAJurgXdbQ5FCiA==
-X-Received: by 2002:a05:622a:180d:b0:42d:c884:a8fd with SMTP id t13-20020a05622a180d00b0042dc884a8fdmr1352569qtc.21.1708663949068;
-        Thu, 22 Feb 2024 20:52:29 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFAYNmpNAPMHq9a3bKc8/5KZU5bBJoUez07kPRCSYkfORJyMPrsrissYELud8isvWNRNSwRuw==
-X-Received: by 2002:a05:622a:180d:b0:42d:c884:a8fd with SMTP id t13-20020a05622a180d00b0042dc884a8fdmr1352559qtc.21.1708663948756;
-        Thu, 22 Feb 2024 20:52:28 -0800 (PST)
-Received: from LeoBras.redhat.com ([2804:431:c7ec:a28e:99bd:8c92:cf80:d1bd])
-        by smtp.gmail.com with ESMTPSA id qn5-20020a056214570500b0068fbdafa771sm1585415qvb.5.2024.02.22.20.52.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Feb 2024 20:52:28 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Leonardo Bras <leobras@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-Date: Fri, 23 Feb 2024 01:52:22 -0300
-Message-ID: <ZdgkhkOCGtfQbf8i@LeoBras>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <87bk89hhpm.ffs@tglx>
-References: <20240216075948.131372-2-leobras@redhat.com> <20240216075948.131372-5-leobras@redhat.com> <87zfvwai62.ffs@tglx> <87v86kaf84.ffs@tglx> <ZdWMja3BfCZsbF_q@LeoBras> <87edd5hljz.ffs@tglx> <87bk89hhpm.ffs@tglx>
+        d=1e100.net; s=20230601; t=1708666938; x=1709271738;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=u3fMKCP86/cH49U6myXWg26shsQVwMm09R/fDfj0GGo=;
+        b=bZM2Jwor1tojMCNE+ZCzdo64/+S2OMru1vxSHtLWxKzmkwsWmKrZ0UwgYL7q1rkudJ
+         nSmmFcbX0VjzO3e7lghYG2gbj86SlauMNo7gyOdsiwS2qh7W2Z5XbaCQj5srtEfPn4kk
+         2dOQ0CVdm+qRIqoyxAnkJj2WYlwhwJP/kr3PZ/hTod9g8NMUgv3dCkqI8GthERlcELXZ
+         CQCRKUxyWlycReEGKSnExgcD2jEN1Lr8JxyKCFwy+6wQX8tH4S4/5jjv+7ryEzdhf+H0
+         CFELRFZyqzRlRyohA81CZOoc8W8wlHSjnfYfjPLsBbnJj4jPV8xq4Urtl9xjdd/AP0+1
+         NxCA==
+X-Forwarded-Encrypted: i=1; AJvYcCVDGuWavo2XUFnJSe+X+LRMZe3fi1fA95uTuIBcVCMcpLv4+OBtE9dtJixwiW7Vv/LKQ3VHPQum5/tkQVkXkG0KkpKiPADZ2My9fuK2BTPkVDUa1jYd3cgXEY2JubQ6NRjUy7rcEVdB5dousuoyzr/aCt8I/WG10edkpudMDsfdHsUSAEjLUX8ypFO71MkD8kKJDUro6B1yhNIw5wQxQ9M7lWVK
+X-Gm-Message-State: AOJu0YxIuuFIk0QmflkE8jiPCX57AEaZKmJyGtTtriaQs4xLQkZPMqEt
+	JGNoHq6upPIlFRX9Ev5HCllHDgLrcJziTwNaTfNWVsOvzqSvSlJU
+X-Google-Smtp-Source: AGHT+IETlrn8TJ5SYjloPENIXUnr1fPoKNiIlFBBZSBBWFFiGUGWWURtCbo86j5heYLxSS0fn4I6pQ==
+X-Received: by 2002:a05:651c:1a12:b0:2d2:734f:f387 with SMTP id by18-20020a05651c1a1200b002d2734ff387mr165929ljb.0.1708666937801;
+        Thu, 22 Feb 2024 21:42:17 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
+        by smtp.gmail.com with ESMTPSA id e3-20020adfe383000000b0033cf637eea2sm1393902wrm.29.2024.02.22.21.42.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Feb 2024 21:42:17 -0800 (PST)
+Message-ID: <fa46f220-a1c4-43f4-91e1-5929ff335be0@kernel.org>
+Date: Fri, 23 Feb 2024 06:42:15 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
+ port type
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+ linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+ Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@codeconstruct.com.au>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Al Cooper <alcooperx@gmail.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Paul Cercueil <paul@crapouillou.net>, Vladimir Zapolskiy <vz@mleia.com>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+ <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
+ <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
+ <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 21, 2024 at 06:04:21PM +0100, Thomas Gleixner wrote:
-> On Wed, Feb 21 2024 at 16:41, Thomas Gleixner wrote:
-> > On Wed, Feb 21 2024 at 02:39, Leonardo Bras wrote:
-> > But as I pointed out above the detection logic is flawed due to the
-> > unconditional accumulation. Can you give the uncompiled below a test
-> > ride with your scenario?
+On 22. 02. 24, 14:21, Andy Shevchenko wrote:
+> On Thu, Feb 22, 2024 at 07:58:32AM +0100, Jiri Slaby wrote:
+>> On 21. 02. 24, 19:31, Andy Shevchenko wrote:
 > 
-> Bah. Ignore this. I misread the code completely. No idea where my brain
-> was.
+> ...
 > 
-> This thing triggers only when there are 100K interrupts and 99.9k of
-> them unhandled. The 100k total resets the unhandled counts.
+>>>    	unsigned char		iotype;			/* io access style */
+>>> +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
+>>
+>> Perhaps making the var u8 and this U8_MAX then? It would make more sense to
+>> me.
 > 
-> Though one thing which strikes me odd is that this actually triggers at
-> all because it needs 99.9k unhandled out of 100k total. That means on
-> average every thread handler invocation handles 1000 hardware interrupts
-> in one go. Is that even realistic?
+> WFM, should it be a separate change?
 
-Yeap, it triggers pretty easily if you bring a vm with a serial console, 
-and try to use it to work with something very verbose.
+Likely.
 
-It was detected by someone trying to unpack a kernel source tarball.
+> Btw, how can I justify it?
 
-Maybe this is an issue that only becomes reproducible for this and maybe a 
-couple extra drivers, so the solution will only need to be implemented in 
-those drivers when (if) this bug reproduces.
+Hmm, thinking about it, why is it not an enum?
 
-This being said, thank you for helping me improve my understandig of this 
-piece of code. I will put some effort in trying to find a solution that 
-works by changing generic-code only, but would like to understand if the 
-current proposal is valid if I am unable to find any.
+But it could be also an u8 because you want it be exactly 8 bits as you 
+want to be sure values up to 255 fit.
 
-Thanks!
-Leo
-
-
-> 
-> Thanks,
-> 
->         tglx
-> 
-> 
+thanks,
+-- 
+js
+suse labs
 
