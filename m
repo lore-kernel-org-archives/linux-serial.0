@@ -1,46 +1,45 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D974F12E54;
-	Fri, 23 Feb 2024 05:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA7012B6C;
+	Fri, 23 Feb 2024 06:08:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708666941; cv=none; b=JztDm0pfo/laP0qbVI7Gx32EGhCNoF8c5StjzuRI9rYk22W+IWZiXS3ZPJh1imIN4youkyjBW2jv6B7digfg7Zg7B7PX0GzfdDPiSSNzydt85EiBNxsmj2m5HYfkr7hmKo8swD0R31MLCeg3MCetpaZIPxHcYZfL34ytyaQ25uA=
+	t=1708668541; cv=none; b=QqYG5kBav9lxngwkKgST+qah1jpX+iB8k0E9/LUiIiMuSjC1psxNamQ9RwqP48dDhFe15wMfVZ28jZY63W8yfOxlG4qfvYVRqE/um7oH5OrciTNkXQ6YfzXUXTFiHqQ5Cp7acCSnrqrBRVNv/Rd0B2rEwlkYeUcdkqBtOxVCsS0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708666941; c=relaxed/simple;
-	bh=b/iRBuxfuwlp3wxx3egxrn06Tj+jjVs9XIQQVj34xwY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WaZenATkYRYpIeZrOvDdh8kBH/xsz+3RHvGlCQeFWpRJP4RO82R/p5rl4PYKvVwEBrwEAT0ZstnemiZJLJeeLan8rsgVhAel1hOKnH88lPdIPSSMgymwim/mzxkg5FdHLn7aNypmqBJEMMGpK+OGQl28s5ATTK9mKiRvTHQNh90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.176
+	s=arc-20240116; t=1708668541; c=relaxed/simple;
+	bh=LE9cCs5zo8ObahidSfS5icMmo+bY1MKluVpvXGuxyb4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=YfF59NH5eSTB/LmMtqOsQXtFVp9g5238n6aVb08Sez6kc+EdznFZNPmK7JLxAshM0bwpgFn3MnQKBb3wcqhmL559vZp/O7/TnFZjQRuMPxJF7uheRVj+xdB4oWO5G6fP7regbc8U9J/Uh5o3azLtlAId0G+XF8DwZEMDkjaMxn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2d2509c66daso6733551fa.3;
-        Thu, 22 Feb 2024 21:42:19 -0800 (PST)
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4128f5ec9b7so3479115e9.3;
+        Thu, 22 Feb 2024 22:08:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708666938; x=1709271738;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u3fMKCP86/cH49U6myXWg26shsQVwMm09R/fDfj0GGo=;
-        b=bZM2Jwor1tojMCNE+ZCzdo64/+S2OMru1vxSHtLWxKzmkwsWmKrZ0UwgYL7q1rkudJ
-         nSmmFcbX0VjzO3e7lghYG2gbj86SlauMNo7gyOdsiwS2qh7W2Z5XbaCQj5srtEfPn4kk
-         2dOQ0CVdm+qRIqoyxAnkJj2WYlwhwJP/kr3PZ/hTod9g8NMUgv3dCkqI8GthERlcELXZ
-         CQCRKUxyWlycReEGKSnExgcD2jEN1Lr8JxyKCFwy+6wQX8tH4S4/5jjv+7ryEzdhf+H0
-         CFELRFZyqzRlRyohA81CZOoc8W8wlHSjnfYfjPLsBbnJj4jPV8xq4Urtl9xjdd/AP0+1
-         NxCA==
-X-Forwarded-Encrypted: i=1; AJvYcCVDGuWavo2XUFnJSe+X+LRMZe3fi1fA95uTuIBcVCMcpLv4+OBtE9dtJixwiW7Vv/LKQ3VHPQum5/tkQVkXkG0KkpKiPADZ2My9fuK2BTPkVDUa1jYd3cgXEY2JubQ6NRjUy7rcEVdB5dousuoyzr/aCt8I/WG10edkpudMDsfdHsUSAEjLUX8ypFO71MkD8kKJDUro6B1yhNIw5wQxQ9M7lWVK
-X-Gm-Message-State: AOJu0YxIuuFIk0QmflkE8jiPCX57AEaZKmJyGtTtriaQs4xLQkZPMqEt
-	JGNoHq6upPIlFRX9Ev5HCllHDgLrcJziTwNaTfNWVsOvzqSvSlJU
-X-Google-Smtp-Source: AGHT+IETlrn8TJ5SYjloPENIXUnr1fPoKNiIlFBBZSBBWFFiGUGWWURtCbo86j5heYLxSS0fn4I6pQ==
-X-Received: by 2002:a05:651c:1a12:b0:2d2:734f:f387 with SMTP id by18-20020a05651c1a1200b002d2734ff387mr165929ljb.0.1708666937801;
-        Thu, 22 Feb 2024 21:42:17 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708668526; x=1709273326;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=9rB/xBYOoLz2xFv+ZmS6qsvslM8+03lHX0mUb5mst/8=;
+        b=Kmx0KsO+vPgjmswFrDQTShSVGAEgHnNOgCN/00fN48kU5yMSCOS8+X89qx6TRy9/pX
+         J60bXTq1LjevVH+czAmWObvKg50RiYU/jhFnkPVPEQE4ahqJ/q7L4Fh+snF1jX7M7bQ+
+         DdO4xvS5CttAw/M+zSVpPL2oTksxPalKZip9PxXK/9LeZs2iiUkj47ImhNM5vRpCcs31
+         NGCpLqn96oeUV9EjJBiMM5M4HRS2BEBEDa3cwr4VonKWtOcQ/Xu5Zt0i7dh95Qdt0muF
+         eE2AumIOBEamFtvKSzuBaRfDkFCp2jlsiZiAVTOHembMQ2uX5h+bl5xcWxQ46uhMWZk9
+         3Lmg==
+X-Forwarded-Encrypted: i=1; AJvYcCWpzI2uZ0rsJ+hc86FaACv34wFG76XegmoEJYtVTBnbktaKJAUdgldhoh8VQ7/6J/Z911U5zthJ9JpAYigkwiGT9cl28W9S9hHfMiyilX57xPNxBPcr8obpX29+6QCY7bJkD1q4bpp3pjlZ
+X-Gm-Message-State: AOJu0YxLuoSQ/54rG3ftP6UR2et05wOLbTUw3VKGaiT8Ur+z16bzJLm5
+	4kJPJtzcoT+2MC87clw2LjLviuLKeY4r15G6ZGc6Zlw6ylDZaB2A
+X-Google-Smtp-Source: AGHT+IEJqqAyMSTndj13S6s/HHhcn7IJAh5o/FuZq7UzAKaq3aOaBE2nr7X0ndZEfl0GA9EmAJ54kA==
+X-Received: by 2002:a05:600c:470f:b0:412:415a:43ac with SMTP id v15-20020a05600c470f00b00412415a43acmr528947wmo.15.1708668525900;
+        Thu, 22 Feb 2024 22:08:45 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id e3-20020adfe383000000b0033cf637eea2sm1393902wrm.29.2024.02.22.21.42.16
+        by smtp.gmail.com with ESMTPSA id p2-20020a5d4582000000b0033da1c4c29csm1452241wrq.91.2024.02.22.22.08.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Feb 2024 21:42:17 -0800 (PST)
-Message-ID: <fa46f220-a1c4-43f4-91e1-5929ff335be0@kernel.org>
-Date: Fri, 23 Feb 2024 06:42:15 +0100
+        Thu, 22 Feb 2024 22:08:45 -0800 (PST)
+Message-ID: <5bf4ba6d-d8e3-4ba6-a889-cfae8c3ddabe@kernel.org>
+Date: Fri, 23 Feb 2024 07:08:43 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,30 +47,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
- port type
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
- linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
- Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@codeconstruct.com.au>,
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Al Cooper <alcooperx@gmail.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Paul Cercueil <paul@crapouillou.net>, Vladimir Zapolskiy <vz@mleia.com>,
- Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
- Masami Hiramatsu <mhiramat@kernel.org>
-References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
- <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
- <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
- <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Refactor TX Burst code
+ to use pre-existing APIs
 Content-Language: en-US
+To: Rengarajan S <rengarajan.s@microchip.com>,
+ kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
+ gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, unglinuxdriver@microchip.com
+References: <20240222134944.1131952-1-rengarajan.s@microchip.com>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -115,34 +98,19 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+In-Reply-To: <20240222134944.1131952-1-rengarajan.s@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 22. 02. 24, 14:21, Andy Shevchenko wrote:
-> On Thu, Feb 22, 2024 at 07:58:32AM +0100, Jiri Slaby wrote:
->> On 21. 02. 24, 19:31, Andy Shevchenko wrote:
-> 
-> ...
-> 
->>>    	unsigned char		iotype;			/* io access style */
->>> +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
->>
->> Perhaps making the var u8 and this U8_MAX then? It would make more sense to
->> me.
-> 
-> WFM, should it be a separate change?
+On 22. 02. 24, 14:49, Rengarajan S wrote:
+> Updated the TX Burst implementation by changing the circular buffer
+> processing with the pre-existing APIs in kernel. Also updated conditional
+> statements and alignment issues for better readability.
 
-Likely.
+Hi,
 
-> Btw, how can I justify it?
+so why are you keeping the nested double loop?
 
-Hmm, thinking about it, why is it not an enum?
-
-But it could be also an u8 because you want it be exactly 8 bits as you 
-want to be sure values up to 255 fit.
-
-thanks,
 -- 
 js
 suse labs
