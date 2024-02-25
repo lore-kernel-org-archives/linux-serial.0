@@ -1,137 +1,174 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1596C4D107;
-	Sat, 24 Feb 2024 20:02:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F54DD528;
+	Sun, 25 Feb 2024 10:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708804953; cv=none; b=Fcm80jeLhCNw4Ntg+P8byEf/9XxTvut8SlFPPB7zstdS/omH9K9x38GwE7m31kATuHU3i06iKrl88eDrfN2pOR52G/xs948b8yI0a242XMjmDyk8zM4exC2jIhPe1B2ibTDd8V5feNrs/2Obf1w1zNuRuLNeuQyKz69iFVW8m88=
+	t=1708855430; cv=none; b=m8cjKJ0DnzrcwNozNt0kIizCm9wXmU8n2BhzmZv+elC2CxB7vHRF7uXVtv1w+XQdl7uoRDpKRq6MbL2TgdFd6HQ8lF/eMDDosHC76oqRL2FqeQ6EyC8nTIHv+8Pg3uDlKSF3D8E/NGVZluJJ2up2i+0KfJ2ceanLHWzEcrr/l6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708804953; c=relaxed/simple;
-	bh=tpvjkEKYJLAWc8r/kFlJlpJPF2ji+9TFnmJFk47EZlk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K3+O4VicqeRWTlyqgRXx0BKFu6Cfl14jOWuTuWFBOAnEp1/817tscmWZm37lXewsE6DVDy+6FFP8p6LyWG/5d6nlT9qsY969iy5MHWRXCae0iu4pOluNcP0k06uzDGPbeB0bC8nWRPABffzM5ULgue0wNJUDyWvsUhFYe6lkgo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M4EJfrEu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708855430; c=relaxed/simple;
+	bh=FwyYlcicA94hCgi0KTUdT4QunAnlUBM+uSL7POHZY/g=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kSKrZ/ypC8wnd6tpmbyYHtXt8tV7gZp+DunoDYSFAE2rX9jE4SgnIlfxw+7DwCsEnoPQ2hyJKIQMuwD0bmWh7r8lQ7abZxEvrgGaM6wYU56275eLgg2SlYOeBkn54BQfH/TOyxhEsHxWiD+kXczvg9lvHHiSno8jgsF2KZYbQH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G/hocDDZ; arc=none smtp.client-ip=209.85.208.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M4EJfrEu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476DFC433F1;
-	Sat, 24 Feb 2024 20:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708804952;
-	bh=tpvjkEKYJLAWc8r/kFlJlpJPF2ji+9TFnmJFk47EZlk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=M4EJfrEukmXbwH6vbe4k1OZ9uAkIti2PK99vA7IODObK94M/+dWtj7ewfRKkVCzBe
-	 C07PLANm15udqZOyj0fM2A+5/64AqnNp3y7OEZ3m3qx2LWwmuSym2P3mmbLbMCEoKW
-	 ZkeTkEvJD+E0tqJ7Gei3Ggez2ugzAV+DBBYd++cVQBzLxvTkNqUIGzbRdGOQ571d/l
-	 K2ZCQTYsYFh6ibAlxc+Gnr56XzXoeytPVFeMjE8PDfI0+iAV7a/LICTWNMVF0McfNw
-	 LpwUA2ZTyv3N3EV5tpPt4xQ8FJJcAUG9iSwZPjoDy2T18+4IVkB1Mr/mckTL/hvbzv
-	 vljH/6Y+VYOZA==
-Date: Sat, 24 Feb 2024 20:02:26 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Varshini Rajendran <varshini.rajendran@microchip.com>
-Cc: radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org, nicolas.ferre@microchip.com,
-	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
-	linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 12/39] dt-bindings: serial: atmel,at91-usart: add
- compatible for sam9x7.
-Message-ID: <20240224-kimono-stress-898eae80abd3@spud>
-References: <20240223171342.669133-1-varshini.rajendran@microchip.com>
- <20240223172559.672142-1-varshini.rajendran@microchip.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G/hocDDZ"
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2d21a68dd3bso29350551fa.1;
+        Sun, 25 Feb 2024 02:03:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1708855427; x=1709460227; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wyw3xA0HGd/6i6d7WHoA8ZSWdz/coub8I+ng5GM1Nc0=;
+        b=G/hocDDZEK6FqVGz8QjNwwQeT7di3QuuWq04ofgZ+dpErvHCoG/XWeoQH5OZ1kY6dy
+         G9Ei31s0zWUXeO56bgP4DIjF7+jZvzz4bBiYRzpM5/h9x9buI8oFy2pzFImFF5e6Ua1G
+         VpyQpLTe27GQ2Ijl9eL+/8i5iDkWkbsCQiWh1Ux92F8S6OPIN6RRkEb6PxD9fApRWo6e
+         MMzWsHZxNznJl6RsXm+jUJWbrnm+tWlc5E+Twpepi3LtKr0FE+xrQE6c5+WJ/FLw+qrQ
+         cl+I2MGi7xS/tPCH5FkP8fxVn3qVL7xWwZHVRJWprkSa9qb1hwpCneqPXexj5RLdVBDu
+         htJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708855427; x=1709460227;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Wyw3xA0HGd/6i6d7WHoA8ZSWdz/coub8I+ng5GM1Nc0=;
+        b=CySXu3PIcCp86eIw7lhQ13ZirNPqYzqgAPYcrZxWdMCT98IkfSG7HmrhWEif4cRTyI
+         Tu+AEwl59UoNAwdwY3xdVHa7kvlJ3ro7/4VYAD5BR6GC7yGV1pUH3L9twWuQWHMUy3T4
+         y7uIPuhGVT1YAzXkhB5C7ExbSpfuc5VCESePcjQpJRT0HdXB9t04r3fZlc5/PAKo15X7
+         b7JEu49gXwyoCvr6UbtMXxibCNL6teMuycP5aMyNz9pUdhONOvXFroF17sPPbQpIOrgh
+         PeZbcS5ZyuCIMMtH2Bp6pSi6EwCVr2g+68wDgOSQnIhPlTBtBbCy3RLwyX9pm5jeEiK5
+         IQvA==
+X-Forwarded-Encrypted: i=1; AJvYcCXaaq1oQTu/KIh7xFlstUZghJe3rSekdsAwQKiKB5Dgq/Z6rTBKJtqlsQXwa5Ov8WXzrxv8/FBkuRbH464jPnsXo3SwY9MFFczs0f8RAGBZp+pHGOOTwzySJ8rkJLyC/c4ueICAqsxxTQ==
+X-Gm-Message-State: AOJu0Yys4pvVA3lwJAjScmsxeLNsexnY9kU10/2DMPl9vMHASZ2/8eLK
+	wh6sL6XH5ePjTVzPuwSJTL9BRlgRHTc4kps0+mbEvP6JjmfqIwVZQ6k+66Ng
+X-Google-Smtp-Source: AGHT+IEb1awhqOX9jx96QWtjLdmcla70/r/iR4O58vc7lQP9nu1y4FGSySxuh4pudnWUVWSKJYhlig==
+X-Received: by 2002:a2e:92c9:0:b0:2d2:6568:eb6c with SMTP id k9-20020a2e92c9000000b002d26568eb6cmr2179436ljh.30.1708855426478;
+        Sun, 25 Feb 2024 02:03:46 -0800 (PST)
+Received: from localhost ([2001:861:3385:e20:6384:4cf:52c5:3194])
+        by smtp.gmail.com with ESMTPSA id k2-20020a5d6d42000000b0033b79d385f6sm4604075wri.47.2024.02.25.02.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Feb 2024 02:03:46 -0800 (PST)
+From: Raphael Gallais-Pou <rgallaispou@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: convert st,asc to DT schema
+Date: Sun, 25 Feb 2024 11:03:36 +0100
+Message-ID: <20240225100336.34122-1-rgallaispou@gmail.com>
+X-Mailer: git-send-email 2.43.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8c64jTTjW0j3INUS"
-Content-Disposition: inline
-In-Reply-To: <20240223172559.672142-1-varshini.rajendran@microchip.com>
+Content-Transfer-Encoding: 8bit
 
+Converts st,asc binding to DT schema format and update example.
 
---8c64jTTjW0j3INUS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
+---
+ .../devicetree/bindings/serial/st,asc.yaml    | 57 +++++++++++++++++++
+ .../devicetree/bindings/serial/st-asc.txt     | 18 ------
+ 2 files changed, 57 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/st,asc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/st-asc.txt
 
-On Fri, Feb 23, 2024 at 10:55:59PM +0530, Varshini Rajendran wrote:
-> Add sam9x7 compatible to DT bindings documentation.
->=20
-> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> ---
-> Changes in v4:
-> - Fixed the wrong addition of compatible
-> - Added further compatibles that are possible correct (as per DT)
-> ---
->  .../devicetree/bindings/serial/atmel,at91-usart.yaml | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.ya=
-ml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-> index 65cb2e5c5eee..30af537e8e81 100644
-> --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
-> @@ -23,11 +23,17 @@ properties:
->            - const: atmel,at91sam9260-dbgu
->            - const: atmel,at91sam9260-usart
->        - items:
-> -          - const: microchip,sam9x60-usart
-> +          - enum:
-> +              - microchip,sam9x60-usart
-> +              - microchip,sam9x7-usart
->            - const: atmel,at91sam9260-usart
->        - items:
-> -          - const: microchip,sam9x60-dbgu
-> -          - const: microchip,sam9x60-usart
-> +          - enum:
-> +              - microchip,sam9x60-dbgu
-> +              - microchip,sam9x7-dbgu
+diff --git a/Documentation/devicetree/bindings/serial/st,asc.yaml b/Documentation/devicetree/bindings/serial/st,asc.yaml
+new file mode 100644
+index 000000000000..b26e1d247346
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/st,asc.yaml
+@@ -0,0 +1,57 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/st,asc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: STMicroelectronics STi SoCs Serial Port
++
++maintainers:
++  - Patrice Chotard <patrice.chotard@foss.st.com>
++
++allOf:
++  - $ref: serial.yaml#
++
++properties:
++  compatible:
++    const: st,asc
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  uart-has-rtscts: true
++
++  st,hw-flow-ctrl:
++    description: When set, enable hardware flow control.
++    type: boolean
++
++  st,force-m1:
++    description: When set, force asc to be in Mode-1. This is recommended for
++      high bit rates above 19.2K.
++    type: boolean
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/stih407-clks.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    serial@9830000 {
++        compatible = "st,asc";
++        reg = <0x9830000 0x2c>;
++        interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
++    };
++...
+diff --git a/Documentation/devicetree/bindings/serial/st-asc.txt b/Documentation/devicetree/bindings/serial/st-asc.txt
+deleted file mode 100644
+index a1b9b6f3490a..000000000000
+--- a/Documentation/devicetree/bindings/serial/st-asc.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-*st-asc(Serial Port)
+-
+-Required properties:
+-- compatible : Should be "st,asc".
+-- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
+-			resources with names. look in
+-			Documentation/devicetree/bindings/resource-names.txt
+-
+-Optional properties:
+-- st,hw-flow-ctrl	bool flag to enable hardware flow control.
+-- st,force-m1		bool flat to force asc to be in Mode-1 recommended
+-			for high bit rates (above 19.2K)
+-Example:
+-serial@fe440000{
+-    compatible    = "st,asc";
+-    reg         = <0xfe440000 0x2c>;
+-    interrupts     =  <0 209 0>;
+-};
+-- 
+2.43.2
 
-> +          - enum:
-> +              - microchip,sam9x60-usart
-> +              - microchip,sam9x7-usart
-
-This doesn't make sense - this enum should be a const.
-I don't really understand the idea behind of the original binding here that
-allowed:
-"microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam9260-dbg=
-u", "atmel,at91sam9260-usart"
-
-Specifically, I don't get the purpose of the "microchip,sam9x60-usart".
-Either make it
-      - items:
-          - enum:
-              - microchip,sam9x60-dbgu
-              - microchip,sam9x7-dbgu
-          - const: microchip,sam9x60-usart
-          - const: atmel,at91sam9260-dbgu
-          - const: atmel,at91sam9260-usart
-or add
-      - items:
-          - const: microchip,sam9x60-dbgu
-          - const: atmel,at91sam9260-dbgu
-          - const: atmel,at91sam9260-usart
-or explain exactly why this needs to be
-"chipa-dgbu", "chipa-usart", "chipb-dbgu", "chipb-dbgu"
-
-Thanks,
-Conor.
-
-
---8c64jTTjW0j3INUS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZdpLUgAKCRB4tDGHoIJi
-0gcuAPwKJcQi8VunTtf+c2HxMwJnzd/VcSM1qfFZR7t6Y2RTxwD/UV6+lcP8ArXQ
-HqrqN+g0Ua0mQyRSLJa+cfksxbl88wY=
-=PXng
------END PGP SIGNATURE-----
-
---8c64jTTjW0j3INUS--
