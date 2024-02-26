@@ -1,63 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DAEC8C10;
-	Sun, 25 Feb 2024 18:46:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59C717BC5;
+	Mon, 26 Feb 2024 04:12:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.29.241.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708886766; cv=none; b=eQVpjbHRfBmLW5N68xtz1MGblaJz9xd3kJ04lUz4T1UnRs2laCL09UFPvOPuBeZby7qMMfIV8o4kWYAfeSDdbOO1kA6LVMhuiWsg3Sfx0b3oS1wwlGYlDdUDZqm71lFGe5vqN29ooYdCd9LpZ8ODc1YF+v0o5m5AimnxtQn2d8g=
+	t=1708920756; cv=none; b=D1r3MGu+OnPipM47h/ivV0CGN0oY3qAEPAixZAJA9RsowZNLwI/IbSlvWO0Kc9erETtIaYUSwWr6C4NNyeyz6ZulBo93vsBMEEKZSVPLV7LQlp0qdOcCNleP/X3TXdo7rXih+NLlcL0mJhQ3rRN7QVG956bhum5t7wdpqCVMhAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708886766; c=relaxed/simple;
-	bh=Kr2/AMGOujMAV2GBmZYtrsLdkbUKteXvq7Agm9ILqBA=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=qJ2i5FRUISyCT3dG7mn3HV0A6i2CIY7ttCPXDGfNpK2S/ZtBwVGknEIb1qedkiqbnYydyOIboNBN3JPcaHbibImGLun7jWb4uJc4RIyk4H6dshQG7HaZdlJIrSYfyr3jAguZNtj2CMldW9Lwncc811Q0iFwPhaP2T/HHL0X/o+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nLLEOd6g; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708920756; c=relaxed/simple;
+	bh=Pe94gA4uf1vHFYSF+mnEFT0ytZjmWjUodzwCgag62eU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=S+i0L0I9hMvsN1bu1CFPxvS5LcrTF2t/7GjByAvxVDAGZJRTgBD5hsVCNzw6x73e13d7uMHjeFvjAFdYcX/Kc1RZChEYlOpaDKhu+y5yGBysRt32D7umRsNC3X0Lvl/9rrNjcdYgNWRe0wGbjL3HrzxLKqTYI+R9QlRc3yKifYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au; spf=pass smtp.mailfrom=codeconstruct.com.au; dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b=mrK4AxRc; arc=none smtp.client-ip=203.29.241.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nLLEOd6g"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C61BDC43394;
-	Sun, 25 Feb 2024 18:46:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708886765;
-	bh=Kr2/AMGOujMAV2GBmZYtrsLdkbUKteXvq7Agm9ILqBA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=nLLEOd6g54I8quAUg46fsaZHZlqiQQnsixR0c81fcIaN2BjtPmBjgm0m1AUz8jlJR
-	 GqsR40/3kCuzC6Z3JXGAMIcF7pv/9jWOukR3/R+2lJUKmUcVjsjhfjSIQTh1w+CcRN
-	 FVQAN2Kd901xE7pOGOwr6iWibSu0sByybz8Ev5nCHpTJoS6q+g0M3EEFGFNtwIt1Bg
-	 tqKdcrDliDKxCRtzFsnneLePi//9CKNDp7PF7RTKcGFY+0N1/tNX1RJqnjS4+G6gQN
-	 9dS52dzcMAzE3wuvy+U11p3DpWfp73e5oK5TQGmSa7njHynZprMh7OALIaDn1R8wgi
-	 CN2QQLZhs2rmQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B0EC3C59A4C;
-	Sun, 25 Feb 2024 18:46:05 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 6.8-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZdtHDUx9Xsqq59k7@kroah.com>
-References: <ZdtHDUx9Xsqq59k7@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZdtHDUx9Xsqq59k7@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc6
-X-PR-Tracked-Commit-Id: 3b69e32e151bc4a4e3c785cbdb1f918d5ee337ed
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1e592e95368433d5e2055de1e43b894408627bcc
-Message-Id: <170888676571.24357.11720813242474167863.pr-tracker-bot@kernel.org>
-Date: Sun, 25 Feb 2024 18:46:05 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b="mrK4AxRc"
+Received: from [192.168.68.112] (ppp118-210-168-240.adl-adc-lon-bras34.tpg.internode.on.net [118.210.168.240])
+	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 85F5A2014E;
+	Mon, 26 Feb 2024 12:12:28 +0800 (AWST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=codeconstruct.com.au; s=2022a; t=1708920752;
+	bh=XXRWq9LzaWJldDlLUORe5CRUYm2s2hhDXWkS7OTa4Lg=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=mrK4AxRcBQAiIKCOPTCJmIVgne/8nIuXIhpXuCDvYKC2xvr/0qonrkIXrDVMHnkfV
+	 SJpQ4glDbG8r8ZjSpRe+DY6Ey7JhHXhfcfOaTTqNev7gE4fsswYgJPcRwqQuMxQUhh
+	 BRsglrzdRY+rIyDxyE3sHLuSt/KMh5558ntUPdudvw3DoZIN56Eblru48iBTPsNITc
+	 /m0B0b/q1uA3uO0RcplIh/4kxIWbI6pxJ4/lCg3g7iwcqHbLU8D7m5H3O8ChcCltuz
+	 o55K+LzKWT+TD7MkYpfONNShG2JzgYB31QHJBUSVedDncb82YdRV5cKQoSRMIq7zBB
+	 //zPm9ZLM1GHg==
+Message-ID: <ab237d0e08b6919d29f25d89ec34d149341f4c57.camel@codeconstruct.com.au>
+Subject: Re: [PATCH v1 10/14] serial: 8250_of: Switch to use
+ uart_read_port_properties()
+From: Andrew Jeffery <andrew@codeconstruct.com.au>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner
+ <tglx@linutronix.de>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org, 
+ linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org, Jiri Slaby
+ <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>, Florian Fainelli
+ <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>, Scott Branden
+ <sbranden@broadcom.com>, Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Al Cooper <alcooperx@gmail.com>, 
+ Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Paul
+ Cercueil <paul@crapouillou.net>,  Vladimir Zapolskiy <vz@mleia.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter
+ <jonathanh@nvidia.com>, Kunihiko Hayashi <hayashi.kunihiko@socionext.com>, 
+ Masami Hiramatsu <mhiramat@kernel.org>, Andi Shyti
+ <andi.shyti@linux.intel.com>
+Date: Mon, 26 Feb 2024 14:42:27 +1030
+In-Reply-To: <Zdd6lnXwvpPPUhRR@smile.fi.intel.com>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+	 <20240221183442.4124354-11-andriy.shevchenko@linux.intel.com>
+	 <0a828f2c50de712940fb9a881702ac1678a35b7c.camel@codeconstruct.com.au>
+	 <ZddKzHplwOX7naLv@smile.fi.intel.com> <Zdd5m2xIPlGI0_Qv@smile.fi.intel.com>
+	 <Zdd6lnXwvpPPUhRR@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
 
-The pull request you sent on Sun, 25 Feb 2024 14:56:29 +0100:
+On Thu, 2024-02-22 at 18:47 +0200, Andy Shevchenko wrote:
+> On Thu, Feb 22, 2024 at 06:43:08PM +0200, Andy Shevchenko wrote:
+> > On Thu, Feb 22, 2024 at 03:23:24PM +0200, Andy Shevchenko wrote:
+> > > On Thu, Feb 22, 2024 at 11:07:05AM +1030, Andrew Jeffery wrote:
+> > > > On Wed, 2024-02-21 at 20:31 +0200, Andy Shevchenko wrote:
+> > > > > Since we have now a common helper to read port properties
+> > > > > use it instead of sparse home grown solution.
+> > > >=20
+> > > > I did some brief testing of the series for the Aspeed machines unde=
+r
+> > > > qemu, building them on top of v6.8-rc5:
+> > > >=20
+> > > > export ARCH=3Darm
+> > > > export CROSS_COMPILE=3Darm-linux-gnueabihf-
+> > > > make aspeed_g5_defconfig
+> > > > make -j$(nproc)
+> > > > qemu-system-arm -M rainier-bmc -nographic -no-reboot -kernel arch/a=
+rm/boot/zImage -dtb arch/arm/boot/dts/aspeed/aspeed-bmc-ibm-rainier.dtb -in=
+itrd ...
+> > > >=20
+> > > > I got an oops during boot, which bisected to this change:
+> > >=20
+> > > Thank you for prompt testing! I will look at it.
+> >=20
+> > I found the issue, will be fixed in next version.
+>=20
+> Whoever is going to test this series, the
+>=20
+> -		port->iotype =3D use_defaults ? UPIO_MEM : port->iotype;
+> +		port->iotype =3D UPIO_MEM;
+>=20
+> should be applied to uart_read_port_properties() implementation.
+>=20
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.8-rc6
+Thanks, with that fix applied it works fine for me also.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1e592e95368433d5e2055de1e43b894408627bcc
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Andrew
