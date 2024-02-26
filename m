@@ -1,131 +1,261 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E217129A75;
-	Mon, 26 Feb 2024 14:17:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F39F71C6B9;
+	Mon, 26 Feb 2024 14:25:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708957035; cv=none; b=H2/igorI3HUWG9PE3CtrHo6RVhfusoOMmm4RFiIAMQjZb+Wz+TsBvib9iqYURvjwJ9PhBJohu9Lz+xrmHoF7JvJ+yddszElaSZc21lfr+VqfT37qHnS4hEkFCbGc+M7pNFTfQTmdMZ9jGc6VpB85PAOujkmqfpqhA08bj8iGZLM=
+	t=1708957526; cv=none; b=rTBiTuBBPcHUI88nk6n5eEWqGlLxQfp/wPuu9p2PNNRSy30In8rnTCs3bMIF2qi66vL9bcLf35t+dbHgR93OoQ+SWEXvZ5murN7pxdzCqogmsy59ib98b95okMC+LmQyEwV1HdO9W/oelwPw6otWOxc2ltC6p7shDuXPfppn0Ms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708957035; c=relaxed/simple;
-	bh=HZlXZGpEZ0auGfIkoqRiKy72XZYfKXmXVmc4SJZWGJo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AAl0fRMvnnTyhadnN5JzNlLyfk4ha6ANIgn2pWRxd7XTwtoYc2C5BlLuJiQstRX6FQdpTImG6WC9j0ISpJGJErLJXH6Rl8Mp/E5UnBD1f6oGqv4WSb/Ql73GlsznL+JGw8HoFxjpAKGxQJA1TsPk+gfQtMSRavv+1hQ3bAPkKHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XLDWD9hK; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1708957526; c=relaxed/simple;
+	bh=B//5uMMN9W3FfA5/QrjFTADRm2s5rP7KhGSGOFjNn5k=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Hb/2Mtu+qVZ7VD/9XQJHw5/hc4jWM8QG7xwi9XFiekGOP/kOEQ2uWdMtBNzW3Suo4RB4x5gMWd8hD6rhdYlxq7BDf/XCC5yjEpx6gVj2/jh9YYY2iTh90kisqtwj3+YvJU6r0owHxsGYLKs5TRaNNmDzLul1RTkl6VwkloU+n+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=km0dIvkB; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XLDWD9hK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="km0dIvkB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708957035; x=1740493035;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HZlXZGpEZ0auGfIkoqRiKy72XZYfKXmXVmc4SJZWGJo=;
-  b=XLDWD9hKWSYS93+37BvlTXBZ6JM6TPO2yMqN8070OaF1NRVheRzy7aNh
-   C8+aBkPAeDa3JRuo//3OTkghATG1dNXAZjETuIcXLR3TP+cQdrocS38f7
-   J6xBn9Ls3gxQCKn92fLTM6foUg26500JT1tcbjMfzCKQ9giYPa99uRXL7
-   /JUOcfxPai348/cfF/y84SSZNT30zEuRGFfM8UlfdLpNHoAzBPFmvWY1R
-   ALlskxrfP3+PR4xvYS4oGQDxViRLcDoAGnyLGtx/4BaXHB4cz1KU7JNZh
-   l+25I4qtB65xEIzy+8e3uXlZ/++WDLpJuzg9TItX+fBVLotxpDDKIJfk5
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="7047436"
+  t=1708957524; x=1740493524;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=B//5uMMN9W3FfA5/QrjFTADRm2s5rP7KhGSGOFjNn5k=;
+  b=km0dIvkBScYqdH6goBFC61aeZ1+qt+bkvVzTrqxzyRycg79H1MLfDiA6
+   DfciMgT5kaxl/0nE6HxNgkrX4halm/xjofe/6FpurhbTMiMSgNm9JLIiP
+   U2rUvjq8vVcrlqsaJSixdYBoFbffMqT/XW5tR8qjN9Ke+ibCtAdc65iWz
+   qQwvrbZd2RU8MlH/D+2TY9vtY3IdN3LMStmPW5cZUhRmaSwGkLBzFaO6/
+   ZvEKjDeqPq6EEMmh2g0DqpD7o5NquG0KrX7wsITPcXfgGTxSIbmTaSlsN
+   Ndz3dwBwpcmJFURmF5UGb/SANTXchTrbdpt7r6osbaENIlZnLl0i0OqeY
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="3375090"
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="7047436"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:17:14 -0800
+   d="scan'208";a="3375090"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:25:23 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="913872291"
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="937030137"
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="913872291"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:17:07 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rebmx-00000007hRa-3oE3;
-	Mon, 26 Feb 2024 16:17:03 +0200
-Date: Mon, 26 Feb 2024 16:17:03 +0200
+   d="scan'208";a="937030137"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 26 Feb 2024 06:25:17 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 26743445; Mon, 26 Feb 2024 16:25:16 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Joel Stanley <joel@jms.id.au>,
 	Andrew Jeffery <andrew@codeconstruct.com.au>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
 	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
 	Al Cooper <alcooperx@gmail.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Paul Cercueil <paul@crapouillou.net>,
 	Vladimir Zapolskiy <vz@mleia.com>,
 	Thierry Reding <thierry.reding@gmail.com>,
 	Jonathan Hunter <jonathanh@nvidia.com>,
 	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
 	Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
- port type
-Message-ID: <ZdydX79GBaedFqku@smile.fi.intel.com>
-References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
- <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
- <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
- <ZddKaaB7HO0CyldD@smile.fi.intel.com>
- <fa46f220-a1c4-43f4-91e1-5929ff335be0@kernel.org>
- <ZdiyzKMZPlkN462G@smile.fi.intel.com>
+Subject: [PATCH v2 03/14] serial: port: Introduce a common helper to read properties
+Date: Mon, 26 Feb 2024 16:19:19 +0200
+Message-ID: <20240226142514.1485246-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240226142514.1485246-1-andriy.shevchenko@linux.intel.com>
+References: <20240226142514.1485246-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZdiyzKMZPlkN462G@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 23, 2024 at 04:59:25PM +0200, Andy Shevchenko wrote:
-> On Fri, Feb 23, 2024 at 06:42:15AM +0100, Jiri Slaby wrote:
-> > On 22. 02. 24, 14:21, Andy Shevchenko wrote:
-> > > On Thu, Feb 22, 2024 at 07:58:32AM +0100, Jiri Slaby wrote:
-> > > > On 21. 02. 24, 19:31, Andy Shevchenko wrote:
+Several serial drivers want to read the same or similar set of
+the port properties. Make a common helper for them.
 
-...
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/serial_port.c | 134 +++++++++++++++++++++++++++++++
+ include/linux/serial_core.h      |   1 +
+ 2 files changed, 135 insertions(+)
 
-> > > > >    	unsigned char		iotype;			/* io access style */
-> > > > > +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
-> > > > 
-> > > > Perhaps making the var u8 and this U8_MAX then? It would make more sense to
-> > > > me.
-> > > 
-> > > WFM, should it be a separate change?
-> > 
-> > Likely.
-> 
-> Then I need a commit message, because I'm unable to justify this change myself.
-> 
-> > > Btw, how can I justify it?
-> > 
-> > Hmm, thinking about it, why is it not an enum?
-> 
-> Maybe, but it is a replica of UAPI definitions, do we want to see it as a enum?
-> To me it will be a bit ugly looking.
-> 
-> > But it could be also an u8 because you want it be exactly 8 bits as you want
-> > to be sure values up to 255 fit.
-> 
-> Depends on what we assume UAPI does with those flags. It maybe even less than
-> 8 bits, or great than, currently 8 bits is enough...
-> 
-> TL;DR: I would rather take a patch from you and incorporate into the series
-> than trying hard to invent a justification and proper type.
-
-Okay, I want to send a new version, for now I leave the type change for
-the next time. It looks that quirks as well will benefit from type clarifying.
-
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 88975a4df306..ecc980e9dba6 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -8,7 +8,10 @@
+ 
+ #include <linux/device.h>
+ #include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ #include <linux/serial_core.h>
+ #include <linux/spinlock.h>
+ 
+@@ -82,6 +85,137 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *port)
+ }
+ EXPORT_SYMBOL(uart_remove_one_port);
+ 
++/**
++ * uart_read_port_properties - read firmware properties of the given UART port
++ * @port: corresponding port
++ * @use_defaults: apply defaults (when %true) or validate the values (when %false)
++ *
++ * The following device properties are supported:
++ *   - clock-frequency (optional)
++ *   - fifo-size (optional)
++ *   - no-loopback-test (optional)
++ *   - reg-shift (defaults may apply)
++ *   - reg-offset (value may be validated)
++ *   - reg-io-width (defaults may apply or value may be validated)
++ *   - interrupts (OF only)
++ *   - serial [alias ID] (OF only)
++ *
++ * If the port->dev is of struct platform_device type the interrupt line
++ * will be retrieved via platform_get_irq() call against that device.
++ * Otherwise it will be assigned by fwnode_irq_get() call. In both cases
++ * the index 0 of the resource is used.
++ *
++ * The caller is responsible to initialize the following fields of the @port
++ *   ->dev (must be valid)
++ *   ->flags
++ *   ->mapbase
++ *   ->mapsize
++ *   ->regshift (if @use_defaults is false)
++ * before calling this function. Alternatively the above mentioned fields
++ * may be zeroed, in such case the only ones, that have associated properties
++ * found, will be set to the respective values.
++ *
++ * If no error happened, the ->irq, ->mapbase, ->mapsize will be altered.
++ * The ->iotype is always altered.
++ *
++ * When @use_defaults is true and the respective property is not found
++ * the following values will be applied:
++ *   ->regshift = 0
++ * In this case IRQ must be provided, otherwise an error will be returned.
++ *
++ * When @use_defaults is false and the respective property is found
++ * the following values will be validated:
++ *   - reg-io-width (->iotype)
++ *   - reg-offset (->mapsize against ->mapbase)
++ *
++ * Returns: 0 on success or negative errno on failure
++ */
++int uart_read_port_properties(struct uart_port *port, bool use_defaults)
++{
++	struct device *dev = port->dev;
++	u32 value;
++	int ret;
++
++	/* Read optional UART functional clock frequency */
++	device_property_read_u32(dev, "clock-frequency", &port->uartclk);
++
++	/* Read the registers alignment (default: 8-bit) */
++	ret = device_property_read_u32(dev, "reg-shift", &value);
++	if (ret)
++		port->regshift = use_defaults ? 0 : port->regshift;
++	else
++		port->regshift = value;
++
++	/* Read the registers I/O access type (default: MMIO 8-bit) */
++	ret = device_property_read_u32(dev, "reg-io-width", &value);
++	if (ret) {
++		port->iotype = UPIO_MEM;
++	} else {
++		switch (value) {
++		case 1:
++			port->iotype = UPIO_MEM;
++			break;
++		case 2:
++			port->iotype = UPIO_MEM16;
++			break;
++		case 4:
++			port->iotype = device_is_big_endian(dev) ? UPIO_MEM32BE : UPIO_MEM32;
++			break;
++		default:
++			if (!use_defaults) {
++				dev_err(dev, "Unsupported reg-io-width (%u)\n", value);
++				return -EINVAL;
++			}
++			port->iotype = UPIO_UNKNOWN;
++			break;
++		}
++	}
++
++	/* Read the address mapping base offset (default: no offset) */
++	ret = device_property_read_u32(dev, "reg-offset", &value);
++	if (ret)
++		value = 0;
++
++	/* Check for shifted address mapping overflow */
++	if (!use_defaults && port->mapsize < value) {
++		dev_err(dev, "reg-offset %u exceeds region size %pa\n", value, &port->mapsize);
++		return -EINVAL;
++	}
++
++	port->mapbase += value;
++	port->mapsize -= value;
++
++	/* Read optional FIFO size */
++	device_property_read_u32(dev, "fifo-size", &port->fifosize);
++
++	if (device_property_read_bool(dev, "no-loopback-test"))
++		port->flags |= UPF_SKIP_TEST;
++
++	/* Get index of serial line, if found in DT aliases */
++	ret = of_alias_get_id(dev_of_node(dev), "serial");
++	if (ret >= 0)
++		port->line = ret;
++
++	if (dev_is_platform(dev))
++		ret = platform_get_irq(to_platform_device(dev), 0);
++	else
++		ret = fwnode_irq_get(dev_fwnode(dev), 0);
++	if (ret == -EPROBE_DEFER)
++		return ret;
++	if (ret > 0)
++		port->irq = ret;
++	else if (use_defaults)
++		/* By default IRQ support is mandatory */
++		return ret;
++	else
++		port->irq = 0;
++
++	port->flags |= UPF_SHARE_IRQ;
++
++	return 0;
++}
++EXPORT_SYMBOL(uart_read_port_properties);
++
+ static struct device_driver serial_port_driver = {
+ 	.name = "port",
+ 	.suppress_bind_attrs = true,
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index c2cf9484014c..3fc8683e7b53 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -962,6 +962,7 @@ int uart_register_driver(struct uart_driver *uart);
+ void uart_unregister_driver(struct uart_driver *uart);
+ int uart_add_one_port(struct uart_driver *reg, struct uart_port *port);
+ void uart_remove_one_port(struct uart_driver *reg, struct uart_port *port);
++int uart_read_port_properties(struct uart_port *port, bool use_defaults);
+ bool uart_match_port(const struct uart_port *port1,
+ 		const struct uart_port *port2);
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0.rc1.1.gbec44491f096
 
