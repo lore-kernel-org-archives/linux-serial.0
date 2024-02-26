@@ -1,253 +1,131 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967B02376A;
-	Mon, 26 Feb 2024 11:37:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E217129A75;
+	Mon, 26 Feb 2024 14:17:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708947440; cv=none; b=HKf2Yka++FTRo+8UelImnOF4bOSPGvujGAYqK2o6i5XDg5cQ5BnC4WqzEoIcqAckdvgjz2Vbs/0BLOLXyn94XwC6+M2//UETKKaEIfVpSc/Wv1h8ySVwVtQM1pfM2tBU2YcgMBgldKcNr/ZUw65ACCnyuLLPIMhGyx9XnUh/v60=
+	t=1708957035; cv=none; b=H2/igorI3HUWG9PE3CtrHo6RVhfusoOMmm4RFiIAMQjZb+Wz+TsBvib9iqYURvjwJ9PhBJohu9Lz+xrmHoF7JvJ+yddszElaSZc21lfr+VqfT37qHnS4hEkFCbGc+M7pNFTfQTmdMZ9jGc6VpB85PAOujkmqfpqhA08bj8iGZLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708947440; c=relaxed/simple;
-	bh=zAAJLho0cCO/HNTiCV3588QnktmmlyE4Z01Qd0pjWN0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Dahxsfpc51RiBY3Mcdt4QfCSlJTvtCowSdcm1jfb03zUUkTB4z0ZnUGIrgJj6YT4OBp17oCyOiFAbmUOuhGwJ7rWvfU/MOcUjR3Nv6U9i22zpoTC/0SSKhNZ3lK/6fnDIfgZARDUXiR4t04VepQ+MgXIguETQBpuISji7JmdWWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=r3gQ/FSS; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0Pcj5SVw; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1708957035; c=relaxed/simple;
+	bh=HZlXZGpEZ0auGfIkoqRiKy72XZYfKXmXVmc4SJZWGJo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AAl0fRMvnnTyhadnN5JzNlLyfk4ha6ANIgn2pWRxd7XTwtoYc2C5BlLuJiQstRX6FQdpTImG6WC9j0ISpJGJErLJXH6Rl8Mp/E5UnBD1f6oGqv4WSb/Ql73GlsznL+JGw8HoFxjpAKGxQJA1TsPk+gfQtMSRavv+1hQ3bAPkKHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XLDWD9hK; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="r3gQ/FSS";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0Pcj5SVw"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1708947431;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0BT9tAymdgF12edcAn5jaXSRSblrBPjimcTyWY1gKVQ=;
-	b=r3gQ/FSS8tZI+vRzbrg42znqs4XhLBKCA3FHP41fG49mpUAKYPSFTBfnwBI0vl9DvSJth+
-	3s1nQcIMV4JRDi19ntwTmgiZIHCBaYuyXsnx/y+ZF97BO2GjRQSNSTvBXB9DuS2aqSiatR
-	T2z9z4DEzFaIVG+B5fGgyYXOSvvka49c0Mm1mDuLVbsd4Qfj9jPD3DNSxflBjlrhvdS5DL
-	UyrO/18gCgb9Kj5Jy+n/V2yvL41DWIZ0lJ3g6XGwly4eY/youC3cBprwjDWNIYXIoseLl7
-	mhBUJbsHaHusHD6fTVcYodfe7/s9cOfeuIn+qonaNq6TNEnX3hrzaPrkyJdEsg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1708947431;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0BT9tAymdgF12edcAn5jaXSRSblrBPjimcTyWY1gKVQ=;
-	b=0Pcj5SVwVRMEILNtAi9Fm3gU1VFrH64Z4wHM04nWiSG26uri1Nb1O4aYF3UpFIrbYKJvx+
-	/zO9Y0UcNtwM0yAg==
-To: Peter Collingbourne <pcc@google.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Petr
- Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Sergey
- Senozhatsky <senozhatsky@chromium.org>
-Cc: Peter Collingbourne <pcc@google.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] serial: Lock console when calling into driver before
- registration
-In-Reply-To: <20240222192329.1047386-1-pcc@google.com>
-References: <20240222192329.1047386-1-pcc@google.com>
-Date: Mon, 26 Feb 2024 12:42:43 +0106
-Message-ID: <878r37mp84.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XLDWD9hK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708957035; x=1740493035;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HZlXZGpEZ0auGfIkoqRiKy72XZYfKXmXVmc4SJZWGJo=;
+  b=XLDWD9hKWSYS93+37BvlTXBZ6JM6TPO2yMqN8070OaF1NRVheRzy7aNh
+   C8+aBkPAeDa3JRuo//3OTkghATG1dNXAZjETuIcXLR3TP+cQdrocS38f7
+   J6xBn9Ls3gxQCKn92fLTM6foUg26500JT1tcbjMfzCKQ9giYPa99uRXL7
+   /JUOcfxPai348/cfF/y84SSZNT30zEuRGFfM8UlfdLpNHoAzBPFmvWY1R
+   ALlskxrfP3+PR4xvYS4oGQDxViRLcDoAGnyLGtx/4BaXHB4cz1KU7JNZh
+   l+25I4qtB65xEIzy+8e3uXlZ/++WDLpJuzg9TItX+fBVLotxpDDKIJfk5
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="7047436"
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="7047436"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:17:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="913872291"
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="913872291"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 06:17:07 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rebmx-00000007hRa-3oE3;
+	Mon, 26 Feb 2024 16:17:03 +0200
+Date: Mon, 26 Feb 2024 16:17:03 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v1 02/14] serial: core: Add UPIO_UNSET constant for unset
+ port type
+Message-ID: <ZdydX79GBaedFqku@smile.fi.intel.com>
+References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
+ <20240221183442.4124354-3-andriy.shevchenko@linux.intel.com>
+ <5aeee02f-45a6-48e5-a6f4-e55b76d4b959@kernel.org>
+ <ZddKaaB7HO0CyldD@smile.fi.intel.com>
+ <fa46f220-a1c4-43f4-91e1-5929ff335be0@kernel.org>
+ <ZdiyzKMZPlkN462G@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZdiyzKMZPlkN462G@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 2024-02-22, Peter Collingbourne <pcc@google.com> wrote:
-> During the handoff from earlycon to the real console driver, we have
-> two separate drivers operating on the same device concurrently. In the
-> case of the 8250 driver these concurrent accesses cause problems due
-> to the driver's use of banked registers, controlled by LCR.DLAB. It is
-> possible for the setup(), config_port(), pm() and set_mctrl() callbacks
-> to set DLAB, which can cause the earlycon code that intends to access
-> TX to instead access DLL, leading to missed output and corruption on
-> the serial line due to unintended modifications to the baud rate.
->
-> In particular, for setup() we have:
->
-> univ8250_console_setup()
-> -> serial8250_console_setup()
-> -> uart_set_options()
-> -> serial8250_set_termios()
-> -> serial8250_do_set_termios()
-> -> serial8250_do_set_divisor()
->
-> For config_port() we have:
->
-> serial8250_config_port()
-> -> autoconfig()
->
-> For pm() we have:
->
-> serial8250_pm()
-> -> serial8250_do_pm()
-> -> serial8250_set_sleep()
->
-> For set_mctrl() we have (for some devices):
->
-> serial8250_set_mctrl()
-> -> omap8250_set_mctrl()
-> -> __omap8250_set_mctrl()
->
-> To avoid such problems, let's make it so that the console is locked
-> during pre-registration calls to these callbacks, which will prevent
-> the earlycon driver from running concurrently.
+On Fri, Feb 23, 2024 at 04:59:25PM +0200, Andy Shevchenko wrote:
+> On Fri, Feb 23, 2024 at 06:42:15AM +0100, Jiri Slaby wrote:
+> > On 22. 02. 24, 14:21, Andy Shevchenko wrote:
+> > > On Thu, Feb 22, 2024 at 07:58:32AM +0100, Jiri Slaby wrote:
+> > > > On 21. 02. 24, 19:31, Andy Shevchenko wrote:
 
-Even after the current atomic/threaded print rework is completed, the
-console lock will be used to synchronize boot consoles with non-boot
-consoles. I am fine with this solution.
+...
 
-Comments below...
+> > > > >    	unsigned char		iotype;			/* io access style */
+> > > > > +#define UPIO_UNSET		((unsigned char)~0U)	/* UCHAR_MAX */
+> > > > 
+> > > > Perhaps making the var u8 and this U8_MAX then? It would make more sense to
+> > > > me.
+> > > 
+> > > WFM, should it be a separate change?
+> > 
+> > Likely.
+> 
+> Then I need a commit message, because I'm unable to justify this change myself.
+> 
+> > > Btw, how can I justify it?
+> > 
+> > Hmm, thinking about it, why is it not an enum?
+> 
+> Maybe, but it is a replica of UAPI definitions, do we want to see it as a enum?
+> To me it will be a bit ugly looking.
+> 
+> > But it could be also an u8 because you want it be exactly 8 bits as you want
+> > to be sure values up to 255 fit.
+> 
+> Depends on what we assume UAPI does with those flags. It maybe even less than
+> 8 bits, or great than, currently 8 bits is enough...
+> 
+> TL;DR: I would rather take a patch from you and incorporate into the series
+> than trying hard to invent a justification and proper type.
 
-> Remove the partial solution to this problem in the 8250 driver
-> that locked the console only during autoconfig_irq(), as this would
-> result in a deadlock with the new approach. The console continues
-> to be locked during autoconfig_irq() because it can only be called
-> through uart_configure_port().
->
-> Although this patch introduces more locking than strictly necessary
-> (and in particular it also locks during the call to rs485_config()
-> which is not affected by this issue as far as I can tell), it follows
-> the principle that it is the responsibility of the generic console
-> code to manage the earlycon handoff by ensuring that earlycon and real
-> console driver code cannot run concurrently, and not the individual
-> drivers.
->
-> Signed-off-by: Peter Collingbourne <pcc@google.com>
-> Link: https://linux-review.googlesource.com/id/I7cf8124dcebf8618e6b2ee543fa5b25532de55d8
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/tty/serial/8250/8250_port.c |  6 ------
->  drivers/tty/serial/serial_core.c    | 10 ++++++++++
->  kernel/printk/printk.c              | 20 +++++++++++++++++---
->  3 files changed, 27 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 8ca061d3bbb9..1d65055dde27 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1329,9 +1329,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  		inb_p(ICP);
->  	}
->  
-> -	if (uart_console(port))
-> -		console_lock();
-> -
->  	/* forget possible initially masked and pending IRQ */
->  	probe_irq_off(probe_irq_on());
->  	save_mcr = serial8250_in_MCR(up);
-> @@ -1371,9 +1368,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  	if (port->flags & UPF_FOURPORT)
->  		outb_p(save_ICP, ICP);
->  
-> -	if (uart_console(port))
-> -		console_unlock();
-> -
->  	port->irq = (irq > 0) ? irq : 0;
->  }
->  
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index d6a58a9e072a..128aa0e0ae24 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2608,7 +2608,11 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  			port->type = PORT_UNKNOWN;
->  			flags |= UART_CONFIG_TYPE;
->  		}
+Okay, I want to send a new version, for now I leave the type change for
+the next time. It looks that quirks as well will benefit from type clarifying.
 
-It would be nice to add a comment here mentioning why the console_lock
-is taken. Even if it is something brief like:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-     /* Sychronize with possible boot console. */
 
-> +		if (uart_console(port))
-> +			console_lock();
->  		port->ops->config_port(port, flags);
-> +		if (uart_console(port))
-> +			console_unlock();
->  	}
->  
->  	if (port->type != PORT_UNKNOWN) {
-> @@ -2616,6 +2620,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  
->  		uart_report_port(drv, port);
->  
-
-Also, here a brief comment.
-
-> +		if (uart_console(port))
-> +			console_lock();
-> +
->  		/* Power up port for set_mctrl() */
->  		uart_change_pm(state, UART_PM_STATE_ON);
->  
-> @@ -2632,6 +2639,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  
->  		uart_rs485_config(port);
->  
-> +		if (uart_console(port))
-> +			console_unlock();
-> +
->  		/*
->  		 * If this driver supports console, and it hasn't been
->  		 * successfully registered yet, try to re-register it.
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index f2444b581e16..db69545e6250 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3263,6 +3263,20 @@ static int __init keep_bootcon_setup(char *str)
->  
->  early_param("keep_bootcon", keep_bootcon_setup);
->  
-
-And here. Maybe slightly more verbose since there is an entire wrapper
-function created for the purpose.
-
-> +static int console_call_setup(struct console *newcon, char *options)
-> +{
-> +	int err;
-> +
-> +	if (!newcon->setup)
-> +		return 0;
-> +
-> +	console_lock();
-> +	err = newcon->setup(newcon, options);
-> +	console_unlock();
-> +
-> +	return err;
-> +}
-> +
->  /*
->   * This is called by register_console() to try to match
->   * the newly registered console with any of the ones selected
-> @@ -3298,8 +3312,8 @@ static int try_enable_preferred_console(struct console *newcon,
->  			if (_braille_register_console(newcon, c))
->  				return 0;
->  
-> -			if (newcon->setup &&
-> -			    (err = newcon->setup(newcon, c->options)) != 0)
-> +			err = console_call_setup(newcon, c->options);
-> +			if (err != 0)
->  				return err;
->  		}
->  		newcon->flags |= CON_ENABLED;
-> @@ -3325,7 +3339,7 @@ static void try_enable_default_console(struct console *newcon)
->  	if (newcon->index < 0)
->  		newcon->index = 0;
->  
-> -	if (newcon->setup && newcon->setup(newcon, NULL) != 0)
-> +	if (console_call_setup(newcon, NULL) != 0)
->  		return;
->  
->  	newcon->flags |= CON_ENABLED;
-> -- 
-> 2.44.0.rc1.240.g4c46232300-goog
-
-With comments added:
-
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
