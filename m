@@ -1,151 +1,176 @@
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D33A81BDC3
-	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 06:22:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46D3B2D048;
+	Mon, 26 Feb 2024 07:38:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708928568; cv=none; b=t2Zfl2HWHGHYp1mAzKKlHUsl2lkwppCVF0qPd/tL9r+IaAlxelja3RoovGaJieXd5xIiOr7FgAVkKv7yn7sj/REm8DM/keuapl3WB1TPq8eJ1TmBAfPxP6WikiOViWGLgRJ00ZZR6ZVLPFy9dtivhrahICLR2nZ3TTrA3GAztH0=
+	t=1708933128; cv=none; b=HE7LczsbgZergtUWzfvyLQMCIe/c2L+FDwUOT4QmNBrmucqDp18LTPctHYQbd0fJfWFitKYAqu/bfD1IApZIsejKTIl8hdcf7AkOYbcs9IC/Hvbd0HpZglVOWEZ7eRuPJEuvSi/F4JjaQcugbABXINSfPA4qhqEtKC+Yu6lXb8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708928568; c=relaxed/simple;
-	bh=ZZKGU3FffPP3zqC+TnubmjhgC9QH4ptQlNNeiWeNUi0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JRnKiCcEwcc2uUwsmMQj52moeTDt6eRH7cl8beHLORVy6uJuKMkBhV/98qUH9R1y/2/+MkjDzs5BK7h40oPdjlQU42GzqyHL2KLscna0KLusdMSMT6OhmTnEsSsWb5bfeKrDxpAPX2yqb/b/6VrGCOnQ8tsY3k3KLnb5j1a0Gl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=C3KQ+lwE; arc=none smtp.client-ip=209.85.219.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1708933128; c=relaxed/simple;
+	bh=1ggclRD1djvxmGmT8E2XQWUaxTLSJFfuYRhMG5jSVS4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LNAP4woBkRB8NMsmgCtAesod7t0Y2aKQAx7hpt57W8g8HPaFfriXVplkRvb3GsoWJE6uipzWKKTLLM2++4bL7r9bGX02sep12wJD1yPzfNtBCj64yItRTpN8ozrr+f8rb5jmyG1LFkdc2DmGQB9VOkJJGf8ChQPSBn+0W8PUhLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X3ENP322; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="C3KQ+lwE"
-Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-dc6d8bd618eso2699733276.3
-        for <linux-serial@vger.kernel.org>; Sun, 25 Feb 2024 22:22:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X3ENP322"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-412a87d5666so569205e9.3;
+        Sun, 25 Feb 2024 23:38:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1708928566; x=1709533366; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l6uQ6p4wrPGEQaea08zy1g4beS3iVKslS9jUud4LuLo=;
-        b=C3KQ+lwEaN/eK4elEjfXVIsTWOshR9M0SssWfU8FWyA+DT0HeE74zXdTrI+fImuj4Y
-         RoGf4hzn4XS/QBrbIIwmIJyqaaEiKv2b0vJh8soMuX5ZKCrgpe3XRhPThhL+BMbY7sIP
-         abHcUK45wAxZ0U5Ih1UZnfmPnrhs72yacrz9h8RKLrPCDhEl1hNlQE5xZr1+bAtInnzH
-         sIEIgw90sTFupE7CFgpj6yXHvozqSgUk7TTzRMTVPZOke5krTah2o+9zPHOZluxnXn9A
-         fK/QDlI3cWj0mOTcLxwfidmh8f2F+c/xuI7mJckLoWdKAaSAIYgSJsTI8+zkOcU/zAAF
-         Ydwg==
+        d=gmail.com; s=20230601; t=1708933124; x=1709537924; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fZmcmpNn19gMD5RLlKzvJyidK9zbXyq1tNlIBH8kQTY=;
+        b=X3ENP322A/eunHqmddmeX8FAO5bvWXnK5Z8SLOzXlSRU6Z3AamdWUFZWX6i1i0i2QD
+         JtU1JslYUx0yyDux25ngIlYz10m/a72XQQhGj1Ju5Wuk5RplfGw7xoJ1j9ez4Hd43wMX
+         8r1FwXXTmQYKVxd6HtK9J3MbllKvOYsSwZAjjo2HEDbTPR/41AYEyvK3/IIH4wHttoxO
+         hHWapboEa1mELtEtB5YhWueuqtjDlMddR543x7+tICS7uQgStf+NAzHKxLKP60x1j7y3
+         SHaKYu/Kfv7cJVzeBVimTHp4ML8C9TSsu3P5bgp6rFMAjBkFGD7VsGv7k/+U4w/ZbMms
+         9T+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708928566; x=1709533366;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=l6uQ6p4wrPGEQaea08zy1g4beS3iVKslS9jUud4LuLo=;
-        b=Ko89G/phUmbJ5Cgw650pMMt/OTRKAv1eqyixb5hdb0Mn5sKU4+ycC0mxv8l8zX0s2h
-         CURpBNDK/+8McuCiauPRTQxlrqB1iJNapsQX41nQfS8JH/zt0u5HpAJqesOlgEWis/PT
-         U8+RHH+pkhVcHYA1hCNZZOV76Rcq/p9lbXkOKcbM+qSVY9qwMn8y2/kkJQuQ3Jl+yNSA
-         Xr95tsInTh+inTNFziVkHn2KYHN5q3paWOJTDVoGH4OBJs8RU5evbFX7jal4hDT3I0vg
-         YGDmKWP6KrXDtSLVFYteSu/BYihjCYyYyo6qV95ICcjYMTRwmxt7QlxeaJb5dhafQD14
-         ciVQ==
-X-Gm-Message-State: AOJu0YzVeboHDGAoTKKHoXj4mFYuW72eMl7xDM9du1TONjgeKaVbFAJ4
-	zWIUXK28tn9yb3jYGBW1d6JDaTjQtRswfW2Zih9FHpyZXJG7HRCfLs/sjD3FRr8UMN3wafQzfbu
-	1kploDENtBNEW/DYWxgqgSTUzl5U3EAFVPurzOA==
-X-Google-Smtp-Source: AGHT+IGuVwNNtNKAUOe7ESvnHt1NkLshjz76YKDlhI9ojfgZqrAObfd1QuyHoNHa5ra3UdBQeDo2NcaGJ6UUutD5RdM=
-X-Received: by 2002:a25:3618:0:b0:dc2:45af:aa5b with SMTP id
- d24-20020a253618000000b00dc245afaa5bmr3427311yba.59.1708928565840; Sun, 25
- Feb 2024 22:22:45 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708933124; x=1709537924;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fZmcmpNn19gMD5RLlKzvJyidK9zbXyq1tNlIBH8kQTY=;
+        b=e86d+dEEKCcWsT8FnFs6jFmFY6pmxVcIDRe3qeIIuDiQ+yFi3kAHad6MJD5bYcoTeQ
+         FmkE7G+AZru/A/m7OCJDVnADUyLIvFlOCNh+9xn8DHaTsMiBSQBMmAZeudynZUS1IIGH
+         OZopEFGOgxxrBv4/y2UgQtj+toI404PNYcd6s9jNQmcMvfCxwoEwdfZxF0el/F5zqhhP
+         sziaghMxgR9i68Y913VF28gmIwDX5rEKPMLpsewZCu9yoStgMr9Aeo81CxyMd0OT2Fnx
+         AYRG2ET3M3MKhyyNQQx8Oekh0CsJchigSUdNw1LGylwcAycCLSLq/7L1SzFSx7jtqSs+
+         jmlw==
+X-Forwarded-Encrypted: i=1; AJvYcCVeQun1KEX9zZJA9umbwiHrHcQYVkCKjDcUv07MpuH8M+qG3Qrb2DhQgJqwbtbwsQnjOcpeQqe5w3fDWjULrXJD6yob8QE5HoXD+BqSkNlfrxBb/5JYieZUd3aCf3RfoMXj8BCukCmjPA==
+X-Gm-Message-State: AOJu0Ywe94zxEwXmrMHfV5XRTMnvyeabmLUUb2m2Yi3VPElRyxPf1G9d
+	BKOndbcq3IHNOWky0mknWjqDxUBXdlMUP5ZH0TTBqgQp1AXoopWyBr/kdzD8
+X-Google-Smtp-Source: AGHT+IGtZBJfgssesLpExwIgvHWKPnBv28kAeC96tIDQFsQtRDAuA0aWBGTSPSOx+Xug9zTSUtfAVQ==
+X-Received: by 2002:a5d:5b85:0:b0:33d:87e9:5900 with SMTP id df5-20020a5d5b85000000b0033d87e95900mr4089815wrb.62.1708933124367;
+        Sun, 25 Feb 2024 23:38:44 -0800 (PST)
+Received: from ?IPV6:2001:861:3385:e20:6384:4cf:52c5:3194? ([2001:861:3385:e20:6384:4cf:52c5:3194])
+        by smtp.gmail.com with ESMTPSA id bh3-20020a05600005c300b0033d640c8942sm7599142wrb.10.2024.02.25.23.38.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Feb 2024 23:38:44 -0800 (PST)
+Message-ID: <4a1504d4-6c64-4385-bb52-43d39a017215@gmail.com>
+Date: Mon, 26 Feb 2024 08:38:43 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240201065932.19899-1-andy.chiu@sifive.com> <2f1b1262-8c32-4dd5-8052-d47682c0b1f6@kernel.org>
-In-Reply-To: <2f1b1262-8c32-4dd5-8052-d47682c0b1f6@kernel.org>
-From: Andy Chiu <andy.chiu@sifive.com>
-Date: Mon, 26 Feb 2024 14:22:34 +0800
-Message-ID: <CABgGipUzTp70j+8UxgURhNU81S_UWNd8dd75pvytzC0GkMCRfA@mail.gmail.com>
-Subject: Re: [PATCH] tty: serial: manage irq with spin_lock_irqsave in SiFive console
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	palmer@dabbelt.com, gregkh@linuxfoundation.org, paul.walmsley@sifive.com, 
-	Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: serial: convert st,asc to DT schema
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20240225100336.34122-1-rgallaispou@gmail.com>
+ <174b85c4-107b-44ea-af81-4564101aa5ec@linaro.org>
+Content-Language: en-US, fr
+From: =?UTF-8?Q?Rapha=C3=ABl_Gallais-Pou?= <rgallaispou@gmail.com>
+In-Reply-To: <174b85c4-107b-44ea-af81-4564101aa5ec@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Feb 1, 2024 at 3:21=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org> wr=
-ote:
->
-> On 01. 02. 24, 7:59, Andy Chiu wrote:
-> > It is not safe to call spin_lock() with irq disabled on RT-linux.
-> > Instead, transfer the code segment to spin_lock_irqsave to make it work
-> > on both RT and non-RT linux.
->
-> Hi,
->
-> have you investigated what is protected by the local_irq_save() in
-> there? The lock is not always taken, OTOH the interrupts are always
-> disabled.
+Hi Krzysztof,
 
-I was referencing some serial drivers (omap, pl011) changes on the
-linux-rt patch series and provide logically the same change here. For
-all oops cases I've found, panic() itself disables irq before calling
-`bust_spinlocks(1)`. Architecture dependent `die()` on riscv also
-masks off irq with a spin_lock_irq() before calling bust_spinlocks(1).
-Should we make SERIAL_SIFIVE depend on RISCV in Kconfig for this?
 
-However, I am not very certain about the sysrq part here. According to
-the patch on linux-rt, it says irqs are already disabled if the
-console_write comes from sysrq handling. One difference I noticed is
-that the sifive console does not support magic sysrq, while the others
-do support. And it seems like the condition check `ssp->port.sysrq` in
-sifive serial is never true, but maybe I just overlooked something.
+Le 25/02/2024 à 16:42, Krzysztof Kozlowski a écrit :
+> On 25/02/2024 11:03, Raphael Gallais-Pou wrote:
+>> Converts st,asc binding to DT schema format and update example.
+>>
+>> Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
+>> ---
+>>   .../devicetree/bindings/serial/st,asc.yaml    | 57 +++++++++++++++++++
+>>   .../devicetree/bindings/serial/st-asc.txt     | 18 ------
+>>   2 files changed, 57 insertions(+), 18 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/serial/st,asc.yaml
+>>   delete mode 100644 Documentation/devicetree/bindings/serial/st-asc.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/st,asc.yaml b/Documentation/devicetree/bindings/serial/st,asc.yaml
+>> new file mode 100644
+>> index 000000000000..b26e1d247346
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/serial/st,asc.yaml
+>> @@ -0,0 +1,57 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/serial/st,asc.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: STMicroelectronics STi SoCs Serial Port
+>> +
+>> +maintainers:
+>> +  - Patrice Chotard <patrice.chotard@foss.st.com>
+>> +
+>> +allOf:
+>> +  - $ref: serial.yaml#
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: st,asc
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+> 
+> This wasn't here before and your commit msg does not explain it.
 
-+ Thomas
-Hi Thomas, do you think the sifive console driver needs the change
-here for RT? Do you have any suggestions otherwise?
+Looking at the device-tree I found that every instance of this device 
+refers to a phandle of a clock.
 
->
-> I believe the fix is not as easy as is presented below.
->
-> > Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-> > ---
-> >   drivers/tty/serial/sifive.c | 8 +++-----
-> >   1 file changed, 3 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-> > index fa4c9336924f..3f0ddf8bfa7b 100644
-> > --- a/drivers/tty/serial/sifive.c
-> > +++ b/drivers/tty/serial/sifive.c
-> > @@ -788,13 +788,12 @@ static void sifive_serial_console_write(struct co=
-nsole *co, const char *s,
-> >       if (!ssp)
-> >               return;
-> >
-> > -     local_irq_save(flags);
-> >       if (ssp->port.sysrq)
-> >               locked =3D 0;
-> >       else if (oops_in_progress)
-> > -             locked =3D spin_trylock(&ssp->port.lock);
-> > +             locked =3D spin_trylock_irqsave(&ssp->port.lock, flags);
-> >       else
-> > -             spin_lock(&ssp->port.lock);
-> > +             spin_lock_irqsave(&ssp->port.lock, flags);
-> >
-> >       ier =3D __ssp_readl(ssp, SIFIVE_SERIAL_IE_OFFS);
-> >       __ssp_writel(0, SIFIVE_SERIAL_IE_OFFS, ssp);
-> > @@ -804,8 +803,7 @@ static void sifive_serial_console_write(struct cons=
-ole *co, const char *s,
-> >       __ssp_writel(ier, SIFIVE_SERIAL_IE_OFFS, ssp);
-> >
-> >       if (locked)
-> > -             spin_unlock(&ssp->port.lock);
-> > -     local_irq_restore(flags);
-> > +             spin_unlock_irqrestore(&ssp->port.lock, flags);
-> >   }
-> >
-> >   static int __init sifive_serial_console_setup(struct console *co, cha=
-r *options)
->
-> --
-> js
-> suse labs
->
+Moreover in the driver of the device, the probe fails if it does not 
+find a clock, hence this addition.
+
+cf. drivers/tty/serial/st-asc.c:701
+> 
+>> +
+>> +  uart-has-rtscts: true
+> 
+> Drop, not needed.
+
+Ack
+> 
+>> +
+>> +  st,hw-flow-ctrl:
+>> +    description: When set, enable hardware flow control.
+>> +    type: boolean
+>> +
+>> +  st,force-m1:
+>> +    description: When set, force asc to be in Mode-1. This is recommended for
+>> +      high bit rates above 19.2K.
+>> +    type: boolean
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +  - clocks
+> 
+> Also something new.
+
+This is linked to the addition above.
+
+If you agree with this change I will send a v2 explaining this.
 
 Regards,
-Andy
+Raphaël
+> 
+> 
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
