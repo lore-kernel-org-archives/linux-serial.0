@@ -1,178 +1,154 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 364DC1E4A1;
-	Mon, 26 Feb 2024 15:22:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 147FC12BE92;
+	Mon, 26 Feb 2024 15:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708960939; cv=none; b=NEpPj6gumv8+xcIEJ1sy7neauktXNM0zllYQx0754UbkKkqvzSqjLMiBZcc7djBB3DwRiXuzwM2gaR2T9mVsVCa1HzEfjr+NjhCHWF3e4dxnFz+Ws1lK1DRGdL9qNXhFOmmptLJxKDQiXioZg/zCaMnrxYKEfN1BALpG2+/z1qI=
+	t=1708961309; cv=none; b=U+skVjTmpGOKwhTronKkO1PVH41TOfZccmu/WtH8CLAH3FL9tGuhd+HZzMmPMKA86pzv2gGKm4UqSBbpmLmfgLtWo92K3xCzzxz+GBiKAoNwzrqV3SbemdXl6IdprqAPfsso2N9rG6QyK2QY56OhSp0kCbSp/Ah+uK5im6xr7B8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708960939; c=relaxed/simple;
-	bh=pnLMu2JRaK4jkBKbdQ/FyNx6bxwlJXbOumIQ5QXHA54=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=g2RwWMzJC+/zt4opouobLrg2++/lpa99NVcJPm1zhK0AtiZEz8w5ExTH9GwM3NvGGqYpQMK5Dew6dDKUJ1G90jTfNkkCGbfxN3tqqtg0P6mZXP/hOgUkdMLXtPq9r737exK9JpVKtqmC+oNe9iYXRDjNGxxvleiOtLDG1EL8kLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZO8Q6gRd; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZO8Q6gRd"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2d24a727f78so45338321fa.0;
-        Mon, 26 Feb 2024 07:22:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708960936; x=1709565736; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=WkqUh76ItlVehsi7wY8VmVeMyWF5V+vxuPwZ5kjJDeM=;
-        b=ZO8Q6gRdcI7KhPUoGTrSGB53QkmoOGCEyPlEFS/6hNLFpGO6Md2XDWROq+iyiBrYr7
-         pYvllUOuqJwnwi8P2HE5JK6PF9igk4BYEVOn6CLhsEQYmtAGma4bX6nUCdnknNKrX1p3
-         porCnOTkC25QIg3Un6xNGX0UY2yzDcDOVB5nsKUbcR4IEmfSxlJpGVsr6v3XoB61a62D
-         zkUdltanIpeklv+nPtW+b21AsUNALHVemCwH3tK0lCkMvlAzDb0jZQGL4CyNJK3q+YUB
-         5ld4wsq1j8vnkHN+CJ8UgKIahFnXgkZ9joWyPYrcDEzrZUe7AkhzU6ik6WYMe2YzzY0h
-         1m4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708960936; x=1709565736;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WkqUh76ItlVehsi7wY8VmVeMyWF5V+vxuPwZ5kjJDeM=;
-        b=udExlnfXgA4MWeO8XLCB8XKzs+nmvcEnmkOMje7lP1dG/Rt7sFFI5p5lz04VOyTj6d
-         fWWgrjT5q2QgJRaTvFQQaWfwTRZLwBXY6qLG/rrhcKVYHfKdsbV+tSEHu7SGIeav2bgx
-         0t6bP5QSBVLiBBPDvPDAEMPA5YKCV+l9R5vaQK8MEo/BoBahmlpKUtu8lbyeG18Tm68S
-         syabm6orbCWCrF3LbaENm1dl5Rcl5V+jE0meWUetzMxvTcPwwZ74hiATvuE4vGFBCEDD
-         B/3dZ7SpMjD2qgSf30HP8jLao7UtZEDw/damLnNQc3hwdpDPdrBEMXUWPclHYcPQsrNt
-         yK+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWPcECNMWqQemMUUuNMG+w4QzgKxfyphXTF+zNy/yNwQvgGYUI6cbcHf3jZLMp1EGB027hWgLDbUkBOWMn+O1pYnJ/CKY5g2bO4NiYwud6aLFkKaAGa2vEkqJjcnNy+CNmNBgTIuz/tSw==
-X-Gm-Message-State: AOJu0Yxpv6qsMF0uNYH6PeQ7H33T8qYJn5QLTxpetnUV9E2t9FqNXD3M
-	ylK6tzLPWY9eifP3K4HzD87zQ8BIvHKlRaUoNxKWEghdvMs+S8xZp4i1E7Ki
-X-Google-Smtp-Source: AGHT+IHPpp4B4SYdq6vLgAkUoOon4yKj1df+LOx8WqTWVPOKzVIKw5eJe4Ff5fZnOkPxBF/C4Eeixg==
-X-Received: by 2002:a2e:86cf:0:b0:2d2:724d:f653 with SMTP id n15-20020a2e86cf000000b002d2724df653mr4873791ljj.38.1708960936140;
-        Mon, 26 Feb 2024 07:22:16 -0800 (PST)
-Received: from localhost ([2001:861:3385:e20:6384:4cf:52c5:3194])
-        by smtp.gmail.com with ESMTPSA id js1-20020a05600c564100b004128936b9a9sm12354104wmb.33.2024.02.26.07.22.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Feb 2024 07:22:15 -0800 (PST)
-From: Raphael Gallais-Pou <rgallaispou@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: serial: convert st,asc to DT schema
-Date: Mon, 26 Feb 2024 16:21:35 +0100
-Message-ID: <20240226152135.8671-1-rgallaispou@gmail.com>
-X-Mailer: git-send-email 2.43.2
+	s=arc-20240116; t=1708961309; c=relaxed/simple;
+	bh=vQ+IFaWXgRCRA+uzfCOIXLaOPJBKy/2Ip4I8Pxm/Ja0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Z8ONNhH0gfGPA50D/NOKIan/ROon5gL6xiVjidx6ihycz5uADEvhrIlP3QvXapOZVIvY342KtF0lUGYALFKOVLDOLc0QSAhd+VGlpltuAPcUO8un3B63RU1j+/XyKZFQidnnPCRRcyxAYu9ByBePtLBxqySHjdAzdES/FhnxjcE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Tk4Hc3BgqzLqKT;
+	Mon, 26 Feb 2024 23:27:40 +0800 (CST)
+Received: from canpemm500009.china.huawei.com (unknown [7.192.105.203])
+	by mail.maildlp.com (Postfix) with ESMTPS id D867414011D;
+	Mon, 26 Feb 2024 23:28:18 +0800 (CST)
+Received: from localhost.localdomain (10.50.165.33) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Mon, 26 Feb 2024 23:28:18 +0800
+From: Yicong Yang <yangyicong@huawei.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <tony@atomide.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+CC: <john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
+	<tglx@linutronix.de>, <yangyicong@hisilicon.com>, <linuxarm@huawei.com>,
+	<prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+	<fanghao11@huawei.com>
+Subject: [PATCH v5] serial: port: Don't suspend if the port is still busy
+Date: Mon, 26 Feb 2024 23:23:51 +0800
+Message-ID: <20240226152351.40924-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 
-'clocks' property is required regarding the device. Convert st,asc
-binding to DT schema format in order to add this property, and update
-example.
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
+We accidently met the issue that the bash prompt is not shown after the
+previous command done and until the next input if there's only one CPU
+(In our issue other CPUs are isolated by isolcpus=). Further analysis
+shows it's because the port entering runtime suspend even if there's
+still pending chars in the buffer and the pending chars will only be
+processed in next device resuming. We are using amba-pl011 and the
+problematic flow is like below:
+
+Bash                                         kworker
+tty_write()
+  file_tty_write()
+    n_tty_write()
+      uart_write()
+        __uart_start()
+          pm_runtime_get() // wakeup waker
+            queue_work()
+                                             pm_runtime_work()
+                                               rpm_resume()
+                                                status = RPM_RESUMING
+                                                serial_port_runtime_resume()
+                                                  port->ops->start_tx()
+                                                    pl011_tx_chars()
+                                                      uart_write_wakeup()
+        […]
+        __uart_start()
+          pm_runtime_get() < 0 // because runtime status = RPM_RESUMING
+                               // later data are not commit to the port driver
+                                                status = RPM_ACTIVE
+                                                rpm_idle() -> rpm_suspend()
+
+This patch tries to fix this by checking the port busy before entering
+runtime suspending. A runtime_suspend callback is added for the port
+driver. When entering runtime suspend the callback is invoked, if there's
+still pending chars in the buffer then flush the buffer.
+
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
-Changes in v2:
-  - Drop 'uart-has-rtscts' property
-  - Rewrite commit log to better match the changes
----
- .../devicetree/bindings/serial/st,asc.yaml    | 55 +++++++++++++++++++
- .../devicetree/bindings/serial/st-asc.txt     | 18 ------
- 2 files changed, 55 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/st,asc.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/st-asc.txt
+Change since v4:
+- Address the code style per Andy and add his tag
+Thanks.
+Link: https://lore.kernel.org/all/Zdi9X8qzQhNE3rGl@smile.fi.intel.com/
 
-diff --git a/Documentation/devicetree/bindings/serial/st,asc.yaml b/Documentation/devicetree/bindings/serial/st,asc.yaml
-new file mode 100644
-index 000000000000..f2083388f36b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/st,asc.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/st,asc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+Change since v3:
+- Drop non-fix change in __serial_port_busy()
+- Use a boolen busy instead of ret per Jiri
+Link: https://lore.kernel.org/all/20240208075216.48915-1-yangyicong@huawei.com/
+
+Change since v2:
+- Narrow the spinlock region per Andy
+- Make __serial_port_busy() return -EBUSY if port has pending chars per Andy
+Thanks.
+Link: https://lore.kernel.org/all/20240206073322.5560-1-yangyicong@huawei.com/
+
+Change since v1:
+- Use port lock wrapper per John
+- Flush the pending chars and return -EBUSY per Tony.
+Thanks.
+Link: https://lore.kernel.org/all/20240204031957.58176-1-yangyicong@huawei.com/
+
+ drivers/tty/serial/serial_port.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+index 88975a4df306..72b6f4f326e2 100644
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -46,8 +46,31 @@ static int serial_port_runtime_resume(struct device *dev)
+ 	return 0;
+ }
+ 
++static int serial_port_runtime_suspend(struct device *dev)
++{
++	struct serial_port_device *port_dev = to_serial_base_port_device(dev);
++	struct uart_port *port = port_dev->port;
++	unsigned long flags;
++	bool busy;
 +
-+title: STMicroelectronics STi SoCs Serial Port
++	if (port->flags & UPF_DEAD)
++		return 0;
 +
-+maintainers:
-+  - Patrice Chotard <patrice.chotard@foss.st.com>
++	uart_port_lock_irqsave(port, &flags);
++	busy = __serial_port_busy(port);
++	if (busy)
++		port->ops->start_tx(port);
++	uart_port_unlock_irqrestore(port, flags);
 +
-+allOf:
-+  - $ref: serial.yaml#
++	if (busy)
++		pm_runtime_mark_last_busy(dev);
 +
-+properties:
-+  compatible:
-+    const: st,asc
++	return busy ? -EBUSY : 0;
++}
 +
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  st,hw-flow-ctrl:
-+    description: When set, enable hardware flow control.
-+    type: boolean
-+
-+  st,force-m1:
-+    description: When set, force asc to be in Mode-1. This is recommended for
-+      high bit rates above 19.2K.
-+    type: boolean
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/stih407-clks.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    serial@9830000 {
-+        compatible = "st,asc";
-+        reg = <0x9830000 0x2c>;
-+        interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clk_s_c0_flexgen CLK_EXT2F_A9>;
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/serial/st-asc.txt b/Documentation/devicetree/bindings/serial/st-asc.txt
-deleted file mode 100644
-index a1b9b6f3490a..000000000000
---- a/Documentation/devicetree/bindings/serial/st-asc.txt
-+++ /dev/null
-@@ -1,18 +0,0 @@
--*st-asc(Serial Port)
--
--Required properties:
--- compatible : Should be "st,asc".
--- reg, reg-names, interrupts, interrupt-names	: Standard way to define device
--			resources with names. look in
--			Documentation/devicetree/bindings/resource-names.txt
--
--Optional properties:
--- st,hw-flow-ctrl	bool flag to enable hardware flow control.
--- st,force-m1		bool flat to force asc to be in Mode-1 recommended
--			for high bit rates (above 19.2K)
--Example:
--serial@fe440000{
--    compatible    = "st,asc";
--    reg         = <0xfe440000 0x2c>;
--    interrupts     =  <0 209 0>;
--};
+ static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+-				 NULL, serial_port_runtime_resume, NULL);
++				 serial_port_runtime_suspend,
++				 serial_port_runtime_resume, NULL);
+ 
+ static int serial_port_probe(struct device *dev)
+ {
 -- 
-2.43.2
+2.24.0
 
