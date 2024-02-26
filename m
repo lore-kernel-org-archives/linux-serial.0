@@ -1,176 +1,169 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2083.outbound.protection.outlook.com [40.107.93.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46D3B2D048;
-	Mon, 26 Feb 2024 07:38:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708933128; cv=none; b=HE7LczsbgZergtUWzfvyLQMCIe/c2L+FDwUOT4QmNBrmucqDp18LTPctHYQbd0fJfWFitKYAqu/bfD1IApZIsejKTIl8hdcf7AkOYbcs9IC/Hvbd0HpZglVOWEZ7eRuPJEuvSi/F4JjaQcugbABXINSfPA4qhqEtKC+Yu6lXb8g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708933128; c=relaxed/simple;
-	bh=1ggclRD1djvxmGmT8E2XQWUaxTLSJFfuYRhMG5jSVS4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LNAP4woBkRB8NMsmgCtAesod7t0Y2aKQAx7hpt57W8g8HPaFfriXVplkRvb3GsoWJE6uipzWKKTLLM2++4bL7r9bGX02sep12wJD1yPzfNtBCj64yItRTpN8ozrr+f8rb5jmyG1LFkdc2DmGQB9VOkJJGf8ChQPSBn+0W8PUhLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X3ENP322; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC0A1C686;
+	Mon, 26 Feb 2024 08:08:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.83
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708934930; cv=fail; b=XN/7iuNbReUDjDyzjhOx0OElfORklxSixrqCnL28TRik2so6824817FybAFxqgdmYffh9Pe5NT9k8/Lasnzu877eoY16RcngXEhRW3g6/RoD3x74gNx78oO00TTg3G6h9oO4WOIE1B57N7C3HB4CWGri9fzRSmumcrlrPcdnTF4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708934930; c=relaxed/simple;
+	bh=C7wAhACUnvWi8puGFH8YeJb5cnbccB4tL2R0TCt7+xQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AL8tl8Aa/4OCjri0HPK2cp3N+xdw1fju6/2RrT8/SZBW/EgoPk54heYgh82psEhMMoZOsZAbM2wPlwCq7bFnt8K8oBHVpGwNfXeAMh1wugQoA8ZN+SAL8ZB0if2VB1nqmVh0z00+KV1bHb2o2xPoUi8SQGRRVDaCM3DsZV/p+ic=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=sony.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=oq1OJ9Uj; arc=fail smtp.client-ip=40.107.93.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sony.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X3ENP322"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-412a87d5666so569205e9.3;
-        Sun, 25 Feb 2024 23:38:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708933124; x=1709537924; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=fZmcmpNn19gMD5RLlKzvJyidK9zbXyq1tNlIBH8kQTY=;
-        b=X3ENP322A/eunHqmddmeX8FAO5bvWXnK5Z8SLOzXlSRU6Z3AamdWUFZWX6i1i0i2QD
-         JtU1JslYUx0yyDux25ngIlYz10m/a72XQQhGj1Ju5Wuk5RplfGw7xoJ1j9ez4Hd43wMX
-         8r1FwXXTmQYKVxd6HtK9J3MbllKvOYsSwZAjjo2HEDbTPR/41AYEyvK3/IIH4wHttoxO
-         hHWapboEa1mELtEtB5YhWueuqtjDlMddR543x7+tICS7uQgStf+NAzHKxLKP60x1j7y3
-         SHaKYu/Kfv7cJVzeBVimTHp4ML8C9TSsu3P5bgp6rFMAjBkFGD7VsGv7k/+U4w/ZbMms
-         9T+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708933124; x=1709537924;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fZmcmpNn19gMD5RLlKzvJyidK9zbXyq1tNlIBH8kQTY=;
-        b=e86d+dEEKCcWsT8FnFs6jFmFY6pmxVcIDRe3qeIIuDiQ+yFi3kAHad6MJD5bYcoTeQ
-         FmkE7G+AZru/A/m7OCJDVnADUyLIvFlOCNh+9xn8DHaTsMiBSQBMmAZeudynZUS1IIGH
-         OZopEFGOgxxrBv4/y2UgQtj+toI404PNYcd6s9jNQmcMvfCxwoEwdfZxF0el/F5zqhhP
-         sziaghMxgR9i68Y913VF28gmIwDX5rEKPMLpsewZCu9yoStgMr9Aeo81CxyMd0OT2Fnx
-         AYRG2ET3M3MKhyyNQQx8Oekh0CsJchigSUdNw1LGylwcAycCLSLq/7L1SzFSx7jtqSs+
-         jmlw==
-X-Forwarded-Encrypted: i=1; AJvYcCVeQun1KEX9zZJA9umbwiHrHcQYVkCKjDcUv07MpuH8M+qG3Qrb2DhQgJqwbtbwsQnjOcpeQqe5w3fDWjULrXJD6yob8QE5HoXD+BqSkNlfrxBb/5JYieZUd3aCf3RfoMXj8BCukCmjPA==
-X-Gm-Message-State: AOJu0Ywe94zxEwXmrMHfV5XRTMnvyeabmLUUb2m2Yi3VPElRyxPf1G9d
-	BKOndbcq3IHNOWky0mknWjqDxUBXdlMUP5ZH0TTBqgQp1AXoopWyBr/kdzD8
-X-Google-Smtp-Source: AGHT+IGtZBJfgssesLpExwIgvHWKPnBv28kAeC96tIDQFsQtRDAuA0aWBGTSPSOx+Xug9zTSUtfAVQ==
-X-Received: by 2002:a5d:5b85:0:b0:33d:87e9:5900 with SMTP id df5-20020a5d5b85000000b0033d87e95900mr4089815wrb.62.1708933124367;
-        Sun, 25 Feb 2024 23:38:44 -0800 (PST)
-Received: from ?IPV6:2001:861:3385:e20:6384:4cf:52c5:3194? ([2001:861:3385:e20:6384:4cf:52c5:3194])
-        by smtp.gmail.com with ESMTPSA id bh3-20020a05600005c300b0033d640c8942sm7599142wrb.10.2024.02.25.23.38.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 25 Feb 2024 23:38:44 -0800 (PST)
-Message-ID: <4a1504d4-6c64-4385-bb52-43d39a017215@gmail.com>
-Date: Mon, 26 Feb 2024 08:38:43 +0100
+	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="oq1OJ9Uj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hTSK862b0gQHcHShpS8oXIL1qc1AMoMSxaorpoAz2kF+k5UmWkU1oKtb1KJwJaTR+3pAuRua0d3Lxo2yKOkf8QZGBLoWCU6eYoN7faKBhMXrf3DHaquTBRvK8I7wkEXT45CeoE+xfVuXOMFEYlwM3OpSb9VXzW59HPjFTkjmQQDnjqVRrIUWigLvChvfsFXl522U6swYr3nCxYLYtTvlNPV9onwVHRownuvUgQAdM/r9hqOjVbTnJ5vqPfaszTC8rJmELvqFaB8dxd0HPYMd/9yGsWdNqJGgKwHjEoza0J99S5SmIf/VFZBpqkcN7ixajnkMz3fpr+JJjJIIXRIDMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C5YthapaJVivoTL7rraD8ulIiopaAJYPMokIAO4+ZC4=;
+ b=digEv1N1Iv7BXXTX4g95kKjRAMwjJ/ayGXKnpmMrNT4xm+6PC6sSoamBljQVSLITUGjni6VUvhzK9Vr4BMjAf3jqBgH54MBchqvoHzmn64t1xWuaMdYns8z0k4Posi07Dup00qaZvTtM2Mzv8Uhe+el/r7GHpsNUbYdcHA/dRLaKatOLXuP/xNq+0ccabeiJKOvanXwKYRzIzU7+QsRyFKkKGhyOpQSZtucfIk8VkP5oFzF1vkFLRg/TwFmuFbHJcS0wKRuTrkAKh4t506obM4NU2pG86MlWvB+X4YZGIrZ9n5p2hDRJ/qBJOz0mkGvu9fNyNU74YfZMzRfB08esXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 121.100.38.196) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=sony.com;
+ dmarc=fail (p=none sp=none pct=100) action=none header.from=sony.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
+ s=selector2-Sony-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C5YthapaJVivoTL7rraD8ulIiopaAJYPMokIAO4+ZC4=;
+ b=oq1OJ9UjWhMC/Y7HsLZkqf0GjETE7X7uJyYRNH/Q2rS4CxlIphBrGOwjBXQ0LwfLgpg5awRHJxxTDYk26mJUmpCp3+eiNmW1fsYvM35Mda3CGYyRRPHgomzuSChz8J1IxwlNv6mSqSWUpKUdalbFex+eSksVW5vIKrIlAxispZU=
+Received: from BN9PR03CA0174.namprd03.prod.outlook.com (2603:10b6:408:f4::29)
+ by SN4PR13MB5741.namprd13.prod.outlook.com (2603:10b6:806:211::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.34; Mon, 26 Feb
+ 2024 08:08:45 +0000
+Received: from BN2PEPF000044A6.namprd04.prod.outlook.com
+ (2603:10b6:408:f4:cafe::7a) by BN9PR03CA0174.outlook.office365.com
+ (2603:10b6:408:f4::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.49 via Frontend
+ Transport; Mon, 26 Feb 2024 08:08:45 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.196)
+ smtp.mailfrom=sony.com; dkim=none (message not signed)
+ header.d=none;dmarc=fail action=none header.from=sony.com;
+Received-SPF: Fail (protection.outlook.com: domain of sony.com does not
+ designate 121.100.38.196 as permitted sender)
+ receiver=protection.outlook.com; client-ip=121.100.38.196;
+ helo=gepdcl07.sg.gdce.sony.com.sg;
+Received: from gepdcl07.sg.gdce.sony.com.sg (121.100.38.196) by
+ BN2PEPF000044A6.mail.protection.outlook.com (10.167.243.100) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7292.25 via Frontend Transport; Mon, 26 Feb 2024 08:08:44 +0000
+Received: from gepdcl02.s.gdce.sony.com.sg (SGGDCSE1NS07.sony.com.sg [146.215.123.196])
+	by gepdcl07.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41Q87Gc4015027
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+	Mon, 26 Feb 2024 16:08:26 +0800
+Received: from mail.sony.com ([43.88.80.246])
+	by gepdcl02.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41Q87FxV020269;
+	Mon, 26 Feb 2024 16:07:15 +0800
+Received: by mail.sony.com (Postfix, from userid 1000)
+	id 8392920C06C3; Mon, 26 Feb 2024 13:31:52 +0530 (IST)
+Date: Mon, 26 Feb 2024 13:31:52 +0530
+From: Sreenath Vijayan <sreenath.vijayan@sony.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
+        anandakumar.balasubramaniam@sony.com
+Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
+ sysrq
+Message-ID: <ZdxFcP2UkocRXbm_@sony.com>
+References: <cover.1706772349.git.sreenath.vijayan@sony.com>
+ <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
+ <ZcOdLrOPiPJmCec5@alley>
+ <ZcygJOj9TaHZUKd-@sony.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: convert st,asc to DT schema
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20240225100336.34122-1-rgallaispou@gmail.com>
- <174b85c4-107b-44ea-af81-4564101aa5ec@linaro.org>
-Content-Language: en-US, fr
-From: =?UTF-8?Q?Rapha=C3=ABl_Gallais-Pou?= <rgallaispou@gmail.com>
-In-Reply-To: <174b85c4-107b-44ea-af81-4564101aa5ec@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZcygJOj9TaHZUKd-@sony.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A6:EE_|SN4PR13MB5741:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4be861c-68c4-4e7e-7b3d-08dc36a22773
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	6I8JhV55wso8bR3/SaG86BosJmCLxIk6/J5nd74DkxEkph/5kFAzwEkaWnO4LWT2fnb7iUwphuMdmYImrlBRytjixx/pzA2jv+NOVcIxLST0xCitTqSQ3BDSRBlPI9I965ESruH2dgcr9pzyGOsw9pl/Y9+oEprn1Ec7hFJJUI8K1MP3LFBI+uW6OAaXUPOYBhGMSvEcpa0Eq4rUwnaO+BBKodf6CNyDqPDv8LvNH58Pw12pPQHIpxUWfCy2WZDRyeKCSeoFkOanFx5HHL1bumxBX0kapvwx9dBAPPpx7YExFzFKVUw54r3keEPnRVLLQsThBbAmDoXTaTX0y+uwgjtlC0n3XmI08P561wjkajoEfUkztlVkxGFqDdxq2jNNoFE5Ttdg/Gb1BYBc9yZZp+PI2eMD/483BXVcAxiUqcwW4juKwhLKrB5zImN1iKUqFSZlZSSPuJ57LjtQSIS5XV2nktNJevshIUOVz/cHHyFRrfHgysVXfBLkTvY4ASAOSQzKANXnilDBSRRFBfkzQJCIuc4qVzJlZE5DYgNMMVgvqSo8bPnI/9x9YLHRBGplwcO3nVr8gFEhdWsbZSJb/H0i8+7ub4e7gda4RGpkOkU4QlGvTnFEyETqZf2LZBZX3d7jljwT2CNirMu0wrUlepQj7zugbx+p7Isuwh6RnDg2iJ/GgGC0GTJqWDwqok25NJCYLR6p3E7pixIC+GpRj8R3PZsvAQEssJqy0zSFdWzHlYrtGwnac3N7aOBQy//H
+X-Forefront-Antispam-Report:
+	CIP:121.100.38.196;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl07.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(36860700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: sony.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 08:08:44.6749
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4be861c-68c4-4e7e-7b3d-08dc36a22773
+X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.196];Helo=[gepdcl07.sg.gdce.sony.com.sg]
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-BN2PEPF000044A6.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5741
 
-Hi Krzysztof,
-
-
-Le 25/02/2024 à 16:42, Krzysztof Kozlowski a écrit :
-> On 25/02/2024 11:03, Raphael Gallais-Pou wrote:
->> Converts st,asc binding to DT schema format and update example.
->>
->> Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
->> ---
->>   .../devicetree/bindings/serial/st,asc.yaml    | 57 +++++++++++++++++++
->>   .../devicetree/bindings/serial/st-asc.txt     | 18 ------
->>   2 files changed, 57 insertions(+), 18 deletions(-)
->>   create mode 100644 Documentation/devicetree/bindings/serial/st,asc.yaml
->>   delete mode 100644 Documentation/devicetree/bindings/serial/st-asc.txt
->>
->> diff --git a/Documentation/devicetree/bindings/serial/st,asc.yaml b/Documentation/devicetree/bindings/serial/st,asc.yaml
->> new file mode 100644
->> index 000000000000..b26e1d247346
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/st,asc.yaml
->> @@ -0,0 +1,57 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/serial/st,asc.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: STMicroelectronics STi SoCs Serial Port
->> +
->> +maintainers:
->> +  - Patrice Chotard <patrice.chotard@foss.st.com>
->> +
->> +allOf:
->> +  - $ref: serial.yaml#
->> +
->> +properties:
->> +  compatible:
->> +    const: st,asc
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
+On Wed, Feb 14, 2024 at 04:42:36PM +0530, Sreenath Vijayan wrote:
+> On Wed, Feb 07, 2024 at 04:09:34PM +0100, Petr Mladek wrote:
+> > Idea:
+> > 
+> > Using console_trylock() actually might be more reliable than
+> > workqueues. console_trylock() might fail repeatably when:
+> > 
+> >     + the console_lock() owner is stuck. But workqueues would fail
+> >       in this case as well.
+> > 
+> >     + there is a flood of messages. In this case, replaying
+> >       the log would not help much.
+> > 
+> > Another advantage is that the consoles would be flushed
+> > in sysrq context with the manipulated console_loglevel.
+> > 
+> > Best Regards,
+> > Petr
 > 
-> This wasn't here before and your commit msg does not explain it.
-
-Looking at the device-tree I found that every instance of this device 
-refers to a phandle of a clock.
-
-Moreover in the driver of the device, the probe fails if it does not 
-find a clock, hence this addition.
-
-cf. drivers/tty/serial/st-asc.c:701
+> Yes, this seems to work well from interrupt context when the
+> console lock owner is not stuck. We can also manipulate
+> the console_loglevel. Something like this:
 > 
->> +
->> +  uart-has-rtscts: true
+> //in printk.c
+> void console_replay_all(void)
+> {
+>        if (console_trylock()) {
+>                __console_rewind_all();
+>                console_unlock();
+>        }
+> }
 > 
-> Drop, not needed.
-
-Ack
+> //in sysrq.c
+> static void sysrq_handle_dmesg_dump(u8 key)
+> {
+>        int orig_log_level = console_loglevel;
+>        console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
+>        console_replay_all();
+>        console_loglevel = orig_log_level;
+> }
 > 
->> +
->> +  st,hw-flow-ctrl:
->> +    description: When set, enable hardware flow control.
->> +    type: boolean
->> +
->> +  st,force-m1:
->> +    description: When set, force asc to be in Mode-1. This is recommended for
->> +      high bit rates above 19.2K.
->> +    type: boolean
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - clocks
 > 
-> Also something new.
+> The downside I see is that the user may have to hit the
+> key multiple times or give up trying if the console lock
+> owner is busy at the time of key press. This information
+> should probably be updated in the documentation.
+> 
+> Please let me know your opinion.
+> 
+> Regards,
+> Sreenath
 
-This is linked to the addition above.
+Hi,
 
-If you agree with this change I will send a v2 explaining this.
+Kindly let me know your opinion on the suggested changes.
 
 Regards,
-Raphaël
-> 
-> 
-> 
-> 
-> Best regards,
-> Krzysztof
-> 
+Sreenath
