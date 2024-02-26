@@ -1,115 +1,190 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A017128386
-	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 16:01:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B85812CD8F;
+	Mon, 26 Feb 2024 16:21:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708963270; cv=none; b=Iu7SHlSPvJiYgCr98p9/Gt6OCn2KF0+hasj5Hs1vbjdagOzo6OSVb611bkZce9ZdsZn1DkzMlHCzYev8Pec31IcAsbgBgKJGmL+GOl0H/BUNm2s+U/X0zA+p+uHNUbtKAEMehiAqCIu8eX6n+vmmThO9ng/HTL9NAh73stYVqb0=
+	t=1708964494; cv=none; b=GxiKgcysqFOkPLUZ1IuqCrnetpUoELtOWW0CA2OaDWNihd5GNpCPX7ykqw+HBJAEqvsp1Mu3JGsSwOdJj/pJ8/WmRqWgSgJjJHf7L54HCe9KAOZMd4aVznNAB4TwPKZwJ7DPEE8x7orlX9qNeluKcXtHbhIbPozpl06u501Zwbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708963270; c=relaxed/simple;
-	bh=KR4gqawWz888BDqcnt6P3mx6J0Z8KN7NyP4/jwzp43k=;
+	s=arc-20240116; t=1708964494; c=relaxed/simple;
+	bh=K8Zp0ZPKDcwcP3G/KRjzFIjbZsJkztFYeVAPVMu3ls8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lJ5HkXQhLcY/gPulGivlHu3d7XL88OgP0EM1Idevv56kdfoPjLOkHNW+yGs3vY4IFchZVZDXIpwJ5RgX/5L8OLljl63RXxn0kv6wK5q0S0FLqbQpisOVZbKCz2LtptFm/jETsOB4XR/0VGAqHSB+oWMK57HsWHhyoHpp/kn2gn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hB9C6BRt; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hB9C6BRt"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4129a748420so95415e9.0
-        for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 08:01:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708963267; x=1709568067; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rx2ismZqI+uUe7s0HDfK/iCGkx96FSYcL/qVJ23SipU=;
-        b=hB9C6BRt/AYHvKOoraUm/QaHtnHHxbEWRXs6kHUPH/hXQXgZQHRmZJBhe00etA38XN
-         F0O9MLwHFsZyrygRGq1Wu7sbHm5rbzb2EkLd0C3Msf1nSPA1EiI4aTl1BW/+ZDjzm+Qr
-         rr0Tm2dbMDahJ1MRrVxJ9z3yyKjHlFcNDMw4C91LnQ2qeXdj6e+HAuMqDapaKd2vskgJ
-         nBp9Rxd6XhStmwpewwN4SBU9C6J/bPKrQfQH1YvF9MmnR5v1T/mS0/9njKypXf0RoLqZ
-         +Lru4aLM581Sq3Vkk2o0u391Cp5hZkdcMFQL9bgYh2Zcrrgv9GTtd+LYfiv2Coa7/grV
-         gGcg==
+	 To:Cc:Content-Type; b=jaU+dAw9IG0T/+RjLslPCJ7CMFdSiuBrrhI72cj3fpSklsy21NYfI+fvGZlOvcGF68NsUMTzQpXLYKREu/FFRm2xD7HsAA8QZh6locuNSWUuiBlup6DertHPu6G7c5BnAMmRtE+uHQfYUQnA+aniDLr2OjAVlCSnxACdAS8qLNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-dc6d9a8815fso3012295276.3;
+        Mon, 26 Feb 2024 08:21:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708963267; x=1709568067;
+        d=1e100.net; s=20230601; t=1708964488; x=1709569288;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rx2ismZqI+uUe7s0HDfK/iCGkx96FSYcL/qVJ23SipU=;
-        b=MA2HnBqj8FruANe0KOcc2RsIDORIutRtl+BRDh5lXnctL3zLaW1g0YGEVx7TAadIix
-         kTHDiRZtnZaCHo8+Gv4Z9/aeEWWhkpouUiNIkKmxZ+6LGPnthVW/E9WaWwzNaak81GS2
-         b9ohNPOJVJab+nALAA1ee08atxL3LihHkXJo3vaWK7sIU5di6ikzW+0qdAicLSXNjwra
-         WxRtM/+RiJfFtsxztAhbWj1qDpTplrcbByIygxYh1mVu2ns7Lp7ZMJr2gywhBmscAtSW
-         8E+CDiRvtjotpMmjoXdbluJDgIi0RYd2Vj0+YTd1pYDtWUX952Y8NsZM2Uk1TXDIM9FK
-         21Aw==
-X-Forwarded-Encrypted: i=1; AJvYcCX7V/ZYIAt1jYSDCHm5iz/pX3tqIPYvmc0WgvfKiwS1qmJmjGCgUgwx55KleyB5ueNF06UW3GzSetnxgRMC6/e7QV7bRCGHDlASNYQ6
-X-Gm-Message-State: AOJu0YzrzWlj/vkv/mjeuvaanjD5BbM2UfXLHySmnKAqH4DIhYqZvwpX
-	Cskjr+Zb2IRVoZPowQcV+zjxZC+lcLN1lbFo+mYPUeTGJeUpiEubHu6EtnjjE3jBPt/KAr4I9h+
-	SBvhGEpxyRWfxRiYqJQ/1qD3TPyuzb6EKnYUh
-X-Google-Smtp-Source: AGHT+IEmC5IIk8VP5+8/9Vrdmx7qEPI0kAZBxvZ4GdYje0qo4jDPNkxsjR5tLHl+hzo1DQpclP5C0nHf3h6pVwtGX2w=
-X-Received: by 2002:a05:600c:1d93:b0:412:a897:a78 with SMTP id
- p19-20020a05600c1d9300b00412a8970a78mr94398wms.5.1708963267311; Mon, 26 Feb
- 2024 08:01:07 -0800 (PST)
+        bh=AnNfNm5GP8AlHR3LpO3OZDALnBwQPt1VpdE5YdvyhHU=;
+        b=FVnpkMWODbp4c5fW2UFshr2DOS6ND2QSWBJ96wrSUsYfNeHmiEw68PeRPLajn1WFVJ
+         3A4auSk7dBLYT9PHhzXsQN3UvDp6ciDmKi+gpjZuVoypDpQLbPOdFxB3n8QjBl0k1ttZ
+         4ibqSJPlm4m0oqQ4vJQLJJtJyblmBFtXOIkuXsYjKmLDsZDlZ6sD0CZrqQJg/XiI9Qrr
+         XIrxk/xfYEnGoOG3yEbOQj/6XAA9Ed8zaWXYAQap8o/4yd8PLAsYJyasNfssnhMckVYb
+         2ujHhjbPlrnu2jESuNXNyiPZmDgE4mWnxLZJ/HE/ZF0H6fjb1XshkNcf3wAGPjRjBjLF
+         54Pw==
+X-Forwarded-Encrypted: i=1; AJvYcCXShRe8maavP53tYStEtKgKz8neu6AFmiEHZbDSs9yJtoXLB4o7X9SClhCyoRJ8rBHsWoIqbytyflsmm4zqC3O0ODnLbpceL4cufCRJHxcc85/B7dGm7yTnfiOYgmLadxLBw16O1S7b9eGVGPAtD+1cR2iEN7455fW2gxdoEbfmqy8cYw06Fys01Uyhp/G+SYxO2rNJ3XfZLWe6oXVn5qdl9ip4VrfHfUWSBMlx+W+SE7wObjWdP4ze1KdB9FFzu6/0YsoFQQEqJAyVq9jmiZyU8/TjnyBlqKDhSfz51+jBIEyqQM3aw11XR5w+cRlrnXqzg9vWD+A4KDSB25a5KVOMQBxQn5vN4ZqwPW/YX6qouFgWPMgMWeA=
+X-Gm-Message-State: AOJu0Yy81+JK7ge34eIBYzpFD03VtP5Vd5q6Ycx9FBePAsB5SV3AzXcP
+	JmiSQ6cvCelDrJLZTBOV3YYbvkTB8kwmYhi7qKICdWVAa00tLrnIoK5OVq5T42w=
+X-Google-Smtp-Source: AGHT+IEJFJN64SqcZMHnkcdm3I6piTKl+/O4wLy59UNIzTaX9D/pCnztcN4qJmRcfE8aCJx/sq4G5Q==
+X-Received: by 2002:a25:ae4f:0:b0:dcd:6722:c728 with SMTP id g15-20020a25ae4f000000b00dcd6722c728mr5196743ybe.14.1708964487740;
+        Mon, 26 Feb 2024 08:21:27 -0800 (PST)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id t13-20020a25aa8d000000b00dcc620f4139sm1019289ybi.14.2024.02.26.08.21.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Feb 2024 08:21:27 -0800 (PST)
+Received: by mail-yb1-f176.google.com with SMTP id 3f1490d57ef6-dc23bf7e5aaso3149877276.0;
+        Mon, 26 Feb 2024 08:21:26 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVqq+jjHfFEPR//OoVVvagRJjk2vjYlnHtyaHvCkOTs+ZFsF6i2R9w6bPoez1blin2aatCtHOQT9jQYIElkQ9XMjM9QNds8HM8FC3tlEEH9+Yi9Xgmrd9nwPw+GjrHL2P2liAGPfbKQf/35XswvsVHxtSDT/8iWz6gCPatMAF/8swgyF+Kaf15fxCjtMXc+SyGjkj04rv8XYMbPZk1keuKBa2brkuHCjSCpJvOpJhsuRu8RsF4ZbZ/3+GUzSpybSWmZSiHFZ8PUn2uIWKWeG7SID418BORxF8mxGgfXlukUXRHQRIJjgqiJWTjI5W7tkkmEpMZICjZRFqfhifFTZag09MAiRGnJus0GfeYjxe+V5h7j3PNIttU=
+X-Received: by 2002:a25:360b:0:b0:dcc:35ca:aac4 with SMTP id
+ d11-20020a25360b000000b00dcc35caaac4mr5201494yba.51.1708964485283; Mon, 26
+ Feb 2024 08:21:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
-From: VAMSHI GAJJELA <vamshigajjela@google.com>
-Date: Mon, 26 Feb 2024 21:30:53 +0530
-Message-ID: <CAMTSyjrKVL12CrXuqJhWydObhYfgLF=zKTE0U0LdzimTT6Sdsw@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
- baudclk failed
-To: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-serial@vger.kernel.org
+References: <cover.1704788539.git.ysato@users.sourceforge.jp> <e5d965a1ba1447466c4a70c95b1e3aa8c1aebe4b.1704788539.git.ysato@users.sourceforge.jp>
+In-Reply-To: <e5d965a1ba1447466c4a70c95b1e3aa8c1aebe4b.1704788539.git.ysato@users.sourceforge.jp>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 26 Feb 2024 17:21:13 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVyz4mbExe8ZzPkVxEujYBhCBBrh88n8D6ykcZyy3=SEA@mail.gmail.com>
+Message-ID: <CAMuHMdVyz4mbExe8ZzPkVxEujYBhCBBrh88n8D6ykcZyy3=SEA@mail.gmail.com>
+Subject: Re: [DO NOT MERGE v6 02/37] sh: Kconfig unified OF supported targets.
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Thomas Gleixner <tglx@linutronix.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
+	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
+	Yang Xiwen <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>, 
+	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, 
+	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 22, 2024 at 4:50=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
->
-> Instead of silently giving up, at least tell what the problem is.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/tty/serial/8250/8250_dw.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/=
-8250_dw.c
-> index 2d1f350a4bea..94aa3dddb71e 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -597,7 +597,8 @@ static int dw8250_probe(struct platform_device *pdev)
->         if (data->clk =3D=3D NULL)
->                 data->clk =3D devm_clk_get_optional_enabled(dev, NULL);
->         if (IS_ERR(data->clk))
-> -               return PTR_ERR(data->clk);
-> +               return dev_err_probe(dev, PTR_ERR(data->clk),
-> +                                    "failed to get baudclk\n");
+Hi Sato-san,
 
-Not required IMO as the baudclk is optional, otherwise it might ask
-for a similar change at apb_pclk.
-Could you please provide some insight into the circumstances that lead
-to encountering this error case?
+On Tue, Jan 9, 2024 at 9:23=E2=80=AFAM Yoshinori Sato
+<ysato@users.sourceforge.jp> wrote:
+> Targets that support OF should be treated as one board.
+>
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 
-Also the check is for IS_ERR(data->clk), data-clk could be NULL aswell.
+Thanks for your patch!
 
-I see any error should be caught at the following line, provided no
-clock-frequency
-```
-/* If no clock rate is defined, fail. */
-if (!p->uartclk)
-        return dev_err_probe(dev, -EINVAL, "clock rate not defined\n");
-```
+> --- a/arch/sh/Kconfig
+> +++ b/arch/sh/Kconfig
+> @@ -710,6 +710,7 @@ choice
+>         prompt "Kernel command line"
+>         optional
+>         default CMDLINE_OVERWRITE
+> +       depends on !OF || USE_BUILTIN_DTB
+
+This is still useful in the generic OF case.
+
+I think it would be good to model this similar to what arm/arm64/riscv
+are using (from bootloader / extend / force).
+
+>         help
+>           Setting this option allows the kernel command line arguments
+>           to be set.
+> diff --git a/arch/sh/boards/Kconfig b/arch/sh/boards/Kconfig
+> index 109bec4dad94..e7e52779ef62 100644
+> --- a/arch/sh/boards/Kconfig
+> +++ b/arch/sh/boards/Kconfig
+> @@ -19,16 +19,9 @@ config SH_DEVICE_TREE
+>         select TIMER_OF
+>         select COMMON_CLK
+>         select GENERIC_CALIBRATE_DELAY
+> -
+> -config SH_JCORE_SOC
+> -       bool "J-Core SoC"
+> -       select SH_DEVICE_TREE
+> -       select CLKSRC_JCORE_PIT
+> -       select JCORE_AIC
+> -       depends on CPU_J2
+> -       help
+> -         Select this option to include drivers core components of the
+> -         J-Core SoC, including interrupt controllers and timers.
+> +       select GENERIC_IRQ_CHIP
+> +       select SYS_SUPPORTS_PCI
+> +       select GENERIC_PCI_IOMAP if PCI
 >
->         INIT_WORK(&data->clk_work, dw8250_clk_work_cb);
->         data->clk_notifier.notifier_call =3D dw8250_clk_notifier_cb;
-> --
-> 2.43.0
+>  config SH_SOLUTION_ENGINE
+>         bool "SolutionEngine"
+> @@ -293,6 +286,7 @@ config SH_LANDISK
+>         bool "LANDISK"
+>         depends on CPU_SUBTYPE_SH7751R
+>         select HAVE_PCI
+> +       select SYS_SUPPORTS_PCI
+>         help
+>           I-O DATA DEVICE, INC. "LANDISK Series" support.
 >
+> @@ -369,6 +363,16 @@ config SH_APSH4AD0A
+>         help
+>           Select AP-SH4AD-0A if configuring for an ALPHAPROJECT AP-SH4AD-=
+0A.
 >
+> +config SH_OF_BOARD
+> +       bool "General Open Firmware boards"
+> +       select SH_DEVICE_TREE
+> +       select CLKSRC_JCORE_PIT if CPU_J2
+> +       select JCORE_AIC if CPU_J2
+
+Please move these selects to CPU_J2 instead...
+
+> +       select HAVE_PCI if CPU_SUBTYPE_SH7751R
+
+... and this to CPU_SUBTYPE_SH7751R, else it will become
+a long unmaintainable list soon...
+
+> +       help
+> +         This board means general OF supported targets.
+> +
+> +
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
