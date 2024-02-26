@@ -1,73 +1,151 @@
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F081B5AD;
-	Mon, 26 Feb 2024 04:13:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.29.241.158
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D33A81BDC3
+	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 06:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708920799; cv=none; b=U2KiD2QlLDHF77RGVB1/fbA9RN9CQ7i833BlkmPUpUaKx6xmyy3C7USgLzjOSPMvmbGQCNwMvFDyNNQ7bLD5n1anpyib8muxsEJq3wxmdPk7zF1lOeNFn8SVh7I3pOUu2tl4WLurxf0Hx4WYuue0oB1G2m+MQrdT3wW2dtCEK7E=
+	t=1708928568; cv=none; b=t2Zfl2HWHGHYp1mAzKKlHUsl2lkwppCVF0qPd/tL9r+IaAlxelja3RoovGaJieXd5xIiOr7FgAVkKv7yn7sj/REm8DM/keuapl3WB1TPq8eJ1TmBAfPxP6WikiOViWGLgRJ00ZZR6ZVLPFy9dtivhrahICLR2nZ3TTrA3GAztH0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708920799; c=relaxed/simple;
-	bh=/q24CJLITfPyErU1UK/fAAmBnBCJ3GQy7PcDHM76kEw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=KqEbuhSBYU+xGIusMxybpmy2aL4uGSRU9hwaar1VF+mfN3zUEQ+QOEAdnfpAb8a3RgtwWA1Agbil8Bq33Dljrvh23CokLkLDKfYrHc3jdASD7FUjNhBwsBMUmXFtecRdo7+8tzu2J/M1rwxIErhvD4B9V4UhBToP010t+z8yEKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au; spf=pass smtp.mailfrom=codeconstruct.com.au; dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b=KMZ2d/Wu; arc=none smtp.client-ip=203.29.241.158
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
+	s=arc-20240116; t=1708928568; c=relaxed/simple;
+	bh=ZZKGU3FffPP3zqC+TnubmjhgC9QH4ptQlNNeiWeNUi0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JRnKiCcEwcc2uUwsmMQj52moeTDt6eRH7cl8beHLORVy6uJuKMkBhV/98qUH9R1y/2/+MkjDzs5BK7h40oPdjlQU42GzqyHL2KLscna0KLusdMSMT6OhmTnEsSsWb5bfeKrDxpAPX2yqb/b/6VrGCOnQ8tsY3k3KLnb5j1a0Gl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=C3KQ+lwE; arc=none smtp.client-ip=209.85.219.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b="KMZ2d/Wu"
-Received: from [192.168.68.112] (ppp118-210-168-240.adl-adc-lon-bras34.tpg.internode.on.net [118.210.168.240])
-	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 151DB2014E;
-	Mon, 26 Feb 2024 12:13:14 +0800 (AWST)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="C3KQ+lwE"
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-dc6d8bd618eso2699733276.3
+        for <linux-serial@vger.kernel.org>; Sun, 25 Feb 2024 22:22:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=codeconstruct.com.au; s=2022a; t=1708920795;
-	bh=/q24CJLITfPyErU1UK/fAAmBnBCJ3GQy7PcDHM76kEw=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References;
-	b=KMZ2d/WueqRPEt0x3pmeKLAQzK5soiMd5fgmGcOBAm1UYlsonQs/Uu/6NzlqB/WK/
-	 dwrA/YA8nsmxhwjMXYtC49fyF8wH09ORmR3cQJYWLThxNX4qC8jnvaA3oSZ3eGy1E4
-	 w2Nmx0FX/nhtpiQQs7GZeWUc5n9S5mA6skQxrAOmC8ZhcU25SnagEi9Qlp4YPMS8AE
-	 ekgbjuUYU2UXyC0pgRXXfWv6Ie+0VDrplCN9nvY/uMHt7NsH/ScqBfkNtM+wLEXQmh
-	 0TX/8e6jpqq4rogsCTZK16wgSCMOVRPo45toJq2I10pWK8OduJZ/XJ/bkvFYq2xyuj
-	 heu6tTyQyTYcA==
-Message-ID: <00b5f735bd9c151812445d40348d70f4b4bd474d.camel@codeconstruct.com.au>
-Subject: Re: [PATCH v1 04/14] serial: 8250_aspeed_vuart: Switch to use
- uart_read_port_properties()
-From: Andrew Jeffery <andrew@codeconstruct.com.au>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
-	 <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org, 
-	linux-rpi-kernel@lists.infradead.org, linux-mips@vger.kernel.org, 
-	linux-tegra@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,  Broadcom
- internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Al
- Cooper <alcooperx@gmail.com>,  Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Paul Cercueil <paul@crapouillou.net>, 
- Vladimir Zapolskiy <vz@mleia.com>, Thierry Reding
- <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,  Masami Hiramatsu
- <mhiramat@kernel.org>, Andi Shyti <andi.shyti@linux.intel.com>
-Date: Mon, 26 Feb 2024 14:43:13 +1030
-In-Reply-To: <20240221183442.4124354-5-andriy.shevchenko@linux.intel.com>
-References: <20240221183442.4124354-1-andriy.shevchenko@linux.intel.com>
-	 <20240221183442.4124354-5-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+        d=sifive.com; s=google; t=1708928566; x=1709533366; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=l6uQ6p4wrPGEQaea08zy1g4beS3iVKslS9jUud4LuLo=;
+        b=C3KQ+lwEaN/eK4elEjfXVIsTWOshR9M0SssWfU8FWyA+DT0HeE74zXdTrI+fImuj4Y
+         RoGf4hzn4XS/QBrbIIwmIJyqaaEiKv2b0vJh8soMuX5ZKCrgpe3XRhPThhL+BMbY7sIP
+         abHcUK45wAxZ0U5Ih1UZnfmPnrhs72yacrz9h8RKLrPCDhEl1hNlQE5xZr1+bAtInnzH
+         sIEIgw90sTFupE7CFgpj6yXHvozqSgUk7TTzRMTVPZOke5krTah2o+9zPHOZluxnXn9A
+         fK/QDlI3cWj0mOTcLxwfidmh8f2F+c/xuI7mJckLoWdKAaSAIYgSJsTI8+zkOcU/zAAF
+         Ydwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708928566; x=1709533366;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=l6uQ6p4wrPGEQaea08zy1g4beS3iVKslS9jUud4LuLo=;
+        b=Ko89G/phUmbJ5Cgw650pMMt/OTRKAv1eqyixb5hdb0Mn5sKU4+ycC0mxv8l8zX0s2h
+         CURpBNDK/+8McuCiauPRTQxlrqB1iJNapsQX41nQfS8JH/zt0u5HpAJqesOlgEWis/PT
+         U8+RHH+pkhVcHYA1hCNZZOV76Rcq/p9lbXkOKcbM+qSVY9qwMn8y2/kkJQuQ3Jl+yNSA
+         Xr95tsInTh+inTNFziVkHn2KYHN5q3paWOJTDVoGH4OBJs8RU5evbFX7jal4hDT3I0vg
+         YGDmKWP6KrXDtSLVFYteSu/BYihjCYyYyo6qV95ICcjYMTRwmxt7QlxeaJb5dhafQD14
+         ciVQ==
+X-Gm-Message-State: AOJu0YzVeboHDGAoTKKHoXj4mFYuW72eMl7xDM9du1TONjgeKaVbFAJ4
+	zWIUXK28tn9yb3jYGBW1d6JDaTjQtRswfW2Zih9FHpyZXJG7HRCfLs/sjD3FRr8UMN3wafQzfbu
+	1kploDENtBNEW/DYWxgqgSTUzl5U3EAFVPurzOA==
+X-Google-Smtp-Source: AGHT+IGuVwNNtNKAUOe7ESvnHt1NkLshjz76YKDlhI9ojfgZqrAObfd1QuyHoNHa5ra3UdBQeDo2NcaGJ6UUutD5RdM=
+X-Received: by 2002:a25:3618:0:b0:dc2:45af:aa5b with SMTP id
+ d24-20020a253618000000b00dc245afaa5bmr3427311yba.59.1708928565840; Sun, 25
+ Feb 2024 22:22:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20240201065932.19899-1-andy.chiu@sifive.com> <2f1b1262-8c32-4dd5-8052-d47682c0b1f6@kernel.org>
+In-Reply-To: <2f1b1262-8c32-4dd5-8052-d47682c0b1f6@kernel.org>
+From: Andy Chiu <andy.chiu@sifive.com>
+Date: Mon, 26 Feb 2024 14:22:34 +0800
+Message-ID: <CABgGipUzTp70j+8UxgURhNU81S_UWNd8dd75pvytzC0GkMCRfA@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: manage irq with spin_lock_irqsave in SiFive console
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	palmer@dabbelt.com, gregkh@linuxfoundation.org, paul.walmsley@sifive.com, 
+	Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2024-02-21 at 20:31 +0200, Andy Shevchenko wrote:
-> Since we have now a common helper to read port properties
-> use it instead of sparse home grown solution.
->=20
-> Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Thu, Feb 1, 2024 at 3:21=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org> wr=
+ote:
+>
+> On 01. 02. 24, 7:59, Andy Chiu wrote:
+> > It is not safe to call spin_lock() with irq disabled on RT-linux.
+> > Instead, transfer the code segment to spin_lock_irqsave to make it work
+> > on both RT and non-RT linux.
+>
+> Hi,
+>
+> have you investigated what is protected by the local_irq_save() in
+> there? The lock is not always taken, OTOH the interrupts are always
+> disabled.
 
-Reviewed-by: Andrew Jeffery <andrew@codeconstruct.com.au>
+I was referencing some serial drivers (omap, pl011) changes on the
+linux-rt patch series and provide logically the same change here. For
+all oops cases I've found, panic() itself disables irq before calling
+`bust_spinlocks(1)`. Architecture dependent `die()` on riscv also
+masks off irq with a spin_lock_irq() before calling bust_spinlocks(1).
+Should we make SERIAL_SIFIVE depend on RISCV in Kconfig for this?
+
+However, I am not very certain about the sysrq part here. According to
+the patch on linux-rt, it says irqs are already disabled if the
+console_write comes from sysrq handling. One difference I noticed is
+that the sifive console does not support magic sysrq, while the others
+do support. And it seems like the condition check `ssp->port.sysrq` in
+sifive serial is never true, but maybe I just overlooked something.
+
++ Thomas
+Hi Thomas, do you think the sifive console driver needs the change
+here for RT? Do you have any suggestions otherwise?
+
+>
+> I believe the fix is not as easy as is presented below.
+>
+> > Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+> > ---
+> >   drivers/tty/serial/sifive.c | 8 +++-----
+> >   1 file changed, 3 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+> > index fa4c9336924f..3f0ddf8bfa7b 100644
+> > --- a/drivers/tty/serial/sifive.c
+> > +++ b/drivers/tty/serial/sifive.c
+> > @@ -788,13 +788,12 @@ static void sifive_serial_console_write(struct co=
+nsole *co, const char *s,
+> >       if (!ssp)
+> >               return;
+> >
+> > -     local_irq_save(flags);
+> >       if (ssp->port.sysrq)
+> >               locked =3D 0;
+> >       else if (oops_in_progress)
+> > -             locked =3D spin_trylock(&ssp->port.lock);
+> > +             locked =3D spin_trylock_irqsave(&ssp->port.lock, flags);
+> >       else
+> > -             spin_lock(&ssp->port.lock);
+> > +             spin_lock_irqsave(&ssp->port.lock, flags);
+> >
+> >       ier =3D __ssp_readl(ssp, SIFIVE_SERIAL_IE_OFFS);
+> >       __ssp_writel(0, SIFIVE_SERIAL_IE_OFFS, ssp);
+> > @@ -804,8 +803,7 @@ static void sifive_serial_console_write(struct cons=
+ole *co, const char *s,
+> >       __ssp_writel(ier, SIFIVE_SERIAL_IE_OFFS, ssp);
+> >
+> >       if (locked)
+> > -             spin_unlock(&ssp->port.lock);
+> > -     local_irq_restore(flags);
+> > +             spin_unlock_irqrestore(&ssp->port.lock, flags);
+> >   }
+> >
+> >   static int __init sifive_serial_console_setup(struct console *co, cha=
+r *options)
+>
+> --
+> js
+> suse labs
+>
+
+Regards,
+Andy
