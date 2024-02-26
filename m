@@ -1,169 +1,160 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2083.outbound.protection.outlook.com [40.107.93.83])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC0A1C686;
-	Mon, 26 Feb 2024 08:08:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.83
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708934930; cv=fail; b=XN/7iuNbReUDjDyzjhOx0OElfORklxSixrqCnL28TRik2so6824817FybAFxqgdmYffh9Pe5NT9k8/Lasnzu877eoY16RcngXEhRW3g6/RoD3x74gNx78oO00TTg3G6h9oO4WOIE1B57N7C3HB4CWGri9fzRSmumcrlrPcdnTF4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708934930; c=relaxed/simple;
-	bh=C7wAhACUnvWi8puGFH8YeJb5cnbccB4tL2R0TCt7+xQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AL8tl8Aa/4OCjri0HPK2cp3N+xdw1fju6/2RrT8/SZBW/EgoPk54heYgh82psEhMMoZOsZAbM2wPlwCq7bFnt8K8oBHVpGwNfXeAMh1wugQoA8ZN+SAL8ZB0if2VB1nqmVh0z00+KV1bHb2o2xPoUi8SQGRRVDaCM3DsZV/p+ic=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=sony.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=oq1OJ9Uj; arc=fail smtp.client-ip=40.107.93.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sony.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C02EB1CA96
+	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 08:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708934949; cv=none; b=lnlPu1KK34Uoz8e3yIeWo5ZsXPyiOgMTgP6vlPzwUuXUemG4j9uWsovCZLwxklqh0au3zC6WGIbxRnrB1o8RADvHlsjGE7jsuTDX7ImDrm6KAUMtB65jcJFhF3auXH/sz7AT+N32znX8QZB1Rw+P0EcP0lRUaTNaHG8S9EaJ/94=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708934949; c=relaxed/simple;
+	bh=u/XBQRoJp3tk1E4JeBn3jkkl4L5HFIR5EpVustX7ifg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lDIPrmR/1ElRyDxJNyvgfLwls/gc+JvkgtzymlFup8lFT/nig1bbG4Vq3WxBmgqC25F/0T3HEGjV7+hMufLQ7i3Ycq+gu89mRy0F2oiA6Y2MRvzdtuAnU1QrAMiHgcEKYoM2K8XO26pYoO8anfMHrJsf7jIjr50V4+iRtaeJV+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=B/NBULvI; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="oq1OJ9Uj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hTSK862b0gQHcHShpS8oXIL1qc1AMoMSxaorpoAz2kF+k5UmWkU1oKtb1KJwJaTR+3pAuRua0d3Lxo2yKOkf8QZGBLoWCU6eYoN7faKBhMXrf3DHaquTBRvK8I7wkEXT45CeoE+xfVuXOMFEYlwM3OpSb9VXzW59HPjFTkjmQQDnjqVRrIUWigLvChvfsFXl522U6swYr3nCxYLYtTvlNPV9onwVHRownuvUgQAdM/r9hqOjVbTnJ5vqPfaszTC8rJmELvqFaB8dxd0HPYMd/9yGsWdNqJGgKwHjEoza0J99S5SmIf/VFZBpqkcN7ixajnkMz3fpr+JJjJIIXRIDMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C5YthapaJVivoTL7rraD8ulIiopaAJYPMokIAO4+ZC4=;
- b=digEv1N1Iv7BXXTX4g95kKjRAMwjJ/ayGXKnpmMrNT4xm+6PC6sSoamBljQVSLITUGjni6VUvhzK9Vr4BMjAf3jqBgH54MBchqvoHzmn64t1xWuaMdYns8z0k4Posi07Dup00qaZvTtM2Mzv8Uhe+el/r7GHpsNUbYdcHA/dRLaKatOLXuP/xNq+0ccabeiJKOvanXwKYRzIzU7+QsRyFKkKGhyOpQSZtucfIk8VkP5oFzF1vkFLRg/TwFmuFbHJcS0wKRuTrkAKh4t506obM4NU2pG86MlWvB+X4YZGIrZ9n5p2hDRJ/qBJOz0mkGvu9fNyNU74YfZMzRfB08esXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.196) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=sony.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=sony.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C5YthapaJVivoTL7rraD8ulIiopaAJYPMokIAO4+ZC4=;
- b=oq1OJ9UjWhMC/Y7HsLZkqf0GjETE7X7uJyYRNH/Q2rS4CxlIphBrGOwjBXQ0LwfLgpg5awRHJxxTDYk26mJUmpCp3+eiNmW1fsYvM35Mda3CGYyRRPHgomzuSChz8J1IxwlNv6mSqSWUpKUdalbFex+eSksVW5vIKrIlAxispZU=
-Received: from BN9PR03CA0174.namprd03.prod.outlook.com (2603:10b6:408:f4::29)
- by SN4PR13MB5741.namprd13.prod.outlook.com (2603:10b6:806:211::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.34; Mon, 26 Feb
- 2024 08:08:45 +0000
-Received: from BN2PEPF000044A6.namprd04.prod.outlook.com
- (2603:10b6:408:f4:cafe::7a) by BN9PR03CA0174.outlook.office365.com
- (2603:10b6:408:f4::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.49 via Frontend
- Transport; Mon, 26 Feb 2024 08:08:45 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.196)
- smtp.mailfrom=sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of sony.com does not
- designate 121.100.38.196 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.196;
- helo=gepdcl07.sg.gdce.sony.com.sg;
-Received: from gepdcl07.sg.gdce.sony.com.sg (121.100.38.196) by
- BN2PEPF000044A6.mail.protection.outlook.com (10.167.243.100) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7292.25 via Frontend Transport; Mon, 26 Feb 2024 08:08:44 +0000
-Received: from gepdcl02.s.gdce.sony.com.sg (SGGDCSE1NS07.sony.com.sg [146.215.123.196])
-	by gepdcl07.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41Q87Gc4015027
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 26 Feb 2024 16:08:26 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl02.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 41Q87FxV020269;
-	Mon, 26 Feb 2024 16:07:15 +0800
-Received: by mail.sony.com (Postfix, from userid 1000)
-	id 8392920C06C3; Mon, 26 Feb 2024 13:31:52 +0530 (IST)
-Date: Mon, 26 Feb 2024 13:31:52 +0530
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-        anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH v4 2/2] tty/sysrq: Dump printk ring buffer messages via
- sysrq
-Message-ID: <ZdxFcP2UkocRXbm_@sony.com>
-References: <cover.1706772349.git.sreenath.vijayan@sony.com>
- <ca8dd18e434f309612c907d90e9f77c09e045b37.1706772349.git.sreenath.vijayan@sony.com>
- <ZcOdLrOPiPJmCec5@alley>
- <ZcygJOj9TaHZUKd-@sony.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B/NBULvI"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a3f4464c48dso299826366b.3
+        for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 00:09:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708934946; x=1709539746; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mxP8k6QyQI95VGU04LOCOgIPRJqTB3GQZLsvFqRA4Wg=;
+        b=B/NBULvIDnlnSQXJZEIz4ttGyiIQehQuGDtH+7p7BbZ4jXAbWwou1fgJS2JAUUdpu+
+         ErqfDsHngX2EnLbCcpxVnqVNJVxjuMXLzclyawPtPHYJJlxtJsXDdoKZLOQ4W78qJRCV
+         MAl9/710y1HeVLhdcUow+96kH3wMT9BBWCSssUe616JjWPMZ9MtT8ivX+MfL+MIK7n0o
+         AEs7jMpdhWCFSoFsCaQ6EgyzjTdmHEzngLmTi9Xm/Md0RuD8AYHMvwIivYUXu1E4xdp5
+         7dVq9Kin4ieKISHJCRRxo1v0DipzT0NCsTnw59zmL2gMf9LMd5wNm72wKCPlEh1Vx+Du
+         /fBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708934946; x=1709539746;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mxP8k6QyQI95VGU04LOCOgIPRJqTB3GQZLsvFqRA4Wg=;
+        b=cz5I7vMlSElNFDXYrspqtquMEvGY2nknimrWLalYiuq9HhfHLmVnNyVHbrGbJKi0tJ
+         Hnacvxji8/t+zgokdCqvJxPhyScN0mCaSqK9ntREhNG8P64v1X4vLQSDrsRjC0bWs3+E
+         3utI4jD/1vQ74bM9U6t/itHME9EV/qhSxgLX193teoHID9b9RPNAhixWVmfzm6t+84V1
+         rneIwn7E++XVFl+VlAG+a5kZG7ZnlHP8aoBnZz44YqN3Ut430LInyCDMfvUNm/AYuA04
+         w/QjQVza5odXr87dwFmOQP6wLGrc7OL7CTLD4cX6juawGCtXBfjR9z+nOXBAzZuEhDoB
+         BDZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX78GxlsoVzKKRG7glk5e3dn9GG9454t9I1LLcabhZ/0zt5kxj/naYMpsXXh791i1yyzyuneuwfkDwyOzV0KDK4nu7Jc1x9wcrcak0L
+X-Gm-Message-State: AOJu0YzRH0RrU5lq7fnj8PF+XEwTD8ikStnCvweO1PR18rF7uTI2EQuZ
+	lubnNFhIkLqzDKt1dyEsyl2lPXAmqMYhjyK81CZx3g2Gq8DqQLP00diuIDtmxXE=
+X-Google-Smtp-Source: AGHT+IERs5iCECzMO0JXBwrzMdYELO1Nf4fOkvSnFIs6FnKtlrmvlom7GtgotwvTrv9laOaUqQ1dUQ==
+X-Received: by 2002:a17:907:9950:b0:a3e:bd4e:c87e with SMTP id kl16-20020a170907995000b00a3ebd4ec87emr4076855ejc.36.1708934946122;
+        Mon, 26 Feb 2024 00:09:06 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.222.116])
+        by smtp.gmail.com with ESMTPSA id cx7-20020a170907168700b00a4316384159sm1444417ejd.224.2024.02.26.00.09.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Feb 2024 00:09:05 -0800 (PST)
+Message-ID: <934c476c-dbe6-4266-8821-ed401e63a004@linaro.org>
+Date: Mon, 26 Feb 2024 09:09:03 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZcygJOj9TaHZUKd-@sony.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF000044A6:EE_|SN4PR13MB5741:EE_
-X-MS-Office365-Filtering-Correlation-Id: e4be861c-68c4-4e7e-7b3d-08dc36a22773
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	6I8JhV55wso8bR3/SaG86BosJmCLxIk6/J5nd74DkxEkph/5kFAzwEkaWnO4LWT2fnb7iUwphuMdmYImrlBRytjixx/pzA2jv+NOVcIxLST0xCitTqSQ3BDSRBlPI9I965ESruH2dgcr9pzyGOsw9pl/Y9+oEprn1Ec7hFJJUI8K1MP3LFBI+uW6OAaXUPOYBhGMSvEcpa0Eq4rUwnaO+BBKodf6CNyDqPDv8LvNH58Pw12pPQHIpxUWfCy2WZDRyeKCSeoFkOanFx5HHL1bumxBX0kapvwx9dBAPPpx7YExFzFKVUw54r3keEPnRVLLQsThBbAmDoXTaTX0y+uwgjtlC0n3XmI08P561wjkajoEfUkztlVkxGFqDdxq2jNNoFE5Ttdg/Gb1BYBc9yZZp+PI2eMD/483BXVcAxiUqcwW4juKwhLKrB5zImN1iKUqFSZlZSSPuJ57LjtQSIS5XV2nktNJevshIUOVz/cHHyFRrfHgysVXfBLkTvY4ASAOSQzKANXnilDBSRRFBfkzQJCIuc4qVzJlZE5DYgNMMVgvqSo8bPnI/9x9YLHRBGplwcO3nVr8gFEhdWsbZSJb/H0i8+7ub4e7gda4RGpkOkU4QlGvTnFEyETqZf2LZBZX3d7jljwT2CNirMu0wrUlepQj7zugbx+p7Isuwh6RnDg2iJ/GgGC0GTJqWDwqok25NJCYLR6p3E7pixIC+GpRj8R3PZsvAQEssJqy0zSFdWzHlYrtGwnac3N7aOBQy//H
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.196;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl07.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(36860700004);DIR:OUT;SFP:1101;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 08:08:44.6749
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e4be861c-68c4-4e7e-7b3d-08dc36a22773
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.196];Helo=[gepdcl07.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-BN2PEPF000044A6.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR13MB5741
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dt-bindings: serial: convert st,asc to DT schema
+Content-Language: en-US
+To: =?UTF-8?Q?Rapha=C3=ABl_Gallais-Pou?= <rgallaispou@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20240225100336.34122-1-rgallaispou@gmail.com>
+ <174b85c4-107b-44ea-af81-4564101aa5ec@linaro.org>
+ <4a1504d4-6c64-4385-bb52-43d39a017215@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <4a1504d4-6c64-4385-bb52-43d39a017215@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 14, 2024 at 04:42:36PM +0530, Sreenath Vijayan wrote:
-> On Wed, Feb 07, 2024 at 04:09:34PM +0100, Petr Mladek wrote:
-> > Idea:
-> > 
-> > Using console_trylock() actually might be more reliable than
-> > workqueues. console_trylock() might fail repeatably when:
-> > 
-> >     + the console_lock() owner is stuck. But workqueues would fail
-> >       in this case as well.
-> > 
-> >     + there is a flood of messages. In this case, replaying
-> >       the log would not help much.
-> > 
-> > Another advantage is that the consoles would be flushed
-> > in sysrq context with the manipulated console_loglevel.
-> > 
-> > Best Regards,
-> > Petr
+On 26/02/2024 08:38, Raphaël Gallais-Pou wrote:
+>>> +
+>>> +allOf:
+>>> +  - $ref: serial.yaml#
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: st,asc
+>>> +
+>>> +  reg:
+>>> +    maxItems: 1
+>>> +
+>>> +  interrupts:
+>>> +    maxItems: 1
+>>> +
+>>> +  clocks:
+>>> +    maxItems: 1
+>>
+>> This wasn't here before and your commit msg does not explain it.
 > 
-> Yes, this seems to work well from interrupt context when the
-> console lock owner is not stuck. We can also manipulate
-> the console_loglevel. Something like this:
+> Looking at the device-tree I found that every instance of this device 
+> refers to a phandle of a clock.
 > 
-> //in printk.c
-> void console_replay_all(void)
-> {
->        if (console_trylock()) {
->                __console_rewind_all();
->                console_unlock();
->        }
-> }
+> Moreover in the driver of the device, the probe fails if it does not 
+> find a clock, hence this addition.
 > 
-> //in sysrq.c
-> static void sysrq_handle_dmesg_dump(u8 key)
-> {
->        int orig_log_level = console_loglevel;
->        console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
->        console_replay_all();
->        console_loglevel = orig_log_level;
-> }
-> 
-> 
-> The downside I see is that the user may have to hit the
-> key multiple times or give up trying if the console lock
-> owner is busy at the time of key press. This information
-> should probably be updated in the documentation.
-> 
-> Please let me know your opinion.
-> 
-> Regards,
-> Sreenath
+> cf. drivers/tty/serial/st-asc.c:701
 
-Hi,
+Commit msg should explain differences from pure conversion and the
+reason behind. Otherwise how can we know why you did it?
 
-Kindly let me know your opinion on the suggested changes.
 
-Regards,
-Sreenath
+Best regards,
+Krzysztof
+
