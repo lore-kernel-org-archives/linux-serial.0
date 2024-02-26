@@ -1,411 +1,152 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7771212B166;
-	Mon, 26 Feb 2024 16:55:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3DBD12CD88
+	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 17:34:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708966503; cv=none; b=SaBe/+Wid7itx5M1RO42JH1gZA7dVP7F3lNffJljw3ADiThEm1azGkVK3eOvxuuJdQI3Nxg9VzF+e+pKE5uvJ99rsaqP9Rg48KYRjSv/HZfsyVe+/3r9GJKxGVgtgGocfBDE/hliFXl1e15QGaSQpP7tLafA4/geOj+qt02naMU=
+	t=1708968867; cv=none; b=S0jaEpiqQKH503oBcQ8VcxQTsLhfxpNl+p7At4oeaMpoY7k3usSpHMc7KmBGhlr+OXT76RsaLD18XQgBQxNO5fTtffD27ndpbbJBkIerWPF6YYD7eV7EkH6LkoiGxEvDJbHEykHPRbzHrh6Nz/mKgw8L3vQULwaPPLjMlF3w8lI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708966503; c=relaxed/simple;
-	bh=QGcRLTEri+GL4LDVdXNHiMq2PMr0H3LVHWba/SRnYx4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fin284iXrKy2czy+Oaw1xqYPf6diJyNHBJqmi5Qxwv/BjXUiYqe8WFe/CU+Q7R4LxULJ6KcH1xSD2wO3EZIWLcDCXKnfOM6sidrYZHo99Nx21hUCUjuFBhyJoV1TRCufzJfyUJ+0MEVWhABBvK8JvfYLNOKZOBh24zpj1nT3IRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-60921c4dc27so134697b3.3;
-        Mon, 26 Feb 2024 08:55:01 -0800 (PST)
+	s=arc-20240116; t=1708968867; c=relaxed/simple;
+	bh=H3JOtlD9/mWlqF+ngs9LBftCJ1rVASuSNB9iqJMl8hs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=O//igdE8PW0PutMeg1wQtTHyH3u1O354BsdO6SLAmtswJeIJ0G8u98Flicn1Omi0MiKYaB+F8mWDY+9LVcQZi9zPiFRxUaRSt4nTv31Xia23NDrZUSu5EU/nkeYExQz/ICRieQeJWJMDDoWQ+cXH9gKaD0gCgWRk/JEqxNAgQfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fQH4WulH; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fQH4WulH"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-564fc495d83so3872613a12.0
+        for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 09:34:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708968864; x=1709573664; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pAXsvvo8URq5j4sO281XzdHZ5oDoydfoxDf2HDjwPqU=;
+        b=fQH4WulHka8JRNNYVRCBJKhuBX8yB6Sc/GTR2eRy/ccVANVeZe22aw6g7TEowx1VzG
+         QywIsHR+waQze0ItMOUhDsBgCEfQa6EIyHRQQNsyuz8hdxgetju2oKosjiEkjDJDDUrr
+         yP5WIJFJNNi/s9ZvnAoiPvyyj6CNAIgNHe7Cr/f1ra6KNg6/kK8K8Y+3jn8mtrnbPl92
+         Q3nMwfhhrIELaTt7Vg4k0wP38YOvqkmDirLk9S66WQ7p0Ib3Umg14nxy1jDeE+mXKdYU
+         XDNyYJKLmG4/s/W0PyzyE6hMd8sKL+mneB9hCAczf8/FoWoQxDfr52PTOXgfxNf3v0zw
+         zMCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708966497; x=1709571297;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=W+9BchcdAdA5Rmse93Wm2Y92LoxElKC7hpYEsTuUwfs=;
-        b=bdVE8vslNwapHdlYkfkyS/B9S/cydPiA7MYtvSaUBeFEVdS0mTIIDJa0696a9ADHa5
-         ozWIjrbLxnJtdG297rsFXU46o2gM8AyG2dp0xnXzL5EH9nkEUFic52tbg0VgciLeJnb1
-         oGN7W/sNN1VJMOaksz/kBTMjyFTpYiQRsgkeRAswCDBDq6sEjsoZC4irTcWxwkMuAcAM
-         u48PCEX5FnJgxWq5GrBNJDrWIDDz61aXGGXZJaRW2N7EeWxTlicdqk57v1bmB3r3ZXYr
-         UgB2UBjkuVBKhqiwtdWJfyZ2NtF2T5qMLIMEMusHS1aWMj+ly8P2ZdSus0qwGLrpOavw
-         qPrg==
-X-Forwarded-Encrypted: i=1; AJvYcCVS/J/I5mBV5iE2nmAcXR1VRcxsiuj7/0bOMfHYxZ62vZ4GtwC+vOngQ0jnI+zrXYZPW6EIOl+sLvIs+WunrXFMTE8UG1tocciMEigKcACES150oa7Um7bwBLxi6NZzJf8SupqxujTEPmMtM6NB6tX5uiNxMrshjID/4D/filOHIaEm12VftonoWyOjMs+HVjxqpgusIVB/TNy8+et3SjjdkFfdOHXWaAWeyMP/6Hfotr+v8VAl0GsVpLvdteQk4hWxXjY63d7GsgItGef5CsNjejiGLOBb3VvgNk0t+EhZHWlo2yrGq6nmSBuLYVfuWu1Fj2Ucn/Izwn6b68rc0/am9mjGZNqcW7BOluSroKUQxDZOU4ttl3g=
-X-Gm-Message-State: AOJu0YwUK8CbtoZfPCJujzglx7aXTgXegSZYsdDk5Vmg5t13qU0YZ6lT
-	dabYm8j9pkmzAuf0hMZSU2YHpV0X75Fzc5wwaos2hqocNZZPTONW6Vgn3EClHaw=
-X-Google-Smtp-Source: AGHT+IHR73T8g+pH1z/OZAzR6/uguNJQiIbExpK1JFKQKd+Z0Hl91C+S3h9Le/ajC2vYDJ9YhOVA6A==
-X-Received: by 2002:a81:af17:0:b0:608:d160:f9aa with SMTP id n23-20020a81af17000000b00608d160f9aamr5926196ywh.46.1708966497424;
-        Mon, 26 Feb 2024 08:54:57 -0800 (PST)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id w10-20020a0dd40a000000b006077c89b001sm1269523ywd.83.2024.02.26.08.54.56
+        d=1e100.net; s=20230601; t=1708968864; x=1709573664;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pAXsvvo8URq5j4sO281XzdHZ5oDoydfoxDf2HDjwPqU=;
+        b=GVTBT3lQw9UDdoM8BhCoBNSAUhmavA9BigLHQyksOj0qZi0ohdI71WM5YDD6/N8gWh
+         C6UAvwN2yxfyqA6tzWdH0ROot4+B0BKfIFjytCTur9k3FnWBT9ZAaZuhySkrLlPkKZLv
+         dluM/BA/YgoJZudk2tz6qmmu/eIUyTX5SCa9bjjdwffFNfKOEd3J1TkSZXZRSmLd3zXP
+         NA6/3b+oIgCfekczlEiISisCyx97v31ySOU8WOjerZQIzOF8ylewsIC50S445tLXV+qT
+         Mx5MOPjCj8NFmm/D1adPj6Awddq/Kz3DYNhlz6u2sxHnSohTIecMJYEZsnooLK0XZpqL
+         uO+A==
+X-Forwarded-Encrypted: i=1; AJvYcCUDPspT4zfsZMc+k8mdJqXkvyMFc+7HeWx+NS7E37XXopj7LMc6y9XkxbcHar12vi6e1qpXRIuKgjI6FIUEUBajU2W53O5QRpRO7blR
+X-Gm-Message-State: AOJu0YzO1P2arlV5jK5U6Ir1c1ITs7oiR2M4qccIrl+r2NJL/TFz4lMi
+	MrWS0tONdDZluU9rOi90Nb+dCW66oo8CaDEPrWv6r0CPGSbRK3AcTJZH96KvmXc=
+X-Google-Smtp-Source: AGHT+IFnS/H/MVpHImbS/LZEjESeA+ylwUhApo5U5MFPvYbokfZd5RFNz6y2ZB6dfy4fypf2vJg5uw==
+X-Received: by 2002:a05:6402:b2d:b0:564:87c1:a1e8 with SMTP id bo13-20020a0564020b2d00b0056487c1a1e8mr5765382edb.13.1708968864033;
+        Mon, 26 Feb 2024 09:34:24 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.222.116])
+        by smtp.gmail.com with ESMTPSA id l25-20020a056402345900b005659ea1caf0sm2509660edc.6.2024.02.26.09.34.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Feb 2024 08:54:56 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-dc6dcd9124bso3372772276.1;
-        Mon, 26 Feb 2024 08:54:56 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWQm2yJ1I0NE5/zVVgr2R45VuJyjU0bQtTgZi3QzVm5f5MPMLSZjEowY6iXyzGThwIdfG7vWKn0dQog43zDwn2FCaPa3eNy8UxrfKymtw9dERyzPDX1/Nf2Mq12Nr6XcMXyJ+D1lkWXrGO5s0ZYeL2O1ZTYgyynJzttwv0Fyl0A7Q5y1R2ReSOcdJZGKbXK5GpTBf6Yp22BGFLv18bqm0cMXaeyscTGb2ao/XPh2IE0VabEpHzh120ojHbjMar119fxVAbvqb8gANB8/MusVSyEUI6lLhnv5EddiQOcSMHgcFDVXE5dKz0dE/kiIn8LZ5st/oCChPm1OKklK6keeAMM/LnVjJr+XjkSuJMwX2Mh4INUqKqFZoo=
-X-Received: by 2002:a25:9346:0:b0:dcd:98bd:7cc8 with SMTP id
- g6-20020a259346000000b00dcd98bd7cc8mr5030611ybo.48.1708966495877; Mon, 26 Feb
- 2024 08:54:55 -0800 (PST)
+        Mon, 26 Feb 2024 09:34:23 -0800 (PST)
+Message-ID: <23544c00-c8fa-441e-8a3b-56a55cad62f0@linaro.org>
+Date: Mon, 26 Feb 2024 18:34:21 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1704788539.git.ysato@users.sourceforge.jp> <f7a504fc42486f4f3f75ca7ac8cd57c084407da0.1704788539.git.ysato@users.sourceforge.jp>
-In-Reply-To: <f7a504fc42486f4f3f75ca7ac8cd57c084407da0.1704788539.git.ysato@users.sourceforge.jp>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 26 Feb 2024 17:54:43 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXOaasX9Dv-Kv=VOO0dhnp8ObQC6-YqsFZT0Q-VeqPg+Q@mail.gmail.com>
-Message-ID: <CAMuHMdXOaasX9Dv-Kv=VOO0dhnp8ObQC6-YqsFZT0Q-VeqPg+Q@mail.gmail.com>
-Subject: Re: [DO NOT MERGE v6 08/37] clocksource: sh_tmu: CLOCKSOURCE support.
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Thomas Gleixner <tglx@linutronix.de>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Lee Jones <lee@kernel.org>, 
-	Helge Deller <deller@gmx.de>, Heiko Stuebner <heiko@sntech.de>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Chris Morgan <macromorgan@hotmail.com>, 
-	Yang Xiwen <forbidden405@foxmail.com>, Sebastian Reichel <sre@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Randy Dunlap <rdunlap@infradead.org>, 
-	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@suse.cz>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	David Rientjes <rientjes@google.com>, Baoquan He <bhe@redhat.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Stephen Rothwell <sfr@canb.auug.org.au>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
-	Javier Martinez Canillas <javierm@redhat.com>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Palmer Dabbelt <palmer@rivosinc.com>, Bin Meng <bmeng@tinylab.org>, 
-	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
-	Lukas Bulwahn <lukas.bulwahn@gmail.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] dt-bindings: serial: convert st,asc to DT schema
+Content-Language: en-US
+To: Raphael Gallais-Pou <rgallaispou@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org
+References: <20240226152135.8671-1-rgallaispou@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240226152135.8671-1-rgallaispou@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Saton-san,
+On 26/02/2024 16:21, Raphael Gallais-Pou wrote:
+> 'clocks' property is required regarding the device. Convert st,asc
+> binding to DT schema format in order to add this property, and update
+> example.
+> 
+> Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
 
-Thanks for your patch!
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Please drop the period at the end of the one-line summary.
 
-On Tue, Jan 9, 2024 at 9:23=E2=80=AFAM Yoshinori Sato
-<ysato@users.sourceforge.jp> wrote:
-> Allows initialization as CLOCKSOURCE.
+---
 
-Please explain why this is needed. E.g.
+This is an automated instruction, just in case, because many review tags
+are being ignored. If you know the process, you can skip it (please do
+not feel offended by me posting it here - no bad intentions intended).
+If you do not know the process, here is a short explanation:
 
-    Add support for early registration using TIMER_OF_DECLARE(),
-    so the timer can be used as a clocksource on SoCs that do not
-    have any other suitable timer.
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions, under or above your Signed-off-by tag. Tag is "received", when
+provided in a message replied to you on the mailing list. Tools like b4
+can help here. However, there's no need to repost patches *only* to add
+the tags. The upstream maintainer will do that for tags received on the
+version they apply.
 
->
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
 
-> --- a/drivers/clocksource/sh_tmu.c
-> +++ b/drivers/clocksource/sh_tmu.c
+Best regards,
+Krzysztof
 
-> @@ -148,8 +151,8 @@ static int __sh_tmu_enable(struct sh_tmu_channel *ch)
->         /* enable clock */
->         ret =3D clk_enable(ch->tmu->clk);
->         if (ret) {
-> -               dev_err(&ch->tmu->pdev->dev, "ch%u: cannot enable clock\n=
-",
-> -                       ch->index);
-> +               pr_err("%s ch%u: cannot enable clock\n",
-> +                      ch->tmu->name, ch->index);
-
-Please wrap the line after, not before, "ch->tmu->name,".
-
->                 return ret;
->         }
->
-
-> @@ -324,14 +332,14 @@ static int sh_tmu_register_clocksource(struct sh_tm=
-u_channel *ch,
->         cs->mask =3D CLOCKSOURCE_MASK(32);
->         cs->flags =3D CLOCK_SOURCE_IS_CONTINUOUS;
->
-> -       dev_info(&ch->tmu->pdev->dev, "ch%u: used as clock source\n",
-> -                ch->index);
-> +       pr_info("%s ch%u: used as clock source\n",
-> +               ch->tmu->name, ch->index);
-
-No need to wrap this line at all.
-
->
->         clocksource_register_hz(cs, ch->tmu->rate);
->         return 0;
->  }
->
-> -static struct sh_tmu_channel *ced_to_sh_tmu(struct clock_event_device *c=
-ed)
-> +static inline struct sh_tmu_channel *ced_to_sh_tmu(struct clock_event_de=
-vice *ced)
->  {
->         return container_of(ced, struct sh_tmu_channel, ced);
->  }
-> @@ -364,8 +372,8 @@ static int sh_tmu_clock_event_set_state(struct clock_=
-event_device *ced,
->         if (clockevent_state_oneshot(ced) || clockevent_state_periodic(ce=
-d))
->                 sh_tmu_disable(ch);
->
-> -       dev_info(&ch->tmu->pdev->dev, "ch%u: used for %s clock events\n",
-> -                ch->index, periodic ? "periodic" : "oneshot");
-> +       pr_info("%s ch%u: used for %s clock events\n",
-> +               ch->tmu->name, ch->index, periodic ? "periodic" : "onesho=
-t");
-
-Please wrap the line after, not before, "ch->tmu->name,".
-
->         sh_tmu_clock_event_start(ch, periodic);
->         return 0;
->  }
-> @@ -403,7 +411,8 @@ static void sh_tmu_clock_event_resume(struct clock_ev=
-ent_device *ced)
->  }
->
->  static void sh_tmu_register_clockevent(struct sh_tmu_channel *ch,
-> -                                      const char *name)
-> +                                      const char *name,
-> +                                      struct device_node *np)
-
-"np" is unused in this function, hence this change is unneeded.
-(Hey, I already said that in my review of v3)
-
->  {
->         struct clock_event_device *ced =3D &ch->ced;
->         int ret;
-> @@ -417,30 +426,32 @@ static void sh_tmu_register_clockevent(struct sh_tm=
-u_channel *ch,
->         ced->set_state_shutdown =3D sh_tmu_clock_event_shutdown;
->         ced->set_state_periodic =3D sh_tmu_clock_event_set_periodic;
->         ced->set_state_oneshot =3D sh_tmu_clock_event_set_oneshot;
-> -       ced->suspend =3D sh_tmu_clock_event_suspend;
-> -       ced->resume =3D sh_tmu_clock_event_resume;
-> -
-> -       dev_info(&ch->tmu->pdev->dev, "ch%u: used for clock events\n",
-> -                ch->index);
-> +       if (ch->tmu->pdev) {
-> +               ced->suspend =3D sh_tmu_clock_event_suspend;
-> +               ced->resume =3D sh_tmu_clock_event_resume;
-> +       }
-> +       pr_info("%s ch%u: used for clock events\n",
-> +               ch->tmu->name, ch->index);
-
-No need to wrap this line at all.
-
->
->         clockevents_config_and_register(ced, ch->tmu->rate, 0x300, 0xffff=
-ffff);
->
->         ret =3D request_irq(ch->irq, sh_tmu_interrupt,
->                           IRQF_TIMER | IRQF_IRQPOLL | IRQF_NOBALANCING,
-> -                         dev_name(&ch->tmu->pdev->dev), ch);
-> +                         ch->tmu->name, ch);
->         if (ret) {
-> -               dev_err(&ch->tmu->pdev->dev, "ch%u: failed to request irq=
- %d\n",
-> -                       ch->index, ch->irq);
-> +               pr_err("%s ch%u: failed to request irq %d\n",
-> +                      ch->tmu->name, ch->index, ch->irq);
-
-Please wrap the line after, not before, "ch->tmu->name,".
-
->                 return;
->         }
->  }
->
->  static int sh_tmu_register(struct sh_tmu_channel *ch, const char *name,
-> +                          struct device_node *np,
-
-np is unneeded.
-
->                            bool clockevent, bool clocksource)
->  {
->         if (clockevent) {
->                 ch->tmu->has_clockevent =3D true;
-> -               sh_tmu_register_clockevent(ch, name);
-> +               sh_tmu_register_clockevent(ch, name, np);
->         } else if (clocksource) {
->                 ch->tmu->has_clocksource =3D true;
->                 sh_tmu_register_clocksource(ch, name);
-
-> @@ -465,53 +477,59 @@ static int sh_tmu_channel_setup(struct sh_tmu_chann=
-el *ch, unsigned int index,
->         else
->                 ch->base =3D tmu->mapbase + 8 + ch->index * 12;
->
-> -       ch->irq =3D platform_get_irq(tmu->pdev, index);
-> +       if (tmu->pdev)
-> +               ch->irq =3D platform_get_irq(tmu->pdev, index);
-> +       else
-> +               ch->irq =3D of_irq_get(np, index);
-
-You can use of_irq_get() unconditionally.
-
->         if (ch->irq < 0)
->                 return ch->irq;
->
->         ch->cs_enabled =3D false;
->         ch->enable_count =3D 0;
->
-> -       return sh_tmu_register(ch, dev_name(&tmu->pdev->dev),
-> +       return sh_tmu_register(ch, tmu->name, np,
-
-No need to pass np.
-
->                                clockevent, clocksource);
->  }
->
-> -static int sh_tmu_map_memory(struct sh_tmu_device *tmu)
-> +static int sh_tmu_map_memory(struct sh_tmu_device *tmu, struct device_no=
-de *np)
->  {
->         struct resource *res;
->
-> -       res =3D platform_get_resource(tmu->pdev, IORESOURCE_MEM, 0);
-> -       if (!res) {
-> -               dev_err(&tmu->pdev->dev, "failed to get I/O memory\n");
-> -               return -ENXIO;
-> -       }
-> +       if (tmu->pdev) {
-> +               res =3D platform_get_resource(tmu->pdev, IORESOURCE_MEM, =
-0);
-> +               if (!res) {
-> +                       pr_err("sh_tmu failed to get I/O memory\n");
-> +                       return -ENXIO;
-> +               }
-> +
-> +               tmu->mapbase =3D ioremap(res->start, resource_size(res));
-> +       } else
-> +               tmu->mapbase =3D of_iomap(np, 0);
-
-You can use of_iomap() unconditionally.
-
->
-> -       tmu->mapbase =3D ioremap(res->start, resource_size(res));
->         if (tmu->mapbase =3D=3D NULL)
->                 return -ENXIO;
->
->         return 0;
->  }
->
-> -static int sh_tmu_parse_dt(struct sh_tmu_device *tmu)
-> +static int sh_tmu_parse_dt(struct sh_tmu_device *tmu, struct device_node=
- *np)
->  {
-> -       struct device_node *np =3D tmu->pdev->dev.of_node;
-> -
->         tmu->model =3D SH_TMU;
->         tmu->num_channels =3D 3;
->
->         of_property_read_u32(np, "#renesas,channels", &tmu->num_channels)=
-;
->
->         if (tmu->num_channels !=3D 2 && tmu->num_channels !=3D 3) {
-> -               dev_err(&tmu->pdev->dev, "invalid number of channels %u\n=
-",
-> -                       tmu->num_channels);
-> +               pr_err("%s: invalid number of channels %u\n",
-> +                      tmu->name, tmu->num_channels);
-
-Please wrap the line after, not before, "ch->tmu->name,".
-
->                 return -EINVAL;
->         }
->
->         return 0;
->  }
->
-> -static int sh_tmu_setup(struct sh_tmu_device *tmu, struct platform_devic=
-e *pdev)
-> +static int sh_tmu_setup(struct sh_tmu_device *tmu,
-> +                       struct platform_device *pdev, struct device_node =
-*np)
->  {
->         unsigned int i;
->         int ret;
-
-> @@ -531,14 +554,17 @@ static int sh_tmu_setup(struct sh_tmu_device *tmu, =
-struct platform_device *pdev)
->                 tmu->model =3D id->driver_data;
->                 tmu->num_channels =3D hweight8(cfg->channels_mask);
->         } else {
-> -               dev_err(&tmu->pdev->dev, "missing platform data\n");
-> +               pr_err("%s missing platform data\n", tmu->name);
->                 return -ENXIO;
->         }
->
->         /* Get hold of clock. */
-> -       tmu->clk =3D clk_get(&tmu->pdev->dev, "fck");
-> +       if (pdev)
-> +               tmu->clk =3D clk_get(&tmu->pdev->dev, "fck");
-> +       else
-> +               tmu->clk =3D of_clk_get(np, 0);
-
-You can use of_clk_get() unconditionally.
-
->         if (IS_ERR(tmu->clk)) {
-> -               dev_err(&tmu->pdev->dev, "cannot get clock\n");
-> +               pr_err("%s: cannot get clock\n", tmu->name);
->                 return PTR_ERR(tmu->clk);
->         }
->
-
-> @@ -665,12 +711,17 @@ static void __exit sh_tmu_exit(void)
->         platform_driver_unregister(&sh_tmu_device_driver);
->  }
->
-> +subsys_initcall(sh_tmu_init);
-> +module_exit(sh_tmu_exit);
-> +#endif
-> +
->  #ifdef CONFIG_SUPERH
-> +#ifdef CONFIG_SH_DEVICE_TREE
-> +TIMER_OF_DECLARE(sh_tmu, "renesas,tmu", sh_tmu_of_register);
-
-Probably this TIMER_OF_DECLARE() should be done unconditionally,
-like is done in drivers/clocksource/renesas-ostm.c.
-
-I gave that a try on R-Mobile A1, which also has TMU, but it didn't
-seem to work (timer not firing?). So I suspect there are some missing
-clk_enable() calls.  In the case of the platform driver, these are
-handled using pm_runtime_get_sync().
-
-> +#else
->  sh_early_platform_init("earlytimer", &sh_tmu_device_driver);
->  #endif
-> -
-> -subsys_initcall(sh_tmu_init);
-> -module_exit(sh_tmu_exit);
-> +#endif
->
->  MODULE_AUTHOR("Magnus Damm");
->  MODULE_DESCRIPTION("SuperH TMU Timer Driver");
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
