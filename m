@@ -1,242 +1,101 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from 19.mo582.mail-out.ovh.net (19.mo582.mail-out.ovh.net [188.165.56.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E1512BEAC
-	for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 19:23:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19976112
+	for <linux-serial@vger.kernel.org>; Tue, 27 Feb 2024 01:21:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.165.56.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708975419; cv=none; b=Uaopzok3wlVNZpaCGDk9Cy2egW5j1b7VrKZe1XWv6D5WAqTavkKzrPwfXUVnOAofQpExbkXGkMgNbWZVDc6IKeD+smawdyv+QvYi8hyyAfj7p0TB+5KHbAf8JF2KLa2sSaZbxO4grp5ABbs6Ch4MJTOOwf4zrVuqY0iwqyV+Flc=
+	t=1708996922; cv=none; b=PnOBee0Z6gyPO5VN8RF/FBezr8HFevR89VPV23Dq05Sfl2q7A40iAisEsnBU5EsTvfg0822c6Lr8B/a5X8bO5l94pU6n6OkfVPr1IZnl/RalnIcJB7QBkV7NEoSV/oLLBL8F6mhdZDp2QrLBxoMh/WqouNkoGNjQEVjN41xU+b0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708975419; c=relaxed/simple;
-	bh=RIaUJYfd1turT62O8XqlowDKwrAPQEYnub3MbudaHOc=;
-	h=Date:Message-Id:Mime-Version:Subject:From:To:Cc:Content-Type; b=jrCO7mn0r4N8COXoi7iT24VE7Ny3O3Yd1paixqW7Xc23LZdGLKGce2cOJBCl37cHq/jdwJT0g5VN/W8oABxcrDqyGlxsn8VEndp4VR8tPk50zQz4zQ8tVkIKXWEku67P95SMNyMud8CG5iH8RZlJe17Jgxpjt4XqCn3t5q0ymE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--pcc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BGKIAXvq; arc=none smtp.client-ip=209.85.128.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--pcc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BGKIAXvq"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-608ac8c5781so59752837b3.3
-        for <linux-serial@vger.kernel.org>; Mon, 26 Feb 2024 11:23:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708975417; x=1709580217; darn=vger.kernel.org;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=srrm+S8jUudlxyacmT7eG3M+AguE7ufuIMxy9ow2wbY=;
-        b=BGKIAXvq2iHLOk0s5wguMNmoAAVkhDm8x4KWg1aaIS2WowbcZBMuJ6x9bLuiwxvG0l
-         jeG+jLXZnSGZRsZap6bCFnk5p+4PyB+dhSyYE7KIvbU/tAkKX4xeN8eluG5fuXRziXe0
-         0MDQ59gKJURS0PEMxRP2itj4Oht8GrjDiPDIlgBSzXC+CmcSnOBGop/ndiq0gaJAgiuR
-         sUu+Be8smG8LQCEMuYVtyM46WrXtrEEkO8R0OEB7UCLnGufPKQNW7a6tBIXu+eJu4xYi
-         voxai8+63kOyNkCSWrzFDbVri6DjuGW8dMnWC056EHZSH/NOwJpA+fuBnwA4t0tnCMts
-         COCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708975417; x=1709580217;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=srrm+S8jUudlxyacmT7eG3M+AguE7ufuIMxy9ow2wbY=;
-        b=exFYldVKWYCU+XJJEm47fv5M61tsqrriRNgSuU1I2iQigKjvSHsahyeIeb6761N7Fe
-         W3+R0QNC3bPvRCuUpVW0f/9jhZOjyWItUK76wH1AYnx9d5q+TkaPlH57HkMJwCwa2y4B
-         CD2udk98qL/u0oqUzWtJMfkRKkDXSqpoxs/j4zCCgBen/dPrfhhkFYZYhgEWFPPGubmf
-         dFFG6IS7gJRbiAseEoevfmUyysdhwhN7gvOvqMadCrcdm91F8FA5sNK0g/bxE5dm2Og6
-         2n58FKK03ZRtqqo0xIYx9R6Rjia7uGO7o8JZQODiZauz7gVoFlfSBj17pHMNyd+DeHgF
-         YuKA==
-X-Forwarded-Encrypted: i=1; AJvYcCUG/x8VJfSmoN5/mCQVpz2UuAQngOga9MGQ8rE3nNwf60mP0CYXfLUJr1/y5B0vIvL0s6FaHXGEQcIxBb2LksKLVMUHP5QRVGim2bew
-X-Gm-Message-State: AOJu0Ywn+/CLdtLu5xnWyLdCNsPhKuonFE1LE26usgIn5WWWUOPIeZF8
-	WXaIgtzca/7j/SgzGSKntSPPg712NVmy0Y2gBIdjA1W1EtOddYSuXYhLuJL289bXlA==
-X-Google-Smtp-Source: AGHT+IE8s0uZISIgBWhNjntfNra4t7Ryjt70aLX4nP2xwzdXstJkzSJ9+ZStoyuI3mzgt3AMV9AAZGw=
-X-Received: from pcc-desktop.svl.corp.google.com ([2620:15c:2d3:205:f53b:71ca:7113:2c2b])
- (user=pcc job=sendgmr) by 2002:a05:6902:34b:b0:dcc:6065:2b3d with SMTP id
- e11-20020a056902034b00b00dcc60652b3dmr35640ybs.8.1708975416968; Mon, 26 Feb
- 2024 11:23:36 -0800 (PST)
-Date: Mon, 26 Feb 2024 11:23:26 -0800
-Message-Id: <20240226192329.3281301-1-pcc@google.com>
+	s=arc-20240116; t=1708996922; c=relaxed/simple;
+	bh=oP+NUZOFqM2E6ptm+fLs9NHiWljY1OQX7Li7+FuOHyQ=;
+	h=From:To:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=qf0QPDrs+KxA/ju+0wx7XSSSLqySCTUutW7tPqOggFVqntnWvfcj03AZXpj9Dk9UvQ5Sc3NPKIVG3djNfztV/ZO1A0uygekfU7yiwI1vBiEc4ltb2lApWBe3AmIGTdqz2bZbBwz9cqtZNy6ZmZyKMFdQ+uTF5PQ8140Jstnh29g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=etezian.org; arc=none smtp.client-ip=188.165.56.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=etezian.org
+Received: from director2.ghost.mail-out.ovh.net (unknown [10.108.2.179])
+	by mo582.mail-out.ovh.net (Postfix) with ESMTP id 4TkKTD3MyFz19mq
+	for <linux-serial@vger.kernel.org>; Tue, 27 Feb 2024 01:21:52 +0000 (UTC)
+Received: from ghost-submission-6684bf9d7b-f4n6p (unknown [10.111.174.252])
+	by director2.ghost.mail-out.ovh.net (Postfix) with ESMTPS id 605D91FD7C;
+	Tue, 27 Feb 2024 01:21:40 +0000 (UTC)
+Received: from etezian.org ([37.59.142.108])
+	by ghost-submission-6684bf9d7b-f4n6p with ESMTPSA
+	id uPD7FCQ53WXtyQAAxDwYeA
+	(envelope-from <andi@etezian.org>); Tue, 27 Feb 2024 01:21:40 +0000
+Authentication-Results:garm.ovh; auth=pass (GARM-108S002fe1109a9-1c88-4d0a-8ee4-2e8d2b473102,
+                    9285090D84508773EC2C25A4099646E261C64314) smtp.auth=andi@etezian.org
+X-OVh-ClientIp:89.217.109.169
+From: Andi Shyti <andi.shyti@kernel.org>
+To: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, 
+ conor+dt@kernel.org, nicolas.ferre@microchip.com, 
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
+ mturquette@baylibre.com, sboyd@kernel.org, herbert@gondor.apana.org.au, 
+ davem@davemloft.net, tglx@linutronix.de, tudor.ambarus@linaro.org, 
+ miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com, 
+ edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+ linus.walleij@linaro.org, sre@kernel.org, u.kleine-koenig@pengutronix.de, 
+ p.zabel@pengutronix.de, olivia@selenic.com, radu_nicolae.pirea@upb.ro, 
+ richard.genoud@gmail.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+ lgirdwood@gmail.com, broonie@kernel.org, wim@linux-watchdog.org, 
+ linux@roeck-us.net, linux@armlinux.org.uk, andrei.simion@microchip.com, 
+ mihai.sain@microchip.com, andre.przywara@arm.com, neil.armstrong@linaro.org, 
+ tony@atomide.com, durai.manickamkr@microchip.com, geert+renesas@glider.be, 
+ arnd@arndb.de, Jason@zx2c4.com, rdunlap@infradead.org, rientjes@google.com, 
+ vbabka@suse.cz, mripard@kernel.org, codrin.ciubotariu@microchip.com, 
+ eugen.hristev@collabora.com, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, 
+ linux-i2c@vger.kernel.org, linux-mtd@lists.infradead.org, 
+ netdev@vger.kernel.org, linux-gpio@vger.kernel.org, 
+ linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, 
+ linux-rtc@vger.kernel.org, linux-spi@vger.kernel.org, 
+ linux-serial@vger.kernel.org, alsa-devel@alsa-project.org, 
+ linux-sound@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+ Varshini Rajendran <varshini.rajendran@microchip.com>
+In-Reply-To: <20240223171342.669133-1-varshini.rajendran@microchip.com>
+References: <20240223171342.669133-1-varshini.rajendran@microchip.com>
+Subject: Re: (subset) [PATCH v4 00/39] Add support for sam9x7 SoC family
+Message-Id: <170899689860.412407.545047377007032928.b4-ty@kernel.org>
+Date: Tue, 27 Feb 2024 02:21:38 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.44.0.rc1.240.g4c46232300-goog
-Subject: [PATCH v2] serial: Lock console when calling into driver before registration
-From: Peter Collingbourne <pcc@google.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: Peter Collingbourne <pcc@google.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13.0
+X-Ovh-Tracer-Id: 4120793662683875913
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvledrgeefgdeffecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfgjfhfukfffgggtgffosehtjeertdertdejnecuhfhrohhmpeetnhguihcuufhhhihtihcuoegrnhguihdrshhhhihtiheskhgvrhhnvghlrdhorhhgqeenucggtffrrghtthgvrhhnpeelkefhieeljeejffdtvddthfffleffueekkefgieelveejjedtudettdeghfdutdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeduvdejrddtrddtrddupdekledrvddujedruddtledrudeiledpfeejrdehledrudegvddruddtkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduvdejrddtrddtrddupdhmrghilhhfrhhomheprghnughisegvthgviihirghnrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkedvpdhmohguvgepshhmthhpohhuth
 
-During the handoff from earlycon to the real console driver, we have
-two separate drivers operating on the same device concurrently. In the
-case of the 8250 driver these concurrent accesses cause problems due
-to the driver's use of banked registers, controlled by LCR.DLAB. It is
-possible for the setup(), config_port(), pm() and set_mctrl() callbacks
-to set DLAB, which can cause the earlycon code that intends to access
-TX to instead access DLL, leading to missed output and corruption on
-the serial line due to unintended modifications to the baud rate.
+Hi
 
-In particular, for setup() we have:
+On Fri, 23 Feb 2024 22:43:42 +0530, Varshini Rajendran wrote:
+> This patch series adds support for the new SoC family - sam9x7.
+>  - The device tree, configs and drivers are added
+>  - Clock driver for sam9x7 is added
+>  - Support for basic peripherals is added
+>  - Target board SAM9X75 Curiosity is added
+> 
+>  Changes in v4:
+>  --------------
+> 
+> [...]
 
-univ8250_console_setup()
--> serial8250_console_setup()
--> uart_set_options()
--> serial8250_set_termios()
--> serial8250_do_set_termios()
--> serial8250_do_set_divisor()
+Applied to i2c/i2c-host on
 
-For config_port() we have:
+git://git.kernel.org/pub/scm/linux/kernel/git/andi.shyti/linux.git
 
-serial8250_config_port()
--> autoconfig()
+Thank you,
+Andi
 
-For pm() we have:
-
-serial8250_pm()
--> serial8250_do_pm()
--> serial8250_set_sleep()
-
-For set_mctrl() we have (for some devices):
-
-serial8250_set_mctrl()
--> omap8250_set_mctrl()
--> __omap8250_set_mctrl()
-
-To avoid such problems, let's make it so that the console is locked
-during pre-registration calls to these callbacks, which will prevent
-the earlycon driver from running concurrently.
-
-Remove the partial solution to this problem in the 8250 driver
-that locked the console only during autoconfig_irq(), as this would
-result in a deadlock with the new approach. The console continues
-to be locked during autoconfig_irq() because it can only be called
-through uart_configure_port().
-
-Although this patch introduces more locking than strictly necessary
-(and in particular it also locks during the call to rs485_config()
-which is not affected by this issue as far as I can tell), it follows
-the principle that it is the responsibility of the generic console
-code to manage the earlycon handoff by ensuring that earlycon and real
-console driver code cannot run concurrently, and not the individual
-drivers.
-
-Signed-off-by: Peter Collingbourne <pcc@google.com>
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
-Link: https://linux-review.googlesource.com/id/I7cf8124dcebf8618e6b2ee543fa5b25532de55d8
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
----
- drivers/tty/serial/8250/8250_port.c |  6 ------
- drivers/tty/serial/serial_core.c    | 12 ++++++++++++
- kernel/printk/printk.c              | 21 ++++++++++++++++++---
- 3 files changed, 30 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 8ca061d3bbb9..1d65055dde27 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1329,9 +1329,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 		inb_p(ICP);
- 	}
- 
--	if (uart_console(port))
--		console_lock();
--
- 	/* forget possible initially masked and pending IRQ */
- 	probe_irq_off(probe_irq_on());
- 	save_mcr = serial8250_in_MCR(up);
-@@ -1371,9 +1368,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
- 	if (port->flags & UPF_FOURPORT)
- 		outb_p(save_ICP, ICP);
- 
--	if (uart_console(port))
--		console_unlock();
--
- 	port->irq = (irq > 0) ? irq : 0;
- }
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index d6a58a9e072a..ff85ebd3a007 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2608,7 +2608,12 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 			port->type = PORT_UNKNOWN;
- 			flags |= UART_CONFIG_TYPE;
- 		}
-+		/* Synchronize with possible boot console. */
-+		if (uart_console(port))
-+			console_lock();
- 		port->ops->config_port(port, flags);
-+		if (uart_console(port))
-+			console_unlock();
- 	}
- 
- 	if (port->type != PORT_UNKNOWN) {
-@@ -2616,6 +2621,10 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 
- 		uart_report_port(drv, port);
- 
-+		/* Synchronize with possible boot console. */
-+		if (uart_console(port))
-+			console_lock();
-+
- 		/* Power up port for set_mctrl() */
- 		uart_change_pm(state, UART_PM_STATE_ON);
- 
-@@ -2632,6 +2641,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 
- 		uart_rs485_config(port);
- 
-+		if (uart_console(port))
-+			console_unlock();
-+
- 		/*
- 		 * If this driver supports console, and it hasn't been
- 		 * successfully registered yet, try to re-register it.
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index f2444b581e16..f51e4e5a869d 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3263,6 +3263,21 @@ static int __init keep_bootcon_setup(char *str)
- 
- early_param("keep_bootcon", keep_bootcon_setup);
- 
-+static int console_call_setup(struct console *newcon, char *options)
-+{
-+	int err;
-+
-+	if (!newcon->setup)
-+		return 0;
-+
-+	/* Synchronize with possible boot console. */
-+	console_lock();
-+	err = newcon->setup(newcon, options);
-+	console_unlock();
-+
-+	return err;
-+}
-+
- /*
-  * This is called by register_console() to try to match
-  * the newly registered console with any of the ones selected
-@@ -3298,8 +3313,8 @@ static int try_enable_preferred_console(struct console *newcon,
- 			if (_braille_register_console(newcon, c))
- 				return 0;
- 
--			if (newcon->setup &&
--			    (err = newcon->setup(newcon, c->options)) != 0)
-+			err = console_call_setup(newcon, c->options);
-+			if (err != 0)
- 				return err;
- 		}
- 		newcon->flags |= CON_ENABLED;
-@@ -3325,7 +3340,7 @@ static void try_enable_default_console(struct console *newcon)
- 	if (newcon->index < 0)
- 		newcon->index = 0;
- 
--	if (newcon->setup && newcon->setup(newcon, NULL) != 0)
-+	if (console_call_setup(newcon, NULL) != 0)
- 		return;
- 
- 	newcon->flags |= CON_ENABLED;
--- 
-2.44.0.rc1.240.g4c46232300-goog
+Patches applied
+===============
+[06/39] dt-bindings: i2c: at91: Add sam9x7 compatible string
+        commit: a856c9e6104f7b4619f09e19ab95903c7888da96
 
