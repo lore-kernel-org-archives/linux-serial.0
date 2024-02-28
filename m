@@ -1,133 +1,105 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32A693FBB5
-	for <linux-serial@vger.kernel.org>; Wed, 28 Feb 2024 17:45:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7780D71ED2
+	for <linux-serial@vger.kernel.org>; Wed, 28 Feb 2024 17:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709142341; cv=none; b=tE3io2JtWlz760HYvdN64lld3PnUwVUeIMq/jGXw+lue5tXjyV2QygkQrCpoDNKzKDlTJiiYGSnzCj+OQ0Dnao9WRFewzdcvV+oqrCzT5dUVKR5ZhNHuDlgKnymn4u5otzOoKozuQMLKf93PfGa16ehQ/R/AnH6tRe67AdkPa1E=
+	t=1709143178; cv=none; b=WUuDAzFJOChEseBu7B1Y8nKU7a94wuJaspM9nKvk0gjHzQETkHkVIK8/Y9zATSd0z3e+9fZmFodO2SKOvKbHgaozWAZHjWRqvIGKfJVgMmris+UDp62e2IoQeRNbNXfU+bZ9hHUvnTZaY/lGhnGPdhwMA2jnDMMVdXSdIXe3a4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709142341; c=relaxed/simple;
-	bh=pUaeyA1t/rs2uzTjJrQTsg5iLayiDuVVh8zG9dCZ9DU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qd603Qv6vby730FzSLT0eXxubBFTwXEX0lvtWTbQUEJHrbb8qlIxt1YBBpMwshcTLcrGwOUNoN9x+8Or03oa3daJiplLqY6SsEwIQ0ulsMemF8eHQ89mUCmzLNZ6pfrV0V4+GSQhIDyWkgdUyB8R/bRovGTJmNurEpA/riSS+AM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FSGHRSdv; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1709143178; c=relaxed/simple;
+	bh=Cryg0oMlMm65LIgyevh5OmxK1msBCbiQJnZ5+mS95BE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dra6SgK2vJ5NsaQE1P//6Y9S4O+OvKyRgw/9cFftYEUsGT74F4QzGI504DpKp/W+cJPYbsRvgEcM6hcH2HfjDTmTriwPMUloIOQpvcnyts+otUpMYnubiPlTfhOQ1CQF7b5WcsU85Me3E+llYG4DcCQ4faD+vnwn4MlKnKYlk24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DjOEn/ha; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FSGHRSdv"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-512fab8cc6aso16e87.1
-        for <linux-serial@vger.kernel.org>; Wed, 28 Feb 2024 09:45:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709142338; x=1709747138; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+sLd6gl83kt/yJiJj67OWnBmLsYqXa7Dtm6HPJ0SDlA=;
-        b=FSGHRSdv2lNssb4d6zfbceXnDNsXAwsvCB9qIbg7TsTcVsKqL6ppwNStBuT5RVoCdT
-         GU4BSAV6qjX0MS9euKkLxqUv7eljcQpfXe4AFxHdJWRizxJVfB3W1gMRBZlSUcshXknf
-         bJF41RC+TemXmZ/KHyTIwBg5MrfgdEHMKrlmh+xpezBF/t0tK3A+NOoJpJX/M/6N9nZA
-         Yutr8Qd51uaKm8x77ivUEvrTH8IrhHXGf8lLPCYN1b2mYiRv9Dw+81TDVkBoY4/eOWx+
-         6iEluejMLVsQ50SU4HK3F30sa5LO6s5sBC0lhTsmfTpTb6x6iH3LbF88nySZA7zyfnE6
-         CqTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709142338; x=1709747138;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+sLd6gl83kt/yJiJj67OWnBmLsYqXa7Dtm6HPJ0SDlA=;
-        b=mGPnJf0magTTZc/hfnnIfpeaMITIMCx0AvDvwfiDEn2L8QHWXtQyFgk+t6uw/i/GIq
-         qCcO+Py1kBIU9QbUjrLfxhTlBt1gdwxO0KHr2VOZEttNdzf8cYVRs3ryKKHeOtoQMVvA
-         JSlUP25lXJEjdh98U1eqPI4/YPrCr301rSysoyTld8KQCM+fT4Gm5ziuagO0fHKCAzAR
-         2S3gV44bL/eqvybv26Hk/ydgG4BnbGVHADQ6V0Ch7vPWmBT+oKilLs+NNhpfL8GY0T1x
-         Klwo/r7PG7HNulpaSc5NVYGann/vOVziwIQ5nRxGaAAGKhJFBX3UnzvEUgfyCTgxbjEj
-         PUVg==
-X-Forwarded-Encrypted: i=1; AJvYcCVsre/oFSTUjKWWHbyf8KQXXvGS5mda4qAL+CVHi99mK3GAMGi0ZZG0CNUapq1lZtwyzKhaeUcwz+dE/M6VEEjSP6QomvRtXWl0/DqM
-X-Gm-Message-State: AOJu0Yyxy+zQRgiNsuL05kiBwlEQUV7DPOiL4h2NIQXSXhKl4rqtBffy
-	B+LtYabDs3LlFFV3NQQVSaYeEiTHMHbNniaekKL7p1oVyqc++cNI1gug/0GWpUZ2W4Jyo660l4l
-	bjh2BBbLxw7Z7AilQoU/cMMHWKG0yRriLR93jOk0TJu5ORRMCgLr+e4ILfA==
-X-Google-Smtp-Source: AGHT+IG/tXhJv1eez6FYw/IOUUcTdcY9BK5YkbVZ3YYCk/UxhnvEMI4/+5XTxSSgL7PAQRhIO5b0VcaX0P0pGnX31pU=
-X-Received: by 2002:ac2:532a:0:b0:513:1e32:56c1 with SMTP id
- f10-20020ac2532a000000b005131e3256c1mr58368lfh.0.1709142337777; Wed, 28 Feb
- 2024 09:45:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DjOEn/ha"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709143177; x=1740679177;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Cryg0oMlMm65LIgyevh5OmxK1msBCbiQJnZ5+mS95BE=;
+  b=DjOEn/haYNDdrin9dHpLH+YImgdYq01Gcph2SIueZJRQMBeQKfFNwTeX
+   Bww9rMwwj5jwhJrPXh02QyUD2Ji4XrpeGqjziNDnPL/5XWtyqaJh40PCt
+   tSqoQrHnzFaXTOgoySBQnf+AGp43XZllyr9e7F+BGI5ybJnvduIGh9ooO
+   bzhIrc0FXh6G5a+r4H+ewPvX+MThFIk7+ZfmXnK+zNJ5jdWHzqYkHvprd
+   7w0UanRakv/nmUE2zhqhxe54M42+juEyVe/foiI9vPshQe6yL9Da392CR
+   cGjKrOUzk+bszHLGf0HgX+BA5TTp/HrQoFw53epxN86m1UBKNRgyAabvS
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="15000847"
+X-IronPort-AV: E=Sophos;i="6.06,190,1705392000"; 
+   d="scan'208";a="15000847"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 09:59:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="913957046"
+X-IronPort-AV: E=Sophos;i="6.06,190,1705392000"; 
+   d="scan'208";a="913957046"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 09:59:34 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rfODL-00000008I7i-0y1N;
+	Wed, 28 Feb 2024 19:59:31 +0200
+Date: Wed, 28 Feb 2024 19:59:30 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: VAMSHI GAJJELA <vamshigajjela@google.com>
+Cc: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
+ baudclk failed
+Message-ID: <Zd90ghtOxQSGNZxD@smile.fi.intel.com>
+References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
+ <CAMTSyjrKVL12CrXuqJhWydObhYfgLF=zKTE0U0LdzimTT6Sdsw@mail.gmail.com>
+ <Zdy-X37encfcr9g7@smile.fi.intel.com>
+ <CAMTSyjodFe0K_0h3R1d1JRYCHMnHhVCjhCSWRLGuzB46Gx+SVQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240222111922.2016122-2-u.kleine-koenig@pengutronix.de>
- <CAMTSyjrKVL12CrXuqJhWydObhYfgLF=zKTE0U0LdzimTT6Sdsw@mail.gmail.com> <Zdy-X37encfcr9g7@smile.fi.intel.com>
-In-Reply-To: <Zdy-X37encfcr9g7@smile.fi.intel.com>
-From: VAMSHI GAJJELA <vamshigajjela@google.com>
-Date: Wed, 28 Feb 2024 23:15:23 +0530
-Message-ID: <CAMTSyjodFe0K_0h3R1d1JRYCHMnHhVCjhCSWRLGuzB46Gx+SVQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_dw: Emit an error message if getting the
- baudclk failed
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMTSyjodFe0K_0h3R1d1JRYCHMnHhVCjhCSWRLGuzB46Gx+SVQ@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Feb 26, 2024 at 10:07=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Mon, Feb 26, 2024 at 09:30:53PM +0530, VAMSHI GAJJELA wrote:
-> > On Thu, Feb 22, 2024 at 4:50=E2=80=AFPM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
->
-> ...
->
-> > >         if (data->clk =3D=3D NULL)
-> > >                 data->clk =3D devm_clk_get_optional_enabled(dev, NULL=
-);
-> > >         if (IS_ERR(data->clk))
-> > > -               return PTR_ERR(data->clk);
-> > > +               return dev_err_probe(dev, PTR_ERR(data->clk),
-> > > +                                    "failed to get baudclk\n");
-> >
-> > Not required IMO as the baudclk is optional,
->
-> It adds verbosity to the cases when it's defined, but for some reason
-> can't be retrieved.
-ack
->
-> > otherwise it might ask
-> > for a similar change at apb_pclk.
->
-> If you need so, yes. Send a patch.
-Noted
->
-> > Could you please provide some insight into the circumstances that lead
-> > to encountering this error case?
-> >
-> > Also the check is for IS_ERR(data->clk), data-clk could be NULL aswell.
->
-> Yes, and that's the case of everything is fine as the clock is optional.
-> Do you see any problem with that check?
-No problem here
->
-> > I see any error should be caught at the following line, provided no
-> > clock-frequency
-> > ```
-> > /* If no clock rate is defined, fail. */
-> > if (!p->uartclk)
-> >         return dev_err_probe(dev, -EINVAL, "clock rate not defined\n");
-> > ```
->
-> Not sure what you meant by this. Even if we ask for an optional clock,
-> the error condition still might happen with many other reasons besides
-> the absence of the clock.
-I was looking for a reason that the author has encountered. Error condition
-on an optional clock might also fail `p->uartclk =3D clk_get_rate` and resu=
-lt
- "clock rate not defined\n" error.
+On Wed, Feb 28, 2024 at 11:15:23PM +0530, VAMSHI GAJJELA wrote:
+> On Mon, Feb 26, 2024 at 10:07 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Mon, Feb 26, 2024 at 09:30:53PM +0530, VAMSHI GAJJELA wrote:
+> > > On Thu, Feb 22, 2024 at 4:50 PM Uwe Kleine-König
+> > > <u.kleine-koenig@pengutronix.de> wrote:
 
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+...
+
+> > > I see any error should be caught at the following line, provided no
+> > > clock-frequency
+> > > ```
+> > > /* If no clock rate is defined, fail. */
+> > > if (!p->uartclk)
+> > >         return dev_err_probe(dev, -EINVAL, "clock rate not defined\n");
+> > > ```
+> >
+> > Not sure what you meant by this. Even if we ask for an optional clock,
+> > the error condition still might happen with many other reasons besides
+> > the absence of the clock.
+> I was looking for a reason that the author has encountered. Error condition
+> on an optional clock might also fail `p->uartclk = clk_get_rate` and result
+>  "clock rate not defined\n" error.
+
+Are you sure that CCF allows this to happen on real clocks?
+I mean, the rate of (existing) clock can be 0 iff the clock provider is
+powered off or unclocked itself (by parent clock).
+But I'm not sure this is the case CCF handles.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
