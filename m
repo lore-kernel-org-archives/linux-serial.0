@@ -1,78 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from pb-smtp2.pobox.com (pb-smtp2.pobox.com [64.147.108.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 693AA6D52F;
-	Thu, 29 Feb 2024 22:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BAC274C00
+	for <linux-serial@vger.kernel.org>; Thu, 29 Feb 2024 22:10:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.108.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709244049; cv=none; b=f+r3ETLq0RXONqy4IT0+9uUyede7LfFRwRPcT5z737aS8mTuvD95GrBPyALtLMkZMnIYpjqCwe+J88ixAMHHHVIz3dOornlKFHSwPF7qELCrdEa0BPh78tYiwEMERvqJqo7BVz1UgHCbublK2fDdElzTaKKLti21WFZQFHIEX3o=
+	t=1709244660; cv=none; b=pBCeF1LDeI8KOaHBzPX0tqi6J9bLmwXUsfkbPK10gRXD49/ceYHr2c+DigKT64LLRNd6yUqE/thfN0BoDGqv2JMsgHyp3/9gK5o8GptjR2O+weT71fCAN+3zvu/J/NUi7J6EKFfzh/HYx1bfxOFiv3km1Z5GH6Zbw0lfv4QXcgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709244049; c=relaxed/simple;
-	bh=Otvi24GU73XCeo3Jc053Uc3VjmLPm1+czoFS3dRaPro=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iay0hDzD3LQSpnkkXsC0H94Fv6drF9slgihcbCtaNPXWQPOiBQLWgY5cUMLwmEJZxRYTlxcRXVL9i/wp2O9oxVz/+Xt6I7G96kRYZovBr0n31XVJK5VuxzZuj13q2NfbeD/moLR/d+gul5QZZQ6RnvuR4SUN4XPT44lciKIynRE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=L/s5U4z1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709244660; c=relaxed/simple;
+	bh=xvCFb69gT8fom4sva1sehd2q73DRQxqz73k+Hv9pKNw=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Lw3tB5JmRPpt9I8SZzdYdYIhL6TGefNx+byDGS92VN7S5td4+LzHMDKamv61MD8PLIRock06Pq0+j0f4K7yepANKOdyg5phbvpPrqbijPpV4is9lhZHefT8ejv/LaDrKgvk59R/yqCGIhztXwrn6jdmfmX1meeM0CGBBFnUMHKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (1024-bit key) header.d=pobox.com header.i=@pobox.com header.b=VosU1Hkj; dkim=pass (1024-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=ut4qVGe5; arc=none smtp.client-ip=64.147.108.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fluxnic.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="L/s5U4z1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C6F9C433C7;
-	Thu, 29 Feb 2024 22:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709244048;
-	bh=Otvi24GU73XCeo3Jc053Uc3VjmLPm1+czoFS3dRaPro=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=L/s5U4z1gKMD/aFql4qJbtRtuDDHC2VPe+By7Vkog4myAQWbXIECVGWleGyAsI8LT
-	 tKYuniW/iTIqprbU5M8iiK43bHBW+IQaD00Z6edRsSLLIqCxKSCdlnjDD8kQ5nwQbS
-	 P5yqkIpvFFuOmYSAI7iBOB7UfAhyaFbaxKO/A5JI=
-Date: Thu, 29 Feb 2024 23:00:45 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: GuanBing Huang <albanhuang@outlook.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, albanhuang@tencent.com
-Subject: Re: [PATCH] serial: 8250_pnp: Support configurable reg shift property
-Message-ID: <2024022916-captivate-state-0255@gregkh>
-References: <PSAPR06MB49522EB50BDE08A5D9D0DACEC95F2@PSAPR06MB4952.apcprd06.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=pobox.com header.i=@pobox.com header.b="VosU1Hkj";
+	dkim=pass (1024-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="ut4qVGe5"
+Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
+	by pb-smtp2.pobox.com (Postfix) with ESMTP id EAADD1E73BF;
+	Thu, 29 Feb 2024 17:10:57 -0500 (EST)
+	(envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=date:from
+	:to:cc:subject:in-reply-to:message-id:references:mime-version
+	:content-type; s=sasl; bh=xvCFb69gT8fom4sva1sehd2q73DRQxqz73k+Hv
+	9pKNw=; b=VosU1Hkjz8Bkm00v3WT4kwV4sL6v5B2ijc5apKsgGgxypOydlqDckQ
+	ZhEd3N2r1NLA6bVCxeNmdEM+LRUuAGcgi1rQ3yd3Z519+q5TJwuk94uTjxcnwXLZ
+	g8sYMGY6C4UCj1sw72zP1lNzOtAtSfAt3xiYYlwqdzIZ9pfmcUCYg=
+Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
+	by pb-smtp2.pobox.com (Postfix) with ESMTP id E35FA1E73BE;
+	Thu, 29 Feb 2024 17:10:57 -0500 (EST)
+	(envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=xvCFb69gT8fom4sva1sehd2q73DRQxqz73k+Hv9pKNw=; b=ut4qVGe5WUPIsgRWC43OmxHrIEqb/IkyTqeYvBXDks0vGcWssMORAPCLp7e1cj/49i6/S7aaMcnoOeXWCBkxkwfQWFhpX7gQuuvuVvjesdzORbMgADMk8lS2qJCokPMID8SOerObvsmEbhD7E2r7Z1jWAAco7VTSU6ORGwCshpI=
+Received: from yoda.fluxnic.net (unknown [24.201.101.36])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by pb-smtp2.pobox.com (Postfix) with ESMTPSA id 628441E73BD;
+	Thu, 29 Feb 2024 17:10:57 -0500 (EST)
+	(envelope-from nico@fluxnic.net)
+Received: from xanadu (unknown [IPv6:fd17:d3d3:663b:0:9696:df8a:e3:af35])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 4327AB8787E;
+	Thu, 29 Feb 2024 17:10:56 -0500 (EST)
+Date: Thu, 29 Feb 2024 17:10:56 -0500 (EST)
+From: Nicolas Pitre <nico@fluxnic.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] vt: fix unicode buffer corruption when deleting
+ characters
+In-Reply-To: <2024022936-chloride-concert-12a6@gregkh>
+Message-ID: <3840o476-6p58-q897-101r-34n723p16oo1@syhkavp.arg>
+References: <88n6qo5r-2986-r273-9n4p-pr77q314727r@syhkavp.arg> <2024022936-chloride-concert-12a6@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PSAPR06MB49522EB50BDE08A5D9D0DACEC95F2@PSAPR06MB4952.apcprd06.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID:
+ 69E716C2-D74F-11EE-B331-25B3960A682E-78420484!pb-smtp2.pobox.com
 
-On Thu, Feb 29, 2024 at 07:51:54PM +0800, GuanBing Huang wrote:
-> From: albanhuang <albanhuang@tencent.com>
+On Thu, 29 Feb 2024, Greg Kroah-Hartman wrote:
+
+> On Thu, Feb 29, 2024 at 04:05:51PM -0500, Nicolas Pitre wrote:
+> > This is the same issue that was fixed for the VGA text buffer in
+> > commit 39cdb68c64d8 ("vt: fix memory overlapping when deleting chars
+> > in the buffer"). The cure is also the same.
 > 
-> The 16550a serial port based on the ACPI table requires obtaining the
-> reg-shift attribute. In the ACPI scenario, If the reg-shift property
-> is not configured like in DTS, the 16550a serial driver cannot read or
-> write controller registers properly during initialization.
-> 
-> Signed-off-by: albanhuang <albanhuang@tencent.com>
-> Signed-off-by: tombinfan <tombinfan@tencent.com>
-> Signed-off-by: dylanlhdu <dylanlhdu@tencent.com>
+> Please spell out what the "cure" is here, so we don't have to do and
+> look up another commit somewhere else :)
 
-"interesting" names, can you not just use your native encoding to make
-this easier?
+This is an obvious single-line fix. Or, are people only reviewing commit 
+logs now?  ;-)
 
-> ---
->  drivers/tty/serial/8250/8250_pnp.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-> index 1974bbadc975..25b4e41e9745 100644
-> --- a/drivers/tty/serial/8250/8250_pnp.c
-> +++ b/drivers/tty/serial/8250/8250_pnp.c
-> @@ -473,6 +473,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  		uart.port.flags |= UPF_SHARE_IRQ;
->  	uart.port.uartclk = 1843200;
->  	device_property_read_u32(&dev->dev, "clock-frequency", &uart.port.uartclk);
-> +	device_property_read_u8(&dev->dev, "reg-shift", &uart.port.regshift);
+Revised commit log coming.
 
-Is this property documented somewhere?  What happens if the property
-isn't there?
 
-thanks,
-
-greg k-h
+Nicolas
