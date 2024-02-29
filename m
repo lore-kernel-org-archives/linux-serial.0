@@ -1,136 +1,206 @@
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01olkn2090.outbound.protection.outlook.com [40.92.53.90])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FC1D7CF29;
-	Thu, 29 Feb 2024 11:52:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.53.90
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709207528; cv=fail; b=mdwKN5buAxXf59mfDhtMLe6t6UIcVazSCTEGQPTDDlSOUI2/YbOLMijSiC7H3kOTzi0K01WCGIKRFCPk9745AnrIl5hxQhpt2pn64oHkS9CKWN/tQfnk091gb+NaxOyTfRiRkEraijMquqSwJ9Xg3pZQuojGstpJo0bpJ6yttQA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709207528; c=relaxed/simple;
-	bh=ZVNWUDac2T4xdsKzIde6ZFGJ36GYBuTszLkBnT6UtiA=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=UEKkg4y32NlV0yYxw4LpnhwSlSdmNtY5E2ohCnsznc+UBNqLPJJtvOEAsElMvlGNUM45beQB2IECBmMDdAc9zVtSWfg+0136GYPncDrFJRp3upN5HnMsELa8QnD6wZXKMRYS+0Apf6zxpNnCFPTAn8/tsgV8yK6dOKo+kpLABEg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=mOoBduo4; arc=fail smtp.client-ip=40.92.53.90
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B366C2A8D7;
+	Thu, 29 Feb 2024 18:26:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709231175; cv=none; b=rk36zvD4PgzKsW/vwXWKhPILXNGUhiNTqzF32U+zrDxlkBM8zP+KMp6l04HhM07J6UrkXb0pke6hkGsQFwss6iQoHpR6K2jghFOrciyP3gqvDFT4dmuD/VRJXAqvpLgC/wdw0eXEEMYkNn7LVcANyjf8aJv9ZUj+mjfeBUa0OZg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709231175; c=relaxed/simple;
+	bh=Vgq4hnQMw27GH6PkaZfA5dT6KlUr9HO4n6N8lO1OUZQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Og/HNEkguYqOl+YE/JfDvWNMwH5EszwXxEvgN9hOi805d46qFrSaFubWfm12zUNQ/44Z4yvr+nDDbP7zZjsNen0kvpXMu55m++SLS4wZlOORNyKkWHxotGl9qgMTNRXQmLTzEKESSTXtmglCe1RR6y51x5xz6fMXJMw7YuaYQZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bFrtT96X; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="mOoBduo4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VvysMCnhWu93fAVdSbBPI7TE4rYeHe1Wk/y73W/ZCP34TDElS102q4yDLSza4Y1MN2ckhPRp51swKYXxvdWktqRIK0BSccb2jPTcqQ0IbFOS0bu9GcOvWFy3Xz+483tet3Pft5QsuqNiSCHF47Rm0EBkZYIkckmeswd8rjGFaOe1KR1XcqGfK1dYcooHNYhmCS0uknbqcWm6xHum3H0oEhpCMS0Be56qffMWTV0bdX3qD5CObK5/LzeO7eLRLyXnwvfCH60fbTiegoKQ5N95nVMPWKyJY9XQRd5CzZ7SqPt/SOmZa68ch6iVQq1M6w3fjjE2izAPenrTm+s7Ks3PRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0PXPH6wLfc8+olI67/P2tQlj6vGxopXd7xlFHEzKT5o=;
- b=bzv4NwAqudNJ5wFsBD6a0nXh9ShC5chlBlOdSwTKrx4AAOjFWuvhjj9SMvieu1t9qWQGxmnBWEhelDhNOker2ekg2ZeQjN75S94Bn60cEqhvTTFpJ3UGvjgQzfONfIzMLgHkuYBtNCz0ncuC66RdgDOc2q5TZi+EZWYd0HL6ySF07mkKAdSd5pP/cxxSPdeaZJlUJMYwkEdrv1xaF7/j+Z35G++RrkWSlRw05mrKZaXwuzImjeJvBgWR0vjj+4Y1466gWShI5eP9OjNwJU/aNyRK5B5TFHX1BaogsDteeyLxqc9oY2UQvizlOhSg5zagepDgpF5zwF09UCR2UXqPJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0PXPH6wLfc8+olI67/P2tQlj6vGxopXd7xlFHEzKT5o=;
- b=mOoBduo4RqV0QBrzmdzpvEiDd4tZs1HQMMsFqs0rx1ithsm7RmVZabX6zqc/rSxhuJ2tZkEAZtEQ2v3h0Qvz3a7cL27allvd27TsL9W/46qSsEuEIyTYJrBsF7+LvQ0bB94EGkJGqMQs7mFPZTqDR/R24fIdC7Wd5m0jqxsgth/gYE5P6tkZII5LMlfQkYk5GwDoFccBFaSVy6WHBec7qn+X/tyLEg3QjRZFUTCLzD5crBcWBBt54HaeE9BllBw+KoZl5laWuh+kVNXgP/0qXJ/W9yhz5dakCUjtEGK4TztRj7M18Ny0lT+KmNsgYZJDxHY+648sAPBZuNdw5Xu93w==
-Received: from PSAPR06MB4952.apcprd06.prod.outlook.com (2603:1096:301:a3::11)
- by TY0PR06MB5836.apcprd06.prod.outlook.com (2603:1096:400:31f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.41; Thu, 29 Feb
- 2024 11:52:03 +0000
-Received: from PSAPR06MB4952.apcprd06.prod.outlook.com
- ([fe80::1e13:cc11:3196:e0a6]) by PSAPR06MB4952.apcprd06.prod.outlook.com
- ([fe80::1e13:cc11:3196:e0a6%5]) with mapi id 15.20.7316.039; Thu, 29 Feb 2024
- 11:52:02 +0000
-From: GuanBing Huang <albanhuang@outlook.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	albanhuang@tencent.com
-Subject: [PATCH] serial: 8250_pnp: Support configurable reg shift property
-Date: Thu, 29 Feb 2024 19:51:54 +0800
-Message-ID:
- <PSAPR06MB49522EB50BDE08A5D9D0DACEC95F2@PSAPR06MB4952.apcprd06.prod.outlook.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-TMN: [Ll0BneyBssgM4Uxpt7eo5+4dP4M4x0S1]
-X-ClientProxiedBy: SG2PR02CA0119.apcprd02.prod.outlook.com
- (2603:1096:4:92::35) To PSAPR06MB4952.apcprd06.prod.outlook.com
- (2603:1096:301:a3::11)
-X-Microsoft-Original-Message-ID:
- <20240229115154.80311-1-albanhuang@outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bFrtT96X"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C1DC433F1;
+	Thu, 29 Feb 2024 18:26:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709231175;
+	bh=Vgq4hnQMw27GH6PkaZfA5dT6KlUr9HO4n6N8lO1OUZQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bFrtT96Xq64H+T6w/LgvmGQcoep03LjgB30PBEddTKmTqkdMUU2vRqeODlsoNU9lJ
+	 KAOLtXcJW6sqkjVJ6iGi5/U3whxLZpxfvHZV96TcS7EUqoQn53KTCW83bibg2mSXU9
+	 kZ8vLNptyVMM25I29+7bMbkO06IThF02QLUjr824P7ibSitzCWzbKRBEQmdCOJBFFs
+	 Sdp6jiww/LXGOogKQcsZUcNT+Zn2HJaA4FSSTvxE9keuvto74s7rFM0nofqEd+4t8H
+	 S0yXl3wGjNlViVie5Ml0fcVYTqJGUgi96C3a75HCe1+6VsHKwKZlc5N13NkNuCaZ91
+	 q5HFNa7Cpf8jA==
+Date: Thu, 29 Feb 2024 18:26:09 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Varshini.Rajendran@microchip.com
+Cc: radu_nicolae.pirea@upb.ro, richard.genoud@gmail.com,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, Nicolas.Ferre@microchip.com,
+	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+	linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 12/39] dt-bindings: serial: atmel,at91-usart: add
+ compatible for sam9x7.
+Message-ID: <20240229-champion-vengeful-4612cee0d678@spud>
+References: <20240223171342.669133-1-varshini.rajendran@microchip.com>
+ <20240223172559.672142-1-varshini.rajendran@microchip.com>
+ <20240224-kimono-stress-898eae80abd3@spud>
+ <b49572d4-b52e-4655-8d10-2709e2fbe803@microchip.com>
+ <20240228-capital-nickname-696dfcd655de@spud>
+ <16e37a0e-74d0-4632-b0a2-403f74a3a379@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PSAPR06MB4952:EE_|TY0PR06MB5836:EE_
-X-MS-Office365-Filtering-Correlation-Id: 91505cd2-3ea5-49f8-ba22-08dc391cd808
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kHoTdC+O0WDlav6JKFQGMQpWPepzqUEXsQkpypuW8dz2Xv8sgKbdoHaow/SIMZLX5+UYJ0qIEf0AxBLQcrLwen/sdyXzAEu+Wyl/sZfxChCfgRMPQcvf58VHp4tMllL0oFMk4w4/xpA2TN91u/qWSEKgkwmwP7KdOyr6kPQEm/DxSmRWiG5s7mGsxgsoxL/zz0mmq1HYBWP5sdTlr6z59SabUKYXX5iPMTNEGAoxRm3q2HkVPbRhk0PKxioiPXcj+MyFZMUtoBE1Jp48PB8Rz0ZQca0YQ8AD8c0PrY3adaITdhckprmRume/4BqvY6609TTl42dqpWHk0WHSwefHxjDsvdpPKcH/XmcooJ+Hv4+jaw9TeQk+1f95bvg15ldzH83KsrJuAvoZlGIH11v/sZv94zzhKNQ30b4fUunVcSMS9/Rgzuq5C60AbsTs9XWU68ve1WVNBHJcaojFBH7eXc3w7bZYlLBgJU4ja0+njxtuGTnGu9G2rvu6OwoD7WdEi+RzAxNumL1goGj/AgEjjGjqd4wKiatIYZ4gs0zR0iwUHp5Bm+BzEWmWwKbW7tZ4
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?FdKSY+oaEOlQT1iiA6QQTHAiOP+StXpKx3sQb4l/EDbW08OvLoQCnapoxiGM?=
- =?us-ascii?Q?K/vTnlwhF5aIrj/2ofzeXNnR57jcaCujvQKlb34+Y8eHdO1sqbHLhUc2CkPV?=
- =?us-ascii?Q?6IkYOls+EsrF7S5RNJ+mFyUn/HO3UYI+3bK3UabRVhnTTb7unpDtI9XpRf36?=
- =?us-ascii?Q?YLSapICsC83uJErHrptTFEbKBx++YBTM6OHmMxkuiKEvDPLK+d1qYt0RqFNM?=
- =?us-ascii?Q?mMEn4myJ0ohPAmxQXR1pVw6jmyaJ25t7kfYnlYkFp/Ijxsi1rxW1nz+S8GS+?=
- =?us-ascii?Q?+JilY8jG9dhceMVgdQ+rdJk/pBaJwjemEDA/Smdkh6XpWCoLTq9JFgafRKIj?=
- =?us-ascii?Q?+OetvN0Zx6FDiHDXbWcaRXpwrRsGlYNTMGf4i6P3Udre+4YAwGVwjYNoQED6?=
- =?us-ascii?Q?aaa1JGWnkVhFtj1efhaUW759ZRemtf5HwFaLgLejdfEAUrMJYV4f5EmX6EZ6?=
- =?us-ascii?Q?+5Y/NQi67ZbqrNw9IHbWFQhcRZHXdNqP9JzWEMGt68cScT18ouLbuhZJLFMn?=
- =?us-ascii?Q?/0Igghd2qLyMLX5rmB03iiCblYvTS9dwtGb9wLo7mTekZvRZEW60nNTdc/qB?=
- =?us-ascii?Q?l4qnHyV+Fl7XrX5NxQsouUm5hjWsGpAgBvqXt4nCC+CC+D1fm5SPmIJ9SCrh?=
- =?us-ascii?Q?ZxydQo88cIaF+9xKiDrJBVJI7AE8B2qfoFwsRU8xSiBuZq4uTiCrMo17dFsi?=
- =?us-ascii?Q?6TeWgZ+agJGJSoj/zG30eRpcVfw8vUh/kf0xzY9P+sDZsqUnqsIvW0gA3b6g?=
- =?us-ascii?Q?LPcpISNJitHnOyAJWvKOaZBOvuWgG4QQNuz5wbtnWkpThI8lsShSHizkvY9Y?=
- =?us-ascii?Q?qtjIS9M2xg8hfhmd9I9DpFpXOJEq+Uf5tv6+NPHqLK0CroSRfOdXTwgoU2wq?=
- =?us-ascii?Q?7M6Nar6p+4+FJKcu+/jRlhjK0QVJorQHOwzEXiEOGEVNSL6CghKfj/6Wilf8?=
- =?us-ascii?Q?IboXJDybv1zkNbasi75W6jSax2MfzGP6OirAWEM+E7wtOC8rb3kARceKe/Da?=
- =?us-ascii?Q?uT/mUVpHux8//L9wAX3QW1M6gaZgvnnrmatq6kJOScqLqfX0CMy7LpQjnVCA?=
- =?us-ascii?Q?7Juppq8AIAKc00XRQd/7/17p4Ds2uudvdwUi4rapI5aDJ6JDrIKzpPaJq9ek?=
- =?us-ascii?Q?Rszuwl0qiIqXwp2P/qwtVZtEXzQoAQhkL6+riU6SHcTAZkoFt3Qv9DSrZuaE?=
- =?us-ascii?Q?3buwAkFfI5prh6G8FJTC1cTKUak3YRSOUdWuzz8jWH2pT2HKdXQ2PI3xqeM?=
- =?us-ascii?Q?=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91505cd2-3ea5-49f8-ba22-08dc391cd808
-X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB4952.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Feb 2024 11:52:02.8567
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR06MB5836
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="27icH3WNe5d1kQpd"
+Content-Disposition: inline
+In-Reply-To: <16e37a0e-74d0-4632-b0a2-403f74a3a379@microchip.com>
 
-From: albanhuang <albanhuang@tencent.com>
 
-The 16550a serial port based on the ACPI table requires obtaining the
-reg-shift attribute. In the ACPI scenario, If the reg-shift property
-is not configured like in DTS, the 16550a serial driver cannot read or
-write controller registers properly during initialization.
+--27icH3WNe5d1kQpd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: albanhuang <albanhuang@tencent.com>
-Signed-off-by: tombinfan <tombinfan@tencent.com>
-Signed-off-by: dylanlhdu <dylanlhdu@tencent.com>
+On Thu, Feb 29, 2024 at 08:55:11AM +0000, Varshini.Rajendran@microchip.com =
+wrote:
+> Hi Conor,
+>=20
+> On 28/02/24 5:19 pm, Conor Dooley wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know =
+the content is safe
+> > On Wed, Feb 28, 2024 at 07:03:01AM +0000, Varshini.Rajendran@microchip.=
+com wrote:
+> >> Hi Conor,
+> >>
+> >> On 25/02/24 1:32 am, Conor Dooley wrote:
+> >>> EXTERNAL EMAIL: Do not click links or open attachments unless you kno=
+w the content is safe
+> >>> On Fri, Feb 23, 2024 at 10:55:59PM +0530, Varshini Rajendran wrote:
+> >>>> Add sam9x7 compatible to DT bindings documentation.
+> >>>>
+> >>>> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
+> >>>> ---
+> >>>> Changes in v4:
+> >>>> - Fixed the wrong addition of compatible
+> >>>> - Added further compatibles that are possible correct (as per DT)
+> >>>> ---
+> >>>>  .../devicetree/bindings/serial/atmel,at91-usart.yaml | 12 +++++++++=
 ---
- drivers/tty/serial/8250/8250_pnp.c | 1 +
- 1 file changed, 1 insertion(+)
+> >>>>  1 file changed, 9 insertions(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usa=
+rt.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> >>>> index 65cb2e5c5eee..30af537e8e81 100644
+> >>>> --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> >>>> +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> >>>> @@ -23,11 +23,17 @@ properties:
+> >>>>            - const: atmel,at91sam9260-dbgu
+> >>>>            - const: atmel,at91sam9260-usart
+> >>>>        - items:
+> >>>> -          - const: microchip,sam9x60-usart
+> >>>> +          - enum:
+> >>>> +              - microchip,sam9x60-usart
+> >>>> +              - microchip,sam9x7-usart
+> >>>>            - const: atmel,at91sam9260-usart
+> >>>>        - items:
+> >>>> -          - const: microchip,sam9x60-dbgu
+> >>>> -          - const: microchip,sam9x60-usart
+> >>>> +          - enum:
+> >>>> +              - microchip,sam9x60-dbgu
+> >>>> +              - microchip,sam9x7-dbgu
+> >>>
+> >>>> +          - enum:
+> >>>> +              - microchip,sam9x60-usart
+> >>>> +              - microchip,sam9x7-usart
+> >>>
+> >>> This doesn't make sense - this enum should be a const.
+> >>> I don't really understand the idea behind of the original binding her=
+e that
+> >>> allowed:
+> >>> "microchip,sam9x60-dbgu", "microchip,sam9x60-usart", "atmel,at91sam92=
+60-dbgu", "atmel,at91sam9260-usart"
+> >>>
+> >>> Specifically, I don't get the purpose of the "microchip,sam9x60-usart=
+".
+> >>> Either make it
+> >>>       - items:
+> >>>           - enum:
+> >>>               - microchip,sam9x60-dbgu
+> >>>               - microchip,sam9x7-dbgu
+> >>>           - const: microchip,sam9x60-usart
+> >>>           - const: atmel,at91sam9260-dbgu
+> >>>           - const: atmel,at91sam9260-usart
+> >>> or add
+> >>>       - items:
+> >>>           - const: microchip,sam9x60-dbgu
+> >>>           - const: atmel,at91sam9260-dbgu
+> >>>           - const: atmel,at91sam9260-usart
+> >>> or explain exactly why this needs to be
+> >>> "chipa-dgbu", "chipa-usart", "chipb-dbgu", "chipb-dbgu"
+> >> The compatible has to be "chipa-usart", "chipb-usart", "chipa-dbgu",=
+=20
+> >> "chipb-dbgu" for the device to work as a debug console over UART
+> >> wher the chipa-<periph> is the device specific compatible
+> >> and the chipb-<periph> is the fallback compatible that the driver=20
+> >> actually uses.
+> >=20
+> > This examples why you have "microchip,sam9x60-dbgu", "atmel,at91sam9260=
+-dbgu"
+> > and "atmel,at91sam9260-usart".
+> > It does not explain "microchip,sam9x60-usart" though, I don't see what
+> > purpose that serves. If used as a debug uart, you fall back to the
+> > sam9260 debug uart compatible and if not you fall back to the sam9260
+> > usart compatible.
+> >=20
+> Here, if it is not used as debug uart it has to fallback to the default=
+=20
+> usart compatible which in this case should have a device specific=20
+> compatible too right?
+>=20
+> The common usart compatible looks as follows,
+>=20
+>      compatible =3D "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
+>=20
+> meaning the 1st one is the device specific usart compatible and the 2nd=
+=20
+> one is the fallback compatible which the driver actually supports.
+>=20
+> The debug uart looks as follows,
+>=20
+> compatible =3D "microchip,sam9x60-dbgu", "atmel,at91sam9260-dbgu",=20
+> "microchip,sam9x60-usart", "atmel,at91sam9260-usart";
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 1974bbadc975..25b4e41e9745 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -473,6 +473,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 		uart.port.flags |= UPF_SHARE_IRQ;
- 	uart.port.uartclk = 1843200;
- 	device_property_read_u32(&dev->dev, "clock-frequency", &uart.port.uartclk);
-+	device_property_read_u8(&dev->dev, "reg-shift", &uart.port.regshift);
- 	uart.port.dev = &dev->dev;
- 
- 	line = serial8250_register_8250_port(&uart);
--- 
-2.17.1
+This version here makes a lot more sense than what is currently in use
+and what is being added in your original patch. I wouldn't object to
+this being used.
 
+> In this case, there is a device specific debug uart compatible, a=20
+> fallback tot he debug uart compatible and as you said if not used as a=20
+> debug uart it should fallback and work as a normal uart device which has=
+=20
+> both a device specific compatible and a fallback to work.
+>=20
+> In case the device specific compatible is supported with some other=20
+> features in the driver in the future, the debug uart also should get its=
+=20
+> perk. Does this make sense?
+>=20
+>=20
+> > In addition, the current setup implies that sam9x60 usart supports all
+> > the features that the sam9260 debug usart does. I doubt that that is
+> > true.
+
+--27icH3WNe5d1kQpd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZeDMQQAKCRB4tDGHoIJi
+0p5MAQDmJ9VKwmndXGtuYADUIRc9WGk25Ny/CCPltwAriEMOYwD+PPAQ6NAoy6jt
+WUaQKjRkDFQpmgCzd1Fn+JVDmsW/NgA=
+=vhzy
+-----END PGP SIGNATURE-----
+
+--27icH3WNe5d1kQpd--
