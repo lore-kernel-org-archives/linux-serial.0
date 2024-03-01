@@ -1,197 +1,236 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from abb.hmeau.com (abb.hmeau.com [144.6.53.87])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B112541233;
-	Fri,  1 Mar 2024 03:31:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 261246BFA4;
+	Fri,  1 Mar 2024 10:53:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.6.53.87
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709263924; cv=none; b=H9lLEhE42D4jcfsEvQsew3ub1OA7Q7FXyNY9N58kPvrML9rp4qjbqTf2GAgQAUroNjUAerEPK4oLLmjiUWAMpEkKXl3CFRboHKWz/sCQw6G4rdjg/UE2+hqq+87T8q4y6Uvzyr431PNmheKYTWWhfUuIXIlV+n5hiqZkpc9Pg6s=
+	t=1709290410; cv=none; b=KjyFmVZfTyuQb0Z1cRiEC7k9nrSGrFIsMPODHhVudvpmv1a5cAR+UVQn0oGE8RK+/S78cNtszJqfDh3BxQlgHTkzEQnYaBubGiDvkwKPz9edoJcYHyTfnyX57T1ioFRGCht3bOKej8VsoJHVmjZ/jlurh0pmhi2SRLiNhp7GBWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709263924; c=relaxed/simple;
-	bh=jqABAPinIeSW8r47TeU7SpC3jbn5amSg5vy82qMBGxc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=J4LgER/4PHMJCpvVDYP4+eFB3MQef6HK9Nu3Xyo9bQMlom3UQf8aikuf2B5BcWxXMGfB5Kngfl5y1jqLBy/XiXv8IsEdIB5HGGoBUFJYHLdnRYdXFMY5Fn30mauvuWAT6ezhJeff2fdOppr4+iOirsadbuie2N18NFIWzIPu5vM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 4213UQ8F071199;
-	Fri, 1 Mar 2024 11:30:26 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX01-IMDC.srv.huawei-3com.com (unknown [10.62.14.10])
-	by mail.maildlp.com (Postfix) with ESMTP id 538602004BBA;
-	Fri,  1 Mar 2024 11:31:37 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX01-IMDC.srv.huawei-3com.com (10.62.14.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Fri, 1 Mar 2024 11:30:26 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Fri, 1 Mar 2024 11:30:26 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Daniel Thompson <daniel.thompson@linaro.org>
-CC: "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>,
-        Liuye <liu.yeC@h3c.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUgaW4g?=
- =?gb2312?Q?KDB_debugging.?=
-Thread-Topic: [PATCH] kdb: Fix the deadlock issue in KDB debugging.
-Thread-Index: AQHaafG3YC/Li+j42kau1FDQhHr2m7EfIsgAgAMadaA=
-Date: Fri, 1 Mar 2024 03:30:25 +0000
-Message-ID: <8b41d34adaef4ddcacde2dd00d4e3541@h3c.com>
-References: <20240228025602.3087748-1-liu.yeC@h3c.com>
- <20240228120516.GA22898@aspen.lan>
-In-Reply-To: <20240228120516.GA22898@aspen.lan>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1709290410; c=relaxed/simple;
+	bh=t4ccu+GWe684aqIDSKF9bD//mn+pVsNSlItyqSKCQgM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ThG9ajKwQuEM+6aiQJ6J1MrUBPD6GEoxaZRIvott21tk4R3d5oEEEZTMtlaZ2aPM5Y5luzQtV2wMga8FNnUMVnqDG3GMn8Ukc+W8/U0TRbE7vlYIEnJhRJFI4V2ddO8bzNVjwsemeyX/PjNJyhVKME/Vj3sZsoAyhVcEKa4DFXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; arc=none smtp.client-ip=144.6.53.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+	id 1rg0UC-002Hbb-4N; Fri, 01 Mar 2024 18:51:29 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Fri, 01 Mar 2024 18:51:43 +0800
+Date: Fri, 1 Mar 2024 18:51:43 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Varshini Rajendran <varshini.rajendran@microchip.com>
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+	mturquette@baylibre.com, sboyd@kernel.org, davem@davemloft.net,
+	andi.shyti@kernel.org, tglx@linutronix.de, tudor.ambarus@linaro.org,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	linus.walleij@linaro.org, sre@kernel.org,
+	u.kleine-koenig@pengutronix.de, p.zabel@pengutronix.de,
+	olivia@selenic.com, radu_nicolae.pirea@upb.ro,
+	richard.genoud@gmail.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
+	wim@linux-watchdog.org, linux@roeck-us.net, linux@armlinux.org.uk,
+	andrei.simion@microchip.com, mihai.sain@microchip.com,
+	andre.przywara@arm.com, neil.armstrong@linaro.org, tony@atomide.com,
+	durai.manickamkr@microchip.com, geert+renesas@glider.be,
+	arnd@arndb.de, Jason@zx2c4.com, rdunlap@infradead.org,
+	rientjes@google.com, vbabka@suse.cz, mripard@kernel.org,
+	codrin.ciubotariu@microchip.com, eugen.hristev@collabora.com,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org,
+	linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH v4 00/39] Add support for sam9x7 SoC family
+Message-ID: <ZeGzPwdslHIj5IWt@gondor.apana.org.au>
+References: <20240223171342.669133-1-varshini.rajendran@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 4213UQ8F071199
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240223171342.669133-1-varshini.rajendran@microchip.com>
 
-Pk9uIFdlZCwgRmViIDI4LCAyMDI0IGF0IDEwOjU2OjAyQU0gKzA4MDAsIExpdVllIHdyb3RlOg0K
-Pj4gbWFzdGVyIGNwdSA6IEFmdGVyIGV4ZWN1dGluZyB0aGUgZ28gY29tbWFuZCwgYSBkZWFkbG9j
-ayBvY2N1cnMuDQo+PiBzbGF2ZSBjcHU6IG1heSBiZSBwZXJmb3JtaW5nIHRocmVhZCBtaWdyYXRp
-b24sDQo+PiAgICAgICAgIGFjcXVpcmluZyB0aGUgcnVubmluZyBxdWV1ZSBsb2NrIG9mIG1hc3Rl
-ciBDUFUuDQo+PiAgICAgICAgIFRoZW4gaXQgd2FzIGludGVycnVwdGVkIGJ5IGtkYiBOTUkgYW5k
-IGVudGVyZWQgdGhlIG5taV9oYW5kbGVyIHByb2Nlc3MuDQo+PiAgICAgICAgIChubWlfaGFuZGxl
-LT4ga2dkYl9ubWljYWxsYmFjay0+IGtnZGJfY3B1X2VudGVyDQo+PiAgICAgICAgIHdoaWxlKDEp
-eyB0b3VjaCB3YXRoY2RvZ30uKQ0KPg0KPkkgdGhpbmsgdGhpcyBkZXNjcmlwdGlvbiBpcyBhIGxp
-dHRsZSBzaG9ydCBhbmQgZG9lc24ndCBjbGVhcmx5IGV4cGxhaW4gdGhlIGNhdXNlLiBIb3cgYWJv
-dXQ6DQo+DQo+Q3VycmVudGx5LCBpZiBrZ2Rib2MgaW5jbHVkZXMgJ2tkYicsIHRoZW4ga2dkYm9j
-IHdpbGwgYXR0ZW1wdCB0byB1c2Ugc2NoZWR1bGVfd29yaygpIHRvIHByb3Zva2UgYSBrZXlib2Fy
-ZCByZXNldCB3aGVuIHRyYW5zaXRpb25pbmcgb3V0IG9mIHRoZSBkZWJ1Z2dlciBhbmQgYmFjayB0
-byBub3JtYWwgb3BlcmF0aW9uLiBUaGlzIGNhbiBjYXVzZSBkZWFkbG9jayBiZWNhdXNlIHNjaGVk
-dWxlX3dvcmsoKSBpcyBub3QgTk1JLXNhZmUuDQo+DQo+VGhlIHN0YWNrIHRyYWNlIGJlbG93IHNo
-b3dzIGFuIGV4YW1wbGUgb2YgdGhlIHByb2JsZW0uIEluIHRoaXMgY2FzZSB0aGUgbWFzdGVyIGNw
-dSBpcyBub3QgcnVubmluZyBmcm9tIE5NSSBidXQgaXQgaGFzIHBhcmtlZCB0aGUgc2xhY2UgQ1BV
-cyB1c2luZyBhbiBOTUkgYW5kIHRoZSBwYXJrZWQgQ1BVcyBpcyBob2xkaW5nIHNwaW5sb2NrcyBu
-ZWVkZWQgYnkgc2NoZWR1bGVfd29yaygpLg0KPg0KPg0KDQpEdWUgdG8gdGhlIGJyZXZpdHkgb2Yg
-dGhlIGRlc2NyaXB0aW9uLCB0aGVyZSBtYXkgYmUgc29tZSBtaXN1bmRlcnN0YW5kaW5nLCBzbyBh
-IGRldGFpbGVkIGRlc2NyaXB0aW9uIGlzIHByb3ZpZGVkIGFzIGZvbGxvd3M6DQoNCmJlZm9yZSBL
-REIgY29tbWFuZCChsGdvobGjug0KDQpXaGVuIGEgc3BlY2lmaWMga2V5IGlzIGRldGVjdGVkIGJ5
-IHRoZSBzZXJpYWwgcG9ydCwgaXQgd2lsbCB0cmlnZ2VyIGtnZGJfYnJlYWtwb2ludCwgYW5kIHRo
-ZSBtYXN0ZXIgQ1BVMCB3aWxsIGVudGVyIHRoZSBrZGJfbWFpbl9sb29wIHRvIHByb2Nlc3MgdXNl
-ciBjb21tYW5kcyBpbiBhIGxvb3AuDQoNCmtnZGJfYnJlYWtwb2ludA0KaW50Mw0KZG9faW50Mw0K
-bm90aWZ5X2RpZQ0KYXRvbWljX25vdGlmaWVyX2NhbGxfY2hhaW4NCl9fYXRvbWljX25vdGlmaWVy
-X2NhbGxfY2hhaW4NCm5vdGlmaWVyX2NhbGxfY2hhaW4NCmtnZGJfbm90aWZ5DQpfX2tnZGJfbm90
-aWZ5DQprZ2RiX2hhbmRsZV9leGNlcHRpb24NCmtnZGJfY3B1X2VudGVyIChrZ2RiX3JvdW5kdXBf
-Y3B1cyBzZW5kIElQSSB0byBvdGhlciBzbGF2ZSBDUFUpDQprZGJfc3R1Yg0Ka2RiX21haW5fbG9v
-cA0KDQpzbGF2ZSBDUFUxLCBDUFUyLCBDUFUzIC4uLiBhbmQgb3RoZXIgQ1BVczoNClVzaW5nIENQ
-VTEgYXMgYW4gZXhhbXBsZToNCkN1cnJlbnRseSBob2xkaW5nIHRoZSBydW5uaW5nIHF1ZXVlIGxv
-Y2sgb2YgdGhlIG1hc3RlciBDUFUwIGR1ZSB0byBsb2FkX2JhbGFuY2Ugb3Igb3RoZXIgcmVhc29u
-cywgcmVzcG9uZGluZyB0byB0aGUgTk1JIHNlbnQgYnkgbWFzdGVyIENQVTAgdGhyb3VnaCBrZ2Ri
-X3JvdW5kdXBfY3B1cy4gRW50ZXIgdGhlIGZvbGxvd2luZyBzdGFjazoNCm5taV9oYW5kbGUNCmtn
-ZGJfbm1pY2FsbGJhY2sNCmtnZGJfY3B1X2VudGVyIChUaGUgc2xhdmUgQ1BVMSB3aWxsIGxvb3Ag
-dG91Y2ggd2F0Y2hkb2cgYW5kIHdhaXQgZm9yIHRoZSBtYXN0ZXIgQ1BVMCB0byBleGl0LikNCg0K
-VGhlIGFib3ZlIGlzIHRoZSBzdGF0ZSBiZWZvcmUgZXhlY3V0aW5nIHRoZSBLREIgY29tbWFuZCAi
-Z28iLg0KDQpXaGVuIHRoZSB1c2VyIGV4ZWN1dGVzIHRoZSBLREIgY29tbWFuZCAiZ28iLCBpdCB3
-aWxsIHRyaWdnZXIgYSBkZWFkbG9jay4NCm1hc3RlciBDUFUwIDoNCmtkYl9tYWluX2xvb3AgcmV0
-dXJuDQprZGJfc3R1YiByZXR1cm4NCmtnZGJfY3B1X2VudGVyDQprZ2Rib2NfcG9zdF9leHBfaGFu
-ZGxlcg0KcXVldWVfd29ya19vbg0KX19xdWV1ZV93b3JrDQppbnNlcnRfd29yaw0Kd2FrZV91cF9w
-cm9jZXNzDQp0cnlfdG9fd2FrZV91cA0KX3Jhd19zcGluX2xvY2sgo6hBY3F1aXJlIHRoZSBzcGlu
-IGxvY2sgb2YgbWFzdGVyIENQVTAgcnEtPmxvY2ssIGJ1dCBhdCB0aGlzIHRpbWUgdGhlIHNwaW4g
-bG9jayBvZiBtYXN0ZXIgQ1BVMCBpcyBoZWxkIGJ5IENQVTGjqQ0KDQpBcyBhIHJlc3VsdCwgYSBk
-ZWFkbG9jayBoYXMgb2NjdXJyZWQuDQoNClRoZXJlZm9yZSwgd2hlbiB0aGUgbWFzdGVyIENQVTAg
-ZXhpdHMsIGlmIHRoZSBycS0+bG9jayBvZiBDUFUwIGlzIGxvY2tlZCwgaXQgc2hvdWxkIG5vdCB3
-YWtlIHVwIHRoZSB3b3JrZXIgb24gdGhlIHN5c3RlbV93cS4NCg0KPj4gZXhhbXBsZToNCj4+ICBC
-VUc6IHNwaW5sb2NrIGxvY2t1cCBzdXNwZWN0ZWQgb24gQ1BVIzAsIG5hbWV4LzEwNDUwDQo+PiAg
-bG9jazogMHhmZmZmODgxZmZlODIzOTgwLCAubWFnaWM6IGRlYWQ0ZWFkLCAub3duZXI6IG5hbWV4
-eC8yMTg4OCwNCj4+IC5vd25lcl9jcHU6IDENCj4+ICBmZmZmODgxNzQxZDAwMDAwIGZmZmY4ODE3
-NDFjMDEwMDAgMDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAwDQo+PiAgZmZmZjg4MTc0
-MGY1OGU3OCBmZmZmODgxNzQxY2ZmZGQwIGZmZmZmZmZmODE0N2E3ZmMgZmZmZjg4MTc0MGY1OGYy
-MA0KPj4gQ2FsbCBUcmFjZToNCj4+ICBbPGZmZmZmZmZmODE0NzllNmQ+XSA/IF9fc2NoZWR1bGUr
-MHgxNmQvMHhhYzAgIFs8ZmZmZmZmZmY4MTQ3YTdmYz5dID8NCj4+IHNjaGVkdWxlKzB4M2MvMHg5
-MCAgWzxmZmZmZmZmZjgxNDdlNzFhPl0gPw0KPj4gc2NoZWR1bGVfaHJ0aW1lb3V0X3JhbmdlX2Ns
-b2NrKzB4MTBhLzB4MTIwDQo+PiAgWzxmZmZmZmZmZjgxNDdkMjJlPl0gPyBtdXRleF91bmxvY2sr
-MHhlLzB4MTAgIFs8ZmZmZmZmZmY4MTFjODM5Yj5dID8NCj4+IGVwX3NjYW5fcmVhZHlfbGlzdCsw
-eDFkYi8weDFlMCAgWzxmZmZmZmZmZjgxNDdlNzQzPl0gPw0KPj4gc2NoZWR1bGVfaHJ0aW1lb3V0
-X3JhbmdlKzB4MTMvMHgyMA0KPj4gIFs8ZmZmZmZmZmY4MTFjODY0YT5dID8gZXBfcG9sbCsweDI3
-YS8weDNiMCAgWzxmZmZmZmZmZjgxMDhjNTQwPl0gPw0KPj4gd2FrZV91cF9xKzB4NzAvMHg3MCAg
-WzxmZmZmZmZmZjgxMWM5OWE4Pl0gPyBTeVNfZXBvbGxfd2FpdCsweGI4LzB4ZDANCj4+IFs8ZmZm
-ZmZmZmY4MTQ3ZjI5Nj5dID8gZW50cnlfU1lTQ0FMTF82NF9mYXN0cGF0aCsweDEyLzB4NzUNCj4+
-ICBDUFU6IDAgUElEOiAxMDQ1MCBDb21tOiBuYW1leCBUYWludGVkOiBHICAgICAgICAgICBPICAg
-IDQuNC42NSAjMQ0KPj4gIEhhcmR3YXJlIG5hbWU6IEluc3lkZSBQdXJsZXkvVHlwZTIgLSBCb2Fy
-ZCBQcm9kdWN0IE5hbWUxLCBCSU9TIDA1LjIxLjUxLjAwMzYgMDcvMTkvMjAxOQ0KPj4gICAwMDAw
-MDAwMDAwMDAwMDAwIGZmZmY4ODFmZmU4MTNjMTAgZmZmZmZmZmY4MTI0ZTg4MyBmZmZmODgxNzQx
-YzAxMDAwDQo+PiAgIGZmZmY4ODFmZmU4MjM5ODAgZmZmZjg4MWZmZTgxM2MzOCBmZmZmZmZmZjgx
-MGE3ZjdmIGZmZmY4ODFmZmU4MjM5ODANCj4+ICAgMDAwMDAwMDA3ZDJiN2NkMCAwMDAwMDAwMDAw
-MDAwMDAxIGZmZmY4ODFmZmU4MTNjNjggZmZmZmZmZmY4MTBhODBlMA0KPj4gICBDYWxsIFRyYWNl
-Og0KPj4gICA8I0RCPiAgWzxmZmZmZmZmZjgxMjRlODgzPl0gZHVtcF9zdGFjaysweDg1LzB4YzIN
-Cj4+ICAgWzxmZmZmZmZmZjgxMGE3ZjdmPl0gc3Bpbl9kdW1wKzB4N2YvMHgxMDANCj4+ICAgWzxm
-ZmZmZmZmZjgxMGE4MGUwPl0gZG9fcmF3X3NwaW5fbG9jaysweGEwLzB4MTUwDQo+PiAgIFs8ZmZm
-ZmZmZmY4MTQ3ZWI1NT5dIF9yYXdfc3Bpbl9sb2NrKzB4MTUvMHgyMA0KPj4gICBbPGZmZmZmZmZm
-ODEwOGMyNTY+XSB0cnlfdG9fd2FrZV91cCsweDE3Ni8weDNkMA0KPj4gICBbPGZmZmZmZmZmODEw
-OGM0YzU+XSB3YWtlX3VwX3Byb2Nlc3MrMHgxNS8weDIwDQo+PiAgIFs8ZmZmZmZmZmY4MTA3YjM3
-MT5dIGluc2VydF93b3JrKzB4ODEvMHhjMA0KPj4gICBbPGZmZmZmZmZmODEwN2I0ZTU+XSBfX3F1
-ZXVlX3dvcmsrMHgxMzUvMHgzOTANCj4+ICAgWzxmZmZmZmZmZjgxMDdiNzg2Pl0gcXVldWVfd29y
-a19vbisweDQ2LzB4OTANCj4+ICAgWzxmZmZmZmZmZjgxMzEzZDI4Pl0ga2dkYm9jX3Bvc3RfZXhw
-X2hhbmRsZXIrMHg0OC8weDcwDQo+PiAgIFs8ZmZmZmZmZmY4MTBlZDQ4OD5dIGtnZGJfY3B1X2Vu
-dGVyKzB4NTk4LzB4NjEwDQo+PiAgIFs8ZmZmZmZmZmY4MTBlZDZlMj5dIGtnZGJfaGFuZGxlX2V4
-Y2VwdGlvbisweGYyLzB4MWYwDQo+PiAgIFs8ZmZmZmZmZmY4MTA1NGUyMT5dIF9fa2dkYl9ub3Rp
-ZnkrMHg3MS8weGQwDQo+PiAgIFs8ZmZmZmZmZmY4MTA1NGViNT5dIGtnZGJfbm90aWZ5KzB4MzUv
-MHg3MA0KPj4gICBbPGZmZmZmZmZmODEwODJlNmE+XSBub3RpZmllcl9jYWxsX2NoYWluKzB4NGEv
-MHg3MA0KPj4gICBbPGZmZmZmZmZmODEwODMwNGQ+XSBub3RpZnlfZGllKzB4M2QvMHg1MA0KPj4g
-ICBbPGZmZmZmZmZmODEwMTcyMTk+XSBkb19pbnQzKzB4ODkvMHgxMjANCj4+ICAgWzxmZmZmZmZm
-ZjgxNDgwZmI0Pl0gaW50MysweDQ0LzB4ODANCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBMaXVZZSA8
-bGl1LnllQ0BoM2MuY29tPg0KPj4gLS0tDQo+PiAgZHJpdmVycy90dHkvc2VyaWFsL2tnZGJvYy5j
-IHwgNiArKysrKy0NCj4+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0
-aW9uKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2MuYyBi
-L2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2MuYw0KPj4gaW5kZXggN2NlN2JiMTY0Li45NDUzMThl
-ZjEgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwva2dkYm9jLmMNCj4+ICsrKyBi
-L2RyaXZlcnMvdHR5L3NlcmlhbC9rZ2Rib2MuYw0KPj4gQEAgLTIyLDYgKzIyLDkgQEANCj4+ICAj
-aW5jbHVkZSA8bGludXgvbW9kdWxlLmg+DQo+PiAgI2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2Rl
-dmljZS5oPg0KPj4gICNpbmNsdWRlIDxsaW51eC9zZXJpYWxfY29yZS5oPg0KPj4gKyNpbmNsdWRl
-IDxsaW51eC9zbXAuaD4NCj4+ICsNCj4+ICsjaW5jbHVkZSAiLi4va2VybmVsL3NjaGVkL3NjaGVk
-LmgiDQo+Pg0KPj4gICNkZWZpbmUgTUFYX0NPTkZJR19MRU4gICAgICAgICA0MA0KPj4NCj4+IEBA
-IC0zOTksNyArNDAyLDggQEAgc3RhdGljIHZvaWQga2dkYm9jX3Bvc3RfZXhwX2hhbmRsZXIodm9p
-ZCkNCj4+ICAgICAgICAgICAgICAgICBkYmdfcmVzdG9yZV9ncmFwaGljcyA9IDA7DQo+PiAgICAg
-ICAgICAgICAgICAgY29uX2RlYnVnX2xlYXZlKCk7DQo+PiAgICAgICAgIH0NCj4+IC0gICAgICAg
-a2dkYm9jX3Jlc3RvcmVfaW5wdXQoKTsNCj4+ICsgICAgICAgaWYgKCFyYXdfc3Bpbl9pc19sb2Nr
-ZWQoJihjcHVfcnEoc21wX3Byb2Nlc3Nvcl9pZCgpKS0+bG9jaykpKQ0KPj4gKyAgICAgICAgICAg
-ICAgIGtnZGJvY19yZXN0b3JlX2lucHV0KCk7DQo+DQo+SSBkb24ndCB0aGluayBzb2x2aW5nIHRo
-aXMgYnkgYWNjZXNzIGludGVybmFsIHNjaGVkdWxlciBzdGF0ZSBpcyB0aGUgcmlnaHQgYXBwcm9h
-Y2ggLg0KPg0KPlRoZSBkZXNjcmlwdGlvbiBJIHdyb3RlIGFib3ZlIHBlcmhhcHMgYWxyZWFkeSBz
-dWdnZXN0cyB3aHkuIFRoZSBkZWFkbG9jayBvY2N1cnMgYmVjYXVzZSBpdCBpcyB1bnNhZmUgdG8g
-Y2FsbCBzY2hlZHVsZV93b3JrKCkgZnJvbSB0aGUgZGVidWcgdHJhcCBoYW5kbGVyLiBUaGUgZGVi
-dWcgdHJhcCBoYW5kbGVyIGluIHlvdXIgc3RhY2sgdHJhY2UgaXMgbm90IHJ1bm5pbmcgZnJvbSBh
-biBOTUkgYnV0IGl0IGNlcnRhaW5seSBoYXMgTk1JLWxpa2UgcHJvcGVydGllcy4gVGhlcmVmb3Jl
-IGEgYmV0dGVyIGZpeCBpcyBub3QgdG8gY2FsbCBzY2hlZHVsZV93b3JrKCkgYXQgYWxsIGZyb20g
-dGhlIGRlYnVnIHRyYXAgaGFuZGxlci4NCj4NCj5JbnN0ZWFkIHdlIG5lZWQgdG8gdXNlIGFuIE5N
-SS1zYWZlIEFQSSBzdWNoIGFzIGlycV93b3JrX3F1ZXVlKCkgYW5kIHRoYXQgaXJxX3dvcmsgY2Fu
-IGNhbGwgc2NoZWR1bGVfd29yaygpIGFuZCB0cmlnZ2VyIHRoZSBrZXlib2FyZCByZXNldC4NCj4N
-Cj4NCj5EYW5pZWwuDQoNCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0Ksb7Tyrz+vLDG5Li9vP66rNPQ
-0MK7qsj9vK/NxbXEsaPD3NDFz6KjrL32z97T2reiy824+MnPw+a12Na31tDB0LP2DQq1xLj2yMu7
-8si61+mho7371rnIzrrOxuTL+8jL0tTIzrrO0M7Kvcq508OjqLD8wKi1q7K7z97T2sirsr+78rK/
-t9a12NC5wrahori01sahog0Ku/LJoreio6mxvtPKvP7W0LXE0MXPoqGjyOe5+8T6tO3K1cHLsb7T
-yrz+o6zH68T6waK8tLXnu7C78tPKvP7NqNaqt6K8/sjLsqLJvrP9sb4NCtPKvP6joQ0KVGhpcyBl
-LW1haWwgYW5kIGl0cyBhdHRhY2htZW50cyBjb250YWluIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlv
-biBmcm9tIE5ldyBIM0MsIHdoaWNoIGlzDQppbnRlbmRlZCBvbmx5IGZvciB0aGUgcGVyc29uIG9y
-IGVudGl0eSB3aG9zZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4gQW55IHVzZSBvZiB0aGUNCmlu
-Zm9ybWF0aW9uIGNvbnRhaW5lZCBoZXJlaW4gaW4gYW55IHdheSAoaW5jbHVkaW5nLCBidXQgbm90
-IGxpbWl0ZWQgdG8sIHRvdGFsIG9yIHBhcnRpYWwNCmRpc2Nsb3N1cmUsIHJlcHJvZHVjdGlvbiwg
-b3IgZGlzc2VtaW5hdGlvbikgYnkgcGVyc29ucyBvdGhlciB0aGFuIHRoZSBpbnRlbmRlZA0KcmVj
-aXBpZW50KHMpIGlzIHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlIHRoaXMgZS1tYWlsIGluIGVy
-cm9yLCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXINCmJ5IHBob25lIG9yIGVtYWlsIGltbWVkaWF0
-ZWx5IGFuZCBkZWxldGUgaXQhDQo=
+On Fri, Feb 23, 2024 at 10:43:42PM +0530, Varshini Rajendran wrote:
+> This patch series adds support for the new SoC family - sam9x7.
+>  - The device tree, configs and drivers are added
+>  - Clock driver for sam9x7 is added
+>  - Support for basic peripherals is added
+>  - Target board SAM9X75 Curiosity is added
+> 
+>  Changes in v4:
+>  --------------
+> 
+>  - Addressed all the review comments in the patches
+>  - Picked up all Acked-by and Reviewed-by tags
+>  - Dropped applied patches from the series
+>  - Added pwm node and related dt binding documentation
+>  - Added support for exporting some clocks to DT
+>  - Dropped USB related patches and changes. See NOTE.
+>  - All the specific changes are captured in the corresponding patches
+> 
+>  NOTE: Owing to the discussion here
+>  https://lore.kernel.org/linux-devicetree/CAL_JsqJ9PrX6fj-EbffeJce09MXs=B7t+KS_kOinxaRx38=WxA@mail.gmail.com/
+>  the USB related changes are dropped from this series in order to enable
+>  us to work on the mentioned issues before adding new compatibles as
+>  said. The issues/warnings will be addressed in subsequent patches.
+>  After which the USB related support for sam9x7 SoCs will be added. Hope
+>  this works out fine.
+> 
+>  Changes in v3:
+>  --------------
+> 
+>  - Fixed the DT documentation errors pointed out in v2.
+>  - Dropped Acked-by tag in tcb DT doc patch as it had to be adapted
+>    according to sam9x7 correctly.
+>  - Picked by the previously missed tags.
+>  - Dropped this patch "dt-bindings: usb: generic-ehci: Document clock-names
+>    property" as the warning was not found while validating DT-schema for
+>    at91-sam9x75_curiosity.dtb.
+>  - Dropped redundant words in the commit message.
+>  - Fixed the CHECK_DTBS warnings validated against
+>    at91-sam9x75_curiosity.dtb.
+>  - Renamed dt nodes according to naming convention.
+>  - Dropped unwanted status property in dts.
+>  - Removed nodes that are not in use from the board dts.
+>  - Removed spi DT doc patch from the series as it was already applied
+>    and a fix patch was applied subsequently. Added a patch to remove the
+>    compatible to adapt sam9x7.
+>  - Added sam9x7 compatibles in usb dt documentation.
+> 
+> 
+>  Changes in v2:
+>  --------------
+> 
+>  - Added sam9x7 specific compatibles in DT with fallbacks
+>  - Documented all the newly added DT compatible strings
+>  - Added device tree for the target board sam9x75 curiosity and
+>    documented the same in the DT bindings documentation
+>  - Removed the dt nodes that are not supported at the moment
+>  - Removed the configs added by previous version that are not supported
+>    at the moment
+>  - Fixed all the corrections in the commit message
+>  - Changed all the instances of copyright year to 2023
+>  - Added sam9x7 flag in PIT64B configuration
+>  - Moved macro definitions to header file
+>  - Added another divider in mck characteristics in the pmc driver
+>  - Fixed the memory leak in the pmc driver
+>  - Dropped patches that are no longer needed
+>  - Picked up Acked-by and Reviewed-by tags
+> 
+> 
+> Varshini Rajendran (39):
+>   dt-bindings: net: cdns,macb: add sam9x7 ethernet interface
+>   dt-bindings: atmel-sysreg: add sam9x7
+>   dt-bindings: crypto: add sam9x7 in Atmel AES
+>   dt-bindings: crypto: add sam9x7 in Atmel SHA
+>   dt-bindings: crypto: add sam9x7 in Atmel TDES
+>   dt-bindings: i2c: at91: Add sam9x7 compatible string
+>   dt-bindings: atmel-ssc: add microchip,sam9x7-ssc
+>   dt-bindings: atmel-nand: add microchip,sam9x7-pmecc
+>   dt-bindings: pinctrl: at91: add sam9x7
+>   dt-bindings: rng: atmel,at91-trng: add sam9x7 TRNG
+>   dt-bindings: rtt: at91rm9260: add sam9x7 compatible
+>   dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7.
+>   ASoC: dt-bindings: atmel-classd: add sam9x7 compatible
+>   dt-bindings: pwm: at91: Add sam9x7 compatible strings list
+>   dt-bindings: watchdog: sama5d4-wdt: add compatible for sam9x7-wdt
+>   spi: dt-bindings: atmel,at91rm9200-spi: remove 9x60 compatible from
+>     list
+>   ASoC: dt-bindings: microchip: add sam9x7
+>   ARM: at91: pm: add support for sam9x7 SoC family
+>   ARM: at91: pm: add sam9x7 SoC init config
+>   ARM: at91: add support in SoC driver for new sam9x7
+>   dt-bindings: clk: at91: add sam9x7
+>   dt-bindings: clk: at91: add sam9x7 clock controller
+>   clk: at91: clk-sam9x60-pll: re-factor to support individual core freq
+>     outputs
+>   clk: at91: sam9x7: add support for HW PLL freq dividers
+>   clk: at91: sama7g5: move mux table macros to header file
+>   dt-bindings: clock: at91: Allow PLLs to be exported and referenced in
+>     DT
+>   clk: at91: sam9x7: add sam9x7 pmc driver
+>   dt-bindings: irqchip/atmel-aic5: Add support for sam9x7 aic
+>   irqchip/atmel-aic5: Add support to get nirqs from DT for sam9x60 &
+>     sam9x7
+>   power: reset: at91-poweroff: lookup for proper pmc dt node for sam9x7
+>   power: reset: at91-reset: add reset support for sam9x7 SoC
+>   power: reset: at91-reset: add sdhwc support for sam9x7 SoC
+>   dt-bindings: reset: atmel,at91sam9260-reset: add sam9x7
+>   dt-bindings: power: reset: atmel,sama5d2-shdwc: add sam9x7
+>   ARM: at91: Kconfig: add config flag for SAM9X7 SoC
+>   ARM: configs: at91: enable config flags for sam9x7 SoC family
+>   ARM: dts: at91: sam9x7: add device tree for SoC
+>   dt-bindings: arm: add sam9x75 curiosity board
+>   ARM: dts: at91: sam9x75_curiosity: add sam9x75 curiosity board
+> 
+>  .../devicetree/bindings/arm/atmel-at91.yaml   |    6 +
+>  .../devicetree/bindings/arm/atmel-sysregs.txt |    7 +-
+>  .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
+>  .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    4 +-
+>  .../crypto/atmel,at91sam9g46-aes.yaml         |    6 +-
+>  .../crypto/atmel,at91sam9g46-sha.yaml         |    6 +-
+>  .../crypto/atmel,at91sam9g46-tdes.yaml        |    6 +-
+>  .../bindings/i2c/atmel,at91sam-i2c.yaml       |    4 +-
+>  .../interrupt-controller/atmel,aic.txt        |    2 +-
+>  .../devicetree/bindings/misc/atmel-ssc.txt    |    1 +
+>  .../devicetree/bindings/mtd/atmel-nand.txt    |    1 +
+>  .../devicetree/bindings/net/cdns,macb.yaml    |    5 +
+>  .../bindings/pinctrl/atmel,at91-pinctrl.txt   |    2 +
+>  .../power/reset/atmel,sama5d2-shdwc.yaml      |    3 +
+>  .../bindings/pwm/atmel,at91sam-pwm.yaml       |    3 +
+>  .../reset/atmel,at91sam9260-reset.yaml        |    4 +
+>  .../bindings/rng/atmel,at91-trng.yaml         |    4 +
+>  .../bindings/rtc/atmel,at91sam9260-rtt.yaml   |    4 +-
+>  .../bindings/serial/atmel,at91-usart.yaml     |   12 +-
+>  .../bindings/sound/atmel,sama5d2-classd.yaml  |    7 +-
+>  .../sound/microchip,sama7g5-i2smcc.yaml       |   11 +-
+>  .../bindings/spi/atmel,at91rm9200-spi.yaml    |    1 -
+>  .../bindings/watchdog/atmel,sama5d4-wdt.yaml  |   12 +-
+>  arch/arm/boot/dts/microchip/Makefile          |    3 +
+>  .../dts/microchip/at91-sam9x75_curiosity.dts  |  309 +++++
+>  arch/arm/boot/dts/microchip/sam9x60.dtsi      |    1 +
+>  arch/arm/boot/dts/microchip/sam9x7.dtsi       | 1214 +++++++++++++++++
+>  arch/arm/configs/at91_dt_defconfig            |    1 +
+>  arch/arm/mach-at91/Kconfig                    |   23 +-
+>  arch/arm/mach-at91/Makefile                   |    1 +
+>  arch/arm/mach-at91/generic.h                  |    2 +
+>  arch/arm/mach-at91/pm.c                       |   35 +
+>  arch/arm/mach-at91/sam9x7.c                   |   34 +
+>  drivers/clk/at91/Makefile                     |    1 +
+>  drivers/clk/at91/clk-sam9x60-pll.c            |   50 +-
+>  drivers/clk/at91/pmc.h                        |   18 +
+>  drivers/clk/at91/sam9x60.c                    |    7 +
+>  drivers/clk/at91/sam9x7.c                     |  946 +++++++++++++
+>  drivers/clk/at91/sama7g5.c                    |   42 +-
+>  drivers/irqchip/irq-atmel-aic5.c              |   12 +-
+>  drivers/power/reset/Kconfig                   |    4 +-
+>  drivers/power/reset/at91-sama5d2_shdwc.c      |    1 +
+>  drivers/soc/atmel/soc.c                       |   23 +
+>  drivers/soc/atmel/soc.h                       |    9 +
+>  include/dt-bindings/clock/at91.h              |    4 +
+>  45 files changed, 2788 insertions(+), 65 deletions(-)
+>  create mode 100644 arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dts
+>  create mode 100644 arch/arm/boot/dts/microchip/sam9x7.dtsi
+>  create mode 100644 arch/arm/mach-at91/sam9x7.c
+>  create mode 100644 drivers/clk/at91/sam9x7.c
+> 
+> -- 
+> 2.25.1
+
+Patches 3-5 and 10 applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
