@@ -1,22 +1,22 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3E758AD1
-	for <linux-serial@vger.kernel.org>; Fri,  1 Mar 2024 21:52:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 410AB58AD7
+	for <linux-serial@vger.kernel.org>; Fri,  1 Mar 2024 21:52:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709329976; cv=none; b=S0nVjkn7e+0SlYcuK0w+Q8wgtKzTL+s92nHZiLQx2f2T4sej8IGPlqBNUDiPffTV2wFnQl04I3orTql5UmUTlvbxLQ0DynY1XZcz7KiXYF3/Hd8VCZcXTunonffWCjyaI44ZVbfFTMRliiaP4ejHd0grEB8SoN2eXQMuacux8YU=
+	t=1709329976; cv=none; b=UCbGvVPNvSXizEPxqVdAs90EM1KT1KgUxX46LYjoCwwWENJ+O0B4U8KyfyhigcxgA1lTkz+nzGtMFKKux+g12ipfY90fsEH+ww7Jjr0sbdDF51Zhin+LV8Y4H6UIyZA+LhnLARUraTC8WjWXi9TRbYSuaviLKJCtGwH8oJDtm0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709329976; c=relaxed/simple;
-	bh=d0+vsfDJBJUqS2Fkhl3INsvp+GpH/URMcC4GhMT1Fgc=;
+	bh=PV8zmysWU6NKef6+WG93PWkFDYIEgZyYBwnADe5OGvU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KB+UrLuUbsKejkR/JeA/IXzvec3xLl4dTL2IYLnBH3zikqBNMlD3BUllkIxI44laVJe9Iag0ClnBRpDRtNdJeZbK0cQ6dpLwKLlWCBFZRZuU1+AQSy+tOvigyeNHdRWYz0r+HBDltfugA7TsfZrPxxxxTmy8sU15yEjndkOTP28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=btylfPwW; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=5S1ziX4Z; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=R4PchC9r8tToCvatV1uZxCu7+L9iOO2Cv+51Y2WoGgWOUkv41C9yJ+SrO9lCcWbOBNVfWVi5M4CGu5HugwVCuZTjM5lAcUlcrvnGw1V/aCmp9N3vBDGYteE4poOlpOck3iSfEV8hCuhnolno+jD8d3IpXeBuchFjtCU5isrAkTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=l8BPYWC+; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3SuRw3NY; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="btylfPwW";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="5S1ziX4Z"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="l8BPYWC+";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3SuRw3NY"
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
 	s=2020; t=1709329971;
@@ -24,29 +24,30 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=neIqKSHS/D/i5nWAr8RrJwghx1+ApKIn7UCJC7a4zDI=;
-	b=btylfPwWS9W4OhA7XC7wc2BZuaBJ7KjLDHmIDK9/iQlLfh8DtSq8ZJnxWWSs50h/nmjqaG
-	VeYJoS+++sbC4Jxc0NNKxTRC0Hqg1WBJmxOni05IPfsO+2a8pv1qU3v4cFz3/yfLAvmLqH
-	NMdOrjHmMdhlQ+JdiFBCLhsQ0zCIwUpOCdBwoFfx/5SVIsWg2gK4b2mvmx6ekaxWNQ8pf1
-	L2lxxxt9JaLtLKK40PJUd/LbX0TuMIZoqfBuw5aVcc/IgxhtSY4L3J7phaqlUUAMojUcZZ
-	e/gXEaeS9s0o4W8TtVQg7K3lGew4qZimwvlSrdOxvLKgiZs5lrnEITB+W5jw7A==
+	bh=zfrtyH8jEy/aviKS2/H/q8f4mQwnYfUS4DMZuSDZ9aI=;
+	b=l8BPYWC+G0hKGAoMf9J8gp8c1QtpaO+6hGYFV1EQOp8xpqJI6Lhegfm3GPzNlGecjKzKqX
+	Kx/Lo14Gi7k6Fi4rJiGWQTZgfMER8UcDB4K2JFa4kqNmenLX1lWLKhgqqSlFgceSQDG28H
+	fq+Wqm0DJHhw2fmLq7oBfmM721WXZYJ5u2FYmDSjbcgiIJEOltTPtZ5v2UjC0RhxFdjgND
+	KI+aMjU5j5efVOIppxH8O4zjosJSGRwtW+LSOUKSGYcJMbO81MzhL00bq+UTdudKWFGcjy
+	RFvt5d/aNc3Cf2pR2K5SvKXK/okl7k9TixKR9uyie99itYKoo5ZnFXdgtIvv4w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
 	s=2020e; t=1709329971;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=neIqKSHS/D/i5nWAr8RrJwghx1+ApKIn7UCJC7a4zDI=;
-	b=5S1ziX4ZKs4Y/mf1jyZJiT7B2ElYQ1p2EVaXdPDGya0A/BwtKZZhUsxdxjNgxkeJ3Siymg
-	uY/BeBEDnSZszoCQ==
+	bh=zfrtyH8jEy/aviKS2/H/q8f4mQwnYfUS4DMZuSDZ9aI=;
+	b=3SuRw3NYo0NvklGJxJe4pkkM6/pEPDPQ0CZoiUhwL1uIhAs43/hJtBQHqfKnt1O3bB0uX/
+	3kld/OzridmeFMBw==
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 06/18] serial: omap: Use uart_prepare_sysrq_char().
-Date: Fri,  1 Mar 2024 22:45:19 +0100
-Message-ID: <20240301215246.891055-7-bigeasy@linutronix.de>
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Hammer Hsieh <hammerh0314@gmail.com>
+Subject: [PATCH 08/18] serial: sunplus: Use uart_prepare_sysrq_char().
+Date: Fri,  1 Mar 2024 22:45:21 +0100
+Message-ID: <20240301215246.891055-9-bigeasy@linutronix.de>
 In-Reply-To: <20240301215246.891055-1-bigeasy@linutronix.de>
 References: <20240301215246.891055-1-bigeasy@linutronix.de>
 Precedence: bulk
@@ -66,65 +67,64 @@ Delay handling sysrq until port lock is dropped.
 Remove the special case in the console write routine an always use the
 complete locking function.
 
+Cc: Hammer Hsieh <hammerh0314@gmail.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/tty/serial/omap-serial.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/tty/serial/sunplus-uart.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-ser=
-ial.c
-index f5a0b401af63b..9be1c871cf116 100644
---- a/drivers/tty/serial/omap-serial.c
-+++ b/drivers/tty/serial/omap-serial.c
-@@ -508,7 +508,7 @@ static void serial_omap_rdi(struct uart_omap_port *up, =
-unsigned int lsr)
+diff --git a/drivers/tty/serial/sunplus-uart.c b/drivers/tty/serial/sunplus=
+-uart.c
+index 99f5285819d4b..f5e29eb4a4ce4 100644
+--- a/drivers/tty/serial/sunplus-uart.c
++++ b/drivers/tty/serial/sunplus-uart.c
+@@ -260,7 +260,7 @@ static void receive_chars(struct uart_port *port)
+ 		if (port->ignore_status_mask & SUP_DUMMY_READ)
+ 			goto ignore_char;
 =20
- 	up->port.icount.rx++;
+-		if (uart_handle_sysrq_char(port, ch))
++		if (uart_prepare_sysrq_char(port, ch))
+ 			goto ignore_char;
 =20
--	if (uart_handle_sysrq_char(&up->port, ch))
-+	if (uart_prepare_sysrq_char(&up->port, ch))
- 		return;
+ 		uart_insert_char(port, lsr, SUP_UART_LSR_OE, ch, flag);
+@@ -287,7 +287,7 @@ static irqreturn_t sunplus_uart_irq(int irq, void *args)
+ 	if (isc & SUP_UART_ISC_TX)
+ 		transmit_chars(port);
 =20
- 	uart_insert_char(&up->port, lsr, UART_LSR_OE, ch, TTY_NORMAL);
-@@ -563,7 +563,7 @@ static irqreturn_t serial_omap_irq(int irq, void *dev_i=
-d)
- 		}
- 	} while (max_count--);
+-	uart_port_unlock(port);
++	uart_unlock_and_check_sysrq(port);
 =20
--	uart_port_unlock(&up->port);
-+	uart_unlock_and_check_sysrq(&up->port);
-=20
- 	tty_flip_buffer_push(&up->port.state->port);
-=20
-@@ -1212,13 +1212,10 @@ serial_omap_console_write(struct console *co, const=
- char *s,
- 	unsigned int ier;
+ 	return IRQ_HANDLED;
+ }
+@@ -512,22 +512,16 @@ static void sunplus_console_write(struct console *co,
+ 	unsigned long flags;
  	int locked =3D 1;
 =20
 -	local_irq_save(flags);
--	if (up->port.sysrq)
+-
+-	if (sunplus_console_ports[co->index]->port.sysrq)
 -		locked =3D 0;
 -	else if (oops_in_progress)
--		locked =3D uart_port_trylock(&up->port);
+-		locked =3D uart_port_trylock(&sunplus_console_ports[co->index]->port);
 +	if (oops_in_progress)
-+		locked =3D uart_port_trylock_irqsave(&up->port, &flags);
++		locked =3D uart_port_trylock_irqsave(&sunplus_console_ports[co->index]->=
+port, &flags);
  	else
--		uart_port_lock(&up->port);
-+		uart_port_lock_irqsave(&up->port, &flags);
+-		uart_port_lock(&sunplus_console_ports[co->index]->port);
++		uart_port_lock_irqsave(&sunplus_console_ports[co->index]->port, &flags);
 =20
- 	/*
- 	 * First save the IER then disable the interrupts
-@@ -1245,8 +1242,7 @@ serial_omap_console_write(struct console *co, const c=
-har *s,
- 		check_modem_status(up);
+ 	uart_console_write(&sunplus_console_ports[co->index]->port, s, count,
+ 			   sunplus_uart_console_putchar);
 =20
  	if (locked)
--		uart_port_unlock(&up->port);
+-		uart_port_unlock(&sunplus_console_ports[co->index]->port);
+-
 -	local_irq_restore(flags);
-+		uart_port_unlock_irqrestore(&up->port, flags);
++		uart_port_unlock_irqrestore(&sunplus_console_ports[co->index]->port, fla=
+gs);
  }
 =20
- static int __init
+ static int __init sunplus_console_setup(struct console *co, char *options)
 --=20
 2.43.0
 
