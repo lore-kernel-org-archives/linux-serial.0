@@ -1,22 +1,22 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BAE122098
-	for <linux-serial@vger.kernel.org>; Fri,  1 Mar 2024 21:52:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC9958ABA
+	for <linux-serial@vger.kernel.org>; Fri,  1 Mar 2024 21:52:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709329973; cv=none; b=F5uXah8EfedmjyWamTj0v32RfmVtzduuARDbrfj7uMdxtZccEa5ezwEifZF2WoOSAwhPlu3RkzKie0PSB4Xa4Ws0j/BJsZ+RJwe0hDVryNl66j+vFOELIJusIozZOeVuOWp7kJ/WZP9tsiXonfZSzr6nQhltF8+ez2SG2Jmk3XE=
+	t=1709329974; cv=none; b=oKkoKvZW8LtvkVxjRI5lIo8QuWAWaNoEvUE/YfX6gTyw0By5btWCDcGbrMNPzv8WY1Ur9q+10bcTlX7xbnsYB0B/MHJ8uoQCRIYdhgYMYBDLmvmUCQ3dqrJCup1vHrcmsJasr0xfLPXOBQozafFMIyW56LsF0LYjmVAN+auUuP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709329973; c=relaxed/simple;
-	bh=y5xpoIyunCZo8pZWw66B7Bmm7D6Ggt2M2grbviX3iKY=;
+	s=arc-20240116; t=1709329974; c=relaxed/simple;
+	bh=A0Sl0tlJDQ4HRDzIJ/leO1z/5F4WjWEu3jha+E8ggsI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=n5GZvA5XJI0ieL93Qd1C8dSErRSe2ASUga8msO0i82c5AtkDctHPeI3sfXE/44fA7SoDvttNEj8btZa5iHVOUV/RdE67cb05hEESfBDBOMekXRIJ8A8J4d1EG4URQVzbsp7zZRhjpKI0oObGL4ndFnu3HOZP4uIRunMcVvXUAgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OuM36w8/; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1GF65Qo8; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=NViKvsB8mZNK5/fRFD3dgGFihp7TkFvwpXbuWIqP+mGw+U4+fsbjmRQIK79SYbUnbAxqlXvyw3+01ThxUrtPjng0jdjckG9lZ44Lh3mIJTs6sbZha078bZ2Dm5w9zm/QNCQj3hCMSilTai5DdfQq1umVT4DrzdgLAXdlrJlPT1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=LJkVeVlz; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=/IvfRVUa; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OuM36w8/";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1GF65Qo8"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="LJkVeVlz";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="/IvfRVUa"
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
 	s=2020; t=1709329970;
@@ -24,30 +24,29 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=uU/09Z2yXckVBdWhsFvdpwmXoXppERpLDZbklHxaGSY=;
-	b=OuM36w8//gkcAhmojG/EfnkCSaY1NFYmUiYENAS28cc0ptuD+0hhwdY2a3tSEnFxwfkQiB
-	6RUBdGiufq6wTCL7DmMMLhSCSo6ue6W8ef12wznrHV6GXj4As1+WdX5fC9NZ3NdYtZ5Gpl
-	nz7EUZ5zgYzLS3inOqSdUg0+t/P8ERGORawSWDBidoRlYhpSyitLhL0tivAvHzXB8+2Aiq
-	7zIOaD5zaGy3xKM5Md6mbmA85hePlAgHzYJ3PVt4HLNyH23+MAC5Iwf+cH8ofOaAQS3q3Y
-	rUJrBfA9MgFXxAk85btf58BaeOl6KNfw1oiyaMVf/aXaIM9tcTq8EzH+EU6cFQ==
+	bh=YIqFu/AADtWHsa2rj/FvPzDKlVU7ecbiMypUuA2TtPA=;
+	b=LJkVeVlz6WczQ2ZtyWamJTorAMNcNKrme/ofxnWL7OhIZCYQCGVnzELmHZKFOxF8la5mIn
+	3Zbw53AEx6atAj223AulIn6zF6H+qS+tAQ9dX/UXx6Mw+Mqe+ihoMKDA/WMOy9lXyonVWL
+	eLfbCD3bPW/Qmx1y2abAYvriF3QXHIDJQNhyG+kLvAOONxNmSZtodpa9SWv9rxUQ5DzZnw
+	1S45MU9pfXSr6/xFaiBMRsX2vxht7bLxQVOPCyVxtBtbVaOOvG2xMTHoyQU6kfY4OWmo+L
+	PLC6ZBKoI2LrIgMbspKM8CtVU5y5MmCnxYA8WrpUNRnu8xj9QWfd5K+QiSHhLw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
 	s=2020e; t=1709329970;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=uU/09Z2yXckVBdWhsFvdpwmXoXppERpLDZbklHxaGSY=;
-	b=1GF65Qo8mo4mV/D68HUFJ/RZLwfPAj9ndnJW4tFgRtzWcNEZqjoFVm1awscLVMb/QJUE85
-	sW4psdEEbW6dUQAg==
+	bh=YIqFu/AADtWHsa2rj/FvPzDKlVU7ecbiMypUuA2TtPA=;
+	b=/IvfRVUa7UMPx9bEPcu7lqfzoDyoFpIjZL+j/rfBa8vduINCAKBi7F60JxkqJ2md9X50UL
+	oe+1fU4c5yfLRODw==
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Russell King <linux@armlinux.org.uk>
-Subject: [PATCH 01/18] serial: amba-pl011: Use uart_prepare_sysrq_char().
-Date: Fri,  1 Mar 2024 22:45:14 +0100
-Message-ID: <20240301215246.891055-2-bigeasy@linutronix.de>
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 03/18] serial: bcm63xx: Use uart_prepare_sysrq_char().
+Date: Fri,  1 Mar 2024 22:45:16 +0100
+Message-ID: <20240301215246.891055-4-bigeasy@linutronix.de>
 In-Reply-To: <20240301215246.891055-1-bigeasy@linutronix.de>
 References: <20240301215246.891055-1-bigeasy@linutronix.de>
 Precedence: bulk
@@ -67,91 +66,76 @@ Delay handling sysrq until port lock is dropped.
 Remove the special case in the console write routine an always use the
 complete locking function.
 
-Cc: Russell King <linux@armlinux.org.uk>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/tty/serial/amba-pl011.c | 24 ++++++++----------------
+ drivers/tty/serial/bcm63xx_uart.c | 24 ++++++++----------------
  1 file changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
-1.c
-index cf2c890a560f0..2fa3fb30dc6c7 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -348,10 +348,7 @@ static int pl011_fifo_to_tty(struct uart_amba_port *ua=
-p)
- 				flag =3D TTY_FRAME;
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx=
+_uart.c
+index a3cefa153456d..34801a6f300b6 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -285,10 +285,9 @@ static void bcm_uart_do_rx(struct uart_port *port)
+ 				flag =3D TTY_PARITY;
  		}
 =20
--		uart_port_unlock(&uap->port);
--		sysrq =3D uart_handle_sysrq_char(&uap->port, ch & 255);
--		uart_port_lock(&uap->port);
+-		if (uart_handle_sysrq_char(port, c))
++		if (uart_prepare_sysrq_char(port, c))
+ 			continue;
+=20
 -
-+		sysrq =3D uart_prepare_sysrq_char(&uap->port, ch & 255);
- 		if (!sysrq)
- 			uart_insert_char(&uap->port, ch, UART011_DR_OE, ch, flag);
- 	}
-@@ -1017,7 +1014,7 @@ static void pl011_dma_rx_callback(void *data)
- 	ret =3D pl011_dma_rx_trigger_dma(uap);
+ 		if ((cstat & port->ignore_status_mask) =3D=3D 0)
+ 			tty_insert_flip_char(tty_port, c, flag);
 =20
- 	pl011_dma_rx_chars(uap, pending, lastbuf, false);
--	uart_port_unlock_irq(&uap->port);
-+	uart_unlock_and_check_sysrq(&uap->port);
- 	/*
- 	 * Do this check after we picked the DMA chars so we don't
- 	 * get some IRQ immediately from RX.
-@@ -1540,11 +1537,10 @@ static void check_apply_cts_event_workaround(struct=
- uart_amba_port *uap)
- static irqreturn_t pl011_int(int irq, void *dev_id)
- {
- 	struct uart_amba_port *uap =3D dev_id;
--	unsigned long flags;
- 	unsigned int status, pass_counter =3D AMBA_ISR_PASS_LIMIT;
- 	int handled =3D 0;
-=20
--	uart_port_lock_irqsave(&uap->port, &flags);
-+	uart_port_lock(&uap->port);
- 	status =3D pl011_read(uap, REG_RIS) & uap->im;
- 	if (status) {
- 		do {
-@@ -1573,7 +1569,7 @@ static irqreturn_t pl011_int(int irq, void *dev_id)
- 		handled =3D 1;
+@@ -353,7 +352,7 @@ static irqreturn_t bcm_uart_interrupt(int irq, void *de=
+v_id)
+ 					       estat & UART_EXTINP_DCD_MASK);
  	}
 =20
--	uart_port_unlock_irqrestore(&uap->port, flags);
-+	uart_unlock_and_check_sysrq(&uap->port);
-=20
- 	return IRQ_RETVAL(handled);
+-	uart_port_unlock(port);
++	uart_unlock_and_check_sysrq(port);
+ 	return IRQ_HANDLED;
  }
-@@ -2322,13 +2318,10 @@ pl011_console_write(struct console *co, const char =
-*s, unsigned int count)
 =20
- 	clk_enable(uap->clk);
+@@ -703,20 +702,14 @@ static void bcm_console_write(struct console *co, con=
+st char *s,
+ {
+ 	struct uart_port *port;
+ 	unsigned long flags;
+-	int locked;
++	int locked =3D 1;
+=20
+ 	port =3D &ports[co->index];
 =20
 -	local_irq_save(flags);
--	if (uap->port.sysrq)
+-	if (port->sysrq) {
+-		/* bcm_uart_interrupt() already took the lock */
 -		locked =3D 0;
--	else if (oops_in_progress)
--		locked =3D uart_port_trylock(&uap->port);
+-	} else if (oops_in_progress) {
+-		locked =3D uart_port_trylock(port);
+-	} else {
+-		uart_port_lock(port);
+-		locked =3D 1;
+-	}
 +	if (oops_in_progress)
-+		locked =3D uart_port_trylock_irqsave(&uap->port, &flags);
- 	else
--		uart_port_lock(&uap->port);
-+		uart_port_lock_irqsave(&uap->port, &flags);
++		locked =3D uart_port_trylock_irqsave(port, &flags);
++	else
++		uart_port_lock_irqsave(port, &flags);
 =20
- 	/*
- 	 *	First save the CR then disable the interrupts
-@@ -2354,8 +2347,7 @@ pl011_console_write(struct console *co, const char *s=
-, unsigned int count)
- 		pl011_write(old_cr, uap, REG_CR);
+ 	/* call helper to deal with \r\n */
+ 	uart_console_write(port, s, count, bcm_console_putchar);
+@@ -725,8 +718,7 @@ static void bcm_console_write(struct console *co, const=
+ char *s,
+ 	wait_for_xmitr(port);
 =20
  	if (locked)
--		uart_port_unlock(&uap->port);
+-		uart_port_unlock(port);
 -	local_irq_restore(flags);
-+		uart_port_unlock_irqrestore(&uap->port, flags);
-=20
- 	clk_disable(uap->clk);
++		uart_port_unlock_irqrestore(port, flags);
  }
+=20
+ /*
 --=20
 2.43.0
 
