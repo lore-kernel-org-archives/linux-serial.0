@@ -1,54 +1,52 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9134358ADD
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07FC459146
 	for <linux-serial@vger.kernel.org>; Fri,  1 Mar 2024 21:52:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709329977; cv=none; b=scxXc6FsZOCWF+UKCdZQnUz0hL96JA1VNNR94bbOb2YcxM/vmBZJ7M3DKDr54OgRXs/beElumSrEyJNzdOlEheZHUyAshY4Zqq764gSFTJ7LhgXoLylSkMZagKCIj5xH5rK/0TwF4XLhHYbrESPIgfB/DD7xBZ4Krh9/Y8/tpRg=
+	t=1709329977; cv=none; b=OHTlUo69Z8+bYKmkuel55Yl0uQOezs8e57K3kbUTpIZEZSFeaFvb1SMJQ0jPYVejwT6DAZ37l28TSXwbZp1Lni6sQ9yRa6phXX43gjH+NoA1FHgBIq96Y9sstZsufAk5dHVv2/FWgwTeE3RISWyyA99KhhKThyrlVor8V5qaPmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709329977; c=relaxed/simple;
-	bh=Z26sQXqoRz5d7FR7ubORTC35ekQGKh6UTTKavUvCI04=;
+	bh=95CvMzwLEYvN0YPdFgnvtB83kTTr7qCy0v8blcJOJG4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BIRaFirKi8Rg+2mB7RdZNoDd4z3+kh4XV8qeDxOmyfTkhFN9x3QmaB1Fb94cT+g59Z6Lth+LibcF8XFa2+E2AQy4i+lEY/tp0kM3fgLvfGxcOg8hkMfcTn1ybK7AIeQxygo0EoPq+3A0FdTVRKUdWiEXzTVL1h0Wox6S2pnoVkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=JQE6hsuD; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=naHLAMDr; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=UldQlj86LX8Izq6YUh3lEeq+UbJHviYMo6Ubt+Z807ltOW1HvHvCM0Trde8zKFg7Ty067r1EJxkKtIfX2Y9gRRVIGdjYWFmOpC9B0H2WEaofnvofXK3EbX/wBXFDG6Eiu31zz3+qolHB15DF9mqGGATgJP21VOnpSYg7y753eC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=fpkk8WdB; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=oSX8W81+; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="JQE6hsuD";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="naHLAMDr"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="fpkk8WdB";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="oSX8W81+"
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1709329972;
+	s=2020; t=1709329973;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=wNzlMgcB7Ml8SwiiDSy2k2m2CzXu6bUYS/NmyaqyVvY=;
-	b=JQE6hsuD4GBq+eQWc1quSwSjrpKc+JJK9sl7nxnUK6YtebPrz+us/3ItDp3nCY+aXVJaKU
-	J5MJhR1O4NE02wDDBMTp7Frme1R84yw2W/iDfnKVd0MMqpvy3BdFsr3vqgqqPDn4es10kC
-	TOyr48sCvlSD/pFbbyFXjnDnK91V3ChT+Q9fVrelgUUXtnbE4HEGPq8OYEochRaUceNK+v
-	dFcJq5HzvYjikpjiLO8Iuo6JjnQupfD/xM54Wyl6XVOYVpWn9SpxG6HCJNtcjUKc4XtldN
-	ywzBmmqbm2xjS7QDlKCdwR1ANQEyAP4aUuWRQZeEvB2Umk1tlH/w91kfT28eZg==
+	bh=gr2ZxEwFtSX4/4G1RgLzPTzSQg478W3tlH7lcsXH0mc=;
+	b=fpkk8WdB0bre+7rLpCRoW15tSHtAa/O4wATJbIud9rMy0nRIbnXFi3dS1unLyTMbYBRXUF
+	HiVK4tXA4/FMISi949igIbIJM7AODSe/QgrqD8MJzd70YgJzfcf+AAPvJuMvRuQquy/2eC
+	NhU2t12++7gk4neMB+c/qd3LmGfe25SyN21X8+/oL/cNdYL3rlqtaSZwZQXiceuQbGqVZb
+	h1S6OXd5s/A12s5mbYH6exS6ejDmIpI3OTq9luwoUcljx2Bt/mub0vGKat6p4ldroN8FkJ
+	nFO5KchHg67GHcBKJ6M4BJnvpOP7H1qV9q6LAIjv5KUfDqgTo7lNk0aeJ+vUDg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1709329972;
+	s=2020e; t=1709329973;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=wNzlMgcB7Ml8SwiiDSy2k2m2CzXu6bUYS/NmyaqyVvY=;
-	b=naHLAMDrbDn1VJoY3UrOJIMmXbzlyfLeNOfYuiezN0L9NJsU7IConNvIk0CYZk/r2oE0cR
-	sOmLRPGu8VdeuICw==
+	bh=gr2ZxEwFtSX4/4G1RgLzPTzSQg478W3tlH7lcsXH0mc=;
+	b=oSX8W81+15FcseS/E4G2apZY2qxtBj1NzB//CfXTjM9toOs5x8V/lBQoRnqSTwhOfW17Yl
+	u7GtZvLyQt2gKzCg==
 To: linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 09/18] serial: lpc32xx_hs: Use uart_prepare_sysrq_char() to handle sysrq.
-Date: Fri,  1 Mar 2024 22:45:22 +0100
-Message-ID: <20240301215246.891055-10-bigeasy@linutronix.de>
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 14/18] serial: pch: Make push_rx() return void.
+Date: Fri,  1 Mar 2024 22:45:27 +0100
+Message-ID: <20240301215246.891055-15-bigeasy@linutronix.de>
 In-Reply-To: <20240301215246.891055-1-bigeasy@linutronix.de>
 References: <20240301215246.891055-1-bigeasy@linutronix.de>
 Precedence: bulk
@@ -59,73 +57,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-The port lock is a spinlock_t which is becomes a sleeping lock on PREEMPT_R=
-T.
-The driver splits the locking function into two parts: local_irq_save() and
-uart_port_lock() and this breaks PREEMPT_RT.
+push_rx() returns always 0.
 
-Handle sysrq requests sysrq once the port lock is dropped.
-Remove the special case in the console write routine an always use the
-complete locking function.
+Make push_rx() return void.
 
-Cc: Vladimir Zapolskiy <vz@mleia.com>
-Cc: linux-arm-kernel@lists.infradead.org
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- drivers/tty/serial/lpc32xx_hs.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/tty/serial/pch_uart.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_h=
-s.c
-index ec20329f06036..e70fa59dbcc3b 100644
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -136,20 +136,16 @@ static void lpc32xx_hsuart_console_write(struct conso=
-le *co, const char *s,
- 	int locked =3D 1;
-=20
- 	touch_nmi_watchdog();
--	local_irq_save(flags);
--	if (up->port.sysrq)
--		locked =3D 0;
--	else if (oops_in_progress)
--		locked =3D uart_port_trylock(&up->port);
-+	if (oops_in_progress)
-+		locked =3D uart_port_trylock_irqsave(&up->port, &flags);
- 	else
--		uart_port_lock(&up->port);
-+		uart_port_lock_irqsave(&up->port, &flags);
-=20
- 	uart_console_write(&up->port, s, count, lpc32xx_hsuart_console_putchar);
- 	wait_for_xmit_empty(&up->port);
-=20
- 	if (locked)
--		uart_port_unlock(&up->port);
--	local_irq_restore(flags);
-+		uart_port_unlock_irqrestore(&up->port, flags);
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 29ed6f8621d7d..124eb816fca7e 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -599,16 +599,14 @@ static void pch_uart_hal_set_break(struct eg20t_port =
+*priv, int on)
+ 	iowrite8(lcr, priv->membase + UART_LCR);
  }
 =20
- static int __init lpc32xx_hsuart_console_setup(struct console *co,
-@@ -268,7 +264,8 @@ static void __serial_lpc32xx_rx(struct uart_port *port)
- 			tty_insert_flip_char(tport, 0, TTY_FRAME);
- 		}
+-static int push_rx(struct eg20t_port *priv, const unsigned char *buf,
+-		   int size)
++static void push_rx(struct eg20t_port *priv, const unsigned char *buf,
++		    int size)
+ {
+ 	struct uart_port *port =3D &priv->port;
+ 	struct tty_port *tport =3D &port->state->port;
 =20
--		tty_insert_flip_char(tport, (tmp & 0xFF), flag);
-+		if (!uart_prepare_sysrq_char(port, tmp & 0xff))
-+			tty_insert_flip_char(tport, (tmp & 0xFF), flag);
-=20
- 		tmp =3D readl(LPC32XX_HSUART_FIFO(port->membase));
- 	}
-@@ -333,7 +330,7 @@ static irqreturn_t serial_lpc32xx_interrupt(int irq, vo=
-id *dev_id)
- 		__serial_lpc32xx_tx(port);
- 	}
-=20
--	uart_port_unlock(port);
-+	uart_unlock_and_check_sysrq(port);
-=20
- 	return IRQ_HANDLED;
+ 	tty_insert_flip_string(tport, buf, size);
+ 	tty_flip_buffer_push(tport);
+-
+-	return 0;
  }
+=20
+ static int dma_push_rx(struct eg20t_port *priv, int size)
+@@ -761,7 +759,7 @@ static int handle_rx_to(struct eg20t_port *priv)
+ {
+ 	struct pch_uart_buffer *buf;
+ 	int rx_size;
+-	int ret;
++
+ 	if (!priv->start_rx) {
+ 		pch_uart_hal_disable_interrupt(priv, PCH_UART_HAL_RX_INT |
+ 						     PCH_UART_HAL_RX_ERR_INT);
+@@ -770,9 +768,7 @@ static int handle_rx_to(struct eg20t_port *priv)
+ 	buf =3D &priv->rxbuf;
+ 	do {
+ 		rx_size =3D pch_uart_hal_read(priv, buf->buf, buf->size);
+-		ret =3D push_rx(priv, buf->buf, rx_size);
+-		if (ret)
+-			return 0;
++		push_rx(priv, buf->buf, rx_size);
+ 	} while (rx_size =3D=3D buf->size);
+=20
+ 	return PCH_UART_HANDLED_RX_INT;
 --=20
 2.43.0
 
