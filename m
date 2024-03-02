@@ -1,41 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE2C914010;
-	Sat,  2 Mar 2024 20:48:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C5BD21100;
+	Sat,  2 Mar 2024 20:58:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709412523; cv=none; b=A9kEwNdAhzmAX789BTtOqMu1vKTRIjWMsjLxzovnHKzuHEYVH4dtmDOrXuWnj8XGyLNa9rDnQyErTuZ5LfxAy+oq7aOrfrMYHigOaplE9PE8g37oupa9PENAy1fxQNxZQsdIXwRr71d2G4EoTvbkPBLtHwblZSmt3G/Z4oSUCwk=
+	t=1709413136; cv=none; b=RL1W7TPOlvVdeq/i/17WErlKCUGdjYrqa7P5sYJAijEmhJH9+TOmh/pTseTTF/giw3AhOhcJ0py9e9CX17TpioPQNRImyyIG5EMRcZp8nBjXFA4yxmv6jvE97SpOe3cP6+uFGW3dLCRseH3QE/b/pQJkjIMChrGW+oluT3arx3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709412523; c=relaxed/simple;
-	bh=KkrDPfDl9MTHCtUdGHigMdKyuR/xnsZt/Vhf4rD7NXs=;
+	s=arc-20240116; t=1709413136; c=relaxed/simple;
+	bh=o+tr4CCbud8uzLtDh5MolTBCwG3kPTB0Bhx8jY/shKs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kzR0zA33Fv56hxfPRaK2e3kLjR9SY7ECgoUO4hBZt655ZybVj9TwxNQYIsDUD/ry7u6AAcTx7FA8wgS/EOCNtdaX0YMtNzsyw/xH3sLFbWMm2uZ+DZaW2kz2iLsB+m6uAiFwPIsa0hFQi9tgH0LN68HE3x+8hmGbCaeYRViD3aE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=H0WKFuZP; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JbE6KLWzmiHcXOSerGOSKsJQHzyrjoW3R6CPXiEKodUUvA/lxDYe9Gw/I+j9+vGtSDe3PFNmQX0O+k7kFI3JZ68hz8/s8VQaxKBtPzF9vh3/KCpmmzaSfq266QlwWeD1TnMhM/vj6GJQpXNvwJ3S/4UOkeXs5/fP21XjQ21tHQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=UgMqkU+n; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="H0WKFuZP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FCFAC433F1;
-	Sat,  2 Mar 2024 20:48:42 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="UgMqkU+n"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 485ABC433C7;
+	Sat,  2 Mar 2024 20:58:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709412522;
-	bh=KkrDPfDl9MTHCtUdGHigMdKyuR/xnsZt/Vhf4rD7NXs=;
+	s=korg; t=1709413135;
+	bh=o+tr4CCbud8uzLtDh5MolTBCwG3kPTB0Bhx8jY/shKs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H0WKFuZPFiFTFwjASROakBdIJ5w39aA7rfgBSeTUhklxqZP08rOwt3ihpoOLg7X0L
-	 xYsQ+GvhhGoHSCCHyy9AGEjqKleVe7dUzC4hne+rJfDhO+IdeK7LEMA/GiCVWl604X
-	 TouQ8TlOJ9Fmf1lqvXb5Hxx7BuiP4+9UDSJySd08=
-Date: Sat, 2 Mar 2024 21:48:39 +0100
+	b=UgMqkU+niNfrrsJKR325G2D+2tAy9twT34HdNKjDPPnzNigNMvu3vA2hb62A57nq0
+	 PEMsKrj7r3EL2UOTajmaknqRQV/d2JCtFJ9pWYRVcF/57lRl/p8lzob7OmHi5mEfNC
+	 4qrR2eTAghx7wO456Nvia8+/Eo8/UCKAhz4WW+Ok=
+Date: Sat, 2 Mar 2024 21:58:53 +0100
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Peter Collingbourne <pcc@google.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2] serial: Lock console when calling into driver before
- registration
-Message-ID: <2024030214-buffing-obtuse-8dc8@gregkh>
-References: <20240226192329.3281301-1-pcc@google.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 03/14] serial: port: Introduce a common helper to read
+ properties
+Message-ID: <2024030259-playback-starlit-a472@gregkh>
+References: <20240226142514.1485246-1-andriy.shevchenko@linux.intel.com>
+ <20240226142514.1485246-4-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,191 +56,187 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240226192329.3281301-1-pcc@google.com>
+In-Reply-To: <20240226142514.1485246-4-andriy.shevchenko@linux.intel.com>
 
-On Mon, Feb 26, 2024 at 11:23:26AM -0800, Peter Collingbourne wrote:
-> During the handoff from earlycon to the real console driver, we have
-> two separate drivers operating on the same device concurrently. In the
-> case of the 8250 driver these concurrent accesses cause problems due
-> to the driver's use of banked registers, controlled by LCR.DLAB. It is
-> possible for the setup(), config_port(), pm() and set_mctrl() callbacks
-> to set DLAB, which can cause the earlycon code that intends to access
-> TX to instead access DLL, leading to missed output and corruption on
-> the serial line due to unintended modifications to the baud rate.
+On Mon, Feb 26, 2024 at 04:19:19PM +0200, Andy Shevchenko wrote:
+> Several serial drivers want to read the same or similar set of
+> the port properties. Make a common helper for them.
 > 
-> In particular, for setup() we have:
-> 
-> univ8250_console_setup()
-> -> serial8250_console_setup()
-> -> uart_set_options()
-> -> serial8250_set_termios()
-> -> serial8250_do_set_termios()
-> -> serial8250_do_set_divisor()
-> 
-> For config_port() we have:
-> 
-> serial8250_config_port()
-> -> autoconfig()
-> 
-> For pm() we have:
-> 
-> serial8250_pm()
-> -> serial8250_do_pm()
-> -> serial8250_set_sleep()
-> 
-> For set_mctrl() we have (for some devices):
-> 
-> serial8250_set_mctrl()
-> -> omap8250_set_mctrl()
-> -> __omap8250_set_mctrl()
-> 
-> To avoid such problems, let's make it so that the console is locked
-> during pre-registration calls to these callbacks, which will prevent
-> the earlycon driver from running concurrently.
-> 
-> Remove the partial solution to this problem in the 8250 driver
-> that locked the console only during autoconfig_irq(), as this would
-> result in a deadlock with the new approach. The console continues
-> to be locked during autoconfig_irq() because it can only be called
-> through uart_configure_port().
-> 
-> Although this patch introduces more locking than strictly necessary
-> (and in particular it also locks during the call to rs485_config()
-> which is not affected by this issue as far as I can tell), it follows
-> the principle that it is the responsibility of the generic console
-> code to manage the earlycon handoff by ensuring that earlycon and real
-> console driver code cannot run concurrently, and not the individual
-> drivers.
-> 
-> Signed-off-by: Peter Collingbourne <pcc@google.com>
-> Reviewed-by: John Ogness <john.ogness@linutronix.de>
-> Link: https://linux-review.googlesource.com/id/I7cf8124dcebf8618e6b2ee543fa5b25532de55d8
-
-Why is a link to a gerrit review with no context other than this same
-commit needed here?
-
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Cc: stable@vger.kernel.org
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  drivers/tty/serial/8250/8250_port.c |  6 ------
->  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
->  kernel/printk/printk.c              | 21 ++++++++++++++++++---
->  3 files changed, 30 insertions(+), 9 deletions(-)
+>  drivers/tty/serial/serial_port.c | 134 +++++++++++++++++++++++++++++++
+>  include/linux/serial_core.h      |   1 +
+>  2 files changed, 135 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 8ca061d3bbb9..1d65055dde27 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1329,9 +1329,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  		inb_p(ICP);
->  	}
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+> index 88975a4df306..ecc980e9dba6 100644
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -8,7 +8,10 @@
 >  
-> -	if (uart_console(port))
-> -		console_lock();
-> -
->  	/* forget possible initially masked and pending IRQ */
->  	probe_irq_off(probe_irq_on());
->  	save_mcr = serial8250_in_MCR(up);
-> @@ -1371,9 +1368,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  	if (port->flags & UPF_FOURPORT)
->  		outb_p(save_ICP, ICP);
+>  #include <linux/device.h>
+>  #include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/property.h>
+>  #include <linux/serial_core.h>
+>  #include <linux/spinlock.h>
 >  
-> -	if (uart_console(port))
-> -		console_unlock();
-> -
->  	port->irq = (irq > 0) ? irq : 0;
+> @@ -82,6 +85,137 @@ void uart_remove_one_port(struct uart_driver *drv, struct uart_port *port)
 >  }
+>  EXPORT_SYMBOL(uart_remove_one_port);
 >  
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index d6a58a9e072a..ff85ebd3a007 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2608,7 +2608,12 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  			port->type = PORT_UNKNOWN;
->  			flags |= UART_CONFIG_TYPE;
->  		}
-> +		/* Synchronize with possible boot console. */
-> +		if (uart_console(port))
-> +			console_lock();
->  		port->ops->config_port(port, flags);
-> +		if (uart_console(port))
-> +			console_unlock();
->  	}
->  
->  	if (port->type != PORT_UNKNOWN) {
-> @@ -2616,6 +2621,10 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  
->  		uart_report_port(drv, port);
->  
-> +		/* Synchronize with possible boot console. */
-> +		if (uart_console(port))
-> +			console_lock();
-> +
->  		/* Power up port for set_mctrl() */
->  		uart_change_pm(state, UART_PM_STATE_ON);
->  
-> @@ -2632,6 +2641,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
->  
->  		uart_rs485_config(port);
->  
-> +		if (uart_console(port))
-> +			console_unlock();
-> +
->  		/*
->  		 * If this driver supports console, and it hasn't been
->  		 * successfully registered yet, try to re-register it.
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index f2444b581e16..f51e4e5a869d 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3263,6 +3263,21 @@ static int __init keep_bootcon_setup(char *str)
->  
->  early_param("keep_bootcon", keep_bootcon_setup);
->  
-> +static int console_call_setup(struct console *newcon, char *options)
+> +/**
+> + * uart_read_port_properties - read firmware properties of the given UART port
+
+I like, but:
+
+> + * @port: corresponding port
+> + * @use_defaults: apply defaults (when %true) or validate the values (when %false)
+
+Using random booleans in a function is horrid.  Every time you see the
+function call, or want to call it, you need to go and look up what the
+boolean is and means.
+
+Make 2 public functions here, one that does it with use_defaults=true
+and one =false and then have them both call this one static function,
+that way the function names themselves are easy to read and understand
+and maintain over time.
+
+thanks,
+
+greg k-h
+
+
+> + *
+> + * The following device properties are supported:
+> + *   - clock-frequency (optional)
+> + *   - fifo-size (optional)
+> + *   - no-loopback-test (optional)
+> + *   - reg-shift (defaults may apply)
+> + *   - reg-offset (value may be validated)
+> + *   - reg-io-width (defaults may apply or value may be validated)
+> + *   - interrupts (OF only)
+> + *   - serial [alias ID] (OF only)
+> + *
+> + * If the port->dev is of struct platform_device type the interrupt line
+> + * will be retrieved via platform_get_irq() call against that device.
+> + * Otherwise it will be assigned by fwnode_irq_get() call. In both cases
+> + * the index 0 of the resource is used.
+> + *
+> + * The caller is responsible to initialize the following fields of the @port
+> + *   ->dev (must be valid)
+> + *   ->flags
+> + *   ->mapbase
+> + *   ->mapsize
+> + *   ->regshift (if @use_defaults is false)
+> + * before calling this function. Alternatively the above mentioned fields
+> + * may be zeroed, in such case the only ones, that have associated properties
+> + * found, will be set to the respective values.
+> + *
+> + * If no error happened, the ->irq, ->mapbase, ->mapsize will be altered.
+> + * The ->iotype is always altered.
+> + *
+> + * When @use_defaults is true and the respective property is not found
+> + * the following values will be applied:
+> + *   ->regshift = 0
+> + * In this case IRQ must be provided, otherwise an error will be returned.
+> + *
+> + * When @use_defaults is false and the respective property is found
+> + * the following values will be validated:
+> + *   - reg-io-width (->iotype)
+> + *   - reg-offset (->mapsize against ->mapbase)
+> + *
+> + * Returns: 0 on success or negative errno on failure
+> + */
+> +int uart_read_port_properties(struct uart_port *port, bool use_defaults)
 > +{
-> +	int err;
+> +	struct device *dev = port->dev;
+> +	u32 value;
+> +	int ret;
 > +
-> +	if (!newcon->setup)
-> +		return 0;
+> +	/* Read optional UART functional clock frequency */
+> +	device_property_read_u32(dev, "clock-frequency", &port->uartclk);
 > +
-> +	/* Synchronize with possible boot console. */
-> +	console_lock();
-> +	err = newcon->setup(newcon, options);
-> +	console_unlock();
+> +	/* Read the registers alignment (default: 8-bit) */
+> +	ret = device_property_read_u32(dev, "reg-shift", &value);
+> +	if (ret)
+> +		port->regshift = use_defaults ? 0 : port->regshift;
+> +	else
+> +		port->regshift = value;
 > +
-> +	return err;
+> +	/* Read the registers I/O access type (default: MMIO 8-bit) */
+> +	ret = device_property_read_u32(dev, "reg-io-width", &value);
+> +	if (ret) {
+> +		port->iotype = UPIO_MEM;
+> +	} else {
+> +		switch (value) {
+> +		case 1:
+> +			port->iotype = UPIO_MEM;
+> +			break;
+> +		case 2:
+> +			port->iotype = UPIO_MEM16;
+> +			break;
+> +		case 4:
+> +			port->iotype = device_is_big_endian(dev) ? UPIO_MEM32BE : UPIO_MEM32;
+> +			break;
+> +		default:
+> +			if (!use_defaults) {
+> +				dev_err(dev, "Unsupported reg-io-width (%u)\n", value);
+> +				return -EINVAL;
+> +			}
+> +			port->iotype = UPIO_UNKNOWN;
+> +			break;
+> +		}
+> +	}
+> +
+> +	/* Read the address mapping base offset (default: no offset) */
+> +	ret = device_property_read_u32(dev, "reg-offset", &value);
+> +	if (ret)
+> +		value = 0;
+> +
+> +	/* Check for shifted address mapping overflow */
+> +	if (!use_defaults && port->mapsize < value) {
+> +		dev_err(dev, "reg-offset %u exceeds region size %pa\n", value, &port->mapsize);
+> +		return -EINVAL;
+> +	}
+> +
+> +	port->mapbase += value;
+> +	port->mapsize -= value;
+> +
+> +	/* Read optional FIFO size */
+> +	device_property_read_u32(dev, "fifo-size", &port->fifosize);
+> +
+> +	if (device_property_read_bool(dev, "no-loopback-test"))
+> +		port->flags |= UPF_SKIP_TEST;
+> +
+> +	/* Get index of serial line, if found in DT aliases */
+> +	ret = of_alias_get_id(dev_of_node(dev), "serial");
+> +	if (ret >= 0)
+> +		port->line = ret;
+> +
+> +	if (dev_is_platform(dev))
+> +		ret = platform_get_irq(to_platform_device(dev), 0);
+> +	else
+> +		ret = fwnode_irq_get(dev_fwnode(dev), 0);
+> +	if (ret == -EPROBE_DEFER)
+> +		return ret;
+> +	if (ret > 0)
+> +		port->irq = ret;
+> +	else if (use_defaults)
+> +		/* By default IRQ support is mandatory */
+> +		return ret;
+> +	else
+> +		port->irq = 0;
+> +
+> +	port->flags |= UPF_SHARE_IRQ;
+> +
+> +	return 0;
 > +}
-> +
->  /*
->   * This is called by register_console() to try to match
->   * the newly registered console with any of the ones selected
-> @@ -3298,8 +3313,8 @@ static int try_enable_preferred_console(struct console *newcon,
->  			if (_braille_register_console(newcon, c))
->  				return 0;
->  
-> -			if (newcon->setup &&
-> -			    (err = newcon->setup(newcon, c->options)) != 0)
-> +			err = console_call_setup(newcon, c->options);
-> +			if (err != 0)
+> +EXPORT_SYMBOL(uart_read_port_properties);
 
-Didn't checkpatch complain about this?  It should be:
-			if (err)
-right?
-
-
->  				return err;
->  		}
->  		newcon->flags |= CON_ENABLED;
-> @@ -3325,7 +3340,7 @@ static void try_enable_default_console(struct console *newcon)
->  	if (newcon->index < 0)
->  		newcon->index = 0;
->  
-> -	if (newcon->setup && newcon->setup(newcon, NULL) != 0)
-> +	if (console_call_setup(newcon, NULL) != 0)
->  		return;
-
-No way to pass an error back here?
+EXPORT_SYMBOL_GPL()?  I have to ask :)
 
 thanks,
 
