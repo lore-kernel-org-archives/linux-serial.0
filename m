@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08D11CD33;
-	Sat,  2 Mar 2024 20:44:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7ABE2AF0F
+	for <linux-serial@vger.kernel.org>; Sat,  2 Mar 2024 20:45:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709412284; cv=none; b=IiqHD2TnNBVyefPaK4+xQKRLwnvweBXmQUJOWuk2gHLQFibi2KFj5U3IL/jAkgggaE9UTc5+mkajqI6JxZuvnS2946oXBae+EcrXf59eEMDbz85OBrTChflfyVPUpSmcpvEQs41A4J9VOlzqAJwNo15EtobniEXucjyascI8KFQ=
+	t=1709412306; cv=none; b=QOzN1sH5IAFlvv2W1cj2/S0unSlBqG+mTbmypo2jk92b5Ys8eE6miz5WtNQ+Viieegstumbq+30HuFwMs5Pxf3Q8XcHdRh4KDSYF79KP1YEt1R5rAbfNHsYTfTR2gr3xlSj10eY1Np/gwXQjvbOa50wGddJREx8saWAMv8t94gc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709412284; c=relaxed/simple;
-	bh=uORoj+aCZMJXyq3QBV5PLg2nAJwWO3vSilNvdbM03yg=;
+	s=arc-20240116; t=1709412306; c=relaxed/simple;
+	bh=fB7Gy4PBvncnttryNkXLnQN0y/0qh7zc/IxZufJTxbg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bnXa170+tYe4kK8FojRX820NLakE7g0x22UmAjClRPymmlIDRH1gaWJ35l5auYBoE0GzHKYXk/3+gudfhXlQUdpVDr4om3udfqrj9QZhkAW2LNnd0PYQWV8x4Z9rMQKrFbnAX82D+5e+OdO57E0ir2LhO92dpMftZk8v4ks4nNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=L/LvDSM5; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=ht8SBX1vbDahmTzSiNkLsK4wEQoaKYF/+8VaAh9Iug9SK/D5TokLTYPI7CW/ynMaKIFiU8RNLno4xqDBF2GYM8RaA3rMotc0cZ3B9xT4dr4/Dm5Nht7Y1jqlOjE2phWLUTyNdJGI+I7n39C1DzmfA1bA5i7fzTYRHJVGEnOwWJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=y89k0ERw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="L/LvDSM5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB135C433C7;
-	Sat,  2 Mar 2024 20:44:43 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="y89k0ERw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F27FCC433F1;
+	Sat,  2 Mar 2024 20:45:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709412284;
-	bh=uORoj+aCZMJXyq3QBV5PLg2nAJwWO3vSilNvdbM03yg=;
+	s=korg; t=1709412306;
+	bh=fB7Gy4PBvncnttryNkXLnQN0y/0qh7zc/IxZufJTxbg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=L/LvDSM5zXtA1zDYO1QrOKvlS8yGL1sPbyV/Kedojm7aSq8eVUcACWfEhF5HlLkmR
-	 gkPfKaEx/XA9oTAChO/sWZS6LQLx5cysKjbGrAfrytYtL9YwHjiphuxpCVDn8GTQMY
-	 CRqVAI2/kGxEm4woJwj5zWZbOGB5Y3XxrNIyC5zQ=
-Date: Sat, 2 Mar 2024 21:44:41 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: LiuYe <liu.yeC@h3c.com>
-Cc: jason.wessel@windriver.com, daniel.thompson@linaro.org,
-	dianders@chromium.org, jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <2024030232-verbalize-eggnog-f04a@gregkh>
-References: <20240228025602.3087748-1-liu.yeC@h3c.com>
+	b=y89k0ERwMM1z8zU+PNO5Fv/QJRdbYkdGSkcPo8N2+NuiUKw9CeD0ZYmCRtK4/XmyS
+	 4lyKYDPHUPXt67KMxXlSejwfBpL6CfwhmDdZPZjpeZ3EFB2huIzUEyFQjv39/3QVgy
+	 5LDoDGKwzLz8TmvRzsNQ56j/ZLiksyv/IP+yjGbg=
+Date: Sat, 2 Mar 2024 21:45:03 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Nicolas Pitre <nico@fluxnic.net>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] vt: fix unicode buffer corruption when deleting
+ characters
+Message-ID: <2024030251-frolic-unequal-459a@gregkh>
+References: <88n6qo5r-2986-r273-9n4p-pr77q314727r@syhkavp.arg>
+ <2024022936-chloride-concert-12a6@gregkh>
+ <3840o476-6p58-q897-101r-34n723p16oo1@syhkavp.arg>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,14 +41,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240228025602.3087748-1-liu.yeC@h3c.com>
+In-Reply-To: <3840o476-6p58-q897-101r-34n723p16oo1@syhkavp.arg>
 
-On Wed, Feb 28, 2024 at 10:56:02AM +0800, LiuYe wrote:
-> This e-mail and its attachments contain confidential information from New H3C, which is
-> intended only for the person or entity whose address is listed above. Any use of the
-> information contained herein in any way (including, but not limited to, total or partial
-> disclosure, reproduction, or dissemination) by persons other than the intended
-> recipient(s) is prohibited. If you receive this e-mail in error, please notify the sender
-> by phone or email immediately and delete it!
+On Thu, Feb 29, 2024 at 05:10:56PM -0500, Nicolas Pitre wrote:
+> On Thu, 29 Feb 2024, Greg Kroah-Hartman wrote:
+> 
+> > On Thu, Feb 29, 2024 at 04:05:51PM -0500, Nicolas Pitre wrote:
+> > > This is the same issue that was fixed for the VGA text buffer in
+> > > commit 39cdb68c64d8 ("vt: fix memory overlapping when deleting chars
+> > > in the buffer"). The cure is also the same.
+> > 
+> > Please spell out what the "cure" is here, so we don't have to do and
+> > look up another commit somewhere else :)
+> 
+> This is an obvious single-line fix. Or, are people only reviewing commit 
+> logs now?  ;-)
 
-Now deleted.
+We always review them :)
+
+> Revised commit log coming.
+
+Thanks for the update.
+
+greg k-h
