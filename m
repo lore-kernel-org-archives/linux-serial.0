@@ -1,250 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54DFA8821
-	for <linux-serial@vger.kernel.org>; Sun,  3 Mar 2024 10:26:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C2552E412;
+	Sun,  3 Mar 2024 15:09:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709461610; cv=none; b=DijiYMgPGNJa2FTfg0TcjqdlPyPddlFK1nZkhLyU2qGpY02uyJj24TpgXWz6kUytSkFAdT7SACl2tN599zS+UIRtkBf7JAcX8cMn2ytz036Fry6gAf40rS/xuV3fb9AkR/Sagym+xzU9gucgzqoIUOeMCd3aEKfVes+9PL66Aao=
+	t=1709478555; cv=none; b=ern8CoRfGXeyEnUsVJV2RautAa+ksFXuReIsy4wM/DQmd/G9sBzk4EnunbuzmeU+JjpKUsynSjKpd5cM65n4LPqNHLvPEnMB3BNX4Uqp6yz9wNx5FyukyftPPwiQ+LaHNMLaaKBU9Pd6ujBM/Z/dEvCqfuxxb57Uei2Gsh166W4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709461610; c=relaxed/simple;
-	bh=UnFV3ZqayCRteHvYTxCK6nfRdVBpAHZpxVJe49DkKWA=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=cLwDOde3eLxHuB5TzzGFpI9aD1Hd0hSuPnH6J7CdaDpkb5qegCwDwF9dvYIcKBbYxukqKhlSmzWvGpxK5t4GEIeb700HSMihWkI9PVex9UWUXiRaKtH2l74wwLJYzd3S4Ljz7hqlTO4mFjui65aXvUPmjO8bQmimPCYVVLKmJk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=deEjOO1w; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1709478555; c=relaxed/simple;
+	bh=/1wh8J2QS8Yr1f07mrXqDFKaFHq+DR4G9sxTgBBjnD4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=YCIkmCDCsXmMfqss/F41uWpbQDOsljV06pc2O8ebNm0Go8sOlShYJOfHpBi5akHB1Rd0K3VZrc+yG3mVwbOhCpbLs15s30X34Js9ydN2J8LrlPeCgsoDDVbsFdjqOzwXDygstKV2C2o4hPxlOQsU5Cbg9WeITq/ekWriWiJb9OA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GqGnHZgZ; arc=none smtp.client-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="deEjOO1w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709461608; x=1740997608;
-  h=date:from:to:cc:subject:message-id;
-  bh=UnFV3ZqayCRteHvYTxCK6nfRdVBpAHZpxVJe49DkKWA=;
-  b=deEjOO1woFjYDnKVUwp8IDdc1SQBecASkWuxseBqqudHWDCTxn7IUllK
-   JJNZgROxFtCeadVc4eiJ040DUo91H8+454WbZzwi8O3WT3iSKwYJIykHA
-   uA3tnPTShMj0GUR6jRvF64ilBogLzcO6o/MwihioMnCtPyxppa/ir6w/Z
-   k2WJfRvAo7MDveedP5+mcYQCl6e0qCyu5Lz0La7D6Sd/amyViCodmAMCl
-   TX0o+f83y4vCZiom4MnsX8E5hE4IBlf7DsK2VtkDrX0P289UVz7MUJYt6
-   Wv5+z7qMVh+S1DYQMV5OOcNuYXhbb1vaUt93g97HaE/YwfaaUkZ/X958K
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11001"; a="21498923"
-X-IronPort-AV: E=Sophos;i="6.06,200,1705392000"; 
-   d="scan'208";a="21498923"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2024 02:26:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,200,1705392000"; 
-   d="scan'208";a="46196960"
-Received: from lkp-server01.sh.intel.com (HELO b21307750695) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 03 Mar 2024 02:26:46 -0800
-Received: from kbuild by b21307750695 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rgj3L-0001i4-1G;
-	Sun, 03 Mar 2024 10:26:43 +0000
-Date: Sun, 03 Mar 2024 18:26:28 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- 1581dafaf0d34bc9c428a794a22110d7046d186d
-Message-ID: <202403031825.uiD66UgI-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GqGnHZgZ"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2d3b93e992aso2240321fa.1;
+        Sun, 03 Mar 2024 07:09:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709478552; x=1710083352; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sb9pY7Lk2NLjqbhUMYCC/cMsKMTEm5a/ly9NPqt4Fgk=;
+        b=GqGnHZgZJPzkBnNMZifNEDk+oQ+Ui/6WS+TNgMNMcLlkNvETgtakGp3RP97Z56VMLO
+         hBIoC2n9B81/CsawGcpms2Ihp3h2s2YihlXaZsNlsydfUutigFOfCg8CRWOlH0DRs3QX
+         xMiXJI+47InoqPylcKaVA724iSM+UA3GOnzd7vA2W4LZuqq3P+drBjb7iPTv0rzxNyPz
+         uOawtSNQD6Gw0/CJ3rQC2DLunFV9exKg83s6yLd6SVsoDqLPpcp0eLK+7g0wYSRrpEqW
+         xF+Q/GNsdeNm9TbVDPiQW09TRowrL8QKsKvdjFKHuLfOZ1BouxRvXdv6XmfvLWyL7bsR
+         bSxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709478552; x=1710083352;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sb9pY7Lk2NLjqbhUMYCC/cMsKMTEm5a/ly9NPqt4Fgk=;
+        b=EdZg2Ql78x4F5p23rAAhobnKq8D88NSInsZNdf5O+fILwvhpek71b589QdPGQLE7qr
+         KdTAD7LgiURpo5Hg4LGmRUcGvzvyplbX/QRpWPNVM/ZRi9LDiwXi1Qt/zRQAWoM5Gt6M
+         DHEvNzkfYWe+dRUlfmaFkA0s57xv863BrmloISerkX/aiETlBpSd3nZk3c/n+5lHLG3T
+         mglVKJmp3CFie5vQuMOBRSglegrmOo9A8ynGSFPwNmgm5T23h4KL7O25wiflUIC9aOj+
+         23NUXzloxGY0MPsKdarlf74yXw5yPMQvSp4vjhOPj6AXnO2oC6Kit+O/+v8VyFXltFeS
+         mncw==
+X-Forwarded-Encrypted: i=1; AJvYcCV0erWtjJnfyXY2+v+BG3YEWWttXleRe7dLEMMyaRE+dUg40IFrogr3Mre+ny6JRNbD+mSMlvUokWLBLhrokN3oK3KOeDh3+i19fvGSG8Y01/h9f+4Vx2693CXNJ5NhN1FZHDHp
+X-Gm-Message-State: AOJu0Yxu82bocolMWt4+2uirZfYrnr9KUHj8EPzVhM2EnXjeqbn+ALho
+	L0GjxPrn+SX0gnYZZxqfKVf5C5c0S03XXjRbxEXWAag9nt/L45jkZSxjoxKG
+X-Google-Smtp-Source: AGHT+IEi2OTj8hmu9gEBZJ3lG4QhAPESVkfB1q4vWDQtN73NM1xFhqUHERJFdwoZpqIjbnZYVFvE3g==
+X-Received: by 2002:a05:651c:1414:b0:2d2:e2b1:4488 with SMTP id u20-20020a05651c141400b002d2e2b14488mr3784348lje.22.1709478551399;
+        Sun, 03 Mar 2024 07:09:11 -0800 (PST)
+Received: from localhost (dslb-002-205-020-122.002.205.pools.vodafone-ip.de. [2.205.20.122])
+        by smtp.gmail.com with ESMTPSA id p3-20020a05640243c300b0055edfb81384sm3543129edc.60.2024.03.03.07.09.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Mar 2024 07:09:10 -0800 (PST)
+From: Jonas Gorski <jonas.gorski@gmail.com>
+To: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: core: only stop transmit when HW fifo is empty
+Date: Sun,  3 Mar 2024 16:08:07 +0100
+Message-Id: <20240303150807.68117-1-jonas.gorski@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: 1581dafaf0d34bc9c428a794a22110d7046d186d  vt: fix unicode buffer corruption when deleting characters
+If the circular buffer is empty, it just means we fit all characters to
+send into the HW fifo, but not that the hardware finished transmitting
+them.
 
-elapsed time: 723m
+So if we immediately call stop_tx() after that, this may abort any
+pending characters in the HW fifo, and cause dropped characters on the
+console.
 
-configs tested: 177
-configs skipped: 3
+Fix this by only stopping tx when the tx HW fifo is actually empty.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Fixes: 8275b48b2780 ("tty: serial: introduce transmit helpers")
+Cc: stable@vger.kernel.org
+Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+---
+(this is v2 of the bcm63xx-uart fix attempt)
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20240303   gcc  
-arc                   randconfig-002-20240303   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   clang
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                          exynos_defconfig   clang
-arm                   randconfig-001-20240303   gcc  
-arm                   randconfig-002-20240303   clang
-arm                   randconfig-003-20240303   clang
-arm                   randconfig-004-20240303   clang
-arm64                            allmodconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                 randconfig-001-20240303   clang
-arm64                 randconfig-002-20240303   gcc  
-arm64                 randconfig-003-20240303   gcc  
-arm64                 randconfig-004-20240303   gcc  
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20240303   gcc  
-csky                  randconfig-002-20240303   gcc  
-hexagon                          allmodconfig   clang
-hexagon                           allnoconfig   clang
-hexagon                          allyesconfig   clang
-hexagon                             defconfig   clang
-hexagon               randconfig-001-20240303   clang
-hexagon               randconfig-002-20240303   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20240303   clang
-i386         buildonly-randconfig-002-20240303   clang
-i386         buildonly-randconfig-003-20240303   gcc  
-i386         buildonly-randconfig-004-20240303   clang
-i386         buildonly-randconfig-005-20240303   clang
-i386         buildonly-randconfig-006-20240303   clang
-i386                                defconfig   clang
-i386                  randconfig-001-20240303   gcc  
-i386                  randconfig-002-20240303   gcc  
-i386                  randconfig-003-20240303   gcc  
-i386                  randconfig-004-20240303   clang
-i386                  randconfig-005-20240303   gcc  
-i386                  randconfig-006-20240303   gcc  
-i386                  randconfig-011-20240303   clang
-i386                  randconfig-012-20240303   gcc  
-i386                  randconfig-013-20240303   gcc  
-i386                  randconfig-014-20240303   gcc  
-i386                  randconfig-015-20240303   gcc  
-i386                  randconfig-016-20240303   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                        allyesconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20240303   gcc  
-loongarch             randconfig-002-20240303   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                             allmodconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20240303   gcc  
-nios2                 randconfig-002-20240303   gcc  
-openrisc                         allmodconfig   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                randconfig-001-20240303   gcc  
-parisc                randconfig-002-20240303   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc                    gamecube_defconfig   clang
-powerpc                 mpc834x_itx_defconfig   clang
-powerpc               randconfig-001-20240303   clang
-powerpc               randconfig-002-20240303   gcc  
-powerpc               randconfig-003-20240303   gcc  
-powerpc                     stx_gp3_defconfig   clang
-powerpc                     taishan_defconfig   clang
-powerpc64             randconfig-001-20240303   gcc  
-powerpc64             randconfig-002-20240303   clang
-powerpc64             randconfig-003-20240303   clang
-riscv                            allmodconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   clang
-riscv                               defconfig   clang
-riscv                 randconfig-001-20240303   gcc  
-riscv                 randconfig-002-20240303   clang
-s390                             allmodconfig   clang
-s390                              allnoconfig   clang
-s390                             allyesconfig   gcc  
-s390                                defconfig   clang
-s390                  randconfig-001-20240303   clang
-s390                  randconfig-002-20240303   gcc  
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                    randconfig-001-20240303   gcc  
-sh                    randconfig-002-20240303   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                            allyesconfig   gcc  
-sparc                               defconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64               randconfig-001-20240303   gcc  
-sparc64               randconfig-002-20240303   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   gcc  
-um                                  defconfig   clang
-um                             i386_defconfig   gcc  
-um                    randconfig-001-20240303   clang
-um                    randconfig-002-20240303   clang
-um                           x86_64_defconfig   clang
-x86_64                            allnoconfig   clang
-x86_64                           allyesconfig   clang
-x86_64       buildonly-randconfig-001-20240303   clang
-x86_64       buildonly-randconfig-002-20240303   clang
-x86_64       buildonly-randconfig-003-20240303   clang
-x86_64       buildonly-randconfig-004-20240303   clang
-x86_64       buildonly-randconfig-005-20240303   gcc  
-x86_64       buildonly-randconfig-006-20240303   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20240303   clang
-x86_64                randconfig-002-20240303   gcc  
-x86_64                randconfig-003-20240303   clang
-x86_64                randconfig-004-20240303   clang
-x86_64                randconfig-005-20240303   clang
-x86_64                randconfig-006-20240303   gcc  
-x86_64                randconfig-011-20240303   gcc  
-x86_64                randconfig-012-20240303   gcc  
-x86_64                randconfig-013-20240303   clang
-x86_64                randconfig-014-20240303   gcc  
-x86_64                randconfig-015-20240303   clang
-x86_64                randconfig-016-20240303   gcc  
-x86_64                randconfig-071-20240303   clang
-x86_64                randconfig-072-20240303   gcc  
-x86_64                randconfig-073-20240303   gcc  
-x86_64                randconfig-074-20240303   gcc  
-x86_64                randconfig-075-20240303   clang
-x86_64                randconfig-076-20240303   clang
-x86_64                           rhel-8.3-bpf   gcc  
-x86_64                          rhel-8.3-func   gcc  
-x86_64                    rhel-8.3-kselftests   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa                            allnoconfig   gcc  
-xtensa                           allyesconfig   gcc  
-xtensa                randconfig-001-20240303   gcc  
-xtensa                randconfig-002-20240303   gcc  
+v1 -> v2
+* replace workaround with fix for core issue
+* add Cc: for stable
 
+I'm somewhat confident this is the core issue causing the broken output
+with bcm63xx-uart, and there is no actual need for the UART_TX_NOSTOP.
+
+I wouldn't be surprised if this also fixes mxs-uart for which
+UART_TX_NOSTOP was introduced.
+
+If it does, there is no need for the flag anymore.
+ include/linux/serial_core.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 55b1f3ba48ac..bb0f2d4ac62f 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -786,7 +786,8 @@ enum UART_TX_FLAGS {
+ 	if (pending < WAKEUP_CHARS) {					      \
+ 		uart_write_wakeup(__port);				      \
+ 									      \
+-		if (!((flags) & UART_TX_NOSTOP) && pending == 0)	      \
++		if (!((flags) & UART_TX_NOSTOP) && pending == 0 &&	      \
++		    __port->ops->tx_empty(__port))			      \
+ 			__port->ops->stop_tx(__port);			      \
+ 	}								      \
+ 									      \
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
