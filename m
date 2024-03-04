@@ -1,202 +1,838 @@
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2060.outbound.protection.outlook.com [40.107.6.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [195.130.132.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F3416429;
-	Mon,  4 Mar 2024 07:31:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.6.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709537515; cv=fail; b=GvDGayGaJycpLWTgvCigr2DCHNy+plC7TryKwjgET4Wu4DnmvNa43U10hFRBoYuetddhIe8gTKhuyCZTDV7HeavhtIYz8+xuPGF9Zx6hBN5mlSMHw/Kn1WWZFDU3ye12Kq+kr0QxB/OEbbC3JSiTJ2eXTYQl0y5qjMHjhf1ZaNo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709537515; c=relaxed/simple;
-	bh=GKmuv+kiqcGTTQUt31n4NAAA0E5BzXFZ3JnToX7aOUE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=ajA4XKyaTtyxShG6sSul+8OczO1AisVifm+iUDK9QcRgAZd/ZMfmt4zQ/MvlxSlH0oFYuEHa234D06RtJq8v7q5lwuonQGXnG3bTG+tlaNaKAqPFxjvh0K9ua7RJAq8q03zYmWtr7q+K4VhPg7ux0UjiYZ3X0IU6C4J9m46qNnQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=hVYuiS1d; arc=fail smtp.client-ip=40.107.6.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="hVYuiS1d"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GF6Z54yzb6Rnlm2Wz/E4OYzhBgA0cgfNtubGdForIZpjtUkVX85pNmuSXYzOWE4T/4Gc1dUtwKibHyMkfTzSntXGHfcDY7WgUYiy0g/HRy0667P9dmrsgMufTarrxHcKCrjJumFubiqYG2+oyiTjr/sLQGIQq9OIYqt8nmDxbJagm4TTmX7vOWHLYQnck8M+JSllxDCik/Gmo/dLhPiVo0wn21rqj2uK88MML0NiG+4YxdS7dEbikmensglrvoohOaCNe6pgJmeRBz4DE8D395fh7iyzlk+0AoxmFgXgpaNSBLE+rpXnceG7QLKz61RCuOO+6zetiXj1kppRTRuefQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GKmuv+kiqcGTTQUt31n4NAAA0E5BzXFZ3JnToX7aOUE=;
- b=FY24lDQYYMCJgqKGNGagnIzf9saCfE980qXTLGIf9Fg/yEtB9/JevRi1IhRVUuMBr7FxKcWzLFjmzAx0e9d+49/Q+jFJ0QiMCbSLd5okBNi8S/bb/x/iL43rSSCcjnuoKFzTEHDDGQJ5H5mWNyltWyjo4VvWStaCFX6cuBNiTvGe9oproxs43+Sf54wxc82wWmTdfj3CXIZoq0Ufsf0TP+FCmuWh3W0jk0kL6D6Th3JwwBCNthJaQ4xfBSE6cNi+6B2+E71MQD+2YKWrjccX4eJGu8bOYvhJmXrKXoA7JOmWkIt33NU2TLj9k0xLtUDfp+2ajSsK1YjmcKEUyw6jIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GKmuv+kiqcGTTQUt31n4NAAA0E5BzXFZ3JnToX7aOUE=;
- b=hVYuiS1dccllPUUg9rS9JuctIE38ep1o+rmKYWjDNNC1y78db3UlxMLD13rroiVO9qjgkWwcPsKsM0cFL7vACDeopZ3YN/OSTznqrp8NiQDhltRHqbEoL2eE3vmPjJ82GBAKGWuwZ5PcAC0c9FmdHBQaHuGrP8VVS6v4JU1Y5x0=
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
- by AS5PR04MB9772.eurprd04.prod.outlook.com (2603:10a6:20b:677::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Mon, 4 Mar
- 2024 07:31:49 +0000
-Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::643f:faca:24da:e9aa]) by AS8PR04MB8404.eurprd04.prod.outlook.com
- ([fe80::643f:faca:24da:e9aa%5]) with mapi id 15.20.7339.035; Mon, 4 Mar 2024
- 07:31:49 +0000
-From: Sherry Sun <sherry.sun@nxp.com>
-To: "Sverdlin, Alexander" <alexander.sverdlin@siemens.com>,
-	"u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-	"robh@kernel.org" <robh@kernel.org>, Shenwei Wang <shenwei.wang@nxp.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>, "jirislaby@kernel.org"
-	<jirislaby@kernel.org>, "robert.hodaszi@digi.com" <robert.hodaszi@digi.com>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"imx@lists.linux.dev" <imx@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, Frank Li <frank.li@nxp.com>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: avoid idle preamble pending if
- CTS is enabled
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: avoid idle preamble pending if
- CTS is enabled
-Thread-Index: AQHabder1X9YMJ50WEuZehMzhpFcmLEnKz4AgAAEAoA=
-Date: Mon, 4 Mar 2024 07:31:49 +0000
-Message-ID:
- <AS8PR04MB8404FEA637E51E3B258BC28C92232@AS8PR04MB8404.eurprd04.prod.outlook.com>
-References: <20240304020712.238637-1-sherry.sun@nxp.com>
- <2e1b1eae2e9d3cedcd270e35cfcf8086b914b7ff.camel@siemens.com>
-In-Reply-To: <2e1b1eae2e9d3cedcd270e35cfcf8086b914b7ff.camel@siemens.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR04MB8404:EE_|AS5PR04MB9772:EE_
-x-ms-office365-filtering-correlation-id: aec94d66-af92-4eb8-3ac3-08dc3c1d2767
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 9NcfsptKh8PUNjLPReXzvEvjNRNKjN9SZxEbewMOsMzp9v1IG54kUFIq4pWZNi1ZITnx3qbm7sxiFFqhm4ssciUOuLh2BPKa7TnK5FwwlLYGQ1htQpHmu8tYnzSxKAXWXitSiFAna1LqrawhHBoDbayi6ZHYTQUnx3HShm8uZQCU9yKc2t0gohFpJemWhzmRxLUxeK/zC1AN0+5Jj4wglq9rKDDsBcJmVm5PJkJ2vsciMe6/y5Kmoe/Codv8/9PkTegtRWhvjTJ9gFj3VFMcArqR+047Teu8Svs69jqEgGTWp4DZsPiD65gkApLSEKpanGSZXtm0KhCyn+RDqIKofcDjWO2DgxG8/hOp5xDsUro21krAa9pwUeFls0znI/5Gr/VC5ZKB9+6wL6ZkThKnjofZrBkCQtxKl4Tm4Hazj9YoSYWbKpppNXP3MvdaXXco4wbtxbGJu9o58TCWusBfCcNh7n0DvnbnwC71N/M7CvF8gHtrgi8Ch8/O5raqn5gBi4nru5LXQ/3uu1PWmibuRGL/AAPZEmSfSAmjh6WOqzoowv/cJckKo2pcZ/oA4ulJR9m9ecPNrXxcfBEN6RXbn4KCv4mjyLYx+tWSb0VZkgvIrtT+4kJdOPBfeQ6LK/6TK2gWeBqK/Q81GR571/m66nYZPqU9mGyKxBVLFxa/z0pErhAJFAH8R0vYNQuXaYexYNqrmG3+4KrXOF7Uq0Gv4NuYQcpCVSzj+5s+0Vw6OCI=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(921011)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?Bwn1nhk3W1IwUVE9ARNqJEU/C/LFkjZgDQvQakVyap6kXO5L6rCJplUg7C?=
- =?iso-8859-1?Q?f0FO94/CytaQrYUrnFl9kzQ9RfAQW67TJYww7OQaTYT/yWq1DLr8IkSDMe?=
- =?iso-8859-1?Q?GP8rlSw4yAR2DTMsOJ4Dv4K64sF1A1GKRQkY5/vXji16j1pndf7AWjvTWP?=
- =?iso-8859-1?Q?QEktQL/Kj+T0j5e12EajMIpNVrowl5nwwlPscyU6aunw5REupDREP0wDop?=
- =?iso-8859-1?Q?X+B+VehkrEwG0ZDS8lwLexuspvAWI6vdLBERe1XUi9Hhh6SedjW4RKFfgh?=
- =?iso-8859-1?Q?vz64bpLw5eH4Q95O2/eSlYDi5hu3mc9FgTqnx+hacg3g3iTvt61+OJDFUG?=
- =?iso-8859-1?Q?Fzs+xyN1/h7GebYyWkK0C0sGdkAN37tGMjdLJ31R5Ykz5UgriC7WFOZBI3?=
- =?iso-8859-1?Q?xFXKlYCgMJlloDAZK/80Pw3pQ/P8BNx6/QiLOkZeeEuUU8ObgllEnmwtsm?=
- =?iso-8859-1?Q?P++WIFV88m2pJ1tYJf72ztMa7X2Mq9AGXfhkFBcjPa1k/8L7Pb9lFWgEqf?=
- =?iso-8859-1?Q?CDzvznO/0nIEQvPoxlbPzZRn4FEepAJH2wmAXuyK9cBOlRiSJn+ST9fQep?=
- =?iso-8859-1?Q?zz79FohrosIj38nNL78NCNxPutAsDsl6wyZcXcNfaFsaCvU7chO4L2YVam?=
- =?iso-8859-1?Q?BoctOAY2J2QA0S+4e62iyvLPj5g2NMfHVDWWJ5E86t/zOfxofk2/wJC9h+?=
- =?iso-8859-1?Q?XxA1WIyWPvwcCcYUTJXxEQ3eL6OC25soEgGDa/0eu/l6sFvUrVQs6e1bA5?=
- =?iso-8859-1?Q?94F4aZwfkVbhH49yEdBDJ+u62L1/CEOYWsWoJ7LZAhpvuf5MZdd7ld7tGX?=
- =?iso-8859-1?Q?pzHJfiWC1Y2DzmzMfSqZOHo9Ry3fys5IHFpgiYivycs6TbelPfxxboeh66?=
- =?iso-8859-1?Q?osVNziW+zlSe0BS1SS3RnrMQ0L7ArwXzFHmK/EASMa28IBP3YPEczmfasn?=
- =?iso-8859-1?Q?mEgG7xhUiRetmDfBc+MxBvtqP807oOWiqO7OTYU6IgMRJICyMPvcsd+QQ7?=
- =?iso-8859-1?Q?QVvfsqJPmIckORk0DLwDqvBbADP2O+V8N4wDVyG1JJp7Tf5SZfr2DQ4kHy?=
- =?iso-8859-1?Q?qTStS40mNpPBvh1stU3Q7b06Hd4U/UmmUaH9q/z7/J3zBTiCXOWttjcJmM?=
- =?iso-8859-1?Q?77Zf7eHcBUUBo1vy3aJG4qGbnSlKIF7ssd3InZo4ANOOvNzsMB3bSiTUIZ?=
- =?iso-8859-1?Q?46yD75m7/Z7vzzZIcqpOImDj9aGYqz3pAymK5O4mlDGfCaZ77ku8uh9T/l?=
- =?iso-8859-1?Q?F9jUmVBO7VheO4S489clfW4ev2v2wrywLlWCdbiRkNGGZsKMvDv9OL8wnO?=
- =?iso-8859-1?Q?bdDlwg3cKAD88sAhsYOuNLHZImV4grUFvmqOHYBSJrbYzC2jrvgUMivt8Z?=
- =?iso-8859-1?Q?/A6GApRiMpvCSLfUI1O+kPND4eyyVozgJPp2TXsIvOCAXzeDbSsYu3dLZ7?=
- =?iso-8859-1?Q?aFFBd+2KBCyvLXlDR56u0LnkDQNRp9TxNHiS27Q/GEieX5jUZcVw1m4rgH?=
- =?iso-8859-1?Q?82RGu1rTXVAv/cwRTjU5YpNF7sDLZDMA5cbuxtUncW86nzaQgrxEezNxg/?=
- =?iso-8859-1?Q?TLG7mKF9ZV2oVl3lKcj9/L5Hzdcyvj01kM7vIlQYl6GiA54hwA=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A98038F91
+	for <linux-serial@vger.kernel.org>; Mon,  4 Mar 2024 10:52:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709549577; cv=none; b=Y68QLaTwX8BaGsHtmFxjIq5wqo0u0Wx+MxcQ7+iHKOvrioaOQoorTQkNUhQRzqzu2BW5osHlscjTbn3JYZLvMfLqjutQneaXxD974WML2B1jpk4nI5CgYr7q2tMcPdnKa35sJo8phnDNTkh1STqRFLKekL0SNkOZGYRavvXBawA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709549577; c=relaxed/simple;
+	bh=9N9TwjMngBZnXAXPp5PTUV+eUQQxx5zCHEG3Uth6spo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Y/TTbPbQ5WNo6l84dvyTLE5QcQKj9gKj6eSoeRRNIglBF1TFKWeePtP/admaAsLzAwzE3c/6poh29FKdLa8iUqCcQNusCOPIkEyoY/sG5Sif29vNcLAfyZ98Sgtf5a20Zb9+K3uXc9QT5djIilLNSwrGfthtnuSS4lSM59X6EyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:2716:1247:52e8:4f90])
+	by xavier.telenet-ops.be with bizsmtp
+	id uasm2B00B2qflky01asm1s; Mon, 04 Mar 2024 11:52:46 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1rh5vu-002I67-G5;
+	Mon, 04 Mar 2024 11:52:46 +0100
+Received: from geert by rox.of.borg with local (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1rh5w6-007KKH-4u;
+	Mon, 04 Mar 2024 11:52:46 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Call sci_serial_{in,out}() directly
+Date: Mon,  4 Mar 2024 11:52:44 +0100
+Message-Id: <51e79d601cb9d9d63822d3773d3cf05a96868612.1709548811.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aec94d66-af92-4eb8-3ac3-08dc3c1d2767
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2024 07:31:49.2409
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UJ/nQ+0SE1IIu2+68K3jQG22Oss6wcL2NFCCouFnG29a0+n0PE5pvmETJw+UP0KFn5NAspFHJeMxJrhHe3LRug==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR04MB9772
+Content-Transfer-Encoding: 8bit
 
+Unlike the 8250 serial driver complex, the sh-sci driver uses only a
+single pair of functions to read and write serial port registers.
+Hence there is no need to incur the overhead of calling them through
+indirection, like the serial_port_{in,out}() wrappers do.
 
+Replace all calls to these wrappers by direct calls to
+sci_serial_{in,out}().
 
-> -----Original Message-----
-> From: Sverdlin, Alexander <alexander.sverdlin@siemens.com>
-> Sent: Monday, March 4, 2024 3:14 PM
-> To: u.kleine-koenig@pengutronix.de; Sherry Sun <sherry.sun@nxp.com>;
-> gregkh@linuxfoundation.org; ilpo.jarvinen@linux.intel.com;
-> robh@kernel.org; Shenwei Wang <shenwei.wang@nxp.com>;
-> tglx@linutronix.de; jirislaby@kernel.org; robert.hodaszi@digi.com
-> Cc: linux-serial@vger.kernel.org; imx@lists.linux.dev; linux-
-> kernel@vger.kernel.org; Frank Li <frank.li@nxp.com>
-> Subject: Re: [PATCH] tty: serial: fsl_lpuart: avoid idle preamble pending=
- if CTS
-> is enabled
->=20
-> Hi Sherry,
->=20
-> thank you for the fix!
->=20
-> On Mon, 2024-03-04 at 10:07 +0800, Sherry Sun wrote:
-> > If the remote uart device is not connected or not enabled after
-> > booting up, the CTS line is high by default. At this time, if we
-> > enable the flow control when opening the device(for example, using
-> > "stty -F /dev/ttyLP4 crtscts" command), there will be a pending idle
-> > preamble(first writing 0 and then writing 1 to UARTCTRL_TE will queue
-> > an idle preamble) that cannot be sent out, resulting in the uart port
-> > fail to close(waiting for TX empty), so the user space stty will have
-> > to wait for a long time or forever.
-> >
-> > This is an LPUART IP bug(idle preamble has higher priority than CTS),
-> > here add a workaround patch to enable TX CTS after enabling
-> > UARTCTRL_TE, so that the idle preamble does not get stuck due to CTS is
-> deasserted.
-> >
-> > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > ---
-> > =A0drivers/tty/serial/fsl_lpuart.c | 6 +++++-
-> > =A01 file changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/fsl_lpuart.c
-> > b/drivers/tty/serial/fsl_lpuart.c index 5ddf110aedbe..dce1b5851de0
-> > 100644
-> > --- a/drivers/tty/serial/fsl_lpuart.c
-> > +++ b/drivers/tty/serial/fsl_lpuart.c
-> > @@ -2345,8 +2345,12 @@ lpuart32_set_termios(struct uart_port *port,
-> > struct ktermios *termios,
-> >
-> > =A0=A0=A0=A0=A0=A0=A0=A0lpuart32_write(&sport->port, bd, UARTBAUD);
-> > =A0=A0=A0=A0=A0=A0=A0=A0lpuart32_serial_setbrg(sport, baud);
-> > -=A0=A0=A0=A0=A0=A0=A0lpuart32_write(&sport->port, modem, UARTMODIR);
-> > +=A0=A0=A0=A0=A0=A0=A0/* disable CTS before enabling UARTCTRL_TE to avo=
-id pending
-> > +idle preamble */
-> > +=A0=A0=A0=A0=A0=A0=A0lpuart32_write(&sport->port, modem & ~UARTMODIR_T=
-XCTSE,
-> > +UARTMODIR);
-> > =A0=A0=A0=A0=A0=A0=A0=A0lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> > +=A0=A0=A0=A0=A0=A0=A0/* re-enable the CTS if needed */
-> > +=A0=A0=A0=A0=A0=A0=A0lpuart32_write(&sport->port, modem, UARTMODIR);
-> > +
-> > =A0=A0=A0=A0=A0=A0=A0=A0/* restore control register */
->=20
-> The fix makes sense to me!
-> I see only one issue with above comment, which commit 380c966c093e7
-> already have put quite sub-optimal (after the actual write), but your com=
-mit
-> now shifts it even further making it completely dangling.
-> Should it be before last UARTCTRL write?
+Remove the setup of the uart_port.serial_{in,out}() callbacks.  After
+removal of all calls to serial_port_{in,out}() in the sh-sci driver, the
+only remaining user is uart_xchar_out(), which the sh-sci driver does
+not use.
 
-Hi Alexander, good catch, I will move the "/* restore control register */" =
-message to the appropriate place in V2. Thanks!
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Tested on R-Car Gen2/3, RZ/Five, and SH7751.
+---
+ drivers/tty/serial/sh-sci.c | 245 ++++++++++++++++++------------------
+ 1 file changed, 119 insertions(+), 126 deletions(-)
 
-Best Regards
-Sherry
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index a85e7b9a2e492391..fd6b941d66266fe8 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -576,13 +576,13 @@ static void sci_start_tx(struct uart_port *port)
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+-		u16 new, scr = serial_port_in(port, SCSCR);
++		u16 new, scr = sci_serial_in(port, SCSCR);
+ 		if (s->chan_tx)
+ 			new = scr | SCSCR_TDRQE;
+ 		else
+ 			new = scr & ~SCSCR_TDRQE;
+ 		if (new != scr)
+-			serial_port_out(port, SCSCR, new);
++			sci_serial_out(port, SCSCR, new);
+ 	}
+ 
+ 	if (s->chan_tx && !uart_circ_empty(&s->port.state->xmit) &&
+@@ -599,7 +599,7 @@ static void sci_start_tx(struct uart_port *port)
+ 	if (!s->chan_tx || s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE ||
+ 	    port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+ 		/* Set TIE (Transmit Interrupt Enable) bit in SCSCR */
+-		ctrl = serial_port_in(port, SCSCR);
++		ctrl = sci_serial_in(port, SCSCR);
+ 
+ 		/*
+ 		 * For SCI, TE (transmit enable) must be set after setting TIE
+@@ -609,7 +609,7 @@ static void sci_start_tx(struct uart_port *port)
+ 		if (port->type == PORT_SCI)
+ 			ctrl |= SCSCR_TE;
+ 
+-		serial_port_out(port, SCSCR, ctrl | SCSCR_TIE);
++		sci_serial_out(port, SCSCR, ctrl | SCSCR_TIE);
+ 	}
+ }
+ 
+@@ -618,14 +618,14 @@ static void sci_stop_tx(struct uart_port *port)
+ 	unsigned short ctrl;
+ 
+ 	/* Clear TIE (Transmit Interrupt Enable) bit in SCSCR */
+-	ctrl = serial_port_in(port, SCSCR);
++	ctrl = sci_serial_in(port, SCSCR);
+ 
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+ 		ctrl &= ~SCSCR_TDRQE;
+ 
+ 	ctrl &= ~SCSCR_TIE;
+ 
+-	serial_port_out(port, SCSCR, ctrl);
++	sci_serial_out(port, SCSCR, ctrl);
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	if (to_sci_port(port)->chan_tx &&
+@@ -640,41 +640,40 @@ static void sci_start_rx(struct uart_port *port)
+ {
+ 	unsigned short ctrl;
+ 
+-	ctrl = serial_port_in(port, SCSCR) | port_rx_irq_mask(port);
++	ctrl = sci_serial_in(port, SCSCR) | port_rx_irq_mask(port);
+ 
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+ 		ctrl &= ~SCSCR_RDRQE;
+ 
+-	serial_port_out(port, SCSCR, ctrl);
++	sci_serial_out(port, SCSCR, ctrl);
+ }
+ 
+ static void sci_stop_rx(struct uart_port *port)
+ {
+ 	unsigned short ctrl;
+ 
+-	ctrl = serial_port_in(port, SCSCR);
++	ctrl = sci_serial_in(port, SCSCR);
+ 
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+ 		ctrl &= ~SCSCR_RDRQE;
+ 
+ 	ctrl &= ~port_rx_irq_mask(port);
+ 
+-	serial_port_out(port, SCSCR, ctrl);
++	sci_serial_out(port, SCSCR, ctrl);
+ }
+ 
+ static void sci_clear_SCxSR(struct uart_port *port, unsigned int mask)
+ {
+ 	if (port->type == PORT_SCI) {
+ 		/* Just store the mask */
+-		serial_port_out(port, SCxSR, mask);
++		sci_serial_out(port, SCxSR, mask);
+ 	} else if (to_sci_port(port)->params->overrun_mask == SCIFA_ORER) {
+ 		/* SCIFA/SCIFB and SCIF on SH7705/SH7720/SH7721 */
+ 		/* Only clear the status bits we want to clear */
+-		serial_port_out(port, SCxSR,
+-				serial_port_in(port, SCxSR) & mask);
++		sci_serial_out(port, SCxSR, sci_serial_in(port, SCxSR) & mask);
+ 	} else {
+ 		/* Store the mask, clear parity/framing errors */
+-		serial_port_out(port, SCxSR, mask & ~(SCIF_FERC | SCIF_PERC));
++		sci_serial_out(port, SCxSR, mask & ~(SCIF_FERC | SCIF_PERC));
+ 	}
+ }
+ 
+@@ -688,7 +687,7 @@ static int sci_poll_get_char(struct uart_port *port)
+ 	int c;
+ 
+ 	do {
+-		status = serial_port_in(port, SCxSR);
++		status = sci_serial_in(port, SCxSR);
+ 		if (status & SCxSR_ERRORS(port)) {
+ 			sci_clear_SCxSR(port, SCxSR_ERROR_CLEAR(port));
+ 			continue;
+@@ -699,10 +698,10 @@ static int sci_poll_get_char(struct uart_port *port)
+ 	if (!(status & SCxSR_RDxF(port)))
+ 		return NO_POLL_CHAR;
+ 
+-	c = serial_port_in(port, SCxRDR);
++	c = sci_serial_in(port, SCxRDR);
+ 
+ 	/* Dummy read */
+-	serial_port_in(port, SCxSR);
++	sci_serial_in(port, SCxSR);
+ 	sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 
+ 	return c;
+@@ -714,10 +713,10 @@ static void sci_poll_put_char(struct uart_port *port, unsigned char c)
+ 	unsigned short status;
+ 
+ 	do {
+-		status = serial_port_in(port, SCxSR);
++		status = sci_serial_in(port, SCxSR);
+ 	} while (!(status & SCxSR_TDxE(port)));
+ 
+-	serial_port_out(port, SCxTDR, c);
++	sci_serial_out(port, SCxTDR, c);
+ 	sci_clear_SCxSR(port, SCxSR_TDxE_CLEAR(port) & ~SCxSR_TEND(port));
+ }
+ #endif /* CONFIG_CONSOLE_POLL || CONFIG_SERIAL_SH_SCI_CONSOLE ||
+@@ -736,8 +735,8 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 	}
+ 
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+-		u16 data = serial_port_in(port, SCPDR);
+-		u16 ctrl = serial_port_in(port, SCPCR);
++		u16 data = sci_serial_in(port, SCPDR);
++		u16 ctrl = sci_serial_in(port, SCPCR);
+ 
+ 		/* Enable RXD and TXD pin functions */
+ 		ctrl &= ~(SCPCR_RXDC | SCPCR_TXDC);
+@@ -756,10 +755,10 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 			/* Enable CTS# pin function */
+ 			ctrl &= ~SCPCR_CTSC;
+ 		}
+-		serial_port_out(port, SCPDR, data);
+-		serial_port_out(port, SCPCR, ctrl);
++		sci_serial_out(port, SCPDR, data);
++		sci_serial_out(port, SCPCR, ctrl);
+ 	} else if (sci_getreg(port, SCSPTR)->size) {
+-		u16 status = serial_port_in(port, SCSPTR);
++		u16 status = sci_serial_in(port, SCSPTR);
+ 
+ 		/* RTS# is always output; and active low, unless autorts */
+ 		status |= SCSPTR_RTSIO;
+@@ -769,7 +768,7 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
+ 			status &= ~SCSPTR_RTSDT;
+ 		/* CTS# and SCK are inputs */
+ 		status &= ~(SCSPTR_CTSIO | SCSPTR_SCKIO);
+-		serial_port_out(port, SCSPTR, status);
++		sci_serial_out(port, SCSPTR, status);
+ 	}
+ }
+ 
+@@ -781,13 +780,13 @@ static int sci_txfill(struct uart_port *port)
+ 
+ 	reg = sci_getreg(port, SCTFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCTFDR) & fifo_mask;
++		return sci_serial_in(port, SCTFDR) & fifo_mask;
+ 
+ 	reg = sci_getreg(port, SCFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCFDR) >> 8;
++		return sci_serial_in(port, SCFDR) >> 8;
+ 
+-	return !(serial_port_in(port, SCxSR) & SCI_TDRE);
++	return !(sci_serial_in(port, SCxSR) & SCI_TDRE);
+ }
+ 
+ static int sci_txroom(struct uart_port *port)
+@@ -803,13 +802,13 @@ static int sci_rxfill(struct uart_port *port)
+ 
+ 	reg = sci_getreg(port, SCRFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCRFDR) & fifo_mask;
++		return sci_serial_in(port, SCRFDR) & fifo_mask;
+ 
+ 	reg = sci_getreg(port, SCFDR);
+ 	if (reg->size)
+-		return serial_port_in(port, SCFDR) & fifo_mask;
++		return sci_serial_in(port, SCFDR) & fifo_mask;
+ 
+-	return (serial_port_in(port, SCxSR) & SCxSR_RDxF(port)) != 0;
++	return (sci_serial_in(port, SCxSR) & SCxSR_RDxF(port)) != 0;
+ }
+ 
+ /* ********************************************************************** *
+@@ -824,14 +823,14 @@ static void sci_transmit_chars(struct uart_port *port)
+ 	unsigned short ctrl;
+ 	int count;
+ 
+-	status = serial_port_in(port, SCxSR);
++	status = sci_serial_in(port, SCxSR);
+ 	if (!(status & SCxSR_TDxE(port))) {
+-		ctrl = serial_port_in(port, SCSCR);
++		ctrl = sci_serial_in(port, SCSCR);
+ 		if (uart_circ_empty(xmit))
+ 			ctrl &= ~SCSCR_TIE;
+ 		else
+ 			ctrl |= SCSCR_TIE;
+-		serial_port_out(port, SCSCR, ctrl);
++		sci_serial_out(port, SCSCR, ctrl);
+ 		return;
+ 	}
+ 
+@@ -847,15 +846,15 @@ static void sci_transmit_chars(struct uart_port *port)
+ 			c = xmit->buf[xmit->tail];
+ 			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		} else if (port->type == PORT_SCI && uart_circ_empty(xmit)) {
+-			ctrl = serial_port_in(port, SCSCR);
++			ctrl = sci_serial_in(port, SCSCR);
+ 			ctrl &= ~SCSCR_TE;
+-			serial_port_out(port, SCSCR, ctrl);
++			sci_serial_out(port, SCSCR, ctrl);
+ 			return;
+ 		} else {
+ 			break;
+ 		}
+ 
+-		serial_port_out(port, SCxTDR, c);
++		sci_serial_out(port, SCxTDR, c);
+ 
+ 		port->icount.tx++;
+ 	} while (--count > 0);
+@@ -866,10 +865,10 @@ static void sci_transmit_chars(struct uart_port *port)
+ 		uart_write_wakeup(port);
+ 	if (uart_circ_empty(xmit)) {
+ 		if (port->type == PORT_SCI) {
+-			ctrl = serial_port_in(port, SCSCR);
++			ctrl = sci_serial_in(port, SCSCR);
+ 			ctrl &= ~SCSCR_TIE;
+ 			ctrl |= SCSCR_TEIE;
+-			serial_port_out(port, SCSCR, ctrl);
++			sci_serial_out(port, SCSCR, ctrl);
+ 		}
+ 
+ 		sci_stop_tx(port);
+@@ -883,7 +882,7 @@ static void sci_receive_chars(struct uart_port *port)
+ 	unsigned short status;
+ 	unsigned char flag;
+ 
+-	status = serial_port_in(port, SCxSR);
++	status = sci_serial_in(port, SCxSR);
+ 	if (!(status & SCxSR_RDxF(port)))
+ 		return;
+ 
+@@ -896,7 +895,7 @@ static void sci_receive_chars(struct uart_port *port)
+ 			break;
+ 
+ 		if (port->type == PORT_SCI) {
+-			char c = serial_port_in(port, SCxRDR);
++			char c = sci_serial_in(port, SCxRDR);
+ 			if (uart_handle_sysrq_char(port, c))
+ 				count = 0;
+ 			else
+@@ -907,11 +906,11 @@ static void sci_receive_chars(struct uart_port *port)
+ 
+ 				if (port->type == PORT_SCIF ||
+ 				    port->type == PORT_HSCIF) {
+-					status = serial_port_in(port, SCxSR);
+-					c = serial_port_in(port, SCxRDR);
++					status = sci_serial_in(port, SCxSR);
++					c = sci_serial_in(port, SCxRDR);
+ 				} else {
+-					c = serial_port_in(port, SCxRDR);
+-					status = serial_port_in(port, SCxSR);
++					c = sci_serial_in(port, SCxRDR);
++					status = sci_serial_in(port, SCxSR);
+ 				}
+ 				if (uart_handle_sysrq_char(port, c)) {
+ 					count--; i--;
+@@ -932,7 +931,7 @@ static void sci_receive_chars(struct uart_port *port)
+ 			}
+ 		}
+ 
+-		serial_port_in(port, SCxSR); /* dummy read */
++		sci_serial_in(port, SCxSR); /* dummy read */
+ 		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 
+ 		copied += count;
+@@ -944,8 +943,8 @@ static void sci_receive_chars(struct uart_port *port)
+ 		tty_flip_buffer_push(tport);
+ 	} else {
+ 		/* TTY buffers full; read from RX reg to prevent lockup */
+-		serial_port_in(port, SCxRDR);
+-		serial_port_in(port, SCxSR); /* dummy read */
++		sci_serial_in(port, SCxRDR);
++		sci_serial_in(port, SCxSR); /* dummy read */
+ 		sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 	}
+ }
+@@ -953,7 +952,7 @@ static void sci_receive_chars(struct uart_port *port)
+ static int sci_handle_errors(struct uart_port *port)
+ {
+ 	int copied = 0;
+-	unsigned short status = serial_port_in(port, SCxSR);
++	unsigned short status = sci_serial_in(port, SCxSR);
+ 	struct tty_port *tport = &port->state->port;
+ 	struct sci_port *s = to_sci_port(port);
+ 
+@@ -1000,10 +999,10 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ 	if (!reg->size)
+ 		return 0;
+ 
+-	status = serial_port_in(port, s->params->overrun_reg);
++	status = sci_serial_in(port, s->params->overrun_reg);
+ 	if (status & s->params->overrun_mask) {
+ 		status &= ~s->params->overrun_mask;
+-		serial_port_out(port, s->params->overrun_reg, status);
++		sci_serial_out(port, s->params->overrun_reg, status);
+ 
+ 		port->icount.overrun++;
+ 
+@@ -1018,7 +1017,7 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ static int sci_handle_breaks(struct uart_port *port)
+ {
+ 	int copied = 0;
+-	unsigned short status = serial_port_in(port, SCxSR);
++	unsigned short status = sci_serial_in(port, SCxSR);
+ 	struct tty_port *tport = &port->state->port;
+ 
+ 	if (uart_handle_break(port))
+@@ -1051,7 +1050,7 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+ 
+ 	/* HSCIF can be set to an arbitrary level. */
+ 	if (sci_getreg(port, HSRTRGR)->size) {
+-		serial_port_out(port, HSRTRGR, rx_trig);
++		sci_serial_out(port, HSRTRGR, rx_trig);
+ 		return rx_trig;
+ 	}
+ 
+@@ -1092,9 +1091,9 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+ 		return 1;
+ 	}
+ 
+-	serial_port_out(port, SCFCR,
+-		(serial_port_in(port, SCFCR) &
+-		~(SCFCR_RTRG1 | SCFCR_RTRG0)) | bits);
++	sci_serial_out(port, SCFCR,
++		       (sci_serial_in(port, SCFCR) &
++			~(SCFCR_RTRG1 | SCFCR_RTRG0)) | bits);
+ 
+ 	return rx_trig;
+ }
+@@ -1102,9 +1101,9 @@ static int scif_set_rtrg(struct uart_port *port, int rx_trig)
+ static int scif_rtrg_enabled(struct uart_port *port)
+ {
+ 	if (sci_getreg(port, HSRTRGR)->size)
+-		return serial_port_in(port, HSRTRGR) != 0;
++		return sci_serial_in(port, HSRTRGR) != 0;
+ 	else
+-		return (serial_port_in(port, SCFCR) &
++		return (sci_serial_in(port, SCFCR) &
+ 			(SCFCR_RTRG0 | SCFCR_RTRG1)) != 0;
+ }
+ 
+@@ -1219,8 +1218,8 @@ static void sci_dma_tx_complete(void *arg)
+ 		s->cookie_tx = -EINVAL;
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
+ 		    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
+-			u16 ctrl = serial_port_in(port, SCSCR);
+-			serial_port_out(port, SCSCR, ctrl & ~SCSCR_TIE);
++			u16 ctrl = sci_serial_in(port, SCSCR);
++			sci_serial_out(port, SCSCR, ctrl & ~SCSCR_TIE);
+ 			if (s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
+ 				/* Switch irq from DMA to SCIF */
+ 				dmaengine_pause(s->chan_tx_saved);
+@@ -1296,7 +1295,7 @@ static void sci_dma_rx_reenable_irq(struct sci_port *s)
+ 	u16 scr;
+ 
+ 	/* Direct new serial port interrupts back to CPU */
+-	scr = serial_port_in(port, SCSCR);
++	scr = sci_serial_in(port, SCSCR);
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
+ 	    s->cfg->regtype == SCIx_RZ_SCIFA_REGTYPE) {
+ 		enable_irq(s->irqs[SCIx_RXI_IRQ]);
+@@ -1305,7 +1304,7 @@ static void sci_dma_rx_reenable_irq(struct sci_port *s)
+ 		else
+ 			scr &= ~SCSCR_RDRQE;
+ 	}
+-	serial_port_out(port, SCSCR, scr | SCSCR_RIE);
++	sci_serial_out(port, SCSCR, scr | SCSCR_RIE);
+ }
+ 
+ static void sci_dma_rx_complete(void *arg)
+@@ -1714,8 +1713,8 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	if (s->chan_rx) {
+-		u16 scr = serial_port_in(port, SCSCR);
+-		u16 ssr = serial_port_in(port, SCxSR);
++		u16 scr = sci_serial_in(port, SCSCR);
++		u16 ssr = sci_serial_in(port, SCxSR);
+ 
+ 		/* Disable future Rx interrupts */
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB ||
+@@ -1733,10 +1732,10 @@ static irqreturn_t sci_rx_interrupt(int irq, void *ptr)
+ 
+ 			scr &= ~SCSCR_RIE;
+ 		}
+-		serial_port_out(port, SCSCR, scr);
++		sci_serial_out(port, SCSCR, scr);
+ 		/* Clear current interrupt */
+-		serial_port_out(port, SCxSR,
+-				ssr & ~(SCIF_DR | SCxSR_RDxF(port)));
++		sci_serial_out(port, SCxSR,
++			       ssr & ~(SCIF_DR | SCxSR_RDxF(port)));
+ 		dev_dbg(port->dev, "Rx IRQ %lu: setup t-out in %u us\n",
+ 			jiffies, s->rx_timeout);
+ 		start_hrtimer_us(&s->rx_timer, s->rx_timeout);
+@@ -1786,9 +1785,9 @@ static irqreturn_t sci_tx_end_interrupt(int irq, void *ptr)
+ 		return sci_tx_interrupt(irq, ptr);
+ 
+ 	uart_port_lock_irqsave(port, &flags);
+-	ctrl = serial_port_in(port, SCSCR);
++	ctrl = sci_serial_in(port, SCSCR);
+ 	ctrl &= ~(SCSCR_TE | SCSCR_TEIE);
+-	serial_port_out(port, SCSCR, ctrl);
++	sci_serial_out(port, SCSCR, ctrl);
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return IRQ_HANDLED;
+@@ -1802,7 +1801,7 @@ static irqreturn_t sci_br_interrupt(int irq, void *ptr)
+ 	sci_handle_breaks(port);
+ 
+ 	/* drop invalid character received before break was detected */
+-	serial_port_in(port, SCxRDR);
++	sci_serial_in(port, SCxRDR);
+ 
+ 	sci_clear_SCxSR(port, SCxSR_BREAK_CLEAR(port));
+ 
+@@ -1816,7 +1815,7 @@ static irqreturn_t sci_er_interrupt(int irq, void *ptr)
+ 
+ 	if (s->irqs[SCIx_ERI_IRQ] == s->irqs[SCIx_BRI_IRQ]) {
+ 		/* Break and Error interrupts are muxed */
+-		unsigned short ssr_status = serial_port_in(port, SCxSR);
++		unsigned short ssr_status = sci_serial_in(port, SCxSR);
+ 
+ 		/* Break Interrupt */
+ 		if (ssr_status & SCxSR_BRK(port))
+@@ -1831,7 +1830,7 @@ static irqreturn_t sci_er_interrupt(int irq, void *ptr)
+ 	if (port->type == PORT_SCI) {
+ 		if (sci_handle_errors(port)) {
+ 			/* discard character in rx buffer */
+-			serial_port_in(port, SCxSR);
++			sci_serial_in(port, SCxSR);
+ 			sci_clear_SCxSR(port, SCxSR_RDxF_CLEAR(port));
+ 		}
+ 	} else {
+@@ -1856,12 +1855,12 @@ static irqreturn_t sci_mpxed_interrupt(int irq, void *ptr)
+ 	struct sci_port *s = to_sci_port(port);
+ 	irqreturn_t ret = IRQ_NONE;
+ 
+-	ssr_status = serial_port_in(port, SCxSR);
+-	scr_status = serial_port_in(port, SCSCR);
++	ssr_status = sci_serial_in(port, SCxSR);
++	scr_status = sci_serial_in(port, SCSCR);
+ 	if (s->params->overrun_reg == SCxSR)
+ 		orer_status = ssr_status;
+ 	else if (sci_getreg(port, s->params->overrun_reg)->size)
+-		orer_status = serial_port_in(port, s->params->overrun_reg);
++		orer_status = sci_serial_in(port, s->params->overrun_reg);
+ 
+ 	err_enabled = scr_status & port_rx_irq_mask(port);
+ 
+@@ -2038,7 +2037,7 @@ static void sci_free_irq(struct sci_port *port)
+ 
+ static unsigned int sci_tx_empty(struct uart_port *port)
+ {
+-	unsigned short status = serial_port_in(port, SCxSR);
++	unsigned short status = sci_serial_in(port, SCxSR);
+ 	unsigned short in_tx_fifo = sci_txfill(port);
+ 
+ 	return (status & SCxSR_TEND(port)) && !in_tx_fifo ? TIOCSER_TEMT : 0;
+@@ -2047,27 +2046,27 @@ static unsigned int sci_tx_empty(struct uart_port *port)
+ static void sci_set_rts(struct uart_port *port, bool state)
+ {
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+-		u16 data = serial_port_in(port, SCPDR);
++		u16 data = sci_serial_in(port, SCPDR);
+ 
+ 		/* Active low */
+ 		if (state)
+ 			data &= ~SCPDR_RTSD;
+ 		else
+ 			data |= SCPDR_RTSD;
+-		serial_port_out(port, SCPDR, data);
++		sci_serial_out(port, SCPDR, data);
+ 
+ 		/* RTS# is output */
+-		serial_port_out(port, SCPCR,
+-				serial_port_in(port, SCPCR) | SCPCR_RTSC);
++		sci_serial_out(port, SCPCR,
++			       sci_serial_in(port, SCPCR) | SCPCR_RTSC);
+ 	} else if (sci_getreg(port, SCSPTR)->size) {
+-		u16 ctrl = serial_port_in(port, SCSPTR);
++		u16 ctrl = sci_serial_in(port, SCSPTR);
+ 
+ 		/* Active low */
+ 		if (state)
+ 			ctrl &= ~SCSPTR_RTSDT;
+ 		else
+ 			ctrl |= SCSPTR_RTSDT;
+-		serial_port_out(port, SCSPTR, ctrl);
++		sci_serial_out(port, SCSPTR, ctrl);
+ 	}
+ }
+ 
+@@ -2075,10 +2074,10 @@ static bool sci_get_cts(struct uart_port *port)
+ {
+ 	if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+ 		/* Active low */
+-		return !(serial_port_in(port, SCPDR) & SCPDR_CTSD);
++		return !(sci_serial_in(port, SCPDR) & SCPDR_CTSD);
+ 	} else if (sci_getreg(port, SCSPTR)->size) {
+ 		/* Active low */
+-		return !(serial_port_in(port, SCSPTR) & SCSPTR_CTSDT);
++		return !(sci_serial_in(port, SCSPTR) & SCSPTR_CTSDT);
+ 	}
+ 
+ 	return true;
+@@ -2108,9 +2107,8 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 		 */
+ 		reg = sci_getreg(port, SCFCR);
+ 		if (reg->size)
+-			serial_port_out(port, SCFCR,
+-					serial_port_in(port, SCFCR) |
+-					SCFCR_LOOP);
++			sci_serial_out(port, SCFCR,
++				       sci_serial_in(port, SCFCR) | SCFCR_LOOP);
+ 	}
+ 
+ 	mctrl_gpio_set(s->gpios, mctrl);
+@@ -2120,21 +2118,21 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 
+ 	if (!(mctrl & TIOCM_RTS)) {
+ 		/* Disable Auto RTS */
+-		serial_port_out(port, SCFCR,
+-				serial_port_in(port, SCFCR) & ~SCFCR_MCE);
++		sci_serial_out(port, SCFCR,
++			       sci_serial_in(port, SCFCR) & ~SCFCR_MCE);
+ 
+ 		/* Clear RTS */
+ 		sci_set_rts(port, 0);
+ 	} else if (s->autorts) {
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB) {
+ 			/* Enable RTS# pin function */
+-			serial_port_out(port, SCPCR,
+-				serial_port_in(port, SCPCR) & ~SCPCR_RTSC);
++			sci_serial_out(port, SCPCR,
++				sci_serial_in(port, SCPCR) & ~SCPCR_RTSC);
+ 		}
+ 
+ 		/* Enable Auto RTS */
+-		serial_port_out(port, SCFCR,
+-				serial_port_in(port, SCFCR) | SCFCR_MCE);
++		sci_serial_out(port, SCFCR,
++			       sci_serial_in(port, SCFCR) | SCFCR_MCE);
+ 	} else {
+ 		/* Set RTS */
+ 		sci_set_rts(port, 1);
+@@ -2187,8 +2185,8 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
+ 	}
+ 
+ 	uart_port_lock_irqsave(port, &flags);
+-	scsptr = serial_port_in(port, SCSPTR);
+-	scscr = serial_port_in(port, SCSCR);
++	scsptr = sci_serial_in(port, SCSPTR);
++	scscr = sci_serial_in(port, SCSCR);
+ 
+ 	if (break_state == -1) {
+ 		scsptr = (scsptr | SCSPTR_SPB2IO) & ~SCSPTR_SPB2DT;
+@@ -2198,8 +2196,8 @@ static void sci_break_ctl(struct uart_port *port, int break_state)
+ 		scscr |= SCSCR_TE;
+ 	}
+ 
+-	serial_port_out(port, SCSPTR, scsptr);
+-	serial_port_out(port, SCSCR, scscr);
++	sci_serial_out(port, SCSPTR, scsptr);
++	sci_serial_out(port, SCSCR, scscr);
+ 	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+@@ -2239,9 +2237,9 @@ static void sci_shutdown(struct uart_port *port)
+ 	 * Stop RX and TX, disable related interrupts, keep clock source
+ 	 * and HSCIF TOT bits
+ 	 */
+-	scr = serial_port_in(port, SCSCR);
+-	serial_port_out(port, SCSCR, scr &
+-			(SCSCR_CKE1 | SCSCR_CKE0 | s->hscif_tot));
++	scr = sci_serial_in(port, SCSCR);
++	sci_serial_out(port, SCSCR,
++		       scr & (SCSCR_CKE1 | SCSCR_CKE0 | s->hscif_tot));
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+@@ -2390,19 +2388,19 @@ static void sci_reset(struct uart_port *port)
+ 	unsigned int status;
+ 	struct sci_port *s = to_sci_port(port);
+ 
+-	serial_port_out(port, SCSCR, s->hscif_tot);	/* TE=0, RE=0, CKE1=0 */
++	sci_serial_out(port, SCSCR, s->hscif_tot);	/* TE=0, RE=0, CKE1=0 */
+ 
+ 	reg = sci_getreg(port, SCFCR);
+ 	if (reg->size)
+-		serial_port_out(port, SCFCR, SCFCR_RFRST | SCFCR_TFRST);
++		sci_serial_out(port, SCFCR, SCFCR_RFRST | SCFCR_TFRST);
+ 
+ 	sci_clear_SCxSR(port,
+ 			SCxSR_RDxF_CLEAR(port) & SCxSR_ERROR_CLEAR(port) &
+ 			SCxSR_BREAK_CLEAR(port));
+ 	if (sci_getreg(port, SCLSR)->size) {
+-		status = serial_port_in(port, SCLSR);
++		status = sci_serial_in(port, SCLSR);
+ 		status &= ~(SCLSR_TO | SCLSR_ORER);
+-		serial_port_out(port, SCLSR, status);
++		sci_serial_out(port, SCLSR, status);
+ 	}
+ 
+ 	if (s->rx_trigger > 1) {
+@@ -2540,8 +2538,8 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * It controls the mux to select (H)SCK or frequency divided clock.
+ 	 */
+ 	if (best_clk >= 0 && sci_getreg(port, SCCKS)->size) {
+-		serial_port_out(port, SCDL, dl);
+-		serial_port_out(port, SCCKS, sccks);
++		sci_serial_out(port, SCDL, dl);
++		sci_serial_out(port, SCCKS, sccks);
+ 	}
+ 
+ 	uart_port_lock_irqsave(port, &flags);
+@@ -2554,7 +2552,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	bits = tty_get_frame_size(termios->c_cflag);
+ 
+ 	if (sci_getreg(port, SEMR)->size)
+-		serial_port_out(port, SEMR, 0);
++		sci_serial_out(port, SEMR, 0);
+ 
+ 	if (best_clk >= 0) {
+ 		if (port->type == PORT_SCIFA || port->type == PORT_SCIFB)
+@@ -2569,9 +2567,9 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			case 27: smr_val |= SCSMR_SRC_27; break;
+ 			}
+ 		smr_val |= cks;
+-		serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
+-		serial_port_out(port, SCSMR, smr_val);
+-		serial_port_out(port, SCBRR, brr);
++		sci_serial_out(port, SCSCR, scr_val | s->hscif_tot);
++		sci_serial_out(port, SCSMR, smr_val);
++		sci_serial_out(port, SCBRR, brr);
+ 		if (sci_getreg(port, HSSRR)->size) {
+ 			unsigned int hssrr = srr | HSCIF_SRE;
+ 			/* Calculate deviation from intended rate at the
+@@ -2593,7 +2591,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 					 HSCIF_SRHP_MASK;
+ 				hssrr |= HSCIF_SRDE;
+ 			}
+-			serial_port_out(port, HSSRR, hssrr);
++			sci_serial_out(port, HSSRR, hssrr);
+ 		}
+ 
+ 		/* Wait one bit interval */
+@@ -2601,10 +2599,10 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	} else {
+ 		/* Don't touch the bit rate configuration */
+ 		scr_val = s->cfg->scscr & (SCSCR_CKE1 | SCSCR_CKE0);
+-		smr_val |= serial_port_in(port, SCSMR) &
++		smr_val |= sci_serial_in(port, SCSMR) &
+ 			   (SCSMR_CKEDG | SCSMR_SRC_MASK | SCSMR_CKS);
+-		serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
+-		serial_port_out(port, SCSMR, smr_val);
++		sci_serial_out(port, SCSCR, scr_val | s->hscif_tot);
++		sci_serial_out(port, SCSMR, smr_val);
+ 	}
+ 
+ 	sci_init_pins(port, termios->c_cflag);
+@@ -2613,7 +2611,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	s->autorts = false;
+ 	reg = sci_getreg(port, SCFCR);
+ 	if (reg->size) {
+-		unsigned short ctrl = serial_port_in(port, SCFCR);
++		unsigned short ctrl = sci_serial_in(port, SCFCR);
+ 
+ 		if ((port->flags & UPF_HARD_FLOW) &&
+ 		    (termios->c_cflag & CRTSCTS)) {
+@@ -2630,7 +2628,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		 */
+ 		ctrl &= ~(SCFCR_RFRST | SCFCR_TFRST);
+ 
+-		serial_port_out(port, SCFCR, ctrl);
++		sci_serial_out(port, SCFCR, ctrl);
+ 	}
+ 	if (port->flags & UPF_HARD_FLOW) {
+ 		/* Refresh (Auto) RTS */
+@@ -2645,7 +2643,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (port->type != PORT_SCI)
+ 		scr_val |= SCSCR_TE;
+ 	scr_val |= SCSCR_RE | (s->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0));
+-	serial_port_out(port, SCSCR, scr_val | s->hscif_tot);
++	sci_serial_out(port, SCSCR, scr_val | s->hscif_tot);
+ 	if ((srr + 1 == 5) &&
+ 	    (port->type == PORT_SCIFA || port->type == PORT_SCIFB)) {
+ 		/*
+@@ -3017,9 +3015,6 @@ static int sci_init_single(struct platform_device *dev,
+ 	port->irq		= sci_port->irqs[SCIx_RXI_IRQ];
+ 	port->irqflags		= 0;
+ 
+-	port->serial_in		= sci_serial_in;
+-	port->serial_out	= sci_serial_out;
+-
+ 	return 0;
+ }
+ 
+@@ -3056,21 +3051,21 @@ static void serial_console_write(struct console *co, const char *s,
+ 		uart_port_lock_irqsave(port, &flags);
+ 
+ 	/* first save SCSCR then disable interrupts, keep clock source */
+-	ctrl = serial_port_in(port, SCSCR);
++	ctrl = sci_serial_in(port, SCSCR);
+ 	ctrl_temp = SCSCR_RE | SCSCR_TE |
+ 		    (sci_port->cfg->scscr & ~(SCSCR_CKE1 | SCSCR_CKE0)) |
+ 		    (ctrl & (SCSCR_CKE1 | SCSCR_CKE0));
+-	serial_port_out(port, SCSCR, ctrl_temp | sci_port->hscif_tot);
++	sci_serial_out(port, SCSCR, ctrl_temp | sci_port->hscif_tot);
+ 
+ 	uart_console_write(port, s, count, serial_console_putchar);
+ 
+ 	/* wait until fifo is empty and last bit has been transmitted */
+ 	bits = SCxSR_TDxE(port) | SCxSR_TEND(port);
+-	while ((serial_port_in(port, SCxSR) & bits) != bits)
++	while ((sci_serial_in(port, SCxSR) & bits) != bits)
+ 		cpu_relax();
+ 
+ 	/* restore the SCSCR */
+-	serial_port_out(port, SCSCR, ctrl);
++	sci_serial_out(port, SCSCR, ctrl);
+ 
+ 	if (locked)
+ 		uart_port_unlock_irqrestore(port, flags);
+@@ -3503,8 +3498,6 @@ static int __init early_console_setup(struct earlycon_device *device,
+ 	if (!device->port.membase)
+ 		return -ENODEV;
+ 
+-	device->port.serial_in = sci_serial_in;
+-	device->port.serial_out	= sci_serial_out;
+ 	device->port.type = type;
+ 	memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
+ 	port_cfg.type = type;
+-- 
+2.34.1
+
