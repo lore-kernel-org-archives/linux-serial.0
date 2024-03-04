@@ -1,47 +1,47 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A102B44C84;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B134D1DFD6;
 	Mon,  4 Mar 2024 12:30:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709555458; cv=none; b=ET272ZSFqFsadHr9eXj7FnTAC/CR2XCmmh+YxN1joqzDHd1X7vAkthG1XqQc6OMoC4FDnPnErjKmM+Om0tZg0/B+LLC5Vz0VnX7EhyxPZ8/7VN2BwaPd0M3ks2ZP2bA+kEHr2pUd1nmdYeMSvlswQ4DQwCZlcAuxdCzo2XG7iVo=
+	t=1709555458; cv=none; b=LknKZl/w9JmrTm3TJEAM9vsg4rNym1NZFeEC6FWIyByrCcajq4lNHamVh4pvrhFB9W7AhXpaKLeYzBii4kPiQ63kWjp5x4tmdJbl/eYRiqrMI2PZfj5G1u7uPYwbT7Tq+0NlxHx1+EjpfaMjcZay7L6X63jPBJy0taYJaxMgVdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1709555458; c=relaxed/simple;
-	bh=2fQaXc8Ypf3lwPz6yPzLdFKzd2VLz29IZnJiOdcHyzs=;
+	bh=Ug0+1cJK1qABFIX1u2vFwuq1+scRl5b911mXi0OiA6E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RWnFEUSsbyRg7V8ZRIJIJFD3hcJv37BtkNO0e1PIQpg5uGQ25NZywkkDxe6IpzUOmegS+pfIKQW0eAH9+zZltUaKsglEHwyuOxbaxxSsV5AiOxo8679yKLgBnLTfJak6t2Q7LnH703bxSR9UBxI42vb0kCfbY/dblDlAxd4hOcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jLhsFR4b; arc=none smtp.client-ip=192.198.163.12
+	 MIME-Version; b=h1Q8dKir6+je1iSxv815rMCxrshct+Pna4xj0o2TnAmYfh/URnJyw0adVvUQVwJUjKJMhB7Xjlz5iUEGWtoejKczZiT2hVaSkDzUmpcBLaLjWIvZwqZkgYKH8UJVjCNawE1mn7GkVMS/E5ZXrhExE4iTXq6txn0EFPeWdMFriGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=btgO66SW; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jLhsFR4b"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="btgO66SW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1709555457; x=1741091457;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2fQaXc8Ypf3lwPz6yPzLdFKzd2VLz29IZnJiOdcHyzs=;
-  b=jLhsFR4bKcHPV/qMsg2WuZrP3ldwzjBAj2DzBotQKC2/fzD2Pifvreml
-   HZF8wO5MXj51Ux+gW/qqPWC3nLjV6sqOH3g1sDxKh6AAXXr9sMEMFx9sb
-   wAKd/wObsQGiRrTjT/TII7G/XYrs1ZKjvmoiDpFKH/syhaLLfUusAMriW
-   bAJxf3Ccdhhi/fO8iiXt3uNK38xZhaipniYaSI5Y5BHTobR8mM4qJrSM1
-   NSjJf0bXrXtgUFdH+QZ2ppp0OjpvrL8O9KLSn6BmivImOUCgNp9eawnpd
-   nkwI5r81srA4ZXfLZVgJanvl7augnLvBWniS0bqGWeVlX0ct1JZX6lpor
+  bh=Ug0+1cJK1qABFIX1u2vFwuq1+scRl5b911mXi0OiA6E=;
+  b=btgO66SWU7R75f1NA6Np7PWHbaWPwPj4LHe6t4MSURWSRWVWbX2bvS+5
+   8LBqpsBTIRZW2PY1PZqsOV4Gvyky6BIVbVlXykOeGFY/9IjtV+XsPdBcc
+   jOVAxuQLHOxn4nTbtHGdxNW2QQ2IXZsFX+7XnMnvO/qllvCz+NuL+hXz3
+   R0QqWRgTm8nqx/wc36VttavsdSna+M1PFHkerd7m+9lfDzJaIqQTVd9t5
+   x4jw21dtzanKluXWnxuC60ezPBUWarM20bjYM8sQYZVhFYVNIwpsKsVyU
+   eFdP1ZY4si+ti4LPk1/2aNZS2HvdT6gXvg+BOHHxCTyMl1XfuFIMYRF6Y
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="7815219"
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="7815203"
 X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="7815219"
+   d="scan'208";a="7815203"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 04:30:52 -0800
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 04:30:51 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="937040434"
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="937040433"
 X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="937040434"
+   d="scan'208";a="937040433"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 04 Mar 2024 04:30:45 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id D8088AB1; Mon,  4 Mar 2024 14:30:37 +0200 (EET)
+	id BF01A8F6; Mon,  4 Mar 2024 14:30:37 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -67,9 +67,9 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Jonathan Hunter <jonathanh@nvidia.com>,
 	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
 	Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH v3 13/14] serial: 8250_tegra: Switch to use uart_read_port_properties()
-Date: Mon,  4 Mar 2024 14:27:14 +0200
-Message-ID: <20240304123035.758700-14-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 11/14] serial: 8250_omap: Switch to use uart_read_port_properties()
+Date: Mon,  4 Mar 2024 14:27:12 +0200
+Message-ID: <20240304123035.758700-12-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240304123035.758700-1-andriy.shevchenko@linux.intel.com>
 References: <20240304123035.758700-1-andriy.shevchenko@linux.intel.com>
@@ -86,61 +86,81 @@ use it instead of sparse home grown solution.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_tegra.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 29 ++++++++++-------------------
+ 1 file changed, 10 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
-index ba352262df75..60a80d00d251 100644
---- a/drivers/tty/serial/8250/8250_tegra.c
-+++ b/drivers/tty/serial/8250/8250_tegra.c
-@@ -57,25 +57,11 @@ static int tegra_uart_probe(struct platform_device *pdev)
- 	port = &port8250.port;
- 	spin_lock_init(&port->lock);
- 
--	port->flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
--		      UPF_FIXED_TYPE;
--	port->iotype = UPIO_MEM32;
--	port->regshift = 2;
-+	port->flags = UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
- 	port->type = PORT_TEGRA;
--	port->irqflags |= IRQF_SHARED;
- 	port->dev = &pdev->dev;
- 	port->handle_break = tegra_uart_handle_break;
- 
--	ret = of_alias_get_id(pdev->dev.of_node, "serial");
--	if (ret >= 0)
--		port->line = ret;
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 6942990a333c..66901d93089a 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1394,11 +1394,7 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	struct uart_8250_port up;
+ 	struct resource *regs;
+ 	void __iomem *membase;
+-	int irq, ret;
 -
--	ret = platform_get_irq(pdev, 0);
--	if (ret < 0)
--		return ret;
--
--	port->irq = ret;
--
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
-@@ -88,12 +74,18 @@ static int tegra_uart_probe(struct platform_device *pdev)
- 	port->mapbase = res->start;
- 	port->mapsize = resource_size(res);
+-	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0)
+-		return irq;
++	int ret;
  
-+	ret = uart_read_port_properties(port);
+ 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!regs) {
+@@ -1419,7 +1415,6 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	up.port.dev = &pdev->dev;
+ 	up.port.mapbase = regs->start;
+ 	up.port.membase = membase;
+-	up.port.irq = irq;
+ 	/*
+ 	 * It claims to be 16C750 compatible however it is a little different.
+ 	 * It has EFR and has no FCR7_64byte bit. The AFE (which it claims to
+@@ -1429,13 +1424,9 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	 * or pm callback.
+ 	 */
+ 	up.port.type = PORT_8250;
+-	up.port.iotype = UPIO_MEM;
+-	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW |
+-		UPF_HARD_FLOW;
++	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW | UPF_HARD_FLOW;
+ 	up.port.private_data = priv;
+ 
+-	up.port.regshift = OMAP_UART_REGSHIFT;
+-	up.port.fifosize = 64;
+ 	up.tx_loadsz = 64;
+ 	up.capabilities = UART_CAP_FIFO;
+ #ifdef CONFIG_PM
+@@ -1461,14 +1452,14 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	up.rs485_stop_tx = serial8250_em485_stop_tx;
+ 	up.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
+ 
+-	ret = of_alias_get_id(np, "serial");
+-	if (ret < 0) {
+-		dev_err(&pdev->dev, "failed to get alias\n");
++	ret = uart_read_port_properties(&up.port);
 +	if (ret)
-+		return ret;
-+
-+	port->iotype = UPIO_MEM32;
-+	port->regshift = 2;
-+
- 	uart->rst = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
- 	if (IS_ERR(uart->rst))
- 		return PTR_ERR(uart->rst);
+ 		return ret;
+-	}
+-	up.port.line = ret;
  
--	if (device_property_read_u32(&pdev->dev, "clock-frequency",
--				     &port->uartclk)) {
-+	if (!port->uartclk) {
- 		uart->clk = devm_clk_get(&pdev->dev, NULL);
- 		if (IS_ERR(uart->clk)) {
- 			dev_err(&pdev->dev, "failed to get clock!\n");
+-	if (of_property_read_u32(np, "clock-frequency", &up.port.uartclk)) {
++	up.port.regshift = OMAP_UART_REGSHIFT;
++	up.port.fifosize = 64;
++
++	if (!up.port.uartclk) {
+ 		struct clk *clk;
+ 
+ 		clk = devm_clk_get(&pdev->dev, NULL);
+@@ -1560,8 +1551,8 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	}
+ #endif
+ 
+-	irq_set_status_flags(irq, IRQ_NOAUTOEN);
+-	ret = devm_request_irq(&pdev->dev, irq, omap8250_irq, 0,
++	irq_set_status_flags(up.port.irq, IRQ_NOAUTOEN);
++	ret = devm_request_irq(&pdev->dev, up.port.irq, omap8250_irq, 0,
+ 			       dev_name(&pdev->dev), priv);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.43.0.rc1.1.gbec44491f096
 
