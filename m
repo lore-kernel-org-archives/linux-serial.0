@@ -1,166 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B134D1DFD6;
-	Mon,  4 Mar 2024 12:30:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31D8E1E487;
+	Mon,  4 Mar 2024 18:53:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709555458; cv=none; b=LknKZl/w9JmrTm3TJEAM9vsg4rNym1NZFeEC6FWIyByrCcajq4lNHamVh4pvrhFB9W7AhXpaKLeYzBii4kPiQ63kWjp5x4tmdJbl/eYRiqrMI2PZfj5G1u7uPYwbT7Tq+0NlxHx1+EjpfaMjcZay7L6X63jPBJy0taYJaxMgVdQ=
+	t=1709578394; cv=none; b=FDg7vpE1R8wDT8YNt7kNcNbAdhi9xYXGRy5j8RBud3nVpb7JCgX8ufLDxE+FbAz/llcz0q7ZEqImiIa13n5fkH8439rhgbMuVdH30BgrSfpjvfam31/4Bwfb9o39zALe6BABO9GA9rhi4u/ea63uvXAUnBpezUgjkd419+dnUOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709555458; c=relaxed/simple;
-	bh=Ug0+1cJK1qABFIX1u2vFwuq1+scRl5b911mXi0OiA6E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=h1Q8dKir6+je1iSxv815rMCxrshct+Pna4xj0o2TnAmYfh/URnJyw0adVvUQVwJUjKJMhB7Xjlz5iUEGWtoejKczZiT2hVaSkDzUmpcBLaLjWIvZwqZkgYKH8UJVjCNawE1mn7GkVMS/E5ZXrhExE4iTXq6txn0EFPeWdMFriGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=btgO66SW; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1709578394; c=relaxed/simple;
+	bh=V37rd8PiGAomhKd4+inZBZxarQhrmyPY3/x1sHNH0Fg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TwtD5qElsLcYD5yG3Yf0nv51Rao1UA9RdPLYFz89Q+7a9hEXj25dGzMJXHfk55vpgXEpHBo+9QTj7lRbbzJcIqi71pH80XIhaLTSCtQgp9voPV7MO8CFqm793ISO+yK/n3HvfBHr0easGFlAR2g+TPTi10NVct4MuTBHVNtov0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=chh0mb+L; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="btgO66SW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709555457; x=1741091457;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ug0+1cJK1qABFIX1u2vFwuq1+scRl5b911mXi0OiA6E=;
-  b=btgO66SWU7R75f1NA6Np7PWHbaWPwPj4LHe6t4MSURWSRWVWbX2bvS+5
-   8LBqpsBTIRZW2PY1PZqsOV4Gvyky6BIVbVlXykOeGFY/9IjtV+XsPdBcc
-   jOVAxuQLHOxn4nTbtHGdxNW2QQ2IXZsFX+7XnMnvO/qllvCz+NuL+hXz3
-   R0QqWRgTm8nqx/wc36VttavsdSna+M1PFHkerd7m+9lfDzJaIqQTVd9t5
-   x4jw21dtzanKluXWnxuC60ezPBUWarM20bjYM8sQYZVhFYVNIwpsKsVyU
-   eFdP1ZY4si+ti4LPk1/2aNZS2HvdT6gXvg+BOHHxCTyMl1XfuFIMYRF6Y
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="7815203"
-X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="7815203"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 04:30:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="937040433"
-X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="937040433"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Mar 2024 04:30:45 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id BF01A8F6; Mon,  4 Mar 2024 14:30:37 +0200 (EET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-aspeed@lists.ozlabs.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-mips@vger.kernel.org,
-	linux-tegra@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Joel Stanley <joel@jms.id.au>,
-	Andrew Jeffery <andrew@codeconstruct.com.au>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Al Cooper <alcooperx@gmail.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Paul Cercueil <paul@crapouillou.net>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [PATCH v3 11/14] serial: 8250_omap: Switch to use uart_read_port_properties()
-Date: Mon,  4 Mar 2024 14:27:12 +0200
-Message-ID: <20240304123035.758700-12-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240304123035.758700-1-andriy.shevchenko@linux.intel.com>
-References: <20240304123035.758700-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="chh0mb+L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39F1FC433F1;
+	Mon,  4 Mar 2024 18:53:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709578393;
+	bh=V37rd8PiGAomhKd4+inZBZxarQhrmyPY3/x1sHNH0Fg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=chh0mb+LqnBnkw4LaW7GXGcf4MUfQbxrI1GPiO3rGliHt+iEnuPpVrGL74YA+11eB
+	 YKqeYxSxlpofVGMQM0Ja6YGuaQetDJzVb60hbUJEDi1PlVG4cEb4nVdlDtqRQ9JXbq
+	 xBD4P6A8pk6pRh83Ib26Riarw33D4f+xUWUobiJzyUK37lSJ4MH4DTgL1ty+ROff6f
+	 yEAplu4CapIknsh9V56kknwXU5O2uknTdnA6forEuztZiC95OLeI4Uc2V1tdzE6bh5
+	 qZm+mAKS/4704cicL872uYrMIEY/X9AfbnztAqIguotzkk9tiEBGdZBMHcp4/LRSmc
+	 /PYattFbOnngQ==
+Date: Mon, 4 Mar 2024 18:53:09 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-riscv@lists.infradead.org,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC] Inconsistent sifive,fu540-c000-uart binding.
+Message-ID: <20240304-whomever-gladly-d43da7ad2fe6@spud>
+References: <20240304105947.SJcVAdr1@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="9HC0fzGtO/m/qkzE"
+Content-Disposition: inline
+In-Reply-To: <20240304105947.SJcVAdr1@linutronix.de>
 
-Since we have now a common helper to read port properties
-use it instead of sparse home grown solution.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_omap.c | 29 ++++++++++-------------------
- 1 file changed, 10 insertions(+), 19 deletions(-)
+--9HC0fzGtO/m/qkzE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 6942990a333c..66901d93089a 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1394,11 +1394,7 @@ static int omap8250_probe(struct platform_device *pdev)
- 	struct uart_8250_port up;
- 	struct resource *regs;
- 	void __iomem *membase;
--	int irq, ret;
--
--	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
-+	int ret;
- 
- 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!regs) {
-@@ -1419,7 +1415,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 	up.port.dev = &pdev->dev;
- 	up.port.mapbase = regs->start;
- 	up.port.membase = membase;
--	up.port.irq = irq;
- 	/*
- 	 * It claims to be 16C750 compatible however it is a little different.
- 	 * It has EFR and has no FCR7_64byte bit. The AFE (which it claims to
-@@ -1429,13 +1424,9 @@ static int omap8250_probe(struct platform_device *pdev)
- 	 * or pm callback.
- 	 */
- 	up.port.type = PORT_8250;
--	up.port.iotype = UPIO_MEM;
--	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW |
--		UPF_HARD_FLOW;
-+	up.port.flags = UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_SOFT_FLOW | UPF_HARD_FLOW;
- 	up.port.private_data = priv;
- 
--	up.port.regshift = OMAP_UART_REGSHIFT;
--	up.port.fifosize = 64;
- 	up.tx_loadsz = 64;
- 	up.capabilities = UART_CAP_FIFO;
- #ifdef CONFIG_PM
-@@ -1461,14 +1452,14 @@ static int omap8250_probe(struct platform_device *pdev)
- 	up.rs485_stop_tx = serial8250_em485_stop_tx;
- 	up.port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_8250_CONSOLE);
- 
--	ret = of_alias_get_id(np, "serial");
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to get alias\n");
-+	ret = uart_read_port_properties(&up.port);
-+	if (ret)
- 		return ret;
--	}
--	up.port.line = ret;
- 
--	if (of_property_read_u32(np, "clock-frequency", &up.port.uartclk)) {
-+	up.port.regshift = OMAP_UART_REGSHIFT;
-+	up.port.fifosize = 64;
-+
-+	if (!up.port.uartclk) {
- 		struct clk *clk;
- 
- 		clk = devm_clk_get(&pdev->dev, NULL);
-@@ -1560,8 +1551,8 @@ static int omap8250_probe(struct platform_device *pdev)
- 	}
- #endif
- 
--	irq_set_status_flags(irq, IRQ_NOAUTOEN);
--	ret = devm_request_irq(&pdev->dev, irq, omap8250_irq, 0,
-+	irq_set_status_flags(up.port.irq, IRQ_NOAUTOEN);
-+	ret = devm_request_irq(&pdev->dev, up.port.irq, omap8250_irq, 0,
- 			       dev_name(&pdev->dev), priv);
- 	if (ret < 0)
- 		return ret;
--- 
-2.43.0.rc1.1.gbec44491f096
+On Mon, Mar 04, 2024 at 11:59:47AM +0100, Sebastian Andrzej Siewior wrote:
+> | $ git grep fu540-c000-uart
+> | Documentation/devicetree/bindings/serial/sifive-serial.yaml:          -=
+ sifive,fu540-c000-uart
+> | Documentation/devicetree/bindings/serial/sifive-serial.yaml:        com=
+patible =3D "sifive,fu540-c000-uart", "sifive,uart0";
+> | Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.tx=
+t:"sifive,fu540-c000-uart".  This way, if SoC-specific
+> | Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.tx=
+t:    compatible =3D "sifive,fu540-c000-uart", "sifive,uart0";
+> | arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compati=
+ble =3D "sifive,fu540-c000-uart", "sifive,uart0";
+> | arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compati=
+ble =3D "sifive,fu540-c000-uart", "sifive,uart0";
+> | drivers/tty/serial/sifive.c:OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c=
+000-uart0",
+> | drivers/tty/serial/sifive.c:    { .compatible =3D "sifive,fu540-c000-ua=
+rt0" },
+>=20
+> note that the driver has a trailing 0 in the binding while the yaml
+> description and the DT part does not.
+> The 'sifive,uart' has a trailing 0 where the 0 denotes the version UART
+> IP.
+>=20
+> Was this also intended for the fu540-c000-uart binding? Should the 0 be
+> added everywhere or removed from the driver?
 
+I suspect that the driver is what's incorrect, given there's little
+value in putting the IP version in the SoC-specific compatible as it's
+a fixed implementation. I'd change the driver to match the bindings.
+
+Cheers,
+Conor.
+
+--9HC0fzGtO/m/qkzE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZeYYkgAKCRB4tDGHoIJi
+0hLtAQCeh/vjouGnruLo6WjBW4ItX+rl8PSOfBxPoyZ6qLT1pAD/VFIkqqRSQoJT
+5af4p39+MyG3lRoOA+H3k7VIM/w0xAE=
+=qY/D
+-----END PGP SIGNATURE-----
+
+--9HC0fzGtO/m/qkzE--
