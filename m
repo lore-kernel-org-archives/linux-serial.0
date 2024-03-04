@@ -1,73 +1,122 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC811B814;
-	Mon,  4 Mar 2024 10:59:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44A36383B9;
+	Mon,  4 Mar 2024 11:09:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709549992; cv=none; b=NJPGPraf15ACko0ap9gMULJrD4ZdyuCQdaxhuLCsW1erbpbsjJfwR9SPFVQlyhdtcSE5nc/57m4N0NuTPxvbTW8vaWYBq/2uC91ZgQSXY/oEOX5Yf/134X4AhqAuilia52N1NRLUpzRfuHhYClB0cHe1ED/BdUbWRZA4CPsDWO0=
+	t=1709550560; cv=none; b=SSO6KBxPv6Dpp6e0wi8ad3pknkJBkVF3aRCGnz7BDHtDNjdJaCyYlsNq8Owtvli1iktQShDFx32vfZiqhGu8fNt/55pV8mpT7OBZKnFBHjl7JiBcaVBFPm4Y2Ab7e2GaWK7RwiK4pYGfS2Fok8WaWeXkhdNJ7+FB+DeiuIn1nSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709549992; c=relaxed/simple;
-	bh=leeC2E/cW3eqj2EuioS6vbusXrw4fa8TOx7FCQEIBWw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=fNNJOu0qpYZ+c/iQvT8we/ttEctgiUB8nE79Az57CXGAJB/uROKfaqmSchz8f8fWGyRoA6nuFDnqOuY5HTw0gcb6zjBkhuqdsZx1KNOVMXonHRQKya2/VAkLi87kM3k81F5aSfItTQJkPC6RCXTtI5Ov7RnE9UgNfu9hzVGO0eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=sz6hKABR; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=U/BaWreY; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1709550560; c=relaxed/simple;
+	bh=KXv3Q2iupm09gepMI0TpXGJCp9MnBfLCvS53P06EY2k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NbrY8v5Whk7jhb3FS28VdAPQyeImDOgdOUBdDTGTbW60P5ir8QPN45SBklkrRq1/yuILox/xSmMTrkCbI76mREOqpvGVD/NRyM6G+y66YflmT4HrRtsdMRogqvAG9ZvDUcKPdWX4KtFqEx500THpOnVeC1cEEPbBT7NCkahVssg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OXmpRFRn; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="sz6hKABR";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="U/BaWreY"
-Date: Mon, 4 Mar 2024 11:59:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1709549988;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=bJAczLXjA5qnADN9h7hX105sDv8kQ1JSUZwi6qoU15o=;
-	b=sz6hKABRt57mIiWwyViSNtb8++S2DkPP/S1D+knADJCErHSjaVSGxZYU253cW3b/LvrI/8
-	gQoFoGfopUzhXJ5yniLzpeVgviQKy0ZjaYrcc3t5Cy3JHntXI3HxEDGS+UIU++0PurRsIi
-	plRr485SeQlhuUO1zEsJmDDp7tQV8LKhePf6WAtmM5x4Qud7OXsesZFyarxs2m9edIPo2V
-	QvBwlpXA+i5KhTXulM755DftHZ9d0WTAdq/W6r739E6uVwc3QDJODxnFGQ7ZsPEdIxe8eZ
-	slOB1wyf1MThGpQyWUsMIV/Dv+cJ6hbDL0AsSpSfdKKWRWUCSet0aNXikzzKkw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1709549988;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=bJAczLXjA5qnADN9h7hX105sDv8kQ1JSUZwi6qoU15o=;
-	b=U/BaWreY8ysvTentpMECQbXLEHOGcbk3Ct8IievDgxYgw3YQyD7dEjEVLXQaW4Xr5gi25p
-	Rz3a1CRqwG7EIWBw==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-riscv@lists.infradead.org
-Cc: Samuel Holland <samuel.holland@sifive.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>
-Subject: [RFC] Inconsistent sifive,fu540-c000-uart binding.
-Message-ID: <20240304105947.SJcVAdr1@linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OXmpRFRn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709550559; x=1741086559;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KXv3Q2iupm09gepMI0TpXGJCp9MnBfLCvS53P06EY2k=;
+  b=OXmpRFRnlz4JhY6eMUcydd+QD+OZiaGVneBjNu0zd5WqeO4v0k6l+URC
+   Tc3t/4AmXYkUjuXA1QgB4oDVg+oQ7OtnlzAxrZEHm6u8Vnu/4kn3zz8pv
+   WZ2D7MYE1qOTQNPxkhQuOl91AZKt4YwllBT/Yjv3wjZrN1Sfkc7sprC0V
+   PvYGT9M9X9cgNI1hSGBen8DYjG1rvPLV4PQwF8NXgqWbkFi4kvdd6mzhk
+   d6aCfEBOumht1fTbSEvEjRv7zHHfTtGGWdfkDhOk+C0WnjxjetkKjDv92
+   eBVWC2pIPjAb5n/qZ1VBSnkVaRxDDPN216VeJ3XJc03UjLMb0oVkJqT2i
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="4202222"
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="4202222"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 03:09:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="914102864"
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="914102864"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 03:09:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rh6Bw-00000009hG5-1IAi;
+	Mon, 04 Mar 2024 13:09:08 +0200
+Date: Mon, 4 Mar 2024 13:09:07 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-rpi-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 03/14] serial: port: Introduce a common helper to read
+ properties
+Message-ID: <ZeWr06YWj5cDHfWL@smile.fi.intel.com>
+References: <20240226142514.1485246-1-andriy.shevchenko@linux.intel.com>
+ <20240226142514.1485246-4-andriy.shevchenko@linux.intel.com>
+ <2024030259-playback-starlit-a472@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <2024030259-playback-starlit-a472@gregkh>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-| $ git grep fu540-c000-uart
-| Documentation/devicetree/bindings/serial/sifive-serial.yaml:          - sifive,fu540-c000-uart
-| Documentation/devicetree/bindings/serial/sifive-serial.yaml:        compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-| Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt:"sifive,fu540-c000-uart".  This way, if SoC-specific
-| Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt:    compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-| arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-| arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-| drivers/tty/serial/sifive.c:OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c000-uart0",
-| drivers/tty/serial/sifive.c:    { .compatible = "sifive,fu540-c000-uart0" },
+On Sat, Mar 02, 2024 at 09:58:53PM +0100, Greg Kroah-Hartman wrote:
+> On Mon, Feb 26, 2024 at 04:19:19PM +0200, Andy Shevchenko wrote:
 
-note that the driver has a trailing 0 in the binding while the yaml
-description and the DT part does not.
-The 'sifive,uart' has a trailing 0 where the 0 denotes the version UART
-IP.
+...
 
-Was this also intended for the fu540-c000-uart binding? Should the 0 be
-added everywhere or removed from the driver?
+> > + * uart_read_port_properties - read firmware properties of the given UART port
+> 
+> I like, but:
+> 
+> > + * @port: corresponding port
+> > + * @use_defaults: apply defaults (when %true) or validate the values (when %false)
+> 
+> Using random booleans in a function is horrid.  Every time you see the
+> function call, or want to call it, you need to go and look up what the
+> boolean is and means.
+> 
+> Make 2 public functions here, one that does it with use_defaults=true
+> and one =false and then have them both call this one static function,
+> that way the function names themselves are easy to read and understand
+> and maintain over time.
 
-Sebastian
+Okay! I'll redo that.
+
+...
+
+> > +EXPORT_SYMBOL(uart_read_port_properties);
+> 
+> EXPORT_SYMBOL_GPL()?  I have to ask :)
+
+No clue, the rest in this file is EXPORT_SYMBOL, but I admit I followed the
+cargo cult. I'll check the modified code and see if I may use _GPL version.
+
+Thank you for review!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
