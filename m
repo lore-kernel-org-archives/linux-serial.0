@@ -1,463 +1,170 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2048.outbound.protection.outlook.com [40.107.8.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 694C57A728
-	for <linux-serial@vger.kernel.org>; Sun,  3 Mar 2024 21:47:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709502440; cv=none; b=j0KmLbyLtdHgCs27DDnI/o9oKBZZ2xi1ENrvNBls54z+uZm/ilUgBx+KCGeLZtOwGsXaL1GBQazGRpDY3zh9WPld245zCg0xDTwiG26vjtuhDaNmaXf/Zda53965rE82W+DKwx940iNsFVuZQSFymXgUuHqeOQSJ4PXqpF7mrJ8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709502440; c=relaxed/simple;
-	bh=qLHHve/IJsVJlqgF6Jk70C+/XLkpF6P4w2riD0m3DKo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nkluxtsca8a9HzX3QFgfS+N2voVQ6OGMCrRa1TlKmAsw8Nfj7262+hpWsQrarxNfW/ZLMAmbYtXKN/afgEUMVUx+exM87pZUwkHYoI2dNm/QriVPoK0kq5mSTAUoKhEphvqaVWwpM5VC3034QG7KFOhWoCxlbL+d6XnAAIg/XaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=ZiQSv6Xl; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC3EA31;
+	Mon,  4 Mar 2024 02:00:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709517607; cv=fail; b=sLz1qBIY5l45YR6iaTQEFFOqFGmvdOQwlcd6FQVqxpvzdL1N02jV9GQCuiT71/Fwi7Fzvzb10yo/WX8g3myeeys/26445TxwJYpWBvFwxh5kbWEeAi7AhLgI7aLdscUrv+8oglGfSHdC14hwrL3kfk5pv5LgYyzacfYHgqUhJSI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709517607; c=relaxed/simple;
+	bh=AHzr6an/u/3D8jN/H2BTmKZk+tPXSHnpSodxSaXz640=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=TwC+RQHL/sjpTN9ZjH21itsBQsBbptTZJdzH/6nafSCbxeWtMSAzzll/9KfZqA+ai1UeLOhfNeoKHToRF4g6L8UalGNb75o/tFY0tCFOznZuPDlMCKyRWvXm1i/lYR5AtUhwN3rG/lTBQunIODg1ymo06168gWPK8EtFtDd+Kt8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=kj65FoHv; arc=fail smtp.client-ip=40.107.8.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="ZiQSv6Xl"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-33e3e8eb8a0so172997f8f.3
-        for <linux-serial@vger.kernel.org>; Sun, 03 Mar 2024 13:47:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1709502437; x=1710107237; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FD+6MDmKRX3rBNbRNBvTaUK966jMpDDoNcEIpOuczko=;
-        b=ZiQSv6XlP7hxl3FBe0G9CmETmipYotNTqP7KaqBE4jSO58YbdYz5dXUxZpdn4bPrV8
-         rFuNbL4HaqiXdSshnv3SDJlKcJKeoVU3J4yEM+pclPiDj3atV2njbnXvTvIif4XnK6fO
-         LYmmGy0cAjpCm0Ek1sRWtsWeVXyjDfz+skzlLcWB9W3uoGotAd4vbvLk43PblTbAi8dw
-         LB2rgOGgrhLyMv6pg6sNGj6gBhyS2LVzhkBcrq6Xb6xvTe1Lff8xUCK5Ms9/jqBhIi98
-         0TDC6uIJ1dmelQITP9XOrzsvvt2nIWCje5FDg74DtT8g/st9fX1qGvKS1wIdPDtxP3zn
-         fPoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709502437; x=1710107237;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FD+6MDmKRX3rBNbRNBvTaUK966jMpDDoNcEIpOuczko=;
-        b=fnAP+0fxNnRsdgnP438SUh9QZSln7CT0dmPgfb56jTY0aVck849gTv51/Xg9z78pd6
-         t3I9c/hITC+W5icmaPRf7rXkF1SqdPxioWtBgctT+vUQXzqlh7U1xeLBCuLHAi8VZiYr
-         8+JkvXQ+dyV/36foTXAGYQ+yoq83IkWXEZfei5yu6mMmttvuh8Yn6JphC3N2umSqlycn
-         V+RNSnASsHoSsmkas+unCHgouz4eTodyvUjRr2vhqePmwzYHcMoo5buOgUpm2flkqlQX
-         qgwPZv2RLMrRvGo3AWTQ4u1I6PQn1YMkziahQfQM1kn99pTz6JzaVaV2HuUr+s4a0AOd
-         ieMA==
-X-Forwarded-Encrypted: i=1; AJvYcCXLJOeTZ3XO9wk2JWeBa3dpoSlPKMgySfjtBb6vqkcIi1u4qQN648VDcODwPsLiHDbL7M0cqsgs8NJFWXDfJJi1tbJ8yrFQYLEyzNK9
-X-Gm-Message-State: AOJu0Ywks1Q+WJfTKq1Mj1GPGta/2RQRg9BwBEorZKEBETEuK0TbA+bc
-	sBltQrDdRWATll+og4vvlLW+dc4BBUp69pZ/IyVoyPRuTQIRWQ5XhSbXsUeXWnI=
-X-Google-Smtp-Source: AGHT+IGznqr/wt4dtduea4dIZTe9E+kioM4CSved/7ZHQdDUAuqkwksDJT4LqAvpVGrM69Yv7U63uA==
-X-Received: by 2002:a05:6000:90d:b0:33d:4fca:b7dc with SMTP id cw13-20020a056000090d00b0033d4fcab7dcmr5288160wrb.62.1709502436851;
-        Sun, 03 Mar 2024 13:47:16 -0800 (PST)
-Received: from P-ASN-ECS-830T8C3.numericable.fr ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id bu16-20020a056000079000b0033dc3f3d689sm10525236wrb.93.2024.03.03.13.47.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Mar 2024 13:47:16 -0800 (PST)
-From: Yoann Congal <yoann.congal@smile.fr>
-To: linux-fsdevel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="kj65FoHv"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pv1SGhKw2TpCv62vEZtH7xyTcfhYK1Wacr2Kk1nRRvhLnzneK4wh6Ih64RuSCPT181h/VDK4JDWzvCzC1t2hP2kcVYDma191+lw2AndqLHDr3HtihnhB4515hBp+kgbJneBzZA75e/T5GeOxiL3lfmYKsYPWVbCr9X4+kKPwC2tDcjSpBjZR/WP6Pq4ZOKuOBBSrBxo89k4pPqMSLNZyrHaTCC+QgaHuncDL09GQrkaxJFxABJ5gbXQZM+6B9M4Hmffa23Edz7nZYFB2V0KPMhJymtEV1BcD326KwyALTgtH59VmauR78Zayh53/lWMRXKLdtpX8cDWsqOS6v5cwMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uBHquXc9OSoe7dBIVnlvVe4lm3iPG7yoZL5CfPxxCPs=;
+ b=SBgPEKXM+UEB3AlWsf+ywMaB3LwnR+2vOELxrkYSjWtGy9XhBGR3AIYxxAdSKARBRyWkGRx3UaNWZ/MvZCP65vpNECG3VJkz/M1W7fByjhBXeA5Ft60tL5csspjk++m+o+R2XbEKV/cfDk0wWU/TS/33O9LpNgo5o/owRbZ13Jch9BcY2zUWFeqQbA8Dt04NFjmwJ/W9ePCmwo4k2d3pMbD61yD6nagdlO5gNOxe4sBdX75sI+wXSJpIRGxP0e9Rgx1Hs4UfNNyOEO0glIYTA+0MJjzU0s6bUwB8zh4utqW+0rVepAYJYn+N7zdbAv4bYu8de/81rK3lO45j+kJrBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uBHquXc9OSoe7dBIVnlvVe4lm3iPG7yoZL5CfPxxCPs=;
+ b=kj65FoHvL451Eg+6YM9QpVDtxaookZJlEyLDC5iGs3wt1kMTlGlar7bgQvW/s1DKUbUa/GYKtKEwSp0QtUeZbxz/E5h3DCromovFeOorBI/UOHHXcH3plL34nAgkjRjS5xmIU7rmSM1WksYYqbSxcppFraI5nLzbbupcmW3KtxY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DB8PR04MB6858.eurprd04.prod.outlook.com (2603:10a6:10:113::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Mon, 4 Mar
+ 2024 02:00:02 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::643f:faca:24da:e9aa]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::643f:faca:24da:e9aa%5]) with mapi id 15.20.7339.035; Mon, 4 Mar 2024
+ 02:00:02 +0000
+From: Sherry Sun <sherry.sun@nxp.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	u.kleine-koenig@pengutronix.de,
+	ilpo.jarvinen@linux.intel.com,
+	shenwei.wang@nxp.com,
+	alexander.sverdlin@siemens.com,
+	robert.hodaszi@digi.com,
+	robh@kernel.org,
+	tglx@linutronix.de
+Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	x86@kernel.org
-Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Darren Hart <dvhart@infradead.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Yoann Congal <yoann.congal@smile.fr>
-Subject: [PATCH v6 3/3] printk: Remove redundant CONFIG_BASE_FULL
-Date: Sun,  3 Mar 2024 22:46:52 +0100
-Message-Id: <20240303214652.727140-4-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240303214652.727140-1-yoann.congal@smile.fr>
-References: <20240303214652.727140-1-yoann.congal@smile.fr>
+	imx@lists.linux.dev,
+	frank.li@nxp.com
+Subject: [PATCH] tty: serial: fsl_lpuart: avoid idle preamble pending if CTS is enabled
+Date: Mon,  4 Mar 2024 10:07:12 +0800
+Message-Id: <20240304020712.238637-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.37.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI1PR02CA0024.apcprd02.prod.outlook.com
+ (2603:1096:4:1f4::12) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DB8PR04MB6858:EE_
+X-MS-Office365-Filtering-Correlation-Id: 96dbd8c9-8f96-4b92-1b52-08dc3beece05
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	oZ0d6wUYkIxqDLNJNVl9Lmtsl6NxxUj0YHvPPFgNs/WhWAXHhhuoVeOI999V3s714KlJdrr3Dd14J/R1e3gR+aKY5zTHh1KSKtXPVb8YwN7vmoFRf1o3rSWoBYSsHZF8+0RAIf0zJxmgZwRJMof48FTlPZEIXz6aPGi8xas0S74IS3clbAtyd0KAh23ENHDfFbhj7G9WP6T0fU8WwL/n5uk1oiZLXHO4YHe00806shhwwWZhK6k5hfMoo2yFs4P/5tVQO9voIoAkD9809+BNcyX/iPxa0qh9qcK8rsraCoRM+b1YND95cE3AE+SNJa2WwSsibdNCb5Y5wJvjmIeUGk9bL4hcp9P2h/Vop60PQ4NDS80UZw80LeH2lcuqSuU8CpaAJ/iXbhJxdo7yl9toYqm7lHA9IkOt/bTYvQ85Mg28eZRTP6k8Y0LPekdLqTLUasrxxHOuk4Hc4ZWuqEH75VlpCcK6V430LeT0Zf1+e1ySpknhALK2LZKk7N8RknHnhxSnXQ2Va9F6oaNWbHpIGqCHTdtnCU1Wpq2C1vn/onBVI13PVlZeqa1e2hnYzEZuzADTNUXHezQgZBQEQ0DMXjQya+oHBM1Sqbp6Z/N8kh5JHNXZppld8+FXOp5iccr4a6ihtWqfs9SmxrpDq7Tz9RESCDnH7sBQ/3ROZV/ck4HLzQweO8fITZqfpJeMo3fC2FMLWj/nqoPkmLa/r0kRCeF/9uC/DUXIqc7VDG4cqHU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OW1oMjBXekpwanBkVHRNY3hUUGNRRjVnYjRYYitFZ2Rycm9ueDcvaTF6anE2?=
+ =?utf-8?B?TU9jcGVVYmQvdm9lVG9PditrNUs0OEJUSGdXOHNNMkhSVmprWTdsK21uUVI3?=
+ =?utf-8?B?Njg1V3o1bVVNKzBZSnRlVGlsWHhjbjZOaXRwSHRyOG16SjR6WUg2eGwxN1V3?=
+ =?utf-8?B?TVFXckxnZ09SeFUwY0IxU2FOQ1JlMWhBalRJTEhNRFVmMTdZam1kUHF5RGdh?=
+ =?utf-8?B?d0RjUUVqMWQxcXFiMG94WHNRVU9Relp2RzVzd1F4R0F1bkkzdGovWmNqVnJt?=
+ =?utf-8?B?Wjg3QmpWdFNKaTFvUUkrc25mSDArZ3pOdGNJYWUrRnYwQ0N5dmJtVk9OdFpF?=
+ =?utf-8?B?ZEMrSzNyZERrang0cTdOSkZLN0ZrQWJrU0g4SEgxSmNBZEFhUVBlWmo4Zll1?=
+ =?utf-8?B?TmJ6ZkQzTE5lWGpxQTF3elpjRUwwelNmV1FaMTAxYlAvTE9xSk5BT0ZMbGVy?=
+ =?utf-8?B?YTJqNlVRVmdwM2ZyWnVUb1NUQWl1ZXNDOFJxSGhEV3dBVG5iNlpodE1LQWlj?=
+ =?utf-8?B?TktIOVJpRE9wenFtTERuVDIwMGJMR29nbnRpOE9EVjlCZjRtQ0RnbXlOZDcr?=
+ =?utf-8?B?QnY3V29rOFArRmoyN1lQZGpoWGp4MGRzeFg4bHpRTkZHcHVMT3haMm9Id1Ew?=
+ =?utf-8?B?alNQcXVHVjJzdUcvV3VGdmhwbVBUSVBEZ0x2MjAxRG0ybjRiZHF5V1hFZ0dL?=
+ =?utf-8?B?YkFMQWFoYmJTUmRhN3l6MnMyUUNzY3gxdGNRZTBDUWJ1N1ZvVGovWkdlYTF2?=
+ =?utf-8?B?TU9uc2t3U2ZpWU4rQnN0TDAycVM2YzFCTUV5RGZ5WldTWUxqV0htUFFYRCtH?=
+ =?utf-8?B?Y3Z5cFlmWE12TzNud0k4ZWluRGZqbnhYZkM3aDRFN0xCRlUrb1h2bnhsR3g3?=
+ =?utf-8?B?OGpna1NDTERSREdpaHNiQmVPZ2llQUtnQjhoOGg4dHRIVVJ0Mm85K254dDlD?=
+ =?utf-8?B?MGcyeFZrTUpwTUhxamZ3UHlVL0ZKNmVlajhKaDFjMjd1c1ZKRTd1SWlmanMy?=
+ =?utf-8?B?UU5OZEJLbVpWTDNYUmFRSDM4OU9aVk9FZkM2RGs2eVB5TEJmS3piZ2dDWmkw?=
+ =?utf-8?B?K0tidmZpd2ZQaGhCOERxcU1TdHcvYVhoM1FVQXdxTkFlc2F6SXlEbEtONFV0?=
+ =?utf-8?B?ZHZITmt3eXVHMWFFblR4VUpURmF2bUJTM3NJV1pZalNiVnE2TGFsLzJQNk5U?=
+ =?utf-8?B?VEpYSDVHMzdjQ0VKczNkd2FvcVNEemY0RUh1bTQ3ZW1WNHZMOXh1Yk1mSUxX?=
+ =?utf-8?B?UzY1amZWZjlvclQxVE00MmNBNjhuRE1aNGpDclZudklkNFh0UmxyK1B0a25C?=
+ =?utf-8?B?dmtmdFV6a1Bxdk1iR1RiRmRTN3YvSCtoWGx1b2Zvc04vTm5PWXlmUXlFUFYx?=
+ =?utf-8?B?Tkl2RWg2Z0Y5UC9ZcmZPNmJZeU8walpURGcxMkg4ZmYxNDkyOWp5ZU1RVTNl?=
+ =?utf-8?B?WlI0RDljZmh6ODFwa2hza3Myam5RbTFVc2RWb1kxanVNa2J4UU51WVpDcFIx?=
+ =?utf-8?B?c094SjlqM28vZDVtbUFsanM4NVg1VDNkY1VTRWh4UDRYTHpFNHpvSXRWL094?=
+ =?utf-8?B?eWxmd0FWb1VMQzYybk5BbnVnV1RCWWV6ZE9ldG5EcEFtZW9mZ2FmNkU3VW94?=
+ =?utf-8?B?MnErOUM2c1ZKY2tPUm0xK25wWWZEcHFOMDhXd2E3c25QWTZKWUFpV2R5TERJ?=
+ =?utf-8?B?dURJNGRjZENpRWR5YVZBRXdyU25tZDFaWmd3dzUreEZPQldORmdaTVdnU1Iv?=
+ =?utf-8?B?RlFXN3dMVlNXeTBIK0FaVDZNNURjVEpWL3hnYU5BeHVISkdMZkJhSWtsbVZi?=
+ =?utf-8?B?d2VVc2J1Mmc5Z1ZVZGo5ZGtOTHU3dmtlbW9sVi8xZE5uY3ZSbEpwQk5Ca21T?=
+ =?utf-8?B?TXN4MTNGZFRmY3VUOGFIY2ErRlJTbzNTc3F0Z1FWckZSOUxNNGhOUnE1OUd6?=
+ =?utf-8?B?TkFQZkswWmRVcEtIUDJaTlhkS2RsNGx0SjRweUxmSStmWGZWSEJMSnV4MTdP?=
+ =?utf-8?B?MGNlWjAreFljTisyQVF0RTNkWkE3WlVBOE9PMzlITFB3OGZ4WUdHWEFMV1V2?=
+ =?utf-8?B?dVdxWmc5d2h2bjdTNW40OHk2cHVTb3FYVjh4MmxFYVExOG1XL1EyeVB4QWNS?=
+ =?utf-8?Q?j1t12nONHUszUs3zvMuVycgLs?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96dbd8c9-8f96-4b92-1b52-08dc3beece05
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2024 02:00:02.6159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9yhY2eat4y64uNU4k68ksNeBN6QTWjuRYg+VkOdl5sX4kvilHjDh9Rv4UotKraqG2rhLr6psoqkZ+4gFDo4zCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6858
 
-CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
-default: CONFIG_BASE_SMALL is the special case to take care of.
-So, remove CONFIG_BASE_FULL and move the config choice to
-CONFIG_BASE_SMALL (which defaults to 'n')
+If the remote uart device is not connected or not enabled after booting
+up, the CTS line is high by default. At this time, if we enable the flow
+control when opening the device(for example, using “stty -F /dev/ttyLP4
+crtscts” command), there will be a pending idle preamble(first writing 0
+and then writing 1 to UARTCTRL_TE will queue an idle preamble) that
+cannot be sent out, resulting in the uart port fail to close(waiting for
+TX empty), so the user space stty will have to wait for a long time or
+forever.
 
-For defconfigs explicitely disabling BASE_FULL, explicitely enable
-BASE_SMALL.
-For defconfigs explicitely enabling BASE_FULL, drop it as it is the
-default.
+This is an LPUART IP bug(idle preamble has higher priority than CTS),
+here add a workaround patch to enable TX CTS after enabling UARTCTRL_TE,
+so that the idle preamble does not get stuck due to CTS is deasserted.
 
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
 ---
- arch/arm/configs/collie_defconfig                    |  2 +-
- arch/arm/configs/keystone_defconfig                  |  2 +-
- arch/arm/configs/lpc18xx_defconfig                   |  2 +-
- arch/arm/configs/moxart_defconfig                    |  2 +-
- arch/arm/configs/mps2_defconfig                      |  2 +-
- arch/arm/configs/omap1_defconfig                     |  2 +-
- arch/arm/configs/stm32_defconfig                     |  2 +-
- arch/microblaze/configs/mmu_defconfig                |  2 +-
- arch/mips/configs/rs90_defconfig                     |  2 +-
- arch/powerpc/configs/adder875_defconfig              |  2 +-
- arch/powerpc/configs/ep88xc_defconfig                |  2 +-
- arch/powerpc/configs/mpc866_ads_defconfig            |  2 +-
- arch/powerpc/configs/mpc885_ads_defconfig            |  2 +-
- arch/powerpc/configs/tqm8xx_defconfig                |  2 +-
- arch/riscv/configs/nommu_k210_defconfig              |  2 +-
- arch/riscv/configs/nommu_k210_sdcard_defconfig       |  2 +-
- arch/riscv/configs/nommu_virt_defconfig              |  2 +-
- arch/sh/configs/edosk7705_defconfig                  |  2 +-
- arch/sh/configs/se7619_defconfig                     |  2 +-
- arch/sh/configs/se7712_defconfig                     |  2 +-
- arch/sh/configs/se7721_defconfig                     |  2 +-
- arch/sh/configs/shmin_defconfig                      |  2 +-
- init/Kconfig                                         | 10 +++-------
- tools/testing/selftests/wireguard/qemu/kernel.config |  1 -
- 24 files changed, 25 insertions(+), 30 deletions(-)
+ drivers/tty/serial/fsl_lpuart.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/configs/collie_defconfig b/arch/arm/configs/collie_defconfig
-index 01b5a5a73f037..42cb1c8541188 100644
---- a/arch/arm/configs/collie_defconfig
-+++ b/arch/arm/configs/collie_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- CONFIG_ARCH_MULTI_V4=y
- # CONFIG_ARCH_MULTI_V7 is not set
-diff --git a/arch/arm/configs/keystone_defconfig b/arch/arm/configs/keystone_defconfig
-index 59c4835ffc977..c1291ca290b23 100644
---- a/arch/arm/configs/keystone_defconfig
-+++ b/arch/arm/configs/keystone_defconfig
-@@ -12,7 +12,7 @@ CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_EXPERT=y
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/lpc18xx_defconfig b/arch/arm/configs/lpc18xx_defconfig
-index d169da9b2824d..f55c231e08708 100644
---- a/arch/arm/configs/lpc18xx_defconfig
-+++ b/arch/arm/configs/lpc18xx_defconfig
-@@ -8,7 +8,7 @@ CONFIG_BLK_DEV_INITRD=y
- # CONFIG_RD_LZ4 is not set
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/moxart_defconfig b/arch/arm/configs/moxart_defconfig
-index 1d41e73f4903c..34d079e03b3c5 100644
---- a/arch/arm/configs/moxart_defconfig
-+++ b/arch/arm/configs/moxart_defconfig
-@@ -6,7 +6,7 @@ CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
- # CONFIG_EVENTFD is not set
-diff --git a/arch/arm/configs/mps2_defconfig b/arch/arm/configs/mps2_defconfig
-index 3ed73f184d839..e995e50537efd 100644
---- a/arch/arm/configs/mps2_defconfig
-+++ b/arch/arm/configs/mps2_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=16
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/omap1_defconfig b/arch/arm/configs/omap1_defconfig
-index 729ea8157e2a5..025b595dd8375 100644
---- a/arch/arm/configs/omap1_defconfig
-+++ b/arch/arm/configs/omap1_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- # CONFIG_KALLSYMS is not set
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
-index b9fe3fbed5aec..3baec075d1efd 100644
---- a/arch/arm/configs/stm32_defconfig
-+++ b/arch/arm/configs/stm32_defconfig
-@@ -6,7 +6,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/microblaze/configs/mmu_defconfig b/arch/microblaze/configs/mmu_defconfig
-index 4da7bc4ac4a37..176314f3c9aac 100644
---- a/arch/microblaze/configs/mmu_defconfig
-+++ b/arch/microblaze/configs/mmu_defconfig
-@@ -4,7 +4,7 @@ CONFIG_AUDIT=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR=1
- CONFIG_XILINX_MICROBLAZE0_USE_PCMP_INSTR=1
-diff --git a/arch/mips/configs/rs90_defconfig b/arch/mips/configs/rs90_defconfig
-index 4b9e36d6400e0..a53dd66e9b864 100644
---- a/arch/mips/configs/rs90_defconfig
-+++ b/arch/mips/configs/rs90_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y
- # CONFIG_SGETMASK_SYSCALL is not set
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_TIMERFD is not set
- # CONFIG_AIO is not set
- # CONFIG_IO_URING is not set
-diff --git a/arch/powerpc/configs/adder875_defconfig b/arch/powerpc/configs/adder875_defconfig
-index 7f35d5bc12299..97f4d48517356 100644
---- a/arch/powerpc/configs/adder875_defconfig
-+++ b/arch/powerpc/configs/adder875_defconfig
-@@ -4,7 +4,7 @@ CONFIG_SYSVIPC=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/ep88xc_defconfig b/arch/powerpc/configs/ep88xc_defconfig
-index a98ef6a4abef6..50cc59eb36cf1 100644
---- a/arch/powerpc/configs/ep88xc_defconfig
-+++ b/arch/powerpc/configs/ep88xc_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc866_ads_defconfig b/arch/powerpc/configs/mpc866_ads_defconfig
-index 5c56d36cdfc5c..6f449411abf7b 100644
---- a/arch/powerpc/configs/mpc866_ads_defconfig
-+++ b/arch/powerpc/configs/mpc866_ads_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc885_ads_defconfig b/arch/powerpc/configs/mpc885_ads_defconfig
-index 56b876e418e91..77306be62e9ee 100644
---- a/arch/powerpc/configs/mpc885_ads_defconfig
-+++ b/arch/powerpc/configs/mpc885_ads_defconfig
-@@ -7,7 +7,7 @@ CONFIG_VIRT_CPU_ACCOUNTING_NATIVE=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- CONFIG_PERF_EVENTS=y
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/powerpc/configs/tqm8xx_defconfig b/arch/powerpc/configs/tqm8xx_defconfig
-index 083c2e57520a0..383c0966e92fd 100644
---- a/arch/powerpc/configs/tqm8xx_defconfig
-+++ b/arch/powerpc/configs/tqm8xx_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- CONFIG_MODULES=y
-diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
-index 146c46d0525b4..51ba0d1683383 100644
---- a/arch/riscv/configs/nommu_k210_defconfig
-+++ b/arch/riscv/configs/nommu_k210_defconfig
-@@ -11,7 +11,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-index 95d8d1808f194..762aea9127ae4 100644
---- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
-+++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=13
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_virt_defconfig b/arch/riscv/configs/nommu_virt_defconfig
-index b794e2f8144e6..ab6d618c1828f 100644
---- a/arch/riscv/configs/nommu_virt_defconfig
-+++ b/arch/riscv/configs/nommu_virt_defconfig
-@@ -10,7 +10,7 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
-diff --git a/arch/sh/configs/edosk7705_defconfig b/arch/sh/configs/edosk7705_defconfig
-index 9ee35269bee26..ab3bf72264df4 100644
---- a/arch/sh/configs/edosk7705_defconfig
-+++ b/arch/sh/configs/edosk7705_defconfig
-@@ -6,7 +6,7 @@
- # CONFIG_PRINTK is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/sh/configs/se7619_defconfig b/arch/sh/configs/se7619_defconfig
-index 14d0f5ead502f..4765966fec99c 100644
---- a/arch/sh/configs/se7619_defconfig
-+++ b/arch/sh/configs/se7619_defconfig
-@@ -4,7 +4,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_KALLSYMS is not set
- # CONFIG_HOTPLUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/sh/configs/se7712_defconfig b/arch/sh/configs/se7712_defconfig
-index dc854293da435..20f07aee5bde7 100644
---- a/arch/sh/configs/se7712_defconfig
-+++ b/arch/sh/configs/se7712_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/se7721_defconfig b/arch/sh/configs/se7721_defconfig
-index c891945b8a900..00862d3c030d2 100644
---- a/arch/sh/configs/se7721_defconfig
-+++ b/arch/sh/configs/se7721_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/shmin_defconfig b/arch/sh/configs/shmin_defconfig
-index e078b193a78a8..bfeb004f130ec 100644
---- a/arch/sh/configs/shmin_defconfig
-+++ b/arch/sh/configs/shmin_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_HOTPLUG is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SHMEM is not set
-diff --git a/init/Kconfig b/init/Kconfig
-index 182f2671a49dd..2a8203628d212 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1590,11 +1590,10 @@ config PCSPKR_PLATFORM
- 	  This option allows to disable the internal PC-Speaker
- 	  support, saving some memory.
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 5ddf110aedbe..dce1b5851de0 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2345,8 +2345,12 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
  
--config BASE_FULL
--	default y
--	bool "Enable full-sized data structures for core" if EXPERT
-+config BASE_SMALL
-+	bool "Enable smaller-sized data structures for core" if EXPERT
- 	help
--	  Disabling this option reduces the size of miscellaneous core
-+	  Enabling this option reduces the size of miscellaneous core
- 	  kernel data structures. This saves memory on small machines,
- 	  but may reduce performance.
+ 	lpuart32_write(&sport->port, bd, UARTBAUD);
+ 	lpuart32_serial_setbrg(sport, baud);
+-	lpuart32_write(&sport->port, modem, UARTMODIR);
++	/* disable CTS before enabling UARTCTRL_TE to avoid pending idle preamble */
++	lpuart32_write(&sport->port, modem & ~UARTMODIR_TXCTSE, UARTMODIR);
+ 	lpuart32_write(&sport->port, ctrl, UARTCTRL);
++	/* re-enable the CTS if needed */
++	lpuart32_write(&sport->port, modem, UARTMODIR);
++
+ 	/* restore control register */
  
-@@ -1949,9 +1948,6 @@ config RT_MUTEXES
- 	bool
- 	default y if PREEMPT_RT
- 
--config BASE_SMALL
--	def_bool !BASE_FULL
--
- config MODULE_SIG_FORMAT
- 	def_bool n
- 	select SYSTEM_DATA_VERIFICATION
-diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
-index 507555714b1d8..f314d3789f175 100644
---- a/tools/testing/selftests/wireguard/qemu/kernel.config
-+++ b/tools/testing/selftests/wireguard/qemu/kernel.config
-@@ -41,7 +41,6 @@ CONFIG_KALLSYMS=y
- CONFIG_BUG=y
- CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
- CONFIG_JUMP_LABEL=y
--CONFIG_BASE_FULL=y
- CONFIG_FUTEX=y
- CONFIG_SHMEM=y
- CONFIG_SLUB=y
+ 	if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) == UARTCTRL_PE)
 -- 
-2.39.2
+2.37.1
 
