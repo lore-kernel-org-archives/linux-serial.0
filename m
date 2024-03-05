@@ -1,45 +1,45 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BAB97BAE1;
-	Tue,  5 Mar 2024 07:07:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 757917E101;
+	Tue,  5 Mar 2024 07:19:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709622450; cv=none; b=rGEO3LIFzqEVJMRf5Y78RUifJ5/lBF2LTCObbdEfr9PtB95Ln50JZgtq/5XQ0x+3c2Ntm8fWm4D8XAQBvqtSu0D/VDrajJnEIdJklbYIlLfA+H2fEb5Ak8ndUBnopUSxCxtoj0lllpDr5Qwi/Jj0tzic2hAo2bPIQFwvT/SAdVo=
+	t=1709623172; cv=none; b=mk31qsp27jRw/GLyB3OqselgZ+adFpyQAx1ByvebjMVrmNibneZZj8XTpEyle0Wegm/XN05EAKvfAkAkoOc4SFdgzGtyZEepjPJM/iAM9kvF7Zoi9AlCRmm3bXCOmNorFtsG4anwvsoMrzPDPLfwqqJEeCD3KDhkPncBPgA6v3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709622450; c=relaxed/simple;
-	bh=vZby/m3LRrGWFrpBXo7IV5PjrBAVr4ouopmPCoaEJGM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=p1t2ubNBcb2cidi7bnWaB5hduQYp1vv94ldDGW3TGd1I8KFP0pU4if+EPzOby1xVm5fjTu2uvxNjaqdK0oZblO0AI7y73J1/T2pSb5VGARSSMpAnZaGoC7K7KFDbycir8vXAKOjPxUpXQMH931p9ThzZbvcz6/DjbY1DvKXIEBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.49
+	s=arc-20240116; t=1709623172; c=relaxed/simple;
+	bh=NcwVel1z7ZcoEyr8WPUWvegmKx13ucuVguofS4a7H/k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=M++qe432tNqdkETpypQr2ZLjjF32nkf8HlhRPZphnzWyAK+zc6ae20VhoWC9S9SFsrkTfJoApz4DxBr15HhMmhvrkfaX+MQwguHpxKk4nXOKmk28x7otvZp8nzgQQ/XVLouge0nSIpAsRjVjYBXPY9e3TxaqDe141aABET6Rbt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a2f22bfb4e6so45086366b.0;
-        Mon, 04 Mar 2024 23:07:28 -0800 (PST)
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-55a5e7fa471so7291737a12.1;
+        Mon, 04 Mar 2024 23:19:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709622447; x=1710227247;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1709623169; x=1710227969;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kjx627cUwp+KMTeHjxsuWfhBmUKybK6GADPnBK7i+J4=;
-        b=MF8946ghEJmcAJbOk4gccOq+FxO9m+W4udszvotoOh11On8Z31F7yxTN+oCPQYVC2f
-         8MeHi5GDN3CT1NI9w2KBtEBoTgi9vEeXO0fHOV5SMoc0wJ+11aeqi9pD/ys7gR4vYJ3+
-         qlBDjAJP2jnP+A3GkhqO+e9a+bjM3GIS3+dHP5sOViAt7tV85r6c04GIc4Rr8czwUpnK
-         uN/VfPOu/Ym3dtVGV7zAivjZq193naAFsiEAwib6FnInfMRhm1O+2OC3pOnXeyRU3/zd
-         zOwL0+GczrkSzikdF+thnzO2ZFkjFVAgNA8UqTdFBpRDbyBinCE1I0UetLixdlejhyrk
-         xwTw==
-X-Forwarded-Encrypted: i=1; AJvYcCXbnNrBiCz2HgR7ukQ6zQzu2dbM6jUpJ6bmD6VFmr5Q1p2s0NRbvibLPBBVDl4SS8R0UFEJqrBAh6yD8O5Ho+LdabLiRg9sqhSYx+GdQe2VzsU+4Xoz/fdIR8Inc3RH7IvcsqUzl+8I16OhZkpeBQ5eEg8ogNypv4GFdh7WaQIpxb1Bwyl6nWqcmQ==
-X-Gm-Message-State: AOJu0YyDrdfMb+3+OyTR85f3VK+rdNRzXKbP13Pr8R1HBMnXYPIactpw
-	AbroJKoF0VLj8bs5BKB7hx7ah6zdq6fVLDWWiQx5bPZNx7vyD3To
-X-Google-Smtp-Source: AGHT+IEmUQjZF3qDWgsAV5rmWrb/OPyvl4RESCNzlIicqkw2l9FI5v9oHKCqRFKrsnOJYeHQL+M+bQ==
-X-Received: by 2002:a17:906:c7d0:b0:a44:8caf:a2e0 with SMTP id dc16-20020a170906c7d000b00a448cafa2e0mr8823508ejb.74.1709622447072;
-        Mon, 04 Mar 2024 23:07:27 -0800 (PST)
+        bh=j+1baBckT7OXImwCfZaZCxZUfFd5GSKEsCREenSuOjg=;
+        b=GFQn8viwuehVmvHuHEOdfbPmw7DHwBh58QPaZPfdCixzI6LbcfXdsXfJIJjO9T07PD
+         0fZAq/Zr5RH31YiVem6viM7T+25xPK45PmKK4wTK69ccrRK9S/Sy5nLVkaGhraY0Hr7x
+         YLBcr48KHfCMhePi+9iQO/GMnyxnmod9X81/UR0u6WAaq9xo/OU+5cJh8eCNe+nNoo71
+         J0jUl5mt/2GG7JxJ5xPdii/KmT2GZPiCBA3Si6om404RxsDKj5C0IBEePV3L4Km66gte
+         1OPyab34/Wag8zSA0CPFUbxRqAUC5SioUIeGvkUePGR3g08zZYzb2YS+iWsGw/7GNPpI
+         WJpA==
+X-Forwarded-Encrypted: i=1; AJvYcCVYCMt9iLUZVHaEaobwWUnd/Dn5/hNQylrv98HC+LOPqMbRyoaxtudfAx7kPyFVCan6H0IZhMGSBWgBy0V91M0WuKK2kHQ6RWo0q+B4ybDPCBERryPKWU49eGVdAb5dNhQnJ8yhHfXr6wNO
+X-Gm-Message-State: AOJu0Yz7tLsk4T1NBB1R9AthHle3JR7483SiTRAs0gyhrO43J4kD7RCS
+	W4kNXUhBQb6aEEWCf0N1zvid6Ls7xPj0TNrozYY+idezsl10HRBzyqe2+ltE
+X-Google-Smtp-Source: AGHT+IHclhwaEt9hqmjKLRPcvn6J4CM61NaIoNux57lWnJWK6Hq57lryW1XeTdc4g/QchZ+JMkZFWw==
+X-Received: by 2002:a17:906:37d6:b0:a45:f05:7e10 with SMTP id o22-20020a17090637d600b00a450f057e10mr4497803ejc.24.1709623168600;
+        Mon, 04 Mar 2024 23:19:28 -0800 (PST)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:59? ([2a0b:e7c0:0:107::aaaa:59])
-        by smtp.gmail.com with ESMTPSA id o7-20020a170906288700b00a42ed7421b8sm5762158ejd.93.2024.03.04.23.07.26
+        by smtp.gmail.com with ESMTPSA id k23-20020a1709063e1700b00a42f6d48c72sm5766587eji.145.2024.03.04.23.19.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Mar 2024 23:07:26 -0800 (PST)
-Message-ID: <734841ee-836f-4397-88cb-9405e5a2b439@kernel.org>
-Date: Tue, 5 Mar 2024 08:07:25 +0100
+        Mon, 04 Mar 2024 23:19:28 -0800 (PST)
+Message-ID: <1cc70895-b520-4dde-971e-692041dfbcce@kernel.org>
+Date: Tue, 5 Mar 2024 08:19:27 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,16 +47,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Revert "tty: serial: simplify
- qcom_geni_serial_send_chunk_fifo()"
+Subject: Re: [PATCH v1 tty] 8250: microchip: pci1xxxx: Refactor TX Burst code
+ to use pre-existing APIs
 Content-Language: en-US
-To: Douglas Anderson <dianders@chromium.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Stephen Boyd <swboyd@chromium.org>, Bjorn Andersson
- <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20240304174952.1.I920a314049b345efd1f69d708e7f74d2213d0b49@changeid>
+To: Rengarajan.S@microchip.com, linux-serial@vger.kernel.org,
+ gregkh@linuxfoundation.org, Kumaravel.Thiagarajan@microchip.com,
+ UNGLinuxDriver@microchip.com, Tharunkumar.Pasumarthi@microchip.com,
+ linux-kernel@vger.kernel.org
+References: <20240222134944.1131952-1-rengarajan.s@microchip.com>
+ <5bf4ba6d-d8e3-4ba6-a889-cfae8c3ddabe@kernel.org>
+ <e93048e64c3f8aa2731575d4b296c473e8dadb82.camel@microchip.com>
+ <254db026-5f9d-497f-ac44-c81d9d5947cf@kernel.org>
+ <53dd0d89466f0f06dfd2d63ab1ff29462a09aabb.camel@microchip.com>
+ <e8b49c34-90a1-4610-b7cd-8eff1b1a312a@kernel.org>
+ <f3b627f1d03c8db3d09f56a836e8733004b2287b.camel@microchip.com>
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
@@ -100,22 +104,164 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240304174952.1.I920a314049b345efd1f69d708e7f74d2213d0b49@changeid>
+In-Reply-To: <f3b627f1d03c8db3d09f56a836e8733004b2287b.camel@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 05. 03. 24, 2:49, Douglas Anderson wrote:
-> This reverts commit 5c7e105cd156fc9adf5294a83623d7a40c15f9b9.
+On 05. 03. 24, 5:15, Rengarajan.S@microchip.com wrote:
+> Hi Jiri,
 > 
-> As identified by KASAN, the simplification done by the cleanup patch
-> was not legal.
-...
-> Fixes: 5c7e105cd156 ("tty: serial: simplify qcom_geni_serial_send_chunk_fifo()")
+> On Mon, 2024-03-04 at 07:19 +0100, Jiri Slaby wrote:
+>> [Some people who received this message don't often get email from
+>> jirislaby@kernel.org. Learn why this is important at
+>> https://aka.ms/LearnAboutSenderIdentification ]
+>>
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>> know the content is safe
+>>
+>> On 04. 03. 24, 5:37, Rengarajan.S@microchip.com wrote:
+>>> Hi Jiri,
+>>>
+>>> On Fri, 2024-02-23 at 10:26 +0100, Jiri Slaby wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>>>> know the content is safe
+>>>>
+>>>> On 23. 02. 24, 10:21, Rengarajan.S@microchip.com wrote:
+>>>>> On Fri, 2024-02-23 at 07:08 +0100, Jiri Slaby wrote:
+>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless
+>>>>>> you
+>>>>>> know the content is safe
+>>>>>>
+>>>>>> On 22. 02. 24, 14:49, Rengarajan S wrote:
+>>>>>>> Updated the TX Burst implementation by changing the
+>>>>>>> circular
+>>>>>>> buffer
+>>>>>>> processing with the pre-existing APIs in kernel. Also
+>>>>>>> updated
+>>>>>>> conditional
+>>>>>>> statements and alignment issues for better readability.
+>>>>>>
+>>>>>> Hi,
+>>>>>>
+>>>>>> so why are you keeping the nested double loop?
+>>>>>>
+>>>>>
+>>>>> Hi, in order to differentiate Burst mode handling with byte
+>>>>> mode
+>>>>> had
+>>>>> seperate loops for both. Since, having single while loop also
+>>>>> does
+>>>>> not
+>>>>> align with rx implementation (where we have seperate handling
+>>>>> for
+>>>>> burst
+>>>>> and byte) have retained the double loop.
+>>>>
+>>>> So obviously, align RX to a single loop if possible. The current
+>>>> TX
+>>>> code
+>>>> is very hard to follow and sort of unmaintainable (and buggy).
+>>>> And
+>>>> IMO
+>>>> it's unnecessary as I proposed [1]. And even if RX cannot be one
+>>>> loop,
+>>>> you still can make TX easy to read as the two need not be the
+>>>> same.
+>>>>
+>>>> [1]
+>>>> https://lore.kernel.org/all/b8325c3f-bf5b-4c55-8dce-ef395edce251@kernel.org/
+>>>
+>>>
+>>> while (data_empty_count) {
+>>>      cnt = CIRC_CNT_TO_END();
+>>>      if (!cnt)
+>>>        break;
+>>>      if (cnt < UART_BURST_SIZE || (tail & 3)) { // is_unaligned()
+>>>        writeb();
+>>>        cnt = 1;
+>>>      } else {
+>>>        writel()
+>>>        cnt = UART_BURST_SIZE;
+>>>      }
+>>>      uart_xmit_advance(cnt);
+>>>      data_empty_count -= cnt;
+>>> }
+>>>
+>>> With the above implementation we are observing performance drop of
+>>> 2
+>>> Mbps at baud rate of 4 Mbps. The reason for this is the fact that
+>>> for
+>>> each iteration we are checking if the the data need to be processed
+>>> via
+>>> DWORDs or Bytes. The condition check for each iteration is causing
+>>> the
+>>> drop in performance.
+>>
+>> Hi,
+>>
+>> the check is by several orders of magnitude faster than the I/O
+>> proper.
+>> So I don't think that's the root cause.
+>>
+>>> With the previous implementation(with nested loops) the performance
+>>> is
+>>> found to be around 4 Mbps at baud rate of 4 Mbps. In that
+>>> implementation we handle sending DWORDs continuosly until the
+>>> transfer
+>>> size < 4. Can you let us know any other alternatives for the above
+>>> performance drop.
+>>
+>> Could you attach the patch you are testing?
+> 
+> Please find the updated pci1xxxx_process_write_data
+> 
+> 	u32 xfer_cnt;
+> 
+>          while (*valid_byte_count) {
+>                  xfer_cnt = CIRC_CNT_TO_END(xmit->head, xmit->tail,
+>                                             UART_XMIT_SIZE);
+> 
+>                  if (!xfer_cnt)
+>                          break;
+> 
+>                  if (xfer_cnt < UART_BURST_SIZE || (xmit->tail & 3)) {
 
-BTW this is in 6.4. You should have "Cc-ed: stable"
+Hi,
+
+OK, is it different if you remove the alignment checking (which should 
+be correct™ thing to do, but may/will slow down things on platforms 
+which don't care)?
+
+>                          writeb(xmit->buf[xmit->tail], port->membase +
+>                                 UART_TX_BYTE_FIFO);
+>                          xfer_cnt = UART_BYTE_SIZE;
+>                  } else {
+>                          writel(*(u32 *)&xmit->buf[xmit->tail],
+
+If you remove the "tail & 3" check, you can use get_unaligned() here and 
+need not care about unaligned accesses after all...
+
+>                                 port->membase + UART_TX_BURST_FIFO);
+>                          xfer_cnt = UART_BURST_SIZE;
+>                  }
+> 
+>                  uart_xmit_advance(port, xfer_cnt);
+>                  *data_empty_count -= xfer_cnt;
+>                  *valid_byte_count -= xfer_cnt;
+>          }
+> 
+> Testing is done via minicom by transferring a 10 MB file at 4 Mbps,
+> 
+> After the minicom transfer with single instance:
+> 
+> Previous implementation(Nested While Loops):
+> Transferred 10 MB at 3900000 CPS
+> 
+> Current implementation:
+> Transferred 10 MB at 2459999 CPS
 
 
--- 
+
 -- 
 js
 suse labs
