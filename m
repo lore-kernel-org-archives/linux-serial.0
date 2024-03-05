@@ -1,284 +1,176 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2054.outbound.protection.outlook.com [40.107.104.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9E9E8F58
-	for <linux-serial@vger.kernel.org>; Mon,  4 Mar 2024 21:44:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709588695; cv=none; b=ivPM9/oj9WfHWdMqwrhe3BltS0/iMwevb4084E4hN66utbItpa4TCsj5LoleKM7QWSGnDxmBPPfmOaoD6NAhS3gNdMLM6SxJiP/YjRXpwK7u81MLjqV9JfoUT8DEO4tMmrsOVM1sQeQy5cRzAVA7NtZaWWaK8ApT8OwNoaNiEnk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709588695; c=relaxed/simple;
-	bh=vnQfVPDee5TR5DXFXuoCLyv9CL2z+tYkFjRkKfEijPs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eMolIwLU+kf3Ai72nb88tX4nCBk/4ht+aU+Cvefy0O9nztf7Wz1RRmwNHYuGvIzTr+GWXoCf5KqZ5U5zzjfCz5ECojEFgvi0SO+MMfgYwce3dFkee8v49WYEp6YXjO6y283TSc9QMCGMcQw7H3oStuJBtbvokT/tfLe9du0N52w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=06TDOK99; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEDCF18026;
+	Tue,  5 Mar 2024 01:49:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709603357; cv=fail; b=hWl6Ee94y0cOxp948g4fIbFMzets1fS7DlgZQ/qq+b3+SFRB6UQiP9v7d7qjLvAlyrv+/WNx2inqQeOXsHbdyeINWASTWIcoTEPNIB3yFGH7Fo4m+xktkcEHvVt9jHoeUT/dzx6IOcc8kvSdXFSkTJZGppmJvJ6LS6t1PPm7wmM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709603357; c=relaxed/simple;
+	bh=w0B4jNOdGrj/R8zBykjKmmMQirfTlDwDSrmXPzyg4E4=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=igWv2wets3EiQNSjrrPbDUz2fYgdxlsPB/i20Rp4BDDYcoTZiWkqW8msT2lX2Ac+2VzBLYpP92erPEGbIzcdOE1LpjYxS6BmYxztP4BLH3N8RC+q6pM+Xb/oao1v+xl3Jb4qKRIGWiwg42SlOgN9RkUxuJXXaSP8qJYZMFrwpmU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=esTPgzLJ; arc=fail smtp.client-ip=40.107.104.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="06TDOK99"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1dbe7e51f91so13495ad.1
-        for <linux-serial@vger.kernel.org>; Mon, 04 Mar 2024 13:44:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709588693; x=1710193493; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XdHn4GZb8mS5r9CCbE9G4dliiSwjFnsZ8iNZM0tpqSw=;
-        b=06TDOK990+J2RWFomRj/GQySLoXhpD7RTIt7xnrmTNK6J4uRhHKa8Cxdf4gz4Qtoyk
-         jcJnblnSu3edy8+G15UWUwOl/Ssp5q+zvPGxtUHHL0/nRAi/hKhqRiDuyE5tG6f489/o
-         b+UUaDA7yLlRt+tsP3pwNF5/ft0snAca1KXVHSE3NtDMK78agKdZTs2z95MrIx+Vs6Q9
-         u9I8X+W+OrOQTNxelFMLtgH9fmXDN7DmgdGpdSt3MldwLYgCbuh0l9jOwG6w+wk9unri
-         edqZNXCGrhIG1IFHtfAUg6qm1G2UetVnbF7yUYYABl/8Ix84iPH2rRJnh+5KSq04Hxnt
-         YkCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709588693; x=1710193493;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XdHn4GZb8mS5r9CCbE9G4dliiSwjFnsZ8iNZM0tpqSw=;
-        b=EcjAl9aE/ubnNgAe9uD0ogEUJ0C48OUYmYW2nlYRJYXvzlfxBz8ci1aBJEp/OUSf68
-         z88yzXq1r/O83BLmnqJW9arpWG3VskQoTwryHqNUXw9DQjD9xB5F38wZ0ECyoQS6IO2I
-         HCuSQ6TXC1pcFWITymhM5dZeHXQmTphwgEby95DxBnunEAgvY10U+X9aThChCD2ARs1D
-         m/vvOgDtwiSmiRnAew4C38NAtH1jzDpasjZID/zW1rXR5+hhSN0VAHoFcX5ikmZitCHu
-         gkM7p258lA+b8vVNgYapVurkSMTLzfUTvFgK+NCnWv4CWHJrSwj6h94D9GOUwUp2yvjZ
-         EOJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWCRPh4BPWzPvFPQ0OHYR/cZMp0O2v1edWQV/gOLeGbJJz2hhpQwruIpTgE08sO1RyLeTJT6N2wA0uvKkCVdK/p13WraHE5uRMZu9vf
-X-Gm-Message-State: AOJu0Yw18edH4HuLN694OgrumuLTTfI1+8f4Jm8lYkLnRfan6ph/lWB7
-	3QdZWm4fNHqeYlXsYUbGkjP2O8YcYn0oKGig3T/3OUAdN4Dyswu5QCf0za+Pa7A5sFAmFxsPi71
-	Hv2Fa0KK2CbsqITw2okduYvSjzO0h04Ujz2Pe
-X-Google-Smtp-Source: AGHT+IGlRiqVF/I1pYpE4NUWd1ZLLQYcAq+ButRY/vOupZ8HBlb/kszZVF6akgIHib/kDQTm8OC6kJzLCWjs2sgY+6s=
-X-Received: by 2002:a17:903:1c2:b0:1db:7057:24df with SMTP id
- e2-20020a17090301c200b001db705724dfmr2059plh.14.1709588692886; Mon, 04 Mar
- 2024 13:44:52 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="esTPgzLJ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CIDw+kIg/lXekYBYtXngKA5hR8u7PrXm2mD7jdef8gIx3UHrTy2AV/vJtNW4j/sDynHkQCkSEBFwcHaAcj/LuM+RGaepBFhsXvlqBnmjtFI3l6CefKVm+aUO6G8lb1mnJruCFcBb8OtGQFDRmmtRX0YDL5IA3+8jWSMChHzbS2f90R2z+rJG2BHQqSyLfJTeNJMXB4tWm88YG3hUFEXUYvHVt/PuIgx9XbBETkZXvxH6c0woaTVTkOsTe6FRWlmej+FBmMK2RunsC0unRfZ2X+lxEuLPdKTTYjinfTIel7hoE2U9xCD6AmTmPv9oQgl0TECP67t/64WuJFyam3ER6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=n+ZVVVw333Vd4QWWlnX7zC7MRQSjORjycBYC2Vxfm4U=;
+ b=lONTLTjuS8hBJgGI8Wkr8IvnI2696g400kHLFJDg8up3RlOBHPdrUTLVbEhNU+PmfSU9H4ekTDAxIMUo0j5HOvuJPOo0gP5XkuAo+4NNs1PIII+jzO+toupMJrIzd8Gu0XKxWpGoLkLAIBxoKWm4be24osQqJ5ZePJJUNySFIidDRH0y/RKS2r+zeiDOOhAEndakK4f/fmS9gJIDr+29q9030yQWnFUTN3llUx0oDLCCatykHYt+QIbFBdQPahUtjg1/96S+L7lqKxzo9B/mu3LxHHZm1qEjjPd3QP465wC/CdodmiO607JWA232cROKVGv1qmO0AIPzrNUZnJ4I2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=n+ZVVVw333Vd4QWWlnX7zC7MRQSjORjycBYC2Vxfm4U=;
+ b=esTPgzLJy2KtWBPFAl5NNUJk4UqfX/vXLd6Hbr7v58v+ApikeMouX/gyXL194enujxUYXmrcEgzu0mpp7vyymmJlAwC1mu9iZpy2CXBNzlbjLqNFN56iLW8MlW1cg6Y2+h40weDhgcw1bQ+hrsRVr/GZT9R8JzWNyT2WnXFOfnI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by DU2PR04MB8933.eurprd04.prod.outlook.com (2603:10a6:10:2e0::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.39; Tue, 5 Mar
+ 2024 01:49:13 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::643f:faca:24da:e9aa]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::643f:faca:24da:e9aa%5]) with mapi id 15.20.7339.035; Tue, 5 Mar 2024
+ 01:49:13 +0000
+From: Sherry Sun <sherry.sun@nxp.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	u.kleine-koenig@pengutronix.de,
+	ilpo.jarvinen@linux.intel.com,
+	shenwei.wang@nxp.com,
+	alexander.sverdlin@siemens.com,
+	robert.hodaszi@digi.com,
+	robh@kernel.org,
+	tglx@linutronix.de
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	imx@lists.linux.dev,
+	frank.li@nxp.com
+Subject: [PATCH V2] tty: serial: fsl_lpuart: avoid idle preamble pending if CTS is enabled
+Date: Tue,  5 Mar 2024 09:57:06 +0800
+Message-Id: <20240305015706.1050769-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.37.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR06CA0238.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::22) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240226192329.3281301-1-pcc@google.com> <2024030214-buffing-obtuse-8dc8@gregkh>
-In-Reply-To: <2024030214-buffing-obtuse-8dc8@gregkh>
-From: Peter Collingbourne <pcc@google.com>
-Date: Mon, 4 Mar 2024 13:44:39 -0800
-Message-ID: <CAMn1gO4V2ehZ8JN_+vz1B8xrpTdvHAbQ_G4-y4yAAzST=PUnuw@mail.gmail.com>
-Subject: Re: [PATCH v2] serial: Lock console when calling into driver before registration
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, John Ogness <john.ogness@linutronix.de>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8404:EE_|DU2PR04MB8933:EE_
+X-MS-Office365-Filtering-Correlation-Id: b1cec08e-60e8-4bbc-4af5-08dc3cb6752e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ZyCjSYtS2QE7PBC9IWTl4Ouw4gQylJr4ycV4sll4QQqsMA35KABQGEoLtpCcjnEDEmXPIQ5+Y0KfSV2+OUAw9/RgQlsyj3CmKV2kAJ+LGCIxSNIjc/jdk4tVPg6nIp8zJO3gesWpCyDsjv4D91whmpQha793g3tPBhhfRGh0TuoAhhtJ+F+5kimSPiwvqLENIhXiIqrezv+ia6tn65mz3qib3Y1+ZNYv47eouWlPHLYM1rp/OnRGri4D09HzEsiS5hNoDV+AQgPZHvuzau+jgVmZpo0c9H9dljfGfTzuso26kql9pTEMhzjpcQ6oeOHRLLJRbfHlRttBuhnVL08hjgyyhUJqVK+Wli1sptq3JZhcCdJbZEygC2vYq7W4P8tvhe+f1PlxkoDiMpUgP4GrVVO9WDuOrJWfN9HjjPZ/W01e9S6WHdtD1kkqwNlwqbmY215jm8/ZUnPGVQEIQiCUG13FogLvklXumMT/9UDxb5wfcoOg8T8j2V8Qv1pAbO1kyQ/rRE67+P2YIzC+GXuefNDi1N79BHAsf7NpAp3R0QxNYY9y3RhKVGDeQGtbtmiE8ZGq0wtmIjdDlVHEyklQJK3Z2hjjNtZkA/mxA5st2FcK9vI8v7pX7ldtgJYU59YA0nbbP9ASNKzSdrIBpR8lYBISsmHWwVYsIczwJfvpB5vIMv/Tv3q0YBdEAyQ7/MpWhPLUhaX+gSK43za7q9G+E743PTcDp9Qbd6H1Oh4SHNY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SUptR3VIdHdwdEtwaStnOHlmUXU3Q284YXhVMXNRMHlHQ1hiZW1rVVdrdzR4?=
+ =?utf-8?B?bEMvck51dlNXalFGOWNqclllb0E2cVc1TGdraXM2VDhGY1NxeFV0SktoU1Nk?=
+ =?utf-8?B?MGtnTU1sZFhQZStkcDc4WW8vTlowOXVpeUxqN3UxdkN0bDlYODVVN0lOSUR6?=
+ =?utf-8?B?eGJOUTBPM0U4aURuVU5uSGRLVERSRG5NamwxeXRWYlNVMHZHKzQvZjU2WXk3?=
+ =?utf-8?B?dDJqVmV6bWJud0VzK0w3SUg5NXkxTWpQRlFXdEV5WVdYUEQ0aGxxYUpuaEFr?=
+ =?utf-8?B?ZHdMVHpiTVNvZ2IwOEVvNWNQNGxma1lDOFRNR2hFK0VVeXB3YTNqZDBFUXlN?=
+ =?utf-8?B?V1BLaGk2K3EvdzFJeSt4ZU5qZ0dNYjFCbm90QUNnMzk2TmJ2VEw5RXNWTWZx?=
+ =?utf-8?B?STFFcVp6c3JJN0toUzNMM2xTUEpqQTNmVHRwSW1xcVNHM0VXSnlsYzRESGs2?=
+ =?utf-8?B?SU1aU21idWtZc3M3L3M0bjNSMXAyQ1RuY0lhNS9SY3pYZGZVSXkwODJQTWF0?=
+ =?utf-8?B?K2pVemhESWpVT1YyQnJNaGF4UkdrODBaODM3cVNqdS93alFMbC9lcGl0MDB6?=
+ =?utf-8?B?K3ZSL1lxUWNDMWpWVFpiRS9lMWY1THhWcytoTUhXZGlnNjRFMUdZMTNVdzJm?=
+ =?utf-8?B?VXc4TkI0ODc4bXVVMDlVZEQzblRkZTZvZVhOMndqVDBLUENkVlV5RzEyaUpF?=
+ =?utf-8?B?NkNVRDNSeEJYQTZqL0xvcWlMZURUcmhWSklaUWNuUXEvMGlhS0drejVLS0JZ?=
+ =?utf-8?B?Mm4yakdiRm1PTlgvZW56ZTVzdjBmTmgwV0Y5SmZzdE9hK3lFSXQvdVpJKzd3?=
+ =?utf-8?B?djZwM3VNS0xLamZmZmZ5VlpPcWF2V1lUMyt3ZkZ0Wkd2M2dlM1g3YU9FWkls?=
+ =?utf-8?B?UnV1TnJyN2hYSGtRNlkwYlNHOVJTUGxhcTQ0RVNzcVBtWkJhUGxYUE1BaXly?=
+ =?utf-8?B?WDNqYmpsSkwyMUNGeHQrRVpJeUJnSVF5dzY2WjRFZVFXdkwwc0VZMjIxN0g5?=
+ =?utf-8?B?Q3doM2ExUlRmREVlazg4UVpIVnBieDVwNjkrKzdJbnRDdThmeUJlTXJlTXlC?=
+ =?utf-8?B?V1dwOGRPNHd0eFQ0d1NzUkVyOEhUNmxPcjQwd21nd3pYYlRWMmRubE9rditO?=
+ =?utf-8?B?S2xiZDEwYUZpT3o0YjlzZTc3cFEwaldCSUh2eDhqV1JNeDRCd25CNDRMcm5R?=
+ =?utf-8?B?QTRSQ0JSNHROcjBvaUdnNFB3WldMK3V2bzJFNjBLOXFuVXJHTUVmZlk3aWpw?=
+ =?utf-8?B?NzczY05ieGtROTE0eitrZDVHcytNdWI0OU9GTW9QeHJIcUZKbEJmdzJqWXNH?=
+ =?utf-8?B?d0YvU0tVMkdHRDNqcnpZS2kxVFUzT1pLekVDb2ZxTWN4U0tmckhURC9BeldQ?=
+ =?utf-8?B?QjdjOWdkZXZnMTRtaTA2SlZ3cktSYmc2aXNvTVRxUUUxaHJSVXZmMk9QbVA3?=
+ =?utf-8?B?YndSRXFpRjlCOWRZTldrYnZSK1VlZUZ3d2FVSkNaQmJyd0FJdVo3M3VoaGdN?=
+ =?utf-8?B?ZlpxdSs1NG5QNkpzM3E5QjNoeEt6dk5SL0l3RTczUGtGZkhuSm1TSFhwTVRx?=
+ =?utf-8?B?UmZMNHB0blRqbGtsWmpLZkxIZEVybHAybzBpU3BCaG1UanVXVlluMmZ6OXNQ?=
+ =?utf-8?B?Z0dRQzAvaG1aNzZ2Tlc4K0UrZWFNamdNSFRVTUdFdEdtWklUREkweDBjbXpN?=
+ =?utf-8?B?NlFEdFVmYXZia1hSMGVFT3N6Q2xFOEFnNjNCZzQva05YZFF0U1RlN3l3SXVT?=
+ =?utf-8?B?YnNiMnUxbFFCbjdneWEvOUFFUUZFdXoxd0RUM0N3eFdWUEU5dmloNEwzMXNl?=
+ =?utf-8?B?Z0VOcjYvYXo4NHhsKzNzQ1BSMGlmc1BqS0NJVWxOamNINnVhT1lpRFNhZjRm?=
+ =?utf-8?B?dEQwUEtsVWl0Tk5IMk1Gb3FySHZtNXZVZnFWbVYvQmJPSmV1MSttei8zdnpG?=
+ =?utf-8?B?QTJPajF1bDhsUUN0dUVEVmtpU2IxR0VtYk9MamYvR1hzRnllQjFKblFTTStK?=
+ =?utf-8?B?WDlzOGxvSW5PbDJLak4zakoybjZWV3Y5ZWhkNW53czJjVTZ5TXVDY1ZKaUtS?=
+ =?utf-8?B?MWsxdVdhOXFHWXA1K25ieVRmNTVzL2l2NlRaUEJvbnVQbVdIbTN6TWprMjhM?=
+ =?utf-8?Q?aQvMaxMYI2rVfc85woRXorotZ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1cec08e-60e8-4bbc-4af5-08dc3cb6752e
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 01:49:13.0621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uN1SE0fTrhtJI3CDXgST9zlsPKFtircaCtaX77857copKCildsMjuGPdIHJZRA6ze0g0rL3BOqbJC4WCtgB0PA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8933
 
-On Sat, Mar 2, 2024 at 12:48=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Feb 26, 2024 at 11:23:26AM -0800, Peter Collingbourne wrote:
-> > During the handoff from earlycon to the real console driver, we have
-> > two separate drivers operating on the same device concurrently. In the
-> > case of the 8250 driver these concurrent accesses cause problems due
-> > to the driver's use of banked registers, controlled by LCR.DLAB. It is
-> > possible for the setup(), config_port(), pm() and set_mctrl() callbacks
-> > to set DLAB, which can cause the earlycon code that intends to access
-> > TX to instead access DLL, leading to missed output and corruption on
-> > the serial line due to unintended modifications to the baud rate.
-> >
-> > In particular, for setup() we have:
-> >
-> > univ8250_console_setup()
-> > -> serial8250_console_setup()
-> > -> uart_set_options()
-> > -> serial8250_set_termios()
-> > -> serial8250_do_set_termios()
-> > -> serial8250_do_set_divisor()
-> >
-> > For config_port() we have:
-> >
-> > serial8250_config_port()
-> > -> autoconfig()
-> >
-> > For pm() we have:
-> >
-> > serial8250_pm()
-> > -> serial8250_do_pm()
-> > -> serial8250_set_sleep()
-> >
-> > For set_mctrl() we have (for some devices):
-> >
-> > serial8250_set_mctrl()
-> > -> omap8250_set_mctrl()
-> > -> __omap8250_set_mctrl()
-> >
-> > To avoid such problems, let's make it so that the console is locked
-> > during pre-registration calls to these callbacks, which will prevent
-> > the earlycon driver from running concurrently.
-> >
-> > Remove the partial solution to this problem in the 8250 driver
-> > that locked the console only during autoconfig_irq(), as this would
-> > result in a deadlock with the new approach. The console continues
-> > to be locked during autoconfig_irq() because it can only be called
-> > through uart_configure_port().
-> >
-> > Although this patch introduces more locking than strictly necessary
-> > (and in particular it also locks during the call to rs485_config()
-> > which is not affected by this issue as far as I can tell), it follows
-> > the principle that it is the responsibility of the generic console
-> > code to manage the earlycon handoff by ensuring that earlycon and real
-> > console driver code cannot run concurrently, and not the individual
-> > drivers.
-> >
-> > Signed-off-by: Peter Collingbourne <pcc@google.com>
-> > Reviewed-by: John Ogness <john.ogness@linutronix.de>
-> > Link: https://linux-review.googlesource.com/id/I7cf8124dcebf8618e6b2ee5=
-43fa5b25532de55d8
->
-> Why is a link to a gerrit review with no context other than this same
-> commit needed here?
+If the remote uart device is not connected or not enabled after booting
+up, the CTS line is high by default. At this time, if we enable the flow
+control when opening the device(for example, using “stty -F /dev/ttyLP4
+crtscts” command), there will be a pending idle preamble(first writing 0
+and then writing 1 to UARTCTRL_TE will queue an idle preamble) that
+cannot be sent out, resulting in the uart port fail to close(waiting for
+TX empty), so the user space stty will have to wait for a long time or
+forever.
 
-I usually add that to my patches so that the progression of the patch
-can be tracked. See:
-https://lore.kernel.org/all/CAMn1gO53G6-sZE8RiLAD2uERbW1XtvyZbRonNGbHonzD05=
-8yAA@mail.gmail.com/
-https://lore.kernel.org/all/CAHk-=3DwhFbgy4RXG11c_=3DS7O-248oWmwB_aZOcWzWMV=
-h3w7=3DRCw@mail.gmail.com/
+This is an LPUART IP bug(idle preamble has higher priority than CTS),
+here add a workaround patch to enable TX CTS after enabling UARTCTRL_TE,
+so that the idle preamble does not get stuck due to CTS is deasserted.
 
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > Cc: stable@vger.kernel.org
-> > ---
-> >  drivers/tty/serial/8250/8250_port.c |  6 ------
-> >  drivers/tty/serial/serial_core.c    | 12 ++++++++++++
-> >  kernel/printk/printk.c              | 21 ++++++++++++++++++---
-> >  3 files changed, 30 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-> > index 8ca061d3bbb9..1d65055dde27 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -1329,9 +1329,6 @@ static void autoconfig_irq(struct uart_8250_port =
-*up)
-> >               inb_p(ICP);
-> >       }
-> >
-> > -     if (uart_console(port))
-> > -             console_lock();
-> > -
-> >       /* forget possible initially masked and pending IRQ */
-> >       probe_irq_off(probe_irq_on());
-> >       save_mcr =3D serial8250_in_MCR(up);
-> > @@ -1371,9 +1368,6 @@ static void autoconfig_irq(struct uart_8250_port =
-*up)
-> >       if (port->flags & UPF_FOURPORT)
-> >               outb_p(save_ICP, ICP);
-> >
-> > -     if (uart_console(port))
-> > -             console_unlock();
-> > -
-> >       port->irq =3D (irq > 0) ? irq : 0;
-> >  }
-> >
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
-al_core.c
-> > index d6a58a9e072a..ff85ebd3a007 100644
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -2608,7 +2608,12 @@ uart_configure_port(struct uart_driver *drv, str=
-uct uart_state *state,
-> >                       port->type =3D PORT_UNKNOWN;
-> >                       flags |=3D UART_CONFIG_TYPE;
-> >               }
-> > +             /* Synchronize with possible boot console. */
-> > +             if (uart_console(port))
-> > +                     console_lock();
-> >               port->ops->config_port(port, flags);
-> > +             if (uart_console(port))
-> > +                     console_unlock();
-> >       }
-> >
-> >       if (port->type !=3D PORT_UNKNOWN) {
-> > @@ -2616,6 +2621,10 @@ uart_configure_port(struct uart_driver *drv, str=
-uct uart_state *state,
-> >
-> >               uart_report_port(drv, port);
-> >
-> > +             /* Synchronize with possible boot console. */
-> > +             if (uart_console(port))
-> > +                     console_lock();
-> > +
-> >               /* Power up port for set_mctrl() */
-> >               uart_change_pm(state, UART_PM_STATE_ON);
-> >
-> > @@ -2632,6 +2641,9 @@ uart_configure_port(struct uart_driver *drv, stru=
-ct uart_state *state,
-> >
-> >               uart_rs485_config(port);
-> >
-> > +             if (uart_console(port))
-> > +                     console_unlock();
-> > +
-> >               /*
-> >                * If this driver supports console, and it hasn't been
-> >                * successfully registered yet, try to re-register it.
-> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> > index f2444b581e16..f51e4e5a869d 100644
-> > --- a/kernel/printk/printk.c
-> > +++ b/kernel/printk/printk.c
-> > @@ -3263,6 +3263,21 @@ static int __init keep_bootcon_setup(char *str)
-> >
-> >  early_param("keep_bootcon", keep_bootcon_setup);
-> >
-> > +static int console_call_setup(struct console *newcon, char *options)
-> > +{
-> > +     int err;
-> > +
-> > +     if (!newcon->setup)
-> > +             return 0;
-> > +
-> > +     /* Synchronize with possible boot console. */
-> > +     console_lock();
-> > +     err =3D newcon->setup(newcon, options);
-> > +     console_unlock();
-> > +
-> > +     return err;
-> > +}
-> > +
-> >  /*
-> >   * This is called by register_console() to try to match
-> >   * the newly registered console with any of the ones selected
-> > @@ -3298,8 +3313,8 @@ static int try_enable_preferred_console(struct co=
-nsole *newcon,
-> >                       if (_braille_register_console(newcon, c))
-> >                               return 0;
-> >
-> > -                     if (newcon->setup &&
-> > -                         (err =3D newcon->setup(newcon, c->options)) !=
-=3D 0)
-> > +                     err =3D console_call_setup(newcon, c->options);
-> > +                     if (err !=3D 0)
->
-> Didn't checkpatch complain about this?  It should be:
->                         if (err)
-> right?
+Fixes: 380c966c093e ("tty: serial: fsl_lpuart: add 32-bit register interface support")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+Changes in V2:
+1. Move the "restore control register" comment message to the appropriate place.
+2. Add Fixes tag.
+---
+ drivers/tty/serial/fsl_lpuart.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-No, it didn't complain. (It complained about the pre-existing
-assignment within an if, which is why I moved it out, but not about
-that.) Looks like if (err) is more popular, so I changed it in v3.
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 5ddf110aedbe..bbcbc91482af 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2345,9 +2345,12 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ 
+ 	lpuart32_write(&sport->port, bd, UARTBAUD);
+ 	lpuart32_serial_setbrg(sport, baud);
+-	lpuart32_write(&sport->port, modem, UARTMODIR);
+-	lpuart32_write(&sport->port, ctrl, UARTCTRL);
++	/* disable CTS before enabling UARTCTRL_TE to avoid pending idle preamble */
++	lpuart32_write(&sport->port, modem & ~UARTMODIR_TXCTSE, UARTMODIR);
+ 	/* restore control register */
++	lpuart32_write(&sport->port, ctrl, UARTCTRL);
++	/* re-enable the CTS if needed */
++	lpuart32_write(&sport->port, modem, UARTMODIR);
+ 
+ 	if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) == UARTCTRL_PE)
+ 		sport->is_cs7 = true;
+-- 
+2.37.1
 
-> >                               return err;
-> >               }
-> >               newcon->flags |=3D CON_ENABLED;
-> > @@ -3325,7 +3340,7 @@ static void try_enable_default_console(struct con=
-sole *newcon)
-> >       if (newcon->index < 0)
-> >               newcon->index =3D 0;
-> >
-> > -     if (newcon->setup && newcon->setup(newcon, NULL) !=3D 0)
-> > +     if (console_call_setup(newcon, NULL) !=3D 0)
-> >               return;
->
-> No way to pass an error back here?
-
-The only caller, register_console(), ignores errors from this
-function. Arguably it shouldn't, but that's a pre-existing issue.
-
-Peter
