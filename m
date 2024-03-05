@@ -1,126 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAED7E564;
-	Tue,  5 Mar 2024 07:35:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD9054D9F9;
+	Tue,  5 Mar 2024 10:03:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709624132; cv=none; b=Pp+KtOmFqrm4SJ6M5TouhWJMViABsjhoOJVEWjj+2u57OXyIcGS745PaokMdvSZB0Gln07Q/TjOffE4BJyWrbZvU7hHCpx9Tq/8BWqqNJ4A41ePeUg0zq12cn1FMlwDe1V7uoXw5QD0jdcGwTg4hiZlYHnl5dppgkasvbx8JF18=
+	t=1709632981; cv=none; b=okn3MITzxwXZjUyOReKnhSxNwAhNj1BaI8A/eCDJ+4hNO0CkSf7U9VHQ6aMewBikeu0hRI7IQDpzBwWCq0dJaWhy09/4elpNrbkZbEeEvjjaEFQYGej0SeNFPNgYA5ezPPBdw5tBG+9S34Imv3HQQiIyKqC7u9FL9F0Up1hbckQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709624132; c=relaxed/simple;
-	bh=9mE8JGFRmIiaAXwJrEkI8C/6vowaKjT3QgtdT5nxS10=;
+	s=arc-20240116; t=1709632981; c=relaxed/simple;
+	bh=CK3hGEkomyEWi++yHT0MA62YvDNmdI7jRyt+cZI+39M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=htC0wlel3fKDI8uuLuSJZUUsCpEfclc1HuO3X/0nI6K4++uzDTqv7sBOzszKXz1KpNc9KzgwEc16Lo88N+7iAKNRkvqyS9Sv7s3Rx0XFcn9rv/CNQVuP/Ex2BePLFj0XuZUbT2fexthC8kcVs0Fn28rKK/MgkjFV9/ir8ZypKqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BFDziI/S; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=D8LUoWJSRkJxZLnL/ueoS+5BXqh9Q+470ocb9798O+EKA983pv2k+hSqS8t6NodPwVEUeDy26VHWajl41Z25M/8CtwyCjOgeaXlGNELOyzBlRie/S2dTdXwumrx4BhDw7eTqd/JZteFptLJZ9Nc3OTFeRQ3GrRU/9brdmR+DXSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3dghNzo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BFDziI/S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89CDAC433F1;
-	Tue,  5 Mar 2024 07:35:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709624132;
-	bh=9mE8JGFRmIiaAXwJrEkI8C/6vowaKjT3QgtdT5nxS10=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3dghNzo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48687C433C7;
+	Tue,  5 Mar 2024 10:03:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709632980;
+	bh=CK3hGEkomyEWi++yHT0MA62YvDNmdI7jRyt+cZI+39M=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BFDziI/SFGMNLoO162znoeRmfJIet1EyZZ0jpgaU7j8q27USEhFhaiAvUsrqIpfNA
-	 hzzdPWE2+S4AZbj9gb67MpaHvd3/n2VyaPlIGR9F+67muyX5ehwkneDNFUE3g1wUgL
-	 Hlm6gxPjqlDH6mzIsg1FGrtjk2Am8a9ofXDn9kdM=
-Date: Tue, 5 Mar 2024 07:35:28 +0000
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Sherry Sun <sherry.sun@nxp.com>
-Cc: jirislaby@kernel.org, u.kleine-koenig@pengutronix.de,
-	ilpo.jarvinen@linux.intel.com, shenwei.wang@nxp.com,
-	alexander.sverdlin@siemens.com, robert.hodaszi@digi.com,
-	robh@kernel.org, tglx@linutronix.de, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, imx@lists.linux.dev, frank.li@nxp.com
-Subject: Re: [PATCH V2] tty: serial: fsl_lpuart: avoid idle preamble pending
- if CTS is enabled
-Message-ID: <2024030517-paging-voter-6054@gregkh>
-References: <20240305015706.1050769-1-sherry.sun@nxp.com>
+	b=Q3dghNzo7HlmbEOACI4bncZhwmZXipl+TemetSV+yqFniCeRIAGEv/1goTgQg9DKA
+	 QuDNmDvcvUkBEAxItcYPDEah06kSVtuBKKRpVu50+yiPNIQabzdSkEkvRFMgBaWT0/
+	 HwXzBrNkDSLAPZDmNOCB5dnQAMXvO01gizNb3wldqr9DvHpXzYt2SxggwaBKv1W+M0
+	 2VxYi7BjXCcoWjK9n3WtKDUEuZq/tQsM1B4aH1ZhH4qOQtgerQf/cIX0gGMjPPigu2
+	 IE50Z0Q6VXaxXItvGljUFpi8L4lfoe6383qzPkDl3KLgUoT2aM70YzGNxJS93D6rk2
+	 2seRVT/1pMKrg==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan@kernel.org>)
+	id 1rhRdb-000000004md-0LEo;
+	Tue, 05 Mar 2024 11:03:07 +0100
+Date: Tue, 5 Mar 2024 11:03:07 +0100
+From: Johan Hovold <johan@kernel.org>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Stephen Boyd <swboyd@chromium.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] Revert "tty: serial: simplify
+ qcom_geni_serial_send_chunk_fifo()"
+Message-ID: <Zebt2_BTiYSlgxtJ@hovoldconsulting.com>
+References: <20240304174952.1.I920a314049b345efd1f69d708e7f74d2213d0b49@changeid>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240305015706.1050769-1-sherry.sun@nxp.com>
+In-Reply-To: <20240304174952.1.I920a314049b345efd1f69d708e7f74d2213d0b49@changeid>
 
-On Tue, Mar 05, 2024 at 09:57:06AM +0800, Sherry Sun wrote:
-> If the remote uart device is not connected or not enabled after booting
-> up, the CTS line is high by default. At this time, if we enable the flow
-> control when opening the device(for example, using “stty -F /dev/ttyLP4
-> crtscts” command), there will be a pending idle preamble(first writing 0
-> and then writing 1 to UARTCTRL_TE will queue an idle preamble) that
-> cannot be sent out, resulting in the uart port fail to close(waiting for
-> TX empty), so the user space stty will have to wait for a long time or
-> forever.
+On Mon, Mar 04, 2024 at 05:49:53PM -0800, Douglas Anderson wrote:
+> This reverts commit 5c7e105cd156fc9adf5294a83623d7a40c15f9b9.
 > 
-> This is an LPUART IP bug(idle preamble has higher priority than CTS),
-> here add a workaround patch to enable TX CTS after enabling UARTCTRL_TE,
-> so that the idle preamble does not get stuck due to CTS is deasserted.
+> As identified by KASAN, the simplification done by the cleanup patch
+> was not legal.
 > 
-> Fixes: 380c966c093e ("tty: serial: fsl_lpuart: add 32-bit register interface support")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
-> Changes in V2:
-> 1. Move the "restore control register" comment message to the appropriate place.
-> 2. Add Fixes tag.
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> From tracing through the code, it can be seen that we're transmitting
+> from a 4096-byte circular buffer. We copy anywhere from 1-4 bytes from
+> it each time. The simplification runs into trouble when we get near
+> the end of the circular buffer. For instance, we might start out with
+> xmit->tail = 4094 and we want to transfer 4 bytes. With the code
+> before simplification this was no problem. We'd read buf[4094],
+> buf[4095], buf[0], and buf[1]. With the new code we'll do a
+> memcpy(&buf[4094], 4) which reads 2 bytes past the end of the buffer
+> and then skips transmitting what's at buf[0] and buf[1].
+
+Good catch!
+
+> Running "ls -al" on large directories also made the missing bytes
+> obvious since columns didn't line up.
+
+I had not noticed this in my limited use of the serial console on the
+sc8280xp CRD, but sure enough there are garbage characters and missing
+characters in the output of 'ls -al' before applying this patch.
+
+> While the original code may not be the most elegant, we only talking
+> about copying up to 4 bytes here. Let's just go back to the code that
+> worked.
 > 
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 5ddf110aedbe..bbcbc91482af 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -2345,9 +2345,12 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
->  
->  	lpuart32_write(&sport->port, bd, UARTBAUD);
->  	lpuart32_serial_setbrg(sport, baud);
-> -	lpuart32_write(&sport->port, modem, UARTMODIR);
-> -	lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> +	/* disable CTS before enabling UARTCTRL_TE to avoid pending idle preamble */
-> +	lpuart32_write(&sport->port, modem & ~UARTMODIR_TXCTSE, UARTMODIR);
->  	/* restore control register */
-> +	lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> +	/* re-enable the CTS if needed */
-> +	lpuart32_write(&sport->port, modem, UARTMODIR);
->  
->  	if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) == UARTCTRL_PE)
->  		sport->is_cs7 = true;
-> -- 
-> 2.37.1
-> 
-> 
+> Fixes: 5c7e105cd156 ("tty: serial: simplify qcom_geni_serial_send_chunk_fifo()")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Hi,
+Tested-by: Johan Hovold <johan+linaro@kernel.org>
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+and as Jiri already pointed out:
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Cc: stable@vger.kernel.org      # 6.4
 
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Johan
