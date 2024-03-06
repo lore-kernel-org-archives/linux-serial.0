@@ -1,64 +1,72 @@
-Received: from SG2PR03CU006.outbound.protection.outlook.com (mail-southeastasiaazolkn19010000.outbound.protection.outlook.com [52.103.65.0])
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2030.outbound.protection.outlook.com [40.92.98.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432905EE70;
-	Wed,  6 Mar 2024 11:42:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.65.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9187386621;
+	Wed,  6 Mar 2024 12:40:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.98.30
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709725362; cv=fail; b=axbMDulD0UnMQG1QiNJNN00lo8nomiP85tSrDAF9QKoTcY7AZ/QvPM0/MFxUQvSeG1BS6zzu+/ZFguskjrrTy978ZyAmtss9K5poog9lj7qliUJnn3p6qvxIb9S3cX/BwoR89oBlcQMZ2JFumUFxJWUlYA41X4ZpM4Wpd6WvfvM=
+	t=1709728846; cv=fail; b=E2gTKKNgMioPw+kYXuNkIT1kS+k9PhATlHvQg/SG9vPSPdPXh0CU++AErrUp5wsHuhXnwMaqo0izCQ8QJ+xo0dMQ+oDTx9iRiiK0gjftko/EJYijlEhakQyEQwDEivbp683muSyKDlOQaHMVwFxtlIP9ugvdSFDcegnpiqUOeKk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709725362; c=relaxed/simple;
-	bh=UZ6XzhaqEvo4Sz735jzl+U2owzJRht4sX7quUtfmD7g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=NxZzlNLvhEKjUnbjaW5u0Nr1TUIbtOaP2OLmgI0LRh1J5CZ/eFzIsMA+XvVExPtJhEGhUrpAY1Hsg+5TnrE0n89STwPM5Dtus4qDvJdgPJhlRJ/B64h3DPUWY8Pw1hRnkY5Oww35W/IDe8U7G1927HP6ggJ5qtI/OY2w343YnfY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=NboYcYnF; arc=fail smtp.client-ip=52.103.65.0
+	s=arc-20240116; t=1709728846; c=relaxed/simple;
+	bh=0DIT8vRGbkFn4fFXdPdOaI/B43qMJw0kpX/v8gDJZf4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=sIy8IThQVtiAJofKkvEWmGKJVSxwd50f6YBUeMTPHAXyF3X1WQzYMUBE03v5Y1zAMg62LT7NITCg/KgqVpjEJyLNdN6fye7qMFbinSZJZu0NPaDdCJ1hfZn9Fuh7pxC3WoeFu1+3qNrm7OhP31obD4OB/inJnG2AW2H6MAzSpvk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=fail (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=JUv8NE9P reason="signature verification failed"; arc=fail smtp.client-ip=40.92.98.30
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="NboYcYnF"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="JUv8NE9P"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ivy9ZkrN2rpcESshyV6Yam1SgWboXC+LOY7jsyAsbY5IEh+LMPvNqjGW6S955Ri6wx7m+gC4X+NwObj601sz7ewDYtk9oJ97Eolrdq+D3mMDy8oVSd95jaIwLXojztXMvEC5MCbocTtvqLIGUfMhJGkdHD64715nCrC37b12OEfgCE4r11zoPQsb52rxsjXRCK5sdykbeP/tercR59emtUlNZhFIAzvqXgJhG6AJeYWtHexbt70UF7pOWXBKRARkM98IRIyr5jXvCf+FUT1rczwfRB2O7PdOB2TueBQgr+Tqzf19w1Qjpz8vgTjLy6U80c0iSfTMNrWMUoC35JKYug==
+ b=iahnpr9nu8xXlAgDMRjcJbf/tpW4u1N42cN9Pub+sy2UAtpbMaCfPqcczpQSqs1zO16kYIv44UJvOlio7BQgNXTd3ouixMfiUnD8hFi45yHCmhiNBCo2JERcuDRWHjDgqwDXpDDeMnTfV+r/qHiSnweRAnmGjRX/bLs6pfShndVV53zx32PF+S9w6S6HvzpQAlXNM6rNQw4BtaWjcCyT6crWHqcXNRCenwSwKK1gOgacPtJqiuq5C//jlB2ODJU5ZdPwN6yTsTBsem3h+O4v2Jf+KQDu/wr1UeGqAVPbCmW08eP6AhjbzcOldlRLX/QWG7iTTgzu6BxxWjvLUOov7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BItPXvOzfEkhY+Mw18wVWnJknPtnJ0UQAoGm2kIPYks=;
- b=DUhbFdoJkd2BbY5hq6wuoFYCpqY0zOn69KrSjssI62ZUWyDfz1wlEE1+0kGzAvIBWFf2aqhbllF+EIhpYq1KxAsKWMeeFgBSxe+767tV2e6xYBkLngv2p49IlLyeivastOK0FgVTUWznltGmsU0SnfZpBoMHy5x2NL/9J1iaCYSfOXeJnAG4mVZYB3JIDgCYf6RV1S+INiFdIqOSvJPMrIDjOJeCM+cwkb5vbDTItMdnYZe32xKcmO6dvLah3kiOeuwAWkcxigtL7LpsC8PN1i4RlC5twhrcdORpIBkfPogbTOc2eWKYXoKKDEtCfemvS/zX3DGs3RHBSq85jU6mAw==
+ bh=noGfxLvPbxnLpweiggOKmItIhD1pkDaIxw+XTK+txfs=;
+ b=B+kZ2riVHA4zNthp4Zd3f9zpKQDcPfF0dittCohn34uhACNERnk0kxUVtIZct4+v3t5PFURcG65ZfeB8zFPjYAKLKSmCtXIBsfsigFQxteOslBWRRbrjsT4Ahj2gb107Q+K78pCV1NAbRIb5dJxvwn+AnuFVWoYmprCBSub640Hp6WuDGrDkEGVsBZiDeXOrVzGlql+wt3WbnJumkoadQO1TrHkWHIzIkFkPnABmKNrDgn64KcIboDQ15Ehpps/OoSG79VH0RaQaK4DsAd6rojJ9sQfPIwrt1VR0wpNUqwFCe779zdKkuIh6qFEF2C1lEgIW9NTWQ+6vurEudefmng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BItPXvOzfEkhY+Mw18wVWnJknPtnJ0UQAoGm2kIPYks=;
- b=NboYcYnF0r7JznUfvWVDDZotOcU94I7YYbGvEbwN2Kf8Q1BzEJNE9eJ7tUCu00tpMFTWW5i9/WzkMa+G3xDuyZq8PLp3rVzEBqN+3YBgUPORM2v8iU6QGzZKP5ktfQj5xrXN0jN5Hw4Qn4EwnyipQTRbDvmI1vu/igncy2hxy2iFvmir0kJH2oQ7EjfTw+RfHqPQd/ekwyOK/ixZ1b0YKM6BTV0Dyh+DVVO7gdrqknB9mHJQ0UbNYe9Rkv7Ies2X3nDX7wQyJO68iRj2dbUstVtvy/Oi9U2ptz6qRODcW1nPJISfnI9SiTQpRecDBMM2ABSSyc0IaG91voGeji0Ygg==
-Received: from PSAPR06MB4952.apcprd06.prod.outlook.com (2603:1096:301:a3::11)
- by SG2PR06MB5012.apcprd06.prod.outlook.com (2603:1096:4:1c4::13) with
+ bh=noGfxLvPbxnLpweiggOKmItIhD1pkDaIxw+XTK+txfs=;
+ b=JUv8NE9PAr63q9zXlRzBBSX78JZDrAA1GuvqKtVMvmlkkwe4oePg5egBVwSMdIaOUl1dJKo2wxrDV/F0UkSdc27DYjB/53kxOLh9KBsicmCt1wOwvw/I+FcbNCpbL2n9wyaRAY4RY8S3K5vDX8osZafqdR6KtNF0cDDXQ+DJzZlWGmASVWUCH2XZmsZf9nyT7ToM5wHn9zEwqgSEq0ZdTOxGMugn52aH5tBDLiLtlfe2UnlyeRrggJ4lZEcb3EuLSv7W+VScVxl8qmBiViJf/di2DNkcaimGwZEG4Zv3YkoIqKEYSGHDrDu5SdYHjtNP1LAdrviz9xSw9XedGN+W9Q==
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:39d::8)
+ by TYCP286MB2880.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:307::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24; Wed, 6 Mar
- 2024 11:42:36 +0000
-Received: from PSAPR06MB4952.apcprd06.prod.outlook.com
- ([fe80::1e13:cc11:3196:e0a6]) by PSAPR06MB4952.apcprd06.prod.outlook.com
- ([fe80::1e13:cc11:3196:e0a6%6]) with mapi id 15.20.7362.019; Wed, 6 Mar 2024
- 11:42:36 +0000
-From: Guanbing Huang <albanhuang@outlook.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	albanhuang@tencent.com,
-	tombinfan@tencent.com
-Subject: [PATCH v2] serial: 8250_pnp: Support configurable reg shift property
-Date: Wed,  6 Mar 2024 19:42:27 +0800
+ 2024 12:40:40 +0000
+Received: from TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::8e48:6e1:f641:32b1]) by TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::8e48:6e1:f641:32b1%7]) with mapi id 15.20.7362.019; Wed, 6 Mar 2024
+ 12:40:40 +0000
+Date: Wed, 6 Mar 2024 20:40:37 +0800
+From: Dawei Li <set_pte_at@outlook.com>
+To: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+	"npiggin@gmail.com" <npiggin@gmail.com>,
+	"linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+	"linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] powerpc: macio: Make remove callback of macio driver
+ void returned
 Message-ID:
- <PSAPR06MB4952ED7EAD4410B25258F42FC9212@PSAPR06MB4952.apcprd06.prod.outlook.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <2024030518-encrust-gutter-f507@gregkh>
-References: <2024030518-encrust-gutter-f507@gregkh>
-Content-Type: text/plain
-X-TMN: [/LBBpEzWebFjYSYF8RnyZEKQB47Dp0xz]
-X-ClientProxiedBy: SG2P153CA0040.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::9)
- To PSAPR06MB4952.apcprd06.prod.outlook.com (2603:1096:301:a3::11)
-X-Microsoft-Original-Message-ID:
- <20240306114227.78924-1-albanhuang@outlook.com>
+ <TYTP286MB356472357994D5EA49E2F5E3CA212@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
+References: <TYCP286MB232391520CB471E7C8D6EA84CAD19@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
+ <3dc29701-239f-4a3b-b571-b9732975bd73@csgroup.eu>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3dc29701-239f-4a3b-b571-b9732975bd73@csgroup.eu>
+X-TMN: [Nh3sQUEUbpxaXXOwSoNdFxws6+REaLee]
+X-ClientProxiedBy: SI2PR02CA0040.apcprd02.prod.outlook.com
+ (2603:1096:4:196::6) To TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:39d::8)
+X-Microsoft-Original-Message-ID: <20240306124037.GA2466@wendao-VirtualBox>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,75 +75,329 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PSAPR06MB4952:EE_|SG2PR06MB5012:EE_
-X-MS-Office365-Filtering-Correlation-Id: 33f6d9cb-1357-4849-437c-08dc3dd284d3
+X-MS-TrafficTypeDiagnostic: TYTP286MB3564:EE_|TYCP286MB2880:EE_
+X-MS-Office365-Filtering-Correlation-Id: e92084cb-eb20-4297-f73d-08dc3ddaa149
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	VdbCCszulPVYB0idHNKveKksC27pM/whwuv8OnFLkY7TtZNsPc2KNAS+tJYD0J4gPeU3maxBa8EnfH/IOOXLkAHe6zfXalMHkQRkcgn79XitQT8Qx6oWY+zdrW04ItXE6ubGFoRXNco5Nz2FpyUEFHDmu6ZnvbET1bMTbhd2SKaFJFtN1qBb2ErPb+I1MKQyPcRjLTU0lfsj6BxGfBbTJc3RUIgvfqkyzpJ3/ilokFiv55uay790Cslxi/i1oyt85zMrFeMaRvd+6pHeUg9CLlamvdCY9k3p6M5Q3OXMxiEnC7m5DWe65kOeFpchk4g+ZaXA/UK5urfNicoCKISbMYhm9ufWPrqaG0OW4cmeOl+lR0oPxW9amrGdF3HBxpnT8JgHh1yHk87ZtNBFOkLMH8BlJMHD9yeK6EQzT0N+Cpfx+ie3/0l8rKi5O09M+z/onGR4/kG/YBC0gl8wZpdP6Aygux4EFnKAbbvBeD6EBbaGjgzZY0XyRRI+Iu33N6UfavD6L5pjHe5DpcQM+mgUONw23QoCYhJINRH28LetD5Eisk+0keXkoVY+zeEGorZR
+	mNc3gDI7HEWYdy9uSOU+QAsWz8a8yzdnHZUuW0hgIEFIhZdB1s9jv26Oq0ZqmY5ZLARFZwg04jDk1WGNH8NkJEld29lX9gd5eLAAVOuWNNG7fdCxIrVgT3/JCZst3sipPGfokCSOM7jaZMfGJKQlr1NzLkp32am3M8boXDQwgjZz49dnO62sDWrhlWfpkhM7h00NL4kw+lGuK9Xm93TLWY8WEEId5u4iXH+LDIzFyaz8YHr1L4yt1sIr8SutLJVsz9DJJStLYuDZJW5T/nve5zh3ocTXqzUG1AWfB63WQj2V3wlQ8IEh//ShvaJVPwBPsIoZYcUZ/zvBNTBSunLX0cJZ5gitHmg2kFJ/hqFMtPmQ/ibbYzAYSeB6l6DQyTECnhKFGmmanHFaLqwHm4hMU9cBB6qzwBjVF6xjhzh6zoXoMb2SIpQ/O+4RkpgYynMQ2MPePT0C5c9JKUQoSby4LydssNGeDYAEfTrlTiOCqM+SHO4oxzGOyDcTMc12NDj+3CTO2VxbRpZZ/2zv4gQ6np4tDXdMNI7uJ7LWlT12rLfTIodgsoSzwgsIr8kQoi+N2tJkj4dH8Yj7rvf3w7SD9ruQvxMs8HInTgoqSsJwa6g=
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yIrIoNhkX/U5dEIqa2WD58yMVhfOoEpy/d05Nw4rR6dgApLskilr5nKmdb0b?=
- =?us-ascii?Q?4LgO9Ks+8MPHjh5dBz55Y498Uyp9KTm+geUE1AiNFIJL8y4alwqMed4qYF6j?=
- =?us-ascii?Q?aslInNMBdFKEP2YdH0P0CzWFwN/jdtk+UKOCcukdB/eo7aEsIM7wP1bTocvK?=
- =?us-ascii?Q?cg5Zs6FNtxNQEm+c1It/1NYO4u1a2BLnZdJlBJ6wKn7oJdbn70zde57pP6L4?=
- =?us-ascii?Q?FjziuYElFD8JVwPnY3Pw4w6E8EeZsFyahhHrXwXAr23hdaWrMl+dBq+CWIg1?=
- =?us-ascii?Q?Xzc7Z2eioTW3Q6YiVEuwFluxsmtCWwTWDbb3trCvIcNDOgbO7yEckSnfVo2L?=
- =?us-ascii?Q?iAt55P17G1EhmJNKa3H1Ls8mf1LPeQQsnt2iBNHpqZyTCIgTG4+KHQMUFrkB?=
- =?us-ascii?Q?xKBqv83XsK07Kg7d2hcLGad2/Gh1U/nGMNLKFsj5FS+GB0neckNCKkFN3HOm?=
- =?us-ascii?Q?UoaexKtANb8adWtljAlHWEJ7kK+sxSgukDLcu8v4by8gdd83IbcmUCJWdy0T?=
- =?us-ascii?Q?P5XyYiQ5Pw+dFWTNXSbrwOzKIXBSN+l7AUBnq+F0DnWw5jp9g0LJrN/Wl22a?=
- =?us-ascii?Q?tUTyYU59eNVDUCd5tRqaLP7bK04s/vHU0ToP8saTdj3IdLamgYeHbaip5uzu?=
- =?us-ascii?Q?HgDO6K3IEkY6VUdbgO3wS7ApRH1/jhnbF90xMSxToVmVVgDmVkckfZWDuucP?=
- =?us-ascii?Q?DCPRrWufWq2uYEXeXo90ui//aUv+pKHegpmTuDtEQuVp2nhzfRMXnQG7g+w4?=
- =?us-ascii?Q?HbOz881WkWTjR5oCQMXOCXKZzw8aLfBiSDgMcvhvBVepr4pjjzth9zKRfgKw?=
- =?us-ascii?Q?vXpjEdQi56w85YpncjJl12NzaVjvB74B84e27bH9oV9eX6tEsGKQ1yG5/veC?=
- =?us-ascii?Q?Q7cn6X9/fOyeymXinlY+s5IhsiTMIyIaGSAvXYA+nnmyPspFenLnYXZS/PJG?=
- =?us-ascii?Q?rNDaE1GkF7lkQQhMJo0x/oNmoN6OWbtrB2dDSGCL0BCuaN0IVPWtZCSwbjH/?=
- =?us-ascii?Q?Px9R6jb2l0ywVjug9CuzYyXg2XDtzWwXtoIAVTqLA0vM3lsfwF5NywXszb4G?=
- =?us-ascii?Q?peWmOxSGOyFH5kiJDvPMNDgF7xuI2XQ06LsClTFV72AQ3gekC+5Q647ZzXKB?=
- =?us-ascii?Q?IeVNnliRTt4OSP7TmB6Yyqg57Nrb+ETrJgmuaZchx15AjaPj8BPwVy2Ne4Ks?=
- =?us-ascii?Q?jZA2Vq6uchnr8bOJCpRtRZT7IU4938JAt0BWygQNxqaR12fN6MFQHCPDj28?=
- =?us-ascii?Q?=3D?=
+	=?iso-8859-1?Q?T3Bo20pNCVM2OdvWX1Y++BEykzr2r0JSnpquix8IRRlylEZKyKslXMz3Dh?=
+ =?iso-8859-1?Q?l7ZqGjwcL+MYCZACLmjxL+XKAQ/XoviitNZNqVUvrXP69maYJ5ldANjjUp?=
+ =?iso-8859-1?Q?++4YADg+7Cqf6JPDiIjon8rOA5pHUphKaSPkx9GPZh/rLs38yipE8fkoor?=
+ =?iso-8859-1?Q?zJJdbdlJkSkekolM4LJ5BO+gSxs2iTsP3kyFZpSStHaDQCx0E8BTNv5ACj?=
+ =?iso-8859-1?Q?F1YN9WKsYlxSjmaXo7VIrBq5DnHbiPCSmGfkg9UOA+5j+wZNkX7w8t6pT2?=
+ =?iso-8859-1?Q?crWl4/3XgurxpygHqt9y2zczfAnp9NZRIr45V9b+C8Ih39VOQtmbhzq7Gh?=
+ =?iso-8859-1?Q?fRNvFrUZAWU2wVflo06HLS5Qpk/xhwkMI5/3rWi/oMgioa3z5X8mf73BsK?=
+ =?iso-8859-1?Q?kbxHAY0vRL/JEROEiO2UDoIxykU88cGOHanNqszWD6uofEmkcrGAM8m4PB?=
+ =?iso-8859-1?Q?7otg6a1vGrNarOcbS76vvtNVaNjo09Cl7Qw7pL+AZLPxyIH/EqAUqR89Bf?=
+ =?iso-8859-1?Q?HQl0vOfS2zReuq9/FsdCQZeK6zXoIs0u7lo7iFYQ+bR4WkjUE6Mq8Aab6g?=
+ =?iso-8859-1?Q?pGShwur+nivRhHVxNEhQXawbd1z8vyrN5quEFYKM3csatteI47HFVNql/q?=
+ =?iso-8859-1?Q?7mHHcdariX+awiuQ4BAPE4B77uAJQtX648PON79sl+w1ut4/9kpKX8shQV?=
+ =?iso-8859-1?Q?gban8X7jSh8Keeut+VnR3ulE3lfk1lPbmIFeSr3lKxHEm4PETSTM2ZZK+v?=
+ =?iso-8859-1?Q?fqtCHBul6Grdv4JPE+0NuB/cMrcsEVcvKDwm30hwBKgYxLNqZ+jWWDPvYn?=
+ =?iso-8859-1?Q?SuF0/CE+J54+FQsqeM6iASN2DLhQ/UFW3RqalQNc89tCSGbjCnqh+uhklN?=
+ =?iso-8859-1?Q?rUglgKqfTMqxK4paxyTABCqdfdifbqZ3cYBen0RuGRdJZn34zPO6jZDbXF?=
+ =?iso-8859-1?Q?/qsZijOAPafP/I3vXmWeCOpOFMX/UOeAdyUxaeYstd0Hx9ZHX7fIh9msRL?=
+ =?iso-8859-1?Q?CJ9XuSctLnYpI0utaadlrciAtyFULAYTIiEXG+DxB2fwqCRvfgae3YV1dd?=
+ =?iso-8859-1?Q?mHJ9G3WW8FynLgqU99AEXGSLXVkJFjNbbVfFIiVvZoWGTbU6jYHTHHFtML?=
+ =?iso-8859-1?Q?YmhEKlebmYaQav4vv5uTtfC++eO+BreSW2q2oaTYB6KahwgAleswsMtA34?=
+ =?iso-8859-1?Q?b08Bii8M4pDE3o7LjS2H/t6YND1T5Pwi7pBsEVMkTFJbR7cb/YaoBxSSgR?=
+ =?iso-8859-1?Q?YkgcLS2e5+Wbwa1p78NkwRvmE7q3GbFdtp2gym+V0=3D?=
 X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33f6d9cb-1357-4849-437c-08dc3dd284d3
-X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB4952.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e92084cb-eb20-4297-f73d-08dc3ddaa149
+X-MS-Exchange-CrossTenant-AuthSource: TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2024 11:42:36.3662
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2024 12:40:40.2608
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
 	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB5012
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCP286MB2880
 
-From: Guanbing Huang <albanhuang@tencent.com>
+Hi Christophe,
 
-The 16550a serial port based on the ACPI table requires obtaining the
-reg-shift attribute. In the ACPI scenario, If the reg-shift property
-is not configured like in DTS, the 16550a serial driver cannot read or
-write controller registers properly during initialization.
+On Tue, Feb 20, 2024 at 04:12:17PM +0000, Christophe Leroy wrote:
+> Hi Michael,
+> 
+> ping ?
+> 
+> Le 01/02/2023 à 15:36, Dawei Li a écrit :
+> > Commit fc7a6209d571 ("bus: Make remove callback return void") forces
+> > bus_type::remove be void-returned, it doesn't make much sense for any
+> > bus based driver implementing remove callbalk to return non-void to
+> > its caller.
+> > 
+> > This change is for macio bus based drivers.
+> > 
+> > Signed-off-by: Dawei Li <set_pte_at@outlook.com>
+> 
+> This patch is Acked , any special reason for not applying it ?
+> 
+> Note that it now conflicts with commit 1535d5962d79 ("wifi: remove 
+> orphaned orinoco driver") but resolution is trivial, just drop the 
+> changes to that file.
 
-Signed-off-by: Guanbing Huang <albanhuang@tencent.com>
-Signed-off-by: Bing Fan <tombinfan@tencent.com>
-Signed-off-by: Linheng Du <dylanlhdu@tencent.com>
----
-v2: change the names after "Signed off by" to the real names
+Thanks for picking it up, hardly believe that it's been one year.
 
- drivers/tty/serial/8250/8250_pnp.c | 1 +
- 1 file changed, 1 insertion(+)
+Michael,
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 1974bbadc975..25b4e41e9745 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -473,6 +473,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 		uart.port.flags |= UPF_SHARE_IRQ;
- 	uart.port.uartclk = 1843200;
- 	device_property_read_u32(&dev->dev, "clock-frequency", &uart.port.uartclk);
-+	device_property_read_u8(&dev->dev, "reg-shift", &uart.port.regshift);
- 	uart.port.dev = &dev->dev;
- 
- 	line = serial8250_register_8250_port(&uart);
--- 
-2.17.1
+I will respin V4 if it's needed.
 
+Thanks,
+
+   Dawei
+
+> 
+> Christophe
+> 
+> > ---
+> > v2 -> v3
+> > - Rebased on latest powerpc/next.
+> > - cc' to relevant subsysem lists.
+> > 
+> > v1 -> v2
+> > - Revert unneeded changes.
+> > - Rebased on latest powerpc/next.
+> > 
+> > v1
+> > - https://lore.kernel.org/all/TYCP286MB2323FCDC7ECD87F8D97CB74BCA189@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM/
+> > ---
+> >   arch/powerpc/include/asm/macio.h                | 2 +-
+> >   drivers/ata/pata_macio.c                        | 4 +---
+> >   drivers/macintosh/rack-meter.c                  | 4 +---
+> >   drivers/net/ethernet/apple/bmac.c               | 4 +---
+> >   drivers/net/ethernet/apple/mace.c               | 4 +---
+> >   drivers/net/wireless/intersil/orinoco/airport.c | 4 +---
+> >   drivers/scsi/mac53c94.c                         | 5 +----
+> >   drivers/scsi/mesh.c                             | 5 +----
+> >   drivers/tty/serial/pmac_zilog.c                 | 7 ++-----
+> >   sound/aoa/soundbus/i2sbus/core.c                | 4 +---
+> >   10 files changed, 11 insertions(+), 32 deletions(-)
+> > 
+> > diff --git a/arch/powerpc/include/asm/macio.h b/arch/powerpc/include/asm/macio.h
+> > index ff5fd82d9ff0..cb9c386dacf8 100644
+> > --- a/arch/powerpc/include/asm/macio.h
+> > +++ b/arch/powerpc/include/asm/macio.h
+> > @@ -125,7 +125,7 @@ static inline struct pci_dev *macio_get_pci_dev(struct macio_dev *mdev)
+> >   struct macio_driver
+> >   {
+> >   	int	(*probe)(struct macio_dev* dev, const struct of_device_id *match);
+> > -	int	(*remove)(struct macio_dev* dev);
+> > +	void	(*remove)(struct macio_dev *dev);
+> >   
+> >   	int	(*suspend)(struct macio_dev* dev, pm_message_t state);
+> >   	int	(*resume)(struct macio_dev* dev);
+> > diff --git a/drivers/ata/pata_macio.c b/drivers/ata/pata_macio.c
+> > index 9ccaac9e2bc3..653106716a4b 100644
+> > --- a/drivers/ata/pata_macio.c
+> > +++ b/drivers/ata/pata_macio.c
+> > @@ -1187,7 +1187,7 @@ static int pata_macio_attach(struct macio_dev *mdev,
+> >   	return rc;
+> >   }
+> >   
+> > -static int pata_macio_detach(struct macio_dev *mdev)
+> > +static void pata_macio_detach(struct macio_dev *mdev)
+> >   {
+> >   	struct ata_host *host = macio_get_drvdata(mdev);
+> >   	struct pata_macio_priv *priv = host->private_data;
+> > @@ -1202,8 +1202,6 @@ static int pata_macio_detach(struct macio_dev *mdev)
+> >   	ata_host_detach(host);
+> >   
+> >   	unlock_media_bay(priv->mdev->media_bay);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   #ifdef CONFIG_PM_SLEEP
+> > diff --git a/drivers/macintosh/rack-meter.c b/drivers/macintosh/rack-meter.c
+> > index c28893e41a8b..f2f83c4f3af5 100644
+> > --- a/drivers/macintosh/rack-meter.c
+> > +++ b/drivers/macintosh/rack-meter.c
+> > @@ -523,7 +523,7 @@ static int rackmeter_probe(struct macio_dev* mdev,
+> >   	return rc;
+> >   }
+> >   
+> > -static int rackmeter_remove(struct macio_dev* mdev)
+> > +static void rackmeter_remove(struct macio_dev *mdev)
+> >   {
+> >   	struct rackmeter *rm = dev_get_drvdata(&mdev->ofdev.dev);
+> >   
+> > @@ -558,8 +558,6 @@ static int rackmeter_remove(struct macio_dev* mdev)
+> >   
+> >   	/* Get rid of me */
+> >   	kfree(rm);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   static int rackmeter_shutdown(struct macio_dev* mdev)
+> > diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
+> > index 9e653e2925f7..292b1f9cd9e7 100644
+> > --- a/drivers/net/ethernet/apple/bmac.c
+> > +++ b/drivers/net/ethernet/apple/bmac.c
+> > @@ -1591,7 +1591,7 @@ bmac_proc_info(char *buffer, char **start, off_t offset, int length)
+> >   }
+> >   #endif
+> >   
+> > -static int bmac_remove(struct macio_dev *mdev)
+> > +static void bmac_remove(struct macio_dev *mdev)
+> >   {
+> >   	struct net_device *dev = macio_get_drvdata(mdev);
+> >   	struct bmac_data *bp = netdev_priv(dev);
+> > @@ -1609,8 +1609,6 @@ static int bmac_remove(struct macio_dev *mdev)
+> >   	macio_release_resources(mdev);
+> >   
+> >   	free_netdev(dev);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   static const struct of_device_id bmac_match[] =
+> > diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
+> > index fd1b008b7208..e6350971c707 100644
+> > --- a/drivers/net/ethernet/apple/mace.c
+> > +++ b/drivers/net/ethernet/apple/mace.c
+> > @@ -272,7 +272,7 @@ static int mace_probe(struct macio_dev *mdev, const struct of_device_id *match)
+> >   	return rc;
+> >   }
+> >   
+> > -static int mace_remove(struct macio_dev *mdev)
+> > +static void mace_remove(struct macio_dev *mdev)
+> >   {
+> >   	struct net_device *dev = macio_get_drvdata(mdev);
+> >   	struct mace_data *mp;
+> > @@ -296,8 +296,6 @@ static int mace_remove(struct macio_dev *mdev)
+> >   	free_netdev(dev);
+> >   
+> >   	macio_release_resources(mdev);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   static void dbdma_reset(volatile struct dbdma_regs __iomem *dma)
+> > diff --git a/drivers/net/wireless/intersil/orinoco/airport.c b/drivers/net/wireless/intersil/orinoco/airport.c
+> > index a890bfa0d5cc..276a06cdd1f5 100644
+> > --- a/drivers/net/wireless/intersil/orinoco/airport.c
+> > +++ b/drivers/net/wireless/intersil/orinoco/airport.c
+> > @@ -85,7 +85,7 @@ airport_resume(struct macio_dev *mdev)
+> >   	return err;
+> >   }
+> >   
+> > -static int
+> > +static void
+> >   airport_detach(struct macio_dev *mdev)
+> >   {
+> >   	struct orinoco_private *priv = dev_get_drvdata(&mdev->ofdev.dev);
+> > @@ -111,8 +111,6 @@ airport_detach(struct macio_dev *mdev)
+> >   
+> >   	macio_set_drvdata(mdev, NULL);
+> >   	free_orinocodev(priv);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   static int airport_hard_reset(struct orinoco_private *priv)
+> > diff --git a/drivers/scsi/mac53c94.c b/drivers/scsi/mac53c94.c
+> > index f75928f7773e..42648ca9b8ed 100644
+> > --- a/drivers/scsi/mac53c94.c
+> > +++ b/drivers/scsi/mac53c94.c
+> > @@ -508,7 +508,7 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
+> >   	return rc;
+> >   }
+> >   
+> > -static int mac53c94_remove(struct macio_dev *mdev)
+> > +static void mac53c94_remove(struct macio_dev *mdev)
+> >   {
+> >   	struct fsc_state *fp = (struct fsc_state *)macio_get_drvdata(mdev);
+> >   	struct Scsi_Host *host = fp->host;
+> > @@ -526,11 +526,8 @@ static int mac53c94_remove(struct macio_dev *mdev)
+> >   	scsi_host_put(host);
+> >   
+> >   	macio_release_resources(mdev);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> > -
+> >   static struct of_device_id mac53c94_match[] =
+> >   {
+> >   	{
+> > diff --git a/drivers/scsi/mesh.c b/drivers/scsi/mesh.c
+> > index 84b541a57b7b..cd2575b88c85 100644
+> > --- a/drivers/scsi/mesh.c
+> > +++ b/drivers/scsi/mesh.c
+> > @@ -1986,7 +1986,7 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
+> >   	return -ENODEV;
+> >   }
+> >   
+> > -static int mesh_remove(struct macio_dev *mdev)
+> > +static void mesh_remove(struct macio_dev *mdev)
+> >   {
+> >   	struct mesh_state *ms = (struct mesh_state *)macio_get_drvdata(mdev);
+> >   	struct Scsi_Host *mesh_host = ms->host;
+> > @@ -2013,11 +2013,8 @@ static int mesh_remove(struct macio_dev *mdev)
+> >   	macio_release_resources(mdev);
+> >   
+> >   	scsi_host_put(mesh_host);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> > -
+> >   static struct of_device_id mesh_match[] =
+> >   {
+> >   	{
+> > diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+> > index 13668ffdb1e7..d4640479c338 100644
+> > --- a/drivers/tty/serial/pmac_zilog.c
+> > +++ b/drivers/tty/serial/pmac_zilog.c
+> > @@ -1507,12 +1507,12 @@ static int pmz_attach(struct macio_dev *mdev, const struct of_device_id *match)
+> >    * That one should not be called, macio isn't really a hotswap device,
+> >    * we don't expect one of those serial ports to go away...
+> >    */
+> > -static int pmz_detach(struct macio_dev *mdev)
+> > +static void pmz_detach(struct macio_dev *mdev)
+> >   {
+> >   	struct uart_pmac_port	*uap = dev_get_drvdata(&mdev->ofdev.dev);
+> >   	
+> >   	if (!uap)
+> > -		return -ENODEV;
+> > +		return;
+> >   
+> >   	uart_remove_one_port(&pmz_uart_reg, &uap->port);
+> >   
+> > @@ -1523,11 +1523,8 @@ static int pmz_detach(struct macio_dev *mdev)
+> >   	dev_set_drvdata(&mdev->ofdev.dev, NULL);
+> >   	uap->dev = NULL;
+> >   	uap->port.dev = NULL;
+> > -	
+> > -	return 0;
+> >   }
+> >   
+> > -
+> >   static int pmz_suspend(struct macio_dev *mdev, pm_message_t pm_state)
+> >   {
+> >   	struct uart_pmac_port *uap = dev_get_drvdata(&mdev->ofdev.dev);
+> > diff --git a/sound/aoa/soundbus/i2sbus/core.c b/sound/aoa/soundbus/i2sbus/core.c
+> > index 51ed2f34b276..35f39727994d 100644
+> > --- a/sound/aoa/soundbus/i2sbus/core.c
+> > +++ b/sound/aoa/soundbus/i2sbus/core.c
+> > @@ -364,15 +364,13 @@ static int i2sbus_probe(struct macio_dev* dev, const struct of_device_id *match)
+> >   	return 0;
+> >   }
+> >   
+> > -static int i2sbus_remove(struct macio_dev* dev)
+> > +static void i2sbus_remove(struct macio_dev *dev)
+> >   {
+> >   	struct i2sbus_control *control = dev_get_drvdata(&dev->ofdev.dev);
+> >   	struct i2sbus_dev *i2sdev, *tmp;
+> >   
+> >   	list_for_each_entry_safe(i2sdev, tmp, &control->list, item)
+> >   		soundbus_remove_one(&i2sdev->sound);
+> > -
+> > -	return 0;
+> >   }
+> >   
+> >   #ifdef CONFIG_PM
