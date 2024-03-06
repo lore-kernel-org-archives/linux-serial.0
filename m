@@ -1,326 +1,203 @@
-Received: from CHN02-BJS-obe.outbound.protection.partner.outlook.cn (mail-bjschn02on2106.outbound.protection.partner.outlook.cn [139.219.17.106])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2077.outbound.protection.outlook.com [40.107.20.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF637135A52;
-	Wed,  6 Mar 2024 16:06:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.17.106
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21AE5133425;
+	Wed,  6 Mar 2024 17:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.77
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709741176; cv=fail; b=iva9ugSqCTsfIZaf6QhlDYTWp1qQ1TR6Iw+oSQwRUtnYiXxQFz3EX3FbxN30F3c7wr90SkK7lQmg/uj3e+fOr/1L7zWITq5/iaoYVcGgC9HcUqVdcyL2sFUxKMAE6T79YX652B2MIQNuYYlanKKny3gdmpEmHkBtFpVKOxIsYuU=
+	t=1709747122; cv=fail; b=SqLfTfVY7xNQGKsvzlcociaXyusHeKC6CKpHThsi64cqwB4AkrQenvRI3OPonvW59uTBZCOqjY+9OsvOoqJc7ZnmlwwKUHsqz5mFtLgKpym3dE7dHUUqte7LE6RITEU2rD2urBsvasuq0FtZTudwlSHXf3U/3xGZekFDPxkbfXM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709741176; c=relaxed/simple;
-	bh=2BVIZpV2Iw53wmdjYbJs8BO3RHnHAuYvlwVfSrclSow=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=NX71j/ZyzXOP+mCHc4mCd4h3kpv+8gQKnd5xntyKoW0w5lgAVhlbpGhWJnmsdBGCzvInNMm7DkaZ5T2GLl2yOdA0p1Bkb1kRt30I22I4cgW0gI8S/Gi1lDm6zks/Zg7L9zGNwhrsFaTq4QOSKBUQYZkmdPsrXWHCZKJV8Gug+q0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.17.106
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
+	s=arc-20240116; t=1709747122; c=relaxed/simple;
+	bh=DuGFYb0GYUPYH6cBi30AfkLA4VTzwGYojo+Njg7Y8z4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=imgF2bLT8iT+LXgpRCbhdqBfgjZQ4PD3kF6oJgJpbwdlgxymh90IyIQJKltiD57PXi020pG//StPP2J+C6sNT4CB7ApQ4kDVYa3GnJ3dJeOvAe9Mh+49eloE4V4p/54lFbypLKIhks3vSzGYXF+PVYnRaR6YXP/inj9Ty+wyJOw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=kFhaOoEI; arc=fail smtp.client-ip=40.107.20.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="kFhaOoEI"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dEtd28K2kpY0M/RQozIHLyv/IWx5Fu4Vn9oC8/DEON5gdqioZI/BgbjdhTaHuSTA697QSHtVAX523zhkp6a8BLFXRzoeltTYvlaSgC7llLIunb902uz8C0YOfxpeKezyR55c/AUZaahwLiH1GCf3Ye76acoVO6seYtrCmNdsstzC2Run+MLSHKZBEOsOt3hTUgT6xId9tYTO/kWsAp9Byc19FD4gbW3ro8CibUOEIrcS7TvVm0M0BrTx0rz4GyLli6Jcx1jfDazsTwp/MOR4ykP4PEtqAqo+t2ifZ99qSn/0pDPmYRCZ7JMLUOzAHibyYxZXgRyzqNCEi/3p+lFPwg==
+ b=QN+D5MnQSrfE471r4/N+CtuUdaGu3H7eIFHubZGytZO+60laKvWb8d2jEgZTVzCSt/rUokCI4YI24O5wfmMCe7/lxbplGPUKCAuDS/zVbw0dF+Zg1TVkePOlVnMzfmXErue74NZUL8+D4iJ3JnaJcvz4a0jvVIDkpaUU4wT4KCWobiC1B9t/CxwJTCfq2Pzp9k0TWIeqF2PTDCKB5kQKDvAO6qM2+fvbRchQgEUomE6MmSbHAMvd1SVMZZhz9MHXBYj8h8wo0DcdJ19/NlNmFJUvv5jBzMfBnj88ZtnruZOaiRkPtR8bldFOtHTWWRrgPxjkXpkUf+cCJ1Zt5qKVOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=euCVAdcK7KDmDrtZQ7R1aFcxAy45UFglzkhmoELsw54=;
- b=k57FndzPeYQJVnjdcnSQ8XhBqcR5v3s8GYSsgSbwXM+Yb63Y4ogNyOlYOawsId++qmqopfbuUgd8BNI9sRpJhJTxlhaMzyNazQ1he/58goeePI6iye0Oy1+7OSfA9Fx8KxF9wK2UimijfQJbZOTg6qVZvhwih9RLdfqDzAPzciE+zaMvdfgq/J/Cy0IxBN00DrbVGnZAmpfQ0swJo4hYCeU6bndrPv60gsRMr/ba7nLnYfwIDYqfSVnEUAzTi3dvKFl20/zx4R2LUwb5csiKOuhNTIcaTH3p4XvAH/Z33gdzP7UgjwXAouZiGGwJWgKe4/23r6fNwLpXkLwO8jdlOw==
+ bh=SD3y0WSMFYRZjeRlwUvlzeCDkEszK5WtZEqGdMFPTbI=;
+ b=dmbPaJ8X5ZoMd+8IU/4VdntaJWogBrciVMPY0A8gTb3Wy3sNiANqj8eq5188ZB9GqhdnaK5i9a78A4+d+D80RmqbKUncd+NwWgvsZrSMmlYWnP4IhrJPbny++LXsoBnYtFsUve+QUcXMYm62yqGBGkCBoo4NvJckc/YqxTW8UAj841PEIsg9MMOOt0HW4+QIutKR9pKcC5q/xFUUXgpEjLQo7b6nYktuT+8JtodZjWZaKwLTgExt39I4ejjegqmHHsz9dYJak1aWUdJl4lBCx2QYSSQrNK5r8Uilh8AMC1SFGOBIhTP276El6UXLba6JwogAnYXLB3V8XuMnw7umdg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=starfivetech.com; dmarc=pass action=none
- header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
-Received: from SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c311:20::14) by SH0PR01MB0571.CHNPR01.prod.partner.outlook.cn
- (2406:e500:c311:8::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.53; Wed, 6 Mar
- 2024 16:06:11 +0000
-Received: from SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
- ([fe80::f6ed:1a18:3fbf:788]) by SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
- ([fe80::f6ed:1a18:3fbf:788%6]) with mapi id 15.20.7316.050; Wed, 6 Mar 2024
- 16:06:11 +0000
-From: Joshua Yeong <joshua.yeong@starfivetech.com>
-To: Frank Li <Frank.Li@nxp.com>
-CC: "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SD3y0WSMFYRZjeRlwUvlzeCDkEszK5WtZEqGdMFPTbI=;
+ b=kFhaOoEIK0x6I0Z48+rKNxMHi7XvZVC4YCLLvY016CM60Shid3EYjCuoHgC7xzo5uwA1W1tPk1JK8BWl5u+/mF7DJHKP3uE/mB1CWkTgbDo4J7ISklkVQRGw2kLkwigMvF/KFxeyVP6vzbcUdixF1du30d3q5I1btbi88f4Mehk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
+ by PR3PR04MB7243.eurprd04.prod.outlook.com (2603:10a6:102:8c::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24; Wed, 6 Mar
+ 2024 17:45:17 +0000
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6]) by PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6%3]) with mapi id 15.20.7339.035; Wed, 6 Mar 2024
+ 17:45:17 +0000
+Date: Wed, 6 Mar 2024 12:45:08 -0500
+From: Frank Li <Frank.li@nxp.com>
+To: Joshua Yeong <joshua.yeong@starfivetech.com>
+Cc: "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
 	"conor.culhane@silvaco.com" <conor.culhane@silvaco.com>,
 	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
 	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
 	"ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
-	"imx@lists.linux.dev" <imx@lists.linux.dev>, "jirislaby@kernel.org"
-	<jirislaby@kernel.org>, "joe@perches.com" <joe@perches.com>,
+	"imx@lists.linux.dev" <imx@lists.linux.dev>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"joe@perches.com" <joe@perches.com>,
 	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
 	"krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
 	"linux-i3c@lists.infradead.org" <linux-i3c@lists.infradead.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>, "robh@kernel.org"
-	<robh@kernel.org>, "zbigniew.lukwinski@linux.intel.com"
-	<zbigniew.lukwinski@linux.intel.com>
-Subject: RE: [PATCH v8 5/8] i3c: target: add svc target controller support
-Thread-Topic: [PATCH v8 5/8] i3c: target: add svc target controller support
-Thread-Index: AQHaWrDF4YqbxbLTO0S8kWb/HNrCK7ErCfUA
-Date: Wed, 6 Mar 2024 16:06:11 +0000
-Message-ID:
- <SH0PR01MB08411D27D7A3CD39CDDE618FF921A@SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn>
-References: <20240208170117.798357-1-Frank.Li@nxp.com>
- <20240208170117.798357-6-Frank.Li@nxp.com>
-In-Reply-To: <20240208170117.798357-6-Frank.Li@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=starfivetech.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SH0PR01MB0841:EE_|SH0PR01MB0571:EE_
-x-ms-office365-filtering-correlation-id: b02dfa58-6050-40ae-5e03-08dc3df757b2
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- cEhvcX1VZpAYdzm25rxEjiIudK2mAxTD9sdXUwztfBCPX4gV0r/MRlJDb/XQTr79FSjt5mfxNt6GGbv8LzCWxXuJez+rvxYvAbJ41Xd//nYg2EzWczaJX6BZb5TzCs+F5q2ltWCXb3LIg5Hw4wJ8lBEVL++CZvkFZgYnO9jV1Kh56ZGaFJHGFWo2bu91KpjpOiGUm1ryzZC9HxqcOCPf2lbyCKaLq4a+tJ1GIeoL8NLkwyQYihckB7nmo01vqvMlRfWaEc+EBhqYTUntAGnlIjiExBEFaS1R4LqVhxB2X6IbdDX4zMD46CzoIMJR+Pep6JtAa/0K1X7NXpnCo1xlEkt0jQy/u1Jb7jGg4N7fmbPQ8wjvwPQ4OaUkKinl5cRGPb+Ae0Xd1viJR2CvwN1+TrimzhSCvBaGptdnYdzjaslzm0FoW+fLbffkdaP8wk5T0/xx22HqHDLvRSUldKUab+D/fgbfZo74EsjQkYvONRSJgsUTKtFaHa/qo8nZyL52WetsARJ9bxwYvH+sx23M1dtzFQiRKkJAXTth1ZghZuxKnFiToOTLqKSqhDJ7rv/TFmmwVKroUQCSNSsJqISLlmsHh09LptiCu2MAdW1boyufTQ32IxHTCfSki1B7oDM4
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230031)(41320700004)(38070700009);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?HCc2XV8MNRehi9xNrYUY63qAzLwbaisc0cQkWhcAa5VO77IbbQyMAPfkQCAv?=
- =?us-ascii?Q?KZgRMChshg9wj/QOTTIK8WEhv0DkwFJONq9ZEugz3ZVBk6j8pgWP4yrP+e24?=
- =?us-ascii?Q?zyQyZelQY1GXAk9Zb0nBAMxkb+nL3I8u0/eianrEw/Cl66wCHI1arkRe5v/m?=
- =?us-ascii?Q?ZPiwlHmjwHu6iHqKL4qDZ+ZSpmw05x86qat/JrXe+fQNb+LHm1FqyEMr7agx?=
- =?us-ascii?Q?AIGPLXoLf6IBSR2lx5Omu9TMxp5vBvxl1yIIeCwi/b6xII58nLJ36W49/0JK?=
- =?us-ascii?Q?rt5uNhGh1hupUm2QxjAWF0XsOV4vzHFrYMEh1t6/nDv5OsTHiIoMLXTRMrKg?=
- =?us-ascii?Q?zvj3RDA0Tc2fn2w3V7CnxWj9KELudgPdkNTomiG5nHvhBGYvPdWKFzvRCGWI?=
- =?us-ascii?Q?NE9QxEIpbUin2NymR9G89vCNHPMJTsPKJJiXQgqwjVtmC/VX2xjqR+4pKdjM?=
- =?us-ascii?Q?jK5EJfijYB7mdQXbPcwGume+Ty0mjgPZOMyRdaeAZD8vnLfwio/DT57EzFfP?=
- =?us-ascii?Q?wcE3R1ka6P1nD2kcPzl44jHWE5Bs7TWKa5R8INa5Zd4wHEGX6PQwfdM6ZF8l?=
- =?us-ascii?Q?zkG0MXg4fic7S7UCdpZEcfcOgFvYON3GzXMGuSQWvm1gk79+zd1mgVoMOclI?=
- =?us-ascii?Q?98S+pVx+HFn8gW08EifVkRciJo0K7WqR3obk885upJWkvPcbz1Us+fkfgfXp?=
- =?us-ascii?Q?AWtnR38q4qTualrqN3FqwDJsoy2OQ/+ZOYZpo/QXCLFepWlT8GlC61MwhUwH?=
- =?us-ascii?Q?AR27lU1LzmfPbX9WzXUdf6b9s9qTuuL1Vip/wxF4VULmjT+4lf1zm0ieic/P?=
- =?us-ascii?Q?M+Gcl8hGb1WwO3VhSBVlmJv0JyNWRbdSXFUt7WGItjq5Eki3vS1oFAvmYW5n?=
- =?us-ascii?Q?UM+/cL9bQ+Jyt8o0aZ97gPg8f2G+anCYa96Pg2u/0lG7rnyUtXju+ejwGNOo?=
- =?us-ascii?Q?MH1ngQXCY08hLh7FnlccFFVLdeykXk+FKnAs8J8pXxsIIvqtx4BhjGyrHowZ?=
- =?us-ascii?Q?AhIHkcMbMBLU9Xlj7gHveSoAO4tcQxcNJjo+O4vHclLcyQWFJVfXZrUVk6EW?=
- =?us-ascii?Q?kchqQWxrJ1DMVAF++BJIQ+EX/Aa5ru8OCygJnfqasylXxDx4SzmR5y/yLWJO?=
- =?us-ascii?Q?8gGX5kiL/FJf/2rntYjbEnakrP9hc/Fr0AYPsgxvoIT5129IefWTCkJP5QgU?=
- =?us-ascii?Q?gCi3cel+HbKIHj0cyxMZVwEwcdFy1D9Rkp+p1gmLw7UZhRtJdwBf1Z1LR8K6?=
- =?us-ascii?Q?jwpHIwZlALkMd16rrJ1YRjkrIGp5xeJ9nC+AUKA37Lio5btDPmrqwS1GZ2oC?=
- =?us-ascii?Q?2IdS0jv4yXMkjrrww4089wJ7hNFgHXoiE/IPBXtjD7T+ytSK2lBTTaqehSZA?=
- =?us-ascii?Q?KT6gK/TR9Q3ZmfD4bbOnv9U+boAm+MLUTPjnYYDH9ujgHaL30f32fInuFHkg?=
- =?us-ascii?Q?i0YApsZZzDFEaF6+PsPlnoitL8X0gUqyhw3A+WnzEkur3Y6F0+X3abDCtt1D?=
- =?us-ascii?Q?7HG/9rNE4Khmzm8WtTjckzrS4h0n8HBoP8GanoJqpWNeCxPwDI85zvA0A20J?=
- =?us-ascii?Q?NZSZuLrEZL9RZwSz/fZsdoUhRwwFiPaKl3UzlSfXlXRPkeUEMsvJizZUKUtu?=
- =?us-ascii?Q?Lw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	"miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+	"robh@kernel.org" <robh@kernel.org>,
+	"zbigniew.lukwinski@linux.intel.com" <zbigniew.lukwinski@linux.intel.com>
+Subject: Re: [PATCH v7 5/8] i3c: target: add svc target controller support
+Message-ID: <ZeirpIpcsPuBAiIR@lizhi-Precision-Tower-5810>
+References: <20240205233326.552576-1-Frank.Li@nxp.com>
+ <20240205233326.552576-6-Frank.Li@nxp.com>
+ <SH0PR01MB08410A70ABB956DF9DD4DE25F921A@SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SH0PR01MB08410A70ABB956DF9DD4DE25F921A@SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn>
+X-ClientProxiedBy: BY5PR17CA0052.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::29) To PAXPR04MB9642.eurprd04.prod.outlook.com
+ (2603:10a6:102:240::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: starfivetech.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|PR3PR04MB7243:EE_
+X-MS-Office365-Filtering-Correlation-Id: f1b7c992-98b2-41d7-a336-08dc3e052f97
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lC3MJIyolfYekxnwJ+6nDh3qDdUAXogby2LTY/j5qy3xtIZRfPSDn1r/RYDEFMOSvsrFYJ5biiVvoz2RghQh7oLx4MH7k8L/2sx/zpQtqBTnpadqGefPWqPO2NmHPFTSiGP44NDnJnDCmXLiZxpOj6QNpfFkCeiAGl9uwHzX5klZrA20bgDK7kHsKR+ZuLg1vca75Yc9XhBvLN3RJTufGoO57W/0OKxqDt4fojzWUZ/eFJol45mL+vyNe8PXPRr4GAJd6sKtGv+uBwxcz2BqQAxnP0Wrvlp3LVHzLCVG18CXNptZ0zKXZBMle6APuDLvgCJ+fyeo/5uSvdq/sbzNvn38IG91J0QZ9j6mCpEtOXZFxrHsAS5If0cBhfeSsJDgKgvqoFj6e2lRcmvpr9C9uwbQGScPnDnvcxCFvxWTh7/GDJspQXs+RcM2OLbtCYgoZPIdr8DqFNbFy9culAo1/isEq0vtnSMkiVL9LEmwKVqT8FMfSMGENIBoauKRV+LhWmZ0N4qO3QKSliijJA+kvhuPO0Brrig+pXzApibwaSQvUYCWJdqeCvnQUI9LU09xT+Stmmc0ZjYfLTGvnZBYajdxdQrIt7DUmZt2yOZLMMS5dFIcFr0Z4E2j9XCDsHfP+T/F5RSNPJZE2/XIF7jiARzs2pARk03UKZU3+uY58kJ7NYIMp3ag17k1GDBKv4zVeQflpiSBUxrvwCx7iakdFPtUP4HA1YIMWockYYtBUis=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?w2IZFBL+jLBiZoDB1hIHlyDt3Pkecr7SUSOTsBeGKhIQvo3PDtqxaKRK3M4C?=
+ =?us-ascii?Q?r9gfM/myjwBxzGhLuW3DlSN9qAV4G+8x79FsP5AwS0jH2rmh37B2Expe4FXs?=
+ =?us-ascii?Q?RnLMZXoTWjbIQk/AE1B4PNWGDqplvucdQ41lsD3OveizDJfFMDBJS18tz/WO?=
+ =?us-ascii?Q?dCat6+exOwKBG6cXLDz7NRKb3SPlUkkGbVWXK8bS5WlZEe3d5ZFzOGbSKpYN?=
+ =?us-ascii?Q?hwtXjtx3uQp6TunJmHX9E+suTrxZIaOstl87Zmw/7GiEAvFat68+7Xkbr3am?=
+ =?us-ascii?Q?G0us8LTSRrjSJnHKDZQndk1MKzO6J6Sktie7MDcBsfgN0U65YfPVQexcecbE?=
+ =?us-ascii?Q?nDd29Z55/tQQG/UsqeUK82CtvkPD4fO2T3L301rMsV0lNxybRQ2QD61MM96v?=
+ =?us-ascii?Q?xhLmfNERc6i8dgR9hK5WNJNLRb3X8hI+pDSGU8KT3f/xpglL7sOAkIF8ufyY?=
+ =?us-ascii?Q?RyPSZukROhQzn79yZN0PY4uU0Yz34rryMCVhfs9QEp9LWQLfuTfO0HHW+38y?=
+ =?us-ascii?Q?7el1cWsUUpd0CmylzpyhNujYHH+yPnA3PiPKKX66TBsaP6Mv7FqNWsrUwPlz?=
+ =?us-ascii?Q?qsDujrqOMH0SSakotlUbmzWo2FgBe1iB2RyCDUucvnDotMGpAACXkpwihYmP?=
+ =?us-ascii?Q?9jOv5Gws/S1+bwzW30mQARsCWzBvdkmRMqHu8Z5NQWQotkPDJBFfaR9gzPJ0?=
+ =?us-ascii?Q?K6rc9XdAaLFhez7459aX7y5TD0SELsJ8txaujYb/n9a7zJw8Q6Q3eGo1bZtt?=
+ =?us-ascii?Q?Z6yRBzoaK2jtEhvCIU9RmIl3lUrNjWTLeG5l9/a6QVuOkstJMCIX+mPFKG7k?=
+ =?us-ascii?Q?RIXkrhrmaBn6hpBC0TJSIITVd9lerFCCbjqcgB+npnhmufeGI00McrWWX+Yb?=
+ =?us-ascii?Q?xjDDnXK/rHrOkVmv9ROBUxEY5pVNKJI2mgfeoh7TXBzaQFusu9NkdrDuI5D7?=
+ =?us-ascii?Q?iaBAhuDGf4/BX7YDePGcCRjhXsUxbtMorkNymDWkftFtIH6fa+CHJrWgTUX6?=
+ =?us-ascii?Q?/KVRk3BjsjOyZVDgPttMQxdgDnucZ45VFJHmWHZEQjNC1LP0BqakAGy7pStq?=
+ =?us-ascii?Q?ftq8EqjsgvfjtcALsU8A5kEiLW/TKcPjBddoe8BVlUU5kQPYCFqF/9kYOrlR?=
+ =?us-ascii?Q?WNUKfyNGMVDvgOshr+vMMic/mR+fc21lElSggbHoZ5vGviNhota0lq6x7MYE?=
+ =?us-ascii?Q?90l9kBfXzIQijbMd445m2SNdUC7QhywkKQtvqwiRo1//dLZihS13Ze+hijmm?=
+ =?us-ascii?Q?blcjxN4Hnjvew8VN3XT3tj3ntl9ov7zXp4OEx/dtO5+1vHrqQTsyN0pycMzI?=
+ =?us-ascii?Q?PA2l1reW6epCWE6AX18WpggBej3EvawsTs6hvieSjzULSgyM56aQSWE6lfsr?=
+ =?us-ascii?Q?Z/FK0hBXQYqlC1vmQS1HXOG/HGdUyUf14GIKn0eZhXjgnT5WILTUrdOx51el?=
+ =?us-ascii?Q?FTq7+Ef7oFfkN0jEoCJGsPhfnPrprF03sgUZ3PdX4jqMteAGvInp6dR68+Oh?=
+ =?us-ascii?Q?jhcCFRK+Ux/CHF1jZvIGs+58xNVTBIrEVAnB2NCMlCAyNmhowmmz37STdPEt?=
+ =?us-ascii?Q?I++aO3khKZwbB4rEqzqmjvOxj+GTiuoZlawXiH6F?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1b7c992-98b2-41d7-a336-08dc3e052f97
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
-X-MS-Exchange-CrossTenant-Network-Message-Id: b02dfa58-6050-40ae-5e03-08dc3df757b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Mar 2024 16:06:11.6804
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2024 17:45:17.6114
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KO0xZJx/FVttO4rRTRtrsUwiCawp/6vbTdIWMyNsl4CDZQd5xp1rZOumej0VYAtclFDlhbH9q0BHSzOE6hyd57EDc1gyn4MMXBBtbg0cSH8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SH0PR01MB0571
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eG9S7bqeGBh9sPjheOysWrrKYjbGWyJc3kfmGG2zvjsKF+nUyNq5k5cr5hkF63AqbAy+z3mslQ8c1VRxoZGgVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7243
 
-Hi Frank,
+On Wed, Mar 06, 2024 at 04:01:17PM +0000, Joshua Yeong wrote:
+> Hi Frank,
+> 
+> > -----Original Message-----
+> > From: linux-i3c <linux-i3c-bounces@lists.infradead.org> On Behalf Of Frank Li
+> > Sent: Tuesday, February 6, 2024 7:33 AM
+> > To: frank.li@nxp.com
+> > Cc: alexandre.belloni@bootlin.com; conor.culhane@silvaco.com;
+> > devicetree@vger.kernel.org; gregkh@linuxfoundation.org;
+> > ilpo.jarvinen@linux.intel.com; imx@lists.linux.dev; jirislaby@kernel.org;
+> > joe@perches.com; krzysztof.kozlowski+dt@linaro.org;
+> > krzysztof.kozlowski@linaro.org; linux-i3c@lists.infradead.org; linux-
+> > kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+> > miquel.raynal@bootlin.com; robh@kernel.org;
+> > zbigniew.lukwinski@linux.intel.com
+> > Subject: [PATCH v7 5/8] i3c: target: add svc target controller support
+> > 
+> > Add Silvaco I3C target controller support
+> > 
+> > Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> > ---
+> > 
+> > Notes:
+> >     Change from v2 to v3
+> >     - fix build warning
+> > 
+> >  drivers/i3c/master/Makefile         |   2 +-
+> >  drivers/i3c/master/svc-i3c-main.c   |  35 +-
+> >  drivers/i3c/master/svc-i3c-target.c | 776
+> 
+> I think putting target mode files under "master" might not make sense. We might have to
+> consider that we may have a "secondary master" mode. Some other ways of splitting
+> or handling of target mode is needed here.
 
-Apologize I replied to the older patch series version. I copy the text from=
- there to here instead.
+I think name 'master' is not good here. Previously only support 'master'
+mode, it should be fine. Now many controller are dual mode.
 
-> -----Original Message-----
-> From: linux-i3c <linux-i3c-bounces@lists.infradead.org> On Behalf Of Fran=
-k Li
-> Sent: Friday, February 9, 2024 1:01 AM
-> To: frank.li@nxp.com
-> Cc: alexandre.belloni@bootlin.com; conor.culhane@silvaco.com;
-> devicetree@vger.kernel.org; gregkh@linuxfoundation.org;
-> ilpo.jarvinen@linux.intel.com; imx@lists.linux.dev; jirislaby@kernel.org;
-> joe@perches.com; krzysztof.kozlowski+dt@linaro.org;
-> krzysztof.kozlowski@linaro.org; linux-i3c@lists.infradead.org; linux-
-> kernel@vger.kernel.org; linux-serial@vger.kernel.org;
-> miquel.raynal@bootlin.com; robh@kernel.org;
-> zbigniew.lukwinski@linux.intel.com
-> Subject: [PATCH v8 5/8] i3c: target: add svc target controller support
->=20
-> Add Silvaco I3C target controller support
->=20
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
-> ---
->=20
-> Notes:
->     Chagne from v7 to v8
->     -reorder header files
->     - add missed header files
->=20
->     Change from v3 to v7
->     - none
->     Change from v2 to v3
->     - fix build warning
->=20
->  drivers/i3c/master/Makefile         |   2 +-
->  drivers/i3c/master/svc-i3c-main.c   |  35 +-
->  drivers/i3c/master/svc-i3c-target.c | 776
+And I3C spec use 'controller/target' instead of 'master/slave'. I think
+'controller' as master are quite confused. It can be master controller
+and slave controller.
 
-I think putting target mode files under "master" might not make sense.
-We might have to consider that we may have a "secondary master" mode.
-Some other ways of splitting or handling of target mode is needed here.
+Anyway, slave/master may share some code and resource, even only one file.
 
->=20
->  static const struct dev_pm_ops svc_i3c_pm_ops =3D { diff --git
-> a/drivers/i3c/master/svc-i3c-target.c b/drivers/i3c/master/svc-i3c-target=
-.c
-> new file mode 100644
-> index 0000000000000..06210ed0c3219
-> --- /dev/null
-> +++ b/drivers/i3c/master/svc-i3c-target.c
-> @@ -0,0 +1,776 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright 2023 NXP.
-> + *
-> + * Author: Frank Li <Frank.Li@nxp.com>
-> + */
-> +
-> +#include <linux/bits.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/clk.h>
-> +#include <linux/completion.h>
-> +#include <linux/errno.h>
-> +#include <linux/i3c/device.h>
-> +#include <linux/i3c/target.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/kernel.h>
-> +#include <linux/list.h>
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/of.h>
-> +#include <linux/pinctrl/consumer.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/workqueue.h>
-> +
-> +#include "svc-i3c.h"
-> +
-> +enum i3c_clks {
-> +	PCLK,
-> +	FCLK,
-> +	SCLK,
-> +	MAXCLK,
-> +};
-> +
-> +struct svc_i3c_target {
-> +	struct device *dev;
-> +	void __iomem *regs;
-> +	int irq;
-> +	struct clk_bulk_data clks[MAXCLK];
-> +
-> +	struct list_head txq;
-> +	spinlock_t txq_lock; /* protect tx queue */
-> +	struct list_head rxq;
-> +	spinlock_t rxq_lock; /* protect rx queue */
-> +	struct list_head cq;
-> +	spinlock_t cq_lock; /* protect complete queue */
-> +
-> +	struct work_struct work;
-> +	struct workqueue_struct *workqueue;
-> +
-> +	struct completion dacomplete;
-> +	struct i3c_target_ctrl_features features;
-> +
-> +	spinlock_t ctrl_lock; /* protext access SCTRL register */ };
-> +
-> +#define I3C_SCONFIG	0x4
-> +#define   I3C_SCONFIG_SLVENA_MASK	BIT(0)
-> +#define	  I3C_SCONFIG_OFFLINE_MASK	BIT(9)
-> +#define   I3C_SCONFIG_SADDR_MASK	GENMASK(31, 25)
-> +
-> +#define I3C_SSTATUS	0x8
-> +#define	  I3C_SSTATUS_STNOTSTOP_MASK	BIT(0)
-> +#define	  I3C_SSTATUS_STOP_MASK		BIT(10)
-> +#define	  I3C_SSTATUS_RX_PEND_MASK	BIT(11)
-> +#define   I3C_SSTATUS_TXNOTFULL_MASK	BIT(12)
-> +#define	  I3C_SSTATUS_DACHG_MASK	BIT(13)
-> +#define	  I3C_SSTATUS_EVDET_MASK	GENMASK(21, 20)
-> +#define	  I3C_SSTATUS_EVDET_ACKED	0x3
-> +#define	  I3C_SSTATUS_IBIDIS_MASK	BIT(24)
-> +#define	  I3C_SSTATUS_HJDIS_MASK	BIT(27)
-> +
-> +#define I3C_SCTRL	0xc
-> +#define   I3C_SCTRL_EVENT_MASK		GENMASK(1, 0)
-> +#define	  I3C_SCTRL_EVENT_IBI		0x1
-> +#define	  I3C_SCTRL_EVENT_HOTJOIN	0x3
-> +#define   I3C_SCTRL_EXTDATA_MASK	BIT(3)
-> +#define   I3C_SCTRL_IBIDATA_MASK	GENMASK(15, 8)
-> +
-> +#define I3C_SINTSET	0x10
-> +#define I3C_SINTCLR	0x14
-> +#define   I3C_SINT_START	BIT(8)
-> +#define   I3C_SINT_MATCHED	BIT(9)
-> +#define   I3C_SINT_STOP		BIT(10)
-> +#define   I3C_SINT_RXPEND	BIT(11)
-> +#define   I3C_SINT_TXSEND	BIT(12)
-> +#define   I3C_SINT_DACHG	BIT(13)
-> +#define   I3C_SINT_CCC		BIT(14)
-> +#define   I3C_SINT_ERRWARN	BIT(15)
-> +#define   I3C_SINT_DDRMAATCHED	BIT(16)
-> +#define   I3C_SINT_CHANDLED	BIT(17)
-> +#define   I3C_SINT_EVENT	BIT(18)
-> +#define   I3C_SINT_SLVRST	BIT(19)
-> +
-> +#define I3C_SDATACTRL	0x2c
-> +#define   I3C_SDATACTRL_RXEMPTY_MASK	BIT(31)
-> +#define   I3C_SDATACTRL_TXFULL_MASK	BIT(30)
-> +#define	  I3C_SDATACTRL_RXCOUNT_MASK	GENMASK(28, 24)
-> +#define	  I3C_SDATACTRL_TXCOUNT_MASK	GENMASK(20, 16)
-> +#define   I3C_SDATACTRL_FLUSHFB_MASK	BIT(1)
-> +#define   I3C_SDATACTRL_FLUSHTB_MASK	BIT(0)
-> +
-> +#define I3C_SWDATAB	0x30
-> +#define   I3C_SWDATAB_END_ALSO_MASK	BIT(16)
-> +#define	  I3C_SWDATAB_END_MASK		BIT(8)
-> +
-> +#define I3C_SWDATAE	0x34
-> +#define I3C_SRDATAB	0x40
-> +
-> +#define I3C_SCAPABILITIES 0x60
-> +#define   I3C_SCAPABILITIES_FIFOTX_MASK     GENMASK(27, 26)
-> +#define   I3C_SCAPABILITIES_FIFORX_MASK     GENMASK(29, 28)
-> +
-> +#define I3C_SMAXLIMITS	0x68
-> +#define   I3C_SMAXLIMITS_MAXRD_MASK  GENMASK(11, 0)
-> +#define   I3C_SMAXLIMITS_MAXWR_MASK  GENMASK(27, 16)
-> +
-> +#define I3C_SIDPARTNO	0x6c
-> +
-> +#define I3C_SIDEXT	0x70
-> +#define	  I3C_SIDEXT_BCR_MASK	GENMASK(23, 16)
-> +#define	  I3C_SIDEXT_DCR_MASK	GENMASK(15, 8)
-> +#define I3C_SVENDORID	0x74
-> +
-> +#define I3C_SMAPCTRL0	0x11c
-> +#define	  I3C_SMAPCTRL0_ENA_MASK	BIT(0)
-> +#define   I3C_SMAPCTRL0_DA_MASK	GENMASK(7, 1)
-> +
-> +#define I3C_IBIEXT1	0x140
-> +#define   I3C_IBIEXT1_CNT_MASK	GEN_MASK(2, 0)
-> +#define   I3C_IBIEXT1_MAX_MASK	GEN_MASK(4, 6)
-> +#define   I3C_IBIEXT1_EXT1_SHIFT	8
-> +#define   I3C_IBIEXT1_EXT2_SHIFT	16
-> +#define   I3C_IBIEXT1_EXT3_SHIFT	24
-> +
-> +#define I3C_IBIEXT2	0x144
-> +#define	  I3C_IBIEXT2_EXT4_SHIFT	0
-> +#define	  I3C_IBIEXT2_EXT5_SHIFT	8
-> +#define	  I3C_IBIEXT2_EXT6_SHIFT	16
-> +#define	  I3C_IBIEXT2_EXT7_SHIFT	24
-> +
+So far, I think it is fine put under master now. we can rename 'master'
+later when more dual mode controller added. 
 
-There is couple of space formatting here that requires to be fixed.
+Frank 
 
-Cheers,
-Joshua
-
+> 
+> ...
+> 
+> > +
+> > +#define I3C_SCONFIG	0x4
+> > +#define   I3C_SCONFIG_SLVENA_MASK	BIT(0)
+> > +#define	  I3C_SCONFIG_OFFLINE_MASK	BIT(9)
+> > +#define   I3C_SCONFIG_SADDR_MASK	GENMASK(31, 25)
+> > +
+> > +#define I3C_SSTATUS	0x8
+> > +#define	  I3C_SSTATUS_STNOTSTOP_MASK	BIT(0)
+> > +#define	  I3C_SSTATUS_STOP_MASK		BIT(10)
+> > +#define	  I3C_SSTATUS_RX_PEND_MASK	BIT(11)
+> > +#define   I3C_SSTATUS_TXNOTFULL_MASK	BIT(12)
+> > +#define	  I3C_SSTATUS_DACHG_MASK	BIT(13)
+> > +#define	  I3C_SSTATUS_EVDET_MASK	GENMASK(21, 20)
+> > +#define	  I3C_SSTATUS_EVDET_ACKED	0x3
+> > +#define	  I3C_SSTATUS_IBIDIS_MASK	BIT(24)
+> > +#define	  I3C_SSTATUS_HJDIS_MASK	BIT(27)
+> > +
+> 
+> There is couple of space formatting here that requires to be fixed.
+> 
+> Cheers,
+> Joshua
