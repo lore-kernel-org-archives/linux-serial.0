@@ -1,166 +1,186 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from CHN02-BJS-obe.outbound.protection.partner.outlook.cn (mail-bjschn02on2136.outbound.protection.partner.outlook.cn [139.219.17.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 601DD7FBDC;
-	Wed,  6 Mar 2024 14:33:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709735610; cv=none; b=aJTUjoTYR4Kn6LcXW3d1+HmYS3UPhRMgTsBoFakAU1aqZJH13sgYCWPUb2HQ/alJ3W+84HiPVxZcd+VDG8jjZ+45rtxaMTp7qMLeEkJLPOsESCxf+soFiLTi+l9Ob7LRXS5kh0HUNRNmw12fR9RinePFtCCovor8IQxGlFjPEfc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709735610; c=relaxed/simple;
-	bh=HUrdNo04SJI+Qhl7X0wlBzlTLUsv8zfi8LaV6ct1kuI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RJ4FdfK++teFzmKAw3klgXw16MHOimOvsm8FWWZjD4kvotboTE1Ufzs0Kd/LQgHNWiaIGHqi9b1bq3LZkmuwyX0ZbihA63lGhStavUXsfTaf7POiwsOME3Bi8txjPNBvJkvAypjEBmBpgzpkc3Q5vGP6J+qGJKTvH6JQN39pbI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cd7hp7DQ; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cd7hp7DQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709735610; x=1741271610;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HUrdNo04SJI+Qhl7X0wlBzlTLUsv8zfi8LaV6ct1kuI=;
-  b=Cd7hp7DQooPf1BSDPTCi/5jKPf5WaCgjdtyPUeoMEBQOcJK8Fra+eQFw
-   7Dn79nfa2orn3MdsrsVGoAqjiLgLKtp4kMtJYypko5CLvHS93vO2K/G8g
-   7vINF/IQ4/JBDF0q/RbNEbnPqnydM90pP5w+0NHjrxRLy+fFc+heUmr0R
-   qe88cE2QFeLJVN2s0ulfXlzMxmBUoeT32siyIzTRiJdAG79dzVwqc01+C
-   L1Rz44XilVJycZ1aZXXTk5pjiwCp/2pVQf63AHeiahZH9Ti0b6FHYiFHd
-   CxHrAQ3kH/ITA8g8PEcapk2c6SsY2RVw+YEyQmBUcxaGCj1hafIB1gTuc
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11004"; a="4464017"
-X-IronPort-AV: E=Sophos;i="6.06,208,1705392000"; 
-   d="scan'208";a="4464017"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2024 06:33:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11004"; a="937045010"
-X-IronPort-AV: E=Sophos;i="6.06,208,1705392000"; 
-   d="scan'208";a="937045010"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 06 Mar 2024 06:33:26 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id B4C453F1; Wed,  6 Mar 2024 16:33:25 +0200 (EET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_dw: Replace ACPI device check by a quirk
-Date: Wed,  6 Mar 2024 16:33:22 +0200
-Message-ID: <20240306143322.3291123-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C6EB13F430;
+	Wed,  6 Mar 2024 16:01:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.17.136
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709740892; cv=fail; b=MB6TsUejpwuOwf7sauzPrGZoTSbl6bGOfwBjR2jRpdP9wkr+HlohPm29IkwPqvr+csiOwocq+V5HKRs89ntjgau8IwJXNZvZirIwehGBr0oM0boFWScK+L9N4kTOd4hfFKbNq/OQdpRYQziexJE+wNsYIrd0CsemJ3vzQMRUvnk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709740892; c=relaxed/simple;
+	bh=Pbbd3arx99p+198utPQbAl0S+4t633dgR+8Py/khP3o=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=N6ogqFGPBvGmh1ZDouh4W0JXQ8Mlw7rj0wdN5RDz8tnrVv9zpoynHDWaDDWKzgOS/rvhIYptbVqSSiL9SXH4Ys2Eylfbp40op00rNQe+TzpNellnA59PoHT6rFVgaGp2tsxi6latgxbt0OVQyR2rGPGTXdXHVnyLbYBdO2BNVjE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.17.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iBrxq3991/7xKJidC0W0Tzxc7opVjWLEUa+chJW+tDNvl4xJG9Z5fUOKqzPfIaDmso3m8/qQnt6UMI87HZgfhO3wKyDcJKC4Bj0Ub+uu9ZsiV3BRIZw4aEIKHl+4PwzVtU3DhYq5znwIVluQlEdzoyuBmmXcMh4h1Y/bz15m0sjBX7azjLCfLBrStem1TfE+BghcZfmqsfQkMm+LIf5+jUQrSafeQqTV3PVrMp/dDgX2QQsoIuvwBpJs0hlK6pm5j+fhTj1G3ZPmfyWpl0+1oRBjgd5+8MzfnwoDhqEOJ/3Mfdd4JNKOcyUEjmCJwN+15esiHJHhzzjHc23ph8IfAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kfdv3AoU0LUfMpoQxN5RD2zAvb6XJFlnInq3BjyyWnE=;
+ b=e6tvEa6FI0CRneLwSkDZMDh0GF3Js9xnO6H7VF88Wf67m1YK3mSxHiQoRVNRk0DkaUTfJAT3kfJ0fXdjQWZH6qRZMgQWsxJkHbgmVLrWr9KwtFl8MJdjx1O4CR7Oq/eOCM0V0lV5RiwlmrTut2cuM4mvaIRz/lC+bFbIFO0iJQeckGMt4EzvPsqc5DmvJmp3MjN8jyIvwBmj+jyrSEUJ5FK2PB7VAd07oY+ghEObfFJqUd5vE7baneEldXPO6OSeHjwBFgj3bOQNKqNXHb71XyWepw/k50dxbjC+Gl7a9UALLmqu3BFVyUJ+4kzkfD3hZEdJfmHoaQsiS+1MGIj4xg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=starfivetech.com; dmarc=pass action=none
+ header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
+Received: from SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c311:20::14) by SH0PR01MB0571.CHNPR01.prod.partner.outlook.cn
+ (2406:e500:c311:8::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.53; Wed, 6 Mar
+ 2024 16:01:17 +0000
+Received: from SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
+ ([fe80::f6ed:1a18:3fbf:788]) by SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
+ ([fe80::f6ed:1a18:3fbf:788%6]) with mapi id 15.20.7316.050; Wed, 6 Mar 2024
+ 16:01:17 +0000
+From: Joshua Yeong <joshua.yeong@starfivetech.com>
+To: Frank Li <Frank.Li@nxp.com>
+CC: "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+	"conor.culhane@silvaco.com" <conor.culhane@silvaco.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+	"imx@lists.linux.dev" <imx@lists.linux.dev>, "jirislaby@kernel.org"
+	<jirislaby@kernel.org>, "joe@perches.com" <joe@perches.com>,
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+	"krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+	"linux-i3c@lists.infradead.org" <linux-i3c@lists.infradead.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>, "robh@kernel.org"
+	<robh@kernel.org>, "zbigniew.lukwinski@linux.intel.com"
+	<zbigniew.lukwinski@linux.intel.com>
+Subject: RE: [PATCH v7 5/8] i3c: target: add svc target controller support
+Thread-Topic: [PATCH v7 5/8] i3c: target: add svc target controller support
+Thread-Index: AQHaWIvaQw3YyHT02UKJrOMhyC7OnbErDKXQ
+Date: Wed, 6 Mar 2024 16:01:17 +0000
+Message-ID:
+ <SH0PR01MB08410A70ABB956DF9DD4DE25F921A@SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn>
+References: <20240205233326.552576-1-Frank.Li@nxp.com>
+ <20240205233326.552576-6-Frank.Li@nxp.com>
+In-Reply-To: <20240205233326.552576-6-Frank.Li@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=starfivetech.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SH0PR01MB0841:EE_|SH0PR01MB0571:EE_
+x-ms-office365-filtering-correlation-id: 3006193a-a604-486a-d8dc-08dc3df6a822
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ w5jH6AvrA5s6Xg2PxzM3MmJC8M1b5nh1HIPp1c9sFBuPW0/pOWsNneBQAnSE5hzHqy/ESpEvZr9t2AAZPNmnbs0zZpqMneQeO6XcidFSP4V4W5U2uKH/Fu7mFbugNm+QXUCgE6LCXVw9BsEEd7W4Valn9HJ4WR/G08RwI8f3eICfJ1JxpuyCAAsA9W+p+D88CyHujkv30/zgQuUY1k8QuWWMttISbIwGe4eFxoR2Mg99aCY0KQjbP92gtjIWN+61/EVFYyZuMpOa5erUXJV8g9ZQ4FLA7Uiscxc5mNwhRG7UT2P3YRkQ/AYcvwhj4ohPJIN6HWCUyBBpCcXKKwMCucSSbIjyoahoSKSdN8L8seQni9I6cuweLf2Ih0QArcHeNXABYGfM36aXH5GPq5bVrdF9zR9nY8KXLRK8W+PMO/MkjSRcKDqP+uGWfv5khk0Us17sk+XPcYji5IFymXHyVCXEdV7YKZPSqGK4IRwCp6lxdcG01tYPRo/SnRzJdzIBJPQ+tF/F7YkCCHvD2Doi52KOTSfM2jMzy1z79x3mHGSKf3HesLRKiqHiEiVfwigE2QyvS25D0YClrp+ZxThILx9aRSvsqTOWkprvSNrp2z+xTaZKlFEo4NQ2MwGKVm2k
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230031)(41320700004)(38070700009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?axLzjIVgz7yHQx2rECoVNZrSJhyiSRw7B03ZCrJiNoS3AtPceWUAaR96n5Mn?=
+ =?us-ascii?Q?UuB3v4cmulEhrzXHQZbF7kd23w7XS5ZjCZ6lMLpC/d00Z6RjnFsEJxUmZejb?=
+ =?us-ascii?Q?8U65fw4B4bjtPQGTjEmERlCrpnjyBIWP1T16nWgJVHkg0cm4QZw4edDNAnKd?=
+ =?us-ascii?Q?EG3RhB+g4EV0Pz5GaW0m539eZRdsyK+2qZeQDZ1knpp6TMOA1z3LYA7AjzlN?=
+ =?us-ascii?Q?hElGNBNXhMWv6q1pSndtOmskSj3rP/4+Jq/hRu6rtjGD6X7xxPXmTVXB34R8?=
+ =?us-ascii?Q?M5RIsIX86PgoZsBuoCJCcU9YD56P3TBuA4tOlelYB9rXSocZGIHTBd4lk75E?=
+ =?us-ascii?Q?J+PqH/w4T8qyB/Z5n2ne+Tcoqr+vEPjOZnYg+XOPblxKkqUsm97rICJFFbKt?=
+ =?us-ascii?Q?94z1LxaxxYoaLw6dUixTK9B0TvTTIpcrMPq1CgcoUfNF1fpe3mkEspzMfW+e?=
+ =?us-ascii?Q?JF8uEHC3RkrI/K9t0s3qBTlgnaarofhfkbAqBhhAefj+7jkPnBYpfU/6q8fU?=
+ =?us-ascii?Q?JTtQyI1RawKTn0iWwj3vd6jX0UcbvwCjXM0E1XHll9fh+oriQ6qfT45VXe3c?=
+ =?us-ascii?Q?jXwpwcUkbhfpyHqe5Ly7qpO0s+XZasa5LDL/UhkkxUYsDUPeIuux48jx7oGT?=
+ =?us-ascii?Q?ZdpxlnEnWY+6GpeF5WQaLvp5fz5VNJV1uFGtXYLML9N1tS4wC5G1phebiRtQ?=
+ =?us-ascii?Q?5eLvZ6B5YCoj2/EXeFK77ydxPWUFhYKgtOO4IBQ60I0XczybfiSi/pbMqd9R?=
+ =?us-ascii?Q?ufofTTWWsJuT087/De+uxhjPusLUqirhwozNS4zIG0NADXQ8IiPB9VZX0NWM?=
+ =?us-ascii?Q?EIYkckxCUsIU1Wbxe/ompPOuxKQ6mLcvcFxbIePgY/6PatyieP2yd8CSbCEG?=
+ =?us-ascii?Q?UzinWM2d8n4WF0EUjtUF6C3uW4ukclOlsr2WeWIKYj1rO52ifmnVu2xOFegE?=
+ =?us-ascii?Q?YuXgoi+P/ldoPTo4LR8zluvQCm070D2Xyd/vBf872MHNBkgspJbvDsXJEOEz?=
+ =?us-ascii?Q?apsWRqYfIKs0JEYKAvOjxPXPBX+nC+P947wpDF/4v4guTK70rJV0s5EmlvHu?=
+ =?us-ascii?Q?0bniXhJrbMZHS096luab/lvNQmPoisjKq+2ZxITlKQT0tXN9WPQ1iZXi3rOr?=
+ =?us-ascii?Q?e4jWKmKYir6yf9a1Phcc5PaVBJcEtktUjlSSDnISOmVXbwBLwmvwk8uhK6UO?=
+ =?us-ascii?Q?5VolAqSCTF3EbWQ4xKQ+qm45gGUsNeqv3oH32S3X9oXFbVMuUEjrS0v/uVc6?=
+ =?us-ascii?Q?CHhztsxaCupD7NCKsnJ/7UlYoGCRuCWa7D/eIhPtoa+p9alJoLjE/fLH9XDz?=
+ =?us-ascii?Q?Mt77mHHaT4nn9+pXP/p3DL0VdNleNCdaYtfnHk74rZDbGMnagGOEjR3Byro3?=
+ =?us-ascii?Q?uartzmY6B+zftqcyYGLSbN7nTNERxKjllwD+aqZWfhz3wBi5Qox6csXKB6UW?=
+ =?us-ascii?Q?G6latGXNAB3gNIHTbUKnbV1vIQ1EfcIgGhHNwARx3YxKJW6cWsf7l2IiTWId?=
+ =?us-ascii?Q?4R20qBqdSm56WS6tO+jNG09HKM0MWstpR8MNJyQhJpt5HcVDguIu07OpMSu7?=
+ =?us-ascii?Q?GtnWn+UFFVBHGmzKJx5FakqvrdUsyJ0Gf3vP3IxB+rILzyjCUH/XqliCBrIf?=
+ =?us-ascii?Q?mg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: starfivetech.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SH0PR01MB0841.CHNPR01.prod.partner.outlook.cn
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3006193a-a604-486a-d8dc-08dc3df6a822
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Mar 2024 16:01:17.1853
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jaQX3N6ZatN2jQjb7BATAIVcmPLNhPCPV1hVfIPNQ/MwhPiH0PioyKCZ8ZqZuQ2FbjHwrt7y6DBsVG+jjdYDVFe3nCSucZ54S/i8BFYQaQQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SH0PR01MB0571
 
-Instead of checking for APMC0D08 ACPI device presence,
-use a quirk based on driver data.
+Hi Frank,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 51 ++++++++++++++++---------------
- 1 file changed, 26 insertions(+), 25 deletions(-)
+> -----Original Message-----
+> From: linux-i3c <linux-i3c-bounces@lists.infradead.org> On Behalf Of Fran=
+k Li
+> Sent: Tuesday, February 6, 2024 7:33 AM
+> To: frank.li@nxp.com
+> Cc: alexandre.belloni@bootlin.com; conor.culhane@silvaco.com;
+> devicetree@vger.kernel.org; gregkh@linuxfoundation.org;
+> ilpo.jarvinen@linux.intel.com; imx@lists.linux.dev; jirislaby@kernel.org;
+> joe@perches.com; krzysztof.kozlowski+dt@linaro.org;
+> krzysztof.kozlowski@linaro.org; linux-i3c@lists.infradead.org; linux-
+> kernel@vger.kernel.org; linux-serial@vger.kernel.org;
+> miquel.raynal@bootlin.com; robh@kernel.org;
+> zbigniew.lukwinski@linux.intel.com
+> Subject: [PATCH v7 5/8] i3c: target: add svc target controller support
+>=20
+> Add Silvaco I3C target controller support
+>=20
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+> ---
+>=20
+> Notes:
+>     Change from v2 to v3
+>     - fix build warning
+>=20
+>  drivers/i3c/master/Makefile         |   2 +-
+>  drivers/i3c/master/svc-i3c-main.c   |  35 +-
+>  drivers/i3c/master/svc-i3c-target.c | 776
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 9ac4be748596..a3acbf0f5da1 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -9,7 +9,6 @@
-  * LCR is written whilst busy.  If it is, then a busy detect interrupt is
-  * raised, the LCR needs to be rewritten and the uart status register read.
-  */
--#include <linux/acpi.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/device.h>
-@@ -55,6 +54,7 @@
- #define DW_UART_QUIRK_ARMADA_38X	BIT(1)
- #define DW_UART_QUIRK_SKIP_SET_RATE	BIT(2)
- #define DW_UART_QUIRK_IS_DMA_FC		BIT(3)
-+#define DW_UART_QUIRK_APMC0D08		BIT(4)
- 
- static inline struct dw8250_data *clk_to_dw8250_data(struct notifier_block *nb)
- {
-@@ -444,33 +444,29 @@ static void dw8250_prepare_rx_dma(struct uart_8250_port *p)
- 
- static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
- {
--	struct device_node *np = p->dev->of_node;
--
--	if (np) {
--		unsigned int quirks = data->pdata->quirks;
-+	unsigned int quirks = data->pdata ? data->pdata->quirks : 0;
- 
- #ifdef CONFIG_64BIT
--		if (quirks & DW_UART_QUIRK_OCTEON) {
--			p->serial_in = dw8250_serial_inq;
--			p->serial_out = dw8250_serial_outq;
--			p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
--			p->type = PORT_OCTEON;
--			data->skip_autocfg = true;
--		}
-+	if (quirks & DW_UART_QUIRK_OCTEON) {
-+		p->serial_in = dw8250_serial_inq;
-+		p->serial_out = dw8250_serial_outq;
-+		p->flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_FIXED_TYPE;
-+		p->type = PORT_OCTEON;
-+		data->skip_autocfg = true;
-+	}
- #endif
- 
--		if (quirks & DW_UART_QUIRK_ARMADA_38X)
--			p->serial_out = dw8250_serial_out38x;
--		if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
--			p->set_termios = dw8250_do_set_termios;
--		if (quirks & DW_UART_QUIRK_IS_DMA_FC) {
--			data->data.dma.txconf.device_fc = 1;
--			data->data.dma.rxconf.device_fc = 1;
--			data->data.dma.prepare_tx_dma = dw8250_prepare_tx_dma;
--			data->data.dma.prepare_rx_dma = dw8250_prepare_rx_dma;
--		}
--
--	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
-+	if (quirks & DW_UART_QUIRK_ARMADA_38X)
-+		p->serial_out = dw8250_serial_out38x;
-+	if (quirks & DW_UART_QUIRK_SKIP_SET_RATE)
-+		p->set_termios = dw8250_do_set_termios;
-+	if (quirks & DW_UART_QUIRK_IS_DMA_FC) {
-+		data->data.dma.txconf.device_fc = 1;
-+		data->data.dma.rxconf.device_fc = 1;
-+		data->data.dma.prepare_tx_dma = dw8250_prepare_tx_dma;
-+		data->data.dma.prepare_rx_dma = dw8250_prepare_rx_dma;
-+	}
-+	if (quirks & DW_UART_QUIRK_APMC0D08) {
- 		p->iotype = UPIO_MEM32;
- 		p->regshift = 2;
- 		p->serial_in = dw8250_serial_in32;
-@@ -750,13 +746,18 @@ static const struct of_device_id dw8250_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
- 
-+static const struct dw8250_platform_data dw8250_apmc0d08 = {
-+	.usr_reg = DW_UART_USR,
-+	.quirks = DW_UART_QUIRK_APMC0D08,
-+};
-+
- static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
--	{ "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
-+	{ "APMC0D08", (kernel_ulong_t)&dw8250_apmc0d08 },
- 	{ "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
--- 
-2.43.0.rc1.1.gbec44491f096
+I think putting target mode files under "master" might not make sense. We m=
+ight have to
+consider that we may have a "secondary master" mode. Some other ways of spl=
+itting
+or handling of target mode is needed here.
 
+...
+
+> +
+> +#define I3C_SCONFIG	0x4
+> +#define   I3C_SCONFIG_SLVENA_MASK	BIT(0)
+> +#define	  I3C_SCONFIG_OFFLINE_MASK	BIT(9)
+> +#define   I3C_SCONFIG_SADDR_MASK	GENMASK(31, 25)
+> +
+> +#define I3C_SSTATUS	0x8
+> +#define	  I3C_SSTATUS_STNOTSTOP_MASK	BIT(0)
+> +#define	  I3C_SSTATUS_STOP_MASK		BIT(10)
+> +#define	  I3C_SSTATUS_RX_PEND_MASK	BIT(11)
+> +#define   I3C_SSTATUS_TXNOTFULL_MASK	BIT(12)
+> +#define	  I3C_SSTATUS_DACHG_MASK	BIT(13)
+> +#define	  I3C_SSTATUS_EVDET_MASK	GENMASK(21, 20)
+> +#define	  I3C_SSTATUS_EVDET_ACKED	0x3
+> +#define	  I3C_SSTATUS_IBIDIS_MASK	BIT(24)
+> +#define	  I3C_SSTATUS_HJDIS_MASK	BIT(27)
+> +
+
+There is couple of space formatting here that requires to be fixed.
+
+Cheers,
+Joshua
