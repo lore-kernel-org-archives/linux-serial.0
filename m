@@ -1,57 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2215F1B59D;
-	Wed,  6 Mar 2024 22:51:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CDAF1C686;
+	Wed,  6 Mar 2024 23:11:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709765503; cv=none; b=maUAGO2F7TzfsRYqWbonTQmCvfXXR+bn3XgjF0k2WO8rawi9aMTkIfTC9qvttoJRIAS2EFQ/0jhBbIT5gOa0+2fBw6xKcYrpUFWMs5YTThqjRA1xzsv9iZGd/trvDbkCw1s0eosimoanQ9RSzdNmbG0rj3WgNjjNv2eSwFQFt3k=
+	t=1709766679; cv=none; b=mbZely/bmyoFXispRtFFeaLl4rYXMeO03jOZH71vXIY8I2AKXo1fX+ue5ztmyIXGZJsrNgiV8bQU+OB0tWx2ypDVuNlgL0PIP09DCeQi+AQGpzXYiDQlY4Tpow+marHyE+8X84ujPTV/oCInk23oqyq8F1UH91qtlG8fblxMKfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709765503; c=relaxed/simple;
-	bh=HNBDIUXB8ADe3S0CerOS4/GQYaPpXqbqYxKNF0I8pJg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G7qZrnR4z9JlzzfjQuhBqDCQXCvHfz10UKt/6CHucud8YDynPoY5R1XkSzD5OiHcjG88MK7GW0v9imVBWRZC4W3Cs25TpeftTQt3beTpUut+G9JcavCQh1Y8OgL8I/jmaGkcv65MEmBL2rZf75G4cc8XckM4FBLTGDMyIsOd70o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GFD37nTy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709766679; c=relaxed/simple;
+	bh=EBrriInW3JbtArIhXHglPAvOuHM/fEGrMu3uHu2Klgs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ZZY+oTLAutHVQo+2zuXHv4YY19NDonCZCkuriG+1lIM4K0YmW4CU5fJGitv8HdzUeBubRAnCsGjiPLaxG6GuxotF89NdAoNT7qqlRJBPSxoDhopk/FQboIfiWO7UHsNrFeYM/KtnTt3uAulB7EOwYljmBuciQVlbs1z9SGc7pr4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V/P+eTMf; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GFD37nTy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 845D1C433C7;
-	Wed,  6 Mar 2024 22:51:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709765503;
-	bh=HNBDIUXB8ADe3S0CerOS4/GQYaPpXqbqYxKNF0I8pJg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GFD37nTysBPDZ+h/N+DQPS8ZoSVnEVzoQ0XSdvrhF2b/3QQn3w0ZRVcZ3DwOZrYsp
-	 56vgJbJqyYShpt5m8kByYnY1GEUX6eKKARyMgLGvh/Bo7yEali0+eO1S8+wU52RkAR
-	 b0ovhdHg7RhyJatRPlBVLSq8dpCqix6svtoI71LE=
-Date: Wed, 6 Mar 2024 22:51:40 +0000
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Mark Brown <broonie@kernel.org>
-Cc: Shuah Khan <shuah@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Michal Sekletar <msekleta@redhat.com>, linux-serial@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] kselftest/tty: Improve integration with automated
- systems
-Message-ID: <2024030633-managing-identical-9b92@gregkh>
-References: <20240306-kselftest-tty-tname-v1-0-33505b31629e@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V/P+eTMf"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-412f692be21so2789455e9.2;
+        Wed, 06 Mar 2024 15:11:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709766676; x=1710371476; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ed13jYHQ8Lp5ithwU/UjoL1/F5W01I7K/zlGRfPgDr8=;
+        b=V/P+eTMfv1nELp+12dSu++7ka00Ht3HBcxQtBanqGFvx1Pblu/hsHaKHoPpYSUBzSZ
+         stPIlkgidx01+6Ke4/djt0kg7IzmWY1oh4HFjtWA6qqTKHV8QQOGss1mFdDcTwtw5nmi
+         07PT47nv3onGPHi/v7+Gt70fu84WBwTDXNyRR4SqmideQeIA1MfmpTpFp4WRWqG1NQ6q
+         jhNP1eWOhOg8DoxBXCeaTLPdLO7iWJTuUvT+G8NUxOr8V98KSJ7pGEJZJncy6/e8KbYO
+         uE9IYxgFtCtnAyD+xvvpNjR4h8dzNPtXqVf1DXiE/Je/T4L534MmWRGHd/Bb+U5ox7+T
+         tIKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709766676; x=1710371476;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ed13jYHQ8Lp5ithwU/UjoL1/F5W01I7K/zlGRfPgDr8=;
+        b=VHKYsAUTyrl0pSy4K0Pwd1DriVmZGRwM4bli+mL8Fu6DFh7iEbqVQyxSrIc4G0HKnq
+         K4aCifH3gLnwzsRkLxaeQdbIM2aRHLu//HJesR+yv1aY9pXIBJwi84DFNiDurst56L2u
+         K8117ncgzaVp1FiUhJgynv9kXhmXfg3Z1MnTpukEMr4zI4ib7e9fp4VH6/ReilQVDAA9
+         Dv5LfJJYx7zh2DUyoPU7UEYyPuosebbAUZwzfHGBljGYxpt4qQChpffhTdDWfEYO8j8L
+         yh4cBZIrzRs5uDLAroNDdiYryzC15fzh/geLFM6MgAHhhypOIX+Qe++shogW1IJpbk12
+         Crew==
+X-Forwarded-Encrypted: i=1; AJvYcCW5YskdAz8rqlzYbBf2cvqjs4yA+aR5hy60B0eXTZg0H5ndclrVdNgzj5TnA5HlaDE2QIYlny+8dSnTmGDJlW4eQqvEi0tejGpqQmAv3NbG52DGTwhj6an5gYdGdEpb+6Jh8MMhJD/jqx39aZHXfGfiiNw/ZNA3d701wE97O99/HrIv234JTeC9vTgy
+X-Gm-Message-State: AOJu0YwMCBl8HZhwkUcMK0EztiT8oFosGwrQNpBSFtDDG76xsng1p2fm
+	sM5Ds1dXzrjohrf6yqkEN7mxLt6EiAGz3nZMhW8mrmQ126iE7zHV
+X-Google-Smtp-Source: AGHT+IHTudt7kiYcNJSDPSJ98mAV2G/a5wBaZS03otEV7K9fUUgCt4uLpoJnm459eeVLI8D38BP8TQ==
+X-Received: by 2002:a05:600c:cc5:b0:412:df1b:4875 with SMTP id fk5-20020a05600c0cc500b00412df1b4875mr8149679wmb.30.1709766675506;
+        Wed, 06 Mar 2024 15:11:15 -0800 (PST)
+Received: from prasmi.home ([2a00:23c8:2500:a01:fef2:3c1d:a816:65f7])
+        by smtp.gmail.com with ESMTPSA id h8-20020a056000000800b0033d2ae84fafsm15328996wrx.52.2024.03.06.15.11.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Mar 2024 15:11:14 -0800 (PST)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 0/2] dt-bindings: serial: renesas,scif: Validate 'interrupts' and 'interrupt-names'
+Date: Wed,  6 Mar 2024 23:10:05 +0000
+Message-Id: <20240306231007.13622-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240306-kselftest-tty-tname-v1-0-33505b31629e@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 06, 2024 at 07:21:24PM +0000, Mark Brown wrote:
-> This cleans up the output of the tty_tstamp_update selftest to play a
-> bit more nicely with automated systems parsing the test output.
-> 
-> To do this I've also added a new helper ksft_test_result() which takes a
-> KSFT_ code as a report, this is something I've wanted on other occasions
-> but restructured things to avoid needing it.  This time I figured I'd
-> just add it since it keeps coming up.
-> 
-> Signed-off-by: Mark Brown <broonie@kernel.org>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Hi All,
+
+This patch series updates renesas,scif.yaml to validate the 'interrupts'
+and 'interrupt-names' properties for every supported SoC.
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (2):
+  dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+  dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+    'interrupt-names'
+
+ .../bindings/serial/renesas,scif.yaml         | 147 ++++++++++++------
+ 1 file changed, 100 insertions(+), 47 deletions(-)
+
+-- 
+2.34.1
+
