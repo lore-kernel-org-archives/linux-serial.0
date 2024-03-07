@@ -1,57 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B43A12A156;
-	Thu,  7 Mar 2024 11:42:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41399128378;
+	Thu,  7 Mar 2024 11:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709811769; cv=none; b=eBhfjJ9EZyR9wuxtZ36NYMxDZPuZN3KicGz6rwpfFWU6AjzcJGeHHyO9pbBUZVL9s3k7srRowdazz1lRZ76pjTu4sGzQVx+V2DugfK6rPB21L9qsO88FgdUvPsDxKCxEhaeY9Itb4I9AVC0vLhSpGAXuVPNRnt/Z11GmFiFJAKo=
+	t=1709811783; cv=none; b=sCeBthTnHEnFCmkiEF2RNhM9FH/Bqie1A8B/F33bJL7Pk86V3CORzaHGDTYW3rBXm4UR+NxFvAZ4D5w0Uvw4/ofI6x8JXSEs5zktND0A57VDBn4SICVwHXSlo9+A2R9Udmv3taO3i4SRL6U+02vCGFMsJv/iu9ZBN+O8O5qWO2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709811769; c=relaxed/simple;
-	bh=eyprLHFR1EiVFsCGdQ/GNrh/FyDMORPPriQDhRlU+Yk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I6LjFO1NFO3dLZkey+Z3T/TQtkb+wkeCWi+Rg/lYCa4MYrXt/rdp2t8bKNFSqD49M7jACAOBkA0fBaekZVgUBh0hAp2owOXDI/0V6mhZvR6aUeeZE265GVE/0bsHMPPd0rrd5oVzYwK1YdkoFMHEEdYLPZdnuLknBiYeA6olp+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ki8nLuQj; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1709811783; c=relaxed/simple;
+	bh=mTa5sc7SzJw8IK4sYc0Zupz/cu6Q3rGAQMTXXn56jPQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=EBsUs0gml/xmvHAxRD+Wb6EzPATNtYCLo0+4tisV66FPka4V0ilVcNbyopo7aPB/oY/OpKcAdnCAzYq7+KbryF6XDR0P5PYFkS5N/gZkT6y2XFzhGL5LjnviBAGJfDXHqKijTmMyGbjcN7YlVv5muR2A+QSoyDD6Ay/xcmn/dp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J3c35cPe; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ki8nLuQj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709811768; x=1741347768;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eyprLHFR1EiVFsCGdQ/GNrh/FyDMORPPriQDhRlU+Yk=;
-  b=ki8nLuQjhkBWELQaGww8nhzcQQTyp7m4IWE6GS2jAuyubSkUlsL5wo22
-   wi4b51KJwRx36bvD1hUDvCIbfrA+lePW66HnmKfVcToqf2K+t6vSNNXA0
-   rfGiKAklEdhusLe9Bee+sl1vpYDvjmqHNNPk4Ntx+L71NfjSY1wZOFixD
-   5pMsLtOcU6BhZ9kzMIhLfAZfPy3BHzptVovzZhWAZoM2v/tOKqyJUmt1W
-   XCohe8DA9pmnS39GXD0R4v3uzP3tbD527eq03DdvPXk9WcTSE4EMrroDS
-   /Yng6XyFSzneUHWmMQeMWuj/VQ3FdJLYQ7+Fc134tpfEJxq6JHl4jEvxc
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11005"; a="15119775"
-X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="15119775"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2024 03:42:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11005"; a="937045879"
-X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="937045879"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 07 Mar 2024 03:42:46 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id F401C193; Thu,  7 Mar 2024 13:42:44 +0200 (EET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] serial: pic32_uart: Replace of_gpio.h by proper one
-Date: Thu,  7 Mar 2024 13:42:43 +0200
-Message-ID: <20240307114243.3642832-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J3c35cPe"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-33e6f9ce76aso71494f8f.3;
+        Thu, 07 Mar 2024 03:43:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709811780; x=1710416580; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9MPOSZA++tTQbyp/n+DD8w8PeiM1K397eA5hseFsnUo=;
+        b=J3c35cPesuxzK+TXac31dWSPfKlOkWND5qWWd0CDWDXqrIbiCyFqmemIHbYyPs/BCE
+         74FAYArbeGYz5S9q1zDBPkvXEM8gMfabGSTLSgAjTPHT/i6FLaqQba6jG0wn/Uff2Vk3
+         ztR8EEixaDukHliaSDnfdAYYyzXmc5eYD4JwQWuPwNc+ZrE2JC/UNc9R7hS0uOy7cK22
+         dkIyZzgF6taLs2kNwACvyszZ23JjXzF9GMFOtlcSLVJ/Qo3Hh2rHS4an/yHKhFD6xgLg
+         ELzRyHPfMRRf8aIdL4MGCqqwYMRfrniISH6MLDVVxKhJF1/Fl5X9tCed3JrdJTRzwv1G
+         J3QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709811780; x=1710416580;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9MPOSZA++tTQbyp/n+DD8w8PeiM1K397eA5hseFsnUo=;
+        b=g28LLY855C0JIuxrJD7DR1ARVRx3aNIYwWgsQyKGvGaQzy78Z/JJIeGYMAWKBd11sj
+         D10M6bem9Hf5jqxmC+xpoN4TbKajfu0WGv5PH9yHLirkL1TqOgH3UJQd/dSniOv3veFL
+         Zu2qs+LqyHkTzfa+dGSwRV3PNk4QLRr9xWzsC6vZ4zYdhkX+z/mPndm2ptyfZ0ozwXqe
+         l9TUCgTV5D9sZqgLw9o/8VCQlO+sLSu0iDxihn5AcwmvmNzvF6qgQ+hwyo1LOWVxcGEo
+         zSzidvlxd9grywSqb2TuhuxCUulKH+n/LWlrduBNCUzXuPufmAk/hl4684FGQ0DQPooh
+         JQZg==
+X-Forwarded-Encrypted: i=1; AJvYcCWKLB9HImAVYOWZNt0juPiDg/2LDxS4DqkwJQIWHoaXlFIS+pjYaTMuJgZH7vR5OZeGtxF1s4G0zzaa3ZwseatxbD1hPPWUf6WfHmdH9XBKVXhRr3t2NIhxSZuguwI+E1lcSKouAZxC+MLl7C+yrfIEBDcm8yFlcPzGCcZQ15Qh2069NtY3pXtjleUY
+X-Gm-Message-State: AOJu0YxDEkZ5x2KrBOiXOfhwr77CYgWudPUwlDypT8DUANjL84+q+G5i
+	PCFdvSu8ZXfDsxufD5mkTq6BqhcJsO6zPptVudig4rFcsmfx/x/4S4EiFnhy
+X-Google-Smtp-Source: AGHT+IEx97a8s+IEsNN6uwwAeUtjU4D9Ii95oBHdlPOhtKv+f2e5gKD6Xwh/wbYpLmYa+pNzmpCuhg==
+X-Received: by 2002:adf:f40e:0:b0:33e:45c2:71dc with SMTP id g14-20020adff40e000000b0033e45c271dcmr6685639wro.1.1709811780360;
+        Thu, 07 Mar 2024 03:43:00 -0800 (PST)
+Received: from prasmi.home ([2a00:23c8:2500:a01:fef2:3c1d:a816:65f7])
+        by smtp.gmail.com with ESMTPSA id h5-20020adf9cc5000000b0033dd9b050f9sm19858722wre.14.2024.03.07.03.42.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Mar 2024 03:42:59 -0800 (PST)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 0/2] dt-bindings: serial: renesas,scif: Validate 'interrupts' and 'interrupt-names'
+Date: Thu,  7 Mar 2024 11:42:15 +0000
+Message-Id: <20240307114217.34784-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -60,32 +78,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-of_gpio.h is deprecated and subject to remove.
-The driver doesn't use it directly, replace it
-with what is really being used.
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/pic32_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi All,
 
-diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
-index bbb46e6e98a2..1619186e158e 100644
---- a/drivers/tty/serial/pic32_uart.c
-+++ b/drivers/tty/serial/pic32_uart.c
-@@ -8,11 +8,11 @@
-  *   Sorin-Andrei Pistirica <andrei.pistirica@microchip.com>
-  */
- 
-+#include <linux/gpio/consumer.h>
- #include <linux/kernel.h>
- #include <linux/platform_device.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
--#include <linux/of_gpio.h>
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/slab.h>
+This patch series updates renesas,scif.yaml to validate the 'interrupts'
+and 'interrupt-names' properties for every supported SoC.
+
+v1- > v2
+* Included RB tag for patch #1 from Geert and Krzysztof
+* For patch #2 defined the properties in top-level block 
+* Used Gen specific callback strings instead of each SoC
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (2):
+  dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+  dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+    'interrupt-names'
+
+ .../bindings/serial/renesas,scif.yaml         | 120 +++++++++++-------
+ 1 file changed, 77 insertions(+), 43 deletions(-)
+
 -- 
-2.43.0.rc1.1.gbec44491f096
+2.34.1
 
