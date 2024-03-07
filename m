@@ -1,102 +1,96 @@
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393ED63D0
-	for <linux-serial@vger.kernel.org>; Thu,  7 Mar 2024 02:48:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A640A82883;
+	Thu,  7 Mar 2024 08:44:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709779697; cv=none; b=EGKY7XUMQj0WPPEonW9PpHVC1MXJCpMz4mHwfM/ojvJN0O0/20I4GQ1Tx1Y7L5pzC2qQR37AhWXYRL1YfcwsFakk5R7LFrL3JtyBPEFG9DNzXAKJvs/X0P8iRLe9Cca31SWJkEQhTUSS4QzbxDFnMP1kA5ylfu62kuy/+iwl9Qo=
+	t=1709801096; cv=none; b=YDeTMo/aK0u5PL4VKGvxrcH/fewEIkyjiN32Sh0S1VWftRXneGDPBZxYC+6J072cz2NOfi4OVaZe9u5a9DQ/GtnOQcgEgpP7dfEIhHgZjmnphhkmPWXbzfG8qKLTcg5n5u+TBKaQnK9HtT+voX6q/hbg/Fv8CESZKAXX97g0KCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709779697; c=relaxed/simple;
-	bh=hhQPcz/fQtlI1CdDKR3YuUxD9RPVR+xBl8a8TvjoJj0=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=dzQKFOnPM4lnoJ+zHlDO3Ury6vbwRbxuFPmB+NSZX0Pb3LaDfH9Hc9HjSnRzUPqTrulSOd6kgrPXBR7BoubS04BINilAe3VNrwkNZeHCtU6Dp1VWGGogKl3wzGpGJ/jr6gsiLNHf9GszZGlQba4HU84L9cQsdDYRaaf1wdTr/fI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=fxptnRNJ; arc=none smtp.client-ip=209.85.166.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="fxptnRNJ"
-Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-365c9d37995so1005165ab.0
-        for <linux-serial@vger.kernel.org>; Wed, 06 Mar 2024 18:48:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1709779695; x=1710384495; darn=vger.kernel.org;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Z5d/26bHgqiMApGVsGr3aD7SjWMpb6gdnyVYgaIBs8=;
-        b=fxptnRNJ/TKEdg4JWbYKq2MRsqi/zofaHHlM/Gd+iX5X+7N1MjvW5NbfgUfABalYSP
-         wknfsgXhks8YDmEzml+otWEUEn8Gf64owBHfyXZm8ULdiv7Ibm7GlgYoPw1l/eUN+FWF
-         fnmKZQ2WpLDFbp26vgp6muJzBv/RReF4UhwfjHZe5fIXrTfSbNZDxdzc/8Pua727dus8
-         q0YoOxGMZHzJb/ta4SmoSIfVccKWC9KI/LjIkf743aljyU7myu3rixL+lA5DKYhJak3z
-         weFhDgo634z/+nbu90cmLbWIX4OJRnghQjOe2+ug+VK6A6em0lBerLtzerLNPODL9SeT
-         EN5g==
+	s=arc-20240116; t=1709801096; c=relaxed/simple;
+	bh=fZTndBaRGIc7XTnn+2HLU5SFyVILvATus03elPoOvG8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eawnzU4w8EpNqrXE556NBF5imMCx4EZbtzt4ryTx7/pkk4w9VMcxWpMLjG9SFXfBOjxlGQ6TZq0AR/feG/cpldcWuS0tVSIXT6G1MiE02TmRAiJONbh0cjx53PNX5GwnhX8EcdzxhEzeSComY+zXunr3BQfUOu0W9U4YNI9eohs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yb1-f174.google.com with SMTP id 3f1490d57ef6-dcbf82cdf05so595349276.2;
+        Thu, 07 Mar 2024 00:44:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709779695; x=1710384495;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3Z5d/26bHgqiMApGVsGr3aD7SjWMpb6gdnyVYgaIBs8=;
-        b=wK2FOb9mLzZqS2dY4elJVbLlV+XzS8LCRF+ZcwFKRm0d88ul89DslxUBI86vlZnxRF
-         ocw0WFCqG1ntzuGDbaW1MSzEP7t/d7VcNN8KwGlkHymrLKpZd90TNxAaF1Kqm2z3PFAI
-         ax393AQ5EFddyiT/48Bc5aHCUoHyPYNHRWNcnwAp0dr1vIGqZ4EKNrVcB2p2sG5Aon/g
-         JCTMArYJiUFGWC+Q786bzzO8Yk3bTYzlsh7sgAyfeIFgjgB/f41j1XuLHxWvfxrRTYfC
-         J0Ua3ruHqd5QnexMJxoOMWZxj6+Z08ZtKt8YVZl86ntElpX9jqBxV1x+WmEptYn6FJgt
-         GkPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXoYbNv6V34mpkOZ5qFy/xTBsKI4BF6kQvs0Q8vdClLLw1AfTJLU4/qA0sJWdonL18qCxeCIrCN4FHyDqd5FuQtPF2henQk83NmGw5y
-X-Gm-Message-State: AOJu0Yy9nWpIZ9tb8USSMj3bG1tDUBf65a3kNcAcVzlTTnbyqiAzAabz
-	uewuXRDh/9hKotyDBpXuUlOC0oEK8MY4ZsevRDsOUTTwWrhpv2ewzp/D2M5vlhYLqa4GHwwumUG
-	t
-X-Google-Smtp-Source: AGHT+IEyF0UCk5AncTHMUs17I2OeHhjTtTpuQHRLuE8Gkg6yydzKB2koqNVCqN1HEtdGNtMpZAviXQ==
-X-Received: by 2002:a05:6e02:1a6a:b0:364:21b4:f59a with SMTP id w10-20020a056e021a6a00b0036421b4f59amr21762216ilv.14.1709779695359;
-        Wed, 06 Mar 2024 18:48:15 -0800 (PST)
-Received: from localhost (c-98-32-39-159.hsd1.nm.comcast.net. [98.32.39.159])
-        by smtp.gmail.com with ESMTPSA id z13-20020a029f0d000000b00474fc6638eesm1392353jal.76.2024.03.06.18.48.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Mar 2024 18:48:14 -0800 (PST)
-Date: Wed, 6 Mar 2024 18:48:13 -0800 (PST)
-From: Paul Walmsley <paul.walmsley@sifive.com>
-To: Conor Dooley <conor@kernel.org>
-cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
-    linux-riscv@lists.infradead.org, 
-    Samuel Holland <samuel.holland@sifive.com>, devicetree@vger.kernel.org, 
-    linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC] Inconsistent sifive,fu540-c000-uart binding.
-In-Reply-To: <20240304-whomever-gladly-d43da7ad2fe6@spud>
-Message-ID: <229b34c1-5419-93ae-0a6f-a21cf4e4a276@sifive.com>
-References: <20240304105947.SJcVAdr1@linutronix.de> <20240304-whomever-gladly-d43da7ad2fe6@spud>
+        d=1e100.net; s=20230601; t=1709801092; x=1710405892;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=a6KGx5cJC7n/o7O+84TUUVjMC/DZFxOfsHhOH0F6S8s=;
+        b=tKSleO7PtgGA83MgoTaijIjyZNmLtMN3Ne+0gHcGuzR0geJmh4MxW7iH2ib1cu7om4
+         JG1Afwn6i4Fka+l8fStANu26xw3Cq0MQRJtFu8H8wQHVE9hvCTDgMSsDZ+DzF8dJyzCJ
+         VF3IGxGaBHkqIq0JhzDpkkqS43jKXbqhrNVM8QD8nIEgun2NPVyOZiy3Lg6/s6MS5At6
+         G4IHFAW6mtgUEVJeOoQy1EVNqrEvq/wwmhCCuDmimEDRHvpZ2Ech2oSucxLKm2DqkLwp
+         qUIJCnNvXqWY3NDlhWM7gAY3hpAamEQGYWup/NyIWUrmbm9nCOw8jHxZs7Y5CtAGiH1X
+         +DAg==
+X-Forwarded-Encrypted: i=1; AJvYcCXH+Vh2WIiiYkK9HmQvADovzxQTCdhhDoF+18amPmfV6jflLxnasAdUCFYuJKLTcPM158MIZzjJ5/miA9cxhZflRz/+WAgG6V3lVYy7gO3L3+iTqsqnlSQGj6EmwcqycVizZGHxl+0zNBS9qmFoIrvb+AFSgZexEjvsLKhlMc+lFPEQGIchBYFBwhiEVpP3QGknYJS7Fk6Ti5MGZiki1oizNi/I+l0zkIhy
+X-Gm-Message-State: AOJu0YxspiAMDDItXIeFxCl/7n2vnM3+76LTb71TxqQFPAyHknwJhxGq
+	XPZbBPZYNj1KcWqRpOl0rZuL4CeqAS2VSEanY/7V9J4KRWYHePETVsOUHPmnn5k=
+X-Google-Smtp-Source: AGHT+IGc7m4g4Pb6b4U2eS9YbjCT13EuMWTe1kXONwhI/+jR4L1FviP+F3kmYJB0qQiKFihK0Rug+A==
+X-Received: by 2002:a25:8a01:0:b0:dcd:407d:52e5 with SMTP id g1-20020a258a01000000b00dcd407d52e5mr15473596ybl.29.1709801092479;
+        Thu, 07 Mar 2024 00:44:52 -0800 (PST)
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
+        by smtp.gmail.com with ESMTPSA id i3-20020a056902068300b00dc74ac54f5fsm3395091ybt.63.2024.03.07.00.44.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Mar 2024 00:44:51 -0800 (PST)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-609acac53d0so5784217b3.1;
+        Thu, 07 Mar 2024 00:44:51 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUXD0LnnWPV6JllKRTeR8sR9Rl+fDLwkLpXa1gVhLk3mOw62Om2azyj5BIQyL/CKRyIEXrZbe4UWkqv7AvLz57y1C6+X9xVdIts6uWCD2+9iPnzRQvR96+21uxSeBEsHQ6stvomPN4eomd23d3wDiu+ZNW0BRLmCtzi8gQIHbXlfaIDwuP3VqIsvR36eLLbvYSExq6DK1ArBP/w7axUOnXv5MqIYsA1LDJ9
+X-Received: by 2002:a81:7c0b:0:b0:608:cbf2:518a with SMTP id
+ x11-20020a817c0b000000b00608cbf2518amr18018502ywc.49.1709801091706; Thu, 07
+ Mar 2024 00:44:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20240306231007.13622-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240306231007.13622-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240306231007.13622-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 7 Mar 2024 09:44:40 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUi5U1BjcdFu1p7PrUteuRxwWiQm39c-tprxA=_LED0DA@mail.gmail.com>
+Message-ID: <CAMuHMdUi5U1BjcdFu1p7PrUteuRxwWiQm39c-tprxA=_LED0DA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: renesas,scif: Move ref for
+ serial.yaml at the end
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 4 Mar 2024, Conor Dooley wrote:
+On Thu, Mar 7, 2024 at 12:11=E2=80=AFAM Prabhakar <prabhakar.csengg@gmail.c=
+om> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> In preparation for adding more validation checks move the ref for
+> 'serial.yaml' to the end and also move reset check in 'allOf' block.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-> On Mon, Mar 04, 2024 at 11:59:47AM +0100, Sebastian Andrzej Siewior wrote:
-> > | $ git grep fu540-c000-uart
-> > | Documentation/devicetree/bindings/serial/sifive-serial.yaml:          - sifive,fu540-c000-uart
-> > | Documentation/devicetree/bindings/serial/sifive-serial.yaml:        compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > | Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt:"sifive,fu540-c000-uart".  This way, if SoC-specific
-> > | Documentation/devicetree/bindings/sifive/sifive-blocks-ip-versioning.txt:    compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > | arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > | arch/riscv/boot/dts/sifive/fu540-c000.dtsi:                     compatible = "sifive,fu540-c000-uart", "sifive,uart0";
-> > | drivers/tty/serial/sifive.c:OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c000-uart0",
-> > | drivers/tty/serial/sifive.c:    { .compatible = "sifive,fu540-c000-uart0" },
-> > 
-> > note that the driver has a trailing 0 in the binding while the yaml
-> > description and the DT part does not.
-> > The 'sifive,uart' has a trailing 0 where the 0 denotes the version UART
-> > IP.
-> > 
-> > Was this also intended for the fu540-c000-uart binding? Should the 0 be
-> > added everywhere or removed from the driver?
-> 
-> I suspect that the driver is what's incorrect, given there's little
-> value in putting the IP version in the SoC-specific compatible as it's
-> a fixed implementation. I'd change the driver to match the bindings.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Agreed
+Gr{oetje,eeting}s,
 
+                        Geert
 
-- Paul
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
