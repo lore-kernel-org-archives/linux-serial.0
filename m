@@ -1,119 +1,108 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com [209.85.128.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E16712D753;
-	Thu,  7 Mar 2024 14:00:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC3812DD9F
+	for <linux-serial@vger.kernel.org>; Thu,  7 Mar 2024 14:10:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709820059; cv=none; b=BV69cTCUbbDdLtjLEihuKZZigWTCWBSCG1JK89uXQ3UeQGWnJp44yex/2gX5jeUaZsrM/6xybjKWFU8t+ADN3VQrHnwktFz/LAgpJ1AyYmMpu5/OWdAwlYPiAYXu9Vr28/KQ1TFq0Bcv0aynXk3vYkpvtofl7oP70IdFjTy/ICY=
+	t=1709820626; cv=none; b=KDn8EdtmfeHoh7eHfd/y2NAIUVoH9wxrkot2RT5BDKMLFfGacl0SqoTSYOBnoOjlSGiai73+yIFMAreaDnAQdOwHqe6pa8U8IMEMTr+hyJeJjSIWojiQgtQQO++QW66jRigNKOFK7PoTDGzmd6pIyQPHZmoCTG9iBkIl83ebNek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709820059; c=relaxed/simple;
-	bh=vALcGQF1plJJ8B/ZtUQvvHBz+XmwU3FidOL/BO6pNac=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=asJKYx4v8w6vMfR9Bux//FO+m9M1Bc8+o0eaWrP9JBus6xdApc/Mktur2GKBb+EWZR2EfVs5htWVolID/Q3m6PAIsnDFF4Na6U99mcyZZsfsQxJ0vvTdqrui/VMZ5VcY11XOpAUhpmFtFocdpNNwO2RvKeyHRw+OZr8MHM5HsFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UYEbyFS/; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=G+z+EPcb; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1709820626; c=relaxed/simple;
+	bh=8Uw8xMBW4UQK0qIgbOHRF+CbwIUsehbE2zVuCzuImqw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d2y9LSxQVbgw0AyvYFoyNEUW6ygnotlG/tMhCbo3yVJ53mRl+mywN2EA2kB2pkBXrPNzWaG4epyyxoomrZNi/gKm9dKAIsxj8TZA8qWGS5IG62APfMuhRbgUDa/6C1i46bNDTpGemhekQpD68lJkQP15+AzVXCMXn/fhDdg146s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4/iHSBG; arc=none smtp.client-ip=209.85.128.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UYEbyFS/";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="G+z+EPcb"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1709820055;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8p7w7uyYIIhVOp8pjBiIgxh/TRc9ivPrHnvnX8VxwEI=;
-	b=UYEbyFS/kfEHTHhY5HvuxQ8VjNsX/YK17Gjf2xfDGRDQx98yiooJn5wt7qqN7LyX26ucem
-	6qQ348SwIf2nfhLzPvrpI8wxjIO8UCW8HuLUtX5mI2/2qd2NacDsBULiT3i3CyqpwVpJD6
-	Vq33uhuvWy7j9OM+vwh2kR2tDaSWbqbJ1XQfZMSUbk9hizC8GfEISLaWpKSTlwhXrckjQR
-	hi3SrMAdkcnJIKHniaCd3dpRBB+e3s/b03IYmECUyp8A/5KiM+bZ6uyx6gv0QzlEehUpge
-	GH6rQ8z9861qsK17OSLeJDEudz9fdkHwW3vnvOATh2HDS/gaVxmCxAaFmgMZXg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1709820055;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8p7w7uyYIIhVOp8pjBiIgxh/TRc9ivPrHnvnX8VxwEI=;
-	b=G+z+EPcbKK5WrAONm8glGcndWD2cUeXGV3yXrXuFfdtkQdLkDlPLR2vsx/u0aa/HegMunG
-	9RyGDHbscyCPLuBQ==
-To: Sreenath Vijayan <sreenath.vijayan@sony.com>, pmladek@suse.com,
- corbet@lwn.net, gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: rdunlap@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
- daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
- sreenath.vijayan@sony.com
-Subject: Re: [PATCH v5 2/2] tty/sysrq: Replay kernel log messages on
- consoles via sysrq
-In-Reply-To: <bf9829e1b3785aca8b7e2d018fac0935522d00dc.1709277332.git.sreenath.vijayan@sony.com>
-References: <cover.1709277332.git.sreenath.vijayan@sony.com>
- <bf9829e1b3785aca8b7e2d018fac0935522d00dc.1709277332.git.sreenath.vijayan@sony.com>
-Date: Thu, 07 Mar 2024 15:06:17 +0106
-Message-ID: <87wmqe87m6.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4/iHSBG"
+Received: by mail-wm1-f68.google.com with SMTP id 5b1f17b1804b1-412e68b8594so7148455e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 07 Mar 2024 06:10:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709820622; x=1710425422; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8Uw8xMBW4UQK0qIgbOHRF+CbwIUsehbE2zVuCzuImqw=;
+        b=A4/iHSBGlcw+/1eAELQ56IAuE8pjP+I3a7JXTiKPJ2C0iJHk6bA7+iLZFFUI8E2yv0
+         et5mKBSVD5qseF0l9cADTSk81K9MA6E8gIb3KXsDctmAWU+DM5nT4Vv3rophH1Foed8y
+         aYMktPmS9l5SkMtdhp12Z0yhEPdW6LoauLpeeBDsqNd5lFrPAg2sXBhcOdH68dWCRrkL
+         NdAolSM3EVh/Ib0hHEWdhVAMc6Vdra0Li9uXkY5D5Xs5HdvOTefbhJC2qMyHI6Ckla7+
+         Iz++dIByny85EUK3N3Z/4rcsXwAn6OWihKDGN5hA/ryp4H9l284mMHriWWaI/dygevdx
+         7M7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709820622; x=1710425422;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8Uw8xMBW4UQK0qIgbOHRF+CbwIUsehbE2zVuCzuImqw=;
+        b=tobCFHXVGVunFKi0oVqt/Kb/XXsC1PN8+e5Bt/Hz+x5TfZXwDCoeXqFDjUekXa0lMU
+         DMZRLarOST3KtjeOJVNAlJHOc6mTK4NfZrSZPzEBiTUM8G/iGY3SYSGMoDuzS05ezi4d
+         +Fg5K/DBT5v2VgBpoUAajSYBjKAxJHvEmk+8YfJEL/pAE8MfllJlmwNJ8klwgC8Dc730
+         ePOqJVdRrQ14v6egTg/7LeJ9kF1DrY2UWovjB8Qsmr4f1m0T7ecccUO36n+ufUUbGZbo
+         3nVFc9qkOdFuhqvGVd6wrBPLRAxRS1VSvgMfWwhQFRAVfX+steYO7rmfbPbPEnOee85C
+         BrDw==
+X-Forwarded-Encrypted: i=1; AJvYcCUnWW8scHN1rX7UmxBEQAFOexcKKD9IEje7fq2sxDJkF7F3CrJRiKt96KE7VdxLuW+aP6yAl6LgI/2qYXfQQ7olFEBei6d5v9aTNkjj
+X-Gm-Message-State: AOJu0Yx8S9+lgdwwbl7R52De6ItTbxV1BQVXuBTSeY3VpAPyPl1lgTc6
+	7V/wB6kyXALuHiJ2uoTVKTB3+EpzTZPZZo0bVQLFKrCaOe73wDbc
+X-Google-Smtp-Source: AGHT+IGCX+TVYxmSkg/Nnak8CCjHl6k+VgF6ooUvLNKGPo4S7QMZbne+sScf4Gn6hI1AUfL+CBYKGQ==
+X-Received: by 2002:a05:600c:35d1:b0:412:e56e:b4f5 with SMTP id r17-20020a05600c35d100b00412e56eb4f5mr8139230wmq.8.1709820621878;
+        Thu, 07 Mar 2024 06:10:21 -0800 (PST)
+Received: from ?IPV6:2001:470:5139::fb2? ([2001:470:5139::fb2])
+        by smtp.gmail.com with ESMTPSA id gw18-20020a05600c851200b00412a31d2e2asm2839875wmb.32.2024.03.07.06.10.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Mar 2024 06:10:21 -0800 (PST)
+Message-ID: <51b7c6c2-824a-4f6c-9667-a8f047bfc080@gmail.com>
+Date: Thu, 7 Mar 2024 15:10:19 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC][PATCH] serial: imx: Fix RS485 behaviour on disabled
+ RX_DURING_TX
+Content-Language: en-US
+To: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: "Rickard.Andersson@axis.com" <Rickard.Andersson@axis.com>,
+ "festevam@denx.de" <festevam@denx.de>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>,
+ "jirislaby@kernel.org" <jirislaby@kernel.org>,
+ "kernel@pengutronix.de" <kernel@pengutronix.de>,
+ "linux-imx@nxp.com" <linux-imx@nxp.com>,
+ "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "lukas@wunner.de" <lukas@wunner.de>, "marex@denx.de" <marex@denx.de>,
+ "rickard314.andersson@gmail.com" <rickard314.andersson@gmail.com>,
+ "robh@kernel.org" <robh@kernel.org>,
+ "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+ "shawnguo@kernel.org" <shawnguo@kernel.org>,
+ "sorganov@gmail.com" <sorganov@gmail.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>, "trix@redhat.com"
+ <trix@redhat.com>,
+ "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
+References: <2e866164c89c495aac905753978e8747@dh-electronics.com>
+ <3a2987d4-ca89-4f4b-9f01-ee19a01c1b6b@gmail.com>
+ <2d92d69369054578baacccf23ae2eff1@dh-electronics.com>
+From: "Tobias Jakobi (Compleo)" <tobias.jakobi.compleo@gmail.com>
+In-Reply-To: <2d92d69369054578baacccf23ae2eff1@dh-electronics.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2024-03-07, Sreenath Vijayan <sreenath.vijayan@sony.com> wrote:
-> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
-> index 2f2e5bd440f9..8098a1b4908d 100644
-> --- a/Documentation/admin-guide/sysrq.rst
-> +++ b/Documentation/admin-guide/sysrq.rst
-> @@ -161,6 +161,8 @@ Command	    Function
->              will be printed to your console. (``0``, for example would make
->              it so that only emergency messages like PANICs or OOPSes would
->              make it to your console.)
-> +
-> +``R``	    Replay the kernel log messages on consoles.
->  =========== ===================================================================
->  
->  Okay, so what can I use them for?
-> @@ -211,6 +213,12 @@ processes.
->  "just thaw ``it(j)``" is useful if your system becomes unresponsive due to a
->  frozen (probably root) filesystem via the FIFREEZE ioctl.
->  
-> +``Replay logs(R)`` is useful to view the kernel log messages when system is hung
-> +or you are not able to use dmesg command to view the messages in printk buffer.
-> +User may have to press the key combination multiple times if console system is
-> +busy. If it is completely locked up, then messages won't be printed. Output
-> +messages depend on current console loglevel.
-> +
 
-I recommend including a reference to SysRq [0-9] about changing the
-loglevel.
+On 07.03.24 13:38, Christoph Niedermaier wrote:
+> Rickard's patch in version 3 solved the same problem, so it should also
+> fix the problem on your side. It has already been accepted and is already
+> available in the next Kernel. It has a Fixes tag on it, so it should normally
+> be backported to the 6.1.x Kernel soon.
 
->  Sometimes SysRq seems to get 'stuck' after using it, what can I do?
->  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->  
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 02217e3c916b..c4deea41a8b5 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -450,6 +450,17 @@ static const struct sysrq_key_op sysrq_unrt_op = {
->  	.enable_mask	= SYSRQ_ENABLE_RTNICE,
->  };
->  
-> +static void sysrq_handle_replay_logs(u8 key)
-> +{
-> +	console_replay_all();
-> +}
-> +static struct sysrq_key_op sysrq_replay_logs_op = {
-> +	.handler        = sysrq_handle_replay_logs,
-> +	.help_msg       = "replay-kernel-logs(R)",
-> +	.action_msg     = "replay kernel logs on consoles",
+Sounds good! Going to keep an eye open when it lands in the stable tree.
 
-If I do:
+With best wishes,
+Tobias
 
-$ grep '\.action_msg' drivers/tty/sysrq.c
 
-This is the only action message that begins lowercase. Please start with
-a capital letter for consistency.
-
-With the change to the action message:
-
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+>
+> Regards
+> Christo1ph
