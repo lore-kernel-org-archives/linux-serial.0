@@ -1,201 +1,115 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8F0482D7A;
-	Thu,  7 Mar 2024 08:58:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE6B351C54
+	for <linux-serial@vger.kernel.org>; Thu,  7 Mar 2024 09:09:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709801917; cv=none; b=DcJj2MoT0Gauz0wrHq2FYry/GEBVO2AAmCP8jpwHF0JGcKGKOpJJXLaohv8fzI0oimbv5Y+k4sAf22nZ9GvRBwyiuZx6wn4xBMCG3sXghaaPgUN2AQTXhsKvnp1ijBMrNMryZtkSObdmWN6dO0n8X9VVE21+l6nHK2AENcbimXM=
+	t=1709802595; cv=none; b=g3+1vCBoy+gS5dN/P6RyqHsSx2ZWCuSDaVL8WiN0t4XMc1rxcra9dQqXQv/uDtW3Tjpm//KEu5aVow0/9sxX7mPOCOt/df4RrC7QhmQqCZu0c0L9tt2TxjvnI02Gwr1wc6VS8aeYQjJ3KoFQdHIQPMcgTNRIeoQfgrYzXztgwaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709801917; c=relaxed/simple;
-	bh=+oiVEdG9b2XuStWqMFk9KRco76DNKJfWP/ntPUBoLOA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sM6FrrkH4yuGlTDM9x51nGY7/fyllhb+cifko+LeYUuNxd93TGv2mSFAqk3eu4UHEU3Bjxrih78I5859BvGQXicrn3Psz6XcYKxOxUzgAuf+G6rcwioUaFlxJzFUaYE9azNTvjD6YEZ+LHmTLpReTCmh70q/YWc02FU0KFvM4YU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-6098ba9959aso7090867b3.2;
-        Thu, 07 Mar 2024 00:58:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709801913; x=1710406713;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jn5dxvQybAgLdJsYDY294tghTuyvSzt1guRy78x0Iu4=;
-        b=GRWN5jDUxW7BdbQfel+krA1hpTHw9ph0QYhSlGLCuWVRq/oNiFQNbRG5GeW0WrX8nF
-         yYUUIWsI+kY/CGimKLvZKsDKwJEZVrNf5YTGn8dANYHMZgUJ2WFFpJqMTzT/UL2/MOfr
-         fcQUZ76af8we8PE2qQD0g3OZU6ixX0XTyLea5YBEOO12rYE4bjIGbIzhyK3p9BYwvgQ0
-         G0zqe3MuFZYHeLTCVjgM/yW84hqRvB7s8eAnQrj+jefvPDwtoyYzOw0uBZtFcUgjbEe2
-         XB0Gjbpi81+n2n+hVwa/9Jcu+YHE/4sxT78WNfbUK5jyXPyGE7XqNInL6rYS5ssL2O1D
-         2aCw==
-X-Forwarded-Encrypted: i=1; AJvYcCWe4y+Lpc4mnJqjoSiMJk9uv1C1hP4E7AkomR+estWnAk43a0yeRm3xPjG3dCfX8Eq26JcbsUYsaACeWHTqy8UvE+l7IkjnY6HEn4gL4u4wJTw40QeBVOjFkuFOEe9dWQm3PG5pj88QAG4iRLh2/84FPSKVb2WgpDKaF4waJ0xJizKYxWC9vECcdpqvnRDrKMOh/frug/Zk9GvR7HElxSDTknajLce8ZIlL
-X-Gm-Message-State: AOJu0YyWfsEmkR5IyDU0jmDBqP3mqZHOYhRSqw4Y5rB5mApZZzWeahjs
-	Twp3rtHpbSz6r1dzwjpVnuH2PcdGuB1z61WPYLk8GP3DLY07/yD5whsr99Ssssk=
-X-Google-Smtp-Source: AGHT+IFzuo4h7857zle3kZbOxTq9bdIy+FRpvbRqlQGkH55w8OCprhGIPZPjt0z4R8AA9K+MZGmwrA==
-X-Received: by 2002:a0d:efc3:0:b0:608:8a6b:b213 with SMTP id y186-20020a0defc3000000b006088a6bb213mr17831923ywe.33.1709801913598;
-        Thu, 07 Mar 2024 00:58:33 -0800 (PST)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id r79-20020a819a52000000b006049c16b843sm4088542ywg.145.2024.03.07.00.58.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Mar 2024 00:58:33 -0800 (PST)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-609f060cbafso4614657b3.0;
-        Thu, 07 Mar 2024 00:58:32 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCX5fEMiGF5L+bZpytGdMeJpN8OjhpVP28JE903Xut49PccBB8AuWAqe6sMHOkOn0OeMUplMrasIhytdch6XgczFA2+FuHT7+t/TNvjXbLsixf9Jy8kceORKyOmFmPKbBEjrLu0p6jBbgYpS6KPjpHOO0+5iC1MafdtzeMJVJReFI3faZfr9987HqHt/F+c11NM6Vmg1tk4OkEHrW66j0hMGiWsULgraZGu1
-X-Received: by 2002:a05:690c:398:b0:609:3c37:a624 with SMTP id
- bh24-20020a05690c039800b006093c37a624mr20123653ywb.35.1709801912626; Thu, 07
- Mar 2024 00:58:32 -0800 (PST)
+	s=arc-20240116; t=1709802595; c=relaxed/simple;
+	bh=bqF8MEgaGwgFRwrgZWMsa/U+WjwHBEC7oM8iS4kd2hA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LxUXPNUQIdWFepR+x6wPzihI1zA4zVQJ5HRAQV9cgoa4/gT9j95kKkBReATrx4SVqmXsP168/ofXtvFHPXpKbmjzFx0vXEUMaYAZprLLX3oVtzy4VfkeTgbAwUN2t/I9RZoW7KugmXA8Wosv4FevIqv5Ltkb0gU2oyybsCByVIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=mPVysM7E; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=yTSiicPW; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="mPVysM7E";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="yTSiicPW"
+Date: Thu, 7 Mar 2024 10:09:50 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1709802591;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9fGy8TOV/fhJE5oAAJ3MAEukbtM1398/CRgKOFV6eys=;
+	b=mPVysM7EoFM4MwBJX5dLlMREizUcVcXH68EeHfMf1pN8zuiLtxnnrEGRK1G/i5Fvj+vUeV
+	KfPvxIXfsPJF8mLiDPWUElFUhIChRZBPSzhhFrhOhg5ViJb/gMtEBT9UnLi7UfYObl5HJE
+	yru3dCz5QQ2qng+gZBj9DGvjOWnrrnwNvrf0OiqpkWIUni09VnqZh6lsoFiUMI9AS7EDj/
+	YUr5pEcHNG2Zjw9wYua7RLYC0yFRGDzCYFRu8j4OPNhWNXVl/7xgVNBdymlcEpXzM8rRG3
+	NAjdcV3qZKN1p7MNR2vLjNWMPGyk02KEqs64zAYLNkQrLsX7ow0cmok8MnEwRg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1709802591;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9fGy8TOV/fhJE5oAAJ3MAEukbtM1398/CRgKOFV6eys=;
+	b=yTSiicPW+BxkoaA11akToXnzY5400u66BAX3bq30g8xtpnXF+EDylMIy/6mMBf/he1xFZq
+	qko7K2HqfY55xHCQ==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org,
+	Samuel Holland <samuel.holland@sifive.com>,
+	linux-serial@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH] serial: sifive: Remove 0 from fu540-c000-uart0 binding.
+Message-ID: <20240307090950.eLELkuyK@linutronix.de>
+References: <20240304105947.SJcVAdr1@linutronix.de>
+ <20240304-whomever-gladly-d43da7ad2fe6@spud>
+ <229b34c1-5419-93ae-0a6f-a21cf4e4a276@sifive.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240306231007.13622-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240306231007.13622-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20240306231007.13622-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 7 Mar 2024 09:58:21 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVQcyrwTCTukhLFiaawDgbKwZWcWCO7bc1FfFS-t=kcqg@mail.gmail.com>
-Message-ID: <CAMuHMdVQcyrwTCTukhLFiaawDgbKwZWcWCO7bc1FfFS-t=kcqg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dt-bindings: serial: renesas,scif: Validate
- 'interrupts' and 'interrupt-names'
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <229b34c1-5419-93ae-0a6f-a21cf4e4a276@sifive.com>
 
-Hi Prabhakar,
+The driver is using "sifive,fu540-c000-uart0" as a binding. The device
+tree and documentation states "sifive,fu540-c000-uart" instead. This
+means the binding is not matched and not used.
 
-On Thu, Mar 7, 2024 at 12:11=E2=80=AFAM Prabhakar <prabhakar.csengg@gmail.c=
-om> wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> This commit adds support to validate the 'interrupts' and 'interrupt-name=
-s'
-> properties for every supported SoC. This ensures proper handling and
-> configuration of interrupt-related properties across supported platforms.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+This did not cause any problems because the alternative binding, used in
+the device tree, "sifive,uart0" is not handling the hardware any
+different.
 
-Thanks for your patch!
+Align the binding in the driver with the documentation.
 
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -82,38 +82,6 @@ properties:
->    reg:
->      maxItems: 1
->
-> -  interrupts:
-> -    oneOf:
-> -      - items:
-> -          - description: A combined interrupt
-> -      - items:
-> -          - description: Error interrupt
-> -          - description: Receive buffer full interrupt
-> -          - description: Transmit buffer empty interrupt
-> -          - description: Break interrupt
-> -      - items:
-> -          - description: Error interrupt
-> -          - description: Receive buffer full interrupt
-> -          - description: Transmit buffer empty interrupt
-> -          - description: Break interrupt
-> -          - description: Data Ready interrupt
-> -          - description: Transmit End interrupt
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+On 2024-03-06 18:48:13 [-0800], Paul Walmsley wrote:
+> On Mon, 4 Mar 2024, Conor Dooley wrote:
+> > I suspect that the driver is what's incorrect, given there's little
+> > value in putting the IP version in the SoC-specific compatible as it's
+> > a fixed implementation. I'd change the driver to match the bindings.
+> 
+> Agreed
 
-As the above three groups are increasing supersets, you can just use
-a single "items" listing all 6 interrupts, and describe the first one
-as "Error interrupt or single combined interrupt".  After that, the
-SoC-specific logic at the end just needs to specify the appropriate
-minItems/maxItems.
+I didn't add any stable/ fixes tags as I guess there is no point in
+backporting this.
 
-> -
-> -  interrupt-names:
-> -    oneOf:
-> -      - items:
-> -          - const: eri
-> -          - const: rxi
-> -          - const: txi
-> -          - const: bri
-> -      - items:
-> -          - const: eri
-> -          - const: rxi
-> -          - const: txi
-> -          - const: bri
-> -          - const: dri
-> -          - const: tei
+> - Paul
 
-Likewise, with "interrupt-names: false" below for the ones that don't
-need it.
+ drivers/tty/serial/sifive.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> -
->    clocks:
->      minItems: 1
->      maxItems: 4
-> @@ -173,6 +141,91 @@ allOf:
->        required:
->          - resets
->
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - renesas,scif-r8a7742
-> +              - renesas,scif-r8a7743
-> +              - renesas,scif-r8a7744
-> +              - renesas,scif-r8a7745
-> +              - renesas,scif-r8a77470
-> +              - renesas,scif-r8a774a1
-> +              - renesas,scif-r8a774b1
-> +              - renesas,scif-r8a774c0
-> +              - renesas,scif-r8a774e1
-> +              - renesas,scif-r8a7778
-> +              - renesas,scif-r8a7779
-> +              - renesas,scif-r8a7790
-> +              - renesas,scif-r8a7791
-> +              - renesas,scif-r8a7792
-> +              - renesas,scif-r8a7793
-> +              - renesas,scif-r8a7794
-> +              - renesas,scif-r8a7795
-> +              - renesas,scif-r8a7796
-> +              - renesas,scif-r8a77961
-> +              - renesas,scif-r8a77965
-> +              - renesas,scif-r8a77970
-> +              - renesas,scif-r8a77980
-> +              - renesas,scif-r8a77990
-> +              - renesas,scif-r8a77995
-> +              - renesas,scif-r8a779a0
-> +              - renesas,scif-r8a779f0
-> +              - renesas,scif-r8a779g0
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index 0670fd9f84967..cbfce65c9d221 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -761,7 +761,7 @@ static int __init early_sifive_serial_setup(struct earlycon_device *dev,
+ }
+ 
+ OF_EARLYCON_DECLARE(sifive, "sifive,uart0", early_sifive_serial_setup);
+-OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c000-uart0",
++OF_EARLYCON_DECLARE(sifive, "sifive,fu540-c000-uart",
+ 		    early_sifive_serial_setup);
+ #endif /* CONFIG_SERIAL_EARLYCON */
+ 
+@@ -1032,7 +1032,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(sifive_uart_pm_ops, sifive_serial_suspend,
+ 				sifive_serial_resume);
+ 
+ static const struct of_device_id sifive_serial_of_match[] = {
+-	{ .compatible = "sifive,fu540-c000-uart0" },
++	{ .compatible = "sifive,fu540-c000-uart" },
+ 	{ .compatible = "sifive,uart0" },
+ 	{},
+ };
+-- 
+2.43.0
 
-Please simplify using family-specific names:
-  - renesas,rcar-gen1-scif
-  - renesas,rcar-gen2-scif
-  - renesas,rcar-gen3-scif
-  - renesas,rcar-gen4-scif
-
-> +    then:
-> +      properties:
-> +        interrupts:
-> +          items:
-> +            - description: A combined interrupt
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Sebastian
