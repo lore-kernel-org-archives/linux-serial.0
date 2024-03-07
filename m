@@ -1,187 +1,103 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2044.outbound.protection.outlook.com [40.107.94.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBB5F12B141;
-	Thu,  7 Mar 2024 13:08:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709816887; cv=fail; b=E1HRvtANwIHqJ8Ga5LMJEMzattYWi27vy5cXW7uwED9evpKLVtDacFamQ9Ia03FnhLNqcZIwGmu0EaUNk7Noc9Ln4R2SKqSF7Kv8EzSb9GBm8POwMNckhgJj4bFAyfU7NVALjDvpu/WIZOJdCOGbpCDGHqDdSrImPNeEc6jdbjA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709816887; c=relaxed/simple;
-	bh=fXYwY8E4kjwRMfO5iYy9stk+qoWzPJKSXKg4B/4wtOI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s7iJMa/1u29TFGKhJ5g+H74Sh3XoPdyrXFI8mFqbdcAISFn/lnriQfGUlSDcuc3xHHxvsEAJtMW9SJiZp3W8EWtu4I6ED/b/KYyDyxvEDaTPNmfRB0QHBlFqhgKavYOaB32DVpB6Q3lcphHCRpONj6ltv6Tx4YgvLw4ZfcQi8/s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=sony.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=cJ3HZVCa; arc=fail smtp.client-ip=40.107.94.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sony.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="cJ3HZVCa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O6s77I6XgKZLmEMz49ZG7Uwq+nwgSx4FgOS+beDd6Ry1yUVPuQU+EFs6Blgl/1VJBfctzll2D9ALf7OuO5lRLJ9YQv2lFW5pR2poKLf1F1OfMqTM9gFIfnavr8MspYLLsuketjKtwgLxQp/TLHaoa8KsRBpyJdGCHZ1EXwkUDMrD17VF6H+NeYSWBPYEmrGvbYzVmJCUwSiIJt6SBRoY0z2OFa5HurudF0316O2l+EeC+GOrgeT6d3aR3/zlv8vKW95Z+BWsD7e8sLTbb4xcSCFhHvwZ33pmMcCJP8ni3e0xIgTe7iPQ7Tk/mS7MnsHs+o3mPQ3h1WvyO2I1KDiFQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ij4iF5rOPAZzFwjp7vIZA1hf4Y/j5ioiegmA69B8UZk=;
- b=JDSGWZCWwy1wNpXGfaXiKxFs2xgJ3lpxHEE041x24sFoNBsn9xWHME4hOxQ3dqT4hA4W2C0ZnsEdrvwhgL519HUE4CsDG/m2AcyZ2eGJ6L9TFoZ1yqGIY4e4QY2Pe4KIkllVzRRawjatbMXi0pisIDTO4yActjLMi5ZO0faeYrvTn4S46NwiEe0SQvDVDoqo4nLEBp6bV2uaDI6YkGKqD1BeoxtgLgEmyf6l66lL2gys3aOVKS73WGk02v/GE/fXEUy3POKlIDJMjqrdH8wUX/v3K4lRHJBbV25tp2QrVX1NXO/wZMldFyM3gjEk35G6bYkkRpuPbpSbZ1AVHIF0Eg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=sony.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=sony.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ij4iF5rOPAZzFwjp7vIZA1hf4Y/j5ioiegmA69B8UZk=;
- b=cJ3HZVCaHJ+JoIrttbQcuFsvZNzmRSvtH6clATk4wb/shsk6lzQ6ebR+dMJOXBPPhaNcG4NxjP3BEx5DDuyQS/CPoEMqE1ZRv87r5+9pn2Vtosn6DRbaT+qts55wSMY32Zz8krvKv4cNVIBn6tjU8U1HPJhpAAg7ZJW6pHDhxqo=
-Received: from BYAPR05CA0015.namprd05.prod.outlook.com (2603:10b6:a03:c0::28)
- by DM6PR13MB4445.namprd13.prod.outlook.com (2603:10b6:5:1b6::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.26; Thu, 7 Mar
- 2024 13:08:00 +0000
-Received: from SJ5PEPF000001CA.namprd05.prod.outlook.com
- (2603:10b6:a03:c0:cafe::31) by BYAPR05CA0015.outlook.office365.com
- (2603:10b6:a03:c0::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24 via Frontend
- Transport; Thu, 7 Mar 2024 13:07:59 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.198)
- smtp.mailfrom=sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of sony.com does not
- designate 121.100.38.198 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.198;
- helo=gepdcl09.sg.gdce.sony.com.sg;
-Received: from gepdcl09.sg.gdce.sony.com.sg (121.100.38.198) by
- SJ5PEPF000001CA.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7362.11 via Frontend Transport; Thu, 7 Mar 2024 13:07:59 +0000
-Received: from gepdcl04.s.gdce.sony.com.sg (SGGDCSE1NS08.sony.com.sg [146.215.123.198])
-	by gepdcl09.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 427D6A3t005712;
-	Thu, 7 Mar 2024 21:07:41 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl04.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 427D5bRn001636;
-	Thu, 7 Mar 2024 21:05:37 +0800
-Received: by mail.sony.com (Postfix, from userid 1000)
-	id 7CE2720C0688; Thu,  7 Mar 2024 18:29:11 +0530 (IST)
-Date: Thu, 7 Mar 2024 18:29:11 +0530
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: pmladek@suse.com, john.ogness@linutronix.de, corbet@lwn.net,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: rdunlap@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
-        daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com,
-        sreenath.vijayan@sony.com
-Subject: [PATCH v5 2/2] tty/sysrq: Replay kernel log messages on consoles via
- sysrq
-Message-ID: <bf9829e1b3785aca8b7e2d018fac0935522d00dc.1709277332.git.sreenath.vijayan@sony.com>
-References: <cover.1709277332.git.sreenath.vijayan@sony.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7F3284FD5;
+	Thu,  7 Mar 2024 13:19:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709817601; cv=none; b=P7Df5xrvmytX2CA9hd/wD/4GkYieMRN/c9D+oQ+atwyRqXWo0yZKnIO8jcL/EZfM2ZLOFm52HmI3J4GHwGdQhjy3eW6QmnlgIyuJfsqGPjf1plqPubOx0KtOBJO+9zsk4YQgIcaqQjj9Vef7jZmBw8Kn7JrzANLQOwONytndDZg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709817601; c=relaxed/simple;
+	bh=XdyRbsIb6pG2jeGtOXK+SlTPRnhDtH1vytwJZq+aHgc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ekhNrObNZepMnuSw1LSo06lboi9AbwyFNvN0Ct+FrE1l2Q7NPqp/UCc8+wxCKsmqqUcygLM37hE+4WchAYKhChMvQwvX3ALiBCxW/vauN13BQMw//njshaWkLqGBen6hMa6OKmpmRNvWl2Qrz8/3c5jroKWtfsKizQn/lDMtG8E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-6094a87c4a7so8554177b3.3;
+        Thu, 07 Mar 2024 05:19:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709817598; x=1710422398;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3qMsMQn9F0MZ0xZLxTSXRgknQ2DR10UkoNa/fQj/hno=;
+        b=koh6pa5h2jWksdLJZdozqgPBV7EgBwxT5NSTyM5hIMqIK3XLwbGroRgXbJ1Oz5bVIW
+         A4/MQVET/UtXvHBDHwWtJmRZBZxfih3qQG5zjkhEHnLF4Lo/ZMRTHs+9Osuw3gxaDmMs
+         0Bux8y1j2pzkwfJaWfzXc3T/QkTiaQFL4s4n5+eZiGryIaLkPHj7+xers1yBR++jT9Ky
+         wsLlVYguzt1i7K6SF1ajd47RB5QpliSatfIphbI7Fvco8rRA5UHru8bTEXmSL3vq3myD
+         YwQvmjxtwLwWlJM8FlIeKExwWrLf3toUuzFIthheVZRuayd9kKVn5YG6PHxhXzjVhd2w
+         MYtg==
+X-Forwarded-Encrypted: i=1; AJvYcCWzVX2iM4sqEZiH1PjFnYl2LW2qHH3VdnsXfjLz3/COOszYllOvBDXyqYLhWKj7Cl5pM8PnkWVtRsXtnCG6Xzmo5hUE0fnCOzOHosSB6qLl5TEdUhbhYK+IlQ1vYwW6f8z235P4Rg5O1oThzJ8sRqxss+EKYC+f3Q9/oTdCDffuEV+iH46ZPHdK9MRcmlojOdBrAziAkbxKdKwvqAfJnaXyn8onRdQVswMa
+X-Gm-Message-State: AOJu0YyEfewKC6kLMlclL526WkqYyU1Gcgw+4HN9pONUuwcrU2ZixmLA
+	G3StQ4uGf4FEPAnnpT01pDbCOImhavVOjywjaisAXSyNtuuYZtzsI7nxFUlrbyg=
+X-Google-Smtp-Source: AGHT+IEMG0bt+c+X29KGNewoGCkSaXD9GOn7kZtzf0V38QWQr2nXcx4HN85e1KgBtBwxuUfrrjGZKg==
+X-Received: by 2002:a81:4ac2:0:b0:607:850e:7583 with SMTP id x185-20020a814ac2000000b00607850e7583mr16757549ywa.38.1709817598487;
+        Thu, 07 Mar 2024 05:19:58 -0800 (PST)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id s17-20020a819f11000000b006096e718ed2sm4045497ywn.103.2024.03.07.05.19.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Mar 2024 05:19:58 -0800 (PST)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-6094a87c4a7so8553967b3.3;
+        Thu, 07 Mar 2024 05:19:58 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWSsiXc7POa7quMc0Vvp/ryn8dg+tenS9drFt074NVwlfbjjZrC6v1j4aIwj9ew8cw3fsSWmXxBLpnZy2WUhJ5PF9+/m+L3+CVx/FOwiqx44oN5hGnSSAiQD7CWHlunuvbL5BBggO6vmX0jR9/NIJcfLOCOtkyUg43vLQGA0KlyIw2yq5NTgCzqdWqaTEtIEWZ8ao/M7pGIxt0AThYWl98U3Gq/+6Eh735z
+X-Received: by 2002:a0d:d645:0:b0:607:d285:4d7a with SMTP id
+ y66-20020a0dd645000000b00607d2854d7amr17511039ywd.52.1709817597978; Thu, 07
+ Mar 2024 05:19:57 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1709277332.git.sreenath.vijayan@sony.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CA:EE_|DM6PR13MB4445:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cd797d4-4c5c-43b4-b437-08dc3ea79d3d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	osa+gW/U++IgEtF4D6Rx5TEgfJJg9KDeUoOL39b32B7R2KclV9annTPpkBTy0TAVSinyah3CulSM132CCkVK+pwjktCtj7x7dfn8LTHLHs4wgQvfi+n3c/6kRZi+k9MypRlOLgrNNd4IQN8LhTOUwNl8ONwf3UkDcvmj26scIgkTAjZvlYtGGp1Oi/2AIW/VewCptoddOCeQ0FhrALdXm44Jcn5yJMzrEbqALKVyzXmc8POA3cAWds1vGiq/+2SB5+fBam2bIxUnKFwf/jrPFPH93iltYUqwb6q4OIHfnG4YSQcf/HIIPEAOGTKVhal5jWWm3A50D93981Ce3xQVrnli8ma6P5NNXvNXkBorvCkqEPGYDDImG8RaXLhhPSDgg6D3kbLZ4dvX1Xcjq8E3uQOP2W3lwl5Z2DdT7itTg4DgJNH+CTyYSDGFuUb/2Ra7FaXBSdVyoSV6B/t0CjhB7A9rb0QCcPCBR8vTeuCNfHD2CmFHnr9EAvd3UMUlpf+bZC9phll1XLwIUwCCbkZb+MvlsQuO93X8fEA7DQS93dkd64kDh9DbumlJB/oph3HLrSkyXNNNiVMERQUy87tXQRPLc/QgzRPBCDH3VGSSJGEcxhg4YNDuzqFAOitZwmn4XFu7wdhV7J4KfZXhGfb4RrP4HqoRa19x+BCUwuB2jMnQxz0dNat8Z2AW70Kyd0XXuxAdLSnX+Xi5x0ssX1U3jT/Er7efgUf4rR8CtR0Y+fv43uNwbSpk7K5YuiUEhGMu
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.198;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl09.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376005)(36860700004)(82310400014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2024 13:07:59.2513
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cd797d4-4c5c-43b4-b437-08dc3ea79d3d
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.198];Helo=[gepdcl09.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-SJ5PEPF000001CA.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4445
+References: <20240307114217.34784-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240307114217.34784-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240307114217.34784-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 7 Mar 2024 14:19:46 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVSYzU6E0cBPmqR+RBk-WFEWQBkyj9KjePJZq-EXJ62og@mail.gmail.com>
+Message-ID: <CAMuHMdVSYzU6E0cBPmqR+RBk-WFEWQBkyj9KjePJZq-EXJ62og@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: serial: renesas,scif: Validate
+ 'interrupts' and 'interrupt-names'
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When terminal is unresponsive, one cannot use dmesg to view
-the printk ring buffer messages. Also, syslog services may be
-disabled, especially on embedded systems, to check the messages
-after a reboot. In this scenario, replay the messages in printk
-ring buffer on consoles via sysrq by pressing sysrq+R.
+On Thu, Mar 7, 2024 at 12:43=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
+om> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> This commit adds support to validate the 'interrupts' and 'interrupt-name=
+s'
+> properties for every supported SoC. This ensures proper handling and
+> configuration of interrupt-related properties across supported platforms.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> v1->v2
+> * Defined the properties in top-level block instead of moving into
+>   if/else block for each SoC.
+> * Used Gen specific callback strings instead of each SoC variant
 
-The console loglevel will determine which all kernel log messages
-are displayed. The messages will be displayed only when
-console_trylock() succeeds. Users could repeat the sysrq key when
-it fails. If the owner of console subsystem lock is stuck,
-repeating the key won't work.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Suggested-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
----
- Documentation/admin-guide/sysrq.rst |  8 ++++++++
- drivers/tty/sysrq.c                 | 13 ++++++++++++-
- 2 files changed, 20 insertions(+), 1 deletion(-)
+Gr{oetje,eeting}s,
 
-diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
-index 2f2e5bd440f9..8098a1b4908d 100644
---- a/Documentation/admin-guide/sysrq.rst
-+++ b/Documentation/admin-guide/sysrq.rst
-@@ -161,6 +161,8 @@ Command	    Function
-             will be printed to your console. (``0``, for example would make
-             it so that only emergency messages like PANICs or OOPSes would
-             make it to your console.)
-+
-+``R``	    Replay the kernel log messages on consoles.
- =========== ===================================================================
- 
- Okay, so what can I use them for?
-@@ -211,6 +213,12 @@ processes.
- "just thaw ``it(j)``" is useful if your system becomes unresponsive due to a
- frozen (probably root) filesystem via the FIFREEZE ioctl.
- 
-+``Replay logs(R)`` is useful to view the kernel log messages when system is hung
-+or you are not able to use dmesg command to view the messages in printk buffer.
-+User may have to press the key combination multiple times if console system is
-+busy. If it is completely locked up, then messages won't be printed. Output
-+messages depend on current console loglevel.
-+
- Sometimes SysRq seems to get 'stuck' after using it, what can I do?
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 02217e3c916b..c4deea41a8b5 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -450,6 +450,17 @@ static const struct sysrq_key_op sysrq_unrt_op = {
- 	.enable_mask	= SYSRQ_ENABLE_RTNICE,
- };
- 
-+static void sysrq_handle_replay_logs(u8 key)
-+{
-+	console_replay_all();
-+}
-+static struct sysrq_key_op sysrq_replay_logs_op = {
-+	.handler        = sysrq_handle_replay_logs,
-+	.help_msg       = "replay-kernel-logs(R)",
-+	.action_msg     = "replay kernel logs on consoles",
-+	.enable_mask    = SYSRQ_ENABLE_DUMP,
-+};
-+
- /* Key Operations table and lock */
- static DEFINE_SPINLOCK(sysrq_key_table_lock);
- 
-@@ -519,7 +530,7 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
- 	NULL,				/* O */
- 	NULL,				/* P */
- 	NULL,				/* Q */
--	NULL,				/* R */
-+	&sysrq_replay_logs_op,		/* R */
- 	NULL,				/* S */
- 	NULL,				/* T */
- 	NULL,				/* U */
--- 
-2.25.1
+                        Geert
 
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
