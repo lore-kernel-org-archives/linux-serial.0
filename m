@@ -1,96 +1,98 @@
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mx3.securetransport.de (mx3.securetransport.de [116.203.31.6])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D78F384FD5;
-	Thu,  7 Mar 2024 12:32:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 061772AD17
+	for <linux-serial@vger.kernel.org>; Thu,  7 Mar 2024 12:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.31.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709814742; cv=none; b=qlrHjZF5gfMHB129LSyAWWqP2IoxSWOf210cWLZpG6im0mcsxbpDRKZ/wH/+4QTofWegGoXm0PSqWYJDQ20yNU069sTvF5x7u2OzfIF9J3u8Fx54earuwfFVlU9Ep75b/KRcRVbzS6RN5tyUW48IHEQlcqYJ0AChMc3b94KyOaY=
+	t=1709815783; cv=none; b=OR7LYll1LVzCQ+uUNoWQMG5XMO0fT7KEuVb2IEdnLx7uctfpKCbv0TZbNVdzJuTony4nerl5L7r9gUIXIzLqArOM31IdZ0dY5XBta1AY46KAOaOmLJVI5yRZVAPprBmu2G6srJLSPvfbX5HEqu70oN26ljyzp0DGKaI2dsRUsVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709814742; c=relaxed/simple;
-	bh=CnKV7YkmwKVN45OVgq9HMp191oP0lkB4cDHb6peK+T4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=qSXw9glSI9pQzgAlZWw01fjMjQRLCoYzV23qVcUHioZC0HVjAXzgiDk9IEn3fvtI04niI/Hp8XJ3kLK8YOx/xl3LthwwB8UvrfrVCjtioVkV7NSWpGB2J32Y6dVJTbGOLtyTmvsS4k7e3p+6CmBWYuyk9U5TOBXTK9pp7uauiK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=lBx1+QuJ; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+	s=arc-20240116; t=1709815783; c=relaxed/simple;
+	bh=dz5T9arzwKCedpnQDib+5FWpGK3EkGGvb9sqeR7AYug=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=WFVRJQgz/15bqADPYP6WeRAyvO/deCVzeDB5bVErME7GfCexg3RG89L8Xd8OTWAvsSiIOy7ZqNeSmECH9fQiuaftHRW9sTeiDTGFHFJ4s37UscryQH6VUncqvMy8ZlHBUuq6xJY7cJasQruE3803T6wW298r+6X92oUxexyfO0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com; spf=pass smtp.mailfrom=dh-electronics.com; dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b=IPMHLbBp; arc=none smtp.client-ip=116.203.31.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dh-electronics.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dh-electronics.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="lBx1+QuJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1709814736;
-	bh=CnKV7YkmwKVN45OVgq9HMp191oP0lkB4cDHb6peK+T4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=lBx1+QuJTEVHApTpCCDU+EV1Aykxe0USdn1M5qeFxUu86nOmkjduBDq8dT3o7qXpm
-	 oS8/qBbiILsQJC5KQx/qJRP/+1Rtwj+Mvna+PmMaQHKiOOUzj3K4BfsAnCXpYBeO5i
-	 sIHi1sZKR2G1jRkcILr1PE7EJZw85kHZ0/HyQZD5Je+4MUjufb3f6fIkyubjPbz8re
-	 /xYRYrDhHsNlHZi8hwJ5D8xkg2qXwM8ii3IePd37e1Jh7QAPge7a0+jwCSZNdI+ZOe
-	 Y4f3knEgXbFr14hWz3pvmzLU64Pzxk2jZ5fbpD4Fd7BcqwRmHFTOSol/RnqeVlE3F0
-	 mpc6I8Pch7Hkg==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Tr7wZ6z4Xz4wc8;
-	Thu,  7 Mar 2024 23:32:14 +1100 (AEDT)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Dawei Li <set_pte_at@outlook.com>, Christophe Leroy
- <christophe.leroy@csgroup.eu>
-Cc: "npiggin@gmail.com" <npiggin@gmail.com>, "linuxppc-dev@lists.ozlabs.org"
- <linuxppc-dev@lists.ozlabs.org>, "linux-ide@vger.kernel.org"
- <linux-ide@vger.kernel.org>, "netdev@vger.kernel.org"
- <netdev@vger.kernel.org>, "linux-wireless@vger.kernel.org"
- <linux-wireless@vger.kernel.org>, "linux-scsi@vger.kernel.org"
- <linux-scsi@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "alsa-devel@alsa-project.org"
- <alsa-devel@alsa-project.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] powerpc: macio: Make remove callback of macio driver
- void returned
-In-Reply-To: <TYTP286MB356472357994D5EA49E2F5E3CA212@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
-References: <TYCP286MB232391520CB471E7C8D6EA84CAD19@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
- <3dc29701-239f-4a3b-b571-b9732975bd73@csgroup.eu>
- <TYTP286MB356472357994D5EA49E2F5E3CA212@TYTP286MB3564.JPNP286.PROD.OUTLOOK.COM>
-Date: Thu, 07 Mar 2024 23:32:14 +1100
-Message-ID: <87bk7qnrxt.fsf@mail.lhotse>
+	dkim=pass (2048-bit key) header.d=dh-electronics.com header.i=@dh-electronics.com header.b="IPMHLbBp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
+	s=dhelectronicscom; t=1709815086;
+	bh=dz5T9arzwKCedpnQDib+5FWpGK3EkGGvb9sqeR7AYug=;
+	h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+	b=IPMHLbBpIjBFyoFfgVgcZ+wXwlLV4v8+j3Ihq8AJ3PjvWHpg+VhndoimigL0vc9S0
+	 jQFLPYlHtzgzdUkAu/Gm0ohj7HlqhXLh8oo5rw1k+BwNM+w810tbcIzNMGRSGM4Mib
+	 jUju/NFRD8An4CQUSpJBoNy9OnLsoPxj6/Xhp93tPE2djGv9ebLRYWXhwUXjek4iDj
+	 PG5/1UZYTv1X6NgGd1VJ1yimBVFMPh5gL0l302TNV9xNPrkrlk42jcVNhro1RJjhUu
+	 hYa7LwNxGIKk7rFwJ8A0uz59DsuTr7oqGx/Jb5aAWFLtDfKTYep+tY25dblh5vezr3
+	 zg5zh2tZnFg6w==
+X-secureTransport-forwarded: yes
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Complaints-To: abuse@cubewerk.de
+To: "Tobias Jakobi (Compleo)" <tobias.jakobi.compleo@gmail.com>
+CC: "Rickard.Andersson@axis.com" <Rickard.Andersson@axis.com>,
+	"festevam@denx.de" <festevam@denx.de>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>, "ilpo.jarvinen@linux.intel.com"
+	<ilpo.jarvinen@linux.intel.com>, "jirislaby@kernel.org"
+	<jirislaby@kernel.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>,
+	"linux-imx@nxp.com" <linux-imx@nxp.com>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
+	"marex@denx.de" <marex@denx.de>, "rickard314.andersson@gmail.com"
+	<rickard314.andersson@gmail.com>, "robh@kernel.org" <robh@kernel.org>,
+	"s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "shawnguo@kernel.org"
+	<shawnguo@kernel.org>, "sorganov@gmail.com" <sorganov@gmail.com>,
+	"tglx@linutronix.de" <tglx@linutronix.de>, "trix@redhat.com"
+	<trix@redhat.com>, "u.kleine-koenig@pengutronix.de"
+	<u.kleine-koenig@pengutronix.de>
+Subject: RE: [RFC][PATCH] serial: imx: Fix RS485 behaviour on disabled
+ RX_DURING_TX
+Thread-Topic: [RFC][PATCH] serial: imx: Fix RS485 behaviour on disabled
+ RX_DURING_TX
+Thread-Index: AQHaY+MB2vblg263n0WgWxIvwFWSn7ETDcBAgBkY/ACAACXbQA==
+Date: Thu, 7 Mar 2024 12:38:03 +0000
+Message-ID: <2d92d69369054578baacccf23ae2eff1@dh-electronics.com>
+References: <2e866164c89c495aac905753978e8747@dh-electronics.com>
+ <3a2987d4-ca89-4f4b-9f01-ee19a01c1b6b@gmail.com>
+In-Reply-To: <3a2987d4-ca89-4f4b-9f01-ee19a01c1b6b@gmail.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 
-Dawei Li <set_pte_at@outlook.com> writes:
-> Hi Christophe,
->
-> On Tue, Feb 20, 2024 at 04:12:17PM +0000, Christophe Leroy wrote:
->> Hi Michael,
->>=20
->> ping ?
->>=20
->> Le 01/02/2023 =C3=A0 15:36, Dawei Li a =C3=A9crit=C2=A0:
->> > Commit fc7a6209d571 ("bus: Make remove callback return void") forces
->> > bus_type::remove be void-returned, it doesn't make much sense for any
->> > bus based driver implementing remove callbalk to return non-void to
->> > its caller.
->> >=20
->> > This change is for macio bus based drivers.
->> >=20
->> > Signed-off-by: Dawei Li <set_pte_at@outlook.com>
->>=20
->> This patch is Acked , any special reason for not applying it ?
->>=20
->> Note that it now conflicts with commit 1535d5962d79 ("wifi: remove=20
->> orphaned orinoco driver") but resolution is trivial, just drop the=20
->> changes to that file.
->
-> Thanks for picking it up, hardly believe that it's been one year.
->
-> Michael,
->
-> I will respin V4 if it's needed.
-
-No that's fine, I'll sort it out.
-
-cheers
+RnJvbTogVG9iaWFzIEpha29iaSAoQ29tcGxlbykgPHRvYmlhcy5qYWtvYmkuY29tcGxlb0BnbWFp
+bC5jb20+DQpTZW50OiBUaHVyc2RheSwgTWFyY2ggNywgMjAyNCAxMjowNyBQTQ0KPiANCj4gSGVs
+bG8sDQo+IA0KPiBJIGFsc28gbm90aWNlZCBsYXN0IHllYXIgdGhhdCBSUzQ4NSB3YXMgcHJvYmxl
+bWF0aWMgb24gaS5NWCBoYXJkd2FyZS4gV2UNCj4gdXNlIGEgaS5NWDcgU29DIGxvY2F0ZWQgb24g
+YSBTb00gYnkgbWFudWZhY3R1cmVyIFRvcmFkZXguIFRoZSBTb00gaXRzZWxmDQo+IGlzIHBsdWdn
+ZWQgaW50byBhIHByb3ByaWV0YXJ5IGJvYXJkIHRoYXQgZmVhdHVyZXMgYSBSZW5lc2FzIElTTDh4
+eHgNCj4gUlM0ODUgdHJhbnNjZWl2ZXIuIFdlIHRhbGsgTW9kQnVzIFJUVSBvdmVyIHRoZSBSUzQ4
+NSBsaW5rLiBUaGUgU29DIGlzDQo+IHRoZSBNb2RCdXMgbWFzdGVyLCB0aGUgc2xhdmUgaXMgYSBp
+bnN1bGF0aW9uIG1vbml0b3JpbmcgZGV2aWNlLg0KPiANCj4gU2luY2Ugd2Ugc291cmNlIHRoZSBp
+Lk1YIHRocm91Z2ggVG9yYWRleCwgSSBvcGVuZWQgYSB0aHJlYWQgb24gdGhlaXINCj4gY29tbXVu
+aXR5IGZvcnVtIGxhc3QgeWVhcjoNCj4gaHR0cHM6Ly9jb21tdW5pdHkudG9yYWRleC5jb20vdC9m
+aXhpbmctbmF0aXZlLXJzNDg1LWRlLXRvZ2dsaW5nLW9uLXVhcnQ2LzIwNTczDQo+IA0KPiBJIGFs
+c28gcmVhbGl6ZWQgdmVyeSBxdWlja2x5IHRoYXQgdGhlIG5ld2x5IGludHJvZHVjZWQgbG9vcGJh
+Y2sgbG9naWMNCj4gd2FzIHRoZSBjdWxwcml0LiBNeSBzb2x1dGlvbiBjdXJyZW50bHkgY29uc2lz
+dHMgb2YgYSBuZXcgRFQgcHJvcGVydHkNCj4gdGhhdCBlZmZlY3RpdmVseSBkaXNhYmxlcyB0aGUg
+dG9nZ2xpbmcgb2YgdGhlIGxvb3BiYWNrIG1vZGU6DQo+IGh0dHBzOi8vZ2l0bGFiLmZyZWVkZXNr
+dG9wLm9yZy90b2JpYXNqYWtvYmkuY29tcGxlby9saW51eC10b3JhZGV4Ly0NCj4gL2NvbW1pdC85
+ODM5N2M5NDM2ZjQ4YTE0OWUyZGEwYjI5NjlhMmQxZDJkODhjNjExDQo+IA0KPiBBbnl3YXksIEkg
+aGF2ZSB0ZXN0ZWQgQ2hyaXN0b3BoJ3MgcGF0Y2ggYW5kIGNhbiBjb25maXJtIHRoYXQgdGhlIHBh
+dGNoDQo+IChhbHNvKSBmaXhlcyB0aGUgcHJvYmxlbXMgd2UgYXJlIHNlZWluZy4gVGVzdCB3YXMg
+ZG9uZSBieSBhcHBseWluZyB0aGUNCj4gcGF0Y2ggdG8gNi4xLjgwLiBJIGhhdmVuJ3QgdGVzdGVk
+IFJpY2thcmQncyBwYXRjaCBzbyBmYXIuDQo+IA0KPiBXb3VsZCBiZSBuaWNlIGlmIHRoaXMgY291
+bGQgbGF0ZXIgYmUgYmFja3BvcnRlZCB0byB0aGUgNi4xLngga2VybmVsDQo+ICh0aGlzIGlzIHRo
+ZSBrZXJuZWwgd2UgY3VycmVudGx5IHVzZSBvbiBvdXIgaGFyZHdhcmUpLg0KDQpSaWNrYXJkJ3Mg
+cGF0Y2ggaW4gdmVyc2lvbiAzIHNvbHZlZCB0aGUgc2FtZSBwcm9ibGVtLCBzbyBpdCBzaG91bGQg
+YWxzbw0KZml4IHRoZSBwcm9ibGVtIG9uIHlvdXIgc2lkZS4gSXQgaGFzIGFscmVhZHkgYmVlbiBh
+Y2NlcHRlZCBhbmQgaXMgYWxyZWFkeQ0KYXZhaWxhYmxlIGluIHRoZSBuZXh0IEtlcm5lbC4gSXQg
+aGFzIGEgRml4ZXMgdGFnIG9uIGl0LCBzbyBpdCBzaG91bGQgbm9ybWFsbHkNCmJlIGJhY2twb3J0
+ZWQgdG8gdGhlIDYuMS54IEtlcm5lbCBzb29uLg0KDQpSZWdhcmRzDQpDaHJpc3RvMXBoDQo=
