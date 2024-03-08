@@ -1,121 +1,243 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2088.outbound.protection.outlook.com [40.107.8.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C383917745;
-	Fri,  8 Mar 2024 16:15:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709914533; cv=none; b=l/KTCCE10+v19ZPowxEP2W2s63L44Y36mVwaZk1OIMfQkKnu1fz3OoUwDKQX/52LicJdoaPtpaxwlOaF1WeWgV5n7XO3F+e9fTv6RarTNHJ+2KAzRdcBhyz76JuIjpKceJDwKhH8QI3pSK4MffwnaEjVhpEEqAe+CJPe/34Sq5s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709914533; c=relaxed/simple;
-	bh=KoN9H3CRkpnEci3xxesKljJ2R9dEAtl14sUiv45A7dc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rxhCXeSyiVJpJyeHJXWLUrJueRI3YbZvMrOR4OfhOCzl/oeAPo5A29Y+YNBpyZTmEu9pestxmjz3fY2t1qcS72BN1mKLU71jbZ/+hSWOb9H7InAp4fpdx8lFftS1blxhk+7lF20dFFIqO+cm5QyU8j3LEnzUwweZmVbe6sS2UKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UggsHOnW; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2E161DFDE;
+	Fri,  8 Mar 2024 16:26:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.88
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709915167; cv=fail; b=IJaMmfr+xMR79URSG9qASzXrCWJpDs3XCY9WdK1r3S97ykOy4TVgap4znpsw5mQ605xltRV3lM21DGGJdKyGNpGbn9htofu3nINIZhk0sBC99Sn2AU080dP/Ic0AHE/GUnnkkK6+Czv2wrnlBvkGvc4Qx+IBvT9P0rBmIyn59yg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709915167; c=relaxed/simple;
+	bh=hc0vWKzWBYmTQPNA0uhujkmwegxnId+yCijUqEvVwaI=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=kL8sI7mbvyvXOKGVU47NM1MaE5sFTVQOsuGfekwAdjPGdclpdHbHTGSWFDgaCo0zP8bj/Qlf7kK6MfC8uAJ+qDB/F85Zb6fDU0j9iqJ7o2XXyLYC7i6beHsCJqAJxrfJx9FfxkmR1SoeZdMUzcBGYAyCAiXPdJ84l68yp2J158E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=c3Mdx6jt; arc=fail smtp.client-ip=40.107.8.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UggsHOnW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709914533; x=1741450533;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KoN9H3CRkpnEci3xxesKljJ2R9dEAtl14sUiv45A7dc=;
-  b=UggsHOnWQ8ah4zZMoBbSL3lt4mdCqq40loaSl05lApYA+tq3Rut7Usgc
-   hqqJoi4377BRJ8IbAuBur+64ttqk+rjHhB0iUZqAnuo8HkSGUB+CPRsmz
-   RZTYm7lCfkGgYKDfFF9gMc2fyt0oUS2SV5xjj0ZDoJ3VOTCh5zPCwgAg2
-   t4m1chzYjkUHQWUrRFYLiTGDUVRtUrRizpFGEm0Drd5KCifRypRXKrW4c
-   7h8whYKrv/nMjEQZwgRFP8kNyX2JAYp1rNhsUTQXdlkykZpa3aROQW2G+
-   X391VfQ/w/wvJ/xNCYtlLTNRBfXKpkACzA4HHXSoOvy6nCl5SOGdoOkmU
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11006"; a="16047241"
-X-IronPort-AV: E=Sophos;i="6.07,110,1708416000"; 
-   d="scan'208";a="16047241"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2024 08:15:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11006"; a="914250176"
-X-IronPort-AV: E=Sophos;i="6.07,110,1708416000"; 
-   d="scan'208";a="914250176"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2024 08:15:28 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1ricsX-0000000At8C-396L;
-	Fri, 08 Mar 2024 18:15:25 +0200
-Date: Fri, 8 Mar 2024 18:15:25 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Guanbing Huang <albanhuang@outlook.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	albanhuang@tencent.com, tombinfan@tencent.com
-Subject: Re: [PATCH v2] serial: 8250_pnp: Support configurable reg shift
- property
-Message-ID: <Zes5nX4YdxrsGRji@smile.fi.intel.com>
-References: <2024030518-encrust-gutter-f507@gregkh>
- <PSAPR06MB4952ED7EAD4410B25258F42FC9212@PSAPR06MB4952.apcprd06.prod.outlook.com>
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="c3Mdx6jt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nF3pRpBispG98ZcR/36y/5U6Ac0/h6EWXFNt7Np1jtftArAlasMCzYqRhfl39hpnvK5N9/4ZWGfJpkpHpYyUMS4ihXm06djWbp1rPEZG3CFCJLJ4jtZrDUjR8UyqP4TcN2hDoZBorX9snD1iSp7IE+0WosXgNqwUyS74muwvMU1Q8jGvmnxHBfAxw9jfTn3KgKaf7LTp5448qq2XZi5HPWjim3HA4ponpvQ8j7oqJYFPFC3uVIM+bxGZKgxD0jAIgILDo+wOvP5JJk+8IZIQ/7cz9Y4fKJ1NLnVqndNXqoKAk67KaJrahmr70nuvK3fbB8DkA7QN80XZdcSHp1BMHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qV44oIZVXxGjMUN038mXUA0fEvu2yZSoG67eTDt2HkM=;
+ b=naW+6/QLvwX4dn6116XICSZRS8rfWN+GlI6qzjai6lvNRJPXU/yJb/kGmnk6A8CqHBxq6DpBKefSpl/OkD0betPWBEglTOkhOGg50W4fE9zuE3cpfK5K8KJ9RKDvf8oU/tp/ExzCvWHTdAo1yjegLO+S9KAMToQ3TriF7Ew9/3PLefJrXvc6y1zXv5QN6tZ4KZI8V33GL/hcE9A3VnubEsMWBIF+urMXC7+RJePHH3zX85JXk1iO7yoOaRRfMXBPRRHlvOeIpApjxd6EGIQaP78PLgOJoXl66QiHIMb5wSL4rTR14xtTTeoUONlNs3lHJBc4nPCSh4pFFthdXq0dpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qV44oIZVXxGjMUN038mXUA0fEvu2yZSoG67eTDt2HkM=;
+ b=c3Mdx6jtSTmjFNIiN7wGqE39VdNsRNU3kLrCvQN7cv/B32jISrNw67XSJoYy41UTdpzqcl7b4GOpsDRztlLPmUDGnd6RtVTF5x1m1zsfGEazi8OqRINQmTZn75HHNjFELOM4ZRMnxiA6awF8RO7MEvFWN1aHTCONwmaSsP6ipkg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
+ by PAWPR04MB9864.eurprd04.prod.outlook.com (2603:10a6:102:390::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.26; Fri, 8 Mar
+ 2024 16:26:00 +0000
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6]) by PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6%3]) with mapi id 15.20.7362.024; Fri, 8 Mar 2024
+ 16:25:59 +0000
+From: Frank Li <Frank.Li@nxp.com>
+To: frank.li@nxp.com,
+	alexandre.belloni@bootlin.com
+Cc: conor.culhane@silvaco.com,
+	devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	ilpo.jarvinen@linux.intel.com,
+	imx@lists.linux.dev,
+	jirislaby@kernel.org,
+	joe@perches.com,
+	krzysztof.kozlowski+dt@linaro.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-i3c@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	miquel.raynal@bootlin.com,
+	robh@kernel.org,
+	zbigniew.lukwinski@linux.intel.com
+Subject: [PATCH v9 0/8] I3C target mode support
+Date: Fri,  8 Mar 2024 11:25:10 -0500
+Message-Id: <20240308162518.1615468-1-Frank.Li@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SJ0PR13CA0137.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c6::22) To PAXPR04MB9642.eurprd04.prod.outlook.com
+ (2603:10a6:102:240::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PSAPR06MB4952ED7EAD4410B25258F42FC9212@PSAPR06MB4952.apcprd06.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|PAWPR04MB9864:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7024ec46-c412-45e5-a4f7-08dc3f8c7069
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	5DVDi0+9NPQ3oOB3NwATvAVe/XPcemCLCgLMhCX49PMtX4/89enS4YEvhO6luyme1bIkuOQwUVuRr7eR8ul6aOlGT4hlACFsw9KSex0DvEITKcY6kBhY6hK+hjTRmv/hWF78+gupagv7IksKzFgaAOWm21lTrWjezcZekAX+BuJByRsao5C/Gy5ZHY7xP8y0NAbwSXr10ULj3N4SJGqjTWoJAiGDB2PJ6p7ebTQCWxlg3WxXy4/6UcGf/kmIskD7q2vP3tBGEoOxMM5fSgNz/mH18KWmn79MVf7dn0GfXmGKoT/0k/p+jUBlllCveReMr2qFLowMiCjt9J7BU0x9HYDrqj0k9jR3jWYgW6ooBPoh5qYMxMGzlFLhKCOOPBAuHobeYSK9DLqKMEmw3tAZbSD9WhOel+wZE8Cst/T133QWt01ydSUawd0ahTQndZX47xMenhBFMVpd4KRUbuBqF15/vT5ICDZgrvwRnGWUCnyPeNq1f2Jpdj3ngECXEFvq9Fd5GonKe5CeqgwzoHz++i3iAVKXQgoG3L2m3LT7+mBy4PEpM9HB8u+l+EIDAl5YKDVyzDCrAjZbU8js/tZPq4z9frMFVp0lUjm32IpnUUMTQNfabbOqAsHsub6BRvY1C+1kpoMruo8JjLRLQpOWLAcwp9MZXM8+NwVA3GgDdi1wAchSAQG8YWslE3XFpeS27drpxEciDbYj6E+PNGS9Ag==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(52116005)(7416005)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?b0htcW9PdEhMMW0rY1lPbEN5ODBtV0dMSzdtY04rLzhDUmpIYk11N0JXaDJU?=
+ =?utf-8?B?cmJJOUpzQzZPYmhHM0hvTnZKQjYwMUFva2p2OHZaa1RLcEZGa3B0TXQwM2Nn?=
+ =?utf-8?B?clhQUi81eU5KeFRkZEMwZjJ3S3Z3Ujh3TS9oU28zYjlKdXlYMHlISW1qRjVy?=
+ =?utf-8?B?MWowV2oreEMxeWlSc2JYcDlIdm1saUg3NitPOVRVdWpSOUo2QzgxNVNtZXZm?=
+ =?utf-8?B?UWdNZ3VwSGRDdmU1TW94bjJidGNiSFcxMkZwd2tQSGMzZjJjc1dkL1cxeFFM?=
+ =?utf-8?B?VmROUHAwaTdQOGxQY3lFRExXeU1zQkFiRnBkZjkrb2oyNUhiSnZDclJEWnlF?=
+ =?utf-8?B?S0lIcm05a1FlUThlU3IrZnVqbU5IOVRCVU5lbkZoK1ZZMWZrTUVZRWVtK2dF?=
+ =?utf-8?B?ZG1pejdXVUdHM3pFVDZ6bkhHaEZvM1cxWEdZcFU5cERQNnY2ZVBtUUpCQlZZ?=
+ =?utf-8?B?MUlsM1ZGSG5oS21FZEIyUmNQUStnQkJXM1pDbCttTnIyZCsrb2szaHYyVlJG?=
+ =?utf-8?B?OHN4Ykw0Vy9vbnVwTlBQcXhHNTlaWldSMGNiWUMrd1lldnhzOXUyK0pkdWw0?=
+ =?utf-8?B?cXVYeDdKNGxDQjZDVUhvNTQ5UmlsTkU4Y0c1eTJWUVZURWZyU2NwdnFRN1JJ?=
+ =?utf-8?B?a0pDM09KdFhLOWpzTU1UQWtWTklDY0VuaHB5YkNmZlBqSXhmYW1lUmJTYkhm?=
+ =?utf-8?B?YWNNUWp5Nlh6OHVaT21lZVBoSWV1K2M1Q3BMZEZNS25zOTEySkFJZ1lZcjBG?=
+ =?utf-8?B?eXBYQjhjZGZjaFQ2ek9ScUFSOThESFlLbGlSeDZxWWhjVlNNQmhwUjRPQzlz?=
+ =?utf-8?B?NXlLQm5mRnlLMjNxNGJ6TE9NWDVGNnNOMEcyN0MvRWVSZWJ6am1mYkNuRjI5?=
+ =?utf-8?B?ZmtES0JkdUJKTXdMcHpLbHFJcVdpdzBmZitvaGVNV3RFYzUxL0ZVS2xkMVcy?=
+ =?utf-8?B?WS8zQUsycWpSSXJES3dWWWFxTFFXTGpCZWVSNll0MlIzeHgzUDdXQUt1c1Y4?=
+ =?utf-8?B?Ym9lNDFDeC82SWZ0NW14QTZQSmg2R3ZSemlDbVZqSm9QbGJFdWc5blMwNzdO?=
+ =?utf-8?B?STVpODUvZVZzTW16cXVXV0lrTVJ3RlJFK2lHZnZFS1FTbHZiOEEwSldhQUta?=
+ =?utf-8?B?VmsrdHlVdUZ5U2hyTllDQkk0eGpwOUI4SGR6Q0k0eTU5Wk8vdFN6Y2dXL3V0?=
+ =?utf-8?B?eTlvMTlFN3JRL1J6VUhVWlVFZHY4Ti9KQVdIZGh1VXhJeWtObTg2SnZKT1pW?=
+ =?utf-8?B?VmwveDhVa1BqVFcwTUdDSjNZWEwvRXFnT1F4Wk5jU1hOSkVZbjRpOUpVcVRH?=
+ =?utf-8?B?dGt2MUNsYUNYZVhrdk1ZYStVQjVCZnJYK0pSTzBsYkVYZ1IyTFJFL1dkZU9P?=
+ =?utf-8?B?Ty9zQ1ZhTmRzcGVHeFZ3Z3hsbk5IR202Q1Fyemhrd21MVklVd2FXMXBRRVhH?=
+ =?utf-8?B?bTI0RTlpVFVVK0t3ZCtZcFh4MWN1K3JDcjlQQ1NUbFI5Lzg2dVIwTTNXY0Mv?=
+ =?utf-8?B?ZktQaE9sMVdIejJWQjI1OVBsOVV0TnlZWk9JNXp3OE1Sdmpvc2dGMFovRHc4?=
+ =?utf-8?B?REF1UzlFcUlENlFaWGJuOVp3QWM1dGdXM1NCZVYwZnlpcktlMjg2VS9qUmdW?=
+ =?utf-8?B?TjdwUEhWRU9YcEdZVkdaNDdDdXJMZDZCYnI4Wi9WbUJZVzV3Q0Iyb21iZzJv?=
+ =?utf-8?B?Y1YrSXp3UkZ4QkVMOGMwNVZtenBPNm5NaEVQYWxuM1VqZUwveldDcG9MV1ow?=
+ =?utf-8?B?WmxsZVlmelRkMU15TWdTeERiaFIydDM1blBmYTNCR2QyeVBWaDJ5TmtwVS9y?=
+ =?utf-8?B?ZDliNGRiZDlBalhiVzFhSDRjZkhhTktNdTlPd2FWQzlDQldlVDJhUGY4N2kz?=
+ =?utf-8?B?MWJUWHJyZkFYTEU2YUlOZWdSZVZBSzY1T3lNSUFxb2ZzZVZZTHdGSmYzeFA5?=
+ =?utf-8?B?YUJpMDFDUnNxdkNnbGJMK0NjSS80VTVGdEw3VnpOaWxoblk4c1hwaDNCdzBT?=
+ =?utf-8?B?QkEvYzdZblRRWFRRWFJoenZpYUR0NFlQZnFzNElxRHZHNnUra2hGZzI3dGxN?=
+ =?utf-8?B?Q0ZqSU5HSno5OFRwVHVpRFZMc0lRWUk0QjNLYkwwTHcwRU44clVjRDhGR2Mr?=
+ =?utf-8?Q?e5dtZ+aEPXnFmiv+AVH8hBExJ?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7024ec46-c412-45e5-a4f7-08dc3f8c7069
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Mar 2024 16:25:59.5030
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: snuvm03YAwe29IvpAVkwx8UTdPwDVdPkOjoNx3GmiEzVvxLg6BAMjGAgYMngs3HQLEaGpP0wqYSY+bL594OseQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9864
 
-On Wed, Mar 06, 2024 at 07:42:27PM +0800, Guanbing Huang wrote:
-> From: Guanbing Huang <albanhuang@tencent.com>
+This  patch introduces support for I3C target mode, which is referenced
+with a PCIe Endpoint system. It also establishes a configuration framework
+(configfs) for the I3C target controller driver and the I3C target function
+driver
 
-Thanks for your contribution!
-My comments below.
+Typic usage as
 
-...
+The user can configure the i3c-target-tty device using configfs entry. In
+order to change the vendorid, the following commands can be used
 
+        # echo 0x011b > functions/tty/func1/vendor_id
+        # echo 0x1000 > functions/tty/func1/part_id
+        # echo 0x6 > functions/tty/t/bcr
 
-First of all, always start a new email thread when sending a new version of the
-patch (i.o.w. no In-Reply-to email header).
+Binding i3c-target-tty Device to target Controller
+------------------------------------------------
 
-> The 16550a serial port based on the ACPI table requires obtaining the
-> reg-shift attribute. In the ACPI scenario, If the reg-shift property
-> is not configured like in DTS, the 16550a serial driver cannot read or
-> write controller registers properly during initialization.
-> 
-> Signed-off-by: Guanbing Huang <albanhuang@tencent.com>
+In order for the target function device to be useful, it has to be bound to
+a I3C target controller driver. Use the configfs to bind the function
+device to one of the controller driver present in the system::
 
+        # ln -s functions/pci_epf_test/func1 controllers/44330000.i3c-target/
 
-> Signed-off-by: Bing Fan <tombinfan@tencent.com>
-> Signed-off-by: Linheng Du <dylanlhdu@tencent.com>
+Host side:
+        cat /dev/ttyI3C0
+Taret side:
+        echo abc >/dev/ttyI3C0
 
-This chain, as described in Submitting Patches documentation [1], should go
-accordingly.
+Notes about header files.
 
-...
+About Ilpo Järvinen's header file comments, it can pass build, some header
+should be included by other header files.
 
-> @@ -473,6 +473,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
->  		uart.port.flags |= UPF_SHARE_IRQ;
->  	uart.port.uartclk = 1843200;
->  	device_property_read_u32(&dev->dev, "clock-frequency", &uart.port.uartclk);
-> +	device_property_read_u8(&dev->dev, "reg-shift", &uart.port.regshift);
->  	uart.port.dev = &dev->dev;
+I added some, but I am not sure that is all needs. There may have tools,
+which can help check, but I don't know.
 
-Instead, it may make sense to switch to use uart_read_port_properties() which
-has been recently introduced and dozen of drivers converted.
+Chagne from v2 to v3
+- using 'mode' distingiush master and target.
+- move svc-i3c-target.c to under master,
+- built together with svc-i3c-master.c
 
-Ex. e6a46d073e11 ("serial: 8250_dw: Switch to use uart_read_port_properties()")
+Change from v1 to v2
+- change "slave" to "target"
+- include master side tty patch
+- fixed dtbcheck problem
+- fixed kerne-doc check warning
 
-Yes, it assumes that you always need to base your changes on the latest
-available changes in the certain subsystem (here it is tty-next branch
-in Greg's tty tree, see git.kernel.org for the details).
+Some review comment may be lost since it is quite long time since v1. Now
+master side dependent patches already in linux-next. So sent target side
+patches with tty support again.
 
->  	line = serial8250_register_8250_port(&uart);
+No sure why an additional "\r\n" appended.
 
-[1]: https://www.kernel.org/doc/html/latest/process/submitting-patches.html
+Frank Li (8):
+  i3c: add target mode support
+  dt-bindings: i3c: svc: add proptery mode
+  Documentation: i3c: Add I3C target mode controller and function
+  i3c: svc: Add svc-i3c-main.c and svc-i3c.h
+  i3c: target: add svc target controller support
+  i3c: target: func: add tty driver
+  i3c: add API i3c_dev_gettstatus_format1() to get target device status
+  tty: i3c: add TTY over I3C master support
+
+ .../bindings/i3c/silvaco,i3c-master.yaml      |  11 +-
+ Documentation/driver-api/i3c/index.rst        |   1 +
+ .../driver-api/i3c/target/i3c-target-cfs.rst  | 109 +++
+ .../driver-api/i3c/target/i3c-target.rst      | 189 +++++
+ .../driver-api/i3c/target/i3c-tty-howto.rst   | 109 +++
+ Documentation/driver-api/i3c/target/index.rst |  13 +
+ drivers/i3c/Kconfig                           |  31 +-
+ drivers/i3c/Makefile                          |   3 +
+ drivers/i3c/device.c                          |  24 +
+ drivers/i3c/func/Kconfig                      |   9 +
+ drivers/i3c/func/Makefile                     |   3 +
+ drivers/i3c/func/tty.c                        | 481 +++++++++++
+ drivers/i3c/i3c-cfs.c                         | 389 +++++++++
+ drivers/i3c/internals.h                       |   1 +
+ drivers/i3c/master.c                          |  26 +
+ drivers/i3c/master/Makefile                   |   3 +-
+ drivers/i3c/master/svc-i3c-main.c             |  80 ++
+ drivers/i3c/master/svc-i3c-master.c           |  34 +-
+ drivers/i3c/master/svc-i3c-target.c           | 776 ++++++++++++++++++
+ drivers/i3c/master/svc-i3c.h                  |  15 +
+ drivers/i3c/target.c                          | 453 ++++++++++
+ drivers/tty/Kconfig                           |  13 +
+ drivers/tty/Makefile                          |   1 +
+ drivers/tty/i3c_tty.c                         | 432 ++++++++++
+ include/linux/i3c/device.h                    |   1 +
+ include/linux/i3c/target.h                    | 548 +++++++++++++
+ 26 files changed, 3724 insertions(+), 31 deletions(-)
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-target-cfs.rst
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-target.rst
+ create mode 100644 Documentation/driver-api/i3c/target/i3c-tty-howto.rst
+ create mode 100644 Documentation/driver-api/i3c/target/index.rst
+ create mode 100644 drivers/i3c/func/Kconfig
+ create mode 100644 drivers/i3c/func/Makefile
+ create mode 100644 drivers/i3c/func/tty.c
+ create mode 100644 drivers/i3c/i3c-cfs.c
+ create mode 100644 drivers/i3c/master/svc-i3c-main.c
+ create mode 100644 drivers/i3c/master/svc-i3c-target.c
+ create mode 100644 drivers/i3c/master/svc-i3c.h
+ create mode 100644 drivers/i3c/target.c
+ create mode 100644 drivers/tty/i3c_tty.c
+ create mode 100644 include/linux/i3c/target.h
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
