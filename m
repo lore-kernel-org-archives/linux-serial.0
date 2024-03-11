@@ -1,253 +1,415 @@
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 982B42AEFA
-	for <linux-serial@vger.kernel.org>; Mon, 11 Mar 2024 14:34:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA84E4879E;
+	Mon, 11 Mar 2024 17:09:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710167664; cv=none; b=unNTf0mecmk6EcgqAazQ6IMb7zmQcQy8gyyuTOxd10IU95xtqgR1icDlzUC5/LKa4I6dLKqPvpi8MmQtHWb8fMOcG0aSGhq2deM5+kkBC+eIWNI8SSZaLKNnsjvg8JODwkQPJSLTdlbKQqiYwVgp3nsUqQJ/J3REj1+QUnCumuU=
+	t=1710176945; cv=none; b=L2kF7Ei5+sCsZ6j+6ArYWN217j4mrLoukgHT0gknp14QCFQVyZfi+q94mMfyznwbCcKyeqScwYfjdJbKEWrjWax1HqQUufVJMV64Jc8YSMBGErgpyrslkCxckUEhj77z+6S9a76+CyVNGTxc4ZP9Pmr1vBmdmXT8J1hlq93ooho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710167664; c=relaxed/simple;
-	bh=Muz2HkEuV2W5sUy7rgSdH24wlCpX0mbkWWCjYfbkGIA=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
-	 Content-Type; b=pJ5mWsk+DavU2ZTzqHxYG0ZpzUBwPbBV1DMvQ0gAd+ijgqSXZoh41yL/vZX5MmZ2nHOBQTcp/K5ejLw4Xp3nrTXuh9DVIrsSnAo2B06u4pNhnltx18Uuu7p9lhaf1O3tCIt9M8RD5bKK8P/usYIHZfa3OTdJOYgv8nse+QPNKjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-7c8a8d93507so151414439f.0
-        for <linux-serial@vger.kernel.org>; Mon, 11 Mar 2024 07:34:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710167662; x=1710772462;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JxjuhAqoOi3wIe760+n1vTOpLju+lhk+tlBCOkRQIQw=;
-        b=lFW2rfLmmFPf34557UzR1qSv4MLYNxEBFHnDQXpbtFpWRhX8jJo8OjDiT6wqghJy64
-         UVpf7js4Rn7XE8EbretNNu+BObEARpqWeVs8l67XG4XpME9AVqJK1m1QiOv9CVDrNNZW
-         GrvQPpUnWsxOWb2d0Rb2w7YAmvWuu4kXIVI2kR9iQIvhqa4DTs/AfDpwB6jU7YSsWd0c
-         /Ef8GHXeQO+G7IPPs5zHwMppNHwt4AfTB6tAbzyJq6zjG1lTTRvhg0wQxSswWwwgXBug
-         nk8QUTU1jp0Ytq4RnQKhPixKx8S8NQvyBj666iOGNl0+eq25pCvqgSQDRPC+5698zBDL
-         o93Q==
-X-Forwarded-Encrypted: i=1; AJvYcCV1e1wre3Mkl94hBq6VSW996jYHNiNxKU961JHRVJV3pg7FXm8Du8KuiOz1manTcygXvR9z1/PGmejWRaC7/99VNngx8YBrEIo+9e1f
-X-Gm-Message-State: AOJu0YzttigvTNb+aE7u78om6fJzwy9p4qrOftNr9PJ17X02ZdJrgW+2
-	8X2qGeWUrpwB/L4XQe0v9aEY3w+Wp2yfl2kwNtIJ6USZgecJDLcz2zMqk7h6wUrWKRa35mVtTVE
-	w7nMsmJ310/+Eg0JedXuZHsamRx2lojxkgwfOQQqat9lqLXqWkoo4FE4=
-X-Google-Smtp-Source: AGHT+IGY8NERYK7VAxbkNAPPkwPh1FZzJ8f/iWfqdZAQ/AO8UvjVR4GNbKRoDdhsSgmxOuxlvXq7G8kOeGhDDvM3lwp3wMr+7bUe
+	s=arc-20240116; t=1710176945; c=relaxed/simple;
+	bh=TTbvqXWR6nWc/MsNEekN815JYhHFt7v4LSNzAZdhZFg=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
+	 Content-Type; b=KNap6jWSwVkmcFA/EHF+66iY+AOobblO9y6ZN4fa9H2UUuC57zUD2zQZQh32TW9/9vJGO7eUUntmn0lZBzrQtASISsX+J469uF9lxPe39IGQqOMJoaKEw0wh2CnUcSQSJblFgaIUUP6zW8AkblHHX43Mg8HFaFtLPlbAXsyqtCQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=4Pb7nL1u; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=N14hTbon; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="4Pb7nL1u";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="N14hTbon"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1710176941;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=Pc+jEfFefB7uqRYli5YEqbddwRCfK3q/jPl/mANg1eQ=;
+	b=4Pb7nL1uZluXsXaQXj9+fIHoxOv3BfquNGMVyD6ru3GEVOxqbStueZSx5QRFlti7OEvqd3
+	kAdC3qhErTPer/VSXHM6UlH1NgDx5HavOMg5rboq8ncKxPR97TlSNCK+dppdIwtBxkzcA5
+	ZEfBpmGFuc2UIxYOM9cLMWxv7b8EKFU+pSl45vgmLP25A1iW5zU/OXw9UU2TmtYTlsiSDV
+	xVgnXON8/j+Ze+shGDs8Am215nnwCOOA28thtSY8E5pkwMTpVp6fTcBDc+aQ0k9JZYO1Rn
+	ulhXg44nhaqpMERou3O2WmhePZfW9ynNJky7W9XIp4DczoAZn4rnMlQ4LkAxoA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1710176941;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=Pc+jEfFefB7uqRYli5YEqbddwRCfK3q/jPl/mANg1eQ=;
+	b=N14hTbonYxEhKhXubgvcXK1awp8V2a/10ZS63H+v9z+0tsYFO09l8Wzr3zZQXr1wICTCMb
+	MfmRcVpcpWmwxPDQ==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt
+ <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>,
+ linux-kernel@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Ilpo
+ =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, Justin Chen
+ <justin.chen@broadcom.com>, Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
+ port->lock wrapper
+In-Reply-To: <Zdh4eEJJpasEWqa5@alley>
+Date: Mon, 11 Mar 2024 18:14:19 +0106
+Message-ID: <87le6oy9vg.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3710:b0:474:c16c:45b5 with SMTP id
- k16-20020a056638371000b00474c16c45b5mr443957jav.5.1710167661815; Mon, 11 Mar
- 2024 07:34:21 -0700 (PDT)
-Date: Mon, 11 Mar 2024 07:34:21 -0700
-In-Reply-To: <000000000000f3b90a060f1178f1@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fd3d660613636f95@google.com>
-Subject: Re: [syzbot] [serial?] KASAN: slab-use-after-free Read in
- tty_write_room (2)
-From: syzbot <syzbot+2a81fdd5c6ddffee3894@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 
-syzbot has found a reproducer for the following issue on:
+Hi Petr,
 
-HEAD commit:    e8f897f4afef Linux 6.8
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1729f41a180000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=aba47157efb89052
-dashboard link: https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f338d1180000
+Thanks for the detailed feedback. Here is a lengthy response. I hope it
+clarifies the uart port and console fields. And I think you identified a
+bug relating to the setup() callback.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/aa5aa46d901e/disk-e8f897f4.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1c87fe0fa468/vmlinux-e8f897f4.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/94beb1f39151/bzImage-e8f897f4.xz
+On 2024-02-23, Petr Mladek <pmladek@suse.com> wrote:
+> My main (only) concern was the synchronization of the various accessed
+> variables, especially, port->cons.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+2a81fdd5c6ddffee3894@syzkaller.appspotmail.com
+The only issue is if port->cons disappears between lock and unlock. I
+see there is code setting port->cons to NULL, although I do not know
+why. Once port->cons is set, there is never a reason to unset it.
 
-ieee802154 phy0 wpan0: encryption failed: -22
-ieee802154 phy1 wpan1: encryption failed: -22
-==================================================================
-BUG: KASAN: slab-use-after-free in tty_write_room+0x35/0x90 drivers/tty/tty_ioctl.c:68
-Read of size 8 at addr ffff88801f7e6020 by task aoe_tx0/1238
+Regardless, I will add port->lock synchronization when modifying
+port->cons. There are only a few code sites and they are all during
+driver setup.
 
-CPU: 1 PID: 1238 Comm: aoe_tx0 Not tainted 6.8.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 02/29/2024
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x1e7/0x2e0 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:377 [inline]
- print_report+0x167/0x540 mm/kasan/report.c:488
- kasan_report+0x142/0x180 mm/kasan/report.c:601
- tty_write_room+0x35/0x90 drivers/tty/tty_ioctl.c:68
- handle_tx+0x164/0x640 drivers/net/caif/caif_serial.c:226
- __netdev_start_xmit include/linux/netdevice.h:4986 [inline]
- netdev_start_xmit include/linux/netdevice.h:5000 [inline]
- xmit_one net/core/dev.c:3547 [inline]
- dev_hard_start_xmit+0x244/0x770 net/core/dev.c:3563
- __dev_queue_xmit+0x19f4/0x3b10 net/core/dev.c:4351
- dev_queue_xmit include/linux/netdevice.h:3169 [inline]
- tx+0x6a/0x110 drivers/block/aoe/aoenet.c:62
- kthread+0x23b/0x440 drivers/block/aoe/aoecmd.c:1229
- kthread+0x2f1/0x390 kernel/kthread.c:388
- ret_from_fork+0x4d/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1b/0x30 arch/x86/entry/entry_64.S:243
- </TASK>
+> Note: I am not completely sure how the early and valid console drivers
+>       share the same struct uart_port. So, maybe I miss some important
+>       guarantee.
 
-Allocated by task 8605:
- kasan_save_stack mm/kasan/common.c:47 [inline]
- kasan_save_track+0x3f/0x80 mm/kasan/common.c:68
- poison_kmalloc_redzone mm/kasan/common.c:370 [inline]
- __kasan_kmalloc+0x98/0xb0 mm/kasan/common.c:387
- kasan_kmalloc include/linux/kasan.h:211 [inline]
- kmalloc_trace+0x1d6/0x360 mm/slub.c:4012
- kmalloc include/linux/slab.h:590 [inline]
- kzalloc include/linux/slab.h:711 [inline]
- alloc_tty_struct+0xa9/0x7d0 drivers/tty/tty_io.c:3116
- tty_init_dev+0x5b/0x4c0 drivers/tty/tty_io.c:1415
- ptmx_open+0xda/0x2c0 drivers/tty/pty.c:824
- chrdev_open+0x5b2/0x630 fs/char_dev.c:414
- do_dentry_open+0x909/0x15a0 fs/open.c:953
- do_open fs/namei.c:3645 [inline]
- path_openat+0x285f/0x3240 fs/namei.c:3802
- do_filp_open+0x234/0x490 fs/namei.c:3829
- do_sys_openat2+0x13e/0x1d0 fs/open.c:1404
- do_sys_open fs/open.c:1419 [inline]
- __do_sys_openat fs/open.c:1435 [inline]
- __se_sys_openat fs/open.c:1430 [inline]
- __x64_sys_openat+0x247/0x2a0 fs/open.c:1430
- do_syscall_64+0xfb/0x240
- entry_SYSCALL_64_after_hwframe+0x6f/0x77
+The struct uart_port is _not_ shared between the early and normal
+consoles. However, the struct console is shared for normal consoles
+amoung various ports of a particular driver.
 
-Freed by task 5161:
- kasan_save_stack mm/kasan/common.c:47 [inline]
- kasan_save_track+0x3f/0x80 mm/kasan/common.c:68
- kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:589
- poison_slab_object+0xa6/0xe0 mm/kasan/common.c:240
- __kasan_slab_free+0x37/0x60 mm/kasan/common.c:256
- kasan_slab_free include/linux/kasan.h:184 [inline]
- slab_free_hook mm/slub.c:2121 [inline]
- slab_free mm/slub.c:4299 [inline]
- kfree+0x14a/0x380 mm/slub.c:4409
- process_one_work kernel/workqueue.c:2633 [inline]
- process_scheduled_works+0x915/0x1420 kernel/workqueue.c:2706
- worker_thread+0xa5f/0x1000 kernel/workqueue.c:2787
- kthread+0x2f1/0x390 kernel/kthread.c:388
- ret_from_fork+0x4d/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1b/0x30 arch/x86/entry/entry_64.S:243
+> Anyway. synchronization of port->cons looks like a shade area.
+> IMHO, the existing code expects that it is used _only when the console
+> is registered_. But this patch wants to access it _even before
+> the console is registered_!
 
-Last potentially related work creation:
- kasan_save_stack+0x3f/0x60 mm/kasan/common.c:47
- __kasan_record_aux_stack+0xac/0xc0 mm/kasan/generic.c:551
- insert_work+0x3e/0x330 kernel/workqueue.c:1653
- __queue_work+0xbf4/0x1000 kernel/workqueue.c:1802
- queue_work_on+0x14f/0x250 kernel/workqueue.c:1837
- tty_release_struct+0xbc/0xe0 drivers/tty/tty_io.c:1707
- tty_release+0xd0c/0x12c0 drivers/tty/tty_io.c:1867
- __fput+0x42b/0x8a0 fs/file_table.c:376
- __do_sys_close fs/open.c:1554 [inline]
- __se_sys_close fs/open.c:1539 [inline]
- __x64_sys_close+0x7e/0x110 fs/open.c:1539
- do_syscall_64+0xfb/0x240
- entry_SYSCALL_64_after_hwframe+0x6f/0x77
+Indeed. It is not enough for uart_is_nbcon() to check if it is an
+NBCON. It must also check if it is registered, locklessly:
 
-The buggy address belongs to the object at ffff88801f7e6000
- which belongs to the cache kmalloc-cg-2k of size 2048
-The buggy address is located 32 bytes inside of
- freed 2048-byte region [ffff88801f7e6000, ffff88801f7e6800)
+    hlist_unhashed_lockless(&con->node);
 
-The buggy address belongs to the physical page:
-page:ffffea00007df800 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88801f7e5000 pfn:0x1f7e0
-head:ffffea00007df800 order:3 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-memcg:ffff8880217f6b81
-flags: 0xfff00000000a40(workingset|slab|head|node=0|zone=1|lastcpupid=0x7ff)
-page_type: 0xffffffff()
-raw: 00fff00000000a40 ffff888014c4f3c0 ffffea0001ae3e10 ffffea0001ac3610
-raw: ffff88801f7e5000 0000000000080006 00000001ffffffff ffff8880217f6b81
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask 0x1d20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL), pid 5098, tgid 5098 (syz-executor.4), ts 200401248275, free_ts 200027547453
- set_page_owner include/linux/page_owner.h:31 [inline]
- post_alloc_hook+0x1ea/0x210 mm/page_alloc.c:1533
- prep_new_page mm/page_alloc.c:1540 [inline]
- get_page_from_freelist+0x33ea/0x3580 mm/page_alloc.c:3311
- __alloc_pages+0x255/0x680 mm/page_alloc.c:4569
- __alloc_pages_node include/linux/gfp.h:238 [inline]
- alloc_pages_node include/linux/gfp.h:261 [inline]
- alloc_slab_page+0x5f/0x160 mm/slub.c:2190
- allocate_slab mm/slub.c:2354 [inline]
- new_slab+0x84/0x2f0 mm/slub.c:2407
- ___slab_alloc+0xd17/0x13e0 mm/slub.c:3540
- __slab_alloc mm/slub.c:3625 [inline]
- __slab_alloc_node mm/slub.c:3678 [inline]
- slab_alloc_node mm/slub.c:3850 [inline]
- __do_kmalloc_node mm/slub.c:3980 [inline]
- __kmalloc_node+0x2d6/0x4e0 mm/slub.c:3988
- kmalloc_node include/linux/slab.h:610 [inline]
- kvmalloc_node+0x72/0x190 mm/util.c:617
- kvmalloc include/linux/slab.h:728 [inline]
- kvmalloc_array include/linux/slab.h:746 [inline]
- alloc_fdtable+0xe7/0x280 fs/file.c:136
- dup_fd+0x839/0xc50 fs/file.c:354
- copy_files+0x14f/0x2a0 kernel/fork.c:1789
- copy_process+0x1c14/0x3fc0 kernel/fork.c:2485
- kernel_clone+0x21d/0x8d0 kernel/fork.c:2902
- __do_sys_clone kernel/fork.c:3045 [inline]
- __se_sys_clone kernel/fork.c:3029 [inline]
- __x64_sys_clone+0x258/0x2a0 kernel/fork.c:3029
- do_syscall_64+0xfb/0x240
- entry_SYSCALL_64_after_hwframe+0x6f/0x77
-page last free pid 5111 tgid 5111 stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1140 [inline]
- free_unref_page_prepare+0x968/0xa90 mm/page_alloc.c:2346
- free_unref_page+0x37/0x3f0 mm/page_alloc.c:2486
- __slab_free+0x349/0x410 mm/slub.c:4211
- qlink_free mm/kasan/quarantine.c:163 [inline]
- qlist_free_all+0x5e/0xc0 mm/kasan/quarantine.c:179
- kasan_quarantine_reduce+0x14f/0x170 mm/kasan/quarantine.c:286
- __kasan_slab_alloc+0x23/0x80 mm/kasan/common.c:322
- kasan_slab_alloc include/linux/kasan.h:201 [inline]
- slab_post_alloc_hook mm/slub.c:3813 [inline]
- slab_alloc_node mm/slub.c:3860 [inline]
- kmem_cache_alloc_lru+0x172/0x350 mm/slub.c:3879
- alloc_inode_sb include/linux/fs.h:3018 [inline]
- alloc_inode fs/inode.c:262 [inline]
- new_inode_pseudo+0x8b/0x1e0 fs/inode.c:1005
- new_inode+0x22/0x1d0 fs/inode.c:1031
- debugfs_get_inode fs/debugfs/inode.c:72 [inline]
- __debugfs_create_file+0x14d/0x490 fs/debugfs/inode.c:437
- add_sta_files net/mac80211/debugfs_netdev.c:850 [inline]
- add_files net/mac80211/debugfs_netdev.c:959 [inline]
- ieee80211_debugfs_add_netdev net/mac80211/debugfs_netdev.c:1012 [inline]
- ieee80211_debugfs_recreate_netdev+0xc5a/0x1400 net/mac80211/debugfs_netdev.c:1045
- ieee80211_if_add+0x988/0x1770 net/mac80211/iface.c:2169
- ieee80211_register_hw+0x2fc7/0x3b80 net/mac80211/main.c:1418
- mac80211_hwsim_new_radio+0x250e/0x4400 drivers/net/wireless/virtual/mac80211_hwsim.c:5329
- hwsim_new_radio_nl+0xe4c/0x21d0 drivers/net/wireless/virtual/mac80211_hwsim.c:6010
- genl_family_rcv_msg_doit net/netlink/genetlink.c:1113 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:1193 [inline]
- genl_rcv_msg+0xad8/0xe50 net/netlink/genetlink.c:1208
+Most importantly to be sure that nbcon_init() has already been called.
+register_console() clears the nbcon state after cons->index has been
+set, but before the console has been added to the list.
 
-Memory state around the buggy address:
- ffff88801f7e5f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- ffff88801f7e5f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->ffff88801f7e6000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                               ^
- ffff88801f7e6080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88801f7e6100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+> For example, it took me quite a lot of time to shake my head around:
+>
+> #define uart_console(port) \
+> 	((port)->cons && (port)->cons->index == (port)->line)
+>
+>   + port->cons and port->line are updated in the uart code.
+>     It seems that the update is not serialized by port->lock.
+>     Something might be done under port->mutex.
+>
+>   + cons->index is updated in register_console() under
+>     console_list_lock.
+>
+> Spoiler: I propose a solution which does not use uart_console().
 
+This check is necessary because multiple ports of a driver will set and
+share the same port->cons value, even if they are not really the
+console. I looked into enforcing that port->cons is NULL if it is not a
+registered console, but this is tricky. port->cons is driver-internal
+and hidden from printk. The driver will set port->cons in case it
+becomes the console and printk will set cons->index once it has chosen
+which port will be the actual console. But there is no way to unset
+port->cons if a port was not chosen by printk.
 
----
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+The various fields have the following meaning (AFAICT):
+
+port->line: An identifier to represent a particular port supported by a
+driver.
+
+port->cons: The struct console to use if this port is chosen to be a
+console.
+
+port->console: Boolean, true if this port was chosen to be a
+console. (Used only by the tty layer.)
+
+cons->index: The port chosen by printk to be a console.
+
+None of those fields specify if the port is currently registered as a
+console. For that you would need to check if port->cons->node is hashed
+and then verify that port->line matches port->cons->index. This is what
+uart_nbcon_acquire() needs to do (as well as check if it is an nbcon
+console).
+
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -3284,6 +3284,7 @@ void serial8250_init_port(struct uart_8250_port *up)
+>>  	struct uart_port *port = &up->port;
+>>  
+>>  	spin_lock_init(&port->lock);
+>> +	port->nbcon_locked_port = false;
+>
+> I am not sure if the variable really helps anything:
+>
+>    + nbcon_context release() must handle the case when it
+>      lost the ownership anyway.
+
+uart_nbcon_release() must first check if the provided port is a
+registered nbcon console. A simple boolean check is certainly faster
+than the 4 checks mentioned above. After all, if it was never locked,
+there is no reason to unlock it.
+
+>    + nbcon_acquire() is called under port->lock. It means that
+>      nbcon_release() should always be called when the acquire
+>      succeeded earlier.
+
+Same answer as above.
+
+> We just need to make sure that port->cons can be cleared only
+> under port->lock. But this would be required even with
+> port->nbcon_locked_port.
+
+Agreed. I will add this.
+
+>> --- a/kernel/printk/nbcon.c
+>> +++ b/kernel/printk/nbcon.c
+>> @@ -995,3 +996,79 @@ void nbcon_free(struct console *con)
+>>  
+>>  	con->pbufs = NULL;
+>>  }
+>> +
+>> +static inline bool uart_is_nbcon(struct uart_port *up)
+>> +{
+>> +	int cookie;
+>> +	bool ret;
+>> +
+>> +	if (!uart_console(up))
+>
+> This function accesses up->cons. I am not completely sure how
+> this value is synchronized, for example:
+>
+>   + serial_core_add_one_port() sets uport->cons under port->mutex.
+>     The function is called uart_add_one_port() in various probe()
+>     or init() calls.
+
+I will add port->lock synchronization.
+
+>   + univ8250_console_setup() sets and clears port->cons with
+>     no explicit synchronization. The function is called from
+>     try_enable_preferred_console() under console_list_lock.
+
+I will add port->lock synchronization.
+
+> IMHO, the assignment is done when the drivers are being initialized.
+> It is done when the port might already be used by early consoles.
+>
+> Especially, according to my understanding, newcon->setup() callbacks
+> are responsible for using the same port by early and real console drivers.
+>
+> I guess that uart_port_lock() API is used by early consoles as well.
+> It means that they might access up->cons here while it is being
+> manipulated by the proper driver.
+
+Note that port->lock does not synchronize early and normal
+consoles. Only the console lock can do that. But you bring up a very
+good point with setup(). serial8250_console_setup() can call
+probe_baud(), which will write to the hardware.
+
+I think that con->setup() needs to be called under the console lock
+(just as already with unblank() and device()).
+
+>> +		return false;
+>> +
+>> +	cookie = console_srcu_read_lock();
+>> +	ret = (console_srcu_read_flags(up->cons) & CON_NBCON);
+>> +	console_srcu_read_unlock(cookie);
+>
+> Hmm, console_srcu_read_flags(con) is called under
+> console_srcu_read_lock() to make sure that it does not
+> disappear. It makes sense when it is used by registered consoles.
+>
+> But uart_port_lock() might be called even when the console
+> is not registered.
+>
+> I suggest to remove the SRCU lock here. In this code path,
+> it does not guarantee anything and is rather misleading.
+
+Agreed.
+
+> I would use a READ_ONCE(), for example by splitting:
+>
+> /*
+>  * Locklessly reading console->flags provides a consistent
+>  * read value because there is at most one CPU modifying
+>  * console->flags and that CPU is using only read-modify-write
+>  * operations to do so.
+>  *
+>  * The caller must make sure that @con does not disappear.
+>  * It can be done by console_srcu_read_lock() when used
+>  * only for registered consoles.
+>  */
+> static inline short console_read_flags(const struct console *con)
+> {
+> 	return data_race(READ_ONCE(con->flags));
+> }
+>
+> /* Locklessly reading console->flags for registered consoles */
+> static inline short console_srcu_read_flags(const struct console *con)
+> {
+> 	WARN_ON_ONCE(!console_srcu_read_lock_is_held());
+>
+> 	console_read_flags();
+> }
+
+OK.
+
+>> +void uart_nbcon_acquire(struct uart_port *up)
+>> +{
+>> +	struct console *con = up->cons;
+>> +	struct nbcon_context ctxt;
+>
+> I would add:
+>
+> 	lockdep_assert_held(&up->lock);
+
+OK.
+
+>> +
+>> +	if (!uart_is_nbcon(up))
+>> +		return;
+>> +
+>> +	WARN_ON_ONCE(up->nbcon_locked_port);
+>> +
+>> +	do {
+>> +		do {
+>> +			memset(&ctxt, 0, sizeof(ctxt));
+>> +			ctxt.console	= con;
+>> +			ctxt.prio	= NBCON_PRIO_NORMAL;
+>> +		} while (!nbcon_context_try_acquire(&ctxt));
+>> +
+>> +	} while (!nbcon_context_enter_unsafe(&ctxt));
+>> +
+>> +	up->nbcon_locked_port = true;
+>> +}
+>> +EXPORT_SYMBOL_GPL(uart_nbcon_acquire);
+>
+> I would prefer to split the uart and nbcon specific code, for example:
+
+Can you explain why? This code will not be used anywhere else.
+
+> /**
+>  * nbcon_normal_context_acquire - Acquire a generic context with
+>  *	the normal priority for nbcon console
+>  * @con:	nbcon console
+>  *
+>  * Context:	Any context which could not be migrated to another CPU.
+>  *
+>  * Acquire a generic context with the normal priority for the given console.
+>  * Prevent the release by entering the unsafe state.
+>  *
+>  * Note: The console might still loose the ownership by a hostile takeover.
+>  *	 But it can be done only by the final flush in panic() when other
+>  *	 CPUs should be stopped and other contexts interrupted.
+>  */
+> static void nbcon_normal_context_acquire(struct console *con)
+> {
+> 	struct nbcon_context ctxt;
+>
+> 	do {
+> 		do {
+> 			memset(&ctxt, 0, sizeof(ctxt));
+> 			ctxt.console	= con;
+> 			ctxt.prio	= NBCON_PRIO_NORMAL;
+> 		} while (!nbcon_context_try_acquire(&ctxt));
+>
+> 	} while (!nbcon_context_enter_unsafe(&ctxt));
+> }
+>
+> /**
+>  * uart_nbcon_acquire - Acquire nbcon console associated with the gived port.
+>  * @up:		uart port
+>  *
+>  * Context:	Must be called under up->lock to prevent manipulating
+>  *		up->cons and migrating to another CPU.
+>  *
+>  * Note: The console might still loose the ownership by a hostile takeover.
+>  *	 But it can be done only by the final flush in panic() when other
+>  *	 CPUs should be stopped and other contexts interrupted.
+>  */
+> void uart_nbcon_acquire(struct uart_port *up)
+> {
+> 	struct console *con; = up->cons;
+>
+> 	lockdep_assert_held(&up->lock);
+>
+> 	/*
+> 	 * FIXME: This would require adding WRITE_ONCE()
+> 	 * on the write part.
+> 	 *
+> 	 * Or even better, the value should be modified under
+> 	 * port->lock so that simple read would be enough here.
+> 	 */
+> 	con = data_race(READ_ONCE(up->cons));
+>
+> 	if (!con)
+> 		return;
+>
+> 	if (!console_read_flags(con) & CON_NBCON)
+> 		return;
+>
+> 	nbcon_normal_context_acquire(con);
+> }
+>
+> Note that I did not use up->nbcon_locked_port as explained above.
+
+Note that it will not work because other ports will share the same
+up->cons value even though they are not consoles. up->cons only
+specifies which struct console to use _if_ printk chooses that port as a
+console. It does _not_ mean that printk has chosen that port.
+
+>> +void uart_nbcon_release(struct uart_port *up)
+>> +{
+>> +	struct console *con = up->cons;
+>> +	struct nbcon_context ctxt = {
+>> +		.console	= con,
+>> +		.prio		= NBCON_PRIO_NORMAL,
+>> +	};
+>> +
+>
+> I would add here as well.
+>
+> 	lockdep_assert_held(&up->lock);
+
+OK.
+
+> This deserves a comment why we do not complain when this function
+> is called for nbcon and it is not locked. Something like:
+>
+> 	/*
+> 	 * Even port used by nbcon console might be seen unlocked
+> 	 * when it was locked and the console has been registered
+> 	 * at the same time.
+> 	 */
+
+I think a more appropriate comment would be:
+
+	/*
+	 * This function is called for ports that are not consoles
+	 * and for ports that may be consoles but are not nbcon
+	 * consoles. In those the cases the nbcon console was
+	 * never locked and this context must not unlock.
+	 */
+
+>> +	if (!up->nbcon_locked_port)
+>> +		return;
+>> +
+>> +	if (nbcon_context_exit_unsafe(&ctxt))
+>> +		nbcon_context_release(&ctxt);
+>> +
+>> +	up->nbcon_locked_port = false;
+>> +}
+>
+> Again I would better split the nbcon and uart part and create:
+
+I can do the split, but I do not see the reason for it.
+
+John
