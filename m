@@ -1,79 +1,81 @@
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [195.130.137.90])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83CCBC8DD
-	for <linux-serial@vger.kernel.org>; Tue, 12 Mar 2024 09:01:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.137.90
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77EB38464;
+	Tue, 12 Mar 2024 09:53:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710234068; cv=none; b=NwdJJB4rmbJZYP1TUWpvvgRS3a0alkspMUPhmDNUQCRcf3Pe76nizOwrOHUv2iTt+WaP5nKwn+ydipnJwTbr0AWHDKoVRzSgZX8qdN0CioXxT2t5FcWhsXH8L2EDtL1w056G+FUdpCuz8EPfgI0LxR6F350sfbqCkqcwSSBvnRQ=
+	t=1710237197; cv=none; b=R9NmInKU0wpM42+iDkmbWwpGQSd7sEAZn/KLSln9m5Vt+gFSPVX2O7QNT+AoT0l4Alhc3sGov3IYJFSVPAPdaYepxdEZGjKFuU75hKQs8SWmnEV6gpnB03Wn4fAonlW8tKdYbxmLkMX8tNtMQ1CJWRigZ7r2+Ta+/B1pEsRU5Yw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710234068; c=relaxed/simple;
-	bh=5EAyyFdwi0ye4lKLVNkrjW/MSy194QmY5ZjYirXbGDw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=UjyS404fESu6dVztVEBD463DnGI5DkDgcNyduidfg1jOvNrtGiYcSKrnCk7oO77CZcGeZBZEFS+uOPtrwpcEYsQ02bZMUAt22sBgO4LKrEKJuu8yhn6iCfvsX/9al6CsaVRqdAr6gaw9cpuhmbQcbpsX4AgDa/HncWhJpY8cqLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.137.90
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:76d0:2bff:fec8:549])
-	by albert.telenet-ops.be with bizsmtp
-	id xl0y2B00H0SSLxL06l0y2H; Tue, 12 Mar 2024 10:00:59 +0100
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtp (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1rjy02-003Qku-Dp;
-	Tue, 12 Mar 2024 10:00:58 +0100
-Received: from geert by rox.of.borg with local (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1rjy0I-005m5B-J2;
-	Tue, 12 Mar 2024 10:00:58 +0100
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Nghia Nguyen <nghia.nguyen.jg@renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779h0 bindings
-Date: Tue, 12 Mar 2024 10:00:55 +0100
-Message-Id: <49b854603c2c3ed6b2edd441f1d55160e0453b70.1709741175.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1710237197; c=relaxed/simple;
+	bh=484fGHYCkSxYD6mCMfudQ6WkbUe/ZMV3OusJdX8NaVg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=WFOxKsLCrZ0czGvQO+riSMukOzU3+fWBX7Tw25MxQ+3sqrNauv3KxMc/EXLMHMHdCccldNWfJeE7ji0t07hj/nIYo6DUEHc36wnx0GZGoZV/8mqrIHKfGscXdab3FOWf+qrS8q8lg9fHWRj+eJjsDYv/Mr0IlI5c0z5aKXuWb1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from h3cspam02-ex.h3c.com (localhost [127.0.0.2] (may be forged))
+	by h3cspam02-ex.h3c.com with ESMTP id 42C8cam6070755;
+	Tue, 12 Mar 2024 16:38:36 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42C8bAQO064331;
+	Tue, 12 Mar 2024 16:37:10 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX12-BJD.srv.huawei-3com.com (unknown [10.153.34.14])
+	by mail.maildlp.com (Postfix) with ESMTP id 9B02C2005153;
+	Tue, 12 Mar 2024 16:38:39 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX12-BJD.srv.huawei-3com.com (10.153.34.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Tue, 12 Mar 2024 16:37:11 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Tue, 12 Mar 2024 16:37:11 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+CC: "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNz?=
+ =?gb2312?Q?ue_in_KDB_debugging.?=
+Thread-Topic: =?gb2312?B?tPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUgaW4g?=
+ =?gb2312?Q?KDB_debugging.?=
+Thread-Index: AQHaafG3YC/Li+j42kau1FDQhHr2m7EfIsgAgAMadaD///fWgIAJrHcQ
+Date: Tue, 12 Mar 2024 08:37:11 +0000
+Message-ID: <2ea381e7407a49aaa0b08fa7d4ff62d3@h3c.com>
+References: <20240228025602.3087748-1-liu.yeC@h3c.com>
+ <20240228120516.GA22898@aspen.lan> <8b41d34adaef4ddcacde2dd00d4e3541@h3c.com>
+ <20240301105931.GB5795@aspen.lan>
+In-Reply-To: <20240301105931.GB5795@aspen.lan>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42C8cam6070755
 
-From: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-
-R-Car V4M (R8A779H0) SoC has the R-Car Gen4 compatible SCIF ports, so
-document the SoC specific bindings.
-
-Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-Changes compared to the BSP:
-  - Split in separate HSCIF and SCIF commits.
----
- Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index 4610a5bd580c2389..f3a3eb2831e9fd5f 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -68,6 +68,7 @@ properties:
-               - renesas,scif-r8a779a0     # R-Car V3U
-               - renesas,scif-r8a779f0     # R-Car S4-8
-               - renesas,scif-r8a779g0     # R-Car V4H
-+              - renesas,scif-r8a779h0     # R-Car V4M
-           - const: renesas,rcar-gen4-scif # R-Car Gen4
-           - const: renesas,scif           # generic SCIF compatible UART
- 
--- 
-2.34.1
-
+SSBrbm93IHRoYXQgeW91IHNhaWQgc2NoZWR1bGVfd29yayBpcyBub3QgTk1JIHNhdmUsIHdoaWNo
+IGlzIHRoZSBmaXJzdCBpc3N1ZS4gUGVyaGFwcyBpdCBjYW4gYmUgZml4ZWQgdXNpbmcgaXJxX3dv
+cmtfcXVldWUuIEJ1dCBldmVuIGlmIGlycV93b3JrX3F1ZXVlIGlzIHVzZWQgdG8gaW1wbGVtZW50
+IGl0LCB0aGVyZSB3aWxsIHN0aWxsIGJlIGEgZGVhZGxvY2sgcHJvYmxlbSBiZWNhdXNlIHNsYXZl
+IGNwdTEgc3RpbGwgaGFzIG5vdCByZWxlYXNlZCB0aGUgcnVubmluZyBxdWV1ZSBsb2NrIG9mIG1h
+c3RlciBDUFUwLg0KDQoNCg0K
