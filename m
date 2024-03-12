@@ -1,92 +1,79 @@
-Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [195.130.137.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B2D35786B
-	for <linux-serial@vger.kernel.org>; Mon, 11 Mar 2024 22:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.83
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83CCBC8DD
+	for <linux-serial@vger.kernel.org>; Tue, 12 Mar 2024 09:01:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.137.90
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710196052; cv=none; b=D/MK1JeCkVaDpJ2jsGXLitMKDQ9OcGUw0PE4fXOjkwF/MVP13jFM9B0C9igMc1iHBtZbybhD8an9939oDYDBPLgVWkkLxUb/gZjCmnhsNZhM802DEtr0WhxIloldfiH1Wts22Xx3hEPOsI+fN3oRnEniLnlsgAHzmRt2qleg2m4=
+	t=1710234068; cv=none; b=NwdJJB4rmbJZYP1TUWpvvgRS3a0alkspMUPhmDNUQCRcf3Pe76nizOwrOHUv2iTt+WaP5nKwn+ydipnJwTbr0AWHDKoVRzSgZX8qdN0CioXxT2t5FcWhsXH8L2EDtL1w056G+FUdpCuz8EPfgI0LxR6F350sfbqCkqcwSSBvnRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710196052; c=relaxed/simple;
-	bh=sLhrfnF8dSizg/c5wOEza7Fobu4qwgdo33vs55Xb8qY=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=edwdVPmhvE8/xsf9jJpE6R63w8DjVkF/XIsaIMtFOLbawEkEEnGU89FoVsEqNuWWCmvdDALg+HAwpnfdjnT5adZENm9drccg8xX0hZB/UXYOSj0W+q844Yd9bfqTZJgmwLI7yj7FB62Olff9w0He0hvlPUmy6TnGDaRwKuRYrIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: from localhost (88-113-26-217.elisa-laajakaista.fi [88.113.26.217])
-	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
-	id 618be5b6-dff6-11ee-a9de-005056bdf889;
-	Tue, 12 Mar 2024 00:26:20 +0200 (EET)
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 12 Mar 2024 00:26:18 +0200
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-	Stephen Rothwell <sfr@rothwell.id.au>, linux-mips@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] mips: cm: Add __mips_cm_l2sync_phys_base prototype
- declaration
-Message-ID: <Ze-FCrkZuRiHIItp@surfacebook.localdomain>
-References: <20240215171740.14550-1-fancer.lancer@gmail.com>
- <20240215171740.14550-2-fancer.lancer@gmail.com>
+	s=arc-20240116; t=1710234068; c=relaxed/simple;
+	bh=5EAyyFdwi0ye4lKLVNkrjW/MSy194QmY5ZjYirXbGDw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=UjyS404fESu6dVztVEBD463DnGI5DkDgcNyduidfg1jOvNrtGiYcSKrnCk7oO77CZcGeZBZEFS+uOPtrwpcEYsQ02bZMUAt22sBgO4LKrEKJuu8yhn6iCfvsX/9al6CsaVRqdAr6gaw9cpuhmbQcbpsX4AgDa/HncWhJpY8cqLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.137.90
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:76d0:2bff:fec8:549])
+	by albert.telenet-ops.be with bizsmtp
+	id xl0y2B00H0SSLxL06l0y2H; Tue, 12 Mar 2024 10:00:59 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1rjy02-003Qku-Dp;
+	Tue, 12 Mar 2024 10:00:58 +0100
+Received: from geert by rox.of.borg with local (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1rjy0I-005m5B-J2;
+	Tue, 12 Mar 2024 10:00:58 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Nghia Nguyen <nghia.nguyen.jg@renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779h0 bindings
+Date: Tue, 12 Mar 2024 10:00:55 +0100
+Message-Id: <49b854603c2c3ed6b2edd441f1d55160e0453b70.1709741175.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240215171740.14550-2-fancer.lancer@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-Thu, Feb 15, 2024 at 08:17:26PM +0300, Serge Semin kirjoitti:
-> The __mips_cm_l2sync_phys_base() and mips_cm_l2sync_phys_base() couple was
-> introduced in commit 9f98f3dd0c51 ("MIPS: Add generic CM probe & access
-> code") where the former method was a weak implementation of the later
-> function. Such design pattern permitted to re-define the original method
-> and use the weak implementation in the new function. A similar approach
-> was introduced in the framework of another arch-specific programmable
-> interface: mips_cm_phys_base() and __mips_cm_phys_base(). The only
-> difference is that the underscored method of the later couple was declared
-> in the "asm/mips-cm.h" header file, but it wasn't done for the CM L2-sync
-> methods in the subject. Due to the missing the global function declaration
-> the "missing prototype" warning was spotted in the framework of the commit
-> 9a2036724cd6 ("mips: mark local function static if possible") and fixed
-> just be re-qualifying the weak method as static. Doing that broke what was
-> originally implied by having the weak implementation globally defined. Fix
-> that by dropping the static qualifier and adding the
-> __mips_cm_l2sync_phys_base() prototype declared in the "asm/mips-cm.h"
-> header file.
+From: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
 
-...
+R-Car V4M (R8A779H0) SoC has the R-Car Gen4 compatible SCIF ports, so
+document the SoC specific bindings.
 
-> +/**
-> + * __mips_cm_l2sync_phys_base - retrieve the physical base address of the CM
-> + *                              L2-sync region
-> + *
-> + * This function returns the physical base address of the Coherence Manager
-> + * L2-cache only region. It provides a default implementation which reads the
-> + * CMGCRL2OnlySyncBase register where available or returns a 4K region just
-> + * behind the CM GCR base address. It may be overridden by platforms which
-> + * determine this address in a different way by defining a function with the
-> + * same prototype except for the name mips_cm_l2sync_phys_base (without
-> + * underscores).
-> + */
-> +extern phys_addr_t __mips_cm_l2sync_phys_base(void);
+Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Changes compared to the BSP:
+  - Split in separate HSCIF and SCIF commits.
+---
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-I'm wondering if you run
-
-	scripts/kernel-doc -v -none -Wall ...
-
-against this file. I believe it will complain that you missed Return section.
-
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index 4610a5bd580c2389..f3a3eb2831e9fd5f 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -68,6 +68,7 @@ properties:
+               - renesas,scif-r8a779a0     # R-Car V3U
+               - renesas,scif-r8a779f0     # R-Car S4-8
+               - renesas,scif-r8a779g0     # R-Car V4H
++              - renesas,scif-r8a779h0     # R-Car V4M
+           - const: renesas,rcar-gen4-scif # R-Car Gen4
+           - const: renesas,scif           # generic SCIF compatible UART
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
