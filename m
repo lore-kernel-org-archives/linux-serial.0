@@ -1,90 +1,95 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EEC1AD56;
-	Wed, 13 Mar 2024 01:23:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7203328374;
+	Wed, 13 Mar 2024 09:49:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710293003; cv=none; b=AUKfO0v+yXrBNgFRmom64sWugE8+O3EJZ7kV0dBnk2a8xAo6WO5tTYlHxs4xtAno5PtiW3OANoe+xKFsFG3dASnJrgH+1jJxFyEKgRT1GDwsynobdQK/P22DkVbuz7MBoX6e94/wKbTjT+GZO01NAVppoTXT62zxiqm2xCl96g0=
+	t=1710323344; cv=none; b=BCioXS4l5hnoFPuspVvOdKAePK2LoVPVHP64gyy0xW3LDUTMjPE53ZQyena6R+VzWB5NGKTGYMX9jA+a9ph95Z5SwiqFEFkhSCmqNT009xB9EM34G4WvQkmgKfuvt60KozpUHQC8hLEPcSjnmCFbbzxWlgiiYNUwBsQua2KkU8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710293003; c=relaxed/simple;
-	bh=zguCaPaRH8CknYHsCoPumQTnq9ZCBUkYQuGxQqp4PhA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=NvapYbAEDUjNdKLMS6qVzey6EJqU7ArNxcyOJP9Am4KMQ76c+3whWhsKlbdpdHyPRl1jUx/W8+QGjeNzXcQWnI1/EH+zAhUr1nkcS8JrECnFnJtxYu3sfzu0PMBUFr0JuqrE8mUp1Mwm5ERXGGlFcP0xtUs01+xYHg3P+faJLco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 42D1MI6s002888;
-	Wed, 13 Mar 2024 09:22:18 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX06-IMDC.srv.huawei-3com.com (unknown [10.62.14.15])
-	by mail.maildlp.com (Postfix) with ESMTP id C5B012004BAA;
-	Wed, 13 Mar 2024 09:23:46 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX06-IMDC.srv.huawei-3com.com (10.62.14.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Wed, 13 Mar 2024 09:22:17 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Wed, 13 Mar 2024 09:22:17 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Daniel Thompson <daniel.thompson@linaro.org>
-CC: "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUg?=
- =?gb2312?Q?deadlock_issue_in_KDB_debugging.?=
-Thread-Topic: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUgZGVhZGxv?=
- =?gb2312?Q?ck_issue_in_KDB_debugging.?=
-Thread-Index: AQHaafG3YC/Li+j42kau1FDQhHr2m7EfIsgAgAMadaD///fWgIAJrHcQgAeL+QCAAIb8YP//gGOAgAGAGvA=
-Date: Wed, 13 Mar 2024 01:22:17 +0000
-Message-ID: <410a443612e8441cb729c640a0d606c6@h3c.com>
-References: <20240228025602.3087748-1-liu.yeC@h3c.com>
- <20240228120516.GA22898@aspen.lan> <8b41d34adaef4ddcacde2dd00d4e3541@h3c.com>
- <20240301105931.GB5795@aspen.lan> <2ea381e7407a49aaa0b08fa7d4ff62d3@h3c.com>
- <20240312095756.GB202685@aspen.lan>
- <06cfa3459ed848cf8f228997b983cf53@h3c.com>
- <20240312102419.GC202685@aspen.lan>
-In-Reply-To: <20240312102419.GC202685@aspen.lan>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1710323344; c=relaxed/simple;
+	bh=qoj46jGRty6OpDKzuEvKMFt8BNfum+juBs3FEHcmUD4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=UW/vdOay5fQyCYvhIVOH7TsSHKYSYVDv+UzChELp84UF16omHIn5vZAdMpGi1pdxfK71em0jR2bejgSoxos+KeFtuCvhiJe37k4TYuimlzBQrBn00uivWAGPBaPk9qqPI1jj4vTdncbJqyI8W/7orAwz2JUKFEOdL422WyobE8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.234])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Tvm111Gblz1FMLC;
+	Wed, 13 Mar 2024 17:48:37 +0800 (CST)
+Received: from kwepemm600014.china.huawei.com (unknown [7.193.23.54])
+	by mail.maildlp.com (Postfix) with ESMTPS id CC1B3140413;
+	Wed, 13 Mar 2024 17:48:52 +0800 (CST)
+Received: from huawei.com (10.67.174.78) by kwepemm600014.china.huawei.com
+ (7.193.23.54) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.35; Wed, 13 Mar
+ 2024 17:48:52 +0800
+From: Yi Yang <yiyang13@huawei.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+Subject: [PATCH v2] tty: vt: selection: fix soft lockup in paste_selection()
+Date: Wed, 13 Mar 2024 09:45:29 +0000
+Message-ID: <20240313094529.679957-1-yiyang13@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 42D1MI6s002888
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600014.china.huawei.com (7.193.23.54)
 
-Pk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDEwOjA0OjU0QU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
-Pj4gPk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDA4OjM3OjExQU0gKzAwMDAsIExpdXllIHdyb3Rl
-Og0KPj4gPj4gSSBrbm93IHRoYXQgeW91IHNhaWQgc2NoZWR1bGVfd29yayBpcyBub3QgTk1JIHNh
-dmUsIHdoaWNoIGlzIHRoZSANCj4+ID4+IGZpcnN0IGlzc3VlLiBQZXJoYXBzIGl0IGNhbiBiZSBm
-aXhlZCB1c2luZyBpcnFfd29ya19xdWV1ZS4gQnV0IGV2ZW4gDQo+PiA+PiBpZiBpcnFfd29ya19x
-dWV1ZSBpcyB1c2VkIHRvIGltcGxlbWVudCBpdCwgdGhlcmUgd2lsbCBzdGlsbCBiZSBhIA0KPj4g
-Pj4gZGVhZGxvY2sgcHJvYmxlbSBiZWNhdXNlIHNsYXZlIGNwdTEgc3RpbGwgaGFzIG5vdCByZWxl
-YXNlZCB0aGUgDQo+PiA+PiBydW5uaW5nIHF1ZXVlIGxvY2sgb2YgbWFzdGVyIENQVTAuDQo+PiA+
-DQo+PiA+VGhpcyBkb2Vzbid0IHNvdW5kIHJpZ2h0IHRvIG1lLiBXaHkgZG8geW91IHRoaW5rIENQ
-VTEgd29uJ3QgcmVsZWFzZSANCj4+ID50aGUgcnVuIHF1ZXVlIGxvY2s/DQo+Pg0KPj4gSW4gdGhp
-cyBleGFtcGxlLCBDUFUxIGlzIHdhaXRpbmcgZm9yIENQVTAgdG8gcmVsZWFzZSBkYmdfc2xhdmVf
-bG9jay4NCj4NCj5UaGF0IHNob3VsZG4ndCBiZSBhIHByb2JsZW0uIENQVTAgd2lsbCBoYXZlIHJl
-bGVhc2VkIHRoYXQgbG9jayBieSB0aGUgdGltZSB0aGUgaXJxIHdvcmsgaXMgZGlzcGF0Y2hlZC4N
-Cg0KUmVsZWFzZSBkYmdfc2xhdmVfbG9jayBpbiBDUFUwLiBCZWZvcmUgdGhhdCwgc2hjZWR1bGVf
-d29yayBuZWVkcyB0byBiZSBoYW5kbGVkLCBhbmQgd2UgYXJlIGJhY2sgdG8gdGhlIHByZXZpb3Vz
-IGlzc3VlLg0K
+Soft lockup occurs when vt device used n_null ldisc, n_null_receivebuf()
+is not implemented in null_ldisc. So tty_ldisc_receive_buf always return
+0 in paste_selection(), this cause deadloop and cause soft lockup.
+
+This can be reproduced as follows:
+  int ldisc = 0x1b; // 0x1b is n_null
+  struct{
+  	char subcode;
+  	struct tiocl_selection sel;
+  } data;
+  date.subcode = TIOCL_SETSEL;
+  data.sel.xs = 0;
+  data.sel.xe = 1;
+  data.sel.ys = 0;
+  data.sel.ye = 1;
+  data.sel.sel_mode = TIOCL_SELCHAR;
+  char bytes[2] = {TIOCL_PASTESEL, 0};
+  open("ttyxx", O_RDWR) // open a vt device
+  ioctl(fd, TIOCSETD, &ldisc) // set ldisc to n_null
+  ioctl(fd, TIOCLINUX, &data.subcode);
+  ioctl(fd, TIOCLINUX, bytes); // cause deadloop
+
+Fix soft lockup by check receive_buf() and receive_buf2() is NULL.
+
+Signed-off-by: Yi Yang <yiyang13@huawei.com>
+---
+
+v2:Change Check Condition.
+
+ drivers/tty/vt/selection.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 564341f1a74f..715e111376a7 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -397,6 +397,12 @@ int paste_selection(struct tty_struct *tty)
+ 	ld = tty_ldisc_ref_wait(tty);
+ 	if (!ld)
+ 		return -EIO;	/* ldisc was hung up */
++
++	/*tty_ldisc_receive_buf() won't do anything and cause deadloop later*/
++	if (!ld->ops->receive_buf && !ld->ops->receive_buf2) {
++		tty_ldisc_deref(ld);
++		return -EIO;
++	}
+ 	tty_buffer_lock_exclusive(&vc->port);
+ 
+ 	add_wait_queue(&vc->paste_wait, &wait);
+-- 
+2.25.1
+
