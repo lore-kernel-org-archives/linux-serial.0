@@ -1,172 +1,69 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [80.241.56.161])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1230446AC;
-	Wed, 13 Mar 2024 14:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265BD5339D;
+	Wed, 13 Mar 2024 17:40:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.241.56.161
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710340686; cv=none; b=EmQu0Mmhcw0XOm712B+kvwIue8S3JiGiHvVjrrursyRqD/nSi2Wz+D/wM7/GD0p65JJUeqY9tkZnTbh3jMwLquad9+jWFCVu9cUeQ/xW/4cGv9yTIq/9TElEynD0uw5rdgwu/9QGowmE0bpqjrHlj5gbN/Ob6APmh2qxGmYS750=
+	t=1710351625; cv=none; b=BfqOO75JgKnArnLMLXx3pOBbCrGQatcZqWK2FKyoZloaPv18y6puooOWpBKFDldETPmfwu/Br6Rlsd9HVi1g9ZuuFcaoC38lEQHX/ohnuhXxu6Cy8pFCAk7z8zCzyULttxucQ0uLW7Lz+r2u39+WGSE8+feaDOPZAjtZHUBeDVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710340686; c=relaxed/simple;
-	bh=hDA7tqOmA8wnGfEta/8cJQeKmR/C5NjwCnDdHSybjqM=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=lJn65KbiGogd8iMDlZCMGW0DzJFmw/CsIo2CqY0UNk/n3bvo35jvO/kdcNIj/ndpBcE1NZASXzV6aL4BAX5rCKNjorRshkgmwnjblNQU/+TGoHtAGkAzZB9EE6hq99qRBU1eI/K8YiqwgZvqZziqUWBCmDSls/JbCiBURiZbsy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=v6oioyru; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1710351625; c=relaxed/simple;
+	bh=SHNsFKcCjctU1oTQ2mrNyrwS3y3J6rO1/xV8aRmrQC8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u9Cmt48HSg5nAr7Lxr8XUYxpznXf7uFQDMwei3nevBwbsZ9HekepRWlrT3GUtSiW0PRiQv/RCRPP8CMQq8wcvh70RPHqVjNGDDyA8AajcmoOlwgQFQFRqDBbz6EpQi7EwECZ9EM9TcONqgQWy5u1cFtHrTpwXIZldi9pui2pbKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bulatov.me; spf=pass smtp.mailfrom=bulatov.me; dkim=pass (2048-bit key) header.d=bulatov.me header.i=@bulatov.me header.b=RU3pp7G9; arc=none smtp.client-ip=80.241.56.161
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bulatov.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bulatov.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="v6oioyru"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=wd9jIWlbL+VuMUA20BcRV4ZrSSX3yz6PI7b617YPVYg=; b=v6oioyruOR/Pu9TsNjWNIth39V
-	CkvQrCA2em2BEA6giEmspJ5W/G0Zus38b6PCQSy/IIZenuFF8WeONzOgrrOQWiYG7bEA7TW9zAIo6
-	1LEbjne0s+R0vdLybqgH+onPBeI2bFPgRIVFS0sljxLl1ZlVms7KarwF0+qRiaHcWtDo=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:52044 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rkPju-0005c0-L2; Wed, 13 Mar 2024 10:37:55 -0400
-Date: Wed, 13 Mar 2024 10:37:54 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Message-Id: <20240313103754.6c33d160f5d69427a29a3e2b@hugovil.com>
-In-Reply-To: <20240307161828.118495-4-hugo@hugovil.com>
-References: <20240307161828.118495-1-hugo@hugovil.com>
-	<20240307161828.118495-4-hugo@hugovil.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=bulatov.me header.i=@bulatov.me header.b="RU3pp7G9"
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:b231:465::2])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4TvyTH4KGdz9t90;
+	Wed, 13 Mar 2024 18:40:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bulatov.me; s=MBO0001;
+	t=1710351619;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kiU9ZS2IFj0jAOjFbYcHToCkrWqaZyIxflp0svWWa7c=;
+	b=RU3pp7G9GRS5GhwWDm7jamZALtbJdawmrR5UZSFtgdQyZImf9ep9v4ah6vlXmAI7/jNXJG
+	ZT+Y5XWdb8ptYbLCdov9aWbTNjtLWvJ6g1P+VGWrRCd2jlTLTJc+oWNb89zVh5wH/kt8ZR
+	4AZVuhOUp8my9byOkRbAYq80Ab5WTE9UCLO1qrcaoYAYWmJ4njIpi3OWFv5pz4gdj2LktX
+	HEBFENIer+eRkaWrrMc+LLsRUb0xRJW6R/ZBbbQ59PvFJ/D6yoI8FNYVENKJRQT6x1ogb9
+	PmhEHOBrVZ9Hiopccb/dOs+1/L1YfN/39Cb1iiL14v8AnJ6U11U4MuIeozuOaQ==
+Date: Wed, 13 Mar 2024 18:40:15 +0100
+From: Oleg Bulatov <oleg@bulatov.me>
+To: legion@kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev, 
+	linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] VT: Allow to get max font width and height
+Message-ID: <c3wrf2h7h45h2vee7gc42zmy43rsh7niueknvsrlsibnae4pdw@4u6b4qulfe6r>
+References: <cover.1708960303.git.legion@kernel.org>
+ <cover.1710252966.git.legion@kernel.org>
+ <78fcb9ad77b88edee8768806ce6a4d23f6d33118.1710252966.git.legion@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -1.8 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v2 3/4] serial: sc16is7xx: split into core and I2C/SPI
- parts (sc16is7xx_lines)
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78fcb9ad77b88edee8768806ce6a4d23f6d33118.1710252966.git.legion@kernel.org>
+X-Rspamd-Queue-Id: 4TvyTH4KGdz9t90
 
-On Thu,  7 Mar 2024 11:18:27 -0500
-Hugo Villeneuve <hugo@hugovil.com> wrote:
+On Tue, Mar 12, 2024 at 03:23:58PM +0100, legion@kernel.org wrote:
+>  drivers/video/console/newport_con.c | 21 +++++++++++++++++----
+>  drivers/video/console/sticon.c      | 25 +++++++++++++++++++++++--
+>  drivers/video/console/vgacon.c      | 21 ++++++++++++++++++++-
+>  drivers/video/fbdev/core/fbcon.c    | 22 +++++++++++++++++++++-
+>  4 files changed, 81 insertions(+), 8 deletions(-)
 
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> Before, sc16is7xx_lines was checked for a free (zero) bit first, and then
-> later it was set only if UART port registration succeeded.
-> 
-> Now that sc16is7xx_lines is shared for the I2C and SPI drivers, make sure
-> it is reserved and modified atomically, and use a new variable to hold the
-> status of UART port regisration.
-> 
-> Remove need to check for previous port registration in sc16is7xx_remove(),
-> because if sc16is7xx_probe() succeeded, we are guaranteed to have
-> successfully registered both ports.
-> 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 22 +++++++++++++++++-----
->  1 file changed, 17 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 5b53c88b7133..d81aad1b201d 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -343,6 +343,8 @@ struct sc16is7xx_port {
->  
->  static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
->  
-> +static DEFINE_MUTEX(sc16is7xx_lines_lock); /* For probe atomic line reservation. */
-> +
->  static struct uart_driver sc16is7xx_uart = {
->  	.owner		= THIS_MODULE,
->  	.driver_name    = SC16IS7XX_NAME,
-> @@ -1468,6 +1470,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  	u32 uartclk = 0;
->  	int i, ret;
->  	struct sc16is7xx_port *s;
-> +	bool port_registered[SC16IS7XX_MAX_PORTS];
->  
->  	for (i = 0; i < devtype->nr_uart; i++)
->  		if (IS_ERR(regmaps[i]))
-> @@ -1532,14 +1535,21 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  	regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
->  		     SC16IS7XX_IOCONTROL_SRESET_BIT);
->  
-> +	memset(port_registered, 0, sizeof(port_registered));
-> +
->  	for (i = 0; i < devtype->nr_uart; ++i) {
-> +		mutex_lock(&sc16is7xx_lines_lock);
->  		s->p[i].port.line = find_first_zero_bit(sc16is7xx_lines,
->  							SC16IS7XX_MAX_DEVS);
->  		if (s->p[i].port.line >= SC16IS7XX_MAX_DEVS) {
->  			ret = -ERANGE;
-> +			mutex_unlock(&sc16is7xx_lines_lock);
->  			goto out_ports;
->  		}
->  
-> +		set_bit(s->p[i].port.line, sc16is7xx_lines);
-> +		mutex_unlock(&sc16is7xx_lines_lock);
-> +
->  		/* Initialize port data */
->  		s->p[i].port.dev	= dev;
->  		s->p[i].port.irq	= irq;
-> @@ -1584,7 +1594,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  		if (ret)
->  			goto out_ports;
->  
-> -		set_bit(s->p[i].port.line, sc16is7xx_lines);
-> +		port_registered[i] = true;
->  
->  		/* Enable EFR */
->  		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
-> @@ -1642,9 +1652,11 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
->  #endif
->  
->  out_ports:
-> -	for (i = 0; i < devtype->nr_uart; i++)
-> -		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
-> +	for (i = 0; i < devtype->nr_uart; i++) {
-> +		clear_bit(s->p[i].port.line, sc16is7xx_lines);
-> +		if (port_registered[i])
+newport_con.c is an interesting one, apparently it's for SGI Indy and
+Indigo2, both are discontinued in 1997. Do we still have a way to test
+this driver?
 
-Hi Andy,
-I just realised that since we no longer need to search if a
-bit is set, it is possible to simplify sc16is7xx_lines allocation
-by using the IDA framework, as you suggested a few months ago.
-
-I will send a V3 with this change.
-
-Hugo Villeneuve
-
-
->  			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
-> +	}
->  
->  	kthread_stop(s->kworker_task);
->  
-> @@ -1667,8 +1679,8 @@ void sc16is7xx_remove(struct device *dev)
->  
->  	for (i = 0; i < s->devtype->nr_uart; i++) {
->  		kthread_cancel_delayed_work_sync(&s->p[i].ms_work);
-> -		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
-> -			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
-> +		clear_bit(s->p[i].port.line, sc16is7xx_lines);
-> +		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
->  		sc16is7xx_power(&s->p[i].port, 0);
->  	}
->  
-> -- 
-> 2.39.2
-> 
-> 
+Oleg
