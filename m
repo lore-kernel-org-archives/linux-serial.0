@@ -1,75 +1,55 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D73E92E648
-	for <linux-serial@vger.kernel.org>; Wed, 13 Mar 2024 11:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E94A43AA4;
+	Wed, 13 Mar 2024 13:28:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710330662; cv=none; b=UnonPIEVNfgp+X2ejBaiN2CuiMav7J3RZHtFkNLoVp9Axpw8iqCwWRrPOVuwrnSNIA7D8yjr2Qjku9QdYs6SY9JPMZ0fFi4MpRWpHptlt2A4seT0Mx4CKaEi8CWSzaz6ZIplsH5BEPKEveafQseI3xerMGgQl8tJi8N9tDuP/EI=
+	t=1710336485; cv=none; b=dSOuWcjmkgIbRtph9/TU+s+1fwxUr+pqz9KW8o00hbdORYlNPKF7xYgWuTFuVKbanYwM+XFzEtvROlwUeG12mkpVpH49Mgazj8tv6m29NFy/bfnjrbrfagdno8GzIuIgn+6rRGjSBfY7FXoh+WYtp6OvdwiIMPapJu0pPiT0PCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710330662; c=relaxed/simple;
-	bh=lYlX9ZkZL5jq2+bVay5Rwq4nPvVC5ZvXNJCQ/1EsWAY=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=SMM5gbuV9MeKsuZ9KonUyS2jdJ4hEEAsv3SQiEYcgmbXFMv6caiJvojgfGFMiJgTOSJhzksre01GQ8ekXkUZt7HWcu1qB+1fuCMpokAhDEtqb5Lg14OULnitxm2ibnDEU1ooawNcUmPFpqW4uEg9XQX1bD9ZWzpqHomIhTqFqmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KJ9hIsaS; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KJ9hIsaS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710330661; x=1741866661;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lYlX9ZkZL5jq2+bVay5Rwq4nPvVC5ZvXNJCQ/1EsWAY=;
-  b=KJ9hIsaSPtrfIX2gyFMKdZezZQCPCwMkp5myCReI7OL6oaKeE2efYV7V
-   bEkV7Gh1VzVzxp4zl1W70IU/nXUZB5NcLz/dgSRAHgKBtUv0VGE1sREh5
-   jlA7R7XFZfLGjMqWDkWzxYZraz3qCOLNnJBgaD6tfL7RJ8W7sN2w762sr
-   xAVu43bnRc6yDTmvjWNNedQlESdXCJ3rk9yV8m8poIE8rEy63Qt5EWAbx
-   CSFzTYCXJdZoMIfNFGCXwBpL/HVl6GbdA0f13zRP8JESPiI8vXykJBwzI
-   z4J+vmih3ffceByaBhp8G11eeaIXhA1dJ6glrgFHpgQ0Wmfz4blKrsSOf
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11011"; a="30523297"
-X-IronPort-AV: E=Sophos;i="6.07,122,1708416000"; 
-   d="scan'208";a="30523297"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2024 04:51:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11011"; a="914429961"
-X-IronPort-AV: E=Sophos;i="6.07,122,1708416000"; 
-   d="scan'208";a="914429961"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2024 04:50:59 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1rkN8K-0000000CCgD-2pOD;
-	Wed, 13 Mar 2024 13:50:56 +0200
-Date: Wed, 13 Mar 2024 13:50:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: speed_t usage?
-Message-ID: <ZfGTIGvFvEMrFwOZ@smile.fi.intel.com>
+	s=arc-20240116; t=1710336485; c=relaxed/simple;
+	bh=CHtNAQTIT1rvRWPPhR3rIHeiRbGPnmXiD2gTyBFLaGs=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=byF4RuIMTWcCErhOkBA3Q0uIphiz3X9oxe2UDzfK6Es6eAKKDuuzv95ahGbMlFUPC53+/HqtfE3XZGUGV4jyhRwapYYlKg5PHZZmeSOheeRn+mwVZ1kwQhTnVdqle/mi0kolXvjf9q4mg16J8BakWHygG2Jqi1uylunumszfqtc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; arc=none smtp.client-ip=150.107.74.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Tvrt96D1qz4x4T;
+	Thu, 14 Mar 2024 00:28:01 +1100 (AEDT)
+From: Michael Ellerman <patch-notifications@ellerman.id.au>
+To: Dawei Li <set_pte_at@outlook.com>
+Cc: npiggin@gmail.com, christophe.leroy@csgroup.eu, linuxppc-dev@lists.ozlabs.org, linux-ide@vger.kernel.org, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+In-Reply-To: <TYCP286MB232391520CB471E7C8D6EA84CAD19@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
+References: <TYCP286MB232391520CB471E7C8D6EA84CAD19@TYCP286MB2323.JPNP286.PROD.OUTLOOK.COM>
+Subject: Re: [PATCH v3] powerpc: macio: Make remove callback of macio driver void returned
+Message-Id: <171033598348.517247.10069683831844972530.b4-ty@ellerman.id.au>
+Date: Thu, 14 Mar 2024 00:19:43 +1100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-Hi!
+On Wed, 01 Feb 2023 22:36:19 +0800, Dawei Li wrote:
+> Commit fc7a6209d571 ("bus: Make remove callback return void") forces
+> bus_type::remove be void-returned, it doesn't make much sense for any
+> bus based driver implementing remove callbalk to return non-void to
+> its caller.
+> 
+> This change is for macio bus based drivers.
+> 
+> [...]
 
-Recently while doing some serial driver cleanup I realised that TTY uses
-speed_t type for baud rates. What is the appropriate use of it?
-Either it is going to be killed (replaced with POD), or should / may we
-spread it over tty/serial and further?
+Applied to powerpc/next.
 
--- 
-With Best Regards,
-Andy Shevchenko
+[1/1] powerpc: macio: Make remove callback of macio driver void returned
+      https://git.kernel.org/powerpc/c/9db2235326c4b868b6e065dfa3a69011ee570848
 
-
+cheers
