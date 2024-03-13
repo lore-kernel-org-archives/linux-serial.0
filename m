@@ -1,137 +1,90 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3F7B7AE52
-	for <linux-serial@vger.kernel.org>; Tue, 12 Mar 2024 14:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EEC1AD56;
+	Wed, 13 Mar 2024 01:23:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710253628; cv=none; b=X1JNKbLh0mYSRoma/99TSFNaCCgZ3qOyvTLDO0vyphlcGkOIOEh/F1wdZvydLgG8unIJrQstX+2WxGkvT4m+VsH5TLOk1Efsej48P7nde3HlRsuMXDChB2Rm19FVaQ5BNTHyjqm1t888joBWlRP4Gq2+uetbF4t+KR2pnCfoejc=
+	t=1710293003; cv=none; b=AUKfO0v+yXrBNgFRmom64sWugE8+O3EJZ7kV0dBnk2a8xAo6WO5tTYlHxs4xtAno5PtiW3OANoe+xKFsFG3dASnJrgH+1jJxFyEKgRT1GDwsynobdQK/P22DkVbuz7MBoX6e94/wKbTjT+GZO01NAVppoTXT62zxiqm2xCl96g0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710253628; c=relaxed/simple;
-	bh=9urwWaXClARDed5p9MAV6XGrLQlgguLxRvHiV4fxbWY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iA0gFSpITfDrjAQVv7JiIjRPC1pjSggymosHMA3XhviM3scS2FixT5qxS0eNwo60efK/kZIa+EIE3/T4IoUnSjwkrejvR+L/9pMchsrb2LFWbpGdE/ffN0YKV7+RF3ULARcb3FiQefpy0UusVjJeFwBD+cST5DOlLxmjbqwyRJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CZwrv7dv; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CZwrv7dv"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4132fc7dea7so9554145e9.3
-        for <linux-serial@vger.kernel.org>; Tue, 12 Mar 2024 07:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710253624; x=1710858424; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=763EDjff7du7ENgbKqBDCtJw062JtF/3HdF4UfF8f60=;
-        b=CZwrv7dvHXCM1likPB7Ldo+6xGmVPlbugFgw9ZbEm7dWtPi9TSyVqWR3YufOeLa3Du
-         BZAvHXzb63GE05Q6KpcsmgKI8ZGjtQL5J/Pj3HUoJmjmGEWh+mnN7xPs5CZvFZ1rmGdq
-         aNb92a8fwlxFZFro/5mwVYsEx/TbVtFy3LFYixZ3VhdkNfz6iXU1Kr1e5odrcO+mtHGL
-         yDdIj2ztnC/y/A5JGTV/1OccmrgDe2l3Wiq0N2+RbXQ0UyVqFgdoDJFoJvEDkS5tvPCi
-         RjQtFX199IPPREiiJT5X684Jz02RtTukhOeVxhbpgj05fYtYE5PsHAFQ6uPx+OHDB8mK
-         EVXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710253624; x=1710858424;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=763EDjff7du7ENgbKqBDCtJw062JtF/3HdF4UfF8f60=;
-        b=EuIt4q98kVYVce2z6551lPbogjLVafE/KrYjW1Ugygvxun2JJKhlnStQ1YQ4mMjNH/
-         F6zXDQlkJXB3P5EvnfYMx5dsLIUrC6foujJMxvSU1tUrCqS4xnox5qPS/dWncwES3RYG
-         XI5z/jHXqYpeW8iYvfW+EvY7twKXQ2er5ufbeeHymWWobo39NS+sc6EgBMMiAcBPzoRH
-         iwr2gG60IFruCxMTb1QMu7HYsVKobjDgYYO2Mb7i1o79zl1s4PQiGi9ZqhkEFZWzQmm7
-         UCnpTb59OlRVBMn9L8L2dsFhUpILXooM230/3sKopAAJC8ksY9QLilVDGmFMUmBRAe65
-         7DhQ==
-X-Gm-Message-State: AOJu0YwYYqKh7hK2SmbCbQ4vxM7uDT7UhSHiD1pmcOD1tIiVHbVr4aKu
-	mQFI8XUjlL77MjgpAeYQPUyBNM7NXjM+4ljDqDxm7OlmvI9/G5WXFJi33VWCI3o=
-X-Google-Smtp-Source: AGHT+IFrBwsp/k8Y+pz0uDt3rH4JTnJqYuEfeJpBAg8OpA6qG1kRql9p3yASkcqcmF4PrWNwuuxY4A==
-X-Received: by 2002:a05:600c:3ac8:b0:412:ed9b:621c with SMTP id d8-20020a05600c3ac800b00412ed9b621cmr259495wms.24.1710253624198;
-        Tue, 12 Mar 2024 07:27:04 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id i20-20020a05600c355400b004131035d28csm18502263wmq.23.2024.03.12.07.27.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Mar 2024 07:27:03 -0700 (PDT)
-Message-ID: <bb58fd75-cbfd-4285-92c2-a3b5364aa291@linaro.org>
-Date: Tue, 12 Mar 2024 15:26:58 +0100
+	s=arc-20240116; t=1710293003; c=relaxed/simple;
+	bh=zguCaPaRH8CknYHsCoPumQTnq9ZCBUkYQuGxQqp4PhA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=NvapYbAEDUjNdKLMS6qVzey6EJqU7ArNxcyOJP9Am4KMQ76c+3whWhsKlbdpdHyPRl1jUx/W8+QGjeNzXcQWnI1/EH+zAhUr1nkcS8JrECnFnJtxYu3sfzu0PMBUFr0JuqrE8mUp1Mwm5ERXGGlFcP0xtUs01+xYHg3P+faJLco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42D1MI6s002888;
+	Wed, 13 Mar 2024 09:22:18 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX06-IMDC.srv.huawei-3com.com (unknown [10.62.14.15])
+	by mail.maildlp.com (Postfix) with ESMTP id C5B012004BAA;
+	Wed, 13 Mar 2024 09:23:46 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX06-IMDC.srv.huawei-3com.com (10.62.14.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Wed, 13 Mar 2024 09:22:17 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Wed, 13 Mar 2024 09:22:17 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+CC: "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUg?=
+ =?gb2312?Q?deadlock_issue_in_KDB_debugging.?=
+Thread-Topic: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZpeCB0aGUgZGVhZGxv?=
+ =?gb2312?Q?ck_issue_in_KDB_debugging.?=
+Thread-Index: AQHaafG3YC/Li+j42kau1FDQhHr2m7EfIsgAgAMadaD///fWgIAJrHcQgAeL+QCAAIb8YP//gGOAgAGAGvA=
+Date: Wed, 13 Mar 2024 01:22:17 +0000
+Message-ID: <410a443612e8441cb729c640a0d606c6@h3c.com>
+References: <20240228025602.3087748-1-liu.yeC@h3c.com>
+ <20240228120516.GA22898@aspen.lan> <8b41d34adaef4ddcacde2dd00d4e3541@h3c.com>
+ <20240301105931.GB5795@aspen.lan> <2ea381e7407a49aaa0b08fa7d4ff62d3@h3c.com>
+ <20240312095756.GB202685@aspen.lan>
+ <06cfa3459ed848cf8f228997b983cf53@h3c.com>
+ <20240312102419.GC202685@aspen.lan>
+In-Reply-To: <20240312102419.GC202685@aspen.lan>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: renesas,scif: Document r8a779h0
- bindings
-Content-Language: en-US
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org, Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-References: <49b854603c2c3ed6b2edd441f1d55160e0453b70.1709741175.git.geert+renesas@glider.be>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <49b854603c2c3ed6b2edd441f1d55160e0453b70.1709741175.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42D1MI6s002888
 
-On 12/03/2024 10:00, Geert Uytterhoeven wrote:
-> From: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-> 
-> R-Car V4M (R8A779H0) SoC has the R-Car Gen4 compatible SCIF ports, so
-> document the SoC specific bindings.
-> 
-> Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+Pk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDEwOjA0OjU0QU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
+Pj4gPk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDA4OjM3OjExQU0gKzAwMDAsIExpdXllIHdyb3Rl
+Og0KPj4gPj4gSSBrbm93IHRoYXQgeW91IHNhaWQgc2NoZWR1bGVfd29yayBpcyBub3QgTk1JIHNh
+dmUsIHdoaWNoIGlzIHRoZSANCj4+ID4+IGZpcnN0IGlzc3VlLiBQZXJoYXBzIGl0IGNhbiBiZSBm
+aXhlZCB1c2luZyBpcnFfd29ya19xdWV1ZS4gQnV0IGV2ZW4gDQo+PiA+PiBpZiBpcnFfd29ya19x
+dWV1ZSBpcyB1c2VkIHRvIGltcGxlbWVudCBpdCwgdGhlcmUgd2lsbCBzdGlsbCBiZSBhIA0KPj4g
+Pj4gZGVhZGxvY2sgcHJvYmxlbSBiZWNhdXNlIHNsYXZlIGNwdTEgc3RpbGwgaGFzIG5vdCByZWxl
+YXNlZCB0aGUgDQo+PiA+PiBydW5uaW5nIHF1ZXVlIGxvY2sgb2YgbWFzdGVyIENQVTAuDQo+PiA+
+DQo+PiA+VGhpcyBkb2Vzbid0IHNvdW5kIHJpZ2h0IHRvIG1lLiBXaHkgZG8geW91IHRoaW5rIENQ
+VTEgd29uJ3QgcmVsZWFzZSANCj4+ID50aGUgcnVuIHF1ZXVlIGxvY2s/DQo+Pg0KPj4gSW4gdGhp
+cyBleGFtcGxlLCBDUFUxIGlzIHdhaXRpbmcgZm9yIENQVTAgdG8gcmVsZWFzZSBkYmdfc2xhdmVf
+bG9jay4NCj4NCj5UaGF0IHNob3VsZG4ndCBiZSBhIHByb2JsZW0uIENQVTAgd2lsbCBoYXZlIHJl
+bGVhc2VkIHRoYXQgbG9jayBieSB0aGUgdGltZSB0aGUgaXJxIHdvcmsgaXMgZGlzcGF0Y2hlZC4N
+Cg0KUmVsZWFzZSBkYmdfc2xhdmVfbG9jayBpbiBDUFUwLiBCZWZvcmUgdGhhdCwgc2hjZWR1bGVf
+d29yayBuZWVkcyB0byBiZSBoYW5kbGVkLCBhbmQgd2UgYXJlIGJhY2sgdG8gdGhlIHByZXZpb3Vz
+IGlzc3VlLg0K
