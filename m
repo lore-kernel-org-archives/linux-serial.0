@@ -1,97 +1,164 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 612DB17BBF;
-	Fri, 15 Mar 2024 09:17:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A754B18622;
+	Fri, 15 Mar 2024 10:00:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710494259; cv=none; b=pQTdwrh4gZt6kbZUuJHSuL3QxDavopMsCE/UQAxSUUKb3ltPPM75QujWvPW3vf15+eHjTBq1ol7lHL97hDP/aLZPNqKTD7NpGbgo8vpdZRF9prkioJE3XNZMQV+nQiNh2KgEwwCaYsjIyj1nEIa6LVgMsUInW2b+oTlgr+9/Fi8=
+	t=1710496826; cv=none; b=i8bYbn9XA4FIeJSwz7+BSfOf0MjsjjmlhPDp/dNa7ddeyaWLoM7BLG9EUh0AojaZx3CQQV+nvMFi23KNW6ybD6ZMQg2IHsuT8UAmgUpiGz/9o5vsDTQEtW+a83UwETYZkVXKk7tI6KLFCsRY2Nc8WUSIasb1ibQIT8LFl0E3dKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710494259; c=relaxed/simple;
-	bh=kXBAnkGbfJNrzeLkswUtQO+dWo2m2AFzCqCA+Q4/7cA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=osUj1R9XedHABJCRMFe04Nn9cjdKjvi2qszDsXGFMzcTOKDphCdXkzZHCX5/o0T4z1DrucVosCsfFXyuvPdkO4bPlDDn2KI3Vi4w4h3ohz5F1idENXuAbuSOwsbW6NGBvRyBj3ScWnrruCH7V57HJ7+cezlZLtAHmyuAkSEi6i4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jpgxlXdO; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jpgxlXdO"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-41401f1d665so1691435e9.2;
-        Fri, 15 Mar 2024 02:17:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710494256; x=1711099056; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=c268dTB1nt4ioX1PYxDiUB6jGnxnnZc8CAJCFV2Kn4k=;
-        b=jpgxlXdOn3GIjpR1gXmm+vdu2GR0MFHT1uVaeHBNQviqAx6WzYBMtaB5x/xCEuuWvz
-         xi6p4TZs4YjdmOFkNyOAnzNsFsk6o8gdXbf//ouBxMzEFCyi2Q3YorASdGDZc5iDzdhy
-         jn+3GULx2gqyhRA5C0EYg9NZ9wuMBvtX/W5XJH0RskCpa96ZohYNTvmftQjPZFRsPC3j
-         zhjgZqJm5QRShUOPE1O0H7tIm4Zqt8iIemAX5kPFX+oyhbXU1Jo1jh5Z1gVeUyIOJkZw
-         HYZ2RIl4SgKnEr7nHmgmgpdIW4dNIZPRo/ftW4FyireGScE4mkdMrVOsZrERHCHJVMLT
-         kCLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710494256; x=1711099056;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c268dTB1nt4ioX1PYxDiUB6jGnxnnZc8CAJCFV2Kn4k=;
-        b=LdV7Fe6MGbN+qxkfrK3KYXN+NSmLnGZ7XtcZ1Vwk8HKLPB4ZjOzYvV4R6d/0P9MHdn
-         GIxkS4YZF5vW5ked/3H0VTShPWQmoEe7qamsEmn/QeUOd4PnG1cryYP4K26aHd2pa+iC
-         PtMN9CCUwL8b/r0xxm5DyeyM7VQB4aR5G7GYtFr9U0hB18cGaEmdNpCpYP4ZmPhO4Xij
-         Al7sODmHkoBI2QSPxd9nftbsYUvQC0YLIj0ZVWgoP9h5yqv+hBo7whznfHk5zMzg5Nbi
-         k5iIgPJ9aYRPslC6S81158AvdqbWazqCF+dO7uGbNlvZBMLWqm9DZtur0MgQCtgjJXoR
-         eNUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXNWH9fN9FL23pB4uYRNKaPs0PETWs6Q0Z8mzqmyPSaT+BMHNAI3e3C7tgBUrE9FKF49EjWZSdpI9DOT59R00U/ausV8yiGlsYznW4xhnSHUUqeeLIQIJJKv2cZEuSQxBWjJcPyio9/iHzB
-X-Gm-Message-State: AOJu0YzidfQ+f8Pa59R4N0OEzZHhmYcM6ahCzGcaNyVoEAQQZ0BAT30N
-	nm17cxrro+7BALtAkO0HAqloyfDIyNHDbQRI2BvOFfzWXC87d7RF6Fohw4udmH4=
-X-Google-Smtp-Source: AGHT+IENWATxNF4oDreVWvt1hXlDdhhoO+9WNqt74/Tv6ejfOOWqm9MJnvUPCll3CHbAqVXALh2GHw==
-X-Received: by 2002:a05:600c:3f90:b0:413:fff2:a7d1 with SMTP id fs16-20020a05600c3f9000b00413fff2a7d1mr1050979wmb.29.1710494255707;
-        Fri, 15 Mar 2024 02:17:35 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id bd7-20020a05600c1f0700b00413f3ca39easm4262167wmb.5.2024.03.15.02.17.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Mar 2024 02:17:35 -0700 (PDT)
-From: Colin Ian King <colin.i.king@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Juergen Gross <jgross@suse.com>,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-serial@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH][next] tty: hvc: Remove second semicolon
-Date: Fri, 15 Mar 2024 09:17:34 +0000
-Message-Id: <20240315091734.2430416-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.39.2
+	s=arc-20240116; t=1710496826; c=relaxed/simple;
+	bh=/v8SprZqCNRj7ne2Yu30kI1h09rkuhN11RGZYRHLGfo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=bxT5DNt2MVy72oovdVrieqQ73vzrGqsiM6Ag4waUMZRtTpYiyFcUOPAtsYCZsBa2KNxfrLnHqSFdxM4pMbDM1Gc1j8fF1XaXRzomQroZPM7QT75q0b4n9zn6G943LYU8dyBtL5fqOnNVHYd0XaGQDRqIAfajY6rCXt7CchTeGF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42F9x6i7048252;
+	Fri, 15 Mar 2024 17:59:06 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX08-BJD.srv.huawei-3com.com (unknown [10.153.34.10])
+	by mail.maildlp.com (Postfix) with ESMTP id EB7F02329740;
+	Fri, 15 Mar 2024 18:00:40 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX08-BJD.srv.huawei-3com.com (10.153.34.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Fri, 15 Mar 2024 17:59:08 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Fri, 15 Mar 2024 17:59:08 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+CC: "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogtPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBr?=
+ =?gb2312?Q?db:_Fix_the_deadlock_issue_in_KDB_debugging.?=
+Thread-Topic: =?gb2312?B?tPC4tDogtPC4tDogtPC4tDogtPC4tDogtPC4tDogW1BBVENIXSBrZGI6IEZp?=
+ =?gb2312?Q?x_the_deadlock_issue_in_KDB_debugging.?=
+Thread-Index: AQHaafG3YC/Li+j42kau1FDQhHr2m7EfIsgAgAMadaD///fWgIAJrHcQgAeL+QCAAIb8YP//gGOAgAGAGvCAAFNzgIABn6DQ///fkwAAPGYiUA==
+Date: Fri, 15 Mar 2024 09:59:08 +0000
+Message-ID: <ae45b2736f364629afe6806c354cec14@h3c.com>
+References: <20240228120516.GA22898@aspen.lan>
+ <8b41d34adaef4ddcacde2dd00d4e3541@h3c.com> <20240301105931.GB5795@aspen.lan>
+ <2ea381e7407a49aaa0b08fa7d4ff62d3@h3c.com>
+ <20240312095756.GB202685@aspen.lan>
+ <06cfa3459ed848cf8f228997b983cf53@h3c.com>
+ <20240312102419.GC202685@aspen.lan>
+ <410a443612e8441cb729c640a0d606c6@h3c.com>
+ <20240313141745.GD202685@aspen.lan>
+ <56ed54fd241c462189d2d030ad51eac6@h3c.com>
+ <20240314130916.GE202685@aspen.lan>
+In-Reply-To: <20240314130916.GE202685@aspen.lan>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42F9x6i7048252
 
-There is a statement with two semicolons. Remove the second one, it
-is redundant.
-
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/tty/hvc/hvc_xen.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/hvc/hvc_xen.c b/drivers/tty/hvc/hvc_xen.c
-index 0e497501f8e3..388a71afd6ef 100644
---- a/drivers/tty/hvc/hvc_xen.c
-+++ b/drivers/tty/hvc/hvc_xen.c
-@@ -558,7 +558,7 @@ static void xencons_backend_changed(struct xenbus_device *dev,
- 			break;
- 		fallthrough;	/* Missed the backend's CLOSING state */
- 	case XenbusStateClosing: {
--		struct xencons_info *info = dev_get_drvdata(&dev->dev);;
-+		struct xencons_info *info = dev_get_drvdata(&dev->dev);
- 
- 		/*
- 		 * Don't tear down the evtchn and grant ref before the other
--- 
-2.39.2
-
+Pk9uIFRodSwgTWFyIDE0LCAyMDI0IGF0IDA3OjA2OjIyQU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
+Pj4gPk9uIFdlZCwgTWFyIDEzLCAyMDI0IGF0IDAxOjIyOjE3QU0gKzAwMDAsIExpdXllIHdyb3Rl
+Og0KPj4gPj4gPk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDEwOjA0OjU0QU0gKzAwMDAsIExpdXll
+IHdyb3RlOg0KPj4gPj4gPj4gPk9uIFR1ZSwgTWFyIDEyLCAyMDI0IGF0IDA4OjM3OjExQU0gKzAw
+MDAsIExpdXllIHdyb3RlOg0KPj4gPj4gPj4gPj4gSSBrbm93IHRoYXQgeW91IHNhaWQgc2NoZWR1
+bGVfd29yayBpcyBub3QgTk1JIHNhdmUsIHdoaWNoIGlzIA0KPj4gPj4gPj4gPj4gdGhlIGZpcnN0
+IGlzc3VlLiBQZXJoYXBzIGl0IGNhbiBiZSBmaXhlZCB1c2luZyANCj4+ID4+ID4+ID4+IGlycV93
+b3JrX3F1ZXVlLiBCdXQgZXZlbiBpZiBpcnFfd29ya19xdWV1ZSBpcyB1c2VkIHRvIA0KPj4gPj4g
+Pj4gPj4gaW1wbGVtZW50IGl0LCB0aGVyZSB3aWxsIHN0aWxsIGJlIGEgZGVhZGxvY2sgcHJvYmxl
+bSBiZWNhdXNlIA0KPj4gPj4gPj4gPj4gc2xhdmUgY3B1MSBzdGlsbCBoYXMgbm90IHJlbGVhc2Vk
+IHRoZSBydW5uaW5nIHF1ZXVlIGxvY2sgb2YgDQo+PiA+PiA+PiA+PiBtYXN0ZXIgQ1BVMC4NCj4+
+ID4+ID4+ID4NCj4+ID4+ID4+ID5UaGlzIGRvZXNuJ3Qgc291bmQgcmlnaHQgdG8gbWUuIFdoeSBk
+byB5b3UgdGhpbmsgQ1BVMSB3b24ndCANCj4+ID4+ID4+ID5yZWxlYXNlIHRoZSBydW4gcXVldWUg
+bG9jaz8NCj4+ID4+ID4+DQo+PiA+PiA+PiBJbiB0aGlzIGV4YW1wbGUsIENQVTEgaXMgd2FpdGlu
+ZyBmb3IgQ1BVMCB0byByZWxlYXNlIA0KPj4gPj4gPj4gZGJnX3NsYXZlX2xvY2suDQo+PiA+PiA+
+DQo+PiA+PiA+VGhhdCBzaG91bGRuJ3QgYmUgYSBwcm9ibGVtLiBDUFUwIHdpbGwgaGF2ZSByZWxl
+YXNlZCB0aGF0IGxvY2sgYnkgDQo+PiA+PiA+dGhlIHRpbWUgdGhlIGlycSB3b3JrIGlzIGRpc3Bh
+dGNoZWQuDQo+PiA+Pg0KPj4gPj4gUmVsZWFzZSBkYmdfc2xhdmVfbG9jayBpbiBDUFUwLiBCZWZv
+cmUgdGhhdCwgc2hjZWR1bGVfd29yayBuZWVkcyB0byANCj4+ID4+IGJlIGhhbmRsZWQsIGFuZCB3
+ZSBhcmUgYmFjayB0byB0aGUgcHJldmlvdXMgaXNzdWUuDQo+PiA+DQo+PiA+IFNvcnJ5IGJ1dCBJ
+IHN0aWxsIGRvbid0IHVuZGVyc3RhbmQgd2hhdCBwcm9ibGVtIHlvdSB0aGluayBjYW4gaGFwcGVu
+IA0KPj4gPiBoZXJlLiBXaGF0IGlzIHdyb25nIHdpdGggY2FsbGluZyBzY2hlZHVsZV93b3JrKCkg
+ZnJvbSB0aGUgSVJRIHdvcmsgDQo+PiA+IGhhbmRsZXI/DQo+PiA+DQo+PiA+IEJvdGggaXJxX3dv
+cmtfcXVldWUoKSBhbmQgc2NoZWR1bGVfd29yaygpIGFyZSBjYWxscyB0byBxdWV1ZSANCj4+ID4g
+ZGVmZXJyZWQgd29yay4gSXQgZG9lcyBub3QgbWF0dGVyIHdoZW4gdGhlIHdvcmsgaXMgcXVldWVk
+IChwcm92aWRpbmcgDQo+PiA+IHdlIGFyZSBsb2NrIHNhZmUpLiBXaGF0IG1hdHRlcnMgaXMgd2hl
+biB0aGUgd29yayBpcyBhY3R1YWxseSBleGVjdXRlZC4NCj4+ID4NCj4+ID4gUGxlYXNlIGNhbiB5
+b3UgZGVzY3JpYmUgdGhlIHByb2JsZW0geW91IHRoaW5rIGV4aXN0cyBiYXNlZCBvbiB3aGVuIA0K
+Pj4gPiB0aGUgd29yayBpcyBleGVjdXRlZC4NCj4+DQo+PiBDUFUwIGVudGVycyB0aGUgS0RCIHBy
+b2Nlc3Mgd2hlbiBwcm9jZXNzaW5nIHNlcmlhbCBwb3J0IGludGVycnVwdHMgYW5kIA0KPj4gdHJp
+Z2dlcnMgYW4gSVBJIChOTUkpIHRvIG90aGVyIENQVXMuICBBZnRlciBlbnRlcmluZyBhIHN0YWJs
+ZSBzdGF0ZSwNCj4+IENQVTAgaXMgaW4gaW50ZXJydXB0IGNvbnRleHQsIHdoaWxlIG90aGVyIENQ
+VXMgYXJlIGluIE5NSSBjb250ZXh0Lg0KPj4gQmVmb3JlIG90aGVyIENQVXMgZW50ZXIgTk1JIGNv
+bnRleHQsIHRoZXJlIGlzIGEgY2hhbmNlIHRvIG9idGFpbiB0aGUgDQo+PiBydW5uaW5nIHF1ZXVl
+IG9mIENQVTAuDQo+DQo+Rm9jdXNpbmcgb24gdGhlIHJ1biBxdWV1ZSBsb2NrcyBpbiB0aGlzIGFu
+YWx5c2lzIGlzIGEgbWlzdGFrZS4gQmVmb3JlIHRoZSBvdGhlciBDUFVzIGVudGVyIE5NSSBjb250
+ZXh0IHRoZXJlIGlzIGEgY2hhbmNlIGZvciB0aGVtIHRvIG9idGFpbg0KPiphbnkqIGxvY2tzLCBp
+bmNsdWRpbmcgdGhlIHRpbWVyIHdoZWVsIGxvY2tzLg0KDQpZZXMsIHlvdSBhcmUgcmlnaHQuIEkg
+ZGlkIG5vdCBjb25zaWRlciBpdCBjb21wcmVoZW5zaXZlbHkuDQoNCj4+IEF0IHRoaXMgdGltZSwg
+d2hlbiBDUFUwIGlzIHByb2Nlc3Npbmcga2dkYm9jX3Jlc3RvcmVfaW5wdXQsIGNhbGxpbmcgDQo+
+PiBzY2hlZHVsZV93b3JrLCBuZWVkX21vcmVfd29ya2VyIGhlcmUgZGV0ZXJtaW5lcyB0aGUgY2hh
+bmNlIHRvIHdha2UgdXAgDQo+PiBwcm9jZXNzZXMgb24gc3lzdGVtX3dxLg0KPj4NCj4+IFRoaXMg
+d2lsbCBjYXVzZSBDUFUwIHRvIGFjcXVpcmUgdGhlIHJ1bm5pbmcgcXVldWUgbG9jayBvZiB0aGlz
+IGNvcmUsIA0KPj4gd2hpY2ggaXMgaGVsZCBieSBvdGhlciBDUFVzLiAgYnV0IG90aGVyIENQVXMg
+YXJlIHN0aWxsIGluIE5NSSBjb250ZXh0IA0KPj4gYW5kIGhhdmUgbm90IGV4aXRlZCBiZWNhdXNl
+IHdhaXRpbmcgZm9yIENQVTAgdG8gcmVsZWFzZSB0aGUgDQo+PiBkYmdfc2xhdmVfbG9jayBhZnRl
+ciBzY2hlZHVsZV93b3JrLg0KPj4NCj4+IEFmdGVyIHRoaW5raW5nIGFib3V0IGl0LCB0aGUgcHJv
+YmxlbSBpcyBub3Qgd2hldGhlciBzY2hlZHVsZV93b3JrIGlzIA0KPj4gTk1JIHNhZmUsIGJ1dCB0
+aGF0IHByb2Nlc3NlcyBvbiBzeXN0ZW1fd3Egc2hvdWxkIG5vdCBiZSBhd2FrZW5lZCANCj4+IGlt
+bWVkaWF0ZWx5IHdoZW4gc2NoZWR1bGVfd29yayBpcyBjYWxsZWQuDQo+DQo+SSBkaXNhZ3JlZSB3
+aXRoIHRoaXMgY29uY2x1c2lvbi4NCj4NCj5UaGUgcHJvYmxlbSAqaXMqIHRoYXQgc2NoZWR1ZV93
+b3JrKCkgaXMgbm90IE5NSS1zYWZlLg0KPg0KPllvdSBjYW5ub3Qgc29sdmUgYW4gTk1JIHNhZmV0
+eSBwcm9ibGVtIGJ5IHJlcGxhY2luZyBzY2hlZHVsZV93b3JrKCkgd2l0aCBhbm90aGVyIGZ1bmN0
+aW9uIHRoYXQgaXMgYWxzbyBub3QgTk1JLXNhZmUuIFRoYXQgc2ltcGx5IGNoYW5nZXMgdGhlIGxv
+Y2tzIHRoYXQgbmVlZCB0byBiZSB0YWtlbiB0byBwcm92b2tlIGEgZGVhZGxvY2suDQo+DQo+DQo+
+PiBJIHJlcGxhY2VkIHNjaGVkdWxlX3dvcmsgd2l0aCBzY2hlZHVsZV9kZWxheWVkX3dvcmssIGFu
+ZCB0aGlzIHNvbHZlZCANCj4+IG15IHByb2JsZW0uDQo+DQo+VGhpcyBtYXkgc3RvcCBzb21lIHNw
+ZWNpZmljIHJlcHJvZHVjdGlvbiBmcm9tIHRha2luZyBwbGFjZSBidXQgaXQgZG9lcyBub3QgZml4
+IHRoZSBwb3RlbnRpYWwgZGVhZGxvY2suDQo+DQo+SSBzdGlsbCBiZWxpZXZlIHRoYXQgdXNpbmcg
+aXJxX3dvcmsgaXMgdGhlIG9ubHkgd2F5IHRvIHNvbHZlIHRoaXMgcHJvcGVybHkuIFBsZWFzZSB0
+cnkgdGhlIGZvbGxvd2luZyBjaGFuZ2U6DQoNCkkgdHJpZWQgdGhlIGZvbGxvd2luZyBwYXRjaCBh
+bmQgaXQgYWxzbyByZXNvbHZlZCB0aGUgaXNzdWUuDQpUaGFuayB5b3UgZm9yIHlvdXIgZ3VpZGFu
+Y2UgYW5kIHN1Z2dlc3Rpb25zLiBJIHdpbGwgb3JnYW5pemUgdGhpcyBpc3N1ZSBhbmQgcmVzZW5k
+IGEgcGF0Y2guDQoNCj5kaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL2tnZGJvYy5jIGIv
+ZHJpdmVycy90dHkvc2VyaWFsL2tnZGJvYy5jIGluZGV4IDdjZTdiYjE2NDAwNTQuLjE2MWIyNWVj
+YzVlMTUgMTAwNjQ0DQo+LS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2tnZGJvYy5jDQo+KysrIGIv
+ZHJpdmVycy90dHkvc2VyaWFsL2tnZGJvYy5jDQo+QEAgLTIyLDYgKzIyLDcgQEANCj4gI2luY2x1
+ZGUgPGxpbnV4L21vZHVsZS5oPg0KPiAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+
+DQo+ICNpbmNsdWRlIDxsaW51eC9zZXJpYWxfY29yZS5oPg0KPisjaW5jbHVkZSA8bGludXgvaXJx
+X3dvcmsuaD4NCj4NCj4gI2RlZmluZSBNQVhfQ09ORklHX0xFTgkJNDANCj4NCj5AQCAtOTksMTAg
+KzEwMCwxNyBAQCBzdGF0aWMgdm9pZCBrZ2Rib2NfcmVzdG9yZV9pbnB1dF9oZWxwZXIoc3RydWN0
+IHdvcmtfc3RydWN0ICpkdW1teSkNCj4NCj4gc3RhdGljIERFQ0xBUkVfV09SSyhrZ2Rib2NfcmVz
+dG9yZV9pbnB1dF93b3JrLCBrZ2Rib2NfcmVzdG9yZV9pbnB1dF9oZWxwZXIpOw0KPg0KPitzdGF0
+aWMgdm9pZCBrZ2Rib2NfcXVldWVfcmVzdG9yZV9pbnB1dF9oZWxwZXIoc3RydWN0IGlycV93b3Jr
+ICp1bnVzZWQpIA0KPit7DQo+KwlzY2hlZHVsZV93b3JrKCZrZ2Rib2NfcmVzdG9yZV9pbnB1dF93
+b3JrKTsNCj4rfQ0KPisNCj4rc3RhdGljIERFRklORV9JUlFfV09SSyhrZ2Rib2NfcmVzdG9yZV9p
+bnB1dF9pcnFfd29yaywgDQo+K2tnZGJvY19xdWV1ZV9yZXN0b3JlX2lucHV0X2hlbHBlcik7DQo+
+Kw0KPiBzdGF0aWMgdm9pZCBrZ2Rib2NfcmVzdG9yZV9pbnB1dCh2b2lkKQ0KPiB7DQo+IAlpZiAo
+bGlrZWx5KHN5c3RlbV9zdGF0ZSA9PSBTWVNURU1fUlVOTklORykpDQo+LQkJc2NoZWR1bGVfd29y
+aygma2dkYm9jX3Jlc3RvcmVfaW5wdXRfd29yayk7DQo+KwkJaXJxX3dvcmtfcXVldWUoJmtnZGJv
+Y19yZXN0b3JlX2lucHV0X2lycV93b3JrKTsNCj4gfQ0KPg0KPiBzdGF0aWMgaW50IGtnZGJvY19y
+ZWdpc3Rlcl9rYmQoY2hhciAqKmNwdHIpIEBAIC0xMzMsNiArMTQxLDcgQEAgc3RhdGljIHZvaWQg
+a2dkYm9jX3VucmVnaXN0ZXJfa2JkKHZvaWQpDQo+IAkJCWktLTsNCj4gCQl9DQo+IAl9DQo+Kwlp
+cnFfd29ya19zeW5jKCZrZ2Rib2NfcmVzdG9yZV9pbnB1dF9pcnFfd29yayk7DQo+IAlmbHVzaF93
+b3JrKCZrZ2Rib2NfcmVzdG9yZV9pbnB1dF93b3JrKTsNCj4gfQ0KPiAjZWxzZSAvKiAhIENPTkZJ
+R19LREJfS0VZQk9BUkQgKi8NCg==
