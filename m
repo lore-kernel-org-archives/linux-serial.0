@@ -1,60 +1,59 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B621535AB
-	for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2024 20:09:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9799B535CF
+	for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2024 20:14:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710533361; cv=none; b=CKBg6DDPC/DEgXVxM9uLW29iVmsksKPof59Lu+vleH0kDarmENFQynEgpvCWPBoRlOzQq68LCtx5K+xNOVwCdSWR6SxHZr0ScgseBXJIAlAj6BsVxcEaNM+w33556qqCETTWFkECHLneRPlkh2cEGUYUR4PGxdcVcSVrQiIxeV4=
+	t=1710533680; cv=none; b=oxXDAP/f3IWUQ8L0YQzO+kz0x1iIlG6GTKCGOA29enRy/t9+JtbudizD31IGEbHcozWolIu7F0rkoD/9bNUFaljm2x8NqvIBZBm7AbFxINrV05//6nVZXXrF2sDkWwC08oUeOKI601ntkFYWZU4ADAqXx8+uXSeG7saYcsqSZaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710533361; c=relaxed/simple;
-	bh=jxzupQBcicL+hUlKgTkEqRcEgtyGe1JHystKUVcXmHE=;
+	s=arc-20240116; t=1710533680; c=relaxed/simple;
+	bh=nFEHXT/ylyLCa900IA9PFnKY9MAwcOJTEsnXYFP5+js=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D37+1UgEInQZ9GRSpvvBeG+3qRuYx8M9PfPOhXk/Q8My8Qwew5jvPq/juvuBoOnIxZKR3bzreu+0LZL47aNMS3+xfL59aBoqt2KCx6t6KmH7GNwCebLaJzasvwxum7mEWG//O9P0Rsz4HvQmsE0XVo55cL4Rwh7Qsx8QmD4xR0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=csC7Ok7/; arc=none smtp.client-ip=209.85.128.47
+	 In-Reply-To:Content-Type; b=N1lUFKG9XerCG/4UNiV8z0MBhY8lWUntvAuZA0NsF0h6eBNFGLFO4zq/fxlOs6oFo57nG0oVDULY7Ym54q0UI/aqMnkYOn9igIE1uj0v1mkGPGi6hr0WNZVt+9Cmta7gDMLJR9yYCyUK0qQwd2by2GFGt0McG5gJAeUaMrAHsXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CXlBE2U7; arc=none smtp.client-ip=209.85.218.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="csC7Ok7/"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-413f8f5541eso11967335e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2024 13:09:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CXlBE2U7"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-a4675aaa2e8so262489166b.0
+        for <linux-serial@vger.kernel.org>; Fri, 15 Mar 2024 13:14:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710533355; x=1711138155; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=p2tW+rY8sSK0emp7CuqgUfSaOYzKGKVj9pNbDTza020=;
-        b=csC7Ok7/birJ1yIZwy2ggYDNdxcZPtAuvImnFoebdUxPiO0lC6a7sOLcBjOs+UyggD
-         SaYHf1H77rqdTH8Flc79ug7fOurEKbu5GKiGTUhc3WsBHnEth14uJlTz9wES0nzSdciN
-         siqI271lkYngQdaYwS4OLnhYKFKjwH1E5sr+sUD5H93TZuywyNrZGqS6sqpAJHXyHe9L
-         zHhbwyBocN39araSfGHvSQjEyO/KGed0SdBCUxi9hpQD8Jy2IE6h1Qf0JrtTkbDOY6RK
-         6BvKuXqRqMNYjvr/DetasTIOWuRgzhGlAcg2PGRRU5zFv5MD0+ylfQUOBbs38TVSmVY/
-         ftVw==
+        d=linaro.org; s=google; t=1710533674; x=1711138474; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=odLjH6pCRhbd6VY/8IpKN5+gXDMhrfAYCr6uel2M/zo=;
+        b=CXlBE2U7XlaLj5OA0z5M5J6kDZpCSKUJZ1F2K/BypbHL8py99AcYxUqY/7p+JgrPOn
+         gZ+YxYe129tPgI79VDXyd/RdasUmCyjoBfQGrCqZOj2rvfGKXAQtpmNqhCKSnPGrhlXC
+         exc6OervAckHF6wfVYqy589fNTMJmk9s2MLtWinjZSH9WmezjVUUHl3ZA4pdi3E1SGfD
+         VvQn9vcN5AMTbKN/RtE4Jt28k1vHep7f3/yx1m70vDbtqg71O1abcOJ6btW9zuExibZq
+         A2jX+Oroz/etnGdazS/npHy0udtgOAxDrDIYfuVuYOKJb+yl6zWRBn28FOD3m4TM6/ah
+         YE7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710533355; x=1711138155;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p2tW+rY8sSK0emp7CuqgUfSaOYzKGKVj9pNbDTza020=;
-        b=jQYwN5ZLSrYUKH8CaUdyvs+Hjesb0XgXu+7K6dElubOqYZYNV1CbmlyFdrkfGviG91
-         jYfqBQlnhPtLrAwRHxmhykxGUP32cdEX9ZOi7zLw7t8wk4R4nrgOaTLWtnbYKUZlJazK
-         yTHouTmDJJwUj8IyB1Sniu6fEYVyH8l0LGZNvTiTqVJNnQdA6oBm7aUE0LJEAcAFVs2T
-         sFTyrf3/QScAmCOPHtBRENcoOg2IeW+EXW9JqMRla7f1SVaY9cJ02WcADkaMhzV86lj/
-         b5j3Nak7/Rpd+YByC55ZFcyT00miE8pPlDSvxPVHRJHqdwkfUKMrZRko1GAjKC9HbpVd
-         ygVw==
-X-Forwarded-Encrypted: i=1; AJvYcCWnFEDoOEDMt3OwaMgmbbT7jzgUjYea6cpYPhHUcao2fWHcSvf+G97CGXWt46qkk11/w0syN2tMEfDE5oOlJ90ZI8xz7eOocoE1t2Tv
-X-Gm-Message-State: AOJu0YzBDr+zeeITADR0Z9S68uw+1Vy9fX8vWdJBmNvU8G8yzjMmnz7C
-	b/U2ghTcLg6s+lwY5pJx8msw/Y/sJQMji4851Y+vc7bHn2/gTSmeKov8rCNpvgc=
-X-Google-Smtp-Source: AGHT+IHNU6xsuhBnJ0s1fL63Xc5fU3svS7s3WxpF6m/TPO0LRH3pZToY1ZFsQdLIl3X4NwKYXWSfWw==
-X-Received: by 2002:a05:600c:1c08:b0:413:fe9d:eaa5 with SMTP id j8-20020a05600c1c0800b00413fe9deaa5mr2654001wms.26.1710533354623;
-        Fri, 15 Mar 2024 13:09:14 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1710533674; x=1711138474;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=odLjH6pCRhbd6VY/8IpKN5+gXDMhrfAYCr6uel2M/zo=;
+        b=j4lCeA46ZLK3oSVS03PVBqdWREO79BvtMuV4s7wlQhPZsqILQ5XOSU/MmfOoGjcxPv
+         JdhiVcx77HipFhNuZLtTBeb6mXInWJ/w7sdkzWNT4SmFp8Ixa2HirGard3t48ct8dqmC
+         d5NZaDZsL3uGisyEsfH02DUXXljWb9G2RPDNqzOFzdAFlB3ZTJhHsEDtlBVQ0yfZORuO
+         gjca6T9BmKTLfqmLG8RnHkLTm9tJOJDilSiydPXJK7pv4zj9zQXTxss2m0SnhNEIeQ4a
+         3lca4bkLwmH/iJXleACcF0d6aoi4Avv170re/QTVZd+qDCFWuM9ZC47uRjsQq/kQJfN3
+         bpdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWrZ8GrdisZpwxuQP8dGUVfxNsD0BQXZ1wa3j0RpO+FPXaaS4Aewuil7zh8I+TbfoXRJG88sL6y4UXKWrVi6/hCciBuV1egJkby3zhj
+X-Gm-Message-State: AOJu0YxUhodBhXx8ygthB9mIp6e3LJV6ZsDQscWO6qL9kZ/FrhmmVJN5
+	T/VCfBqAubTjvWlVyFhUw8hBScgI3wTG1b5AWVElqOUMC8cWJMBG2FQ/LrRTyYM=
+X-Google-Smtp-Source: AGHT+IEsS46iEcSasaXWquxv5k5qikS5zVamCo2J4zeZor8vCboZ/fxtqwqJns14sHIDjc/FiAzt+Q==
+X-Received: by 2002:a17:907:72d5:b0:a46:a23f:bc2c with SMTP id du21-20020a17090772d500b00a46a23fbc2cmr27440ejc.25.1710533673785;
+        Fri, 15 Mar 2024 13:14:33 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id i9-20020a05600c354900b00413ef6826desm6785579wmq.4.2024.03.15.13.09.12
+        by smtp.gmail.com with ESMTPSA id hj11-20020a170906874b00b00a46a04d7daesm90052ejb.115.2024.03.15.13.14.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Mar 2024 13:09:14 -0700 (PDT)
-Message-ID: <314a88e0-19cd-4b95-9cf3-aef1c7579eec@linaro.org>
-Date: Fri, 15 Mar 2024 21:09:11 +0100
+        Fri, 15 Mar 2024 13:14:33 -0700 (PDT)
+Message-ID: <b70ceddb-0f36-4ee3-bafe-01e4683cc72a@linaro.org>
+Date: Fri, 15 Mar 2024 21:14:31 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,7 +61,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/8] dt-bindings: misc: Add mikrobus-connector
+Subject: Re: [PATCH v3 2/8] w1: Add w1_find_master_device
+Content-Language: en-US
 To: Ayush Singh <ayushdevel1325@gmail.com>, linux-kernel@vger.kernel.org
 Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
  Vaishnav M A <vaishnav@beagleboard.org>, Rob Herring <robh@kernel.org>,
@@ -78,8 +78,7 @@ Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
  linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
  linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
 References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
- <20240315184908.500352-2-ayushdevel1325@gmail.com>
-Content-Language: en-US
+ <20240315184908.500352-3-ayushdevel1325@gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -125,168 +124,69 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240315184908.500352-2-ayushdevel1325@gmail.com>
+In-Reply-To: <20240315184908.500352-3-ayushdevel1325@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 15/03/2024 19:48, Ayush Singh wrote:
-> Add DT bindings for mikroBUS interface. MikroBUS is an open standard
-> developed by MikroElektronika for connecting add-on boards to
-> microcontrollers or microprocessors.
+On 15/03/2024 19:49, Ayush Singh wrote:
+> Add helper to find w1_master from w1_bus_master, which is present in
+> drvdata of platform device.
+
+Who needs this?
+
 > 
+> Signed-off-by: Vaishnav M A <vaishnav@beagleboard.org>
 > Signed-off-by: Ayush Singh <ayushdevel1325@gmail.com>
 > ---
->  .../bindings/misc/mikrobus-connector.yaml     | 110 ++++++++++++++++++
->  MAINTAINERS                                   |   6 +
->  2 files changed, 116 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
+>  drivers/w1/w1.c     |  6 +++---
+>  drivers/w1/w1_int.c | 27 +++++++++++++++++++++++++++
+>  include/linux/w1.h  |  1 +
+>  3 files changed, 31 insertions(+), 3 deletions(-)
+
+Why is this in the patchset? What are the dependencies? Please clearly
+express dependencies between patches or merging needs in cover letter.
+Otherwise please do not combine unrelated patches from different
+subsystems together. It's make review and merging only difficult.
+
 > 
-> diff --git a/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml b/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
-> new file mode 100644
-> index 000000000000..6eace2c0dddc
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
+> diff --git a/drivers/w1/w1.c b/drivers/w1/w1.c
+> index afb1cc4606c5..ce8a3f93f2ef 100644
+> --- a/drivers/w1/w1.c
+> +++ b/drivers/w1/w1.c
+> @@ -673,9 +673,9 @@ static int __w1_attach_slave_device(struct w1_slave *sl)
+>  	sl->dev.of_node = of_find_matching_node(sl->master->dev.of_node,
+>  						sl->family->of_match_table);
+>  
+> -	dev_set_name(&sl->dev, "%02x-%012llx",
+> -		 (unsigned int) sl->reg_num.family,
+> -		 (unsigned long long) sl->reg_num.id);
+> +	dev_set_name(&sl->dev, "%s-%02x-%012llx", sl->master->name,
+> +		     (unsigned int)sl->reg_num.family,
+> +		     (unsigned long long)sl->reg_num.id);
+>  	snprintf(&sl->name[0], sizeof(sl->name),
 
-Please put it in connector directory.
+Why? How is this related to the goal "add a helper"? Where is the helper
+used? I don't see. Don't combine unrelated topics in one patch.
 
-> @@ -0,0 +1,110 @@
-> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/misc/mikrobus-connector.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>  		 "%02x-%012llx",
+>  		 (unsigned int) sl->reg_num.family,
+> diff --git a/drivers/w1/w1_int.c b/drivers/w1/w1_int.c
+> index 3a71c5eb2f83..2bfef8e67687 100644
+> --- a/drivers/w1/w1_int.c
+> +++ b/drivers/w1/w1_int.c
+> @@ -242,3 +242,30 @@ void w1_remove_master_device(struct w1_bus_master *bm)
+>  	__w1_remove_master_device(found);
+>  }
+>  EXPORT_SYMBOL(w1_remove_master_device);
 > +
-> +title: mikroBUS add-on board socket
-> +
-> +maintainers:
-> +  - Ayush Singh <ayushdevel1325@gmail.com>
-> +
-> +properties:
-> +  compatible:
-> +    const: mikrobus-connector
+> +/**
+> + * w1_find_master_device() - find a master device
+> + * @bm:	master bus device to search
+> + */
+> +struct w1_master *w1_find_master_device(struct w1_bus_master *bm)
 
-Hm, why do you create binding for the connector, not for some sort of
-controller? Please provide some rationale for this in commit msg.
-
-> +
-> +  pinctrl-0: true
-> +  pinctrl-1: true
-> +  pinctrl-2: true
-> +  pinctrl-3: true
-> +  pinctrl-4: true
-> +  pinctrl-5: true
-> +  pinctrl-6: true
-> +  pinctrl-7: true
-> +  pinctrl-8: true
-> +
-> +  pinctrl-names:
-> +    items:
-> +      - const: default
-> +      - const: pwm_default
-> +      - const: pwm_gpio
-> +      - const: uart_default
-> +      - const: uart_gpio
-> +      - const: i2c_default
-> +      - const: i2c_gpio
-> +      - const: spi_default
-> +      - const: spi_gpio
-
-I fail to see why such choice is related to the connector itself.
-Connector could have just SPI attached, so why all other entries needs
-to be provided? Or is it fully plugable? But then really please explain
-the hardware in the binding description.
-
-> +
-> +  mikrobus-gpios:
-> +    minItems: 11
-> +    maxItems: 12
-> +
-> +  i2c-adapter:
-> +    description: i2c adapter attached to the mikrobus socket.
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +
-> +  spi-controller:
-> +    description: spi bus number of the spi-master attached to the mikrobus socket.
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +
-> +  uart:
-> +    description: uart port attached to the mikrobus socket
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +
-> +  pwms:
-> +    description: the pwm-controller corresponding to the mikroBUS PWM pin.
-> +    maxItems: 1
-> +
-> +  spi-cs:
-> +    description: spi chip-select numbers corresponding to the chip-selects on the mikrobus socket.
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    items:
-> +      - description: chip select corresponding to CS pin
-> +      - description: chip select corresponding to RST pin
-
-I don't understand why do you need all these properties. First, if this
-is connector then I would rather see some sort of graph, not phandles.
-Why would connector need to do anything with SPI controller?
-
-All this looks like made for software. For the driver.
-
-> +
-> +required:
-> +  - compatible
-> +  - pinctrl-0
-> +  - pinctrl-1
-> +  - pinctrl-2
-> +  - pinctrl-3
-> +  - pinctrl-4
-> +  - pinctrl-5
-> +  - pinctrl-6
-> +  - pinctrl-7
-> +  - pinctrl-8
-> +  - i2c-adapter
-> +  - spi-controller
-> +  - spi-cs
-> +  - uart
-> +  - pwms
-> +  - mikrobus-gpios
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +      mikrobus-0 {
-
-mikrobus {
-
-and fix the indentation. Use 4 spaces for example indentation.
-
-> +        compatible = "mikrobus-connector";
-> +        status = "okay";
-
-Drop.
-
-> +        pinctrl-names = "default", "pwm_default", "pwm_gpio","uart_default", "uart_gpio", "i2c_default",
-> +                        "i2c_gpio", "spi_default", "spi_gpio";
-> +        pinctrl-0 = <&P2_03_gpio_input_pin &P1_04_gpio_pin &P1_02_gpio_pin>;
-> +        pinctrl-1 = <&P2_01_pwm_pin>;
-> +        pinctrl-2 = <&P2_01_gpio_pin>;
-> +        pinctrl-3 = <&P2_05_uart_pin &P2_07_uart_pin>;
-> +        pinctrl-4 = <&P2_05_gpio_pin &P2_07_gpio_pin>;
-> +        pinctrl-5 = <&P2_09_i2c_pin &P2_11_i2c_pin>;
-> +        pinctrl-6 = <&P2_09_gpio_pin &P2_11_gpio_pin>;
-> +        pinctrl-7 = <&P1_12_spi_pin &P1_10_spi_pin &P1_08_spi_sclk_pin &P1_06_spi_cs_pin>;
-> +        pinctrl-8 = <&P1_12_gpio_pin &P1_10_gpio_pin &P1_08_gpio_pin &P1_06_gpio_pin>;
-> +        i2c-adapter = <&i2c1>;
-> +        spi-controller = <&spi1>;
-> +        spi-cs = <0 1>;
-> +        uart = <&uart1>;
-> +        pwms = <&ehrpwm1 0 500000 0>;
-> +        mikrobus-gpios = <&gpio1 18 0> , <&gpio0 23 0>, <&gpio0 30 0> , <&gpio0 31 0>, <&gpio0 15 0>,
-> +                         <&gpio0 14 0>, <&gpio0 4 0> , <&gpio0 3 0>, <&gpio0 2 0>, <&gpio0 5 0>,
-> +                         <&gpio2 25 0>, <&gpio2 3 0>;
-
-Use proper defines for GPIO flags.
-
-
+Why are you duplicating w1_search_master_id()? Without locking? Sorry,
+this looks like you did not look at all at existing code.
 
 Best regards,
 Krzysztof
