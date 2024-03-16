@@ -1,100 +1,108 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AFDA11CBA
-	for <linux-serial@vger.kernel.org>; Sat, 16 Mar 2024 09:30:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 455F117722;
+	Sat, 16 Mar 2024 13:07:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710581418; cv=none; b=DqhheBDfcVtO+M8SU4a2OOH02KvDGVCxDHSInkGuzd5edyfVPjnr9FU3xPatIJK0ThXaYYrh/ozgrUdga4R9PTEdiQzst0NGePYwBK5PhNzKMUbwl+zjHVqJDfYNHDjm3X8ETGfqmthQTvp900ouW2RjrGHmmMWi9e4SqSsSqQw=
+	t=1710594431; cv=none; b=bhDQcuS1fv144o7gyIxny+UJ1ww8IFzc9hcr2nrWdEpr8gWMQ/nscL9ll+CBvUfopzCoPZKzaDd7W6kWULny2umrlNA5IBFmGWZj8yVUsqFue6Og4FynyAhME4Zl5krtl8rvMnBB5iYw00tM4jiiJ1ujr4Se5440DVzQm1plRDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710581418; c=relaxed/simple;
-	bh=3a6ZkGbC6qnjXSvnaDZPukV97lFmXpUpFjamuzvR7e4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=GjyLZnrvAdnLzMnmYHe7k1veleCFhn9VYddvOrn+jC8Yt62RmtB2Qb6jSvWuBG4mr5N8TzCJrLV6iBye/1lVg8N6j3/w9UJGHIVJu5HcKu919YuEOnvf05fDwXAUEjq21tu8iTh+OTTE0V0tb4Hlmr/l8eo04nwWXJbvcpQOURc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hQ9d3b//; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1710594431; c=relaxed/simple;
+	bh=Kkwv7Fnmn2+BnIp98KsOR/7orH5EqMLTknixPdx1hRw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Jmx0tXoT/hk71rQmLhYXqs6EHf8x8aFfmi8rSmXeobkHoIfFO20jT2TKROWXE2ETHB2yaGgffna+8oUYTlTMMk7OIpplKxTA/xtA34DKBjPEV9sVjjUkzmLetIcsT5lU3uBZlmKPsAZh5BZX1UUqO+NnHRFgwFWHcj1O7RZijlc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TH6RohCX; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hQ9d3b//"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-512f892500cso3216109e87.3
-        for <linux-serial@vger.kernel.org>; Sat, 16 Mar 2024 02:30:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TH6RohCX"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1dd10a37d68so25115765ad.2;
+        Sat, 16 Mar 2024 06:07:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710581413; x=1711186213; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        d=gmail.com; s=20230601; t=1710594428; x=1711199228; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=dGUAB3UIw3E7EFrzYS72iNT6shEEycV/Wx4kFX1KU/c=;
-        b=hQ9d3b//VyzUIh/rdiLQt7Jdf7l7DRhbvVjrM2jerO3K8r8lcPflktsdqZzAKdG2Gb
-         r0uX1uPuTE3P2HGfIwI7PD91N/oo7N6LHth+E2FAfx0TBhaMusUhBjG/3l/T6T/BCqxU
-         Gh3nHg0mX4Xl9KA6Bb89tgU90Lft241uyOtVmOzasW9D45XD/A+gHDGP0mnPPZWR7Yrg
-         0wmrtvTwbmm63bHBWh9A4PbsXvGjEFiIegt82bZERiZRP0NGH6z7CKVHX+0BeS07NUDu
-         hauV/Z7OpE/xAr+hnxaOkt27TWlLhBQ5iFR3rnY4oYKN7ivCOGGu0Vpz75gqWMA9diQ7
-         2R9w==
+        bh=O29l49W9XGARXAl4J0N7LLsgN9XT4ySMJ5Apk0iOPvg=;
+        b=TH6RohCXO2dzSuPJ58ic0kvDvIpP9y3PcKmCPnkKYxltbdlgPrnLpZ4KMWzug1028U
+         uUSPWJJLQKmtVZjTEx5TJV/Rw2v1XZ4jEdx9a9+wZuP7CIGBRyDktgIM/Yrqesi2XPZh
+         9fF2Lb5xKEJnWdqjin9zUptWTKfRiyhCPelKPQJ9I55ERIzXEmU0qYuSkF2amodA2R+Q
+         UTUbcDA2N4EomAEfz9SrV4qSZsEs2XWN3f0mHV+OX+mxZy2JRs8kLaiPb7p8gSQ1uJZ9
+         sxa4G8qauORI4/FikhwEDdEgYmlWkrya77QPyKnYoHWdYhfrOm2ANFpBxwDXtnqGrFdO
+         lJ1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710581413; x=1711186213;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1710594428; x=1711199228;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dGUAB3UIw3E7EFrzYS72iNT6shEEycV/Wx4kFX1KU/c=;
-        b=FS0lmbhcJt7wAHlm+W4o96qKsPizgr4+bbla1atBe12/GS0w1gduPbUObailJDHXbx
-         ydOVOKvmRp3DE8A5RJZurcwFK42t4N5J5+pkMbmhuf+AKRI74bAllVZZl/OVUCCYl8dz
-         t67N3o9FPnfjFp3thD2M01bBKGy7VgYOs3vwRVJ/Y+Jk2BPVLlLL8kHNAI65lRetJkFa
-         y6sthCtcFcGRMbGDXzb0D06ZXrlnmtmMhpMff8lWHX5ENYEh+fo0I9BhDgDs3ydMSzwc
-         xOBRupLeOZqojnM6qEeH57EmSsSK9tmby/VN/BtvHzGeTGkoumPKe29f75pmY8kFIDjT
-         Mkkw==
-X-Forwarded-Encrypted: i=1; AJvYcCXu2VyVN6fOpbzsIdN9Sx/jZo3H2xUrNTcvRcd0KVYV0yLP4RkUzr9OgeNvAGjpyKScmWSWm08eq6g06Z73HnMF3Mf03X3jLC9xQSD1
-X-Gm-Message-State: AOJu0Ywye3rYqLWg8sW4urL8ld6J3+ArJQkIWOg6cJ4axiie2gByXFNK
-	1/wblFF1kUu6T2K2iBG2RgjIrwKOqZ0b3VldG9HiNDM+0yOkM6LzJUacT3/NwK0=
-X-Google-Smtp-Source: AGHT+IHaVTRcQ6GSzZTIOX7uqn97na0aCbldg2yl3L19ISK8nvKzKRYsmj4GCGkP1PGTK3RRw+8UUw==
-X-Received: by 2002:a19:914c:0:b0:513:c223:f0e4 with SMTP id y12-20020a19914c000000b00513c223f0e4mr1128678lfj.10.1710581413374;
-        Sat, 16 Mar 2024 02:30:13 -0700 (PDT)
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id fb4-20020a05600c520400b004132901d73asm8228520wmb.46.2024.03.16.02.30.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Mar 2024 02:30:13 -0700 (PDT)
-Date: Sat, 16 Mar 2024 12:30:09 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [PATCH] serial: 8250_lpc18xx: disable clks on error in probe()
-Message-ID: <92646c10-e0b5-4117-a9ac-ce9987d33ce3@moroto.mountain>
+        bh=O29l49W9XGARXAl4J0N7LLsgN9XT4ySMJ5Apk0iOPvg=;
+        b=B/hZDEE5tEdACcZpW+sw64X1f30ZVHn5+x09PMsintYR2dWDBZ6nH5lEHwpjR1SrOW
+         6h90BJAmaVwikOknUntymPEGA5Bf+iy9OCfkiSadlXqYpw9vouiVwPA/j91wVwrw/1B2
+         W0mVMROjSLxYHHkZlVenLR5v7OQNYjwniZe6qPf9y8qDBOBdEjVmCBrjdGSxQsP+cz9N
+         Zkqpn7xhPv+1UJV0nuOL3OHmVjeZ+TGmBP3U/fn24bBEpHRIfKQQxLPazgSlEvJbmLop
+         JSnRJGxIUnu0GY5FRqkqPNJdy1yFqL+XQMuxp3R0sT26WvImJLdVG+xVrAPEFUUZ0+G/
+         3GpA==
+X-Forwarded-Encrypted: i=1; AJvYcCWhN8+KVfft6nkxNnqxLm6B+5PGMU7k343yHZbtM4aCfptiMEn/vTeVsVFFK6P0OEAjoM3H47HWemTCh5tIBdFjaXnz5CLavFrFDzxXrmIe+jL+7sVA3MqQgaJyNRhsyJgfqlGjRMSPLoQZCIVpkkygjdT8lV7dY6UNeVtAsaycFmzjyoPlhLJwTgjBbJRrC97IW9JQ6z5tNtsvcssytKQ6Rw==
+X-Gm-Message-State: AOJu0Ywm2CSyS0l5IG5oe0JuxBBK1IcLntWhTjEhrY0uzT3X0GEYywIz
+	Wv+iQ6njFk07A2eWd+WdihtjIO9POsBKNskZ8uRzYASWe5/y0VNd
+X-Google-Smtp-Source: AGHT+IGPmM31pP4/EeJlrKrXYxjvW5slggKxA8CfUGLf9CovlmWxJIz6/FceDn5U368qBNv0iNC5FQ==
+X-Received: by 2002:a17:902:e88f:b0:1dd:6965:5888 with SMTP id w15-20020a170902e88f00b001dd69655888mr10251961plg.47.1710594428433;
+        Sat, 16 Mar 2024 06:07:08 -0700 (PDT)
+Received: from [172.16.116.58] ([103.15.228.94])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b001dede7dd3c7sm5277814plb.111.2024.03.16.06.07.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Mar 2024 06:07:08 -0700 (PDT)
+Message-ID: <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
+Date: Sat, 16 Mar 2024 18:36:38 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 7/8] mikrobus: Add mikrobus driver
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-kernel@vger.kernel.org
+Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
+ Vaishnav M A <vaishnav@beagleboard.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+ Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
+ Derek Kiernan <derek.kiernan@amd.com>, Dragan Cvetic
+ <dragan.cvetic@amd.com>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>,
+ Alex Elder <elder@kernel.org>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+ linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
+References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
+ <20240315184908.500352-8-ayushdevel1325@gmail.com>
+ <8799b216-57a7-451b-80a3-3d4ae9693e0b@linaro.org>
+From: Ayush Singh <ayushdevel1325@gmail.com>
+In-Reply-To: <8799b216-57a7-451b-80a3-3d4ae9693e0b@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Goto the clean up path to clean up a couple clocks before returning
-on this error path.
+ > Are you sure this fits in Linux coding style limit (not checkpatch 
+limit, but the limit expressed by Linux coding style)?
 
-Fixes: 0087b9e694ee ("serial: 8250_lpc18xx: Switch to use uart_read_port_properties()")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
----
- drivers/tty/serial/8250/8250_lpc18xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
-index 7984ee05af1d..47e1a056a60c 100644
---- a/drivers/tty/serial/8250/8250_lpc18xx.c
-+++ b/drivers/tty/serial/8250/8250_lpc18xx.c
-@@ -151,7 +151,7 @@ static int lpc18xx_serial_probe(struct platform_device *pdev)
- 
- 	ret = uart_read_port_properties(&uart.port);
- 	if (ret)
--		return ret;
-+		goto dis_uart_clk;
- 
- 	uart.port.iotype = UPIO_MEM32;
- 	uart.port.regshift = 2;
--- 
-2.43.0
+Well, I am just using clang-format with column width of 100 instead of 
+80. The docs now say 80 is prefered rather than mandatory, so well I was 
+using 100 since I prefer that. If 80 is necessary or would make review 
+easier than I can just switch to it.
+
+
+I will remove serdev, pwm, clickID and send a new patch with the minimal 
+driver and better commit messages as suggested with Vaishnav. It is 
+important to have good support for mikroBUS boards without clickID as well.
+
+
+Thanks for all your feedback and time.
+
+
+Ayush Singh
 
