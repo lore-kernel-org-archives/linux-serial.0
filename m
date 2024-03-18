@@ -1,131 +1,138 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171C955E7A;
-	Mon, 18 Mar 2024 17:22:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB2F56442
+	for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 18:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710782560; cv=none; b=bWlaKGVfd5Oc0JYF3RsZQJNmHidSA2gWJ3r+q+VY8wLXyB0pURShZNIwDifQwzfOj7FKBCR+ypRT2TnV90B63t7WYmevuu8crZgjzPy/tLFxX4FmAu0U2LbFPwYdxU73B3dEfALwvAN2RGXqNVj3LnEsdENEjLd1Jrszn110x10=
+	t=1710787981; cv=none; b=pK3agABd5n9krW2ejmJtQN90WAwwndvoVZq7ZBtTsVK4Qw/+Jr2CuaaNzj+d50PtGRqH4z4P65PNesmJncEd6OJ+67kAatCIj1cgWfOySICYqDn0/Vr/N/+9TbVEsJ8CfwimsglHUhgABbB7mmKIhKiRPZHRfBZt9qtTOEYBwEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710782560; c=relaxed/simple;
-	bh=d9QlQ3LmOITKy+7UaQgBMxtlKEfegHfOQNyg6pP5+qQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=AD1pHe9ruTKTULWgs/dDrDRkjhpPwiTg5BEK7ArLscsHuwOSOEApUPuR+XX/YyJ5piU7yhqUyifKB2e+Qpr2FW6DWlyYwkl1j6gWELKvBW0BQ5guB5EE/KjrYhmf2+tzeMHfsZKybw8T7KS0Jz9sNigIRWzVyA/QXat2Vmf7Wxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TqI1GgKz; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1710787981; c=relaxed/simple;
+	bh=WA9t2JLaCdhVBKvzAFSO3yj34I9PGx2jtsLcn5J2f68=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oprIm3zOzhLlqlOxtl0hVZHWWaqd2Kzub0w+hlo+VXvQ6vtaMNUXAVzARBEL/+O4VC52+hX8dOR/5x3J+RONzirSoTpydNVJZ+8UlEQIIS7a/RYf1vgQzR+X0UVECVqI9akBxnYYDi7XsBok2ADSnMtgY/bNmAvh5dAuv7UO/B8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ecMvraCI; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TqI1GgKz"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-513d3746950so5590217e87.1;
-        Mon, 18 Mar 2024 10:22:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ecMvraCI"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1dddd7d64cdso23715ad.1
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 11:52:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710782557; x=1711387357; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1710787979; x=1711392779; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TVCv5MO0HlKhbS+d3hf8UIAQYrD8eX3xs/eYmEYQzI0=;
-        b=TqI1GgKzTpOgGP5igxK9kP13B8ZsUrT2DMl5FD68kW6+p94TkTv3jKRi4boKU4DFh3
-         s289NQG7pm6VJDcTlO/3ugCmN+F8LP/9UwmRTh7w+BcY/VQ7cNXdTUtyEOXZoqT/5qmj
-         Rk94swGzuPPsix0rYhVCV80iGJ4Kxny0ReFFl9agG7yZn7qjH1VtG+Bv8and2V0XOd0E
-         RF6OjI6sXY2kTx/plI1uad2eVT+HE3Br4pEoRXYr8NFw1tY+4hWlIEOVbFpT2dT92isi
-         Nsyop41T6ftI80FLN9Uc6fLodIlZMGSMnUW7Vp/DlUQuBJxN3OlWeac9O57A9LELtYuq
-         m3OQ==
+        bh=ooCrJpUnHKphfXZ5NhuriLnnuqEoFFTTE4QaO2C2COE=;
+        b=ecMvraCIWowvN5IajLtRd/WNlsD4i21GxzfqBmXTyTaO3Bmlz0QZl3qI3dKC0cthMm
+         bHoNEWOgj/8P+oW11+08fYuqmlrTMYNzWHruEL2HGxwfrEIw+hzQWHbWDHOyldx7n8cO
+         SQdUkOKDzbqQ7XTPvhDWHeQlA4TUwz1taXKDFViBqPoApHEOXeIpKOvdso79OIdAAIuM
+         EtGhwjUkM15ynFUytINpv+D5/S5F3ShY8AgT3JkmaW6c6j+Cy8KO3/dKnLh4NoK6Asfq
+         9MrNrfEjsOO6igAstZiKyDgnpGMku4Xc4ZRePrT0J+1DZbL5PSqxYcuzy5GyvYbKLkLT
+         IKdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710782557; x=1711387357;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1710787979; x=1711392779;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TVCv5MO0HlKhbS+d3hf8UIAQYrD8eX3xs/eYmEYQzI0=;
-        b=JDKB7n6jolUgZkb/YruzQ31kJVo0kL5+/WuoDkUxT/cQyZ6jpn9OWf/jguJMckFe3P
-         biHbfRlxKVgcV+4bxzz17kQM9/BrxbbZJy19G/c90pdCEg41MqTY2RpaoaXHmYaFCfed
-         jhBwAROhaxjET4ux7S+qL+n5CILFp8jh1e+nc0Au3KrEIo2k6yMXNDkXzbp5wIq3xbZI
-         aJZDJoKGVfe3JMe1YQ+6XGFJSC/yPitqXK367hhfwJ962toCBbbWY1jfDLB/EUFcMbKH
-         kMWTUcBVb0zTHwyDAxOSDdyvNLWifbjEzy/B30wDyk70SZIqWfc9mYUOl+M5+utSWVXQ
-         HDVg==
-X-Forwarded-Encrypted: i=1; AJvYcCXW4jxtiurjd5fonss9rFB27aANlbizuEDsxCAfb8qcQHgwpe59dFdn3CwkVy1dpfzZZdQouNcR2GxpfomJ2Z6X7rluHCrmoM0mTDA1hSQd9pnw9csJcSEYdxrc+OuiLPgSqdLOPJFjsOQbDLw4oOZdJ/QMjodMq+55c2DpXtMxuMSroNPMsZvJJWy/
-X-Gm-Message-State: AOJu0Yxk0AxMjJLN6owUYMogWHvg5cWZjxzHMobuvziM1HyHj/VH7aG6
-	G4Gpca/30I9xK0jLnhP5JBNNuwfLByo/uwn9iQmvzf+S3R2bnr+e
-X-Google-Smtp-Source: AGHT+IFLZD9aDd6er/E29kcIwyxVtdJbv+F4efOZQg0CdYfzysDvkBTztnDCZ5XsxpnjJfQxIrwuZQ==
-X-Received: by 2002:ac2:498e:0:b0:513:ca99:5908 with SMTP id f14-20020ac2498e000000b00513ca995908mr8625770lfl.26.1710782556915;
-        Mon, 18 Mar 2024 10:22:36 -0700 (PDT)
-Received: from prasmi.home ([2a00:23c8:2500:a01:c23f:76ae:8149:291])
-        by smtp.gmail.com with ESMTPSA id bv30-20020a0560001f1e00b0034180898569sm1140769wrb.72.2024.03.18.10.22.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Mar 2024 10:22:36 -0700 (PDT)
-From: Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar <prabhakar.csengg@gmail.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v3 4/4] serial: sh-sci: Add support for RZ/V2H(P) SoC
-Date: Mon, 18 Mar 2024 17:21:02 +0000
-Message-Id: <20240318172102.45549-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        bh=ooCrJpUnHKphfXZ5NhuriLnnuqEoFFTTE4QaO2C2COE=;
+        b=Zxu+XT6YlWxVfCMAJIyuXic+SlcyesWF4xl5PG2/1RVT6rF5jYrQH3ewiYmyrhQ5/9
+         2fpMSGAp3b/1pxB00A+80W8+ncswOmcnrbFkCJBpKV0+8LvpCvSfY8PYJr5yp9uduK/o
+         eYjac7svfakefVaXFJXx3amztjKi1JWFvJD8RkTAoQi92a10DXB0e7sRJD+OBOG1kB3s
+         Jnbbilxn+pmpki9MBW2Ia3MOSTN4M5JCCq3heSfBc/RB5f69SbZSZrzxcaULMojdkPdI
+         q4S+PaZqKASoA2LXzPa3VM4C9ScjfcFcjmKe11TZZJhGJUqjvPb36y4uMezM5QJ20SPe
+         K/4A==
+X-Forwarded-Encrypted: i=1; AJvYcCUy5Ee8EzbJzbmtwszZVWWAKqCnv1AJfl3A5p/Ma42SP2yLqAtSBEzT41tPGQaJqMpSr9rULIu0UHZhmDnmF4bH3Amiutez3ZU9vexc
+X-Gm-Message-State: AOJu0YxGQpuExv8GsrfRr33AU4on3d5QIK1QRQa3yfYOY+FDuP/yjSbA
+	AsUgnHtHGHXqQTyqmeXV3nBJ/I7QX87AH7mnLycT21EyTPy6xEo1hj4hC7mY31R5/87+GNpal5E
+	uZ9188Ygd+ww9WbmFj3cTt1lntTuT7bIAtBNi
+X-Google-Smtp-Source: AGHT+IFxnWdVHhFA9G5toRi+YSBgRJ4vD3ZYF6ZNV3WhNQhJfWcVdbaPyyKN/dFGLUM66Zp9Nzo3aBAZ8CtEp5ZKoYc=
+X-Received: by 2002:a17:902:e848:b0:1de:f8f:7d56 with SMTP id
+ t8-20020a170902e84800b001de0f8f7d56mr48333plg.8.1710787978738; Mon, 18 Mar
+ 2024 11:52:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240317214123.34482-1-hdegoede@redhat.com> <ZfgZEcg2RXSz08Gd@smile.fi.intel.com>
+In-Reply-To: <ZfgZEcg2RXSz08Gd@smile.fi.intel.com>
+From: Peter Collingbourne <pcc@google.com>
+Date: Mon, 18 Mar 2024 11:52:45 -0700
+Message-ID: <CAMn1gO4zPpwVDcv5FFiimG0MkGdni_0QRMoJH9SSA3LJAk7JqQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: 8250_dw: Revert: Do not reclock if already at
+ correct rate
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	linux-serial@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Mon, Mar 18, 2024 at 3:36=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Sun, Mar 17, 2024 at 10:41:23PM +0100, Hans de Goede wrote:
+> > Commit e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at
+> > correct rate") breaks the dw UARTs on Intel Bay Trail (BYT) and
+> > Cherry Trail (CHT) SoCs.
+> >
+> > Before this change the RTL8732BS Bluetooth HCI which is found
+> > connected over the dw UART on both BYT and CHT boards works properly:
+> >
+> > Bluetooth: hci0: RTL: examining hci_ver=3D06 hci_rev=3D000b lmp_ver=3D0=
+6 lmp_subver=3D8723
+> > Bluetooth: hci0: RTL: rom_version status=3D0 version=3D1
+> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
+> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
+> > Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
+> > Bluetooth: hci0: RTL: fw version 0x365d462e
+> >
+> > where as after this change probing it fails:
+> >
+> > Bluetooth: hci0: RTL: examining hci_ver=3D06 hci_rev=3D000b lmp_ver=3D0=
+6 lmp_subver=3D8723
+> > Bluetooth: hci0: RTL: rom_version status=3D0 version=3D1
+> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
+> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
+> > Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
+> > Bluetooth: hci0: command 0xfc20 tx timeout
+> > Bluetooth: hci0: RTL: download fw command failed (-110)
+> >
+> > Revert the changes to fix this regression.
+>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>
+> > Note it is not entirely clear to me why this commit is causing
+> > this issue. Maybe probe() needs to explicitly set the clk rate
+> > which it just got (that feels like a clk driver issue) or maybe
+> > the issue is that unless setup before hand by firmware /
+> > the bootloader serial8250_update_uartclk() needs to be called
+> > at least once to setup things ?  Note that probe() does not call
+> > serial8250_update_uartclk(), this is only called from the
+> > dw8250_clk_notifier_cb()
+> >
+> > This requires more debugging which is why I'm proposing
+> > a straight revert to fix the regression ASAP and then this
+> > can be investigated further.
+>
+> Yep. When I reviewed the original submission I was got puzzled with
+> the CLK APIs. Now I might remember that ->set_rate() can't be called
+> on prepared/enabled clocks and it's possible the same limitation
+> is applied to ->round_rate().
+>
+> I also tried to find documentation about the requirements for those
+> APIs, but failed (maybe was not pursuing enough, dunno). If you happen
+> to know the one, can you point on it?
 
-Add serial support for RZ/V2H(P) SoC with earlycon.
+To me it seems to be unlikely to be related to round_rate(). It seems
+more likely that my patch causes us to never actually set the clock
+rate (e.g. because uartclk was initialized to the intended clock rate
+instead of the current actual clock rate). It should be possible to
+confirm by checking the behavior with my patch with `&& p->uartclk !=3D
+rate` removed, which I would expect to unbreak Hans's scenario. If my
+hypothesis is correct, the fix might involve querying the clock with
+clk_get_rate() in the if instead of reading from uartclk.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
-v2 - > v3
-- new patch
----
- drivers/tty/serial/sh-sci.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index a85e7b9a2e49..4a60d77257d6 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -290,7 +290,7 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
- 	},
- 
- 	/*
--	 * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T.
-+	 * The "SCIFA" that is in RZ/A2, RZ/G2L, RZ/T and RZ/V2H.
- 	 * It looks like a normal SCIF with FIFO data, but with a
- 	 * compressed address space. Also, the break out of interrupts
- 	 * are different: ERI/BRI, RXI, TXI, TEI, DRI.
-@@ -3224,6 +3224,10 @@ static const struct of_device_id of_sci_match[] __maybe_unused = {
- 		.compatible = "renesas,scif-r9a07g044",
- 		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
- 	},
-+	{
-+		.compatible = "renesas,scif-r9a09g057",
-+		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
-+	},
- 	/* Family-specific types */
- 	{
- 		.compatible = "renesas,rcar-gen1-scif",
-@@ -3554,6 +3558,7 @@ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_console_setup);
-+OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a09g057", rzscifa_early_console_setup);
- OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
- OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
- OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
--- 
-2.34.1
-
+Peter
