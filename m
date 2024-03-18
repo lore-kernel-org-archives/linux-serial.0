@@ -1,85 +1,84 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3138817BDC;
-	Mon, 18 Mar 2024 08:30:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DF8E2D03D;
+	Mon, 18 Mar 2024 10:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710750661; cv=none; b=RG7BcWr7h0JgnO72fnhlFfn5wh3QMo471NG5lWTH1iq4kTVTmaYu144siUlvyuNqEGeQ5YQHJPBaskruQUHYUCP/gKtcIsx+FdKVYWGT8MTxxCruwsHyxo2xoU9WG9qVYJdAzw+0iXOADl9fgSAPuZi98fkGypHxHa3fiKOC5PE=
+	t=1710756226; cv=none; b=H8DgBmBjcmGPMZPy0ihmGl5OLkMjkRVtAdu1XjcY36nkHmLZ3feYsaxq1Va7QQexV7IcfWerPh+i5sr9N4Lsco22Qqbr67QpyfpnfNG/aZolKwXDm/hKPQF57dWP63rKjAyiImz518EHv+fviY+yAI8SpqP48I+DENFEqQJ8YPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710750661; c=relaxed/simple;
-	bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ebqwfYoqd/1AU5mRmH1nErp7MpbAGsGkqV/WFden2erGLI9NNP8pX8k4Tgqbv8WGHcNQhYJfhPLmJM8oGfnx8YAtns+raucdmLkjwboUbtiWkuQPsKfLnilGuK43K6ZQ0it1zwFPUKiVda8BvxG7SQrvlrGV4u1cILJB40vem9k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XiGab2Lq; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1710756226; c=relaxed/simple;
+	bh=xDlNMWqUTXTBM8em3VlJSfREj2/BL9qrToesVMEcMoI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qGjoh0PLhbiUcHTRKp9gQ6kLeKcwx8oZckhwmukXOGVR545fFFXcLzuO+IOMROm3PG+VTru663N7FXJHD+WugMoVYgyfJdCiLcO3Xmrcv2p6Rkdi4TUJ7ojdgH0mGWEoSJ7qo9/4NXukfpwYfKHMuiaZ8MO0zyDsYxh+yDObqp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WactNBc7; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XiGab2Lq"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a28a6cef709so588968366b.1;
-        Mon, 18 Mar 2024 01:30:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710750657; x=1711355457; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
-        b=XiGab2LqgE0wQZIzUH1z32uPHQsLF//X/wc/FJSwcrU6rULvQKqIz99NXD/0K/0Q/e
-         C7pDfE/SnnPU1Y6oNk8iOnYLUOl8sK2WifbwI7bNSfZoc4oBNUCg/rECPrPxbRx3gNJI
-         ODceExjrADCjWHQZLat1zkAF1J/3mfO/EVk8spzYCXyTYj+lCcRedSnin4TQDtCmic12
-         QiGOtpmGCgaXDiJF+qMxncs7pTy5qTWhJrsdZjvY2nG2GDkzsE+1/VPhxvSY4FAS1UN7
-         HNrV77aJvSS+si1CnToOTGYxG131VYT++GSCBrCzcB0ydGC79JhpIngOIwJ3mLKADWCG
-         6ZAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710750657; x=1711355457;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
-        b=E5c4otVjzJxij5gEjEjQhTEwEsrY8xcDvc/zNEvGpUqlJIzcdu6p37+W30pz8mIy2i
-         O/mKPBl4M3mii5wBZJGCW8OV5xOSMGatpU+VbM/E5gw5XJV1scC2eLgY4Cg74xPCFVBl
-         7L0p4Ot+O/0rQwkdcSM7UlMjM0mZ16bMMFoxvZfXzBAw8Z/xmwuDQBfqFV6q24DhxGLX
-         3jW2vT1OLxSpq9hO4rtJH5Ks8iQIGK9e5RM2QusHUnMQCdInN+o+4yECl8c7A19fBE0a
-         T/4UQhRvdHwTzolAiyBf+6KnucdscdGhg6ewfTwsYAq6y/4BYr4NOx3HcmurHMSyj7S9
-         8Igw==
-X-Forwarded-Encrypted: i=1; AJvYcCVDkTrtaQdA5HHVz9OUDabnWzVRtNAJDuczH1y+ZVatdjvgf8N2oPiEyCGdiZxboWfyuqGNeE6aihMgO3/Rd51zHuj9gnXp68eRaY7ZErJ++ROv3io0X7Qh8QqM7Gw1bb4JTmeInFeZH3kQ
-X-Gm-Message-State: AOJu0YwjKEID2gIEFgae1zZG8PmWng/XKJcbT3lfZlwMVvDPREUabXsY
-	aZLJlNksx9VdhzRcZqM2+Ls0lcO+Tq2lTYCPseVZU3yPYdGxHTkG4tOIPA6xTf8Wsf/jlx84Ron
-	+nJcja0zR8DAWttcqnKkIczemjwE=
-X-Google-Smtp-Source: AGHT+IFyaKnmaYXudEyFpeZ0cn0sigVZg2eBU1E8qctUy87AClRrA3bZQwHovDEJ9oU8GdXOEMG94TJ3ap3HpbXA43M=
-X-Received: by 2002:a17:906:f8c6:b0:a46:13a0:7db1 with SMTP id
- lh6-20020a170906f8c600b00a4613a07db1mr7381944ejb.7.1710750657287; Mon, 18 Mar
- 2024 01:30:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WactNBc7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710756225; x=1742292225;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xDlNMWqUTXTBM8em3VlJSfREj2/BL9qrToesVMEcMoI=;
+  b=WactNBc723FWsyDwt6b5yZLza4dAx5hV7XKPcoGw1SbMQp3HGgRHblGX
+   EaJEPZVgmoezgpzLS440qpXlvboeS/3V0DbCTwjd22yJ2YdgpF/rBtm7u
+   qChIqlqSTUk3jfJ6kuRLhhe2QK1Ly/Hm6iqFnPMvtd54CWmSlnKwEB+fj
+   6DEfNA36GZOp7QqyjWN8DGUPJ9MqTe/1ppi2m69OwGgF04ZgCEBRGUnKg
+   9n0Vht+f5oBiHNSIJryD23OAtFBUmsZJnLfYK+TY9QeuQwJYxpE9XmfCN
+   B5Jd7KBHLy+ORoI0XDeX9SdmUFc5a84mVytqy/Ei8kpR3UWuMl11D/IlV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11016"; a="5685231"
+X-IronPort-AV: E=Sophos;i="6.07,134,1708416000"; 
+   d="scan'208";a="5685231"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2024 03:03:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11016"; a="914587235"
+X-IronPort-AV: E=Sophos;i="6.07,134,1708416000"; 
+   d="scan'208";a="914587235"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2024 03:03:41 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rm9qE-0000000DuN5-1Kpj;
+	Mon, 18 Mar 2024 12:03:38 +0200
+Date: Mon, 18 Mar 2024 12:03:37 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Vladimir Zapolskiy <vz@mleia.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] serial: 8250_lpc18xx: disable clks on error in probe()
+Message-ID: <ZfgReWkDIFnoUiCZ@smile.fi.intel.com>
+References: <92646c10-e0b5-4117-a9ac-ce9987d33ce3@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240318064036.1656-1-wangkaiyuan@inspur.com>
-In-Reply-To: <20240318064036.1656-1-wangkaiyuan@inspur.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 18 Mar 2024 10:30:20 +0200
-Message-ID: <CAHp75VdyJGy6niQBNEX_C22_kDjdf-4tbe+ybLF=+GwZRzpg_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] tty: serial: max310x: convert to use maple tree
- register cache
-To: wangkaiyuan <wangkaiyuan@inspur.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <92646c10-e0b5-4117-a9ac-ce9987d33ce3@moroto.mountain>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Mar 18, 2024 at 8:40=E2=80=AFAM wangkaiyuan <wangkaiyuan@inspur.com=
-> wrote:
->
-> The maple tree register cache is based on a much more modern data structu=
-re
-> than the rbtree cache and makes optimisation choices which are probably
-> more appropriate for modern systems than those made by the rbtree cache.
+On Sat, Mar 16, 2024 at 12:30:09PM +0300, Dan Carpenter wrote:
+> Goto the clean up path to clean up a couple clocks before returning
+> on this error path.
 
-FWIW,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
---=20
+Thank you for fixing this!
+
+-- 
 With Best Regards,
 Andy Shevchenko
+
+
