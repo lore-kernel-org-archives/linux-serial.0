@@ -1,69 +1,85 @@
-Received: from ssh247.corpemail.net (ssh247.corpemail.net [210.51.61.247])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C1622612;
-	Mon, 18 Mar 2024 06:42:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.51.61.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3138817BDC;
+	Mon, 18 Mar 2024 08:30:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710744147; cv=none; b=S9OftS8H0Rg4HpWrGsPP2OVh89fwO/tqFO3PondUYZWlTNtPCklheS0XwyzlZ3JJPz+n8ms0SmPzlbRPMfNzvHtBiZ57LU9RUQQrVKsxZgupA/2diD+xbfenejLgh79BGIlP4FePqrYxxX4PRBa5RKouEAQHx8nsvULZYu3W9iY=
+	t=1710750661; cv=none; b=RG7BcWr7h0JgnO72fnhlFfn5wh3QMo471NG5lWTH1iq4kTVTmaYu144siUlvyuNqEGeQ5YQHJPBaskruQUHYUCP/gKtcIsx+FdKVYWGT8MTxxCruwsHyxo2xoU9WG9qVYJdAzw+0iXOADl9fgSAPuZi98fkGypHxHa3fiKOC5PE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710744147; c=relaxed/simple;
-	bh=PWYCjG1RUX4B3xxYUQthNnqRe0G2F1gmxMOFgQ5o2vg=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=C+E+j7MDyBUVTg2SieYxijdU+aTTG7VarRFFUIKysQ3KtDKt8uwy9v1M0D47bm+u8zK/iiu9l//aB+/4WgZHPZhkdCMLV9ASSw58ZdL3bGxB6+J4F98NUylHN+MZRy2VIsYr5OtgqCy95y5/CM4ftE+gKpIh1hxZBA59U8A7OAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com; spf=pass smtp.mailfrom=inspur.com; arc=none smtp.client-ip=210.51.61.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=inspur.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inspur.com
-Received: from ssh247.corpemail.net
-        by ssh247.corpemail.net ((D)) with ASMTP (SSL) id OZI00019;
-        Mon, 18 Mar 2024 14:42:19 +0800
-Received: from localhost.localdomain (10.94.10.188) by
- jtjnmail201603.home.langchao.com (10.100.2.3) with Microsoft SMTP Server id
- 15.1.2507.35; Mon, 18 Mar 2024 14:42:18 +0800
-From: wangkaiyuan <wangkaiyuan@inspur.com>
-To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<hvilleneuve@dimonoff.com>, <andriy.shevchenko@linux.intel.com>
-CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	wangkaiyuan <wangkaiyuan@inspur.com>
-Subject: [PATCH 2/2] tty: serial: sc16is7xx: convert to use maple tree register cache
-Date: Mon, 18 Mar 2024 14:42:16 +0800
-Message-ID: <20240318064216.1765-1-wangkaiyuan@inspur.com>
-X-Mailer: git-send-email 2.27.0
+	s=arc-20240116; t=1710750661; c=relaxed/simple;
+	bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ebqwfYoqd/1AU5mRmH1nErp7MpbAGsGkqV/WFden2erGLI9NNP8pX8k4Tgqbv8WGHcNQhYJfhPLmJM8oGfnx8YAtns+raucdmLkjwboUbtiWkuQPsKfLnilGuK43K6ZQ0it1zwFPUKiVda8BvxG7SQrvlrGV4u1cILJB40vem9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XiGab2Lq; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XiGab2Lq"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a28a6cef709so588968366b.1;
+        Mon, 18 Mar 2024 01:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1710750657; x=1711355457; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
+        b=XiGab2LqgE0wQZIzUH1z32uPHQsLF//X/wc/FJSwcrU6rULvQKqIz99NXD/0K/0Q/e
+         C7pDfE/SnnPU1Y6oNk8iOnYLUOl8sK2WifbwI7bNSfZoc4oBNUCg/rECPrPxbRx3gNJI
+         ODceExjrADCjWHQZLat1zkAF1J/3mfO/EVk8spzYCXyTYj+lCcRedSnin4TQDtCmic12
+         QiGOtpmGCgaXDiJF+qMxncs7pTy5qTWhJrsdZjvY2nG2GDkzsE+1/VPhxvSY4FAS1UN7
+         HNrV77aJvSS+si1CnToOTGYxG131VYT++GSCBrCzcB0ydGC79JhpIngOIwJ3mLKADWCG
+         6ZAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710750657; x=1711355457;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aTNcL9rcfGV2tcNiBwK5lOr/N1TktsH+wMZ3yS/auuE=;
+        b=E5c4otVjzJxij5gEjEjQhTEwEsrY8xcDvc/zNEvGpUqlJIzcdu6p37+W30pz8mIy2i
+         O/mKPBl4M3mii5wBZJGCW8OV5xOSMGatpU+VbM/E5gw5XJV1scC2eLgY4Cg74xPCFVBl
+         7L0p4Ot+O/0rQwkdcSM7UlMjM0mZ16bMMFoxvZfXzBAw8Z/xmwuDQBfqFV6q24DhxGLX
+         3jW2vT1OLxSpq9hO4rtJH5Ks8iQIGK9e5RM2QusHUnMQCdInN+o+4yECl8c7A19fBE0a
+         T/4UQhRvdHwTzolAiyBf+6KnucdscdGhg6ewfTwsYAq6y/4BYr4NOx3HcmurHMSyj7S9
+         8Igw==
+X-Forwarded-Encrypted: i=1; AJvYcCVDkTrtaQdA5HHVz9OUDabnWzVRtNAJDuczH1y+ZVatdjvgf8N2oPiEyCGdiZxboWfyuqGNeE6aihMgO3/Rd51zHuj9gnXp68eRaY7ZErJ++ROv3io0X7Qh8QqM7Gw1bb4JTmeInFeZH3kQ
+X-Gm-Message-State: AOJu0YwjKEID2gIEFgae1zZG8PmWng/XKJcbT3lfZlwMVvDPREUabXsY
+	aZLJlNksx9VdhzRcZqM2+Ls0lcO+Tq2lTYCPseVZU3yPYdGxHTkG4tOIPA6xTf8Wsf/jlx84Ron
+	+nJcja0zR8DAWttcqnKkIczemjwE=
+X-Google-Smtp-Source: AGHT+IFyaKnmaYXudEyFpeZ0cn0sigVZg2eBU1E8qctUy87AClRrA3bZQwHovDEJ9oU8GdXOEMG94TJ3ap3HpbXA43M=
+X-Received: by 2002:a17:906:f8c6:b0:a46:13a0:7db1 with SMTP id
+ lh6-20020a170906f8c600b00a4613a07db1mr7381944ejb.7.1710750657287; Mon, 18 Mar
+ 2024 01:30:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-tUid: 2024318144219cf7f534fda99d27d1e15aa6df0c5cfc9
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+References: <20240318064036.1656-1-wangkaiyuan@inspur.com>
+In-Reply-To: <20240318064036.1656-1-wangkaiyuan@inspur.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 18 Mar 2024 10:30:20 +0200
+Message-ID: <CAHp75VdyJGy6niQBNEX_C22_kDjdf-4tbe+ybLF=+GwZRzpg_Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] tty: serial: max310x: convert to use maple tree
+ register cache
+To: wangkaiyuan <wangkaiyuan@inspur.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The maple tree register cache is based on a much more modern data structure
-than the rbtree cache and makes optimisation choices which are probably
-more appropriate for modern systems than those made by the rbtree cache.
+On Mon, Mar 18, 2024 at 8:40=E2=80=AFAM wangkaiyuan <wangkaiyuan@inspur.com=
+> wrote:
+>
+> The maple tree register cache is based on a much more modern data structu=
+re
+> than the rbtree cache and makes optimisation choices which are probably
+> more appropriate for modern systems than those made by the rbtree cache.
 
-Signed-off-by: wangkaiyuan <wangkaiyuan@inspur.com>
----
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+FWIW,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 929206a9a6e1..410b772cdbb3 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1696,7 +1696,7 @@ static struct regmap_config regcfg = {
- 	.reg_bits = 5,
- 	.pad_bits = 3,
- 	.val_bits = 8,
--	.cache_type = REGCACHE_RBTREE,
-+	.cache_type = REGCACHE_MAPLE,
- 	.volatile_reg = sc16is7xx_regmap_volatile,
- 	.precious_reg = sc16is7xx_regmap_precious,
- 	.writeable_noinc_reg = sc16is7xx_regmap_noinc,
--- 
-2.27.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
