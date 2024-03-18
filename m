@@ -1,138 +1,175 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2125.outbound.protection.outlook.com [40.107.104.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB2F56442
-	for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 18:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710787981; cv=none; b=pK3agABd5n9krW2ejmJtQN90WAwwndvoVZq7ZBtTsVK4Qw/+Jr2CuaaNzj+d50PtGRqH4z4P65PNesmJncEd6OJ+67kAatCIj1cgWfOySICYqDn0/Vr/N/+9TbVEsJ8CfwimsglHUhgABbB7mmKIhKiRPZHRfBZt9qtTOEYBwEA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710787981; c=relaxed/simple;
-	bh=WA9t2JLaCdhVBKvzAFSO3yj34I9PGx2jtsLcn5J2f68=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oprIm3zOzhLlqlOxtl0hVZHWWaqd2Kzub0w+hlo+VXvQ6vtaMNUXAVzARBEL/+O4VC52+hX8dOR/5x3J+RONzirSoTpydNVJZ+8UlEQIIS7a/RYf1vgQzR+X0UVECVqI9akBxnYYDi7XsBok2ADSnMtgY/bNmAvh5dAuv7UO/B8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ecMvraCI; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A189F4AEF5;
+	Mon, 18 Mar 2024 20:18:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.125
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710793118; cv=fail; b=GE6XoupdIvXU8ua/z89/WFzUAPlS6EO0RgjXXIt/8HH8rufQYFzpUO0qOPHnKE1MeoxQ0FV0aSeNHS89XEIgoF/FFKwSJZpUyxCYGBEnC8AL6/AbwGjpMSoEMe1fb0nNkyVAQrkg+4rvbikVPdktcn9gveUBuRJIlRIqDKwFClk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710793118; c=relaxed/simple;
+	bh=PDhxN0+8D7Hn5hzd8/k6AxuS7oil9i6KAnuwRQn2tRw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=gThCU88VooZLvja70gRnUvxzF21h/S17SwpgKb5/9MESGGlB+jpVvfbAevUn1VJdRD/nyT/7SnpuAth0tIPB1kstvL2UhZhjKIfWyGPQGer7sGcv9hDWBJg5LJz9mXpPp9c5wT1ykuIXshFuNoI8lfib+29eVezqyIK3JZZxelw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=ibmcmI6O; arc=fail smtp.client-ip=40.107.104.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ecMvraCI"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1dddd7d64cdso23715ad.1
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 11:52:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710787979; x=1711392779; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ooCrJpUnHKphfXZ5NhuriLnnuqEoFFTTE4QaO2C2COE=;
-        b=ecMvraCIWowvN5IajLtRd/WNlsD4i21GxzfqBmXTyTaO3Bmlz0QZl3qI3dKC0cthMm
-         bHoNEWOgj/8P+oW11+08fYuqmlrTMYNzWHruEL2HGxwfrEIw+hzQWHbWDHOyldx7n8cO
-         SQdUkOKDzbqQ7XTPvhDWHeQlA4TUwz1taXKDFViBqPoApHEOXeIpKOvdso79OIdAAIuM
-         EtGhwjUkM15ynFUytINpv+D5/S5F3ShY8AgT3JkmaW6c6j+Cy8KO3/dKnLh4NoK6Asfq
-         9MrNrfEjsOO6igAstZiKyDgnpGMku4Xc4ZRePrT0J+1DZbL5PSqxYcuzy5GyvYbKLkLT
-         IKdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710787979; x=1711392779;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ooCrJpUnHKphfXZ5NhuriLnnuqEoFFTTE4QaO2C2COE=;
-        b=Zxu+XT6YlWxVfCMAJIyuXic+SlcyesWF4xl5PG2/1RVT6rF5jYrQH3ewiYmyrhQ5/9
-         2fpMSGAp3b/1pxB00A+80W8+ncswOmcnrbFkCJBpKV0+8LvpCvSfY8PYJr5yp9uduK/o
-         eYjac7svfakefVaXFJXx3amztjKi1JWFvJD8RkTAoQi92a10DXB0e7sRJD+OBOG1kB3s
-         Jnbbilxn+pmpki9MBW2Ia3MOSTN4M5JCCq3heSfBc/RB5f69SbZSZrzxcaULMojdkPdI
-         q4S+PaZqKASoA2LXzPa3VM4C9ScjfcFcjmKe11TZZJhGJUqjvPb36y4uMezM5QJ20SPe
-         K/4A==
-X-Forwarded-Encrypted: i=1; AJvYcCUy5Ee8EzbJzbmtwszZVWWAKqCnv1AJfl3A5p/Ma42SP2yLqAtSBEzT41tPGQaJqMpSr9rULIu0UHZhmDnmF4bH3Amiutez3ZU9vexc
-X-Gm-Message-State: AOJu0YxGQpuExv8GsrfRr33AU4on3d5QIK1QRQa3yfYOY+FDuP/yjSbA
-	AsUgnHtHGHXqQTyqmeXV3nBJ/I7QX87AH7mnLycT21EyTPy6xEo1hj4hC7mY31R5/87+GNpal5E
-	uZ9188Ygd+ww9WbmFj3cTt1lntTuT7bIAtBNi
-X-Google-Smtp-Source: AGHT+IFxnWdVHhFA9G5toRi+YSBgRJ4vD3ZYF6ZNV3WhNQhJfWcVdbaPyyKN/dFGLUM66Zp9Nzo3aBAZ8CtEp5ZKoYc=
-X-Received: by 2002:a17:902:e848:b0:1de:f8f:7d56 with SMTP id
- t8-20020a170902e84800b001de0f8f7d56mr48333plg.8.1710787978738; Mon, 18 Mar
- 2024 11:52:58 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="ibmcmI6O"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WcH9RozfjBdyN7LOzzreewR/R59TMl7eCFqKdKyrsaGRgh+4NrKbCfdkCEh47sRYubF4iSz8BKP1Ubd9zYXy2qlBdyT5IbymAAU33lGC6SN03WcQxejZMi7CgdM+kk6FiiIoVXQJ1I/rDj9UxQOD4zXntbDqOCN2X6ajdB45NqmPZ8FBF6UoVI3ZvURSYH2EqCRZ+f7jfvlYRIv646GGH55Jrtc5OufJ3ih+hIUtRp+5m6/f6EQLZ/byBOcR9I+VipCny5b+7gjZ6kNIHltVk4dzeO2bzdm2FUiy4ONsdKmZnywaDWrWwuaysPGMr8pF3vWZ2iz6eDjBXvFJegIjRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5EKcPSAEr4V2B56eLdLK8dEVeSv1I/A8zNt5q7In9CI=;
+ b=luGN99giCUcekw3OlA/OWlEVuQslbyps+MVn4rXNBRXsMPRSJI5QLGQrAkgxM66j6rNp+oMHqhVDPO8OO357LHFP96lZ2mxm5Ogr5P+cgctgsNumpAosi9FQWmzEEVKyFhl3wihJTTkj9Nu3dcjGs/V3FGTCx07qeSKLu0P29m3UNbhximfKfAkWsomgWo5eacOWg5jtHO0JCgzNpoJWvue3V+TcczTCinhFTMT0OC5+Uw1mTJAv+7ROauwJDm6kfnhbpZxJKFngYb/yABc0GHqsdne5txU+mxrzQ8dfjI6cjAgQg97oquGpNFFkTsN4qM9+Iiqyvw3HfxGVljFtrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5EKcPSAEr4V2B56eLdLK8dEVeSv1I/A8zNt5q7In9CI=;
+ b=ibmcmI6OomRsZ+S1xxk4XaYPfe1D4ML556gd1qz47r/8YScrBz27+uba86FO3fh3v6g2enK4PCgep3pYH8w6tKHOYB8uQ002VmT7tEn5m2t4RJDC3flbVPCQth/qRsCksL/ALHBHTVmQ71YO0MvpJBMWC9n8TDl7+rm6T5/np+Y=
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
+ by AM7PR04MB7031.eurprd04.prod.outlook.com (2603:10a6:20b:116::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.26; Mon, 18 Mar
+ 2024 20:18:34 +0000
+Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6]) by PAXPR04MB9642.eurprd04.prod.outlook.com
+ ([fe80::3168:91:27c6:edf6%3]) with mapi id 15.20.7386.025; Mon, 18 Mar 2024
+ 20:18:34 +0000
+Date: Mon, 18 Mar 2024 16:18:28 -0400
+From: Frank Li <Frank.li@nxp.com>
+To: Emil Kronborg <emil.kronborg@protonmail.com>
+Cc: jirislaby@kernel.org, gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev
+Subject: Re: [PATCH] serial: mxs-auart: add spinlock around changing cts state
+Message-ID: <ZfihlNj1qMm1aJvI@lizhi-Precision-Tower-5810>
+References: <20240315154150.28391-1-emil.kronborg@protonmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240315154150.28391-1-emil.kronborg@protonmail.com>
+X-ClientProxiedBy: BYAPR02CA0029.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::42) To PAXPR04MB9642.eurprd04.prod.outlook.com
+ (2603:10a6:102:240::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240317214123.34482-1-hdegoede@redhat.com> <ZfgZEcg2RXSz08Gd@smile.fi.intel.com>
-In-Reply-To: <ZfgZEcg2RXSz08Gd@smile.fi.intel.com>
-From: Peter Collingbourne <pcc@google.com>
-Date: Mon, 18 Mar 2024 11:52:45 -0700
-Message-ID: <CAMn1gO4zPpwVDcv5FFiimG0MkGdni_0QRMoJH9SSA3LJAk7JqQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_dw: Revert: Do not reclock if already at
- correct rate
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	linux-serial@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|AM7PR04MB7031:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	TzMDSM+8fxXx6dhOVCce2+rI6jGz/mf+SOcQoqo2s+OcBgvCD6xBpH81/kk4DzG/4fv/405FvWaptDfX/10Dlf+B4RKsv5nwaTmwZCIBFSs1CM9b4yhdd0kEEEGEcZvofoR9X62R/LRkaV+cq/sOnmzwUAP8Z9qsEW8FuwdLUHM0n9vKqPVw/Af+GS5W+0QGaO4rm6lBt0/7vAwUTUyH7hTeWkx8AACV6eAlp6PhhwdVZ6qvH1ykRy+AcYubehQ43g3hudeUDx2tx1o7YysCWiYv7ZiJQUpFr5UNf6HRsjIgStLfRg2DxwutY98bLKbKTIBUDj9bGeWL6D2drOrHR61xloV6t1Lorlr6mgtDiviDgFjJP55YVmrYA7xHlzgTLx9WS4Sz6WfYtK36cTrE9qkfM14TwwU55n01dpuNCtM/+cYTS+m52j/Xy1rA4jfc0tcFlER/D5+8D3QcpNhXzuHhroUmjDlFIhdxvZWUV2wQeJM7Csgz+0zdqD1K4KYLxaLmM+08LuJ3sPmAuVPkAEQ3325VE2Y4w4ZbJLXmY7in4wckR1/eC/Fc9E56PWzHiSfweeVv3DYCC5woGyqIgkSN/9z1OSBiqD6dXDgesjqCUyDuv6cT6vrpta6CDl2l/ExKloi/Lej1dWc7zFV5vrb6udEHt9FgvAAQ3fW9fc694Ce6znF0vOpgzRPvK249U7DGAgbt8UyLrcV9ZmtyzRRwk26QdM0PqVcOPCE3iNk=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(52116005)(38350700005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0t+l++Vsl1u04/CXJuOo6STgbfgsc/lQ0m3IGXv/hTW1HzsuH9G0N9ln4RI1?=
+ =?us-ascii?Q?pwKXLhxPIevhNaBy5VrjkTye1EYxeXyFQGMYtjtkNNBojGCa1zVFTt0VHL6Y?=
+ =?us-ascii?Q?ytFRbbszo7Nz7mtext9/OGyFNLSKFGH1L/o5jAqGkNuVtQjhrO3aPwXlq8Gz?=
+ =?us-ascii?Q?oBr5Q8MY5CYQVW9gR48AbQ9N/Timv9dGb17ckSB1HmxUe07YDLM4Mw3DWcH1?=
+ =?us-ascii?Q?Q5qAjCxDasRjFZxnveJCzzWT2xdk8RUyecIkCXTd9NII3MjLAj7aGrUtAr9m?=
+ =?us-ascii?Q?PJUF4IHROM0RHnpHrwO3AFygXQ0if+Zx6TMsD+shuhG/8ZfOWpefwfIIc84H?=
+ =?us-ascii?Q?j5v4OuhwUg+2p5uxrm2WSfEmY8VM/U4j4Wj45ImVznY94GASDeWzpE3VcxD9?=
+ =?us-ascii?Q?I3PiRwFFwKMtaZmDkFAXGxeYOJAInhUA0dwJ9kQ35eDr5y/cVRZF/1FIQcGf?=
+ =?us-ascii?Q?4pP0PXIbrIqXe1bSbGvxnqDoOZAOeYWOCIh1iIO/XX2ngQJQu8pTa5P0e9T6?=
+ =?us-ascii?Q?jkiycOF8FXuTnZfwk2Ff1LG2z7a39EIRkBqMmzyqXkjtRvef2FDpjp5rWRZB?=
+ =?us-ascii?Q?tJEvBGI26OrmPt7PgNZCOpj2v/o0nP62idof1DJjxjdfWjGXW9o+f7eUgoU/?=
+ =?us-ascii?Q?qdlrP2xFda+HxpgFtQ5EsPsW7DhQ4rBr0Aw+drykzOU1f90BCIHw6Uf51dUS?=
+ =?us-ascii?Q?6r59WanK1ZJlblfbH4n8dBCSMrSkqXc2KqRMFULF1iM3QkACJwkSuFPMP2Vn?=
+ =?us-ascii?Q?7gm8XrQf4nCp+OSsb5KUc+AlDgKcey/VP7p+LjdgUaC8sm7XeqFGsO8KJB2M?=
+ =?us-ascii?Q?fi7nMYlh77DW97rdxoYtu9OYn/bNxEzo5KDX4t63w6Ps+rJQUBNIEBER9M9H?=
+ =?us-ascii?Q?A3d0CzmDFl2O6nqx6IU4IiTnbnKtoykyg0DkhKPRYIZFhO5NDS2QA/oSeIhc?=
+ =?us-ascii?Q?gLUBh+ZdS7RsN2nM1up/0V8HSgAER3oIz2DtPPKSUrgOxQAR9sFIaaunArY8?=
+ =?us-ascii?Q?InHyq+SJFM16MN2GBOs+yJvJ9WP14zVPANHuV8AiZMk9p97+92cZXnQvStDl?=
+ =?us-ascii?Q?NhAp6MuNsTrOSH6Zlh4nT6h5K7aUTTeAvYVP4EHwawhTkt+VvY1XC5SbnvLO?=
+ =?us-ascii?Q?wN3zjYXhw0RSEIaQ7gg36Slypgvp86PZzHlg2T8iXknmDRRfciPPMDzgdI68?=
+ =?us-ascii?Q?2sasB/mwOz2xJBoP534Xo2OdTWmSPER/bhpr4vsP4cDR55qkjRy+DtvOXfgu?=
+ =?us-ascii?Q?pFGxnWukgU03IhRLERbKnPZnEiUpCq4PUQOxAWaIyTEjx4zVE7atVI+KvU/s?=
+ =?us-ascii?Q?0bjLSmkjiV4j1Q3FppdmrV7onyqacwTLLimgLGJtet5Xz9oyp1eeWsO3/c4s?=
+ =?us-ascii?Q?/vxE9umeT9/Z03gFSvXbdn+1+qDg3QykbTyBQ5w3EHX0K+E19I2venWBVPht?=
+ =?us-ascii?Q?xfoQcHzNZapJ8jzhQ2ZG1O7qtavMfrVfjqtWAguwxmSmCzPs45fzogYvtPVJ?=
+ =?us-ascii?Q?zg7YPCI5ytPeLu7YUu2K70pIWRJdIkeTyW0pmhpa2ER2fG3EM3zf8redPEiz?=
+ =?us-ascii?Q?Pii0f6JnYviDPNsxb8uQxN/s7cLpLsynZHYadXZG?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 565eaac0-a4df-4aeb-189c-08dc47889615
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2024 20:18:33.9867
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /T/D4wqt+3z/CZnI2Vz7wAkw7lOwl+NCAuE9sh081MXhU2b1XaULQ2HVy2e4/wOp4fYSIvYsQpvnTlIW+N1HIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7031
 
-On Mon, Mar 18, 2024 at 3:36=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Sun, Mar 17, 2024 at 10:41:23PM +0100, Hans de Goede wrote:
-> > Commit e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at
-> > correct rate") breaks the dw UARTs on Intel Bay Trail (BYT) and
-> > Cherry Trail (CHT) SoCs.
-> >
-> > Before this change the RTL8732BS Bluetooth HCI which is found
-> > connected over the dw UART on both BYT and CHT boards works properly:
-> >
-> > Bluetooth: hci0: RTL: examining hci_ver=3D06 hci_rev=3D000b lmp_ver=3D0=
-6 lmp_subver=3D8723
-> > Bluetooth: hci0: RTL: rom_version status=3D0 version=3D1
-> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
-> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
-> > Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
-> > Bluetooth: hci0: RTL: fw version 0x365d462e
-> >
-> > where as after this change probing it fails:
-> >
-> > Bluetooth: hci0: RTL: examining hci_ver=3D06 hci_rev=3D000b lmp_ver=3D0=
-6 lmp_subver=3D8723
-> > Bluetooth: hci0: RTL: rom_version status=3D0 version=3D1
-> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
-> > Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
-> > Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
-> > Bluetooth: hci0: command 0xfc20 tx timeout
-> > Bluetooth: hci0: RTL: download fw command failed (-110)
-> >
-> > Revert the changes to fix this regression.
->
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->
-> > Note it is not entirely clear to me why this commit is causing
-> > this issue. Maybe probe() needs to explicitly set the clk rate
-> > which it just got (that feels like a clk driver issue) or maybe
-> > the issue is that unless setup before hand by firmware /
-> > the bootloader serial8250_update_uartclk() needs to be called
-> > at least once to setup things ?  Note that probe() does not call
-> > serial8250_update_uartclk(), this is only called from the
-> > dw8250_clk_notifier_cb()
-> >
-> > This requires more debugging which is why I'm proposing
-> > a straight revert to fix the regression ASAP and then this
-> > can be investigated further.
->
-> Yep. When I reviewed the original submission I was got puzzled with
-> the CLK APIs. Now I might remember that ->set_rate() can't be called
-> on prepared/enabled clocks and it's possible the same limitation
-> is applied to ->round_rate().
->
-> I also tried to find documentation about the requirements for those
-> APIs, but failed (maybe was not pursuing enough, dunno). If you happen
-> to know the one, can you point on it?
+On Fri, Mar 15, 2024 at 03:42:29PM +0000, Emil Kronborg wrote:
+> The uart_handle_cts_change() function in serial_core expects the caller
+> to hold uport->lock. For example, I have seen the below kernel splat,
+> when the Bluetooth driver is loaded on an i.MX28 board.
+> 
+>     [   85.119255] ------------[ cut here ]------------
+>     [   85.124413] WARNING: CPU: 0 PID: 27 at /drivers/tty/serial/serial_core.c:3453 uart_handle_cts_change+0xb4/0xec
 
-To me it seems to be unlikely to be related to round_rate(). It seems
-more likely that my patch causes us to never actually set the clock
-rate (e.g. because uartclk was initialized to the intended clock rate
-instead of the current actual clock rate). It should be possible to
-confirm by checking the behavior with my patch with `&& p->uartclk !=3D
-rate` removed, which I would expect to unbreak Hans's scenario. If my
-hypothesis is correct, the fix might involve querying the clock with
-clk_get_rate() in the if instead of reading from uartclk.
+Add:  mxs_auart_modem_status()
+      mxs_auart_irq_handle()
 
-Peter
+May help understand why need add lock in mxs_auart_irq_handle().
+          
+>     [   85.134694] Modules linked in: hci_uart bluetooth ecdh_generic ecc wlcore_sdio configfs
+>     [   85.143314] CPU: 0 PID: 27 Comm: kworker/u3:0 Not tainted 6.6.3-00021-gd62a2f068f92 #1
+>     [   85.151396] Hardware name: Freescale MXS (Device Tree)
+>     [   85.156679] Workqueue: hci0 hci_power_on [bluetooth]
+>     [   85.164243]  unwind_backtrace from show_stack+0x10/0x14
+>     (...)
+> 
+> Signed-off-by: Emil Kronborg <emil.kronborg@protonmail.com>
+
+Cc stable and add fix tag
+
+Frank
+
+> ---
+>  drivers/tty/serial/mxs-auart.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+> index 4749331fe618..1e8853eae504 100644
+> --- a/drivers/tty/serial/mxs-auart.c
+> +++ b/drivers/tty/serial/mxs-auart.c
+> @@ -1086,11 +1086,13 @@ static void mxs_auart_set_ldisc(struct uart_port *port,
+>  
+>  static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+>  {
+> -	u32 istat;
+> +	u32 istat, stat;
+>  	struct mxs_auart_port *s = context;
+>  	u32 mctrl_temp = s->mctrl_prev;
+> -	u32 stat = mxs_read(s, REG_STAT);
+>  
+> +	uart_port_lock(&s->port);
+> +
+> +	stat = mxs_read(s, REG_STAT);
+>  	istat = mxs_read(s, REG_INTR);
+>  
+>  	/* ack irq */
+> @@ -1126,6 +1128,8 @@ static irqreturn_t mxs_auart_irq_handle(int irq, void *context)
+>  		istat &= ~AUART_INTR_TXIS;
+>  	}
+>  
+> +	uart_port_unlock(&s->port);
+> +
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -- 
+> 2.44.0
+> 
+> 
