@@ -1,55 +1,37 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 407AA20B33
-	for <linux-serial@vger.kernel.org>; Sun, 17 Mar 2024 21:41:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 765571CD23;
+	Mon, 18 Mar 2024 02:46:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710711720; cv=none; b=S01kgyIQMe1JUNOCpnLOshPM61Z4pf7xe9d1s89HImecL51O8RBGNUk34UxgrBavNon6D4vZ7YOXIYz2WnVRlVt+FL/MPu3aME5QyzG+iB6r+QcabKkjHZgkZ54B8pzBf4Genw8B3/TM6ERqnqAyHjn0OTX8KI+e4a9r+kjTZBw=
+	t=1710729975; cv=none; b=f+AuVP8oESkPvbUpxbAx3G8eBV3EfRcT66M4OGsPmAIReSArbPSRGaW+ENVmh+5fDpvK7oVD0loQiNhLG5wl2KKC3AMEh3Zz22Zj0Mkiu7zUhpikxy5XaVzZ1wcJwx3MpKRayW/wWIxFo1/V7uZpVfOVogJKp8pvlRT5mJh61go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710711720; c=relaxed/simple;
-	bh=AQOuIZCrB9FidQg/kAZKaa1dIJbFfCNIrJ6x/+ojQx0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=h0buF0MXGSoOi2LPdwvXQ5H0io92kGVI+HbO7sez+SVYD3dZHfyC2qLmVpyz+XMXeM7zB8eWe1XSx047paMNyO6Np3SeEq10XQ28rgmgT3QiAbvJnPck9EgKIQeFvrMAZM+5ho7H4SVG/kTvRdOZ5rmwKW1XY9+xDVeEtSWLFTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cqioy6IQ; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cqioy6IQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1710711717;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=2UD1uhUWB3+uEEu+3aOovx1iyyjT3/jslhdCSc8fWe4=;
-	b=cqioy6IQfCdVaW0X4gAeGwRvlZw/ElJf4uWuu0BdG591V+qtisPAYY/eBjHJcTWPt2yAUL
-	fCahIa8D7upe3hJQ7KO9uTEm6NSN6BS/OE6tBlBfpnCNCOJ7D4Q2z/VXUzXOA8jiRhVGx3
-	5CEPJ81bRX8w2PKpK9c5iM5J1f2RXM0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-376-6U4vIbqgOXWdvg-o3vllVg-1; Sun, 17 Mar 2024 17:41:50 -0400
-X-MC-Unique: 6U4vIbqgOXWdvg-o3vllVg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0BFAD101A526;
-	Sun, 17 Mar 2024 21:41:50 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.64])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id DCE6740C6DAE;
-	Sun, 17 Mar 2024 21:41:48 +0000 (UTC)
-From: Hans de Goede <hdegoede@redhat.com>
-To: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
-	stable@vger.kernel.org,
-	Peter Collingbourne <pcc@google.com>
-Subject: [PATCH] serial: 8250_dw: Revert: Do not reclock if already at correct rate
-Date: Sun, 17 Mar 2024 22:41:23 +0100
-Message-ID: <20240317214123.34482-1-hdegoede@redhat.com>
+	s=arc-20240116; t=1710729975; c=relaxed/simple;
+	bh=iMalHyvOjYJTB5z6bdp7v0zygCXgTHvNs47aIBcNDys=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sqydRA9BgRBMSkx7NFXUHvmayPBA7BqbdYdtTtDTPTk2tHlsHMRgRu1d59S8haqanMmiIL1G8rrl/iEEMu043uaBST7hxCuRnN0xFJX4UnqWqVw/1nH7cs6riwS6l1SbRtlc4SZbNcZV0PrHyE9P+f+ewPaRVixg4PmYPazEiu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.234])
+	by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4TyfLC11yYz1QBmL;
+	Mon, 18 Mar 2024 10:43:31 +0800 (CST)
+Received: from dggpemd100002.china.huawei.com (unknown [7.185.36.164])
+	by mail.maildlp.com (Postfix) with ESMTPS id D28B11400CB;
+	Mon, 18 Mar 2024 10:46:02 +0800 (CST)
+Received: from huawei.com (10.67.174.33) by dggpemd100002.china.huawei.com
+ (7.185.36.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.28; Mon, 18 Mar
+ 2024 10:46:02 +0800
+From: "GONG, Ruiqi" <gongruiqi1@huawei.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+CC: Jon Ringle <jringle@gridpoint.com>, <linux-serial@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Wang Weiyang <wangweiyang2@huawei.com>
+Subject: [PATCH stable 5.10] serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions for FIFO
+Date: Mon, 18 Mar 2024 10:52:59 +0800
+Message-ID: <20240318025259.1412353-1-gongruiqi1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,81 +39,100 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.2
+Content-Type: text/plain
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemd100002.china.huawei.com (7.185.36.164)
 
-Commit e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at
-correct rate") breaks the dw UARTs on Intel Bay Trail (BYT) and
-Cherry Trail (CHT) SoCs.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Before this change the RTL8732BS Bluetooth HCI which is found
-connected over the dw UART on both BYT and CHT boards works properly:
+commit dbf4ab821804df071c8b566d9813083125e6d97b upstream.
 
-Bluetooth: hci0: RTL: examining hci_ver=06 hci_rev=000b lmp_ver=06 lmp_subver=8723
-Bluetooth: hci0: RTL: rom_version status=0 version=1
-Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
-Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
-Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
-Bluetooth: hci0: RTL: fw version 0x365d462e
+The SC16IS7XX IC supports a burst mode to access the FIFOs where the
+initial register address is sent ($00), followed by all the FIFO data
+without having to resend the register address each time. In this mode, the
+IC doesn't increment the register address for each R/W byte.
 
-where as after this change probing it fails:
+The regmap_raw_read() and regmap_raw_write() are functions which can
+perform IO over multiple registers. They are currently used to read/write
+from/to the FIFO, and although they operate correctly in this burst mode on
+the SPI bus, they would corrupt the regmap cache if it was not disabled
+manually. The reason is that when the R/W size is more than 1 byte, these
+functions assume that the register address is incremented and handle the
+cache accordingly.
 
-Bluetooth: hci0: RTL: examining hci_ver=06 hci_rev=000b lmp_ver=06 lmp_subver=8723
-Bluetooth: hci0: RTL: rom_version status=0 version=1
-Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
-Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
-Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
-Bluetooth: hci0: command 0xfc20 tx timeout
-Bluetooth: hci0: RTL: download fw command failed (-110)
+Convert FIFO R/W functions to use the regmap _noinc_ versions in order to
+remove the manual cache control which was a workaround when using the
+_raw_ versions. FIFO registers are properly declared as volatile so
+cache will not be used/updated for FIFO accesses.
 
-Revert the changes to fix this regression.
-
-Fixes: e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at correct rate")
-Cc: stable@vger.kernel.org
-Cc: Peter Collingbourne <pcc@google.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc:  <stable@vger.kernel.org>
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Link: https://lore.kernel.org/r/20231211171353.2901416-6-hugo@hugovil.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
 ---
-Note it is not entirely clear to me why this commit is causing
-this issue. Maybe probe() needs to explicitly set the clk rate
-which it just got (that feels like a clk driver issue) or maybe
-the issue is that unless setup before hand by firmware /
-the bootloader serial8250_update_uartclk() needs to be called
-at least once to setup things ?  Note that probe() does not call
-serial8250_update_uartclk(), this is only called from the
-dw8250_clk_notifier_cb()
 
-This requires more debugging which is why I'm proposing
-a straight revert to fix the regression ASAP and then this
-can be investigated further.
----
- drivers/tty/serial/8250/8250_dw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+The mainline commit dbf4ab821804 ("serial: sc16is7xx: convert from _raw_
+to _noinc_ regmap functions for FIFO") by Hugo has been assigned to be
+CVE-2023-52488, but for stable branches lower than 6.1 there's no
+official backport.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index c1d43f040c43..2d1f350a4bea 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -357,9 +357,9 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 	long rate;
- 	int ret;
+I made up this backport patch for 5.10, and its correctness has been
+confirmed in previous communication with Hugo. Let's publicize it and
+merge it into upstream.
+
+ drivers/tty/serial/sc16is7xx.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 31e0c5c3ddea..29f05db0d49b 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -376,9 +376,7 @@ static void sc16is7xx_fifo_read(struct uart_port *port, unsigned int rxlen)
+ 	const u8 line = sc16is7xx_line(port);
+ 	u8 addr = (SC16IS7XX_RHR_REG << SC16IS7XX_REG_SHIFT) | line;
  
-+	clk_disable_unprepare(d->clk);
- 	rate = clk_round_rate(d->clk, newrate);
--	if (rate > 0 && p->uartclk != rate) {
--		clk_disable_unprepare(d->clk);
-+	if (rate > 0) {
- 		/*
- 		 * Note that any clock-notifer worker will block in
- 		 * serial8250_update_uartclk() until we are done.
-@@ -367,8 +367,8 @@ static void dw8250_set_termios(struct uart_port *p, struct ktermios *termios,
- 		ret = clk_set_rate(d->clk, newrate);
- 		if (!ret)
- 			p->uartclk = rate;
--		clk_prepare_enable(d->clk);
- 	}
-+	clk_prepare_enable(d->clk);
- 
- 	dw8250_do_set_termios(p, termios, old);
+-	regcache_cache_bypass(s->regmap, true);
+-	regmap_raw_read(s->regmap, addr, s->buf, rxlen);
+-	regcache_cache_bypass(s->regmap, false);
++	regmap_noinc_read(s->regmap, addr, s->buf, rxlen);
  }
+ 
+ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+@@ -394,9 +392,7 @@ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+ 	if (unlikely(!to_send))
+ 		return;
+ 
+-	regcache_cache_bypass(s->regmap, true);
+-	regmap_raw_write(s->regmap, addr, s->buf, to_send);
+-	regcache_cache_bypass(s->regmap, false);
++	regmap_noinc_write(s->regmap, addr, s->buf, to_send);
+ }
+ 
+ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
+@@ -489,6 +485,11 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
+ 	return false;
+ }
+ 
++static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
++{
++	return reg == SC16IS7XX_RHR_REG;
++}
++
+ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ {
+ 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+@@ -1439,6 +1440,8 @@ static struct regmap_config regcfg = {
+ 	.cache_type = REGCACHE_RBTREE,
+ 	.volatile_reg = sc16is7xx_regmap_volatile,
+ 	.precious_reg = sc16is7xx_regmap_precious,
++	.writeable_noinc_reg = sc16is7xx_regmap_noinc,
++	.readable_noinc_reg = sc16is7xx_regmap_noinc,
+ };
+ 
+ #ifdef CONFIG_SERIAL_SC16IS7XX_SPI
 -- 
-2.44.0
+2.25.1
 
