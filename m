@@ -1,264 +1,111 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1A452F86
-	for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 15:42:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B96055777;
+	Mon, 18 Mar 2024 17:22:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710776560; cv=none; b=Rl3wLi/CvQ78T/dKccQ5mnZZ+sWGheWQFDmuLhWLOJQYY0jDM7rivqL0f67JkiaUICUel/cOCcdLuzTg1XRco1TZlE4PvGMraf3AzTRRPLU+xMssOHJKZ7/5sADF7ynHtniAvVBOFmGTkPpNHD2fe/7HOgrMt2OSH8ptT+MRNKE=
+	t=1710782554; cv=none; b=t6yGpOM7g0h9/H7n2o7+QIRdatYjMCUi8ycXhed2Ek/zUF2tQ7Bzl6RJblEaXSXgCSttZ6enFhR6ucqJw3pFSl7PG5LWv/mFLANV9AGpSfYPxVyG6yu3KB2d0h1dVdAyYriZUk9SFytlbM1OoEXCvj6K+j5+qJ2z9MML1oud5HA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710776560; c=relaxed/simple;
-	bh=fstJsI88rFXxdnO6uRjee1SkFXXRCenAkMwozqG3HWw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dL9U/FgWVmk8tMqyjxGg8RtG7EAnWEP6BH5+8jzL0MJTBXZIr+47i/Zc6BYrjt5Ndh6TCLEDL0InQLzyRHV2GL+yK//TOksCk+a79iKkM1+eR3CkxVEml46nkzzS3x76ePn/LZl0N+lQn+g8eSMiZqnNMqqMdr3URHmH/cy/BD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cwrXHFsi; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1710782554; c=relaxed/simple;
+	bh=bqogYihsT2MUMkgJT/9f7+odx5Q5POVudeXLuCfRTCE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=oOLtk39GvNZqgHoWKos13ChpO7wd4WcMrpr25mcl1S+TR/XYEX0h5dW2BwB9anvGb8NaHsnG6lemypiuPfZK4sfzc8ylQY8bwSmILYlIVdzJcdzkTMPo9Dc0PFe7swqtKIOFDXpW55yNRMbIjE+p/dO3UFQsnumonyctdiHq6C8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nqGwnGwT; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cwrXHFsi"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d46dd5f222so49877321fa.1
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 08:42:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nqGwnGwT"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-33ec7e1d542so2516251f8f.1;
+        Mon, 18 Mar 2024 10:22:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1710776556; x=1711381356; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0PTC94ZWbRaMxlVfwdin5J88yO9q91Lex65wqGvnlrg=;
-        b=cwrXHFsi/yuwVhWRUSEJSMt13GNIXXMjrsryBRW0janO6RAl1fTJILYlBSOfuD4r6X
-         BBomRnl6hNvwssdvlKOHTf0R7uNf+L1+e30kCFf3ztoDXzUCjDqsrbyXcgN69kBpT1vH
-         9EMMxEitpAyBW16RNFv5IhyCkShsFku2g6UDDsEoSHk/Se/zKIer1ipY0Nk7auqhRYk6
-         g6Yi1HmDjxMueJE/QsX9Go6No0lt02KgtZ7HPQeb+QLJDGtVwhTEhjFlwOscz7UyO8+l
-         Tll7nNmQKHwT+9QQSAAXRAKH/jgSWqLz9ddxrGOkR2vNiztYDatvnNFODSvUm2Wx6eA1
-         kddA==
+        d=gmail.com; s=20230601; t=1710782551; x=1711387351; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gBFejtHMX0UPJ3eW4z9/yufOKHm5p6BhqExLw0G3pDY=;
+        b=nqGwnGwT0dMWClmYSRMxaAh0MoMrRk3VFtn5fSwBJ+YSd1CCIQSfCuF/4tVeQyuGdp
+         ONir6PwAr3ekFzYHwC6AB028mi47cdG9BWe8tUeBdsO0vtaS3asr1O7aGWWuTZ/jlphh
+         j8gFMM/kNvL4hXFeePzGUN541SoXSyc7CLvz+rtlDaAacUqFjrnCScrKUHG7qTNkmVQS
+         lBkGCFBd5DFP1vJjAPd851uZzyhMj7eNsRySxt1x9GAfxtmFBRhDJsWktwZx5pxXhvnf
+         ewf7Un3HIAXWqJWPZ3hIj125apEjs8CAJkWaW+arI7SLABTlNdBv6QvWoOoHHxNOE0IG
+         2ZUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710776556; x=1711381356;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0PTC94ZWbRaMxlVfwdin5J88yO9q91Lex65wqGvnlrg=;
-        b=vugwrnMROrQImScQGz8W+NXKKeI8s4UQ9RR/4uG3pW7qSNRYfUtOWtNB0l+H6KMcXF
-         5BsdjM/IExU42TjTLo8PEuDWKkf+zD3H/uFdgO5ahj4jWVTu/9pLaDcNJYN+8ceMxiau
-         CYlkoJySbgJZCcbhK26ryuwX/aKcLkySV9PQ1K+c6cKpobRdCAua73sNOw14nCVnFVGN
-         HG5Kerb1pdk0gr/LFrXQz2RmldpTDMUtAVplS8kCuqaPODNjLGKrcK8rzzYpVaT5wj+j
-         km9uUw5XWpd5BzjSk8TepQBl+BCauky1Bv0zUrVCUq58YnkzDAZmKQpBji19CMh6aLSL
-         32cQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVlf5u/G9hKkAMvY4pJhkmbrJdtHWC8uXScXrBe5XyKTVLv+IzzP57Wf4yeBIBIvBsrs32+BCcYG5QPDhtO3oFw1b4SpTX4M5f2YE6a
-X-Gm-Message-State: AOJu0YySUzRYUqgMLTMqM6yquYSLZ7VLPl88cODsUb8t/D9toLHRv9nh
-	+gA1tgupU6yasJxOt6a8qVUk9eouWHSb8niUqSIUpBP6hbOymMfyS7u100M4FTI=
-X-Google-Smtp-Source: AGHT+IEsO7vhRxVm7Fc2hwqUeCgM1PR81mOQVEuvXfit0SV++Crjwy29mrjq3FKCuRT4gP9ISH6VZg==
-X-Received: by 2002:a2e:9008:0:b0:2d4:5bc6:23a9 with SMTP id h8-20020a2e9008000000b002d45bc623a9mr7998112ljg.33.1710776552717;
-        Mon, 18 Mar 2024 08:42:32 -0700 (PDT)
-Received: from alley ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id en10-20020a056402528a00b005693985c35dsm1368700edb.36.2024.03.18.08.42.32
+        d=1e100.net; s=20230601; t=1710782551; x=1711387351;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gBFejtHMX0UPJ3eW4z9/yufOKHm5p6BhqExLw0G3pDY=;
+        b=vEBnZpJSlKennafZXUlH3r9KagvbcuG9LDeptW2D5gYZZjMuytTIFtluahv8pMpKVI
+         LU9V132miHQpAvFNrifdX3GkXlzMsMlHdweW36cSXY9qzznoGnbtj/iRGlVl1enhr4LO
+         d4nq+eDNQvMm5HzxT3/m+7AKg7jCojwvTq6k7HS/9JgjPR6csXAEf2rdjxIXFFI3QrBp
+         kNIys/zMonMOieeMEojvVH6Fy0fThzpBsLiwT9yPseNuCWVmgkYUvTIKmHvQiubZYWP5
+         6D76YG9FL8Y3oPGPKMmGRSuU3FY9wBXHH7AqtVMqpHJWv0n4UZrsMZGrHp5K/j0npx6a
+         Up9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUoqk0BvEt6Q9DNEqPEHUBwjkQudz4M1XsoOwcejTvknCPVosVOvBH8cvRLW0gk79Oj9ySZxNmSSQzeQO4yNjYnWLMBjysnOq0D8ZHiqbsSa+68Yxw+FWOPDeS1Zg8LTrmBsSaJmh6KNtoSo4UxMQVo8K/rkfN/0aqBUkUraCRxNb8Yd23Z86u0fBKu
+X-Gm-Message-State: AOJu0YxDYO7S++5OpKAO2gYtC8ypWFeFVpmJbr/wPdMDvX/VIAUUpTHs
+	uxK1FYjqMsUcS7AkCis58tu/taT7vw4TvSlQY0zaeoASNznnAzdD
+X-Google-Smtp-Source: AGHT+IEa3GE8ywRJSL+LQikpBiv5zAhF8ifisyDLX5kfpe/JdCvQyW7dEjvtdPbCQ30aB2It0RJ3IA==
+X-Received: by 2002:adf:e00c:0:b0:33f:8e6d:ab6f with SMTP id s12-20020adfe00c000000b0033f8e6dab6fmr37473wrh.62.1710782551189;
+        Mon, 18 Mar 2024 10:22:31 -0700 (PDT)
+Received: from prasmi.home ([2a00:23c8:2500:a01:c23f:76ae:8149:291])
+        by smtp.gmail.com with ESMTPSA id bv30-20020a0560001f1e00b0034180898569sm1140769wrb.72.2024.03.18.10.22.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Mar 2024 08:42:32 -0700 (PDT)
-Date: Mon, 18 Mar 2024 16:42:30 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Mon, 18 Mar 2024 10:22:30 -0700 (PDT)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Justin Chen <justin.chen@broadcom.com>,
-	Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
- port->lock wrapper
-Message-ID: <Zfhg5mBd27HmRzQp@alley>
-References: <Zdh4eEJJpasEWqa5@alley>
- <87le6oy9vg.fsf@jogness.linutronix.de>
- <ZfMIX8bsftsDNdlm@alley>
- <87sf0rbkp9.fsf@jogness.linutronix.de>
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v3 0/4] Add SCIF support for Renesas RZ/V2H(P) SoC
+Date: Mon, 18 Mar 2024 17:20:58 +0000
+Message-Id: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87sf0rbkp9.fsf@jogness.linutronix.de>
+Content-Transfer-Encoding: 8bit
 
-On Fri 2024-03-15 16:10:18, John Ogness wrote:
-> On 2024-03-14, Petr Mladek <pmladek@suse.com> wrote:
-> > Well, it brings another question. Does this allow to have
-> > the following situation?
-> >
-> > CPU0				CPU1
-> >
-> >   some_function()
-> >     uart_port_lock()
-> >       // locked just with up->lock
-> >       // doing something with the port
-> >
-> > 				register_console()
-> > 				  // add struct console using the same
-> > 				  // port as CPU0
-> > 				  printk()
-> > 				    console_try_lock()
-> > 				    console_unlock()
-> > 				      console_flush_all()
-> > 					// acquire context for the newly
-> > 					// registered nbcon
-> > 					nbcon_context_try_acquire(ctxt)
-> > 					  con->write()
-> >
-> > BANG: Both CPU0 and CPU1 are writing to the same port.
-> >
-> > Reason: CPU0 locked only via port->lock.
-> > 	CPU1 locked only by acquiring nbcon context.
-> 
-> Great catch! Yes, this is possible. :-/
-> 
-> When the kthread series part is introduced, there will be additional
-> callbacks that nbcon consoles must implement
-> (driver_enter()/driver_exit()). These provide driver-level
-> synchronization. In the case of serial uarts, the callbacks map to
-> locking/unlocking the port lock.
-> 
-> If I were to introduce those callbacks in _this_ series, they can be
-> used when adding a console to the list in register_console(). This
-> changes your example to:
-> 
-> CPU0				CPU1
-> 
->   some_function()
->     uart_port_lock()
->       // locked just with up->lock
->       // doing something with the port
-> 
-> 				register_console()
-> 				  // add struct console using the same
-> 				  // port as CPU0
-> 				  newcon->driver_enter()
-> 				    spin_lock(port_lock)
-> 				    // spin on CPU0
->     uart_port_unlock()
-> 				  // add new console to console list
-> 				  newcon->driver_exit()
-> 				    spin_unlock(port_lock)
-> 				  ...
-> 
-> If any other CPUs come in and call uart_port_lock(), they will see the
-> console as registered and will acquire the nbcon to avoid the BANG.
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Looks good. See below.
+Hi All,
 
-> > Maybe, this is not possible because the console is registered when
-> > the struct uart_port is being initialized and nobody could
-> > use the same port in parallel, except for the early console.
-> > Where the early console is serialized using the console_lock().
-> 
-> Yes, it is possible. Just check out:
-> 
->     find /sys/ -name console -type f
-> 
-> If you echo 'Y' or 'N' into any of those files, you can dynamically
-> register and unregister those consoles, respectively.
-> 
-> I just ran some tests to verify this and was even able to trigger a
-> mainline bug because probe_baud() of the 8250 driver is not called under
-> the port lock. This is essentially the same scenario you
-> illustrated. But the 8250 probe_baud() issue is a driver bug and not
-> related to this series.
+This patch series updates DT binding doc and scif driver to add support
+for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
+interface.
 
-Thanks a lot for checking it.
+v2->v3
+- Included DT validation patches
+- Added a new compat string for RZ/V2H(P) SoC
+- Added driver changes for RZ/V2H(P) SoC
+- Listed interrupts and interrupt-names for every SoC in if check
 
-> Getting back to this series, my proposal would change register_console()
-> like this:
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 68657d4d6649..25a0a81e8397 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3733,6 +3733,7 @@ void register_console(struct console *newcon)
->  	struct console *con;
->  	bool bootcon_registered = false;
->  	bool realcon_registered = false;
-> +	unsigned long flags;
->  	int err;
->  
->  	console_list_lock();
-> @@ -3831,6 +3832,19 @@ void register_console(struct console *newcon)
->  	if (newcon->flags & CON_BOOT)
->  		have_boot_console = true;
->  
-> +	/*
-> +	 * If another context is actively using the hardware of this new
-> +	 * console, it will not be aware of the nbcon synchronization. This
-> +	 * is a risk that two contexts could access the hardware
-> +	 * simultaneously if this new console is used for atomic printing
-> +	 * and the other context is still using the hardware.
-> +	 * 
-> +	 * Use the driver synchronization to ensure that the hardware is not
-> +	 * in use while this new console transitions to being registered.
-> +	 */
-> +	if ((newcon->flags & CON_NBCON) && newcon->write_atomic)
-> +		newcon->driver_enter(newcon, &flags);
-> +
->  	/*
->  	 * Put this console in the list - keep the
->  	 * preferred driver at the head of the list.
-> @@ -3855,6 +3869,10 @@ void register_console(struct console *newcon)
->  	 * register_console() completes.
->  	 */
->  
-> +	/* This new console is now registered. */
-> +	if ((newcon->flags & CON_NBCON) && newcon->write_atomic)
-> +		newcon->driver_exit(newcon, flags);
-> +
->  	console_sysfs_notify();
->  
->  	/*
-> 
-> > One solution would be to add nbcon consoles into the console_list
-> > under uart_port_lock().
-> 
-> This is what I have proposed and I think it is the most straight forward
-> solution.
-> 
-> > Another solution would be to make sure that any code serialized
-> > by uart_port_lock() will be already synchronized by nbcon context
-> > while the nbcon is added into the console_list.
-> 
-> I do not think this would be acceptable. It would mean that non-console
-> ports would need to lock the nbcon. Not only will that slow down the
-> non-console ports, but it will also cause serious contention between the
-> ports. (Remember, all the ports share the same struct console.)
+Cheers,
+Prabhakar
 
-I actually did not want to lock the nbcon for all ports. This is why
-I proposed to do it in con->setup() where con->index is already set.
-It might solve the problem without adding yet another callbacks.
+Lad Prabhakar (4):
+  dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+  dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+    'interrupt-names'
+  dt-bindings: serial: renesas,scif: Document R9A09G057 support
+  serial: sh-sci: Add support for RZ/V2H(P) SoC
 
-That said, I like your solution with newcon->driver_enter()/exit()
-callbacks. It seems to have an easier and more straightforward semantic.
+ .../bindings/serial/renesas,scif.yaml         | 158 ++++++++++++------
+ drivers/tty/serial/sh-sci.c                   |   7 +-
+ 2 files changed, 117 insertions(+), 48 deletions(-)
 
-Go for it, especially when you need these callbacks later in
-the printk kthread.
+-- 
+2.34.1
 
-Nit: I think about renaming the callbacks to"device_lock()
-     and device_unlock().
-
-     "(un)lock" probably better describes what the callbacks do.
-     register_console() does not want to do any operations
-     on the serial port. It just needs to serialize adding
-     the console into the list.
-
-     I suggest "device" because the callbacks will lock/unlock
-     the tty_driver pointed by "con->device".
-
-> 
-> > Maybe, we could do this in con->setup() callback. Something like:
-> 
-> This proposal would work, but IMHO it adds too much complexity by
-> requiring console drivers to implement the callbacks and do special
-> things in those callbacks.
-
-Fair enough.
-
-Best Regards,
-Petr
