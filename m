@@ -1,222 +1,264 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5152C1B6;
-	Mon, 18 Mar 2024 12:37:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1A452F86
+	for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 15:42:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710765459; cv=none; b=badohQ4TjGSg1Vfmv46Os1RraS663vcnz0ToFGoiGNcEXoofkZhEqszSJRevlca8Dq5F4/vkFX9aiQ5kXrTepJeJXEUqrPHJK/VahzXZet0SZHYm73UNdskKjeW1oimoax9O4CVj6D7r66YbHAEETaMBn78VrJas0ThNYFcp04s=
+	t=1710776560; cv=none; b=Rl3wLi/CvQ78T/dKccQ5mnZZ+sWGheWQFDmuLhWLOJQYY0jDM7rivqL0f67JkiaUICUel/cOCcdLuzTg1XRco1TZlE4PvGMraf3AzTRRPLU+xMssOHJKZ7/5sADF7ynHtniAvVBOFmGTkPpNHD2fe/7HOgrMt2OSH8ptT+MRNKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710765459; c=relaxed/simple;
-	bh=n3nj14kJhGQoVcDiuHhUwEg8Bhy8pR2tKc0A0QnHthE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tjScqa2I29sFSTlT5gziY93jey+1EwUegMCHwJgscrYLIz/a5j5rOpUSuyov93fZknfQY7HHF9SFMDTwhn/ONAoIEZiAUZLnoeV+JoGpizYgkae7+9ABNMv3rd+o7Mzhl00AoLdIuafCB2A7BqyiNCnVtq6kwWIDzFaCM3UtyLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AjaGvWzg; arc=none smtp.client-ip=209.85.210.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1710776560; c=relaxed/simple;
+	bh=fstJsI88rFXxdnO6uRjee1SkFXXRCenAkMwozqG3HWw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dL9U/FgWVmk8tMqyjxGg8RtG7EAnWEP6BH5+8jzL0MJTBXZIr+47i/Zc6BYrjt5Ndh6TCLEDL0InQLzyRHV2GL+yK//TOksCk+a79iKkM1+eR3CkxVEml46nkzzS3x76ePn/LZl0N+lQn+g8eSMiZqnNMqqMdr3URHmH/cy/BD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cwrXHFsi; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AjaGvWzg"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-6e6cb0f782bso3586116b3a.1;
-        Mon, 18 Mar 2024 05:37:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cwrXHFsi"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d46dd5f222so49877321fa.1
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 08:42:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710765457; x=1711370257; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HanPhs+5pxNZQ2UN6SW5+54Ajhvbvl08qcxZF5kLZJw=;
-        b=AjaGvWzgD0D8RqccSYzLOshHEUSJ07UHw5HPwdoN+C9LTD7yqnK70vTglzCqrM47sg
-         e0sGpWjEOXA00kzAyvhKFMNqlc3YGisi9j7kAhujCgIcCDRXSs2bflx1lfu2u2ZeFwLx
-         xEU51nBf4w9J6D+VjFP2+EKYkHi/Z5zZLuXm3kcuQuBoEkYFCptIOQSgPUpwHE27fjT6
-         AIdHa5K1MSGYWfUV5RpP+t1HeVgqQcZ6BOIiBqQWm6kriN4XS7hQCqfaI0cMYxirkEu1
-         Su86IQ3etAFF+tyxSjmZZmu4WLdlq3w9adWSJ3KuuUiHH8dzFZYX9Tuih+KwetGDwToS
-         t/MA==
+        d=suse.com; s=google; t=1710776556; x=1711381356; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=0PTC94ZWbRaMxlVfwdin5J88yO9q91Lex65wqGvnlrg=;
+        b=cwrXHFsi/yuwVhWRUSEJSMt13GNIXXMjrsryBRW0janO6RAl1fTJILYlBSOfuD4r6X
+         BBomRnl6hNvwssdvlKOHTf0R7uNf+L1+e30kCFf3ztoDXzUCjDqsrbyXcgN69kBpT1vH
+         9EMMxEitpAyBW16RNFv5IhyCkShsFku2g6UDDsEoSHk/Se/zKIer1ipY0Nk7auqhRYk6
+         g6Yi1HmDjxMueJE/QsX9Go6No0lt02KgtZ7HPQeb+QLJDGtVwhTEhjFlwOscz7UyO8+l
+         Tll7nNmQKHwT+9QQSAAXRAKH/jgSWqLz9ddxrGOkR2vNiztYDatvnNFODSvUm2Wx6eA1
+         kddA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710765457; x=1711370257;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HanPhs+5pxNZQ2UN6SW5+54Ajhvbvl08qcxZF5kLZJw=;
-        b=gkpqj9PJDI2iacZNaqZZ2/YScAeg0oGqfDrb7zgRJrKlLlw4vWkIJJNZxCLTXiq2S+
-         gd9Y2wc7XT4M9vX6riDeOiDmaMXQEyYjMRfaHn3YGZCz/4SSpQVbmse7iFPlNX6zdngj
-         NnH7Gqbsd2zsP/vnivYeoHUsBmTC3x/AkpNbb6VtBK3iH3cYrVBUNgJI2y63Jq3RxUiO
-         xcflQx36BNuOgtvqltEuJFJW7DpI48uYyQPvv7K+Ee1RHz7ZzUmpHnntWDwhqcAGpjUW
-         vhYnVKc9nxJ7aaA8qlDS5iWLVGRFaMbolcdpHsyRrFCO0EchjzurFm5C+cgGurwkLqrR
-         45ig==
-X-Forwarded-Encrypted: i=1; AJvYcCXXZ1G54m/kCM7wMRKSDfuya8a6RUjRKOZo9ywdZ/goWyPPOtptpPmHIu9wg5qwwjeaJdHIs7P12rbqBx1BT8ENqKdYUJWyDkaG4H9FScO/0pDg3+ow7bxxOWMBCkGIdh+5E+gaxjgNgC19td3cv0VUWSjVY9AxGeSeL6wRffX6i7VQYw==
-X-Gm-Message-State: AOJu0YzKCpqTDwfWhZY63ePrAjBaGKDQWtrZYekifCS+aRvD9p7/yFKC
-	KTd9qGacb7EQxhKsVn98U1edy/xxaE6FWKKE3zqvr4ijXXlo6tQ4
-X-Google-Smtp-Source: AGHT+IE28j3JMcgmkhIHT5C2xjMBKmVzdMK31Wr/3TQ9SLPD+hsnPLfW9CeJ8hkB4t35V3ofHy0FWQ==
-X-Received: by 2002:a05:6a20:9185:b0:1a3:6b98:9a84 with SMTP id v5-20020a056a20918500b001a36b989a84mr852665pzd.10.1710765456826;
-        Mon, 18 Mar 2024 05:37:36 -0700 (PDT)
-Received: from [172.16.116.58] ([103.15.228.94])
-        by smtp.gmail.com with ESMTPSA id r3-20020a17090ad40300b0029c68206e2bsm7569501pju.0.2024.03.18.05.37.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Mar 2024 05:37:36 -0700 (PDT)
-Message-ID: <c3f5aa60-61e1-46df-8c3c-864e0acc750e@gmail.com>
-Date: Mon, 18 Mar 2024 18:07:17 +0530
+        d=1e100.net; s=20230601; t=1710776556; x=1711381356;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0PTC94ZWbRaMxlVfwdin5J88yO9q91Lex65wqGvnlrg=;
+        b=vugwrnMROrQImScQGz8W+NXKKeI8s4UQ9RR/4uG3pW7qSNRYfUtOWtNB0l+H6KMcXF
+         5BsdjM/IExU42TjTLo8PEuDWKkf+zD3H/uFdgO5ahj4jWVTu/9pLaDcNJYN+8ceMxiau
+         CYlkoJySbgJZCcbhK26ryuwX/aKcLkySV9PQ1K+c6cKpobRdCAua73sNOw14nCVnFVGN
+         HG5Kerb1pdk0gr/LFrXQz2RmldpTDMUtAVplS8kCuqaPODNjLGKrcK8rzzYpVaT5wj+j
+         km9uUw5XWpd5BzjSk8TepQBl+BCauky1Bv0zUrVCUq58YnkzDAZmKQpBji19CMh6aLSL
+         32cQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVlf5u/G9hKkAMvY4pJhkmbrJdtHWC8uXScXrBe5XyKTVLv+IzzP57Wf4yeBIBIvBsrs32+BCcYG5QPDhtO3oFw1b4SpTX4M5f2YE6a
+X-Gm-Message-State: AOJu0YySUzRYUqgMLTMqM6yquYSLZ7VLPl88cODsUb8t/D9toLHRv9nh
+	+gA1tgupU6yasJxOt6a8qVUk9eouWHSb8niUqSIUpBP6hbOymMfyS7u100M4FTI=
+X-Google-Smtp-Source: AGHT+IEsO7vhRxVm7Fc2hwqUeCgM1PR81mOQVEuvXfit0SV++Crjwy29mrjq3FKCuRT4gP9ISH6VZg==
+X-Received: by 2002:a2e:9008:0:b0:2d4:5bc6:23a9 with SMTP id h8-20020a2e9008000000b002d45bc623a9mr7998112ljg.33.1710776552717;
+        Mon, 18 Mar 2024 08:42:32 -0700 (PDT)
+Received: from alley ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id en10-20020a056402528a00b005693985c35dsm1368700edb.36.2024.03.18.08.42.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Mar 2024 08:42:32 -0700 (PDT)
+Date: Mon, 18 Mar 2024 16:42:30 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Justin Chen <justin.chen@broadcom.com>,
+	Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
+ port->lock wrapper
+Message-ID: <Zfhg5mBd27HmRzQp@alley>
+References: <Zdh4eEJJpasEWqa5@alley>
+ <87le6oy9vg.fsf@jogness.linutronix.de>
+ <ZfMIX8bsftsDNdlm@alley>
+ <87sf0rbkp9.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/8] dt-bindings: misc: Add mikrobus-connector
-To: Rob Herring <robh@kernel.org>
-Cc: linux-kernel@vger.kernel.org, jkridner@beagleboard.org,
- robertcnelson@beagleboard.org, Vaishnav M A <vaishnav@beagleboard.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
- Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
- Derek Kiernan <derek.kiernan@amd.com>, Dragan Cvetic
- <dragan.cvetic@amd.com>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>,
- Alex Elder <elder@kernel.org>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
- linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
-References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
- <20240315184908.500352-2-ayushdevel1325@gmail.com>
- <20240317205927.GA2178147-robh@kernel.org>
-Content-Language: en-US
-From: Ayush Singh <ayushdevel1325@gmail.com>
-In-Reply-To: <20240317205927.GA2178147-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87sf0rbkp9.fsf@jogness.linutronix.de>
 
-A new version of the patch is up and can be found here: 
-https://lore.kernel.org/lkml/20240317193714.403132-1-ayushdevel1325@gmail.com/
+On Fri 2024-03-15 16:10:18, John Ogness wrote:
+> On 2024-03-14, Petr Mladek <pmladek@suse.com> wrote:
+> > Well, it brings another question. Does this allow to have
+> > the following situation?
+> >
+> > CPU0				CPU1
+> >
+> >   some_function()
+> >     uart_port_lock()
+> >       // locked just with up->lock
+> >       // doing something with the port
+> >
+> > 				register_console()
+> > 				  // add struct console using the same
+> > 				  // port as CPU0
+> > 				  printk()
+> > 				    console_try_lock()
+> > 				    console_unlock()
+> > 				      console_flush_all()
+> > 					// acquire context for the newly
+> > 					// registered nbcon
+> > 					nbcon_context_try_acquire(ctxt)
+> > 					  con->write()
+> >
+> > BANG: Both CPU0 and CPU1 are writing to the same port.
+> >
+> > Reason: CPU0 locked only via port->lock.
+> > 	CPU1 locked only by acquiring nbcon context.
+> 
+> Great catch! Yes, this is possible. :-/
+> 
+> When the kthread series part is introduced, there will be additional
+> callbacks that nbcon consoles must implement
+> (driver_enter()/driver_exit()). These provide driver-level
+> synchronization. In the case of serial uarts, the callbacks map to
+> locking/unlocking the port lock.
+> 
+> If I were to introduce those callbacks in _this_ series, they can be
+> used when adding a console to the list in register_console(). This
+> changes your example to:
+> 
+> CPU0				CPU1
+> 
+>   some_function()
+>     uart_port_lock()
+>       // locked just with up->lock
+>       // doing something with the port
+> 
+> 				register_console()
+> 				  // add struct console using the same
+> 				  // port as CPU0
+> 				  newcon->driver_enter()
+> 				    spin_lock(port_lock)
+> 				    // spin on CPU0
+>     uart_port_unlock()
+> 				  // add new console to console list
+> 				  newcon->driver_exit()
+> 				    spin_unlock(port_lock)
+> 				  ...
+> 
+> If any other CPUs come in and call uart_port_lock(), they will see the
+> console as registered and will acquire the nbcon to avoid the BANG.
 
+Looks good. See below.
 
-On 3/18/24 02:29, Rob Herring wrote:
+> > Maybe, this is not possible because the console is registered when
+> > the struct uart_port is being initialized and nobody could
+> > use the same port in parallel, except for the early console.
+> > Where the early console is serialized using the console_lock().
+> 
+> Yes, it is possible. Just check out:
+> 
+>     find /sys/ -name console -type f
+> 
+> If you echo 'Y' or 'N' into any of those files, you can dynamically
+> register and unregister those consoles, respectively.
+> 
+> I just ran some tests to verify this and was even able to trigger a
+> mainline bug because probe_baud() of the 8250 driver is not called under
+> the port lock. This is essentially the same scenario you
+> illustrated. But the 8250 probe_baud() issue is a driver bug and not
+> related to this series.
 
-> On Sat, Mar 16, 2024 at 12:18:59AM +0530, Ayush Singh wrote:
->> Add DT bindings for mikroBUS interface. MikroBUS is an open standard
->> developed by MikroElektronika for connecting add-on boards to
->> microcontrollers or microprocessors.
->>
->> Signed-off-by: Ayush Singh <ayushdevel1325@gmail.com>
->> ---
->>   .../bindings/misc/mikrobus-connector.yaml     | 110 ++++++++++++++++++
->>   MAINTAINERS                                   |   6 +
->>   2 files changed, 116 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml b/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
->> new file mode 100644
->> index 000000000000..6eace2c0dddc
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/misc/mikrobus-connector.yaml
->> @@ -0,0 +1,110 @@
->> +# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/misc/mikrobus-connector.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: mikroBUS add-on board socket
->> +
->> +maintainers:
->> +  - Ayush Singh <ayushdevel1325@gmail.com>
->> +
->> +properties:
->> +  compatible:
->> +    const: mikrobus-connector
->> +
->> +  pinctrl-0: true
->> +  pinctrl-1: true
->> +  pinctrl-2: true
->> +  pinctrl-3: true
->> +  pinctrl-4: true
->> +  pinctrl-5: true
->> +  pinctrl-6: true
->> +  pinctrl-7: true
->> +  pinctrl-8: true
->> +
->> +  pinctrl-names:
->> +    items:
->> +      - const: default
->> +      - const: pwm_default
->> +      - const: pwm_gpio
->> +      - const: uart_default
->> +      - const: uart_gpio
->> +      - const: i2c_default
->> +      - const: i2c_gpio
->> +      - const: spi_default
->> +      - const: spi_gpio
->> +
->> +  mikrobus-gpios:
->> +    minItems: 11
->> +    maxItems: 12
-> What is each GPIO entry?
+Thanks a lot for checking it.
 
+> Getting back to this series, my proposal would change register_console()
+> like this:
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index 68657d4d6649..25a0a81e8397 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3733,6 +3733,7 @@ void register_console(struct console *newcon)
+>  	struct console *con;
+>  	bool bootcon_registered = false;
+>  	bool realcon_registered = false;
+> +	unsigned long flags;
+>  	int err;
+>  
+>  	console_list_lock();
+> @@ -3831,6 +3832,19 @@ void register_console(struct console *newcon)
+>  	if (newcon->flags & CON_BOOT)
+>  		have_boot_console = true;
+>  
+> +	/*
+> +	 * If another context is actively using the hardware of this new
+> +	 * console, it will not be aware of the nbcon synchronization. This
+> +	 * is a risk that two contexts could access the hardware
+> +	 * simultaneously if this new console is used for atomic printing
+> +	 * and the other context is still using the hardware.
+> +	 * 
+> +	 * Use the driver synchronization to ensure that the hardware is not
+> +	 * in use while this new console transitions to being registered.
+> +	 */
+> +	if ((newcon->flags & CON_NBCON) && newcon->write_atomic)
+> +		newcon->driver_enter(newcon, &flags);
+> +
+>  	/*
+>  	 * Put this console in the list - keep the
+>  	 * preferred driver at the head of the list.
+> @@ -3855,6 +3869,10 @@ void register_console(struct console *newcon)
+>  	 * register_console() completes.
+>  	 */
+>  
+> +	/* This new console is now registered. */
+> +	if ((newcon->flags & CON_NBCON) && newcon->write_atomic)
+> +		newcon->driver_exit(newcon, flags);
+> +
+>  	console_sysfs_notify();
+>  
+>  	/*
+> 
+> > One solution would be to add nbcon consoles into the console_list
+> > under uart_port_lock().
+> 
+> This is what I have proposed and I think it is the most straight forward
+> solution.
+> 
+> > Another solution would be to make sure that any code serialized
+> > by uart_port_lock() will be already synchronized by nbcon context
+> > while the nbcon is added into the console_list.
+> 
+> I do not think this would be acceptable. It would mean that non-console
+> ports would need to lock the nbcon. Not only will that slow down the
+> non-console ports, but it will also cause serious contention between the
+> ports. (Remember, all the ports share the same struct console.)
 
+I actually did not want to lock the nbcon for all ports. This is why
+I proposed to do it in con->setup() where con->index is already set.
+It might solve the problem without adding yet another callbacks.
 
+That said, I like your solution with newcon->driver_enter()/exit()
+callbacks. It seems to have an easier and more straightforward semantic.
 
->
->> +
->> +  i2c-adapter:
-> We already have i2c-bus and i2c-parent properties. Neither of those work
-> for you?
+Go for it, especially when you need these callbacks later in
+the printk kthread.
 
-I think i2c-bus should work. Although I could only find information 
-about what it is supposed to be in some old kernel i2c.txt so is there a 
-general place for such properties to be discovered?
+Nit: I think about renaming the callbacks to"device_lock()
+     and device_unlock().
 
->> +    description: i2c adapter attached to the mikrobus socket.
->> +    $ref: /schemas/types.yaml#/definitions/phandle
->> +
->> +  spi-controller:
->> +    description: spi bus number of the spi-master attached to the mikrobus socket.
->> +    $ref: /schemas/types.yaml#/definitions/phandle
->> +
->> +  uart:
-> Nice and consistent. In 3 properties, we have 'adapter', 'controller'
-> and <null>...
+     "(un)lock" probably better describes what the callbacks do.
+     register_console() does not want to do any operations
+     on the serial port. It just needs to serialize adding
+     the console into the list.
 
-Right. So the names I am currently using are from v2 of the patch and 
-are based on Linux kernel names for this. But yes, they probably need to 
-be changed since dt-bindings are not supposed to be tied to Linux. Not 
-sure if `spi-bus` and `serial-bus` are appropriate though, so maybe 
-`{spi, serial}-controller` is fine?
+     I suggest "device" because the callbacks will lock/unlock
+     the tty_driver pointed by "con->device".
 
-To explain why these are here in the first place, mikroBUS addon boards 
-are free to only use a few of these buses or multiple of these 
-simultaneously. Also, some of the properties of spi, i2c etc device 
-needs to be changed depending on the mikroBUS board (mostly described by 
-mikroBUS manifest). This means, the driver needs access to i2c adapter, 
-spi controller, serdev-controller, pwm associated with the mikroBUS 
-connector to configure them (or not use them in case of Not Connected) 
-and register the board.
+> 
+> > Maybe, we could do this in con->setup() callback. Something like:
+> 
+> This proposal would work, but IMHO it adds too much complexity by
+> requiring console drivers to implement the callbacks and do special
+> things in those callbacks.
 
-> Also, DT generally uses 'serial' rather than 'uart'.
-Noted
->> +    description: uart port attached to the mikrobus socket
->> +    $ref: /schemas/types.yaml#/definitions/phandle
->> +
->> +  pwms:
->> +    description: the pwm-controller corresponding to the mikroBUS PWM pin.
->> +    maxItems: 1
->> +
->> +  spi-cs:
->> +    description: spi chip-select numbers corresponding to the chip-selects on the mikrobus socket.
->> +    $ref: /schemas/types.yaml#/definitions/uint32-array
->> +    items:
->> +      - description: chip select corresponding to CS pin
->> +      - description: chip select corresponding to RST pin
-> How would someone handle any of the properties defined in
-> spi-peripheral-props.yaml?
->
->
-> Rob
+Fair enough.
 
-After taking a look at `spi-peripheral-props.yaml`, the properties 
-described here will actually be specified by mikroBUS manifest and thus 
-will be set by the driver after parsing the manifest.
-
-If you are referring to keeping `spi-cs` in sync with `reg`, well I'm 
-not quite sure how to do it better than the current implementation.
-
-Ayush Singh
-
+Best Regards,
+Petr
