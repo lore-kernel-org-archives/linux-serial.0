@@ -1,132 +1,135 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B25EA4084B
-	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 21:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 729124F5F9;
+	Tue, 19 Mar 2024 22:17:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710884689; cv=none; b=USqBK1WmQ0dWd6kccu4R7J1RUPt7X2tGzbDRUgl0WdU+QgjGhmQtGmexjjsPndsdmE0OvSZSWFhId1WrQgSbpBetfRIjibz83gctQ4uGrJ/+T+dK1D6V6khsz6wEwuqjeomH73ytfJlMfYid8L49AsWiSMOZtMDKnpzhK+Aj/Fk=
+	t=1710886646; cv=none; b=SjPcXhXqIwuh4b96t2lYZEP11l7kcKrDA/HUyVrsl5V9XsXrMBMKyVBgxIIp8Yej9WTubIZip1NOQX1ClWhLcy7LJxVC6U0iVxQgXAEbMZUwYHwrPMum+ejDyLe0ULArWUG8NsPgtrWY5cq0rnBbntoyw96wOgSq0rrOUdADaMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710884689; c=relaxed/simple;
-	bh=eBhcJkjdIZMXWCWXz9E2KeEXBdZhRhMUhqzS5PYUx28=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gzrTy3rjnnDwdYC4k1divh7zXN2LpXdMyJfImVCLGMQx9rt42NA3g1M0wmsRCikuv2dA14yL4CJ50yL+OecgNTyr9b1Xe1okN1quQhjFr4K2BbjEP9Brj9xEo9dfDt8+Ew4k5fLrS/QEhrCYY15+sEPJBBfno5mbMufld0z+Gpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=YzKnAYJy; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1710886646; c=relaxed/simple;
+	bh=iSWaMEWDug/PqAcpOySOPvs1GqiZV7u1C4XYEixAJCE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ot612y7tmShKUDBIqQ7X/tRPxTJ5w8SyNyp5OXMJKSFQHmrZx5qTV6kIU67g5Iaw9eQJOcAq6iFogQZCASTZPNPcfa/OtwdjD/44LPyjU/JRnKG4gsrAM5YzMrY0iSEGNOed82pesDCPumedBDDcb47y658tce/OdxVTIa6KFUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jtZA6t61; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="YzKnAYJy"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1dffa5e3f2dso21483025ad.2
-        for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 14:44:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jtZA6t61"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-56ba73c02b2so765141a12.0;
+        Tue, 19 Mar 2024 15:17:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1710884687; x=1711489487; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=b4jDMTaEh9Tmc/RAOO1DLFWKOQOj35T+6qA1lIMjBb0=;
-        b=YzKnAYJyPyVU1ZCnmtblJF0iSVjoOegMvXZv5uJdE5tGlCUpSq9fSosZODrT0BrFtA
-         BNJyDJ3ZRFeM7tOEc8yYO9Ri3BmzEOG24FlyszeEf52QJnOnY0yV9p+ufjFkeyCLckHT
-         R5mETtg1wGOQD2d1RoqrZRjoabeT5gxDbM5wY=
+        d=gmail.com; s=20230601; t=1710886642; x=1711491442; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=cSNk7Vf1g7S81rJhVAJNnvcZ02nEXYFCinajVc9WiKg=;
+        b=jtZA6t61Cp8qIl7A1LRA27ekgSA9h3CbMO5+RrTkH7geKuJb5svNaRvdRyOniILrEj
+         wnF7eJOyB9HRpX7sZ/gNZGnhmGUEG7HUrmW6RRN1cEkJQwTnMsbNHFje1Tfn4CGaaCfb
+         p4jVWPY2xBZJqIZpZLtzDJHY9Q7X19XpSLR00aJ0c+0fy4099212J2OJtNttnoTHxA/q
+         pSqZbp8NDWYbJP0obajERx3etm9iBs9IAfB29H6dsqGFkTkd7A12KIP1kCoQHbDUnBlG
+         G11SrYErxVLndnIfGOJi+9F0aLy9i3xfeTMLG/lnnSWwP7IOlVFFBizmNze0aUbH37Uj
+         ig1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710884687; x=1711489487;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b4jDMTaEh9Tmc/RAOO1DLFWKOQOj35T+6qA1lIMjBb0=;
-        b=wzsWdrr7l65agWvtN+KM3aTVEbzk9FZxNDyrczIRz51E1zLV3NSrWmkG5nuYOWMU0f
-         P5kU3+wLen6gbVNogDnUDjtP7w1mgVx0TtoPdaxnlxepj8Ox7vlmly2Kw3KRa6LeOEty
-         0UH1GDir4kWdrlW2Rs8tcEqbXrIr1KepzRWLyTRWbywnvjpSX+6NbqtpInvCMicdbtHx
-         2SeypqdRrQZtKS/WB19eFYM6iYhYp1Y98HFapT2vM/1HcXd1URYFTdZ2pF9iZaczTY93
-         JP1MaOPAQLRu0ic+kZU9Dxxymf04wiOXl00XfXiSh9soFeOSTdfXekNWF80nX+YRo8/N
-         TRSA==
-X-Forwarded-Encrypted: i=1; AJvYcCV6b1isYPslYyPGOaoZ/4PNkIhEge/jE8IDoCZCN7bkJUIS7rmC6DyQJTdwhInIhT+jJUfw3FYD7V/RBjUnTZ0Ath5hdVAImSsV7FtQ
-X-Gm-Message-State: AOJu0YxZ6n9z+bbhOmF1aI53FqbO3qb97CenrV2W5h6TTE6wAIK4ll0y
-	J+qkjZh9pfSj/WDKjuAnmoaoWTnug3wBNyC4cZIYHpNaBQFQ12WKXfR1L0CGLw==
-X-Google-Smtp-Source: AGHT+IE5OC8LzVRzLn5nTU5QYo7UeQmmxs9m35kXMJwGMfexxRccoDwLT4tRF8BNtoPmHD0tgyYoGg==
-X-Received: by 2002:a17:902:d549:b0:1e0:4aac:e543 with SMTP id z9-20020a170902d54900b001e04aace543mr2800312plf.38.1710884686935;
-        Tue, 19 Mar 2024 14:44:46 -0700 (PDT)
-Received: from www.outflux.net ([198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id 13-20020a170902ee4d00b001dd7d66aa18sm11873034plo.67.2024.03.19.14.44.46
+        d=1e100.net; s=20230601; t=1710886642; x=1711491442;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cSNk7Vf1g7S81rJhVAJNnvcZ02nEXYFCinajVc9WiKg=;
+        b=R4Mg3yeqUrvcGzUI+V9mq3s2+98j9rys1WUgckF8WQMupu2obotfoDd3egL8OK74Vx
+         JpZAF44c9yEKZdeovhfRbpIAQ745P504Jo3+7LQ3pcAXpcYtzEVZw5mM+Z2ENk591E98
+         l3NqaQdIMFbuk2C8EqU855BzRiSUkYXnVsEmCRtL3PtrOnzbSJ4Q/I7ihexJKIT27kk8
+         4jA3GrG0W/2ld7h1VJ5V24DF2CHNiABVseBmyhJDE4Bq/2OOAs0B44M7UM+T/Nnclk1f
+         XevOnk5oOy9P1XnqSwuZYst+qwWyPOjFluzjdHRAKX5tWjqfrWJJ4j7o3vBsHCTgWVxk
+         LaJQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUZds5yINfqgGTDg95y1A4yqiWMt/YNozlDen3WgRspe7Z/6pJN6COmgfnRq2uQefvJ+JNXKl6YCnp7HOjWHTmka2IP4CvkdauU4dimwdXMjuqdzoVbnHISGqExF1TgersxrHTb9KP09No1lgtQtPwIO7o1jhA5c2TyxAm3KFLktZMI0iKhMw==
+X-Gm-Message-State: AOJu0YxphkJ6LdULXh/m9/JcTLG1tG7Dqa/lxUhwFKudngHe8fXtX8NY
+	63dCrwwJi9H288aShz1WYCVyc4RvhFvKYOdnwj22gmT1Uj6tLg+b
+X-Google-Smtp-Source: AGHT+IGMRTODL29KcDlbOCHNLwkDAaChUKnvdXRP1BG+7isiw1RpTe6iNe5o6suqQifNVnwSPURhdQ==
+X-Received: by 2002:a05:6402:4499:b0:568:c6df:d23 with SMTP id er25-20020a056402449900b00568c6df0d23mr6871268edb.1.1710886641585;
+        Tue, 19 Mar 2024 15:17:21 -0700 (PDT)
+Received: from bhlegrsu.conti.de ([2a02:908:2525:6ea0::11c2])
+        by smtp.googlemail.com with ESMTPSA id n13-20020a05640204cd00b00569aed32c32sm2761182edw.75.2024.03.19.15.17.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Mar 2024 14:44:46 -0700 (PDT)
-Date: Tue, 19 Mar 2024 14:44:45 -0700
-From: Kees Cook <keescook@chromium.org>
-To: Justin Stitt <justinstitt@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] tty: n_gsm: replace deprecated strncpy with strscpy
-Message-ID: <202403191443.0E396FCA@keescook>
-References: <20240318-strncpy-drivers-tty-n_gsm-c-v1-1-da37a07c642e@google.com>
+        Tue, 19 Mar 2024 15:17:21 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+To: 
+Cc: Wadim Mueller <wafgo01@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Chester Lin <chester62515@gmail.com>,
+	=?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+	Matthias Brugger <mbrugger@suse.com>,
+	NXP S32 Linux Team <s32@nxp.com>,
+	Tim Harvey <tharvey@gateworks.com>,
+	Marco Felsch <m.felsch@pengutronix.de>,
+	Gregor Herburger <gregor.herburger@ew.tq-group.com>,
+	Marek Vasut <marex@denx.de>,
+	Joao Paulo Goncalves <joao.goncalves@toradex.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+	Matthias Schiffer <matthias.schiffer@tq-group.com>,
+	Stefan Wahren <stefan.wahren@chargebyte.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Philippe Schenker <philippe.schenker@toradex.com>,
+	Li Yang <leoyang.li@nxp.com>,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 0/2] NXP S32G3 SoC initial bring-up
+Date: Tue, 19 Mar 2024 23:16:08 +0100
+Message-Id: <20240319221614.56652-1-wafgo01@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240318-strncpy-drivers-tty-n_gsm-c-v1-1-da37a07c642e@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Mar 18, 2024 at 11:02:12PM +0000, Justin Stitt wrote:
-> strncpy() is deprecated for use on NUL-terminated destination strings
-> [1] and as such we should prefer more robust and less ambiguous string
-> interfaces.
-> 
-> We expect nc->if_name to be NUL-terminated based on existing manual
-> NUL-byte assignments and checks:
-> |	nc.if_name[IFNAMSIZ-1] = '\0';
-> ...
-> | 	if (nc->if_name[0] != '\0')
-> 
-> Let's use the new 2-argument strscpy() since it guarantees
-> NUL-termination on the destination buffer while correctly using the
-> destination buffers size to bound the operation.
 
-We may need for -rc1 (or -rc2), depending on when subsystem tree re-open
-for landing patches to use the 2-arg versio, but, regardless, it looks
-right:
+This series brings up initial support for the NXP S32G3 SoC,
+used on the S32G-VNP-RDB3 board [1].
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+The following features are supported in this initial port:
 
--Kees
+  * Devicetree for the S32G-VNP-RDB3 
+  * UART (fsl-linflexuart) with earlycon support
+  * SDHC: fsl-imx-esdhc (SD/eMMC)
 
-> 
-> Link: https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings [1]
-> Link: https://manpages.debian.org/testing/linux-manual-4.8/strscpy.9.en.html [2]
-> Link: https://github.com/KSPP/linux/issues/90
-> Cc: linux-hardening@vger.kernel.org
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
-> ---
-> Note: build-tested only.
-> 
-> Found with: $ rg "strncpy\("
-> ---
->  drivers/tty/n_gsm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 4036566febcb..f5b0d91d32a7 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -4010,7 +4010,7 @@ static int gsm_create_network(struct gsm_dlci *dlci, struct gsm_netconfig *nc)
->  	mux_net = netdev_priv(net);
->  	mux_net->dlci = dlci;
->  	kref_init(&mux_net->ref);
-> -	strncpy(nc->if_name, net->name, IFNAMSIZ); /* return net name */
-> +	strscpy(nc->if_name, net->name); /* return net name */
->  
->  	/* reconfigure dlci for network */
->  	dlci->prev_adaption = dlci->adaption;
-> 
-> ---
-> base-commit: bf3a69c6861ff4dc7892d895c87074af7bc1c400
-> change-id: 20240318-strncpy-drivers-tty-n_gsm-c-ab1336e0e196
-> 
-> Best regards,
-> --
-> Justin Stitt <justinstitt@google.com>
-> 
-> 
+== Changes since v1 ==:
+
+  * fix the reported checkpatch.pl errors. Two warnings still available but can be ignored
+  * clean up unneeded DT nodes and properties
+  * fix 'make dt_binding_check dtbs_check' errors
+  * remove the S32 STMMAC driver and DT node which will be introduced in a new patchset
+  * add NXP authorship and copyright into the dtsi header
+ 
+
+[1] https://www.nxp.com/design/design-center/designs/s32g3-vehicle-networking-reference-design:S32G-VNP-RDB3
+
+
+Wadim Mueller (2):
+  arm64: dts: S32G3: Introduce device tree for S32G-VNP-RDB3
+  dt-bindings: arm: fsl: Document missing s32g3 board and linflexuart
+
+ .../devicetree/bindings/arm/fsl.yaml          |   6 +
+ .../bindings/serial/fsl,s32-linflexuart.yaml  |   3 +
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ arch/arm64/boot/dts/freescale/s32g3.dtsi      | 236 ++++++++++++++++++
+ .../boot/dts/freescale/s32g399a-rdb3.dts      |  43 ++++
+ 5 files changed, 289 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/s32g3.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/s32g399a-rdb3.dts
 
 -- 
-Kees Cook
+2.25.1
+
