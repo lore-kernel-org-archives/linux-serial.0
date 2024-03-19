@@ -1,125 +1,152 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E315450A73;
-	Tue, 19 Mar 2024 06:59:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7395C51C5F;
+	Tue, 19 Mar 2024 08:12:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710831569; cv=none; b=bcyz3+oSd28yjZFgBxnSo9/CHhUyZ76mqf286kn6j2ULm16ShmBtXxRNedVSVDIUi3MPaKTIfg6Foq4zE0T5v+ExV+blpJDcddPj5INpMQH2S85Ydr3p5fh59NY4V67Q/qr5guZOCnsiaFuy3W7dyjo/6gso/RPT686k0vveM5Y=
+	t=1710835946; cv=none; b=q6K6kLS/p+nGl9Pnha24cc3r+3D3glGnqCTPlNw0WM6mMNT0dFZtye2DlbgugQnXH+5cEE5p7ZObDmFkZjJMMwDWujxJPFf0OmIAgXj/QpXCDy/GhM7efzZa4RgmAqon2joDNqoasqkg1oVzNm2sTwNwH3NCgWcfufXoRFp8L14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710831569; c=relaxed/simple;
-	bh=AIm9eviEi3P0eyCT+yS25nZjVcga1ARn9xwEwLrT2z4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RGgE1beBt0R//zqp1sObchryM44rcjz0A6y3wLK8L2jA4wcLxXIV5/UtqZkNaQ4A5EF/9FvcndLKaEqddTm0emG7Dm/TY6yaEqHnx+frWcJ3KVATq558ikmCtCxe9KckCcU0oS/mDWzSxLcRNdITNOW0aCzt3xxl9M+bbib6ns0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QhewyzF/; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1710835946; c=relaxed/simple;
+	bh=H77LRDP1ZAiFLCOpOXxrX0rEwjCzTkbq4ZIheDk2y0M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=V90kCuT32M36DqPnL/8v8D9K6r32wYoZLSE3FsYC/PpTm+Z9CHcSD0dcTWX9zDCVj459GkeRq+wV6FXV7AahaoyENcocNnbTp7gP75J4lSiygIMcORWmiGoJBgBr9j+OeD/fI2aAdxSTi9lwqHsxYuaI+GvR+cNSyX9IdQO9GPI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QhewyzF/"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-1df01161b39so25575245ad.3;
-        Mon, 18 Mar 2024 23:59:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1710831567; x=1711436367; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=sMcKfZi1xz5eaYp9NuQfLHyNEpRw2+4mgzvyh4Nj45M=;
-        b=QhewyzF/Jn+Z1v9mHxuUMSfyzkvgXVoacIY2h4W0CuJgQ6tzh52oGHf3LgfGFCucsU
-         o93cc+Zd6nAl2V8c0NB+2QF0vVYYnRL4mB8d3Nno81GkelyVM8J93FRugkcGs37+qkU6
-         UPUQyqhLwmdvdDwWV6yapypvAtIOM4BNbQMkl+8/8h5oG1QZ9t+0PLl82Gwldb/ixIUV
-         KTnhZBUD8JzJWeKAZ86DD9r2Cgb8x/vvoujmxKEYx2SnpKT2xzVf8kkxxsECV4hR9sa5
-         ySMLjCtkFhp8QP711lBAfRjhwHx2S15ZsJMgcQdjMTNZMk2i3i5Ni1n4s3c6eYCjELer
-         TqNA==
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dc6dcd9124bso4955438276.1;
+        Tue, 19 Mar 2024 01:12:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710831567; x=1711436367;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sMcKfZi1xz5eaYp9NuQfLHyNEpRw2+4mgzvyh4Nj45M=;
-        b=Qzl4WcSTmcxKG/6QZ/k9UoHfNsvG1cPtd5TQIYhW2qcrhuxxC25LrG4xatzGj3e2ok
-         57srK5YYlnr7wycYXZmrxzWU+fYREFRfU8ZiGDSmmWaUjOsiLn0dOGvtbPxvOKutxfdx
-         ZQA7WqDCw9Z7jLutkEyuj2K5dPjWxw96vQ9brcV6GGIA14KvIAZvznIlOfX7LOzLj/yS
-         m0TAekZYnSrILLoeiQ8JoFkbK6VTHcv8lvYAm9AWHnwtkfejurflXnb4X7n00tnw5FQF
-         UlIqoVoHDuxGt4LpdhEKw/SvuvOcO/oQH71OAnAdz9D6CL8p0RherxtVBp37wJMAiHBD
-         Nthw==
-X-Forwarded-Encrypted: i=1; AJvYcCXkmbqL4d9CENbHEMpnR6YOk//X+bfY3u7UWq8xljhwlbHyP8B2grbfQWPXUk/SxWKZtF90a8DiAHFW0jx/YLugBIeibUklt9OopsGXZwNHcE0WMKLX7AG7SVmaoYNHhUP3e8libctnyQT6RV/oDhlU1DOCI5g1g11ADM1ge6/G/qnhQn6apk54z0tg0SSbLgcsqnpj/uGZhp2BxUUXdftx6g==
-X-Gm-Message-State: AOJu0Yzon5b7V8Z8s/NDyfZpZXxmMdEiwvb/4Ha3Bq3Bj89Eqj6BmNj4
-	savS96a5NdnqFLM6HQ4qGOiXHsHT7Tiw8aSE1Zd1ijjITsYZn9w/
-X-Google-Smtp-Source: AGHT+IEPaXPncig+2mfJueHot0LijD4BGVGO0GUG1oH2eSfMb7KVBv96LoNJAMJa6u8EF69x5xL/1g==
-X-Received: by 2002:a17:903:230a:b0:1de:f6aa:c991 with SMTP id d10-20020a170903230a00b001def6aac991mr14909604plh.34.1710831567041;
-        Mon, 18 Mar 2024 23:59:27 -0700 (PDT)
-Received: from [172.16.116.58] ([103.15.228.94])
-        by smtp.gmail.com with ESMTPSA id u16-20020a170903125000b001dd8e1db1b1sm10509163plh.175.2024.03.18.23.59.18
+        d=1e100.net; s=20230601; t=1710835942; x=1711440742;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2zJdlRpxPRZ55P1IAEnV9vLc1U+U2M6G4MVPK3fBjws=;
+        b=r8N+Cwkhpc+1rtBqXY3c/ozxAckbQ2O6qAxLP8UMUgUt3iPQynwxYW3M4Bl30iXLnP
+         RhGm+N/VfpKZN5RmMU/WbrzT7LzM2rILmex5jc7ZndYagrp7ixgoTrCEOjOcmzGoB3O1
+         Hi9rAx+CYuMI/wrCOEItzsGZ8UsdlTwg7kho3No++vr+CSkZpudE0bfSwym8lLHw7E50
+         mED2ydksbaF1ftTXp5H/9CVSDTxvCuU3zYcgSBDWOOy+iwblbQHEGL6doV96EUFrJEAt
+         VZXpb20wDl980zIxIQuUrsXBUzy7PTtTWTNeTK7XxLppooP6m00f4SD6M6MIvyEg8vps
+         TE0A==
+X-Forwarded-Encrypted: i=1; AJvYcCU50fFg77CVUwcbOVb5xyKFFhlyVHC/MYIdTWLtPtYdI4CmGfYDdr3OYO0runCip0eXXtNtIMJDJuEA80IwUak88a3K/QVqrfoc+GfJ/RZWoqOY6fMQA7azsUIkjjov/AvAOL0SJRJzsvfVnBomDpicl3lhY5JV9b8/R7vDChZw6EH/6Jg3Uqu0SCAYYs+8YRPDw9Xju2T/XPzy2Xm6gJdgwsc3dewEMKft
+X-Gm-Message-State: AOJu0YxUkYA8KjqgCdI0LMOOBpy7dimew7kEdtcJGgaQzZIlTAznpun1
+	geci9gN7fBcP93GGIFbvagncldYMcQGfb+SIBBOiZXChAqWrySd6Tgf8nTTd5Bw=
+X-Google-Smtp-Source: AGHT+IHZ9dSVxHec45+BMhJjTUUkBs9yseYBz2aUmywqF+4X59/g4RSLuP7hJjaMJIKZy2d7o7/dIQ==
+X-Received: by 2002:a25:6604:0:b0:dcc:f6e2:44d0 with SMTP id a4-20020a256604000000b00dccf6e244d0mr1008145ybc.37.1710835941564;
+        Tue, 19 Mar 2024 01:12:21 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id e84-20020a251e57000000b00dc74ac54f5fsm2158296ybe.63.2024.03.19.01.12.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Mar 2024 23:59:26 -0700 (PDT)
-Message-ID: <28a5e314-30ba-4fc4-9228-51adb63e7aaa@gmail.com>
-Date: Tue, 19 Mar 2024 12:29:07 +0530
+        Tue, 19 Mar 2024 01:12:21 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-60a0599f6e5so48767827b3.3;
+        Tue, 19 Mar 2024 01:12:20 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVvwpyUqqWQEwBha2TfR/v0Z4XQSYimKS2YqOm+FvMu9l/QtS7sfLy9ZrcCZTLG4HhvVMrPmnsFxiOaVuKXkFFE/7LnTcalRZbgTrCMwI447SDpZtg/08WFROLwoLHRxeQ1VuaLpSIn5XVb99RbSIwrlC1xB0oAX/B4CGanTYd6m3G22H6ziQBuTkuRS1/rW97zajFXcD9HRwDh2TIVi5kJ4Zl1J/040BId
+X-Received: by 2002:a0d:f186:0:b0:610:b0a6:72e1 with SMTP id
+ a128-20020a0df186000000b00610b0a672e1mr8185978ywf.31.1710835940343; Tue, 19
+ Mar 2024 01:12:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 7/8] mikrobus: Add mikrobus driver
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-kernel@vger.kernel.org
-Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
- Vaishnav M A <vaishnav@beagleboard.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
- Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
- Derek Kiernan <derek.kiernan@amd.com>, Dragan Cvetic
- <dragan.cvetic@amd.com>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>,
- Alex Elder <elder@kernel.org>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
- linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
-References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
- <20240315184908.500352-8-ayushdevel1325@gmail.com>
- <8799b216-57a7-451b-80a3-3d4ae9693e0b@linaro.org>
- <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
- <81d55f10-c538-494f-8274-6ea8c4366ab2@linaro.org>
-From: Ayush Singh <ayushdevel1325@gmail.com>
-In-Reply-To: <81d55f10-c538-494f-8274-6ea8c4366ab2@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240318172102.45549-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240318172102.45549-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 19 Mar 2024 09:12:07 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX=3HfYsrHr8Mus9NR9VEoBXh1t=RukmKdcZe=9MaHrcw@mail.gmail.com>
+Message-ID: <CAMuHMdX=3HfYsrHr8Mus9NR9VEoBXh1t=RukmKdcZe=9MaHrcw@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] dt-bindings: serial: renesas,scif: Document
+ R9A09G057 support
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 3/19/24 11:02, Krzysztof Kozlowski wrote:
+Hi Prabhakar,
 
-> On 16/03/2024 14:06, Ayush Singh wrote:
->>   > Are you sure this fits in Linux coding style limit (not checkpatch
->> limit, but the limit expressed by Linux coding style)?
->>
->>
->> Well, I am just using clang-format with column width of 100 instead of
->> 80. The docs now say 80 is prefered rather than mandatory, so well I was
-> So you introduce your own style? Then consider it mandatory...
+On Mon, Mar 18, 2024 at 6:22=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
+om> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 >
->> using 100 since I prefer that. If 80 is necessary or would make review
->> easier than I can just switch to it.
-> You do not choose your own coding style.
+> Document support for the Serial Communication Interface with FIFO (SCIF)
+> available in the Renesas RZ/V2H(P) (R9A09G057) SoC. The SCIF interface in
+> the Renesas RZ/V2H(P) is similar to that available in the RZ/G2L
+> (R9A07G044) SoC, with the only difference being that the RZ/V2H(P) SoC ha=
+s
+> three additional interrupts: one for Tx end/Rx ready and the other two fo=
+r
+> Rx and Tx buffer full, which are edge-triggered.
 >
->>
->> I will remove serdev, pwm, clickID and send a new patch with the minimal
->> driver and better commit messages as suggested with Vaishnav. It is
->> important to have good support for mikroBUS boards without clickID as well.
-> Best regards,
-> Krzysztof
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> v2->v3
+> - Added SoC specific compat string
+
+Thanks for the update!
+
+> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> @@ -79,6 +79,8 @@ properties:
+>                - renesas,scif-r9a08g045      # RZ/G3S
+>            - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback
 >
+> +      - const: renesas,scif-r9a09g057       # RZ/V2H(P)
+> +
+>    reg:
+>      maxItems: 1
+>
+> @@ -204,6 +206,37 @@ allOf:
+>              - const: dri
+>              - const: tei
+>
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: renesas,scif-r9a09g057
+> +    then:
+> +      properties:
+> +        interrupts:
+> +          items:
+> +            - description: Error interrupt
 
-I mean after the whole discussion about 80 vs 100 column line limit a 
-few years ago, and change in checkpatch behavior, I thought 100 was an 
-acceptable column length in the kernel, but I guess was mistaken, and 80 
-character is still mandatory? Not sure why there was a change in 
-checkpatch and docs though.
+[...]
 
-Regardless, I have switched 80 in the next patch since it is mandatory, 
-and I do not care as long as I can format using a formatter.
+These descriptions should be at the top level.  The SoC-specific rules
+should just restrict the lower limit (interrupts/minItems).
+
+> +
+> +        interrupt-names:
+> +          items:
+> +            - const: eri
+
+[...]
+
+Likewise.
+
+In addition, you should restrict clocks/maxItems to 1, as on RZ/V2H
+only the UART functional clock is supported.
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 
-Ayush Singh
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
