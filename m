@@ -1,60 +1,59 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAFD944362
-	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 05:32:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96E74594E
+	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 06:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710826379; cv=none; b=ZJMT7M5ODZQbRAsjPc5ehFJcGXy2d6kkzW3Vp+DNHcj7cJAApWDPJbOi6UXTz9sLnsFTSTDJSkt7O+XcU3EMGi3ikEegcgZDDw5QMiSRD3hdc+euEDEj3CZwhLMtoiFVLlBdY+NCd7NuZIxbTaM9GEhsqrwR7L7NqAiLvGbeGu4=
+	t=1710829197; cv=none; b=QWvhmT7gcAKe0pNE1lrMHZB5T7npyU0iZK72F/nsXK+ZGfuJkP1IEdAH2j8JfDgM56yGBr7kEikQlco7TRJzDBXlOLEhVbMhVXsSPbswr6dUCLmLiaeXOvfr0YzrJqsqZ3afCrjDIbjyLEIhe9nokLeB8Dn5lCq1tnUIwgYkTSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710826379; c=relaxed/simple;
-	bh=xl5lWCcnCzMPuoOFXIoZi+GoMfldehsQHY3hndHZ2gk=;
+	s=arc-20240116; t=1710829197; c=relaxed/simple;
+	bh=0yijNPe3mwQ64TCF1fbO0XvklpCD7EaEMGjgQsc4qe4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rrgUju+o40O4uh7fAkGUf5h95sRXZNYDREqxNpcwYQudwK6YOrYf1Uf/FH41LmZv7X9svGxG5IG2IfW6YCla53SWboW+O+cdGe55L0jG37xF6y54bwwzX/NhE3jRh4ylrGYX9dOEbwD/1T/fILF31nnN2qolKJ6BFV3sDNm+WkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=buqMMpkx; arc=none smtp.client-ip=209.85.218.46
+	 In-Reply-To:Content-Type; b=krhHCqAJgYflLWVMyUVqno58VlKiuIid/U2PTwX3+WLOxzjWt4ARj00/bDy5i9/Ij5VZQWMheRySDSq4ARe1LspcWc7wqmJEEOYCldANz27Gcb5Byigj38uVgwNIOvnGWbO+ykdGHGDlwaRznaUvaJPYxUtgJ2a5nXSwa5V8dno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xR+k4fkV; arc=none smtp.client-ip=209.85.218.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="buqMMpkx"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a46ce2bd562so176767266b.2
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 22:32:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xR+k4fkV"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a46cc855600so211746366b.0
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 23:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710826376; x=1711431176; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=4SxnMpY3DxcFh+MWEVjTcWTDI7NiqxrUCVsr1VaMCgw=;
-        b=buqMMpkxTsWBJVvcAQRB+H//k8+/61dH5df8ST02+nK7+s+RtsUL7Atk6CJN7atwGQ
-         km2FAVlg6ToVO9wgxHcE/Wd5hHu5HyKyFETSTGNz9u1JIXgyjPgnZNdIDRIdYItMVgbS
-         /Lw/5VpXmNdl3+2ka8s1cd/9RFTjWOc2k3CtA739tzY6kpPfPlA9uK4tP/lz7QEefji8
-         bPLUpjz9WB5lPXnzvElEyzB066/VdEk4HiAxLeGNoXpBWT3WjywDWIURssLUx+hk7SYh
-         x0CzhDjwt2dZv/8dVsuflM5SIWuNbzu0Z2fRi3yZB4lBDVRxV8pc5x1W//Csgyw4jkVZ
-         eaaQ==
+        d=linaro.org; s=google; t=1710829194; x=1711433994; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gkIlYDaJW+9WUMdSaa/ilef43El2pd6walcVrx1mtTU=;
+        b=xR+k4fkVVQCvhzxfFyV7IfBtvMvpQCaC36F9XbNjtYE29dK+8OWLLhgzEEHHGNDw24
+         Zwp7Wec4+90FuG0mQzDtethcWrLK4qxOBnBzlZWsiCJgXaWKJer3/iecyx4xQyEkpTm6
+         JxYrr8l2P3VHra/TFjvammRixgVz2ZzHSDLWSXUukz67Ky1IqXlebcm7nkPJA/o/psFM
+         0w0aaqMGN4iS2BCo4NvWwcEkCOehKysBAbb/vX1KhnRmUIeTksC/+3JwmNqI30+2/gAF
+         DAEIgHRl84Fa4ZZDxTf12yDkcCvQZzYZu3KIDFF657cSruy59ck3R2Zaiej3wcS3yLEl
+         VjIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710826376; x=1711431176;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4SxnMpY3DxcFh+MWEVjTcWTDI7NiqxrUCVsr1VaMCgw=;
-        b=c7GBNAdGML8kQr22GaoOxuPjTe7S6n20e7bsFCLLFLkswCb2va/Z1wt17QvD+UNQL5
-         lhQaVm2G4XqpZP9wWiBTpD9bb48aNbpiEAPnBDs0VVKM7ww0mJacf0h10dzBkTk6vjkm
-         k1xGivqsqJ3xgup88kSh4PKC6KzD2j+IekIB9vTpwsqhJAj/5KLoS+aSVnVadZT+/txi
-         UqA65xN9IAZV8GSIYLCAn5datVZq7EyBEr5q9Yn7S82AkdVdFSE1yO2YuSxEf7bJIahL
-         Axw0uAs+uez/KJU0hSf2MG7LmAEJHrLj/unvQiVzAMEHR0GL4+607txsae8PRpKtZIed
-         9QPg==
-X-Forwarded-Encrypted: i=1; AJvYcCVoYz93StbQOBPihm2BzmqefE1z8duzdNLWU/Rtb4lvcU1ccaIzzxM/GTLpAyK+q5bu/ZzcK/oBHuinRIDy11V2LOGEqk8FN4oS712p
-X-Gm-Message-State: AOJu0YyuhooMbg0o+85Wff0t1JwDPLyLktLy33mRAr11KiV7MtJbUbVy
-	A63O7zygsiF/4uT8M6tFUaqHJ3c8teV+RD464uj9PVm9XbKBZLonTTTqNo2n6VQ=
-X-Google-Smtp-Source: AGHT+IHSDN/jrEcCvmllzmYLzKmxoVnQr3zoR69ATwifKQvAzVzA/zkXmSeuz6Tiz1sYB/Cl+o9laA==
-X-Received: by 2002:a17:906:7db:b0:a46:aed5:2553 with SMTP id m27-20020a17090607db00b00a46aed52553mr994543ejc.15.1710826376134;
-        Mon, 18 Mar 2024 22:32:56 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1710829194; x=1711433994;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gkIlYDaJW+9WUMdSaa/ilef43El2pd6walcVrx1mtTU=;
+        b=o6tzmiGtXkx1CbX/OACALIZXFhP3sPBhilwuDUBCrIGyMs1/z8qSX2AEkXAfj0Nh2S
+         cG5beaST0B8hpLKwT61fKYF4Toz40hBaZ1EaMBlzvvquDNGFMBhw3bJFqJ3XEFs++lEa
+         F9T3pQJ/Lf0Pa/TM76EZCMFV++fnFxTNKyxVtph4N6jutgkqTBttKPg4JZaXZY/04KYG
+         1HN0iZZAczhyUhI95m1wyALclUuxgV3ajFNQ3r5buIo81iz5AicsYmR3DcgUQWLeg7vl
+         K37uhLICILcFk0RyqKCafUGhkOmd5Trfgf4LEUdJw/CfTpbqtPmITifL1CEvrBpnM9KF
+         +57g==
+X-Forwarded-Encrypted: i=1; AJvYcCUl7J1vO32sk/K1nlhDnUVLue7/9XDv/V6rnhPMvv35LTBq2EPjPnPftrrhwtjPLtvg1g+kzcxAuIOmFrVpaq/z5IkSbJn4QKOjHwZk
+X-Gm-Message-State: AOJu0YxP/SL8i7yp0pxgpwCaSnOlWDqkH7e+GDQO3Bj3IB3qIZaIZI0k
+	ZT4hGtXKED6pqRRN2sr3xCut0V78UCNASafgr1N0V6lDQ0T3Gtqb8oo86WaGC1w=
+X-Google-Smtp-Source: AGHT+IH6NlDsY4VujEd3BP5gGcnMLKshl/WjA1i6UleU9JCzWb3R4Xp8XGu+iTgxlFdgoByLl5SOUg==
+X-Received: by 2002:a17:906:2310:b0:a46:b028:7dc8 with SMTP id l16-20020a170906231000b00a46b0287dc8mr1073131eja.50.1710829194088;
+        Mon, 18 Mar 2024 23:19:54 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id a4-20020a170906368400b00a44936527b5sm5664170ejc.99.2024.03.18.22.32.53
+        by smtp.gmail.com with ESMTPSA id e25-20020a170906845900b00a4652efd795sm5696140ejy.83.2024.03.18.23.19.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Mar 2024 22:32:55 -0700 (PDT)
-Message-ID: <81d55f10-c538-494f-8274-6ea8c4366ab2@linaro.org>
-Date: Tue, 19 Mar 2024 06:32:52 +0100
+        Mon, 18 Mar 2024 23:19:53 -0700 (PDT)
+Message-ID: <db13e305-adc4-4990-b9ec-b1cdcdad4406@linaro.org>
+Date: Tue, 19 Mar 2024 07:19:51 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,26 +61,21 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 7/8] mikrobus: Add mikrobus driver
-To: Ayush Singh <ayushdevel1325@gmail.com>, linux-kernel@vger.kernel.org
-Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
- Vaishnav M A <vaishnav@beagleboard.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
- Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
- Derek Kiernan <derek.kiernan@amd.com>, Dragan Cvetic
- <dragan.cvetic@amd.com>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>,
- Alex Elder <elder@kernel.org>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
- linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
-References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
- <20240315184908.500352-8-ayushdevel1325@gmail.com>
- <8799b216-57a7-451b-80a3-3d4ae9693e0b@linaro.org>
- <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
+Subject: Re: [PATCH v3 2/4] dt-bindings: serial: renesas,scif: Validate
+ 'interrupts' and 'interrupt-names'
 Content-Language: en-US
+To: Prabhakar <prabhakar.csengg@gmail.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20240318172102.45549-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -127,30 +121,38 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
+In-Reply-To: <20240318172102.45549-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 16/03/2024 14:06, Ayush Singh wrote:
->  > Are you sure this fits in Linux coding style limit (not checkpatch 
-> limit, but the limit expressed by Linux coding style)?
+On 18/03/2024 18:21, Prabhakar wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > 
+> Add support to validate the 'interrupts' and 'interrupt-names' properties
+> for every supported SoC. This ensures proper handling and configuration of
+> interrupt-related properties across supported platforms.
 > 
-> Well, I am just using clang-format with column width of 100 instead of 
-> 80. The docs now say 80 is prefered rather than mandatory, so well I was 
-
-So you introduce your own style? Then consider it mandatory...
-
-> using 100 since I prefer that. If 80 is necessary or would make review 
-> easier than I can just switch to it.
-
-You do not choose your own coding style.
-
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> v2->v3
+> - Listed interrupts and interrupt-names for every SoC in if check
+> ---
+>  .../bindings/serial/renesas,scif.yaml         | 95 ++++++++++++-------
+>  1 file changed, 63 insertions(+), 32 deletions(-)
 > 
-> 
-> I will remove serdev, pwm, clickID and send a new patch with the minimal 
-> driver and better commit messages as suggested with Vaishnav. It is 
-> important to have good support for mikroBUS boards without clickID as well.
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> index af72c3420453..53f18e9810fd 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> @@ -82,38 +82,6 @@ properties:
+>    reg:
+>      maxItems: 1
+>  
+> -  interrupts:
+
+I don't understand what is happening with this patchset. Interrupts must
+stay here. Where did you receive any different feedback?
+
 
 Best regards,
 Krzysztof
