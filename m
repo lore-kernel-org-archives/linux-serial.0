@@ -1,40 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8467F7EE;
-	Tue, 19 Mar 2024 09:53:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7160D7FBB1;
+	Tue, 19 Mar 2024 09:53:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710842024; cv=none; b=XKtxdu2uA9iNjXZ4hD0UrqFdM6VVLxPWX+o+0LdHabb+TW6Qehy8TYvXArVG2Gj/MllvOml/XpAapD2KZKB7iCloSyOyPOXwLhjUeF3qIP3iDrDQ+rqIn3CrwkIpq0Hp1ignAFHxMZVgUca5uX33Y0ViVgQal1Dakv5EUJCjOKM=
+	t=1710842026; cv=none; b=T+FqTZ9enPxlvphMAYYTOZB4sQOjxrg+SV37/Dxrux2ID07i5knYz8Oj9/B4asSll/AeQY+xrbkjgEsEcwHU672TAxI1y7XI4cGYJ/UmPK/Sl8W1A4GaHhk7wD9hTcLd6O1TQkY3d5m7ZJXoSMXDqi17vS9lc4SgiQvipOn8x1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710842024; c=relaxed/simple;
-	bh=ABWyGemdevLy8WsvPHNbBGBHcbCMGV5EaSGQyEJYhLA=;
+	s=arc-20240116; t=1710842026; c=relaxed/simple;
+	bh=wKzRdXC2CGMBk+yjNkNCtzVfVM9PNiFuCla4o//SuBU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ccygMMj1JdKNugs482faD9byMjnUajbh39VGfVKB7cw/QQdGiOy5nA/Du+hSxFW+x1RH48soqvL65mt5MFq/gjXkBi+Et2Kyq1BzrfMcai6IxN1H/WDLesYkeFPhCJloD2oRrx2E84rF5pjoOn0lK0ktzIuFiHUJ1dCF5sWbf0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b/GocJNN; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=jxnAi6NyXk2IGTzQ1Wwno+so8+nx/y4dzXjW1c48mwp6oDBZYH0qyikUPCILri/Jz2IlFhvVf2xHyGrHnsHSQmIbVaCVhP7RNQaY95r7pf9FQMxQmguFlPz0QV8UrApOBYoO8VQq/moydrPbdp1c8yOZOjpF6SC3qcT3A85ctOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f8O5Oava; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b/GocJNN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7937C43390;
-	Tue, 19 Mar 2024 09:53:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f8O5Oava"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C0FCC433C7;
+	Tue, 19 Mar 2024 09:53:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1710842024;
-	bh=ABWyGemdevLy8WsvPHNbBGBHcbCMGV5EaSGQyEJYhLA=;
+	s=k20201202; t=1710842025;
+	bh=wKzRdXC2CGMBk+yjNkNCtzVfVM9PNiFuCla4o//SuBU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=b/GocJNN9prwOikvbvCq4ayHy5jrjzX6avLN/9kz55jC9hvVQXfh9Q6d8EDmt0UGH
-	 fGZJdYXI+qpKGxPh9sCFs90n3ceG7lQ0YBhrlljBDOHrQ5rNQaUQGlbBDvnd2w0eZX
-	 kSqz7YVieLF5ZBDnQwzUnaZTIH4dgO/hMBcIKlPwM7c5WDpYUOjlHMlSeAhDtehgpz
-	 qK3e3oG/kXpuNIKHztCPhv2Vdd/uZ5RSKfxzDwv8Az8yxP6EwxxlKkmxn0HoDdxqgn
-	 p1+rtpHr7YYNckfJpGnfqbgwJw254Ku8b2RqBUj71Wxm/m27qVyB8iKmxUvpYu+ZAR
-	 4329QKg5+8/2w==
+	b=f8O5OavaKbe48Cwfe30+zoZzglhaJ1CyFuUEnxzTjmjaRkhWtYtchg12yT4duUx2q
+	 dcbW3jsB/aEZiAiSjHy++0PPpJvyIHAi8iNH7BtLFjEoo+2UBRKU0WbOavTOS0c5FB
+	 Vx4lbiLziNGTEnd07/fSzTq+uKTLy4dJvOoFqlICe1Nspmpu00rT4mwI/KB3+Djx+9
+	 sdPP/hCW/KGiqhtsPmdEYF6mnwADCgCUIoQjZLatHU+F/tLCz1ugB2fCgFXcxKRCcf
+	 nnOX2NBiVqn5jylkAmpzLRM9aksnXmuRnhAeam3Up5ofLSgvxhPmbety5ERwolMb8E
+	 3kBCdCQua2Plg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: linux-serial@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Stefani Seibold <stefani@seibold.net>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: [RFT 08/15] kfifo: fix typos in kernel-doc
-Date: Tue, 19 Mar 2024 10:53:08 +0100
-Message-ID: <20240319095315.27624-10-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [RFT 09/15] tty: 8250_dma: use dmaengine_prep_slave_sg()
+Date: Tue, 19 Mar 2024 10:53:09 +0100
+Message-ID: <20240319095315.27624-11-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.44.0
 In-Reply-To: <20240319095315.27624-1-jirislaby@kernel.org>
 References: <20240319095315.27624-1-jirislaby@kernel.org>
@@ -46,66 +44,47 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Obviously:
-"This macro finish" -> "This macro finishes"
-and similar.
+This is a preparatory for the serial-to-kfifo switch. kfifo understands
+only scatter-gatter approach, so switch to that.
+
+No functional change intended, it's just dmaengine_prep_slave_single()
+inline expanded.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Stefani Seibold <stefani@seibold.net>
-Cc: Andrew Morton <akpm@linux-foundation.org>
 ---
- include/linux/kfifo.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_dma.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/kfifo.h b/include/linux/kfifo.h
-index c7cc25b2808b..d613748de7ff 100644
---- a/include/linux/kfifo.h
-+++ b/include/linux/kfifo.h
-@@ -585,7 +585,7 @@ __kfifo_uint_must_check_helper( \
-  * @buf: pointer to the storage buffer
-  * @n: max. number of elements to get
-  *
-- * This macro get some data from the fifo and return the numbers of elements
-+ * This macro gets some data from the fifo and returns the numbers of elements
-  * copied.
-  *
-  * Note that with only one concurrent reader and one concurrent
-@@ -612,7 +612,7 @@ __kfifo_uint_must_check_helper( \
-  * @n: max. number of elements to get
-  * @lock: pointer to the spinlock to use for locking
-  *
-- * This macro get the data from the fifo and return the numbers of elements
-+ * This macro gets the data from the fifo and returns the numbers of elements
-  * copied.
-  */
- #define	kfifo_out_spinlocked(fifo, buf, n, lock) \
-@@ -745,7 +745,7 @@ __kfifo_int_must_check_helper( \
-  * @fifo: address of the fifo to be used
-  * @len: number of bytes to received
-  *
-- * This macro finish a DMA IN operation. The in counter will be updated by
-+ * This macro finishes a DMA IN operation. The in counter will be updated by
-  * the len parameter. No error checking will be done.
-  *
-  * Note that with only one concurrent reader and one concurrent
-@@ -801,7 +801,7 @@ __kfifo_int_must_check_helper( \
-  * @fifo: address of the fifo to be used
-  * @len: number of bytes transferred
-  *
-- * This macro finish a DMA OUT operation. The out counter will be updated by
-+ * This macro finishes a DMA OUT operation. The out counter will be updated by
-  * the len parameter. No error checking will be done.
-  *
-  * Note that with only one concurrent reader and one concurrent
-@@ -818,7 +818,7 @@ __kfifo_int_must_check_helper( \
-  * @buf: pointer to the storage buffer
-  * @n: max. number of elements to get
-  *
-- * This macro get the data from the fifo and return the numbers of elements
-+ * This macro gets the data from the fifo and returns the numbers of elements
-  * copied. The data is not removed from the fifo.
-  *
-  * Note that with only one concurrent reader and one concurrent
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index 8b30ca8fdd3f..8b2c3f478b17 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -89,6 +89,7 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	struct circ_buf			*xmit = &p->port.state->xmit;
+ 	struct dma_async_tx_descriptor	*desc;
+ 	struct uart_port		*up = &p->port;
++	struct scatterlist sg;
+ 	int ret;
+ 
+ 	if (dma->tx_running) {
+@@ -111,10 +112,13 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 
+ 	serial8250_do_prepare_tx_dma(p);
+ 
+-	desc = dmaengine_prep_slave_single(dma->txchan,
+-					   dma->tx_addr + xmit->tail,
+-					   dma->tx_size, DMA_MEM_TO_DEV,
+-					   DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
++	sg_init_table(&sg, 1);
++	sg_dma_address(&sg) = dma->tx_addr + xmit->tail;
++	sg_dma_len(&sg) = dma->tx_size;
++
++	desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1,
++				       DMA_MEM_TO_DEV,
++				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+ 	if (!desc) {
+ 		ret = -EBUSY;
+ 		goto err;
 -- 
 2.44.0
 
