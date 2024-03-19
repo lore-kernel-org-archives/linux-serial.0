@@ -1,122 +1,157 @@
-Received: from mail-io1-f74.google.com (mail-io1-f74.google.com [209.85.166.74])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BC385B675
-	for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 23:02:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAFD944362
+	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 05:32:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710802936; cv=none; b=moVjxd00sB5VVJl4M7zKCvSvMXJxsxn2o60AYP6JVIJvDM2psTWIs3LbcRElbOgAUOtxCgjRayqBoCdC3PN/5aFyPHIDL6JI5iCXsRMwYV4sewy4Eh3bQfC7wv04oRrpk/Yd8sBRjjqVAvqvFNKhom/WkyuuT2EjX9mBlDU37So=
+	t=1710826379; cv=none; b=ZJMT7M5ODZQbRAsjPc5ehFJcGXy2d6kkzW3Vp+DNHcj7cJAApWDPJbOi6UXTz9sLnsFTSTDJSkt7O+XcU3EMGi3ikEegcgZDDw5QMiSRD3hdc+euEDEj3CZwhLMtoiFVLlBdY+NCd7NuZIxbTaM9GEhsqrwR7L7NqAiLvGbeGu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710802936; c=relaxed/simple;
-	bh=PLBNaeGU4NGKgH+5UYKS87ZNpd4Ohvlws0rrQwvjxCs=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=Ol8IWJ16Y6Jf6gd/oHcVeIQzQkn0Ss6LCPEyZMyCx6F+Lqj7EPmUxrIU464z315p1h0HTUddUN8bY+zwgGbl4ULpZBZeunq2H33gft1YzmMQ3X0vDyNCV3vIB72/ffSUiXVLStJCXnTiOzeE9VVZkN9JFKPNyst1MdNxdXLFM2c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--justinstitt.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UMisAxXH; arc=none smtp.client-ip=209.85.166.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--justinstitt.bounces.google.com
+	s=arc-20240116; t=1710826379; c=relaxed/simple;
+	bh=xl5lWCcnCzMPuoOFXIoZi+GoMfldehsQHY3hndHZ2gk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rrgUju+o40O4uh7fAkGUf5h95sRXZNYDREqxNpcwYQudwK6YOrYf1Uf/FH41LmZv7X9svGxG5IG2IfW6YCla53SWboW+O+cdGe55L0jG37xF6y54bwwzX/NhE3jRh4ylrGYX9dOEbwD/1T/fILF31nnN2qolKJ6BFV3sDNm+WkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=buqMMpkx; arc=none smtp.client-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UMisAxXH"
-Received: by mail-io1-f74.google.com with SMTP id ca18e2360f4ac-7cbffd468acso301245239f.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 16:02:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="buqMMpkx"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a46ce2bd562so176767266b.2
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 22:32:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710802934; x=1711407734; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=RuRw5x2krmOTvpAyjZbMZbMO9GBeCXlz1oxN1a8wl6I=;
-        b=UMisAxXH96OIu1uQ2lJuAXEkkS6Iqh3MbHamKlgTCrWILnYmz9sFpAwuvuaklH7Mqi
-         qWy4C8ZbQT/NTBNhYHbXo8RyYvoMYoSetiiiqGyROsRouGTGqS28p9Vb2MBgwvP4FuoA
-         WvvIp2epZFPKrW/CNMnDfovM9Q0f1EixlARPbfhpSm9wbcj1hXJBAOihwBUygvaK3i25
-         Q4bIXUWfKraOF8T9yCqL5uLveboWs+9/ehW/eLAYtM8N/4sc/wxpRqoI0liDtslBGOaI
-         aDY/YvgTIyiQG6tiD31RUJbP4kAetZ1eo4JdBIxNmISPw7Y1lQ7zTNvGXF1YAZvemshP
-         5tGQ==
+        d=linaro.org; s=google; t=1710826376; x=1711431176; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=4SxnMpY3DxcFh+MWEVjTcWTDI7NiqxrUCVsr1VaMCgw=;
+        b=buqMMpkxTsWBJVvcAQRB+H//k8+/61dH5df8ST02+nK7+s+RtsUL7Atk6CJN7atwGQ
+         km2FAVlg6ToVO9wgxHcE/Wd5hHu5HyKyFETSTGNz9u1JIXgyjPgnZNdIDRIdYItMVgbS
+         /Lw/5VpXmNdl3+2ka8s1cd/9RFTjWOc2k3CtA739tzY6kpPfPlA9uK4tP/lz7QEefji8
+         bPLUpjz9WB5lPXnzvElEyzB066/VdEk4HiAxLeGNoXpBWT3WjywDWIURssLUx+hk7SYh
+         x0CzhDjwt2dZv/8dVsuflM5SIWuNbzu0Z2fRi3yZB4lBDVRxV8pc5x1W//Csgyw4jkVZ
+         eaaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710802934; x=1711407734;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RuRw5x2krmOTvpAyjZbMZbMO9GBeCXlz1oxN1a8wl6I=;
-        b=S7SDvp1GlRSql8GQ3i95y/dE1vBr8oEunyEJIIuqG0oA3EkOjgxNoPdwOD7GepDLK2
-         xNVplA5k++wyTBRtgw4urFgZIwXq7ry89FyORGIqMMxYlfh8UhV6EHpf5r2fmFv8oumK
-         H5S55AsaqhtjEO3/qG06SLEJmVyk3gsCmpJUHXEKU+jDbMGXfKY0oiJw1fTqI884PdAo
-         S/FFNUL06B8m8jt8y5Hs6JsCL/MM+162JLV0NIu9OhSk24DpdBHo8PO1azuzlQhEfMPg
-         2CJ0SfnptGaXyTNYoFOUpWfMSWC9ql5X51NBy8l3rfEWAjN8rE5iY2oK8uWv1WDIpKDZ
-         pcpg==
-X-Forwarded-Encrypted: i=1; AJvYcCUXmJpDNJjaCfjRKKWTCMkJGntQxHdEdRpPBIH1D0U/pqTVJjeaPwFZurkJumHClsQOMedL+gjrHp+3woSDzv5gr+WQyFlygzjRQnZE
-X-Gm-Message-State: AOJu0YyZoPAkq+xPwvM5TOraCs2hZd4YXpWnvSqKdKylC0k9Qx3ltI5O
-	9tz14CUn5GBqxhUnNbXWQmQjS3X3EV/KVP2X3lAUULKbwxhiGUBAzFUdLDDubZrjTrbrch2FY9D
-	P7DfoOxcQO9dnD5dklnnzRA==
-X-Google-Smtp-Source: AGHT+IGigwPG3lswWUAwHTHW//LsWC2Z+0kkjdFTnuXg/Py0AAp24wxbDb4trJJAijtKAdS9ElBjrJTq+3LBUasfOg==
-X-Received: from jstitt-linux1.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:23b5])
- (user=justinstitt job=sendgmr) by 2002:a05:6638:1501:b0:474:f25a:6fb with
- SMTP id b1-20020a056638150100b00474f25a06fbmr18381jat.3.1710802933921; Mon,
- 18 Mar 2024 16:02:13 -0700 (PDT)
-Date: Mon, 18 Mar 2024 23:02:12 +0000
+        d=1e100.net; s=20230601; t=1710826376; x=1711431176;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4SxnMpY3DxcFh+MWEVjTcWTDI7NiqxrUCVsr1VaMCgw=;
+        b=c7GBNAdGML8kQr22GaoOxuPjTe7S6n20e7bsFCLLFLkswCb2va/Z1wt17QvD+UNQL5
+         lhQaVm2G4XqpZP9wWiBTpD9bb48aNbpiEAPnBDs0VVKM7ww0mJacf0h10dzBkTk6vjkm
+         k1xGivqsqJ3xgup88kSh4PKC6KzD2j+IekIB9vTpwsqhJAj/5KLoS+aSVnVadZT+/txi
+         UqA65xN9IAZV8GSIYLCAn5datVZq7EyBEr5q9Yn7S82AkdVdFSE1yO2YuSxEf7bJIahL
+         Axw0uAs+uez/KJU0hSf2MG7LmAEJHrLj/unvQiVzAMEHR0GL4+607txsae8PRpKtZIed
+         9QPg==
+X-Forwarded-Encrypted: i=1; AJvYcCVoYz93StbQOBPihm2BzmqefE1z8duzdNLWU/Rtb4lvcU1ccaIzzxM/GTLpAyK+q5bu/ZzcK/oBHuinRIDy11V2LOGEqk8FN4oS712p
+X-Gm-Message-State: AOJu0YyuhooMbg0o+85Wff0t1JwDPLyLktLy33mRAr11KiV7MtJbUbVy
+	A63O7zygsiF/4uT8M6tFUaqHJ3c8teV+RD464uj9PVm9XbKBZLonTTTqNo2n6VQ=
+X-Google-Smtp-Source: AGHT+IHSDN/jrEcCvmllzmYLzKmxoVnQr3zoR69ATwifKQvAzVzA/zkXmSeuz6Tiz1sYB/Cl+o9laA==
+X-Received: by 2002:a17:906:7db:b0:a46:aed5:2553 with SMTP id m27-20020a17090607db00b00a46aed52553mr994543ejc.15.1710826376134;
+        Mon, 18 Mar 2024 22:32:56 -0700 (PDT)
+Received: from [192.168.1.20] ([178.197.222.97])
+        by smtp.gmail.com with ESMTPSA id a4-20020a170906368400b00a44936527b5sm5664170ejc.99.2024.03.18.22.32.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Mar 2024 22:32:55 -0700 (PDT)
+Message-ID: <81d55f10-c538-494f-8274-6ea8c4366ab2@linaro.org>
+Date: Tue, 19 Mar 2024 06:32:52 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-X-B4-Tracking: v=1; b=H4sIAPPH+GUC/x3MSwqDMBAA0KvIrDuQj0jrVaSIxqmdhVFmgiiSu
- xtcvs27QEmYFNrqAqGdlddYYF8VhP8QZ0KeisEZVxtv36hJYthOnIR3EsWUToz9rAsGHEbrfUO G7KeBMmxCPz6evfvmfAO2nZ2DbQAAAA==
-X-Developer-Key: i=justinstitt@google.com; a=ed25519; pk=tC3hNkJQTpNX/gLKxTNQKDmiQl6QjBNCGKJINqAdJsE=
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1710802933; l=1720;
- i=justinstitt@google.com; s=20230717; h=from:subject:message-id;
- bh=PLBNaeGU4NGKgH+5UYKS87ZNpd4Ohvlws0rrQwvjxCs=; b=fmH1GAtSbSXvWJQhDzqi9ECrH9lrSt1Xh3vgXrt6mIBppacRRR69jUkAWUkkscz5SfVvIypNY
- 6lWcTQXikENDBdVs8XK2spG8HvT3aLgM+9oP+uAW70dWhbZzew5Ck/7
-X-Mailer: b4 0.12.3
-Message-ID: <20240318-strncpy-drivers-tty-n_gsm-c-v1-1-da37a07c642e@google.com>
-Subject: [PATCH] tty: n_gsm: replace deprecated strncpy with strscpy
-From: Justin Stitt <justinstitt@google.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, Justin Stitt <justinstitt@google.com>
-Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 7/8] mikrobus: Add mikrobus driver
+To: Ayush Singh <ayushdevel1325@gmail.com>, linux-kernel@vger.kernel.org
+Cc: jkridner@beagleboard.org, robertcnelson@beagleboard.org,
+ Vaishnav M A <vaishnav@beagleboard.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+ Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
+ Derek Kiernan <derek.kiernan@amd.com>, Dragan Cvetic
+ <dragan.cvetic@amd.com>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>,
+ Alex Elder <elder@kernel.org>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+ linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org
+References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
+ <20240315184908.500352-8-ayushdevel1325@gmail.com>
+ <8799b216-57a7-451b-80a3-3d4ae9693e0b@linaro.org>
+ <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
+Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <402d1296-0a0c-4f85-a096-be7993869f94@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-strncpy() is deprecated for use on NUL-terminated destination strings
-[1] and as such we should prefer more robust and less ambiguous string
-interfaces.
+On 16/03/2024 14:06, Ayush Singh wrote:
+>  > Are you sure this fits in Linux coding style limit (not checkpatch 
+> limit, but the limit expressed by Linux coding style)?
+> 
+> 
+> Well, I am just using clang-format with column width of 100 instead of 
+> 80. The docs now say 80 is prefered rather than mandatory, so well I was 
 
-We expect nc->if_name to be NUL-terminated based on existing manual
-NUL-byte assignments and checks:
-|	nc.if_name[IFNAMSIZ-1] = '\0';
-...
-| 	if (nc->if_name[0] != '\0')
+So you introduce your own style? Then consider it mandatory...
 
-Let's use the new 2-argument strscpy() since it guarantees
-NUL-termination on the destination buffer while correctly using the
-destination buffers size to bound the operation.
+> using 100 since I prefer that. If 80 is necessary or would make review 
+> easier than I can just switch to it.
 
-Link: https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings [1]
-Link: https://manpages.debian.org/testing/linux-manual-4.8/strscpy.9.en.html [2]
-Link: https://github.com/KSPP/linux/issues/90
-Cc: linux-hardening@vger.kernel.org
-Signed-off-by: Justin Stitt <justinstitt@google.com>
----
-Note: build-tested only.
+You do not choose your own coding style.
 
-Found with: $ rg "strncpy\("
----
- drivers/tty/n_gsm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 4036566febcb..f5b0d91d32a7 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -4010,7 +4010,7 @@ static int gsm_create_network(struct gsm_dlci *dlci, struct gsm_netconfig *nc)
- 	mux_net = netdev_priv(net);
- 	mux_net->dlci = dlci;
- 	kref_init(&mux_net->ref);
--	strncpy(nc->if_name, net->name, IFNAMSIZ); /* return net name */
-+	strscpy(nc->if_name, net->name); /* return net name */
- 
- 	/* reconfigure dlci for network */
- 	dlci->prev_adaption = dlci->adaption;
-
----
-base-commit: bf3a69c6861ff4dc7892d895c87074af7bc1c400
-change-id: 20240318-strncpy-drivers-tty-n_gsm-c-ab1336e0e196
+> 
+> 
+> I will remove serdev, pwm, clickID and send a new patch with the minimal 
+> driver and better commit messages as suggested with Vaishnav. It is 
+> important to have good support for mikroBUS boards without clickID as well.
 
 Best regards,
---
-Justin Stitt <justinstitt@google.com>
+Krzysztof
 
