@@ -1,151 +1,132 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2122.outbound.protection.outlook.com [40.107.14.122])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584995916D;
-	Tue, 19 Mar 2024 08:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710836497; cv=none; b=QxqtB1rpF7DMurhOWlQ4Cd2tmwb0bjvNJkspS2nDF2rsTMo9gr3c5jq5ss+s84A0ga0MJ6BxwikZ5ri0UNSNwQYTlakqrQXcgfZArxGHU/MAE7OMNQUxlmcywEvYNhclh7utkVgzzAYW7cAq37kl6ByDlAbsc7B6uhk7gqRPZns=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710836497; c=relaxed/simple;
-	bh=1l+VsDLetr19MqFbcaBSq5IeLD1NWkokl+Ro9XgvyMk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UFiRYVrJDuVtWkuPcfX+oU6y1MzvcoAeZNag4X5ONICPKzh5arQXQ5rvvzwQCN4xsXi027mJqFktMfUwFDO6bs2CKj3uMpAbEX56RAmM0xfcvMY+ATrnZ7D9IT86VIFgeKhDsSf69lQMWrgAP750IjdadImDqom4n7GlXT79Qjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-609fb0450d8so55705947b3.0;
-        Tue, 19 Mar 2024 01:21:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710836494; x=1711441294;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Sk6uoSSGwlcUK6y2ntn66lixyi761tGP06lmI4gJ/mE=;
-        b=WY7wiYr6FB1X2gKhM+LxjJSXrQU6RoUuMU1PnQYRLyCEqeMUZvKxsde9YNy6A6tMhq
-         g0cAKoAC3aMuoS47vhbumLOXzpYYgccKWLRvOSG7LsdFgllMJp7DqR1jPPcMN/KzChAh
-         gQR7nIsZh3mbfJk+2yWMq3/KSD6cynnnf082lmFNA0cPXJm72seus6QtxG7mwKVA/tsK
-         Tz+uUEhiqc7Mz7Sv6XwVJSgSsEQIKBv+DUQUXt+OU31jsoyg55np5CEL05jzsI6UbVRE
-         tpp5bA/bKD1kYIQEv1MehBE22otKB9QsZEHc+w590Kr9ifVSjzld1rtlJd3eiDJtIIjV
-         W4+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUIow7+fTqvaGD9GmJmUTCqsoylyn2MJwvaMBh0/wQclBjfpTWqtGRqu68k6ZM4wVk2pevuaiSVojlkMHzWCJy4f1mrGbtpbUyLsmF5LYnRmugKrQyKOV3hVEUdGn2/Q3pMZaC7d3IdODKYK6Akk5SmNPn3Nciib3i9GLzB270YscCWPl2ib8HWqXem3mWTV4BoGVxWZYVvRDVW11nXIHECasZ5R+du4GZ2
-X-Gm-Message-State: AOJu0YxQM24v1uD7kiuzjUSmTW8qtcTU07T4GixWHJ3gP6BJKittGPCF
-	XzeGElbdQC3YE3rjGOHuRPlFbmCoR4KarUjQOh/FZ3KD0PDq78yR6VwjPY6kauY=
-X-Google-Smtp-Source: AGHT+IGbqEnN9U4PLxGxrJsILv2O2f+wvA0LyA3SOdihrpg449tLji2C99MseNcFTbS1lty6KtkVmA==
-X-Received: by 2002:a81:7185:0:b0:609:fd5f:bcf4 with SMTP id m127-20020a817185000000b00609fd5fbcf4mr2023577ywc.24.1710836494019;
-        Tue, 19 Mar 2024 01:21:34 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
-        by smtp.gmail.com with ESMTPSA id b12-20020a0dd90c000000b0060a5795fde5sm2301743ywe.98.2024.03.19.01.21.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Mar 2024 01:21:20 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-60a057b6601so51932617b3.2;
-        Tue, 19 Mar 2024 01:21:20 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWCDfms/3cKzJVDkg72tA4hNxeb9UNnMp/pdek+CGyJGk+jN2rE9OO3EN9glDcxBFQOVh5hQhd2ZgUqnt5C5KzHeXWRKLi1fmhT1Utk/1h+2UoBd7VRfGVT9v8HiiPsstWdVjXhkbVe/2ZlT0y5YCmHl0NFDmAsfyMbe07P5D6CJLK8+rAvNAyvqucFMJAtszICfqDxaOUXR+ItD4qszJjlsJrId9GyeVN2
-X-Received: by 2002:a25:e089:0:b0:dc6:c617:7ca with SMTP id
- x131-20020a25e089000000b00dc6c61707camr1281456ybg.29.1710836480016; Tue, 19
- Mar 2024 01:21:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6BBC7CF3A;
+	Tue, 19 Mar 2024 09:11:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.14.122
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710839469; cv=fail; b=PQC50cqjf5+tfckmSz8hoEGXbXSEtI5V6UNLSI/4O83tLh7t9CW9WGAW4u1TOY+eseQFrrkSozAB17LHJndoAMEeQPqoN7yXBxDjvQJs3yxjJL4yp2F2YJYZGljd/s35/GnPG8p6ejhhEXVtbwqp4W+fBGRe4N++9dy3cDySklA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710839469; c=relaxed/simple;
+	bh=08LRLOtFn+nH3MmU+R5lA7yoR1Mua5m6sKulxxdBTZA=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=l7rQVn8tEngUWZLdge/5tQM8gSJWfdrKYusXtte+Jrudwulsxgj6+1Aj63wcunjt056ZzKQO/9gVJ4Lx6blktM5ft4Nfq1cNn9rYOVssSrF+EYXpCwxbzvfK/W9AeU8Ulal+F6KtWxtnVgiel6VTQ2iYgBVFQYvioLfbDV/U+gQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=Kfk1WLC7; arc=fail smtp.client-ip=40.107.14.122
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="Kfk1WLC7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YZjdldsU29wSyigtgAlUcINqPzElN9tq1LVdGmo8r4m6QEDkLDn5rD57nrDeTDmuUjzAyqXJflQOu0OPL5cjL+vnRsTIYNCgcDkN9vmqi/9FnTbAkVpmteuT2Kc4tev7AVGs7NbfTFN3yVb59OIv1niU7Pflcws3nc/iILLSzXBgRRXPT3thQixMJh8Gf0vLE/gc7TYwL4inSskhmYJoQ+90GNV2Z5jbyC1BjrqjlEtBM4NH77eN7SsXl0DY9GVGycYfCkBI+0a6X2uoG9V9l5Sdtp0RIfP9hgJtICDF6Ag7LoZ9fycbD77LUMIF20a49WRdQa63bPExBvi6cnnRmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=08LRLOtFn+nH3MmU+R5lA7yoR1Mua5m6sKulxxdBTZA=;
+ b=Jg9fB1h3+ifIdc43BwttxyrrGog8JUl6fVvX+ZeGRl4mdrRZOJHCIk4v7eYkvcA9fJZhlK/3fBDvpLRRC6ElwjXnJHHJg9F+0X+Mh56bJOjRL0I9Ef+USGnRZdT9JYl8zccqZb2+tLhYvV1/fhuM0fbE3URD1h99nEMIbHIKmST5UJOmxbG++g8UL7Qp6BzhmPRioLOuusKG68Alm5wk/0T4DyUilHNdKEcY57OKRkr828Ti7SOyiTTwCSg/FC9Ql5aJNnX8xdneOLxZVSnNMlSiVfPRUhKBYioVaZ+7MeajSkqdj/Bli/KaonJ5VUBxZMzDkhmAhumwcoA8oubgqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 40.69.19.60) smtp.rcpttodomain=google.com smtp.mailfrom=sttls.nl; dmarc=pass
+ (p=none sp=none pct=100) action=none header.from=sttls.nl; dkim=none (message
+ not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=08LRLOtFn+nH3MmU+R5lA7yoR1Mua5m6sKulxxdBTZA=;
+ b=Kfk1WLC7npDxKO+6okTxyih3HCfQRIfdfljNOyYJmGV2dEqffzsYVQ2JsKrD9j8iWnUJcThPsML1o8dIF5jOf69VwrjZM4HKnzfT1WGoh1L2jcaUKJTwi5i+1i894/9TPlAkGEUiw8hb7z9HFceJYGcQpyOQidO6Pxh8/C8cPiqD6uEkGIcowzFOZpfYqnADUMJY9VxHLUbGwxia/7dzlurQSLIIORTIByw6+wa6bLkT6VCSNfybIj/z2KA8fOv3Wjq/KVAsqZoTogoOW7WFQsYt+hUgIaLwQq7caROwYjVOe+FR+cevZo7J2nV+NwFZw3Y1fgM1F+Iq8qSPQ7cmdg==
+Received: from DU7P194CA0017.EURP194.PROD.OUTLOOK.COM (2603:10a6:10:553::6) by
+ GV1PR05MB9795.eurprd05.prod.outlook.com (2603:10a6:150:86::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7386.28; Tue, 19 Mar 2024 09:11:00 +0000
+Received: from DU6PEPF00009528.eurprd02.prod.outlook.com
+ (2603:10a6:10:553:cafe::2) by DU7P194CA0017.outlook.office365.com
+ (2603:10a6:10:553::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.27 via Frontend
+ Transport; Tue, 19 Mar 2024 09:11:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 40.69.19.60)
+ smtp.mailfrom=sttls.nl; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=sttls.nl;
+Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
+ 40.69.19.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=40.69.19.60; helo=westeu100-emailsignatures-cloud.codetwo.com; pr=C
+Received: from westeu100-emailsignatures-cloud.codetwo.com (40.69.19.60) by
+ DU6PEPF00009528.mail.protection.outlook.com (10.167.8.9) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7409.10 via Frontend Transport; Tue, 19 Mar 2024 09:10:59 +0000
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (104.47.11.41) by westeu100-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Tue, 19 Mar 2024 09:10:58 +0000
+Received: from AS8PR05MB9810.eurprd05.prod.outlook.com (2603:10a6:20b:5c2::16)
+ by AS8PR05MB10561.eurprd05.prod.outlook.com (2603:10a6:20b:5ac::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.29; Tue, 19 Mar
+ 2024 09:10:56 +0000
+Received: from AS8PR05MB9810.eurprd05.prod.outlook.com
+ ([fe80::b777:79ea:2f7f:8765]) by AS8PR05MB9810.eurprd05.prod.outlook.com
+ ([fe80::b777:79ea:2f7f:8765%4]) with mapi id 15.20.7386.025; Tue, 19 Mar 2024
+ 09:10:56 +0000
+From: Maarten Brock <Maarten.Brock@sttls.nl>
+To: Justin Stitt <justinstitt@google.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
+Subject: RE: [PATCH] tty: n_gsm: replace deprecated strncpy with strscpy
+Thread-Topic: [PATCH] tty: n_gsm: replace deprecated strncpy with strscpy
+Thread-Index: AQHaeYhZ+rm2Dpa5Z0qBCeHxLCBLHLE+xrjw
+Date: Tue, 19 Mar 2024 09:10:56 +0000
+Message-ID: <AS8PR05MB9810B8AC6B5033FD6660EC69832C2@AS8PR05MB9810.eurprd05.prod.outlook.com>
+References: <20240318-strncpy-drivers-tty-n_gsm-c-v1-1-da37a07c642e@google.com>
+ <9bba38df-5881-43f7-b1b3-f77e7b57bbe7.6c628ed6-0c2a-48f7-ba62-bcb23589b41f.60196f95-e445-4678-a450-875badf86498@emailsignatures365.codetwo.com>
+In-Reply-To: <20240318-strncpy-drivers-tty-n_gsm-c-v1-1-da37a07c642e@google.com>
+Accept-Language: en-US, nl-NL
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-traffictypediagnostic:
+	AS8PR05MB9810:EE_|AS8PR05MB10561:EE_|DU6PEPF00009528:EE_|GV1PR05MB9795:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ 7OIfpu3L7eK/r4rLoP3k4WGOEE5bLNRDw2Xartcs9ZZLwEdoP93ksSCOqLL7F0q0z65q2yC7jfrCxW0EFw2/Hg7w3mkSmjGDTI9RpNyFE99t74iI17rBexGEXQXPC6QesSSD1JarK4eRmPgSh9KKAe6vL5PCS9YdtQDQq2f1E5CTx4AAymy62UtLhdBUHb2UCFu4eYNNvshcpIq6O6gK0qJ61GbbHNOqIS50DKzr06RqHqvtTrm3R3ktFcOsHRiN8ZC6zV2GAaBCMTYLKpne26VJm/RArjuODQTo9gA3VCsfvwxugnfVgCj0So3m/kz2aCOQ1cL4cXATLmD2SLGJhzSNrYiPIoRTfyGdF3auVulm922/V9aSXQTDPEpaxaAQMRIoWVxE5/tIMVMx+FbvMT17n+yDoTW3MzLzHS9LXhF78wfQ6hWtWZXcNZ8mDQtxLkyrAf4815saEoITGB/8/DAE/y0938XDWVZY1S+50+1qlym8KUIlxHV3sc01B/zyw8OcIAvO8yEgbVM9bCHhmbq24+ZT5gE3a5oykiR1llBhzbAoA01mKN0nYwTof/jaG2THlnfL8h50Ke/5g9LYGlKNuXiji1tVZeoPjomk3yMczYnr0vl6CCcGOxvR2mglkwSFOwYpLDYfUhmczqBNaSnrJfSnjnMclzz4sNWZSAM=
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR05MB9810.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015);DIR:OUT;SFP:1102;
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240318172102.45549-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20240318172102.45549-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 19 Mar 2024 09:21:08 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVR=t+QW+kqh3HswJ_8T2Dos381VL8vJvdqiC4RZDRRZw@mail.gmail.com>
-Message-ID: <CAMuHMdVR=t+QW+kqh3HswJ_8T2Dos381VL8vJvdqiC4RZDRRZw@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] serial: sh-sci: Add support for RZ/V2H(P) SoC
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR05MB10561
+X-CodeTwo-MessageID: 87209540-bfbd-49e7-be57-bdfc8584ac16.20240319091058@westeu100-emailsignatures-cloud.codetwo.com
+X-CodeTwoProcessed: true
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ DU6PEPF00009528.eurprd02.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 382050fe-8917-4c9c-a3b0-08dc47f47e76
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	0AprxdN9Lb0Ly/L4kgH4Kuvib10zr0OFRR7bEPEdiUy45cuqSXGduJbakH6tMvBd5TMmLGNKNw7SqnscVmxqVgh2BhQ8tjxie//DmZpqix3+zxoHOYB29JHjNSi/dBAvlFM5W24idTnyLYJ9+5T0NIIEzqyIG4jzYzOmzw8BKv+4q5hFKICvLKGZF0pwAitNr1uB3uoRQmvBUT99IQ7lks7nLu4eKyaMCmreifhGeQvmwmYD0BFmV7OyqqJhmRCS92G4HnZmRt6IHZxZGZ/ZyMiRl//8FddfK0vnpGC8aLFaTKyBRs46Q4oryI4kg3OMzmMugMuViObLlaBlXdLoaYsLvGmEiB7cgkVtjj6M5jhtQUwQIVKK0EIZ6tKqs7NpYCCV66IoIJ+0WDy83ffQcYXapEhPiAI3fjRWCLIZjShbxmE7NzG3zrjjDntR4w6Nag5Z76rkbXsznctu2gbdab/5TCffdMHuSnyuw7UCxkgde/zsAGMUjR5cQxPGi/dsJ90csCPQV/QoUOSlY9CN7kjtXpMOE/vbT0EJWQCDHDwVTl8geGO4KtkuyldM4SWoF+IGjoRigwGl0NUCXyFFTjsE3RGRLT2CH8z6ZPfhubQdrplIeyD6wJ/rl+lQ5GcvU2R8ZMshPol8T3ehIjwQ7Vp9WZNGUDJGkkM6gKaMN6f1ASJ/ECSEwj//R3kKamQB84Mr564MduWjqDO9uBUI99RFdVURfYuDuUGrVO4t5Ke0vq14WVM+LupbM+Jf6VZV
+X-Forefront-Antispam-Report:
+	CIP:40.69.19.60;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu100-emailsignatures-cloud.codetwo.com;PTR:westeu100-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230031)(82310400014)(36860700004)(1800799015)(376005);DIR:OUT;SFP:1102;
+X-OriginatorOrg: sttls.nl
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2024 09:10:59.8908
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 382050fe-8917-4c9c-a3b0-08dc47f47e76
+X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[40.69.19.60];Helo=[westeu100-emailsignatures-cloud.codetwo.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DU6PEPF00009528.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR05MB9795
 
-Hi Prabhakar,
-
-On Mon, Mar 18, 2024 at 6:22=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
-om> wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Add serial support for RZ/V2H(P) SoC with earlycon.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v2 - > v3
-> - new patch
-
-Thanks for your patch!
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -290,7 +290,7 @@ static const struct sci_port_params sci_port_params[S=
-CIx_NR_REGTYPES] =3D {
->         },
->
->         /*
-> -        * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T.
-> +        * The "SCIFA" that is in RZ/A2, RZ/G2L, RZ/T and RZ/V2H.
->          * It looks like a normal SCIF with FIFO data, but with a
->          * compressed address space. Also, the break out of interrupts
->          * are different: ERI/BRI, RXI, TXI, TEI, DRI.
-
-and RZ/V2H has more interrupts than RZ/A1, RZ/G2L and RZ/T...
-
-In addition, RZ/V2H does not support synchronous mode (does not matter
-for the driver) and modem control signals.
-
-Currently, sci_init_pins() does write ones to the SCPTR bits that are
-reserved and marked as "write zero" on RZ/V2H. I am not sure how bad
-that is.  You could avoid that by adding a check for .hasrtscts, but
-that may have impact on other SoCs/boards, where currently e.g. RTS#
-is always programmed for output and active low...
-
-So if you really need to avoid writing to these bits, the only safe
-way may be to add a new SCIF type.  But perhaps I'm over-cautious? ;-)
-
-> @@ -3224,6 +3224,10 @@ static const struct of_device_id of_sci_match[] __=
-maybe_unused =3D {
->                 .compatible =3D "renesas,scif-r9a07g044",
->                 .data =3D SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
->         },
-> +       {
-> +               .compatible =3D "renesas,scif-r9a09g057",
-> +               .data =3D SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
-> +       },
->         /* Family-specific types */
->         {
->                 .compatible =3D "renesas,rcar-gen1-scif",
-> @@ -3554,6 +3558,7 @@ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_c=
-onsole_setup);
->  OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
->  OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_=
-setup);
->  OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_consol=
-e_setup);
-> +OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a09g057", rzscifa_early_consol=
-e_setup);
->  OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
->  OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
->  OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+SGkgSnVzdGluLA0KDQo+IC0tLQ0KPiBOb3RlOiBidWlsZC10ZXN0ZWQgb25seS4NCg0KUmVhbGx5
+PyBXaXRob3V0IHdhcm5pbmdzPw0KDQo+IC0tLSBhL2RyaXZlcnMvdHR5L25fZ3NtLmMNCj4gKysr
+IGIvZHJpdmVycy90dHkvbl9nc20uYw0KPiBAQCAtNDAxMCw3ICs0MDEwLDcgQEAgc3RhdGljIGlu
+dCBnc21fY3JlYXRlX25ldHdvcmsoc3RydWN0IGdzbV9kbGNpICpkbGNpLA0KPiBzdHJ1Y3QgZ3Nt
+X25ldGNvbmZpZyAqbmMpDQo+ICAJbXV4X25ldCA9IG5ldGRldl9wcml2KG5ldCk7DQo+ICAJbXV4
+X25ldC0+ZGxjaSA9IGRsY2k7DQo+ICAJa3JlZl9pbml0KCZtdXhfbmV0LT5yZWYpOw0KPiAtCXN0
+cm5jcHkobmMtPmlmX25hbWUsIG5ldC0+bmFtZSwgSUZOQU1TSVopOyAvKiByZXR1cm4gbmV0IG5h
+bWUgKi8NCj4gKwlzdHJzY3B5KG5jLT5pZl9uYW1lLCBuZXQtPm5hbWUpOyAvKiByZXR1cm4gbmV0
+IG5hbWUgKi8NCg0KV2hlcmUgZGlkIElGTkFNU0laIGdvPw0KDQpLaW5kIHJlZ2FyZHMsDQpNYWFy
+dGVuIEJyb2NrDQoNCg==
