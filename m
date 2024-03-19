@@ -1,59 +1,60 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A96E74594E
-	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 06:19:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A6B5C03D
+	for <linux-serial@vger.kernel.org>; Tue, 19 Mar 2024 06:22:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710829197; cv=none; b=QWvhmT7gcAKe0pNE1lrMHZB5T7npyU0iZK72F/nsXK+ZGfuJkP1IEdAH2j8JfDgM56yGBr7kEikQlco7TRJzDBXlOLEhVbMhVXsSPbswr6dUCLmLiaeXOvfr0YzrJqsqZ3afCrjDIbjyLEIhe9nokLeB8Dn5lCq1tnUIwgYkTSA=
+	t=1710829350; cv=none; b=kPowQ4tTJW2H6Zq/xLspGdIYlFEalOPJ7p7VBE8NZNTvxw8fgYqFV+7wOPdLK7BVd0h0bjudarTLTROBYQJWJazn+kDWPmGDPMuy8E/K9KvrPhmCjLmS+1xEGdTYaInGsjeu4dKgCYuWDEhQkEkqJi0rDtEDO4ySxuNpOvsjuSE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710829197; c=relaxed/simple;
-	bh=0yijNPe3mwQ64TCF1fbO0XvklpCD7EaEMGjgQsc4qe4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=krhHCqAJgYflLWVMyUVqno58VlKiuIid/U2PTwX3+WLOxzjWt4ARj00/bDy5i9/Ij5VZQWMheRySDSq4ARe1LspcWc7wqmJEEOYCldANz27Gcb5Byigj38uVgwNIOvnGWbO+ykdGHGDlwaRznaUvaJPYxUtgJ2a5nXSwa5V8dno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xR+k4fkV; arc=none smtp.client-ip=209.85.218.44
+	s=arc-20240116; t=1710829350; c=relaxed/simple;
+	bh=KqMPHkUTtQxeNusy5frQn4gvKT+5IBvRtNmj1/03Osw=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=gTf/e4tWFdJRVAwQVhyiToNIqKxKmrYyyOXDAtuS5E2x5ifjghnAyt5ZrKq6Utc7Ip252lWHgWDkW1NdfcfVPcYt/HrNhs3u60z+1gdRVF/tWnRZH+wTPYkmsXGadktwF2tvBDRA8lpEMcihmzfBtZmhkB5MXEpxmzf1wycs3nE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=N//YetxT; arc=none smtp.client-ip=209.85.167.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xR+k4fkV"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a46cc855600so211746366b.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 23:19:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N//YetxT"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-512ed314881so3586233e87.2
+        for <linux-serial@vger.kernel.org>; Mon, 18 Mar 2024 23:22:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710829194; x=1711433994; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=gkIlYDaJW+9WUMdSaa/ilef43El2pd6walcVrx1mtTU=;
-        b=xR+k4fkVVQCvhzxfFyV7IfBtvMvpQCaC36F9XbNjtYE29dK+8OWLLhgzEEHHGNDw24
-         Zwp7Wec4+90FuG0mQzDtethcWrLK4qxOBnBzlZWsiCJgXaWKJer3/iecyx4xQyEkpTm6
-         JxYrr8l2P3VHra/TFjvammRixgVz2ZzHSDLWSXUukz67Ky1IqXlebcm7nkPJA/o/psFM
-         0w0aaqMGN4iS2BCo4NvWwcEkCOehKysBAbb/vX1KhnRmUIeTksC/+3JwmNqI30+2/gAF
-         DAEIgHRl84Fa4ZZDxTf12yDkcCvQZzYZu3KIDFF657cSruy59ck3R2Zaiej3wcS3yLEl
-         VjIg==
+        d=linaro.org; s=google; t=1710829346; x=1711434146; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=UJo3lrzyn4BX2VjOQD9TCLxNY+IhC3SjsmV3Z4Nvbek=;
+        b=N//YetxT4cz7HxeuiD5XjaELaysyYut5dYHQYXH8NdMDoVhJb4HOsmFqZsP2Zl3Sin
+         obo9SRHy//4NHUYu4Dz2GZIgsLh3wdtk/KUmQl+V88wZbFkwqmUhH2A5YivLaWQiAlDw
+         82HBlAAWVIEqgzIIuNg7TELwN/yo4Xhh7nWqN7WZHncskJ0Sae3wSH9RjmVBq/8FqWQo
+         5mKcsdhzcZ4W3i1DvaN1qwDnON06NU1CBHvjiNBcn0oiPXUNOxcXC834T6Xs0CHj/lHd
+         kObllH58KOUKlwdf7NNv15ftdNLXbsIEBPupAkpbGSmAsajPoGar0tEx5Rt7WeAHFOT6
+         mxJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710829194; x=1711433994;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gkIlYDaJW+9WUMdSaa/ilef43El2pd6walcVrx1mtTU=;
-        b=o6tzmiGtXkx1CbX/OACALIZXFhP3sPBhilwuDUBCrIGyMs1/z8qSX2AEkXAfj0Nh2S
-         cG5beaST0B8hpLKwT61fKYF4Toz40hBaZ1EaMBlzvvquDNGFMBhw3bJFqJ3XEFs++lEa
-         F9T3pQJ/Lf0Pa/TM76EZCMFV++fnFxTNKyxVtph4N6jutgkqTBttKPg4JZaXZY/04KYG
-         1HN0iZZAczhyUhI95m1wyALclUuxgV3ajFNQ3r5buIo81iz5AicsYmR3DcgUQWLeg7vl
-         K37uhLICILcFk0RyqKCafUGhkOmd5Trfgf4LEUdJw/CfTpbqtPmITifL1CEvrBpnM9KF
-         +57g==
-X-Forwarded-Encrypted: i=1; AJvYcCUl7J1vO32sk/K1nlhDnUVLue7/9XDv/V6rnhPMvv35LTBq2EPjPnPftrrhwtjPLtvg1g+kzcxAuIOmFrVpaq/z5IkSbJn4QKOjHwZk
-X-Gm-Message-State: AOJu0YxP/SL8i7yp0pxgpwCaSnOlWDqkH7e+GDQO3Bj3IB3qIZaIZI0k
-	ZT4hGtXKED6pqRRN2sr3xCut0V78UCNASafgr1N0V6lDQ0T3Gtqb8oo86WaGC1w=
-X-Google-Smtp-Source: AGHT+IH6NlDsY4VujEd3BP5gGcnMLKshl/WjA1i6UleU9JCzWb3R4Xp8XGu+iTgxlFdgoByLl5SOUg==
-X-Received: by 2002:a17:906:2310:b0:a46:b028:7dc8 with SMTP id l16-20020a170906231000b00a46b0287dc8mr1073131eja.50.1710829194088;
-        Mon, 18 Mar 2024 23:19:54 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1710829346; x=1711434146;
+        h=content-transfer-encoding:in-reply-to:autocrypt:references:cc:to
+         :from:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UJo3lrzyn4BX2VjOQD9TCLxNY+IhC3SjsmV3Z4Nvbek=;
+        b=CCSPaBAdgWGHiz9cf6C+Sr7LxsUpNA7hZ01VwY0BNgzF5kGv7RUzHJe12/N/0fUU5Y
+         yegNhXe0z1EQJulaiEuQsCRsa4CfqDgNpUnHFL2VOR1MuhHyKGDWlmUCFNGVrgmyAiYx
+         027qzaQAQXik4ZXkuiphU1PcVPIQ8qQMX5PTyVxU8UxYZjqW8E4Op4qY+fXR3Ce3DApw
+         PhhXTksGB1hjvzOPJKQ3cJKyM17eE5cmjXo5rBa6MBWV3sz5Fmbe246jQgil65I1pNle
+         lNjps8UAPQ90IczIdduCPqMBsi+sK68xpW4A0X2AKGp8223zTdd2tq4vtEXqW2gYTYJ+
+         jNYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW5R3sg1hF+pwJNvpSPk3HvRNAiDWrRx/so9laqX/O6GaIyqjHhhctdGhit4toQscW3SZhbFqSAVggCtINcTpev/Ot9GF9BtWFqes81
+X-Gm-Message-State: AOJu0YzgIu5qcgRUQ+jnAMOgwUO4NgAYntcMHaD/OQ8bh9OlwT9c4TV5
+	j4NPuaxn0EF37eGvJyFaJD30zsw1o/1Gs/94O8dEbsGIhtBkGGE/zZiwn7ZjvwM=
+X-Google-Smtp-Source: AGHT+IGqQ0XJeb6NbZreyAuvIAwh2GQyVXn9cuYItstUKhH9Nz0K9bVLarSYzE+se2sflBcN5Oyo4Q==
+X-Received: by 2002:a05:6512:443:b0:513:bebd:79d4 with SMTP id y3-20020a056512044300b00513bebd79d4mr1083411lfk.49.1710829346215;
+        Mon, 18 Mar 2024 23:22:26 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id e25-20020a170906845900b00a4652efd795sm5696140ejy.83.2024.03.18.23.19.52
+        by smtp.gmail.com with ESMTPSA id l8-20020a17090612c800b00a46aab70226sm3302072ejb.180.2024.03.18.23.22.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Mar 2024 23:19:53 -0700 (PDT)
-Message-ID: <db13e305-adc4-4990-b9ec-b1cdcdad4406@linaro.org>
-Date: Tue, 19 Mar 2024 07:19:51 +0100
+        Mon, 18 Mar 2024 23:22:25 -0700 (PDT)
+Message-ID: <010e4742-438f-413f-811f-a033ec104832@linaro.org>
+Date: Tue, 19 Mar 2024 07:22:23 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,6 +65,7 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 2/4] dt-bindings: serial: renesas,scif: Validate
  'interrupts' and 'interrupt-names'
 Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: Prabhakar <prabhakar.csengg@gmail.com>,
  Geert Uytterhoeven <geert+renesas@glider.be>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -76,7 +78,7 @@ Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
  Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
  <20240318172102.45549-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ <db13e305-adc4-4990-b9ec-b1cdcdad4406@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -121,37 +123,41 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240318172102.45549-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <db13e305-adc4-4990-b9ec-b1cdcdad4406@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 18/03/2024 18:21, Prabhakar wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On 19/03/2024 07:19, Krzysztof Kozlowski wrote:
+> On 18/03/2024 18:21, Prabhakar wrote:
+>> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>>
+>> Add support to validate the 'interrupts' and 'interrupt-names' properties
+>> for every supported SoC. This ensures proper handling and configuration of
+>> interrupt-related properties across supported platforms.
+>>
+>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>> ---
+>> v2->v3
+>> - Listed interrupts and interrupt-names for every SoC in if check
+>> ---
+>>  .../bindings/serial/renesas,scif.yaml         | 95 ++++++++++++-------
+>>  1 file changed, 63 insertions(+), 32 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>> index af72c3420453..53f18e9810fd 100644
+>> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>> @@ -82,38 +82,6 @@ properties:
+>>    reg:
+>>      maxItems: 1
+>>  
+>> -  interrupts:
 > 
-> Add support to validate the 'interrupts' and 'interrupt-names' properties
-> for every supported SoC. This ensures proper handling and configuration of
-> interrupt-related properties across supported platforms.
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v2->v3
-> - Listed interrupts and interrupt-names for every SoC in if check
-> ---
->  .../bindings/serial/renesas,scif.yaml         | 95 ++++++++++++-------
->  1 file changed, 63 insertions(+), 32 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> index af72c3420453..53f18e9810fd 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -82,38 +82,6 @@ properties:
->    reg:
->      maxItems: 1
->  
-> -  interrupts:
+> I don't understand what is happening with this patchset. Interrupts must
+> stay here. Where did you receive any different feedback?
 
-I don't understand what is happening with this patchset. Interrupts must
-stay here. Where did you receive any different feedback?
+Look how it is done:
+https://elixir.bootlin.com/linux/v6.8/source/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml#L44
 
 
 Best regards,
