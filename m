@@ -1,61 +1,60 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 329382260A
-	for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 07:47:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4808D23770
+	for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 07:49:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710920868; cv=none; b=TUbsFncTyto0ka5TUrFsxfW8vJfmQJ34IUGoWs5FwlEIIUwxTTGgvc74tnYkvmp/G5zTWZ/bX9V3OJS2OKGBmXAFC05POCchjN3vFuMYYLJZoECsM3iAY3YuAb0bM72XytSInnSChTPBwX5y93OMFXMJr+fuyt6fz9mbpaz4zoM=
+	t=1710920999; cv=none; b=HDlyTdqHcHk2LUdu/PXXhz9xN/nukjuHdPrY03obOPugI+CrSltaeCq/PMQ8R9wg2At3W5PB7c4qNhmEsr5WvOrxpL0ZasjmBqsh1hhjJJSdChbZrrmuA5d6xiE7AW1aP/+uWmb0EEcFTgeolXHXrwqQX88MAlRBLcb7p4z5l3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710920868; c=relaxed/simple;
-	bh=t2wm18haUb5zgLnO+t9LRU0/xcGucVsdjym5/5wtfNw=;
+	s=arc-20240116; t=1710920999; c=relaxed/simple;
+	bh=q5U32Wv2NtRKMBCOe/UdWxXohxDEUHP5aP2dTZSwA64=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ky+5K4rRwuHLvt6PIJjl5vSBp9yPIp88D9DyM1jymmUKLpA5uoA0tEn5dDi2NK8HTGepBxc/CATFTyJRBvx35kMywqTlmrlqG8PeVx4Xi6fwAcY7nTdduxcdgPkzSQTAOeNyr+HqAkpR8S49Xp3q1yeZ7XHJGrEoMlUXprH8qsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=pRC44tL1; arc=none smtp.client-ip=209.85.208.46
+	 In-Reply-To:Content-Type; b=hVSiEVogOLWy03tToHilis+TFX8cm5ic0Egubb/oEWlSI/Xw4fYgN8m8nTMAUFFC/ct1nfx2y10SmeAFv8EjHLMFPSvHLsw/zqB+SsRKT7Y2+iWGmAaeOM6bTofWbn7dOt1NDgXl9QTriLKzQi7W77nVwZWZ0hwxxlS0xNWtpaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hNI6q0vF; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pRC44tL1"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-568a19fcc4eso3575892a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 00:47:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hNI6q0vF"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-56a0c0a7ebcso3823659a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 00:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710920864; x=1711525664; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1710920995; x=1711525795; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=f0kRypK3YZBBne8paZFA5fiyJqOqtaf45VrPcMgCFA0=;
-        b=pRC44tL1i+GIac1/EZdXgniStfgDc3Zbr0GKCj9NhUjq7P6hpUI4v7nR85WbSLCB+g
-         ymK2UorXCds/gg1KjJObyPlHO0I1dKvwhh03Pg8K6Iyv2/eJigvMF3dsMbnEdgHyleUk
-         lywJDZFgc96bkeJ5f1PegR/aw8fe23QZzOyoh2zrBYtatpI+btHbN8p2ogoH07NShRX/
-         BdshrnLen6eH5+atVUSXJ47EUJuvgSRaN17aqDWibDcrHsIlGUhaglIGpPaWGsyNjQrJ
-         IvBp3bYZP9tOjUhgNNsHOggBT1wEyjDIfq4kkt0qI1C+BV1VQ6reaeqSBA5LPUMveo5m
-         CaOA==
+        bh=MRntVtwqYez/rC/iIjnai7Rc/ctg94I/p6RSPi7b+nQ=;
+        b=hNI6q0vF2mGhJFCXOq6x/QlfCdVB4ll3pPt+8b/vDdv7boZW+y7yZSY+gAZ0tM+pfW
+         ayySu0ngFVmAMh9oJgqSKrHMiKY7jrHeynAFPGSU5k9kNTA1dhn3S3HewpTotxL220xc
+         LjLnnvmVJvCgv293b4miTkCuaXi9PDkE5Jqtu6Wvh16e2P2ATn5JNChppoytJFNy9jby
+         0uj+AZupxJNHn7LTRs7I9LB5wiTGrmVXT9pZ/bpp0PEeBYdOtGrAi6Ce82hnTb9A4LRj
+         GbsZeb5bKEZqq+BfR0KcElRV6kb+V5N85+y40GRR3LpsiVLJ+WdgEXd0PDctWjXBhX0L
+         Hbqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710920864; x=1711525664;
+        d=1e100.net; s=20230601; t=1710920995; x=1711525795;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f0kRypK3YZBBne8paZFA5fiyJqOqtaf45VrPcMgCFA0=;
-        b=kZ/dQ10Gn/ys3QBcJXA5c1VRNjtglnJZVkRvijCWThS5da43+I6en77Xqb+2olPwWW
-         rvpVnTJpfjaTuG83MN0wZhNuDxMFZVTFcunDYnLCSxhtBEWI4DA7K73pnUNBZhUmF2PG
-         7sot8N6iqHLtbAqedQEKscEUvM6mTJ3agP6lfnC5OjdHJi+TnTaH8lJSYKvCEbO3yEDu
-         i5ZHtv8Sp3kPLRUIgtTQskmEQzeho/e34zxZDb5VfXS6JQmIs7B5Upt+fd1eXxDdqgqi
-         EHgMFggIrpeLHTc2AjWvw899EtCy6JkP2+Pc4wmJD9PrG3/Nv/EWAB+3+xAxbf6paNga
-         Y/KQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUQlgTkSfMV2XPqMaHtcG1552jXbZpjUShy4YLC3X5GOVa82aVUm2CYy1NVpinR6LjCHMwOFBFOiaHMlOm8sG0m1gnmHs+DwOV66mvb
-X-Gm-Message-State: AOJu0Yxs4NRAK5rI7NKwoT1apR5jGOhBogYAuUejg9io4o8H/bAa1AoT
-	ac4bX9wiW8Uj5bV4ZshF/2asJ/EXWwApamR3Ho0TtOV6IQb2W3eG4as2eXvuzggSsWpeEFw5tmn
-	g
-X-Google-Smtp-Source: AGHT+IHsfi3bjT0neqvf5ehY53thvgxCP8uGLAhKGePJNt9nePJzNCZtR2iCEF9mmV7qH9PUYRE7/Q==
-X-Received: by 2002:a05:6402:2418:b0:568:d19e:7ab0 with SMTP id t24-20020a056402241800b00568d19e7ab0mr9398054eda.36.1710920864395;
-        Wed, 20 Mar 2024 00:47:44 -0700 (PDT)
+        bh=MRntVtwqYez/rC/iIjnai7Rc/ctg94I/p6RSPi7b+nQ=;
+        b=PR6SFi6ygZ9VTnAc1oEKnXU7TIyI7j47aJcNEwz0aFx9O/7s9dgDhDYZ3v25XF/Qoj
+         ial8pMh9QlvBhhRPC3uV6DqzcWRIfNY1KbC5N9cB6wX9c1EMT8xGM35AwMiYAQZ5e4Wv
+         OWHr5/uCmsGGax8RVCyKQ6XDnLhZilRKT1CYXBYZimPqkLX5el4iUsqIQyUlOof+h8Le
+         Gx0qaYzJzm18iRhzZgswrOIkB6m4JhdH70cbg3VEPRyEcJ+bdxOiRNyT727ThxFzmJjn
+         XH/oxTbWarumfY8Sdx0cvUI7H2Yplyhb49CFKWPPOK5ya5jFn02BQzOnSa8h5KokHq7g
+         yEtQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXmOcckaleLMIfhKc5b5xWj3ea61tfYkFJGScfBV8XKXipeLaTxiYNnnzjxlWcz+SD9qyrmCgjMlzC84LtRzKnYLrWqQ1Ek/k/PQiCm
+X-Gm-Message-State: AOJu0YwKlgVz4nyuK4UlkWBJvZdoOP9Cggcn58AhMNjMzvj8vlI803rD
+	Q61MKQbFY1F9k77LTcRa9lCyzros3NUgh+lh5joXWzxEZzl7/VHYBoLfCvWzmvc=
+X-Google-Smtp-Source: AGHT+IFZaPjdhUYIwRAyOsAPuyNwb/aBT1vtXqOAmfG32jQSBNobJHnMektYJuUB51g6QjcEadiJog==
+X-Received: by 2002:a17:906:6d59:b0:a46:e595:f357 with SMTP id a25-20020a1709066d5900b00a46e595f357mr2365013ejt.9.1710920995458;
+        Wed, 20 Mar 2024 00:49:55 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id ec55-20020a0564020d7700b0056bb14935e9sm352963edb.2.2024.03.20.00.47.42
+        by smtp.gmail.com with ESMTPSA id an14-20020a17090656ce00b00a465b72a1f3sm4471165ejc.85.2024.03.20.00.49.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Mar 2024 00:47:43 -0700 (PDT)
-Message-ID: <918b1700-17d7-4475-a39c-c317472da0b4@linaro.org>
-Date: Wed, 20 Mar 2024 08:47:41 +0100
+        Wed, 20 Mar 2024 00:49:54 -0700 (PDT)
+Message-ID: <018d1b9d-7957-4efb-903b-2e510db1ff80@linaro.org>
+Date: Wed, 20 Mar 2024 08:49:52 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,9 +62,10 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] dt-bindings: arm: fsl: Document missing s32g3
- board
-To: Wadim Mueller <wafgo01@gmail.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: S32G3: Introduce device tree for
+ S32G-VNP-RDB3
+To: Ghennadi Procopciuc <ghennadi.procopciuc@oss.nxp.com>,
+ Wadim Mueller <wafgo01@gmail.com>
 Cc: Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  Conor Dooley <conor+dt@kernel.org>,
@@ -78,20 +78,20 @@ Cc: Rob Herring <robh+dt@kernel.org>,
  <afaerber@suse.de>, Matthias Brugger <mbrugger@suse.com>,
  NXP S32 Linux Team <s32@nxp.com>, Tim Harvey <tharvey@gateworks.com>,
  Alexander Stein <alexander.stein@ew.tq-group.com>,
+ Marek Vasut <marex@denx.de>,
  Gregor Herburger <gregor.herburger@ew.tq-group.com>,
- Marek Vasut <marex@denx.de>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Marco Felsch <m.felsch@pengutronix.de>,
  Joao Paulo Goncalves <joao.goncalves@toradex.com>,
  Markus Niebel <Markus.Niebel@ew.tq-group.com>,
- Marco Felsch <m.felsch@pengutronix.de>,
  Matthias Schiffer <matthias.schiffer@tq-group.com>,
  Stefan Wahren <stefan.wahren@chargebyte.com>,
  Bjorn Helgaas <bhelgaas@google.com>, Josua Mayer <josua@solid-run.com>,
- Philippe Schenker <philippe.schenker@toradex.com>,
- Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+ Yannic Moog <y.moog@phytec.de>, Li Yang <leoyang.li@nxp.com>,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 References: <20240319221614.56652-1-wafgo01@gmail.com>
- <20240319221614.56652-3-wafgo01@gmail.com>
+ <20240319221614.56652-2-wafgo01@gmail.com>
+ <a5268bcc-144b-4e86-a13a-33d976368f06@oss.nxp.com>
 Content-Language: en-US
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
@@ -138,47 +138,33 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240319221614.56652-3-wafgo01@gmail.com>
+In-Reply-To: <a5268bcc-144b-4e86-a13a-33d976368f06@oss.nxp.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 19/03/2024 23:16, Wadim Mueller wrote:
-> The nxp, s32g399a-rdb3 board is not documented.
-
-Use full name of the board.
-
-Subject: How is it missing? There is no such board in the kernel, so
-binding is not missing. Also, you touch here serial...
-
+On 20/03/2024 08:00, Ghennadi Procopciuc wrote:
+> On 3/20/24 00:16, Wadim Mueller wrote:
+> [...]
+>> +++ b/arch/arm64/boot/dts/freescale/s32g3.dtsi
+>> @@ -0,0 +1,236 @@
+>> +// SPDX-License-Identifier: GPL-2.0-or-later
+>> +/*
+>> + * Copyright 2021-2023 NXP
+>> + *
+>> + * Authors: Ghennadi Procopciuc <ghennadi.procopciuc@nxp.com>
+>> + *          Ciprian Costea <ciprianmarian.costea@nxp.com>
+>> + *          Andra-Teodora Ilie <andra.ilie@nxp.com>
 > 
->  * Add entry for S32G3 based boards with nxp,s32g399a-rdb3 item
->  * Add nxp,s32g3-linflexuart documentation
+> This pollutes the content of the file. Please make them part of the
+> commit description using 'Signed-off-by' tags.
 > 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
 
-Bindings go before users.
+No, that's not how process works. SoB are part of DCO and Ghennadi is
+allowed to skip them. Just read the DCO. Don't add fake SoB tags just
+because someone wants...
 
-> ---
->  Documentation/devicetree/bindings/arm/fsl.yaml              | 6 ++++++
->  .../devicetree/bindings/serial/fsl,s32-linflexuart.yaml     | 3 +++
-
-Split the patches. They will go via different subsystems.
-
->  2 files changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-> index 228dcc5c7d6f..23bf1d7f95b1 100644
-> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
-> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-> @@ -1503,6 +1503,12 @@ properties:
->                - nxp,s32g274a-rdb2
->            - const: nxp,s32g2
->  
-> +      - description: S32G3 based Boards
-> +        items:
-> +          - enum:
-> +              - nxp,s32g399a-rdb3
-> +          - const: nxp,s32g3
+Nothing is polluted in the file. That's what this section you have (if
+someone wants).
 
 
 Best regards,
