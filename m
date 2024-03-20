@@ -1,49 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 865854596C;
-	Wed, 20 Mar 2024 14:37:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863EC54BE8
+	for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 16:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710945432; cv=none; b=ShMc6pdwaA1ZkNlFYGtatR1FcNZF7HVjEXEdjGND9umNw0kvgvh1/atONsidZnPKYreFWfKKtj5B2ObeAkQmZoOLuUpj1jERcmGjpEU5aSx3ckQu7H4WdRDH1YI1kCRnX/g7CWKwBrypc1W3NoDrjtT/36LIFmHW311QS93NGVw=
+	t=1710952088; cv=none; b=a7j8Jns/IhvGn3psThl1QL9akR9M1y1Oo0d16iLHM3humwTeVF9KpFY9AJNcF/kTpA1T+cq+btIMwt+e1HEbeUUtg9fPqMLzd9NujmplkYsqqD97VeMo/ozFNU3AUTADpuSMC6xOPwpwv35opQwrVjJO2qDCrlUmI/4euRTi+DM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710945432; c=relaxed/simple;
-	bh=sHHbuYFWLzbXRpPFre1G9oi4c/Un6QERBOEq6EyyZOY=;
+	s=arc-20240116; t=1710952088; c=relaxed/simple;
+	bh=yTzaE6ut/W8ahZ+/Mz5Xw5xcnS3KSBlLVAjk9v6eLtM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jD+DKcGCApnACp7h3GAjtHk6uaHFzGvSt8DbLbe4DTcX0A33PXFyy0P9RmBjU4aYg3VSkiqU5yt4/uz+bLD7E/+ilPG1rZV7+mgd+MufvCNAKC0MOaVV9KYVyMzC270wiQmd5YFvXUBxzGC3Ldo8D7R8kpwbzCFwkg08XrNOKRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pvs4/3Zp; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=jAUP8vy+uEK8mE2OEfTSBjOwYEpls+DBbo7NAElyNbsEo5Ie48IL7v3K48Hl+kUbsWBlbjB4FacrD1IHkmquC9nVMwyDlRE+JX1U7+wKBe1upEjYiEvpaHHzaB0hZklNwv/h9Mc23f6Q8kAOVl7LRV1ruOtxgYCZqheIsYpFzms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=v+jJayUs; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pvs4/3Zp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2674C433C7;
-	Wed, 20 Mar 2024 14:37:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1710945432;
-	bh=sHHbuYFWLzbXRpPFre1G9oi4c/Un6QERBOEq6EyyZOY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pvs4/3Zpg/p5C1nPFtJd3JaiL6u9ZdC64Ztv7iG3TDt0UjISG+WWAnaY7/LSE65CY
-	 1fft6ZlyELQuhflT33iq6T0fiIgH9QXMsbjjtWBBEjj1KLEcUpx43oikwge4caOxcI
-	 X3TgX+xeVHt5oa+j1XhC2RQPmsRbC688OE9ejsuHnLx4/2oy9/6701cxnEOYSUZUKM
-	 NLXeOnIED1bm4g1/RKDgK525yIAAn2FvzsZ+J6vX9zzICNYbXmtcQNEFV47HCVmjiu
-	 KIh1wC1v+2hxlelEaASDNZabL59/9tydiyO9K+y+xSJQfaIspm9R6J+sAO3a7XgYv9
-	 n3a4eO9+HdZWQ==
-Date: Wed, 20 Mar 2024 09:37:09 -0500
-From: Rob Herring <robh@kernel.org>
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v3 3/4] dt-bindings: serial: renesas,scif: Document
- R9A09G057 support
-Message-ID: <20240320143709.GA1676859-robh@kernel.org>
-References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20240318172102.45549-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="v+jJayUs"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-33eee0258abso2043532f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 09:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1710952085; x=1711556885; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=msB9F7QOeQwvM5EEEp7pk58WHiFSBilQq0veDXMN8ik=;
+        b=v+jJayUsCzfwwMNnWVBxrApMS2WwY53jUPISYEktrNJDMCU6gd1iABKITYnhfdefxN
+         /WOvZH8I9VGeY7H7VO3VqTh28XJz1/257EriFlH6geHpuNCPhwrSwfk9Er0iTjxCX0Ua
+         bNrVIORCxTnmIvhWd1YGe1oX1Uz/3b/Frl6CYqRrSkMM4PvzWVekSFyUWJSfOfK0aP4P
+         GlL2PrG91liyPm2vERxHgnZyyNOj01GpA0UnHgtPz4ZLb5FxcfAnIjO1sf90HsFYktXn
+         0ZlwITZJrJlhTSvk8rc+yBKx/aMUWx4l4VtpvMRO/gXMZNBkun6grk2AU7JT6WajrAQ3
+         iHlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710952085; x=1711556885;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=msB9F7QOeQwvM5EEEp7pk58WHiFSBilQq0veDXMN8ik=;
+        b=XHPNmA2KF2U3fDvOqETYCTroPnqL+M4v4bQ+3DReqj4CGJjEz6hMxcDZ/YPdH+WYEw
+         WFEWPFOVpmaaD+Zc0NxNLocKatb/HeKkT2bVst6RioQYmxbzTQ8EIkeaBiptTRxMRplI
+         zK4PCk9DC3/gqNuUwf7OaDbtGzggZWA/3T//jfcdJaVjdsUAHdQy5SNOm8Hx+EtIsg2d
+         8Es+42G9QGAkJFgxZxJ6AgxSpTntbI+Aw6X7HFzmICST5nEnT49evgE9v+Zje1+PhKmC
+         b/x1Syf8Cq7TeOKOs4CvN0ZMh4w+LpjqEMISJsPm9jzv5jeiiaeed8Kz5OHXjQ3szm1I
+         5Wdg==
+X-Forwarded-Encrypted: i=1; AJvYcCX3HsqmA6p7AkEoJES1W7XlgxhqGQhM7KMzF7hGKO4FG0tX1PSNkqdjmdXn4j/76ogWcmlGt1+VDnhvKQXLVLRPlEDe9rgKVoxm2GzR
+X-Gm-Message-State: AOJu0YweAofj/ytvo0hYV2EoP1yivHHCHih851TI1AwhKaqv4+JSpMhO
+	da32ELE53jTM7Qydmi5CezzLnPOF0NoNaqgW83yo57v0CNO0dxQdDYdtBLJFMhBFG2CZX6U3EO4
+	XjiE=
+X-Google-Smtp-Source: AGHT+IHstSVEPL+xvtOXSxEs1vKRqfJRf0BWqW/KLyPo8TIErjY7+CyoRIq2xlo5N0rNxiR2Se/3NA==
+X-Received: by 2002:a5d:64ab:0:b0:33e:781e:da57 with SMTP id m11-20020a5d64ab000000b0033e781eda57mr1983079wrp.53.1710952084670;
+        Wed, 20 Mar 2024 09:28:04 -0700 (PDT)
+Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
+        by smtp.gmail.com with ESMTPSA id m10-20020adffe4a000000b0033de10c9efcsm14961571wrs.114.2024.03.20.09.28.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Mar 2024 09:28:04 -0700 (PDT)
+Date: Wed, 20 Mar 2024 16:28:02 +0000
+From: Daniel Thompson <daniel.thompson@linaro.org>
+To: liu.yec@h3c.com
+Cc: dianders@chromium.org, gregkh@linuxfoundation.org,
+	jason.wessel@windriver.com, jirislaby@kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1] kdb: Fix the deadlock issue in KDB debugging.
+Message-ID: <20240320162802.GA22198@aspen.lan>
+References: <20240314130916.GE202685@aspen.lan>
+ <20240316023443.101169-1-liu.yec@h3c.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,39 +71,78 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240318172102.45549-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240316023443.101169-1-liu.yec@h3c.com>
 
-On Mon, Mar 18, 2024 at 05:21:01PM +0000, Prabhakar wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> 
-> Document support for the Serial Communication Interface with FIFO (SCIF)
-> available in the Renesas RZ/V2H(P) (R9A09G057) SoC. The SCIF interface in
-> the Renesas RZ/V2H(P) is similar to that available in the RZ/G2L
-> (R9A07G044) SoC, with the only difference being that the RZ/V2H(P) SoC has
-> three additional interrupts: one for Tx end/Rx ready and the other two for
-> Rx and Tx buffer full, which are edge-triggered.
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v2->v3
-> - Added SoC specific compat string
-> ---
->  .../bindings/serial/renesas,scif.yaml         | 33 +++++++++++++++++++
->  1 file changed, 33 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> index 53f18e9810fd..e4ce13e20cd7 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -79,6 +79,8 @@ properties:
->                - renesas,scif-r9a08g045      # RZ/G3S
->            - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback
->  
-> +      - const: renesas,scif-r9a09g057       # RZ/V2H(P)
+^^^ This is v2 isn't it?
 
-I don't understand why there's not a fallback. Looks like the existing 
-driver would work if you had one. It should be fine to ignore the new 
-interrupts. Though with Geert's comments, it seems there are more 
-differences than you say. 
+On Sat, Mar 16, 2024 at 10:34:43AM +0800, liu.yec@h3c.com wrote:
+> From: LiuYe <liu.yeC@h3c.com>
+>
+> Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
+>   attempt to use schedule_work() to provoke a keyboard reset when transitioning out
 
-Rob
+Please format the description correctly.
+
+
+> of the debugger and back to normal operation. This can cause
+> deadlock because schedule_work() is not NMI-safe.
+
+Wasn't there another paragraph to go here?
+
+: The stack trace below shows an example of the problem. In this
+: case the master cpu is not running from NMI but it has parked
+: the slave CPUs using an NMI and the parked CPUs is holding
+: spinlocks needed by schedule_work().
+
+
+> example:
+>  BUG: spinlock lockup suspected on CPU#0, namex/10450
+>  lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
+>  ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
+>  ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
+> Call Trace:
+>  [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
+>  [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
+>  [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
+>  [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
+>  [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
+>  [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
+>  [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
+>  [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
+>  [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
+>  [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
+>  CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
+>  Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
+>   0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
+>   ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
+>   000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
+>   Call Trace:
+>   <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
+>   [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
+>   [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
+>   [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
+>   [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
+>   [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
+>   [<ffffffff8107b371>] insert_work+0x81/0xc0
+>   [<ffffffff8107b4e5>] __queue_work+0x135/0x390
+>   [<ffffffff8107b786>] queue_work_on+0x46/0x90
+>   [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
+>   [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
+>   [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
+>   [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
+>   [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
+>   [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
+>   [<ffffffff8108304d>] notify_die+0x3d/0x50
+>   [<ffffffff81017219>] do_int3+0x89/0x120
+>   [<ffffffff81480fb4>] int3+0x44/0x80
+>
+> Suggested-by: daniel.thompson@linaro.org
+
+Thanks for the credit but I think the following is probably a better way
+to express it:
+
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+
+Daniel.
