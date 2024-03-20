@@ -1,60 +1,60 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4808D23770
-	for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 07:49:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD29822F0D
+	for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 08:06:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710920999; cv=none; b=HDlyTdqHcHk2LUdu/PXXhz9xN/nukjuHdPrY03obOPugI+CrSltaeCq/PMQ8R9wg2At3W5PB7c4qNhmEsr5WvOrxpL0ZasjmBqsh1hhjJJSdChbZrrmuA5d6xiE7AW1aP/+uWmb0EEcFTgeolXHXrwqQX88MAlRBLcb7p4z5l3k=
+	t=1710921972; cv=none; b=I7V7dt+PKBVL7OdZNWC/+OuKp9+oTJpn9szo3OuYl5XxMx9cnYTjXctIkvIsPuq67ctLefFoG3gfjyRwoKUyFqKdJVPiDiizXhm9A/kacQpULn/dHddbWlvzl9gnPipm4bj8PEuBoMP1R+K98A0kmmU9J3TZkxa2B3MiR3BbjKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710920999; c=relaxed/simple;
-	bh=q5U32Wv2NtRKMBCOe/UdWxXohxDEUHP5aP2dTZSwA64=;
+	s=arc-20240116; t=1710921972; c=relaxed/simple;
+	bh=3VaEiu7P6Vt47e432Hig0a+pLMJ67V4uuiIr1ehyxTE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hVSiEVogOLWy03tToHilis+TFX8cm5ic0Egubb/oEWlSI/Xw4fYgN8m8nTMAUFFC/ct1nfx2y10SmeAFv8EjHLMFPSvHLsw/zqB+SsRKT7Y2+iWGmAaeOM6bTofWbn7dOt1NDgXl9QTriLKzQi7W77nVwZWZ0hwxxlS0xNWtpaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hNI6q0vF; arc=none smtp.client-ip=209.85.208.43
+	 In-Reply-To:Content-Type; b=ZxD2CTPKmCkVqVq/l9WHhfm+3VtYy/+foMS52NR9OHBT0c/3+LqvqlPdE4koldy0StItviBbxpmHQGhDO8juawLmXkR24E+bpJ+SuAE5Goc+jRfMiFUUotgpYQwoq11QVticEd7AIiF99MJ9e9cHApj+RSIt5ZPYS6/NZpYg1I4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=i+zkdaJk; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hNI6q0vF"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-56a0c0a7ebcso3823659a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 00:49:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="i+zkdaJk"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-56bb33a907bso108036a12.2
+        for <linux-serial@vger.kernel.org>; Wed, 20 Mar 2024 01:06:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710920995; x=1711525795; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1710921968; x=1711526768; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=MRntVtwqYez/rC/iIjnai7Rc/ctg94I/p6RSPi7b+nQ=;
-        b=hNI6q0vF2mGhJFCXOq6x/QlfCdVB4ll3pPt+8b/vDdv7boZW+y7yZSY+gAZ0tM+pfW
-         ayySu0ngFVmAMh9oJgqSKrHMiKY7jrHeynAFPGSU5k9kNTA1dhn3S3HewpTotxL220xc
-         LjLnnvmVJvCgv293b4miTkCuaXi9PDkE5Jqtu6Wvh16e2P2ATn5JNChppoytJFNy9jby
-         0uj+AZupxJNHn7LTRs7I9LB5wiTGrmVXT9pZ/bpp0PEeBYdOtGrAi6Ce82hnTb9A4LRj
-         GbsZeb5bKEZqq+BfR0KcElRV6kb+V5N85+y40GRR3LpsiVLJ+WdgEXd0PDctWjXBhX0L
-         Hbqg==
+        bh=SlzyeVESNsQAYLZBivF0TU3lMaCAxvMVcqfOd6RxnXM=;
+        b=i+zkdaJk++vt1x7IQvwQOTqVbL+vgHV0ZqOi73m/F3qBDc2wJtWkvHm496DLCyoIXh
+         RwN3Z71wefhcaw4UWK+r+jzaUqRFmO5fW+UiBu+SPe/d+Lhp1xL7/Bo5eRSeuWaETdhM
+         oMhOfH8L/pJcc5eyov36yQ1Q092nscxEbv3Jf3lUeCssLXvqdsfRH9pJe/gDzOvo6CjD
+         Af2APwyQDN4qYw2+QqgktRsoglM0b/iqC/Bxovgl/RaBJ6+NeaCsFdSEcSyl/vh+4l0g
+         VMFj7R67JiaTwa4iPInPkpK0MwGH8vdKALYug/tBb2O9jMJhXcOgnn5viadBmY1DCIWn
+         Y0EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710920995; x=1711525795;
+        d=1e100.net; s=20230601; t=1710921968; x=1711526768;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=MRntVtwqYez/rC/iIjnai7Rc/ctg94I/p6RSPi7b+nQ=;
-        b=PR6SFi6ygZ9VTnAc1oEKnXU7TIyI7j47aJcNEwz0aFx9O/7s9dgDhDYZ3v25XF/Qoj
-         ial8pMh9QlvBhhRPC3uV6DqzcWRIfNY1KbC5N9cB6wX9c1EMT8xGM35AwMiYAQZ5e4Wv
-         OWHr5/uCmsGGax8RVCyKQ6XDnLhZilRKT1CYXBYZimPqkLX5el4iUsqIQyUlOof+h8Le
-         Gx0qaYzJzm18iRhzZgswrOIkB6m4JhdH70cbg3VEPRyEcJ+bdxOiRNyT727ThxFzmJjn
-         XH/oxTbWarumfY8Sdx0cvUI7H2Yplyhb49CFKWPPOK5ya5jFn02BQzOnSa8h5KokHq7g
-         yEtQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXmOcckaleLMIfhKc5b5xWj3ea61tfYkFJGScfBV8XKXipeLaTxiYNnnzjxlWcz+SD9qyrmCgjMlzC84LtRzKnYLrWqQ1Ek/k/PQiCm
-X-Gm-Message-State: AOJu0YwKlgVz4nyuK4UlkWBJvZdoOP9Cggcn58AhMNjMzvj8vlI803rD
-	Q61MKQbFY1F9k77LTcRa9lCyzros3NUgh+lh5joXWzxEZzl7/VHYBoLfCvWzmvc=
-X-Google-Smtp-Source: AGHT+IFZaPjdhUYIwRAyOsAPuyNwb/aBT1vtXqOAmfG32jQSBNobJHnMektYJuUB51g6QjcEadiJog==
-X-Received: by 2002:a17:906:6d59:b0:a46:e595:f357 with SMTP id a25-20020a1709066d5900b00a46e595f357mr2365013ejt.9.1710920995458;
-        Wed, 20 Mar 2024 00:49:55 -0700 (PDT)
+        bh=SlzyeVESNsQAYLZBivF0TU3lMaCAxvMVcqfOd6RxnXM=;
+        b=X1K9p4QUs2do20ojgWVC8WzOyoSk6VrvcHKzttsJmRJ6v/gzKu3HIU8t2le7EO9q3w
+         b7X0FUYIcbudoBUkGA1mid0cae9DEQ6IEUDkjEoTvOt4EkjVPMowFv2biO3E6EyQhoLv
+         nA5kiiXx79DDHQPjfJ42XxqtPXlFUIkD9b+zqMrCAQevGxKRd3PtOcwBcIw8rX1eiRbD
+         Q8rXU2BB4l4UCWBhEc66HwhyELp0DasZnU6CH0pXtlp5m7iW5ElAa5H7MmFammP2QI+e
+         mf7/4/+G7mQSLozL0vQbZC+kbNdmPtzSskB4u6y9oL1Y6t+WrYqDBIbLZGMHw9Aj3hEU
+         2R/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXrb6udz3/2HVoIIvjiYEZ8YV5pCZ12ZBt6ZMbUbxp9c4GXxa9INC5DQsgN6dcrX+zr8qdp6j6tLYpornftzg3BtJ3NQwZmK2IP5sPe
+X-Gm-Message-State: AOJu0YwCehb4Y//B4dOY+76y9jmYgdKOSWfL7naWdc/nvdkTLwV+Qza6
+	p4V+/lfJIprEUsV4dxmLjCeDV3k8BB3yNCgrrVMT9rNyk9vyDAipX+6eJLlyVBk=
+X-Google-Smtp-Source: AGHT+IH6EmMnyI9/7MY7sWDDU2aR5lNG12sHgtfcpCwiENfmIWrRyINNt7AJUm8vWKW7hfkG52s/vg==
+X-Received: by 2002:a05:6402:3641:b0:568:32f7:6c55 with SMTP id em1-20020a056402364100b0056832f76c55mr13096907edb.9.1710921968157;
+        Wed, 20 Mar 2024 01:06:08 -0700 (PDT)
 Received: from [192.168.1.20] ([178.197.222.97])
-        by smtp.gmail.com with ESMTPSA id an14-20020a17090656ce00b00a465b72a1f3sm4471165ejc.85.2024.03.20.00.49.53
+        by smtp.gmail.com with ESMTPSA id cw24-20020a170906c79800b00a469d3df3c1sm5232599ejb.96.2024.03.20.01.06.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Mar 2024 00:49:54 -0700 (PDT)
-Message-ID: <018d1b9d-7957-4efb-903b-2e510db1ff80@linaro.org>
-Date: Wed, 20 Mar 2024 08:49:52 +0100
+        Wed, 20 Mar 2024 01:06:07 -0700 (PDT)
+Message-ID: <5b87eee4-2b28-48a5-a7c8-6c450be724e7@linaro.org>
+Date: Wed, 20 Mar 2024 09:06:05 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,36 +62,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] arm64: dts: S32G3: Introduce device tree for
- S32G-VNP-RDB3
-To: Ghennadi Procopciuc <ghennadi.procopciuc@oss.nxp.com>,
- Wadim Mueller <wafgo01@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
+Subject: Re: [PATCH v3 2/4] dt-bindings: serial: renesas,scif: Validate
+ 'interrupts' and 'interrupt-names'
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
- Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
- Chester Lin <chester62515@gmail.com>, =?UTF-8?Q?Andreas_F=C3=A4rber?=
- <afaerber@suse.de>, Matthias Brugger <mbrugger@suse.com>,
- NXP S32 Linux Team <s32@nxp.com>, Tim Harvey <tharvey@gateworks.com>,
- Alexander Stein <alexander.stein@ew.tq-group.com>,
- Marek Vasut <marex@denx.de>,
- Gregor Herburger <gregor.herburger@ew.tq-group.com>,
- Marco Felsch <m.felsch@pengutronix.de>,
- Joao Paulo Goncalves <joao.goncalves@toradex.com>,
- Markus Niebel <Markus.Niebel@ew.tq-group.com>,
- Matthias Schiffer <matthias.schiffer@tq-group.com>,
- Stefan Wahren <stefan.wahren@chargebyte.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Josua Mayer <josua@solid-run.com>,
- Yannic Moog <y.moog@phytec.de>, Li Yang <leoyang.li@nxp.com>,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20240319221614.56652-1-wafgo01@gmail.com>
- <20240319221614.56652-2-wafgo01@gmail.com>
- <a5268bcc-144b-4e86-a13a-33d976368f06@oss.nxp.com>
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20240318172102.45549-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <db13e305-adc4-4990-b9ec-b1cdcdad4406@linaro.org>
+ <010e4742-438f-413f-811f-a033ec104832@linaro.org>
+ <CA+V-a8txP39HJJrJcNqCUgw2NkdA3uSvBrbdSzw0bN6r5LpNaQ@mail.gmail.com>
+ <51743788-3444-4817-864b-404205a06137@linaro.org>
+ <CAMuHMdVWMt_JqpiWasZxS3D8dS5JYgxDU0SKbFxNVV-zWk8D+w@mail.gmail.com>
 Content-Language: en-US
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
@@ -138,33 +128,69 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <a5268bcc-144b-4e86-a13a-33d976368f06@oss.nxp.com>
+In-Reply-To: <CAMuHMdVWMt_JqpiWasZxS3D8dS5JYgxDU0SKbFxNVV-zWk8D+w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 20/03/2024 08:00, Ghennadi Procopciuc wrote:
-> On 3/20/24 00:16, Wadim Mueller wrote:
-> [...]
->> +++ b/arch/arm64/boot/dts/freescale/s32g3.dtsi
->> @@ -0,0 +1,236 @@
->> +// SPDX-License-Identifier: GPL-2.0-or-later
->> +/*
->> + * Copyright 2021-2023 NXP
->> + *
->> + * Authors: Ghennadi Procopciuc <ghennadi.procopciuc@nxp.com>
->> + *          Ciprian Costea <ciprianmarian.costea@nxp.com>
->> + *          Andra-Teodora Ilie <andra.ilie@nxp.com>
+On 19/03/2024 14:25, Geert Uytterhoeven wrote:
+> Hi Krzysztof,
 > 
-> This pollutes the content of the file. Please make them part of the
-> commit description using 'Signed-off-by' tags.
+> On Tue, Mar 19, 2024 at 2:04 PM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>> On 19/03/2024 13:43, Lad, Prabhakar wrote:
+>>>>>> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>>>>>> index af72c3420453..53f18e9810fd 100644
+>>>>>> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>>>>>> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+>>>>>> @@ -82,38 +82,6 @@ properties:
+>>>>>>    reg:
+>>>>>>      maxItems: 1
+>>>>>>
+>>>>>> -  interrupts:
+>>>>>
+>>>>> I don't understand what is happening with this patchset. Interrupts must
+>>>>> stay here. Where did you receive any different feedback?
+>>>>
+>>>> Look how it is done:
+>>>> https://elixir.bootlin.com/linux/v6.8/source/Documentation/devicetree/bindings/ufs/qcom,ufs.yaml#L44
+>>>>
+>>> Thanks for the pointer, as the above binding doesn't have any
+>>
+>> Yeah, that's just an example to point you the concept: top level
+>> property comes with widest constraints (or widest matching items
+>> description) and each variant narrows the choice.
+>>
+>>> description items as compared to our case, to clarify I have updated
+>>> the binding is below. Is this the correct approach?
+>>>
+>>> option #1
+>>> ---------------
+>>
+>>
+>> Yes, it looks correct.
 > 
+> Why duplicate all the descriptions? The only differences are the number
+> of valid interrupts?
+> What was wrong with "[PATCH v2 2/2] dt-bindings: serial: renesas,scif:
+> Validate 'interrupts' and 'interrupt-names'"[1]?
+> 
+> https://lore.kernel.org/r/20240307114217.34784-3-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
-No, that's not how process works. SoB are part of DCO and Ghennadi is
-allowed to skip them. Just read the DCO. Don't add fake SoB tags just
-because someone wants...
+I have impression that only two variants out of three have same
+descriptions... but now I see mistake I made in above. I read that first
+interrupt is "Error interrupt" but it is "error or combined". Sorry for
+that, I think most of my comment there is not correct.
 
-Nothing is polluted in the file. That's what this section you have (if
-someone wants).
+It could be made oneOf?
+
+    oneOf:
+     - items:
+          - description: A combined interrupt
+     - items:
+         - ....
+       minItems: 4
+?
+
 
 
 Best regards,
