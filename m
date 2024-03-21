@@ -1,81 +1,177 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D49423A1DE;
-	Thu, 21 Mar 2024 07:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1262754F86;
+	Thu, 21 Mar 2024 09:56:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711007915; cv=none; b=aTIrFcURejD7qSwRDmP2PfqjoyxdLZNR/z8b6q3y/r5rZ9UuxIY1bHKqTo7wLDlQukB8w5zobzM9XMDQ3czA4e1NTV9oehtNKzQOfMKE6rrfKE6B7BmUTedCuINHNqMbGPOHeZ0XHkV1DoM6JvGj1Qm0pi/axM1AOWFMiy6O5dI=
+	t=1711015006; cv=none; b=PcWbFRXmlG17VBM8IVs+VUkjY0VToXruObwtPJRRgMNkGKfZAXO6W0Xfs4J+0XgLagjFLIQZ/CYhuCbv4w5CCKjxFcdPgnQ05uopx3Ha0S0fp2oRkCoOMerZfiPYvHzJschY/0A4CxZ++myxxYYxiboA2wwPSd5dVk6FKoUSN8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711007915; c=relaxed/simple;
-	bh=FOxNEXZ9LoI28qYyifvU8qUpUyH83SG5h8zuxJ0WK3w=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=nFTX3nFobWcYWB9EYzRZ94HI0d69pDBoI/g5D/JnEgeHCowfL64YkPqVDJ1Z2OwHO8x3ln/7z/DJ3YerMBtDKbN+SS79n6uHhA9OWT0o4NcSp2dXgV4h5spDHouoAaumN7hEhwlDO3EFcPdSSxPRda/SocNElDKKFud4KXPA/58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 42L7vQPX052728;
-	Thu, 21 Mar 2024 15:57:26 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX03-IMDC.srv.huawei-3com.com (unknown [10.62.14.12])
-	by mail.maildlp.com (Postfix) with ESMTP id 59DB42004BAA;
-	Thu, 21 Mar 2024 15:59:08 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX03-IMDC.srv.huawei-3com.com (10.62.14.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Thu, 21 Mar 2024 15:57:28 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Thu, 21 Mar 2024 15:57:28 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "jason.wessel@windriver.com"
-	<jason.wessel@windriver.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIIFYzXSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUg?=
- =?gb2312?Q?in_KDB_debugging.?=
-Thread-Topic: [PATCH V3] kdb: Fix the deadlock issue in KDB debugging.
-Thread-Index: AQHaezckCXAchSVaZ0+2QsrTyw6AgbFBSNsAgACKiZA=
-Date: Thu, 21 Mar 2024 07:57:28 +0000
-Message-ID: <3cb0b32b8b4946efb93ce68729d4c321@h3c.com>
-References: <20240320162802.GA22198@aspen.lan>
- <20240321022604.4088438-1-liu.yec@h3c.com>
- <2024032137-parrot-sandbank-ab29@gregkh>
-In-Reply-To: <2024032137-parrot-sandbank-ab29@gregkh>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1711015006; c=relaxed/simple;
+	bh=X+vay/ufd0X59BZKgQtvlB9hrVh25YaX+Tq0N2WVlVg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hTwEOviWy2P9JTvpnGucNtzObWOneSLYWjYcHhtMD2hLqKwKOoJNgJMV1pfK8XuirrY4L1YXE2Z6/YVm6iKN34pLAh7Tb7BDXRjnsIikbhFYsRZqWzMAZiA7/T7VcGpUm/yXWId09vs27luvX8O641FKlX4sQavtZ3Vbhwe95l4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZJaK6ZXW; arc=none smtp.client-ip=209.85.221.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZJaK6ZXW"
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-4d435a60217so296572e0c.0;
+        Thu, 21 Mar 2024 02:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1711015004; x=1711619804; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+fRFePWYUc68B3PsZK1/PkJRWXlxCxxTCy2WfNf/nvc=;
+        b=ZJaK6ZXWGqoIrZ0/oVWZZF+jW3Na/aDCYgFWxkogxEQfp0GTZio5i5rr509N7AoGxy
+         RenKAtDaMD/b+wXf8Mg2gfqFE3iUYHU6Tt+iFVBFpra/KSp3+B7DYuGRAweOJtyRwD5z
+         eu/WS0F/4nsjARAS9M/rQOEYIVIP39+VIIOIwdtTBrkWTMc4C1syBXETQ9aSFRmG0kpO
+         NHAkyRc8IJtyCsDaW5dKxrTVS3VrJB7JbCAIWJRtyHEBTbMmJDdE7hBl7al7P4ZzXQHP
+         qGJuccn9t1/9pgSUM1yguLxV5VKfpiqL4IxGPpfAXOFGOgm+xFgegd+1StYTfmK4oZGG
+         F7pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711015004; x=1711619804;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+fRFePWYUc68B3PsZK1/PkJRWXlxCxxTCy2WfNf/nvc=;
+        b=w3FSjrmKPTY45Exiz1bwuis196EGN+HmZ1L0W43vQ9kECG9cCNDTYPQqwemupSSinD
+         IS2FGglKBz5KvlYZ9dkfTCSP6STHSSfEc8Td/O9pXiG74odaN/f3jie9NCn+J+h/hc9u
+         2tsUOLsu6iiN5HvCi9dSUT32RI8y+N9Uux/vTDrtUNm4WSyWhzYwcgtXKyDMQOV8t5US
+         ZVbTMICDIgNCG14R68+FJQ54O2EByynZAd0X1XbqcFvv8H5AOdFlvj3k8qvweNo03XIW
+         wOPvdrnemAcqHrkedT+chHSdiBEUEWQGVn18EEG8WiC9sGsziI6H9nGZXBD0m9tnU3WJ
+         2r2w==
+X-Forwarded-Encrypted: i=1; AJvYcCXGH8NZUfrZNxDarJp8VfbwpQj0y/AKyX1hWYw6Wx79RHLtJsKdvaXJHTg5nBkfGYbkbEkFhivNPDO9wv4BRjxk1n+sRpJJuqYbxNE2+ND/6W8/FhHfBbM8bdlr3ZOg/kPU3P6hpXY5ShU5PQq69lC/nDmf0NzuHs9ukCXwnyAvI9SbgfWelUcDBZaJRLQ+zmMaRfaWsBLko/ZPj2xGlGvnPRbkEL0IzN3L
+X-Gm-Message-State: AOJu0YxMnu9J1sewe70zXMs44Qi+gZrl6NKa39unipDWppWO7YK6NlCk
+	QNMl/bbaJ7XSZKbmJBH4UMzzwbmKNjafdeZ/nd83skPr0pK/E6bEJ5dJnClaEuiM3L1sSdajFsU
+	8TlSrXbZ/qvTtkGn6oxWzxPH8cBQ=
+X-Google-Smtp-Source: AGHT+IGS3HgPdlXdCKerNWxvvRRQVEd5FD9Httx3Fx7LHzwMRUK822/VRu6sF2lPXrq3U/IBQR8bJiWnsyAgWP5X7Tw=
+X-Received: by 2002:a05:6122:c97:b0:4ca:80c5:7544 with SMTP id
+ ba23-20020a0561220c9700b004ca80c57544mr4686116vkb.4.1711015002465; Thu, 21
+ Mar 2024 02:56:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 42L7vQPX052728
+References: <20240318172102.45549-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20240318172102.45549-5-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdVR=t+QW+kqh3HswJ_8T2Dos381VL8vJvdqiC4RZDRRZw@mail.gmail.com>
+In-Reply-To: <CAMuHMdVR=t+QW+kqh3HswJ_8T2Dos381VL8vJvdqiC4RZDRRZw@mail.gmail.com>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Thu, 21 Mar 2024 09:56:16 +0000
+Message-ID: <CA+V-a8uorWK=Vi=N_CSCTjwn+fhFy4cBsNyA=818Nnwj3mq0Vg@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] serial: sh-sci: Add support for RZ/V2H(P) SoC
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-DQo+IFRoZSBzdGFjayB0cmFjZSBiZWxvdyBzaG93cyBhbiBleGFtcGxlIG9mIHRoZSBwcm9ibGVt
-LiBJbiB0aGlzIGNhc2UgDQo+IHRoZSBtYXN0ZXIgY3B1IGlzIG5vdCBydW5uaW5nIGZyb20gTk1J
-IGJ1dCBpdCBoYXMgcGFya2VkIHRoZSBzbGF2ZSANCj4gQ1BVcyB1c2luZyBhbiBOTUkgYW5kIHRo
-ZSBwYXJrZWQgQ1BVcyBpcyBob2xkaW5nIHNwaW5sb2NrcyBuZWVkZWQgYnkgDQo+IHNjaGVkdWxl
-X3dvcmsoKS4NCg0KQWRkIGRlc2NyaXB0aW9uIGluZm9ybWF0aW9uIA0KDQo+IFNpZ25lZC1vZmYt
-Ynk6IExpdVllIDxsaXUueWVDQGgzYy5jb20+DQo+IENvLWF1dGhvcmVkLWJ5OiBEYW5pZWwgVGhv
-bXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBEYW5p
-ZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPg0KDQpBZGQgDQpDby1hdXRo
-b3JlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGluYXJvLm9yZz4NClNp
-Z25lZC1vZmYtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+
-DQoNCg==
+Hi Geert,
+
+Thank you for the review.
+
+On Tue, Mar 19, 2024 at 8:21=E2=80=AFAM Geert Uytterhoeven <geert@linux-m68=
+k.org> wrote:
+>
+> Hi Prabhakar,
+>
+> On Mon, Mar 18, 2024 at 6:22=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail=
+.com> wrote:
+> > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> >
+> > Add serial support for RZ/V2H(P) SoC with earlycon.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> > v2 - > v3
+> > - new patch
+>
+> Thanks for your patch!
+>
+> > --- a/drivers/tty/serial/sh-sci.c
+> > +++ b/drivers/tty/serial/sh-sci.c
+> > @@ -290,7 +290,7 @@ static const struct sci_port_params sci_port_params=
+[SCIx_NR_REGTYPES] =3D {
+> >         },
+> >
+> >         /*
+> > -        * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T.
+> > +        * The "SCIFA" that is in RZ/A2, RZ/G2L, RZ/T and RZ/V2H.
+> >          * It looks like a normal SCIF with FIFO data, but with a
+> >          * compressed address space. Also, the break out of interrupts
+> >          * are different: ERI/BRI, RXI, TXI, TEI, DRI.
+>
+> and RZ/V2H has more interrupts than RZ/A1, RZ/G2L and RZ/T...
+>
+> In addition, RZ/V2H does not support synchronous mode (does not matter
+> for the driver) and modem control signals.
+>
+> Currently, sci_init_pins() does write ones to the SCPTR bits that are
+> reserved and marked as "write zero" on RZ/V2H. I am not sure how bad
+> that is.  You could avoid that by adding a check for .hasrtscts, but
+> that may have impact on other SoCs/boards, where currently e.g. RTS#
+> is always programmed for output and active low...
+>
+Oops I had totally missed this difference, thanks for catching that.
+
+> So if you really need to avoid writing to these bits, the only safe
+> way may be to add a new SCIF type.  But perhaps I'm over-cautious? ;-)
+>
+As we are adding a SoC specific compat string we can update this if we
+see an issue, but I'm happy to do that change now too. Please let me
+know what would you prefer.
+
+Cheers,
+Prabhakar
+> > @@ -3224,6 +3224,10 @@ static const struct of_device_id of_sci_match[] =
+__maybe_unused =3D {
+> >                 .compatible =3D "renesas,scif-r9a07g044",
+> >                 .data =3D SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE)=
+,
+> >         },
+> > +       {
+> > +               .compatible =3D "renesas,scif-r9a09g057",
+> > +               .data =3D SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE)=
+,
+> > +       },
+> >         /* Family-specific types */
+> >         {
+> >                 .compatible =3D "renesas,rcar-gen1-scif",
+> > @@ -3554,6 +3558,7 @@ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early=
+_console_setup);
+> >  OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
+> >  OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_consol=
+e_setup);
+> >  OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_cons=
+ole_setup);
+> > +OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a09g057", rzscifa_early_cons=
+ole_setup);
+> >  OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup)=
+;
+> >  OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup)=
+;
+> >  OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup)=
+;
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                 -- Linus Torvalds
