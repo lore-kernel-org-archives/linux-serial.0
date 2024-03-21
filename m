@@ -1,129 +1,162 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 381F55732B
-	for <linux-serial@vger.kernel.org>; Thu, 21 Mar 2024 11:04:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D44D3C17;
+	Thu, 21 Mar 2024 11:51:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711019053; cv=none; b=Uyec/fKhjNDoW+7wbCo05+WDuW4Ciqci8+96TM14rc6GNpqK3WU3xi4XmayScBQIxBgNOzeAZt6x2ZJ3/FnNg99Xa/bEz4d+Jvgh+IjuoT1U4nzHRcQ2eMUoGWQkCRoNpmVg5OQElSmYpBqFXO3ja2Ph+QkXlvhEzv1IBw2i7Cg=
+	t=1711021894; cv=none; b=pS79KqRo+XKI2+xa9RSIC1HKrzZZez8OyfYA/SJuHRbIaJUTg+QqtXBMqW1xB00I34YhuA1Pz4162G1fhFxy3iwpA2tx4txPDvnp9FuWCNm11oNWuzvITWWCi57TgkiQCne1Aat6BbVCVUD9lbb3uEQlUR52pH/fZNA5wM0EGCs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711019053; c=relaxed/simple;
-	bh=byi2AR2z6WKqvWWijQ8qSi+D5IrNykDN7WeRnTWUSgk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BCstI7TQrXWZSEpqm9IWfdJF10+EcsMhRpktMF+SKxlqoxBOffrkyDbkXqFE+H/4DaJIYkLZMM39NLewsxR0yvuvhGvTZSkLj5ZWy/BBhSFozYKovGANadyKyHF/f+n7ugb1++LvBybsVh6JRVOqhnQgmg/QouldVzwNFFhaI/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qA42Oku4; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qA42Oku4"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5101cd91017so968767e87.2
-        for <linux-serial@vger.kernel.org>; Thu, 21 Mar 2024 04:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1711019049; x=1711623849; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=a0TlLN0BMwnJ+UpSK4jvuBdM2+J+Dj1/xcdLP2bxFwM=;
-        b=qA42Oku4iPuJAVXG2+RsUvXj2Qh/wGXKrMrYYHPzA5oKoOQ9Aw1qZzVsPikyE5ZsjA
-         FZzMeCf6pUR382eXD7Qd34VOQH2fUi/4sRxWQxFwl2ErjMB47OCM+rzhtGKv2YcfHF3m
-         EXT5aHxysNotwp3d+b3kBGDDrnG3aGa16jMfpkWFmcnTpjj9M2kozO25bmlBd8L2ngqw
-         oo7heyTunOsZAKOORmxsMKNTthzYg1Y2r4nxonoZHbi7cebcau/wPYu+uTg3eRVGH0FL
-         t5/n9v8EnpnbkU9R35xFS3cVFC3e/BNJkJlK0keKj6vF9EYPdMxqdUygCl3asVC8GoHp
-         54nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711019049; x=1711623849;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=a0TlLN0BMwnJ+UpSK4jvuBdM2+J+Dj1/xcdLP2bxFwM=;
-        b=tSR9sVvQfSy3c3+8JjywT4VCSjh89KK9dGRxmqz1q7S2YTyG1RJdSBZq54G+/CHmGo
-         wpCbRq9WNwsR0V0oGn2uoQW3E+bxFy6zhCYelBTxHc5aS/2nvrZmjue6BBfs9J1v3St5
-         PgsOKlgDkTFxDipUNmtwr5EQnVAgkl54ksCV8wSThaPxmUVQ+F8rBNgq85d0gjSKOo67
-         ab7eO28FLU2EeJunOktiJh78/JxiYqka8dH/7vJAPXzkUNlUyM7TFLGiFiLhEtfUPZR/
-         jXIV1rxBh0NnoqPeIYoj6UPa0136yoUgMwz/RPO8ygQxnBZqpGQ8bjcZMnEEiTJiHzDL
-         I1AA==
-X-Forwarded-Encrypted: i=1; AJvYcCWYtR982ExWIRrGyd8SipijAfQYcGTez6jgKTrMhjxGwWCU4V/mG/mV4HR0AFNRyjmocEpaV0lWiBVwWuKM25ezeqhl+A81/gN+QAyy
-X-Gm-Message-State: AOJu0YxTMKf/ZjeGi3RO7pzbH+oLq6GNX+Q2QVB5QRHE2d7BjVI2GXzO
-	oXgvJU2lIiaWjdzCvsCAOgdsd3lvKPzj96Q+yar/4zgcB2g30nLQqlKKh6E3a6gf1qMj4RgjnmE
-	Kdd8=
-X-Google-Smtp-Source: AGHT+IEqisjMLI8hi5BcvMJ9JSYdKJ4s9qTck9CnSoGjSt4euGRQ1UsKn6uxN86qyPFuWIy/k85Umg==
-X-Received: by 2002:ac2:5a0a:0:b0:513:cf73:d8d2 with SMTP id q10-20020ac25a0a000000b00513cf73d8d2mr11555976lfn.54.1711019049329;
-        Thu, 21 Mar 2024 04:04:09 -0700 (PDT)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id g8-20020a05600c4ec800b0041408451874sm5225401wmq.17.2024.03.21.04.04.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Mar 2024 04:04:08 -0700 (PDT)
-Date: Thu, 21 Mar 2024 11:04:07 +0000
-From: Daniel Thompson <daniel.thompson@linaro.org>
-To: Liuye <liu.yeC@h3c.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>,
-	"dianders@chromium.org" <dianders@chromium.org>,
-	"jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: =?utf-8?B?562U5aSN?= =?utf-8?Q?=3A?= [PATCH V3] kdb: Fix the
- deadlock issue in KDB debugging.
-Message-ID: <20240321110407.GB7342@aspen.lan>
-References: <20240320162802.GA22198@aspen.lan>
- <20240321022604.4088438-1-liu.yec@h3c.com>
- <2024032137-parrot-sandbank-ab29@gregkh>
- <3cb0b32b8b4946efb93ce68729d4c321@h3c.com>
+	s=arc-20240116; t=1711021894; c=relaxed/simple;
+	bh=ZWaGrDtjpK+9JiJxCRC8Xa2hVkOfI5aZMwq9BnFdYVI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NlQDGtiCz0ADE504ZuM0IVZJ1MKXQ0OcIyGVa7ozCrQuI6v37Ni/T8MbnlImrgSi283wZGl/SaIxrx4HwB8p6T7CheTAo+Y5AybccV3jciXoujixzvDzhbV1sheuZBNzvTilWONQYV4cCfXj4zlcOldPRs67gcNewYnA8+L47OU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42LBoOWw098955;
+	Thu, 21 Mar 2024 19:50:24 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
+	by mail.maildlp.com (Postfix) with ESMTP id E02D02004BA8;
+	Thu, 21 Mar 2024 19:52:07 +0800 (CST)
+Received: from localhost.localdomain (10.114.186.34) by
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Thu, 21 Mar 2024 19:50:27 +0800
+From: <liu.yec@h3c.com>
+To: <daniel.thompson@linaro.org>
+CC: <dianders@chromium.org>, <gregkh@linuxfoundation.org>,
+        <jason.wessel@windriver.com>, <jirislaby@kernel.org>,
+        <kgdb-bugreport@lists.sourceforge.net>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <liu.yec@h3c.com>,
+        LiuYe <liu.yeC@h3c.com>
+Subject: [PATCH V4] kdb: Fix the deadlock issue in KDB debugging.
+Date: Thu, 21 Mar 2024 19:50:17 +0800
+Message-ID: <20240321115017.2879691-1-liu.yec@h3c.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240321110407.GB7342@aspen.lan>
+References: <20240321110407.GB7342@aspen.lan>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3cb0b32b8b4946efb93ce68729d4c321@h3c.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42LBoOWw098955
 
-On Thu, Mar 21, 2024 at 07:57:28AM +0000, Liuye wrote:
->
-> > The stack trace below shows an example of the problem. In this case
-> > the master cpu is not running from NMI but it has parked the slave
-> > CPUs using an NMI and the parked CPUs is holding spinlocks needed by
-> > schedule_work().
->
-> Add description information
->
-> > Signed-off-by: LiuYe <liu.yeC@h3c.com>
-> > Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> > Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
->
-> Add
-> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+From: LiuYe <liu.yeC@h3c.com>
 
-I assume this reply is summarizing what changed between the previous
-version and v3?
+Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
+attempt to use schedule_work() to provoke a keyboard reset when
+transitioning out of the debugger and back to normal operation.
+This can cause deadlock because schedule_work() is not NMI-safe.
 
-The best way to add the changelog requested by Greg's bot is to send
-a corrected v4 version. If you follow the example in
-https://docs.kernel.org/process/submitting-patches.html#the-canonical-patch-format
-then you'll see that what is expected.
+The stack trace below shows an example of the problem. In this
+case the master cpu is not running from NMI but it has parked
+the slave CPUs using an NMI and the parked CPUs is holding
+spinlocks needed by schedule_work().
 
-You can use git-notes to handle this. If you add a note containing
-something like the following:
-~~~
-Changes in v4:
-* Provide these changelogs.
+example:
+ BUG: spinlock lockup suspected on CPU#0, namex/10450
+ lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
+ ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
+ ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
+Call Trace:
+ [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
+ [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
+ [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
+ [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
+ [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
+ [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
+ [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
+ [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
+ [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
+ [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
+ CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
+ Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
+  0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
+  ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
+  000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
+  Call Trace:
+  <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
+  [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
+  [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
+  [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
+  [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
+  [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
+  [<ffffffff8107b371>] insert_work+0x81/0xc0
+  [<ffffffff8107b4e5>] __queue_work+0x135/0x390
+  [<ffffffff8107b786>] queue_work_on+0x46/0x90
+  [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
+  [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
+  [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
+  [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
+  [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
+  [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
+  [<ffffffff8108304d>] notify_die+0x3d/0x50
+  [<ffffffff81017219>] do_int3+0x89/0x120
+  [<ffffffff81480fb4>] int3+0x44/0x80
 
-Changes in v3:
-* <please describe changes>
+Signed-off-by: LiuYe <liu.yeC@h3c.com>
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-Changes in v2:
-* <please describe changes>
-~~~
+---
+V3 -> V4: Add changelogs
+V2 -> V3: Add description information
+V1 -> V2: using irq_work to solve this properly.
+---
+---
+ drivers/tty/serial/kgdboc.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-Once you have the note than git-format-patch --notes will automatically
-included the changelog with the patch.
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7ce7bb164..161b25ecc 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -22,6 +22,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_core.h>
++#include <linux/irq_work.h>
+ 
+ #define MAX_CONFIG_LEN		40
+ 
+@@ -99,10 +100,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
+ 
+ static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
+ 
++static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
++{
++	schedule_work(&kgdboc_restore_input_work);
++}
++
++static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
++
+ static void kgdboc_restore_input(void)
+ {
+ 	if (likely(system_state == SYSTEM_RUNNING))
+-		schedule_work(&kgdboc_restore_input_work);
++		irq_work_queue(&kgdboc_restore_input_irq_work);
+ }
+ 
+ static int kgdboc_register_kbd(char **cptr)
+@@ -133,6 +141,7 @@ static void kgdboc_unregister_kbd(void)
+ 			i--;
+ 		}
+ 	}
++	irq_work_sync(&kgdboc_restore_input_irq_work);
+ 	flush_work(&kgdboc_restore_input_work);
+ }
+ #else /* ! CONFIG_KDB_KEYBOARD */
+-- 
+2.25.1
 
-
-Daniel.
-
-
-PS I know that v2 was circulated with an incorrect subject line but I
-   think it is probably OK to call it v2 anyway... it makes the
-   changelog clearer!
