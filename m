@@ -1,178 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19948F5D;
-	Thu, 21 Mar 2024 07:38:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D49423A1DE;
+	Thu, 21 Mar 2024 07:58:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711006685; cv=none; b=k8g3WgyEmCgOd4WyCQguZPvbqjyZ2lrWbIknLLqTbufg9f3nVA18ZBW6eQ8xE1sw5iuq0eDI3ibpVV0/YXurbBSVd5fT6YAjoexOiSi9DZD80Aq4OefmsHIRK9m/7gXinzPe6fpCWFz+2tqhjOfJSzf5E+C/sp97XWSKeNtn7U4=
+	t=1711007915; cv=none; b=aTIrFcURejD7qSwRDmP2PfqjoyxdLZNR/z8b6q3y/r5rZ9UuxIY1bHKqTo7wLDlQukB8w5zobzM9XMDQ3czA4e1NTV9oehtNKzQOfMKE6rrfKE6B7BmUTedCuINHNqMbGPOHeZ0XHkV1DoM6JvGj1Qm0pi/axM1AOWFMiy6O5dI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711006685; c=relaxed/simple;
-	bh=r5tQxRIoGQ31YekqFLxmrVDnCnZskKiy+nmyBJ0P9Mc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QXwBhLZUxwSROALCbI/YLf2qBJDd3FpW9gkSINYE64wcJqyek63I+xSa8eI/B3c7hfmV5soPXtPktanxmZdHwY598s7gOcXcpNCkNjX2AWejtxaqdTZgyVSn161TLM4jbI8SbIPB03ANvmDC6KTuJYEtjJgYLQaJ8m+JplqrEPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=jAV3qku2; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jAV3qku2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4FB7C433F1;
-	Thu, 21 Mar 2024 07:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1711006684;
-	bh=r5tQxRIoGQ31YekqFLxmrVDnCnZskKiy+nmyBJ0P9Mc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jAV3qku2vdq7slWqkOit85k4p8LiqknT2EUeqJ36paO2XEvzH/+gTyg46bTnLNN6G
-	 cTvjqqEB8fBHJ2HLdS+//Yl/FJEzhYoJdjoZUhIWw/WeWkytytkJEZOYpBJd2pk98p
-	 +mTLBUJf0x9PHmMZKU7xnYfNf8oLThBOAktYSbo8=
-Date: Thu, 21 Mar 2024 08:38:00 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: liu.yec@h3c.com
-Cc: daniel.thompson@linaro.org, dianders@chromium.org,
-	jason.wessel@windriver.com, jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH V3] kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <2024032137-parrot-sandbank-ab29@gregkh>
+	s=arc-20240116; t=1711007915; c=relaxed/simple;
+	bh=FOxNEXZ9LoI28qYyifvU8qUpUyH83SG5h8zuxJ0WK3w=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=nFTX3nFobWcYWB9EYzRZ94HI0d69pDBoI/g5D/JnEgeHCowfL64YkPqVDJ1Z2OwHO8x3ln/7z/DJ3YerMBtDKbN+SS79n6uHhA9OWT0o4NcSp2dXgV4h5spDHouoAaumN7hEhwlDO3EFcPdSSxPRda/SocNElDKKFud4KXPA/58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42L7vQPX052728;
+	Thu, 21 Mar 2024 15:57:26 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX03-IMDC.srv.huawei-3com.com (unknown [10.62.14.12])
+	by mail.maildlp.com (Postfix) with ESMTP id 59DB42004BAA;
+	Thu, 21 Mar 2024 15:59:08 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX03-IMDC.srv.huawei-3com.com (10.62.14.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Thu, 21 Mar 2024 15:57:28 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Thu, 21 Mar 2024 15:57:28 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "jason.wessel@windriver.com"
+	<jason.wessel@windriver.com>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIFYzXSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUg?=
+ =?gb2312?Q?in_KDB_debugging.?=
+Thread-Topic: [PATCH V3] kdb: Fix the deadlock issue in KDB debugging.
+Thread-Index: AQHaezckCXAchSVaZ0+2QsrTyw6AgbFBSNsAgACKiZA=
+Date: Thu, 21 Mar 2024 07:57:28 +0000
+Message-ID: <3cb0b32b8b4946efb93ce68729d4c321@h3c.com>
 References: <20240320162802.GA22198@aspen.lan>
  <20240321022604.4088438-1-liu.yec@h3c.com>
+ <2024032137-parrot-sandbank-ab29@gregkh>
+In-Reply-To: <2024032137-parrot-sandbank-ab29@gregkh>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240321022604.4088438-1-liu.yec@h3c.com>
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42L7vQPX052728
 
-On Thu, Mar 21, 2024 at 10:26:04AM +0800, liu.yec@h3c.com wrote:
-> From: LiuYe <liu.yeC@h3c.com>
-> 
-> Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-> attempt to use schedule_work() to provoke a keyboard reset when
-> transitioning out of the debugger and back to normal operation.
-> This can cause deadlock because schedule_work() is not NMI-safe.
-> 
-> The stack trace below shows an example of the problem. In this
-> case the master cpu is not running from NMI but it has parked
-> the slave CPUs using an NMI and the parked CPUs is holding
-> spinlocks needed by schedule_work().
-> 
-> example:
->  BUG: spinlock lockup suspected on CPU#0, namex/10450
->  lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
->  ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
->  ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
-> Call Trace:
->  [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
->  [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
->  [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
->  [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
->  [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
->  [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
->  [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
->  [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
->  [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
->  [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
->  CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
->  Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
->   0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
->   ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
->   000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
->   Call Trace:
->   <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
->   [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
->   [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
->   [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
->   [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
->   [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
->   [<ffffffff8107b371>] insert_work+0x81/0xc0
->   [<ffffffff8107b4e5>] __queue_work+0x135/0x390
->   [<ffffffff8107b786>] queue_work_on+0x46/0x90
->   [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
->   [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
->   [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
->   [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
->   [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
->   [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
->   [<ffffffff8108304d>] notify_die+0x3d/0x50
->   [<ffffffff81017219>] do_int3+0x89/0x120
->   [<ffffffff81480fb4>] int3+0x44/0x80
-> 
-> Signed-off-by: LiuYe <liu.yeC@h3c.com>
-> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> ---
->  drivers/tty/serial/kgdboc.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 7ce7bb164..161b25ecc 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -22,6 +22,7 @@
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/serial_core.h>
-> +#include <linux/irq_work.h>
->  
->  #define MAX_CONFIG_LEN		40
->  
-> @@ -99,10 +100,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
->  
->  static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
->  
-> +static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-> +{
-> +	schedule_work(&kgdboc_restore_input_work);
-> +}
-> +
-> +static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
-> +
->  static void kgdboc_restore_input(void)
->  {
->  	if (likely(system_state == SYSTEM_RUNNING))
-> -		schedule_work(&kgdboc_restore_input_work);
-> +		irq_work_queue(&kgdboc_restore_input_irq_work);
->  }
->  
->  static int kgdboc_register_kbd(char **cptr)
-> @@ -133,6 +141,7 @@ static void kgdboc_unregister_kbd(void)
->  			i--;
->  		}
->  	}
-> +	irq_work_sync(&kgdboc_restore_input_irq_work);
->  	flush_work(&kgdboc_restore_input_work);
->  }
->  #else /* ! CONFIG_KDB_KEYBOARD */
-> -- 
-> 2.25.1
-> 
-> 
-
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/process/submitting-patches.rst for what
-  needs to be done here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+DQo+IFRoZSBzdGFjayB0cmFjZSBiZWxvdyBzaG93cyBhbiBleGFtcGxlIG9mIHRoZSBwcm9ibGVt
+LiBJbiB0aGlzIGNhc2UgDQo+IHRoZSBtYXN0ZXIgY3B1IGlzIG5vdCBydW5uaW5nIGZyb20gTk1J
+IGJ1dCBpdCBoYXMgcGFya2VkIHRoZSBzbGF2ZSANCj4gQ1BVcyB1c2luZyBhbiBOTUkgYW5kIHRo
+ZSBwYXJrZWQgQ1BVcyBpcyBob2xkaW5nIHNwaW5sb2NrcyBuZWVkZWQgYnkgDQo+IHNjaGVkdWxl
+X3dvcmsoKS4NCg0KQWRkIGRlc2NyaXB0aW9uIGluZm9ybWF0aW9uIA0KDQo+IFNpZ25lZC1vZmYt
+Ynk6IExpdVllIDxsaXUueWVDQGgzYy5jb20+DQo+IENvLWF1dGhvcmVkLWJ5OiBEYW5pZWwgVGhv
+bXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBEYW5p
+ZWwgVGhvbXBzb24gPGRhbmllbC50aG9tcHNvbkBsaW5hcm8ub3JnPg0KDQpBZGQgDQpDby1hdXRo
+b3JlZC1ieTogRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGluYXJvLm9yZz4NClNp
+Z25lZC1vZmYtYnk6IERhbmllbCBUaG9tcHNvbiA8ZGFuaWVsLnRob21wc29uQGxpbmFyby5vcmc+
+DQoNCg==
