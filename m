@@ -1,96 +1,91 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57D012E4E;
-	Fri, 22 Mar 2024 07:52:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8325017998;
+	Fri, 22 Mar 2024 09:07:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711093952; cv=none; b=p5j4gDtvbpKID9zGDzb3GxSPrCZZTqG7DCN+Rtpuqc+Yp3l+LQRk5qaa/tbtHBlgfSouUd32C5bhxa2beGvoW7zyJclhQhuEs5gkD1S9ApYH6zSyw02XtoOJ+/52jLKaDtl/bJaeKAxqJppLN4GpazVKBT5Dn9VRtEXQuNBEWXE=
+	t=1711098439; cv=none; b=HmRpXJM05W55mI3K2DHVi0A/DraXsJAn8YJ1xU7J4wWanpnkC9MOLbK+7wbllBtwBQ2pTwQzbP+U0lZwXFR1znvy7MrmOQvTmti0UnerbNjfOFeF9BVK9uhmykdjCKtmbxUVfxk/8eeD97Y0fk3rlm4I8wbywC9YkrFgnbUxjjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711093952; c=relaxed/simple;
-	bh=JcawjuQzj2kIp/tXe59hsACPJPeGZetDdjNA++lcYhg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=FdkRPZ4caReE/rRlZjPzh1cFDt4A9kjiqcJdPd4TxSRqF7BXTrhBqlU0xto1PJjL/pr3QODMIk3XD6oTLLBhxPepc0qi4bXxRi2oIaU8bsn8QPWK3qpEbgU0dtFIYzfeYWymdiNo0P2kvR9zAqBbYVTM1g+RlhvoQBV3oTIJHX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 42M7oqLk000733;
-	Fri, 22 Mar 2024 15:50:52 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX05-IMDC.srv.huawei-3com.com (unknown [10.62.14.14])
-	by mail.maildlp.com (Postfix) with ESMTP id 09A1D2004BB9;
-	Fri, 22 Mar 2024 15:52:36 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX05-IMDC.srv.huawei-3com.com (10.62.14.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Fri, 22 Mar 2024 15:50:54 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Fri, 22 Mar 2024 15:50:54 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Jiri Slaby <jirislaby@kernel.org>,
-        "daniel.thompson@linaro.org"
-	<daniel.thompson@linaro.org>
-CC: "dianders@chromium.org" <dianders@chromium.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggVjRdIGtkYjogRml4IHRoZSBkZWFkbG9jayBpc3N1?=
- =?utf-8?Q?e_in_KDB_debugging.?=
-Thread-Topic: [PATCH V4] kdb: Fix the deadlock issue in KDB debugging.
-Thread-Index: AQHae4X3OBfEt+YG5U6iGFBuJcoLGLFCznkAgACVJ+A=
-Date: Fri, 22 Mar 2024 07:50:54 +0000
-Message-ID: <5649fa8bfbdb43ea914850794afc6cac@h3c.com>
-References: <20240321110407.GB7342@aspen.lan>
- <20240321115017.2879691-1-liu.yec@h3c.com>
- <d3b77177-7c00-4459-9515-37afe741e9dd@kernel.org>
-In-Reply-To: <d3b77177-7c00-4459-9515-37afe741e9dd@kernel.org>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1711098439; c=relaxed/simple;
+	bh=fqnq0phZd8eQ1RBeCYKOKzraow94yCRC0cLooXVkLDs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WbTEi6mlR+W2WC9cucA0VYQogblYgcgcmpaBFP/o3XRUNzvER8jeOt2fs99mjEnmm9nQF3/jdSi2/gb9YiZahLBe8IsCyXeu3x26nZO2YPviuy+HBJuEYFJ87J6gxPglpE5XqcuNnyX32EZXmsQrVoS9F+AMEEStVD8wxvwOkl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=M9YV8kKn; arc=none smtp.client-ip=74.50.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="M9YV8kKn"
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id 0040360340;
+	Fri, 22 Mar 2024 09:06:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1711098430;
+	bh=fqnq0phZd8eQ1RBeCYKOKzraow94yCRC0cLooXVkLDs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=M9YV8kKnPAlSqDp772EmB/bHzTaDkR+q2GDGF+ZJKdISm9Z7MMsp/ij3Z7kNDdk97
+	 Y1/FDp98vv4WSDMbb1u1jk7XpUF8Kto52j04bNH8Wiw59zGrol+rEDjX0PWUf2XCSg
+	 0W+bh4RLEtuztC9SwxnvNZNbqw4Bt4e83IrZNlS2WD9yGzg80XD8LecgN1ht2ncY4Z
+	 sIUgOcMW3TgauctmrAvxSFEAddpztd96nqkNvjQnhj2rxYE3GFoAPOYO0zEKoT7qfJ
+	 J5QzaBv6TvPU/sE/HFDT4JLac2RkQSh2s72B/FvaI9qiPtX6/wTVTnzFjI+nzYAnpk
+	 8qg+hiadrnNmg==
+Date: Fri, 22 Mar 2024 11:06:57 +0200
+From: Tony Lindgren <tony@atomide.com>
+To: Nick Bowler <nbowler@draconx.ca>
+Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
+	regressions@lists.linux.dev, linux-serial@vger.kernel.org
+Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
+Message-ID: <20240322090657.GD5132@atomide.com>
+References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
+ <20240322051531.GA5132@atomide.com>
+ <d7337014-09ac-8a35-7159-e75ecd2707b6@draconx.ca>
+ <20240322064843.GC5132@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 42M7oqLk000733
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240322064843.GC5132@atomide.com>
 
-Pk9uIDIxLiAwMy4gMjQsIDEyOjUwLCBsaXUueWVjQGgzYy5jb20gd3JvdGU6DQo+PiBGcm9tOiBM
-aXVZZSA8bGl1LnllQ0BoM2MuY29tPg0KPj4gDQo+PiBDdXJyZW50bHksIGlmIENPTkZJR19LREJf
-S0VZQk9BUkQgaXMgZW5hYmxlZCwgdGhlbiBrZ2Rib2Mgd2lsbCBhdHRlbXB0IA0KPj4gdG8gdXNl
-IHNjaGVkdWxlX3dvcmsoKSB0byBwcm92b2tlIGEga2V5Ym9hcmQgcmVzZXQgd2hlbiB0cmFuc2l0
-aW9uaW5nIA0KPj4gb3V0IG9mIHRoZSBkZWJ1Z2dlciBhbmQgYmFjayB0byBub3JtYWwgb3BlcmF0
-aW9uLg0KPj4gVGhpcyBjYW4gY2F1c2UgZGVhZGxvY2sgYmVjYXVzZSBzY2hlZHVsZV93b3JrKCkg
-aXMgbm90IE5NSS1zYWZlLg0KPj4gDQo+PiBUaGUgc3RhY2sgdHJhY2UgYmVsb3cgc2hvd3MgYW4g
-ZXhhbXBsZSBvZiB0aGUgcHJvYmxlbS4gSW4gdGhpcyBjYXNlIA0KPj4gdGhlIG1hc3RlciBjcHUg
-aXMgbm90IHJ1bm5pbmcgZnJvbSBOTUkgYnV0IGl0IGhhcyBwYXJrZWQgdGhlIHNsYXZlIA0KPj4g
-Q1BVcyB1c2luZyBhbiBOTUkgYW5kIHRoZSBwYXJrZWQgQ1BVcyBpcyBob2xkaW5nIHNwaW5sb2Nr
-cyBuZWVkZWQgYnkgDQo+PiBzY2hlZHVsZV93b3JrKCkuDQo+DQo+SSBhbSBtaXNzaW5nIGhlcmUg
-YW4gZXhwbGFuYXRpb24gKHBlcmhhcHMgYmVjYXVzZSBJIGNhbm5vdCBmaW5kIGFueSBkb2NzIGZv
-ciBpcnFfd29yaykgd2h5IGlycV93b3JrIHdvcmtzIGluIHRoaXMgY2FzZS4NCg0KSnVzdCBuZWVk
-IHRvIHBvc3Rwb25lIHNjaGVkdWxlX3dvcmsgdG8gdGhlIHNsYXZlIENQVSBleGl0aW5nIHRoZSBO
-TUkgY29udGV4dCwgYW5kIHRoZXJlIHdpbGwgYmUgbm8gZGVhZGxvY2sgcHJvYmxlbS4gDQppcnFf
-d29yayB3aWxsIG9ubHkgcmVzcG9uZCB0byBoYW5kbGUgc2NoZWR1bGVfd29yayBhZnRlciBtYXN0
-ZXIgY3B1IGV4aXRpbmcgdGhlIGN1cnJlbnQgaW50ZXJydXB0IGNvbnRleHQuIA0KV2hlbiB0aGUg
-bWFzdGVyIENQVSBleGl0cyB0aGUgaW50ZXJydXB0IGNvbnRleHQsIG90aGVyIENQVXMgd2lsbCBu
-YXR1cmFsbHkgZXhpdCB0aGUgTk1JIGNvbnRleHQsIHNvIHRoZXJlIHdpbGwgYmUgbm8gZGVhZGxv
-Y2suDQoNCj5BbmQgd2h5IHlvdSBuZWVkIHRvIHNjaGVkdWxlIGFub3RoZXIgd29yayBpbiB0aGUg
-aXJxX3dvcmsgYW5kIG5vdCBkbyB0aGUgam9iIGRpcmVjdGx5Lg0KDQpJbiB0aGUgZnVuY3Rpb24g
-a2dkYm9jX3Jlc3RvcmVfaW5wdXRfaGVscGVyICwgdXNlIG11dGV4X2xvY2sgZm9yIHByb3RlY3Rp
-b24uIFRoZSBtdXRleCBsb2NrIGNhbm5vdCBiZSB1c2VkIGluIGludGVycnVwdCBjb250ZXh0Lg0K
-R3Vlc3MgdGhhdCB0aGUgcHJvY2VzcyBuZWVkcyB0byBydW4gaW4gdGhlIGNvbnRleHQgb2YgdGhl
-IHByb2Nlc3MuIFRoZXJlZm9yZSwgY2FsbCBzY2hlZHVsZV93b3JrIGluIGlycV93b3JrLiBLZWVw
-IHRoZSBvcmlnaW5hbCBmbG93IHVuY2hhbmdlZC4NCg==
+* Tony Lindgren <tony@atomide.com> [240322 08:48]:
+> * Nick Bowler <nbowler@draconx.ca> [240322 06:36]:
+> > On 2024-03-22 01:15, Tony Lindgren wrote:
+> > > Can you please test if the following change to add back the check for
+> > > !pm_runtime_active() is enough to fix the issue?
+> > 
+> > I applied the below patch on top of 6.8 and unfortunately it does _not_
+> > fix the problem (no obvious change in behaviour).
+> 
+> Hmm OK thanks for testing. I'll take a look and see if I can debug this
+> with qemu sparc as I no longer have any sparc boxes around.
+
+I can't reproduce this on qemu-system-sparc64, probably as it does not use
+the sunsab driver.
+
+I noticed something though, I think we need to test for the port device
+instead for being runtime PM enabled.
+
+Can you please test if the updated patch below make things work again?
+
+Regards,
+
+Tony
+
+8< -------------------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
+ 	 * enabled, serial_port_runtime_resume() calls start_tx() again
+ 	 * after enabling the device.
+ 	 */
+-	if (pm_runtime_active(&port_dev->dev))
++	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
+ 		port->ops->start_tx(port);
+ 	pm_runtime_mark_last_busy(&port_dev->dev);
+ 	pm_runtime_put_autosuspend(&port_dev->dev);
+-- 
+2.44.0
