@@ -1,105 +1,120 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEB7747A52
-	for <linux-serial@vger.kernel.org>; Fri, 22 Mar 2024 14:12:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DFA64D5AA;
+	Fri, 22 Mar 2024 14:45:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711116750; cv=none; b=RjGJ+uaXiTJ6Ve1D8OAWfM9gzEiAX5gEylqUzXV7/zBFSmSSHJfibwUc08ZdFytlkcw6ZoVdQYK+DLuQb/TsNF6+VxMDpjRUlPH1E6meBueKBdacR30vYveyoWTCA14dGEiWDcbI6AFxjvN/46C3SplHRLPfBleLDx8MRNLRDq4=
+	t=1711118705; cv=none; b=Q/jHiueriGjt8unWxekkweB7NeYM0NbOIrOe0pPu3y+7c3I0epwAbIyqIxJkH8jjKWTfaLr3DwIuzb14Pf/RWPckhnDTJWb2rh8cde6iPIQIFnugqohfF6uiZX3ujYgp8NHbqb34dB8iXC1BtKKBHCBg5qAAF1XTqQFn6Mddliw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711116750; c=relaxed/simple;
-	bh=xaP3sAbLubt6f1b7wDUbIs8Zobt3RgckgcUvcMqq0tw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Cm1iQidk/R8qXbkXR/WxFj8/QwmbbM8IXnAUFfgH98hUqE9VgUHrAi5KYcG+3tFrkcpWp3CeH8x2vTlf1Zqe5DLSuNeo5oi0fep0b2OzPjLh32xWFM9VrnpPdx3KzvIJt9F9K6qH6tR70WTxGsuAc97QxCHCZGjn+a7B0NePrJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=draconx.ca; spf=none smtp.mailfrom=draconx.ca; dkim=pass (2048-bit key) header.d=draconx-ca.20230601.gappssmtp.com header.i=@draconx-ca.20230601.gappssmtp.com header.b=CyTnfEUJ; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=draconx.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=draconx.ca
+	s=arc-20240116; t=1711118705; c=relaxed/simple;
+	bh=iLjxTmMNTTTSbPcgr+dDzIp1jE1//QBqqla9qhWektU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=W5Rx2FsJ9/fPXO1PtQLosKTC1z0ACEUKgpSHFXrllY63SydFPHFt4zCUl2/RYP10dAqoo43delxA4Hptt9h91gcsv17of+ykKALzGXGZCtlskBWksWQ7pGpC/Wb6KWsBFfGdqOAIo+m9W4sR7Vk6TfaDCFWWJQ9S8lTaM+RgDqU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Dvx8+kPh; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=draconx-ca.20230601.gappssmtp.com header.i=@draconx-ca.20230601.gappssmtp.com header.b="CyTnfEUJ"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-789d0c90cadso140875885a.3
-        for <linux-serial@vger.kernel.org>; Fri, 22 Mar 2024 07:12:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dvx8+kPh"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4146562a839so15371805e9.1;
+        Fri, 22 Mar 2024 07:45:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=draconx-ca.20230601.gappssmtp.com; s=20230601; t=1711116747; x=1711721547; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ccm1mtAb95qdb6lkqB0FItmGid6eaARPcUgc6MW739g=;
-        b=CyTnfEUJHsymqTdVoMVhR2UT1dVcu8qtdw/0rW/bYjqnRmbzZQ53SD1Pq1LgyE44Ff
-         B7YukyopaeBiXcJ7xV1Ul2U2Gar76bJItz4p6XUhgCfdrt+epVoNCQyVNytimSfv6YMe
-         P5Y7XyAd17UzMkon81/v1e2zl1nS2ZRtiratCi0TL0aafrJckRSbBFl3qo7cEFr+iZcv
-         /RrZmQhm0+oyAGHhbBKd9lH9Gpzahmk0KgMcn9XYG1vPE+MRImwtXoBH4UzGDL6qU3N7
-         bEF7FxlBB6tcp+gq3LHA+V+7cu6fVsMmPUPv9bYSkmXdBFsSZaLChNPHOZ2/WIwYRE7r
-         Q5vw==
+        d=gmail.com; s=20230601; t=1711118702; x=1711723502; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=a0V7Mhe0ArfXSjrT95vTJ+hE4SWzfgGrhDLu3sLUJno=;
+        b=Dvx8+kPhskkvyly1QghHrzFwX5GbOZaQlyQPxE6Cv1VIDX2tjFvvT6LTfIuK5MG+oz
+         PgXpEnkGnIDj7+w9iuNw0kuQsa10sG9gLg9ZomEcvMBL68MpAmxmVzCsycx5oBJQo91y
+         KZyFlGRT3BUfhQhabZKZp426zl9JKKRQrSUojcE4KO75NyINJQHDxI1d30XBXeUfAYVT
+         /W7kmzeYyn436hCD2Vlzy96ew7yBZkx2Clh2FANMoV+a1uNoK9L3nGR7P8a96yxhhgj5
+         RPZQeaoaxlhAvn/8UUHkvhnFNHg5QX68YZT2fq7hmC2X/Cs3eA5oNtOnN5gGkYVQmWdI
+         ZfyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711116747; x=1711721547;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ccm1mtAb95qdb6lkqB0FItmGid6eaARPcUgc6MW739g=;
-        b=uFv6JPze3LMh0QmqpSoQwdjuWXP6p8KaS2u5yi46C+W94H3Va5Gs7HPWNalQ9Kh8ff
-         s1JONWOOWeg+kBUqQeOL0ANDvIOEd33w01FL3jQOzga5cPDIXyGiqo/egxXIRSdLHZt+
-         AC1xFvaKcdY9ZCWmAiw/3VeKitWHpLyIVybfZIEWruHfPg5MepqCGKhlrKI/xT4YpRzq
-         3cePekcfiuX9ToNcUOsliCdPXHjRVJ1NIsjH6ZpO5W56C1hgit9yoxOwvfsCjo0nCfIf
-         KGw4blEZBBVJk+kYMxv/l1Abj0TZBjgkyI8ClIoif40r5qOzpG0+//6UNxeIA0pOHinV
-         8Law==
-X-Forwarded-Encrypted: i=1; AJvYcCW4D2VBK19RzjRsBE1xErYUvgll/LAhdMkVRhdXYzKWhqvqxN8PvzJz3USczdL9ozyGmvkFO0qMW4Yj3KNsyuPTLgcl4XWEkTAyNiaD
-X-Gm-Message-State: AOJu0YxgpGTngSfNE/jznGPgTlc5XWMHzIeweNl/p/0DxRDXmtWsdrtA
-	P/4SVXxj0tXuaij37ArLiL4KaLtcP1sIoren22HuO57JPDi4HlVO0qwD8jEMAXQ=
-X-Google-Smtp-Source: AGHT+IFnfaJOCDK6cUge2Q0kmiLhh1+As+3fWIT4dvDOMO5Q9mrgQY3RBqSVCXK7jYSLUb7CSofK/A==
-X-Received: by 2002:a05:620a:5605:b0:789:d306:879a with SMTP id vu5-20020a05620a560500b00789d306879amr2427097qkn.7.1711116746679;
-        Fri, 22 Mar 2024 07:12:26 -0700 (PDT)
-Received: from [192.168.0.50] (dhcp-24-53-241-2.cable.user.start.ca. [24.53.241.2])
-        by smtp.gmail.com with ESMTPSA id bj23-20020a05620a191700b00789f34f225dsm782925qkb.71.2024.03.22.07.12.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Mar 2024 07:12:26 -0700 (PDT)
-Message-ID: <193a134c-f0da-4a45-b45a-a3605f91cfa4@draconx.ca>
-Date: Fri, 22 Mar 2024 10:12:25 -0400
+        d=1e100.net; s=20230601; t=1711118702; x=1711723502;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=a0V7Mhe0ArfXSjrT95vTJ+hE4SWzfgGrhDLu3sLUJno=;
+        b=S8S3iF/XWkGHp30utIv30N+e4O7bzK5aQ9pRFuT41DTUAeQmJIT/d50jRZ3n3XY+xx
+         ISThuXnUtJzEUs9I/odgSJAmrsfeFxfQBCjxdpOzhNMcbO3aNCfQkRUKE6RrHZxUDAgS
+         N0S/vj+Bfo6LgRRyDkH40nzssEYhHR1dEXyr9+KfvMIwXyiQRzLLdopimzIaoiLpc3r+
+         F1ROiIOMX6S6lIcQLAkI7iABfT7L2eLvs3FGbOKBhXcHiQjOKPV368w9xAItS9aT8e2G
+         /ZkuoARQcbntSOzfPTakEoSvAOrYaHUHv0g04AD/9xcGvj6OA4xb6EQ3fVXBw6k82T5C
+         Cj2w==
+X-Forwarded-Encrypted: i=1; AJvYcCUEe2k4O4QwSaDr/c+BrTzcN6pY6Vg99QRQSNBUbNhB32LJeTadcbwSrUJ0iV8ie16lSEgXofOOw25uFHMa9N1VZwe3SaMb06I8gXLLFiuBXC8vrxR6/AaDA4+PJNrgvYFYhqjfrJV0XItxFARDKKITABtPA7v8GqOsNw/ikfL9aQcQWb30wgokeLoW
+X-Gm-Message-State: AOJu0YzUnSqzd/GEQilkbGdiP44lFLskapNcklKz4BwAslAXRQ0sgI5b
+	Z/E3M/drBidw8jCIXfob71xEKbB080QdkIT6JAvhJ4t2kIOXT/fe
+X-Google-Smtp-Source: AGHT+IG9rnTvKoOPeTbMKqJIRqYfbGywkmROQyv1XpETaAIHcwN8T5J7t/JVSoylUGPCNE56cr6jQg==
+X-Received: by 2002:a05:600c:35cf:b0:414:255:c6a7 with SMTP id r15-20020a05600c35cf00b004140255c6a7mr1768259wmq.32.1711118701431;
+        Fri, 22 Mar 2024 07:45:01 -0700 (PDT)
+Received: from prasmi.home ([2a00:23c8:2500:a01:7b89:721b:d6b0:d7e8])
+        by smtp.gmail.com with ESMTPSA id s15-20020a05600c45cf00b0041466e03e55sm3911117wmo.0.2024.03.22.07.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Mar 2024 07:45:00 -0700 (PDT)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v4 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
+Date: Fri, 22 Mar 2024 14:43:50 +0000
+Message-Id: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
- regressions@lists.linux.dev, linux-serial@vger.kernel.org
-References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
- <20240322051531.GA5132@atomide.com>
- <d7337014-09ac-8a35-7159-e75ecd2707b6@draconx.ca>
- <20240322064843.GC5132@atomide.com> <20240322090657.GD5132@atomide.com>
-Content-Language: en-US
-From: Nick Bowler <nbowler@draconx.ca>
-In-Reply-To: <20240322090657.GD5132@atomide.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024-03-22 05:06, Tony Lindgren wrote:
-[...]
-> I can't reproduce this on qemu-system-sparc64, probably as it does not use
-> the sunsab driver.
-> 
-> I noticed something though, I think we need to test for the port device
-> instead for being runtime PM enabled.
-> 
-> Can you please test if the updated patch below make things work again?
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-Yes, with the below patch applied on top of 6.8 things are working.
+Hi All,
 
-Thanks,
-  Nick
+This patch series updates DT binding doc and scif driver to add support
+for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
+interface.
 
-> 8< -------------------
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
->  	 * enabled, serial_port_runtime_resume() calls start_tx() again
->  	 * after enabling the device.
->  	 */
-> -	if (pm_runtime_active(&port_dev->dev))
-> +	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
->  		port->ops->start_tx(port);
->  	pm_runtime_mark_last_busy(&port_dev->dev);
->  	pm_runtime_put_autosuspend(&port_dev->dev)
+v3->v4
+- patch 2/4 reverted back to version 2
+- new patch 3/5 added
+- Added new reg type for RZ/V2H
+
+v2->v3
+- Included DT validation patches
+- Added a new compat string for RZ/V2H(P) SoC
+- Added driver changes for RZ/V2H(P) SoC
+- Listed interrupts and interrupt-names for every SoC in if check
+
+Cheers,
+Prabhakar
+
+Lad Prabhakar (5):
+  dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+  dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+    'interrupt-names'
+  dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
+    required
+  dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
+    (R9A09G057) SCIF support
+  serial: sh-sci: Add support for RZ/V2H(P) SoC
+
+ .../bindings/serial/renesas,scif.yaml         | 136 +++++++++++++-----
+ drivers/tty/serial/sh-sci.c                   |  55 ++++++-
+ include/linux/serial_sci.h                    |   1 +
+ 3 files changed, 154 insertions(+), 38 deletions(-)
+
+-- 
+2.34.1
+
