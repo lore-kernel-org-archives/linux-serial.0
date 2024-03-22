@@ -1,45 +1,95 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8325017998;
-	Fri, 22 Mar 2024 09:07:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B2D20DDB;
+	Fri, 22 Mar 2024 09:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711098439; cv=none; b=HmRpXJM05W55mI3K2DHVi0A/DraXsJAn8YJ1xU7J4wWanpnkC9MOLbK+7wbllBtwBQ2pTwQzbP+U0lZwXFR1znvy7MrmOQvTmti0UnerbNjfOFeF9BVK9uhmykdjCKtmbxUVfxk/8eeD97Y0fk3rlm4I8wbywC9YkrFgnbUxjjo=
+	t=1711100733; cv=none; b=EtBlWd9YReNIIjnZlZlByyO/ZGEPm8CpE3qGfMg6k0JIpSaUdGz8fvzMjxNA4spEq4HBDiSF+JFchQsMrLvbjKYNqof8ipZJgAzw+tAUneCx1TBBvMsHeqg/77JypuiYgTiJuS1TZaM3t21K/ZS94p4WtMtKn4w8WKKkJBF2Pag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711098439; c=relaxed/simple;
-	bh=fqnq0phZd8eQ1RBeCYKOKzraow94yCRC0cLooXVkLDs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WbTEi6mlR+W2WC9cucA0VYQogblYgcgcmpaBFP/o3XRUNzvER8jeOt2fs99mjEnmm9nQF3/jdSi2/gb9YiZahLBe8IsCyXeu3x26nZO2YPviuy+HBJuEYFJ87J6gxPglpE5XqcuNnyX32EZXmsQrVoS9F+AMEEStVD8wxvwOkl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=M9YV8kKn; arc=none smtp.client-ip=74.50.62.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+	s=arc-20240116; t=1711100733; c=relaxed/simple;
+	bh=A4FOGLlvtuthBYiub+mR8yfwfnfz1i/GHCFLNMfFHSs=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xw0IQtJlDA8Upd0+6IJ/VM6ODRmeeHkttKqKx9nbwz+UlA69aAGdiRNcd6zVFZKZrafM/WAMhGcR2k08nR3up3HvACFoGo0M/rMJ5J7oj1ByJeIwrmejy8N7HGgKXL5N3nyV0FnK5wFfUoD9fsifOJf5qEI+oTG4zUoXcJtkWS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RT/bx1Bo; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="M9YV8kKn"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 0040360340;
-	Fri, 22 Mar 2024 09:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1711098430;
-	bh=fqnq0phZd8eQ1RBeCYKOKzraow94yCRC0cLooXVkLDs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=M9YV8kKnPAlSqDp772EmB/bHzTaDkR+q2GDGF+ZJKdISm9Z7MMsp/ij3Z7kNDdk97
-	 Y1/FDp98vv4WSDMbb1u1jk7XpUF8Kto52j04bNH8Wiw59zGrol+rEDjX0PWUf2XCSg
-	 0W+bh4RLEtuztC9SwxnvNZNbqw4Bt4e83IrZNlS2WD9yGzg80XD8LecgN1ht2ncY4Z
-	 sIUgOcMW3TgauctmrAvxSFEAddpztd96nqkNvjQnhj2rxYE3GFoAPOYO0zEKoT7qfJ
-	 J5QzaBv6TvPU/sE/HFDT4JLac2RkQSh2s72B/FvaI9qiPtX6/wTVTnzFjI+nzYAnpk
-	 8qg+hiadrnNmg==
-Date: Fri, 22 Mar 2024 11:06:57 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Nick Bowler <nbowler@draconx.ca>
-Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
-	regressions@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
-Message-ID: <20240322090657.GD5132@atomide.com>
-References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
- <20240322051531.GA5132@atomide.com>
- <d7337014-09ac-8a35-7159-e75ecd2707b6@draconx.ca>
- <20240322064843.GC5132@atomide.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RT/bx1Bo"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-56bdf81706aso756225a12.2;
+        Fri, 22 Mar 2024 02:45:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1711100730; x=1711705530; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AlmUZX1oKnCqPJXsSuCW5CozYj1wJFSEFEeiu59yIp4=;
+        b=RT/bx1BoKmV/H07F2KB3VAiCTU9NK5DSdzkM3LbD6svSDVKB/RT0wKdPy8PT/gljED
+         uXuc0C0pKXug4Plzo7ycf3C4ZNFqNvIgP58E/0ORjbRS43S1AjxZptd0EIpabsGmDWE4
+         zNwz9U9Zl5byqu+a7KQaLpBxXGD0Z2fMIHrtOFTdQF8SoL+ryMdTn+zY73dnt8xhqE/o
+         4OY0YfPd2j1KzUc3pxFrBtuLW+wfEZRy2mpotH7Jw/zZB3fAcZGz8f83FANPWZei5bW2
+         R4HQs/6aWBDij5eif2tTjdRBXoD24mcWH8KC0AI0LiJhWCit/b6UDC91PmFdcfXv9jOF
+         RxHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711100730; x=1711705530;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AlmUZX1oKnCqPJXsSuCW5CozYj1wJFSEFEeiu59yIp4=;
+        b=EhIk2jv5hTv7M4wJu/xN+KHzAbG3B19AVDWqFnylEt9uTbgYME9Y9r4F7FU5Bv5wvE
+         wgl6QdvqTF6NczEtVQ7/8eNdaPeH9ZNScGDDSeJnfP+tHmlyy3fBXxxOemTyTr2mSZcf
+         7B1H3BF/Kzoiofcb0RIvp6+QqsQ38GeCNxyFtEmk83O/SG74wBzDBCWJCQyfaLZQdcjs
+         5Br2DMkql0ytV1HcC/kuwY9QRtCmuc2RhrANpZOkio4PzkMDoraqGtLSs/D1u/BqbgkV
+         Ioba8PxMdfH667hdLV54EJpElHTi23I5LM0HSYHGTwYOykYZqYBQTT42lv1dkY8RUZyM
+         Kgog==
+X-Forwarded-Encrypted: i=1; AJvYcCXpNWu0Vf9LtwVNot9Un1ytWdEiEb3qFUAuCbNkwkNvvxS/qTrQEg2l0/H+I82umBN28GwFfl06KKZrGpYgG7TK9U9ksDHOV3qoQpS9+oltZ8s3OMgewBvgzF/G8mCy+KDPoVDDX384oQkX5cHoSOFWvElHUJTYbGiKN64WbxjGNmykNvHa+CKmCdK2NIhx8i9fTaQhQ9nT3pzGrkTHCR2ljA==
+X-Gm-Message-State: AOJu0YztxUAwaEANpQ3Z1EDFk3asbgxs/THwOaB4G/U6VqV2AGX/fnDA
+	4hbZxy5CsryIfCH16U0eOfFh5qOlKrlTE4jvPWbpoLHSdxSC2sxV
+X-Google-Smtp-Source: AGHT+IEMdPwXdULfmQN6UAn3oOA+aJ6y8GiAsPYU2u8TIUMJ7NjPC6DuAt/2jKqSVu/RE4c3YGQRhQ==
+X-Received: by 2002:a50:cd1c:0:b0:56b:6ec6:af2f with SMTP id z28-20020a50cd1c000000b0056b6ec6af2fmr1179534edi.6.1711100729462;
+        Fri, 22 Mar 2024 02:45:29 -0700 (PDT)
+Received: from bhlegrsu.conti.de ([2a02:908:2525:6ea0::11c2])
+        by smtp.gmail.com with ESMTPSA id b9-20020aa7d489000000b00568ba57983csm839426edr.0.2024.03.22.02.45.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Mar 2024 02:45:29 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+X-Google-Original-From: Wadim Mueller <wadim.mueller@continental.com>
+Date: Fri, 22 Mar 2024 10:45:26 +0100
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Wadim Mueller <wafgo01@gmail.com>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chester Lin <chester62515@gmail.com>,
+	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+	Matthias Brugger <mbrugger@suse.com>,
+	NXP S32 Linux Team <s32@nxp.com>,
+	Tim Harvey <tharvey@gateworks.com>,
+	Marco Felsch <m.felsch@pengutronix.de>,
+	Gregor Herburger <gregor.herburger@ew.tq-group.com>,
+	Marek Vasut <marex@denx.de>,
+	Joao Paulo Goncalves <joao.goncalves@toradex.com>,
+	Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+	Matthias Schiffer <matthias.schiffer@tq-group.com>,
+	Stefan Wahren <stefan.wahren@chargebyte.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Philippe Schenker <philippe.schenker@toradex.com>,
+	Yannic Moog <y.moog@phytec.de>, Li Yang <leoyang.li@nxp.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 3/4] dt-bindings: mmc: fsl-imx-esdhc: add NXP S32G3
+ support
+Message-ID: <20240322094526.GA7097@bhlegrsu.conti.de>
+References: <20240321154108.146223-1-wafgo01@gmail.com>
+ <20240321154108.146223-4-wafgo01@gmail.com>
+ <00174dc3-65a7-4a2e-b48d-a974336a3f18@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,44 +98,102 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240322064843.GC5132@atomide.com>
+In-Reply-To: <00174dc3-65a7-4a2e-b48d-a974336a3f18@linaro.org>
 
-* Tony Lindgren <tony@atomide.com> [240322 08:48]:
-> * Nick Bowler <nbowler@draconx.ca> [240322 06:36]:
-> > On 2024-03-22 01:15, Tony Lindgren wrote:
-> > > Can you please test if the following change to add back the check for
-> > > !pm_runtime_active() is enough to fix the issue?
+On Thu, Mar 21, 2024 at 06:53:34PM +0100, Krzysztof Kozlowski wrote:
+> On 21/03/2024 16:41, Wadim Mueller wrote:
+> > Add a compatible string for the SDHC binding of NXP S32G3 platforms. Here
+> > we use "nxp,s32g2-usdhc" as fallback since the s32g2-usdhc
+> > driver works also on S32G3 platforms.
 > > 
-> > I applied the below patch on top of 6.8 and unfortunately it does _not_
-> > fix the problem (no obvious change in behaviour).
+> > Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> > index 82eb7a24c857..b42b4368fa4e 100644
+> > --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> > +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> > @@ -35,6 +35,7 @@ properties:
+> >            - fsl,imx8mm-usdhc
+> >            - fsl,imxrt1050-usdhc
+> >            - nxp,s32g2-usdhc
+> > +          - nxp,s32g3-usdhc
+> >        - items:
+> >            - const: fsl,imx50-esdhc
+> >            - const: fsl,imx53-esdhc
+> > @@ -90,6 +91,9 @@ properties:
+> >            - enum:
+> >                - fsl,imxrt1170-usdhc
+> >            - const: fsl,imxrt1050-usdhc
+> > +      - items:
+> > +          - const: nxp,s32g3-usdhc
+> > +          - const: nxp,s32g2-usdhc
 > 
-> Hmm OK thanks for testing. I'll take a look and see if I can debug this
-> with qemu sparc as I no longer have any sparc boxes around.
+> No, that's just wrong. G3 is not and is compatible with G2? There is no
+> dualism here. Either it is or it is not. Not both.
+>
 
-I can't reproduce this on qemu-system-sparc64, probably as it does not use
-the sunsab driver.
+I am trying to understand your statement but I am not sure whether I get
+it right.
 
-I noticed something though, I think we need to test for the port device
-instead for being runtime PM enabled.
+Let me try to explain what I understand is wrong with this patch. 
 
-Can you please test if the updated patch below make things work again?
+Having nxp,s32g2-usdhc and nxp,s32g2-usdhc in one enum
 
-Regards,
+> >            - nxp,s32g2-usdhc
+> > +          - nxp,s32g3-usdhc
 
-Tony
+would mean that those are 
+__not__ compatible with each other, whereas the anouther item
 
-8< -------------------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (pm_runtime_active(&port_dev->dev))
-+	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
--- 
-2.44.0
+> > +      - items:
+> > +          - const: nxp,s32g3-usdhc
+> > +          - const: nxp,s32g2-usdhc
+> 
+
+where both const entries are side by side means that those are compatible. Which is
+paradox. Is this undersanding correct?
+
+So if I want to have the follwing im my DTS for the mmc node
+
+usdhc0: mmc@402f0000 {
+			compatible = "nxp,s32g3-usdhc",
+				     "nxp,s32g2-usdhc";
+				     ...
+}
+
+The schema update should contain just this part?
+
+i@@ -90,6 +90,9 @@ properties:
+           - enum:
+               - fsl,imxrt1170-usdhc
+           - const: fsl,imxrt1050-usdhc
++      - items:
++          - const: nxp,s32g3-usdhc
++          - const: nxp,s32g2-usdhc
+ 
+   reg:
+     maxItems: 1
+
+
+Is this correct?
+
+With this patch in place I dont see any issues with an 
+
+"make CHECK_DTBS=y freescale/s32g399a-rdb3.dtb"
+
+as well as "make dt_binding_check dtbs_check" seems to be OK with this.
+
+
+Thanks for your guidence so far, much appreciated!
+
+Best Regard
+Wadim
+
+
+
+> Best regards,
+> Krzysztof
+> 
