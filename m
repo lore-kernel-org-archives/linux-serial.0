@@ -1,42 +1,54 @@
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA8A8BE8;
-	Fri, 22 Mar 2024 05:15:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB5A7C122;
+	Fri, 22 Mar 2024 06:23:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711084547; cv=none; b=ssbY2uqcGEyOn/Xji5XeI1I5VPcJikkBGqntc4YW9zxzw/i/NptKvYhgWat7M4YCLlGQ/3ObhvWDQrQzMjhlrjitOgV4MEQobm31bkNZg1iSNrdSemUo6nuZKSxZfeJfgMWGJHNbYghcGGwzEGCL96CFVlqMTGhbTSK1m3Y0hAc=
+	t=1711088621; cv=none; b=KwkI+bqI5aUm/xvWQXdjCX1VRPvoprls2ySAiaWdxqvfItoInm3VqMojkDWMnBZBW127v9TVavprkQQiJ3GFxLgfSB3h4KHwUKknxe+Ioygl9KN+Zvzs2/I8k2apEoIJ54YrMIDw6ItFzoMK949y/eHXE92tCfk4OPDq7/kvwUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711084547; c=relaxed/simple;
-	bh=zZ3yn/or8XI7NTp4HCt3i6GrXqOYvdyBZlw7ZdLzjPM=;
+	s=arc-20240116; t=1711088621; c=relaxed/simple;
+	bh=CIQDA4RE2QaJoOsDHdz4Ke2vPj1SmGC5YF8CnH9aZBs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qIklLAjSChRPqEdv5Srm9vNOK4JIRXCIXwO/J7xhdtdAIYZQZ9+XB/XpbN3CrUP8TBiecrHuwicNrGoA40IjCO4NNY9BDMWWgwVWpXoHBWl+jE/x2CSEiGMXKVKY2p2z02n13rarryFP9KULNojk+SlOcnE7javXzDRgO2LtUiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=RS5hRsRl; arc=none smtp.client-ip=74.50.62.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bpnw3fE1IQX3wCfOmssl5WPBn+1NyvUvSCecFldP4/3NLPOOmC+zRAXSk7kN9YS+LHiPjo5HWbGPR8KFpPRwuENX5NY8YVZu3jBbU3MklvTe5lS08jgUz/nA9YfLlQC5OlO/MLjkoK1h7J9EIysY7gZ5ryFjD4CzoLNK6s7tN5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=THDPJ8F3; arc=none smtp.client-ip=74.50.62.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="RS5hRsRl"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="THDPJ8F3"
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 05FEA603CD;
-	Fri, 22 Mar 2024 05:15:33 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 7BD2560426;
+	Fri, 22 Mar 2024 06:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1711084544;
-	bh=zZ3yn/or8XI7NTp4HCt3i6GrXqOYvdyBZlw7ZdLzjPM=;
+	s=25mailst; t=1711088618;
+	bh=CIQDA4RE2QaJoOsDHdz4Ke2vPj1SmGC5YF8CnH9aZBs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RS5hRsRls1aBGMe4PuqiHIIA68L1TqGweQkAVbOW8sGqQebRXsoB3mosy/Tb9Z5+g
-	 PiRFJcxdxAmX4T9WSBqKmSwqkiRCAO4vffg7pJMkkJaDnFSRVAetVrBpVJBQtlfj33
-	 soIbj0M0casLr4TGpanTnrOhQOkivlt0a5JjslYpCwdK8BJGhjKgKKYVuDPkplDa4t
-	 BCyt6jaOPKzSa2hjufF8LC7r0E1rVzTb0BcoNiB1cw1yJK/khcOU0vSp8qv9tZ5/oc
-	 0bId4FBMoBwYjR2jgHejWiw7PzKMwaCcnBybnK/wwgKuzyLHxPJlQDYUqGWjPpSkOM
-	 DbrfxyK19lBgw==
-Date: Fri, 22 Mar 2024 07:15:32 +0200
+	b=THDPJ8F3skY0xd7YIdyho9ZolbqyzwbJi+/R+zH/b6Y1WNyO9xfDC/2OGWPLxcZko
+	 XLKB7qMXQk7Bky6S2o7HZu49nT9IMcAyRj9uBTgOOElwuBo/9lcxfnmHdy/cCruTRg
+	 /ozBJ9tMX0FzjYtuvRrMU5A6LBxPv1DSIR8UE/PQX4w44DCh/ev5q/+1fKUeqRKLo8
+	 lM3Qjs7g6NWJ3qsrxM4/kM7ZhwmHhpyIFmrSbDPXdR8MWTLs5ZJKMjeAGOczfrPqph
+	 I7y/vwbzWZkz6TJ7uP4HeGB4uC6iQSlNJymBH+KMo2IyKskTTaI70HSAl2RwwT8AJ2
+	 skedYhf35QtSw==
+Date: Fri, 22 Mar 2024 08:23:05 +0200
 From: Tony Lindgren <tony@atomide.com>
-To: Nick Bowler <nbowler@draconx.ca>
-Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
-	regressions@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
-Message-ID: <20240322051531.GA5132@atomide.com>
-References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Justin Chen <justin.chen@broadcom.com>,
+	Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
+	linux-serial@vger.kernel.org, Peter Collingbourne <pcc@google.com>
+Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
+ port->lock wrapper
+Message-ID: <20240322062305.GB5132@atomide.com>
+References: <87le6oy9vg.fsf@jogness.linutronix.de>
+ <87plvy31hg.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -45,43 +57,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
+In-Reply-To: <87plvy31hg.fsf@jogness.linutronix.de>
 
-Hi,
+* John Ogness <john.ogness@linutronix.de> [240313 09:50]:
+> One nice thing that has risen from this is we are starting to see
+> exactly what the console lock is needed for. At this point I would say
+> its main function is synchronizing boot consoles with real
+> drivers. Which means we will not be able to remove the console lock
+> until we find a real solution to match boot consoles (which circumvent
+> the Linux driver model) with the real drivers.
 
-* Nick Bowler <nbowler@draconx.ca> [240322 04:29]:
-> I bisected to this commit:
-> 
->   commit 45a3a8ef81291b63a2b50a1a145857dd9fc05e89
->   Author: Tony Lindgren <tony@atomide.com>
->   Date:   Mon Nov 13 10:07:53 2023 +0200
->   
->       serial: core: Revert checks for tx runtime PM state
-> 
-> Reverting this commit on top of Linux 6.8 is sufficient to get the
-> system booting again.
-
-Thanks a lot for bisecting and reporting the issue.
-
-Can you please test if the following change to add back the check for
-!pm_runtime_active() is enough to fix the issue?
+Would it help if earlycon handles all the boot consoles?
+Then just have the serial driver take over when it probes?
 
 Regards,
 
 Tony
 
-8< -----------------------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
- 	 * enabled, serial_port_runtime_resume() calls start_tx() again
- 	 * after enabling the device.
- 	 */
--	if (pm_runtime_active(&port_dev->dev))
-+	if (!pm_runtime_enabled(&port_dev->dev) || pm_runtime_active(&port_dev->dev))
- 		port->ops->start_tx(port);
- 	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
--- 
-2.44.0
+
+
