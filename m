@@ -1,244 +1,183 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2084.outbound.protection.outlook.com [40.107.104.84])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 324A154BD3;
-	Fri, 22 Mar 2024 14:45:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711118712; cv=none; b=V9/JKcx3EIkn60ohFWn393N/pcJr7J3wwURBysBzeGlkJ4HF0P7Ki6J4MQoKC0P57SgcQFUA4tgYpn7QI4pU+82/V9UD5hL8BAYig1cQPKVPvyIOGlNE5CDG5cDycXYRPPxrSa3rUHkH2O5/SsnxSu/L5CerbHuSxv79tYWZP9g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711118712; c=relaxed/simple;
-	bh=veb2SWtHL0Ox9QO3zZylkMTzcpBgXqQeJZKsGDwqEUg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=J1ycfjqDeRnOpAABg+oQs0p3iwxDQvSAA2AxqnRp4znDBqXp5DAQckHe5r1Ve4nQDSzTsSI1qXQrfvUX+S4XWGgZrhB0/XQNvdl44OqBg74RyduVACkxvRkwhhvc40UiFMXkqedx+PsZJYjN06WwJFBkDYElViycr63L/8cRlQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GxmfFUFc; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA6B4D5AA;
+	Fri, 22 Mar 2024 14:53:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711119186; cv=fail; b=MtYkPw8c/sQBZRy5VxpeUa8ZgBw8O5B1W3DWwKlO7grKN6q+MSiwmEVR5A7N1CydqJZVNlpARh9STRjyAdjyL61Olp7GuGzCDBJxjuh+kLxrLJZ1Iltf52er7d9LUxfCMIapHlN/4tSdiE6oQsP8YR/Z8n3aLMLqUdyA3Vx7eaM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711119186; c=relaxed/simple;
+	bh=rq2iBemUr3M9RU3hjXisPK+jeILsO2RdvU+zpybADbg=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=pVBPQ3UdM6RZQE4p2fTWJOv41sjg6M3QNJ8ZDK/dVD7Kl3qUaGJP6IGsVqI8iSlEAYjsg99c13EJvnGv4dDbGkQu4OerjccLgeCG1Hl2f3755B7ZUuZbNjP4azMKx3ga5IbA0E6sekkJxqpmuKh4JrEuQeZsXlhXuasuEloDv+A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (1024-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=VOpoZ8Sr; arc=fail smtp.client-ip=40.107.104.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GxmfFUFc"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4147e3e4d3cso2484845e9.2;
-        Fri, 22 Mar 2024 07:45:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1711118707; x=1711723507; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GWuEvV0rvpO/l7LvIGHT/JLAEhFTYoLZLqtwl5iRm64=;
-        b=GxmfFUFckVSHvrdQKxawyNBJ3Am2rTfgeAXR+PLnVUERvsp973ZE6FtoJyOzw2N9ZQ
-         tBCRhUf6d2ebKV/exxX365IiUdU6vrqVakHVFOcgrLQ3FoMSdXSWexBIFvkbvXyZgPck
-         XHz1RQMuFWZaY2r/lzlvu55Lb17/Ehd5T4/Qa5L15zOQjFQQbNkDcaM0cOZENNUTy8Kr
-         6PoVzJg0K3BuJaMACogkI+PVQBxqmJK8ahOTbrLQ11fY8qjAQJpM6aG7PTuckien+HHC
-         zb3FQ2n3iVU8IOu8S0roubqqEYFcPRQeGr4vr+pcDMQUro17VxD097MbfSNyt2NwIwMe
-         hxjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711118707; x=1711723507;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GWuEvV0rvpO/l7LvIGHT/JLAEhFTYoLZLqtwl5iRm64=;
-        b=pFlVODu/GlxaZC/5ez+XR8UT3TYson36FW4wUBKoKyJN5Udad/vqmaVpT/XdDOOeNp
-         ++lgicMhaK/gY6K27Qyc8CLAJvgx/RnYMTxMrkoiLFebHszBN5vhPlaphKtQlaDRthJX
-         u6zeVVwY1b5wLtIHBgCP6k5SmzQcbFCB4lGJozzFhLkLsJtlFZVmEIjdXEgQmUEZSvDD
-         E98QARyOwKuoLqZqgXsOJ1Iv+2CRpbefT3l1B/HaK7CrZReAuNimWeArIT1Xmc5JKyv9
-         L3t8/hzWeoRMnqqjMW3Cj3rfym7p5Gk4CERw2kv1HRQ1cEMxFxxG5pyxZyn2fwvELQcF
-         Hx0g==
-X-Forwarded-Encrypted: i=1; AJvYcCVXgJqJGXKKke03JpsvECXRSIqvMqTBIsMCSFtYSJZcl0BKpD5S+SoHOywU6ZztO4cJYQZD/aFPnWczJjjUWgQGgQt/thOO+D+ZOQ0WST4EGXUA/zyIwZ18m09Wm2qRj0WwiJDgzHQPOxbG8KgSbM9xuDNsHwSrjkMuBVTgSxM9rQUsHZL9KF4JNQAx
-X-Gm-Message-State: AOJu0Yy+7YLsGun8nSnOdPpo5vuK3t+TpZW8wOvFKPI51OLIXHNnbaxT
-	5Ega546BE9dRZsHOgRYtNzY94qTyTAY/SMdUIYQ0+qJ3MUBbppLA
-X-Google-Smtp-Source: AGHT+IGjPztaqKpu596k3blnST+nfDPu+lVA/PnAdQ4mezi8JzRKgF2wtriu9oc4aDkqJvhuMV83+Q==
-X-Received: by 2002:a05:600c:6a85:b0:414:6638:4507 with SMTP id jl5-20020a05600c6a8500b0041466384507mr1723116wmb.16.1711118707528;
-        Fri, 22 Mar 2024 07:45:07 -0700 (PDT)
-Received: from prasmi.home ([2a00:23c8:2500:a01:7b89:721b:d6b0:d7e8])
-        by smtp.gmail.com with ESMTPSA id s15-20020a05600c45cf00b0041466e03e55sm3911117wmo.0.2024.03.22.07.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 07:45:06 -0700 (PDT)
-From: Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar <prabhakar.csengg@gmail.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v4 5/5] serial: sh-sci: Add support for RZ/V2H(P) SoC
-Date: Fri, 22 Mar 2024 14:43:55 +0000
-Message-Id: <20240322144355.878930-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+	dkim=pass (1024-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="VOpoZ8Sr"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SxkZvaB3+HSUfkD6JFNvodgeLdDrqplWUTKxlXrq73P161f8ZWOaWvEIxhWopQr673+hBSoE/agiwc53EsK5q6geo+hwETmKxCiEx3thbwvrjMVDie/yZkJDK+ZZ3pqxMl8VGr+Jx4Dq2xaqeLNzIkc701o1j5X5zSFtd5D92uzRZ+RWSPoeaq/Fs5K8odNGw9olRXsSJ3DAtBrTTkiXIMLnmftxlI7/5jwgO5vng5J7rB6fKYSADr7XAD/QjMLXGB4CN7/derF5YC1r9vovqO+pwaBbf/2shxP8u61RM3+L6czeJOfFTx6k8mQUaJGTBfghs7Z3N+aJly8cXvOsyQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rq2iBemUr3M9RU3hjXisPK+jeILsO2RdvU+zpybADbg=;
+ b=cLNu4ehJgHduxS3QsFEk2RH3uhqy2WjP6Xh0xkqgWYeypMFfZxr5TRwxS4isZeT1ADwZhmpwQnu5ku4Zp9xMSSdV1aa4ycZY0Sj+IkD36DEuu2ri0wtEEuZjTiuI0JyPHCktO1Kh5Zse7C5dwLLBWXhBqmu6qEb7OX6DoBRzBlhuuyIf5F4bAWXFAdXqK0hkQh3c9tx8rQDVvadRAlgg1eoPrcWGtXDClxzXX1yTim4FeRrfmhAJlktamavidms6Gqgm/r1e9tWljpnR8uEJuvgkXAtjefvDHkCHHYSdo6/j6N9dlWqUE5oqTqEnR5PAg8RVHBmYtjIqda4oYC2Y/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rq2iBemUr3M9RU3hjXisPK+jeILsO2RdvU+zpybADbg=;
+ b=VOpoZ8SrCel1ARqIt/4+v09Gy0OAANN/H782vb2jRDJkHQeQKMKqP7Q7L2BmRM7tdJOqrFJ+7KdzXGTGzBgyFs0uaAqXaUA2alfo/8jDElYQz0wIFR2+kRCWIlz6av63WDhsE5I/IEfrVcmdpDOkK8Uwdp1e3I8MOUBFZmAb8WI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU2PR04MB8582.eurprd04.prod.outlook.com (2603:10a6:10:2d9::24)
+ by AM9PR04MB8937.eurprd04.prod.outlook.com (2603:10a6:20b:408::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.25; Fri, 22 Mar
+ 2024 14:53:01 +0000
+Received: from DU2PR04MB8582.eurprd04.prod.outlook.com
+ ([fe80::195c:9861:96a1:56ed]) by DU2PR04MB8582.eurprd04.prod.outlook.com
+ ([fe80::195c:9861:96a1:56ed%4]) with mapi id 15.20.7386.030; Fri, 22 Mar 2024
+ 14:53:01 +0000
+Message-ID: <52b6976d-2903-4480-b171-fa16b99bc88e@oss.nxp.com>
+Date: Fri, 22 Mar 2024 16:52:04 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/4] arm64: dts: S32G3: Introduce device tree for
+ S32G-VNP-RDB3
+Content-Language: en-US
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Fabio Estevam <festevam@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Chester Lin <chester62515@gmail.com>,
+ =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
+ Matthias Brugger <mbrugger@suse.com>, NXP S32 Linux Team <s32@nxp.com>,
+ Tim Harvey <tharvey@gateworks.com>,
+ Alexander Stein <alexander.stein@ew.tq-group.com>,
+ Gregor Herburger <gregor.herburger@ew.tq-group.com>,
+ Marek Vasut <marex@denx.de>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Marco Felsch <m.felsch@pengutronix.de>,
+ Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+ Matthias Schiffer <matthias.schiffer@tq-group.com>,
+ Stefan Wahren <stefan.wahren@chargebyte.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Philippe Schenker <philippe.schenker@toradex.com>,
+ Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+References: <20240321154108.146223-1-wafgo01@gmail.com>
+ <20240321154108.146223-5-wafgo01@gmail.com>
+From: Ghennadi Procopciuc <ghennadi.procopciuc@oss.nxp.com>
+In-Reply-To: <20240321154108.146223-5-wafgo01@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR09CA0116.eurprd09.prod.outlook.com
+ (2603:10a6:803:78::39) To DU2PR04MB8582.eurprd04.prod.outlook.com
+ (2603:10a6:10:2d9::24)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU2PR04MB8582:EE_|AM9PR04MB8937:EE_
+X-MS-Office365-Filtering-Correlation-Id: d52880dd-d348-4d33-3dae-08dc4a7fc503
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+ vJOGFSawORG7d5hUrBfH14zZYgF6T0Jwq+D8rgmCHZ8is5p+oc3GbIjwJoIz+keQHyl/fKVD1eu4TX1uA9km8i+XblMQO8gwVrqtVfwFAheNKjuHaicyHGO7E1iM2poijnrS8vGGWjgIcwK1E1nmIAmysBsGlXEPP0WLQbr5DxCDtzbIxSBKenZVxDlSaBnothGwnEp6aOKfpE5mN/wXosA4HWy/j+jXI5pjqESgGGv/pcEFMjDspWOaK1+1X8t2Ko9YOP+tPKINKSVtSr++Q2k0e11WbCoU/t748vWMYHV9Ycu01GW87ZvNF77ASj6wPTaUv5scsVeHnlow9r+6YxlNUSrA3PIWMDNG1ZuJoh1nSyKwR73+OeFR3G0FCBL5Lhmewc/aPqIWzNXI7s3GtzVo8914a+DyeVnPq8g30uyoTiLZ8KG3YNoBy7o1ZCriRlNrianf3EkRTZYf54RSV44QYcksGHlPgJVTeroiSAU83RmZAfTsZMQDIVODthSqPN6B9FVn2W3Qm+NX49rVO8WuLHBBiDxn1D9jKnJWVklibfWFodztSIPjRGmC+8a1Vz4fnDXJOY93WXZ03R77a2Z0Ly3X/1hdtpdHPYyjWHE=
+X-Forefront-Antispam-Report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU2PR04MB8582.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(7416005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+ =?utf-8?B?T1JOTXptVEFta0tjM0dRZUZUYk5GcXNva3ltNkowVWlkRk0yY2J6Q1QwZ2Ny?=
+ =?utf-8?B?WHJaLzYyNG5BWDlxMGxxWnRyalp1SGlHS05xazV4emtQZXczRkw1aVZCS3BM?=
+ =?utf-8?B?TG1jd1A0UUllRDJ0OVdNakNxSTBVN0xyZDNqcGh5V0JjM28wb3Y5enEwclU5?=
+ =?utf-8?B?aVFCcW9mTEFBdDZEcmFFdGFrVzhZVkdMVE1PTXRaL3Y5b0xsKy82b3Z4THRE?=
+ =?utf-8?B?djJYMHNybWlOLzRWaGRYbXk1VkRzVVZwVnNKcG5MWWdydnkxZ0g3amUzU0Y1?=
+ =?utf-8?B?bnZzSGNOaHhXTVBlSkNXRVlSSzhwWkJad0czeEtYS0JOVG13dzJUV3BpelFS?=
+ =?utf-8?B?SUdIR0pVclF4alBXNWU5R0tEQnJ1WFNsNFBBL2daQ2t0dnB4YkxmbTRudm5r?=
+ =?utf-8?B?TlVGckVhd1VseU1iTDlzTlo3Q2d6VXEzRFcvTjBpRnJqb3NDeHlkY0JSRTl6?=
+ =?utf-8?B?Sks3MVVvYnFYdEhtK2duK0oxREdwQklRYTRLVW1zL2xPZkN1cUM0NTFVazRq?=
+ =?utf-8?B?dzJYaGo2T2JtUzAzYmpBeFlBZFluSkRZaVFKbUswUVp5S05KZ2dZN2IwTjR2?=
+ =?utf-8?B?QWZBNkdVUVhsSlB6Zklhekg1dVUwZnlPTDBkcmJyK21DSWhic2VLdlNCcVVy?=
+ =?utf-8?B?aWZpL0k2Zk9Sb0pwN2pqQzc5b0UvSjJMNDc4SlRhSzgzeFlCZnRKbjlOejYz?=
+ =?utf-8?B?QnJQOGdNSEM3L2poanovdnNYUGE0S1V2ZlFTV2dBUVNBYTJPaEpDRGs1NEY0?=
+ =?utf-8?B?cHNiYjlVOGZOcUhtbTVMS1o3QWY4TnBtbjRpd09pQ0lvMWxxZmtkSDdYb2lX?=
+ =?utf-8?B?RC9YelBoQ0NrQXA1WWFQNjU4MGNQMjA3K2c4cjM2cVpNUlA0TDRtYlNxR0Ix?=
+ =?utf-8?B?MWNXaGRySnJrc2ptRWVSZkxrWStjUXd2cUxJU21SUW1WQVo4VVNDM21MT2hy?=
+ =?utf-8?B?dWNjTnJkODV5ajVuWjFXeFlqZXVFWElsa1BsR3RsY004d01IY2hmbTlOK1Ur?=
+ =?utf-8?B?YzRmMEdlQjE3ajNsTzJSRzg5VUM0R1JBR3FrNTlGWWFiMUdxdk40UEo0UjYy?=
+ =?utf-8?B?Sm1mN2NwWW5Rbi93bU9WNUE0WmQ4TGZROVNjWVZNei9GSWkvS2N0SmIvNG5x?=
+ =?utf-8?B?RjhWSzVta0Q3NXg2QlZid0lET1NtWlJmM2x0TkVqWStubnYvMUpjR01KSE9k?=
+ =?utf-8?B?MFdBQVp0dGhZM0JkL3BzTGRYK09xYjE1VkoyU1diTWlEUVNkbGIxQ2NMZ3R5?=
+ =?utf-8?B?WG4yQndVYkZQN1FBanhYdXVQeWpiMXRpN2tHY3NFUUl3d3JMaGRVWE91b3R1?=
+ =?utf-8?B?Q1I4ZFlOZkh2M1E1SzJQMHkvYU81dy94RzNiWENPMk1vS2hWV1BtTU1BSXZr?=
+ =?utf-8?B?K1B4OG5ac0hLb3g1WmJiMEZsV0xBOGhNMEJpbUgyZ1pSTDBlTHg5ZVFwRFlw?=
+ =?utf-8?B?YlBKZ2VCVGdVcWsvaWVEVlBPaE9TaHBlbCsyekhyZDM2VEVjQnUzL2JhbTNP?=
+ =?utf-8?B?MkRKTzRkbFFNOG81Y2JLNDFsYzYycDlRdkt3c2pNOGozbHFuc3ZYY3Z3NDh2?=
+ =?utf-8?B?c3RtZ0ZhQ3pZNmliNSswWFRHSnd5Umx6NmFGdGtpalpEQWZiZ2Z1MGIrdHd1?=
+ =?utf-8?B?R2tkaXpGMHR0ekp0dzZKRDlyd3BZR1ZTR2NYSTBvRFlrVVF0SmpWYXpuYWZl?=
+ =?utf-8?B?aGZuRVJHMUhXQk1mMWpvRUtndWkwUlNVQVc5em95Yk9aazNkb1VwOXJkQVMx?=
+ =?utf-8?B?cTc2ODh4dndrWFlCb0hWOXJ1WHlPOTNqd1hZMmdEOS9Xb1I3a0xzL1ZmNlgv?=
+ =?utf-8?B?U0ZlRGVHeTNxSTlSWGVNcmh6OWJYNE5Xb25oY21mcWNQekpSVm5IVWdMbnNa?=
+ =?utf-8?B?UHJtRTJ6Qy9IUmM0VjJGRytXZGZkYUliY1JXajFVM2pvUXZLaGttYmNkMG9l?=
+ =?utf-8?B?d1JNbTVoZTJhbzlrQ3Y0TFJpcUtGRmhNUytFWWVhUWZsUkRTSGszcmpoQWd2?=
+ =?utf-8?B?ZlVseUJjVGtjczQwQzhRTzNOZkxNY00xeFFvM3BUYmZQclZJUnYreTdmL3lJ?=
+ =?utf-8?B?ZkxlVllzUnk0NVNnemhZcjUxcDhvRWJ4OTNhdVNhQ3BzSHkxQitrQm80UWpu?=
+ =?utf-8?B?ZWwwZkJoQnB5ak92NFFvaUNvUktoQ2U3NVNFb3VCcTEySitpRFRRYXVKbUMx?=
+ =?utf-8?B?UlE9PQ==?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d52880dd-d348-4d33-3dae-08dc4a7fc503
+X-MS-Exchange-CrossTenant-AuthSource: DU2PR04MB8582.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2024 14:53:01.1510
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nJ6Gq9s6T38eonPKztTvpKzPi07c9fsQ017ZeVjtq3HQuYmf+1CgPsRlNhHHKgr53zkU0Tth7pR4H6RJ6WuKVeDdKw/TlQ8af3ZRN5r49DY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8937
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On 3/21/24 17:41, Wadim Mueller wrote:
+> +++ b/arch/arm64/boot/dts/freescale/s32g3.dtsi
+> @@ -0,0 +1,237 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
 
-Add serial support for RZ/V2H(P) SoC with earlycon.
+Please use the dual license model (GPL-2.0+ OR BSD-3-Clause) for device
+tree files, as the TF-A version of these files [0] already uses this
+license. Using a consistent license is needed to keep files in sync
+between upstream versions of Linux and TF-A for S32G in the future.
 
-The SCIF interface in the Renesas RZ/V2H(P) is similar to that available
-in the RZ/G2L (R9A07G044) SoC, with the following differences:
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
 
-- RZ/V2H(P) SoC has three additional interrupts: one for Tx end/Rx ready
-  and two for Rx and Tx buffer full, all of which are edge-triggered.
-- RZ/V2H(P) supports asynchronous mode, whereas RZ/G2L supports both
-  synchronous and asynchronous modes.
-- There are differences in the configuration of certain registers such
-  as SCSMR, SCFCR, and SCSPTR between the two SoCs.
+This paragraph is already implied by the SPDX tag.
 
-To handle these differences on RZ/V2H(P) SoC SCIx_RZV2H_SCIF_REGTYPE
-is added.
+> + *
+> + */> +
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +/ {
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
-Hi Geert,
+Missing empty line here between header include and '{'?
 
-To keep the changes minimal I've added a new regtype instead of
-port type.
+[0]
+https://github.com/nxp-auto-linux/arm-trusted-firmware/blob/release/bsp39.0-2.5/fdts/s32g3.dtsi#L1
 
-Cheers, Prabhakar
-
-v3 - > v4
-- Added SCIx_RZV2H_SCIF_REGTYPE to handle the differences on the
-  RZ/V2H(P) SoC
-
-v2 - > v3
-- new patch
----
- drivers/tty/serial/sh-sci.c | 55 +++++++++++++++++++++++++++++++++----
- include/linux/serial_sci.h  |  1 +
- 2 files changed, 51 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index a85e7b9a2e49..297787dc5c1c 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -317,6 +317,37 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
- 		.error_clear = SCIF_ERROR_CLEAR,
- 	},
- 
-+	/*
-+	 * The "SCIF" that is in RZ/V2H(P) SoC is similar to one found on RZ/G2L SoC
-+	 * with below differences,
-+	 * - Break out of interrupts are different: ERI, BRI, RXI, TXI, TEI, DRI,
-+	 *   TEI-DRI, RXI-EDGE and TXI-EDGE.
-+	 * - SCSMR register does not have CM bit (BIT(7)) ie it does not support synchronous mode.
-+	 * - SCFCR register does not have SCFCR_MCE bit.
-+	 * - SCSPTR register has only bits SCSPTR_SPB2DT and SCSPTR_SPB2IO.
-+	 */
-+	[SCIx_RZV2H_SCIF_REGTYPE] = {
-+		.regs = {
-+			[SCSMR]		= { 0x00, 16 },
-+			[SCBRR]		= { 0x02,  8 },
-+			[SCSCR]		= { 0x04, 16 },
-+			[SCxTDR]	= { 0x06,  8 },
-+			[SCxSR]		= { 0x08, 16 },
-+			[SCxRDR]	= { 0x0a,  8 },
-+			[SCFCR]		= { 0x0c, 16 },
-+			[SCFDR]		= { 0x0e, 16 },
-+			[SCSPTR]	= { 0x10, 16 },
-+			[SCLSR]		= { 0x12, 16 },
-+			[SEMR]		= { 0x14, 8 },
-+		},
-+		.fifosize = 16,
-+		.overrun_reg = SCLSR,
-+		.overrun_mask = SCLSR_ORER,
-+		.sampling_rate_mask = SCI_SR(32),
-+		.error_mask = SCIF_DEFAULT_ERROR_MASK,
-+		.error_clear = SCIF_ERROR_CLEAR,
-+	},
-+
- 	/*
- 	 * Common SH-3 SCIF definitions.
- 	 */
-@@ -758,7 +789,7 @@ static void sci_init_pins(struct uart_port *port, unsigned int cflag)
- 		}
- 		serial_port_out(port, SCPDR, data);
- 		serial_port_out(port, SCPCR, ctrl);
--	} else if (sci_getreg(port, SCSPTR)->size) {
-+	} else if (sci_getreg(port, SCSPTR)->size && s->cfg->regtype != SCIx_RZV2H_SCIF_REGTYPE) {
- 		u16 status = serial_port_in(port, SCSPTR);
- 
- 		/* RTS# is always output; and active low, unless autorts */
-@@ -2120,8 +2151,9 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- 	if (!(mctrl & TIOCM_RTS)) {
- 		/* Disable Auto RTS */
--		serial_port_out(port, SCFCR,
--				serial_port_in(port, SCFCR) & ~SCFCR_MCE);
-+		if (s->cfg->regtype != SCIx_RZV2H_SCIF_REGTYPE)
-+			serial_port_out(port, SCFCR,
-+					serial_port_in(port, SCFCR) & ~SCFCR_MCE);
- 
- 		/* Clear RTS */
- 		sci_set_rts(port, 0);
-@@ -2133,8 +2165,9 @@ static void sci_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 		}
- 
- 		/* Enable Auto RTS */
--		serial_port_out(port, SCFCR,
--				serial_port_in(port, SCFCR) | SCFCR_MCE);
-+		if (s->cfg->regtype != SCIx_RZV2H_SCIF_REGTYPE)
-+			serial_port_out(port, SCFCR,
-+					serial_port_in(port, SCFCR) | SCFCR_MCE);
- 	} else {
- 		/* Set RTS */
- 		sci_set_rts(port, 1);
-@@ -3224,6 +3257,10 @@ static const struct of_device_id of_sci_match[] __maybe_unused = {
- 		.compatible = "renesas,scif-r9a07g044",
- 		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE),
- 	},
-+	{
-+		.compatible = "renesas,scif-r9a09g057",
-+		.data = SCI_OF_DATA(PORT_SCIF, SCIx_RZV2H_SCIF_REGTYPE),
-+	},
- 	/* Family-specific types */
- 	{
- 		.compatible = "renesas,rcar-gen1-scif",
-@@ -3534,6 +3571,13 @@ static int __init rzscifa_early_console_setup(struct earlycon_device *device,
- 	return early_console_setup(device, PORT_SCIF);
- }
- 
-+static int __init rzv2hscif_early_console_setup(struct earlycon_device *device,
-+						const char *opt)
-+{
-+	port_cfg.regtype = SCIx_RZV2H_SCIF_REGTYPE;
-+	return early_console_setup(device, PORT_SCIF);
-+}
-+
- static int __init scifa_early_console_setup(struct earlycon_device *device,
- 					  const char *opt)
- {
-@@ -3554,6 +3598,7 @@ OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif", scif_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif-r7s9210", rzscifa_early_console_setup);
- OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a07g044", rzscifa_early_console_setup);
-+OF_EARLYCON_DECLARE(scif, "renesas,scif-r9a09g057", rzv2hscif_early_console_setup);
- OF_EARLYCON_DECLARE(scifa, "renesas,scifa", scifa_early_console_setup);
- OF_EARLYCON_DECLARE(scifb, "renesas,scifb", scifb_early_console_setup);
- OF_EARLYCON_DECLARE(hscif, "renesas,hscif", hscif_early_console_setup);
-diff --git a/include/linux/serial_sci.h b/include/linux/serial_sci.h
-index 1c89611e0e06..0f2f50b8d28e 100644
---- a/include/linux/serial_sci.h
-+++ b/include/linux/serial_sci.h
-@@ -37,6 +37,7 @@ enum {
- 	SCIx_SH7705_SCIF_REGTYPE,
- 	SCIx_HSCIF_REGTYPE,
- 	SCIx_RZ_SCIFA_REGTYPE,
-+	SCIx_RZV2H_SCIF_REGTYPE,
- 
- 	SCIx_NR_REGTYPES,
- };
--- 
-2.34.1
+Regards,
+Ghennadi
 
