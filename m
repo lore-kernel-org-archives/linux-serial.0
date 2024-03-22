@@ -1,63 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7060137C37;
-	Thu, 21 Mar 2024 21:10:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA8A8BE8;
+	Fri, 22 Mar 2024 05:15:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711055406; cv=none; b=NahhMFqC/2DfvnCbxSUOnYqOeCUvaLEg9/LYxUTwou5u/IOeaEWVAdtvwKtqYn7LZklaSkGekLdUJhO6zl+ybw8C8ZMEWFrOC/4lcihQtp0/tFs3I10ADVF2/nG2bXs+eNir4k+x4tzJ4pkfaj61bai7Fzndj8bHGfn50JTfLOo=
+	t=1711084547; cv=none; b=ssbY2uqcGEyOn/Xji5XeI1I5VPcJikkBGqntc4YW9zxzw/i/NptKvYhgWat7M4YCLlGQ/3ObhvWDQrQzMjhlrjitOgV4MEQobm31bkNZg1iSNrdSemUo6nuZKSxZfeJfgMWGJHNbYghcGGwzEGCL96CFVlqMTGhbTSK1m3Y0hAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711055406; c=relaxed/simple;
-	bh=U5Prvr/8AcQSn+3I1B6Wdpb50+BWZLxHR1Z42zOQSSA=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=rvqaXF2fcWpIWTly6vVWSa0959T18fsv88HS+zDEhrw7hd7V0/kX0A9F8sgtz4p41W05z1tVV9k/dXtuwDyoiCjdtfT2Vmc+Oelo1Z85PRglwW63jf2gqdMMGQIMhXXjEizVQLEl8Tc5fqYlc6llJasrh7yfaagPp39XVpID/jY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dg9bF0mc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711084547; c=relaxed/simple;
+	bh=zZ3yn/or8XI7NTp4HCt3i6GrXqOYvdyBZlw7ZdLzjPM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qIklLAjSChRPqEdv5Srm9vNOK4JIRXCIXwO/J7xhdtdAIYZQZ9+XB/XpbN3CrUP8TBiecrHuwicNrGoA40IjCO4NNY9BDMWWgwVWpXoHBWl+jE/x2CSEiGMXKVKY2p2z02n13rarryFP9KULNojk+SlOcnE7javXzDRgO2LtUiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=RS5hRsRl; arc=none smtp.client-ip=74.50.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dg9bF0mc"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 89637C43394;
-	Thu, 21 Mar 2024 21:10:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711055406;
-	bh=U5Prvr/8AcQSn+3I1B6Wdpb50+BWZLxHR1Z42zOQSSA=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=Dg9bF0mcjIUnLPTmxHDNw9O16Qvm4Vq6KCvVQpMx4atdxMu7v2B+DTbbJStjkKRnY
-	 Ebx/tSrFb874M55t6prGr1LgMDNBYEQ0pf07qcDpXqmytYZ0xaQusRMJbUKUro8ETJ
-	 ItPY8vu78bD74vNWK/4uMon/Mvd7GogbQ93p/ojFS7QhbFlSAT+kiIxfLAeu3/3zaU
-	 G5VWP4M51E+I+e3kfEiQwyYSGgsueyT5Z6Buq7rBRnqD71NqnBvMX7SBihq2j3bEx/
-	 aBQvaRRfZJDhqcue2oktnFSlIu+/2T3dHR52gllI/d6OhRmxHMbAv0h6g0TmoqEzCO
-	 oP42nZAz114ew==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 725ECD8C734;
-	Thu, 21 Mar 2024 21:10:06 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.9-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZfwvlME6MKUHhQde@kroah.com>
-References: <ZfwvlME6MKUHhQde@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZfwvlME6MKUHhQde@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.9-rc1
-X-PR-Tracked-Commit-Id: d6c0d892b44cd16e0421909cf7f2883b9e625e4a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3bcb0bf65c2b8d67dbe7509da8d1461ee4445db7
-Message-Id: <171105540646.8284.2643369827600799017.pr-tracker-bot@kernel.org>
-Date: Thu, 21 Mar 2024 21:10:06 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="RS5hRsRl"
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id 05FEA603CD;
+	Fri, 22 Mar 2024 05:15:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1711084544;
+	bh=zZ3yn/or8XI7NTp4HCt3i6GrXqOYvdyBZlw7ZdLzjPM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RS5hRsRls1aBGMe4PuqiHIIA68L1TqGweQkAVbOW8sGqQebRXsoB3mosy/Tb9Z5+g
+	 PiRFJcxdxAmX4T9WSBqKmSwqkiRCAO4vffg7pJMkkJaDnFSRVAetVrBpVJBQtlfj33
+	 soIbj0M0casLr4TGpanTnrOhQOkivlt0a5JjslYpCwdK8BJGhjKgKKYVuDPkplDa4t
+	 BCyt6jaOPKzSa2hjufF8LC7r0E1rVzTb0BcoNiB1cw1yJK/khcOU0vSp8qv9tZ5/oc
+	 0bId4FBMoBwYjR2jgHejWiw7PzKMwaCcnBybnK/wwgKuzyLHxPJlQDYUqGWjPpSkOM
+	 DbrfxyK19lBgw==
+Date: Fri, 22 Mar 2024 07:15:32 +0200
+From: Tony Lindgren <tony@atomide.com>
+To: Nick Bowler <nbowler@draconx.ca>
+Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
+	regressions@lists.linux.dev, linux-serial@vger.kernel.org
+Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
+Message-ID: <20240322051531.GA5132@atomide.com>
+References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
 
-The pull request you sent on Thu, 21 Mar 2024 14:01:08 +0100:
+Hi,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.9-rc1
+* Nick Bowler <nbowler@draconx.ca> [240322 04:29]:
+> I bisected to this commit:
+> 
+>   commit 45a3a8ef81291b63a2b50a1a145857dd9fc05e89
+>   Author: Tony Lindgren <tony@atomide.com>
+>   Date:   Mon Nov 13 10:07:53 2023 +0200
+>   
+>       serial: core: Revert checks for tx runtime PM state
+> 
+> Reverting this commit on top of Linux 6.8 is sufficient to get the
+> system booting again.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3bcb0bf65c2b8d67dbe7509da8d1461ee4445db7
+Thanks a lot for bisecting and reporting the issue.
 
-Thank you!
+Can you please test if the following change to add back the check for
+!pm_runtime_active() is enough to fix the issue?
 
+Regards,
+
+Tony
+
+8< -----------------------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
+ 	 * enabled, serial_port_runtime_resume() calls start_tx() again
+ 	 * after enabling the device.
+ 	 */
+-	if (pm_runtime_active(&port_dev->dev))
++	if (!pm_runtime_enabled(&port_dev->dev) || pm_runtime_active(&port_dev->dev))
+ 		port->ops->start_tx(port);
+ 	pm_runtime_mark_last_busy(&port_dev->dev);
+ 	pm_runtime_put_autosuspend(&port_dev->dev);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.44.0
