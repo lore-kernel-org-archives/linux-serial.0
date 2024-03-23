@@ -1,172 +1,86 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60A6A31;
-	Sat, 23 Mar 2024 01:42:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD8CE4C6B;
+	Sat, 23 Mar 2024 06:49:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711158163; cv=none; b=VT9se5bnnNeJVtGb0tBs9zJk38XxxNusJuPurlzCcJbisP4uK0ujdy7xrEv7t7t4fVeKNlKQB2dfucxdnfnKTkIiRFO+rJR4q6nedp9yJYf4aGyhlfiuu7aafVgA4zw7pgizMDfXxxK1+u3xByKXpRqZ+tzPwtbQEdJ1FZcE1d4=
+	t=1711176587; cv=none; b=UuvkRsetT3+B6rh/NqIqMg5FxO+KIXk+kQurMLrva2yyeeGFGdXOs1LAnwBOfMRYJElPZFNBin4ivLvKVmVSFHmTLpeYPPglk0Df1aaZI1UnretPVzwO96fpSA5RlZDncDze6LCRPogCW2qk9FVX7n7/nSUwOvz8cWdkXx5UFhI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711158163; c=relaxed/simple;
-	bh=7OFeym3Sqxgd58tl0vLnpbPtNaVVfsS7w/DOS22Kmus=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QrKFmopRvOCJpQ8dy1WvhQ74it50RebtuBCbFfaRoLPA7PeBGzqG2yAP9+vYtzOJPCwo13ONxtr4a63cY58Qp2hmD5jZgq4+/pRIx+6o8TyJlS7HIM/aU1l0LP5doam7rUCgFs5s4zeJlCyZNl6x4k/lFeM9Sqy6I08mvx7Jous=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 42N1foJW083957;
-	Sat, 23 Mar 2024 09:41:50 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
-	by mail.maildlp.com (Postfix) with ESMTP id 5C1E72004BA5;
-	Sat, 23 Mar 2024 09:43:33 +0800 (CST)
-Received: from localhost.localdomain (10.114.186.34) by
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.1258.27; Sat, 23 Mar 2024 09:41:50 +0800
-From: <liu.yec@h3c.com>
-To: <daniel.thompson@linaro.org>, <jirislaby@kernel.org>
-CC: <dianders@chromium.org>, <gregkh@linuxfoundation.org>,
-        <jason.wessel@windriver.com>, <kgdb-bugreport@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <liu.yec@h3c.com>, LiuYe <liu.yeC@h3c.com>
-Subject: [PATCH V5] kdb: Fix the deadlock issue in KDB debugging.
-Date: Sat, 23 Mar 2024 09:41:41 +0800
-Message-ID: <20240323014141.3621738-1-liu.yec@h3c.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240322155818.GD7342@aspen.lan>
-References: <20240322155818.GD7342@aspen.lan>
+	s=arc-20240116; t=1711176587; c=relaxed/simple;
+	bh=NqzzK0iz78KIPvtZ1w0JtdqyZDW7tedW5UnASOm5zGQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p/abi34v6ClC1f3Zfm7UTQ0MSu8QWWT8BSzwKEtjNt/RcRxoqb84c815IpkiKeIdgeqnNNeDEkpr0wM3ble1DH4VzmdamdjyOkqrYKmd2g4J+6Do5c2JkSJJdhxy3wE9D9dQb7kTRjgjFCRmaVkXy/laHCX6z8sXZ/gAK2BNgeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=KxJDs5kU; arc=none smtp.client-ip=74.50.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="KxJDs5kU"
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id AF5B060412;
+	Sat, 23 Mar 2024 06:49:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1711176578;
+	bh=NqzzK0iz78KIPvtZ1w0JtdqyZDW7tedW5UnASOm5zGQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KxJDs5kUZdfOQ1L2jFBxRGef4vObdcMlhJiKC2R1m0lQiwuZHEusMKDibM79sSFbT
+	 8mjLaNPaxxtvaVcZm+n8s89byOt0z9FO0uGyRfJe90wE1t9ntm81v6rTQLUW5gYbD4
+	 PDWscr2BWoXto6AemF++NYujKC8EAM7hy5dAwiPo5A/wMU+t4OM0c0mtlyGE1hVjBa
+	 TZCpkxA5e1devphdXOcb3TeL1kQ3uftEzn/RxDMJ/htD6LStfpL5lIOIfi8W7NimuC
+	 JaIPkSznA7+8VrNajtNofg/glL1O1XuP/f5Aqv0aNEeiQPrJ83pw99hMWNlKnkWR2h
+	 Z1KWIGTU0fmjQ==
+Date: Sat, 23 Mar 2024 08:49:25 +0200
+From: Tony Lindgren <tony@atomide.com>
+To: Nick Bowler <nbowler@draconx.ca>
+Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
+	regressions@lists.linux.dev, linux-serial@vger.kernel.org
+Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
+Message-ID: <20240323064925.GE5132@atomide.com>
+References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
+ <20240322051531.GA5132@atomide.com>
+ <d7337014-09ac-8a35-7159-e75ecd2707b6@draconx.ca>
+ <20240322064843.GC5132@atomide.com>
+ <20240322090657.GD5132@atomide.com>
+ <193a134c-f0da-4a45-b45a-a3605f91cfa4@draconx.ca>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 42N1foJW083957
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <193a134c-f0da-4a45-b45a-a3605f91cfa4@draconx.ca>
 
-From: LiuYe <liu.yeC@h3c.com>
+* Nick Bowler <nbowler@draconx.ca> [240322 14:12]:
+> On 2024-03-22 05:06, Tony Lindgren wrote:
+> [...]
+> > I can't reproduce this on qemu-system-sparc64, probably as it does not use
+> > the sunsab driver.
+> > 
+> > I noticed something though, I think we need to test for the port device
+> > instead for being runtime PM enabled.
+> > 
+> > Can you please test if the updated patch below make things work again?
+> 
+> Yes, with the below patch applied on top of 6.8 things are working.
 
-Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-attempt to use schedule_work() to provoke a keyboard reset when
-transitioning out of the debugger and back to normal operation.
-This can cause deadlock because schedule_work() is not NMI-safe.
+OK great thanks for testing, I'll send out a proper patch.
 
-The stack trace below shows an example of the problem. In this
-case the master cpu is not running from NMI but it has parked
-the slave CPUs using an NMI and the parked CPUs is holding
-spinlocks needed by schedule_work().
+Regards,
 
-example:
- BUG: spinlock lockup suspected on CPU#0, namex/10450
- lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
- ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
- ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
-Call Trace:
- [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
- [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
- [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
- [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
- [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
- [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
- [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
- [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
- [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
- [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
- CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
- Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
-  0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
-  ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
-  000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
-  Call Trace:
-  <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
-  [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
-  [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
-  [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
-  [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
-  [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
-  [<ffffffff8107b371>] insert_work+0x81/0xc0
-  [<ffffffff8107b4e5>] __queue_work+0x135/0x390
-  [<ffffffff8107b786>] queue_work_on+0x46/0x90
-  [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
-  [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
-  [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
-  [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
-  [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
-  [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
-  [<ffffffff8108304d>] notify_die+0x3d/0x50
-  [<ffffffff81017219>] do_int3+0x89/0x120
-  [<ffffffff81480fb4>] int3+0x44/0x80
+Tony
 
-Just need to postpone schedule_work to the slave CPU exiting the NMI context.
-
-irq_work will only respond to handle schedule_work after exiting the current interrupt context.
-
-When the master CPU exits the interrupt context, other CPUs will naturally exit the NMI context, so there will be no deadlock.
-
-It is the call to input_register_handler() that forces us not to do the work from irq_work's hardirq callback.
-
-Therefore schedule another work in the irq_work and not do the job directly.
-
-Signed-off-by: LiuYe <liu.yeC@h3c.com>
-Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-
----
-V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
-V3 -> V4: Add changelogs
-V2 -> V3: Add description information
-V1 -> V2: using irq_work to solve this properly.
----
----
- drivers/tty/serial/kgdboc.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 7ce7bb164..161b25ecc 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -22,6 +22,7 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/serial_core.h>
-+#include <linux/irq_work.h>
- 
- #define MAX_CONFIG_LEN		40
- 
-@@ -99,10 +100,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
- 
- static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
- 
-+static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-+{
-+	schedule_work(&kgdboc_restore_input_work);
-+}
-+
-+static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
-+
- static void kgdboc_restore_input(void)
- {
- 	if (likely(system_state == SYSTEM_RUNNING))
--		schedule_work(&kgdboc_restore_input_work);
-+		irq_work_queue(&kgdboc_restore_input_irq_work);
- }
- 
- static int kgdboc_register_kbd(char **cptr)
-@@ -133,6 +141,7 @@ static void kgdboc_unregister_kbd(void)
- 			i--;
- 		}
- 	}
-+	irq_work_sync(&kgdboc_restore_input_irq_work);
- 	flush_work(&kgdboc_restore_input_work);
- }
- #else /* ! CONFIG_KDB_KEYBOARD */
--- 
-2.25.1
-
+> > 8< -------------------
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
+> >  	 * enabled, serial_port_runtime_resume() calls start_tx() again
+> >  	 * after enabling the device.
+> >  	 */
+> > -	if (pm_runtime_active(&port_dev->dev))
+> > +	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
+> >  		port->ops->start_tx(port);
+> >  	pm_runtime_mark_last_busy(&port_dev->dev);
+> >  	pm_runtime_put_autosuspend(&port_dev->dev)
