@@ -1,189 +1,172 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255895FDC9;
-	Fri, 22 Mar 2024 18:41:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B60A6A31;
+	Sat, 23 Mar 2024 01:42:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711132919; cv=none; b=ItNRL1mOhwKYuEwJn01UxR9tUtECG/nksPq0E4hjhiyrgN8+3k+jWSIWZkbFRXTr+zvAZZWwry6IJIGbawNVPUAElYVTm83MF7B5YcmXoc2AK2zECqsKneDuKiaVCrFJomLrtsXVYquREbw762Lwgleh1p585PKqIVA7t21CU1k=
+	t=1711158163; cv=none; b=VT9se5bnnNeJVtGb0tBs9zJk38XxxNusJuPurlzCcJbisP4uK0ujdy7xrEv7t7t4fVeKNlKQB2dfucxdnfnKTkIiRFO+rJR4q6nedp9yJYf4aGyhlfiuu7aafVgA4zw7pgizMDfXxxK1+u3xByKXpRqZ+tzPwtbQEdJ1FZcE1d4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711132919; c=relaxed/simple;
-	bh=F11k4iI02tzCqpoumpy2ptLTRb5nTvwahbpqwzebvKI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ran5rZ3i0LV1/MAm6j3JTwmYymznbdPpofdRWGUYhtcp2nXMuSg/fKLpgZ3JohiUd46ahtbVg6DgwrsTLzGbtT2qsvJwQatYJywtcoQPAuu95LUc+gxOV8/DSsXu51OVat8TwVH6DDiIIlx6LonBlDyAq7+xyabL61b7TEODOok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5Lyk2Yf; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5Lyk2Yf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05A0CC433C7;
-	Fri, 22 Mar 2024 18:41:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711132918;
-	bh=F11k4iI02tzCqpoumpy2ptLTRb5nTvwahbpqwzebvKI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=j5Lyk2YftVMKaJ9QA+oLv/BWSAsGEYXT/O9U4taywknWePLo6uZDQrL9JZFfaSKAl
-	 St2bIrbsE2P75d5lEvYCbAMsUd83jvz8Ik4D5YG3gyIDVWV7Emg37kuj66NxkAJUdO
-	 4VmTUaHFu2M8uIjc+GpRoqPjrRi83HfotABCghV4jB0UOoAI2EjUX2ZuR0ztatKBD1
-	 jHdB+8oh3zCTjQI1nWlWjXi4GcEEs330XBMKVW6+IYnJKEeRdtYmlYKcDtZc8gAcj0
-	 PvNUx+kPXQ0c0ZGJOxzOUHa6Bmrjy+wDte0n7McFiCOsTytCPtc1jF5zRdHbrO9ToQ
-	 brsM9GWBU5FEw==
-Date: Fri, 22 Mar 2024 18:41:52 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v4 4/5] dt-bindings: serial: Add documentation for
- Renesas RZ/V2H(P) (R9A09G057) SCIF support
-Message-ID: <20240322-donor-undying-d941fc3db445@spud>
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20240322144355.878930-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+	s=arc-20240116; t=1711158163; c=relaxed/simple;
+	bh=7OFeym3Sqxgd58tl0vLnpbPtNaVVfsS7w/DOS22Kmus=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QrKFmopRvOCJpQ8dy1WvhQ74it50RebtuBCbFfaRoLPA7PeBGzqG2yAP9+vYtzOJPCwo13ONxtr4a63cY58Qp2hmD5jZgq4+/pRIx+6o8TyJlS7HIM/aU1l0LP5doam7rUCgFs5s4zeJlCyZNl6x4k/lFeM9Sqy6I08mvx7Jous=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42N1foJW083957;
+	Sat, 23 Mar 2024 09:41:50 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
+	by mail.maildlp.com (Postfix) with ESMTP id 5C1E72004BA5;
+	Sat, 23 Mar 2024 09:43:33 +0800 (CST)
+Received: from localhost.localdomain (10.114.186.34) by
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Sat, 23 Mar 2024 09:41:50 +0800
+From: <liu.yec@h3c.com>
+To: <daniel.thompson@linaro.org>, <jirislaby@kernel.org>
+CC: <dianders@chromium.org>, <gregkh@linuxfoundation.org>,
+        <jason.wessel@windriver.com>, <kgdb-bugreport@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <liu.yec@h3c.com>, LiuYe <liu.yeC@h3c.com>
+Subject: [PATCH V5] kdb: Fix the deadlock issue in KDB debugging.
+Date: Sat, 23 Mar 2024 09:41:41 +0800
+Message-ID: <20240323014141.3621738-1-liu.yec@h3c.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240322155818.GD7342@aspen.lan>
+References: <20240322155818.GD7342@aspen.lan>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="kbZNjUf7uTigHDC3"
-Content-Disposition: inline
-In-Reply-To: <20240322144355.878930-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42N1foJW083957
 
+From: LiuYe <liu.yeC@h3c.com>
 
---kbZNjUf7uTigHDC3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
+attempt to use schedule_work() to provoke a keyboard reset when
+transitioning out of the debugger and back to normal operation.
+This can cause deadlock because schedule_work() is not NMI-safe.
 
-On Fri, Mar 22, 2024 at 02:43:54PM +0000, Prabhakar wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->=20
-> Document support for the Serial Communication Interface with FIFO (SCIF)
-> available in the Renesas RZ/V2H(P) (R9A09G057) SoC. The SCIF interface in
-> the Renesas RZ/V2H(P) is similar to that available in the RZ/G2L
-> (R9A07G044) SoC, with the following differences:
->=20
-> - RZ/V2H(P) SoC has three additional interrupts: one for Tx end/Rx ready
->   and two for Rx and Tx buffer full, all of which are edge-triggered.
-> - RZ/V2H(P) supports asynchronous mode, whereas RZ/G2L supports both
->   synchronous and asynchronous modes.
-> - There are differences in the configuration of certain registers such
->   as SCSMR, SCFCR, and SCSPTR between the two SoCs.
->=20
-> To handle these differences in the driver, a new SoC-specific compatible
-> string is added, ensuring proper handling of the unique features and
-> register configurations of the RZ/V2H(P) SoC.
->=20
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+The stack trace below shows an example of the problem. In this
+case the master cpu is not running from NMI but it has parked
+the slave CPUs using an NMI and the parked CPUs is holding
+spinlocks needed by schedule_work().
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+example:
+ BUG: spinlock lockup suspected on CPU#0, namex/10450
+ lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
+ ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
+ ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
+Call Trace:
+ [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
+ [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
+ [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
+ [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
+ [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
+ [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
+ [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
+ [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
+ [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
+ [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
+ CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
+ Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
+  0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
+  ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
+  000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
+  Call Trace:
+  <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
+  [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
+  [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
+  [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
+  [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
+  [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
+  [<ffffffff8107b371>] insert_work+0x81/0xc0
+  [<ffffffff8107b4e5>] __queue_work+0x135/0x390
+  [<ffffffff8107b786>] queue_work_on+0x46/0x90
+  [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
+  [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
+  [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
+  [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
+  [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
+  [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
+  [<ffffffff8108304d>] notify_die+0x3d/0x50
+  [<ffffffff81017219>] do_int3+0x89/0x120
+  [<ffffffff81480fb4>] int3+0x44/0x80
 
-Thanks,
-Conor.
+Just need to postpone schedule_work to the slave CPU exiting the NMI context.
 
-> ---
-> v3->v4
-> - Appended the interrupts instead of adding SoC specific
-> - Added restriction for clocks and reset
->=20
-> v2->v3
-> - Added SoC specific compat string
-> ---
->  .../bindings/serial/renesas,scif.yaml         | 30 +++++++++++++++++++
->  1 file changed, 30 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b=
-/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> index c13b31c28049..93fc7b75e2e5 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-> @@ -79,6 +79,8 @@ properties:
->                - renesas,scif-r9a08g045      # RZ/G3S
->            - const: renesas,scif-r9a07g044   # RZ/G2{L,LC} fallback
-> =20
-> +      - const: renesas,scif-r9a09g057       # RZ/V2H(P)
-> +
->    reg:
->      maxItems: 1
-> =20
-> @@ -93,6 +95,9 @@ properties:
->            - description: Break interrupt
->            - description: Data Ready interrupt
->            - description: Transmit End interrupt
-> +          - description: Transmit End/Data Ready interrupt
-> +          - description: Receive buffer full interrupt (EDGE trigger)
-> +          - description: Transmit buffer empty interrupt (EDGE trigger)
->          minItems: 4
-> =20
->    interrupt-names:
-> @@ -104,6 +109,9 @@ properties:
->        - const: bri
->        - const: dri
->        - const: tei
-> +      - const: tei-dri
-> +      - const: rxi-edge
-> +      - const: txi-edge
-> =20
->    clocks:
->      minItems: 1
-> @@ -160,6 +168,7 @@ allOf:
->                - renesas,rcar-gen3-scif
->                - renesas,rcar-gen4-scif
->                - renesas,scif-r9a07g044
-> +              - renesas,scif-r9a09g057
->      then:
->        required:
->          - resets
-> @@ -209,9 +218,30 @@ allOf:
->        properties:
->          interrupts:
->            minItems: 6
-> +          maxItems: 6
-> =20
->          interrupt-names:
->            minItems: 6
-> +          maxItems: 6
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: renesas,scif-r9a09g057
-> +    then:
-> +      properties:
-> +        clocks:
-> +          maxItems: 1
-> +
-> +        clock-names:
-> +          maxItems: 1
-> +
-> +        interrupts:
-> +          minItems: 9
-> +
-> +        interrupt-names:
-> +          minItems: 9
-> =20
->  unevaluatedProperties: false
-> =20
-> --=20
-> 2.34.1
->=20
+irq_work will only respond to handle schedule_work after exiting the current interrupt context.
 
---kbZNjUf7uTigHDC3
-Content-Type: application/pgp-signature; name="signature.asc"
+When the master CPU exits the interrupt context, other CPUs will naturally exit the NMI context, so there will be no deadlock.
 
------BEGIN PGP SIGNATURE-----
+It is the call to input_register_handler() that forces us not to do the work from irq_work's hardirq callback.
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZf3Q8AAKCRB4tDGHoIJi
-0rSuAQDQBPGUs8icPLxwGsWSeXy4khapO+KonhR3hhzZarFPagEA+J5rYERXAPIm
-ZqcsXcmdvvFPcibF6kTToxC6lUyChgs=
-=JU55
------END PGP SIGNATURE-----
+Therefore schedule another work in the irq_work and not do the job directly.
 
---kbZNjUf7uTigHDC3--
+Signed-off-by: LiuYe <liu.yeC@h3c.com>
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+---
+V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
+V3 -> V4: Add changelogs
+V2 -> V3: Add description information
+V1 -> V2: using irq_work to solve this properly.
+---
+---
+ drivers/tty/serial/kgdboc.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7ce7bb164..161b25ecc 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -22,6 +22,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_core.h>
++#include <linux/irq_work.h>
+ 
+ #define MAX_CONFIG_LEN		40
+ 
+@@ -99,10 +100,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
+ 
+ static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
+ 
++static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
++{
++	schedule_work(&kgdboc_restore_input_work);
++}
++
++static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
++
+ static void kgdboc_restore_input(void)
+ {
+ 	if (likely(system_state == SYSTEM_RUNNING))
+-		schedule_work(&kgdboc_restore_input_work);
++		irq_work_queue(&kgdboc_restore_input_irq_work);
+ }
+ 
+ static int kgdboc_register_kbd(char **cptr)
+@@ -133,6 +141,7 @@ static void kgdboc_unregister_kbd(void)
+ 			i--;
+ 		}
+ 	}
++	irq_work_sync(&kgdboc_restore_input_irq_work);
+ 	flush_work(&kgdboc_restore_input_work);
+ }
+ #else /* ! CONFIG_KDB_KEYBOARD */
+-- 
+2.25.1
+
