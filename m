@@ -1,86 +1,140 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD8CE4C6B;
-	Sat, 23 Mar 2024 06:49:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08E91CF87;
+	Sun, 24 Mar 2024 21:44:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711176587; cv=none; b=UuvkRsetT3+B6rh/NqIqMg5FxO+KIXk+kQurMLrva2yyeeGFGdXOs1LAnwBOfMRYJElPZFNBin4ivLvKVmVSFHmTLpeYPPglk0Df1aaZI1UnretPVzwO96fpSA5RlZDncDze6LCRPogCW2qk9FVX7n7/nSUwOvz8cWdkXx5UFhI=
+	t=1711316650; cv=none; b=cEcI69J1z8fVNyd5KTCFsyjKLKisqiqTIc/Z4XKqJNne6sZjZpNWK2mz7V4wdPexuBWIY/UHHp9X41PYcSqdRvIXynTU114ri7OId5wG61z5fBjj3vRh93EztMJ8tmLp+PLDINNtHuBsVI45hKpr6AbfyaSHP8s0wHvO8tnNlIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711176587; c=relaxed/simple;
-	bh=NqzzK0iz78KIPvtZ1w0JtdqyZDW7tedW5UnASOm5zGQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p/abi34v6ClC1f3Zfm7UTQ0MSu8QWWT8BSzwKEtjNt/RcRxoqb84c815IpkiKeIdgeqnNNeDEkpr0wM3ble1DH4VzmdamdjyOkqrYKmd2g4J+6Do5c2JkSJJdhxy3wE9D9dQb7kTRjgjFCRmaVkXy/laHCX6z8sXZ/gAK2BNgeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=KxJDs5kU; arc=none smtp.client-ip=74.50.62.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+	s=arc-20240116; t=1711316650; c=relaxed/simple;
+	bh=Y1ZH6sXEWgZE7mVR1DS58C2yS473lu4Tv/5Sh3lTIr0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LtXkpr9lU7XcGE4GlT22i7ih9RE3WBjNuOzxu8Hs34KGUOwTWBMLRcTX6bMgMO3oWQzIVT1kxD0wCuflWleo2AnNzEom1plA94mA7F62UlaOLA6zU4La//3PuSi+kuUYhj/sDU1g+VekroOmBOV8stZDnhufAuiYcvGBsmB/318=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OHRzJDtT; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="KxJDs5kU"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id AF5B060412;
-	Sat, 23 Mar 2024 06:49:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1711176578;
-	bh=NqzzK0iz78KIPvtZ1w0JtdqyZDW7tedW5UnASOm5zGQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KxJDs5kUZdfOQ1L2jFBxRGef4vObdcMlhJiKC2R1m0lQiwuZHEusMKDibM79sSFbT
-	 8mjLaNPaxxtvaVcZm+n8s89byOt0z9FO0uGyRfJe90wE1t9ntm81v6rTQLUW5gYbD4
-	 PDWscr2BWoXto6AemF++NYujKC8EAM7hy5dAwiPo5A/wMU+t4OM0c0mtlyGE1hVjBa
-	 TZCpkxA5e1devphdXOcb3TeL1kQ3uftEzn/RxDMJ/htD6LStfpL5lIOIfi8W7NimuC
-	 JaIPkSznA7+8VrNajtNofg/glL1O1XuP/f5Aqv0aNEeiQPrJ83pw99hMWNlKnkWR2h
-	 Z1KWIGTU0fmjQ==
-Date: Sat, 23 Mar 2024 08:49:25 +0200
-From: Tony Lindgren <tony@atomide.com>
-To: Nick Bowler <nbowler@draconx.ca>
-Cc: linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
-	regressions@lists.linux.dev, linux-serial@vger.kernel.org
-Subject: Re: PROBLEM: Sun Ultra 60 hangs on boot since Linux 6.8
-Message-ID: <20240323064925.GE5132@atomide.com>
-References: <d84baa5d-a092-3647-8062-ed7081d329d4@draconx.ca>
- <20240322051531.GA5132@atomide.com>
- <d7337014-09ac-8a35-7159-e75ecd2707b6@draconx.ca>
- <20240322064843.GC5132@atomide.com>
- <20240322090657.GD5132@atomide.com>
- <193a134c-f0da-4a45-b45a-a3605f91cfa4@draconx.ca>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OHRzJDtT"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-56c0d1bddc1so406833a12.3;
+        Sun, 24 Mar 2024 14:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1711316647; x=1711921447; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zkCO8Y+WHQnl+tvX3DzgjNq21YRogyxceoqEZu7+h94=;
+        b=OHRzJDtTb/e9R8NDjCU93tpn3dM9TrzZuTO7uW/h3C1TDdUbls8H8KsU0vm3qR3pHz
+         +H2RVZwa4Uc5Cz0XvKDa9psEd7HkJh0kaq7XGHMrq+2RkzmqsVUJYydem86GDuOvsraB
+         TjCLyv/E5bh3hJt0mAk5jPyebLvTZUDFt3xd1EtH6q+x3ue70MnaxpAxJvC7CsqUiLOT
+         Dh21ibfuQzznM4FL3dH93q9+uvWqBqFgZwV0NlTDPFLtKssIYy0zRU4UxfrlOyPN2ZC1
+         VDAygBs8YR2hpDNt93HjhWONMVLznI3FRJJZsJ/bqTlt8B7IxUB3u5UbEryfZM5d5/Kd
+         RL8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711316647; x=1711921447;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zkCO8Y+WHQnl+tvX3DzgjNq21YRogyxceoqEZu7+h94=;
+        b=YrJ1yvaWhdNIMnwiDLbz5ms2G+JMSpHs+9MQN1zBxE2w9683p2xFaXjG+crHp4ESjA
+         UzjBikHLXnZ4SU+tlHQWkcnJR5XS6I3NXRrkXw/PoftlFbk4Y8UdJcZ/dNQgV7dk1F6H
+         5BACe2GoJc05B3UuqQcDmxY29Mz2KCjmkqsh/2M2dAWb79XBEOd6Gu6j+7P9EkJYHSWY
+         +BkywFpUwQ+NQWetCPn+W8xEwby555qMjDZASoSZmTWPXb9flqrgU1Qf7otLXJNwBh0F
+         GVVel4Ca0sht+K+bXcLs7YE/0oRq9XTmdeD69z/ngpzJ09YYXNcW2T6jE7XnEGqDMkLj
+         S3LQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWBJhe2jhjlh+yPNQIV01ptbBa60xA2X93ybSfC4E2dUbtvNEj+REwOUx32sFcrPuz3QYF6byRLPmDqcF8m/Lw7eHD7OQ5DucGOLR3umRLXXxhyVOCI11DdLM+Uv0mOUX+gDmuupUeE5L8doQ7rieIPfEXU/fDDly4YCY8EhcIYeRR/t46kTwDW+02MQOlE3+hcY4TwdhB53UnzXxIVfSmAlQ==
+X-Gm-Message-State: AOJu0YzB/xn4TOruyz3Di3B+8yL2Ig8blrFIR+MfIg7D3e4Aeg5J/Tzq
+	GJGOGqyzrOaHmzjKzVIcilAMwEFvksPkx0SeU0PENa+XlYc9zujM
+X-Google-Smtp-Source: AGHT+IFFyizMvoL9NzRPRAQx/Lp+F9c0iktT8fr9Vh6GjvgooA64cmyXKDEGWTjfh+nJBNef+vQR4g==
+X-Received: by 2002:a17:906:1515:b0:a46:ede0:2370 with SMTP id b21-20020a170906151500b00a46ede02370mr3761286ejd.57.1711316646538;
+        Sun, 24 Mar 2024 14:44:06 -0700 (PDT)
+Received: from bhlegrsu.conti.de ([2a02:908:2525:6ea0::2043])
+        by smtp.googlemail.com with ESMTPSA id w17-20020a170906385100b00a46d8e5a031sm2327542ejc.209.2024.03.24.14.44.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Mar 2024 14:44:06 -0700 (PDT)
+From: Wadim Mueller <wafgo01@gmail.com>
+To: 
+Cc: Wadim Mueller <wafgo01@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chester Lin <chester62515@gmail.com>,
+	=?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
+	Matthias Brugger <mbrugger@suse.com>,
+	NXP S32 Linux Team <s32@nxp.com>,
+	Tim Harvey <tharvey@gateworks.com>,
+	Alexander Stein <alexander.stein@ew.tq-group.com>,
+	Marek Vasut <marex@denx.de>,
+	Gregor Herburger <gregor.herburger@ew.tq-group.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Joao Paulo Goncalves <joao.goncalves@toradex.com>,
+	Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+	Marco Felsch <m.felsch@pengutronix.de>,
+	Matthias Schiffer <matthias.schiffer@tq-group.com>,
+	Stefan Wahren <stefan.wahren@chargebyte.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Philippe Schenker <philippe.schenker@toradex.com>,
+	Josua Mayer <josua@solid-run.com>,
+	Li Yang <leoyang.li@nxp.com>,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v4 0/4] NXP S32G3 SoC initial bring-up
+Date: Sun, 24 Mar 2024 22:43:22 +0100
+Message-Id: <20240324214329.29988-1-wafgo01@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <193a134c-f0da-4a45-b45a-a3605f91cfa4@draconx.ca>
+Content-Transfer-Encoding: 8bit
 
-* Nick Bowler <nbowler@draconx.ca> [240322 14:12]:
-> On 2024-03-22 05:06, Tony Lindgren wrote:
-> [...]
-> > I can't reproduce this on qemu-system-sparc64, probably as it does not use
-> > the sunsab driver.
-> > 
-> > I noticed something though, I think we need to test for the port device
-> > instead for being runtime PM enabled.
-> > 
-> > Can you please test if the updated patch below make things work again?
-> 
-> Yes, with the below patch applied on top of 6.8 things are working.
+This series brings up initial support for the NXP S32G3 SoC,
+used on the S32G-VNP-RDB3 board [1].
 
-OK great thanks for testing, I'll send out a proper patch.
+The following features are supported in this initial port:
 
-Regards,
+  * Devicetree for the S32G-VNP-RDB3 
+  * UART (fsl-linflexuart) with earlycon support
+  * SDHC: fsl-imx-esdhc (SD/eMMC)
 
-Tony
+== Changes since v3 ==:
 
-> > 8< -------------------
-> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> > --- a/drivers/tty/serial/serial_core.c
-> > +++ b/drivers/tty/serial/serial_core.c
-> > @@ -156,7 +156,7 @@ static void __uart_start(struct uart_state *state)
-> >  	 * enabled, serial_port_runtime_resume() calls start_tx() again
-> >  	 * after enabling the device.
-> >  	 */
-> > -	if (pm_runtime_active(&port_dev->dev))
-> > +	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
-> >  		port->ops->start_tx(port);
-> >  	pm_runtime_mark_last_busy(&port_dev->dev);
-> >  	pm_runtime_put_autosuspend(&port_dev->dev)
+  * changed dts license to dual license model (GPL-2.0+ OR BSD-3-Clause)
+  * fixed wrong s32g3 schema binding for fsl-imx-esdhc
+  * merged s32-linflexuart schema binding for s32g2 and s32g3 into one enum
+  * sorted s32g3 dts nodes alpha-numerically by the node name
+  * sorted s32g3 soc nodes by unit address
+ 
+
+[1] https://www.nxp.com/design/design-center/designs/s32g3-vehicle-networking-reference-design:S32G-VNP-RDB3
+
+Wadim Mueller (4):
+  dt-bindings: arm: fsl: add NXP S32G3 board
+  dt-bindings: serial: fsl-linflexuart: add compatible for S32G3
+  dt-bindings: mmc: fsl-imx-esdhc: add NXP S32G3 support
+  arm64: dts: S32G3: Introduce device tree for S32G-VNP-RDB3
+
+ .../devicetree/bindings/arm/fsl.yaml          |   6 +
+ .../bindings/mmc/fsl-imx-esdhc.yaml           |   3 +
+ .../bindings/serial/fsl,s32-linflexuart.yaml  |   4 +-
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ arch/arm64/boot/dts/freescale/s32g3.dtsi      | 233 ++++++++++++++++++
+ .../boot/dts/freescale/s32g399a-rdb3.dts      |  45 ++++
+ 6 files changed, 291 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/s32g3.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/s32g399a-rdb3.dts
+
+-- 
+2.25.1
+
