@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C4113DDD5;
-	Mon, 25 Mar 2024 07:10:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3F2181305;
+	Mon, 25 Mar 2024 07:10:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711350631; cv=none; b=TNnj+/jAM8Geb5IOV5XUPhil0xGQW8aVu+Ak2c0sSZFkTUfCm1W+R9IPlWWZKNLWOaoZ2+0eZ/Ll2EmjOUV1Lccvy8H7nl/4zEe8D65LrK3SuehSLDGKj8U0BqGaz5HIMDF4uObbsEsvNN8dDt0MieK+t5BrvxS7ZwtzQJbpIJQ=
+	t=1711350653; cv=none; b=K7IhsjEBlACBe3e75Hr1NcIkD7rz8q0ppu1VUBcRJTEuoWkMY4dZQzuRXTTsxiqhpF15wEOI9rTun04WW8c0HPQEcGSrTP/EcidtO2DxLYS+cVQJdPNXx2eq2emmLqvInoFD6Tq9EDDVq3xWIlShY/oAIQIQohq+kozDCFVkC2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711350631; c=relaxed/simple;
-	bh=yQkEdpK+pQC5xgDqqVQKDe1hrD7TK7KQYXOn9F7ILT4=;
+	s=arc-20240116; t=1711350653; c=relaxed/simple;
+	bh=L9+oMgTqns9sw9ne/My/DZdwn60k6w1jk+fymbaNaYE=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sT3XKpghslWqkETgeA53T/DPBCDV8eKuO2z5JfNupQ9URFGCsSq8/vfUdS7ZELXj/HA+/qO+HvaZskq9IL142TmRFlE/Ylnx2aS0NOSR8HZ5BTyjX6YvPnfSRvDeaURQy2PCxUdKb0v56FqVwrQCa8VvKXVTeRmb3Mop04NDCjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rFvvwxM+; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=IStUSYMqhKSJvitKT0tVdguACEAUJYVWwaKcjSyLDxMFohP8N+/h7u562c5GXBjOaxiq5989aeVjftDovPpTocEK0Gt4VATtVXnadBaLFa8xcyW3ZQAq3jZ546QDCHjmsNvyAyb6vTRQZON5vnL11BsPkdlsayzP/572jXD3Hqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s/+LXerr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rFvvwxM+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249C8C43390;
-	Mon, 25 Mar 2024 07:10:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s/+LXerr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49E2C433C7;
+	Mon, 25 Mar 2024 07:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711350630;
-	bh=yQkEdpK+pQC5xgDqqVQKDe1hrD7TK7KQYXOn9F7ILT4=;
+	s=k20201202; t=1711350653;
+	bh=L9+oMgTqns9sw9ne/My/DZdwn60k6w1jk+fymbaNaYE=;
 	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=rFvvwxM+nOfC6ZINMkuVQCj79iT/f6YfZu82C8ota8vaEaAzc2AFR0ak8taEZM5dg
-	 B5mM5UJWkiNfsPa2zPhe4sasKskWbl7OfeS/VXzUMd/KNc38aM0nuw71t4DsYBpadJ
-	 gHojJtPOMg78lJcw5I4GDKgvLoRY7/ObWycdLbJJUgUgzhb6mcRcqWk44EzKJqZelh
-	 7MxygxPQBzbK5l+dwzver1Eq69x7R9ZhLf2Eip2pB1KYc1HDx6kYTY4vjixVRZgOMX
-	 4HEGu4gqfllsTwe/1Jib+o6VOSJ1yY4PqpPEDQEL93hs6tyLqWQEmEoeDqEnPWt7ti
-	 4sCCR8FUQRWoA==
+	b=s/+LXerrViBpnwV64FJRv7v83te1MPyMxomjHLvPDg/M1H1aOVEJ0hSAHGUv+riMl
+	 R8MjtDZABIUAZjV7OAFyndyVVnE0jRIQ6ekZMJvqX9M7y8clwA4+Xgym6OmUvDYQjK
+	 glW3Sc8DN/6jtzxPlP1XHWs4YyTJlY2mQBIPPu3oFiYovgLwB/sjGFQDHSBhU8Mg+6
+	 6lh6wernnvtghNv84/NCrQwZJKR2SFsEKwiCN49vhL84wcaGHJXGBG1EsJ/ZEFrwDY
+	 RsTgnbN7NI/RWAekJ1A7+P8iodcmZfevRfAssCW1980tgPJ8fJknHKzZkuYb4Yfr3c
+	 YS/hXzUDvbb9A==
 From: Damien Le Moal <dlemoal@kernel.org>
 To: linux-pci@vger.kernel.org,
 	Bjorn Helgaas <bhelgaas@google.com>,
@@ -49,9 +49,9 @@ To: linux-pci@vger.kernel.org,
 	Eric Dumazet <edumazet@google.com>,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 11/28] infiniband: qib: Use PCI_IRQ_INTX
-Date: Mon, 25 Mar 2024 16:09:22 +0900
-Message-ID: <20240325070944.3600338-12-dlemoal@kernel.org>
+Subject: [PATCH 17/28] net: realtek: r8169: Use PCI_IRQ_INTX
+Date: Mon, 25 Mar 2024 16:09:28 +0900
+Message-ID: <20240325070944.3600338-18-dlemoal@kernel.org>
 X-Mailer: git-send-email 2.44.0
 In-Reply-To: <20240325070944.3600338-1-dlemoal@kernel.org>
 References: <20240325070944.3600338-1-dlemoal@kernel.org>
@@ -68,60 +68,22 @@ macro.
 
 Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
 ---
- drivers/infiniband/hw/qib/qib_iba7220.c | 2 +-
- drivers/infiniband/hw/qib/qib_iba7322.c | 5 ++---
- drivers/infiniband/hw/qib/qib_pcie.c    | 2 +-
- 3 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/qib/qib_iba7220.c b/drivers/infiniband/hw/qib/qib_iba7220.c
-index 6af57067c32e..78dfe98ebcf7 100644
---- a/drivers/infiniband/hw/qib/qib_iba7220.c
-+++ b/drivers/infiniband/hw/qib/qib_iba7220.c
-@@ -3281,7 +3281,7 @@ static int qib_7220_intr_fallback(struct qib_devdata *dd)
- 
- 	qib_free_irq(dd);
- 	dd->msi_lo = 0;
--	if (pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_LEGACY) < 0)
-+	if (pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_INTX) < 0)
- 		qib_dev_err(dd, "Failed to enable INTx\n");
- 	qib_setup_7220_interrupt(dd);
- 	return 1;
-diff --git a/drivers/infiniband/hw/qib/qib_iba7322.c b/drivers/infiniband/hw/qib/qib_iba7322.c
-index f93906d8fc09..9db29916e35a 100644
---- a/drivers/infiniband/hw/qib/qib_iba7322.c
-+++ b/drivers/infiniband/hw/qib/qib_iba7322.c
-@@ -3471,8 +3471,7 @@ static void qib_setup_7322_interrupt(struct qib_devdata *dd, int clearpend)
- 				    pci_irq_vector(dd->pcidev, msixnum),
- 				    ret);
- 			qib_7322_free_irq(dd);
--			pci_alloc_irq_vectors(dd->pcidev, 1, 1,
--					      PCI_IRQ_LEGACY);
-+			pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_INTX);
- 			goto try_intx;
- 		}
- 		dd->cspec->msix_entries[msixnum].arg = arg;
-@@ -5143,7 +5142,7 @@ static int qib_7322_intr_fallback(struct qib_devdata *dd)
- 	qib_devinfo(dd->pcidev,
- 		"MSIx interrupt not detected, trying INTx interrupts\n");
- 	qib_7322_free_irq(dd);
--	if (pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_LEGACY) < 0)
-+	if (pci_alloc_irq_vectors(dd->pcidev, 1, 1, PCI_IRQ_INTX) < 0)
- 		qib_dev_err(dd, "Failed to enable INTx\n");
- 	qib_setup_7322_interrupt(dd, 0);
- 	return 1;
-diff --git a/drivers/infiniband/hw/qib/qib_pcie.c b/drivers/infiniband/hw/qib/qib_pcie.c
-index 47bf64ace05c..58c1d62d341b 100644
---- a/drivers/infiniband/hw/qib/qib_pcie.c
-+++ b/drivers/infiniband/hw/qib/qib_pcie.c
-@@ -210,7 +210,7 @@ int qib_pcie_params(struct qib_devdata *dd, u32 minw, u32 *nent)
- 	}
- 
- 	if (dd->flags & QIB_HAS_INTX)
--		flags |= PCI_IRQ_LEGACY;
-+		flags |= PCI_IRQ_INTX;
- 	maxvec = (nent && *nent) ? *nent : 1;
- 	nvec = pci_alloc_irq_vectors(dd->pcidev, 1, maxvec, flags);
- 	if (nvec < 0)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 5c879a5c86d7..7288afcc8c94 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5076,7 +5076,7 @@ static int rtl_alloc_irq(struct rtl8169_private *tp)
+ 		rtl_lock_config_regs(tp);
+ 		fallthrough;
+ 	case RTL_GIGA_MAC_VER_07 ... RTL_GIGA_MAC_VER_17:
+-		flags = PCI_IRQ_LEGACY;
++		flags = PCI_IRQ_INTX;
+ 		break;
+ 	default:
+ 		flags = PCI_IRQ_ALL_TYPES;
 -- 
 2.44.0
 
