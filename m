@@ -1,108 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4378062E;
-	Mon, 25 Mar 2024 12:57:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FAA8174952
+	for <linux-serial@vger.kernel.org>; Mon, 25 Mar 2024 13:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711371435; cv=none; b=F3JGkS5CzXamA33+Bk4EwxeG2K/FgMd6uwm/vKUn/6O6V9XJVzRu79PV0jyh5UR9dojTkXk7dK0HeCoMDbQBexuBx3HooIgQjxumXrWUnjE9gw4cnZ7WzYzPu/Q9H1lM4Vps3wx7vOtglMx14Xf8O4z2Hd+RvQWx8/AYF9RJ9ag=
+	t=1711372797; cv=none; b=qwaIaOP9kQ/JR/p/IP82RShJtI0OHvlpnH+cE5wpWzTF5PuDEadMf9iWkzFbOdOBFp26qszcMasCXrwNCUQpStJrZHWiTm3HM24QhQLvczSNhkwsRB0JL2cM1Xot7bqW0yevyrAGE6E9ld3/4femW37+TL658hGoGnFB2Z2ZXsU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711371435; c=relaxed/simple;
-	bh=HUjKdQlxom6P1m/TBqTuw6g6vhOkoQNgKeUZCY9XFh8=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=S0PfVWyk1RENFfnj21UUcFJPW2TPp5oSIdVFOrZNqxWYVsrS0PMWLa/VwP82Oa2jDH5IVoupmvyDf5faQnruJHAtDxKCPKTeYzrYj8RJKRU95yaNPoxw1ShK0spEJSi/TwV4cSCn+jJv4PiNYetdl0UL+sI5bCPcqbHHJLt7rOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jJUAlXLp; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1711372797; c=relaxed/simple;
+	bh=T0UhGD46y7GnmjcpACpO9YkO2PsWjjjy6i5a75FohHo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rZdwLiZa7HpcRmQoEK84tc7Ck7ppXLn3W7tuEhwtW4K978MuxB6USeULHuBADZuc/HQlnwJstl5o47tPbo4473kLSqKE2lVG8et0kLLkZZmYFepGpEye0Lj5kxGSOiqEWQJqO4J/pZKRYAGKtVw2RK0rqewMSkRBOH5v+bGYDGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=EBswOZdo; arc=none smtp.client-ip=209.85.219.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jJUAlXLp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711371433; x=1742907433;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=HUjKdQlxom6P1m/TBqTuw6g6vhOkoQNgKeUZCY9XFh8=;
-  b=jJUAlXLpNmQvj1sPQuPkQIAXYKr5zeC4VNVj9Ux1TwLOuSS6Esa4zLz0
-   zgEgwo/w7ayto416WoD4OWjK28R7LT3nFHmJB7mXhtz2SNx2K6kC31p5U
-   zokP/yHr2iFMo8fP2ftyk69TN7iXUPRNKur3Pl4oRglfGoFbJk2NkgTbk
-   Ld2SM0WM8n9T8n6b6LhtlenvoYlxARr3y8LdMlr/xjKFEJKKy7U7aIPV4
-   HzXWu0erfWuIPcR0FYP8eDfZMhh9gvMfeAgGO4ZztPpozZ/+GYo7IYEVU
-   z6kr/vMDhaX+uJedxYk8whHWDGx1fO1YooHU9R81QnU+gbr0aY4OV5LA3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="6552944"
-X-IronPort-AV: E=Sophos;i="6.07,153,1708416000"; 
-   d="scan'208";a="6552944"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2024 05:57:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,153,1708416000"; 
-   d="scan'208";a="15637244"
-Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.94.0.53]) ([10.94.0.53])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2024 05:57:06 -0700
-Message-ID: <b99a99be-d5f3-4e7a-a83a-e29722cd79dc@linux.intel.com>
-Date: Mon, 25 Mar 2024 13:57:04 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EBswOZdo"
+Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-dc236729a2bso4128272276.0
+        for <linux-serial@vger.kernel.org>; Mon, 25 Mar 2024 06:19:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1711372794; x=1711977594; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=yxBqMV2tXP1EFJC3ffAea+Nlp68o2kbIX/WBGOrDI24=;
+        b=EBswOZdoXYXiAgsTBQJ0rKDwO4neaTATSCscl4tXH23JK6Y1rcM97BjBO/vIcyz/yD
+         BjrwdtUpfzVepNKG/N4n+R2Tmn22Nw6G783FFvEzHzxJCFYyvTTnFFe9QDsJAulDqCKu
+         1bmwuk3s5Bl87G1K9QeSYouBhGUBp7XmXsuQlg1y9PuIACdYsoIjaU7a4Xn2e2s7WTga
+         5/zsGXO/8lWlovqTNT7xGFuS+vxBcoV5RZor5f63yz4J29mk1R1BDVN7EDV91V5/4NFw
+         SeLogAkHyA9fhfa+TO96j6aljBhcJeZraJmJEpExV8Yr+2dr3rrGxJFLlPJ5AttsfgD9
+         GbYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711372794; x=1711977594;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yxBqMV2tXP1EFJC3ffAea+Nlp68o2kbIX/WBGOrDI24=;
+        b=W+QVlp6dGEe4vZ2W4dGeZmEurf85klbDGqOBlYAdZHelkXimDhhkBkHUaCFPlomXm2
+         wdZMGEA+dyRXA5w1WxR5+2CskWzMa6Nsa88nW+gc4B724UY8bDh114Hy+7aMmatVp+l3
+         FSRlaGUraMF9P3q7llxNsiTl8BCyfWgkNcQYi5WmX9j3CNQ3vZgFT1o7s/RONgxR/XGk
+         dMmIm4vzBILI2ALi8IT6gn0Ka+BXQ6Bg/VER2yNNgEmEVUH8PVJnZsGZA77uHo//QL5I
+         BxhI2EiKMWAiEEU1FrBgSbuGOSB1fZRRorF3yYVMRCMFrE6F2f0VpAZT+mipHzF+8cA0
+         gIBA==
+X-Forwarded-Encrypted: i=1; AJvYcCULzMIaxp+Kg+n9MrwjOY5+hHO9HG5fohoyzNlqab5B7lMsALlTKm7aF7DPXMAyesT4enfWCD+myjbPoz4srPLjkb4TciGDfnvLeB/0
+X-Gm-Message-State: AOJu0YxkNWp7XQSu75tEE0OPWWyx064eu5qm5Xaw0mXlnp8r/1SxBzok
+	1WfVfMVFNjkgZ/0lpwCW29Y1upT/E/xCA9QKN/nI74YmusEEOHxkv2cZA+P5VguSthym990PVre
+	PZYVj3K8UXeRW8OdzZJ1rhN4S1qLHaWxGdwi9sg==
+X-Google-Smtp-Source: AGHT+IGHYRk03A+ebdrgDqCegMS+TQhHjy1L3Fp6OrAoZ21JkL2vjd7xmwf3RER4jqhhXfsQH0CLxSd+Wsa60dSp6/U=
+X-Received: by 2002:a05:6902:3ce:b0:dce:53c9:4d9f with SMTP id
+ g14-20020a05690203ce00b00dce53c94d9fmr5372283ybs.58.1711372794518; Mon, 25
+ Mar 2024 06:19:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 04/28] sound: intel: Use PCI_IRQ_INTX
-From: =?UTF-8?Q?Amadeusz_S=C5=82awi=C5=84ski?=
- <amadeuszx.slawinski@linux.intel.com>
-To: Damien Le Moal <dlemoal@kernel.org>, linux-pci@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>,
- Manivannan Sadhasivami <manivannan.sadhasivam@linaro.org>,
- linux-scsi@vger.kernel.org, "Martin K . Petersen"
- <martin.petersen@oracle.com>, Jaroslav Kysela <perex@perex.cz>,
- linux-sound@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
- linux-serial@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
- platform-driver-x86@vger.kernel.org, ntb@lists.linux.dev,
- Lee Jones <lee@kernel.org>, David Airlie <airlied@gmail.com>,
- amd-gfx@lists.freedesktop.org, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-rdma@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: Cezary Rojewski <cezary.rojewski@intel.com>
-References: <20240325070944.3600338-1-dlemoal@kernel.org>
- <20240325070944.3600338-5-dlemoal@kernel.org>
- <3edd5823-bf54-4898-bcee-e1628c863388@linux.intel.com>
-Content-Language: en-US
-In-Reply-To: <3edd5823-bf54-4898-bcee-e1628c863388@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20240324214329.29988-1-wafgo01@gmail.com> <20240324214329.29988-4-wafgo01@gmail.com>
+In-Reply-To: <20240324214329.29988-4-wafgo01@gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Mon, 25 Mar 2024 14:19:18 +0100
+Message-ID: <CAPDyKFoSB3+jqw+cmc7x6NMSV9tegK=c-nUjC2pXiYFUzjEM4w@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] dt-bindings: mmc: fsl-imx-esdhc: add NXP S32G3 support
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, 
+	NXP Linux Team <linux-imx@nxp.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Chester Lin <chester62515@gmail.com>, 
+	=?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>, 
+	Matthias Brugger <mbrugger@suse.com>, NXP S32 Linux Team <s32@nxp.com>, Tim Harvey <tharvey@gateworks.com>, 
+	Alexander Stein <alexander.stein@ew.tq-group.com>, 
+	Gregor Herburger <gregor.herburger@ew.tq-group.com>, Marek Vasut <marex@denx.de>, 
+	Marco Felsch <m.felsch@pengutronix.de>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	Markus Niebel <Markus.Niebel@ew.tq-group.com>, 
+	Matthias Schiffer <matthias.schiffer@tq-group.com>, 
+	Stefan Wahren <stefan.wahren@chargebyte.com>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Yannic Moog <y.moog@phytec.de>, Li Yang <leoyang.li@nxp.com>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 3/25/2024 1:34 PM, Amadeusz Sławiński wrote:
-> On 3/25/2024 8:09 AM, Damien Le Moal wrote:
->> Use the macro PCI_IRQ_INTX instead of the deprecated PCI_IRQ_LEGACY
->> macro.
->>
->> Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
->> ---
->>   sound/soc/intel/avs/core.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/sound/soc/intel/avs/core.c b/sound/soc/intel/avs/core.c
->> index d7f8940099ce..69818e4b43da 100644
->> --- a/sound/soc/intel/avs/core.c
->> +++ b/sound/soc/intel/avs/core.c
->> @@ -343,7 +343,7 @@ static int avs_hdac_acquire_irq(struct avs_dev *adev)
->>       int ret;
->>       /* request one and check that we only got one interrupt */
->> -    ret = pci_alloc_irq_vectors(pci, 1, 1, PCI_IRQ_MSI | 
->> PCI_IRQ_LEGACY);
->> +    ret = pci_alloc_irq_vectors(pci, 1, 1, PCI_IRQ_MSI | PCI_IRQ_INTX);
->>       if (ret != 1) {
->>           dev_err(adev->dev, "Failed to allocate IRQ vector: %d\n", ret);
->>           return ret;
-> 
-> Reviewed-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+On Sun, 24 Mar 2024 at 22:44, Wadim Mueller <wafgo01@gmail.com> wrote:
+>
+> Add a compatible string for the SDHC binding of NXP S32G3 platforms. Here
+> we use "nxp,s32g2-usdhc" as fallback since the s32g2-usdhc
+> driver works also on S32G3 platforms.
+>
+> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
 
-Sorry, one more thing, can you adjust commit title to:
-ASoC: Intel: avs: Use PCI_IRQ_INTX
+Applied for next, thanks!
 
-and with that, you can add above Reviewed-by:
+Kind regards
+Uffe
 
-Thanks!
+
+> ---
+>  Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> index 82eb7a24c857..466e7157308a 100644
+> --- a/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/fsl-imx-esdhc.yaml
+> @@ -90,6 +90,9 @@ properties:
+>            - enum:
+>                - fsl,imxrt1170-usdhc
+>            - const: fsl,imxrt1050-usdhc
+> +      - items:
+> +          - const: nxp,s32g3-usdhc
+> +          - const: nxp,s32g2-usdhc
+>
+>    reg:
+>      maxItems: 1
+> --
+> 2.25.1
+>
