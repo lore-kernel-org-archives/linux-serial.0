@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA3611802A4;
-	Mon, 25 Mar 2024 07:09:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B96513DDC8;
+	Mon, 25 Mar 2024 07:10:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711350593; cv=none; b=SpV4+Y+YojNgmbM2bmzzKeKeAUCPZMkEgw9xwzxOZt58VE1UqeTh5hBF8Y07GA067OTty0px8K+YCNHLNwFI5rNIKH6me+CmDq2xnMNnF0HwLpp3qEYoNarQGr/5Mi490+eMQMSIFKuWxP94AipbVP3zyScTzcNt2hxSLNf1tCA=
+	t=1711350638; cv=none; b=fmQf3BZ27uDeh59L5hfxo4EeCRemNrkKeHhyKG6gnXMuYD7Dy1eqH7H+SRQcaVD/xudkzq4TfllKrpDCsVwR4RhrpM2kkgyGuOnVxbswVbmMD9zE5kx7oV/jAlteuc+C+eI0eDAd2/S2YRFHp5Yrvr6cbvHoJSNjDcOhEpJn/jo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711350593; c=relaxed/simple;
-	bh=fgNYRUWQ1ehKxth4W+tPpNo5aTyrEzS0AG45mdCeF+8=;
+	s=arc-20240116; t=1711350638; c=relaxed/simple;
+	bh=WYkv91EIIKYnBjiqDa2StmEVhH3MpVjmEKTd+pFQezw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=K0XhA1YX2nSpuFt/1aCesQuD/7UPkjuGICtfdttyu8zsl1Am5WLX5iERBUJ8IuH4wmjRuOk3NXX/XIWlblw2GbfP2SL0fvYDjajeCNBhnaRamKuWdQX8HjEPbXYV/7uDuE7eIs7aycl6EBhCQeYISX+SrnVltcMjMIWuR2uG7i0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nlLsGMZ2; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=ToQ+7sY6sdKNYlsMZ0Um0SC5zE1tvQ1BxuFRzPezdKG78zheeQC+g7a6BExmNy8fxQoGLQOrkfQ4vMPjiRIdX/dTz2scKdI+bBPVKu1EqxDbG/nC75BZYA1m2VWChCiQYRyUwEvL7FGTra6HTIQFwb2stPrPhZjDuyP3Lr/wCq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ly8fo8tV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nlLsGMZ2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 481CBC43394;
-	Mon, 25 Mar 2024 07:09:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ly8fo8tV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3503C433F1;
+	Mon, 25 Mar 2024 07:10:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711350592;
-	bh=fgNYRUWQ1ehKxth4W+tPpNo5aTyrEzS0AG45mdCeF+8=;
+	s=k20201202; t=1711350638;
+	bh=WYkv91EIIKYnBjiqDa2StmEVhH3MpVjmEKTd+pFQezw=;
 	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=nlLsGMZ2Nh1cmWZviNXNJCoreXfnZJbu/HHZ5lA3BMPBMNWQKCda07SFBYqYhojiW
-	 fVZSiiPSSgYzid9Z+ET8AaD/7NA3ZpksRz0tid4Zbt+pwN2P6b2h3LawbPRcs03yPg
-	 QoSyFngv2VBgv17tj1gF7yCPHd5J3L5PnRgyE13/PYW6ku+qY19ZNJYClUXzgUc8/h
-	 c9d2WErzPC3zdyVm8IA7SZxCmmndh+BTOzvXXha8YlvWjcMTxTYUWp2zKalOq8Q467
-	 hjGn63aTCi2DWOPTiWtV45L+Y/i6QK7e2kF4i/AQbLg8riS7vdPwlVzsUx1VuQ5Ypb
-	 nyRI/JDRgUqXA==
+	b=ly8fo8tVm0I9vz6tH/U6vYCt+/tZTektMeBOExnuVyIh/EKmBVeGLhwFpI2tQULum
+	 uVL1ynEGdJjL7PyOeXwFWQvSCqhuqJgmYzocLxL1zxgnbU0Dvo6F8v7L7lub4met9v
+	 1QBWc0EhV5YJA0b3d7ZhZ1F4W3od9WchLg0QCemBc/iZymYbd4j1ZANCRvuiXDSNf+
+	 DlRI66tKG19MF6dctm45sochuLHR4XBUlBQPJJSNElJ4y8Cxwd+vLfrjRsDsRnz+io
+	 fRHcKlf7ZqGFmZXRxVFGUHQ/8YwDdVYd6lm4umZzXirCXC5Ok0ca77lFO5W6mZ/zF8
+	 u0beROuG8V2oQ==
 From: Damien Le Moal <dlemoal@kernel.org>
 To: linux-pci@vger.kernel.org,
 	Bjorn Helgaas <bhelgaas@google.com>,
@@ -49,9 +49,9 @@ To: linux-pci@vger.kernel.org,
 	Eric Dumazet <edumazet@google.com>,
 	netdev@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 01/28] PCI: msi: Use PCI_IRQ_INTX
-Date: Mon, 25 Mar 2024 16:09:12 +0900
-Message-ID: <20240325070944.3600338-2-dlemoal@kernel.org>
+Subject: [PATCH 13/28] misc: vmci_guest: Use PCI_IRQ_ALL_TYPES
+Date: Mon, 25 Mar 2024 16:09:24 +0900
+Message-ID: <20240325070944.3600338-14-dlemoal@kernel.org>
 X-Mailer: git-send-email 2.44.0
 In-Reply-To: <20240325070944.3600338-1-dlemoal@kernel.org>
 References: <20240325070944.3600338-1-dlemoal@kernel.org>
@@ -63,40 +63,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In pci_alloc_irq_vectors_affinity(), use the macro PCI_IRQ_INTX instead
-of the now deprecated PCI_IRQ_LEGACY macro.
+In vmci_guest_probe_device(), remove the reference to PCI_IRQ_LEGACY by
+using PCI_IRQ_ALL_TYPES instead of an explicit OR of all IRQ types.
 
 Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
 ---
- drivers/pci/msi/api.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/misc/vmw_vmci/vmci_guest.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pci/msi/api.c b/drivers/pci/msi/api.c
-index be679aa5db64..dfba4d6dd535 100644
---- a/drivers/pci/msi/api.c
-+++ b/drivers/pci/msi/api.c
-@@ -213,8 +213,8 @@ EXPORT_SYMBOL(pci_disable_msix);
-  *            * %PCI_IRQ_MSIX      Allow trying MSI-X vector allocations
-  *            * %PCI_IRQ_MSI       Allow trying MSI vector allocations
-  *
-- *            * %PCI_IRQ_LEGACY    Allow trying legacy INTx interrupts, if
-- *              and only if @min_vecs == 1
-+ *            * %PCI_IRQ_INTX      Allow trying INTx interrupts, if and
-+ *              only if @min_vecs == 1
-  *
-  *            * %PCI_IRQ_AFFINITY  Auto-manage IRQs affinity by spreading
-  *              the vectors around available CPUs
-@@ -279,8 +279,8 @@ int pci_alloc_irq_vectors_affinity(struct pci_dev *dev, unsigned int min_vecs,
- 			return nvecs;
- 	}
- 
--	/* use legacy IRQ if allowed */
--	if (flags & PCI_IRQ_LEGACY) {
-+	/* use INTx IRQ if allowed */
-+	if (flags & PCI_IRQ_INTX) {
- 		if (min_vecs == 1 && dev->irq) {
- 			/*
- 			 * Invoke the affinity spreading logic to ensure that
+diff --git a/drivers/misc/vmw_vmci/vmci_guest.c b/drivers/misc/vmw_vmci/vmci_guest.c
+index 4f8d962bb5b2..c61e8953511d 100644
+--- a/drivers/misc/vmw_vmci/vmci_guest.c
++++ b/drivers/misc/vmw_vmci/vmci_guest.c
+@@ -787,8 +787,7 @@ static int vmci_guest_probe_device(struct pci_dev *pdev,
+ 	error = pci_alloc_irq_vectors(pdev, num_irq_vectors, num_irq_vectors,
+ 				      PCI_IRQ_MSIX);
+ 	if (error < 0) {
+-		error = pci_alloc_irq_vectors(pdev, 1, 1,
+-				PCI_IRQ_MSIX | PCI_IRQ_MSI | PCI_IRQ_LEGACY);
++		error = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_ALL_TYPES);
+ 		if (error < 0)
+ 			goto err_unsubscribe_event;
+ 	} else {
 -- 
 2.44.0
 
