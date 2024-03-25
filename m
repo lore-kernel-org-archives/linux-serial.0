@@ -1,35 +1,60 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4FC21448C5;
-	Mon, 25 Mar 2024 02:13:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C7EE180A85;
+	Mon, 25 Mar 2024 07:10:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711332790; cv=none; b=t6GriCTwVChT//VbpLOuyjwDLji0uRD7+A2zT+2+RH1T1Y2UMmUgs/ZP2l0Mwp4e2xeuFbOdKrsFvZJN73iLtFD4ZgpzXDUJLfSxxE/AkqZDUziN409ca1r/OdL9hzYDdBRXPdPq7jeEucl66Cf1368FxalqI4RGZai+/qNj/ng=
+	t=1711350619; cv=none; b=KfYVTQs9WrjHo85Ms9SovIsJ997v8bZL4nXytIUPaUgr1stJ+5tRIUa4FKDfiS+LHP1mjSvkEu+GxzWux9D//j52Mp7vCjqCdqwD9xjIkem8DnXDqyv9o8wgpfRZuPrL3ZlQ3zj/CVASOTufYUmdRhWmnxMGfCXZ1Bf1vL55e1A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711332790; c=relaxed/simple;
-	bh=5wz/G6BX39xadTRq0vFfWqYZDZhSRjYlx0kuuawdnUY=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=RTqZ+N+YfszdbYr0Jv7vsSMJscmQa5uQ6l8VSSkHhwAP0S2Jy/sPwgt4qMFczCXEpzeZwDa7joQg/lTLhLgGIcQK37hWSuH2Kh7R5Uy9MCP2ZCx9XmukLEaoTImoCqJikbHMAmOrqO8MXyU4yVkcIcCb/z8bA0QzF0azKKrVMy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bf4PA4AJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711350619; c=relaxed/simple;
+	bh=pDklQ4HEyATJrG52s500i9rhBWGMsdxljxs2zv1Sn9M=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=DUYqjmAnKF+cBB561dGFaK+t1TDFKl2FYXUYTxKWrW/rEu2WiqgfYfcURMSVLihoEuFPZaOACESFmq4InNMfqQc4Fi+NMIsXslpnqDFFop6U0tIjZ61Ts0ew/YDoH42O4eWErsFaIV9jpzjY5isUhkQOn9IP+FKg/nsgMuZLm20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sDYAW4so; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bf4PA4AJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C2673C3278B;
-	Mon, 25 Mar 2024 02:13:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sDYAW4so"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA54EC43390;
+	Mon, 25 Mar 2024 07:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711332787;
-	bh=5wz/G6BX39xadTRq0vFfWqYZDZhSRjYlx0kuuawdnUY=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=bf4PA4AJ6lFivhLpGcubQoBLV61qpUeFb5CEvCqEnG+WnZVpdTtq1TuutfbOOTnK8
-	 KUbnm61riFCmr43khH6NJi+4O1d75Ldpm05eeetUHo1B1Wi5vnJupujdw46EbtGMoy
-	 guqa2zX2JJk5Oa+qv/Oa+zEqgpaecqGNAMw04MelD+IQ2unKuY71gotTmBa86UnRwW
-	 nytA2WM5NsQWo/cY8jD0IUH2Bh9n9HuqLCO+m9hyxg0EyTrdg7l7WlHXTeT9aqwg9v
-	 uuNMse2kFdLrJV17V0aMiyoJc+5+ucfT+2/0JNrcXygvVB5vKNmDS3mjGr2f763QO+
-	 WAOcXVm6tj7Rw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B4277D2D0E4;
-	Mon, 25 Mar 2024 02:13:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20201202; t=1711350619;
+	bh=pDklQ4HEyATJrG52s500i9rhBWGMsdxljxs2zv1Sn9M=;
+	h=From:To:Subject:Date:In-Reply-To:References:From;
+	b=sDYAW4so/yK4aW9I/T/TZScfACA4ErlTn9EzeRTzT0MnxaSVQ18Q/wo608EexZikE
+	 sQl8FfiCyoVhNcD8xHTbECjttNmWw0ciorZ3xFGviCMbgRLOJ00DpYRWlTMJxOtZZg
+	 s5SU6uyY/WGt9G9bB84oySLBvK+/u2GZTVC3oMJhjM7Ob8VXW5JgVt2V7KHslRw3Oh
+	 gL35PqaFFZT1tkoAczGgg/W48noHxc978hv4oL6Fxz0NJ+OHry+tDI+RQsYgB4eL/x
+	 FfsjGiAWqZV/KEgVhCfLsTpJ+PJrw7cwRmdpFSka6ElQHDgnw5eikTNurbY+d3DDsq
+	 XYcVv/bRWkvlQ==
+From: Damien Le Moal <dlemoal@kernel.org>
+To: linux-pci@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Manivannan Sadhasivami <manivannan.sadhasivam@linaro.org>,
+	linux-scsi@vger.kernel.org,
+	"Martin K . Petersen" <martin.petersen@oracle.com>,
+	Jaroslav Kysela <perex@perex.cz>,
+	linux-sound@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-usb@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Hans de Goede <hdegoede@redhat.com>,
+	platform-driver-x86@vger.kernel.org,
+	ntb@lists.linux.dev,
+	Lee Jones <lee@kernel.org>,
+	David Airlie <airlied@gmail.com>,
+	amd-gfx@lists.freedesktop.org,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	linux-rdma@vger.kernel.org,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 08/28] ntb: Use PCI_IRQ_INTX
+Date: Mon, 25 Mar 2024 16:09:19 +0900
+Message-ID: <20240325070944.3600338-9-dlemoal@kernel.org>
+X-Mailer: git-send-email 2.44.0
+In-Reply-To: <20240325070944.3600338-1-dlemoal@kernel.org>
+References: <20240325070944.3600338-1-dlemoal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,54 +62,28 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] treewide,
- serdev: change receive_buf() return type to size_t
-From: patchwork-bot+chrome-platform@kernel.org
-Message-Id: 
- <171133278773.9916.16472744560807510288.git-patchwork-notify@kernel.org>
-Date: Mon, 25 Mar 2024 02:13:07 +0000
-References: <20240122180551.34429-1-francesco@dolcini.it>
-In-Reply-To: <20240122180551.34429-1-francesco@dolcini.it>
-To: Francesco Dolcini <francesco@dolcini.it>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-bluetooth@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- greybus-dev@lists.linaro.org, linux-iio@vger.kernel.org,
- netdev@vger.kernel.org, chrome-platform@lists.linux.dev,
- platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-sound@vger.kernel.org, francesco.dolcini@toradex.com,
- luiz.dentz@gmail.com, johan@kernel.org, elder@kernel.org, jic23@kernel.org,
- lee@kernel.org, kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
- davem@davemloft.net, krzysztof.kozlowski@linaro.org, hdegoede@redhat.com,
- ilpo.jarvinen@linux.intel.com, bleung@chromium.org, tzungbi@kernel.org,
- robh@kernel.org, Jonathan.Cameron@huawei.com
 
-Hello:
+Use the macro PCI_IRQ_INTX instead of the deprecated PCI_IRQ_LEGACY
+macro.
 
-This patch was applied to chrome-platform/linux.git (for-next)
-by Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
+---
+ drivers/ntb/hw/idt/ntb_hw_idt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, 22 Jan 2024 19:05:51 +0100 you wrote:
-> From: Francesco Dolcini <francesco.dolcini@toradex.com>
-> 
-> receive_buf() is called from ttyport_receive_buf() that expects values
-> ">= 0" from serdev_controller_receive_buf(), change its return type from
-> ssize_t to size_t.
-> 
-> The need for this clean-up was noticed while fixing a warning, see
-> commit 94d053942544 ("Bluetooth: btnxpuart: fix recv_buf() return value").
-> Changing the callback prototype to return an unsigned seems the best way
-> to document the API and ensure that is properly used.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] treewide, serdev: change receive_buf() return type to size_t
-    https://git.kernel.org/chrome-platform/c/fed99212acae
-
-You are awesome, thank you!
+diff --git a/drivers/ntb/hw/idt/ntb_hw_idt.c b/drivers/ntb/hw/idt/ntb_hw_idt.c
+index 48823b53ede3..48dfb1a69a77 100644
+--- a/drivers/ntb/hw/idt/ntb_hw_idt.c
++++ b/drivers/ntb/hw/idt/ntb_hw_idt.c
+@@ -2129,7 +2129,7 @@ static int idt_init_isr(struct idt_ntb_dev *ndev)
+ 	int ret;
+ 
+ 	/* Allocate just one interrupt vector for the ISR */
+-	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI | PCI_IRQ_LEGACY);
++	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI | PCI_IRQ_INTX);
+ 	if (ret != 1) {
+ 		dev_err(&pdev->dev, "Failed to allocate IRQ vector");
+ 		return ret;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.44.0
 
