@@ -1,73 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33918174F;
-	Mon, 25 Mar 2024 23:06:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA601BC43;
+	Tue, 26 Mar 2024 00:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711407987; cv=none; b=Z29K7eEwFD8D9Ohg3BbTwPi3/uonv1sd4VSpiOX0NiG+X2J5cC5E2pTG3FS04dqsrvjD9TEsy4aALd/UAQZmy/4UOWM7LX2QUQi1vWaFK2EFl1oiP816I30FVOk1K1N7YaL8bcb4Ic60ipXATPmKPZkh/QKgeURO/KrkAOBSDYM=
+	t=1711414088; cv=none; b=N1qwebkUft3hYKPrEilhHCMRfgpxn3pbrPs/oNsHjFiKF0lanTvFROiKcZ9xRvIc5LuqEq93RvArnARRrgMQKrajwHV3ttPF0fDCz3dl/QHcD/ex/GH4Wiovyj7HhnDtg+VZLSpjyoS4dRxx3RoUwMMMUtO5Z8/lF85TYHwtQ+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711407987; c=relaxed/simple;
-	bh=1QyVL22FJBxcb4t1+dh5JP6zFPMFsBApFX/CuykGQcQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HRMHVPKE1Fd9LSqmSwz8I1rSNnJkX4Wy6WS6K2IDieW1JHO8u/bvy5Zm+5hGyQGE9PP93o/8FqhNcJvlJbFPDmOqumSRoR3PEyq/YDPQHzLxq2hfalYGx5Su+DUMiG6Z9Txgs9OZmct7yg8oTNh/02gudtTvlu6UgUAM7UML6p8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=miVONJQ5; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="miVONJQ5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D81ECC433F1;
-	Mon, 25 Mar 2024 23:06:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711407987;
-	bh=1QyVL22FJBxcb4t1+dh5JP6zFPMFsBApFX/CuykGQcQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=miVONJQ5NXRsG7mtEQGjb5OCHUFlD7yIcjL8Zczot8iH1PlPuzLpzXUWN779YGM8y
-	 sdRSypBm9jXhiqw1IzSFooBJQq5k1wtRXrJIOTx4xbzUnA1RJeHfwPvxzQkJwqjAA2
-	 N6YIqez7RTTZpmbSlWcSMzhmaSXkYG9rvLI4m7dYZcw7TieXzKum/7A5nU+P13vC61
-	 T1cLGk10rXaP0S8Iok04wj1ZA1e/YPTPkHaE8qnOaUkw/8fA7OGzdEbCdysSpVND4U
-	 Gsl75wBe1MjtRVXYky/7xx56/oe9JwwwMEAsu3NP0isHTJVisTQU7YEP34h3oAU2oc
-	 dvb52RefFwqtw==
-Message-ID: <ea5a0baa-64f3-40f8-a775-433eeb0b430e@kernel.org>
-Date: Tue, 26 Mar 2024 08:06:22 +0900
+	s=arc-20240116; t=1711414088; c=relaxed/simple;
+	bh=QkZ6aHYMcf61HU6Zd5zYZ/ekW8uMmtly18b1BNH24nc=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=nJRh855DdmidbFGkX3xKgBVzUghje1OGbxd0EuOcnZqw0sERCyxgc5AUBLRFTIbVnKAQICS6P3X4hr1XmDPYYWbffNJErAa+nbH4FmRFSHd5luV4tF7TgTlLoMMKpg44JoC63KvEKY3ooWD+SWE2TeEfrJBjgaOgS8YdoICBMVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42Q0l5q3009474;
+	Tue, 26 Mar 2024 08:47:05 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX07-IMDC.srv.huawei-3com.com (unknown [10.62.14.16])
+	by mail.maildlp.com (Postfix) with ESMTP id 974262004BBF;
+	Tue, 26 Mar 2024 08:48:52 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX07-IMDC.srv.huawei-3com.com (10.62.14.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Tue, 26 Mar 2024 08:47:05 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Tue, 26 Mar 2024 08:47:05 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+CC: "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "dianders@chromium.org"
+	<dianders@chromium.org>,
+        "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>,
+        "jason.wessel@windriver.com"
+	<jason.wessel@windriver.com>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIFY1XSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUg?=
+ =?gb2312?Q?in_KDB_debugging.?=
+Thread-Topic: [PATCH V5] kdb: Fix the deadlock issue in KDB debugging.
+Thread-Index: AQHafMNGp110DpezqUCtEXSIKJEqHbFIKpkAgAEGDzA=
+Date: Tue, 26 Mar 2024 00:47:05 +0000
+Message-ID: <284dbaad75574bbaaab803b471e8ca6c@h3c.com>
+References: <20240322155818.GD7342@aspen.lan>
+ <20240323014141.3621738-1-liu.yec@h3c.com>
+ <20240325165436.GA485978@aspen.lan>
+In-Reply-To: <20240325165436.GA485978@aspen.lan>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/28] Remove PCI_IRQ_LEGACY
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- Manivannan Sadhasivami <manivannan.sadhasivam@linaro.org>,
- linux-scsi@vger.kernel.org, "Martin K . Petersen"
- <martin.petersen@oracle.com>, Jaroslav Kysela <perex@perex.cz>,
- linux-sound@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, linux-usb@vger.kernel.org,
- linux-serial@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
- platform-driver-x86@vger.kernel.org, ntb@lists.linux.dev,
- Lee Jones <lee@kernel.org>, David Airlie <airlied@gmail.com>,
- amd-gfx@lists.freedesktop.org, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-rdma@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20240325175941.GA1443646@bhelgaas>
-Content-Language: en-US
-From: Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <20240325175941.GA1443646@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42Q0l5q3009474
 
-On 3/26/24 02:59, Bjorn Helgaas wrote:
-> I applied all these to pci/enumeration for v6.10, thanks!
-> 
-> I added acks and reviewed-by and will update if we receive more, and
-> adjusted subject lines to add "... instead of PCI_IRQ_LEGACY" and in
-> some cases to match history of the file.
-
-Thanks Bjorn !
-
--- 
-Damien Le Moal
-Western Digital Research
-
+Pj4gSnVzdCBuZWVkIHRvIHBvc3Rwb25lIHNjaGVkdWxlX3dvcmsgdG8gdGhlIHNsYXZlIENQVSBl
+eGl0aW5nIHRoZSBOTUkgY29udGV4dC4NCj4+DQo+PiBpcnFfd29yayB3aWxsIG9ubHkgcmVzcG9u
+ZCB0byBoYW5kbGUgc2NoZWR1bGVfd29yayBhZnRlciBleGl0aW5nIHRoZSBjdXJyZW50IGludGVy
+cnVwdCBjb250ZXh0Lg0KPj4NCj4+IFdoZW4gdGhlIG1hc3RlciBDUFUgZXhpdHMgdGhlIGludGVy
+cnVwdCBjb250ZXh0LCBvdGhlciBDUFVzIHdpbGwgbmF0dXJhbGx5IGV4aXQgdGhlIE5NSSBjb250
+ZXh0LCBzbyB0aGVyZSB3aWxsIGJlIG5vIGRlYWRsb2NrLg0KPj4NCj4+IEl0IGlzIHRoZSBjYWxs
+IHRvIGlucHV0X3JlZ2lzdGVyX2hhbmRsZXIoKSB0aGF0IGZvcmNlcyB1cyBub3QgdG8gZG8gdGhl
+IHdvcmsgZnJvbSBpcnFfd29yaydzIGhhcmRpcnEgY2FsbGJhY2suDQo+Pg0KPj4gVGhlcmVmb3Jl
+IHNjaGVkdWxlIGFub3RoZXIgd29yayBpbiB0aGUgaXJxX3dvcmsgYW5kIG5vdCBkbyB0aGUgam9i
+IGRpcmVjdGx5Lg0KPg0KPlRoaXMgbG9va3MgbGlrZSBpdCB3YXMgY29weSBhbmQgcGFzdGVkIGZy
+b20gdGhlIGUtbWFpbCB0aHJlYWQgd2l0aG91dCBhbnkgZWRpdGluZyB0byBtYWtlIGl0IG1ha2Ug
+YW55IHNlbnNlLiBJdCBub3QgZXZlbiBmb3JtYXR0ZWQgY29ycmVjdGx5ICh3aGVyZSBhcmUgdGhl
+IGxpbmUgYnJlYWtzPykuDQo+DQo+SG93IGFib3V0Og0KPg0KPldlIGZpeCB0aGUgcHJvYmxlbSBi
+eSB1c2luZyBpcnFfd29yayB0byBjYWxsIHNjaGVkdWxlX3dvcmsoKSBpbnN0ZWFkIG9mIGNhbGxp
+bmcgaXQgZGlyZWN0bHkuIGlycV93b3JrIGlzIGFuIE5NSS1zYWZlIGRlZmVycmVkIHdvcmsgZnJh
+bWV3b3JrIHRoYXQgcGVyZm9ybXMgdGhlIHJlcXVlc3RlZCB3b3JrIGZyb20gYSBoYXJkaXJxIGNv
+bnRleHQgKHVzdWFsbHkgYW4gSVBJIGJ1dCBpdCBjYW4gYmUgdGltZXIgaW50ZXJydXB0IG9uIHNv
+bWUgYXJjaGl0ZWN0dXJlcykuDQo+DQo+Tm90ZSB0aGF0IHdlIHN0aWxsIG5lZWQgdG8gIGEgd29y
+a3F1ZXVlIHNpbmNlIHdlIGNhbm5vdCByZXN5bmMgdGhlIGtleWJvYXJkIHN0YXRlIGZyb20gdGhl
+IGhhcmRpcnEgY29udGV4dCBwcm92aWRlZCBieSBpcnFfd29yay4NCj5UaGF0IG11c3QgYmUgZG9u
+ZSBmcm9tIHRhc2sgY29udGV4dCBmb3IgdGhlIGNhbGxzIGludG8gdGhlIGlucHV0IHN1YnlzdGVt
+LiBIZW5jZSB3ZSBtdXN0IGRlZmVyIHRoZSB3b3JrIHR3aWNlLiBGaXJzdCB0byBzYWZlbHkgc3dp
+dGNoIGZyb20gdGhlIGRlYnVnIHRyYXAgKE5NSS1saWtlIGNvbnRleHQpIHRvIGhhcmRpcnEgYW5k
+IHRoZW4sIHNlY29uZGx5LCB0byBnZXQgZnJvbSBoYXJkaXJxIHRvIHRoZSBzeXN0ZW0gd29ya3F1
+ZXVlLg0KDQpJIGFwb2xvZ2l6ZSBmb3IgbXkgcG9vciB3cml0aW5nIHNraWxscywgeW91ciBhbnN3
+ZXIgaXMgbW9yZSBwcm9mZXNzaW9uYWwgYW5kIGFjY3VyYXRlLiBJIHdpbGwgcmVwbGFjZSB0aGlz
+IHBhcnQgd2l0aCB5b3VyIGRlc2NyaXB0aW9uIGluIHRoZSBWNi4NCg0KDQo=
