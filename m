@@ -1,38 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28BD81CAA2;
-	Tue, 26 Mar 2024 08:23:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCF041292FD;
+	Tue, 26 Mar 2024 08:27:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711441382; cv=none; b=SPSXQA4xe0UeTrK37YmF5QpzOzoaAWwZWx7nZCI34iZ1G0bYHVd3eJ2hdmElUJqaFzWbayMn35cOTelU6Dg+LMERDcmyYrZ3rHJTu2hQgFo73uF3IEsrx+LfVxXL0PxRmXCU1EZdGFjSO9zM6zLeFg6EMD9LeUHKGTOR+tqqirg=
+	t=1711441679; cv=none; b=Bdzz7ITTDEcaqsqKP9gnhj2LJI/uFj7cus5ISTqq9VFtLyJTvElDG+yT4Pgin5FCF8hHCHem8H4H7YdXbkSTLPidqlX+H5OQklfHGfbESNti4HS/TzPrtFDbeqlpUWnCaXSZoZ7eTJMS8y9TXSRxubh/dD8FrL2Of9cRXNstaKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711441382; c=relaxed/simple;
-	bh=hwm0DgownOe+a+wofavFrRbBxRMYeIjoVarruVwkAp8=;
+	s=arc-20240116; t=1711441679; c=relaxed/simple;
+	bh=nQyk3qdNwZ8anxHMwxL1UdJZCo+TRv8Hz9hdRnnLqBk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iBfZezmEoiBnOGv2dwTUnPFb2aOBozS+Ut273fc7liOtYCL4xwwvjHd2k8B52Q5nkxUEKBU1bjJuJmnzNRntLfqw7WCrVLstQbqUH25VyEia1mCuEFcAfw3rPyKIk5pFbdXdn0pHEIttc28bPN1JfAv6V8mFQbQL07JQR9srauM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RJQoui9W; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=gIvGGafcDht630G7qp1qfE8LIp4yhIOGWkOQPGcCvaAu/dZ+VxIMuDbCgsOaL1ZyF0cUrBD+nT7xY8s9bJVMjXqHHj8Qowv20z7xXMBo+IyZYYf2ukw6Zs7QWU+iOzMX8Jl5AmG6j3AZpNY4lDvtoMh8O2kkuzS3uD70pAJJs1M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Iw6U8WjZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RJQoui9W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECBC1C433F1;
-	Tue, 26 Mar 2024 08:23:00 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Iw6U8WjZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8715C43394;
+	Tue, 26 Mar 2024 08:27:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1711441381;
-	bh=hwm0DgownOe+a+wofavFrRbBxRMYeIjoVarruVwkAp8=;
+	s=korg; t=1711441678;
+	bh=nQyk3qdNwZ8anxHMwxL1UdJZCo+TRv8Hz9hdRnnLqBk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RJQoui9Wv8kNVDt2z9iBQZygQxlmX8aSnUITgrc3cyQw4pnhb+7i74VCqYXCe8lJy
-	 qKZwtCfRkdoc+PcDT45tR9DmH8PAr/1CIaBuR5suhR929+L/UJUwSCe01Ri4Yns4B5
-	 QS79pRCAD50jqWIOcKlqq+4Jg6aajCVTkyrriolw=
-Date: Tue, 26 Mar 2024 09:22:57 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: liu.yec@h3c.com
-Cc: daniel.thompson@linaro.org, jirislaby@kernel.org, dianders@chromium.org,
-	jason.wessel@windriver.com, kgdb-bugreport@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH V6] kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <2024032630-croon-consuming-6ef9@gregkh>
-References: <20240325165436.GA485978@aspen.lan>
- <20240326074014.1905023-1-liu.yec@h3c.com>
+	b=Iw6U8WjZi0ZrwwftN3emjcJ/oZOIzjr7swKZOnMNp/4chnUfYm+SEpuiRo28qOLEZ
+	 05RijM8OUNxINXKYuwPEO7Ht/fCvBCqa1KgnTXedu6EYOEENmKvfR1mkZnQy9URTTN
+	 u4AC8W9q5PVErxInCdbfvkZkLUegBAglB4RLcz9Q=
+Date: Tue, 26 Mar 2024 09:27:55 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Damien Le Moal <dlemoal@kernel.org>
+Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+	Manivannan Sadhasivami <manivannan.sadhasivam@linaro.org>,
+	linux-scsi@vger.kernel.org,
+	"Martin K . Petersen" <martin.petersen@oracle.com>,
+	Jaroslav Kysela <perex@perex.cz>, linux-sound@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+	Hans de Goede <hdegoede@redhat.com>,
+	platform-driver-x86@vger.kernel.org, ntb@lists.linux.dev,
+	Lee Jones <lee@kernel.org>, David Airlie <airlied@gmail.com>,
+	amd-gfx@lists.freedesktop.org, Jason Gunthorpe <jgg@ziepe.ca>,
+	linux-rdma@vger.kernel.org,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 13/28] misc: vmci_guest: Use PCI_IRQ_ALL_TYPES
+Message-ID: <2024032646-cosigner-whoopee-cd17@gregkh>
+References: <20240325070944.3600338-1-dlemoal@kernel.org>
+ <20240325070944.3600338-14-dlemoal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,58 +52,13 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240326074014.1905023-1-liu.yec@h3c.com>
+In-Reply-To: <20240325070944.3600338-14-dlemoal@kernel.org>
 
-On Tue, Mar 26, 2024 at 03:40:14PM +0800, liu.yec@h3c.com wrote:
-> Note that we still need to  a workqueue since we cannot resync
-> the keyboard state from the hardirq context provided by irq_work.
-
-I think you are missing a word between "to" and "a", right?
-
-> That must be done from task context for the calls into the input
-> subystem. Hence we must defer the work twice. First to safely
-> switch from the debug trap (NMI-like context) to hardirq and
-> then, secondly, to get from hardirq to the system workqueue.
+On Mon, Mar 25, 2024 at 04:09:24PM +0900, Damien Le Moal wrote:
+> In vmci_guest_probe_device(), remove the reference to PCI_IRQ_LEGACY by
+> using PCI_IRQ_ALL_TYPES instead of an explicit OR of all IRQ types.
 > 
-> Signed-off-by: LiuYe <liu.yeC@h3c.com>
-> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> 
+> Signed-off-by: Damien Le Moal <dlemoal@kernel.org>
 > ---
-> V5 -> V6: Replace with a more professional and accurate answer.
-> V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
-> V3 -> V4: Add changelogs
-> V2 -> V3: Add description information
-> V1 -> V2: using irq_work to solve this properly.
-> ---
-> ---
->  drivers/tty/serial/kgdboc.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 7ce7bb164..161b25ecc 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -22,6 +22,7 @@
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/serial_core.h>
-> +#include <linux/irq_work.h>
->  
->  #define MAX_CONFIG_LEN		40
->  
-> @@ -99,10 +100,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
->  
->  static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
->  
-> +static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-> +{
-> +	schedule_work(&kgdboc_restore_input_work);
 
-As this is a "two stage deferment" or something like that, it should be
-documented in the code exactly why this is needed and what is happening,
-otherwise it looks very odd.
-
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
