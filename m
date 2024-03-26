@@ -1,191 +1,189 @@
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2093.outbound.protection.outlook.com [40.107.114.93])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C212218641;
-	Tue, 26 Mar 2024 08:46:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.114.93
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711442799; cv=fail; b=t8MF4OzkXwgcRTUD0oFJpjd306AV2A1sHrjIn9Kz2xj792FgEHn1/JCebn3nO1ShsTl7Wi0Rygei5nchQghrBA1RUzEbcwNQ5YOyN+WSADfCCGnNXVgGRsATajA8RQtcZ2JX9PqNRcP5evhKXitHquI8FeCYT7yXTbHcce/al/U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711442799; c=relaxed/simple;
-	bh=yFKkm2U23LxfGw4navWaLV7k40sA5Bc1qzvuj9ehaVc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=FOYK/bFLaBYOFLIs4UYoCgdTNi/k7sUD1svWFFK5OErhDVaGm3gr3WlWFYr5IVQ9+SQAvQUsfikiuAemiJEHqw6XF7xJjXRV3l1bYemmk3pPJIx64IJWjXuSbn5tdnX8/1WyfuPZ51CKXYAEWdT9FbCeoJpO9MWxCyCyZDZ3pHQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=Wyro2xNW; arc=fail smtp.client-ip=40.107.114.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="Wyro2xNW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h1pBGOsDjC8NhrqZUlBN9vp3Kr6HwdZTV/k2bUZG6pFuwABo2L1lkxXh+UoMnrToJxtXLh2Jel4s+Lu/SGFNChrBdrf9BIelo0+h2Zc5Do/JCPf/dQhu963gnG7W+LWyS/qinchJG4wHRzYj1T+6j944pT0aKotBonOKTJZjTdhLXZ565LLyYcLUKEHs4sIagAbZizr3saaj1BTRrh9YYi3c+A4pMrdy8WMsKHq1YVFYw/Y7JTf22fF1U/vXb0GOt7KZHEIDRa+l+8333GhEOy9ySWSc0BswPThYbvj8S3OPaE7WphAiHaCmD/26xAFjoFxoZ/nVF1VdBnjQsHnDQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yFKkm2U23LxfGw4navWaLV7k40sA5Bc1qzvuj9ehaVc=;
- b=cyY67waQYAwgG//cTLUR3iVZ7i31YrEU+m+YDtC2W4swBGQjfcOuzl4hQZp1jlFiDG3iB0DGwSicG+cCRSiMY4Wa6J92XTuu/QhyrvzShARtOkp3hu1bx5qm21tXqIIArgLB5JNjxt7FFfMWU6ZeZLy44uWc0f7re7VshnbAo2m/qO8ytOFKGCMaA28sqaOJbMTmMf3qSMeqWE5M1oKuCSbPv0brXQKpbGk2WQ3dZAddyGR/YNBYsi9mURyjisQz2CIME871YKCubx0SGjw/R20l2leCaA6XgrEOPEKWP0cw4eSxSkREVN0rBVzL9iVtYNcTorkX7JqYrONWjZduiw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yFKkm2U23LxfGw4navWaLV7k40sA5Bc1qzvuj9ehaVc=;
- b=Wyro2xNW/6n2JhvNSzvvz/w9T1W9GcnYgnS7WuyznROAUcW6GZStbx4yxuwuGEwm+HBFO5DRgy+obXQzU9WX5Q4lFfAFJkKezosEVq+7EAYrrX60wAiJq6qjo7BI8viTC3/oA89J1tEblKoGSNO65mpJ+8/miRk1ZyMrSaXWuV4=
-Received: from OSBPR01MB1592.jpnprd01.prod.outlook.com (2603:1096:603:6::18)
- by TYCPR01MB7163.jpnprd01.prod.outlook.com (2603:1096:400:f4::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.32; Tue, 26 Mar
- 2024 08:46:32 +0000
-Received: from OSBPR01MB1592.jpnprd01.prod.outlook.com
- ([fe80::b920:d0d0:b0d:af60]) by OSBPR01MB1592.jpnprd01.prod.outlook.com
- ([fe80::b920:d0d0:b0d:af60%5]) with mapi id 15.20.7409.031; Tue, 26 Mar 2024
- 08:46:32 +0000
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-CC: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
-	<linux-renesas-soc@vger.kernel.org>, Fabrizio Castro
-	<fabrizio.castro.jz@renesas.com>, Prabhakar Mahadev Lad
-	<prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: RE: [PATCH v4 2/5] dt-bindings: serial: renesas,scif: Validate
- 'interrupts' and 'interrupt-names'
-Thread-Topic: [PATCH v4 2/5] dt-bindings: serial: renesas,scif: Validate
- 'interrupts' and 'interrupt-names'
-Thread-Index: AQHafGepLpCbH9nzEkaXOHWLeIChIbFIp7LwgAEO0QCAAAQjYA==
-Date: Tue, 26 Mar 2024 08:46:32 +0000
-Message-ID:
- <OSBPR01MB15924978EADEACA98A17FE1286352@OSBPR01MB1592.jpnprd01.prod.outlook.com>
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20240322144355.878930-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <OSAPR01MB15871221D42B6CEAA08168C386362@OSAPR01MB1587.jpnprd01.prod.outlook.com>
- <CA+V-a8sL9+ZCdWtqrFn9KF4f+jXJ5BBSqOkSCfAAe-LSLJxF0A@mail.gmail.com>
-In-Reply-To:
- <CA+V-a8sL9+ZCdWtqrFn9KF4f+jXJ5BBSqOkSCfAAe-LSLJxF0A@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OSBPR01MB1592:EE_|TYCPR01MB7163:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- GIYFUGbxm81Q1jmf3Nrk/cDrhB4DwYRHtHsmIrBgVOI5rkiuR1RY45wvpiyeS8z/DOl80Mk4R2u6WM7q4ise+ydrO7XKGSwGAoRy+8Evx8DSUWY3G4clNzcLFNkFqw+mhGtm+yRsZZ4kFvVE5dmUmFEAsqK90BSfuxnIdw6lP4uRgzD/dkWLrB7BYscTOP5JGyBsFH/2NS2tiPikYO3ul/GtXOq0SgnPEJm/QRPsJ3p5sZzSR/Ie3ZoPCVRv8exDHxfLNq5wyKmFUEBykbnXf5evnmOqptC+4Qz5fNLgzbtJMQQwxFaYo+0eo6TEa9H4NNmUyMnXFSfGLIoRHWebVR17qOpvXX6QtA6ciSaDkDUhNfxZMFd9BRSKaiY3FYdogs/VFXobjC6yOE8FOBxdemDQLUHLs0dQ4P1a1sC8WZ7XbBkUgajEwcisUPeDgiyTzlJXA8eZ+VAJWa9XwPyYf/3+XlPVxd+22wCEpJWdWqU2tYx//mb8twTtgDzUfSQtutatJrYxM2jlwQ+0lUEzfAka26LiOMChrQpLEymGXKitcWAsox4VnSXByMoRuvpQH/iKSIlzd709ZWy5dARA+8mG9SyZRp3aYUJBgHyaazphkmN5yftHOchYaFtjfDuJv5RX5Mp5tm1rfDiKvREoU/yhs58l5YpF4+pvkdNMSsI=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB1592.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(7416005)(366007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?TzVUVG02UmZPYlBZWXVDekxvYmtqWUJkV0pMQXF6RGQxaFJQK1JHaDRhRy81?=
- =?utf-8?B?SExaaDJKVjlaaStIdmNIdTFrZmJTSUZUbFRoRTQ0c1dYc2tKYXBEcCt6TXJ3?=
- =?utf-8?B?bjk1ajdhU3BuSDBvc1VwVEFGZzdMdHovT21KbGVMaXVlTVZLQmtFUHUvU2sw?=
- =?utf-8?B?eDhJaTFVK1ZPQ0tPb3g3c21LRHdNbHlmamNkTjJLblFaMHRhL2lOcDYxcm5I?=
- =?utf-8?B?VWZ1NzRLUEd0Q3NlUGRackdMdWptcy9sbXpZOW5YZURZcTZ6dEMwV1ZCa0NC?=
- =?utf-8?B?eXlCWCtGMUc3M2ppRzRTMFF0UEMzMjJHNm1yOGhCeG8yQUc3TG12SnBqdFJt?=
- =?utf-8?B?dWhHSUVYWFRmYk1sLzBtTW4rTE55WVVkN25Xa09nbVFjNUhodHVsUUNtUzN3?=
- =?utf-8?B?WVdVeUlwbHZqNkZ5ZUxvV3hheW9NRHZaZlZaM2tkNzhNNk1UUk5FMkdmOHlT?=
- =?utf-8?B?Z0lFam9jUDErUE5KenFRRFVMOTVXWm5JRkM5c2tZU29YbzNTZmZlWElsMzgv?=
- =?utf-8?B?bEsxRjZkUEVxT3VYSjlqLzhJV1VFUXNkNS9tTCtidk5vajd3Q1A0bWcvN2pC?=
- =?utf-8?B?VUhFa0dBdUwva2dPRHptQTJqZG5yTmZxeEJYTlRBQ1VGNHdrZzZWZGY3RzhP?=
- =?utf-8?B?SzJsRWE0Zzc1N3VaRUI0QXlsM1FBb2hkaG9WbEp5WHJQK1Q1eE5VeHFseVla?=
- =?utf-8?B?TUVSWHdsNzhUMGdBR0gvdTVKaHBOU2lYK3I1SUVHVi9OYkdHd3FBbmxibzFF?=
- =?utf-8?B?ZFFuWFZPd0tESjJVODMwRytUeU1vZm1CaFB1RDlzTmY3dTlpZDNMcHVJc3lk?=
- =?utf-8?B?U1NQQXM1Q0w5blFjaGlQak96emdMRVV1UTh6OFdqckllQisydkxOd2NxSHRF?=
- =?utf-8?B?MTRZUTBnemNzSDFmdysySjZhVkFWaHNUeWR2di9wWmNFeHdDV3hOZE54QTNZ?=
- =?utf-8?B?NGNnQ0Ftb1J2QWFhT28zeG9GUm9yVWFYeVQ1USs1NFNrYXlMKzUxbnB2S3hw?=
- =?utf-8?B?QVhmMytCdWNsMGJpYlJIdjBrb3Z5d3h1WUxOdjcxZnBab3Zzemk1ak5BU0cv?=
- =?utf-8?B?ZTdIQktFeHRWM0h5emVZMk1VNDQzYXlNUVZqQnoyQlFQbFdob2dFUUJlckNu?=
- =?utf-8?B?TWp4TlhvZkRKTk1zdXpDWmN1NDRKZVVLVXNDYmJDV2d4WjQ0WUtBbmVxOXlw?=
- =?utf-8?B?akF0MHNPQUFpaUY4V2pEeEloWDgyT2VOZUo4TVlEL0lpSEJUa2ZNVFJPUFZT?=
- =?utf-8?B?Wjc1cCtuempIbUFyajc4ZVF2Ync5aSszdlorVnBmTjJid2RxNUFSdHpUVWFE?=
- =?utf-8?B?bENoVWZ2SlVLWlF5ODhwdDJyUVVQa0tFUlpYRkhCblpMVnJMdk8rcWpBTmFF?=
- =?utf-8?B?S3VJSC9OOE13YU5vSmpQSGQ0T1JydUhiRDk4UUUyOFBDY3l5Qm9SQ05MZE91?=
- =?utf-8?B?V2l0YXRsWlhoOWNQQ1JBZVF5R25ranVkZzB6R09RQnFVM3FXWG5LN2pZbzF0?=
- =?utf-8?B?SXpFTzlzVnJiQnRMV09EaHNmYkRNcmVoTmpaSzUrOWdlVDkzeHNxUjJSVGlO?=
- =?utf-8?B?OWlEaC9SdkQxejlDUjBWanI2TVRHSmFvcVFwc2JIQUh3TDlycU01S1Y5cW9H?=
- =?utf-8?B?V0xIVGIvUWpZYUZva2F4bVV5RnhNQWxqMXZYRVlZbzF4RWdoRzA2dmtiN3Za?=
- =?utf-8?B?bTZjdmJhSFhzREY5c1RpNGRHeWswNkdVRkhhWEc1c2VreEYxcGd6Q21ONVVG?=
- =?utf-8?B?ZzgyQVlKOHg0TVVxVEhaSFppR0lBZUszbWdpSXRDbmZmeGZ2ckkwQXByTWJs?=
- =?utf-8?B?MkZreHJyRGtOd0ZXUDJFQW1xbXlnclg0SE5jSXNuWmhJZFdudEdXR3I2c1pR?=
- =?utf-8?B?ZTEwdmFPUFBSQkpjbWUvelBEOVp6M1R5a2hvejJ2WXFGSDV1WW9zNXNSMm9k?=
- =?utf-8?B?YWl5VmFVMWFIdFhieHl2d2Q1OU54bWI2R01ZMlh6TnpKV0xJajdKOEpvUjdS?=
- =?utf-8?B?REYzV1BCdGtNTzlpanNPU2tQUVNMV1ZGcmNJekdUdkkrSDFYQVRjc0trcnZk?=
- =?utf-8?B?SGZENWE4UWtPM0pTcXV0THhmMXB0V1ZiYW10SW5GMW5HUHBCVHlSbERxTkpo?=
- =?utf-8?B?YlVqZUZKang1VjlEU250c3FPWGtHWldnemF6eHkwQmtCaVJ0VVVzY2p3SVI5?=
- =?utf-8?B?cWc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0861012E71;
+	Tue, 26 Mar 2024 08:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711443319; cv=none; b=GmqBIzSEPirbF72ie9yFY6lj4VkQMC+ll8UlNA3N2iARKVYCYoDetFMpgEyr2p1I5IrHo58d2haaDZSw1EDsWUdmPkX04XN2oWRn8ixSvS3QQy6M9y6g5bBB67+2nzs7uy99yKLd26ffXIwdj463EOTosk2GeZEkUwrF7S6iKyk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711443319; c=relaxed/simple;
+	bh=0pMbrfokLkxhCtieTNnDNErMxWAa6xMwMJoC15lnqrM=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=birwm9Bqvp2E/yiaxLgltFgjUzmHES+CmmMHb4bXd9xIdvd8Idi374vzNuslQqAsCi3WjDoT6SHtU5zEAtXfAS70hr5oKS8sAsA1PyFpA6Obd+l3IouZIpdtQioRNl/tsVsyzMH1bhwx0jVLwVZ63Ep97yu1OtGbciX9o0GSpRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 42Q8sCf9085219;
+	Tue, 26 Mar 2024 16:54:13 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
+	by mail.maildlp.com (Postfix) with ESMTP id A074722B369C;
+	Tue, 26 Mar 2024 16:56:02 +0800 (CST)
+Received: from localhost.localdomain (10.114.186.34) by
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Tue, 26 Mar 2024 16:54:14 +0800
+From: <liu.yec@h3c.com>
+To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+CC: <dianders@chromium.org>, <jason.wessel@windriver.com>,
+        <kgdb-bugreport@lists.sourceforge.net>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <liu.yec@h3c.com>,
+        LiuYe <liu.yeC@h3c.com>, Daniel Thompson <daniel.thompson@linaro.org>
+Subject: [PATCH V7] kdb: Fix the deadlock issue in KDB debugging.
+Date: Tue, 26 Mar 2024 16:54:07 +0800
+Message-ID: <20240326085407.1970686-1-liu.yec@h3c.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <2024032630-croon-consuming-6ef9@gregkh>
+References: <2024032630-croon-consuming-6ef9@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSBPR01MB1592.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a6f61ed-cc81-4ef8-d816-08dc4d713cb5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Mar 2024 08:46:32.4435
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8WSho4oGvV6borRPBcmyaa29+2TBsZSQppcld55fa7NAuRKWyzqpkY6COq1rkUcjZFBkIA2joZJpgcrvBKwq6/d1/UUWJ8ritu7tqkLqm40=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB7163
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 42Q8sCf9085219
 
-SGkgUHJhYmhha2FyLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IExh
-ZCwgUHJhYmhha2FyIDxwcmFiaGFrYXIuY3NlbmdnQGdtYWlsLmNvbT4NCj4gU2VudDogVHVlc2Rh
-eSwgTWFyY2ggMjYsIDIwMjQgODoyOSBBTQ0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHY0IDIvNV0g
-ZHQtYmluZGluZ3M6IHNlcmlhbDogcmVuZXNhcyxzY2lmOiBWYWxpZGF0ZSAnaW50ZXJydXB0cycg
-YW5kDQo+ICdpbnRlcnJ1cHQtbmFtZXMnDQo+IA0KPiBIaSBCaWp1LA0KPiANCj4gT24gTW9uLCBN
-YXIgMjUsIDIwMjQgYXQgNDoyMeKAr1BNIEJpanUgRGFzIDxiaWp1LmRhcy5qekBicC5yZW5lc2Fz
-LmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBIaSBQcmFiaGFrYXIsDQo+ID4NCj4gPiA+IC0tLS0tT3Jp
-Z2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPiBGcm9tOiBQcmFiaGFrYXIgPHByYWJoYWthci5jc2Vu
-Z2dAZ21haWwuY29tPg0KPiA+ID4gU2VudDogRnJpZGF5LCBNYXJjaCAyMiwgMjAyNCAyOjQ0IFBN
-DQo+ID4gPiBTdWJqZWN0OiBbUEFUQ0ggdjQgMi81XSBkdC1iaW5kaW5nczogc2VyaWFsOiByZW5l
-c2FzLHNjaWY6IFZhbGlkYXRlDQo+ID4gPiAnaW50ZXJydXB0cycgYW5kICdpbnRlcnJ1cHQtIG5h
-bWVzJw0KPiA+ID4NCj4gPiA+IEZyb206IExhZCBQcmFiaGFrYXIgPHByYWJoYWthci5tYWhhZGV2
-LWxhZC5yakBicC5yZW5lc2FzLmNvbT4NCj4gPiA+DQo+ID4gPiBUaGlzIGNvbW1pdCBhZGRzIHN1
-cHBvcnQgdG8gdmFsaWRhdGUgdGhlICdpbnRlcnJ1cHRzJyBhbmQgJ2ludGVycnVwdC1uYW1lcycN
-Cj4gPiA+IHByb3BlcnRpZXMgZm9yIGV2ZXJ5IHN1cHBvcnRlZCBTb0MuIFRoaXMgZW5zdXJlcyBw
-cm9wZXIgaGFuZGxpbmcgYW5kDQo+ID4gPiBjb25maWd1cmF0aW9uIG9mIGludGVycnVwdC0gcmVs
-YXRlZCBwcm9wZXJ0aWVzIGFjcm9zcyBzdXBwb3J0ZWQgcGxhdGZvcm1zLg0KPiA+ID4NCj4gPiA+
-IFNpZ25lZC1vZmYtYnk6IExhZCBQcmFiaGFrYXINCj4gPiA+IDxwcmFiaGFrYXIubWFoYWRldi1s
-YWQucmpAYnAucmVuZXNhcy5jb20+DQo+ID4gPiBSZXZpZXdlZC1ieTogR2VlcnQgVXl0dGVyaG9l
-dmVuIDxnZWVydCtyZW5lc2FzQGdsaWRlci5iZT4NCj4gPiA+IC0tLQ0KPiA+ID4gdjMtPnY0DQo+
-ID4gPiAtIFJldmVydGVkIGJhY2sgdG8gdjIgdmVyc2lvbiBvZiB0aGUgcGF0Y2guDQo+ID4gPiAt
-IFVzZWQgc3VnZ2VzdGlvbiBmcm9tIEtyenlzenRvZiBmb3IgaW50ZXJydXB0cw0KPiA+ID4gLSBS
-ZXN0b3JlZCBSQiB0YWcgZnJvbSBHZWVydA0KPiA+ID4NCj4gPiA+IHYyLT52Mw0KPiA+ID4gLSBM
-aXN0ZWQgaW50ZXJydXB0cyBhbmQgaW50ZXJydXB0LW5hbWVzIGZvciBldmVyeSBTb0MgaW4gaWYg
-Y2hlY2sNCj4gPiA+IC0tLQ0KPiA+ID4gIC4uLi9iaW5kaW5ncy9zZXJpYWwvcmVuZXNhcyxzY2lm
-LnlhbWwgICAgICAgICB8IDczICsrKysrKysrKysrKysrLS0tLS0NCj4gPiA+ICAxIGZpbGUgY2hh
-bmdlZCwgNTUgaW5zZXJ0aW9ucygrKSwgMTggZGVsZXRpb25zKC0pDQo+ID4gPg0KPiA+ID4gZGlm
-ZiAtLWdpdA0KPiA+ID4gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mvc2VyaWFs
-L3JlbmVzYXMsc2NpZi55YW1sDQo+ID4gPiBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
-aW5ncy9zZXJpYWwvcmVuZXNhcyxzY2lmLnlhbWwNCj4gPiA+IGluZGV4IGFmNzJjMzQyMDQ1My4u
-ZWIyYWE1ZTc1ZTAyIDEwMDY0NA0KPiA+ID4gLS0tIGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVl
-L2JpbmRpbmdzL3NlcmlhbC9yZW5lc2FzLHNjaWYueWFtbA0KPiA+ID4gKysrIGIvRG9jdW1lbnRh
-dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3NlcmlhbC9yZW5lc2FzLHNjaWYueWFtbA0KPiA+ID4g
-QEAgLTg2LDExICs4Niw2IEBAIHByb3BlcnRpZXM6DQo+ID4gPiAgICAgIG9uZU9mOg0KPiA+ID4g
-ICAgICAgIC0gaXRlbXM6DQo+ID4gPiAgICAgICAgICAgIC0gZGVzY3JpcHRpb246IEEgY29tYmlu
-ZWQgaW50ZXJydXB0DQo+ID4gPiAtICAgICAgLSBpdGVtczoNCj4gPiA+IC0gICAgICAgICAgLSBk
-ZXNjcmlwdGlvbjogRXJyb3IgaW50ZXJydXB0DQo+ID4gPiAtICAgICAgICAgIC0gZGVzY3JpcHRp
-b246IFJlY2VpdmUgYnVmZmVyIGZ1bGwgaW50ZXJydXB0DQo+ID4gPiAtICAgICAgICAgIC0gZGVz
-Y3JpcHRpb246IFRyYW5zbWl0IGJ1ZmZlciBlbXB0eSBpbnRlcnJ1cHQNCj4gPiA+IC0gICAgICAg
-ICAgLSBkZXNjcmlwdGlvbjogQnJlYWsgaW50ZXJydXB0DQo+ID4gPiAgICAgICAgLSBpdGVtczoN
-Cj4gPiA+ICAgICAgICAgICAgLSBkZXNjcmlwdGlvbjogRXJyb3IgaW50ZXJydXB0DQo+ID4gPiAg
-ICAgICAgICAgIC0gZGVzY3JpcHRpb246IFJlY2VpdmUgYnVmZmVyIGZ1bGwgaW50ZXJydXB0IEBA
-IC05OCwyMSArOTMsMTcgQEAgcHJvcGVydGllczoNCj4gPiA+ICAgICAgICAgICAgLSBkZXNjcmlw
-dGlvbjogQnJlYWsgaW50ZXJydXB0DQo+ID4gPiAgICAgICAgICAgIC0gZGVzY3JpcHRpb246IERh
-dGEgUmVhZHkgaW50ZXJydXB0DQo+ID4gPiAgICAgICAgICAgIC0gZGVzY3JpcHRpb246IFRyYW5z
-bWl0IEVuZCBpbnRlcnJ1cHQNCj4gPiA+ICsgICAgICAgIG1pbkl0ZW1zOiA0DQo+ID4NCj4gPiBJ
-IHRoaW5rIGhlcmUgbWluSXRlbXMgaXMgMSBhcyBpdCBpcyBlaXRoZXIgMSBvciA0IG9yIDYNCj4g
-Pg0KPiBtaW5JdGVtcyAxIGNhc2UgaXMgYWxyZWFkeSBoYW5kbGVkIGFib3ZlLg0KDQpJSUMsIEFz
-IHBlciB0aGUgYWJvdmUgb25lT2YgbGlzdCwgaXRlbXN7MSwgNCwgNn0gZm9yIG1pbkl0ZW1zIGlz
-IDEuDQoNCkNoZWVycywNCkJpanUNCg==
+From: LiuYe <liu.yeC@h3c.com>
+
+Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
+attempt to use schedule_work() to provoke a keyboard reset when
+transitioning out of the debugger and back to normal operation.
+This can cause deadlock because schedule_work() is not NMI-safe.
+
+The stack trace below shows an example of the problem. In this
+case the master cpu is not running from NMI but it has parked
+the slave CPUs using an NMI and the parked CPUs is holding
+spinlocks needed by schedule_work().
+
+example:
+ BUG: spinlock lockup suspected on CPU#0, namex/10450
+ lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
+ ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
+ ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
+Call Trace:
+ [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
+ [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
+ [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
+ [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
+ [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
+ [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
+ [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
+ [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
+ [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
+ [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
+ CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
+ Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
+  0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
+  ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
+  000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
+  Call Trace:
+  <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
+  [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
+  [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
+  [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
+  [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
+  [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
+  [<ffffffff8107b371>] insert_work+0x81/0xc0
+  [<ffffffff8107b4e5>] __queue_work+0x135/0x390
+  [<ffffffff8107b786>] queue_work_on+0x46/0x90
+  [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
+  [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
+  [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
+  [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
+  [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
+  [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
+  [<ffffffff8108304d>] notify_die+0x3d/0x50
+  [<ffffffff81017219>] do_int3+0x89/0x120
+  [<ffffffff81480fb4>] int3+0x44/0x80
+
+We fix the problem by using irq_work to call schedule_work()
+instead of calling it directly. irq_work is an NMI-safe deferred work
+framework that performs the requested work from a hardirq context
+(usually an IPI but it can be timer interrupt on some
+architectures).
+
+Note that we still need to a workqueue since we cannot resync
+the keyboard state from the hardirq context provided by irq_work.
+That must be done from task context for the calls into the input
+subystem. Hence we must defer the work twice. First to safely
+switch from the debug trap (NMI-like context) to hardirq and
+then, secondly, to get from hardirq to the system workqueue.
+
+Signed-off-by: LiuYe <liu.yeC@h3c.com>
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+---
+V6 -> V7: Add comments in the code.
+V5 -> V6: Replace with a more professional and accurate answer.
+V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
+V3 -> V4: Add changelogs
+V2 -> V3: Add description information
+V1 -> V2: using irq_work to solve this properly.
+---
+---
+ drivers/tty/serial/kgdboc.c | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7ce7bb164..750ed66d2 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -22,6 +22,7 @@
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_core.h>
++#include <linux/irq_work.h>
+ 
+ #define MAX_CONFIG_LEN		40
+ 
+@@ -98,11 +99,29 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
+ }
+ 
+ static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
++/*
++ * We fix the problem by using irq_work to call schedule_work()
++ * instead of calling it directly. irq_work is an NMI-safe deferred work
++ * framework that performs the requested work from a hardirq context
++ * (usually an IPI but it can be timer interrupt on some
++ * architectures). Note that we still need to a workqueue since we cannot resync
++ * the keyboard state from the hardirq context provided by irq_work.
++ * That must be done from task context for the calls into the input
++ * subystem. Hence we must defer the work twice. First to safely
++ * switch from the debug trap (NMI-like context) to hardirq and
++ * then, secondly, to get from hardirq to the system workqueue.
++ */
++static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
++{
++	schedule_work(&kgdboc_restore_input_work);
++}
++
++static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
+ 
+ static void kgdboc_restore_input(void)
+ {
+ 	if (likely(system_state == SYSTEM_RUNNING))
+-		schedule_work(&kgdboc_restore_input_work);
++		irq_work_queue(&kgdboc_restore_input_irq_work);
+ }
+ 
+ static int kgdboc_register_kbd(char **cptr)
+@@ -133,6 +152,7 @@ static void kgdboc_unregister_kbd(void)
+ 			i--;
+ 		}
+ 	}
++	irq_work_sync(&kgdboc_restore_input_irq_work);
+ 	flush_work(&kgdboc_restore_input_work);
+ }
+ #else /* ! CONFIG_KDB_KEYBOARD */
+-- 
+2.25.1
+
