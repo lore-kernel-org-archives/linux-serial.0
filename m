@@ -1,72 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10C7D13A876;
-	Wed, 27 Mar 2024 13:12:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3F4A12E1CA;
+	Wed, 27 Mar 2024 13:36:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711545162; cv=none; b=t7rlkWBfs/7HCZLYdIWbqq8h3NnyjsqMEnsmndOwyM8ttml4mVy16NN3+KJrPGubxfBVAsoCMLUL0x2mUfh2tR6/MaCOaaPyPG+V2KwIF0fWfKUFyfaK1rlP96cZJtMGvO5wluce2w90ft4ohl7G05rM+5WHYFYCb0mIvTKCxPw=
+	t=1711546578; cv=none; b=ixFUssav1hTeY2Vf1YBJDG19WMCI4Hlsx8WC4sIACAE9j2V+NEKIthr43Zu0GgxcXsX8YSZz13DRAVxtZTncd05NoBuolyqj1YQRMCQmP19nm3LTHX647fshw4G1w2oUbaWCa8i+w9Fh20wUclZvcok89SJvdUjjL2iXwFhD8TY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711545162; c=relaxed/simple;
-	bh=IvPK6ON9KEhuTWpwCUnz/lO5Eb9diKRyDkkg+71RXhY=;
+	s=arc-20240116; t=1711546578; c=relaxed/simple;
+	bh=tvpLVrhz+euw41OHiEC0NwXfQCCLWLqhiMZ7p+2r5iA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YNrcviIReubia/WnP6WNX8nFVX0FKSn2v3v4w3fmRpCiMzgMad3O8s8Qbpd8J0C42/8We58xNedUG8Yl/7UI+/VLhSz7sLO/NF9FVVPXbJpzaMm1e1cEbZGFwjrHNtMQi3uEtgJhkrHvMcAJp7ktAdds0Za9poP0I1dltYQfeag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eW1OVAqp; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=rJXBw7B3G5zX/hiVUtgkZJRoSVSTE3+3Ih8oLw6RtN3/2AaH1UjNRduujPK2S6nLle8K+lBepBtT1Mr84h8/CP/1+PTL5c2ygneIupJ/piNEXwza450+ySXTOqw5BvgJUFnIezv9jnyvTYqoKh7oZy9KmiacFI6eh6pQUWpHGWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aYlHUCf2; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eW1OVAqp"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aYlHUCf2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711545162; x=1743081162;
+  t=1711546577; x=1743082577;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=IvPK6ON9KEhuTWpwCUnz/lO5Eb9diKRyDkkg+71RXhY=;
-  b=eW1OVAqpj8VDc3JWyo9KMAkgkM5M8fuA/Iswt0tCyugz/Xxa1kLCiqPV
-   kQVaOiOPiEmxnmevj+u814TxSR4uhwYpCt4sSxI0ts0FOX6iiK21ZVXRY
-   iibw/R/ZtdNSyl9sOxmviRXitc2lFz1cwkD7tyK28ebw5j6b3WDdaQ39Q
-   bsJuZjqkmmea8L+XA9/OWQtvepIzUB3l1lyL9HeyX+DfuF7PfXBRwCm49
-   emo53gA0Fs2OjqkGEiYsWk31IQGqb9QosMP9BGu3/SsQIY6/YDwWnL/l5
-   jXXqv1XmFTLOmam8UBmmsaRVhDGm2YYHMBxtcCO4c5T5pHZMD+QX1HpLb
+  bh=tvpLVrhz+euw41OHiEC0NwXfQCCLWLqhiMZ7p+2r5iA=;
+  b=aYlHUCf2ccvzjIRwaRSeY6Qv3cL0zaXXsbrPT43AtesfX+CP3JegSCJ+
+   cbe9Sj+1dOCTxF7Fb2gZgD8Xf0O1QLv/cNL4VZLjn9IUJ7ohtQPrsHaXT
+   9uprZ9N13XffnQOxMXlD2AWS+mAaGcchKu//SckpbTAnHqv0kmdvyHkOG
+   Vh9CVTU1kp7DvAkWQtxcfy/IUcYWgWIGM4N/u8uaRF+0tZunESq3MBz47
+   66HVRo3zLE4H61l0DIjTwM0b05WpQMdHu92qoUlg0E04tXdLZYiZHzxEl
+   kAsaxvnOwqx3bphYfQM8HUNBfRoDAAQkthxSpIZKQwWNmGYkI7AecHlmP
    Q==;
-X-CSE-ConnectionGUID: BHCDtHv/Sj2es2we1/f0nQ==
-X-CSE-MsgGUID: txK54sFEQ7mk+wP5EMckgw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="6581471"
-X-IronPort-AV: E=Sophos;i="6.07,158,1708416000"; 
-   d="scan'208";a="6581471"
+X-CSE-ConnectionGUID: JyrwrfKHTxKtcyGN5usIOg==
+X-CSE-MsgGUID: bNthLcESQc2pSMkT2zhuzA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="6834547"
+X-IronPort-AV: E=Sophos;i="6.07,159,1708416000"; 
+   d="scan'208";a="6834547"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:12:41 -0700
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:36:16 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="914912994"
-X-IronPort-AV: E=Sophos;i="6.07,158,1708416000"; 
-   d="scan'208";a="914912994"
+X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="914913420"
+X-IronPort-AV: E=Sophos;i="6.07,159,1708416000"; 
+   d="scan'208";a="914913420"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:12:36 -0700
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:36:11 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rpT4z-0000000GdkI-2zqD;
-	Wed, 27 Mar 2024 15:12:33 +0200
-Date: Wed, 27 Mar 2024 15:12:33 +0200
+	id 1rpTRn-0000000Ge4G-2wfg;
+	Wed, 27 Mar 2024 15:36:07 +0200
+Date: Wed, 27 Mar 2024 15:36:07 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Tony Lindgren <tony@atomide.com>, Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Petr Mladek <pmladek@suse.com>,
 	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Dhruva Gole <d-gole@ti.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Justin Chen <justin.chen@broadcom.com>,
-	Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-	linux-serial@vger.kernel.org, Peter Collingbourne <pcc@google.com>
-Subject: Re: [PATCH printk v2 08/26] printk: nbcon: Implement processing in
- port->lock wrapper
-Message-ID: <ZgQbQaNyIcuKnPqm@smile.fi.intel.com>
-References: <87le6oy9vg.fsf@jogness.linutronix.de>
- <87plvy31hg.fsf@jogness.linutronix.de>
- <20240322062305.GB5132@atomide.com>
- <87r0fwt3z4.fsf@jogness.linutronix.de>
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v7 1/7] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <ZgQgx1uS2ugc-qPi@smile.fi.intel.com>
+References: <20240327110021.59793-1-tony@atomide.com>
+ <20240327110021.59793-2-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,30 +76,46 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87r0fwt3z4.fsf@jogness.linutronix.de>
+In-Reply-To: <20240327110021.59793-2-tony@atomide.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, Mar 27, 2024 at 10:38:15AM +0106, John Ogness wrote:
-> On 2024-03-22, Tony Lindgren <tony@atomide.com> wrote:
-> > * John Ogness <john.ogness@linutronix.de> [240313 09:50]:
-> >> One nice thing that has risen from this is we are starting to see
-> >> exactly what the console lock is needed for. At this point I would say
-> >> its main function is synchronizing boot consoles with real
-> >> drivers. Which means we will not be able to remove the console lock
-> >> until we find a real solution to match boot consoles (which circumvent
-> >> the Linux driver model) with the real drivers.
-> >
-> > Would it help if earlycon handles all the boot consoles?
-> > Then just have the serial driver take over when it probes?
+On Wed, Mar 27, 2024 at 12:59:35PM +0200, Tony Lindgren wrote:
+> Driver subsystems may need to translate the preferred console name to the
+> character device name used. We already do some of this in console_setup()
+> with a few hardcoded names, but that does not scale well.
 > 
-> I think this would be very helpful. And it would also cleanup the boot
-> arguments. For example, we would no longer need the
-> architecture-specific arguments/options (such as "early_printk" and
-> "keep"). These architecture-specific arguments can be really
-> confusing.
+> The console options are parsed early in console_setup(), and the consoles
+> are added with __add_preferred_console(). At this point we don't know much
+> about the character device names and device drivers getting probed.
+> 
+> To allow driver subsystems to set up a preferred console, let's save the
+> kernel command line console options. To add a preferred console from a
+> driver subsystem with optional character device name translation, let's
+> add a new function add_preferred_console_match().
+> 
+> This allows the serial core layer to support console=DEVNAME:0.0 style
+> hardware based addressing in addition to the current console=ttyS0 style
+> naming. And we can start moving console_setup() character device parsing
+> to the driver subsystem specific code.
+> 
+> We use a separate array from the console_cmdline array as the character
+> device name and index may be unknown at the console_setup() time. And
+> eventually there's no need to call __add_preferred_console() until the
+> subsystem is ready to handle the console.
+> 
+> Adding the console name in addition to the character device name, and a
+> flag for an added console, could be added to the struct console_cmdline.
+> And the console_cmdline array handling could be modified accordingly. But
+> that complicates things compared saving the console options, and then
+> adding the consoles when the subsystems handling the consoles are ready.
+> 
+> Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-You may not get rid of earlyprintk as it affects *very* early at boot,
-earlycon is simply not and may not be available at these stages.
+This requires my SoB as well.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 
 -- 
 With Best Regards,
