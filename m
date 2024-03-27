@@ -1,104 +1,244 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B2CB1CA87;
-	Wed, 27 Mar 2024 11:06:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C2B12FF69;
+	Wed, 27 Mar 2024 12:22:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711537580; cv=none; b=Ie/0EdTwjTlr+ZrKNiuEaLWHd0DHmtjC4DAzlCOccT1LHHnKSyggRHjAFBarO9/W2+Q8HLA2cFBTgCXEirtgkCeGpQtBAT+OeI2U4l4I7S3s8XVwhiDMqMOjckpa134XNBuoNt9I4n8xnTSoOhV5005mE7bUTl/3acXwJdnmvcg=
+	t=1711542165; cv=none; b=FOzkLVOMQlfnRBz82LOT4Xg0OdZ8ba5+O0558rCWB9ABsRCTWDaJq0jAuIWGYveMHD5a5YHLFKEjFoR7uoeTekNiJHZF/wRyS0tLIhabb9h3UkR2SGdVhxq/SvYo6pmyRvlisiFD49X0+3o9A/dp59DbJCQArEbmDY0in8mi3AM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711537580; c=relaxed/simple;
-	bh=hZErjMhbMur3G6+yLs7/2PSHAumNUkNnSGgGasOMYD8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=n11SqeeqS1YKfXBJ+CCVb6kEEUxC/+n9z/csT82VZXttD0sG09kRDvcGF/eMX9tL6hRiMb+WwthHS5wE3UXsX602OnxJDJ5RH1YLNsna88KACGTCsMfAqvAlazdfpHSe4cZUodcR0jD9pzsPmCe8z0qWns8sRS+hEZFlACW6cDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=r7A/g2cc; arc=none smtp.client-ip=74.50.62.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+	s=arc-20240116; t=1711542165; c=relaxed/simple;
+	bh=mu1QpX12s8RhnKVIQrgvsQdB1NHlixa0oNaX2v8nA20=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=M4951OvcqwfuveOSTkhL1Up8MmUlIgvH460YTv86UiozqXCbDXB2RTNx/WHNaPLqMBP8rWgnx2nZql3dYsrhAIBFJ23MyRpMrtHUV/kqEGBD5NjP7XhEuXI7LpH04+F2X63odNenrLfkVsxCIAEzOUDHBrXujwQ2/5/8UMh514M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VTSvbQ0k; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="r7A/g2cc"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 5C986604C8;
-	Wed, 27 Mar 2024 11:05:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1711537577;
-	bh=hZErjMhbMur3G6+yLs7/2PSHAumNUkNnSGgGasOMYD8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=r7A/g2ccUWCSqiKzLQs+I7VY2TayELWt2El9JI+6jUY943RhaHZdMz02xhMAjihkJ
-	 ZVtTvGaTcJejjJfM+anyF4yeBOFC1OltUMv+bgbYpa0v2ynvX1kbk1gNIx4LEEWUWd
-	 QI4ceyB2ytp+AZBjdv4h+FlBV58ZbuLxPj6Z4e7W//nZHqeN1siNTGNO8fipPZO4D5
-	 AkAgruKQWGmN0zQMhQJ0p2+eMd1J/30u2kOt00rLkoFqlKh8X6ZpciLbO20HuggUST
-	 wjrpshtGzhzCCEC6+5jAAOiSlKm+6L8mbJuqwbpfVq4EebtJBWTF+QW9KSnQhWEz0y
-	 GJe8AIIOQQDvA==
-From: Tony Lindgren <tony@atomide.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc: "David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VTSvbQ0k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12809C433F1;
+	Wed, 27 Mar 2024 12:22:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711542164;
+	bh=mu1QpX12s8RhnKVIQrgvsQdB1NHlixa0oNaX2v8nA20=;
+	h=From:To:Cc:Subject:Date:From;
+	b=VTSvbQ0kXWPiCslOXElbqkuxzuiFaa9k98wi2wL5MXuCyRexONxLDyngfWYJdfZfW
+	 +50mei+Ye9mKw3B0o551uuXNRnuwgxtUmiHwXlNb68RkwNIyfGFw2MBp2dkKA53PHm
+	 y4sKPZxo7pIGHAHu4izCW7o5RKJgzGbVOEjyBoqDXN2T+zSA36GskPWiWrZcFv52Ae
+	 WRiJlsgKZqdfos4zMEPT0XtJWGKCER1YmpscFjFCkGXDwA0ER7LAMzXY4LOAQH7imV
+	 FXEozY3s61PGrHHUrQeG8703OqJFQnSZOZoeIucF0yGd3koVc+7iMBX1DVdv4UfMgt
+	 KfWyJLkw0q3ag==
+From: Sasha Levin <sashal@kernel.org>
+To: stable@vger.kernel.org,
+	pcc@google.com
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Sebastian Reichel <sre@kernel.org>,
-	linux-doc@vger.kernel.org
-Subject: [PATCH v7 7/7] Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports
-Date: Wed, 27 Mar 2024 12:59:41 +0200
-Message-ID: <20240327110021.59793-8-tony@atomide.com>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240327110021.59793-1-tony@atomide.com>
-References: <20240327110021.59793-1-tony@atomide.com>
+	linux-serial@vger.kernel.org
+Subject: FAILED: Patch "serial: Lock console when calling into driver before registration" failed to apply to 5.4-stable tree
+Date: Wed, 27 Mar 2024 08:22:39 -0400
+Message-ID: <20240327122243.2837897-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Patchwork-Hint: ignore
+X-stable: review
 Content-Transfer-Encoding: 8bit
 
-Document the console option for DEVNAME:0.0 style addressing for serial
-ports.
+The patch below does not apply to the 5.4-stable tree.
+If someone wants it applied there, or to any other stable or longterm
+tree, then please email the backport, including the original git commit
+id to <stable@vger.kernel.org>.
 
-Suggested-by: Sebastian Reichel <sre@kernel.org>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Thanks,
+Sasha
+
+------------------ original commit in Linus's tree ------------------
+
+From 801410b26a0e8b8a16f7915b2b55c9528b69ca87 Mon Sep 17 00:00:00 2001
+From: Peter Collingbourne <pcc@google.com>
+Date: Mon, 4 Mar 2024 13:43:49 -0800
+Subject: [PATCH] serial: Lock console when calling into driver before
+ registration
+
+During the handoff from earlycon to the real console driver, we have
+two separate drivers operating on the same device concurrently. In the
+case of the 8250 driver these concurrent accesses cause problems due
+to the driver's use of banked registers, controlled by LCR.DLAB. It is
+possible for the setup(), config_port(), pm() and set_mctrl() callbacks
+to set DLAB, which can cause the earlycon code that intends to access
+TX to instead access DLL, leading to missed output and corruption on
+the serial line due to unintended modifications to the baud rate.
+
+In particular, for setup() we have:
+
+univ8250_console_setup()
+-> serial8250_console_setup()
+-> uart_set_options()
+-> serial8250_set_termios()
+-> serial8250_do_set_termios()
+-> serial8250_do_set_divisor()
+
+For config_port() we have:
+
+serial8250_config_port()
+-> autoconfig()
+
+For pm() we have:
+
+serial8250_pm()
+-> serial8250_do_pm()
+-> serial8250_set_sleep()
+
+For set_mctrl() we have (for some devices):
+
+serial8250_set_mctrl()
+-> omap8250_set_mctrl()
+-> __omap8250_set_mctrl()
+
+To avoid such problems, let's make it so that the console is locked
+during pre-registration calls to these callbacks, which will prevent
+the earlycon driver from running concurrently.
+
+Remove the partial solution to this problem in the 8250 driver
+that locked the console only during autoconfig_irq(), as this would
+result in a deadlock with the new approach. The console continues
+to be locked during autoconfig_irq() because it can only be called
+through uart_configure_port().
+
+Although this patch introduces more locking than strictly necessary
+(and in particular it also locks during the call to rs485_config()
+which is not affected by this issue as far as I can tell), it follows
+the principle that it is the responsibility of the generic console
+code to manage the earlycon handoff by ensuring that earlycon and real
+console driver code cannot run concurrently, and not the individual
+drivers.
+
+Signed-off-by: Peter Collingbourne <pcc@google.com>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Link: https://linux-review.googlesource.com/id/I7cf8124dcebf8618e6b2ee543fa5b25532de55d8
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20240304214350.501253-1-pcc@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../admin-guide/kernel-parameters.txt         | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/tty/serial/8250/8250_port.c |  6 ------
+ drivers/tty/serial/serial_core.c    | 12 ++++++++++++
+ kernel/printk/printk.c              | 21 ++++++++++++++++++---
+ 3 files changed, 30 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -785,6 +785,25 @@
- 			Documentation/networking/netconsole.rst for an
- 			alternative.
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 336a0bd4d172a..fc9dd5d45295d 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1325,9 +1325,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 		inb_p(ICP);
+ 	}
  
-+		<DEVNAME>:<n>.<n>[,options]
-+			Use the specified serial port on the serial core bus.
-+			The addressing uses DEVNAME of the physical serial port
-+			device, followed by the serial core controller instance,
-+			and the serial port instance. The options are the same
-+			as documented for the ttyS addressing above.
+-	if (uart_console(port))
+-		console_lock();
+-
+ 	/* forget possible initially masked and pending IRQ */
+ 	probe_irq_off(probe_irq_on());
+ 	save_mcr = serial8250_in_MCR(up);
+@@ -1367,9 +1364,6 @@ static void autoconfig_irq(struct uart_8250_port *up)
+ 	if (port->flags & UPF_FOURPORT)
+ 		outb_p(save_ICP, ICP);
+ 
+-	if (uart_console(port))
+-		console_unlock();
+-
+ 	port->irq = (irq > 0) ? irq : 0;
+ }
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d6a58a9e072a1..ff85ebd3a007d 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2608,7 +2608,12 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 			port->type = PORT_UNKNOWN;
+ 			flags |= UART_CONFIG_TYPE;
+ 		}
++		/* Synchronize with possible boot console. */
++		if (uart_console(port))
++			console_lock();
+ 		port->ops->config_port(port, flags);
++		if (uart_console(port))
++			console_unlock();
+ 	}
+ 
+ 	if (port->type != PORT_UNKNOWN) {
+@@ -2616,6 +2621,10 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 
+ 		uart_report_port(drv, port);
+ 
++		/* Synchronize with possible boot console. */
++		if (uart_console(port))
++			console_lock();
 +
-+			The mapping of the serial ports to the tty instances
-+			can be viewed with:
+ 		/* Power up port for set_mctrl() */
+ 		uart_change_pm(state, UART_PM_STATE_ON);
+ 
+@@ -2632,6 +2641,9 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 
+ 		uart_rs485_config(port);
+ 
++		if (uart_console(port))
++			console_unlock();
 +
-+			$ ls -d /sys/bus/serial-base/devices/*:*.*/tty/*
-+			/sys/bus/serial-base/devices/00:04:0.0/tty/ttyS0
+ 		/*
+ 		 * If this driver supports console, and it hasn't been
+ 		 * successfully registered yet, try to re-register it.
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index f2444b581e16c..89f2aa2e1172f 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3263,6 +3263,21 @@ static int __init keep_bootcon_setup(char *str)
+ 
+ early_param("keep_bootcon", keep_bootcon_setup);
+ 
++static int console_call_setup(struct console *newcon, char *options)
++{
++	int err;
 +
-+			In the above example, the console can be addressed with
-+			console=00:04:0.0. Note that a console addressed this
-+			way will only get added when the related device driver
-+			is ready. The use of an earlycon parameter in addition to
-+			the console may be desired for console output early on.
++	if (!newcon->setup)
++		return 0;
 +
- 		uart[8250],io,<addr>[,options]
- 		uart[8250],mmio,<addr>[,options]
- 		uart[8250],mmio16,<addr>[,options]
++	/* Synchronize with possible boot console. */
++	console_lock();
++	err = newcon->setup(newcon, options);
++	console_unlock();
++
++	return err;
++}
++
+ /*
+  * This is called by register_console() to try to match
+  * the newly registered console with any of the ones selected
+@@ -3298,8 +3313,8 @@ static int try_enable_preferred_console(struct console *newcon,
+ 			if (_braille_register_console(newcon, c))
+ 				return 0;
+ 
+-			if (newcon->setup &&
+-			    (err = newcon->setup(newcon, c->options)) != 0)
++			err = console_call_setup(newcon, c->options);
++			if (err)
+ 				return err;
+ 		}
+ 		newcon->flags |= CON_ENABLED;
+@@ -3325,7 +3340,7 @@ static void try_enable_default_console(struct console *newcon)
+ 	if (newcon->index < 0)
+ 		newcon->index = 0;
+ 
+-	if (newcon->setup && newcon->setup(newcon, NULL) != 0)
++	if (console_call_setup(newcon, NULL) != 0)
+ 		return;
+ 
+ 	newcon->flags |= CON_ENABLED;
 -- 
-2.44.0
+2.43.0
+
+
+
+
