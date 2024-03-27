@@ -1,124 +1,136 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3F4A12E1CA;
-	Wed, 27 Mar 2024 13:36:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC621304BF;
+	Wed, 27 Mar 2024 16:08:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711546578; cv=none; b=ixFUssav1hTeY2Vf1YBJDG19WMCI4Hlsx8WC4sIACAE9j2V+NEKIthr43Zu0GgxcXsX8YSZz13DRAVxtZTncd05NoBuolyqj1YQRMCQmP19nm3LTHX647fshw4G1w2oUbaWCa8i+w9Fh20wUclZvcok89SJvdUjjL2iXwFhD8TY=
+	t=1711555696; cv=none; b=ONW3PCo4s0dU3tHUAdfomWb0JCcBcRZ0+zygFH0rm8T36Bd2+chexIGTVtzaTdCHDgYhZEpJbioW+2mniosn8EjOWk1xsMr0ncaDPMfCFrGl/FWbZoGELKHsx1x7Z3dPN0t4nanrqQOTFQlzFez1XXk+aNguruJXjTBOwFoNej0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711546578; c=relaxed/simple;
-	bh=tvpLVrhz+euw41OHiEC0NwXfQCCLWLqhiMZ7p+2r5iA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rJXBw7B3G5zX/hiVUtgkZJRoSVSTE3+3Ih8oLw6RtN3/2AaH1UjNRduujPK2S6nLle8K+lBepBtT1Mr84h8/CP/1+PTL5c2ygneIupJ/piNEXwza450+ySXTOqw5BvgJUFnIezv9jnyvTYqoKh7oZy9KmiacFI6eh6pQUWpHGWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aYlHUCf2; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1711555696; c=relaxed/simple;
+	bh=3J9oWvkrDOBZNCeoIPGbHWUfU8diyk8bQx/Xctp+3Nc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=gtku04tLxaURe3ES8LVeEqMq0YNRlkgNjSXpU6fdACvJAMgq87QA+xg0RODaL37UxSVtGsCTLZXFgbAYZu8h6ouOH/evCVLSdy+eA2JYM45POYZLOmyKnfuQSMSleeeWvqyHFr4K7D047oofDUWfH2NjrRhbKTcjvCD53SoirCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mKSzsCIZ; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aYlHUCf2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711546577; x=1743082577;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tvpLVrhz+euw41OHiEC0NwXfQCCLWLqhiMZ7p+2r5iA=;
-  b=aYlHUCf2ccvzjIRwaRSeY6Qv3cL0zaXXsbrPT43AtesfX+CP3JegSCJ+
-   cbe9Sj+1dOCTxF7Fb2gZgD8Xf0O1QLv/cNL4VZLjn9IUJ7ohtQPrsHaXT
-   9uprZ9N13XffnQOxMXlD2AWS+mAaGcchKu//SckpbTAnHqv0kmdvyHkOG
-   Vh9CVTU1kp7DvAkWQtxcfy/IUcYWgWIGM4N/u8uaRF+0tZunESq3MBz47
-   66HVRo3zLE4H61l0DIjTwM0b05WpQMdHu92qoUlg0E04tXdLZYiZHzxEl
-   kAsaxvnOwqx3bphYfQM8HUNBfRoDAAQkthxSpIZKQwWNmGYkI7AecHlmP
-   Q==;
-X-CSE-ConnectionGUID: JyrwrfKHTxKtcyGN5usIOg==
-X-CSE-MsgGUID: bNthLcESQc2pSMkT2zhuzA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="6834547"
-X-IronPort-AV: E=Sophos;i="6.07,159,1708416000"; 
-   d="scan'208";a="6834547"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:36:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11025"; a="914913420"
-X-IronPort-AV: E=Sophos;i="6.07,159,1708416000"; 
-   d="scan'208";a="914913420"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2024 06:36:11 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rpTRn-0000000Ge4G-2wfg;
-	Wed, 27 Mar 2024 15:36:07 +0200
-Date: Wed, 27 Mar 2024 15:36:07 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Tony Lindgren <tony@atomide.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 1/7] printk: Save console options for
- add_preferred_console_match()
-Message-ID: <ZgQgx1uS2ugc-qPi@smile.fi.intel.com>
-References: <20240327110021.59793-1-tony@atomide.com>
- <20240327110021.59793-2-tony@atomide.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mKSzsCIZ"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-41488e17e1cso21199705e9.0;
+        Wed, 27 Mar 2024 09:08:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1711555693; x=1712160493; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=bT1raRNJeqKOym+LNB+gUSk7/A9iCImFlQwqZliyRIw=;
+        b=mKSzsCIZZtW75FS1vxMQMnzNYam+rlgiCui/9nrqtWsFNcWbKwJ4T4NHg3YwoqYyhV
+         Xo/JB/VXjoWqdKx065hiUeYiFBUauncK/+kB0H/ZYG6AnD/v6x+MhnFSjhJxmWf6fX4B
+         hJUft4lQMUd5f45yL8XHNBlZPw759KzuGQOvyCJOx28xZ3v7e6kGZqQ5miHuWFJzbmZE
+         7C9hiaRhx01DiDm6cT0oaTqHTlegbZWEpT97z8Jd6TjCwqWFydtZNtUZXYXJXc2YIx9T
+         i0WB8dEmQWZhZlbWblKSzxJOVe8ehztdwNc2stXMCjVDDsg7ZGQnNIX++H7vXE1hBlGu
+         Po0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711555693; x=1712160493;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=bT1raRNJeqKOym+LNB+gUSk7/A9iCImFlQwqZliyRIw=;
+        b=uugbDCqBAjG4ZlpsoN6S9IusOxSkv1fiRdyF1GJEzXyh+0EoeO/Cvci1goxsROiXMz
+         UkNWPXEELc24NZkynF2YDv6RJEL59pycupkoJ4uam8qiHadxhTv3ovdBNRONlPFGhLok
+         sZ2W2zQTVph0P3pD+VW0F06At8Rk8PuoDBn+3r59Gen1nGWB4yCfroWCy2KURUAY2yvX
+         3Ra/vNA8bBZMjFKNqnbgnr2SPnOOwMk08np4xQMl/cNZOInS03HfyFbg5tT4N+Gakyte
+         HLRNUB3y1GK1ewMAbn9lRrM3d82pUErwjVXy4GDbceVacH8tQ+R1w6CAtvM3WFQX4Wxl
+         pN8g==
+X-Forwarded-Encrypted: i=1; AJvYcCW6nJaDCqWvcDTkwQ49mPUDFj3wuXF4gs7q9R15/sHfjjYSYdBgXC8XuvuWSROnq7PIfanuTDb08aQNJXKV+Lvdt88sR7NKeiKDBooKnf8cdJ4CrH7tkGbfT3XyqBUQVFwHV2EifdEqU2qBAQ==
+X-Gm-Message-State: AOJu0Yzzr0vcbQKMSfRV7Bj5xVR+pXQb/Q/liFm2n5N55r+bg5AiMhwi
+	WPirPda+96LS8+WHWb5RcV1W/3PsHdkj/yQWZWymIjtnmf/SqEZE
+X-Google-Smtp-Source: AGHT+IEXvy4Ta0nK+BLZfesQlwIb3cRLvbmhAGKfIRDppfcPcRXyU4g++og2mjweWhcQCI94BM3PQw==
+X-Received: by 2002:adf:fd81:0:b0:341:b47f:e45a with SMTP id d1-20020adffd81000000b00341b47fe45amr225786wrr.50.1711555692968;
+        Wed, 27 Mar 2024 09:08:12 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b? ([2a01:e0a:181:90d0:6ce1:d6aa:6a23:353b])
+        by smtp.gmail.com with ESMTPSA id y6-20020a5d4ac6000000b0033ec8739918sm15212344wrs.41.2024.03.27.09.08.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Mar 2024 09:08:12 -0700 (PDT)
+Message-ID: <9f2ec032-20bd-46d0-959c-deeb9a3503ac@gmail.com>
+Date: Wed, 27 Mar 2024 17:08:08 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240327110021.59793-2-tony@atomide.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFT 00/15] tty: serial: switch from circ_buf to kfifo
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+ Alexander Shiyan <shc_work@mail.ru>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Baruch Siach
+ <baruch@tkos.co.il>, Bjorn Andersson <andersson@kernel.org>,
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ "David S. Miller" <davem@davemloft.net>, Fabio Estevam <festevam@gmail.com>,
+ Hammer Hsieh <hammerh0314@gmail.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Chunyan Zhang <zhang.lyra@gmail.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Kevin Hilman <khilman@baylibre.com>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+ Laxman Dewangan <ldewangan@nvidia.com>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@amd.com>,
+ "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
+ =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Peter Korsgaard <jacmet@sunsite.dk>,
+ Richard Genoud <richard.genoud@gmail.com>,
+ Russell King <linux@armlinux.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Shawn Guo <shawnguo@kernel.org>, Stefani Seibold <stefani@seibold.net>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Taichi Sugaya <sugaya.taichi@socionext.com>,
+ Takao Orito <orito.takao@socionext.com>,
+ Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Timur Tabi <timur@kernel.org>,
+ Vineet Gupta <vgupta@kernel.org>
+References: <20240319095315.27624-1-jirislaby@kernel.org>
+From: Richard Genoud <richard.genoud@gmail.com>
+Content-Language: fr-FR
+In-Reply-To: <20240319095315.27624-1-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 27, 2024 at 12:59:35PM +0200, Tony Lindgren wrote:
-> Driver subsystems may need to translate the preferred console name to the
-> character device name used. We already do some of this in console_setup()
-> with a few hardcoded names, but that does not scale well.
+Le 19/03/2024 à 10:52, Jiri Slaby (SUSE) a écrit :
+> This series switches tty serial layer to use kfifo instead of circ_buf.
+> Excerpt from the switching patch:
+> """
+> Switch from struct circ_buf to proper kfifo. kfifo provides much better
+> API, esp. when wrap-around of the buffer needs to be taken into account.
+> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
 > 
-> The console options are parsed early in console_setup(), and the consoles
-> are added with __add_preferred_console(). At this point we don't know much
-> about the character device names and device drivers getting probed.
+> Kfifo API can also fill in scatter-gather DMA structures, so it easier
+> for that use case too. Look at lpuart_dma_tx() for example. Note that
+> not all drivers can be converted to that (like atmel_serial), they
+> handle DMA specially.
 > 
-> To allow driver subsystems to set up a preferred console, let's save the
-> kernel command line console options. To add a preferred console from a
-> driver subsystem with optional character device name translation, let's
-> add a new function add_preferred_console_match().
+> Note that usb-serial uses kfifo for TX for ages.
+> """
 > 
-> This allows the serial core layer to support console=DEVNAME:0.0 style
-> hardware based addressing in addition to the current console=ttyS0 style
-> naming. And we can start moving console_setup() character device parsing
-> to the driver subsystem specific code.
-> 
-> We use a separate array from the console_cmdline array as the character
-> device name and index may be unknown at the console_setup() time. And
-> eventually there's no need to call __add_preferred_console() until the
-> subsystem is ready to handle the console.
-> 
-> Adding the console name in addition to the character device name, and a
-> flag for an added console, could be added to the struct console_cmdline.
-> And the console_cmdline array handling could be modified accordingly. But
-> that complicates things compared saving the console options, and then
-> adding the consoles when the subsystems handling the consoles are ready.
-> 
-> Co-developed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> This is Request for Testing as I cannot test all the changes
+> (obviously). So please test your HW's serial properly.
 
-This requires my SoB as well.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Tested-by: Richard Genoud <richard.genoud@gmail.com> # on at91sam9g20-ek sama5d3_xplained and sama5d2_xplained
