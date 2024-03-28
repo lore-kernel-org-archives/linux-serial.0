@@ -1,176 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44922137C2A;
-	Thu, 28 Mar 2024 16:22:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87EC0374EF
+	for <linux-serial@vger.kernel.org>; Thu, 28 Mar 2024 19:34:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711642933; cv=none; b=jVVIlAuwyQWWEEinjjSusTofrVyvgqwvBuOK9F3gWSOM6beMy1brXQ6XfVPhqhKHYHr1anY/257UwGVpQIAKhdoFVUaS6R47Xzay63q8QzskjMYFLxqcq5+EBJ/ds3aWFpdfYQvKLbRpRo/MZhCo7XKqkz6AzrdGE8BOkSC52hs=
+	t=1711654459; cv=none; b=hKTEgMoutVKTKEAsTqrXuHk/ausZscT7qLj/F+p5zYOxq6KWeLdx1a8gBVAfh/xlp+f9HMrmuSp3juKCq1UYJ5JBmj2lw2BnAaoy3gCNbNcLFLsi+6fA4Dweef/Vcr2Bp/d9IulBGRsE5NrM8BpwP/RTwEhgYPKthPU2v0TNLNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711642933; c=relaxed/simple;
-	bh=bSHvmQ+UWzfHYRyiidyuX1GYmVR6GOA1F/3dAa7M2w4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HUHS513rPp+sUqESfDbF3antICfn1Cn8bM/BuBoB3Jk1iZfZxnq8KbHFedPIlad2FP1Lnoaux4O8QrxjTh62J/jSToZ9NjpemZ4eKo0L/+7a7YoqczfEITNHTL2oVV0hH++2YQ+tyG6bD2k5gD3N82NpNmJAdHwvJDqKwPb88vk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m1jexxr8; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1711654459; c=relaxed/simple;
+	bh=XQ4H6m7tZOjNJqsayCfyl+1h1KKHM5EiiF21zB23LSw=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=jBPT8FiG0d7rSTZn7R9JhLVkTYus+6p1trnNoBOD9+7vWLj+jgnJDmf4rDfa0imlh/OAVYOrUVof5EdZSH2oOmZDu7/TnbCtLlpX4by01NoGtcGykXQBGVPMChVyLCRRryL8zFmmxU9aBrfK4K+IlNe609gCKNq8qxDosBQsxSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=fastcomproducts.com; spf=fail smtp.mailfrom=fastcomproducts.com; dkim=pass (2048-bit key) header.d=fastcomproducts-com.20230601.gappssmtp.com header.i=@fastcomproducts-com.20230601.gappssmtp.com header.b=aJj7mmFE; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=fastcomproducts.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=fastcomproducts.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m1jexxr8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711642931; x=1743178931;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bSHvmQ+UWzfHYRyiidyuX1GYmVR6GOA1F/3dAa7M2w4=;
-  b=m1jexxr8JmG3LN5eJCg5i1ZHqAoKorcJTSiSK3flhydIj9CqmtpTRCH/
-   I/fOKuuK4AlQds16nAA6VP9epp02Qsm8Ty0jnWCn4nSWayAWPUBKMhPD2
-   D1GHC7KSHd5reUeUb/7GK+k3gT1KXR4gQPujE/aQmtjOhugBKg6xTAPZ7
-   8In+RbmSsIxseYJJ9moAdea0PhnDBQ+KT3wPXPSstiKUBPNceGlLI7jl7
-   c7Lv1NIsZd2VbYlKNUbfzmNgT3fZ3NrzDHAA590JW9P14I1lYI6l0kH7v
-   vwJwGXh5odhE3hQ60jwbV148pwvfdbyXgK1y7+eRxi/hUayeUr6e7yD9G
-   g==;
-X-CSE-ConnectionGUID: NYS4uucvTyGUw2CjJ1k00Q==
-X-CSE-MsgGUID: 4ammN5MjQqCTWorUh6kvUQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11027"; a="6936185"
-X-IronPort-AV: E=Sophos;i="6.07,162,1708416000"; 
-   d="scan'208";a="6936185"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 09:22:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11027"; a="914954863"
-X-IronPort-AV: E=Sophos;i="6.07,162,1708416000"; 
-   d="scan'208";a="914954863"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 09:22:08 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1rpsVx-0000000H3ug-45Ul;
-	Thu, 28 Mar 2024 18:22:05 +0200
-Date: Thu, 28 Mar 2024 18:22:05 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Guanbing Huang <albanhuang@outlook.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	lvjianmin@loongson.cn, albanhuang@tencent.com,
-	tombinfan@tencent.com
-Subject: Re: [PATCH v3] serial: 8250_pnp: Support configurable reg shift
- property
-Message-ID: <ZgWZLfKp9fqAHjb8@smile.fi.intel.com>
-References: <SG2PR06MB4953D0E0A40FDAC34FF130C8C93B2@SG2PR06MB4953.apcprd06.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=fastcomproducts-com.20230601.gappssmtp.com header.i=@fastcomproducts-com.20230601.gappssmtp.com header.b="aJj7mmFE"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1e228c12468so2702735ad.1
+        for <linux-serial@vger.kernel.org>; Thu, 28 Mar 2024 12:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastcomproducts-com.20230601.gappssmtp.com; s=20230601; t=1711654456; x=1712259256; darn=vger.kernel.org;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=XQ4H6m7tZOjNJqsayCfyl+1h1KKHM5EiiF21zB23LSw=;
+        b=aJj7mmFEBYUBuqlpM+abBfH1ihe3Qu4XReMi8/MxxPW/+upG/4Vykc0xzw25/drWZR
+         OF7KD+tY8fhUAmiK+hzmnj6kmhkzjUPsB8BElL0PMh8Zq5IGwf8U5+ptW3LnuQ88FYRh
+         j/sC2Iw5PSoR9jXM7qeRC2SUEUv8Wc4MM5rBK0zzC+ozRrsensChNn9SIPZ/G0kmDlqH
+         n/PdHA0TPhAo+uNaUGp5g+XhoHWgw7mnqY952pRk04qH5vkduTZWIHeV3ZXWnG5/1Voo
+         UnttoGbQhVv1lv4Qr7o1fetF4Yzpc2RjrCtICpA9r2g2RT72/pW6RB/v4JfJc/SZfSsA
+         voEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711654456; x=1712259256;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XQ4H6m7tZOjNJqsayCfyl+1h1KKHM5EiiF21zB23LSw=;
+        b=uFM9EZ1i7viy7pHuZRmWcbjpitiQMTVJX3TCKS2hRlEzBUTw9HLRz7guWcWSog2KGY
+         NY8Y1BMkrpGkS2ZYeOpRj4PDfTFKykJVwDpo9Szke+JQ/FzYPlvLMpWgNzJ3TEKvos3V
+         sim1e0tBWAh0EJur9pcxI2xoLLx+c/ERpGPKhipEwavjS/Er61lfjvIMpJFGyggT2nuG
+         MqeKgLF2tZvhpwGRJ63/qLbSE89IqGPPHcyXPDwjaNURVACVbF8GTVRZhD8uJ2wnTFX9
+         Xw7FEitNxef3ccAlgWqzfqPE4eAhcxbDiCBO7cZeykA6BCCl1NFySH1nc8bDEI2f66SR
+         w8Lg==
+X-Gm-Message-State: AOJu0Yzr8+7RWB3wQgrSAaaYWjjoXmXW4/rKFCtyWXXcYLnxSnzuWydx
+	QE3ddO5GBNeSF/7G3NS8h2DlKzV3mPvnI/YuHXmCT0daw0nPETsWYUOuxpx5N5lvOKdNdDWhUE2
+	UhNkOVwI9f6ZAJrzyDEB/fcX0O99MtTqc2uJJ1JenFsZvXyZCPQ==
+X-Google-Smtp-Source: AGHT+IH5NIUTIQ/dfG6GsP8iNmkX14fihxZF+GlNH9uU97gZP3Y9cTYoCXNI697D30nMOirkAFO1x6yvVIUOqDvaRfc=
+X-Received: by 2002:a17:902:f54a:b0:1e0:aca5:fd24 with SMTP id
+ h10-20020a170902f54a00b001e0aca5fd24mr444300plf.24.1711654456464; Thu, 28 Mar
+ 2024 12:34:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SG2PR06MB4953D0E0A40FDAC34FF130C8C93B2@SG2PR06MB4953.apcprd06.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+From: Joshua Droney <josh@fastcomproducts.com>
+Date: Thu, 28 Mar 2024 14:34:10 -0500
+Message-ID: <CAJqSBBNc5mPcKfFSH2jXnjp9PB6fQGWN0vB9JPKHENogUw-D+A@mail.gmail.com>
+Subject: Incorrect UART in /tty/serial/8250
+To: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Mar 28, 2024 at 11:45:29AM +0800, Guanbing Huang wrote:
-> From: Guanbing Huang <albanhuang@tencent.com>
-> 
-> The 16550a serial port based on the ACPI table requires obtaining the
-> reg-shift attribute. In the ACPI scenario, If the reg-shift property
-> is not configured like in DTS, the 16550a serial driver cannot read or
-> write controller registers properly during initialization.
+Hello!
 
-Thank you for the update!
-Basically we have now a few issues with this (easy to fix though).
+My name is Josh. I'm currently employed at Commtech, Inc.
+(https://fastcomproducts.com/). I'm following the instructions at
+https://kernelnewbies.org/FoundBug to report this issue. Please let me
+know if this is incorrect.
 
-Note, below I described _two_ variants of what needs to be done,
-but if you think it's too much for you, let's go in v4 to the code
-of v2 (i.o.w. just adding what you need in 8250_pnp).
+We (Commtech) have several serial boards, but the board in question is
+the '422/2-PCIe'. This board does not exist, but someone added it to
+the Linux kernel at some point in the past. This wouldn't be a
+problem, except that the board ID that was used for this non-existent
+board (0x22) was ultimately used for a different REAL board, with a
+different UART. Instead of a xr172358, we use a 16C950 on the real
+board. But the Linux kernel finds our other board ID, and tries to
+initialize it as an exar chip and fails. I don't know much about the
+kernel, but I believe the lines in question are:
 
-...
+https://github.com/torvalds/linux/blob/master/drivers/tty/serial/8250/8250_exar.c#L47
+https://github.com/torvalds/linux/blob/master/drivers/tty/serial/8250/8250_exar.c#L925
 
->  	memset(&uart, 0, sizeof(uart));
-> -	if (pnp_irq_valid(dev, 0))
-> -		uart.port.irq = pnp_irq(dev, 0);
+You can see that we have a different board with device ID 0x22 here:
+https://admin.pci-ids.ucw.cz/read/PC/18f7
 
-This has checked for IRQ validness and left it 0 if not...
+The 422/4-PCIe exists (0x20), the 422/8-PCIe exists (0x21), but the
+422/2-PCIe was never created and its device id was used for a
+different board (0x22, the SuperFSCC/4-LVDS-PCIe).
 
->  	if ((flags & CIR_PORT) && pnp_port_valid(dev, 2)) {
->  		uart.port.iobase = pnp_port_start(dev, 2);
-> -		uart.port.iotype = UPIO_PORT;
->  	} else if (pnp_port_valid(dev, 0)) {
->  		uart.port.iobase = pnp_port_start(dev, 0);
-> -		uart.port.iotype = UPIO_PORT;
->  	} else if (pnp_mem_valid(dev, 0)) {
->  		uart.port.mapbase = pnp_mem_start(dev, 0);
-
-(The mapsize is also needed now to be initialized correctly)
-
-> -		uart.port.iotype = UPIO_MEM;
->  		uart.port.flags = UPF_IOREMAP;
->  	} else
->  		return -ENODEV;
->  
-> -	dev_dbg(&dev->dev,
-> -		 "Setup PNP port: port %#lx, mem %#llx, irq %u, type %u\n",
-> -		 uart.port.iobase, (unsigned long long)uart.port.mapbase,
-> -		 uart.port.irq, uart.port.iotype);
-> +	uart.port.uartclk = 1843200;
-> +	uart.port.dev = &dev->dev;
-> +
-> +	ret = uart_read_port_properties(&uart.port);
-
-...which means here you need to check for IRQ being absent. The example
-is 8250_dw.c, where similar check is done.
-
-> +	if (ret < 0)
-> +		return ret;
-
-Then the iotype should be preserved, most likely it will become UPIO_UNKNOWN
-for those who do not provide reg-io-width property. That means you need an
-additional local variable that you assign instead of port->iotype in the above
-if-else-if chain and (re)assign port->iotype with it here.
-
-...
-
-Next point is that above API doesn't cover PNP devices, what you need is
-to add a patch to that API in drivers/tty/serial/serial_port.c
-
-        else if (dev_is_pnp(dev))
-		ret = pnp_irq(to_pnp_dev(dev), 0);
-		if (ret < 0)
-			ret = -ENXIO;
-	} else
-
-You may try to fix pnp to return -ENXIO from pnp_irq(), but this might need
-more careful check of users that none of them relies on the exact returned
-value. (If you choose this direction, the mentioned change has to be done
-separately.)
-
-And also update include/linux/pnp.h to provide dev_is_pnp() macro
-(somewhere before module_pnp_driver() I think)
-
-#define dev_is_pnp(d)	((d)->bus == &pnp_bus_type)
-
-(This should be done in a separate patch)
-
-That said you should have the series out of 3+ patches:
-1) (optional) Fix pnp_irq() to return -ENXIO.
-2) Add dev_is_pnp() macro to include/linux/pnp.h.
-3) Add support of PNP IRQ to __uart_read_properties().
-4) Update 8250_pnp to support the additional properties.
-
-
-Alternatively to the above you may simply try pnp_irq() after the call
-
-	ret = uart_read_port_properties(&uart.port);
-	if (ret == -ENXIO) {
-		if (pnp_irq_valid(dev, 0))
-			uart.port.irq = pnp_irq(dev, 0);
-		if (pnp_irq_flags(dev, 0) & IORESOURCE_IRQ_SHAREABLE)
-			uart.port.flags |= UPF_SHARE_IRQ;
-	} else if (ret) {
-		return ret;
-	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Josh
