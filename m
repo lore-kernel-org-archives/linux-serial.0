@@ -1,193 +1,93 @@
-Received: from relay161.nicmail.ru (relay161.nicmail.ru [91.189.117.5])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EFD1C0DC2;
-	Fri, 29 Mar 2024 18:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.189.117.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0699313E02F
+	for <linux-serial@vger.kernel.org>; Fri, 29 Mar 2024 21:54:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711735642; cv=none; b=lyK1mNE+QELei9n2nLrKHbsyO4InAkDRt+eODRPGNkLO1rksSqL3ZAaYDjUA9yT7G+vP9Sx6TP2g75yctN5QhOEp2jqIwAA560qqBTBi7WpSBm3gzJ/JzxXp4oytGnC2EFqruqGWOmploLKvEN7RkfE1dt4DCG1k6hjg5bz9jsM=
+	t=1711749299; cv=none; b=E8j/w4sTrvrrKxHD+V6I96fD6rHtfz+UKRPkzq3Jh0RNOjxHRErdMul+DZWUjGsxfuGhVi1MxCxU2AEI6s7JTlxx3VNHWUZ/zAbY/qfW30cuzspyi6vn3anuLfwA0hHeerJK8VTmxcmHfCx/QSeo6npmvu3v7FSpwb+dWuQDIlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711735642; c=relaxed/simple;
-	bh=hSBJ9UIGseVTgL10Ws4lmaYZism0F9VDtcJjqtKXHCk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Fewv/dJor8o1zKEmNjXdeH9RJ/mhf0R5fyhF4qB0dQTu1tZKa01lAA4paJLP+eQnlKv4igEhn09JmqYklhJ8TWWwC2LrA62NpHL+rqbmhNZCz5lbOBJXlhByOC7e49YRwfCVvH+XVhpOORZENgALET8G19ZyYhLzK7b9Ikh8p8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ancud.ru; spf=pass smtp.mailfrom=ancud.ru; arc=none smtp.client-ip=91.189.117.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ancud.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ancud.ru
-Received: from [10.28.138.19] (port=62484 helo=mitx-gfx..)
-	by relay.hosting.mail.nic.ru with esmtp (Exim 5.55)
-	(envelope-from <kiryushin@ancud.ru>)
-	id 1rqGdE-00028Q-4m;
-	Fri, 29 Mar 2024 21:07:12 +0300
-Received: from [87.245.155.195] (account kiryushin@ancud.ru HELO mitx-gfx..)
-	by incarp1106.mail.hosting.nic.ru (Exim 5.55)
-	with id 1rqGdE-0056fM-1C;
-	Fri, 29 Mar 2024 21:07:12 +0300
-From: Nikita Kiryushin <kiryushin@ancud.ru>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Nikita Kiryushin <kiryushin@ancud.ru>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Tony Lindgren <tony@atomide.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
+	s=arc-20240116; t=1711749299; c=relaxed/simple;
+	bh=WwLc102XeYwZwzW3cybR17GYB+ofAI/4n3gKjg8xR20=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IwnrrlPxQ233zRq1C7SpWhjvPWRorCqkK96FSVrRVFzJYZnjim7RX+LslVYTBIAE50V0j9ZNLPmdXMJoqezj2QilUPQEIVdrDPwBWVHB/uQravLthIx2jbug4JoAFj+zdYDGQZDYkke0e5wVp2X9GsNdIJR/R5AVvzdsr9y++Bc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rqKBX-0004gT-MQ; Fri, 29 Mar 2024 22:54:51 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rqKBX-009GMC-7h; Fri, 29 Mar 2024 22:54:51 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rqKBX-00DTjy-0V;
+	Fri, 29 Mar 2024 22:54:51 +0100
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kbuild@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	lvc-project@linuxtesting.org
-Subject: [PATCH] serial: core: use sysfs_emit() in sysfs show handlers
-Date: Fri, 29 Mar 2024 21:06:34 +0300
-Message-Id: <20240329180634.1037706-1-kiryushin@ancud.ru>
-X-Mailer: git-send-email 2.34.1
+	kernel@pengutronix.de
+Subject: [PATCH] serial: ami: Mark driver struct with __refdata to prevent section mismatch
+Date: Fri, 29 Mar 2024 22:54:40 +0100
+Message-ID:  <043afcbc94ad90079301f3c7738136a7993a1748.1711748999.git.u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To:  <2e3783106bf6bd9a7bdeb12b706378fb16316471.1711748999.git.u.kleine-koenig@pengutronix.de>
+References:  <2e3783106bf6bd9a7bdeb12b706378fb16316471.1711748999.git.u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1447; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=WwLc102XeYwZwzW3cybR17GYB+ofAI/4n3gKjg8xR20=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBmBzijRkqhZMAgH/jj2wot8WnuuEcuR35OQTqoa HxETeaJ7A6JATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZgc4owAKCRCPgPtYfRL+ TlFyB/99tEe8PsNy2x4XEaKBmh7YcfGF2CMkAxh+l+QXvElnsS1gY5Ju0CddcPcSMrEzjIM04rm BM2Ib1uGGulFhQcVeWQMpzn4HlYNv8vB43j6Mpc2YwJWsMbqz2wJ5my8WJ+zFw4zfZpcx+vS8hu RrX/Ws6X2vik2JysZCe+dFBXK2jA7vaKq/ikPxSWvxTcFMVrFrOQl/IOMv6vK/cfNkmO/0txRSw dea69sg07LSwdJ4dTuU4PPxnQ1vy4Ob5eSjmxXNU5CE2e8UTXjk4k8OUliNx0O1JYI2qPjfXAWO QZnMh407StR4/a20SnGViosDO1219AVbFJqeHRVvNFGs8Nux
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-MS-Exchange-Organization-SCL: -1
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-Change sprintf() in sysfs show() handlers to sysfs_emit(),
-as recommended by sysfs documentation.
+As described in the added code comment, a reference to .exit.text is ok
+for drivers registered via module_platform_driver_probe(). Make this
+explicit to prevent the following section mismatch warning
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+	WARNING: modpost: drivers/tty/amiserial: section mismatch in reference: amiga_serial_driver+0x8 (section: .data) -> amiga_serial_remove (section: .exit.text)
 
-Signed-off-by: Nikita Kiryushin <kiryushin@ancud.ru>
+that triggers on an allmodconfig W=1 build.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/tty/serial/serial_core.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/tty/amiserial.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index ff85ebd3a007..a80b6aab2d98 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2903,7 +2903,7 @@ static ssize_t uartclk_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.baud_base * 16);
-+	return sysfs_emit(buf, "%d\n", tmp.baud_base * 16);
+diff --git a/drivers/tty/amiserial.c b/drivers/tty/amiserial.c
+index e27360652d9b..8c964da75f2d 100644
+--- a/drivers/tty/amiserial.c
++++ b/drivers/tty/amiserial.c
+@@ -1578,7 +1578,13 @@ static void __exit amiga_serial_remove(struct platform_device *pdev)
+ 	free_irq(IRQ_AMIGA_RBF, state);
  }
  
- static ssize_t type_show(struct device *dev,
-@@ -2913,7 +2913,7 @@ static ssize_t type_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.type);
-+	return sysfs_emit(buf, "%d\n", tmp.type);
- }
- 
- static ssize_t line_show(struct device *dev,
-@@ -2923,7 +2923,7 @@ static ssize_t line_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.line);
-+	return sysfs_emit(buf, "%d\n", tmp.line);
- }
- 
- static ssize_t port_show(struct device *dev,
-@@ -2937,7 +2937,7 @@ static ssize_t port_show(struct device *dev,
- 	ioaddr = tmp.port;
- 	if (HIGH_BITS_OFFSET)
- 		ioaddr |= (unsigned long)tmp.port_high << HIGH_BITS_OFFSET;
--	return sprintf(buf, "0x%lX\n", ioaddr);
-+	return sysfs_emit(buf, "0x%lX\n", ioaddr);
- }
- 
- static ssize_t irq_show(struct device *dev,
-@@ -2947,7 +2947,7 @@ static ssize_t irq_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.irq);
-+	return sysfs_emit(buf, "%d\n", tmp.irq);
- }
- 
- static ssize_t flags_show(struct device *dev,
-@@ -2957,7 +2957,7 @@ static ssize_t flags_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "0x%X\n", tmp.flags);
-+	return sysfs_emit(buf, "0x%X\n", tmp.flags);
- }
- 
- static ssize_t xmit_fifo_size_show(struct device *dev,
-@@ -2967,7 +2967,7 @@ static ssize_t xmit_fifo_size_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.xmit_fifo_size);
-+	return sysfs_emit(buf, "%d\n", tmp.xmit_fifo_size);
- }
- 
- static ssize_t close_delay_show(struct device *dev,
-@@ -2977,7 +2977,7 @@ static ssize_t close_delay_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.close_delay);
-+	return sysfs_emit(buf, "%d\n", tmp.close_delay);
- }
- 
- static ssize_t closing_wait_show(struct device *dev,
-@@ -2987,7 +2987,7 @@ static ssize_t closing_wait_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.closing_wait);
-+	return sysfs_emit(buf, "%d\n", tmp.closing_wait);
- }
- 
- static ssize_t custom_divisor_show(struct device *dev,
-@@ -2997,7 +2997,7 @@ static ssize_t custom_divisor_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.custom_divisor);
-+	return sysfs_emit(buf, "%d\n", tmp.custom_divisor);
- }
- 
- static ssize_t io_type_show(struct device *dev,
-@@ -3007,7 +3007,7 @@ static ssize_t io_type_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.io_type);
-+	return sysfs_emit(buf, "%d\n", tmp.io_type);
- }
- 
- static ssize_t iomem_base_show(struct device *dev,
-@@ -3017,7 +3017,7 @@ static ssize_t iomem_base_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "0x%lX\n", (unsigned long)tmp.iomem_base);
-+	return sysfs_emit(buf, "0x%lX\n", (unsigned long)tmp.iomem_base);
- }
- 
- static ssize_t iomem_reg_shift_show(struct device *dev,
-@@ -3027,7 +3027,7 @@ static ssize_t iomem_reg_shift_show(struct device *dev,
- 	struct tty_port *port = dev_get_drvdata(dev);
- 
- 	uart_get_info(port, &tmp);
--	return sprintf(buf, "%d\n", tmp.iomem_reg_shift);
-+	return sysfs_emit(buf, "%d\n", tmp.iomem_reg_shift);
- }
- 
- static ssize_t console_show(struct device *dev,
-@@ -3044,7 +3044,7 @@ static ssize_t console_show(struct device *dev,
- 		console = uart_console_registered(uport);
- 	mutex_unlock(&port->mutex);
- 
--	return sprintf(buf, "%c\n", console ? 'Y' : 'N');
-+	return sysfs_emit(buf, "%c\n", console ? 'Y' : 'N');
- }
- 
- static ssize_t console_store(struct device *dev,
+-static struct platform_driver amiga_serial_driver = {
++/*
++ * amiga_serial_remove() lives in .exit.text. For drivers registered via
++ * module_platform_driver_probe() this is ok because they cannot get unbound at
++ * runtime. So mark the driver struct with __refdata to prevent modpost
++ * triggering a section mismatch warning.
++ */
++static struct platform_driver amiga_serial_driver __refdata = {
+ 	.remove_new = __exit_p(amiga_serial_remove),
+ 	.driver   = {
+ 		.name	= "amiga-serial",
+base-commit: a6bd6c9333397f5a0e2667d4d82fef8c970108f2
 -- 
-2.34.1
+2.43.0
 
