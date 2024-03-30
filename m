@@ -1,127 +1,141 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7993D13CC4C
-	for <linux-serial@vger.kernel.org>; Fri, 29 Mar 2024 21:55:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63AED7E8;
+	Sat, 30 Mar 2024 01:18:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711749311; cv=none; b=sKLGH+tZcNiofJWPRGkTaonpjKALn9Uj83lO4MZETvVzZCxFvkzJnKVyn99xDLJmcIq7uzf+WoPWhyBjLP5wt19aylzBzJWKxOmbj+q/rpJX/fx1SZQRyMUIwCVP++MJUDsVjLQG1inHAVDBvsl5Ze53njh7KbU70xQ5cid5kNI=
+	t=1711761512; cv=none; b=LKFD53QKYbmG0aAt16EOuvLyvNzmoBNJLuXhTp9N5pu4+OBJd78A2pSkjjxGsz+X27NhIC85zFrDIeB4IrpAJvsbhy8nrR14HFTdkdOTrkbXnlp5kHaCPta7V2kjSmYz7DGeOLh1dBaM4aE4980Wf6lnsEulkpFEVFlOvhLt89c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711749311; c=relaxed/simple;
-	bh=u1UhruhrTBacTG5k8fHeAqtFCEXrhLT1PXtH1xxAtAA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fL7g6AqbYgECjixMWiC0mglN9n1RX2msctP+UkvbhHzKMRStpMzhg7yMxioLidyzvsnx41jQRomlLmvhriJYoPdNv2Hj4Jd9cFqo0HNFMEESnZ4l345MbRITzwp47mInT3qAwmaY/ucDuqNBYCU7+dBzU7Jialha0zDQjtMQDU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rqKBa-0004gm-2H; Fri, 29 Mar 2024 22:54:54 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rqKBX-009GMO-Re; Fri, 29 Mar 2024 22:54:51 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rqKBX-00DTkA-2T;
-	Fri, 29 Mar 2024 22:54:51 +0100
-From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Dawei Li <set_pte_at@outlook.com>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>
-Cc: Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-	linux-kbuild@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	kernel@pengutronix.de
-Subject: [PATCH] serial: pmac_zilog: Drop usage of platform_driver_probe()
-Date: Fri, 29 Mar 2024 22:54:43 +0100
-Message-ID:  <5ea3174616abc9fa256f115b4fb175d289ac1754.1711748999.git.u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To:  <2e3783106bf6bd9a7bdeb12b706378fb16316471.1711748999.git.u.kleine-koenig@pengutronix.de>
-References:  <2e3783106bf6bd9a7bdeb12b706378fb16316471.1711748999.git.u.kleine-koenig@pengutronix.de>
+	s=arc-20240116; t=1711761512; c=relaxed/simple;
+	bh=ZxhyUR/BsO+88hhZ0WPOqi7RMpOM0Seq4GE1dJ6FiFg=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=X+aCxp4xrGT1wv2hKv+hhgdvUp6uyOUL7B921fedksCbNx6PXoblF2MZcO30MiyN/HT8XUQ51SKSIs8wdGp4r/gP3F8fl56e8uYAh5t0xM8FlDWLOl7ZPF4xz1Zu9qf+hUoTu2EEwM1adiVNlNCRXAh/AhoFmq+HD04+G0R+nJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.234])
+	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4V5zqG6GYhz1h4Hl;
+	Sat, 30 Mar 2024 09:15:38 +0800 (CST)
+Received: from dggpemd100002.china.huawei.com (unknown [7.185.36.164])
+	by mail.maildlp.com (Postfix) with ESMTPS id 89076140134;
+	Sat, 30 Mar 2024 09:18:20 +0800 (CST)
+Received: from huawei.com (10.67.174.33) by dggpemd100002.china.huawei.com
+ (7.185.36.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.28; Sat, 30 Mar
+ 2024 09:18:20 +0800
+From: "GONG, Ruiqi" <gongruiqi1@huawei.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+CC: <stable@vger.kernel.org>, Jon Ringle <jringle@gridpoint.com>,
+	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Wang Weiyang
+	<wangweiyang2@huawei.com>
+Subject: [PATCH stable 5.10 5.15 v2] serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions for FIFO
+Date: Sat, 30 Mar 2024 09:25:20 +0800
+Message-ID: <20240330012520.1904970-1-gongruiqi1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2095; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=u1UhruhrTBacTG5k8fHeAqtFCEXrhLT1PXtH1xxAtAA=; b=owGbwMvMwMXY3/A7olbonx/jabUkhjR2i+Usnzv+dSVtseae9CZXZd72KOkmQ4cc419MLt/fL c607rzRyWjMwsDIxSArpshi37gm06pKLrJz7b/LMINYmUCmMHBxCsBEKhzZ//BdMynhn/h7kvJm QdY89rAlGvOLLzzeJuCoczCGIZVjvdAzl0DfX5c7giyjgxOOqHxq4rlncs0m6de+syWn2Lgd5Rp YV0bo/ThwnCkpV1X0411eSSbHufMkLCYV/P+64etzMaO4Ah056YknHJfnnzXS2pf84l7Tdv/pZ7 XvLfjLscXX8q2l9GIbTt3frrwW3g1L6mOuuCXsP/b6nnNEqPP65ftE5/PvLt697bLSdKXvBaYuZ 8Xjm+ZPL7p2tcAgyP6b+szXZdMsPxXHWlsWbU7eevNjnkvS9DOucy+b71GJurNdxaWnTXKSefgu jbDuLdlNPccCEjfOF7Rszwp2b1qXJ20ik3BBYW11iZ8UAA==
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemd100002.china.huawei.com (7.185.36.164)
 
-There are considerations to drop platform_driver_probe() as a concept
-that isn't relevant any more today. It comes with an added complexity
-that makes many users hold it wrong. (E.g. this driver should have
-marked the driver struct with __refdata to prevent the below mentioned
-false positive section mismatch warning.)
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-This fixes a W=1 build warning:
+commit dbf4ab821804df071c8b566d9813083125e6d97b upstream.
 
-	WARNING: modpost: drivers/tty/serial/pmac_zilog: section mismatch in reference: pmz_driver+0x8 (section: .data) -> pmz_detach (section: .exit.text)
+The SC16IS7XX IC supports a burst mode to access the FIFOs where the
+initial register address is sent ($00), followed by all the FIFO data
+without having to resend the register address each time. In this mode, the
+IC doesn't increment the register address for each R/W byte.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+The regmap_raw_read() and regmap_raw_write() are functions which can
+perform IO over multiple registers. They are currently used to read/write
+from/to the FIFO, and although they operate correctly in this burst mode on
+the SPI bus, they would corrupt the regmap cache if it was not disabled
+manually. The reason is that when the R/W size is more than 1 byte, these
+functions assume that the register address is incremented and handle the
+cache accordingly.
+
+Convert FIFO R/W functions to use the regmap _noinc_ versions in order to
+remove the manual cache control which was a workaround when using the
+_raw_ versions. FIFO registers are properly declared as volatile so
+cache will not be used/updated for FIFO accesses.
+
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc:  <stable@vger.kernel.org> # 5.10 5.15
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Link: https://lore.kernel.org/r/20231211171353.2901416-6-hugo@hugovil.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
 ---
- drivers/tty/serial/pmac_zilog.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
-index 05d97e89511e..e44621218248 100644
---- a/drivers/tty/serial/pmac_zilog.c
-+++ b/drivers/tty/serial/pmac_zilog.c
-@@ -1695,7 +1695,7 @@ static void pmz_dispose_port(struct uart_pmac_port *uap)
- 	memset(uap, 0, sizeof(struct uart_pmac_port));
+v2: Backport to both 5.15 and 5.10
+
+The mainline commit dbf4ab821804 ("serial: sc16is7xx: convert from _raw_
+to _noinc_ regmap functions for FIFO") by Hugo has been assigned to be
+CVE-2023-52488, but for stable branches lower than 6.1 there's no
+official backport.
+
+I made up this backport patch for 5.10, and its correctness has been
+confirmed in previous communication with Hugo. Let's publicize it and
+merge it into upstream.
+
+ drivers/tty/serial/sc16is7xx.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 8c09c97f9814..0066a0e23516 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -376,9 +376,7 @@ static void sc16is7xx_fifo_read(struct uart_port *port, unsigned int rxlen)
+ 	const u8 line = sc16is7xx_line(port);
+ 	u8 addr = (SC16IS7XX_RHR_REG << SC16IS7XX_REG_SHIFT) | line;
+ 
+-	regcache_cache_bypass(s->regmap, true);
+-	regmap_raw_read(s->regmap, addr, s->buf, rxlen);
+-	regcache_cache_bypass(s->regmap, false);
++	regmap_noinc_read(s->regmap, addr, s->buf, rxlen);
  }
  
--static int __init pmz_attach(struct platform_device *pdev)
-+static int pmz_attach(struct platform_device *pdev)
+ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+@@ -394,9 +392,7 @@ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+ 	if (unlikely(!to_send))
+ 		return;
+ 
+-	regcache_cache_bypass(s->regmap, true);
+-	regmap_raw_write(s->regmap, addr, s->buf, to_send);
+-	regcache_cache_bypass(s->regmap, false);
++	regmap_noinc_write(s->regmap, addr, s->buf, to_send);
+ }
+ 
+ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
+@@ -489,6 +485,11 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
+ 	return false;
+ }
+ 
++static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
++{
++	return reg == SC16IS7XX_RHR_REG;
++}
++
+ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
  {
- 	struct uart_pmac_port *uap;
- 	int i;
-@@ -1714,7 +1714,7 @@ static int __init pmz_attach(struct platform_device *pdev)
- 	return uart_add_one_port(&pmz_uart_reg, &uap->port);
- }
+ 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+@@ -1439,6 +1440,8 @@ static struct regmap_config regcfg = {
+ 	.cache_type = REGCACHE_RBTREE,
+ 	.volatile_reg = sc16is7xx_regmap_volatile,
+ 	.precious_reg = sc16is7xx_regmap_precious,
++	.writeable_noinc_reg = sc16is7xx_regmap_noinc,
++	.readable_noinc_reg = sc16is7xx_regmap_noinc,
+ };
  
--static void __exit pmz_detach(struct platform_device *pdev)
-+static void pmz_detach(struct platform_device *pdev)
- {
- 	struct uart_pmac_port *uap = platform_get_drvdata(pdev);
- 
-@@ -1789,7 +1789,8 @@ static struct macio_driver pmz_driver = {
- #else
- 
- static struct platform_driver pmz_driver = {
--	.remove_new	= __exit_p(pmz_detach),
-+	.probe		= pmz_attach,
-+	.remove_new	= pmz_detach,
- 	.driver		= {
- 		.name		= "scc",
- 	},
-@@ -1837,7 +1838,7 @@ static int __init init_pmz(void)
- #ifdef CONFIG_PPC_PMAC
- 	return macio_register_driver(&pmz_driver);
- #else
--	return platform_driver_probe(&pmz_driver, pmz_attach);
-+	return platform_driver_register(&pmz_driver);
- #endif
- }
- 
-base-commit: a6bd6c9333397f5a0e2667d4d82fef8c970108f2
+ #ifdef CONFIG_SERIAL_SC16IS7XX_SPI
 -- 
-2.43.0
+2.25.1
 
