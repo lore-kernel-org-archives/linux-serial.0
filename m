@@ -1,93 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C0F8BA57;
-	Sat, 30 Mar 2024 09:09:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 241DD10E5;
+	Mon,  1 Apr 2024 02:18:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711789774; cv=none; b=sGA47sKGRz1NCfjOGXb0QhL9POJUuAQ/iGabufH7PwRdiFmh1ehL9J1a3QR+VAOHwYkzKxYPsr9DcMWLJGu+9YhB2ecIGfD86v+GLUu4onRajW8fAZw+BYHs11Nk7H6xQHGNXeuDOo265RbAcB2HYFPf+V3xHqBK+hUhpjRMJPU=
+	t=1711937904; cv=none; b=V7Hds4GcCm9e4Q1/mgZ7TZSOa1xsHQ2o7g0XQr4290f6TbskeFHDA/I200bX+vvECLAyocBNhJ/GJXE0cSD3pDEExHYmfFeZiBZuEmwSidIy948+lCQBPwUuNzOp914l1JYHMa/y20WG5d16N9C4HWXEq1el/svVA6rSAeJBwqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711789774; c=relaxed/simple;
-	bh=xreq82aGzQ3JmBuEJlKHp0cTF0bfinus9BUKu+7kd5E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qdwES2SuZv2Wu7XpjMA/SVgOq1o3URhep4H+Wxyr6iHgn+pi0h0pPNbKviwaysafFUqwvgYmej+CE1X6LSViNzMszK5BtRF0nCO5phYoO/35HKgtTDD1iHQByeojriUYXOzhIt1TAMWI5/3m7Jv3XJxcUtf13MUAUlCbheiab54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=k8l97VZ7; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="k8l97VZ7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2315C433F1;
-	Sat, 30 Mar 2024 09:09:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1711789774;
-	bh=xreq82aGzQ3JmBuEJlKHp0cTF0bfinus9BUKu+7kd5E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=k8l97VZ7gFFFSU5qXSw2gg04x+YsKwGS8ISNYB0XDiQDA2bDDdB8HUzjNEGJ0YKe5
-	 5BHQB5gh9DqojaFlUMDDh3ecGqEUGKG0Oz6pzjdZMR+esZ+FMbXTUV7KR8848dTK3R
-	 3vL7zzkKx5Ex3Ru6rNpWT92PGZu5M8JD4hg12StY=
-Date: Sat, 30 Mar 2024 10:09:31 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: "GONG, Ruiqi" <gongruiqi1@huawei.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@vger.kernel.org,
-	Jon Ringle <jringle@gridpoint.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Wang Weiyang <wangweiyang2@huawei.com>
-Subject: Re: [PATCH stable 5.10 5.15 v2] serial: sc16is7xx: convert from
- _raw_ to _noinc_ regmap functions for FIFO
-Message-ID: <2024033023-scorch-volley-7265@gregkh>
-References: <20240330012520.1904970-1-gongruiqi1@huawei.com>
+	s=arc-20240116; t=1711937904; c=relaxed/simple;
+	bh=XaikyVQs5EJGZ8CGtdMMdgUqWK86PcrEdVmxt1j3bwg=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=fsrA5h5H3WXW6nUU4bOxp3w5MSBhQcTXcACaP+wvG6Z1SOiEmWvHJE5JCQiuzbl9c7zXlZABqZ8fin6563MjGjRZRGUcxEV+ikSecyo1B0BYjeloSIQzBcuIdyImqKOMN6CnwCUHSQPri9A8wOpBbnDOAk846fVG47EFZ/Rqn00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 4312H1be015188;
+	Mon, 1 Apr 2024 10:17:01 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX08-BJD.srv.huawei-3com.com (unknown [10.153.34.10])
+	by mail.maildlp.com (Postfix) with ESMTP id B6F9F200BBEF;
+	Mon,  1 Apr 2024 10:18:57 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX08-BJD.srv.huawei-3com.com (10.153.34.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Mon, 1 Apr 2024 10:17:02 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Mon, 1 Apr 2024 10:17:02 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+CC: "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "dianders@chromium.org"
+	<dianders@chromium.org>,
+        "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>,
+        "jason.wessel@windriver.com"
+	<jason.wessel@windriver.com>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIIFY3XSBrZGI6IEZpeCB0aGUgZGVhZGxvY2sgaXNzdWUg?=
+ =?gb2312?Q?in_KDB_debugging.?=
+Thread-Topic: [PATCH V7] kdb: Fix the deadlock issue in KDB debugging.
+Thread-Index: AdqD2hPGLsWNTqu4Qy+z4NFD9ArrsQ==
+Date: Mon, 1 Apr 2024 02:17:02 +0000
+Message-ID: <ebd5ce38abfd435886d526d4488db9ee@h3c.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240330012520.1904970-1-gongruiqi1@huawei.com>
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 4312H1be015188
 
-On Sat, Mar 30, 2024 at 09:25:20AM +0800, GONG, Ruiqi wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> commit dbf4ab821804df071c8b566d9813083125e6d97b upstream.
-> 
-> The SC16IS7XX IC supports a burst mode to access the FIFOs where the
-> initial register address is sent ($00), followed by all the FIFO data
-> without having to resend the register address each time. In this mode, the
-> IC doesn't increment the register address for each R/W byte.
-> 
-> The regmap_raw_read() and regmap_raw_write() are functions which can
-> perform IO over multiple registers. They are currently used to read/write
-> from/to the FIFO, and although they operate correctly in this burst mode on
-> the SPI bus, they would corrupt the regmap cache if it was not disabled
-> manually. The reason is that when the R/W size is more than 1 byte, these
-> functions assume that the register address is incremented and handle the
-> cache accordingly.
-> 
-> Convert FIFO R/W functions to use the regmap _noinc_ versions in order to
-> remove the manual cache control which was a workaround when using the
-> _raw_ versions. FIFO registers are properly declared as volatile so
-> cache will not be used/updated for FIFO accesses.
-> 
-> Fixes: dfeae619d781 ("serial: sc16is7xx")
-> Cc:  <stable@vger.kernel.org> # 5.10 5.15
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> Link: https://lore.kernel.org/r/20231211171353.2901416-6-hugo@hugovil.com
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
-> ---
-> 
-> v2: Backport to both 5.15 and 5.10
-> 
-> The mainline commit dbf4ab821804 ("serial: sc16is7xx: convert from _raw_
-> to _noinc_ regmap functions for FIFO") by Hugo has been assigned to be
-> CVE-2023-52488, but for stable branches lower than 6.1 there's no
-> official backport.
-> 
-> I made up this backport patch for 5.10, and its correctness has been
-> confirmed in previous communication with Hugo. Let's publicize it and
-> merge it into upstream.
-
-Now queued up, thanks.
-
-greg k-h
+SGkgRGFuaWVsLA0KDQpIb3cgYWJvdXQgUEFUQ0ggVjcuDQoNClRoYW5rcy4NCg==
