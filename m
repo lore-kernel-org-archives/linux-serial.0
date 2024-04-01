@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D71012E51;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F79612E5E;
 	Mon,  1 Apr 2024 10:10:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711966255; cv=none; b=HNA1tj/q/yOz1HW6xDFzKESA/qCXC85/qdCZ6FoqNJRpA3lDniCT1bgRtLLq6GlwLi24VYi6ljVA1wnugAUDW0kqq/vlahk/xVkmvQVicYIK3NJ4BS/S44/ttf3xj3+CoJYjS+VxttLtYarQMTVsa8AMbzdwDB8HBu2Sl0S7Zno=
+	t=1711966255; cv=none; b=JUWHz/XSYjq8/IOuzG6vGMnp7SCdK0jxPFt58FYDjMbi7+NJSKGCpTtrGNtUr1NB2DULXh62spTzbrSSFllCocyzVZDZHmxgY4lJ5r1y7R81K3OFWuCaItwTjCcmHhfXE8pEWFxioOpXAJC81CBYPldrZ+V0wIhYnIzigSUn1Y4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1711966255; c=relaxed/simple;
-	bh=BlBJpiUv7aUmAuFYUdvRYginZ8mbbvQ7MHOWOPOYjTM=;
+	bh=87vxEiXK4Bw7uWercX7BECQUi8vL2f8Pu9x/4eHktak=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=JNGs6mYPmEBjIzBkCM9z6tcG8XGdjL9LLvu4JjuYtxz7X3vgiiukCsrSc7G5R8YbRxjELMPT1okIpBwOvfOU8cFcKY8raEAxFdPkuW5gaaLELs6Rc2RWLXlTJWd7Yf4VFXo/q+nkA30HpnaWFcJMxpqHC1BWDz7SW7VDHgHWyyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rWOh7MzS; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=eMDXXj1o0dUWeD6iZz5pYfmLXmg0UIy8onkoZUhvUGBQZEABKwquNrZAjdwH6xivTpp9CpCFtigP0GahIhtqYruQ0jpyCSytOh8hu+F1xlA0twU3XPnWfP4zFu6x0+ipQ+gTWGzEmzGc4q5IUaoAzl33azu4Ugu/Lr0k5uWdIP4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lxFxLN3o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rWOh7MzS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EDFB0C433B1;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lxFxLN3o"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D079FC433C7;
 	Mon,  1 Apr 2024 10:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711966255;
-	bh=BlBJpiUv7aUmAuFYUdvRYginZ8mbbvQ7MHOWOPOYjTM=;
+	s=k20201202; t=1711966254;
+	bh=87vxEiXK4Bw7uWercX7BECQUi8vL2f8Pu9x/4eHktak=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=rWOh7MzSja3Tv/nIkmXomxahTuXKF0z28xJ1UjSSC6Myrd78ZwCptLzhg1yszT9W2
-	 5TlWDTV5bfTLYSIhV2yE3cyH/6Liiann71hkRcmafVhianLGdk27nVsdIIjdAcl0HZ
-	 yKvs/9AbM0k6JEGlKIgaWBT1EExijooUSbSPD/fnS0EIoXQk8gHhFRByYWgomVZi3u
-	 DKqzl2GIrD3W0fVCf1aioxwIR7oeXMVopCHKIRsdbEbHHOBu0D3/WWIX28pOytIa1T
-	 SxFqG8Iqqv/2/R5kEsNLTuyQxkVLOCpvhf9F0tDPqQGvHIiFnzxHfJJuXWYTyW80qi
-	 XKi7d11CsAsjg==
+	b=lxFxLN3oGf0q9tbkirgIInupoQhqNN8zrXBxT7onNhhp3PREXnr5gP9xZ2ZdJc0gb
+	 GSnTx1wcpi6U9RRgLIfzCGpqNsXmZk7e6EhlQOHWINVYO25dsds1FoAtUE9cQaj8v4
+	 TZUaHCFZU46N8MGf1f64YtY964ey7nZgfVnwf88pw7WBcOzGZtSion8R/z+Bq1HmGK
+	 gQVntk4zcTIRTr4ZnlsOW3AOfPQgOQe2YCj/tD7goWYXnCyzd7xpaarTLf4KaTh8hV
+	 4Ltr1v4K79AqJ0UNNpTJYcqwe8J8Hu2JZH0OZL24G/ex4EBzuY9fGwv8RgZuYXHZNK
+	 mC4AHcIivPTPA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCE8CD1294;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6D1CD1283;
 	Mon,  1 Apr 2024 10:10:54 +0000 (UTC)
 From: Xianwei Zhao via B4 Relay <devnull+xianwei.zhao.amlogic.com@kernel.org>
-Date: Mon, 01 Apr 2024 18:10:51 +0800
-Subject: [PATCH v3 3/5] dt-bindings: serial: amlogic,meson-uart: Add
- compatible string for A4
+Date: Mon, 01 Apr 2024 18:10:49 +0800
+Subject: [PATCH v3 1/5] dt-bindings: arm: amlogic: add A4 support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240401-basic_dt-v3-3-cb29ae1c16da@amlogic.com>
+Message-Id: <20240401-basic_dt-v3-1-cb29ae1c16da@amlogic.com>
 References: <20240401-basic_dt-v3-0-cb29ae1c16da@amlogic.com>
 In-Reply-To: <20240401-basic_dt-v3-0-cb29ae1c16da@amlogic.com>
 To: Rob Herring <robh+dt@kernel.org>, 
@@ -54,13 +53,14 @@ To: Rob Herring <robh+dt@kernel.org>,
  Jiri Slaby <jirislaby@kernel.org>
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, 
- linux-serial@vger.kernel.org, Xianwei Zhao <xianwei.zhao@amlogic.com>
+ linux-serial@vger.kernel.org, Xianwei Zhao <xianwei.zhao@amlogic.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1711966253; l=1045;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1711966252; l=1029;
  i=xianwei.zhao@amlogic.com; s=20231208; h=from:subject:message-id;
- bh=BoOg9oQGXAIVipNRqINyIKrEQRpu4JFfXxioyfv5GFo=;
- b=mZ+9Ep9WWQoTg3a/P02KSgdMBd1++x66NLZBVFzDPu+9hcHs0xLkwundg7BoZB9L42CWB88kJ
- IJIMFTOpNA0AqAFgMZslQiz9dJNHfYcjr9+2kgNGridt4qlPuRqOT25
+ bh=qwPgdDWTmKejFsU6gaw/3XWYRmAsFuyvj2aPVFS4Wuo=;
+ b=wphnuoooDrs+q+UVo1L5BE8A2WRQO5j1/LdinYam5CbywNyb9vcUwaME0qWhaFFCR1Wh0T5mL
+ KWdkemYxCsABqjueasGGU48Gc2eJAWToeyYYQrponOeL8KDFPyaed0L
 X-Developer-Key: i=xianwei.zhao@amlogic.com; a=ed25519;
  pk=o4fDH8ZXL6xQg5h17eNzRljf6pwZHWWjqcOSsj3dW24=
 X-Endpoint-Received: by B4 Relay for xianwei.zhao@amlogic.com/20231208 with
@@ -70,30 +70,34 @@ Reply-To: xianwei.zhao@amlogic.com
 
 From: Xianwei Zhao <xianwei.zhao@amlogic.com>
 
-Amlogic A4 SoCs uses the same UART controller as S4 SoCs and G12A.
-There is no need for an extra compatible line in the driver, but
-add A4 compatible line for documentation.
+Document the new A4 SoC/board device tree bindings.
 
+Amlogic A4 is an application processor designed for smart audio
+and IoT applications.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
 ---
- Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/arm/amlogic.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-index 2e189e548327..0565fb7649c5 100644
---- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
-@@ -54,7 +54,9 @@ properties:
-           - const: amlogic,meson-gx-uart
-       - description: UART controller on S4 compatible SoCs
-         items:
--          - const: amlogic,t7-uart
-+          - enum:
-+              - amlogic,a4-uart
-+              - amlogic,t7-uart
-           - const: amlogic,meson-s4-uart
+diff --git a/Documentation/devicetree/bindings/arm/amlogic.yaml b/Documentation/devicetree/bindings/arm/amlogic.yaml
+index 949537cea6be..520975e7cac0 100644
+--- a/Documentation/devicetree/bindings/arm/amlogic.yaml
++++ b/Documentation/devicetree/bindings/arm/amlogic.yaml
+@@ -201,6 +201,12 @@ properties:
+               - amlogic,ad402
+           - const: amlogic,a1
  
-   reg:
++      - description: Boards with the Amlogic A4 A113L2 SoC
++        items:
++          - enum:
++              - amlogic,ba400
++          - const: amlogic,a4
++
+       - description: Boards with the Amlogic C3 C302X/C308L SoC
+         items:
+           - enum:
 
 -- 
 2.37.1
