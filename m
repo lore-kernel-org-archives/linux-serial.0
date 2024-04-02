@@ -1,49 +1,49 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A31F15D5D8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D09715DBB7;
 	Tue,  2 Apr 2024 19:53:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712087600; cv=none; b=H7sbrIloJGSBAgOEFlJ6ysc73IadaCV4LHolRt7FPIJpnB2GrgfZhuk7JYrv/uPVpkvGUSk2mQQzhJury+OJZr6S5cgEMyEA0vTeKaoGTNc7csX3FmgL69SmwqDtTSaFJxX990xETt+8XM2GVFRsR1rJoBP8eXbOz2tDaOVyaDI=
+	t=1712087600; cv=none; b=Q7LfTgSfuhgoZw+v7DKUgjRruQ0zV+6ZdAenBf93iswJgw7PsTvM+D/ROfXykJP6/DImwqvxZiEusFGaOoaDDU8XcnrlsGx6EL0qA1nrgjoXZH6+gHOCLDRSwi2f74te5jpTmLt8zvEtTOZonDA40Fhdh+YKpzobPbuSdxyYCjc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1712087600; c=relaxed/simple;
-	bh=Pi6Iu7dutwBs4bW3dBS5h5JXTELjV2UWlLMb4UNtt4M=;
+	bh=7uF+Ni2y2wMkDzn7LDrpsM+dIWXMZVCj7KGProB4/7U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EDpSJFpTtbZjGzgHI537vuA+X5Uq+SPTW0WH8bP/4fKa54bFIeg74ZZV5b9GFTx9JLExkEy2sSpt3UMbnFx6pJE9OdUHwGGIGOdqV7H9vNi9alXSTy+kXGTUeIq+7igvx4kNv0luy6cEaaUole2RaHBeb2EjVZhB5o3D1iRoKLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BuceOWkb; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=mfXpe6AGmAn6cdlYGvhK5IvHSUXaP6mOJP/lsOEAzWqMEOmm4EkR0rpl6Nqw49S+0dbZ5LTzKJGH3oRmt6gnuDF0uFEI/tUn+a2v7qoPZsb4Mfj9YucKCdCWVP1cqwCpTKDv7jwAK6w1FLAcaps7+jenPlc9yxg35sRURDq4Yo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a/10wS2Y; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BuceOWkb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a/10wS2Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1712087599; x=1743623599;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Pi6Iu7dutwBs4bW3dBS5h5JXTELjV2UWlLMb4UNtt4M=;
-  b=BuceOWkb3PhI+6hddI32OSi9ULiUIwXZjAKNK9+exRLg6aq4dmCQGOn4
-   duZWDjOyN5TmipXd4xnhnJzufUmCPgKhSVex+4V73YNf6QwD6fx+3j+l3
-   zUGzRLGulOCO/mt0sHYQdvdQ1QYBW3tS70+jExlrtsduVt/4ChNKJCDif
-   9SmcS0BY2Dbk8jnuvKXRTkr/U9EY6zsiO66Nnlq4CLcbBBCiyF/mWlPAG
-   xWZq9d6KDAWyi0Rg1K8Hd/KzW9xcPIGtGGFI/mg1yozz6TAuhNrgzyZn/
-   R1eUuebcGMmLBRcPn7VVBnsC5DTKE1GlEZ/gLiq4Yzt7j+vMZaXKc5SPL
-   A==;
-X-CSE-ConnectionGUID: 3e1e1UbGTeiI6hV9phm8rA==
-X-CSE-MsgGUID: enoX+2j8SVqhIsC2clYuSg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7151007"
+  bh=7uF+Ni2y2wMkDzn7LDrpsM+dIWXMZVCj7KGProB4/7U=;
+  b=a/10wS2Ysnn2QwnJzXKi7euUh9maBiUhRmfRmTynxG2gNOOB1lzrIet/
+   KBBpS0pwkhcOVP8FwZIpXBkwwDS/rJrTFdeRRhJSZXKJ01aPOXVBDyz1L
+   aNzuI0Ji5Nqt/SpZzXSs81MfXinczpJO7dItPYooVY2xXP9Bo18lphT/n
+   FTtziBoIrr1vRzo08Nj0/UyZ0XcrDJOWbiGOwn+sdxVS4vFwaYgI93HMa
+   6eH8K9pXS2hc0NZrTmRoN9S11nAfACGCvY8/2jjr3MJtcyTFFlMjUiC0+
+   g2L+99hlpPUJtaNBI8VCDIy+76HuPJJJ7t6UZDqdaP7FSXAE3L8BaXsp+
+   g==;
+X-CSE-ConnectionGUID: ZWslMqamT4iYaWrjBCnzgg==
+X-CSE-MsgGUID: /zNIbKQ4SIy6Fk52gcyUzA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7151013"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="7151007"
+   d="scan'208";a="7151013"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 12:53:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083790"
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083792"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="937083790"
+   d="scan'208";a="937083792"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 12:53:13 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 0C3799B0; Tue,  2 Apr 2024 22:53:10 +0300 (EEST)
+	id 5159C16A1; Tue,  2 Apr 2024 22:53:10 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -51,9 +51,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-serial@vger.kernel.org
 Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Hugo Villeneuve <hugo@hugovil.com>
-Subject: [PATCH v2 08/16] serial: max3100: Get crystal frequency via device property
-Date: Tue,  2 Apr 2024 22:50:35 +0300
-Message-ID: <20240402195306.269276-9-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 14/16] serial: max3100: Remove unneeded forward declaration
+Date: Tue,  2 Apr 2024 22:50:41 +0300
+Message-ID: <20240402195306.269276-15-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
 References: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
@@ -65,158 +65,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Get crystal frequency via device property instead of using
-a platform data.
+There is no code using max3100_work() before the definition of it.
+Remove unneeded forward declaration.
+
+While at it, move max3100_dowork() and max3100_timeout() down in
+the code to be after actual max3100_work() implementation.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/max3100.c | 49 +++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 29 deletions(-)
+ drivers/tty/serial/max3100.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index cd6a80e97868..bd3f281969e3 100644
+index b068175ef9c3..5a28df2564b2 100644
 --- a/drivers/tty/serial/max3100.c
 +++ b/drivers/tty/serial/max3100.c
-@@ -20,6 +20,7 @@
- #include <linux/slab.h>
- #include <linux/device.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/serial_core.h>
- #include <linux/serial.h>
- #include <linux/spi/spi.h>
-@@ -30,17 +31,6 @@
+@@ -150,22 +150,6 @@ static void max3100_calc_parity(struct max3100_port *s, u16 *c)
+ 		*c |= max3100_do_parity(s, *c) << 8;
+ }
  
- #include <asm/unaligned.h>
- 
--/**
-- * struct plat_max3100 - MAX3100 SPI UART platform data
-- * @crystal:             1 for 3.6864 Mhz, 0 for 1.8432
-- *
-- * You should use this structure in your machine description to specify
-- * how the MAX3100 is connected.
-- */
--struct plat_max3100 {
--	int crystal;
--};
+-static void max3100_work(struct work_struct *w);
 -
- #define MAX3100_C    (1<<14)
- #define MAX3100_D    (0<<14)
- #define MAX3100_W    (1<<15)
-@@ -106,7 +96,6 @@ struct max3100_port {
- 	int irq;		/* irq assigned to the max3100 */
- 
- 	int minor;		/* minor number */
--	int crystal;		/* 1 if 3.6864Mhz crystal 0 for 1.8432 */
- 	int loopback_commit;	/* need to change loopback */
- 	int loopback;		/* 1 if we are in loopback mode */
- 
-@@ -428,7 +417,8 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	struct max3100_port *s = container_of(port,
- 					      struct max3100_port,
- 					      port);
--	int baud = 0;
-+	unsigned int baud = port->uartclk / 16;
-+	unsigned int baud230400 = (baud == 230400) ? 1 : 0;
- 	unsigned cflag;
- 	u32 param_new, param_mask, parity = 0;
- 
-@@ -441,40 +431,40 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	param_new = s->conf & MAX3100_BAUD;
- 	switch (baud) {
- 	case 300:
--		if (s->crystal)
-+		if (baud230400)
- 			baud = s->baud;
- 		else
- 			param_new = 15;
- 		break;
- 	case 600:
--		param_new = 14 + s->crystal;
-+		param_new = 14 + baud230400;
- 		break;
- 	case 1200:
--		param_new = 13 + s->crystal;
-+		param_new = 13 + baud230400;
- 		break;
- 	case 2400:
--		param_new = 12 + s->crystal;
-+		param_new = 12 + baud230400;
- 		break;
- 	case 4800:
--		param_new = 11 + s->crystal;
-+		param_new = 11 + baud230400;
- 		break;
- 	case 9600:
--		param_new = 10 + s->crystal;
-+		param_new = 10 + baud230400;
- 		break;
- 	case 19200:
--		param_new = 9 + s->crystal;
-+		param_new = 9 + baud230400;
- 		break;
- 	case 38400:
--		param_new = 8 + s->crystal;
-+		param_new = 8 + baud230400;
- 		break;
- 	case 57600:
--		param_new = 1 + s->crystal;
-+		param_new = 1 + baud230400;
- 		break;
- 	case 115200:
--		param_new = 0 + s->crystal;
-+		param_new = 0 + baud230400;
- 		break;
- 	case 230400:
--		if (s->crystal)
-+		if (baud230400)
- 			param_new = 0;
- 		else
- 			baud = s->baud;
-@@ -577,7 +567,7 @@ static int max3100_startup(struct uart_port *port)
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
- 
- 	s->conf = MAX3100_RM;
--	s->baud = s->crystal ? 230400 : 115200;
-+	s->baud = port->uartclk / 16;
- 	s->rx_enabled = 1;
- 
- 	if (s->suspending)
-@@ -720,8 +710,8 @@ static int uart_driver_registered;
- 
- static int max3100_probe(struct spi_device *spi)
+-static void max3100_dowork(struct max3100_port *s)
+-{
+-	if (!s->force_end_work && !freezing(current) && !s->suspending)
+-		queue_work(s->workqueue, &s->work);
+-}
+-
+-static void max3100_timeout(struct timer_list *t)
+-{
+-	struct max3100_port *s = from_timer(s, t, timer);
+-
+-	max3100_dowork(s);
+-	mod_timer(&s->timer, jiffies + uart_poll_timeout(&s->port));
+-}
+-
+ static int max3100_sr(struct max3100_port *s, u16 tx, u16 *rx)
  {
-+	struct device *dev = &spi->dev;
- 	int i, retval;
--	struct plat_max3100 *pdata;
- 	u16 rx;
+ 	struct spi_message message;
+@@ -313,6 +297,20 @@ static void max3100_work(struct work_struct *w)
+ 		tty_flip_buffer_push(&s->port.state->port);
+ }
  
- 	mutex_lock(&max3100s_lock);
-@@ -757,20 +747,21 @@ static int max3100_probe(struct spi_device *spi)
- 	max3100s[i]->irq = spi->irq;
- 	spin_lock_init(&max3100s[i]->conf_lock);
- 	spi_set_drvdata(spi, max3100s[i]);
--	pdata = dev_get_platdata(&spi->dev);
--	max3100s[i]->crystal = pdata->crystal;
- 	max3100s[i]->minor = i;
- 	timer_setup(&max3100s[i]->timer, max3100_timeout, 0);
- 
- 	dev_dbg(&spi->dev, "%s: adding port %d\n", __func__, i);
- 	max3100s[i]->port.irq = max3100s[i]->irq;
--	max3100s[i]->port.uartclk = max3100s[i]->crystal ? 3686400 : 1843200;
- 	max3100s[i]->port.fifosize = 16;
- 	max3100s[i]->port.ops = &max3100_ops;
- 	max3100s[i]->port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 	max3100s[i]->port.line = i;
- 	max3100s[i]->port.type = PORT_MAX3100;
- 	max3100s[i]->port.dev = &spi->dev;
++static void max3100_dowork(struct max3100_port *s)
++{
++	if (!s->force_end_work && !freezing(current) && !s->suspending)
++		queue_work(s->workqueue, &s->work);
++}
 +
-+	/* Read clock frequency from a property, uart_add_one_port() will fail if it's not set */
-+	device_property_read_u32(dev, "clock-frequency", &max3100s[i]->port.uartclk);
++static void max3100_timeout(struct timer_list *t)
++{
++	struct max3100_port *s = from_timer(s, t, timer);
 +
- 	retval = uart_add_one_port(&max3100_uart_driver, &max3100s[i]->port);
- 	if (retval < 0)
- 		dev_warn(&spi->dev,
++	max3100_dowork(s);
++	mod_timer(&s->timer, jiffies + uart_poll_timeout(&s->port));
++}
++
+ static irqreturn_t max3100_irq(int irqno, void *dev_id)
+ {
+ 	struct max3100_port *s = dev_id;
 -- 
 2.43.0.rc1.1.gbec44491f096
 
