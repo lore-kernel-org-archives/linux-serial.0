@@ -1,133 +1,107 @@
-Received: from mail-177131.yeah.net (mail-177131.yeah.net [123.58.177.131])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 757E712C544;
-	Tue,  2 Apr 2024 14:45:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=123.58.177.131
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EDD584FCD;
+	Tue,  2 Apr 2024 15:42:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712069103; cv=none; b=Qo8olfDyVa+tmGWj/zst9hOYCbq6t5Bxuoj8EdrHM6+xDk6C2LEIcgAVszyQfU9rrQ2/S3oWtBU1uDpc700EMoZaASMlPqfSVbOkO2leeXDTj27ltqqynRC8DZPVJZVuzENn21RlMXkr/UyybCOOoqfzmiwBjcX8/5KOUFiPfTg=
+	t=1712072545; cv=none; b=OAbBVgl+SaRfsWGuNZmNMgDZGZ3h5dGWt+W+HMum1u/QjIER6Neu4cAceyoavD6eh9ZSrQTwSkbCzIZB3kec94wVF3wMPWEkuavfMrVu5qYA0IZlmqsxsaedXpQ8IN6gPtDXuu5j1srwDMr/vqXQjcmxjBoK1cW6uW80OS2uO9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712069103; c=relaxed/simple;
-	bh=UoAIQh6T2R5yd03vS3etflEo5KsJFR7Ir5HehSGj0qU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I0kOnoH9UXN6za2tjzjus/yr9ubGTrx+ZMTF6DCJrFNTmf90WEYKdNyl9FVD4R2KPHSzjVWn/ldGLWVULwiqltYEXPl1K79WFwBKKCXXFG7iHE7K1GCJKW0voZkRKOBxMz9sK9kVf9+rYzsL9n3YJXoIERnF9MVoUccWPHmXn3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yeah.net; spf=pass smtp.mailfrom=yeah.net; dkim=pass (1024-bit key) header.d=yeah.net header.i=@yeah.net header.b=I8eFhD78; arc=none smtp.client-ip=123.58.177.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yeah.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yeah.net
+	s=arc-20240116; t=1712072545; c=relaxed/simple;
+	bh=3qKFLfNKckxhtzTrYwg8CiyP780i0A8n/fZ4lxrWml4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=E2L2MG5T70DiLp2MgS3bNepYaJif+qOABy8TpZaNk4KfFSdKKzevXFvdADKPpgAVeiARGgsW5xrYZm+1Cx9E1vlq1QEVYMQV+ZXnxwniEGYDoP5MufywgdBorTSdA5KtyvESUMD8WANc6uOO4YKDn0GopMq31AJvFhi33oy7NUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T9Xpanjj; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=yeah.net header.i=@yeah.net header.b="I8eFhD78"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yeah.net;
-	s=s110527; h=Date:From:Subject:Message-ID:MIME-Version:
-	Content-Type; bh=sNp+AZXGX0bUEOLXo2ZGNsWH+ua3wPGWHS+AYi2Sy94=;
-	b=I8eFhD78wX/KsGbMXjYCDiOI/4+iFV21AYAWatCGUUr9GlU1h2acMWQGuPSVc+
-	dx/49bGRy+cZNIPU8xEzxUJyuHI1B54xWKQtEVBWlgFH9jKZKfWhBJcVDnNc6yHq
-	oHplaASZd4k0BeDzmHPOoPw7UtMFu9iVBlqw2a1m1zi4I=
-Received: from dragon (unknown [223.68.79.243])
-	by smtp1 (Coremail) with SMTP id ClUQrADnr0IuGQxm_E+mAQ--.45967S3;
-	Tue, 02 Apr 2024 22:41:51 +0800 (CST)
-Date: Tue, 2 Apr 2024 22:41:50 +0800
-From: Shawn Guo <shawnguo2@yeah.net>
-To: Wadim Mueller <wafgo01@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	NXP Linux Team <linux-imx@nxp.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Chester Lin <chester62515@gmail.com>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-	Matthias Brugger <mbrugger@suse.com>,
-	NXP S32 Linux Team <s32@nxp.com>,
-	Tim Harvey <tharvey@gateworks.com>,
-	Marco Felsch <m.felsch@pengutronix.de>, Marek Vasut <marex@denx.de>,
-	Gregor Herburger <gregor.herburger@ew.tq-group.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Joao Paulo Goncalves <joao.goncalves@toradex.com>,
-	Markus Niebel <Markus.Niebel@ew.tq-group.com>,
-	Matthias Schiffer <matthias.schiffer@tq-group.com>,
-	Stefan Wahren <stefan.wahren@chargebyte.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Philippe Schenker <philippe.schenker@toradex.com>,
-	Josua Mayer <josua@solid-run.com>, Li Yang <leoyang.li@nxp.com>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T9Xpanjj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712072543; x=1743608543;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3qKFLfNKckxhtzTrYwg8CiyP780i0A8n/fZ4lxrWml4=;
+  b=T9XpanjjKU5XHedST3pGoTz/xHuWoH98IyhrTNjY+XEZA4kH9fWRbu+g
+   Md+uLA7Tftc37cDlvdyH6M5cRe/k+RHIG2TGumws+V91MYdDkJpZmXnJw
+   MNKP0tXWTOF/68WPgjBWApf62JWNg1huoCprMsLiGVKpd1ScGPEikwybc
+   1VQMJN9hq+GHe9in+wMDzxzVlk9LGeqlSTpcErvrvmI7bIlklKK1hmLbt
+   Hgie6eWUGV0Bz2yp4Gt5rseSgumnsYvBEO/Kw9O0mMlWBnm0PHR/0ybiF
+   8bStW7tCzNWXApoHPgOpA0dRTVXG5omv9UqMpJ3NXQRsmBvg/Sr/eCciT
+   A==;
+X-CSE-ConnectionGUID: 0TQIAYzaS9Guf6r60b1nZw==
+X-CSE-MsgGUID: VCFQkQNuS5qoeZga4L2L+A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="17870048"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="17870048"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 08:42:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083635"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="937083635"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 08:42:21 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 3E38328A; Tue,  2 Apr 2024 18:42:20 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 4/4] arm64: dts: S32G3: Introduce device tree for
- S32G-VNP-RDB3
-Message-ID: <ZgwZLkpBf11rHNrG@dragon>
-References: <20240324214329.29988-1-wafgo01@gmail.com>
- <20240324214329.29988-5-wafgo01@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 03/16] serial: max3100: Fix bitwise types
+Date: Tue,  2 Apr 2024 18:38:09 +0300
+Message-ID: <20240402154219.3583679-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
+References: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240324214329.29988-5-wafgo01@gmail.com>
-X-CM-TRANSID:ClUQrADnr0IuGQxm_E+mAQ--.45967S3
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Cw1xGry8Zw1DCFWfuryUWrg_yoW5Jr1fpa
-	yrCrZ3GrZ7Gr17Zayaga1kWFyqvws5JFWYkry5ury8tr45Zr9Yqr10krsIgr47Xrn5Aayr
-	CF1F9ryxu3WYy3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j34SrUUUUU=
-X-CM-SenderInfo: pvkd40hjxrjqh1hdxhhqhw/1tbiFRC0ZV6NnBoE+QAAs8
+Content-Transfer-Encoding: 8bit
 
-On Sun, Mar 24, 2024 at 10:43:26PM +0100, Wadim Mueller wrote:
-> This commit adds device tree support for the NXP S32G3-based
-> S32G-VNP-RDB3 Board [1].
-> 
-> The S32G3 features an 8-core ARM Cortex-A53 based SoC developed by NXP.
-> 
-> The device tree files are derived from the official NXP downstream
-> Linux tree [2].
-> 
-> This addition encompasses a limited selection of peripherals that
-> are upstream-supported. Apart from the ARM System Modules
-> (GIC, Generic Timer, etc.), the following IPs have been validated:
-> 
->     * UART: fsl-linflexuart
->     * SDHC: fsl-imx-esdhc
-> 
-> Clock settings for the chip rely on ATF Firmware [3].
-> Pin control integration into the device tree is pending and currently
-> relies on Firmware/U-Boot settings [4].
-> 
-> These changes were validated using BSP39 Firmware/U-Boot from NXP [5].
-> 
-> The modifications enable booting the official Ubuntu 22.04 from NXP on
-> the RDB3 with default settings from the SD card and eMMC.
-> 
-> [1] https://www.nxp.com/design/design-center/designs/s32g3-vehicle-networking-reference-design:S32G-VNP-RDB3
-> [2] https://github.com/nxp-auto-linux/linux
-> [3] https://github.com/nxp-auto-linux/arm-trusted-firmware
-> [4] https://github.com/nxp-auto-linux/u-boot
-> [5] https://github.com/nxp-auto-linux/auto_yocto_bsp
-> 
-> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
-> ---
->  arch/arm64/boot/dts/freescale/Makefile        |   1 +
->  arch/arm64/boot/dts/freescale/s32g3.dtsi      | 233 ++++++++++++++++++
->  .../boot/dts/freescale/s32g399a-rdb3.dts      |  45 ++++
->  3 files changed, 279 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/freescale/s32g3.dtsi
->  create mode 100644 arch/arm64/boot/dts/freescale/s32g399a-rdb3.dts
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-> index 2cb0212b63c6..e701008dbc7b 100644
-> --- a/arch/arm64/boot/dts/freescale/Makefile
-> +++ b/arch/arm64/boot/dts/freescale/Makefile
-> @@ -252,3 +252,4 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mp-venice-gw74xx-rpidsi.dtb
->  dtb-$(CONFIG_ARCH_S32) += s32g274a-evb.dtb
->  dtb-$(CONFIG_ARCH_S32) += s32g274a-rdb2.dtb
->  dtb-$(CONFIG_ARCH_S32) += s32v234-evb.dtb
-> +dtb-$(CONFIG_ARCH_S32) += s32g399a-rdb3.dtb
+Sparse is not happy about misuse of bitwise types:
 
-The list is alphabetically sorted, so it should be added before
-s32v234-evb.dtb.  I fixed it up and applied the patch.
+  .../max3100.c:194:13: warning: incorrect type in assignment (different base types)
+  .../max3100.c:194:13:    expected unsigned short [addressable] [usertype] etx
+  .../max3100.c:194:13:    got restricted __be16 [usertype]
+  .../max3100.c:202:15: warning: cast to restricted __be16
 
-Shawn
+Fix this by choosing proper types for the respective variables.
+
+Fixes: 7831d56b0a35 ("tty: MAX3100")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/max3100.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index efe26f6d5ebf..3c68b8e1a226 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -45,6 +45,9 @@
+ #include <linux/freezer.h>
+ #include <linux/tty.h>
+ #include <linux/tty_flip.h>
++#include <linux/types.h>
++
++#include <asm/unaligned.h>
+ 
+ #include <linux/serial_max3100.h>
+ 
+@@ -191,7 +194,7 @@ static void max3100_timeout(struct timer_list *t)
+ static int max3100_sr(struct max3100_port *s, u16 tx, u16 *rx)
+ {
+ 	struct spi_message message;
+-	u16 etx, erx;
++	__be16 etx, erx;
+ 	int status;
+ 	struct spi_transfer tran = {
+ 		.tx_buf = &etx,
+-- 
+2.43.0.rc1.1.gbec44491f096
 
