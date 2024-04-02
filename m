@@ -1,30 +1,31 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F326A159910;
-	Tue,  2 Apr 2024 17:45:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E652615A4B3;
+	Tue,  2 Apr 2024 17:45:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712079906; cv=none; b=IvaXIynZ8ERpdUUw1ZDyOe3EutpEudOCIGUjNKx9b+uxFnqFBrIDZ+noFhNMyOgj4sug2hQxh41/KfDLGHxjdIZLcBHp4eoxyf+i2y9jQPmFUth5vZgyw7avf00BjPF+KKXJ7BF6qI/u2Xl3M+yYeH0cNaCWuk/3Y//UcUTE2RY=
+	t=1712079907; cv=none; b=Gf4s8HZXFzj8lBGBaE1JOlrOhqKjSUFsGBbB3BvKPaq+poWHS2BiFz8iKwOWw+HjI6RRk9xmkvHTioIKH64JlUefnzTmGQpvu0lrYZ7VNHjaMNA8N14vofAcI0Wa7Ttyr7sOCmAJCz6Auo1TycYJ5cDNSSSPt4ZSjlF4bZC76xo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712079906; c=relaxed/simple;
-	bh=AbpB2KHSXA2Gd4ST+SXTe7OHQwyZ+KzWtYnbWX18qYk=;
-	h=From:To:Cc:Date:Message-Id:MIME-Version:Subject; b=Q8/bolCLIZQeW6gkscKkw95h/IrXz9q78mwOmluqCsBhSoBpcD/BCxeWnvWyLEa+nhFc65POyHxGMU6Q/s0yrzdIUBCQpp0HyC+tnaybti522Qc097jUOACWpAi7n467mNPLvDM6YXjLhr9TE00gct9LNkC79bTlx2cwbq4XXKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=AWApqeI1; arc=none smtp.client-ip=162.243.120.170
+	s=arc-20240116; t=1712079907; c=relaxed/simple;
+	bh=NO8sx7BEmdXAJCCtmgmWaDRmvaBNQzYUor23w6HgV+A=;
+	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
+	 Subject; b=c339y3LE1IncSoQTxsiatPRxeFhHe1R7ZEXS3T6Uc1WvgZvRvmoOoC06oDDJlUGDJdgZRTc2rWQMngWSJzD/GDVDrhTw+C3RLg9Hciwbj2vBkJSFdU70WTn1j60RZXF2Pk31p7NPOOVZe8kJ2oFkohxdA1KNeXMeaSxI4KQ3Xn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=xrkwXQUo; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="AWApqeI1"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="xrkwXQUo"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=4rrp6ETByzdIBJA25gHZc6tDZQp+n0yfQSvoQtvDxQE=; b=AWApqeI1n5Vww7rSVLD1Bh+WM/
-	kVNwusjnrs8FY7M8UIJ1csnrv4pSvCtrjgjEEQfF1ykzfC55EwqSR+kYUNhXdYuAhHuH5sZFEV7Wm
-	UQidp5wdC1yzZqgmHG9v1wS1Io8L66bUy4REcvGOfBHOZZZHagWILgXSSP1yVnwMQ/Ac=;
+	bh=Ks1JKRBp1nmEsXMUxSJGLv5REfK4wuCmiSDm2+yGNNI=; b=xrkwXQUo0CW0RX2YW/48jL2CxG
+	xYb4cHBH8jEcSTwn3HIjvUXLLIBsnbEUJDcJ+Gg2HTQ18nrfn2SDH7yQLgN0TN96w7LCJeoTqkUjO
+	bxjOaogWoPuBoCV0ll04VkBh+m674Ysj45i5ffhsNR0UOtHuOaY2FgLsKsmxa1mSwQmM=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:56268 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1rriBy-0008FF-3O; Tue, 02 Apr 2024 13:45:02 -0400
+	id 1rriBz-0008FF-RO; Tue, 02 Apr 2024 13:45:04 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -33,9 +34,11 @@ Cc: linux-kernel@vger.kernel.org,
 	hugo@hugovil.com,
 	andy.shevchenko@gmail.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Tue,  2 Apr 2024 13:43:48 -0400
-Message-Id: <20240402174353.256627-1-hugo@hugovil.com>
+Date: Tue,  2 Apr 2024 13:43:50 -0400
+Message-Id: <20240402174353.256627-3-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240402174353.256627-1-hugo@hugovil.com>
+References: <20240402174353.256627-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,71 +51,77 @@ X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH v3 0/5] serial: sc16is7xx: split into core and I2C/SPI parts
+Subject: [PATCH v3 2/5] serial: sc16is7xx: simplify and improve Kconfig help text
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Hello,
-this patch series splits the SPI/I2C parts for the sc16is7xx driver into
-separate source files (and separate I2C/SPI drivers).
+Simplify and improve Kconfig help text for SC16IS7XX driver:
 
-These changes are based on suggestions made by Andy Shevchenko
-following this discussion:
+Especially get rid of the confusing:
+    "If required say y, and say n to..."
+in each of the I2C and SPI portions.
 
-Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=Mrn2kbYs1Lx26f5-8rKJ3RXeh-w@mail.gmail.com/
+Capitalize SPI keyword for consistency.
 
-The changes are split into multiple patches to facilitate the review process.
-In the end, some of them could be merged into a single patch.
+Display list of supported ICs each on a separate line (and aligned) to
+facilitate locating a specific IC model.
 
-I have tested the changes on a custom board with two SC16IS752 DUART over
-a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
-configured in RS-485 mode.
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/Kconfig | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-I did not test the changes on a real SC16is7xx using the I2C interface. But
-I slighly modified the driver to be able to simulate an I2C device using
-i2c-stub. I was then able to instantiate a virtual I2C device without
-disturbing existing connection/communication between real SPI devices on
-/dev/ttySC0 and /dev/ttySC2 (using a loopback cable).
-
-Thank you.
-
-Link: [v1] https://lore.kernel.org/lkml/20240206214208.2141067-1-hugo@hugovil.com
-      [v2] https://lore.kernel.org/lkml/20240307161828.118495-1-hugo@hugovil.com
-
-Changes for V2:
-- Move port_registered[] init before the for loop to prevent bug if
-  aborting probe when i = 0
-- Since patch f7b487648986 ("lib/find: add atomic find_bit() primitives") has
-  been dropped from linux-next/master, rework patch 2 (sc16is7xx_lines)
-  without find_and_set_bit.
-
-Changes for V3:
-- Simplify sc16is7xx_lines allocation by using the IDA framework
-
-Hugo Villeneuve (5):
-  serial: sc16is7xx: unconditionally clear line bit in
-    sc16is7xx_remove()
-  serial: sc16is7xx: simplify and improve Kconfig help text
-  serial: sc16is7xx: split into core and I2C/SPI parts (core)
-  serial: sc16is7xx: split into core and I2C/SPI parts (sc16is7xx_lines)
-  serial: sc16is7xx: split into core and I2C/SPI parts
-    (sc16is7xx_regcfg)
-
- drivers/tty/serial/Kconfig         |  41 +++--
- drivers/tty/serial/Makefile        |   4 +-
- drivers/tty/serial/sc16is7xx.c     | 255 ++++++-----------------------
- drivers/tty/serial/sc16is7xx.h     |  41 +++++
- drivers/tty/serial/sc16is7xx_i2c.c |  74 +++++++++
- drivers/tty/serial/sc16is7xx_spi.c |  97 +++++++++++
- 6 files changed, 288 insertions(+), 224 deletions(-)
- create mode 100644 drivers/tty/serial/sc16is7xx.h
- create mode 100644 drivers/tty/serial/sc16is7xx_i2c.c
- create mode 100644 drivers/tty/serial/sc16is7xx_spi.c
-
-
-base-commit: 39cd87c4eb2b893354f3b850f916353f2658ae6f
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index ffcf4882b25f9..48087e34ff527 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1028,9 +1028,18 @@ config SERIAL_SC16IS7XX
+ 	select SERIAL_CORE
+ 	depends on (SPI_MASTER && !I2C) || I2C
+ 	help
+-	  This selects support for SC16IS7xx serial ports.
+-	  Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+-	  SC16IS760 and SC16IS762. Select supported buses using options below.
++	  Core driver for NXP SC16IS7xx serial ports.
++	  Supported ICs are:
++
++	    SC16IS740
++	    SC16IS741
++	    SC16IS750
++	    SC16IS752
++	    SC16IS760
++	    SC16IS762
++
++	  You also must select at least one of I2C and SPI interface
++	  drivers below.
+ 
+ config SERIAL_SC16IS7XX_I2C
+ 	bool "SC16IS7xx for I2C interface"
+@@ -1041,9 +1050,7 @@ config SERIAL_SC16IS7XX_I2C
+ 	default y
+ 	help
+ 	  Enable SC16IS7xx driver on I2C bus,
+-	  If required say y, and say n to i2c if not required,
+-	  Enabled by default to support oldconfig.
+-	  You must select at least one bus for the driver to be built.
++	  enabled by default to support oldconfig.
+ 
+ config SERIAL_SC16IS7XX_SPI
+ 	bool "SC16IS7xx for spi interface"
+@@ -1052,10 +1059,7 @@ config SERIAL_SC16IS7XX_SPI
+ 	select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+ 	select REGMAP_SPI if SPI_MASTER
+ 	help
+-	  Enable SC16IS7xx driver on SPI bus,
+-	  If required say y, and say n to spi if not required,
+-	  This is additional support to existing driver.
+-	  You must select at least one bus for the driver to be built.
++	  Enable SC16IS7xx driver on SPI bus.
+ 
+ config SERIAL_TIMBERDALE
+ 	tristate "Support for timberdale UART"
 -- 
 2.39.2
 
