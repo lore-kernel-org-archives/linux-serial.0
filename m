@@ -1,99 +1,197 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7079D15AAAA;
-	Tue,  2 Apr 2024 19:51:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C56715B96A;
+	Tue,  2 Apr 2024 19:53:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712087480; cv=none; b=ldMFyRj6ye+XR1Zs3OuTtRcIwiJOCZ72CezufrGTiGLfeWQyaVEuPqOQ4FD20tKBwOOpQfYRFMp8/Nk1E7kjG7/9yzYYGgrWBj9EnkIC28MiqW1CdptqzkeTECk3E/t/+1TkKYmVISxJuTj2pBvn7XH7LMZadhnni7qzHqb0gdQ=
+	t=1712087595; cv=none; b=PPlsb+OS1Bz6ibCO38R5/8vwf5a+G4Q1mmU5zZ8pF6gJa+qc9RLNoCauIYQriYsCAkE2lMHVJoZB4fNpQZ8l+k/mASmuZeOl3EAy69lfKtM+Pe7miJoIEtVxsWehHemlkBwO5D6uysJAEwMdPe4eZYKdtT/WqaGt9po15smDWdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712087480; c=relaxed/simple;
-	bh=bqXSoYZYpoDOlviSuyY8vu24PrI+70YMdminhVwEYNs=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=Ri9ljOsXjYHNw/E97BPVrpj3qMYwcyYCUyDIffA4byI5w+z/ECFYkyZq1bejT6ZHVy+zKOoVo81pqvfPh7jBHmwd1v5WWBLuj3f/NGCKnGYVd/fPHGn8dy7umcmfnoT9CZoO7pVtVDkClA9b4yLxFqGsdfqb0XmS4a9qrPMRXc8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=eB4ebqY7; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1712087595; c=relaxed/simple;
+	bh=1UzMmpdJ3SyH/zn8EcKQjxnq5OJVXRSw4sEYO55O31c=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=FLHjTKxehULA3+5L9nmfwWHkXDBzySPDhJWRW3Ten9uWvoUTHDZmmUub13Wdla7+/fOfuK1DRU/9P+9kQOTcZGea8bg6D95KJqkNlYnh/EKb0DU/vJnmJ+LPJZIshLoUuuqwj53mNOvnh6nck3YqU4MrYcLOHBes+86Tf0LdWeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NxigBuYs; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="eB4ebqY7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=9DaXjULJHLZpzhqzyNkkPkEBR6YCb7iZnUxB3ewIuiM=; b=eB4ebqY77eAy5B+wYMKAXdHm8S
-	/9LoTwYSrV1tP6OlfY4l436g/XkgNzCgeSFPaTfiTtIz64G5L622/trtFRHJpineY7/EDDf47ngBN
-	Va2dUe8AL22iFq5gZE+umzBylvdE20S4I8Wxa9mgwQxXYPZqwupwyXed9yeX8sT8eow0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:50794 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rrkA7-0001Hn-JC; Tue, 02 Apr 2024 15:51:15 -0400
-Date: Tue, 2 Apr 2024 15:51:15 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Message-Id: <20240402155115.7aa760a4b7a107003e2b411c@hugovil.com>
-In-Reply-To: <CAHp75VedAiB_wSaq+oaNriC3HfLC=ft21O=ZYW_wCARPS7v3QQ@mail.gmail.com>
-References: <20240402174353.256627-1-hugo@hugovil.com>
-	<20240402174353.256627-5-hugo@hugovil.com>
-	<CAHp75VedAiB_wSaq+oaNriC3HfLC=ft21O=ZYW_wCARPS7v3QQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NxigBuYs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712087594; x=1743623594;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=1UzMmpdJ3SyH/zn8EcKQjxnq5OJVXRSw4sEYO55O31c=;
+  b=NxigBuYs/KhhLDd99ZK1ij3qrZp3GxRQthng8XKsGclOwa2AWHrH6NwH
+   LY4LcNpUIvNVls/5LfFhLFlBpIlWB/8V8qos3zEBYMcaFPCL1y1Nv+oh7
+   iGjpdgQVZuMEHbbJ614zYTKM8LI9x6GPSPqny8zOlAlYDm/ZEJq3qORnR
+   +uNzsCJqDbvtko+UEIrwX4IV6jZewIoZcLdhQzSFd9vKpd7CNQZZzPI7d
+   bTGyiZQV2u5qPtx4prY7aALaAwiqjQt+xCUGQFyhGelEefUr3zaVfbeTD
+   qZVsBbBHGmin2YxI0ltgsQX6FwdOBgmLgwAPcxAZ7+O92nHJcUPBs06A5
+   A==;
+X-CSE-ConnectionGUID: qA3a4RotSDORZNgf9VvLpw==
+X-CSE-MsgGUID: dSTH3/2ASRK6DUSxNkWeDA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7150988"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="7150988"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 12:53:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083782"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="937083782"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 12:53:10 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id D746957D; Tue,  2 Apr 2024 22:53:09 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hugo@hugovil.com>
+Subject: [PATCH v2 04/16] serial: max3100: Make struct plat_max3100 local
+Date: Tue,  2 Apr 2024 22:50:31 +0300
+Message-ID: <20240402195306.269276-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
+References: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v3 4/5] serial: sc16is7xx: split into core and I2C/SPI
- parts (sc16is7xx_lines)
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, 2 Apr 2024 22:28:25 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+There is no user of the struct plat_max3100 outside the driver.
+Inline its contents into the driver. While at it, drop outdated
+example in the comment.
 
-> On Tue, Apr 2, 2024 at 8:45 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >
-> > Before, sc16is7xx_lines was checked for a free (zero) bit first, and then
-> > later it was set only if UART port registration succeeded. Now that
-> > sc16is7xx_lines is shared for the I2C and SPI drivers, there is a
-> > possibility that the two drivers can simultaneously try to reserve the same
-> > line bit at the same time.
-> >
-> > To prevent this, make sure line allocation is reserved atomically, and use
-> > a new variable to hold the status of UART port regisration.
-> 
-> registration
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/max3100.c   | 38 +++++++++++++--------------
+ include/linux/serial_max3100.h | 48 ----------------------------------
+ 2 files changed, 18 insertions(+), 68 deletions(-)
+ delete mode 100644 include/linux/serial_max3100.h
 
-Hi Andy,
-will fix for V4.
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 3d2b83d6ab51..031803a5da58 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -1,6 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+- *
+  *  Copyright (C) 2008 Christian Pellegrin <chripell@evolware.org>
+  *
+  * Notes: the MAX3100 doesn't provide an interrupt on CTS so we have
+@@ -8,24 +7,6 @@
+  * writing conf clears FIFO buffer and we cannot have this interrupt
+  * always asking us for attention.
+  *
+- * Example platform data:
+-
+- static struct plat_max3100 max3100_plat_data = {
+- .loopback = 0,
+- .crystal = 0,
+- .poll_time = 100,
+- };
+-
+- static struct spi_board_info spi_board_info[] = {
+- {
+- .modalias	= "max3100",
+- .platform_data	= &max3100_plat_data,
+- .irq		= IRQ_EINT12,
+- .max_speed_hz	= 5*1000*1000,
+- .chip_select	= 0,
+- },
+- };
+-
+  * The initial minor number is 209 in the low-density serial port:
+  * mknod /dev/ttyMAX0 c 204 209
+  */
+@@ -49,7 +30,24 @@
+ 
+ #include <asm/unaligned.h>
+ 
+-#include <linux/serial_max3100.h>
++/**
++ * struct plat_max3100 - MAX3100 SPI UART platform data
++ * @loopback:            force MAX3100 in loopback
++ * @crystal:             1 for 3.6864 Mhz, 0 for 1.8432
++ * @max3100_hw_suspend:  MAX3100 has a shutdown pin. This is a hook
++ *                       called on suspend and resume to activate it.
++ * @poll_time:           poll time for CTS signal in ms, 0 disables (so no hw
++ *                       flow ctrl is possible but you have less CPU usage)
++ *
++ * You should use this structure in your machine description to specify
++ * how the MAX3100 is connected.
++ */
++struct plat_max3100 {
++	int loopback;
++	int crystal;
++	void (*max3100_hw_suspend) (int suspend);
++	int poll_time;
++};
+ 
+ #define MAX3100_C    (1<<14)
+ #define MAX3100_D    (0<<14)
+diff --git a/include/linux/serial_max3100.h b/include/linux/serial_max3100.h
+deleted file mode 100644
+index befd55c08a7c..000000000000
+--- a/include/linux/serial_max3100.h
++++ /dev/null
+@@ -1,48 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-/*
+- *
+- *  Copyright (C) 2007 Christian Pellegrin
+- */
+-
+-
+-#ifndef _LINUX_SERIAL_MAX3100_H
+-#define _LINUX_SERIAL_MAX3100_H 1
+-
+-
+-/**
+- * struct plat_max3100 - MAX3100 SPI UART platform data
+- * @loopback:            force MAX3100 in loopback
+- * @crystal:             1 for 3.6864 Mhz, 0 for 1.8432
+- * @max3100_hw_suspend:  MAX3100 has a shutdown pin. This is a hook
+- *                       called on suspend and resume to activate it.
+- * @poll_time:           poll time for CTS signal in ms, 0 disables (so no hw
+- *                       flow ctrl is possible but you have less CPU usage)
+- *
+- * You should use this structure in your machine description to specify
+- * how the MAX3100 is connected. Example:
+- *
+- * static struct plat_max3100 max3100_plat_data = {
+- *  .loopback = 0,
+- *  .crystal = 0,
+- *  .poll_time = 100,
+- * };
+- *
+- * static struct spi_board_info spi_board_info[] = {
+- * {
+- *  .modalias	= "max3100",
+- *  .platform_data	= &max3100_plat_data,
+- *  .irq		= IRQ_EINT12,
+- *  .max_speed_hz	= 5*1000*1000,
+- *  .chip_select	= 0,
+- * },
+- * };
+- *
+- **/
+-struct plat_max3100 {
+-	int loopback;
+-	int crystal;
+-	void (*max3100_hw_suspend) (int suspend);
+-	int poll_time;
+-};
+-
+-#endif
+-- 
+2.43.0.rc1.1.gbec44491f096
 
-> 
-> > Now that we no longer need to search if a bit is set, it is now possible
-> > to simplify sc16is7xx_lines allocation by using the IDA framework.
-> 
-> ...
-> 
-> > -static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
-> > +static DEFINE_IDA(sc16is7xx_lines);
-> 
-> Don't we need to replace bitmap.h with idr.h with this change in place?
-
-Yes, but I will replace bitops.h with idr.h in V4 (bitmap.h was not
-included).
-
-While at it, I will include an additional patch to replace inlude of 
-<uapi/linux/sched/types.h> with <linux/sched.h>.
-
-Thank you,
-Hugo.
