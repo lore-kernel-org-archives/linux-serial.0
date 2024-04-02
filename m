@@ -1,58 +1,61 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 484D0131753;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F00C132C39;
 	Tue,  2 Apr 2024 15:42:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712072546; cv=none; b=mABQjxGYxXbxQgxd334CqlvTEN7DLKPhYk2oQR5b9+y33RS3qlQPI1PmsVyA3IcTRlvy9fKl6fg8Lprt0WoA0ttoxrDjDw9n7rDDAZeTzmf+1qw5qCBTQcFTb87HxzY7K//oM93js2PXC4HUFpPvqR73IFUPXSgjaUMzBrfbrLY=
+	t=1712072548; cv=none; b=WfAqcP8osRyOZPaR+UacYwkXBwB6fJxooLzj8Sx9B5LdxWOQ40KJMtYkwrYnXbo9qgAEeEkFK+bSnNqd9iKZkoRV3B99vV2+frvjYniI3KltNIZPiAd3iNabHT0DcdQrmhLOGAKPCKlKiMGtUEbtd9v0W9fx/KVayaZJ26ukyRI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712072546; c=relaxed/simple;
-	bh=2/PWeuWesUzausxl//V13vqLBKaXiwUc4zo7E78hC44=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=u1IHl1cAV4TBK1QGppLC21ymAQ1Y809UBJB6btFs+OsRupNngQcljBBFDQv/gEIEAUh0wJkbcr0bKwr6RLLyNk6dQOJDfG023kFDWSIeRAEYzDL+qk67atHk+kjAkEBbb5NSjsRUmNqg5uhBkxeIIYIwBCWbWSI3wdaBiFC5xYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oKJUSJCx; arc=none smtp.client-ip=192.198.163.11
+	s=arc-20240116; t=1712072548; c=relaxed/simple;
+	bh=o78Fa752/ZOPs6iLperlSbDq86UPzIkFataSRBoiH5o=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZjRj0BqSLS3ibp7ePEWLhmUNgNlQUCR8E51n7RtdMqPw/r5/32JZDAZDrAiQxIMfl4LbYlwdyFT9lYI7AO7WyloRDvt86VOjIFiVtMbPnW9mYHzb95AdnhTPusPFbGty2uJ4Ja9zZ4upGyyr8C5vzeGcSFIConENiJMeZO/shRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JhRRKeZg; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oKJUSJCx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JhRRKeZg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712072545; x=1743608545;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2/PWeuWesUzausxl//V13vqLBKaXiwUc4zo7E78hC44=;
-  b=oKJUSJCxFyjN5UaqWIOvCVxj15hnQgwIqlh14SoHmW6cXONLlSUh3ieD
-   s7y4kYvJqtI/ZXqYBGZ9p1DX7td2/uLTZWbV5cXn1LufLd5t2NlPl+aNT
-   9uhdkNr7O0lq4kSG7WsYGXmbJnZosWDEwJ2KumUjQFKql+jNWg5c4mBpQ
-   6Q48AN5gVWUuWRVf7a2WOufpNdRTvk/QSKIqgnTkRTesfCMttdSo1LzFj
-   FZgfRVPGsgR+Yg8CnPlP4HtmtODi/fXeCsT28lD7uWQhYtmvhNWgUTUct
-   dhSnRA2vai/Z476KqEYrUvpyzQZMg7+SIRH0gKo9iSQkLmrsQPIBSGLFh
-   w==;
-X-CSE-ConnectionGUID: dNz+PfqrQyuwugDVdefSOQ==
-X-CSE-MsgGUID: hraLqaSNTY6fd8BSPtO3Ng==
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="17870051"
+  t=1712072546; x=1743608546;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=o78Fa752/ZOPs6iLperlSbDq86UPzIkFataSRBoiH5o=;
+  b=JhRRKeZgk4TdfSlc/i8PRARSiAPC7EdrZF4A98iOdkLp7nedM49aAicx
+   8BcCXCVQE0+DubNWlAldgI58xpIxFaBUSDLsbhUWw/NcabvPDd0f4/q+r
+   +uGYI65LqCrrspLa5uf7aT8yDUqqdoAUqCk4JfXn2lZ2LVHoiEHERzVHK
+   upVhcrn5sDpHekJMOsWF8qVslZ2NBZw4VNwVeglDxRWOKWR1+SEOdZ7R6
+   2HxtXuy/UUV7hZlF9QqLHmDFvrbsNBJxIWVhXVL9FVmA9XvkQ2JMPIvnq
+   VrixDaXGlDMU66mM1R6boHMJs8rwjFY1RwB5+xqHnptK0kaR3AZqOM4gQ
+   A==;
+X-CSE-ConnectionGUID: PV/v7GXrQkS+8xUl3pUVMg==
+X-CSE-MsgGUID: cprVtvEMTNC684Nd5tUTtA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="17870055"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="17870051"
+   d="scan'208";a="17870055"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 08:42:22 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083637"
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083636"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="937083637"
+   d="scan'208";a="937083636"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 08:42:21 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 1B4841C5; Tue,  2 Apr 2024 18:42:20 +0300 (EEST)
+	id 3506D506; Tue,  2 Apr 2024 18:42:20 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 00/16] serial: max3100: Put into shape
-Date: Tue,  2 Apr 2024 18:38:06 +0300
-Message-ID: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 02/16] serial: max3100: Update uart_driver_registered on driver removal
+Date: Tue,  2 Apr 2024 18:38:08 +0300
+Message-ID: <20240402154219.3583679-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
+References: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,39 +65,40 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Put the driver into the shape with all new bells and whistles
-from the kernel.
+The removal of the last MAX3100 device triggers the removal of
+the driver. However, code doesn't update the respective global
+variable and after insmod — rmmod — insmod cycle the kernel
+oopses:
 
-The first three patches marked as fixes, but there is no hurry (as it
-was for ages like this in the kernel) to pipe them to stable. That's
-why I sent all in one series and it's good for tty-next.
+  max3100 spi-PRP0001:01: max3100_probe: adding port 0
+  BUG: kernel NULL pointer dereference, address: 0000000000000408
+  ...
+  RIP: 0010:serial_core_register_port+0xa0/0x840
+  ...
+   max3100_probe+0x1b6/0x280 [max3100]
+   spi_probe+0x8d/0xb0
 
-Tested on Intel Merrifield with MAX3111e connected.
+Update the actual state so next time UART driver will be registered
+again.
 
-Andy Shevchenko (16):
-  serial: max3100: Lock port->lock when calling uart_handle_cts_change()
-  serial: max3100: Update uart_driver_registered on driver removal
-  serial: max3100: Fix bitwise types
-  serial: max3100: Make struct plat_max3100 local
-  serial: max3100: Remove custom HW shutdown support
-  serial: max3100: Replace custom polling timeout with standard one
-  serial: max3100: Enable TIOCM_LOOP
-  serial: max3100: Get crystal frequency via device property
-  serial: max3100: Remove duplicating irq field
-  serial: max3100: Switch to use dev_err_probe()
-  serial: max3100: Replace MODULE_ALIAS() with respective ID tables
-  serial: max3100: Switch to DEFINE_SIMPLE_DEV_PM_OPS()
-  serial: max3100: Extract to_max3100_port() helper macro
-  serial: max3100: Remove unneeded forward declaration
-  serial: max3100: Sort headers
-  serial: max3100: Update Kconfig entry
+Fixes: 7831d56b0a35 ("tty: MAX3100")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/max3100.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/tty/serial/Kconfig     |   7 +-
- drivers/tty/serial/max3100.c   | 320 +++++++++++++--------------------
- include/linux/serial_max3100.h |  48 -----
- 3 files changed, 131 insertions(+), 244 deletions(-)
- delete mode 100644 include/linux/serial_max3100.h
-
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 45022f2909f0..efe26f6d5ebf 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -841,6 +841,7 @@ static void max3100_remove(struct spi_device *spi)
+ 		}
+ 	pr_debug("removing max3100 driver\n");
+ 	uart_unregister_driver(&max3100_uart_driver);
++	uart_driver_registered = 0;
+ 
+ 	mutex_unlock(&max3100s_lock);
+ }
 -- 
 2.43.0.rc1.1.gbec44491f096
 
