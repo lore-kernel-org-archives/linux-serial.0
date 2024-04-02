@@ -1,68 +1,67 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0610915B98D;
-	Tue,  2 Apr 2024 19:40:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE881EF01;
+	Tue,  2 Apr 2024 19:42:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712086846; cv=none; b=h2/C0m9mTfoA0vODFCaMkt+Tze9Qog0NYiE49aECtW26aG2zqYwOXesXZlrPxpnqqRELg7Z2mPgKDzBwFg8XEd4y3eU7XgpMNJ1ywAPnKLxPAXeJlmm3jzlpH+P/W5wxwBjF2TCidxxKJZNnHpxZVsxhx1mvzTb2qtq2ilmNqEc=
+	t=1712086954; cv=none; b=a5uprzdtheFwZUfw89JjCsKtYOO07rHUmdNElmZDeu5Pq+F9GUuABhwtfEahWxVBckFse/EIItfY4VniOe5xGtvqC6PFd+J8kZAUpDql8UIscg+RRPlhbwIzw35hRhi7rIZCikaZtufO0Tnn1ofPD5WGbJI7RhkJfYSo1qWT0gc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712086846; c=relaxed/simple;
-	bh=uyf/Pl8TfA3/sDo0PLePDpCjIGDzGYe1T2UiXjFKfhY=;
+	s=arc-20240116; t=1712086954; c=relaxed/simple;
+	bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cDN/GyEzNApiP5Bzc9JU8yEvwIOP8COdNk/b6ygzyoReqVaLOQ38hILp3ghLn0Y7vptRBlqkwb6yN4RSsA+hkDAgG32Fp2efEhAvoK+dNJ5w5zYs42ds/NIgFw3SoA39A6coQNewjWDTXDm8qOYPeBqF1R33Z0zgr+fu50p4UIM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c+w9BqWg; arc=none smtp.client-ip=209.85.218.53
+	 To:Cc:Content-Type; b=fnUu8FloP5oc21Ve4Ofa/ormi377zKEsE16o92iPMK4VBapnLIfa0oAq0jTlGIfPKbceuF4gWQhlmkkBnSGzfELl6gxrEYQy5C4L8vphS1pdUeOBqWTYQsi+w+s0E6ZY7+ToQduYi41A0L8YK+nqO7qCUthGcG/H71AXV9In95s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jCjyMcEg; arc=none smtp.client-ip=209.85.218.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c+w9BqWg"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a4644bde1d4so753330266b.3;
-        Tue, 02 Apr 2024 12:40:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jCjyMcEg"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a46ba938de0so742534166b.3;
+        Tue, 02 Apr 2024 12:42:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712086843; x=1712691643; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1712086951; x=1712691751; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QFlszyiWnk5HTRYNcbVHpUgDW/C34zJ91mv8A40Foz8=;
-        b=c+w9BqWgvc+om4ZXWgjAGUw9X8tQSrKNAzqfeiCgROSFonWeG9IX3Ovg//IZz3Y4gy
-         yCk9b/cYj/2SnTPRIgEcDDMCOfYYiZOCFoJR/IKBNqgEsSABG4QCt2R60mWfbABjh2/X
-         sznt3A/WYbzOc0VHqZFrt4l9wJm2FZpUr/dgT0z0OZfGyQNzJLG0UJErmn+D/EtHglPb
-         40JP/nV9g59FK1xHJks0Nw8a8ZdKrARvGd/rHU45UM6KCOhHjswn/kZ9Af7GqLgKOdJD
-         flcI20CxRC0GBvqBcwMUknd4MXBi5nn+CJszfxo1U9Q5nq3KSiXrigHI5tMeCbEsYlGO
-         N+ww==
+        bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
+        b=jCjyMcEgq29R8PB5jSVsOxsHpN0E8tzKtsE7uidQJKE/gqV7EtY2pCbbk0jzBdlqSy
+         mjCl0mpQ/xXGoeRcmPGeakdalgvG9Dl+ncHtvr4LNK6+4y2RggIlt1sLGBBC3llZQGA4
+         bu5SkeYkAAf0Nofl/E/THZ/XhSNWiNg9eHxkLt20WNN612MXFwLZeWEY0miEgNaZUKim
+         XARnERZZ26rwE9Ai1cU3jMKxSSjW3EuG0D8pRTSBj1f2MWRexg5BPNZvP++/RKd330N1
+         NPigUKmubdN1SOgMvus+DVJputTQJNFTlWL5x5xTP9uXX1MiQK/bD02paTFH5KTxErTM
+         hlUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712086843; x=1712691643;
+        d=1e100.net; s=20230601; t=1712086951; x=1712691751;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=QFlszyiWnk5HTRYNcbVHpUgDW/C34zJ91mv8A40Foz8=;
-        b=V7UdLQ+Icden5RfUHul70I3w0ZQHYZK38fVAoyoi8ssS31Opero6l7yXf+KnlbIHW2
-         iz4Vzr3SHwFMLYMoxu3bMOZrbWuwx5ybhGQKA2ClEifXbdmWg8qY7nwPrCn8ODrMcCiN
-         d3YkmWs8RYPANKLqw0HaXlF7EaWeV6f3XZA5yz6QrqIGuZLosNyNIPX8B8924oXmkiAA
-         G3Dk7QYmy8iFxeE7vcgt9ssjR7YDne1BMTaDm0383DQIvMebFYJPcw71kr/h/e7uUBnC
-         0FXz+v8si57qkZC9M+ay8FznCWMhqnJzdYXKOAR5JXge5r1WX1BTlZJC3JWWjlvZbB1X
-         3v1w==
-X-Forwarded-Encrypted: i=1; AJvYcCW4NLTgh9ASYqC1nQjYD6ia+TqQzdexH+jTlK5YTVq1NhY/qSZTV+3gSr8C+fmqkHH33+nvroEE3S37jIFgpQT47UtRP6rnlkmRzl5iVsDGuvmLSA3Woqt0qNjf4aTVRLWkS3pwiV9Oo5eM
-X-Gm-Message-State: AOJu0Yz1tzqrpIy5KtpnJGESh8A4nFy3q1wRd/DvYo2ZBAg5lyNzzDZI
-	TgiboYtEXgSQvt+9tPS1boKUhvmfGThmD+OP220olQB2IzJSmWgtiBd96DCnMjodb2ay2eXOLbN
-	3WFYm0USPADWTkCyrfy2g1Vqo1MU=
-X-Google-Smtp-Source: AGHT+IHhe5CMOmVwSalChAbGoM0MlF5r97iJJx2O6zlFWmiGUpBUNF5mSVKS71RwkL5/0gCjNJJWw6saPU1v7QvCIyY=
-X-Received: by 2002:a17:906:5782:b0:a4e:207e:b71 with SMTP id
- k2-20020a170906578200b00a4e207e0b71mr9204641ejq.6.1712086843139; Tue, 02 Apr
- 2024 12:40:43 -0700 (PDT)
+        bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
+        b=XRG4dtoUg+CoKpJ8GZ4dR/wE5wcrrRlKaHAyHjfk3dA4tGTAHqRxPygEw1j6fLrRSk
+         rTTEkKtZSUg6Ikkunh4ntkQ6iZVTNtbbJS0zSIKnottWeG8+Faxo7r+MyESAR70PBpby
+         wA+/S+prDHo+cjB9RdZEw7cnaGz++6kqod8vvuH6QAj+PByaCfoMbsu9L73gk+wgmeRM
+         r4K4gWgIyoi8kHCti3wmZD6WYDseqtttXMDtJbiO31m0dDeXwF8eN6gXOOnY3Bzo5nl9
+         LKs6rCbipmTYzRM+po9OFyPEBFREqkMY2YCjTsit/ScvyykepxdVGcPo0/yIEROhJxjF
+         fAJw==
+X-Forwarded-Encrypted: i=1; AJvYcCWkA+WLf0b4rSlbbcsLabeAFF0L/BWvIOtqzT9cFw7cYvZD9jAVRDbZG/ONdGDSaG9qQK6hhBKdns7+I4od77062f0ciMPqSzv6xVQPS+/rYdN7LBvOUd3ZG8h5HhvS66evRbCuB7WQxpg8
+X-Gm-Message-State: AOJu0YyRVryQ3BKtjVbeMLx65/E36jIOnoa9yuxblK70dQ/deySpukuI
+	GI1pSQ9WUzb791VJ4i+zP/foXEZ7RngZsOMcbVpE8ZrzlGG+tdhwfl5e23BF3vITaWX89dlXNPi
+	tgeX3nypCYDy9+4ZkNAI71KjPbYM=
+X-Google-Smtp-Source: AGHT+IGWoVUBHO6cFd46RaUv4TkpRlu3aoYPZGGnMy/legnwvw0WZjzJJayDTE22W26g9TKGq7A+GpGdtQJGuVYYT90=
+X-Received: by 2002:a17:906:a151:b0:a46:cef3:4aba with SMTP id
+ bu17-20020a170906a15100b00a46cef34abamr8684309ejb.75.1712086951031; Tue, 02
+ Apr 2024 12:42:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240402174353.256627-1-hugo@hugovil.com> <20240402174353.256627-4-hugo@hugovil.com>
-In-Reply-To: <20240402174353.256627-4-hugo@hugovil.com>
+References: <20240402174353.256627-1-hugo@hugovil.com>
+In-Reply-To: <20240402174353.256627-1-hugo@hugovil.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 2 Apr 2024 22:40:07 +0300
-Message-ID: <CAHp75VdZ5yYVx7Df7G4X4Y7ZvJ3LAdq=A0fVNzNfMcdywJC-dQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/5] serial: sc16is7xx: split into core and I2C/SPI
- parts (core)
+Date: Tue, 2 Apr 2024 22:41:54 +0300
+Message-ID: <CAHp75Vd0bjCdUse0yL67GZsqh5b-76aaD+N61UNAi-9rD2oZmg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/5] serial: sc16is7xx: split into core and I2C/SPI parts
 To: Hugo Villeneuve <hugo@hugovil.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
@@ -75,155 +74,36 @@ rote:
 >
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 >
-> Split the common code from sc16is7xx driver and move the I2C and SPI bus
-> parts into interface-specific source files.
+> Hello,
+> this patch series splits the SPI/I2C parts for the sc16is7xx driver into
+> separate source files (and separate I2C/SPI drivers).
 >
-> sc16is7xx becomes the core functions which can support multiple bus
-> interfaces like I2C and SPI.
+> These changes are based on suggestions made by Andy Shevchenko
+> following this discussion:
 >
-> No functional change intended.
-
-...
-
-> -config SERIAL_SC16IS7XX_CORE
-> -       tristate
-> -
->  config SERIAL_SC16IS7XX
->         tristate "SC16IS7xx serial support"
->         select SERIAL_CORE
-> -       depends on (SPI_MASTER && !I2C) || I2C
-> +       depends on SPI_MASTER || I2C
-
-Is it?
-
->         help
->           Core driver for NXP SC16IS7xx serial ports.
->           Supported ICs are:
-> @@ -1042,22 +1039,18 @@ config SERIAL_SC16IS7XX
->           drivers below.
+> Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=3DMrn2kbYs1Lx26=
+f5-8rKJ3RXeh-w@mail.gmail.com/
 >
->  config SERIAL_SC16IS7XX_I2C
-> -       bool "SC16IS7xx for I2C interface"
-> +       tristate "SC16IS7xx for I2C interface"
->         depends on SERIAL_SC16IS7XX
->         depends on I2C
-> -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> -       select REGMAP_I2C if I2C
-> -       default y
-> +       select REGMAP_I2C
->         help
-> -         Enable SC16IS7xx driver on I2C bus,
-> -         enabled by default to support oldconfig.
-> +         Enable SC16IS7xx driver on I2C bus.
+> The changes are split into multiple patches to facilitate the review proc=
+ess.
+> In the end, some of them could be merged into a single patch.
 >
->  config SERIAL_SC16IS7XX_SPI
-> -       bool "SC16IS7xx for spi interface"
-> +       tristate "SC16IS7xx for SPI interface"
->         depends on SERIAL_SC16IS7XX
->         depends on SPI_MASTER
-> -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> -       select REGMAP_SPI if SPI_MASTER
-> +       select REGMAP_SPI
->         help
->           Enable SC16IS7xx driver on SPI bus.
+> I have tested the changes on a custom board with two SC16IS752 DUART over
+> a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
+> configured in RS-485 mode.
+>
+> I did not test the changes on a real SC16is7xx using the I2C interface. B=
+ut
+> I slighly modified the driver to be able to simulate an I2C device using
 
-Hmm... What I was thinking about is more like dropping
- the SERIAL_SC16IS7XX and having I2C/SPI to select the core.
+slightly
 
-See many examples under drivers/iio on how it's done.
+> i2c-stub. I was then able to instantiate a virtual I2C device without
+> disturbing existing connection/communication between real SPI devices on
+> /dev/ttySC0 and /dev/ttySC2 (using a loopback cable).
 
-...
-
-> +EXPORT_SYMBOL_GPL(sc16is74x_devtype);
-
-Is it namespaced? Please make sure we are not polluting the global
-namespace with these.
-
-...
-
-> +#ifndef _SC16IS7XX_H_
-> +#define _SC16IS7XX_H_
-> +
-> +#include <linux/device.h>
-
-Not used (by this file).
-
-> +#include <linux/mod_devicetable.h>
-
-> +#include <linux/regmap.h>
-
-> +#include <linux/serial_core.h>
-
-Not used.
-
-> +#include <linux/types.h>
-
-> +extern const struct of_device_id __maybe_unused sc16is7xx_dt_ids[];
-
-No __maybe_unused. Just have it always be added.
-
-> +const char *sc16is7xx_regmap_name(u8 port_id);
-> +
-> +unsigned int sc16is7xx_regmap_port_mask(unsigned int port_id);
-> +
-> +int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *=
-devtype,
-> +                   struct regmap *regmaps[], int irq);
-
-> +void sc16is7xx_remove(struct device *dev);
-
-Will require forward declaration
-
-#include ...
-
-struct device;
-
-> +#endif /* _SC16IS7XX_H_ */
-
-...
-
-> +#include <linux/i2c.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-
-Follow the IWYU principle (include what you use).
-
-...
-
-> +               return dev_err_probe(&i2c->dev, -ENODEV, "Failed to match=
- device\n");
-
-+ dev_printk.h
-
-...
-
-> +static int __init sc16is7xx_i2c_init(void)
-> +{
-> +       return i2c_add_driver(&sc16is7xx_i2c_driver);
-> +}
-> +module_init(sc16is7xx_i2c_init);
-> +
-> +static void __exit sc16is7xx_i2c_exit(void)
-> +{
-> +       i2c_del_driver(&sc16is7xx_i2c_driver);
-> +}
-> +module_exit(sc16is7xx_i2c_exit);
-
-This is now module_i2c_driver().
-
-...
-
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("SC16IS7xx I2C interface driver");
-
-+ MODULE_IMPORT_NS()
-
-...
-
-> +++ b/drivers/tty/serial/sc16is7xx_spi.c
-
-Similar/same comments as per i2c counterpart.
+For patches 1,2,5
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
 
 --=20
 With Best Regards,
