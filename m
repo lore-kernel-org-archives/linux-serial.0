@@ -1,130 +1,90 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E34604BB;
-	Tue,  2 Apr 2024 11:09:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA97F69D31;
+	Tue,  2 Apr 2024 12:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712056178; cv=none; b=omqOCpQrRqhd0cO2+pjIdJMbdx4Cb9WaZJV4qGB3TFs+nC1h51rpYGbm+BVFG0wpHAT+kn+lQAHrU4td1SIlClDtqum2rTZjC3xDvBkyWxkIc2k3x3gi6kH4FA7ik+FYcVj36vf1FRIG6aQdql25BVZgCdulIrAuFdTYHs3cdes=
+	t=1712059519; cv=none; b=DExCS4CNtJvCcRhrgd+CxHD4jUcbNC0BfL3iaRnur2tU3fdBNwfA8MH+XnaZS0uxxdXdM/8FYzrsUdF1vyAY16PVMd0ZsEGbqCDkVEVxul4L0M9VncRmelewQe7yeqQZzXKizEsDIbu4Hcy1vp3GiHTWE6tnzckAAlJjeTpDTGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712056178; c=relaxed/simple;
-	bh=Pz2W/JmvhcbrLHGMtbP+oMEqjfIqVmg5RzHfv2V/y3o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PHG2lqA6fmIZJzF2wRzczgQySNZPM/AjsSJLbwfu8hX76JsFjYwadKCglGnMJdsj2xpzqmSRoIL/1HVWzTNQow6ILNmWQ5GUIeZcKNafglFjIaeVK4b4yLnTngnB28tUWGNf+1jVsa2jR3xIlw2FIGv5VaqQL2AA5vGhyGoHPhs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-513e89d0816so5923103e87.0;
-        Tue, 02 Apr 2024 04:09:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712056175; x=1712660975;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QL/SUQMEvTD3atN+VbztFSimA7sFWSFKuIGeBQT4IQc=;
-        b=JFFAynjMXh/yh/ZM1pgpbvZfi/Sj9x+gf1OTQ4ZzrqGIilE23jk/OmBOW1WLc+FrAN
-         GW+5+QWTmywkbD/X5YbdMlXwsIBTEJeF5+zbCWg45Ncebk8Y83gAOtg8PyGR5uPeCIxN
-         9Lyc6hFKXimw88v1hMLXZRpEvhxdN7NYX2xbknhS4tHL2LwSywWrtQJym2pFVOE8+shi
-         yTXFnTl1lUhP68fLj+ZWhauBJH4saUUQGp7DnfgXIVkys8d0eJ6ccOyHxsdPRNb/cPb5
-         u+DRZmJGlKxLsUgAnCDBgJbqngvgV52yUBgmw+rU7xucjwcEcOJljypS59lwQYa/dP9L
-         HM6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWaqtVljsE77uXhXsgJbfyVHQ5JEqEjA+KGV6V9Rfb2Hhxno+Rk0oS12XjSybkAEk5JZgLF37xCJmS6V8m3codn4i7sMT69oM0jPSmLcVgdQwiGJL6V2x2r+zSDAzPVlNM64VuTgw52Sblte3ElOFo/2oCSdwm2NlOpj56U6Wwui576VyCEbPFaKdmHc1/fL2b0Imandmzxkn9XcVvALuEIGxU=
-X-Gm-Message-State: AOJu0YwEqPgtUvU+6m9pMq2Kp4FTLqZI3VI0bYVXxHYq5WeCWNwqFJNs
-	kl6lEyHnG6IjDmf3WERpCsY9vs6rGUvqdXRPse22DO3cyr6Yi7yUCrIJUgz/Zl4=
-X-Google-Smtp-Source: AGHT+IF0YdHd7ok9JRJmyKYA0oAkP/eBrCU6csCg08svcx755Oi82Vnlkarv6abMZpR0ABaLmAz/Hw==
-X-Received: by 2002:ac2:5edc:0:b0:513:e17d:cf37 with SMTP id d28-20020ac25edc000000b00513e17dcf37mr7474872lfq.19.1712056174555;
-        Tue, 02 Apr 2024 04:09:34 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id u15-20020a05600c00cf00b00414041032casm13502060wmm.1.2024.04.02.04.09.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Apr 2024 04:09:33 -0700 (PDT)
-Message-ID: <b3e0cb29-9487-4709-8150-77bff3e80920@kernel.org>
-Date: Tue, 2 Apr 2024 13:09:32 +0200
+	s=arc-20240116; t=1712059519; c=relaxed/simple;
+	bh=8itSNBWONp/JWbHCXlll2v/LVKAb3eTRaE5mwetyAWQ=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=J87oj2PlNEXu8lYIrpl0b8oYAHJGnyYTMpzdzBLbI8KsDwQDk0F3155u+900NqaAhuDHePJK0d8jr0ZjlYPjUgPClfvlNoyKqyu+jwiyyENSDUIWc0Ai8D6UVzLAHlDoiVerHI5QAkbz01X3CknhvtxOtHfSLhEEyUuc4DPmr1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Dzbb8kai; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Dzbb8kai"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712059517; x=1743595517;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=8itSNBWONp/JWbHCXlll2v/LVKAb3eTRaE5mwetyAWQ=;
+  b=Dzbb8kaitITZpi75b0FuidVau+cfoKlOROQjLgJj4UGZTBr0s4dNzwi2
+   O99KPhjKLbPNatHk/1sn7Dbcr1ofOiRy1ybqTiapKltk9l7wkVna3DM1c
+   aBumL6nLM2hi6Y+t76mlsGosTvc9fi2m0KaqkVrRp1rFNaQTtQT6v/s3q
+   aL1nMl2ZrBjNMskGG7ra7K3Zhp7Te1gPqLG6FqW+eMJ2mNTjgokXq6f5J
+   hZWXVlV0P+dVa0nzH/y2b1xvIjCWe3zbbT+2QWUUuHaiuxYb4mSOsuZC8
+   yIppIXtycEDQCnN82NbpJD0blffuBmz78h/M46zTT/oz8PYq3FoRckscg
+   w==;
+X-CSE-ConnectionGUID: AA3Y304hRO201zQFbS0DPA==
+X-CSE-MsgGUID: k7t5gzkCS96gql6EY+mHzQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11031"; a="29705939"
+X-IronPort-AV: E=Sophos;i="6.07,174,1708416000"; 
+   d="scan'208";a="29705939"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 05:05:16 -0700
+X-CSE-ConnectionGUID: YBndc8D5R5qeQDWrg3M7jw==
+X-CSE-MsgGUID: sjBJdEQqQsKLbM72DEpw4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,174,1708416000"; 
+   d="scan'208";a="49062418"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.23])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 05:05:13 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 2 Apr 2024 15:05:09 +0300 (EEST)
+To: Nikita Kiryushin <kiryushin@ancud.ru>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>, 
+    Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
+    John Ogness <john.ogness@linutronix.de>, 
+    Thomas Gleixner <tglx@linutronix.de>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, lvc-project@linuxtesting.org
+Subject: Re: [PATCH] serial: core: use sysfs_emit() in sysfs show handlers
+In-Reply-To: <20240329180634.1037706-1-kiryushin@ancud.ru>
+Message-ID: <2385bd33-e481-b9a4-fa9c-ccbaaa8ea52c@linux.intel.com>
+References: <20240329180634.1037706-1-kiryushin@ancud.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/2] VT: Allow to get max font width and height
-To: Oleg Bulatov <oleg@bulatov.me>, legion@kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
- linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <cover.1708960303.git.legion@kernel.org>
- <cover.1710252966.git.legion@kernel.org>
- <78fcb9ad77b88edee8768806ce6a4d23f6d33118.1710252966.git.legion@kernel.org>
- <c3wrf2h7h45h2vee7gc42zmy43rsh7niueknvsrlsibnae4pdw@4u6b4qulfe6r>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <c3wrf2h7h45h2vee7gc42zmy43rsh7niueknvsrlsibnae4pdw@4u6b4qulfe6r>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323328-536657061-1712059509=:1019"
 
-On 13. 03. 24, 18:40, Oleg Bulatov wrote:
-> On Tue, Mar 12, 2024 at 03:23:58PM +0100, legion@kernel.org wrote:
->>   drivers/video/console/newport_con.c | 21 +++++++++++++++++----
->>   drivers/video/console/sticon.c      | 25 +++++++++++++++++++++++--
->>   drivers/video/console/vgacon.c      | 21 ++++++++++++++++++++-
->>   drivers/video/fbdev/core/fbcon.c    | 22 +++++++++++++++++++++-
->>   4 files changed, 81 insertions(+), 8 deletions(-)
-> 
-> newport_con.c is an interesting one, apparently it's for SGI Indy and
-> Indigo2, both are discontinued in 1997. Do we still have a way to test
-> this driver?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I doubt that.
+--8323328-536657061-1712059509=:1019
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Care to submit a removal patch? I am afraid, there is no other way to 
-find out anyway...
+On Fri, 29 Mar 2024, Nikita Kiryushin wrote:
 
-thanks,
--- 
-js
-suse labs
+> Change sprintf() in sysfs show() handlers to sysfs_emit(),
+> as recommended by sysfs documentation.
+>=20
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+>=20
+> Signed-off-by: Nikita Kiryushin <kiryushin@ancud.ru>
 
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
+ i.
+
+--8323328-536657061-1712059509=:1019--
