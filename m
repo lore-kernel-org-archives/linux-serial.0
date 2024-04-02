@@ -1,98 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D86613A890;
-	Tue,  2 Apr 2024 15:42:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155F214AD3D;
+	Tue,  2 Apr 2024 17:14:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712072557; cv=none; b=Jj7TRjb0xJEeHmwqC1B2+G8Ow+u8rA7LMzGRpqD2DCiSRCNmHw8DTcQsIpsnmSnQDtnHVVSI6vr2T/ZRb8oxHhR87kftO0R0th93qWj+2Bti/FSvIPdpSd0pYCGKr7EjLER22AAViQnLYGc+XxxdjCysuDnEdZe3vXZljmyYLC0=
+	t=1712078073; cv=none; b=VdvUPGZCxbScWjnh4pIhCZrCzD1w3qUAf6wKzom5Eky+kGYgXfePVjcvd27810RgKesH3RgYVJ9TrQ8M9YZDJkcr+LHoZ3RzSVChO7sXkZ+tsWmTM/QY675tVfCyUjntJy5C6pOZsdpNqfPTUwiI/d7J45+IY6F9zUcyIMC8cE4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712072557; c=relaxed/simple;
-	bh=Pzd4zF55D0Q5tN3ZT/f+vvK1+li7w9jn5Gn98hnh/Tk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ICHBmyuohMRZlodt1DOr5/7a7jmUTTbNAMiYImMDDRxGs6Jq46hFIx1Le2FmEjo2m5MQFUQyxXKvRcsTGlulFeeQyt8G9yeGPwhxPvd6rLCc4gff+pHe3hbs1fnp2bT/pm0W4gouq7XonrAfHcJeQ8yDqBhnLBRJ+E7Ib36YIMA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nBP7VhyT; arc=none smtp.client-ip=192.198.163.11
+	s=arc-20240116; t=1712078073; c=relaxed/simple;
+	bh=q0UKhpoGPHKhj58EoPT3zVOoCjDm9q73MeOh5CTO2wQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TZKII6c2ZocDTFwEyFulVH1kFXLhZIhL/4H6TK6PrAxBRPIswX10EalMOxD7TCTF/akHI1SqZWVMBALY4/wUxtkWtI6xKIhPdfMv0Shb8SBr4AihD18UDqiWkiy3InwX9HL+qGX5HITJ9qFJnfGV21u+f+z9jFcykt69cBYzM3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eVWmVU0N; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nBP7VhyT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eVWmVU0N"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712072555; x=1743608555;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Pzd4zF55D0Q5tN3ZT/f+vvK1+li7w9jn5Gn98hnh/Tk=;
-  b=nBP7VhyTTRyoCcONpmr8jmQ6qOIWoW42Q4Lzz2huPYZKgAk/PiPgGsTs
-   kzAX5wB7bQrR3mz74qEB0BcbCmDiGA8G7M5l8C6SZKv4LUHvd+b8ycNUO
-   oI5VQWQj0W5M+BLcbZZskLqNXEbG+xssUMX9TwVuzuYqaJ7eKQkah1M5+
-   OjudtXhbHPDixLKasnbYJRwTjutPzoCHkZDoGQGNyXJlWQsIuwfNdCj/l
-   1tIIlU3U7IzwSlrldSgvj+hCPXc017x/TY8Ub78iMHS29bHXpGZvmnMjv
-   CPK1v4cpZxurdibIoxBlUVBgC8sa2r5AM0hE3Vu6TM0TBOe66xnZBzJq7
+  t=1712078073; x=1743614073;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=q0UKhpoGPHKhj58EoPT3zVOoCjDm9q73MeOh5CTO2wQ=;
+  b=eVWmVU0NJpeiwzIS1fwxOeimlTZcNYV3vnH5eudUISl+n9ud6DAJ0Qn1
+   H03SxY0uVpIro0p2kij/dyuzDaAFm1cWMCktrzI6U21H5U0iT4oM/9WgJ
+   uZSACHGu1vrCdQKQXfaddVMK2r15bG300fy+v6pFqTdreoq4flJw7v2w+
+   nhf6LRmro6DFXTvjsu3atORXDBX1bmWipbF8Ec3hNRsDhHmmcFoQaBtK4
+   PKuT+9evdlp7njfL2ELsid2tUitZ7XuhXECSru/BKmAT3b3ESv3KlO0zr
+   6o6ggilYJFh3Xk/7r840A70LJlERykL0xkAMxfi8v4PlazI8y59UYy4Ry
    A==;
-X-CSE-ConnectionGUID: kSOzQfISRcWO2NZSh8cLCg==
-X-CSE-MsgGUID: CHzj9OOQRYiAGGoK6ahx1w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="17870099"
+X-CSE-ConnectionGUID: 9/6nRc0aQQykLGL6Vomevg==
+X-CSE-MsgGUID: NtTniqdLSlGzcOlDIiFYkQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7384270"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="17870099"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 08:42:27 -0700
+   d="scan'208";a="7384270"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 10:14:32 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083651"
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="915147527"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="937083651"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 08:42:25 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id E0BC016EF; Tue,  2 Apr 2024 18:42:20 +0300 (EEST)
+   d="scan'208";a="915147527"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 10:14:29 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rrhiN-00000000sIa-2C3C;
+	Tue, 02 Apr 2024 20:14:27 +0300
+Date: Tue, 2 Apr 2024 20:14:27 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 16/16] serial: max3100: Update Kconfig entry
-Date: Tue,  2 Apr 2024 18:38:22 +0300
-Message-ID: <20240402154219.3583679-17-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 01/16] serial: max3100: Lock port->lock when calling
+ uart_handle_cts_change()
+Message-ID: <Zgw881ApbwJrozAw@smile.fi.intel.com>
 References: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
+ <20240402154219.3583679-2-andriy.shevchenko@linux.intel.com>
+ <20240402130715.7f1292b774ee0b2f056a6e95@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240402130715.7f1292b774ee0b2f056a6e95@hugovil.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-The driver actually supports more than one chip.
-Update Kconfig entry to list the supported chips.
+On Tue, Apr 02, 2024 at 01:07:15PM -0400, Hugo Villeneuve wrote:
+> On Tue,  2 Apr 2024 18:38:07 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> Hi Andy,
+> 
+> > uart_handle_cts_change() has to be called with port lock taken,
+> > Since we run it in a separate work, the lcok maybe not taken at
+> 
+> lcok -> lock
+> 
+> and possibly: "may not be taken" ?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/Kconfig | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Thanks, I'll fix this in case a new version is required.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index e636a51eb7b6..dcb67c40bf92 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -307,11 +307,14 @@ config SERIAL_TEGRA_TCU_CONSOLE
- 	  If unsure, say Y.
- 
- config SERIAL_MAX3100
--	tristate "MAX3100 support"
-+	tristate "MAX3100/3110/3111/3222 support"
- 	depends on SPI
- 	select SERIAL_CORE
- 	help
--	  MAX3100 chip support
-+	  This selects support for an advanced UART from Maxim.
-+	  Supported ICs are MAX3100, MAX3110, MAX3111, MAX3222.
-+
-+	  Say Y here if you want to support these ICs.
- 
- config SERIAL_MAX310X
- 	tristate "MAX310X support"
+> > the time of running. Make sure that it's taken by explicitly doing
+> > that. Without it we got a splat:
+> > 
+> >   WARNING: CPU: 0 PID: 10 at drivers/tty/serial/serial_core.c:3491 uart_handle_cts_change+0xa6/0xb0
+> >   ...
+> >   Workqueue: max3100-0 max3100_work [max3100]
+> >   RIP: 0010:uart_handle_cts_change+0xa6/0xb0
+> >   ...
+> >    max3100_handlerx+0xc5/0x110 [max3100]
+> >    max3100_work+0x12a/0x340 [max3100]
+
 -- 
-2.43.0.rc1.1.gbec44491f096
+With Best Regards,
+Andy Shevchenko
+
 
