@@ -1,49 +1,49 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB89715E7FA;
-	Tue,  2 Apr 2024 19:53:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF2F15E816;
+	Tue,  2 Apr 2024 19:53:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712087604; cv=none; b=HvxswKZl7syH6m98fETL5BaobYREKcXKeAdTbRAODN0NTOq3yyUU+Ky0eT1R5m1F4WQfXOAhBOx41U9ZAA3gMV1aEJL6sZHeAXLLDc9jBe90K6vOOalcICr9DRZ1TlZ/53qOWCN1OAquN7SOwipXVJL6KLc/qUicF0qApW3RepU=
+	t=1712087605; cv=none; b=fx/K5f9vEzlt610bAILOQ4IpUPrlPCWaTR7RBIVgpKKZQZMI/ToEoax9BJz2BuNkie7efw7zU0skfToMSx0oT/kJnA3N6lVP/D7BruY/EOphgPuiT3UL2oH+5UK2GYF6BnxZl5VkEBAIylfCt/mdD3BckSQB3QTVCgA9IJkoifI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712087604; c=relaxed/simple;
-	bh=+tCR8Q6qrQLWWhfMOEUZuihnpFyj0j83V98VFK52xIc=;
+	s=arc-20240116; t=1712087605; c=relaxed/simple;
+	bh=b14aVJkpvb1M/whvnXz3j759fvoxBOvYl/RFmgCkmkU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=R1jQwJWeluN9UR9VynzSKifHc2+maZwyeNIlcZ6oo9yK62aJpTHLQ8IKpX8waNKv2pKAfO4bVjNKmES4yOaUaLisASC/7y555OVn1bdXrt3c/7AqmJ6NNkwM3PPMDo2tG59dLtYUqtAxzswm3dqVwJS8ZrBaf3+CKKaIfkz4np0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OcjN0hj+; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version; b=FdtPHABalyuDSe6UGzyPlHARJcZUAaVXPYy9tNZSbjHKe6/7FnGqX6tIw+bv6Eu9zy4AhpsnAh6XYsjH5cEo/KEayqx0WIAQiBvj5B2ClviXRPNn3RBwLs0Wmu7BR7PgZ/bUw3CVaDkxjLmE0vjunRhl2ZfAFjo9n1vlQzWlJso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d9NnickI; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OcjN0hj+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d9NnickI"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1712087603; x=1743623603;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+tCR8Q6qrQLWWhfMOEUZuihnpFyj0j83V98VFK52xIc=;
-  b=OcjN0hj+PLRTIE0XhZ7xk5zF6zJtL9KNDgUUGt97tHtQlhazepzRkE3c
-   uVzqm3486CpBkpdxgbHvlCOdYrg1I0hHATIQupKJzM3IR5cAFFeS7xx2s
-   cwM8kNNcEm/cOxkMG8xRPcVmiqeIA3534/wuw4ca3JSjenLHD6RwO+caS
-   3mWx5DV6jzB/DIj4R/kxCKoFXeygg1eqv15Dmni0yQHrJay/6QQ6TeUKc
-   xdzuPxoXWmghh9jLvFMXiMIzlITavvVKJukoWj/UZib8RnrsmDlrRUeJk
-   RPYE7FMRC1aXWWOoPTE3a6TaxewbQauPgIoTPwlIhJYYzmz0nsVjP+FjJ
-   Q==;
-X-CSE-ConnectionGUID: Ak2GAdJtTZe7XxNZs25lVA==
-X-CSE-MsgGUID: qPbBct4jTqmIsp6j/qBzFg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7151041"
+  bh=b14aVJkpvb1M/whvnXz3j759fvoxBOvYl/RFmgCkmkU=;
+  b=d9NnickIoRvIRDe4QeT0OdW1U3JsnaM53TO4cPdIpVxyN9E0cOw4qAOK
+   Ms0J/R2r/aEA+772q7i8noEPcGpL+vWwizh2AaTqUl5NAXAMShE+fGWdN
+   Ulvs8Mna/3sOPf9vSh0evNor8VP773ir8SlCL68ciNsTXvVeZIS2jKuod
+   AWXqEycpstoCXC/gCECAlTyGpcyDZFd62m0O4oj8v108kEhJdfPxHb681
+   /mp237YavzJlyTk+KwSIqBNpncrvvfZ4wn7qDmN0n/uF6KyzEtcn3/flg
+   +UUIGRm10u3VEdOj+ScAnF+6vP7sIWPA/pZfl1qltixZVmQSX/70Z5Lro
+   A==;
+X-CSE-ConnectionGUID: qODqmkJoT4KJi1QkUXU4Bw==
+X-CSE-MsgGUID: Jf7H67+2QHeMXMfYQ6u1kg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7151018"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="7151041"
+   d="scan'208";a="7151018"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 12:53:16 -0700
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 12:53:15 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083789"
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="937083793"
 X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
-   d="scan'208";a="937083789"
+   d="scan'208";a="937083793"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 02 Apr 2024 12:53:13 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id E6E9C6CB; Tue,  2 Apr 2024 22:53:09 +0300 (EEST)
+	id 378531506; Tue,  2 Apr 2024 22:53:10 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -51,9 +51,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-serial@vger.kernel.org
 Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Hugo Villeneuve <hugo@hugovil.com>
-Subject: [PATCH v2 06/16] serial: max3100: Replace custom polling timeout with standard one
-Date: Tue,  2 Apr 2024 22:50:33 +0300
-Message-ID: <20240402195306.269276-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 12/16] serial: max3100: Switch to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Tue,  2 Apr 2024 22:50:39 +0300
+Message-ID: <20240402195306.269276-13-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
 References: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
@@ -65,99 +65,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Serial core provides a standard timeout for polling modem state.
-Use it instead of a custom approach.
+The SIMPLE_DEV_PM_OPS() is deprecated, replace it with the
+DEFINE_SIMPLE_DEV_PM_OPS() and use pm_sleep_ptr() for setting
+the driver's PM routines.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/max3100.c | 25 +++++--------------------
- 1 file changed, 5 insertions(+), 20 deletions(-)
+ drivers/tty/serial/max3100.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index c31e4a96cc72..6dc20e4ec078 100644
+index 7cbb8c096b47..55f0421515a8 100644
 --- a/drivers/tty/serial/max3100.c
 +++ b/drivers/tty/serial/max3100.c
-@@ -34,8 +34,6 @@
-  * struct plat_max3100 - MAX3100 SPI UART platform data
-  * @loopback:            force MAX3100 in loopback
-  * @crystal:             1 for 3.6864 Mhz, 0 for 1.8432
-- * @poll_time:           poll time for CTS signal in ms, 0 disables (so no hw
-- *                       flow ctrl is possible but you have less CPU usage)
-  *
-  * You should use this structure in your machine description to specify
-  * how the MAX3100 is connected.
-@@ -43,7 +41,6 @@
- struct plat_max3100 {
- 	int loopback;
- 	int crystal;
--	int poll_time;
- };
- 
- #define MAX3100_C    (1<<14)
-@@ -122,9 +119,6 @@ struct max3100_port {
- 	/* need to know we are suspending to avoid deadlock on workqueue */
- 	int suspending;
- 
--	/* poll time (in ms) for ctrl lines */
--	int poll_time;
--	/* and its timer */
- 	struct timer_list	timer;
- };
- 
-@@ -177,10 +171,8 @@ static void max3100_timeout(struct timer_list *t)
- {
- 	struct max3100_port *s = from_timer(s, t, timer);
- 
--	if (s->port.state) {
--		max3100_dowork(s);
--		mod_timer(&s->timer, jiffies + s->poll_time);
--	}
-+	max3100_dowork(s);
-+	mod_timer(&s->timer, jiffies + uart_poll_timeout(&s->port));
+@@ -21,6 +21,7 @@
+ #include <linux/device.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/pm.h>
+ #include <linux/property.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial.h>
+@@ -799,8 +800,6 @@ static void max3100_remove(struct spi_device *spi)
+ 	mutex_unlock(&max3100s_lock);
  }
  
- static int max3100_sr(struct max3100_port *s, u16 tx, u16 *rx)
-@@ -342,8 +334,7 @@ static void max3100_enable_ms(struct uart_port *port)
- 					      struct max3100_port,
- 					      port);
- 
--	if (s->poll_time > 0)
--		mod_timer(&s->timer, jiffies);
-+	mod_timer(&s->timer, jiffies);
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
- }
- 
-@@ -526,9 +517,7 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
- 			MAX3100_STATUS_PE | MAX3100_STATUS_FE |
- 			MAX3100_STATUS_OE;
- 
--	if (s->poll_time > 0)
--		del_timer_sync(&s->timer);
+-#ifdef CONFIG_PM_SLEEP
 -
-+	del_timer_sync(&s->timer);
- 	uart_update_timeout(port, termios->c_cflag, baud);
+ static int max3100_suspend(struct device *dev)
+ {
+ 	struct max3100_port *s = dev_get_drvdata(dev);
+@@ -836,12 +835,7 @@ static int max3100_resume(struct device *dev)
+ 	return 0;
+ }
  
- 	spin_lock(&s->conf_lock);
-@@ -556,8 +545,7 @@ static void max3100_shutdown(struct uart_port *port)
+-static SIMPLE_DEV_PM_OPS(max3100_pm_ops, max3100_suspend, max3100_resume);
+-#define MAX3100_PM_OPS (&max3100_pm_ops)
+-
+-#else
+-#define MAX3100_PM_OPS NULL
+-#endif
++static DEFINE_SIMPLE_DEV_PM_OPS(max3100_pm_ops, max3100_suspend, max3100_resume);
  
- 	s->force_end_work = 1;
- 
--	if (s->poll_time > 0)
--		del_timer_sync(&s->timer);
-+	del_timer_sync(&s->timer);
- 
- 	if (s->workqueue) {
- 		destroy_workqueue(s->workqueue);
-@@ -769,9 +757,6 @@ static int max3100_probe(struct spi_device *spi)
- 	pdata = dev_get_platdata(&spi->dev);
- 	max3100s[i]->crystal = pdata->crystal;
- 	max3100s[i]->loopback = pdata->loopback;
--	max3100s[i]->poll_time = msecs_to_jiffies(pdata->poll_time);
--	if (pdata->poll_time > 0 && max3100s[i]->poll_time == 0)
--		max3100s[i]->poll_time = 1;
- 	max3100s[i]->minor = i;
- 	timer_setup(&max3100s[i]->timer, max3100_timeout, 0);
- 
+ static const struct spi_device_id max3100_spi_id[] = {
+ 	{ "max3100" },
+@@ -859,7 +853,7 @@ static struct spi_driver max3100_driver = {
+ 	.driver = {
+ 		.name		= "max3100",
+ 		.of_match_table	= max3100_of_match,
+-		.pm		= MAX3100_PM_OPS,
++		.pm		= pm_sleep_ptr(&max3100_pm_ops),
+ 	},
+ 	.probe		= max3100_probe,
+ 	.remove		= max3100_remove,
 -- 
 2.43.0.rc1.1.gbec44491f096
 
