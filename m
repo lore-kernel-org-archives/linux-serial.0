@@ -1,222 +1,185 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C2A8288A
-	for <linux-serial@vger.kernel.org>; Tue,  2 Apr 2024 12:58:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D471C8062A;
+	Tue,  2 Apr 2024 13:19:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712062688; cv=none; b=scP9x9S8GZMVPlF+Q/8q/5tZ03lMW4zcpon0WUZm3rPYTLYolziiNjotjxfpSXgh9ausXiHlygxZ0PFL4wdolL9bqwpM/dbwZgYQWXMJ08kh9vZqHBdmvd8/D37NgLVts41vJz1HbTidW7DaMEYEXGTedu9l9lhjwUq0AlOjBGM=
+	t=1712063989; cv=none; b=ckOkC0VKLtTLG9zZNW2r0GDGIuMY2lftj1PWvokDYZlLc1UGmcd0wV3Nh8ISFk0D8ZSTJ8bynMjOBfK3Nd+RZmsnWcwWeehmzrkz4BuPszRxyoSOjufLKMbvxIhqn4fX4q/3Ofi/uwbFkPn5h8nUrACVNG/JxXpy5O5UtwE8eYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712062688; c=relaxed/simple;
-	bh=mdY4dxhz2UTdQG4t+FrFFk3AOW100nipdCoXDUX5fj0=;
+	s=arc-20240116; t=1712063989; c=relaxed/simple;
+	bh=6D05Yya3KxK0OkWkNXVX0Mp3DXfWGd2Ns0Ca9ovdfaw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qbw+cYqTHT5tPN5gJqxMKJ2YhBbag60/2XnKwxqQ0VhTsnZrqYDcaYIu5MU8NUzuevcftPHh8jqBX886jjTrTZZAjEkBKR/eGnjie4Kh1gBcaoOZIkAx7XDhGG7Z4MUtwtUaLvcj3XLcyBNIwuNsiGbe1QmKZuVNmy6NAcCJRjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=f0xwaJ3v; arc=none smtp.client-ip=209.85.208.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=reVBf5iEw0F8eFHbyJp5nBkjllSnp+qvML/xJ02FEoWyhrE0zNG7fSGVOr/RePAbuTelviO3mkEMkjEdn5DNn1eW7y1KaHhxtxsflBh3LESYU+eqmEA+dAsosfbanDMdL/wnelL8tN9mtSYoxlq6IgC4HN+IaxA6UZdUTKLxKIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MwXOKwDD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f0xwaJ3v"
-Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2d52e65d4a8so71512401fa.0
-        for <linux-serial@vger.kernel.org>; Tue, 02 Apr 2024 05:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1712062685; x=1712667485; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sFx6hP8hvOPeUdfct+YUNkXorKxd3sUiyEh1lx2j5Y0=;
-        b=f0xwaJ3v74A7f887w6JazJTx2qnAKWjrvMEFrgNIzd0zR46OpINQUUQnmwtkL+Qsge
-         h9yXIU+61M2FPOAVDnCFK1AOesUV0szXajUnft1liuM1KbZa8uVFFD/gsA/mn3pXjZFQ
-         nhAW7NeXvlSFi1oVmelMtG4b0JvL2xacCD4CG/5HGSRI0F36MpoBcUfzYhgbizhCmy1s
-         zZZ84ax7yrR/DBHtrbJSTv/fcWuLkG0zrWzqCq3RgIqw7/Sp/aTa0sdSlwjWJ7Uo6eGe
-         m3VzdY55pcC0V/FghB2duqyZ/4a7ULGlHL/8uUXDISeTsKC5q/i6OKxQk3RU7nXN6+b6
-         c7lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712062685; x=1712667485;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sFx6hP8hvOPeUdfct+YUNkXorKxd3sUiyEh1lx2j5Y0=;
-        b=n79KTFsPBkGm7LBo8TWpHTsWkkQbyiQxeC2yuBIKI3X/DiQmY0m6SXLFU6o3Qt2Qcj
-         FPZ8NiR5bSauI5aQxM3E4Sdt94DG9ixkuniINHUBL2NKn8SFgLEiNU8spIVkdMurNNIg
-         8qaM8iR1tYp7ySa+puzxCpVC9VexSfoFa+a1deVLV9Kc7LQHy4kp7AkImOuqbqhuAZ0Z
-         /sFzVpY/Ovu0wh5xeMWdTHGC0518ZUycN0sSNe/KCFjxeTdicZctRoY3y7CaoZGzrXr+
-         b7qTjvKL8kN1jiygyynGPpS76o2u4lNmydnlfVjfMFfxC99DkbzOwx6dD1Hm1dwqfMNh
-         2Wug==
-X-Forwarded-Encrypted: i=1; AJvYcCXFVVDs8iRgn8g10Rz2JENIPTKW6RelGRUlOBRJjRVmB1VdzjsZqmBkDdAg3Fr8vkiXISd1Q/mnfS/kWt2wH4DAhyil3g8cdJpiDIWn
-X-Gm-Message-State: AOJu0YymofsDlq2ai8exbP/lQMo75nDFqfVWrlZk2aIIza1uAPiW5y0r
-	ouUHqq01wc+xcxDtI2Ksv/Du9brBqDC8u741QbJVot3syb067+Y7PP7i1+rkUds=
-X-Google-Smtp-Source: AGHT+IHWR0hLdOL78yMVv8MFgfNCo7t7ygA9mH2c/bUuGc7SlEtcmgj1HbUwD+5oLppZJcBjJKZHDQ==
-X-Received: by 2002:a05:6512:2815:b0:515:d198:694d with SMTP id cf21-20020a056512281500b00515d198694dmr10154546lfb.26.1712062684514;
-        Tue, 02 Apr 2024 05:58:04 -0700 (PDT)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id n7-20020a05600c500700b00415870e1e88sm2728986wmr.29.2024.04.02.05.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Apr 2024 05:58:04 -0700 (PDT)
-Date: Tue, 2 Apr 2024 13:58:02 +0100
-From: Daniel Thompson <daniel.thompson@linaro.org>
-To: liu.yec@h3c.com
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, dianders@chromium.org,
-	jason.wessel@windriver.com, kgdb-bugreport@lists.sourceforge.net,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH V7] kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <20240402125802.GC25200@aspen.lan>
-References: <2024032630-croon-consuming-6ef9@gregkh>
- <20240326085407.1970686-1-liu.yec@h3c.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MwXOKwDD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EAE6C43390;
+	Tue,  2 Apr 2024 13:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712063988;
+	bh=6D05Yya3KxK0OkWkNXVX0Mp3DXfWGd2Ns0Ca9ovdfaw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MwXOKwDDFThNQSSdwFoyIDPuzphqyMHtPg1wzAPeJNlw7LZilwgpYtOb5qPMLjVpV
+	 CYUxFWbal2HMJeC93LtARxsmlb6Xu2PACLlFnYHIjXWlmS6M7tWn5kMUJ+qupt3FAv
+	 U7fR66IQmSw/jK5b6N9x64B8O/rca4SOIhBepo5bAO1g9f+6nUpApx/hJ1JlMQAnFk
+	 Vt3XjdtRfWGVvAnfqY43tgY9tNw2FLYYI90+yZA41lRIHs5PSTjZn1p04QirVPulpo
+	 cI7UT62Ym4BcKJKH4D826Xqw5qw7ekg3r8hSuDN2oigtUp8rACw2FP0YND2Aex/qpZ
+	 aRT7q6NBPsanQ==
+Date: Tue, 2 Apr 2024 15:19:43 +0200
+From: Alexey Gladkov <legion@kernel.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
+	linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	linux-serial@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: Re: [RESEND PATCH v3 1/2] VT: Add KDFONTINFO ioctl
+Message-ID: <ZgwF72yHH_0-A4FW@example.org>
+References: <cover.1710252966.git.legion@kernel.org>
+ <cover.1712053848.git.legion@kernel.org>
+ <ed056326540f04b72c97a276fbcc316e1b2f6371.1712053848.git.legion@kernel.org>
+ <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240326085407.1970686-1-liu.yec@h3c.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
 
-On Tue, Mar 26, 2024 at 04:54:07PM +0800, liu.yec@h3c.com wrote:
-> From: LiuYe <liu.yeC@h3c.com>
->
-> Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-> attempt to use schedule_work() to provoke a keyboard reset when
-> transitioning out of the debugger and back to normal operation.
-> This can cause deadlock because schedule_work() is not NMI-safe.
->
-> The stack trace below shows an example of the problem. In this
-> case the master cpu is not running from NMI but it has parked
-> the slave CPUs using an NMI and the parked CPUs is holding
-> spinlocks needed by schedule_work().
->
-> example:
->  BUG: spinlock lockup suspected on CPU#0, namex/10450
->  lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
->  ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
->  ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
-> Call Trace:
->  [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
->  [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
->  [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
->  [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
->  [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
->  [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
->  [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
->  [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
->  [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
->  [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
->  CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
->  Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
->   0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
->   ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
->   000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
->   Call Trace:
->   <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
->   [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
->   [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
->   [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
->   [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
->   [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
->   [<ffffffff8107b371>] insert_work+0x81/0xc0
->   [<ffffffff8107b4e5>] __queue_work+0x135/0x390
->   [<ffffffff8107b786>] queue_work_on+0x46/0x90
->   [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
->   [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
->   [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
->   [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
->   [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
->   [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
->   [<ffffffff8108304d>] notify_die+0x3d/0x50
->   [<ffffffff81017219>] do_int3+0x89/0x120
->   [<ffffffff81480fb4>] int3+0x44/0x80
->
-> We fix the problem by using irq_work to call schedule_work()
-> instead of calling it directly. irq_work is an NMI-safe deferred work
-> framework that performs the requested work from a hardirq context
-> (usually an IPI but it can be timer interrupt on some
-> architectures).
->
-> Note that we still need to a workqueue since we cannot resync
-> the keyboard state from the hardirq context provided by irq_work.
-> That must be done from task context for the calls into the input
-> subystem. Hence we must defer the work twice. First to safely
-> switch from the debug trap (NMI-like context) to hardirq and
-> then, secondly, to get from hardirq to the system workqueue.
->
-> Signed-off-by: LiuYe <liu.yeC@h3c.com>
-> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
->
-> ---
-> V6 -> V7: Add comments in the code.
-> V5 -> V6: Replace with a more professional and accurate answer.
-> V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
-> V3 -> V4: Add changelogs
-> V2 -> V3: Add description information
-> V1 -> V2: using irq_work to solve this properly.
-> ---
-> ---
->  drivers/tty/serial/kgdboc.c | 22 +++++++++++++++++++++-
->  1 file changed, 21 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 7ce7bb164..750ed66d2 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -22,6 +22,7 @@
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/serial_core.h>
-> +#include <linux/irq_work.h>
->
->  #define MAX_CONFIG_LEN		40
->
-> @@ -98,11 +99,29 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
->  }
->
->  static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
-> +/*
-> + * We fix the problem by using irq_work to call schedule_work()
-> + * instead of calling it directly.
+On Tue, Apr 02, 2024 at 01:02:20PM +0200, Jiri Slaby wrote:
+> Hi,
+> 
+> On 02. 04. 24, 12:32, Alexey Gladkov wrote:
+> > Each driver has its own restrictions on font size. There is currently no
+> > way to understand what the requirements are. The new ioctl allows
+> > userspace to get the minmum and maximum font size values.
+> 
+> minimum
 
-What problem?
+Typo. Sorry.
 
-Put another way this text has been copy-pasted from
-the commit message without any editing to make it make sense. Text in
-the C file needs to be standalone!
+> > Acked-by: Helge Deller <deller@gmx.de>
+> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> > ---
+> >   drivers/tty/vt/vt.c       | 24 ++++++++++++++++++++++++
+> >   drivers/tty/vt/vt_ioctl.c | 13 +++++++++++++
+> >   include/linux/console.h   |  2 ++
+> >   include/linux/vt_kern.h   |  1 +
+> >   include/uapi/linux/kd.h   | 13 ++++++++++++-
+> >   5 files changed, 52 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> > index 156efda7c80d..8c2a3d98b5ec 100644
+> > --- a/drivers/tty/vt/vt.c
+> > +++ b/drivers/tty/vt/vt.c
+> > @@ -4680,6 +4680,30 @@ int con_font_op(struct vc_data *vc, struct console_font_op *op)
+> >   	return -ENOSYS;
+> >   }
+> >   
+> > +int con_font_info(struct vc_data *vc, struct console_font_info *info)
+> > +{
+> > +	int rc = -EINVAL;
+> 
+> This initialization appears to be unneeded.
+> 
+> > +
+> > +	info->min_height = 0;
+> > +	info->max_height = max_font_height;
+> > +
+> > +	info->min_width = 0;
+> > +	info->max_width = max_font_width;
+> > +
+> > +	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
+> > +
+> > +	console_lock();
+> > +	if (vc->vc_mode != KD_TEXT)
+> > +		rc = -EINVAL;
+> > +	else if (vc->vc_sw->con_font_info)
+> > +		rc = vc->vc_sw->con_font_info(vc, info);
+> > +	else
+> > +		rc = -ENOSYS;
+> > +	console_unlock();
+> > +
+> > +	return rc;
+> > +}
+> > +
+> >   /*
+> >    *	Interface exported to selection and vcs.
+> >    */
+> > diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+> > index 8c685b501404..b3b4e4b69366 100644
+> > --- a/drivers/tty/vt/vt_ioctl.c
+> > +++ b/drivers/tty/vt/vt_ioctl.c
+> > @@ -479,6 +479,19 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+> >   		break;
+> >   	}
+> >   
+> > +	case KDFONTINFO: {
+> > +		struct console_font_info fnt_info;
+> > +
+> > +		if (copy_from_user(&fnt_info, up, sizeof(fnt_info)))
+> > +			return -EFAULT;
+> 
+> Who uses the copied values?
 
-More like:
---- cut here ---
-This code ensures that the keyboard state, which is changed during kdb
-execution, is resynchronized when we leave the debug trap. The resync
-logic calls into the input subsystem to force a reset. The calls into
-the input subsystem must be executed from normal task context.
+No one. I did it by analogy with KDFONTOP. Thanks!
 
-We need to trigger the resync from the debug trap, which executes in an
-NMI (or similar) context. To make it safe to call into the input
-subsystem we end up having use two deferred execution techniques.
-Firstly, we use irq_work, which is NMI-safe, to provoke a callback from
-hardirq context. Then, from the hardirq callback we use the system
-workqueue to provoke the callback that actually performs the resync.
---- cut here ---
+> > +		ret = con_font_info(vc, &fnt_info);
+> > +		if (ret)
+> > +			return ret;
+> > +		if (copy_to_user(up, &fnt_info, sizeof(fnt_info)))
+> 
+> We should do the preferred sizeof(*up) here...
+> 
+> > +			return -EFAULT;
+> > +		break;
+> > +	}
+> > +
+> >   	default:
+> >   		return -ENOIOCTLCMD;
+> >   	}
+> ...
+> > --- a/include/uapi/linux/kd.h
+> > +++ b/include/uapi/linux/kd.h
+> > @@ -183,8 +183,19 @@ struct console_font {
+> >   
+> >   #define KD_FONT_FLAG_DONT_RECALC 	1	/* Don't recalculate hw charcell size [compat] */
+> >   
+> > +#define KDFONTINFO	0x4B73	/* font information */
+> 
+> Why not properly define the number using IOC() et al.? K (that 0x4b) is 
+> even reserved for kd.h.
 
->                                     irq_work is an NMI-safe deferred work
-> + * framework that performs the requested work from a hardirq context
-> + * (usually an IPI but it can be timer interrupt on some
-> + * architectures). Note that we still need to a workqueue since we cannot resync
-> + * the keyboard state from the hardirq context provided by irq_work.
-> + * That must be done from task context for the calls into the input
-> + * subystem. Hence we must defer the work twice. First to safely
-> + * switch from the debug trap (NMI-like context) to hardirq and
-> + * then, secondly, to get from hardirq to the system workqueue.
-> + */
+I just did the same as the numbers above. This entire header does not use
+IOC().
 
-Please find a better place to anchor the comment. It should be further
-up in the file when the first bit of deferred work appears, perhaps near
-kgdboc_restore_input_helper().
+Should I convert this header as a separate commit?
 
+> > +#define KD_FONT_INFO_FLAG_LOW_SIZE	(1U << 0) /* 256 */
+> > +#define KD_FONT_INFO_FLAG_HIGH_SIZE	(1U << 1) /* 512 */
+> 
+> _BITUL()
 
-> +static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-> +{
-> +	schedule_work(&kgdboc_restore_input_work);
-> +}
-> +
-> +static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
+Make sense. I will use it.
 
+> > +struct console_font_info {
+> > +	unsigned int min_width, min_height;	/* minimal font size */
+> > +	unsigned int max_width, max_height;	/* maximum font size */
+> > +	unsigned int flags;			/* KD_FONT_INFO_FLAG_* */
+> 
+> This does not look like a well-defined™ and extendable uapi structure. 
+> While it won't change anything here, still use fixed-length __u32.
+> 
+> And you should perhaps add some reserved fields. Do not repeat the same 
+> mistakes as your predecessors with the current kd uapi.
 
-Daniel.
+I thought about it, but I thought it would be overengineering.
+Can you suggest how best to do this?
+
+-- 
+Rgrds, legion
+
