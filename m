@@ -1,110 +1,99 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE881EF01;
-	Tue,  2 Apr 2024 19:42:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7079D15AAAA;
+	Tue,  2 Apr 2024 19:51:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712086954; cv=none; b=a5uprzdtheFwZUfw89JjCsKtYOO07rHUmdNElmZDeu5Pq+F9GUuABhwtfEahWxVBckFse/EIItfY4VniOe5xGtvqC6PFd+J8kZAUpDql8UIscg+RRPlhbwIzw35hRhi7rIZCikaZtufO0Tnn1ofPD5WGbJI7RhkJfYSo1qWT0gc=
+	t=1712087480; cv=none; b=ldMFyRj6ye+XR1Zs3OuTtRcIwiJOCZ72CezufrGTiGLfeWQyaVEuPqOQ4FD20tKBwOOpQfYRFMp8/Nk1E7kjG7/9yzYYGgrWBj9EnkIC28MiqW1CdptqzkeTECk3E/t/+1TkKYmVISxJuTj2pBvn7XH7LMZadhnni7qzHqb0gdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712086954; c=relaxed/simple;
-	bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fnUu8FloP5oc21Ve4Ofa/ormi377zKEsE16o92iPMK4VBapnLIfa0oAq0jTlGIfPKbceuF4gWQhlmkkBnSGzfELl6gxrEYQy5C4L8vphS1pdUeOBqWTYQsi+w+s0E6ZY7+ToQduYi41A0L8YK+nqO7qCUthGcG/H71AXV9In95s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jCjyMcEg; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712087480; c=relaxed/simple;
+	bh=bqXSoYZYpoDOlviSuyY8vu24PrI+70YMdminhVwEYNs=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=Ri9ljOsXjYHNw/E97BPVrpj3qMYwcyYCUyDIffA4byI5w+z/ECFYkyZq1bejT6ZHVy+zKOoVo81pqvfPh7jBHmwd1v5WWBLuj3f/NGCKnGYVd/fPHGn8dy7umcmfnoT9CZoO7pVtVDkClA9b4yLxFqGsdfqb0XmS4a9qrPMRXc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=eB4ebqY7; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jCjyMcEg"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a46ba938de0so742534166b.3;
-        Tue, 02 Apr 2024 12:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712086951; x=1712691751; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
-        b=jCjyMcEgq29R8PB5jSVsOxsHpN0E8tzKtsE7uidQJKE/gqV7EtY2pCbbk0jzBdlqSy
-         mjCl0mpQ/xXGoeRcmPGeakdalgvG9Dl+ncHtvr4LNK6+4y2RggIlt1sLGBBC3llZQGA4
-         bu5SkeYkAAf0Nofl/E/THZ/XhSNWiNg9eHxkLt20WNN612MXFwLZeWEY0miEgNaZUKim
-         XARnERZZ26rwE9Ai1cU3jMKxSSjW3EuG0D8pRTSBj1f2MWRexg5BPNZvP++/RKd330N1
-         NPigUKmubdN1SOgMvus+DVJputTQJNFTlWL5x5xTP9uXX1MiQK/bD02paTFH5KTxErTM
-         hlUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712086951; x=1712691751;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VLN0GvoxXHbcgeuzQAHDb4xeRudfTmKpVn5GgSsrGmE=;
-        b=XRG4dtoUg+CoKpJ8GZ4dR/wE5wcrrRlKaHAyHjfk3dA4tGTAHqRxPygEw1j6fLrRSk
-         rTTEkKtZSUg6Ikkunh4ntkQ6iZVTNtbbJS0zSIKnottWeG8+Faxo7r+MyESAR70PBpby
-         wA+/S+prDHo+cjB9RdZEw7cnaGz++6kqod8vvuH6QAj+PByaCfoMbsu9L73gk+wgmeRM
-         r4K4gWgIyoi8kHCti3wmZD6WYDseqtttXMDtJbiO31m0dDeXwF8eN6gXOOnY3Bzo5nl9
-         LKs6rCbipmTYzRM+po9OFyPEBFREqkMY2YCjTsit/ScvyykepxdVGcPo0/yIEROhJxjF
-         fAJw==
-X-Forwarded-Encrypted: i=1; AJvYcCWkA+WLf0b4rSlbbcsLabeAFF0L/BWvIOtqzT9cFw7cYvZD9jAVRDbZG/ONdGDSaG9qQK6hhBKdns7+I4od77062f0ciMPqSzv6xVQPS+/rYdN7LBvOUd3ZG8h5HhvS66evRbCuB7WQxpg8
-X-Gm-Message-State: AOJu0YyRVryQ3BKtjVbeMLx65/E36jIOnoa9yuxblK70dQ/deySpukuI
-	GI1pSQ9WUzb791VJ4i+zP/foXEZ7RngZsOMcbVpE8ZrzlGG+tdhwfl5e23BF3vITaWX89dlXNPi
-	tgeX3nypCYDy9+4ZkNAI71KjPbYM=
-X-Google-Smtp-Source: AGHT+IGWoVUBHO6cFd46RaUv4TkpRlu3aoYPZGGnMy/legnwvw0WZjzJJayDTE22W26g9TKGq7A+GpGdtQJGuVYYT90=
-X-Received: by 2002:a17:906:a151:b0:a46:cef3:4aba with SMTP id
- bu17-20020a170906a15100b00a46cef34abamr8684309ejb.75.1712086951031; Tue, 02
- Apr 2024 12:42:31 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="eB4ebqY7"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=9DaXjULJHLZpzhqzyNkkPkEBR6YCb7iZnUxB3ewIuiM=; b=eB4ebqY77eAy5B+wYMKAXdHm8S
+	/9LoTwYSrV1tP6OlfY4l436g/XkgNzCgeSFPaTfiTtIz64G5L622/trtFRHJpineY7/EDDf47ngBN
+	Va2dUe8AL22iFq5gZE+umzBylvdE20S4I8Wxa9mgwQxXYPZqwupwyXed9yeX8sT8eow0=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:50794 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rrkA7-0001Hn-JC; Tue, 02 Apr 2024 15:51:15 -0400
+Date: Tue, 2 Apr 2024 15:51:15 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20240402155115.7aa760a4b7a107003e2b411c@hugovil.com>
+In-Reply-To: <CAHp75VedAiB_wSaq+oaNriC3HfLC=ft21O=ZYW_wCARPS7v3QQ@mail.gmail.com>
+References: <20240402174353.256627-1-hugo@hugovil.com>
+	<20240402174353.256627-5-hugo@hugovil.com>
+	<CAHp75VedAiB_wSaq+oaNriC3HfLC=ft21O=ZYW_wCARPS7v3QQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240402174353.256627-1-hugo@hugovil.com>
-In-Reply-To: <20240402174353.256627-1-hugo@hugovil.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 2 Apr 2024 22:41:54 +0300
-Message-ID: <CAHp75Vd0bjCdUse0yL67GZsqh5b-76aaD+N61UNAi-9rD2oZmg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/5] serial: sc16is7xx: split into core and I2C/SPI parts
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.4 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v3 4/5] serial: sc16is7xx: split into core and I2C/SPI
+ parts (sc16is7xx_lines)
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, Apr 2, 2024 at 8:45=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
-rote:
->
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> Hello,
-> this patch series splits the SPI/I2C parts for the sc16is7xx driver into
-> separate source files (and separate I2C/SPI drivers).
->
-> These changes are based on suggestions made by Andy Shevchenko
-> following this discussion:
->
-> Link: https://lore.kernel.org/all/CAHp75VebCZckUrNraYQj9k=3DMrn2kbYs1Lx26=
-f5-8rKJ3RXeh-w@mail.gmail.com/
->
-> The changes are split into multiple patches to facilitate the review proc=
-ess.
-> In the end, some of them could be merged into a single patch.
->
-> I have tested the changes on a custom board with two SC16IS752 DUART over
-> a SPI interface using a Variscite IMX8MN NANO SOM. The four UARTs are
-> configured in RS-485 mode.
->
-> I did not test the changes on a real SC16is7xx using the I2C interface. B=
-ut
-> I slighly modified the driver to be able to simulate an I2C device using
+On Tue, 2 Apr 2024 22:28:25 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-slightly
+> On Tue, Apr 2, 2024 at 8:45 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> >
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> >
+> > Before, sc16is7xx_lines was checked for a free (zero) bit first, and then
+> > later it was set only if UART port registration succeeded. Now that
+> > sc16is7xx_lines is shared for the I2C and SPI drivers, there is a
+> > possibility that the two drivers can simultaneously try to reserve the same
+> > line bit at the same time.
+> >
+> > To prevent this, make sure line allocation is reserved atomically, and use
+> > a new variable to hold the status of UART port regisration.
+> 
+> registration
 
-> i2c-stub. I was then able to instantiate a virtual I2C device without
-> disturbing existing connection/communication between real SPI devices on
-> /dev/ttySC0 and /dev/ttySC2 (using a loopback cable).
+Hi Andy,
+will fix for V4.
 
-For patches 1,2,5
-Reviewed-by: Andy Shevchenko <andy@kernel.org>
+> 
+> > Now that we no longer need to search if a bit is set, it is now possible
+> > to simplify sc16is7xx_lines allocation by using the IDA framework.
+> 
+> ...
+> 
+> > -static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
+> > +static DEFINE_IDA(sc16is7xx_lines);
+> 
+> Don't we need to replace bitmap.h with idr.h with this change in place?
 
---=20
-With Best Regards,
-Andy Shevchenko
+Yes, but I will replace bitops.h with idr.h in V4 (bitmap.h was not
+included).
+
+While at it, I will include an additional patch to replace inlude of 
+<uapi/linux/sched/types.h> with <linux/sched.h>.
+
+Thank you,
+Hugo.
