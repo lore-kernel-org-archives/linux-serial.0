@@ -1,104 +1,90 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED8215A4A4;
-	Tue,  2 Apr 2024 17:37:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0AE17BB7;
+	Tue,  2 Apr 2024 17:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712079426; cv=none; b=FTX2yEV5fCATSUYhp3r5hI9DYms+QYknaNbjUwBOw90UnBRgaTdUndo0H38xexPvMw1oZiq6LQlkFADJQBnZ+/h8GOKMwRS3Cx2KnImo0jEL/5dJZUCxWD1Xa/+xPNY0AuY6YQBdwArfmGNJg6LUy8PXmWNU9DJo4JVkCv77qPc=
+	t=1712079660; cv=none; b=nt114t7+FniA0jzo/D2tGEbozDjA/e0bmzIC3xB6aaj37a69MTIWnR7fRdLrlLyvt+DNR+fS0wQYU8xPzZl5ealor/2ej53no2x2y0O0zO+R5POQokdLbM+Cm/I2tFK5jfh5Xdvw2gk0Xy/8Z6UhQEBfa9Dk16Zpn6I+km1ScEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712079426; c=relaxed/simple;
-	bh=5uOAjV3Vg35YUkmTzQtYe9c8rpLaT1QiFYRMknfdpK4=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=jxW40lW/FeOeuRS4bRGR2VM3IhlRuca18nEDc92hJ0n+8S9ZRxX9e/aFuuZyRNfMdZ3KMVoctSxdPzDv2bXITd0p/PUYrFGPqBd5ANRB+Inch/pFPeDQxP4bpjU09BBDTR91ZgzwibyJIaRSIBGRjcubFOLNjY8kxmeiyOSMe+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=NXvfIkZn; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1712079660; c=relaxed/simple;
+	bh=vhg0oaCb7THdZc8NXM2XN52ZqPajlyFdXUg7Sg0+Uu0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oEg2WNxp20ScUsNdHkrgMwhB71Z3tp7Qvz+dV+grChxEH4mPs7raxpwpc/qLf+77VObw819//AHjXnUWjxxwQxd09vuRmfECri291enOma2ALBEaWZQec8Qm4hFNjmg/zsIXw5pqY07Ti/ocuQ92H2wd50bQTaegTYLLElDzPJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M+e/lanQ; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="NXvfIkZn"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=gWasRQVKJg4H/CT80jtjdU7PQlQo2NdH6FxQmY5BGxc=; b=NXvfIkZnXF9TVCybvgpLZ632tv
-	xfJ+q0NtwEFUXo8bLJPv8+an2LfW18WBm0Oe3ONSnTLJZL6dK7xc2H05sCuhjJSFXoydplRSSnhqE
-	mh5Ag+VIP/PPPbm54nJBtiNiJOCAzpYa5+IeoDJqSIQQ3syxdz2VO0B1TS1W2qXBiocU=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:46930 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rri4E-00089o-7l; Tue, 02 Apr 2024 13:37:02 -0400
-Date: Tue, 2 Apr 2024 13:37:01 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M+e/lanQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712079659; x=1743615659;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vhg0oaCb7THdZc8NXM2XN52ZqPajlyFdXUg7Sg0+Uu0=;
+  b=M+e/lanQQBW/ai5nAzUL+blIz2jaRMT6cMQ8eoJBnpOnD8nmni0wLy6Q
+   Q3BbeVUedb38HCY4oQt12BnjdfhAtUI2hmGhEo6wrLhVNGZTkkeb4zs9U
+   3KQoVS1jKR8Z8NHomuOMCh/jVYPSOvUk5qs73uXvPnZV1eyH7GPK2Zztn
+   f6s03IG52IJ7fevsWap/qb3vVAfRwk5bBB0cvVjX26IjyRham0DR2ZfXg
+   AvmI4uyl70QCjAyhcc6etWwiMMni51bEEqARFSSaTxD+M0RDr9Uzy6jyN
+   whtA8HrRWwyD6ygpLI/NlAMQFLAYKLgzRaY45+LIlSb3c5LGspw1VDCgl
+   g==;
+X-CSE-ConnectionGUID: YnCjPX6USDKQ9YIw7xQYMQ==
+X-CSE-MsgGUID: NM1LW2YkTNyms/T9OxeBsg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="10235408"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="10235408"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 10:40:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="915148327"
+X-IronPort-AV: E=Sophos;i="6.07,175,1708416000"; 
+   d="scan'208";a="915148327"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 10:40:56 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rri7y-00000000stb-0xtv;
+	Tue, 02 Apr 2024 20:40:54 +0300
+Date: Tue, 2 Apr 2024 20:40:53 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hugo Villeneuve <hugo@hugovil.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby
- <jirislaby@kernel.org>
-Message-Id: <20240402133701.21d8bd5d35754f042874b923@hugovil.com>
-In-Reply-To: <ZgxBBioFa1HIFth8@smile.fi.intel.com>
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 13/16] serial: max3100: Extract to_max3100_port()
+ helper macro
+Message-ID: <ZgxDJZmdzhK3aa0i@smile.fi.intel.com>
 References: <20240402154219.3583679-1-andriy.shevchenko@linux.intel.com>
-	<20240402154219.3583679-3-andriy.shevchenko@linux.intel.com>
-	<20240402131827.fdc429dfb6f62db4d291688f@hugovil.com>
-	<ZgxBBioFa1HIFth8@smile.fi.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20240402154219.3583679-14-andriy.shevchenko@linux.intel.com>
+ <20240402133209.910f63378eb40fa27363f3ed@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v1 02/16] serial: max3100: Update uart_driver_registered
- on driver removal
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240402133209.910f63378eb40fa27363f3ed@hugovil.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Tue, 2 Apr 2024 20:31:50 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> On Tue, Apr 02, 2024 at 01:18:27PM -0400, Hugo Villeneuve wrote:
-> > On Tue,  2 Apr 2024 18:38:08 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Tue, Apr 02, 2024 at 01:32:09PM -0400, Hugo Villeneuve wrote:
+> On Tue,  2 Apr 2024 18:38:19 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-> ...
+> > Instead of using container_of() explicitly, introduce a heler macro.
 > 
-> > >  	pr_debug("removing max3100 driver\n");
-> > >  	uart_unregister_driver(&max3100_uart_driver);
-> > > +	uart_driver_registered = 0;
-> > 
-> > At the beginning of the probe function, we have:
-> > 
-> > -----------------------
-> > if (!uart_driver_registered) {
-> > 		uart_driver_registered = 1;
-> > 		retval = uart_register_driver(&max3100_uart_driver);
-> > 		if (retval) {
-> > 			printk(KERN_ERR "Couldn't register max3100 uart
-> > driver\n"); mutex_unlock(&max3100s_lock);
-> > 			return retval;
-> > ...
-> > -----------------------
-> > 
-> > If uart_register_driver() fails, uart_driver_registered would still be
-> > true and would it prevent any other subsequent devices from being
-> > properly registered? If yes, then maybe "uart_driver_registered = 1"
-> > should be set only after a sucessfull call to uart_register_driver()?
-> 
-> Looks like yet another issue here (however I haven't hit it so far).
-> I guess I can combine both fixes.  What do you think?
+> heler -> helper
 
-Hi Andy,
-makes sense to me.
+Seems v2 will be needed, I'll fix this.
 
-Hugo.
+> Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+
+Thank you!
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
