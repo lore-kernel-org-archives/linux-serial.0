@@ -1,185 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D471C8062A;
-	Tue,  2 Apr 2024 13:19:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail-177131.yeah.net (mail-177131.yeah.net [123.58.177.131])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D349612BF1F;
+	Tue,  2 Apr 2024 14:37:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=123.58.177.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712063989; cv=none; b=ckOkC0VKLtTLG9zZNW2r0GDGIuMY2lftj1PWvokDYZlLc1UGmcd0wV3Nh8ISFk0D8ZSTJ8bynMjOBfK3Nd+RZmsnWcwWeehmzrkz4BuPszRxyoSOjufLKMbvxIhqn4fX4q/3Ofi/uwbFkPn5h8nUrACVNG/JxXpy5O5UtwE8eYg=
+	t=1712068684; cv=none; b=VdG6O29xp0x6kYHXi6WtLPregGIyshtGxvd5mZo4bt3wIrGKEp0VfCnyaSi3LKV2Wu0Wr+PrhbJD5EtK5LdT6tSG0fvZ5TiRrTtIUZbN/RxAM0p7Jd4l6G8bXKPLW7MlJttDo9yEfyM9eEFhRy7sM1SJ/t//6b3u0Dd+0v4Yc08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712063989; c=relaxed/simple;
-	bh=6D05Yya3KxK0OkWkNXVX0Mp3DXfWGd2Ns0Ca9ovdfaw=;
+	s=arc-20240116; t=1712068684; c=relaxed/simple;
+	bh=y93sbGXDHyqBedzkpPL4OL5mGT6a0q7FptP2qObJa8k=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=reVBf5iEw0F8eFHbyJp5nBkjllSnp+qvML/xJ02FEoWyhrE0zNG7fSGVOr/RePAbuTelviO3mkEMkjEdn5DNn1eW7y1KaHhxtxsflBh3LESYU+eqmEA+dAsosfbanDMdL/wnelL8tN9mtSYoxlq6IgC4HN+IaxA6UZdUTKLxKIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MwXOKwDD; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=E0gatRZs1KNf4IakEie3nc8OO9v4sZHIZZmzF9PfDXpSHixmuiInZyzWX5KhnE5UWdzbSJ829WzN3353XXcNsnq3b+pYBgRcP74E/dWYisX4gd/eVO9vyRFo++grxdZGnvLth55eHhSWuC5flc+gmYriwgFwlnunwHTvtpfKkkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yeah.net; spf=pass smtp.mailfrom=yeah.net; dkim=pass (1024-bit key) header.d=yeah.net header.i=@yeah.net header.b=a0JH/9Zr; arc=none smtp.client-ip=123.58.177.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yeah.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yeah.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MwXOKwDD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EAE6C43390;
-	Tue,  2 Apr 2024 13:19:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712063988;
-	bh=6D05Yya3KxK0OkWkNXVX0Mp3DXfWGd2Ns0Ca9ovdfaw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MwXOKwDDFThNQSSdwFoyIDPuzphqyMHtPg1wzAPeJNlw7LZilwgpYtOb5qPMLjVpV
-	 CYUxFWbal2HMJeC93LtARxsmlb6Xu2PACLlFnYHIjXWlmS6M7tWn5kMUJ+qupt3FAv
-	 U7fR66IQmSw/jK5b6N9x64B8O/rca4SOIhBepo5bAO1g9f+6nUpApx/hJ1JlMQAnFk
-	 Vt3XjdtRfWGVvAnfqY43tgY9tNw2FLYYI90+yZA41lRIHs5PSTjZn1p04QirVPulpo
-	 cI7UT62Ym4BcKJKH4D826Xqw5qw7ekg3r8hSuDN2oigtUp8rACw2FP0YND2Aex/qpZ
-	 aRT7q6NBPsanQ==
-Date: Tue, 2 Apr 2024 15:19:43 +0200
-From: Alexey Gladkov <legion@kernel.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
-	linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	linux-serial@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: Re: [RESEND PATCH v3 1/2] VT: Add KDFONTINFO ioctl
-Message-ID: <ZgwF72yHH_0-A4FW@example.org>
-References: <cover.1710252966.git.legion@kernel.org>
- <cover.1712053848.git.legion@kernel.org>
- <ed056326540f04b72c97a276fbcc316e1b2f6371.1712053848.git.legion@kernel.org>
- <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
+	dkim=pass (1024-bit key) header.d=yeah.net header.i=@yeah.net header.b="a0JH/9Zr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yeah.net;
+	s=s110527; h=Date:From:Subject:Message-ID:MIME-Version:
+	Content-Type; bh=aJBu59wH8+zyksPlO84AEqktfR6MRWy+q+ZyQLyUzbE=;
+	b=a0JH/9ZrT+x5iocC6DS5MSTBOvXdWlem2GP+brQLVVgQLACfnVD3CRcM1lv5sY
+	uU4MK5GDezWPe+5k+EBe265ojSBrzKRHC0g3xwFMXPP1CwrUfsZclf4a6uFmrosk
+	0wwI5AMleMej8ybrdbMzqe4YCg+QYVO/3Ebim8ALXmFro=
+Received: from dragon (unknown [223.68.79.243])
+	by smtp1 (Coremail) with SMTP id ClUQrADnr0R6FwxmkTqmAQ--.46595S3;
+	Tue, 02 Apr 2024 22:34:36 +0800 (CST)
+Date: Tue, 2 Apr 2024 22:34:34 +0800
+From: Shawn Guo <shawnguo2@yeah.net>
+To: Wadim Mueller <wafgo01@gmail.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	NXP Linux Team <linux-imx@nxp.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chester Lin <chester62515@gmail.com>,
+	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+	Matthias Brugger <mbrugger@suse.com>,
+	NXP S32 Linux Team <s32@nxp.com>,
+	Tim Harvey <tharvey@gateworks.com>,
+	Alexander Stein <alexander.stein@ew.tq-group.com>,
+	Marek Vasut <marex@denx.de>,
+	Gregor Herburger <gregor.herburger@ew.tq-group.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Joao Paulo Goncalves <joao.goncalves@toradex.com>,
+	Markus Niebel <Markus.Niebel@ew.tq-group.com>,
+	Marco Felsch <m.felsch@pengutronix.de>,
+	Matthias Schiffer <matthias.schiffer@tq-group.com>,
+	Stefan Wahren <stefan.wahren@chargebyte.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Josua Mayer <josua@solid-run.com>, Li Yang <leoyang.li@nxp.com>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] dt-bindings: arm: fsl: add NXP S32G3 board
+Message-ID: <ZgwXepBYa78FhQaT@dragon>
+References: <20240324214329.29988-1-wafgo01@gmail.com>
+ <20240324214329.29988-2-wafgo01@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
+In-Reply-To: <20240324214329.29988-2-wafgo01@gmail.com>
+X-CM-TRANSID:ClUQrADnr0R6FwxmkTqmAQ--.46595S3
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjxUxdWFUUUUU
+X-CM-SenderInfo: pvkd40hjxrjqh1hdxhhqhw/1tbiDh+0ZVszYdX9jwAAsu
 
-On Tue, Apr 02, 2024 at 01:02:20PM +0200, Jiri Slaby wrote:
-> Hi,
+On Sun, Mar 24, 2024 at 10:43:23PM +0100, Wadim Mueller wrote:
+> Add bindings for NXP S32G3 Reference Design Board 3 (S32G-VNP-RDB3) [1]
 > 
-> On 02. 04. 24, 12:32, Alexey Gladkov wrote:
-> > Each driver has its own restrictions on font size. There is currently no
-> > way to understand what the requirements are. The new ioctl allows
-> > userspace to get the minmum and maximum font size values.
+> [1]
+> https://www.nxp.com/design/design-center/designs/s32g3-vehicle-networking-reference-design:S32G-VNP-RDB3
 > 
-> minimum
+> Signed-off-by: Wadim Mueller <wafgo01@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Typo. Sorry.
-
-> > Acked-by: Helge Deller <deller@gmx.de>
-> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
-> > ---
-> >   drivers/tty/vt/vt.c       | 24 ++++++++++++++++++++++++
-> >   drivers/tty/vt/vt_ioctl.c | 13 +++++++++++++
-> >   include/linux/console.h   |  2 ++
-> >   include/linux/vt_kern.h   |  1 +
-> >   include/uapi/linux/kd.h   | 13 ++++++++++++-
-> >   5 files changed, 52 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> > index 156efda7c80d..8c2a3d98b5ec 100644
-> > --- a/drivers/tty/vt/vt.c
-> > +++ b/drivers/tty/vt/vt.c
-> > @@ -4680,6 +4680,30 @@ int con_font_op(struct vc_data *vc, struct console_font_op *op)
-> >   	return -ENOSYS;
-> >   }
-> >   
-> > +int con_font_info(struct vc_data *vc, struct console_font_info *info)
-> > +{
-> > +	int rc = -EINVAL;
-> 
-> This initialization appears to be unneeded.
-> 
-> > +
-> > +	info->min_height = 0;
-> > +	info->max_height = max_font_height;
-> > +
-> > +	info->min_width = 0;
-> > +	info->max_width = max_font_width;
-> > +
-> > +	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-> > +
-> > +	console_lock();
-> > +	if (vc->vc_mode != KD_TEXT)
-> > +		rc = -EINVAL;
-> > +	else if (vc->vc_sw->con_font_info)
-> > +		rc = vc->vc_sw->con_font_info(vc, info);
-> > +	else
-> > +		rc = -ENOSYS;
-> > +	console_unlock();
-> > +
-> > +	return rc;
-> > +}
-> > +
-> >   /*
-> >    *	Interface exported to selection and vcs.
-> >    */
-> > diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-> > index 8c685b501404..b3b4e4b69366 100644
-> > --- a/drivers/tty/vt/vt_ioctl.c
-> > +++ b/drivers/tty/vt/vt_ioctl.c
-> > @@ -479,6 +479,19 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
-> >   		break;
-> >   	}
-> >   
-> > +	case KDFONTINFO: {
-> > +		struct console_font_info fnt_info;
-> > +
-> > +		if (copy_from_user(&fnt_info, up, sizeof(fnt_info)))
-> > +			return -EFAULT;
-> 
-> Who uses the copied values?
-
-No one. I did it by analogy with KDFONTOP. Thanks!
-
-> > +		ret = con_font_info(vc, &fnt_info);
-> > +		if (ret)
-> > +			return ret;
-> > +		if (copy_to_user(up, &fnt_info, sizeof(fnt_info)))
-> 
-> We should do the preferred sizeof(*up) here...
-> 
-> > +			return -EFAULT;
-> > +		break;
-> > +	}
-> > +
-> >   	default:
-> >   		return -ENOIOCTLCMD;
-> >   	}
-> ...
-> > --- a/include/uapi/linux/kd.h
-> > +++ b/include/uapi/linux/kd.h
-> > @@ -183,8 +183,19 @@ struct console_font {
-> >   
-> >   #define KD_FONT_FLAG_DONT_RECALC 	1	/* Don't recalculate hw charcell size [compat] */
-> >   
-> > +#define KDFONTINFO	0x4B73	/* font information */
-> 
-> Why not properly define the number using IOC() et al.? K (that 0x4b) is 
-> even reserved for kd.h.
-
-I just did the same as the numbers above. This entire header does not use
-IOC().
-
-Should I convert this header as a separate commit?
-
-> > +#define KD_FONT_INFO_FLAG_LOW_SIZE	(1U << 0) /* 256 */
-> > +#define KD_FONT_INFO_FLAG_HIGH_SIZE	(1U << 1) /* 512 */
-> 
-> _BITUL()
-
-Make sense. I will use it.
-
-> > +struct console_font_info {
-> > +	unsigned int min_width, min_height;	/* minimal font size */
-> > +	unsigned int max_width, max_height;	/* maximum font size */
-> > +	unsigned int flags;			/* KD_FONT_INFO_FLAG_* */
-> 
-> This does not look like a well-defined™ and extendable uapi structure. 
-> While it won't change anything here, still use fixed-length __u32.
-> 
-> And you should perhaps add some reserved fields. Do not repeat the same 
-> mistakes as your predecessors with the current kd uapi.
-
-I thought about it, but I thought it would be overengineering.
-Can you suggest how best to do this?
-
--- 
-Rgrds, legion
+Applied, thanks!
 
