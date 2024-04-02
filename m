@@ -1,277 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EB2815AD8C;
-	Tue,  2 Apr 2024 17:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5BBE15B55A;
+	Tue,  2 Apr 2024 19:29:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712080287; cv=none; b=MQHZRiFgDC2ZmVPfyuD9Y2Y+urUIbzMueeSXtjgWVb83Cdx7YwGFgAVw3/OMh3nVA6ICAN5ttYk/UoFrI+rKsz42CZ13raYMbrnqwxRFWgRDVIrS7rvh8qD6gnW4Ykp1yyfapFDq9dymsbw63l5r3Frj/lhT4wvG2II//DTwkTU=
+	t=1712086145; cv=none; b=dVrkbamxmgTcsubJea2pdHn0xVhgM0U0qRWgtJnXeqb/Fbp5aqcUJpLpy2ia3hrUzOAnHoKt0fv4wskWBH6we+i1C125OxzKQzlu+3moejYD+JmWiHr4Qd4VH6oPHMk363yeAp/xpOBiv+iN7l0dIhakjvmV4C3nRJF8MfX3H6k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712080287; c=relaxed/simple;
-	bh=CcyeG5LEOSpGWOeOm3cbVKAtUzZmD4pho93LO4Lftsc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gJnA5jb7yfAzIf8I+Z8z+aHKlyzo9MmVSTpmRqCi5mw986ju2buLhmOuiqZ7QtdZzek75Ymt6O8X83ZG0DsRwQBZ52MTYlBiTpmKc3L6K2gUkv8qJhvXXlHkyHuUgQWtKTlUASz8uAqMsCPPniOoIqNroRuHEl5w8/WM+L4IsjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gDPpL1iS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712086145; c=relaxed/simple;
+	bh=EhAHyl9cP3nWJoJwRMyp31F4H83JzTgrt3TBLtATRPM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OF5vwr1a/4zYTlv3gh4zpkzgLEyCzVy426NrEE6JEd1w3shn9YEvK4qs0JlzEpd3IKGORtXpyijYTvWp0ES7WzZr96psFLWmUqMlDCyQXO2ul49t+y+/qbvO+a0f91Jcx5PIX5W/BGfn5X7dopI6XkG5WRFXjI5amJHyPs+AlTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CYqD8REK; arc=none smtp.client-ip=209.85.208.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gDPpL1iS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2213C43141;
-	Tue,  2 Apr 2024 17:51:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712080286;
-	bh=CcyeG5LEOSpGWOeOm3cbVKAtUzZmD4pho93LO4Lftsc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gDPpL1iSidYDTm2cfaFRKWDA6FRECYoVffaodoZH0Kd2Ojp8D965LqLkRBPeV21LO
-	 c+uqtYWir+a12YHGnAK7hUoldX5/EJ2oeeSJabTOjujSOY9bj/gTgoKNMsCzHzqvsi
-	 WvqK31EfOtcxep9lELkvVMMjBCvA6VM1F4ct8g6HIjsOECCmA4Du9NN63zpYLB/e4k
-	 nkOIY++Q/hKLaUUTLiaZcnDuxrmLq7gxr8Ou7Bgq8NHGfFCEMHKyhvwi4+ST6YU9kx
-	 UhkMnrvG3kXC/JFi8x8pW70wT/WRXGQ9Fxf4+Qrd53IA0NNKcjuDYmt+CaHxdEMzwx
-	 EWzoHhIBCBGRg==
-From: Alexey Gladkov <legion@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>,
-	kbd@lists.linux.dev,
-	linux-api@vger.kernel.org,
-	linux-fbdev@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Helge Deller <deller@gmx.de>
-Subject: [PATCH v4 3/3] VT: Allow to get max font width and height
-Date: Tue,  2 Apr 2024 19:50:46 +0200
-Message-ID: <adf46c743e7badf601feebcc31ec2def417cd56b.1712080158.git.legion@kernel.org>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <cover.1712080158.git.legion@kernel.org>
-References: <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org> <cover.1712080158.git.legion@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CYqD8REK"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2d82713f473so24118701fa.3;
+        Tue, 02 Apr 2024 12:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712086142; x=1712690942; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EhAHyl9cP3nWJoJwRMyp31F4H83JzTgrt3TBLtATRPM=;
+        b=CYqD8REKN8s0bzShPPTrMUmPTaJ5yO8+2g6JTiBSnULraNLy0jpDcdpJoqJZ/pgEB6
+         GVy53m0kTATygm+BTxaf9mjWaWmWLMxeCSF1c2KWi/n5rG/o9nF9m256aj/qGN6mlp1p
+         OHcCUxFU+CtYD7Mfs/wjJiafUn5Q0Hrr7OG/L9eme/oG4LEYGgRRSOGhpSjNNe7U3e8C
+         4/Qnj2o4XgSS993XNyQHrl2/4uFjDpd38FQuybLJMoBTk+RgI3tUzSnnVkb6qK2aJOoT
+         hJVCIFiKs9sDw8pXb4TFPLsHg8ZlZnT57PTTzEkk09EC1THkvydErx9pboqlU4IaODCA
+         wkgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712086142; x=1712690942;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EhAHyl9cP3nWJoJwRMyp31F4H83JzTgrt3TBLtATRPM=;
+        b=UCn4bEuPNVosP/arRS/nSZxSAzKImNWeQSPSYieuUD1FvnnqOQn9Rt65oHSR5MtOiD
+         Vi+Cg93Ckv3vLViRjyKy45uYy1L64B6K4oNKiOpsmCFKa35LEWWMmN7Ast+dQ90Mb3zM
+         HSwg+evYUUIMIo2Hfah7Z/BE+JnE0KMgC0PVvFwjbRBeTo2WD2wntQYNoyDDD0uJ89rn
+         tYZMHfRnh2pfsraWr6fTTCt8dLDw0N3aqWWtHUWSgUEuY098dRWvLXnjowYEGO+mywfd
+         9zJISZXZTyN2r4LQeGIf83bZbnJhPZV5NCJkjJ1xzYyQ82HVxGJwVrUVKGcCgUzUqPzO
+         I4zA==
+X-Forwarded-Encrypted: i=1; AJvYcCVbzJ7Q/sn74rQkxhnou+FVd93kQIL31KJijDy6zZ9go2Z8v6/e1kCm/yseEAISa4uKfkJf3PYd2tIs0PqXK8Nfpx9O9WA6cUlTfRJRti3LvTgOFuF397BSYXko+nyu08qhZpPPT3MOmcKY
+X-Gm-Message-State: AOJu0YxnSYae94H0hN/YeP95AsoF/TOzqSBYAB11+rpV9IXyEqfUnZqU
+	GAXfoyGfJeDBcZLGr/8q8S0pPJ7z7RtkpBgu05GpR/Pf5s2eIkU76xSQcvIqqSwBuupHBe/A7+1
+	WBDVuCKLd1CYv2aieDICziB4ZDxI=
+X-Google-Smtp-Source: AGHT+IG12UrZ+tZaBT8KWaGbUc2/tzG6TFzFBRGcHZSyJ3RrVBGA7RdiJS8Yv9Q/NVxawbm/Yyjoo42Z52vQNS2I/q0=
+X-Received: by 2002:a2e:a783:0:b0:2d4:132b:9f21 with SMTP id
+ c3-20020a2ea783000000b002d4132b9f21mr3160289ljf.6.1712086141578; Tue, 02 Apr
+ 2024 12:29:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240402174353.256627-1-hugo@hugovil.com> <20240402174353.256627-5-hugo@hugovil.com>
+In-Reply-To: <20240402174353.256627-5-hugo@hugovil.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 2 Apr 2024 22:28:25 +0300
+Message-ID: <CAHp75VedAiB_wSaq+oaNriC3HfLC=ft21O=ZYW_wCARPS7v3QQ@mail.gmail.com>
+Subject: Re: [PATCH v3 4/5] serial: sc16is7xx: split into core and I2C/SPI
+ parts (sc16is7xx_lines)
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The Console drivers has more restrictive font size limits than vt_ioctl.
-This leads to errors that are difficult to handle. If a font whose size
-is not supported is used, an EINVAL error will be returned, which is
-also returned in case of errors in the font itself. At the moment there
-is no way to understand what font sizes the current console driver
-supports.
+On Tue, Apr 2, 2024 at 8:45=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
+rote:
+>
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>
+> Before, sc16is7xx_lines was checked for a free (zero) bit first, and then
+> later it was set only if UART port registration succeeded. Now that
+> sc16is7xx_lines is shared for the I2C and SPI drivers, there is a
+> possibility that the two drivers can simultaneously try to reserve the sa=
+me
+> line bit at the same time.
+>
+> To prevent this, make sure line allocation is reserved atomically, and us=
+e
+> a new variable to hold the status of UART port regisration.
 
-To solve this problem, we need to transfer information about the
-supported font to userspace from the console driver.
+registration
 
-Acked-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- drivers/video/console/newport_con.c | 21 +++++++++++++++++----
- drivers/video/console/sticon.c      | 25 +++++++++++++++++++++++--
- drivers/video/console/vgacon.c      | 21 ++++++++++++++++++++-
- drivers/video/fbdev/core/fbcon.c    | 16 ++++++++++++++++
- 4 files changed, 76 insertions(+), 7 deletions(-)
+> Now that we no longer need to search if a bit is set, it is now possible
+> to simplify sc16is7xx_lines allocation by using the IDA framework.
 
-diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
-index a51cfc1d560e..6167f45326ac 100644
---- a/drivers/video/console/newport_con.c
-+++ b/drivers/video/console/newport_con.c
-@@ -33,6 +33,9 @@
- 
- #define NEWPORT_LEN	0x10000
- 
-+#define NEWPORT_MAX_FONT_WIDTH 8
-+#define NEWPORT_MAX_FONT_HEIGHT 16
-+
- #define FONT_DATA ((unsigned char *)font_vga_8x16.data)
- 
- static unsigned char *font_data[MAX_NR_CONSOLES];
-@@ -328,8 +331,8 @@ static void newport_init(struct vc_data *vc, bool init)
- {
- 	int cols, rows;
- 
--	cols = newport_xsize / 8;
--	rows = newport_ysize / 16;
-+	cols = newport_xsize / NEWPORT_MAX_FONT_WIDTH;
-+	rows = newport_ysize / NEWPORT_MAX_FONT_HEIGHT;
- 	vc->vc_can_do_color = 1;
- 	if (init) {
- 		vc->vc_cols = cols;
-@@ -507,8 +510,8 @@ static int newport_set_font(int unit, const struct console_font *op,
- 
- 	/* ladis: when I grow up, there will be a day... and more sizes will
- 	 * be supported ;-) */
--	if ((w != 8) || (h != 16) || (vpitch != 32)
--	    || (op->charcount != 256 && op->charcount != 512))
-+	if ((w != NEWPORT_MAX_FONT_WIDTH) || (h != NEWPORT_MAX_FONT_HEIGHT) ||
-+	    (vpitch != 32) || (op->charcount != 256 && op->charcount != 512))
- 		return -EINVAL;
- 
- 	if (!(new_data = kmalloc(FONT_EXTRA_WORDS * sizeof(int) + size,
-@@ -570,6 +573,15 @@ static int newport_font_default(struct vc_data *vc, struct console_font *op,
- 	return newport_set_def_font(vc->vc_num, op);
- }
- 
-+static int newport_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = info->max_width = NEWPORT_MAX_FONT_WIDTH;
-+	info->min_height = info->max_height = NEWPORT_MAX_FONT_HEIGHT;
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static int newport_font_set(struct vc_data *vc, const struct console_font *font,
- 			    unsigned int vpitch, unsigned int flags)
- {
-@@ -689,6 +701,7 @@ const struct consw newport_con = {
- 	.con_scroll	  = newport_scroll,
- 	.con_switch	  = newport_switch,
- 	.con_blank	  = newport_blank,
-+	.con_font_info	  = newport_font_info,
- 	.con_font_set	  = newport_font_set,
- 	.con_font_default = newport_font_default,
- 	.con_save_screen  = newport_save_screen
-diff --git a/drivers/video/console/sticon.c b/drivers/video/console/sticon.c
-index 4c7b4959a1aa..490e6b266a31 100644
---- a/drivers/video/console/sticon.c
-+++ b/drivers/video/console/sticon.c
-@@ -56,6 +56,11 @@
- #define BLANK 0
- static int vga_is_gfx;
- 
-+#define STICON_MIN_FONT_WIDTH 6
-+#define STICON_MIN_FONT_HEIGHT 6
-+#define STICON_MAX_FONT_WIDTH 32
-+#define STICON_MAX_FONT_HEIGHT 32
-+
- #define STI_DEF_FONT	sticon_sti->font
- 
- /* borrowed from fbcon.c */
-@@ -166,8 +171,10 @@ static int sticon_set_font(struct vc_data *vc, const struct console_font *op,
- 	struct sti_cooked_font *cooked_font;
- 	unsigned char *data = op->data, *p;
- 
--	if ((w < 6) || (h < 6) || (w > 32) || (h > 32) || (vpitch != 32)
--	    || (op->charcount != 256 && op->charcount != 512))
-+	if (!in_range(w, STICON_MIN_FONT_WIDTH, STICON_MAX_FONT_WIDTH) ||
-+	    !in_range(h, STICON_MIN_FONT_HEIGHT, STICON_MAX_FONT_HEIGHT) ||
-+	    (vpitch != 32) ||
-+	    (op->charcount != 256 && op->charcount != 512))
- 		return -EINVAL;
- 	pitch = ALIGN(w, 8) / 8;
- 	bpc = pitch * h;
-@@ -260,6 +267,19 @@ static int sticon_font_set(struct vc_data *vc, const struct console_font *font,
- 	return sticon_set_font(vc, font, vpitch);
- }
- 
-+static int sticon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = STICON_MIN_FONT_WIDTH;
-+	info->min_height = STICON_MIN_FONT_HEIGHT;
-+
-+	info->max_width = STICON_MAX_FONT_WIDTH;
-+	info->max_height = STICON_MAX_FONT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static void sticon_init(struct vc_data *c, bool init)
- {
-     struct sti_struct *sti = sticon_sti;
-@@ -356,6 +376,7 @@ static const struct consw sti_con = {
- 	.con_scroll		= sticon_scroll,
- 	.con_switch		= sticon_switch,
- 	.con_blank		= sticon_blank,
-+	.con_font_info		= sticon_font_info,
- 	.con_font_set		= sticon_font_set,
- 	.con_font_default	= sticon_font_default,
- 	.con_build_attr		= sticon_build_attr,
-diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 7597f04b0dc7..b5465e555fdc 100644
---- a/drivers/video/console/vgacon.c
-+++ b/drivers/video/console/vgacon.c
-@@ -61,6 +61,10 @@ static struct vgastate vgastate;
- #define BLANK 0x0020
- 
- #define VGA_FONTWIDTH       8   /* VGA does not support fontwidths != 8 */
-+
-+#define VGACON_MAX_FONT_WIDTH VGA_FONTWIDTH
-+#define VGACON_MAX_FONT_HEIGHT 32
-+
- /*
-  *  Interface used by the world
-  */
-@@ -1039,6 +1043,19 @@ static int vgacon_adjust_height(struct vc_data *vc, unsigned fontheight)
- 	return 0;
- }
- 
-+static int vgacon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = VGACON_MAX_FONT_WIDTH;
-+	info->min_height = 0;
-+
-+	info->max_width = VGACON_MAX_FONT_WIDTH;
-+	info->max_height = VGACON_MAX_FONT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static int vgacon_font_set(struct vc_data *c, const struct console_font *font,
- 			   unsigned int vpitch, unsigned int flags)
- {
-@@ -1048,7 +1065,8 @@ static int vgacon_font_set(struct vc_data *c, const struct console_font *font,
- 	if (vga_video_type < VIDEO_TYPE_EGAM)
- 		return -EINVAL;
- 
--	if (font->width != VGA_FONTWIDTH || font->height > 32 || vpitch != 32 ||
-+	if (font->width != VGACON_MAX_FONT_WIDTH ||
-+	    font->height > VGACON_MAX_FONT_HEIGHT || vpitch != 32 ||
- 	    (charcount != 256 && charcount != 512))
- 		return -EINVAL;
- 
-@@ -1201,6 +1219,7 @@ const struct consw vga_con = {
- 	.con_scroll = vgacon_scroll,
- 	.con_switch = vgacon_switch,
- 	.con_blank = vgacon_blank,
-+	.con_font_info = vgacon_font_info,
- 	.con_font_set = vgacon_font_set,
- 	.con_font_get = vgacon_font_get,
- 	.con_resize = vgacon_resize,
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index fcabc668e9fb..b54031da49fd 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2452,6 +2452,21 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 	return ret;
- }
- 
-+
-+static int fbcon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = 0;
-+	info->min_height = 0;
-+
-+	info->max_width = FB_MAX_BLIT_WIDTH;
-+	info->max_height = FB_MAX_BLIT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
-+
- /*
-  *  User asked to set font; we are guaranteed that charcount does not exceed 512
-  *  but lets not assume that, since charcount of 512 is small for unicode support.
-@@ -3127,6 +3142,7 @@ static const struct consw fb_con = {
- 	.con_scroll 		= fbcon_scroll,
- 	.con_switch 		= fbcon_switch,
- 	.con_blank 		= fbcon_blank,
-+	.con_font_info		= fbcon_font_info,
- 	.con_font_set 		= fbcon_set_font,
- 	.con_font_get 		= fbcon_get_font,
- 	.con_font_default	= fbcon_set_def_font,
--- 
-2.44.0
+...
 
+> -static DECLARE_BITMAP(sc16is7xx_lines, SC16IS7XX_MAX_DEVS);
+> +static DEFINE_IDA(sc16is7xx_lines);
+
+Don't we need to replace bitmap.h with idr.h with this change in place?
+
+--=20
+With Best Regards,
+Andy Shevchenko
