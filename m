@@ -1,92 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E2B71494A1;
-	Wed,  3 Apr 2024 14:47:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B588C14E2DC;
+	Wed,  3 Apr 2024 16:09:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712155658; cv=none; b=PEd/OTvvOqZUQd8wZGKYFRJI4zil9LiNvvzAwbfrj/W+6Lvfdje/rNlwrJkHeqMVGvBEtxfvoABS6ArgSUy5qF1IMpE55iQbzgrvINCYCbIUVij1s241vBUiWcXOoeDKkY5LzMv/rNPTMIictmvmCseL2xWC8lHnJeZq/28o1LE=
+	t=1712160590; cv=none; b=tMzNNRwvuL4xKu3ObIZreVIYllJX0VEwnt/9/8A9m83Y6EXAavLbiAO26dJm+dct40OW8b0IrFb4AK5wimx0arKEaeuS2QMi5484j3+J2fe0i2Kw8/+449DDCg2tvvusRqoDxEbwKaO0/n/RWy6vyas726DFXQ1J9mNIuI4cS+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712155658; c=relaxed/simple;
-	bh=l768EKMi5Qcmw0SI+NUxxzGDRtMSPlHXPvp9gOd0qD8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=M5f685PcI+doO21A9zxOdGrr8XqeldP9f7XzWQqrCxYXTT7kYYSEFqQbh6pdSbBe11YjkqKFiKE0c8MbLUvbViCfbQ1Q5M2IWdhIv5AdMBva04DFEosyXZEYQpk+dysqkUmGUcnnCBzgr3By98dFKtiAdxoEOEpUlKZJCek17AI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=az89PdXa; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712160590; c=relaxed/simple;
+	bh=8hzZGuG3Djlgf0qMwrfrn4bWy2pLWmCCjfypaPd6iaU=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
+	 References:In-Reply-To; b=tJaGtwjEjTezCb56WYqyDf0bl03EZxpj8BiJulTlSG/m95BaVKr7XaVQwgkSAHlT7aHjzTF8byu4fD6Lh10WsoKifcpnI1QoMsY5+pBvmZXSO+SCbj7Syb09/5iJK5uSjlrA9cgtNy0UxZxDgh73e+aHoeiV/tx/09miV/2PXc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jcKjSobB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="az89PdXa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712155655; x=1743691655;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=l768EKMi5Qcmw0SI+NUxxzGDRtMSPlHXPvp9gOd0qD8=;
-  b=az89PdXatea4m3wDtjypL1chVzn31JB6erGbcLlDZW4U/1wxhQqeRSB0
-   XCCLwRIzoDy5CTtgqlE6QVxol/douYLQaM9fg70AtwY2Dl87pRigA8C1h
-   2eBB56OtH1FVavntgKGpvz0AzDE9n1RiqsmUzhsQeF0Ian7wAQ89LfHpX
-   FG2Z3J9x9dydvLKk/e3ne+tLQ+a1CtSIWn8kzEdx5FmlxwqThGZz9KQ4u
-   MyBzOouOLAl7g35o1T+iwxi6rR3oNvfxav+UKsDYgkMTbEFgtmrTW351f
-   rZ5SpgQo+vuv05XAoc8yTWt9AK7BvhLTxwfiHed5kwvi1x7/hb+2Aw17n
-   g==;
-X-CSE-ConnectionGUID: 0N/UmaQ6QiK5PETMPvNZfQ==
-X-CSE-MsgGUID: P0mmy9FSQHaRyWeAa0WVGg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="17963790"
-X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="17963790"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:47:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="937085160"
-X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="937085160"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 03 Apr 2024 07:47:29 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id EC7EE670; Wed,  3 Apr 2024 17:47:28 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/3] serial: fsl_lpuart: Don't count XON/XOFF in the statistics
-Date: Wed,  3 Apr 2024 17:46:16 +0300
-Message-ID: <20240403144722.860258-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
-References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jcKjSobB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93D70C433B1;
+	Wed,  3 Apr 2024 16:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712160590;
+	bh=8hzZGuG3Djlgf0qMwrfrn4bWy2pLWmCCjfypaPd6iaU=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=jcKjSobBys2AwDWtHUg+nZNz255hX8YJ8clocbZnVtIj0h52DY808t+gVnLSzkMLC
+	 X2jjQFAvUGmd4lb2M/HiK8OYAD4oRg6oM2wRSk/RtDyPOErdicM/kRH7ZmaFffstdd
+	 A5uhuABW7lcrvZbj6juYMAQtimJyqGFQZcIGMI0EOpEDTaFtJn8kgeNnGah9Hgz94S
+	 IOzUjSSG8Dy1PPZNqM66yJrWCw2X5fzAFrh0GVmZ1l/EQYOliuMJ261ne92VmHIt0M
+	 aZaraEfx5h6OpkWv3gkSRGiGucYprWgAnxL9Gst4Y9JBTDvukYB1H1HajHS8VYD79T
+	 fVNVTde8ha+Ew==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Wed, 03 Apr 2024 19:09:38 +0300
+Message-Id: <D0AM9RGC7D65.2V9TFGBOSF3LN@kernel.org>
+Subject: Re: [PATCH 33/34] drivers: remove incorrect of_match_ptr/ACPI_PTR
+ annotations
+From: "Jarkko Sakkinen" <jarkko@kernel.org>
+To: "Arnd Bergmann" <arnd@kernel.org>, <linux-kernel@vger.kernel.org>,
+ "Corey Minyard" <minyard@acm.org>, "Peter Huewe" <peterhuewe@gmx.de>,
+ "Vinod Koul" <vkoul@kernel.org>, "Moritz Fischer" <mdf@kernel.org>, "Wu
+ Hao" <hao.wu@intel.com>, "Xu Yilun" <yilun.xu@intel.com>, "Jiri Kosina"
+ <jikos@kernel.org>, "Benjamin Tissoires" <benjamin.tissoires@redhat.com>,
+ "Michael Hennerich" <michael.hennerich@analog.com>, "Peter Rosin"
+ <peda@axentia.se>, "Dmitry Torokhov" <dmitry.torokhov@gmail.com>, "Iyappan
+ Subramanian" <iyappan@os.amperecomputing.com>, "Keyur Chudgar"
+ <keyur@os.amperecomputing.com>, "David S. Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>, "Yisen Zhuang"
+ <yisen.zhuang@huawei.com>, "Salil Mehta" <salil.mehta@huawei.com>, "Tony
+ Lindgren" <tony@atomide.com>, "Liam Girdwood" <lgirdwood@gmail.com>, "Mark
+ Brown" <broonie@kernel.org>, "Alexandre Belloni"
+ <alexandre.belloni@bootlin.com>, "Xiang Chen" <chenxiang66@hisilicon.com>,
+ "James E.J. Bottomley" <jejb@linux.ibm.com>, "Martin K. Petersen"
+ <martin.petersen@oracle.com>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Russell King" <linux@armlinux.org.uk>, "Jiri
+ Slaby" <jirislaby@kernel.org>, "Jacky Huang" <ychuang3@nuvoton.com>,
+ "Shan-Chun Hung" <schung@nuvoton.com>
+Cc: "Arnd Bergmann" <arnd@arndb.de>, "Jason Gunthorpe" <jgg@ziepe.ca>, "Tom
+ Rix" <trix@redhat.com>, =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, "Randy Dunlap" <rdunlap@infradead.org>,
+ "Rob Herring" <robh@kernel.org>, "Linus Walleij"
+ <linus.walleij@linaro.org>, <openipmi-developer@lists.sourceforge.net>,
+ <linux-integrity@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+ <linux-fpga@vger.kernel.org>, <linux-input@vger.kernel.org>,
+ <linux-i2c@vger.kernel.org>, <netdev@vger.kernel.org>,
+ <linux-omap@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+ <linux-scsi@vger.kernel.org>, <linux-staging@lists.linux.dev>,
+ <linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+X-Mailer: aerc 0.17.0
+References: <20240403080702.3509288-1-arnd@kernel.org>
+ <20240403080702.3509288-34-arnd@kernel.org>
+In-Reply-To: <20240403080702.3509288-34-arnd@kernel.org>
 
-Don't count XON/XOFF in the statistics in lpuart32_transmit_buffer().
-It will make it in align with other serial drivers.
+On Wed Apr 3, 2024 at 11:06 AM EEST, Arnd Bergmann wrote:
+> diff --git a/drivers/char/tpm/tpm_ftpm_tee.c b/drivers/char/tpm/tpm_ftpm_=
+tee.c
+> index 2ea4882251cf..0c453f3f928d 100644
+> --- a/drivers/char/tpm/tpm_ftpm_tee.c
+> +++ b/drivers/char/tpm/tpm_ftpm_tee.c
+> @@ -362,7 +362,7 @@ MODULE_DEVICE_TABLE(of, of_ftpm_tee_ids);
+>  static struct platform_driver ftpm_tee_plat_driver =3D {
+>  	.driver =3D {
+>  		.name =3D "ftpm-tee",
+> -		.of_match_table =3D of_match_ptr(of_ftpm_tee_ids),
+> +		.of_match_table =3D of_ftpm_tee_ids,
+>  	},
+>  	.shutdown =3D ftpm_plat_tee_shutdown,
+>  	.probe =3D ftpm_plat_tee_probe,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/fsl_lpuart.c | 1 -
- 1 file changed, 1 deletion(-)
+For this portion:
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index bbcbc91482af..a1cdb0ccc40e 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -761,7 +761,6 @@ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
- 
- 	if (sport->port.x_char) {
- 		lpuart32_write(&sport->port, sport->port.x_char, UARTDATA);
--		sport->port.icount.tx++;
- 		sport->port.x_char = 0;
- 		return;
- 	}
--- 
-2.43.0.rc1.1.gbec44491f096
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
+[can be included to possible new revisions if it stays same]
+
+BR, Jarkko
