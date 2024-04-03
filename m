@@ -1,68 +1,63 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 431EA148844
-	for <linux-serial@vger.kernel.org>; Wed,  3 Apr 2024 13:58:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B778F1487E2;
+	Wed,  3 Apr 2024 14:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712152735; cv=none; b=XYYv2MBCc2FMZC/Kjg5ONgy1r5QcuHlxJA1yaMDG0l+MZGB0Tg4Si3JziXJ2i4FRcE9Glb18YXL0p7qN2S9nWQd9i1aop2sCQndijQfW2IoRU0fyGPueQ9scI28qViexU8Rhxz4VPLZn8qRfDnKft1q8LAEQmEwNuDOvl4MBViU=
+	t=1712152853; cv=none; b=R2PtIzjrE2LYgtYgjWdzyQdcNW05umNiycswQ5Euoj0xTe8o5JuahhcUch5ubL99bbEhUNwb/dNECzJYTF155TY88im+vIuwFqMG7hEioaa6jhc3qJcQ3VCwPJA6lJGpTHbr0MsZ5EhVOSddkHTMo6qn053/Tji8GVajdtPSGZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712152735; c=relaxed/simple;
-	bh=TQNlFkl/iPl6kEZxvkBf9c7pV/p9E/CfhbTLpQyyNlU=;
+	s=arc-20240116; t=1712152853; c=relaxed/simple;
+	bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ISm+CkPNY/LRo3WaUdizoDMFrsWX1+n+DbC9AiX38ODjL1FAJYYIpJIXI84DAWnSESMVSGudj9b9bJkAySfMj6TH8gIrcm3x/9p6iP8FMcgcZ8wgKml9WVf212A9aeL4vr2L2sXP9APUUvTKLxWjnwUIEtxZrHLS2FCoR3kl09M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=nNIuh8T+; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=nKPUot5/gg+CLMHX1yK3sI/IPTgBOEY3Y3lb/lcT4PHpNBO5I5aMW4Sn45AaBWklcZh1uAqyAEQAAlZ8pLmSQ0KfUne8OqZsr7iuPQtWLKCzS6MDT2ubMTKjjRioz71aU9awhaChEmAMfZkh6rEOwuQA9SoYLOxPzH0ul5FsEfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VCEL4asg; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nNIuh8T+"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-41624fe40b2so4146525e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 03 Apr 2024 06:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1712152731; x=1712757531; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TQNlFkl/iPl6kEZxvkBf9c7pV/p9E/CfhbTLpQyyNlU=;
-        b=nNIuh8T+JlqmtZHyz4eE6vMszpgykfl9OLbG4MEu3gWvbwqTDTNj304CNV2HRcSxXT
-         DPkbi2YxwQVhCbUF5+Kdq/bgWnMAy5ABX2+82sy1RfRN8EljLnm2IYm22zA200Eq/B42
-         AjsQJTnh1fm7DIyjXapkzRiIKQyE4XxM2NtdqBXPaHhBGX0rPnhLJ9J3+i+i1kHsNvvd
-         sUKwMusI0wxrqgg3npzVq+2kkuFbsbNaO0q9njbzbguWiYPyCl7ojCBiurOs3KEbcqbo
-         8qxjy+7T08THQZisLi0gUvP/bCnaGXabSj0jJXv2hv7EZLh+L9/wsnTLl9kX5zuuAZHR
-         fO5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712152731; x=1712757531;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TQNlFkl/iPl6kEZxvkBf9c7pV/p9E/CfhbTLpQyyNlU=;
-        b=S9w/2E+JqpxTezt0p3i6vcDxB5sRlze3rNwnc3IF1zAcqn/0RS+gmcpr+TvXTF1uWk
-         yNbnTkSYL+pyJCfHvMU9a1voYvYdhzSabT86qqF99y133NHu5LGMyt9pIof9XE6IOKCM
-         yEukhFKIlS2pZ2VvdWLP7Zcb+YeQRxVZO08PDWizcTCiCJ8EihKntqpNEDKl8IwJ0xuG
-         6mGnZm0tpZrH1YVckIgYFqMb0EjnO7m7DBWedvHX3N9vmiah+kKFx4i+5vsH/8hVPIU/
-         ooxozGzvY4EHANR5Keh7FTf0ruAjAi9nTDUBx9k2ElnlCHsHY0/EyAiiavLrwA8Kr4Gp
-         7gGg==
-X-Forwarded-Encrypted: i=1; AJvYcCVW2H0MsuV/vXwGk88mZycjoF/OKm9nh0+o1DKwh+KbN4V+KZmFi8XyJFvYFDG/v7woZCSGdkH32rXaEu7xzAVedzjJDzW7jKkplt5j
-X-Gm-Message-State: AOJu0Yxpz7i/bb1fzIN/lcdqzV5aVnRtyDjrB6JxYZRaFRLd8jcr2w+G
-	SO9cB6F26ILdZK+NYFiaX9K4yZhsxfMlu4hfBrlKBpuWtne/vasWWZIT2Fpg0NSkFX4W4cF+9Qh
-	6
-X-Google-Smtp-Source: AGHT+IHeqNDBA/AfyKYzWvB+jEZxaoUQEyY/aylIOI09KkhqbTFndAoM1/OE52+0lZPrdJynAwVY/A==
-X-Received: by 2002:a5d:4bc6:0:b0:343:72e3:df00 with SMTP id l6-20020a5d4bc6000000b0034372e3df00mr4208682wrt.49.1712152731627;
-        Wed, 03 Apr 2024 06:58:51 -0700 (PDT)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id v21-20020adfa1d5000000b0034399b0713fsm1541588wrv.18.2024.04.03.06.58.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Apr 2024 06:58:51 -0700 (PDT)
-Date: Wed, 3 Apr 2024 14:58:49 +0100
-From: Daniel Thompson <daniel.thompson@linaro.org>
-To: liu.yec@h3c.com
-Cc: dianders@chromium.org, gregkh@linuxfoundation.org,
-	jason.wessel@windriver.com, jirislaby@kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VCEL4asg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712152851; x=1743688851;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
+  b=VCEL4asgnnEEOD95ZuKkjN2TPMOp2R0+GLPXdnm8xZyOeP26QhW6bvqR
+   2BPJatt/SC+5AZel+iRBBCdjSruglfv8nqUJSfZrK2Ncr4a5E7NyWS2s4
+   CDnVzYJ77HwqngGpHNJeDimNPyoDgV90rfq4b2paPGbB+1OwIwraezZkC
+   2jbGO3VWioD0k006yWmO7O7IsjdcDwis+RLlWUhd/AmgOynHPo0IMbfGy
+   fDn7gAofd3BfsjS8DJnQX6Nl5+6bUvtUY22KxV163mBag3LsxNGPb9Fyw
+   uZYfhPsc8wJcNrQ9qGBwSpezI8ue5+tLPNXIljjumzdEOJ/LJQJyZCLg8
+   w==;
+X-CSE-ConnectionGUID: sKyOhLmhT1iJfWqZT/MWaA==
+X-CSE-MsgGUID: 1nMGWMucTTyxJrQUT6tnSA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="11210598"
+X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
+   d="scan'208";a="11210598"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="915184273"
+X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
+   d="scan'208";a="915184273"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:42 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rs1AN-000000018aI-09zF;
+	Wed, 03 Apr 2024 17:00:39 +0300
+Date: Wed, 3 Apr 2024 17:00:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: kernel test robot <oliver.sang@intel.com>
+Cc: Yicong Yang <yangyicong@hisilicon.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	stable <stable@kernel.org>, Tony Lindgren <tony@atomide.com>,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH V8] kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <20240403135849.GE25200@aspen.lan>
-References: <20240402125802.GC25200@aspen.lan>
- <20240403061109.3142580-1-liu.yec@h3c.com>
+Subject: Re: [linus:master] [serial]  43066e3222:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <Zg1hBvRAxifo50sf@smile.fi.intel.com>
+References: <202404031607.2e92eebe-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,43 +66,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240403061109.3142580-1-liu.yec@h3c.com>
+In-Reply-To: <202404031607.2e92eebe-lkp@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, Apr 03, 2024 at 02:11:09PM +0800, liu.yec@h3c.com wrote:
-> From: LiuYe <liu.yeC@h3c.com>
->
-> Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-> attempt to use schedule_work() to provoke a keyboard reset when
-> transitioning out of the debugger and back to normal operation.
-> This can cause deadlock because schedule_work() is not NMI-safe.
->
-> <snip>
->
-> We fix the problem by using irq_work to call schedule_work()
-> instead of calling it directly. This is because we cannot
-> resynchronize the keyboard state from the hardirq context
-> provided by irq_work. This must be done from the task context
-> in order to call the input subsystem.
->
-> Therefore, we have to defer the work twice. First, safely
-> switch from the debug trap context (similar to NMI) to the
-> hardirq, and then switch from the hardirq to the system work queue.
->
-> Signed-off-by: LiuYe <liu.yeC@h3c.com>
-> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+On Wed, Apr 03, 2024 at 09:43:28PM +0800, kernel test robot wrote:
 
-I'm happy with how this is looking. In the long term it might be good to
-move the keyboard resync code so it is with the rest of the kdb keyboard
-code rather than in tty/serial. However I certainly don't want to tangle
-that kind of clean up along with a bug fix so I think this is ready to
-go now.
+> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
+> 
+> commit: 43066e32227ecde674e8ae1fcdd4a1ede67680c2 ("serial: port: Don't suspend if the port is still busy")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
 
-@Greg: I assume you want to take this via the tty/serial tree? I
-contributed a fair bit to the eventual patch so a Reviewed-by from me
-probably isn't appropriate but if you want to take the code it is
-certainly:
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Ja-ja, I am investigating this issue for a while (not that I spend all my time
+on it, though) on max3100.
+
+The problem seems that we enable PM runtime on all serial ports
+(even if they have no RPM support), but at the same time we enforce
+the common serial_port PM callbacks and that change misses a detail
+on how to check the port status as the real callback may happen
+quite after the port being closed (/dev/ttySx).
+
+Probably we need to check if the port is still open...
+
+P.S. AFAIU the state / xmit is invalid pointer or so.
+
+Culprit line:	serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Daniel.
