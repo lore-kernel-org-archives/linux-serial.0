@@ -1,187 +1,207 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2894C152513;
-	Wed,  3 Apr 2024 17:44:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035E7152505;
+	Wed,  3 Apr 2024 17:59:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712166285; cv=none; b=ayx1XQSRqKQvHxGjZiW9CyKd9T2gYkVnp4qi1nbA51LhT4KKrUJPL5d7nSJl5AWd6UKCnDdNMLpF6m8VqMeDrEg3rNfCwj28OYjEMa7YXJHLSCm/cFCA0Oe9Pg3VfdKoC4kFSJMFJfdk2PnKL9RBjktUfQLrDBDCf9Hg3EeVgCk=
+	t=1712167161; cv=none; b=pi+eh2DqxkReHIvNJ7Kah/eKPkBa46EjA3SKULWr28TWs2BTtNvhZm83SrCUnbwppNGi2czRhRNkcYUqGMKBFL3VPLGTczoUxO4TlqIuI1kRup32rlw9a8DZ/N/J7AnaSKfwFNcIvJLF73K07zZXuXW3fhaXRC+5YwO2r5E+vrQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712166285; c=relaxed/simple;
-	bh=qlaC/nOO2wW6YX9nIJo18Mx51joixNRxdhP7W77ht1o=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cxzD1nRRT3/bKR7V6KSHJRKNMmXBEdaE1kGgBeE4n/mkOk+lNQ/EU5pf+a1rIH2RfWB2ZGTBEfvPqHDjDP3I9QihTUkzz68l6MIxPjVCb1qsp24X4699OAa8WCyZFZGc2MC+GYvo16ChkJoBGQ6P4Sm9D0S2jvtOgMQGXgR4IP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EMoqFOuP; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712167161; c=relaxed/simple;
+	bh=U7zH5RmAzUWXjSGg3FmmSyJBJmOW5vZMmsgGta3oe9E=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=WZMTPZzW/fsxw7OgqkWr+8UPpiXZ87Qn/xQZaeiaBFBtdN044aqdEbjTip7h2JZTNLGmgDN55mpHxZnh+0PSqUv7eIvjwWjoC0wpUiT+Dhl7hv5skeccVu0iV03J9a4YYmcVha3bdiAumUIXZqSqEAmCgi8kuSjdwg4B6VhynaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=Ddh0wnWe; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EMoqFOuP"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3417a3151c4so31700f8f.3;
-        Wed, 03 Apr 2024 10:44:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712166282; x=1712771082; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OJ0v0GF0gyyABhhhVrngkvNWmNZR3i3O24zieOvv0cg=;
-        b=EMoqFOuPUbp1+UwH/JgRhbBawbZHBAVIFoJz7231WqnB1zugWvjeDPBarvlTbU/xjb
-         NawXW5rnzxqE1iwtAGc+iKL9+WPHozc3B1DmpGzriyqHdNQyt4SJjoPzhOVY9bU1luR1
-         wFcEFU5fJQABhavPyyYOj3KiqKfiEJXKWmTJ7/AwWAMsRM0wmCq8wz08NwVPLJqQzUwx
-         1k52wgW03QlxiJ0c2dmhWJnEc3/XhSD0a0mLpuf1xXnkf70iFus67daNNB5x4OkLa+uZ
-         /FMuOpOzYUZkkWG/zTucM1uRfH0hLtIFe5n8fZKE4h23uoRuM3imyGSfl/d1KtCgsnLt
-         OmCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712166282; x=1712771082;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OJ0v0GF0gyyABhhhVrngkvNWmNZR3i3O24zieOvv0cg=;
-        b=faRZ9m8Qa0iUj4wZ3DJDhGXQHVGt99im+3320qrjNWgSAImcVHHDQ1UVkBQ5vlREc0
-         Fq4MWzE8OxireMbaf32PRNrZCbtCBKPe+jYzSAAAf4KVe5/Zgdq/jjVSLdZG80hFyrQw
-         WrtdqNtOdek2DweGVLsylEBDOl5Xxpq73rvxsTtBI4B/SupXJSMCudZrR1GNFa6K5FSK
-         mphxNnKin4GxrjviC9hwv8X1r07qrRk0bQVr7IzoL3A9fTxAZ3fgQftEPgztKjgz5P94
-         CO4adu0PvkTRYdfsC7fO3ILkwpy1EbTSaJA6KOvV55CxGUrTG2VVFen7v8yApbdzcaaU
-         GMNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVj2rvOjEamWzAkNoeL1+dlpitlPCkuBVIHS6cSFOhq1fdCpmc0jQWtoeRDN9hTV3eWg0DWEyD0WigFn+YR3FrnW+SbJrm6pjbHz3zlMhWnRK5lDOF44HctqCkg3dBdsRS5GHJ7dS/1HPln
-X-Gm-Message-State: AOJu0YxkbZ9egG3mN9JU9IEHMFfgvL64HLSmsmy002cHDK/KOZLSuThZ
-	S8cYzgDhlSHPJZDHrN909N2Fplnc7EyOH3KInuA3PNIiEoAKYVj8gxC9U8HOCAQu2mlJzPHfNQi
-	BX3M+4/2aNQovNt4isz6d2D7ro6cNWwFcCVI=
-X-Google-Smtp-Source: AGHT+IF7dJceFJhLnmKSHKofqAxYbSQKMPd6RKz2ktK1nckW/bPe2J+9zw2z02WGDAlCEGcTt3NqttltmJr6HUhumMA=
-X-Received: by 2002:a5d:4a0a:0:b0:33d:277b:8bf6 with SMTP id
- m10-20020a5d4a0a000000b0033d277b8bf6mr197105wrq.26.1712166282248; Wed, 03 Apr
- 2024 10:44:42 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="Ddh0wnWe"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=XsibBNQ48v3ozljfAa2u+QdXR1ArmIMnXcbhbHkVW+8=; b=Ddh0wnWep9wQaBjokHV1drm3fr
+	Ol+7FeY/UnbJuIZdwgs4rdu6W8Ix8llvZ5+x8s6zf5qDdxOmUND2bUa1GkgUPrGHBV0eyzlQ9dA4O
+	P46oDm5X6EafqkmQVj/LEfJ35Onn6FZLkSwpBz0jmadcboPKfcGwTP3aJYAvtRQLrEtA=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:33886 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rs4tC-0007gl-IW; Wed, 03 Apr 2024 13:59:10 -0400
+Date: Wed, 3 Apr 2024 13:59:10 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20240403135910.2ef852670c184927340d08d7@hugovil.com>
+In-Reply-To: <CAHp75VcEj64aFb0nT8uQitkNSdWWqz7pmAqSGaGwy-tA=df0EA@mail.gmail.com>
+References: <20240402174353.256627-1-hugo@hugovil.com>
+	<20240402174353.256627-4-hugo@hugovil.com>
+	<CAHp75VdZ5yYVx7Df7G4X4Y7ZvJ3LAdq=A0fVNzNfMcdywJC-dQ@mail.gmail.com>
+	<20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com>
+	<CAHp75VcEj64aFb0nT8uQitkNSdWWqz7pmAqSGaGwy-tA=df0EA@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240402174353.256627-1-hugo@hugovil.com> <20240402174353.256627-4-hugo@hugovil.com>
- <CAHp75VdZ5yYVx7Df7G4X4Y7ZvJ3LAdq=A0fVNzNfMcdywJC-dQ@mail.gmail.com> <20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com>
-In-Reply-To: <20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 3 Apr 2024 20:44:05 +0300
-Message-ID: <CAHp75VcEj64aFb0nT8uQitkNSdWWqz7pmAqSGaGwy-tA=df0EA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.8 NICE_REPLY_A Looks like a legit reply (A)
 Subject: Re: [PATCH v3 3/5] serial: sc16is7xx: split into core and I2C/SPI
  parts (core)
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, Apr 3, 2024 at 7:35=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
-rote:
-> On Tue, 2 Apr 2024 22:40:07 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Apr 2, 2024 at 8:45=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.co=
-m> wrote:
+On Wed, 3 Apr 2024 20:44:05 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-...
-
-> > > -config SERIAL_SC16IS7XX_CORE
-> > > -       tristate
-> > > -
-> > >  config SERIAL_SC16IS7XX
-> > >         tristate "SC16IS7xx serial support"
-> > >         select SERIAL_CORE
-> > > -       depends on (SPI_MASTER && !I2C) || I2C
-> > > +       depends on SPI_MASTER || I2C
-> >
-> > Is it?
->
-> See discussion below, but I would remove the SPI/I2C depends. And I
-> would rename SERIAL_SC16IS7XX to SERIAL_SC16IS7XX_CORE.
->
-> >
-> > >         help
-> > >           Core driver for NXP SC16IS7xx serial ports.
-> > >           Supported ICs are:
-> > > @@ -1042,22 +1039,18 @@ config SERIAL_SC16IS7XX
-> > >           drivers below.
+> On Wed, Apr 3, 2024 at 7:35 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > On Tue, 2 Apr 2024 22:40:07 +0300
+> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > > On Tue, Apr 2, 2024 at 8:45 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> 
+> ...
+> 
+> > > > -config SERIAL_SC16IS7XX_CORE
+> > > > -       tristate
+> > > > -
+> > > >  config SERIAL_SC16IS7XX
+> > > >         tristate "SC16IS7xx serial support"
+> > > >         select SERIAL_CORE
+> > > > -       depends on (SPI_MASTER && !I2C) || I2C
+> > > > +       depends on SPI_MASTER || I2C
 > > >
-> > >  config SERIAL_SC16IS7XX_I2C
-> > > -       bool "SC16IS7xx for I2C interface"
-> > > +       tristate "SC16IS7xx for I2C interface"
-> > >         depends on SERIAL_SC16IS7XX
-> > >         depends on I2C
-> > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> > > -       select REGMAP_I2C if I2C
-> > > -       default y
-> > > +       select REGMAP_I2C
-> > >         help
-> > > -         Enable SC16IS7xx driver on I2C bus,
-> > > -         enabled by default to support oldconfig.
-> > > +         Enable SC16IS7xx driver on I2C bus.
+> > > Is it?
+> >
+> > See discussion below, but I would remove the SPI/I2C depends. And I
+> > would rename SERIAL_SC16IS7XX to SERIAL_SC16IS7XX_CORE.
+> >
 > > >
-> > >  config SERIAL_SC16IS7XX_SPI
-> > > -       bool "SC16IS7xx for spi interface"
-> > > +       tristate "SC16IS7xx for SPI interface"
-> > >         depends on SERIAL_SC16IS7XX
-> > >         depends on SPI_MASTER
-> > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> > > -       select REGMAP_SPI if SPI_MASTER
-> > > +       select REGMAP_SPI
-> > >         help
-> > >           Enable SC16IS7xx driver on SPI bus.
+> > > >         help
+> > > >           Core driver for NXP SC16IS7xx serial ports.
+> > > >           Supported ICs are:
+> > > > @@ -1042,22 +1039,18 @@ config SERIAL_SC16IS7XX
+> > > >           drivers below.
+> > > >
+> > > >  config SERIAL_SC16IS7XX_I2C
+> > > > -       bool "SC16IS7xx for I2C interface"
+> > > > +       tristate "SC16IS7xx for I2C interface"
+> > > >         depends on SERIAL_SC16IS7XX
+> > > >         depends on I2C
+> > > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+> > > > -       select REGMAP_I2C if I2C
+> > > > -       default y
+> > > > +       select REGMAP_I2C
+> > > >         help
+> > > > -         Enable SC16IS7xx driver on I2C bus,
+> > > > -         enabled by default to support oldconfig.
+> > > > +         Enable SC16IS7xx driver on I2C bus.
+> > > >
+> > > >  config SERIAL_SC16IS7XX_SPI
+> > > > -       bool "SC16IS7xx for spi interface"
+> > > > +       tristate "SC16IS7xx for SPI interface"
+> > > >         depends on SERIAL_SC16IS7XX
+> > > >         depends on SPI_MASTER
+> > > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+> > > > -       select REGMAP_SPI if SPI_MASTER
+> > > > +       select REGMAP_SPI
+> > > >         help
+> > > >           Enable SC16IS7xx driver on SPI bus.
+> > >
+> > > Hmm... What I was thinking about is more like dropping
+> > >  the SERIAL_SC16IS7XX and having I2C/SPI to select the core.
+> > >
+> > > See many examples under drivers/iio on how it's done.
 > >
-> > Hmm... What I was thinking about is more like dropping
-> >  the SERIAL_SC16IS7XX and having I2C/SPI to select the core.
+> > Ok, I found this example:
+> > bf96f6e80cef ("iio: accel: kxsd9: Split out SPI transport")
 > >
-> > See many examples under drivers/iio on how it's done.
->
-> Ok, I found this example:
-> bf96f6e80cef ("iio: accel: kxsd9: Split out SPI transport")
->
-> In it, the SPI part doesn't select the core, but depends on it, similar
-> to what I have done. I find this approach more interesting for
-> embedded systems as you can enable/disable I2C or SPI part if you
-> need only one interface.
+> > In it, the SPI part doesn't select the core, but depends on it, similar
+> > to what I have done. I find this approach more interesting for
+> > embedded systems as you can enable/disable I2C or SPI part if you
+> > need only one interface.
+> 
+> Yes, but what I mean is to have i2c/spi symbols visible and if user
+> selects one of them or both the core is automatically being selected.
 
-Yes, but what I mean is to have i2c/spi symbols visible and if user
-selects one of them or both the core is automatically being selected.
+Ok, I see. But a drawback of doing this is that for each interface
+(I2C/SPI), you would need to list (duplicate) all the devices
+supported. For now, that list is only in one place,
+for the generic SERIAL_SC16IS7XX_CORE section:
 
 ...
+config SERIAL_SC16IS7XX_CORE
+	tristate "SC16IS7xx serial support"
+	select SERIAL_CORE
+	help
+	  Core driver for NXP SC16IS7xx serial ports.
+	  Supported ICs are:
 
-> > > +#include <linux/device.h>
-> >
-> > Not used (by this file).
->
-> I was assuming that this file was for "struct device"?
-
-But it does not use it. It uses an opaque pointer, for which the
-forward declaration is enough to have.
-
+	    SC16IS740
+	    SC16IS741
+	    SC16IS750
 ...
 
-> > > +void sc16is7xx_remove(struct device *dev);
+
+> 
+> ...
+> 
+> > > > +#include <linux/device.h>
+> > >
+> > > Not used (by this file).
 > >
-> > Will require forward declaration
+> > I was assuming that this file was for "struct device"?
+> 
+> But it does not use it. It uses an opaque pointer, for which the
+> forward declaration is enough to have.
+> 
+> ...
+> 
+> > > > +void sc16is7xx_remove(struct device *dev);
+> > >
+> > > Will require forward declaration
+> > >
+> > > #include ...
+> > >
+> > > struct device;
 > >
-> > #include ...
+> > Isn't it provided by <linux/device.h> ?
+> 
+> But why? Have you looked into device.h? It's a mess. You don't need it
+> in this header.
+
+Yes I have looked at it, and saw that the forward declaration of
+"struct device" opaque pointer is in it, and this is why I was
+including it. But I will remove it if you wish.
+
+
+> 
+> ...
+> 
+> > > Follow the IWYU principle (include what you use).
 > >
-> > struct device;
->
-> Isn't it provided by <linux/device.h> ?
+> > Ok, I tried to follow it, I do think those 4 includes are required in
+> > this file, no?
+> 
+> I haven't deeply checked, I believe for the next version you will
+> provide a better list.
 
-But why? Have you looked into device.h? It's a mess. You don't need it
-in this header.
+Ok
 
-...
+> 
+> > and maybe I can add <linux/string.h> for memcpy().
+> 
+> For sure, yes.
 
-> > Follow the IWYU principle (include what you use).
->
-> Ok, I tried to follow it, I do think those 4 includes are required in
-> this file, no?
+Ok.
 
-I haven't deeply checked, I believe for the next version you will
-provide a better list.
+Thanks for your comments.
 
-> and maybe I can add <linux/string.h> for memcpy().
-
-For sure, yes.
-
---
-With Best Regards,
-Andy Shevchenko
+Hugo.
