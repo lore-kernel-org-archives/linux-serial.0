@@ -1,98 +1,92 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B778F1487E2;
-	Wed,  3 Apr 2024 14:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C0B2F28;
+	Wed,  3 Apr 2024 14:47:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712152853; cv=none; b=R2PtIzjrE2LYgtYgjWdzyQdcNW05umNiycswQ5Euoj0xTe8o5JuahhcUch5ubL99bbEhUNwb/dNECzJYTF155TY88im+vIuwFqMG7hEioaa6jhc3qJcQ3VCwPJA6lJGpTHbr0MsZ5EhVOSddkHTMo6qn053/Tji8GVajdtPSGZA=
+	t=1712155655; cv=none; b=Sr82TxQvlPSZ1B1BoFp1Dbw6ZYie2vhbc+bCgXmVid/gkBUtSfynJ7wDQg180VjcVy91jhVZdzAd0juxXfiXsI7+wq93KEN8uPd6gvcr0HoSWR+l2Q+yNnGIZFhkRfsLR3+Ua5N+D3BSdyDz4FygLPd1m/Gf/QdXUnRg4D0K1pI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712152853; c=relaxed/simple;
-	bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nKPUot5/gg+CLMHX1yK3sI/IPTgBOEY3Y3lb/lcT4PHpNBO5I5aMW4Sn45AaBWklcZh1uAqyAEQAAlZ8pLmSQ0KfUne8OqZsr7iuPQtWLKCzS6MDT2ubMTKjjRioz71aU9awhaChEmAMfZkh6rEOwuQA9SoYLOxPzH0ul5FsEfo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VCEL4asg; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1712155655; c=relaxed/simple;
+	bh=gTksTsumFlenpsCVho1lUNgk04tJb4nLbosDVRyHfbM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bdOfseoT2uJmZF0ttXK9ZPDM7FFKyJzhhaMnW/ryz32QiA850ytY8x70my6mZSrXn3OogMmI7Ep6SUbqIJP5Q2GmxJasDJz63bkYxyHcN+OJkfjpeAp2prt/xP2xar/Pm6RJ9AfLdScmI/3O0oFE1hAZmdCA1CCy02gWfz/e65g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e/kqoURk; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VCEL4asg"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e/kqoURk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712152851; x=1743688851;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BjYkvF7LXg6vWD752aMFoRkrW/2JqvZ+/duQLEBk55o=;
-  b=VCEL4asgnnEEOD95ZuKkjN2TPMOp2R0+GLPXdnm8xZyOeP26QhW6bvqR
-   2BPJatt/SC+5AZel+iRBBCdjSruglfv8nqUJSfZrK2Ncr4a5E7NyWS2s4
-   CDnVzYJ77HwqngGpHNJeDimNPyoDgV90rfq4b2paPGbB+1OwIwraezZkC
-   2jbGO3VWioD0k006yWmO7O7IsjdcDwis+RLlWUhd/AmgOynHPo0IMbfGy
-   fDn7gAofd3BfsjS8DJnQX6Nl5+6bUvtUY22KxV163mBag3LsxNGPb9Fyw
-   uZYfhPsc8wJcNrQ9qGBwSpezI8ue5+tLPNXIljjumzdEOJ/LJQJyZCLg8
+  t=1712155652; x=1743691652;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gTksTsumFlenpsCVho1lUNgk04tJb4nLbosDVRyHfbM=;
+  b=e/kqoURkQDZaCkvSUZFsTnRjc2RWK18iXjnGAUk1bO864PFMHJkXN5hJ
+   PRELhXxw3SJy8BoOrIe7i5TH4djVrDMsN3b8GvsPk4OagLkWazR5ZXcvz
+   2nLDIt3CSYOqjjuRMItiqOUFmDd2KEE5YtSS7LdM9jHAScCc7Z70Lsfb1
+   1VVTQm+NAvUYmzzzlfVNS+fnGsid8t6y+xouY3W8wqR56HWY0+7oh3UY/
+   sntNB7V4Epf4FVDjvnCVFdVeHEDwCAMFfd+WS9eewS+6vaOdCqIBNtM+a
+   dsicXyjNUgrqhfA3REvMbQ1EuF+T+7baw5X0PANoFh7meLxPhdov1JGkf
    w==;
-X-CSE-ConnectionGUID: sKyOhLmhT1iJfWqZT/MWaA==
-X-CSE-MsgGUID: 1nMGWMucTTyxJrQUT6tnSA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="11210598"
+X-CSE-ConnectionGUID: 9JoAN9/tQFimWRZcF9KhQg==
+X-CSE-MsgGUID: MSKqmDOQRA+uyTdMuZGpEA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="17963772"
 X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="11210598"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:45 -0700
+   d="scan'208";a="17963772"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:47:30 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="915184273"
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="937085161"
 X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="915184273"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:00:42 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rs1AN-000000018aI-09zF;
-	Wed, 03 Apr 2024 17:00:39 +0300
-Date: Wed, 3 Apr 2024 17:00:38 +0300
+   d="scan'208";a="937085161"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Apr 2024 07:47:29 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 06199812; Wed,  3 Apr 2024 17:47:28 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: kernel test robot <oliver.sang@intel.com>
-Cc: Yicong Yang <yangyicong@hisilicon.com>, oe-lkp@lists.linux.dev,
-	lkp@intel.com, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	stable <stable@kernel.org>, Tony Lindgren <tony@atomide.com>,
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [linus:master] [serial]  43066e3222:
- BUG:kernel_NULL_pointer_dereference,address
-Message-ID: <Zg1hBvRAxifo50sf@smile.fi.intel.com>
-References: <202404031607.2e92eebe-lkp@intel.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] serial: sprd: Don't count XON/XOFF in the statistics
+Date: Wed,  3 Apr 2024 17:46:17 +0300
+Message-ID: <20240403144722.860258-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+In-Reply-To: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
+References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202404031607.2e92eebe-lkp@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 03, 2024 at 09:43:28PM +0800, kernel test robot wrote:
+Don't count XON/XOFF in the statistics in sprd_start_tx_dma().
+It will make it in align with other serial drivers.
 
-> kernel test robot noticed "BUG:kernel_NULL_pointer_dereference,address" on:
-> 
-> commit: 43066e32227ecde674e8ae1fcdd4a1ede67680c2 ("serial: port: Don't suspend if the port is still busy")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/sprd_serial.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Ja-ja, I am investigating this issue for a while (not that I spend all my time
-on it, though) on max3100.
-
-The problem seems that we enable PM runtime on all serial ports
-(even if they have no RPM support), but at the same time we enforce
-the common serial_port PM callbacks and that change misses a detail
-on how to check the port status as the real callback may happen
-quite after the port being closed (/dev/ttySx).
-
-Probably we need to check if the port is still open...
-
-P.S. AFAIU the state / xmit is invalid pointer or so.
-
-Culprit line:	serial_out(up, UART_TX, xmit->buf[xmit->tail]);
-
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index 15f14fa593da..3554b9e7678f 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -323,7 +323,6 @@ static void sprd_start_tx_dma(struct uart_port *port)
+ 
+ 	if (port->x_char) {
+ 		serial_out(port, SPRD_TXD, port->x_char);
+-		port->icount.tx++;
+ 		port->x_char = 0;
+ 		return;
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0.rc1.1.gbec44491f096
 
