@@ -1,45 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B9BC153BE0;
-	Wed,  3 Apr 2024 17:16:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BDE4153566;
+	Wed,  3 Apr 2024 17:17:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712164620; cv=none; b=rfzRQXqgaga7xrielKqcZxtNQO+YkAEpXHwzTXg4Q/i1is47iyP/601ojAMxo0QaKKXyjdKMGZjQ6meM9iBzSeGw3ppn/Xy4ldimmMH8uZNzrtV0gQFpG7Fu2ytMu6L9/545SWlRH+EDmBKHQtZ83zR91t/FF49OHT8XL//Wd0Q=
+	t=1712164642; cv=none; b=i1q7caSZH6TwOPZjWNI5nH/VuJbJjDJKX0Dh9200ZnuJEEscW4vfSobjk6oxtZwNoWD0/YbKVR/Ek4QZK7Lyw/aJQbmDx7OSW92CHDY4wBOag0P/RmpHbDvFpovK2eHKHIlSbhWsLd55o0yPohBDoZqGU3sYATuV2aatduCfl74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712164620; c=relaxed/simple;
-	bh=Rdq/tCZloRjmO30scHy8wsKZG4mD07IlY6+90beOSuo=;
+	s=arc-20240116; t=1712164642; c=relaxed/simple;
+	bh=ndJUG13AxsRqCLAMfV020HMo0gLnUMLYmOet4DTZZMs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VcFRBWPQ1VEh6iv3zQx9fN9BWIKEkCU0PBU3jORt9HSsQjQfdof4pwl88lnwBGVW8CxPn1PeGvzuwoRLd+6sZjnSDFStz9YnLA6irl76cx3ikoCW+pu9YMBzt+pk0ezblA/o2jfRvWEK5KdQcB1fkvJdFICkKSDbpDbgMiED5sQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gJxy1UGt; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=uJUyHDN/vpm6+sOc3p75XUSlzQMBP6kWKgT7vu4NV5jkDUm9py200NxsdG08PH55OY+9xqmR4f57pLpLyKIl89uwAdMEaB2JYFp/e6KHo3pGyAeWlTo37I9RbmCpXQXSv524Xd49mN59YWwB4exXKrlQvw/qTvlhj1CgfbJhYhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ApsnYwXF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gJxy1UGt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925BFC433B2;
-	Wed,  3 Apr 2024 17:16:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ApsnYwXF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56200C43390;
+	Wed,  3 Apr 2024 17:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712164619;
-	bh=Rdq/tCZloRjmO30scHy8wsKZG4mD07IlY6+90beOSuo=;
+	s=k20201202; t=1712164642;
+	bh=ndJUG13AxsRqCLAMfV020HMo0gLnUMLYmOet4DTZZMs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gJxy1UGtzC7hhGWqTsQTUx9beRl4WLaSbKFzckbjYwEI+34iAfW3Nzq4ST60m7Mt8
-	 ya7Drt0rYwS5LOwFpuNb+Mv/M0m9VYmMzzvsoWLX6UbAa8nUutucMJAbpzTwx9PJVU
-	 68RM8AwVE7fW5YevHxR5r+AxQHtzEaPOHkHSZ/iB3SRGsM/C59zXSCCd/mNOxZ33Ye
-	 qZBQopK8OXlf2cSsd5UrcKRMB9QgeJHw52849dzs7tjG+pthjwkzMguPGlWTvJu0hz
-	 9letp9ICVi2E+clOw1oRtsA93qHPmAAKeyxtheWHJWRO15RtnGKsRdM9zjhlyeJRVP
-	 k3aXSQjKKPtYg==
+	b=ApsnYwXFtepbNOEPrShIAm7n+MZcYO1/7Yg0zYrfGBTkEG3rqE9Ui2UkHu66zWT/M
+	 i9vwpU5SKCLUHtNozkoy5msBxg8G1pXzIY2KAk8PMeVDlw+PlT04SMyAJCfdm4+mi6
+	 EBTkeaPP44/rTo16D7n/QOcyFs7F4NjMsE5EkwC5WD5RwmOePUCU5brJh+O5MIHKCm
+	 U1TKjCZnimgyB6h+lKJu+JbbQK0VZmfNe9N3ofne+dLeFQQQHpfEMCpKl+yNGuV+s4
+	 slYts/0ixcI0OudkMpoYqFbY2sMTc6+pE9QSa+q9WK+mi0LY89zUnnh7wCWJqvO0uE
+	 /Wd2k4EwlnCvA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Douglas Anderson <dianders@chromium.org>,
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sasha Levin <sashal@kernel.org>,
-	andersson@kernel.org,
-	konrad.dybcio@linaro.org,
 	jirislaby@kernel.org,
-	linux-arm-msm@vger.kernel.org,
+	andi.shyti@linux.intel.com,
+	u.kleine-koenig@pengutronix.de,
+	john.ogness@linutronix.de,
+	florian.fainelli@broadcom.com,
+	tony@atomide.com,
+	tglx@linutronix.de,
+	justin.chen@broadcom.com,
+	fancer.lancer@gmail.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.8 03/28] serial: qcom-geni: Don't cancel/abort if we can't get the port lock
-Date: Wed,  3 Apr 2024 13:16:05 -0400
-Message-ID: <20240403171656.335224-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.8 11/28] serial: 8250_of: Drop quirk fot NPCM from 8250_port
+Date: Wed,  3 Apr 2024 13:16:13 -0400
+Message-ID: <20240403171656.335224-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240403171656.335224-1-sashal@kernel.org>
 References: <20240403171656.335224-1-sashal@kernel.org>
@@ -49,128 +55,159 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.8.3
 Content-Transfer-Encoding: 8bit
 
-From: Douglas Anderson <dianders@chromium.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 9e957a155005b16af057e86c6bcc1197cd70a6af ]
+[ Upstream commit cd0eb354d441488feed6685adbeb1acd45db1b8d ]
 
-As of commit d7402513c935 ("arm64: smp: IPI_CPU_STOP and
-IPI_CPU_CRASH_STOP should try for NMI"), if we've got pseudo-NMI
-enabled then we'll use it to stop CPUs at panic time. This is nice,
-but it does mean that there's a pretty good chance that we'll end up
-stopping a CPU while it holds the port lock for the console
-UART. Specifically, I see a CPU get stopped while holding the port
-lock nearly 100% of the time on my sc7180-trogdor based Chromebook by
-enabling the "buddy" hardlockup detector and then doing:
+We are not supposed to spread quirks in 8250_port module especially
+when we have a separate driver for the hardware in question.
 
-  sysctl -w kernel.hardlockup_all_cpu_backtrace=1
-  sysctl -w kernel.hardlockup_panic=1
-  echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
+Move quirk from generic module to the driver that uses it.
 
-UART drivers are _supposed_ to handle this case OK and this is why
-UART drivers check "oops_in_progress" and only do a "trylock" in that
-case. However, before we enabled pseudo-NMI to stop CPUs it wasn't a
-very well-tested situation.
-
-Now that we're testing the situation a lot, it can be seen that the
-Qualcomm GENI UART driver is pretty broken. Specifically, when I run
-my test case and look at the console output I just see a bunch of
-garbled output like:
-
-  [  201.069084] NMI backtrace[  201.069084] NM[  201.069087] CPU: 6
-  PID: 10296 Comm: dnsproxyd Not tainted 6.7.0-06265-gb13e8c0ede12
-  #1 01112b9f14923cbd0b[  201.069090] Hardware name: Google Lazor
-  ([  201.069092] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DI[
-  201.069095] pc : smp_call_function_man[  201.069099]
-
-That's obviously not so great. This happens because each call to the
-console driver exits after the data has been written to the FIFO but
-before it's actually been flushed out of the serial port. When we have
-multiple calls into the console one after the other then (if we can't
-get the lock) each call tells the UART to throw away any data in the
-FIFO that hadn't been transferred yet.
-
-I've posted up a patch to change the arm64 core to avoid this
-situation most of the time [1] much like x86 seems to do, but even if
-that patch lands the GENI driver should still be fixed.
-
->From testing, it appears that we can just delete the cancel/abort in
-the case where we weren't able to get the UART lock and the output
-looks good. It makes sense that we'd be able to do this since that
-means we'll just call into __qcom_geni_serial_console_write() and
-__qcom_geni_serial_console_write() looks much like
-qcom_geni_serial_poll_put_char() but with a loop. However, it seems
-safest to poll the FIFO and make sure it's empty before our
-transfer. This should reliably make sure that we're not
-interrupting/clobbering any existing transfers.
-
-As part of this change, we'll also avoid re-setting up a TX at the end
-of the console write function if we weren't able to get the lock,
-since accessing "port->tx_remaining" without the lock is not
-safe. This is only needed to re-start userspace initiated transfers.
-
-[1] https://lore.kernel.org/r/20231207170251.1.Id4817adef610302554b8aa42b090d57270dc119c@changeid
-
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20240112150307.2.Idb1553d1d22123c377f31eacb4486432f6c9ac8d@changeid
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20240215145029.581389-1-andriy.shevchenko@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ drivers/tty/serial/8250/8250_of.c   | 44 +++++++++++++++++++++++++++--
+ drivers/tty/serial/8250/8250_port.c | 24 ----------------
+ 2 files changed, 42 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 99e08737f293c..f9f7ac1a10df3 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -488,18 +488,16 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 34f17a9785e79..9dcc17e332690 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -4,7 +4,10 @@
+  *
+  *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
+  */
++
++#include <linux/bits.h>
+ #include <linux/console.h>
++#include <linux/math.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/serial_core.h>
+@@ -25,6 +28,36 @@ struct of_serial_info {
+ 	int line;
+ };
  
- 	geni_status = readl(uport->membase + SE_GENI_STATUS);
++/* Nuvoton NPCM timeout register */
++#define UART_NPCM_TOR          7
++#define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
++
++static int npcm_startup(struct uart_port *port)
++{
++	/*
++	 * Nuvoton calls the scratch register 'UART_TOR' (timeout
++	 * register). Enable it, and set TIOC (timeout interrupt
++	 * comparator) to be 0x20 for correct operation.
++	 */
++	serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
++
++	return serial8250_do_startup(port);
++}
++
++/* Nuvoton NPCM UARTs have a custom divisor calculation */
++static unsigned int npcm_get_divisor(struct uart_port *port, unsigned int baud,
++				     unsigned int *frac)
++{
++	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
++}
++
++static int npcm_setup(struct uart_port *port)
++{
++	port->get_divisor = npcm_get_divisor;
++	port->startup = npcm_startup;
++	return 0;
++}
++
+ /*
+  * Fill a struct uart_port for a given device node
+  */
+@@ -164,10 +197,17 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	switch (type) {
+ 	case PORT_RT2880:
+ 		ret = rt288x_setup(port);
+-		if (ret)
+-			goto err_pmruntime;
++		break;
++	case PORT_NPCM:
++		ret = npcm_setup(port);
++		break;
++	default:
++		/* Nothing to do */
++		ret = 0;
+ 		break;
+ 	}
++	if (ret)
++		goto err_pmruntime;
  
--	/* Cancel the current write to log the fault */
- 	if (!locked) {
--		geni_se_cancel_m_cmd(&port->se);
--		if (!qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
--						M_CMD_CANCEL_EN, true)) {
--			geni_se_abort_m_cmd(&port->se);
--			qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
--							M_CMD_ABORT_EN, true);
--			writel(M_CMD_ABORT_EN, uport->membase +
--							SE_GENI_M_IRQ_CLEAR);
--		}
--		writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
-+		/*
-+		 * We can only get here if an oops is in progress then we were
-+		 * unable to get the lock. This means we can't safely access
-+		 * our state variables like tx_remaining. About the best we
-+		 * can do is wait for the FIFO to be empty before we start our
-+		 * transfer, so we'll do that.
-+		 */
-+		qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
-+					  M_TX_FIFO_NOT_EMPTY_EN, false);
- 	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->tx_remaining) {
- 		/*
- 		 * It seems we can't interrupt existing transfers if all data
-@@ -516,11 +514,12 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 	if (IS_REACHABLE(CONFIG_SERIAL_8250_FSL) &&
+ 	    (of_device_is_compatible(np, "fsl,ns16550") ||
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8ca061d3bbb92..4164f8650476d 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -38,10 +38,6 @@
  
- 	__qcom_geni_serial_console_write(uport, s, count);
+ #include "8250.h"
  
--	if (port->tx_remaining)
--		qcom_geni_serial_setup_tx(uport, port->tx_remaining);
+-/* Nuvoton NPCM timeout register */
+-#define UART_NPCM_TOR          7
+-#define UART_NPCM_TOIE         BIT(7)  /* Timeout Interrupt Enable */
+-
+ /*
+  * Debugging.
+  */
+@@ -2235,15 +2231,6 @@ int serial8250_do_startup(struct uart_port *port)
+ 				UART_DA830_PWREMU_MGMT_FREE);
+ 	}
  
--	if (locked)
-+	if (locked) {
-+		if (port->tx_remaining)
-+			qcom_geni_serial_setup_tx(uport, port->tx_remaining);
- 		uart_port_unlock_irqrestore(uport, flags);
-+	}
+-	if (port->type == PORT_NPCM) {
+-		/*
+-		 * Nuvoton calls the scratch register 'UART_TOR' (timeout
+-		 * register). Enable it, and set TIOC (timeout interrupt
+-		 * comparator) to be 0x20 for correct operation.
+-		 */
+-		serial_port_out(port, UART_NPCM_TOR, UART_NPCM_TOIE | 0x20);
+-	}
+-
+ #ifdef CONFIG_SERIAL_8250_RSA
+ 	/*
+ 	 * If this is an RSA port, see if we can kick it up to the
+@@ -2545,15 +2532,6 @@ static void serial8250_shutdown(struct uart_port *port)
+ 		serial8250_do_shutdown(port);
  }
  
- static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
+-/* Nuvoton NPCM UARTs have a custom divisor calculation */
+-static unsigned int npcm_get_divisor(struct uart_8250_port *up,
+-		unsigned int baud)
+-{
+-	struct uart_port *port = &up->port;
+-
+-	return DIV_ROUND_CLOSEST(port->uartclk, 16 * baud + 2) - 2;
+-}
+-
+ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
+ 					      unsigned int baud,
+ 					      unsigned int *frac)
+@@ -2598,8 +2576,6 @@ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
+ 		quot = 0x8001;
+ 	else if (magic_multiplier && baud >= port->uartclk / 12)
+ 		quot = 0x8002;
+-	else if (up->port.type == PORT_NPCM)
+-		quot = npcm_get_divisor(up, baud);
+ 	else
+ 		quot = uart_get_divisor(port, baud);
+ 
 -- 
 2.43.0
 
