@@ -1,280 +1,176 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C5E817C98;
-	Wed,  3 Apr 2024 16:35:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B9BC153BE0;
+	Wed,  3 Apr 2024 17:16:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712162108; cv=none; b=dHr0oIz1nrmarOMT+t9aCth4XAlDrFhaxT2uCpE8WpCoVZP0F7maZSQSmdZeKJ2mdvafvcirAEls1bg0iHO3Wzn3DvyK3S2trOs0g1k6bBM7aJdbiNe5WeT8gdVGSk7N9Xv7LlKr35P0KkLRAnozkqGJhUD6UT0qmvd+HCoUnCs=
+	t=1712164620; cv=none; b=rfzRQXqgaga7xrielKqcZxtNQO+YkAEpXHwzTXg4Q/i1is47iyP/601ojAMxo0QaKKXyjdKMGZjQ6meM9iBzSeGw3ppn/Xy4ldimmMH8uZNzrtV0gQFpG7Fu2ytMu6L9/545SWlRH+EDmBKHQtZ83zR91t/FF49OHT8XL//Wd0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712162108; c=relaxed/simple;
-	bh=zD4Yiw7OCi5fgq+RCSzBtrA4K1iq312b2H72yW8lIT4=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=tQwxAVWXv1PLrDC6wB+obMHQA1QjZ8i7YvW21ztFoc+PUTUOS8oSzVOerjIi3AOOi3aya+3hpUgGT0rd3EmRJ4dMv1Wcp7mDczAYo1gdvNxLKSTD7cFYweMC4+s5QutP+1vg50dytazXLBVJONIR7r+WzRqVLPRic/CxkHjknIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=OiUSB7tm; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1712164620; c=relaxed/simple;
+	bh=Rdq/tCZloRjmO30scHy8wsKZG4mD07IlY6+90beOSuo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=VcFRBWPQ1VEh6iv3zQx9fN9BWIKEkCU0PBU3jORt9HSsQjQfdof4pwl88lnwBGVW8CxPn1PeGvzuwoRLd+6sZjnSDFStz9YnLA6irl76cx3ikoCW+pu9YMBzt+pk0ezblA/o2jfRvWEK5KdQcB1fkvJdFICkKSDbpDbgMiED5sQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gJxy1UGt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="OiUSB7tm"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=Be+U0t7VcjuBlMtDw/ENxuCcQmZcFzNETa3Sysptv4M=; b=OiUSB7tmeIR8B2uvc6IKt9wse4
-	T+kulL5ySz0S0BP3YJzh74XtCh6sABHlnWlFn0Q+BMy+r4EuV5y2DtUjaSpUAO15xh4gabHZQ9hjW
-	K9i6Ti1p0F9P0bwLzL3+iRQcObSYrxHPFkn7UzhImg2KSTNyiLie+FZWjH6cqlGix+x4=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:45874 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rs3Zn-0006aZ-0r; Wed, 03 Apr 2024 12:35:03 -0400
-Date: Wed, 3 Apr 2024 12:35:01 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>
-Message-Id: <20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com>
-In-Reply-To: <CAHp75VdZ5yYVx7Df7G4X4Y7ZvJ3LAdq=A0fVNzNfMcdywJC-dQ@mail.gmail.com>
-References: <20240402174353.256627-1-hugo@hugovil.com>
-	<20240402174353.256627-4-hugo@hugovil.com>
-	<CAHp75VdZ5yYVx7Df7G4X4Y7ZvJ3LAdq=A0fVNzNfMcdywJC-dQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gJxy1UGt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 925BFC433B2;
+	Wed,  3 Apr 2024 17:16:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712164619;
+	bh=Rdq/tCZloRjmO30scHy8wsKZG4mD07IlY6+90beOSuo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=gJxy1UGtzC7hhGWqTsQTUx9beRl4WLaSbKFzckbjYwEI+34iAfW3Nzq4ST60m7Mt8
+	 ya7Drt0rYwS5LOwFpuNb+Mv/M0m9VYmMzzvsoWLX6UbAa8nUutucMJAbpzTwx9PJVU
+	 68RM8AwVE7fW5YevHxR5r+AxQHtzEaPOHkHSZ/iB3SRGsM/C59zXSCCd/mNOxZ33Ye
+	 qZBQopK8OXlf2cSsd5UrcKRMB9QgeJHw52849dzs7tjG+pthjwkzMguPGlWTvJu0hz
+	 9letp9ICVi2E+clOw1oRtsA93qHPmAAKeyxtheWHJWRO15RtnGKsRdM9zjhlyeJRVP
+	 k3aXSQjKKPtYg==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Douglas Anderson <dianders@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sasha Levin <sashal@kernel.org>,
+	andersson@kernel.org,
+	konrad.dybcio@linaro.org,
+	jirislaby@kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 6.8 03/28] serial: qcom-geni: Don't cancel/abort if we can't get the port lock
+Date: Wed,  3 Apr 2024 13:16:05 -0400
+Message-ID: <20240403171656.335224-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240403171656.335224-1-sashal@kernel.org>
+References: <20240403171656.335224-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.8.3
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.8 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v3 3/5] serial: sc16is7xx: split into core and I2C/SPI
- parts (core)
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, 2 Apr 2024 22:40:07 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+From: Douglas Anderson <dianders@chromium.org>
 
-Hi Andy,
+[ Upstream commit 9e957a155005b16af057e86c6bcc1197cd70a6af ]
 
-> On Tue, Apr 2, 2024 at 8:45 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> >
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >
-> > Split the common code from sc16is7xx driver and move the I2C and SPI bus
-> > parts into interface-specific source files.
-> >
-> > sc16is7xx becomes the core functions which can support multiple bus
-> > interfaces like I2C and SPI.
-> >
-> > No functional change intended.
-> 
-> ...
-> 
-> > -config SERIAL_SC16IS7XX_CORE
-> > -       tristate
-> > -
-> >  config SERIAL_SC16IS7XX
-> >         tristate "SC16IS7xx serial support"
-> >         select SERIAL_CORE
-> > -       depends on (SPI_MASTER && !I2C) || I2C
-> > +       depends on SPI_MASTER || I2C
-> 
-> Is it?
+As of commit d7402513c935 ("arm64: smp: IPI_CPU_STOP and
+IPI_CPU_CRASH_STOP should try for NMI"), if we've got pseudo-NMI
+enabled then we'll use it to stop CPUs at panic time. This is nice,
+but it does mean that there's a pretty good chance that we'll end up
+stopping a CPU while it holds the port lock for the console
+UART. Specifically, I see a CPU get stopped while holding the port
+lock nearly 100% of the time on my sc7180-trogdor based Chromebook by
+enabling the "buddy" hardlockup detector and then doing:
 
-See discussion below, but I would remove the SPI/I2C depends. And I
-would rename SERIAL_SC16IS7XX to SERIAL_SC16IS7XX_CORE.
+  sysctl -w kernel.hardlockup_all_cpu_backtrace=1
+  sysctl -w kernel.hardlockup_panic=1
+  echo HARDLOCKUP > /sys/kernel/debug/provoke-crash/DIRECT
 
-> 
-> >         help
-> >           Core driver for NXP SC16IS7xx serial ports.
-> >           Supported ICs are:
-> > @@ -1042,22 +1039,18 @@ config SERIAL_SC16IS7XX
-> >           drivers below.
-> >
-> >  config SERIAL_SC16IS7XX_I2C
-> > -       bool "SC16IS7xx for I2C interface"
-> > +       tristate "SC16IS7xx for I2C interface"
-> >         depends on SERIAL_SC16IS7XX
-> >         depends on I2C
-> > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> > -       select REGMAP_I2C if I2C
-> > -       default y
-> > +       select REGMAP_I2C
-> >         help
-> > -         Enable SC16IS7xx driver on I2C bus,
-> > -         enabled by default to support oldconfig.
-> > +         Enable SC16IS7xx driver on I2C bus.
-> >
-> >  config SERIAL_SC16IS7XX_SPI
-> > -       bool "SC16IS7xx for spi interface"
-> > +       tristate "SC16IS7xx for SPI interface"
-> >         depends on SERIAL_SC16IS7XX
-> >         depends on SPI_MASTER
-> > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
-> > -       select REGMAP_SPI if SPI_MASTER
-> > +       select REGMAP_SPI
-> >         help
-> >           Enable SC16IS7xx driver on SPI bus.
-> 
-> Hmm... What I was thinking about is more like dropping
->  the SERIAL_SC16IS7XX and having I2C/SPI to select the core.
-> 
-> See many examples under drivers/iio on how it's done.
+UART drivers are _supposed_ to handle this case OK and this is why
+UART drivers check "oops_in_progress" and only do a "trylock" in that
+case. However, before we enabled pseudo-NMI to stop CPUs it wasn't a
+very well-tested situation.
 
-Ok, I found this example:
-bf96f6e80cef ("iio: accel: kxsd9: Split out SPI transport")
+Now that we're testing the situation a lot, it can be seen that the
+Qualcomm GENI UART driver is pretty broken. Specifically, when I run
+my test case and look at the console output I just see a bunch of
+garbled output like:
 
-In it, the SPI part doesn't select the core, but depends on it, similar
-to what I have done. I find this approach more interesting for
-embedded systems as you can enable/disable I2C or SPI part if you
-need only one interface.
+  [  201.069084] NMI backtrace[  201.069084] NM[  201.069087] CPU: 6
+  PID: 10296 Comm: dnsproxyd Not tainted 6.7.0-06265-gb13e8c0ede12
+  #1 01112b9f14923cbd0b[  201.069090] Hardware name: Google Lazor
+  ([  201.069092] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DI[
+  201.069095] pc : smp_call_function_man[  201.069099]
 
-> 
-> ...
-> 
-> > +EXPORT_SYMBOL_GPL(sc16is74x_devtype);
-> 
-> Is it namespaced? Please make sure we are not polluting the global
-> namespace with these.
+That's obviously not so great. This happens because each call to the
+console driver exits after the data has been written to the FIFO but
+before it's actually been flushed out of the serial port. When we have
+multiple calls into the console one after the other then (if we can't
+get the lock) each call tells the UART to throw away any data in the
+FIFO that hadn't been transferred yet.
 
-Ok, will add namespace support to all exports.
+I've posted up a patch to change the arm64 core to avoid this
+situation most of the time [1] much like x86 seems to do, but even if
+that patch lands the GENI driver should still be fixed.
 
+>From testing, it appears that we can just delete the cancel/abort in
+the case where we weren't able to get the UART lock and the output
+looks good. It makes sense that we'd be able to do this since that
+means we'll just call into __qcom_geni_serial_console_write() and
+__qcom_geni_serial_console_write() looks much like
+qcom_geni_serial_poll_put_char() but with a loop. However, it seems
+safest to poll the FIFO and make sure it's empty before our
+transfer. This should reliably make sure that we're not
+interrupting/clobbering any existing transfers.
 
-> 
-> ...
-> 
-> > +#ifndef _SC16IS7XX_H_
-> > +#define _SC16IS7XX_H_
-> > +
-> > +#include <linux/device.h>
-> 
-> Not used (by this file).
+As part of this change, we'll also avoid re-setting up a TX at the end
+of the console write function if we weren't able to get the lock,
+since accessing "port->tx_remaining" without the lock is not
+safe. This is only needed to re-start userspace initiated transfers.
 
-I was assuming that this file was for "struct device"?
+[1] https://lore.kernel.org/r/20231207170251.1.Id4817adef610302554b8aa42b090d57270dc119c@changeid
 
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20240112150307.2.Idb1553d1d22123c377f31eacb4486432f6c9ac8d@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 27 +++++++++++++--------------
+ 1 file changed, 13 insertions(+), 14 deletions(-)
 
-> 
-> > +#include <linux/mod_devicetable.h>
-> 
-> > +#include <linux/regmap.h>
-> 
-> > +#include <linux/serial_core.h>
-> 
-> Not used.
-
-Ok, will drop for V4.
-
-
-> 
-> > +#include <linux/types.h>
-> 
-> > +extern const struct of_device_id __maybe_unused sc16is7xx_dt_ids[];
-> 
-> No __maybe_unused. Just have it always be added.
-
-Ok.
-
-
-> 
-> > +const char *sc16is7xx_regmap_name(u8 port_id);
-> > +
-> > +unsigned int sc16is7xx_regmap_port_mask(unsigned int port_id);
-> > +
-> > +int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-> > +                   struct regmap *regmaps[], int irq);
-> 
-> > +void sc16is7xx_remove(struct device *dev);
-> 
-> Will require forward declaration
-> 
-> #include ...
-> 
-> struct device;
-
-Isn't it provided by <linux/device.h> ?
-
-
-> 
-> > +#endif /* _SC16IS7XX_H_ */
-> 
-> ...
-> 
-> > +#include <linux/i2c.h>
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/module.h>
-> > +#include <linux/regmap.h>
-> 
-> Follow the IWYU principle (include what you use).
-
-Ok, I tried to follow it, I do think those 4 includes are required in
-this file, no?
-
-and maybe I can add <linux/string.h> for memcpy().
-
-
-> 
-> ...
-> 
-> > +               return dev_err_probe(&i2c->dev, -ENODEV, "Failed to match device\n");
-> 
-> + dev_printk.h
-
-Ok.
-
-
-> 
-> ...
-> 
-> > +static int __init sc16is7xx_i2c_init(void)
-> > +{
-> > +       return i2c_add_driver(&sc16is7xx_i2c_driver);
-> > +}
-> > +module_init(sc16is7xx_i2c_init);
-> > +
-> > +static void __exit sc16is7xx_i2c_exit(void)
-> > +{
-> > +       i2c_del_driver(&sc16is7xx_i2c_driver);
-> > +}
-> > +module_exit(sc16is7xx_i2c_exit);
-> 
-> This is now module_i2c_driver().
-
-Ok. Great, simplifies things.
-
-
-> 
-> ...
-> 
-> > +MODULE_LICENSE("GPL");
-> > +MODULE_DESCRIPTION("SC16IS7xx I2C interface driver");
-> 
-> + MODULE_IMPORT_NS()
-
-Ok.
-
-
-> 
-> ...
-> 
-> > +++ b/drivers/tty/serial/sc16is7xx_spi.c
-> 
-> Similar/same comments as per i2c counterpart.
-
-Ok.
-
-
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 99e08737f293c..f9f7ac1a10df3 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -488,18 +488,16 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 
+ 	geni_status = readl(uport->membase + SE_GENI_STATUS);
+ 
+-	/* Cancel the current write to log the fault */
+ 	if (!locked) {
+-		geni_se_cancel_m_cmd(&port->se);
+-		if (!qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+-						M_CMD_CANCEL_EN, true)) {
+-			geni_se_abort_m_cmd(&port->se);
+-			qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
+-							M_CMD_ABORT_EN, true);
+-			writel(M_CMD_ABORT_EN, uport->membase +
+-							SE_GENI_M_IRQ_CLEAR);
+-		}
+-		writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
++		/*
++		 * We can only get here if an oops is in progress then we were
++		 * unable to get the lock. This means we can't safely access
++		 * our state variables like tx_remaining. About the best we
++		 * can do is wait for the FIFO to be empty before we start our
++		 * transfer, so we'll do that.
++		 */
++		qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
++					  M_TX_FIFO_NOT_EMPTY_EN, false);
+ 	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->tx_remaining) {
+ 		/*
+ 		 * It seems we can't interrupt existing transfers if all data
+@@ -516,11 +514,12 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 
+ 	__qcom_geni_serial_console_write(uport, s, count);
+ 
+-	if (port->tx_remaining)
+-		qcom_geni_serial_setup_tx(uport, port->tx_remaining);
+ 
+-	if (locked)
++	if (locked) {
++		if (port->tx_remaining)
++			qcom_geni_serial_setup_tx(uport, port->tx_remaining);
+ 		uart_port_unlock_irqrestore(uport, flags);
++	}
+ }
+ 
+ static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
 -- 
-Hugo Villeneuve
+2.43.0
+
