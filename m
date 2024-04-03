@@ -1,197 +1,139 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01olkn2012.outbound.protection.outlook.com [40.92.52.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7044645;
-	Wed,  3 Apr 2024 06:12:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712124759; cv=none; b=ubd3YycaAXAkPI6TDr6AYFBVPUXjsEnyBDIPNC+SYLUT9Y05HVnouv49xSxSEZ/VFLim3APuMPkKnGlmoiFDh5OqzW/NB6KThxp0o6UFhl9iGDOD1e80YwJD42JBcTLb0XSYz0kw4iFgxWXfDs+iyYb8SwHk+JE5gEZQoTz1sWY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712124759; c=relaxed/simple;
-	bh=cDJ+56UgBDjll1l3QqIhy5OF77+XfU4Ieoj5qmZhn5o=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OVGL+x8h/8vQG2fpasN5St/G0TXODGeJ7Pw/69ozQOMVdYigmFtUFn4ezJ6EiNaQ52LWgEFONorUHfB9pcYzgHI0lRjG6X/a6OBIwWq2Q1yci6FIgHT9T3RPJ1n1sHMczhHARL+EtIi9APbOdB8oCDTeqxrkHdrNfrFD0xgtQi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 4336BGO9024811;
-	Wed, 3 Apr 2024 14:11:16 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
-	by mail.maildlp.com (Postfix) with ESMTP id 987942004BA1;
-	Wed,  3 Apr 2024 14:13:16 +0800 (CST)
-Received: from localhost.localdomain (10.114.186.34) by
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.1258.27; Wed, 3 Apr 2024 14:11:17 +0800
-From: <liu.yec@h3c.com>
-To: <daniel.thompson@linaro.org>
-CC: <dianders@chromium.org>, <gregkh@linuxfoundation.org>,
-        <jason.wessel@windriver.com>, <jirislaby@kernel.org>,
-        <kgdb-bugreport@lists.sourceforge.net>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <liu.yec@h3c.com>,
-        LiuYe <liu.yeC@h3c.com>
-Subject: [PATCH V8] kdb: Fix the deadlock issue in KDB debugging.
-Date: Wed, 3 Apr 2024 14:11:09 +0800
-Message-ID: <20240403061109.3142580-1-liu.yec@h3c.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240402125802.GC25200@aspen.lan>
-References: <20240402125802.GC25200@aspen.lan>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BE944EB2E;
+	Wed,  3 Apr 2024 07:41:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.52.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712130106; cv=fail; b=D4y45ULUPT3gSTYUYwbALnptMlSJWKKWYaWk92t/C8l3tCpJ/vTRtcMSRZ2+Xz+WmjP/7rSZ3sUQNyusPcndIm4mmkFUZkWP5yUcdCToAQw1+ai6CF8IP9qy8gjXDYKBCfVU/mh4ACDUAcSwenqyaxsELP8dLkhg6TbCQ6morec=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712130106; c=relaxed/simple;
+	bh=XEbPO2jF/jt3BT4YdYHk3UIhCO2+CJxodcZi2Sxa7uU=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=PUhMEMCWWWmL13d/HrEo+qx7HrArvUzo7xubd2d28ZaaL3Iie8cnNhoWkkUHDOwSUpRdRSQSH3qx48iovlXSFUN01KXHM2hrH6ADvzV7iz5HrNBQtV+EMiOOn4RepLc+3heJtBCpDFxCnj0LDLDfho5Zc2xk8YdRTVmBdLa6POI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=BnyJR+AU; arc=fail smtp.client-ip=40.92.52.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="BnyJR+AU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q2lPbJPKULKslb5Y1m1DNqKAYWVxlqCGuN4o+pDWxS2E1JZxTYbs14sBVUwPTE+JiP/FxeEu1aI5ucwp8lrrOrCn7KKHim2ahT9m4l4hEOlwztObnvZY3FlPBRM8OcBrXg+AAGTsAfRDeIcKc30owthi09fLmpc5REguHG3pmXfk9sU1wjMIcSEsTrJsoV/fnUsE4uqPipk+uhE3zm6fhN7DI5Jw7TVbOnWQwlva1/yZhAZjFV+U26xGb9/nsmg3ltWsqATD3oN3xlR14omAeh+9VyexwwXavETna7Qc/zsIkDeVN2l1eFPLwqfNx7HjYVkpGUqV3Dykw5bU6OaCjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xBh2Mo42HQOCROtJW97N/C+xLV2w7oHLJGQAtmMf4g4=;
+ b=C1qsteGf2QsTWs9NABNQU2BuA5q1wBXHvE7u6xR3zzYPp22cFiX8o/AQ8mtlK5IqBi79jhwDT1KJadaKGElhkgfNBOV/IQtS0wW9szx/Z9Cky4p+WiGwdZV0JEPNltQfsY0+bM9jIXmqv9LJzoUusALqj2tUts+8cgV7OMqlN2WvVSqh13UcATIB5awzCuOJ/I52G31LwnbOaRZeMar6FHIQc4dvYODTlIWLCKsfPgsocU/zYEgshIw3yIkYNB09ni2rxRnqm0f1DYX7XMn0Jdjjqd6CiLWT1L6imtnSkXd0DPPtebpmvvjsp9QPnGuWe5H+qCv1OdsSNgQiY1Y1zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xBh2Mo42HQOCROtJW97N/C+xLV2w7oHLJGQAtmMf4g4=;
+ b=BnyJR+AUrPGX5anbeVeuCCetI57U/o9kPs5tQGa8qcL3jegerDvAi7evuOgh2ngxoLTOswSz+DmUXQYEfuKUGebh5kkA28/LhtKVbNCJhldfVrOBbVUOeBqB4ejKmhrh/gLJUNTV/r5C3mTf/Z1bnk885LqOBHtdWbGzjwC+E/ICjY11asF/wyHTXF9t5Z83Xz0YxTObI/MFqN2te/TyzICkH2d9Kite8IPNzTYwCXVe9oJ65VOe68ep2JLInxO6f5jEOmaRP8+AFGAXay5B2Oc87zGHL6nCb0m+IrpySnV1rOlJRAIM4Vn9ZRApXT5zWCDsC0LLXcvDNFG7l4UpPA==
+Received: from PSAPR06MB4952.apcprd06.prod.outlook.com (2603:1096:301:a3::11)
+ by TYZPR06MB7169.apcprd06.prod.outlook.com (2603:1096:405:b7::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.45; Wed, 3 Apr
+ 2024 07:41:40 +0000
+Received: from PSAPR06MB4952.apcprd06.prod.outlook.com
+ ([fe80::45cb:f62c:d9bc:b12b]) by PSAPR06MB4952.apcprd06.prod.outlook.com
+ ([fe80::45cb:f62c:d9bc:b12b%7]) with mapi id 15.20.7409.042; Wed, 3 Apr 2024
+ 07:41:40 +0000
+From: Guanbing Huang <albanhuang@outlook.com>
+To: gregkh@linuxfoundation.org,
+	andriy.shevchenko@intel.com,
+	rafael.j.wysocki@intel.com
+Cc: linux-acpi@vger.kernel.org,
+	tony@atomide.com,
+	john.ogness@linutronix.de,
+	yangyicong@hisilicon.com,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	lvjianmin@loongson.cn,
+	albanhuang@tencent.com,
+	tombinfan@tencent.com
+Subject: [PATCH v4 0/3] serial: 8250_pnp: Support configurable reg shift property
+Date: Wed,  3 Apr 2024 15:41:27 +0800
+Message-ID:
+ <PSAPR06MB49524F135EBF81C4F2D181BCC93D2@PSAPR06MB4952.apcprd06.prod.outlook.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-TMN: [KOut+fD3pxOctsiPMJgwofpbhdruQFIO]
+X-ClientProxiedBy: SI1PR02CA0053.apcprd02.prod.outlook.com
+ (2603:1096:4:1f5::8) To PSAPR06MB4952.apcprd06.prod.outlook.com
+ (2603:1096:301:a3::11)
+X-Microsoft-Original-Message-ID:
+ <20240403074130.93811-1-albanhuang@outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 4336BGO9024811
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PSAPR06MB4952:EE_|TYZPR06MB7169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 80144fb7-8466-4424-e4dc-08dc53b17fbf
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	NujF5vtNh+EdKgamEP+gNmgd/rViO/vDFUQW3hbzrPUy6H3Cr1r9FYLtKRuSg6l4GuzgwtyUdmB9DZc9A0NtSnvALUDYCNgnfuXnIMtM4kPVfgNF6xaAUJcWNKNmtOjXBCwXaBgEqnnz3Q18IC/0B9hf29IE6x8rfHILoCl+M93En4ZkqW16tuhTzkJLjvD/zCTO0JteEtlKky0TB9d4lYnryRWLH9yohYMCxaT+VMmjz23Stz89IgYR/ZaOx/60D+KEGe+BomuV5HsrzwkrzvDW5+RpJPifEl8FVXNPmuvZUxX/9qDc+yXahJtJ+6nuupojDLVAgiGbELDxvVZKLw8llo4s3BmI1t0tQmG4XRAOH2esDK8pXs/KTrL5idXXYUQQX56Q2LkG1f24qb+N/oZn1RBKFu7keZVAA/0+E2MjNp6DTxNOIAuR9Il8kzhmtsrrpGs0+SvzyOsr4QPXqOEaU1wtvuMw2rDHIHl2/RBNbXk+N3aglwYV4SDruN1VlAQDpxHuGRgktGjmUdrhB/s3ZwVupbZVJ3bQOl27g0EOFt0x3pvixxXa4ca1/kvv
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?JfCJDLFKJxNRiyHpLnq7bH3Slaq/EbtvWvC1Ne+E1ar6GoneqOacLPwQjR6y?=
+ =?us-ascii?Q?3F/n4GAwS2xtE3IHBolMLLPHrgRDy2gBWiU0vHdufIB0fGMEhmBR0Wgb5XNh?=
+ =?us-ascii?Q?et3gIUKFujC+LnRozPYQGCQT8ym48UKYlWM+bJImWgEuIzT87NTJAtyysYdM?=
+ =?us-ascii?Q?yuWc5rCSINQJzNpHz9GehNR4hexGFRfZJpFTbgYhF7aays66lC09l5YTFPV6?=
+ =?us-ascii?Q?Bj2wXa/i8rzqfv+VB+urkaLDtjQclasqBCGpnAFI5Cj5jEnGzSjeH1J87tBZ?=
+ =?us-ascii?Q?QE47+lvMEMHjS8ALs5lxRA/PQx7WMulPUC8v/OnsuB1MCeRQ7EuYzxvYcl89?=
+ =?us-ascii?Q?kGi6oSAns2QZJOURO2AY4uNSC48cfmcuB0pdGnEELSbTtGHdO6fRXWPOsleZ?=
+ =?us-ascii?Q?7IxzGDIRFvfSqkrRnisDolclRJ60nDQzekp9GfxJ2730ePNx+aYkxRg39xS8?=
+ =?us-ascii?Q?vZo/iE5z1ZJzZYxZuBbU5xn7oNzE6Ue6wXOfmNG4BeaQ5w4stEIhvs0JLhYM?=
+ =?us-ascii?Q?xawqB2O3EHq67AJi3f9AROqef1FzC/03B1ok+ITv5WSXV2Z76XOnyOWlYiEM?=
+ =?us-ascii?Q?c2N+JWtL/jMGtFL3L5VnytzLOKBCMgU2DyfM7I3H+PNxwOpUlEODNJvSIg7b?=
+ =?us-ascii?Q?mqzTEuL3ZM+hDO9L2LGUYl8PpVDS1Ht44OMZ7E2tketgZn/bazgmDVeaMxcZ?=
+ =?us-ascii?Q?OFO++Zg4umhYi0s4HhBzJZ+Kf8+dA3y4A/gg16U8c1p5gyQ1t+qoEXaJSCop?=
+ =?us-ascii?Q?yzjGF/sgv9E76nR0H9GTV/yCTRcDM3yMtBS3dDV64Rx9wchKAfHwlVsdxyFR?=
+ =?us-ascii?Q?T/TawtENOILlD5dzQSVc8cS6eYetJAogMNoy5+t6N4QJSpypQYDCYPSmK8ZE?=
+ =?us-ascii?Q?s5RXPsY6qadSVn1F6hM58z4wJIjWBrQ0gxchG6RYHsZ/lBlQiuREbypfab/r?=
+ =?us-ascii?Q?ZrqNXqPU034bgQWDU8Yi0qtxYc9Epp5dNUjm40oFMsezcVdEU77gQ6O707Rt?=
+ =?us-ascii?Q?hlarej8qjODXRtbE/a47T/iik91/T5hiyyEaCd0SOlfEQ6UafQqN3vOMl9wv?=
+ =?us-ascii?Q?i83CSDw+AtfRZhIO36TxXAsLX1r4s5aSf21bjl35WmznYiGWQ6Mwq4y7kp9h?=
+ =?us-ascii?Q?Yl+Q1/Mcs8QW8UuDBKp8OXQz7H2fptxte4BryDXuEGAMd0M52+AYj319sTlr?=
+ =?us-ascii?Q?7seR3GHI6JL50DydvwdfwYdZPiajwmvMPKfw0RaM0FXMbpgn8x49TdXkr10?=
+ =?us-ascii?Q?=3D?=
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80144fb7-8466-4424-e4dc-08dc53b17fbf
+X-MS-Exchange-CrossTenant-AuthSource: PSAPR06MB4952.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Apr 2024 07:41:39.9780
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB7169
 
-From: LiuYe <liu.yeC@h3c.com>
+From: Guanbing Huang <albanhuang@tencent.com>
 
-Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-attempt to use schedule_work() to provoke a keyboard reset when
-transitioning out of the debugger and back to normal operation.
-This can cause deadlock because schedule_work() is not NMI-safe.
+The 16550a serial port based on the ACPI table requires obtaining the
+reg-shift attribute. In the ACPI scenario, If the reg-shift property
+is not configured like in DTS, the 16550a serial driver cannot read or
+write controller registers properly during initialization.
 
-The stack trace below shows an example of the problem. In this
-case the master cpu is not running from NMI but it has parked
-the slave CPUs using an NMI and the parked CPUs is holding
-spinlocks needed by schedule_work().
+To address the issue of configuring the reg-shift property, the 
+__uart_read_properties() universal interface is called to implement it.
+Adaptation of pnp devices is done in the __uart_read_properties() function.
 
-example:
- BUG: spinlock lockup suspected on CPU#0, namex/10450
- lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
- ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
- ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
-Call Trace:
- [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
- [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
- [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
- [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
- [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
- [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
- [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
- [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
- [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
- [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
- CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
- Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
-  0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
-  ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
-  000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
-  Call Trace:
-  <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
-  [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
-  [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
-  [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
-  [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
-  [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
-  [<ffffffff8107b371>] insert_work+0x81/0xc0
-  [<ffffffff8107b4e5>] __queue_work+0x135/0x390
-  [<ffffffff8107b786>] queue_work_on+0x46/0x90
-  [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
-  [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
-  [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
-  [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
-  [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
-  [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
-  [<ffffffff8108304d>] notify_die+0x3d/0x50
-  [<ffffffff81017219>] do_int3+0x89/0x120
-  [<ffffffff81480fb4>] int3+0x44/0x80
+Guanbing Huang (3):
+  pnp: Add dev_is_pnp() macro
+  serial: 8250_port: Add support of pnp irq to __uart_read_properties()
+  serial: 8250_pnp: Support configurable reg shift property
 
-We fix the problem by using irq_work to call schedule_work()
-instead of calling it directly. This is because we cannot
-resynchronize the keyboard state from the hardirq context
-provided by irq_work. This must be done from the task context
-in order to call the input subsystem.
+ drivers/tty/serial/8250/8250_pnp.c | 36 ++++++++++++++++++++----------
+ drivers/tty/serial/serial_port.c   |  7 +++++-
+ include/linux/pnp.h                |  2 ++
+ 3 files changed, 32 insertions(+), 13 deletions(-)
 
-Therefore, we have to defer the work twice. First, safely
-switch from the debug trap context (similar to NMI) to the
-hardirq, and then switch from the hardirq to the system work queue.
-
-Signed-off-by: LiuYe <liu.yeC@h3c.com>
-Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-
----
-V7 -> V8: Update the description information and comments in the code.
-	: Submit this patch based on version linux-6.9-rc2.
-V6 -> V7: Add comments in the code.
-V5 -> V6: Replace with a more professional and accurate answer.
-V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
-V3 -> V4: Add changelogs
-V2 -> V3: Add description information
-V1 -> V2: using irq_work to solve this properly.
----
----
- drivers/tty/serial/kgdboc.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 7ce7bb164..d6ce945f0 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -22,6 +22,7 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/serial_core.h>
-+#include <linux/irq_work.h>
- 
- #define MAX_CONFIG_LEN		40
- 
-@@ -82,6 +83,19 @@ static struct input_handler kgdboc_reset_handler = {
- 
- static DEFINE_MUTEX(kgdboc_reset_mutex);
- 
-+/*
-+ * This code ensures that the keyboard state, which is changed during kdb
-+ * execution, is resynchronized when we leave the debug trap. The resync
-+ * logic calls into the input subsystem to force a reset. The calls into
-+ * the input subsystem must be executed from normal task context.
-+ *
-+ * We need to trigger the resync from the debug trap, which executes in an
-+ * NMI (or similar) context. To make it safe to call into the input
-+ * subsystem we end up having use two deferred execution techniques.
-+ * Firstly, we use irq_work, which is NMI-safe, to provoke a callback from
-+ * hardirq context. Then, from the hardirq callback we use the system
-+ * workqueue to provoke the callback that actually performs the resync.
-+ */
- static void kgdboc_restore_input_helper(struct work_struct *dummy)
- {
- 	/*
-@@ -99,10 +113,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
- 
- static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
- 
-+static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-+{
-+	schedule_work(&kgdboc_restore_input_work);
-+}
-+
-+static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
-+
- static void kgdboc_restore_input(void)
- {
- 	if (likely(system_state == SYSTEM_RUNNING))
--		schedule_work(&kgdboc_restore_input_work);
-+		irq_work_queue(&kgdboc_restore_input_irq_work);
- }
- 
- static int kgdboc_register_kbd(char **cptr)
-@@ -133,6 +154,7 @@ static void kgdboc_unregister_kbd(void)
- 			i--;
- 		}
- 	}
-+	irq_work_sync(&kgdboc_restore_input_irq_work);
- 	flush_work(&kgdboc_restore_input_work);
- }
- #else /* ! CONFIG_KDB_KEYBOARD */
 -- 
-2.25.1
+2.17.1
 
