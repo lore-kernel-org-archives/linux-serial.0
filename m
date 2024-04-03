@@ -1,49 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C0B2F28;
-	Wed,  3 Apr 2024 14:47:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF2C3D96B;
+	Wed,  3 Apr 2024 14:47:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712155655; cv=none; b=Sr82TxQvlPSZ1B1BoFp1Dbw6ZYie2vhbc+bCgXmVid/gkBUtSfynJ7wDQg180VjcVy91jhVZdzAd0juxXfiXsI7+wq93KEN8uPd6gvcr0HoSWR+l2Q+yNnGIZFhkRfsLR3+Ua5N+D3BSdyDz4FygLPd1m/Gf/QdXUnRg4D0K1pI=
+	t=1712155656; cv=none; b=ai4e4uvxEhHJgDuxVrNYhURLIhLqv6dMTs8LXJvR4uuRS1bNWjAWRQGy1F/SA1eXZzazYOWKv2lmRAUig459ZBoAEcKr5L134lc331VT5RSty+RPGpZsRo8HLB4DxWQWXAJnMBOwZsHFd/PjxOCxpKNdVqCqEJhZ0r/t6+0OIgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712155655; c=relaxed/simple;
-	bh=gTksTsumFlenpsCVho1lUNgk04tJb4nLbosDVRyHfbM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bdOfseoT2uJmZF0ttXK9ZPDM7FFKyJzhhaMnW/ryz32QiA850ytY8x70my6mZSrXn3OogMmI7Ep6SUbqIJP5Q2GmxJasDJz63bkYxyHcN+OJkfjpeAp2prt/xP2xar/Pm6RJ9AfLdScmI/3O0oFE1hAZmdCA1CCy02gWfz/e65g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e/kqoURk; arc=none smtp.client-ip=198.175.65.11
+	s=arc-20240116; t=1712155656; c=relaxed/simple;
+	bh=j+j9gJh9AR/K/6EMcCGKCzoxFBSWKneuP7FZVAR7urU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pdKGFI3KsVuvDMQtFnQwhv8e/SGB6Yj9ikxTQ6NarrzVpcyQBgq2EwBkQFSxz1sRcLdb2I8th+t4cyAmUhYmz6tDeeQobwgSRT45nXkqscJoHN39YKTdpQIZbL0WJy1YPAbgibMMNGXt/BP4IYL3cHeh3DsJuwwD4txQ8FnpbNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jWvIwh7D; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e/kqoURk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jWvIwh7D"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712155652; x=1743691652;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gTksTsumFlenpsCVho1lUNgk04tJb4nLbosDVRyHfbM=;
-  b=e/kqoURkQDZaCkvSUZFsTnRjc2RWK18iXjnGAUk1bO864PFMHJkXN5hJ
-   PRELhXxw3SJy8BoOrIe7i5TH4djVrDMsN3b8GvsPk4OagLkWazR5ZXcvz
-   2nLDIt3CSYOqjjuRMItiqOUFmDd2KEE5YtSS7LdM9jHAScCc7Z70Lsfb1
-   1VVTQm+NAvUYmzzzlfVNS+fnGsid8t6y+xouY3W8wqR56HWY0+7oh3UY/
-   sntNB7V4Epf4FVDjvnCVFdVeHEDwCAMFfd+WS9eewS+6vaOdCqIBNtM+a
-   dsicXyjNUgrqhfA3REvMbQ1EuF+T+7baw5X0PANoFh7meLxPhdov1JGkf
-   w==;
-X-CSE-ConnectionGUID: 9JoAN9/tQFimWRZcF9KhQg==
-X-CSE-MsgGUID: MSKqmDOQRA+uyTdMuZGpEA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="17963772"
+  t=1712155654; x=1743691654;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=j+j9gJh9AR/K/6EMcCGKCzoxFBSWKneuP7FZVAR7urU=;
+  b=jWvIwh7DnRfiwX9a2vuBmCBqryAhx9PIfgH7zBme+QceQnEc5h7LTmVa
+   n/LjIrBRdGZsQZCA9Bc924ezWH9EHIZ274kwuVjGtqqL4WLiA175rCn16
+   dXZBv9uSLF8yPDPuDtQnjM/03OMSRRwI89LJPayFeplwmKrpWy3Jpq7C+
+   sxzZTgJU0pqkE5k2GnMgqGX30WVRiHFZcKuCQUStuJ7RLXjyY5ovIkUyC
+   9DomxX5nvtgHFpRWtMEhsXJsH14N5BZsBr6ScfnBJv5wM0mi7IlZ/r2BI
+   v6fIHRvLIxbg7PWJGJAkUZlXsRm2pDm7wJgelZeXKEqr7MiZiecMEYYQu
+   A==;
+X-CSE-ConnectionGUID: phmBKf7YTNKx0ywafCQeAQ==
+X-CSE-MsgGUID: wY+wciF7Rh2ZiXfiviVLpg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="17963778"
 X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="17963772"
+   d="scan'208";a="17963778"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 07:47:30 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="937085161"
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="937085162"
 X-IronPort-AV: E=Sophos;i="6.07,177,1708416000"; 
-   d="scan'208";a="937085161"
+   d="scan'208";a="937085162"
 Received: from black.fi.intel.com ([10.237.72.28])
   by fmsmga001.fm.intel.com with ESMTP; 03 Apr 2024 07:47:29 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 06199812; Wed,  3 Apr 2024 17:47:28 +0300 (EEST)
+	id D332057D; Wed,  3 Apr 2024 17:47:28 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
@@ -53,12 +52,10 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Baolin Wang <baolin.wang@linux.alibaba.com>,
 	Chunyan Zhang <zhang.lyra@gmail.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/3] serial: sprd: Don't count XON/XOFF in the statistics
-Date: Wed,  3 Apr 2024 17:46:17 +0300
-Message-ID: <20240403144722.860258-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 0/3] serial: Do not count XON/XOFF in the statistics
+Date: Wed,  3 Apr 2024 17:46:14 +0300
+Message-ID: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
-References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,26 +64,20 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Don't count XON/XOFF in the statistics in sprd_start_tx_dma().
-It will make it in align with other serial drivers.
+Some drivers count XON/XOFF in the Tx statistics, some do not.
+I actually a bit uncertain, but I _think_ the correct way is not
+to count them, hence this series.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+Andy Shevchenko (3):
+  serial: core: Don't count XON/XOFF in the statistics
+  serial: fsl_lpuart: Don't count XON/XOFF in the statistics
+  serial: sprd: Don't count XON/XOFF in the statistics
+
+ drivers/tty/serial/fsl_lpuart.c  | 1 -
  drivers/tty/serial/sprd_serial.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/serial_core.h      | 4 ++--
+ 3 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
-index 15f14fa593da..3554b9e7678f 100644
---- a/drivers/tty/serial/sprd_serial.c
-+++ b/drivers/tty/serial/sprd_serial.c
-@@ -323,7 +323,6 @@ static void sprd_start_tx_dma(struct uart_port *port)
- 
- 	if (port->x_char) {
- 		serial_out(port, SPRD_TXD, port->x_char);
--		port->icount.tx++;
- 		port->x_char = 0;
- 		return;
- 	}
 -- 
 2.43.0.rc1.1.gbec44491f096
 
