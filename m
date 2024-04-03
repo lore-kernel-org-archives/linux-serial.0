@@ -1,131 +1,142 @@
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB99A6AD7;
-	Wed,  3 Apr 2024 05:15:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81F4246425;
+	Wed,  3 Apr 2024 05:27:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712121312; cv=none; b=hfDBEOukDXBohIoVJE02iMdjUQZIZSmcgNfKC9jS4zUOq59rb/0JMmrEuxvcmu4JiQGJKl3BPIwsR9JySwT760YGl61JGd+l70n8y7RD7XNFI+fOQzSttGvsIMqtdvGRpplWMYpKM5xEocTXYWeoGJ3FYbz3z1s0HeQQCsX3Meg=
+	t=1712122080; cv=none; b=OZhPv4KidiiCCb5Zuny9iV71Yp8Zq/BlroTGU32ed2FNdRplZqqLruz/M73YL6R1rsfqzf6N9+PXxBC+tHNv2+Q4zAXxb/KnTRqWBF6vVTnS7Io885vTD/fC6FE72YNDziI3xb/bvxJeHvpejxxGUUohMXHjduJpcrelMD5x3oQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712121312; c=relaxed/simple;
-	bh=JKf1Lfs7ylEsEEOL0uKm/nUWXlj1T7i7XJwXyVCXK9s=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=VpHzET+c91W3TbBsh3m5P87Ef2oLHIiVFYQKLDI62syIztB1A+vtc1SZwjRnLAuFkFamvaYQ0zowalGOrkyLljlUmHvhAIy2uhH1JKLyTLBYI5JXffoDZOvgk+BE1Bjo8nsqW88VUFh7TewQxzxbyLRJHRW9sJMNdsh8SEs7tO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=ePzR1yDU; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="ePzR1yDU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1712121305;
-	bh=5J/vLQrpGhgqQsZ80PIigutoMIakBJ7aJJ3MmitBdiI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=ePzR1yDUO9Ongm+ac85mPhRRna7nfIhqLmj6fcYtsfm/+VsT2swGklamXED769K86
-	 +O2uDG2SxnIrqf1h3rKHWnvKUeGaljSokCgXKVkSE2sRjr5pDFQnYuri0p2Nr5NANy
-	 KHQdBzAVt+06DJ5eCBlUMps59rQQIiGKnixdoUelOTpLyE0DaSnpC1tYMsta+zbqpF
-	 f+ZPITtVqkgllb04gGzxYatpkuyG0At88rpzIhcFPR2XYLp2vu188YGM2ZI9vT6hCC
-	 WH+jNN8xeMetg9wYgTknycTmi/+w6/KwqvIXQwIYERRlFdwZjr2+vFm3pq1RV7O964
-	 ymrcVWrFO11rg==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4V8Xxg6QZqz4wcg;
-	Wed,  3 Apr 2024 16:15:03 +1100 (AEDT)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Greg
- Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Dawei Li
- <set_pte_at@outlook.com>, Damien Le Moal
- <damien.lemoal@opensource.wdc.com>, Jakub Kicinski <kuba@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>
-Cc: Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
- <christophe.leroy@csgroup.eu>, "Aneesh Kumar K.V"
- <aneesh.kumar@kernel.org>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
- linux-kbuild@vger.kernel.org, linux-serial@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, kernel@pengutronix.de
-Subject: Re: [PATCH] serial: pmac_zilog: Drop usage of platform_driver_probe()
-In-Reply-To: <5ea3174616abc9fa256f115b4fb175d289ac1754.1711748999.git.u.kleine-koenig@pengutronix.de>
-References: <2e3783106bf6bd9a7bdeb12b706378fb16316471.1711748999.git.u.kleine-koenig@pengutronix.de>
- <5ea3174616abc9fa256f115b4fb175d289ac1754.1711748999.git.u.kleine-koenig@pengutronix.de>
-Date: Wed, 03 Apr 2024 16:15:01 +1100
-Message-ID: <877chf81t6.fsf@mail.lhotse>
+	s=arc-20240116; t=1712122080; c=relaxed/simple;
+	bh=nQ1AADJtSUrelDGKIEVmDJob3+HQS5CIkO5KdKa2Y6w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T7JdEtXcLZJBYXjInPFiLnyBiFZCYZd/rpDc7edkhZhe9SalEI0uAHEkWEEyybMng78kuOgk18Uk177P8pDcgPZkjwkB/nuJ9FxDOjr8mSf/k4izLrp9mPGZYnNYCjeB4O0D3dy9ceWF/yirxcsBUpneJNUwBjzuVSf8DdsKSQU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-515a68d45faso6729814e87.3;
+        Tue, 02 Apr 2024 22:27:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712122077; x=1712726877;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3e61jTEyzLr/0dQ2X4DGlvWfgoJOocw130xaEPJzMOg=;
+        b=Uy955x2OKmlCSGIXTqwnI7VDJW3pH7Wru9fgmoKl1Fb/2U4YiH4rzXRXB+Kh00xkBe
+         SiUOMAD5uflVJBuYSJ8IOQCs98G5HK9hKWM8aXGKSYu5T7Mnvo2WWUUJvdnNe//32JPN
+         8bbvXNXOwAU2v307RjEtyD0pOzJ6ejtwqzSDCQl0DTt52sx1VK2Ojw0SpDDHhrxbK/jo
+         GoMGQh5aTHr8ZcywnsZo0biYZVuL/O2ZO8LehpLPV6eW3JBadw2xHrkK9ZJ7XD5CrwpW
+         kCW2z87bsR2j6Bxz/dVZbfO3i0xXQvBxw/F59jn0ffTP80fdykGufy2ugBpuHPGruu9O
+         pZag==
+X-Forwarded-Encrypted: i=1; AJvYcCXnU5DBPDrwQtmgA9VuxjOTUrMGmr3I6aiX6JKZT+BBPIC/btZfKdd7Bldi5cK9BSjiibRnXHF5z5+JUA8dHFk7XSkTSAYmGhTEnNSEJxQDg5RbpLWNfOZTCoJ9Dt0i4daTApog3HE3T9ziam3K5N7kOixX132BTg7OFqDdG57khOkxMwnMB9ejjmHvtFiIaYXOBilNf1V/u6QIdA+U9vxQBjs=
+X-Gm-Message-State: AOJu0YytvDIO+aOc6Ub/mv+mInK0Zlu0wzkZgZ1qv7qp2gc2HirYeckn
+	1KIcF5PvnzMYZngmAJ+7qjsqBFDasVvTN1QOj5UPECbQTOf25qSg
+X-Google-Smtp-Source: AGHT+IErwZY+85fAkT8g4r68ExVUmiUc+8PVg7MkDKyZQ5FBQE/f1myNVL3Vw902yQKzsTH9GdsjCA==
+X-Received: by 2002:a05:6512:acc:b0:515:9ae1:9a6e with SMTP id n12-20020a0565120acc00b005159ae19a6emr10439127lfu.67.1712122076369;
+        Tue, 02 Apr 2024 22:27:56 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id l6-20020a05600c4f0600b0041469869d11sm23278276wmq.47.2024.04.02.22.27.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Apr 2024 22:27:56 -0700 (PDT)
+Message-ID: <6bb4f4fb-573c-4f63-967c-2cb08514fc91@kernel.org>
+Date: Wed, 3 Apr 2024 07:27:55 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RESEND PATCH v3 1/2] VT: Add KDFONTINFO ioctl
+To: Alexey Gladkov <legion@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
+ linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ linux-serial@vger.kernel.org, Helge Deller <deller@gmx.de>
+References: <cover.1710252966.git.legion@kernel.org>
+ <cover.1712053848.git.legion@kernel.org>
+ <ed056326540f04b72c97a276fbcc316e1b2f6371.1712053848.git.legion@kernel.org>
+ <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
+ <ZgwF72yHH_0-A4FW@example.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <ZgwF72yHH_0-A4FW@example.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> writes:
-> There are considerations to drop platform_driver_probe() as a concept
-> that isn't relevant any more today. It comes with an added complexity
-> that makes many users hold it wrong. (E.g. this driver should have
-> marked the driver struct with __refdata to prevent the below mentioned
-> false positive section mismatch warning.)
->
-> This fixes a W=3D1 build warning:
->
-> 	WARNING: modpost: drivers/tty/serial/pmac_zilog: section mismatch in ref=
-erence: pmz_driver+0x8 (section: .data) -> pmz_detach (section: .exit.text)
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/tty/serial/pmac_zilog.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+On 02. 04. 24, 15:19, Alexey Gladkov wrote:
+>>> --- a/include/uapi/linux/kd.h
+>>> +++ b/include/uapi/linux/kd.h
+...
+>>> +struct console_font_info {
+>>> +	unsigned int min_width, min_height;	/* minimal font size */
+>>> +	unsigned int max_width, max_height;	/* maximum font size */
+>>> +	unsigned int flags;			/* KD_FONT_INFO_FLAG_* */
+>>
+>> This does not look like a well-defined™ and extendable uapi structure.
+>> While it won't change anything here, still use fixed-length __u32.
+>>
+>> And you should perhaps add some reserved fields. Do not repeat the same
+>> mistakes as your predecessors with the current kd uapi.
+> 
+> I thought about it, but I thought it would be overengineering.
 
-I gave it a quick spin in qemu, no issues.
+It would not. UAPI structs are set in stone once released.
 
-Tested-by: Michael Ellerman <mpe@ellerman.id.au>
+And in this case, it's likely you would want to know more info about 
+fonts in the future.
 
-cheers
+> Can you suggest how best to do this?
 
-> diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zi=
-log.c
-> index 05d97e89511e..e44621218248 100644
-> --- a/drivers/tty/serial/pmac_zilog.c
-> +++ b/drivers/tty/serial/pmac_zilog.c
-> @@ -1695,7 +1695,7 @@ static void pmz_dispose_port(struct uart_pmac_port =
-*uap)
->  	memset(uap, 0, sizeof(struct uart_pmac_port));
->  }
->=20=20
-> -static int __init pmz_attach(struct platform_device *pdev)
-> +static int pmz_attach(struct platform_device *pdev)
->  {
->  	struct uart_pmac_port *uap;
->  	int i;
-> @@ -1714,7 +1714,7 @@ static int __init pmz_attach(struct platform_device=
- *pdev)
->  	return uart_add_one_port(&pmz_uart_reg, &uap->port);
->  }
->=20=20
-> -static void __exit pmz_detach(struct platform_device *pdev)
-> +static void pmz_detach(struct platform_device *pdev)
->  {
->  	struct uart_pmac_port *uap =3D platform_get_drvdata(pdev);
->=20=20
-> @@ -1789,7 +1789,8 @@ static struct macio_driver pmz_driver =3D {
->  #else
->=20=20
->  static struct platform_driver pmz_driver =3D {
-> -	.remove_new	=3D __exit_p(pmz_detach),
-> +	.probe		=3D pmz_attach,
-> +	.remove_new	=3D pmz_detach,
->  	.driver		=3D {
->  		.name		=3D "scc",
->  	},
-> @@ -1837,7 +1838,7 @@ static int __init init_pmz(void)
->  #ifdef CONFIG_PPC_PMAC
->  	return macio_register_driver(&pmz_driver);
->  #else
-> -	return platform_driver_probe(&pmz_driver, pmz_attach);
-> +	return platform_driver_register(&pmz_driver);
->  #endif
->  }
->=20=20
-> base-commit: a6bd6c9333397f5a0e2667d4d82fef8c970108f2
-> --=20
-> 2.43.0
+Given you have flags in there already (to state that the structure 
+contains more), just add an array of u32 reserved[] space. 3 or 5, I 
+would say (to align the struct to 64bit).
+
+thanks,
+-- 
+js
+suse labs
+
