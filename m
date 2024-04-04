@@ -1,116 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0CFE57310;
-	Thu,  4 Apr 2024 07:06:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D75F433B0;
+	Thu,  4 Apr 2024 07:45:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712214399; cv=none; b=cLnIjaQHXPHm2jCRd1M7hGMgBjh7Bewy5IbSc1hs+fOm6RzAzG541tvDUxZcrqDSETIe1hVmvmA5KOr5ZGG6txHPZWfigBHaCFuRXTTYuB2k1s3KBEUMPpxDu3fJoT4m0cfXgme63xbH6EfXphgDIYE+6m+CMj5/3Sojp6WCAfE=
+	t=1712216705; cv=none; b=FBN8K/4y08HVX6UkZp1+ssvo/NExA/vtsb8AXOrp/cB+k5M9vIY6sc++ESh2JUisWaYTtiC5siUQOqV0pY/E4VN9/vvZfxTmH+MqKZj4wzLpmZSD8HA0R5+l8RRQ57kTKW/Dq4aeEvAGAaHhmqHq4xoTePx5ni1BerF+dUDQy/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712214399; c=relaxed/simple;
-	bh=7wDvLbPYyMM9tMvA54Q637lo5w2wg+oz7qp0/dB26zo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HV9nE5mdDNitRCrAxUVth34+JC80OCj5Cxd1lq9i5NyYSnbQSibRjLjqG0xuNlNs2XifqQNGgWo0zvsaq25JK48OKSKP5CKdTU0PZJZhA/k/XtKuuI7xcY92P+Kp0Hu8TQcyxVvD3dYZnevGAURnTMBDs0nhGvKK3ddyYo/Kasw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lLJJTmEz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712216705; c=relaxed/simple;
+	bh=kJNlUmuT+uSoa9cveBbwIGJVle08lX4eiQ8PecQGYf4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Bd97IVGOxSJiFKD5jxdSmsPTs/eLfqGqbAzp2cAQ2bQDeFBToE+MEFyhN9HfGYp19JbJZC45m2n9kH5/j7SNF6dDmSMfYOfJ60B6FUzkSOO5ERtYVOqMOD4k3SEIkD3h0cmR7NPLsfXoUO5xeypOgK5hEhrYdUKM0vE5Q9ToI7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=o0LXJNsJ; arc=none smtp.client-ip=217.70.183.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lLJJTmEz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F4FAC433C7;
-	Thu,  4 Apr 2024 07:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712214398;
-	bh=7wDvLbPYyMM9tMvA54Q637lo5w2wg+oz7qp0/dB26zo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lLJJTmEzEGNK+wzoDFCki6hGfnJoPH2zXhWFB4ifPniz6i7aIrceshem837xezXxY
-	 lv92zQPwhfmpJZPy0FwEBKtC0q4bRq6HtcVXZ0U+7qpUYYWisMw4wzvpxQGpTh70En
-	 4aZvJlMSk4qe1YqCL36s0NxWqh+kAgO2clibUaNeet5rQwV1724zrRZTKNegl3ktWz
-	 nwuuu1hHp8s2WSI1qD8DXWuWMKRlSA/H9tQRyb0sVsT1jbiQMyI/RcEM08WExiBct2
-	 xryw+DHSPpa5YW2ZMMvi+Ej/g8RmKMs6EOJ/Whry1cQIIe1wAT6Y/rVK6qnrX3YNFh
-	 aDIOkLWkHtliA==
-Date: Thu, 4 Apr 2024 09:06:23 +0200
-From: Niklas Cassel <cassel@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="o0LXJNsJ"
+Received: by mail.gandi.net (Postfix) with ESMTPA id 93D0B240008;
+	Thu,  4 Apr 2024 07:44:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1712216695;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iX+0Ymm9a4nCLp3+QhB61amQXiz0tKdtmoelt1SlXa4=;
+	b=o0LXJNsJoEqqF7dx0rz2H3P2ma2Rha0X+mhddsUpSHA8W5J14YzTGMicTgIh8DP+UdJQtR
+	Kl8kqXrVBZPAUopLTjbTRD8gYj3HIwUzO8VwHiCTPuPT566Lydjbdew/LO/D9/YArNLQQX
+	iD3eTNZOBP1yGiY8lEejWLRqvj6260HDUbXdkviYI5K9SJ8OBmKWHYF2bZWkou9CLmU5ob
+	YJaoso3ATLZKWyfVAMEXQe/6r/zW7TLbpNMJZfkR1PBtQJUTePOWBpYS/IWcfTTd9/iyPi
+	c56rX2dCok85syDHTSQbWtb56h99V7Ilz6mdme2a/P17C/CTv4aR+01qLXf3mA==
+From: Bastien Curutchet <bastien.curutchet@bootlin.com>
+To: bastien.curutchet@bootlin.com,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Shawn Guo <shawnguo@kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>, David Rientjes <rientjes@google.com>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Guo Ren <guoren@kernel.org>, Azeem Shaikh <azeemshaikh38@gmail.com>,
-	Max Filippov <jcmvbkbc@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v7 00/37] Device Tree support for SH7751 based board
-Message-ID: <Zg5Rb3JecqjivrIy@ryzen>
-References: <cover.1712205900.git.ysato@users.sourceforge.jp>
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	herve.codina@bootlin.com,
+	christophercordahi@nanometrics.ca
+Subject: [PATCH 1/1] serial: 8250_of: Add clock_notifier
+Date: Thu,  4 Apr 2024 09:44:50 +0200
+Message-ID: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1712205900.git.ysato@users.sourceforge.jp>
+Content-Transfer-Encoding: 8bit
+X-GND-Sasl: bastien.curutchet@bootlin.com
 
-On Thu, Apr 04, 2024 at 01:59:25PM +0900, Yoshinori Sato wrote:
-> This is an updated version of something I wrote about 7 years ago.
-> Minimum support for R2D-plus and LANDISK.
-> I think R2D-1 will work if you add AX88796 to dts.
-> And board-specific functions and SCI's SPI functions are not supported.
-> 
-> You can get it working with qemu found here.
-> https://gitlab.com/yoshinori.sato/qemu/-/tree/landisk
+The UART's input clock rate can change at runtime but this is not
+handled by the driver.
 
-Why send this as one huge series?
+Add a clock_notifier callback that updates the divisors when the input
+clock is updated. The serial8250_update_uartclk() is used to do so.
+PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
+the POST_RATE_CHANGE is used.
 
-These are the mailing lists that you have on CC:
-linux-ide, devicetree, linux-kernel,
-linux-renesas-soc, linux-clk, dri-devel,
-linux-pci, linux-serial, linux-fbdev
+Reorder the #include to match alphabetic order.
 
-I really think that you will be able to get all these changes accepted much
-faster if you split this series in to one series per subsystem/mailing list.
+It has been tested on a DAVINCI/OMAP-L138 processor.
 
+Signed-off-by: Bastien Curutchet <bastien.curutchet@bootlin.com>
+---
+ drivers/tty/serial/8250/8250_of.c | 48 ++++++++++++++++++++++++++++---
+ 1 file changed, 44 insertions(+), 4 deletions(-)
 
-Kind regards,
-Niklas
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 5d1dd992d8fb..6d570164d906 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -6,18 +6,19 @@
+  */
+ 
+ #include <linux/bits.h>
++#include <linux/clk.h>
+ #include <linux/console.h>
+ #include <linux/math.h>
+ #include <linux/module.h>
+-#include <linux/slab.h>
+-#include <linux/serial_core.h>
+-#include <linux/serial_reg.h>
++#include <linux/notifier.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+ #include <linux/pm_runtime.h>
+-#include <linux/clk.h>
+ #include <linux/reset.h>
++#include <linux/serial_core.h>
++#include <linux/serial_reg.h>
++#include <linux/slab.h>
+ 
+ #include "8250.h"
+ 
+@@ -26,6 +27,7 @@ struct of_serial_info {
+ 	struct reset_control *rst;
+ 	int type;
+ 	int line;
++	struct notifier_block clk_notifier;
+ };
+ 
+ /* Nuvoton NPCM timeout register */
+@@ -58,6 +60,29 @@ static int npcm_setup(struct uart_port *port)
+ 	return 0;
+ }
+ 
++static inline struct of_serial_info *clk_nb_to_info(struct notifier_block *nb)
++{
++	return container_of(nb, struct of_serial_info, clk_notifier);
++}
++
++static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
++					      void *data)
++{
++	struct of_serial_info *info = clk_nb_to_info(nb);
++	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
++	struct clk_notifier_data *ndata = data;
++
++	if (IS_ERR(info->clk))
++		return NOTIFY_DONE;
++
++	if (event == POST_RATE_CHANGE) {
++		serial8250_update_uartclk(&port8250->port, ndata->new_rate);
++		return NOTIFY_OK;
++	}
++
++	return NOTIFY_DONE;
++}
++
+ /*
+  * Fill a struct uart_port for a given device node
+  */
+@@ -218,7 +243,19 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	info->type = port_type;
+ 	info->line = ret;
+ 	platform_set_drvdata(ofdev, info);
++
++	if (info->clk) {
++		info->clk_notifier.notifier_call = of_platform_serial_clk_notifier_cb;
++		ret = clk_notifier_register(info->clk, &info->clk_notifier);
++		if (ret) {
++			dev_err_probe(port8250.port.dev, ret, "Failed to set the clock notifier\n");
++			goto err_unregister;
++		}
++	}
++
+ 	return 0;
++err_unregister:
++	serial8250_unregister_port(info->line);
+ err_dispose:
+ 	pm_runtime_put_sync(&ofdev->dev);
+ 	pm_runtime_disable(&ofdev->dev);
+@@ -234,6 +271,9 @@ static void of_platform_serial_remove(struct platform_device *ofdev)
+ {
+ 	struct of_serial_info *info = platform_get_drvdata(ofdev);
+ 
++	if (info->clk)
++		clk_notifier_unregister(info->clk, &info->clk_notifier);
++
+ 	serial8250_unregister_port(info->line);
+ 
+ 	reset_control_assert(info->rst);
+-- 
+2.44.0
+
