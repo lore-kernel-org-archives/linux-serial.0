@@ -1,46 +1,46 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A06495FD;
-	Thu,  4 Apr 2024 06:13:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E91847796;
+	Thu,  4 Apr 2024 06:18:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712211235; cv=none; b=nIXBGCgFTzentGQZV2b5VaCO7MnGrvYtn2ZBKFjHGhIi2s9KhzJTOfUa43TlOSnzmGP9tNW2/lSPObtsyJwTPpDqst0s2YTg1nHhGxHFj1BK7FZN5MbQRji+jKQVNxC+kHVH2akjfEE5DMzx0SO0jlVwYkfC5NNA9PjNeGOQWdE=
+	t=1712211509; cv=none; b=StMZ8qHzhUFGEUhtgPL6b+7VfzVp7GxpQyCGl5TSv09uEPTsQwi1osAICKu4hp9QaUc3hW/6syAe5Dw4GIiVFLU4dBdMMwMO9ytZ7i4Ld1DEUiK/bOhNfjCEtde7wjcXlvyXdZBzIebFI0Iu7hIcDTAfkM87uPQX62pZq6slRWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712211235; c=relaxed/simple;
-	bh=KMFVnRj1puoFTacPA+r3a1ZmpxceZFD6zL48kvYrs+U=;
+	s=arc-20240116; t=1712211509; c=relaxed/simple;
+	bh=xZV5s80qnBkVRUrxTmMA6a9pTwG2E5R2vrBwabFXvlk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=s8Gb9GgqupbZ1Pzj6a1KhTZcSh0YVwlCR1m3Y/L8JhJLgrC97FJN0D2Y/SSuZEWH7+8n6aL2N2C708XpZdsYXsYSZXlfEc+7udrWqdne3uG1GYxaisYx2b8+MGZE+6Kh5oqSJNkY/FyVtEoYJWnre5DsO5DbgCaL8GiiFFvT7F4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.46
+	 In-Reply-To:Content-Type; b=oPyZTljA7ppQm+RJ1xKwHwpLkpZjOcT6BqdIaDefroqlr2DgCn3F3vmFFEoMHiHTROkpnFyqj31d9Z8hNxlW01Wxs126/uYDIvKvwMTvy3Rz2+jk+LSby+tMiSA2ZpL9c/MhPpOZnIaKmlkPJj05alaS63dH1JH7kqDOTiFl90c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4162b5ba333so606225e9.1;
-        Wed, 03 Apr 2024 23:13:53 -0700 (PDT)
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2d6c220a377so6628511fa.2;
+        Wed, 03 Apr 2024 23:18:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712211232; x=1712816032;
+        d=1e100.net; s=20230601; t=1712211506; x=1712816306;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/LQeNvn8CRkB9bLvweih3cjrt58Ut3yzCRbRnITZ2hY=;
-        b=ajsSkeT9EDSiFgRgHxPp1QNE5ytjrqKce4Ldv2V5QaenU7TizMSu6Nboo2HSgOBvTx
-         b8UHSfEwvKvYM8yEjSsUgBN+W0cKD54WR+5cFnJlVBSp8Buuq/9dxWxuv27MkMW8gD4A
-         utP2A1tfSBvM2xO0xoChE88eThxjZ6hJkT7Ca7RipCmV2RHzwqcAYiLZjSFFAfmTfs/c
-         CG7tQc1CkdTCYgxarCwfmPpULLOQbIB5J9klyKY7S7IYNaW7f8uiMaG/1TeUdU2fFWE9
-         mcI4T6U/B8cRz3LoNqnbuVuaBS1+19xF1ctXyb9zU8w3gEJQInWXEdBQ6a3tuaklOh1A
-         CLXg==
-X-Forwarded-Encrypted: i=1; AJvYcCX+023ylC/EAzr6zadaXo0lY6c+jBZyMQOb9fKUBxj2AtokY3bTQnN7SghEOrYvIY02CDvGVCs5NAPVL4pEFylJA6/4Eed0ln+mqotmt5GZb9oHFta2rpIcbb71VIEwAOQSLNoaVpLepP6h
-X-Gm-Message-State: AOJu0YwU/Zy5mxSygCd7xXH1dkrpoqeJwmL2Bw9DBTm3Jrh+MvO4B+qu
-	fEwHUyQcPs/EF6jf1NX9Rf6OHgNyMKjU9H/RrNzFR0PHzGyiTcjw
-X-Google-Smtp-Source: AGHT+IHpmn1dtru+z/l4bhc4JF+whUh3mpl3a8kFBSi8k18AjZNyG082KoNVKINGWPZZzgjCEAl1KQ==
-X-Received: by 2002:a5d:4384:0:b0:343:8097:3e3 with SMTP id i4-20020a5d4384000000b00343809703e3mr872816wrq.40.1712211232463;
-        Wed, 03 Apr 2024 23:13:52 -0700 (PDT)
+        bh=DAD0iIzSNxfWPIAXf1xYavm5RzR0be8FFOXpNWWYhBs=;
+        b=Z6GtsruZE79u2ctpo47bNkPnW6qVenFdl8Oyvsk7AKnwgmdSw0++ikJDWsuwGA24yV
+         7ayDnrubaD/SV8EeVrPOEhnTJfCB05InE74M/nJMYqKh0sPQA7XHLzam0ODzGE981M17
+         f1ReBQD+wS98zwSy2DdWrhnj8rYNKUKRc7KbKnfDWwLUYkQy62vbXE1C3zWkLFCHuYDi
+         w1T5Fr8B/Vdac/qOj9sqPGmqJYv9hJONe9e+l9hqakk79kLj670TDXSgZMVtdUWCeXhY
+         QzZdf2SS8lzprq2x8RBNrJNK8KBMR+cWQ1UHwVsC5XSxJYMnBSvUAnyfZwyThP+Y/j0A
+         4QmA==
+X-Forwarded-Encrypted: i=1; AJvYcCVYYZzIHzpIUkhLjmQYr/iw0RT5tA3zwM+S5Bw8FXVoE5+8mCAwyKSXQJNMH5MTSqgOsCWkwjJyn430VTW8BqTlmY1JUUrvaCBEDqXrZV8pwbqTQM2CUg2Avu3BjNNGF2x8G0G5IXzLPe/+
+X-Gm-Message-State: AOJu0YwmnYracMe7TGYTe05TMUTxFCX+y0g1/IBKJxVgonHs3h/42HYj
+	jbqXkOu5j5w5s8E8zx+ATs/OQ8nWQ4jEfzHGIwTPjYqcXE5TwZLW
+X-Google-Smtp-Source: AGHT+IG/meR44lmFjpLBxaZfY+7UI0ISqr4QbmF+/OyJRWi+HnSUvwY3OKhoo1Kqflp+bYxXWFPbYw==
+X-Received: by 2002:a2e:8011:0:b0:2d4:99f8:8b9f with SMTP id j17-20020a2e8011000000b002d499f88b9fmr1080106ljg.50.1712211506060;
+        Wed, 03 Apr 2024 23:18:26 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id t1-20020adfe441000000b0033e756ed840sm19019393wrm.47.2024.04.03.23.13.51
+        by smtp.gmail.com with ESMTPSA id jn18-20020a05600c6b1200b004155387c08esm1424014wmb.27.2024.04.03.23.18.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Apr 2024 23:13:52 -0700 (PDT)
-Message-ID: <461a0f0c-c1c9-4bba-bc3e-787024b5de7d@kernel.org>
-Date: Thu, 4 Apr 2024 08:13:51 +0200
+        Wed, 03 Apr 2024 23:18:25 -0700 (PDT)
+Message-ID: <3358869b-db3a-40f3-b02b-4f1b46d5d724@kernel.org>
+Date: Thu, 4 Apr 2024 08:18:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -109,19 +109,12 @@ On 03. 04. 24, 18:15, Allen Pais wrote:
 > are executed in the BH context.
 > 
 > This patch converts drivers/tty/* from tasklet to BH workqueue.
-> 
-> Based on the work done by Tejun Heo <tj@kernel.org>
-> Branch: https://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-6.10
-> 
-> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
-> ---
->   drivers/tty/ipwireless/hardware.c | 15 +++---
->   drivers/tty/serial/atmel_serial.c | 79 ++++++++++++++++---------------
->   drivers/tty/serial/timbuart.c     | 19 ++++----
->   drivers/tty/vt/keyboard.c         | 34 ++++++-------
 
-Could you CC maintainers of the drivers?
+Quickly looking into the changes, could you also elaborate why not to 
+convert most (all?) of them to (non-BH) wq? Or threaded IRQs. Much of 
+the code comes from the pre-WQ era.
 
+thanks,
 -- 
 js
 suse labs
