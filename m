@@ -1,89 +1,89 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4611E86F;
-	Thu,  4 Apr 2024 08:34:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 190E113ADA;
+	Thu,  4 Apr 2024 08:50:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712219693; cv=none; b=J3JpLmlS9nDraqlBK7Yd4MFml/f/q8fOEf//zQgEX86ji6Gj0bkA7cdonCwU6Dehy7WVADPpKKbkQDj5wJHzqfbPE6mr+R4PyBN+Pf6jqzDsnfZTr3wdvZcLzbZf8K/mqBvY4OMLTfYFrJpxrPKBc7cdGfDRsvo0S1esCGc8rbA=
+	t=1712220662; cv=none; b=ogRBmwLC4t+Jy3oPhajRxRUn9vXNDQ5TyBworJ8NiIb6JBgwbYmOMW+qBq+sJ6PwON2zng0qsteSfYp9i/3feuTQwtA0r2qOXf4KQEAHJWPoD2fw3fNrbJjr4Cx9VqQIBnS/276zpxLGH4NXBTMrSkEo3INi0ELNma7E3v5nXC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712219693; c=relaxed/simple;
-	bh=C5a9aG3Qw2Bw6k8igkXBLSfg5iCmR4TbbWe7aLkG3MU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=X0VvR70JntN6yZ4B8nGPMOWlYK/NJ7IWeiSWCQU/bSehW5T+641MWEubHYhpG33Hcv9Gv/iNl0SDQDqTLDiZSf45aKYv2wGUxzOmopS5NX77JFKFAO+sf+7eXICNRusTQ2ECjWWLW3hhmJekYL2GBGfEe/oLNUlOsjA27KZRnns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=VGw7IpEx; arc=none smtp.client-ip=217.70.183.195
+	s=arc-20240116; t=1712220662; c=relaxed/simple;
+	bh=RnV2XWrFzuPbTdYwdjhB8w1PdzG3lR941MZUKMz/d2c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fbb18zbg+d87J24kz/QoX86ifPmDecWQDK/v809F1mnRhB0ok7y3XoHtnY3MZ/a0f3QgRsBjF/eUiKH0YM1ts4TmEdOs12vDkeYL2HFuf0+vprZFikyQZZ+T6N73LUO6gITTbHbSgxvHRd+CqNqAodwf3x5+vMHcIsWkltqpHmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=NSse4M6n; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="VGw7IpEx"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id D678560010;
-	Thu,  4 Apr 2024 08:34:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="NSse4M6n"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id A89A6C0003;
+	Thu,  4 Apr 2024 08:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1712219687;
+	t=1712220658;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=L7oqIdUtVHuAqA326fh1aqDMQzLhpDYB2v27wCCOmDc=;
-	b=VGw7IpExoX/8amBz6m8hIsK1TQiWwvogDSuLsrCe18UFehMdj7j/jHR7QLIX6oLyBaEudH
-	7TrYpZxFzWatZ1bwNKw+3VnJ0wywWER4UlRR1SJmsau1TlAv1WSCukTWoaaADn+SqOanQX
-	tJVYuT65vuWiIlVsILuitgmDjMMGM7E8KAEyQwna2xma6dK2kYMN8Es95EOcpk92Fit5sA
-	XBLQKqqlhHzKXMDxYbxPk9XRWbugRfnp1DMKNEEOMWvYK0dmsgDVmkuZFIl6SLRYCgkfwd
-	AbDzihXEicQwyqKNxSwoWrypk/dmBAhKRMXbVsufyEq/xggKBPm5BlYo0xItwA==
-Date: Thu, 4 Apr 2024 10:34:46 +0200
-From: Herve Codina <herve.codina@bootlin.com>
-To: Bastien Curutchet <bastien.curutchet@bootlin.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Thomas Petazzoni
- <thomas.petazzoni@bootlin.com>, christophercordahi@nanometrics.ca
-Subject: Re: [PATCH 1/1] serial: 8250_of: Add clock_notifier
-Message-ID: <20240404103446.2fd953a1@bootlin.com>
-In-Reply-To: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
-References: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
+	bh=bcl+blTYVb8UlfBhe34P71DucCEgZ+SnoyrFlukGhYg=;
+	b=NSse4M6n2yUdP7WfgUO9kn7FSff0z7MUhr9TapI4X8ASXHDcP4bYNzpz/S600fqqnNNlgI
+	tK/9Rzjfg/1VXFaab3A8IrizKEN6YzauDnVrUK5kBDFmrEJMb4NgudTvo8iIA8FXQqUqtJ
+	W2wHLDCn6l7OBIowSZ7NWoF2urbKV7rgkxm3KUI9hfrgvzdhfvxP4GLsK4QGpYkC/ST9IR
+	PS1wmiSwOe7RwbUdu1bNGe48ySJVZS0YwzWLUwYsTJuVEiBsGa3s9VzVePE4PX8JanhqSd
+	2xyTtGybTa/piQAwCKZsbLz6i7HYLe9RnMM1dW9RuGDzIj5rT0x9WfZranwK/Q==
+Message-ID: <d74836a8-9e5d-4a2f-900c-90ceb66bed7b@bootlin.com>
+Date: Thu, 4 Apr 2024 10:50:57 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: herve.codina@bootlin.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] serial: 8250_of: Add clock_notifier
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Thomas Petazzoni
+ <thomas.petazzoni@bootlin.com>, herve.codina@bootlin.com,
+ christophercordahi@nanometrics.ca
+References: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
+ <2024040455-bungee-subsidy-f5aa@gregkh>
+Content-Language: en-US
+From: Bastien Curutchet <bastien.curutchet@bootlin.com>
+In-Reply-To: <2024040455-bungee-subsidy-f5aa@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: bastien.curutchet@bootlin.com
 
-Hi Bastien,
+Hi Greg,
 
-On Thu,  4 Apr 2024 09:44:50 +0200
-Bastien Curutchet <bastien.curutchet@bootlin.com> wrote:
+On 4/4/24 09:50, Greg Kroah-Hartman wrote:
+> On Thu, Apr 04, 2024 at 09:44:50AM +0200, Bastien Curutchet wrote:
+>> The UART's input clock rate can change at runtime but this is not
+>> handled by the driver.
+>>
+>> Add a clock_notifier callback that updates the divisors when the input
+>> clock is updated. The serial8250_update_uartclk() is used to do so.
+>> PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
+>> the POST_RATE_CHANGE is used.
+> 
+> Why just this one notification?  You say they are ignored but do not say
+> why.
+> 
 
-> The UART's input clock rate can change at runtime but this is not
-> handled by the driver.
-> 
-> Add a clock_notifier callback that updates the divisors when the input
-> clock is updated. The serial8250_update_uartclk() is used to do so.
-> PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
-> the POST_RATE_CHANGE is used.
-> 
-> Reorder the #include to match alphabetic order.
-> 
-> It has been tested on a DAVINCI/OMAP-L138 processor.
-> 
-> Signed-off-by: Bastien Curutchet <bastien.curutchet@bootlin.com>
-...
-> +static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
-> +					      void *data)
-> +{
-> +	struct of_serial_info *info = clk_nb_to_info(nb);
-> +	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-> +	struct clk_notifier_data *ndata = data;
-> +
-> +	if (IS_ERR(info->clk))
-> +		return NOTIFY_DONE;
+I don't need to react to PRE_RATE_CHANGE in my use case. A few bytes may
+be corrupted during the rate change but it is not a problem for my
+application (and I assumed that it would also be ok in many other use
+cases).
 
-The info->clk pointer cannot contain an error code.
-Can you double check that and remove the test if it is not needed?
+>>
+>> Reorder the #include to match alphabetic order.
+> 
+> That is not needed here, why do that now?  And "alphabetic order" is not
+> an issue for tty drivers, no need to do that, but if you really want to,
+> a separate patch series is good for that.
+
+Ok sorry, I thought it was needed, I'll remove this in next iteration.
+
 
 Best regards,
-Hervé
+Bastien
