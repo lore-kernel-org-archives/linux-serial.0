@@ -1,102 +1,152 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45EA6127B4E;
-	Thu,  4 Apr 2024 15:54:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B6625337B;
+	Thu,  4 Apr 2024 16:48:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712246085; cv=none; b=gau/fovjZvAcuAezaZec8HMIHdsaLfHp8R0X1v8gAKDxiLax2/2Olw8i1aTau89h8k/AP7dqheAxUqRLBPi1o7KzCBObuhcGL2ECUFr1j85jL7QqWbXUENjYatEZA6Y1SEq6X5lEaPQs9ywpZ/2aBwQZaFQDcs0ZOsv/ZyJLGUI=
+	t=1712249327; cv=none; b=EHhKHln7ScCbeZ8fiZTyuojfILqzfORIZBN6KiQ7/bmISRSYB/LFhwrqwy8CKmXHXYFw3OogxYUp/2X3fdM6aQ+pSmPYotkjhT3guwM6hWVmR2oIIyOHLycBn4Gu3qShs68wAkVvX1SKEyvmPUMKvSNdMntSiSYGpJ1RPmxrULg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712246085; c=relaxed/simple;
-	bh=vVqfrXHIS3zQ2r9jD4TTb/uaoB1pGIFMhsCJ78419QY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HRVAp4X/3VW/p1/FVY55X4RE6VngQ9A39B4UezQDLFbZzRThYSR5STf5yibpu2jOnjuSAHcLFEMnsQ1iwJz6tQ50hLAaj9Ol/Cw/HqqlJkRUbf5SneJrJhSRSR0GyqVdDbkAmKR2nvfKuYMTgek+hfvL7U01jYw38OOziLK+7DQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-X-CSE-ConnectionGUID: wf3n6rFvRK23wXryI0XFPA==
-X-CSE-MsgGUID: 0WS6nmNQStWXn7Gva3iVFQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="7777708"
-X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="7777708"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 08:54:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="915222155"
-X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="915222155"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 08:54:40 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andy.shevchenko@gmail.com>)
-	id 1rsPQE-00000001VJZ-2LJQ;
-	Thu, 04 Apr 2024 18:54:38 +0300
-Date: Thu, 4 Apr 2024 18:54:38 +0300
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v1 0/3] serial: Do not count XON/XOFF in the statistics
-Message-ID: <Zg7NPnpFXkQWJ-Ks@smile.fi.intel.com>
-References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
- <Zg3VHs-LVxHFdi8V@surfacebook.localdomain>
- <573aac92-9c9b-427b-a76f-3c0b7c3b6ce6@kernel.org>
+	s=arc-20240116; t=1712249327; c=relaxed/simple;
+	bh=f0ZUc9cVkTYbWSm7SlkoyeQqtebVeW+MGfGHY9LAnds=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XkIv6zwE50hT+qH/4962mP55oKdMlopZnvJYnZQJIW8Qyl4IlaQdkQx1KLzxF4bNjxGb4IenYuop5uRB+Nz6/2IBGpdpcXZovcNLQdxmOD+jXUugf88bhrxYz6OqcbZC1cda4j4VzASQ7742PPTmqG+w+56byOifBfuiOEHwpVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K6ovYBBY; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K6ovYBBY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DCEC433B2;
+	Thu,  4 Apr 2024 16:48:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712249327;
+	bh=f0ZUc9cVkTYbWSm7SlkoyeQqtebVeW+MGfGHY9LAnds=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=K6ovYBBYue9PM8NYfR7YR7xtB4whDjLcBUCl3DhZaB6oF3Hh1QGo6IYwTa/jtb5IV
+	 SJSicYDiRwiOCN8IdaRtBdQgTDx1J53CG/bVCcE3xEegd0umAbjISGW/i47PcRqajk
+	 6GusCggLy9XxctVsC27cT9gPXSN68HdIomjHPQqEf7MGLpTX2J+GA02Jhv3z9sEIcu
+	 65JnbqsBAWB829JqkRYC/EjjscXNWSQN7HrbuoEawtyWxiSONajpsAJrveIvGHapUV
+	 T0bVd8ses2r9LgZR3jSv8xmzMpBeq97ITtsq+hOSE3+YFElkoStrsuFrGW0OOHCGyw
+	 eNETT5AZQt1Sg==
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2d700beb60bso21464621fa.1;
+        Thu, 04 Apr 2024 09:48:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU5vi4+zUMV6D5P1DLp9/oBQeYc8fDZQwMNZxiHvpIU8X+ReWTEGqfwm6JgE3WJjgUlOEflw+ryKJrOHcmZ0d7tNkzhB0TnTEQTrxnv3dWBJ7EwjjX5CPTuc5z6Ap1nLZvfQ2Csv0fges0Nrie0tWpWLyq4kWMjgXO4EKTK8OHSPaXxSJY6NSizB0zTohkmCxK8Zic54tKt2htiT/32VgeVT9JrUV3MI+x37YXulmkrZjqNP+SBcyEh/EkLJ9NY9VKhlaw9tvV7GpSpCzC+iBB7tesmAJ9MLgBliq/F2y53ur5CQ565Y6eLWF457YUeShDvFa0eY76UfQf0apUGLlQLIuWv/Bss9+5q0nWAOi5WMbnGkW9XevQ=
+X-Gm-Message-State: AOJu0YxjASAg226CYO0YGGxy83/2ltWxPq0Yd3EvARdsCK4UioKa9Osm
+	KmdUIrhjqXxJ1Li0oJTe4xui4IUoUvrC9ypOBsfDT1FOCZOuhBBfEOCqfTdb2MNcb4s/Ob7e6eK
+	7Hdr5WqFTc3lMorIieHg6Kx3wxg==
+X-Google-Smtp-Source: AGHT+IGA/B0Olc8HVdDCHlF8+fjMTjFHUiVbJhjDnxrx6ejO3lXuUhtHy5hp5vmBhc80/3eocgT9w6rQF0BvJQeGA5M=
+X-Received: by 2002:a05:651c:1417:b0:2d3:8c1f:c0ff with SMTP id
+ u23-20020a05651c141700b002d38c1fc0ffmr2449840lje.16.1712249325311; Thu, 04
+ Apr 2024 09:48:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <573aac92-9c9b-427b-a76f-3c0b7c3b6ce6@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <cover.1712207606.git.ysato@users.sourceforge.jp> <a4ce7771faec761b9bbb91ff6694a99e5bc293b6.1712207606.git.ysato@users.sourceforge.jp>
+In-Reply-To: <a4ce7771faec761b9bbb91ff6694a99e5bc293b6.1712207606.git.ysato@users.sourceforge.jp>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 4 Apr 2024 11:48:32 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLG+v1ujhMM45dQcMXiQkCvjif3pAWZxgeAcKFMe9Sy9Q@mail.gmail.com>
+Message-ID: <CAL_JsqLG+v1ujhMM45dQcMXiQkCvjif3pAWZxgeAcKFMe9Sy9Q@mail.gmail.com>
+Subject: Re: [RESEND v7 06/37] sh: kernel/setup Update DT support.
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
+	Niklas Cassel <cassel@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>, 
+	Heiko Stuebner <heiko.stuebner@cherry.de>, Shawn Guo <shawnguo@kernel.org>, 
+	Sebastian Reichel <sre@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
+	Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
+	David Rientjes <rientjes@google.com>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Kefeng Wang <wangkefeng.wang@huawei.com>, Stephen Rothwell <sfr@canb.auug.org.au>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Guo Ren <guoren@kernel.org>, 
+	Azeem Shaikh <azeemshaikh38@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Herve Codina <herve.codina@bootlin.com>, 
+	Manikanta Guntupalli <manikanta.guntupalli@amd.com>, Anup Patel <apatel@ventanamicro.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 04, 2024 at 07:16:55AM +0200, Jiri Slaby wrote:
-> On 04. 04. 24, 0:15, Andy Shevchenko wrote:
-> > Wed, Apr 03, 2024 at 05:46:14PM +0300, Andy Shevchenko kirjoitti:
-> > > Some drivers count XON/XOFF in the Tx statistics, some do not.
-> > > I actually a bit uncertain, but I _think_ the correct way is not
-> > > to count them, hence this series.
-> > 
-> > Okay, it seems there are much more drivers doing that. Perhaps we need
-> > to add that to the rest in this case (i.o.w. invert the series from removal
-> > to addition)?
-> 
-> Interesting, perhaps cut & paste?
-> 
-> XON and XOFF are overhead IMO. So should not be counted. When they are, they
-> mangle statistics as in transmitted (real) bytes per second.
-> 
-> How are they handled on the RX side?
+On Thu, Apr 4, 2024 at 12:15=E2=80=AFAM Yoshinori Sato
+<ysato@users.sourceforge.jp> wrote:
+>
+> Fix extrnal fdt initialize and bootargs.
 
-It took me a while.
+What is the problem you are trying to solve?
 
-All serial drivers accept everything and those that care, update statics for
-anything they receive. This is because of layering. The Rx XON/XOFF seems
-(note I am completely unfamiliar with mysterious ways of TTY layers) to be
-handled on TTY level by n_tty_receive_char_flow_ctrl(), i.o.w. we may not
-skip counting it easily.
+And a typo.
 
-Now the question is, shall we count the control characters on output or not?
-Whatever decision we made, we should document (if not yet) and align drivers
-accordingly.
+>
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  arch/sh/Kconfig             | 23 +++++++++++------------
+>  arch/sh/include/asm/setup.h |  1 +
+>  arch/sh/kernel/setup.c      | 36 +++++++++++++++++++++++-------------
+>  3 files changed, 35 insertions(+), 25 deletions(-)
+>
+> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+> index 6711cde0d973..242cf30e704d 100644
+> --- a/arch/sh/Kconfig
+> +++ b/arch/sh/Kconfig
+> @@ -708,17 +708,22 @@ config ROMIMAGE_MMCIF
+>           first part of the romImage which in turn loads the rest the ker=
+nel
+>           image to RAM using the MMCIF hardware block.
+>
+> +config CMDLINE
+> +       string "Kernel command line arguments string"
+> +       default "console=3DttySC1,115200"
+> +
+>  choice
+>         prompt "Kernel command line"
+> -       optional
+> -       default CMDLINE_OVERWRITE
+> -       depends on !OF || USE_BUILTIN_DTB
+> +       default CMDLINE_BOOTLOADER
+> +
+> +config CMDLINE_BOOTLOADER
+> +       bool "Use bootloader kernel arguments"
 
-Another Q is what do books / other OS / projects usually do with them
-WRT statistics?
+This should be the preferred, normal, default way. So why is it a user
+visible option?
 
-If we count everything on a wire, then we must count them, otherwise
-it depends on how we treat them.
+>         help
+> -         Setting this option allows the kernel command line arguments
+> -         to be set.
+> +         Uses the command-line options passed by the boot loader.
+> +         If boot loader dosen't provide kernel argments, Use built-in ar=
+gments.
 
-P.S.
-This series as is should be abandoned. But we may continue discussing topic
-under this cover letter.
+typos
 
--- 
-With Best Regards,
-Andy Shevchenko
+bootloader in some spots, "boot loader" in others. Go with the former.
 
+>
+>  config CMDLINE_OVERWRITE
+> -       bool "Overwrite bootloader kernel arguments"
+> +       bool "Overwrite built-in kernel arguments"
 
+The original made more sense to me. The default should be to use
+bootloader args. Any built-in kernel command line should be prepend,
+append (extend), or overwrite/replace.
+
+Rob
