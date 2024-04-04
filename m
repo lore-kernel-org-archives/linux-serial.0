@@ -1,89 +1,108 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 190E113ADA;
-	Thu,  4 Apr 2024 08:50:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE0DD5C61D;
+	Thu,  4 Apr 2024 09:21:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712220662; cv=none; b=ogRBmwLC4t+Jy3oPhajRxRUn9vXNDQ5TyBworJ8NiIb6JBgwbYmOMW+qBq+sJ6PwON2zng0qsteSfYp9i/3feuTQwtA0r2qOXf4KQEAHJWPoD2fw3fNrbJjr4Cx9VqQIBnS/276zpxLGH4NXBTMrSkEo3INi0ELNma7E3v5nXC0=
+	t=1712222496; cv=none; b=KkiLkclXRfsdyxtrRUevembsoSeOTLINwcLcL/QCFb7L5Mph57xw8HjY9KcI6GvX3irssH6JT2X9ETLpb1JjfEc5i0sWWmDouzzh+4gxPXxUSlOt3lR8WIEn41d+nJnxvU8Jx5ydmaVUUGrDglr9KZyyjCWnsIb9WEt47gv0qjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712220662; c=relaxed/simple;
-	bh=RnV2XWrFzuPbTdYwdjhB8w1PdzG3lR941MZUKMz/d2c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fbb18zbg+d87J24kz/QoX86ifPmDecWQDK/v809F1mnRhB0ok7y3XoHtnY3MZ/a0f3QgRsBjF/eUiKH0YM1ts4TmEdOs12vDkeYL2HFuf0+vprZFikyQZZ+T6N73LUO6gITTbHbSgxvHRd+CqNqAodwf3x5+vMHcIsWkltqpHmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=NSse4M6n; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1712222496; c=relaxed/simple;
+	bh=IBtqvebZipirK0kh1olnmPcc8MM/cNoL1tv0Wtc1tsU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sRTf2mKkTDQuCVP8ixOGRiMtE8DEaaMWrcrosJDSoR0042adF2bEJhTEJaHUnQ4DUYXUHETRdjXwCQHZBerSkQWSaTT55cnD7r9IvkFlA/ArB2ZK6lvBBoC/Q5hnidjCYX64O7YEcxZpdUU0A6b2dzkTg9wXCVvgYWsU6aKF144=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FqsEAVB+; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="NSse4M6n"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id A89A6C0003;
-	Thu,  4 Apr 2024 08:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1712220658;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bcl+blTYVb8UlfBhe34P71DucCEgZ+SnoyrFlukGhYg=;
-	b=NSse4M6n2yUdP7WfgUO9kn7FSff0z7MUhr9TapI4X8ASXHDcP4bYNzpz/S600fqqnNNlgI
-	tK/9Rzjfg/1VXFaab3A8IrizKEN6YzauDnVrUK5kBDFmrEJMb4NgudTvo8iIA8FXQqUqtJ
-	W2wHLDCn6l7OBIowSZ7NWoF2urbKV7rgkxm3KUI9hfrgvzdhfvxP4GLsK4QGpYkC/ST9IR
-	PS1wmiSwOe7RwbUdu1bNGe48ySJVZS0YwzWLUwYsTJuVEiBsGa3s9VzVePE4PX8JanhqSd
-	2xyTtGybTa/piQAwCKZsbLz6i7HYLe9RnMM1dW9RuGDzIj5rT0x9WfZranwK/Q==
-Message-ID: <d74836a8-9e5d-4a2f-900c-90ceb66bed7b@bootlin.com>
-Date: Thu, 4 Apr 2024 10:50:57 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FqsEAVB+"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-56e22574eb3so235068a12.3;
+        Thu, 04 Apr 2024 02:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712222493; x=1712827293; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IBtqvebZipirK0kh1olnmPcc8MM/cNoL1tv0Wtc1tsU=;
+        b=FqsEAVB+mb5Q33F0YLS7CIsj1ukh+gk9w1Kfttn/cthVSRV1y21C+moUPKUaEpSaNP
+         m6e3T/lhxnowxtdxTe6wOXLTK/esGVXvGiKZM6YnWpoLRmOxMR59iTiCP0h8rKJTPQZQ
+         SyPPxsbeiFw3qrE1Gaj7YQ56Ae7B9iQGEi5k+Y4RIVJFbLaD18uwv8tLMGOQtcZBx/LE
+         r7UN7L48jGR3voCayr/ufWUQk/bkreQ8X3CqbUHdT8C2EKV4PuZjKqXTFYeVL+hbBptZ
+         SqvNagaOEEVdrXulrKn+6xNG9kVjI8eA54gtaataI9PNnu3To+xF+o9Jt9ftOjL+VNsO
+         HUng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712222493; x=1712827293;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IBtqvebZipirK0kh1olnmPcc8MM/cNoL1tv0Wtc1tsU=;
+        b=rQLDCAx34tCdExH5sHH23d6ytGoONS64QT7DTUxupzPa58LE31fC2n4ta7E/A6+I8k
+         DODR96XfOjvpTdWoAjMkHmBVUSmZSWvg6ojpgmzMLVWWoBrblxXLuZ7f23O5jsGwMxpz
+         mC/PQVhx81kzDhRvcl3EHDoeHaIWhlbbBb1N6sM857jNGUKCPJEfChxCnCLurfTkgiGo
+         KB4boUKwje2zyprL5tZ6A+JUFQifEO/tMcy07dq3lK8594MA3kpYaJ1og4GQxFSyB2e3
+         KLmc7FO56cME6vrVBjL+C4y8WUU6M/2QWKSNXr5qpC0k4TE6Pe0N+uDsQ+e1JE9q6MPC
+         9JTQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV4/8Gaf9fQeCRJvihQQSatypRa8sn7SeZYV4HZyDyYkOqQqcEShFfehWdBlrtiIBs6k6AnO8dlLL254nAew5GG/TgYKPhml8DImyDhML5oQmOAZfoJzV1NFfSCiBy5Yjx8J5KBaVwloqGe
+X-Gm-Message-State: AOJu0YwSIGeimymtkci/11LdiWNB805+4C5YAM4TznkbQZzqDCeEyVvL
+	O8hEyNrKqLPabgTn9Rpkh3vHtPFXT6yXPCh8GmAGwP2Rlps6tTgoYcWo22uJsJO4GpD0PmdkyZs
+	82oMD116rXnQ4pbx0txXRBzlwq54=
+X-Google-Smtp-Source: AGHT+IEuFsWQzjuoFKH6xP3gUs4bjys7kjQDLGl7XjPe+GUjpbLrwsjQcVsY5ZtSes7AfzSta2BDUCPfEFFQt++PcSk=
+X-Received: by 2002:a17:906:6d4:b0:a47:32b3:18c5 with SMTP id
+ v20-20020a17090606d400b00a4732b318c5mr1130270ejb.68.1712222493009; Thu, 04
+ Apr 2024 02:21:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] serial: 8250_of: Add clock_notifier
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Thomas Petazzoni
- <thomas.petazzoni@bootlin.com>, herve.codina@bootlin.com,
- christophercordahi@nanometrics.ca
-References: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
- <2024040455-bungee-subsidy-f5aa@gregkh>
-Content-Language: en-US
-From: Bastien Curutchet <bastien.curutchet@bootlin.com>
-In-Reply-To: <2024040455-bungee-subsidy-f5aa@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: bastien.curutchet@bootlin.com
+References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org>
+ <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <de576647-1147-4aa6-9d5f-aa6e3464fe1e@kernel.org>
+In-Reply-To: <de576647-1147-4aa6-9d5f-aa6e3464fe1e@kernel.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 4 Apr 2024 12:20:56 +0300
+Message-ID: <CAHp75VcQXQv26M1aLias2xnsgehqOr1PzX9sztSa_b1Ws=_L4g@mail.gmail.com>
+Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq flood
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Finn Thain <fthain@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Greg,
+On Thu, Apr 4, 2024 at 8:07=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> wr=
+ote:
+> On 04. 04. 24, 0:29, Andy Shevchenko wrote:
 
-On 4/4/24 09:50, Greg Kroah-Hartman wrote:
-> On Thu, Apr 04, 2024 at 09:44:50AM +0200, Bastien Curutchet wrote:
->> The UART's input clock rate can change at runtime but this is not
->> handled by the driver.
->>
->> Add a clock_notifier callback that updates the divisors when the input
->> clock is updated. The serial8250_update_uartclk() is used to do so.
->> PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
->> the POST_RATE_CHANGE is used.
-> 
-> Why just this one notification?  You say they are ignored but do not say
-> why.
-> 
+> >> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> >> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> >> Cc: Nicholas Piggin <npiggin@gmail.com>
+> >> Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+> >> Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+> >> Cc: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+> >> Cc: linux-m68k@lists.linux-m68k.org
+> >
+> > Second, please move these Cc to be after the '---' line
+>
+> Sorry, but why?
 
-I don't need to react to PRE_RATE_CHANGE in my use case. A few bytes may
-be corrupted during the rate change but it is not a problem for my
-application (and I assumed that it would also be ok in many other use
-cases).
+Really need to create a Q&A entry for this.
 
->>
->> Reorder the #include to match alphabetic order.
-> 
-> That is not needed here, why do that now?  And "alphabetic order" is not
-> an issue for tty drivers, no need to do that, but if you really want to,
-> a separate patch series is good for that.
+This will pollute the commit messages with irrelevant (to some extent)
+information. Since we have a lore mail archive there is no need to
+have this (the email itself will be sent to the list of people,
+otherwise the Cc email headers can be tracked in the mail archive).
+Also note, some developers may read git history on the mobile devices,
+meaning small screens, this just (as for backtraces) simply blurs the
+information with a high potential to lose significant piece(s) of
+information). Last, but not least is environmentally friendly approach
+(I'm not joking): having it on thousands of computers, scrolling with
+longer time, power for compressing - decompressing -- all of this
+wastes a lot of energy (maybe kWh:s per such a Cc list).
 
-Ok sorry, I thought it was needed, I'll remove this in next iteration.
-
-
-Best regards,
-Bastien
+--=20
+With Best Regards,
+Andy Shevchenko
