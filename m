@@ -1,86 +1,65 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ED27128361;
-	Thu,  4 Apr 2024 13:46:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D045D11CB8;
+	Thu,  4 Apr 2024 14:34:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712238417; cv=none; b=bnytUXYrkLF8TEnKPTVNAULtaewnQ85u/nwo5buacL+b3f5gCr3/RELDfEv7QtVwhEZHXbXRF9kC2qStzOaITs0vUs41/bMBFQ24VIRmwdkmtL4LDlorRcwfJBvwEVwocEfsnDESv5qDe6e1GscQU7vVU47YpYtbrO9QarM4NPA=
+	t=1712241290; cv=none; b=QTZsRxc+fbGGqgBuJUfnIOKd9Ggp5ZChLVhDYtnECgFGefYEB6+cJhhd3I/KzjyELuqRddycznBXIQvW7MhoyNN3+QzW2NuW+URYVHj2hvb4uOcK0OOPUX7hnEYYB1J63cIWAtVvnhDix5+Adj2ch9XRMUpExE5GNyInkWPYFpY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712238417; c=relaxed/simple;
-	bh=YTmuV8AU6ijpWFJ9qUSeRqsG7ZkPrskWPB28srSjA4g=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=dB6E5vWxVy+SQFKQyRh8NdF9CoDH4CnuxN7ICy5dDluRnOmsB1khMHZoknJyNiLk4sGUGvUXFpd6CGQgKM0cl1qqJrpwiBHOT2fxxEQ5Hx3RTLBBwzXtLTHJIkCGNcNtmw08lKUBZEgEPQHHwjlqB7OtGtDY2lFjaOd2wyfbQDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iN6HA0FF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712241290; c=relaxed/simple;
+	bh=DorkrpbGkmH6Hd/xxbpsPwzp65GkMHv55jrfPPfG+cE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EOGgKDKdM9Y5Vv3fPJb5kOvX1zHny9dsenomW2q3XLjaBG6FmsaT3XCOU5f4CK0GHN5FePwu0yOkYbcrOu33mrbE6AClO9H5o/LS+sb8mfT0kM9hbDJMjeRKZ3LqikaIfj70sk/P5CvIy8SXFmfsdGLU1dtuerk5oxpL1pUc1HU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VeQHltvX; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iN6HA0FF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5D52C433F1;
-	Thu,  4 Apr 2024 13:46:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712238417;
-	bh=YTmuV8AU6ijpWFJ9qUSeRqsG7ZkPrskWPB28srSjA4g=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=iN6HA0FFgz90MtiQnEAgWRdCm8zcts9f45Sxg2VSsHNeMEL//kXdgXBkuFCxtsMOp
-	 X0y2UQ2sBs5OHeOqlgIbYuJM/b/jHyoWp39lX5Edh6zGWMT45nZw7x9YCR/aXpAaYu
-	 eMsZjAU9wsTUkb16TrzpthEStk7WoiiiYvpnAMO7mNgtSPSrLUA6a9ZjOh+cHkPDor
-	 VLvFgnj76quaNpHeaOIJBKszW0wvwkaa64/OKfiXhxW26b6XWQI2o4aIMrPbyzSfP6
-	 XzMA3Be72lk7jigxbkFuwJDK5o6KLLHNbV3pMsrlxi4bNEYo8p6SRThJsQJ1fgG+nd
-	 AqfZgrH4ZWYDw==
-Date: Thu, 4 Apr 2024 08:46:52 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VeQHltvX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712241289; x=1743777289;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DorkrpbGkmH6Hd/xxbpsPwzp65GkMHv55jrfPPfG+cE=;
+  b=VeQHltvXn3jQ2Qdek/Mmg7lF4tdZlxJjkeCTR/bngPix4o6/69zs5SEI
+   1fq9fUA2I8hAsukroct7e4bNfRGiYKRUoYEhD4kxKNJMvCZA/t+kt3dNm
+   3ZkD9VdN5IrU9+gmk2oaeYRN3P8f6jGMUZ8LpQolc1Yw/4NSyBKWjk1pq
+   1bb/3/IxFaYv9gd5c/6z30dzQRntXrZnrrd9GEEPWDxLLkixdpOb62Jub
+   +AHJ7ZqbypVomaI1GbasCXY2IcL/RdzfAaFjJ6ZsXJMCfT+Ip+LktYvZ/
+   JhPfTsJxUPh53b+AZiVZWgyTRrnBPM+Te3TfElVd/dSDOSdXaonhocX1l
+   g==;
+X-CSE-ConnectionGUID: D32PXaEwT32mtlyVJmAILw==
+X-CSE-MsgGUID: AUieEUCKTK2WxujumXLBjg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="7689418"
+X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
+   d="scan'208";a="7689418"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 07:34:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="915219989"
+X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
+   d="scan'208";a="915219989"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 07:34:46 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rsOAt-00000001U28-14lJ;
+	Thu, 04 Apr 2024 17:34:43 +0300
+Date: Thu, 4 Apr 2024 17:34:42 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: kernel test robot <oliver.sang@intel.com>,
+	Yicong Yang <yangyicong@hisilicon.com>, oe-lkp@lists.linux.dev,
+	lkp@intel.com, linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Shawn Guo <shawnguo@kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>, David Rientjes <rientjes@google.com>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Guo Ren <guoren@kernel.org>, Azeem Shaikh <azeemshaikh38@gmail.com>,
-	Max Filippov <jcmvbkbc@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH v7 00/37] Device Tree support for SH7751 based board
-Message-ID: <20240404134652.GA1910402@bhelgaas>
+	stable <stable@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [linus:master] [serial]  43066e3222:
+ BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <Zg66gtOQ01bOD5q3@smile.fi.intel.com>
+References: <202404031607.2e92eebe-lkp@intel.com>
+ <Zg1hBvRAxifo50sf@smile.fi.intel.com>
+ <20240404065415.GO5132@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,15 +68,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1712205900.git.ysato@users.sourceforge.jp>
+In-Reply-To: <20240404065415.GO5132@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 04, 2024 at 01:59:25PM +0900, Yoshinori Sato wrote:
-> This is an updated version of something I wrote about 7 years ago.
-> Minimum support for R2D-plus and LANDISK.
-> I think R2D-1 will work if you add AX88796 to dts.
-> And board-specific functions and SCI's SPI functions are not supported.
+On Thu, Apr 04, 2024 at 09:54:15AM +0300, Tony Lindgren wrote:
+> * Andy Shevchenko <andriy.shevchenko@linux.intel.com> [240403 14:00]:
+> > Probably we need to check if the port is still open...
+> > 
+> > P.S. AFAIU the state / xmit is invalid pointer or so.
+> > 
+> > Culprit line:	serial_out(up, UART_TX, xmit->buf[xmit->tail]);
+> 
+> Maybe we can set UPF_DEAD a bit earlier as below?
 
-My comments/questions from
-https://lore.kernel.org/r/20231120181600.GA205977@bhelgaas
-https://lore.kernel.org/r/20231016172742.GA1215127@bhelgaas
-still apply.
+We should do this under port_mutex. Otherwise we replace one race by another.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
