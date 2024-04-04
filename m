@@ -1,152 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout6-smtp.messagingengine.com (fout6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B6625337B;
-	Thu,  4 Apr 2024 16:48:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E6C13C3DE;
+	Thu,  4 Apr 2024 22:15:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712249327; cv=none; b=EHhKHln7ScCbeZ8fiZTyuojfILqzfORIZBN6KiQ7/bmISRSYB/LFhwrqwy8CKmXHXYFw3OogxYUp/2X3fdM6aQ+pSmPYotkjhT3guwM6hWVmR2oIIyOHLycBn4Gu3qShs68wAkVvX1SKEyvmPUMKvSNdMntSiSYGpJ1RPmxrULg=
+	t=1712268955; cv=none; b=IoPg3KEXHRsqOwaxk7vTMrImxDdHCVWbqh4p538+ZPQ49W8ABXznQQdCVHP2eOBPvPR830PWiKt+THyWElHOExGN2wIRaccQyobg/BvmGzW/gmibXFgAA9rDrWT6CcltIY4GUvLMok5QNz873xVSFjx7afkKwVKRqsVBZYwFV7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712249327; c=relaxed/simple;
-	bh=f0ZUc9cVkTYbWSm7SlkoyeQqtebVeW+MGfGHY9LAnds=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XkIv6zwE50hT+qH/4962mP55oKdMlopZnvJYnZQJIW8Qyl4IlaQdkQx1KLzxF4bNjxGb4IenYuop5uRB+Nz6/2IBGpdpcXZovcNLQdxmOD+jXUugf88bhrxYz6OqcbZC1cda4j4VzASQ7742PPTmqG+w+56byOifBfuiOEHwpVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K6ovYBBY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712268955; c=relaxed/simple;
+	bh=pTp5edkZdZb3eEOWCrTxXu87gsPr0RabVB3/ii9vNkw=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=QNL80t3Rk2hBjiwoPpdNuoEoE9j7aU75ZwA25mCwD3LjBW97CjrcyUhidBoV3kASyhdYkuJKsH8BfqNL9GGNhD+Y6sF087UqJY2t6JlVkGa06cPakYRfCxkYQH6LzWc8VSX2Oa3G1IPoY6QxDwAtBRgMchmGZIx8s8KPcLth8Z4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Jw1DfUkh; arc=none smtp.client-ip=103.168.172.149
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K6ovYBBY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DCEC433B2;
-	Thu,  4 Apr 2024 16:48:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712249327;
-	bh=f0ZUc9cVkTYbWSm7SlkoyeQqtebVeW+MGfGHY9LAnds=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=K6ovYBBYue9PM8NYfR7YR7xtB4whDjLcBUCl3DhZaB6oF3Hh1QGo6IYwTa/jtb5IV
-	 SJSicYDiRwiOCN8IdaRtBdQgTDx1J53CG/bVCcE3xEegd0umAbjISGW/i47PcRqajk
-	 6GusCggLy9XxctVsC27cT9gPXSN68HdIomjHPQqEf7MGLpTX2J+GA02Jhv3z9sEIcu
-	 65JnbqsBAWB829JqkRYC/EjjscXNWSQN7HrbuoEawtyWxiSONajpsAJrveIvGHapUV
-	 T0bVd8ses2r9LgZR3jSv8xmzMpBeq97ITtsq+hOSE3+YFElkoStrsuFrGW0OOHCGyw
-	 eNETT5AZQt1Sg==
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2d700beb60bso21464621fa.1;
-        Thu, 04 Apr 2024 09:48:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU5vi4+zUMV6D5P1DLp9/oBQeYc8fDZQwMNZxiHvpIU8X+ReWTEGqfwm6JgE3WJjgUlOEflw+ryKJrOHcmZ0d7tNkzhB0TnTEQTrxnv3dWBJ7EwjjX5CPTuc5z6Ap1nLZvfQ2Csv0fges0Nrie0tWpWLyq4kWMjgXO4EKTK8OHSPaXxSJY6NSizB0zTohkmCxK8Zic54tKt2htiT/32VgeVT9JrUV3MI+x37YXulmkrZjqNP+SBcyEh/EkLJ9NY9VKhlaw9tvV7GpSpCzC+iBB7tesmAJ9MLgBliq/F2y53ur5CQ565Y6eLWF457YUeShDvFa0eY76UfQf0apUGLlQLIuWv/Bss9+5q0nWAOi5WMbnGkW9XevQ=
-X-Gm-Message-State: AOJu0YxjASAg226CYO0YGGxy83/2ltWxPq0Yd3EvARdsCK4UioKa9Osm
-	KmdUIrhjqXxJ1Li0oJTe4xui4IUoUvrC9ypOBsfDT1FOCZOuhBBfEOCqfTdb2MNcb4s/Ob7e6eK
-	7Hdr5WqFTc3lMorIieHg6Kx3wxg==
-X-Google-Smtp-Source: AGHT+IGA/B0Olc8HVdDCHlF8+fjMTjFHUiVbJhjDnxrx6ejO3lXuUhtHy5hp5vmBhc80/3eocgT9w6rQF0BvJQeGA5M=
-X-Received: by 2002:a05:651c:1417:b0:2d3:8c1f:c0ff with SMTP id
- u23-20020a05651c141700b002d38c1fc0ffmr2449840lje.16.1712249325311; Thu, 04
- Apr 2024 09:48:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Jw1DfUkh"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfout.nyi.internal (Postfix) with ESMTP id CCFB913800B8;
+	Thu,  4 Apr 2024 18:15:51 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 04 Apr 2024 18:15:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1712268951; x=1712355351; bh=2BjsJg1F1jsrIqkTlwXi7zvS9Quc
+	1lTtGbFTjSTDfA4=; b=Jw1DfUkhxICYlaH25P8sNWWfmviY9fTgQD1YAkM+b7J5
+	MLDoXeSGk6Ppi2vjNecFMnDMVAWH3cOI51tY25oyukCw05gCNvfiUFjjdFECZNKa
+	m6kmayGHiHqRDj+AaubmnhfiCBKbgp2EmGoAOKgnyeAbKRBH5uvrTSwHI0OfjCwQ
+	sZh1VGtktjiIk6Q4UAII8BrPseCAW5jBPLkOcHDgMsoDrbctl0ul4GLZPzSG5ny8
+	mmslf+tCky2hCQa0gvjwvW1FFj6Ec3CgKxiQvwc14ovTWKx/Vzmm0GWlRDGYB8L6
+	J2450RXPLz9cVmVP+dLv4twnNIQ7ApXzz/femDFrSA==
+X-ME-Sender: <xms:liYPZvsdxUwhpSDsLAJ15Ck6MEr4JUZhkhvSW4-OJWf8qCgqKfkCUQ>
+    <xme:liYPZgdiN14S6lFyxmsaXVP1Hp8-WL0eiNV1Fs9pOJoeOMZHRJlDbJJ0O2oibCxNs
+    5ZKoTv0O3_tFUol8pQ>
+X-ME-Received: <xmr:liYPZixfe0dvx1nFnKAy4_YRH4ksESFowbNWe2tzbjOn8zuQkuw-FiJ-igtn_J_2x6-zBWbj4Zzu_ZzR2n1MSy-jpDuL28_WP_g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudefledgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcu
+    vfhhrghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeelueehleehkefgueevtdevteejkefhffekfeffffdtgfejveekgeefvdeu
+    heeuleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hfthhhrghinheslhhinhhugidqmheikehkrdhorhhg
+X-ME-Proxy: <xmx:liYPZuN5fHDfdNiFMxbrhi9Y_PDp_oI2lNBNnq2OQbPrGu25iHDF_A>
+    <xmx:liYPZv-bCS5UZc1XWxuLXceT-WG_8FC5MZT1S7WDvlPmVScgt2-J_A>
+    <xmx:liYPZuUhOa5q13FGdcikfp-_luhQxgFEaFh2XZhOxBrX5T4JeBFzqQ>
+    <xmx:liYPZge-gMrPjOIYZNYccbqHomnavk-glqv0v4MXwVjv-HW12g49cw>
+    <xmx:lyYPZlf_hyBptrtbhf2hDfT4IkUpmoIs8cEwLP9MQkAFhP5RVpNysbGG>
+Feedback-ID: i58a146ae:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 4 Apr 2024 18:15:47 -0400 (EDT)
+Date: Fri, 5 Apr 2024 09:17:27 +1100 (AEDT)
+From: Finn Thain <fthain@linux-m68k.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
+    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+    Christophe Leroy <christophe.leroy@csgroup.eu>, 
+    "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+    "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+    linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+    linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq
+ flood
+In-Reply-To: <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
+Message-ID: <5dd285bd-b9a8-c85c-9bd9-a839c10e78fd@linux-m68k.org>
+References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org> <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org>
+ <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1712207606.git.ysato@users.sourceforge.jp> <a4ce7771faec761b9bbb91ff6694a99e5bc293b6.1712207606.git.ysato@users.sourceforge.jp>
-In-Reply-To: <a4ce7771faec761b9bbb91ff6694a99e5bc293b6.1712207606.git.ysato@users.sourceforge.jp>
-From: Rob Herring <robh@kernel.org>
-Date: Thu, 4 Apr 2024 11:48:32 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLG+v1ujhMM45dQcMXiQkCvjif3pAWZxgeAcKFMe9Sy9Q@mail.gmail.com>
-Message-ID: <CAL_JsqLG+v1ujhMM45dQcMXiQkCvjif3pAWZxgeAcKFMe9Sy9Q@mail.gmail.com>
-Subject: Re: [RESEND v7 06/37] sh: kernel/setup Update DT support.
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
-	Niklas Cassel <cassel@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>, 
-	Heiko Stuebner <heiko.stuebner@cherry.de>, Shawn Guo <shawnguo@kernel.org>, 
-	Sebastian Reichel <sre@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
-	Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
-	David Rientjes <rientjes@google.com>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
-	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Kefeng Wang <wangkefeng.wang@huawei.com>, Stephen Rothwell <sfr@canb.auug.org.au>, 
-	Javier Martinez Canillas <javierm@redhat.com>, Guo Ren <guoren@kernel.org>, 
-	Azeem Shaikh <azeemshaikh38@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
-	Herve Codina <herve.codina@bootlin.com>, 
-	Manikanta Guntupalli <manikanta.guntupalli@amd.com>, Anup Patel <apatel@ventanamicro.com>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 
-On Thu, Apr 4, 2024 at 12:15=E2=80=AFAM Yoshinori Sato
-<ysato@users.sourceforge.jp> wrote:
->
-> Fix extrnal fdt initialize and bootargs.
 
-What is the problem you are trying to solve?
+On Thu, 4 Apr 2024, Andy Shevchenko wrote:
 
-And a typo.
+> 
+> > > > ---
+> > > (here is a good location for Cc:)
+> >
+> > Documentation/process/submitting-patches.rst indicats that it should 
+> > be above the "---" separator together with Acked-by etc. Has this 
+> > convention changed recently?
+> 
+> I see, I will prepare a patch to discuss this aspect.
+> 
 
->
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> ---
->  arch/sh/Kconfig             | 23 +++++++++++------------
->  arch/sh/include/asm/setup.h |  1 +
->  arch/sh/kernel/setup.c      | 36 +++++++++++++++++++++++-------------
->  3 files changed, 35 insertions(+), 25 deletions(-)
->
-> diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-> index 6711cde0d973..242cf30e704d 100644
-> --- a/arch/sh/Kconfig
-> +++ b/arch/sh/Kconfig
-> @@ -708,17 +708,22 @@ config ROMIMAGE_MMCIF
->           first part of the romImage which in turn loads the rest the ker=
-nel
->           image to RAM using the MMCIF hardware block.
->
-> +config CMDLINE
-> +       string "Kernel command line arguments string"
-> +       default "console=3DttySC1,115200"
-> +
->  choice
->         prompt "Kernel command line"
-> -       optional
-> -       default CMDLINE_OVERWRITE
-> -       depends on !OF || USE_BUILTIN_DTB
-> +       default CMDLINE_BOOTLOADER
-> +
-> +config CMDLINE_BOOTLOADER
-> +       bool "Use bootloader kernel arguments"
+If you are going to veto patches on the basis of rules yet unwritten, I 
+think you risk turning the kernel development process into a lottery.
 
-This should be the preferred, normal, default way. So why is it a user
-visible option?
-
->         help
-> -         Setting this option allows the kernel command line arguments
-> -         to be set.
-> +         Uses the command-line options passed by the boot loader.
-> +         If boot loader dosen't provide kernel argments, Use built-in ar=
-gments.
-
-typos
-
-bootloader in some spots, "boot loader" in others. Go with the former.
-
->
->  config CMDLINE_OVERWRITE
-> -       bool "Overwrite bootloader kernel arguments"
-> +       bool "Overwrite built-in kernel arguments"
-
-The original made more sense to me. The default should be to use
-bootloader args. Any built-in kernel command line should be prepend,
-append (extend), or overwrite/replace.
-
-Rob
+How many other patches presently under review will need to be dropped just 
+in case they don't conform with possible future rules?
