@@ -1,100 +1,148 @@
-Received: from fout6-smtp.messagingengine.com (fout6-smtp.messagingengine.com [103.168.172.149])
+Received: from fhigh2-smtp.messagingengine.com (fhigh2-smtp.messagingengine.com [103.168.172.153])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E6C13C3DE;
-	Thu,  4 Apr 2024 22:15:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A16C13C66C;
+	Thu,  4 Apr 2024 23:31:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.153
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712268955; cv=none; b=IoPg3KEXHRsqOwaxk7vTMrImxDdHCVWbqh4p538+ZPQ49W8ABXznQQdCVHP2eOBPvPR830PWiKt+THyWElHOExGN2wIRaccQyobg/BvmGzW/gmibXFgAA9rDrWT6CcltIY4GUvLMok5QNz873xVSFjx7afkKwVKRqsVBZYwFV7A=
+	t=1712273473; cv=none; b=osKD9zxPCrOB2GTic23lu0ANqiY2DnQSoyFWQvjf9i7DmVS4jvg4E7UVxV5AwspM95+A4aSp8Xp3UMigTVSZlVfkpE6/rfmTLREICK3Lk2+7RdU7xdafRaQHebZhF5OLqlmZFLUA92AHTMjkOO8NVaVBhHJ/Ydh2pSohpuTr8gQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712268955; c=relaxed/simple;
-	bh=pTp5edkZdZb3eEOWCrTxXu87gsPr0RabVB3/ii9vNkw=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=QNL80t3Rk2hBjiwoPpdNuoEoE9j7aU75ZwA25mCwD3LjBW97CjrcyUhidBoV3kASyhdYkuJKsH8BfqNL9GGNhD+Y6sF087UqJY2t6JlVkGa06cPakYRfCxkYQH6LzWc8VSX2Oa3G1IPoY6QxDwAtBRgMchmGZIx8s8KPcLth8Z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Jw1DfUkh; arc=none smtp.client-ip=103.168.172.149
+	s=arc-20240116; t=1712273473; c=relaxed/simple;
+	bh=gT3ISPrTb39TkoYxCl+zUy++inSKyXfqXfH+8D34BXY=;
+	h=To:Cc:Message-Id:From:Subject:Date; b=cWAwo77prkjpdxL2/E02JC+ZOBvRwbqrrIBTsb/45Pl81XZx1v6THGLocX3Wo2MBQdEBq2XU+j7YaWn4a6mdninXvn4bJiwjDGpIQ1743LOvxIOYw5uH1DWnUxYB9AcT3yhfKbosnCO/DuW6YA+vWBivyQZfeNMY5v/YftNwb3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=bVtCQEka; arc=none smtp.client-ip=103.168.172.153
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Jw1DfUkh"
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailfout.nyi.internal (Postfix) with ESMTP id CCFB913800B8;
-	Thu,  4 Apr 2024 18:15:51 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="bVtCQEka"
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailfhigh.nyi.internal (Postfix) with ESMTP id 7F3841140105;
+	Thu,  4 Apr 2024 19:31:10 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 04 Apr 2024 18:15:51 -0400
+  by compute2.internal (MEProxy); Thu, 04 Apr 2024 19:31:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm2; t=1712268951; x=1712355351; bh=2BjsJg1F1jsrIqkTlwXi7zvS9Quc
-	1lTtGbFTjSTDfA4=; b=Jw1DfUkhxICYlaH25P8sNWWfmviY9fTgQD1YAkM+b7J5
-	MLDoXeSGk6Ppi2vjNecFMnDMVAWH3cOI51tY25oyukCw05gCNvfiUFjjdFECZNKa
-	m6kmayGHiHqRDj+AaubmnhfiCBKbgp2EmGoAOKgnyeAbKRBH5uvrTSwHI0OfjCwQ
-	sZh1VGtktjiIk6Q4UAII8BrPseCAW5jBPLkOcHDgMsoDrbctl0ul4GLZPzSG5ny8
-	mmslf+tCky2hCQa0gvjwvW1FFj6Ec3CgKxiQvwc14ovTWKx/Vzmm0GWlRDGYB8L6
-	J2450RXPLz9cVmVP+dLv4twnNIQ7ApXzz/femDFrSA==
-X-ME-Sender: <xms:liYPZvsdxUwhpSDsLAJ15Ck6MEr4JUZhkhvSW4-OJWf8qCgqKfkCUQ>
-    <xme:liYPZgdiN14S6lFyxmsaXVP1Hp8-WL0eiNV1Fs9pOJoeOMZHRJlDbJJ0O2oibCxNs
-    5ZKoTv0O3_tFUol8pQ>
-X-ME-Received: <xmr:liYPZixfe0dvx1nFnKAy4_YRH4ksESFowbNWe2tzbjOn8zuQkuw-FiJ-igtn_J_2x6-zBWbj4Zzu_ZzR2n1MSy-jpDuL28_WP_g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudefledgtdelucetufdoteggodetrfdotf
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:message-id:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm2; t=1712273470; x=1712359870; bh=pK0jqIblLjOpZ
+	HzUGqOIz32gEstS475diijrXkvB3eA=; b=bVtCQEkankDw3t6RGYiDd8/EY4b+5
+	OzQ9bQO+z+fvSgLNl4Hihj/3+1Iyt/j/7mRvoNEdx9nq0mzoPY82XWtyZ6CSelPJ
+	hTMmdx59Zi1PlM439ffPVs8D6dHkR2+WxZxgJlt/NR3Ad1oBZUAh9wSbEnd6Abiw
+	eZiiU7nZQmEespjylXWF4NzO3fpesz6tvLToDVZwG0/Kjyudz/odn0nT26lnK+m+
+	EzMUyA2YkcTH03g6pmPgKPNIwAh14/8ZpFNQvnv7YvVLYtcqXpGRYXUQsicsQQLL
+	60/U1Av/QVDDm7Xuzzq2wfz2uYrvA/Dsa++yY9htMb+aLQzBwGBfaUGlQ==
+X-ME-Sender: <xms:PTgPZiIYUQgfXdEe2xMm6RNyfQ9Ax0Tys96XO8zAiceVf7ZEVrmsdw>
+    <xme:PTgPZqLug2l4k5bBmMT7AD0W_AlvjhEHFlW3copE2AghsDdWIV4ay6MPjgLElFJ2g
+    JaX5IP8W_fOczojAag>
+X-ME-Received: <xmr:PTgPZit_SuYal7Dwk2kbRLRnYZP7JMuu0UwIps91x6C4ER09IjsEvH6sygZj46dOB8DrcWkWPzAW3iRUKjVVz_Q8wQnX50hILEs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudefledgvdegucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcu
-    vfhhrghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeelueehleehkefgueevtdevteejkefhffekfeffffdtgfejveekgeefvdeu
-    heeuleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hfthhhrghinheslhhinhhugidqmheikehkrdhorhhg
-X-ME-Proxy: <xmx:liYPZuN5fHDfdNiFMxbrhi9Y_PDp_oI2lNBNnq2OQbPrGu25iHDF_A>
-    <xmx:liYPZv-bCS5UZc1XWxuLXceT-WG_8FC5MZT1S7WDvlPmVScgt2-J_A>
-    <xmx:liYPZuUhOa5q13FGdcikfp-_luhQxgFEaFh2XZhOxBrX5T4JeBFzqQ>
-    <xmx:liYPZge-gMrPjOIYZNYccbqHomnavk-glqv0v4MXwVjv-HW12g49cw>
-    <xmx:lyYPZlf_hyBptrtbhf2hDfT4IkUpmoIs8cEwLP9MQkAFhP5RVpNysbGG>
+    cujfgurhepvfevkffhufffsedttdertddttddtnecuhfhrohhmpefhihhnnhcuvfhhrghi
+    nhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrghtthgvrh
+    hnpefftdekheelvddvtdetudelhfehhfejjeeuudeileettdeuleeigeefkeehvdevffen
+    ucffohhmrghinhepghhithhhuhgsrdgtohhmpdhkvghrnhgvlhdrohhrghenucevlhhush
+    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehfthhhrghinheslhhi
+    nhhugidqmheikehkrdhorhhg
+X-ME-Proxy: <xmx:PTgPZnYzgMZqTR9eF0t2MW4RQMMnH5xqPRNnqU0AnmpCIYqoUvnT_A>
+    <xmx:PTgPZpax3bPUEitnmylwi9RrEP0uTOGwHsuDo3ZplnQqvvPXd0f_QQ>
+    <xmx:PTgPZjD9Hw4wmx-HpbYzcz-5yMeY0kIz_0QGqEcP2rsyMf3ndWf0Tw>
+    <xmx:PTgPZvZ-9TuHrTyx0lF6wnPMq_srWjKCDVH-0PJoQ9ruq4NwESpiTw>
+    <xmx:PjgPZtpVPFHDMi94NCjMIl9Z1y5zCPxerLPUSPRZGYZ9sMIgh69zrJHO>
 Feedback-ID: i58a146ae:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 4 Apr 2024 18:15:47 -0400 (EDT)
-Date: Fri, 5 Apr 2024 09:17:27 +1100 (AEDT)
+ 4 Apr 2024 19:31:07 -0400 (EDT)
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+    Jiri Slaby <jirislaby@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>,
+    Nicholas Piggin <npiggin@gmail.com>,
+    Christophe Leroy <christophe.leroy@csgroup.eu>,
+    "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+    "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+    linux-kernel@vger.kernel.org,
+    linux-serial@vger.kernel.org,
+    linuxppc-dev@lists.ozlabs.org,
+    linux-m68k@lists.linux-m68k.org,
+    Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+    Andy Shevchenko <andy.shevchenko@gmail.com>
+Message-Id: <0df45bedded1249f6c6ec2c2fb0d9879da1841b7.1712273040.git.fthain@linux-m68k.org>
 From: Finn Thain <fthain@linux-m68k.org>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-    Christophe Leroy <christophe.leroy@csgroup.eu>, 
-    "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
-    "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-    linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq
- flood
-In-Reply-To: <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
-Message-ID: <5dd285bd-b9a8-c85c-9bd9-a839c10e78fd@linux-m68k.org>
-References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org> <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org>
- <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
+Subject: [PATCH v2] serial/pmac_zilog: Remove flawed mitigation for rx irq flood
+Date: Fri, 05 Apr 2024 10:24:00 +1100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 
+The mitigation was intended to stop the irq completely. That may be
+better than a hard lock-up but it turns out that you get a crash anyway
+if you're using pmac_zilog as a serial console:
 
-On Thu, 4 Apr 2024, Andy Shevchenko wrote:
+ttyPZ0: pmz: rx irq flood !
+BUG: spinlock recursion on CPU#0, swapper/0
 
-> 
-> > > > ---
-> > > (here is a good location for Cc:)
-> >
-> > Documentation/process/submitting-patches.rst indicats that it should 
-> > be above the "---" separator together with Acked-by etc. Has this 
-> > convention changed recently?
-> 
-> I see, I will prepare a patch to discuss this aspect.
-> 
+That's because the pr_err() call in pmz_receive_chars() results in
+pmz_console_write() attempting to lock a spinlock already locked in
+pmz_interrupt(). With CONFIG_DEBUG_SPINLOCK=y, this produces a fatal
+BUG splat. The spinlock in question is the one in struct uart_port.
 
-If you are going to veto patches on the basis of rules yet unwritten, I 
-think you risk turning the kernel development process into a lottery.
+Even when it's not fatal, the serial port rx function ceases to work.
+Also, the iteration limit doesn't play nicely with QEMU, as can be
+seen in the bug report linked below.
 
-How many other patches presently under review will need to be dropped just 
-in case they don't conform with possible future rules?
+A web search for other reports of the error message "pmz: rx irq flood"
+didn't produce anything. So I don't think this code is needed any more.
+Remove it.
+
+Link: https://github.com/vivier/qemu-m68k/issues/44
+Link: https://lore.kernel.org/all/1078874617.9746.36.camel@gaston/
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Finn Thain <fthain@linux-m68k.org>
+---
+Changed since v1:
+ - Reworked commit log according to comments from Andy Shevchenko.
+---
+ drivers/tty/serial/pmac_zilog.c | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index c8bf08c19c64..77691fbbf779 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -210,7 +210,6 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
+ {
+ 	struct tty_port *port;
+ 	unsigned char ch, r1, drop, flag;
+-	int loops = 0;
+ 
+ 	/* Sanity check, make sure the old bug is no longer happening */
+ 	if (uap->port.state == NULL) {
+@@ -291,24 +290,11 @@ static bool pmz_receive_chars(struct uart_pmac_port *uap)
+ 		if (r1 & Rx_OVR)
+ 			tty_insert_flip_char(port, 0, TTY_OVERRUN);
+ 	next_char:
+-		/* We can get stuck in an infinite loop getting char 0 when the
+-		 * line is in a wrong HW state, we break that here.
+-		 * When that happens, I disable the receive side of the driver.
+-		 * Note that what I've been experiencing is a real irq loop where
+-		 * I'm getting flooded regardless of the actual port speed.
+-		 * Something strange is going on with the HW
+-		 */
+-		if ((++loops) > 1000)
+-			goto flood;
+ 		ch = read_zsreg(uap, R0);
+ 		if (!(ch & Rx_CH_AV))
+ 			break;
+ 	}
+ 
+-	return true;
+- flood:
+-	pmz_interrupt_control(uap, 0);
+-	pmz_error("pmz: rx irq flood !\n");
+ 	return true;
+ }
+ 
+-- 
+2.39.3
+
