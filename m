@@ -1,120 +1,102 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41E21C2A1;
-	Thu,  4 Apr 2024 15:00:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45EA6127B4E;
+	Thu,  4 Apr 2024 15:54:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712242843; cv=none; b=fV7gdlVtvkKOI31MSL7DM4m21aqMiL3ufXE0QO0Nd35wrEc3es3c3UXvLkWQEF6JRLrvv4RAhPFgDrlnDH6NFzabFv+1l2ONsN5MTZtLkfcUacl/wI96y2yX7e9HaLJwjTrD0xeuCq5LASWqoJ6euJA9naN4M+ZI5Jm8jeJWy7M=
+	t=1712246085; cv=none; b=gau/fovjZvAcuAezaZec8HMIHdsaLfHp8R0X1v8gAKDxiLax2/2Olw8i1aTau89h8k/AP7dqheAxUqRLBPi1o7KzCBObuhcGL2ECUFr1j85jL7QqWbXUENjYatEZA6Y1SEq6X5lEaPQs9ywpZ/2aBwQZaFQDcs0ZOsv/ZyJLGUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712242843; c=relaxed/simple;
-	bh=k0VeJYbpn/TShgzYqdD2a34SZlW9LgfGRcTUiFmDZpg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cMQ9fP8BibXJM8BbKrKLXn4ZossHTYtyIxage2zWNovppJJpOptE2udlXFLmW0TipZb3uUNRxhbNY369njcOLCAjRISb+Ix7G3uIBp2w22bT5ExJoQwfquifMj8eTqAvOBmksgKTszyQc1QvjK58QNxTjzbhDxW8VrmHRTVRZIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=O849EgRl; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O849EgRl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712242842; x=1743778842;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=k0VeJYbpn/TShgzYqdD2a34SZlW9LgfGRcTUiFmDZpg=;
-  b=O849EgRlT3B2Zfy6hyTh+yMgUlPyzGLPyEHFn8+ZEELo2+N7Axwp760U
-   DGdhKOvNf2EGCOzUuy6FsJHPHbzRLHCLHSGJYq+AeW0y5xDXda1Gu55z8
-   PXvdiF7+aVcUqREMdZ8vSCwoKowcTk2FNqKcc7ET06B2mBfgvxGjzM0t/
-   9p030X40HU/zsIge/z9BDk1IbooLO/HwOgSw8wkNpf30heMan2gxU0nIO
-   14/XFOUkKdTtqueVHR8uj6ihRyAD+ukpx0OFgoHQMgyUMMT+QrwPTGqZz
-   vHS1pWGCcLmW3F0DiSZY0/Lu6LLSVG2DFAHu7jimAga+TUnDaRtQPKL2D
-   A==;
-X-CSE-ConnectionGUID: Xw7L3KaYT6qE5fb+DpLugQ==
-X-CSE-MsgGUID: Ho72HPApTxm6FQ8oLsYZPQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="7766868"
+	s=arc-20240116; t=1712246085; c=relaxed/simple;
+	bh=vVqfrXHIS3zQ2r9jD4TTb/uaoB1pGIFMhsCJ78419QY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HRVAp4X/3VW/p1/FVY55X4RE6VngQ9A39B4UezQDLFbZzRThYSR5STf5yibpu2jOnjuSAHcLFEMnsQ1iwJz6tQ50hLAaj9Ol/Cw/HqqlJkRUbf5SneJrJhSRSR0GyqVdDbkAmKR2nvfKuYMTgek+hfvL7U01jYw38OOziLK+7DQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+X-CSE-ConnectionGUID: wf3n6rFvRK23wXryI0XFPA==
+X-CSE-MsgGUID: 0WS6nmNQStWXn7Gva3iVFQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="7777708"
 X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="7766868"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 08:00:40 -0700
+   d="scan'208";a="7777708"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 08:54:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="937086705"
+X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="915222155"
 X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="937086705"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Apr 2024 08:00:38 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 28DED812; Thu,  4 Apr 2024 18:00:37 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	kernel test robot <oliver.sang@intel.com>
-Subject: [PATCH v1 1/1] serial: core: Clearing the circular buffer before NULLifying it
-Date: Thu,  4 Apr 2024 17:59:26 +0300
-Message-ID: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+   d="scan'208";a="915222155"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 08:54:40 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andy.shevchenko@gmail.com>)
+	id 1rsPQE-00000001VJZ-2LJQ;
+	Thu, 04 Apr 2024 18:54:38 +0300
+Date: Thu, 4 Apr 2024 18:54:38 +0300
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
+Subject: Re: [PATCH v1 0/3] serial: Do not count XON/XOFF in the statistics
+Message-ID: <Zg7NPnpFXkQWJ-Ks@smile.fi.intel.com>
+References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
+ <Zg3VHs-LVxHFdi8V@surfacebook.localdomain>
+ <573aac92-9c9b-427b-a76f-3c0b7c3b6ce6@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <573aac92-9c9b-427b-a76f-3c0b7c3b6ce6@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-The circular buffer is NULLified in uart_tty_port_shutdown()
-under the spin lock. However, the PM or other timer based callbacks
-may still trigger after this event without knowning that buffer pointer
-is not valid. Since the serial code is a bit inconsistent in checking
-the buffer state (some rely on the head-tail positions, some on the
-buffer pointer), it's better to have both aligned, i.e. buffer pointer
-to be NULL and head-tail possitions to be the same, meaning it's empty.
-This will prevent asynchronous calls to dereference NULL pointer as
-reported recently in 8250 case:
+On Thu, Apr 04, 2024 at 07:16:55AM +0200, Jiri Slaby wrote:
+> On 04. 04. 24, 0:15, Andy Shevchenko wrote:
+> > Wed, Apr 03, 2024 at 05:46:14PM +0300, Andy Shevchenko kirjoitti:
+> > > Some drivers count XON/XOFF in the Tx statistics, some do not.
+> > > I actually a bit uncertain, but I _think_ the correct way is not
+> > > to count them, hence this series.
+> > 
+> > Okay, it seems there are much more drivers doing that. Perhaps we need
+> > to add that to the rest in this case (i.o.w. invert the series from removal
+> > to addition)?
+> 
+> Interesting, perhaps cut & paste?
+> 
+> XON and XOFF are overhead IMO. So should not be counted. When they are, they
+> mangle statistics as in transmitted (real) bytes per second.
+> 
+> How are they handled on the RX side?
 
-  BUG: kernel NULL pointer dereference, address: 00000cf5
-  Workqueue: pm pm_runtime_work
-  EIP: serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
-  ...
-  ? serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
-  __start_tx (drivers/tty/serial/8250/8250_port.c:1551)
-  serial8250_start_tx (drivers/tty/serial/8250/8250_port.c:1654)
-  serial_port_runtime_suspend (include/linux/serial_core.h:667 drivers/tty/serial/serial_port.c:63)
-  __rpm_callback (drivers/base/power/runtime.c:393)
-  ? serial_port_remove (drivers/tty/serial/serial_port.c:50)
-  rpm_suspend (drivers/base/power/runtime.c:447)
+It took me a while.
 
-The proposed change will prevent ->start_tx() to be called during
-suspend on shut down port.
+All serial drivers accept everything and those that care, update statics for
+anything they receive. This is because of layering. The Rx XON/XOFF seems
+(note I am completely unfamiliar with mysterious ways of TTY layers) to be
+handled on TTY level by n_tty_receive_char_flow_ctrl(), i.o.w. we may not
+skip counting it easily.
 
-Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still busy")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Closes: https://lore.kernel.org/oe-lkp/202404031607.2e92eebe-lkp@intel.com
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+Now the question is, shall we count the control characters on output or not?
+Whatever decision we made, we should document (if not yet) and align drivers
+accordingly.
 
-I have got into the very similar issue while working on max3100 driver.
-I haven't checked the 8250 case, but for mine the culprit is the same
-and this patch fixes it. Hence I assume it will fix the 8250 case as
-well.
+Another Q is what do books / other OS / projects usually do with them
+WRT statistics?
 
- drivers/tty/serial/serial_core.c | 1 +
- 1 file changed, 1 insertion(+)
+If we count everything on a wire, then we must count them, otherwise
+it depends on how we treat them.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index a005fc06a077..ba3a674a8bbf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1788,6 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	 * Free the transmit buffer.
- 	 */
- 	uart_port_lock_irq(uport);
-+	uart_circ_clear(&state->xmit);
- 	buf = state->xmit.buf;
- 	state->xmit.buf = NULL;
- 	uart_port_unlock_irq(uport);
+P.S.
+This series as is should be abandoned. But we may continue discussing topic
+under this cover letter.
+
 -- 
-2.43.0.rc1.1.gbec44491f096
+With Best Regards,
+Andy Shevchenko
+
 
