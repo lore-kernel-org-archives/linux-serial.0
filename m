@@ -1,168 +1,123 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D75F433B0;
-	Thu,  4 Apr 2024 07:45:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B935B1F6;
+	Thu,  4 Apr 2024 07:45:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712216705; cv=none; b=FBN8K/4y08HVX6UkZp1+ssvo/NExA/vtsb8AXOrp/cB+k5M9vIY6sc++ESh2JUisWaYTtiC5siUQOqV0pY/E4VN9/vvZfxTmH+MqKZj4wzLpmZSD8HA0R5+l8RRQ57kTKW/Dq4aeEvAGAaHhmqHq4xoTePx5ni1BerF+dUDQy/I=
+	t=1712216753; cv=none; b=ouZu7hph2kN0yLB9wOU1LNCqG8inih8id23lXkx2L1NQkxhRp0ZpQVY+WVZo5cdiR83FOYn8kOv6OsybtlcSdgnIDx4D8f8rRGIzACmN1SXlXTgNegKMHK/l+vZpwEqG+zuNtvGnJFRiUnHuGXSx8QyzZzk3ZdU+nG6tJMo9czA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712216705; c=relaxed/simple;
-	bh=kJNlUmuT+uSoa9cveBbwIGJVle08lX4eiQ8PecQGYf4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Bd97IVGOxSJiFKD5jxdSmsPTs/eLfqGqbAzp2cAQ2bQDeFBToE+MEFyhN9HfGYp19JbJZC45m2n9kH5/j7SNF6dDmSMfYOfJ60B6FUzkSOO5ERtYVOqMOD4k3SEIkD3h0cmR7NPLsfXoUO5xeypOgK5hEhrYdUKM0vE5Q9ToI7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=o0LXJNsJ; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1712216753; c=relaxed/simple;
+	bh=vcETtOrVy9bTRvDJ6u7ogSjCKNt7NXEhds5NARQGbPY=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=cAZ4eJJecI/TZQEysaTarMoXp+vAzdB+usGAnFAGiSCfHpORW84txP0OZH4IK/38mhR41MtKD7vI0thnZApjXoY1E/53vjB6blU1TtplkKStEQm5mmO+PWaQi/SfKijUt3aVnGMV1DfUcUxqcpPM1WvHWpxFvfHWP3W3hmUmY5E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ahmcg0O/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="o0LXJNsJ"
-Received: by mail.gandi.net (Postfix) with ESMTPA id 93D0B240008;
-	Thu,  4 Apr 2024 07:44:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1712216695;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=iX+0Ymm9a4nCLp3+QhB61amQXiz0tKdtmoelt1SlXa4=;
-	b=o0LXJNsJoEqqF7dx0rz2H3P2ma2Rha0X+mhddsUpSHA8W5J14YzTGMicTgIh8DP+UdJQtR
-	Kl8kqXrVBZPAUopLTjbTRD8gYj3HIwUzO8VwHiCTPuPT566Lydjbdew/LO/D9/YArNLQQX
-	iD3eTNZOBP1yGiY8lEejWLRqvj6260HDUbXdkviYI5K9SJ8OBmKWHYF2bZWkou9CLmU5ob
-	YJaoso3ATLZKWyfVAMEXQe/6r/zW7TLbpNMJZfkR1PBtQJUTePOWBpYS/IWcfTTd9/iyPi
-	c56rX2dCok85syDHTSQbWtb56h99V7Ilz6mdme2a/P17C/CTv4aR+01qLXf3mA==
-From: Bastien Curutchet <bastien.curutchet@bootlin.com>
-To: bastien.curutchet@bootlin.com,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	herve.codina@bootlin.com,
-	christophercordahi@nanometrics.ca
-Subject: [PATCH 1/1] serial: 8250_of: Add clock_notifier
-Date: Thu,  4 Apr 2024 09:44:50 +0200
-Message-ID: <20240404074450.42708-1-bastien.curutchet@bootlin.com>
-X-Mailer: git-send-email 2.44.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ahmcg0O/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5535EC433F1;
+	Thu,  4 Apr 2024 07:45:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712216752;
+	bh=vcETtOrVy9bTRvDJ6u7ogSjCKNt7NXEhds5NARQGbPY=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=ahmcg0O/wVgUSHDmaLqFtCVQppeFQLHTQcwLUR3ZoemzEiydJLq5n65V+ZZF4U3Z/
+	 iZTZ2dGWs5n/xGsr2C9Ro8bxdpCo0mryC+/NJ293dDVVrTasGOJjky78rF1l0Vh5Cj
+	 ewN+vdhM+Vk7MvaEXrP9a5f9hvvIhXjlvvkp5fjW6hQf8tlH5S2zNXD299vhN6PNvh
+	 Y5zEUTiauyseC4AumRqKYaxCMkjyr8HU9RPqz7Q7M32OkZevScqGC8ldR1pXRVNnPN
+	 lCtMqbIda7OLCc5vYYCtjdUg0R4nqeFderQtkQlFlCIFJl63TPR9JxYni0ko+ATY12
+	 3JVV8cyIjyi9Q==
+Date: Thu, 04 Apr 2024 02:45:51 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: bastien.curutchet@bootlin.com
+From: Rob Herring <robh@kernel.org>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, 
+ linux-ide@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, 
+ Lee Jones <lee@kernel.org>, linux-kernel@vger.kernel.org, 
+ Sam Ravnborg <sam@ravnborg.org>, Stephen Boyd <sboyd@kernel.org>, 
+ linux-sh@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+ Thomas Gleixner <tglx@linutronix.de>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+ devicetree@vger.kernel.org, Helge Deller <deller@gmx.de>, 
+ dri-devel@lists.freedesktop.org, Jonathan Corbet <corbet@lwn.net>, 
+ Biju Das <biju.das.jz@bp.renesas.com>, Guenter Roeck <linux@roeck-us.net>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Damien Le Moal <dlemoal@kernel.org>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+ Anup Patel <apatel@ventanamicro.com>, Maxime Ripard <mripard@kernel.org>, 
+ Chris Morgan <macromorgan@hotmail.com>, Jiri Slaby <jirislaby@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, 
+ Javier Martinez Canillas <javierm@redhat.com>, 
+ David Rientjes <rientjes@google.com>, 
+ Azeem Shaikh <azeemshaikh38@gmail.com>, Conor Dooley <conor+dt@kernel.org>, 
+ Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>, 
+ linux-fbdev@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>, 
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+ Daniel Vetter <daniel@ffwll.ch>, linux-serial@vger.kernel.org, 
+ linux-pci@vger.kernel.org, Niklas Cassel <cassel@kernel.org>, 
+ Sebastian Reichel <sre@kernel.org>, Max Filippov <jcmvbkbc@gmail.com>, 
+ Manikanta Guntupalli <manikanta.guntupalli@amd.com>, 
+ Guo Ren <guoren@kernel.org>, Jacky Huang <ychuang3@nuvoton.com>, 
+ linux-clk@vger.kernel.org, David Airlie <airlied@gmail.com>, 
+ Magnus Damm <magnus.damm@gmail.com>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Herve Codina <herve.codina@bootlin.com>, Vlastimil Babka <vbabka@suse.cz>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Shawn Guo <shawnguo@kernel.org>, Heiko Stuebner <heiko.stuebner@cherry.de>, 
+ Baoquan He <bhe@redhat.com>, Kefeng Wang <wangkefeng.wang@huawei.com>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>
+In-Reply-To: <8d8dec2d75890f3a14632c9606c332fb11d89a95.1712207606.git.ysato@users.sourceforge.jp>
+References: <cover.1712207606.git.ysato@users.sourceforge.jp>
+ <8d8dec2d75890f3a14632c9606c332fb11d89a95.1712207606.git.ysato@users.sourceforge.jp>
+Message-Id: <171221675032.1570606.17195739558800384053.robh@kernel.org>
+Subject: Re: [RESEND v7 19/37] dt-bindings: interrupt-controller:
+ renesas,sh7751-irl-ext: Add json-schema
 
-The UART's input clock rate can change at runtime but this is not
-handled by the driver.
 
-Add a clock_notifier callback that updates the divisors when the input
-clock is updated. The serial8250_update_uartclk() is used to do so.
-PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
-the POST_RATE_CHANGE is used.
+On Thu, 04 Apr 2024 14:14:30 +0900, Yoshinori Sato wrote:
+> Renesas SH7751 external interrupt encoder json-schema.
+> 
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  .../renesas,sh7751-irl-ext.yaml               | 57 +++++++++++++++++++
+>  1 file changed, 57 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.yaml
+> 
 
-Reorder the #include to match alphabetic order.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-It has been tested on a DAVINCI/OMAP-L138 processor.
+yamllint warnings/errors:
 
-Signed-off-by: Bastien Curutchet <bastien.curutchet@bootlin.com>
----
- drivers/tty/serial/8250/8250_of.c | 48 ++++++++++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 4 deletions(-)
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/interrupt-controller/renesas,sh7751-irl-ext.example.dtb: interrupt-controller@a4000000: #interrupt-cells:0:0: 2 was expected
+	from schema $id: http://devicetree.org/schemas/interrupt-controller/renesas,sh7751-irl-ext.yaml#
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 5d1dd992d8fb..6d570164d906 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -6,18 +6,19 @@
-  */
- 
- #include <linux/bits.h>
-+#include <linux/clk.h>
- #include <linux/console.h>
- #include <linux/math.h>
- #include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/serial_core.h>
--#include <linux/serial_reg.h>
-+#include <linux/notifier.h>
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/pm_runtime.h>
--#include <linux/clk.h>
- #include <linux/reset.h>
-+#include <linux/serial_core.h>
-+#include <linux/serial_reg.h>
-+#include <linux/slab.h>
- 
- #include "8250.h"
- 
-@@ -26,6 +27,7 @@ struct of_serial_info {
- 	struct reset_control *rst;
- 	int type;
- 	int line;
-+	struct notifier_block clk_notifier;
- };
- 
- /* Nuvoton NPCM timeout register */
-@@ -58,6 +60,29 @@ static int npcm_setup(struct uart_port *port)
- 	return 0;
- }
- 
-+static inline struct of_serial_info *clk_nb_to_info(struct notifier_block *nb)
-+{
-+	return container_of(nb, struct of_serial_info, clk_notifier);
-+}
-+
-+static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
-+					      void *data)
-+{
-+	struct of_serial_info *info = clk_nb_to_info(nb);
-+	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-+	struct clk_notifier_data *ndata = data;
-+
-+	if (IS_ERR(info->clk))
-+		return NOTIFY_DONE;
-+
-+	if (event == POST_RATE_CHANGE) {
-+		serial8250_update_uartclk(&port8250->port, ndata->new_rate);
-+		return NOTIFY_OK;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- /*
-  * Fill a struct uart_port for a given device node
-  */
-@@ -218,7 +243,19 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	info->type = port_type;
- 	info->line = ret;
- 	platform_set_drvdata(ofdev, info);
-+
-+	if (info->clk) {
-+		info->clk_notifier.notifier_call = of_platform_serial_clk_notifier_cb;
-+		ret = clk_notifier_register(info->clk, &info->clk_notifier);
-+		if (ret) {
-+			dev_err_probe(port8250.port.dev, ret, "Failed to set the clock notifier\n");
-+			goto err_unregister;
-+		}
-+	}
-+
- 	return 0;
-+err_unregister:
-+	serial8250_unregister_port(info->line);
- err_dispose:
- 	pm_runtime_put_sync(&ofdev->dev);
- 	pm_runtime_disable(&ofdev->dev);
-@@ -234,6 +271,9 @@ static void of_platform_serial_remove(struct platform_device *ofdev)
- {
- 	struct of_serial_info *info = platform_get_drvdata(ofdev);
- 
-+	if (info->clk)
-+		clk_notifier_unregister(info->clk, &info->clk_notifier);
-+
- 	serial8250_unregister_port(info->line);
- 
- 	reset_control_assert(info->rst);
--- 
-2.44.0
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/8d8dec2d75890f3a14632c9606c332fb11d89a95.1712207606.git.ysato@users.sourceforge.jp
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
