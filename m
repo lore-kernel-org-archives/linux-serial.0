@@ -1,84 +1,112 @@
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+Received: from wfout1-smtp.messagingengine.com (wfout1-smtp.messagingengine.com [64.147.123.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94C9B17545;
-	Fri,  5 Apr 2024 03:10:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0207128E2;
+	Fri,  5 Apr 2024 03:44:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712286616; cv=none; b=JzEagG13axjOlLtktNrkgO75ZgwKyc4JZZqCZLHscinI/HASs1m5+2wbsucm0dlAkqKtcYyYfFQRI5z+QAjjqc6U29Jlse9TvObxUt7k1h9wE7pHu4//IWFZJCzPt52PKzHN5hhpH/Bp2jsMnMTElnkYHQEVZGD/VYRReU/YOnA=
+	t=1712288675; cv=none; b=ISC5OVlVOva6kYtzqI+EFfJCqMRzh/yLSXdprwEYpZgCzhcL+/J6adqtzSAJV9HfK4CRcyeluwszNemtGzKOGZO7zNdn1HvHb3SNbq55D+trNpSRS+Gy1mT22T6k0MTmmNnqFRYi9p7pcGx9zw2fj+RtW2kBIWdZHHtNTACivYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712286616; c=relaxed/simple;
-	bh=5YM7mvGWbMlZmbIx5ybNEkNpgBfZXycaMReGwErZsdc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=kilnnEC0G8/9TUei6fzWHql2SQ7kR/drYoYcpEgSBbLH5i3v6aDNIcI4ZPybicYqok7H06R8Xc45LxdOowQ70VcxZA3SPbqGMegnXrGWdwDisKOUkGBWPktPPdeM6MHRNMtzqwSuajOOfuA8YGxY6Wr89y0uaf/O3gfKfKYSVok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=Q3QIzxzR; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+	s=arc-20240116; t=1712288675; c=relaxed/simple;
+	bh=qsPh5jLsPjqoh7RdHlpwd0IOnjyfFaZnNumgZZVOKso=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=mRoMa9LY/VE7qYwhZchJpmE0vw+3TMZ7HwKIlsDE6VGlQDx686GotBFzqOVgPENc0US3KdMNucJoC6jwx4g+tcRaneYhrtwfyqQAUPp8t0TYAsnjGnCyPiEb/i+3cZfmEU1Bh5pyKae3wDjKM5GukiA0GVisZpSPBFeBrQc5ppI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=C81QSD5A; arc=none smtp.client-ip=64.147.123.144
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="Q3QIzxzR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1712286613;
-	bh=5YM7mvGWbMlZmbIx5ybNEkNpgBfZXycaMReGwErZsdc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=Q3QIzxzRbXpx2e47F9wae2WgRCUdoJb3BHqgFNQVHo4XOAcj6V4A6KAwpGReH2mLc
-	 f4tWtIJ+360ZAKdin4JhCHTv8ghAVgTzDcPVTwAJNRCc/XIai15DUZ9CcoTd+cXGl3
-	 CD64SNl4kNizJb6K2tWtg4KZzFiVTo67Mm7LyQ/ef6Ff7cb7pSMjsnUThoWI+4srek
-	 3NrOXgKPwAv5ld8VkOq9Zsx07cH9xbaJYm5WvPsNggkC+eeNBC6WhkTXLl9IbgkFrt
-	 kUeb7ERnoYAz1FDsjnvakUEh/M29R0AZI9Ci6zUJqmudcmTafdmRUuAxe33KrBmI4x
-	 w8K64JUPj8pfw==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4V9k4j0HHRz4wyh;
-	Fri,  5 Apr 2024 14:10:13 +1100 (AEDT)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Finn Thain <fthain@linux-m68k.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
- <christophe.leroy@csgroup.eu>, "Aneesh Kumar K.V"
- <aneesh.kumar@kernel.org>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-m68k@lists.linux-m68k.org, Benjamin
- Herrenschmidt <benh@kernel.crashing.org>, Andy Shevchenko
- <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2] serial/pmac_zilog: Remove flawed mitigation for rx
- irq flood
-In-Reply-To: <0df45bedded1249f6c6ec2c2fb0d9879da1841b7.1712273040.git.fthain@linux-m68k.org>
-References: <0df45bedded1249f6c6ec2c2fb0d9879da1841b7.1712273040.git.fthain@linux-m68k.org>
-Date: Fri, 05 Apr 2024 14:10:12 +1100
-Message-ID: <87v84w7be3.fsf@mail.lhotse>
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="C81QSD5A"
+Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
+	by mailfout.west.internal (Postfix) with ESMTP id 0977D1C0009E;
+	Thu,  4 Apr 2024 23:44:30 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute7.internal (MEProxy); Thu, 04 Apr 2024 23:44:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1712288670; x=1712375070; bh=YYryhgN6k4zAyvC/eOIu42dxlhfu
+	pw+E0NbxOoGoDXg=; b=C81QSD5AN2lgFOxtYWBrXWwhGfRaN1myhcFPEJtsdna1
+	y3KI7ki6k3LoQ6wanvh7ek7OCGqnuk8La/UKj4YzV50mNwatTsKPAYY3wOo9TWkR
+	1TH/PV+rfnVHnNFV9AMr7l1uft7y5+64d8VirT5vgvMi6QUaFOZrxyfsgy2uXTGU
+	5Ii8y1HpotS7x7jrOEpHoBOQ9t4tyFOCI8uhNL6Ny/qryGILHOvLDlwglpjZDkok
+	LBjfXTN/JKNNPYN9jMJ24rKPrLwAZXo9mtbeyw94TQscJQTPAN7y1wCU1+RSp0Bi
+	oRMifHOt66N8dTO6H7oTYyLslz4mZfrvaSvcS4e44Q==
+X-ME-Sender: <xms:nXMPZrWAi09F-2pkasZh3e4LxYUURcYASuu9XXfN5aFte3fVVGHmiQ>
+    <xme:nXMPZjmH2hhl2bjt2RSrZ5CuVgXf-g0weQBhcVpVmrf9Ae-tm5PVWXZZ0XqGcsPAn
+    Ne9GoZrkfW39p9UqXQ>
+X-ME-Received: <xmr:nXMPZnYhdfi4BpVgPnTJsselG-2LMSF68qraFL4CBAf9zqYU5V4rPAdKVXQP0VBN4rAh1iDjrmXlHVJ-7Qp_FE9kkSgneEE-7a0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudefledgjeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcu
+    vfhhrghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeelueehleehkefgueevtdevteejkefhffekfeffffdtgfejveekgeefvdeu
+    heeuleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hfthhhrghinheslhhinhhugidqmheikehkrdhorhhg
+X-ME-Proxy: <xmx:nnMPZmWvmndcnC68Z4XcXHk59kNUS7IUTfsRxTvSSJhoPm8cUQW_Kw>
+    <xmx:nnMPZlkw0WmXCIj8Ey7Urnj7JoFoTaODYcuyRudjL79ESfV2E_NIEg>
+    <xmx:nnMPZjcodEDnCWyPaFGcVcUDJsuwW-dAe9V_guzE9DxdrkKXPSZ2EA>
+    <xmx:nnMPZvEa6ASIjTJQYhMcHRfXiODLjWNsgAKvDMHhgA95SSBy43a8pQ>
+    <xmx:nnMPZnn37qv0I34juauWUCcca0SPYmpyQZ3yNtnYZY5ny5gBAYpXi5_L>
+Feedback-ID: i58a146ae:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 4 Apr 2024 23:44:28 -0400 (EDT)
+Date: Fri, 5 Apr 2024 14:46:17 +1100 (AEDT)
+From: Finn Thain <fthain@linux-m68k.org>
+To: Michael Ellerman <mpe@ellerman.id.au>, Jiri Slaby <jirislaby@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: Andy Shevchenko <andy.shevchenko@gmail.com>, 
+    Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
+    Nicholas Piggin <npiggin@gmail.com>, 
+    Christophe Leroy <christophe.leroy@csgroup.eu>, 
+    "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+    "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+    linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+    linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq
+ flood
+In-Reply-To: <87y19s7bk6.fsf@mail.lhotse>
+Message-ID: <4bddf8ec-97f1-07f6-9c0a-523c102c0a1b@linux-m68k.org>
+References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org> <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org> <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
+ <87y19s7bk6.fsf@mail.lhotse>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 
-Finn Thain <fthain@linux-m68k.org> writes:
-> The mitigation was intended to stop the irq completely. That may be
-> better than a hard lock-up but it turns out that you get a crash anyway
-> if you're using pmac_zilog as a serial console:
->
-> ttyPZ0: pmz: rx irq flood !
-> BUG: spinlock recursion on CPU#0, swapper/0
->
-> That's because the pr_err() call in pmz_receive_chars() results in
-> pmz_console_write() attempting to lock a spinlock already locked in
-> pmz_interrupt(). With CONFIG_DEBUG_SPINLOCK=y, this produces a fatal
-> BUG splat. The spinlock in question is the one in struct uart_port.
->
-> Even when it's not fatal, the serial port rx function ceases to work.
-> Also, the iteration limit doesn't play nicely with QEMU, as can be
-> seen in the bug report linked below.
->
-> A web search for other reports of the error message "pmz: rx irq flood"
-> didn't produce anything. So I don't think this code is needed any more.
-> Remove it.
 
-Yeah I think you're probably right.
+On Fri, 5 Apr 2024, Michael Ellerman wrote:
 
-I assume you have tested this on an actual pmac, as well as qemu?
+> >> > > ---
+> >> > (here is a good location for Cc:)
+> >>
+> >> Documentation/process/submitting-patches.rst indicats that it should 
+> >> be above the "---" separator together with Acked-by etc. Has this 
+> >> convention changed recently?
+> 
+> The docs don't really say where to put the Cc: tags, although they are 
+> mentioned along with other tags which clearly are intended to go above 
+> the separator.
+> 
 
-cheers
+I see no ambiguity there. What's the point of copying the message headers 
+into the message body unless it was intended that they form part of the 
+commit log?
+
+> > I see, I will prepare a patch to discuss this aspect.
+> 
+> FYI there was a discussion about this several years ago, where at least 
+> some maintainers agreed that Cc: tags don't add much value and are 
+> better placed below the --- separator.
+> 
+
+Maintainers who merge patches almost always add tags. And they can use the 
+Cc tags from the message headers if they wish to. Or they can omit them or 
+remove them. I don't mind. And I'd be happy to resubmit the patch with 
+different tags if that's what is needed by the workflow used by Jiri Slaby 
+or Greg Kroah-Hartman.
