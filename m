@@ -1,34 +1,45 @@
-Received: from fgw23-7.mail.saunalahti.fi (fgw23-7.mail.saunalahti.fi [62.142.5.84])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 525FE1E4BE
-	for <linux-serial@vger.kernel.org>; Fri,  5 Apr 2024 22:25:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9DE91CF8F;
+	Fri,  5 Apr 2024 22:33:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712355916; cv=none; b=ekAgzPXatev6qXuHO72HDKZK0yxCDvAbiFPLxtUHrl/0FK0CIOXuSH6Xjl/BdmUlrQsQ8FKXg660rejOCO6e9oa5B70fJSjp4okOTkfc8CjuXmttVSrcyWtvw4MP9P9YY1ccDY1s5cVmfDyIfYf+4BLGi36Py9k7PUXzBsjdDqo=
+	t=1712356407; cv=none; b=jdDzhAXgtURG0ukWrgouVQBnYiHbtFlV5I1jjVB/DrS7j6x+LwPuK6/kXMHruPmsyEtgqK5ToiPNgUrC8O215n5xSdo1ZDa5Ly4ssv2bx/Y6V/o4aLXLP7CxJuIbRAzl6Zg0K2XLWUib09sfgoo7hivPObySEuxwhiPOhENekAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712355916; c=relaxed/simple;
-	bh=9hz1CacEtBqBR2tMlHhXU8XFj54Ot+LLOeUrP6Vf7yY=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JdEtvfmpLtPfwKNkQuiY8zhAS88K7wy2qJNgZTGiC4YSqhi8G9eI5J4VW+8ygYfqv4NZzoPgpwGLGmp92oPfs7t07u5HBWGr8VxhqnwqUg+zU2l46TEEKl+JDPvS633OquRCCaJbO9Y4ugMgbvjhN4G3BzU9hFZ1FyVj+89EVH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: from localhost (88-113-26-217.elisa-laajakaista.fi [88.113.26.217])
-	by fgw23.mail.saunalahti.fi (Halon) with ESMTP
-	id 5ade748f-f39b-11ee-b972-005056bdfda7;
-	Sat, 06 Apr 2024 01:25:06 +0300 (EEST)
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Sat, 6 Apr 2024 01:25:06 +0300
-To: syzbot <syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] [serial?] general protection fault in
- serial8250_tx_chars
-Message-ID: <ZhB6Qt48rkC3zMUb@surfacebook.localdomain>
-References: <0000000000009e2dd805ffc595a3@google.com>
- <000000000000706b5c0601125945@google.com>
+	s=arc-20240116; t=1712356407; c=relaxed/simple;
+	bh=tOOBRSN4UD8iNmFPLqnELgrDuShaBqdXyEqgmPhWEHw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=emhrGhxQF8QR7TUP4WCCdJSjlJFEjrcK5cbu7nro7oYpuI+cOguZBLb4RPuMz1SyZlWPbQuZHoGyQ7fcbtklosOBQOsNBn3SCGsUrC4N1qLge5+eDSul3NGjHigZSPqMLPZrQF3hhXuTFd07GSQHptzSs3iJk1BEl5+Si+HADjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com; spf=pass smtp.mailfrom=intel.com; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+X-CSE-ConnectionGUID: YOZbUO0fSbGoHoPAw5ipOg==
+X-CSE-MsgGUID: qZdnhEV0RpWZaRrs8sxlVQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7937167"
+X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
+   d="scan'208";a="7937167"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:33:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="937088154"
+X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
+   d="scan'208";a="937088154"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2024 15:33:23 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 311554C5; Sat,  6 Apr 2024 01:33:22 +0300 (EEST)
+Date: Sat, 6 Apr 2024 01:33:22 +0300
+From: Andy Shevchenko <andy@black.fi.intel.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/1] tty: Handle HAS_IOPORT dependencies
+Message-ID: <ZhB8MnWSeySAHGXG@black.fi.intel.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,28 +48,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <000000000000706b5c0601125945@google.com>
+In-Reply-To: <20240405152924.252598-1-schnelle@linux.ibm.com>
 
-Sat, Jul 22, 2023 at 05:16:21AM -0700, syzbot kirjoitti:
-> syzbot has found a reproducer for the following issue on:
+On Fri, Apr 05, 2024 at 05:29:23PM +0200, Niklas Schnelle wrote:
+> Hi Greg, Jiri, Ilpo,
 > 
-> HEAD commit:    d192f5382581 Merge tag 'arm64-fixes' of git://git.kernel.o..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=12d03ff4a80000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a4507c291b5ab5d4
-> dashboard link: https://syzkaller.appspot.com/bug?extid=837b8c9032c053262db8
-> compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17e4fe52a80000
+> This is a follow up in my ongoing effort of making inb()/outb() and
+> similar I/O port accessors compile-time optional. Previously I sent this
+> as a treewide series titled "treewide: Remove I/O port accessors for
+> HAS_IOPORT=n" with the latest being its 5th version[0]. With a significant
+> subset of patches merged I've changed over to per-subsystem series. These
+> series are stand alone and should be merged via the relevant tree such
+> that with all subsystems complete we can follow this up with the final
+> patch that will make the I/O port accessors compile-time optional.
 > 
-> Downloadable assets:
-> disk image: https://storage.googleapis.com/syzbot-assets/517e5a5be15c/disk-d192f538.raw.xz
-> vmlinux: https://storage.googleapis.com/syzbot-assets/59d41b43c30c/vmlinux-d192f538.xz
-> kernel image: https://storage.googleapis.com/syzbot-assets/99ed26179ccf/bzImage-d192f538.xz
+> The current state of the full series with changes to the remaining subsystems
+> and the aforementioned final patch can be found for your convenience on my
+> git.kernel.org tree in the has_ioport branch[1]. As for compile-time vs runtime
+> see Linus' reply to my first attempt[2].
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+837b8c9032c053262db8@syzkaller.appspotmail.com
+> The patch was previously acked[3] by Greg but given this was almost
+> a year ago and didn't apply then I didn't carry the Ack over. That said
+> I don't think there were non trivial changes.
 
-#syz test git@bitbucket.org:andy-shev/linux.git test-8250-pm
+Hmm... Can those drivers simply be converted to use ioreadXX/iowriteXX
+instead?
 
 -- 
 With Best Regards,
