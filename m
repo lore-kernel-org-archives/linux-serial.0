@@ -1,62 +1,62 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2FD159B45;
-	Fri,  5 Apr 2024 13:44:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDEBF16E895;
+	Fri,  5 Apr 2024 14:10:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712324691; cv=none; b=qDhguc994hfgBNnCOuoj/bvpTWBBia1O5uzJulXXX0lvMjBMqZqF/qqvpJn3MsA2AyHCNajdVxoW2SseFJLFFtZi0gy1JJaKN1QCDV4Q4NggKACDpAoSN/nWg86dfh1i7sBcW8/7UBJrvkO3GLvpGOG7WVY7QxqTYV1nVmGkVE0=
+	t=1712326215; cv=none; b=YxPX8FTaUr7aEum4zmolp1NXgjHlkYkZKUonLPcF4CAZmIY1Wr0tQWvAh6qDUpCuc3aqdBM4trutLlPMTDecEj71R6fFOVv2lAsvlGazwNUr66huZ8diTeoCmxAO25wjuorRm5xU2MFUhpVfgXu9zYdxYpdL1oYHB1iCywv+FlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712324691; c=relaxed/simple;
-	bh=xva1i4UV7vLLzjuJ78eFep+KhLy6yugVjTmbsoR/THE=;
+	s=arc-20240116; t=1712326215; c=relaxed/simple;
+	bh=UhWkJrz23rKLc2rFOHT1xk+suq4P0R7Fe6anIWJ5btE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eWu2yenVR8WywDLGbI8ruTuZ4jri+1Uk2ZpCrzG2R3dTIkQW6bOg0dQsX6r6SeH708fnvmpOihoenbX0JK6Sh0c6oyXv64YuMoCoZEcDCeuGdh5H3EjGzfW7joCHnFGxh8TQLUBHpOK9ytZ6gUpe68TyjcPUws9dO0anQK+vlZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.172
+	 To:Cc:Content-Type; b=BG8kONHYPMshE2RImnJSk5JlghRwTpzRXRc1GYrmKyNaayno9prR/pQXvG7oNT6SC05XJLF2CF3fz20dl3Pmx7+CnqR7mPMLRd7SGwzolkW7RrSwBbe4owdN0Xe/ajhy17Fi+V/9IIF/XlPeAOUSKL9WLlMh1g1HS3WsBvL4IRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-61495e769bdso20601567b3.0;
-        Fri, 05 Apr 2024 06:44:49 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-6151d2489b4so24101067b3.0;
+        Fri, 05 Apr 2024 07:10:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712324687; x=1712929487;
+        d=1e100.net; s=20230601; t=1712326212; x=1712931012;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cmgVg+1Qt1l7Val4LNuCcTFJSMT3ZujIhIoVP0zBFgM=;
-        b=MbEOsctzP05UopA1uaFoAj8BmDdf9l3kOBd/wixV+izSbXZ14bT8Knh0Q697aeUBZH
-         JLS0d0PAQqFKJrAd4rVGx1wgAuaePJGXhhODrq2NnmDhmaQLMCmA9dSuI91i+V3AhFrd
-         JG8RxnH8KEpm29Q1aYVig27FXb8xFP++2SADpfKyUTNjryxdqv36rCkfBZrlV7Y4B8q3
-         SX0yzhEOs5l16LYKFw9jcODqm5qccloC7ZHQYTneMBhCvo+mc2HWpo8Dti+oBHD501aK
-         dD9NSMavr43e8nKcmWNdx6xzKbL+tZe2K4Up98cAyVe/fa4FjdsYWabkOqPlS6XldqdD
-         91kQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXNQqOyfSgBrj7mPPRG5lxoqJchqbKU9f9vJRf3lDzmR7+X1dJ4z0RJ6NkqWX7g2eS1H3zKUvtP541nW8gdXXNRqFJzr+ir7eteRCpTg4DjF1lfa/yVtkCvTp1cVL1bpokEioE8SNBtXGG7Q3IEHry7gsoTh7KX1ozlM2D+yeYBKKUF0eAczbBmpNDUoMfn5bRdPQsIuh0evlHUzbayRil8rxCUhwE5S5QkzJ+hLIcM90k78dzJZvNO3IfYpOfFiQC/D7oltSXaOEquGltbqfWVzSXtxNUyaq5it9syqw/86oQErJ3D6XYpTZC7FI2jgN3dlTlsCsCsZiF5Pd95YEn2SDBVBatyMxDQJIiVnt2y/9bVaJiCsY0=
-X-Gm-Message-State: AOJu0Yx/jh1Klvo7IoqDhD1fsdpg8ZP8sL0fo2KKeicWfNFPGTYSjFKZ
-	2/qW4k0JiDlLphYqpx7yjLElda6wustYRpUxNXgmCONhkBgsuEg0/qFAST41RtU=
-X-Google-Smtp-Source: AGHT+IGryuA94LE/eSXrxoIJvHMzfoXO/BOd4G4bBFVPpkH3DKKQDijLJcZynHrVvv2SFpn7Kx85jQ==
-X-Received: by 2002:a0d:e8c8:0:b0:610:f5db:697f with SMTP id r191-20020a0de8c8000000b00610f5db697fmr1265803ywe.11.1712324686820;
-        Fri, 05 Apr 2024 06:44:46 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id m28-20020a81ae1c000000b0060a28132b21sm353732ywh.106.2024.04.05.06.44.46
+        bh=zo5dazFCTOKvFVcPPNzGvqZjg5emzEStKUearWVqE/4=;
+        b=smdZ4x4tSobCG7/AJB5NXCw4gj5Km1mPaySy2IcZA1wu9jYPko//VYA2ThdRPwanvA
+         MC1Z4Y3VGv4hECxKJs5DjkR9zFKaiZ9agYgKaDxmXlG8YTWDklPv1cyo9TyNpY5HMQ4X
+         elPVHuE4gcC0iqoatpXNO3Cgcx6rcpryFpdjOkRWgmsvI8+f72itOeKWid9q/mszdiDL
+         KbGb2lUXSxvndo2LiNJ0Tjev1lJ2U0AfLVPnbkWKWCgmu/WAV9g5wW8NVPlhzFTBtnLb
+         EaMj5oqSBRQ80ahEs9js7XJCbkMEk4kXQP8IPKM8TRDitOsHpyeANnXCIIYR4MIxXFae
+         BD5g==
+X-Forwarded-Encrypted: i=1; AJvYcCUnEuPbaOhRQLIvz56UXaXLOxm4jTwf7T6UngwMHp0zVfhpgPMHyle0bQilYUihq0RISIyz9Gzetfvw1/KrYIPptj6GLpDJspNfZOZeZVtlTJB//1UhLOt+diBGLCyWnzVMJ/lBYs3i59xFa+fnQDih1wiF+HuaKXFDM51zAs9yC53TfQchHWh5EbdwCtMHY8yLxk058HsQle5SsBRPUDAVK73+YJuIUgfeot4Qmxb5E/Np43Mg/PwCGMqhvGQCWuj0r65axXoptjutoJL39T4UY9CK3qUCHfvn/gGmZE50miEu5vNNFY2T1XvQwYlQtmwDuYaLNM1++keLG8Fd3DytCzu18/wrzrREdDaZzl/HWLwHZ8CyrpU=
+X-Gm-Message-State: AOJu0YwvxaRCIEVT/zVCfalDAmhBHItiMr88lLhGODcta3p0TFh2+iQj
+	CEkjDd7PpAQVHy1jAsq/Dc4UX2ZBZ2yztd0CcKFzfUYRlC3DRRzKgQffP5ZBkno=
+X-Google-Smtp-Source: AGHT+IEP7v2FRtp6YWsKqFOWKu6GX9ebD3Ahe7HH5QN4FxWDZZBjjTw+UOh4HM5EFGxMk02CQuTa9g==
+X-Received: by 2002:a81:6086:0:b0:615:31a9:83c4 with SMTP id u128-20020a816086000000b0061531a983c4mr1461190ywb.6.1712326212430;
+        Fri, 05 Apr 2024 07:10:12 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
+        by smtp.gmail.com with ESMTPSA id g68-20020a81a947000000b00617cf273030sm278771ywh.82.2024.04.05.07.10.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Apr 2024 06:44:46 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id 3f1490d57ef6-dc6d8bd612dso2384236276.1;
-        Fri, 05 Apr 2024 06:44:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCV41T4WqMg2Yw6UHY16yorygqThCKEtkkDtHn9m9kwmTODivrNJJQJCERBUqHL4qPF4+cpRYAHsN8MNSA0jnkIHQ4nQhXzjRZ4T/vD6sg4z451zWXVgWLtqbkdj+efTVZy3Fqp+fl5WlEQctd/i1h+O82lWDgrIVKhy+uWe+a9r5Vzmpliah8ebSfjlIROtb4c9QZjRboMfTxkBeBxvYo7CW0NPxC2dIlb62yVRGLpmNbMwZJ2OH+ZO9WcQuClprMKacsUtKGnLcFuZOlZgIobF6CDugCJ+rYXUZ9Hhoiqw1YdUzw1WGhgLtvIaaOmLDzjzdtuxjoCu3pae21zeMsEPT3EJRqmFX9js1nKEjtxM47VBqz7fMpE=
-X-Received: by 2002:a25:9a05:0:b0:dcf:4793:9a25 with SMTP id
- x5-20020a259a05000000b00dcf47939a25mr1436501ybn.44.1712324686416; Fri, 05 Apr
- 2024 06:44:46 -0700 (PDT)
+        Fri, 05 Apr 2024 07:10:12 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-dbed0710c74so2090306276.1;
+        Fri, 05 Apr 2024 07:10:12 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU3fJz6nL6cfIkiiG2ayy4RzOL2AldXVQJNoWYlsKDVgAtte9df/fQnzkurcNyjffaQcLcVhA4S1/tqOhyVS2GRh9SMU3sq26i9hekbCg8LNZa2J2H19KcNi+QjtS4guCcvsC6EmAOhRTNph3MwMjcW4zIDz07Z/QtLxLEM44PNeYAzb46Rxb4ly9UgBSzbCmTCXncx3LF1b2/hUCFUppVW/F1GSw94xx9lz9e5W4oDlinEzLdQtblFs+70X5XVeg++4X/Cn2saVSIvQHiLNc3YZm/B0juNwDEmxP/9DnGyNbTLbnNw292Jz7ufjJaDT19U4QMqhLE/udNFZ3IudIG2sCDaTB/GMUU5Fgghru5p6JAvKVqw6i0=
+X-Received: by 2002:a5b:b8f:0:b0:dc6:dd80:430e with SMTP id
+ l15-20020a5b0b8f000000b00dc6dd80430emr1385717ybq.27.1712325790915; Fri, 05
+ Apr 2024 07:03:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1712207606.git.ysato@users.sourceforge.jp> <3c2937039026fdb827709b2584528aca263f2668.1712207606.git.ysato@users.sourceforge.jp>
-In-Reply-To: <3c2937039026fdb827709b2584528aca263f2668.1712207606.git.ysato@users.sourceforge.jp>
+References: <cover.1712207606.git.ysato@users.sourceforge.jp> <f3af315d575fbec431bad9bfaf9790450ab31ad9.1712207606.git.ysato@users.sourceforge.jp>
+In-Reply-To: <f3af315d575fbec431bad9bfaf9790450ab31ad9.1712207606.git.ysato@users.sourceforge.jp>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 5 Apr 2024 15:44:34 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXetO4FJhL3rByXWS=vevkvNgbgevzTZgDFjh-F3TMb2A@mail.gmail.com>
-Message-ID: <CAMuHMdXetO4FJhL3rByXWS=vevkvNgbgevzTZgDFjh-F3TMb2A@mail.gmail.com>
-Subject: Re: [RESEND v7 28/37] dt-bindings: soc: renesas: sh: Add SH7751 based target
+Date: Fri, 5 Apr 2024 16:02:59 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU1vhCZ+mCKB27N57N7atLdxSmEUV8RWJf7uiZkfUvG0A@mail.gmail.com>
+Message-ID: <CAMuHMdU1vhCZ+mCKB27N57N7atLdxSmEUV8RWJf7uiZkfUvG0A@mail.gmail.com>
+Subject: Re: [RESEND v7 21/37] dt-bindings: serial: renesas,scif: Add scif-sh7751.
 To: Yoshinori Sato <ysato@users.sourceforge.jp>
 Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
 	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -90,7 +90,8 @@ Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
 	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org, 
+	"Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -98,33 +99,37 @@ Hi Sato-san,
 
 On Thu, Apr 4, 2024 at 7:15=E2=80=AFAM Yoshinori Sato
 <ysato@users.sourceforge.jp> wrote:
+> Add Renesas SH7751 SCIF.
+>
 > Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks for the update!
+> --- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+> @@ -18,6 +18,7 @@ properties:
+>        - items:
+>            - enum:
+>                - renesas,scif-r7s72100     # RZ/A1H
+> +              - renesas,scif-sh7751       # SH7751
+>            - const: renesas,scif           # generic SCIF compatible UART
+>
+>        - items:
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/renesas/sh.yaml
 
-> +  compatible:
-> +    oneOf:
+If this is applied after "[PATCH v2 2/2] dt-bindings: serial:
+renesas,scif: Validate 'interrupts' and 'interrupt-names'"[1], an extra
+"- renesas,scif-sh7751" line should be added to the 4-interrupt section
+(below "- renesas,scif-r7s72100").
 
-As adding more SoCs is expected, having oneOf from the start is fine.
-
-> +      - description: SH7751R based platform
-> +        items:
-> +          - enum:
-> +              - renesas,rts7751r2d      # Renesas SH4 2D graphics board
-> +              - iodata,landisk          # LANDISK HDL-U
-> +              - iodata,usl-5p           # USL-5P
-> +          - const: renesas,sh7751r
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+[1] https://lore.kernel.org/all/20240307114217.34784-3-prabhakar.mahadev-la=
+d.rj@bp.renesas.com/
 
 Gr{oetje,eeting}s,
 
                         Geert
 
---=20
+
+--
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
 .org
 
