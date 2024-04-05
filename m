@@ -1,105 +1,155 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D9416079F
-	for <linux-serial@vger.kernel.org>; Fri,  5 Apr 2024 09:50:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7146416ABCE;
+	Fri,  5 Apr 2024 12:06:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712310614; cv=none; b=q0txXKBMoCWkIxfarV42ygFN6FLV8zoH1NG8Y0RfGp6GT+BJSCpQ6240mm87qgonVLweIT80rxEqLSEzwaEscohoAuGuPQs4/fgYU3e1axMHsHw2Y3b2uHqtghcsu8Ux5qdnG08sKOkUxybq34X5vpEGWz0ggbdJxTwOEsFP/KM=
+	t=1712318766; cv=none; b=KeYlA2+yU8P3QNBnxvFxQfv/kNpz+eezSB6u+4RV5YbJS3NbOc4vwVeWgv5IiIgb6ky3jfymZ0Xll0IqO36FdfaQ5kl/A+nqpeaauE7wWkn3CBqeDkR0KIVZ0jWEPPbPKHhFogIVB38050ycbfF5mwaGQkfJxYqSEbRliINvjz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712310614; c=relaxed/simple;
-	bh=hSWXhZbD6PA6W0zh+ZqK9opYJ0KSx0CuUh2LDJVqsug=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mxBMhGaoJ3EfyGhPAFvwJyduJhCvgATX+1CDu9J1D63NQxtb/rgevQeEz8vY6Lc6czsjem3OOMDlCiaTEXdtnvD0BghWHMLpsp78LYEpGNCnSxDrEOegbwSXwHKg9ANFK4epkVkgwFvYyGV+j/H4CDpfbKs+bR+nxaW+F7I8v6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1rsgCl-0003Gt-Rv; Fri, 05 Apr 2024 11:49:51 +0200
-Received: from [2a0a:edc0:0:b01:1d::7b] (helo=bjornoya.blackshift.org)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1rsgCl-00AXqP-3W; Fri, 05 Apr 2024 11:49:51 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id AE6A52B282F;
-	Fri,  5 Apr 2024 09:49:50 +0000 (UTC)
-Date: Fri, 5 Apr 2024 11:49:50 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] serial: imx: Introduce timeout when waiting on
- transmitter empty
-Message-ID: <20240405-impurity-emerald-f67dc37adf9b-mkl@pengutronix.de>
-References: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
+	s=arc-20240116; t=1712318766; c=relaxed/simple;
+	bh=3SOawKf7ShxwVuliq6PEQpm/4ZVoz/cacxEBlBkgzko=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tPCMyYBVbbE+/aw9c6OutP+ep15AL3s9TRXsyujf23pEIQr9aSfWKC5EwARNSB+H26SydkLbbuJHbbOvAThQod4bgjTCuboTx5WsDx60+Pvx1nusMzWlLXmSmoo4HTxqUSccuMmM9rb6aUVNuz3IWf4kMzn4xSKJ8EnCfqsOGYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=jUV6/BWI; arc=none smtp.client-ip=217.70.183.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="jUV6/BWI"
+Received: by mail.gandi.net (Postfix) with ESMTPA id CBB5C60009;
+	Fri,  5 Apr 2024 12:05:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1712318755;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=dLx+yQeXl9X7vSpjKyi2n2Z3bqsnNuxCnQzI/RO3bx4=;
+	b=jUV6/BWIzPQt0r3RaYyWkUQFqzRMNk8l0YxD4DVH2/yWPbRsNZ6Bw6J2VKFlY+h96jrT5a
+	ns72dPJFsEjb4hK4iauxpCr9U2/n3infaHmdtGnNjqBzOmT3hEU8w9V/u9cG80nt2OzWBi
+	sl1HwQnsAKA/kw7w35QYh4xx07m7di2Xi16zneYKgE2FvtXTWMX8v+TmCLhwuujZc4qSMH
+	mkudrvXCrgiYVb9ZsQ7//jKwZMmFdBv97JtwBHrMtRzTEXGDC69h2vaY9FmbI1Y0MQbGwd
+	H5oknzmopj66WdEHTcuMNz9rs4OR5L+vkx8Ep7+KC44bCuoL+cvwMn1V9ic3BA==
+From: Bastien Curutchet <bastien.curutchet@bootlin.com>
+To: bastien.curutchet@bootlin.com,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+	herve.codina@bootlin.com,
+	christophercordahi@nanometrics.ca
+Subject: [PATCH v2 1/1] serial: 8250_of: Add clock_notifier
+Date: Fri,  5 Apr 2024 14:05:52 +0200
+Message-ID: <20240405120552.35991-1-bastien.curutchet@bootlin.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6rhh7y57qqxw7exf"
-Content-Disposition: inline
-In-Reply-To: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-GND-Sasl: bastien.curutchet@bootlin.com
 
+The UART's input clock rate can change at runtime but this is not
+handled by the driver.
 
---6rhh7y57qqxw7exf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add a clock_notifier callback that updates the divisors when the input
+clock is updated. The serial8250_update_uartclk() is used to do so.
+PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
+the POST_RATE_CHANGE is used. Not using PRE_RATE_CHANGE notification can
+result in a few corrupted bytes during frequency transitions but, IMHO,
+it can be acceptable in many use cases.
 
-On 05.04.2024 11:25:13, Esben Haabendal wrote:
-> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potentital
-> deadlock.
->=20
-> In case of the timeout, there is not much we can do, so we simply ignore
-> the transmitter state and optimistically try to continue.
->=20
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+It has been tested on a DAVINCI/OMAP-L138 processor.
 
-Where's the cover letter and patch 2/2? Have a look at b4 [1], it's a
-great tool to help you with sending git patch series.
+Signed-off-by: Bastien Curutchet <bastien.curutchet@bootlin.com>
+---
+Change log v1 -> v2:
+ * Add details in commit log
+ * Drop alphabetic order in #include
+ * Drop a useless check in notifier callback
 
-[1] https://b4.docs.kernel.org/en/latest/
+v1 : https://lore.kernel.org/all/20240404074450.42708-1-bastien.curutchet@bootlin.com/
+ drivers/tty/serial/8250/8250_of.c | 37 +++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-Marc
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 5d1dd992d8fb..e14f47ef1172 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -18,6 +18,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/clk.h>
+ #include <linux/reset.h>
++#include <linux/notifier.h>
+ 
+ #include "8250.h"
+ 
+@@ -26,6 +27,7 @@ struct of_serial_info {
+ 	struct reset_control *rst;
+ 	int type;
+ 	int line;
++	struct notifier_block clk_notifier;
+ };
+ 
+ /* Nuvoton NPCM timeout register */
+@@ -58,6 +60,26 @@ static int npcm_setup(struct uart_port *port)
+ 	return 0;
+ }
+ 
++static inline struct of_serial_info *clk_nb_to_info(struct notifier_block *nb)
++{
++	return container_of(nb, struct of_serial_info, clk_notifier);
++}
++
++static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
++					      void *data)
++{
++	struct of_serial_info *info = clk_nb_to_info(nb);
++	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
++	struct clk_notifier_data *ndata = data;
++
++	if (event == POST_RATE_CHANGE) {
++		serial8250_update_uartclk(&port8250->port, ndata->new_rate);
++		return NOTIFY_OK;
++	}
++
++	return NOTIFY_DONE;
++}
++
+ /*
+  * Fill a struct uart_port for a given device node
+  */
+@@ -218,7 +240,19 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
+ 	info->type = port_type;
+ 	info->line = ret;
+ 	platform_set_drvdata(ofdev, info);
++
++	if (info->clk) {
++		info->clk_notifier.notifier_call = of_platform_serial_clk_notifier_cb;
++		ret = clk_notifier_register(info->clk, &info->clk_notifier);
++		if (ret) {
++			dev_err_probe(port8250.port.dev, ret, "Failed to set the clock notifier\n");
++			goto err_unregister;
++		}
++	}
++
+ 	return 0;
++err_unregister:
++	serial8250_unregister_port(info->line);
+ err_dispose:
+ 	pm_runtime_put_sync(&ofdev->dev);
+ 	pm_runtime_disable(&ofdev->dev);
+@@ -234,6 +268,9 @@ static void of_platform_serial_remove(struct platform_device *ofdev)
+ {
+ 	struct of_serial_info *info = platform_get_drvdata(ofdev);
+ 
++	if (info->clk)
++		clk_notifier_unregister(info->clk, &info->clk_notifier);
++
+ 	serial8250_unregister_port(info->line);
+ 
+ 	reset_control_assert(info->rst);
+-- 
+2.44.0
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---6rhh7y57qqxw7exf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEUEC6huC2BN0pvD5fKDiiPnotvG8FAmYPyTsACgkQKDiiPnot
-vG8gsAf/fEGSFLsAsbgzZopYqja0FtibvbPZ1dlovaaUkpMAPJxw50RrvIK4/Nor
-CQYR8XnT9GiH77IUOjNphjpvJJYNXWxkvsj1U9vAYziAV+fDRCzXxYWVmJf/7MNC
-gJ2EOm2FCAmlOkiRcvzeoaIIodo2465NLn9WQaWj9qbrGslgQ996WZ6bl1wu6aZG
-LS4/7FK9dbdAu8w6poagajePRAYZ9U5faIiBA5ZMSegB0dHHXgUbQAzRqvCZmWVY
-3qbzsy+0uvN0lz4Z7jP6tQ/8YcKl5vz/HOdYAyN2qI3yJnB+ChB71ON3RwYSSHTO
-pVA/zhZztk307ZmaTA7eeWnLFBAyFw==
-=BAfU
------END PGP SIGNATURE-----
-
---6rhh7y57qqxw7exf--
