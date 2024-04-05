@@ -1,121 +1,85 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6325B17167C
-	for <linux-serial@vger.kernel.org>; Fri,  5 Apr 2024 17:34:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB7B171072;
+	Fri,  5 Apr 2024 17:39:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712338447; cv=none; b=i9T0s/CUZzFy6VDSqxrJhp5UnT/8rDHtOclhvKhbTxEmEb1BsSPPki+qTOGdsM+4SdRRfojK8yF+SvnQPOGzYLrKzmas3fL2+jypKm0xqD/0lAdWkvK/kq662CUHSc96WUzwzextBjuKJxvrgsh9/l7qC0vOz60AG/I0Q20y278=
+	t=1712338743; cv=none; b=fFKdDReROQyXI5yhDg73ar4tNr3CY48GrgHvQgRvYYa2Mv7VvZ2Pxr8QcXWUNAMmEHCfbA3iE5bVh66bWFvB39keNuGOpQjAz2+QQhC4Pjq6KO5GWC6U24a6g3/3wtroaQqi2CXuXtCDV1GNIUzp/KsLFkEEhGKiyDrwhDeYh/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712338447; c=relaxed/simple;
-	bh=yNKlQsRX9NX6jSUmt6M9DavRE3tT1/cEPwISWiiJF1o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ovk23DYlFY4xZ/2RjpXasHqHOmi3qnx92tpEd5zzpdCocJO6as/f5emmm1DRVTMoy40KlRizlqw50E8mK0lJk3e2QN6YOeqP69qOjnhDS6bgG6B7fPwvGe8B7ar/rZOOO5FJXiS41yo04KIXDHnODF+Vy4gh1stOcmG4/9tgBrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1rsnRo-0006ax-55; Fri, 05 Apr 2024 19:33:52 +0200
-Received: from [2a0a:edc0:0:b01:1d::7b] (helo=bjornoya.blackshift.org)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1rsnRn-00AbC0-C5; Fri, 05 Apr 2024 19:33:51 +0200
-Received: from pengutronix.de (unknown [172.20.34.65])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id F30542B2CB5;
-	Fri,  5 Apr 2024 17:33:50 +0000 (UTC)
-Date: Fri, 5 Apr 2024 19:33:50 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
-	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] serial: imx: Introduce timeout when waiting on
- transmitter empty
-Message-ID: <20240405-amused-cascade-0801f31c674a-mkl@pengutronix.de>
-References: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
- <20240405-impurity-emerald-f67dc37adf9b-mkl@pengutronix.de>
- <874jcf67xm.fsf@geanix.com>
+	s=arc-20240116; t=1712338743; c=relaxed/simple;
+	bh=XkNv1Lje8tREP4a4egM0yUzbQRvo5OybpHj233Dw/9o=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=n2ovSSJ7jjiJF2L3fwC7kQSYxc99p36TJo/X1c3Zt2GAAIqLT5AdmeAtOwwW1czQSlu/7kcATb09v5gmcObWdpFnU5OHMGdPtsMNYqNkVTg6iTPXgtkOBGdd3VRz1qj0cNCt7eCKtx15OFr/+zfU1/a54UWHlJqSoyGVsIcCO1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kgfL5TFa; arc=none smtp.client-ip=209.85.215.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kgfL5TFa"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-5d862e8b163so487107a12.1;
+        Fri, 05 Apr 2024 10:39:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712338742; x=1712943542; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XkNv1Lje8tREP4a4egM0yUzbQRvo5OybpHj233Dw/9o=;
+        b=kgfL5TFabPuF+rEuDwCSE63s92ax/yBKgJi+yrvWwbDP/ncHYt7E481YDWBZfbnDoO
+         Bst7Kcs24TAbyaCQ4RNb4vvUHboAzy5TmTzT4uxgV+Tz7c4TRXzuWubEk9841LW6m/8p
+         nuXIW8o70UDQnHPiL5Zr5F8TCODIjm1yeRLnms5QJOpd2Wn6UzxsJ/Tid9Q85OaurJe1
+         SWf5IHAfOB9CQnREkCloGA2yU6i5sUCsQKr7b6BGbnzhA01v8K0VwPx1aZED3GiP4i5I
+         7WmSo4p6tlKIvaK1WnetzfIOc5oBH5NiqKS0iD7a9A/sxv5L9tOwONAaX6f3NucDHrTf
+         CPuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712338742; x=1712943542;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XkNv1Lje8tREP4a4egM0yUzbQRvo5OybpHj233Dw/9o=;
+        b=G0rpP6D9Htwss0oI27Uai63ahfPIHTd3hsrodH/d/GMvKdQGcTwv3z5vJSHABEDEHD
+         7O6QWTkNKvL5LYxWBhia3qLuOjK3Is2wxm/uudmVu+LBadLpqS3CqqhtsApKF6fof/VR
+         8X2d6tbW9At/+rl+tz232MVqs3JH0w18lgn7U0t6Vm5VjUbnc9biZl3gdhzQLzUqUfDj
+         pCI7pC8GN3GZG5HrS4QcckCv7FwG6lwHb9J115RaTtUzKHa6qx99C9Cu2qhxTolFkD5W
+         sE4OjQNKVWfM707//mrSe6nxqUNd6hXJIANNtp7genTnyNrIYpQExWYgZ5W0wmrfSSJY
+         ZiYA==
+X-Forwarded-Encrypted: i=1; AJvYcCXEpUz6Sb2egFLR0izh26ba8IpXx53kCF6jOJgUvwGZS4Yd6eOkCvE9RoPTsccwVbWaUuWniW0+rO92ffed2Qv5tzmA6BEs3Alb3AvjFD072sxMmQ49c7P6ZUf2P2yG9F3NZIiWgy+LNAfs
+X-Gm-Message-State: AOJu0Ywe9TbutLq/vNESdn1ezUOjpE/J8XQEuQ+27cEsx4yPcsuuLq0r
+	kf7iwqEC3R27jJLF+DSmsRKpRRsnRS/3dFmH6pgC3rh2LBL1PRwJo3cyUYzyMBf4RYBbBzPAt9F
+	CbAKw+nM045OFiuYz+VB3b7bvovo=
+X-Google-Smtp-Source: AGHT+IG0fdWiO/DDhWt+ydU2XsAmvp8DjslGdEn7xhs3xLBJ4xyuh09Wa2suF3tZOlzI8PazH3O11cA/0Kf1hRuxMYk=
+X-Received: by 2002:a17:90b:e89:b0:2a2:386e:3921 with SMTP id
+ fv9-20020a17090b0e8900b002a2386e3921mr2035370pjb.3.1712338741681; Fri, 05 Apr
+ 2024 10:39:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4bjqwdxylbl7erdi"
-Content-Disposition: inline
-In-Reply-To: <874jcf67xm.fsf@geanix.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
-
-
---4bjqwdxylbl7erdi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
+In-Reply-To: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
+From: Fabio Estevam <festevam@gmail.com>
+Date: Fri, 5 Apr 2024 14:38:48 -0300
+Message-ID: <CAOMZO5Axz7un+9H2uEoQtE0=pYNC0hEyZiNobrSi2m0ajj8N+g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] serial: imx: Introduce timeout when waiting on
+ transmitter empty
+To: Esben Haabendal <esben@geanix.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	Pengutronix Kernel Team <kernel@pengutronix.de>, Marc Kleine-Budde <mkl@pengutronix.de>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, imx@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 05.04.2024 19:22:29, Esben Haabendal wrote:
-> Marc Kleine-Budde <mkl@pengutronix.de> writes:
->=20
-> > On 05.04.2024 11:25:13, Esben Haabendal wrote:
-> >> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potent=
-ital
-> >> deadlock.
-> >>=20
-> >> In case of the timeout, there is not much we can do, so we simply igno=
-re
-> >> the transmitter state and optimistically try to continue.
-> >>=20
-> >> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> >> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> >
-> > Where's the cover letter and patch 2/2? Have a look at b4 [1], it's a
-> > great tool to help you with sending git patch series.
->=20
-> It is left out on purpose.
->=20
-> This patch is a stand-alone patch as it is. The other part of the series
-> you are talking about is not going to mainline for now. It needs still
-> quite some work, and will only go in after all the other printk stuff.
->=20
-> I hope we can merge this patch as it to mainline now, instead of piling
-> up more than necessary in the rt tree.
+On Fri, Apr 5, 2024 at 6:25=E2=80=AFAM Esben Haabendal <esben@geanix.com> w=
+rote:
+>
+> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potentita=
+l
 
-Ok, then send it as patch 1/1.
+s/potentital/potential
 
-Marc
+Could you elaborate on this deadlock? Have you seen it in practice?
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---4bjqwdxylbl7erdi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEUEC6huC2BN0pvD5fKDiiPnotvG8FAmYQNfsACgkQKDiiPnot
-vG9DAgf7BXuZetpPFhgqfRuDFXD45sY0bXSNzz+OUWMCPPyz3WmXU0+EV74/QMCU
-un0y/QTd+SM5nYz4/hiRANBcDIXR71D0gDH1aNBNG6rpd3ZaZ/GnDfMmS6mj7MfJ
-xYRaMZ0wlKbrueg3up5K24qKL8J+HDWCVtEF06htScqSA33Z/sWC6x6vJ21qhU13
-KAYE8e+cy2QEcwUnBzxoYyNNS04hD1AyCGrtbJwyIwKJG7ZU8EqBsGZWGqyQDZCR
-WmfJvQGSjY2HuB0vTQD9hidq4pt9PIR6s0tVd8FQR+Xif02BK31KOlzsdkm0QVp4
-BimNplJFuQbXcL4cq8AW7EFuKkp9OQ==
-=SQHg
------END PGP SIGNATURE-----
-
---4bjqwdxylbl7erdi--
+Should a Fixes tag be added?
