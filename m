@@ -1,45 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9DE91CF8F;
-	Fri,  5 Apr 2024 22:33:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C10EC1426F;
+	Fri,  5 Apr 2024 22:37:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712356407; cv=none; b=jdDzhAXgtURG0ukWrgouVQBnYiHbtFlV5I1jjVB/DrS7j6x+LwPuK6/kXMHruPmsyEtgqK5ToiPNgUrC8O215n5xSdo1ZDa5Ly4ssv2bx/Y6V/o4aLXLP7CxJuIbRAzl6Zg0K2XLWUib09sfgoo7hivPObySEuxwhiPOhENekAc=
+	t=1712356666; cv=none; b=T5Rbsuqn+34S2wHnKLNokPRqJOuD2ScC6TlgDLm8MiFf/5WC8cxRf8mZDb7LoDEGK1X3YCQug+yOdZ28D/F5omQfX6EJ9D+c1EUhB9VNy1iDINgHnwVX7EQaWiJiDvWVkOTYpAGgdbXvJvKxg+pvs0ck2hL48rWzbwCOqT02c3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712356407; c=relaxed/simple;
-	bh=tOOBRSN4UD8iNmFPLqnELgrDuShaBqdXyEqgmPhWEHw=;
+	s=arc-20240116; t=1712356666; c=relaxed/simple;
+	bh=pcosRLT+plCTRdcbPNPsDmzaWjgYtYbKdOn2t8ObmoQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=emhrGhxQF8QR7TUP4WCCdJSjlJFEjrcK5cbu7nro7oYpuI+cOguZBLb4RPuMz1SyZlWPbQuZHoGyQ7fcbtklosOBQOsNBn3SCGsUrC4N1qLge5+eDSul3NGjHigZSPqMLPZrQF3hhXuTFd07GSQHptzSs3iJk1BEl5+Si+HADjY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com; spf=pass smtp.mailfrom=intel.com; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-X-CSE-ConnectionGUID: YOZbUO0fSbGoHoPAw5ipOg==
-X-CSE-MsgGUID: qZdnhEV0RpWZaRrs8sxlVQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7937167"
+	 Content-Type:Content-Disposition:In-Reply-To; b=embxmvH5lemReY14D9UMw8/K7h4ZgFR6e3QxelarrqzhkCU2LPwaeS4h3Mo5b+d/Fv3fzjU8h0LDrJfM+jb1prOmkKE/4dW85Nd1zwa4vFKO/rTnrmb9KzfWsYMZ5HILmX5843t/enBZPOWORxsFPKWRQ3ukpllLcELp/tPVl0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WNWyVRQR; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WNWyVRQR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712356665; x=1743892665;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pcosRLT+plCTRdcbPNPsDmzaWjgYtYbKdOn2t8ObmoQ=;
+  b=WNWyVRQRgOUxjG5OT6mkkWS9dejbbCGRPhKJnARgOdy696qf58jKxu0y
+   K14HxmzoXUQyoNwPh/O2BKpDO7YeGZPfHzdSA6uo9GnkDxR6DTuRN3EM7
+   +Vfgm6MTBJ7Quh1qT6DMggLS4T140O8LpiJdlI1031g8ZYTVeqUY/Rs2K
+   sR1NPkkzYn/dJJzTdDdcyBtiaYh+JXnFtQjhferbha3dyOWe6pSj0ixks
+   rC+JqUNEd6JaiQCMd8R9Nf+4ax8k/DnaRS/nweLUKxeOT4KS8N2lcf1Mi
+   XENtfJ8eDXOXe6yke1a2BbdVlSpZWfvLUM0JXQZ2Qjxi0CzIqA/0OoKAl
+   g==;
+X-CSE-ConnectionGUID: 2qlAAbQJTe+0OKE9gDt8Jg==
+X-CSE-MsgGUID: ZSqxPTT8QLKtUIouRzYhxw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19063730"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="7937167"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:33:25 -0700
+   d="scan'208";a="19063730"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:37:44 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="937088154"
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="915268493"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="937088154"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 05 Apr 2024 15:33:23 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 311554C5; Sat,  6 Apr 2024 01:33:22 +0300 (EEST)
-Date: Sat, 6 Apr 2024 01:33:22 +0300
-From: Andy Shevchenko <andy@black.fi.intel.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
+   d="scan'208";a="915268493"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:37:42 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rssBn-00000001sGz-2k5y;
+	Sat, 06 Apr 2024 01:37:39 +0300
+Date: Sat, 6 Apr 2024 01:37:39 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/1] tty: Handle HAS_IOPORT dependencies
-Message-ID: <ZhB8MnWSeySAHGXG@black.fi.intel.com>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tony Lindgren <tony@atomide.com>,
+	kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
+ NULLifying it
+Message-ID: <ZhB9M8C9IhXtJIXR@smile.fi.intel.com>
+References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
+ <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
+ <ZhAWIThfejjbmj8u@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,31 +68,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240405152924.252598-1-schnelle@linux.ibm.com>
+In-Reply-To: <ZhAWIThfejjbmj8u@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Apr 05, 2024 at 05:29:23PM +0200, Niklas Schnelle wrote:
-> Hi Greg, Jiri, Ilpo,
+On Fri, Apr 05, 2024 at 06:17:54PM +0300, Andy Shevchenko wrote:
+> On Fri, Apr 05, 2024 at 07:25:03AM +0200, Jiri Slaby wrote:
+> > On 04. 04. 24, 16:59, Andy Shevchenko wrote:
+> > > The circular buffer is NULLified in uart_tty_port_shutdown()
+> > > under the spin lock. However, the PM or other timer based callbacks
+> > > may still trigger after this event without knowning that buffer pointer
+> > > is not valid. Since the serial code is a bit inconsistent in checking
+> > > the buffer state (some rely on the head-tail positions, some on the
+> > > buffer pointer), it's better to have both aligned, i.e. buffer pointer
+> > > to be NULL and head-tail possitions to be the same, meaning it's empty.
+> > > This will prevent asynchronous calls to dereference NULL pointer as
+> > > reported recently in 8250 case:
+> > > 
+> > >    BUG: kernel NULL pointer dereference, address: 00000cf5
+> > >    Workqueue: pm pm_runtime_work
+> > >    EIP: serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
+> > >    ...
+> > >    ? serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
+> > >    __start_tx (drivers/tty/serial/8250/8250_port.c:1551)
+> > >    serial8250_start_tx (drivers/tty/serial/8250/8250_port.c:1654)
+> > >    serial_port_runtime_suspend (include/linux/serial_core.h:667 drivers/tty/serial/serial_port.c:63)
+> > >    __rpm_callback (drivers/base/power/runtime.c:393)
+> > >    ? serial_port_remove (drivers/tty/serial/serial_port.c:50)
+> > >    rpm_suspend (drivers/base/power/runtime.c:447)
+> > 
+> > Yeah, I noticed start_tx() is called repeatedly after shutdown() yesterday
+> > too. So thanks for looking into this.
 > 
-> This is a follow up in my ongoing effort of making inb()/outb() and
-> similar I/O port accessors compile-time optional. Previously I sent this
-> as a treewide series titled "treewide: Remove I/O port accessors for
-> HAS_IOPORT=n" with the latest being its 5th version[0]. With a significant
-> subset of patches merged I've changed over to per-subsystem series. These
-> series are stand alone and should be merged via the relevant tree such
-> that with all subsystems complete we can follow this up with the final
-> patch that will make the I/O port accessors compile-time optional.
+> > And it's pretty weird. I think it's new with the runtime PM (sure, /me reads
+> > Fixes: now). I am not sure if it is documented, but most of the code in tty/
+> > assumes NO ordinary ->ops (like start_tx()) are called after shutdown().
+> > Actually, to me it occurs like serial8250_start_tx() should not be called in
+> > the first place. It makes no sense after all.
+> > 
+> > BTW cannot be x_char en/queued at that time too (the other check in the if)?
+> > But again, serial8250_start_tx() should not be called after shutdown().
 > 
-> The current state of the full series with changes to the remaining subsystems
-> and the aforementioned final patch can be found for your convenience on my
-> git.kernel.org tree in the has_ioport branch[1]. As for compile-time vs runtime
-> see Linus' reply to my first attempt[2].
+> Yes, and I have no clue how we can check this as startup can be called again
+> and so on. The PM callback is timer based AFAIU, meaning it may happen at any
+> time.
 > 
-> The patch was previously acked[3] by Greg but given this was almost
-> a year ago and didn't apply then I didn't carry the Ack over. That said
-> I don't think there were non trivial changes.
+> But do you agree that this patch has value on its own?
 
-Hmm... Can those drivers simply be converted to use ioreadXX/iowriteXX
-instead?
+FWIW, https://lore.kernel.org/all/0000000000009e2dd805ffc595a3@google.com/T/
 
 -- 
 With Best Regards,
