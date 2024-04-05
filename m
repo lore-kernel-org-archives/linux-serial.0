@@ -1,155 +1,115 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7146416ABCE;
-	Fri,  5 Apr 2024 12:06:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9450316DEA5;
+	Fri,  5 Apr 2024 12:32:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712318766; cv=none; b=KeYlA2+yU8P3QNBnxvFxQfv/kNpz+eezSB6u+4RV5YbJS3NbOc4vwVeWgv5IiIgb6ky3jfymZ0Xll0IqO36FdfaQ5kl/A+nqpeaauE7wWkn3CBqeDkR0KIVZ0jWEPPbPKHhFogIVB38050ycbfF5mwaGQkfJxYqSEbRliINvjz4=
+	t=1712320332; cv=none; b=oin4xQYxqoesX1p7kEm88v1LcIh7REm/H1Rzpb9u+5UluRhArQVu0C6F+EwJ4U5jRNnSUQA5wFLx+QDL2gItMyysVApvupI2zBKHch2nkVx9Qe3zwHJRr294onE7ngZYvGsvxvzuo7ktMiwi1BHNkjXxsUkwxu4NmzDKUeCOCSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712318766; c=relaxed/simple;
-	bh=3SOawKf7ShxwVuliq6PEQpm/4ZVoz/cacxEBlBkgzko=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tPCMyYBVbbE+/aw9c6OutP+ep15AL3s9TRXsyujf23pEIQr9aSfWKC5EwARNSB+H26SydkLbbuJHbbOvAThQod4bgjTCuboTx5WsDx60+Pvx1nusMzWlLXmSmoo4HTxqUSccuMmM9rb6aUVNuz3IWf4kMzn4xSKJ8EnCfqsOGYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=jUV6/BWI; arc=none smtp.client-ip=217.70.183.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="jUV6/BWI"
-Received: by mail.gandi.net (Postfix) with ESMTPA id CBB5C60009;
-	Fri,  5 Apr 2024 12:05:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1712318755;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=dLx+yQeXl9X7vSpjKyi2n2Z3bqsnNuxCnQzI/RO3bx4=;
-	b=jUV6/BWIzPQt0r3RaYyWkUQFqzRMNk8l0YxD4DVH2/yWPbRsNZ6Bw6J2VKFlY+h96jrT5a
-	ns72dPJFsEjb4hK4iauxpCr9U2/n3infaHmdtGnNjqBzOmT3hEU8w9V/u9cG80nt2OzWBi
-	sl1HwQnsAKA/kw7w35QYh4xx07m7di2Xi16zneYKgE2FvtXTWMX8v+TmCLhwuujZc4qSMH
-	mkudrvXCrgiYVb9ZsQ7//jKwZMmFdBv97JtwBHrMtRzTEXGDC69h2vaY9FmbI1Y0MQbGwd
-	H5oknzmopj66WdEHTcuMNz9rs4OR5L+vkx8Ep7+KC44bCuoL+cvwMn1V9ic3BA==
-From: Bastien Curutchet <bastien.curutchet@bootlin.com>
-To: bastien.curutchet@bootlin.com,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	herve.codina@bootlin.com,
-	christophercordahi@nanometrics.ca
-Subject: [PATCH v2 1/1] serial: 8250_of: Add clock_notifier
-Date: Fri,  5 Apr 2024 14:05:52 +0200
-Message-ID: <20240405120552.35991-1-bastien.curutchet@bootlin.com>
-X-Mailer: git-send-email 2.44.0
+	s=arc-20240116; t=1712320332; c=relaxed/simple;
+	bh=RB1Wd/l8LoElaNdtvFRK6lkrvSeTO+EqCHYvOY2uo9k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Vcd53BblRdWhkH3/OY2IylBbqdArQoDEDQAU89QBqfVv7YYdWsINkBCHusfKJcP3zgsQdZ2CCr85kOcRGLKq4Aw9se/dtPDwa1lwgpJqEJZXS/2eeMzDv2PUpKSeP7dzunik+V5eB0QO5QZVfX5OsvxsbEI7/fJu/cmUEWwciws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcc71031680so2104444276.2;
+        Fri, 05 Apr 2024 05:32:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712320328; x=1712925128;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=/bPulDFyqKcNHOqZbTas5oGwjflVlb0IvXxADWNRbac=;
+        b=MPlvI2s8USkd0KUwDLyzT+44IipyacqoM3eSrOXEnaE+gq/5eri1jvCAFInTymt60z
+         REU/Xv5JsI4t7qr17Xnw+FIDmUxaLz7gsDwdCATDwL4saADckMYtHthVLdhZjH4WnVkI
+         HNmDc5maAvcDHpP8QIc+gi4SIJ7qQHSvwOpCpAw14M34yvFCdM4lTsL//m/wELHt3DrF
+         xCzxk0tHygg8yKgui6SNjP9VEBw9MCjbiZR9HYwoxG9s1tsg1f3UKX2ja26i2NdU7l6K
+         IF6LPaov4qX7thKBssjGWuISdK8f4InaEyHqbsyt6dnrBeG3EEVVFTShBlccg7+s9F3F
+         AZVQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWL5nURRwxemR+6FpvigBrmySRwBvKpTecJEy/+pr7a/EPAndTOjR1HayG/9Cwqlxk1bQHM9EH6lT/rfRGBLnCz1SSwBQ03t9FaEezpmkYkReHuLJhfU93oj3ltN6sRC0VvGpnpDpeqITVL8H3noqnNYVa7xvMWbD8HbQA0geo9wf9XXi30uxCvWsVdrgft6rHgcKw/6kreLrVOWUp0Zj7Ww+cJNduKmoj9PlChpSP6qyq+Yvwt4/i9VTAbDYg1js+vlRnsdYmQaXBe2BEK6VrEXkOIVoX48ghA6ij+LwxKLjzxYsUo9NLl9GydVMZRYi0SIQA0UqQ8fDy/6FdrKGj7Qx59s7lf0Ovu443QwAKZhY05OJRpi2g=
+X-Gm-Message-State: AOJu0YzEmVMQJ17wtrOGRxANtnDxvTZ4n3IIxa58hBJWlw07SqnqyyIe
+	Vhmkx6r/UINMq4po4OpwPVcvZiW/5XlcYCRpEU6lwQK/5/+1wIQOtr6wJq+Az4k=
+X-Google-Smtp-Source: AGHT+IGgevHEpkwMOS5F8pl4dvxc5ZuXVYL1BPsil8rGe3AWrEo/ncgGoEdKh0U9XNWHI/dLAToN5Q==
+X-Received: by 2002:a5b:ac6:0:b0:dc6:d457:ac92 with SMTP id a6-20020a5b0ac6000000b00dc6d457ac92mr984772ybr.31.1712320327715;
+        Fri, 05 Apr 2024 05:32:07 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id h4-20020a25b184000000b00dcf35be9f51sm284055ybj.24.2024.04.05.05.32.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Apr 2024 05:32:07 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-6151d2489b4so23214527b3.0;
+        Fri, 05 Apr 2024 05:32:06 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWCCz7fA2Scgs08FC+THMGTgCJv9gl18fLbu1NXBD3XzOowX1J9JcPetsrnxejSXGejHF+zEgnxKFVCryqhlpXFJLiq8yL9Ok95qeT9dVG16h9hICUfo2sOC80D4xpJv5saikGuc+5vBPGB+DmhdCAI044MiNxsoco8Ipre4i6/Er5NMsFq5TejWgZ2ESX8iTy19C+7OO8WOuJHYlCQwAujhrufjL8tccWpg7TajjzsOoIJty+1t8QPiM4CJwBktcNvAvplAFecd2lTEZ8bE1bpEpqLs9jcitN5ETCzEYTVp5luw4SM0BwiTPXmMp8SZwD8F/oGc02IUWHwYVhgsbMX3G+BhIwkQGWfTox/izi0nC6dt/xETRw=
+X-Received: by 2002:a5b:4ca:0:b0:dcd:19ba:10df with SMTP id
+ u10-20020a5b04ca000000b00dcd19ba10dfmr1040280ybp.56.1712320326217; Fri, 05
+ Apr 2024 05:32:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: bastien.curutchet@bootlin.com
+References: <cover.1712207606.git.ysato@users.sourceforge.jp> <4ac65d0f311e890c1ca92bf057c70954ec7ac351.1712207606.git.ysato@users.sourceforge.jp>
+In-Reply-To: <4ac65d0f311e890c1ca92bf057c70954ec7ac351.1712207606.git.ysato@users.sourceforge.jp>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 5 Apr 2024 14:31:54 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXvL0fWGrn+KNDvXcioYnY-=3WmGtcdFkC82L7tL__+wA@mail.gmail.com>
+Message-ID: <CAMuHMdXvL0fWGrn+KNDvXcioYnY-=3WmGtcdFkC82L7tL__+wA@mail.gmail.com>
+Subject: Re: [RESEND v7 09/37] dt-binding: Add compatible SH7750 SoC
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
+	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>, 
+	Heiko Stuebner <heiko.stuebner@cherry.de>, Shawn Guo <shawnguo@kernel.org>, 
+	Sebastian Reichel <sre@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
+	Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
+	David Rientjes <rientjes@google.com>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Kefeng Wang <wangkefeng.wang@huawei.com>, Stephen Rothwell <sfr@canb.auug.org.au>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Guo Ren <guoren@kernel.org>, 
+	Azeem Shaikh <azeemshaikh38@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Herve Codina <herve.codina@bootlin.com>, 
+	Manikanta Guntupalli <manikanta.guntupalli@amd.com>, Anup Patel <apatel@ventanamicro.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The UART's input clock rate can change at runtime but this is not
-handled by the driver.
+On Thu, Apr 4, 2024 at 7:15=E2=80=AFAM Yoshinori Sato
+<ysato@users.sourceforge.jp> wrote:
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 
-Add a clock_notifier callback that updates the divisors when the input
-clock is updated. The serial8250_update_uartclk() is used to do so.
-PRE_RATE_CHANGE and ABORT_RATE_CHANGE notifications are ignored, only
-the POST_RATE_CHANGE is used. Not using PRE_RATE_CHANGE notification can
-result in a few corrupted bytes during frequency transitions but, IMHO,
-it can be acceptable in many use cases.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-It has been tested on a DAVINCI/OMAP-L138 processor.
+Gr{oetje,eeting}s,
 
-Signed-off-by: Bastien Curutchet <bastien.curutchet@bootlin.com>
----
-Change log v1 -> v2:
- * Add details in commit log
- * Drop alphabetic order in #include
- * Drop a useless check in notifier callback
+                        Geert
 
-v1 : https://lore.kernel.org/all/20240404074450.42708-1-bastien.curutchet@bootlin.com/
- drivers/tty/serial/8250/8250_of.c | 37 +++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-index 5d1dd992d8fb..e14f47ef1172 100644
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -18,6 +18,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/clk.h>
- #include <linux/reset.h>
-+#include <linux/notifier.h>
- 
- #include "8250.h"
- 
-@@ -26,6 +27,7 @@ struct of_serial_info {
- 	struct reset_control *rst;
- 	int type;
- 	int line;
-+	struct notifier_block clk_notifier;
- };
- 
- /* Nuvoton NPCM timeout register */
-@@ -58,6 +60,26 @@ static int npcm_setup(struct uart_port *port)
- 	return 0;
- }
- 
-+static inline struct of_serial_info *clk_nb_to_info(struct notifier_block *nb)
-+{
-+	return container_of(nb, struct of_serial_info, clk_notifier);
-+}
-+
-+static int of_platform_serial_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
-+					      void *data)
-+{
-+	struct of_serial_info *info = clk_nb_to_info(nb);
-+	struct uart_8250_port *port8250 = serial8250_get_port(info->line);
-+	struct clk_notifier_data *ndata = data;
-+
-+	if (event == POST_RATE_CHANGE) {
-+		serial8250_update_uartclk(&port8250->port, ndata->new_rate);
-+		return NOTIFY_OK;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- /*
-  * Fill a struct uart_port for a given device node
-  */
-@@ -218,7 +240,19 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
- 	info->type = port_type;
- 	info->line = ret;
- 	platform_set_drvdata(ofdev, info);
-+
-+	if (info->clk) {
-+		info->clk_notifier.notifier_call = of_platform_serial_clk_notifier_cb;
-+		ret = clk_notifier_register(info->clk, &info->clk_notifier);
-+		if (ret) {
-+			dev_err_probe(port8250.port.dev, ret, "Failed to set the clock notifier\n");
-+			goto err_unregister;
-+		}
-+	}
-+
- 	return 0;
-+err_unregister:
-+	serial8250_unregister_port(info->line);
- err_dispose:
- 	pm_runtime_put_sync(&ofdev->dev);
- 	pm_runtime_disable(&ofdev->dev);
-@@ -234,6 +268,9 @@ static void of_platform_serial_remove(struct platform_device *ofdev)
- {
- 	struct of_serial_info *info = platform_get_drvdata(ofdev);
- 
-+	if (info->clk)
-+		clk_notifier_unregister(info->clk, &info->clk_notifier);
-+
- 	serial8250_unregister_port(info->line);
- 
- 	reset_control_assert(info->rst);
--- 
-2.44.0
-
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
