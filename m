@@ -1,112 +1,110 @@
-Received: from wfout1-smtp.messagingengine.com (wfout1-smtp.messagingengine.com [64.147.123.144])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0207128E2;
-	Fri,  5 Apr 2024 03:44:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.144
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CAEF28E2;
+	Fri,  5 Apr 2024 05:06:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712288675; cv=none; b=ISC5OVlVOva6kYtzqI+EFfJCqMRzh/yLSXdprwEYpZgCzhcL+/J6adqtzSAJV9HfK4CRcyeluwszNemtGzKOGZO7zNdn1HvHb3SNbq55D+trNpSRS+Gy1mT22T6k0MTmmNnqFRYi9p7pcGx9zw2fj+RtW2kBIWdZHHtNTACivYs=
+	t=1712293590; cv=none; b=XbLPn+dV5AWqN/tEuILYLzHPKMG66uW2YEUbGOe0kglZAEnW8Ryk8KLbLtpy1hciebGjlIln3uc+0mp1SoZo5M8zvlWquSWvhPac/9GQ69sHz41gLym6OhxpLvEkye/RwnQMdBJhEgTFzflYiyBZgXH6Hsjk7CAz+ZwOiIiSQwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712288675; c=relaxed/simple;
-	bh=qsPh5jLsPjqoh7RdHlpwd0IOnjyfFaZnNumgZZVOKso=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=mRoMa9LY/VE7qYwhZchJpmE0vw+3TMZ7HwKIlsDE6VGlQDx686GotBFzqOVgPENc0US3KdMNucJoC6jwx4g+tcRaneYhrtwfyqQAUPp8t0TYAsnjGnCyPiEb/i+3cZfmEU1Bh5pyKae3wDjKM5GukiA0GVisZpSPBFeBrQc5ppI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=C81QSD5A; arc=none smtp.client-ip=64.147.123.144
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+	s=arc-20240116; t=1712293590; c=relaxed/simple;
+	bh=Sebt93aHymKxS1oWwauAtqnPitLNbEXG6RlgwpBarSs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=k7x6I0ROkYP3QWhXobxn4aBpGpTzo+6UTf/aSh0MdUMfbM2da8cw+4bSCpdS51goJ6K2wYxhkObqucXffxON6HIgk4I/blmLKsinsduFNSd1eylFS0V3kSP8sb+91estgqgOnkIMdf0p0LS/EGzVuXMO67etW71yE7U6lV6Lk6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N3LvKjr5; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="C81QSD5A"
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
-	by mailfout.west.internal (Postfix) with ESMTP id 0977D1C0009E;
-	Thu,  4 Apr 2024 23:44:30 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute7.internal (MEProxy); Thu, 04 Apr 2024 23:44:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm2; t=1712288670; x=1712375070; bh=YYryhgN6k4zAyvC/eOIu42dxlhfu
-	pw+E0NbxOoGoDXg=; b=C81QSD5AN2lgFOxtYWBrXWwhGfRaN1myhcFPEJtsdna1
-	y3KI7ki6k3LoQ6wanvh7ek7OCGqnuk8La/UKj4YzV50mNwatTsKPAYY3wOo9TWkR
-	1TH/PV+rfnVHnNFV9AMr7l1uft7y5+64d8VirT5vgvMi6QUaFOZrxyfsgy2uXTGU
-	5Ii8y1HpotS7x7jrOEpHoBOQ9t4tyFOCI8uhNL6Ny/qryGILHOvLDlwglpjZDkok
-	LBjfXTN/JKNNPYN9jMJ24rKPrLwAZXo9mtbeyw94TQscJQTPAN7y1wCU1+RSp0Bi
-	oRMifHOt66N8dTO6H7oTYyLslz4mZfrvaSvcS4e44Q==
-X-ME-Sender: <xms:nXMPZrWAi09F-2pkasZh3e4LxYUURcYASuu9XXfN5aFte3fVVGHmiQ>
-    <xme:nXMPZjmH2hhl2bjt2RSrZ5CuVgXf-g0weQBhcVpVmrf9Ae-tm5PVWXZZ0XqGcsPAn
-    Ne9GoZrkfW39p9UqXQ>
-X-ME-Received: <xmr:nXMPZnYhdfi4BpVgPnTJsselG-2LMSF68qraFL4CBAf9zqYU5V4rPAdKVXQP0VBN4rAh1iDjrmXlHVJ-7Qp_FE9kkSgneEE-7a0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudefledgjeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefhihhnnhcu
-    vfhhrghinhcuoehfthhhrghinheslhhinhhugidqmheikehkrdhorhhgqeenucggtffrrg
-    htthgvrhhnpeelueehleehkefgueevtdevteejkefhffekfeffffdtgfejveekgeefvdeu
-    heeuleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hfthhhrghinheslhhinhhugidqmheikehkrdhorhhg
-X-ME-Proxy: <xmx:nnMPZmWvmndcnC68Z4XcXHk59kNUS7IUTfsRxTvSSJhoPm8cUQW_Kw>
-    <xmx:nnMPZlkw0WmXCIj8Ey7Urnj7JoFoTaODYcuyRudjL79ESfV2E_NIEg>
-    <xmx:nnMPZjcodEDnCWyPaFGcVcUDJsuwW-dAe9V_guzE9DxdrkKXPSZ2EA>
-    <xmx:nnMPZvEa6ASIjTJQYhMcHRfXiODLjWNsgAKvDMHhgA95SSBy43a8pQ>
-    <xmx:nnMPZnn37qv0I34juauWUCcca0SPYmpyQZ3yNtnYZY5ny5gBAYpXi5_L>
-Feedback-ID: i58a146ae:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 4 Apr 2024 23:44:28 -0400 (EDT)
-Date: Fri, 5 Apr 2024 14:46:17 +1100 (AEDT)
-From: Finn Thain <fthain@linux-m68k.org>
-To: Michael Ellerman <mpe@ellerman.id.au>, Jiri Slaby <jirislaby@kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-cc: Andy Shevchenko <andy.shevchenko@gmail.com>, 
-    Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-    Nicholas Piggin <npiggin@gmail.com>, 
-    Christophe Leroy <christophe.leroy@csgroup.eu>, 
-    "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
-    "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-    linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq
- flood
-In-Reply-To: <87y19s7bk6.fsf@mail.lhotse>
-Message-ID: <4bddf8ec-97f1-07f6-9c0a-523c102c0a1b@linux-m68k.org>
-References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org> <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org> <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
- <87y19s7bk6.fsf@mail.lhotse>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N3LvKjr5"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a519eae91d1so65917966b.3;
+        Thu, 04 Apr 2024 22:06:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712293587; x=1712898387; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Sebt93aHymKxS1oWwauAtqnPitLNbEXG6RlgwpBarSs=;
+        b=N3LvKjr5QTlIeW6M7y51sMUzApni9GRUJ+TKTYW5AjkDogV3LXq254sr3NwoqFGcP1
+         3zRzFMdr+SCSnUc0AWFZfZN4Ct4AG3kduFE4XlfJOiinCYsLmVSQoYNnZ4NPK4qzP4pi
+         26pdJBeZfD4Gjm/9GPSxBnBEwXaaIfOV3vX7FfBlxuifSpi7QqnVKW9uEAOkBxmDJCOu
+         D1rxUrsuF9uqWQeZkwrlXcQY5laSpPDaNZQCuy6sC9rfwGc1eVntB8bggZztel7Adyto
+         h09u1UXkCm/3w47NAAlB//GqUsmYVjRjFK9WtY7yAeHJgzdyS3sdIevr6eLNsx7knyTo
+         H1Zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712293587; x=1712898387;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Sebt93aHymKxS1oWwauAtqnPitLNbEXG6RlgwpBarSs=;
+        b=eIibOo4bDhdzx2lfVq+ejh1zyC2CL40jQ47merRIy77e3TXQah/yKCEgKgzeS8MIE5
+         Bhu2s2v/VYV1EsYUQx8PmwXHRbt8XjL/bswtTkDkzdJBz/NmTfMYtC1fagzbJLbiZpTk
+         HF2ZRqZ4PtRR27VSkNyUzM6eovGC6weLyzOvewXg/hTOXGPNTKkIt9koZvExfVF3uLWQ
+         SK92IXq9sjgr5RtzUHub9bROK/55L7T6lcDN1nUjUCA2zmKhV/51+XPZhGaKc15p07NU
+         XEvOOWfmTs8Th0QuqpTVErvRkOt8ttfiBs2ryiNZ6YAVnrwUCR8EOkkfM/Y/svZ/Q6Nw
+         xWng==
+X-Forwarded-Encrypted: i=1; AJvYcCU+o53ggGdWy4nzp9rnYGVmg84PLv7Pniqvr9XhE706zukHSnAB4HMZuuDs3dsQl0T6PXrpkZ5jn4mlubsyO1evpxMI4UdahRMBwlsANhLhCyGp7xt6HDJU8cMG4aYenoXd44R+o9a/FEHg
+X-Gm-Message-State: AOJu0YyO3cZeJxQC65uF7v4oQZL01CAPRfrefhRHUYfM69ZWEpmfWgCR
+	Ly7/UUePKei8O1hTppTsyJOQsWfKC2wCtqz9A9Z7TSEh2gmut9f0C2ooGsB3xLMYHzsurX3SZ+k
+	oJcb3R8AyW463bi25z2Q6+Uu9A2Q=
+X-Google-Smtp-Source: AGHT+IH5UaoZ1lqiUtwAAZvTUwGnrAg/GCbjcl9oYf28LvmdvgmcJ9HrjMUzZXEnFiUjAjm989T6vTu1elJupyLaKig=
+X-Received: by 2002:a17:906:5784:b0:a4e:6580:eec5 with SMTP id
+ k4-20020a170906578400b00a4e6580eec5mr183356ejq.27.1712293587311; Thu, 04 Apr
+ 2024 22:06:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org>
+ <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org>
+ <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com> <5dd285bd-b9a8-c85c-9bd9-a839c10e78fd@linux-m68k.org>
+In-Reply-To: <5dd285bd-b9a8-c85c-9bd9-a839c10e78fd@linux-m68k.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 5 Apr 2024 08:05:50 +0300
+Message-ID: <CAHp75Vc75xFK_kq4AHmHqt-bC_dk+St9M-AgBa0XUEAc1fB7AQ@mail.gmail.com>
+Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq flood
+To: Finn Thain <fthain@linux-m68k.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-On Fri, 5 Apr 2024, Michael Ellerman wrote:
-
-> >> > > ---
-> >> > (here is a good location for Cc:)
-> >>
-> >> Documentation/process/submitting-patches.rst indicats that it should 
-> >> be above the "---" separator together with Acked-by etc. Has this 
-> >> convention changed recently?
-> 
-> The docs don't really say where to put the Cc: tags, although they are 
-> mentioned along with other tags which clearly are intended to go above 
-> the separator.
-> 
-
-I see no ambiguity there. What's the point of copying the message headers 
-into the message body unless it was intended that they form part of the 
-commit log?
-
+On Fri, Apr 5, 2024 at 1:15=E2=80=AFAM Finn Thain <fthain@linux-m68k.org> w=
+rote:
+> On Thu, 4 Apr 2024, Andy Shevchenko wrote:
+>
+> > > > > ---
+> > > > (here is a good location for Cc:)
+> > >
+> > > Documentation/process/submitting-patches.rst indicats that it should
+> > > be above the "---" separator together with Acked-by etc. Has this
+> > > convention changed recently?
+> >
 > > I see, I will prepare a patch to discuss this aspect.
-> 
-> FYI there was a discussion about this several years ago, where at least 
-> some maintainers agreed that Cc: tags don't add much value and are 
-> better placed below the --- separator.
-> 
+>
+> If you are going to veto patches on the basis of rules yet unwritten, I
+> think you risk turning the kernel development process into a lottery.
 
-Maintainers who merge patches almost always add tags. And they can use the 
-Cc tags from the message headers if they wish to. Or they can omit them or 
-remove them. I don't mind. And I'd be happy to resubmit the patch with 
-different tags if that's what is needed by the workflow used by Jiri Slaby 
-or Greg Kroah-Hartman.
+It's already a lottery, if you haven't noticed, i.e. it highly relies
+on the style preferences of the maintainers and is yet undocumented (a
+few years ago it was a new section introduced for closing this gap).
+
+> How many other patches presently under review will need to be dropped jus=
+t
+> in case they don't conform with possible future rules?
+
+What you are saying is pure speculation.
+
+I rely on at least two things (besides already explained):
+- the fact that Submitting Patches refers to the commit message
+reduction due to the unnecessariness of some lines
+- my experience and common sense (why duplicate the data?).
+
+--=20
+With Best Regards,
+Andy Shevchenko
