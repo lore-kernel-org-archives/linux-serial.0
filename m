@@ -1,203 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A612052F6E;
-	Fri,  5 Apr 2024 06:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94705225AE;
+	Fri,  5 Apr 2024 06:14:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.237.130.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712297357; cv=none; b=ZzMq6IebqPa/U0i0pHUnkhjnMKjZPPsKkCWLFR4/9G7lC7txNqbz+Iecqd6gK/+YmMUwhyJ2dj5pfIxvaIfvY4qAzBWr0J0VVJsIOCT+GrXqqY6/fMJgmkc0VqazKEtrmaF6Ws2Xuixeb1DjOvXGD1lk7YG0ShE71fqPrk1ytqU=
+	t=1712297651; cv=none; b=flZrxACw8LUCfg6TRvxksqHjR0e1Mf/gWPyCCzt8iBovZ21TPvzGZsdIvq1Kco6xscK/2xd0zQZrix7Fu4CmYDG/ADLw1Oj+Ph3uA6p7EhjkitNJfv2nT9aD8W476rH24dt8BOsq1Vs3J2Jgx2AS50WRgNzXoGMMfKCNdSIZ9TY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712297357; c=relaxed/simple;
-	bh=/FjnStB/yZtMO26TOxQ+YsIrQb3A2biwdW2z1LAyxHw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=d1uyPC9f1eYYZNWgwQZZvMoeOH1nowtGTQNR611RrXRyeiUD5EmDK0Q7aQAnOIGc7gozYMzF4qt1DJ180kIbBDM35+J3CFZPV02OykdsEiPh4eJqlrso2iGsqT+89hAX+ZuITXxGBns+KojDtFzVY8lKbQA0fdweax4R+/XpSyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ptB122nd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712297651; c=relaxed/simple;
+	bh=Y73ejoqOno5fyAe5OApfKn42Z9VgVEiazySE3cRTsU8=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=tGfHHt2CP6iRn8BkIkL/z5xTy3M+xSaggm6VYTbhCj+59aKX+9ynjJgI1mpOC0w3jsZflg+sSG7igAm4quAt0Aw7ObuJDP+m1Se3x+6R7HELGfbVP2KHbvdwM6xGRU8R1ORje5olIrxSIJPEsSRiYvJfjvQx2BRldpApCSbCKwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info; spf=pass smtp.mailfrom=leemhuis.info; dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b=Cr2wnymL; arc=none smtp.client-ip=80.237.130.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=leemhuis.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ptB122nd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89087C43399;
-	Fri,  5 Apr 2024 06:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712297357;
-	bh=/FjnStB/yZtMO26TOxQ+YsIrQb3A2biwdW2z1LAyxHw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ptB122ndmL1qOaMN542Suz/jgypKSfUMNgqcdTXrsSn8apL2DaRjXXfT+dKuf0e8U
-	 SknJ8928wFdXrmjaj2C3cPBnAxiUTRaNNlQPfKysbWnfkZ7D6hnXJOr32nok4IO9it
-	 DmHPD8j2GOHHP4ApHNCKCL4Pvw6zQzn7BXR2gCrlfcXKGTSuzANT09FYhDS/fEglOc
-	 Qn0+77Zr8CZo0rvKjRvNOlB1k5QMmpp8z6PWXkqwLHMyE2KIdaen7UihL634guJEqU
-	 3UIoABuJy0/Ov20Q9qUEqUmVauGtkJkSnlYiS9WKGEeMVspbtd9uNhewpMEOWpPqnc
-	 81aQ4aUasR7NA==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Richard Genoud <richard.genoud@gmail.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 15/15] tty: atmel_serial: use single DMA mapping for RX
-Date: Fri,  5 Apr 2024 08:08:26 +0200
-Message-ID: <20240405060826.2521-16-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240405060826.2521-1-jirislaby@kernel.org>
-References: <20240405060826.2521-1-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=leemhuis.info header.i=@leemhuis.info header.b="Cr2wnymL"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=leemhuis.info; s=he214686; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:References:Cc:To:Reply-To:Subject:From:MIME-Version:Date:
+	Message-ID:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
+	Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
+	In-Reply-To:References; bh=PiIR9uARf8/+ulKS9Us4quW+aLsEoxSn7m3WArQ8Wdk=;
+	t=1712297649; x=1712729649; b=Cr2wnymLvvayoDtHXA18r+tMpItZLJ+o3Uj8z/lf/TGlAAi
+	VcIE0XSE9KFOkOSPO4PNvnnj/Elkv+w8GZK/TskO06vjc+PYjy7EJCZWjh8GQAlddK1A8CXhxVBrf
+	do6uO0/Ys3OUfnjQ6tu8dKQ3qknCBpNRsEY2HvGt+tYCOHrHw6BSgB1ymk8QmKd+QuC4wJJsBeytx
+	8NmE0F0OFG1UzwRnqgWvPo5IvM8sPE6G6V+x73eYJ2f3tyFpndOmdeG5jn6YHFM8/4qkGiyo4FAcH
+	IuwYuxEFUpcTqIZ1YZ+qI0A8v86x4X2QxIpAgk2oEquiU0wHhHVE5xiIRpnynpfw==;
+Received: from [2a02:8108:8980:2478:8cde:aa2c:f324:937e]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1rscpw-0005OI-1Z; Fri, 05 Apr 2024 08:14:04 +0200
+Message-ID: <1d7c3e03-fb25-4891-87bb-f4e7b8b4ee30@leemhuis.info>
+Date: Fri, 5 Apr 2024 08:14:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: "Linux regression tracking (Thorsten Leemhuis)"
+ <regressions@leemhuis.info>
+Subject: Re: [PATCH] serial: 8250_dw: Revert: Do not reclock if already at
+ correct rate
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hans de Goede <hdegoede@redhat.com>
+Cc: Peter Collingbourne <pcc@google.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+ stable@vger.kernel.org, VAMSHI GAJJELA <vamshigajjela@google.com>
+References: <20240317214123.34482-1-hdegoede@redhat.com>
+ <ZfgZEcg2RXSz08Gd@smile.fi.intel.com>
+ <CAMn1gO4zPpwVDcv5FFiimG0MkGdni_0QRMoJH9SSA3LJAk7JqQ@mail.gmail.com>
+ <35cdaf7e-ef32-470f-ab61-e5f4a3b35238@redhat.com>
+ <33110d20-45d6-45b9-8af0-d3eac8c348b8@redhat.com>
+ <CAMn1gO5-WD5wyPt+ZKDL-sRKhZvz1sUSPP-Mq59Do5kySpm=Sg@mail.gmail.com>
+ <8cbe0f5f-0672-4bca-b539-8bff254c7c97@redhat.com>
+ <2024032922-stipulate-skeleton-6f9c@gregkh>
+Content-Language: en-US, de-DE
+In-Reply-To: <2024032922-stipulate-skeleton-6f9c@gregkh>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1712297649;8224f19b;
+X-HE-SMSGID: 1rscpw-0005OI-1Z
 
-dma_map_single() provides much easier interface for simple mappings as
-used for RX in atmel_serial. So switch to that, removing all the s-g
-unnecessary handling.
+On 29.03.24 13:12, Greg Kroah-Hartman wrote:
+> On Fri, Mar 29, 2024 at 12:42:14PM +0100, Hans de Goede wrote:
+>> On 3/29/24 3:35 AM, Peter Collingbourne wrote:
+>>> On Thu, Mar 28, 2024 at 5:35 AM Hans de Goede <hdegoede@redhat.com> wrote:
+>>>> On 3/28/24 8:10 AM, Hans de Goede wrote:
+>>>>> On 3/18/24 7:52 PM, Peter Collingbourne wrote:
+>>>>>> On Mon, Mar 18, 2024 at 3:36 AM Andy Shevchenko
+>>>>>> <andriy.shevchenko@linux.intel.com> wrote:
+>>>>>>>
+>>>>>>> On Sun, Mar 17, 2024 at 10:41:23PM +0100, Hans de Goede wrote:
+>>>>>>>> Commit e5d6bd25f93d ("serial: 8250_dw: Do not reclock if already at
+>>>>>>>> correct rate") breaks the dw UARTs on Intel Bay Trail (BYT) and
+>>>>>>>> Cherry Trail (CHT) SoCs.
+>>>>>>>>
+>>>>>>>> Before this change the RTL8732BS Bluetooth HCI which is found
+>>>>>>>> connected over the dw UART on both BYT and CHT boards works properly:
+>>>>>>>>
+>>>>>>>> Bluetooth: hci0: RTL: examining hci_ver=06 hci_rev=000b lmp_ver=06 lmp_subver=8723
+>>>>>>>> Bluetooth: hci0: RTL: rom_version status=0 version=1
+>>>>>>>> Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_fw.bin
+>>>>>>>> Bluetooth: hci0: RTL: loading rtl_bt/rtl8723bs_config-OBDA8723.bin
+>>>>>>>> Bluetooth: hci0: RTL: cfg_sz 64, total sz 24508
+>>>>>>>> Bluetooth: hci0: RTL: fw version 0x365d462e
+>>>>>>>>
+>>>>>>>> where as after this change probing it fails:
+> [...]
+>>> Acked-by: Peter Collingbourne <pcc@google.com>
+>>
+>> Thanks. Greg can we get this merged please
+>> (it is a regression fix for a 6.8 regression) ?
+> 
+> Will queue it up soon, thanks.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Richard Genoud <richard.genoud@gmail.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Cc: linux-arm-kernel@lists.infradead.org
----
- drivers/tty/serial/atmel_serial.c | 56 ++++++++++++-------------------
- 1 file changed, 22 insertions(+), 34 deletions(-)
+You are obviously busy (we really need to enhance Git so it can clone
+humans, too!), nevertheless: friendly reminder that that fix afaics
+still is not queued.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 5cde5077c429..0a90964d6d10 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -135,7 +135,7 @@ struct atmel_uart_port {
- 	dma_cookie_t			cookie_tx;
- 	dma_cookie_t			cookie_rx;
- 	dma_addr_t			tx_phys;
--	struct scatterlist		sg_rx;
-+	dma_addr_t			rx_phys;
- 	struct tasklet_struct	tasklet_rx;
- 	struct tasklet_struct	tasklet_tx;
- 	atomic_t		tasklet_shutdown;
-@@ -1088,8 +1088,8 @@ static void atmel_release_rx_dma(struct uart_port *port)
- 	if (chan) {
- 		dmaengine_terminate_all(chan);
- 		dma_release_channel(chan);
--		dma_unmap_sg(port->dev, &atmel_port->sg_rx, 1,
--				DMA_FROM_DEVICE);
-+		dma_unmap_single(port->dev, atmel_port->rx_phys,
-+				 ATMEL_SERIAL_RX_SIZE, DMA_FROM_DEVICE);
- 	}
- 
- 	atmel_port->desc_rx = NULL;
-@@ -1122,10 +1122,8 @@ static void atmel_rx_from_dma(struct uart_port *port)
- 	}
- 
- 	/* CPU claims ownership of RX DMA buffer */
--	dma_sync_sg_for_cpu(port->dev,
--			    &atmel_port->sg_rx,
--			    1,
--			    DMA_FROM_DEVICE);
-+	dma_sync_single_for_cpu(port->dev, atmel_port->rx_phys,
-+				ATMEL_SERIAL_RX_SIZE, DMA_FROM_DEVICE);
- 
- 	/*
- 	 * ring->head points to the end of data already written by the DMA.
-@@ -1134,8 +1132,8 @@ static void atmel_rx_from_dma(struct uart_port *port)
- 	 * The current transfer size should not be larger than the dma buffer
- 	 * length.
- 	 */
--	ring->head = sg_dma_len(&atmel_port->sg_rx) - state.residue;
--	BUG_ON(ring->head > sg_dma_len(&atmel_port->sg_rx));
-+	ring->head = ATMEL_SERIAL_RX_SIZE - state.residue;
-+	BUG_ON(ring->head > ATMEL_SERIAL_RX_SIZE);
- 	/*
- 	 * At this point ring->head may point to the first byte right after the
- 	 * last byte of the dma buffer:
-@@ -1149,7 +1147,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
- 	 * tail to the end of the buffer then reset tail.
- 	 */
- 	if (ring->head < ring->tail) {
--		count = sg_dma_len(&atmel_port->sg_rx) - ring->tail;
-+		count = ATMEL_SERIAL_RX_SIZE - ring->tail;
- 
- 		tty_insert_flip_string(tport, ring->buf + ring->tail, count);
- 		ring->tail = 0;
-@@ -1162,17 +1160,15 @@ static void atmel_rx_from_dma(struct uart_port *port)
- 
- 		tty_insert_flip_string(tport, ring->buf + ring->tail, count);
- 		/* Wrap ring->head if needed */
--		if (ring->head >= sg_dma_len(&atmel_port->sg_rx))
-+		if (ring->head >= ATMEL_SERIAL_RX_SIZE)
- 			ring->head = 0;
- 		ring->tail = ring->head;
- 		port->icount.rx += count;
- 	}
- 
- 	/* USART retreives ownership of RX DMA buffer */
--	dma_sync_sg_for_device(port->dev,
--			       &atmel_port->sg_rx,
--			       1,
--			       DMA_FROM_DEVICE);
-+	dma_sync_single_for_device(port->dev, atmel_port->rx_phys,
-+				   ATMEL_SERIAL_RX_SIZE, DMA_FROM_DEVICE);
- 
- 	tty_flip_buffer_push(tport);
- 
-@@ -1188,7 +1184,7 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	struct dma_slave_config config;
- 	struct circ_buf		*ring;
- 	struct dma_chan *chan;
--	int ret, nent;
-+	int ret;
- 
- 	ring = &atmel_port->rx_ring;
- 
-@@ -1205,26 +1201,18 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 		dma_chan_name(atmel_port->chan_rx));
- 
- 	spin_lock_init(&atmel_port->lock_rx);
--	sg_init_table(&atmel_port->sg_rx, 1);
- 	/* UART circular rx buffer is an aligned page. */
- 	BUG_ON(!PAGE_ALIGNED(ring->buf));
--	sg_set_page(&atmel_port->sg_rx,
--		    virt_to_page(ring->buf),
--		    ATMEL_SERIAL_RX_SIZE,
--		    offset_in_page(ring->buf));
--	nent = dma_map_sg(port->dev,
--			  &atmel_port->sg_rx,
--			  1,
--			  DMA_FROM_DEVICE);
--
--	if (!nent) {
-+	atmel_port->rx_phys = dma_map_single(port->dev, ring->buf,
-+					     ATMEL_SERIAL_RX_SIZE,
-+					     DMA_FROM_DEVICE);
-+
-+	if (dma_mapping_error(port->dev, atmel_port->rx_phys)) {
- 		dev_dbg(port->dev, "need to release resource of dma\n");
- 		goto chan_err;
- 	} else {
--		dev_dbg(port->dev, "%s: mapped %d@%p to %pad\n", __func__,
--			sg_dma_len(&atmel_port->sg_rx),
--			ring->buf,
--			&sg_dma_address(&atmel_port->sg_rx));
-+		dev_dbg(port->dev, "%s: mapped %zu@%p to %pad\n", __func__,
-+			ATMEL_SERIAL_RX_SIZE, ring->buf, &atmel_port->rx_phys);
- 	}
- 
- 	/* Configure the slave DMA */
-@@ -1245,9 +1233,9 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	 * each one is half ring buffer size
- 	 */
- 	desc = dmaengine_prep_dma_cyclic(atmel_port->chan_rx,
--					 sg_dma_address(&atmel_port->sg_rx),
--					 sg_dma_len(&atmel_port->sg_rx),
--					 sg_dma_len(&atmel_port->sg_rx)/2,
-+					 atmel_port->rx_phys,
-+					 ATMEL_SERIAL_RX_SIZE,
-+					 ATMEL_SERIAL_RX_SIZE / 2,
- 					 DMA_DEV_TO_MEM,
- 					 DMA_PREP_INTERRUPT);
- 	if (!desc) {
--- 
-2.44.0
+Side note: there is another fix for a serial 6.8 regression I track
+waiting for review here:
+https://lore.kernel.org/linux-serial/20240325071649.27040-1-tony@atomide.com/
 
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
+
+#regzbot poke
