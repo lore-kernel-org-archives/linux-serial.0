@@ -1,153 +1,175 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C22F20DE8;
-	Fri,  5 Apr 2024 05:10:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E88A12E5B;
+	Fri,  5 Apr 2024 05:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712293812; cv=none; b=RnXAO5X7+KgHDYCDsLCy/JMVyHYmpy2SxUOnyWNUqiBzADcYhxiHxNk0O16Eqy7MmUmjkkJ+wfj5HPrA78g9OZoVUJCVYYqk6I1MfEHJ4UnIQDHUUd0SptGsQyopY+dt2s5hO5m6UDA3dP4+EpgC62XyR9KR6ohaEbzXd9U4vFI=
+	t=1712294709; cv=none; b=UbcjvjZduWto2yPzA1G6KDnfiUPPefjL4FR2jD6qqXwAmYgL68zeKs8VsQVTvSMLVW5/PdyMwPSIz11v8OnCf8z6ieaPbHXgiR+uTs/cucqylegaoMoEbOvifXgSVf18uEHyKwQjI7tJDKZwS6pM8U07yqNj9Q9V15gw7Ij1hM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712293812; c=relaxed/simple;
-	bh=NlMY98BD79lBdspG+ouG7M9punegC0XfPjsulWCNnW4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZSCbSQ3wXRrGZTv4joPxDrARuQVxrc6bNQQkhbXob/U/RVTXNBBdB4PTG68Awsu7+eNoWHlO33IWiJAuGVEDlN6xX8Su0jXmqPaO8NlNJMeR2D4mxtJa9L561zM9VUbOZS+7BRMz4tUYdexhYm4WLVfQ0ARdVjH+Mal4QZj4SX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c5I+GnnK; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1712294709; c=relaxed/simple;
+	bh=qjhqmeZyakIcB2WRtmXiuW6Vv533y6WL9gqqXtxnRQA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LFY9MTLoVP0ABET5qUBMw8f6wW0hKlkCOjS5tejbHPOJ9Ueq0TtMfzVwvzzb1VcglnPyB5vYLGEshFsPglSH5Wmi4Lwle8CReAgUn1OZ/WRgGzWzSbudReR8aFHUDr2PKPl51KKzzwAxYn6amsRvoMD9esikdFPdv5mNGwQtWe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c5I+GnnK"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a51a742c273so15674266b.1;
-        Thu, 04 Apr 2024 22:10:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712293808; x=1712898608; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NlMY98BD79lBdspG+ouG7M9punegC0XfPjsulWCNnW4=;
-        b=c5I+GnnKtg0KgWO/Gz2NMPPSiIjtx5bWW+fueq+/RbKBAzBoH7ah+Ytwqv/h7Fh8wf
-         JdNEOfDfBb7QEf8Xe0nDCisD50h+7JpIEVg4YjoIdJ27Qd/HWeR5ngLgurPsgOI7Kli2
-         jJxwzPvxfBqRz+68ogupJ8kkUiUNFXZHZH9pdycHZqnq1/UHvNOsB9q7yYJWrH0sptxj
-         9TMFzbkyR8L3dcw5gCzEmC4Y7GFZfglRaK3DsXH1/nWtQov1iJxMcE/ajBei7M3QyNmG
-         ZuKP8PL227rCbAOfVBAyaSruN/ovDsXPHF3ScsZqQV78Wq6atIo9Jg9lVQAIrMWsB8wW
-         rkrQ==
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2d700beb60bso28662111fa.1;
+        Thu, 04 Apr 2024 22:25:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712293808; x=1712898608;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NlMY98BD79lBdspG+ouG7M9punegC0XfPjsulWCNnW4=;
-        b=s6h9kZh7dED+aUXvr/mQVkdXDJ9TKKK1hR0de/mSunH0eLa0uLzeIpgc87EtZnVjkW
-         9xpMCvSXbrGFUfeTd0EoECLAmXUbNARj6l7Xkmix7Kan5/ohriBimbsAWHnkBfzq2qgG
-         zjwPgEPz/FAV72mruGniwEex4zSiXIlgoDh7xNYl3fHmyvLENi14GuiRjgVrv+hSZtqo
-         VVP+hxlgqvovXT5lj/mdIRYcssnX2sbaJIxy73mEVlm0sKdu29XFUNukcvDQq7GVXDzG
-         c+RuowuXAbr8hk/RLZJXO14t4z8chW5tF5uKyl78soqJjRmyowUw5gvJ4UoPvt+wZXXc
-         VAjg==
-X-Forwarded-Encrypted: i=1; AJvYcCVFt2KJuDw/7gnqeGgoME4i2z4VlTy4mN4AlTIsO5UqP1GoeWdqbYAFe2XcnHvdQPjr0KIm6dDfwdub729275hYfUDk60BUcCEFoI9IrQpWI02hmb6sXrUEIqeiD1rg9VKPV/myyQPH3EUI
-X-Gm-Message-State: AOJu0YxCrbqrX5+3hpBt+x5O7HOY5wgqY3Mg3uQ7xXMoPcdLOnEQKpv4
-	51PmrbHe4nfxLE5xkPuO9jtHmBlgwWUdTJ+QFowLA0/vgJmx+OAGAY7mYPedwhUJy4TRhzovqgy
-	DSPfI5s1WehGIrHdHXl2Z0gEtJNg=
-X-Google-Smtp-Source: AGHT+IFNALLC+cLIfNSKBkrLOWuswiELcg0iglPLHWgzh4Faj3pLvLFzDEWHz9/0AFOMJnrf3rlzgjtzvgyHYx2EFkg=
-X-Received: by 2002:a17:906:cce6:b0:a4d:ffcb:1f4e with SMTP id
- ot38-20020a170906cce600b00a4dffcb1f4emr161016ejb.75.1712293807779; Thu, 04
- Apr 2024 22:10:07 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1712294705; x=1712899505;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YsUr+8mmX+b7++95BZ8RJ5aoU3lTnpPg5pKUZvrJrQ4=;
+        b=eASrV94Eg2AfpnEqqsbybty07OVhYBCkcKmATbAfXJAArY1aPafH6QhrTwhnrRW6ve
+         SaO+Y+uV3ZuAkkL0+j0H/3vByg5siZ00qrtQ3qz57i/A8+08tN+CMAdoLSGO+aaq9VFv
+         EFTSzc3XgFAh5A7lZM9Uyr8bHl1TF3Tt2KFjhJ7gJxdEOXvfgi9MGs6O9sng0G5lSQwX
+         ituQhdPj2CbW6vYBavtp4sP6D7o5GLGiUc4eDNNGeveOpbK7mBZRf/Y8rFeaiu28vKty
+         DGENCQQfGzjnhUioEK74G6gV32l8WxzskpnYSbEoDYdHybmV7VoH3kq9aG+ksvvd3CNe
+         fgKg==
+X-Forwarded-Encrypted: i=1; AJvYcCUAsm2qSdRn66/VZ7T9WiyLHO1vxz/jXhUn6zYC2c+GjO/TV2dJA9OorN9I3pNZVtgQ3hzbWKyAslgnv7OwWkekzEEY7nsPcG6nLOD9aYk++5WfsVWuPFV/InfTATQYM4P5wabW4X71Vtwj
+X-Gm-Message-State: AOJu0YwBSTtH7Kn1LNmj7aiYAnKWDTV0W+Fgt4fA16K95jawO1aR9WOs
+	gugYj8g8EilwCNOf++HyWckNQ7Dl+pjCC6JO3roeyYS1lt/KNkps
+X-Google-Smtp-Source: AGHT+IEPX+SSJwUEuh9wTd60ayLVODL8vrQc1rZZUAI6ZKFL1fl6iLwemPkqLzf5DNMoLaBS2US3Ow==
+X-Received: by 2002:a05:651c:124d:b0:2d6:fd22:8065 with SMTP id h13-20020a05651c124d00b002d6fd228065mr509980ljh.1.1712294705136;
+        Thu, 04 Apr 2024 22:25:05 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id oz10-20020a1709077d8a00b00a4e533085aesm415776ejc.129.2024.04.04.22.25.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Apr 2024 22:25:04 -0700 (PDT)
+Message-ID: <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
+Date: Fri, 5 Apr 2024 07:25:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org>
- <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org>
- <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com> <87y19s7bk6.fsf@mail.lhotse>
-In-Reply-To: <87y19s7bk6.fsf@mail.lhotse>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 5 Apr 2024 08:09:31 +0300
-Message-ID: <CAHp75VdM8HgvBJrN_GRXH8XGGdv3Npxg6GR13AW-70jpuU=QOw@mail.gmail.com>
-Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq flood
-To: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Finn Thain <fthain@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, 
-	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
+ NULLifying it
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Yicong Yang <yangyicong@hisilicon.com>, Tony Lindgren <tony@atomide.com>,
+ kernel test robot <oliver.sang@intel.com>
+References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 5, 2024 at 6:06=E2=80=AFAM Michael Ellerman <mpe@ellerman.id.au=
-> wrote:
-> Andy Shevchenko <andy.shevchenko@gmail.com> writes:
-> > On Thu, Apr 4, 2024 at 2:57=E2=80=AFAM Finn Thain <fthain@linux-m68k.or=
-g> wrote:
-> >> On Thu, 4 Apr 2024, Andy Shevchenko wrote:
-> >
-> >> > > Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> >> > > Cc: Michael Ellerman <mpe@ellerman.id.au>
-> >> > > Cc: Nicholas Piggin <npiggin@gmail.com>
-> >> > > Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-> >> > > Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-> >> > > Cc: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
-> >> > > Cc: linux-m68k@lists.linux-m68k.org
-> >> >
-> >> > Second, please move these Cc to be after the '---' line
-> >>
-> >> I thought they were placed above the line for audit (and signing)
-> >> purposes.
-> >
-> > I didn't get this, sorry.
-> >
-> >> There are thousands of Cc lines in the mainline commit messages
-> >> since v6.8.
-> >
-> > Having thousands of mistaken cases does not prove it's a good thing to
-> > follow. I answered Jiri why it's better the way I suggested.
-> >
-> >> > > Link: https://github.com/vivier/qemu-m68k/issues/44
-> >> > > Link: https://lore.kernel.org/all/1078874617.9746.36.camel@gaston/
-> >> >
-> >> > Missed Fixes tag?
-> >>
-> >> Would this be ok: Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> >> I have to ask because some reviewers do not like to see a Fixes tag ci=
-te
-> >> that commit.
-> >
-> > Yes, or you even may dig into the history.git from history group (see
-> > git.kernel.org) for the real first patch that brought it.
-> >
-> >> > > Signed-off-by: Finn Thain <fthain@linux-m68k.org>
-> >> > > ---
-> >> > (here is a good location for Cc:)
-> >>
-> >> Documentation/process/submitting-patches.rst indicats that it should b=
-e
-> >> above the "---" separator together with Acked-by etc. Has this convent=
-ion
-> >> changed recently?
->
-> The docs don't really say where to put the Cc: tags, although they are
-> mentioned along with other tags which clearly are intended to go above
-> the separator.
+On 04. 04. 24, 16:59, Andy Shevchenko wrote:
+> The circular buffer is NULLified in uart_tty_port_shutdown()
+> under the spin lock. However, the PM or other timer based callbacks
+> may still trigger after this event without knowning that buffer pointer
+> is not valid. Since the serial code is a bit inconsistent in checking
+> the buffer state (some rely on the head-tail positions, some on the
+> buffer pointer), it's better to have both aligned, i.e. buffer pointer
+> to be NULL and head-tail possitions to be the same, meaning it's empty.
+> This will prevent asynchronous calls to dereference NULL pointer as
+> reported recently in 8250 case:
+> 
+>    BUG: kernel NULL pointer dereference, address: 00000cf5
+>    Workqueue: pm pm_runtime_work
+>    EIP: serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
+>    ...
+>    ? serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
+>    __start_tx (drivers/tty/serial/8250/8250_port.c:1551)
+>    serial8250_start_tx (drivers/tty/serial/8250/8250_port.c:1654)
+>    serial_port_runtime_suspend (include/linux/serial_core.h:667 drivers/tty/serial/serial_port.c:63)
+>    __rpm_callback (drivers/base/power/runtime.c:393)
+>    ? serial_port_remove (drivers/tty/serial/serial_port.c:50)
+>    rpm_suspend (drivers/base/power/runtime.c:447)
 
-He-h... Documentation needs constant updates too, for one reason or another=
-.
-This is normal process and in particular Cc (rather long) lists needs to be
-reconsidered.
+Yeah, I noticed start_tx() is called repeatedly after shutdown() 
+yesterday too. So thanks for looking into this.
 
-> > I see, I will prepare a patch to discuss this aspect.
->
-> FYI there was a discussion about this several years ago, where at least
-> some maintainers agreed that Cc: tags don't add much value and are
-> better placed below the --- separator.
+And it's pretty weird. I think it's new with the runtime PM (sure, /me 
+reads Fixes: now). I am not sure if it is documented, but most of the 
+code in tty/ assumes NO ordinary ->ops (like start_tx()) are called 
+after shutdown(). Actually, to me it occurs like serial8250_start_tx() 
+should not be called in the first place. It makes no sense after all.
 
-Thanks, I'll definitely read this.
-But I'm 100% sure the environment aspect and mobile device screen
-sizes were not discussed there.
+BTW cannot be x_char en/queued at that time too (the other check in the 
+if)? But again, serial8250_start_tx() should not be called after shutdown().
 
-> Thread starts here: https://lore.kernel.org/all/87y31eov1l.fsf@concordia.=
-ellerman.id.au/
+> The proposed change will prevent ->start_tx() to be called during
+> suspend on shut down port.
+> 
+> Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still busy")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Closes: https://lore.kernel.org/oe-lkp/202404031607.2e92eebe-lkp@intel.com
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> 
+> I have got into the very similar issue while working on max3100 driver.
+> I haven't checked the 8250 case, but for mine the culprit is the same
+> and this patch fixes it. Hence I assume it will fix the 8250 case as
+> well.
+> 
+>   drivers/tty/serial/serial_core.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index a005fc06a077..ba3a674a8bbf 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1788,6 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
+>   	 * Free the transmit buffer.
+>   	 */
+>   	uart_port_lock_irq(uport);
+> +	uart_circ_clear(&state->xmit);
+>   	buf = state->xmit.buf;
+>   	state->xmit.buf = NULL;
+>   	uart_port_unlock_irq(uport);
 
+-- 
+js
+suse labs
 
---=20
-With Best Regards,
-Andy Shevchenko
