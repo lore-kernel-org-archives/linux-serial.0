@@ -1,76 +1,58 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D8AB143C65;
-	Fri,  5 Apr 2024 08:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61930134404;
+	Fri,  5 Apr 2024 09:25:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712304263; cv=none; b=IqDazv4Mr8LAywBlXfJbHhEp6jGP28i1I/YFrEEKRgeVFeDgQglyi3naVgl/JTPIDyJzz9hSIJiSNjYmXSNkVMnYgPdJhbNTssWCS0fy+qexv1N3aFOaTVIP73eTBAiwBVCTwfWK8UpHqfBOGpJq7AOdwR18hvsUOAMaHkqdKAI=
+	t=1712309120; cv=none; b=oZR2CZY5ymAcbpXum4GwTB3o4hcnhbhBhNdy8TJ+++Sr7jSoB5jM9xrZgN114e0Ehq8RgCMW4+XfWJsXuYOymyFuXSVimoGswo0GAfsoTSVbXtE+yjc/oBG7lw6lmSwF10Tfr55qcr10+/+H/WUGl+rCWrIRPzNZgnASOKSBd9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712304263; c=relaxed/simple;
-	bh=v11yFk9NSOfNoHc6+ANIFNbVeOYgrslLQmB+9CH9P+8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QZz1FIjcZNRvP9Yl/XFwWAs2SUmSBOxHCVqIMyTGNldHz2EA1fa0wkWowFQdUOACcZ1AC945AMYZi9aij0B5iAzPQLMWV7j1nZpOsTVBDLq6KlkjHktK+kTvBeHmAvwvLtYqzFQFNguyB1y1j6X856OdbCksAtQF8ZaqRKch+cg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fRF5ZN73; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712309120; c=relaxed/simple;
+	bh=LegK3ExFHR/1h7eBlgS2YcN2cj0X5XUHxShJ3eJQaDE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bb1wab3nvouEDG3W/OyPgh5AEudv4Ll+Br5a/zqbpzCBNAGvUrQpJEeQFcD6YpgcEzLVk4VQjSdVK9MQ1ersO6WTILIrl2eW7TEGi9efVlf1ieJlEX5AzjLWM+QtwriqElJ1RCms0GcKcIjY/dif69RAujgqA+Yj5V/Wcu7ilBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=WcMRfZrH; arc=none smtp.client-ip=188.40.30.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fRF5ZN73"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-6ecf406551aso1097449b3a.2;
-        Fri, 05 Apr 2024 01:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712304261; x=1712909061; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GfvN/GEUvZgHsMPKzmrhQeGD0EhxOkBXG+H6PdOljG4=;
-        b=fRF5ZN73lsvPf9tkv6kWqR037JX2BQc5ETO+ko4Uy+7GSkd+UxsOpRu3uUJu8tkVix
-         sfX17sEE7MnudyE13BRJWuokGlHFXheGGF/B6jbZcfsdj89dzek3TwXDSGu5X5FtPPJ5
-         71ruxej5jGNPDnU1d+/ESmS4WeBMqHEyZCw3gkHkI4+sBFJkKdMrfAgsSRp/IW72ZlR2
-         Dk8imfqmqYn3IlwwCopPCotfTxgJpzuM7izhL1FNSGT2RzIVmQqGQnRsnmvF4cwkL7Ud
-         X4Jo5TrWJa8I48f+C2Rj4ji97pDh31yHBtrOQcDCelAoF2Nv633lJQ+9XeKH6B2Ge6Go
-         yirw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712304261; x=1712909061;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GfvN/GEUvZgHsMPKzmrhQeGD0EhxOkBXG+H6PdOljG4=;
-        b=tGUYNcPIrdIzkyqOPZaY8/np2+N/yNrbLzprlJBK5FcOwerZoyxJSDBseIp/FPXO/n
-         AeMbEfep4UROEGTKL7K+/mrJ0bWv3N1qD0omUBqp8h1M5XwAv8j8E+pe9FuUbRser+P9
-         fGCM9RBCKYdhSuWHrX8qv2KMC0sknQybWMYDlZeujZOT9diaEoABltk4Ey6SQUnLXWWi
-         cIErgMFgSZtNPZViOZvBKrWgxWfi3mHJlTxiPUmkawg3OI0Rv6/oTVZ4RWkmtJa7x1+e
-         cHKOng/BsizgxHzw6SaXGVT3WCx9eJXzpioDHsjLoDnEQFos9m6kiO28hBmd5FzMktvR
-         06xQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVMV0Z+5S5yevEJKIoedGDyr/fRxkFDdKal4ZxDssDk5FjK1+TOPRLgHRAP/Bkff7MzvLa3qW/W5rpUWbXFi715fXO9e+NO+8203yltdQE/pVs784NmaJZ2PtWvh6OuWUUtosBvicMIp6qi4GFUF9tzevlGlyzCGPYmEaFY1PNefM7Kirc8sQ==
-X-Gm-Message-State: AOJu0YwflE1DqlSnexZSe/PBidZNkodEN74Ftgkau1A15wHHuU56Ai1d
-	xL3kwfyToqIfWcC5yrwQUdQmB3MZKkhJG/65202iA0lacAKoTZNc
-X-Google-Smtp-Source: AGHT+IEk9ijxrJqAh34I2dW8pSMS+a1cqK0Fa6E00ttmimkRzuDSHQJOQgvaAdjxlY1/kHWPx48UVw==
-X-Received: by 2002:a05:6a20:3d8a:b0:1a3:c512:580c with SMTP id s10-20020a056a203d8a00b001a3c512580cmr857251pzi.9.1712304260711;
-        Fri, 05 Apr 2024 01:04:20 -0700 (PDT)
-Received: from localhost.localdomain ([103.4.220.252])
-        by smtp.googlemail.com with ESMTPSA id b6-20020a170902ed0600b001e10b6f45dasm921162pld.295.2024.04.05.01.04.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Apr 2024 01:04:19 -0700 (PDT)
-From: Kanak Shilledar <kanakshilledar@gmail.com>
-To: 
-Cc: daniel.baluta@nxp.com,
-	Kanak Shilledar <kanakshilledar111@protonmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="WcMRfZrH"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
+	s=default2211; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:
+	Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References;
+	bh=7dcSbryEJQBvrS2PQ/uX0RZsRPEyzPJFXC461YQLAEI=; b=WcMRfZrHfD5Kz+BAUns9apNjZy
+	N/6W5kSGc9CvCl/0AgBAZA/Qja5Dc3ZAtnJ074m1/gIW+V0M7YiVtMu4YJ75IcQR8NXQVd48BJ4cX
+	yjcwcc4dvsGy7p2TAlFKkKyBCTEtENxVPHxSyulOIeD5fUD5baGCo1X6PycvDbNex3wnUoeXyX567
+	WsbKAhCSvBi5O4Eu9N/LqmavJcScDcU8XWDBRrErZW4tR1BlDHMUWai/KFADXLr0xhwGsbAH1YYJn
+	2FZ7PId0xWVCH33V8AWPAwnderJESA6czDKtukDaWAvz3fyAhGSjbDz1abBmrHsC5nrm+Zsy/ZxeV
+	my/os/ew==;
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <esben@geanix.com>)
+	id 1rsfow-000KBi-TR; Fri, 05 Apr 2024 11:25:14 +0200
+Received: from [185.17.218.86] (helo=localhost)
+	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <esben@geanix.com>)
+	id 1rsfow-000AR5-0H;
+	Fri, 05 Apr 2024 11:25:14 +0200
+From: Esben Haabendal <esben@geanix.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	=?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-actions@lists.infradead.org
-Subject: [PATCH v5] dt-bindings: serial: actions,owl-uart: convert to dtschema
-Date: Fri,  5 Apr 2024 13:32:32 +0530
-Message-Id: <20240405080235.11563-1-kanakshilledar@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 1/2] serial: imx: Introduce timeout when waiting on transmitter empty
+Date: Fri,  5 Apr 2024 11:25:13 +0200
+Message-ID: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -78,109 +60,53 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: esben@geanix.com
+X-Virus-Scanned: Clear (ClamAV 0.103.10/27235/Thu Apr  4 10:24:59 2024)
 
-From: Kanak Shilledar <kanakshilledar111@protonmail.com>
+By waiting at most 1 second for USR2_TXDC to be set, we avoid a potentital
+deadlock.
 
-Convert the Actions Semi Owl UART to newer DT schema.
-Created DT schema based on the .txt file which had
-`compatible`, `reg` and `interrupts` as the
-required properties. This binding is used by Actions S500, S700
-and S900 SoC. S700 and S900 use the same UART compatible string.
+In case of the timeout, there is not much we can do, so we simply ignore
+the transmitter state and optimistically try to continue.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Kanak Shilledar <kanakshilledar111@protonmail.com>
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
-Changes in v5
-- rebased the patch
-- sent to all the maintainers
+ drivers/tty/serial/imx.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Changes in v4
-- updated commit message
-- `clocks` property is removed from the required section.
-- remove disabled status from example devicetree
----
- .../bindings/serial/actions,owl-uart.txt      | 16 -------
- .../bindings/serial/actions,owl-uart.yaml     | 48 +++++++++++++++++++
- 2 files changed, 48 insertions(+), 16 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/actions,owl-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/actions,owl-uart.yaml
-
-diff --git a/Documentation/devicetree/bindings/serial/actions,owl-uart.txt b/Documentation/devicetree/bindings/serial/actions,owl-uart.txt
-deleted file mode 100644
-index aa873eada02d..000000000000
---- a/Documentation/devicetree/bindings/serial/actions,owl-uart.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--Actions Semi Owl UART
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index e14813250616..09c1678ddfd4 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -26,6 +26,7 @@
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/dma-mapping.h>
+ 
+ #include <asm/irq.h>
+@@ -2010,7 +2011,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	struct imx_port *sport = imx_uart_ports[co->index];
+ 	struct imx_port_ucrs old_ucr;
+ 	unsigned long flags;
+-	unsigned int ucr1;
++	unsigned int ucr1, usr2;
+ 	int locked = 1;
+ 
+ 	if (sport->port.sysrq)
+@@ -2041,8 +2042,8 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and restore UCR1/2/3
+ 	 */
+-	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC));
 -
--Required properties:
--- compatible :  "actions,s500-uart", "actions,owl-uart" for S500
--                "actions,s900-uart", "actions,owl-uart" for S900
--- reg        :  Offset and length of the register set for the device.
--- interrupts :  Should contain UART interrupt.
--
--
--Example:
--
--		uart3: serial@b0126000 {
--			compatible = "actions,s500-uart", "actions,owl-uart";
--			reg = <0xb0126000 0x1000>;
--			interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
--		};
-diff --git a/Documentation/devicetree/bindings/serial/actions,owl-uart.yaml b/Documentation/devicetree/bindings/serial/actions,owl-uart.yaml
-new file mode 100644
-index 000000000000..ab1c4514ae93
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/actions,owl-uart.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/actions,owl-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Actions Semi Owl UART
-+
-+maintainers:
-+  - Kanak Shilledar <kanakshilledar111@protonmail.com>
-+
-+allOf:
-+  - $ref: serial.yaml
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - actions,s500-uart
-+          - actions,s900-uart
-+      - const: actions,owl-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/actions,s500-cmu.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    uart0: serial@b0126000 {
-+        compatible = "actions,s500-uart", "actions,owl-uart";
-+        reg = <0xb0126000 0x1000>;
-+        clocks = <&cmu CLK_UART0>;
-+        interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
-+    };
++	read_poll_timeout_atomic(imx_uart_readl, usr2, usr2 & USR2_TXDC,
++				 0, USEC_PER_SEC, false, sport, USR2);
+ 	imx_uart_ucrs_restore(sport, &old_ucr);
+ 
+ 	if (locked)
 -- 
-2.34.1
+2.44.0
 
