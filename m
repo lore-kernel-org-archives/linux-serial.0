@@ -1,112 +1,105 @@
-Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61930134404;
-	Fri,  5 Apr 2024 09:25:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D9416079F
+	for <linux-serial@vger.kernel.org>; Fri,  5 Apr 2024 09:50:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712309120; cv=none; b=oZR2CZY5ymAcbpXum4GwTB3o4hcnhbhBhNdy8TJ+++Sr7jSoB5jM9xrZgN114e0Ehq8RgCMW4+XfWJsXuYOymyFuXSVimoGswo0GAfsoTSVbXtE+yjc/oBG7lw6lmSwF10Tfr55qcr10+/+H/WUGl+rCWrIRPzNZgnASOKSBd9U=
+	t=1712310614; cv=none; b=q0txXKBMoCWkIxfarV42ygFN6FLV8zoH1NG8Y0RfGp6GT+BJSCpQ6240mm87qgonVLweIT80rxEqLSEzwaEscohoAuGuPQs4/fgYU3e1axMHsHw2Y3b2uHqtghcsu8Ux5qdnG08sKOkUxybq34X5vpEGWz0ggbdJxTwOEsFP/KM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712309120; c=relaxed/simple;
-	bh=LegK3ExFHR/1h7eBlgS2YcN2cj0X5XUHxShJ3eJQaDE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bb1wab3nvouEDG3W/OyPgh5AEudv4Ll+Br5a/zqbpzCBNAGvUrQpJEeQFcD6YpgcEzLVk4VQjSdVK9MQ1ersO6WTILIrl2eW7TEGi9efVlf1ieJlEX5AzjLWM+QtwriqElJ1RCms0GcKcIjY/dif69RAujgqA+Yj5V/Wcu7ilBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=WcMRfZrH; arc=none smtp.client-ip=188.40.30.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="WcMRfZrH"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
-	s=default2211; h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:
-	Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References;
-	bh=7dcSbryEJQBvrS2PQ/uX0RZsRPEyzPJFXC461YQLAEI=; b=WcMRfZrHfD5Kz+BAUns9apNjZy
-	N/6W5kSGc9CvCl/0AgBAZA/Qja5Dc3ZAtnJ074m1/gIW+V0M7YiVtMu4YJ75IcQR8NXQVd48BJ4cX
-	yjcwcc4dvsGy7p2TAlFKkKyBCTEtENxVPHxSyulOIeD5fUD5baGCo1X6PycvDbNex3wnUoeXyX567
-	WsbKAhCSvBi5O4Eu9N/LqmavJcScDcU8XWDBRrErZW4tR1BlDHMUWai/KFADXLr0xhwGsbAH1YYJn
-	2FZ7PId0xWVCH33V8AWPAwnderJESA6czDKtukDaWAvz3fyAhGSjbDz1abBmrHsC5nrm+Zsy/ZxeV
-	my/os/ew==;
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	s=arc-20240116; t=1712310614; c=relaxed/simple;
+	bh=hSWXhZbD6PA6W0zh+ZqK9opYJ0KSx0CuUh2LDJVqsug=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mxBMhGaoJ3EfyGhPAFvwJyduJhCvgATX+1CDu9J1D63NQxtb/rgevQeEz8vY6Lc6czsjem3OOMDlCiaTEXdtnvD0BghWHMLpsp78LYEpGNCnSxDrEOegbwSXwHKg9ANFK4epkVkgwFvYyGV+j/H4CDpfbKs+bR+nxaW+F7I8v6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1rsgCl-0003Gt-Rv; Fri, 05 Apr 2024 11:49:51 +0200
+Received: from [2a0a:edc0:0:b01:1d::7b] (helo=bjornoya.blackshift.org)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
-	(envelope-from <esben@geanix.com>)
-	id 1rsfow-000KBi-TR; Fri, 05 Apr 2024 11:25:14 +0200
-Received: from [185.17.218.86] (helo=localhost)
-	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <esben@geanix.com>)
-	id 1rsfow-000AR5-0H;
-	Fri, 05 Apr 2024 11:25:14 +0200
-From: Esben Haabendal <esben@geanix.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 1/2] serial: imx: Introduce timeout when waiting on transmitter empty
-Date: Fri,  5 Apr 2024 11:25:13 +0200
-Message-ID: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
-X-Mailer: git-send-email 2.44.0
+	(envelope-from <mkl@pengutronix.de>)
+	id 1rsgCl-00AXqP-3W; Fri, 05 Apr 2024 11:49:51 +0200
+Received: from pengutronix.de (unknown [172.20.34.65])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id AE6A52B282F;
+	Fri,  5 Apr 2024 09:49:50 +0000 (UTC)
+Date: Fri, 5 Apr 2024 11:49:50 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Esben Haabendal <esben@geanix.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
+	Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] serial: imx: Introduce timeout when waiting on
+ transmitter empty
+Message-ID: <20240405-impurity-emerald-f67dc37adf9b-mkl@pengutronix.de>
+References: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: esben@geanix.com
-X-Virus-Scanned: Clear (ClamAV 0.103.10/27235/Thu Apr  4 10:24:59 2024)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="6rhh7y57qqxw7exf"
+Content-Disposition: inline
+In-Reply-To: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-By waiting at most 1 second for USR2_TXDC to be set, we avoid a potentital
-deadlock.
 
-In case of the timeout, there is not much we can do, so we simply ignore
-the transmitter state and optimistically try to continue.
+--6rhh7y57qqxw7exf
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/tty/serial/imx.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+On 05.04.2024 11:25:13, Esben Haabendal wrote:
+> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potentital
+> deadlock.
+>=20
+> In case of the timeout, there is not much we can do, so we simply ignore
+> the transmitter state and optimistically try to continue.
+>=20
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index e14813250616..09c1678ddfd4 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -26,6 +26,7 @@
- #include <linux/slab.h>
- #include <linux/of.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/dma-mapping.h>
- 
- #include <asm/irq.h>
-@@ -2010,7 +2011,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
- 	struct imx_port *sport = imx_uart_ports[co->index];
- 	struct imx_port_ucrs old_ucr;
- 	unsigned long flags;
--	unsigned int ucr1;
-+	unsigned int ucr1, usr2;
- 	int locked = 1;
- 
- 	if (sport->port.sysrq)
-@@ -2041,8 +2042,8 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
- 	 *	Finally, wait for transmitter to become empty
- 	 *	and restore UCR1/2/3
- 	 */
--	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC));
--
-+	read_poll_timeout_atomic(imx_uart_readl, usr2, usr2 & USR2_TXDC,
-+				 0, USEC_PER_SEC, false, sport, USR2);
- 	imx_uart_ucrs_restore(sport, &old_ucr);
- 
- 	if (locked)
--- 
-2.44.0
+Where's the cover letter and patch 2/2? Have a look at b4 [1], it's a
+great tool to help you with sending git patch series.
 
+[1] https://b4.docs.kernel.org/en/latest/
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--6rhh7y57qqxw7exf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEUEC6huC2BN0pvD5fKDiiPnotvG8FAmYPyTsACgkQKDiiPnot
+vG8gsAf/fEGSFLsAsbgzZopYqja0FtibvbPZ1dlovaaUkpMAPJxw50RrvIK4/Nor
+CQYR8XnT9GiH77IUOjNphjpvJJYNXWxkvsj1U9vAYziAV+fDRCzXxYWVmJf/7MNC
+gJ2EOm2FCAmlOkiRcvzeoaIIodo2465NLn9WQaWj9qbrGslgQ996WZ6bl1wu6aZG
+LS4/7FK9dbdAu8w6poagajePRAYZ9U5faIiBA5ZMSegB0dHHXgUbQAzRqvCZmWVY
+3qbzsy+0uvN0lz4Z7jP6tQ/8YcKl5vz/HOdYAyN2qI3yJnB+ChB71ON3RwYSSHTO
+pVA/zhZztk307ZmaTA7eeWnLFBAyFw==
+=BAfU
+-----END PGP SIGNATURE-----
+
+--6rhh7y57qqxw7exf--
