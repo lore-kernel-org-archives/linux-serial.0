@@ -1,139 +1,115 @@
-Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DB8200B7;
-	Sat,  6 Apr 2024 05:46:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1A6208D4
+	for <linux-serial@vger.kernel.org>; Sat,  6 Apr 2024 08:06:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712382403; cv=none; b=Md2CaxG4O/rGpXORNqkp+gF9nM6U+1pIetrh+2WzaIHR7UqWmIolHO5Gh084zeo5t0cWE+MqrifNq25CXdstKM0v5XmYYFAt8Ce/xlaytzd0Pg21/hkaIpiouwQhCuKGE5bMMKx3P0HiJtS2CXVS5uZJJ8UBDIhBw4GOMG6P61w=
+	t=1712390809; cv=none; b=bPphZogU60R5vdlU8WS3psvwHPtkYfUlYhnfeIQMfJ442TOuFmQ+sRaREVr4M6Iwjui1nMlvreSGr5BXb2zwyh7mEXjn7hG8IyzRpdnsL29JxA6LK4nO7APB3MLDKnahrACuZtTfgcPBdFoExRyQggit6msWReQs994DIctLQm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712382403; c=relaxed/simple;
-	bh=vZ1pg4vbgxQBMvnUbk+bAxA9uplTaeoZ1SLa48DCmB0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Eueaiclsh+5VPRNd7Vplba18N6ZVHblPDGnl2HW2algqO3/M/1A8BNt+BIZDdzHXbjsAsMPq/dlF5LwpPkE9m7dDUtGaMkGxhlK5ESAbadFocQwQjFkB9XQcmmTcLbzbixi2QIdYzdYY6iBg+DTln3oR38jrD4wwr5w/YQDFhkw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=LWXsbhf+; arc=none smtp.client-ip=74.50.62.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
+	s=arc-20240116; t=1712390809; c=relaxed/simple;
+	bh=M87uudLlyUpqSYEX63NZsIYqD2BGh3l0n8hlMS93E4U=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=Mt4ijT+GgHb7hf0ILV7g7DUM/s2828rGCj8w5gHURlYz3VZPgfRL4X8b8ULVNrDWawn0TXdnFRMFHCNulGENis5nMkFZnU0iacZ/CFbPKccGlgonLKUwkarjYpLp/RkqO4cYMLhEg8BgHnM5cwS9gax2mdgEjGkCLzNY2zACHq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DZMaRcXg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="LWXsbhf+"
-Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 2E7F960339;
-	Sat,  6 Apr 2024 05:46:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1712382393;
-	bh=vZ1pg4vbgxQBMvnUbk+bAxA9uplTaeoZ1SLa48DCmB0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LWXsbhf+CRF31iWm9i8TY/haZFCQ4mUaXjcmiYgOgkmpOyeyPMyw+8XkEXZUmWfM7
-	 gQK8acTpyyUuEcyJfw5C7w5nwOM/HrfER0KzfJmq0su+FDxybx5cQTx+HUTyR1I0+/
-	 s1RksCMZk4cbCes9uaQXFr53Fcy7Wb21E82hhlcNOOIBcs6iR88LJviCDNm7wIaDro
-	 T9/Smwe7zfedweIw38ksX3DfZaY9BBgiGErRiK/5so9F/fN8exNCnlFyZ5zmWtVhMW
-	 WUxvC9vunbNcLD6fhGrM80Jrhuv2gRwFILPOi5RfBbK17x2cBdKM33ceqQXkUBNKOD
-	 Q2jQ5M3zv3P5w==
-Date: Sat, 6 Apr 2024 08:46:17 +0300
-From: Tony Lindgren <tony@atomide.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
- NULLifying it
-Message-ID: <20240406054617.GR5132@atomide.com>
-References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
- <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
- <ZhAWIThfejjbmj8u@smile.fi.intel.com>
- <ZhB9M8C9IhXtJIXR@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DZMaRcXg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09916C43394;
+	Sat,  6 Apr 2024 08:06:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712390809;
+	bh=M87uudLlyUpqSYEX63NZsIYqD2BGh3l0n8hlMS93E4U=;
+	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+	b=DZMaRcXggFxoaTFtgJFZZSIS8FJbGkFVCdMMOawJwkiu0/XSao2jO7OScmYiQmq7E
+	 aGIKIRq2Wpb082mBWY5+pOW+ekN0aEVS77gODR6ytHOnMIsWb3+v8HR0T+v7ww3ccN
+	 aPJe2MRdVQAKNvwbTQJYpKk8rzGIOnptM40pB+OSecgmRVIbqM7U949gZ50XpOkVCx
+	 L4s45kLH5getuGe3e2EmoqmtYZEbLPjW3QnceLq5YgdGeGGo1zdwZqXpqVRFsJHT47
+	 crX9A7gPMJCB6wbN1vTAeJcTY1Wbr9lNCOzt5eFRYzaAYPuEnNOwpQbPvu7EmlSDuE
+	 38rPvLIibyUog==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfauth.nyi.internal (Postfix) with ESMTP id 0627F1200066;
+	Sat,  6 Apr 2024 04:06:47 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Sat, 06 Apr 2024 04:06:48 -0400
+X-ME-Sender: <xms:lwIRZhfGxOfrq3GRd6jrUncCIgt1032rvYV3h1tC9BRH1mdw0k1Hdg>
+    <xme:lwIRZvMd609QFkaSkldvCzTg-up2jq1WFbigPvZBDkWJTLW4qnfYHQvEUFfbalSQs
+    EE5R7uSdyakOwrkKVM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudegvdcutefuodetggdotefrodftvfcurf
+    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhnugcu
+    uegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeelvefgudeiheefledttedthfffgfekudegkeelffdtiedvgfevieetteekheff
+    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomheprghrnhguodhmvghsmhhtphgruhhthhhpvghr
+    shhonhgrlhhithihqdduvdekhedujedtvdegqddvkeejtddtvdeigedqrghrnhgupeepkh
+    gvrhhnvghlrdhorhhgsegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:lwIRZqhqaJE6nrIv7iq94np4B3clKvBFCWeBms2nHPX9HazvEWFeTg>
+    <xmx:lwIRZq_FCwFnKL65wo2I-wHIAMoQPHRvBOrrrjLHZRgbZWcNW2GnlQ>
+    <xmx:lwIRZtspNkEHBTzoEnmofoh-Sv4WjWHiPtzHQ_1OgZHh3J6BdujJYw>
+    <xmx:lwIRZpEwdW4VCUXgH3ti4aW5vKmRKdP__imCofjIpm3BGO02BZkS5A>
+    <xmx:lwIRZrV3vkNe6sCYNq80UxYlG_mr8KktdGBhKrsiuybh1cvNUzd20Qzb>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id E64B8B6008D; Sat,  6 Apr 2024 04:06:46 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-333-gbfea15422e-fm-20240327.001-gbfea1542
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZhB9M8C9IhXtJIXR@smile.fi.intel.com>
+Message-Id: <7e6757c1-10ad-4852-9927-6e0dca100524@app.fastmail.com>
+In-Reply-To: <ZhB8MnWSeySAHGXG@black.fi.intel.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <ZhB8MnWSeySAHGXG@black.fi.intel.com>
+Date: Sat, 06 Apr 2024 10:06:21 +0200
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Andy Shevchenko" <andy@black.fi.intel.com>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>
+Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/1] tty: Handle HAS_IOPORT dependencies
+Content-Type: text/plain
 
-* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [240405 22:37]:
-> On Fri, Apr 05, 2024 at 06:17:54PM +0300, Andy Shevchenko wrote:
-> > On Fri, Apr 05, 2024 at 07:25:03AM +0200, Jiri Slaby wrote:
-> > > BTW cannot be x_char en/queued at that time too (the other check in the if)?
-> > > But again, serial8250_start_tx() should not be called after shutdown().
-> > 
-> > Yes, and I have no clue how we can check this as startup can be called again
-> > and so on. The PM callback is timer based AFAIU, meaning it may happen at any
-> > time.
+On Sat, Apr 6, 2024, at 00:33, Andy Shevchenko wrote:
+> On Fri, Apr 05, 2024 at 05:29:23PM +0200, Niklas Schnelle wrote:
+>> Hi Greg, Jiri, Ilpo,
+>> 
+>> This is a follow up in my ongoing effort of making inb()/outb() and
+>> similar I/O port accessors compile-time optional. Previously I sent this
+>> as a treewide series titled "treewide: Remove I/O port accessors for
+>> HAS_IOPORT=n" with the latest being its 5th version[0]. With a significant
+>> subset of patches merged I've changed over to per-subsystem series. These
+>> series are stand alone and should be merged via the relevant tree such
+>> that with all subsystems complete we can follow this up with the final
+>> patch that will make the I/O port accessors compile-time optional.
+>> 
+>> The current state of the full series with changes to the remaining subsystems
+>> and the aforementioned final patch can be found for your convenience on my
+>> git.kernel.org tree in the has_ioport branch[1]. As for compile-time vs runtime
+>> see Linus' reply to my first attempt[2].
+>> 
+>> The patch was previously acked[3] by Greg but given this was almost
+>> a year ago and didn't apply then I didn't carry the Ack over. That said
+>> I don't think there were non trivial changes.
+>
+> Hmm... Can those drivers simply be converted to use ioreadXX/iowriteXX
+> instead?
 
-So below is an incomplete pseudo patch just showing where we could disable
-tx for runtime PM.
+Not 8250, for a couple of reasons:
 
-The patch won't compile, and assumes we only disable tx for runtime PM.
+- the irq autoconfig code uses outb_p(), which has no iowrite()
+  equivalent
+- the driver is used on machines that cannot implement
+  ioport_map() because of the nonlinear address translation,
+  e.g. certain early alpha and mips machines.
+- it still needs its own I/O abstraction layer to deal with
+  different-sized registers, so the result would not be any
+  more readable even without the other issues.
 
-However, if we need it elsewhere also, then we may want to set up some
-UPF_TX_ENABLED type flag instead of serial_base_port specific calls.
-
-My preference would be to limit it to serial_port.c if we can get away
-with that.
-
-Anybody have better ideas for enabling and disabling tx?
-
-> > But do you agree that this patch has value on its own?
-> 
-> FWIW, https://lore.kernel.org/all/0000000000009e2dd805ffc595a3@google.com/T/
-
-No objections from me for clearing the xmit. But should it also be done for
-uart_shutdown() in addition to uart_tty_port_shutdown()?
-
-Regards,
-
-Tony
-
-8< -----------------------
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -345,16 +345,23 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
- 			bool init_hw)
- {
- 	struct tty_port *port = &state->port;
-+	struct uart_port *uport;
- 	int retval;
- 
- 	if (tty_port_initialized(port))
--		return 0;
-+		goto enable_tx;
- 
- 	retval = uart_port_startup(tty, state, init_hw);
--	if (retval)
-+	if (retval) {
- 		set_bit(TTY_IO_ERROR, &tty->flags);
-+		return retval;
-+	}
- 
--	return retval;
-+enable_tx:
-+	uport = uart_port_check(state);
-+	serial_base_port_enable_tx(uport);
-+
-+	return 0;
- }
- 
- /*
-@@ -377,6 +384,9 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	if (tty)
- 		set_bit(TTY_IO_ERROR, &tty->flags);
- 
-+	if (uport)
-+		serial_base_port_disable_tx(uport);
-+
- 	if (tty_port_initialized(port)) {
- 		tty_port_set_initialized(port, false);
- 
-@@ -1821,6 +1831,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	uport->ops->stop_rx(uport);
- 	uart_port_unlock_irq(uport);
- 
-+	serial_base_port_disable_tx(uport);
- 	uart_port_shutdown(port);
- 
- 	/*
+     Arnd
