@@ -1,124 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94EB218E02;
-	Sat,  6 Apr 2024 05:20:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8DB8200B7;
+	Sat,  6 Apr 2024 05:46:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712380829; cv=none; b=YzbEaLpkY1uVjsGwaQO1u+GcmshnUnFAxY+GcJB8z7/W6G5GIZGCcfBcDEjXLvGBv0crdz8VkQIxs2kmrhvOykKr6zmbeQjKDQT+1V+GgFc8+UV9n4BO280BecUa/nF1cCe8vrCw/5HIHacvrFdeEATQ6v+RiMCvinEcdNzAKq8=
+	t=1712382403; cv=none; b=Md2CaxG4O/rGpXORNqkp+gF9nM6U+1pIetrh+2WzaIHR7UqWmIolHO5Gh084zeo5t0cWE+MqrifNq25CXdstKM0v5XmYYFAt8Ce/xlaytzd0Pg21/hkaIpiouwQhCuKGE5bMMKx3P0HiJtS2CXVS5uZJJ8UBDIhBw4GOMG6P61w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712380829; c=relaxed/simple;
-	bh=TBj/hcnPrvS19ZOluMZ12evt8AeDaDrUTBeM5kaTuKY=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=CZ8xfNFOwOwbOw+X7MQ2mypw2+89BHGbOVaiv57GMPQkzoP+kTI3Of0iGuMzFOUzREJ/5HG1uwWjOnb/738qFydKIOLZPWRcq+fRpVC2c83ScQZah+i6XKs06F3D3U/JknTPeBdxqgBUOHgAXMUknabfbbQJoG8FBKB5p8UrXSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HYazYNyp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712382403; c=relaxed/simple;
+	bh=vZ1pg4vbgxQBMvnUbk+bAxA9uplTaeoZ1SLa48DCmB0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Eueaiclsh+5VPRNd7Vplba18N6ZVHblPDGnl2HW2algqO3/M/1A8BNt+BIZDdzHXbjsAsMPq/dlF5LwpPkE9m7dDUtGaMkGxhlK5ESAbadFocQwQjFkB9XQcmmTcLbzbixi2QIdYzdYY6iBg+DTln3oR38jrD4wwr5w/YQDFhkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=LWXsbhf+; arc=none smtp.client-ip=74.50.62.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HYazYNyp"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C5A9C433C7;
-	Sat,  6 Apr 2024 05:20:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712380828;
-	bh=TBj/hcnPrvS19ZOluMZ12evt8AeDaDrUTBeM5kaTuKY=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=HYazYNypOS+iPe/PmwIZVgrP0OAjOmuWcCZaXmQBd5/DF3DU2Cm7HK1KTLKVM8W2j
-	 EfdrhznuDsHvbEh7NeV1r2EDMVkxTqo+hmKt5MdFIcqj68UTB4u7gvHG6geAe3ArfV
-	 cYxb7yc2nqhO3pPj8ToTFIgL78NntzPlzi3tNk1u8F7N5z7SqSGJ1Z/QhHbUaQaR1j
-	 GTv/7bDPNNXqFXoXNMGCl3bjIAtmML/lX++bgYkRjXumLNf6dEzpQPrpxdPeyVgSKh
-	 czfxRuHIWxcuBJ6wGSXEzVfHmRCYmRJdToESEDFulu3u4HF5IZUSSU3tkxxLhyQRAI
-	 TbkNIwkM8MMRA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 19C9BD84BAC;
-	Sat,  6 Apr 2024 05:20:28 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="LWXsbhf+"
+Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
+	by mail5.25mail.st (Postfix) with ESMTPSA id 2E7F960339;
+	Sat,  6 Apr 2024 05:46:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
+	s=25mailst; t=1712382393;
+	bh=vZ1pg4vbgxQBMvnUbk+bAxA9uplTaeoZ1SLa48DCmB0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LWXsbhf+CRF31iWm9i8TY/haZFCQ4mUaXjcmiYgOgkmpOyeyPMyw+8XkEXZUmWfM7
+	 gQK8acTpyyUuEcyJfw5C7w5nwOM/HrfER0KzfJmq0su+FDxybx5cQTx+HUTyR1I0+/
+	 s1RksCMZk4cbCes9uaQXFr53Fcy7Wb21E82hhlcNOOIBcs6iR88LJviCDNm7wIaDro
+	 T9/Smwe7zfedweIw38ksX3DfZaY9BBgiGErRiK/5so9F/fN8exNCnlFyZ5zmWtVhMW
+	 WUxvC9vunbNcLD6fhGrM80Jrhuv2gRwFILPOi5RfBbK17x2cBdKM33ceqQXkUBNKOD
+	 Q2jQ5M3zv3P5w==
+Date: Sat, 6 Apr 2024 08:46:17 +0300
+From: Tony Lindgren <tony@atomide.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
+ NULLifying it
+Message-ID: <20240406054617.GR5132@atomide.com>
+References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
+ <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
+ <ZhAWIThfejjbmj8u@smile.fi.intel.com>
+ <ZhB9M8C9IhXtJIXR@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 00/34] address all -Wunused-const warnings
-From: patchwork-bot+netdevbpf@kernel.org
-Message-Id: 
- <171238082809.31617.17365732495689756509.git-patchwork-notify@kernel.org>
-Date: Sat, 06 Apr 2024 05:20:28 +0000
-References: <20240403080702.3509288-1-arnd@kernel.org>
-In-Reply-To: <20240403080702.3509288-1-arnd@kernel.org>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: linux-kernel@vger.kernel.org, arnd@arndb.de, mpe@ellerman.id.au,
- christophe.leroy@csgroup.eu, dlemoal@kernel.org, jikos@kernel.org,
- gregkh@linuxfoundation.org, minyard@acm.org, peterhuewe@gmx.de,
- jarkko@kernel.org, kristo@kernel.org, sboyd@kernel.org, abbotti@mev.co.uk,
- hsweeten@visionengravers.com, srinivas.pandruvada@linux.intel.com,
- lenb@kernel.org, rafael@kernel.org, john.allen@amd.com,
- herbert@gondor.apana.org.au, vkoul@kernel.org, ardb@kernel.org,
- andersson@kernel.org, mdf@kernel.org, liviu.dudau@arm.com,
- benjamin.tissoires@redhat.com, andi.shyti@kernel.org,
- michael.hennerich@analog.com, peda@axentia.se, lars@metafoo.de,
- jic23@kernel.org, dmitry.torokhov@gmail.com, markuss.broks@gmail.com,
- alexandre.torgue@foss.st.com, lee@kernel.org, kuba@kernel.org,
- Shyam-sundar.S-k@amd.com, iyappan@os.amperecomputing.com,
- yisen.zhuang@huawei.com, stf_xl@wp.pl, kvalo@kernel.org, sre@kernel.org,
- tony@atomide.com, broonie@kernel.org, alexandre.belloni@bootlin.com,
- chenxiang66@hisilicon.com, martin.petersen@oracle.com,
- neil.armstrong@linaro.org, heiko@sntech.de, krzysztof.kozlowski@linaro.org,
- hvaibhav.linux@gmail.com, elder@kernel.org, jirislaby@kernel.org,
- ychuang3@nuvoton.com, deller@gmx.de, hch@lst.de, robin.murphy@arm.com,
- rostedt@goodmis.org, mhiramat@kernel.org, akpm@linux-foundation.org,
- keescook@chromium.org, trond.myklebust@hammerspace.com, anna@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org, tiwai@suse.com,
- linuxppc-dev@lists.ozlabs.org, linux-ide@vger.kernel.org,
- openipmi-developer@lists.sourceforge.net, linux-integrity@vger.kernel.org,
- linux-omap@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
- dmaengine@vger.kernel.org, linux-efi@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-fpga@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com,
- linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
- linux-leds@vger.kernel.org, linux-wireless@vger.kernel.org,
- linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-fbdev@vger.kernel.org, iommu@lists.linux.dev,
- linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
- linux-hardening@vger.kernel.org, linux-nfs@vger.kernel.org,
- linux-kbuild@vger.kernel.org, alsa-devel@alsa-project.org,
- linux-sound@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZhB9M8C9IhXtJIXR@smile.fi.intel.com>
 
-Hello:
+* Andy Shevchenko <andriy.shevchenko@linux.intel.com> [240405 22:37]:
+> On Fri, Apr 05, 2024 at 06:17:54PM +0300, Andy Shevchenko wrote:
+> > On Fri, Apr 05, 2024 at 07:25:03AM +0200, Jiri Slaby wrote:
+> > > BTW cannot be x_char en/queued at that time too (the other check in the if)?
+> > > But again, serial8250_start_tx() should not be called after shutdown().
+> > 
+> > Yes, and I have no clue how we can check this as startup can be called again
+> > and so on. The PM callback is timer based AFAIU, meaning it may happen at any
+> > time.
 
-This series was applied to netdev/net-next.git (main)
-by Jakub Kicinski <kuba@kernel.org>:
+So below is an incomplete pseudo patch just showing where we could disable
+tx for runtime PM.
 
-On Wed,  3 Apr 2024 10:06:18 +0200 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+The patch won't compile, and assumes we only disable tx for runtime PM.
+
+However, if we need it elsewhere also, then we may want to set up some
+UPF_TX_ENABLED type flag instead of serial_base_port specific calls.
+
+My preference would be to limit it to serial_port.c if we can get away
+with that.
+
+Anybody have better ideas for enabling and disabling tx?
+
+> > But do you agree that this patch has value on its own?
 > 
-> Compilers traditionally warn for unused 'static' variables, but not
-> if they are constant. The reason here is a custom for C++ programmers
-> to define named constants as 'static const' variables in header files
-> instead of using macros or enums.
-> 
-> [...]
+> FWIW, https://lore.kernel.org/all/0000000000009e2dd805ffc595a3@google.com/T/
 
-Here is the summary with links:
-  - [05/34] 3c515: remove unused 'mtu' variable
-    https://git.kernel.org/netdev/net-next/c/17b35355c2c6
-  - [19/34] sunrpc: suppress warnings for unused procfs functions
-    (no matching commit)
-  - [26/34] isdn: kcapi: don't build unused procfs code
-    https://git.kernel.org/netdev/net-next/c/91188544af06
-  - [28/34] net: xgbe: remove extraneous #ifdef checks
-    https://git.kernel.org/netdev/net-next/c/0ef416e045ad
-  - [33/34] drivers: remove incorrect of_match_ptr/ACPI_PTR annotations
-    (no matching commit)
+No objections from me for clearing the xmit. But should it also be done for
+uart_shutdown() in addition to uart_tty_port_shutdown()?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards,
 
+Tony
 
+8< -----------------------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -345,16 +345,23 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
+ 			bool init_hw)
+ {
+ 	struct tty_port *port = &state->port;
++	struct uart_port *uport;
+ 	int retval;
+ 
+ 	if (tty_port_initialized(port))
+-		return 0;
++		goto enable_tx;
+ 
+ 	retval = uart_port_startup(tty, state, init_hw);
+-	if (retval)
++	if (retval) {
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
++		return retval;
++	}
+ 
+-	return retval;
++enable_tx:
++	uport = uart_port_check(state);
++	serial_base_port_enable_tx(uport);
++
++	return 0;
+ }
+ 
+ /*
+@@ -377,6 +384,9 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	if (tty)
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
+ 
++	if (uport)
++		serial_base_port_disable_tx(uport);
++
+ 	if (tty_port_initialized(port)) {
+ 		tty_port_set_initialized(port, false);
+ 
+@@ -1821,6 +1831,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
+ 	uport->ops->stop_rx(uport);
+ 	uart_port_unlock_irq(uport);
+ 
++	serial_base_port_disable_tx(uport);
+ 	uart_port_shutdown(port);
+ 
+ 	/*
