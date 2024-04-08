@@ -1,121 +1,192 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7781CAA4;
-	Sun,  7 Apr 2024 09:49:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07034A40;
+	Mon,  8 Apr 2024 01:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712483366; cv=none; b=EhtlHbOgMQNyZTiEVomKhj52pvMxnMzx7F76+9w9HF8eQhvp0Mit3khiuCFWYmTZ35F3aSj/hSHSpChhDUIGL+F3y251tl9VyOOWsCZTqiq77H60DI9t/c/65FEQUHB55BVCBQTiPiJA/NpW2sR9N4xHlgWqjEvvOdUY1wN2k0M=
+	t=1712540802; cv=none; b=uBhB8j6J8Q2nC5253iC49hMJlP9uyLnArrOQR7RRgXsokP5Fz5uDKwYC2iXJCFw7j8qERr2/c+qKmtVO/1jM67JvIIoCF70NdgWlkv9L7r11tkS7z8kpV+LFKYSm5k2KeYtO94BGZ5vkosFoYlFsA0wDa42KEOZZqxXU2wkWSjc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712483366; c=relaxed/simple;
-	bh=ZmoHroEEWQNn9yJ7NQoUQMxBXY/9Ta5EgVKE6Owbfh8=;
-	h=CC:Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=WmsQibuW6ttyfXF1tui9DM3rhXtKXDWDW98cWGrrpGrD1S9BY8CGAz8dJxn8zOMm6b3WNyn8IrJtW73XWHmbAZ9H3PK4mzSY8ORShYaCPyTs5JNe+FpSXTsykfSGdG6PE5OYSIpw6n+x04Y/xPdh3q6Tf/4BErX5lNxh/7KtQbo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.174])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4VC6qD23fdzbfQB;
-	Sun,  7 Apr 2024 17:48:24 +0800 (CST)
-Received: from kwepemd200014.china.huawei.com (unknown [7.221.188.8])
-	by mail.maildlp.com (Postfix) with ESMTPS id 13E3B140156;
-	Sun,  7 Apr 2024 17:49:21 +0800 (CST)
-Received: from [10.67.121.177] (10.67.121.177) by
- kwepemd200014.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.28; Sun, 7 Apr 2024 17:49:20 +0800
-CC: <yangyicong@hisilicon.com>, Jiri Slaby <jirislaby@kernel.org>, Tony
- Lindgren <tony@atomide.com>, kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
- NULLifying it
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>
-References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <b3fd1077-b49e-d99b-9cd1-c41bd244f290@huawei.com>
-Date: Sun, 7 Apr 2024 17:49:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	s=arc-20240116; t=1712540802; c=relaxed/simple;
+	bh=HyM5zS7f5MYGW6eeBg1qi8l7ZaziJAsjzE+M8sUoukg=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=qKafLDFQj4vBZcce113NKLZeX8vgzZ9wKOBz9/6+bX07/2xQFTsX30fh2yw7zNGzAsM/gGbVQiF9vmWR4OzrEWFFcBXCwZvZ0enmg08WtHN1lcEdPdWiYyMr8pDSLxnbfbENS6Ob8p3DkC5Gx2iHE53zaOIBZNomn7jIhu2Qp7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 4381jBwW077166;
+	Mon, 8 Apr 2024 09:45:11 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
+	by mail.maildlp.com (Postfix) with ESMTP id D6F9D2004BBA;
+	Mon,  8 Apr 2024 09:47:16 +0800 (CST)
+Received: from localhost.localdomain (10.114.186.34) by
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Mon, 8 Apr 2024 09:45:11 +0800
+From: LiuYe <liu.yeC@h3c.com>
+To: <andy.shevchenko@gmail.com>
+CC: <daniel.thompson@linaro.org>, <dianders@chromium.org>,
+        <gregkh@linuxfoundation.org>, <jason.wessel@windriver.com>,
+        <jirislaby@kernel.org>, <kgdb-bugreport@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <liu.yec@h3c.com>, LiuYe <liu.yeC@h3c.com>
+Subject: Re: Re: [PATCH V8] kdb: Fix the deadlock issue in KDB debugging.
+Date: Mon, 8 Apr 2024 09:44:53 +0800
+Message-ID: <20240408014453.1431652-1-liu.yeC@h3c.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <Zg3WicDB8m9am7dJ@surfacebook.localdomain>
+References: <Zg3WicDB8m9am7dJ@surfacebook.localdomain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemd200014.china.huawei.com (7.221.188.8)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP02-EX.srv.huawei-3com.com (10.63.20.133) To
+ DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 4381jBwW077166
 
-Hi Andy,
+>Wed, Apr 03, 2024 at 02:11:09PM +0800, liu.yec@h3c.com kirjoitti:
+>> From: LiuYe <liu.yeC@h3c.com>
+>> 
+>> Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
+>> attempt to use schedule_work() to provoke a keyboard reset when
+>> transitioning out of the debugger and back to normal operation.
+>> This can cause deadlock because schedule_work() is not NMI-safe.
+>> 
+>> The stack trace below shows an example of the problem. In this
+>> case the master cpu is not running from NMI but it has parked
+>> the slave CPUs using an NMI and the parked CPUs is holding
+>> spinlocks needed by schedule_work().
+>
+>> example:
+>>  BUG: spinlock lockup suspected on CPU#0, namex/10450
+>>  lock: 0xffff881ffe823980, .magic: dead4ead, .owner: namexx/21888, .owner_cpu: 1
+>>  ffff881741d00000 ffff881741c01000 0000000000000000 0000000000000000
+>>  ffff881740f58e78 ffff881741cffdd0 ffffffff8147a7fc ffff881740f58f20
+>> Call Trace:
+>>  [<ffffffff81479e6d>] ? __schedule+0x16d/0xac0
+>>  [<ffffffff8147a7fc>] ? schedule+0x3c/0x90
+>>  [<ffffffff8147e71a>] ? schedule_hrtimeout_range_clock+0x10a/0x120
+>>  [<ffffffff8147d22e>] ? mutex_unlock+0xe/0x10
+>>  [<ffffffff811c839b>] ? ep_scan_ready_list+0x1db/0x1e0
+>>  [<ffffffff8147e743>] ? schedule_hrtimeout_range+0x13/0x20
+>>  [<ffffffff811c864a>] ? ep_poll+0x27a/0x3b0
+>>  [<ffffffff8108c540>] ? wake_up_q+0x70/0x70
+>>  [<ffffffff811c99a8>] ? SyS_epoll_wait+0xb8/0xd0
+>>  [<ffffffff8147f296>] ? entry_SYSCALL_64_fastpath+0x12/0x75
+>>  CPU: 0 PID: 10450 Comm: namex Tainted: G           O    4.4.65 #1
+>>  Hardware name: Insyde Purley/Type2 - Board Product Name1, BIOS 05.21.51.0036 07/19/2019
+>>   0000000000000000 ffff881ffe813c10 ffffffff8124e883 ffff881741c01000
+>>   ffff881ffe823980 ffff881ffe813c38 ffffffff810a7f7f ffff881ffe823980
+>>   000000007d2b7cd0 0000000000000001 ffff881ffe813c68 ffffffff810a80e0
+>>   Call Trace:
+>>   <#DB>  [<ffffffff8124e883>] dump_stack+0x85/0xc2
+>>   [<ffffffff810a7f7f>] spin_dump+0x7f/0x100
+>>   [<ffffffff810a80e0>] do_raw_spin_lock+0xa0/0x150
+>>   [<ffffffff8147eb55>] _raw_spin_lock+0x15/0x20
+>>   [<ffffffff8108c256>] try_to_wake_up+0x176/0x3d0
+>>   [<ffffffff8108c4c5>] wake_up_process+0x15/0x20
+>>   [<ffffffff8107b371>] insert_work+0x81/0xc0
+>>   [<ffffffff8107b4e5>] __queue_work+0x135/0x390
+>>   [<ffffffff8107b786>] queue_work_on+0x46/0x90
+>>   [<ffffffff81313d28>] kgdboc_post_exp_handler+0x48/0x70
+>>   [<ffffffff810ed488>] kgdb_cpu_enter+0x598/0x610
+>>   [<ffffffff810ed6e2>] kgdb_handle_exception+0xf2/0x1f0
+>>   [<ffffffff81054e21>] __kgdb_notify+0x71/0xd0
+>>   [<ffffffff81054eb5>] kgdb_notify+0x35/0x70
+>>   [<ffffffff81082e6a>] notifier_call_chain+0x4a/0x70
+>>   [<ffffffff8108304d>] notify_die+0x3d/0x50
+>>   [<ffffffff81017219>] do_int3+0x89/0x120
+>>   [<ffffffff81480fb4>] int3+0x44/0x80
+>
+>Ouch.
+>Please, read this
+>https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-messages
+>and modify the commit message accordingly.
 
-On 2024/4/4 22:59, Andy Shevchenko wrote:
-> The circular buffer is NULLified in uart_tty_port_shutdown()
-> under the spin lock. However, the PM or other timer based callbacks
-> may still trigger after this event without knowning that buffer pointer
-> is not valid. Since the serial code is a bit inconsistent in checking
-> the buffer state (some rely on the head-tail positions, some on the
-> buffer pointer), it's better to have both aligned, i.e. buffer pointer
-> to be NULL and head-tail possitions to be the same, meaning it's empty.
-> This will prevent asynchronous calls to dereference NULL pointer as
-> reported recently in 8250 case:
-> 
->   BUG: kernel NULL pointer dereference, address: 00000cf5
->   Workqueue: pm pm_runtime_work
->   EIP: serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
->   ...
->   ? serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
->   __start_tx (drivers/tty/serial/8250/8250_port.c:1551)
->   serial8250_start_tx (drivers/tty/serial/8250/8250_port.c:1654)
->   serial_port_runtime_suspend (include/linux/serial_core.h:667 drivers/tty/serial/serial_port.c:63)
->   __rpm_callback (drivers/base/power/runtime.c:393)
->   ? serial_port_remove (drivers/tty/serial/serial_port.c:50)
->   rpm_suspend (drivers/base/power/runtime.c:447)
-> 
-> The proposed change will prevent ->start_tx() to be called during
-> suspend on shut down port.
-> 
+The example is the printout of the kernel lockup detection mechanism, which may be easier to understand. 
+If organized according to the format provided in the previous link, should it be arranged as follows?
 
-Just saw the issue and thanks for your timely fix. I didn't got a board with 8250 and sorry for
-didn't found this issue.
+Example:
+BUG: spinlock lockup suspected on CPU#0. owner_cpu: 1
+CPU1: Call Trace:
+__schedule
+schedule
+schedule_hrtimeout_range_clock
+mutex_unlock
+ep_scan_ready_list
+schedule_hrtimeout_range
+ep_poll
+wake_up_q
+SyS_epoll_wait
+entry_SYSCALL_64_fastpath
 
-FYI, I checked device_shutdown() and seems it called pm_runtime_barrier() for waiting all
-the scheduled RPM callbacks finished and keep the device in resume state. So ideally there
-shouldn't be any pending requests later since we handled them before shutdown?
+CPU0: Call Trace:
+dump_stack
+spin_dump
+do_raw_spin_lock
+_raw_spin_lock
+try_to_wake_up
+wake_up_process
+insert_work
+__queue_work
+queue_work_on
+kgdboc_post_exp_handler
+kgdb_cpu_enter
+kgdb_handle_exception
+__kgdb_notify
+kgdb_notify
+notifier_call_chain
+notify_die
+do_int3
+int3
 
-There's someone encountered the same issue in shutdown() due to runtime pm and fixed it in
-	af8db1508f2c ("PM / driver core: disable device's runtime PM during shutdown")
-patch above seems to still have some problem and later fixed by:
-	fe6b91f47080 ("PM / Driver core: leave runtime PM enabled during system shutdown")
+>> We fix the problem by using irq_work to call schedule_work()
+>> instead of calling it directly. This is because we cannot
+>> resynchronize the keyboard state from the hardirq context
+>> provided by irq_work. This must be done from the task context
+>> in order to call the input subsystem.
+>> 
+>> Therefore, we have to defer the work twice. First, safely
+>> switch from the debug trap context (similar to NMI) to the
+>> hardirq, and then switch from the hardirq to the system work queue.
+>
+>> Signed-off-by: LiuYe <liu.yeC@h3c.com>
+>> Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+>
+>Correct tag is Co-developed-by, btw it's written in the same document the link
+>to which I provided a few lines above.
 
-But seems the handling in the driver core doesn't cover the case here..
+Yes, there will be warnings when using the ./scripts/checkpatch.pl script to check.
 
-> Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still busy")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Closes: https://lore.kernel.org/oe-lkp/202404031607.2e92eebe-lkp@intel.com
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> 
-> I have got into the very similar issue while working on max3100 driver.
-> I haven't checked the 8250 case, but for mine the culprit is the same
-> and this patch fixes it. Hence I assume it will fix the 8250 case as
-> well.
-> 
->  drivers/tty/serial/serial_core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index a005fc06a077..ba3a674a8bbf 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -1788,6 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
->  	 * Free the transmit buffer.
->  	 */
->  	uart_port_lock_irq(uport);
-> +	uart_circ_clear(&state->xmit);
->  	buf = state->xmit.buf;
->  	state->xmit.buf = NULL;
->  	uart_port_unlock_irq(uport);
-> 
+WARNING: Non-standard signature: Co-authored-by:
+#68:
+Co-authored-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+total: 0 errors, 1 warnings, 51 lines checked 
+
+I will change it to the following:
+
+Co-developed-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+>
+>> --- a/drivers/tty/serial/kgdboc.c
+>> +++ b/drivers/tty/serial/kgdboc.c
+>> @@ -22,6 +22,7 @@
+>>  #include <linux/module.h>
+>>  #include <linux/platform_device.h>
+>>  #include <linux/serial_core.h>
+>> +#include <linux/irq_work.h>
+>
+>Please, keep it ordered (with visible context this should go at least before
+>module.h).
+
+I don't understand why this needs to be placed before module.h. Please explain further, thank you.
+
