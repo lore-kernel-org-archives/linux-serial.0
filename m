@@ -1,210 +1,551 @@
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11024023.outbound.protection.outlook.com [52.101.61.23])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBFA143C59
-	for <linux-serial@vger.kernel.org>; Mon,  8 Apr 2024 20:27:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.23
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712608078; cv=fail; b=b/IsY6/On0fux4DTxH0zrsGtkPXKGDdapdVCk6BXqgOS2ZkrPPtMTi/uhVQpH3Xw/U0QDk3tnj4m4haaNfSt0/5IpiBWmCAXF0G52FKVEnhFW/nCo6ymDLu0dYqix0ZhKALqbojcg2OOXhvQrQtYGkTW0D8vKCyGbMZ8KtNZmw8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712608078; c=relaxed/simple;
-	bh=7CRmS68RPX0NcSmdCEeuyyrai4YE6Nfx7wHTsI+b0Cc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=X5n+qtQkrNiNJQTtt/16hNrQ3t12fSy/mkTdor0KcxVdAUX5b1++XwCmd6+D3/piDIjW9aKUXR0kont13MoOZSZdeSZmiiO3pArRNoUOywhbWlA/qfH9uC5lIa9rVl8OXfDCgLJfCcHV1OJZGz3t6Z92jpOxKOFkhHOuYydJosc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sealevel.com; spf=pass smtp.mailfrom=sealevel.com; dkim=pass (2048-bit key) header.d=sealevel.com header.i=@sealevel.com header.b=IxdvDqVx; arc=fail smtp.client-ip=52.101.61.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sealevel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sealevel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A526A495CB;
+	Mon,  8 Apr 2024 21:32:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712611967; cv=none; b=V66KP79wVfhLUPBRP1I1sRvjIhzYbiJDFUOac7XSq2KButcNF/liuaomER5VgPdugP1C/WweU2XACsBrBsR7zpK8ka3wbVN1Xw8R73mNGx3V0jDwCqv9vflq5kflIOHXWQGVjIW9+aQ949CCWPIQazoQUFeSTznGYCYb/lLK4Xg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712611967; c=relaxed/simple;
+	bh=+cRDILoePVa3X0tY61PfvKN0oL7YnGt6dEjuNylwZVk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=PYgltB2lJULUbpNfz0DE4C+EVMkRe7mc449mC1Cmu+6ZVN9pI7w1IzSFGs8PaksIrYXCenhzIDEJU4sB8ECi+JvaTUKUklHZSemsnsvPIcnlQX1C74c48l/4CGEDcwYs7FHxfJK/Lw8Sl00Gtuokhywpmujw5fQ2F8NvQTS/VR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VvXupPG9; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sealevel.com header.i=@sealevel.com header.b="IxdvDqVx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fXFQwOYoX/iNyZroIWGB/5Z+WrQP7fQ0woCDkUpmgUKA+FszPNpDl1sTKocsYZ+gOE1J90/QiGb4PQMzddNLxc3Qxa+3Wx9vTJmT/2/eKCGJPzxPL3rlR30LrXWaCZpGclTu/hZTPUNqMc3pC4lRH3UZ0Rf4UBxrRWS3FG9qAOrt4haxToHfpMC6MTmhPEDgZPNgN/lfAFbDfBBjGp4T51bo3508kj3snD3CM/Hkt6ZpbUglUQU/zHR+OwvAUJmjHKpBVrexnc8eJxkrSTqYDt5LXRoAWRxZyeBGqW8mQtqPyZjnA9LOMLaas+TGyDqIKjkGmlOylbH1YBwdIuqZHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7CRmS68RPX0NcSmdCEeuyyrai4YE6Nfx7wHTsI+b0Cc=;
- b=CMDiWlyK5+1CJv0/LeI8TBgx2Hbzq41GskKUbQ8DTjUuJG7UbNebxsdc4AY7LNBT+CUOwXazffCgSbWrps/MyXNMFvvyfeb3Mu6gkd2yweeF/5by0oGOCr21uL3nH8G0THLQEu4pN2NaCEW4kEHuFNQIgoHwObG/aEAEnxOD5vMi4X60TRE20F44iLxgBenaDdQi2j7IhsLz0fcikJX2jdderL0/EYDJdHDpFxeDNRO48r+xy7qDSNh5FWGvYGoa5bw/z5sN8/0pySzIGTROKzjpKJSMEKbag65+1Bgfan0KaPZMFSiJ75YJW764ceLuhK5VFR/5SAkraExs3w4Zkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
- dkim=pass header.d=sealevel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7CRmS68RPX0NcSmdCEeuyyrai4YE6Nfx7wHTsI+b0Cc=;
- b=IxdvDqVxtoh+Mi2+sM/NJ9WRDT0G9OHdosDLcrVcVJCnOfgxJkzo7RCsqQ/7TNsYQnQIDqTMZQQPY+AjxXxjMZfbahERgSjmzQMoPsI7zmO8frxiAxq0+34iNQYRZmCdF04C8jnbpoAUHGhQtAH8NTxIShLUgEeYm+0bR1+zPhbOR9gq2tI0ucZts1BkrO19bENJ6i+X3HquZW1pohRhQhgVd7+bajbNthrLi6D1EH8W+YmYxVhdgQALCINY7JJyljbfK717bMUudompDY0LoUOGO8H/ORAna79Q37Faouk77J8VqUU9ccE++W8nSRL/WBGONvvltCR5DH1UeO828A==
-Received: from CO1PR05MB8426.namprd05.prod.outlook.com (2603:10b6:303:e5::11)
- by PH0PR05MB7734.namprd05.prod.outlook.com (2603:10b6:510:2d::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Mon, 8 Apr
- 2024 20:27:52 +0000
-Received: from CO1PR05MB8426.namprd05.prod.outlook.com
- ([fe80::6231:d3c9:8cd3:4169]) by CO1PR05MB8426.namprd05.prod.outlook.com
- ([fe80::6231:d3c9:8cd3:4169%7]) with mapi id 15.20.7409.049; Mon, 8 Apr 2024
- 20:27:52 +0000
-From: Matthew Howell <matthew.howell@sealevel.com>
-To: "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"5dd9f8b0c1dc154c73fb883cb948768ae68d1ccb.camel@sealevel.com"
-	<5dd9f8b0c1dc154c73fb883cb948768ae68d1ccb.camel@sealevel.com>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Jeff Baldwin
-	<jeff.baldwin@sealevel.com>, Darren Beeson <darren.beeson@sealevel.com>, Ryan
- Wenglarz <ryan.wenglarz@sealevel.com>
-Subject: Re: [PATCH V2] serial: exar: Preserve FCTR[5] bit in
- pci_xr17v35x_setup()
-Thread-Topic: [PATCH V2] serial: exar: Preserve FCTR[5] bit in
- pci_xr17v35x_setup()
-Thread-Index: AQHaZQtGjPOmrNLBp0ShUL1okzQC67FeooGAgAA8pwCAAD02gA==
-Date: Mon, 8 Apr 2024 20:27:52 +0000
-Message-ID: <cbe7931db7a6841369505b83ee3c747c981c16f2.camel@sealevel.com>
-References: <5dd9f8b0c1dc154c73fb883cb948768ae68d1ccb.camel@sealevel.com>
-	 <a9519d301f542c921260b11b4576cd68cc929b52.camel@sealevel.com>
-	 <937e10172eaf46cbb6e355666e15ba33344f2c51.camel@sealevel.com>
-	 <74b591e8-c8b1-7a9b-e2ea-c375f3d712c2@linux.intel.com>
-In-Reply-To: <74b591e8-c8b1-7a9b-e2ea-c375f3d712c2@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Evolution 3.44.4-0ubuntu2 
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CO1PR05MB8426:EE_|PH0PR05MB7734:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 6Pq96WCbENDmJKQMES3jHtVEbPLPeAckLECDlZYGD47miF9oToz6rTN20QRLIxwPcoAoPt1p9zzlc/uAcy3JV3ETXruDf24l01R2Bq29zA+c05uNRVIIkcq6OYINqAmrpnoylsj44Zhxyf1/LVdTqiJQ14Y5GigWXVDlqa7M+ONVOCxoO3XKfK8VfawCY3+cKXUuvLJgNhp9q2Ujq+xZZhonWPU06jn+VuE79+i/dT71Sz/hj3dBCSRrPrwe5nkm+oIw/hlQfHq/HidId3FaKmrgGiJ7e12FSJ5PyWOk+DrjaNHuxj+uvtNDjyOI8Ei6UWVtM+g8rLifripFQO1LkExEVGr/XyT/c/KmoX/JD5mWHuau/nESwwjxpfeTcIwre11ifKK2ThY7dEZaDFayrm8dFLENI9pFZmiffpQ6qYRJOfKO8isi6iUNUwUFCn5S8Vvz6VQIMkiTcECtgYHMbRYRB6jpYwRkJSIMRZoLESJxcGQF5zy2oGNOcPLRSj0RFuvVUaVgo4HgrLJdmtRPjlKfEPC3lggShe5DMkmPUCvzqmb6MCRKu7D1/hBrVI+aETR6xKYg/U5a4xbWQROi9nfhI3oVbyJwel317jtmqk0iXYXB0DEyCJWntLjRdQ93UBNYB/kVkpJOfUfGuxDWV7+yP6pn2efsWcq/FJPoE9k=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR05MB8426.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?d0RmQitacFBBZkc0OFM3T3BZOW9Cb0t3WWgwVk9VUENObTlXc3E0b09iVUVS?=
- =?utf-8?B?ZFM4Q3pLSS9sUTlvdEx2MkUxMWhIQmtwL3Y4STdHWnFkY3UyOFMwaDJCUHE2?=
- =?utf-8?B?M3NMOWxGV1lXTWdld0Vickd1SEY4UER1NkFvNEgzS295VTNXNzYrcG5qTVV5?=
- =?utf-8?B?elZJSVM4SzBTa3JzZkZZSk1CZ01QMDYyWldEMW5ISjJ6MUR3VisyUEpsRFIv?=
- =?utf-8?B?Z21oakZzWGJYQjN0dzZrV0VRT2dqUitSaXRsYWJwbDA3Z0wyVC9aRkdvRGh2?=
- =?utf-8?B?bG1WVVRWZFVOMy9wNC96b3ZFQ0w2aHZ6VHlTMnEvdllSbmZRVjRBV0xDTmFY?=
- =?utf-8?B?ZEJ0RHZ4N2hpM3NMdzJGcFZwRUs2M2NNRi8yWlZSYWZsQTBHdDMxb3A0UDRZ?=
- =?utf-8?B?RCtkbTRwZTh6akFJUjRVVDcraHYwWU10ZjdBVVBQWkV3UmwyWjZxNW9qdmRS?=
- =?utf-8?B?ZFQxMXZwaFAwUUZKNmpLbW9iRTF4T0lCZkc2WXlBRG93YXhFZ2JlYkthSG5u?=
- =?utf-8?B?c0tNdG5LTXQ2YWsrWTN2VzFVT1hpRi9SMWx0ZkZjTmYrZVNrQ2ozM1d5dkps?=
- =?utf-8?B?bzRJWGI1b0tWQ1d0TElEVW1lMXlNdmN2LzJOUW9QWVUxbHQySDlLRHJ0SlJj?=
- =?utf-8?B?eENCTW84TlF6bmxScitnYUQvNTZCMkZHb29RMU5DNTg4cy9UUzliM0ZkS0Rk?=
- =?utf-8?B?aU0rWitRMWtlL0VIS2psMG9JMTNpSTJKa0hhUWtiQ0lhWlB0TTNtQm1Yb2Ix?=
- =?utf-8?B?aU1sQjJUdTBTQzhXdHBDeUNKczREMW11SVM0ZzZyVXhzUGltYStienNVdVE0?=
- =?utf-8?B?TmZvYkt3N0dVYVZrK1ZQUmFvcmdJQ1hrL1BKd1Nob1h5Mk9wSU1mbGU0UXJH?=
- =?utf-8?B?V2s4MFd4dTlkUzBmZk54TFZGUjE1M2J1b05ZWHcxR0tXWTlUbVF6ZHZXRFRG?=
- =?utf-8?B?ejcxUmhjdSt1TFROUTIxdWFiSEpSZUZPRElkSXFxZ1YzeTVoS0tJTDRrN3BW?=
- =?utf-8?B?QTNJRE9HZFRnT0tkM2h1S3RJNFJQdmxNRng1U3BLcTZLN1pJWlNxU0ZMNWtF?=
- =?utf-8?B?QTZVSXF1SlN2QkZrTFl6eFptYWtUSTEzbEpwZlVuZTRvV2hWN0dLMTlBL3RL?=
- =?utf-8?B?em0xKytUTkF1eHBodjlwRk5QQTZzSElDbVlUaUxHR09oRU56a2NVTzlST29R?=
- =?utf-8?B?MGYyNUN1UmpkMEJheHZhbllOU3ZZT0FXcWRqQ095RXNQbHYwcmVyQ0xpWmlF?=
- =?utf-8?B?VklpTXpvWjlTRlQvaFdpTnNLTFQ5eVZvSWFGbVlZOTBkU3BxTDhPSkN3ZWt2?=
- =?utf-8?B?ekg1Tm9reGh6NUZoVzFZaWdCOXdrY0tYUEpxT1JiRG9Xb05sT052cHhqK1ZR?=
- =?utf-8?B?a2xRSmlvemprSGRHRFFKR21GRmRpeXdFUHJYU0U2L2lUNW1TdVN2akpyeHJI?=
- =?utf-8?B?YnFSVTlWUnNnMGdxbjJDZVZiTkNIMUhYUWVLUE1YcVRleDlJTkhJa1piZEdq?=
- =?utf-8?B?czZkOWFrbngzVmlLSjNlQ0xJRlVpZ3N2QkRPVW1yUm9QNU5LOTlHemQ4cGRZ?=
- =?utf-8?B?TmtIQy8zbmFpSmJUM1NubVpic1kvNEllZUtaeTRxUFNQUGVGZnNHWVlONDJR?=
- =?utf-8?B?akYxdkFTSThmT2o5MzdGeW9QTEI1QTlJY0RTamlYVnp5dTBLS0l1LzdlZWQv?=
- =?utf-8?B?YW9lRjByTXJVQy9MMjFBNEIxOEoraW1mSGhjbk1jRHA3V29udUdnemJsL0h4?=
- =?utf-8?B?VDFaN1ZjUUVsRVhHUHpHUHp0dURqWjhYWGxqc09jUzNqY2VRM3p5cXVOTXMy?=
- =?utf-8?B?TlJzR3dZWjdpZmxxTlo2ekN0RXhHb1UzSEc5OGRUcTlCbnI2eFRndjZsRXVI?=
- =?utf-8?B?TXEyRHRLcUh4TVE4YkVXN1AvQzFIZFF1cm8rMEtEVFBDTjJwMXZNekdOWStj?=
- =?utf-8?B?RHVJcVNZTEV4dnUzaytFZFpRQklseFBOTWxpZXplOVZIRDdRRWlPc0FOMVFx?=
- =?utf-8?B?QTFIYzRDWW5JaEJxMlBOcXFzUGFEeTBZUUhEdmV3UVNxdXhSOW9ObjVnODNo?=
- =?utf-8?B?eTljbGxscU9iVkQ2V2hTOVZFYVA4bGZxUm5qcEl5ZnovYzA5U3RiWCtMejJn?=
- =?utf-8?B?Wm9CcllGdWltRjdaU0cvK0ZPSVhHbHU2SVNTd1ZRUlNES3R4V3lockFHQm1s?=
- =?utf-8?B?ZUE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7B0EB49DE9EA3F4F835C62730F88A445@namprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VvXupPG9"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 438Kokj2019966;
+	Mon, 8 Apr 2024 21:32:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=cDMYRCrXSE+2mItn5T4tls+ytjwHBG/ODIwK6NRQ86M=; b=Vv
+	XupPG9J/90h7NCPahz1JF02ZaaC9LABCuaKmVEGklkew4+USnJ5Zfv4UGv3d5dbB
+	0/IilIBdY7cj3X0HzzCP6bICRHIFZwWL470iL15MzRmSnMSq66xsA0oj9hIZkr4T
+	t8cncyh8alYwUMLMI1sZ53ilJba3pLS28EZ3HL5T6eZekfv22tI7bgDzMJA+a+kx
+	4g7fVID6ODzZY/rv+nAnbAX4hnn/bx5/IDIrPC46FP50e3/KHW4L8ungCQASUjAN
+	byeeXsCGJospomG/I1Veh9mPSU0q+/IA9kwH9dNCsf4SHAMH7o7yI7CtAL9FW2K7
+	9jt3Q1CW42xi8O9v3VSQ==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3xcbg31vqn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 08 Apr 2024 21:32:21 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 438LWKs1022697
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 8 Apr 2024 21:32:20 GMT
+Received: from [10.110.52.150] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 8 Apr 2024
+ 14:32:18 -0700
+Message-ID: <67799341-d27f-4a46-9874-0fc12b6e56d4@quicinc.com>
+Date: Mon, 8 Apr 2024 14:32:17 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: sealevel.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR05MB8426.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cbe7e33-09f7-4a20-56b7-08dc580a5dc6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2024 20:27:52.5341
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e34c5615-b4e3-481c-abc8-602581f2e735
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bDtz12SLiyMna0jBiDe7AMWW50vVcr0reusB7FjwJVzpP6pMgVhRooudJhcIOdCWVnAD7gSKDBz+imC4tkGcpB6fGiNFLzW72rmxBRz0PDk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR05MB7734
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 11/37] pci: pci-sh7751: Add SH7751 PCI driver
+Content-Language: en-US
+To: Yoshinori Sato <ysato@users.sourceforge.jp>, <linux-sh@vger.kernel.org>
+CC: Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Michael Turquette
+	<mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, David Airlie
+	<airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst
+	<maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thomas Gleixner
+	<tglx@linutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi
+	<lpieralisi@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?=
+	<kw@linux.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Daniel Lezcano
+	<daniel.lezcano@linaro.org>,
+        Rich Felker <dalias@libc.org>,
+        John Paul Adrian
+ Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Lee Jones <lee@kernel.org>, Helge
+ Deller <deller@gmx.de>,
+        Heiko Stuebner <heiko.stuebner@cherry.de>,
+        Shawn Guo
+	<shawnguo@kernel.org>, Sebastian Reichel <sre@kernel.org>,
+        Chris Morgan
+	<macromorgan@hotmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd
+ Bergmann <arnd@arndb.de>, David Rientjes <rientjes@google.com>,
+        Hyeonggon Yoo
+	<42.hyeyoo@gmail.com>, Vlastimil Babka <vbabka@suse.cz>,
+        Baoquan He
+	<bhe@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck
+	<linux@roeck-us.net>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Stephen
+ Rothwell <sfr@canb.auug.org.au>,
+        Javier Martinez Canillas
+	<javierm@redhat.com>,
+        Guo Ren <guoren@kernel.org>, Azeem Shaikh
+	<azeemshaikh38@gmail.com>,
+        Max Filippov <jcmvbkbc@gmail.com>, Jonathan Corbet
+	<corbet@lwn.net>,
+        Jacky Huang <ychuang3@nuvoton.com>,
+        Herve Codina
+	<herve.codina@bootlin.com>,
+        Manikanta Guntupalli
+	<manikanta.guntupalli@amd.com>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Biju
+ Das <biju.das.jz@bp.renesas.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@pengutronix.de>,
+        Sam Ravnborg <sam@ravnborg.org>, Sergey
+ Shtylyov <s.shtylyov@omp.ru>,
+        Laurent Pinchart
+	<laurent.pinchart+renesas@ideasonboard.com>,
+        <linux-ide@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-pci@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-fbdev@vger.kernel.org>
+References: <cover.1712205900.git.ysato@users.sourceforge.jp>
+ <8c44b3e28da65cf47ff6bd53cf8e9cf30f2b4cb0.1712205900.git.ysato@users.sourceforge.jp>
+From: Mayank Rana <quic_mrana@quicinc.com>
+In-Reply-To: <8c44b3e28da65cf47ff6bd53cf8e9cf30f2b4cb0.1712205900.git.ysato@users.sourceforge.jp>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: knXsaAItbBlMLn9jsxmNDYP9M96oGppO
+X-Proofpoint-GUID: knXsaAItbBlMLn9jsxmNDYP9M96oGppO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-04-08_17,2024-04-05_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 malwarescore=0 phishscore=0 spamscore=0 adultscore=0
+ mlxlogscore=999 impostorscore=0 lowpriorityscore=0 suspectscore=0
+ bulkscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2404010003 definitions=main-2404080165
 
-T24gTW9uLCAyMDI0LTA0LTA4IGF0IDE5OjQ4ICswMzAwLCBJbHBvIErDpHJ2aW5lbiB3cm90ZToN
-Cj4gW1NvbWUgcGVvcGxlIHdobyByZWNlaXZlZCB0aGlzIG1lc3NhZ2UgZG9uJ3Qgb2Z0ZW4gZ2V0
-IGVtYWlsIGZyb20gaWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20uIExlYXJuIHdoeSB0aGlz
-IGlzIGltcG9ydGFudCBhdCBodHRwczovL2FrYS5tcy9MZWFybkFib3V0U2VuZGVySWRlbnRpZmlj
-YXRpb24gXQ0KPiANCj4g4pqgQ2F1dGlvbjogRXh0ZXJuYWwgZW1haWwuIEV4ZXJjaXNlIGV4dHJl
-bWUgY2F1dGlvbiB3aXRoIGxpbmtzIG9yIGF0dGFjaG1lbnRzLuKaoA0KPiANCj4gDQo+IE9uIE1v
-biwgOCBBcHIgMjAyNCwgTWF0dGhldyBIb3dlbGwgd3JvdGU6DQo+IA0KPiA+IE9uIFdlZCwgMjAy
-NC0wMi0yMSBhdCAxNjoxNiAtMDUwMCwgTWF0dGhldyBIb3dlbGwgd3JvdGU6DQo+ID4gPiBBbGxv
-d3MgdGhlIHVzZSBvZiB0aGUgRU40ODUgaGFyZHdhcmUgcGluIGJ5IHByZXNlcnZpbmcgdGhlIHZh
-bHVlIG9mDQo+ID4gPiBGQ1RSWzVdIGluIHBjaV94cjE3djM1eF9zZXR1cCgpLg0KPiA+ID4gDQo+
-ID4gPiBQZXIgdGhlIFhSMTdWMzVYIGRhdGFzaGVldCwgdGhlIEVONDg1IGhhcmR3YXJlIHBpbiB3
-b3JrcyBieSBzZXR0aW5nDQo+ID4gPiBGQ1RSWzVdIHdoZW4gdGhlIHBpbiBpcyBhY3RpdmUuIHBj
-aV94cjE3djM1eF9zZXR1cCgpIHByZXZlbnRlZCB0aGUgdXNlDQo+ID4gPiBvZiBFTjQ4NSBiZWNh
-dXNlIGl0IG92ZXJ3cm90ZSB0aGUgRkNUUiByZWdpc3Rlci4NCj4gPiA+IA0KPiA+ID4gU2lnbmVk
-LW9mZi1ieTogTWF0dGhldyBIb3dlbGwgPG1hdHRoZXcuaG93ZWxsQHNlYWxldmVsLmNvbT4NCj4g
-PiA+IC0tLQ0KPiA+ID4gVjEgLT4gVjINCj4gPiA+IEZpeGVkIHdvcmR3cmFwIGluIGRpZmYNCj4g
-PiA+IA0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZXhh
-ci5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9leGFyLmMNCj4gPiA+IGluZGV4IDIz
-MzY2Zjg2OC4uOTc3MTE2MDZmIDEwMDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVycy90dHkvc2VyaWFs
-LzgyNTAvODI1MF9leGFyLmMNCj4gPiA+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgy
-NTBfZXhhci5jDQo+ID4gPiBAQCAtNTk2LDYgKzU5Niw3IEBAIHBjaV94cjE3djM1eF9zZXR1cChz
-dHJ1Y3QgZXhhcjgyNTAgKnByaXYsIHN0cnVjdCBwY2lfZGV2ICpwY2lkZXYsDQo+ID4gPiAgICAg
-dW5zaWduZWQgaW50IGJhdWQgPSA3ODEyNTAwOw0KPiA+ID4gICAgIHU4IF9faW9tZW0gKnA7DQo+
-ID4gPiAgICAgaW50IHJldDsNCj4gPiA+ICsgICB1OCBlbjQ4NW1hc2s7DQo+ID4gPiANCj4gPiA+
-ICAgICBwb3J0LT5wb3J0LnVhcnRjbGsgPSBiYXVkICogMTY7DQo+ID4gPiAgICAgcG9ydC0+cG9y
-dC5yczQ4NV9jb25maWcgPSBwbGF0Zm9ybS0+cnM0ODVfY29uZmlnOw0KPiA+ID4gQEAgLTYxOCw3
-ICs2MTksOCBAQCBwY2lfeHIxN3YzNXhfc2V0dXAoc3RydWN0IGV4YXI4MjUwICpwcml2LCBzdHJ1
-Y3QgcGNpX2RldiAqcGNpZGV2LA0KPiA+ID4gICAgIHAgPSBwb3J0LT5wb3J0Lm1lbWJhc2U7DQo+
-ID4gPiANCj4gPiA+ICAgICB3cml0ZWIoMHgwMCwgcCArIFVBUlRfRVhBUl84WE1PREUpOw0KPiA+
-ID4gLSAgIHdyaXRlYihVQVJUX0ZDVFJfRVhBUl9UUkdELCBwICsgVUFSVF9FWEFSX0ZDVFIpOw0K
-PiA+ID4gKyAgIGVuNDg1bWFzayA9IHJlYWRiKHAgKyBVQVJUX0VYQVJfRkNUUikgJiBVQVJUX0ZD
-VFJfRVhBUl80ODU7DQo+ID4gPiArICAgd3JpdGViKFVBUlRfRkNUUl9FWEFSX1RSR0QgfCBlbjQ4
-NW1hc2ssIHAgKyBVQVJUX0VYQVJfRkNUUik7DQo+ID4gPiAgICAgd3JpdGViKDEyOCwgcCArIFVB
-UlRfRVhBUl9UWFRSRyk7DQo+ID4gPiAgICAgd3JpdGViKDEyOCwgcCArIFVBUlRfRVhBUl9SWFRS
-Ryk7DQo+IA0KPiBXaHkgeW91IG5lZWQgdG8gcmVhZCByczQ4NSBzdGF0ZSBmcm9tIHRoZSByZWdp
-c3Rlcj8gSXQgc2hvdWxkIGJlIGF2YWlsYWJsZQ0KPiBpbiAtPnJzNDg1LmZsYWdzICYgU0VSX1JT
-NDg1X0VOQUJMRUQuDQo+IA0KDQpQbGVhc2UgY29ycmVjdCBtZSBpZiBJIGFtIHdyb25nLCBidXQg
-bXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0DQpTRVJfUlM0ODVfRU5BQkxFRCBpcyBzZXQgZnJvbSB1
-c2Vyc3BhY2UgdXNpbmcgdGhlIFRJT0NSUzQ4NSBJT0NUTC4gDQoNCkhvd2V2ZXIsIHRoaXMgaXMg
-bm90IHRoZSBvbmx5IHdheSB0aGF0IHRoZSBGQ1RSIHJlZ2lzdGVyIGNhbiBiZSBjaGFuZ2VkLg0K
-SW4gcGFydGljdWxhciwgcGVyIFhSMTdWMzVYIGRhdGFzaGVldCwgdGhlIEVONDg1IHBpbiBpcyBz
-YW1wbGVkIG9uDQpwb3dlci1vbiBhbmQgdHJhbnNmZXJzIHRoZSBsb2dpYyBzdGF0ZSB0byBGQ1RS
-WzVdLiBPdXIgY2FyZCB0YWtlcw0KYWR2YW50YWdlIG9mIHRoaXMgdG8gYWxsb3cgdXNlcnMgdG8g
-Y29uZmlndXJlIFJTNDg1IGluIHNjZW5hcmlvcyB3aGVyZQ0KdGhleSBjYW5ub3QsIG9yIGRvIG5v
-dCB3YW50IHRvLCBtb2RpZnkgdGhlaXIgc29mdHdhcmUgdG8gc2V0DQpTRVJfUlM0ODVfRU5BQkxF
-RC4NCg0KSG93ZXZlciwgdGhpcyBmdW5jdGlvbmFsaXR5IG9mIHRoZSBVQVJUIGRvZXMgbm90IGN1
-cnJlbnRseSB3b3JrIHdpdGgNCnRoaXMgZHJpdmVyIGJlY2F1c2UgdGhlIGVudGlyZSBGQ1RSIHJl
-Z2lzdGVyIGlzIGJlaW5nIG92ZXJ3cml0dGVuLA0KdGhlcmVieSBlcmFzaW5nIHdoYXRldmVyIHZh
-bHVlIHdhcyB3cml0dGVuIHRvIEZDVFJbNV0gb24gVUFSVCBwb3dlci11cC4NCg0KVGhlIGRyaXZl
-ciBjYW5ub3Qga25vdyB3aGV0aGVyIEZDVFJbNV0gd2FzIHNldCBvbiBwb3dlci11cCB3aXRob3V0
-DQpyZWFkaW5nIHRoZSBGQ1RSLCB0aGVyZWZvcmUgaXQgbXVzdCBiZSByZWFkLg0KDQo+IHBjaV9m
-YXN0Y29tMzM1X3NldHVwKCkgc2VlbXMgdG8gaGF2ZSB0aGUgc2FtZSBwcm9ibGVtPyBUaGF0IHNt
-YWxsIHBhcnQNCj4gc2VlbXMgdG8gYmUgY29tbW9uIGNvZGUgYW55d2F5IHdoaWNoIHNob3VsZCBi
-ZSBtb3ZlZCBpbnRvIGhlbHBlciwgb25seSB0aGUNCj4gdHJpZ2dlciB0aHJlc2hvbGQgc2VlbXMg
-dG8gZGlmZmVyIHdoaWNoIGNhbiBiZSBnaXZlbiBpbiBhIHBhcmFtZXRlci4NCj4gDQoNClRlY2hu
-aWNhbGx5LCB5ZXMgbWl0IGhhcyB0aGUgc2FtZSBwcm9ibGVtLCBidXQgSSBhbSBub3Qgc3VyZSBp
-dCBpcyBhbg0KYWN0dWFsIGlzc3VlIGFuZCBhbSBoZXNpdGFudCBtYWtlIHRoZSBzdWdnZXN0ZWQg
-Y2hhbmdlcyBmb3IgdGhlDQpmb2xsb3dpbmcgcmVhc29uczoNCg0KDQoxKSBUaGUgZmFzdGNvbSBj
-YXJkIG1heSBkZXBlbmQgb24gdGhlIGJlaGF2aW91ciB3b3JraW5nIGFzLWlzLg0KMikgSSBvbmx5
-IGhhdmUgU2VhbGV2ZWwgJiByZWZlcmVuY2UgRXhhciBoYXJkd2FyZSB0byB0ZXN0LCBub3QgRmFz
-dGNvbSwNCnNvIEkgaGF2ZSBubyB3YXkgdG8gdGVzdCBpZiB0aGUgY2hhbmdlcyBuZWdhdGl2ZWx5
-IGltcGFjdCBmYXN0Y29tDQozKSBGaW5hbGx5LCB3aGlsZSBJIGFtIG5vdCBmYW1pbGFyIHdpdGgg
-dGhlIGZhc3Rjb20gMzM1LCBpdCBkb2Vzbid0IGhhdmUNCmFueSBkaXAtc3dpdGNoZXMgb3IganVt
-cGVycywgd2hpY2ggbGVhZHMgbWUgdG8gYmVsaWV2ZSBpdCBkb2Vzbid0IGhhdmUgYQ0Kd2F5IGZv
-ciB1c2VycyB0byB1dGlsaXplIHRoZSBFTjQ4NSBwaW4uIElmIHRoaXMgaXMgdGhlIGNhc2UsIHRo
-ZW4gdGhlcmUNCmlzIG5vIGVuZC11c2VyIGJlbmVmaXQgdG8gJ2ZpeGluZycgdGhpcyBpbiBwY2lf
-ZmFzdGNvbTMzNV9zZXR1cCgpLg0KDQpJZiBzb21lb25lIHdpdGggYSBmYXN0Y29tIDMzNSBjYXJk
-IGlzIHdpbGxpbmcgdG8gdGVzdCB0aGVuIEkgY2FuIHRha2UgYQ0Kc3RhYiBhdCB0aGUgc3VnZ2Vz
-dGVkIGNoYW5nZSwgYnV0IGF0IHRoZSBtb21lbnQgSSBzZWUgYXQgbGVhc3Qgc29tZQ0KJ3Jpc2sn
-IGluIG1ha2luZyB0aGlzIGNoYW5nZSwgYnV0IG5vICdyZXdhcmQnIGZvciBkb2luZyBzby4NCg0K
-LS0NCk1hdHRoZXcgSC4NCg0KPiAtLQ0KPiAgaS4NCj4gDQo+ID4gSnVzdCB3YW50ZWQgdG8gZm9s
-bG93LXVwIG9uIHRoaXMgdG8gc2VlIGlmIGFueW9uZSBoYXMgaGFkIGEgdGltZSB0bw0KPiA+IHJl
-dmlldyB0aGUgYWJvdmUgc3VibWlzc2lvbj8gUGxlYXNlIGxldCBtZSBrbm93IGlmIHRoZXJlIGFy
-ZSBhbnkgaXNzdWVzDQo+ID4gLyBhbnl0aGluZyBJIG5lZWQgdG8gZG8uDQo+IA0KDQo=
+Hi,
+
+On 4/3/2024 9:59 PM, Yoshinori Sato wrote:
+> Renesas SH7751 CPU Internal PCI Controller driver.
+> 
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>   drivers/pci/controller/Kconfig      |   9 +
+>   drivers/pci/controller/Makefile     |   1 +
+>   drivers/pci/controller/pci-sh7751.c | 342 ++++++++++++++++++++++++++++
+>   3 files changed, 352 insertions(+)
+>   create mode 100644 drivers/pci/controller/pci-sh7751.c
+> 
+> diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
+> index e534c02ee34f..a2fd917a2e03 100644
+> --- a/drivers/pci/controller/Kconfig
+> +++ b/drivers/pci/controller/Kconfig
+> @@ -353,6 +353,15 @@ config PCIE_XILINX_CPM
+>   	  Say 'Y' here if you want kernel support for the
+>   	  Xilinx Versal CPM host bridge.
+>   
+> +config PCI_SH7751
+> +	bool "Renesas SH7751 PCI controller"
+> +	depends on OF
+> +	depends on CPU_SUBTYPE_SH7751 || CPU_SUBTYPE_SH7751R || COMPILE_TEST
+> +	select PCI_HOST_COMMON
+> +	help
+> +	  Say 'Y' here if you want kernel to support the Renesas SH7751 PCI
+> +	  Host Bridge driver.
+> +
+>   source "drivers/pci/controller/cadence/Kconfig"
+>   source "drivers/pci/controller/dwc/Kconfig"
+>   source "drivers/pci/controller/mobiveil/Kconfig"
+> diff --git a/drivers/pci/controller/Makefile b/drivers/pci/controller/Makefile
+> index f2b19e6174af..aa97e5d74e58 100644
+> --- a/drivers/pci/controller/Makefile
+> +++ b/drivers/pci/controller/Makefile
+> @@ -40,6 +40,7 @@ obj-$(CONFIG_PCI_LOONGSON) += pci-loongson.o
+>   obj-$(CONFIG_PCIE_HISI_ERR) += pcie-hisi-error.o
+>   obj-$(CONFIG_PCIE_APPLE) += pcie-apple.o
+>   obj-$(CONFIG_PCIE_MT7621) += pcie-mt7621.o
+> +obj-$(CONFIG_PCI_SH7751) += pci-sh7751.o
+>   
+>   # pcie-hisi.o quirks are needed even without CONFIG_PCIE_DW
+>   obj-y				+= dwc/
+> diff --git a/drivers/pci/controller/pci-sh7751.c b/drivers/pci/controller/pci-sh7751.c
+> new file mode 100644
+> index 000000000000..a5340689f737
+> --- /dev/null
+> +++ b/drivers/pci/controller/pci-sh7751.c
+> @@ -0,0 +1,342 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * SH7751 PCI driver
+> + * Copyright (C) 2023 Yoshinori Sato
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_pci.h>
+> +#include <linux/of_platform.h>
+> +#include <linux/pci-ecam.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/io.h>
+> +#include <linux/pci.h>
+> +#include <linux/dma-direct.h>
+> +#include <asm/addrspace.h>
+can you consider to rearranging headers into alphabetically sorted order ?
+> +
+> +/* PCICR and PCICLKCR write enable magic key */
+> +#define PCIC_WE_KEY		(0xa5 << 24)
+> +
+> +/* PCIC registers */
+> +/* 0x0000 - 0x00ff mapped to PCI device configuration space */
+> +#define PCIC_PCICR		0x100	/* PCI Control Register */
+> +#define PCIC_PCICR_TRSB		BIT(9)	/* Target Read Single */
+> +#define PCIC_PCICR_BSWP		BIT(8)	/* Target Byte Swap */
+> +#define PCIC_PCICR_PLUP		BIT(7)	/* Enable PCI Pullup */
+> +#define PCIC_PCICR_ARBM		BIT(6)	/* PCI Arbitration Mode */
+> +#define PCIC_PCICR_MD10		BIT(5)	/* MD10 status */
+> +#define PCIC_PCICR_MD9		BIT(4)	/* MD9 status */
+> +#define PCIC_PCICR_SERR		BIT(3)	/* SERR output assert */
+> +#define PCIC_PCICR_INTA		BIT(2)	/* INTA output assert */
+> +#define PCIC_PCICR_PRST		BIT(1)	/* PCI Reset Assert */
+> +#define PCIC_PCICR_CFIN		BIT(0)	/* Central Fun. Init Done */
+> +
+> +#define PCIC_PCILSR0		0x104	/* PCI Local Space Register0 */
+> +#define PCIC_PCILSR1		0x108	/* PCI Local Space Register1 */
+> +#define PCIC_PCILAR0		0x10c	/* PCI Local Addr Register1 */
+> +#define PCIC_PCILAR1		0x110	/* PCI Local Addr Register1 */
+> +#define PCIC_PCIINT		0x114	/* PCI Interrupt Register */
+> +#define PCIC_PCIINTM		0x118	/* PCI Interrupt Mask */
+> +#define PCIC_PCIALR		0x11c	/* Error Address Register */
+> +#define PCIC_PCICLR		0x120	/* Error Command/Data */
+> +#define PCIC_PCIAINT		0x130	/* Arbiter Interrupt Register */
+> +#define PCIC_PCIAINTM		0x134	/* Arbiter Int. Mask Register */
+> +#define PCIC_PCIBMLR		0x138	/* Error Bus Master Register */
+> +#define PCIC_PCIDMABT		0x140	/* DMA Transfer Arb. Register */
+> +#define PCIC_PCIPAR		0x1c0	/* PIO Address Register */
+> +#define PCIC_PCIMBR		0x1c4	/* Memory Base Address */
+> +#define PCIC_PCIIOBR		0x1c8	/* I/O Base Address Register */
+> +
+> +#define PCIC_PCIPINT		0x1cc	/* Power Mgmnt Int. Register */
+> +#define PCIC_PCIPINT_D3		BIT(1)	/* D3 Pwr Mgmt. Interrupt */
+> +#define PCIC_PCIPINT_D0		BIT(0)	/* D0 Pwr Mgmt. Interrupt */
+> +
+> +#define PCIC_PCIPINTM		0x1d0	/* Power Mgmnt Mask Register */
+> +#define PCIC_PCICLKR		0x1d4	/* Clock Ctrl. Register */
+> +#define PCIC_PCIBCR1		0x1e0	/* Memory BCR1 Register */
+> +#define PCIC_PCIBCR2		0x1e4	/* Memory BCR2 Register */
+> +#define PCIC_PCIWCR1		0x1e8	/* Wait Control 1 Register */
+> +#define PCIC_PCIWCR2		0x1ec	/* Wait Control 2 Register */
+> +#define PCIC_PCIWCR3		0x1f0	/* Wait Control 3 Register */
+> +#define PCIC_PCIMCR		0x1f4	/* Memory Control Register */
+> +#define PCIC_PCIBCR3		0x1f8	/* Memory BCR3 Register */
+> +#define PCIC_PCIPDR		0x220	/* Port IO Data Register */
+> +
+> +/* PCI IDs */
+> +/* Hitachi is the company that led to Renesas. */
+> +/* The SH7751 was designed by Hitachi, so it has a Hitachi ID. */
+multi-line comments way ?
+> +#define PCI_VENDOR_ID_HITACHI	0x1054
+> +#define PCI_DEVICE_ID_SH7751	0x3505
+> +#define PCI_DEVICE_ID_SH7751R	0x350e
+> +
+> +/* BSC registers */
+> +/* Copy BSC setting to PCI BSC */
+> +#define BSC_BCR1		0x0000
+> +#define BSC_BCR1_SLAVE		BIT(30)
+> +#define BSC_BCR1_BRQEN		BIT(19)
+> +#define BSC_BCR2		0x0004
+> +#define BSC_BCR3		0x0050
+> +#define BSC_WCR1		0x0008
+> +#define BSC_WCR2		0x000c
+> +#define BSC_WCR3		0x0010
+> +#define BSC_MCR			0x0014
+> +#define BSC_MCR_MRSET		BIT(30)
+> +#define BSC_MCR_RFSH		BIT(2)
+> +
+> +/* PCIC access wrapper */
+> +#define pcic_writel(val, base, reg)	writel(val, base + (reg))
+> +#define pcic_readl(base, reg)		readl(base + (reg))
+Do you really needed these new macros ? Is it for better readability ?
+> +/*
+> + * We need to avoid collisions with `mirrored' VGA ports
+> + * and other strange ISA hardware, so we always want the
+> + * addresses to be allocated in the 0x000-0x0ff region
+> + * modulo 0x400.
+> + */
+> +#define IO_REGION_BASE 0x1000
+> +resource_size_t pcibios_align_resource(void *data, const struct resource *res,
+> +				resource_size_t size, resource_size_t align)
+> +{
+> +	resource_size_t start = res->start;
+> +
+> +	if (res->flags & IORESOURCE_IO) {
+> +		if (start < PCIBIOS_MIN_IO + IO_REGION_BASE)
+> +			start = PCIBIOS_MIN_IO + IO_REGION_BASE;
+> +
+> +		/*
+> +		 * Put everything into 0x00-0xff region modulo 0x400.
+> +		 */
+single line comment would work. no ?
+> +		if (start & 0x300)
+> +			start = (start + 0x3ff) & ~0x3ff;
+> +	}
+> +
+> +	return start;
+> +}
+> +
+> +static int setup_pci_bsc(struct device *dev, void __iomem *pcic,
+> +			 void __iomem *bsc, unsigned int area, bool bcr3)
+> +{
+> +	u32 word;
+> +
+> +	word = __raw_readl(bsc + BSC_BCR1);
+> +	/* check BCR for SDRAM in area */
+> +	if (((word >> area) & 1) == 0) {
+> +		dev_err(dev, "Area %u is not configured for SDRAM. BCR1=0x%x\n",
+> +			area, word);
+> +		return -EINVAL;
+> +	}
+> +	word |= BSC_BCR1_SLAVE;		/* PCIC BSC is slave only */
+> +	pcic_writel(word, pcic, PCIC_PCIBCR1);
+> +
+> +	word = __raw_readw(bsc + BSC_BCR2);
+> +	/* check BCR2 for 32bit SDRAM interface*/
+> +	if (((word >> (area << 1)) & 0x3) != 0x3) {
+> +		dev_err(dev, "Area %u is not 32 bit SDRAM. BCR2=0x%x\n",
+> +			area, word);
+> +		return -EINVAL;
+> +	}
+> +	pcic_writel(word, pcic, PCIC_PCIBCR2);
+> +
+> +	if (bcr3) {
+> +		/* BCR3 have only SH7751R */
+> +		word = __raw_readw(bsc + BSC_BCR3);
+> +		pcic_writel(word, pcic, PCIC_PCIBCR3);
+> +	}
+> +
+> +	/* configure the wait control registers */
+> +	word = __raw_readl(bsc + BSC_WCR1);
+> +	pcic_writel(word, pcic, PCIC_PCIWCR1);
+> +	word = __raw_readl(bsc + BSC_WCR2);
+> +	pcic_writel(word, pcic, PCIC_PCIWCR2);
+> +	word = __raw_readl(bsc + BSC_WCR3);
+> +	pcic_writel(word, pcic, PCIC_PCIWCR3);
+> +	word = __raw_readl(bsc + BSC_MCR);
+> +	/* Clear MRSET and RFSH bit */
+> +	word &= ~(BSC_MCR_MRSET | BSC_MCR_RFSH);
+> +	pcic_writel(word, pcic, PCIC_PCIMCR);
+> +
+> +	return 0;
+> +}
+> +
+> +#define NUM_AREA 7
+> +static int set_pci_ranges(struct device *dev,
+> +			  void __iomem *pcic, void __iomem *bsc, bool bcr3)
+> +{
+> +	struct resource_entry *dma, *tmp;
+> +	struct pci_host_bridge *bridge;
+> +	u32 bsc_done[NUM_AREA];
+> +	unsigned int la;
+> +
+> +	bridge = dev_get_drvdata(dev);
+> +	pcic_writel(0, pcic, PCIC_PCILAR0);
+> +	pcic_writel(0, pcic, PCIC_PCILAR1);
+> +	la = 0;
+> +	memset(&bsc_done, 0, sizeof(bsc_done));
+> +	resource_list_for_each_entry_safe(dma, tmp, &bridge->dma_ranges) {
+> +		struct resource *res = dma->res;
+> +		unsigned int area;
+> +		u32 word;
+> +
+> +		switch (resource_type(res)) {
+> +		case IORESOURCE_IO:
+> +			/* BAR0 is I/O space */
+> +			word = res->start | 1;
+> +			pcic_writel(word, pcic, PCI_BASE_ADDRESS_0);
+> +			word = pcic_readl(pcic, PCI_COMMAND);
+> +			word |= PCI_COMMAND_IO;
+> +			pcic_writel(word, pcic, PCI_COMMAND);
+> +			break;
+> +		case IORESOURCE_MEM:
+> +			if (la > 4) {
+> +				dev_err(dev, "Invalid range definition.\n");
+> +				return -EINVAL;
+> +			}
+> +			area = (res->start >> 26) & 0x07;
+> +			word = res->end - res->start;
+> +			if (area >= NUM_AREA) {
+> +				/* Area 7 is reserved. */
+> +				dev_info(dev, "Invalid local address 0x%08x. Ignore it.\n",
+> +					 res->start);
+> +				break;
+> +			}
+> +			pcic_writel(res->start, pcic, PCI_BASE_ADDRESS_1 + la);
+> +			/* if dummy entry, skip BSC setup */
+> +			if (word < 4)
+> +				break;
+> +			/* BAR1 is local area 0, BAR2 is local area 1 */
+> +			pcic_writel(word, pcic, PCIC_PCILSR0 + la);
+> +			word = P2SEGADDR(res->start);
+> +			pcic_writel(word, pcic, PCIC_PCILAR0 + la);
+> +			la += 4;
+> +			if (!bsc_done[area]) {
+> +				/* check BCR for SDRAM in specified area. And setup PCI BSC. */
+> +				if (setup_pci_bsc(dev, pcic, bsc, area, bcr3))
+> +					return -EINVAL;
+> +				bsc_done[area] = 1;
+> +			}
+> +			break;
+> +		}
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int sh7751_pci_probe(struct platform_device *pdev)
+> +{
+> +	struct resource *res, *bscres;
+> +	void __iomem *pcic;
+> +	void __iomem *bsc;
+> +	u16 vid, did;
+> +	u32 word;
+> +	int ret;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (IS_ERR(res))
+> +		return PTR_ERR(res);
+> +	pcic = ioremap(res->start, res->end - res->start + 1);
+Can you consider using devm_platform_ioremap_resource() API ?
+> +	bscres = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> +	bsc = devm_ioremap_resource(&pdev->dev, bscres);
+> +	if (IS_ERR(bsc))
+> +		return PTR_ERR(bsc);
+Same as above.
+> +	/* check for SH7751/SH7751R hardware */
+> +	word = pcic_readl(pcic, PCI_VENDOR_ID);
+> +	vid = word & 0xffff;
+> +	did = word >> 16;
+> +	if ((vid != PCI_VENDOR_ID_HITACHI) ||
+> +	    ((did != PCI_DEVICE_ID_SH7751) &&
+> +	     (did != PCI_DEVICE_ID_SH7751R))) {
+> +		dev_err(&pdev->dev, "This is not an SH7751(R)\n");
+error handling missing iounmap(pcic)
+> +		return -ENODEV;
+> +	}
+> +	dev_info(&pdev->dev, "PCI core found at %pR\n", res);
+> +
+> +	/* Set the BCR's to enable PCI access */
+> +	word = __raw_readl(bsc + BSC_BCR1);
+> +	word |= BSC_BCR1_BRQEN;
+> +	__raw_writel(word, bsc + BSC_BCR1);
+> +
+> +	/* Turn the clocks back on (not done in reset)*/
+> +	pcic_writel(PCIC_WE_KEY | 0, pcic, PCIC_PCICLKR);
+> +	/* Clear Powerdown IRQ's (not done in reset) */
+> +	word = PCIC_PCIPINT_D3 | PCIC_PCIPINT_D0;
+> +	pcic_writel(word, pcic, PCIC_PCIPINT);
+> +
+> +	/* set the command/status */
+> +	word = PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER |
+> +		PCI_COMMAND_PARITY | PCI_COMMAND_WAIT;
+> +	pcic_writel(word, pcic, PCI_COMMAND);
+> +
+> +	/* define this host as the host bridge */
+> +	word = PCI_BASE_CLASS_BRIDGE << 24;
+> +	pcic_writel(word, pcic, PCI_CLASS_REVISION);
+> +
+> +	ret = pci_host_common_probe(pdev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Initialize failed (%d)\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* Set IO and Mem windows to local address */
+> +	if (set_pci_ranges(&pdev->dev, pcic, bsc,
+> +			   did == PCI_DEVICE_ID_SH7751R))
+> +		return -EINVAL;
+error handling to call pci_host_common_remove() ?
+> +	pcic_writel(0, pcic, PCIC_PCIIOBR);
+> +
+> +	if (of_property_read_bool(pdev->dev.of_node, "renesas,bus-arbit-round-robin"))
+> +		word |= BIT(0);
+> +	else
+> +		word = 0;
+> +	pcic_writel(word, pcic, PCIC_PCIDMABT);
+> +
+> +	/* SH7751 init done, set central function init complete */
+> +	/* use round robin mode to stop a device starving/overrunning */
+multi-line comment ?
+> +	word = PCIC_PCICR_CFIN | PCIC_PCICR_ARBM;
+> +	pcic_writel(PCIC_WE_KEY | word, pcic, PCIC_PCICR);
+> +
+> +	return 0;
+> +}
+> +
+> +/*
+> + * Direct access to PCI hardware...
+> + */
+> +#define CONFIG_CMD(bus, devfn, where) \
+> +	(0x80000000 | (bus->number << 16) | (devfn << 8) | (where & ~3))
+> +
+> +static void __iomem *sh4_pci_map_bus(struct pci_bus *bus,
+> +				     unsigned int devfn, int where)
+> +{
+> +	struct pci_config_window *cfg = bus->sysdata;
+> +	void __iomem *pcic = (void __iomem *)cfg->res.start;
+> +
+> +	pcic_writel(CONFIG_CMD(bus, devfn, where), pcic, PCIC_PCIPAR);
+> +	return pcic + PCIC_PCIPDR;
+> +}
+> +
+> +static const struct pci_ecam_ops pci_sh7751_bus_ops = {
+> +	.pci_ops	= {
+> +		.map_bus = sh4_pci_map_bus,
+> +		.read    = pci_generic_config_read32,
+> +		.write   = pci_generic_config_write32,
+> +	}
+> +};
+> +
+> +static const struct of_device_id sh7751_pci_of_match[] = {
+> +	{ .compatible = "renesas,sh7751-pci",
+> +	  .data = &pci_sh7751_bus_ops },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, sh7751_pci_of_match);
+> +
+> +static struct platform_driver sh7751_pci_driver = {
+> +	.driver = {
+> +		.name = "sh7751-pci",
+> +		.of_match_table = sh7751_pci_of_match,
+> +	},
+> +	.probe = sh7751_pci_probe,
+> +};
+> +module_platform_driver(sh7751_pci_driver);
+> +
+> +MODULE_DESCRIPTION("SH7751 PCI driver");
