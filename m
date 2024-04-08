@@ -1,197 +1,115 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2075.outbound.protection.outlook.com [40.107.94.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82783BE55;
-	Mon,  8 Apr 2024 05:56:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.75
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712555783; cv=fail; b=h6Vg45HXIBGLYThaSyBevLrjci9zeDViT2w6GHQxs9UaGIP0O8oi0MyKyu9ddwT0Gos/GiMjCTCRkHiAeMExtDVX+rdByvN9Zcim9HLB7DZN5+GrAFDj1ULtCt+HfuUEtHydA5qZS1+ufUZ1uN2xC4Q8MBDX7/IcGcjZZ+rhmBk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712555783; c=relaxed/simple;
-	bh=sETc1CltxqaEsBFpn9XoOKsO721a28C/EPYMworu6g8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rkmHyJ0TE5CJ4UU9S5MumCywa8IEVuerrSUuYNBVDEgOQpgspKBvmvzB3k31qvqKalaMlrlB/X7L3u+G/AXt1aIDZmaUJ+36Ig8URToOljMadnnGsipOFPJxI0uKGh4/cFeJ2ri47HOFSRM/dgGWba71a+wOJXJ++bSIhFf3Qgo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=sony.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=naPG2Vhc; arc=fail smtp.client-ip=40.107.94.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sony.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="naPG2Vhc"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U1RS+/QtZMxfYpDJbWa4y0XhBDWuX0Y1LR+bo712cFFJdgpdDju9+RUDM3l1UCBq2pUaeBPJS5buxoThXc3pu0lUp8WAXmWswPz+8i/+rhWnfa5wlzsHQXAPHQERvzQmkNuzD3mr/y4z26BfVtMolpd7PM/PW/97DsAIANEtIooKPi/qUZJV3C5ZDZFmE9RF5SPTN8a/2QzU2JOrqU/M/k0I3xoSBB3Ofe2iumRbEdMim6CBX8P8mFKy9gfD9HfH3nWwFn3+MelijLQm4icI0QXGc/1YjIAmmzs+U8KWp5fF9EA7j3Z9zid/79pXkGGzjqVQEI0XDbdLHdSEl/2cDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8kmD/K69K1k1eR6qLLgoNMW8GhJj1vk3TQMPHRuUzGs=;
- b=H6ma8MB9Yfd9eBSoMY3WU8h3l66i/lAO8fP1xpNdF5BgIrRkJpnpvs5KYgD9+GLJseMsUtjLJu4HfxG66I7/a0SosTm3j8hMY6DpvkV3Ce865FBSSslBMZrGJzjstOlFe+kNZhByLQdPotZL4wiCO4HxXsNu/+hmUxOMqwPCZmKHLnLQ9xxAnefCg/0uQjHTJgm6z4wp7ouq94FRCy3FSUeH/F6+WzhK6NsE7y7/naER3HjIQglntkuCG39Pw2cFvFvLOt3jmt2RrGoZc0PQ4tAnd0zyjDIoxyiwOueWb5xQ4Hizh2jZ3odPFQh5lnv/299AlOfP49ttJcrtmMpUZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=sony.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=sony.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8kmD/K69K1k1eR6qLLgoNMW8GhJj1vk3TQMPHRuUzGs=;
- b=naPG2Vhc0DmYiM58xjSbBoTH52WGQ7PaQkSyPcTP7vIOryldGGA3OWNrqtnTBChoFstTXEmPqWki1gu/59aa2qR7qhMro9p7I7N3rB5IwF8E5933/SsFHbFkZNcg3HG9TwN3eR1ssxjmeLqckJyhoHWX3Yunk7PjQnq2zfQJ1ek=
-Received: from BN9PR03CA0134.namprd03.prod.outlook.com (2603:10b6:408:fe::19)
- by MW4PR13MB5409.namprd13.prod.outlook.com (2603:10b6:303:181::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.46; Mon, 8 Apr
- 2024 05:56:18 +0000
-Received: from BN3PEPF0000B06D.namprd21.prod.outlook.com
- (2603:10b6:408:fe:cafe::f0) by BN9PR03CA0134.outlook.office365.com
- (2603:10b6:408:fe::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.35 via Frontend
- Transport; Mon, 8 Apr 2024 05:56:17 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.198)
- smtp.mailfrom=sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of sony.com does not
- designate 121.100.38.198 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.198;
- helo=gepdcl09.sg.gdce.sony.com.sg;
-Received: from gepdcl09.sg.gdce.sony.com.sg (121.100.38.198) by
- BN3PEPF0000B06D.mail.protection.outlook.com (10.167.243.72) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7495.0 via Frontend Transport; Mon, 8 Apr 2024 05:56:16 +0000
-Received: from gepdcl04.s.gdce.sony.com.sg (SGGDCSE1NS08.sony.com.sg [146.215.123.198])
-	by gepdcl09.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 4385s6SK027698;
-	Mon, 8 Apr 2024 13:55:59 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl04.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 4385rXmh008417;
-	Mon, 8 Apr 2024 13:53:33 +0800
-Received: by mail.sony.com (Postfix, from userid 1001)
-	id A98AF1D804D2; Mon,  8 Apr 2024 11:23:32 +0530 (IST)
-Date: Mon, 8 Apr 2024 11:23:32 +0530
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: pmladek@suse.com, john.ogness@linutronix.de, corbet@lwn.net,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: rdunlap@infradead.org, rostedt@goodmis.org, senozhatsky@chromium.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, taichi.shimoyashiki@sony.com,
-        daniel.palmer@sony.com, anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH v6 2/2] tty/sysrq: Replay kernel log messages on consoles
- via sysrq
-Message-ID: <ZhOGXGwGTWK5JVuU@sreenath.vijayan@sony.com>
-References: <cover.1710220326.git.sreenath.vijayan@sony.com>
- <cc3b9b1aae60a236c6aed1dc7b0ffa2c7cd1f183.1710220326.git.sreenath.vijayan@sony.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1AFD2E651;
+	Mon,  8 Apr 2024 08:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712565187; cv=none; b=rjpLrMWQBzPMPK0BDfsvo2m/Nlg7i8OJPu6lTzvWktQfkwOF1E4//1OWEJt9/ypAlxxdrcMoSHCPgGnotffK7W4xlBWSQi8IE5Nsrhk1xJ3rXLn7Szk/Fhd9g58akyhm2kshvW/YMygrd4QeyqZOWLjB6QkAAPF2dpHBGpa0mjI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712565187; c=relaxed/simple;
+	bh=qsWHvJLZoBirAJa2z/xDxSXcE2fWSyxa1yYwt5wP1MA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KTk9oHIRJaU0wXDz+FjQ3fZHxiQGZYXzdhbZ3qrQbtqPOJe39UYDmrcWMdNicB3kLbcYgi3h6P4CWjF4RHnEIb1YKeQSHK7E2+TG0BD6Ka9IEOx3/aCQWv3Fw2cj8MWPPdceAi21hVH8hd/oImRg5aLUmv3jwl6zLL44+JTJfrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-615053a5252so36839257b3.1;
+        Mon, 08 Apr 2024 01:33:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712565183; x=1713169983;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3bnKadFFQKfZtqlQN85uKX1QN2funm0jGKmok0O/bf4=;
+        b=dUzdt4MhnR1IljF9xG74P9+YDENL21c4zX2MWtmZ22M0C7WxTJoMS0aMlxbQDCXsR/
+         GA1hEF9Yjf9+iCq4lJt02tK6orYoDsHCoxJ9ICoUsYBTfjqEEr8BKEpgvnbQgP39ECny
+         m0rch22TFYSUwsm6iAzCQao5F0sD4yJD/z1Pz+j/VEbL4om5d++vNcrFdkNoBQCpSkv9
+         H+gzki7CQjR/sP7faTW+a94EVLp2KtOx/MaMG9xNA5Cgszisri/SIXbId4sbWP6fiYLv
+         7l1qqjcp2a4FQveqVKvXz4i2qREhMAiX3bSvIAsJ4sTgdL/NDg8Ec8vdisDA7m3C8SdV
+         12VQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW8ShezvXw54tEd5q08XQAqHiFD7uk1WYafhT4wt20rCbVk9irWoN9fR9T1o5AOjRxo0J3qYL9FtR1azWHUIPtrJBrocD7EzvPVH6CVd+x1bNkDL4EgpKCGn7u2pFo82EtfdpDJx/RfNUQ6
+X-Gm-Message-State: AOJu0Yy6A0UZQP2rURdPytT4ludfTXwyfjA2jQij49BaOV/qvKoxJzvL
+	VsSXBJoJgSRjDnlDwUTZjEZaFIArwf/OXnOYve0qTZImP3mkw1N3aDg/0rUrUL0=
+X-Google-Smtp-Source: AGHT+IHP4F2Tm6N/5OxE+D+ej5jOfAnCXKW6QxdTGze+i/qVOJkz19OpI5GAxPOlZnSVD+rwaTqfyw==
+X-Received: by 2002:a05:690c:ec8:b0:610:b545:6605 with SMTP id cs8-20020a05690c0ec800b00610b5456605mr6293070ywb.26.1712565183270;
+        Mon, 08 Apr 2024 01:33:03 -0700 (PDT)
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
+        by smtp.gmail.com with ESMTPSA id u82-20020a0deb55000000b0061449082d4fsm1615114ywe.52.2024.04.08.01.33.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Apr 2024 01:33:02 -0700 (PDT)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-614b02f8ed6so45147377b3.0;
+        Mon, 08 Apr 2024 01:33:02 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXHeqyXZrJ0tH0UgPLdVxNDKqWCbR6G0x2gBifEzUWyHPxUmK1+D10pVDG9H5m1EEG8W1RnYRKNoHG5qnSkeSBODINiDlno/6KQOuOL2H2kYFjH9Y4iwK0gzsmV7NDzu2jitJjwUElyITx3
+X-Received: by 2002:a25:ab2f:0:b0:ddd:7a62:59b0 with SMTP id
+ u44-20020a25ab2f000000b00ddd7a6259b0mr5993867ybi.15.1712565182435; Mon, 08
+ Apr 2024 01:33:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cc3b9b1aae60a236c6aed1dc7b0ffa2c7cd1f183.1710220326.git.sreenath.vijayan@sony.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B06D:EE_|MW4PR13MB5409:EE_
-X-MS-Office365-Filtering-Correlation-Id: e08d2a49-c493-433b-22b4-08dc57909b84
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	MA2W6rknB4Vlp6hDaZcNyAaEndR6h22VH1afjedTIKuc8GzgBIIwKi1eRtMVS7996d339eRjH8gxIMu7pmueOlCiB6LlpTG08okVLU79PpApLJzn3WLwL9xqYIXOJlSfsfyckmyrJKqUaZaKvOP/0/DKbhrcsDFPf1EPiVU60BVvosesRIKksObFcPoc6CZ3hf3flVoeg0Dtoo2TBJtUSXYz9ubeEStjrfYELq4JpC7EnqjvdlZGZq4s83C6WkdvOlWX4Dos41uwOmMTApTLBewchgWtM+CCCfZ2BW8qnbABzwwUCyV5qXiBU7uWsVmkMvm7zNROWg1Ym7IZ0BMRLwiuZSdD58fhkOnDhtur64xIDHetx1RavbA8e+hqgNMg1w53mppuSweyNRcbvdcvEP4+ljDUGIjkgW/L9od+qaVGdZ7lJRKF5PE8T6zP8cH0p9XYbdEgobMstp//Kjw7QcrQjtr8iUIyURzHoopOPDJ2Q2TtrqQ4CQ/jVti4eg6F94ZwW99CiKMeIPdWCI8EjKZXXXpY+4anEolLDO6hyJHtwJtZ+Rkzq3E6UfHfwxkRJuCXZmpu7DCKeChrAf5kbGRUnkCzf1fM/WYj2moNDeLya6fP5x894D2aCM+B9q3f35CeqEYDxkE3XHyMUTSvKj/HxmklVOMA+G1711QFQNcyigbuJkhpohyx3NJ96aGWyeyF/62OtYqc3oVtZHSudF0IkxYEe3uwSC35SA5PhGCMntjnWh8vlxI9crGPNIjp
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.198;CTRY:SG;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl09.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(1800799015)(36860700004)(376005)(82310400014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2024 05:56:16.8303
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e08d2a49-c493-433b-22b4-08dc57909b84
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.198];Helo=[gepdcl09.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-BN3PEPF0000B06D.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5409
+References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linux-m68k.org>
+ <Zg3YZN-QupyVaTPm@surfacebook.localdomain> <8f234f26-d5e3-66ed-ab0c-86d3c9852b4a@linux-m68k.org>
+ <CAHp75VcxLez_Nm0N8=gpWd7SKGd9JF2QXEOOB_gvX3ZtTzj6HQ@mail.gmail.com>
+ <87y19s7bk6.fsf@mail.lhotse> <4bddf8ec-97f1-07f6-9c0a-523c102c0a1b@linux-m68k.org>
+ <87v84sbexv.fsf@mail.lhotse> <b1553164-18db-4f5c-b1a5-28a393d64941@kernel.org>
+ <3adf561b-2d6b-47be-8fca-2a26ee738670@kernel.org>
+In-Reply-To: <3adf561b-2d6b-47be-8fca-2a26ee738670@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 8 Apr 2024 10:32:50 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdX+sZCUs7a-z07y-27t7RFqRg6y8M98XqExLy0qU=aVOA@mail.gmail.com>
+Message-ID: <CAMuHMdX+sZCUs7a-z07y-27t7RFqRg6y8M98XqExLy0qU=aVOA@mail.gmail.com>
+Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq flood
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>, Finn Thain <fthain@linux-m68k.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andy Shevchenko <andy.shevchenko@gmail.com>, 
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>, Nicholas Piggin <npiggin@gmail.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+	"Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, linux-m68k@lists.linux-m68k.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 13, 2024 at 03:52:52PM +0530, Sreenath Vijayan wrote:
-> When terminal is unresponsive, one cannot use dmesg to view
-> the printk ring buffer messages. Also, syslog services may be
-> disabled, especially on embedded systems, to check the messages
-> after a reboot. In this scenario, replay the messages in printk
-> ring buffer on consoles via sysrq by pressing sysrq+R.
-> 
-> The console loglevel will determine which all kernel log messages
-> are displayed. The messages will be displayed only when
-> console_trylock() succeeds. Users could repeat the sysrq key when
-> it fails. If the owner of console subsystem lock is stuck,
-> repeating the key won't work.
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
-> Reviewed-by: John Ogness <john.ogness@linutronix.de>
-> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-> ---
->  Documentation/admin-guide/sysrq.rst |  9 +++++++++
->  drivers/tty/sysrq.c                 | 13 ++++++++++++-
->  2 files changed, 21 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
-> index 2f2e5bd440f9..a85b3384d1e7 100644
-> --- a/Documentation/admin-guide/sysrq.rst
-> +++ b/Documentation/admin-guide/sysrq.rst
-> @@ -161,6 +161,8 @@ Command	    Function
->              will be printed to your console. (``0``, for example would make
->              it so that only emergency messages like PANICs or OOPSes would
->              make it to your console.)
-> +
-> +``R``	    Replay the kernel log messages on consoles.
->  =========== ===================================================================
->  
->  Okay, so what can I use them for?
-> @@ -211,6 +213,13 @@ processes.
->  "just thaw ``it(j)``" is useful if your system becomes unresponsive due to a
->  frozen (probably root) filesystem via the FIFREEZE ioctl.
->  
-> +``Replay logs(R)`` is useful to view the kernel log messages when system is hung
-> +or you are not able to use dmesg command to view the messages in printk buffer.
-> +User may have to press the key combination multiple times if console system is
-> +busy. If it is completely locked up, then messages won't be printed. Output
-> +messages depend on current console loglevel, which can be modified using
-> +sysrq[0-9] (see above).
-> +
->  Sometimes SysRq seems to get 'stuck' after using it, what can I do?
->  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->  
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index 02217e3c916b..e5974b8239c9 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -450,6 +450,17 @@ static const struct sysrq_key_op sysrq_unrt_op = {
->  	.enable_mask	= SYSRQ_ENABLE_RTNICE,
->  };
->  
-> +static void sysrq_handle_replay_logs(u8 key)
-> +{
-> +	console_replay_all();
-> +}
-> +static struct sysrq_key_op sysrq_replay_logs_op = {
-> +	.handler        = sysrq_handle_replay_logs,
-> +	.help_msg       = "replay-kernel-logs(R)",
-> +	.action_msg     = "Replay kernel logs on consoles",
-> +	.enable_mask    = SYSRQ_ENABLE_DUMP,
-> +};
-> +
->  /* Key Operations table and lock */
->  static DEFINE_SPINLOCK(sysrq_key_table_lock);
->  
-> @@ -519,7 +530,7 @@ static const struct sysrq_key_op *sysrq_key_table[62] = {
->  	NULL,				/* O */
->  	NULL,				/* P */
->  	NULL,				/* Q */
-> -	NULL,				/* R */
-> +	&sysrq_replay_logs_op,		/* R */
->  	NULL,				/* S */
->  	NULL,				/* T */
->  	NULL,				/* U */
-> -- 
-> 2.25.1
-> 
+Hi Jiri,
 
-Hi,
+On Mon, Apr 8, 2024 at 7:37=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> wr=
+ote:
+> On 08. 04. 24, 7:32, Jiri Slaby wrote:
+> > On 08. 04. 24, 7:29, Michael Ellerman wrote:
+> >> Many maintainers won't drop Cc: tags if they are there in the submitte=
+d
+> >> patch. So I agree with Andy that we should encourage folks not to add
+> >> them in the first place.
+> >
+> > But fix the docs first.
+> >
+> > I am personally not biased to any variant (as in: I don't care where CC=
+s
+> > live in a patch).
+>
+> OTOH, as a submitter, it's a major PITA to carry CCs in notes (to have
+> those under the --- line). Esp. when I have patches in a queue for years.
 
-Kindly let me know if there are any review comments for the above changes.
+(Good to discover I'm not the only one carrying Very Old Patches ;-)
 
-Regards,
-Sreenath
+> How do people handle that? (Like rebases on current kernel.)
+
+Keep them under the --- line in the actual commits, just like your
+changelog? All of that is retained when rebasing.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
