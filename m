@@ -1,114 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86ED752F8C
-	for <linux-serial@vger.kernel.org>; Mon,  8 Apr 2024 10:17:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6BF452F82;
+	Mon,  8 Apr 2024 10:25:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712571462; cv=none; b=qIEyZmoatXd0654MHfNtOn9th3RtMAL/8sIdb441EGcL543CTF8rzq5Qou+K/PuW0N/vaYniEAaJmphpnpisn8U/UZrXykXz4KAJrmLbiY6+uCTSDYkCtX9CYz+LsaugfrV1Q4enDedwGMJpGtnNdWSW0AVrmEZOHv2kjwpTCC8=
+	t=1712571926; cv=none; b=iOx1LnJ6DJdK/CG1INlP8W46RmOh8L3f5B3tOGPNtjgHESGMONTLp/yAgLf9Jv6XDbteGObMKqdfw9tlmPLf+dTx06Ji0QZgvtd5ErHzDLTZNyEXO6VUNPcIpdYduQaM75JzrvFxyuNeNMFKgFmcCoeS7oz1k7206H5qkEXIAhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712571462; c=relaxed/simple;
-	bh=OG9cNKuW5LqEoaNK3TpF1vRBrzAoC6dHxwMeVlrmYwk=;
-	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
-	 Subject:Content-Type; b=M1SDkOaGURqkwzX/K18g7skwep3LLFe69sRLFUnxU8HypHk29Tj4vtfl4GXDNHggMmBu7fTCNPfnD5+eFxs1vqmiLK53AWFkf+2i1XcDmeuqMdi0YL91yecnLyToOE6vLBehWflDXcm6DNsjKReBrphQanO/QUJjr3O6quamSR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rvKU2GoZ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712571926; c=relaxed/simple;
+	bh=Uab3bx1gPT1snh2DM+Z6/uoVdtZfkeKrMGCstkzKNg4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=bqUg93jGi+lKhxxGZSMLUAlaYV1RqJUQ1f5T1YrUvzYoIxjbW+6nrexyvcFxSo7MzRuSumXAIF9cd6zHgsKad6boz8BDmoQ4Cfx7zM0S1EkdQon/BDhe50ca+wCRd7A8Df0vPL4nYue1Ssjm1F2OZ919rnvIBBfYPdm9QSp/Ivk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DxKZrt9N; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rvKU2GoZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C219DC43390;
-	Mon,  8 Apr 2024 10:17:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712571462;
-	bh=OG9cNKuW5LqEoaNK3TpF1vRBrzAoC6dHxwMeVlrmYwk=;
-	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-	b=rvKU2GoZyRcnmUQC6I5QcNLol4ltbN43mN908IkVPTkRzrbhzbMCk23uo9Ggd4N6Z
-	 5J3ny7gOZmeOGpWDXUXiKl72V0qUBosunju6XK7c7xCAfrsnYUI/mv6LoWfEbclkrB
-	 CabtOpETgsDZ1Ty+xrCI7O09f+54S/H1Gg5OUSVXj7y6EarRWRZzerfnK/FgzmmBF6
-	 EotvhUS9LO+z74cEVHbOi+MvNM+13oMn8Fdp5Xbpi2d6RDTk0aw7+cRhGswBYgtYa1
-	 z5yhslDnxNU81okjLWme3mGQZUOXPxycLAkO8UcSVvs2xEZZmm1KoCkuqXfSgYpS7Y
-	 d2D6PftNbxQqA==
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailfauth.nyi.internal (Postfix) with ESMTP id DE6371200032;
-	Mon,  8 Apr 2024 06:17:40 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute5.internal (MEProxy); Mon, 08 Apr 2024 06:17:40 -0400
-X-ME-Sender: <xms:RMQTZhvjfL83qhCd2GU_ETsiMg40OoKqUFwstf1AW8Ut7xLxONl59A>
-    <xme:RMQTZqcQEcuQtDs_bJGOEqNoBwfsKvPxQdcZz-XIY7TtvOlxCaVemOcxYaFxG6Eop
-    oBczHKsS7PcWAfUqnk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudegiedgvdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
-    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrdhorhhgqeenucggtf
-    frrghtthgvrhhnpedvtddtffejfeeggefgleefgfeghfehfeefffetgffgleegudevveet
-    hfefjeevkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidquddvkeehudej
-    tddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdrohhrghesrghrnhgusg
-    druggv
-X-ME-Proxy: <xmx:RMQTZkx5ju5gpobZgFR8FVpj5E41Gdvwap84jlBI0D2r0A3jAsCQoQ>
-    <xmx:RMQTZoNZl5IuWlGdOZTq1LEe75nV_jMa7w2oRRj161m9WXyBw7H-2A>
-    <xmx:RMQTZh-T5L8NzLGr69g-BX6dDea3rOXCIjbLAr5rFOxLfDwHCVVbnw>
-    <xmx:RMQTZoUa-xMGeRHODc5ituxuH9M5NJDS8kjIxaZYlbkoEBdXPXCayw>
-    <xmx:RMQTZida91ZjUK0cXg1N6T1yaIQnrzUXPzzGJtpwkFEMHrRf3pjcK5Fj>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 97B6BB6008D; Mon,  8 Apr 2024 06:17:40 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.11.0-alpha0-368-gc733b1d8df-fm-20240402.001-gc733b1d8
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DxKZrt9N"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712571925; x=1744107925;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=Uab3bx1gPT1snh2DM+Z6/uoVdtZfkeKrMGCstkzKNg4=;
+  b=DxKZrt9Nfx16EtmeJGjMfgBeE3Txv16oTFKRiRfxCA9hipqGxFQ8xjX8
+   VdZtU0PNidmhz4GZlC3wb1MTo+e2vYSMNEKqLoL7H31T5/8TXbto5G32x
+   3nuD7BJdF1ilzj6tyVHwSNHR7msmh3FMlyaszs3jo5sP451378FoHhuim
+   JfRwqig2a4dwwQ4ldJocUWjXFYjAvipZy3hVDupst82l01XgRdhkMkDKi
+   SrBIOz5vOqhFBiIOCoPNEMoK7Jh0buxxdO4pNfprG/KCzvhKMmI5VOeEl
+   H8mom4vRPdjzulhOnJa64KBHly+NetYNaWBBWzIlh6U3SbTYmG9ile/m+
+   A==;
+X-CSE-ConnectionGUID: PSVEW6BEQE6j4yxM2rby/g==
+X-CSE-MsgGUID: 54BbDBOaTcK+It8TG/EsnA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11037"; a="25339562"
+X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
+   d="scan'208";a="25339562"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 03:25:23 -0700
+X-CSE-ConnectionGUID: YMR2HhP6Q26/wPEV7++T9Q==
+X-CSE-MsgGUID: sgrfuxHKQRCBUX2qENLqWw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
+   d="scan'208";a="24312238"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.28])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 03:25:20 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 8 Apr 2024 13:25:15 +0300 (EEST)
+To: Arnd Bergmann <arnd@kernel.org>
+cc: Niklas Schnelle <schnelle@linux.ibm.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+In-Reply-To: <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
+Message-ID: <e4299a49-eeef-da89-2806-377d62b417e2@linux.intel.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com> <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com> <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-Id: <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
-In-Reply-To: <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
- <20240405152924.252598-2-schnelle@linux.ibm.com>
- <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com>
-Date: Mon, 08 Apr 2024 12:17:19 +0200
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>,
- "Heiko Carstens" <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323328-171181184-1712571915=:1249"
 
-On Mon, Apr 8, 2024, at 11:54, Ilpo J=C3=A4rvinen wrote:
-> On Fri, 5 Apr 2024, Niklas Schnelle wrote:
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
->>  config SERIAL_8250_CS
->>  	tristate "8250/16550 PCMCIA device support"
->> -	depends on PCMCIA && SERIAL_8250
->> +	depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
->>  	help
->>  	  Say Y here to enable support for 16-bit PCMCIA serial devices,
->>  	  including serial port cards, modems, and the modem functions of
->
-> What about drivers that use SERIAL8250_PORT()?
+--8323328-171181184-1712571915=:1249
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-It probably makes sense to hide these, since they won't ever
-work. I probably missed them in my initial series because they
-don't cause a compile-time error, but I agree that there is no
-use in showing the options here.
+On Mon, 8 Apr 2024, Arnd Bergmann wrote:
 
-> Also port provided in 8250_PNP might expect it I think.
+> On Mon, Apr 8, 2024, at 11:54, Ilpo J=C3=A4rvinen wrote:
+> > On Fri, 5 Apr 2024, Niklas Schnelle wrote:
+>=20
+> >>  config SERIAL_8250_CS
+> >>  =09tristate "8250/16550 PCMCIA device support"
+> >> -=09depends on PCMCIA && SERIAL_8250
+> >> +=09depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
+> >>  =09help
+> >>  =09  Say Y here to enable support for 16-bit PCMCIA serial devices,
+> >>  =09  including serial port cards, modems, and the modem functions of
+> >
+> > What about drivers that use SERIAL8250_PORT()?
+>=20
+> It probably makes sense to hide these, since they won't ever
+> work. I probably missed them in my initial series because they
+> don't cause a compile-time error, but I agree that there is no
+> use in showing the options here.
+>=20
+> > Also port provided in 8250_PNP might expect it I think.
+>=20
+> I don't think these need any change: 8250_pnp.c supports
+> both IORESOURCE_IO and IORESOURCE_MEM based ports. It will
+> still create a 8250 port for the I/O based ones but they
+> will now correctly fail to probe in the main driver rather
+> than crashing the kernel. PNP devices that only use
+> memory BARs will keep working as before, on both machines
+> with and without CONFIG_HAS_IOPORT.
+>=20
+> I think that most 8250_pnp variants are probably used only
+> with ISAPNP or PNPBIOS, neither of which exists without
+> HAS_IOPORT,
 
-I don't think these need any change: 8250_pnp.c supports
-both IORESOURCE_IO and IORESOURCE_MEM based ports. It will
-still create a 8250 port for the I/O based ones but they
-will now correctly fail to probe in the main driver rather
-than crashing the kernel. PNP devices that only use
-memory BARs will keep working as before, on both machines
-with and without CONFIG_HAS_IOPORT.
+Okay, seems fine then if that dependency is handled somewhere.
 
-I think that most 8250_pnp variants are probably used only
-with ISAPNP or PNPBIOS, neither of which exists without
-HAS_IOPORT, but you could certainly have PNPACPI on arm
-or riscv machines that don't have port I/O but come with
-a memory-mapped 8250 port described by firmware.
+--=20
+ i.
 
-    Arnd
+> but you could certainly have PNPACPI on arm
+> or riscv machines that don't have port I/O but come with
+> a memory-mapped 8250 port described by firmware.
+
+--8323328-171181184-1712571915=:1249--
