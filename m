@@ -1,46 +1,46 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 307FA1BC31;
-	Mon,  8 Apr 2024 05:32:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E19C8BE48;
+	Mon,  8 Apr 2024 05:37:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712554378; cv=none; b=ABiG+K8XSFIYqvoPsJjAGL89Wr9c9sEbV5/VzXxPyp2DRfMJRQ/TJ7qrnPjlxQJp6nYIW+SSHWMOj28gF65lthHIAsOTNYRPWVR8H7RQ+XkB5Ivz9Xl7AVvna/TF/5KCBnxIR5OFnVI9yn7sFalS/TyyKLx+apdtftuTGTsYZ5U=
+	t=1712554647; cv=none; b=b4EoE8CNL4TdkS308A6lucHvmQbZx8Pi4v5SK+o6w5J5pfzGe8H9548wKK1BuRfsP1AvnbsejKasEs+5luRhrESID+lOhfJfWbCzv72jL7DWoi072aPuGk59h3xbk/b5CMLBs3K9KTGzj84/zcvRTWk4AyHYk3V7auL+k4iG3Os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712554378; c=relaxed/simple;
-	bh=pTueZNG1LpBAvxEc2CvXnKDMDpGIKc7cJtQYsyUuijg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c29JnTIyEbomSIaq8ZBcQ1RZtl0OQxHL1431EA4oyZgV6Va6TCxnyImzMbFzPbILo8rJXrezMtvQObDWyfJGSuvb7yqF9BmTuouYGNXndTTmb1xgc2HQRmJ1SkKpbrjGn0fIEKArnquharEayOlEsTHDEZupQIcFW4qer8BqtYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.50
+	s=arc-20240116; t=1712554647; c=relaxed/simple;
+	bh=rMb9e18qNwbirZ+Qeyrr3v7QUvTj6l5pPSr3dd5orDA=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=obBWOhSp/vLK76Qw+neH21T3OL1W/Cdfr5/P8awOCe0J/Ni8L/KFX3hwACQcJj8W4dnPLu1hAhFpOVa3Lo+fIGI1PMREvHsO0MDbmgxAnD8tsQNq5dZchCsMibJPRyOTTRwU4SMvhwoLsZnb2nu7+CMMThEhnqoeVGTOJ+n5Cmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a51d0dda061so87410666b.1;
-        Sun, 07 Apr 2024 22:32:56 -0700 (PDT)
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-56e4a148aecso1091516a12.1;
+        Sun, 07 Apr 2024 22:37:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712554375; x=1713159175;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yauB8JQIymdD78CJjq3xXLggug3ial+yAL/X9vmlHcI=;
-        b=AOFq5A6OW1VhTSaR20B2z9dgYEQgh2m4/888UF+iNhbF2YEY6SAbJ0G664dU5oOqm1
-         PNlCqTSwoZ3IsxzkgvL/wAq8XXd2u4SStiU0nnt/tPJMiPJLXtTskCp3Jv16DJZ/t1Nx
-         OJvcfAi+AxZ8QJ2pJ6eH2kWSRp8Nj7QB0ozT2MlejDbwPyfp00C3C2vQAASPH4aBW/wm
-         +SbVlb8nT4hDmcL6KnC7agJ40brTAJpCcz0SsKLfF1t/WFkXnKl02VL9XKkA2ZOHWRmT
-         fKGEsp6Mmnk9XIt51ov/z6uAmJLMpjku1KdvpdLvuN7BnIdLTYbmjBb5+3ernvXaSxM8
-         p9jQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWCoQ2nGhqX9WaMxejA+Tp3WaDVMTrmj8SmkB5CPIWILezwmTJf0Tih68LK6JcduWSUxML8+IjlsGUwM+ehrcMzDdtaK4DrhFZvwBgp5u+sX78wIdVyLXBFYqHo6McvLnYt11OD5WWPfVhg
-X-Gm-Message-State: AOJu0Yy3+jz0KV08zXqQVfwZtO8n3S5ScG3K3voGZFky+OR+o9vscPt+
-	wNaFzR0yEnIVtgCTCNtlGnnF7TNBeVtqE6xfILS6cix6M4nlptYs6RAdklQB678=
-X-Google-Smtp-Source: AGHT+IF/a13ITPU+7qZQdHcft4lK5EQstOZutY/JLyFh0o8fUeN/TcPNkPDkm8A8QxGznPlXl1xl+g==
-X-Received: by 2002:a17:907:3ea2:b0:a4e:a23d:4b73 with SMTP id hs34-20020a1709073ea200b00a4ea23d4b73mr9083084ejc.1.1712554375314;
-        Sun, 07 Apr 2024 22:32:55 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1712554644; x=1713159444;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nOUTwdyNc/dDtKEYyWTr+IwLAmFJrKuyGjQagjzfSRk=;
+        b=pH67AO/gfDn5mOlCBvEL3AUcJLo6X9QECEhYPscQoIf8fTmhGaz59NPLxbOIDkrxz2
+         DhOZku9RtvoHS1FxUPk5t2QAVYwPGhTlj9zba4gjR5XmkMhyTDo/xu1eRiWR3GdQwYAL
+         WTDK7ZSBwuEgfFqxCPoST9Yy+804H2r+a0OgzbQoqSX0VoembmtEZLvb0qV6mJkK0D25
+         heD/Rz6oqSSRcb0B4MEVJTGJ3ha/higCmtPglMGAaKlXiMI7Lfthhtm1akvXBOrCWrqD
+         X0Tw8obaGb/aobE5vUn5EJ/TaxSXa4AOp+WLaG2UDh1tQ58dxfSfqPQBDMN85mJoaceV
+         W53Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXRtD/EGghawdnzjJh0DySpIj1H8b8ApCih1bDrvf9D2pO5AO5j8n4K3e5lSNPwRA4XAj7XfbUxSM6F3T7QwyLFjMY/RCXymaWfwaDgn+9vnotcreJjpny+P3P7Kod6eRTa2/ObbFeDWdSq
+X-Gm-Message-State: AOJu0YzNCNbwb1v8zHrbK2bC2kCo1lmtPfuXh3VPT5N9DrQK7C6RqMAj
+	+vodM2w1/+FjlrocmEZePRCs4QdjTrR3dE26rkEXhecTIABNT4M3
+X-Google-Smtp-Source: AGHT+IG+wF5q0MmQfa0v3anYFLqftAUbHZlonE6OOw5x/lgjrDfgD2meAC6ZXPM/ILo74CXmJTFfpg==
+X-Received: by 2002:a50:9319:0:b0:56e:2dfc:6189 with SMTP id m25-20020a509319000000b0056e2dfc6189mr5109047eda.2.1712554644093;
+        Sun, 07 Apr 2024 22:37:24 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id an3-20020a17090656c300b00a51cfd5c6ddsm1405201ejc.9.2024.04.07.22.32.54
+        by smtp.gmail.com with ESMTPSA id cn10-20020a0564020caa00b0056e68b14986sm93936edb.29.2024.04.07.22.37.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Apr 2024 22:32:54 -0700 (PDT)
-Message-ID: <b1553164-18db-4f5c-b1a5-28a393d64941@kernel.org>
-Date: Mon, 8 Apr 2024 07:32:53 +0200
+        Sun, 07 Apr 2024 22:37:23 -0700 (PDT)
+Message-ID: <3adf561b-2d6b-47be-8fca-2a26ee738670@kernel.org>
+Date: Mon, 8 Apr 2024 07:37:22 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,6 +50,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] serial/pmac_zilog: Remove flawed mitigation for rx irq
  flood
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Michael Ellerman <mpe@ellerman.id.au>, Finn Thain
  <fthain@linux-m68k.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -67,8 +68,8 @@ References: <dda2187e128bfaaf092351812e4538e2e41c17f6.1711599093.git.fthain@linu
  <87y19s7bk6.fsf@mail.lhotse>
  <4bddf8ec-97f1-07f6-9c0a-523c102c0a1b@linux-m68k.org>
  <87v84sbexv.fsf@mail.lhotse>
+ <b1553164-18db-4f5c-b1a5-28a393d64941@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -111,21 +112,27 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <87v84sbexv.fsf@mail.lhotse>
+In-Reply-To: <b1553164-18db-4f5c-b1a5-28a393d64941@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08. 04. 24, 7:29, Michael Ellerman wrote:
-> Many maintainers won't drop Cc: tags if they are there in the submitted
-> patch. So I agree with Andy that we should encourage folks not to add
-> them in the first place.
+On 08. 04. 24, 7:32, Jiri Slaby wrote:
+> On 08. 04. 24, 7:29, Michael Ellerman wrote:
+>> Many maintainers won't drop Cc: tags if they are there in the submitted
+>> patch. So I agree with Andy that we should encourage folks not to add
+>> them in the first place.
+> 
+> But fix the docs first.
+> 
+> I am personally not biased to any variant (as in: I don't care where CCs 
+> live in a patch).
 
-But fix the docs first.
+OTOH, as a submitter, it's a major PITA to carry CCs in notes (to have 
+those under the --- line). Esp. when I have patches in a queue for years.
 
-I am personally not biased to any variant (as in: I don't care where CCs 
-live in a patch).
+How do people handle that? (Like rebases on current kernel.)
 
-regards,
+> regards,
 -- 
 js
 suse labs
