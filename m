@@ -1,149 +1,128 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36FAA55C07;
-	Mon,  8 Apr 2024 10:30:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40CF657C4;
+	Mon,  8 Apr 2024 11:33:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712572239; cv=none; b=TyrgMokho4KFzIsCSaEGS+zRf9uDr7m56df90JmWiIFENoMMIyysbk7o0HampeaZlCVM72ttHhqtac8nLr0AI3yRJkGbTSoiKUI7EZC664/tjQxHfbeuGzJ7qeddLuf/t4eDwEZ9Etq0XkP3CF3q9HaOPiDGjZ4wsmsSXA60LtU=
+	t=1712576024; cv=none; b=jcmir31eUJrCpNlXqQBuY/TMR6N7iGqS006pfg699Lk50/2oblPFqh+NXp9J30vO4dcv2j2IY0ufRks6Q1wd3zAWjuUufS+kQCVC+MLdkZbGFuGC9DdM1DvctCsKigJ303kyepJskPtwy1Ezh7Z7QsC4tJw0Gx92kq45Hy9nyso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712572239; c=relaxed/simple;
-	bh=GEGWc/XxgeRAFafF0SAHIMfS+1Ne1BKISwPtjIBH8cM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LdhNW7Qz1HE3MC0k+Y+qyhUb5wWXXAuYc8GrffmmfPTrfVRy6/GmUELE0VBcBAQMsN3Xdmt7g4sPp+O4aSrch+LLw9uhGMHsKGnINZFKBdIPjla6Fd8rozEO2zs5yfk1dCklHlry5WwNd6d+EXtOnjvXAEMONxs/xbw+KD20S/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fs/AQod8; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712576024; c=relaxed/simple;
+	bh=Wo/fnT4vrzEdJzsfaOrBfM3t1EYcWSQcfI+sddFhP94=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=B/iPL4SIvp6EYEQ/TaVCq825r7KGC/l9kmNtcC4HqGYYN4dbQeF9ikWQqdsPzlASfyakNo7ISlBzAWoHcorcg7eqNWbQv/plk5QCzybeXI/BItRBD/Gj0dv6Hnw0FiWFAPnQ5Mj8Dfsg6dleiK23vFvVx+4wPl2KL7PuivXNX9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=1MRvaI9V; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fs/AQod8"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a51abd0d7c2so371968466b.2;
-        Mon, 08 Apr 2024 03:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712572236; x=1713177036; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zDrTyP2Vy4iVLI6V80x+ZoMCFhWQosP2tXbTa3RDay8=;
-        b=fs/AQod86L+wLdKHBOaLTMdj37ZH4nrPdivl7h2EH6UhVeis7Rl+P7hqVTyoXY5wCz
-         n4uhFQ/n4ccg5KkPxIIDCHZPmp0XGrHWq616Gy7t3GcZ7RZzKonDMLX2tG3U3BtILZbL
-         0HEAdbXcQ6BRUxv3wcQLiTBknrCBjXDAWjQklfYKwTKp2Sm35ACV7RAKuc16LYgTZhYu
-         x809Qlk+S0osj3Fvyt95fMJ5dKg1UCaW56eEyl0zHlpuYLr30G8sLqGjqmwxTQ2/NJUL
-         AW6I1nvAEd7QSj6EYA1bfwbNVW1WkvuVfxVgXdJ0rI07C7EzeNxPX5x/2CWO1InbFNtI
-         eZkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712572236; x=1713177036;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zDrTyP2Vy4iVLI6V80x+ZoMCFhWQosP2tXbTa3RDay8=;
-        b=areTsULTnIWSzovhnGITHDdPZCebmhXtE9YjUYJvCyOoYGgdbLzUB+IHmgcFYDpl5K
-         8QBDiNSnzQoXU71vryL0c2P6H/6jVioOEBhHkegVRrMzNqhbAsjgOitaRqbf7Kpd2lh5
-         RmOayBphywU7C07icUVx6uMJeWV20rHm99FQKQ/ZsOutrTyrusmj0nuZV4eG8CEE9J5k
-         bsuSEhska2msMcnAmS6LsNmVvyQ+15neQQ/bST6SvApcGRE4rroeOPslCNHR8Rn8eXNb
-         ewRyk3lu7UPscKuGFaqVnN0wzbYHPqMhRHH2hQ6yZQrQA18d0F+p0hQdgFwb0L7rqbNa
-         pI3w==
-X-Forwarded-Encrypted: i=1; AJvYcCWt7VJzMBYHafaYYTFm0D3uKaTSXiZvPIiwlJWuTIGMOiLOae5GrUaOFOj8lp8NwnUTz4Grnw5qESP4crhL6l+fbDsPXIcwsqQO6jJf5PVLm6uRq7ARr8obT6Eh2sSW7UjIIh0nB/l+7J+t
-X-Gm-Message-State: AOJu0YxxwkgEyBHJlvjmqsXRuh7I823heA9UnFfYBtI+2YZovFQIRsEo
-	GjdVGCEaRRcvjq9VGKOMBFYJJo9aDC68MDkS+n7/n+fpanfx3rpKBY2U0ytRu5dRK9yzfyTuPWv
-	5x3By3l30Z4gR5qkUazh5t4USwbM=
-X-Google-Smtp-Source: AGHT+IHrzBrC48Lrtrj0shD3qgiyxsJ2BMGxhjJ541np4p2WV47+CJO76OS97mZZAM7ikNc4i6v64annsIx0/tuLNHw=
-X-Received: by 2002:a17:906:f218:b0:a51:a676:db26 with SMTP id
- gt24-20020a170906f21800b00a51a676db26mr5349858ejb.21.1712572236205; Mon, 08
- Apr 2024 03:30:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="1MRvaI9V"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1712576022; x=1744112022;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Wo/fnT4vrzEdJzsfaOrBfM3t1EYcWSQcfI+sddFhP94=;
+  b=1MRvaI9Vxv4becgs+ORWqyQ7d1yLZqnFQYG4J9Dwed3/mGf9wl0U1BOK
+   GnkWdVuY2H9lDbQlSskYD+Mm4Gje86iuC6D9WpTM2NPcmGVZjbotxb5RX
+   jZUglB5duSGjdUQC6RbjCdeKb7LlW95LVKVIB5DCQz1t4Ap93q6kdqu6a
+   hKqkRf8qRgXlSUPEf4890mQqw5qIkbO6oS22G2cAyVnYcix2oBZ8pk4qQ
+   3FaBozDiB1J+h9EIwEUuiP220G3xQLfEyaG7LhRYdbq0Tec8iizPZ1qbK
+   AGFxZ7d6GDXjTDrSjKdyAAJWoZ+Z46hWGww6qzxdVX3FnFhIO7oSlFP8w
+   g==;
+X-CSE-ConnectionGUID: 8UDBYYxJQwS+kRlQNe0HGg==
+X-CSE-MsgGUID: dSm+3HjYRNyanz2ynRLD9w==
+X-IronPort-AV: E=Sophos;i="6.07,186,1708412400"; 
+   d="scan'208";a="250791766"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 08 Apr 2024 04:33:42 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 8 Apr 2024 04:33:22 -0700
+Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Mon, 8 Apr 2024 04:33:21 -0700
+Message-ID: <d8f2d9ab-3c68-4ba1-8733-7ae9754011ed@microchip.com>
+Date: Mon, 8 Apr 2024 13:32:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <Zg3WicDB8m9am7dJ@surfacebook.localdomain> <20240408014453.1431652-1-liu.yeC@h3c.com>
-In-Reply-To: <20240408014453.1431652-1-liu.yeC@h3c.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 8 Apr 2024 13:29:59 +0300
-Message-ID: <CAHp75Vd3xAxmEEHHTXWvKYtieV+kUmP+L+tQGq30YDH9S2hc-w@mail.gmail.com>
-Subject: Re: Re: [PATCH V8] kdb: Fix the deadlock issue in KDB debugging.
-To: LiuYe <liu.yeC@h3c.com>
-Cc: daniel.thompson@linaro.org, dianders@chromium.org, 
-	gregkh@linuxfoundation.org, jason.wessel@windriver.com, jirislaby@kernel.org, 
-	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] MAINTAINERS: mailmap: update Richard Genoud's email
+ address
+Content-Language: en-US, fr-FR
+To: Richard Genoud <richard.genoud@bootlin.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>
+CC: Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>
+References: <20240408101329.9448-1-richard.genoud@bootlin.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20240408101329.9448-1-richard.genoud@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Apr 8, 2024 at 4:46=E2=80=AFAM LiuYe <liu.yeC@h3c.com> wrote:
-> >Wed, Apr 03, 2024 at 02:11:09PM +0800, liu.yec@h3c.com kirjoitti:
+On 08/04/2024 at 12:13, Richard Genoud wrote:
+> I'm working now at bootlin, so I'll use my bootlin address for kernel
+> development from now on.
+> 
+> Update also the yaml file for atmel-serial accordingly.
+> 
+> Signed-off-by: Richard Genoud <richard.genoud@bootlin.com>
 
-...
+Thanks for the update Richard!
+Reviewed-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
-> >Ouch.
-> >Please, read this
-> >https://www.kernel.org/doc/html/latest/process/submitting-patches.html#b=
-acktraces-in-commit-messages
-> >and modify the commit message accordingly.
->
-> The example is the printout of the kernel lockup detection mechanism, whi=
-ch may be easier to understand.
-> If organized according to the format provided in the previous link, shoul=
-d it be arranged as follows?
+Best regards,
+   Nicolas
 
-Do you think all lines are important from this?
-Do you think you haven't dropped anything useful?
+> ---
+>   .mailmap                                                       | 1 +
+>   Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml | 2 +-
+>   MAINTAINERS                                                    | 2 +-
+>   3 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/.mailmap b/.mailmap
+> index 8284692f9610..71e28f4e0d4a 100644
+> --- a/.mailmap
+> +++ b/.mailmap
+> @@ -524,6 +524,7 @@ Rémi Denis-Courmont <rdenis@simphalempin.com>
+>   Ricardo Ribalda <ribalda@kernel.org> <ricardo@ribalda.com>
+>   Ricardo Ribalda <ribalda@kernel.org> Ricardo Ribalda Delgado <ribalda@kernel.org>
+>   Ricardo Ribalda <ribalda@kernel.org> <ricardo.ribalda@gmail.com>
+> +Richard Genoud <richard.genoud@bootlin.com> <richard.genoud@gmail.com>
+>   Richard Leitner <richard.leitner@linux.dev> <dev@g0hl1n.net>
+>   Richard Leitner <richard.leitner@linux.dev> <me@g0hl1n.net>
+>   Richard Leitner <richard.leitner@linux.dev> <richard.leitner@skidata.com>
+> diff --git a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> index 65cb2e5c5eee..eb2992a447d7 100644
+> --- a/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+> @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>   title: Atmel Universal Synchronous Asynchronous Receiver/Transmitter (USART)
+> 
+>   maintainers:
+> -  - Richard Genoud <richard.genoud@gmail.com>
+> +  - Richard Genoud <richard.genoud@bootlin.com>
+> 
+>   properties:
+>     compatible:
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index aea47e04c3a5..0dbdc81e46c6 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14363,7 +14363,7 @@ F:      drivers/dma/at_xdmac.c
+>   F:     include/dt-bindings/dma/at91.h
+> 
+>   MICROCHIP AT91 SERIAL DRIVER
+> -M:     Richard Genoud <richard.genoud@gmail.com>
+> +M:     Richard Genoud <richard.genoud@bootlin.com>
+>   S:     Maintained
+>   F:     Documentation/devicetree/bindings/serial/atmel,at91-usart.yaml
+>   F:     drivers/tty/serial/atmel_serial.c
 
-If "yes" is the answer to both Qs, then go with it (but at least I see
-that first seems to me as "no", some lines are not important)
-
-
-> Example:
-> BUG: spinlock lockup suspected on CPU#0. owner_cpu: 1
-> CPU1: Call Trace:
-> __schedule
-> schedule
-> schedule_hrtimeout_range_clock
-> mutex_unlock
-> ep_scan_ready_list
-> schedule_hrtimeout_range
-> ep_poll
-> wake_up_q
-> SyS_epoll_wait
-> entry_SYSCALL_64_fastpath
->
-> CPU0: Call Trace:
-> dump_stack
-> spin_dump
-> do_raw_spin_lock
-> _raw_spin_lock
-> try_to_wake_up
-> wake_up_process
-> insert_work
-> __queue_work
-> queue_work_on
-> kgdboc_post_exp_handler
-> kgdb_cpu_enter
-> kgdb_handle_exception
-> __kgdb_notify
-> kgdb_notify
-> notifier_call_chain
-> notify_die
-> do_int3
-> int3
-
-...
-
-> >>  #include <linux/module.h>
-> >>  #include <linux/platform_device.h>
-> >>  #include <linux/serial_core.h>
-> >> +#include <linux/irq_work.h>
-> >
-> >Please, keep it ordered (with visible context this should go at least be=
-fore
-> >module.h).
->
-> I don't understand why this needs to be placed before module.h. Please ex=
-plain further, thank you.
-
-Alphabetical order helps long-term maintenance. Yes, I know that it is
-not _fully_ sorted, but don't add more mess to it.
-
---=20
-With Best Regards,
-Andy Shevchenko
