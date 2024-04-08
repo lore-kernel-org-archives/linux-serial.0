@@ -1,134 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 810747460
-	for <linux-serial@vger.kernel.org>; Mon,  8 Apr 2024 17:25:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA79C7460;
+	Mon,  8 Apr 2024 17:28:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712597138; cv=none; b=c1GPzazFNOXMjICsFBnt1wR4tDHsSphWJb5eEW1s1hDSClsInvXsZqMjb9dQaZio9XHqOdV6x6pYdSyQTzAwk8yyfT74oDms5jWbHVCN0D1vl8HGO0EdakgH7uQnOiEAvyMQaHX652N9/3USLPuSIBBXLXYzaSwkJTUkkH8XIJ0=
+	t=1712597305; cv=none; b=UNI3cyNxTqiAHJaPByWlMIJju2dSv8xVUENYgbC9x0X/V4trGuc/KsEFQnevpHTRfQAReSkjlv6IWNQjavkbrTiKX2ENrffB3m3C2kaBEwNL/039oBhz554uImz/RKf1Kgg54u4TZLkPLSc4BbjCEw97AhOolDVmbsGN2Zc03/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712597138; c=relaxed/simple;
-	bh=MvYkYh0myG5kZ1rrWiFLsovRnF5sluU0TA5YZ0UxVaA=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=YrmqaEIwf1FTZwBJuWIPU+7pOCPB1eB7k40ehtMfqFzLzd7q+h3MqMjIcwSlccwlaxzSV7xAdE21OpXj9/HuX0Sw8h3j6ioJHh1FfWzHSY0+S7e1XnjmBFMg6CAuMfiEDhpeGs+E2qQ6qnxyNNOE1jjeHMi+G438O118xm2fO/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DYFWgMIs; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712597305; c=relaxed/simple;
+	bh=KK8GiSvFSo2V8qUPnqrwK3403k5I7vbDgJq4v/eqDhE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SbUF8ZdlJd1D637izanEpzICs+7G40YlRfuCEGq3yTgnQA81xzHn9JkPDTpuqi0+e/+WJQ5NAW9BYxALdWhGtAQhkrUtmIh2G8SBHa1L8EPHOaO9kY3AhhLn2MmktLwAE7mPLbfyQ3IcTegeDQ+F5Bm/2yYjr0F4fBmjGWLdToI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com; spf=pass smtp.mailfrom=googlemail.com; dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b=EF2fNNRo; arc=none smtp.client-ip=209.85.215.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DYFWgMIs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712597136; x=1744133136;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=MvYkYh0myG5kZ1rrWiFLsovRnF5sluU0TA5YZ0UxVaA=;
-  b=DYFWgMIsvY/3BMdzrepQqm9TKx9MExBdQHOJf3e8s/tlqbUWMcFPOfEl
-   NDmkYef6aI+eO/VT4CVC+quuJmtNqitf6KJgx6rotWJ8M44Q+2NlIXlNB
-   kYWPuBj0jhy1SV085Vc1vEzlGLnsJJL/aUGCQf1AVlSQDiyDrMCGYWaN0
-   IJ7g6Yaa01WppsZbhdEBCyl74p1YESqZ72T2unPnWapuawIYkLqOkL9+G
-   1wGfqQoqqoeJM9YmEyzstIoDD92kBWvFo4/fvQK/0OFMhJmxZDNAnGJG2
-   9WjWogk1UPSVbrdUXgUoONZ8EOhuu9RDnpOZnCuELmOj7pC/9cqd6YyLX
-   Q==;
-X-CSE-ConnectionGUID: NRcfZN6ORm2zCDM3VIe39w==
-X-CSE-MsgGUID: IzXPO4wRQ06mYIpQ44ayQQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="11667268"
-X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="11667268"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 10:25:35 -0700
-X-CSE-ConnectionGUID: qTQBH9KORsGCcCfEozAZWQ==
-X-CSE-MsgGUID: Kj//SEGHRFGveQdKJ/41fA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="43133392"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.28])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 10:25:32 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 8 Apr 2024 20:25:28 +0300 (EEST)
-To: Matthew Howell <matthew.howell@sealevel.com>
-cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, 
-    "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
-    Darren Beeson <darren.beeson@sealevel.com>, 
-    Jeff Baldwin <jeff.baldwin@sealevel.com>, 
-    Ryan Wenglarz <ryan.wenglarz@sealevel.com>
-Subject: Re: [PATCH V2] serial: exar: Preserve FCTR[5] bit in
- pci_xr17v35x_setup()
-In-Reply-To: <74b591e8-c8b1-7a9b-e2ea-c375f3d712c2@linux.intel.com>
-Message-ID: <db3d5156-5ba7-e3e0-42c8-37f9d4f5efcb@linux.intel.com>
-References: <5dd9f8b0c1dc154c73fb883cb948768ae68d1ccb.camel@sealevel.com>  <a9519d301f542c921260b11b4576cd68cc929b52.camel@sealevel.com> <937e10172eaf46cbb6e355666e15ba33344f2c51.camel@sealevel.com> <74b591e8-c8b1-7a9b-e2ea-c375f3d712c2@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="EF2fNNRo"
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-5d8b519e438so3596605a12.1;
+        Mon, 08 Apr 2024 10:28:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20230601; t=1712597303; x=1713202103; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KK8GiSvFSo2V8qUPnqrwK3403k5I7vbDgJq4v/eqDhE=;
+        b=EF2fNNRoXZnr9j1nOoBTEXaBjHpdFiVUMb49JXbx0MW12waqoyw3ZCCwiy34TKpqQB
+         onbomXKvo4DSh2/3fS39oa99exR0nxl8zc08vtm185fiCrC7LtR9fwg06vKDJt90U7xs
+         fqKllRjCX07yDr3nJUDnTW42ZlcbA54BBv/gN/jY4hB2zj3xalhdmGkF0YPcKs4NQy/k
+         E3jQgV38mX8vpkazifYsmSWeUz2HZlLBkMMOWIgSv6y9h4ie9BYQabtGTV56jzrNjuzi
+         ol7IHs4P25rcW2jpckey90bk2pcaTY7AOnNA6pRiP0blgpRBWjL4ipvL47VFXwagUUgO
+         pzhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712597303; x=1713202103;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KK8GiSvFSo2V8qUPnqrwK3403k5I7vbDgJq4v/eqDhE=;
+        b=eDREM0ngLVxbq2xd2d7MDzKVI4BpHTPQYsSwmmT+le5QQznD/zYA3n8sAlUX7grzL+
+         x8knKtSAVZLZzbe7x2n/qC71dVzcHW1Sv9K+TCtNXp5F2gk72buMXwiqEWnzzzOajsU7
+         GRx4SfCFdRcJizYZXyXKjwk+X5DuBRtIIRd4bfYirsGMGpLYdEAY9mGsYwWcQod/ES+N
+         eEDGOO7TUsMBYCj/ixhpGI7WBI5IHgrEtNfELE08wMiZshsh1QjiRhSIbFc7A4Qc5aa7
+         KVpey+knZcZHoepvU6pCEi0+Nhjvq3jAGU1spcQoYPF8NngE2i0mRsdel5IX38CmAwA4
+         8wSQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXA+YSSxSggcvPwgyZkac/qaL8WYqdfgvKYMFuI/lP6BiEbZ4RK1ZQEE7aT/45K6KlHoIoXKFg4YXRRhnpnQT47iRzD1Lh6XkHh0kBxK2FHCzGN41it+ri61a/Xhe1riEtreDZbGO9x06a456FEGtFR37J+uY3nGw0Huvs6Qv9+Shgv/LUDIQ==
+X-Gm-Message-State: AOJu0YzPfQNuAcnl+L2kvPY8COjsc9We1VJrDMbBpXauLOw1qMO2ayfG
+	r37vGvdiB/40iYtKJ51pd9VUCn4YxG2XGZazGITRmh1gqk+vmorFoLnu5rsokGx5MmcyKbfrIrD
+	/F6eGF7JVtOXZXxezmYCA/ERygVA=
+X-Google-Smtp-Source: AGHT+IFP6Z5pdRwrSLwARLzJ699fJGpW0H4+2+OpwDmZEkfRQGnMSXvUFgpa3p6th/TN1PAwzKX59Po/azxvXbfA8xg=
+X-Received: by 2002:a05:6a20:9155:b0:1a7:49c1:d326 with SMTP id
+ x21-20020a056a20915500b001a749c1d326mr7381136pzc.1.1712597303058; Mon, 08 Apr
+ 2024 10:28:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1488353054-1712597128=:14302"
+References: <20240401-basic_dt-v3-0-cb29ae1c16da@amlogic.com> <20240401-basic_dt-v3-3-cb29ae1c16da@amlogic.com>
+In-Reply-To: <20240401-basic_dt-v3-3-cb29ae1c16da@amlogic.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 8 Apr 2024 19:28:10 +0200
+Message-ID: <CAFBinCA1XchHvRuFNGeKOrpjzggM_LSNtA5ixn071=MkQvdc5A@mail.gmail.com>
+Subject: Re: [PATCH v3 3/5] dt-bindings: serial: amlogic,meson-uart: Add
+ compatible string for A4
+To: xianwei.zhao@amlogic.com
+Cc: Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Neil Armstrong <neil.armstrong@linaro.org>, Jerome Brunet <jbrunet@baylibre.com>, 
+	Kevin Hilman <khilman@baylibre.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-amlogic@lists.infradead.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-1488353054-1712597128=:14302
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-
-On Mon, 8 Apr 2024, Ilpo J=E4rvinen wrote:
-
-> On Mon, 8 Apr 2024, Matthew Howell wrote:
->=20
-> > On Wed, 2024-02-21 at 16:16 -0500, Matthew Howell wrote:
-> > > Allows the use of the EN485 hardware pin by preserving the value of
-> > > FCTR[5] in pci_xr17v35x_setup().
-> > >=20
-> > > Per the XR17V35X datasheet, the EN485 hardware pin works by setting
-> > > FCTR[5] when the pin is active. pci_xr17v35x_setup() prevented the us=
-e
-> > > of EN485 because it overwrote the FCTR register.
-> > >=20
-> > > Signed-off-by: Matthew Howell <matthew.howell@sealevel.com>
-> > > ---
-> > > V1 -> V2
-> > > Fixed wordwrap in diff
-> > >=20
-> > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial=
-/8250/8250_exar.c
-> > > index 23366f868..97711606f 100644
-> > > --- a/drivers/tty/serial/8250/8250_exar.c
-> > > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > > @@ -596,6 +596,7 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct =
-pci_dev *pcidev,
-> > >  =09unsigned int baud =3D 7812500;
-> > >  =09u8 __iomem *p;
-> > >  =09int ret;
-> > > +=09u8 en485mask;
-> > > =20
-> > >  =09port->port.uartclk =3D baud * 16;
-> > >  =09port->port.rs485_config =3D platform->rs485_config;
-> > > @@ -618,7 +619,8 @@ pci_xr17v35x_setup(struct exar8250 *priv, struct =
-pci_dev *pcidev,
-> > >  =09p =3D port->port.membase;
-> > > =20
-> > >  =09writeb(0x00, p + UART_EXAR_8XMODE);
-> > > -=09writeb(UART_FCTR_EXAR_TRGD, p + UART_EXAR_FCTR);
-> > > +=09en485mask =3D readb(p + UART_EXAR_FCTR) & UART_FCTR_EXAR_485;
-> > > +=09writeb(UART_FCTR_EXAR_TRGD | en485mask, p + UART_EXAR_FCTR);
-> > >  =09writeb(128, p + UART_EXAR_TXTRG);
-> > >  =09writeb(128, p + UART_EXAR_RXTRG);
->=20
-> Why you need to read rs485 state from the register? It should be availabl=
-e=20
-> in ->rs485.flags & SER_RS485_ENABLED.
->=20
-> pci_fastcom335_setup() seems to have the same problem? Path small part=20
-
-I meant "That small part ..."
-
-> seems to be common code anyway which should be moved into helper, only th=
-e=20
-> trigger threshold seems to differ which can be given in a parameter.
->=20
->=20
-
---=20
- i.
-
---8323328-1488353054-1712597128=:14302--
+On Mon, Apr 1, 2024 at 12:10=E2=80=AFPM Xianwei Zhao via B4 Relay
+<devnull+xianwei.zhao.amlogic.com@kernel.org> wrote:
+>
+> From: Xianwei Zhao <xianwei.zhao@amlogic.com>
+>
+> Amlogic A4 SoCs uses the same UART controller as S4 SoCs and G12A.
+> There is no need for an extra compatible line in the driver, but
+> add A4 compatible line for documentation.
+>
+> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
