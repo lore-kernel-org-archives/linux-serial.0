@@ -1,119 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B5D1411EF;
-	Mon,  8 Apr 2024 15:45:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0047E1420D4
+	for <linux-serial@vger.kernel.org>; Mon,  8 Apr 2024 15:50:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712591113; cv=none; b=VnL0Sj50Ehgh+QqJaBvxsTYOiBo0vpOkcMy6M0cO7F34lfsBOyOsqnYLizGqpH2GELPtZcd8x3xLX9TfGGZSpcrmNZc/Clr+X1URH0Szu8kdtrdTmQaN9M0EaJd1T92mlR0hWjylz8/vLSuqpzopWPBsM00wtJQo8si2Sjyhxb0=
+	t=1712591441; cv=none; b=Apeo0BNCc7QjR3aBmlEHRBBFNvPBKE5JojPCJMwP6o3PeMeNaMMJhVnr7ECiyD+NeHWzjQwVfheMOWM35a66zm18zY+8kySZQoPyIUcDVliJXYo5wUsyjmdmU7gQm1RB4Tym2cFMxRLDqJW9NB/h27PTOJ0tU7lYXQj19O2fmW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712591113; c=relaxed/simple;
-	bh=T+hfrAsFNnklIEb0sRRQ8EMi792MajkNUSG/16PQJXE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b5k4fcabr3rhDQbqkCotMNQOHSXRN62S2wWTza9PkHn0vZMcDomPAw2gEIIEnZZXlT2L454wZ8Xo9r1F6foZik0UJF1DJGXjqYFAg2lfHAiz8EVJA9XrWGadwD8nu5dY6SyBkmQHVZti8N7jhG326SeUAKSmEDhPhmDhZ5YHUGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QEMyJOGk; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712591441; c=relaxed/simple;
+	bh=BnzHtJP+mzhnx61ojSEFsfHzwz1nj3hUWfsnlB/PFvo=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=JfM4LcZdR0No6S9wHfpRZOjwbajU768D6Mtv1PW85rXUiM+doR7CQhOMca34ib2Nvghc8XBrDUi7DAp3xOUTGDOpMWaQfu73fi4kwbgDJcfyCqAv13nVR8tamMjYb76qP7J2Rwo9qwx+14oFLQghPj3Rb1homwEOAXhgHk/XuXQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XIH6r3wf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QEMyJOGk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712591112; x=1744127112;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T+hfrAsFNnklIEb0sRRQ8EMi792MajkNUSG/16PQJXE=;
-  b=QEMyJOGkX6/hHHWD1cBeFJiCHWjgAalgCp8T3qzJ958dOSxcmcRyirvz
-   Qr+QmLZNv3eMIU84RLL86NRepSahytose9EpjsJlwn8HLdgA+YCEtey97
-   ddqMpEswgb5vn0EOWqyi5z2o6Lk5QslEr+es75Bmc3kPiccO9XVrsrsFI
-   2zfZis6uY4Ou1ORAaVkue0BKlN3yMUVZTtwvkQ2nItZsbenfgzy2gtr3X
-   QY20hAE6k45W1wnJHGJA+az1yR3Nb1eIPKJ6Hzjk2smPId19ilwA38JG9
-   ZG5NSpWkBxDJFVmqVrH57LGAtAytgT6yUAbKVoy6SaiFBcPOtwOxTaNTK
-   A==;
-X-CSE-ConnectionGUID: 0jj0ANFKRDCscXaxj1VLjg==
-X-CSE-MsgGUID: NcmG8EEbSrCpI21l0PdImA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="8037174"
-X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="8037174"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 08:45:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="915368991"
-X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="915368991"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 08:45:09 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rtrBC-00000002ZCa-38P1;
-	Mon, 08 Apr 2024 18:45:06 +0300
-Date: Mon, 8 Apr 2024 18:45:06 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tony Lindgren <tony@atomide.com>,
-	kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v1 1/1] serial: core: Clearing the circular buffer before
- NULLifying it
-Message-ID: <ZhQRAhsGfdikDGEG@smile.fi.intel.com>
-References: <20240404150034.41648-1-andriy.shevchenko@linux.intel.com>
- <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XIH6r3wf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E5D9C433F1;
+	Mon,  8 Apr 2024 15:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712591440;
+	bh=BnzHtJP+mzhnx61ojSEFsfHzwz1nj3hUWfsnlB/PFvo=;
+	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+	b=XIH6r3wfe9Z591QUfyJ9MM03ZOVDxbmIZV35Xizr8iyWHYE2q+emfaXxZ0oi6eI82
+	 ObISCgeFUhbbvEtIAPOCXAhVGBsuGb8Pr5fZctSj0IVo7dq+/xODyux61Rzmdqlpi6
+	 0xpfWd1wPwduWsKUA7mWtTMB17YIBVyvOsYJGVRQG/BDzsyDb4e4ONV/U6yGEbe8Kt
+	 LjFcWhVkG1gMoH8UYWPVClq5q82CUmWmv66x9OzXaLPEWQ+lN3SgabhS6MEIniNvSJ
+	 xsA9QcZLpHMPVWO/Nqz4TGPwbnMmRSwdk9CdhTO2bMYbsmWP1pMCsDCHC69gPiC75i
+	 GfvVqTSdV1CRA==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfauth.nyi.internal (Postfix) with ESMTP id 1F7C91200068;
+	Mon,  8 Apr 2024 11:50:39 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Mon, 08 Apr 2024 11:50:39 -0400
+X-ME-Sender: <xms:ThIUZh8Hzo7qekgKGngjNy1UvK2pDfMmMumuTXIfHa9SSqu56viiXw>
+    <xme:ThIUZlv-qKLAcXT1bCBwhxVwx2mMRKaRw4i2NZ35NRso0QgsjiGNH6_aeikHzUs4n
+    GKBLeeLxf05cwIPIF4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudegiedgleefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtgfesthhqredtreerjeenucfhrhhomhepfdet
+    rhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrdhorhhgqeenucggtf
+    frrghtthgvrhhnpedvtddtffejfeeggefgleefgfeghfehfeefffetgffgleegudevveet
+    hfefjeevkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidquddvkeehudej
+    tddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdrohhrghesrghrnhgusg
+    druggv
+X-ME-Proxy: <xmx:ThIUZvBmvnPqxs_thxB3r6rGCRDtjpQRQZayIYVH4GFqkJi90bp9og>
+    <xmx:ThIUZlfgsKI5zb31ZSYxZvTI6Edi1yCeP2OybAl34lhpgegavol0-A>
+    <xmx:ThIUZmNzVa1QN3-IOl-Qwm5KoiQ-Zf9yzS3poKE3U07grIoCZvJXSQ>
+    <xmx:ThIUZnmvN030T2sMwAFWnWY-SbKKZB4QWqIzkt2qgo1gqzOekwfOjg>
+    <xmx:TxIUZgv-hQw70Hfhyf9OklY5ogxyXbCda5MWggI9NyVZuUyXiVYdj5WF>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id D3686B6008D; Mon,  8 Apr 2024 11:50:38 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-368-gc733b1d8df-fm-20240402.001-gc733b1d8
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f0f200b0-34dc-430b-b55e-b133faf4db44@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Message-Id: <a78fae4c-6ab4-4ac1-ae72-c68b24ebb640@app.fastmail.com>
+In-Reply-To: <6251fc72-21ca-aba6-c70a-eefdbc046951@linux.intel.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com>
+ <a98fdeca857f4eb1e3513a8658ef55f89ac45e8b.camel@linux.ibm.com>
+ <6251fc72-21ca-aba6-c70a-eefdbc046951@linux.intel.com>
+Date: Mon, 08 Apr 2024 17:50:11 +0200
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>
+Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>,
+ "Heiko Carstens" <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 05, 2024 at 07:25:03AM +0200, Jiri Slaby wrote:
-> On 04. 04. 24, 16:59, Andy Shevchenko wrote:
-> > The circular buffer is NULLified in uart_tty_port_shutdown()
-> > under the spin lock. However, the PM or other timer based callbacks
-> > may still trigger after this event without knowning that buffer pointer
-> > is not valid. Since the serial code is a bit inconsistent in checking
-> > the buffer state (some rely on the head-tail positions, some on the
-> > buffer pointer), it's better to have both aligned, i.e. buffer pointer
-> > to be NULL and head-tail possitions to be the same, meaning it's empty.
-> > This will prevent asynchronous calls to dereference NULL pointer as
-> > reported recently in 8250 case:
-> > 
-> >    BUG: kernel NULL pointer dereference, address: 00000cf5
-> >    Workqueue: pm pm_runtime_work
-> >    EIP: serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
-> >    ...
-> >    ? serial8250_tx_chars (drivers/tty/serial/8250/8250_port.c:1809)
-> >    __start_tx (drivers/tty/serial/8250/8250_port.c:1551)
-> >    serial8250_start_tx (drivers/tty/serial/8250/8250_port.c:1654)
-> >    serial_port_runtime_suspend (include/linux/serial_core.h:667 drivers/tty/serial/serial_port.c:63)
-> >    __rpm_callback (drivers/base/power/runtime.c:393)
-> >    ? serial_port_remove (drivers/tty/serial/serial_port.c:50)
-> >    rpm_suspend (drivers/base/power/runtime.c:447)
-> 
-> Yeah, I noticed start_tx() is called repeatedly after shutdown() yesterday
-> too. So thanks for looking into this.
-> 
-> And it's pretty weird. I think it's new with the runtime PM (sure, /me reads
-> Fixes: now). I am not sure if it is documented, but most of the code in tty/
-> assumes NO ordinary ->ops (like start_tx()) are called after shutdown().
-> Actually, to me it occurs like serial8250_start_tx() should not be called in
-> the first place. It makes no sense after all.
+On Mon, Apr 8, 2024, at 17:41, Ilpo J=C3=A4rvinen wrote:
+> On Mon, 8 Apr 2024, Niklas Schnelle wrote:
+>> On Mon, 2024-04-08 at 12:54 +0300, Ilpo J=C3=A4rvinen wrote:
+>> > On Fri, 5 Apr 2024, Niklas Schnelle wrote:
+>> ---8<---
+>> > > diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial=
+/8250/Kconfig
+>> > > index 47ff50763c04..54bf98869abf 100644
+>> > > --- a/drivers/tty/serial/8250/Kconfig
+>> > > +++ b/drivers/tty/serial/8250/Kconfig
+>> > > @@ -6,7 +6,6 @@
+>> > > =20
+>> > >  config SERIAL_8250
+>> > >  	tristate "8250/16550 and compatible serial support"
+>> > > -	depends on !S390
+>> >=20
+>> > Why? Your changelogs gives zero insight on this change.
+>>=20
+>> I used this for compile testing since I build on s390 natively and th=
+is
+>> would have hidden the missing HAS_IOPORT dependencies I'm pretty sure
+>> it was added because of the I/O port problem too. I'll either add to
+>> the commit description that it is no longer needed or drop this. Any
+>> preference?
+>
+> Okay, we might never know the reason for sure if that's old enough.
+> I think the best approach would be to put it into own patch so this=20
+> guessimation is limited to a single liner patch instead of it being=20
+> hidden among the other clearer cases.
 
-So, with PM autosuspend the [PM] callback can be called in to cases:
-- port is open and busy, but PM is not informed (yet) of it
-- port is closed while PM timer is still counting
+From the description in commit 1598e38c0770 ("serial: forbid
+8250 on s390") I would just leave the dependency there.
 
-The Fixes seems about the first case (so we need to call Tx there).
-The second one probably can be fixed properly with PM barrier.
-
-This fix is just against the oops AFAIU the bug report and my own case.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+     Arnd
