@@ -1,116 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6BF452F82;
-	Mon,  8 Apr 2024 10:25:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36FAA55C07;
+	Mon,  8 Apr 2024 10:30:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712571926; cv=none; b=iOx1LnJ6DJdK/CG1INlP8W46RmOh8L3f5B3tOGPNtjgHESGMONTLp/yAgLf9Jv6XDbteGObMKqdfw9tlmPLf+dTx06Ji0QZgvtd5ErHzDLTZNyEXO6VUNPcIpdYduQaM75JzrvFxyuNeNMFKgFmcCoeS7oz1k7206H5qkEXIAhg=
+	t=1712572239; cv=none; b=TyrgMokho4KFzIsCSaEGS+zRf9uDr7m56df90JmWiIFENoMMIyysbk7o0HampeaZlCVM72ttHhqtac8nLr0AI3yRJkGbTSoiKUI7EZC664/tjQxHfbeuGzJ7qeddLuf/t4eDwEZ9Etq0XkP3CF3q9HaOPiDGjZ4wsmsSXA60LtU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712571926; c=relaxed/simple;
-	bh=Uab3bx1gPT1snh2DM+Z6/uoVdtZfkeKrMGCstkzKNg4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=bqUg93jGi+lKhxxGZSMLUAlaYV1RqJUQ1f5T1YrUvzYoIxjbW+6nrexyvcFxSo7MzRuSumXAIF9cd6zHgsKad6boz8BDmoQ4Cfx7zM0S1EkdQon/BDhe50ca+wCRd7A8Df0vPL4nYue1Ssjm1F2OZ919rnvIBBfYPdm9QSp/Ivk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DxKZrt9N; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712572239; c=relaxed/simple;
+	bh=GEGWc/XxgeRAFafF0SAHIMfS+1Ne1BKISwPtjIBH8cM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LdhNW7Qz1HE3MC0k+Y+qyhUb5wWXXAuYc8GrffmmfPTrfVRy6/GmUELE0VBcBAQMsN3Xdmt7g4sPp+O4aSrch+LLw9uhGMHsKGnINZFKBdIPjla6Fd8rozEO2zs5yfk1dCklHlry5WwNd6d+EXtOnjvXAEMONxs/xbw+KD20S/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fs/AQod8; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DxKZrt9N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712571925; x=1744107925;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=Uab3bx1gPT1snh2DM+Z6/uoVdtZfkeKrMGCstkzKNg4=;
-  b=DxKZrt9Nfx16EtmeJGjMfgBeE3Txv16oTFKRiRfxCA9hipqGxFQ8xjX8
-   VdZtU0PNidmhz4GZlC3wb1MTo+e2vYSMNEKqLoL7H31T5/8TXbto5G32x
-   3nuD7BJdF1ilzj6tyVHwSNHR7msmh3FMlyaszs3jo5sP451378FoHhuim
-   JfRwqig2a4dwwQ4ldJocUWjXFYjAvipZy3hVDupst82l01XgRdhkMkDKi
-   SrBIOz5vOqhFBiIOCoPNEMoK7Jh0buxxdO4pNfprG/KCzvhKMmI5VOeEl
-   H8mom4vRPdjzulhOnJa64KBHly+NetYNaWBBWzIlh6U3SbTYmG9ile/m+
-   A==;
-X-CSE-ConnectionGUID: PSVEW6BEQE6j4yxM2rby/g==
-X-CSE-MsgGUID: 54BbDBOaTcK+It8TG/EsnA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11037"; a="25339562"
-X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
-   d="scan'208";a="25339562"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 03:25:23 -0700
-X-CSE-ConnectionGUID: YMR2HhP6Q26/wPEV7++T9Q==
-X-CSE-MsgGUID: sgrfuxHKQRCBUX2qENLqWw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
-   d="scan'208";a="24312238"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.28])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 03:25:20 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 8 Apr 2024 13:25:15 +0300 (EEST)
-To: Arnd Bergmann <arnd@kernel.org>
-cc: Niklas Schnelle <schnelle@linux.ibm.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-In-Reply-To: <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
-Message-ID: <e4299a49-eeef-da89-2806-377d62b417e2@linux.intel.com>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com> <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com> <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fs/AQod8"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a51abd0d7c2so371968466b.2;
+        Mon, 08 Apr 2024 03:30:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712572236; x=1713177036; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zDrTyP2Vy4iVLI6V80x+ZoMCFhWQosP2tXbTa3RDay8=;
+        b=fs/AQod86L+wLdKHBOaLTMdj37ZH4nrPdivl7h2EH6UhVeis7Rl+P7hqVTyoXY5wCz
+         n4uhFQ/n4ccg5KkPxIIDCHZPmp0XGrHWq616Gy7t3GcZ7RZzKonDMLX2tG3U3BtILZbL
+         0HEAdbXcQ6BRUxv3wcQLiTBknrCBjXDAWjQklfYKwTKp2Sm35ACV7RAKuc16LYgTZhYu
+         x809Qlk+S0osj3Fvyt95fMJ5dKg1UCaW56eEyl0zHlpuYLr30G8sLqGjqmwxTQ2/NJUL
+         AW6I1nvAEd7QSj6EYA1bfwbNVW1WkvuVfxVgXdJ0rI07C7EzeNxPX5x/2CWO1InbFNtI
+         eZkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712572236; x=1713177036;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zDrTyP2Vy4iVLI6V80x+ZoMCFhWQosP2tXbTa3RDay8=;
+        b=areTsULTnIWSzovhnGITHDdPZCebmhXtE9YjUYJvCyOoYGgdbLzUB+IHmgcFYDpl5K
+         8QBDiNSnzQoXU71vryL0c2P6H/6jVioOEBhHkegVRrMzNqhbAsjgOitaRqbf7Kpd2lh5
+         RmOayBphywU7C07icUVx6uMJeWV20rHm99FQKQ/ZsOutrTyrusmj0nuZV4eG8CEE9J5k
+         bsuSEhska2msMcnAmS6LsNmVvyQ+15neQQ/bST6SvApcGRE4rroeOPslCNHR8Rn8eXNb
+         ewRyk3lu7UPscKuGFaqVnN0wzbYHPqMhRHH2hQ6yZQrQA18d0F+p0hQdgFwb0L7rqbNa
+         pI3w==
+X-Forwarded-Encrypted: i=1; AJvYcCWt7VJzMBYHafaYYTFm0D3uKaTSXiZvPIiwlJWuTIGMOiLOae5GrUaOFOj8lp8NwnUTz4Grnw5qESP4crhL6l+fbDsPXIcwsqQO6jJf5PVLm6uRq7ARr8obT6Eh2sSW7UjIIh0nB/l+7J+t
+X-Gm-Message-State: AOJu0YxxwkgEyBHJlvjmqsXRuh7I823heA9UnFfYBtI+2YZovFQIRsEo
+	GjdVGCEaRRcvjq9VGKOMBFYJJo9aDC68MDkS+n7/n+fpanfx3rpKBY2U0ytRu5dRK9yzfyTuPWv
+	5x3By3l30Z4gR5qkUazh5t4USwbM=
+X-Google-Smtp-Source: AGHT+IHrzBrC48Lrtrj0shD3qgiyxsJ2BMGxhjJ541np4p2WV47+CJO76OS97mZZAM7ikNc4i6v64annsIx0/tuLNHw=
+X-Received: by 2002:a17:906:f218:b0:a51:a676:db26 with SMTP id
+ gt24-20020a170906f21800b00a51a676db26mr5349858ejb.21.1712572236205; Mon, 08
+ Apr 2024 03:30:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-171181184-1712571915=:1249"
+References: <Zg3WicDB8m9am7dJ@surfacebook.localdomain> <20240408014453.1431652-1-liu.yeC@h3c.com>
+In-Reply-To: <20240408014453.1431652-1-liu.yeC@h3c.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 8 Apr 2024 13:29:59 +0300
+Message-ID: <CAHp75Vd3xAxmEEHHTXWvKYtieV+kUmP+L+tQGq30YDH9S2hc-w@mail.gmail.com>
+Subject: Re: Re: [PATCH V8] kdb: Fix the deadlock issue in KDB debugging.
+To: LiuYe <liu.yeC@h3c.com>
+Cc: daniel.thompson@linaro.org, dianders@chromium.org, 
+	gregkh@linuxfoundation.org, jason.wessel@windriver.com, jirislaby@kernel.org, 
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, Apr 8, 2024 at 4:46=E2=80=AFAM LiuYe <liu.yeC@h3c.com> wrote:
+> >Wed, Apr 03, 2024 at 02:11:09PM +0800, liu.yec@h3c.com kirjoitti:
 
---8323328-171181184-1712571915=:1249
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+...
 
-On Mon, 8 Apr 2024, Arnd Bergmann wrote:
+> >Ouch.
+> >Please, read this
+> >https://www.kernel.org/doc/html/latest/process/submitting-patches.html#b=
+acktraces-in-commit-messages
+> >and modify the commit message accordingly.
+>
+> The example is the printout of the kernel lockup detection mechanism, whi=
+ch may be easier to understand.
+> If organized according to the format provided in the previous link, shoul=
+d it be arranged as follows?
 
-> On Mon, Apr 8, 2024, at 11:54, Ilpo J=C3=A4rvinen wrote:
-> > On Fri, 5 Apr 2024, Niklas Schnelle wrote:
->=20
-> >>  config SERIAL_8250_CS
-> >>  =09tristate "8250/16550 PCMCIA device support"
-> >> -=09depends on PCMCIA && SERIAL_8250
-> >> +=09depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
-> >>  =09help
-> >>  =09  Say Y here to enable support for 16-bit PCMCIA serial devices,
-> >>  =09  including serial port cards, modems, and the modem functions of
+Do you think all lines are important from this?
+Do you think you haven't dropped anything useful?
+
+If "yes" is the answer to both Qs, then go with it (but at least I see
+that first seems to me as "no", some lines are not important)
+
+
+> Example:
+> BUG: spinlock lockup suspected on CPU#0. owner_cpu: 1
+> CPU1: Call Trace:
+> __schedule
+> schedule
+> schedule_hrtimeout_range_clock
+> mutex_unlock
+> ep_scan_ready_list
+> schedule_hrtimeout_range
+> ep_poll
+> wake_up_q
+> SyS_epoll_wait
+> entry_SYSCALL_64_fastpath
+>
+> CPU0: Call Trace:
+> dump_stack
+> spin_dump
+> do_raw_spin_lock
+> _raw_spin_lock
+> try_to_wake_up
+> wake_up_process
+> insert_work
+> __queue_work
+> queue_work_on
+> kgdboc_post_exp_handler
+> kgdb_cpu_enter
+> kgdb_handle_exception
+> __kgdb_notify
+> kgdb_notify
+> notifier_call_chain
+> notify_die
+> do_int3
+> int3
+
+...
+
+> >>  #include <linux/module.h>
+> >>  #include <linux/platform_device.h>
+> >>  #include <linux/serial_core.h>
+> >> +#include <linux/irq_work.h>
 > >
-> > What about drivers that use SERIAL8250_PORT()?
->=20
-> It probably makes sense to hide these, since they won't ever
-> work. I probably missed them in my initial series because they
-> don't cause a compile-time error, but I agree that there is no
-> use in showing the options here.
->=20
-> > Also port provided in 8250_PNP might expect it I think.
->=20
-> I don't think these need any change: 8250_pnp.c supports
-> both IORESOURCE_IO and IORESOURCE_MEM based ports. It will
-> still create a 8250 port for the I/O based ones but they
-> will now correctly fail to probe in the main driver rather
-> than crashing the kernel. PNP devices that only use
-> memory BARs will keep working as before, on both machines
-> with and without CONFIG_HAS_IOPORT.
->=20
-> I think that most 8250_pnp variants are probably used only
-> with ISAPNP or PNPBIOS, neither of which exists without
-> HAS_IOPORT,
+> >Please, keep it ordered (with visible context this should go at least be=
+fore
+> >module.h).
+>
+> I don't understand why this needs to be placed before module.h. Please ex=
+plain further, thank you.
 
-Okay, seems fine then if that dependency is handled somewhere.
+Alphabetical order helps long-term maintenance. Yes, I know that it is
+not _fully_ sorted, but don't add more mess to it.
 
 --=20
- i.
-
-> but you could certainly have PNPACPI on arm
-> or riscv machines that don't have port I/O but come with
-> a memory-mapped 8250 port described by firmware.
-
---8323328-171181184-1712571915=:1249--
+With Best Regards,
+Andy Shevchenko
