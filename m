@@ -1,29 +1,29 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFC8D823AF;
-	Tue,  9 Apr 2024 13:39:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BDF6130A4E;
+	Tue,  9 Apr 2024 13:40:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712669976; cv=none; b=fljZStjLBNxVapql9gKkNzDaM+AtlccSPywsh3VqzabmDo+IiMwEhtgF7jbQuGn4Nb0iiD/vffXHvP5xz4fuFyLLol9WE4PRjiYIZVwvn1wbTyZvs6laiJg0nK9RVcRVLJXmmtDfUxp8Y9JH3WFRhIPjwLa+xrqfi+WLMNLjD9E=
+	t=1712670035; cv=none; b=id90wV32MRKHzN8yKJoS5kzgo8OUfEL0rusLvKwvwU6EG5kRcxFzkhsn7uYADC4HsU8wuF/kSAVDfmIJppu/dBgEfuWgcdJpWZh/6DbXr43pmZV/C+bz72SMTKk0PplwVYrD3mns7xQa8XYtrW54f+qxGNbmdbbbI2zwNzTq+b4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712669976; c=relaxed/simple;
-	bh=2YcExfwfmFcMQf2qTKgSgUElDupQLly3vq9xsEeAdjw=;
+	s=arc-20240116; t=1712670035; c=relaxed/simple;
+	bh=HgosSJ3u5EJ7OCEFXDV5HeG0gZWoOdOo9itx9Woi0Fg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CWebvSujuzVbhsxKN4tLTtMG7DdhX6O98VcG+jEry9R/Idb19p83l7q5Jx5WreusdXuYJWUj5ryPqOoFAQFDqJSpQrHHEijVXGvRBv8voGHhdWnBBejX7RNQ0DqTEQEPZzhUy/weCYIeG63IN3OdBtrWjiIW7R7TaMSsWIdgePE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=aHN3YgGU; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=i+R+7R3DkRkCRc+sMK6aD1T00UHBfkBx6MEBufnw9lWUpo6O4aj/lGHSAWQ7mUoH1MXGFdoWD9D2yIX+Zv4ifxM8WwYx9naBrNR9GPQgLja9+Qa/Hi4duMN/LjKbfwyhgagMq3OVycLW0pbOkMt6rYMGp3YWdZD+399bnHHAcCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=oI4NdefV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="aHN3YgGU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A2EC433F1;
-	Tue,  9 Apr 2024 13:39:34 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oI4NdefV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AA9FC433F1;
+	Tue,  9 Apr 2024 13:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712669975;
-	bh=2YcExfwfmFcMQf2qTKgSgUElDupQLly3vq9xsEeAdjw=;
+	s=korg; t=1712670034;
+	bh=HgosSJ3u5EJ7OCEFXDV5HeG0gZWoOdOo9itx9Woi0Fg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aHN3YgGUCyw9SdSxB70ylWVPV77jFH13sLX+9Tiq+cTohCaUL7zaE+CnqDvUGqT29
-	 hBMCxDPrp4HD1s0MjYhFX4H/kXZWcGlxECFeUw/D3uYESbHyXt2ydLqLU3IoxvrWZh
-	 kqVbIwja6wjTtbpF9QKD4YUKaA4kdne7EK22TxuU=
-Date: Tue, 9 Apr 2024 15:39:32 +0200
+	b=oI4NdefViyY6cw3qVFOmHjavZVHauMI03D07pGxakvJzu82JWr8YuQovTtZG4drsv
+	 Ff2bEmzyuw9hL8eRSZ4oAOE+arXhAyd1iMPpEpOZ8EkoOLE48RGJTYSpsHQauJXYY3
+	 zZs87EJenHI2tykyf9kBklp68ab4lr+I2UdKE7Z0=
+Date: Tue, 9 Apr 2024 15:40:31 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: wangkaiyuan <wangkaiyuan@inspur.com>
 Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com,
@@ -31,8 +31,9 @@ Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com,
 	linux-serial@vger.kernel.org
 Subject: Re: [PATCH 1/2] tty: serial: max310x: convert to use maple tree
  register cache
-Message-ID: <2024040904-agreeably-deferral-f2f8@gregkh>
+Message-ID: <2024040905-facecloth-cornmeal-e9cb@gregkh>
 References: <20240318064036.1656-1-wangkaiyuan@inspur.com>
+ <2024040904-agreeably-deferral-f2f8@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,22 +42,25 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240318064036.1656-1-wangkaiyuan@inspur.com>
+In-Reply-To: <2024040904-agreeably-deferral-f2f8@gregkh>
 
-On Mon, Mar 18, 2024 at 02:40:36PM +0800, wangkaiyuan wrote:
-> The maple tree register cache is based on a much more modern data structure
-> than the rbtree cache and makes optimisation choices which are probably
-> more appropriate for modern systems than those made by the rbtree cache.
+On Tue, Apr 09, 2024 at 03:39:32PM +0200, Greg KH wrote:
+> On Mon, Mar 18, 2024 at 02:40:36PM +0800, wangkaiyuan wrote:
+> > The maple tree register cache is based on a much more modern data structure
+> > than the rbtree cache and makes optimisation choices which are probably
+> > more appropriate for modern systems than those made by the rbtree cache.
+> > 
+> > Signed-off-by: wangkaiyuan <wangkaiyuan@inspur.com>
+> > ---
+> >  drivers/tty/serial/max310x.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Signed-off-by: wangkaiyuan <wangkaiyuan@inspur.com>
-> ---
->  drivers/tty/serial/max310x.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Where is patch 2/2 of this series?  I don't see it anywhere on
+> lore.kernel.org.
 
-Where is patch 2/2 of this series?  I don't see it anywhere on
-lore.kernel.org.
-
-Please fix up and resend the patch properly.
+Ah, I see it now, it is not connected here.  I'll take both now but next
+time please use something like 'git send-email' for both commits at the
+same time.
 
 thanks,
 
