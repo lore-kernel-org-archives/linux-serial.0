@@ -1,232 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D894C85;
-	Tue,  9 Apr 2024 17:41:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BE8D12F381;
+	Tue,  9 Apr 2024 21:38:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712684470; cv=none; b=kO8ywqx5CWyMBZI8ovitFxR9gdiKwZfP5FdK7QH0u8JmWOXzGFo3PRrtDyZnxiyHDzpUOzrxIJejw/pCYgTp+53peN9ms4D95XufBEA4zn3l01dOJxa54ouGdTe//75W7G+tHo2gySHi7HYiGuNeksk0AvLtbXygxwXOS4agQeU=
+	t=1712698691; cv=none; b=ujCkn961zpVIkfLyXGnjTAhk3Lsa/REQX1SmNV0ZPWRWX3ghyIMNZn1eLWyE8Keim3x9msNrL3b52/7htWTjS4gQFduwlMcbfkocwd4ZdzXekjPLT/XdBlDKibgzuzHFrO+NK7u2TtbxikX3UvcNQvDV0btCfXrUS39hU0NRjCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712684470; c=relaxed/simple;
-	bh=XZWEMUAl0dN7TYQOj1m3nXStPmhxnvopLLCppGIaYWg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mh29cG95kW8RfW7ONxIPS28r5gUzFByjstjdJicMDh6zW7e6JYF0JhuHNHXpKXBC0fc9jjuWLEJqfibI6TOP8H5wHP13IhHqzLCThYGxWAgDSkwogtc8wFc1f9x4lwAv4hET8bZ/8fMORk04lxLErDhFH5Yl1pn197LcF9TlgJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ALcy4sCu; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712698691; c=relaxed/simple;
+	bh=a6dju3HKpW7sRypaPtrf7VW08Pozh7etO++KZldlSsE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CugDm6ixqjxsYYFq0CVeG4XPzgX4Vv5z/op1lQSYEJVc7MYh5htpOAiBQ1NawTh0jtgAlBuXTE2xNpg9JsgYzvnwDyEs0u79ZGsuiHjrDI/gHT1mKKtpicHzWsWBUgjUqnpzWx85O0XFaioKIoIC3NaNDQN97Jv7d2z+2A8j9/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=brhd4jGe; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ALcy4sCu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="brhd4jGe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712684469; x=1744220469;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XZWEMUAl0dN7TYQOj1m3nXStPmhxnvopLLCppGIaYWg=;
-  b=ALcy4sCudXLeDkFtk+hX9cEMdYl/wU6AN/D+eIVvP5+y0hYo9y3H2VOk
-   MvHsi3rcB57B0EtXmOeE8rIS0TqgkB8jLdpfDSRVJpzu0Upr0pb6ZBzrY
-   mLsezzehopA6IvRvGDXNMQePeajxFg9N3Oqi1NBE8YTg6gtl+OR+5Qq4B
-   buqTtoPdfDehjAh13j+k9Vaadd20Uy2uK/6wiryvEs/DN//bgUMZOdRqB
-   8TifjJAUIgTnXwEmwj3xlZ1/3H9GkbUjLmTZXv4tTGjS62oO3CJ6NPltU
-   wTvmjU1h6hM60Vj4JSDPOgX1j/62kfxvYaqNtduAfeiqajFEbFvVG0RIl
-   w==;
-X-CSE-ConnectionGUID: OtgvYccTQ42hPrNeQmbYkg==
-X-CSE-MsgGUID: QPe4dMhORTqTAzZc2BCcbA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="11856112"
+  t=1712698688; x=1744234688;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a6dju3HKpW7sRypaPtrf7VW08Pozh7etO++KZldlSsE=;
+  b=brhd4jGevs+/W3lLu2ZQ3RbYy4b8N9A/qFznmZk6l+GYTfTfz2qU25i4
+   GHAF1Zsuc+LnSQSdnvyZnWEYVaT4mzHN/wEC5owHAR5hBGhZ6HtBi3FTh
+   N9N7QOch5wvRSlKARskQOc4FOqDoIV1eeBOD9QA52sMsHnnxN0qMYTHh2
+   qrl9PXrHPUW6e41QyhPNEuutTZi7m8/Ij0lyg5GpcG8BrA0QSMSkjwavn
+   gV/PMbs3Z6gM+tu9JyBFSx40g1cX2QkP5p+z6Fp47juAkBZDNBx4B6thH
+   hQj1FHj1mzoaeXgepB3GJouGXZIEzqERDep4Crgb+rADazTVCZ8LUdHh3
+   A==;
+X-CSE-ConnectionGUID: ncJ/xF2dSgeVoENsDvWTXA==
+X-CSE-MsgGUID: eZRRxjlZQze//y/4FNCtoA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8214966"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="11856112"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 10:41:09 -0700
+   d="scan'208";a="8214966"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 14:38:08 -0700
+X-CSE-ConnectionGUID: CyJlMzQTRf6i5sbKlZpsdA==
+X-CSE-MsgGUID: oIdAYGWeRSmqTk8U+kdcTA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="937093674"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="937093674"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2024 10:41:06 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 9E73712C; Tue,  9 Apr 2024 20:41:05 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] serial: core: Extract uart_alloc_xmit_buf() and uart_free_xmit_buf()
-Date: Tue,  9 Apr 2024 20:40:57 +0300
-Message-ID: <20240409174057.1104262-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
+   d="scan'208";a="25022748"
+Received: from lkp-server01.sh.intel.com (HELO e61807b1d151) ([10.239.97.150])
+  by orviesa003.jf.intel.com with ESMTP; 09 Apr 2024 14:38:03 -0700
+Received: from kbuild by e61807b1d151 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1ruJAH-0006XK-18;
+	Tue, 09 Apr 2024 21:38:01 +0000
+Date: Wed, 10 Apr 2024 05:37:18 +0800
+From: kernel test robot <lkp@intel.com>
+To: Guanbing Huang <albanhuang0@gmail.com>, gregkh@linuxfoundation.org,
+	andriy.shevchenko@intel.com, rafael.j.wysocki@intel.com
+Cc: oe-kbuild-all@lists.linux.dev, linux-acpi@vger.kernel.org,
+	tony@atomide.com, john.ogness@linutronix.de,
+	yangyicong@hisilicon.com, jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	lvjianmin@loongson.cn, albanhuang@tencent.com,
+	tombinfan@tencent.com
+Subject: Re: [PATCH v6 2/3] serial: port: Add support of PNP IRQ to
+ __uart_read_properties()
+Message-ID: <202404100548.rbAa11Xr-lkp@intel.com>
+References: <e6dc33e399f119e6430bca48223cb2127930939b.1712646750.git.albanhuang@tencent.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e6dc33e399f119e6430bca48223cb2127930939b.1712646750.git.albanhuang@tencent.com>
 
-After conversion to the kfifo, it becomes possible to extract two helper
-functions for better maintenance and code deduplication. Do it here.
+Hi Guanbing,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/serial_core.c | 98 ++++++++++++++++++--------------
- 1 file changed, 54 insertions(+), 44 deletions(-)
+kernel test robot noticed the following build errors:
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index dd6cf525d98d..ba2d6065fe02 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -243,25 +243,12 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
- 	uart_port_unlock_irq(uport);
- }
- 
--/*
-- * Startup the port.  This will be called once per open.  All calls
-- * will be serialised by the per-port mutex.
-- */
--static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
--			     bool init_hw)
-+static int uart_alloc_xmit_buf(struct tty_port *port)
- {
--	struct uart_port *uport = uart_port_check(state);
-+	struct uart_state *state = container_of(port, struct uart_state, port);
-+	struct uart_port *uport;
- 	unsigned long flags;
- 	unsigned long page;
--	int retval = 0;
--
--	if (uport->type == PORT_UNKNOWN)
--		return 1;
--
--	/*
--	 * Make sure the device is in D0 state.
--	 */
--	uart_change_pm(state, UART_PM_STATE_ON);
- 
- 	/*
- 	 * Initialise and allocate the transmit and temporary
-@@ -271,7 +258,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 	if (!page)
- 		return -ENOMEM;
- 
--	uart_port_lock(state, flags);
-+	uport = uart_port_lock(state, flags);
- 	if (!state->port.xmit_buf) {
- 		state->port.xmit_buf = (unsigned char *)page;
- 		kfifo_init(&state->port.xmit_fifo, state->port.xmit_buf,
-@@ -281,11 +268,58 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
- 		uart_port_unlock(uport, flags);
- 		/*
- 		 * Do not free() the page under the port lock, see
--		 * uart_shutdown().
-+		 * uart_free_xmit_buf().
- 		 */
- 		free_page(page);
- 	}
- 
-+	return 0;
-+}
-+
-+static void uart_free_xmit_buf(struct tty_port *port)
-+{
-+	struct uart_state *state = container_of(port, struct uart_state, port);
-+	struct uart_port *uport;
-+	unsigned long flags;
-+	char *xmit_buf;
-+
-+	/*
-+	 * Do not free() the transmit buffer page under the port lock since
-+	 * this can create various circular locking scenarios. For instance,
-+	 * console driver may need to allocate/free a debug object, which
-+	 * can end up in printk() recursion.
-+	 */
-+	uport = uart_port_lock(state, flags);
-+	xmit_buf = port->xmit_buf;
-+	port->xmit_buf = NULL;
-+	INIT_KFIFO(port->xmit_fifo);
-+	uart_port_unlock(uport, flags);
-+
-+	free_page((unsigned long)xmit_buf);
-+}
-+
-+/*
-+ * Startup the port.  This will be called once per open.  All calls
-+ * will be serialised by the per-port mutex.
-+ */
-+static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
-+			     bool init_hw)
-+{
-+	struct uart_port *uport = uart_port_check(state);
-+	int retval;
-+
-+	if (uport->type == PORT_UNKNOWN)
-+		return 1;
-+
-+	/*
-+	 * Make sure the device is in D0 state.
-+	 */
-+	uart_change_pm(state, UART_PM_STATE_ON);
-+
-+	retval = uart_alloc_xmit_buf(&state->port);
-+	if (retval)
-+		return retval;
-+
- 	retval = uport->ops->startup(uport);
- 	if (retval == 0) {
- 		if (uart_console(uport) && uport->cons->cflag) {
-@@ -347,8 +381,6 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- {
- 	struct uart_port *uport = uart_port_check(state);
- 	struct tty_port *port = &state->port;
--	unsigned long flags;
--	char *xmit_buf = NULL;
- 
- 	/*
- 	 * Set the TTY IO error marker
-@@ -381,19 +413,7 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	 */
- 	tty_port_set_suspended(port, false);
- 
--	/*
--	 * Do not free() the transmit buffer page under the port lock since
--	 * this can create various circular locking scenarios. For instance,
--	 * console driver may need to allocate/free a debug object, which
--	 * can endup in printk() recursion.
--	 */
--	uart_port_lock(state, flags);
--	xmit_buf = port->xmit_buf;
--	port->xmit_buf = NULL;
--	INIT_KFIFO(port->xmit_fifo);
--	uart_port_unlock(uport, flags);
--
--	free_page((unsigned long)xmit_buf);
-+	uart_free_xmit_buf(port);
- }
- 
- /**
-@@ -1747,7 +1767,6 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- {
- 	struct uart_state *state = container_of(port, struct uart_state, port);
- 	struct uart_port *uport = uart_port_check(state);
--	char *buf;
- 
- 	/*
- 	 * At this point, we stop accepting input.  To do this, we
-@@ -1769,16 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	 */
- 	tty_port_set_suspended(port, false);
- 
--	/*
--	 * Free the transmit buffer.
--	 */
--	uart_port_lock_irq(uport);
--	buf = port->xmit_buf;
--	port->xmit_buf = NULL;
--	INIT_KFIFO(port->xmit_fifo);
--	uart_port_unlock_irq(uport);
--
--	free_page((unsigned long)buf);
-+	uart_free_xmit_buf(port);
- 
- 	uart_change_pm(state, UART_PM_STATE_OFF);
- }
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.9-rc3 next-20240409]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Guanbing-Huang/PNP-Add-dev_is_pnp-macro/20240409-154558
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/e6dc33e399f119e6430bca48223cb2127930939b.1712646750.git.albanhuang%40tencent.com
+patch subject: [PATCH v6 2/3] serial: port: Add support of PNP IRQ to __uart_read_properties()
+config: sparc-allnoconfig (https://download.01.org/0day-ci/archive/20240410/202404100548.rbAa11Xr-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240410/202404100548.rbAa11Xr-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202404100548.rbAa11Xr-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+   sparc-linux-ld: drivers/tty/serial/serial_port.o: in function `__uart_read_properties':
+   serial_port.c:(.text+0x1c4): undefined reference to `pnp_bus_type'
+>> sparc-linux-ld: serial_port.c:(.text+0x1c8): undefined reference to `pnp_bus_type'
+
 -- 
-2.43.0.rc1.1.gbec44491f096
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
