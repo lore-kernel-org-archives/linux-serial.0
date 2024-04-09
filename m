@@ -1,122 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E546131BA1;
-	Tue,  9 Apr 2024 14:47:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC48136E17;
+	Tue,  9 Apr 2024 14:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712674057; cv=none; b=U/MG+b9+oXNNPatJkUrJbADKpo4DFsWx8czy59ev+mUrM4PTHlZD543bQN61OpWtveRwci6+CBIDbYaDaO1BdD/H4saUMty6ctuFK/rdjqebip8XEd8dBFBUALJFzDY/VN5n5HDQJeXowyILSoHxAj87vGqTGDpGpGw1QZ99+Lk=
+	t=1712674086; cv=none; b=dNQ1PVfhmuAYCAECUbzSROP4S4bWF0FBTwzdBYRNTKip87hvQQHtEUYoNRaJE8+EvQ0LRD6wK6L1K/WebkOCKQyCG6LLkX+b5ZhnxrZrK4clti1zzWgSQVx9jVMz/YxK4xbkQPcUGiFfAZ7XUd75xE4uzaumR/9Fj8wrE2YBVrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712674057; c=relaxed/simple;
-	bh=xF8oRrOuA8we7IwhVd+8C+jZeZJzI3rGBO1o6MB+O0M=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hj8rXdqJftKK+CeHoAS0/geKoYnHRKf95UNLDxPOp1Cugs/GcgWjn/GfiGKfwZ1ZhZe66KiH2ZpjrT33Xj+PpuAyGVS8QzVm1OFM8v1eUj13dil/xnVrvzu1sC0GKNYTux1g5EstFaeVJ54Wj+pyt5aP69sasKC/9d0EJWf9A4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YeC2MF+1; arc=none smtp.client-ip=198.175.65.21
+	s=arc-20240116; t=1712674086; c=relaxed/simple;
+	bh=qXiImrPjk9pciUK+qkOQS8Qk++NVZZHB0HTKd0iJ9jc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r9hLzSFYwwyZeAE4Vw53nnS1dNnZ3ehiOlAo4eHGj9N62i2Q64Z8s1dKHt+P+OQ99LsgFnQy1cuP1J4nwpwGZ298E6871KxI6T7rsfq7HJp50X+MIUQbev2Y4xJUrykNarUSMtd0kCUctEANTj3hid2PIvDc8N711SUy0GuxS4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yt5oK5c5; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YeC2MF+1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yt5oK5c5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712674056; x=1744210056;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xF8oRrOuA8we7IwhVd+8C+jZeZJzI3rGBO1o6MB+O0M=;
-  b=YeC2MF+1N6O/AUabLz0WJCqkOmcYIOGI2aJH8KgL1FUVcBcDbPzDTz4K
-   db6hCXp4ZcaFecWDwW1IDFKppxnXACviB7lPrkclP+AwMyNh934xGGIxI
-   AL83rUkbv5FUCpxduaeO2a8l3BQ1uePqoUO02Fd1AphIhkXlQaEy5w4mF
-   0AocxRCHxt80Bd+Oiu09nRJ4lUZxIsPFUFWzom5l9vuwmumed/hvjyr4F
-   oc5UbnYBWSI6zs5FIhW6F/1tG9Wwr0RSWJGUhJJnGiOeDz7EF1cPWc8h5
-   baVNL7zU0CYoWyN53Z3f9lCx/ooDgPgfK8DqCezdifJhBf6TiZg3RzjTq
+  t=1712674085; x=1744210085;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qXiImrPjk9pciUK+qkOQS8Qk++NVZZHB0HTKd0iJ9jc=;
+  b=Yt5oK5c5HVUKIUlYMIxTv7sA16AdSarSi3Xb1TBzjW6r0GoY6TFEtFPg
+   4ZWaqz9h1hqYR/H0UJ2GjjKYBmKSMzSdyqVI9XW39JfcMT7xfxej3YEos
+   0UixIj/1KOQSmvDzhxh/TE3Ui9r9lHg0R07Lmk5Uf5ScZ9IAt6A5ZT1pS
+   yYzTBsM9GGIq1d4a+jHX5PG1d+Tf9uFm62EekzgMb1Mw6bvqmSEMBinlD
+   vrw6V0JKFwiw4AC5JkJW/2F6jjLScA6JEH/2cEZgMR/W+gDbIfV/1QJhb
+   qutdhqewaCGzq5f9eyDRw1hP9Lc/bdqQOFWPzsqou+HG6USe1yiy5AzYh
    w==;
-X-CSE-ConnectionGUID: IdekcKAiTtGUcmq1BvwH/A==
-X-CSE-MsgGUID: aOdwVwQ0SemhDj0P2NPT7g==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7905543"
+X-CSE-ConnectionGUID: Qqd54Ye4QHKMCFNo96nAYA==
+X-CSE-MsgGUID: COLdtpSeRJKYk/pZmAkP4Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="25489948"
 X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="7905543"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:47:32 -0700
+   d="scan'208";a="25489948"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:48:04 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="937093488"
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915401658"
 X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="937093488"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2024 07:47:30 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 587F58D1; Tue,  9 Apr 2024 17:47:27 +0300 (EEST)
+   d="scan'208";a="915401658"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:48:03 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ruClU-00000002pl6-2uK6;
+	Tue, 09 Apr 2024 17:48:00 +0300
+Date: Tue, 9 Apr 2024 17:48:00 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v3 5/8] serial: max3100: Replace MODULE_ALIAS() with respective ID tables
-Date: Tue,  9 Apr 2024 17:45:52 +0300
-Message-ID: <20240409144721.638326-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
-In-Reply-To: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
-References: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hugo@hugovil.com>
+Subject: Re: [PATCH v2 00/16] serial: max3100: Put into shape
+Message-ID: <ZhVVILIFP3VKb4b7@smile.fi.intel.com>
+References: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
+ <2024040903-handcuff-lanky-cc13@gregkh>
+ <ZhVI7wzYKrutk1LA@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZhVI7wzYKrutk1LA@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-MODULE_ALIAS() in most cases is a pure hack to avoid placing ID tables.
-Replace it with the respective ID tables.
+On Tue, Apr 09, 2024 at 04:55:59PM +0300, Andy Shevchenko wrote:
+> On Tue, Apr 09, 2024 at 03:52:19PM +0200, Greg Kroah-Hartman wrote:
+> > On Tue, Apr 02, 2024 at 10:50:27PM +0300, Andy Shevchenko wrote:
+> > > Put the driver into the shape with all new bells and whistles
+> > > from the kernel.
+> > > 
+> > > The first three patches marked as fixes, but there is no hurry (as it
+> > > was for ages like this in the kernel) to pipe them to stable. That's
+> > > why I sent all in one series and it's good for tty-next.
+> > > 
+> > > Tested on Intel Merrifield with MAX3111e connected.
+> > > 
+> > > In v2:
+> > > - fixed a few typos in the commit messages (Hugo)
+> > > - added an additional fix to patch 2 (Hugo)
+> > > - appended tag to patch 13 (Hugo)
+> > > - v1 (20240402154219.3583679-1-andriy.shevchenko@linux.intel.com)
+> > 
+> > Only a portion of this series applied to my tree.  Can you please rebase
+> > and resend the remaining bits?
+> 
+> Sure, thanks!
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/max3100.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+v3 just has been sent: 20240409144721.638326-1-andriy.shevchenko@linux.intel.com
 
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 09ec2ca06989..3004a95e573f 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -19,6 +19,7 @@
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/property.h>
- #include <linux/serial_core.h>
-@@ -840,13 +841,27 @@ static SIMPLE_DEV_PM_OPS(max3100_pm_ops, max3100_suspend, max3100_resume);
- #define MAX3100_PM_OPS NULL
- #endif
- 
-+static const struct spi_device_id max3100_spi_id[] = {
-+	{ "max3100" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, max3100_spi_id);
-+
-+static const struct of_device_id max3100_of_match[] = {
-+	{ .compatible = "maxim,max3100" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max3100_of_match);
-+
- static struct spi_driver max3100_driver = {
- 	.driver = {
- 		.name		= "max3100",
-+		.of_match_table	= max3100_of_match,
- 		.pm		= MAX3100_PM_OPS,
- 	},
- 	.probe		= max3100_probe,
- 	.remove		= max3100_remove,
-+	.id_table	= max3100_spi_id,
- };
- 
- module_spi_driver(max3100_driver);
-@@ -854,4 +869,3 @@ module_spi_driver(max3100_driver);
- MODULE_DESCRIPTION("MAX3100 driver");
- MODULE_AUTHOR("Christian Pellegrin <chripell@evolware.org>");
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("spi:max3100");
 -- 
-2.43.0.rc1.1.gbec44491f096
+With Best Regards,
+Andy Shevchenko
+
 
