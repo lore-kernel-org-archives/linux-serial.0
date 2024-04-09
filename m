@@ -1,58 +1,58 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89E9C12FF63;
-	Tue,  9 Apr 2024 14:47:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C0D130A43;
+	Tue,  9 Apr 2024 14:47:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712674054; cv=none; b=ZT9nVURcl9sYY2NEsFIqSuhMWDusetVsUREpW+/INZGHjts6KFyHXg5oxXS3axlr3UtkhJevPDvcYGH3WtxvHlEIKc7gkypSaqkfWD/mzyOh6KpCiWLUSpYze33VLLW87ZlBcsdkE+MOYswT3FeYTyvFhAVd1TwMDlU9lmH05B4=
+	t=1712674055; cv=none; b=BforQ+Z77Pigbg5Uh0bu3nsQ6bSdo+C6sZvkwuqmts0Y/elipYtCKUEeqBDWr4K8yvUC7lGYq+8NO0d8QOov+SdDiQOwjoT0ZcrDwbC5USf2DpDXVI4ebn551dk6ZBoiltbsjyzDF2SyFt3XeoRtFNaFtfHNfZduCJrpobK0SkE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712674054; c=relaxed/simple;
-	bh=AzV7ojVPO5a7N5jBs+1WvcuO+35uQD5o8KQy7ckJN8Q=;
+	s=arc-20240116; t=1712674055; c=relaxed/simple;
+	bh=pt7kSYebcjw0FdTN5T5ylrZPelzqHThOoid4ebBFqqQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CyTg8Ts2DgTAYObIpwrG661ZfWZwBvX9FrA/FCaPVzsm3VVejLicrRcz6TTdGBnTO3SERbE2X4uMNvY3HXa050wSCdpYUNC+1ZFCC2ghDTDVCZHKUA8dS0nxEUVHfJfDQEbdrtqAfGk7D4G5ITa6fdqPKPXK/mV2IvhqpuH/FJY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EjfjMqe9; arc=none smtp.client-ip=198.175.65.21
+	 MIME-Version; b=AVTXGcvRCTwBBk4XKDETwyeN5RQLwIR5tTk2k/oyek8NXoyGFgqqqgNY6t2T1qiiDcxWPfNA40ipSA9yK2rr5hgnZmb8T4kd7rD/Q0cbkp8dT6tgfMKntGD38bj3jJ6dEiSYRiKZnv0pDLj1F97njSq7nhdZD/tC+4KcNxnzcQg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=egp86RJg; arc=none smtp.client-ip=198.175.65.21
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EjfjMqe9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="egp86RJg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712674053; x=1744210053;
+  t=1712674054; x=1744210054;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AzV7ojVPO5a7N5jBs+1WvcuO+35uQD5o8KQy7ckJN8Q=;
-  b=EjfjMqe9ZHUpfSjXdAuHcHGv+res3ucLj6BWF5wLFMA7Skm2zWG/ayOS
-   99oN4PVLDLboa+0iBVfOkXH+h0Sd3yc+HhroPJgaYyB1yrCMwWzJ2YQKW
-   Z8mdnQXPyEK+S7DefVY/DnJKPDfsRkaEiX9nBHZeySlYXv8NWwPoVRGS9
-   q5GDrUbVetpUS37+ffelOwq1/2ro8COutJp05rBO6ewqgtrihNPk4oJ3E
-   2CN/8gC9OS0VDhbWXGA0T2LuhzJOoMu/QkiNO89Kw2dYbPh03BLu3JZUH
-   LmIjoa0BHoEY81WhPgaRmqHnTGUpCqsgl1u94Kq8jHJZssBWuoffdBgI8
+  bh=pt7kSYebcjw0FdTN5T5ylrZPelzqHThOoid4ebBFqqQ=;
+  b=egp86RJgQ//caVyOkD0lX/rhejNQ+yE0cOltBT4N2XboeL1LTpY7fFCC
+   RiiWBp50LlCy7CQm7B2qVTwjdmbsJe919KV/LvUnLI2clg2Aus3Tb5qQ8
+   r1NZ78g4HoXQ0O7jupjZlg1o9ZFAZg9WjEJwVlA0JuSpg5UQoH8z/Glij
+   Cx/xo0nlihZoH26rAk/rY14+LB5mwU8WNjxo6v+AsS81RIZexkO5KO+5C
+   royCb7NqkID2o+xxuVs5yJSUNgwFv/N1815YEDClZtA5l9cJgeemzW2jB
+   iEwP8OV7deYCsyQQuRBW9t2aGFXN2e0NfHWaXBTkuvmYasuEZFiXeEZ2b
    A==;
-X-CSE-ConnectionGUID: GYXIRWJ7TA+OHU/J24+uUw==
-X-CSE-MsgGUID: 7x8F93giTtWq3qElGoNzHw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7905524"
+X-CSE-ConnectionGUID: AQWbVTuvT2aaS4lbX4+yLw==
+X-CSE-MsgGUID: uqUXtoG3T3K2KszIiCrywg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7905535"
 X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="7905524"
+   d="scan'208";a="7905535"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:47:30 -0700
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:47:32 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="937093483"
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="937093489"
 X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="937093483"
+   d="scan'208";a="937093489"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2024 07:47:28 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 09 Apr 2024 07:47:30 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 3E14A8C9; Tue,  9 Apr 2024 17:47:27 +0300 (EEST)
+	id 7C852BC4; Tue,  9 Apr 2024 17:47:27 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v3 3/8] serial: max3100: Remove duplicating irq field
-Date: Tue,  9 Apr 2024 17:45:50 +0300
-Message-ID: <20240409144721.638326-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 8/8] serial: max3100: Sort headers
+Date: Tue,  9 Apr 2024 17:45:55 +0300
+Message-ID: <20240409144721.638326-9-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 In-Reply-To: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
 References: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
@@ -64,96 +64,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The struct uart_port has a copy of the IRQ that is also stored
-in the private data structure. Remove the duplication in the latter
-one.
+Sort the headers in alphabetic order in order to ease
+the maintenance for this part.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/max3100.c | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+ drivers/tty/serial/max3100.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 446bc78061e3..e3104ea7a3ca 100644
+index 4e7cd037cfc2..ce24588150bf 100644
 --- a/drivers/tty/serial/max3100.c
 +++ b/drivers/tty/serial/max3100.c
-@@ -93,8 +93,6 @@ struct max3100_port {
- #define MAX3100_7BIT 4
- 	int rx_enabled;	        /* if we should rx chars */
+@@ -18,18 +18,18 @@
  
--	int irq;		/* irq assigned to the max3100 */
--
- 	int minor;		/* minor number */
- 	int loopback_commit;	/* need to change loopback */
- 	int loopback;		/* 1 if we are in loopback mode */
-@@ -548,8 +546,8 @@ static void max3100_shutdown(struct uart_port *port)
- 		destroy_workqueue(s->workqueue);
- 		s->workqueue = NULL;
- 	}
--	if (s->irq)
--		free_irq(s->irq, s);
-+	if (port->irq)
-+		free_irq(port->irq, s);
+ #include <linux/container_of.h>
+ #include <linux/delay.h>
+-#include <linux/slab.h>
+ #include <linux/device.h>
++#include <linux/freezer.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/pm.h>
+ #include <linux/property.h>
+ #include <linux/serial_core.h>
+ #include <linux/serial.h>
++#include <linux/slab.h>
+ #include <linux/spi/spi.h>
+-#include <linux/freezer.h>
+-#include <linux/tty.h>
+ #include <linux/tty_flip.h>
++#include <linux/tty.h>
+ #include <linux/types.h>
  
- 	/* set shutdown mode to save power */
- 	max3100_sr(s, MAX3100_WC | MAX3100_SHDN, &rx);
-@@ -561,6 +559,7 @@ static int max3100_startup(struct uart_port *port)
- 					      struct max3100_port,
- 					      port);
- 	char b[12];
-+	int ret;
- 
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
- 
-@@ -583,10 +582,10 @@ static int max3100_startup(struct uart_port *port)
- 	}
- 	INIT_WORK(&s->work, max3100_work);
- 
--	if (request_irq(s->irq, max3100_irq,
--			IRQF_TRIGGER_FALLING, "max3100", s) < 0) {
--		dev_warn(&s->spi->dev, "cannot allocate irq %d\n", s->irq);
--		s->irq = 0;
-+	ret = request_irq(port->irq, max3100_irq, IRQF_TRIGGER_FALLING, "max3100", s);
-+	if (ret < 0) {
-+		dev_warn(&s->spi->dev, "cannot allocate irq %d\n", port->irq);
-+		port->irq = 0;
- 		destroy_workqueue(s->workqueue);
- 		s->workqueue = NULL;
- 		return -EBUSY;
-@@ -742,14 +741,13 @@ static int max3100_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 	}
- 	max3100s[i]->spi = spi;
--	max3100s[i]->irq = spi->irq;
- 	spin_lock_init(&max3100s[i]->conf_lock);
- 	spi_set_drvdata(spi, max3100s[i]);
- 	max3100s[i]->minor = i;
- 	timer_setup(&max3100s[i]->timer, max3100_timeout, 0);
- 
- 	dev_dbg(&spi->dev, "%s: adding port %d\n", __func__, i);
--	max3100s[i]->port.irq = max3100s[i]->irq;
-+	max3100s[i]->port.irq = spi->irq;
- 	max3100s[i]->port.fifosize = 16;
- 	max3100s[i]->port.ops = &max3100_ops;
- 	max3100s[i]->port.flags = UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
-@@ -813,7 +811,7 @@ static int max3100_suspend(struct device *dev)
- 
- 	dev_dbg(&s->spi->dev, "%s\n", __func__);
- 
--	disable_irq(s->irq);
-+	disable_irq(s->port.irq);
- 
- 	s->suspending = 1;
- 	uart_suspend_port(&max3100_uart_driver, &s->port);
-@@ -832,7 +830,7 @@ static int max3100_resume(struct device *dev)
- 	uart_resume_port(&max3100_uart_driver, &s->port);
- 	s->suspending = 0;
- 
--	enable_irq(s->irq);
-+	enable_irq(s->port.irq);
- 
- 	s->conf_commit = 1;
- 	if (s->workqueue)
+ #include <asm/unaligned.h>
 -- 
 2.43.0.rc1.1.gbec44491f096
 
