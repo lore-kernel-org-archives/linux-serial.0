@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92EAA12EBF7;
-	Tue,  9 Apr 2024 13:38:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFC8D823AF;
+	Tue,  9 Apr 2024 13:39:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712669905; cv=none; b=LjmpiHkKcS5QsVlgtis5Uyt4qkJO5b6jxfF+X6XqZZ59CW4N0aWdw+gza+y/vh8mgx/qtHL0oacQqSDQsPlRWQUYzYF1EdwBo97tVTit5NmPri3bnS7d+WZoJxGg/OTYMBv8Lwikrkl575wpJ3U4+1jXxOCcw4lFk+hxTAU2tOE=
+	t=1712669976; cv=none; b=fljZStjLBNxVapql9gKkNzDaM+AtlccSPywsh3VqzabmDo+IiMwEhtgF7jbQuGn4Nb0iiD/vffXHvP5xz4fuFyLLol9WE4PRjiYIZVwvn1wbTyZvs6laiJg0nK9RVcRVLJXmmtDfUxp8Y9JH3WFRhIPjwLa+xrqfi+WLMNLjD9E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712669905; c=relaxed/simple;
-	bh=peQqCOotkIJimL+cJu7ThX6HtNMoK2xBm6fdtFNcy9s=;
+	s=arc-20240116; t=1712669976; c=relaxed/simple;
+	bh=2YcExfwfmFcMQf2qTKgSgUElDupQLly3vq9xsEeAdjw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nak15ysxX8f4l/e+xQiedXg2S83Jji4IRnTLseCqXt2nMPpg3mWXR9k8ExOhEHvyYno1/AeWawMPJHYBMfBSD30ZjZ0xz++yOua2rsrDiLL4BE+4l5gGoHqNfMB76zuxgwH4RbM0nHxMQKOxtbYeD3dvOlcaDdNVkmE+dBOUJok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0jbSYxVG; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=CWebvSujuzVbhsxKN4tLTtMG7DdhX6O98VcG+jEry9R/Idb19p83l7q5Jx5WreusdXuYJWUj5ryPqOoFAQFDqJSpQrHHEijVXGvRBv8voGHhdWnBBejX7RNQ0DqTEQEPZzhUy/weCYIeG63IN3OdBtrWjiIW7R7TaMSsWIdgePE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=aHN3YgGU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0jbSYxVG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B51C433C7;
-	Tue,  9 Apr 2024 13:38:23 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="aHN3YgGU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0A2EC433F1;
+	Tue,  9 Apr 2024 13:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712669904;
-	bh=peQqCOotkIJimL+cJu7ThX6HtNMoK2xBm6fdtFNcy9s=;
+	s=korg; t=1712669975;
+	bh=2YcExfwfmFcMQf2qTKgSgUElDupQLly3vq9xsEeAdjw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0jbSYxVG1SOlgAEiCWRAf5n9aFMnQJIEd7mbkZgdAQWWXVqAmxNfYzMOgPVYvKPqH
-	 OUgFzkcZhooc61avUTVjSJtJPC5P1x0y0S6AMUHw4u1IsseMFNlBL9L+MNFPDNH1xW
-	 19Od2NtULDW2u04N365V7hAwSXlKcX8lVlAir1o0=
-Date: Tue, 9 Apr 2024 15:38:21 +0200
+	b=aHN3YgGUCyw9SdSxB70ylWVPV77jFH13sLX+9Tiq+cTohCaUL7zaE+CnqDvUGqT29
+	 hBMCxDPrp4HD1s0MjYhFX4H/kXZWcGlxECFeUw/D3uYESbHyXt2ydLqLU3IoxvrWZh
+	 kqVbIwja6wjTtbpF9QKD4YUKaA4kdne7EK22TxuU=
+Date: Tue, 9 Apr 2024 15:39:32 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Yi Yang <yiyang13@huawei.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+To: wangkaiyuan <wangkaiyuan@inspur.com>
+Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com,
+	andy.shevchenko@gmail.com, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] tty: vt: selection: fix soft lockup in
- paste_selection()
-Message-ID: <2024040943-tightwad-handcuff-5eb7@gregkh>
-References: <20240313094529.679957-1-yiyang13@huawei.com>
+Subject: Re: [PATCH 1/2] tty: serial: max310x: convert to use maple tree
+ register cache
+Message-ID: <2024040904-agreeably-deferral-f2f8@gregkh>
+References: <20240318064036.1656-1-wangkaiyuan@inspur.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,69 +41,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240313094529.679957-1-yiyang13@huawei.com>
+In-Reply-To: <20240318064036.1656-1-wangkaiyuan@inspur.com>
 
-On Wed, Mar 13, 2024 at 09:45:29AM +0000, Yi Yang wrote:
-> Soft lockup occurs when vt device used n_null ldisc, n_null_receivebuf()
-> is not implemented in null_ldisc. So tty_ldisc_receive_buf always return
-> 0 in paste_selection(), this cause deadloop and cause soft lockup.
-
-Why is a vt using n_null?
-
-What is causing that?
-
+On Mon, Mar 18, 2024 at 02:40:36PM +0800, wangkaiyuan wrote:
+> The maple tree register cache is based on a much more modern data structure
+> than the rbtree cache and makes optimisation choices which are probably
+> more appropriate for modern systems than those made by the rbtree cache.
 > 
-> This can be reproduced as follows:
->   int ldisc = 0x1b; // 0x1b is n_null
->   struct{
->   	char subcode;
->   	struct tiocl_selection sel;
->   } data;
->   date.subcode = TIOCL_SETSEL;
->   data.sel.xs = 0;
->   data.sel.xe = 1;
->   data.sel.ys = 0;
->   data.sel.ye = 1;
->   data.sel.sel_mode = TIOCL_SELCHAR;
->   char bytes[2] = {TIOCL_PASTESEL, 0};
->   open("ttyxx", O_RDWR) // open a vt device
->   ioctl(fd, TIOCSETD, &ldisc) // set ldisc to n_null
->   ioctl(fd, TIOCLINUX, &data.subcode);
->   ioctl(fd, TIOCLINUX, bytes); // cause deadloop
-> 
-> Fix soft lockup by check receive_buf() and receive_buf2() is NULL.
-
-As you had permissions to do this, why prevent it?
-
-> 
-> Signed-off-by: Yi Yang <yiyang13@huawei.com>
+> Signed-off-by: wangkaiyuan <wangkaiyuan@inspur.com>
 > ---
-> 
-> v2:Change Check Condition.
-> 
->  drivers/tty/vt/selection.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-> index 564341f1a74f..715e111376a7 100644
-> --- a/drivers/tty/vt/selection.c
-> +++ b/drivers/tty/vt/selection.c
-> @@ -397,6 +397,12 @@ int paste_selection(struct tty_struct *tty)
->  	ld = tty_ldisc_ref_wait(tty);
->  	if (!ld)
->  		return -EIO;	/* ldisc was hung up */
-> +
-> +	/*tty_ldisc_receive_buf() won't do anything and cause deadloop later*/
+>  drivers/tty/serial/max310x.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Comments need to be properly formated.
+Where is patch 2/2 of this series?  I don't see it anywhere on
+lore.kernel.org.
 
-And I do not understand this comment sorry.
-
-> +	if (!ld->ops->receive_buf && !ld->ops->receive_buf2) {
-
-Why check reciev_buf pointers here?  What is that causing?
-
-This needs to be documented a lot better please.
+Please fix up and resend the patch properly.
 
 thanks,
 
