@@ -1,100 +1,91 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC48136E17;
-	Tue,  9 Apr 2024 14:48:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0254A13B7AB;
+	Tue,  9 Apr 2024 15:46:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712674086; cv=none; b=dNQ1PVfhmuAYCAECUbzSROP4S4bWF0FBTwzdBYRNTKip87hvQQHtEUYoNRaJE8+EvQ0LRD6wK6L1K/WebkOCKQyCG6LLkX+b5ZhnxrZrK4clti1zzWgSQVx9jVMz/YxK4xbkQPcUGiFfAZ7XUd75xE4uzaumR/9Fj8wrE2YBVrU=
+	t=1712677585; cv=none; b=tzUxciFA1/FpqVV6kDO3SCRtHYlZYDsjgu2BiMeA9b+s9IYnNRvlSDOufCOcJNbQzh94L7mYadYLGNMAbVVdo5C4iUoD1C/nzHrPSW1IXt1/sCuevZylKhIsow96lMVJj1vrzUMEFo6EYQoCn7qsWsjTBxAufHSckKtIkKV5q6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712674086; c=relaxed/simple;
-	bh=qXiImrPjk9pciUK+qkOQS8Qk++NVZZHB0HTKd0iJ9jc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r9hLzSFYwwyZeAE4Vw53nnS1dNnZ3ehiOlAo4eHGj9N62i2Q64Z8s1dKHt+P+OQ99LsgFnQy1cuP1J4nwpwGZ298E6871KxI6T7rsfq7HJp50X+MIUQbev2Y4xJUrykNarUSMtd0kCUctEANTj3hid2PIvDc8N711SUy0GuxS4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yt5oK5c5; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712677585; c=relaxed/simple;
+	bh=lB+OSgFBKTPogjqBh7v/fFKKRZTQIHKNXmdDGgNyk8g=;
+	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
+	 Subject; b=JxzvDMMAXK0uLCtF6qQINoYJWNC/72l1MW5ddj45zSTEfr4t+EfSPHG9FGXPP5myxpV4qhyo2//OlK6gbmSUotwz8WifUoY63kganqSadldglXs4Tzo9/F6ga5kRX/ACtKzEFRpIVmTdzXMiVoOfMbN6Z8U6y/MMMYHOH7tRQwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=O5rq+CV4; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yt5oK5c5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712674085; x=1744210085;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qXiImrPjk9pciUK+qkOQS8Qk++NVZZHB0HTKd0iJ9jc=;
-  b=Yt5oK5c5HVUKIUlYMIxTv7sA16AdSarSi3Xb1TBzjW6r0GoY6TFEtFPg
-   4ZWaqz9h1hqYR/H0UJ2GjjKYBmKSMzSdyqVI9XW39JfcMT7xfxej3YEos
-   0UixIj/1KOQSmvDzhxh/TE3Ui9r9lHg0R07Lmk5Uf5ScZ9IAt6A5ZT1pS
-   yYzTBsM9GGIq1d4a+jHX5PG1d+Tf9uFm62EekzgMb1Mw6bvqmSEMBinlD
-   vrw6V0JKFwiw4AC5JkJW/2F6jjLScA6JEH/2cEZgMR/W+gDbIfV/1QJhb
-   qutdhqewaCGzq5f9eyDRw1hP9Lc/bdqQOFWPzsqou+HG6USe1yiy5AzYh
-   w==;
-X-CSE-ConnectionGUID: Qqd54Ye4QHKMCFNo96nAYA==
-X-CSE-MsgGUID: COLdtpSeRJKYk/pZmAkP4Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="25489948"
-X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="25489948"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:48:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915401658"
-X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="915401658"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 07:48:03 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1ruClU-00000002pl6-2uK6;
-	Tue, 09 Apr 2024 17:48:00 +0300
-Date: Tue, 9 Apr 2024 17:48:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hugo@hugovil.com>
-Subject: Re: [PATCH v2 00/16] serial: max3100: Put into shape
-Message-ID: <ZhVVILIFP3VKb4b7@smile.fi.intel.com>
-References: <20240402195306.269276-1-andriy.shevchenko@linux.intel.com>
- <2024040903-handcuff-lanky-cc13@gregkh>
- <ZhVI7wzYKrutk1LA@smile.fi.intel.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="O5rq+CV4"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=tGKtNFefyyWSQPpVNbihtZ2oqv0OxBXwGK/JHuIWq3I=; b=O5rq+CV4kblEFvCwcvq5yv5BIf
+	Kq2oduBDGzl2QaCxbD3I2XM/4aomdiFCwVsIe9wQnBCpWsRVKictO2+GeAolLhrUA4RuxBx10zA5/
+	3Jd41XvMdrBsQtCQhmZtPG9QSI9J7EI/gjXTiceDE7fKI1cmrKwbMBvtREtSxwRL6KLE=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:44750 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1ruDfq-0002NM-Tk; Tue, 09 Apr 2024 11:46:15 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	peterz@infradead.org,
+	mingo@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	hugo@hugovil.com,
+	andy.shevchenko@gmail.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andy@kernel.org>
+Date: Tue,  9 Apr 2024 11:42:50 -0400
+Message-Id: <20240409154253.3043822-3-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240409154253.3043822-1-hugo@hugovil.com>
+References: <20240409154253.3043822-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZhVI7wzYKrutk1LA@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+Subject: [PATCH v4 2/5] serial: sc16is7xx: unconditionally clear line bit in sc16is7xx_remove()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, Apr 09, 2024 at 04:55:59PM +0300, Andy Shevchenko wrote:
-> On Tue, Apr 09, 2024 at 03:52:19PM +0200, Greg Kroah-Hartman wrote:
-> > On Tue, Apr 02, 2024 at 10:50:27PM +0300, Andy Shevchenko wrote:
-> > > Put the driver into the shape with all new bells and whistles
-> > > from the kernel.
-> > > 
-> > > The first three patches marked as fixes, but there is no hurry (as it
-> > > was for ages like this in the kernel) to pipe them to stable. That's
-> > > why I sent all in one series and it's good for tty-next.
-> > > 
-> > > Tested on Intel Merrifield with MAX3111e connected.
-> > > 
-> > > In v2:
-> > > - fixed a few typos in the commit messages (Hugo)
-> > > - added an additional fix to patch 2 (Hugo)
-> > > - appended tag to patch 13 (Hugo)
-> > > - v1 (20240402154219.3583679-1-andriy.shevchenko@linux.intel.com)
-> > 
-> > Only a portion of this series applied to my tree.  Can you please rebase
-> > and resend the remaining bits?
-> 
-> Sure, thanks!
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-v3 just has been sent: 20240409144721.638326-1-andriy.shevchenko@linux.intel.com
+There is no need to check for previous port registration in
+sc16is7xx_remove() because if sc16is7xx_probe() succeeded, we are
+guaranteed to have successfully registered both ports. We can thus
+unconditionally clear the line allocation bit in sc16is7xx_lines.
 
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+---
+ drivers/tty/serial/sc16is7xx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 34edc80859d5c..b971fd2a9a77e 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1670,8 +1670,8 @@ static void sc16is7xx_remove(struct device *dev)
+ 
+ 	for (i = 0; i < s->devtype->nr_uart; i++) {
+ 		kthread_cancel_delayed_work_sync(&s->p[i].ms_work);
+-		if (test_and_clear_bit(s->p[i].port.line, sc16is7xx_lines))
+-			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
++		clear_bit(s->p[i].port.line, sc16is7xx_lines);
++		uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 		sc16is7xx_power(&s->p[i].port, 0);
+ 	}
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
