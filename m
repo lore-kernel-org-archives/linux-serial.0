@@ -1,60 +1,41 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C441369AC
-	for <linux-serial@vger.kernel.org>; Tue,  9 Apr 2024 13:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E67212C531;
+	Tue,  9 Apr 2024 13:46:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712670196; cv=none; b=VGiQGDbtgRT+kL4EVVkX7VYMrrET+x2g0Sjuwbt+7TSWDtQPYckcfVU4bIoeMCBMQe0k2cRYd/ykfB82A3msSIwYOhy9YesH+xeCsTQt6grFR8G/QKyr1sOrxsjWQ2uOzZJZRWqxpFHsY64o847NjZ1dU9eOjknVcBMlHejBia8=
+	t=1712670393; cv=none; b=IuDXuTFuFaeD/bz/nk23VLlTGN8TYAMta292vnRH+e63qM19c0ZBFMacjjT0VcZueWQfqlGoVyW0kif/g8XEJ6sqvLxQ0Wg6s29B1XgAgN2vEONBzjn3zS8HmbsI6FUU06RGRL99dPR/XJw/bR0kKcYCfaWgvZ5GZDO0DI4Wnk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712670196; c=relaxed/simple;
-	bh=Fw6hoqDh7KH0XxyevTd/2LKF5IuxN9N2zmsqTBW8to0=;
+	s=arc-20240116; t=1712670393; c=relaxed/simple;
+	bh=zDbyBb/9hhPVBbG3X7C1YdT4HO4jlTdu1qvdQ+VHvJE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wb8s7VViZEM5HVQAUyQj/DxiFs0lAyl3FyxEE+mwkA9D/5AyCfjL6p3rVyCfdxwdvIyTzutCxqoIs+hr19DdUZhD4XVi7grqNok0QNyvj3FJMTZM98Egj6q94epthoXLhJ2a0b5dQNFgetc7pP4iX+FjtU+qNSGoXf0VKQiXMDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jf4FYDud; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bBfQezPsBLgp3LiXrM9rfqYTPrqM9zr+GhR5XcisQ56vX9I8CnG/fMBqluiYmJyFjzcZ1thE8xa7o9bzoqwSwhOjQMkXovcCpWVPv/k8Xt45OxAllCXHmy3iQPdalqaAfXqP4Z+Ze5+0nATJydmu2ESjTujElCStSumh5wE1ltk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=eflFdtuC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jf4FYDud"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712670194; x=1744206194;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Fw6hoqDh7KH0XxyevTd/2LKF5IuxN9N2zmsqTBW8to0=;
-  b=jf4FYDud7Xs7jWF0dZW1U42sI26/wv6FQt9DinCQq45AIeJQp5VVoges
-   /v/0lhYgPn/uuM+cpcVDn0Vgi2nn9fkpkwAd2Yf0HwP+OGjAtCsL7If8S
-   53yI6YKRAa4794E4fForfAslp9Yo0T+fcfzoRUpHxVAPeGzNE9heuGmCF
-   t5mRY3LAvVZnU4u0VbMO4kHdJQwzbkhpYPXKDy16Ac/av/ZKX4r/qjbbH
-   8GjGO8zqZn6bevo7VMweyYYGnacxtk90IP3vT6Pw5e0H82p57mN8Qi4Kw
-   C9058qB/kH25lV8gerBqTzWBaCiIzk/H/pEjkPEb02UFXb8M2UtM91Ca4
-   g==;
-X-CSE-ConnectionGUID: CD9J8qZaQE2u/obsZoyikA==
-X-CSE-MsgGUID: aHfB8a/HTYmVYlz/Zn2zPg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="25425519"
-X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="25425519"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 06:43:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915400190"
-X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
-   d="scan'208";a="915400190"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 06:43:11 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1ruBkj-00000002olH-1EhL;
-	Tue, 09 Apr 2024 16:43:09 +0300
-Date: Tue, 9 Apr 2024 16:43:08 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: speed_t usage?
-Message-ID: <ZhVF7Dntnt1BbsMh@smile.fi.intel.com>
-References: <ZfGTIGvFvEMrFwOZ@smile.fi.intel.com>
- <2024040905-stoppage-sampling-b575@gregkh>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="eflFdtuC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF194C433C7;
+	Tue,  9 Apr 2024 13:46:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1712670393;
+	bh=zDbyBb/9hhPVBbG3X7C1YdT4HO4jlTdu1qvdQ+VHvJE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eflFdtuCE7meJNtJ0Hp2+gGmaAnDIiIBQS7CUgKkcvnDVwoxUWPdC7Nku33lL47Rw
+	 OyqoX1knSwghzlxHbL9UGhzngUjdFVkI3M0ZWK8ae8BnOir9NLz88MADXEczliGDrP
+	 sjLZM0S9BvPXV+eXIdtqLbO5a7RPrnTho2LNLK7c=
+Date: Tue, 9 Apr 2024 15:46:30 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>
+Subject: Re: [PATCH v1 0/3] serial: Do not count XON/XOFF in the statistics
+Message-ID: <2024040926-whinny-coil-4c15@gregkh>
+References: <20240403144722.860258-1-andriy.shevchenko@linux.intel.com>
+ <Zg3VHs-LVxHFdi8V@surfacebook.localdomain>
+ <573aac92-9c9b-427b-a76f-3c0b7c3b6ce6@kernel.org>
+ <Zg7NPnpFXkQWJ-Ks@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,27 +44,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2024040905-stoppage-sampling-b575@gregkh>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <Zg7NPnpFXkQWJ-Ks@smile.fi.intel.com>
 
-On Tue, Apr 09, 2024 at 03:36:11PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Mar 13, 2024 at 01:50:56PM +0200, Andy Shevchenko wrote:
-> > Hi!
+On Thu, Apr 04, 2024 at 06:54:38PM +0300, Andy Shevchenko wrote:
+> On Thu, Apr 04, 2024 at 07:16:55AM +0200, Jiri Slaby wrote:
+> > On 04. 04. 24, 0:15, Andy Shevchenko wrote:
+> > > Wed, Apr 03, 2024 at 05:46:14PM +0300, Andy Shevchenko kirjoitti:
+> > > > Some drivers count XON/XOFF in the Tx statistics, some do not.
+> > > > I actually a bit uncertain, but I _think_ the correct way is not
+> > > > to count them, hence this series.
+> > > 
+> > > Okay, it seems there are much more drivers doing that. Perhaps we need
+> > > to add that to the rest in this case (i.o.w. invert the series from removal
+> > > to addition)?
 > > 
-> > Recently while doing some serial driver cleanup I realised that TTY uses
-> > speed_t type for baud rates. What is the appropriate use of it?
-> > Either it is going to be killed (replaced with POD), or should / may we
-> > spread it over tty/serial and further?
+> > Interesting, perhaps cut & paste?
+> > 
+> > XON and XOFF are overhead IMO. So should not be counted. When they are, they
+> > mangle statistics as in transmitted (real) bytes per second.
+> > 
+> > How are they handled on the RX side?
 > 
-> As it's a uapi interface we can't just delete it entirely, but please,
-> do not spread it any further, and try to clean up what places in the
-> kernel itself that we can to use a "real" type that we know the size of
-> at all times (i.e. u32/u64), not just having to guess like we do today.
+> It took me a while.
+> 
+> All serial drivers accept everything and those that care, update statics for
+> anything they receive. This is because of layering. The Rx XON/XOFF seems
+> (note I am completely unfamiliar with mysterious ways of TTY layers) to be
+> handled on TTY level by n_tty_receive_char_flow_ctrl(), i.o.w. we may not
+> skip counting it easily.
+> 
+> Now the question is, shall we count the control characters on output or not?
+> Whatever decision we made, we should document (if not yet) and align drivers
+> accordingly.
+> 
+> Another Q is what do books / other OS / projects usually do with them
+> WRT statistics?
 
-Thank you for clarification!
+It depends on where you are measuring stuff.
 
--- 
-With Best Regards,
-Andy Shevchenko
+If you want "raw" bytes on the wire, you count them.  If you want to see
+what the port sends based on what userspace sent/recieved, you don't.
 
+> If we count everything on a wire, then we must count them, otherwise
+> it depends on how we treat them.
 
+Agreed.  We need to pick one and stick with it.
+
+I think, at the driver level, we should count it, as it's a ldisc thing,
+not a driver thing, right?
+
+thanks,
+
+greg k-h
