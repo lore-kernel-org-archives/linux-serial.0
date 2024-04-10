@@ -1,111 +1,129 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81BA5C8DD;
-	Wed, 10 Apr 2024 06:32:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C27E13D2A2;
+	Wed, 10 Apr 2024 07:17:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712730747; cv=none; b=dowadIcocvUh77PGhTX1Vxpgj8dZJjofwPsL5d7xwRH9Re7uKbM3l/3gB5slBwWjHyDLsfmkpmKkAnztuSMKKMiVdzjKR9TSwyNZ/aQhH6UzKrZ5myQ1xGHScxXZY88BYCDiOKDzLOcQtVNjN9wZpvbaitsl5o6II6XdqOmgLog=
+	t=1712733454; cv=none; b=Ku2I0hSmIwZBn/mveIDEJPNYN0lHUlu6mRZRDUac2dxZ5UYlRb3wX2UGXqhNn1bIE18OJLGmJYpJrs71VZz9RgmChdRFPkgT/RRt7TBWFAv1dkd5OizXZ0yf6ugHlGOqchqkmeEo3z6bwkjuFvyjzefRLMqi7BG92cenBo395lU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712730747; c=relaxed/simple;
-	bh=pGvxBubreliBepPTNBS2k6SqYHRlWHDZe4Zl/3HRKZI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=MVzWykoaRp8OK9NDpFgPLcoKp21AQ3L62YMQEbgpaZTn/pm6JUzVZ8fq4CQ3BzdQpzLFEfxXvRtaFn/R507J6ewct5Q0UD9f4ttXtrXRm7vHuC90GHO2UErsGVePrKYFxosPUuwhJa8ISzo7z3RVs9h+d7BPZ8J2TUAQfDdipUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 43A6Uv1R068148;
-	Wed, 10 Apr 2024 14:30:57 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX10-BJD.srv.huawei-3com.com (unknown [10.153.34.12])
-	by mail.maildlp.com (Postfix) with ESMTP id BC1FD2006135;
-	Wed, 10 Apr 2024 14:33:07 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX10-BJD.srv.huawei-3com.com (10.153.34.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Wed, 10 Apr 2024 14:30:59 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Wed, 10 Apr 2024 14:30:59 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "jason.wessel@windriver.com"
-	<jason.wessel@windriver.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIIFYxMF0ga2RiOiBGaXgg?=
- =?utf-8?Q?the_deadlock_issue_in_KDB_debugging.?=
-Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRDSCBWMTBdIGtkYjogRml4IHRoZSBkZWFk?=
- =?utf-8?Q?lock_issue_in_KDB_debugging.?=
-Thread-Index: AQHaiuuw81gSSyk26Eq+v/7KfdTz2LFgdGkAgACJimD//36cAIAAh7Hw//98qQCAAIohAA==
-Date: Wed, 10 Apr 2024 06:30:59 +0000
-Message-ID: <567857bab013409ca53fa7c36292f4b0@h3c.com>
-References: <20240409020326.2125332-1-liu.yec@h3c.com>
- <20240410020615.2885000-1-liu.yec@h3c.com>
- <2024041014-padlock-aggregate-4705@gregkh>
- <0c004dd44ad5478eba9451186f4ec962@h3c.com>
- <2024041001-retaliate-cork-1fe5@gregkh>
- <5c659d5f41ff4cf69ea9467b62d74e9b@h3c.com>
- <2024041022-electable-unblock-5077@gregkh>
-In-Reply-To: <2024041022-electable-unblock-5077@gregkh>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1712733454; c=relaxed/simple;
+	bh=H/2SRJZyEG+iyb9DFJEFwPWSwlCN93pqSGDbL0uBIgo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=q9cDT/tH2aoJhG7p1blDHO6nM+r7lMKxBA4BJRlyjnIph1ASWzpDuqqDsHzRg5GkLrT442iM1TfBiUlP3evp3fcJvWD9pt7I3oIESItOg5HGjA4FCqlHWltpSmwisOl+tSmv8LE7blzXTyshcmdynxWKV9zqydNAWFW7lVte6Uo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a450bedffdfso894186466b.3;
+        Wed, 10 Apr 2024 00:17:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712733450; x=1713338250;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fuUol7FYR59VdhQtwGyuh1y4vFucPajgfbXo16j1CVw=;
+        b=osWQfilc/JD6OhcdzdNUNKkQ77MyC/nEJIwOV3HC/7WuILvafyHwbq6vsflPMK9ZRs
+         ZUdoy0leCQAVqA3KSd0NCcRWvXWAfzBviVfUNIhDgo/REbYceDs8gfL4BDGmoYB6il4r
+         FFexhqkeGYwjM4h3/y4KKbLwUT9PAp/MaQI6FmxBNK2vVOsdlyV5h6efzBprXHHPKYPD
+         xST7bKWb0rbpb6AAILWOrPbgxpUlIBTgHlpKZe5VXzKkC7u+WlQnkadctNDAqYs/pbCc
+         frddQf65g/r0rjDR/5g2CKFKGVOgXq07S1UXVf6zZsUIr66wPSP35868/rVI/mk99OSB
+         R/pQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW44WWhRvXunUmTb5Fwq6fRG64JavBT2DUyXodtONgXMvPxOKZP/8FCYEePnvzQRgEm1d/cf79cYBQpNenQILea5GiFxkVblHknQE1Q0wYTnsuEGkmK7rvrcDZlKlizaq7x/wWW+ylsQz27
+X-Gm-Message-State: AOJu0YzDJkgVk4drkdVqhqn2sQEwbev2QrkQIRWhKPp3ib/TSx/d9Bze
+	XVBjlXmug0uDbzz9mcDous/pCkuLLGsBBmIHSjlTD93WME3WV8ti382zYp6A0lI=
+X-Google-Smtp-Source: AGHT+IEcLuwohwm7o38eMIQcxyNJ0Q4ZgH17eZP+5fJJfFNtnOVFcDDGMfESfqwqq8HtGkuJDGkm2Q==
+X-Received: by 2002:a17:906:4c4f:b0:a52:10c9:661f with SMTP id d15-20020a1709064c4f00b00a5210c9661fmr396269ejw.62.1712733449486;
+        Wed, 10 Apr 2024 00:17:29 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id b16-20020a170906039000b00a51a5c8ea6fsm6480553eja.193.2024.04.10.00.17.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Apr 2024 00:17:29 -0700 (PDT)
+Message-ID: <889be591-93cc-4e80-bebe-04a6f8f58c70@kernel.org>
+Date: Wed, 10 Apr 2024 09:17:28 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 43A6Uv1R068148
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 7/8] serial: max3100: Extract to_max3100_port() helper
+ macro
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>
+References: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
+ <20240409144721.638326-8-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20240409144721.638326-8-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Pk9uIFdlZCwgQXByIDEwLCAyMDI0IGF0IDA2OjEwOjEwQU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
-Pj4gPk9uIFdlZCwgQXByIDEwLCAyMDI0IGF0IDA1OjU0OjA4QU0gKzAwMDAsIExpdXllIHdyb3Rl
-Og0KPj4gPj4gPj4gU2lnbmVkLW9mZi1ieTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlv
-bi5vcmc+DQo+PiA+PiA+DQo+PiA+PiA+SSBoYXZlIE5PVCBzaWduZWQgb2ZmIG9uIHRoaXMgY29t
-bWl0LiAgWW91IGp1c3Qgc2FpZCB0aGF0IEkgbWFkZSBhIGxlZ2FsIHN0YXRlbWVudCBhYm91dCB0
-aGlzIGNvbW1pdCB3aXRob3V0IHRoYXQgYWN0dWFsbHkgYmVpbmcgdHJ1ZT8/Pw0KPj4gPj4gPg0K
-Pj4gPj4gPlNvcnJ5LCBidXQgdGhhdCBpcyBmbGF0IG91dCBub3QgYWNjZXB0YWJsZSBhdCBhbGwu
-ICBQbGVhc2UgZ28gd29yayB3aXRoIHlvdXIgY29tcGFueSBsYXd5ZXJzIHRvIGZpZ3VyZSBvdXQg
-d2hhdCB5b3UgZGlkIGFuZCBjb21lIGJhY2sgd2l0aCBhbiBleHBsYWluYXRpb24gb2YgZXhhY3Rs
-eSB3aGF0IHRoaXMgaXMgYW5kIGhvdyBpdCB3aWxsIG5vdCBoYXBwZW4gYWdhaW4uDQo+PiA+PiA+
-DQo+PiA+PiANCj4+ID4+ID4+IFNpZ25lZC1vZmYtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5keS5z
-aGV2Y2hlbmtvQGdtYWlsLmNvbT4NCj4+ID4+ID4NCj4+ID4+ID4+IFY5IC0+IFYxMCA6IEFkZCBT
-aWduZWQtb2ZmLWJ5IG9mIEdyZWcgS0ggYW5kIEFuZHkgU2hldmNoZW5rbywgDQo+PiA+PiA+PiBB
-Y2tlZC1ieSBvZiBEYW5pZWwgVGhvbXBzb24NCj4+ID4+ID4NCj4+ID4+ID5IdWg/IQ0KPj4gPj4g
-DQo+PiA+PiBAZ3JlZyBrLWgg77yaDQo+PiA+PiBAQW5keSBTaGV2Y2hlbmtvIO+8mg0KPj4gPj4g
-DQo+PiA+PiBTb3JyeSwgaXQgd2FzIG15IG1pc3Rha2UuIEkgbWlzdW5kZXJzdG9vZCB0aGUgbWVh
-bmluZyBvZiAic2lnbmVkLW9mZi1ieSIsIHdoaWNoIGxlZCB0byB1c2FnZSBpc3N1ZXMuDQo+PiA+
-PiANCj4+ID4+IEkgd2FudCB0byBleHByZXNzIG15IGdyYXRpdHVkZSBmb3IgdGhlIHN1Z2dlc3Rp
-b25zIG9uIHRoZSBwYXRjaCBmcm9tIHRoZSB0d28gb2YgeW91LiANCj4+ID4+IA0KPj4gPj4gV2hh
-dCBkbyBJIG5lZWQgdG8gZG8gbm93PyBSZWxlYXNlIFBBVENIIFYxMSBhbmQgZGVsZXRlIHRoZXNl
-IHR3byBzaWduYXR1cmVzIGluIGl0ID8NCj4+ID4NCj4+ID5BcyBJIHNhaWQsIGdvIHdvcmsgd2l0
-aCB5b3VyIGNvcnBvcmF0ZSBsYXd5ZXJzIG9uIHRoaXMgdG8gdW5kZXJzdGFuZCB3aGF0IGp1c3Qg
-aGFwcGVuZWQgYW5kIGhhdmUgdGhlbSBsZXQgdXMga25vdyBob3cgaXQgd2lsbCBub3QgaGFwcGVu
-IGFnYWluLg0KPj4gDQo+PiBJJ20gdmVyeSBzb3JyeSwgdGhpcyBpcyBteSBmaXJzdCB0aW1lIHN1
-Ym1pdHRpbmcgYSBwYXRjaCBhbmQgSSBtYWRlIGEgc2lnbmlmaWNhbnQgbWlzdGFrZSBpbiB1c2lu
-ZyAiU2lnbmVkLW9mZi1ieSIuIEkgbm93IHVuZGVyc3RhbmQgdGhlIG1lYW5pbmcgb2YgdGhpcyBm
-aWVsZCBhbmQgd2lsbCBub3QgbWFrZSB0aGUgc2FtZSBtaXN0YWtlIGFnYWluIGluIHRoZSBmdXR1
-cmUuDQo+DQo+VW5kZXJzdG9vZCwgYnV0IHlvdSBzdGlsbCBuZWVkIHRvIGdvIHdvcmsgd2l0aCB5
-b3VyIGNvcnBvcmF0ZSBsZWdhbCBncm91cCBzbyB0aGF0IHlvdSBhbGwgZW5zdXJlIHRoaXMgZG9l
-cyBub3QgaGFwcGVuIGFnYWluIGZvciBhbnkgb3RoZXIgZGV2ZWxvcGVyIGluIHlvdXIgY29tcGFu
-eSwgYXMgSSBhbSBzdXJlIHRoZXkgd2lsbCB3YW50IHRvIGtub3cgYWJvdXQgdGhpcy4NCg0KT2ss
-IEkgd2lsbCByZXBvcnQgdGhpcyB0byB0aGUgY29tcGFueS4gQXQgdGhlIHNhbWUgdGltZSwgSSB3
-aWxsIGFkZCBhbiBhdWRpdCBtZWNoYW5pc20gdG8gdGhlIHBhdGNoIHN1Ym1pc3Npb24gcHJvY2Vz
-cy4gVGhhbmtzIGFnYWluIGZvciB5b3VyIHJlbWluZGVyLg0KDQpJIHdpbGwgcmVtb3ZlIHRoaXMg
-cGFydCBpbiBQQVRDSCBWMTEuDQoNClRoYW5rc++8jA0KTGl1IFllDQo=
+On 09. 04. 24, 16:45, Andy Shevchenko wrote:
+> Instead of using container_of() explicitly, introduce a helper macro.
+> This saves a lot of lines of code.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+...
+> @@ -110,6 +111,8 @@ struct max3100_port {
+>   	struct timer_list	timer;
+>   };
+>   
+> +#define to_max3100_port(port)	container_of(port, struct max3100_port, port)
+
+This is wrong. If you pass something other than "port" to 
+to_max3100_port(), the third arg of container_of() will explode.
+
+Use an inline to avoid mistakes like this.
+
+regards,
+-- 
+js
+suse labs
+
