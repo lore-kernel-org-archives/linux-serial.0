@@ -1,95 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D9E2AF16;
-	Wed, 10 Apr 2024 13:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 709E615ADB0;
+	Wed, 10 Apr 2024 14:11:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712757361; cv=none; b=cTfZM38DQiEAadFyo1wC+VppRDiJ8KeB6IFnRf+OINc38/dGuEx9zKESrov4cw6rgioHGmq7yn0xXzQzDu/JbVdEhDeTIeJjQ2Y83Qyb+fGFwmk0QPlpm9+N3uEJA6gp0vZsWzwSVeSmbW2evf15oZVunD4Gg7fInP/0sCreiFA=
+	t=1712758313; cv=none; b=OyDArCv/3dBUukiEZqN3NJCjyLnFp9b5WHb5K8XMoWA0nVMR49QolhG8f2BiM2/V8D6loQeireDzmOjgFGxgupCT/DqYidb5L4l8S+gUaQGgiBIGrK7+crTPP9ZNOeKd2FhQATCXZQe+YMc8P83z9OwpsCAB0M02FdhsMfKoEao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712757361; c=relaxed/simple;
-	bh=BY21WXTdgA7cn3s4Y4cI1FMn3JiwMTv1TQpfDpXed4k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IsXNlo5IE7oNvzwiiWeVJnKp9hxHof2FwXjszOH7AE/th8HHK4obrmUQyw4B6gbdvQgobv5vdNI0qrNIPp9rr7vCGxExUvMF74/JHONTqXqG6Nl2GH5KLbdnMqNOuzRHYwhPalJN0urTNSn8pwFb5V1S1CbCRGS4l7Jm+1pJOKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YKEhPDBS; arc=none smtp.client-ip=198.175.65.19
+	s=arc-20240116; t=1712758313; c=relaxed/simple;
+	bh=sygr61+yPFLUXgEFhp4qbUoHSiqZR3IMEGHe5hFJJ3c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qluBTmpjCbGG921tM4K6TtqJ/AFe2tI7Nhijvvqz85J9/Xr2/XVudVs26CaLTpHqieuGPRVxx7ybtFH3gOAcb2ZWWIa0cQXqwY1AYW2elQNX2Cq/boIprgWLbWsDHIej7JsaWvOCQAKyR7MNGRXN6qcUH2ODoWR6SwIyS4uXwRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ld28G/CH; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YKEhPDBS"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ld28G/CH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712757360; x=1744293360;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BY21WXTdgA7cn3s4Y4cI1FMn3JiwMTv1TQpfDpXed4k=;
-  b=YKEhPDBS57vgr1ELdBGUr2B+ArdkP8gNP9dap483vQZZdU+q9CGt4kKy
-   lKDlyZsrpJFQQVFYsdCRcKNOQyENxsm4hF/9Nx1bw7MHD971CTWFaFDF7
-   +EFcd53brb+eMqPEC/R5yGitb3Kjg1o0GXPY/CQI598yoO6JevwCm3Nvi
-   PT+RzrSi1HEy9SxSGQBL5LHBEexheO927yaGQoMbKAdZVJp2e1+xTx7WK
-   vywPhFpqdUlwOCch7FYwaaXtz/OPtPSP29S1D2kQXcxzhcB20Woy2o2Ky
-   hB3voMN2q2SyqBE6ehnlO7eP0GxVKImN5rJywp018UNZKs+85dw5ALQZW
-   A==;
-X-CSE-ConnectionGUID: elmdEX65ThatW109Ulqi1A==
-X-CSE-MsgGUID: MDdfDskNQyCw8TV6K7Z36Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7992826"
+  t=1712758312; x=1744294312;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sygr61+yPFLUXgEFhp4qbUoHSiqZR3IMEGHe5hFJJ3c=;
+  b=ld28G/CHqH2NShNdP8Q/MGEkoyUgNUqqXltqnU0Qy4q5D1bK3OzREACK
+   Z9j2iNFqQcNAmFcN2YSJ9s8bPgcqoRL+4JDUqMTzSY0Nz2YGZVWyXmugK
+   5dctiyJYAnQA+FuINbmhDYQTOo06Zu0C9Mr87486LcY7FL8bAPlKvIvF5
+   o5n4DR9k177KxkdHbW2w7ts4gWsk65wxKYwUmr6TgacG8BqMIhvb14JEb
+   BY3a4BZE2ns9/Q6c0/fn6PluI1d9XqMVPNK0orS0MWuhIiR7T98PBBe8q
+   FHCEw8ODeRDQdHiT1c6ns6uN2xAGKopdUFBd3ublE15CUhnF3dQZh+gLw
+   g==;
+X-CSE-ConnectionGUID: 0XFet8XpRv2I7uMQU36g1A==
+X-CSE-MsgGUID: hKILSHlGQE+QxJYveF9xGA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="19548456"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="7992826"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:56:00 -0700
+   d="scan'208";a="19548456"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 07:11:39 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915433640"
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="937095145"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="915433640"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:55:57 -0700
-Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1ruYQd-000000035Ea-2Wj6;
-	Wed, 10 Apr 2024 16:55:55 +0300
-Date: Wed, 10 Apr 2024 16:55:55 +0300
+   d="scan'208";a="937095145"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 10 Apr 2024 07:11:37 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 8AC8F161; Wed, 10 Apr 2024 17:11:36 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH v3 7/8] serial: max3100: Extract to_max3100_port() helper
- macro
-Message-ID: <Zhaaa1DBwVHf48oQ@smile.fi.intel.com>
-References: <20240409144721.638326-1-andriy.shevchenko@linux.intel.com>
- <20240409144721.638326-8-andriy.shevchenko@linux.intel.com>
- <889be591-93cc-4e80-bebe-04a6f8f58c70@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 1/1] serial: max3100: Convert to_max3100_port() to be static inline
+Date: Wed, 10 Apr 2024 17:11:35 +0300
+Message-ID: <20240410141135.1378948-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1.gbec44491f096
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <889be591-93cc-4e80-bebe-04a6f8f58c70@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 10, 2024 at 09:17:28AM +0200, Jiri Slaby wrote:
-> On 09. 04. 24, 16:45, Andy Shevchenko wrote:
-> > Instead of using container_of() explicitly, introduce a helper macro.
-> > This saves a lot of lines of code.
+As Jiri rightfully pointed out the current to_max3100_port() macro
+implementation is fragile in a sense that it expects the variable
+name to be port, otherwise it blow up the build.
 
-...
+Change this to be static inline to prevent bad compilation.
 
-> > +#define to_max3100_port(port)	container_of(port, struct max3100_port, port)
-> 
-> This is wrong. If you pass something other than "port" to to_max3100_port(),
-> the third arg of container_of() will explode.
+Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/max3100.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Then don't do that :-)
-
-> Use an inline to avoid mistakes like this.
-
-Sure, thanks for catching this. Should I send an update to prevent this from
-happening?
-
+diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
+index 1e6b5763ce3f..07ee001640bb 100644
+--- a/drivers/tty/serial/max3100.c
++++ b/drivers/tty/serial/max3100.c
+@@ -111,7 +111,10 @@ struct max3100_port {
+ 	struct timer_list	timer;
+ };
+ 
+-#define to_max3100_port(port)	container_of(port, struct max3100_port, port)
++static inline struct max3100_port *to_max3100_port(struct uart_port *port)
++{
++	return container_of(port, struct max3100_port, port);
++}
+ 
+ static struct max3100_port *max3100s[MAX_MAX3100]; /* the chips */
+ static DEFINE_MUTEX(max3100s_lock);		   /* race on probe */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0.rc1.1.gbec44491f096
 
