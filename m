@@ -1,195 +1,107 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADEB0522E;
-	Wed, 10 Apr 2024 02:08:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EAC8464;
+	Wed, 10 Apr 2024 02:49:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712714898; cv=none; b=hmy+2TTqHqw0NdUd0tVQ5weMtQbickgCbjx2oiePOfn/2ttMaP7AJz4Fu+JI/5YvmwceD56Y8btz0Lgkz4iQEQhpMg+WlDIIONpkZsXZ3UCEyij82RV3yDCSoAP3WoyTsVMe9+B+aVw78W0nz8OxNVyNTMRTIVRhFAJ7Mi6z9tM=
+	t=1712717376; cv=none; b=DX3vdcdH9VBAaxtH6Wd8hrFrzfTjMprd1GemLXGXxTUs0eFLF93bx+uWeHLYswMlWawxqcequK8ABilJNvt/+7ECrMACDRw8RWAAP+6HFmNv6BWQBjJM8a/uJBQKGbssA1g64fJ4mvcXq5HT5qWTT1RZIqfjDxDvfjVPsR3kFNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712714898; c=relaxed/simple;
-	bh=0W3UsbIojVwFSlMNwZGkkrTxQotLO1cK8fUvwsiqQF0=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jNMAVPHgVYRHMOM/Z84Oo3Gw6g2WrGZELD2CDRtiAKVR+ahmFFLuB2rBgJPyraF0w+lvTUs1HmkwFUIVT8/UT8EVITKEY+VUIwuPvgq4Yot/JJw+SDDrHVoS1sDoHkAuosNEDhv/BUoRCqIcXTDewbPY1XtJQixUrEZVN2jThs8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 43A26IAO060864;
-	Wed, 10 Apr 2024 10:06:22 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (unknown [10.62.14.11])
-	by mail.maildlp.com (Postfix) with ESMTP id 0B8C922DED61;
-	Wed, 10 Apr 2024 10:08:31 +0800 (CST)
-Received: from localhost.localdomain (10.114.186.34) by
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.2.1258.27; Wed, 10 Apr 2024 10:06:22 +0800
-From: <liu.yec@h3c.com>
-To: <andy.shevchenko@gmail.com>, <daniel.thompson@linaro.org>,
-        <gregkh@linuxfoundation.org>
-CC: <dianders@chromium.org>, <jason.wessel@windriver.com>,
-        <jirislaby@kernel.org>, <kgdb-bugreport@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <liu.yeC@h3c.com>
-Subject: [PATCH V10] kdb: Fix the deadlock issue in KDB debugging.
-Date: Wed, 10 Apr 2024 10:06:15 +0800
-Message-ID: <20240410020615.2885000-1-liu.yec@h3c.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20240409020326.2125332-1-liu.yec@h3c.com>
-References: <20240409020326.2125332-1-liu.yec@h3c.com>
+	s=arc-20240116; t=1712717376; c=relaxed/simple;
+	bh=vqxOi0QTxedbvwYGD+HYW5L2o0KZGcG/0tL626Tvz1U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=W9vLDKBHwQDa0ieqFabtxxyPPwRS+s2M1o2x1WAqawpShALc1H14kmRQNNCrSOdS6VPUc2sw8nVWD5HGH1QqG1/KjIyovsO5dbGrIVkSc4YcWxdkEgOnT11tjDTc50K2vXwU2L6z53/mFKvlL8eRmQvicSc+Flavuz89vd5v1Rc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XRKCYsLl; arc=none smtp.client-ip=209.85.210.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XRKCYsLl"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-6ed2170d89fso2005010b3a.1;
+        Tue, 09 Apr 2024 19:49:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712717374; x=1713322174; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kG6xWQ0yCGVJl/MNKg4FH9ZwsPiElj7Y50UBk8VG6lg=;
+        b=XRKCYsLlCRc3lSZNyfbBcP1/AlNCIup44ySs8kAfzPlHiv6V+7/aXgiaDwDleXC9ns
+         oQgAks3fvjOxcTOhv5RdL7o2SwLbatvkThZkSxq/I0aT6MBObIHxL5Izok1pHnVdEObe
+         x763gqtshQICyHpT6nk/g2esOvxSQTSVCaCvT4O1UEt+/LpAMMA4A/8r6VaeNAzP/uAj
+         ffm1iL53CzXkowoX2lwo7rWkWkkqy/tnhMdz3z49s6bF6WUILcu0uUOlGlq88LEw5Hpa
+         vb0jnGedD4z0U8jlLYFF49qt7rSWGCadKC/1vCKW1hytiDU2mCCqZBHFNppYyobdFKj6
+         al4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712717374; x=1713322174;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=kG6xWQ0yCGVJl/MNKg4FH9ZwsPiElj7Y50UBk8VG6lg=;
+        b=jYP4xgRvqJRb3NDaVYaAejUjgETHOnCPvf5r0Rh0Hk5lE8qWEuk/rXVnPlk2Rkd4Gj
+         Q71+xAJORLqn+Cm7Homo6AnQOXYCQ6VT7akgptpEyKdFZNbxDWdhZcUyR3ZCa5PGDkGw
+         a/C5WooUDsQ1FOic1BQDZ1ye2eUDcD9RK1cpkvquuXFZSOiQwo5g/PJOs2OIWRvyTP5n
+         nutk4Urm26HK7UBMUJTVZU/DCyhPZ/bTrBwcFLQHuDFbAV3fTWdZl/CvP2MKEft7rjhY
+         6WbWM6H/02eDPz//3VZ139WBmYLwSXQJoLc0txic5BKztkxf1jsKGagapCLfG4NF8hp1
+         wyZg==
+X-Forwarded-Encrypted: i=1; AJvYcCWGmcJ1ygIPQNdfDMN4sh2NfQKWsEI3MrXG2vCJ5zrf380ldL7pS/y7zDkWfvLsoSQsbreDu/C7C4+trgp3TF1Z+w30DcbP54pbgGq22SoPYEiAfx9uYSkM5PoIzBFTMQNVNGxHAVah9n8qj/qbXauAIQFTUokwpcUs/GdhUD7gUMFYVtp1hA==
+X-Gm-Message-State: AOJu0YzIQ2BBkYfUjgUZpOatj3Z8uWugfN9wFixG9f0RPu5dTO00fkxM
+	ARi041WyP+G+DqxSQMcTc7tNSP9xOKA6aAbnu2N6SA8DclZNXTdY
+X-Google-Smtp-Source: AGHT+IF0GlULpUAxxK4GQn2bft3LURYvb6qaqhircdJMse1NfkNnqKFaq7ajDd0+kVBJHMc+a/oANw==
+X-Received: by 2002:a05:6a20:2591:b0:1a7:53c1:ad8d with SMTP id k17-20020a056a20259100b001a753c1ad8dmr2308422pzd.24.1712717374183;
+        Tue, 09 Apr 2024 19:49:34 -0700 (PDT)
+Received: from [192.168.255.10] ([43.132.141.16])
+        by smtp.gmail.com with ESMTPSA id e9-20020aa79809000000b006edbcfe7005sm483193pfl.144.2024.04.09.19.49.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Apr 2024 19:49:33 -0700 (PDT)
+Message-ID: <4f0950f8-e0e1-4b26-85b9-385c97c39cf6@gmail.com>
+Date: Wed, 10 Apr 2024 10:49:29 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 0/3] serial: 8250_pnp: Support configurable reg shift
+ property
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: gregkh@linuxfoundation.org, rafael.j.wysocki@intel.com,
+ linux-acpi@vger.kernel.org, tony@atomide.com, john.ogness@linutronix.de,
+ yangyicong@hisilicon.com, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ lvjianmin@loongson.cn, albanhuang@tencent.com, tombinfan@tencent.com
+References: <cover.1712646750.git.albanhuang@tencent.com>
+ <ZhU6Or3hTziarHZo@smile.fi.intel.com>
+From: albanhuang <albanhuang0@gmail.com>
+In-Reply-To: <ZhU6Or3hTziarHZo@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BJSMTP01-EX.srv.huawei-3com.com (10.63.20.132) To
- DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11)
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 43A26IAO060864
 
-From: LiuYe <liu.yeC@h3c.com>
 
-Currently, if CONFIG_KDB_KEYBOARD is enabled, then kgdboc will
-attempt to use schedule_work() to provoke a keyboard reset when
-transitioning out of the debugger and back to normal operation.
-This can cause deadlock because schedule_work() is not NMI-safe.
+在 2024/4/9 20:53, Andy Shevchenko 写道:
+> On Tue, Apr 09, 2024 at 03:43:20PM +0800, Guanbing Huang wrote:
+>> From: Guanbing Huang <albanhuang@tencent.com>
+>>
+>> The 16550a serial port based on the ACPI table requires obtaining the
+>> reg-shift attribute. In the ACPI scenario, If the reg-shift property
+>> is not configured like in DTS, the 16550a serial driver cannot read or
+>> write controller registers properly during initialization.
+>>
+>> To address the issue of configuring the reg-shift property, the
+>> __uart_read_properties() universal interface is called to implement it.
+>> Adaptation of PNP devices is done in the __uart_read_properties() function.
+> You either forgot or deliberately not added my tag. Can you elaborate?
 
-The stack trace below shows an example of the problem. In this
-case the master cpu is not running from NMI but it has parked
-the slave CPUs using an NMI and the parked CPUs is holding
-spinlocks needed by schedule_work().
+I'm very sorry, this is my first time submitting a kernel patch. My 
+understanding
 
-Example:
-BUG: spinlock lockup suspected on CPU#0. owner_cpu: 1
-CPU1: Call Trace:
-__schedule
-schedule
-schedule_hrtimeout_range_clock
-mutex_unlock
-ep_scan_ready_list
-schedule_hrtimeout_range
-ep_poll
-wake_up_q
-SyS_epoll_wait
-entry_SYSCALL_64_fastpath
+of the submission specification is not comprehensive and profound enough,
 
-CPU0: Call Trace:
-dump_stack
-spin_dump
-do_raw_spin_lock
-_raw_spin_lock
-try_to_wake_up
-wake_up_process
-insert_work
-__queue_work
-queue_work_on
-kgdboc_post_exp_handler
-kgdb_cpu_enter
-kgdb_handle_exception
-__kgdb_notify
-kgdb_notify
-notifier_call_chain
-notify_die
-do_int3
-int3
+and I didn't intentionally not add tags. I hope you can forgive my 
+operational mistake.
 
-We fix the problem by using irq_work to call schedule_work()
-instead of calling it directly. This is because we cannot
-resynchronize the keyboard state from the hardirq context
-provided by irq_work. This must be done from the task context
-in order to call the input subsystem.
+Should I just add a "Reviewed-by tag", or do I need any other tags? Thanks.
 
-Therefore, we have to defer the work twice. First, safely
-switch from the debug trap context (similar to NMI) to the
-hardirq, and then switch from the hardirq to the system work queue.
 
-Signed-off-by: LiuYe <liu.yeC@h3c.com>
-Co-developed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Greg KH <gregkh@linuxfoundation.org>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+With Best Regards.
 
----
-V9 -> V10 : Add Signed-off-by of Greg KH and Andy Shevchenko, Acked-by of Daniel Thompson
-V8 -> V9: Modify call trace format and move irq_work.h before module.h
-V7 -> V8: Update the description information and comments in the code.
-	: Submit this patch based on version linux-6.9-rc2.
-V6 -> V7: Add comments in the code.
-V5 -> V6: Replace with a more professional and accurate answer.
-V4 -> V5: Answer why schedule another work in the irq_work and not do the job directly.
-V3 -> V4: Add changelogs
-V2 -> V3: Add description information
-V1 -> V2: using irq_work to solve this properly.
----
----
- drivers/tty/serial/kgdboc.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 7ce7bb164..32410fec7 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -19,6 +19,7 @@
- #include <linux/console.h>
- #include <linux/vt_kern.h>
- #include <linux/input.h>
-+#include <linux/irq_work.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/serial_core.h>
-@@ -82,6 +83,19 @@ static struct input_handler kgdboc_reset_handler = {
- 
- static DEFINE_MUTEX(kgdboc_reset_mutex);
- 
-+/*
-+ * This code ensures that the keyboard state, which is changed during kdb
-+ * execution, is resynchronized when we leave the debug trap. The resync
-+ * logic calls into the input subsystem to force a reset. The calls into
-+ * the input subsystem must be executed from normal task context.
-+ *
-+ * We need to trigger the resync from the debug trap, which executes in an
-+ * NMI (or similar) context. To make it safe to call into the input
-+ * subsystem we end up having use two deferred execution techniques.
-+ * Firstly, we use irq_work, which is NMI-safe, to provoke a callback from
-+ * hardirq context. Then, from the hardirq callback we use the system
-+ * workqueue to provoke the callback that actually performs the resync.
-+ */
- static void kgdboc_restore_input_helper(struct work_struct *dummy)
- {
- 	/*
-@@ -99,10 +113,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
- 
- static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
- 
-+static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-+{
-+	schedule_work(&kgdboc_restore_input_work);
-+}
-+
-+static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
-+
- static void kgdboc_restore_input(void)
- {
- 	if (likely(system_state == SYSTEM_RUNNING))
--		schedule_work(&kgdboc_restore_input_work);
-+		irq_work_queue(&kgdboc_restore_input_irq_work);
- }
- 
- static int kgdboc_register_kbd(char **cptr)
-@@ -133,6 +154,7 @@ static void kgdboc_unregister_kbd(void)
- 			i--;
- 		}
- 	}
-+	irq_work_sync(&kgdboc_restore_input_irq_work);
- 	flush_work(&kgdboc_restore_input_work);
- }
- #else /* ! CONFIG_KDB_KEYBOARD */
--- 
-2.25.1
-
+>
