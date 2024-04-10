@@ -1,503 +1,233 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448AD15B153
-	for <linux-serial@vger.kernel.org>; Wed, 10 Apr 2024 12:35:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FE1B15B153
+	for <linux-serial@vger.kernel.org>; Wed, 10 Apr 2024 13:30:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712752518; cv=none; b=KQnFKcilJOLuZbOceGmBV25CwLqeAchlQgDKwBdx+WrNsHLAjCLFk5qgaxVQA/ycP4FYXJUtHwDhHgryQIvzNNYbcHefrkjbmLjvVzjgV0J7tKJgf3oNWCmmyB7KCdFccZJkGTE55bSLgaHeX5ZZEomm9BFeUZJd1eSAiblZjHA=
+	t=1712755809; cv=none; b=I9goUeKhnwY1uPIdDIlTDUKC1duPAwW/+NtgRpJ7Dq11KeowdQQikwu7g2/RXZM1XU5VvVU33kpxMs83OoNhfIUv4xfGSY1eSsSfQZpmsJTb6Ev6InlB3FTCi7UShAOL9iO9tpmjrfYYXc2BObUKE/e3OqBlqwnUhQXj7pHxLKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712752518; c=relaxed/simple;
-	bh=TPW7z25VA25IH4mn5QCCaLkAd9PHJishk0C3e8SbDJU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TRqcPHJ2bkOEsXI6z49HjgxGH1jSqNaZdvv5OQ2oRIJ3oTHTCGhBh+Ivsaz8cCu5H13MfW37ksN4+xF87kY6A7ROgxrr9dCOKBAaNT53sAHOWQl3M57t3rnJGXstvpkGWco3zICuW+SRMELZJAB2zyBg6ftrfZ1l8R/1cDYyM4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=T2qQDLhW; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1712755809; c=relaxed/simple;
+	bh=kK4rDF2v4fpQdug7IMOBrjc6Slc0zGW645wS4h/s7yo=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=kVU6+rtvjv9upo1uB+Sfz8KSkIGOtWJ69/vvyeMkOBBVUC1j8UN5XP1uyHWpK59fQEK79Kfj5S3bqyt1w+NIanDumLvXnXoI+ST5fTZB3pWTBXWEZXDkdrguYug5P9nknvRFjmfdUu8DrYxC5Dl1Yoj0k/mra9MKrD3aa4sRjlI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lMlXvMgq; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="T2qQDLhW"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4165caf9b2dso35558805e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 10 Apr 2024 05:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1712752512; x=1713357312; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=B4u1OqKWT/Fd4SbXAWMEENZmlKxdBreylzgVp8nF4PA=;
-        b=T2qQDLhWh41ry5rFPhC6iYX5FNt4LMYXseKCNjd9npLL+7OcoCGeXJJXlUw++LvZPT
-         fYC4GyIoXoW1BK8XIHm9wj8MdgLPJfCqXsgPwSnGQcDKSd8WbwsmRji/x5A3KY0+1svQ
-         hQzB8AJOkkex9oiSbblsjKib6P8/jk8a6XvhdhUuMxUQvMyEF2P2VQqF9NMfNVzOb5of
-         dulY/KXHCMcnrUSAXCwMk5KKDBAQr2ql5OKusvgCPrzSfeyxg6t8c0kaVyMWO7J7HyHE
-         dQto1hr563vJal9kV27brhn1butlcuzn6n9SE8ZRNd/GRD82rIzJoZvPvxCU9NzDLyo8
-         mMKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712752512; x=1713357312;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=B4u1OqKWT/Fd4SbXAWMEENZmlKxdBreylzgVp8nF4PA=;
-        b=sn0HwL1J4nQAeFy0h4yN1Rgyr7AmZ3PM/yRph1tIsJs6ojfZEDpSaQPJwwICiOpkra
-         u/dp6XvWRdBNIwl8yYhn6fPI5qI2vX7BBp4GUAd4dw27nMAeGlULG4YSLbQ76bFRmp2z
-         JS3SFkOcFK25vtcj3QV1nTVpRv2oReEpAjEP4ZgHTJxEuHN9zHc/mkauv2NIq2sALcD4
-         EdUvkf9WggPRwWygePger/kzmD0IQXR7Q77Yqzxk7/6aa2nRHTCC5XXwSmRw444Ml0lC
-         c6MPvxZyPiMCfrzdFnorZeTS7NzbwUWte/OdrVQjo1VtxcPJKe5MuQYyMe7DXoD80Hkh
-         BsDA==
-X-Forwarded-Encrypted: i=1; AJvYcCX5z9jKAwHPIACIHz5t3+JQgvJUh+/fA1sp9e+AZDZvznOiy8TXsEbtmBvvmoW+VS7UvgzYiWBDoGwgpPotJit7Q5dhczq2Xv8PdX+B
-X-Gm-Message-State: AOJu0Yyxj+6WLUaTxCEqtQqCoRS4fhbDrw9alzHp7FPsNja+07dMMvve
-	ojdnBwPFaP/H8TsFeYZeibhp++eJgLyQyc9TDdt5EpHmJdVImqINH0IUfzhmCfA=
-X-Google-Smtp-Source: AGHT+IH2FhEGJj9PPXZonEhO5cFRUz79WOynjglzTpxIC4y/g1JAKl79K2BzAg/3ej09IDAqQtiWnw==
-X-Received: by 2002:a05:6000:2a3:b0:343:8551:8d90 with SMTP id l3-20020a05600002a300b0034385518d90mr2856242wry.34.1712752511064;
-        Wed, 10 Apr 2024 05:35:11 -0700 (PDT)
-Received: from localhost.localdomain ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id o14-20020adfe80e000000b003436a3cae6dsm13647300wrm.98.2024.04.10.05.35.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Apr 2024 05:35:10 -0700 (PDT)
-Date: Wed, 10 Apr 2024 14:35:08 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	=?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Fabio Estevam <festevam@denx.de>, Arnd Bergmann <arnd@arndb.de>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v4 09/27] printk: nbcon: Implement processing in
- port->lock wrapper
-Message-ID: <ZhaHfFa2LJ6zQic1@localhost.localdomain>
-References: <20240402221129.2613843-1-john.ogness@linutronix.de>
- <20240402221129.2613843-10-john.ogness@linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lMlXvMgq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712755808; x=1744291808;
+  h=date:from:to:cc:subject:message-id;
+  bh=kK4rDF2v4fpQdug7IMOBrjc6Slc0zGW645wS4h/s7yo=;
+  b=lMlXvMgqsrk86Lt5G86bsn0HnEovCzCId3QEIzWzNaSZ1dhilmJmK+4n
+   OKbaN+u+mWL1WQSac05qqHTq2cESadA+VFUpaOE7MZuiKKl9irkpymQ3b
+   P0vuWeeS0Bdey/yfwupr3JW8fcW4GpEjgJP7CnnVYymka5YBhxt/ggZWL
+   FdrBYbqWCDB/L6fw94zWhmpbck7Q/tlM6RK+od8p/cAMgnNxfG5WG0x39
+   Smr6OyshRbIpciSqaQ/bBU/JiuD3gaKkv35FIr5+whMIn+nbfypJv5onO
+   kuGOhmA4PxCrF0rMVoeiYVnNKwZq9My8XlLq5hRJmH/1xAXV47S7h3Ucy
+   A==;
+X-CSE-ConnectionGUID: NtJDKy6mTjek+lN/saU2EQ==
+X-CSE-MsgGUID: tqceX4zKS9a6Mk/YcyzfSw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8241362"
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="8241362"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:30:07 -0700
+X-CSE-ConnectionGUID: GY7MoIGrSMG2WrqAGREhMA==
+X-CSE-MsgGUID: l5rXC2CUQ+mUhvIZsedfWA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="20575488"
+Received: from lkp-server01.sh.intel.com (HELO e61807b1d151) ([10.239.97.150])
+  by fmviesa006.fm.intel.com with ESMTP; 10 Apr 2024 06:30:05 -0700
+Received: from kbuild by e61807b1d151 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1ruY1b-0007Rw-1W;
+	Wed, 10 Apr 2024 13:30:03 +0000
+Date: Wed, 10 Apr 2024 21:29:57 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ fff4a5d5609db86ccdf1cf5791b7651b7f6a9b19
+Message-ID: <202404102155.wjYcELJY-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240402221129.2613843-10-john.ogness@linutronix.de>
 
-On Wed 2024-04-03 00:17:11, John Ogness wrote:
-> Currently the port->lock wrappers uart_port_lock(),
-> uart_port_unlock() (and their variants) only lock/unlock
-> the spin_lock.
-> 
-> If the port is an nbcon console, the wrappers must also
-> acquire/release the console and mark the region as unsafe. This
-> allows general port->lock synchronization to be synchronized
-> with the nbcon console ownership.
-> 
-> Introduce a new struct nbcon_drvdata within struct console that
-> provides the necessary components for the port lock wrappers to
-> acquire the nbcon console and track its ownership.
-> 
-> Also introduce uart_port_set_cons() as a wrapper to set @cons
-> of a uart_port. The wrapper sets @cons under the port lock in
-> order to prevent @cons from disappearing while another context
-> owns the port lock via the port lock wrappers.
-> 
-> Also cleanup the description of the console_srcu_read_flags()
-> function. It is used by the port lock wrappers to ensure a
-> console cannot be fully unregistered while another context
-> owns the port lock via the port lock wrappers.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -689,7 +689,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
->  			continue;
->  
->  		co->index = i;
-> -		port->cons = co;
-> +		uart_port_set_cons(port, co);
->  		return serial8250_console_setup(port, options, true);
-
-I just noticed that this is a newcon->match() callback. It does:
-
-  + univ8250_console_match()
-    + serial8250_console_setup(port, options, true)   // @probe == true
-      + probe_baud(port)
-
-which manipulates the serial port.
-
-We should call also the con->match() callback under console_lock()
-in try_enable_preferred_console() like we do with con->setup,
-see the commit 801410b26a0e8 ("serial: Lock console when calling into
-driver before registration").
-
-Maybe, we should just take console_lock() in register_console()
-around these try_enable_*() calls.
-
-Well, this is for a separated patch or separate patchset.
-
->  	}
->  
-> --- a/include/linux/console.h
-> +++ b/include/linux/console.h
-> @@ -282,6 +282,25 @@ struct nbcon_write_context {
->  	bool			unsafe_takeover;
->  };
->  
-> +/**
-> + * struct nbcon_drvdata - Data to allow nbcon acquire in non-print context
-> + * @ctxt:		The core console context
-> + * @srcu_cookie:	Storage for a console_srcu_lock cookie, if needed
-> + * @owner_index:	Storage for the owning console index, if needed
-> + * @locked:		Storage for the locked state, if needed
-> + *
-> + * All fields (except for @ctxt) are available exclusively to the driver to
-> + * use as needed. They are not used by the printk subsystem.
-> + */
-> +struct nbcon_drvdata {
-> +	struct nbcon_context	__private ctxt;
-> +
-> +	/* reserved for driver use */
-> +	int			srcu_cookie;
-> +	short			owner_index;
-> +	bool			locked;
-> +};
-> +
->  /**
->   * struct console - The console descriptor structure
->   * @name:		The name of the console driver
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -606,6 +609,83 @@ static inline void __uart_port_unlock_irqrestore(struct uart_port *up, unsigned
->  	spin_unlock_irqrestore(&up->lock, flags);
->  }
->  
-> +/**
-> + * uart_port_set_cons - Safely set the @cons field for a uart
-> + * @up:		The uart port to set
-> + * @con:	The new console to set to
-> + *
-> + * This function must be used to set @up->cons. It uses the port lock to
-> + * synchronize with the port lock wrappers in order to ensure that the console
-> + * cannot change or disappear while another context is holding the port lock.
-> + */
-> +static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
-> +{
-> +	unsigned long flags;
-> +
-> +	__uart_port_lock_irqsave(up, &flags);
-> +	up->cons = con;
-> +	__uart_port_unlock_irqrestore(up, flags);
-> +}
-> +
-> +/* Only for internal port lock wrapper usage. */
-> +static inline void __uart_port_nbcon_acquire(struct uart_port *up)
-> +{
-> +	lockdep_assert_held_once(&up->lock);
-> +
-> +	if (likely(!uart_console(up)))
-> +		return;
-> +
-> +	if (up->cons->nbcon_drvdata) {
-> +		/*
-> +		 * If @up->cons is registered, prevent it from fully
-> +		 * unregistering until this context releases the nbcon.
-> +		 */
-> +		int cookie = console_srcu_read_lock();
-
-[ later update: maybe skip 30 lines and read the "Hum, ho" part first]
-[ even later update: or skip 60 lines and read "Win win" part first.]
-
-OK, this makes sense. But I feel like we are in a lock cycle.
-This code is called under "up->lock()". It will be taken also by
-the newcon->device_lock() in register_console() so we would have:
-
-  + register_console()
-    + console_list_lock()   // serializes SRCU access to console list.
-      + con->device_lock()
-	+spin_lock(&up->lock)
-
-  => console_list_lock -> up->lock
-
-and here
-
-  + uart_port_lock()
-    + spin_lock(&up->lock)
-     + __uart_port_nbcon_acquire()
-       + console_srcu_read_lock()   // SRCU read lock serialized by console_list_lock
-
-  => up->lock -> SRCU read lock serialized by console_list_lock
-
-and for completeness:
-
-  + unregister_console()
-    + console_list_lock()
-      + unregister_console_locked()
-	+ synchronize_srcu(&console_srcu);
-
-
-OK, it works because because scru_read_lock() is not blocking.
-The synchronize_srcu() is called under console_list_lock(). So that
-the only important thing is not taking console_list_lock() under
-console_srcu_read_lock().
-
-
-Hum, ho, it took me some time to create a mental model around this.
-It is not that complicated after all:
-
-    + console_list_lock(): serializes the entire (un)register console
-	console operation. Well, it primary serializes
-	the console_list manipulation, including up->cons->node
-	which is tested below.
-
-    + console_lock():  serializes emitting messages on legacy and
-	boot consoles
-
-    + con->device_lock aka port->lock: serializes more actions:
-
-	1. any non-printk related access to the device (HW) like
-	   a generic read/write.
-
-	2. Access to the device by con->write() for legacy consoles.
-
-	3. console registration, in particular console_list
-	   manipulation, including up->cons->node. It is needed
-	   to avoid races when the non-printk code has to decide
-	   whether it needs to get serialized against nbcon
-	   consoles or not.
-
-	  For example, it should prevent races in
-	   __uart_port_nbcon_acquire(up) and
-	   __uart_port_nbcon_release(up) which are added in this patch.
-
-But wait, we take con->device_lock() only in register_console().
-
-Is this correct?
-
-IMHO, it is a bug. We should (must) take con->device_lock()
-also in unregister_console() when manipulating the
-console_list and up->cons->node. Otherwise, uart_console(up)
-would provide racy results.
-
-
-Win win situation:
-
-    If we take con->device_lock() in unregister_console() around
-    console_list manipulation then the console could never
-    disappear or be assigned to another port when both:
-
-       uart_console(up) && hlist_unhashed_lockless(&up->cons->node)
-
-    are "true"
-
-    => we would not need to take console_scru_read_lock() here
-    => we would not need to store/check up->line
-
-    Heh, we even would not need "bool locked" because
-
-       uart_console(up) && hlist_unhashed_lockless(&up->cons->node)
-
-    would always return the same even in  __uart_port_nbcon_release()
-
-    => easier code, straight serialization rules, no races.
-
-
-> +
-> +		/* Ensure console is registered and is an nbcon console. */
-> +		if (!hlist_unhashed_lockless(&up->cons->node) &&
-> +		    (console_srcu_read_flags(up->cons) & CON_NBCON)) {
-> +			WARN_ON_ONCE(up->cons->nbcon_drvdata->locked);
-> +
-> +			nbcon_driver_acquire(up->cons);
-> +
-> +			/*
-> +			 * Record @up->line to be used during release because
-> +			 * @up->cons->index can change while the port and
-> +			 * nbcon are locked.
-> +			 */
-> +			up->cons->nbcon_drvdata->owner_index = up->line;
-> +			up->cons->nbcon_drvdata->srcu_cookie = cookie;
-> +			up->cons->nbcon_drvdata->locked = true;
-> +		} else {
-> +			console_srcu_read_unlock(cookie);
-> +		}
-> +	}
-> +}
-> +
-> +/* Only for internal port lock wrapper usage. */
-> +static inline void __uart_port_nbcon_release(struct uart_port *up)
-> +{
-> +	lockdep_assert_held_once(&up->lock);
-> +
-> +	/*
-> +	 * uart_console() cannot be used here because @up->cons->index might
-> +	 * have changed. Check against @up->cons->nbcon_drvdata->owner_index
-> +	 * instead.
-> +	 */
-> +
-> +	if (unlikely(up->cons &&
-> +		     up->cons->nbcon_drvdata &&
-> +		     up->cons->nbcon_drvdata->locked &&
-> +		     up->cons->nbcon_drvdata->owner_index == up->line)) {
-> +		WARN_ON_ONCE(!up->cons->nbcon_drvdata->locked);
-
-The WARN_ON_ONCE() would never trigger because
-"up->cons->nbcon_drvdata->locked" is checked by the above
-if-condition.
-
-I hope that we would replace this by the same checks as in acquire()
-part as proposed above.
-
-
-> +
-> +		up->cons->nbcon_drvdata->locked = false;
-> +		nbcon_driver_release(up->cons);
-> +		console_srcu_read_unlock(up->cons->nbcon_drvdata->srcu_cookie);
-> +	}
-> +}
-> +
->  /**
->   * uart_port_lock - Lock the UART port
->   * @up:		Pointer to UART port structure
-> @@ -654,7 +741,11 @@ static inline bool uart_port_trylock(struct uart_port *up)
->   */
->  static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
->  {
-> -	return spin_trylock_irqsave(&up->lock, *flags);
-> +	if (!spin_trylock_irqsave(&up->lock, *flags))
-> +		return false;
-> +
-> +	__uart_port_nbcon_acquire(up);
-
-I would feel more comfortable if we created
-__uart_port_nbcon_try_acquire(up). It would give up when it could
-not acquire the context in the given timeout.
-
-It would by similar to acquire(). The only difference would be that
-it would return false on failure. And it would call:
-
-/**
- * nbcon_driver_try_acquire - Try acquire nbcon console and enter unsafe section
- * @con:	The nbcon console to acquire
- *
- * Context:	Any context which could not be migrated to another CPU.
- *
- * Console drivers will usually use their own internal synchronization
- * mechanism to synchronize between console printing and non-printing
- * activities (such as setting baud rates). However, nbcon console drivers
- * supporting atomic consoles may also want to mark unsafe sections when
- * performing non-printing activities.
- *
- * This function tries to acquires the nbcon console using priority
- * NBCON_PRIO_NORMAL and marks it unsafe for handover/takeover.
- *
- * Return: true on success, false when it was not able to acquire the
- *	console and set it "usafe" for a takeover.
- */
-bool nbcon_driver_try_acquire(struct console *con)
-{
-	struct nbcon_context *ctxt = &ACCESS_PRIVATE(con->nbcon_drvdata, ctxt);
-
-	cant_migrate();
-
-	memset(ctxt, 0, sizeof(*ctxt));
-	ctxt->console	= con;
-	ctxt->prio	= NBCON_PRIO_NORMAL;
-
-	if (!nbcon_context_try_acquire(ctxt))
-		return false;
-
-	if (!nbcon_context_enter_unsafe(ctxt))
-		return false;
-}
-
-It is probably not that important because it should not block emitting
-the emergency or panic messages. They would use NBCON_PRIO_EMERGENCY
-or NBCON_PRIO_PANIC in the important code paths.
-
-But it looks semantically wrong to use a potentially blocking function
-in a try_lock() API. IMHO, it would be a call for troubles.
-
-> +	return true;
->  }
->  
->  /**
-> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-> index 2516449f921d..38328cf0fd5c 100644
-> --- a/kernel/printk/nbcon.c
-> +++ b/kernel/printk/nbcon.c
-> @@ -988,3 +991,52 @@ void nbcon_free(struct console *con)
->  
->  	con->pbufs = NULL;
->  }
-> +
-> +/**
-> + * nbcon_driver_acquire - Acquire nbcon console and enter unsafe section
-> + * @con:	The nbcon console to acquire
-> + *
-> + * Context:	Any context which could not be migrated to another CPU.
-> + *
-> + * Console drivers will usually use their own internal synchronization
-> + * mechasism to synchronize between console printing and non-printing
-> + * activities (such as setting baud rates). However, nbcon console drivers
-> + * supporting atomic consoles may also want to mark unsafe sections when
-> + * performing non-printing activities.
-> + *
-> + * This function acquires the nbcon console using priority NBCON_PRIO_NORMAL
-> + * and marks it unsafe for handover/takeover.
-> + *
-> + * Console drivers using this function must have provided @nbcon_drvdata in
-> + * their struct console, which is used to track ownership and state
-> + * information.
-> + */
-> +void nbcon_driver_acquire(struct console *con)
-> +{
-> +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(con->nbcon_drvdata, ctxt);
-
-Hmm, we need to store somewhere the "struct nbcon_context" for this
-generic purpose. If we agreed to remove struct nbcon_drvdata then
-I would store it in struct console as
-
-struct console {
-[...]
-	/**
-	 * @device_nbcon_context:
-	 *
-	 * nbcon_context used to serialize non-printing operations on
-	 * the same device.
-	 *
-	 * The device drivers synchronize these operations with a driver-specific
-	 * lock, such as port->lock in the serial consoles. When the
-	 * device is registered as a console, they additionally have to acquire
-	 * this nbcon context to get serialized against the atomic_write()
-	 * callback using the same device.
-	 *
-	 * The struct does not require any special initialization.
-	 */
-	struct nbcon_context	driver_nbcon_context;
-[...]
-	};
-
-It will be unused for legacy consoles. But the plan is convert all
-console drivers anyway.
-
-IMHO, passing it via an optional pointer is not worth the complexity.
-
-> +
-> +	cant_migrate();
-> +
-> +	do {
-> +		do {
-> +			memset(ctxt, 0, sizeof(*ctxt));
-> +			ctxt->console	= con;
-> +			ctxt->prio	= NBCON_PRIO_NORMAL;
-> +		} while (!nbcon_context_try_acquire(ctxt));
-> +
-> +	} while (!nbcon_context_enter_unsafe(ctxt));
-> +}
-> +EXPORT_SYMBOL_GPL(nbcon_driver_acquire);
-
-Best Regards,
-Petr
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: fff4a5d5609db86ccdf1cf5791b7651b7f6a9b19  serial: ar933x: Remove unneeded static structure
+
+elapsed time: 1334m
+
+configs tested: 156
+configs skipped: 3
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20240410   gcc  
+arc                   randconfig-002-20240410   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   clang
+arm                              allyesconfig   gcc  
+arm                                 defconfig   clang
+arm                   randconfig-001-20240410   gcc  
+arm                   randconfig-003-20240410   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                 randconfig-002-20240410   gcc  
+arm64                 randconfig-003-20240410   gcc  
+arm64                 randconfig-004-20240410   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20240410   gcc  
+csky                  randconfig-002-20240410   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-001-20240410   gcc  
+i386         buildonly-randconfig-002-20240410   clang
+i386         buildonly-randconfig-003-20240410   clang
+i386         buildonly-randconfig-004-20240410   clang
+i386         buildonly-randconfig-005-20240410   gcc  
+i386         buildonly-randconfig-006-20240410   gcc  
+i386                                defconfig   clang
+i386                  randconfig-001-20240410   clang
+i386                  randconfig-002-20240410   clang
+i386                  randconfig-003-20240410   gcc  
+i386                  randconfig-004-20240410   gcc  
+i386                  randconfig-005-20240410   gcc  
+i386                  randconfig-006-20240410   clang
+i386                  randconfig-011-20240410   clang
+i386                  randconfig-012-20240410   clang
+i386                  randconfig-013-20240410   gcc  
+i386                  randconfig-014-20240410   clang
+i386                  randconfig-015-20240410   gcc  
+i386                  randconfig-016-20240410   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                        allyesconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20240410   gcc  
+loongarch             randconfig-002-20240410   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20240410   gcc  
+nios2                 randconfig-002-20240410   gcc  
+openrisc                         allmodconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                randconfig-001-20240410   gcc  
+parisc                randconfig-002-20240410   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                        cell_defconfig   gcc  
+powerpc               randconfig-001-20240410   gcc  
+powerpc               randconfig-002-20240410   gcc  
+powerpc               randconfig-003-20240410   gcc  
+powerpc64             randconfig-001-20240410   gcc  
+powerpc64             randconfig-002-20240410   gcc  
+riscv                            allmodconfig   clang
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   clang
+riscv                               defconfig   clang
+riscv             nommu_k210_sdcard_defconfig   gcc  
+riscv                 randconfig-001-20240410   gcc  
+riscv                 randconfig-002-20240410   gcc  
+s390                             alldefconfig   gcc  
+s390                             allmodconfig   clang
+s390                              allnoconfig   clang
+s390                             allyesconfig   gcc  
+s390                                defconfig   clang
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                               j2_defconfig   gcc  
+sh                            migor_defconfig   gcc  
+sh                    randconfig-001-20240410   gcc  
+sh                    randconfig-002-20240410   gcc  
+sh                           se7712_defconfig   gcc  
+sh                     sh7710voipgw_defconfig   gcc  
+sh                   sh7724_generic_defconfig   gcc  
+sh                              ul2_defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20240410   gcc  
+sparc64               randconfig-002-20240410   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   gcc  
+um                                  defconfig   clang
+um                             i386_defconfig   gcc  
+um                           x86_64_defconfig   clang
+x86_64                            allnoconfig   clang
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-002-20240410   clang
+x86_64       buildonly-randconfig-003-20240410   clang
+x86_64       buildonly-randconfig-005-20240410   clang
+x86_64                              defconfig   gcc  
+x86_64                randconfig-001-20240410   clang
+x86_64                randconfig-003-20240410   clang
+x86_64                randconfig-004-20240410   clang
+x86_64                randconfig-006-20240410   clang
+x86_64                randconfig-014-20240410   clang
+x86_64                randconfig-016-20240410   clang
+x86_64                randconfig-072-20240410   clang
+x86_64                randconfig-074-20240410   clang
+x86_64                randconfig-076-20240410   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                           allyesconfig   gcc  
+xtensa                randconfig-001-20240410   gcc  
+xtensa                randconfig-002-20240410   gcc  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
