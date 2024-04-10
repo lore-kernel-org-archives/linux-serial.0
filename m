@@ -1,93 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5184320309;
-	Wed, 10 Apr 2024 06:15:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81BA5C8DD;
+	Wed, 10 Apr 2024 06:32:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712729710; cv=none; b=SYcSaCva/mLZMyilIDpSNXXxjD66d8HUpmM7flB+s5YsLediLsuf4FWWanU+ufug5nN3ysyndX9JWZGvdaJ3zuX2KQ+HbzjrDY8QhJeD1hG8DjHwF5HBC7O6klwX1JqXG5gMmleZuRkUOhXwyota9isLAb3VtFhzHJWmb7M/xzo=
+	t=1712730747; cv=none; b=dowadIcocvUh77PGhTX1Vxpgj8dZJjofwPsL5d7xwRH9Re7uKbM3l/3gB5slBwWjHyDLsfmkpmKkAnztuSMKKMiVdzjKR9TSwyNZ/aQhH6UzKrZ5myQ1xGHScxXZY88BYCDiOKDzLOcQtVNjN9wZpvbaitsl5o6II6XdqOmgLog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712729710; c=relaxed/simple;
-	bh=i1SI/KN3r0p/TBOv27r40IHabpQWrtHclXTYWM4E3BM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V7yNiOmMrLNecIOpF+BPtVKZxjDbPDseB2aZVTtu9/lXMDrcgSk00c7sF2nsA7kpB9LrepvCOBo3VvGKfCdjYha5qeGFwUQSDUSNaS60eEKHp+9HqzpsQRXbuGc3LHaTxld9w0D+ii4ajvCtnseWE7SXJEu/MTWl+et8ovZvcBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2qyXSC6M; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2qyXSC6M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D73C433F1;
-	Wed, 10 Apr 2024 06:15:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712729709;
-	bh=i1SI/KN3r0p/TBOv27r40IHabpQWrtHclXTYWM4E3BM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=2qyXSC6McdQ9greAT8ipTCHr/xjY5kNOSrkhCcTAB0tO8Iu+MCPnF8Xme6UFJzkFb
-	 qE+lhgiFkbOj2fMQzIFAcwuUj1piXYWnm624l37L0x5PUN6sh2Dgm0REQRWkvedtot
-	 yOvaw/gT7LNBgG0nS0SE30A5vm8DM1ORmJXFxMlg=
-Date: Wed, 10 Apr 2024 08:15:06 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Liuye <liu.yeC@h3c.com>
-Cc: "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-	"daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
-	"dianders@chromium.org" <dianders@chromium.org>,
-	"jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: Re: =?utf-8?B?562U5aSNOiDnrZTlpI0=?= =?utf-8?Q?=3A?= [PATCH V10]
- kdb: Fix the deadlock issue in KDB debugging.
-Message-ID: <2024041022-electable-unblock-5077@gregkh>
+	s=arc-20240116; t=1712730747; c=relaxed/simple;
+	bh=pGvxBubreliBepPTNBS2k6SqYHRlWHDZe4Zl/3HRKZI=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=MVzWykoaRp8OK9NDpFgPLcoKp21AQ3L62YMQEbgpaZTn/pm6JUzVZ8fq4CQ3BzdQpzLFEfxXvRtaFn/R507J6ewct5Q0UD9f4ttXtrXRm7vHuC90GHO2UErsGVePrKYFxosPUuwhJa8ISzo7z3RVs9h+d7BPZ8J2TUAQfDdipUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 43A6Uv1R068148;
+	Wed, 10 Apr 2024 14:30:57 +0800 (GMT-8)
+	(envelope-from liu.yeC@h3c.com)
+Received: from DAG6EX10-BJD.srv.huawei-3com.com (unknown [10.153.34.12])
+	by mail.maildlp.com (Postfix) with ESMTP id BC1FD2006135;
+	Wed, 10 Apr 2024 14:33:07 +0800 (CST)
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
+ DAG6EX10-BJD.srv.huawei-3com.com (10.153.34.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.27; Wed, 10 Apr 2024 14:30:59 +0800
+Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
+ by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
+ mapi id 15.02.1258.027; Wed, 10 Apr 2024 14:30:59 +0800
+From: Liuye <liu.yeC@h3c.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "jason.wessel@windriver.com"
+	<jason.wessel@windriver.com>,
+        "jirislaby@kernel.org" <jirislaby@kernel.org>,
+        "kgdb-bugreport@lists.sourceforge.net"
+	<kgdb-bugreport@lists.sourceforge.net>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIIFYxMF0ga2RiOiBGaXgg?=
+ =?utf-8?Q?the_deadlock_issue_in_KDB_debugging.?=
+Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRDSCBWMTBdIGtkYjogRml4IHRoZSBkZWFk?=
+ =?utf-8?Q?lock_issue_in_KDB_debugging.?=
+Thread-Index: AQHaiuuw81gSSyk26Eq+v/7KfdTz2LFgdGkAgACJimD//36cAIAAh7Hw//98qQCAAIohAA==
+Date: Wed, 10 Apr 2024 06:30:59 +0000
+Message-ID: <567857bab013409ca53fa7c36292f4b0@h3c.com>
 References: <20240409020326.2125332-1-liu.yec@h3c.com>
  <20240410020615.2885000-1-liu.yec@h3c.com>
  <2024041014-padlock-aggregate-4705@gregkh>
  <0c004dd44ad5478eba9451186f4ec962@h3c.com>
  <2024041001-retaliate-cork-1fe5@gregkh>
  <5c659d5f41ff4cf69ea9467b62d74e9b@h3c.com>
+ <2024041022-electable-unblock-5077@gregkh>
+In-Reply-To: <2024041022-electable-unblock-5077@gregkh>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-sender-location: DAG2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5c659d5f41ff4cf69ea9467b62d74e9b@h3c.com>
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 43A6Uv1R068148
 
-On Wed, Apr 10, 2024 at 06:10:10AM +0000, Liuye wrote:
-> >On Wed, Apr 10, 2024 at 05:54:08AM +0000, Liuye wrote:
-> >> >> Signed-off-by: Greg KH <gregkh@linuxfoundation.org>
-> >> >
-> >> >I have NOT signed off on this commit.  You just said that I made a legal statement about this commit without that actually being true???
-> >> >
-> >> >Sorry, but that is flat out not acceptable at all.  Please go work with your company lawyers to figure out what you did and come back with an explaination of exactly what this is and how it will not happen again.
-> >> >
-> >> 
-> >> >> Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> >> >
-> >> >> V9 -> V10 : Add Signed-off-by of Greg KH and Andy Shevchenko, 
-> >> >> Acked-by of Daniel Thompson
-> >> >
-> >> >Huh?!
-> >> 
-> >> @greg k-h ：
-> >> @Andy Shevchenko ：
-> >> 
-> >> Sorry, it was my mistake. I misunderstood the meaning of "signed-off-by", which led to usage issues.
-> >> 
-> >> I want to express my gratitude for the suggestions on the patch from the two of you. 
-> >> 
-> >> What do I need to do now? Release PATCH V11 and delete these two signatures in it ?
-> >
-> >As I said, go work with your corporate lawyers on this to understand what just happened and have them let us know how it will not happen again.
-> 
-> I'm very sorry, this is my first time submitting a patch and I made a significant mistake in using "Signed-off-by". I now understand the meaning of this field and will not make the same mistake again in the future.
-
-Understood, but you still need to go work with your corporate legal
-group so that you all ensure this does not happen again for any other
-developer in your company, as I am sure they will want to know about
-this.
-
-thanks,
-
-greg k-h
+Pk9uIFdlZCwgQXByIDEwLCAyMDI0IGF0IDA2OjEwOjEwQU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
+Pj4gPk9uIFdlZCwgQXByIDEwLCAyMDI0IGF0IDA1OjU0OjA4QU0gKzAwMDAsIExpdXllIHdyb3Rl
+Og0KPj4gPj4gPj4gU2lnbmVkLW9mZi1ieTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlv
+bi5vcmc+DQo+PiA+PiA+DQo+PiA+PiA+SSBoYXZlIE5PVCBzaWduZWQgb2ZmIG9uIHRoaXMgY29t
+bWl0LiAgWW91IGp1c3Qgc2FpZCB0aGF0IEkgbWFkZSBhIGxlZ2FsIHN0YXRlbWVudCBhYm91dCB0
+aGlzIGNvbW1pdCB3aXRob3V0IHRoYXQgYWN0dWFsbHkgYmVpbmcgdHJ1ZT8/Pw0KPj4gPj4gPg0K
+Pj4gPj4gPlNvcnJ5LCBidXQgdGhhdCBpcyBmbGF0IG91dCBub3QgYWNjZXB0YWJsZSBhdCBhbGwu
+ICBQbGVhc2UgZ28gd29yayB3aXRoIHlvdXIgY29tcGFueSBsYXd5ZXJzIHRvIGZpZ3VyZSBvdXQg
+d2hhdCB5b3UgZGlkIGFuZCBjb21lIGJhY2sgd2l0aCBhbiBleHBsYWluYXRpb24gb2YgZXhhY3Rs
+eSB3aGF0IHRoaXMgaXMgYW5kIGhvdyBpdCB3aWxsIG5vdCBoYXBwZW4gYWdhaW4uDQo+PiA+PiA+
+DQo+PiA+PiANCj4+ID4+ID4+IFNpZ25lZC1vZmYtYnk6IEFuZHkgU2hldmNoZW5rbyA8YW5keS5z
+aGV2Y2hlbmtvQGdtYWlsLmNvbT4NCj4+ID4+ID4NCj4+ID4+ID4+IFY5IC0+IFYxMCA6IEFkZCBT
+aWduZWQtb2ZmLWJ5IG9mIEdyZWcgS0ggYW5kIEFuZHkgU2hldmNoZW5rbywgDQo+PiA+PiA+PiBB
+Y2tlZC1ieSBvZiBEYW5pZWwgVGhvbXBzb24NCj4+ID4+ID4NCj4+ID4+ID5IdWg/IQ0KPj4gPj4g
+DQo+PiA+PiBAZ3JlZyBrLWgg77yaDQo+PiA+PiBAQW5keSBTaGV2Y2hlbmtvIO+8mg0KPj4gPj4g
+DQo+PiA+PiBTb3JyeSwgaXQgd2FzIG15IG1pc3Rha2UuIEkgbWlzdW5kZXJzdG9vZCB0aGUgbWVh
+bmluZyBvZiAic2lnbmVkLW9mZi1ieSIsIHdoaWNoIGxlZCB0byB1c2FnZSBpc3N1ZXMuDQo+PiA+
+PiANCj4+ID4+IEkgd2FudCB0byBleHByZXNzIG15IGdyYXRpdHVkZSBmb3IgdGhlIHN1Z2dlc3Rp
+b25zIG9uIHRoZSBwYXRjaCBmcm9tIHRoZSB0d28gb2YgeW91LiANCj4+ID4+IA0KPj4gPj4gV2hh
+dCBkbyBJIG5lZWQgdG8gZG8gbm93PyBSZWxlYXNlIFBBVENIIFYxMSBhbmQgZGVsZXRlIHRoZXNl
+IHR3byBzaWduYXR1cmVzIGluIGl0ID8NCj4+ID4NCj4+ID5BcyBJIHNhaWQsIGdvIHdvcmsgd2l0
+aCB5b3VyIGNvcnBvcmF0ZSBsYXd5ZXJzIG9uIHRoaXMgdG8gdW5kZXJzdGFuZCB3aGF0IGp1c3Qg
+aGFwcGVuZWQgYW5kIGhhdmUgdGhlbSBsZXQgdXMga25vdyBob3cgaXQgd2lsbCBub3QgaGFwcGVu
+IGFnYWluLg0KPj4gDQo+PiBJJ20gdmVyeSBzb3JyeSwgdGhpcyBpcyBteSBmaXJzdCB0aW1lIHN1
+Ym1pdHRpbmcgYSBwYXRjaCBhbmQgSSBtYWRlIGEgc2lnbmlmaWNhbnQgbWlzdGFrZSBpbiB1c2lu
+ZyAiU2lnbmVkLW9mZi1ieSIuIEkgbm93IHVuZGVyc3RhbmQgdGhlIG1lYW5pbmcgb2YgdGhpcyBm
+aWVsZCBhbmQgd2lsbCBub3QgbWFrZSB0aGUgc2FtZSBtaXN0YWtlIGFnYWluIGluIHRoZSBmdXR1
+cmUuDQo+DQo+VW5kZXJzdG9vZCwgYnV0IHlvdSBzdGlsbCBuZWVkIHRvIGdvIHdvcmsgd2l0aCB5
+b3VyIGNvcnBvcmF0ZSBsZWdhbCBncm91cCBzbyB0aGF0IHlvdSBhbGwgZW5zdXJlIHRoaXMgZG9l
+cyBub3QgaGFwcGVuIGFnYWluIGZvciBhbnkgb3RoZXIgZGV2ZWxvcGVyIGluIHlvdXIgY29tcGFu
+eSwgYXMgSSBhbSBzdXJlIHRoZXkgd2lsbCB3YW50IHRvIGtub3cgYWJvdXQgdGhpcy4NCg0KT2ss
+IEkgd2lsbCByZXBvcnQgdGhpcyB0byB0aGUgY29tcGFueS4gQXQgdGhlIHNhbWUgdGltZSwgSSB3
+aWxsIGFkZCBhbiBhdWRpdCBtZWNoYW5pc20gdG8gdGhlIHBhdGNoIHN1Ym1pc3Npb24gcHJvY2Vz
+cy4gVGhhbmtzIGFnYWluIGZvciB5b3VyIHJlbWluZGVyLg0KDQpJIHdpbGwgcmVtb3ZlIHRoaXMg
+cGFydCBpbiBQQVRDSCBWMTEuDQoNClRoYW5rc++8jA0KTGl1IFllDQo=
