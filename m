@@ -1,106 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE2C15B10A;
-	Wed, 10 Apr 2024 16:38:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 958B717BB05;
+	Wed, 10 Apr 2024 17:11:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712767111; cv=none; b=q2sguF1cPG65C2gtDPYg+SYdM48B9YCiLnH7kLGPXvtCBQnvQAPhuDofURhrff1L3q2u0bdNLo06Syl8UoebRCp6IYIIGCNxKdfIO4NBQy+6wIFH4XCO75dm1AQcWLDnyHHYXRATPN4bRlJ0Gf0i5PKMarXGgC+E0w2GNgLzaBA=
+	t=1712769067; cv=none; b=V3SdrRAbuTSisGadFvug41mw9YWew2E6a3iSwTP3FiWzO6PPTDP2kupxo2/m27unLNyoEUWBwXGCfjf8H7Qlk3Fa7trMwTlubBJ1iO4XQS8+Z18KQo8R2Lea8yiKcXJyg/lGg1shcrgxOT5G/X6KaApwWZFePObGfVa7x/2nV70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712767111; c=relaxed/simple;
-	bh=iX3oV/OqzRjgmC93miXiwRYAlMbRuyED7tJL1s5mjUg=;
+	s=arc-20240116; t=1712769067; c=relaxed/simple;
+	bh=ZGMs4eaw7dazW68rXM4OhUV3d8QFUB+5AWT1J8PJOOg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iaSGPH3JKU6cP6eHgDYy/inGNXFdslviSFuAlBX2DFRQ7h+by2/nQQ5jbvrX398tA3vnhi8MRIitzV+ms1EVwNWjj1Jz/O6KLsMvRtoB/Fgni5hr06fPE1AUI3zrTIpukk9n6qSy65sd6uGMI+z8smoX3B+TguvxP4dc+YxMqho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R1E3obt2; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=abwVUnv8nNgZVUGZkaxLRcXHCD16NWZlbcVqRvLFHmUdHjk0jPAKNhWznd+CkLZxZY7KOWb1SZmflQil+zxOpaQhGfDjiE7JiRdoavw0SmgNqqiuK8peBpcNI1TRIVfhgz23UX53qLz5osB2j3hRloYwQpp8eCCaYI4j13dQ5ig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZnTku62o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R1E3obt2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCBACC433F1;
-	Wed, 10 Apr 2024 16:38:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712767111;
-	bh=iX3oV/OqzRjgmC93miXiwRYAlMbRuyED7tJL1s5mjUg=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZnTku62o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A503BC433F1;
+	Wed, 10 Apr 2024 17:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1712769067;
+	bh=ZGMs4eaw7dazW68rXM4OhUV3d8QFUB+5AWT1J8PJOOg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=R1E3obt2kD4S6U3A41s/x8MeAVa76xSg0hM9zZpclfIcJGjDZd7Z+Z0oYq9MJjeZ4
-	 mwBHLzTYLuLg32YIyFi4t8HXlKgVkKjrVp9rxxwggjzoxqfaLdenVywR8GgmFSF/nD
-	 Vbvb/AgS/82DgK2Sxcu9t0GA3TuHZQ2bppmX/BLPI4zdDSn/nywvxiFRXBCLLA3tFb
-	 t1cPPDYPyzH9e3FbeBPvEotYVc9H71bVUbed6R4mKRqmKAPiVjl98z2F4BZeB6v60q
-	 htHY38WGEOQju1dBN7aXVO99lAXTd3Jkj5EdTaOHm4i56ebD+dIvmin4tPSylnAF9J
-	 xPvGnvbDpXI/Q==
-Date: Wed, 10 Apr 2024 11:38:28 -0500
-From: Rob Herring <robh@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: David Rientjes <rientjes@google.com>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>, Helge Deller <deller@gmx.de>,
-	linux-pci@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-	linux-clk@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Azeem Shaikh <azeemshaikh38@gmail.com>, Lee Jones <lee@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	linux-renesas-soc@vger.kernel.org,
-	Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Jonathan Corbet <corbet@lwn.net>, dri-devel@lists.freedesktop.org,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Maxime Ripard <mripard@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>, linux-ide@vger.kernel.org,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Damien Le Moal <dlemoal@kernel.org>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	Stephen Boyd <sboyd@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Niklas Cassel <cassel@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Baoquan He <bhe@redhat.com>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	linux-fbdev@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>,
-	David Airlie <airlied@gmail.com>, linux-sh@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>, Rich Felker <dalias@libc.org>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Daniel Vetter <daniel@ffwll.ch>, devicetree@vger.kernel.org,
-	Jacky Huang <ychuang3@nuvoton.com>
-Subject: Re: [RESEND v7 28/37] dt-bindings: soc: renesas: sh: Add SH7751
- based target
-Message-ID: <171276710677.411211.12362682268802975581.robh@kernel.org>
-References: <cover.1712207606.git.ysato@users.sourceforge.jp>
- <3c2937039026fdb827709b2584528aca263f2668.1712207606.git.ysato@users.sourceforge.jp>
+	b=ZnTku62oSu7dzbXbtHbKdxdkZCjWSlQNPYz08CqnLdYPDMoHOvRdowI3qIZEDv+Kd
+	 FEWutw6k+OWB7ROvHbbUJhZdiv/Io/ybnrUY3zzG6JF9ZukipycH0eOs31K8DHk66Q
+	 0ieea41dUD4O24dSNLKPn0s7FRDHoryWqXvVX9+I=
+Date: Wed, 10 Apr 2024 19:11:03 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Alexey Gladkov <legion@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+	kbd@lists.linux.dev, linux-api@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org,
+	Helge Deller <deller@gmx.de>
+Subject: Re: [RESEND PATCH v3 1/2] VT: Add KDFONTINFO ioctl
+Message-ID: <2024041027-overload-striking-c9a5@gregkh>
+References: <cover.1710252966.git.legion@kernel.org>
+ <cover.1712053848.git.legion@kernel.org>
+ <ed056326540f04b72c97a276fbcc316e1b2f6371.1712053848.git.legion@kernel.org>
+ <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
+ <ZgwF72yHH_0-A4FW@example.org>
+ <6bb4f4fb-573c-4f63-967c-2cb08514fc91@kernel.org>
+ <Zha-X8QS_8L9eF0r@example.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3c2937039026fdb827709b2584528aca263f2668.1712207606.git.ysato@users.sourceforge.jp>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Zha-X8QS_8L9eF0r@example.org>
 
-
-On Thu, 04 Apr 2024 14:14:39 +0900, Yoshinori Sato wrote:
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> ---
->  .../devicetree/bindings/soc/renesas/sh.yaml   | 27 +++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/renesas/sh.yaml
+On Wed, Apr 10, 2024 at 06:29:19PM +0200, Alexey Gladkov wrote:
+> On Wed, Apr 03, 2024 at 07:27:55AM +0200, Jiri Slaby wrote:
+> > On 02. 04. 24, 15:19, Alexey Gladkov wrote:
+> > >>> --- a/include/uapi/linux/kd.h
+> > >>> +++ b/include/uapi/linux/kd.h
+> > ...
+> > >>> +struct console_font_info {
+> > >>> +	unsigned int min_width, min_height;	/* minimal font size */
+> > >>> +	unsigned int max_width, max_height;	/* maximum font size */
+> > >>> +	unsigned int flags;			/* KD_FONT_INFO_FLAG_* */
+> > >>
+> > >> This does not look like a well-defined™ and extendable uapi structure.
+> > >> While it won't change anything here, still use fixed-length __u32.
+> > >>
+> > >> And you should perhaps add some reserved fields. Do not repeat the same
+> > >> mistakes as your predecessors with the current kd uapi.
+> > > 
+> > > I thought about it, but I thought it would be overengineering.
+> > 
+> > It would not. UAPI structs are set in stone once released.
+> > 
+> > And in this case, it's likely you would want to know more info about 
+> > fonts in the future.
+> > 
+> > > Can you suggest how best to do this?
+> > 
+> > Given you have flags in there already (to state that the structure 
+> > contains more), just add an array of u32 reserved[] space. 3 or 5, I 
+> > would say (to align the struct to 64bit).
 > 
+> struct console_font_info {
+>        __u32 min_width, min_height;    /* minimal font size */
+>        __u32 max_width, max_height;    /* maximum font size */
+>        __u32  flags;                   /* KD_FONT_INFO_FLAG_* */
+>        __u32 reserved[5];              /* This field is reserved forfuture use. Must be 0. */
+> };
+> 
+> So, struct should be like this ?
+> 
+> I wouldn't add the version to the flags. Maybe it would be better to add a
+> separate field with the version?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Versions do not work for ioctls, just use flags for stuff.  And you
+might want to put flags first?
 
+thanks,
+
+greg k-h
