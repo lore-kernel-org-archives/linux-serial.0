@@ -1,205 +1,262 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961E313C9C2;
-	Wed, 10 Apr 2024 09:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D80642BAEC
+	for <linux-serial@vger.kernel.org>; Wed, 10 Apr 2024 11:05:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712739881; cv=none; b=tBYfS1O0wrdA71FmcdKNGm3y13sX9z92lNOTCeEqAQjipqnPoQH2vzD6ItaOpKoCRP+E4cTtstzrI8ke1kFcjGnVtG7M9OaGwJ+/xAkMGgZr+3P+OXNKshw4tVdJqkIQNy2JFrXAauhDSUhUJyYsaqXSDAcxrWTv/8KwiMTT8oc=
+	t=1712747150; cv=none; b=vDRaXLRh7++JAw+auaLWYk9gvGCWcDnh9q8nG5ah4HeAzsbPR+/gdlWklHmB27dPD036zjwIH9SCu8pO5/+1EZwIlM+x70HpnUErK2bdpwm9o93zBeetNqrrWevbIvo5OO8ME9Qm4M3A4Jkz2IOo+8F5OrSP2JPosnuAchglt0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712739881; c=relaxed/simple;
-	bh=yC1fHnN++BPpkQjf58bLfmmcbueNBtdWeMQ2Fls3OaI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=paYZ9z1NIJ2ExZNwmPgnFnZNqkk0zg94hQ6fYGYWF5VWCWMDgACiB/iV58Nrp9QdJlF9HXIAiDJ3QybfuUmNam8nNm0M0IPr3Tt87z0+pASC+7GlYV6pmSjtV1SNWjCVdtV3HE+1LiZ55VrSOV80cLt0NjyWuSpYeR5rGSYV2j0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-56fd7df9ea9so334848a12.0;
-        Wed, 10 Apr 2024 02:04:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712739878; x=1713344678;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CSRbPEsYEHh8o1F+T+KrAr6gkHV7VXnnnB4LL4c3yKI=;
-        b=f5Emf1lMWHjmwdFq3LrjjYEelvTOYNTL/drkVUwOwn/XeBVLrZ9vZf44tjME/twdod
-         +MTvCczF0COsjISBc+CUX5jNXJkYBrDErhjWjsAmSk5ue1FGRyopd+DW4JeO1JSvF5R9
-         B1P21jGaB0b4qTSAMj528D8VzbLRh2WFm0TwMKskBFLFJ1YCc1BgfrtjSjmDIDbEGKFZ
-         2SutjOiF1U5c2NJSlfrx5XHlWy9Ex0R89M9qB/BzZAzzsgQygvu0xd9scQ79xDaeZ0nB
-         cy36I8Mx+a7gfdZOzdFv6pxia/H3Z2yI1gmdrFfofTbBoDaoearm3JznQxZNXZA1GNoq
-         V/fg==
-X-Forwarded-Encrypted: i=1; AJvYcCVzVpT0xOonzIq2yMpx3vYsW/s791c8jbTMloYibg2SDRb0Adcu807K9tiFuP80U4lzvsWG7iwQX/sLWrKvYpKnTNUqhv4LKD9O1NU0Dc+GvJc/HeP7lLZJsCplaTjySawZXGgPFB0RciEL
-X-Gm-Message-State: AOJu0YzjQN9SOmvmxJTDJNFmvvSi6iyAFZnwxZRmHut//GXtDMiNzF59
-	9uJhUppb2RCUsGJAEwr7FfHNIVxbLPMrtyYJYY8vOnOWl1wC6sFZe7yYCVtp4C4=
-X-Google-Smtp-Source: AGHT+IFlqwA3VpuaQbkMbHZHnkhIS3ZLMINC/6P8/QHZVQOqt7JvaZp0yCKD0KEBS7w2RpGmedWsWg==
-X-Received: by 2002:a17:906:155a:b0:a51:b2a6:8bf3 with SMTP id c26-20020a170906155a00b00a51b2a68bf3mr1152437ejd.66.1712739877636;
-        Wed, 10 Apr 2024 02:04:37 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id y6-20020a17090668c600b00a46d049ff63sm6655145ejr.21.2024.04.10.02.04.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Apr 2024 02:04:36 -0700 (PDT)
-Message-ID: <52a83cb5-ef4f-46f5-ad90-1f64b4d588e2@kernel.org>
-Date: Wed, 10 Apr 2024 11:04:35 +0200
+	s=arc-20240116; t=1712747150; c=relaxed/simple;
+	bh=MlMo3/sjy9gqZh36XzM/VBPUjbZZOJlQg4dBI+6i6gw=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=aYjpl5jOMbkwykzyBA4cCsR5i0gZjPALBISXXV7FSHwqPBYw7tJv2n2VHudSfkC6WWrVp+hPlKQIljweb1pZnWgxyW6/Bsyvim2BMvdistl3x6AcqRHL+KcLyh/bre3LFUAd950RQZCw3Y7fCfsYPrW5tNyNAM3+dGLxzVZ5VNg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EE0n4XN8; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EE0n4XN8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712747149; x=1744283149;
+  h=date:from:to:cc:subject:message-id;
+  bh=MlMo3/sjy9gqZh36XzM/VBPUjbZZOJlQg4dBI+6i6gw=;
+  b=EE0n4XN8tpSq65qHtGuoXU6SYpvBLVeD3n73yaL0SGEkSi8wTwvzJYtX
+   m7L2efZ9b55wbA2mgCd8l+feCLz72aKlZDU2H5f+2yY1VHAYzS0mWh/Rx
+   U8V7qpUGOa4XF3UMb0Cjnck4j8Gspgoo4mdtlZuZ6Gv72oQf5HnJs5jAl
+   e6Byw3PNZ9GCDGAVgqFl4czGQNqM+ocNgck0QXThyHz1MQH3CBIAmA/uW
+   BbzIjWFSW03EDPleCNxCYVQd+VxYgYxJY9DG4ZL3rG/7Xk5wCtrlV1ac1
+   0dCAW6nvc8725EoLcNx0eddRZqwmA4gxEO2duEk6DGIPOhNvWWhPrgz3v
+   w==;
+X-CSE-ConnectionGUID: EswmQFwTSquhj6ISZOhuNQ==
+X-CSE-MsgGUID: /RP9fGJ2SACnPCScb727Dw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="18815134"
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="18815134"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 04:05:48 -0700
+X-CSE-ConnectionGUID: VZ1yXsNOR8y53bH/v9OjLg==
+X-CSE-MsgGUID: zt+MW0MfQYueRJwzb7qDrg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="25297649"
+Received: from lkp-server01.sh.intel.com (HELO e61807b1d151) ([10.239.97.150])
+  by orviesa005.jf.intel.com with ESMTP; 10 Apr 2024 04:05:46 -0700
+Received: from kbuild by e61807b1d151 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1ruVlw-0007FC-17;
+	Wed, 10 Apr 2024 11:05:44 +0000
+Date: Wed, 10 Apr 2024 19:04:53 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 9cf7ea2eeb745213dc2a04103e426b960e807940
+Message-ID: <202404101951.RNK1O7xR-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/1] serial: core: Extract uart_alloc_xmit_buf() and
- uart_free_xmit_buf()
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240409174057.1104262-1-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240409174057.1104262-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 09. 04. 24, 19:40, Andy Shevchenko wrote:
-> After conversion to the kfifo, it becomes possible to extract two helper
-> functions for better maintenance and code deduplication. Do it here.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->   drivers/tty/serial/serial_core.c | 98 ++++++++++++++++++--------------
->   1 file changed, 54 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index dd6cf525d98d..ba2d6065fe02 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -243,25 +243,12 @@ static void uart_change_line_settings(struct tty_struct *tty, struct uart_state
->   	uart_port_unlock_irq(uport);
->   }
->   
-> -/*
-> - * Startup the port.  This will be called once per open.  All calls
-> - * will be serialised by the per-port mutex.
-> - */
-> -static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
-> -			     bool init_hw)
-> +static int uart_alloc_xmit_buf(struct tty_port *port)
->   {
-> -	struct uart_port *uport = uart_port_check(state);
-> +	struct uart_state *state = container_of(port, struct uart_state, port);
-> +	struct uart_port *uport;
->   	unsigned long flags;
->   	unsigned long page;
-> -	int retval = 0;
-> -
-> -	if (uport->type == PORT_UNKNOWN)
-> -		return 1;
-> -
-> -	/*
-> -	 * Make sure the device is in D0 state.
-> -	 */
-> -	uart_change_pm(state, UART_PM_STATE_ON);
->   
->   	/*
->   	 * Initialise and allocate the transmit and temporary
-> @@ -271,7 +258,7 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->   	if (!page)
->   		return -ENOMEM;
->   
-> -	uart_port_lock(state, flags);
-> +	uport = uart_port_lock(state, flags);
->   	if (!state->port.xmit_buf) {
->   		state->port.xmit_buf = (unsigned char *)page;
->   		kfifo_init(&state->port.xmit_fifo, state->port.xmit_buf,
-> @@ -281,11 +268,58 @@ static int uart_port_startup(struct tty_struct *tty, struct uart_state *state,
->   		uart_port_unlock(uport, flags);
->   		/*
->   		 * Do not free() the page under the port lock, see
-> -		 * uart_shutdown().
-> +		 * uart_free_xmit_buf().
->   		 */
->   		free_page(page);
->   	}
->   
-> +	return 0;
-> +}
-> +
-> +static void uart_free_xmit_buf(struct tty_port *port)
-> +{
-> +	struct uart_state *state = container_of(port, struct uart_state, port);
-> +	struct uart_port *uport;
-> +	unsigned long flags;
-> +	char *xmit_buf;
-> +
-> +	/*
-> +	 * Do not free() the transmit buffer page under the port lock since
-> +	 * this can create various circular locking scenarios. For instance,
-> +	 * console driver may need to allocate/free a debug object, which
-> +	 * can end up in printk() recursion.
-> +	 */
-> +	uport = uart_port_lock(state, flags);
-> +	xmit_buf = port->xmit_buf;
-> +	port->xmit_buf = NULL;
-> +	INIT_KFIFO(port->xmit_fifo);
-> +	uart_port_unlock(uport, flags);
-> +
-> +	free_page((unsigned long)xmit_buf);
-> +}
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 9cf7ea2eeb745213dc2a04103e426b960e807940  serial: core: Clearing the circular buffer before NULLifying it
 
-I see very much of tty_port_alloc_xmit_buf() and 
-tty_port_free_xmit_buf() in here :).
+elapsed time: 1196m
 
-Currently, different locks are used, so the patch is, I think, good for 
-now. For future, we should switch to the tty port helpers.
+configs tested: 185
+configs skipped: 3
 
-Actually have you looked if the different locking is an issue at all? 
-IOW, isn't the tty_port's (and its xmit buf) lifetime enough w/o uart 
-port locks?
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-thanks,
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20240410   gcc  
+arc                   randconfig-002-20240410   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   clang
+arm                              allyesconfig   gcc  
+arm                         bcm2835_defconfig   clang
+arm                                 defconfig   clang
+arm                          pxa910_defconfig   gcc  
+arm                   randconfig-001-20240410   gcc  
+arm                   randconfig-002-20240410   clang
+arm                   randconfig-003-20240410   gcc  
+arm                   randconfig-004-20240410   clang
+arm                         s3c6400_defconfig   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                 randconfig-001-20240410   clang
+arm64                 randconfig-002-20240410   gcc  
+arm64                 randconfig-003-20240410   gcc  
+arm64                 randconfig-004-20240410   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20240410   gcc  
+csky                  randconfig-002-20240410   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+hexagon               randconfig-001-20240410   clang
+hexagon               randconfig-002-20240410   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-001-20240410   gcc  
+i386         buildonly-randconfig-002-20240410   clang
+i386         buildonly-randconfig-003-20240410   clang
+i386         buildonly-randconfig-004-20240410   clang
+i386         buildonly-randconfig-005-20240410   gcc  
+i386         buildonly-randconfig-006-20240410   gcc  
+i386                                defconfig   clang
+i386                  randconfig-001-20240410   clang
+i386                  randconfig-002-20240410   clang
+i386                  randconfig-003-20240410   gcc  
+i386                  randconfig-004-20240410   gcc  
+i386                  randconfig-005-20240410   gcc  
+i386                  randconfig-006-20240410   clang
+i386                  randconfig-011-20240410   clang
+i386                  randconfig-012-20240410   clang
+i386                  randconfig-013-20240410   gcc  
+i386                  randconfig-014-20240410   clang
+i386                  randconfig-015-20240410   gcc  
+i386                  randconfig-016-20240410   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20240410   gcc  
+loongarch             randconfig-002-20240410   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                         amcore_defconfig   gcc  
+m68k                                defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                     cu1000-neo_defconfig   gcc  
+mips                         db1xxx_defconfig   clang
+mips                     decstation_defconfig   gcc  
+mips                 decstation_r4k_defconfig   gcc  
+mips                      malta_kvm_defconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20240410   gcc  
+nios2                 randconfig-002-20240410   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                randconfig-001-20240410   gcc  
+parisc                randconfig-002-20240410   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                       ebony_defconfig   clang
+powerpc                   motionpro_defconfig   clang
+powerpc                      pasemi_defconfig   clang
+powerpc               randconfig-001-20240410   gcc  
+powerpc               randconfig-002-20240410   gcc  
+powerpc               randconfig-003-20240410   gcc  
+powerpc                     tqm8555_defconfig   clang
+powerpc64             randconfig-001-20240410   gcc  
+powerpc64             randconfig-002-20240410   gcc  
+powerpc64             randconfig-003-20240410   clang
+riscv                            allmodconfig   clang
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   clang
+riscv                               defconfig   clang
+riscv                 randconfig-001-20240410   gcc  
+riscv                 randconfig-002-20240410   gcc  
+s390                             allmodconfig   clang
+s390                              allnoconfig   clang
+s390                             allyesconfig   gcc  
+s390                                defconfig   clang
+s390                  randconfig-001-20240410   clang
+s390                  randconfig-002-20240410   clang
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                             espt_defconfig   gcc  
+sh                            hp6xx_defconfig   gcc  
+sh                               j2_defconfig   gcc  
+sh                    randconfig-001-20240410   gcc  
+sh                    randconfig-002-20240410   gcc  
+sh                          rsk7201_defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20240410   gcc  
+sparc64               randconfig-002-20240410   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   gcc  
+um                                  defconfig   clang
+um                             i386_defconfig   gcc  
+um                    randconfig-001-20240410   clang
+um                    randconfig-002-20240410   clang
+um                           x86_64_defconfig   clang
+x86_64                            allnoconfig   clang
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20240410   gcc  
+x86_64       buildonly-randconfig-002-20240410   clang
+x86_64       buildonly-randconfig-003-20240410   clang
+x86_64       buildonly-randconfig-004-20240410   gcc  
+x86_64       buildonly-randconfig-005-20240410   clang
+x86_64       buildonly-randconfig-006-20240410   gcc  
+x86_64                              defconfig   gcc  
+x86_64                randconfig-001-20240410   clang
+x86_64                randconfig-002-20240410   gcc  
+x86_64                randconfig-003-20240410   clang
+x86_64                randconfig-004-20240410   clang
+x86_64                randconfig-005-20240410   gcc  
+x86_64                randconfig-006-20240410   clang
+x86_64                randconfig-011-20240410   gcc  
+x86_64                randconfig-012-20240410   gcc  
+x86_64                randconfig-013-20240410   gcc  
+x86_64                randconfig-014-20240410   clang
+x86_64                randconfig-015-20240410   gcc  
+x86_64                randconfig-016-20240410   clang
+x86_64                randconfig-071-20240410   gcc  
+x86_64                randconfig-072-20240410   clang
+x86_64                randconfig-073-20240410   gcc  
+x86_64                randconfig-074-20240410   clang
+x86_64                randconfig-075-20240410   gcc  
+x86_64                randconfig-076-20240410   clang
+x86_64                           rhel-8.3-bpf   gcc  
+x86_64                          rhel-8.3-func   gcc  
+x86_64                    rhel-8.3-kselftests   gcc  
+x86_64                         rhel-8.3-kunit   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                randconfig-001-20240410   gcc  
+xtensa                randconfig-002-20240410   gcc  
+
 -- 
-js
-suse labs
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
