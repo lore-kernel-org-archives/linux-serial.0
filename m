@@ -1,44 +1,88 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C5651779A9;
-	Wed, 10 Apr 2024 16:36:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3509A142E62;
+	Wed, 10 Apr 2024 16:37:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712766977; cv=none; b=gUNaOCJZQIQQRbQgJcJgo1w50YgAXHHwdl1cq3058iz2he9Wne9gGxpz/+0eeZ1NxIH8ePUt351IuhPcLZpnUiQ+qDfp5+HcfVTc5SMcCOlDjEhxlK9Ek8/ifMa+68weDPhnENqoBuGKQ6z6eyJwYKSplCwA0nhRysLJvsWAiDQ=
+	t=1712767062; cv=none; b=CU9FkJNBua+G9lId6B+/yfv2IeQYlY2hkNvP9bwmxGzaXzUFYaaeR7uMoewsVnQPk0AlvlTahmMIytXYY4su2QNqEIB1zM08CfNeBAOwP2uSGFzTk06q4r98Jyo+p67DoaDSWdLDdR4oQHP00saFN1ccFPNnN/Syuo1KRPn3Wds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712766977; c=relaxed/simple;
-	bh=va6aJQDCMR2Z82GIPrLoBSIBd2Bs9Em2LFb+DW3sePg=;
+	s=arc-20240116; t=1712767062; c=relaxed/simple;
+	bh=6OUj44vZFwVj92r42Hpe1Vt84hfOsxOHWO/kw7h9fI0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tl7ZMDqY8yNeAU9HEha5duSf19hs/9TKCo2viBTyYuYG3+3qTyWtDpXWq2NHaHCqP5dIFIMWQLxyWFghC35ujJA8cLWXtszI/+xDc7nBq6q5yk6mMcfgBPXpUmnCgujVJK56IFPKB5S7XpkArL22mmJuqJGDvwRycFwsB1FHJps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hJWktyAE; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=qsS/dYBtIPBddTLVVCtUzXFRfugm0ztSjcQntsVSahN3SNgPKpuAThI4gkQMKejxjxJ2w15XK7PMek9lTm8qJwnHGxdkth3HyDIz2bC1Iijvz7xLQKX2lwDNCjS0Um4G3bkEUFsj8FGPNU1ajV3jC30rHxCiEuA4X/GkV5I209s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bnxnT+lH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hJWktyAE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E27C433F1;
-	Wed, 10 Apr 2024 16:36:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bnxnT+lH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D7BC433C7;
+	Wed, 10 Apr 2024 16:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712766976;
-	bh=va6aJQDCMR2Z82GIPrLoBSIBd2Bs9Em2LFb+DW3sePg=;
+	s=k20201202; t=1712767061;
+	bh=6OUj44vZFwVj92r42Hpe1Vt84hfOsxOHWO/kw7h9fI0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hJWktyAEKduiTPIVXOuA9YcJrobuE94Y3FtLE3/zgzQ+xGs57CPEIuvPx6yPdFTxQ
-	 4oNzU/41oBNCEf91OPo+v6EDV/Zr7BBgJ9QlmssvXr8+MAblRmp3gcwSihl9KSSRDw
-	 7jA80OPbu7HYoYm1HvPQ7S083R5L9dqSJgcR3o1h91te/2EsuHWvcc9j62L5hYL5aY
-	 j0f+t80N4qijG67S/7T/2tFP9T/Kfp3bJz3DJ8ghj7ncJMVIWQqBmQiLJTQTdXkNCg
-	 OIGgxnlZEwhFT/sEVDjMTVezlYbvG8fct7/iIiTj+1SZ6D0NC1xoG7FS980rcEB7fJ
-	 cAMthVoOVOScw==
-Date: Wed, 10 Apr 2024 18:36:11 +0200
-From: Alexey Gladkov <legion@kernel.org>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
-	linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
-	linux-serial@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH v4 2/3] VT: Add KDFONTINFO ioctl
-Message-ID: <Zha_-zPHCW8iYT_4@example.org>
-References: <74ca50e0-61b1-4d4c-85dd-a5d920548c04@kernel.org>
- <cover.1712080158.git.legion@kernel.org>
- <7cd32f988a147d7617742c9e074c753de0c6bc1f.1712080158.git.legion@kernel.org>
- <211f3c45-7064-475b-b9e1-f6adbbba8879@kernel.org>
+	b=bnxnT+lHlpR7zjZ7nbs32PKFsecWWxj8QxZPHZzeepoo4DgJSJN7oWS6UQzlr+JuX
+	 v/kvc7+0ho9YbKGfYrAsQyfsrcsmZb/2LXWbC+gj57mEPQbjvlKAM5pP8cYh6JKRkR
+	 LK+9XAHXGUEdsdu5k2J0SWJJWk5SiM0YMqLQExQoPhrQnli75f7ez5FepFCc75cOe/
+	 3GUIfji5/mY5RlVjflzoc3MniWevQso5i1uv7tvUb6JuxvfH4d9J+bBT+EGelqWv3N
+	 80mIjjNRmNxcKuJaPJJtCrquUTEpt18OVhRhmROuS4u0U1Eo/fxqp6GTL+t5uSQZAs
+	 7yzvaFYlsi1Fw==
+Date: Wed, 10 Apr 2024 11:37:39 -0500
+From: Rob Herring <robh@kernel.org>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
+	Heiko Stuebner <heiko.stuebner@cherry.de>,
+	Shawn Guo <shawnguo@kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Arnd Bergmann <arnd@arndb.de>, David Rientjes <rientjes@google.com>,
+	Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	Javier Martinez Canillas <javierm@redhat.com>,
+	Guo Ren <guoren@kernel.org>, Azeem Shaikh <azeemshaikh38@gmail.com>,
+	Max Filippov <jcmvbkbc@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Herve Codina <herve.codina@bootlin.com>,
+	Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Sam Ravnborg <sam@ravnborg.org>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>,
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [RESEND v7 25/37] dt-binding: sh: cpus: Add SH CPUs json-schema
+Message-ID: <20240410163739.GA406756-robh@kernel.org>
+References: <cover.1712207606.git.ysato@users.sourceforge.jp>
+ <7731111c9e383c41173ac08f3a040a18449ac542.1712207606.git.ysato@users.sourceforge.jp>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,45 +91,94 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <211f3c45-7064-475b-b9e1-f6adbbba8879@kernel.org>
+In-Reply-To: <7731111c9e383c41173ac08f3a040a18449ac542.1712207606.git.ysato@users.sourceforge.jp>
 
-On Wed, Apr 03, 2024 at 07:05:14AM +0200, Jiri Slaby wrote:
-> First, there was no need to send this v4 so quickly. Provided we have 
-> not settled in v3... This makes the review process painful.
+On Thu, Apr 04, 2024 at 02:14:36PM +0900, Yoshinori Sato wrote:
+> Renesas SH series and compatible ISA CPUs.
 > 
-> And then:
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  .../devicetree/bindings/sh/cpus.yaml          | 63 +++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/sh/cpus.yaml
 > 
-> On 02. 04. 24, 19:50, Alexey Gladkov wrote:
-> > Each driver has its own restrictions on font size. There is currently no
-> > way to understand what the requirements are. The new ioctl allows
-> > userspace to get the minimum and maximum font size values.
-> > 
-> > Acked-by: Helge Deller <deller@gmx.de>
-> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
-> ...
-> > --- a/drivers/tty/vt/vt_ioctl.c
-> > +++ b/drivers/tty/vt/vt_ioctl.c
-> > @@ -479,6 +479,17 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
-> >   		break;
-> >   	}
-> >   
-> > +	case KDFONTINFO: {
-> > +		struct console_font_info fnt_info;
-> > +
-> > +		ret = con_font_info(vc, &fnt_info);
-> > +		if (ret)
-> > +			return ret;
-> > +		if (copy_to_user(up, &fnt_info, sizeof(fnt_info)))
+> diff --git a/Documentation/devicetree/bindings/sh/cpus.yaml b/Documentation/devicetree/bindings/sh/cpus.yaml
+> new file mode 100644
+> index 000000000000..9e5640793d76
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/sh/cpus.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/sh/cpus.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Renesas SuperH CPUs
+> +
+> +maintainers:
+> +  - Yoshinori Sato <ysato@users.sourceforge.jp>
+> +
+> +description: |+
+> +  Definition of CPU core with Renesas SuperH and compatible instruction set.
+> +
+> +properties:
+> +  compatible:
+> +    anyOf:
+
+oneOf
+
+> +      - items:
+> +          - enum:
+> +              - renesas,sh2a
+> +              - renesas,sh3
+> +              - renesas,sh4
+> +              - renesas,sh4a
+> +              - jcore,j2
+> +          - const: renesas,sh2
+> +      - const: renesas,sh2
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  device_type:
+> +    const: cpu
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - device_type
+> +
+> +additionalProperties: true
+
+This is a problem with the other cpu bindings, but should not be copied 
+here. Add a $ref to schemas/cpu.yaml and make this 
+'unevaluatedProperties: false'.
+
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/sh7750-cpg.h>
+> +    cpus {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        cpu: cpu@0 {
+> +            compatible = "renesas,sh4", "renesas,sh2";
+> +            device_type = "cpu";
+> +            reg = <0>;
+> +            clocks = <&cpg SH7750_CPG_ICK>;
+> +            clock-names = "ick";
+> +            icache-size = <16384>;
+> +            icache-line-size = <32>;
+> +            dcache-size = <32768>;
+> +            dcache-line-size = <32>;
+> +        };
+> +    };
+> +...
+> -- 
+> 2.39.2
 > 
-> sizeof, I already commented.
-
-I'm not sure I understand. sizeof(*up), but 'up' is 'void __user *up'.
-
-> Now you leak info to userspace unless everyone sets everything in 
-> fnt_info. IOW, do memset() above.
-
-Yes. I miss it. Sorry.
-
--- 
-Rgrds, legion
-
