@@ -1,120 +1,97 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6809F16D9D4;
-	Wed, 10 Apr 2024 13:40:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86F7A171659;
+	Wed, 10 Apr 2024 13:45:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712756453; cv=none; b=fw0moWmcPDHo8AEhjPcrXPWW+lL3rM0xazd4vX52ZBDkuC9Y/uoGVlfszt5OmGRQC62SQOXzQSWDMTQFIhWhHYZxN1y/YeRZjEx3SDETiZQ/wFAjmzXvVj+O1jqiQyFOwv3XeGkSazjzLxhGjaUDliFiO+pLqkQVbiW1vnqJ8as=
+	t=1712756734; cv=none; b=OoTSpPyHkPyV+YWJsp2VJjQFQd1COOFZIo29EZ5PPNb59FhVPXsz8glN+tEoTxCkQuwGsROQsSVfJ81hyGNDgDzYCjWBDeiyWBcb/gwFlIliK8vPjEeECqHCkK39A6+ilmDs5AmzjG3ObqocvtqQWrUFg5WAbutjia4bp59y9Hs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712756453; c=relaxed/simple;
-	bh=2FUZKmDC3uXV6lRtnmgMR3WBQZOamgU9l6hJ9YWMlsw=;
+	s=arc-20240116; t=1712756734; c=relaxed/simple;
+	bh=BZBYIru1y9O0ff+KqP42qWApBTmbdjS4qKJAb5/5bwo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UwJcH+RMAji3aXbCRaywWl2rbCNpViWwzeoMrhbqTmJWYVHjZk+/sQ4BpLmRRd8ZyXJ+vpbEtciF6R/AL/6c+K5bq0q3oI1Xq2HoyGrz8gDWNRXBfgldga4Q5SwQv0cxiKeTxlnipNAhDcE6l79Wu+Bi7YMxj9GD+zXLSCgO9to=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WWwjUk8v; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=H0JVDdk5jwEbUpMtKdeuk6QaMpH1M++vsL/LWWQMUTw0hlmE5mW9bsA9tPqAm0tpA6IFKgbhRWnrpGbBxA/amVJTRdSIqwgPKw7hva4rvD605m9NcZL+Hi4FcOoyLjYrVxuTFDVhx/RV5RfUYkc8DCOIF9+LFuPv4we8aASGxRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c9erP2RV; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WWwjUk8v"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c9erP2RV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712756452; x=1744292452;
+  t=1712756734; x=1744292734;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=2FUZKmDC3uXV6lRtnmgMR3WBQZOamgU9l6hJ9YWMlsw=;
-  b=WWwjUk8v3LNWtBaigWnCnU64h1F45shPvccb2E6tGvTIIe0GLHDP3GKl
-   WaUx8vzj84gHyak3DvWHFPLf37+GdZLCXGjh2Z9wXdqH7PKhS2YtWUpEy
-   ESTPBjjNjdn/Fg6drgO7J4Ou1aIeIrDx5zUxGdm/lUjR3OQfyTfoGxDtw
-   Xaqpfa6jc1Pa6ThOA+ez3/+eJ2Kr7huOkKsmtB0XEgPMi8+AqOg5BodJl
-   6vnBNjj3d9LGQSuHc2RFLrqnr73BsyUPna045+Nrui2vsbRwnODXi9QWd
-   6kEpDavFpWtIjLHQWOtyT3meap66kmTNuZi2NWvkSUow0A/PwurVZoXn9
-   Q==;
-X-CSE-ConnectionGUID: Ad1oVmFiSa2Z/oGaLxFp/g==
-X-CSE-MsgGUID: FX+jqJ92Te+opPcajXWSrw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7991582"
+   mime-version:in-reply-to;
+  bh=BZBYIru1y9O0ff+KqP42qWApBTmbdjS4qKJAb5/5bwo=;
+  b=c9erP2RVSPWjuTKDNSLaGLMc1sR8iZgNFugyP3wmow7YOdhpwx9IzIro
+   ZQ7YsM2uSfR9mCLgmEzqDmLlEU+lxYl6B6EarMGQB+Ta+tX7iDHiVwYpj
+   7iIPIG176zm88WXqau93sE0kpepFA0Fi75WO0rhN8Zny54gwk+Wsu4Nun
+   POzmiaJ49FmImyaFZJZer5JuLaskn09Hj8GiKrK7TFrlWnfk19z6hG0NM
+   LXBWyKtm77G+DkXs9y+/AokdCHA7h7xQB8LDDhxVKvMDJ8kJZ2l05v4cA
+   34ATQekF4MbpGZpr7kA0+KfkVtBlNyODGL8s14MJv3cTI01kC7xj9gKaX
+   w==;
+X-CSE-ConnectionGUID: EGQD7SB6TMCeh1oPmVd6hA==
+X-CSE-MsgGUID: lxIkZn92TpS3QGBxbaXVOA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7991959"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="7991582"
+   d="scan'208";a="7991959"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:40:51 -0700
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:45:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915433375"
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="915433467"
 X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="915433375"
+   d="scan'208";a="915433467"
 Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:40:47 -0700
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 06:45:31 -0700
 Received: from andy by smile with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1ruYBw-00000003516-3Ty5;
-	Wed, 10 Apr 2024 16:40:44 +0300
-Date: Wed, 10 Apr 2024 16:40:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: albanhuang <albanhuang0@gmail.com>
-Cc: gregkh@linuxfoundation.org, rafael.j.wysocki@intel.com,
-	linux-acpi@vger.kernel.org, tony@atomide.com,
-	john.ogness@linutronix.de, yangyicong@hisilicon.com,
-	jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, lvjianmin@loongson.cn,
-	albanhuang@tencent.com, tombinfan@tencent.com
-Subject: Re: [PATCH v6 0/3] serial: 8250_pnp: Support configurable reg shift
- property
-Message-ID: <ZhaW3PM3TccV5t3w@smile.fi.intel.com>
-References: <cover.1712646750.git.albanhuang@tencent.com>
- <ZhU6Or3hTziarHZo@smile.fi.intel.com>
- <4f0950f8-e0e1-4b26-85b9-385c97c39cf6@gmail.com>
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ruYGX-0000000354V-17GR;
+	Wed, 10 Apr 2024 16:45:29 +0300
+Date: Wed, 10 Apr 2024 16:45:29 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] serial: core: Extract uart_alloc_xmit_buf() and
+ uart_free_xmit_buf()
+Message-ID: <ZhaX-R2UV8B9xMXL@smile.fi.intel.com>
+References: <20240409174057.1104262-1-andriy.shevchenko@linux.intel.com>
+ <52a83cb5-ef4f-46f5-ad90-1f64b4d588e2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4f0950f8-e0e1-4b26-85b9-385c97c39cf6@gmail.com>
+In-Reply-To: <52a83cb5-ef4f-46f5-ad90-1f64b4d588e2@kernel.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, Apr 10, 2024 at 10:49:29AM +0800, albanhuang wrote:
-> 在 2024/4/9 20:53, Andy Shevchenko 写道:
-> > On Tue, Apr 09, 2024 at 03:43:20PM +0800, Guanbing Huang wrote:
-> > > From: Guanbing Huang <albanhuang@tencent.com>
-> > > 
-> > > The 16550a serial port based on the ACPI table requires obtaining the
-> > > reg-shift attribute. In the ACPI scenario, If the reg-shift property
-> > > is not configured like in DTS, the 16550a serial driver cannot read or
-> > > write controller registers properly during initialization.
-> > > 
-> > > To address the issue of configuring the reg-shift property, the
-> > > __uart_read_properties() universal interface is called to implement it.
-> > > Adaptation of PNP devices is done in the __uart_read_properties() function.
-> > You either forgot or deliberately not added my tag. Can you elaborate?
-> 
-> I'm very sorry, this is my first time submitting a kernel patch. My
-> understanding
-> 
-> of the submission specification is not comprehensive and profound enough,
-> 
-> and I didn't intentionally not add tags. I hope you can forgive my
-> operational mistake.
-> 
-> Should I just add a "Reviewed-by tag", or do I need any other tags? Thanks.
+On Wed, Apr 10, 2024 at 11:04:35AM +0200, Jiri Slaby wrote:
+> On 09. 04. 24, 19:40, Andy Shevchenko wrote:
 
-Understood. So if you are is one who is sending a new version, you should take
-care about any given tags (such as Reviewed-by) and carry them, in case the
-code is not drastically changed. I.o.w. if you don't, you have to explain why.
+...
 
-Anyways, it seems the patch still has a flaw as per LKP, so fix that by
-providing probably two macros in the pnp.h header for both cases
-(CONFIG_PNP=y/n), and I will review it again.
+> I see very much of tty_port_alloc_xmit_buf() and tty_port_free_xmit_buf() in
+> here :).
 
-	#ifdef CONFIG_PNP
-	...
-	#define dev_is_pnp(...) ...
-	...
-	#else
-	...
-	#define dev_is_pnp(...)		false
-	...
-	#endif
+A-ha!
+
+> Currently, different locks are used, so the patch is, I think, good for now.
+> For future, we should switch to the tty port helpers.
+
+Sure, but I'm not familiar with TTY.
+
+> Actually have you looked if the different locking is an issue at all? IOW,
+> isn't the tty_port's (and its xmit buf) lifetime enough w/o uart port locks?
+
+Nope. I only looked at spin lock differences (irq/irqsave) and decided that
+irqsave variant is good for both cases.
+
+...
+
+So, do I need to do anything or is it good to go as-is?
+Thanks for review.
 
 -- 
 With Best Regards,
