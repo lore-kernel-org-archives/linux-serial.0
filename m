@@ -1,99 +1,146 @@
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 611FD38DD2;
-	Thu, 11 Apr 2024 13:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.104.207.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595E61428FA
+	for <linux-serial@vger.kernel.org>; Thu, 11 Apr 2024 13:06:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712840707; cv=none; b=RI5f6s94dFhASVmNLWA8Oes7AwaMvgAI1+3PnRPf5et164iI3ewZLXKEl+zh/WUzMyPVnCPPc0ZyagkStGNrH/9boelvxJOeUT58pqtc5h1shdYy66+VlqdDI4rqTdEJHh8IFaZqvQSxy/m8jewkddBdEYrCLcsrzv4xd6DKgHE=
+	t=1712840767; cv=none; b=bqze9CI4O0/Qxf4giHSD0uRH8SVFr++dm76thNhY9mAnWqwt6f8jSzbhzQR6MPETGBnaBOVDt0dGd/dpNvJPo9EBeMMr9FSd18fvEat04sTkeqELEp89Uqshi0HJOISRxV1XdB+ZFlmi3iB6Oyqvj4fB7TOfULhhYdDysAJPD+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712840707; c=relaxed/simple;
-	bh=ZrO8njZB9AZNmPKmPyEZoaoX8nSebxgDBxikZ6b+YEI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=o/m9ZyWiU0qn2UPtCswr6vH18Wg2WK63ABi68nD9WsIM7mnXYJ4Q1b9lpZU03iq4+SwqpmFXVkxNBT45r/H76BBL8mw6IotcqTMCS9o788fq1E2NVJvhVfAQZWeBbdrsbFZC03LmOMxMj50Vs/Fuxfokv24NAq9MuJymO3T1FwA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b=mKUFNUk9; dkim=fail (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=gvZESPUs reason="key not found in DNS"; arc=none smtp.client-ip=93.104.207.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
+	s=arc-20240116; t=1712840767; c=relaxed/simple;
+	bh=pryc/QH+INi/Qsom/WNhFv2C+a3hNEWpvJ2Ll6EXqb0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FYFrccojIsRRhLCbUuBiCQBIdbigB/No3cqt3lfb4LxpdDZJXmQZCCnnaszxEPwC+c6tILKGW4TFEDaubeDZN1X5NDKKPTlQOdEOn0CJcAsfxZW8V5EvTi+DMp49IizcVymjGXm5qR+WNlRsKlcR5PKG8yT+ppz4ztrySIix7Mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WHhbXa0r; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="mKUFNUk9";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="gvZESPUs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1712840703; x=1744376703;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=GwardD7WuS5Bsy9JLAG1ZGah+5S9uvjwccp3uchevzs=;
-  b=mKUFNUk98Vssm+X+B4ZJppFVcWp7A15UcJDYgajIflR+uQ9WGs0G91uX
-   i+4/RflDdEY1p33+pX1/AOYn5o5PPhPHtQwtrM0vhRm79oMXrGgCKymvK
-   BT0xm6Sep5c8deUHlwiWDW76wyC9gETJR0uYTrqMCZrj1v9/Oqk9u9Hjo
-   6iBGVOc/3V0V0XrECcZNV//3QTWV1sfpGT5eLmzg4pABQbi2bQHyLCYzO
-   PB2eAIHyCcg8haQs3MiaROJYZMVN7hAeiWlVjHiyL41PehdTNOxrdBRSu
-   TkfylpuvKdnBxIhOFs7wfDUHc4dqg4PlaK7zeqS59H7q+XvXhuNk2tz9n
-   w==;
-X-IronPort-AV: E=Sophos;i="6.07,193,1708383600"; 
-   d="scan'208";a="36370095"
-Received: from vmailcow01.tq-net.de ([10.150.86.48])
-  by mx1.tq-group.com with ESMTP; 11 Apr 2024 15:05:00 +0200
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 8A18F17145F;
-	Thu, 11 Apr 2024 15:04:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ew.tq-group.com;
-	s=dkim; t=1712840696; h=from:subject:date:message-id:to:cc:mime-version:
-	 content-transfer-encoding; bh=GwardD7WuS5Bsy9JLAG1ZGah+5S9uvjwccp3uchevzs=;
-	b=gvZESPUsNKGOKDS/H6LMn3yjy9VCKVgOt1H3UvJhsdJqn3pNBPnFnwkSCImsih63N2AIp3
-	bZHpBBazcq/CNmofIenPiKwLydl11Eotf/a7pj+W7DvM+L6pE18dWsUkLk0IRR4ABwqPEl
-	YQd5aJiPT1GyoQ3jobVyFPajcU0mT1Thl7FoozvfjeNKdDoWJovhGu922Dldyr3CoQhBTa
-	UktybazpioB05tjb9vjyjOBBEVWY7pJhD6ML+oWDJsUmPTm2OMeB0Il8db4GDpZo4NncoK
-	ZkjYHNHMx09gK3BCD/pTzm+MgXT8+eaRwrNrk36jwrAX5VlILlEDnSTEST352g==
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Alexander Stein <alexander.stein@ew.tq-group.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 1/1] tty: serial: fsl_lpuart: use dev_err_probe for clocks
-Date: Thu, 11 Apr 2024 15:04:48 +0200
-Message-Id: <20240411130449.1096090-1-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WHhbXa0r"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712840766; x=1744376766;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pryc/QH+INi/Qsom/WNhFv2C+a3hNEWpvJ2Ll6EXqb0=;
+  b=WHhbXa0rgFkVTkITc3dhynpX/vrZSzVoz9WyuIzDJvVIBT9o0HkJSQym
+   tYchdLxaJcUgQRZTo7m0ED2O+JN1h0c3QvTsfZzi9oASG2J35XetPqnAH
+   Zl2Wdq+gk85puaoy7pNei1s7XbDzySK70G+8l6CBlDMVGSgeZjiB+GN9G
+   UzBM+d/o4/AL4DxfIwKW3VSWvy8K39kmFZalqzpnd08rkMyV08HGT4ZSz
+   EPBfbb64RdqlgvEiq49S8zki8RmHVGaYMwC13o7HIrDR2nc3K5SC435HH
+   OC9y58tXknCdtyRNqYjSVJRN5uXwzuGR9SOWJ+BdtzefyrTZBtkheNl0g
+   A==;
+X-CSE-ConnectionGUID: rsvEFPN4SiWXSSwChSYJzg==
+X-CSE-MsgGUID: BBQZrdWCTImCIGAy3NzlAQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11041"; a="18807045"
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="18807045"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 06:06:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,11041"; a="915463110"
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="915463110"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 06:06:04 -0700
+Received: from andy by smile with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ruu7t-00000003M6G-44NO;
+	Thu, 11 Apr 2024 16:06:01 +0300
+Date: Thu, 11 Apr 2024 16:06:01 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: core: Fix missing shutdown and startup for
+ serial base port
+Message-ID: <ZhfgOU7htReGK3Xt@smile.fi.intel.com>
+References: <20240411055848.38190-1-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240411055848.38190-1-tony@atomide.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Clocks might not be available yet when probing lpuart. Silence -517 errors
-by using dev_err_probe.
+On Thu, Apr 11, 2024 at 08:58:45AM +0300, Tony Lindgren wrote:
+> We are seeing start_tx being called after port shutdown as noted by Jiri.
+> This happens because we are missing the startup and shutdown related
+> functions for the serial base port.
+> 
+> Let's fix the issue by adding startup and shutdown functions for the
+> serial base port to block tx flushing for the serial base port when the
+> port is not in use.
 
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- drivers/tty/serial/fsl_lpuart.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+I'm going to test this later today, meanwhile some comments below.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index bbcbc91482af0..d0977124632e5 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -2884,8 +2884,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 	sport->ipg_clk = devm_clk_get(&pdev->dev, "ipg");
- 	if (IS_ERR(sport->ipg_clk)) {
- 		ret = PTR_ERR(sport->ipg_clk);
--		dev_err(&pdev->dev, "failed to get uart ipg clk: %d\n", ret);
--		return ret;
-+		return dev_err_probe(&pdev->dev, ret, "failed to get uart ipg clk\n");
- 	}
- 
- 	sport->baud_clk = NULL;
-@@ -2893,8 +2892,7 @@ static int lpuart_probe(struct platform_device *pdev)
- 		sport->baud_clk = devm_clk_get(&pdev->dev, "baud");
- 		if (IS_ERR(sport->baud_clk)) {
- 			ret = PTR_ERR(sport->baud_clk);
--			dev_err(&pdev->dev, "failed to get uart baud clk: %d\n", ret);
--			return ret;
-+			return dev_err_probe(&pdev->dev, ret, "failed to get uart baud clk\n");
- 		}
- 	}
- 
+...
+
+> +out_base_port_startup:
+> +	uport = uart_port_check(state);
+> +	if (!uport)
+> +		return -EIO;
+> +
+> +	serial_base_port_startup(uport);
+
+So, we call this even on uninitialised TTY. Is it okay?
+
+> +	return 0;
+>  }
+
+
+...
+
+>  	if (tty)
+>  		set_bit(TTY_IO_ERROR, &tty->flags);
+
+> +	if (uport)
+> +		serial_base_port_shutdown(uport);
+
+Why not to call it after the below check to be reverse-symmetrical with startup?
+
+>  	if (tty_port_initialized(port)) {
+>  		tty_port_set_initialized(port, false);
+>  
+
+...
+
+>  	/* Flush any pending TX for the port */
+>  	uart_port_lock_irqsave(port, &flags);
+> +	if (!port_dev->tx_enabled)
+> +		goto unlock;
+
+Can't this be integrated into...
+
+>  	if (__serial_port_busy(port))
+
+...this call?
+
+>  		port->ops->start_tx(port);
+> +
+> +unlock:
+>  	uart_port_unlock_irqrestore(port, flags);
+>  
+
+...
+
+>  	uart_port_lock_irqsave(port, &flags);
+> +	if (!port_dev->tx_enabled) {
+> +		uart_port_unlock_irqrestore(port, flags);
+> +		return 0;
+> +	}
+> +
+>  	busy = __serial_port_busy(port);
+>  	if (busy)
+>  		port->ops->start_tx(port);
+
+Ditto.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
