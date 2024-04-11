@@ -1,516 +1,289 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11022010.outbound.protection.outlook.com [52.101.56.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8664524A03;
-	Thu, 11 Apr 2024 20:26:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712867168; cv=none; b=LiRUISjsZF6vJ1uxpFz1P3zDnzXHJbJ7Jo/dGN2TIr4AR0aOtkNrUAzXL9n6Z/FTGocIVBRr0K0jj7vtYUnmvcwwG3xcag+cazPyC2muZMyhQU1aJJQ4peZRPgZ/wS79Z07rJXuXGTsqUVEpB6EJVMR2W4KovHXLK5QK4Ql1C9U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712867168; c=relaxed/simple;
-	bh=D2glbP7cm0TmfFFPGqKUcqu4qF4AR8nZgHoZ7dH9Yj0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZwOfhWcPYuOn/2cVs5ZNhCSyOM+iXu7mQfj3RYKfh4AR+OBxJHLjGa85I4PpYX3Qj8SSAEEYjQDujPJ6BxlfsdG8qdxd8iPsQEoxKixWpovpffLZEMP1RC0nTj9nQ/fAAO7zOibzborNvQqTRHISJhXf85HkCJK4LOcgpXN795Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=dTfP+P6H; arc=none smtp.client-ip=74.208.4.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8770A3CF72
+	for <linux-serial@vger.kernel.org>; Thu, 11 Apr 2024 20:44:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712868257; cv=fail; b=qmeJCR3Gybh1LOOi0Q1+Y7xHy3FG7GTdHR6dFk/fDgOyqQ4H1k7DLLLuT1dYF4ti0d1tMVNeC+ZzCmJv6j+H1IShIIGw0LNGdXuorX/qhTkBvLY1Cbmvo0bcjP7bjalt8/wLZMbdd+HzVpfgOnCZ4A6UxpfI09vCfvs5iJXGVDU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712868257; c=relaxed/simple;
+	bh=aesRXFvHowllSWtn+CULeESwx+Ln9ytwIf5d6XHc4Mk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Suh6os3OmSeVb4wdCbPSQbKT5UcOdrt971Epgy9pPcR7SEc0hnFJFoK1n57L3RWsSyRcaA3lCIezdC0oTGcWM0hdvNPx5AfG+/NAA8I7Oy+1sO18GoVeCyuOdmFHOtLNNWiDFjd+l36vG3aXi7arQiKcKODmrgBU4yNgrkOaplE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sealevel.com; spf=pass smtp.mailfrom=sealevel.com; dkim=pass (2048-bit key) header.d=sealevel.com header.i=@sealevel.com header.b=RobOQR35; arc=fail smtp.client-ip=52.101.56.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sealevel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sealevel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="dTfP+P6H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1712867158; x=1713471958; i=parker@finest.io;
-	bh=zGQMmuknO7H4DJSGj8qu3qo3rQdck9vuC74qN0BKFcU=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=dTfP+P6HSU78bTJCP4BFePeVHMdDRJ1EoXqBt67U/dtZfOvn00zdtw7Boiv5sjyf
-	 UGbrOg8Y+g2J4B2RHLZvtFHfyX++ctDOtPq2+q86lFq2YVBj9+lNFff35Z/YzRn4r
-	 3w/BP7Tu4IZ9jKCRXim1VGXU1a7gqEkUvIZQDBkKF6dvRaJTcKd5IeWhdRo17MZFn
-	 oeFZeeIuzHr52QHa0IuMW3MbNESXBwsIpSbipNidjOcvQYdXaKIMe9F8tVj7VInO7
-	 seq1TNtpfMZGv5DRcctoixHBYX58XsrfwjCldBQlZ4NBi40DAWO4v7NbOWD7OJmT+
-	 o8q9olcBrAp0b0md7g==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0M4oTz-1sgfzn22iz-016Swv; Thu, 11 Apr
- 2024 22:25:58 +0200
-From: parker@finest.io
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v2 5/7] serial: exar: add some CTI helper functions
-Date: Thu, 11 Apr 2024 16:25:43 -0400
-Message-ID: <f610d699b6d0495c76e732fb93afd2216aacbb85.1712863999.git.pnewman@connecttech.com>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <cover.1712863999.git.pnewman@connecttech.com>
-References: <cover.1712863999.git.pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=sealevel.com header.i=@sealevel.com header.b="RobOQR35"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QUQPwBmCalVrb9RgVmBCZ9NHyYPI+ef+RPb743Q3K/V847+JN2npFDCkTGbWpIwne3iGn7prkms3+6OP76x7/6Z93nzGewlD8ZkaV9ygO6sCzaa2zVhQyW9pZUbfwq5a9IGX2Hwo5F25ubcwhJcRi4+n+il13uAhGFqcNrIvlVMP9b+detAPcaJidnH8vrNtQqlzmRrNDrzFjmNwI3UDsJZDJny8Ikg4pvl+sIY9sXsZfp28y1PUojuxuPeUWL8raoM2gZ4KGDOeYJip5MokLVmjjq1uKIZ1zyJ/vrw3i5p/956s4mRu6MbYPTxmNHbttWSxKk1Sel9IV+stcOvt0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aesRXFvHowllSWtn+CULeESwx+Ln9ytwIf5d6XHc4Mk=;
+ b=kn91x63T1OiEurwuPMsVWKkIHadm9fpvV52/Lbnn8Djgb/V43POOzhRkmDnU66xm9t51vWdyvgHPZ89mU4Z/ePx010fpPZJ9WgrYZb9yp9YGII8OVgN6NPq/nUqiEFQ8zwu/z8pFAzArk0EKw1tY6p3WTcOeLHMC7LGKTKVzl5SCsn9yM3V4vwIJl0/MENoVyutoBSrFYVN+AB7oZdDJCWPps/mgNirrbKPYd1KCbHRyphhhwqW2DvEXqhvvDpJZdlq8sT2GpAjSXwS+ePi0enR7Xe6NUL/MQUK/kSmbxaB5Um5KmjD5K4ZUtfSV0sJs1039YDDcErchFxnrYP7A3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sealevel.com; dmarc=pass action=none header.from=sealevel.com;
+ dkim=pass header.d=sealevel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sealevel.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aesRXFvHowllSWtn+CULeESwx+Ln9ytwIf5d6XHc4Mk=;
+ b=RobOQR35r/+hxg9A7ifWHrKW9mq+/rNQCaYDKWkyISEvmGkYtdo915dHl7MYkM5pHfnJ1P1fD1lA27hf/AEun59Cxtvt1jG0X695y2e/2Pvo1ryi5ckRRWqR7BJlhh6CB3kDDpKVROw/MCpa+4aVlndAkemtf7msBCybKu+rA0xvgOOG8Byg2F0fBlMjk0qgn0d7qu4l9mIGS3WyCrYCBYEwIIEPsS2m+sVBYwo7tULmHDPdE7kky989raCtZH/WT11IHtvyTQ/K5q5obPIRfoTdppgUOP9nM4W++TOHAXW/ZGGMyvSwPym0yeiLhvQqw2/xE+X6fbY+sJw10iQRxw==
+Received: from CO1PR05MB8426.namprd05.prod.outlook.com (2603:10b6:303:e5::11)
+ by MW4PR05MB7827.namprd05.prod.outlook.com (2603:10b6:303:68::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Thu, 11 Apr
+ 2024 20:44:09 +0000
+Received: from CO1PR05MB8426.namprd05.prod.outlook.com
+ ([fe80::6231:d3c9:8cd3:4169]) by CO1PR05MB8426.namprd05.prod.outlook.com
+ ([fe80::6231:d3c9:8cd3:4169%7]) with mapi id 15.20.7409.049; Thu, 11 Apr 2024
+ 20:44:07 +0000
+From: Matthew Howell <matthew.howell@sealevel.com>
+To: "ilpo.jarvinen@linux.intel.com" <ilpo.jarvinen@linux.intel.com>
+CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Darren
+ Beeson <darren.beeson@sealevel.com>, "gregkh@linuxfoundation.org"
+	<gregkh@linuxfoundation.org>, Jeff Baldwin <jeff.baldwin@sealevel.com>, Ryan
+ Wenglarz <ryan.wenglarz@sealevel.com>
+Subject: Re: [PATCH V2] serial: exar: Preserve FCTR[5] bit in
+ pci_xr17v35x_setup()
+Thread-Topic: [PATCH V2] serial: exar: Preserve FCTR[5] bit in
+ pci_xr17v35x_setup()
+Thread-Index:
+ AQHaZQtGjPOmrNLBp0ShUL1okzQC67FeooGAgAA8pwCAAD02gIACtVEAgAAqQQCAAQ4WAIAAj5OAgAA+T4A=
+Date: Thu, 11 Apr 2024 20:44:07 +0000
+Message-ID: <edb5a0899c551655b00afed2aac1911f08ab9d84.camel@sealevel.com>
+References: <5dd9f8b0c1dc154c73fb883cb948768ae68d1ccb.camel@sealevel.com>
+	 <a9519d301f542c921260b11b4576cd68cc929b52.camel@sealevel.com>
+	 <937e10172eaf46cbb6e355666e15ba33344f2c51.camel@sealevel.com>
+	 <74b591e8-c8b1-7a9b-e2ea-c375f3d712c2@linux.intel.com>
+	 <cbe7931db7a6841369505b83ee3c747c981c16f2.camel@sealevel.com>
+	 <41c9bb61-8f40-7ead-5870-d67632ab4936@linux.intel.com>
+	 <a1f93f46966b087ce392263b886790bbc3abc317.camel@sealevel.com>
+	 <da99e0fa-47a2-42e3-7b29-85dda41c3bbd@linux.intel.com>
+	 <3de81ecf80f1cf16d8040e60f4582ad581ecefde.camel@sealevel.com>
+In-Reply-To: <3de81ecf80f1cf16d8040e60f4582ad581ecefde.camel@sealevel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+user-agent: Evolution 3.44.4-0ubuntu2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=sealevel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR05MB8426:EE_|MW4PR05MB7827:EE_
+x-ms-office365-filtering-correlation-id: a04be51f-fdc6-4b44-4c5d-08dc5a682242
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ g+K3x+jn6aRtW2NoVcEPAjHbkV5UeTpRa+v7XyJjDyojmqtSS4M+/5XTUUBE5heNmWyKoTCw78uJhbLbaIo5mY16ogHihiMexLIlNk5/ZQy5EOpvXDg20HKNLgxHrSERwmSKLOxczBPSxinf6RFg48IQ6IJKleRFE6owjzmQcn0oGl0feC+ZHbT64Iv/u1QCHOfuy2n3HeI1LqZgMwkpPdmJEU6woqiYW7PIiqD8VprpQ5Jo2cg1R/nicIUGcDDIMls2D3EDgpfmhcQ0mMOdJfDfi7dQZOKH8hs3a0EMgD3vaR7NDzGme7YnAkSOa4cAyBX8bMkHsp2pzjXKObtXLnrN4ZFpPKPPXNJURvNTLdl8xv4CH7Ns3aCNkm2TI6HYUhM2IIQvAUM+2qqYBW+4042JRKXDL+3O/BH5jM9qwa6sHUkEpmz2/RaXaseX98m7vaxUAa4Hr6NbecP2WrLB5GbsWhmnIKiDQHL8OwzrLMokllKkMGI/BKktBUNP++H9SEGM3L2vMm+sZRes25jcp/XkEYhW5vCM6u7ECKTN4mg+cmyIuDxElaa0qy8SVuGnPl41LCo1dp+L8/rcGvzae9u+lKo9x5h99ArmkMIaRcIb5meVy6irOpvGNKo7eCMaKAvSvZ7v7fp4YQrleXpxU8kvXUA5bBD39esGX4Bu+23q5rN43jtO5zqnW6nEUJZXodnpgy5DuEJV3/juZ+YvGEnpkuM8wEr/4EOA0V+8Pnw=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR05MB8426.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007)(38070700009);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?Ujl0R3JqUzFhOFBrM0kxeUZ3K1QzQUx4NU84eVVVejFwVjRuVitkSHJWaTJk?=
+ =?utf-8?B?TytubngzRmJ6ajRNZlAxZStib080TjVSTDJRRjF5VnlEYXBkWXFydHhyeFVt?=
+ =?utf-8?B?T3N5MnE2SUp5M2RWbkp3RnFEUHp2ekNQNDlENzRNQnZxV1UvM1prcTBVeVhm?=
+ =?utf-8?B?dDdubFZqUEpVeVlCVGJLTGpkUTV3OGFselR5b3o1T3d2ZlAvYW0wN1V5WnZV?=
+ =?utf-8?B?YXFMZ0NVTjZJSVhUeE4yR0ZjT2ZJOEZuc2drSlAva3JNSzliNERpOWZ4ODJL?=
+ =?utf-8?B?bUtIa3VoOWw0SzRGVjJ2QVRmaU1yM0pESTFkWlFKTlg3NlN1ZkhnQmJsc21V?=
+ =?utf-8?B?VDJ1ZGRBaEo3VFNNT0FmMHpEOUVITDdCdW9jdmloaHA1RFZCU084YkVjMThk?=
+ =?utf-8?B?NXk3eURLVjhkMjNXandaZ2s5YmdaS3dlaHltNHZpczZPYkVRbG5WRmI4NU9L?=
+ =?utf-8?B?UkNDcitsTWpBS1psdGlhSndRendiQ1FhVTlKZ3J5bWVjdmxTaVAzM1ZoM0FR?=
+ =?utf-8?B?VTFEem5Ud1JxVVBQMnQzZ3hpL2pwWU44eENjcGQ4S096Y1A3eWh3YmplMW9t?=
+ =?utf-8?B?WkNtakwwRWVER1JRNFVXQ1VPVWF5TnZkM1plRXJ5anN4T2pDVTZFalhQdGJ4?=
+ =?utf-8?B?NnI4L1RFb3VFaE1RQzB2V2pBL2EzbVhlRGxXdVpJVkxhcURwcmpoRDZ6YzJF?=
+ =?utf-8?B?N29BVHY3cXh4ekc0VG1QR29KWjczSWZGTFNkYXc2UmtjMmxaOHJKUTE3MStY?=
+ =?utf-8?B?MHBjL1RmQ2RGWmt2aXA3SlU2OHQzbjdtNy9Xc2ZINFgxdTdRSHBuM3crVGRE?=
+ =?utf-8?B?ZlUxZmhJNWs5TmNlR0tDVFVHQWN3ek92WGlNZVVYbjRSYUE4YzBPclIrZmE0?=
+ =?utf-8?B?MjdHb3E4ci8vdUh2QmlxdUZGd2FHT3R1Nm5Kbnc1aTlQZm1rL3lmUllqb1ZU?=
+ =?utf-8?B?SlBDTFdvUkU1R3ZtdTFUOGRUTHpjbVQ4NnZBekZZZ05XVjVXUDB4SHVNRmd6?=
+ =?utf-8?B?RkJ0aE5iN0ttTDl0Y29kNGM4VCsxaDU5K0FLZVpyQzZHbE8wYW14czBZbWZa?=
+ =?utf-8?B?ZEh5Lzg4VG5LV0tNTGRaQ0hjRkRHYnRPeEdCL2xIeEpUNnNqTDVkZ2NRUzdS?=
+ =?utf-8?B?SEw2QUdDM1FPMmxoYmNnOS9VdFhEcnJUOEdNNkV1VFdST1FYS3FnUWZYVU42?=
+ =?utf-8?B?Z2s3a0FnN0dJNkNBWFJXMDBYaHk2Y2xCV0J2WU9RZTBXbFlwbkNkaWFYSXB6?=
+ =?utf-8?B?djZCNjY1ME1PTDJ5MFRLR001bmNUTEE4L3FoNENmUjRuRTVwWWV6VDdzc3B0?=
+ =?utf-8?B?R0FYRHdWSnA5WksrRldjeStNZlRSMUN1VlNXMnZqV25ZS0xkWTB5NXgyR2lj?=
+ =?utf-8?B?dU5PNkFyWkFydXkvdTNta2t1WjM4dmVyamZ2M0ZTQmEraEdEdXg5VVVOdzJV?=
+ =?utf-8?B?dEJuWWFWLy9RL2gvQXZic1NEY2lvaUhNUHFMWTJ2LzRtR2RRcVF4MkdmYjN1?=
+ =?utf-8?B?TG5NTTU3VDI0RTlRZGd1L3dLUFdPYnlPc2h4MkZiaVNTNGtSVmtFck5IMkwy?=
+ =?utf-8?B?bmc4eEtMN1FpS1p0cmxLdDh1WFVYUG1iSndEb081MzF2N1J2VWVvalNkc2VB?=
+ =?utf-8?B?eXF2RG9PRlQ2SEpxMkw2SDFYZnFad3JpcHhkbXRQUlVsVkI0UUk4cHZidlVm?=
+ =?utf-8?B?TTIzUE5VOUMxVHUvem5xdmU5TGpqT1FRQlUrV0dIUVJzODR4Z2NVMEVzMWU1?=
+ =?utf-8?B?VDBOMFpBMHU0UkpPQUhtUHE3bnhCT2VtVXd3c1FveEpzbFczOC9FdzA3M2Jz?=
+ =?utf-8?B?cUo4OGZHSUJIcWFtTmFOVisvV3dZeVREQlhCcU5UajZld0dsb09FdnhkeDR6?=
+ =?utf-8?B?blREKzdPOWhkOUUxbi9lKzZqZFpGYjUwOFpvRFhEekFXVWZweGNuVkpML3d5?=
+ =?utf-8?B?SGtJd2Zvd1VTSnUvUGphN1ZVREpHaHFzQVFEN0VsMnJLZCtIdW1MK1FpYXlJ?=
+ =?utf-8?B?djVHditPSWVURnV1UitUZ2RiTllFamJjZnFnb25sakgyZW5SM2RjU1BTNC9H?=
+ =?utf-8?B?YytLTzcrQ3J2eDlYVHEveEora0l0ZHdCRFdXQTlDUlY2QWxoN096SGY3d1Rq?=
+ =?utf-8?B?TXpkWXJCaGpib0NsTFY1VUVkYnZMVlMwaTQ0c2ZTczZLZHRUZ3N3OXdmQ2tu?=
+ =?utf-8?B?c1E9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0BB6BE4E13BD884CBCE995026F42ECBC@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:G8KyqjAnDXTvX433vE0YOEvvWG9V3POi5snH3U7eXwdL4rS5k58
- AGHssuToSCSdvBkU5/Iat6i7Oue8+KDS5iQpxvT07rcr/Xtznt9V0O+AJmXymVWZtdkseeI
- d4ghQppfCam/ylkZ1yHuCNonDvmFfJo+XfI+y0X3sIV3KlCoOJsrdCgMsE266zz4m5LCgEF
- eJtvY4G2MBgyv9H2ZH2hw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:yQRd95HKEdQ=;uBBGFxvJX/vFGu7XBrBjxDdVOCM
- +96aFLBOKeh8YFeow/t2iebzML158DYHQpjbDZ4YdZaevM9JzZBj483XexIpx7duTQXGUrigC
- M/azsSDhP2zIOr36cSY0C4Gefwxd/CaJUxaeSVOhCj0JAmVGrAQFnsPYkygcHEhfzAZmucFJY
- jFUt8JNIO7TefplGuTS2a67kcXSu2eC3O47VpxxvFj9AQWG4WQ2//M9FU7RVJ2HcjjuOYgM8l
- ft/qeYdukE7Gu48LUS3dwT55OfZuEcBYvY14efzq4aewjRLzDQqIxkY0TitKSAYSGKNjt6eGI
- 80KGfOSoz6RtFmT0oTW8VNsaLPMDiHbAmwcvqZRafTvAd5Ecp7y5ohWYAKXS+safEkzYqRm8H
- naHowAa548CT1ApNm0Mz9sYCzdKz0Qk+pIM1IM0SPwrDVRY4AyNGd8+9ZgXAkKhoe2SheY+s5
- WAtRW5XZGJmi889ZwGdoKeEdSccKtoLWn3mRWc9rlBjYJGNXgoihv8lBJoaTn4rI/LT5NbXsn
- vA2UfiZ4K1Y5bxsnrZZod1Xncw1adZTAwCumSVGW6N4FzRtxpFAJfnW07BOcfh8ILHy1RM0Qq
- zs0ZidIBf1uUx/f3Ic0MO523jVVRuWT3M8YJT3p5V9umVNbF4PnlgfVDCNZ5tiQMPYvMU45Yb
- ye88QcBoYq4P4ldP3YZubIPrOg91jHA63vSWZeQUYn4SUE5C1XLaFh9Ka51goLZtCIYoh60gr
- U39MPXQhTVmVojIKuiTqjEr9UOeUIztsh6lmSdztGRrNDHCMWbXoR4=
+X-OriginatorOrg: sealevel.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR05MB8426.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a04be51f-fdc6-4b44-4c5d-08dc5a682242
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Apr 2024 20:44:07.7573
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: e34c5615-b4e3-481c-abc8-602581f2e735
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3eo50s7oExx3bidfSZpNy3TzXaW0u3On6wXrzDKExyvoo11YH173nh3X2V8gxCl5wwDgNlcx/sTr4Bz36Tff4HLfBTtqVg6FvndIaWW56kY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR05MB7827
 
-From: Parker Newman <pnewman@connecttech.com>
-
-- Adds various helper functions for CTI boards.
-- Add osc_freq and pcidev to struct exar8250
-- Added a exar_get_nr_ports function
-
-Signed-off-by: Parker Newman <pnewman@connecttech.com>
-=2D--
- drivers/tty/serial/8250/8250_exar.c | 363 +++++++++++++++++++++++++++-
- 1 file changed, 357 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
-/8250_exar.c
-index b30f3855652a..6f3697e34722 100644
-=2D-- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -137,6 +137,9 @@
- #define UART_EXAR_REGB_EE_ADDR_SIZE     6
- #define UART_EXAR_REGB_EE_DATA_SIZE     16
-
-+#define UART_EXAR_XR17C15X_PORT_OFFSET  0x200
-+#define UART_EXAR_XR17V25X_PORT_OFFSET  0x200
-+#define UART_EXAR_XR17V35X_PORT_OFFSET  0x400
-
- /*
-  * IOT2040 MPIO wiring semantics:
-@@ -173,6 +176,46 @@
- #define IOT2040_UARTS_ENABLE		0x03
- #define IOT2040_UARTS_GPIO_HI_MODE	0xF8	/* enable & LED as outputs */
-
-+/* CTI EEPROM offsets */
-+#define CTI_EE_OFF_XR17C15X_OSC_FREQ	0x04  /* 2 words (4 bytes) */
-+#define CTI_EE_OFF_XR17V25X_OSC_FREQ    0x08  /* 2 words (4 bytes) */
-+#define CTI_EE_OFF_XR17C15X_PART_NUM    0x0A  /* 4 words (8 bytes) */
-+#define CTI_EE_OFF_XR17V25X_PART_NUM    0x0E  /* 4 words (8 bytes) */
-+#define CTI_EE_OFF_XR17C15X_SERIAL_NUM  0x0E  /* 1 word  (2 bytes) */
-+#define CTI_EE_OFF_XR17V25X_SERIAL_NUM  0x12  /* 1 word  (2 bytes) */
-+#define CTI_EE_OFF_XR17V35X_SERIAL_NUM  0x11  /* 2 word  (4 bytes) */
-+#define CTI_EE_OFF_XR17V35X_BOARD_FLAGS 0x13  /* 1 word  (2 bytes) */
-+#define CTI_EE_OFF_XR17V35X_PORT_FLAGS	0x14  /* 1 word (per port) */
-+
-+#define CTI_FPGA_RS485_IO_REG		0x2008
-+
-+#define CTI_DEFAULT_PCI_OSC_FREQ	29491200
-+#define CTI_DEFAULT_PCIE_OSC_FREQ	125000000
-+#define CTI_DEFAULT_FPGA_OSC_FREQ	33333333
-+
-+/*
-+ * CTI Serial port line types. These match the values stored in the first
-+ * nibble of the CTI EEPROM port_flags word.
-+ */
-+enum cti_port_type {
-+	CTI_PORT_TYPE_NONE =3D 0,
-+	CTI_PORT_TYPE_RS232,            //RS232 ONLY
-+	CTI_PORT_TYPE_RS422_485,        //RS422/RS485 ONLY
-+	CTI_PORT_TYPE_RS232_422_485_HW, //RS232/422/485 HW ONLY Switchable
-+	CTI_PORT_TYPE_RS232_422_485_SW, //RS232/422/485 SW ONLY Switchable
-+	CTI_PORT_TYPE_RS232_422_485_4B, //RS232/422/485 HW/SW (4bit ex. BCG004)
-+	CTI_PORT_TYPE_RS232_422_485_2B, //RS232/422/485 HW/SW (2bit ex. BBG008)
-+	CTI_PORT_TYPE_MAX,
-+};
-+
-+#define CTI_PORT_TYPE_VALID(_port_type) \
-+	(((_port_type) > CTI_PORT_TYPE_NONE) && \
-+	((_port_type) < CTI_PORT_TYPE_MAX))
-+
-+#define CTI_PORT_TYPE_RS485(_port_type) \
-+	(((_port_type) > CTI_PORT_TYPE_RS232) && \
-+	((_port_type) < CTI_PORT_TYPE_MAX))
-+
- struct exar8250;
-
- struct exar8250_platform {
-@@ -202,6 +245,8 @@ struct exar8250_board {
-
- struct exar8250 {
- 	unsigned int		nr;
-+	unsigned int            osc_freq;
-+	struct pci_dev		*pcidev;
- 	struct exar8250_board	*board;
- 	void __iomem		*virt;
- 	int			line[];
-@@ -557,6 +602,279 @@ pci_fastcom335_setup(struct exar8250 *priv, struct p=
-ci_dev *pcidev,
- 	return 0;
- }
-
-+/**
-+ * cti_set_tristate() - Enable/Disable RS485 transciever tristate
-+ * @priv: Device's private structure
-+ * @port_num: Port number to set tristate on/off
-+ * @enable: Enable tristate if true, disable if false
-+ *
-+ * Most RS485 capable cards have a power on tristate jumper/switch that e=
-nsures
-+ * the RS422/RS485 transciever does not drive a multi-drop RS485 bus when=
- it is
-+ * not the master. When this jumper is installed the user must set the RS=
-485
-+ * mode to disable tristate prior to using the port.
-+ *
-+ * Some Exar UARTs have an auto-tristate feature while others require set=
-ting
-+ * an MPIO to disable the tristate.
-+ *
-+ * Return: 0 on success, negative error code on failure
-+ */
-+static int cti_set_tristate(struct exar8250 *priv,
-+			unsigned int port_num, bool enable)
-+{
-+	int ret =3D 0;
-+
-+	if (!priv || (port_num >=3D priv->nr))
-+		return -EINVAL;
-+
-+	//Only Exar based cards use MPIO, return 0 otherwise
-+	if (priv->pcidev->vendor !=3D PCI_VENDOR_ID_EXAR)
-+		return 0;
-+
-+	pci_dbg(priv->pcidev, "%s tristate for port %u\n",
-+		(enable ? "enabling" : "disabling"), port_num);
-+
-+	ret =3D exar_mpio_set(priv, port_num, !enable);
-+	if (ret)
-+		return ret;
-+
-+	//ensure MPIO is an output
-+	ret =3D exar_mpio_config(priv, port_num, true);
-+
-+	return ret;
-+}
-+
-+/**
-+ * cti_set_plx_int_enable() - Enable/Disable PCI interrupts
-+ * @priv: Device's private structure
-+ * @enable: Enable interrupts if true, disable if false
-+ *
-+ * Some older CTI cards require MPIO_0 to be set low to enable the PCI
-+ * interupts from the UART to the PLX PCI->PCIe bridge.
-+ *
-+ * Return: 0 on success, negative error code on failure
-+ */
-+static int cti_set_plx_int_enable(struct exar8250 *priv, bool enable)
-+{
-+	int ret =3D 0;
-+
-+	if (!priv)
-+		return -EINVAL;
-+
-+	//Only Exar based cards use MPIO, return 0 otherwise
-+	if (priv->pcidev->vendor !=3D PCI_VENDOR_ID_EXAR)
-+		return 0;
-+
-+	pci_dbg(priv->pcidev, "%s plx fix\n",
-+		(enable ? "enabling" : "disabling"));
-+
-+	//INT enabled when MPIO0 is LOW
-+	ret =3D exar_mpio_set(priv, 0, !enable);
-+	if (ret)
-+		return ret;
-+
-+	//ensure MPIO is an output
-+	ret =3D exar_mpio_config(priv, 0, true);
-+
-+	return ret;
-+}
-+
-+/**
-+ * cti_read_osc_freq() - Read the UART oscillator frequency from EEPROM
-+ * @priv: Device's private structure
-+ *
-+ * CTI XR17x15X and XR17V25X cards have the serial boards oscillator freq=
-uency
-+ * stored in the EEPROM. FPGA and XR17V35X based cards use the PCI/PCIe c=
-lock.
-+ *
-+ * Return: frequency on success, negative error code on failure
-+ */
-+static int cti_read_osc_freq(struct exar8250 *priv, uint8_t eeprom_offset=
-)
-+{
-+	int osc_freq;
-+
-+	if (!priv)
-+		return -EINVAL;
-+
-+	osc_freq =3D (exar_ee_read(priv, eeprom_offset));
-+	osc_freq |=3D (exar_ee_read(priv, (eeprom_offset + 1)) << 16);
-+
-+	//check if EEPROM word was blank
-+	if ((osc_freq =3D=3D 0xFFFF) || (osc_freq =3D=3D 0x0000))
-+		return -EIO;
-+
-+	pci_dbg(priv->pcidev, "osc_freq from EEPROM %d\n", osc_freq);
-+
-+	return osc_freq;
-+}
-+
-+/**
-+ * cti_get_port_type_xr17c15x_xr17v25x() - Get the port type of a xr17c15=
-x
-+ * or xr17v25x card
-+ *
-+ * @priv: Device's private structure
-+ * @port_num: Port to get type of
-+ *
-+ * CTI xr17c15x and xr17v25x based cards port types are based on PCI IDs
-+ *
-+ * Return: port type on success, CTI_PORT_TYPE_NONE on failure
-+ */
-+static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar=
-8250 *priv,
-+							unsigned int port_num)
-+{
-+	enum cti_port_type port_type;
-+
-+	if (!priv)
-+		return CTI_PORT_TYPE_NONE;
-+
-+	switch (priv->pcidev->subsystem_device) {
-+	//RS232 only cards
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_232:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_232:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_232:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_232_NS:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232_NS:
-+		port_type =3D CTI_PORT_TYPE_RS232;
-+		break;
-+	//1x RS232, 1x RS422/RS485
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
-+		port_type =3D (port_num =3D=3D 0) ?
-+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		break;
-+	//2x RS232, 2x RS422/RS485
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
-+		port_type =3D (port_num < 2) ?
-+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		break;
-+	//4x RS232, 4x RS422/RS485
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
-+		port_type =3D (port_num < 4) ?
-+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		break;
-+	//RS232/RS422/RS485 HW (jumper) selectable
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_SP_OPTO:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_SP_OPTO_A:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_SP_OPTO_B:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XPRS:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_A:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_B:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_16_XPRS_A:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_16_XPRS_B:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XPRS_OPTO:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_OPTO_A:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_OPTO_B:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XP_OPTO_LEFT:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XP_OPTO_RIGHT:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XP_OPTO:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_XPRS_OPTO:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP:
-+		port_type =3D CTI_PORT_TYPE_RS232_422_485_HW;
-+		break;
-+	//RS422/RS485 HW (jumper) selectable
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_485:
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_485:
-+		port_type =3D CTI_PORT_TYPE_RS422_485;
-+		break;
-+	//6x RS232, 2x RS422/RS485
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
-+		port_type =3D (port_num < 6) ?
-+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		break;
-+	//2x RS232, 6x RS422/RS485
-+	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
-+		port_type =3D (port_num < 2) ?
-+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		break;
-+	default:
-+		pci_err(priv->pcidev, "unknown/unsupported device\n");
-+		port_type =3D CTI_PORT_TYPE_NONE;
-+	}
-+
-+	return port_type;
-+}
-+
-+/**
-+ * cti_get_port_type_fpga() - Get the port type of a CTI FPGA card
-+ * @priv: Device's private structure
-+ * @port_num: Port to get type of
-+ *
-+ * FPGA based cards port types are based on PCI IDs
-+ *
-+ * Return: port type on success, CTI_PORT_TYPE_NONE on failure
-+ */
-+static enum cti_port_type cti_get_port_type_fpga(struct exar8250 *priv,
-+						unsigned int port_num)
-+{
-+	enum cti_port_type port_type;
-+
-+	if (!priv)
-+		return CTI_PORT_TYPE_NONE;
-+
-+	switch (priv->pcidev->device) {
-+	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
-+	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
-+	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
-+		port_type =3D CTI_PORT_TYPE_RS232_422_485_HW;
-+		break;
-+	default:
-+		pci_err(priv->pcidev, "unknown/unsupported device\n");
-+		return CTI_PORT_TYPE_NONE;
-+	}
-+
-+	return port_type;
-+}
-+
-+/**
-+ * cti_get_port_type_xr17v35x() - Read port type from the EEPROM
-+ * @priv: Device's private structure
-+ * @port_num: port offset
-+ *
-+ * CTI XR17V35X based cards have the port types stored in the EEPROM.
-+ * This function reads the port type for a single port.
-+ *
-+ * Return: port type on success, CTI_PORT_TYPE_NONE on failure
-+ */
-+static enum cti_port_type cti_get_port_type_xr17v35x(struct exar8250 *pri=
-v,
-+						unsigned int port_num)
-+{
-+	uint16_t port_flags;
-+	uint8_t offset;
-+	enum cti_port_type port_type;
-+
-+	if (!priv)
-+		return CTI_PORT_TYPE_NONE;
-+
-+	offset =3D CTI_EE_OFF_XR17V35X_PORT_FLAGS + port_num;
-+	port_flags =3D exar_ee_read(priv, offset);
-+
-+	port_type =3D (port_flags & 0x00FF);
-+
-+	if (!CTI_PORT_TYPE_VALID(port_type)) {
-+		/*
-+		 * If the port type is missing the card assume it is a
-+		 * RS232/RS422/RS485 card to be safe.
-+		 *
-+		 * There is one known board (BEG013) that only has
-+		 * 3 of 4 port types written to the EEPROM so this
-+		 * acts as a work around.
-+		 */
-+		pci_warn(priv->pcidev,
-+			"failed to get port %d type from EEPROM\n", port_num);
-+		port_type =3D CTI_PORT_TYPE_RS232_422_485_HW;
-+	}
-+
-+	return port_type;
-+}
-+
- static int
- pci_connect_tech_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 		       struct uart_8250_port *port, int idx)
-@@ -914,6 +1232,39 @@ static irqreturn_t exar_misc_handler(int irq, void *=
-data)
- 	return IRQ_HANDLED;
- }
-
-+static unsigned int exar_get_nr_ports(struct exar8250_board *board,
-+					struct pci_dev *pcidev)
-+{
-+	unsigned int nr_ports =3D 0;
-+
-+	if (!board || !pcidev)
-+		return 0;
-+
-+	if (pcidev->vendor =3D=3D PCI_VENDOR_ID_ACCESSIO) {
-+		nr_ports =3D BIT(((pcidev->device & 0x38) >> 3) - 1);
-+	} else if (board->num_ports > 0) {
-+		//Check if board struct overrides number of ports
-+		nr_ports =3D board->num_ports;
-+	} else if (pcidev->vendor =3D=3D PCI_VENDOR_ID_EXAR) {
-+		//Exar encodes # ports in last nibble of PCI Device ID ex. 0358
-+		nr_ports =3D pcidev->device & 0x0f;
-+	} else  if (pcidev->vendor =3D=3D PCI_VENDOR_ID_CONNECT_TECH) {
-+		//Handle CTI FPGA cards
-+		switch (pcidev->device) {
-+		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
-+		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
-+			nr_ports =3D 12;
-+			break;
-+		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
-+			nr_ports =3D 16;
-+		default:
-+			break;
-+		}
-+	}
-+
-+	return nr_ports;
-+}
-+
- static int
- exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
- {
-@@ -933,18 +1284,18 @@ exar_pci_probe(struct pci_dev *pcidev, const struct=
- pci_device_id *ent)
-
- 	maxnr =3D pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
-
--	if (pcidev->vendor =3D=3D PCI_VENDOR_ID_ACCESSIO)
--		nr_ports =3D BIT(((pcidev->device & 0x38) >> 3) - 1);
--	else if (board->num_ports)
--		nr_ports =3D board->num_ports;
--	else
--		nr_ports =3D pcidev->device & 0x0f;
-+	nr_ports =3D exar_get_nr_ports(board, pcidev);
-+	if (nr_ports =3D=3D 0) {
-+		pci_err(pcidev, "failed to get number of ports\n");
-+		return -ENODEV;
-+	}
-
- 	priv =3D devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), G=
-FP_KERNEL);
- 	if (!priv)
- 		return -ENOMEM;
-
- 	priv->board =3D board;
-+	priv->pcidev =3D pcidev;
- 	priv->virt =3D pcim_iomap(pcidev, bar, 0);
- 	if (!priv->virt)
- 		return -ENOMEM;
-=2D-
-2.43.2
-
+T24gVGh1LCAyMDI0LTA0LTExIGF0IDEzOjAxIC0wNDAwLCBNYXR0aGV3IEhvd2VsbCB3cm90ZToN
+Cj4gT24gVGh1LCAyMDI0LTA0LTExIGF0IDExOjI3ICswMzAwLCBJbHBvIErDpHJ2aW5lbiB3cm90
+ZToNCj4gPiBPbiBXZWQsIDEwIEFwciAyMDI0LCBNYXR0aGV3IEhvd2VsbCB3cm90ZToNCj4gPiA+
+IE9uIFdlZCwgMjAyNC0wNC0xMCBhdCAxNjo0OSArMDMwMCwgSWxwbyBKw6RydmluZW4gd3JvdGU6
+DQo+ID4gPiA+IE9uIE1vbiwgOCBBcHIgMjAyNCwgTWF0dGhldyBIb3dlbGwgd3JvdGU6DQo+ID4g
+PiA+ID4gT24gTW9uLCAyMDI0LTA0LTA4IGF0IDE5OjQ4ICswMzAwLCBJbHBvIErDpHJ2aW5lbiB3
+cm90ZToNCj4gPiA+ID4gPiA+IE9uIE1vbiwgOCBBcHIgMjAyNCwgTWF0dGhldyBIb3dlbGwgd3Jv
+dGU6DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gT24gV2VkLCAyMDI0LTAyLTIxIGF0IDE2
+OjE2IC0wNTAwLCBNYXR0aGV3IEhvd2VsbCB3cm90ZToNCj4gPiA+ID4gPiA+ID4gPiBBbGxvd3Mg
+dGhlIHVzZSBvZiB0aGUgRU40ODUgaGFyZHdhcmUgcGluIGJ5IHByZXNlcnZpbmcgdGhlIHZhbHVl
+IG9mDQo+ID4gPiA+ID4gPiA+ID4gRkNUUls1XSBpbiBwY2lfeHIxN3YzNXhfc2V0dXAoKS4NCj4g
+PiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiBQZXIgdGhlIFhSMTdWMzVYIGRhdGFzaGVl
+dCwgdGhlIEVONDg1IGhhcmR3YXJlIHBpbiB3b3JrcyBieSBzZXR0aW5nDQo+ID4gPiA+ID4gPiA+
+ID4gRkNUUls1XSB3aGVuIHRoZSBwaW4gaXMgYWN0aXZlLiBwY2lfeHIxN3YzNXhfc2V0dXAoKSBw
+cmV2ZW50ZWQgdGhlIHVzZQ0KPiA+ID4gPiA+ID4gPiA+IG9mIEVONDg1IGJlY2F1c2UgaXQgb3Zl
+cndyb3RlIHRoZSBGQ1RSIHJlZ2lzdGVyLg0KPiA+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
+PiA+IFNpZ25lZC1vZmYtYnk6IE1hdHRoZXcgSG93ZWxsIDxtYXR0aGV3Lmhvd2VsbEBzZWFsZXZl
+bC5jb20+DQo+ID4gPiA+ID4gPiA+ID4gLS0tDQo+ID4gPiA+ID4gPiA+ID4gVjEgLT4gVjINCj4g
+PiA+ID4gPiA+ID4gPiBGaXhlZCB3b3Jkd3JhcCBpbiBkaWZmDQo+ID4gPiA+ID4gPiA+ID4gDQo+
+ID4gPiA+ID4gPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBf
+ZXhhci5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9leGFyLmMNCj4gPiA+ID4gPiA+
+ID4gPiBpbmRleCAyMzM2NmY4NjguLjk3NzExNjA2ZiAxMDA2NDQNCj4gPiA+ID4gPiA+ID4gPiAt
+LS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2V4YXIuYw0KPiA+ID4gPiA+ID4gPiA+
+ICsrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZXhhci5jDQo+ID4gPiA+ID4gPiA+
+ID4gQEAgLTU5Niw2ICs1OTYsNyBAQCBwY2lfeHIxN3YzNXhfc2V0dXAoc3RydWN0IGV4YXI4MjUw
+ICpwcml2LCBzdHJ1Y3QgcGNpX2RldiAqcGNpZGV2LA0KPiA+ID4gPiA+ID4gPiA+ICAgICB1bnNp
+Z25lZCBpbnQgYmF1ZCA9IDc4MTI1MDA7DQo+ID4gPiA+ID4gPiA+ID4gICAgIHU4IF9faW9tZW0g
+KnA7DQo+ID4gPiA+ID4gPiA+ID4gICAgIGludCByZXQ7DQo+ID4gPiA+ID4gPiA+ID4gKyAgIHU4
+IGVuNDg1bWFzazsNCj4gPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gPiAgICAgcG9ydC0+
+cG9ydC51YXJ0Y2xrID0gYmF1ZCAqIDE2Ow0KPiA+ID4gPiA+ID4gPiA+ICAgICBwb3J0LT5wb3J0
+LnJzNDg1X2NvbmZpZyA9IHBsYXRmb3JtLT5yczQ4NV9jb25maWc7DQo+ID4gPiA+ID4gPiA+ID4g
+QEAgLTYxOCw3ICs2MTksOCBAQCBwY2lfeHIxN3YzNXhfc2V0dXAoc3RydWN0IGV4YXI4MjUwICpw
+cml2LCBzdHJ1Y3QgcGNpX2RldiAqcGNpZGV2LA0KPiA+ID4gPiA+ID4gPiA+ICAgICBwID0gcG9y
+dC0+cG9ydC5tZW1iYXNlOw0KPiA+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiA+ICAgICB3
+cml0ZWIoMHgwMCwgcCArIFVBUlRfRVhBUl84WE1PREUpOw0KPiA+ID4gPiA+ID4gPiA+IC0gICB3
+cml0ZWIoVUFSVF9GQ1RSX0VYQVJfVFJHRCwgcCArIFVBUlRfRVhBUl9GQ1RSKTsNCj4gPiA+ID4g
+PiA+ID4gPiArICAgZW40ODVtYXNrID0gcmVhZGIocCArIFVBUlRfRVhBUl9GQ1RSKSAmIFVBUlRf
+RkNUUl9FWEFSXzQ4NTsNCj4gPiA+ID4gPiA+ID4gPiArICAgd3JpdGViKFVBUlRfRkNUUl9FWEFS
+X1RSR0QgfCBlbjQ4NW1hc2ssIHAgKyBVQVJUX0VYQVJfRkNUUik7DQo+ID4gPiA+ID4gPiA+ID4g
+ICAgIHdyaXRlYigxMjgsIHAgKyBVQVJUX0VYQVJfVFhUUkcpOw0KPiA+ID4gPiA+ID4gPiA+ICAg
+ICB3cml0ZWIoMTI4LCBwICsgVUFSVF9FWEFSX1JYVFJHKTsNCj4gPiA+ID4gPiA+IA0KPiA+ID4g
+PiA+ID4gV2h5IHlvdSBuZWVkIHRvIHJlYWQgcnM0ODUgc3RhdGUgZnJvbSB0aGUgcmVnaXN0ZXI/
+IEl0IHNob3VsZCBiZSBhdmFpbGFibGUNCj4gPiA+ID4gPiA+IGluIC0+cnM0ODUuZmxhZ3MgJiBT
+RVJfUlM0ODVfRU5BQkxFRC4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFBs
+ZWFzZSBjb3JyZWN0IG1lIGlmIEkgYW0gd3JvbmcsIGJ1dCBteSB1bmRlcnN0YW5kaW5nIGlzIHRo
+YXQNCj4gPiA+ID4gPiBTRVJfUlM0ODVfRU5BQkxFRCBpcyBzZXQgZnJvbSB1c2Vyc3BhY2UgdXNp
+bmcgdGhlIFRJT0NSUzQ4NSBJT0NUTC4NCj4gPiA+ID4gDQo+ID4gPiA+IFRob3VnaHQgdGhhdCBh
+bmQgZGV2aWNlX3Byb3BlcnR5X3JlYWRfYm9vbChkZXYsDQo+ID4gPiA+ICJsaW51eCxyczQ4NS1l
+bmFibGVkLWF0LWJvb3QtdGltZSIpDQo+ID4gPiA+IA0KPiA+ID4gDQo+ID4gPiBJIGFtIG5vdCBm
+YW1pbGlhciB3aXRoIHRoYXQgcHJvcGVydHkuIElzIHRoYXQgc29tZXRoaW5nIHRoYXQgY2FuIGJl
+IHNldA0KPiA+ID4gaW4gdXNlcnNwYWNlIG9yIHZpYSBhIGtlcm5lbCBwYXJhbWV0ZXI/IE9yIGlz
+IGl0ICdoYXJkLWNvZGVkJyBpbnRvIHRoZQ0KPiA+ID4gZGV2aWNlIHRyZWUgYmluZGluZyBmb3Ig
+YSBwYXJ0aWN1bGFyIGRldmljZT8NCj4gPiANCj4gPiBUaHJvdWdoIERULCB5ZXMgKG9yIEFDUEkg
+ZXF1aXZhbGVudCkuDQo+ID4gDQo+ID4gPiA+ID4gSG93ZXZlciwgdGhpcyBpcyBub3QgdGhlIG9u
+bHkgd2F5IHRoYXQgdGhlIEZDVFIgcmVnaXN0ZXIgY2FuIGJlIGNoYW5nZWQuDQo+ID4gPiA+ID4g
+SW4gcGFydGljdWxhciwgcGVyIFhSMTdWMzVYIGRhdGFzaGVldCwgdGhlIEVONDg1IHBpbiBpcyBz
+YW1wbGVkIG9uDQo+ID4gPiA+ID4gcG93ZXItb24gYW5kIHRyYW5zZmVycyB0aGUgbG9naWMgc3Rh
+dGUgdG8gRkNUUls1XS4gT3VyIGNhcmQgdGFrZXMNCj4gPiA+ID4gPiBhZHZhbnRhZ2Ugb2YgdGhp
+cyB0byBhbGxvdyB1c2VycyB0byBjb25maWd1cmUgUlM0ODUgaW4gc2NlbmFyaW9zIHdoZXJlDQo+
+ID4gPiA+ID4gdGhleSBjYW5ub3QsIG9yIGRvIG5vdCB3YW50IHRvLCBtb2RpZnkgdGhlaXIgc29m
+dHdhcmUgdG8gc2V0DQo+ID4gPiA+ID4gU0VSX1JTNDg1X0VOQUJMRUQuDQo+ID4gPiA+ID4gDQo+
+ID4gPiA+ID4gSG93ZXZlciwgdGhpcyBmdW5jdGlvbmFsaXR5IG9mIHRoZSBVQVJUIGRvZXMgbm90
+IGN1cnJlbnRseSB3b3JrIHdpdGgNCj4gPiA+ID4gPiB0aGlzIGRyaXZlciBiZWNhdXNlIHRoZSBl
+bnRpcmUgRkNUUiByZWdpc3RlciBpcyBiZWluZyBvdmVyd3JpdHRlbiwNCj4gPiA+ID4gPiB0aGVy
+ZWJ5IGVyYXNpbmcgd2hhdGV2ZXIgdmFsdWUgd2FzIHdyaXR0ZW4gdG8gRkNUUls1XSBvbiBVQVJU
+IHBvd2VyLXVwLg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFRoZSBkcml2ZXIgY2Fubm90IGtub3cg
+d2hldGhlciBGQ1RSWzVdIHdhcyBzZXQgb24gcG93ZXItdXAgd2l0aG91dA0KPiA+ID4gPiA+IHJl
+YWRpbmcgdGhlIEZDVFIsIHRoZXJlZm9yZSBpdCBtdXN0IGJlIHJlYWQuDQo+ID4gPiA+IA0KPiA+
+ID4gPiA/Pz8NCj4gPiA+ID4gDQo+ID4gPiA+IEFyZSB5b3Ugc2F5aW5nIFJTNDg1IGlzIGVuYWJs
+ZWQgd2l0aG91dCBrZXJuZWwga25vd2luZyBhYm91dCBpdD8gSSBkb24ndA0KPiA+ID4gPiB0aGlu
+ayB0aGF0J3MgdGhlIGNvcnJlY3Qgd2F5IHRvIGRvIHRoaW5ncy4NCj4gPiA+IA0KPiA+ID4gVGhh
+dCBpcyBjb3JyZWN0LiBIb3dldmVyLCBJIHdvdWxkbid0IHNheSBpdCBpcyBhbiBpbmNvcnJlY3Qg
+d2F5IG9mIGRvaW5nDQo+ID4gPiB0aGluZ3MuIFNvbWUgcmVhc29uaW5nL2p1c3RpZmljYXRpb24g
+YmVsb3c6DQo+ID4gPiANCj4gPiA+ICogS2VybmVsL0RyaXZlci9Tb2Z0d2FyZSBpbmRlcGVuZGVu
+dCBSUzQ4NSBBdXRvIEVuYWJsZSBpcyBub3QgbmV3LiBJDQo+ID4gPiBjYW4ndCBzcGVhayBmb3Ig
+b3RoZXIgdmVuZG9ycywgYnV0IFNlYWxldmVsIGhhcyBiZWVuIGNyZWF0aW5nIHByb2R1Y3RzDQo+
+ID4gPiB3aXRoIHRoaXMgZnVuY3Rpb25hbGl0eSBmb3Igc2V2ZXJhbCBkZWNhZGVzLCBkYXRpbmcg
+YmFjayB0byBhdCBsZWFzdA0KPiA+ID4gMTk5NC4NCj4gPiA+IA0KPiA+ID4gKiBJbiB0aG9zZSBw
+cm9kdWN0cywgdGhlIGtlcm5lbCB3YXMgKm5lY2Vzc2FyaWx5KiBlbnRpcmVseSB1bmF3YXJlIG9m
+DQo+ID4gPiB3aGV0aGVyIFJTNDg1IHdhcyBpbiB1c2UgYmVjYXVzZSBtb3N0IE9TJ3MgYW5kIGFw
+cGxpY2F0aW9ucyBkaWQgbm90DQo+ID4gPiBzdXBwb3J0IFJTNDg1IGF0IHRoZSB0aW1lIGFuZCBh
+cyBzdWNoIHdhcyBpbXBsZW1lbnQgdG8gYmUgZW50aXJlbHkNCj4gPiA+IHRyYW5zcGFyZW50IHRv
+IHRoZSBPUyBhbmQgYXBwbGljYXRpb24uDQo+ID4gPiANCj4gPiA+ICogU2luY2UgdGhlbiwgbWFu
+eSBVQVJUcyBoYXZlIGludGVncmF0ZWQgQXV0byBSUzQ4NSBFbmFibGUgaW50byBhIHNpbmdsZQ0K
+PiA+ID4gcGFja2FnZSBhbmQgd2UgaGF2ZSBtb3ZlZCB0b3dhcmRzIHV0aWxpemluZyB0aGlzIGlu
+dGVncmF0ZWQNCj4gPiA+IGZ1bmN0aW9uYWxpdHkgd2hlbiBpdCBpcyBhdmFpbGFibGUuDQo+ID4g
+PiANCj4gPiA+ICogSSBzYXkgdGhlIGFib3ZlIHRvIHBvaW50IG91dCB0aGF0IHRoZXJlIGlzIGEg
+bG9uZyBoaXN0b3J5IG9mIFJTNDg1DQo+ID4gPiBBdXRvIEVuYWJsZSB3aXRob3V0IGtlcm5lbCBp
+bnZvbHZlbWVudCwgYW5kIHRoZXJlZm9yZSBpbiBteSB2aWV3IGl0IGlzDQo+ID4gPiBqdXN0IGFz
+IHZhbGlkIHRvIGhhdmUgUlM0ODUgQXV0byBFbmFibGVkIHNldCB2aWEgaGFyZHdhcmUgd2l0aG91
+dCB0aGUNCj4gPiA+IGtlcm5lbCBiZWluZyBhd2FyZSBhcyBpdCBpcyBmb3IgdGhlIGtlcm5lbCB0
+byBiZSBhd2FyZS4NCj4gPiANCj4gPiBJcyB0aGlzICJBdXRvIiB0aGluZyBkb25lIHdpdGggc29t
+ZSBkaXAgc3dpdGNoZXMvanVtcGVycyBhbmQgaXMgY2FzdCB0bw0KPiA+IHN0b25lIGFmdGVyIGh3
+IGluaXQ/IFNvIGRyaXZlcidzIC5wcm9iZSgpIGNvdWxkIGp1c3QgcmVhZCB0aGF0IHN0YXRlDQo+
+ID4gYW5kIGFkanVzdCBrZXJuZWwgcnM0ODUgc3RhdGUgYmFzZWQgb25lIGl0Pw0KPiA+IA0KPiAN
+Cj4gVGhlIGJlaGF2aW91ciBvZiB0aGUgcGF0Y2ggYXQgdGhlIG1vbWVudCBpcyB0aGF0IGNoYW5n
+ZXMgdG8NCj4gU0VSX1JTNDg1X0VOQUJMRUQgY2FuICdyZXNldCcgdGhlIHN0YXRlIG9mIEZDVFJb
+NV0uIEZvciBleGFtcGxlLCBpZiBhbg0KPiBhcHBsaWNhdGlvbiBzZXRzIFNFUl9SUzQ4NV9FTkFC
+TEVEIHRvIHRydWUsIHRoZW4gYmFjayB0byBmYWxzZSwgdGhlIGNhcmQNCj4gd2lsbCBsb3NlIHRo
+ZSBBdXRvLVJTNDg1IEVuYWJsZSBzZXR0aW5nLiANCj4gDQo+IE9uIG9uZSBoYW5kLCB0aGlzIHBy
+b3ZpZGVzIHVzZXJzIGEgbWV0aG9kIG9mICdyZXNldHRpbmcnIEZDVFJbNV0gb24gYQ0KPiBjaGFu
+bmVsIHRoYXQgdGhleSBkbyBub3Qgd2FudCB0byBiZSBSUzQ4NSBpbiBvcmRlciB0byB3b3JrIGFy
+b3VuZCB0aGF0DQo+IGxpbWl0YXRpb24gb2YgdGhlIEVONDg1IHBpbiwgYnV0IG9uIHRoZSBvdGhl
+ciBpdCBhIGxpdHRsZSBiaXQgd2VpcmQgdG8NCj4gZW5hYmxpbmcgYW5kIGhlbiBkaXNhYmxpbmcg
+U0VSX1JTNDg1X0VOQUJMRUQgZG9lcyBub3QgbGVhdmUgeW91IHdoZXJlDQo+IHlvdSBpbiB0aGUg
+c3RhdGUgc3RhcnRlZCBpZiBFTjQ4NSB3YXMgYXNzZXJ0ZWQgYXQgYm9vdC4NCj4gDQo+ID4gPiAq
+IEZpbmFsbHksIHRvIHRoZSBkYXkgbWFueSBhcHBsaWNhdGlvbnMgc3RpbGwgZG8gbm90IHN1cHBv
+cnQgUlM0ODUuDQo+ID4gPiBUaGVyZWZvcmUsIGhhdmluZyB0aGUgYWJpbGl0eSB0byBzZXQgUlM0
+ODUgdmlhIGhhcmR3YXJlIGlzIHN0aWxsIGENCj4gPiA+IHZhbHVhYmxlIGZlYXR1cmUgZm9yIHVz
+ZXJzLCBhbmQgb25lIHRoYXQgRXhhci9NYXhsaW5lYXIgc2VlbXMgdG8gaGF2ZQ0KPiA+ID4gcmVj
+b2duaXplZCwgYXMgSSBkb24ndCBrbm93IHdoeSB0aGV5IHdvdWxkIGV2ZW4gaGF2ZSB0aGUgRU40
+ODUgcGluIGlmDQo+ID4gPiBub3QgZm9yIHRoaXMgc29ydCBvZiB1c2UtY2FzZS4NCj4gPiANCj4g
+PiBPbmNlIHRoZSBzZXJpYWwgbGluZSBoYXMgYmVlbiB0cmFuc2l0aW9uZWQgaW50byBSUzQ4NSBt
+b2RlLCB1c2Vyc3BhY2UgZG9lcw0KPiA+IG5vdCBuZWVkIHRvIGJlIGF3YXJlIG9mIGl0ICh3aGlj
+aCBjYW4gaGFwcGVuIHRocm91Z2ggRFQgc28gbm8gdXNlcnNwYWNlDQo+ID4gaW52b2x2ZW1lbnQp
+LiBTbyB0aGlzIHNob3VsZG4ndCBiZSBzZWVuIGFzIGEgcHJvYmxlbS4NCj4gPiANCj4gDQo+IEFo
+LCBJIGhhZCBtaXNzZWQgb2ZfYWRkX3Byb3BlcnR5KCkgaW4gdGhlIERldmljZSBUcmVlIGtlcm5l
+bCBBUEkuDQo+IA0KPiBXb3VsZCBpdCBiZSBhcHByb3ByaWF0ZSB0byBmaW5kIGFuZCBtb2RpZnkg
+dGhlIGRldmljZSB0cmVlIG5vZGUgZnJvbQ0KPiBleGFyX3BjaV9wcm9iZSgpPyBJIGFzayBiZWNh
+dXNlIGl0IGxvb2tzIGxpa2UgYWxsIG9yIG1vc3QgZGV2aWNlIHRyZWUNCj4gb3BlcmF0aW9ucyBp
+biB0aGUgODI1MCBkcml2ZXIgYXJlIGNvbmZpbmVkIHRvIDgyNTBfb2YuYywgYnV0IEkgYmVsaWV2
+ZQ0KPiB0aGUgRkNUUiBpcyBzcGVjaWZpYyB0byBFeGFyIHNvIEkgdGhpbmsgeW91ciBzdWdnZXN0
+aW9uIG9mIGNoZWNraW5nIHRoZQ0KPiByZWdpc3RlciB2YWx1ZSBkdXJpbmcgcHJvYmUgbWFrZXMg
+c2Vuc2UuDQo+IA0KPiA+ID4gUGVyaGFwcyB0aGUgb3B0aW1hbCBzb2x1dGlvbiB3b3VsZCBiZSBp
+ZiB0aGVyZSB3ZXJlIGEgbWV0aG9kIGZvciB0aGUNCj4gPiA+IGhhcmR3YXJlIHRvIGluZm9ybSB0
+aGUga2VybmVsIHRoYXQgaXQgaXMgY29uZmlndXJlZCBmb3IgUlM0ODUgQXV0bw0KPiA+ID4gRW5h
+YmxlIHZpYSBoYXJkd2FyZSwgYnV0IEknbSBub3QgYXdhcmUgb2YgYSBzdXBwb3J0ZWQgd2F5IG9m
+IGRvaW5nIHRoaXMuDQo+ID4gPiBUaGUgb25seSB0aGluZyBJIGNhbiB0aGluayBvZiBhdCB0aGUg
+bW9tZW50IGlzIGp1c3QgYSBjaGVjayBpbiB0aGUNCj4gPiA+IGluaXQvc2V0dXAgdGhhdCBzZXRz
+IFNFUl9SUzQ4NV9FTkFCTEVEIGlmIEZDVFJbNV0gaXMgZW5hYmxlZC4gSSBkb24ndA0KPiA+ID4g
+a25vdyBpZiB0aGlzIHdvdWxkIGJlIGNvbnNpZGVyZWQgYW4gaW1wcm92ZW1lbnQgdGhvdWdoLg0K
+PiA+IA0KPiA+IEkgZG9uJ3QgdGhpbmsgc3VjaCBtZWNoYW5pc20gZXhpc3RzIGJleW9uZCBEVCBj
+dXJyZW50bHksIGJ1dCBJIGRvbid0IHNlZQ0KPiA+IHdoeSBpdCBjb3VsZCBiZSBhZGRlZC4NCj4g
+DQo+ID4gLS0NCj4gPiAgaS4NCj4gDQo+IElmIERUIGFscmVhZHkgaGFzIGEgbWVjaGFuaXNtIHRo
+YXQgY2FuIGJlIHVzZWQgSSB3b3VsZCByYXRoZXIgZG8gdGhhdA0KPiB0aGFuIGFkZCBhZGRpdGlv
+bmFsIG1lY2hhbmlzbXMgZm9yIHRoZSBzYW1lIHRoaW5nLg0KPiANCg0KQWZ0ZXIgbG9va2luZyBp
+bnRvIHRoaXMgc29tZSBtb3JlLCBJJ20gbm90IHN1cmUgaWYgRGV2aWNlIFRyZWUgd2lsbA0Kd29y
+ay4gSSB3YXMgaW5pdGlhbGx5IHVuZGVyIHRoZSBpbXByZXNzaW9uIHRoYXQgRFQgd2FzIHByZXNl
+bnQgZm9yIGJvdGgNCmVtYmVkZGVkIGFuZCBBQ1BJIGNhcGFibGUgc3lzdGVtcyBkdWUgdG8gL3N5
+cy9kZXZpY2VzL0xOWFNZU1RFTSBiZWluZw0KZGVzY3JpYmVkIGFzIGJlaW5nIGEgRGV2aWNlIFRy
+ZWUgcmVwcmVzZW50YXRpb24gb2YgQUNQSS4gSG93ZXZlciwgYWZ0ZXINCmxvb2tpbmcgZnVydGhl
+ciBJIGFtIG5vdCBzdXJlIHRoYXQgdGhpcyBtZWFucyB0aGF0IERUIHByb3BlcnRpZXMgYXJlDQpy
+ZXNwZWN0ZWQgb24gQUNQSSBzeXN0ZW1zLiBEbyB5b3Uga25vdyB3aGV0aGVyIHRoaXMgaXMgdGhl
+IGNhc2U/IElmIG5vdCwNCmRvIHlvdSBrbm93IHRoZSBBQ1BJIGVxdWl2YWxlbnQgb2YgInJzNDg1
+LWVuYWJsZWQtYXQtYm9vdC10aW1lIj8gSSd2ZQ0Kbm90IHlldCBoYWQgbXVjaCBsdWNrIGZpbmRp
+bmcgYW55dGhpbmcuDQoNCi0tDQpNYXR0aGV3IEguIA0KDQo+IC0tDQo+IE1hdHRoZXcgSC4NCg0K
