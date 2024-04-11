@@ -1,115 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 210A4147C86;
-	Thu, 11 Apr 2024 11:20:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5338B14AD24;
+	Thu, 11 Apr 2024 12:03:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712834438; cv=none; b=kF7JadaQ6rqQGQ813AZPrnAOThZVXEDpSX7jUv+F2dHzqrgAUjIzf8Dunw/p2jjGK3+AlwTwpL3vzL3FYjUnwyqlt3lT40+H3++Wv6us5tz4E/Dm8xyLjMQicqB1R9hkRNxTBGpRu1UZEWuSjE0GDe3SU47eVzSvqa9qllTeNWE=
+	t=1712837031; cv=none; b=Obn44fUOG9OF+qvjUGw0/tOBwQwUAWe3VLbajGRdB9uhO48ZKzz2UoTZbVjgPo8IAxFy7BmAsSZQPRmyUsPkjkyePAMU/FKnwQaoKy2ea9K+8Da1zD4PX+s03iC2/FswBvWe+zuqrh+cKn5Smx3E1da7JNxHzX2FIRk9JHS/fSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712834438; c=relaxed/simple;
-	bh=+926ajbsXSpyzZveFO9nj3gRQLdTdIRLCaK6UzM314k=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=WqTVy+LzS+tzEcPpzp1WeBZzyVKoRlgwfWuY5wmM0su6Q8olg7u959Y5i27cmF6sMwIY+L2aPKr9x6uZMrecN2U/3RfNjb9GxJ3AZ51FZfwvrmzkMI1w2zUaJ4zOY57+xi0NmF2Bl2hyCgVQ3pLju/N8/BHeEKvywTkgpkqVhV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YoZ7vomS; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712837031; c=relaxed/simple;
+	bh=oltkbgJz/lUcQWtwkLke/qM0DU1bwDW6wogBIn+i780=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=A4ErHE+8SmxFR+BLCVRkiNvz3Cvn4Fq/C1iWw4oN298WiPIDbjzaTT1PRjceFOQ4lNlr+ORdHqKdLvmTzO2eVW5kTOqZQlMO8UbDLXZZ6GFkko3yZWOXe6+U2hdpsgBZrfIyKNRPuQ7HEVSIAYVK7l+oJj/vc1OutCfpEwjpCkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=dKYDMK3i; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YoZ7vomS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712834438; x=1744370438;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=+926ajbsXSpyzZveFO9nj3gRQLdTdIRLCaK6UzM314k=;
-  b=YoZ7vomSdPBuB/icjZHsGpWdVk71ddE6Z8fzKnl4/D2ehds0p1GeLJ2y
-   Mg9DdYBW7o3Rz/dY9CbRwttH0ayjvUiGVR7XOzMUG69xk88Bn5MhaDzH3
-   BLudOoDzKQ5bZYT8BpZ3hEb1D2C1o4zesBLLK/uYYwazsk0ciWWRSMyoc
-   /35QlCbCmfZE9xrfs9ZofZluN07FzHE7+8I6oGTPqfutOCjoRZiwwgmLo
-   LTFyIReM3qSW4Tfogh4f5V2osnytbjXfklRnhpxa/mAwc64AMtCUtn56p
-   ZaGXX58EkPJBKCqcqSsLDzgFeW9jG2hp85zr0kxUwcRaiCdZ3y3eH/83u
-   w==;
-X-CSE-ConnectionGUID: VVDW2VAuRWqrQ36VZVunyA==
-X-CSE-MsgGUID: vx/xG8M3Rkivs28jjNDsbA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="12016020"
-X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="12016020"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 04:20:37 -0700
-X-CSE-ConnectionGUID: VRGMNC62R4+HcPuzvSo5zA==
-X-CSE-MsgGUID: stVam8kfTNqJBnaEOAyVGw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="21366764"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 04:20:34 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 11 Apr 2024 14:20:29 +0300 (EEST)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 1/1] serial: max3100: Convert to_max3100_port() to be
- static inline
-In-Reply-To: <20240410141135.1378948-1-andriy.shevchenko@linux.intel.com>
-Message-ID: <0efff014-43a2-b1e2-6690-515a6b2a3edd@linux.intel.com>
-References: <20240410141135.1378948-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="dKYDMK3i"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B608C433C7;
+	Thu, 11 Apr 2024 12:03:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1712837030;
+	bh=oltkbgJz/lUcQWtwkLke/qM0DU1bwDW6wogBIn+i780=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dKYDMK3iUyUAOAqGAdXCtZqI4PHO1hUEa+vVgCaVnZbP7/HZax/WvuruCdVXLpiZ+
+	 fITLONyNAJrOiKejW9o5JiBe6r4Usq9A7jldYoqRvOgU2Gker3Xf+qBKZhsG5F6NFY
+	 ZDQkPjOsDABS8Kmf+z23LoZuYVWxnhMHXfdm2XqM=
+Date: Thu, 11 Apr 2024 14:03:47 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Ayush Singh <ayushdevel1325@gmail.com>
+Cc: linux-kernel@vger.kernel.org, jkridner@beagleboard.org,
+	robertcnelson@beagleboard.org,
+	Vaishnav M A <vaishnav@beagleboard.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Tero Kristo <kristo@kernel.org>,
+	Derek Kiernan <derek.kiernan@amd.com>,
+	Dragan Cvetic <dragan.cvetic@amd.com>,
+	Arnd Bergmann <arnd@arndb.de>, Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+	greybus-dev@lists.linaro.org
+Subject: Re: [PATCH v3 6/8] greybus: Add mikroBUS manifest types
+Message-ID: <2024041103-nimbly-pounce-aa36@gregkh>
+References: <20240315184908.500352-1-ayushdevel1325@gmail.com>
+ <20240315184908.500352-7-ayushdevel1325@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-94683981-1712834247=:1017"
-Content-ID: <b296fc51-820a-5172-1f94-14d0777a60c8@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240315184908.500352-7-ayushdevel1325@gmail.com>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-94683981-1712834247=:1017
-Content-Type: text/plain; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <d4ccf212-a95c-7bf6-6d13-d12ae3696795@linux.intel.com>
-
-On Wed, 10 Apr 2024, Andy Shevchenko wrote:
-
-> As Jiri rightfully pointed out the current to_max3100_port() macro
-> implementation is fragile in a sense that it expects the variable
-> name to be port, otherwise it blow up the build.
->=20
-> Change this to be static inline to prevent bad compilation.
->=20
-> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Sat, Mar 16, 2024 at 12:19:04AM +0530, Ayush Singh wrote:
+> Add data structures for parsing mikroBUS manifests, which are based on
+> greybus manifest.
+> 
+> Signed-off-by: Ayush Singh <ayushdevel1325@gmail.com>
 > ---
->  drivers/tty/serial/max3100.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> index 1e6b5763ce3f..07ee001640bb 100644
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -111,7 +111,10 @@ struct max3100_port {
->  =09struct timer_list=09timer;
+>  include/linux/greybus/greybus_manifest.h | 49 ++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
+> diff --git a/include/linux/greybus/greybus_manifest.h b/include/linux/greybus/greybus_manifest.h
+> index bef9eb2093e9..83241e19d9b3 100644
+> --- a/include/linux/greybus/greybus_manifest.h
+> +++ b/include/linux/greybus/greybus_manifest.h
+> @@ -23,6 +23,9 @@ enum greybus_descriptor_type {
+>  	GREYBUS_TYPE_STRING		= 0x02,
+>  	GREYBUS_TYPE_BUNDLE		= 0x03,
+>  	GREYBUS_TYPE_CPORT		= 0x04,
+> +	GREYBUS_TYPE_MIKROBUS		= 0x05,
+> +	GREYBUS_TYPE_PROPERTY		= 0x06,
+> +	GREYBUS_TYPE_DEVICE		= 0x07,
+
+These need approval in the spec before we can add them here.
+
+And you are adding 3 different things here, not just one.  Shouldn't
+this be 3 patches?
+
+
 >  };
-> =20
-> -#define to_max3100_port(port)=09container_of(port, struct max3100_port, =
-port)
-> +static inline struct max3100_port *to_max3100_port(struct uart_port *por=
-t)
-> +{
-> +=09return container_of(port, struct max3100_port, port);
-> +}
-> =20
->  static struct max3100_port *max3100s[MAX_MAX3100]; /* the chips */
->  static DEFINE_MUTEX(max3100s_lock);=09=09   /* race on probe */
->=20
+>  
+>  enum greybus_protocol {
+> @@ -151,6 +154,49 @@ struct greybus_descriptor_cport {
+>  	__u8	protocol_id;	/* enum greybus_protocol */
+>  } __packed;
+>  
+> +/*
+> + * A mikrobus descriptor is used to describe the details
+> + * about the bus ocnfiguration for the add-on board
+> + * connected to the mikrobus port.
+> + */
+> +struct greybus_descriptor_mikrobus {
+> +	__u8 pin_state[12];
+> +} __packed;
+> +
+> +/*
+> + * A property descriptor is used to pass named properties
+> + * to device drivers through the unified device properties
+> + * interface under linux/property.h
+> + */
+> +struct greybus_descriptor_property {
+> +	__u8 length;
+> +	__u8 id;
+> +	__u8 propname_stringid;
+> +	__u8 type;
+> +	__u8 value[];
 
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+Don't we have a "counted-by" marking that we can use to show how big
+value[] here is?
 
-It seems liteuart has the same trap.
+> +} __packed;
+> +
+> +/*
+> + * A device descriptor is used to describe the
+> + * details required by a add-on board device
+> + * driver.
+> + */
+> +struct greybus_descriptor_device {
+> +	__u8 id;
+> +	__u8 driver_stringid;
+> +	__u8 protocol;
+> +	__u8 reg;
+> +	__le32 max_speed_hz;
+> +	__u8 irq;
+> +	__u8 irq_type;
+> +	__u8 mode;
+> +	__u8 prop_link;
+> +	__u8 gpio_link;
+> +	__u8 reg_link;
+> +	__u8 clock_link;
+> +	__u8 pad[1];
 
---=20
- i.
---8323328-94683981-1712834247=:1017--
+Why the padding?
+
+And this looks like a greybus thing, not a mikrobus thing, right?  Some
+description of exactly what this is and what it does would be good.
+
+thanks,
+
+greg k-h
