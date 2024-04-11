@@ -1,72 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 590D5145FEE;
-	Thu, 11 Apr 2024 12:06:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB1D13FD66;
+	Thu, 11 Apr 2024 12:18:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712837213; cv=none; b=odGk6cbMtmD01+05F8W52wb/jr+ntfJ5FAQPZH3LJ+aQQsV9rVOcMyhpNztExLWo+w89bqk0BCM8wwyM3gDVyTGriUFMoBmCAQImjxRNd8pGTkGWQcoVJPy9iH/dVh+CRuvFaNhK1K0yaBZSmXe5r4wW2YXLV5yU0vUdN9BsBV4=
+	t=1712837901; cv=none; b=q/qhL5q7tG8PDfHTl1JWjV5cCIruMmpSmSrSKdOtgZ+mrM6+hBtBoR68bfaXZTzBzpTK1kGLcSzBvMEIOKJvmutfNYHb5dvSQAIRLCbjaLANt0hUvYVP9IC7cGBpUApE2RKjYR0iqeb15/VLi1KvMgGvhkGKe7gRfUq1V0o5wWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712837213; c=relaxed/simple;
-	bh=jFxW61R4XvNpf6y0HK808cnVABYyTYDvgVwNDWHbSes=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T58E/fnbeSNJwwV/8pFfNN+noCxvP7JSd84aXQZ0xLnunof+WrM4fh7ogMKcF57q1KZmvD1PQICjdzRWjMoQ8npBfiI6KH2mRG0EjTyenSxBhnx5L9W4YFcQzI9vv9QD2ahHe1M3HpONdZeONrwWBJxZvtlCOExTI2caywYQS8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ePtHMzYf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712837901; c=relaxed/simple;
+	bh=Ue+kPqa5ovpPl3Sfsh1uMsxDRpeY+X+tUrHJcKDmYWw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=rAAMgcz9A8/jTnKhoMVzfFLxeDygqZe9B1aXNf2H7vg2k8bj9rSEMPOL/LTP6PqiquDODmKwda0FX0E+UzlruYxpC2cXr0DxU0VHwfwb/RJmICmFpl81WV9dQs6znL9jO/5AUAg3Kmts6Lr+6J3OqzqmwJUA/iNsgeAmRn9mXwM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=Iw7uPJ72; arc=none smtp.client-ip=188.40.30.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ePtHMzYf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56B66C433F1;
-	Thu, 11 Apr 2024 12:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712837212;
-	bh=jFxW61R4XvNpf6y0HK808cnVABYyTYDvgVwNDWHbSes=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ePtHMzYfrvBhjxvYsuscTYaPtgAjEVuz2SwBegGLm75FJFOmRvQdd7gne8yFXzmRN
-	 ql68WT5o937J2cMlVxV7kmJQA42Gx9zZ2Da4egqAzuaO6rSnrvhko5IbT6wZez5/++
-	 SS7tVSigdOYeQew6JyRxf5rEvrohzMuhwcEGyzR8=
-Date: Thu, 11 Apr 2024 14:06:50 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>,
-	Sergey Organov <sorganov@gmail.com>,
-	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Iw7uPJ72"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
+	s=default2211; h=Content-Type:MIME-Version:Message-ID:Date:References:
+	In-Reply-To:Subject:Cc:To:From:Sender:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=aHsQbmA+wnCbMY5ngUe0xXk3sGyXlVb12AhxDVR+FNs=; b=Iw7uPJ72Z/zjJvP+Avqb/nFiC7
+	O0qAVLkHcUbujC1EGyQRHk2ga5/TAsRgQIeIvOUrVGCOPq5CgjX5JagbiHsepkSFeYhtsENtKJrGZ
+	hd2/asM7+6oLI+ZHMJcZdVH594rDd2IAXnLRT4Px63y3C2HmvLi7HSW7cMRB5NlSqV42bAevlgHWz
+	t3U2bacRtL55ityZH9qAlvh8rQGyHAB/9D2zp73cZc12SuHKZoIgMtCW43NySVOjZZC9i90qO17//
+	+rfDDr+LxuGYIoM66b4av1/SE5sQVZCYFXTwMF9EkKIJb/FhUKdPrNqeq3F5a71DbEIDBRHjnCmhB
+	0O3SOhLQ==;
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <esben@geanix.com>)
+	id 1rutNX-000NqQ-UZ; Thu, 11 Apr 2024 14:18:07 +0200
+Received: from [185.17.218.86] (helo=localhost)
+	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <esben@geanix.com>)
+	id 1rutNX-0002kv-1e;
+	Thu, 11 Apr 2024 14:18:07 +0200
+From: Esben Haabendal <esben@geanix.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org,  linux-serial@vger.kernel.org,
+  imx@lists.linux.dev,  linux-arm-kernel@lists.infradead.org
 Subject: Re: [PATCH v2] serial: imx: Introduce timeout when waiting on
  transmitter empty
-Message-ID: <2024041122-transfer-diffuser-781a@gregkh>
+In-Reply-To: <2024041122-transfer-diffuser-781a@gregkh> (Greg Kroah-Hartman's
+	message of "Thu, 11 Apr 2024 14:06:50 +0200")
 References: <76cf9ce9cbf9dcdf78bc00ce7a919db1776ebce1.1712309058.git.esben@geanix.com>
- <cf197182beab7acf6ea7ead54fb4324e97e18cbc.1712733269.git.esben@geanix.com>
+	<cf197182beab7acf6ea7ead54fb4324e97e18cbc.1712733269.git.esben@geanix.com>
+	<2024041122-transfer-diffuser-781a@gregkh>
+Date: Thu, 11 Apr 2024 14:18:07 +0200
+Message-ID: <87il0o6qkg.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf197182beab7acf6ea7ead54fb4324e97e18cbc.1712733269.git.esben@geanix.com>
+Content-Type: text/plain
+X-Authenticated-Sender: esben@geanix.com
+X-Virus-Scanned: Clear (ClamAV 0.103.10/27242/Thu Apr 11 10:25:12 2024)
 
-On Wed, Apr 10, 2024 at 09:18:32AM +0200, Esben Haabendal wrote:
-> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potential
-> deadlock.
-> 
-> In case of the timeout, there is not much we can do, so we simply ignore
-> the transmitter state and optimistically try to continue.
-> 
-> v2:
-> - Fixed commit message typo
-> - Remove reference to patch series it originated from. This is a
->   stand-alone patch
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
 
-The "v2:" stuff needs to go below the --- line, so it doesn't show up in
-the kernel changelog.  The kernel documentation should describe this,
-right?
+> On Wed, Apr 10, 2024 at 09:18:32AM +0200, Esben Haabendal wrote:
+>> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potential
+>> deadlock.
+>> 
+>> In case of the timeout, there is not much we can do, so we simply ignore
+>> the transmitter state and optimistically try to continue.
+>> 
+>> v2:
+>> - Fixed commit message typo
+>> - Remove reference to patch series it originated from. This is a
+>>   stand-alone patch
+>
+> The "v2:" stuff needs to go below the --- line, so it doesn't show up in
+> the kernel changelog.  The kernel documentation should describe this,
+> right?
 
-Please fix up and send a v3.
+Right. It is described in Documentation/process/submitting-patches.rst.
+Sorry about that.
 
-thanks,
+> Please fix up and send a v3.
 
-greg k-h
+On its way.
+
+/Esben
