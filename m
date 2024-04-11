@@ -1,41 +1,41 @@
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C5713C806
-	for <linux-serial@vger.kernel.org>; Thu, 11 Apr 2024 05:59:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00425664DD
+	for <linux-serial@vger.kernel.org>; Thu, 11 Apr 2024 08:06:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712815157; cv=none; b=fWyMejoiGhEE9tl3KnsO1Vu7NMQcUlPVNqlD0ZDMMzUGRvWlCXQNP1TsGl51gHyVXKeq5sv5YGd5kAKjL7Ohh8TGVgs14HJOXt4R/0Ys2GvrPI8Ia9fmAigvCP4G5qbC99afI6rt2fJoge9fLPFP0fRgH3rbn+/KP/Tg3pJNI08=
+	t=1712822807; cv=none; b=pd7CCK7xZoMIH8mLiBuQWHhHxeHDDKLJwbMU5pRa/Fxt8feIN3yNNWHdu2vkae1W78+uS3+X3I3ZVzhPOQea1/9Cp56GtelH2ReFQyXFvPkamGKErBPqLPvtnN9RwfHCjP9/JHsqzUheHVjSMV978MqG0vYT2gSiUYwykSwnySs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712815157; c=relaxed/simple;
-	bh=qxz7IOWA0L4mzPObN8LOqebnNnq50hs6MVSP51B7ij8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PXWuwW1/v/ZGpqDxXXVymDwIX/gAoduPCthMd+u34m3Lxk4fp4ESjapUqt86xepWYGxinm9llGHjhpXJbHyvZ4Jbwp21COeiHPX0q/SdQTsY0S/A5dbadDUMfmu3fWvl7UeoHrCOjFjI4A293H7Ooxka4lngwPOAyNALUv8qXVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=lwY61MJ2; arc=none smtp.client-ip=74.50.62.9
+	s=arc-20240116; t=1712822807; c=relaxed/simple;
+	bh=JIuWOZnE9EBJOzdNbrzfgvDB7J6q0T3p/XWTIbJVfuo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rzbaBcX4vsAD89OoXeMlXwKnv9vQouj+Kr1k1qzBJNT0u78YlWajlGacTpDrv5hNH2IdNgSrjY7GWM8e1jCrmBWjbjd2/IxKGhIfR1jWz4pjf2Mm0kD52tYLgBhLwbmpqy/mN+hFOEfL3t8ySanC8j3QI0WklSa0MTFjUefvpWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=WEMYDofl; arc=none smtp.client-ip=74.50.62.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="lwY61MJ2"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="WEMYDofl"
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id 8853A603E6;
-	Thu, 11 Apr 2024 05:58:53 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 728B160368;
+	Thu, 11 Apr 2024 08:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1712815150;
-	bh=qxz7IOWA0L4mzPObN8LOqebnNnq50hs6MVSP51B7ij8=;
+	s=25mailst; t=1712822799;
+	bh=JIuWOZnE9EBJOzdNbrzfgvDB7J6q0T3p/XWTIbJVfuo=;
 	h=From:To:Cc:Subject:Date:From;
-	b=lwY61MJ2QQh97Vslffm6S2Y/2XfxWbcRI2OEkqX1BCql6ysPdzPRk4pIycGf2IAPT
-	 bSDXQel/epBMFpBKE0yGxEGhm7rw/5noGt8nvuy52aYhpmLxPasO1Ihw34ncUoIPM2
-	 tOodXi66QeDoABuU54nETzTsNe7CcMszdjXuFcxuT06/ZdnXXtXuS1UIg/4xQx2VJr
-	 mz6ID+ARh7v09ctgNHnCTcwvllrzJYFsJKwuSmTALMkzNTmdRaeotIdlKlrHkK84vY
-	 GW48cvrPUximSve17wk85Q88LT3UdbapsHOjZXY0XmVVtLqfEfIgFB43kWAORFZWf/
-	 GpUVNyBjjI9lQ==
+	b=WEMYDoflyrbwOghrn91lbSliGzJa7FWXw/Qway3/+qYg84mxlOUZwjKgoitExH41f
+	 dhiJjSCRKyb9ztrSIJuVwOumW6W+UaFYGTBeqjGmdEVMlWWD4PBnu1uaL+a4ToFy1/
+	 jvDDDL86YqB1MT1sfVBzKvv8guLUHMqqYeiKlMysrs1fei42yG4J3hEitT/u4wM2nU
+	 xYbiqL7C6Rr7kSmeQj5WBGaxjziVZWwZxryB5U6+duGFjhoBFLbUBBo0HiUBbbUY3u
+	 XtsTt+ARdgmydp/4k8xWeZrO2M/aKtTUNhefbbaPJ+tYcf0jGIWOTuK/BJNfyGNonh
+	 eWFYF/K8T4rlw==
 From: Tony Lindgren <tony@atomide.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org
-Subject: [PATCH] serial: core: Fix missing shutdown and startup for serial base port
-Date: Thu, 11 Apr 2024 08:58:45 +0300
-Message-ID: <20240411055848.38190-1-tony@atomide.com>
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250: Fix add preferred console for serial8250_isa_init_ports()
+Date: Thu, 11 Apr 2024 11:06:20 +0300
+Message-ID: <20240411080622.11929-1-tony@atomide.com>
 X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -45,154 +45,78 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-We are seeing start_tx being called after port shutdown as noted by Jiri.
-This happens because we are missing the startup and shutdown related
-functions for the serial base port.
+We need to inline serial_base_add_isa_preferred_console()  based on
+CONFIG_SERIAL_8250_CONSOLE and not based on CONFIG_SERIAL_CORE_CONSOLE.
+Otherwise we can get the follwoing error as noted by Stephen:
 
-Let's fix the issue by adding startup and shutdown functions for the
-serial base port to block tx flushing for the serial base port when the
-port is not in use.
+ERROR: modpost: "serial_base_add_isa_preferred_console"
+[drivers/tty/serial/8250/8250.ko] undefined!
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
-Reported-by: Jiri Slaby <jirislaby@kernel.org>
+We also have a duplicate inlined serial_base_add_isa_preferred_console(),
+in serial_base_bus.c added by the same commit by accident, let's drop it.
+
+Fixes: a8b04cfe7dad ("serial: 8250: Add preferred console in serial8250_isa_init_ports()")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/tty/serial/serial_base.h |  4 ++++
- drivers/tty/serial/serial_core.c | 20 ++++++++++++++++---
- drivers/tty/serial/serial_port.c | 34 ++++++++++++++++++++++++++++++++
- 3 files changed, 55 insertions(+), 3 deletions(-)
+ drivers/tty/serial/serial_base.h     | 10 ++++++++--
+ drivers/tty/serial/serial_base_bus.c | 11 ++---------
+ 2 files changed, 10 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
 --- a/drivers/tty/serial/serial_base.h
 +++ b/drivers/tty/serial/serial_base.h
-@@ -22,6 +22,7 @@ struct serial_ctrl_device {
- struct serial_port_device {
- 	struct device dev;
- 	struct uart_port *port;
-+	unsigned int tx_enabled:1;
- };
+@@ -51,8 +51,6 @@ void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port
+ int serial_base_add_preferred_console(struct uart_driver *drv,
+ 				      struct uart_port *port);
  
- int serial_base_ctrl_init(void);
-@@ -30,6 +31,9 @@ void serial_base_ctrl_exit(void);
- int serial_base_port_init(void);
- void serial_base_port_exit(void);
+-int serial_base_add_isa_preferred_console(const char *name, int idx);
+-
+ #else
  
-+void serial_base_port_startup(struct uart_port *port);
-+void serial_base_port_shutdown(struct uart_port *port);
+ static inline
+@@ -62,6 +60,14 @@ int serial_base_add_preferred_console(struct uart_driver *drv,
+ 	return 0;
+ }
+ 
++#endif
 +
- int serial_base_driver_register(struct device_driver *driver);
- void serial_base_driver_unregister(struct device_driver *driver);
- 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -323,16 +323,26 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
- 			bool init_hw)
++#ifdef CONFIG_SERIAL_8250_CONSOLE
++
++int serial_base_add_isa_preferred_console(const char *name, int idx);
++
++#else
++
+ static inline
+ int serial_base_add_isa_preferred_console(const char *name, int idx)
  {
- 	struct tty_port *port = &state->port;
-+	struct uart_port *uport;
- 	int retval;
- 
- 	if (tty_port_initialized(port))
--		return 0;
-+		goto out_base_port_startup;
- 
- 	retval = uart_port_startup(tty, state, init_hw);
--	if (retval)
-+	if (retval) {
- 		set_bit(TTY_IO_ERROR, &tty->flags);
-+		return retval;
-+	}
- 
--	return retval;
-+out_base_port_startup:
-+	uport = uart_port_check(state);
-+	if (!uport)
-+		return -EIO;
-+
-+	serial_base_port_startup(uport);
-+
-+	return 0;
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -219,6 +219,8 @@ static int serial_base_add_one_prefcon(const char *match, const char *dev_name,
+ 	return ret;
  }
  
- /*
-@@ -355,6 +365,9 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 	if (tty)
- 		set_bit(TTY_IO_ERROR, &tty->flags);
- 
-+	if (uport)
-+		serial_base_port_shutdown(uport);
++#endif
 +
- 	if (tty_port_initialized(port)) {
- 		tty_port_set_initialized(port, false);
+ #ifdef __sparc__
  
-@@ -1775,6 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
- 	uport->ops->stop_rx(uport);
- 	uart_port_unlock_irq(uport);
- 
-+	serial_base_port_shutdown(uport);
- 	uart_port_shutdown(port);
- 
- 	/*
-diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
---- a/drivers/tty/serial/serial_port.c
-+++ b/drivers/tty/serial/serial_port.c
-@@ -39,8 +39,12 @@ static int serial_port_runtime_resume(struct device *dev)
- 
- 	/* Flush any pending TX for the port */
- 	uart_port_lock_irqsave(port, &flags);
-+	if (!port_dev->tx_enabled)
-+		goto unlock;
- 	if (__serial_port_busy(port))
- 		port->ops->start_tx(port);
-+
-+unlock:
- 	uart_port_unlock_irqrestore(port, flags);
- 
- out:
-@@ -60,6 +64,11 @@ static int serial_port_runtime_suspend(struct device *dev)
- 		return 0;
- 
- 	uart_port_lock_irqsave(port, &flags);
-+	if (!port_dev->tx_enabled) {
-+		uart_port_unlock_irqrestore(port, flags);
-+		return 0;
-+	}
-+
- 	busy = __serial_port_busy(port);
- 	if (busy)
- 		port->ops->start_tx(port);
-@@ -71,6 +80,31 @@ static int serial_port_runtime_suspend(struct device *dev)
- 	return busy ? -EBUSY : 0;
+ /* Handle Sparc ttya and ttyb options as done in console_setup() */
+@@ -329,15 +331,6 @@ int serial_base_add_isa_preferred_console(const char *name, int idx)
+ 	return serial_base_add_prefcon(name, idx);
  }
  
-+static void serial_base_port_set_tx(struct uart_port *port,
-+				    struct serial_port_device *port_dev,
-+				    bool enabled)
-+{
-+	unsigned long flags;
-+
-+	uart_port_lock_irqsave(port, &flags);
-+	port_dev->tx_enabled = enabled;
-+	uart_port_unlock_irqrestore(port, flags);
-+}
-+
-+void serial_base_port_startup(struct uart_port *port)
-+{
-+	struct serial_port_device *port_dev = port->port_dev;
-+
-+	serial_base_port_set_tx(port, port_dev, true);
-+}
-+
-+void serial_base_port_shutdown(struct uart_port *port)
-+{
-+	struct serial_port_device *port_dev = port->port_dev;
-+
-+	serial_base_port_set_tx(port, port_dev, false);
-+}
-+
- static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
- 				 serial_port_runtime_suspend,
- 				 serial_port_runtime_resume, NULL);
+-#else
+-
+-int serial_base_add_isa_preferred_console(const char *name, int idx)
+-{
+-	return 0;
+-}
+-
+-#endif
+-
+ #endif
+ 
+ static int serial_base_init(void)
 -- 
 2.44.0
