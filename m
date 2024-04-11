@@ -1,47 +1,47 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA83C17C6A;
-	Thu, 11 Apr 2024 20:26:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D57D17C6D;
+	Thu, 11 Apr 2024 20:26:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712867164; cv=none; b=OY9nNew8rvDe2UXmFjHs7D701mse/RXBqxWDVImACtkMB95eqGN6lcQJsRrq3cVNADYYi1lCABCDNL88mh8i4pKM2YhorQh+/tbLo6CXkEgFCVM6fy0WrUNLf7fSU7I+LQlht8H0LUOqVjB41/qzCxWPjy0qbnjqulmqdqH4gxY=
+	t=1712867165; cv=none; b=H51favclpXV0QrYcyZ47tuRydkZEP8DHdlPF9+kbE4IpVIMNFS0XkA9mfpS9mJN9PLLYLNK72DKFJLsvQeEEne6ifknyYfx2oU7gcrB4tub95YFlR2FWVf8Q0kVxFCUOw/Boiiyhq+3ANZSjJUtnE7+OZXLrpABQTeCKeQUrJH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712867164; c=relaxed/simple;
-	bh=XoApVgnrMaufCiheBxdu3E9GYzATKwq4UZrsxBcGihY=;
+	s=arc-20240116; t=1712867165; c=relaxed/simple;
+	bh=TkhjnlvjFGVhpEGIBO9ktab1bjtXa/Gww45F0qnwaGw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=j6ay3ACy4qtH4Qlxhm+l9hUiE5hPbAeHugJX6tILNOtL8UBxtukQnZM87MvchzzKLHtwzBiIhonQrotT4TfKSJKnyHN+HtZhz68aZDXqb/n3rnj9dfRTrrEviREGXa4i4UPtUUDL2L/OLDwGCxMu1FG/RlSaeLd4X4MQcGsmUAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=i6iH4hiR; arc=none smtp.client-ip=74.208.4.196
+	 MIME-Version; b=IYPNgHeNSp+knz318rJ6z2e/qvi4sGbmM21n+jSIyFI2Jg0hYNhZDBFVyjX0UdddXfUtQgaIcJtKJh/zHRulGtRLrXLjM0YwAjXZEnFVVMyb1ZQljMTg76SGk5hHJ+vU+3XBKr4ft6NJTRhdkw+zkeCiJc/vy4FUo4uw+5pBpDI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=SwLrta9o; arc=none smtp.client-ip=74.208.4.196
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="i6iH4hiR"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="SwLrta9o"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1712867157; x=1713471957; i=parker@finest.io;
-	bh=jDtycroHBuO6M79KMq7clDQ2cxUyLfrUzN08PqttkGg=;
+	s=s1-ionos; t=1712867158; x=1713471958; i=parker@finest.io;
+	bh=iyYbMwbsoalW7f0BZDynP1kALXT2YHy5NY0+s2Dr6Fs=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=i6iH4hiRs01wemE31sWZqXm9UzqsGXcoMWH40UXGf87cxkc4vgpIlSVCD5w33i9m
-	 dbQ94CkdYq+SHgQMAXS8gScBsPVIws82OklIJ2P1AaiV8tPJk0baVSEv6bogmRhu+
-	 sLQZ8uugaJQMvhTQnnB5GEim7xdlukv4DMw5u4ajDN90HKkNxZ9e2DAZFOg5DCMk8
-	 ecPVGmdWGwXdtiQ7hp03WuItPd/Acy42+Eet4Btcoz1r67LPRqxteKbfofqPDR7i3
-	 LgUaneB2sDr84RJA89zB/4XVWVhI0sqnI2X7rtsRjr3FJERT7dsde11k4ffWv57D1
-	 6GkuvLO5+puSYpmqyA==
+	b=SwLrta9oqLc9LjSfpwh6cf9yGX5e6RutuK+e7NSaECXA1tR8nidYQ4eDR2JU2ywI
+	 1+iAixV9+bo2dipTkSsGtG9e6uom7qPLU+t06XWr30yAAkJXucoaGIj1HbETbxDoj
+	 C8zQP0gpfgU6ywkitJEcSZ4FzlaWQ8eVBdilo4ZxH86cNNsdMc8CHvaDA8+FAAFw+
+	 uz0cD+NxYY23FeCjuvnfQoCb9H14PSEkWqu6ePqjZHrk1wHFgSlhow0Ikj5Dfdi4i
+	 AWaq8dDKZX5BxhoirIm48XnIN7HyPhT12kLIuZZWaQ5whptM2UYhY2sxYZVLfaID3
+	 Dw/xDWihgdz/36wndw==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0M9IQC-1s3Ijb2DOw-0032Yw; Thu, 11 Apr
- 2024 22:25:57 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0MStu7-1sMkSZ0m6n-00HffZ; Thu, 11 Apr
+ 2024 22:25:58 +0200
 From: parker@finest.io
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v2 2/7] serial: exar: add support for reading from Exar EEPROM
-Date: Thu, 11 Apr 2024 16:25:40 -0400
-Message-ID: <d16cb88f916914278e125023c856bbf85d0908c1.1712863999.git.pnewman@connecttech.com>
+Subject: [PATCH v2 4/7] serial: exar: add optional board_setup function
+Date: Thu, 11 Apr 2024 16:25:42 -0400
+Message-ID: <69677365f4c753cbe6b5c028f530db49e6712ab3.1712863999.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.43.2
 In-Reply-To: <cover.1712863999.git.pnewman@connecttech.com>
 References: <cover.1712863999.git.pnewman@connecttech.com>
@@ -52,167 +52,98 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Y4RPmjxQqQ4vafUt1kFgZGKHOYLk7BwGDAxQV2jDQxdTtiQcTRO
- jvRby1j2c6/Af1yc47C6LccmwT122stXSxmqbTNJNn2nm0a5DDuKlKRYE00rQahWTVbczBc
- dXRwLDjhGFFBZWA8PHZq/xju+DgjcKQctbyWObDTTg+0X2/NL4cLxorIDOyNDr3oPPnXKNV
- 8p4ZcyyChahMvX1BOv6eA==
+X-Provags-ID: V03:K1:cGlYfgxUzp/dk+YlF7OoGo/8PXhPAY+qB3wIDrtCULnQKHcJ2Ey
+ zVfZISSB7kE3OunQRk0o4w0I72C90WOpchanDUIj7YBMukIsHjt7dkYLoT1vmaMUTgm+YEb
+ EgkjbDWk7a2WXhduxd0BTq43qseMJBtCb5E9rDq4o4+PEV+GrEFQFD1a6/rCdOgmAqythds
+ d30hTd+raE42y2dWhNH8Q==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:upnVXHs+xiY=;fYUxVut5gLhHQy/JpxbZcD7qSbs
- 4cbk4AK2b1I5gwNvVC+EeRHtKx14bxGJHpt0WQ0vG5Qt+jGTIR1dj7eWdSZMCTDXv5NDS/2is
- 6PR2GsZLUI/Qag0jzBa3FGDfs9tnIyjy+5fk62fEHtKru5yz1ICGnm8F04PwId4/kqxAGMbyU
- Wfr2RJ2vHKv/ttcTiuz65gzLRe3TFKjxOenjz3C7sd59tAG9EJf9YTPwSR4qedk6ihKUIk0ka
- EbbP1gCXUMdFid0HHrPGn5VtqxJqdxdYDG4zTtKJ1qo/JTpDRc60wyWGraygSwFjY/mi5oOhS
- jNZ70TZR0fe6E99PVjHaD8COPBWQ6C25zTjn6JgTyiA/9TlQhKD2LancAH10s4WK4E+FjcLGy
- 3iZdNDsGS21OVZwPbCxtRu3UxsopzOWm3GT8/N8DnnuVpRvVRPdvBCCtzbWFwWFidMHhU3a61
- 4waDD5zen4HIu80vqrVs2fSDRh9NWoEQnXvpeHDdw4r4ZlBCjB9tIGPwiibjY6EpgK//32jmz
- otdicFyp9ZZRwifxuduQPF0caLXEiKqLZXfZGqrIbV3teoQ05XtX5gRhMboFlAXQToBggrNi7
- T4qq8aN3pwdbIB1waQfRfUUCgUzkgsDe9QW1mYlxQmqA7efWd54FTf6s8GvxTXBe3K+u/kou+
- b9pFs3ahCHv6rfYbl3s8wA7UmSdS39+euk89JsdY20lGtRw1MWHqg3AMFdQvhpLwP+TIwAgWp
- 0KcBYk/CU/JokSjUBshOKaHiK2I6xt9xPrm/VBS0jCb0zbZ4Q8F/3s=
+UI-OutboundReport: notjunk:1;M01:P0:CeSaNtNqE98=;cEBVWnOpTBRRd8aBZe4JWF9WmQo
+ MgA8fU/bkfIwDJrj/+mpW3WHwRY4KvnU7TiAga5ss1MWVK5k84tHNwy1jAg1wOJ+bp8FMnMHZ
+ RRvaGQFMJNxTvMXl1L7OPHJvaQ48bElfzv/a0NWMHBKLVZ6vF23SUsb5zICFo8IItCSWVX7OB
+ 8mx5MQ6hNEkWSRA6qu9J0N6Hc6wl5YRn6Kgk+bJEgW6XZsihJa6RnPBpyey1mHMx1KCCyzoNc
+ dQhQ4NfDQ5b2Vsx1JYzkXit+Dze7sJ5juec1Qx1m3fcClNrx+AtEvisbKKCQxD1ezeZhq27Da
+ 62Qh2XfAgVJyzltkuirKcKBsDeVp3VDA2y1oum+ha2EdbaUl9UnodGR75KOCL0XIRXqcRtO0p
+ BamuNZ0LF5yFXHBuiVWMRF7AvR2JsHvQuAwWfwiBomzaC/mDWRDoMJdPJIavitbHboiulJ1on
+ 0+qO7NFvX3w2OWjubwpBYiGcRxcWoShjxh3R1T9BZPWstTLYEG+zXJgsrVqkwu5rg9VoyBm5v
+ 8VJEE9gKsQ9LkrtpQgaQezUjh7ZvCxYNeqzjruX8SWdno+rPfIkMFACscyHw86J2PWgTlCeaB
+ ZNYXR6NQa60Fg1eKiRcg3ByypxaEThPWF+M09TBX5ZzYSKHXgBwymhPcnjbuoSttF4LcBOcYi
+ 5GA031wGNJ9hrqry0AUI4xM/OAbd2lmsyp//6zsQ/drzfusPUB4m8lXc1CYQdu85hQPwOZpYg
+ GXlZTZrDyJ1iBHR2Xr0oXXNjyeGHf1S9G2jYGa3GUEk9GR6KbS0QdY=
 
 From: Parker Newman <pnewman@connecttech.com>
 
-- Adds support for reading a word from the Exar EEPROM.
-- Adds exar_write_reg/exar_read_reg for reading and writing to the UART's
-config registers.
+Adds an optional "board_setup" function pointer to struct
+exar8250_board. This gets called once during probe prior to setting up
+the ports.
 
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
- drivers/tty/serial/8250/8250_exar.c | 110 ++++++++++++++++++++++++++++
- 1 file changed, 110 insertions(+)
+ drivers/tty/serial/8250/8250_exar.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
 /8250_exar.c
-index 4d1e07343d0b..49d690344e65 100644
+index 9915a99cb7c6..b30f3855652a 100644
 =2D-- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -128,6 +128,16 @@
- #define UART_EXAR_DLD			0x02 /* Divisor Fractional */
- #define UART_EXAR_DLD_485_POLARITY	0x80 /* RS-485 Enable Signal Polarity =
-*/
-
-+/* EEPROM registers */
-+#define UART_EXAR_REGB                  0x8e
-+#define UART_EXAR_REGB_EECK             BIT(4)
-+#define UART_EXAR_REGB_EECS             BIT(5)
-+#define UART_EXAR_REGB_EEDI             BIT(6)
-+#define UART_EXAR_REGB_EEDO             BIT(7)
-+#define UART_EXAR_REGB_EE_ADDR_SIZE     6
-+#define UART_EXAR_REGB_EE_DATA_SIZE     16
-+
-+
- /*
-  * IOT2040 MPIO wiring semantics:
+@@ -143,7 +143,7 @@
   *
-@@ -195,6 +205,106 @@ struct exar8250 {
- 	int			line[];
+  * MPIO		Port	Function
+  * ----		----	--------
+- * 0		2 	Mode bit 0
++ * 0		2	Mode bit 0
+  * 1		2	Mode bit 1
+  * 2		2	Terminate bus
+  * 3		-	<reserved>
+@@ -179,22 +179,24 @@ struct exar8250_platform {
+ 	int (*rs485_config)(struct uart_port *port, struct ktermios *termios,
+ 			    struct serial_rs485 *rs485);
+ 	const struct serial_rs485 *rs485_supported;
+-	int (*register_gpio)(struct pci_dev *, struct uart_8250_port *);
+-	void (*unregister_gpio)(struct uart_8250_port *);
++	int (*register_gpio)(struct pci_dev *pcidev, struct uart_8250_port *port=
+);
++	void (*unregister_gpio)(struct uart_8250_port *port);
  };
 
-+static inline void exar_write_reg(struct exar8250 *priv,
-+				unsigned int reg, uint8_t value)
-+{
-+	if (!priv || !priv->virt)
-+		return;
-+
-+	writeb(value, priv->virt + reg);
-+}
-+
-+static inline uint8_t exar_read_reg(struct exar8250 *priv, unsigned int r=
-eg)
-+{
-+	if (!priv || !priv->virt)
-+		return 0;
-+
-+	return readb(priv->virt + reg);
-+}
-+
-+static inline void exar_ee_select(struct exar8250 *priv, bool enable)
-+{
-+	uint8_t value =3D 0x00;
-+
-+	if (enable)
-+		value |=3D UART_EXAR_REGB_EECS;
-+
-+	exar_write_reg(priv, UART_EXAR_REGB, value);
-+	udelay(2);
-+}
-+
-+static inline void exar_ee_write_bit(struct exar8250 *priv, int bit)
-+{
-+	uint8_t value =3D UART_EXAR_REGB_EECS;
-+
-+	if (bit)
-+		value |=3D UART_EXAR_REGB_EEDI;
-+
-+	//Clock out the bit on the i2c interface
-+	exar_write_reg(priv, UART_EXAR_REGB, value);
-+	udelay(2);
-+
-+	value |=3D UART_EXAR_REGB_EECK;
-+
-+	exar_write_reg(priv, UART_EXAR_REGB, value);
-+	udelay(2);
-+}
-+
-+static inline uint8_t exar_ee_read_bit(struct exar8250 *priv)
-+{
-+	uint8_t regb;
-+	uint8_t value =3D UART_EXAR_REGB_EECS;
-+
-+	//Clock in the bit on the i2c interface
-+	exar_write_reg(priv, UART_EXAR_REGB, value);
-+	udelay(2);
-+
-+	value |=3D UART_EXAR_REGB_EECK;
-+
-+	exar_write_reg(priv, UART_EXAR_REGB, value);
-+	udelay(2);
-+
-+	regb =3D exar_read_reg(priv, UART_EXAR_REGB);
-+
-+	return (regb & UART_EXAR_REGB_EEDO ? 1 : 0);
-+}
-+
-+/**
-+ * exar_ee_read() - Read a word from the EEPROM
-+ * @priv: Device's private structure
-+ * @ee_addr: Offset of EEPROM to read word from
-+ *
-+ * Read a single 16bit word from an Exar UART's EEPROM
-+ *
-+ * Return: EEPROM word on success, negative error code on failure
-+ */
-+static int exar_ee_read(struct exar8250 *priv, uint8_t ee_addr)
-+{
-+	int i;
-+	int data =3D 0;
-+
-+	exar_ee_select(priv, true);
-+
-+	//Send read command (opcode 110)
-+	exar_ee_write_bit(priv, 1);
-+	exar_ee_write_bit(priv, 1);
-+	exar_ee_write_bit(priv, 0);
-+
-+	//Send address to read from
-+	for (i =3D 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>=3D 1)
-+		exar_ee_write_bit(priv, (ee_addr & i));
-+
-+	//Read data 1 bit at a time
-+	for (i =3D 0; i <=3D UART_EXAR_REGB_EE_DATA_SIZE; i++) {
-+		data <<=3D 1;
-+		data |=3D exar_ee_read_bit(priv);
+ /**
+  * struct exar8250_board - board information
+  * @num_ports: number of serial ports
+  * @reg_shift: describes UART register mapping in PCI memory
+- * @setup: quirk run at ->probe() stage
++ * @board_setup: quirk run once at ->probe() stage before setting up port=
+s
++ * @setup: quirk run at ->probe() stage for each port
+  * @exit: quirk run at ->remove() stage
+  */
+ struct exar8250_board {
+ 	unsigned int num_ports;
+ 	unsigned int reg_shift;
+-	int	(*setup)(struct exar8250 *, struct pci_dev *,
+-			 struct uart_8250_port *, int);
++	int     (*board_setup)(struct exar8250 *priv);
++	int	(*setup)(struct exar8250 *priv, struct pci_dev *pcidev,
++			 struct uart_8250_port *port, int idx);
+ 	void	(*exit)(struct pci_dev *pcidev);
+ };
+
+@@ -966,6 +968,15 @@ exar_pci_probe(struct pci_dev *pcidev, const struct p=
+ci_device_id *ent)
+ 	if (rc)
+ 		return rc;
+
++	if (board->board_setup) {
++		rc =3D board->board_setup(priv);
++		if (rc) {
++			pci_err(pcidev,
++				"failed to setup serial board: %d\n", rc);
++			return rc;
++		}
 +	}
 +
-+	exar_ee_select(priv, false);
-+
-+	return data;
-+}
-+
- static void exar_pm(struct uart_port *port, unsigned int state, unsigned =
-int old)
- {
- 	/*
+ 	for (i =3D 0; i < nr_ports && i < maxnr; i++) {
+ 		rc =3D board->setup(priv, pcidev, &uart, i);
+ 		if (rc) {
 =2D-
 2.43.2
 
