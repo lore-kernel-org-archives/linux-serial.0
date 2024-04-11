@@ -1,47 +1,42 @@
 Received: from mail5.25mail.st (mail5.25mail.st [74.50.62.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6455D13C80B;
-	Thu, 11 Apr 2024 05:24:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C5713C806
+	for <linux-serial@vger.kernel.org>; Thu, 11 Apr 2024 05:59:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.50.62.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712813074; cv=none; b=mjqBNqxawufwt0cVisZc9K4eBlG+OX3dp2STVfEMY02z5E8q/lUhWCkeHii/DG9208sStxeZFum/epfp15ZqJ/nKdSZ34PKNIsDXCP9OV5gCt0Ft645LjtIH7shhg6Ig1FpjjkfnwFB3vxMAt9XdByh+sLN1hg5CGclotgfBRYQ=
+	t=1712815157; cv=none; b=fWyMejoiGhEE9tl3KnsO1Vu7NMQcUlPVNqlD0ZDMMzUGRvWlCXQNP1TsGl51gHyVXKeq5sv5YGd5kAKjL7Ohh8TGVgs14HJOXt4R/0Ys2GvrPI8Ia9fmAigvCP4G5qbC99afI6rt2fJoge9fLPFP0fRgH3rbn+/KP/Tg3pJNI08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712813074; c=relaxed/simple;
-	bh=cMcNbp6qZx7YcqIcrUoQemHHiu6y77uoRqWrfG6QieM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pv/croC6fy1Nn4mKTkJ6UHajbTPi729MkssR2SJw4CmmqxkocGB/CwCKyFXIPTN1Zx4KjpE8ipnujNsfmR0sJsNkyyikZ4GGTMAMDge17sugcDWKjeZXUwL3l1ptOi6s+wP2iwkZvRUtg3Q74XtyKajPrUjI8H6EbzeIMtdP72Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=AeUASavu; arc=none smtp.client-ip=74.50.62.9
+	s=arc-20240116; t=1712815157; c=relaxed/simple;
+	bh=qxz7IOWA0L4mzPObN8LOqebnNnq50hs6MVSP51B7ij8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PXWuwW1/v/ZGpqDxXXVymDwIX/gAoduPCthMd+u34m3Lxk4fp4ESjapUqt86xepWYGxinm9llGHjhpXJbHyvZ4Jbwp21COeiHPX0q/SdQTsY0S/A5dbadDUMfmu3fWvl7UeoHrCOjFjI4A293H7Ooxka4lngwPOAyNALUv8qXVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com; spf=fail smtp.mailfrom=atomide.com; dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b=lwY61MJ2; arc=none smtp.client-ip=74.50.62.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=atomide.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=atomide.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="AeUASavu"
+	dkim=pass (2048-bit key) header.d=atomide.com header.i=@atomide.com header.b="lwY61MJ2"
 Received: from localhost (91-158-86-216.elisa-laajakaista.fi [91.158.86.216])
-	by mail5.25mail.st (Postfix) with ESMTPSA id E1BD7603E6;
-	Thu, 11 Apr 2024 05:24:18 +0000 (UTC)
+	by mail5.25mail.st (Postfix) with ESMTPSA id 8853A603E6;
+	Thu, 11 Apr 2024 05:58:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=atomide.com;
-	s=25mailst; t=1712813071;
-	bh=cMcNbp6qZx7YcqIcrUoQemHHiu6y77uoRqWrfG6QieM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AeUASavufVbze58Mcc9yiMZJUZ+AJzhhii033h76dvsglXYe3qZI2Lsq77j8/xr2J
-	 3HwNxRpYEhzkwfafWiENZPo1PYovEvN/M4piTHHX52WYTrZPqXrhMGG/UUlW4vNO7U
-	 KyKRqAeOKBWATbTiy2JwaPaWAOev0HLF2gxr+pLblT5Vwajz0Mv89evAkTeeBKTVdw
-	 X19HisXNj4blrVKw4sk7BsvR+MH4Y9zezDI0QEApL6ji7Q+E7uHA6oO3xB4/e70QvH
-	 r4f/eUqv2ppiFs8RFXA1jjA2TxTpVnHdd+yvWGC/6qdL6zHTmVnGFPZpGg8x0qxpvG
-	 r6KCs1WxRJG7w==
+	s=25mailst; t=1712815150;
+	bh=qxz7IOWA0L4mzPObN8LOqebnNnq50hs6MVSP51B7ij8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=lwY61MJ2QQh97Vslffm6S2Y/2XfxWbcRI2OEkqX1BCql6ysPdzPRk4pIycGf2IAPT
+	 bSDXQel/epBMFpBKE0yGxEGhm7rw/5noGt8nvuy52aYhpmLxPasO1Ihw34ncUoIPM2
+	 tOodXi66QeDoABuU54nETzTsNe7CcMszdjXuFcxuT06/ZdnXXtXuS1UIg/4xQx2VJr
+	 mz6ID+ARh7v09ctgNHnCTcwvllrzJYFsJKwuSmTALMkzNTmdRaeotIdlKlrHkK84vY
+	 GW48cvrPUximSve17wk85Q88LT3UdbapsHOjZXY0XmVVtLqfEfIgFB43kWAORFZWf/
+	 GpUVNyBjjI9lQ==
 From: Tony Lindgren <tony@atomide.com>
-To: linux-omap@vger.kernel.org
-Cc: Dhruva Gole <d-gole@ti.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [RFC PATCH 4/4] serial: 8250: omap: Use reset control for resets
-Date: Thu, 11 Apr 2024 08:22:57 +0300
-Message-ID: <20240411052257.2113-5-tony@atomide.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org
+Subject: [PATCH] serial: core: Fix missing shutdown and startup for serial base port
+Date: Thu, 11 Apr 2024 08:58:45 +0300
+Message-ID: <20240411055848.38190-1-tony@atomide.com>
 X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240411052257.2113-1-tony@atomide.com>
-References: <20240411052257.2113-1-tony@atomide.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,118 +45,154 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-For at least am335x and omap4, we set the UART_ERRATA_CLOCK_DISABLE quirk
-that ends up calling reset for the interconnect target. We can do this with
-reset control framework and simplify the 8250_omap driver.
+We are seeing start_tx being called after port shutdown as noted by Jiri.
+This happens because we are missing the startup and shutdown related
+functions for the serial base port.
 
+Let's fix the issue by adding startup and shutdown functions for the
+serial base port to block tx flushing for the serial base port when the
+port is not in use.
+
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+Reported-by: Jiri Slaby <jirislaby@kernel.org>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 66 +++++++++++------------------
- 1 file changed, 24 insertions(+), 42 deletions(-)
+ drivers/tty/serial/serial_base.h |  4 ++++
+ drivers/tty/serial/serial_core.c | 20 ++++++++++++++++---
+ drivers/tty/serial/serial_port.c | 34 ++++++++++++++++++++++++++++++++
+ 3 files changed, 55 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -29,6 +29,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/sys_soc.h>
- #include <linux/pm_domain.h>
-+#include <linux/reset.h>
+diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
+--- a/drivers/tty/serial/serial_base.h
++++ b/drivers/tty/serial/serial_base.h
+@@ -22,6 +22,7 @@ struct serial_ctrl_device {
+ struct serial_port_device {
+ 	struct device dev;
+ 	struct uart_port *port;
++	unsigned int tx_enabled:1;
+ };
  
- #include "8250.h"
+ int serial_base_ctrl_init(void);
+@@ -30,6 +31,9 @@ void serial_base_ctrl_exit(void);
+ int serial_base_port_init(void);
+ void serial_base_port_exit(void);
  
-@@ -147,6 +148,7 @@ struct omap8250_priv {
- 	struct pm_qos_request pm_qos_request;
- 	struct work_struct qos_work;
- 	struct uart_8250_dma omap8250_dma;
-+	struct reset_control *reset;
- 	spinlock_t rx_dma_lock;
- 	bool rx_dma_broken;
- 	bool throttled;
-@@ -1490,6 +1492,14 @@ static int omap8250_probe(struct platform_device *pdev)
- 	priv->line = -ENODEV;
- 	priv->latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
- 	priv->calc_latency = PM_QOS_CPU_LATENCY_DEFAULT_VALUE;
++void serial_base_port_startup(struct uart_port *port);
++void serial_base_port_shutdown(struct uart_port *port);
 +
-+	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
-+		priv->reset = devm_reset_control_get_exclusive(&pdev->dev,
-+							       "softreset");
-+		if (IS_ERR(priv->reset))
-+			return PTR_ERR(priv->reset);
+ int serial_base_driver_register(struct device_driver *driver);
+ void serial_base_driver_unregister(struct device_driver *driver);
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -323,16 +323,26 @@ static int uart_startup(struct tty_struct *tty, struct uart_state *state,
+ 			bool init_hw)
+ {
+ 	struct tty_port *port = &state->port;
++	struct uart_port *uport;
+ 	int retval;
+ 
+ 	if (tty_port_initialized(port))
+-		return 0;
++		goto out_base_port_startup;
+ 
+ 	retval = uart_port_startup(tty, state, init_hw);
+-	if (retval)
++	if (retval) {
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
++		return retval;
 +	}
-+
- 	cpu_latency_qos_add_request(&priv->pm_qos_request, priv->latency);
- 	INIT_WORK(&priv->qos_work, omap8250_uart_qos_work);
  
-@@ -1695,47 +1705,6 @@ static void uart_write(struct omap8250_priv *priv, u32 reg, u32 val)
- 	writel(val, priv->membase + (reg << OMAP_UART_REGSHIFT));
+-	return retval;
++out_base_port_startup:
++	uport = uart_port_check(state);
++	if (!uport)
++		return -EIO;
++
++	serial_base_port_startup(uport);
++
++	return 0;
  }
  
--/* TODO: in future, this should happen via API in drivers/reset/ */
--static int omap8250_soft_reset(struct device *dev)
--{
--	struct omap8250_priv *priv = dev_get_drvdata(dev);
--	int timeout = 100;
--	int sysc;
--	int syss;
--
--	/*
--	 * At least on omap4, unused uarts may not idle after reset without
--	 * a basic scr dma configuration even with no dma in use. The
--	 * module clkctrl status bits will be 1 instead of 3 blocking idle
--	 * for the whole clockdomain. The softreset below will clear scr,
--	 * and we restore it on resume so this is safe to do on all SoCs
--	 * needing omap8250_soft_reset() quirk. Do it in two writes as
--	 * recommended in the comment for omap8250_update_scr().
--	 */
--	uart_write(priv, UART_OMAP_SCR, OMAP_UART_SCR_DMAMODE_1);
--	uart_write(priv, UART_OMAP_SCR,
--		   OMAP_UART_SCR_DMAMODE_1 | OMAP_UART_SCR_DMAMODE_CTL);
--
--	sysc = uart_read(priv, UART_OMAP_SYSC);
--
--	/* softreset the UART */
--	sysc |= OMAP_UART_SYSC_SOFTRESET;
--	uart_write(priv, UART_OMAP_SYSC, sysc);
--
--	/* By experiments, 1us enough for reset complete on AM335x */
--	do {
--		udelay(1);
--		syss = uart_read(priv, UART_OMAP_SYSS);
--	} while (--timeout && !(syss & OMAP_UART_SYSS_RESETDONE));
--
--	if (!timeout) {
--		dev_err(dev, "timed out waiting for reset done\n");
--		return -ETIMEDOUT;
--	}
--
--	return 0;
--}
--
- static int omap8250_runtime_suspend(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
-@@ -1747,7 +1716,20 @@ static int omap8250_runtime_suspend(struct device *dev)
- 	if (priv->habit & UART_ERRATA_CLOCK_DISABLE) {
- 		int ret;
+ /*
+@@ -355,6 +365,9 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ 	if (tty)
+ 		set_bit(TTY_IO_ERROR, &tty->flags);
  
--		ret = omap8250_soft_reset(dev);
-+		/*
-+		 * At least on omap4, unused uarts may not idle after reset without
-+		 * a basic scr dma configuration even with no dma in use. The
-+		 * module clkctrl status bits will be 1 instead of 3 blocking idle
-+		 * for the whole clockdomain. The softreset below will clear scr,
-+		 * and we restore it on resume so this is safe to do on all SoCs
-+		 * needing omap8250_soft_reset() quirk. Do it in two writes as
-+		 * recommended in the comment for omap8250_update_scr().
-+		 */
-+		uart_write(priv, UART_OMAP_SCR, OMAP_UART_SCR_DMAMODE_1);
-+		uart_write(priv, UART_OMAP_SCR,
-+			   OMAP_UART_SCR_DMAMODE_1 | OMAP_UART_SCR_DMAMODE_CTL);
++	if (uport)
++		serial_base_port_shutdown(uport);
 +
-+		ret = reset_control_reset(priv->reset);
- 		if (ret)
- 			return ret;
+ 	if (tty_port_initialized(port)) {
+ 		tty_port_set_initialized(port, false);
  
+@@ -1775,6 +1788,7 @@ static void uart_tty_port_shutdown(struct tty_port *port)
+ 	uport->ops->stop_rx(uport);
+ 	uart_port_unlock_irq(uport);
+ 
++	serial_base_port_shutdown(uport);
+ 	uart_port_shutdown(port);
+ 
+ 	/*
+diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+--- a/drivers/tty/serial/serial_port.c
++++ b/drivers/tty/serial/serial_port.c
+@@ -39,8 +39,12 @@ static int serial_port_runtime_resume(struct device *dev)
+ 
+ 	/* Flush any pending TX for the port */
+ 	uart_port_lock_irqsave(port, &flags);
++	if (!port_dev->tx_enabled)
++		goto unlock;
+ 	if (__serial_port_busy(port))
+ 		port->ops->start_tx(port);
++
++unlock:
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+ out:
+@@ -60,6 +64,11 @@ static int serial_port_runtime_suspend(struct device *dev)
+ 		return 0;
+ 
+ 	uart_port_lock_irqsave(port, &flags);
++	if (!port_dev->tx_enabled) {
++		uart_port_unlock_irqrestore(port, flags);
++		return 0;
++	}
++
+ 	busy = __serial_port_busy(port);
+ 	if (busy)
+ 		port->ops->start_tx(port);
+@@ -71,6 +80,31 @@ static int serial_port_runtime_suspend(struct device *dev)
+ 	return busy ? -EBUSY : 0;
+ }
+ 
++static void serial_base_port_set_tx(struct uart_port *port,
++				    struct serial_port_device *port_dev,
++				    bool enabled)
++{
++	unsigned long flags;
++
++	uart_port_lock_irqsave(port, &flags);
++	port_dev->tx_enabled = enabled;
++	uart_port_unlock_irqrestore(port, flags);
++}
++
++void serial_base_port_startup(struct uart_port *port)
++{
++	struct serial_port_device *port_dev = port->port_dev;
++
++	serial_base_port_set_tx(port, port_dev, true);
++}
++
++void serial_base_port_shutdown(struct uart_port *port)
++{
++	struct serial_port_device *port_dev = port->port_dev;
++
++	serial_base_port_set_tx(port, port_dev, false);
++}
++
+ static DEFINE_RUNTIME_DEV_PM_OPS(serial_port_pm,
+ 				 serial_port_runtime_suspend,
+ 				 serial_port_runtime_resume, NULL);
 -- 
 2.44.0
