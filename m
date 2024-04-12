@@ -1,234 +1,245 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EAC1DFD9;
-	Fri, 12 Apr 2024 13:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A68FC84A3B;
+	Fri, 12 Apr 2024 13:45:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712928984; cv=none; b=M8NLKaEHvklJZM5fnulVt0GWQ8HWYFTOWU13r8VnnPJZziI5gdRoz8G44hTbxr84QOdXEwAKl3fx4SM2W3rxMsdtNtFe2dOlwDtiUFD/ztHNNPVROEwdzxsgd2IU3rYzagfAX8r7U4GLW7lQPIkfyhB8PemaK5b6sv/8ixKyA7U=
+	t=1712929504; cv=none; b=TYbmmoUtMCXvS5vC/nYd5LXlURXzzdXqG/KvuNKNM3ZCIXHy3hFV5OkW9Wob9Hz0ZJ4L/zabo3Jx1vNp6/WRMckYDzzL8znKmQD5DZ1ZL/AboFsmwAPZxtvDYKXR2JEoLmmcqD6yZ1OXxPr/mhDUVXxN2fe00Sd6SSLxcCT6sLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712928984; c=relaxed/simple;
-	bh=+f12AoCq1Uk7MdNTnhqJMwJbAErNbJVN3OzdMGHbrj4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pqRxfjkyhJVJiCCFH9VynGrs5FxH2ncTLn6mTPHJhaGhVMUesUqsmskjBxXFxwrGDw8My6JV9EzCFU8CFabFhUab0DDaNFCtFiM08zYQWQEvDbInpFGxHVmmW2fJaEt0zlAJrSEnronLWBuaKn4Hccmvt8x/dI0PVXX6QgCZ7S8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=jIAcMZ9w; arc=none smtp.client-ip=74.208.4.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1712929504; c=relaxed/simple;
+	bh=WkOse5NWhetwI4hvIS8h085YA8LZIv0m1x0ud7AY7rg=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=jEfyEFwbkpPoXfSvpvqWayssQsiDj198tlrVPUuMrc52nAm7gA0x5lUA3KPAa7+je/XjMzRsWlC/1Gk/BOQYhlO1MUc3TiDzsBGfWBusTUGwrXjDI34Od7gbXQripEBw4wzpE+Gceg2l70FRH52VkKP8LCI3uRl++yPbRJdACpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iOu+FDfi; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="jIAcMZ9w"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1712928975; x=1713533775; i=parker@finest.io;
-	bh=Gt74haBilWrf2DFuac5s7xs1UEykV4iYzenuK42Ti6w=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:
-	 References;
-	b=jIAcMZ9wRc2YuUHrfuNZc8a/ZmNDzNnZxZ5qb8lEc0fvg+D14rTfCamwaHTmbiKS
-	 uzEoCkR1TnBW9ZFpHLO0dyaNcvq/HafZyGhTzWCKmMwSCJb2l/qKUZ09ODxaYq9Hw
-	 WSO3nSOIhYquidnxSuyDZ9Z0LCPW0qBWePdejFCtI3kdk94Ot+6wIPr04Lq8062yG
-	 mPCRV5trFIPbFj50FlBz5BAAKhITwTN5B5Y+i3OEIApJjgMnBQweMd6Xr0L8q7XK+
-	 5CQlSsh3KyDb6DZnrdtZdc6fowL+GKWRLwMYBA528F/P6vXQln4dtmUCVPE6qLQYx
-	 A4JCAWah7zo7nB6fKQ==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0MVerB-1sGSpd3f83-00YwhH; Fri, 12 Apr 2024 15:36:14 +0200
-Date: Fri, 12 Apr 2024 09:36:13 -0400
-From: Parker Newman <parker@finest.io>
-To: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, linux-serial
- <linux-serial@vger.kernel.org>, Parker Newman <pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iOu+FDfi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712929503; x=1744465503;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=WkOse5NWhetwI4hvIS8h085YA8LZIv0m1x0ud7AY7rg=;
+  b=iOu+FDfiMPme3oiefH5dDS8MIeA/FmEyEmUmljCn4Csepe2ITiOt6hcc
+   AswwhVtrPGg6wL0QeyADnNyTcR7iEBIJ8wbnYu0WEeigARWvOdgkCMVu0
+   KPJCgBi0hAir4ueaGKBIQkAVIwiT4U32Mtk5p9nLI4ARi8ye4XnPHg1Gt
+   rm2ukSJUDKS5RUefrRwtdhCbR4RoD0i8WoJrmlRB/7SfoeJzUnCGDllSB
+   pFcloVNiLHXpPiNhVL72fUWlYWXiyrTrQptJLOD0Jjet3HI/fWN7KjlRG
+   cUDJ3uWTZpZWb5eNgA62yAa3hTmvDkSHuTPvmZ4oGAN/6iKS435Q0Tw8U
+   A==;
+X-CSE-ConnectionGUID: KSWXZywwSqS8rhX/bLCaaw==
+X-CSE-MsgGUID: 105MRIKbTuGE8gFMMoiyFQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="18990272"
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="18990272"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 06:45:02 -0700
+X-CSE-ConnectionGUID: 2Op4pL7YRdigt8obJOPcmg==
+X-CSE-MsgGUID: /Id2MiN8RtWDJLYRVyoYqw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="25914397"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.32])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 06:44:59 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 12 Apr 2024 16:44:55 +0300 (EEST)
+To: Parker Newman <parker@finest.io>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Parker Newman <pnewman@connecttech.com>
 Subject: Re: [PATCH v2 3/7] serial: exar: add support for config/set single
  MPIO
-Message-ID: <20240412093613.0cbb4362@SWDEV2.connecttech.local>
-In-Reply-To: <b057b1e2-1cf9-2f20-2453-b359a1e89f01@linux.intel.com>
-References: <cover.1712863999.git.pnewman@connecttech.com>
-	<3e671b6c0d11a2d0c292947675ed087eaaa5445e.1712863999.git.pnewman@connecttech.com>
-	<b057b1e2-1cf9-2f20-2453-b359a1e89f01@linux.intel.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+In-Reply-To: <20240412093613.0cbb4362@SWDEV2.connecttech.local>
+Message-ID: <90e76b4c-10f8-2c06-2c86-51bdf822f968@linux.intel.com>
+References: <cover.1712863999.git.pnewman@connecttech.com> <3e671b6c0d11a2d0c292947675ed087eaaa5445e.1712863999.git.pnewman@connecttech.com> <b057b1e2-1cf9-2f20-2453-b359a1e89f01@linux.intel.com> <20240412093613.0cbb4362@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-2064743525-1712929495=:1014"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323328-2064743525-1712929495=:1014
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:bkX7ucM1qk5+VnygobM35POx/lwpyru7giJyC2mlhFqkUEc5uTf
- BWLkZK/7UTKX2uy3pAqbuEsaMik5dZu4d9+h8iClEILL2HJ1enAg0TBt8JdeCQdbflt9mg2
- kbkXG8vRE5zjFAJpzNEFopnBkwNsEJg6XzihZCts8z21vxzkQBX8vlPIatBf6Q0UsSvrYS6
- hwMvNZ8wTrfIsyH2BlmdQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:z11ttMU+Sow=;yZ1j1QLlQ7kqOHJfM1vaNxLdMci
- vEF5vMlPI5vB6+orJavTlmip6jjKG60mb1gQJ0Qrgi6mz23izlJ5LsV33fBBgj6PdBMBvqGv4
- dG9dLOnvTtJp39klqP+oLQWdQWLOYvH7z4y3Vb0Log+56US4/K49lWWsT7/LZ4CPv456rd+rE
- MdcCvkd6gcbdtC7KwHi4xHwD4p8W1dIIsFaPx4choiXr3V50x0BCplUc5EeGCuXQ+loA08Q5F
- XdTGOx6gG+DfB3m/v8gciVzHKYRYDVQa1UsmfEFp0ewe7G1VbWeej0RJ41IbiLsiSTShESWaF
- /vjA8QFdc4lxXga/xSzbOyyEYmRwh875xp6LUtrfvDDDXo1Cji+Gw8y2zvqKbuVi4wjQnNefQ
- 3wFLIEIT3U+eDZ9d/ULXitEN0CKEE8UDFUmMgUR41MShUMvb06FwhjJwMgkieRMS8ZdHWrH0a
- kb01iQZSWiFrt/ky9dG8jueWfJHGvGowiAGHUIcHElDVNhMsPKQNGcLSVJ+PPNqY9We0rUtMT
- Owt5/BD4k66ZNcJ9OW56hGB0egKr+SfpaIIQjz3oXTBaGQ6+/oMhKApWVsQ5hXO86CQwXV3bQ
- /y8xXDtvNDzV1VgMQLvje0LNrqy4qCuWIn6D5DT02JDJ1ytJTsuivhOkB0rq85YRILDq4/oN4
- 0HOHT8QSQ1vkCJRjawRkxFrVykn0mgXKXlxA/ghxr7Wq6uwxnn+F7BrsSduGc+rIyNxaxmMbn
- stiwrOWV8bj1jb05URYsRPMvWFbBSmd4dHOGWUsAtUY+kjfMW9u2yM=
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-On Fri, 12 Apr 2024 13:20:41 +0300 (EEST)
-Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+On Fri, 12 Apr 2024, Parker Newman wrote:
 
-> On Thu, 11 Apr 2024, parker@finest.io wrote:
+> On Fri, 12 Apr 2024 13:20:41 +0300 (EEST)
+> Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
 >=20
-> > From: Parker Newman <pnewman@connecttech.com>
+> > On Thu, 11 Apr 2024, parker@finest.io wrote:
 > >=20
-> > Adds support for configuring and setting a single MPIO
+> > > From: Parker Newman <pnewman@connecttech.com>
+> > >=20
+> > > Adds support for configuring and setting a single MPIO
+> > >=20
+> > > Signed-off-by: Parker Newman <pnewman@connecttech.com>
+> > > ---
+> > >  drivers/tty/serial/8250/8250_exar.c | 88 +++++++++++++++++++++++++++=
+++
+> > >  1 file changed, 88 insertions(+)
+> > >=20
+> > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial=
+/8250/8250_exar.c
+> > > index 49d690344e65..9915a99cb7c6 100644
+> > > --- a/drivers/tty/serial/8250/8250_exar.c
+> > > +++ b/drivers/tty/serial/8250/8250_exar.c
+> > > @@ -305,6 +305,94 @@ static int exar_ee_read(struct exar8250 *priv, u=
+int8_t ee_addr)
+> > >  =09return data;
+> > >  }
+> > >=20
+> > > +/**
+> > > + * exar_mpio_config() - Configure an EXar MPIO as input or output
+> > > + * @priv: Device's private structure
+> > > + * @mpio_num: MPIO number/offset to configure
+> > > + * @output: Configure as output if true, inout if false
+> > > + *
+> > > + * Configure a single MPIO as an input or output and disable trisate=
+=2E =20
 > >=20
-> > Signed-off-by: Parker Newman <pnewman@connecttech.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_exar.c | 88 +++++++++++++++++++++++++++++
-> >  1 file changed, 88 insertions(+)
+> > tristate
 > >=20
-> > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8=
-250/8250_exar.c
-> > index 49d690344e65..9915a99cb7c6 100644
-> > --- a/drivers/tty/serial/8250/8250_exar.c
-> > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > @@ -305,6 +305,94 @@ static int exar_ee_read(struct exar8250 *priv, uin=
-t8_t ee_addr)
-> >  	return data;
-> >  }
+> > > + * If configuring as output it is reccomended to set value with
+> > > + * exar_mpio_set prior to calling this function to ensure default st=
+ate. =20
 > >=20
-> > +/**
-> > + * exar_mpio_config() - Configure an EXar MPIO as input or output
-> > + * @priv: Device's private structure
-> > + * @mpio_num: MPIO number/offset to configure
-> > + * @output: Configure as output if true, inout if false
-> > + *
-> > + * Configure a single MPIO as an input or output and disable trisate. =
+> > Use () if talking about function.
+> >=20
+> > > + *
+> > > + * Return: 0 on success, negative error code on failure
+> > > + */
+> > > +static int exar_mpio_config(struct exar8250 *priv,
+> > > +=09=09=09unsigned int mpio_num, bool output)
+> > > +{
+> > > +=09uint8_t sel_reg; //MPIO Select register (input/output)
+> > > +=09uint8_t tri_reg; //MPIO Tristate register
+> > > +=09uint8_t value;
+> > > +=09unsigned int bit;
+> > > +
+> > > +=09if (mpio_num < 8) {
+> > > +=09=09sel_reg =3D UART_EXAR_MPIOSEL_7_0;
+> > > +=09=09tri_reg =3D UART_EXAR_MPIO3T_7_0;
+> > > +=09=09bit =3D mpio_num;
+> > > +=09} else if (mpio_num >=3D 8 && mpio_num < 16) {
+> > > +=09=09sel_reg =3D UART_EXAR_MPIOSEL_15_8;
+> > > +=09=09tri_reg =3D UART_EXAR_MPIO3T_15_8;
+> > > +=09=09bit =3D mpio_num - 8;
+> > > +=09} else {
+> > > +=09=09return -EINVAL;
+> > > +=09}
+> > > +
+> > > +=09//Disable MPIO pin tri-state
+> > > +=09value =3D exar_read_reg(priv, tri_reg);
+> > > +=09value &=3D ~(BIT(bit)); =20
+> >=20
+> > Use more meaningful variable name than "bit", it could perhaps even avo=
+id=20
+> > the need to use the comment if the code is self-explanary with better=
 =20
+> > variable name.
+> >=20
+> > > +=09exar_write_reg(priv, tri_reg, value);
+> > > +
+> > > +=09value =3D exar_read_reg(priv, sel_reg);
+> > > +=09//Set MPIO as input (1) or output (0) =20
+> >=20
+> > Unnecessary comment.
+> >=20
+> > > +=09if (output)
+> > > +=09=09value &=3D ~(BIT(bit)); =20
+> >=20
+> > Unnecessary parenthesis.
+> >=20
+> > > +=09else
+> > > +=09=09value |=3D BIT(bit);
+> > > +
+> > > +=09exar_write_reg(priv, sel_reg, value); =20
+> >=20
+> > Don't leave empty line into RMW sequence.
+> >=20
+> > > +
+> > > +=09return 0;
+> > > +}
+> > > +/**
+> > > + * exar_mpio_set() - Set an Exar MPIO output high or low
+> > > + * @priv: Device's private structure
+> > > + * @mpio_num: MPIO number/offset to set
+> > > + * @high: Set MPIO high if true, low if false
+> > > + *
+> > > + * Set a single MPIO high or low. exar_mpio_config must also be call=
+ed
+> > > + * to configure the pin as an output.
+> > > + *
+> > > + * Return: 0 on success, negative error code on failure
+> > > + */
+> > > +static int exar_mpio_set(struct exar8250 *priv,
+> > > +=09=09unsigned int mpio_num, bool high)
+> > > +{
+> > > +=09uint8_t reg;
+> > > +=09uint8_t value;
+> > > +=09unsigned int bit;
+> > > +
+> > > +=09if (mpio_num < 8) {
+> > > +=09=09reg =3D UART_EXAR_MPIOSEL_7_0;
+> > > +=09=09bit =3D mpio_num;
+> > > +=09} else if (mpio_num >=3D 8 && mpio_num < 16) {
+> > > +=09=09reg =3D UART_EXAR_MPIOSEL_15_8;
+> > > +=09=09bit =3D mpio_num - 8;
+> > > +=09} else {
+> > > +=09=09return -EINVAL;
+> > > +=09}
+> > > +
+> > > +=09value =3D exar_read_reg(priv, reg);
+> > > +
+> > > +=09if (high)
+> > > +=09=09value |=3D BIT(bit);
+> > > +=09else
+> > > +=09=09value &=3D ~(BIT(bit)); =20
+> >=20
+> > Extra parenthesis.
+> >=20
+> > > +
+> > > +=09exar_write_reg(priv, reg, value); =20
+> >=20
+> > Again, I'd put this kind of simple RMW sequence without newlines.
+> >=20
+> > > +
+> > > +=09return 0;
+> > > +} =20
 >=20
-> tristate
+> I will fix above.=20
 >=20
-> > + * If configuring as output it is reccomended to set value with
-> > + * exar_mpio_set prior to calling this function to ensure default stat=
-e. =20
+> > There are zero users of these functions so I couldn't review if two=20
+> > functions are really needed, or if the difference could be simply handl=
+ed=20
+> > using a boolean parameter.
+> >=20
 >=20
-> Use () if talking about function.
+> The functions are used by code in other patches in this series.=20
 >=20
-> > + *
-> > + * Return: 0 on success, negative error code on failure
-> > + */
-> > +static int exar_mpio_config(struct exar8250 *priv,
-> > +			unsigned int mpio_num, bool output)
-> > +{
-> > +	uint8_t sel_reg; //MPIO Select register (input/output)
-> > +	uint8_t tri_reg; //MPIO Tristate register
-> > +	uint8_t value;
-> > +	unsigned int bit;
-> > +
-> > +	if (mpio_num < 8) {
-> > +		sel_reg =3D UART_EXAR_MPIOSEL_7_0;
-> > +		tri_reg =3D UART_EXAR_MPIO3T_7_0;
-> > +		bit =3D mpio_num;
-> > +	} else if (mpio_num >=3D 8 && mpio_num < 16) {
-> > +		sel_reg =3D UART_EXAR_MPIOSEL_15_8;
-> > +		tri_reg =3D UART_EXAR_MPIO3T_15_8;
-> > +		bit =3D mpio_num - 8;
-> > +	} else {
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	//Disable MPIO pin tri-state
-> > +	value =3D exar_read_reg(priv, tri_reg);
-> > +	value &=3D ~(BIT(bit)); =20
->=20
-> Use more meaningful variable name than "bit", it could perhaps even avoid=
+> I kept exar_mpio_set() and exar_mpio_config() separate because we plan on
+> adding support for other features in the future that require reading and=
 =20
-> the need to use the comment if the code is self-explanary with better=20
-> variable name.
->=20
-> > +	exar_write_reg(priv, tri_reg, value);
-> > +
-> > +	value =3D exar_read_reg(priv, sel_reg);
-> > +	//Set MPIO as input (1) or output (0) =20
->=20
-> Unnecessary comment.
->=20
-> > +	if (output)
-> > +		value &=3D ~(BIT(bit)); =20
->=20
-> Unnecessary parenthesis.
->=20
-> > +	else
-> > +		value |=3D BIT(bit);
-> > +
-> > +	exar_write_reg(priv, sel_reg, value); =20
->=20
-> Don't leave empty line into RMW sequence.
->=20
-> > +
-> > +	return 0;
-> > +}
-> > +/**
-> > + * exar_mpio_set() - Set an Exar MPIO output high or low
-> > + * @priv: Device's private structure
-> > + * @mpio_num: MPIO number/offset to set
-> > + * @high: Set MPIO high if true, low if false
-> > + *
-> > + * Set a single MPIO high or low. exar_mpio_config must also be called
-> > + * to configure the pin as an output.
-> > + *
-> > + * Return: 0 on success, negative error code on failure
-> > + */
-> > +static int exar_mpio_set(struct exar8250 *priv,
-> > +		unsigned int mpio_num, bool high)
-> > +{
-> > +	uint8_t reg;
-> > +	uint8_t value;
-> > +	unsigned int bit;
-> > +
-> > +	if (mpio_num < 8) {
-> > +		reg =3D UART_EXAR_MPIOSEL_7_0;
-> > +		bit =3D mpio_num;
-> > +	} else if (mpio_num >=3D 8 && mpio_num < 16) {
-> > +		reg =3D UART_EXAR_MPIOSEL_15_8;
-> > +		bit =3D mpio_num - 8;
-> > +	} else {
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	value =3D exar_read_reg(priv, reg);
-> > +
-> > +	if (high)
-> > +		value |=3D BIT(bit);
-> > +	else
-> > +		value &=3D ~(BIT(bit)); =20
->=20
-> Extra parenthesis.
->=20
-> > +
-> > +	exar_write_reg(priv, reg, value); =20
->=20
-> Again, I'd put this kind of simple RMW sequence without newlines.
->=20
-> > +
-> > +	return 0;
-> > +} =20
+> writing MPIO.=20
 
-I will fix above.=20
+Ok. After getting up to the point where the callers were, I started to=20
+understand things somewhat better so keeping them separate seems fine=20
+with how I ended up understanding things.
 
-> There are zero users of these functions so I couldn't review if two=20
-> functions are really needed, or if the difference could be simply handled=
+But please put these functions into the patch which is using them when you=
 =20
-> using a boolean parameter.
->=20
+reorganize the series.
 
-The functions are used by code in other patches in this series.=20
+--=20
+ i.
 
-I kept exar_mpio_set() and exar_mpio_config() separate because we plan on
-adding support for other features in the future that require reading and=20
-writing MPIO.=20
-
-Thanks,
--Parker
-
-
-=20
+--8323328-2064743525-1712929495=:1014--
