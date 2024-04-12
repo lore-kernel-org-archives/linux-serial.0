@@ -1,83 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4A8D531;
-	Fri, 12 Apr 2024 05:22:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7311BC20;
+	Fri, 12 Apr 2024 05:23:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712899331; cv=none; b=tzq0XlpCWeOO3dGuDcgWoBrEZO8a8QrG2k1QhNuQZgZVPqk+9vcmbE2hR3ug0MeMiEVtv4YBtyBe1CrcituYnuW4JIO+k4KziNTMhu4wc0yd1TU4Sc9Hi9/8dI+KX/lka40VMU6MggK8YqLSCiR47Mz37JVBCUoeknmWuvYXfN0=
+	t=1712899383; cv=none; b=KNZWAPWevF9tv64XuAvrnWXnk6LyS3ib1hNTmyIFoAmRHViOjHBtGUpvb0HxTb7z59ETXXc82CcEjsWoZ7EX2s2e1UDGnqr5/FpT6IT0om35xm8wU3b8bWeNWyLqJpdZHovGrIFx6E50yYLsd4RVFyogD42/4bBDoWZrbOwaKrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712899331; c=relaxed/simple;
-	bh=a5uBuZZAQBvcD3nu0kxCuF0HhAHsxu1HdhHDndDLL3M=;
+	s=arc-20240116; t=1712899383; c=relaxed/simple;
+	bh=Be1HIkMk4Xq+RofQvGmPKjjQ46/GPbpbgN3h/Gu/xYE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OtuyBsrdIJnvalh/iZseJ8Ujy/M7s6k2hbXpir0dfUUSuZF17tXeAHyosQuUNYhzJEN3xXm/numk38h/uFJBdpQ4QfC9pw92TIiN0xU1NLIpBxEUs39xPPyO5ncOmDYVwreUcqv4ZLqun7LjWDqFed7MsV35Na62TBMGvR5CrEE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=nt8PC0dC; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=rqvLnmasUaE4nFZlG4Ax5vNQm9Yf5RusvAUoFsyB3+chBoSW36BXVDq9Pfn+1HfHxW/aJ0d5+mU0PflnJCMitXPlaPVnL/7+ZQx880aSNrjwhx7cuXfy9Qbj50BwmurH5mtpac08GuAFfA0ESg5e5zI9C4w1/9jwiQLiepVTPm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RAznAcCa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="nt8PC0dC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A7CEC2BBFC;
-	Fri, 12 Apr 2024 05:22:10 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RAznAcCa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33FE1C2BBFC;
+	Fri, 12 Apr 2024 05:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712899331;
-	bh=a5uBuZZAQBvcD3nu0kxCuF0HhAHsxu1HdhHDndDLL3M=;
+	s=korg; t=1712899382;
+	bh=Be1HIkMk4Xq+RofQvGmPKjjQ46/GPbpbgN3h/Gu/xYE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nt8PC0dCTBV+JCBeHkrqK4Q3GcKue26HfGwqBA/jVTAwGyhfP5BhPkUabMrXXk/Oe
-	 f3cpIbXQKMu3i2ViVuQd1/zHRJYKgpR2dsNv143zsmrDj6K7tUy7gaO4CFph+OTQXD
-	 r7cXAZXozVWPf30/7CunBIhbn86xcxImpR/E+me4=
-Date: Fri, 12 Apr 2024 07:22:07 +0200
+	b=RAznAcCa4v1zg+MWzZPzsKyWCIAMFob1sqkC/qAYvAT4bbAdeaK7Z5adZuvxx2zQe
+	 mVuwk+5aFsqnHO0utprwDvV0HPWWhTcOUXLl/m5ZMuX4ScVgz8HVnhig60mB8I2D4o
+	 Jw+D4uIXpWgHsz0r78lzv8B/xsqae2s9Ab8nlt0A=
+Date: Fri, 12 Apr 2024 07:22:59 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Roman Storozhenko <romeusmeister@gmail.com>
-Cc: jirislaby@kernel.org, Julia.Lawall@inria.fr, skhan@linuxfoundation.org,
-	javier.carrasco.cruz@gmail.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
+To: Julia Lawall <julia.lawall@inria.fr>
+Cc: Roman Storozhenko <romeusmeister@gmail.com>, jirislaby@kernel.org,
+	skhan@linuxfoundation.org, javier.carrasco.cruz@gmail.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] sysrq: Auto release device node using __free attribute
-Message-ID: <2024041222-credit-finally-9580@gregkh>
+Message-ID: <2024041211-statistic-reformist-bf70@gregkh>
 References: <20240411180256.61001-1-romeusmeister@gmail.com>
- <2024041146-exciting-predefine-05bb@gregkh>
- <CALsPMBM9DG3-St9Ne6qZMXiNzSBxSXL=pzJn8Eu9be5hfik2bQ@mail.gmail.com>
+ <2024041111-tummy-boil-a6aa@gregkh>
+ <b6b33aa-faef-6919-7125-c2db11e784ee@inria.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CALsPMBM9DG3-St9Ne6qZMXiNzSBxSXL=pzJn8Eu9be5hfik2bQ@mail.gmail.com>
+In-Reply-To: <b6b33aa-faef-6919-7125-c2db11e784ee@inria.fr>
 
-On Thu, Apr 11, 2024 at 08:25:10PM +0200, Roman Storozhenko wrote:
-> Hi Greg,
+On Thu, Apr 11, 2024 at 08:17:07PM +0200, Julia Lawall wrote:
 > 
-> This is the output of the checkpatch:
-> hedin@laptop:~/prj/linux-next$ ./scripts/checkpatch.pl --strict
-> ~/lkmp/course_tasks/coccinele/patches/sysrq/v1/*
-> --------------------------------------------------------------------------------
-> /home/hedin/lkmp/course_tasks/coccinele/patches/sysrq/v1/0000-cover-letter.patch
-> --------------------------------------------------------------------------------
-> total: 0 errors, 0 warnings, 0 checks, 0 lines checked
 > 
-> /home/hedin/lkmp/course_tasks/coccinele/patches/sysrq/v1/0000-cover-letter.patch
-> has no obvious style problems and is ready for submission.
-> ------------------------------------------------------------------------------------------------------------------------
-> /home/hedin/lkmp/course_tasks/coccinele/patches/sysrq/v1/0001-sysrq-Auto-release-device-node-using-__free-attribut.patch
-> ------------------------------------------------------------------------------------------------------------------------
-> total: 0 errors, 0 warnings, 0 checks, 16 lines checked
+> On Thu, 11 Apr 2024, Greg KH wrote:
 > 
-> /home/hedin/lkmp/course_tasks/coccinele/patches/sysrq/v1/0001-sysrq-Auto-release-device-node-using-__free-attribut.patch
-> has no obvious style problems and is ready for submission.
-> 
-> Before sending this patch to the mailing list I sent it to me,
-> downloaded from the email, and then applied atop of the tree using git
-> am. Encountered no issues.
-> 
-> I can guess that you checked the whole file and got some issues. But
-> those are not related to my changes.
-> 
-> Thanks,
-> Roman
-> 
-> On Thu, Apr 11, 2024 at 8:10 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
 > > On Thu, Apr 11, 2024 at 08:02:56PM +0200, Roman Storozhenko wrote:
 > > > Add a cleanup function attribute '__free(device_node)' to the device node
 > > > pointer initialization statement and remove the pairing cleanup function
@@ -105,21 +76,50 @@ On Thu, Apr 11, 2024 at 08:25:10PM +0200, Roman Storozhenko wrote:
 > > > @@ -758,11 +758,12 @@ static void sysrq_detect_reset_sequence(struct sysrq_state *state,
 > > >  static void sysrq_of_get_keyreset_config(void)
 > > >  {
-> > >       u32 key;
-> > > -     struct device_node *np;
-> > >       struct property *prop;
-> > >       const __be32 *p;
+> > >  	u32 key;
+> > > -	struct device_node *np;
+> > >  	struct property *prop;
+> > >  	const __be32 *p;
 > > >
-> > > -     np = of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
-> > > +     struct device_node *np __free(device_node) =
-> > > +             of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
+> > > -	np = of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
+> > > +	struct device_node *np __free(device_node) =
+> > > +		of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
 > > > +
+> > >  	if (!np) {
+> > >  		pr_debug("No sysrq node found");
+> > >  		return;
+> > > @@ -781,8 +782,6 @@ static void sysrq_of_get_keyreset_config(void)
+> > >
+> > >  	/* Get reset timeout if any. */
+> > >  	of_property_read_u32(np, "timeout-ms", &sysrq_reset_downtime_ms);
+> > > -
+> > > -	of_node_put(np);
+> > >  }
+> > >  #else
+> > >  static void sysrq_of_get_keyreset_config(void)
 > >
-> > Did you run this through checkpatch.pl?  Please do so.
+> > Also, this change really makes no sense at all, the pointer never goes
+> > out of scope except when the function is over, at the bottom.  So why
+> > make this complex change at all for no benefit?
+> >
+> > In other words, properly understand the change you are making and only
+> > make it if it actually makes sense.  It does not make any sense here,
+> > right?
+> 
+> Maybe it would be nice to get rid of of_node_puts in the general case?
 
-The issue is the blank line in the variable list now.  Odd that
-checkpatch doesn't catch it, which implies the complexity added here
-might just not be a good idea :(
+That's a call for the of maintainer to make, and then if so, to do it
+across the whole tree, right?
+
+> Even though this one is not very annoying, there are some other functions
+> where there are many of_node_puts, and convoluted error handling code to
+> incorporate them on both the success and failure path.  So maybe it would
+> be better to avoid the situation of having them sometimes and not having
+> them other times?  But this is an opinion, and if the general consensus is
+> to only get rid of the cases that currently add complexity, then that is
+> possible too.
+
+Let's keep things simple until it has to be complex please.
 
 thanks,
 
