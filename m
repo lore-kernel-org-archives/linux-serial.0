@@ -1,143 +1,104 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2E641487D8;
-	Fri, 12 Apr 2024 15:40:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63431487F4;
+	Fri, 12 Apr 2024 15:52:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712936405; cv=none; b=QSizSlUasKLeDBx1sZpR7ThkEVKm6KKw4/tyGd0/fF9Kps1mtcQv9ah9O8+2CKb3TCk2rhDy7ZVXaANYgBqT8e+jd+rGTUOiwDt5t2j0VAQWRBZ37ruFnQlZkKVDWBigRyBPOBqzVTMSRi7woHDS/xrpfebH+vFGsDpeQOpQ9PY=
+	t=1712937153; cv=none; b=ujHUciYsmzEE5/cjFhbMnruIdmMfMa0zJkWy7C6Llwi/g2qkeU/q61RG33GIFqAreOJozfQzBd/3dOEV1ZTWDiCAd872NqrWpOOLBgxK1CIgK9QeNv58CW15LQGdBPthOsTQZ3cTwMrzM935QPiL2mdTeCTVeM/0Nf+cYnQR5jY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712936405; c=relaxed/simple;
-	bh=cb2yJJcD0Hbk+45aCbkWuSgX79odNGqq3CZK0GHO9GI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dhl9r4IWeGikkwy1p6GJlN4uuBFZQQAiekqYp2BKBxD2atGG4zUjoLakzfx3T+HD1EmFnZ5pEQtaJ25ueaSCeHR2TUzExywu6XzZQDDVUbvzQN7AwJjE4O3Em7JQa6mwKRjEGu1bTD1ZJ+hO0ouQhPmQPOxX2MmQRL1Mpsp/4rA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=A8sxtXm3; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1712937153; c=relaxed/simple;
+	bh=+9Mw43B2dc8yqpBB0UYDtikznFH+l2Yt2aPRuDCoaxs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nDX6YVeuqeQLKz8DNwby9igoq0v2bHgLFBoToSK98FH8Oa6hWqePz5LOoiMi7jlcR/BKpSebr8KZZTLFsh5WhPlQnEl3hYaVZ824D2ML1DFdMGwno3i7dv+FRbOIcb69LirhTRoadYKYt1NL/bXdqJRNWkCGLUxed7egxI0S/Gc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=joN38Zph; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="A8sxtXm3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1712936385; x=1713541185; i=parker@finest.io;
-	bh=b/AzrjodG8Ty/4WJZG+tzIEn6cxEm6dU7JqcH8NWHTI=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:In-Reply-To:
-	 References;
-	b=A8sxtXm3eSnkJ1AA+fY53kcs9TcsvsvBykyIkKqsvBeCrV6zyOhtGV/mpK2Bc59Z
-	 yBXheMLFj8TjPMaauoBtBzfWEdwZBSPWeENO9x0KasxpFZFMYaqBpdcyS02ziancB
-	 rZ6pBu49TroLH3CxM77Pfl5mMBcv4jeMrEI3bPb85F+qeT/YkWoN0YslFmgnuTd3z
-	 Y5XSh5xvK6r5V0GllLf+TlmjWUL6m9kHLznFxUnPJoi8/AmP9gypESvl+1kHLihzK
-	 apZ04LVq7feFPGz8pUEGjMEBYfWteJGIyRJtJFu80iHzRXRjbAZ/1eRpNqo5nCXXS
-	 4FYgJXMz1bqBcaXMFA==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 1MBmM4-1s32mT1M7g-00CDAH; Fri, 12 Apr 2024 17:39:45 +0200
-Date: Fri, 12 Apr 2024 11:39:43 -0400
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Jiri
- Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>, Parker Newman
- <pnewman@connecttech.com>
-Subject: Re: [PATCH v2 6/7] serial: exar: add CTI board and port setup
- functions
-Message-ID: <20240412113943.7a2bf0c6@SWDEV2.connecttech.local>
-In-Reply-To: <2024041248-enjoyable-barterer-4f01@gregkh>
-References: <cover.1712863999.git.pnewman@connecttech.com>
-	<ca94454e54504c1621f17f5e3933cad299f61344.1712863999.git.pnewman@connecttech.com>
-	<c73b4fc3-be87-6a6d-408e-634ba915f28e@linux.intel.com>
-	<20240412111926.5b4c9953@SWDEV2.connecttech.local>
-	<2024041248-enjoyable-barterer-4f01@gregkh>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="joN38Zph"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712937152; x=1744473152;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+9Mw43B2dc8yqpBB0UYDtikznFH+l2Yt2aPRuDCoaxs=;
+  b=joN38ZphQ1iZxf7DrEH4eS2xDKF1T8BSJ3EaI58uXienr+KJt7Mf2/SD
+   y8SIQ4cClnM7Ouya7+8fT2g8xS1Dw01JI/3FwPPdwM/evJSkuCznQc9Qa
+   QjknC3SDnmiAJkUPnN3bFZ/Xu7+rhCk4My2GIlzo9Igy8xaNAb0DExvKl
+   vQ/XioaT0roYmmMx46d786fWSRus/2HbA/F92cl95JqOntsmuy2gI3bO/
+   2/BMt/sp8PvZhUT2ZwxINHufMILzRVUkqMbsxhIhkHd0HU+W3LubnLwSs
+   26xgL+NLk8fq1Vis5MH6UND3m6lLxR5NhCNDYrV8F3BYY7SVGiMdRF4Tl
+   g==;
+X-CSE-ConnectionGUID: icjNzD5GTImK4lcoLcTaKA==
+X-CSE-MsgGUID: v5Dfz/zGRSe2jvje0nMSIw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="19109610"
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="19109610"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 08:52:31 -0700
+X-CSE-ConnectionGUID: fcUfTuZISBWTR9K8VRnTfw==
+X-CSE-MsgGUID: G/GU/PpXRyCFNjj6D9Y8Gg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="21689461"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 08:52:29 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1rvJCS-00000003h58-3XTT;
+	Fri, 12 Apr 2024 18:52:24 +0300
+Date: Fri, 12 Apr 2024 18:52:24 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Guanbing Huang <albanhuang0@gmail.com>
+Cc: gregkh@linuxfoundation.org, rafael.j.wysocki@intel.com,
+	linux-acpi@vger.kernel.org, tony@atomide.com,
+	john.ogness@linutronix.de, yangyicong@hisilicon.com,
+	jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, lvjianmin@loongson.cn,
+	albanhuang@tencent.com, tombinfan@tencent.com
+Subject: Re: [PATCH v7 1/3] PNP: Add dev_is_pnp() macro
+Message-ID: <ZhlYuPZTrhwZl0HD@smile.fi.intel.com>
+References: <cover.1712890897.git.albanhuang@tencent.com>
+ <41d35ec4ff287ad6ab4fe7360fc80fb604a12958.1712890897.git.albanhuang@tencent.com>
+ <ZhlTdPNuD_IayWlw@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1SP0sy12AmEwE41YKrF1nYVxSvj0IpmMWOmGZWMpMhwGVyiEp19
- J49OIKQf7o2gWmc3980+j4o4iJCXGqDn7o2OAs7qpkhWOiULaGYRkQyPgXzhK3EGhcdak6v
- XspwIfelmdjlrVmptfZlT8ssHdU917/84ya/BG/UjyR4YQ7AKDA6VteJ3gmOlaJeCoBmT0x
- fKCqmbTaHHXEneoUJZRYw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:+5fXMDEAca8=;0mzk6sFLx1VxltU3hfs50br1UTq
- bQzPeW2Lwsk+HGSQPDlrDmkVaZD0eB6cm9Io1OsNOUdcnuwvAbN2fvs1vh1gwtjRMr09wDhRb
- WbyuBzxXK5IgrUm/iHEBZLU3/x8j4muv1cHIa00Fks7gnN0d8tv2D5bGR3woyO+135u3hYYkA
- H+p6/poG/HpdKEBUZAD/cwAIgcMuFNGQ5XalEJL7lijZQErdWxOcSHSPofhVg0FS6a+Bm+Kop
- gJnCm5OQVFgoxjDQkj5f4jHX2t8DyqV5EIM/AOLoovMLecQcltvovMS/wfMgAr9W/AMIeI/sT
- H7Q91dAejh5fsE+CRNL6llQyxsbxVmYkj74ro5GQfi3jNGFn3dyeF5uwVESR3s45hHpVgMTOS
- +aBQIVIwFxeJI0INkFgDf1FDHlp4Wz7OCK+yuL6yyNmokWAfVSDvt7DpRkVvR5/PJrUtlGcRc
- AhtTUc6/rQXivucQpRFsZzAdl0VCDPk/Kh3QzGVCNc4w3CgWFgqomsHSBQc7AA1bOf1/4lQDA
- yX5xYbSNvotuhKAgIzkqrV+N1A8Yg42UM0TCJZF621fBBtngCm2ErkydITdlaVqZZJ7CEB8AB
- /Z99ctrZ4uN4eAmGaCHr/Nug0R3ELhR7mRnM26dvcNbLTzkGCrQShBMcwcB42joVixd+QIFQd
- qmT1nMIkd3yiqYyaHwqVXlxOIszX8nGgq5GCFGUI1+4fzclEXixwFFYaEcO6EJnh6J1jRsLME
- c3OiKnG4NQv1pwGKLWsgCaypHO1BjXKbTt42KOfuXuNcRWfW/k/kWo=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZhlTdPNuD_IayWlw@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, 12 Apr 2024 17:28:20 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+On Fri, Apr 12, 2024 at 06:29:56PM +0300, Andy Shevchenko wrote:
+> On Fri, Apr 12, 2024 at 11:24:12AM +0800, Guanbing Huang wrote:
 
-> On Fri, Apr 12, 2024 at 11:19:26AM -0400, Parker Newman wrote:
-> > On Fri, 12 Apr 2024 13:57:01 +0300 (EEST)
-> > Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
-> >  =20
-> > > On Thu, 11 Apr 2024, parker@finest.io wrote:
-> > >  =20
-> > > > From: Parker Newman <pnewman@connecttech.com>
-> > > >=20
-> > > > - Removed old port setup function and replaced with UART specific o=
-nes
-> > > > - Added board setup functions for CTI boards
-> > > > - Replaced CONNECT_DEVICE macro with CTI_EXAR_DEVICE and CTI_PCI_DE=
-VICE   =20
-> > >=20
-> > > In general, you should try to do refactoring in a preparatory patch (=
-one=20
-> > > refactoring thing at a time) and add new stuff in another patch in=20
-> > > the series. I didn't go to figure out how much it applies to those th=
-ree=20
-> > > items because you likely know the answer immediately.
-> > >  =20
-> > > > - Moved "generic rs485" support up in the file   =20
-> > >=20
-> > > Please do this in a separate patch.
-> > >  =20
-> >=20
-> > Will do.
-> >  =20
-> > >=20
-> > > Another general level problem with your series is that it adds functi=
-ons=20
-> > > x, y, etc. without users, whereas the expected way of doing things wo=
-uld=20
-> > > be to add the functions in the change they are getting used so it's e=
-asier=20
-> > > to follow what's going on.
-> > >=20
-> > > I believe if you separate the refactoring & moving code around into o=
-wn=20
-> > > changes (no functional change type patches), the new stuff is much=20
-> > > smaller so there is no need to split that illogically into incomplete=
-=20
-> > > fragments in some patches.
-> > >=20
-> > > --
-> > >  i.
-> > >  =20
-> >=20
-> > Thanks for the feedback, I am new to the mailing lists and am trying to=
- balance
-> > what you mention above with not having giant patches.  =20
->=20
-> It's a fine line, and takes a while to learn, but as a first cut, this
-> was pretty good, I didn't have any major problems with the structure of
-> it, so nice work.
->=20
-> thanks,
->=20
-> greg k-h
+...
 
-Thanks, I appreciate both your feedback I think I have a better handle on i=
-t.
--Parker
+> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> I haven't given this tag _explicitly_ as it's a new code and I answered in
+> the previous email that I will give one for the new version.
+> 
+> ...
+> 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Closes: https://lore.kernel.org/oe-kbuild-all/202404100523.b06UvPSB-lkp@intel.com/
+> 
+> No, the new feature can't be reported.
+> 
+> ...
+> 
+> Please, try again.
+
+To clarify, remove the above lines from your first commit.
+If you want, you may leave my Rb tags in the patches 2 & 3
+as code wasn't changed there.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
