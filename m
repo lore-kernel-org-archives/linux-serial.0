@@ -1,78 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3391E1F934;
-	Fri, 12 Apr 2024 05:29:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E330E542;
+	Fri, 12 Apr 2024 06:22:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.134.164.83
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712899760; cv=none; b=FHP8lr6S6+y2hhd1hDDbDrQ5+eWzh1M8MBRySkxXOm9y0v7lazI42Zlzm5z0QO3aZGsuT5UbX0u7r8c0g5NX0+NglMWmttymRHNmGckJ2pJHnxb73elWsCpaY2wSIzkku4GZVeEk1iM2e2jbtcqf75qJHd6kkWfnatIIQ/lhsEs=
+	t=1712902966; cv=none; b=FfiJT/5Fy3/jYFIhKlLwc1v6G+4TWGxfxeXXkt1WJsMwkx+UGXpbSRgZIwYEghFOJwAXB/TajF97x173ia5iZMsxfSTGi92C18iTp1Wwd1dhyFW4TSBbib1WSKPN9aM2oWwf6o7OJjQauSmpp0oxOWCKgJX53hhCXuUT1ImSFU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712899760; c=relaxed/simple;
-	bh=8bi6ee2KE7tWw9jg23MVgqYOY0sTFVighRqcEyShMDI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kQaOlQY4qmiD8h/DaXuK624M85u5sKl3h19wlNgjkIKnYcHtTOI2oUGAOQWMPLr2D68BWcvgH2RopiAFG2Uo54ctiMFMWnguU7n+3JTBrTW4yIHva4VaHh+AoYrQx4fUYdjF1QTLy96YIXOePGUc1qL5PCNJWNt15O7GJpRIm4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=JK0N/ubr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712902966; c=relaxed/simple;
+	bh=I9aBK5dbrhcLKKL/MjbcYuCu6MZvLINSTsHK4HqiwmY=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=dNWXPnZ565Mawl3nX738qGtQFFXlG61od5gqDOU6CPYXNfKIpHbY+kRTETREBLfwG1SVCjELtZRfS/07JrkTR201EDOhk/Dy82QWgbmZFDb5rcC68srJP55xCjn0bJVQ1AwQ7MzpREZFhNijSBRPO2GfLRlpAGHTpS1J8/K68Jg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr; spf=pass smtp.mailfrom=inria.fr; dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b=lcjPlO4Q; arc=none smtp.client-ip=192.134.164.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inria.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JK0N/ubr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40DC5C2BD10;
-	Fri, 12 Apr 2024 05:29:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1712899759;
-	bh=8bi6ee2KE7tWw9jg23MVgqYOY0sTFVighRqcEyShMDI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JK0N/ubrIi9OdOk2tmSbS505wxEfErtUdnCRVa9rBz4Vw3z02RncjXTp8P3pfx2Ct
-	 pjqzWjahjrwIpelDreVQFYYvgxdbZumuCOODxIT9LwO315sdiTCaUZEWnSf2P5dotC
-	 YMTxYV7IAExtWZvt2Y4h6/dRB5C7kI7etlxJ4s3M=
-Date: Fri, 12 Apr 2024 07:29:16 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: parker@finest.io
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v2 3/7] serial: exar: add support for config/set single
- MPIO
-Message-ID: <2024041213-uncouple-justness-35fa@gregkh>
-References: <cover.1712863999.git.pnewman@connecttech.com>
- <3e671b6c0d11a2d0c292947675ed087eaaa5445e.1712863999.git.pnewman@connecttech.com>
+	dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b="lcjPlO4Q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=I5FV9y1cxUtXTeIw4zxGn7mwJ5/NnPbk/Fu5KJrJVaQ=;
+  b=lcjPlO4QuLiofl/z2VrHVX8/JVna8Xe2yfTHpz/M2jvRem9Gw/iW1JyT
+   DoXDc45a4ozCnM5br6N3g/NSN4MVWmA22eo4zXtHI1OAziqtWpy5m9+yY
+   r9ksScekmVXrDIFKg7Msv1blvJphv8bHCv681m6kli3BkLnW+IZ2xPZsg
+   k=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="6.07,195,1708383600"; 
+   d="scan'208";a="161185143"
+Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 08:21:31 +0200
+Date: Fri, 12 Apr 2024 08:21:30 +0200 (CEST)
+From: Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To: Greg KH <gregkh@linuxfoundation.org>, Rob Herring <robh@kernel.org>, 
+    Saravana Kannan <saravanak@google.com>, devicetree@vger.kernel.org
+cc: Roman Storozhenko <romeusmeister@gmail.com>, jirislaby@kernel.org, 
+    skhan@linuxfoundation.org, javier.carrasco.cruz@gmail.com, 
+    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] sysrq: Auto release device node using __free attribute
+In-Reply-To: <2024041211-statistic-reformist-bf70@gregkh>
+Message-ID: <alpine.DEB.2.22.394.2404120807400.3229@hadrien>
+References: <20240411180256.61001-1-romeusmeister@gmail.com> <2024041111-tummy-boil-a6aa@gregkh> <b6b33aa-faef-6919-7125-c2db11e784ee@inria.fr> <2024041211-statistic-reformist-bf70@gregkh>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3e671b6c0d11a2d0c292947675ed087eaaa5445e.1712863999.git.pnewman@connecttech.com>
+Content-Type: text/plain; charset=US-ASCII
 
-On Thu, Apr 11, 2024 at 04:25:41PM -0400, parker@finest.io wrote:
-> +/**
-> + * exar_mpio_config() - Configure an EXar MPIO as input or output
-> + * @priv: Device's private structure
-> + * @mpio_num: MPIO number/offset to configure
-> + * @output: Configure as output if true, inout if false
-> + *
-> + * Configure a single MPIO as an input or output and disable trisate.
-> + * If configuring as output it is reccomended to set value with
-> + * exar_mpio_set prior to calling this function to ensure default state.
-> + *
-> + * Return: 0 on success, negative error code on failure
-> + */
-> +static int exar_mpio_config(struct exar8250 *priv,
-> +			unsigned int mpio_num, bool output)
+[Adding the OF maintainers and device tree mailing list]
 
-When you have a bool in a function, every time you read the code you
-have to go and figure out what that boolean means.
+> > Maybe it would be nice to get rid of of_node_puts in the general case?
+>
+> That's a call for the of maintainer to make, and then if so, to do it
+> across the whole tree, right?
 
-Have 2 functions:
-	exar_mpio_config_input()
-	exar_mpio_config_output()
+Sure.
 
-and then have THEM call this function with the bool set or not.  That
-way when reading the code you know exactly what is happening.
+Rob and Saravana, what do you think about the following:
 
-Same with other functions in this patch.  Naming is hard, make it easy
-please.
+* Is it ok to use __free(device_tree) directly in a declaration, or is
+there some macro that should be used instead?
 
-thanks,
+* If is ok to use __free(device_tree) even in simple cases where a
+variable is just declared at the start of the scope and freed at the end,
+and there is no internediate error handling code?
 
-greg k-h
+Please see for example:
+
+https://lore.kernel.org/lkml/alpine.DEB.2.22.394.2401291455430.8649@hadrien/
+
+But I don't think we can do the whole thing at once, in one patch.  There
+are a lot of things that need to be checked, and it don't break anything
+to do them one at a time.
+
+>
+> > Even though this one is not very annoying, there are some other functions
+> > where there are many of_node_puts, and convoluted error handling code to
+> > incorporate them on both the success and failure path.  So maybe it would
+> > be better to avoid the situation of having them sometimes and not having
+> > them other times?  But this is an opinion, and if the general consensus is
+> > to only get rid of the cases that currently add complexity, then that is
+> > possible too.
+>
+> Let's keep things simple until it has to be complex please.
+
+I meant that the current code is complex and error prone, and using __free
+eliminates code that is ugly and has led to memory leaks in the past (and
+a lot of effort to find and fix them in the past).  Even if some instances
+don't have that property, they may become more complex in the future, if
+some error condition is detected.
+
+julia
