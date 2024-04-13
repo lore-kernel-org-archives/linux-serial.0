@@ -1,92 +1,147 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BEC14C587;
-	Fri, 12 Apr 2024 17:39:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9864D14267
+	for <linux-serial@vger.kernel.org>; Sat, 13 Apr 2024 07:04:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712943583; cv=none; b=reQRJ4UJOnm0Ga1knlqwC3rt2iDZ1a4t4o+JPiZ1+NOCzKHaF03j5QSW0jb6MBbwjxZbKO33a2YxhUD2V8fpc2TXnaspRrC8ppCzjY0Jk1PYMkZ6dRpWvMnudmAHv/2y5ywMUDsbOax/ERpQVywlf3p1OW+ygY7j2nV5InyyiaE=
+	t=1712991850; cv=none; b=N41mcS7sEx5EVEwxEzox8Iij8TDyqXwaHKcJdHqTUgXpI7ewyXI27gRUD504DOFO5ehgw8sp1umlg5n0UAqmXqtH8l23JveMw58KxSSdDeAS5kNb7IhExr0mDWsp3vyj3qxKgDY/9pPbygvu2xTW1Tdew74eyQZXKulTr0mUMHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712943583; c=relaxed/simple;
-	bh=+nDF4mzA3qfuixFkwc6U/sURTYNxPE6F4fsKO8OZGPQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W3dVTkn6ewTYOk0NlcAl50Db+sjd0k+DIA0n3Q9h4Utih42Ss5DhvA9ABn6OSQk13mA7G+PtA+PJfrPil0zFiRT5afTPDeDXlRREy2WA1wquAzI5+BrpslrPfhmwRSB6TtNj8rJVF6yl4hnUkyUEQKjqz4sdJb3PvTGRTLKOtng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Uh71hG/c; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712991850; c=relaxed/simple;
+	bh=lwjQgxKurdkEXXblSJ4Zl9VgogMKYcxkXBVZEP7HSBw=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=mDSbAGHyPd+FDCw/hNyZjQOv0I+PvsyWPz9ZLoBSbqkpqVw+4ROqp7QLBNqf1OA/nYl4WosVFRTNd4gJegSgj2Uswl8cn6Nh2pepLa3OWOage5DPyQlFeq/lh0WtLrfSz36yT8Y8Ui9PH8rbtI+lInqP5vF88SnIVBwKKErLACI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=So7iSZwa; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Uh71hG/c"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="So7iSZwa"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712943582; x=1744479582;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+nDF4mzA3qfuixFkwc6U/sURTYNxPE6F4fsKO8OZGPQ=;
-  b=Uh71hG/cdSwfmJCXPlrtX+6y0Tvin1o9fot1xuuOZbSjvPwRPuF91uSh
-   JeJWqLyXnW30bhdwpjq6LAJ9spMMvjauDHlRfQpJfJqzwancQrP+gioag
-   eu9hVLvx/Iz9WSMsyyD8ZikkM6JQiK56HxvyTWRapAtbeWLIgF/PqOds7
-   fQuLGYpA53SGScy3N0QVXqcp0pP/6Au0aCC1PWIkWQacUX1FKIoyCTAuC
-   HaI2q81eqpV8Y88FvFLQ0trmJMBMYUSv5NWAdqS8azl65iqtU82hL5aGG
-   risiXG4h+kfmi/FpxT7fyA0D0xy7llZZT3K/PjYB2ApdkY5TEnM9zsN93
-   w==;
-X-CSE-ConnectionGUID: All1xElWQSKMWTalYv5l1g==
-X-CSE-MsgGUID: fG8jMI/MQeOiA8xHRP42uQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="11366222"
-X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
-   d="scan'208";a="11366222"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 10:39:41 -0700
-X-CSE-ConnectionGUID: 88R/a6r7T5ColwXA8APiBQ==
-X-CSE-MsgGUID: 9r/m6aWtRxOKWB5KqsCd0g==
+  t=1712991849; x=1744527849;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lwjQgxKurdkEXXblSJ4Zl9VgogMKYcxkXBVZEP7HSBw=;
+  b=So7iSZwaOCUey26gw+LSJuOpPCg1N05gsKH3Ih720hQx0obpamTPWRwH
+   vP60E7H7ZDSn3H/+zIux9DPmqDPvci54gIDMJmCWYtpYhJAhiLU0HYEu2
+   tpHFdfCXkCnz1yy1BCyW+JELtiHNyqyTFOWeUseaj9lhAn8PUIBwffTY3
+   0wL4aUqdUH6kN/awvKyC+1X4ol3zQgIA05p4H+t5GV58J58DPI5m8etxP
+   BzVG+IgGbRuMmju3Cucks2l/uiEzSucQ1izPnyg8M72WCPysAlXmSqUSZ
+   D7xJd0d+pUobwztXKN7ILgUo+cvxxYI/O0qJDY+p1J4sRtO2bs3sV1b30
+   A==;
+X-CSE-ConnectionGUID: azVOcDCbQ/GgqNRi/tL/6g==
+X-CSE-MsgGUID: 5K+X6rl0R+eW/Ejhj9vQig==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="8312574"
+X-IronPort-AV: E=Sophos;i="6.07,198,1708416000"; 
+   d="scan'208";a="8312574"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2024 00:04:08 -0700
+X-CSE-ConnectionGUID: utVF0aTdTqaR3wEETki3XQ==
+X-CSE-MsgGUID: 5zUWImkvQK2M2BkKFTUyQA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
-   d="scan'208";a="21782593"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa007.jf.intel.com with ESMTP; 12 Apr 2024 10:39:39 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 1FDC2FF; Fri, 12 Apr 2024 20:39:38 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_dw: Hide a cast in dw8250_serial_inq()
-Date: Fri, 12 Apr 2024 20:39:37 +0300
-Message-ID: <20240412173937.187442-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+X-IronPort-AV: E=Sophos;i="6.07,198,1708416000"; 
+   d="scan'208";a="21455635"
+Received: from unknown (HELO 23c141fc0fd8) ([10.239.97.151])
+  by fmviesa006.fm.intel.com with ESMTP; 13 Apr 2024 00:04:06 -0700
+Received: from kbuild by 23c141fc0fd8 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rvXQi-0001zW-0E;
+	Sat, 13 Apr 2024 07:04:04 +0000
+Date: Sat, 13 Apr 2024 15:03:48 +0800
+From: kernel test robot <lkp@intel.com>
+To: Tony Lindgren <tony@atomide.com>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-next 61/65] drivers/tty/serial/serial_base_bus.c:267:9:
+ error: call to undeclared function 'serial_base_add_one_prefcon'; ISO C99
+ and later do not support implicit function declarations
+Message-ID: <202404131416.VJljwvkS-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-dw8250_serial_inq() uses unsigned int variable to store 8-bit value.
-Due to that it needs a cast which can be avoided by switching to use
-u8 instead of unsigned int.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-next
+head:   1b743485e27f3d874695434cc8103f557dfdf4b9
+commit: 4547cd76f08a6f301f6ad563f5d0e4566924ec6b [61/65] serial: 8250: Fix add preferred console for serial8250_isa_init_ports()
+config: mips-mtx1_defconfig (https://download.01.org/0day-ci/archive/20240413/202404131416.VJljwvkS-lkp@intel.com/config)
+compiler: clang version 16.0.4 (https://github.com/llvm/llvm-project.git ae42196bc493ffe877a7e3dff8be32035dea4d07)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240413/202404131416.VJljwvkS-lkp@intel.com/reproduce)
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_dw.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202404131416.VJljwvkS-lkp@intel.com/
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 1e81024f8fd3..ba9f4dc4e71d 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -185,9 +185,7 @@ static unsigned int dw8250_serial_in(struct uart_port *p, int offset)
- #ifdef CONFIG_64BIT
- static unsigned int dw8250_serial_inq(struct uart_port *p, int offset)
- {
--	unsigned int value;
--
--	value = (u8)__raw_readq(p->membase + (offset << p->regshift));
-+	u8 value = __raw_readq(p->membase + (offset << p->regshift));
- 
- 	return dw8250_modify_msr(p, offset, value);
- }
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/serial/serial_base_bus.c:267:9: error: call to undeclared function 'serial_base_add_one_prefcon'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   ret = serial_base_add_one_prefcon(nmbr_match, name, idx);
+                         ^
+   drivers/tty/serial/serial_base_bus.c:267:9: note: did you mean 'serial_base_add_prefcon'?
+   drivers/tty/serial/serial_base_bus.c:254:12: note: 'serial_base_add_prefcon' declared here
+   static int serial_base_add_prefcon(const char *name, int idx)
+              ^
+   drivers/tty/serial/serial_base_bus.c:282:9: error: call to undeclared function 'serial_base_add_one_prefcon'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           return serial_base_add_one_prefcon(char_match, name, idx);
+                  ^
+   drivers/tty/serial/serial_base_bus.c:303:5: error: redefinition of 'serial_base_add_preferred_console'
+   int serial_base_add_preferred_console(struct uart_driver *drv,
+       ^
+   drivers/tty/serial/serial_base.h:57:5: note: previous definition is here
+   int serial_base_add_preferred_console(struct uart_driver *drv,
+       ^
+   drivers/tty/serial/serial_base_bus.c:319:9: error: call to undeclared function 'serial_base_add_one_prefcon'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           return serial_base_add_one_prefcon(port_match, drv->dev_name, port->line);
+                  ^
+   4 errors generated.
+
+
+vim +/serial_base_add_one_prefcon +267 drivers/tty/serial/serial_base_bus.c
+
+a0f32e2dd99867 Tony Lindgren 2024-03-27  253  
+787a1cabac01c9 Tony Lindgren 2024-03-27  254  static int serial_base_add_prefcon(const char *name, int idx)
+787a1cabac01c9 Tony Lindgren 2024-03-27  255  {
+787a1cabac01c9 Tony Lindgren 2024-03-27  256  	const char *char_match __free(kfree) = NULL;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  257  	const char *nmbr_match __free(kfree) = NULL;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  258  	int ret;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  259  
+a0f32e2dd99867 Tony Lindgren 2024-03-27  260  	/* Handle ttyS specific options */
+a0f32e2dd99867 Tony Lindgren 2024-03-27  261  	if (strstarts(name, "ttyS")) {
+a0f32e2dd99867 Tony Lindgren 2024-03-27  262  		/* No name, just a number */
+a0f32e2dd99867 Tony Lindgren 2024-03-27  263  		nmbr_match = kasprintf(GFP_KERNEL, "%i", idx);
+a0f32e2dd99867 Tony Lindgren 2024-03-27  264  		if (!nmbr_match)
+a0f32e2dd99867 Tony Lindgren 2024-03-27  265  			return -ENODEV;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  266  
+a0f32e2dd99867 Tony Lindgren 2024-03-27 @267  		ret = serial_base_add_one_prefcon(nmbr_match, name, idx);
+a0f32e2dd99867 Tony Lindgren 2024-03-27  268  		if (ret)
+a0f32e2dd99867 Tony Lindgren 2024-03-27  269  			return ret;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  270  
+a0f32e2dd99867 Tony Lindgren 2024-03-27  271  		/* Sparc ttya and ttyb */
+a0f32e2dd99867 Tony Lindgren 2024-03-27  272  		ret = serial_base_add_sparc_console(name, idx);
+a0f32e2dd99867 Tony Lindgren 2024-03-27  273  		if (ret)
+a0f32e2dd99867 Tony Lindgren 2024-03-27  274  			return ret;
+a0f32e2dd99867 Tony Lindgren 2024-03-27  275  	}
+787a1cabac01c9 Tony Lindgren 2024-03-27  276  
+787a1cabac01c9 Tony Lindgren 2024-03-27  277  	/* Handle the traditional character device name style console=ttyS0 */
+787a1cabac01c9 Tony Lindgren 2024-03-27  278  	char_match = kasprintf(GFP_KERNEL, "%s%i", name, idx);
+787a1cabac01c9 Tony Lindgren 2024-03-27  279  	if (!char_match)
+787a1cabac01c9 Tony Lindgren 2024-03-27  280  		return -ENOMEM;
+787a1cabac01c9 Tony Lindgren 2024-03-27  281  
+787a1cabac01c9 Tony Lindgren 2024-03-27  282  	return serial_base_add_one_prefcon(char_match, name, idx);
+787a1cabac01c9 Tony Lindgren 2024-03-27  283  }
+787a1cabac01c9 Tony Lindgren 2024-03-27  284  
+
+:::::: The code at line 267 was first introduced by commit
+:::::: a0f32e2dd99867b164bfebcf36729c2a0d41b30b serial: core: Handle serial console options
+
+:::::: TO: Tony Lindgren <tony@atomide.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 -- 
-2.43.0.rc1.1336.g36b5255a03ac
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
