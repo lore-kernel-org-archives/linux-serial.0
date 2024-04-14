@@ -1,154 +1,238 @@
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2556D2901;
-	Sat, 13 Apr 2024 19:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.134.164.104
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B9A2E657
+	for <linux-serial@vger.kernel.org>; Sun, 14 Apr 2024 11:05:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713035739; cv=none; b=L5KdZR+6eFdX8x6m8bqPcknUY9k2/46gXCx1bcbBbavlACzbVbpfSi3Z/ej5wwS+d1E/r6wM4X2q6GqBRe7/z+UCOkZMxBrxFXMcvXfa8ljD3YcQVS3GnzHhbzwgsqWPoZH+gQcnJIFlYjdjxM/pfb/dKKPRccbe0TwPBIrylmY=
+	t=1713092732; cv=none; b=LgStH1bEjh87D4DwlzsWWkMzZVSzyIKooU9mnTlKAlIZc5RNKPocW19T0rdJhfTpNkU6LN5B4HgaOJk1jHX/xNrx4a7f7a9t5oHQE6A3B1PHg9ivNhiBQO3cL5IAVZZzxau4qSKWmV3KfD0mP71M/2dfKJRJYO+8Z5SJDI6OznI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713035739; c=relaxed/simple;
-	bh=4cGjbS7oZv3MqXnUHAus2v7DZuTRY4ghBpQ6dnNDpM8=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=BS6+L7DEH6i0gqjzjpk6OyrHWzJpawxv82e1t7Hl/pTFa6o/CYxORDbUHg8NI5G+4oocM3UCmAplMFXMr0FLBACYRrZT6xGG1KbPX7uf+QmiHI7aBFLgj5B0PIkX/pRUOmFLwSyVpib8f68wTQIGj74fChFh2imS773k9L5rQhI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr; spf=pass smtp.mailfrom=inria.fr; dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b=WM5DiaCD; arc=none smtp.client-ip=192.134.164.104
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inria.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inria.fr
+	s=arc-20240116; t=1713092732; c=relaxed/simple;
+	bh=UHFm85LBJymrYs4h13kHY0H95lsN3JUnKV4IyNq2PCU=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=Rf8KKTIHpShRn6vRVzI3Dw1fR15J3hl6cWUSsE70w4hOFD6j4cxS0jIQ3JLZlbGiUDOjh+wBdOIU+esAN67obhVrUDOEzD7e3Lc49GspxZRyawAhTOv4KsOX6qwGmFiBqM34RXHnNx0W/ES9nxfpnkn+vok2zLhkYgWl1hSuijw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CT7bpJAH; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=inria.fr header.i=@inria.fr header.b="WM5DiaCD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=asONdpdArG+MOBmLcsAmo2WXpEy8zk0Cigt+bZtUvK0=;
-  b=WM5DiaCDP5zKrAzdddx2gwE7da09vEs/ZhFfDa9ODud/54fsUFCHc+1B
-   U18Xu+0URGYPS7lpuYwiiSxTvz2UKreKJiPM0w2n75urw2vOSy1HTDCPG
-   SANAZK/M4JG5+mgXU+dPtUj+zVWtg93ivk3lTr+oOpsKbQZrgTbwBXrEL
-   s=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="6.07,199,1708383600"; 
-   d="scan'208";a="84712531"
-Received: from 231.85.89.92.rev.sfr.net (HELO hadrien) ([92.89.85.231])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2024 21:15:26 +0200
-Date: Sat, 13 Apr 2024 21:15:25 +0200 (CEST)
-From: Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To: Greg KH <gregkh@linuxfoundation.org>
-cc: Julia Lawall <julia.lawall@inria.fr>, Rob Herring <robh@kernel.org>, 
-    Roman Storozhenko <romeusmeister@gmail.com>, jirislaby@kernel.org, 
-    skhan@linuxfoundation.org, javier.carrasco.cruz@gmail.com, 
-    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] sysrq: Auto release device node using __free attribute
-In-Reply-To: <2024041211-statistic-reformist-bf70@gregkh>
-Message-ID: <alpine.DEB.2.22.394.2404132106281.3446@hadrien>
-References: <20240411180256.61001-1-romeusmeister@gmail.com> <2024041111-tummy-boil-a6aa@gregkh> <b6b33aa-faef-6919-7125-c2db11e784ee@inria.fr> <2024041211-statistic-reformist-bf70@gregkh>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CT7bpJAH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713092729; x=1744628729;
+  h=date:from:to:cc:subject:message-id;
+  bh=UHFm85LBJymrYs4h13kHY0H95lsN3JUnKV4IyNq2PCU=;
+  b=CT7bpJAH8MdEQ6nekf7ysPmmk/TZdyRTb4yYCKMD1Ql6y3+QRIXMFa+F
+   0yb9OWUegMh8ZgbVFBoVhDgFKoKBLRwacem40izQo6iOgQZrBHO/0NKJn
+   nljR2EdFr9E3FGg1CCOFv26w7pKX+5Ls7F27UKceOmVshGI0UstDN3f1I
+   cE6Lkj3iWLaidQwUCPe0zBgl9DHWihPNREYs169aBl7L1YLLlr5W0jOew
+   8Iq5fEu38SS9crsGUdeGZb542g1Pdf8orU+rHO6xRldrh5e+/wo06wOwk
+   nHvERJgabzxDowASzDEp5Nd5pyYQ+Z8wj3ZHZXgVPhOjARhZAaxHteH9+
+   A==;
+X-CSE-ConnectionGUID: vcup5q1bRV2tLuCgjruiaA==
+X-CSE-MsgGUID: fjIqP5dzQ/eVMXx4LgSlig==
+X-IronPort-AV: E=McAfee;i="6600,9927,11043"; a="26006371"
+X-IronPort-AV: E=Sophos;i="6.07,201,1708416000"; 
+   d="scan'208";a="26006371"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2024 04:05:28 -0700
+X-CSE-ConnectionGUID: 5R02ewjES86QkeoNab/MRw==
+X-CSE-MsgGUID: qxT+FTdxRsux8U8//Bfi/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,201,1708416000"; 
+   d="scan'208";a="59073864"
+Received: from unknown (HELO 23c141fc0fd8) ([10.239.97.151])
+  by orviesa001.jf.intel.com with ESMTP; 14 Apr 2024 04:05:27 -0700
+Received: from kbuild by 23c141fc0fd8 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1rvxfo-0003a8-0x;
+	Sun, 14 Apr 2024 11:05:24 +0000
+Date: Sun, 14 Apr 2024 19:05:18 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ b20172ca6bf489534892b801a5db41bbf5ceec75
+Message-ID: <202404141916.tPBZZNEp-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: b20172ca6bf489534892b801a5db41bbf5ceec75  serial: core: Fix ifdef for serial base console functions
 
+elapsed time: 1441m
 
-On Fri, 12 Apr 2024, Greg KH wrote:
+configs tested: 161
+configs skipped: 6
 
-> On Thu, Apr 11, 2024 at 08:17:07PM +0200, Julia Lawall wrote:
-> >
-> >
-> > On Thu, 11 Apr 2024, Greg KH wrote:
-> >
-> > > On Thu, Apr 11, 2024 at 08:02:56PM +0200, Roman Storozhenko wrote:
-> > > > Add a cleanup function attribute '__free(device_node)' to the device node
-> > > > pointer initialization statement and remove the pairing cleanup function
-> > > > call of 'of_node_put' at the end of the function.
-> > > > The '_free()' attrubute is introduced by scope-based resource management
-> > > > in-kernel framework implemented in 'cleanup.h'. A pointer marked with
-> > > > '__free()' attribute makes a compiler insert a cleanup function call
-> > > > to the places where the pointer goes out of the scope. This feature
-> > > > allows to get rid of manual cleanup function calls.
-> > > >
-> > > > Suggested-by: Julia.Lawall <Julia.Lawall@inria.fr>
-> > > > Signed-off-by: Roman Storozhenko <romeusmeister@gmail.com>
-> > > > ---
-> > > > This patch targets the next tree:
-> > > > tree: git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-> > > > tag: next-20240411
-> > > > ---
-> > > >  drivers/tty/sysrq.c | 7 +++----
-> > > >  1 file changed, 3 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> > > > index 02217e3c916b..1d1261f618c0 100644
-> > > > --- a/drivers/tty/sysrq.c
-> > > > +++ b/drivers/tty/sysrq.c
-> > > > @@ -758,11 +758,12 @@ static void sysrq_detect_reset_sequence(struct sysrq_state *state,
-> > > >  static void sysrq_of_get_keyreset_config(void)
-> > > >  {
-> > > >  	u32 key;
-> > > > -	struct device_node *np;
-> > > >  	struct property *prop;
-> > > >  	const __be32 *p;
-> > > >
-> > > > -	np = of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
-> > > > +	struct device_node *np __free(device_node) =
-> > > > +		of_find_node_by_path("/chosen/linux,sysrq-reset-seq");
-> > > > +
-> > > >  	if (!np) {
-> > > >  		pr_debug("No sysrq node found");
-> > > >  		return;
-> > > > @@ -781,8 +782,6 @@ static void sysrq_of_get_keyreset_config(void)
-> > > >
-> > > >  	/* Get reset timeout if any. */
-> > > >  	of_property_read_u32(np, "timeout-ms", &sysrq_reset_downtime_ms);
-> > > > -
-> > > > -	of_node_put(np);
-> > > >  }
-> > > >  #else
-> > > >  static void sysrq_of_get_keyreset_config(void)
-> > >
-> > > Also, this change really makes no sense at all, the pointer never goes
-> > > out of scope except when the function is over, at the bottom.  So why
-> > > make this complex change at all for no benefit?
-> > >
-> > > In other words, properly understand the change you are making and only
-> > > make it if it actually makes sense.  It does not make any sense here,
-> > > right?
-> >
-> > Maybe it would be nice to get rid of of_node_puts in the general case?
->
-> That's a call for the of maintainer to make, and then if so, to do it
-> across the whole tree, right?
->
-> > Even though this one is not very annoying, there are some other functions
-> > where there are many of_node_puts, and convoluted error handling code to
-> > incorporate them on both the success and failure path.  So maybe it would
-> > be better to avoid the situation of having them sometimes and not having
-> > them other times?  But this is an opinion, and if the general consensus is
-> > to only get rid of the cases that currently add complexity, then that is
-> > possible too.
->
-> Let's keep things simple until it has to be complex please.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Jonathan Cameron pointed me to the following series from Rob Herring:
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                          axs103_defconfig   gcc  
+arc                                 defconfig   gcc  
+arc                        nsim_700_defconfig   gcc  
+arc                   randconfig-001-20240414   gcc  
+arc                   randconfig-002-20240414   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   clang
+arm                              allyesconfig   gcc  
+arm                                 defconfig   clang
+arm                   randconfig-003-20240414   gcc  
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                            allyesconfig   clang
+arm64                               defconfig   gcc  
+arm64                 randconfig-001-20240414   gcc  
+arm64                 randconfig-003-20240414   gcc  
+arm64                 randconfig-004-20240414   gcc  
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20240414   gcc  
+csky                  randconfig-002-20240414   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-001-20240413   gcc  
+i386         buildonly-randconfig-001-20240414   gcc  
+i386         buildonly-randconfig-002-20240413   gcc  
+i386         buildonly-randconfig-003-20240413   clang
+i386         buildonly-randconfig-003-20240414   gcc  
+i386         buildonly-randconfig-004-20240413   clang
+i386         buildonly-randconfig-004-20240414   gcc  
+i386         buildonly-randconfig-005-20240413   clang
+i386         buildonly-randconfig-005-20240414   gcc  
+i386         buildonly-randconfig-006-20240413   clang
+i386         buildonly-randconfig-006-20240414   gcc  
+i386                                defconfig   clang
+i386                  randconfig-001-20240413   clang
+i386                  randconfig-002-20240413   gcc  
+i386                  randconfig-002-20240414   gcc  
+i386                  randconfig-003-20240413   clang
+i386                  randconfig-003-20240414   gcc  
+i386                  randconfig-004-20240413   gcc  
+i386                  randconfig-004-20240414   gcc  
+i386                  randconfig-005-20240413   clang
+i386                  randconfig-005-20240414   gcc  
+i386                  randconfig-006-20240413   clang
+i386                  randconfig-011-20240413   gcc  
+i386                  randconfig-012-20240413   clang
+i386                  randconfig-013-20240413   gcc  
+i386                  randconfig-013-20240414   gcc  
+i386                  randconfig-014-20240413   gcc  
+i386                  randconfig-014-20240414   gcc  
+i386                  randconfig-015-20240413   clang
+i386                  randconfig-016-20240413   gcc  
+i386                  randconfig-016-20240414   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20240414   gcc  
+loongarch             randconfig-002-20240414   gcc  
+m68k                             alldefconfig   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+mips                      fuloong2e_defconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20240414   gcc  
+nios2                 randconfig-002-20240414   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                randconfig-001-20240414   gcc  
+parisc                randconfig-002-20240414   gcc  
+parisc64                            defconfig   gcc  
+powerpc                          allmodconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                 mpc832x_rdb_defconfig   gcc  
+powerpc                      ppc6xx_defconfig   gcc  
+powerpc               randconfig-003-20240414   gcc  
+powerpc                     tqm8560_defconfig   gcc  
+powerpc64             randconfig-002-20240414   gcc  
+powerpc64             randconfig-003-20240414   gcc  
+riscv                            allmodconfig   clang
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   clang
+riscv                               defconfig   clang
+s390                              allnoconfig   clang
+s390                             allyesconfig   gcc  
+s390                                defconfig   clang
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                ecovec24-romimage_defconfig   gcc  
+sh                          r7785rp_defconfig   gcc  
+sh                    randconfig-001-20240414   gcc  
+sh                    randconfig-002-20240414   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20240414   gcc  
+sparc64               randconfig-002-20240414   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   gcc  
+um                                  defconfig   clang
+um                             i386_defconfig   gcc  
+um                    randconfig-001-20240414   gcc  
+um                           x86_64_defconfig   clang
+x86_64                            allnoconfig   clang
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20240414   clang
+x86_64       buildonly-randconfig-002-20240414   clang
+x86_64       buildonly-randconfig-003-20240414   clang
+x86_64       buildonly-randconfig-004-20240414   clang
+x86_64       buildonly-randconfig-006-20240414   clang
+x86_64                              defconfig   gcc  
+x86_64                randconfig-002-20240414   clang
+x86_64                randconfig-005-20240414   clang
+x86_64                randconfig-006-20240414   clang
+x86_64                randconfig-011-20240414   clang
+x86_64                randconfig-072-20240414   clang
+x86_64                randconfig-073-20240414   clang
+x86_64                randconfig-075-20240414   clang
+x86_64                randconfig-076-20240414   clang
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                       common_defconfig   gcc  
+xtensa                randconfig-001-20240414   gcc  
+xtensa                randconfig-002-20240414   gcc  
 
-https://lore.kernel.org/linux-devicetree/20240409-dt-cleanup-free-v2-0-5b419a4af38d@kernel.org/
-
-The patch for of_node_put is:
-
-https://lore.kernel.org/linux-devicetree/20240409-dt-cleanup-free-v2-3-5b419a4af38d@kernel.org/
-
-It uses __free directy. The cases in the file drivers/of/property.c have
-quite simple structure, with for each get just one put at the end of the
-scope in most cases.
-
-julia
-
-
->
-> thanks,
->
-> greg k-h
->
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
