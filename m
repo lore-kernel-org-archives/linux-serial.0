@@ -1,94 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F158D157E91
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 19:36:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1C96154446
+	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 20:04:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713209810; cv=none; b=D5n+ojQGA2qnxbiMsMXAfCpeqaEGsu1BvE4r0blT2Vk3ekqqAjF4lbSxLtEJQU8sihcFu8TfSS4WFq6Ba3pCXDkeJF2EpfPbyAwpjDmGXL84OR2VltC3MOcQmP9pEfelsffM/lSvSqV+F8GIKjcOTRmKXslcHP7nGu5k8ZghydI=
+	t=1713211485; cv=none; b=OCxXiv83bi5Se4g0NY6u5XGGNPlRCDW115PpSNVaW6TC4v+vzmRREZv3UOvzzRTSSI7b716N2gqHYYeUwFHwrgnJ7L3r8JgqXsnl5SsGo3jv+UHY+vXKh8H0mWMvyJzscv5ydDLQxRTccS84TN7F9Xgq02Spw5PIjvezpNWbC70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713209810; c=relaxed/simple;
-	bh=O6fuuNfBKglyBl+KJ4BoRa6i92FJ0RbI90yJ/WVYvOw=;
+	s=arc-20240116; t=1713211485; c=relaxed/simple;
+	bh=FUvyAUTP6GC5X/RfNh707fyQNuadrWN8P49nP+xtWxQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bfQ3RDts7iz1/O198ThpL9JJR+maQqyPNYODbF5ICbV90TmlWDQrsWA9wu1QgEQFTcXKKV3E+kQnYW0Svc3uUbGPJF8ub0emJBJmguk2cbn/6FiJc86+zH9muB1FDKUfaekWgE13zo3zNRqdZFqVRcHyzEdIcM7WrrQsucv4y+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Km7L2OLI; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Km7L2OLI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713209809; x=1744745809;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=O6fuuNfBKglyBl+KJ4BoRa6i92FJ0RbI90yJ/WVYvOw=;
-  b=Km7L2OLI4gqAgk5i8I/1UQcMni2dj3yZ3M9c4VDEMTmSS9KgD6Gr9EQ5
-   fC7DtO3NMqIrUYle8Vv1lQp6d3eiCOX8xcRSdExFpJQAI9n8ge2Ble1i2
-   fcnFZsL/dbKMlPGOxDF2I5P45mHwik8BV+EtJTy9x5Y1/thbbY5Vv66bM
-   0+VFk4kDMQ6KCpnYXcDtNhzHEWUP8xJ8+xvxOBrodD43ggNuEiGm3uTsO
-   hMIXDhOXTmgzkaxPf7TjEmQSqbWIBTDcv92X3nrRp2RXAyduAowtuJOa4
-   LXtGla8v8oHWV26twmEZJRYJ9u91DjDFTS1OLhhIDouh2SeBbXqFfEOZg
-   A==;
-X-CSE-ConnectionGUID: aR3GUt5kSOa2SmIAmP0YRA==
-X-CSE-MsgGUID: 6XghwENVT8WJyiVOL9MSrg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="12410275"
-X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
-   d="scan'208";a="12410275"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 12:36:49 -0700
-X-CSE-ConnectionGUID: xwcu790zS/CZgMDNL9URcQ==
-X-CSE-MsgGUID: osRnboaDQgyrLWKr9G6lbA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
-   d="scan'208";a="52967756"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 12:36:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rwS8C-00000004Vge-3aqF;
-	Mon, 15 Apr 2024 22:36:44 +0300
-Date: Mon, 15 Apr 2024 22:36:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=D/OqfWVmhzGECjiUsMcgKmhSsdnSWueGZg7Lgm2C37bvuavAHqGpyyn1Lu2Dpx6oxdFFPt4szY0wJihu3gdVbzJGyzrlV+b8Fa04k7iA1UjmtL7dmNWDxBb5RYXF+8FlKOBCJyIAp+dxhtYTuvJ473jJvo4zysC8cibgywHIfk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwSZE-0007d0-SN; Mon, 15 Apr 2024 22:04:40 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwSZD-00CTxu-L7; Mon, 15 Apr 2024 22:04:39 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwSZD-001qIN-1q;
+	Mon, 15 Apr 2024 22:04:39 +0200
+Date: Mon, 15 Apr 2024 22:04:39 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org
 Subject: Re: NULL pointer dereference when closing a busy UART
-Message-ID: <Zh2BzD3qW1j1GR_o@smile.fi.intel.com>
+Message-ID: <p5eesytdhdrqo5ep2nazsm4ft6oc2dw5wb3goqo5use75f6fsg@ivsxlgyyadot>
 References: <luomji4bv5c54xq442csgd2ifdacjrme7bomnwbviw6pmalpgv@5uusgu3vgybm>
+ <Zh2BzD3qW1j1GR_o@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ruypkfx3eeagmv5c"
+Content-Disposition: inline
+In-Reply-To: <Zh2BzD3qW1j1GR_o@smile.fi.intel.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+
+
+--ruypkfx3eeagmv5c
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <luomji4bv5c54xq442csgd2ifdacjrme7bomnwbviw6pmalpgv@5uusgu3vgybm>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 15, 2024 at 07:15:54PM +0200, Uwe Kleine-König wrote:
+Hello Andy,
 
-...
+On Mon, Apr 15, 2024 at 10:36:44PM +0300, Andy Shevchenko wrote:
+> On Mon, Apr 15, 2024 at 07:15:54PM +0200, Uwe Kleine-K=F6nig wrote:
+>=20
+> ...
+>=20
+> > I didn't try to test if older kernel behave better, yet.
+> >=20
+> > Any ideas? Does this ring a bell?
+>=20
+> Does this
+>=20
+> 9cf7ea2eeb74 serial: core: Clearing the circular buffer before NULLifying=
+ it
+>=20
+> fix it?
 
-> I didn't try to test if older kernel behave better, yet.
-> 
-> Any ideas? Does this ring a bell?
+It doesn't. I mentioned that in my report (though with the wrong commit
+hash, I used the commit hash of the cherry picked commit *sigh*)
+=20
+> You might need this
+>=20
+> 1aa4ad4eb695 serial: core: Fix missing shutdown and startup for serial ba=
+se port
+>=20
+> on top btw.
 
-Does this
+Ah, that looks exactly like my issue. Thanks, I will test that an report
+back.
 
-9cf7ea2eeb74 serial: core: Clearing the circular buffer before NULLifying it
+Thanks a ton,
+Uwe
 
-fix it?
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
-You might need this
+--ruypkfx3eeagmv5c
+Content-Type: application/pgp-signature; name="signature.asc"
 
-1aa4ad4eb695 serial: core: Fix missing shutdown and startup for serial base port
+-----BEGIN PGP SIGNATURE-----
 
-on top btw.
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmYdiFYACgkQj4D7WH0S
+/k5M3wf/XEN7HYREBZCLequ7N9jD7S/nouDxz+Ji8r8I1NGCGUWYdmv3gQJvdfxh
+GG7+kVfbThY8Cy+BN7cD7Ieoghs6MGyOHgBDKEohFULR5yk6Q1Vkl7aeA8u7yvbh
+hPN9fhLUFip1OlhplJKX7ThXvY9ABrTYI78DSe2bmuMJJ51CDULl7iZg1UmXssOB
+/froaQkBbP4xqTX2GQAY1JeQzh/j81h1wAvRkNGduvtAEaDjd1bfs2ffdRbLfXHX
+qiWPNTvQ5VRqp7VBbQPJmnrm1a751ZrltAl2JWO3J2wna+rl1X3rFQI6wkaz04Yu
+VYfO+4JDX+APEiMcuif7MGX2OSy+KQ==
+=crbs
+-----END PGP SIGNATURE-----
 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--ruypkfx3eeagmv5c--
