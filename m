@@ -1,175 +1,178 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B5E71B48
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 14:17:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42F8F71B3B;
+	Mon, 15 Apr 2024 15:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713190671; cv=none; b=htfz+UjGaa63oONgTE9cNGbh5wNAWCEnF9mftM0h/k+0C4eLQUBw23nRCn9PHJZj9Tv0pl8m12OU0F5kWwt/MOTzpuwx2eB8Hi9Hmcnau+Vc6P4qOXGTTd4OF+VaifecXVnyiDq0SnC6xHg22RLqWfJ7vGTpx40Vmx297ySABlU=
+	t=1713193287; cv=none; b=aOIbQmF57NjYcbUqzUFDBGjAuHAYMtBsnIMDmGNWy5JozvUB1kTJqbwhl/P5WxhVpvmamVqnnkE2yUFvqbWuh+VhVdzwLrPLLzf4/cpVlYncZlVi3LmjXendkW20a8vu/O73gtYWZ4N/hM273GiPt2dYeBoobJQo90/aLWbJvk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713190671; c=relaxed/simple;
-	bh=7MAAuR4nAOglbJK96XVV97nD55IJBCwFc5+BwwC1NsQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=X2wwN8eJUTyp3y8CoYxJsuA+RCH62lnUiT+ROTV9YqOxH+ecTMGvRfezA4sKnXI24lPO29GF3LLx6GBdAOBLPJeThTOOUm4iWzAfyFG9cL2KijN8eaBeRrr2Eh77VqMvLtgkLvPXoYpAi0jF/nTQbcP5vDlp6qcJ5uo0nwNejeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=b9Q13URl; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1713193287; c=relaxed/simple;
+	bh=T7MRLv7FhJRARR1bVP7YZL9xM5lJoY6hPL2r7Wr+kxU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=n4KsAJuBSdQdCZLH0bpT31GLuhae2bYN1FMA8WxvhYf4baV/TZndqy6lki0peNgpywkUrRAYapNKZxhE6jCke5TbysfGTPCPt2awyopM6ABKowetT3V+nfgALjUmqo8v1jpCN/ptgtxB56KYZnaxLVdY44qu37QhLLQ0Rl9xD+Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=igAueFYi; arc=none smtp.client-ip=209.85.208.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="b9Q13URl"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240415141746euoutp02d7cb3d9ee798cf40281c9132f2565625~GedWMPJyT0252202522euoutp02G
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 14:17:46 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240415141746euoutp02d7cb3d9ee798cf40281c9132f2565625~GedWMPJyT0252202522euoutp02G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1713190666;
-	bh=zaHlAEoiDKROJY7VOEH6En1JrEsx1/tm4GCi694dG7o=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=b9Q13URlzeRiG4F0ITi/a/4+aFY0gCm05XCT180UqfbY28Z5TJVziXSjDq7RT8cFR
-	 8uv0kOp0UFK+eVSpDnC/xBsmFby2HlE5C9dfeB2im6rHhFB2x72MwxSlRxlFVSH5h2
-	 4zuR1GO513ZL1O1qTNIBNuKrrFVgOnCojSdD1Ni8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240415141745eucas1p2243811eae4b291a2963c6a4190d087d0~GedVySrfo0944809448eucas1p2Q;
-	Mon, 15 Apr 2024 14:17:45 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 8A.58.09624.9073D166; Mon, 15
-	Apr 2024 15:17:45 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240415141745eucas1p2570fd7509a5d42276a70504803c9988f~GedVY0Akn0944409444eucas1p2O;
-	Mon, 15 Apr 2024 14:17:45 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240415141745eusmtrp230c0618bb0db5f6b21a686d02e3b0716~GedVX96FJ1064510645eusmtrp2f;
-	Mon, 15 Apr 2024 14:17:45 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-82-661d370959d9
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id C0.4D.09010.9073D166; Mon, 15
-	Apr 2024 15:17:45 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240415141744eusmtip2cf1c1d1487a68e62858ad1ebd209a3b7~GedUvxdsZ2056220562eusmtip2U;
-	Mon, 15 Apr 2024 14:17:44 +0000 (GMT)
-Message-ID: <1dd9e3a1-29d0-4628-9b6a-b7e9fc09bf0f@samsung.com>
-Date: Mon, 15 Apr 2024 16:17:44 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="igAueFYi"
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2d4a8bddc21so38619041fa.0;
+        Mon, 15 Apr 2024 08:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713193280; x=1713798080; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Mx/6MUgB7xl8fVQhit3vdrOM02gBSAL1RlrQaMlTq6k=;
+        b=igAueFYivVbgPE8r9zIGRUH+7LRuUHMgtFqvt6XS18WPOxLtD5syGRHWobzCbPzHWT
+         gLeHD9GnRSaGhEy8NV9797mwjT1R/P69JpUOpEZExMmE22Rmf6LRPH1h4Tf2xz8JUJOC
+         +wimp19ZKKBvTDYR6pcXBDqRa4ScT1bXSX0nu/S7nGMN/XPHQUyhnKzDFOWZDq7+GVOY
+         lKny8EustoQGJwhZXlQ1nH8wo5UXxC18RZi7EOYce3DMNPROu6LL31AGDLdPHM07/xbP
+         IXQecEfTOw2jn397LjZY2HoJsAPg/KI+6+LY4wyZKHZxjDH/PuoHA49mmI+jSEH0BRs7
+         HTUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713193280; x=1713798080;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Mx/6MUgB7xl8fVQhit3vdrOM02gBSAL1RlrQaMlTq6k=;
+        b=enhk5TibIT1jLFRodMdDBIt08aKyPo/8mNoZAGMeZMZUzrGzsJPv0qpHz4MIWe6vr7
+         jAQ5EdhtHX6rqmT12GUbPBIlq1Cid2/JH5pc4/4ySswGe/pbl64Pxnt/wBG7+ehEHysk
+         ccNdNDN+FqjFnhKxc7YE0YPJyWNIi6TqstTLycx+TRGjpHlsAGU7B7HGHnn3/ce5yUME
+         2YfjK4btyk/vbPivnCYhcjHICGP94MbpscaP7rKbqcTJHJL5xlQTpY5zlF6SVgC9DNdl
+         Ks6eROX30ZilMaTYPcPi552hWSkH4Dly16xQ1N84kkAUJ7wOI909hhkv0mYVU36tJShH
+         Odhw==
+X-Forwarded-Encrypted: i=1; AJvYcCXxX5mGI4/Tyipf2CS3UO1VEDOpIZqSregIf+jzPw0F1Lq0gLFpZ0UEJJEFMBCAc694LEP2mNCeAJZrlt+iRUsmr4oyxlGEzPwP2ikOxI8kIL6Oe6g89XwP/ZySv+sXyDk+b4S8lhTKugQD2o0JLOM9CmmSVkY4TNtiho7pLRKEDcq3ImAzsw==
+X-Gm-Message-State: AOJu0Yyo3ZXRfXl0X2FrmdHK+4G6cUcp+ifSuU9R7ZAgrtEP9SSSqEnm
+	/UOpagTjdojiJBb6QsP0xVz2f7+GNddZzH0AQ7RuIcUAabiyHc6s
+X-Google-Smtp-Source: AGHT+IFv/gU+KWM1ufZfi1AtNceIbXbIeTp539sQYbvvFryi8Vyrm8iEP5X7q/0EfTOW2o1A9DL29A==
+X-Received: by 2002:a2e:8012:0:b0:2d8:d23a:f440 with SMTP id j18-20020a2e8012000000b002d8d23af440mr6139405ljg.6.1713193280100;
+        Mon, 15 Apr 2024 08:01:20 -0700 (PDT)
+Received: from pratik-IdeaPad.lan (customer-145-40-29-195.stosn.net. [145.40.29.195])
+        by smtp.googlemail.com with ESMTPSA id n11-20020a2e878b000000b002d8e9a37bfdsm1302799lji.113.2024.04.15.08.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Apr 2024 08:01:19 -0700 (PDT)
+From: Pratik Farkase <pratikfarkase94@gmail.com>
+X-Google-Original-From: Pratik Farkase <pratik.farkase@wsisweden.com>
+To: 
+Cc: Pratik Farkase <pratik.farkase@wsisweden.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pratik Farkase <pratikfarkase94@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to dtschema
+Date: Mon, 15 Apr 2024 17:00:44 +0200
+Message-Id: <20240415150046.144987-1-pratik.farkase@wsisweden.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 12/15] tty: serial: switch from circ_buf to kfifo
-To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org,
-	linux-amlogic@lists.infradead.org, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn
-	Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>, Kevin Hilman
-	<khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Martin
-	Blumenstingl <martin.blumenstingl@googlemail.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <d70049d5-d0fe-465f-a558-45b6785f6014@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrHKsWRmVeSWpSXmKPExsWy7djPc7qc5rJpBi+bTSy2ddhYNC9ez2bx
-	5tERZot3c2UsfrZvYbLomLydxWLBbG6LifvPsltc3jWHzeLM4l52i2OLTrJYvN95i9GBx+P9
-	jVZ2j6cTJrN7bFrVyeZx59oeNo/9c9ewe2xeUu/xeZNcAHsUl01Kak5mWWqRvl0CV8bld0eZ
-	Cx4KVFw7OpmpgfEwbxcjB4eEgInEiRccXYxcHEICKxgldly8ywjhfGGU+NB2mQnC+cwoMWHR
-	ShaYjnWvayHiyxkl/n7cyArhfGSUmL3/MHsXIycHr4CdxNEp3WwgNouAqsTD9/fYIOKCEidn
-	PmEBsUUF5CXu35oBVi8s4Cpx6c1bNpBBIgIrGSUuPLgG5jALnGSSuPu8EayKWUBc4taT+Uwg
-	NpuAoUTX2y6wqZxA217ff8sIUSMvsf3tHGaQZgmBfk6Jr18+soIkJARcJL7tusEEYQtLvDq+
-	hR3ClpH4v3M+E0RDO6PEgt/3oZwJjBINz28xQlRZS9w594sNFALMApoS63fpQ4QdJW7+7GeF
-	BAyfxI23ghBH8ElM2jadGSLMK9HRJgRRrSYx6/g6uLUHL1xinsCoNAspYGYheXMWkndmIexd
-	wMiyilE8tbQ4Nz212DAvtVyvODG3uDQvXS85P3cTIzCJnf53/NMOxrmvPuodYmTiYDzEKMHB
-	rCTC2yIsmybEm5JYWZValB9fVJqTWnyIUZqDRUmcVzVFPlVIID2xJDU7NbUgtQgmy8TBKdXA
-	ZP3y+L2jwa1NNjd83+5V7FNulOia1OLiM7kmdb/F08NSkw9ti8tYKHr019u/9n6MneemsfVG
-	FK2acmhy6ARf9eBezmN7KpvV2g4l+mgzLxPomv3jof0u7/RPmeKT8/1mzi+srfsZt2RR98X3
-	mcG1ZTZZwklPdZsn8j4Uk/m2qVtF+iDD/gsqN3u/LPZeZySeEb5a9eMToWM7FjZOq3GW+1h0
-	/vmCGxPTPj1aJvDScCKzzfI/2darXbdsyWra9+bqKfc7rOobN/8V2qE2SUI9693HST8mHazi
-	veb1Um8uh2fg+oC+S086ju57mLDB0vWciuj1tlU9cmcPZBzL+3TnrXc198dl04vPOnPqfI4s
-	Z1ZiKc5INNRiLipOBABzmhc10QMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrIIsWRmVeSWpSXmKPExsVy+t/xe7qc5rJpBr+2SFhs67CxaF68ns3i
-	zaMjzBbv5spY/GzfwmTRMXk7i8WC2dwWE/efZbe4vGsOm8WZxb3sFscWnWSxeL/zFqMDj8f7
-	G63sHk8nTGb32LSqk83jzrU9bB77565h99i8pN7j8ya5APYoPZui/NKSVIWM/OISW6VoQwsj
-	PUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYzL744yFzwUqLh2dDJTA+Nh3i5GDg4J
-	AROJda9ruxi5OIQEljJKfF90n6mLkRMoLiNxcloDK4QtLPHnWhcbRNF7RokTs1+zgCR4Bewk
-	jk7pZgOxWQRUJR6+v8cGEReUODnzCViNqIC8xP1bM9hBbGEBV4lLb96CDRIRWMkoMXH7SnYQ
-	h1ngNJPE6osPWaHuYJK49a8R7A5mAXGJW0/mg9lsAoYSXW+7wFZwAq1+ff8tI0SNmUTX1i4o
-	W15i+9s5zBMYhWYhuWQWklGzkLTMQtKygJFlFaNIamlxbnpusZFecWJucWleul5yfu4mRmDc
-	bjv2c8sOxpWvPuodYmTiYDzEKMHBrCTC2yIsmybEm5JYWZValB9fVJqTWnyI0RQYHBOZpUST
-	84GJI68k3tDMwNTQxMzSwNTSzFhJnNezoCNRSCA9sSQ1OzW1ILUIpo+Jg1OqgWniynX53Dv4
-	vms6v7pgkHE5fHLp5HWr3yjx1mhcXxdoMW1bluPiTWZLpy26VTJncuGv26+W3T1iKO27v7FU
-	3CHcwz+Or9DBrFz3xJa53QHfvPZ5RkX47Jq8q3viyhmaZfMV88+2zPb8wvpUZJp1gF2bd92k
-	b3duRZ8qtDKTmXSX24ax+YmLwLs8x4RbOa2T35399elzpbaZu5/6xM2Fux0EX056mnhrBn9X
-	2hPf2C1CqydMUOuQ7yxaO3f/03Nh35vEo7S15l8VyPJ/NOvZ/H3Z3h+fVvknhqpl8y/5f884
-	pcEl/tWP80+uHkiI283+dXO67icX+SiB5Gs//i/VTisru+j0OuU7P1/p1vOvNiYrsRRnJBpq
-	MRcVJwIAN2bmOGQDAAA=
-X-CMS-MailID: 20240415141745eucas1p2570fd7509a5d42276a70504803c9988f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae
-References: <20240405060826.2521-1-jirislaby@kernel.org>
-	<20240405060826.2521-13-jirislaby@kernel.org>
-	<CGME20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae@eucas1p2.samsung.com>
-	<91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com>
-	<d70049d5-d0fe-465f-a558-45b6785f6014@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On 15.04.2024 15:28, Jiri Slaby wrote:
-> On 15. 04. 24, 14:58, Marek Szyprowski wrote:
->> On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
->>> Switch from struct circ_buf to proper kfifo. kfifo provides much better
->>> API, esp. when wrap-around of the buffer needs to be taken into 
->>> account.
->>> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for 
->>> example.
->>>
->>> Kfifo API can also fill in scatter-gather DMA structures, so it easier
->>> for that use case too. Look at lpuart_dma_tx() for example. Note that
->>> not all drivers can be converted to that (like atmel_serial), they
->>> handle DMA specially.
->>>
->>> Note that usb-serial uses kfifo for TX for ages.
->>>
->>> omap needed a bit more care as it needs to put a char into FIFO to 
->>> start
->>> the DMA transfer when OMAP_DMA_TX_KICK is set. In that case, we have to
->>> do kfifo_dma_out_prepare twice: once to find out the tx_size (to find
->>> out if it is worths to do DMA at all -- size >= 4), the second time for
->>> the actual transfer.
->>>
->>> All traces of circ_buf are removed from serial_core.h (and its struct
->>> uart_state).
->>>
->>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->>> ...
->>
->> This patch landed in linux-next as commit 1788cf6a91d9 ("tty: serial:
->> switch from circ_buf to kfifo"). Unfortunately it breaks UART operation
->> on thr Amlogic Meson based boards (drivers/tty/serial/meson_uart.c
->> driver) and Qualcomm RB5 board (drivers/tty/serial/qcom_geni_serial.c).
->> Once the init process is started, a complete garbage is printed to the
->> serial console. Here is an example how it looks:
->
-> Oh my!
->
-> Both drivers move the tail using both kfifo and uart_xmit_advance() 
-> interfaces. Bah. Does it help to remove that uart_xmit_advance() for 
-> both of them? (TX stats will be broken.)
->
-> Users of uart_port_tx() are not affected.
->
-> This is my fault when merging uart_xmit_advance() with this series.
+Convert the Broadcom BCM2835 Auxiliar UART to newer DT schema.
+Created DT schema based on the .txt file which had
+`compatible`, `reg` `clocks` and `interrupts` as the
+required properties. This binding is used by Broadcom BCM2835
+SOC used in some Raspberry PI boards.
+Changes from original file:
+Implemented complete example which the original txt binding lacked.
 
-Yes, removing uart_xmit_advance() from both drivers seems to be fixing 
-the console output.
+Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
+---
+ .../bindings/serial/brcm,bcm2835-aux-uart.txt | 18 --------
+ .../serial/brcm,bcm2835-aux-uart.yaml         | 46 +++++++++++++++++++
+ 2 files changed, 46 insertions(+), 18 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
 
-
-Best regards
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
+deleted file mode 100644
+index b5cc6297cd1b..000000000000
+--- a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-* BCM2835 AUXILIAR UART
+-
+-Required properties:
+-
+-- compatible: "brcm,bcm2835-aux-uart"
+-- reg: The base address of the UART register bank.
+-- interrupts: A single interrupt specifier.
+-- clocks: Clock driving the hardware; used to figure out the baud rate
+-  divisor.
+-
+-Example:
+-
+-	uart1: serial@7e215040 {
+-		compatible = "brcm,bcm2835-aux-uart";
+-		reg = <0x7e215040 0x40>;
+-		interrupts = <1 29>;
+-		clocks = <&aux BCM2835_AUX_CLOCK_UART>;
+-	};
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
+new file mode 100644
+index 000000000000..c52ba2e33f28
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/brcm,bcm2835-aux-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: BCM2835 AUXILIAR UART
++
++maintainers:
++  - Pratik Farkase <pratikfarkase94@gmail.com>
++
++allOf:
++  - $ref: serial.yaml
++
++properties:
++  compatible:
++    const: brcm,bcm2835-aux-uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/bcm2835.h>
++    #include <dt-bindings/clock/bcm2835-aux.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    uart1: serial@7e215040 {
++        compatible = "brcm,bcm2835-aux-uart";
++        reg = <0x7e215040 0x40>;
++        interrupts = <1 29>;
++        clocks = <&aux BCM2835_AUX_CLOCK_UART>;
++    };
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.34.1
 
