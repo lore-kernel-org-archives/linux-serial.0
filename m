@@ -1,304 +1,209 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2164762EF
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 15:17:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B083D823CE
+	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 17:15:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713194239; cv=none; b=OwWIH23sdF3tcvPA+a+rNJc2aDt6CdQ+5t7UfIbqmf7Aauch/1MXCa0Bsq8x5cfnHUGwuCzbA1NAFb6xRNlsLcwUN0RaVtT6+VU5DgzXd7MSZ7L1Yj9Z9y3hiAjKQ/G8uPqc+D6GsnesgWNh37peKdfUowd1jKfGAO9p+rpxocg=
+	t=1713201361; cv=none; b=NL6ULlL95ACKBTyROOO6G/8k1fZNgm9/JecsZRZaHeZc4koaxTwbj3AcAeOBFlpgz/TKArpd6SyoEVoEI2uT6Qon0m7M915RRBK5qb5mFLTjNum0fRJKPFm9I7tx6xTNJHuqtTcTdsvEDwlOQ5hC/bJxXcglGGz/rCLwmkrthXc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713194239; c=relaxed/simple;
-	bh=ISgn/Ns87TVbecQDeqzKN6rrjKD8X0v3wjRJTCZzHnc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fwau/jHV0SPd0zoiBuJY7u1mbqWblUarDDm3ICX+llwbHSe9ntfpojTKIn8X+yzFGAroVLswM8kz0azovHbv/DVY6rU1CMT7aRbxFiO8kFgLKSaJYzPAPEj0e8zq6WDj1cWGBlfMFJsC6klYUE1N2bvSFD32pG4MV7G8aVKqnUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=SU95M4O2; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="SU95M4O2"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5aa2dcd4454so2336531eaf.2
-        for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 08:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1713194236; x=1713799036; darn=vger.kernel.org;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XsL0RUdnJ2bbj29HY3i0EysDDFr9ozHwMSaaolKtCYU=;
-        b=SU95M4O2tJBIsDnMchE5HgOowf9jLIYIsTJlKv65P2QYI5LSWbR+K2S1D7Wkqe6wrH
-         sOP7urbQyFYs3sI4UaOZsWXphKDGAaSqzeJp73y08xoDs+tmpFmEBNPZQP/GVp7ubt+s
-         85RZrk3Ae9lX1s+nxqzUNuqUYHv8JFfonTbnw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713194236; x=1713799036;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=XsL0RUdnJ2bbj29HY3i0EysDDFr9ozHwMSaaolKtCYU=;
-        b=j0q5zgS1gpi5fv7Nhfn5mLp0Mp5urISZnRY0eGouUdgJ6kYF9nHSWlDcaU+IiNz4Vk
-         mqdFetjRw/a+o5y2kVvCU5Is54VYA2pbkES3xZjqZrdopYIiqL1lMM5Hvaz1lUk4x0So
-         SKFO5nEXKlrtHlauk/ogW8oRuMG9SRwHDa7bjayepGvPo30vqk/1SSlcRimH0cndPJ1s
-         FgEs7AWOFLBaFKRgeovE4OZmTHT40i3blBxwjXueTycM1cEHMd2d9Q8BGZt+DAdjGE/r
-         U1ZSfGmYJCVcg07nFbqpPPYjQcn9qhgOXcBLlE9j4AzL5a1D06eRhvtoy85Bzh7d3bYO
-         297A==
-X-Forwarded-Encrypted: i=1; AJvYcCXQ3lSeWURwxy0IX2hyRW7EXWKA7ZjVJEsn59yEEAGM2ZbDPMREYBXNeQQR7DLLAGhQMjMYc49BTB4YIPqUUIzeawaaG6xEA1WvH9Wy
-X-Gm-Message-State: AOJu0Yzpcbq22sCEXbVnMVULx0pNZrKNdfh6D46ezVhb2CuoqJLDIGEQ
-	vKPZSLDrq+NNi4pwldPRinjKOOcuIKP0V4523NKQhEP0bVJcgn2aWFEvkzu3Cg==
-X-Google-Smtp-Source: AGHT+IE53sWrv4QK+Ymeg3YMytoTt281YFPWzYCtAQi4C0XU9V44tibLsOMeFdTOqZM5BFVl50e0xw==
-X-Received: by 2002:a4a:4e81:0:b0:5ac:9f86:cc0d with SMTP id r123-20020a4a4e81000000b005ac9f86cc0dmr3523206ooa.6.1713194235767;
-        Mon, 15 Apr 2024 08:17:15 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-4-215-93.oc.oc.cox.net. [68.4.215.93])
-        by smtp.gmail.com with ESMTPSA id h13-20020ac8714d000000b00434ee466ea6sm6087352qtp.22.2024.04.15.08.17.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Apr 2024 08:17:15 -0700 (PDT)
-Message-ID: <aa85caaa-5bfb-4a7c-9a46-a628b50e78e4@broadcom.com>
-Date: Mon, 15 Apr 2024 08:17:09 -0700
+	s=arc-20240116; t=1713201361; c=relaxed/simple;
+	bh=aDIu4GbInUhDpbIixo4hB8yARHAIlJEIl0AxsLbJ/Go=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=vCOrFnYvns6nZPwwz5hYinJ2EuPaylId/9+fscBBlOQHj5HMPt49SCAe28GGDIC+5kNnalLJXdsjSC9FHxGKScsK/K19PwsWcEiDBTY6n/oJSUTbwymNqMTtGfUxpjNzT+3JeCJx3VCgq0PNTZUfSPjlzrq9FHjZtfqzx55r/U4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwPvv-0007U6-DV; Mon, 15 Apr 2024 19:15:55 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwPvu-00CStv-Jm; Mon, 15 Apr 2024 19:15:54 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rwPvu-001mU5-1i;
+	Mon, 15 Apr 2024 19:15:54 +0200
+Date: Mon, 15 Apr 2024 19:15:54 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de
+Subject: NULL pointer dereference when closing a busy UART
+Message-ID: <luomji4bv5c54xq442csgd2ifdacjrme7bomnwbviw6pmalpgv@5uusgu3vgybm>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to
- dtschema
-To: Pratik Farkase <pratikfarkase94@gmail.com>
-Cc: Pratik Farkase <pratik.farkase@wsisweden.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
-References: <20240415150046.144987-1-pratik.farkase@wsisweden.com>
-From: Florian Fainelli <florian.fainelli@broadcom.com>
-Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
- xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
- M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
- JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
- PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
- KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
- AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
- IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
- ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
- bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
- Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
- tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
- TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
- zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
- WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
- IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
- U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
- 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
- pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
- MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
- IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
- gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
- obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
- N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
- CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
- C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
- wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
- EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
- fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
- MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
- 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
- 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240415150046.144987-1-pratik.farkase@wsisweden.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000dfdd170616241d15"
-
---000000000000dfdd170616241d15
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="7mmymzdxvbeaibzi"
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
 
+--7mmymzdxvbeaibzi
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 4/15/2024 8:00 AM, Pratik Farkase wrote:
-> Convert the Broadcom BCM2835 Auxiliar UART to newer DT schema.
-> Created DT schema based on the .txt file which had
-> `compatible`, `reg` `clocks` and `interrupts` as the
-> required properties. This binding is used by Broadcom BCM2835
-> SOC used in some Raspberry PI boards.
-> Changes from original file:
-> Implemented complete example which the original txt binding lacked.
-> 
-> Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
-> ---
->   .../bindings/serial/brcm,bcm2835-aux-uart.txt | 18 --------
->   .../serial/brcm,bcm2835-aux-uart.yaml         | 46 +++++++++++++++++++
->   2 files changed, 46 insertions(+), 18 deletions(-)
->   delete mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
->   create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
-> deleted file mode 100644
-> index b5cc6297cd1b..000000000000
-> --- a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
-> +++ /dev/null
-> @@ -1,18 +0,0 @@
-> -* BCM2835 AUXILIAR UART
-> -
-> -Required properties:
-> -
-> -- compatible: "brcm,bcm2835-aux-uart"
-> -- reg: The base address of the UART register bank.
-> -- interrupts: A single interrupt specifier.
-> -- clocks: Clock driving the hardware; used to figure out the baud rate
-> -  divisor.
-> -
-> -Example:
-> -
-> -	uart1: serial@7e215040 {
-> -		compatible = "brcm,bcm2835-aux-uart";
-> -		reg = <0x7e215040 0x40>;
-> -		interrupts = <1 29>;
-> -		clocks = <&aux BCM2835_AUX_CLOCK_UART>;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
-> new file mode 100644
-> index 000000000000..c52ba2e33f28
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
-> @@ -0,0 +1,46 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/brcm,bcm2835-aux-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: BCM2835 AUXILIAR UART
+Hello,
 
-AUXILIARY (it was already a typo in the previous binding document, but 
-let's fix it).
+on a v6.8 kernel + I can trigger a NULL pointer dereference with the
+following python3 script on an stm32mp157 based machine. It uses the
+stm32-usart driver:
 
-> +
-> +maintainers:
-> +  - Pratik Farkase <pratikfarkase94@gmail.com>
+	import serial
 
-Could you also add Stefan Wahren and myself to this list?
+	port =3D serial.Serial("/dev/ttySTM1", rtscts=3DTrue, baudrate=3D115200)
 
-> +
-> +allOf:
-> +  - $ref: serial.yaml
-> +
-> +properties:
-> +  compatible:
-> +    const: brcm,bcm2835-aux-uart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/bcm2835.h>
-> +    #include <dt-bindings/clock/bcm2835-aux.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    uart1: serial@7e215040 {
-> +        compatible = "brcm,bcm2835-aux-uart";
-> +        reg = <0x7e215040 0x40>;
-> +        interrupts = <1 29>;
-> +        clocks = <&aux BCM2835_AUX_CLOCK_UART>;
-> +    };
+	s =3D "a"*100
+	s =3D s.encode()
 
--- 
-Florian
+	for _ in range(100):
+	    port.write(s)
 
---000000000000dfdd170616241d15
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+	del port
 
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
-9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
-UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
-KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
-nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
-Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
-KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
-kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
-2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
-3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
-NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
-AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIHughOvWEW8N9awX
-QbT5WyolutKdFCCstzEZmA5Mujd5MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDQxNTE1MTcxNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCZ4TB7nX7TYOy8UVALmT/p3D+RB+kPhl9u
-zVzgsiGPs6GTbH3He56ev4mJuKomoMwibEf8TIDF9AW0SPEnGn4uXgCw2MCznqJ2FpixQ4MqiCdt
-N9hGkVMIQXddepNc4dV+rdv4qAKLzjGVXiKw3h35Jy1hUu5GRttP7q2bumgWqHEBB2W9avr7RMz/
-ihdz9hChGS16KySJPc9AzMFYZy/rA51ECJDHt2gugoMGRHKdcA4KMfOdq9Ga43t9CFrRtzij5FOR
-RA30pixL7eJunVkdIzvkRfyWVD/xIC4pKWDIWplKrhE2HHCv37bdHE2gLIB3krB1l8NV8a8ujpGV
-nG0U
---000000000000dfdd170616241d15--
+I let it run for some and then press Ctrl-C to interrupt it. This
+results in
+
+[  206.946589] stm32-usart 4000f000.serial: Transmission is not complete
+[  206.988890] 8<--- cut here ---
+[  206.990763] Unable to handle kernel NULL pointer dereference at virtual =
+address 00000fa3 when read
+[  206.999839] [00000fa3] *pgd=3D00000000
+[  207.003587] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[  207.008838] Modules linked in: sd_mod t10_pi crc64_rocksoft_generic crc6=
+4_rocksoft crc64 uas usb_storage cdc_acm dm_mod
+[  207.019971] CPU: 0 PID: 29 Comm: kworker/0:2 Not tainted 6.8.0-20240403-=
+1 #1 4a8ca24b652422adbfb70675a1cc7d4e71b9bbfe
+[  207.030754] Hardware name: STM32 (Device Tree Support)
+[  207.036002] Workqueue: pm pm_runtime_work
+[  207.039979] PC is at stm32_usart_transmit_chars_pio+0x2c/0xd8
+[  207.045856] LR is at 0xc108d0e8
+[  207.049094] pc : [<c0665514>]    lr : [<c108d0e8>]    psr: 00070193
+[  207.055453] sp : e08c5e40  ip : 00000fa3  fp : 000f4240
+[  207.060899] r10: e08c5eec  r9 : 00000003  r8 : 00000000
+[  207.066053] r7 : c1991110  r6 : 00000000  r5 : c1991110  r4 : 00000000
+[  207.072806] r3 : e0901028  r2 : c1991110  r1 : e0901000  r0 : c10fd4e8
+[  207.079366] Flags: nzcv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segmen=
+t none
+[  207.086822] Control: 10c5387d  Table: c6c7806a  DAC: 00000051
+[  207.092664] Register r0 information: non-slab/vmalloc memory
+[  207.098330] Register r1 information: 0-page vmalloc region starting at 0=
+xe0901000 allocated at __devm_ioremap_resource+0x168/0x1e0
+[  207.110437] Register r2 information: slab kmalloc-4k start c1991000 poin=
+ter offset 272 size 4096
+[  207.119336] Register r3 information: 0-page vmalloc region starting at 0=
+xe0901000 allocated at __devm_ioremap_resource+0x168/0x1e0
+[  207.131336] Register r4 information: NULL pointer
+[  207.136087] Register r5 information: slab kmalloc-4k start c1991000 poin=
+ter offset 272 size 4096
+[  207.145075] Register r6 information: NULL pointer
+[  207.149913] Register r7 information: slab kmalloc-4k start c1991000 poin=
+ter offset 272 size 4096
+[  207.158710] Register r8 information: NULL pointer
+[  207.163650] Register r9 information: non-paged memory
+[  207.168703] Register r10 information: 2-page vmalloc region starting at =
+0xe08c4000 allocated at kernel_clone+0x90/0x32c
+[  207.179804] Register r11 information: non-paged memory
+[  207.184946] Register r12 information: non-paged memory
+[  207.190098] Process kworker/0:2 (pid: 29, stack limit =3D 0xf862f2a7)
+[  207.196651] Stack: (0xe08c5e40 to 0xe08c6000)
+[  207.201003] 5e40: c10fd4e8 c0667dd4 00000000 c187ce80 00000713 e08c5e70 =
+00000009 adc5da34
+[  207.209364] 5e60: 00000100 adc5da34 c0f4e4c0 c1c5cb10 c10fd4e8 40070113 =
+c1c5ca84 00000000
+[  207.217633] 5e80: 00000003 c06652b0 c1c5ca00 c0665230 0000000a c06d1920 =
+c1c5ca00 c0665230
+[  207.226094] 5ea0: 0000000a 00000000 00000008 00000003 e08c5eec c06d1a9c =
+c1c5ca00 c0665230
+[  207.234355] 5ec0: 0000000a c06d1b84 00000000 00000000 ffffffff c6add580 =
+c187cc00 c0172584
+[  207.242716] 5ee0: c187cc00 61c88647 c6a6b300 c6a6b300 e08c5f4c adc5da34 =
+0a093fa7 c1c5cac8
+[  207.250987] 5f00: c1c5ca84 c1815900 df910b40 0a0fd174 c1815905 00000000 =
+c187cc00 c06d26f0
+[  207.259446] 5f20: c1a13a00 c1c5cac8 c1815900 c0141d98 df910b40 c1003d40 =
+df910b60 c1a13a00
+[  207.267707] 5f40: df910b40 c1003d40 df910b60 61c88647 c1a13a2c c187cc00 =
+df910b60 c014216c
+[  207.275976] 5f60: e0831ed0 00000000 e08c5f7c c18f3680 c187cc00 c0141ef0 =
+c1a13a00 c19f7700
+[  207.284436] 5f80: e0831ed0 00000000 00000000 c014ae50 c18f3680 c014ad40 =
+00000000 00000000
+[  207.292794] 5fa0: 00000000 00000000 00000000 c010014c 00000000 00000000 =
+00000000 00000000
+[  207.301055] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 =
+00000000 00000000
+[  207.309325] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000 =
+00000000 00000000
+[  207.317789]  stm32_usart_transmit_chars_pio from stm32_usart_transmit_ch=
+ars+0x430/0x56c
+[  207.325888]  stm32_usart_transmit_chars from serial_port_runtime_suspend=
++0x80/0xb8
+[  207.333685]  serial_port_runtime_suspend from __rpm_callback+0x3c/0x168
+[  207.340275]  __rpm_callback from rpm_callback+0x50/0x54
+[  207.345736]  rpm_callback from rpm_suspend+0xe4/0x528
+[  207.350706]  rpm_suspend from pm_runtime_work+0x9c/0xa8
+[  207.356079]  pm_runtime_work from process_one_work+0x140/0x298
+[  207.362151]  process_one_work from worker_thread+0x27c/0x4ac
+[  207.367827]  worker_thread from kthread+0x110/0x12c
+[  207.372797]  kthread from ret_from_fork+0x14/0x28
+[  207.377574] Exception stack(0xe08c5fb0 to 0xe08c5ff8)
+[  207.382725] 5fa0:                                     00000000 00000000 =
+00000000 00000000
+[  207.391002] 5fc0: 00000000 00000000 00000000 00000000 00000000 00000000 =
+00000000 00000000
+[  207.399463] 5fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[  207.406229] Code: ea00002b e59240f0 e5de300a e0813003 (e7d4100c)
+[  207.412292] ---[ end trace 0000000000000000 ]---
+[  207.437779] note: kworker/0:2[29] exited with irqs disabled
+[  207.444324] note: kworker/0:2[29] exited with preempt_count 1
+
+The problem is that after the UART's shutdown callback completed
+serial_port_runtime_suspend() calls .start_tx() and there xmit->buf is
+NULL.
+
+It's unclear to me where this should be fixed, but I suspect the problem
+isn't in the stm32 driver but serial_core.
+
+Cherry-picking a05ce5f2d840 ("serial: core: Clearing the circular buffer
+before NULLifying it") didn't help. The other changes to serial_core and
+stm32-usart in next since v6.8 didn't look like they could help.
+
+I didn't try to test if older kernel behave better, yet.
+
+Any ideas? Does this ring a bell?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--7mmymzdxvbeaibzi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmYdYMkACgkQj4D7WH0S
+/k7nfwf/S6VjlSwJARrnzb1LA0f9LzFRhBGhPsiSQw9iH8gnm5Tf8artA9/aeh48
+Iy1Vl2EPF/BQIwl8xUc3WOeXpBum7xSdsOjbv7iAHsiwbBq2FUvFP+X9rHsX2Pse
+bcNhyhurKGsTdittZZWKFocqolh4jkVUwJS3Qwcj3+LkHlANeQauOnX64g+PgTl0
+qhiQcP97+1oRondZn3HS7F8kSYpj98vQD4Tlh10in4H4U1zl7eY8yl6NhOFHAkiU
+St8BAsZIZgTyv218ZmioDrYjT/TaF7FbgY2uQW8RKU1DsQ3pSsTk2zBjQEhtvQs1
+iOoWFD44cMseBSrmcd2BT37bdAwiuQ==
+=aJ5h
+-----END PGP SIGNATURE-----
+
+--7mmymzdxvbeaibzi--
