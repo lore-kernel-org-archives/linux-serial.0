@@ -1,57 +1,46 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57CF569945
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 12:58:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC3673509;
+	Mon, 15 Apr 2024 13:28:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713185932; cv=none; b=dBbnGg7ukTB1TF5IgN/G1B4vDFIsmfC1BnpUZFbSYgvS8TCSopxplvbKx1uRf5OzHjSdYLffvnnIkoEvd1tOvBEEtK4qgH2a+ZxoTrk9KDJWHcwOkSvFCTJDmgpdgnXwTWtdfG2CqvS1QZ8T0QfIWV+/moQNCAmunFsPXyTXBmk=
+	t=1713187729; cv=none; b=RE671WWKxyURMQBJgFPvSdV9ir+mToDFP2V7/nqAxl2KTrUEZFB708eCHD2xouElpejWLgDp6zipX5Dw72fcAenoapE7OtOifkefwKPfTIwXTNcNvTQnd32G7giMuBV4D8lpP78DkVMGa6Acd9ExoXsmP3yqIMgEslOmnzS77Jc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713185932; c=relaxed/simple;
-	bh=iziCxtBeQUgWvhE++plh/rlR2F6qXEUcQ5jrLIOpDfU=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:In-Reply-To:
-	 Content-Type:References; b=Nrnr7TstDWMvIr/VzmSvcn1dJ0FyC4XrBtvhl9Nr3Y7zYQJBk9kYMDA1NdKqX4NcvZ9yy8Ff5BmvCqAG6rxXkFNJltmyy8iKijt7MLebAMh/kbCbXv7zQJatqnrLZecyIACbo8sr4bh+TfL2S6iztt1jRKw/VYgC74tdjJ5ZgVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=U3DZfTt2; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="U3DZfTt2"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240415125848euoutp028064b0e3ff843318666026b22ee42619~GdYZxBof-1164711647euoutp022
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 12:58:48 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240415125848euoutp028064b0e3ff843318666026b22ee42619~GdYZxBof-1164711647euoutp022
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1713185928;
-	bh=K7kgIzAF8cwrWU7cZnQZrJq9/UxYfRIxipy6YJIOOnc=;
-	h=Date:From:Subject:To:Cc:In-Reply-To:References:From;
-	b=U3DZfTt2tz636C6PK/TOxc5kdPqHBA+WgNL+c9f7jbLpkfE7TazfaTNa1XDFdbp4K
-	 OoNcBD9ppaVqFVCdTDnNa+PocIQQNt/VohmdBru9TOuKws3EYQ6SPCtNybhXcx7/Ii
-	 uvixRC/CXtAC7SbwwI43vAloRWJGzUYSBTHr2z0Y=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240415125848eucas1p2693e3902c12ef8668751a407d9d9f211~GdYZi7waQ1350713507eucas1p20;
-	Mon, 15 Apr 2024 12:58:48 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id 83.07.09875.8842D166; Mon, 15
-	Apr 2024 13:58:48 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae~GdYZAlLpo1350813508eucas1p25;
-	Mon, 15 Apr 2024 12:58:47 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240415125847eusmtrp2b598b357b551f9ce09ab776ff9f34d8a~GdYY-6IPH2471724717eusmtrp2U;
-	Mon, 15 Apr 2024 12:58:47 +0000 (GMT)
-X-AuditID: cbfec7f4-11bff70000002693-32-661d2488da1c
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 89.6F.08810.7842D166; Mon, 15
-	Apr 2024 13:58:47 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20240415125846eusmtip1044831a80b43d035463a2940376d5e6d~GdYYUHAow1109911099eusmtip1Q;
-	Mon, 15 Apr 2024 12:58:46 +0000 (GMT)
-Message-ID: <91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com>
-Date: Mon, 15 Apr 2024 14:58:46 +0200
+	s=arc-20240116; t=1713187729; c=relaxed/simple;
+	bh=Hkc/i5fQRWMyNfp/pkPP3vmKRGqAhBx5bs5wguZTaPE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Phuy1Z2jJsKVlLYe+PEn/kaU84E7tj3sB77mdsSAQAXsRI0YUq98TbkityUeUxFtcbFKmmArRNnAjgybgIAVyY03kOhzZ+1u4xTsHlqz98yjqxpWqkjQ56niRGKmY5gUnt31nSghh6faQl3q8Opq0NjUK+JmWsFiD+A3plpxwvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-346b94fa7ecso3105004f8f.3;
+        Mon, 15 Apr 2024 06:28:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713187726; x=1713792526;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+lrgrGzjjgYNJJjfx46YZRyvfOQXPcVBXxjVFNNCm2M=;
+        b=XPgnxqT6dhAdZGCap2IOvCJwyeZx2+G8pQFnK10sp1nCOroPLNZvV3+IhUafXNHhUJ
+         HozAVvAxJlj3ZxN90asL1WqYArXSy93tWiew6/zvvqWeev6bQoZ1baXtK4luJHB6Ggde
+         yvEXrj5xFHQ8itmpvviI+npk/04OzH+OYTIv3Gjxhhwf7mtiQ6SCzQe1Gllave81GauH
+         OBRxChR1aa3MsSxBAAM/jcqUx2QT1/wrxdoFlvfNC6c8WKAYjBtZGP5kAzVuRiC8JhN/
+         8dTlKoO5yjpjNXrBu3xohYrotLe28hSgzqr6o/CDwwsqb3psUXo4A30Uuaj/Y4MIqBmi
+         Plog==
+X-Forwarded-Encrypted: i=1; AJvYcCXvlQ9vf9YW2owSrMoQ59H0vmDA4V4Gn6U17ANhr6+SWeY65q1TgH7Xzpp/f5WO31h6Kgb1SFjG7V4VwZbIuJq+K2L6IUaTqXdSiYKKI7HX+0tqqOe/zJRkNPD1Ay8HrjJ2+6Ns1tRL0yod3w==
+X-Gm-Message-State: AOJu0YxOSINSKQDoP670G5VsnqUQ9thQFjJ9I/6JX9LrBve209B+hyBI
+	UJvHsJtI6rwqkRr9xNMmkLhynF85H5Yy7APpdjlCYFtxqZCbFbOl
+X-Google-Smtp-Source: AGHT+IEnVEco3CbkMrPnlNwXMvP9q4ttl9SGzT8tNl6Ytwu7CS/s3vEsYwkX2DFq4d51oKk++f2Lzw==
+X-Received: by 2002:a5d:64e3:0:b0:346:4151:12c4 with SMTP id g3-20020a5d64e3000000b00346415112c4mr11291238wri.10.1713187726032;
+        Mon, 15 Apr 2024 06:28:46 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id t7-20020adfe447000000b00343eac2acc4sm12148705wrm.111.2024.04.15.06.28.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Apr 2024 06:28:44 -0700 (PDT)
+Message-ID: <d70049d5-d0fe-465f-a558-45b6785f6014@kernel.org>
+Date: Mon, 15 Apr 2024 15:28:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,156 +48,114 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Marek Szyprowski <m.szyprowski@samsung.com>
 Subject: Re: [PATCH 12/15] tty: serial: switch from circ_buf to kfifo
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org,
-	linux-amlogic@lists.infradead.org, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn
-	Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Neil Armstrong <neil.armstrong@linaro.org>, Kevin Hilman
-	<khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Martin
-	Blumenstingl <martin.blumenstingl@googlemail.com>
-Content-Language: en-US
-In-Reply-To: <20240405060826.2521-13-jirislaby@kernel.org>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrHKsWRmVeSWpSXmKPExsWy7djP87odKrJpBtu2clls67CxaF68ns3i
-	zaMjzBbv5spY/GzfwmTRMXk7i8WC2dwWE/efZbe4vGsOm8WZxb3sFscWnWSxeL/zFqMDj8f7
-	G63sHk8nTGb32LSqk83jzrU9bB77565h99i8pN7j8ya5APYoLpuU1JzMstQifbsErozl3xYz
-	FhxQqtiw6iNrA2OLbBcjB4eEgInEvgmSXYxcHEICKxglXm+9zAjhfGGU6Dv3Csr5zCjR3TGX
-	uYuRE6zjaMNfZojEckaJD8svsEM4Hxklll1tAKviFbCT2P/zGxOIzSKgKvFg8go2iLigxMmZ
-	T1hAbFEBeYn7t2awg9hsAoYSXW+7wGqEBVwlLr15ywYyVERgE6PEzYcvwDYwC5xkkrj7vBGs
-	g1lAXOLWk/lgGzgFrCS+t35jhYjLSzRvnQ11azunxMMeawjbReLm7SNsELawxKvjW9ghbBmJ
-	/ztB5nCB1DNKLPh9H8qZwCjR8PwWI0SVtcSdc7/YQGHGLKApsX6XPkTYUeLmz35WSFDySdx4
-	KwhxA5/EpG3TmSHCvBIdbUIQ1WoSs46vg1t78MIl5gmMSrOQwmUWks9mIflmFsLeBYwsqxjF
-	U0uLc9NTi43yUsv1ihNzi0vz0vWS83M3MQKT2Ol/x7/sYFz+6qPeIUYmDsZDjBIczEoivC3C
-	smlCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeVVT5FOFBNITS1KzU1MLUotgskwcnFINTIn/TW/5
-	/DDaavv4asTFHU1BRxweWISkse3w6PTanv4ztNg7duZy1ntlUg9khJIzzj3+Um+Yk5ld0Ci3
-	9whT8fWV3ou4j2jv+ijQrKWRq/ROmfHHj8f3XytIbZ/xuFftru7bXK3p71bxNnz0OpD6Yx3r
-	9NPepTO31f6J6VM/MXWWua3dqf7Jh+/aKisrHOzI/iX47Z2+pXqthkCSv9zKehPjFbVfXaOE
-	fbQcly642sK5WSg4IVEhzqRU/schx4Ifc5O0uROSV7z5ZhWw+mudaATvur/XSh5fM0p/vPvC
-	k+uKceIvlGafa1+kfHvbrnLVCL5/zDv35Jz++jHqzW6uTa5L2sq/ON09fnXXWmOGP0osxRmJ
-	hlrMRcWJADgPeZLRAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrAIsWRmVeSWpSXmKPExsVy+t/xu7rtKrJpBheWK1ts67CxaF68ns3i
-	zaMjzBbv5spY/GzfwmTRMXk7i8WC2dwWE/efZbe4vGsOm8WZxb3sFscWnWSxeL/zFqMDj8f7
-	G63sHk8nTGb32LSqk83jzrU9bB77565h99i8pN7j8ya5APYoPZui/NKSVIWM/OISW6VoQwsj
-	PUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsEvYzl3xYzFhxQqtiw6iNrA2OLbBcjJ4eE
-	gInE0Ya/zF2MXBxCAksZJbZ9m8oMkZCRODmtgRXCFpb4c62LDaLoPaPE0pfbwIp4Bewk9v/8
-	xgRiswioSjyYvIINIi4ocXLmExYQW1RAXuL+rRnsIDabgKFE19susBphAVeJS2/egtkiApuA
-	Nn+JAFnALHCaSWL1xYdgm4UEMiQ2rH0CtoBZQFzi1pP5YDangJXE99ZvrBBxM4murV2MELa8
-	RPPW2cwTGIVmIbljFpL2WUhaZiFpWcDIsopRJLW0ODc9t9hQrzgxt7g0L10vOT93EyMwarcd
-	+7l5B+O8Vx/1DjEycTAeYpTgYFYS4W0Rlk0T4k1JrKxKLcqPLyrNSS0+xGgKDIyJzFKiyfnA
-	tJFXEm9oZmBqaGJmaWBqaWasJM7rWdCRKCSQnliSmp2aWpBaBNPHxMEp1cB0hMGP+ZL/w18K
-	+zrbqtRvJdlZC3688KT3cF6w8nzJJjWBrGXretofr7quLegUNmMeU7fM7TvaZw1rd67i0O70
-	e8Uw+Y9l9QSP9+zPzfWNJ6+RYog8EcwhcMFblMeh2n21hpjpjDli4Ut15KpPnb//c64Ok17W
-	PvsXNY2Bu5SKbiqapHSvyJX3/5Uad0rrCntR9udk4f7pjH+j8jM2JuRdZ2x7xlcv5+C9dfak
-	KwJv2eykvji8VfPb5qY042mSatjmGu5bxceePpUWdphxylz6juqS03rz0necFf7s1X5/2tNc
-	S/1j2VLGSscY/jKUTUx3X3UuVb387Ju/HD63T+hsi1ylI6XG67D5robxCiWW4oxEQy3mouJE
-	AEHZq4VjAwAA
-X-CMS-MailID: 20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae
+To: Marek Szyprowski <m.szyprowski@samsung.com>, gregkh@linuxfoundation.org,
+ linux-amlogic@lists.infradead.org,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 References: <20240405060826.2521-1-jirislaby@kernel.org>
-	<20240405060826.2521-13-jirislaby@kernel.org>
-	<CGME20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae@eucas1p2.samsung.com>
+ <20240405060826.2521-13-jirislaby@kernel.org>
+ <CGME20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae@eucas1p2.samsung.com>
+ <91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Dear All,
+On 15. 04. 24, 14:58, Marek Szyprowski wrote:
+> Dear All,
+> 
+> On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
+>> Switch from struct circ_buf to proper kfifo. kfifo provides much better
+>> API, esp. when wrap-around of the buffer needs to be taken into account.
+>> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
+>>
+>> Kfifo API can also fill in scatter-gather DMA structures, so it easier
+>> for that use case too. Look at lpuart_dma_tx() for example. Note that
+>> not all drivers can be converted to that (like atmel_serial), they
+>> handle DMA specially.
+>>
+>> Note that usb-serial uses kfifo for TX for ages.
+>>
+>> omap needed a bit more care as it needs to put a char into FIFO to start
+>> the DMA transfer when OMAP_DMA_TX_KICK is set. In that case, we have to
+>> do kfifo_dma_out_prepare twice: once to find out the tx_size (to find
+>> out if it is worths to do DMA at all -- size >= 4), the second time for
+>> the actual transfer.
+>>
+>> All traces of circ_buf are removed from serial_core.h (and its struct
+>> uart_state).
+>>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>> ...
+> 
+> This patch landed in linux-next as commit 1788cf6a91d9 ("tty: serial:
+> switch from circ_buf to kfifo"). Unfortunately it breaks UART operation
+> on thr Amlogic Meson based boards (drivers/tty/serial/meson_uart.c
+> driver) and Qualcomm RB5 board (drivers/tty/serial/qcom_geni_serial.c).
+> Once the init process is started, a complete garbage is printed to the
+> serial console. Here is an example how it looks:
 
-On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
-> Switch from struct circ_buf to proper kfifo. kfifo provides much better
-> API, esp. when wrap-around of the buffer needs to be taken into account.
-> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
->
-> Kfifo API can also fill in scatter-gather DMA structures, so it easier
-> for that use case too. Look at lpuart_dma_tx() for example. Note that
-> not all drivers can be converted to that (like atmel_serial), they
-> handle DMA specially.
->
-> Note that usb-serial uses kfifo for TX for ages.
->
-> omap needed a bit more care as it needs to put a char into FIFO to start
-> the DMA transfer when OMAP_DMA_TX_KICK is set. In that case, we have to
-> do kfifo_dma_out_prepare twice: once to find out the tx_size (to find
-> out if it is worths to do DMA at all -- size >= 4), the second time for
-> the actual transfer.
->
-> All traces of circ_buf are removed from serial_core.h (and its struct
-> uart_state).
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> ...
+Oh my!
 
-This patch landed in linux-next as commit 1788cf6a91d9 ("tty: serial: 
-switch from circ_buf to kfifo"). Unfortunately it breaks UART operation 
-on thr Amlogic Meson based boards (drivers/tty/serial/meson_uart.c 
-driver) and Qualcomm RB5 board (drivers/tty/serial/qcom_geni_serial.c). 
-Once the init process is started, a complete garbage is printed to the 
-serial console. Here is an example how it looks:
+Both drivers move the tail using both kfifo and uart_xmit_advance() 
+interfaces. Bah. Does it help to remove that uart_xmit_advance() for 
+both of them? (TX stats will be broken.)
 
-[    8.763154] Run /sbin/init as init process
-NT [   12.429776] platform cpufreq-dt: deferred probe pending: (reason 
-unknown)
-[   12.434259] platform regulator-vddcpu: deferred probe pending: 
-pwm-regulator: Failed to get PWM
-[[6if;9]Uigmkfl-tl ocretbo nrnee .[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[2l[1[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-[.. yteiigteiiilhtlgeet dvcs..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-[.. yteiigteiiilhtlgeet dvcs..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-[.. yteiigteiiilhtlgeet dvcs..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-[.. yteiigteiiilhtlgeet dvcs..[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-[.. yteiigteiiilhtlgeet dvcs..[  105.613420] debugfs: Directory 
-'ff800280.cec' with parent 'regmap' already present!
-[[6if;9]Uigmkfl-tl ocretbo nrnee .
-[.. trightlgeet ipthr ytm-dv5c7[Gmo [94m8[2h[0.
-..]Snhszn h nta opu vns(usses..[2l[11[[2 k;9?5[  105.638809] mc: Linux 
-media interface: v0.10
-[.. atn o dvt eflyppltd.[  105.707390] meson-vrtc ff8000a8.rtc: 
-registered as rtc0
+Users of uart_port_tx() are not affected.
 
+This is my fault when merging uart_xmit_advance() with this series.
 
-I found this patch by bisecting today's linux-next. I've checked the 
-changes in the related UART drivers and I don't see any obvious issues 
-though. Let me know if I can help debugging this issue somehow.
-
-I've trimmed recipient list due to my smtp server limitation.
-
-
-Best regards
-
+thanks,
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+js
+suse labs
 
