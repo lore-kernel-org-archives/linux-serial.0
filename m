@@ -1,41 +1,50 @@
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C708662B
-	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 12:35:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 444621804A
+	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 12:35:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713270957; cv=none; b=ltxi2i8pCdZo6aSewm4s9CVg7jxIgaPfDSdLZ1GmDSiYu9JBxbQ31pZvNvHrgTqHKEg2+orX/bL0XJDiwpXAgoepuddKRyIVeqzoHUe0hVDbi1G2n9V8u8/5IigPKmx2mPIZbs3k1bfKQl3zamVHjpPnr2T9zX2V/g7xa78+Uos=
+	t=1713270957; cv=none; b=fqJ7B4vWT33DSUR9TOT5teacX/U9fVfvzEQmkV0xCYYE2WKHnSF82slv8+sD670DTHGlKw7wSnxyjip40baEQb/jzvY/xEKEqEt0P9vOYvEQX5bdQZIhYgoreus5smEDK8MmMqiR5mU2UA2rfXziGqq2IRuaoy7VSWaTzvvE4+U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713270957; c=relaxed/simple;
-	bh=QzaXJp3fRmgFSdc4E+CBAgut+j23yvZ7rxM6Zesvzy4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=niXrl4XcbmkYtkzV9SPAWRcN7ST+8XL+BiAYyiF+ganECFRZh/cc38w+P/wT8QbvqC7Wsa59bVUCWy6OmRI5ledHz005v530BazTc+sgcaMHmycrRAuubS1pETp6bFh/O7C2FCVsK7RNzRLE31Quei0jvY+plv9kxbxuwAYKO4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=VMSi9Vjh; arc=none smtp.client-ip=194.117.254.33
+	bh=kRk3QnAZ3qr1PcFUmSrslq3HTppGMx2/2WOyXWDOFfk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=rE9IZAC1lGKnW6upqdx4RCo1dX0FQkqooojSaXDUTbzi0PWMul+wFGjfJFiQvDIql8T9LVqbnXaiVo3EcUpna0ggM5sJ1cVzEnmke3dnhSQR+jPdDLJj/STMuIN3NiEh3VkNx7aSczUuU4xuoGDILlIlPk5wPyiuqO9cJpiZ268=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=ICedfnS+; arc=none smtp.client-ip=194.117.254.33
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="VMSi9Vjh"
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="ICedfnS+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:mime-version:content-transfer-encoding; s=k1; bh=G4irgf2RtW4Ubq
-	PlxZoWpsEr8xGEeaVxEao1976prvY=; b=VMSi9Vjhpm2RFEtcaoMJWhCmXPuCT3
-	l22DoSWa+Amf9+HXYhilSot5sxoZbstyg62fOpR5Nu0CmaTxr2joHayeN+ReED1Q
-	U9XWgD1WlJ4xtqqySCx7yC+0NBo1wniBo+MtylJMkxCFVJOZBF/cmpvyWi9ygK5U
-	INrDyls99BGpcX9TKfzbbD20qK7MeCXXmvXIyq1qrdodoB9WxS2i9B8w7LKKzKmi
-	erm6xYQlBvvRTRGAQtsR1vnJmwW1i71cVXjJeR817/Jm9HzqVuX7RyDBRpG7m+Zf
-	1w6zGmb5/GKsyFyNOnBKVJ/z5Y7KoFNefiYQcJap4oFpPHhcnznacfew==
-Received: (qmail 2408439 invoked from network); 16 Apr 2024 14:35:51 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 16 Apr 2024 14:35:51 +0200
-X-UD-Smtp-Session: l3s3148p1@JgJ1+jUW3psgAwDPXxiyACzheF6dGXh7
+	:in-reply-to:references:mime-version:content-transfer-encoding;
+	 s=k1; bh=rK8csEqpyjcNZo4plK8L+bE/v5scXoLguzVWeStfOtQ=; b=ICedfn
+	S+Hq8mdLli3RH2Ar+6cfnLlqR62/BKNyOQQhwLDCNXm8LgM/lMJ8e+kSrqceYg5m
+	wHZWDf3zqOAmXTbvo4zzS9Hjr/WF/G1QxgDD5j1lff9QqSgPKdRDdnYig12OiiYM
+	k/lbxgmWbTdMcI0W/nOoXxuMfAaG0QnIAjvkqYz6UWepdQijbbDEIcsQjXK3DoZk
+	le7OECG5gb+gwPZ4Dm36dvVxss8kAouoM6BffztLAIhJpiA58RS50TRu6exjSbTh
+	zZHg2CPyMfBzU/IeMCVyCjzeuU8mUbVa4oVAz67mvp6wFgjFJqmtGpOVT2UBH3s+
+	mk1PvTIskR0clTKA==
+Received: (qmail 2408539 invoked from network); 16 Apr 2024 14:35:53 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 16 Apr 2024 14:35:53 +0200
+X-UD-Smtp-Session: l3s3148p1@otaM+jUW7psgAwDPXxiyACzheF6dGXh7
 From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 To: linux-renesas-soc@vger.kernel.org
 Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Dirk Behme <dirk.behme@de.bosch.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Aleksandar Mitev <amitev@visteon.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [RFC PATCH 0/2] serial: sci: fix OOPS because of wrongly running hrtimer
-Date: Tue, 16 Apr 2024 14:35:46 +0200
-Message-ID: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 2/2] serial: sh-sci: always cancel hrtimer when DMA RX is invalidated
+Date: Tue, 16 Apr 2024 14:35:48 +0200
+Message-ID: <20240416123545.7098-6-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
+References: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,21 +53,50 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Dirk sent a very interesting bug report[1]. This series is what I found
-out by reviewing the driver. It is not tested yet because I couldn't
-trigger the code path yet. The console still works normally with these
-patches. Still, I am already curious in hearing your opinions, so here
-is what I have...
+Clear the timer whenever 'chan_rx' is cleared to avoid an OOPS.
+Currently, the driver only runs the timer when 'chan_rx' is set before.
+However, it is good defensive programming to make sure the hrtimer is
+always stopped before clearing the 'chan_rx' pointer.
 
-[1] https://lore.kernel.org/r/ee6c9e16-9f29-450e-81da-4a8dceaa8fc7@de.bosch.com
+Reported-by: Dirk Behme <dirk.behme@de.bosch.com>
+Closes: https://lore.kernel.org/r/ee6c9e16-9f29-450e-81da-4a8dceaa8fc7@de.bosch.com
+Fixes: 9ab765566086 ("serial: sh-sci: Remove timer on shutdown of port")
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-Wolfram Sang (2):
-  serial: sh-sci: start hrtimer after setting up DMA
-  serial: sh-sci: always cancel hrtimer when DMA RX is invalidated
+Locking needs to be double-checked here. This patch is mainly calling
+for opinions.
 
- drivers/tty/serial/sh-sci.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/tty/serial/sh-sci.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 1e3c26c11c49..5ad73933c1c5 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1262,6 +1262,7 @@ static void sci_dma_rx_chan_invalidate(struct sci_port *s)
+ {
+ 	unsigned int i;
+ 
++	hrtimer_cancel(&s->rx_timer);
+ 	s->chan_rx = NULL;
+ 	for (i = 0; i < ARRAY_SIZE(s->cookie_rx); i++)
+ 		s->cookie_rx[i] = -EINVAL;
+@@ -2242,14 +2243,6 @@ static void sci_shutdown(struct uart_port *port)
+ 		       scr & (SCSCR_CKE1 | SCSCR_CKE0 | s->hscif_tot));
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+-#ifdef CONFIG_SERIAL_SH_SCI_DMA
+-	if (s->chan_rx_saved) {
+-		dev_dbg(port->dev, "%s(%d) deleting rx_timer\n", __func__,
+-			port->line);
+-		hrtimer_cancel(&s->rx_timer);
+-	}
+-#endif
+-
+ 	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0)
+ 		del_timer_sync(&s->rx_fifo_timer);
+ 	sci_free_irq(s);
 -- 
 2.43.0
 
