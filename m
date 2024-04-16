@@ -1,118 +1,138 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 137AA2907
-	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 09:52:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3641B127B47;
+	Tue, 16 Apr 2024 10:23:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713261146; cv=none; b=eYSGiMbYOldUPR8pu058vXCFxvPwMkRLS5TmdFLfhrEgwr7kC9MRT0ebodjDfd1hIZOdevwAuK1ikrR7vGvIMKtthddgjMYNeURDTNzpUKTxT1E9ILnGRtCdVtleJvk5+MakgpJrhGRRFCc/jAzghmtFyj7nbVYp0joA/sBZZ28=
+	t=1713262997; cv=none; b=QHqojxKRulgIeSn6hTwxjkh3cnXWyOLWubnEJvPBo25+vaRqlQnnNXIPTLH1zPE50ezqRjsV0Lav3W/PmZf2r32ZKR8jJyDWhiBcu/3vwahEzd0SLHyTv/Hdt78ikQm7lIkk7nfwwYJiS/UtdZyC4Eybwl3oi7UIXLFIW5OZVcw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713261146; c=relaxed/simple;
-	bh=4L6qARZneapmN2Y/cVCt7GPhbe0aa+SjmMIrHGbax+0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JJDULdYRp+HxWAXY7jqbrPNvE4WauNGRD/3n0CQsR8qVRT0vWJgtOJnh6jwVbmIL0q/ggvPKaenL+b+9SqdRuqYAx5la/ShOTAOv1xEtWh2Lx4uy+xu3lDNFfSovDTDw18Tfsf4Ms//q1K44KFXAl9sc4w8XNCnOj6S5kDgaTEk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwfUC-0001WO-U1; Tue, 16 Apr 2024 11:52:20 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwfUB-00CaJw-Qz; Tue, 16 Apr 2024 11:52:19 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwfUB-0024cM-2R;
-	Tue, 16 Apr 2024 11:52:19 +0200
-Date: Tue, 16 Apr 2024 11:52:19 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-serial@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: NULL pointer dereference when closing a busy UART
-Message-ID: <nhwtgw543mkannfwvtqi3oap3xrscs66gsg56cpojxnfhjbrv3@s5fqkhvyjrfh>
-References: <luomji4bv5c54xq442csgd2ifdacjrme7bomnwbviw6pmalpgv@5uusgu3vgybm>
- <Zh2BzD3qW1j1GR_o@smile.fi.intel.com>
- <p5eesytdhdrqo5ep2nazsm4ft6oc2dw5wb3goqo5use75f6fsg@ivsxlgyyadot>
+	s=arc-20240116; t=1713262997; c=relaxed/simple;
+	bh=rMjwkrwAOltl09/IG3yP8jEU5vYs2FMx8bZ7IyDk/fU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=N1428HA67L8FS+fMLy1ULFJm0+wNVu+ddsvLV2/htVjyXUFGjjHJPza0UK/XIE6hsPmEdmDPkd3Mjwz97OkiWRu5P2NAGb3t4z8iI9mAUoyLwl6f2KbzRX0fpa9LzdARP7qNNkayJTNORF+pHktY1bo99Ao5sALpqiqw8+GxNx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a51b008b3aeso514930466b.3;
+        Tue, 16 Apr 2024 03:23:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713262994; x=1713867794;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=suW8/tLpFvlwUe54rBmmg2aiFYahRLtszTpUONNcvmM=;
+        b=AhVYRZS0RYlTFHfttZgG7zO6FGLpTbINJoqL5TVoUtpi/llNdmMycnPc6+I9Bd+UJP
+         2meGXcgWUb9iLiDcCZmmnMArAXm9b/DT75byjh15aJb1R2DqQDeK12nfUXt68L+MkQj1
+         WIAPWVgZDlSvXjY+O4RmsC0Ta6dUghYmmS5pny9tDABItiNdFUUNQhJyugyUatQNfqCc
+         RKmZ5B6YKqNyivLlcvrVdd3yz5LKWUOjhgluJxtgELKGMHrLYCu7zN3LoVkKBJOeiH7A
+         a6QrsfnuI1yyCc9kZ2VfzQXFbORJAfea8G5vhUFagGC45R2UVxUDJs8vWhibdCpnh5si
+         Pbkg==
+X-Forwarded-Encrypted: i=1; AJvYcCWP+vCSCkIGJ6jCjToacgLxFzv8r6HGJoitFiNQSahLeJ1Z3PBLf/B/uMOh1928OlPijqSAH/VWXlcPtPD+KUzGgPvdHsFZf0BACfz0LQ1FuYDFd+4LM/fgryD1IaAfTxSpMi99SAZ9f6p3UQ==
+X-Gm-Message-State: AOJu0Yx8xq4Y++u1aEh4vcIjkBrFjxkPIkazvQBK7L2bpTMCLCzGU5GT
+	yPJtILET5AsvRkUitxJzJJ0KBv6LGqrtLRdgesgpYxu5ICJyuBEhKpQNgLTo5Ds=
+X-Google-Smtp-Source: AGHT+IF+XM2bquzMr/PcJo2Jm2sqX+vqbTJlpYNstMsJfWb1ZdOpt+nQKudOWOE+AQ5pyWs8mwW2+w==
+X-Received: by 2002:a17:906:48ce:b0:a55:339d:bd20 with SMTP id d14-20020a17090648ce00b00a55339dbd20mr2796054ejt.51.1713262994315;
+        Tue, 16 Apr 2024 03:23:14 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id o17-20020a1709061b1100b00a525492801dsm3967477ejg.119.2024.04.16.03.23.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Apr 2024 03:23:13 -0700 (PDT)
+Message-ID: <54679d54-3957-489d-a8b5-b98ea1c8a93c@kernel.org>
+Date: Tue, 16 Apr 2024 12:23:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6w4mjjysdcfd4xi7"
-Content-Disposition: inline
-In-Reply-To: <p5eesytdhdrqo5ep2nazsm4ft6oc2dw5wb3goqo5use75f6fsg@ivsxlgyyadot>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/15] tty: msm_serial: use dmaengine_prep_slave_sg()
+To: Marek Szyprowski <m.szyprowski@samsung.com>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <20240405060826.2521-12-jirislaby@kernel.org>
+ <CGME20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1@eucas1p1.samsung.com>
+ <d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 15. 04. 24, 23:17, Marek Szyprowski wrote:
+> On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
+>> This is a preparatory for the serial-to-kfifo switch. kfifo understands
+>> only scatter-gatter approach, so switch to that.
+>>
+>> No functional change intended, it's just dmaengine_prep_slave_single()
+>> inline expanded.
+>>
+>> And in this case, switch from dma_map_single() to dma_map_sg() too. This
+>> needs struct msm_dma changes. I split the rx and tx parts into an union.
+>> TX is now struct scatterlist, RX remains the old good phys-virt-count
+>> triple.
+>>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>> Cc: Bjorn Andersson <andersson@kernel.org>
+>> Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
+>> Cc: linux-arm-msm@vger.kernel.org
+> 
+> I've just found that this patch broke UART operation on DragonBoard
+> 410c. I briefly checked and didn't notice anything obviously wrong here,
+> but the board stops transmitting any data from its serial port after the
+> first message. I will try to analyze this issue a bit more tomorrow.
 
---6w4mjjysdcfd4xi7
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I double checked, but I see no immediate issues in the patch too. So 
+please, if you can analyze this more…
 
-Hello Andy,
+thanks,
+-- 
+js
+suse labs
 
-On Mon, Apr 15, 2024 at 10:04:39PM +0200, Uwe Kleine-K=F6nig wrote:
-> On Mon, Apr 15, 2024 at 10:36:44PM +0300, Andy Shevchenko wrote:
-> > On Mon, Apr 15, 2024 at 07:15:54PM +0200, Uwe Kleine-K=F6nig wrote:
-> >=20
-> > ...
-> >=20
-> > > I didn't try to test if older kernel behave better, yet.
-> > >=20
-> > > Any ideas? Does this ring a bell?
-> >=20
-> > Does this
-> >=20
-> > 9cf7ea2eeb74 serial: core: Clearing the circular buffer before NULLifyi=
-ng it
-> >=20
-> > fix it?
->=20
-> It doesn't. I mentioned that in my report (though with the wrong commit
-> hash, I used the commit hash of the cherry picked commit *sigh*)
-> =20
-> > You might need this
-> >=20
-> > 1aa4ad4eb695 serial: core: Fix missing shutdown and startup for serial =
-base port
-> >=20
-> > on top btw.
->=20
-> Ah, that looks exactly like my issue. Thanks, I will test that an report
-> back.
-
-It improves my situation for sure. I have yet another problem with the
-stm32 UART that is driver specfic. I'm working on that one now ...
-
-thanks again,
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---6w4mjjysdcfd4xi7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmYeSlIACgkQj4D7WH0S
-/k7nYAf8DjvYAOri+wFZc81PgU2fVSiqvZYjImtzIAOyfzruqf4SS5NUqxQ6xoDt
-9cn8LYl99OUl0+Egm2w1VVf39bJvgyAmrCXfdwA5LCqBqK8AGtQ5ZXP+ZMATmoxn
-9Sc6tG8wHy/0kDF5oSAYDlRYKHf6sQAE2QWAAbs4KVPmnge6/UDcMYJ0nvoEf42J
-FfPzFJ9qqfWg+VLEPNMVkIGeS9N/NPaVxjqyCAS/JCkgITEwZgRml12XeD1KtpQ6
-Ly1V8vnBBGL5SvMIfJJeoYCkxgWcNGfjt2ro5lyH9FLn35FFrg9dbh4/ciM2430E
-LBVhm/rNklXMKzvZaR1SnyxMXa+LEA==
-=22jP
------END PGP SIGNATURE-----
-
---6w4mjjysdcfd4xi7--
