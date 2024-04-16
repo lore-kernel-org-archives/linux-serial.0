@@ -1,47 +1,47 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF77628E6;
-	Tue, 16 Apr 2024 12:56:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BABBB12BF1D;
+	Tue, 16 Apr 2024 12:56:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713272216; cv=none; b=Gitk+3BrnqYkjjcG4MNaJl9Ey20E7UbErwvlxg2/7kbvLvAZ0AqxhlrO2TuBpcZCVBl0OBKGHVcKf58WCwEaQUt+ymkvlE/tY4f5DWDxt5As9NtxAdmv+71rLSnT1Tl0QS22geLWlrzBFa7Bu24BYL6yRnyb1XLbYCkTsv/G11g=
+	t=1713272216; cv=none; b=bCTrg/4y7jSLA0zB1WZlXnYPBwQdTSKPh5y+tj9ttaG63fg915h5kMnCa/Js5VotOdAoWy54KQkozYTFvUSGpcXiE4nArVW2HRSTrKRDqU1HgZzbN6Lk485J4Al+XuSOcGCYIDa0yZKVn7tYkQ7fO14OP0XBJM4D9mwg6erl28A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713272216; c=relaxed/simple;
-	bh=p0pbcjOGrW9R0+xZei0K9xOJ4ALbve9BFZcsgFbKluk=;
+	bh=QjdcD+5gndgUXKknCUOuWGZOGbJGx9wFZpaqOHf8IXI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ae0poVs9sM5Xo7eYAS2haEpyIO6HPO6Cdz0eX0OLzkvK63V2ZK2h6ROywqy6bRhFdR+/Bk0oly98lAVao7yZQI84ZaCgLo8Xols3inKK4ftVwx+m79yMfozswUYVyB9VWATv9syu3qerVrch82d0tO08Kpz7S79MplC4E6g3VjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=nOxbeoRm; arc=none smtp.client-ip=74.208.4.197
+	 MIME-Version; b=h8rAlYLWhRGpMVqrnFFvxOmChmresY83giMvbtkH6g4nK1iPWbrxCLbXQ9W3kEGzuVPz6WxCusXfk3gZSZcXGNFtWbAf7jWtJHJaaSA0gP+NjtVV6NJaTqkejPSrZpMelRK4AGYHnpgz1jjVU6yttsqqnOayQCS1t6q1gW/Qa4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=g92ogG9p; arc=none smtp.client-ip=74.208.4.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="nOxbeoRm"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="g92ogG9p"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713272196; x=1713876996; i=parker@finest.io;
-	bh=IIhBmpy4z0+P4cIvEA/H163fhCoG79SjvbrHTTat3eE=;
+	s=s1-ionos; t=1713272197; x=1713876997; i=parker@finest.io;
+	bh=nq1fU38+YbMXQbv6fuKYJYq/QSLMrZ0aemu44ZrNMOg=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=nOxbeoRmjImYJx18ovcJd9LmW8W7QjtH7lNq1KvBzQJPfEhnQJ4YwnFf7ab3hdcC
-	 xwk8tTg8ctqG9ySZm9Q916CVCz15Guyu8X0i19LGf/wnIhCNCbBwXLRRgD4LEiMjO
-	 YL54fSJdirtkv5RqPZxsTBQJkeA4NAKuFWBvnr7IwNR97EPmXBOww1jtNg6mzM27i
-	 JHNIBgF2jhH4j3InIKHoQghAKknacahZE2vP95tNE8dMYgOxN/+oknfRSmqW9a8oP
-	 NwjkxbSG99N6bDMQSm0Z/dRqMUrpIQ9FeAco5+7sa5ZfQTl54M6FHPUCotw+Z+b+D
-	 soa1X1leyzOs4Qe5nA==
+	b=g92ogG9pzZZl7fwWUUMWponggIrLl/pZr8Hflo99cbYyc/vafU4/FpJoKP8yuiG4
+	 Rc3RCv6Dqpp8xwfNKgMla4t8gG9EwvP9KuNLNg8dZ5M786SbP3bSEXrnh/w30wAf0
+	 fA/bdAagzGvRRm1/19P0BO2nqB5er9pb2WA0kTCxmPo8WSBJlZ1aoWr1Y26IwbOzD
+	 2CyJtgNWmaRWLP1OdsnZOn8I3HLQguuLIk+ShMHmnMsW571af+4TCKDYtD5uf++qt
+	 BVdf+arrURUtQpGZf8lAuSpUz6h0JHaN7d9e4m3Jc9Hpc/atfg1E7wbwMJKfRlpRQ
+	 AbC1wsIwrQxpC40tyQ==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0M87rr-1sjR8X1Up7-015JhU; Tue, 16 Apr
- 2024 14:56:36 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0MYQD9-1sIrpN48A5-00NDRM; Tue, 16 Apr
+ 2024 14:56:37 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v3 2/8] serial: exar: remove old Connect Tech setup
-Date: Tue, 16 Apr 2024 08:55:29 -0400
-Message-ID: <e85dc81f8cecfb8dc416fd845089f7f2ba3338ba.1713270624.git.pnewman@connecttech.com>
+Subject: [PATCH v3 4/8] serial: exar: add optional board_init function
+Date: Tue, 16 Apr 2024 08:55:31 -0400
+Message-ID: <cd710c68b6bc84efda3a57a1e91a1191d51fccb5.1713270624.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.43.2
 In-Reply-To: <cover.1713270624.git.pnewman@connecttech.com>
 References: <cover.1713270624.git.pnewman@connecttech.com>
@@ -52,112 +52,112 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:tUm/cSDLboyH1ISWswfOkWKv27rJSe9V8B/rZvcDNSuobuuQYpd
- lvvyW3yEbQRVS7uA2VfbI1RR4cQ+WF4G3p4THBjga0M9GlaeKZk90iqlT4N2f6EZnVoRbDk
- minojfnFEP8flDehuE/1Gvm1Oz+r+A5G7XgoD9YGPrESP989cLZdPVLquhEYYGplc0+fS/0
- m39kdFlVtbotjlx6nuX6Q==
+X-Provags-ID: V03:K1:Zc5YffDDEQWqNS9VJLFw2eg2+NrUU+PDgt9ChqVDh9Q/UVyvivJ
+ /Cu4JP0BO+P6L7MS30AgR7uFWSP3erOLw1P4NKAh44NxMTIpOjxuJyQz+sgY9aCr7vrYsBU
+ wPI9TwXlJ9ZjOL3gwKR9vVNf+iuCkdFwDEJTKYwRpnPcNaDUBXytE+oYkyi0lXDnaO4Xynr
+ 9p0IwUBBmfNED8X5YYK5A==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:obspGj4EhAw=;JJTplzmRPYtAgS6qB35fBIkvE//
- BeTnDT8OFK8HkAKi6Xs6BUdWEbOdKyWq1kk7jykPmoDP/RK3BRnme4qKLD8CdKkczYAy1baux
- 8NX+vbZAtaXqQVahvntl3VuBfLcgRCYg3UBVgXyKChlYBVQFBEugpj2Gb8aGVgoR1cmY2AKsG
- jviVEJjlwM2ZJ/kAPwU6QLwppG4A75B0IPexF+DZzonk0ZrfUi0hSsa+9h/odJo8Q225qiiqQ
- nEoZnOmLRsooeOnUko/ErZ5ahgVhzsQtREGm75zkxX6ZAM3VEjSRhb9sr6hG0QePhktWVzo2/
- we2Y2rE2trC1u/BsX68spkDAlgUZGUlTqmQM7StQhLnoPxFU9ouQMEjT2DLFlidIP2LCtsAUP
- 9aad47PU6m0yGl9f7L7ZA4IlcPDzbd6UQkjtK/m+Go0xj/OV8eEqmnWnSaEqit7gnlfg13cx5
- J4xZyDb5n4sPJDvDUve9hiWej/uIhNl+Ze21baK2/bh84PFXH3g/TsidlXssSNZz8jFMoqEpu
- HFKioHHmNIQwoe4SqcVGJDT53LNdaSnGIPwWf1o30cEfmRz0d1aeFz36oATqsWrL0Pyo1snIK
- h7w/wfyGZQmDKsdelNA8wCMzBiN+evBPYNgDA7DRijenOvm96HSSdIWEYdfISF0lJUOt5Klp6
- 3DTS5XPoraUTfJsJlvAhbrnN5RgDXX0RvP79fBmIPfy7mqS9lm9e1MHINJZ/g+Ifu0D/eeACL
- nDIi0pYXsKQ1O+ZhaQKDEm+OsIeW6Gyf0CRB7b2NKUyC5BL/o+qGc4=
+UI-OutboundReport: notjunk:1;M01:P0:f8mxUc9XiuU=;PvwLdBSnRj94fQLN7Ku3b6I60gk
+ 4ed2JOP0nQXpOoslOFKm4BzwcdQNqD0mC0pnwaQlrRuz9epsWVbAlKO32Kdqd7y/t5uTS9n0X
+ Pkffuny3e8n3n7n7U4dfWbFbEKoNnhDS3gokFHgd2Gy3MnIuum2JWocnvNc5Eg7gWPwboYJcZ
+ 8beh7kTuljqS7UfCviwKxcMRaalh1UhBKKxTEKff0R7iNgvehCN0yoiFCvLc5DePEMta19zAy
+ m47pBEkgOTIJLTzxfp/s/WM5Th5Y5YzaOBBQTSP/kGt8lAY0ewFYnqWuARplTIan0MOJfegev
+ Z34Me6AehVyB+zFuVJNEJWetuvgQ/K9AbuRRrgOPMOPKwN8hIEhhZwX4G0ula/l3S46e7OvBC
+ hu9oyXcUynmtLmq7NbuBqg5X6PyI8CuyH839m5bYnPc1GHSmP1UIe9IPmfebeEYgyC0XJ+fBy
+ 3nI7EtFMvk4C0f0yJVtDTRxAOEQ5D1qtaOovLTc66OhcEMDKxCeBXPu898reGQ8HjBLP2sKsN
+ KiiI6b0HOCXmkF2kjaupN3W9FWjEHSJB+lxastOXnQzKOmiAk//rh2eMeFN1obNAHo6hslohD
+ 0Rzz8ZlpVen3dEErNNBaj7jw5hatSbfBzUkuULwkVfvlWxnm7JFkt39mW0/iLx14+VMddDlmg
+ P6Xjx7Xt6Jk8xi+7241PVW/h/3IL97uHuSORV4K2uFepbB0b6kg8gymG/dxQ3RcmPfjtG9jfz
+ ul0P5dhE7z4qVcCtXzT3x2lgohT/in2ssnCpSbMyeLJDKM+rhFSCOs=
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Preparatory patch removing existing Connect Tech setup code and
-CONNECT_DEVICE macro.
+- Add an optional "board_init()" function pointer to struct
+exar8250_board which is called once during probe prior to setting up
+the ports.
+
+- Fix several "missing identifier name" warnings from checkpatch in
+struct exar8250_platform and struct exar8250_board:
+
+WARNING: function definition argument <arg> should also have an
+identifier name
+
+- Fix warning from checkpatch:
+WARNING: please, no space before tabs
++ * 0^I^I2 ^IMode bit 0$
 
 Changes in v3:
-- Split code removals to own patch
+ - Renamed board_setup to board_init.
+ - Changed pci_err to dev_err_probe
+ - Added note above about checkpatch fixes
 
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
- drivers/tty/serial/8250/8250_exar.c | 37 -----------------------------
- 1 file changed, 37 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
 /8250_exar.c
-index 4d1e07343d0b..3565b880f512 100644
+index 388dd60ad23a..cf7900bd2974 100644
 =2D-- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -357,17 +357,6 @@ pci_fastcom335_setup(struct exar8250 *priv, struct pc=
-i_dev *pcidev,
- 	return 0;
- }
-
--static int
--pci_connect_tech_setup(struct exar8250 *priv, struct pci_dev *pcidev,
--		       struct uart_8250_port *port, int idx)
--{
--	unsigned int offset =3D idx * 0x200;
--	unsigned int baud =3D 1843200;
--
--	port->port.uartclk =3D baud * 16;
--	return default_setup(priv, pcidev, idx, offset, port);
--}
--
- static int
- pci_xr17c154_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 		   struct uart_8250_port *port, int idx)
-@@ -848,10 +837,6 @@ static const struct exar8250_board pbn_fastcom335_8 =
-=3D {
- 	.setup		=3D pci_fastcom335_setup,
+@@ -133,7 +133,7 @@
+  *
+  * MPIO		Port	Function
+  * ----		----	--------
+- * 0		2 	Mode bit 0
++ * 0		2	Mode bit 0
+  * 1		2	Mode bit 1
+  * 2		2	Terminate bus
+  * 3		-	<reserved>
+@@ -169,22 +169,24 @@ struct exar8250_platform {
+ 	int (*rs485_config)(struct uart_port *port, struct ktermios *termios,
+ 			    struct serial_rs485 *rs485);
+ 	const struct serial_rs485 *rs485_supported;
+-	int (*register_gpio)(struct pci_dev *, struct uart_8250_port *);
+-	void (*unregister_gpio)(struct uart_8250_port *);
++	int (*register_gpio)(struct pci_dev *pcidev, struct uart_8250_port *port=
+);
++	void (*unregister_gpio)(struct uart_8250_port *port);
  };
 
--static const struct exar8250_board pbn_connect =3D {
--	.setup		=3D pci_connect_tech_setup,
--};
--
- static const struct exar8250_board pbn_exar_ibm_saturn =3D {
- 	.num_ports	=3D 1,
- 	.setup		=3D pci_xr17c154_setup,
-@@ -896,15 +881,6 @@ static const struct exar8250_board pbn_exar_XR17V8358=
- =3D {
- 	.exit		=3D pci_xr17v35x_exit,
+ /**
+  * struct exar8250_board - board information
+  * @num_ports: number of serial ports
+  * @reg_shift: describes UART register mapping in PCI memory
+- * @setup: quirk run at ->probe() stage
++ * @board_init: quirk run once at ->probe() stage before setting up ports
++ * @setup: quirk run at ->probe() stage for each port
+  * @exit: quirk run at ->remove() stage
+  */
+ struct exar8250_board {
+ 	unsigned int num_ports;
+ 	unsigned int reg_shift;
+-	int	(*setup)(struct exar8250 *, struct pci_dev *,
+-			 struct uart_8250_port *, int);
++	int     (*board_init)(struct exar8250 *priv);
++	int	(*setup)(struct exar8250 *priv, struct pci_dev *pcidev,
++			 struct uart_8250_port *port, int idx);
+ 	void	(*exit)(struct pci_dev *pcidev);
  };
 
--#define CONNECT_DEVICE(devid, sdevid, bd) {				\
--	PCI_DEVICE_SUB(							\
--		PCI_VENDOR_ID_EXAR,					\
--		PCI_DEVICE_ID_EXAR_##devid,				\
--		PCI_SUBVENDOR_ID_CONNECT_TECH,				\
--		PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_##sdevid), 0, 0,	\
--		(kernel_ulong_t)&bd					\
--	}
--
- #define EXAR_DEVICE(vend, devid, bd) { PCI_DEVICE_DATA(vend, devid, &bd) =
-}
+@@ -772,6 +774,15 @@ exar_pci_probe(struct pci_dev *pcidev, const struct p=
+ci_device_id *ent)
+ 	if (rc)
+ 		return rc;
 
- #define IBM_DEVICE(devid, sdevid, bd) {			\
-@@ -934,19 +910,6 @@ static const struct pci_device_id exar_pci_tbl[] =3D =
-{
- 	EXAR_DEVICE(ACCESSIO, COM_4SM, pbn_exar_XR17C15x),
- 	EXAR_DEVICE(ACCESSIO, COM_8SM, pbn_exar_XR17C15x),
-
--	CONNECT_DEVICE(XR17C152, UART_2_232, pbn_connect),
--	CONNECT_DEVICE(XR17C154, UART_4_232, pbn_connect),
--	CONNECT_DEVICE(XR17C158, UART_8_232, pbn_connect),
--	CONNECT_DEVICE(XR17C152, UART_1_1, pbn_connect),
--	CONNECT_DEVICE(XR17C154, UART_2_2, pbn_connect),
--	CONNECT_DEVICE(XR17C158, UART_4_4, pbn_connect),
--	CONNECT_DEVICE(XR17C152, UART_2, pbn_connect),
--	CONNECT_DEVICE(XR17C154, UART_4, pbn_connect),
--	CONNECT_DEVICE(XR17C158, UART_8, pbn_connect),
--	CONNECT_DEVICE(XR17C152, UART_2_485, pbn_connect),
--	CONNECT_DEVICE(XR17C154, UART_4_485, pbn_connect),
--	CONNECT_DEVICE(XR17C158, UART_8_485, pbn_connect),
--
- 	IBM_DEVICE(XR17C152, SATURN_SERIAL_ONE_PORT, pbn_exar_ibm_saturn),
-
- 	/* USRobotics USR298x-OEM PCI Modems */
++	if (board->board_init) {
++		rc =3D board->board_init(priv);
++		if (rc) {
++			dev_err_probe(&pcidev->dev, rc,
++					"failed to init serial board\n");
++			return rc;
++		}
++	}
++
+ 	for (i =3D 0; i < nr_ports && i < maxnr; i++) {
+ 		rc =3D board->setup(priv, pcidev, &uart, i);
+ 		if (rc) {
 =2D-
 2.43.2
 
