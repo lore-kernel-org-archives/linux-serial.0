@@ -1,39 +1,39 @@
 Received: from mail-40131.protonmail.ch (mail-40131.protonmail.ch [185.70.40.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4C2D2C6A3;
-	Tue, 16 Apr 2024 18:30:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0CC81353F3
+	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 18:34:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.40.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713292229; cv=none; b=FVNreKo/6EBc30QB7Pjn3v9jme7no77Xv1cb1NOeTsqHka4eeB3XaRrwfkBHri96u1KPIjnytY6XJp1sReS5s8tQ8wl553obsv2l3QfTDIvakIDGLLE+fUc6MfD9xuRPn4kkOayY2ZTArrkTJ3C61tOGRqKo/NOp+hf3HiJMbaU=
+	t=1713292467; cv=none; b=GeaI4N/Lq76AAo6C+aePYRBdZ3N+/WOyXnBNQIdJdoHK7zma2aZkB/UIyOPwq3DIz0bv3ktfnsyM7ElLcaOM96vpGMH9J042pAeQHYrtxDnnvhvE+j6hieVbB2eaaKykor71CvX6xNt9mcNKhbZR8Oi2V/gaohUorqxue7vl/os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713292229; c=relaxed/simple;
-	bh=BOgkAFFdf2wnO9hL/ivSNkM9DBF2bbinKHnkCviT4l8=;
+	s=arc-20240116; t=1713292467; c=relaxed/simple;
+	bh=SZ9BlOq9LC/Dzi9Ke1GsgNFBMPYPVQktfTHm/zfvHdA=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FiH4wni/L5MfstRP6f8Q5YSvkgp4lt7gvjXhV+toA+oCEeRXr/Dab6oydIP4ob83Us520dZJjWzmtywomEpSplGJ9AzIXbLr3pNBoiJbqFOXgsU67wJ5qHRUm0iUQ+T83nWxkKh/0N65FYpCivcn5POlm8eXbad4ySBxzN2vVKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=Wg4PaEEn; arc=none smtp.client-ip=185.70.40.131
+	 MIME-Version:Content-Type; b=NvZRASXD2WL6nz2LCGYn07KjUnbImM8WnLbK4MEu2CuS622qnPbmx7MCDOUUm6acjP5RuduhoyEV73Uk9z+QWNRHkuOkXswhKdWP6LVdP9Lu5hODyJfAI3tTneUxAHagYG4l/1lgWOnCTv5J+MLy1PJER+NeDzLkiFU0u1NJle0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=hn1CQ/Gg; arc=none smtp.client-ip=185.70.40.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="Wg4PaEEn"
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="hn1CQ/Gg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
-	s=protonmail3; t=1713292225; x=1713551425;
-	bh=62YpHOvZnZ8olaQOV9AE7phGelntP6xtyhEl8JdkA54=;
+	s=protonmail3; t=1713292463; x=1713551663;
+	bh=SZ9BlOq9LC/Dzi9Ke1GsgNFBMPYPVQktfTHm/zfvHdA=;
 	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
 	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
 	 Message-ID:BIMI-Selector;
-	b=Wg4PaEEnIx5Lk0zDGjMn6BASw1bt7to6J/Otm4Qg5gGACUkF2rEBqmcYuHbduwckQ
-	 H1eo4AJvG3DCpM9CG0k90JV04Y95S8+grRhuFgIlKPdbbC7n44ZULp+QPalg+XNLE0
-	 By9mcXrdmEjIw0e41WckW7a/gmG3c5RRA9bNKkfaeuNIIGFAssv+jM1995X88Mgm/N
-	 A/sID5Ok081/ygln9wjKqztDlG21Rm6msq3y/xotQbnVtCAQXlK4v5kYzlj+A9mgla
-	 qhJNgvAlLImKeJAI7VVqwLilQfcatPe1Sk/FYo5r7zrxe/g0QpIhyB1cVmU2Yh/Xt5
-	 OgauEt/0LlMRw==
-Date: Tue, 16 Apr 2024 18:29:56 +0000
+	b=hn1CQ/GgpX9BczIc9SqdPGiPdserIrTIiPm9lk0gzJXJGax1LwhZF7As1Z2/jcgdi
+	 87gXJOIITzGmbfKhFfOzX8sWkhNDDmk7/SH3Na1c3QoQyv/c16KagIL70MLcKIgd6B
+	 FYpaT7ujVBkGCEPfrsSXTqMJuCTU6ipZ6LV3e9dZQPR7GDe0zR8AXjk1lbfYMX2leQ
+	 72I8cVZi/vi1mCmaXSvXwgvGw5YIwk30OYJPu27zKEUUIruOJIqtItQvbg9Buih8jV
+	 1m/t0+9MyoAasUQ74R4y+QNX/sg/KlvLbt0UsFvMIqqIFpnr73so2RFXBioOrV5XSB
+	 QYRUkR1ltL/vg==
+Date: Tue, 16 Apr 2024 18:34:10 +0000
 To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
 From: Michael Pratt <mcpratt@pm.me>
 Cc: Wander Lairson Costa <wander@redhat.com>, =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vamshi Gajjela <vamshigajjela@google.com>, Michael Pratt <mcpratt@pm.me>
-Subject: [PATCH v2 2/3] serial: 8250: Store whether fifo device is enabled
-Message-ID: <20240416182741.22514-3-mcpratt@pm.me>
+Subject: [PATCH v2 3/3] serial: 8250: Set fifo timeout using uart_fifo_timeout()
+Message-ID: <20240416182741.22514-4-mcpratt@pm.me>
 In-Reply-To: <20240416182741.22514-1-mcpratt@pm.me>
 References: <20240416182741.22514-1-mcpratt@pm.me>
 Feedback-ID: 27397442:user:proton
@@ -46,51 +46,63 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Currently, there are 7 checks for whether to enable
-the internal fifo device of a 8250/16550 type uart.
+Commit 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver")
+reworked functions for basic 8250 and 16550 type serial devices
+in order to enable and use the internal fifo device for buffering,
+however the default timeout of 10 ms remained, which is proving
+to be insufficient for low baud rates like 9600, causing data overrun.
 
-Instead of checking all 7 values again whenever
-we need to know whether we have the fifo device enabled,
-store the result as a struct member of uart_8250_port.
+Unforunately, that commit was written and accepted just before commit
+31f6bd7fad3b ("serial: Store character timing information to uart_port")
+which introduced the frame_time member of the uart_port struct
+in order to store the amount of time it takes to send one uart frame
+relative to the baud rate and other serial port configuration,
+and commit f9008285bb69 ("serial: Drop timeout from uart_port")
+which established function uart_fifo_timeout() in order to
+calculate a reasonable timeout to wait until flushing
+the fifo device before writing data again when partially filled,
+using the now stored frame_time value and size of the buffer.
 
-This can, for example, lessen the amount
-of calculations done during a write operation.
+Fix this by using the stored timeout value made with this new function
+to calculate the timeout for the fifo device, when enabled, and when
+the buffer is larger than 1 byte (unknown port default).
 
+The previous 2 commits add the struct members used here
+in order to store the values, so that the calculations
+are offloaded from the functions that are called
+during a write operation for better performance.
+
+Tested on a MIPS device (ar934x) at baud rates 625, 9600, 115200.
+
+Fixes: 8f3631f0f6eb ("serial/8250: Use fifo in 8250 console driver")
 Signed-off-by: Michael Pratt <mcpratt@pm.me>
 ---
-V1 -> V2: new commit
+V1 -> V2:
+ Use stored values instead of calling uart_fifo_timeout()
+ or checking capability flags.
+ The existence of the timeout value satisfies fifosize > 1.
 
- drivers/tty/serial/8250/8250_port.c | 2 ++
- include/linux/serial_8250.h         | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/tty/serial/8250/8250_port.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/=
 8250_port.c
-index fc9dd5d45295..5b0cfe6bc98c 100644
+index 5b0cfe6bc98c..cf67911a74f5 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3392,6 +3392,8 @@ void serial8250_console_write(struct uart_8250_port *=
-up, const char *s,
- =09=09 */
- =09=09!(up->port.flags & UPF_CONS_FLOW);
+@@ -2066,7 +2066,10 @@ static void wait_for_lsr(struct uart_8250_port *up, =
+int bits)
+ {
+ =09unsigned int status, tmout =3D 10000;
 =20
-+=09up->fifo_enable =3D use_fifo;
+-=09/* Wait up to 10ms for the character(s) to be sent. */
++=09/* Wait for a time relative to buffer size and baud */
++=09if (up->fifo_enable && up->port.timeout)
++=09=09tmout =3D jiffies_to_usecs(up->port.timeout);
 +
- =09if (likely(use_fifo))
- =09=09serial8250_console_fifo_write(up, s, count);
- =09else
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index fd59ed2cca53..017429f0e743 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -127,6 +127,7 @@ struct uart_8250_port {
- =09struct list_head=09list;=09=09/* ports on this IRQ */
- =09u32=09=09=09capabilities;=09/* port capabilities */
- =09u16=09=09=09bugs;=09=09/* port bugs */
-+=09unsigned int=09=09fifo_enable;=09/* fifo enabled if capable */
- =09unsigned int=09=09tx_loadsz;=09/* transmit fifo load size */
- =09unsigned char=09=09acr;
- =09unsigned char=09=09fcr;
+ =09for (;;) {
+ =09=09status =3D serial_lsr_in(up);
+=20
 --=20
 2.30.2
 
