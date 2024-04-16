@@ -1,99 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mail-4322.protonmail.ch (mail-4322.protonmail.ch [185.70.43.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32AC5137920;
-	Tue, 16 Apr 2024 19:13:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED1D13792A;
+	Tue, 16 Apr 2024 19:15:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713294811; cv=none; b=E3z/x4gsWKD1/xLZGiD6bGLaCCbB0mRM2BeBSYDZ5RXlAIJzTybaOzlTFHpYRxwm5v9k7nzngOFExURDtGZUk9H5bhFrP71DXFU/oUjjBcQXFkxL0rfLNmB4reKo2EBLwUmaqLYPZT5I3ZmIup3mo7Z1ztjecysMRmS2R8wp9o4=
+	t=1713294918; cv=none; b=YWlKF0gvPm7sO2wIWLTJ3ru4gKojHBG0/ic8945KDQhCTUhp3RosQjJ00neqywYwOCsN/WpSIqda/p5h7n/AXU0wx+V9AEFK7df93119Iy+Vn+qJ9ePFTDnAJXpT7gFhy2++Rg6cA1e4erLNARymbPQaD3Y0soeM7QL59pYBKOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713294811; c=relaxed/simple;
-	bh=WidDV0+cydjYUFBcrsXyNgs1N16QDq4Ayftcy1ggqFE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HNq8GF3bl3kCxu8pjs/p57buJZVtd92Urqxz95XnP9SA/LurbLlr/eFiury6z9fiS7QlyVy6ALTzJmBRiwQNlmkox3kxffd2pOy+cymFi9XuUTImDdoTsQVa3aDatUlvssKZzTFuJabWN8r/3ntw/QdKxGJY6FxdACsxLTtwVzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bGLnjAW1; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713294918; c=relaxed/simple;
+	bh=Ac43jLMqQf/eO9EHaae+vUIk7xfngUWmCTeT+44YV3Y=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EOqtKIh/NWE9YHedsnZk5rtC34cDHMKr4V/OIzBWnYrta8+Q+nGWgFhv968Nyy9Jjb/kBX8P3RdvySuKoNSJF4XbSefdaoMx7r+0jY5khxu3MBtSM6fBLXfTiJHPdl190wEd4Y7uBYrqgUJIWGvAjdLbe6cGmNGPIHoadG+maRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=Q/GBub0S; arc=none smtp.client-ip=185.70.43.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bGLnjAW1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713294810; x=1744830810;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WidDV0+cydjYUFBcrsXyNgs1N16QDq4Ayftcy1ggqFE=;
-  b=bGLnjAW1MbqBaO1Ogi24qI7MuBsIDEPpOHbxtmUNh53L5FzpKMJ6alpX
-   gzUbj2PzhHxs9v9bhFUOwHxA1ufoqL8Y17HzOuo9gQMko6ZUbkL7st/o0
-   phP0MPazk6Y6jR7oknzmAkpsheUKA9MVQMMVrpA9wUVoJJGeP/rgeplUG
-   qvu12H6lrdsYPWas7+xmvgyXTOHXd7jzv7sF2GFTe/zQydgfpfLFEMMWy
-   CT/cs6GHiscRC5nXftIKL1/YUKl+7/ytrwVsdI2GR4CV34gCYxT+Ljcfr
-   NPwpUq+RiEfwLI7A4N5HuA1sP2twdFLZsSZHP57L+zaIJ8JtMMvGJRoPX
-   A==;
-X-CSE-ConnectionGUID: P7t9CeurTv+JCu/j8sTLuw==
-X-CSE-MsgGUID: xFWTUOONSfe0dXVfVfH32A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="26268086"
-X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
-   d="scan'208";a="26268086"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 12:13:29 -0700
-X-CSE-ConnectionGUID: rpK+ZSyiR3mB73v5+CjGHQ==
-X-CSE-MsgGUID: qdEqqAxwQqaa96/cPZSPtQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
-   d="scan'208";a="22768609"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 12:13:26 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rwoFA-00000004ngn-0THg;
-	Tue, 16 Apr 2024 22:13:24 +0300
-Date: Tue, 16 Apr 2024 22:13:23 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] dmaengine: dw: Fix src/dst addr width misconfig
-Message-ID: <Zh7N0-D-TJ1OXqli@smile.fi.intel.com>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="Q/GBub0S"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1713294909; x=1713554109;
+	bh=Ac43jLMqQf/eO9EHaae+vUIk7xfngUWmCTeT+44YV3Y=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=Q/GBub0SIgyBam+4opzEKK0txUbxvfCrhfAWYuAaSiYJtSNYdp44AFC9Y8RMMlxCw
+	 HXEZOppzCgWxF/UTq5ZhXx0+vd7kSizjzsE+3uoTjfdGyI1a+/F1od+NZN2/1ks8ow
+	 m6hngQhsRQdLUty/0DF+MgGgtZFff+fs/pd73fUAxuSHd7AqPrDTBMesEMQzmP9Inn
+	 Z76tf04rtmm1dt99egNjOuvc4a23AOjz7yZU007yWLt0IWhATgFMmFs5DXbiyxLrrG
+	 zrprpzfcX7aVT5enfVvRGGyU6LtRo11WdwtyqdatIFToOgHaZlECm8HiUINe/cQ+Ka
+	 /YViFEgnWX88g==
+Date: Tue, 16 Apr 2024 19:15:03 +0000
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Michael Pratt <mcpratt@pm.me>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Wander Lairson Costa <wander@redhat.com>, =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Vamshi Gajjela <vamshigajjela@google.com>
+Subject: Re: [PATCH v2 3/3] serial: 8250: Set fifo timeout using uart_fifo_timeout()
+Message-ID: <CmMdmgjPFh8R-rH0-mjU0QdQcqhRwVr9bmApDJ7BV_9DjRBL35K_Qfjs7oIPVwGFv5mdT476a8tPtkgnWqY2lRBEfGvfhjk0yW9ueI4bcf8=@pm.me>
+In-Reply-To: <Zh7KIz1AGyyS3zLT@smile.fi.intel.com>
+References: <20240416182741.22514-1-mcpratt@pm.me> <20240416182741.22514-4-mcpratt@pm.me> <Zh7KIz1AGyyS3zLT@smile.fi.intel.com>
+Feedback-ID: 27397442:user:proton
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240416162908.24180-1-fancer.lancer@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 16, 2024 at 07:28:54PM +0300, Serge Semin wrote:
-> The main goal of this series is to fix the data disappearance in case of
-> the DW UART handled by the DW AHB DMA engine. The problem happens on a
-> portion of the data received when the pre-initialized DEV_TO_MEM
-> DMA-transfer is paused and then disabled. The data just hangs up in the
-> DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
-> suspension (see the second commit log for details). On a way to find the
-> denoted problem fix it was discovered that the driver doesn't verify the
-> peripheral device address width specified by a client driver, which in its
-> turn if unsupported or undefined value passed may cause DMA-transfer being
-> misconfigured. It's fixed in the first patch of the series.
-> 
-> In addition to that two cleanup patch follow the fixes described above in
-> order to make the DWC-engine configuration procedure more coherent. First
-> one simplifies the CTL_LO register setup methods. Second one simplifies
-> the max-burst calculation procedure and unifies it with the rest of the
-> verification methods. Please see the patches log for more details.
+Hi Andy,
 
-Thank you for this.
-I have looked into all of them and most worrying (relatively to the rest) to me
-is the second patch that does some tricks. The rest are the cosmetics that can
-be easily addressed.
+On Tuesday, April 16th, 2024 at 14:57, Andy Shevchenko <andriy.shevchenko@l=
+inux.intel.com> wrote:
 
--- 
-With Best Regards,
-Andy Shevchenko
+>=20
+> > unsigned int status, tmout =3D 10000;
+> >=20
+> > - /* Wait up to 10ms for the character(s) to be sent. /
+> > + / Wait for a time relative to buffer size and baud */
+> > + if (up->fifo_enable && up->port.timeout)
+> > + tmout =3D jiffies_to_usecs(up->port.timeout);
+>=20
+>=20
+> Why do we still use that default? Can't we calculate timeout even for\
+> FIFO-less / FIFO-disabled devices?
 
+Maybe it's possible that there is some kind of rare case where the LSR regi=
+ster
+is not working or not configured properly for a device in which support
+is being worked on...without a timeout, that would result in an infinite lo=
+op.
 
+AFAIK, when everything is working properly, there is no such thing as needi=
+ng
+a timeout for a uart device without fifo, as every single byte written woul=
+d trigger
+an interrupt anyway.
+
+> --
+> With Best Regards,
+> Andy Shevchenko
+
+--
+MCP
