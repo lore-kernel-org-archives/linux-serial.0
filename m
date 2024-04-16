@@ -1,154 +1,91 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mail-40134.protonmail.ch (mail-40134.protonmail.ch [185.70.40.134])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70E2612EBCE;
-	Tue, 16 Apr 2024 18:00:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8738A134406
+	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 18:29:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.40.134
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713290458; cv=none; b=PS5P/0ZkUnmz1xJ9FkLP+2MG3+Dk5jedEvkCp4Qxr8wEioWNXPNIoSCw3ag8dpBpfyZie2sq1WVhyaKtjJsFpHejAOEU7yhzEZSmpHUNhROH3mqUZLOqvA6oTsZotrhf8CfJInGTio/z+HoFLGdRzuUbPBcoo+pGuCOo3KayVdU=
+	t=1713292157; cv=none; b=P3oT/k9ApzvLhzvs1u/RiQ92+sEMzqS2yiPCIMNp7W5myqGF+uHlEAFmtOJzQF+v+OG/v+uTqOQJCJaaMhf0GPw6VO05OcnGoySu7GQkFHuHFb2lKbB5brVsNe1pvDfWX4NDYgV9Fqj+5ZIC5la2+mMa3zKlYImM+bSbR9INiCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713290458; c=relaxed/simple;
-	bh=SLEcQwrdeAyJMhsUpPs/WnfkDUuxw6+ip8W3cRvk0co=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sQwCjj0GhfrGUI/DLIWvT4FXQ67F0TCh/LSLYndcvUBUkg5wh+hIDWwS3x8XZYwSMyG9NTAHmu3OoGLVQ0YGE/0A9q1g5rAFC7K7ySixDkII4vulHUTBqlKNNm1uuCminw0nspFE6HmZgXn28/O7w7m/1IMYZYBxu4RwEWNeKZg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bEUfc3NF; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713292157; c=relaxed/simple;
+	bh=v+czfn0IfSapZZ8pqxRYSfkPUjwNRdVUep4x5Tza0QA=;
+	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=CDBuOkEAE2YpO9PWDBltvQ1TwGx9gY7R0ZXLh47JNy1jM0bUQ0hm1b53qZJEBJL2cHq7SFiJjuTnvpvj7JhSOlDL8MSY6xpHKE3ObrzGT9OQeCLC+oXih2slz4JoYIEGfysRfLXHBv9TKZU/pLiEoZ7ToFXgMOTTugvcmjZAt7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me; spf=pass smtp.mailfrom=pm.me; dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b=jWGQPi8d; arc=none smtp.client-ip=185.70.40.134
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=pm.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pm.me
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bEUfc3NF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713290457; x=1744826457;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SLEcQwrdeAyJMhsUpPs/WnfkDUuxw6+ip8W3cRvk0co=;
-  b=bEUfc3NFS0M4y7Pky1k5ipynrK64UAqKGt6PSU5JpcauGMDRZdbxwMug
-   YSC6y9QptD9NYt1Osrvk4Jz6Ow0/3Voh+OBVNORjevddzYaZCv+9HJKw/
-   CCfDhljpj4KS2C03xX+WN5ueephWSyWMDqv2hfvqAlizC6tfok18Ne2BA
-   emohluekBv3tgR8SqSmze630exkxABetFxVaJDirsoUUcMKL3vmJbeqTy
-   5gEZaP5gKS8U6kAt67HOrX69GzwCCKluZlZnA+SoTeDIQ9QpYWJdpcpU7
-   VJirddfwgQOGJrpZK5OzxYst9ovCvDAnhuAPTC2JjsWF69HYuLl1h0bLm
-   Q==;
-X-CSE-ConnectionGUID: teptYAYDQIWJfRYu5MGpQQ==
-X-CSE-MsgGUID: c+XwvYTzRjq5a46ksPCwUA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="8629024"
-X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
-   d="scan'208";a="8629024"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 11:00:56 -0700
-X-CSE-ConnectionGUID: HhquDLfRQROq+SUyssmTNA==
-X-CSE-MsgGUID: 8Pbg0ZewSZqGG9bjbWRyiQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
-   d="scan'208";a="27026244"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 11:00:53 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rwn6w-00000004mUp-3DzS;
-	Tue, 16 Apr 2024 21:00:50 +0300
-Date: Tue, 16 Apr 2024 21:00:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dmaengine: dw: Add peripheral bus width verification
-Message-ID: <Zh680h4h6hURIb82@smile.fi.intel.com>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-2-fancer.lancer@gmail.com>
+	dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="jWGQPi8d"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me;
+	s=protonmail3; t=1713292152; x=1713551352;
+	bh=hzNvp2rdWqKMsdmDAYXgUDD3rBTlt6eZV6vZgFT9zFo=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=jWGQPi8dLclrNLoIEExXmBHGzqXEro1BDfTNAP3ZPEHOTUkBl2PBM5PvpbzZxvmsD
+	 1KpNudoXV7JBIyzhj8MYhdJERm+Fb+0eSKvrwutZCbA1rkcijQsHfhTLlUUtL71O7U
+	 fQkOuh2GTtinjyg8+FDk6kv2cjCKr+0b6TI1Wd3n1B23qM3nM4lbRVxKEbyHDGyUO7
+	 HF/bqhFGdri0cmZ9tn9lO8yl03wap3LE/LoYx82cY1XmDZNhHHqDcwiI5oomt5CsEV
+	 2G3R55ki5M0QM9rf0uRrv9nwQA9g+FoiKvS/De2kpWabxH04QADMuQmuf/6HlocG6+
+	 0el4g6UkKL+ZQ==
+Date: Tue, 16 Apr 2024 18:28:41 +0000
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+From: Michael Pratt <mcpratt@pm.me>
+Cc: Wander Lairson Costa <wander@redhat.com>, =?utf-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vamshi Gajjela <vamshigajjela@google.com>, Michael Pratt <mcpratt@pm.me>
+Subject: [PATCH v2 0/3] serial: 8250: Set fifo timeout with uart_fifo_timeout()
+Message-ID: <20240416182741.22514-1-mcpratt@pm.me>
+Feedback-ID: 27397442:user:proton
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240416162908.24180-2-fancer.lancer@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 16, 2024 at 07:28:55PM +0300, Serge Semin wrote:
-> Currently the src_addr_width and dst_addr_width fields of the
-> dma_slave_config structure are mapped to the CTLx.SRC_TR_WIDTH and
-> CTLx.DST_TR_WIDTH fields of the peripheral bus side in order to have the
-> properly aligned data passed to the target device. It's done just by
-> converting the passed peripheral bus width to the encoded value using the
-> __ffs() function. This implementation has several problematic sides:
-> 
-> 1. __ffs() is undefined if no bit exist in the passed value. Thus if the
-> specified addr-width is DMA_SLAVE_BUSWIDTH_UNDEFINED, __ffs() may return
-> unexpected value depending on the platform-specific implementation.
-> 
-> 2. DW AHB DMA-engine permits having the power-of-2 transfer width limited
-> by the DMAH_Mk_HDATA_WIDTH IP-core synthesize parameter. Specifying
-> bus-width out of that constraints scope will definitely cause unexpected
-> result since the destination reg will be only partly touched than the
-> client driver implied.
-> 
-> Let's fix all of that by adding the peripheral bus width verification
-> method which would make sure that the passed source or destination address
-> width is valid and if undefined then the driver will just fallback to the
-> 1-byte width transfer.
+Hi all,
 
-Please, add a word that you apply the check in the dwc_config() which is
-supposed to be called before preparing any transfer?
+On Thu, Jan 11, 2024 I submitted a single patch solution
+for this issue of data overrun because of the default timeout
+value which is insufficient for very low baud rates
+with the internal fifo device enabled.
 
-...
+Following the advice of Vamshi Gajjela in the v1 thread,
+I tried to find a way to limit the amount of math
+being done within the write operation, and this is a possibility.
 
-> +static int dwc_verify_p_buswidth(struct dma_chan *chan)
-> +{
-> +	struct dw_dma_chan *dwc = to_dw_dma_chan(chan);
-> +	struct dw_dma *dw = to_dw_dma(chan->device);
-> +	u32 reg_width, max_width;
-> +
-> +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
-> +		reg_width = dwc->dma_sconfig.dst_addr_width;
-> +	else if (dwc->dma_sconfig.direction == DMA_DEV_TO_MEM)
-> +		reg_width = dwc->dma_sconfig.src_addr_width;
+In this series, I'm proposing we bring back the
+"timeout" member of struct uart_port, and also that we
+add a new member of struct uart_8250_port in order
+to store whether the fifo device has been enabled.
 
-> +	else /* DMA_MEM_TO_MEM */
+This way, in the function wait_for_lsr()
+all we need to do is convert the value from jiffies to usecs
+in order to have the appropriate timeout value.
 
-Actually not only this direction, but TBH I do not see value in these comments.
+I'm hoping to get this in during the RC phase of v6.9
+and I'm trying to keep this fix as simple as possible,
+or at least I think this is the appropriate time to
+bring this issue up again...
 
-> +		return 0;
-> +
-> +	max_width = dw->pdata->data_width[dwc->dws.p_master];
-> +
-> +	/* Fall-back to 1byte transfer width if undefined */
+Thanks in advance for your time.
 
-1-byte
-(as you even used in the commit message correctly)
+--
+MCP
 
-> +	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
-> +		reg_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-> +	else if (!is_power_of_2(reg_width) || reg_width > max_width)
-> +		return -EINVAL;
-> +	else /* bus width is valid */
-> +		return 0;
-> +
-> +	/* Update undefined addr width value */
-> +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
-> +		dwc->dma_sconfig.dst_addr_width = reg_width;
-> +	else /* DMA_DEV_TO_MEM */
-> +		dwc->dma_sconfig.src_addr_width = reg_width;
+Michael Pratt (3):
+  serial: core: Store fifo timeout again
+  serial: 8250: Store whether fifo device is enabled
+  serial: 8250: Set fifo timeout using uart_fifo_timeout()
 
-So, can't you simply call clamp() for both fields in dwc_config()?
+ drivers/tty/serial/8250/8250_port.c | 7 ++++++-
+ drivers/tty/serial/serial_core.c    | 3 +++
+ include/linux/serial_8250.h         | 1 +
+ include/linux/serial_core.h         | 1 +
+ 4 files changed, 11 insertions(+), 1 deletion(-)
 
-> +	return 0;
-> +}
 
-...
-
-> +	int err;
-
-Hmm... we have two functions one of which is using different name for this.
-Can we have a patch to convert to err the other one?
-
--- 
-With Best Regards,
-Andy Shevchenko
+base-commit: 0bbac3facb5d6cc0171c45c9873a2dc96bea9680
+--
+2.30.2
 
 
