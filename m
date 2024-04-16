@@ -1,131 +1,154 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801992EAF9
-	for <linux-serial@vger.kernel.org>; Tue, 16 Apr 2024 17:07:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70E2612EBCE;
+	Tue, 16 Apr 2024 18:00:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713287271; cv=none; b=noPnvmMTWmkWCYl1XtaJeMIkHvrAykk1tE5Rd8kpy7dB2SjxUKr9umStsIRnpxIRK/1ZXCjEVviSoouGVtNwihxWCMvQXzAy/hL7aY/PndGfWw75L1+CRsilNTimGZG4BN09XZoqsb0A+04WghWz4zvmNfREQobqYv/PbRL8WlU=
+	t=1713290458; cv=none; b=PS5P/0ZkUnmz1xJ9FkLP+2MG3+Dk5jedEvkCp4Qxr8wEioWNXPNIoSCw3ag8dpBpfyZie2sq1WVhyaKtjJsFpHejAOEU7yhzEZSmpHUNhROH3mqUZLOqvA6oTsZotrhf8CfJInGTio/z+HoFLGdRzuUbPBcoo+pGuCOo3KayVdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713287271; c=relaxed/simple;
-	bh=hKg0B5/9OaomVzzS1VVVNqsMSaLEq5o/v/48CvT880E=;
+	s=arc-20240116; t=1713290458; c=relaxed/simple;
+	bh=SLEcQwrdeAyJMhsUpPs/WnfkDUuxw6+ip8W3cRvk0co=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NYqv11RbxpoH0iNLXh9/JuE9FBPr8lNltw1zbCqCoxIwKHW5cWqzWPzcTJQzP9R229mxZMm73xRhCUtwtt8GMXVADqN72lQpii8+OB2Y17U078ZtyNRUZRFl60DX5phSFt00E/sUp4sFwUrjyaQkdNBEF7nhqcC7hmjU9YDc6/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwmHT-000385-C0; Tue, 16 Apr 2024 19:07:39 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwmHS-00CeGj-Jz; Tue, 16 Apr 2024 19:07:38 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <ukl@pengutronix.de>)
-	id 1rwmHS-002I2k-1i;
-	Tue, 16 Apr 2024 19:07:38 +0200
-Date: Tue, 16 Apr 2024 19:07:38 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: kernel@pengutronix.de, linux-serial@vger.kernel.org
-Subject: Re: NULL pointer dereference when closing a busy UART
-Message-ID: <wmfb6m7gz5ym2exep4pgmtwqonxi5eqryif4herfkc5rbxxvre@eqnzhic3umux>
-References: <luomji4bv5c54xq442csgd2ifdacjrme7bomnwbviw6pmalpgv@5uusgu3vgybm>
- <Zh2BzD3qW1j1GR_o@smile.fi.intel.com>
- <p5eesytdhdrqo5ep2nazsm4ft6oc2dw5wb3goqo5use75f6fsg@ivsxlgyyadot>
- <nhwtgw543mkannfwvtqi3oap3xrscs66gsg56cpojxnfhjbrv3@s5fqkhvyjrfh>
- <Zh6Sb-Gk_RIdHkZi@smile.fi.intel.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=sQwCjj0GhfrGUI/DLIWvT4FXQ67F0TCh/LSLYndcvUBUkg5wh+hIDWwS3x8XZYwSMyG9NTAHmu3OoGLVQ0YGE/0A9q1g5rAFC7K7ySixDkII4vulHUTBqlKNNm1uuCminw0nspFE6HmZgXn28/O7w7m/1IMYZYBxu4RwEWNeKZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bEUfc3NF; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bEUfc3NF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713290457; x=1744826457;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SLEcQwrdeAyJMhsUpPs/WnfkDUuxw6+ip8W3cRvk0co=;
+  b=bEUfc3NFS0M4y7Pky1k5ipynrK64UAqKGt6PSU5JpcauGMDRZdbxwMug
+   YSC6y9QptD9NYt1Osrvk4Jz6Ow0/3Voh+OBVNORjevddzYaZCv+9HJKw/
+   CCfDhljpj4KS2C03xX+WN5ueephWSyWMDqv2hfvqAlizC6tfok18Ne2BA
+   emohluekBv3tgR8SqSmze630exkxABetFxVaJDirsoUUcMKL3vmJbeqTy
+   5gEZaP5gKS8U6kAt67HOrX69GzwCCKluZlZnA+SoTeDIQ9QpYWJdpcpU7
+   VJirddfwgQOGJrpZK5OzxYst9ovCvDAnhuAPTC2JjsWF69HYuLl1h0bLm
+   Q==;
+X-CSE-ConnectionGUID: teptYAYDQIWJfRYu5MGpQQ==
+X-CSE-MsgGUID: c+XwvYTzRjq5a46ksPCwUA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="8629024"
+X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
+   d="scan'208";a="8629024"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 11:00:56 -0700
+X-CSE-ConnectionGUID: HhquDLfRQROq+SUyssmTNA==
+X-CSE-MsgGUID: 8Pbg0ZewSZqGG9bjbWRyiQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,206,1708416000"; 
+   d="scan'208";a="27026244"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 11:00:53 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rwn6w-00000004mUp-3DzS;
+	Tue, 16 Apr 2024 21:00:50 +0300
+Date: Tue, 16 Apr 2024 21:00:50 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Serge Semin <fancer.lancer@gmail.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dmaengine: dw: Add peripheral bus width verification
+Message-ID: <Zh680h4h6hURIb82@smile.fi.intel.com>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-2-fancer.lancer@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="lhitrku3ojgb23v2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Zh6Sb-Gk_RIdHkZi@smile.fi.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20240416162908.24180-2-fancer.lancer@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+
+On Tue, Apr 16, 2024 at 07:28:55PM +0300, Serge Semin wrote:
+> Currently the src_addr_width and dst_addr_width fields of the
+> dma_slave_config structure are mapped to the CTLx.SRC_TR_WIDTH and
+> CTLx.DST_TR_WIDTH fields of the peripheral bus side in order to have the
+> properly aligned data passed to the target device. It's done just by
+> converting the passed peripheral bus width to the encoded value using the
+> __ffs() function. This implementation has several problematic sides:
+> 
+> 1. __ffs() is undefined if no bit exist in the passed value. Thus if the
+> specified addr-width is DMA_SLAVE_BUSWIDTH_UNDEFINED, __ffs() may return
+> unexpected value depending on the platform-specific implementation.
+> 
+> 2. DW AHB DMA-engine permits having the power-of-2 transfer width limited
+> by the DMAH_Mk_HDATA_WIDTH IP-core synthesize parameter. Specifying
+> bus-width out of that constraints scope will definitely cause unexpected
+> result since the destination reg will be only partly touched than the
+> client driver implied.
+> 
+> Let's fix all of that by adding the peripheral bus width verification
+> method which would make sure that the passed source or destination address
+> width is valid and if undefined then the driver will just fallback to the
+> 1-byte width transfer.
+
+Please, add a word that you apply the check in the dwc_config() which is
+supposed to be called before preparing any transfer?
+
+...
+
+> +static int dwc_verify_p_buswidth(struct dma_chan *chan)
+> +{
+> +	struct dw_dma_chan *dwc = to_dw_dma_chan(chan);
+> +	struct dw_dma *dw = to_dw_dma(chan->device);
+> +	u32 reg_width, max_width;
+> +
+> +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
+> +		reg_width = dwc->dma_sconfig.dst_addr_width;
+> +	else if (dwc->dma_sconfig.direction == DMA_DEV_TO_MEM)
+> +		reg_width = dwc->dma_sconfig.src_addr_width;
+
+> +	else /* DMA_MEM_TO_MEM */
+
+Actually not only this direction, but TBH I do not see value in these comments.
+
+> +		return 0;
+> +
+> +	max_width = dw->pdata->data_width[dwc->dws.p_master];
+> +
+> +	/* Fall-back to 1byte transfer width if undefined */
+
+1-byte
+(as you even used in the commit message correctly)
+
+> +	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
+> +		reg_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> +	else if (!is_power_of_2(reg_width) || reg_width > max_width)
+> +		return -EINVAL;
+> +	else /* bus width is valid */
+> +		return 0;
+> +
+> +	/* Update undefined addr width value */
+> +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
+> +		dwc->dma_sconfig.dst_addr_width = reg_width;
+> +	else /* DMA_DEV_TO_MEM */
+> +		dwc->dma_sconfig.src_addr_width = reg_width;
+
+So, can't you simply call clamp() for both fields in dwc_config()?
+
+> +	return 0;
+> +}
+
+...
+
+> +	int err;
+
+Hmm... we have two functions one of which is using different name for this.
+Can we have a patch to convert to err the other one?
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---lhitrku3ojgb23v2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Andy,
-
-On Tue, Apr 16, 2024 at 05:59:59PM +0300, Andy Shevchenko wrote:
-> On Tue, Apr 16, 2024 at 11:52:19AM +0200, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Apr 15, 2024 at 10:04:39PM +0200, Uwe Kleine-K=F6nig wrote:
-> > > On Mon, Apr 15, 2024 at 10:36:44PM +0300, Andy Shevchenko wrote:
-> > > > On Mon, Apr 15, 2024 at 07:15:54PM +0200, Uwe Kleine-K=F6nig wrote:
->=20
-> ...
->=20
-> > > > You might need this
-> > > >=20
-> > > > 1aa4ad4eb695 serial: core: Fix missing shutdown and startup for ser=
-ial base port
-> > > >=20
-> > > > on top btw.
-> > >=20
-> > > Ah, that looks exactly like my issue. Thanks, I will test that an rep=
-ort
-> > > back.
-> >=20
-> > It improves my situation for sure. I have yet another problem with the
-> > stm32 UART that is driver specfic. I'm working on that one now ...
->=20
-> Please, Cc me on that when publishing, I'm curious.
-
-I don't have a fix yet, but the problem reproduces as follows:
-
-I have a bridge between TX and RX; and also between RTS and CTS; there
-is no DMA involved. I send a big amount of data and so receive that all.
-This puts pressure on the receiving line discipline and so ->throttle()
-is called.
-
-->throttle() sets stm32_port->throttled =3D true; which makes the ISR (=3D
-stm32_usart_interrupt()) stop handle USART_SR_RXNE (=3D RXFIFO not empty).
-So the ISR is called in a tight loop. Stuck irq detection doesn't step
-in because the ISR returns IRQ_HANDLED unconditionally. (For the latter
-I already have a prototype patch.)
-
-It's unclear to me yet, what to do. Some further things that are (maybe)
-relevant are:
-
- - Without a rts-gpio the driver cannot toggle RTS. (Hardware
-   limitation)
- - The driver makes no effort evaluating CTS.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---lhitrku3ojgb23v2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmYesFkACgkQj4D7WH0S
-/k408AgAp8UfNuSQthzioY1PMOyLG2LpW+rqv0+iYoaVAbhSFN6SEH611cipyBZB
-XRMthGysxo9x2YU6nmWaL+6Zxq83oQ3mj+6rRGENrLLMa13RjJDSL5+WzBYZ4U+w
-MgroAR81bHpFVrCDSL9Hxwcq/ooKiTU+2MpyMUzo11PvAglQrKtA3TdgVx208mDf
-zbAnviT1YgTw/7YkbVCfV7D5sjoBbgvwVJ6n0ib+NwgmFjjNfMtgTQl++LoFc7Ig
-pK8oxVyxPrWreq0JPEepT4/xhfQyFaulcGhtLZdw/KGlSDCIXR7IXldeRCnQt6D0
-JgzD5vBg5cPOTZmS/jF9lekHS6B3UA==
-=8028
------END PGP SIGNATURE-----
-
---lhitrku3ojgb23v2--
