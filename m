@@ -1,391 +1,99 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF66156987
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 21:17:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A53156E4;
+	Tue, 16 Apr 2024 03:16:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713215842; cv=none; b=Mn/ESkGVG7A/gbZIOVMvPn1n89IjS1aJKMt8ckVTKqfHBVQrZOQRa0fiebA29pl1rzVnhWbw8olg4DAyQyBu4hzisODHQsCUc6tJ4PcnBF4Cg4Ab0DrPcohOwoh43IMkHBfPGezHQO4B1+FJUTBJwzVwuH5mzP3zNlRG94+jqxo=
+	t=1713237373; cv=none; b=rkJjDKDw0aTYf3KSWyNufD9gQHtNl36fwjoG5Qo9jG1TYqPfwBC2XyPedrpmjQ0zkjSo3NsC9ZKjS/LbFTFRa5thvcaXKW9c+TQtHmCyYG6xy/dmhub3z0Mwsw5/cvapoK8c3uBYon7GNxSXz1xNl3Fr++cdorawCGPvw2qKLGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713215842; c=relaxed/simple;
-	bh=n/UV1lOaJcDiiDP6HZq55kzXr38qVpECvewbDp+jy30=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=tLRYeOTwkMJn3maqWRQY0uV8aI92SFqRuLsqKp0gQWwzrkuG/OXNbyqiXJYo7YFxSw9w7hCpcM1A31mT/g5rq0OnBURaRi0w3/VfPqIZG/QPyuo96whG48Cy2iVzlnBI5eCDppqogsirr4kU5eiPcgueJ9YKoTK5Ku7MvbgKAZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=e9jbcUcA; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1713237373; c=relaxed/simple;
+	bh=B3BEeQqzlf4FZKveKyo0QpREp7f6dmwUHp30YnzGYyQ=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=FibeztqYlKaz4OFeCzM3eR2dOP/a9Z2GXYR5XygfAtYuO2AJR4mm+JrT0ycvKY58UXkG2UIIQeUJz9BVw+HDMxb6c/kaOKBIz6+9qRwkawcLV+RPNpVs28Co7+dOatiDRt0Gam+Z4TKuWAbeUJWuts1BGopxAHHJJDWTcqvhqqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YJ/z2i7J; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="e9jbcUcA"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240415211718euoutp01a4adde1fe66a32dbf561003dc769df0d~GkLpV934B3008930089euoutp01X
-	for <linux-serial@vger.kernel.org>; Mon, 15 Apr 2024 21:17:18 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240415211718euoutp01a4adde1fe66a32dbf561003dc769df0d~GkLpV934B3008930089euoutp01X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1713215838;
-	bh=ORkChA2wTbRw2dbB04fHWYzokvyhGGEPeG4l5SsOJ9U=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=e9jbcUcA/NX99MPXWcNRbKXH5lY9hU+Dd/4H37OQDzLVMYpbcltMwcMBWtrb7G3XO
-	 thkFhPsg6aUrOp5XlueOh/+hVNzLpDBCjZqtw0ZjeAafALwiA3Ziv/hAyL03JDzIPX
-	 tmHPN+bVHy6SOitRt0nIf9qdW71vPwZlUjB0FQlQ=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240415211717eucas1p265b567a26594b4f1321a13a123711c19~GkLoT-WDL2242922429eucas1p25;
-	Mon, 15 Apr 2024 21:17:17 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id B7.2F.09620.D599D166; Mon, 15
-	Apr 2024 22:17:17 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1~GkLnUJ-1S1437514375eucas1p19;
-	Mon, 15 Apr 2024 21:17:16 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240415211716eusmtrp2900e9ed80641738dd8a328873d9c318e~GkLnTkrr-0308803088eusmtrp2W;
-	Mon, 15 Apr 2024 21:17:16 +0000 (GMT)
-X-AuditID: cbfec7f5-d31ff70000002594-48-661d995dd8ab
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 5C.B3.09010.B599D166; Mon, 15
-	Apr 2024 22:17:15 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240415211715eusmtip238e929d6736a7cc9fcb3bafdccf1ef91~GkLm2iS-u0268802688eusmtip2x;
-	Mon, 15 Apr 2024 21:17:15 +0000 (GMT)
-Message-ID: <d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com>
-Date: Mon, 15 Apr 2024 23:17:15 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YJ/z2i7J"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1e4c4fb6af3so21278255ad.0;
+        Mon, 15 Apr 2024 20:16:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713237371; x=1713842171; darn=vger.kernel.org;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vkzqh0jNf3IiQKrXTxkpy8kUD3tILL0aPn6146+WbnA=;
+        b=YJ/z2i7Jx4GuAaXesYZ80KqXxG70nzFASTZEjfriIr3kKedT6xyVvSA/UwFLf5EEIw
+         fL6vJlClHvL0pdrMMTE6v3WRQtEAbq7Hd8Kl+ChJgPaY4T5wkEnfWMM1Gr5mjoUNCkZU
+         zGhnjCCuAiP3s54Lj+85KxyHlr+swaJCRPBpuApsAQS2jSb55i9EAbQqOGXADPjcDno5
+         OT2QdFSyxEt6xICCeALT5YBHG+TooDskm26iUD5VgLZCihPYVg/I4wZ5wL5Ub81uQxCZ
+         t4/cAD15xQZ0WKOTAX70aHO4O31vbGsOOFcWtkORT2luQ5vz79u6sPbjZUmxrZWtXa3h
+         Rngw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713237371; x=1713842171;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vkzqh0jNf3IiQKrXTxkpy8kUD3tILL0aPn6146+WbnA=;
+        b=LH2XLRktl/a156md+O9Xb+VevEnXGg3ZUn7d+2oUsnQp8XoMjDV4bxr6NMVbIrrUyO
+         D0+ZEBG5bsvaiIqEw5SUkT5RXc9bSSI/zDwBRei9kbHWdLlId1TlGj4UCFwtWzRnRxat
+         S2m58kVyTfMM8lv5Lsyuea1zn4f3vrwfzrHnnDTOcCwtWPfrq1PiJ8lQDgIq7XN1WfkZ
+         5TEhkkfSkpCLCP6ezfVZZisURYiIAfJf1goekEXQBG/V722Ojva5f/NPSBE4/IfyaPpv
+         Dpootja5UwCKUZ1qow058fG3v3JvEKUCgjNnZ0kZAS+vykgEsiR83JgRi3MbicHQTDdr
+         5p3g==
+X-Forwarded-Encrypted: i=1; AJvYcCXRJrcVJ90yQJ0be+35IKMjpbUnWDRlvPcHerQXRg7OLbwBLO5DO2lVbwLskIbeeONxypvLtwT1BUHkH8kSqfIliAUUWA0gu2dqxoBhIE1zfjyJCGYdA0Jx3Q+ScOU5KkSGlNXe/9agXkQM
+X-Gm-Message-State: AOJu0Yw55GBvlYa608q/uBdDm76GKeuQ69dRFGnJ0dGdWZ2s1PGnJskM
+	xOvAZWwIB+DB/VZqlSZwiUCWChHXESFMMqe8yEMr3GLn/YftEqWMFU3KZQ==
+X-Google-Smtp-Source: AGHT+IHSIjAivD3fuCRu8S3x6WqiHOYqcW39EQUhx8cIBtuh1xObkH/0VJ0EScu8OF+u+nXFp73CgQ==
+X-Received: by 2002:a17:903:2450:b0:1e0:b60f:5de3 with SMTP id l16-20020a170903245000b001e0b60f5de3mr1335314pls.7.1713237370958;
+        Mon, 15 Apr 2024 20:16:10 -0700 (PDT)
+Received: from localhost.localdomain ([43.159.199.34])
+        by smtp.gmail.com with ESMTPSA id j13-20020a170903024d00b001e1072382a1sm8640310plh.142.2024.04.15.20.16.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Apr 2024 20:16:10 -0700 (PDT)
+From: Guanbing Huang <albanhuang0@gmail.com>
+To: gregkh@linuxfoundation.org,
+	andriy.shevchenko@intel.com,
+	rafael.j.wysocki@intel.com
+Cc: linux-acpi@vger.kernel.org,
+	tony@atomide.com,
+	john.ogness@linutronix.de,
+	yangyicong@hisilicon.com,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	lvjianmin@loongson.cn,
+	albanhuang@tencent.com,
+	tombinfan@tencent.com
+Subject: [PATCH v8 0/3] serial: 8250_pnp: Support configurable reg shift property
+Date: Tue, 16 Apr 2024 11:15:57 +0800
+Message-Id: <cover.1713234515.git.albanhuang@tencent.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] tty: msm_serial: use dmaengine_prep_slave_sg()
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn
-	Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-	linux-arm-msm@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20240405060826.2521-12-jirislaby@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJKsWRmVeSWpSXmKPExsWy7djP87qxM2XTDK51M1ts67CxaF68ns3i
-	3VwZi47J21ksJu4/y25xedccNoszi3vZHdg9Nq3qZPO4c20Pm8f+uWvYPT5vkgtgieKySUnN
-	ySxLLdK3S+DK+DZzG3tBt1fFj5/PGBsYN1l1MXJySAiYSFxseMnWxcjFISSwglHi3olzjBDO
-	F0aJGT/nsUI4nxkltj9dwAjTcvjGInaIxHJGiYk/p0K1fGSUWHf3HztIFa+AncTESZOYQGwW
-	AVWJ9z/+QMUFJU7OfMICYosKyEvcvzUDLC4s4CnxtOU2M4gtIuAlcWryE7ChzAKbGSUudkxi
-	BUkwC4hL3HoyH2wom4ChRNfbLjYQm1PASuL/lSXMEDXyEtvfzmEGaZYQuMIhsb/tGzPE3S4S
-	36+cZoKwhSVeHd/CDmHLSPzfCTIUpKGdUWLB7/tQzgRGiYbnt6C+tpa4c+4X0DoOoBWaEut3
-	6UOEHSXm7LjFChKWEOCTuPFWEOIIPolJ26YzQ4R5JTrahCCq1SRmHV8Ht/bghUvMExiVZiGF
-	yywkb85C8s4shL0LGFlWMYqnlhbnpqcWG+ellusVJ+YWl+al6yXn525iBKae0/+Of93BuOLV
-	R71DjEwcjIcYJTiYlUR4W4Rl04R4UxIrq1KL8uOLSnNSiw8xSnOwKInzqqbIpwoJpCeWpGan
-	phakFsFkmTg4pRqY9AR055et/F6/7rzjJC6LaTreSWdudyy6F6VfYN9ru1GpznRjype79+c6
-	zmBylT/PXPvr64M9X5LNF6W0Szz2PC16bVGx974ji++8fxPMKLfq+YHKFPe1khGB+/Unljxl
-	36/WNvnb0aIZUfy2ixszZAUvznyr9DF1sbzdnZcxLGm5FZ+2Mc4PCLh5UyfRqjRXSsvS93zr
-	0wTvVZe3i2zXiV77lrXLhGdnxrQ5/y44OjY0Z853c5m4Y//NR7kXznts28346Kv1VQsnX+ME
-	Eaa/QYZfDTgFby+fUezqePa6Q1PhYd23NQLr5n92Cp7SrSdfXXO9TSNLfMcR0x/nfcwcWn4H
-	LjGep1Q/ydgyPrxKiaU4I9FQi7moOBEA6RDABawDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrFIsWRmVeSWpSXmKPExsVy+t/xe7rRM2XTDM49srLY1mFj0bx4PZvF
-	u7kyFh2Tt7NYTNx/lt3i8q45bBZnFveyO7B7bFrVyeZx59oeNo/9c9ewe3zeJBfAEqVnU5Rf
-	WpKqkJFfXGKrFG1oYaRnaGmhZ2RiqWdobB5rZWSqpG9nk5Kak1mWWqRvl6CX8W3mNvaCbq+K
-	Hz+fMTYwbrLqYuTkkBAwkTh8YxF7FyMXh5DAUkaJL/svs0EkZCROTmtghbCFJf5c62KDKHrP
-	KDF15TV2kASvgJ3ExEmTmEBsFgFVifc//kDFBSVOznzCAmKLCshL3L81AywuLOAp8bTlNjOI
-	LSLgJXFq8hNGkKHMApsZJTb8OQs2SEggQ2LSuwawZmYBcYlbT+aDxdkEDCW63naBXccpYCXx
-	/8oSZogaM4murV2MELa8xPa3c5gnMArNQnLHLCSjZiFpmYWkZQEjyypGkdTS4tz03GIjveLE
-	3OLSvHS95PzcTYzASNt27OeWHYwrX33UO8TIxMF4iFGCg1lJhLdFWDZNiDclsbIqtSg/vqg0
-	J7X4EKMpMDAmMkuJJucDYz2vJN7QzMDU0MTM0sDU0sxYSZzXs6AjUUggPbEkNTs1tSC1CKaP
-	iYNTqoFpzZkHvQEJfy9Oblumn8ZeZ+pfr+dxbVHEkh5ZjgdG657N1n6o4LLQ0et26mm9VVO9
-	z9Q9Zrr9OoTpw6k9D95uDLRrYlA2lz5x6PV/w5QZS+2u/jKQ1X09teoCS2e4iFD/RTfVov78
-	ZS2ZrQXZHGIMt9y5D2UY+Rh1rzT4os5jmXNl6kY+QQsrHY28gohJd5tMd2Z9ajqs0Lfwh6gX
-	o/eJtr4TDmd7FhSub2JdfkyQeanHBZHTrjMZzVZIX57PNeXJhNR0rbf2tg3meYo5rboHJ57S
-	5u8oKl62cH8rZ1fu4R0m5/d8lIzcx9G1gPXAweviq3fv/Zk0W/PB23Td2C0VX/f0+qy9m3Oq
-	qd4u10GJpTgj0VCLuag4EQBaxmvUPQMAAA==
-X-CMS-MailID: 20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1
-References: <20240405060826.2521-1-jirislaby@kernel.org>
-	<20240405060826.2521-12-jirislaby@kernel.org>
-	<CGME20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1@eucas1p1.samsung.com>
 
-On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
-> This is a preparatory for the serial-to-kfifo switch. kfifo understands
-> only scatter-gatter approach, so switch to that.
->
-> No functional change intended, it's just dmaengine_prep_slave_single()
-> inline expanded.
->
-> And in this case, switch from dma_map_single() to dma_map_sg() too. This
-> needs struct msm_dma changes. I split the rx and tx parts into an union.
-> TX is now struct scatterlist, RX remains the old good phys-virt-count
-> triple.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Bjorn Andersson <andersson@kernel.org>
-> Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
-> Cc: linux-arm-msm@vger.kernel.org
+From: Guanbing Huang <albanhuang@tencent.com>
 
-I've just found that this patch broke UART operation on DragonBoard 
-410c. I briefly checked and didn't notice anything obviously wrong here, 
-but the board stops transmitting any data from its serial port after the 
-first message. I will try to analyze this issue a bit more tomorrow.
+The 16550a serial port based on the ACPI table requires obtaining the
+reg-shift attribute. In the ACPI scenario, If the reg-shift property
+is not configured like in DTS, the 16550a serial driver cannot read or
+write controller registers properly during initialization.
 
-> ---
->   drivers/tty/serial/msm_serial.c | 86 +++++++++++++++++++--------------
->   1 file changed, 49 insertions(+), 37 deletions(-)
->
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index d27c4c8c84e1..7bf30e632313 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -161,11 +161,16 @@ enum {
->   struct msm_dma {
->   	struct dma_chan		*chan;
->   	enum dma_data_direction dir;
-> -	dma_addr_t		phys;
-> -	unsigned char		*virt;
-> +	union {
-> +		struct {
-> +			dma_addr_t		phys;
-> +			unsigned char		*virt;
-> +			unsigned int		count;
-> +		} rx;
-> +		struct scatterlist tx_sg;
-> +	};
->   	dma_cookie_t		cookie;
->   	u32			enable_bit;
-> -	unsigned int		count;
->   	struct dma_async_tx_descriptor	*desc;
->   };
->   
-> @@ -249,8 +254,12 @@ static void msm_stop_dma(struct uart_port *port, struct msm_dma *dma)
->   	unsigned int mapped;
->   	u32 val;
->   
-> -	mapped = dma->count;
-> -	dma->count = 0;
-> +	if (dma->dir == DMA_TO_DEVICE) {
-> +		mapped = sg_dma_len(&dma->tx_sg);
-> +	} else {
-> +		mapped = dma->rx.count;
-> +		dma->rx.count = 0;
-> +	}
->   
->   	dmaengine_terminate_all(dma->chan);
->   
-> @@ -265,8 +274,13 @@ static void msm_stop_dma(struct uart_port *port, struct msm_dma *dma)
->   	val &= ~dma->enable_bit;
->   	msm_write(port, val, UARTDM_DMEN);
->   
-> -	if (mapped)
-> -		dma_unmap_single(dev, dma->phys, mapped, dma->dir);
-> +	if (mapped) {
-> +		if (dma->dir == DMA_TO_DEVICE) {
-> +			dma_unmap_sg(dev, &dma->tx_sg, 1, dma->dir);
-> +			sg_init_table(&dma->tx_sg, 1);
-> +		} else
-> +			dma_unmap_single(dev, dma->rx.phys, mapped, dma->dir);
-> +	}
->   }
->   
->   static void msm_release_dma(struct msm_port *msm_port)
-> @@ -285,7 +299,7 @@ static void msm_release_dma(struct msm_port *msm_port)
->   	if (dma->chan) {
->   		msm_stop_dma(&msm_port->uart, dma);
->   		dma_release_channel(dma->chan);
-> -		kfree(dma->virt);
-> +		kfree(dma->rx.virt);
->   	}
->   
->   	memset(dma, 0, sizeof(*dma));
-> @@ -357,8 +371,8 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
->   
->   	of_property_read_u32(dev->of_node, "qcom,rx-crci", &crci);
->   
-> -	dma->virt = kzalloc(UARTDM_RX_SIZE, GFP_KERNEL);
-> -	if (!dma->virt)
-> +	dma->rx.virt = kzalloc(UARTDM_RX_SIZE, GFP_KERNEL);
-> +	if (!dma->rx.virt)
->   		goto rel_rx;
->   
->   	memset(&conf, 0, sizeof(conf));
-> @@ -385,7 +399,7 @@ static void msm_request_rx_dma(struct msm_port *msm_port, resource_size_t base)
->   
->   	return;
->   err:
-> -	kfree(dma->virt);
-> +	kfree(dma->rx.virt);
->   rel_rx:
->   	dma_release_channel(dma->chan);
->   no_rx:
-> @@ -420,7 +434,7 @@ static void msm_start_tx(struct uart_port *port)
->   	struct msm_dma *dma = &msm_port->tx_dma;
->   
->   	/* Already started in DMA mode */
-> -	if (dma->count)
-> +	if (sg_dma_len(&dma->tx_sg))
->   		return;
->   
->   	msm_port->imr |= MSM_UART_IMR_TXLEV;
-> @@ -448,12 +462,12 @@ static void msm_complete_tx_dma(void *args)
->   	uart_port_lock_irqsave(port, &flags);
->   
->   	/* Already stopped */
-> -	if (!dma->count)
-> +	if (!sg_dma_len(&dma->tx_sg))
->   		goto done;
->   
->   	dmaengine_tx_status(dma->chan, dma->cookie, &state);
->   
-> -	dma_unmap_single(port->dev, dma->phys, dma->count, dma->dir);
-> +	dma_unmap_sg(port->dev, &dma->tx_sg, 1, dma->dir);
->   
->   	val = msm_read(port, UARTDM_DMEN);
->   	val &= ~dma->enable_bit;
-> @@ -464,9 +478,9 @@ static void msm_complete_tx_dma(void *args)
->   		msm_write(port, MSM_UART_CR_TX_ENABLE, MSM_UART_CR);
->   	}
->   
-> -	count = dma->count - state.residue;
-> +	count = sg_dma_len(&dma->tx_sg) - state.residue;
->   	uart_xmit_advance(port, count);
-> -	dma->count = 0;
-> +	sg_init_table(&dma->tx_sg, 1);
->   
->   	/* Restore "Tx FIFO below watermark" interrupt */
->   	msm_port->imr |= MSM_UART_IMR_TXLEV;
-> @@ -485,19 +499,18 @@ static int msm_handle_tx_dma(struct msm_port *msm_port, unsigned int count)
->   	struct circ_buf *xmit = &msm_port->uart.state->xmit;
->   	struct uart_port *port = &msm_port->uart;
->   	struct msm_dma *dma = &msm_port->tx_dma;
-> -	void *cpu_addr;
->   	int ret;
->   	u32 val;
->   
-> -	cpu_addr = &xmit->buf[xmit->tail];
-> +	sg_init_table(&dma->tx_sg, 1);
-> +	sg_set_buf(&dma->tx_sg, &xmit->buf[xmit->tail], count);
->   
-> -	dma->phys = dma_map_single(port->dev, cpu_addr, count, dma->dir);
-> -	ret = dma_mapping_error(port->dev, dma->phys);
-> +	ret = dma_map_sg(port->dev, &dma->tx_sg, 1, dma->dir);
->   	if (ret)
->   		return ret;
->   
-> -	dma->desc = dmaengine_prep_slave_single(dma->chan, dma->phys,
-> -						count, DMA_MEM_TO_DEV,
-> +	dma->desc = dmaengine_prep_slave_sg(dma->chan, &dma->tx_sg, 1,
-> +						DMA_MEM_TO_DEV,
->   						DMA_PREP_INTERRUPT |
->   						DMA_PREP_FENCE);
->   	if (!dma->desc) {
-> @@ -520,8 +533,6 @@ static int msm_handle_tx_dma(struct msm_port *msm_port, unsigned int count)
->   	msm_port->imr &= ~MSM_UART_IMR_TXLEV;
->   	msm_write(port, msm_port->imr, MSM_UART_IMR);
->   
-> -	dma->count = count;
-> -
->   	val = msm_read(port, UARTDM_DMEN);
->   	val |= dma->enable_bit;
->   
-> @@ -536,7 +547,8 @@ static int msm_handle_tx_dma(struct msm_port *msm_port, unsigned int count)
->   	dma_async_issue_pending(dma->chan);
->   	return 0;
->   unmap:
-> -	dma_unmap_single(port->dev, dma->phys, count, dma->dir);
-> +	dma_unmap_sg(port->dev, &dma->tx_sg, 1, dma->dir);
-> +	sg_init_table(&dma->tx_sg, 1);
->   	return ret;
->   }
->   
-> @@ -553,7 +565,7 @@ static void msm_complete_rx_dma(void *args)
->   	uart_port_lock_irqsave(port, &flags);
->   
->   	/* Already stopped */
-> -	if (!dma->count)
-> +	if (!dma->rx.count)
->   		goto done;
->   
->   	val = msm_read(port, UARTDM_DMEN);
-> @@ -570,14 +582,14 @@ static void msm_complete_rx_dma(void *args)
->   
->   	port->icount.rx += count;
->   
-> -	dma->count = 0;
-> +	dma->rx.count = 0;
->   
-> -	dma_unmap_single(port->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
-> +	dma_unmap_single(port->dev, dma->rx.phys, UARTDM_RX_SIZE, dma->dir);
->   
->   	for (i = 0; i < count; i++) {
->   		char flag = TTY_NORMAL;
->   
-> -		if (msm_port->break_detected && dma->virt[i] == 0) {
-> +		if (msm_port->break_detected && dma->rx.virt[i] == 0) {
->   			port->icount.brk++;
->   			flag = TTY_BREAK;
->   			msm_port->break_detected = false;
-> @@ -588,9 +600,9 @@ static void msm_complete_rx_dma(void *args)
->   		if (!(port->read_status_mask & MSM_UART_SR_RX_BREAK))
->   			flag = TTY_NORMAL;
->   
-> -		sysrq = uart_prepare_sysrq_char(port, dma->virt[i]);
-> +		sysrq = uart_prepare_sysrq_char(port, dma->rx.virt[i]);
->   		if (!sysrq)
-> -			tty_insert_flip_char(tport, dma->virt[i], flag);
-> +			tty_insert_flip_char(tport, dma->rx.virt[i], flag);
->   	}
->   
->   	msm_start_rx_dma(msm_port);
-> @@ -614,13 +626,13 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
->   	if (!dma->chan)
->   		return;
->   
-> -	dma->phys = dma_map_single(uart->dev, dma->virt,
-> +	dma->rx.phys = dma_map_single(uart->dev, dma->rx.virt,
->   				   UARTDM_RX_SIZE, dma->dir);
-> -	ret = dma_mapping_error(uart->dev, dma->phys);
-> +	ret = dma_mapping_error(uart->dev, dma->rx.phys);
->   	if (ret)
->   		goto sw_mode;
->   
-> -	dma->desc = dmaengine_prep_slave_single(dma->chan, dma->phys,
-> +	dma->desc = dmaengine_prep_slave_single(dma->chan, dma->rx.phys,
->   						UARTDM_RX_SIZE, DMA_DEV_TO_MEM,
->   						DMA_PREP_INTERRUPT);
->   	if (!dma->desc)
-> @@ -648,7 +660,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
->   
->   	msm_write(uart, msm_port->imr, MSM_UART_IMR);
->   
-> -	dma->count = UARTDM_RX_SIZE;
-> +	dma->rx.count = UARTDM_RX_SIZE;
->   
->   	dma_async_issue_pending(dma->chan);
->   
-> @@ -668,7 +680,7 @@ static void msm_start_rx_dma(struct msm_port *msm_port)
->   
->   	return;
->   unmap:
-> -	dma_unmap_single(uart->dev, dma->phys, UARTDM_RX_SIZE, dma->dir);
-> +	dma_unmap_single(uart->dev, dma->rx.phys, UARTDM_RX_SIZE, dma->dir);
->   
->   sw_mode:
->   	/*
-> @@ -955,7 +967,7 @@ static irqreturn_t msm_uart_irq(int irq, void *dev_id)
->   	}
->   
->   	if (misr & (MSM_UART_IMR_RXLEV | MSM_UART_IMR_RXSTALE)) {
-> -		if (dma->count) {
-> +		if (dma->rx.count) {
->   			val = MSM_UART_CR_CMD_STALE_EVENT_DISABLE;
->   			msm_write(port, val, MSM_UART_CR);
->   			val = MSM_UART_CR_CMD_RESET_STALE_INT;
+To address the issue of configuring the reg-shift property, the 
+__uart_read_properties() universal interface is called to implement it.
+Adaptation of PNP devices is done in the __uart_read_properties() function.
 
-Best regards
+Guanbing Huang (3):
+  PNP: Add dev_is_pnp() macro
+  serial: port: Add support of PNP IRQ to __uart_read_properties()
+  serial: 8250_pnp: Support configurable reg shift property
+
+ drivers/tty/serial/8250/8250_pnp.c | 40 +++++++++++++++++++-----------
+ drivers/tty/serial/serial_port.c   |  7 +++++-
+ include/linux/pnp.h                |  4 +++
+ 3 files changed, 35 insertions(+), 16 deletions(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.17.1
 
