@@ -1,118 +1,210 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 566F9146A9F;
-	Wed, 17 Apr 2024 15:04:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D7B6146D5D;
+	Wed, 17 Apr 2024 15:19:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713366270; cv=none; b=J5ownP4LIQZnMcPb+LuscowXKAWG5BQ8gv7Q5EZeWvBu+G8Rt55h2191L785enWtJYNxXmlOxwJwkM8x5/3gI48qUsUtEw5ED6L/Py4UEUfocmXUhTGaRvYOivJmMpflX+0dRrVRlYjSH2zA5tMwMcZ/INaG3RfYIwGxoyCQcPs=
+	t=1713367171; cv=none; b=HvsCSIFpk17O3hNKB+FUwwlMSmWrKssTsj85WBcfSXFvqDm7dKDJM8DMha9Wlk+PICo+k9rAuKtDGC6u5/jUgckT9SLojwBA2DqsGuuOILj0Wjgvhm70Fm1nHeNKmhb1BEUgEpi5q376f/WiZY+P1/cdQm8RLPYp8U4jvMeepIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713366270; c=relaxed/simple;
-	bh=lXS1zX27CNjD5iT8H4jBr/oAVb3l1Qfc2uEUWSMms9s=;
+	s=arc-20240116; t=1713367171; c=relaxed/simple;
+	bh=9ieCxJYZGNBDD1LiuUPAloXHCCgXHM76uCwIyEXjUiU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tx19HtEIGeeJIreO8UpShAD+V6oBWy2uNZfqc8rARTiD20f37ZeAzqD0WWnqItnXKzgCciK1363uZ3Xlh8kslmYJhl1lbW6ks7lloaVDTI/FarxLG/jHX0wu2ZgQe+vtFKo3kx3iztVnJbGWoWuRVWHX5OW7pbn3ILpb/hKleLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	 To:Cc:Content-Type; b=DIrGVSPrd36Jn+GN0k8StRadAx4YI0/jhtPG6dmKps62hhZVEKP2NJg7Bl4QIg9c+S/Tj/qz9H70ZaL4GioPysQ/Rtk35s9ctUN7qb6tmo/HwZpYaMEcG45CNIiMTLwSWyhM1kaIpB8GZ8a5IBRp0oY30MvlyySiooT09z+9nK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VBnZrAOy; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-617ddc988f5so65805937b3.2;
-        Wed, 17 Apr 2024 08:04:25 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VBnZrAOy"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-43716c1616dso16450181cf.2;
+        Wed, 17 Apr 2024 08:19:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713367169; x=1713971969; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IsuMImG8y65tuxtEa3J0zOxc8q85jI16Vx7B/v7ER6c=;
+        b=VBnZrAOyEn5VczX6uD1UkqvFGOvlhz3Gicaegyd8RAdEBVGDfV8FOOD5DP5Y8ZXUWd
+         HSacl5Qo6DCPzjOwNjbyfSO8y+yvHLfTsnTptuoru9H7brGJHZnh12YueDPln4OLRSFk
+         SsFAcxDz5oikKhitjPLju3KYGzBSOKHi90yRYtmOlT91AuiDeKTcI63PaCPRFmjqBbmf
+         4L4qDlNoot8waIM/Wa+CVYou9HpRI+lgxgCbPmBLnWkh5wA8Z9nS/jUwtxGSexORNG8G
+         yMIl4IHm0uxsUgt1h3GjmmYt0h6VsVaHkwzDAqUm2Rb4ItkSPiK3YGmvk7X1dKKOSOi9
+         DvCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713366264; x=1713971064;
+        d=1e100.net; s=20230601; t=1713367169; x=1713971969;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FmPbDx+9Otjmd3Nxkuoo97wZVDF9LaZCMQjGYZNrMXY=;
-        b=WlpS2UQolmk2Vq7ZluEYBbKtsQkic6ST1nqiNdZRJHqYvSwUCK/1tKUl8yy+zlZSDo
-         zKNDVUkRZV9xVY9R0JRxjf7i52inHi8A8kbQfZwZ0+7Si3MBtbxV/9Q4quZsZLy5eQQ/
-         LUKuc5tZ1d8fGICy31ZIoJVekg+PGEQCpFcjKsWQsvRNvr8aSlPNSEYzYdwVcLj9ybLJ
-         omXJro6BhbAnEwpP8kJHf/I65oY9tZ7U2+hCwBLVxC3/HRT87cbegfLlxJHjHetAICKA
-         +ZiOQ00T5ytTZRDNv254ED04YAPE5m+biUWjBu36dVsiFwKSJOlwVCT+9JXJFjj6ykTK
-         8Ffg==
-X-Forwarded-Encrypted: i=1; AJvYcCVpfvdWRHq9I9f0gGY4aQqfjLdkrpTC+mCUuEqW1daGiHDXgfc2QzjiCg2re+I9chm2zOFGuuZTWC/S1LWiLw+zCEKjPoq/enI5SJyMQt3+hIsGklYD9RqdGdYN2LUQjWTUsgkB8Blhjms7paIfzsRYhvmxMmDa9mD482yUbvIjo66oXaLSZNF3gcqnedd9BcrGxKCUzkHWRbTp2OsNGzpUHOt3OdyHS/AP
-X-Gm-Message-State: AOJu0YyqEbwT7h7HhyAeHKzTG5qYDOSg/vD5jy7A6w4uBkSZFuObRntq
-	f7HNpH758zHrmJxKShvcQ1KEPLYAhkjKAUroyQXpWvZTAWqXmZoQ1rlPW9y3aF8=
-X-Google-Smtp-Source: AGHT+IH5oUTL17S7sn7il+nUEmctv4jcj8o4kjQGqiJsMMd3jEcwJ272A6ccO361lI189UOKcArY0g==
-X-Received: by 2002:a0d:cb8f:0:b0:61a:d2a0:5497 with SMTP id n137-20020a0dcb8f000000b0061ad2a05497mr9128715ywd.8.1713366263851;
-        Wed, 17 Apr 2024 08:04:23 -0700 (PDT)
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
-        by smtp.gmail.com with ESMTPSA id l36-20020a81ad24000000b0061248f16528sm133442ywh.66.2024.04.17.08.04.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Apr 2024 08:04:23 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-61500da846fso41881367b3.1;
-        Wed, 17 Apr 2024 08:04:23 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXPiUKAcp1ZvDubQAVdOZetCGyEq+CiX6hGXH6irpndBN1tna5pXjDT5xaDXTKa2vvjE1rSEP8DQRCHMA67vv7uo0m9ZjpDT/v5ZX20R/R38a1oTbJen1TljSIpeLglHadGJv4ZARifqj4xuJL94Bbn25QX4J70dOl2qd6ZNPEgDUHtS1lE/510/DynKSo2pMJvitOFO+zTsyk96eQS+UmD67I39+TpU6Ff
-X-Received: by 2002:a81:c10c:0:b0:61a:cc3c:ae69 with SMTP id
- f12-20020a81c10c000000b0061acc3cae69mr9032606ywi.18.1713366263495; Wed, 17
- Apr 2024 08:04:23 -0700 (PDT)
+        bh=IsuMImG8y65tuxtEa3J0zOxc8q85jI16Vx7B/v7ER6c=;
+        b=xQ/GlZWwWo2bqK3OLeE62DS1xFrFIKCCTNb5ZPJ6+zrx0vpXcFMom1wqiJFJL/bpA7
+         TSloEfqGS7EAbWmSuL2PdyhTpSsBdcf8Zv0LLwjHqbQN+F7FWUd6IXVl84xnCFpT9K7H
+         ZzK9kgRTqix2qopIqqa64s1RwYi0238DoMM6uvtP4H7YJcjtTBsL/BTocmFmVyMVO4ey
+         QWsVfnWLzf2QygN2kj3xXy41aAdt30Z313e0pExwhTeDh/4SKhsk6FhVZ+7c/WPCUoCl
+         /b2FCikjWt9JV0z/yzxL7q4m3r7Mx0Y7B8eAaBF3GfvbqstSYLdfnOzNyDDZbt9+1AcW
+         Qb2w==
+X-Forwarded-Encrypted: i=1; AJvYcCUBqD+GtitdXL1IXGGznlkhmfSOHdJvhpJslc5qyfVzzv3PFrTssQp2GAzgbomlJo+zwuhwWXp/YOuwVwwsRRAL17vRb4Xi+JBBp1oBgrrL/J/vOJrIwGBmhZI8TM3KmVPRkBU6MprpaDmOm/nuXkKubB0i9LsSU24UX0+vYUyXx8AatCAf5g==
+X-Gm-Message-State: AOJu0YwGCbGn7bXvy0VmrJkuDuNYxBwJRRzkEACVwlbQjmXzNjXJeIas
+	7K5fwn949Xf2kXgF+3JpgptZsbuE0qrUZQRt3E+2lMraD1tWT3S6Cy8P1sWO2okKTI6Jx0rFlpv
+	lDJ6sCOVwNgX2Z24OgVwmxKiT++o=
+X-Google-Smtp-Source: AGHT+IHIisIJ4FJxDLwU+mOfGl94tChPUf7fwp+QgM5rMw7GH+ywYcGEpzukiulU6fkcyGUq246BiHzlmCV8563qhBg=
+X-Received: by 2002:ac8:57cc:0:b0:436:ac83:42b8 with SMTP id
+ w12-20020ac857cc000000b00436ac8342b8mr17228338qta.1.1713367169046; Wed, 17
+ Apr 2024 08:19:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240322144355.878930-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20240322144355.878930-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 17 Apr 2024 17:04:11 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWpSUHjLG16xe2A9rg6kBC=yb9=ErvaB1H3qFa11Vtr3A@mail.gmail.com>
-Message-ID: <CAMuHMdWpSUHjLG16xe2A9rg6kBC=yb9=ErvaB1H3qFa11Vtr3A@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] serial: sh-sci: Add support for RZ/V2H(P) SoC
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20240417135111.20375-1-pratik.farkase@wsisweden.com> <20240417-obscure-denial-ae7c53d0e321@spud>
+In-Reply-To: <20240417-obscure-denial-ae7c53d0e321@spud>
+From: Pratik Farkase <pratikfarkase94@gmail.com>
+Date: Wed, 17 Apr 2024 17:19:18 +0200
+Message-ID: <CACy_QWNpUtDz16RWOHf_-xBhtwt_66_4xCaSf+wzPKFz9c6D0A@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to dtschema
+To: Conor Dooley <conor@kernel.org>
+Cc: Pratik Farkase <pratik.farkase@wsisweden.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
+	Scott Branden <sbranden@broadcom.com>, Stefan Wahren <wahrenst@gmx.net>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 22, 2024 at 3:45=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
-om> wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Wed, Apr 17, 2024 at 4:54=E2=80=AFPM Conor Dooley <conor@kernel.org> wro=
+te:
 >
-> Add serial support for RZ/V2H(P) SoC with earlycon.
+> On Wed, Apr 17, 2024 at 03:51:10PM +0200, Pratik Farkase wrote:
+> > Convert the Broadcom BCM2835 Auxiliary UART to newer DT schema.
+> > Created DT schema based on the .txt file which had
+> > `compatible`, `reg` `clocks` and `interrupts` as the
+> > required properties. This binding is used by Broadcom BCM2835
+> > SOC used in some Raspberry PI boards.
+> > Changes from original file:
+> > Implemented complete example which the original txt binding lacked.
+> >
+> > Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
+> > ---
+> > Changes in v2
+> > - Updated Maintainers list according to feedback
+> > - Fixed typo `Auxiliar` to `Auxiliary`
+> > ---
+> > ---
+> >  .../bindings/serial/brcm,bcm2835-aux-uart.txt | 18 -------
+> >  .../serial/brcm,bcm2835-aux-uart.yaml         | 48 +++++++++++++++++++
+> >  2 files changed, 48 insertions(+), 18 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm28=
+35-aux-uart.txt
+> >  create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm28=
+35-aux-uart.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-=
+uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.t=
+xt
+> > deleted file mode 100644
+> > index b5cc6297cd1b..000000000000
+> > --- a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.tx=
+t
+> > +++ /dev/null
+> > @@ -1,18 +0,0 @@
+> > -* BCM2835 AUXILIAR UART
+> > -
+> > -Required properties:
+> > -
+> > -- compatible: "brcm,bcm2835-aux-uart"
+> > -- reg: The base address of the UART register bank.
+> > -- interrupts: A single interrupt specifier.
+> > -- clocks: Clock driving the hardware; used to figure out the baud rate
+> > -  divisor.
+> > -
+> > -Example:
+> > -
+> > -     uart1: serial@7e215040 {
+> > -             compatible =3D "brcm,bcm2835-aux-uart";
+> > -             reg =3D <0x7e215040 0x40>;
+> > -             interrupts =3D <1 29>;
+> > -             clocks =3D <&aux BCM2835_AUX_CLOCK_UART>;
+> > -     };
+> > diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-=
+uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.=
+yaml
+> > new file mode 100644
+> > index 000000000000..5d4d37371d6b
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.ya=
+ml
+> > @@ -0,0 +1,48 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/serial/brcm,bcm2835-aux-uart.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: BCM2835 AUXILIARY UART
+> > +
+> > +maintainers:
+> > +  - Pratik Farkase <pratikfarkase94@gmail.com>
+> > +  - Florian Fainelli <florian.fainelli@broadcom.com>
+> > +  - Stefan Wahren <wahrenst@gmx.net>
+> > +
+> > +allOf:
+> > +  - $ref: serial.yaml
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: brcm,bcm2835-aux-uart
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +
+> > +  clocks:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - interrupts
+> > +  - clocks
+> > +
+> > +unevaluatedProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/clock/bcm2835.h>
+> > +    #include <dt-bindings/clock/bcm2835-aux.h>
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
 >
-> The SCIF interface in the Renesas RZ/V2H(P) is similar to that available
-> in the RZ/G2L (R9A07G044) SoC, with the following differences:
+> Only 1 of these headers seems used, there's only one define below.
 >
-> - RZ/V2H(P) SoC has three additional interrupts: one for Tx end/Rx ready
->   and two for Rx and Tx buffer full, all of which are edge-triggered.
-> - RZ/V2H(P) supports asynchronous mode, whereas RZ/G2L supports both
->   synchronous and asynchronous modes.
-> - There are differences in the configuration of certain registers such
->   as SCSMR, SCFCR, and SCSPTR between the two SoCs.
+> > +    uart1: serial@7e215040 {
 >
-> To handle these differences on RZ/V2H(P) SoC SCIx_RZV2H_SCIF_REGTYPE
-> is added.
+> The label is unused and can be dropped.
+I did not understand this part. What do you suggest i change it into?
+I took the example from original dtsi file:
+arch/arm/boot/dts/broadcom/bcm283x.dtsi
 >
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> Hi Geert,
+> Otherwise,
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 >
-> To keep the changes minimal I've added a new regtype instead of
-> port type.
 >
-> Cheers, Prabhakar
->
-> v3 - > v4
-> - Added SCIx_RZV2H_SCIF_REGTYPE to handle the differences on the
->   RZ/V2H(P) SoC
+> > +        compatible =3D "brcm,bcm2835-aux-uart";
+> > +        reg =3D <0x7e215040 0x40>;
+> > +        interrupts =3D <1 29>;
+> > +        clocks =3D <&aux BCM2835_AUX_CLOCK_UART>;
+> > +    };
+> > --
+> > 2.34.1
+> >
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Gr{oetje,eeting}s,
-
-                        Geert
 
 --=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Best Regards
+Pratik Farkase
+Be Passionate Be Smart
