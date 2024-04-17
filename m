@@ -1,225 +1,131 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1841813BAFA
-	for <linux-serial@vger.kernel.org>; Wed, 17 Apr 2024 10:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7B913D299;
+	Wed, 17 Apr 2024 10:19:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713348920; cv=none; b=ttvBWuu5U6WOQAybSogxt2nRlrNiXuHesf/V8lqoyEQB5f/7l9yxJ41B291njYh57q8l5N8QSM4ewZDVXBtjN0w843W2O3zc7/kPMNa7ZAx2DlzqbPgwbAufGlbzObc7SnNiSAqNfTiitPrZSdoThxMMtxuCbtF0nc5uP9AUi3o=
+	t=1713349194; cv=none; b=MjTYvX6wGULxzkSX4Ch7WKjGq2do6GRh7ASXxIxyCVCBb4mdsDhW/YPuXROa0jIWKsaa8GWprIsgE0M1TlCulNqZF7azCyS2G8JO6Yuu3RPFceFLhk0eRXLOE5jlGgt5f7SAM2yooeRgLeDz99Xr/QTJ12MK7bUs7dVrw85Jmiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713348920; c=relaxed/simple;
-	bh=fv5yPdVJiGS5NXE2yj0uhfJpuUPlFc72Nbeee8OJh/U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=sLfoutZTaFEjeBryHEULx6aQaEI22sAayz4Mkga+glfBPZn9Mwcd1ZcIbSmVmvLJARVXnDR6F5w3STg3Jj61p2QKbSa7pqO+exCmLv9CpE9gapUexgyFKvx8bFt2XL7dBb9kjg6X2UIrRHkcoxZM6T5t/5LyuLhP6fUXrvnkOJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=cIdFVddK; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1713349194; c=relaxed/simple;
+	bh=O9e24V6PiADRPuas4hKybpLpvCD9gH1/TlfDs45hvPc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ez8bmR6CLj37btGMAG+3bTIACIBrY4VGdWbc71yDZ3v6E72iRpSkuSET1tmrVam345UYlKQ/DMFBIk2NLd6DC0uf7Lgu/zCrpzFxzDUiTq3zGD0j4/troB+uSmaDsyALTIrEr5NHKW+vP3vkp+3WDbERqfgYhQ8NLmUrisbeaKk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YlQOTkLL; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="cIdFVddK"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240417101514euoutp0104378d8838fd2e11c47babac1e3df549~HCcKomt0F1927819278euoutp01F
-	for <linux-serial@vger.kernel.org>; Wed, 17 Apr 2024 10:15:14 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240417101514euoutp0104378d8838fd2e11c47babac1e3df549~HCcKomt0F1927819278euoutp01F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1713348914;
-	bh=27ileZGHOYtN9nZgq/UWvP1r9Ik0Fxmy7wJboV6E4CA=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=cIdFVddK5hwyQtRUY0GZJDPFDCXuchBE3y3vQGGGEDgSwi5jsHnhOcjZPHBjuAQdH
-	 6o6tYAh1h7H9c2G3sANNz1K35uoHN+S4noifChW+UOsTdpiqh8WEAnd/juhrDcK0QH
-	 ENGQe200S6Zh1+bvlQuWYiZNdi1EExLa1CWKAZ0k=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240417101514eucas1p10651fb4252d053df51c3592d50e9015f~HCcKUWcw01830918309eucas1p1r;
-	Wed, 17 Apr 2024 10:15:14 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 8F.D6.09624.231AF166; Wed, 17
-	Apr 2024 11:15:14 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240417101514eucas1p2b86c86cfe435dec8708bbdc7d04ab963~HCcKBUFOp2346623466eucas1p2t;
-	Wed, 17 Apr 2024 10:15:14 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240417101514eusmtrp1b68b48086571f7fa320e5f0f1c0beea9~HCcKAnSma2051020510eusmtrp1Q;
-	Wed, 17 Apr 2024 10:15:14 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-fc-661fa132ddd7
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 14.D4.09010.231AF166; Wed, 17
-	Apr 2024 11:15:14 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240417101513eusmtip2de89af895e989e9365557b692c1f92ba~HCcJmJCBu1775617756eusmtip2O;
-	Wed, 17 Apr 2024 10:15:13 +0000 (GMT)
-Message-ID: <0335b679-da36-42c1-a1ba-8affb7a98d44@samsung.com>
-Date: Wed, 17 Apr 2024 12:15:13 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YlQOTkLL"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6ed691fb83eso4440778b3a.1;
+        Wed, 17 Apr 2024 03:19:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713349192; x=1713953992; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=f5dQLAEVl6XJIGmhvn4StU4aF5gN006BMgNvMVPMtZ8=;
+        b=YlQOTkLLXiF4KHKRG0nhCc1gpCjvBrMkyPWaicLnGzC8YDW0HjmadA1aKZByvD7Zw8
+         0lbmj9VZwqNdOLVpM7IsUVMQyGMtVNw+4V/9UNg1GqcWqU25QfGHXCRNLqCgQkqGvod2
+         zFoSAjSbb4mrKSHqSVYVpCCNam6wT5JtXjwhWhrwg8YhunrbzPnYIHd8dTpbZdqM1KmU
+         gT6shGbnmZ0zwLJpLwE//sn4jf+gXCvw0Yl27Xnu1eVKXdBZIkNZkRKZbfoKVqsOxKAr
+         YFtGJ1zbwBLpb82q7IheKgnNhWjIJ1px3akmUozgdvV/SYnSWbKLm4+9HvcqzuVeY27Z
+         XZ+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713349192; x=1713953992;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f5dQLAEVl6XJIGmhvn4StU4aF5gN006BMgNvMVPMtZ8=;
+        b=JEwttoWX/NAI+AM8Mp2xjEb1LEpy8RoVCS2hXCJJxOX9ojUVi5WOuJx7F3TMsiHAGb
+         DYev4v79tBAhjGGKmmY/pccyWiSSaO+IFUs+N1BzX5AQYQmytvNfjclWMS0MJrb/4MGT
+         PqMEevnWURKYR3BIu8SvZW6MFZ4jkgLituBqzaDf3+hyiZmvq8ver3LnvnZ24bysp/P8
+         o8p/8PQLdjXWq2kNTPHOX4jYR4KhAcr83wF7coc9Eh6KU/SfpLpL4HW5dCZz1IexQtCP
+         lP9ace8Q+4WE84iF2BYXXiiki6j5TiknZYIHRot8sXtVhrtGzLJ//xSvxCDs7N+B3BnU
+         Fcxg==
+X-Forwarded-Encrypted: i=1; AJvYcCXVL/x2qU8UfIx+qHtUnlnL9eE5/UJFarEfMMjh3moxiktM/EHon2kJykBCZHR+aYHAO/ss1FADgX2P6gVNNeAbG5ByajOTqSCE+RYhmKyNHVynufDCAlJsydcP0bDqXjxxgs+GQZYJZMjY
+X-Gm-Message-State: AOJu0YxXsDJ5U/p6lTitiV5iwAIQhxdiqrUk04mS633V/7RzDtXerZ+n
+	0607vgQNf/HBibFdpcW+NlSPKaCsLhuXa0Ifl7cXmHFyRQkkqHQ663djtQ==
+X-Google-Smtp-Source: AGHT+IGaaZja4PRU1ctflcpS2ogtjcMwFa+oKkRP67URbw+72wWAhM4uMJwv+s5bxIQMO5SGVuCjEA==
+X-Received: by 2002:a05:6a00:3913:b0:6ea:8e89:7faf with SMTP id fh19-20020a056a00391300b006ea8e897fafmr17078587pfb.28.1713349192337;
+        Wed, 17 Apr 2024 03:19:52 -0700 (PDT)
+Received: from libra05 ([143.248.188.128])
+        by smtp.gmail.com with ESMTPSA id y7-20020a62b507000000b006ed00ea504asm10309282pfe.159.2024.04.17.03.19.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 03:19:52 -0700 (PDT)
+Date: Wed, 17 Apr 2024 19:19:48 +0900
+From: Yewon Choi <woni9911@gmail.com>
+To: "Starke, Daniel" <daniel.starke@siemens.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	"Dae R. Jeong" <threeearcat@gmail.com>,
+	syzbot+6e3e8f30f269f5028e5d@syzkaller.appspotmail.com
+Subject: Re: tty: n_gsm: race condition in gsmld_ioctl
+Message-ID: <Zh+iROsYkqoRsJQj@libra05>
+References: <Zh5Zj35zeobGGzKj@libra05>
+ <69b4cd22-3a02-4d5c-a110-152b8ba8200b@kernel.org>
+ <DB9PR10MB5881D2170678C169FB42A423E0082@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] tty: msm_serial: use dmaengine_prep_slave_sg()
-To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Bjorn
-	Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
-	linux-arm-msm@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <54679d54-3957-489d-a8b5-b98ea1c8a93c@kernel.org>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFKsWRmVeSWpSXmKPExsWy7djPc7pGC+XTDO79kLW4NeU3k8W2DhuL
-	5sXr2SzezZWx6Ji8ncVi4v6z7BaXd81hszizuJfdgcNj06pONo871/aweeyfu4bd4/MmuQCW
-	KC6blNSczLLUIn27BK6M3m9zmAs+Kle83P2YsYHxvFwXIyeHhICJxMGvDcwgtpDACkaJ5f+5
-	uxi5gOwvjBKXt19ggUh8ZpRYu8wYpqFt+V4WiKLljBI/bz1jhHA+MkpMfLCVHaSKV8BO4uSU
-	46xdjBwcLAKqEot/QIUFJU7OfAI2VFRAXuL+rRlgcWEBT4mnLbeZQcpFBBwlWv9Wg4xkFrjL
-	KDFj91Y2kBpmAXGJW0/mM4HYbAKGEl1vu8DinECrrm7pZoWokZdo3jqbGaRZQuAGh8Sl5+uZ
-	Ia52kbi79z+ULSzx6vgWdghbRuL05B4WiIZ2RokFv+8zQTgTGCUant9ihKiylrhz7hcbyHnM
-	ApoS63fpQ4QdJebsuAX2pIQAn8SNt4IQR/BJTNo2nRkizCvR0SYEUa0mMev4Ori1By9cYp7A
-	qDQLKVhmIXlzFpJ3ZiHsXcDIsopRPLW0ODc9tdgwL7Vcrzgxt7g0L10vOT93EyMw+Zz+d/zT
-	Dsa5rz7qHWJk4mA8xCjBwawkwtsiLJsmxJuSWFmVWpQfX1Sak1p8iFGag0VJnFc1RT5VSCA9
-	sSQ1OzW1ILUIJsvEwSnVwJR6TW5+0bSTp3pufv+afeSO4K7GGQ4fzZr8F9t0Nqrea7TeJbfj
-	zYVthwzmV/u/qFARaPjQLJ+/nXmy6aYE+/er2ORNL7X9y0g5f+/VcYHa7GtTfs2Y5SvaO7s0
-	xKP9PePv6acSF4bq+fZW3GT/YWon4Pfa+eg2Xc8Jk2aFvZi+2KXu+AmvtXXzGj99fXX5vPR5
-	+4UtC22qxDcy3IkKvvzy6PxnV7TXxbUvWOvMayK1c1Hd93qZBlMptvqEzxOOTr4d+UMjQ/PX
-	F4XvF6VUSoT3TKlbrKudqngwdMlVi0Bpi+Oy5/mr6zYdaktLy+6ayP2k9NI0hknv7vU/urE1
-	Rfvcm2tvuljl7s7seNu6asIKJZbijERDLeai4kQAdPsA2K0DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLIsWRmVeSWpSXmKPExsVy+t/xe7pGC+XTDG4e4ra4NeU3k8W2DhuL
-	5sXr2SzezZWx6Ji8ncVi4v6z7BaXd81hszizuJfdgcNj06pONo871/aweeyfu4bd4/MmuQCW
-	KD2bovzSklSFjPziElulaEMLIz1DSws9IxNLPUNj81grI1MlfTublNSczLLUIn27BL2M3m9z
-	mAs+Kle83P2YsYHxvFwXIyeHhICJRNvyvSxdjFwcQgJLGSWW/b7HBpGQkTg5rYEVwhaW+HOt
-	CywuJPCeUeLjKlkQm1fATuLklONANRwcLAKqEot/sEOEBSVOznzCAmKLCshL3L81AywuLOAp
-	8bTlNjNIuYiAo0Tr32qQtcwC9xklJr48ywx1A5PEmTt/wBqYBcQlbj2ZzwRiswkYSnS9hbiB
-	E2jv1S3drBA1ZhJdW7sYIWx5ieats5knMArNQnLHLCSjZiFpmYWkZQEjyypGkdTS4tz03GIj
-	veLE3OLSvHS95PzcTYzAeNt27OeWHYwrX33UO8TIxMF4iFGCg1lJhLdFWDZNiDclsbIqtSg/
-	vqg0J7X4EKMpMCwmMkuJJucDIz6vJN7QzMDU0MTM0sDU0sxYSZzXs6AjUUggPbEkNTs1tSC1
-	CKaPiYNTqoHJQWmdofMSO4ufCYeyKqpZ/PQEJ3PUvfOb3LXoyIZV7M3sFy/p/l6cmyLr/5pR
-	neEFg8GVl9zmTau3z3o25XU8K4vEI1c3PelvjqGb3rafY2/L+hZzK/3F2+Lj8b6WV/pjbm2v
-	mpXMf89zu85W6agnLivZQiqXx7+afi/hdTJP/M0nN06f81dfoREkLFk69exz39evy2L7Wlev
-	c3Bymzb9//Ona3nfX7J2mP5owfPHOw2/+2cd3Wj64FnI7imPeYo4a7u63Hk5HI1jbd372k03
-	MXHI82hKKv15o8Sww6NunVtc7LIE+xZP144mDjmpTwWpPB9XmrBMbUqXf5Twa/vbH+5Hpl4V
-	uWf5PtTeYL0SS3FGoqEWc1FxIgBMvz4WQAMAAA==
-X-CMS-MailID: 20240417101514eucas1p2b86c86cfe435dec8708bbdc7d04ab963
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1
-References: <20240405060826.2521-1-jirislaby@kernel.org>
-	<20240405060826.2521-12-jirislaby@kernel.org>
-	<CGME20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1@eucas1p1.samsung.com>
-	<d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com>
-	<54679d54-3957-489d-a8b5-b98ea1c8a93c@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB9PR10MB5881D2170678C169FB42A423E0082@DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM>
 
-Hi Jiri,
+On Tue, Apr 16, 2024 at 12:26:30PM +0000, Starke, Daniel wrote:
+> > We think either (1) gsm_dlci_alloc() should hold a lock(mutex) and do 
+> > internal check about whether gsm->dlci[addr] is NUll or not, OR
+> > (2) all callers of gsm_dlci_alloc() should hold gsm->mutex and check 
+> > whether gsm->dlci[addr] is NUll or not (like gsmtty_install()).
+> > 
+> > Could you check this? If it makes sense, we will write a patch 
+> > following one of the suggestions.
+> 
+> We are currently dealing with multiple race conditions in the n_gsm. Not
+> only for the syzkaller reports but in recent exploits for example, too.
+> I believe we need an overall concept/solution for these.
+> 
+> Currently, the following actors can race:
+> - ioctl (e.g. resetting the mux or one of its DLCIs)
+> - ldisc callbacks (e.g. receiving SABM or DISC in gsm_queue())
+> - tty callbacks (e.g. gsmtty_hangup())
+> - internal write task (gsmld_write_task())
+> - internal timers (e.g. gsm_control_keep_alive())
+> - driver removal
+> 
+> Each with another and ioctl's from multiple threads.
+> 
+> Guarding these is not trivial for the following reasons:
+> - execution context may not allow sleep (timers, write task, tty callbacks?)
+> - creating an atomic section may conflict inner sleeps (e.g. ioctl)
+> - dead-locking needs to be considered
+> - locking may introduce high performance bottlenecks
+> 
+> Still, not guarding one of the racing actors does not appears to be
+> possible as I see it.
+> 
+> Unfortunately, for the same reason the sleep while atomic issue when using
+> a console on a virtual tty has not been fixed yet, I have no solution at
+> hand. We are dealing with a quite complex situation here.
+> 
+> Nevertheless, creating many small patches here and there should not be our
+> solution for obvious reasons. This does not give a complete solution and
+> makes it harder to find the remaining corner cases.
+> 
+> I can assist to find a solution here, but I have not enough time to do this
+> alone at the moment.
+> 
 
-On 16.04.2024 12:23, Jiri Slaby wrote:
-> On 15. 04. 24, 23:17, Marek Szyprowski wrote:
->> On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
->>> This is a preparatory for the serial-to-kfifo switch. kfifo understands
->>> only scatter-gatter approach, so switch to that.
->>>
->>> No functional change intended, it's just dmaengine_prep_slave_single()
->>> inline expanded.
->>>
->>> And in this case, switch from dma_map_single() to dma_map_sg() too. 
->>> This
->>> needs struct msm_dma changes. I split the rx and tx parts into an 
->>> union.
->>> TX is now struct scatterlist, RX remains the old good phys-virt-count
->>> triple.
->>>
->>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
->>> Cc: Bjorn Andersson <andersson@kernel.org>
->>> Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
->>> Cc: linux-arm-msm@vger.kernel.org
->>
->> I've just found that this patch broke UART operation on DragonBoard
->> 410c. I briefly checked and didn't notice anything obviously wrong here,
->> but the board stops transmitting any data from its serial port after the
->> first message. I will try to analyze this issue a bit more tomorrow.
->
-> I double checked, but I see no immediate issues in the patch too. So 
-> please, if you can analyze this more…
+Thank you for your comprehensive explanation.
 
-I've spent some time digging into this issue and frankly speaking I 
-still have no idea WHY it doesn't work (or I seriously mixed something 
-in the scatterlist principles). However I found a workaround to make it 
-working. Maybe it will help a bit guessing what happens there.
+As you described, there are many concurrency issues entangled each other and 
+fixing single one will be rather confusing.
+I hope this mail is supportive on solving the problems.
 
-Here is a workaround:
+Sincerely,
+Yewon Choi
 
-diff --git a/drivers/tty/serial/msm_serial.c 
-b/drivers/tty/serial/msm_serial.c
-index ae7a8e3cf467..fd3f3bf03f33 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -169,6 +169,7 @@ struct msm_dma {
-                 } rx;
-                 struct scatterlist tx_sg;
-         };
-+       int                     mapped;
-         dma_cookie_t            cookie;
-         u32                     enable_bit;
-         struct dma_async_tx_descriptor  *desc;
-@@ -278,6 +279,7 @@ static void msm_stop_dma(struct uart_port *port, 
-struct msm_dma *dma)
-                 if (dma->dir == DMA_TO_DEVICE) {
-                         dma_unmap_sg(dev, &dma->tx_sg, 1, dma->dir);
-                         sg_init_table(&dma->tx_sg, 1);
-+                       dma->mapped = 0;
-                 } else
-                         dma_unmap_single(dev, dma->rx.phys, mapped, 
-dma->dir);
-         }
-@@ -434,7 +436,7 @@ static void msm_start_tx(struct uart_port *port)
-         struct msm_dma *dma = &msm_port->tx_dma;
-
-         /* Already started in DMA mode */
--       if (sg_dma_len(&dma->tx_sg))
-+       if (dma->mapped)
-                 return;
-
-         msm_port->imr |= MSM_UART_IMR_TXLEV;
-@@ -462,7 +464,7 @@ static void msm_complete_tx_dma(void *args)
-         uart_port_lock_irqsave(port, &flags);
-
-         /* Already stopped */
--       if (!sg_dma_len(&dma->tx_sg))
-+       if (!dma->mapped)
-                 goto done;
-
-         dmaengine_tx_status(dma->chan, dma->cookie, &state);
-@@ -481,6 +483,7 @@ static void msm_complete_tx_dma(void *args)
-         count = sg_dma_len(&dma->tx_sg) - state.residue;
-         uart_xmit_advance(port, count);
-         sg_init_table(&dma->tx_sg, 1);
-+       dma->mapped = 0;
-
-         /* Restore "Tx FIFO below watermark" interrupt */
-         msm_port->imr |= MSM_UART_IMR_TXLEV;
-@@ -522,6 +525,7 @@ static int msm_handle_tx_dma(struct msm_port 
-*msm_port, unsigned int count)
-         dma->desc->callback_param = msm_port;
-
-         dma->cookie = dmaengine_submit(dma->desc);
-+       dma->mapped = 1;
-         ret = dma_submit_error(dma->cookie);
-         if (ret)
-                 goto unmap;
-@@ -549,6 +553,7 @@ static int msm_handle_tx_dma(struct msm_port 
-*msm_port, unsigned int count)
-  unmap:
-         dma_unmap_sg(port->dev, &dma->tx_sg, 1, dma->dir);
-         sg_init_table(&dma->tx_sg, 1);
-+       dma->mapped = 0;
-         return ret;
-  }
-
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> Best regards,
+> Daniel Starke
