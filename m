@@ -1,38 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CDAD13C80B;
-	Wed, 17 Apr 2024 11:18:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D892B13C68E;
+	Wed, 17 Apr 2024 11:19:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713352716; cv=none; b=fLPe2izSDo5oFmZo3K5HUZELzobDGqPrAEYYyp7agRruYbWQJZjiTrHAwZL0ELSeEcSmHu7ZDQrXbyKo4I6Wje0n7YhF4QRKcVn+KFA+dsJ7xYvYFgCeY+c/QPd282GfYqxnJETNyRxSJgvNqAnnIgz4LxFiXZrQsP4twACa32c=
+	t=1713352749; cv=none; b=sJmZbWRYT24KslvtJLSAYiGAI7QQSveCIWKpBn6TYdOPpQdYjclNthmJcRlRwoKlEIBhWXRI9dYs1wWapPM55bA4rjWBY8gqs+40CS1cZamloGBhA8K8+CMOerV371vju5kp/212Oxqm6NC4z2km8Idfx3mDMFLfEOJNPcWm8YQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713352716; c=relaxed/simple;
-	bh=IZUgiSBdQAoQRubBCT3/2bhNxeEj1vM1SZLMwCmRNlk=;
+	s=arc-20240116; t=1713352749; c=relaxed/simple;
+	bh=OUmscy4N4P8Jk2gTRlKg8QoiDcFeKHpdLLSRDJuAFUs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RUoenf6x//URUvgl0/utzhf9Zq3jG8vb9bHE51tUwXGep7I/fBJDcWRRRBVWAoMjh0JBpdEzGO4K/Yl+eU4WB/J87m+GBtoORa6+AQW+k9TYrla35tR2L9C/DtkYuR5hIsz5+47HqBfK1HexHJa7SDu/pW+QzPhzZ9iUF6x35lY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=jl2tWzvt; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=HoQ0Zkvm5NXRc1pGvlh4lx+ubKLccZF5pgtJcVNtrcNWbTZBsqJ3WI1PEKHZq9IPcenLThPqkqwsXWbN4GjBm8DLt2QEGImBVQZPVwzTgNOCLtkCHQlxMoJo5NFaejlgLtWo/GEeQPa7dk0cANz4EMAQspjJosaq4RKCktjnjFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ZoVBz0gF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jl2tWzvt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 921B4C072AA;
-	Wed, 17 Apr 2024 11:18:35 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ZoVBz0gF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A0BBC072AA;
+	Wed, 17 Apr 2024 11:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713352716;
-	bh=IZUgiSBdQAoQRubBCT3/2bhNxeEj1vM1SZLMwCmRNlk=;
+	s=korg; t=1713352749;
+	bh=OUmscy4N4P8Jk2gTRlKg8QoiDcFeKHpdLLSRDJuAFUs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jl2tWzvtLLhYJalpZ3HzCMpIgbKmpZI78SNAtmX4yBb56A0Il+1sjaMAtFEoz8z4u
-	 Cwc/OsdHtaHm3kSTmlGafIeub4CqfdxONCwkEHakH0TpIKV1VvyFDHCiuKdCBLUXLb
-	 PTFf3E+SEBvHBXCgWG56vOgdIk46OWnrL7lloKOg=
-Date: Wed, 17 Apr 2024 13:18:33 +0200
+	b=ZoVBz0gFmumlP0r3VGjZnjMIWstMpSiEMcc5ylLCjx0s2EH0pz29JXox1qJPClen3
+	 EeXnXZORb8fBYU7G0hcyEPRLh8TOCYW89wXPqclKJIFzZX1NacnWnWq9P6GBDteWU/
+	 zlQjL0n86lGFd/vXCGv3zXIVScFoASpavFGigGX0=
+Date: Wed, 17 Apr 2024 13:19:07 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Parker Newman <parker@finest.io>
 Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v3 4/8] serial: exar: add optional board_init function
-Message-ID: <2024041750-register-exterior-087a@gregkh>
+Subject: Re: [PATCH v3 8/8] serial: exar: fix: fix crash during shutdown if
+ setup fails
+Message-ID: <2024041746-galvanize-satchel-09a4@gregkh>
 References: <cover.1713270624.git.pnewman@connecttech.com>
- <cd710c68b6bc84efda3a57a1e91a1191d51fccb5.1713270624.git.pnewman@connecttech.com>
+ <1a21fffe403d7181e0404db1ed92140c306f97b7.1713270624.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,51 +42,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cd710c68b6bc84efda3a57a1e91a1191d51fccb5.1713270624.git.pnewman@connecttech.com>
+In-Reply-To: <1a21fffe403d7181e0404db1ed92140c306f97b7.1713270624.git.pnewman@connecttech.com>
 
-On Tue, Apr 16, 2024 at 08:55:31AM -0400, Parker Newman wrote:
+On Tue, Apr 16, 2024 at 08:55:35AM -0400, Parker Newman wrote:
 > From: Parker Newman <pnewman@connecttech.com>
 > 
-> - Add an optional "board_init()" function pointer to struct
-> exar8250_board which is called once during probe prior to setting up
-> the ports.
+> If a port fails to register with serial8250_register_8250_port() the
+> kernel can crash when shutting down or module removal.
 > 
-> - Fix several "missing identifier name" warnings from checkpatch in
-> struct exar8250_platform and struct exar8250_board:
-> 
-> WARNING: function definition argument <arg> should also have an
-> identifier name
-> 
-> - Fix warning from checkpatch:
-> WARNING: please, no space before tabs
-> + * 0^I^I2 ^IMode bit 0$
-> 
-> Changes in v3:
->  - Renamed board_setup to board_init.
->  - Changed pci_err to dev_err_probe
->  - Added note above about checkpatch fixes
+> This is because "priv->line[i]" will be set to a negative error code
+> and in the exar_pci_remove() function serial8250_unregister_port() is
+> called without checking if the "priv->line[i]" value is valid.
 > 
 > Signed-off-by: Parker Newman <pnewman@connecttech.com>
 > ---
->  drivers/tty/serial/8250/8250_exar.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
+>  drivers/tty/serial/8250/8250_exar.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 388dd60ad23a..cf7900bd2974 100644
+> index 501b9f3e9c89..f5a395ed69d1 100644
 > --- a/drivers/tty/serial/8250/8250_exar.c
 > +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -133,7 +133,7 @@
->   *
->   * MPIO		Port	Function
->   * ----		----	--------
-> - * 0		2 	Mode bit 0
-> + * 0		2	Mode bit 0
+> @@ -1671,7 +1671,8 @@ static void exar_pci_remove(struct pci_dev *pcidev)
+>  	unsigned int i;
+> 
+>  	for (i = 0; i < priv->nr; i++)
+> -		serial8250_unregister_port(priv->line[i]);
+> +		if (priv->line[i] >= 0)
+> +			serial8250_unregister_port(priv->line[i]);
 
-This change isn't related to the exar8250_board change, right?
-
-Just keep exar8250_board change as one patch, and the coding style
-warning fixups as one for the very end, after you add all of your new
-functionality.
+Is this a bug in the current driver?  If so, can you resend it on its
+own so we can get it merged now?
 
 thanks,
 
