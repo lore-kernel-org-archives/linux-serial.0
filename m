@@ -1,41 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 524EA13BAFB;
-	Wed, 17 Apr 2024 13:30:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1233813173A;
+	Wed, 17 Apr 2024 13:33:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713360660; cv=none; b=qXHId1gUK8u3kW3k5isRNH6w6CEgCUcEuHJPZ2f/5otM77tKmMX3upzcES4KJDHhcl1GHrjh/Rj6x+VptnjgSjbzG+X/UgfXEYWzMAZ7CXY+aM/WqDs4L55ztnn+MiKr4RMqqkuLMr+wa0zsU3FHnjLaotbRchbDuWjW+7bC6xU=
+	t=1713360782; cv=none; b=df2f+C/SA6jczvugJbLXYwndyM6U2IcpyXlr2r5ozP/zslAtWMQptpJSqaFSAdO5xJWRSrHDUIBfWAk5cfX2pInFHQ1OPFgAZGMUgZH5D48XIuWb9t6T5IIx7p509sUwpjAaQVX2wL3+XvpMaWMuGKlN/kyQPtHzs6id0RpEObA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713360660; c=relaxed/simple;
-	bh=WiX3CxJvr+ydE+u5l5Y9ymhgWQ140YrTzOQJMdduWF4=;
+	s=arc-20240116; t=1713360782; c=relaxed/simple;
+	bh=0FAQr3+1ZyvZLqysSDdApJFQe0+RgfkEZ/Lh4fI1GnE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=q1asVjBFNmJt4g7r1mRnoAriOF+TJ6m9e20f1sYu4kcjxx3x02FZH7ps1iJ5YITSavvCBuYU1IS0Aye4pi2AB66miXfauzKR4iD23EW1egci0cyMk15ZgrBFRI31qUJbfoAebAHxKzFIiN7e01N8FrUIeYi3IR/iipRZVW+Yinw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=YcUBcPyh; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=QgQNwJsgL+40lY9H1X+lG0w/zDw0XBDnDDDit+D3M55eiv/ei38gsNlCukfx9H4Q1aUTav+E1F4Xr15sd3Rjy8PlBnuqztnqjATxjLJRtl5rZgoYqx7qKfPFNOPn4wr8wjl46OvagZ9mGSDQcxC5H9YecgKyjejoFVE78SNrcWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=f8WHvl68; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="YcUBcPyh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F094C3277B;
-	Wed, 17 Apr 2024 13:30:59 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="f8WHvl68"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E66C072AA;
+	Wed, 17 Apr 2024 13:33:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713360659;
-	bh=WiX3CxJvr+ydE+u5l5Y9ymhgWQ140YrTzOQJMdduWF4=;
+	s=korg; t=1713360781;
+	bh=0FAQr3+1ZyvZLqysSDdApJFQe0+RgfkEZ/Lh4fI1GnE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YcUBcPyhI4Q5bgipJU27blJaZaL+Tj03m1UM0mrdMcEtndQ5cT6a6OrAqe7vZQhAB
-	 E8ZH0w6wvWCkLhcUpDV7WM4ymn1edQrPKuZ+p5Jc5JGYkWXaI89xchjJsANpVBaU+f
-	 PDCZS//twwiKmTlXnCYPNiiehyCd0pM1doVMIVZM=
-Date: Wed, 17 Apr 2024 15:30:56 +0200
+	b=f8WHvl68uFX4nxlyi0wiRaglG8F8qQhn71IzAOpEEnlmDOTsivZmG9z89kl2BHYaj
+	 JxFdfrFmaYBTalfPEaGu6CiC+JYRcAgubU4ByKQdSdTmM+QPGH2xtk/iwQpE7UQrcH
+	 xl6UpOD24d87Pc2xxrsvl23yhIcmyT+Dn7B8z2/0=
+Date: Wed, 17 Apr 2024 15:32:58 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Parker Newman <parker@finest.io>
 Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v3 8/8] serial: exar: fix: fix crash during shutdown if
- setup fails
-Message-ID: <2024041730-abstain-dynamite-054a@gregkh>
+Subject: Re: [PATCH v3 7/8] serial: exar: add CTI specific setup code
+Message-ID: <2024041700-engraved-bootie-aca5@gregkh>
 References: <cover.1713270624.git.pnewman@connecttech.com>
- <1a21fffe403d7181e0404db1ed92140c306f97b7.1713270624.git.pnewman@connecttech.com>
- <2024041746-galvanize-satchel-09a4@gregkh>
- <20240417082413.70397ccf@SWDEV2.connecttech.local>
+ <354ff4aa9d8bdea1a21c503e685e81ac3df48eb8.1713270624.git.pnewman@connecttech.com>
+ <2024041726-fall-debunk-6cc5@gregkh>
+ <20240417091735.17686470@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -44,47 +43,61 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240417082413.70397ccf@SWDEV2.connecttech.local>
+In-Reply-To: <20240417091735.17686470@SWDEV2.connecttech.local>
 
-On Wed, Apr 17, 2024 at 08:24:13AM -0400, Parker Newman wrote:
-> On Wed, 17 Apr 2024 13:19:07 +0200
+On Wed, Apr 17, 2024 at 09:17:35AM -0400, Parker Newman wrote:
+> On Wed, 17 Apr 2024 13:24:20 +0200
 > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 > 
-> > On Tue, Apr 16, 2024 at 08:55:35AM -0400, Parker Newman wrote:
-> > > From: Parker Newman <pnewman@connecttech.com>
-> > >
-> > > If a port fails to register with serial8250_register_8250_port() the
-> > > kernel can crash when shutting down or module removal.
-> > >
-> > > This is because "priv->line[i]" will be set to a negative error code
-> > > and in the exar_pci_remove() function serial8250_unregister_port() is
-> > > called without checking if the "priv->line[i]" value is valid.
-> > >
-> > > Signed-off-by: Parker Newman <pnewman@connecttech.com>
-> > > ---
-> > >  drivers/tty/serial/8250/8250_exar.c | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> > > index 501b9f3e9c89..f5a395ed69d1 100644
-> > > --- a/drivers/tty/serial/8250/8250_exar.c
-> > > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > > @@ -1671,7 +1671,8 @@ static void exar_pci_remove(struct pci_dev *pcidev)
-> > >  	unsigned int i;
-> > >
-> > >  	for (i = 0; i < priv->nr; i++)
-> > > -		serial8250_unregister_port(priv->line[i]);
-> > > +		if (priv->line[i] >= 0)
-> > > +			serial8250_unregister_port(priv->line[i]);
+> > On Tue, Apr 16, 2024 at 08:55:34AM -0400, Parker Newman wrote:
+> > >  struct exar8250 {
+> > >  	unsigned int		nr;
+> > > +	unsigned int		osc_freq;
+> > > +	struct pci_dev		*pcidev;
+> > > +	struct device		*dev;
 > >
-> > Is this a bug in the current driver?  If so, can you resend it on its
-> > own so we can get it merged now?
+> > Why do you need both a pci_dev and a device?  Aren't they the same thing
+> > here?
 > >
 > 
-> Yes it is, I can split this one out and send it on its own.
+> I added dev to make the prints cleaner. I personally prefer:
+> 
+> 	dev_err(priv->dev, ...);
+> to
+> 	dev_err(&priv->pcidev->dev, ...);
+> 
+> or to adding a:
+> 	struct device *dev = &priv->pcidev->dev;
+> 
+> to every function just for printing.
+> 
+> However, I do understand your point. I can drop dev if you prefer.
 
-Great!  Bonus points if you can find the commit id it fixes and add a
-"Fixes:" tag to the signed-off-by area.  If not, I can guess :)
+Pick one and stick with it, no need for both.  I too like your first
+option, and if you never need the pci device pointer, just stick with
+"struct dev".  Note, properly reference count it in case you think it
+could go away from underneath you (some paths it could, so be careful.)
+
+> > > +static int cti_tristate_disable(struct exar8250 *priv, unsigned int port_num)
+> > > +{
+> > > +	return _cti_set_tristate(priv, port_num, false);
+> > > +}
+> >
+> > Do you ever call _cti_set_tristate() with "true"?
+> >
+> 
+> Currently no. However, re-enabling tristate via a custom ioctl was a feature in
+> our old out-of-tree driver (which was created prior to linux RS485 support).
+> 
+> I am not sure how it would be activated now, but I left enabling tristate as an
+> option in to make it easier down the line when we need it.
+> 
+> I can add a note to the patch or remove it if you would prefer.
+
+Just remove it for now, no need to ever add code you "might need in the
+future", just add that then, when you need it.  Code for what you need
+to do now, that makes things simpler and removes extra stuff that you
+would have to force others to review :)
 
 thanks,
 
