@@ -1,172 +1,262 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA5416FF3D;
-	Wed, 17 Apr 2024 16:33:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0127214199C;
+	Wed, 17 Apr 2024 17:14:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713371592; cv=none; b=PYLpkCT8954vcAJfTPBdn4pQv1FNmCTObvJWUjNy1OBzCM95IjJSexkISDMkQTjZVEco+paMnZwqVvPvq6PtEaDChJ+hPKCCqgN2JVlozx/daz4op5wJuHVuWTkuJsvZeF3Ok/qqw00cXIlbLtsNg7rxf7u3PBqqyUvfI9JCR3c=
+	t=1713374045; cv=none; b=KocJIUaP7sbBB94aCOHLtjd9b2ugACMRLxrxfZKuAS8dAFivDGPq0v96QpQuKMicJZ+2TtfhybGCzDs65y7zDqI7xYq7ciUJ1YckpPFxjUAKtMeeQPwzCeJedYpdQp6YxHUFv+Z8/UawV6xMk4hkhzGhei7XZycZxVCSmpnfLEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713371592; c=relaxed/simple;
-	bh=H16RDcSXiwW3boEkfjBDObKtkSAaLyjSW/xLSJ2yxrg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dMQgqKgBroqCSYQLXG6cflmZe4LCzBWKXkVt84y4Tm1LXCW0hX2lttlbuxS9EEOL4b2T5LUXQTEJZiEV7svj4v6l/qwAzNbiwsZk42k5Qbw5DXTgtsoITaG936LHEnoeemPW1zrFEnaQn1Bn8Rwa4jBZbWNoSG3xX33wWqg3iFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=rQrw7v4Q; arc=none smtp.client-ip=74.208.4.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1713374045; c=relaxed/simple;
+	bh=lj8aJUMl44Y4DxflO3LqH+eNRX9TRbSUMZYJVsKLiY0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BlyBMCXqI7r4mJO1tCuBtxXRIzrrxQB1lsUR/o3j505ftBZseEdJgDpl3WCjR9R6f+LuWeObtrU92K/bMtGZxXlvHnn6yfa9MvQMkaWxam0kK2EcggzTUkvTHASt7gAFuI4gUR/1o0cp/S+h2stCOBrKYqbIgM/EY9JhjYUBKoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WhYLUlDN; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="rQrw7v4Q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713371575; x=1713976375; i=parker@finest.io;
-	bh=ppksCirNLcq+JKWP3akPmNVgbZGLQOhKntxR0CMxoqs=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=rQrw7v4Q4t5q4tKKuBEcxcDn0kHN+kfQxQ5FOaFrNaQmaozn9Gz/o8bStUoK0FrA
-	 k+Gns8ip7itWXIkGJYxOD4FiNn1wjprkpVjx95yEu+a9vpQK9kNjyqlXCt5YADSTC
-	 6OEWqmEEbv6DqOIbW1RY5QeCZt0KcBcoTOtPSdiUKAuO7lJlTEcPSPnZ5n0YEn+vg
-	 f0MwO5b+QjvpTSo+qJftyYxHVPBgYpCkrnp2BGEJ/2iuY1rtK+DyQ1xEgBWwmvCs7
-	 TTEWXDOKElYNz0SsT3e033UJTf8BdLCNZ07NTU+id7lrpAPfjIyh6+7iDEj/4tyZz
-	 X9A5Ep4KNXEQ8Dz/OA==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0M4oHb-1sfiyx47OH-00yxsI; Wed, 17 Apr 2024 18:32:55 +0200
-Date: Wed, 17 Apr 2024 12:32:53 -0400
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v3 8/8] serial: exar: fix: fix crash during shutdown if
- setup fails
-Message-ID: <20240417123253.0f9d4555@SWDEV2.connecttech.local>
-In-Reply-To: <2024041730-abstain-dynamite-054a@gregkh>
-References: <cover.1713270624.git.pnewman@connecttech.com>
-	<1a21fffe403d7181e0404db1ed92140c306f97b7.1713270624.git.pnewman@connecttech.com>
-	<2024041746-galvanize-satchel-09a4@gregkh>
-	<20240417082413.70397ccf@SWDEV2.connecttech.local>
-	<2024041730-abstain-dynamite-054a@gregkh>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WhYLUlDN"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-518f8a69f82so4004157e87.2;
+        Wed, 17 Apr 2024 10:14:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713374042; x=1713978842; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=b1WlPy7Sg/AbF3lG9IuHJ6Ld8oFGaFqFMXHnnnRw8iY=;
+        b=WhYLUlDNmg0Gy24mY+BdQ5ly1WLwqnWUuIeWK3ls/lUIQMp6yt6/IBX2fHTONVh+3U
+         TvmdjwaQlFSyOFIOByPjazWOIWcR3QcdBAncxF+QMpQRdaxE00xtYMelpoEs58G2aJMg
+         +a4s1ck6oVcDNTXgKKlPQkpIGLOOZ9mUXqybXI2cRdW0vvCLTBv3U7z4oXh30AVkq6vv
+         LdXNZ71+Wca3/b2+rojo92fMqtfunEGq7GDHRx9+fQV1tTF87KiTanDe6XUvVuwT8aGI
+         7HlCDdBfX6Euahbqa4Zp+0Ile5m5Ru18H0PAkXZK93gEJbjBBDcSNPUtftz5AS3GQKNQ
+         USnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713374042; x=1713978842;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b1WlPy7Sg/AbF3lG9IuHJ6Ld8oFGaFqFMXHnnnRw8iY=;
+        b=Qn6LWCTjX5WihT8n7Bc1X7gUOsVraOeAeMOy02okmO6mPgdu5Pm6VWIVeEaQhljJtb
+         zalJwZjppy2s53IS/CXMbGu87tjzZZUf5UNoENxLuSzXRiupDt3Xnyso7GTkwPk/wxlM
+         XupSj0I/ryFzR3U2eZ2cQ87wcg+DKjN7eJ26/+BswQI32lejIugpbEW+3c+/mrR13dGj
+         7eUP80boKOALS9YzgbsVZcebodInTjhW9F6gQyzjHBVI0CF93d2GS4bl/OI3BZqazU48
+         lrvI21rO/7IIVSnxCN2QuaEGy8kLHWtmFg7rLjutCdowazWS80k2AQyw8tM0zw5O6QxL
+         ZZgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXcR7nsa29sO+llogQHgUoi2ifIjUmu7WP8mHvYqwjU0bAx5aKR0QzOK70kedtLYbVRPon2Z6mRT+muhm9NjP5c7F1D1Vzfw6EzQeXffBC7aKdYbVE3Tiboj8OqaVgWk6RzAghOGjf6z8z/aKc/0W7iJg03PIOxQe/gUIDM8cxzNRNIqdU9
+X-Gm-Message-State: AOJu0Yyfigh2bBUqh6t2rYIm7Zt5uWsFNp8ze40qJrqlbXTAjOsHkTsR
+	Ql0oMun+MOCmFEU5kTart4J/faQtpV80xZkgSZ4ZyN2UtiMoEk1ctqjniw==
+X-Google-Smtp-Source: AGHT+IGcIV12jfWYrHmoGAn10S6hsqSnQ+zpqC4kPUQUcwpfqg33BTEVy4vyYHhM1HSjj7OlnYv7/A==
+X-Received: by 2002:ac2:46e6:0:b0:518:c2fb:a365 with SMTP id q6-20020ac246e6000000b00518c2fba365mr8484901lfo.31.1713374041742;
+        Wed, 17 Apr 2024 10:14:01 -0700 (PDT)
+Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
+        by smtp.gmail.com with ESMTPSA id z18-20020a19f712000000b00518e3a194e9sm1078669lfe.304.2024.04.17.10.14.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 10:14:01 -0700 (PDT)
+Date: Wed, 17 Apr 2024 20:13:59 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH 2/4] dmaengine: dw: Add memory bus width verification
+Message-ID: <lzipslbrr4fkpqc3plfllltls2sy2mrlentp7clpjoppvgscoi@zlmysqym2kyb>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-3-fancer.lancer@gmail.com>
+ <Zh7Hpuo-TzSmlz69@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:5a/Hvcp5OCDn59rw5DyL60VoHZtITCe4NYTNqxVWOjiJ9be6i6K
- WKOzRqy/9bWQQHznZLlao120G5VWUWZxbtLXpkZhePqHyz9gVeRzJ/zGvaurDkYdlYfiHbW
- ZRVSd5UrVOvnoyJ8ryyRP9x2POHcaIgpS5zPiqa9I1AEomZr4RVv0X2xMtf9+BxUh1e1ybO
- o4/rRc/koJZzuliRL1mOA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:NXiMkn8pYOk=;N+ZzIE0jdAiqGZ+cJWp7dZIwUzT
- x2lfqQrxMncWoSozPTvi3TKrG5QIcmnSJT29x4rezzZMzMhYEu5FxNsZdrYT1c0VfZJRRC3DC
- tl1KAP4/iccU/oApSPWJdbM+P5NW5EJgLrv4RIwJJ+bAXN+Sq9HCAW7vczEe5YUGd8XW8e5U6
- eFxMJmMeNp8m8dxlQskZ0IhfnPPk6cT/5N9OBBgA9+il1zUOrbMD8VCbKXPoc8g4pJ25IV4Ao
- 0dXFOSmLSxcYLUZMMTEZSZQAqzj8uFcF6D++EG/DiIG9CkDxGEsb/ISg5HusotnKRr11I1SfP
- CnXQ3n3Yc0t5YzkejxNr+EUAEGGbcgysS5L8Q7wBo4ijLZ+0x8K1etVlKxbvK07Zlv+Nun/FQ
- BrOPgdCmsnYimzjM6CqCT8UMzoub1ZjdiwYQ080lgQ787JzPPdIgFIFkLqSlJBGwZquvtZlGs
- +Yl5GhasV/oL7D/fF3PpC1/800BQvt2bSac5+t/6s9gKVVzyvE74jl1tFPzLLDevPBqbwfF8a
- +PUUKsfiB155D2k1yaGRECyma1H2ijVNN9uPK3xIx3kycXBQHCc/DP6kh2g0+8LD178Y57VwU
- loiWRtOG1dVVjrVnyyk7An9XwaPB1XrXbkevU02CXBxvTkd4qVWNWthy8bbOex9hEJXGPbBVu
- ly5NHbgHkSpO2Es6QKSOFQeniCYnYes+jvpv/kI/RgzoflToi2MYHTZmYJX+RH+5A3g1/Pnmf
- 3shRKjzTN12LYnDNOrntstXWYsw4se+sr7CAS4Ge9q5RS/H6rDdleQ=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zh7Hpuo-TzSmlz69@smile.fi.intel.com>
 
-On Wed, 17 Apr 2024 15:30:56 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+On Tue, Apr 16, 2024 at 09:47:02PM +0300, Andy Shevchenko wrote:
+> On Tue, Apr 16, 2024 at 07:28:56PM +0300, Serge Semin wrote:
+> > Currently in case of the DEV_TO_MEM or MEM_TO_DEV DMA transfers the memory
+> > data width (single transfer width) is determined based on the buffer
+> > length, buffer base address or DMA master-channel max address width
+> > capability. It isn't enough in case of the channel disabling prior the
+> > block transfer is finished. Here is what DW AHB DMA IP-core databook says
+> > regarding the port suspension (DMA-transfer pause) implementation in the
+> > controller:
+> > 
+> > "When CTLx.SRC_TR_WIDTH < CTLx.DST_TR_WIDTH and the CFGx.CH_SUSP bit is
+> > high, the CFGx.FIFO_EMPTY is asserted once the contents of the FIFO do not
+> > permit a single word of CTLx.DST_TR_WIDTH to be formed. However, there may
+> > still be data in the channel FIFO, but not enough to form a single
+> > transfer of CTLx.DST_TR_WIDTH. In this scenario, once the channel is
+> > disabled, the remaining data in the channel FIFO is not transferred to the
+> > destination peripheral."
+> > 
+> > So in case if the port gets to be suspended and then disabled it's
+> > possible to have the data silently discarded even though the controller
+> > reported that FIFO is empty and the CTLx.BLOCK_TS indicated the dropped
+> > data already received from the source device. This looks as if the data
+> > somehow got lost on a way from the peripheral device to memory and causes
+> > problems for instance in the DW APB UART driver, which pauses and disables
+> > the DMA-transfer as soon as the recv data timeout happens. Here is the way
+> > it looks:
+> > 
+> >  Memory <------- DMA FIFO <------ UART FIFO <---------------- UART
+> >   DST_TR_WIDTH -+--------|       |         |
+> >                 |        |       |         |                No more data
+> >    Current lvl -+--------|       |---------+- DMA-burst lvl
+> >                 |        |       |---------+- Leftover data
+> >                 |        |       |---------+- SRC_TR_WIDTH
+> >                -+--------+-------+---------+
+> > 
+> > In the example above: no more data is getting received over the UART port
+> > and BLOCK_TS is not even close to be fully received; some data is left in
+> > the UART FIFO, but not enough to perform a bursted DMA-xfer to the DMA
+> > FIFO; some data is left in the DMA FIFO, but not enough to be passed
+> > further to the system memory in a single transfer. In this situation the
+> > 8250 UART driver catches the recv timeout interrupt, pauses the
+> > DMA-transfer and terminates it completely, after which the IRQ handler
+> > manually fetches the leftover data from the UART FIFO into the
+> > recv-buffer. But since the DMA-channel has been disabled with the data
+> > left in the DMA FIFO, that data will be just discarded and the recv-buffer
+> > will have a gap of the "current lvl" size in the recv-buffer at the tail
+> > of the lately received data portion. So the data will be lost just due to
+> > the misconfigured DMA transfer.
+> > 
+> > Note this is only relevant for the case of the transfer suspension and
+> > _disabling_. No problem will happen if the transfer will be re-enabled
+> > afterwards or the block transfer is fully completed. In the later case the
+> > "FIFO flush mode" will be executed at the transfer final stage in order to
+> > push out the data left in the DMA FIFO.
+> > 
+> > In order to fix the denoted problem the DW AHB DMA-engine driver needs to
+> > make sure that the _bursted_ source transfer width is greater or equal to
+> > the single destination transfer (note the HW databook describes more
+> > strict constraint than actually required). Since the peripheral-device
+> > side is prescribed by the client driver logic, the memory-side can be only
+> > used for that. The solution can be easily implemented for the DEV_TO_MEM
+> > transfers just by adjusting the memory-channel address width. Sadly it's
+> > not that easy for the MEM_TO_DEV transfers since the mem-to-dma burst size
+> > is normally dynamically determined by the controller. So the only thing
+> > that can be done is to make sure that memory-side address width can be
+> > greater than the peripheral device address width.
+> 
+> ...
+> 
+> > +static int dwc_verify_m_buswidth(struct dma_chan *chan)
+> > +{
+> > +	struct dw_dma_chan *dwc = to_dw_dma_chan(chan);
+> > +	struct dw_dma *dw = to_dw_dma(chan->device);
+> > +	u32 reg_width, reg_burst, mem_width;
+> > +
+> > +	mem_width = dw->pdata->data_width[dwc->dws.m_master];
+> > +
+> > +	/* Make sure src and dst word widths are coherent */
+> > +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV) {
+> > +		reg_width = dwc->dma_sconfig.dst_addr_width;
+> > +		if (mem_width < reg_width)
+> > +			return -EINVAL;
+> > +
+> > +		dwc->dma_sconfig.src_addr_width = mem_width;
+> > +	} else if (dwc->dma_sconfig.direction == DMA_DEV_TO_MEM) {
+> > +		reg_width = dwc->dma_sconfig.src_addr_width;
+> > +		reg_burst = rounddown_pow_of_two(dwc->dma_sconfig.src_maxburst);
+> > +
+> > +		dwc->dma_sconfig.dst_addr_width = min(mem_width, reg_width * reg_burst);
+> 
 
-> On Wed, Apr 17, 2024 at 08:24:13AM -0400, Parker Newman wrote:
-> > On Wed, 17 Apr 2024 13:19:07 +0200
-> > Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> >
-> > > On Tue, Apr 16, 2024 at 08:55:35AM -0400, Parker Newman wrote:
-> > > > From: Parker Newman <pnewman@connecttech.com>
-> > > >
-> > > > If a port fails to register with serial8250_register_8250_port() t=
-he
-> > > > kernel can crash when shutting down or module removal.
-> > > >
-> > > > This is because "priv->line[i]" will be set to a negative error co=
-de
-> > > > and in the exar_pci_remove() function serial8250_unregister_port()=
- is
-> > > > called without checking if the "priv->line[i]" value is valid.
-> > > >
-> > > > Signed-off-by: Parker Newman <pnewman@connecttech.com>
-> > > > ---
-> > > >  drivers/tty/serial/8250/8250_exar.c | 3 ++-
-> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/ser=
-ial/8250/8250_exar.c
-> > > > index 501b9f3e9c89..f5a395ed69d1 100644
-> > > > --- a/drivers/tty/serial/8250/8250_exar.c
-> > > > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > > > @@ -1671,7 +1671,8 @@ static void exar_pci_remove(struct pci_dev *=
-pcidev)
-> > > >  	unsigned int i;
-> > > >
-> > > >  	for (i =3D 0; i < priv->nr; i++)
-> > > > -		serial8250_unregister_port(priv->line[i]);
-> > > > +		if (priv->line[i] >=3D 0)
-> > > > +			serial8250_unregister_port(priv->line[i]);
-> > >
-> > > Is this a bug in the current driver?  If so, can you resend it on it=
-s
-> > > own so we can get it merged now?
-> > >
-> >
-> > Yes it is, I can split this one out and send it on its own.
->
-> Great!  Bonus points if you can find the commit id it fixes and add a
-> "Fixes:" tag to the signed-off-by area.  If not, I can guess :)
->
-> thanks,
->
-> greg k-h
+> I understand the desire to go this way, but wouldn't be better to have
+> a symmetrical check and return an error?
 
-After looking at this again and doing some testing this bug does not actua=
-lly
-happen with the driver in its current state. During my development I had i=
-t
-happen but that would have been due to me messing around.
+Sadly the situation isn't symmetrical.
 
-When "priv->line[i]" < 0 it breaks out of the for loop and priv->nr is set=
- to "i".
-so only the successfully registered ports will be unregistered in exar_pci=
-_remove().
+The main idea of the solution proposed in this patch is to make sure
+that the DMA transactions would fill in the DMA FIFO in a way so in
+case of the suspension all the data would be delivered to the
+destination with nothing left in the DMA FIFO and the CFGx.FIFO_EMPTY
+flag would mean the real FIFO emptiness. It can be reached only if
+(CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE) >= CTLx.DST_TR_WIDTH
+(calculated in the real values of course). But CTLx.SRC_MSIZE is only
+relevant for the flow-control/non-memory peripherals. Thus the
+conditions under which the problem can be avoided are:
 
-...
-        for (i =3D 0; i < nr_ports && i < maxnr; i++) {
-                rc =3D board->setup(priv, pcidev, &uart, i);
-                if (rc) {
-                        dev_err(&pcidev->dev, "Failed to setup port %u\n",=
- i);
-                        break;
-                }
+DMA_MEM_TO_DEV: CTLx.SRC_TR_WIDTH >= CTLx.DST_TR_WIDTH
+DMA_DEV_TO_MEM: CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE >= CTLx.DST_TR_WIDTH
 
-                dev_dbg(&pcidev->dev, "Setup PCI port: port %lx, irq %d, t=
-ype %d\n",
-                        uart.port.iobase, uart.port.irq, uart.port.iotype)=
-;
+In both cases the non-memory peripheral side parameters (DEV-side)
+can't be changed because they are selected by the client drivers based
+on their specific logic (Device FIFO depth, watermarks, CSR widths,
+etc). But we can vary the memory-side transfer width as long as it's
+within the permitted limits.
 
-                priv->line[i] =3D serial8250_register_8250_port(&uart);
-                if (priv->line[i] < 0) {
-                        dev_err(&pcidev->dev,
-                                "Couldn't register serial port %lx, irq %d=
-, type %d, error %d\n",
-                                uart.port.iobase, uart.port.irq,
-                                uart.port.iotype, priv->line[i]);
-                        break;
-                }
-        }
-        priv->nr =3D i;
-...
+In case of the DMA_MEM_TO_DEV transfers we can change the
+CTLx.SRC_TR_WIDTH because it represents the memory side transfer
+width. But if the maximum memory transfer width is smaller than the
+specified destination register width, there is nothing we can do. Thus
+returning the EINVAL error. Note this is mainly a hypothetical
+situation since normally the max width of the memory master xfers is
+greater than the peripheral master xfer max width (in my case it's 128
+and 32 bits respectively).
 
-Thanks,
-Parker
+In case of the DMA_DEV_TO_MEM transfers we can change the CTLx.DST_TR_WIDTH
+parameter because it's the memory side. Thus if the maximum
+memory transfer width is smaller than the bursted source transfer,
+then we can stick to the maximum memory transfer width. But if it's
+greater than the bursted source transfer, we can freely reduce it
+so to support the safe suspension+disable DMA-usage pattern.
 
+> 
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> 
 
+> IIRC MEM side of the DMA channel will ignore those in HW, so basically you are
+> (re-)using them purely for the __ffs() corrections.
+
+No. DMAC ignores the _burst length_ parameters CTLx.SRC_MSIZE and
+CTLx.DEST_MSIZE for the memory side (also see my comment above):
+
+"The CTLx.SRC_MSIZE and CTLx.DEST_MSIZE are properties valid only for
+peripherals with a handshaking interface; they cannot be used for
+defining the burst length for memory peripherals.
+
+When the peripherals are memory, the DW_ahb_dmac is always the flow
+controller and uses DMA transfers to move blocks; thus the
+CTLx.SRC_MSIZE and CTLx.DEST_MSIZE values are not used for memory
+peripherals. The SRC_MSIZE/DEST_MSIZE limitations are used to
+accommodate devices that have limited resources, such as a FIFO.
+Memory does not normally have limitations similar to the FIFOs."
+
+In my case the problem is in the CTLx.SRC_TR_WIDTH and
+CTLx.DST_TR_WIDTH values misconfiguration. Here is the crucial comment
+in the HW-manual about that (cited in the commit messages):
+
+"When CTLx.SRC_TR_WIDTH < CTLx.DST_TR_WIDTH and the CFGx.CH_SUSP bit is
+high, the CFGx.FIFO_EMPTY is asserted once the contents of the FIFO do not
+permit a single word of CTLx.DST_TR_WIDTH to be formed. However, there may
+still be data in the channel FIFO, but not enough to form a single
+transfer of CTLx.DST_TR_WIDTH. In this scenario, once the channel is
+disabled, the remaining data in the channel FIFO is not transferred to the
+destination peripheral."
+
+See Chapter 7.7 "Disabling a Channel Prior to Transfer Completion" of
+the DW DMAC HW manual for more details.
+
+-Serge(y)
+
+> 
+> ...
+> 
+> >  	dwc->dma_sconfig.src_maxburst =
+> > -		clamp(dwc->dma_sconfig.src_maxburst, 0U, dwc->max_burst);
+> > +		clamp(dwc->dma_sconfig.src_maxburst, 1U, dwc->max_burst);
+> >  	dwc->dma_sconfig.dst_maxburst =
+> > -		clamp(dwc->dma_sconfig.dst_maxburst, 0U, dwc->max_burst);
+> > +		clamp(dwc->dma_sconfig.dst_maxburst, 1U, dwc->max_burst);
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
