@@ -1,277 +1,291 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B89174EC2;
-	Wed, 17 Apr 2024 17:38:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C13F171A5;
+	Wed, 17 Apr 2024 18:52:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713375525; cv=none; b=LCl5N6qoi8Ga7iqnu8x/R/l3rDWTdEGd72P5BPQ0qmrAfANBGWl5Oouoa9CP4vhKl/xOBVeVJyxOeK31DRed+iIANIlYbNLUjSnTfb8+7DVau3Ir1y5Fi5l5Og3lfHDeE7HLZAuNU1QM36S6Pil4jagf/d9KGK/wHLWUm+kZWak=
+	t=1713379968; cv=none; b=N5z959PjbJtGtUESWDVqYZAPCnEvrC2ihOKiE6KzpzgIW2bh9i06L1PPLHr+ovVJ/Q7yz3YYDGu1CgA8lKiqcf9l9hSkfYHXgTOrW9cTyRqLI357GefzT++KVFsp1sq8/Ivdn/5eLLmt3NeKTetOoG1qFLmoJp4bwR3K8uP49ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713375525; c=relaxed/simple;
-	bh=CcyeG5LEOSpGWOeOm3cbVKAtUzZmD4pho93LO4Lftsc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mh/hFF75eeUIbL62HocW30lfLe/fnGOl/OTq2Y/xC1ZlNDtMHMstiyEXmZiyqPnKxP5on0fXAsF5yL37FvArdSdOesd42gETok4xaFQ40Y/R5mJd0Shdd/jsUHn5KqDrs0NIfpQMeUm4/fcV2MxGQ6I3xVnM/20cF7ULTOmFxJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Av0RgA4q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713379968; c=relaxed/simple;
+	bh=K+tgtTWDf1hYngG6HFAqbuU/XT5EMpmdIjRfrLTx8D8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BaCKcR2km5oX9VhCyzVCFDgP+kl06N6z0IBL1Rm/xtPTHuNk3oNNtjl/jmF2r4D3bVmtwP2D0j5h4sXpplaEaHQ0ybnrR/hR47ojv8QqXEL5e103JfbyNpihYT8Ygz5AhK+WUPJGEYXcrXy7hwQm0dBkrVpi+fg6MM3cZwTvM8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WicuUJ2b; arc=none smtp.client-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Av0RgA4q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698B7C2BD11;
-	Wed, 17 Apr 2024 17:38:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713375525;
-	bh=CcyeG5LEOSpGWOeOm3cbVKAtUzZmD4pho93LO4Lftsc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Av0RgA4qaltC6R2UAP+IZbyAGnKjB4ekzdULv8j9eAPqnmFRvKNI/tSGeYj3OWUcp
-	 qc6c8ihVRqy5xvc1FVVs2AxLK01Y5zF1DP+w65R/cmtzKmijs4sBJAFcGvJ+PWVSTP
-	 Cs/VrPh5fAS/kkgAPnngqXBr12G9wrAq4ALJdrKkFbuR04kIY/UfY/8zewzmRyNyY4
-	 FGtYvbl/zSPCI7kUk+ONgLL+oU0ba0PVJb/rKvaJnoI9fvRcg6tMMJfO6YNiEDxytp
-	 PvkY+gEYNCBbvMfU4hPx2MfJOZBDAA8oqfeSJpxvsX31dlnXX2vy74MbgvamfGDaZI
-	 OHANGbu9LOAzA==
-From: Alexey Gladkov <legion@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>,
-	kbd@lists.linux.dev,
-	linux-api@vger.kernel.org,
-	linux-fbdev@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Helge Deller <deller@gmx.de>
-Subject: [PATCH v5 3/3] VT: Allow to get max font width and height
-Date: Wed, 17 Apr 2024 19:37:37 +0200
-Message-ID: <2b0c4ab198935cdd92a41dc718682b3658553961.1713375378.git.legion@kernel.org>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <cover.1713375378.git.legion@kernel.org>
-References: <cover.1712080158.git.legion@kernel.org> <cover.1713375378.git.legion@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WicuUJ2b"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2dac77cdf43so449981fa.2;
+        Wed, 17 Apr 2024 11:52:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713379965; x=1713984765; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4gxVZKKBojDfS52bqlNEjy2/nWDdF4WxO0AvebDP1tQ=;
+        b=WicuUJ2bDzFE6+tXqV8udiHeYv6vouuj8N8LqApisROjOzNnanlIhpZ+P7IZgOwr4v
+         LDw2j36SS33U4rrZmjie7ZnHST5YS9pVsiQdHQyfkBCW24W5AzXEqiqpjmGg7trU/WN+
+         EAQtFF7xTmskQTGAG2yW9NoSwwIc/UdmYY8pRBXDSfx/6pCSdfUKfWa2K/Nr5slgrRs1
+         PXV/0I4UDrZGHWDDPpQ5cuchNwaWccMmBXbnmy6EaI6abS+W78yEm4P4kojAIMuMU8uj
+         g8xXsc8cwTveHGob+JUgqUUR09/JiuyBxLspzTVW3it0l8ESH0YpFdxxnwa6UT6HUR4S
+         jZRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713379965; x=1713984765;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4gxVZKKBojDfS52bqlNEjy2/nWDdF4WxO0AvebDP1tQ=;
+        b=dZ+BDTqTxqIZ5KH44TDJ5H9K3OXImB6VI1O59oqi4Hg9KzdQCIonbUZ8ww/2HXrj1r
+         kvyE59zmKomVytDdzHH9GdLegatjsLlt2sz5uW5OmkroE/z1YUDWB1UF+fGeXpnjGw21
+         jb57AddmpMfKKe3rOzaoid4ALTnoTWfWSup3cpfy076UG7eimBzb6HA3CRQIKd0AU3Gi
+         UYvjgFAfOYyoz4j2ML/JinfMPg1z9NQVlhnnL9yB/QohKpmdnI7IW5Qf0H/z9ogAiNuC
+         cyc3cIg63m0RzCMXBypghGUtkB2Yu8qFhsZtA/4ZAaroyvX8KpDU7OwbXsVmYn8U//kt
+         hQ7g==
+X-Forwarded-Encrypted: i=1; AJvYcCU0NoKFnkWIo2vrbuVuGRw+YQXi66i+JPMYdt+bEbNJpSqzrgQbouOEoo0C0ojaQ+N4zvYm3gOJ2qHsHsGnKjnCaDgbmOvjt7PcV6xuL8vC+bnZQXhmi1O2qbT5nBnZ0Ds90/sDLYMqSiuByL/D1t4Sr7502EhmxjXxgyYblomXZHe//SIq
+X-Gm-Message-State: AOJu0Yxz356Qg7VFftlO8b3toaIwufoGEVMH2Z60BWywbDNeDSWVxZaU
+	ppjuLufARrhZnTnCgIvmfANrvSoQmFEClviVBCTd1pxeAGAkCkar
+X-Google-Smtp-Source: AGHT+IEVPF55JUIr6GJAfQDwc+O0ordKbTs0fx4HLuaXvJhywQqPe5NIP6rTvx3hPVsLzNrhrbGnPQ==
+X-Received: by 2002:a2e:95cf:0:b0:2d4:99f8:8b9f with SMTP id y15-20020a2e95cf000000b002d499f88b9fmr88243ljh.50.1713379964328;
+        Wed, 17 Apr 2024 11:52:44 -0700 (PDT)
+Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
+        by smtp.gmail.com with ESMTPSA id b15-20020a05651c032f00b002da6c946722sm1075405ljp.124.2024.04.17.11.52.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 11:52:43 -0700 (PDT)
+Date: Wed, 17 Apr 2024 21:52:42 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
+Subject: Re: [PATCH 2/4] dmaengine: dw: Add memory bus width verification
+Message-ID: <nroj7c7hvo5ao5gfuububc2zqj7z4rpkoji5flhbrie3xrmgwg@6rhzllxwgj4w>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-3-fancer.lancer@gmail.com>
+ <Zh7Hpuo-TzSmlz69@smile.fi.intel.com>
+ <lzipslbrr4fkpqc3plfllltls2sy2mrlentp7clpjoppvgscoi@zlmysqym2kyb>
+ <ZiAGpsldQMB-dKkn@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZiAGpsldQMB-dKkn@smile.fi.intel.com>
 
-The Console drivers has more restrictive font size limits than vt_ioctl.
-This leads to errors that are difficult to handle. If a font whose size
-is not supported is used, an EINVAL error will be returned, which is
-also returned in case of errors in the font itself. At the moment there
-is no way to understand what font sizes the current console driver
-supports.
+On Wed, Apr 17, 2024 at 08:28:06PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 17, 2024 at 08:13:59PM +0300, Serge Semin wrote:
+> > On Tue, Apr 16, 2024 at 09:47:02PM +0300, Andy Shevchenko wrote:
+> > > On Tue, Apr 16, 2024 at 07:28:56PM +0300, Serge Semin wrote:
+> > > > Currently in case of the DEV_TO_MEM or MEM_TO_DEV DMA transfers the memory
+> > > > data width (single transfer width) is determined based on the buffer
+> > > > length, buffer base address or DMA master-channel max address width
+> > > > capability. It isn't enough in case of the channel disabling prior the
+> > > > block transfer is finished. Here is what DW AHB DMA IP-core databook says
+> > > > regarding the port suspension (DMA-transfer pause) implementation in the
+> > > > controller:
+> > > > 
+> > > > "When CTLx.SRC_TR_WIDTH < CTLx.DST_TR_WIDTH and the CFGx.CH_SUSP bit is
+> > > > high, the CFGx.FIFO_EMPTY is asserted once the contents of the FIFO do not
+> > > > permit a single word of CTLx.DST_TR_WIDTH to be formed. However, there may
+> > > > still be data in the channel FIFO, but not enough to form a single
+> > > > transfer of CTLx.DST_TR_WIDTH. In this scenario, once the channel is
+> > > > disabled, the remaining data in the channel FIFO is not transferred to the
+> > > > destination peripheral."
+> > > > 
+> > > > So in case if the port gets to be suspended and then disabled it's
+> > > > possible to have the data silently discarded even though the controller
+> > > > reported that FIFO is empty and the CTLx.BLOCK_TS indicated the dropped
+> > > > data already received from the source device. This looks as if the data
+> > > > somehow got lost on a way from the peripheral device to memory and causes
+> > > > problems for instance in the DW APB UART driver, which pauses and disables
+> > > > the DMA-transfer as soon as the recv data timeout happens. Here is the way
+> > > > it looks:
+> > > > 
+> > > >  Memory <------- DMA FIFO <------ UART FIFO <---------------- UART
+> > > >   DST_TR_WIDTH -+--------|       |         |
+> > > >                 |        |       |         |                No more data
+> > > >    Current lvl -+--------|       |---------+- DMA-burst lvl
+> > > >                 |        |       |---------+- Leftover data
+> > > >                 |        |       |---------+- SRC_TR_WIDTH
+> > > >                -+--------+-------+---------+
+> > > > 
+> > > > In the example above: no more data is getting received over the UART port
+> > > > and BLOCK_TS is not even close to be fully received; some data is left in
+> > > > the UART FIFO, but not enough to perform a bursted DMA-xfer to the DMA
+> > > > FIFO; some data is left in the DMA FIFO, but not enough to be passed
+> > > > further to the system memory in a single transfer. In this situation the
+> > > > 8250 UART driver catches the recv timeout interrupt, pauses the
+> > > > DMA-transfer and terminates it completely, after which the IRQ handler
+> > > > manually fetches the leftover data from the UART FIFO into the
+> > > > recv-buffer. But since the DMA-channel has been disabled with the data
+> > > > left in the DMA FIFO, that data will be just discarded and the recv-buffer
+> > > > will have a gap of the "current lvl" size in the recv-buffer at the tail
+> > > > of the lately received data portion. So the data will be lost just due to
+> > > > the misconfigured DMA transfer.
+> > > > 
+> > > > Note this is only relevant for the case of the transfer suspension and
+> > > > _disabling_. No problem will happen if the transfer will be re-enabled
+> > > > afterwards or the block transfer is fully completed. In the later case the
+> > > > "FIFO flush mode" will be executed at the transfer final stage in order to
+> > > > push out the data left in the DMA FIFO.
+> > > > 
+> > > > In order to fix the denoted problem the DW AHB DMA-engine driver needs to
+> > > > make sure that the _bursted_ source transfer width is greater or equal to
+> > > > the single destination transfer (note the HW databook describes more
+> > > > strict constraint than actually required). Since the peripheral-device
+> > > > side is prescribed by the client driver logic, the memory-side can be only
+> > > > used for that. The solution can be easily implemented for the DEV_TO_MEM
+> > > > transfers just by adjusting the memory-channel address width. Sadly it's
+> > > > not that easy for the MEM_TO_DEV transfers since the mem-to-dma burst size
+> > > > is normally dynamically determined by the controller. So the only thing
+> > > > that can be done is to make sure that memory-side address width can be
+> > > > greater than the peripheral device address width.
+> 
+> ...
+> 
+> > > > +static int dwc_verify_m_buswidth(struct dma_chan *chan)
+> > > > +{
+> > > > +	struct dw_dma_chan *dwc = to_dw_dma_chan(chan);
+> > > > +	struct dw_dma *dw = to_dw_dma(chan->device);
+> > > > +	u32 reg_width, reg_burst, mem_width;
+> > > > +
+> > > > +	mem_width = dw->pdata->data_width[dwc->dws.m_master];
+> > > > +
+> > > > +	/* Make sure src and dst word widths are coherent */
+> > > > +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV) {
+> > > > +		reg_width = dwc->dma_sconfig.dst_addr_width;
+> > > > +		if (mem_width < reg_width)
+> > > > +			return -EINVAL;
+> > > > +
+> > > > +		dwc->dma_sconfig.src_addr_width = mem_width;
+> > > > +	} else if (dwc->dma_sconfig.direction == DMA_DEV_TO_MEM) {
+> > > > +		reg_width = dwc->dma_sconfig.src_addr_width;
+> > > > +		reg_burst = rounddown_pow_of_two(dwc->dma_sconfig.src_maxburst);
+> > > > +
+> > > > +		dwc->dma_sconfig.dst_addr_width = min(mem_width, reg_width * reg_burst);
+> > > 
+> > 
+> > > I understand the desire to go this way, but wouldn't be better to have
+> > > a symmetrical check and return an error?
+> > 
+> > Sadly the situation isn't symmetrical.
+> > 
+> > The main idea of the solution proposed in this patch is to make sure
+> > that the DMA transactions would fill in the DMA FIFO in a way so in
+> > case of the suspension all the data would be delivered to the
+> > destination with nothing left in the DMA FIFO and the CFGx.FIFO_EMPTY
+> > flag would mean the real FIFO emptiness. It can be reached only if
+> > (CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE) >= CTLx.DST_TR_WIDTH
+> > (calculated in the real values of course). But CTLx.SRC_MSIZE is only
+> > relevant for the flow-control/non-memory peripherals. Thus the
+> 
 
-To solve this problem, we need to transfer information about the
-supported font to userspace from the console driver.
+> Oh, if it involves flow control, shouldn't you check for that as well?
+> We have a (PPC? IIRC) hardware with this IP that can have peripheral
+> as flow control.
 
-Acked-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Alexey Gladkov <legion@kernel.org>
----
- drivers/video/console/newport_con.c | 21 +++++++++++++++++----
- drivers/video/console/sticon.c      | 25 +++++++++++++++++++++++--
- drivers/video/console/vgacon.c      | 21 ++++++++++++++++++++-
- drivers/video/fbdev/core/fbcon.c    | 16 ++++++++++++++++
- 4 files changed, 76 insertions(+), 7 deletions(-)
+Oops. Sorry, I was wrong in saying that the peripheral is a
+flow-controller. All my cases imply DMAC as flow-controller. The
+correct sentence would be "But CTLx.SRC_MSIZE is only relevant for the
+non-memory peripherals."
 
-diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
-index a51cfc1d560e..6167f45326ac 100644
---- a/drivers/video/console/newport_con.c
-+++ b/drivers/video/console/newport_con.c
-@@ -33,6 +33,9 @@
- 
- #define NEWPORT_LEN	0x10000
- 
-+#define NEWPORT_MAX_FONT_WIDTH 8
-+#define NEWPORT_MAX_FONT_HEIGHT 16
-+
- #define FONT_DATA ((unsigned char *)font_vga_8x16.data)
- 
- static unsigned char *font_data[MAX_NR_CONSOLES];
-@@ -328,8 +331,8 @@ static void newport_init(struct vc_data *vc, bool init)
- {
- 	int cols, rows;
- 
--	cols = newport_xsize / 8;
--	rows = newport_ysize / 16;
-+	cols = newport_xsize / NEWPORT_MAX_FONT_WIDTH;
-+	rows = newport_ysize / NEWPORT_MAX_FONT_HEIGHT;
- 	vc->vc_can_do_color = 1;
- 	if (init) {
- 		vc->vc_cols = cols;
-@@ -507,8 +510,8 @@ static int newport_set_font(int unit, const struct console_font *op,
- 
- 	/* ladis: when I grow up, there will be a day... and more sizes will
- 	 * be supported ;-) */
--	if ((w != 8) || (h != 16) || (vpitch != 32)
--	    || (op->charcount != 256 && op->charcount != 512))
-+	if ((w != NEWPORT_MAX_FONT_WIDTH) || (h != NEWPORT_MAX_FONT_HEIGHT) ||
-+	    (vpitch != 32) || (op->charcount != 256 && op->charcount != 512))
- 		return -EINVAL;
- 
- 	if (!(new_data = kmalloc(FONT_EXTRA_WORDS * sizeof(int) + size,
-@@ -570,6 +573,15 @@ static int newport_font_default(struct vc_data *vc, struct console_font *op,
- 	return newport_set_def_font(vc->vc_num, op);
- }
- 
-+static int newport_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = info->max_width = NEWPORT_MAX_FONT_WIDTH;
-+	info->min_height = info->max_height = NEWPORT_MAX_FONT_HEIGHT;
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static int newport_font_set(struct vc_data *vc, const struct console_font *font,
- 			    unsigned int vpitch, unsigned int flags)
- {
-@@ -689,6 +701,7 @@ const struct consw newport_con = {
- 	.con_scroll	  = newport_scroll,
- 	.con_switch	  = newport_switch,
- 	.con_blank	  = newport_blank,
-+	.con_font_info	  = newport_font_info,
- 	.con_font_set	  = newport_font_set,
- 	.con_font_default = newport_font_default,
- 	.con_save_screen  = newport_save_screen
-diff --git a/drivers/video/console/sticon.c b/drivers/video/console/sticon.c
-index 4c7b4959a1aa..490e6b266a31 100644
---- a/drivers/video/console/sticon.c
-+++ b/drivers/video/console/sticon.c
-@@ -56,6 +56,11 @@
- #define BLANK 0
- static int vga_is_gfx;
- 
-+#define STICON_MIN_FONT_WIDTH 6
-+#define STICON_MIN_FONT_HEIGHT 6
-+#define STICON_MAX_FONT_WIDTH 32
-+#define STICON_MAX_FONT_HEIGHT 32
-+
- #define STI_DEF_FONT	sticon_sti->font
- 
- /* borrowed from fbcon.c */
-@@ -166,8 +171,10 @@ static int sticon_set_font(struct vc_data *vc, const struct console_font *op,
- 	struct sti_cooked_font *cooked_font;
- 	unsigned char *data = op->data, *p;
- 
--	if ((w < 6) || (h < 6) || (w > 32) || (h > 32) || (vpitch != 32)
--	    || (op->charcount != 256 && op->charcount != 512))
-+	if (!in_range(w, STICON_MIN_FONT_WIDTH, STICON_MAX_FONT_WIDTH) ||
-+	    !in_range(h, STICON_MIN_FONT_HEIGHT, STICON_MAX_FONT_HEIGHT) ||
-+	    (vpitch != 32) ||
-+	    (op->charcount != 256 && op->charcount != 512))
- 		return -EINVAL;
- 	pitch = ALIGN(w, 8) / 8;
- 	bpc = pitch * h;
-@@ -260,6 +267,19 @@ static int sticon_font_set(struct vc_data *vc, const struct console_font *font,
- 	return sticon_set_font(vc, font, vpitch);
- }
- 
-+static int sticon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = STICON_MIN_FONT_WIDTH;
-+	info->min_height = STICON_MIN_FONT_HEIGHT;
-+
-+	info->max_width = STICON_MAX_FONT_WIDTH;
-+	info->max_height = STICON_MAX_FONT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static void sticon_init(struct vc_data *c, bool init)
- {
-     struct sti_struct *sti = sticon_sti;
-@@ -356,6 +376,7 @@ static const struct consw sti_con = {
- 	.con_scroll		= sticon_scroll,
- 	.con_switch		= sticon_switch,
- 	.con_blank		= sticon_blank,
-+	.con_font_info		= sticon_font_info,
- 	.con_font_set		= sticon_font_set,
- 	.con_font_default	= sticon_font_default,
- 	.con_build_attr		= sticon_build_attr,
-diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index 7597f04b0dc7..b5465e555fdc 100644
---- a/drivers/video/console/vgacon.c
-+++ b/drivers/video/console/vgacon.c
-@@ -61,6 +61,10 @@ static struct vgastate vgastate;
- #define BLANK 0x0020
- 
- #define VGA_FONTWIDTH       8   /* VGA does not support fontwidths != 8 */
-+
-+#define VGACON_MAX_FONT_WIDTH VGA_FONTWIDTH
-+#define VGACON_MAX_FONT_HEIGHT 32
-+
- /*
-  *  Interface used by the world
-  */
-@@ -1039,6 +1043,19 @@ static int vgacon_adjust_height(struct vc_data *vc, unsigned fontheight)
- 	return 0;
- }
- 
-+static int vgacon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = VGACON_MAX_FONT_WIDTH;
-+	info->min_height = 0;
-+
-+	info->max_width = VGACON_MAX_FONT_WIDTH;
-+	info->max_height = VGACON_MAX_FONT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
- static int vgacon_font_set(struct vc_data *c, const struct console_font *font,
- 			   unsigned int vpitch, unsigned int flags)
- {
-@@ -1048,7 +1065,8 @@ static int vgacon_font_set(struct vc_data *c, const struct console_font *font,
- 	if (vga_video_type < VIDEO_TYPE_EGAM)
- 		return -EINVAL;
- 
--	if (font->width != VGA_FONTWIDTH || font->height > 32 || vpitch != 32 ||
-+	if (font->width != VGACON_MAX_FONT_WIDTH ||
-+	    font->height > VGACON_MAX_FONT_HEIGHT || vpitch != 32 ||
- 	    (charcount != 256 && charcount != 512))
- 		return -EINVAL;
- 
-@@ -1201,6 +1219,7 @@ const struct consw vga_con = {
- 	.con_scroll = vgacon_scroll,
- 	.con_switch = vgacon_switch,
- 	.con_blank = vgacon_blank,
-+	.con_font_info = vgacon_font_info,
- 	.con_font_set = vgacon_font_set,
- 	.con_font_get = vgacon_font_get,
- 	.con_resize = vgacon_resize,
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index fcabc668e9fb..b54031da49fd 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2452,6 +2452,21 @@ static int fbcon_do_set_font(struct vc_data *vc, int w, int h, int charcount,
- 	return ret;
- }
- 
-+
-+static int fbcon_font_info(struct vc_data *vc, struct console_font_info *info)
-+{
-+	info->min_width = 0;
-+	info->min_height = 0;
-+
-+	info->max_width = FB_MAX_BLIT_WIDTH;
-+	info->max_height = FB_MAX_BLIT_HEIGHT;
-+
-+	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
-+
-+	return 0;
-+}
-+
-+
- /*
-  *  User asked to set font; we are guaranteed that charcount does not exceed 512
-  *  but lets not assume that, since charcount of 512 is small for unicode support.
-@@ -3127,6 +3142,7 @@ static const struct consw fb_con = {
- 	.con_scroll 		= fbcon_scroll,
- 	.con_switch 		= fbcon_switch,
- 	.con_blank 		= fbcon_blank,
-+	.con_font_info		= fbcon_font_info,
- 	.con_font_set 		= fbcon_set_font,
- 	.con_font_get 		= fbcon_get_font,
- 	.con_font_default	= fbcon_set_def_font,
--- 
-2.44.0
+> 
+> > conditions under which the problem can be avoided are:
+> > 
+> > DMA_MEM_TO_DEV: CTLx.SRC_TR_WIDTH >= CTLx.DST_TR_WIDTH
+> > DMA_DEV_TO_MEM: CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE >= CTLx.DST_TR_WIDTH
+> > 
+> > In both cases the non-memory peripheral side parameters (DEV-side)
+> > can't be changed because they are selected by the client drivers based
+> > on their specific logic (Device FIFO depth, watermarks, CSR widths,
+> > etc). But we can vary the memory-side transfer width as long as it's
+> > within the permitted limits.
+> > 
+> > In case of the DMA_MEM_TO_DEV transfers we can change the
+> > CTLx.SRC_TR_WIDTH because it represents the memory side transfer
+> > width. But if the maximum memory transfer width is smaller than the
+> > specified destination register width, there is nothing we can do. Thus
+> > returning the EINVAL error. Note this is mainly a hypothetical
+> > situation since normally the max width of the memory master xfers is
+> > greater than the peripheral master xfer max width (in my case it's 128
+> > and 32 bits respectively).
+> > 
+> > In case of the DMA_DEV_TO_MEM transfers we can change the CTLx.DST_TR_WIDTH
+> > parameter because it's the memory side. Thus if the maximum
+> > memory transfer width is smaller than the bursted source transfer,
+> > then we can stick to the maximum memory transfer width. But if it's
+> > greater than the bursted source transfer, we can freely reduce it
+> > so to support the safe suspension+disable DMA-usage pattern.
+> > 
+> > > 
+> > > > +	}
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > 
+> > 
+> > > IIRC MEM side of the DMA channel will ignore those in HW, so basically you are
+> > > (re-)using them purely for the __ffs() corrections.
+> > 
+> > No. DMAC ignores the _burst length_ parameters CTLx.SRC_MSIZE and
+> > CTLx.DEST_MSIZE for the memory side (also see my comment above):
+> > 
+> > "The CTLx.SRC_MSIZE and CTLx.DEST_MSIZE are properties valid only for
+> > peripherals with a handshaking interface; they cannot be used for
+> > defining the burst length for memory peripherals.
+> > 
+> > When the peripherals are memory, the DW_ahb_dmac is always the flow
+> > controller and uses DMA transfers to move blocks; thus the
+> > CTLx.SRC_MSIZE and CTLx.DEST_MSIZE values are not used for memory
+> > peripherals. The SRC_MSIZE/DEST_MSIZE limitations are used to
+> > accommodate devices that have limited resources, such as a FIFO.
+> > Memory does not normally have limitations similar to the FIFOs."
+> > 
+> > In my case the problem is in the CTLx.SRC_TR_WIDTH and
+> > CTLx.DST_TR_WIDTH values misconfiguration. Here is the crucial comment
+> > in the HW-manual about that (cited in the commit messages):
+> > 
+> > "When CTLx.SRC_TR_WIDTH < CTLx.DST_TR_WIDTH and the CFGx.CH_SUSP bit is
+> > high, the CFGx.FIFO_EMPTY is asserted once the contents of the FIFO do not
+> > permit a single word of CTLx.DST_TR_WIDTH to be formed. However, there may
+> > still be data in the channel FIFO, but not enough to form a single
+> > transfer of CTLx.DST_TR_WIDTH. In this scenario, once the channel is
+> > disabled, the remaining data in the channel FIFO is not transferred to the
+> > destination peripheral."
+> > 
+> > See Chapter 7.7 "Disabling a Channel Prior to Transfer Completion" of
+> > the DW DMAC HW manual for more details.
+> 
 
+> Got it. Maybe a little summary in the code to explain all this magic?
+
+Will it be enough to add something like this:
+/*
+ * It's possible to have a data portion locked in the DMA FIFO in case
+ * of the channel suspension. Subsequent channel disabling will cause
+ * that data silent loss. In order to prevent that maintain the src
+ * and dst transfer widths coherency by means of the relation:
+ * (CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE >= CTLx.DST_TR_WIDTH)
+ */
+?
+
+-Serge(y)
+
+> 
+> ...
+> 
+> > > >  	dwc->dma_sconfig.src_maxburst =
+> > > > -		clamp(dwc->dma_sconfig.src_maxburst, 0U, dwc->max_burst);
+> > > > +		clamp(dwc->dma_sconfig.src_maxburst, 1U, dwc->max_burst);
+> > > >  	dwc->dma_sconfig.dst_maxburst =
+> > > > -		clamp(dwc->dma_sconfig.dst_maxburst, 0U, dwc->max_burst);
+> > > > +		clamp(dwc->dma_sconfig.dst_maxburst, 1U, dwc->max_burst);
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
