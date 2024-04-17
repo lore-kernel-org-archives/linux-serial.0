@@ -1,186 +1,111 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B21813F443;
-	Wed, 17 Apr 2024 13:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED2138DD3;
+	Wed, 17 Apr 2024 14:52:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713362267; cv=none; b=VFcXMrZRTu+ss9FqHuqgLP9TRessLXBvXn4N8HsTlQ6CFsLe1vpM7FWAruJi5MRtg4Kt0HtSe4UAoXJWgXHZ2u17j0U0I70SRrrkcciZUW4dhCCAiyRcitoAwRNOqVCAx4Zbp+VEGnvLvsYEcyoyB+s9lKQTEXXQX6yX4TgXIw0=
+	t=1713365533; cv=none; b=MqWFWpqoWXgdrz3hgikboExCjo1Ry3aY8PC4UHMVckuL17hsxiBElj3rIMV9k3AXQ8znqsXCOB8Svu3kXYANTR6UfnmjQOO1EIEXLsbSUBS0fS/CBYsfPjLlWglpAnZW3oFhaxVnF+zp7xSP8Qczb/8irSRaGZUNlT5dCXB6Nho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713362267; c=relaxed/simple;
-	bh=tAuTme6GkvilwxtiDUHh+kXeYKrHGiZ7i8iQOkzrPBg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=InFuWzyg+czyAZ/0dBOlT38rBmczfvtJwLm9QSUvzUaaEZG9lJBkUpQRPp5O6nQjlfvJEu3lJ+L/yhuAwdTCRo8pExZQob1SSNvdqI632MKTZacGrBPDEU5Hz1hQCNXX4ecAviwJ8InfehZ/RisYbbhMYHLcQyBU/hAzsMVnMZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WELsYkuE; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1713365533; c=relaxed/simple;
+	bh=ns7K8uQ8uC8NFTMTiEiwqxwnLZ/spdSlLaZ/lCi4ruA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Tn2pyCeG0pZV4WiZaYOGIqspCkNFVw7I76K9HV+xCFrlgTPUCOhf9K2qE/YyG4YUddJOFmxOmsGkwLuMznTBvsEDuyL55u9qjHj/rASonRuau8vLOzWFhCT0IuFfUZ9jszcKIgGjvzjkAWyWS3isGKWlfhlEoztxHZIZOMwmUKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WELsYkuE"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d8863d8a6eso72972451fa.3;
-        Wed, 17 Apr 2024 06:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713362264; x=1713967064; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4CPt5wsPPyfiuSaFsXxCJvkSsW2VMZQ8yMjMPQ4gYeA=;
-        b=WELsYkuE8+DsMAIZkP1dXlRBmiYEGRDFXl3KCwgDOAwnMYMcHwUBVwPXoBXBTuE2qw
-         iQ7B8wBV3u3XfE0VFoeq2LB0yF+C7DEIy1Yk/saRHhehyEfp2+EC3H08VaHX+Mi5gBxw
-         c/do0vM3MI/LhVJ2YWZMPsqWJ/F4EOHfBCJMTUFB1dpCPWWDCMcXc/rZJtu5Unzl88Ka
-         yLphbsBFMBWbjnHcvHTCDUbkZMQDskZkPN/mGKHvSoRCZrQuXAqKFKrtpulV6avd1Ezq
-         kolHQoLnMF4FPJ5v/T8eDof6MyjTGrZ0qEiyEfDieMJ+km1rusl3HBe5HhuVH3XamcYG
-         OD2A==
+Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dc742543119so5044612276.0;
+        Wed, 17 Apr 2024 07:52:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713362264; x=1713967064;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4CPt5wsPPyfiuSaFsXxCJvkSsW2VMZQ8yMjMPQ4gYeA=;
-        b=Zhy2bXn34M1xgkC5eirBWXkLl8nuzcV+OGWfdAB7fCVVVZZljf0pG/dxiEwf6zIBVO
-         UNG15qgjb3Wf9Y5+IIigS/OAUE3JKwXhIVQa6JywMqa8EFdJf1adi197Kz9rV4RXI49z
-         REV5c/+q64iAYzBOxjcalrYT4gQSk4o94Qc7I0XaBl3atpBeONeYYWVInXTwZpcZ5IDB
-         +k64hwEg8tOV1do3seTfwo1/qXaE87U5zdIj3gL2Bjq51Z7yrtwFxOVTb2DzYcEBQuCN
-         zsWgE+Q0sAIuc0ycna+7ZT0eNfp1GpYofU6zbWLHbDHbnN5XA5o1Abczmxn6Zu4TvAqN
-         hlJg==
-X-Forwarded-Encrypted: i=1; AJvYcCXcHVPaZ2uCQnOg9PccnBS953PrNcwuWITbnqfWaFkbNjbvcsJe5AM5g/XV0wRJlZKH0yT3p/56Kvfja9As9HIPz1E8MsSz1bPV9Ht/L11BQVEpyZ/e8cgiENeoDqLLMtq6a1NCqIFPRYs9oVE2aL/TgV1MqZPwSxCFMEcJg1F8qPfwXyxQ6g==
-X-Gm-Message-State: AOJu0Yzsk0lQ7rTh086OrssEc4I7ShBApEaF8jW4wxn8w2DQeSBsehVp
-	7x2YTNXB/MmzNrrVEavg4tXmpCHNEwcsRwFeQQRdvqIlGZuy7S4A
-X-Google-Smtp-Source: AGHT+IHxA3at9V3J8oOOjFoQI8Hxcudvb/valQNqHmVnxagYSsadcG/jKBH3OuVO++fYzASwT0Gzcg==
-X-Received: by 2002:a2e:a695:0:b0:2da:38e:f73d with SMTP id q21-20020a2ea695000000b002da038ef73dmr11056940lje.51.1713362264074;
-        Wed, 17 Apr 2024 06:57:44 -0700 (PDT)
-Received: from pratik-IdeaPad.lan (customer-145-40-29-195.stosn.net. [145.40.29.195])
-        by smtp.googlemail.com with ESMTPSA id e9-20020a2e8189000000b002d7095bf808sm1864467ljg.128.2024.04.17.06.57.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Apr 2024 06:57:43 -0700 (PDT)
-From: Pratik Farkase <pratikfarkase94@gmail.com>
-X-Google-Original-From: Pratik Farkase <pratik.farkase@wsisweden.com>
-To: 
-Cc: Pratik Farkase <pratik.farkase@wsisweden.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Pratik Farkase <pratikfarkase94@gmail.com>,
-	Stefan Wahren <wahrenst@gmx.net>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to dtschema
-Date: Wed, 17 Apr 2024 15:51:10 +0200
-Message-Id: <20240417135111.20375-1-pratik.farkase@wsisweden.com>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20230601; t=1713365531; x=1713970331;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=U4rFLFMP7uhBZnwM9rYpM+VdFgfW6XVyJZ9NVk6uI1k=;
+        b=gCESApHYwXkc8EFXFgu0SZG/WB6Siy+pjee8Lw8u6IKoqT8yuO4Jh98eo4qVpvDVZ+
+         TeVyqFbj8ZZS4NldTE3cvJ47L36EQgXDrJedpE9AvGd+lLEZeEl1FpRA/0R2qI3ITHK+
+         Mn8rfW7ih3u5Fwf94XoivE0dbxVJ0eSShEPqJmwyughOpP8EnGdmF+wUZEwC0MoPpCKt
+         11R2mXcW8Iz4OvyCJps4AXunzurmh5mG5ri3dIeBjfMtP1gAB5ahmrMZ3kqUi671LugK
+         Pbyiaai6dk+77R++lcFURk8PpRw6rSb+ivhYe/uSsiW2c+avRFrqLf8ZVsyp9iq35Wmx
+         5obQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVobZJ2JrM88zzwm3J/kAC8P/NFZHc5Dgc2iGafNQEbjyjPz1qXrtM1JbQQKjDe6YVchnEP9Gf8hTqMV+gsmqk06Cy4nyV/Y3u1G5avtFrukjmmS13k1owKVh0/4ybBdz0QwIHs9qE6GrnrgvDS44snDbPWAeBzPTmWTeple67fzJvLc5C8narzJ26F/JRnXUuX54/eSviBFNqtuWHo4ZrE1BFBRg0m0jLn
+X-Gm-Message-State: AOJu0Yx9l5Ucy3bg9WfoeJeZzIDZfUZdV7bWq3MMO5ecS1w99/tk+7zr
+	1lL/twqzT2F4VtzoeYqwAUUzHK8qoScFXNnI9Zq1arT+Sh7VgeyI0VxCA0NLt4U=
+X-Google-Smtp-Source: AGHT+IFKKi9klGLYTQg9HEkjQKa/7JPlPlA9FAXgS1pP4VDcZe62kmmi0QczEMVM877cxX6ucFYZZQ==
+X-Received: by 2002:a0d:d60d:0:b0:61a:c19f:fc4c with SMTP id y13-20020a0dd60d000000b0061ac19ffc4cmr8882978ywd.3.1713365530719;
+        Wed, 17 Apr 2024 07:52:10 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id m124-20020a817182000000b00611213d62adsm2989372ywc.124.2024.04.17.07.52.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Apr 2024 07:52:10 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-61816fc256dso50555137b3.0;
+        Wed, 17 Apr 2024 07:52:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVqK/8V4XZ47dviTvvk64ftnO35leWjYc3bJuzQUS5y+QLxoPd86u+w/mZjywTqx07rJXAMcBXCDiBi8CiEGpxjt+0GYocneiw8vEq42cmSrfb1vcULeFuDmI/MXa1PAjqcEd5hDf4R2OYsFw67/llFG1dCpTbQNxQRgmP5zJA2t6qUVOQbIJzRFYkN09nYgWKDKJx8+ZCOm8JMg/FnBA3Kdc5CIfAa0HlB
+X-Received: by 2002:a81:4ec7:0:b0:615:21e7:6bf6 with SMTP id
+ c190-20020a814ec7000000b0061521e76bf6mr14888644ywb.14.1713365530376; Wed, 17
+ Apr 2024 07:52:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240322144355.878930-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240322144355.878930-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 17 Apr 2024 16:51:58 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXaCAkQ3BdjR-iUookW2o5jd3KHc_AC5MHxLKaYZTikpw@mail.gmail.com>
+Message-ID: <CAMuHMdXaCAkQ3BdjR-iUookW2o5jd3KHc_AC5MHxLKaYZTikpw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/5] dt-bindings: serial: renesas,scif: Make
+ 'interrupt-names' property as required
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Convert the Broadcom BCM2835 Auxiliary UART to newer DT schema.
-Created DT schema based on the .txt file which had
-`compatible`, `reg` `clocks` and `interrupts` as the
-required properties. This binding is used by Broadcom BCM2835
-SOC used in some Raspberry PI boards.
-Changes from original file:
-Implemented complete example which the original txt binding lacked.
+On Fri, Mar 22, 2024 at 3:45=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
+om> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> As all the SoCs having multiple interrupts have 'interrupt-names' propert=
+y
+> in their respective DTSIs, make 'interrupt-names' property as required
+> so that we can validate them using dtbs_check.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+> v3->v4
+> - New patch
 
-Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
----
-Changes in v2
-- Updated Maintainers list according to feedback
-- Fixed typo `Auxiliar` to `Auxiliary`
----
----
- .../bindings/serial/brcm,bcm2835-aux-uart.txt | 18 -------
- .../serial/brcm,bcm2835-aux-uart.yaml         | 48 +++++++++++++++++++
- 2 files changed, 48 insertions(+), 18 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
-deleted file mode 100644
-index b5cc6297cd1b..000000000000
---- a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
-+++ /dev/null
-@@ -1,18 +0,0 @@
--* BCM2835 AUXILIAR UART
--
--Required properties:
--
--- compatible: "brcm,bcm2835-aux-uart"
--- reg: The base address of the UART register bank.
--- interrupts: A single interrupt specifier.
--- clocks: Clock driving the hardware; used to figure out the baud rate
--  divisor.
--
--Example:
--
--	uart1: serial@7e215040 {
--		compatible = "brcm,bcm2835-aux-uart";
--		reg = <0x7e215040 0x40>;
--		interrupts = <1 29>;
--		clocks = <&aux BCM2835_AUX_CLOCK_UART>;
--	};
-diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
-new file mode 100644
-index 000000000000..5d4d37371d6b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/serial/brcm,bcm2835-aux-uart.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: BCM2835 AUXILIARY UART
-+
-+maintainers:
-+  - Pratik Farkase <pratikfarkase94@gmail.com>
-+  - Florian Fainelli <florian.fainelli@broadcom.com>
-+  - Stefan Wahren <wahrenst@gmx.net>
-+
-+allOf:
-+  - $ref: serial.yaml
-+
-+properties:
-+  compatible:
-+    const: brcm,bcm2835-aux-uart
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/bcm2835.h>
-+    #include <dt-bindings/clock/bcm2835-aux.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    uart1: serial@7e215040 {
-+        compatible = "brcm,bcm2835-aux-uart";
-+        reg = <0x7e215040 0x40>;
-+        interrupts = <1 29>;
-+        clocks = <&aux BCM2835_AUX_CLOCK_UART>;
-+    };
--- 
-2.34.1
+> Note, we need patch [0] to be applied or else we might see
+> dtbs_check warning.
+>
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20240318=
+174345.46824-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
+That is commit 7db74b65a93bac5a ("ARM: dts: renesas: r7s72100:
+Add interrupt-names to SCIF nodes") in renesas-dts-for-v6.10
+(next-20240327 and later).
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
