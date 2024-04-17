@@ -1,47 +1,47 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680E844C9E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E183D967;
 	Wed, 17 Apr 2024 20:32:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713385922; cv=none; b=Twq9c2jfmG8OaC7Mhwg6Scor6p59vrDZzOWMRV6DbFyFq2Pqa02hzhl7Y1jH0vH1aAaovP8/HJhPpsT5OT+ORPdRHg3yztO3QwlXj7PLN9ue5c2WktxC9P73Gnw9eWwhTzT22oqNH6QckRRWIl5YY38wrd824qqn4aI7ZZsAOmc=
+	t=1713385923; cv=none; b=V/MFRKjuAn0omkD/EFwEOQy0FGwFEnTu7M59JmkMaD8lX8wyNELqyZ+cgso2G0bk0WdqfwpFnzl1cooStZyDLOXWRVoZwRbgxM/4LSJkLKq1etU2OlZm0lVgfSu7REAMaJY+0IfSGqvlS6/Rtroqpy+800+k5qggGhBuPP+lsjM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713385922; c=relaxed/simple;
-	bh=cQOIUn28R7ZCsWq0fLJEMttNYm5HrXEpOQPtfYumEqg=;
+	s=arc-20240116; t=1713385923; c=relaxed/simple;
+	bh=bx7VWFAj9zkp6xgsrVbQBN8r0hAL1+YWgodpGDfPiwI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=N2XcUwAQMywMXvTTW03w3TWvRRmkHtURq4EssyNJy1vrzwG3znSpA0+Vla+z5IYL7NoBOvdMidfinpEoUXjAoMQ2dnjY7SndPTn6dNnQG0mnE94lsQkNXvicJ03nuV8Dp0v7MgWKEgD2ZCtQ9BWyBcY38T0TmbLaqdl2fipHSK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=spwjUayj; arc=none smtp.client-ip=74.208.4.197
+	 MIME-Version; b=VRjUXoskUpKzUqrL9tiTphd7rHpR/dIq9GIdHW4X0HZeLs0Mgb4SctlyTJ1wUHJv4nfh+iEGTQ+4+H/JlDY8pFBznrr7+Izj82e1E9/qWWO0rJLjykucA2Vwq4narMiYdURIGlFChyItPIaJCQa8o2bHi/EH9XLvYHt78Xw3LhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=IpYU9e4b; arc=none smtp.client-ip=74.208.4.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="spwjUayj"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="IpYU9e4b"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713385916; x=1713990716; i=parker@finest.io;
-	bh=3mlaqrL+/WwAOWO2/+h06ofeEnSKj96AzK/VqPbMGLo=;
+	s=s1-ionos; t=1713385914; x=1713990714; i=parker@finest.io;
+	bh=D0cLuCAUv1D0ayVna0ISlfjCEXY7iRquaoAsOH9TeO4=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=spwjUayjd2TABBZIxW+c819UGgqmEfjETKw/uSEEkEYV7zDpioAr6cacZ7x1wNgC
-	 C9XzN9Z2jiG4dDdpwVKDNpeyJHhouf1Ha/TIN9scW0gXte2eYl5zvn7y3CqTIlyjG
-	 dXScDqMaYlBxrUsMUAf6QoRB5jQ6qS5Y7XtYPBXkPlZpXyjnDGI9jlgJUPPbEnRgH
-	 NoQuXCUSpE3ETcIyz1sPGMdXFLSzZMgQiHthY4THbLTKCwUBLAYUEC0UGK7t6LyBP
-	 I1VyYYmT76lRJD8Ih2WB7EUrcHXbFxL6RXyS0uifcsrbQlnukT7TOj8sS973i9bb2
-	 YeXe5tofDWwQrGAhKA==
+	b=IpYU9e4bz++EAGzAO+iM2PGmgL+utMk/64Z07YsylnRF3tL4MO8RfB4OSN/oLsc5
+	 qNH2hhGQPzuI3JfHldy2B/JUi4ooU0d1W/DopMgCmWMTXHH3fTFQWBT913vuSjJUd
+	 AzB6a75yIzAUTZsWzNUkJcw4REfuiRGeceYOpDFX0P5rV9P4yqUqE08rcC9r8+oyw
+	 z/tucpCQwzuG7Subp3lRIlX3e57lrGi1Kcc0DDGIkAq1ywOEPipysyQuss4Sx+azF
+	 gfD120Yf+n30m2N93WWYXq2VZohXmkg4qZd4nARB51GGzR2SLuUausKnPLJlvVmxm
+	 fG1kILzra/mltLT+2w==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus004
- [74.208.5.2]) with ESMTPSA (Nemesis) id 1M5fxm-1s4KoQ0XN4-007Bs6; Wed, 17 Apr
- 2024 22:31:56 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 1MzyVm-1suEVo2JJ0-00x6AM; Wed, 17 Apr
+ 2024 22:31:54 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v4 7/7] serial: exar: fix checkpach warnings
-Date: Wed, 17 Apr 2024 16:31:29 -0400
-Message-ID: <f7fa6c16cb5f2c8c1c7cb7d29f80bc7be53f91ab.1713382717.git.pnewman@connecttech.com>
+Subject: [PATCH v4 2/7] serial: exar: added a exar_get_nr_ports function
+Date: Wed, 17 Apr 2024 16:31:24 -0400
+Message-ID: <33f2bf66bc334573c10cf670a299ecef0b7264bc.1713382717.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.43.2
 In-Reply-To: <cover.1713382717.git.pnewman@connecttech.com>
 References: <cover.1713382717.git.pnewman@connecttech.com>
@@ -52,82 +52,88 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rmQ6lvyO9pcnLqF+oMyPzW9wbsk5Q3xtHL1O3lWF5U+UZndGBr3
- 7w9Xot12CLhbAYxoy0wJ+Ne6eXqebMrO+jM+iUWIoRXgT5uZpLyv+8gz40NbbvnPxTA4o4R
- iAqJsu1PjiH5yUqRYdZ9oM2TwN8cTOWaFAImOlDFmSCTQgBxqNDzKEeW/kEf+iG4PEeUPnE
- xQadyyuJUeFPXt8jd+Sjw==
+X-Provags-ID: V03:K1:lmxjJVTt5Rxry9+yxUIQhHvHMuCXBS86zV+ew9oOXQmeZeK6tof
+ Dt1whiHtZZ6rMhpcuLVF7YL5rn0i+mbVkefwzyV+A/gtdj8gxTY4o5ABsg720axXQG/ZzES
+ PL8cvcXFuz/7S6jg4aY6OobTFnARSKXiUNYplOIMmoeAywqdAMgLDiTEAlRxutO5P3/gKoE
+ VANiRnIkckaen/Ija5TTw==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:tecjjXD4p7U=;yGo4BdNr+vZQPdaOqVSoWRi35md
- X1J2LPXuMabQkd2cG6i0FxPUdqdkCx+bWHs5QkCszvuMIIsNzNRw0DHvrF8HqoLFAR7iTtD3g
- h5BqWJzac+KPcQFmU9yPpKpQqaN4XUlIVFrv3Qi5RnQ7H2D/Q6iprDoAFS8wr8xowj+V0mOjV
- fSy01PPWZILRWfvhJug/6Au+Cy7+2sBK7VjOxokGzTi+PNUF/iVaEkj2rpCrQ95d3u16fW0nb
- Kg8ah1un8PTwPmngIuQbjl6S72OjqlDmyMEf2TdQ0DqNB5cI08oTQXI9XJAuCVSDK82r7mB0d
- 2WPUJ+efgMZekBupb4mUoMn4hZ/KAhFvXmTsjH2ebWZsslV4cEc5JjYKncItpAzZDd2AEfISa
- esuRreZv4eOQ+yeu8yuMh9YGJx2tm3U8t+jwMhz6L3pDZW5mPdoeo6S5UpMxWJxQ4YQV85nYM
- ZsmWSm5zSRa/oaJUFOepNmnSRbWVNe9Dy+57DrFPl7hRumyRguf1Psw78M6Gcw6iQeb/Pj8dK
- fcl2o6iJr3/Qm7h6bUYojCJtyMsLZC1B0MTM5mYB/u8wZKGxOwvx3JBFU7vrkcOf9V60E/2sw
- SWeGbchB8FM5cSJg0eRlguqkJLkb74m0fD+rwm7qQPJrCHFPW/c0gJLoVDV7XxbekoPIzGTLd
- uzNtH6QNlv98lTxvBNUGtYAB33RV3Qhybx2kViTeyyxe7iNNGVTo6FK6M7FFwzc/XMNylcTI3
- 7U46a8Fxpeu9L76BidXoBMwsjWkq3EUQDQCyjmrwOTa5psM/VRuiJc=
+UI-OutboundReport: notjunk:1;M01:P0:g4f2b9UA+MY=;7N1TVxiFRc05BDan4sTTMmiIbCt
+ kElQvHp5BQ+bKwrp8hMyq1L29KrbLAmKq1lyp0VlDesaTYsGAzBSqUIFIJPrRg7tXL7qh9pIY
+ 0kXWBLen69BwKuo8Vw+lP5DSfGKa9//+vNePUHVMyixaUKB24gfPrzFrcdOXIyxxooxL+IgmI
+ JbEztJPY4EL5KnV6secdH+2vByFbwXK2kCzqm2fq6f/kwOqWZHPX9uD1NKj0L94VxSO4B/eLO
+ k8fyOLCCuiPcfAuH2rkl46GvGIYBvKMIsr1eX7VmzpusvzeKA6JsugKIQNUTXtQw0BTy9HmHn
+ EHVJejVnXnq0QFFJAQtPDw2MHiiFMBTwta6s6XaIuqoBc+UauOQkHUII1324LUvOGdatQDKxZ
+ fKZBRhL9s+x56tljmtEBSEEecoa5QRqdMszjfSxo6W/hUGJufsvhDy7aTq5dxrJCeTGL6CPgB
+ skCYsWs1m4NWL5YT1N8tfWorViRRlMbbN2nh6WneWBblQ3ZYATue45fjgpvpwmYVHx6WRbMsF
+ GHBFC+rgwN/JH9XMjhhMQZMOuwrfHA/5TiWMhTqIBQ2dhhqV1ZnUVAEGsbK5WiAfuZwjaXQZ2
+ 2wvWaiSyowQxhFf0HZaxqrnx4mHG5PzrO7mx1Pa5p2o9TXJrguRtKxs2U2TYJgdH/pkQ5dsEC
+ U7ZJMJgcTK7bN3EZzmyI/mMaAEFotGM6GB7aAjR9J5muAsquJdFE/U206uhUZjevK4XElD8eT
+ ecda+uaZR7rh0tgAUz+qmonwYjKblhloi5pqFDWrJ1GMfnUccounF0=
 
 From: Parker Newman <pnewman@connecttech.com>
 
--Fix several "missing identifier name" warnings from checkpatch in
-struct exar8250_platform and struct exar8250_board.
-Example:
-
-WARNING: function definition argument <arg> should also have an
-identifier name
-
-- Fix space before tab warning from checkpatch:
-WARNING: please, no space before tabs
-+ * 0^I^I2 ^IMode bit 0$
+Moved code for getting number of ports from exar_pci_probe() to a
+separate exar_get_nr_ports() function. CTI specific code will be added
+in another patch in this series.
 
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
-Changes in v4:
-- Moved to separate patch
+Changes in v3:
+- Only moved existing code in this patch, will add CTI code in subsequent
+  patch
 
- drivers/tty/serial/8250/8250_exar.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
 /8250_exar.c
-index 6985aabe13cc..5e42558cbb01 100644
+index 04ce5e8ddb24..72385c7d2eda 100644
 =2D-- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -147,7 +147,7 @@
-  *
-  * MPIO		Port	Function
-  * ----		----	--------
-- * 0		2 	Mode bit 0
-+ * 0		2	Mode bit 0
-  * 1		2	Mode bit 1
-  * 2		2	Terminate bus
-  * 3		-	<reserved>
-@@ -229,8 +229,8 @@ struct exar8250_platform {
- 	int (*rs485_config)(struct uart_port *port, struct ktermios *termios,
- 			    struct serial_rs485 *rs485);
- 	const struct serial_rs485 *rs485_supported;
--	int (*register_gpio)(struct pci_dev *, struct uart_8250_port *);
--	void (*unregister_gpio)(struct uart_8250_port *);
-+	int (*register_gpio)(struct pci_dev *pcidev, struct uart_8250_port *port=
-);
-+	void (*unregister_gpio)(struct uart_8250_port *port);
- };
+@@ -704,6 +704,21 @@ static irqreturn_t exar_misc_handler(int irq, void *d=
+ata)
+ 	return IRQ_HANDLED;
+ }
 
- /**
-@@ -245,8 +245,8 @@ struct exar8250_board {
- 	unsigned int num_ports;
- 	unsigned int reg_shift;
- 	int     (*board_init)(struct exar8250 *priv, struct pci_dev *pcidev);
--	int	(*setup)(struct exar8250 *, struct pci_dev *,
--			 struct uart_8250_port *, int);
-+	int	(*setup)(struct exar8250 *priv, struct pci_dev *pcidev,
-+			 struct uart_8250_port *port, int idx);
- 	void	(*exit)(struct pci_dev *pcidev);
- };
++static unsigned int exar_get_nr_ports(struct exar8250_board *board,
++					struct pci_dev *pcidev)
++{
++	unsigned int nr_ports =3D 0;
++
++	if (pcidev->vendor =3D=3D PCI_VENDOR_ID_ACCESSIO)
++		nr_ports =3D BIT(((pcidev->device & 0x38) >> 3) - 1);
++	else if (board->num_ports)
++		nr_ports =3D board->num_ports;
++	else
++		nr_ports =3D pcidev->device & 0x0f;
++
++	return nr_ports;
++}
++
+ static int
+ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ {
+@@ -723,12 +738,12 @@ exar_pci_probe(struct pci_dev *pcidev, const struct =
+pci_device_id *ent)
 
+ 	maxnr =3D pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
+
+-	if (pcidev->vendor =3D=3D PCI_VENDOR_ID_ACCESSIO)
+-		nr_ports =3D BIT(((pcidev->device & 0x38) >> 3) - 1);
+-	else if (board->num_ports)
+-		nr_ports =3D board->num_ports;
+-	else
+-		nr_ports =3D pcidev->device & 0x0f;
++	nr_ports =3D exar_get_nr_ports(board, pcidev);
++	if (nr_ports =3D=3D 0) {
++		dev_err_probe(&pcidev->dev, -ENODEV,
++				"failed to get number of ports\n");
++		return -ENODEV;
++	}
+
+ 	priv =3D devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), G=
+FP_KERNEL);
+ 	if (!priv)
 =2D-
 2.43.2
 
