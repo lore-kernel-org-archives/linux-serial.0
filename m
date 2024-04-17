@@ -1,101 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1C96A8D0;
-	Wed, 17 Apr 2024 08:18:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1120480614
+	for <linux-serial@vger.kernel.org>; Wed, 17 Apr 2024 09:04:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713341923; cv=none; b=RfKLXv6VgAOxPFdGE3hbQmnXr307eCiBbDaHjgemhw1fylRafmWnzYULRPBvXNSDV43jtVRHPEHvXL99UwCazboGutNWg+Crh8RXrxTl5SYURtiqwGibPMIltYbhM3qKBlm5sSZwaxRiyP2N1zfpiQ5OfE5u9csJiIF65qBC1uk=
+	t=1713344674; cv=none; b=uWHrG+P2p6IGK9ZX0k/971eLWpyCCieebDTo+TGLwwyZ2TKm/ChmU/nDRIuB/mjowXf5tZJNaAT2lhKyGyx6yfe4+/LQB7BqWjTQxUgS2pdU160CVgarrtPQHu7h4pS+a12MqvEpzJR7LwtDZ1XJ/C9VD53Hba2pnFwoOEsLrSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713341923; c=relaxed/simple;
-	bh=a3P9nelLo/PDdkDikvNisOmc9OwfBNQXroeq20WsmG4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Mk35jLO28Q/184ORKhjZh8Jpbp8uxTmj7/tRB3ZeqExpDi/R69E2XDWymFYBUhYtLWTICIZ5RSeFw+6GuflOQ6ayhdbiajN7j3wNOT6+5ssrbxJCR11l1YdXkVDkShrOPTYBfxkhkxySCqKd1P6RrqkZFmJD/+4MhbdTL8C1N7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NJxw78Xg; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NJxw78Xg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713341922; x=1744877922;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=a3P9nelLo/PDdkDikvNisOmc9OwfBNQXroeq20WsmG4=;
-  b=NJxw78XgoZvaNBxPtbupMFflS24SGXY/RQ7Ultm3QNkUuA1CblNnuiRC
-   yT7EqW904HwEvYFZkMIRurgc/VBkigML0vIOIJ3FdOzw7HHqPugBs3f6r
-   z9TLtgDlFcbDt7xAE1WXbmmFcD7sbYL0ZG1Ce2X/jIlNTkfJYNrG37xej
-   fjVXosNqd0bH273CaqFzTZ/oMiZXw4VMJKo0L9rOL7zmPub/a11ZMOD+0
-   PeMnejblOPD1pPIIaVeYxesdBdIMq565DaK7D/3oyf1B1ssSzosIgg05u
-   dxN+TTQKdJD15E7wRqCkDpvq/v5pAXU4tVGrHefux99XS0dD4f3VTpetz
-   Q==;
-X-CSE-ConnectionGUID: GKsHBWpfT/C98SRjXpf6tQ==
-X-CSE-MsgGUID: SgJsr82XT1WORxOQ1j6Umw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="20209618"
-X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
-   d="scan'208";a="20209618"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 01:18:40 -0700
-X-CSE-ConnectionGUID: Q4Xhe7nSTmGgIbThMNYtYQ==
-X-CSE-MsgGUID: o+pWPl+fSAOWLovgwsIK7Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
-   d="scan'208";a="22552533"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.35])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 01:18:37 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 17 Apr 2024 11:18:33 +0300 (EEST)
-To: Michael Pratt <mcpratt@pm.me>
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Wander Lairson Costa <wander@redhat.com>, 
-    Vamshi Gajjela <vamshigajjela@google.com>
-Subject: Re: [PATCH v2 1/3] serial: core: Store fifo timeout again
-In-Reply-To: <zTaajAZtS59Hv5offvbHJV1ptivBxD4WaZP_M-zQkicUtDb4mokpuKCFGIzUVL3p2yDSqHx9Uf2vIYVlbGeHN8xMJ6H3VWxwH3MPe1cH5a4=@pm.me>
-Message-ID: <35bd3e50-8a60-7c0e-23a9-ae483e293a15@linux.intel.com>
-References: <20240416182741.22514-1-mcpratt@pm.me> <20240416182741.22514-2-mcpratt@pm.me> <Zh7KV0FuM2B56J7w@smile.fi.intel.com> <zTaajAZtS59Hv5offvbHJV1ptivBxD4WaZP_M-zQkicUtDb4mokpuKCFGIzUVL3p2yDSqHx9Uf2vIYVlbGeHN8xMJ6H3VWxwH3MPe1cH5a4=@pm.me>
+	s=arc-20240116; t=1713344674; c=relaxed/simple;
+	bh=Vy9RxpGJFkyUUn1WJcrbkWAi2j1VMThp4FrzwrvO4aY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BS4VU9iLt9jv39I5/1qOxswVyv7CQB4bm9FXqcgmPEofZYchzmuG96nCJiusSc9dmxXTmck90KLt6OgrhAspsu2FgrRljNF/zZl/yWAni89GTAqA8xsZGzc6iRZHhJDD7bWpDpBHy2RkKkhspiCAFDlGSlZ9gr45e8mnbNMV6YU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rx1DD-0004ol-PA; Wed, 17 Apr 2024 11:04:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rx1DB-00ClGE-Q8; Wed, 17 Apr 2024 11:04:13 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ukl@pengutronix.de>)
+	id 1rx1DB-002hLw-2J;
+	Wed, 17 Apr 2024 11:04:13 +0200
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	kernel@pengutronix.de,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Valentin Caron <valentin.caron@foss.st.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Erwan Le Ray <erwan.leray@foss.st.com>,
+	Peter Hurley <peter@hurleysoftware.com>,
+	Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>,
+	linux-serial@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 0/2] serial: stm32: Two fixes
+Date: Wed, 17 Apr 2024 11:03:26 +0200
+Message-ID: <cover.1713344161.git.u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=710; i=u.kleine-koenig@pengutronix.de; h=from:subject:message-id; bh=Vy9RxpGJFkyUUn1WJcrbkWAi2j1VMThp4FrzwrvO4aY=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBmH5BfsTno6WspytFGVGdPtgzDOQ57SnStMVreu xnM2THkVyGJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZh+QXwAKCRCPgPtYfRL+ ThT0B/44IBFxXJkLjJrE/ZG1oW5gVoGKgsjniS6CKQaN3sKpXtV58WnkjbVzW/iQNtUyNH0oVKj CU5w+Uf2f1Ht2+HFLei+OBZKtRczvYGbg03N34JytZkuIw1OOTwcSm180aqgAnRE5tDtX8+Y34t 0OcAyitQ9FFpZWu/mUTFdkg9bzAmq3AckFCC1TH5cChVcTfAjCKybeMY8zO4mcau9DLGik+y/25 uOSzEFI95gj+Z18uL3fend9iOdVqaiXwfs2AxeeZTx8o+dlVjttT/2SYFBWYl4UFxDFg0aQJ7il DA66aUf0nvLSJGXlsz5mywjXv95Hq3AfrGhJ+Mp9ZR2jzwBA
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-On Tue, 16 Apr 2024, Michael Pratt wrote:
-> On Tuesday, April 16th, 2024 at 14:58, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > > + if (port->fifosize > 1)
-> > > + port->timeout = uart_fifo_timeout(port);
-> > 
-> > 
-> > else
-> > port->timeout = port->frame_time;
-> > 
-> 
-> 
-> Consistent with what I said in the other reply, the only reason that
-> I have an if statement here, is to avoid doing extra math for devices
-> without a fifo, as a specifically calculated timeout value would be useless
-> in those cases.
+Hello,
 
-Please benchmark to show this actually matters if want to make this claim. 
-Otherwise just do the math always.
+this series contains to fixes that target v6.9 and IMHO should also get
+backported to stable. For that reason I added a Cc: stable line to both
+patches.
 
-> However, if you don't like the 10 ms default timeout, perhaps port->frame_time
-> could actually be a more reasonable default value? That is, provided 
-> that we have a process 
-> for calculating the proper value already in place...
+The first patch isn't very critical, it only improves the driver's
+behaviour if another problem pops up in the future that results in an
+unhandled irq. The second fixes a real problem for me.
 
-While it would be a step toward the correct direction, you'd still need to 
-add the safety there which is already done by uart_fifo_timeout(). So no, 
-I don't think there's advantage of using port->frame_time over just 
-calling uart_fifo_timeout() and ensuring uart_fifo_timeout() is always 
-using at least 1 as the FIFO size when it does the calculations.
+Best regards
+Uwe
 
+Uwe Kleine-König (2):
+  serial: stm32: Return IRQ_NONE in the ISR if no handling happend
+  serial: stm32: Reset .throttled state in .startup()
+
+ drivers/tty/serial/stm32-usart.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+base-commit: 4eab358930711bbeb85bf5ee267d0d42d3394c2c
 -- 
- i.
+2.43.0
 
