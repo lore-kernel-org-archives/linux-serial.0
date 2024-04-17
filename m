@@ -1,96 +1,186 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736DC13F42D;
-	Wed, 17 Apr 2024 13:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B21813F443;
+	Wed, 17 Apr 2024 13:57:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713361780; cv=none; b=gPG8kVCjMEIA0pOYdG/4cM56IdSVUvB5vQP0/38EaqDoBix/XU7f3QL3qxYguGsNZs1hETf95sa8NDHIl0u9qoWFboNQhef1W5VM9UwOBuMbXi7w0xuOZSYvuqeF47c2AFn0Ndcl2apatXvIwBs0cM3aCi5yyG01F65nIccY9Jk=
+	t=1713362267; cv=none; b=VFcXMrZRTu+ss9FqHuqgLP9TRessLXBvXn4N8HsTlQ6CFsLe1vpM7FWAruJi5MRtg4Kt0HtSe4UAoXJWgXHZ2u17j0U0I70SRrrkcciZUW4dhCCAiyRcitoAwRNOqVCAx4Zbp+VEGnvLvsYEcyoyB+s9lKQTEXXQX6yX4TgXIw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713361780; c=relaxed/simple;
-	bh=gPRA+AslrE+AGNd2zbxY6w8vhwUFOOh7RkJeH++GuGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E0cSCjZozoUxTQKqfAmteL+Vi50CNbBeGS4Ruq6LF50zbnN64GVq5WYmLMeRS/DHfpCUFO/h2t8hO73k/tuSFQ0s7W9ZzH2GKeaxPabkvb4Seyhea9sSYxqFB87VltjisVRPUtu2rWf06ZfdqLSEZQzG57UP1XTlsMZnEDKTzio=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Mu25yupA; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713362267; c=relaxed/simple;
+	bh=tAuTme6GkvilwxtiDUHh+kXeYKrHGiZ7i8iQOkzrPBg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=InFuWzyg+czyAZ/0dBOlT38rBmczfvtJwLm9QSUvzUaaEZG9lJBkUpQRPp5O6nQjlfvJEu3lJ+L/yhuAwdTCRo8pExZQob1SSNvdqI632MKTZacGrBPDEU5Hz1hQCNXX4ecAviwJ8InfehZ/RisYbbhMYHLcQyBU/hAzsMVnMZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WELsYkuE; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Mu25yupA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 968EFC072AA;
-	Wed, 17 Apr 2024 13:49:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713361780;
-	bh=gPRA+AslrE+AGNd2zbxY6w8vhwUFOOh7RkJeH++GuGE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Mu25yupAemBAjpDZ6PatmFMmNAVJVJzE6fz/UfN8Y2nn0YA5lpyH48/C0rnRO+/IE
-	 3fM3nvuUqBrSBGl1X7gjn00BQxJ6oW/W8nW48Gggjw24K1BzXQQQM52dD5PxNkoagh
-	 2I5TyBVRXabgnKPuambLA4D7a7mRfAea4ebksEgY=
-Date: Wed, 17 Apr 2024 15:49:37 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Parker Newman <parker@finest.io>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WELsYkuE"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d8863d8a6eso72972451fa.3;
+        Wed, 17 Apr 2024 06:57:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713362264; x=1713967064; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4CPt5wsPPyfiuSaFsXxCJvkSsW2VMZQ8yMjMPQ4gYeA=;
+        b=WELsYkuE8+DsMAIZkP1dXlRBmiYEGRDFXl3KCwgDOAwnMYMcHwUBVwPXoBXBTuE2qw
+         iQ7B8wBV3u3XfE0VFoeq2LB0yF+C7DEIy1Yk/saRHhehyEfp2+EC3H08VaHX+Mi5gBxw
+         c/do0vM3MI/LhVJ2YWZMPsqWJ/F4EOHfBCJMTUFB1dpCPWWDCMcXc/rZJtu5Unzl88Ka
+         yLphbsBFMBWbjnHcvHTCDUbkZMQDskZkPN/mGKHvSoRCZrQuXAqKFKrtpulV6avd1Ezq
+         kolHQoLnMF4FPJ5v/T8eDof6MyjTGrZ0qEiyEfDieMJ+km1rusl3HBe5HhuVH3XamcYG
+         OD2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713362264; x=1713967064;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4CPt5wsPPyfiuSaFsXxCJvkSsW2VMZQ8yMjMPQ4gYeA=;
+        b=Zhy2bXn34M1xgkC5eirBWXkLl8nuzcV+OGWfdAB7fCVVVZZljf0pG/dxiEwf6zIBVO
+         UNG15qgjb3Wf9Y5+IIigS/OAUE3JKwXhIVQa6JywMqa8EFdJf1adi197Kz9rV4RXI49z
+         REV5c/+q64iAYzBOxjcalrYT4gQSk4o94Qc7I0XaBl3atpBeONeYYWVInXTwZpcZ5IDB
+         +k64hwEg8tOV1do3seTfwo1/qXaE87U5zdIj3gL2Bjq51Z7yrtwFxOVTb2DzYcEBQuCN
+         zsWgE+Q0sAIuc0ycna+7ZT0eNfp1GpYofU6zbWLHbDHbnN5XA5o1Abczmxn6Zu4TvAqN
+         hlJg==
+X-Forwarded-Encrypted: i=1; AJvYcCXcHVPaZ2uCQnOg9PccnBS953PrNcwuWITbnqfWaFkbNjbvcsJe5AM5g/XV0wRJlZKH0yT3p/56Kvfja9As9HIPz1E8MsSz1bPV9Ht/L11BQVEpyZ/e8cgiENeoDqLLMtq6a1NCqIFPRYs9oVE2aL/TgV1MqZPwSxCFMEcJg1F8qPfwXyxQ6g==
+X-Gm-Message-State: AOJu0Yzsk0lQ7rTh086OrssEc4I7ShBApEaF8jW4wxn8w2DQeSBsehVp
+	7x2YTNXB/MmzNrrVEavg4tXmpCHNEwcsRwFeQQRdvqIlGZuy7S4A
+X-Google-Smtp-Source: AGHT+IHxA3at9V3J8oOOjFoQI8Hxcudvb/valQNqHmVnxagYSsadcG/jKBH3OuVO++fYzASwT0Gzcg==
+X-Received: by 2002:a2e:a695:0:b0:2da:38e:f73d with SMTP id q21-20020a2ea695000000b002da038ef73dmr11056940lje.51.1713362264074;
+        Wed, 17 Apr 2024 06:57:44 -0700 (PDT)
+Received: from pratik-IdeaPad.lan (customer-145-40-29-195.stosn.net. [145.40.29.195])
+        by smtp.googlemail.com with ESMTPSA id e9-20020a2e8189000000b002d7095bf808sm1864467ljg.128.2024.04.17.06.57.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 06:57:43 -0700 (PDT)
+From: Pratik Farkase <pratikfarkase94@gmail.com>
+X-Google-Original-From: Pratik Farkase <pratik.farkase@wsisweden.com>
+To: 
+Cc: Pratik Farkase <pratik.farkase@wsisweden.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pratik Farkase <pratikfarkase94@gmail.com>,
+	Stefan Wahren <wahrenst@gmx.net>,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v3 0/8] serial: exar: add Connect Tech serial cards to
- Exar driver
-Message-ID: <2024041706-palatable-buckskin-aa39@gregkh>
-References: <cover.1713270624.git.pnewman@connecttech.com>
- <2024041723-abroad-jugular-89db@gregkh>
- <20240417092641.6f7dacd8@SWDEV2.connecttech.local>
+	devicetree@vger.kernel.org,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to dtschema
+Date: Wed, 17 Apr 2024 15:51:10 +0200
+Message-Id: <20240417135111.20375-1-pratik.farkase@wsisweden.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240417092641.6f7dacd8@SWDEV2.connecttech.local>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 17, 2024 at 09:26:41AM -0400, Parker Newman wrote:
-> On Wed, 17 Apr 2024 13:24:49 +0200
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> 
-> > On Tue, Apr 16, 2024 at 08:55:27AM -0400, Parker Newman wrote:
-> > > From: Parker Newman <pnewman@connecttech.com>
-> > >
-> > > Hello,
-> > > These patches add proper support for most of Connect Tech's (CTI) Exar
-> > > based serial cards. Previously, only a subset of CTI's cards would work
-> > > with the Exar driver while the rest required the CTI out-of-tree driver.
-> > > These patches are intended to phase out the out-of-tree driver.
-> > >
-> > > I am new to the mailing lists and contributing to the kernel so please
-> > > let me know if I have made any mistakes or if you have any feedback.
-> >
-> > Much better.  I took the 1st patch already in my tree to make it
-> > hopefully easire for you to rebase and redo the rest.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> I will resend with the updates.
-> I have been using the "main" branch of gregkh/tty.git so far. Is that correct?
-> Or should I be using "tty-testing"?
+Convert the Broadcom BCM2835 Auxiliary UART to newer DT schema.
+Created DT schema based on the .txt file which had
+`compatible`, `reg` `clocks` and `interrupts` as the
+required properties. This binding is used by Broadcom BCM2835
+SOC used in some Raspberry PI boards.
+Changes from original file:
+Implemented complete example which the original txt binding lacked.
 
-tty-testing is where things go before they are considered "good enough"
-to get into "tty-next" which is never rebased, and is what will be sent
-to Linus for the "next" kernel release (not this one.)
+Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
+---
+Changes in v2
+- Updated Maintainers list according to feedback
+- Fixed typo `Auxiliar` to `Auxiliary`
+---
+---
+ .../bindings/serial/brcm,bcm2835-aux-uart.txt | 18 -------
+ .../serial/brcm,bcm2835-aux-uart.yaml         | 48 +++++++++++++++++++
+ 2 files changed, 48 insertions(+), 18 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
 
-Sometimes it is rebased if I mess things up, but usually it's pretty
-stable.  Patches only sit in there for 24 hours usually before ending up
-in "tty-next"
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
+deleted file mode 100644
+index b5cc6297cd1b..000000000000
+--- a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-* BCM2835 AUXILIAR UART
+-
+-Required properties:
+-
+-- compatible: "brcm,bcm2835-aux-uart"
+-- reg: The base address of the UART register bank.
+-- interrupts: A single interrupt specifier.
+-- clocks: Clock driving the hardware; used to figure out the baud rate
+-  divisor.
+-
+-Example:
+-
+-	uart1: serial@7e215040 {
+-		compatible = "brcm,bcm2835-aux-uart";
+-		reg = <0x7e215040 0x40>;
+-		interrupts = <1 29>;
+-		clocks = <&aux BCM2835_AUX_CLOCK_UART>;
+-	};
+diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
+new file mode 100644
+index 000000000000..5d4d37371d6b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/brcm,bcm2835-aux-uart.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/brcm,bcm2835-aux-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: BCM2835 AUXILIARY UART
++
++maintainers:
++  - Pratik Farkase <pratikfarkase94@gmail.com>
++  - Florian Fainelli <florian.fainelli@broadcom.com>
++  - Stefan Wahren <wahrenst@gmx.net>
++
++allOf:
++  - $ref: serial.yaml
++
++properties:
++  compatible:
++    const: brcm,bcm2835-aux-uart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/bcm2835.h>
++    #include <dt-bindings/clock/bcm2835-aux.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    uart1: serial@7e215040 {
++        compatible = "brcm,bcm2835-aux-uart";
++        reg = <0x7e215040 0x40>;
++        interrupts = <1 29>;
++        clocks = <&aux BCM2835_AUX_CLOCK_UART>;
++    };
+-- 
+2.34.1
 
-"main" just tracks Linus's branch, don't use it, I just need a branch to
-diff against.
-
-"tty-linus" is what will be sent to Linus for "this" release (i.e. bug
-fixes only.)
-
-Or you can just work off of the linux-next tree, which merges in both of
-my tty-next and tty-linus branches together (and all other maintainer
-trees/branches), every day, and is usually a good base for what will be
-the "next" release after this one.
-
-hope this helps,
-
-greg k-h
