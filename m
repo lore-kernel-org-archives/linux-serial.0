@@ -1,180 +1,133 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B19922324;
-	Wed, 17 Apr 2024 20:11:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE5242A81;
+	Wed, 17 Apr 2024 20:31:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713384712; cv=none; b=WgG5hc/R2ylEcbTuuSxujfXCXO8uBeMS6zOhEfzMFVIJ7oKNNAYsIZMd00s8XDLF4ghaQfIN+jz+KrhznkUi0KRSSFP6lOLrmy+UHDHHJdaDh2qq5mAUzqmMiYy8mg37KqUJC7G2b0qwpVbGM1LXiW/hclBo+ZJVezdap59GjtI=
+	t=1713385921; cv=none; b=DMTyWEVNQF8/f5f452BQPP3pon2ky/cpLnOLnavbGcNfIYmRpzuW0ncHYGhpbZIutLDBybeDkjn3g8UkRwswQEb2C3KXYM1yexECixjTbRuSooZ2j7xHnkQ5yJ7KXZOSjCF5JZwaglaIxmsh4EJ/N0YK5jrQyo8uH4RB8FKFBfg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713384712; c=relaxed/simple;
-	bh=XD0lQbHLXLAn/+S5GwtU0Lbsu1BpfgFic/mCjoxxyow=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PY2l62J0N+z9TZaY80SI4+C40KV6Rmiv2mhGXub5uf56HSNF1UWqMi5q8Xm28mlby7Z39WEXHL9LCuPeDphR81mAC8JCGIE8/Zm4qkSyYb3FTEw2Ym4DbghvNB4Pa5+/KH8K7x32vN2C3TJp7ZEXieqOtGcTDg7zP/+wa1sSrZ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VCK+0+hT; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1713385921; c=relaxed/simple;
+	bh=vaOwlWfWNCYXW1bY0aCtIE5T8+KB0DoUNLHtA1QtREM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TaA5P4xeeZVkM6koQTYeqIBZdjHVesQmleCTS7/j/gqboWxn0SVFr+AjuB4dwePA6jrbWxgMgiAnx5MVEeHK9FZtqYkMW4KxflI+1sYTRS5NcoZ+4IFfuCnJ4g9Qrybbw/kjCr/c5Djb0YAsk4YLIjWyKhioaI0ZJdsQ5gjj/Z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=n2YGThtR; arc=none smtp.client-ip=74.208.4.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VCK+0+hT"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-516d1c8dc79so82036e87.1;
-        Wed, 17 Apr 2024 13:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713384709; x=1713989509; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YkXJYCCAFQIB+kTCCd8sU0ZfFeu7ir+DVLkLbSTNUGY=;
-        b=VCK+0+hTk4ttiQy2uXosmIuQli97FvL98EsWs4h/SY30apA76b+in+4DERUK6jRt0A
-         jqFVZ/4X3P0brxpZWRTnGNwUwz1kmlW0JbmRxUzdMgQVNfMql5qSvupBJ37fWCX4F1KD
-         /PPPPkWNGWgEEZ4UbleWCyDOMrK/3tTOvpuQQjvBzhKFbqUeGNXKO73GuHOwc0s6q9ia
-         Q69of+BelUK8r2mwtvxQd40hoPhLIHR8H7GBfikNoDYOGmOj2webpmOkyQiwFv1teGxv
-         wVRvzoUl0/jNwbtiUFoM1tcUM79tgU6F1LBgisJM7J8julYl9RD+r4AGlpyI8xopc3yQ
-         7nLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713384709; x=1713989509;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YkXJYCCAFQIB+kTCCd8sU0ZfFeu7ir+DVLkLbSTNUGY=;
-        b=AIwdpkamBIsJPjEw07XuEegm/NPNa38NlAnV18uEoVsOsEX5E6GXcfVcNR1f+mLmYW
-         AkP4rWnk0/mGDYh0rJo7m/OT+j7iycLLrZ7Go+zCMtAAZ9WQOr/3ZekCLOyTVWRatZmO
-         RF/sKzqIjJ5IqO59GSXdO7mbmfDOYMjuRNYHaCCM4VU4bfIJK232cjxiyacNrBS41+mH
-         zoIKjUXsfh3SRRWQppics4G4EdyqasFPSnaX3Ny/3B86fUra8PCZGVw3bUanFmj4wein
-         5AfQLAEz3Sf6Rvwu1mjGXzRK1EsBhTwmwH5XqGEj6mDM7nWEdvr62roIj/eEdKKiKTxp
-         1RiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWdQZOTb29YtvLVvTIybplabM1ZxlWZJbM86Et94w2tfUYLMl0FMnQpw7YkxnVA6IHzuEdSPrDohxh6doh/8hFJNihkmeVfsD/vVCpxbhZwU/rywm0nb7VB2hD6rrdXlSsQve/a6Bs242P+Bah1ffmEoxYT0xp9F2OmooVR4gQuI9CDEaIq
-X-Gm-Message-State: AOJu0Yzqf3GY6GF+5zCELSO7gryLNiPsvs1urxsZtjcguIo/5j1IKrQ/
-	SGxT+juVFz6Bb1gLcAbvnqobYvbx6EdaktyA7m+gqvZD0XE7hKcwIhSdaGbr
-X-Google-Smtp-Source: AGHT+IEimNL9Jzkg+4WuFGUWNsLVtlVgbYacCQGaS4hEtgXZrKILR+Dv3UKvX+SXrk3ibvZAdcxVBg==
-X-Received: by 2002:ac2:4424:0:b0:518:9952:2740 with SMTP id w4-20020ac24424000000b0051899522740mr173861lfl.41.1713384708981;
-        Wed, 17 Apr 2024 13:11:48 -0700 (PDT)
-Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
-        by smtp.gmail.com with ESMTPSA id bp32-20020a05651215a000b00518f6b9a5d7sm971036lfb.137.2024.04.17.13.11.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Apr 2024 13:11:48 -0700 (PDT)
-Date: Wed, 17 Apr 2024 23:11:46 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] dmaengine: dw: Simplify prepare CTL_LO methods
-Message-ID: <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-4-fancer.lancer@gmail.com>
- <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="n2YGThtR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1713385915; x=1713990715; i=parker@finest.io;
+	bh=OgdkLE55rcfI4iKjjOB90ezNiSvnD5C9xJWlY5tEYG8=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=n2YGThtRzvolVvlSHqhtDIbr4ndivkR6tQ49p0Aw6jCGLr7SgjDJ8SvdnsW/DKDB
+	 w3zhGvfVcZxESmLifGdMps2sF7NQzgFU4Gfj6MAL5U0GfjnPG1Qa2sUJnkAXSoTm8
+	 OAhbug+Tb8dbr2ZI3e69lIdQYh09jZKFCXSXMTIuzeq/rBR85Nox1hAt0EtnkOpqY
+	 UGoapV1l/1oSJ6no0ofElxDhxyWADngSVm0ctXsIA1jibU+yovtpc6sRFSlWtflyg
+	 hGF6UKsSMvkT9VdCDbRKSW6EwI8NtbfCfXlMmyqbN4o6o96vkjg1IyZfYYnyD/vfo
+	 qjUxrYaZOGn6n5zO4A==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus004
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 1M3U6Q-1rxkAy3htS-000cIY; Wed, 17 Apr
+ 2024 22:31:55 +0200
+From: Parker Newman <parker@finest.io>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Parker Newman <pnewman@connecttech.com>
+Subject: [PATCH v4 3/7] serial: exar: add optional board_init function
+Date: Wed, 17 Apr 2024 16:31:25 -0400
+Message-ID: <0e72a3154114c733283ff273bc1e31456ee101f4.1713382717.git.pnewman@connecttech.com>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <cover.1713382717.git.pnewman@connecttech.com>
+References: <cover.1713382717.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:iIMK9UjhQLlMwa/AOnMoIDct01FXLpiy27KVmAkNRK+LmCzAnPC
+ t+KobOXZIttezz417DQSrVYFS/VmMwxdd7w5OsCgzi8b5C8z+UyVRKJzWLSivOZUmvebN1N
+ rY3AynBj8LnKs0iyCSD57ngXnMko1zle9AVgt/86ddGmBsaMerXrQ8eisH8HAm0rg3cvA0C
+ WKlp/zjHGcYL1+vcYYy1g==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:oMV7c3eF+9c=;jyZpVD84WwK6gUFMo7JqnwP6lzG
+ QPlRNKOqX1Aflozb8oWDsYsLxTMrkbKf4VX/IG2x2r6MhnZCxX4jF7H1GgiO6q74kIpMzdBGo
+ NnlmsRsZUCFftXlfwkIEE22SL6HQY2KX0odTEyLwy+IzdwgbGNXdK2XQHes1l9s6VBIWr7Bd3
+ fBmWGy9N/yKiruBVTZxpuDPmVKL4T8XReZDCNOD7vMiu+TLsz7g/0s/EFDgkTUchPbHxTsBsQ
+ WxvsvZvujNr+q56zlSAoP9uLbX2MJ8OO2wH7J765dNGq5OOz404G7EmV20O/cMae5o4pLLKnM
+ 0FjouOS0/R9qDENNQyKDYmfarnOHHQ3TzvFXEV7eGkRNFi36qlEXlq4Fi+Q+PJ2fv3nfOBh7y
+ MBuCfFU/k4Xu7mnzrBkaBKkMYvHiCNmhCMI7zCiwdw583U0GqU2YLavhKaz+ob69lnwTTw1hF
+ ONjOO4/0bHWnIK/998P0QeJSruB2vK0I8+YmSigN4QNqe6mWgTa2SoJzcni0htJfp6ViS71zm
+ mUE8Vdq1kQYQaKte7DJVzQeHPpWFF3Ak9QdInZhFR4Io2CLmqSGn7Vc6fR/a25adHHyRVVDip
+ iqLaG8qVXDoTmyufw4m9sdT4fMW+iDHtvWW+2a72sw7Gn8VW9qBkIN+JO+qbQq0P3nVisnBHG
+ sw5CBpj2VvDbRGKumxXyBD7jMqm1pCp1GPlTe9BeXsLE2Zwu1/DmNwEGgPMzU7gjB/8XBYsli
+ 9uBRTB20hTqCfq81uOTvatdRiEsBtR4lGzGKUgv92C9zho6+SZpI7M=
 
-On Tue, Apr 16, 2024 at 10:04:42PM +0300, Andy Shevchenko wrote:
-> On Tue, Apr 16, 2024 at 07:28:57PM +0300, Serge Semin wrote:
-> > Currently the CTL LO fields are calculated on the platform-specific basis.
-> > It's implemented by means of the prepare_ctllo() callbacks using the
-> > ternary operator within the local variables init block at the beginning of
-> > the block scope. The functions code currently is relatively hard to
-> > comprehend and isn't that optimal since implies four conditional
-> > statements executed and two additional local variables defined. Let's
-> > simplify the DW AHB DMA prepare_ctllo() method by unrolling the ternary
-> > operators into the normal if-else statement, dropping redundant
-> > master-interface ID variables and initializing the local variables based
-> > on the singly evaluated DMA-transfer direction check. Thus the method will
-> > look much more readable since now the fields content can be easily
-> > inferred right from the if-else branch. Provide the same update in the
-> > Intel DMA32 core driver for sake of the driver code unification.
-> > 
-> > Note besides of the effects described above this update is basically a
-> > preparation before dropping the max burst encoding callback. It will
-> > require calling the burst fields calculation methods right in the
-> > prepare_ctllo() callbacks, which would have made the later function code
-> > even more complex.
-> 
-> Yeah, this is inherited from the original driver where it used to be a macro.
-> 
-> ...
-> 
-> > +	if (dwc->direction == DMA_MEM_TO_DEV) {
-> > +		sms = dwc->dws.m_master;
-> > +		smsize = 0;
-> > +		dms = dwc->dws.p_master;
-> > +		dmsize = sconfig->dst_maxburst;
-> 
+From: Parker Newman <pnewman@connecttech.com>
 
-> I would group it differently, i.e.
-> 
-> 		sms = dwc->dws.m_master;
-> 		dms = dwc->dws.p_master;
-> 		smsize = 0;
-> 		dmsize = sconfig->dst_maxburst;
+Add an optional "board_init()" function pointer to struct exar8250_board
+which is called once during probe prior to setting up the ports. It will
+be used in subsequent patches of this series.
 
-Could you please clarify, why? From my point of view it was better to
-group the source master ID and the source master burst size inits
-together.
+Signed-off-by: Parker Newman <pnewman@connecttech.com>
+=2D--
+Changes in v3:
+ - Renamed board_setup to board_init.
+ - Changed pci_err to dev_err_probe
+ - Added note above about checkpatch fixes
 
-> 
-> > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
-> > +		sms = dwc->dws.p_master;
-> > +		smsize = sconfig->src_maxburst;
-> > +		dms = dwc->dws.m_master;
-> > +		dmsize = 0;
-> > +	} else /* DMA_MEM_TO_MEM */ {
-> > +		sms = dwc->dws.m_master;
-> > +		smsize = 0;
-> > +		dms = dwc->dws.m_master;
-> > +		dmsize = 0;
-> > +	}
-> 
-> Ditto for two above cases.
-> 
-> >  static u32 idma32_prepare_ctllo(struct dw_dma_chan *dwc)
-> >  {
-> >  	struct dma_slave_config	*sconfig = &dwc->dma_sconfig;
-> > -	u8 smsize = (dwc->direction == DMA_DEV_TO_MEM) ? sconfig->src_maxburst : 0;
-> > -	u8 dmsize = (dwc->direction == DMA_MEM_TO_DEV) ? sconfig->dst_maxburst : 0;
+Changes in v4:
+ - Removed checkpatch fixes, they will be in their own patch at the end
+ - Added pcidev to board_init() args to avoid needing to add to priv
 
-> > +	u8 smsize, dmsize;
-> > +
-> > +	if (dwc->direction == DMA_MEM_TO_DEV) {
-> > +		smsize = 0;
-> > +		dmsize = sconfig->dst_maxburst;
-> > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
-> > +		smsize = sconfig->src_maxburst;
-> > +		dmsize = 0;
-> > +	} else /* DMA_MEM_TO_MEM */ {
-> > +		smsize = 0;
-> > +		dmsize = 0;
-> > +	}
-> 
-> 	u8 smsize = 0, dmsize = 0;
-> 
-> 	if (dwc->direction == DMA_MEM_TO_DEV)
-> 		dmsize = sconfig->dst_maxburst;
-> 	else if (dwc->direction == DMA_DEV_TO_MEM)
-> 		smsize = sconfig->src_maxburst;
-> 
-> ?
-> 
-> Something similar also can be done in the Synopsys case above, no?
+ drivers/tty/serial/8250/8250_exar.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-As in case of the patch #1 the if-else statement here was designed
-like that intentionally: to signify that the else clause implies the
-DMA_MEM_TO_MEM transfer. Any other one (like DMA_DEV_TO_DEV) would
-need to have the statement alteration. Moreover even though your
-version looks smaller, but it causes one redundant store operation.
-Do you think it still would be better to use your version despite of
-my reasoning? 
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
+/8250_exar.c
+index 72385c7d2eda..f14f73d250bb 100644
+=2D-- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -177,12 +177,14 @@ struct exar8250_platform {
+  * struct exar8250_board - board information
+  * @num_ports: number of serial ports
+  * @reg_shift: describes UART register mapping in PCI memory
+- * @setup: quirk run at ->probe() stage
++ * @board_init: quirk run once at ->probe() stage before setting up ports
++ * @setup: quirk run at ->probe() stage for each port
+  * @exit: quirk run at ->remove() stage
+  */
+ struct exar8250_board {
+ 	unsigned int num_ports;
+ 	unsigned int reg_shift;
++	int     (*board_init)(struct exar8250 *priv, struct pci_dev *pcidev);
+ 	int	(*setup)(struct exar8250 *, struct pci_dev *,
+ 			 struct uart_8250_port *, int);
+ 	void	(*exit)(struct pci_dev *pcidev);
+@@ -773,6 +775,15 @@ exar_pci_probe(struct pci_dev *pcidev, const struct p=
+ci_device_id *ent)
+ 	if (rc)
+ 		return rc;
 
--Serge(y)
++	if (board->board_init) {
++		rc =3D board->board_init(priv, pcidev);
++		if (rc) {
++			dev_err_probe(&pcidev->dev, rc,
++					"failed to init serial board\n");
++			return rc;
++		}
++	}
++
+ 	for (i =3D 0; i < nr_ports && i < maxnr; i++) {
+ 		rc =3D board->setup(priv, pcidev, &uart, i);
+ 		if (rc) {
+=2D-
+2.43.2
 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
