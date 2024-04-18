@@ -1,142 +1,131 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B0D1DA26;
-	Thu, 18 Apr 2024 12:40:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582E416C877;
+	Thu, 18 Apr 2024 12:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713444028; cv=none; b=nGLKRbx+orPlq1p1uU8wQ62X/oewxYD+v5ZI6SPbP0NhvGQkZfnJ6VNPxDWGbjFhnKSNMpRauoUnCX5+t7sCRVrpQdtGFoeVgk6Q3QhXdwvZq54PkA00htNB1f6ZJUgk31Eup5qNvwamBVU+kYJpYTvNOHMzHnoLXlfdVqCl7cQ=
+	t=1713444257; cv=none; b=SvmCweDRM9JJs/G5ZZJNzeAIzxr3c+S/iwlqSpeF8V21EIz0cL5UqdMpp+/6mPdCycbIUpiZUHOLaykCqQI0ggj1y5dhDBmoYxWA2N5DnPw53seF0edJyjwmvzvTjSOrUx1zlyauF1hI1S8JTCX3uQu8t8wa5k2qKAMgTdgVG5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713444028; c=relaxed/simple;
-	bh=lAs6euoKWtTMsCQ2XVPCwEyYSxj5FVyRMEjNavkpJY8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Va7Q4ga1mYTD9/Lb2CGepaR63bsuNh7R0NloDa8beP1rx0hICDZyD56cXF/b8b4JDzoaw1OYuwD29zRkoWq6HAe8268ZrF8qk6BcKnudD0NQIaoF5ZfVMzY2bP6FNrXvw58z1T8g/JI06nWEFVc+XAcGSArxZMvpa8V6PwTpEUo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=MKOAhc4D; arc=none smtp.client-ip=74.208.4.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1713444257; c=relaxed/simple;
+	bh=VDDRpJrtn+FBJiYXnzWdYY1eE6FUMnWwjRC3v8JhoyY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iv8UaboC4O0O/Miay1nsPeVW0BTRJEFm1afInz2b1W8thHriBGt4HkZTQnJMt91K1x94znH3u4EbCzmNdmNhL0CUV8YoxSRN7H41gd+vM8Dk7NUSN+zO3UU4TPUzjSJdmvsXJdjAFlfHagXGIMe9QjlP+E64t/Jn2DiNuXyv/dw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nYm11ENj; arc=none smtp.client-ip=209.85.167.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="MKOAhc4D"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713444017; x=1714048817; i=parker@finest.io;
-	bh=6LjRACjR9FTwEG+uc0H81JIH5+SabjHLe3fRRoHPfAo=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=MKOAhc4DBX59T2rCSGMNrL9S/0UXgNEduAPBQ5HtfN7gZvD/RNyWYuBzNUHXoNcT
-	 P4j6YC6/cT+Twt1xAABgZ/Khne1L6q/Lav3mKvW+Qnu+k+rq7gnegrkQMWNlu/KOx
-	 l9k/1SToTTtLhFi5VuM26UZUGLGm0Rym/UkU9ePGofEUMkpF1x7Zou5NxMJ+AL0HM
-	 mR4Ri28QHmWmPWHNNIzxA/Bg7Gi/BzM2jAoeIq7TRWmlv/z4nU9nxfLJFlT5OJQ2/
-	 GETDmPCcIveFCzNDBe+42yBRl0lcTpfMkrtWA5QsSLYPEaSItRO/ga8rnjE4hXlEC
-	 5SCgmzTzfu/Cnp7MbA==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 1MpE2t-1sVyBj3Od5-00qmtY; Thu, 18 Apr 2024 14:40:16 +0200
-Date: Thu, 18 Apr 2024 08:40:15 -0400
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v4 0/7] serial: exar: add Connect Tech serial cards to
- Exar driver
-Message-ID: <20240418084015.5db5a6a1@SWDEV2.connecttech.local>
-In-Reply-To: <2024041801-earthlike-drastic-076a@gregkh>
-References: <cover.1713382717.git.pnewman@connecttech.com>
-	<2024041801-earthlike-drastic-076a@gregkh>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nYm11ENj"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-518931f8d23so781867e87.3;
+        Thu, 18 Apr 2024 05:44:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713444253; x=1714049053; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=bxeVD0eMUOeKTnsK96fJNP8CxKZSsom4Dx6Yys6UqKQ=;
+        b=nYm11ENj4HMDdzsgFijB58KqYEx+GHuZ1gmDwS2lFI54cAsuMz93gZNMv9GiLxFNNA
+         nOfXElcPnOIuLSmlZ0upfZqZB8a+mG0TPa5vrmx8C7O1D03JZhEbh8b4UksYQav7ob5M
+         qT5lyrRvddwjuiQi+i6W3OBB3cmsQ7cMe70yyHbCisH3+DlFeqeraQbsm/IKAxxAhaHT
+         JLoBGpfdsuh+2cNscTKd7fGqN6zm/rL220Ca9RSC6NB7/+R3TZ9kGFDr2MKgh9PFWjgs
+         tmD0xn6q/+IQcrhQM9qDjEX03PsnUM+zL+bCiWHplhtyA2jQYVFZNe4SsGyzU5vv/IbR
+         4Jvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713444253; x=1714049053;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bxeVD0eMUOeKTnsK96fJNP8CxKZSsom4Dx6Yys6UqKQ=;
+        b=VELikzkRQ0dFnQ69YlReGzvIfS0vxBGApn75aNhre8Ws6AJOkDij78qT1CbWQnI6k/
+         gZg/sTo8QXro/G90yoFBx0S50ZFxZg4q3Iwafaad0Y2TxMM+txIAsAuuquWJcrK42qNp
+         wVSA4LOw+11/Qr39bPGapcxpWVCauWzvij4dE2ptVwptmnsgpq1HDbsh51gpt9PBKsxV
+         mEnyZsnkJtAaAs/MScV9cm0josNpBfj3uErYrnKD6p7Tlm5kAOy81JlphUOMUGDsNEia
+         9b+23CfffmsJ5hTFsaXgEtmVyfN+XmcdDLvv8wKo196GmvPd8SDPUXR0hncK6koWVkJW
+         8dgA==
+X-Forwarded-Encrypted: i=1; AJvYcCU/R3jq3daql4qj/7QcWJds5m3v6onDMBIbGoMgJ6+Zu2SOyYiVUEVFmjvMWDYtfJlJRkBu/EzolXCJGsFBNPaalNVaG4fm7yZdXX+UJ8uoSa73M7mpUtOqnnYYJKggmW1MA92zsJy1Lkh/
+X-Gm-Message-State: AOJu0YwnbZdndABbSleR9FuBQSQqqpyHB/zxN0dZTRD539Avs/Deao1g
+	ME0301H+IdOgQDLaWZAI/Y223SXDArdrPEsLW0CRM/ymB8/ujnNAjr7XMdG+
+X-Google-Smtp-Source: AGHT+IEZjH1dSZOJ3DKH4OuKiAPlaPcushV+W1X9DOb6sZmVnMV8UPHw5I7Qt/JxpxFYE158LRBxKg==
+X-Received: by 2002:ac2:4ac1:0:b0:519:5ed4:c901 with SMTP id m1-20020ac24ac1000000b005195ed4c901mr1492290lfp.48.1713444253235;
+        Thu, 18 Apr 2024 05:44:13 -0700 (PDT)
+Received: from esko-ThinkStation-P620.nordic.imtech.com ([185.154.228.48])
+        by smtp.gmail.com with ESMTPSA id t28-20020ac243bc000000b00516c9a8120asm225799lfl.226.2024.04.18.05.44.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Apr 2024 05:44:12 -0700 (PDT)
+From: Esa Laakso <fidelix.laakso@gmail.com>
+X-Google-Original-From: Esa Laakso <esa.laakso@fidelix.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-serial@vger.kernel.org
+Cc: kari.argillander@gmail.com,
+	linux-kernel@vger.kernel.org,
+	Esa Laakso <esa.laakso@fidelix.com>,
+	Esa Laakso <fidelix.laakso@gmail.com>
+Subject: [PATCH RFC] pty: Add parity enabling routine
+Date: Thu, 18 Apr 2024 15:43:49 +0300
+Message-Id: <20240418124349.26289-1-esa.laakso@fidelix.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:XfYM1HfcmvGAgIQ7bGoh0MQhpvPGgEvrU00lAwD1W1kO+AMTap0
- oULVIJUIC74+6Fxws1qWsS9digvMP70o4XhF/rw1cVsh/1CzB2S7327CQSKHp65TEhcWpt+
- mrJDgf8L1WE4KgGP9nw53itza/Cv3h1mZbwfCg8nvXKxSWD7GkuKnYHnWv6G/OkJ+IIkqUR
- AB3nay4KaKrJcb9vCX2JA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:eKD3pRiZqFY=;h31ppLCcW88GZ3FaCMxv10M97Tl
- YWCsaMScUFeuuBQs/vCgyfdcUO93HyfLY1COogG3WuMNaGo4TqZdlpRIXae0+0H821w43/UlL
- XySY2K05NVd8eb2So1Lp+SNU2jgSxbUY60VPdOLgdXpDIINA3jtNZPhlq+ngq3CF1YhrjgaJh
- z65WBML4pf8AFbpyvxC5AXgYGYhiFvjv+oP1srqpW5X5Y/JqM3LFbjHCjcF39fcvi1cKIi1S5
- NgM3dnNQiqOAf+bswDfBBubEWRKGlkrgvGE8sNGauVXPcj5nzkiAR373/VnCvs/Jda0MgYDic
- qYUXuwcQyRXlKVEoEncf87YJ/t3VEEj4tV1mZvuYiAywh5L1EL7S6to5mPZOIem3XJ1DdlcST
- BkW5VnTgcJDVynd+0fcjRA6YoD3BlgvR3HGnGBWmc2n49ptlNCs1HmTOIItzEspoa/nzRL3vp
- QNoLxsrE2RciBCmRCy0cDew9C/vzKKZihnVS5Xu3q+Hprnd5LH2IpF3BFiEDa8tJFC/zsmLM8
- DBfvqMu36HBjcSZtgJBcvdkJ/jJEbKUTJzQBD+QIPMw9BjyW2qL60VSoairRwCyfP47sb+1iY
- wRG3ncp+eJ9RYDrieC4sPmZPMgCZDskE98XfFuk0NX5TLmF3OpLbnN6d4LafP1qg1gSpTlcjh
- U/phE9RryWxUpDpK4dqVuxez9BL5FIDypERbyhlcdTHL9SRG1xJvQPyrt5jY76U4QXFQ9gPa4
- Cr5AgU984MyEQzpQy5xzPmqdEoYnEtef3PpstRWbBxix3/QAdsq17M=
+Content-Transfer-Encoding: 8bit
 
-On Thu, 18 Apr 2024 08:25:10 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+There are some cases where parity selection is required for passing
+it forward to a virtualized terminal. In this sepcific use-case, we
+want to use pty to send and receive serial data to a serial
+multiplexer. By using a pty, we avoid writing a custom tty driver.
 
-> On Wed, Apr 17, 2024 at 04:31:22PM -0400, Parker Newman wrote:
-> > From: Parker Newman <pnewman@connecttech.com>
-> >
-> > Hello,
-> > These patches add proper support for most of Connect Tech's (CTI) Exar
-> > based serial cards. Previously, only a subset of CTI's cards would wor=
-k
-> > with the Exar driver while the rest required the CTI out-of-tree drive=
-r.
-> > These patches are intended to phase out the out-of-tree driver.
-> >
-> > I am new to the mailing lists and contributing to the kernel so please
-> > let me know if I have made any mistakes or if you have any feedback.
-> >
-> > Changes in v2:
-> > - Put missing PCI IDs in 8250_exar.c instead of pci_ids.h
-> > - Split large patch into smaller ones
-> >
-> > Changes in v3:
-> > - Refactored patches to be easier to follow (based on feedback of v2)
-> > - Patch specific changes listed in corresponding patch
-> >
-> > Changes in v4:
-> > - Rebased to tty-testing branch
-> > - Removed v3 patch 8/8, "bug" didn't happen in current driver
-> > - Patch specific changes listed in corresponding patch
-> >
-> > Thank you,
-> >
-> > Parker Newman (7):
-> >   serial: exar: remove old Connect Tech setup
-> >   serial: exar: added a exar_get_nr_ports function
-> >   serial: exar: add optional board_init function
-> >   serial: exar: moved generic_rs485 further up in 8250_exar.c
-> >   serial: exar: add CTI cards to exar_get_nr_ports
-> >   serial: exar: add CTI specific setup code
-> >   serial: exar: fix checkpach warnings
-> >
-> >  drivers/tty/serial/8250/8250_exar.c | 981 ++++++++++++++++++++++++++-=
--
-> >  1 file changed, 916 insertions(+), 65 deletions(-)
->
-> Nice, compared to your first version, this is less code overall in this
-> file:
->    1 file changed, 1019 insertions(+), 70 deletions(-)
->
-> so the review process helped!
->
+There is very little evidence on the reasoning on why this option is
+hard-coded to be disabled. AFAIK it has been as such since 1996. With
+the lack of information about why this is, and based on the fact there
+are other similar fields that are not hard-coded, it is considered safe
+to enable this option.
 
-Yes thanks again for your patience. I learned a lot about the process :).
+Still, in order not to be too intrusive about the change, add it only on
+the condition that the termios flag `EXTPROC` is turned on. This way
+there is very little chance it will cause any unintended problems in any
+other implementation.
 
-> All now applied to my tree, thanks for the revisions.  And a follow-on
-> patch to fix up the kbuild warning would be appreciated.
->
+Signed-off-by: Esa Laakso <esa.laakso@fidelix.com>
+Signed-off-by: Esa Laakso <fidelix.laakso@gmail.com>
+---
 
-I will follow up with a mini-series now to fix the kbuild warnings and a
-couple minor things mentioned by Ilpo.
+We are looking for some assistance on this patch, or just a green light
+to submit it, if it is good to go.
 
-Thanks,
-Parker
+We would need to know if the change is valid in context of pty, as
+there seems to be fairly little information about the reasoning behind
+the hard-coded values.
 
-> thanks,
->
-> greg k-h
+Our guess is that they have been as such forever and nobody has had a
+reason to change them. We have a reason to change them, and we would
+like to know if it is safe to do so and possibly contribute in the
+process. Either by just using the patch for ourselves or submitting
+it here.
+
+For the record, this is my first patch submitted upstream. Please let
+me know if something is incorrect or missing.
+---
+
+ drivers/tty/pty.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 07394fdaf522..e2d9718dcea0 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -267,7 +267,9 @@ static void pty_set_termios(struct tty_struct *tty,
+ 		}
+ 	}
+ 
+-	tty->termios.c_cflag &= ~(CSIZE | PARENB);
++	tty->termios.c_cflag &= ~(CSIZE);
++	if (!L_EXTPROC(tty))
++		tty->termios.c_cflag &= ~(PARENB);
+ 	tty->termios.c_cflag |= (CS8 | CREAD);
+ }
+ 
+-- 
+2.35.3
 
