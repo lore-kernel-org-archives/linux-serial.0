@@ -1,87 +1,178 @@
-Received: from forward501b.mail.yandex.net (forward501b.mail.yandex.net [178.154.239.145])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7E0EECF;
-	Thu, 18 Apr 2024 13:32:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F21FE84D02;
+	Thu, 18 Apr 2024 13:46:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713447129; cv=none; b=tNZ8sSd/JU/ExNBWxPLmUgbnMelMmgRyZ7Nu23Z5JXhVEgNmFl06hozQP/nnPkwR6w7XzZJ1H1JIU2O3fydJxQieke1GiSz2bmgTkUB3dz/eufpfX5o9yYmg7m0PK6glCh66rbE8ZAO3X5voOZvoMp1dAwcjqQRagPtKvs97R8Y=
+	t=1713448007; cv=none; b=LRdv9pdj1E9hA7yjfO5TgleVkZiooGLoxYntXwweS4SFHV5dlvFtiumIbN1E0248rBAFotkll96l4XT9n8MkXh+xwu21iaggxLtpjndKw+ee/Vpz+Wi2TzUydJr4smrKDbJ0igG4mceyPpQhic6lqI0/0Fqi1aeqvt59IbivLlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713447129; c=relaxed/simple;
-	bh=VgSvRh4Nkqg+giXaWx1zHyeFWJKVhVCAvHRS1IAmzoQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=WAfhpNfoHAD2L7IftnnvlLp6NXVFCt4Kni3CYvpg1s8GVaYV1j5+nNPwEmi6NHa5BAtRZXkSponYvK8uziyntHObKLBxSqGKGCaR2qFQWpj5Oab2l1ue/kKpGWTYCsbetGt3RWYb9RO+652VcyqtUfzBmNl483XhfgPTrhBP1wo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=lytFUuKr; arc=none smtp.client-ip=178.154.239.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
+	s=arc-20240116; t=1713448007; c=relaxed/simple;
+	bh=gW8dXb6Q7XLgPxHV9ikTqeBfKystElfghh0UjTRZTNM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FFaGRXNREFjYNJXwzkKRX4UQ8t9E4WHjB7gVT+RrOfx5XzWpFNFLHTBzJI0uOKJV/ElRRf5h+p709K5lyYKmRdFEo/n21bdoaNuFVaVXHBuY3UVT8LY4VO7UoWfdMIGMU/V62Wt6WrcjBIWg/eI6/vaSaoaWzV2Rn3rs48SvCGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LpWa/Ywr; arc=none smtp.client-ip=209.85.166.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="lytFUuKr"
-Received: from mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net [IPv6:2a02:6b8:c05:84:0:640:40f8:0])
-	by forward501b.mail.yandex.net (Yandex) with ESMTPS id 24D34614D5;
-	Thu, 18 Apr 2024 16:25:27 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id HPFFWsDX0Cg0-Zzy45R7B;
-	Thu, 18 Apr 2024 16:25:26 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
-	t=1713446726; bh=shykAdTRV0cwoBwnCaC1Edv+I0dugY6Hlb/B0Lizbw4=;
-	h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
-	b=lytFUuKrncc6LBsWKDtLT8ZdlsxBBpgdFFP1IMhszbuZZC4l7b9400lCTWf2ufcu/
-	 vrYlLoPO3uFqq5IuHxWm7I1IokzoZW0fw1j9lotX2CUc3qBT3u1jdyBZSTg5c+4g1k
-	 hI7GaurLw9i6zq1dzFrm8iC/K6iGtD5/X9AbaIuU=
-Authentication-Results: mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net; dkim=pass header.i=@ya.ru
-From: Konstantin <rilian.la.te@ya.ru>
-To: 
-Cc: Konstantin <ria.freelander@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-Date: Thu, 18 Apr 2024 16:25:03 +0300
-Message-Id: <20240418132508.3447800-2-rilian.la.te@ya.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240418132508.3447800-1-rilian.la.te@ya.ru>
-References: <20240418132508.3447800-1-rilian.la.te@ya.ru>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LpWa/Ywr"
+Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-36b309dd33bso3371805ab.1;
+        Thu, 18 Apr 2024 06:46:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713448004; x=1714052804; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gGi5waHieAvVi8Tc0QBDOeAQpOHxjESm7pISzq4RViM=;
+        b=LpWa/YwrYoOCU7WOeyVz2mrF77xcv5USUALUzHA0tGllyY5xwXKxPVYgSeTlvA4RP4
+         J98oIs1dttVACOlyFtj6cNhejSOMMVqFb+d2ExPskQ41xP25NghE7SeUbzaa1K1STD+c
+         pcCfqfxrW24+li+xYaKhM+H5jkrS0KsIGvAm0mtaERf74LV6uMiicYqNbO5Ph5T1YrwH
+         9zqxiutmvhzBLhc10eISOp2lkIuFdkRBhwn7detKJmasjVn2+OoimbzOTIj4XSFUqkPm
+         ekWVJNgvUIQHXORk7m21nqZ5nyOqQr0grGJC2B8G7C4Y1hqRp3KiKjkT4q3G8J/G91dC
+         ggMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713448004; x=1714052804;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gGi5waHieAvVi8Tc0QBDOeAQpOHxjESm7pISzq4RViM=;
+        b=G+Gg+kqDhM0D5qtYFKzsMVeLGKX9BsEd9/eQ97+pRtJa6XMvJs3mLB++w/GglqxzvS
+         Lzjq30GeOeLtKGnU/D1isQxUjticFRu0p0h7d7KBGyBR0slyDp6UOq5IrcdGWNPL5FFI
+         YAUEE9A3NAMaJBPu8r6LxlqpVdECRJ93aDjDVKjWnl1Tc/TF8WN7Fw5FN3zcWUpQtqLc
+         APO1tWbaGgCv3FBi5QDw4tuNjEG6SdQXiQ1ngp6SzqoZ1LgVwqsq8HJKwluCM/2m/yZa
+         SPghbUWUNmnVIcVSuQb/lkLJNgnDsP5KKMO5A85UsDlu5hOS3I/A79hpiFrdHWJq4VQG
+         LPJw==
+X-Forwarded-Encrypted: i=1; AJvYcCXYX263+dbLhBsiYhKzomOw3+4oK/PBR5EPfNON76AdVaaSq+an2qx2aT2nPiANd2TcwGZkJ3HykiIPZq9KWfm8OheORhRQydkQpgfsJEf1jRrinjcGc+lsojXnVVWY5j/67K8GmEom1hyZ
+X-Gm-Message-State: AOJu0Yzqg2Y3AcPwI3hoH4hpvDQFJdDJA3ZV97z5BPuMmh9tCYMgwOxd
+	fZT22uW0DzO6lw3Q2eoACRkApR4h+m7cW65POWeAmDkm8dyjPIUBmcPsmf1asE9Wb1OBQYhvTEz
+	+QNXb5ShW8KhYFTIZtq56SZ6tRx4=
+X-Google-Smtp-Source: AGHT+IEoY8D9Jpg7uMpntADhnxTP1sKLam3YuKyv3a9rM9dkzBnvXCPvVhYLBXcdJYl4EkepVCeAZDTepPa7Rbz+bLU=
+X-Received: by 2002:a05:6e02:152d:b0:36b:2218:c913 with SMTP id
+ i13-20020a056e02152d00b0036b2218c913mr3495688ilu.6.1713448004122; Thu, 18 Apr
+ 2024 06:46:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240418124349.26289-1-esa.laakso@fidelix.com> <2024041840-roundworm-sedate-9167@gregkh>
+In-Reply-To: <2024041840-roundworm-sedate-9167@gregkh>
+From: Esa Laakso <fidelix.laakso@gmail.com>
+Date: Thu, 18 Apr 2024 16:46:32 +0300
+Message-ID: <CAM3Ruo1=38jYvbHPwnTPHo5nyNO1d8e6AcM_5nzU0-04GWn85g@mail.gmail.com>
+Subject: Re: [PATCH RFC] pty: Add parity enabling routine
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org, 
+	kari.argillander@gmail.com, linux-kernel@vger.kernel.org, 
+	Esa Laakso <esa.laakso@fidelix.com>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Konstantin <ria.freelander@gmail.com>
+to 18. huhtik. 2024 klo 15.53 Greg KH (gregkh@linuxfoundation.org) kirjoitti:
+>
+> On Thu, Apr 18, 2024 at 03:43:49PM +0300, Esa Laakso wrote:
+> > There are some cases where parity selection is required for passing
+> > it forward to a virtualized terminal. In this sepcific use-case, we
+> > want to use pty to send and receive serial data to a serial
+> > multiplexer. By using a pty, we avoid writing a custom tty driver.
+> >
+> > There is very little evidence on the reasoning on why this option is
+> > hard-coded to be disabled. AFAIK it has been as such since 1996. With
+> > the lack of information about why this is, and based on the fact there
+> > are other similar fields that are not hard-coded, it is considered safe
+> > to enable this option.
+> >
+> > Still, in order not to be too intrusive about the change, add it only on
+> > the condition that the termios flag `EXTPROC` is turned on. This way
+> > there is very little chance it will cause any unintended problems in any
+> > other implementation.
+>
+> You need to document that EXTPROC thing somewhere, otherwise someone is
+> going to ask about this in 20 years and be confused :)
 
-Hardware supports both modes, but after
-commit 4afeced55baa ("serial: core: fix sanitizing check for RTS settings")
-we always end up with SER_RS485_RTS_AFTER_SEND and always write in
-register SC16IS7XX_EFCR_RTS_INVERT_BIT,
-which breaks some hardware using these chips,
+True! Is it enough if this is documented as a comment? I would like to add it
+to the actual documentation, but AFAICS there does not seem to be a proper
+location for it...
 
-Fixes: 267913ecf737 ("serial: sc16is7xx: Fill in rs485_supported")
-Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
----
- drivers/tty/serial/sc16is7xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> > Signed-off-by: Esa Laakso <esa.laakso@fidelix.com>
+> > Signed-off-by: Esa Laakso <fidelix.laakso@gmail.com>
+>
+> Do not sign off on something twice, use your real email address only
+> once, that's all that is needed.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 929206a9a6e1..a300eebf1401 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1458,7 +1458,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
- }
- 
- static const struct serial_rs485 sc16is7xx_rs485_supported = {
--	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND,
-+	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
- 	.delay_rts_before_send = 1,
- 	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
- };
--- 
-2.34.1
+Alright. I'm unable to use our company e-mail as it adds a signature by force,
+so I wasn't sure what the proper protocol for this was. Thanks for the info.
 
+>
+> > ---
+> >
+> > We are looking for some assistance on this patch, or just a green light
+> > to submit it, if it is good to go.
+> >
+> > We would need to know if the change is valid in context of pty, as
+> > there seems to be fairly little information about the reasoning behind
+> > the hard-coded values.
+> >
+> > Our guess is that they have been as such forever and nobody has had a
+> > reason to change them. We have a reason to change them, and we would
+> > like to know if it is safe to do so and possibly contribute in the
+> > process. Either by just using the patch for ourselves or submitting
+> > it here.
+> >
+> > For the record, this is my first patch submitted upstream. Please let
+> > me know if something is incorrect or missing.
+> > ---
+> >
+> >  drivers/tty/pty.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+> > index 07394fdaf522..e2d9718dcea0 100644
+> > --- a/drivers/tty/pty.c
+> > +++ b/drivers/tty/pty.c
+> > @@ -267,7 +267,9 @@ static void pty_set_termios(struct tty_struct *tty,
+> >               }
+> >       }
+> >
+> > -     tty->termios.c_cflag &= ~(CSIZE | PARENB);
+> > +     tty->termios.c_cflag &= ~(CSIZE);
+> > +     if (!L_EXTPROC(tty))
+> > +             tty->termios.c_cflag &= ~(PARENB);
+>
+> Some description of how you tested this in the changelog would also be
+
+With "changelog", do you mean the commit message? I'll do that.
+
+> good, and a comment here too as to what you are doing.
+
+We are using a (legacy) hardware serial port multiplexer in our device. In order
+to avoid writing a kernel driver for this, we decided the next best approach is
+to have a rust driver in userspace and use pty:s instead of tty:s. This way we
+get to have access to the needed parts of the termios structure, plus any other
+niceties that come with pty code without having to implement those ourselves.
+Our rust code hosts a pty master, takes the termios settings defined by the
+slave endpoint and passes the relevant parts to the multiplexer. This way we can
+take almost any software that uses a serial and it will have a high chance
+working out of the box.
+
+We use EXTPROC flag to get the termios settings asyncronously from the slaves to
+the master. When termios is used by the process attached to the slave pty, it
+will send a byte to indicate change of options. We then pass those settings on
+the multiplexer, resulting in a minimal delay.
+
+When doing this, we noted that we were unable to control the parity flag, as it
+would always be disabled. This meant that we were unable to pass it onto the
+multiplexer. This did not apply to other similar, non-effecting settings like
+baudrate, which does nothing on pty:s either (AFAIK). Hence the careful change
+here, where we used the EXTPROC to determine the behavior of the PARENB bit.
+
+We can still change this to NOT be EXTPROC dependent, but we felt that such we
+could cause a regression due to lack of knowledge. Very little to no info on the
+PARENB flag, or any of the other relevant flags could be found on the
+pty. Let us
+know if you deem otherwise.
+
+>
+> thanks,
+>
+> greg k-h
