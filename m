@@ -1,98 +1,142 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AC8E15ECD6;
-	Thu, 18 Apr 2024 11:49:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B0D1DA26;
+	Thu, 18 Apr 2024 12:40:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713440974; cv=none; b=PibL8D/ZGqwjsCy9SHJaZ9mF9pS6v4OWaLyljwALotWQ9JLLJErV8CriAVrTwNe3R0rzdcC6Ud7VpLSgXyVhLV/FtGVTZyZp195yFCOJEZscHBqb1Pxc1KXfIT0E+UeHR9bWgPhHUHeeNZxm5iJhpGGsr4HEWqjxsoCPNIbfeuQ=
+	t=1713444028; cv=none; b=nGLKRbx+orPlq1p1uU8wQ62X/oewxYD+v5ZI6SPbP0NhvGQkZfnJ6VNPxDWGbjFhnKSNMpRauoUnCX5+t7sCRVrpQdtGFoeVgk6Q3QhXdwvZq54PkA00htNB1f6ZJUgk31Eup5qNvwamBVU+kYJpYTvNOHMzHnoLXlfdVqCl7cQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713440974; c=relaxed/simple;
-	bh=SU/rfWhGkYqdubvUaSDF/Y16iMQ9TRP/vqT/hswgmIo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bF8oO+XENZubo0jrLKMqeyjEO7EpNocWBNhtf9Mdohr+wzWST6XK6GNJotj76k0tG174FvNqPCClqsacW+1kxPlD1Kfog2NrXlDlfIGdZMZOAHLiLIOW93aLoHH7ThgPHr0X9bz1yXCyrGfTi0o6SjeU4CQaMrMtiMdUn/dWA88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kmDKo+Uz; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713444028; c=relaxed/simple;
+	bh=lAs6euoKWtTMsCQ2XVPCwEyYSxj5FVyRMEjNavkpJY8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Va7Q4ga1mYTD9/Lb2CGepaR63bsuNh7R0NloDa8beP1rx0hICDZyD56cXF/b8b4JDzoaw1OYuwD29zRkoWq6HAe8268ZrF8qk6BcKnudD0NQIaoF5ZfVMzY2bP6FNrXvw58z1T8g/JI06nWEFVc+XAcGSArxZMvpa8V6PwTpEUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=MKOAhc4D; arc=none smtp.client-ip=74.208.4.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kmDKo+Uz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713440973; x=1744976973;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SU/rfWhGkYqdubvUaSDF/Y16iMQ9TRP/vqT/hswgmIo=;
-  b=kmDKo+Uz/MgY75XBrdCNCVfsdubZBQ00M9nP3uo4qDvHWx0BAdGIBAK3
-   74VGcQ/5d5iqiIYgs8J1wBxjmmoWynqG6ZNwCHRe1P/IZ77IBTE+qrHzq
-   gLojW6NSbwRY/8ZwAoz/HdpMvTc7+kYBDXcBDhYdovLGjiSYtE6CdWydo
-   I7XanrP0+ZqnZxDOTq3xXwPm0gt+C9E0Nx0DngxIV+avyrCgS22kKPLeX
-   yxBePoFrKw+qBx3QPV/XADhbE6wGCSzJIt+1YVLLz36eXkXdCHSi0Ei3u
-   uVJXgfPAuY3kbbk4aZjYDP/qf7zH1OUDgVT3VitEtqWPOHkZ7pahY/w9N
-   Q==;
-X-CSE-ConnectionGUID: rPz8DEp5R7qXmBnvBa7h7Q==
-X-CSE-MsgGUID: Gs8JqNGXQAKcihxUDlsi8A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20372827"
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="20372827"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:49:31 -0700
-X-CSE-ConnectionGUID: HiZ7wehvTC6AdQrzuj4B/A==
-X-CSE-MsgGUID: z5uToZu3TTqQwTvyFQQ1eg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="22941834"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:49:29 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rxQGc-00000000JaB-2Bwo;
-	Thu, 18 Apr 2024 14:49:26 +0300
-Date: Thu, 18 Apr 2024 14:49:26 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] dmaengine: dw: Simplify max-burst calculation
- procedure
-Message-ID: <ZiEIxq8dHxObrYZx@smile.fi.intel.com>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-5-fancer.lancer@gmail.com>
- <Zh7NfmffgSBSjVWv@smile.fi.intel.com>
- <tez5uqt4lg2qf5nooxuqo2rqhkqzzzbpeysdcbljokznbztkhj@j5t7cy4gd4pd>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="MKOAhc4D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1713444017; x=1714048817; i=parker@finest.io;
+	bh=6LjRACjR9FTwEG+uc0H81JIH5+SabjHLe3fRRoHPfAo=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=MKOAhc4DBX59T2rCSGMNrL9S/0UXgNEduAPBQ5HtfN7gZvD/RNyWYuBzNUHXoNcT
+	 P4j6YC6/cT+Twt1xAABgZ/Khne1L6q/Lav3mKvW+Qnu+k+rq7gnegrkQMWNlu/KOx
+	 l9k/1SToTTtLhFi5VuM26UZUGLGm0Rym/UkU9ePGofEUMkpF1x7Zou5NxMJ+AL0HM
+	 mR4Ri28QHmWmPWHNNIzxA/Bg7Gi/BzM2jAoeIq7TRWmlv/z4nU9nxfLJFlT5OJQ2/
+	 GETDmPCcIveFCzNDBe+42yBRl0lcTpfMkrtWA5QsSLYPEaSItRO/ga8rnjE4hXlEC
+	 5SCgmzTzfu/Cnp7MbA==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 1MpE2t-1sVyBj3Od5-00qmtY; Thu, 18 Apr 2024 14:40:16 +0200
+Date: Thu, 18 Apr 2024 08:40:15 -0400
+From: Parker Newman <parker@finest.io>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v4 0/7] serial: exar: add Connect Tech serial cards to
+ Exar driver
+Message-ID: <20240418084015.5db5a6a1@SWDEV2.connecttech.local>
+In-Reply-To: <2024041801-earthlike-drastic-076a@gregkh>
+References: <cover.1713382717.git.pnewman@connecttech.com>
+	<2024041801-earthlike-drastic-076a@gregkh>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tez5uqt4lg2qf5nooxuqo2rqhkqzzzbpeysdcbljokznbztkhj@j5t7cy4gd4pd>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:XfYM1HfcmvGAgIQ7bGoh0MQhpvPGgEvrU00lAwD1W1kO+AMTap0
+ oULVIJUIC74+6Fxws1qWsS9digvMP70o4XhF/rw1cVsh/1CzB2S7327CQSKHp65TEhcWpt+
+ mrJDgf8L1WE4KgGP9nw53itza/Cv3h1mZbwfCg8nvXKxSWD7GkuKnYHnWv6G/OkJ+IIkqUR
+ AB3nay4KaKrJcb9vCX2JA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:eKD3pRiZqFY=;h31ppLCcW88GZ3FaCMxv10M97Tl
+ YWCsaMScUFeuuBQs/vCgyfdcUO93HyfLY1COogG3WuMNaGo4TqZdlpRIXae0+0H821w43/UlL
+ XySY2K05NVd8eb2So1Lp+SNU2jgSxbUY60VPdOLgdXpDIINA3jtNZPhlq+ngq3CF1YhrjgaJh
+ z65WBML4pf8AFbpyvxC5AXgYGYhiFvjv+oP1srqpW5X5Y/JqM3LFbjHCjcF39fcvi1cKIi1S5
+ NgM3dnNQiqOAf+bswDfBBubEWRKGlkrgvGE8sNGauVXPcj5nzkiAR373/VnCvs/Jda0MgYDic
+ qYUXuwcQyRXlKVEoEncf87YJ/t3VEEj4tV1mZvuYiAywh5L1EL7S6to5mPZOIem3XJ1DdlcST
+ BkW5VnTgcJDVynd+0fcjRA6YoD3BlgvR3HGnGBWmc2n49ptlNCs1HmTOIItzEspoa/nzRL3vp
+ QNoLxsrE2RciBCmRCy0cDew9C/vzKKZihnVS5Xu3q+Hprnd5LH2IpF3BFiEDa8tJFC/zsmLM8
+ DBfvqMu36HBjcSZtgJBcvdkJ/jJEbKUTJzQBD+QIPMw9BjyW2qL60VSoairRwCyfP47sb+1iY
+ wRG3ncp+eJ9RYDrieC4sPmZPMgCZDskE98XfFuk0NX5TLmF3OpLbnN6d4LafP1qg1gSpTlcjh
+ U/phE9RryWxUpDpK4dqVuxez9BL5FIDypERbyhlcdTHL9SRG1xJvQPyrt5jY76U4QXFQ9gPa4
+ Cr5AgU984MyEQzpQy5xzPmqdEoYnEtef3PpstRWbBxix3/QAdsq17M=
 
-On Wed, Apr 17, 2024 at 11:35:39PM +0300, Serge Semin wrote:
-> On Tue, Apr 16, 2024 at 10:11:58PM +0300, Andy Shevchenko wrote:
-> > On Tue, Apr 16, 2024 at 07:28:58PM +0300, Serge Semin wrote:
+On Thu, 18 Apr 2024 08:25:10 +0200
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-...
+> On Wed, Apr 17, 2024 at 04:31:22PM -0400, Parker Newman wrote:
+> > From: Parker Newman <pnewman@connecttech.com>
+> >
+> > Hello,
+> > These patches add proper support for most of Connect Tech's (CTI) Exar
+> > based serial cards. Previously, only a subset of CTI's cards would wor=
+k
+> > with the Exar driver while the rest required the CTI out-of-tree drive=
+r.
+> > These patches are intended to phase out the out-of-tree driver.
+> >
+> > I am new to the mailing lists and contributing to the kernel so please
+> > let me know if I have made any mistakes or if you have any feedback.
+> >
+> > Changes in v2:
+> > - Put missing PCI IDs in 8250_exar.c instead of pci_ids.h
+> > - Split large patch into smaller ones
+> >
+> > Changes in v3:
+> > - Refactored patches to be easier to follow (based on feedback of v2)
+> > - Patch specific changes listed in corresponding patch
+> >
+> > Changes in v4:
+> > - Rebased to tty-testing branch
+> > - Removed v3 patch 8/8, "bug" didn't happen in current driver
+> > - Patch specific changes listed in corresponding patch
+> >
+> > Thank you,
+> >
+> > Parker Newman (7):
+> >   serial: exar: remove old Connect Tech setup
+> >   serial: exar: added a exar_get_nr_ports function
+> >   serial: exar: add optional board_init function
+> >   serial: exar: moved generic_rs485 further up in 8250_exar.c
+> >   serial: exar: add CTI cards to exar_get_nr_ports
+> >   serial: exar: add CTI specific setup code
+> >   serial: exar: fix checkpach warnings
+> >
+> >  drivers/tty/serial/8250/8250_exar.c | 981 ++++++++++++++++++++++++++-=
+-
+> >  1 file changed, 916 insertions(+), 65 deletions(-)
+>
+> Nice, compared to your first version, this is less code overall in this
+> file:
+>    1 file changed, 1019 insertions(+), 70 deletions(-)
+>
+> so the review process helped!
+>
 
-> > > +static void dwc_verify_maxburst(struct dma_chan *chan)
-> 
-> > It's inconsistent to the rest of _verify methods. It doesn't verify as it
-> > doesn't return anything. Make it int or rename the function.
-> 
-> Making it int won't make much sense since currently the method doesn't
-> imply returning an error status. IMO using "verify" was ok, but since
-> you don't see it suitable please suggest a better alternative. mend,
-> fix, align?
+Yes thanks again for your patience. I learned a lot about the process :).
 
-My suggestion is (and was) to have it return 0 for now.
+> All now applied to my tree, thanks for the revisions.  And a follow-on
+> patch to fix up the kbuild warning would be appreciated.
+>
 
--- 
-With Best Regards,
-Andy Shevchenko
+I will follow up with a mini-series now to fix the kbuild warnings and a
+couple minor things mentioned by Ilpo.
 
+Thanks,
+Parker
+
+> thanks,
+>
+> greg k-h
 
