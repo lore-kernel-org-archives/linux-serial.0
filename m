@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0657171E5A;
-	Thu, 18 Apr 2024 17:37:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D861442F4;
+	Thu, 18 Apr 2024 17:54:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713461881; cv=none; b=qvAhlVk8uw0yfsS3c4fXuiNDswae3mK5pZlVo2ZBvvm98Wi2oTwu7NCy49qck+syFnxU/2R8Po32RMV2+oUL+TYQaLSyrF9KIquEkYNqmnwKiSxRWxQeYxc4G7krl3M2Yz/BdJvAJe5UTfZAGxh//ZmTlWSer9XrHR3C+Xg9orU=
+	t=1713462849; cv=none; b=QS966/nuq79Ec1E5Grm3mu1suVYKYiCexb8r25RuaqbyTaaXRkS+K00sxq98x2fOs5K4e30LaXYDk9FDLjpzXoWQ/TgUcJ5p5DsmoqetrOtyIA2OFL+fWEw5pLriInPqPXAOhfaYnczce+yTtuWFS5paAUuw6cnF8Czf4R1CnKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713461881; c=relaxed/simple;
-	bh=sov1ioee3d3W4cpmqQXXRXw1XlTvKh/lMf8Iva1ztOI=;
+	s=arc-20240116; t=1713462849; c=relaxed/simple;
+	bh=0a9FZ5kxuVUE8o/BfQ+wXbwjLxMhPraV7wWeJYFX9S4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aB8Y/HZKGMtnN96RwWW4relcyiVF8bUyAcNXxAa9FEZn6QPx7AxlGZBFVUVPZgdPuFiNyinAaFZTMyvzLb0KxwG1p65STwrK57CpRP1byZu4YfH7TEbBj3sUYr6vIxNQ4z33OYfGUI8GeRDacRlnNu/SNjpPX2KJWRRZWiTEyDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GjG2DlPI; arc=none smtp.client-ip=192.198.163.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ds7tDhM0o3DSQod6RBroxovvzlIglZRh6QGeFATNwqp80VaBkoFyIsOV++Ri36CKlQgArP6xB7zQveVdjSXvPVutr6unOR2H80iCz7VA8d9YiTbBciVmcEXTcmpt0PB9mGM1LswKgGlAOcMiFiReH4qBDaNGCepZjReVSVi8k40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GjRJw1YW; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GjG2DlPI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GjRJw1YW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713461880; x=1744997880;
+  t=1713462848; x=1744998848;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=sov1ioee3d3W4cpmqQXXRXw1XlTvKh/lMf8Iva1ztOI=;
-  b=GjG2DlPIc+1Oxn2xxRx1sJ+AM4TVvG8nkQMyEfTXLMy/HnL2oRyVbOa1
-   hQ9iIV2mWLgVnW7fb11I3ylNgxwucrZsObhBBEiIu57dOUsw4foKyZR9/
-   OsliE4RA666+DOarudTJaUMNzhlv1HRgSPT+Eztlj7AL3TeKqbvwXMXrR
-   5+fJrFTLjM6pa2kuHL29F+W34gMpgob2/BUaY42arYEEHMw/yCzK2u/Wu
-   QI7OG1wShyl4zkGpfW/VJ9cPg7jnsRSP18iqiWak97DPBq25LUOqtOzqy
-   jHo3YYaymdO/7WK11ezdz4Sw9+xhTAMcX8j8i5vVWzW130jUWqjSHyFch
-   g==;
-X-CSE-ConnectionGUID: Z1O1i9C6TuSq+mc4FyFgaw==
-X-CSE-MsgGUID: G7EsSDIGR6G0E6zpCE8ASg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20416206"
+  bh=0a9FZ5kxuVUE8o/BfQ+wXbwjLxMhPraV7wWeJYFX9S4=;
+  b=GjRJw1YW9eIwlBOSYtry8oZ6FIGYU/05rqD6A3joZYIKorp84S77ELPH
+   4+5BWwSq2aqBLNt21LSf2IS2Nz8JUAlB2VrKhMFKzl7DrYPoD/o9dsFKD
+   fIIanmcHsr6YrNgr66QZE2g5NiCjeGo5G0gc45/4UsTWrZ56FY/9fCCoC
+   icbOmxsSo1gBi//99/Bsn6F4+AQZqT3toZD5S69nRgs5HA5Skhvtl/Jk+
+   iVxI6aSuYJ8YErnuB1fmrc8LgQzGrsPAU9k5g4eWJJxE7kMJKhrOxzBid
+   +lr5k68ylKGiyCvv2dxAbq2DDqn8fMmVs9gTGNd9hbccqDS7TN0Uw4aAl
+   w==;
+X-CSE-ConnectionGUID: MjbR1HnsSJKu9MGCsblBxw==
+X-CSE-MsgGUID: A2IKTMihQjSKGFmF14zWpw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20453032"
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="20416206"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:37:59 -0700
-X-CSE-ConnectionGUID: e9B0Hp8jQeeIvlFrq5nuwg==
-X-CSE-MsgGUID: 64Jn8TC/S8K5Rw/TbJjGiA==
+   d="scan'208";a="20453032"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:54:07 -0700
+X-CSE-ConnectionGUID: kUa5EzyiRam30J+gYZs1Pg==
+X-CSE-MsgGUID: G2A+ciC3QfWd5q8+RK7/XA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="23510032"
+   d="scan'208";a="23124009"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:37:56 -0700
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:54:04 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rxVhp-00000000QGm-0Yjw;
-	Thu, 18 Apr 2024 20:37:53 +0300
-Date: Thu, 18 Apr 2024 20:37:52 +0300
+	id 1rxVxQ-00000000QYc-1qx5;
+	Thu, 18 Apr 2024 20:54:00 +0300
+Date: Thu, 18 Apr 2024 20:54:00 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Konstantin Pugin <rilian.la.te@ya.ru>
 Cc: Konstantin Pugin <ria.freelander@gmail.com>,
@@ -59,11 +59,11 @@ Cc: Konstantin Pugin <ria.freelander@gmail.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] serial: sc16is7xx: announce support of
- SER_RS485_RTS_ON_SEND
-Message-ID: <ZiFacIT0wzvhzaEk@smile.fi.intel.com>
+Subject: Re: [PATCH v3 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
+ UART
+Message-ID: <ZiFeOKNashUrmoDi@smile.fi.intel.com>
 References: <20240418170610.759838-1-rilian.la.te@ya.ru>
- <20240418170610.759838-2-rilian.la.te@ya.ru>
+ <20240418170610.759838-4-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,34 +72,62 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240418170610.759838-2-rilian.la.te@ya.ru>
+In-Reply-To: <20240418170610.759838-4-rilian.la.te@ya.ru>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 18, 2024 at 08:06:05PM +0300, Konstantin Pugin wrote:
+On Thu, Apr 18, 2024 at 08:06:07PM +0300, Konstantin Pugin wrote:
 > From: Konstantin Pugin <ria.freelander@gmail.com>
 > 
-> The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, but
-> after the commit 4afeced55baa ("serial: core: fix sanitizing check for
-> RTS settings") we always end up with SER_RS485_RTS_AFTER_SEND and
-
-  "...with _RTS_AFTER_SEND set..."
-
-or
-
-  "...with _RTS_AFTER_SEND clear..."
-
-or?..
-
-> always write in the register field SC16IS7XX_EFCR_RTS_INVERT_BIT, which
-
-write to
-
-> breaks some hardware using these chips.
+> XR20M1172 register set is mostly compatible with SC16IS762, but it has
+> a support for additional division rates of UART with special DLD register.
+> So, add handling this register by appropriate devicetree bindings.
 
 ...
 
-I might have been not clear about Vladimir's tag. Please double check
-if he gave it against the certain patch or the entire series.
+>  /* Special Register set: Only if ((LCR[7] == 1) && (LCR != 0xBF)) */
+>  #define SC16IS7XX_DLL_REG		(0x00) /* Divisor Latch Low */
+>  #define SC16IS7XX_DLH_REG		(0x01) /* Divisor Latch High */
+> +#define XR20M117X_DLD_REG		(0x02) /* Divisor Fractional Register (only on EXAR chips) */
+
+The comment in the parentheses is not needed anymore as it's implied by
+the namespace.
+
+...
+
+> +#define XR20M117X_DLD_16X		0
+> +#define XR20M117X_DLD_DIV(m)	((m) & GENMASK(3, 0))
+
+Seems like one too little TABs in between.
+
+> +#define XR20M117X_DLD_8X		BIT(4)
+> +#define XR20M117X_DLD_4X		BIT(5)
+
+...
+
+>  	char	name[10];
+>  	int	nr_gpio;
+>  	int	nr_uart;
+
+> +	bool has_dld;
+
+Not needed. See below.
+
+...
+
+> +	bool has_dld = s->devtype->has_dld;
+
+So, you can check against devtype itself:
+
+	s->devtype == &xr20m1172_devtype;
+
+> +static const struct sc16is7xx_devtype = {
+
+...
+
+> +	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
+> +		divisor = 1 << (fls(DIV_ROUND_CLOSEST(clk, baud)) - 1);
+
+BIT() ?
 
 -- 
 With Best Regards,
