@@ -1,49 +1,56 @@
-Received: from forward400b.mail.yandex.net (forward400b.mail.yandex.net [178.154.239.159])
+Received: from forward500c.mail.yandex.net (forward500c.mail.yandex.net [178.154.239.208])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 199A315CD50;
-	Thu, 18 Apr 2024 13:25:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F75F15E1FE;
+	Thu, 18 Apr 2024 13:25:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.208
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713446733; cv=none; b=LwnDTH/G/Ui2bzCOa7oL6hc7GfnB6bww/uoQu08JU7qUjv80SaD1EjcSkJkzh8Tklf611tqrs1R3iCC/ahTSYvqA8eQSH16bJFs7lbv0W5lsCLCtj8iVhCzwpRpfVoUcCZEDNA2Pj2kVkJO1qAkENR9zKdg7ykrC8RyjrjykOZY=
+	t=1713446742; cv=none; b=nozHe7ZF32ekFAziRytf0N4zgEfubZcEVpBPk5UT+v0ikvjDlZwwD/4GXzshcUx3Gf7bEGRYKFi6GP5xXydEWUWd6UbEtDU77ZA3ih1oFuoZa8y6gf00MkLTA12vIJiQqsaCUb9okMGxXxDqqUA25x083DgJ+Kiix1qijrcMNbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713446733; c=relaxed/simple;
-	bh=6WR78XuM8lUYQarv1w5dNxtl+kh5e6PBz0ljAp9dGsM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=JTj8d05JpqtzlzSZj1KFWnVGK0IL7rpvy8P6Xd9Nu6nSK01f5MilDf9bQs9Z406TSa7QZ7AUFKDzcB9h5BnboXLUV/4STDO8k+tshVJZTgK7iw4MBLJhcM07kgrCe0B/kzCYI9FqX1t+NXBG98uA82lpdwn3RFlGvgbfoPkuJ7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=QYJYysT4; arc=none smtp.client-ip=178.154.239.159
+	s=arc-20240116; t=1713446742; c=relaxed/simple;
+	bh=Jg08ugN7crLeraSu3t+b58lZjcn71WokINIQzw7wMhg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=WJzGpAafpFApfGwn8BJSXUmtqETCLfWnJVbWX5DvY1FvBzDv2gbry6hqGrXbMivhS5kKwDOOXF35jbbn8eNfiWFTmx8N0gQSZOWM8rnag3gz0rZ37NTHmmGFh2ZM5RUC4urV4iDPjaJ8KGDE63viKcBlEDW3LCCTeREifxkoJJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=H0maqJwI; arc=none smtp.client-ip=178.154.239.208
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="QYJYysT4"
+	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="H0maqJwI"
 Received: from mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net [IPv6:2a02:6b8:c05:84:0:640:40f8:0])
-	by forward400b.mail.yandex.net (Yandex) with ESMTPS id 9CE4C7545B;
-	Thu, 18 Apr 2024 16:25:19 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id HPFFWsDX0Cg0-tfjEwGt0;
-	Thu, 18 Apr 2024 16:25:18 +0300
+	by forward500c.mail.yandex.net (Yandex) with ESMTPS id 543B3610E7;
+	Thu, 18 Apr 2024 16:25:32 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id HPFFWsDX0Cg0-gm6CoVTK;
+	Thu, 18 Apr 2024 16:25:31 +0300
 X-Yandex-Fwd: 1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
-	t=1713446718; bh=DVS5WHJ+HqA1KWKdi8bTsjkikj5AFrUnyRjvjUbKEEA=;
-	h=Message-Id:Date:Cc:Subject:To:From;
-	b=QYJYysT4pboOFWTNMJVyx+BY0+KBJ7siT49IIp4Q4OLCbbPfAmEgqa94uouumbEhR
-	 +oFc4JEDEIQEjXp3Suq5CuW3Hvh3ZZY4MpIYljnCQ3RuOM09QUWpYkipSQD6UMwKOC
-	 nPmctG7QZUCFrLMt2JWvsE5Kgv8fpz6OygRHTub8=
+	t=1713446731; bh=s/N54e29hO90jNvjku5sez2Ii+TUoqQT3STMI5kSKjw=;
+	h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
+	b=H0maqJwIMOb/0DaFc3IqhxTtwGXzxx2bpWXDvSZShu7w0P5m5GEqsDo79QHQJQMgG
+	 1VAorcGf8DnHVIaXN0ibO2nswKPkd5ie+1wSBxcvQDHPHyYs6DdGPy+iktC97Cu8aG
+	 ppOG9yysbjQOQ16owczcWOehTW7dwyKMVXvVME1c=
 Authentication-Results: mail-nwsmtp-smtp-production-main-38.myt.yp-c.yandex.net; dkim=pass header.i=@ya.ru
 From: Konstantin <rilian.la.te@ya.ru>
 To: 
-Cc: Konstantin Pugin <ria.freelander@gmail.com>,
+Cc: Konstantin <ria.freelander@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Lech Perczak <lech.perczak@camlingroup.com>,
 	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 0/3] add support for EXAR XR20M1172 UART
-Date: Thu, 18 Apr 2024 16:25:02 +0300
-Message-Id: <20240418132508.3447800-1-rilian.la.te@ya.ru>
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH 2/3] serial: sc16is7xx: Add bindings documentation for EXAR XR20M1172 UART
+Date: Thu, 18 Apr 2024 16:25:04 +0300
+Message-Id: <20240418132508.3447800-3-rilian.la.te@ya.ru>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240418132508.3447800-1-rilian.la.te@ya.ru>
+References: <20240418132508.3447800-1-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,24 +59,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Konstantin Pugin <ria.freelander@gmail.com>
+From: Konstantin <ria.freelander@gmail.com>
 
-EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
-it has additional register which can change UART multiplier
-to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
-flag to guard access to its specific DLD register. It seems than
-other EXAR SPI UART modules also have this register, but I tested
-only XR20M1172.
+This patch adds the devicetree documentation for the XR20M1172 UART.
 
-Konstantin (3):
-  serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-  serial: sc16is7xx: Add bindings documentation for EXAR XR20M1172 UART
-  serial: sc16is7xx: add support for EXAR XR20M1172 UART
+Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+---
+ Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
- .../bindings/serial/nxp,sc16is7xx.yaml        |  1 +
- drivers/tty/serial/sc16is7xx.c                | 56 +++++++++++++++++--
- 2 files changed, 53 insertions(+), 4 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+index 5dec15b7e7c3..68fe7b11961c 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+@@ -18,6 +18,7 @@ properties:
+       - nxp,sc16is752
+       - nxp,sc16is760
+       - nxp,sc16is762
++      - exar,xr20m1172
+ 
+   reg:
+     maxItems: 1
 -- 
 2.34.1
 
