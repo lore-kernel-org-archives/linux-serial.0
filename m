@@ -1,71 +1,68 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55FDF177980;
-	Thu, 18 Apr 2024 19:10:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 371B4165FD6;
+	Thu, 18 Apr 2024 21:00:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713467409; cv=none; b=gcpNszYRZFmIwP4nPLQh9vfs3eBrL64m7StT6B9xZnQ/MJeBlDeuAKp6yQIv55DQ4qWtp7Pdm87+d4JWbC/Ed+cIKcasukn8308mUjJHal6PtnkRM/Y91aF78buJTcpxTQv7wF2YiTJRmERn+kTbBvuoK+7/zdTAE1H1oABtF8c=
+	t=1713474047; cv=none; b=E93PKmbGR5YK9lL0/PaFSWxGhPGe1oMOw4In4m9kPwcYhSXWIO8OAhv9n7s2YnijcJnRkhg2oCS+oJLHHc2A/mhiBqOvuG4v8l7ZMbWlk0+9teaXxe2EhXEZoJkvNmHZO7XlaZulHKM6zcOiSA/Oele56ZwkVMnkxBOWMXHZvyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713467409; c=relaxed/simple;
-	bh=LNYSLafohNI3OcAPQLdlG1Op1X2KxPSSInkwWTm9e9k=;
+	s=arc-20240116; t=1713474047; c=relaxed/simple;
+	bh=8FcS+d3XqPALYlKipast1fx6gvgoQgjVL9Fu3VpDnLA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i03DPz2NzCwqyIZ/lu+9TYK66QNBe8WcwJjJkRPcCqPux09rEiAlRL8g4W6Cr4FNRGodz0yNMpFIOGmFPYlFoeLvp83vliJHb8Z6yjDx98HvjhwWB4TPm0/1/vJjn34OhBt3BiGoxie9yWXuTNREKYkwBAhWHqyg8frp6x/ffcE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f52zaE4M; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=XPtLob/FQ03bJZDd9MdTIIDhke3NtPJnGjcf25Qzx6HRAhwEXrV8ERrctcG7NHEyvaJf1SAbVntHnS8sZSnZLS2haQxDb9RkeWjxFQYik6mUGxcoZ2H2hbzXlkKvSQLI83reGjFVk+CDzAeHLq8+C+A3ylYzpT0wbmDIzZj4A/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RPl5kAtR; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f52zaE4M"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-518f8a69f82so1511055e87.2;
-        Thu, 18 Apr 2024 12:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713467406; x=1714072206; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=LFCOV5/FbvZyadb0eigbmic/UPzgGtARohnH/S7yn5M=;
-        b=f52zaE4MY0RS5TFgCrG79fG0RkfpF+xLXDYU0+/bYKXVbENGgdFdq6XagTqNarcHan
-         KpPkv7naSQ/lzIdOtZlaMUz+JdA/iO6luBGWC2CrUas78pQumhH4ouWBSRtvMzB+5tAf
-         M78YhkvOdRhKu0wjyp25Ji4LDTZaMtgW3DVsfsxLbfqerF9o06YomjjI2M+ChogwRZV7
-         Vo1YSUwoDTueBeeIS4AEaUkOjBMtnx81o8FluaflRbCLqJZYu54nx1jF0kjoWqJ5P90W
-         oaPxMrfVmWtJtULoLuZYMLs2CgFtDPjdJooDErfP38K6bWnu3WUNb3aPMckp3lA/77TF
-         lptQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713467406; x=1714072206;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LFCOV5/FbvZyadb0eigbmic/UPzgGtARohnH/S7yn5M=;
-        b=F9vAG/VnSmY7QZS25HusxlT1CE4c3NV1Bsmn8CzNpGKHe0xJDNuuDY4AMirBX7AlQ/
-         UHLs46eIxiZFoZnWi1hudeXsRsz1qFDr/U1Rj5JhhKYIhkSlgaKLFs/RzRUW1OEBer3j
-         aYA29PWowWlHAR9GH1A6at0szc7ZTmEOzrC0baYDdIL8DVfatDfB9IVUMfJDMUIntwgq
-         0qSX+nVYXwdOn6IF16YAcGt4EeBRodEp23bqMaUSHZvp9I1cXz66x07ZpelzW3FsdIGL
-         Jilse5DPaJA/YeGMsOxd6zU87VtCI1T4LipnHkVoSwRbOk51RVsbXLaRsVKgyJxFvfWw
-         7rYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVczPUEmJfiBPi9qyVY5qd2gWzEqpN6AYGAPtJeYZkFeUtOHlMIL08PSAw53ASs75ILhr74rtpdQ1LTlbnIyM1ZwUu6irzLBIPtmSzxQH4nJRelqwe8XZ/VJgOcEhdc0TlQfPSdba2vwsjR+Hjrrq5k09QCqep41YvTbDaec3vMz+kHiExa
-X-Gm-Message-State: AOJu0YyW0AjKU6jUhlp8cKvqldBlNnqSwYBIxfrIhihMqf0KNzQx/8Jj
-	cmz/KMorm8gezg/bhedz+jx8V7lmJWzwlNM0K/HKfmvqMGBeSf+v
-X-Google-Smtp-Source: AGHT+IHeGbZo3NR5cIAMrdyKdsxgouRoWv0Ml67OyFVx/dFz8bHvQmI84/kBwrtuR7IbXbEyjH6uzw==
-X-Received: by 2002:ac2:4836:0:b0:516:d3ba:5602 with SMTP id 22-20020ac24836000000b00516d3ba5602mr2273115lft.16.1713467406333;
-        Thu, 18 Apr 2024 12:10:06 -0700 (PDT)
-Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
-        by smtp.gmail.com with ESMTPSA id a22-20020a195f56000000b00518e16f8297sm352294lfj.55.2024.04.18.12.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Apr 2024 12:10:05 -0700 (PDT)
-Date: Thu, 18 Apr 2024 22:10:04 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] dmaengine: dw: Simplify max-burst calculation
- procedure
-Message-ID: <2htaobgfle7glf4t7v5vjlhx6hdzja6bbwn3fonhejs3dbxgij@puaipep4ycwp>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RPl5kAtR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713474047; x=1745010047;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8FcS+d3XqPALYlKipast1fx6gvgoQgjVL9Fu3VpDnLA=;
+  b=RPl5kAtRpAcuAbJqxzwsGcjpeTg5pIsamhEGIso2xUzLBC3IFzJOFxPg
+   +RVLJw52f9JCmihI6AUVb3uGV0hvWeYeHeWaTncnVlxmPvbErYfuS1twr
+   j2E51xmB2tiHb+a8EmlHvp53EucAQ5hwft8B4RXbRaBAaH6rN7Fkbuvoy
+   JRVcwdVWyN2QJRQ7Y7in/RhnEKI28mBvaeDtyHSgmnl/MVYnl7aubV3IB
+   PLVDWV3MEZHgayCS9/diDMS7aCpXw/v0EB6eAXB3pZNVrWPC9+OHEDvh0
+   n9viuEey5War5H1HuGm52tezYzr+d2KWMRcqdukJhFMtZuSsG40Wt0OmN
+   g==;
+X-CSE-ConnectionGUID: MN+mgiDQQU+mV+yJGkcy2g==
+X-CSE-MsgGUID: IsJfKF/9Rfu7vaorLvNsFA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="8887569"
+X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
+   d="scan'208";a="8887569"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 14:00:46 -0700
+X-CSE-ConnectionGUID: nELOdJapRMKou4dSOlVNNw==
+X-CSE-MsgGUID: PG/RLJrHQxqtfy0ZX+NVSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
+   d="scan'208";a="27879557"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 14:00:43 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rxYs4-00000000Uaz-1KZK;
+	Fri, 19 Apr 2024 00:00:40 +0300
+Date: Fri, 19 Apr 2024 00:00:40 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Serge Semin <fancer.lancer@gmail.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] dmaengine: dw: Simplify prepare CTL_LO methods
+Message-ID: <ZiGJ-DspJq5R6Dym@smile.fi.intel.com>
 References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-5-fancer.lancer@gmail.com>
- <Zh7NfmffgSBSjVWv@smile.fi.intel.com>
- <tez5uqt4lg2qf5nooxuqo2rqhkqzzzbpeysdcbljokznbztkhj@j5t7cy4gd4pd>
- <ZiEIxq8dHxObrYZx@smile.fi.intel.com>
+ <20240416162908.24180-4-fancer.lancer@gmail.com>
+ <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
+ <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
+ <ZiEIRluj-50FMIgp@smile.fi.intel.com>
+ <xfa7evanbrvdxdoq6473wpymvqogezspwkdoawu2dr6mnyxiwq@zx2schip66wj>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,36 +71,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZiEIxq8dHxObrYZx@smile.fi.intel.com>
+In-Reply-To: <xfa7evanbrvdxdoq6473wpymvqogezspwkdoawu2dr6mnyxiwq@zx2schip66wj>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 18, 2024 at 02:49:26PM +0300, Andy Shevchenko wrote:
-> On Wed, Apr 17, 2024 at 11:35:39PM +0300, Serge Semin wrote:
-> > On Tue, Apr 16, 2024 at 10:11:58PM +0300, Andy Shevchenko wrote:
-> > > On Tue, Apr 16, 2024 at 07:28:58PM +0300, Serge Semin wrote:
-> 
-> ...
-> 
-> > > > +static void dwc_verify_maxburst(struct dma_chan *chan)
-> > 
-> > > It's inconsistent to the rest of _verify methods. It doesn't verify as it
-> > > doesn't return anything. Make it int or rename the function.
-> > 
-> > Making it int won't make much sense since currently the method doesn't
-> > imply returning an error status. IMO using "verify" was ok, but since
-> > you don't see it suitable please suggest a better alternative. mend,
-> > fix, align?
-> 
+On Thu, Apr 18, 2024 at 10:00:02PM +0300, Serge Semin wrote:
+> On Thu, Apr 18, 2024 at 02:47:18PM +0300, Andy Shevchenko wrote:
+> > On Wed, Apr 17, 2024 at 11:11:46PM +0300, Serge Semin wrote:
+> > > On Tue, Apr 16, 2024 at 10:04:42PM +0300, Andy Shevchenko wrote:
+> > > > On Tue, Apr 16, 2024 at 07:28:57PM +0300, Serge Semin wrote:
 
-> My suggestion is (and was) to have it return 0 for now.
+...
 
-Ok. Let's have it returning zero then.
-
-
--Serge(y)
-
+> > > > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
+> > > > > +		sms = dwc->dws.m_master;
+> > > > > +		smsize = 0;
+> > > > > +		dms = dwc->dws.p_master;
+> > > > > +		dmsize = sconfig->dst_maxburst;
+> > > 
+> > > > I would group it differently, i.e.
+> > > > 
+> > > > 		sms = dwc->dws.m_master;
+> > > > 		dms = dwc->dws.p_master;
+> > > > 		smsize = 0;
+> > > > 		dmsize = sconfig->dst_maxburst;
+> > > 
+> > > Could you please clarify, why? From my point of view it was better to
+> > > group the source master ID and the source master burst size inits
+> > > together.
 > 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+> > Sure. The point here is that when you look at the DMA channel configuration
+> > usually you operate with the semantically tied fields for source and
+> > destination. At least this is my experience, I always check both sides
+> > of the transfer for the same field, e.g., master setting, hence I want to
+> > have them coupled.
 > 
-> 
+> Ok. I see. Thanks for clarification. I normally do that in another
+> order: group the functionally related fields together - all
+> source-related configs first, then all destination-related configs.
+> Honestly I don't have strong opinion about this part, it's just my
+> personal preference. Am I right to think that from your experience in
+> kernel it's normally done in the order you described?
+
+In this driver I believe I have followed that one, yes.
+
+> > > > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
+> > > > > +		sms = dwc->dws.p_master;
+> > > > > +		smsize = sconfig->src_maxburst;
+> > > > > +		dms = dwc->dws.m_master;
+> > > > > +		dmsize = 0;
+> > > > > +	} else /* DMA_MEM_TO_MEM */ {
+> > > > > +		sms = dwc->dws.m_master;
+> > > > > +		smsize = 0;
+> > > > > +		dms = dwc->dws.m_master;
+> > > > > +		dmsize = 0;
+> > > > > +	}
+> > > > 
+> > > > Ditto for two above cases.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
