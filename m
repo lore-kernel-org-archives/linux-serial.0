@@ -1,111 +1,187 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03D6C2AEFA;
-	Thu, 18 Apr 2024 15:52:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA3C1D688;
+	Thu, 18 Apr 2024 16:30:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713455572; cv=none; b=K8AsT+WxkVvgwSEY8SI7ppO6blYm/2IXkQT2MLUO+Q2nZrnsK4+usySTLIv1NSuQIScn5KKd5y5zJoDFj2fqjfrpY3tOHzdz/3inkIqR1ff7qIEpJp0QqEK5m6w/VMqYXvONO/xRU6+rPa0Os+oXjw5SbrkQABP9/lnFOi2cJ1g=
+	t=1713457846; cv=none; b=ToqpGOTtfq6lEj2FYipydC3gIAie/0J175L6ZN8kPt59Cei+vP2w7Y3W6/LYWeLf+sHpva0+hD00ozfhPs+wzc3oejQ0/b2tDOysK5P88BM9mZnXChtcsaYWmROR2BFAe6+oFg+6A7HzU3XEh+j30TPzVtYzOPpa5XkPOd0Kcbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713455572; c=relaxed/simple;
-	bh=WkAAHyvVDeP+e2sfdfroKn2jp46qnZOOyePAl/GIvN0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JW4SprdEczPrGYzUAvCsgvUajWsa8iF69iwiexislr0HYx5XzlO6oUv6jNRDOEBi6vAHLo2f5rjMZw/SZMZRabk2KwAYGTwnbAjXFYfqECVpoHEb3me4Gg9NFmutPC+qOAYNGEj8zd4WBfwkL2QCqV7Q+s1RjLsl+Odb91TGAfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V9NC9Dkl; arc=none smtp.client-ip=209.85.208.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1713457846; c=relaxed/simple;
+	bh=OxwKkR/0/pgmVSy4+9IziMov1JDKA+3RR43Yc298QwQ=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=nYepRQvlvx3cNGVbOzCUsi8CDWJAsYXpP3zlY7fBXwh8V68/Zk01lXVfmpttIu2TswUmBdB0qjjKNJryV+GjFc5EsFbbEr2KNBePX8yRRC5WeU1GaFpf1yvoQ6Y5sb6mnuXOxmxPR0ZtKS2mDTBEYVHVSsbOK3CMuTm3TPotbjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qxslpwk2; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V9NC9Dkl"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2da01cb187cso18945281fa.0;
-        Thu, 18 Apr 2024 08:52:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713455569; x=1714060369; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=80IOZRJAg3n+luujCnfZpyZXCYpVPrOJyohSTrYNWpc=;
-        b=V9NC9DklaVLSNmAGDOUQSqSzz7hqln20JAwF4NWJgR7+5SE2/bfcXeflRpkt2Jdgho
-         /ve4JrSY9OQfZGSS9Nv9C/Lk1bCp3adMMlFw2EmHZ8ZVi/szD5LG7QHf/bt1ZKXI8SFQ
-         7S1sQSQeecv2amrrhgqaKsT5iDSI+9gnhZ7ww2BBlG07PLpbHtaY/PojwUPu4MRDro0o
-         eZ1nYRgmSLxFFloBdFVHcPVATLHUe1WO6gC6JaJIHvz4t97J6ZLZWDKinVlkCxfPtUvv
-         61RcjSO8UnqtUgqE635H9PSHSQziZ3eyUMj6XWzHlipjcfeB37n8nXqD7SlMEDUIIBSh
-         1rsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713455569; x=1714060369;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=80IOZRJAg3n+luujCnfZpyZXCYpVPrOJyohSTrYNWpc=;
-        b=wjqMyRQ1rTimONuhToMsVNjBbqEGPP6lx4iOsowZBdnMcgMSzGjhhvqly4x+1/nSMO
-         TFPBJUo41cZEsNsNL6l/TcS2Xc3K3/hmWSo54qU4mnCmvzISrTdPf0cEzkDp5GdxYEU1
-         Iy3mQAsazR3UFuwb/juVTR/vMtReAqwFL5VTs3AXFSFQHrDIZpIe5E+nmqp7zMW9SVIc
-         Hu/e/hSwcU4+KdxdoVhhU1+VBTtygUG4tqNY+kkHXsblVgeTvBUAO85fx0BlT3mRftXE
-         0c340V1hbLUc5foP/UL3J2UOrifmJ54qGJufuXfoRtpwaPbgS6P+U6Ud3gsPcUYN9ae+
-         yhcA==
-X-Forwarded-Encrypted: i=1; AJvYcCXkrY5GKNEtoR1mWvEBBehTx3t/69Y743C347kRD/77WTFKdbVnU3gerj0nwWsUVQE8Htb8v39CN6S+hgM9D8YvV0hFOmyXcdLVfl20NKInF3S3VWysQHu3FYvFT+eM+x3+ZeqaImAKeU9b5LLlAhVAfWlOOHNU9DSipmCt31Qx1FDYnaSm
-X-Gm-Message-State: AOJu0Yx7h3uPbvQBy5aEzzYf3oa6o9bk87z+IvV2VpF8vMxDgTPku14K
-	JZnCDGEOhiz784y+37E/i4AY3GcyVMxJnlm/9LmlDAmmcRueDL5z
-X-Google-Smtp-Source: AGHT+IGQBxhUssFgYIcYFhb0iGzTgiERBaBVOH1kvO22eJtoubzPk2q+XBi65mwuJxQjyxgWfAYq9g==
-X-Received: by 2002:a2e:908e:0:b0:2da:7cd1:3f1f with SMTP id l14-20020a2e908e000000b002da7cd13f1fmr2175351ljg.52.1713455568884;
-        Thu, 18 Apr 2024 08:52:48 -0700 (PDT)
-Received: from mobilestation.baikal.int ([94.125.187.42])
-        by smtp.gmail.com with ESMTPSA id h25-20020a2e3a19000000b002da968f03f9sm237734lja.89.2024.04.18.08.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Apr 2024 08:52:48 -0700 (PDT)
-Date: Thu, 18 Apr 2024 18:52:46 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH 2/4] dmaengine: dw: Add memory bus width verification
-Message-ID: <3aias5ufn2gdta7lr4g2phzg4vfynarrup36zmiuxndd6zgzqc@6z57kf4wk4ut>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-3-fancer.lancer@gmail.com>
- <Zh7Hpuo-TzSmlz69@smile.fi.intel.com>
- <lzipslbrr4fkpqc3plfllltls2sy2mrlentp7clpjoppvgscoi@zlmysqym2kyb>
- <ZiAGpsldQMB-dKkn@smile.fi.intel.com>
- <nroj7c7hvo5ao5gfuububc2zqj7z4rpkoji5flhbrie3xrmgwg@6rhzllxwgj4w>
- <ZiDpxb-diEt91My4@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qxslpwk2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713457846; x=1744993846;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=OxwKkR/0/pgmVSy4+9IziMov1JDKA+3RR43Yc298QwQ=;
+  b=Qxslpwk2svyJevsH5S3yJO/9pS5tsGKg+rTkkiitICG1Euh4aJs9C5Ic
+   Aw69iAQW3ipgT4/sxEQ3xLY2Lxtwx9XtpK1Vq5PvcZaA570FAX60NmRb8
+   uQ4f190/AQnBQVmg8O/x8q2Qj4GxkF8YHwVkDP8RcHaYjh3SVML7xRd3Z
+   5hU9K3RJn4DbIZa8wQxsyjaott4dGzVfMaaNF87YE7eXz3BJsI+2AFs6h
+   9ILdFcnlrBfFowHj0KjTgfKEdjZBgVUe7FjMCSH1qmqANdK+K46pQu84K
+   0PZk92l1C3HBsqP+btsw8Aw2+Jh6KotaG30Axy/9fxd1yM9/je4+gIU04
+   A==;
+X-CSE-ConnectionGUID: NMLFHSJMQsqSwHB2yiG4aw==
+X-CSE-MsgGUID: M42+Hr6aSA+SKKDBQuUMQw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="12854570"
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="12854570"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 09:30:45 -0700
+X-CSE-ConnectionGUID: YOoPL6H1TqST0s6j9PTGWA==
+X-CSE-MsgGUID: rd/6OfPuQGaFCYLnbqTPiw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="23554263"
+Received: from unknown (HELO localhost) ([10.245.247.37])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 09:30:42 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Thu, 18 Apr 2024 19:29:44 +0300 (EEST)
+To: Parker Newman <parker@finest.io>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v4 6/7] serial: exar: add CTI specific setup code
+In-Reply-To: <20240418102153.554d56ba@SWDEV2.connecttech.local>
+Message-ID: <8c91f3a5-e124-aa28-06bb-2e6a699d4998@linux.intel.com>
+References: <cover.1713382717.git.pnewman@connecttech.com> <ae4a66e7342b686cb8d4b15317585dfb37222cf4.1713382717.git.pnewman@connecttech.com> <f2353b8c-2079-b895-2707-f6be83161288@linux.intel.com> <20240418102153.554d56ba@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZiDpxb-diEt91My4@smile.fi.intel.com>
+Content-Type: multipart/mixed; BOUNDARY="8323328-1243625647-1713457534=:986"
+Content-ID: <88c6a853-6c20-48f8-b23c-9d936047bb66@linux.intel.com>
 
-On Thu, Apr 18, 2024 at 12:37:09PM +0300, Andy Shevchenko wrote:
-> On Wed, Apr 17, 2024 at 09:52:42PM +0300, Serge Semin wrote:
-> > On Wed, Apr 17, 2024 at 08:28:06PM +0300, Andy Shevchenko wrote:
-> > > On Wed, Apr 17, 2024 at 08:13:59PM +0300, Serge Semin wrote:
-> 
-> ...
-> 
-> > > Got it. Maybe a little summary in the code to explain all this magic?
-> > 
-> > Will it be enough to add something like this:
-> > /*
-> >  * It's possible to have a data portion locked in the DMA FIFO in case
-> >  * of the channel suspension. Subsequent channel disabling will cause
-> >  * that data silent loss. In order to prevent that maintain the src
-> >  * and dst transfer widths coherency by means of the relation:
-> >  * (CTLx.SRC_TR_WIDTH * CTLx.SRC_MSIZE >= CTLx.DST_TR_WIDTH)
-> >  */
-> 
-> Yes, and you may add something like
-> "Look for the details in the commit message that brings this change."
-> at the end of it.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Agreed. Thanks.
+--8323328-1243625647-1713457534=:986
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <02e9d16b-861a-03a0-64b2-e11adae1c562@linux.intel.com>
 
--Serge(y)
+On Thu, 18 Apr 2024, Parker Newman wrote:
+> On Thu, 18 Apr 2024 16:20:15 +0300 (EEST)
+> Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+>=20
+> > On Wed, 17 Apr 2024, Parker Newman wrote:
+> > > From: Parker Newman <pnewman@connecttech.com>
+> > >=20
+> > > This is a large patch but is only additions. All changes and removals
+> > > are made in previous patches in this series.
+> > >=20
+> > > - Add CTI board_init and port setup functions for each UART type
+> > > - Add CTI_EXAR_DEVICE() and CTI_PCI_DEVICE() macros
+> > > - Add support for reading a word from the Exar EEPROM.
+> > > - Add support for configuring and setting a single MPIO
+> > > - Add various helper functions for CTI boards.
+> > > - Add osc_freq to struct exar8250
+> > >=20
+> > > Signed-off-by: Parker Newman <pnewman@connecttech.com>
 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+> > > @@ -192,11 +252,201 @@ struct exar8250_board {
+> > >=20
+> > >  struct exar8250 {
+> > >  =09unsigned int=09=09nr;
+> > > +=09unsigned int=09=09osc_freq;
+> > >  =09struct exar8250_board=09*board;
+> > >  =09void __iomem=09=09*virt;
+> > >  =09int=09=09=09line[];
+> > >  };
+> > >=20
+> > > +static inline void exar_write_reg(struct exar8250 *priv,
+> > > +=09=09=09=09unsigned int reg, u8 value)
+> > > +{
+> > > +=09writeb(value, priv->virt + reg);
+> > > +}
+> > > +
+> > > +static inline u8 exar_read_reg(struct exar8250 *priv, unsigned int r=
+eg)
+> > > +{
+> > > +=09return readb(priv->virt + reg);
+> > > +} =20
+> >=20
+> > I tried to understand what is going on with this priv->virt in 8250_exa=
+r=20
+> > in general and why it exists but I failed. It seems to BAR0 is mapped=
+=20
+> > there but also serial8250_pci_setup_port() does map the same BAR and=20
+> > sets it up into the usual place in membase.
+> >=20
+>=20
+> Exar PCI/PCIe UARTs have global configuration registers from 0x80-0x9B.
+> These registers are for reading the EEPROM, configuring the MPIO, etc.
+> As these registers are only at 0x80, and not port specific, the driver ma=
+ps
+> BAR0 to priv->virt for accessing them.=20
+
+Okay, thanks for explaining. The naming & lack of comments wasn't exactly=
+=20
+making it easy to follow this bit (this is not your fault in anyway but=20
+a pre-existing problem in the driver's code).
+
+I've a follow up question now that it's confirmed they're different,=20
+see below...
+
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_8XMODE), 0x00);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_FCTR), UART_FCTR_EXAR_TR=
+GD);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_TXTRG), 128);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_RXTRG), 128); =20
+> >=20
+> > Unnecessary parenthesis.
+
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_8XMODE), 0x00);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_FCTR), UART_FCTR_EXAR_TR=
+GD);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_TXTRG), 32);
+> > > +=09exar_write_reg(priv, (offset + UART_EXAR_RXTRG), 32); =20
+> >=20
+> > Unnecessary parenthesis.
+> >=20
+>=20
+> I will fix these in my cleanup patches.=20
+
+Based on the wording in your response, I'm not sure you got this right. It=
+=20
+is code you're adding in this patch so the parenthesis should be removed=20
+from this change so they never appear in the commit history.
+
+> > I recommend you add a helper for this as it is repeated twice. Are the=
+=20
+> > values 32 and 128 literal or do they have some specific meaning? If the=
+=20
+> > latter case, they should be using named defines (this likely applies to=
+=20
+> > the existing trigger code in the driver too).
+> >=20
+> >=20
+>=20
+> They are the FIFO trigger levels so they are literally 128 and 32.=20
+
+Okay, no problem then if its 128 characters and 32 characters.
+
+> These 4 writes come from Exar's out-of-tree driver and are in=20
+> pci_xr17v35x_setup() and some other vendor specific functions.=20
+>=20
+> I am not sure why/if these are needed.=20
+
+=2E..So the follow-up question. I see the existing code in=20
+pci_fastcom335_setup() and pci_xr17v35x_setup() writes into membase=20
+based address but your code uses exar_write_reg() which is priv->virt=20
+based. Is this difference intentional?
+
+--=20
+ i.
+--8323328-1243625647-1713457534=:986--
