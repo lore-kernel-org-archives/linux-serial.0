@@ -1,192 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08DE15F415;
-	Thu, 18 Apr 2024 11:37:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821FC56464;
+	Thu, 18 Apr 2024 11:43:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713440253; cv=none; b=qJFLFuGHbcmSD5Rlj0kAjAm/88kKxnHZ0/n/MNUoxnyCTTn9ZWkZAL8dxTZT0j+lP7d0bvn2htFQOTMq5J1Ba1RVuxTkXQ+a5FMaE/dXl9EpzCJM1Xsl+Ii4YPxI9hyrgJWlsfOrWDKxWpKjN+8byGGnDh0BdUCB7L03J6mKhBc=
+	t=1713440623; cv=none; b=bUhs+hZ8+kjnt+WbUQsTkkjxvSjDtkq1NTOTBNERqOo8qqPRSwpBoENY2Qt0nuLdb+t6ebb8C817bxNlJbY2VEhdjYUSKIjYvzy65zGlGlMruAoi+hxZ/gnJfbkTI001QooCNQFB6m7gO/1RirCt1WOafiShSQ6NY0wCcfpx5pI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713440253; c=relaxed/simple;
-	bh=Nq8Yi29thlbiHkw+aSqvbgnfPnMwcMK/TIXfF/XHa/w=;
+	s=arc-20240116; t=1713440623; c=relaxed/simple;
+	bh=T4fBkydOARcqpAZpedsRkcZRcxSxeRnonLEt65AZCDk=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=RHMIWBb8h6Y6PgF8KJJYQDTuI+cPfK6IEsOBhrtWiwZyK5qjBV8T/RM0UeOCHtF5MtsLmtjfljAkksKhpva/ThQhjqpd0xpvJhVahDPNSXkx95vVooaDCNsb9MjUg4+2t8/Ar0flm0eq8z9+9+Uto+4EmdIK951gT1lLEynAd+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hzpIyNb0; arc=none smtp.client-ip=198.175.65.11
+	 MIME-Version:Content-Type; b=nJ8bcIkyHTbEsnl/a5o3VC6uxt4taHQvdIzX6+HzSGuynJdTj9tVJm3+WyXbPbTokLGMPvl/CCzWfleAzvNbiXT2S0B89141Tr5/XVvr4vozopvYuK3zPNjAyZ9TDTxa3f2cCG6sacJ8ArCYgg2tAJ3QXgXLg8N1dxRyQcv2tWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kkpmaVqG; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hzpIyNb0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kkpmaVqG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713440251; x=1744976251;
+  t=1713440622; x=1744976622;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=Nq8Yi29thlbiHkw+aSqvbgnfPnMwcMK/TIXfF/XHa/w=;
-  b=hzpIyNb0c8FbJE+4H8P83nCa/uLGfwGkB4w+P5Y60OstHqiBi5OSvUdQ
-   WD8GBm5bEGFIqmV8GxSWLIVic5EvdLQJ9BihVyiap5cTvKiOiK6zjDuqo
-   vZ7Oq6D5+PjGpeOhJjisllP5s+tXhwWqjp/3dKWEUELxERmQ1AkISFfOc
-   F05Qxb+YzJ8agY3nSGjnIm1mB3d7vmJs3xOSjv9jgX0gCabUVDu0i4r6m
-   W03krMVJNa6AOnLvF9GubuVAbEzBvkpfUmyGTjwaBvlMKPcIEzsbqZ0yl
-   zKLB/C4Tu670JzCrNv70WFsPFX3ksXNDXBYaIce7FVQNk3IHcfj4Y9Gg/
-   Q==;
-X-CSE-ConnectionGUID: vvauLY2pREeXZMnfJLA0Iw==
-X-CSE-MsgGUID: nyx8PDnhRT+oqFrcAPiGWg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="19541721"
+  bh=T4fBkydOARcqpAZpedsRkcZRcxSxeRnonLEt65AZCDk=;
+  b=kkpmaVqGiSLIQaD/zqs1kz0g9Fj5jvmG0ckn200x2Ke35ifEmZ8wxPp/
+   aAi0IQLNjue2FXNHbP1JecZsiSeocif0SiH9MZCM83X2PzICEad7p7CTI
+   C98x0stmxHmlwXHZIhVYM6767haMKF12UIcGCS8DKkc3JX3KIt0rUYalP
+   s0P5LeSTJDEutkw3/PSBhlVv4xRAW61DPB9NSctwW5Q/SmHDocByEJDso
+   b+4mvm8Fw0vgnJxDfU9ozV1fG206b6kQk63zlz/Kzw+ZNxrdITew773gl
+   4Ia39JCubV/wHgmq30e0+ciaxvDBjvfUgFvO1gOjeZBrDLQQppL0UlH9I
+   w==;
+X-CSE-ConnectionGUID: 0hyStRiVSmy0fjFg6cNG+g==
+X-CSE-MsgGUID: jmMSuNfDQJyBHE20Ht2Ylw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="9149569"
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="19541721"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:37:31 -0700
-X-CSE-ConnectionGUID: hkIWchC4TPGV/XX9lMpruA==
-X-CSE-MsgGUID: tGJ9DO0EQC2QrHXIXcEShQ==
+   d="scan'208";a="9149569"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:43:41 -0700
+X-CSE-ConnectionGUID: q8RaWKgCS2qalrCMofydew==
+X-CSE-MsgGUID: M79X7JZnSQC5AROw9vYsDQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="46246116"
+   d="scan'208";a="27387263"
 Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.36])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:37:28 -0700
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:43:38 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 18 Apr 2024 14:37:23 +0300 (EEST)
+Date: Thu, 18 Apr 2024 14:43:32 +0300 (EEST)
 To: Parker Newman <parker@finest.io>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v4 4/7] serial: exar: moved generic_rs485 further up in
- 8250_exar.c
-In-Reply-To: <a7bf2a42de759908c058246ec15f60bde9a5dc65.1713382717.git.pnewman@connecttech.com>
-Message-ID: <88d1dde8-c32b-a5b2-3eaf-e133ec3c4e33@linux.intel.com>
-References: <cover.1713382717.git.pnewman@connecttech.com> <a7bf2a42de759908c058246ec15f60bde9a5dc65.1713382717.git.pnewman@connecttech.com>
+    Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
+    linux-serial@vger.kernel.org, Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v4 5/7] serial: exar: add CTI cards to
+ exar_get_nr_ports
+In-Reply-To: <0c64bdf852f39aec966b38696695d951e485d7e6.1713382717.git.pnewman@connecttech.com>
+Message-ID: <60790bd3-d35a-026d-ef38-ae3b12160fbe@linux.intel.com>
+References: <cover.1713382717.git.pnewman@connecttech.com> <0c64bdf852f39aec966b38696695d951e485d7e6.1713382717.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1651817364-1713440243=:986"
+Content-Type: text/plain; charset=US-ASCII
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-1651817364-1713440243=:986
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-
-Hi,
-
-In shortlog (Subject),=20
-
-- moved -> move
-- exar: -> 8250_exar:
-
-After those, "in 8250_exar.c" is redundant information and can be removed.
+On Wed, 17 Apr 2024, Parker Newman wrote:
 
 > From: Parker Newman <pnewman@connecttech.com>
->=20
-> Preparatory patch moving generic_rs485_config and
-
-Use () when talking about functions.
-
-After fixing those, feel free to add,
-
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-
---=20
- i.
-
-> generic_rs485_supported higher in the file to allow for CTI setup
-> functions to use them.
->=20
+> 
+> Add code for getting number of ports of CTI cards to
+> exar_get_nr_ports().
+> 
 > Signed-off-by: Parker Newman <pnewman@connecttech.com>
 > ---
 > Changes in v3:
->  - split into separate preparatory patch
->=20
->  drivers/tty/serial/8250/8250_exar.c | 50 ++++++++++++++---------------
->  1 file changed, 25 insertions(+), 25 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/825=
-0/8250_exar.c
-> index f14f73d250bb..e68029a59122 100644
+> - moved to separate patch
+> - added spaces to single line comments
+> 
+>  drivers/tty/serial/8250/8250_exar.c | 22 +++++++++++++++++++---
+>  1 file changed, 19 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> index e68029a59122..197f45e306ff 100644
 > --- a/drivers/tty/serial/8250/8250_exar.c
 > +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -197,6 +197,31 @@ struct exar8250 {
->  =09int=09=09=09line[];
->  };
->=20
-> +static int generic_rs485_config(struct uart_port *port, struct ktermios =
-*termios,
-> +=09=09=09=09struct serial_rs485 *rs485)
-> +{
-> +=09bool is_rs485 =3D !!(rs485->flags & SER_RS485_ENABLED);
-> +=09u8 __iomem *p =3D port->membase;
-> +=09u8 value;
-> +
-> +=09value =3D readb(p + UART_EXAR_FCTR);
-> +=09if (is_rs485)
-> +=09=09value |=3D UART_FCTR_EXAR_485;
-> +=09else
-> +=09=09value &=3D ~UART_FCTR_EXAR_485;
-> +
-> +=09writeb(value, p + UART_EXAR_FCTR);
-> +
-> +=09if (is_rs485)
-> +=09=09writeb(UART_EXAR_RS485_DLY(4), p + UART_MSR);
-> +
-> +=09return 0;
-> +}
-> +
-> +static const struct serial_rs485 generic_rs485_supported =3D {
-> +=09.flags =3D SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
-> +};
-> +
->  static void exar_pm(struct uart_port *port, unsigned int state, unsigned=
- int old)
+> @@ -711,12 +711,28 @@ static unsigned int exar_get_nr_ports(struct exar8250_board *board,
 >  {
->  =09/*
-> @@ -459,27 +484,6 @@ static void xr17v35x_unregister_gpio(struct uart_825=
-0_port *port)
->  =09port->port.private_data =3D NULL;
+>  	unsigned int nr_ports = 0;
+> 
+> -	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO)
+> +	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO) {
+
+You can add the braces while you moved the code around so you don't need 
+to play with them again here and this patch can be more to the point.
+
+>  		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
+> -	else if (board->num_ports)
+> +	} else if (board->num_ports > 0) {
+> +		// Check if board struct overrides number of ports
+>  		nr_ports = board->num_ports;
+
+The comment just tells what the code does, IMO that comment doesn't add 
+any value.
+
+> -	else
+> +	} else if (pcidev->vendor == PCI_VENDOR_ID_EXAR) {
+> +		// Exar encodes # ports in last nibble of PCI Device ID ex. 0358
+
+This comment you can also add while you moved the code around (or make 
+another patch out of it after moving).
+
+-- 
+ i.
+
+>  		nr_ports = pcidev->device & 0x0f;
+> +	} else  if (pcidev->vendor == PCI_VENDOR_ID_CONNECT_TECH) {
+> +		// Handle CTI FPGA cards
+> +		switch (pcidev->device) {
+> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
+> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
+> +			nr_ports = 12;
+> +			break;
+> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
+> +			nr_ports = 16;
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +	}
+> 
+>  	return nr_ports;
 >  }
->=20
-> -static int generic_rs485_config(struct uart_port *port, struct ktermios =
-*termios,
-> -=09=09=09=09struct serial_rs485 *rs485)
-> -{
-> -=09bool is_rs485 =3D !!(rs485->flags & SER_RS485_ENABLED);
-> -=09u8 __iomem *p =3D port->membase;
-> -=09u8 value;
-> -
-> -=09value =3D readb(p + UART_EXAR_FCTR);
-> -=09if (is_rs485)
-> -=09=09value |=3D UART_FCTR_EXAR_485;
-> -=09else
-> -=09=09value &=3D ~UART_FCTR_EXAR_485;
-> -
-> -=09writeb(value, p + UART_EXAR_FCTR);
-> -
-> -=09if (is_rs485)
-> -=09=09writeb(UART_EXAR_RS485_DLY(4), p + UART_MSR);
-> -
-> -=09return 0;
-> -}
-> -
->  static int sealevel_rs485_config(struct uart_port *port, struct ktermios=
- *termios,
->  =09=09=09=09  struct serial_rs485 *rs485)
->  {
-> @@ -518,10 +522,6 @@ static int sealevel_rs485_config(struct uart_port *p=
-ort, struct ktermios *termio
->  =09return 0;
->  }
->=20
-> -static const struct serial_rs485 generic_rs485_supported =3D {
-> -=09.flags =3D SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
-> -};
-> -
->  static const struct exar8250_platform exar8250_default_platform =3D {
->  =09.register_gpio =3D xr17v35x_register_gpio,
->  =09.unregister_gpio =3D xr17v35x_unregister_gpio,
 > --
 > 2.43.2
->=20
->=20
---8323328-1651817364-1713440243=:986--
+> 
+> 
