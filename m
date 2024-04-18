@@ -1,135 +1,176 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821FC56464;
-	Thu, 18 Apr 2024 11:43:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E73B2156894;
+	Thu, 18 Apr 2024 11:47:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713440623; cv=none; b=bUhs+hZ8+kjnt+WbUQsTkkjxvSjDtkq1NTOTBNERqOo8qqPRSwpBoENY2Qt0nuLdb+t6ebb8C817bxNlJbY2VEhdjYUSKIjYvzy65zGlGlMruAoi+hxZ/gnJfbkTI001QooCNQFB6m7gO/1RirCt1WOafiShSQ6NY0wCcfpx5pI=
+	t=1713440846; cv=none; b=Jx0uL+/avC1ItB3w3B1mRhwn30Cfcvogr39VUFwM3dtfkJyp+rwM7naJbsAdqeJlCdpfFciAWtrPpbKky/gP1wY+hcc7ewDKD2wJfkd4wCs6Ug0BSVuVVgAgnsudcqODk4IjrA8R2k3Zqku9ty/OHQmcwscJ9r0si45+YeayXNE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713440623; c=relaxed/simple;
-	bh=T4fBkydOARcqpAZpedsRkcZRcxSxeRnonLEt65AZCDk=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=nJ8bcIkyHTbEsnl/a5o3VC6uxt4taHQvdIzX6+HzSGuynJdTj9tVJm3+WyXbPbTokLGMPvl/CCzWfleAzvNbiXT2S0B89141Tr5/XVvr4vozopvYuK3zPNjAyZ9TDTxa3f2cCG6sacJ8ArCYgg2tAJ3QXgXLg8N1dxRyQcv2tWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kkpmaVqG; arc=none smtp.client-ip=192.198.163.15
+	s=arc-20240116; t=1713440846; c=relaxed/simple;
+	bh=1dF/QvVZQ4hPyEOJfKhcAxHXy2CpSDIxFNK2gxe1ep4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I0itZA0bq4z2hXR2lV6fcoVYEqm/7r7vpoYl8/8NgBTa8VRxUME5cLtQMCTF9UCEdMthr8ezpFnSkjFTH0y/auw/Q8oylaIUHqXahrk4sK83SnnvxaIbz6SGN5eZYs0pyYRvFnItmbTmGOYHky+X4OG5THLDdL+Da+ZPaJeZY/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EHJlH71O; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kkpmaVqG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EHJlH71O"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713440622; x=1744976622;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=T4fBkydOARcqpAZpedsRkcZRcxSxeRnonLEt65AZCDk=;
-  b=kkpmaVqGiSLIQaD/zqs1kz0g9Fj5jvmG0ckn200x2Ke35ifEmZ8wxPp/
-   aAi0IQLNjue2FXNHbP1JecZsiSeocif0SiH9MZCM83X2PzICEad7p7CTI
-   C98x0stmxHmlwXHZIhVYM6767haMKF12UIcGCS8DKkc3JX3KIt0rUYalP
-   s0P5LeSTJDEutkw3/PSBhlVv4xRAW61DPB9NSctwW5Q/SmHDocByEJDso
-   b+4mvm8Fw0vgnJxDfU9ozV1fG206b6kQk63zlz/Kzw+ZNxrdITew773gl
-   4Ia39JCubV/wHgmq30e0+ciaxvDBjvfUgFvO1gOjeZBrDLQQppL0UlH9I
-   w==;
-X-CSE-ConnectionGUID: 0hyStRiVSmy0fjFg6cNG+g==
-X-CSE-MsgGUID: jmMSuNfDQJyBHE20Ht2Ylw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="9149569"
+  t=1713440846; x=1744976846;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1dF/QvVZQ4hPyEOJfKhcAxHXy2CpSDIxFNK2gxe1ep4=;
+  b=EHJlH71OAKyQgzoDrMFG7XxvW14XfIjS3jUbvSKs6OrsNi36s4TZ+ZpV
+   +oVtnaVReA00aOmS2k34+hRYj4MRo1ha+WYzsbrrq1to+nLr9YkRzu626
+   /Mum/VDAlO0zuXQiOSTgUMRXIBd7/QObQgadY+XW93J+zs2f2f+8/ruxo
+   5a97YxVx2hn3xUYXX53uHtWNzYOClZ1S3rPs9p1Qd9UDih0IieBImGrLX
+   Bm2Tm7kGRkRamPZN2UypwS5qCKjmI6alXy4m+/toHF+IbBpctH6vt/Xvk
+   ejY0WGCXwpr/3zRcQaZ7yrHvCY24nEgA2bynQ8V4TcUVkUR2OjVNuDs1t
+   A==;
+X-CSE-ConnectionGUID: 6ClMJ9LeRiG6/ktxTXYqPg==
+X-CSE-MsgGUID: YIXUrNufTtijMEmMPsco5A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20127184"
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="9149569"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:43:41 -0700
-X-CSE-ConnectionGUID: q8RaWKgCS2qalrCMofydew==
-X-CSE-MsgGUID: M79X7JZnSQC5AROw9vYsDQ==
+   d="scan'208";a="20127184"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:47:25 -0700
+X-CSE-ConnectionGUID: mxlbQUyKRoa2OHsQZaugmQ==
+X-CSE-MsgGUID: o5wD/FQnTyuCjLCYW+sgZg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="27387263"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.36])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:43:38 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 18 Apr 2024 14:43:32 +0300 (EEST)
-To: Parker Newman <parker@finest.io>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v4 5/7] serial: exar: add CTI cards to
- exar_get_nr_ports
-In-Reply-To: <0c64bdf852f39aec966b38696695d951e485d7e6.1713382717.git.pnewman@connecttech.com>
-Message-ID: <60790bd3-d35a-026d-ef38-ae3b12160fbe@linux.intel.com>
-References: <cover.1713382717.git.pnewman@connecttech.com> <0c64bdf852f39aec966b38696695d951e485d7e6.1713382717.git.pnewman@connecttech.com>
+   d="scan'208";a="23392192"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 04:47:22 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rxQEZ-00000000JV7-1B5d;
+	Thu, 18 Apr 2024 14:47:19 +0300
+Date: Thu, 18 Apr 2024 14:47:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Serge Semin <fancer.lancer@gmail.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] dmaengine: dw: Simplify prepare CTL_LO methods
+Message-ID: <ZiEIRluj-50FMIgp@smile.fi.intel.com>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-4-fancer.lancer@gmail.com>
+ <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
+ <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, 17 Apr 2024, Parker Newman wrote:
+On Wed, Apr 17, 2024 at 11:11:46PM +0300, Serge Semin wrote:
+> On Tue, Apr 16, 2024 at 10:04:42PM +0300, Andy Shevchenko wrote:
+> > On Tue, Apr 16, 2024 at 07:28:57PM +0300, Serge Semin wrote:
 
-> From: Parker Newman <pnewman@connecttech.com>
+...
+
+> > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
+> > > +		sms = dwc->dws.m_master;
+> > > +		smsize = 0;
+> > > +		dms = dwc->dws.p_master;
+> > > +		dmsize = sconfig->dst_maxburst;
+> > 
 > 
-> Add code for getting number of ports of CTI cards to
-> exar_get_nr_ports().
+> > I would group it differently, i.e.
+> > 
+> > 		sms = dwc->dws.m_master;
+> > 		dms = dwc->dws.p_master;
+> > 		smsize = 0;
+> > 		dmsize = sconfig->dst_maxburst;
 > 
-> Signed-off-by: Parker Newman <pnewman@connecttech.com>
-> ---
-> Changes in v3:
-> - moved to separate patch
-> - added spaces to single line comments
+> Could you please clarify, why? From my point of view it was better to
+> group the source master ID and the source master burst size inits
+> together.
+
+Sure. The point here is that when you look at the DMA channel configuration
+usually you operate with the semantically tied fields for source and
+destination. At least this is my experience, I always check both sides
+of the transfer for the same field, e.g., master setting, hence I want to
+have them coupled.
+
+> > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
+> > > +		sms = dwc->dws.p_master;
+> > > +		smsize = sconfig->src_maxburst;
+> > > +		dms = dwc->dws.m_master;
+> > > +		dmsize = 0;
+> > > +	} else /* DMA_MEM_TO_MEM */ {
+> > > +		sms = dwc->dws.m_master;
+> > > +		smsize = 0;
+> > > +		dms = dwc->dws.m_master;
+> > > +		dmsize = 0;
+> > > +	}
+> > 
+> > Ditto for two above cases.
+
+...
+
+> > >  static u32 idma32_prepare_ctllo(struct dw_dma_chan *dwc)
+> > >  {
+> > >  	struct dma_slave_config	*sconfig = &dwc->dma_sconfig;
+> > > -	u8 smsize = (dwc->direction == DMA_DEV_TO_MEM) ? sconfig->src_maxburst : 0;
+> > > -	u8 dmsize = (dwc->direction == DMA_MEM_TO_DEV) ? sconfig->dst_maxburst : 0;
+
+> > > +	u8 smsize, dmsize;
+> > > +
+> > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
+> > > +		smsize = 0;
+> > > +		dmsize = sconfig->dst_maxburst;
+> > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
+> > > +		smsize = sconfig->src_maxburst;
+> > > +		dmsize = 0;
+> > > +	} else /* DMA_MEM_TO_MEM */ {
+> > > +		smsize = 0;
+> > > +		dmsize = 0;
+> > > +	}
+> > 
+> > 	u8 smsize = 0, dmsize = 0;
+> > 
+> > 	if (dwc->direction == DMA_MEM_TO_DEV)
+> > 		dmsize = sconfig->dst_maxburst;
+> > 	else if (dwc->direction == DMA_DEV_TO_MEM)
+> > 		smsize = sconfig->src_maxburst;
+> > 
+> > ?
+> > 
+> > Something similar also can be done in the Synopsys case above, no?
 > 
->  drivers/tty/serial/8250/8250_exar.c | 22 +++++++++++++++++++---
->  1 file changed, 19 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index e68029a59122..197f45e306ff 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -711,12 +711,28 @@ static unsigned int exar_get_nr_ports(struct exar8250_board *board,
->  {
->  	unsigned int nr_ports = 0;
-> 
-> -	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO)
-> +	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO) {
+> As in case of the patch #1 the if-else statement here was designed
+> like that intentionally: to signify that the else clause implies the
+> DMA_MEM_TO_MEM transfer. Any other one (like DMA_DEV_TO_DEV) would
+> need to have the statement alteration.
 
-You can add the braces while you moved the code around so you don't need 
-to play with them again here and this patch can be more to the point.
+My version as I read it:
+- for M2D the dmsize is important
+- for D2M the smsize is important
+- for anything else use defaults (which are 0)
 
->  		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
-> -	else if (board->num_ports)
-> +	} else if (board->num_ports > 0) {
-> +		// Check if board struct overrides number of ports
->  		nr_ports = board->num_ports;
+> Moreover even though your
+> version looks smaller, but it causes one redundant store operation.
 
-The comment just tells what the code does, IMO that comment doesn't add 
-any value.
+Most likely not. Any assembler here? I can check on x86_64, but I believe it
+simply assigns 0 for both u8 at once using xor r16,r16 or so.
 
-> -	else
-> +	} else if (pcidev->vendor == PCI_VENDOR_ID_EXAR) {
-> +		// Exar encodes # ports in last nibble of PCI Device ID ex. 0358
+Maybe ARM or MIPS (what do you use?) sucks? :-)
 
-This comment you can also add while you moved the code around (or make 
-another patch out of it after moving).
+> Do you think it still would be better to use your version despite of
+> my reasoning?
 
 -- 
- i.
+With Best Regards,
+Andy Shevchenko
 
->  		nr_ports = pcidev->device & 0x0f;
-> +	} else  if (pcidev->vendor == PCI_VENDOR_ID_CONNECT_TECH) {
-> +		// Handle CTI FPGA cards
-> +		switch (pcidev->device) {
-> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
-> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
-> +			nr_ports = 12;
-> +			break;
-> +		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
-> +			nr_ports = 16;
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +	}
-> 
->  	return nr_ports;
->  }
-> --
-> 2.43.2
-> 
-> 
+
