@@ -1,113 +1,201 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3D416ABE3;
-	Thu, 18 Apr 2024 17:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C95BE177980;
+	Thu, 18 Apr 2024 19:00:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713463103; cv=none; b=Ge2rIPoW9PL6R6cnKPGU+TeCp2JARHxIIL6qwOjprjXWSbycniokuEfx0VhMrkffNmsDrFJgr81HGWAkuxxup5b8CTeMFqSahwBbzySGGJLqwGdj6XuOz9ahdfQGNzh91J1ClqtZXyUarH6mNlUhp5Zw4WTEP703SKroXH5K57M=
+	t=1713466808; cv=none; b=Xd21iQRrR2trLmpzIiwcwNWlKlULzmLyA950q42NazB89nU6/t3Oi67W+8EDXCySSBjs19c/xS6EXsmhJqkHQi511bj1CUxEuh+eKzw06UTllCvHB3SgLkh8kp+JGBMb20oRPCOvQNQe20Vn9A7nWu8nHItEdhse9QoMRQDZczI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713463103; c=relaxed/simple;
-	bh=27/uXdpGHcncFOlSxDwRdjvgNaliKyoLpv4C5/cBwrE=;
+	s=arc-20240116; t=1713466808; c=relaxed/simple;
+	bh=DtNB2uwV6hdLHUzoTUuKKanWjIIY04kFcUi2VeS4yxM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VU0OpAJ7KqIQuwrxR40jFbCQpgOvla+3MVmhLybG0y1uMiNKnbt9pOayVVZt6f6eriG4NQLZXVh7E2VfC+FJaHvD2/2UTYpmVSjopAoZUCDug3mAdFoYECCi06ZIrPtHJihoXL+IDA7lQb3o/sJXanJM+MpW+o/cGqMXG9Ulpu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jAKnZiBT; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=hn38gaUanAzYD/j3zvUgGwamAm5FttrE5+5NZaPEfjolKXVeTcZCxrAfYDEzQNuvMYxevkITeZcF0LsXHEPCdG1p9KDXQupDIwwfPkHGdO9v+nFAngGbxXgm0DE1N0d9ir/9MLliJj7IUDGd4TZokvIu1EH+Y4dyva3ecEsAebM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B+6hq8S/; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jAKnZiBT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713463102; x=1744999102;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=27/uXdpGHcncFOlSxDwRdjvgNaliKyoLpv4C5/cBwrE=;
-  b=jAKnZiBTs2/pWxLe4w4bwaJXu9GWWdGjHYxTm+wMzDFJmjq8S5WsnB38
-   1cUf3Xu7560ECqkADeIhdKG3z2fGShE/0yN7NQl0xuTh0IaQwU6Muzkuo
-   KEHynvJLXQd/VUDpUORZHalAeRCSt94VeKQf0vyriwEyPMHvHkcSEVehQ
-   YqqKmKhWEiMWltltf75gE1mxQtJM28rtsu06xOmgz3ovPBXu5SteyJK95
-   twuXaOHoVNAQUL/Kb9eexFUKh7An3sloK+8Hg8vzcFMt8SiC8ZB7ePyk5
-   U7qJp1l5vQYsWBczNUmLB5JpAO6O4+dM+NDpErVVQduKaxWXxah/Uc/p4
-   g==;
-X-CSE-ConnectionGUID: /2jmpFMiSNSSIGbFsT3cOg==
-X-CSE-MsgGUID: 00n/7oQGQfeEKdzBHrNOcg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="8956787"
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="8956787"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:58:21 -0700
-X-CSE-ConnectionGUID: 2LW46ca+RAaObzm62NgxXQ==
-X-CSE-MsgGUID: +45gGWBQR5irnhv7ELeu7g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="27891075"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:58:18 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rxW1W-00000000Qd4-30aR;
-	Thu, 18 Apr 2024 20:58:14 +0300
-Date: Thu, 18 Apr 2024 20:58:14 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: "Konstantin P." <ria.freelander@gmail.com>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 1/3] serial: sc16is7xx: announce support of
- SER_RS485_RTS_ON_SEND
-Message-ID: <ZiFfNl-wj3pzZqiH@smile.fi.intel.com>
-References: <20240418170610.759838-1-rilian.la.te@ya.ru>
- <20240418170610.759838-2-rilian.la.te@ya.ru>
- <ZiFacIT0wzvhzaEk@smile.fi.intel.com>
- <CAF1WSuyauXes-RncLqRrYYaeP1KaDyfG82YcAaa8gK_mFUWCHg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B+6hq8S/"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2d8b194341eso12053361fa.3;
+        Thu, 18 Apr 2024 12:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713466805; x=1714071605; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=K/1ZUQVywqBQMj10OM00Y6p3sF/smVF9hYZ25aGm7pE=;
+        b=B+6hq8S/peAedzdq23LZQ09KT12WjeDaqmnP9gbHCT5gkAVkekjAP6Bwi/Uedg3oEu
+         pwyJ3G1ROPHB+VS+7FYyC3M9a3hMysdf+AY51tkmPm36TePHszM8flkFNexZ7HocJSRA
+         oHgLI7DKM122NqJWUh2nS3VfSSRfbErSnHbkDF7u6I53MMTYas+YnFG+xvi8pIpAwTfM
+         rQhD8do1tkvuNSWFUWWjMDDHnYGlwUV0ziVtLcok5XH2cCgAM+qWrTkqsFYiJqcyzBJY
+         XmrHEk8I5tkaAOrEz9jvlCTeTPFPudxHko9FvZ49fFsCM13WayIJlNDchKQEUZ6Y43OO
+         zVZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713466805; x=1714071605;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=K/1ZUQVywqBQMj10OM00Y6p3sF/smVF9hYZ25aGm7pE=;
+        b=J+TCmEl/9+E9JJ2kiYsJagQxCLt5/thEyNMYRUDfxd71PDMdIWH90E/6P4AmgjVF21
+         v8xL5IPGm7vy90/3VnmDfxYsj1DPQi24LjjVp9Slas4cuHSW2crKJed+cict3orRufUo
+         E+qDj96FX8hjAniMstoKbCOrOj/tCVCby5dONKbZqLxadjBDmbMZ3+xvxDTzq62VEX2V
+         9zkjbH2ls6nZqE90FDmfFUJ8Qxy7Jbg+fTBXapZyXF9Yudd0e06VHhqwZFtDq4r73Lx/
+         GlcgD7OHF0SdgSrtiU4CE0w4OrYv64/ieGK1zvPBvjJ9mip+ikaRBGBNsFfnS9QG1c5W
+         AtmA==
+X-Forwarded-Encrypted: i=1; AJvYcCVAuA6cquzK7FKAmW/bpG4wTuj1eoOqAXDLaMnl8a1KwBbzXqpcni1Ig+xalx0cQ5zBv/pxmxpfX9zJH5fEgJbbO24pQv8XvZASIUIxnWDzeftDZhn6TuuxbgzdTYhjsDtE/FC8ZwDSoqkUxehUr05euqEEJKl0ccN8sMYk8762D98kbO4l
+X-Gm-Message-State: AOJu0Yx5m3gmXhPnN6efBUpthCkIZz7WesHJrKoG37EnFHeoQfiW20S0
+	Aap3+ayQdsjV8BI1rH96lgjF1LXvWoAkJTtXW6P5VhYVVpe7Iyg09I77a8Un
+X-Google-Smtp-Source: AGHT+IGXwZs8WOAgzHyky2KaxTrnx0nCRMwId+2ubPwIhwW0csx5LhLO2/vZ7Pe2jmUQIxYZC2tAdg==
+X-Received: by 2002:a2e:8519:0:b0:2d8:180d:a62a with SMTP id j25-20020a2e8519000000b002d8180da62amr2054653lji.25.1713466804650;
+        Thu, 18 Apr 2024 12:00:04 -0700 (PDT)
+Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
+        by smtp.gmail.com with ESMTPSA id e3-20020a2e9843000000b002d8a3121b0asm289457ljj.36.2024.04.18.12.00.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Apr 2024 12:00:04 -0700 (PDT)
+Date: Thu, 18 Apr 2024 22:00:02 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] dmaengine: dw: Simplify prepare CTL_LO methods
+Message-ID: <xfa7evanbrvdxdoq6473wpymvqogezspwkdoawu2dr6mnyxiwq@zx2schip66wj>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-4-fancer.lancer@gmail.com>
+ <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
+ <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
+ <ZiEIRluj-50FMIgp@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAF1WSuyauXes-RncLqRrYYaeP1KaDyfG82YcAaa8gK_mFUWCHg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <ZiEIRluj-50FMIgp@smile.fi.intel.com>
 
-On Thu, Apr 18, 2024 at 08:52:36PM +0300, Konstantin P. wrote:
-
-Please, do not top post!
-
-> How I should check this? Vladimir does not said anything about his tag
-> scope - whether it applies only to patch 2 or to series as a whole, and
-> initially I assumed than his tag were given only to patch 2.
-
-If there was not explicitly said, the algo is following:
-- if the tag against cover letter — all patches are covered
-- otherwise only the patches reply to which has been sent
-
-> But then you said than I missed his tag, so, I thought that it applies to
-> series as a whole and in version 3 I added his tag to all patches.
-
-I might missed the difference explained above. Sorry about that.
-
-> On Thu, Apr 18, 2024, 20:37 Andy Shevchenko <
-> andriy.shevchenko@linux.intel.com> wrote:
+On Thu, Apr 18, 2024 at 02:47:18PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 17, 2024 at 11:11:46PM +0300, Serge Semin wrote:
+> > On Tue, Apr 16, 2024 at 10:04:42PM +0300, Andy Shevchenko wrote:
+> > > On Tue, Apr 16, 2024 at 07:28:57PM +0300, Serge Semin wrote:
 > 
-> > On Thu, Apr 18, 2024 at 08:06:05PM +0300, Konstantin Pugin wrote:
-> > > From: Konstantin Pugin <ria.freelander@gmail.com>
+> ...
+> 
+> > > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
+> > > > +		sms = dwc->dws.m_master;
+> > > > +		smsize = 0;
+> > > > +		dms = dwc->dws.p_master;
+> > > > +		dmsize = sconfig->dst_maxburst;
+> > > 
+> > 
+> > > I would group it differently, i.e.
+> > > 
+> > > 		sms = dwc->dws.m_master;
+> > > 		dms = dwc->dws.p_master;
+> > > 		smsize = 0;
+> > > 		dmsize = sconfig->dst_maxburst;
+> > 
+> > Could you please clarify, why? From my point of view it was better to
+> > group the source master ID and the source master burst size inits
+> > together.
+> 
 
-...
+> Sure. The point here is that when you look at the DMA channel configuration
+> usually you operate with the semantically tied fields for source and
+> destination. At least this is my experience, I always check both sides
+> of the transfer for the same field, e.g., master setting, hence I want to
+> have them coupled.
 
-> > I might have been not clear about Vladimir's tag. Please double check
-> > if he gave it against the certain patch or the entire series.
+Ok. I see. Thanks for clarification. I normally do that in another
+order: group the functionally related fields together - all
+source-related configs first, then all destination-related configs.
+Honestly I don't have strong opinion about this part, it's just my
+personal preference. Am I right to think that from your experience in
+kernel it's normally done in the order you described?
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> > > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
+> > > > +		sms = dwc->dws.p_master;
+> > > > +		smsize = sconfig->src_maxburst;
+> > > > +		dms = dwc->dws.m_master;
+> > > > +		dmsize = 0;
+> > > > +	} else /* DMA_MEM_TO_MEM */ {
+> > > > +		sms = dwc->dws.m_master;
+> > > > +		smsize = 0;
+> > > > +		dms = dwc->dws.m_master;
+> > > > +		dmsize = 0;
+> > > > +	}
+> > > 
+> > > Ditto for two above cases.
+> 
+> ...
+> 
+> > > >  static u32 idma32_prepare_ctllo(struct dw_dma_chan *dwc)
+> > > >  {
+> > > >  	struct dma_slave_config	*sconfig = &dwc->dma_sconfig;
+> > > > -	u8 smsize = (dwc->direction == DMA_DEV_TO_MEM) ? sconfig->src_maxburst : 0;
+> > > > -	u8 dmsize = (dwc->direction == DMA_MEM_TO_DEV) ? sconfig->dst_maxburst : 0;
+> 
+> > > > +	u8 smsize, dmsize;
+> > > > +
+> > > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
+> > > > +		smsize = 0;
+> > > > +		dmsize = sconfig->dst_maxburst;
+> > > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
+> > > > +		smsize = sconfig->src_maxburst;
+> > > > +		dmsize = 0;
+> > > > +	} else /* DMA_MEM_TO_MEM */ {
+> > > > +		smsize = 0;
+> > > > +		dmsize = 0;
+> > > > +	}
+> > > 
+> > > 	u8 smsize = 0, dmsize = 0;
+> > > 
+> > > 	if (dwc->direction == DMA_MEM_TO_DEV)
+> > > 		dmsize = sconfig->dst_maxburst;
+> > > 	else if (dwc->direction == DMA_DEV_TO_MEM)
+> > > 		smsize = sconfig->src_maxburst;
+> > > 
+> > > ?
+> > > 
+> > > Something similar also can be done in the Synopsys case above, no?
+> > 
+> > As in case of the patch #1 the if-else statement here was designed
+> > like that intentionally: to signify that the else clause implies the
+> > DMA_MEM_TO_MEM transfer. Any other one (like DMA_DEV_TO_DEV) would
+> > need to have the statement alteration.
+> 
 
+> My version as I read it:
+> - for M2D the dmsize is important
+> - for D2M the smsize is important
+> - for anything else use defaults (which are 0)
+> 
 
+Ok. Let's follow your way in this case. After your how-to-read-it
+comment your version no longer look less readable than what is
+implemented by me. Thanks for clarification.
+
+> > Moreover even though your
+> > version looks smaller, but it causes one redundant store operation.
+> 
+> Most likely not. Any assembler here? I can check on x86_64, but I believe it
+> simply assigns 0 for both u8 at once using xor r16,r16 or so.
+> 
+> Maybe ARM or MIPS (what do you use?) sucks? :-)
+
+Interestingly, but asm-code in both cases match.) So the redundant
+store operation in your C-code gets to be optimized away.
+
+-Serge(y)
+
+> 
+> > Do you think it still would be better to use your version despite of
+> > my reasoning?
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
