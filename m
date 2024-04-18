@@ -1,38 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61B0657D4;
-	Thu, 18 Apr 2024 06:25:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B200136991
+	for <linux-serial@vger.kernel.org>; Thu, 18 Apr 2024 09:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713421513; cv=none; b=d8RA0IziRD/A5keUJqUUrh3/n5X72IICdlFqr7UO4fJVdKaLJqLQk1VauBjkG1An+/KwrNXgHB6WOv1d29yhj4iq8rPvq/ZVl61oWGDTYeTwT9F6rz2L6Ix5YJH62WA5h9QIHtFPQAG9JtNpkERSEYz2vdwSr688DdN1eMXT3Bg=
+	t=1713431144; cv=none; b=ZE+ktcigBuTFOl+wSccb6N5MwvrlMOi+6G+RmXvGbu1fwxLgn7RU8wq0Ji5unTU1jfYODdewXQVGU4Yky/pAfmkNcyirhrHFegSt/tRNGKvactZ1Nr/z+xKzieMzWpnz5arq4PZgQ+5IVao0+UaAN79dZJIO6KDYQQE6adhtSMk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713421513; c=relaxed/simple;
-	bh=vDQURt8jUcoEu7p3MgkJ/YfbZZ7dGBBc9Y+bdKLdgMY=;
+	s=arc-20240116; t=1713431144; c=relaxed/simple;
+	bh=ePckogndbT/HMJ6Dkb0NZIGm65xXskRus//486LRAjQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qQDg2Lmz0IFMKuHXWg5N+0hAWgynX4Oeydx1uIOxb5c0kqWakML3MiPXM7imlnn846+39pv0m0oVeUETW/UfNV6a67/L/QUinvt1hnHv/grsIW+0uae529gwztX3LGQvt6mGZh+QQhRv4KRFtJgj8wikVF+2x3bNT/rLN0J8dh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pcNxOxQU; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fhWGSCZJ+433OOUQ5SA3i1K2KFwXro8+NknTqo/kWJ6u5dsAsZBrnb+QF9MDVX3AE1D6lE7gkzDYzZ1axMCiV7PbdZ0sH3xKsQwqbU2yoBqr1GAsHYgWTIEYAhL4kt/FQYc03MTBra0t4483K57OnIg0HXVyPxx4/Tg3Rw7tkA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CBrmcrLk; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pcNxOxQU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0BE7C113CC;
-	Thu, 18 Apr 2024 06:25:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713421513;
-	bh=vDQURt8jUcoEu7p3MgkJ/YfbZZ7dGBBc9Y+bdKLdgMY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pcNxOxQUeXRdsv8plZja/MnVFXoiCyL2n3IsKs0Rx4V7rFnNux7GYHFdguphb/Mdz
-	 gKvKlvpz7wfsFP68tFDD9eSEmtw+jNtUjdEz7/a9Lud4QadBoWxzx2gaIk3uFHhYvb
-	 RijE/PXWdGQoNR+cViU8g79FKHzjlv5SVJTQRtgE=
-Date: Thu, 18 Apr 2024 08:25:10 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Parker Newman <parker@finest.io>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v4 0/7] serial: exar: add Connect Tech serial cards to
- Exar driver
-Message-ID: <2024041801-earthlike-drastic-076a@gregkh>
-References: <cover.1713382717.git.pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CBrmcrLk"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-418c2bf2f90so3486815e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 18 Apr 2024 02:05:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1713431141; x=1714035941; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=euB3vcyNRkqSsujp1rBWtIUz95ZDQeOsD0X15ArXVN8=;
+        b=CBrmcrLk/ovs2ABxT0cXYt1PpOu/cfPoycdKTlppbhZT93KsoSc8My+yyDEZbQNzJA
+         jCZkh0arON1rZoxu25X062rq4XjS6rYmlR25CBUTuH5H0F02UPDlPm7FObx+wZWUj6fG
+         DkahhAJcYdfybPWs2olLJw9gGh3oCrRoxt6MRNLi98WitTuG784kINf/H1uYyxJeRB+f
+         kvcFaRRo9LP1uzj0Flq4U7Dls0+uxOMO/1s7Ud6FvY33Swyh6SASXpO1vvhBk8KewF6a
+         HveSTyE4+d5IpFeyY+eA5/siXbs1V2dP2Y2neU69jEsT3+iAOSzufHkngoP8daKBPBpU
+         K4Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713431141; x=1714035941;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=euB3vcyNRkqSsujp1rBWtIUz95ZDQeOsD0X15ArXVN8=;
+        b=l/bc1o98VTpbszz+FwCnBhqZHZa4dxMi0VXMd8WjiULBCHCsOZ4wNO7jFpDbZNVav5
+         C1P4rP2+RXYRDQ15VlEIfbh9AYbCFr0MOo71pSrZl4xFnBaeItdRAfc85CrNWtbWCj7G
+         l/8gM/+mzIIyX4ZDiC7itX9VMSnfQLqh2rcX8lThA8Uc/ubqON+LvSt4N9b3FUOP7GhE
+         BdApJgA/vRFCv6Q9dRgr1Wu5deo0ZuMzIDJ44XhJEiE4Or9TGgd3kUIirjivdVik+rpn
+         AtaKSFjXuSkCTA7/j9IMvgLqpl2ytlCkGP9fvksF8bIsdSG8J9XmG6ie8rCenpOD1Bxt
+         E10g==
+X-Forwarded-Encrypted: i=1; AJvYcCVXJqFM5QlXv/j8rXmDudNggfCT0gc/c2T2ImItPGNaflQVXS6BVndbSRLuhWBtVhy3ZyPDVrYx3O/kjaywRjWrHdiSqFK5erRQ3cmh
+X-Gm-Message-State: AOJu0YycpuOBnTivN3x0TjEzkjokQpjoOmpLjWgdQygKQDmckbdI+a8n
+	Sa3ZA6daYEXCA0J+3dY0a6laI7X1B/tWGTK9cNtjZEAogufkoK2vDi1b0mbQtf4=
+X-Google-Smtp-Source: AGHT+IG5HhSMVcn1nLDLtOfxsytHEqcveQ4MV1aOv60X6+6dklq/C+iAIIstaQcJbkGV6ywa6bgoKQ==
+X-Received: by 2002:a05:600c:3554:b0:418:3ad0:742 with SMTP id i20-20020a05600c355400b004183ad00742mr1223954wmq.4.1713431141344;
+        Thu, 18 Apr 2024 02:05:41 -0700 (PDT)
+Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
+        by smtp.gmail.com with ESMTPSA id bi11-20020a05600c3d8b00b00418effbc4f7sm557536wmb.38.2024.04.18.02.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Apr 2024 02:05:40 -0700 (PDT)
+Date: Thu, 18 Apr 2024 10:05:43 +0100
+From: Daniel Thompson <daniel.thompson@linaro.org>
+To: Liuye <liu.yeC@h3c.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>,
+	"andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+	"dianders@chromium.org" <dianders@chromium.org>,
+	"jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: Re: =?utf-8?B?UmXvvJpbUEFUQw==?= =?utf-8?Q?H?= V11] kdb: Fix the
+ deadlock issue in KDB debugging.
+Message-ID: <20240418090543.GC162404@aspen.lan>
+References: <186cdeea58094d06b351b07eefa2189d@h3c.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,56 +74,45 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1713382717.git.pnewman@connecttech.com>
+In-Reply-To: <186cdeea58094d06b351b07eefa2189d@h3c.com>
 
-On Wed, Apr 17, 2024 at 04:31:22PM -0400, Parker Newman wrote:
-> From: Parker Newman <pnewman@connecttech.com>
-> 
-> Hello,
-> These patches add proper support for most of Connect Tech's (CTI) Exar
-> based serial cards. Previously, only a subset of CTI's cards would work
-> with the Exar driver while the rest required the CTI out-of-tree driver.
-> These patches are intended to phase out the out-of-tree driver.
-> 
-> I am new to the mailing lists and contributing to the kernel so please
-> let me know if I have made any mistakes or if you have any feedback.
-> 
-> Changes in v2:
-> - Put missing PCI IDs in 8250_exar.c instead of pci_ids.h
-> - Split large patch into smaller ones
-> 
-> Changes in v3:
-> - Refactored patches to be easier to follow (based on feedback of v2)
-> - Patch specific changes listed in corresponding patch
-> 
-> Changes in v4:
-> - Rebased to tty-testing branch
-> - Removed v3 patch 8/8, "bug" didn't happen in current driver
-> - Patch specific changes listed in corresponding patch
-> 
-> Thank you,
-> 
-> Parker Newman (7):
->   serial: exar: remove old Connect Tech setup
->   serial: exar: added a exar_get_nr_ports function
->   serial: exar: add optional board_init function
->   serial: exar: moved generic_rs485 further up in 8250_exar.c
->   serial: exar: add CTI cards to exar_get_nr_ports
->   serial: exar: add CTI specific setup code
->   serial: exar: fix checkpach warnings
-> 
->  drivers/tty/serial/8250/8250_exar.c | 981 ++++++++++++++++++++++++++--
->  1 file changed, 916 insertions(+), 65 deletions(-)
+On Wed, Apr 17, 2024 at 11:01:56AM +0000, Liuye wrote:
+> >---
+> >V10 -> V11: Revert to V9
+> >V9 -> V10 : Add Signed-off-by of Greg KH and Andy Shevchenko, Acked
+> >            by of Daniel Thompson
+> >V8 -> V9: Modify call trace format and move irq_work.h before module.h
+> >V7 -> V8: Update the description information and comments in the code.
+> >	   : Submit this patch based on version linux-6.9-rc2.
+> >V6 -> V7: Add comments in the code.
+> >V5 -> V6: Replace with a more professional and accurate answer.
+> >V4 -> V5: Answer why schedule another work in the irq_work and not do
+> >          the job directly.
+> >V3 -> V4: Add changelogs
+> >V2 -> V3: Add description information
+> >V1 -> V2: using irq_work to solve this properly.
+> >---
+>
+> What is the current status of PATCH V11? Are there any additional
+> modifications needed?
 
-Nice, compared to your first version, this is less code overall in this
-file:
-   1 file changed, 1019 insertions(+), 70 deletions(-)
+I understood that is blocked pending outcome of the legal matters
+raised by v10...  and that this is why you were asked not to post
+v11 until they had been resolved.
 
-so the review process helped!
+To be honest given that [I wrote all of the C code][1] for the most
+recent version of the patch and that I'd like to see the bug fixed,
+then I will probably have to give up on co-authorship. Instead I can
+post my code with a new comment and patch description and credit you
+with a Reported-by:. That should take the pressure off in terms of
+landing this bug fix.
 
-All now applied to my tree, thanks for the revisions.  And a follow-on
-patch to fix up the kbuild warning would be appreciated.
+However, the legal issues do still need to be resolved or there is a
+risk that other upstream contributions from your company will be
+delayed.
 
-thanks,
 
-greg k-h
+Daniel.
+
+
+[1]: https://lore.kernel.org/all/20240314130916.GE202685@aspen.lan/
