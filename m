@@ -1,37 +1,36 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7FA16C453;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3239016D33E;
 	Thu, 18 Apr 2024 15:37:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713454645; cv=none; b=V4RmFJuHJWCBY7tdW0PjAc24ZmwCuMl6UQ9IGRZLm9fwGuis31V7twgxZSg3pkcdMMvkwgfWE5fTAQHILGnajrcqrrmA/GauUH1Ocs0vVRu9drSTm9GNdfcDMuQOfcZ4Hr7E/AE+fSyZRT/ybYhmvF1oQ0Bwn3VY5loMrNQqVnQ=
+	t=1713454645; cv=none; b=mV70I3otDcPOTR1li7osgSo7tHKOPJZbhnfB6CdQnNDvlAX8kitK7rewadif/JuvhAwde2h2JuJImrO7PAijHtLtYFbjCpIcRCHrJewoc/gFOKGh7oyCaT2vY3GZjIem5qny0vRgPs37A2nbH/mexw1s9YYRrmAZRlspFVP4ugc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1713454645; c=relaxed/simple;
-	bh=6FcMwAVQ1oQ13VSGE3/gSNaKF921zwjZHklsSqpjmWk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=tV4RpglWXOW/P0qQZ7mgWedKsxDy77TsoJj1PSIIw/JJuVTSckgK6aO38LC3a/7nzv2WDrK7tst9H8tquV885bTIsHJLT7HhTPgvlpoD1XXbxtINDbLN684Qjm2nPUwsiAYqMx7dMW/I9kbFY+0+7qPcIuwlYXUtzAyobUK5LTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=NnQEteed; arc=none smtp.client-ip=74.208.4.196
+	bh=GuLk3A8M3vQrERq+Af9nwo+nmfxC08b8IT5W6Cgpo+U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BL4qeIQ2Rg0/nOEdN8xxxNeVTQ8kNnGQE9bGo67MCJzbtCmDmPoLnxaeAVKGRllrZjLLUrFrX3CAF4Yq5Swrg6yCi5y6pnIlr6nCy6oosc7xTdqYCHVmC1YJ03Uivs1vLWUxOvBFgDSN/ougqWK3Bcz0fLGRKihK5I1/NrKvzWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=P9xLf122; arc=none smtp.client-ip=74.208.4.196
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="NnQEteed"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="P9xLf122"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713454633; x=1714059433; i=parker@finest.io;
-	bh=91znGsyHENCtexZoIjuZ12Bug2BwW+jFHp+nXCy9hyc=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
+	s=s1-ionos; t=1713454632; x=1714059432; i=parker@finest.io;
+	bh=7mJOqydJA7QzkE7pW3qqPEKjBcHf4PDVhXzfkdaj/OY=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:
+	 MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=NnQEteedl2hKmnSz3UYcDsE5k/E07G585K6/SqcIc8jbV2HjynREsfJNoze5byqL
-	 ObsiZWDnq3HJfb499Hi5HoIAcKTNLw8hxmCdSYt+n6BpfAklhz15NDBmSDzTlgKUD
-	 HVu9IsMjqqXtBxjGAejN89ox2+53Zhfak5W3yf8tb69vxpUwGehZyfsQSaSkI48Mm
-	 SN+VG7qsBccIfu+UpG2sF2UWjk5rDC3tOZ7oufhCuptdLXzPcwHKqLtddxdH+k1Gu
-	 ayk1n6vD20iUmd0HGR1HkItZXS1oYVI/uuDowWdnSKkEYZwou93/uErGt3r63/0mR
-	 YjX4uBL4RUxu9xrrrg==
+	b=P9xLf122r0+HpA9Z0wE/MauMzgdO12dC+cL3TMF8wWMRKxUI/6+U7s3Ff5R1r2rK
+	 UbAJrqFpYLQIeUvZ6/SqW3LS9aM4sf4HXGnv9lJde2pkDN6f8QkbvN18b8NTnnvDP
+	 4Kj3wQv6xj/V8kU3kma2RyFgunFz9tJ/XYUkhfjTZRMQ+uNJt1CHTnI8WBn8/+kOA
+	 h03tFN57i4lTUPRuHquT7onaud94REuiPtpHQFWK1jVDk5hUwbwfnUIdAZaCHJaSE
+	 eqEFFGtvmjpto03PeY70/0c6GwciTk1zYGCS+52d3/UDRfWNIDnvSgYsCQQ911hy4
+	 y+h+LTxgUBZx9xwNPg==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0LoWNw-1sdwBO3kOg-00ow5j; Thu, 18 Apr
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0MZSPL-1sIA2M3he9-00UV3c; Thu, 18 Apr
  2024 17:37:12 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,12 +38,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v1 2/4] serial: exar: use return dev_err_probe instead of returning error code
-Date: Thu, 18 Apr 2024 11:36:29 -0400
-Message-ID: <69dce254723c80f69d4deef8512323a38aeeb7d1.1713452766.git.pnewman@connecttech.com>
+Subject: [PATCH v1 0/4] serial: exar: fix kbuild warnings and code style
+Date: Thu, 18 Apr 2024 11:36:27 -0400
+Message-ID: <cover.1713452766.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.43.2
-In-Reply-To: <cover.1713452766.git.pnewman@connecttech.com>
-References: <cover.1713452766.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,64 +49,45 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:OoBam/oCzCOWDp5lY5iLVRbMrH/n35wBO3b0Jd7iTs6B+2WesgK
- xU1Z19cRezihSxiEIByqixoh5j199KAuBRQJcmt9JqV3vM6tjZcpePwevO3KMQfooiRaZmo
- Who3DLSRjsq0lp10ffCM+pAXI6yI2JnYfzBZ97pxC7PbVryL1LOILERMuJR7cp20a4M8J/0
- FZqV14wfgyEc2CE3Pd8kw==
+X-Provags-ID: V03:K1:YIWADP/CmXoAEdKqH6ZI2qmBrbO713LInGo2tWERMSG3WR2PEgP
+ o0bgc7SNMGFUhrtmBXFGHHCRVL+IUYhhMTzAn935kGTW8fXV081yTj95zGdYr/J8tLL2EB8
+ HL60uYy68t9D3Th0sUQlVkbvqJQARmnYn77lFLqnvyrtVxakYPOqurYfaqL7vMRjS3b5gma
+ G3DdJul/yx0m8ggEVVgAQ==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:AJoWJ7re4O0=;Ym4TddEyOePSxmlkoPMl3fc/KCL
- vvwZk7uSSM52cZp1Q+HK1xv3gh35/qA2y17pinMZ4V448Ljic10Idg0MzgKrrmuilAIHYZDmR
- 00Kuh7bsL+uXjebFN/nY1VUR0xZ18EkQM/EMvmR1RrBuu+pcdAU18OeF9A4/OKto8ElzIp1+o
- FfXUumtws1BpSkWZ4ZVVHvf9l2xfxuNWXOaydtjVuzZc0gFDljHuprchLTs2H59uqD9wGePyg
- A6701EMDd914ica0W1bGDIV+Ifsd2S6mrPzIyFuRGl8uTlZxInewfQbFuM/s7eRCFnXG7SN/i
- q5z8DFJsgLHN9e9m4t45agZgk5l51LgaZQBd2fCdNxGbYQb722JH5EqGWb1nWue2M/h1aqE/c
- V7JhY9phe4oEGPVV5/3xE3luEDTq7yY6DxZxfuLK7yvwjQ/tidqJJsLlMf+/rOWl3F8zwbg53
- mhjNSUVboTUh3UeeI4Ya/L7mUJsm4Nmrq60gk6aRLInkpDqIfCIWNs2uPY8OIVpMsyAZMcuRp
- kmEBI6ZXCzZ71MBKoENPxKth448r86UNBqKoOgLTyOCrZHENa4K1NPQ6rahav+iCIMlScEmDC
- o3reyF6NIK3xBWKRaHWSNjIJrsBdomhDAT9QfA0snpMUzAyvFO+hA4u4zLaVW5VwL61CDes/o
- CO+7KIohshlnw/pJLd/B7OcshAYI9fvPrVAD5g6N/lVmh4hsSHnNt64zP+I13gstcbh9RRP80
- 46nryXfvP+IwNwELMz7l4RpWJNESt4Ig0FZH9Mozns+7+8cZIJcPeQ=
+UI-OutboundReport: notjunk:1;M01:P0:5PXZGpAllV0=;kSybSKQ4rlhqmr0RjpPiL/8Xjey
+ SJqloJYmhkkQHPVzgomc9eOmw/PNVlof0XrooKfnUlEF0m3PE3OdbIy5NNBEzwrjeN+Ve+2T9
+ GgzpKYZbxL6YO3jAqjpQ8/31blPrfE8SN9v9EekgD9ju+hoqKXU+ojD7M4qFNJ7SdPkhLDju/
+ laTkF6N3Ig/C1rwwwenQAmCuuIETjPno80e4sX9/zdRGfqCvWF/y5OsxQlNuhcU+wJEwUOx+b
+ 3BG4uK8A/qu3aYuY7LmH2vEJq9Olz7uSQj9ePZIhnvHoywv3W/GYeINsj8B+qQKWkfM7274d2
+ sbQCJlvlQan1B4MwjtgdFn56zTDoYVCKyr+cW+HZoRuru14wcW2wchSgFr+WNEhC1aQmLVZUh
+ SUI50KeudfU/tl5lg2mn8N+EUgRrFrl6EdHfcKDJf9s4Emx6W5jQ4VQi2lo12dJxI3ozFqsiW
+ fZNFHcddOxuxiuhmkj4vb3IzRHaQFnfnP1zer+v/B87Al5CQJHaAwbc1RCBvSGN5Ncwu2vHy7
+ E6iIBhFZj1K4elmYWuhPOM2VcoIdwWf7sa4rmfH1Sj5Zul/weLGkWMcrdbYJ5KcLP5BAXBHwW
+ jgFwrl0f7KDEjA19EsmD/hwK+ayKfq+WJK4dzpxRAE1TL0on1bEMmGw2yFjnlwFbYZBLaGXhY
+ dOq9IfY7Gsuf1yAjEKgK9wb5hGoPS+kQCYBHkJwTzvZgWqgpKOmeUJsLKApjZW5HNvtUQE3d9
+ Aq9+v7l43iTZDllB0mIQihLY7ukK0F96j/pnIhKviE8sVazKnGIdvs=
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Change to returning dev_err_probe() instead of returning the error code
-after calling dev_err_probe().
+This is a series of small patches fixing kbuilds error and code style
+issues based on feedback during review of main patches.
 
-Signed-off-by: Parker Newman <pnewman@connecttech.com>
-=2D--
- drivers/tty/serial/8250/8250_exar.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Original patches thread:
+Link: https://lore.kernel.org/linux-serial/cover.1713382717.git.pnewman@co=
+nnecttech.com/
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
-/8250_exar.c
-index a180741da634..01748ddbf729 100644
-=2D-- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -1551,9 +1551,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct =
-pci_device_id *ent)
+Thank you,
+Parker Newman (4):
+  serial: exar: add missing kernel doc function parameters
+  serial: exar: use return dev_err_probe instead of returning error code
+  serial: exar: remove unneeded parenthesis
+  serial: exar: change port_type ternary line wrapping
 
- 	nr_ports =3D exar_get_nr_ports(board, pcidev);
- 	if (nr_ports =3D=3D 0) {
--		dev_err_probe(&pcidev->dev, -ENODEV,
-+		return dev_err_probe(&pcidev->dev, -ENODEV,
- 				"failed to get number of ports\n");
--		return -ENODEV;
- 	}
+ drivers/tty/serial/8250/8250_exar.c | 47 +++++++++++++++--------------
+ 1 file changed, 24 insertions(+), 23 deletions(-)
 
- 	priv =3D devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), G=
-FP_KERNEL);
-@@ -1587,9 +1586,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct =
-pci_device_id *ent)
- 	if (board->board_init) {
- 		rc =3D board->board_init(priv, pcidev);
- 		if (rc) {
--			dev_err_probe(&pcidev->dev, rc,
-+			return dev_err_probe(&pcidev->dev, rc,
- 					"failed to init serial board\n");
--			return rc;
- 		}
- 	}
 
+base-commit: c6795fbffc4547b40933ec368200bd4926a41b44
 =2D-
 2.43.2
 
