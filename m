@@ -1,78 +1,112 @@
-Received: from forward400c.mail.yandex.net (forward400c.mail.yandex.net [178.154.239.223])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BD781649DE;
-	Thu, 18 Apr 2024 14:05:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.223
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8019B1411E4;
+	Thu, 18 Apr 2024 14:12:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713449119; cv=none; b=s9Nsyq6lXA1beRjR1i2TExkS3aeiNp6d/alQ9dxlWm/13YsCTWmtaWF3TFO7qsT+DS2YYSfTZB8wxDtc84zkUTaW5/dxxQ3pFIkKqm9ZjIFZQfLlXfNcXWHiOb7Uj1AxIu4RWXhq2wa6Bb8lGXPex0tdZAwccK7WyBkfjVAbc8k=
+	t=1713449574; cv=none; b=mp6DsBLFPIrscneVxHyKton20pcMOhi2DsJ8nC8rpKJ53PYT3JJPtukhvF8ixQgv8r4NMKAkvcJFipksAXjisXxe/1usSqX+E/ZwDVxFFvW9b0LMMJoJD3P6xZU6wc+wmj9U/YpTPWNpFNWWdbpO0GS6e0CwfYEKZzP3vgmt47E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713449119; c=relaxed/simple;
-	bh=ex+30tcMVfxyUUaSDHrkFZx2Ws3xvFmrPzJt0E2CC+g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rsJ2utA/4LBiiyXsJKK7TUWlHwwmSxcbRQd+d7YUiLW8yUFZbWYYLgYbnDwQU/PgtK6srZ9U+7PBlpiUmpEIkNmkzwxMOZstHSCVRd5odc3tSauH9fkD6+CIamBT5FZN3OR4TjYvyyV7RR2EDFIPMHe6QO8g7497M2Xgktma+aQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=NDFuMdPF; arc=none smtp.client-ip=178.154.239.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
+	s=arc-20240116; t=1713449574; c=relaxed/simple;
+	bh=jnDfVi6EWylq7MqzNCSDDOiuGvArZd8NwgzHsM3Atd8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OXtLrhwmd7MsyymbcJTzNr9DvM+UEyZrfGncuuulu6Zuu+rRmBKgiGCZJx2l5irIOdXudi/tt/tRR+PzUh3u8xQxlrJTMqHR4BfIORKb1x1omU4He4lMtOxm+6KkQ7k3i3ZvblSN6vF3waaZ1vMUJbfnAbmVPO27B0Ge3J3sKSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gXkt8eRl; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="NDFuMdPF"
-Received: from mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net [IPv6:2a02:6b8:c08:c8ad:0:640:7c75:0])
-	by forward400c.mail.yandex.net (Yandex) with ESMTPS id 0FEDB68E2C;
-	Thu, 18 Apr 2024 16:57:45 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id gvF5FWNoJ8c0-8KFtarnq;
-	Thu, 18 Apr 2024 16:57:44 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
-	t=1713448664; bh=FfhBEk6M6XmT6yLhIJFRQ99L15wWJZxAlbi/OQfzRCo=;
-	h=Message-Id:Date:Cc:Subject:To:From;
-	b=NDFuMdPFBykaLLJO4cPMMoM0oEL4+cGP/LsBY7eK6lCEPgS6x38S6Ofvr0oTrCetD
-	 dxmPDbmKRe4PoxW6oAPp09/0nEEtptRqGfFPRQ+5VNJhKNLYJnyrlhaB4NQ1y2AAjJ
-	 22ZDw1NDMjIxWq/osN6ftBObHAerkqy8W5h5uQCY=
-Authentication-Results: mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net; dkim=pass header.i=@ya.ru
-From: Konstantin Pugin <rilian.la.te@ya.ru>
-To: 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gXkt8eRl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713449572; x=1744985572;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jnDfVi6EWylq7MqzNCSDDOiuGvArZd8NwgzHsM3Atd8=;
+  b=gXkt8eRl+noGWhnbPq9GA3Z79KjdgCbMI++MxEYiRYy8FIseJaqc3pw3
+   /ZxP1uma6gglnuqh34++Y5P/MWg7Sj4GqXFpd4ijFmnOaH5IWXcXg56+P
+   DoKzC4pc88VJlKjcouvE+jnDsoebEUpXk0shokIrjn4FUMCILKRWzBnUX
+   Sxcy4Zk1P664k65tc5wp4D+Pi5+8KIizxvg3lZxvXk6HS7PNTAZv6VY48
+   BtV95VZl0bmhKg9mj+RH32jwszmshZBNqnKPoPoiSzDewk92zBaY9sEy9
+   7upMJRbIRH5OXdo4yzFrqx5/Au9ZQPdtpb93LDll5Sd7ZYugcN/dlUXfs
+   g==;
+X-CSE-ConnectionGUID: bHdwsw2cST22AFItuzSeIA==
+X-CSE-MsgGUID: 03W4SY6WSkmaooxPr95Udw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="12785093"
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="12785093"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 07:12:52 -0700
+X-CSE-ConnectionGUID: muIKI36OQy+4EDVekWZf2A==
+X-CSE-MsgGUID: qPbRWa3STYWcitOWH/M2CQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="23045756"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 07:12:50 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rxSVK-00000000LbY-2WHh;
+	Thu, 18 Apr 2024 17:12:46 +0300
+Date: Thu, 18 Apr 2024 17:12:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Konstantin Pugin <rilian.la.te@ya.ru>
 Cc: Konstantin Pugin <ria.freelander@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Lech Perczak <lech.perczak@camlingroup.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v2 0/3] add support for EXAR XR20M1172 UART
-Date: Thu, 18 Apr 2024 16:57:31 +0300
-Message-Id: <20240418135737.3659498-1-rilian.la.te@ya.ru>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH v2 1/3] serial: sc16is7xx: announce support of
+ SER_RS485_RTS_ON_SEND
+Message-ID: <ZiEqXkw_IvavCPVS@smile.fi.intel.com>
+References: <20240418135737.3659498-1-rilian.la.te@ya.ru>
+ <20240418135737.3659498-2-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240418135737.3659498-2-rilian.la.te@ya.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-From: Konstantin Pugin <ria.freelander@gmail.com>
+On Thu, Apr 18, 2024 at 04:57:32PM +0300, Konstantin Pugin wrote:
+> From: Konstantin Pugin <ria.freelander@gmail.com>
+> 
+> Hardware supports both modes, but after
 
-EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
-it has additional register which can change UART multiplier
-to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
-flag to guard access to its specific DLD register. It seems than
-other EXAR SPI UART modules also have this register, but I tested
-only XR20M1172.
+The hardware
 
-Changes in v2:
-  use full name in git authorship
+"both"? Please elaborate, like
 
-Konstantin Pugin (3):
-  serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-  serial: sc16is7xx: Add bindings documentation for EXAR XR20M1172 UART
-  serial: sc16is7xx: add support for EXAR XR20M1172 UART
+"The hardware supports both (A and B) modes, ..."
 
- .../bindings/serial/nxp,sc16is7xx.yaml        |  1 +
- drivers/tty/serial/sc16is7xx.c                | 56 +++++++++++++++++--
- 2 files changed, 53 insertions(+), 4 deletions(-)
+> commit 4afeced55baa ("serial: core: fix sanitizing check for RTS settings")
+
+the commit
+
+> we always end up with SER_RS485_RTS_AFTER_SEND and always write in
+
+write to
+
+> register SC16IS7XX_EFCR_RTS_INVERT_BIT,
+
+the register
+
+> which breaks some hardware using these chips,
+
+Please, rewrap these lines to be approximately same width. Yes, you may split
+commit over the lines in the body of the commit message, but tags (like Fixes).
+
+Also it seems you forgot to add Vladimir's tags. It's your responsibility
+to do that if you send a new version with only cosmetic changes done.
 
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
