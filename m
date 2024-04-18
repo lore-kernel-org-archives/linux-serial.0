@@ -1,205 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 685B86A8CA;
-	Thu, 18 Apr 2024 14:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA7FA16C453;
+	Thu, 18 Apr 2024 15:37:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713450534; cv=none; b=RYPdA/a7gJ0LzsX9e+Vod16TPNOPWHzvwDECInG0UpUucJO4llJgELWwgYKYlXWvVNwmCvw5ZJwyM7rt/iIIRp1mSor2fqh98LDqCyQRsCmFf3ySUJjQcB3bv5QCdThk9wjxkUuvCscEZtYVWeZmPsYZPzIXgnKS0BnZJ9rDZ1M=
+	t=1713454645; cv=none; b=V4RmFJuHJWCBY7tdW0PjAc24ZmwCuMl6UQ9IGRZLm9fwGuis31V7twgxZSg3pkcdMMvkwgfWE5fTAQHILGnajrcqrrmA/GauUH1Ocs0vVRu9drSTm9GNdfcDMuQOfcZ4Hr7E/AE+fSyZRT/ybYhmvF1oQ0Bwn3VY5loMrNQqVnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713450534; c=relaxed/simple;
-	bh=rKFeQFsgx0NqL1L7btW70VT8wS22OsLuq/GSEvwpFt0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IrR+Xw/UQuCFW5nC66y3TuWMTAlDp/57p/xstpnxpo2rtFOom88h9/kWJthRu6A7/55MjFvZ07HJQJnmYwKxsY55Zuts6u5S0tzBKfsUo4VVlBSfeGYhuKZL7HDaXQHYf1wVMRGxRM/eChweIlWnwuYpGP0ENYAW8fZLcirMtQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fQ683lHe; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713454645; c=relaxed/simple;
+	bh=6FcMwAVQ1oQ13VSGE3/gSNaKF921zwjZHklsSqpjmWk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=tV4RpglWXOW/P0qQZ7mgWedKsxDy77TsoJj1PSIIw/JJuVTSckgK6aO38LC3a/7nzv2WDrK7tst9H8tquV885bTIsHJLT7HhTPgvlpoD1XXbxtINDbLN684Qjm2nPUwsiAYqMx7dMW/I9kbFY+0+7qPcIuwlYXUtzAyobUK5LTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=NnQEteed; arc=none smtp.client-ip=74.208.4.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fQ683lHe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713450532; x=1744986532;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rKFeQFsgx0NqL1L7btW70VT8wS22OsLuq/GSEvwpFt0=;
-  b=fQ683lHethrB8RKn5jW+sGnWSdZdKoWPPxVW1Oym/zyWJKkNyLs4dVg3
-   fHW4Gtd9fcRPVH51NXherRy7IjpYfZ6Je7oWYt/iqTDV6Gz5m+Zna8m0Z
-   jOsuPsq9cgG6BSEzkqT15OmQ87qOkxT3MHBOQVNpnSNFq74J2PXgpXJVt
-   yhr/ouKw9DRv8qqZHAtTDqEKHHRyjOUcZdUj1WmFIIqYCpzsehiPG7k6T
-   sSe5QWzX/yJsJ7L3WrxIipa64Yalzwx4M3XmyTfTlEZY5ZUTTFoFRJ23m
-   QFD49UI2wKWpgmik9vT8WnQmESbzvvDpnohUao1B2WG/1hZ+sWv7DOZdF
-   w==;
-X-CSE-ConnectionGUID: UvF5rfpWTBm9ig5Z+tyMEw==
-X-CSE-MsgGUID: ELqP8EjNRvWFdIDrRV8GvA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="8868112"
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="8868112"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 07:28:51 -0700
-X-CSE-ConnectionGUID: KidSamR1Qm6psbtD6HeHgg==
-X-CSE-MsgGUID: xs87afnGTQ2l5n7VDNmpng==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="27628124"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 07:28:49 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rxSkn-00000000Lon-01XX;
-	Thu, 18 Apr 2024 17:28:45 +0300
-Date: Thu, 18 Apr 2024 17:28:44 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: Konstantin Pugin <ria.freelander@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="NnQEteed"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1713454633; x=1714059433; i=parker@finest.io;
+	bh=91znGsyHENCtexZoIjuZ12Bug2BwW+jFHp+nXCy9hyc=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=NnQEteedl2hKmnSz3UYcDsE5k/E07G585K6/SqcIc8jbV2HjynREsfJNoze5byqL
+	 ObsiZWDnq3HJfb499Hi5HoIAcKTNLw8hxmCdSYt+n6BpfAklhz15NDBmSDzTlgKUD
+	 HVu9IsMjqqXtBxjGAejN89ox2+53Zhfak5W3yf8tb69vxpUwGehZyfsQSaSkI48Mm
+	 SN+VG7qsBccIfu+UpG2sF2UWjk5rDC3tOZ7oufhCuptdLXzPcwHKqLtddxdH+k1Gu
+	 ayk1n6vD20iUmd0HGR1HkItZXS1oYVI/uuDowWdnSKkEYZwou93/uErGt3r63/0mR
+	 YjX4uBL4RUxu9xrrrg==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0LoWNw-1sdwBO3kOg-00ow5j; Thu, 18 Apr
+ 2024 17:37:12 +0200
+From: Parker Newman <parker@finest.io>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
- UART
-Message-ID: <ZiEuHE7aGnrPk5RK@smile.fi.intel.com>
-References: <20240418135737.3659498-1-rilian.la.te@ya.ru>
- <20240418135737.3659498-4-rilian.la.te@ya.ru>
+Cc: Parker Newman <pnewman@connecttech.com>
+Subject: [PATCH v1 2/4] serial: exar: use return dev_err_probe instead of returning error code
+Date: Thu, 18 Apr 2024 11:36:29 -0400
+Message-ID: <69dce254723c80f69d4deef8512323a38aeeb7d1.1713452766.git.pnewman@connecttech.com>
+X-Mailer: git-send-email 2.43.2
+In-Reply-To: <cover.1713452766.git.pnewman@connecttech.com>
+References: <cover.1713452766.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240418135737.3659498-4-rilian.la.te@ya.ru>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:OoBam/oCzCOWDp5lY5iLVRbMrH/n35wBO3b0Jd7iTs6B+2WesgK
+ xU1Z19cRezihSxiEIByqixoh5j199KAuBRQJcmt9JqV3vM6tjZcpePwevO3KMQfooiRaZmo
+ Who3DLSRjsq0lp10ffCM+pAXI6yI2JnYfzBZ97pxC7PbVryL1LOILERMuJR7cp20a4M8J/0
+ FZqV14wfgyEc2CE3Pd8kw==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:AJoWJ7re4O0=;Ym4TddEyOePSxmlkoPMl3fc/KCL
+ vvwZk7uSSM52cZp1Q+HK1xv3gh35/qA2y17pinMZ4V448Ljic10Idg0MzgKrrmuilAIHYZDmR
+ 00Kuh7bsL+uXjebFN/nY1VUR0xZ18EkQM/EMvmR1RrBuu+pcdAU18OeF9A4/OKto8ElzIp1+o
+ FfXUumtws1BpSkWZ4ZVVHvf9l2xfxuNWXOaydtjVuzZc0gFDljHuprchLTs2H59uqD9wGePyg
+ A6701EMDd914ica0W1bGDIV+Ifsd2S6mrPzIyFuRGl8uTlZxInewfQbFuM/s7eRCFnXG7SN/i
+ q5z8DFJsgLHN9e9m4t45agZgk5l51LgaZQBd2fCdNxGbYQb722JH5EqGWb1nWue2M/h1aqE/c
+ V7JhY9phe4oEGPVV5/3xE3luEDTq7yY6DxZxfuLK7yvwjQ/tidqJJsLlMf+/rOWl3F8zwbg53
+ mhjNSUVboTUh3UeeI4Ya/L7mUJsm4Nmrq60gk6aRLInkpDqIfCIWNs2uPY8OIVpMsyAZMcuRp
+ kmEBI6ZXCzZ71MBKoENPxKth448r86UNBqKoOgLTyOCrZHENa4K1NPQ6rahav+iCIMlScEmDC
+ o3reyF6NIK3xBWKRaHWSNjIJrsBdomhDAT9QfA0snpMUzAyvFO+hA4u4zLaVW5VwL61CDes/o
+ CO+7KIohshlnw/pJLd/B7OcshAYI9fvPrVAD5g6N/lVmh4hsSHnNt64zP+I13gstcbh9RRP80
+ 46nryXfvP+IwNwELMz7l4RpWJNESt4Ig0FZH9Mozns+7+8cZIJcPeQ=
 
-On Thu, Apr 18, 2024 at 04:57:34PM +0300, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
-> 
-> Its register set is mostly compatible with SC16IS762, but
+From: Parker Newman <pnewman@connecttech.com>
 
-"Its"? Whose? Elaborate, please.
+Change to returning dev_err_probe() instead of returning the error code
+after calling dev_err_probe().
 
-> it has a support for additional division rates of UART
-> with special DLD register. So, add handling this register
-> via UPF_MAGIC_MULTIPLIER port flag.
+Signed-off-by: Parker Newman <pnewman@connecttech.com>
+=2D--
+ drivers/tty/serial/8250/8250_exar.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Oh, can we avoid using this? You can redefine ->set_termios() if required and
-before factor out the common pieces to the helper functions.
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
+/8250_exar.c
+index a180741da634..01748ddbf729 100644
+=2D-- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -1551,9 +1551,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct =
+pci_device_id *ent)
 
-...
+ 	nr_ports =3D exar_get_nr_ports(board, pcidev);
+ 	if (nr_ports =3D=3D 0) {
+-		dev_err_probe(&pcidev->dev, -ENODEV,
++		return dev_err_probe(&pcidev->dev, -ENODEV,
+ 				"failed to get number of ports\n");
+-		return -ENODEV;
+ 	}
 
-All three commit messages seems follow different text width, please keep it around
+ 	priv =3D devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), G=
+FP_KERNEL);
+@@ -1587,9 +1586,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct =
+pci_device_id *ent)
+ 	if (board->board_init) {
+ 		rc =3D board->board_init(priv, pcidev);
+ 		if (rc) {
+-			dev_err_probe(&pcidev->dev, rc,
++			return dev_err_probe(&pcidev->dev, rc,
+ 					"failed to init serial board\n");
+-			return rc;
+ 		}
+ 	}
 
-~60 for Subject and ~72 for the commit message.
-
-...
-
->  /* Special Register set: Only if ((LCR[7] == 1) && (LCR != 0xBF)) */
->  #define SC16IS7XX_DLL_REG		(0x00) /* Divisor Latch Low */
->  #define SC16IS7XX_DLH_REG		(0x01) /* Divisor Latch High */
-> +#define SC16IS7XX_DLD_REG		(0x02) /* Divisor Latch Mode (only on EXAR chips) */
-
-Is it called DLD in the datasheet? If so, can you match the comment to
-the datasheet, otherwise make it DLM and I would even go for the EXAR
-namespace.
-
-...
-
-> +/* Divisor Latch Mode bits (EXAR extension)
-> + *
-> + * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
-> + * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
-> + * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
-> + * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
-> + * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
-> + */
-
-/*
- * This is wrong multi-line comment
- * style for this subsystem. Use this
- * example.
- */
-
-...
-
-> +#define SC16IS7XX_DLD_16X		0
-> +#define SC16IS7XX_DLD_DIV(m)	((m) & 0xf)
-
-GENMASK() (since you already use BIT() below)
-
-> +#define SC16IS7XX_DLD_8X		BIT(4)
-> +#define SC16IS7XX_DLD_4X		BIT(5)
-
-Perhaps also EXAR namespace.
-
-...
-
->  	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
->  	u8 lcr;
->  	u8 prescaler = 0;
-> -	unsigned long clk = port->uartclk, div = clk / 16 / baud;
-> +	u8 divisor = 16;
-> +	u8 dld_mode = SC16IS7XX_DLD_16X;
-> +	bool has_dld = !!(port->flags & UPF_MAGIC_MULTIPLIER);
-> +	unsigned long clk = port->uartclk, div, div16;
-
-Please, try to keep it in reversed xmas tree order (longer lines first).
-
-...
-
-> +	if (has_dld)
-
-Can we actually replace this with some ID checks?
-
-> +		while (DIV_ROUND_CLOSEST(port->uartclk, baud) < divisor)
-> +			divisor /= 2;
-
-Bit shifts and ffs() / fls() from bitops.h (or respective round*() / ilog2() /
-etc. from log2.h) will help you to avoid while loop.
-
-...
-
-> +	div16 = clk * (16 / divisor) / baud;
-> +	div = div16 / 16; /* For divisor = 16, it is the same as clk / 16 / baud */
-
-
-So, these may loose in precision, right?
-
-Wouldn't be better to have
-
-	div16 = (clk * 16) / divisor / baud;
-	div = div16 / 16;
-
-?
-
->  	if (div >= BIT(16)) {
->  		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
->  		div /= 4;
->  	}
->  
-
-...
-
->  	{ .compatible = "nxp,sc16is752",	.data = &sc16is752_devtype, },
->  	{ .compatible = "nxp,sc16is760",	.data = &sc16is760_devtype, },
->  	{ .compatible = "nxp,sc16is762",	.data = &sc16is762_devtype, },
-> +	{ .compatible = "exar,xr20m1172",	.data = &xr20m1172_devtype, },
-
-Sorted?
-
-...
-
-> +	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
-
-This gives a hint about the above mentioned EXAR namespace for the definitions,
-i.e. use
-
-#define XR20M1172_...
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+=2D-
+2.43.2
 
