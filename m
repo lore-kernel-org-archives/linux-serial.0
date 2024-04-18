@@ -1,223 +1,231 @@
-Received: from forward501a.mail.yandex.net (forward501a.mail.yandex.net [178.154.239.81])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C6DC174ECA;
-	Thu, 18 Apr 2024 17:12:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDCD515E20F;
+	Thu, 18 Apr 2024 17:25:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713460346; cv=none; b=JuGSkwYXpvDSKQ1NETAm7U8jesuqkyb5vRKmmgV6lL4oo4gU/noBML+EBD1Ct6caxQcS2w4JcDO8K4CCQ3fEMLBu9RXMy0pt15pxZDD/WjwKnQn/vTGOxxFOfegj5/iyPXMeF0eLsOdrTO1LBwULd2NR+wuR64E3MRjECdHVRL4=
+	t=1713461150; cv=none; b=EH/QfMbeYKfZIKvsQruthoRS180B0Pw39Dve2NyL7wd3g/NbEPdEZ6DZjP/BFy3VHbTwL3/Fq56zcMIpHhk5hvEbu/MApy19y5c7a/2+/FFKQQoy0zJJ6nYZU4Bq/vgE+VRmo8S+vFpmTbioSh6NXEL4Z7LcWNfjRFQW9RI2A20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713460346; c=relaxed/simple;
-	bh=QPBkGopLO/mAbo3PWDsaNs5YXiaDA4qS8qIbUMNiHqM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=gD84zoya+ODKBjuNr+/ZxiJDu47+ZU+wVA7/BwCrlsI8tZK0245SLXxFc9fPM1oGkfAK2wyqcdXvbWjJ477iTInGNjZI81WuFh+QmurVWK3kNJX/87hE1ybuNrMRv5K8Qj8lzICORJJ0W3FLGUfhcbzP+1fWTPo78FDhekhCR/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=fdU/mFYX; arc=none smtp.client-ip=178.154.239.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
+	s=arc-20240116; t=1713461150; c=relaxed/simple;
+	bh=FLXjmNmKcSXrfleW5MB4+b5p9DMCOnw1IiCEtELCQWg=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=E3TWAkqTOWGAc11UQPDXC6Ia6bRXdJht5KJki5vVh49mBxrHlojmyFn0StPqWAvmluHZa9AiJJALiitZp3OnuObwAPIbEnJPzEcbTM9IjjTgsgXEwn8DuLkwLmS8601yYEx4AdvEc4dxuNTY/KmR617gkWpn4/AOfU83H1bdbr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kIqHG3uC; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="fdU/mFYX"
-Received: from mail-nwsmtp-smtp-production-main-67.vla.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-67.vla.yp-c.yandex.net [IPv6:2a02:6b8:c1d:2c01:0:640:acf3:0])
-	by forward501a.mail.yandex.net (Yandex) with ESMTPS id AA04B615D1;
-	Thu, 18 Apr 2024 20:06:39 +0300 (MSK)
-Received: by mail-nwsmtp-smtp-production-main-67.vla.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id M6JHjm3m3Gk0-INaHv4Bc;
-	Thu, 18 Apr 2024 20:06:38 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
-	t=1713459998; bh=1AXbpXo2p67BqwFaHtvoE/mN3T/RrjXfDxP6nZ3RYRI=;
-	h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
-	b=fdU/mFYXC7LPcxisKXM7cfgCwZ4AP5s1Qe2Ba8FPQ8I6IG+OOwCsYYB68icgR5wBf
-	 /Hf36Hsp6bRYAqKFu6Ppv4tedZQ3Q/+MMy6ivt0noqfdVCcaN4E//doqCqoDEsFOWn
-	 NtQQi0iIlagYHjdx/a0Qt7MyZ0OzZFkAFpQEgZJk=
-Authentication-Results: mail-nwsmtp-smtp-production-main-67.vla.yp-c.yandex.net; dkim=pass header.i=@ya.ru
-From: Konstantin Pugin <rilian.la.te@ya.ru>
-To: 
-Cc: Konstantin Pugin <ria.freelander@gmail.com>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v3 3/3] serial: sc16is7xx: add support for EXAR XR20M1172 UART
-Date: Thu, 18 Apr 2024 20:06:07 +0300
-Message-Id: <20240418170610.759838-4-rilian.la.te@ya.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240418170610.759838-1-rilian.la.te@ya.ru>
-References: <20240418170610.759838-1-rilian.la.te@ya.ru>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kIqHG3uC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713461149; x=1744997149;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=FLXjmNmKcSXrfleW5MB4+b5p9DMCOnw1IiCEtELCQWg=;
+  b=kIqHG3uC0o5CocQlvR/7G5csvbXBcamycBydoTqQ8ai1ZZ2GXWQgCo0Q
+   nhQtMs6jirKbE/pqtutsqUebICTX2SR17buR9V0Kmnpm5jbPnmW4ZvkLA
+   HaCHhnsyq0HEFBZZz9YUJd/aidCpCm7nFtp7JFIBg6fsE/6KZBEOxSFn6
+   zZf/64HIptCkzo0uTeICOOZUuyVuiQH0qubvS14dyoKaHAI5I6Y5u/QpV
+   A4/JQTpiQGOfPiRu6mYEPEcnkfIrjIZmAd74BaSu8e1ayiSsdZ2gJGoMM
+   rSxcFpx1MAmgeSma52RKeBzSdk0yYRNmWukDzLyfVPFpP5ugKLahyef7V
+   Q==;
+X-CSE-ConnectionGUID: ARjZ/c6RRGaUortvFzgyYg==
+X-CSE-MsgGUID: Lbo6DcYVTsarA2ZGMaZ6iA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20171551"
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="20171551"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:25:48 -0700
+X-CSE-ConnectionGUID: kTUPgKk2SB6XicQ0car4CA==
+X-CSE-MsgGUID: TpaEAdTRRTSYKZDpcjXPJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
+   d="scan'208";a="22927333"
+Received: from unknown (HELO localhost) ([10.245.247.37])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 10:25:45 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Thu, 18 Apr 2024 20:25:41 +0300 (EEST)
+To: Parker Newman <parker@finest.io>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v4 6/7] serial: exar: add CTI specific setup code
+In-Reply-To: <20240418130346.12530fdb@SWDEV2.connecttech.local>
+Message-ID: <2f51079c-061a-2a04-2569-3ece3cd9beca@linux.intel.com>
+References: <cover.1713382717.git.pnewman@connecttech.com> <ae4a66e7342b686cb8d4b15317585dfb37222cf4.1713382717.git.pnewman@connecttech.com> <f2353b8c-2079-b895-2707-f6be83161288@linux.intel.com> <20240418102153.554d56ba@SWDEV2.connecttech.local>
+ <8c91f3a5-e124-aa28-06bb-2e6a699d4998@linux.intel.com> <20240418130346.12530fdb@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; BOUNDARY="8323328-1078240065-1713460633=:986"
+Content-ID: <72bd82c3-c51e-cadf-48ce-05b20dd3eee6@linux.intel.com>
 
-From: Konstantin Pugin <ria.freelander@gmail.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-XR20M1172 register set is mostly compatible with SC16IS762, but it has
-a support for additional division rates of UART with special DLD register.
-So, add handling this register by appropriate devicetree bindings.
+--8323328-1078240065-1713460633=:986
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <91b8c041-f96c-5039-04c0-16ec44733eb6@linux.intel.com>
 
-Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
----
- drivers/tty/serial/sc16is7xx.c | 55 +++++++++++++++++++++++++++++++---
- 1 file changed, 51 insertions(+), 4 deletions(-)
+On Thu, 18 Apr 2024, Parker Newman wrote:
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index a300eebf1401..59376c637467 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -65,6 +65,7 @@
- /* Special Register set: Only if ((LCR[7] == 1) && (LCR != 0xBF)) */
- #define SC16IS7XX_DLL_REG		(0x00) /* Divisor Latch Low */
- #define SC16IS7XX_DLH_REG		(0x01) /* Divisor Latch High */
-+#define XR20M117X_DLD_REG		(0x02) /* Divisor Fractional Register (only on EXAR chips) */
- 
- /* Enhanced Register set: Only if (LCR == 0xBF) */
- #define SC16IS7XX_EFR_REG		(0x02) /* Enhanced Features */
-@@ -218,6 +219,20 @@
- #define SC16IS7XX_TCR_RX_HALT(words)	((((words) / 4) & 0x0f) << 0)
- #define SC16IS7XX_TCR_RX_RESUME(words)	((((words) / 4) & 0x0f) << 4)
- 
-+/*
-+ * Divisor Fractional Register bits (EXAR extension)
-+ * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
-+ * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
-+ * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
-+ * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
-+ * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
-+ */
-+
-+#define XR20M117X_DLD_16X		0
-+#define XR20M117X_DLD_DIV(m)	((m) & GENMASK(3, 0))
-+#define XR20M117X_DLD_8X		BIT(4)
-+#define XR20M117X_DLD_4X		BIT(5)
-+
- /*
-  * TLR register bits
-  * If TLR[3:0] or TLR[7:4] are logical 0, the selectable trigger levels via the
-@@ -310,6 +325,7 @@ struct sc16is7xx_devtype {
- 	char	name[10];
- 	int	nr_gpio;
- 	int	nr_uart;
-+	bool has_dld;
- };
- 
- #define SC16IS7XX_RECONF_MD		(1 << 0)
-@@ -522,6 +538,13 @@ static const struct sc16is7xx_devtype sc16is762_devtype = {
- 	.nr_uart	= 2,
- };
- 
-+static const struct sc16is7xx_devtype xr20m1172_devtype = {
-+	.name		= "XR20M1172",
-+	.nr_gpio	= 8,
-+	.nr_uart	= 2,
-+	.has_dld	= true,
-+};
-+
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
-@@ -556,16 +579,33 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
- 
- static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- {
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
--	u8 lcr;
-+	unsigned long clk = port->uartclk, div, div16;
-+	bool has_dld = s->devtype->has_dld;
-+	u8 dld_mode = XR20M117X_DLD_16X;
- 	u8 prescaler = 0;
--	unsigned long clk = port->uartclk, div = clk / 16 / baud;
-+	u8 divisor = 16;
-+	u8 lcr;
-+
-+	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
-+		divisor = 1 << (fls(DIV_ROUND_CLOSEST(clk, baud)) - 1);
-+
-+	div16 = (clk * 16) / divisor / baud;
-+	div = div16 / 16;
- 
- 	if (div >= BIT(16)) {
- 		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
- 		div /= 4;
- 	}
- 
-+	/* Count additional divisor for EXAR devices */
-+	if (divisor == 8)
-+		dld_mode = XR20M117X_DLD_8X;
-+	if (divisor == 4)
-+		dld_mode = XR20M117X_DLD_4X;
-+	dld_mode |= XR20M117X_DLD_DIV(div16);
-+
- 	/* Enable enhanced features */
- 	sc16is7xx_efr_lock(port);
- 	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-@@ -586,12 +626,14 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	regcache_cache_bypass(one->regmap, true);
- 	sc16is7xx_port_write(port, SC16IS7XX_DLH_REG, div / 256);
- 	sc16is7xx_port_write(port, SC16IS7XX_DLL_REG, div % 256);
-+	if (has_dld)
-+		sc16is7xx_port_write(port, XR20M117X_DLD_REG, dld_mode);
- 	regcache_cache_bypass(one->regmap, false);
- 
- 	/* Restore LCR and access to general register set */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
--	return DIV_ROUND_CLOSEST(clk / 16, div);
-+	return DIV_ROUND_CLOSEST(clk / divisor, div);
- }
- 
- static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
-@@ -1010,7 +1052,9 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 				  struct ktermios *termios,
- 				  const struct ktermios *old)
- {
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-+	bool has_dld = s->devtype->has_dld;
- 	unsigned int lcr, flow = 0;
- 	int baud;
- 	unsigned long flags;
-@@ -1093,7 +1137,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	/* Get baud rate generator configuration */
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / 4 / 0xffff,
--				  port->uartclk / 16);
-+				  port->uartclk / (has_dld ? 4 : 16));
- 
- 	/* Setup baudrate generator */
- 	baud = sc16is7xx_set_baud(port, baud);
-@@ -1682,6 +1726,7 @@ static void sc16is7xx_remove(struct device *dev)
- }
- 
- static const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
-+	{ .compatible = "exar,xr20m1172",	.data = &xr20m1172_devtype, },
- 	{ .compatible = "nxp,sc16is740",	.data = &sc16is74x_devtype, },
- 	{ .compatible = "nxp,sc16is741",	.data = &sc16is74x_devtype, },
- 	{ .compatible = "nxp,sc16is750",	.data = &sc16is750_devtype, },
-@@ -1776,6 +1821,7 @@ static const struct spi_device_id sc16is7xx_spi_id_table[] = {
- 	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
- 	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
- 	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
-+	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
- 	{ }
- };
- 
-@@ -1826,6 +1872,7 @@ static const struct i2c_device_id sc16is7xx_i2c_id_table[] = {
- 	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
- 	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
- 	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
-+	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, sc16is7xx_i2c_id_table);
--- 
-2.34.1
+> On Thu, 18 Apr 2024 19:29:44 +0300 (EEST)
+> Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+>=20
+> > On Thu, 18 Apr 2024, Parker Newman wrote:
+> > > On Thu, 18 Apr 2024 16:20:15 +0300 (EEST)
+> > > Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com> wrote:
+> > >  =20
+> > > > On Wed, 17 Apr 2024, Parker Newman wrote: =20
+> > > > > From: Parker Newman <pnewman@connecttech.com>
+> > > > >=20
+> > > > > This is a large patch but is only additions. All changes and remo=
+vals
+> > > > > are made in previous patches in this series.
+> > > > >=20
+> > > > > - Add CTI board_init and port setup functions for each UART type
+> > > > > - Add CTI_EXAR_DEVICE() and CTI_PCI_DEVICE() macros
+> > > > > - Add support for reading a word from the Exar EEPROM.
+> > > > > - Add support for configuring and setting a single MPIO
+> > > > > - Add various helper functions for CTI boards.
+> > > > > - Add osc_freq to struct exar8250
+> > > > >=20
+> > > > > Signed-off-by: Parker Newman <pnewman@connecttech.com> =20
+> >=20
+> > > > > @@ -192,11 +252,201 @@ struct exar8250_board {
+> > > > >=20
+> > > > >  struct exar8250 {
+> > > > >  =09unsigned int=09=09nr;
+> > > > > +=09unsigned int=09=09osc_freq;
+> > > > >  =09struct exar8250_board=09*board;
+> > > > >  =09void __iomem=09=09*virt;
+> > > > >  =09int=09=09=09line[];
+> > > > >  };
+> > > > >=20
+> > > > > +static inline void exar_write_reg(struct exar8250 *priv,
+> > > > > +=09=09=09=09unsigned int reg, u8 value)
+> > > > > +{
+> > > > > +=09writeb(value, priv->virt + reg);
+> > > > > +}
+> > > > > +
+> > > > > +static inline u8 exar_read_reg(struct exar8250 *priv, unsigned i=
+nt reg)
+> > > > > +{
+> > > > > +=09return readb(priv->virt + reg);
+> > > > > +}   =20
+> > > >=20
+> > > > I tried to understand what is going on with this priv->virt in 8250=
+_exar=20
+> > > > in general and why it exists but I failed. It seems to BAR0 is mapp=
+ed=20
+> > > > there but also serial8250_pci_setup_port() does map the same BAR an=
+d=20
+> > > > sets it up into the usual place in membase.
+> > > >  =20
+> > >=20
+> > > Exar PCI/PCIe UARTs have global configuration registers from 0x80-0x9=
+B.
+> > > These registers are for reading the EEPROM, configuring the MPIO, etc=
+=2E
+> > > As these registers are only at 0x80, and not port specific, the drive=
+r maps
+> > > BAR0 to priv->virt for accessing them.  =20
+> >=20
+> > Okay, thanks for explaining. The naming & lack of comments wasn't exact=
+ly=20
+> > making it easy to follow this bit (this is not your fault in anyway but=
+=20
+> > a pre-existing problem in the driver's code).
+> >=20
+> > I've a follow up question now that it's confirmed they're different,=20
+> > see below...
+> >=20
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_8XMODE), 0x00);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_FCTR), UART_FCTR_EXA=
+R_TRGD);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_TXTRG), 128);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_RXTRG), 128);   =20
+> > > >=20
+> > > > Unnecessary parenthesis. =20
+> >=20
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_8XMODE), 0x00);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_FCTR), UART_FCTR_EXA=
+R_TRGD);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_TXTRG), 32);
+> > > > > +=09exar_write_reg(priv, (offset + UART_EXAR_RXTRG), 32);   =20
+> > > >=20
+> > > > Unnecessary parenthesis.
+> > > >  =20
+> > >=20
+> > > I will fix these in my cleanup patches.  =20
+> >=20
+> > Based on the wording in your response, I'm not sure you got this right.=
+ It=20
+> > is code you're adding in this patch so the parenthesis should be remove=
+d=20
+> > from this change so they never appear in the commit history.
+> >=20
+>=20
+> Greg has already merged this series into his testing branch. I assumed an=
+y
+> changes would need to be made in a separate patch series? Sorry if I=20
+> misunderstood. I already sent these fixes in a new mini-series.=20
 
+Okay. I was only aware he took the first patch but seemingly he took all=20
+of them. So you're correct then, ignore my advice which was based on=20
+incomplete picture.
+
+> > > > I recommend you add a helper for this as it is repeated twice. Are =
+the=20
+> > > > values 32 and 128 literal or do they have some specific meaning? If=
+ the=20
+> > > > latter case, they should be using named defines (this likely applie=
+s to=20
+> > > > the existing trigger code in the driver too).
+> > > >=20
+> > > >  =20
+> > >=20
+> > > They are the FIFO trigger levels so they are literally 128 and 32.  =
+=20
+> >=20
+> > Okay, no problem then if its 128 characters and 32 characters.
+> >=20
+> > > These 4 writes come from Exar's out-of-tree driver and are in=20
+> > > pci_xr17v35x_setup() and some other vendor specific functions.=20
+> > >=20
+> > > I am not sure why/if these are needed.  =20
+> >=20
+> > ...So the follow-up question. I see the existing code in=20
+> > pci_fastcom335_setup() and pci_xr17v35x_setup() writes into membase=20
+> > based address but your code uses exar_write_reg() which is priv->virt=
+=20
+> > based. Is this difference intentional?
+> >=20
+>=20
+> Both methods are effectively the same thing. I used exar_write_reg() to b=
+e
+> consistent with my other code and it is a bit cleaner than:
+
+Those people used to serial subsystem, using membase is way more familiar=
+=20
+than using some driver private thing.
+
+> =09u8 __iomem *p;
+>=20
+> =09p =3D port->port.membase;
+>=20
+> =09writeb(0x00, p + UART_EXAR_8XMODE);
+
+It's inconsistent with the other two uses now but since you told they're=20
+effectively the same thing, I was hoping all of 4 places in 8250_exar=20
+would be converted to use a helper that is just given the threshold as=20
+parameter (the helper doesn't exist yet).
+
+--=20
+ i.
+--8323328-1078240065-1713460633=:986--
