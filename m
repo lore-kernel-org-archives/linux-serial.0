@@ -1,66 +1,44 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 095CB15B104;
-	Thu, 18 Apr 2024 09:44:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A325C15AD88;
+	Thu, 18 Apr 2024 10:27:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713433473; cv=none; b=qVAJTFhJdb7P0OzvPqzf1HUyFsDAGhwOH95oqNOsyeO3sOoxbwX4hwa6LRETjUUd4JsYrkVDDWHEECtdJNba1AN0H22CoCFgHgl3kkEMYD42toxj5mJtzQLPw2kXdvNPICM8GRmwPwKNh9nUHIIr2FLapJ5ya/iMfsP3L6UuloQ=
+	t=1713436028; cv=none; b=jNXeQJ0qDXR/pDS18lNLQ75xaGDebWXGXZBQBzp4OQszf1gn+RSjoNKOcMR3hfem+0uEuH4FdXbsogFoupPMCBr6S270D2/+xIxpBAVaUEKT6BBQWOA40tHQeRxrypqC0QmI/Eo/7Y/9bScFGbadPvP4gb2vMqXUzFBdSj0DpgM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713433473; c=relaxed/simple;
-	bh=Almhm7EmJOze8Bt25QP+KeiGORDpSLyCg+DsR0jsOXw=;
+	s=arc-20240116; t=1713436028; c=relaxed/simple;
+	bh=snJLjn63STpeMflAGhp2j2GxYJy8Px6zZ4o/bbeFQLE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QJjc4YHNnLXQHN0sncMiTuYkZRIsIJIYdG0gVV+gFGJ9IQyoi+XYzpPUIKKdTRKWWkanwII1131Agzu2A3zq4/DToLt8SE8GWsmPRgm9JOgOozZ1K6s2t2fWL0hLikBQm/sChIhejEbJbgFMq2ZBvAolLiL1jrugtdLjEdzvrXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ljztmPpK; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=KZZzyv8LA0QwpWWfNhqdg6HNJo6jn9dIl+qiileaFaLXp7sFfOLoI6XB8Aa/yODEPZTGpTC2fOGNRm/y0oz/BCNfkJ5bRlqNNbH5qjqpATfBuBfR7QuypvXg9tJOXWZOa6wvlxmhKQPmFvWAHT7GoxF+wbqeBOa8VL0aLBRZoZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lZYNYMlL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ljztmPpK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713433472; x=1744969472;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Almhm7EmJOze8Bt25QP+KeiGORDpSLyCg+DsR0jsOXw=;
-  b=ljztmPpKPOTdGVVwGfW4HxDj50VrCe+Vn+RzPE6j8CSwVb6SHFRPpq2l
-   4olomKUNYDFYKmScXAyv1fF7ysEopwr6gdRK+98XHFmLN/d7rNCU5F3Ty
-   IVGDtyy7Flw4hD2TqGbUIxCQHL5Kti0CK/XYW0lnl++/He0faVjfYadpo
-   7Y+Vejnvb/B7/FsSwQqxJiWfHK7aoAerzQvFPEXQ6LQVxHbIJzqXpX3zC
-   0r2UzvytcQIGxglo6nmA4gnp8RrxgRZ6GjkU9aeVF1mPmaWmSWdZFFuty
-   o61izWeKoJAfrWnzrDCADV+78+sQZAJTmdQmHSnKWfVhe7c7sbSxmEJb6
-   A==;
-X-CSE-ConnectionGUID: aLFY8dS5RfK+xsDpCVD5NQ==
-X-CSE-MsgGUID: RIoTKXEyQX67NYjsSdP8eg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="12754079"
-X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="12754079"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 02:43:31 -0700
-X-CSE-ConnectionGUID: FczCJVUoTgef2Wb+gIihNw==
-X-CSE-MsgGUID: /TKLrt2sSbOsNLJb1Lqs7w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="23356524"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa006.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 02:43:29 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rxOIf-00000000HpB-2vZ4;
-	Thu, 18 Apr 2024 12:43:25 +0300
-Date: Thu, 18 Apr 2024 12:43:25 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dmaengine: dw: Add peripheral bus width verification
-Message-ID: <ZiDrPSb7YxeooHzC@smile.fi.intel.com>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-2-fancer.lancer@gmail.com>
- <Zh680h4h6hURIb82@smile.fi.intel.com>
- <ut5notgwnjdj7ex3jeo7jnbdc2vhopebdg3miepto2wfrxti4b@b2xksvotrgph>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lZYNYMlL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580AEC113CC;
+	Thu, 18 Apr 2024 10:27:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713436028;
+	bh=snJLjn63STpeMflAGhp2j2GxYJy8Px6zZ4o/bbeFQLE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lZYNYMlL6+m5qAygccM2JtYn9DVn+P1lAFPGiWSoqdWfRBDA9GXziZwMOri0QZf1W
+	 Iwutv+zX2BIYkDUooZ7CNqfm+mg2s4mGHS2auJeUNaIqjL44wonuI3wj6icZWhr8xz
+	 P1FilN4xeyx+x5fhxQqU3i+b4/dCH0bbkqaJS+XJZguP+rmFtnErBvcWSSB2cHKul9
+	 vwAn+xc9IGbWCErkYRBgCnv5YlA3xw+KE/k6lIydtfa/cdYPpHqrIUtNncQhYOCpL/
+	 ucUq/ycAn3QVbe07+0V5+tp9bp5gU7AAJlg3eQZS2yez3dGzl0w0C50ZtwUQ0/fkBC
+	 d1V+t7cnjJCqg==
+Date: Thu, 18 Apr 2024 12:27:02 +0200
+From: Alexey Gladkov <legion@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+	kbd@lists.linux.dev, linux-api@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-serial@vger.kernel.org,
+	Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH v5 2/3] VT: Add KDFONTINFO ioctl
+Message-ID: <ZiD1dih_LQik_zWS@example.org>
+References: <cover.1712080158.git.legion@kernel.org>
+ <cover.1713375378.git.legion@kernel.org>
+ <bd2755e7b6ebe9b49e82d04d9908a176e0fe2f15.1713375378.git.legion@kernel.org>
+ <2024041830-feisty-gristle-5fd0@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,84 +47,196 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ut5notgwnjdj7ex3jeo7jnbdc2vhopebdg3miepto2wfrxti4b@b2xksvotrgph>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <2024041830-feisty-gristle-5fd0@gregkh>
 
-On Wed, Apr 17, 2024 at 10:54:42PM +0300, Serge Semin wrote:
-> On Tue, Apr 16, 2024 at 09:00:50PM +0300, Andy Shevchenko wrote:
-> > On Tue, Apr 16, 2024 at 07:28:55PM +0300, Serge Semin wrote:
+On Thu, Apr 18, 2024 at 08:18:33AM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Apr 17, 2024 at 07:37:36PM +0200, Alexey Gladkov wrote:
+> > Each driver has its own restrictions on font size. There is currently no
+> > way to understand what the requirements are. The new ioctl allows
+> > userspace to get the minimum and maximum font size values.
+> 
+> Is there any userspace code that uses this yet that we can point to
+> here?
 
-...
+Yes. I have a code that uses this. It waits for this ioctl to appear in
+the kernel.
 
-> > > +	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
-> > > +		reg_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-> > > +	else if (!is_power_of_2(reg_width) || reg_width > max_width)
-> > > +		return -EINVAL;
-> > > +	else /* bus width is valid */
-> > > +		return 0;
-> > > +
-> > > +	/* Update undefined addr width value */
-> > > +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
-> > > +		dwc->dma_sconfig.dst_addr_width = reg_width;
-> > > +	else /* DMA_DEV_TO_MEM */
-> > > +		dwc->dma_sconfig.src_addr_width = reg_width;
+https://git.kernel.org/pub/scm/linux/kernel/git/legion/kbd.git/commit/?h=kdfontinfo-v1&id=e2ad0117ca8e46cedd8668934db7b04e9054d5d7
+
+> I know tty ioctls are woefully undocumented, but could there be some
+> documentation here?
+
+Yes, this is a big problem for this interface. The ioctl_console(2)
+describes PIO_FONT/PIO_FONTX, which is no longer supported, but does not
+describe KDFONTOP at all, which is exactly used by userspace.
+
+My TODO has a task to fix this.
+
+But I would suggest creating documentation in the kernel because life
+shows that man-page is far behind what is implemented.
+
 > > 
+> > Acked-by: Helge Deller <deller@gmx.de>
+> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> > ---
+> >  drivers/tty/vt/vt.c       | 24 ++++++++++++++++++++++++
+> >  drivers/tty/vt/vt_ioctl.c | 13 +++++++++++++
+> >  include/linux/console.h   |  3 +++
+> >  include/linux/vt_kern.h   |  1 +
+> >  include/uapi/linux/kd.h   | 14 ++++++++++++++
+> >  5 files changed, 55 insertions(+)
+> > 
+> > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> > index 9b5b98dfc8b4..e8db0e9ea674 100644
+> > --- a/drivers/tty/vt/vt.c
+> > +++ b/drivers/tty/vt/vt.c
+> > @@ -4851,6 +4851,30 @@ int con_font_op(struct vc_data *vc, struct console_font_op *op)
+> >  	return -ENOSYS;
+> >  }
+> >  
+> > +int con_font_info(struct vc_data *vc, struct console_font_info *info)
+> > +{
+> > +	int rc;
+> > +
+> > +	info->min_height = 0;
+> > +	info->max_height = max_font_height;
+> > +
+> > +	info->min_width = 0;
+> > +	info->max_width = max_font_width;
+> > +
+> > +	info->flags = KD_FONT_INFO_FLAG_LOW_SIZE | KD_FONT_INFO_FLAG_HIGH_SIZE;
+> > +
+> > +	console_lock();
+> > +	if (vc->vc_mode != KD_TEXT)
+> > +		rc = -EINVAL;
+> > +	else if (vc->vc_sw->con_font_info)
+> > +		rc = vc->vc_sw->con_font_info(vc, info);
+> > +	else
+> > +		rc = -ENOSYS;
+> > +	console_unlock();
+> > +
+> > +	return rc;
+> > +}
+> > +
+> >  /*
+> >   *	Interface exported to selection and vcs.
+> >   */
+> > diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+> > index 4b91072f3a4e..9a2f8081f650 100644
+> > --- a/drivers/tty/vt/vt_ioctl.c
+> > +++ b/drivers/tty/vt/vt_ioctl.c
+> > @@ -479,6 +479,19 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+> >  		break;
+> >  	}
+> >  
+> > +	case KDFONTINFO: {
+> > +		struct console_font_info fnt_info;
+> > +
+> > +		memset(&fnt_info, 0, sizeof(fnt_info));
+> > +
+> > +		ret = con_font_info(vc, &fnt_info);
 > 
-> > So, can't you simply call clamp() for both fields in dwc_config()?
+> Shouldn't con_font_info() memset it first?  No need to do it in the
+> caller.
 > 
-> Alas I can't. Because the addr-width is the non-memory peripheral
-> setting. We can't change it since the client drivers calculate it on
-> the application-specific basis (CSR widths, transfer length, etc). So
-> we must make sure that the specified value is supported.
-
-What I meant is to convert this "update" part to the clamping, so
-we will have the check as the above like
-
-_verify_()
-{
-	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
-		return -E...;
-	if (!is_power_of_2(reg_width) || reg_width > max_width)
-		return -EINVAL;
-
-	/* bus width is valid */
-	return 0;
-}
-
-dwc_config()
-{
-	err = ...
-	if (err = ...)
-		clamp?
-	else if (err)
-		return err;
-}
-
-But it's up to you to choose the better variant. I just share the idea.
-
-> > > +	return 0;
-> > > +}
-
-...
-
-> > > +	int err;
+> > +		if (ret)
+> > +			return ret;
+> > +		if (copy_to_user(up, &fnt_info, sizeof(fnt_info)))
+> > +			return -EFAULT;
+> > +		break;
+> > +	}
+> > +
+> >  	default:
+> >  		return -ENOIOCTLCMD;
+> >  	}
+> > diff --git a/include/linux/console.h b/include/linux/console.h
+> > index 31a8f5b85f5d..4b798322aa01 100644
+> > --- a/include/linux/console.h
+> > +++ b/include/linux/console.h
+> > @@ -21,6 +21,7 @@
+> >  #include <linux/vesa.h>
+> >  
+> >  struct vc_data;
+> > +struct console_font_info;
+> >  struct console_font_op;
+> >  struct console_font;
+> >  struct module;
+> > @@ -102,6 +103,8 @@ struct consw {
+> >  	bool	(*con_switch)(struct vc_data *vc);
+> >  	bool	(*con_blank)(struct vc_data *vc, enum vesa_blank_mode blank,
+> >  			     bool mode_switch);
+> > +	int	(*con_font_info)(struct vc_data *vc,
+> > +				 struct console_font_info *info);
 > 
-> > Hmm... we have two functions one of which is using different name for this.
+> To make the names more obvious, how about:
+> 	con_font_info_get()?
 > 
-> Right, the driver uses both variants (see of.c, platform.c, pci.c too).
+> >  	int	(*con_font_set)(struct vc_data *vc,
+> >  				const struct console_font *font,
+> >  				unsigned int vpitch, unsigned int flags);
+> > diff --git a/include/linux/vt_kern.h b/include/linux/vt_kern.h
+> > index d008c3d0a9bb..383b3a4f6113 100644
+> > --- a/include/linux/vt_kern.h
+> > +++ b/include/linux/vt_kern.h
+> > @@ -33,6 +33,7 @@ void do_blank_screen(int entering_gfx);
+> >  void do_unblank_screen(int leaving_gfx);
+> >  void poke_blanked_console(void);
+> >  int con_font_op(struct vc_data *vc, struct console_font_op *op);
+> > +int con_font_info(struct vc_data *vc, struct console_font_info *info);
+> >  int con_set_cmap(unsigned char __user *cmap);
+> >  int con_get_cmap(unsigned char __user *cmap);
+> >  void scrollback(struct vc_data *vc);
+> > diff --git a/include/uapi/linux/kd.h b/include/uapi/linux/kd.h
+> > index 8ddb2219a84b..68b715ad4d5c 100644
+> > --- a/include/uapi/linux/kd.h
+> > +++ b/include/uapi/linux/kd.h
+> > @@ -185,6 +185,20 @@ struct console_font {
+> >  
+> >  #define KD_FONT_FLAG_DONT_RECALC 	1	/* Don't recalculate hw charcell size [compat] */
+> >  
+> > +/* font information */
+> > +
+> > +#define KD_FONT_INFO_FLAG_LOW_SIZE	_BITUL(0) /* 256 */
+> > +#define KD_FONT_INFO_FLAG_HIGH_SIZE	_BITUL(1) /* 512 */
 > 
-> > Can we have a patch to convert to err the other one?
+> I don't understand why bit 0 and bit 1 have those comments after them.
+> That's confusing (i.e. bit 0 is NOT 256...)
 > 
-> To be honest I'd prefer to use the "ret" name instead. It better
-> describes the variable usage context (Although the statements like "if
-> (err) ..." look a bit more readable). So I'd rather convert the "err"
-> vars to "ret". What do you think?
-
-I'm fine with any choice, just my point is to get it consistent across
-the driver.
+> > +
+> > +struct console_font_info {
+> > +	__u32  flags;			/* KD_FONT_INFO_FLAG_* */
+> 
+> Why are there flags if you are only setting these 2 values?  What are
+> the flags for?
+> 
+> If this is going to be a "multiplexed" type of structure, then make it a
+> union?  Or maybe we are totally over thinking this whole thing.
+> 
+> All you want is the min/max font size of the console, right?  So perhaps
+> the whole structure is just:
+> 
+> > +	__u32 min_width, min_height;	/* minimal font size */
+> > +	__u32 max_width, max_height;	/* maximum font size */
+> 
+> Those 4 variables?  Why have anything else here at all?  For any new
+> thing you wish to discover, have it be a new ioctl?
+> 
+> > +	__u32 reserved[5];		/* This field is reserved for future use. Must be 0. */
+> 
+> I understand the "must be 0" but this is a read-only structure, so
+> saying "it will be set to 0" might be better?"  Or something like that?
+> 
+> > +};
+> > +
+> > +#define KDFONTINFO	_IOR(KD_IOCTL_BASE, 0x73, struct console_font_info)
+> 
+> As mentioned above how about KDFONTINFOGET?
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Rgrds, legion
 
