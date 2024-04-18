@@ -1,149 +1,168 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D7216D4C7;
-	Thu, 18 Apr 2024 15:37:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF0F4D9E8;
+	Thu, 18 Apr 2024 15:47:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713454654; cv=none; b=PnnptcrI9KZl6/wpdkPEWffs21wgHwHzhotHw8AfPr5qBJXMf4yi1aXG37ilD40Jv4BN9/RZnDLgci1fbMLSV62rnE0n4fj9ZUIQwLClv8I6bExJHXHN9Zsqhldq8kwlL47e7ZNVzIVpkU01xtZehJaOEDTjCK9yY4QQSkro31I=
+	t=1713455234; cv=none; b=IOSK7KTR91t8r/YgzcMXDQL5cror50LIZL9Lzicz13zEy8rcWd2ql4gW0dzUZcftPh2C4ldOoMWNtJI50GTnt+2KrxcJNPIhrbSQXzkwR5lTZLTf3VFTST5chhjJtrk146nmJQBIiOdZWv4B8KF0we3KbWEFTeZYhjtv1JSAiFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713454654; c=relaxed/simple;
-	bh=xrOseHxGhJJjbzBk9CbfMrD6MMhOfu9NvA7fUAzlpU4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=nJ8YjsNlk9/kLPdwUDq02azhPTKPe4V3e/4YLhnKgfYRtCEdUoqJjuRqP0ydMInVPRxfVk1iVktFTg61zrC+N6z3VsRT6G//xbbVqJLzPaKHKxfOW1X39AfgE1oJMFatEgEWQSsUc/fNZyG3wL+T2chmCuNo5KgOyH6y5KA2bME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=r5fbv7oE; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1713455234; c=relaxed/simple;
+	bh=M+QSrsfB7NABO5qemPEQ3RI5tFnJexvhpiIJ/e7kwxs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g6JFb1ZtRIWbg3hQnsk/5agEY0048yUovS3648XlgW9uvfdqHhb+Lb5kgX9ecnkIYqs7gcN5w4aNanTVPbXcVmaP0+2AnMAxqfon8Gul8dt4Wx15/SG/LBZpDM2KQu0z/MuQuDIKsUw58PPl15yyHpdDDukYe1rn9v+X/GJLcS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W5NBinHQ; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="r5fbv7oE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713454633; x=1714059433; i=parker@finest.io;
-	bh=Ph05WVH8sofutm+g3QQ5ry41ZKtih+7xDUpbKSmjN4I=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=r5fbv7oEwfLqrnoh+j/ksY4L5IwuHNOKOQeg0k/XemuRryPSYclJ2FLiJ4ctSoUX
-	 7hnv6uks6oawn5/EjnLQHd1lS1rcv9dYz2wNzdaJVGB1KD4OHIZdMSD3oa0SxEM6o
-	 7O1NkCAhUWjoY01I+LJiBNpYWBNw0tTfrbQqopTr59lGbN3d3p/GRSxaadDhd4Z1v
-	 TZOcXu/PyVty3JmJUH5qjfBC4HaZDtS3V1eI5VphuNN01mxzH8jgzs3yBuSJlj5Hw
-	 viUxMSWZWgf5aEdqYVeaLG5hkYY3miIQdTGWyFUEJMcd44n/KJ90DwsvHD90O61Ng
-	 OkUKA3CuNBwF3Oy+Hw==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0LbL7E-1sQil122iA-00bgXD; Thu, 18 Apr
- 2024 17:37:13 +0200
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v1 4/4] serial: exar: change port_type ternary line wrapping
-Date: Thu, 18 Apr 2024 11:36:31 -0400
-Message-ID: <0081b6a7bbe1ad6ce114132f9ee86677a761de6d.1713452766.git.pnewman@connecttech.com>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <cover.1713452766.git.pnewman@connecttech.com>
-References: <cover.1713452766.git.pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W5NBinHQ"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-516d0c004b1so1298927e87.2;
+        Thu, 18 Apr 2024 08:47:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713455231; x=1714060031; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pgivi16PEU1cW2TB4a2zL/2NxGpEoLOZG1KSg6mlhCw=;
+        b=W5NBinHQQ8in4PfmEo5tN1J9N1StCnje+HRndcv9T0B+DF8lNzCDpNPOLCKopH2JuT
+         hiZTjz/bX9FLw/fUyHTi7hHj5r9X6ajy55T9X+cWFKsHKOYnAA6uJt2gjA5RUbgIg9J/
+         PQFmW6zXBQS1ViLPnNS3PKDSehtOmhVu+QsSriAu8cCRyGS6D2DRV8HUQIWgds+ILTpJ
+         m+BVas4CXVkubE3ol1+8s6AHuMtPiKpUWnf9prVoWcaDaaiixJtHjvR/BtmoUPq+aXd/
+         b4fhv+UO46G2nB78jiOT1NIi0+8FlfefgaBWG9foO/WZOaIqy2+dFi0SvJRCbvWT8FFB
+         Hitg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713455231; x=1714060031;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pgivi16PEU1cW2TB4a2zL/2NxGpEoLOZG1KSg6mlhCw=;
+        b=iRF4m7QAOJFYYmpFSKZzJ7y0uvWPggL/yIc0VhLh8bznn3nfQX/uFGvlxahRPKE4kJ
+         yEkIvUlOoO9vrdkM3vJads6VFG/rcRNEN1+h2xM+phsk+eiQNhee/y1Z3hwZm/ty+T4j
+         FXVI/LJGv+QvoS05OwNjunD6P/+Xf3BG118H4MoCuHiJPAyIWnCj8LeWBW5qL3pe23c8
+         PJDORiWaSJBUXdtaQWc8MZo5PAUuz8FevBdzqqtqr+0c7oYnKNgyCF/7ghQeANqCPU9a
+         4aPmk2OBQfSollS8giw/5tZ5qdNhu80t3Uq9rdVWXEalIHtRf0ZO15gFKulz9LCCJOfB
+         6bbg==
+X-Forwarded-Encrypted: i=1; AJvYcCU0BTKYYxYthCvQl4eujexbxwlXBOgNzw/qKKMF+zcXLYNxuUBh27lhWSTZA8G7R99HBYIoCdVD/Li0APejI7YyvtD09/M5oPUl04GSOIyhefYxSCNBtp5mHj0yjUW8aYIfymQ6TfIP7A8DzZf6TQotPZN47hmYjQFMwRfY51kAA9iRcQG9
+X-Gm-Message-State: AOJu0YwKoGmGXMO5JHO0DfVrPHlV5kEGttAvlAKAeJLDtEmSGeQTeCqZ
+	tuA+ZSxOxWNnCqhCF7dKNv15MvFCQikZ7KZzbDWwhlMwXrQwWTh8
+X-Google-Smtp-Source: AGHT+IGWcN3FvGWp6gZos5U+UHsVlZJR/jG/G6MZjGQIeNt/Fu7eNSkwawtWUFXFo+Y7+tpmVTxOiw==
+X-Received: by 2002:a19:910c:0:b0:515:ab7f:b13e with SMTP id t12-20020a19910c000000b00515ab7fb13emr2560271lfd.33.1713455230894;
+        Thu, 18 Apr 2024 08:47:10 -0700 (PDT)
+Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
+        by smtp.gmail.com with ESMTPSA id e24-20020ac25478000000b00518eb215bbfsm284403lfn.107.2024.04.18.08.47.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Apr 2024 08:47:10 -0700 (PDT)
+Date: Thu, 18 Apr 2024 18:47:08 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dmaengine: dw: Add peripheral bus width verification
+Message-ID: <uvun5magjf4wy4qcwzhzrwfqoquktsgdk7rr7dx6avl5zun37h@i3fx4irnkcx4>
+References: <20240416162908.24180-1-fancer.lancer@gmail.com>
+ <20240416162908.24180-2-fancer.lancer@gmail.com>
+ <Zh680h4h6hURIb82@smile.fi.intel.com>
+ <ut5notgwnjdj7ex3jeo7jnbdc2vhopebdg3miepto2wfrxti4b@b2xksvotrgph>
+ <ZiDrPSb7YxeooHzC@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:fEdVUzoim6yTgaflYo7WrYliLGG0Wd9ACHr3RzLIhaHdwvKaju9
- HWlFhCpk0hiZYrfoc0FF7pIRylyoh1sT4OKHwi7t6+nVgn2YVeeaUEm9zo2SPsNe4y2KRX/
- wFdQJCqCT6oKVg5sgieP74HMhPeIHtFDMd6aYgYNc/GGM0/VZ+Kz9JI15Ahjr7K/iycRQfo
- iNhp/q8p9PiQdWqdESFLg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Pq4BudVsxuU=;/kKc52QHcdEgk6SZ40r+13oNiO9
- y0Hdf6jbiYkC817XjeW3l99+fHoN98GGqpHGbLX7/kRj1AU8S9SNkzuaeGzHb0tnDhQSCldco
- oSXEqc0q59StSVzfkkLGB2EztL41q5RoCtNBnqzDJWLbhAQgtN+7HFxT98Ugcj0s/QGgHnlsQ
- MvPJwBpvlFsxjfrJnFR8gUSofhX5FrrcjLym9Ros+zljucxYs3BBPw92aOEkaraZmKHwoHG7v
- cVjW3+3u8XZI0Gc+9jpTY1aXNKcDP8wwAKCOAcQvcui0exB8jn//hbLXpcxlUY+z0qZF+j9f7
- WbGq1yHPaZriXjnbnam0bIif2XYyJGsltl1XYvreb/jNnou7Aak/qVaYGcL9LSM/gvXmMzUHW
- xcmscw7G9kHPYhDWgX1lUi/R+LNOJe7L6fggQ9I3Ks3flJux3mZlg2qbu73ittHpVsF7I6COU
- yePrv1WUpljSCBYgeyaz9nERZU5xQOcUdUA4QpklNcwDYgaaGasaiG/w7Z63n3uW9KFTjgt9/
- PARSvKDF8YFcQUO/eFU4kRxf88CkF6PFp+UgjHveZs2h4a1tI2+ze/MQf50goBItoGoR1Ya0z
- CoaqZtsJuBgz2mrBosFUb7CZ3DExmxVQ4oCEI/SoQ5ZCRiCCDE2eRHe/tb2f0syBGGf6c5gYe
- JNl5ZvgpaKEQxz0QatBkO6k4ulHawUNIgA8SWwnPAPVZFpJl9z189I9P6HwWhUasDAHuyEHrP
- 1wQ34J7Pf2v6An3zwxMwbJb7SKcSXodYTHZ7KA/iQjmqbnWZBFiGd0=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZiDrPSb7YxeooHzC@smile.fi.intel.com>
 
-From: Parker Newman <pnewman@connecttech.com>
+On Thu, Apr 18, 2024 at 12:43:25PM +0300, Andy Shevchenko wrote:
+> On Wed, Apr 17, 2024 at 10:54:42PM +0300, Serge Semin wrote:
+> > On Tue, Apr 16, 2024 at 09:00:50PM +0300, Andy Shevchenko wrote:
+> > > On Tue, Apr 16, 2024 at 07:28:55PM +0300, Serge Semin wrote:
+> 
+> ...
+> 
+> > > > +	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
+> > > > +		reg_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
+> > > > +	else if (!is_power_of_2(reg_width) || reg_width > max_width)
+> > > > +		return -EINVAL;
+> > > > +	else /* bus width is valid */
+> > > > +		return 0;
+> > > > +
+> > > > +	/* Update undefined addr width value */
+> > > > +	if (dwc->dma_sconfig.direction == DMA_MEM_TO_DEV)
+> > > > +		dwc->dma_sconfig.dst_addr_width = reg_width;
+> > > > +	else /* DMA_DEV_TO_MEM */
+> > > > +		dwc->dma_sconfig.src_addr_width = reg_width;
+> > > 
+> > 
+> > > So, can't you simply call clamp() for both fields in dwc_config()?
+> > 
+> > Alas I can't. Because the addr-width is the non-memory peripheral
+> > setting. We can't change it since the client drivers calculate it on
+> > the application-specific basis (CSR widths, transfer length, etc). So
+> > we must make sure that the specified value is supported.
+> 
+> What I meant is to convert this "update" part to the clamping, so
+> we will have the check as the above like
+> 
+> _verify_()
+> {
+> 	if (reg_width == DMA_SLAVE_BUSWIDTH_UNDEFINED)
+> 		return -E...;
+> 	if (!is_power_of_2(reg_width) || reg_width > max_width)
+> 		return -EINVAL;
+> 
+> 	/* bus width is valid */
+> 	return 0;
+> }
+> 
+> dwc_config()
+> {
+> 	err = ...
+> 	if (err = ...)
+> 		clamp?
+> 	else if (err)
+> 		return err;
+> }
+> 
+> But it's up to you to choose the better variant. I just share the idea.
 
-Change line wrapping of ternary operators in
-cti_get_port_type_xr17c15x_xr17v25x() for better readability.
+Ok. Thanks for the suggestion. But I'll stick to my solution then. The
+specified *_addr_width values can't/shouldn't be clamped anyway and
+having a single verification function will comply to what will be
+implemented for the rest of the dwc_onfig() parts in this patchset.
 
-Old example:
+> 
+> > > > +	return 0;
+> > > > +}
+> 
+> ...
+> 
+> > > > +	int err;
+> > 
+> > > Hmm... we have two functions one of which is using different name for this.
+> > 
+> > Right, the driver uses both variants (see of.c, platform.c, pci.c too).
+> > 
+> > > Can we have a patch to convert to err the other one?
+> > 
+> > To be honest I'd prefer to use the "ret" name instead. It better
+> > describes the variable usage context (Although the statements like "if
+> > (err) ..." look a bit more readable). So I'd rather convert the "err"
+> > vars to "ret". What do you think?
+> 
 
-	port_type =3D port_num =3D=3D 0 ?
-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+> I'm fine with any choice, just my point is to get it consistent across
+> the driver.
 
-New:
-	port_type =3D port_num =3D=3D 0 ? CTI_PORT_TYPE_RS232 :
-				CTI_PORT_TYPE_RS422_485;
+Ok. "ret" it is then.
 
-Based on feedback from:
-Link: https://lore.kernel.org/linux-serial/f2353b8c-2079-b895-2707-f6be831=
-61288@linux.intel.com
+-Serge(y)
 
-Signed-off-by: Parker Newman <pnewman@connecttech.com>
-=2D--
- drivers/tty/serial/8250/8250_exar.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
-/8250_exar.c
-index 10725ad0f3ef..a76b4e5bab4e 100644
-=2D-- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -741,19 +741,19 @@ static enum cti_port_type cti_get_port_type_xr17c15x=
-_xr17v25x(struct exar8250 *p
- 		break;
- 	// 1x RS232, 1x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
--		port_type =3D port_num =3D=3D 0 ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		port_type =3D port_num =3D=3D 0 ? CTI_PORT_TYPE_RS232 :
-+					CTI_PORT_TYPE_RS422_485;
- 		break;
- 	// 2x RS232, 2x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
--		port_type =3D port_num < 2 ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		port_type =3D port_num < 2 ? CTI_PORT_TYPE_RS232 :
-+					CTI_PORT_TYPE_RS422_485;
- 		break;
- 	// 4x RS232, 4x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
--		port_type =3D port_num < 4 ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		port_type =3D port_num < 4 ? CTI_PORT_TYPE_RS232 :
-+					CTI_PORT_TYPE_RS422_485;
- 		break;
- 	// RS232/RS422/RS485 HW (jumper) selectable
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
-@@ -789,13 +789,13 @@ static enum cti_port_type cti_get_port_type_xr17c15x=
-_xr17v25x(struct exar8250 *p
- 		break;
- 	// 6x RS232, 2x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
--		port_type =3D port_num < 6 ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		port_type =3D port_num < 6 ? CTI_PORT_TYPE_RS232 :
-+					CTI_PORT_TYPE_RS422_485;
- 		break;
- 	// 2x RS232, 6x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
--		port_type =3D port_num < 2 ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-+		port_type =3D port_num < 2 ? CTI_PORT_TYPE_RS232 :
-+					CTI_PORT_TYPE_RS422_485;
- 		break;
- 	default:
- 		dev_err(&pcidev->dev, "unknown/unsupported device\n");
-=2D-
-2.43.2
-
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
