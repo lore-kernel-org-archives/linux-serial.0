@@ -1,94 +1,87 @@
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
+Received: from forward501b.mail.yandex.net (forward501b.mail.yandex.net [178.154.239.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1188B15AAA4;
-	Thu, 18 Apr 2024 13:54:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.79.152.223
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23DEB165FA1;
+	Thu, 18 Apr 2024 13:57:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713448485; cv=none; b=hphZctdtUlPPotSqJYxUCjn1VknNG120tPNILaX9d9tYYUGyTT03N/sUBzMTi0DqotvOE6OcmXSq3lGy3hEpyyaYst9FGS1iN5HfVjPwrJu8ze3/5ah2NWOQJOxszQkDLDL/k82O8PZgkK9gMPFmsKeDG2W3n4UYonuV6+fLU6U=
+	t=1713448678; cv=none; b=Hv+lVazpOCuob4l6gYFa3FTwMHoRzormEfr1Vj9NFVvyrtrUvqxNSMvpWBdfJGwmpK5hAM3QhpGaFIJU/fNwPGeJ9oRftvRfa2PL9ztqljxGJ3OKaqR/eQ8jIafKdEDmVBFM/en5Q688qU5Sd7q8cmkX4WO+9veompGBxwMXZ6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713448485; c=relaxed/simple;
-	bh=d4qDJxtj0TKPWtUGjhTmuDRXiwM9jmNP0Ljg54XpF3U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sr9xqKv8E1+RQps1boxweYPqNB9SjOhrZF7n7szPejLhM5/QwpV10wYxKwkkZ5tLpM6tr1BMPnPTnhlpT0uqr2kL2OdGbNSvNYdrNQQi26nrR7m1QmTYiixiHhuOEf8x3CuL5LXHcWAKkkY8nR1TMNrBxdm5AA1MYdtnXCrsHcg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com; spf=none smtp.mailfrom=mleia.com; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=uCvMHtqw; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=uCvMHtqw; arc=none smtp.client-ip=178.79.152.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mleia.com
+	s=arc-20240116; t=1713448678; c=relaxed/simple;
+	bh=ZhlL4tjht7GlG67GG9kDbL7UVrYgSu0/4n5O5L0wbUY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=pQud/LlnLqW5j0rEMhkJinLPj4ifUuy8nYrT5WHTRO3nyEOp0YnuOamOOXUORufeIWckihNZ9wisT+0PpTUWCZfbHNnFCRI4dLDPilnbzukmHCY2UxpQ7w+NzWid0Ybf45yBZ8L2SgBaQ1fKKNuJgBtXQLXxfT96hmbdO65IvsQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=eRoC1Yhv; arc=none smtp.client-ip=178.154.239.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="uCvMHtqw";
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="uCvMHtqw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1713448026; bh=d4qDJxtj0TKPWtUGjhTmuDRXiwM9jmNP0Ljg54XpF3U=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uCvMHtqwEOf8PCo2M08gknm7c5L8y8eo9UzDePHvd/Rt1vR1zjUDSpGfQj8S2proF
-	 JOOHDuwjGUlf+otQ3hsiw2lRRPb+Z2vpqpQSHDcZsX2lgf8LhpF2tqpyeW02wgr/Hd
-	 zggQgDgnU6uw9dUFHGsCezaWXxTtzw+XLxtAcTIgj8f+l0taPw5+xgqnHBuGngCg73
-	 uttu9dP4Xx0j2nYuk5slhze8++ZcIBPw+HadMrH8FtdqFflqpj6UlON7Ykk0NPRiPO
-	 RAL6jfhm3KP55CXAqpPLwm6/k9W1Yps1CX+4mmE7fi7hqGOBEM2UlPbYqRaEp9r/FV
-	 /exwmV9lPQBww==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-	by mail.mleia.com (Postfix) with ESMTP id 937EA4677E3;
-	Thu, 18 Apr 2024 13:47:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1713448026; bh=d4qDJxtj0TKPWtUGjhTmuDRXiwM9jmNP0Ljg54XpF3U=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uCvMHtqwEOf8PCo2M08gknm7c5L8y8eo9UzDePHvd/Rt1vR1zjUDSpGfQj8S2proF
-	 JOOHDuwjGUlf+otQ3hsiw2lRRPb+Z2vpqpQSHDcZsX2lgf8LhpF2tqpyeW02wgr/Hd
-	 zggQgDgnU6uw9dUFHGsCezaWXxTtzw+XLxtAcTIgj8f+l0taPw5+xgqnHBuGngCg73
-	 uttu9dP4Xx0j2nYuk5slhze8++ZcIBPw+HadMrH8FtdqFflqpj6UlON7Ykk0NPRiPO
-	 RAL6jfhm3KP55CXAqpPLwm6/k9W1Yps1CX+4mmE7fi7hqGOBEM2UlPbYqRaEp9r/FV
-	 /exwmV9lPQBww==
-Message-ID: <ca1e249b-2f2b-4936-8c88-935c3112356e@mleia.com>
-Date: Thu, 18 Apr 2024 16:47:04 +0300
+	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="eRoC1Yhv"
+Received: from mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net [IPv6:2a02:6b8:c08:c8ad:0:640:7c75:0])
+	by forward501b.mail.yandex.net (Yandex) with ESMTPS id F118261590;
+	Thu, 18 Apr 2024 16:57:52 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id gvF5FWNoJ8c0-d4s2iy88;
+	Thu, 18 Apr 2024 16:57:52 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
+	t=1713448672; bh=TvATYFolPsmsitecl5MtmkLtQMecqxUnnNMJDk5m6iw=;
+	h=Message-Id:Date:In-Reply-To:Cc:Subject:References:To:From;
+	b=eRoC1YhvKeUwU5setA+cJMFuZa34BpfFtcWC9Lp9PTV79tdENeELNGqZBbG9xahoD
+	 6h0BDbRbfBVk7hFGtdj58pwJatXxY1bOoke3ud7SpR5SPIvbhnvhDRZzzRz3Y1R2Ur
+	 BxMK4oW48lqrzi49G1BAVXRZc+j6LthJAmqx8L2Q=
+Authentication-Results: mail-nwsmtp-smtp-production-main-25.sas.yp-c.yandex.net; dkim=pass header.i=@ya.ru
+From: Konstantin Pugin <rilian.la.te@ya.ru>
+To: 
+Cc: Konstantin Pugin <ria.freelander@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v2 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
+Date: Thu, 18 Apr 2024 16:57:32 +0300
+Message-Id: <20240418135737.3659498-2-rilian.la.te@ya.ru>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240418135737.3659498-1-rilian.la.te@ya.ru>
+References: <20240418135737.3659498-1-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] serial: sc16is7xx: Add bindings documentation for
- EXAR XR20M1172 UART
-Content-Language: en-US
-To: Konstantin <rilian.la.te@ya.ru>
-Cc: Konstantin <ria.freelander@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Lech Perczak <lech.perczak@camlingroup.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-References: <20240418132508.3447800-1-rilian.la.te@ya.ru>
- <20240418132508.3447800-3-rilian.la.te@ya.ru>
-From: Vladimir Zapolskiy <vz@mleia.com>
-In-Reply-To: <20240418132508.3447800-3-rilian.la.te@ya.ru>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20240418_134706_631872_0B25327F 
-X-CRM114-Status: UNSURE (   8.06  )
-X-CRM114-Notice: Please train this message. 
+Content-Transfer-Encoding: 8bit
 
-Hi Konstantin,
+From: Konstantin Pugin <ria.freelander@gmail.com>
 
-On 4/18/24 16:25, Konstantin wrote:
-> From: Konstantin <ria.freelander@gmail.com>
+Hardware supports both modes, but after
+commit 4afeced55baa ("serial: core: fix sanitizing check for RTS settings")
+we always end up with SER_RS485_RTS_AFTER_SEND and always write in
+register SC16IS7XX_EFCR_RTS_INVERT_BIT,
+which breaks some hardware using these chips,
 
-please use a full name, which points to the author of the change, thank you!
+Fixes: 267913ecf737 ("serial: sc16is7xx: Fill in rs485_supported")
+Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This patch adds the devicetree documentation for the XR20M1172 UART.
-> 
-> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 929206a9a6e1..a300eebf1401 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1458,7 +1458,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
+ }
+ 
+ static const struct serial_rs485 sc16is7xx_rs485_supported = {
+-	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND,
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
+ 	.delay_rts_before_send = 1,
+ 	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
+ };
+-- 
+2.34.1
 
-Other than that the change is good from my point of view.
-
-Please make the requested update, add my tag below and resubmit v2 of the change.
-
-Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-
---
-Best wishes,
-Vladimir
