@@ -1,248 +1,261 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CDFC8C1F
-	for <linux-serial@vger.kernel.org>; Thu, 18 Apr 2024 04:10:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E09937162;
+	Thu, 18 Apr 2024 05:30:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713413411; cv=none; b=Kta2VkKXx5DChVmt2pznDcEwGzQfN2e9uc2bADyEg55SJ+pzIdHvax7Pp/IOWha9XVTzN+M9YULxzE8DlvwA+C7Ugj4rxoSi9FHoLEhTbRK41z7rU66O9WwUJ4Qwo35SMH4mgOYaXpoOhZp6btfm548euDGnFlckLIGi5vo3J0o=
+	t=1713418216; cv=none; b=aQjdj6s25LqS7lzmCG42yfrz4yS9xfTzz5FQWqGlzBVki8DTmaoBgw85Y/5GeMZBFBLqoUpwCwCJNi5VNjQgAHh3xQ2SlnU5OBNXeXU7CXU4mAihbNvNfsDarSaIxIaGjtZj49y8nilqNWUkeQCIMv9X9v7PBDubY+qKBXHVTQE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713413411; c=relaxed/simple;
-	bh=KUmyiv4RPTRu8xXyPhFeYOnwp1bqf0OjBZNTOdnkRhk=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=urFimNuFg767QE0J988cFWNIbSm/b14u/lEdyw5ZsyQ6yV7370KzvS9eATtkVK3gARRqNSa1e2BSekgUgfCxu1aIbKDSYMHwbi5LBIWicX5G8TK5XHGWtn3kDBxpD4LgkO6Vaf72gQkPvxgO1Aqdtxp5/GU57Q0SEQEpSPtL1W8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SDo+cPX4; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1713418216; c=relaxed/simple;
+	bh=NYgj7ZhMx+/Gt3JSoGDcMbiG0lfzlaFzj6mHj8V0D1g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bA0sJd6qA3Fs69FJe6qrincoVwQUGH1vSDkEHUZG4hsMuMGN5JQdvp0PazTAnzURU1ekUBiFo1mgpjivImwgPMam57xmbvUATS2tdHyXMtNNjTApaFkRQbY3qFyaoW/54goT2zNPt47sJFotFkevBdow2t9gMHP0ZdN1kcF0GSk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vih8eJP7; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SDo+cPX4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vih8eJP7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713413409; x=1744949409;
-  h=date:from:to:cc:subject:message-id;
-  bh=KUmyiv4RPTRu8xXyPhFeYOnwp1bqf0OjBZNTOdnkRhk=;
-  b=SDo+cPX4TCjpaBW7+4yJLrqi7qlLKFKVBx82Co4E0NvzXNxpLKPaldsx
-   T/qMgCU3039IixuLKllcq2Qz1uzcs+ow9NjENT/lzoc1WBHFYPlAB8Rsd
-   i0iIp/GQG92Mes2RzdEEkUYANjHJyOE2Ne71OZy+n2sYJhoocH/+P7SAr
-   v3GqD8zGVUBsXjRZGJ770+oskVCEAQ+2XWfTNuBhCbHll4AprrvPYtSk6
-   hxSLigtyVfHa6fIQoff7/8jImriBmeS0dvn3kMKsAsYe4JWhq4EF9Qoo3
-   A+xf0UlIJxAXc17xX2HZSUGGmdQpZeI8lw823vWptxGM2snumaaWQcotm
+  t=1713418215; x=1744954215;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=NYgj7ZhMx+/Gt3JSoGDcMbiG0lfzlaFzj6mHj8V0D1g=;
+  b=Vih8eJP7QCIMoF8x0oXcwFXr5Gt+lgbjgddM5ts0kio8P9+6sYMI91JS
+   VHeVyIx/GC8gnPV9nDIDS2VKii3PrFTsOQP35XWPERJ64cxcIsOMz/jNp
+   As8+FVwfYQe7UNsgy9RkxX9Lw6vYKs+CccSKm/2nEL3kx2Hu0t3rVMNnC
+   v/vNtLw/TrcbvldBaB5gVycfuWyvucrb9NRbJ0Je08SPDE5uk/QMiZbi+
+   A9ikkCDxVeJjze3hZZ+dTdmrU+92GBu39lKlaPWaT1/p7VitWeNXS4E//
+   JN2CeOEvECKQU3Fz8vdh2m2fprbvYT7JZ/EV8aT6kxow+/x+852PNIY1D
    w==;
-X-CSE-ConnectionGUID: ylYXDsEpQmy8nVj88EGxRw==
-X-CSE-MsgGUID: woEt2h8dSQufZdV/dGAe2A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="12719715"
+X-CSE-ConnectionGUID: 3wP2Da3qRN6d8ZwuGkrVEQ==
+X-CSE-MsgGUID: Vuv+DBV3TXSZMHA8Ukad/A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="20366898"
 X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="12719715"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 21:10:08 -0700
-X-CSE-ConnectionGUID: 5cDsMJ9QR4Ovx2b4uuhnrQ==
-X-CSE-MsgGUID: 6XpXrGFQRTqX8ybTuI5lbg==
+   d="scan'208";a="20366898"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 22:30:14 -0700
+X-CSE-ConnectionGUID: yroBPzUYRFSOj2URPkR5yA==
+X-CSE-MsgGUID: JoBGsokrR2qTlTP89CuKvw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,211,1708416000"; 
-   d="scan'208";a="22904647"
+   d="scan'208";a="46141496"
 Received: from unknown (HELO 23c141fc0fd8) ([10.239.97.151])
-  by fmviesa010.fm.intel.com with ESMTP; 17 Apr 2024 21:10:07 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 17 Apr 2024 22:30:11 -0700
 Received: from kbuild by 23c141fc0fd8 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rxJ64-0007HO-2L;
-	Thu, 18 Apr 2024 04:10:04 +0000
-Date: Thu, 18 Apr 2024 12:09:11 +0800
+	id 1rxKLZ-0007LU-0x;
+	Thu, 18 Apr 2024 05:30:09 +0000
+Date: Thu, 18 Apr 2024 13:29:14 +0800
 From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- b86ae40ffcf5a16b9569b1016da4a08c4f352ca2
-Message-ID: <202404181208.0zCZIKoB-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+To: Parker Newman <parker@finest.io>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v4 6/7] serial: exar: add CTI specific setup code
+Message-ID: <202404181353.1VIC4cz9-lkp@intel.com>
+References: <ae4a66e7342b686cb8d4b15317585dfb37222cf4.1713382717.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae4a66e7342b686cb8d4b15317585dfb37222cf4.1713382717.git.pnewman@connecttech.com>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: b86ae40ffcf5a16b9569b1016da4a08c4f352ca2  serial: exar: adding missing CTI and Exar PCI ids
+Hi Parker,
 
-elapsed time: 993m
+kernel test robot noticed the following build warnings:
 
-configs tested: 172
-configs skipped: 4
+[auto build test WARNING on b86ae40ffcf5a16b9569b1016da4a08c4f352ca2]
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+url:    https://github.com/intel-lab-lkp/linux/commits/Parker-Newman/serial-exar-remove-old-Connect-Tech-setup/20240418-043457
+base:   b86ae40ffcf5a16b9569b1016da4a08c4f352ca2
+patch link:    https://lore.kernel.org/r/ae4a66e7342b686cb8d4b15317585dfb37222cf4.1713382717.git.pnewman%40connecttech.com
+patch subject: [PATCH v4 6/7] serial: exar: add CTI specific setup code
+config: alpha-defconfig (https://download.01.org/0day-ci/archive/20240418/202404181353.1VIC4cz9-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240418/202404181353.1VIC4cz9-lkp@intel.com/reproduce)
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20240418   gcc  
-arc                   randconfig-002-20240418   gcc  
-arm                               allnoconfig   clang
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                        multi_v7_defconfig   gcc  
-arm                   randconfig-001-20240418   gcc  
-arm                   randconfig-002-20240418   gcc  
-arm                   randconfig-003-20240418   gcc  
-arm                   randconfig-004-20240418   gcc  
-arm                           sama5_defconfig   gcc  
-arm64                            allmodconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                            allyesconfig   clang
-arm64                               defconfig   gcc  
-arm64                 randconfig-002-20240418   gcc  
-arm64                 randconfig-003-20240418   gcc  
-arm64                 randconfig-004-20240418   gcc  
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20240418   gcc  
-csky                  randconfig-002-20240418   gcc  
-hexagon                          allmodconfig   clang
-hexagon                           allnoconfig   clang
-hexagon                          allyesconfig   clang
-hexagon                             defconfig   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20240417   clang
-i386         buildonly-randconfig-001-20240418   gcc  
-i386         buildonly-randconfig-002-20240417   gcc  
-i386         buildonly-randconfig-002-20240418   gcc  
-i386         buildonly-randconfig-003-20240417   clang
-i386         buildonly-randconfig-004-20240417   gcc  
-i386         buildonly-randconfig-004-20240418   gcc  
-i386         buildonly-randconfig-005-20240417   gcc  
-i386         buildonly-randconfig-006-20240417   gcc  
-i386                                defconfig   clang
-i386                  randconfig-001-20240417   clang
-i386                  randconfig-001-20240418   gcc  
-i386                  randconfig-002-20240417   gcc  
-i386                  randconfig-002-20240418   gcc  
-i386                  randconfig-003-20240417   gcc  
-i386                  randconfig-004-20240417   clang
-i386                  randconfig-004-20240418   gcc  
-i386                  randconfig-005-20240417   clang
-i386                  randconfig-005-20240418   gcc  
-i386                  randconfig-006-20240417   clang
-i386                  randconfig-006-20240418   gcc  
-i386                  randconfig-011-20240417   gcc  
-i386                  randconfig-012-20240417   gcc  
-i386                  randconfig-013-20240417   clang
-i386                  randconfig-013-20240418   gcc  
-i386                  randconfig-014-20240417   gcc  
-i386                  randconfig-014-20240418   gcc  
-i386                  randconfig-015-20240417   gcc  
-i386                  randconfig-015-20240418   gcc  
-i386                  randconfig-016-20240417   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20240418   gcc  
-loongarch             randconfig-002-20240418   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20240418   gcc  
-nios2                 randconfig-002-20240418   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-openrisc                  or1klitex_defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                generic-32bit_defconfig   gcc  
-parisc                randconfig-001-20240418   gcc  
-parisc                randconfig-002-20240418   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc                        fsp2_defconfig   gcc  
-powerpc                      ppc64e_defconfig   gcc  
-powerpc               randconfig-001-20240418   gcc  
-powerpc               randconfig-003-20240418   gcc  
-powerpc64             randconfig-001-20240418   gcc  
-powerpc64             randconfig-002-20240418   gcc  
-powerpc64             randconfig-003-20240418   gcc  
-riscv                            allmodconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   clang
-riscv                               defconfig   clang
-riscv                 randconfig-001-20240418   gcc  
-riscv                 randconfig-002-20240418   gcc  
-s390                             allmodconfig   clang
-s390                              allnoconfig   clang
-s390                             allyesconfig   gcc  
-s390                                defconfig   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                ecovec24-romimage_defconfig   gcc  
-sh                             espt_defconfig   gcc  
-sh                 kfr2r09-romimage_defconfig   gcc  
-sh                    randconfig-001-20240418   gcc  
-sh                    randconfig-002-20240418   gcc  
-sh                             sh03_defconfig   gcc  
-sh                              ul2_defconfig   gcc  
-sparc                            alldefconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                               defconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64               randconfig-001-20240418   gcc  
-sparc64               randconfig-002-20240418   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   gcc  
-um                                  defconfig   clang
-um                             i386_defconfig   gcc  
-um                    randconfig-001-20240418   gcc  
-um                    randconfig-002-20240418   gcc  
-um                           x86_64_defconfig   clang
-x86_64                            allnoconfig   clang
-x86_64                           allyesconfig   clang
-x86_64       buildonly-randconfig-005-20240418   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20240418   gcc  
-x86_64                randconfig-003-20240418   gcc  
-x86_64                randconfig-005-20240418   gcc  
-x86_64                randconfig-006-20240418   gcc  
-x86_64                randconfig-012-20240418   gcc  
-x86_64                randconfig-014-20240418   gcc  
-x86_64                randconfig-015-20240418   gcc  
-x86_64                randconfig-016-20240418   gcc  
-x86_64                randconfig-071-20240418   gcc  
-x86_64                randconfig-074-20240418   gcc  
-x86_64                randconfig-075-20240418   gcc  
-x86_64                randconfig-076-20240418   gcc  
-x86_64                           rhel-8.3-bpf   gcc  
-x86_64                          rhel-8.3-func   gcc  
-x86_64                          rhel-8.3-rust   clang
-x86_64                               rhel-8.3   gcc  
-xtensa                            allnoconfig   gcc  
-xtensa                randconfig-001-20240418   gcc  
-xtensa                randconfig-002-20240418   gcc  
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202404181353.1VIC4cz9-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/8250/8250_exar.c:727: warning: Function parameter or struct member 'pcidev' not described in 'cti_get_port_type_xr17c15x_xr17v25x'
+>> drivers/tty/serial/8250/8250_exar.c:819: warning: Function parameter or struct member 'pcidev' not described in 'cti_get_port_type_fpga'
+>> drivers/tty/serial/8250/8250_exar.c:849: warning: Function parameter or struct member 'pcidev' not described in 'cti_get_port_type_xr17v35x'
+
+
+vim +727 drivers/tty/serial/8250/8250_exar.c
+
+   714	
+   715	/**
+   716	 * cti_get_port_type_xr17c15x_xr17v25x() - Get port type of xr17c15x/xr17v25x
+   717	 * @priv: Device's private structure
+   718	 * @port_num: Port to get type of
+   719	 *
+   720	 * CTI xr17c15x and xr17v25x based cards port types are based on PCI IDs.
+   721	 *
+   722	 * Return: port type on success, CTI_PORT_TYPE_NONE on failure
+   723	 */
+   724	static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *priv,
+   725								struct pci_dev *pcidev,
+   726								unsigned int port_num)
+ > 727	{
+   728		enum cti_port_type port_type;
+   729	
+   730		switch (pcidev->subsystem_device) {
+   731		// RS232 only cards
+   732		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232:
+   733		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_232:
+   734		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_232:
+   735		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_232:
+   736		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_232_NS:
+   737		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232:
+   738		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232_NS:
+   739			port_type = CTI_PORT_TYPE_RS232;
+   740			break;
+   741		// 1x RS232, 1x RS422/RS485
+   742		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
+   743			port_type = (port_num == 0) ?
+   744				CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+   745			break;
+   746		// 2x RS232, 2x RS422/RS485
+   747		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
+   748			port_type = (port_num < 2) ?
+   749				CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+   750			break;
+   751		// 4x RS232, 4x RS422/RS485
+   752		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
+   753		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
+   754			port_type = (port_num < 4) ?
+   755				CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+   756			break;
+   757		// RS232/RS422/RS485 HW (jumper) selectable
+   758		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
+   759		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4:
+   760		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8:
+   761		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_SP_OPTO:
+   762		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_SP_OPTO_A:
+   763		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_SP_OPTO_B:
+   764		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XPRS:
+   765		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_A:
+   766		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_B:
+   767		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS:
+   768		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_16_XPRS_A:
+   769		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_16_XPRS_B:
+   770		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XPRS_OPTO:
+   771		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_OPTO_A:
+   772		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XPRS_OPTO_B:
+   773		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP:
+   774		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XP_OPTO_LEFT:
+   775		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_XP_OPTO_RIGHT:
+   776		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XP_OPTO:
+   777		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_XPRS_OPTO:
+   778		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP:
+   779			port_type = CTI_PORT_TYPE_RS232_422_485_HW;
+   780			break;
+   781		// RS422/RS485 HW (jumper) selectable
+   782		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485:
+   783		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485:
+   784		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485:
+   785		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_485:
+   786		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_485:
+   787			port_type = CTI_PORT_TYPE_RS422_485;
+   788			break;
+   789		// 6x RS232, 2x RS422/RS485
+   790		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
+   791			port_type = (port_num < 6) ?
+   792				CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+   793			break;
+   794		// 2x RS232, 6x RS422/RS485
+   795		case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
+   796			port_type = (port_num < 2) ?
+   797				CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+   798			break;
+   799		default:
+   800			dev_err(&pcidev->dev, "unknown/unsupported device\n");
+   801			port_type = CTI_PORT_TYPE_NONE;
+   802		}
+   803	
+   804		return port_type;
+   805	}
+   806	
+   807	/**
+   808	 * cti_get_port_type_fpga() - Get the port type of a CTI FPGA card
+   809	 * @priv: Device's private structure
+   810	 * @port_num: Port to get type of
+   811	 *
+   812	 * FPGA based cards port types are based on PCI IDs.
+   813	 *
+   814	 * Return: port type on success, CTI_PORT_TYPE_NONE on failure
+   815	 */
+   816	static enum cti_port_type cti_get_port_type_fpga(struct exar8250 *priv,
+   817							struct pci_dev *pcidev,
+   818							unsigned int port_num)
+ > 819	{
+   820		enum cti_port_type port_type;
+   821	
+   822		switch (pcidev->device) {
+   823		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
+   824		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
+   825		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
+   826			port_type = CTI_PORT_TYPE_RS232_422_485_HW;
+   827			break;
+   828		default:
+   829			dev_err(&pcidev->dev, "unknown/unsupported device\n");
+   830			return CTI_PORT_TYPE_NONE;
+   831		}
+   832	
+   833		return port_type;
+   834	}
+   835	
+   836	/**
+   837	 * cti_get_port_type_xr17v35x() - Read port type from the EEPROM
+   838	 * @priv: Device's private structure
+   839	 * @port_num: port offset
+   840	 *
+   841	 * CTI XR17V35X based cards have the port types stored in the EEPROM.
+   842	 * This function reads the port type for a single port.
+   843	 *
+   844	 * Return: port type on success, CTI_PORT_TYPE_NONE on failure
+   845	 */
+   846	static enum cti_port_type cti_get_port_type_xr17v35x(struct exar8250 *priv,
+   847							struct pci_dev *pcidev,
+   848							unsigned int port_num)
+ > 849	{
+   850		enum cti_port_type port_type;
+   851		u16 port_flags;
+   852		u8 offset;
+   853	
+   854		offset = CTI_EE_OFF_XR17V35X_PORT_FLAGS + port_num;
+   855		port_flags = exar_ee_read(priv, offset);
+   856	
+   857		port_type = FIELD_GET(CTI_EE_MASK_PORT_FLAGS_TYPE, port_flags);
+   858		if (!CTI_PORT_TYPE_VALID(port_type)) {
+   859			/*
+   860			 * If the port type is missing the card assume it is a
+   861			 * RS232/RS422/RS485 card to be safe.
+   862			 *
+   863			 * There is one known board (BEG013) that only has
+   864			 * 3 of 4 port types written to the EEPROM so this
+   865			 * acts as a work around.
+   866			 */
+   867			dev_warn(&pcidev->dev,
+   868				"failed to get port %d type from EEPROM\n", port_num);
+   869			port_type = CTI_PORT_TYPE_RS232_422_485_HW;
+   870		}
+   871	
+   872		return port_type;
+   873	}
+   874	
 
 -- 
 0-DAY CI Kernel Test Service
