@@ -1,48 +1,47 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57E3D16EBEA;
-	Thu, 18 Apr 2024 15:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D7216D4C7;
+	Thu, 18 Apr 2024 15:37:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713454647; cv=none; b=lO/+93vVh7P9Y2AxhpGARaM3Xqr+NYWFZUjRJIF0r7idtxXDkraNjJEXKM7KgI5d6ww4Q1sFSXb5AXx0TSWCnLgkXeB5KVmA349kUIKg17O3C62lclmiqSx5cCbp6I2fmSNZANCeLo1C9xfOkb7Esv+Lu+eS7EkiYHEusfCh2bc=
+	t=1713454654; cv=none; b=PnnptcrI9KZl6/wpdkPEWffs21wgHwHzhotHw8AfPr5qBJXMf4yi1aXG37ilD40Jv4BN9/RZnDLgci1fbMLSV62rnE0n4fj9ZUIQwLClv8I6bExJHXHN9Zsqhldq8kwlL47e7ZNVzIVpkU01xtZehJaOEDTjCK9yY4QQSkro31I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713454647; c=relaxed/simple;
-	bh=OAeYXdnsHo/DbZFmMhO4X2AF1kWlsKRdM1cAg1u4sQQ=;
+	s=arc-20240116; t=1713454654; c=relaxed/simple;
+	bh=xrOseHxGhJJjbzBk9CbfMrD6MMhOfu9NvA7fUAzlpU4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hpCYYJPazdhJvE6jW74MjPuh+JtdJFhjd4k8vRhkh7+ThiI+aODU/ueKoNSOiTSO8dprdZi+LMtkRU18tj+ukEot8QZrmypFS63HLRIEhNbY98G1Q9V6WZTAMjPv2Sl5a/Yzxt2mXatNboSMJ+l60yYDG6AATUtAtKytIWzVgwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=KGZ6C84m; arc=none smtp.client-ip=74.208.4.196
+	 MIME-Version; b=nJ8YjsNlk9/kLPdwUDq02azhPTKPe4V3e/4YLhnKgfYRtCEdUoqJjuRqP0ydMInVPRxfVk1iVktFTg61zrC+N6z3VsRT6G//xbbVqJLzPaKHKxfOW1X39AfgE1oJMFatEgEWQSsUc/fNZyG3wL+T2chmCuNo5KgOyH6y5KA2bME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=r5fbv7oE; arc=none smtp.client-ip=74.208.4.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="KGZ6C84m"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="r5fbv7oE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713454632; x=1714059432; i=parker@finest.io;
-	bh=+oqF0TtEVeNFKa6CNbV30K8acenVtAv92jduxJuUnGU=;
+	s=s1-ionos; t=1713454633; x=1714059433; i=parker@finest.io;
+	bh=Ph05WVH8sofutm+g3QQ5ry41ZKtih+7xDUpbKSmjN4I=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=KGZ6C84mpRGmyLI24Vzuao4PZSuD2zS7lvjtVc/CVt1TMjVlhTMU0B8iTwdKbLLT
-	 e/67Ko+okbqsZImtBpynuk8W/n63ULHZV5vqX/kV7VIVdAdSQbBFCZ2ft++yQjgc0
-	 mm2FcuvMMAAc+7DMzsyTRFUMmZ9f5nEVQZ+mDk1YpB0aBQ26R7+ev75Wft3p33Ba8
-	 CUbUFd11LN8nIu6BfHQPxaH1JxAoADdzqsmHPEHZe5dNobuTVDbulqGRKjHoTjnKV
-	 APPewIWjXGLrTy+60v2F5/rj23QyzFbAquNJgn1zqgL/07c67hR70v7OboumGn65H
-	 UH2IYbzSNj0UjmFclQ==
+	b=r5fbv7oEwfLqrnoh+j/ksY4L5IwuHNOKOQeg0k/XemuRryPSYclJ2FLiJ4ctSoUX
+	 7hnv6uks6oawn5/EjnLQHd1lS1rcv9dYz2wNzdaJVGB1KD4OHIZdMSD3oa0SxEM6o
+	 7O1NkCAhUWjoY01I+LJiBNpYWBNw0tTfrbQqopTr59lGbN3d3p/GRSxaadDhd4Z1v
+	 TZOcXu/PyVty3JmJUH5qjfBC4HaZDtS3V1eI5VphuNN01mxzH8jgzs3yBuSJlj5Hw
+	 viUxMSWZWgf5aEdqYVeaLG5hkYY3miIQdTGWyFUEJMcd44n/KJ90DwsvHD90O61Ng
+	 OkUKA3CuNBwF3Oy+Hw==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0MH1eO-1rtZnu2Xuk-004pgx; Thu, 18 Apr
- 2024 17:37:12 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0LbL7E-1sQil122iA-00bgXD; Thu, 18 Apr
+ 2024 17:37:13 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Cc: Parker Newman <pnewman@connecttech.com>,
-	kernel test robot <lkp@intel.com>
-Subject: [PATCH v1 1/4] serial: exar: add missing kernel doc function parameters
-Date: Thu, 18 Apr 2024 11:36:28 -0400
-Message-ID: <a79cc7d98a94b71b8d2f390b578514e84fe17c97.1713452766.git.pnewman@connecttech.com>
+Cc: Parker Newman <pnewman@connecttech.com>
+Subject: [PATCH v1 4/4] serial: exar: change port_type ternary line wrapping
+Date: Thu, 18 Apr 2024 11:36:31 -0400
+Message-ID: <0081b6a7bbe1ad6ce114132f9ee86677a761de6d.1713452766.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.43.2
 In-Reply-To: <cover.1713452766.git.pnewman@connecttech.com>
 References: <cover.1713452766.git.pnewman@connecttech.com>
@@ -53,70 +52,98 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Peb4tWBB6FbIjS85voxb3JKatrdxNOnXiihCl6U2UyHeSbVugu8
- gdH2glLJYS+dh5R3Sg/qu8lQkGm4Y6/ipwp9KOflfFIk6szoGss7v8IXhJtT61+IV5OGF2B
- aIXafB28nqUxsznV27dKZEjk8V/XDx+t0+3H8JGhs+Fy0efiOOFTsOClqVBoK8gLpxxoGlx
- wOxEDGh498tsbrraNBFlA==
+X-Provags-ID: V03:K1:fEdVUzoim6yTgaflYo7WrYliLGG0Wd9ACHr3RzLIhaHdwvKaju9
+ HWlFhCpk0hiZYrfoc0FF7pIRylyoh1sT4OKHwi7t6+nVgn2YVeeaUEm9zo2SPsNe4y2KRX/
+ wFdQJCqCT6oKVg5sgieP74HMhPeIHtFDMd6aYgYNc/GGM0/VZ+Kz9JI15Ahjr7K/iycRQfo
+ iNhp/q8p9PiQdWqdESFLg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Q3pLf8qgAM4=;HwJgLiZqFwukb4dnVRLXoTN2R87
- KLA0VPF7PN6g66gPeo45GCnj8XR29+ZsHskfogOpQ2kNDBPnNf+vTMDXRe+hkP4R6J26YiZx+
- 13XyWr1px4fTnxiIUowKxs6r7RanfAE8PGB4uX21XJOOlqIhsu22ki69jBZbCuEc4KR+v65cw
- 0t2aDCizA7xpkL8CFOxp7koaMZoYuSTCigVHt/cUGL06qnsTg5S1WGl2Ie60s9W8BXERz775j
- aKyIC7rNgnTmpTcs/QLKFP03tOXnaAwH4E68f8Yb53WLP7XoxEsZJthydYGSzAHt7AYzsKLW2
- +4Udui4ZhfAkO0yF7lJ107o3l1ruohl4pfeFTMhZy2X2PbErk3LW9lJ+lbfGDYS/cEeZGFXse
- R1wTaDis65rzmluBRhtBq2iqAz7oINQh3oebjaI8zGhVYyjoHyIOUVLfxabBKS4+dsMnEVhP4
- 4Jn/A3uWpLpAFFAh+s8+PWSh6qu/3JAcu4zIzGlClkaTwkiTuOUBVHLUTVmIz3dKPl36Y/toi
- Q82peq6wZLC2MdVk8lgyTTyme4BLgj9Gri2RiPxW42Mj7HnksLt8Jss/fvdDCeHuiMxBZZiWd
- ZZ8T2AcCiGCiFr7Xziwq9zM/tpw4KuX8JvtZ0UY2BspqgNBj+N3lnpl0e0YOVMNoVZd5p0OhN
- GorNL4kd3FbEXuxRj86ac3TvSjaxujRH1FKnYRq3vnULJcZPeNMe4Z7tAmBHYgOmn0qHTn88Z
- 0P0B+hgPfOssgGLXv4xJqiLoEL1lOFzXiItWzMAZ0bhdQh+9bku9Vo=
+UI-OutboundReport: notjunk:1;M01:P0:Pq4BudVsxuU=;/kKc52QHcdEgk6SZ40r+13oNiO9
+ y0Hdf6jbiYkC817XjeW3l99+fHoN98GGqpHGbLX7/kRj1AU8S9SNkzuaeGzHb0tnDhQSCldco
+ oSXEqc0q59StSVzfkkLGB2EztL41q5RoCtNBnqzDJWLbhAQgtN+7HFxT98Ugcj0s/QGgHnlsQ
+ MvPJwBpvlFsxjfrJnFR8gUSofhX5FrrcjLym9Ros+zljucxYs3BBPw92aOEkaraZmKHwoHG7v
+ cVjW3+3u8XZI0Gc+9jpTY1aXNKcDP8wwAKCOAcQvcui0exB8jn//hbLXpcxlUY+z0qZF+j9f7
+ WbGq1yHPaZriXjnbnam0bIif2XYyJGsltl1XYvreb/jNnou7Aak/qVaYGcL9LSM/gvXmMzUHW
+ xcmscw7G9kHPYhDWgX1lUi/R+LNOJe7L6fggQ9I3Ks3flJux3mZlg2qbu73ittHpVsF7I6COU
+ yePrv1WUpljSCBYgeyaz9nERZU5xQOcUdUA4QpklNcwDYgaaGasaiG/w7Z63n3uW9KFTjgt9/
+ PARSvKDF8YFcQUO/eFU4kRxf88CkF6PFp+UgjHveZs2h4a1tI2+ze/MQf50goBItoGoR1Ya0z
+ CoaqZtsJuBgz2mrBosFUb7CZ3DExmxVQ4oCEI/SoQ5ZCRiCCDE2eRHe/tb2f0syBGGf6c5gYe
+ JNl5ZvgpaKEQxz0QatBkO6k4ulHawUNIgA8SWwnPAPVZFpJl9z189I9P6HwWhUasDAHuyEHrP
+ 1wQ34J7Pf2v6An3zwxMwbJb7SKcSXodYTHZ7KA/iQjmqbnWZBFiGd0=
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Adds missing kernel doc function parameters to 3 functions.
+Change line wrapping of ternary operators in
+cti_get_port_type_xr17c15x_xr17v25x() for better readability.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes:
-https://lore.kernel.org/oe-kbuild-all/202404181353.1VIC4cz9-lkp@intel.com/
+Old example:
+
+	port_type =3D port_num =3D=3D 0 ?
+			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
+
+New:
+	port_type =3D port_num =3D=3D 0 ? CTI_PORT_TYPE_RS232 :
+				CTI_PORT_TYPE_RS422_485;
+
+Based on feedback from:
+Link: https://lore.kernel.org/linux-serial/f2353b8c-2079-b895-2707-f6be831=
+61288@linux.intel.com
 
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
- drivers/tty/serial/8250/8250_exar.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/8250/8250_exar.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
 /8250_exar.c
-index 5e42558cbb01..a180741da634 100644
+index 10725ad0f3ef..a76b4e5bab4e 100644
 =2D-- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -715,6 +715,7 @@ static int cti_read_osc_freq(struct exar8250 *priv, u8=
- eeprom_offset)
- /**
-  * cti_get_port_type_xr17c15x_xr17v25x() - Get port type of xr17c15x/xr17=
-v25x
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: Port to get type of
-  *
-  * CTI xr17c15x and xr17v25x based cards port types are based on PCI IDs.
-@@ -807,6 +808,7 @@ static enum cti_port_type cti_get_port_type_xr17c15x_x=
-r17v25x(struct exar8250 *p
- /**
-  * cti_get_port_type_fpga() - Get the port type of a CTI FPGA card
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: Port to get type of
-  *
-  * FPGA based cards port types are based on PCI IDs.
-@@ -836,6 +838,7 @@ static enum cti_port_type cti_get_port_type_fpga(struc=
-t exar8250 *priv,
- /**
-  * cti_get_port_type_xr17v35x() - Read port type from the EEPROM
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: port offset
-  *
-  * CTI XR17V35X based cards have the port types stored in the EEPROM.
+@@ -741,19 +741,19 @@ static enum cti_port_type cti_get_port_type_xr17c15x=
+_xr17v25x(struct exar8250 *p
+ 		break;
+ 	// 1x RS232, 1x RS422/RS485
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
+-		port_type =3D port_num =3D=3D 0 ?
+-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
++		port_type =3D port_num =3D=3D 0 ? CTI_PORT_TYPE_RS232 :
++					CTI_PORT_TYPE_RS422_485;
+ 		break;
+ 	// 2x RS232, 2x RS422/RS485
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
+-		port_type =3D port_num < 2 ?
+-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
++		port_type =3D port_num < 2 ? CTI_PORT_TYPE_RS232 :
++					CTI_PORT_TYPE_RS422_485;
+ 		break;
+ 	// 4x RS232, 4x RS422/RS485
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
+-		port_type =3D port_num < 4 ?
+-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
++		port_type =3D port_num < 4 ? CTI_PORT_TYPE_RS232 :
++					CTI_PORT_TYPE_RS422_485;
+ 		break;
+ 	// RS232/RS422/RS485 HW (jumper) selectable
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
+@@ -789,13 +789,13 @@ static enum cti_port_type cti_get_port_type_xr17c15x=
+_xr17v25x(struct exar8250 *p
+ 		break;
+ 	// 6x RS232, 2x RS422/RS485
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
+-		port_type =3D port_num < 6 ?
+-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
++		port_type =3D port_num < 6 ? CTI_PORT_TYPE_RS232 :
++					CTI_PORT_TYPE_RS422_485;
+ 		break;
+ 	// 2x RS232, 6x RS422/RS485
+ 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
+-		port_type =3D port_num < 2 ?
+-			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
++		port_type =3D port_num < 2 ? CTI_PORT_TYPE_RS232 :
++					CTI_PORT_TYPE_RS422_485;
+ 		break;
+ 	default:
+ 		dev_err(&pcidev->dev, "unknown/unsupported device\n");
 =2D-
 2.43.2
 
