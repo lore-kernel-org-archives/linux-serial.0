@@ -1,145 +1,156 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2090.outbound.protection.outlook.com [40.107.8.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AE02F9CD;
-	Fri, 19 Apr 2024 09:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713518395; cv=none; b=H5Sx31SeEU57WWf7P9EFK0sgEma5ykirj1ZNBchBP/B1fylHUlHvCs9k3mQHvWJMVF9rPIDpV4tBNA+3IhslTgwsJn1Ni7MBOPbk5tae22KDYSXerRXjeZnvYhw15JYeI1VBhB6JKpuObQOjfC82k1qc2oQWoAAiDY/Ix9ha7I0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713518395; c=relaxed/simple;
-	bh=KlXQuKvGJywU3LD2CUoRhMvX72mjF+L+3E8OH1+cRzU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bLA3fsch3ryudgoS6sIszr0G5vo+InTUakt8KJrVo5FuMTOymwF1igyOCUdp0wBX/B51yLIXdYCMqz7PpANDuCTBryYGYAFdg8JXR83wTSRD8KOmj+amgeW0fgjz33ZsGIukEM1ZtmWqraEviQVFnV4l4wc5rlGvqk0hutGJzg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B4jh+iEJ; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 744C842AAF;
+	Fri, 19 Apr 2024 10:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.90
+ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713521129; cv=fail; b=LRXTcWbPujhpBMWepWGHk/a80vDB2MfTXUSq4OG1yXZCB76DSTUdHJ75mlLOeXmcSK3Ld9vM/BWfnQ3yOMYgju71YThTDgxtMHNM4zqn4Tqtyg6c95d75BB6VOoRF8uC+gztU7diDbz4Ek9yT5OrwaEp/05qKT6W+c4NA4ukoCQ=
+ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713521129; c=relaxed/simple;
+	bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=ScUj5hVbGknVZ+z4hdzQK47L5a2UviXEd94vHRfG3PqE6I/tNO/o8CMKxSEiyOXOYbQ1eBcJ2F4fl2I3h1pcjbI0o2Npn7N/2IMGzxS51cGi2PAv0kT2Zo0xLz45UtUGY0v2oLygiwfvBY0WXi7Cf9E4ZuKzBvvJvcywmu0kM2o=
+ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=SEO3c1ya; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=SEO3c1ya; arc=fail smtp.client-ip=40.107.8.90
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B4jh+iEJ"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-518f8a69f82so2178255e87.2;
-        Fri, 19 Apr 2024 02:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713518391; x=1714123191; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7uRz/nxbhPgcg3DGqznEbcQEDecYnCJi73IPin9pfrE=;
-        b=B4jh+iEJHa4KbbBJTt41vTtc7Cf+rbHqSV8rhoEFCgSc+xT1ZL9GgX3U56rwNSq9l3
-         l9y7DydEZFaofOLsCmkgG0VEmf5Bauuz8ZTOQMgQYBbchHDhtlWxUDEe1vnNXbtSHl/2
-         +AqW5mwX2nuDexKYYIDjGiiAd+vP6Vm9HlySy7lYReyn2TWP4LwIkE1rF7ELdpXhNp/C
-         blVKMym9gs7oZoWQ57H9O2dS8zEd1pjXXtmgsbrPOQJXSwQAYuXqWgoWNKRHWqTL6goa
-         bbtPKRfXT653/ebf6OMqRdPhxocwVdvFQprM4Rytn9FYN2YmP1jiricjtMeJIYEG0B8p
-         w/jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713518391; x=1714123191;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7uRz/nxbhPgcg3DGqznEbcQEDecYnCJi73IPin9pfrE=;
-        b=aTIrauSN29zRxb3+NYNrgGP/WN6RZh2B36AKHjpIbohTvtb4nglDmgT25PnnZGE1Po
-         WL2oXjFDPAnrti2q1Vuzh1HmEY16bY0eGMbea8BIAgAHJEs3uWebhO8OkdKIRCvUd9A1
-         9/xkaeydiBh4R9lqGxy/i968m6Q8e3tPUSYqAGddxJbDGYlBbtUrPaU4vea9/ZPDB5Nn
-         rHKV1P36+1HUf68z6Gf0VQE8ZDQPyiDczfahZltC0wq4NwQWRprGXmODoE2/i0YD+7JH
-         us/d0o6Lkq/6Byvm7mKl+/bW0G+f6X+34U7bG5la54ry6ovn2SHWetLYZ28ej+L3S0a8
-         I/Vw==
-X-Forwarded-Encrypted: i=1; AJvYcCWx9FaKTeencCCRcecS6fUCBrmicC9Xtf47Ju1HHEhujZTFl9rhtq1/DCOiSFkAbIWrhKxDwDyRqoYPF1CckSOSue0QEq6TRC6YeQowqYC91IUsaQF/c8FZ3mQtwX8SEqiqWwBsFW6FRtL1fnbUx744dlE8jGLTWw6DqOCF+vuTvSSdeaSc
-X-Gm-Message-State: AOJu0YxaGPrpKzpyk/EIaR9jAAUm1SGArMzGwtK7dhl3uVh++rG33FXj
-	F3FvatAh1h/+jQGgS65KgyXjKk/l12CB3x6BxGNCVijRFdVbcUKjbra9hIXO
-X-Google-Smtp-Source: AGHT+IEE+c8XToG2LkLPH2w60EnuzxV5zLxI6Q2u6Y+2UULExfGeij1aufjjl9uW3OpE6g7MOIyzRQ==
-X-Received: by 2002:ac2:4e4a:0:b0:516:cc06:fa03 with SMTP id f10-20020ac24e4a000000b00516cc06fa03mr1033854lfr.56.1713518391302;
-        Fri, 19 Apr 2024 02:19:51 -0700 (PDT)
-Received: from mobilestation.baikal.int (srv1.baikalchip.ru. [87.245.175.227])
-        by smtp.gmail.com with ESMTPSA id p24-20020a056512329800b00519331d8b66sm626692lfe.110.2024.04.19.02.19.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Apr 2024 02:19:50 -0700 (PDT)
-Date: Fri, 19 Apr 2024 12:19:48 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] dmaengine: dw: Simplify prepare CTL_LO methods
-Message-ID: <oqyz6fpdxzk5x4xr5rlqwnj3frakjnz24e6bx7mxngh5gm5jom@wsm7qvubqwn3>
-References: <20240416162908.24180-1-fancer.lancer@gmail.com>
- <20240416162908.24180-4-fancer.lancer@gmail.com>
- <Zh7LyszPd2sNfWRm@smile.fi.intel.com>
- <lzcgxh7trwoksd4bx2fsybellbngvpwhgq2a76ou2iufemockp@3dca4bfox2ps>
- <ZiEIRluj-50FMIgp@smile.fi.intel.com>
- <xfa7evanbrvdxdoq6473wpymvqogezspwkdoawu2dr6mnyxiwq@zx2schip66wj>
- <ZiGJ-DspJq5R6Dym@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="SEO3c1ya";
+	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="SEO3c1ya"
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
+ b=NYyNbY9ZYHCyyYzV7uqMVxuGmlGGNP8jSfjaXaQAsgG0biuGZJjxN/hODCEDsmm/JtRunVYfZyzPzsqaS2sImPbEOeXmNUyhl6MEuYzCgrFVH1cj60GMKviU9GqNEF+OU5OyvtqbaUCWLH2XDqvzgCvC+k6u3fPN2EV5voArexbo/Zx+2gliLOu8KOSUFfIPwD2rjfJrD2XSgltaW26xDbrTsyeu6HBW6wrJCa5NlUNQxRdtaRPsgST1MybUCvMo61hKajDjuXoEtzetcRuiwoWjA08yUSIsYHUlFXBiQkVJ3lw2OLEdaCiLN4gvDiAsqbUNcfcViU1gi/a7Kkb+qg==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
+ b=LvBuS/EQgRe+TfC2q64RSX6JlM7w82iMiaFXa+ria1knKpYIMlKYiKlZsE1Ir66Cy6UnPkz8lYp9jBwYw8TbXint3r7n5PYIbig4w8tvk3ph68P4qPcB1SlncoeggDGDkire894ZX4NliIlP1pDjvBw16xOWGoX1Fnf6RgvwVyJaq6JMgeYzKIfZ89gLNBHbZlzrBQP8zQStxRsX+vMwzSbAKhvByZa+itdeeIOvVfHxyL0wIJLIA7sFFksc3nsMd71MTDPQPn/ihoXs+j2KEjs5XnCHO126KhUAE3BsNWRTlDbQWXHLvE31mczZrZCYLrBrU6aWLxw/+mPWoSerIA==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 40.69.19.60) smtp.rcpttodomain=ya.ru smtp.mailfrom=sttls.nl; dmarc=pass
+ (p=none sp=none pct=100) action=none header.from=sttls.nl; dkim=pass
+ (signature was verified) header.d=sttls.nl; arc=pass (0 oda=1 ltdi=1
+ spf=[1,1,smtp.mailfrom=sttls.nl] dkim=[1,1,header.d=sttls.nl]
+ dmarc=[1,1,header.from=sttls.nl])
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
+ b=SEO3c1yaWVA4qQMEzKJxouukdfsqy6XGOyv4rbi9JDQ+QwnGGPEQ+0Z3bDAIPRxzDSXShLyeZ3XQyAirMaRHRL4LL+Jy8/pFOt1yVHjoWM10JJZx37Yr65a56QWpocrasnT/i+ukk5gZe8RWSFuiRAMoBkoiwFPe3XoI6bOOLB1yQDjPJhBjKaYdYannpGtuMwDhT/TgNKoB1to/Od9hFoHDJBNXMdfL8c4CpS7rrK9ZYA8B9hV65h9fotGDZRMqQzq7NFKR/QrnA48iBN1UKpw70UYWh75SucWiEG+l+/bj1hMKA49L5TkvGTsW8wuuuUOtJMGwrfpu3sA+JCoTdA==
+Received: from DBBPR09CA0022.eurprd09.prod.outlook.com (2603:10a6:10:c0::34)
+ by AM8PR05MB7521.eurprd05.prod.outlook.com (2603:10a6:20b:1d3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.37; Fri, 19 Apr
+ 2024 10:05:22 +0000
+Received: from DU6PEPF0000B61E.eurprd02.prod.outlook.com
+ (2603:10a6:10:c0:cafe::a1) by DBBPR09CA0022.outlook.office365.com
+ (2603:10a6:10:c0::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.26 via Frontend
+ Transport; Fri, 19 Apr 2024 10:05:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 40.69.19.60)
+ smtp.mailfrom=sttls.nl; dkim=pass (signature was verified)
+ header.d=sttls.nl;dmarc=pass action=none header.from=sttls.nl;
+Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
+ 40.69.19.60 as permitted sender) receiver=protection.outlook.com;
+ client-ip=40.69.19.60; helo=westeu100-emailsignatures-cloud.codetwo.com; pr=C
+Received: from westeu100-emailsignatures-cloud.codetwo.com (40.69.19.60) by
+ DU6PEPF0000B61E.mail.protection.outlook.com (10.167.8.133) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7452.22 via Frontend Transport; Fri, 19 Apr 2024 10:05:21 +0000
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (104.47.17.105) by westeu100-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Fri, 19 Apr 2024 10:05:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QXAthprXQYggVdr5oJKemnXqLh8XUBIWcgMfZwTk7Eh/ftwwzMXzmIwbGbTjcUQhkjWSv1wTfjUvEgO2odI+3LNMa8nvy0lTXpG38PrIiWfJBiXL0iWiilCCDYFyyr9BnMYFjZ5wFCvyixCVSkj/+Hs8tEJAXUo+IHCCvsL+3U+J+PPmSYSsncsWvPrraWlH1bUlLXkTK2O9Icdu0FEqaMDdVHOff3w+aNdA11EIQBcQCp5dtU543Fdwj7JdpGnpRXSEK4EUm4uNMFpW1HI/pwrCaBR39vcTMDWgreX2ibDYWRau8SB41L8566Uhgo/E2u/xw1SLgg+LuaJyq7mJSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
+ b=a+dUIxfsZeHDhc5+T6X8BDc2SlZRGW41Dj6Gwn+XvFOVqaja9DvQMEg3ZcwVlXUWKh0ThBE49WbxdjiYy7DOlCmrKDrOUaIJu43ugOk4xEi5MS5Ri/WCVJ9Yh5Lt8wEb8VxyWecai7vg5iFHp4e31wSwB6AKz5CthCpDeWbV9JOQlw8cngHLTOGAz83m8iQUfQo13k5uKGs/Tn6SNxRiVAbSTAmEGP9LLwLxlFdpp4r+fFdYbtG19TIaSq60pO1iVlGMx47EVuiQ3U+/aO0DeP5RQcLfbSYvvabb5VDsF2tIkUUbzksDku3gGVeOhfkTTKWzSj2R6Mbel8/scvGvog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sttls.nl; dmarc=pass action=none header.from=sttls.nl;
+ dkim=pass header.d=sttls.nl; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
+ b=SEO3c1yaWVA4qQMEzKJxouukdfsqy6XGOyv4rbi9JDQ+QwnGGPEQ+0Z3bDAIPRxzDSXShLyeZ3XQyAirMaRHRL4LL+Jy8/pFOt1yVHjoWM10JJZx37Yr65a56QWpocrasnT/i+ukk5gZe8RWSFuiRAMoBkoiwFPe3XoI6bOOLB1yQDjPJhBjKaYdYannpGtuMwDhT/TgNKoB1to/Od9hFoHDJBNXMdfL8c4CpS7rrK9ZYA8B9hV65h9fotGDZRMqQzq7NFKR/QrnA48iBN1UKpw70UYWh75SucWiEG+l+/bj1hMKA49L5TkvGTsW8wuuuUOtJMGwrfpu3sA+JCoTdA==
+Received: from AS8PR05MB9810.eurprd05.prod.outlook.com (2603:10a6:20b:5c2::16)
+ by DB9PR05MB9549.eurprd05.prod.outlook.com (2603:10a6:10:301::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.41; Fri, 19 Apr
+ 2024 10:05:15 +0000
+Received: from AS8PR05MB9810.eurprd05.prod.outlook.com
+ ([fe80::b777:79ea:2f7f:8765]) by AS8PR05MB9810.eurprd05.prod.outlook.com
+ ([fe80::b777:79ea:2f7f:8765%4]) with mapi id 15.20.7472.042; Fri, 19 Apr 2024
+ 10:05:15 +0000
+From: Maarten Brock <Maarten.Brock@sttls.nl>
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+CC: Konstantin Pugin <ria.freelander@gmail.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
+ Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>, Lech Perczak
+	<lech.perczak@camlingroup.com>, =?utf-8?B?SWxwbyBKw6RydmluZW4=?=
+	<ilpo.jarvinen@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+Subject: RE: [PATCH v3 0/3] add support for EXAR XR20M1172 UART
+Thread-Topic: [PATCH v3 0/3] add support for EXAR XR20M1172 UART
+Thread-Index: AQHakbLQAxqe1zqBxk+zfKNZu562+rFvW8gA
+Date: Fri, 19 Apr 2024 10:05:15 +0000
+Message-ID: <AS8PR05MB9810C02BC1C3F3E301B8A590830D2@AS8PR05MB9810.eurprd05.prod.outlook.com>
+References: <20240418170610.759838-1-rilian.la.te@ya.ru>
+In-Reply-To: <20240418170610.759838-1-rilian.la.te@ya.ru>
+Accept-Language: en-US, nl-NL
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Authentication-Results-Original: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=sttls.nl;
+x-ms-traffictypediagnostic:
+	AS8PR05MB9810:EE_|DB9PR05MB9549:EE_|DU6PEPF0000B61E:EE_|AM8PR05MB7521:EE_
+X-MS-Office365-Filtering-Correlation-Id: db357ad1-a04e-4ded-5af7-08dc6058392a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original:
+ JFRCZSXBYyJ0Il6tRyCXDAX7ll/HT7i+e7QtJ2zk3qhGi6lohTuIJxRKZIMQ92DUtw+apR1dsWQLN+9kiksCMnKdot3cuQCxkpQ6jay2jmN17TbdHdS4Z/jLkv8u6sJ2wCBzV2VUnBT7dqJBkk0T+Mi020FGh/RPsoNV63PfqDpcWreLSQZPI1W2mGOO9ZOlt//LRDfiIKioJqPHwFii9eFwmJ2dVIOXnPrLukuL2nZisSAsygYXw+KCTM8w2Q+SJIzG84AW3V9aHQZi2NzYXLiWOTOz2KoMb4iOGVBfdBkLSLHPDLMGX1OAmzpd9iGOPxkkM/pBpZGaaIMgSBBAugWW/h8XUFgcmbB/VOr3iSyh30nn0JoBE27813fVhAlGEh4UkUkw2Jt2dSLJLIQL0SDocQOao/Lx0EocWz2nXSg+ONP7P+kX9hu0Q58CrE+5lCxM5v7IiiTbNwmKTNoKSQRNNIta9x7S7vi+CA1j8REQQKJ7FXe4WREK+RBgh1TLOd4yjCg7LXjhpmnalE5QwcTy4FOBQVLiygwUKc7BnOxUrBFyMsTJgX8XJeSLH29VdT3jv1I7b7aoTTglvHNReUbP4Ah5asNwh4Eta4BHLARLDA8Kyo+/jYxLpwJe4pjGVkAW3aLQRpcPHrU584lxY0eCTjxWMDHWJH9kcXVh2CDm8a7RkDN/cxypRUV2bPR0uUGXM0AV6MMXLKsZQ5I2Uv6pyOhcZAqfi+Bs7wH7RVI=
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR05MB9810.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(7416005)(1800799015)(366007)(38070700009);DIR:OUT;SFP:1102;
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZiGJ-DspJq5R6Dym@smile.fi.intel.com>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB9549
+X-CodeTwo-MessageID: 47c95888-8eef-4092-a5c0-96505046aaf8.20240419100519@westeu100-emailsignatures-cloud.codetwo.com
+X-CodeTwoProcessed: true
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ DU6PEPF0000B61E.eurprd02.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	2aa4f35b-2636-4773-013d-08dc6058359c
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	4t11eTIi0yLPEU9q5X98NLXKnN4+y1gjyCtWfUHgBUU/GNAbBZho2IN4/gc/gPPvs0EyOlEGTcJEO7Jk5txTnm9irqX2YrLhrJVOMrAnpcGimw1bpMcE+suxp9Kfh3lhRAWleebXixXDJIIAShv+f734pZTPJPuvy8Oq1omiqR7XlnGEhl8hTPRtsVVLJJyg2EwIkWDmbUysDGkENhOYGeGuJ/YS2egDVDoN1XMQiLe8TEna8j0ZP+cT+8hJblBfTQM5zi7H/SVFw9Wz405nqWNmq0WQyZWu4cZJUK7oJciJSZQzHkIW2c6tKtkzaT7Gaw3ghRTHFOYdsCw81JWwQemr7v7UEbUteHWaoZDxFIS7ihg7i8mwojkicSkE4CcygXZ8oSe3Rby1RjdPYmDtJAqVi3W22QLZWlEiPtAAiy0kr15LAWsWL/l/mQtg7bmNvryVnuDKQKq3k22Fuim9i2gLoV0sokd6QavV3FvzGxgaEeoXzkf8+acIacWea/ToUpF4cVDjkVFuoL8wcR9yEsOl9HQNmkCGyv1QDbM+PYr5YIno1to5r1JuNSZkpW9pCiip/Zmb8tAAqYXP8WMLZUA0FqAkr8R4+maP7oveCg3vzYSL9nyVh6pWsg8ovUWYjBL5YJ2j3JrV9tKHpdJ/JxNqVw+oU0f8k6ulm/tLtrIk/djTI3CkOcWMLPXW4oGCJ3YWCLa6LNYokDbB5pJntvoUcjary/plxAw2iIUO0ZtrMRnlzyJHzNFBu8HcLSnR
+X-Forefront-Antispam-Report:
+	CIP:40.69.19.60;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu100-emailsignatures-cloud.codetwo.com;PTR:westeu100-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230031)(7416005)(82310400014)(1800799015)(376005)(36860700004);DIR:OUT;SFP:1102;
+X-OriginatorOrg: sttls.nl
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 10:05:21.2077
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: db357ad1-a04e-4ded-5af7-08dc6058392a
+X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[40.69.19.60];Helo=[westeu100-emailsignatures-cloud.codetwo.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DU6PEPF0000B61E.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR05MB7521
 
-On Fri, Apr 19, 2024 at 12:00:40AM +0300, Andy Shevchenko wrote:
-> On Thu, Apr 18, 2024 at 10:00:02PM +0300, Serge Semin wrote:
-> > On Thu, Apr 18, 2024 at 02:47:18PM +0300, Andy Shevchenko wrote:
-> > > On Wed, Apr 17, 2024 at 11:11:46PM +0300, Serge Semin wrote:
-> > > > On Tue, Apr 16, 2024 at 10:04:42PM +0300, Andy Shevchenko wrote:
-> > > > > On Tue, Apr 16, 2024 at 07:28:57PM +0300, Serge Semin wrote:
-> 
-> ...
-> 
-> > > > > > +	if (dwc->direction == DMA_MEM_TO_DEV) {
-> > > > > > +		sms = dwc->dws.m_master;
-> > > > > > +		smsize = 0;
-> > > > > > +		dms = dwc->dws.p_master;
-> > > > > > +		dmsize = sconfig->dst_maxburst;
-> > > > 
-> > > > > I would group it differently, i.e.
-> > > > > 
-> > > > > 		sms = dwc->dws.m_master;
-> > > > > 		dms = dwc->dws.p_master;
-> > > > > 		smsize = 0;
-> > > > > 		dmsize = sconfig->dst_maxburst;
-> > > > 
-> > > > Could you please clarify, why? From my point of view it was better to
-> > > > group the source master ID and the source master burst size inits
-> > > > together.
-> > 
-> > > Sure. The point here is that when you look at the DMA channel configuration
-> > > usually you operate with the semantically tied fields for source and
-> > > destination. At least this is my experience, I always check both sides
-> > > of the transfer for the same field, e.g., master setting, hence I want to
-> > > have them coupled.
-> > 
-> > Ok. I see. Thanks for clarification. I normally do that in another
-> > order: group the functionally related fields together - all
-> > source-related configs first, then all destination-related configs.
-> > Honestly I don't have strong opinion about this part, it's just my
-> > personal preference. Am I right to think that from your experience in
-> > kernel it's normally done in the order you described?
-> 
-
-> In this driver I believe I have followed that one, yes.
-
-Agreed then. I'll change the order to the way you ask.
-
--Serge(y)
-
-> 
-> > > > > > +	} else if (dwc->direction == DMA_DEV_TO_MEM) {
-> > > > > > +		sms = dwc->dws.p_master;
-> > > > > > +		smsize = sconfig->src_maxburst;
-> > > > > > +		dms = dwc->dws.m_master;
-> > > > > > +		dmsize = 0;
-> > > > > > +	} else /* DMA_MEM_TO_MEM */ {
-> > > > > > +		sms = dwc->dws.m_master;
-> > > > > > +		smsize = 0;
-> > > > > > +		dms = dwc->dws.m_master;
-> > > > > > +		dmsize = 0;
-> > > > > > +	}
-> > > > > 
-> > > > > Ditto for two above cases.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+PiBGcm9tOiBLb25zdGFudGluIFB1Z2luIDxyaWxpYW4ubGEudGVAeWEucnU+DQo+IFN1YmplY3Q6
+IFtQQVRDSCB2MyAwLzNdIGFkZCBzdXBwb3J0IGZvciBFWEFSIFhSMjBNMTE3MiBVQVJUDQoNCldo
+YXQgaXMgdGhlIHBvbGljeSBpbiB0aGUga2VybmVsIHNvdXJjZXMgZm9yIHRoZSBuYW1lIG9mIHRo
+ZSBtYW51ZmFjdHVyZXI/DQpUaGlzIGRyaXZlciBuZXZlciBoYWQgc3BlY2lhbCBzdXBwb3J0IGZv
+ciB0aGUgRVhBUiBjaGlwcyB3aGVuIGl0IHdhcyBzdGlsbCBFWEFSLg0KU2luY2UgMjAxNyBpdCBp
+cyBub3cgcGFydCBvZiBNYXhMaW5lYXIuIFNob3VsZCB0aGUgZHJpdmVyIHVzZSB0aGUgbmFtZSBv
+ZiB0aGUNCm9yaWdpbmFsIG1hbnVmYWN0dXJlciBvciB0aGUgbmFtZSBvZiB0aGUgbWFudWZhY3R1
+cmVyIGF0IHRoZSB0aW1lIG9mIGFkZGl0aW9uDQp0byB0aGUgc291cmNlcz8NCg0KS2luZCByZWdh
+cmRzLA0KTWFhcnRlbg0KDQo=
