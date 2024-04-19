@@ -1,46 +1,46 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 002D6C8FF;
-	Fri, 19 Apr 2024 06:42:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 072CD2206B;
+	Fri, 19 Apr 2024 06:45:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713508938; cv=none; b=OPykPehFEoXSvlzQNemXrLlr5TW/8AXpzacAaVmpNH8hrTtX4m66tk2y2Ain6+fzVD0lb42Xj7qZB9RVj9QgzUlO4EZG5KC19YJ6WOkzj7FOhV0VPEfKS9TdzMA0OOa0sBsKxlWgTS/yYmYLDIzqzO4m8Ik4L2Tn/YuVIjwoEGE=
+	t=1713509110; cv=none; b=dpTY8jBnSskvvEMNRMRLezl4S1VGpaOn6OpjLNhODgMr7U2KPWycd1l5PfMZL+suHlYagY/zEQAAPCSiflBm9Eln3U/1G9cM4SctaqDdtyJnGtZOhn9vzeY/X3TltlwZkt2LkGpMVlnDCYp19o/IpCkhN01Pj9a0mL09j4h6jGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713508938; c=relaxed/simple;
-	bh=4QwSAdaHJ+jSoNAFurZ4vkDf+ZSWnJ4D31nzVNVlaOA=;
+	s=arc-20240116; t=1713509110; c=relaxed/simple;
+	bh=BYJfFB3o4z4DlnqnsEJgtuXRJsUFcJABhy/592EEOTg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DOtlwrKFSze1nJQ8wVPxQsSJOanyg5vfuZMNl33U+2zc2ejWIEjhflEtXetZh5M2GfnjDaoa2JRXQRw4gHYRGAZuiDnuC4OJx88Opp4M50nRvaOFNTXoZfQw3aTMmusMXqh9wZA1wQVJ0B5jcbqso90aI6AltH5Asjmpw+aoboM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.45
+	 In-Reply-To:Content-Type; b=srdkPvtSK82akSlFYVE4tQ7LgFWUc2iQZr0IRU5FHLKPQPCoji10cmEiEZUls3wk6SyIcJAAYndhhbNVrpC6Fb5ZCS+pKLRyRQtfDcZAy1G/gzFSUUnIsRyBgKjAeH7duoEWSl7iimqT44VrDbnf6tv3wSg4U7+JoVkRktD+f44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a556d22fa93so194304166b.3;
-        Thu, 18 Apr 2024 23:42:16 -0700 (PDT)
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a555b203587so181071366b.3;
+        Thu, 18 Apr 2024 23:45:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713508935; x=1714113735;
+        d=1e100.net; s=20230601; t=1713509107; x=1714113907;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=hK1cw/DjfU20qIlgWW74LMBKEyMpUlbo8nQGzacK178=;
-        b=R7aQb4ACuxqICD658Vs/0slK333mzs2MEQDzbC69pejE2RXwqCmkDYr9FjmRX9sPjX
-         ghp8FJFTXjamAZrw7DaJcIbmUt7aI6QgvuAoi5uGeRGPHBwVtzTUbXnB6jA1CbBlO+J6
-         2sIgI1a8msWCD4a3nKc0pL286OVYNjqu9BwOhXOCa0DlT0uvPLa0Zu5kzxQxKn6DmeLU
-         mselBvh9IfDcTOXJX0MzGhQP44qntsgmeuq5P7Hl4hHb67eWvKudRCrtrObjWVkgQrpc
-         x1pFni+jxEfqWjgwaSV0l3VwGkNhZpdY5fz92LWpc2CE6kLBowEasGJvcoVPKKuXIgJd
-         VcAg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVnlid1/7k2DTZ8y2QtSPuDyIj3d5MIRCrwXN4k8hiTSQB/zhIqF7WqdloAJzddKaKyvrqcFe5JkbqrvYIs286q903573EFqlBYALoaK3zlmiwMm4pXiTWr19KmaDlaclK2TPrQGaInGBj
-X-Gm-Message-State: AOJu0YwVRsXuJ5Ot1uB9SAuo4ZcRQ4KiWvzNV8K1mJ67YZfQpQEskxVQ
-	R2wl7mndGxbjXMEH4aTSyq29Fx95zcp9/c09ewtYTgDv8k8A+XVC
-X-Google-Smtp-Source: AGHT+IFbyCbfWpvHU9qLiqtgo5nVS9UXGAK5AESXpOV+hQs4hM43DIJUzPk7rHnwrGdvTjKz1taeDA==
-X-Received: by 2002:a17:906:3450:b0:a52:5a23:3c2e with SMTP id d16-20020a170906345000b00a525a233c2emr747727ejb.43.1713508935023;
-        Thu, 18 Apr 2024 23:42:15 -0700 (PDT)
+        bh=TXIvdpEd+7151YjFeMND2OHmgnAdxNKLUK95CtrZCdI=;
+        b=gQGLFcB1JH8n/ORR1aAJXGhQOanDkuOLmtvDfWoexBWaA5XvN1sy+/jzYS6jM7w/Tt
+         2+OenTgwt7zgdpWt4ngyM1eJ4l/x8VmzuMjuSLR5plPLtkt1TrMWM6lCcmN0lt+nb5/H
+         UqgX8+t9ev5feeZx8rCnnKhlkyrp6zMLDDcCoHXWexE+H2t3KVUp5Jxf+eqYuivrw4fY
+         +sZVcDETRr87fxT/drMfNQfjS3mYBxWrdt9dqH2WzOhpmmAJwQ/AhFH4Ry/JDpzUx2rD
+         41uQjtX7RYu7kqD/Pkqx62aP+QyKwoz+UKiW6IHkB61Z8fxqc7FAlaEZKAy+SgXZRvFp
+         ziRA==
+X-Forwarded-Encrypted: i=1; AJvYcCU0Fn5Bfs3fvaEgbG/XLmn1bNQ01jwfkjvN6fIXX5+soGeBvLqS7BXniE4ebke7JzSXwq1Zh0r7ohIVY85oV1NWQyNbr4/RJ5MhnCQXFHDbHrinbkcAAd22j0QMuG5WO8pVh9u9FjR8MBNp
+X-Gm-Message-State: AOJu0YxYrpSroxLAcEJxHxOG4Oq5SDtL6L6lOPXNmkwwqblcMwkVbuk4
+	XdwKBobRa7e/8FDI9+I1JDviO38IoGeFuMRsz4cAVl83Z7ce//VO
+X-Google-Smtp-Source: AGHT+IFcA73FFOmxY7aTA5rxa2eWhA56cSRnUbV2wiUKZOyqKo2C668xTzXLBl3e/aFv7RSiA+rUVg==
+X-Received: by 2002:a17:907:3ea8:b0:a52:56e8:2245 with SMTP id hs40-20020a1709073ea800b00a5256e82245mr1335980ejc.47.1713509107067;
+        Thu, 18 Apr 2024 23:45:07 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id n22-20020a170906119600b00a51a9d87570sm1796612eja.17.2024.04.18.23.42.14
+        by smtp.gmail.com with ESMTPSA id cd19-20020a170906b35300b00a4673706b4dsm1798254ejb.78.2024.04.18.23.45.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Apr 2024 23:42:14 -0700 (PDT)
-Message-ID: <92d2c6cb-77d5-4bf5-9d4a-ab5b03f3f044@kernel.org>
-Date: Fri, 19 Apr 2024 08:42:13 +0200
+        Thu, 18 Apr 2024 23:45:06 -0700 (PDT)
+Message-ID: <07021359-27b4-4e7c-b8cc-3090f59ff219@kernel.org>
+Date: Fri, 19 Apr 2024 08:45:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -128,25 +128,26 @@ On 18. 04. 24, 19:06, Konstantin Pugin wrote:
 > --- a/drivers/tty/serial/sc16is7xx.c
 > +++ b/drivers/tty/serial/sc16is7xx.c
 ...
-> @@ -556,16 +579,33 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+> @@ -218,6 +219,20 @@
+>   #define SC16IS7XX_TCR_RX_HALT(words)	((((words) / 4) & 0x0f) << 0)
+>   #define SC16IS7XX_TCR_RX_RESUME(words)	((((words) / 4) & 0x0f) << 4)
 >   
->   static int sc16is7xx_set_baud(struct uart_port *port, int baud)
->   {
-> +	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
->   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-> -	u8 lcr;
-> +	unsigned long clk = port->uartclk, div, div16;
-> +	bool has_dld = s->devtype->has_dld;
-> +	u8 dld_mode = XR20M117X_DLD_16X;
->   	u8 prescaler = 0;
-> -	unsigned long clk = port->uartclk, div = clk / 16 / baud;
-> +	u8 divisor = 16;
-> +	u8 lcr;
+> +/*
+> + * Divisor Fractional Register bits (EXAR extension)
+> + * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
+> + * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
+> + * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
+> + * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
+> + * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
+> + */
 > +
-> +	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
-> +		divisor = 1 << (fls(DIV_ROUND_CLOSEST(clk, baud)) - 1);
+> +#define XR20M117X_DLD_16X		0
+> +#define XR20M117X_DLD_DIV(m)	((m) & GENMASK(3, 0))
 
-Do you mimic roundup_pow_of_two()?
+Again, why not set this up as a mask and use FIELD_PREP?
+
+Could you stop submitting this many series in such a short time lapse? 
+It makes reviewing a major PITA.
 
 -- 
 js
