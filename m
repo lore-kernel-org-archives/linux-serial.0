@@ -1,106 +1,74 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D34BEBE65;
-	Fri, 19 Apr 2024 05:56:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B36C8B666;
+	Fri, 19 Apr 2024 06:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713506184; cv=none; b=tz/ZqutAtds66u2CI5ClH4wg1c7UVrxJqHFUhd/jTwCMZ4JzFqygKzv6gcEx+oKv2ApLcgNn+jUnaR7MJUjzcT5zp9apc/cGTynnvARgoozS/Qnn/xhXG4JsMnLWUecAKXpBJZ46pobTVos5kUpYTYY2AOcVgvAchekZoOodo5M=
+	t=1713506805; cv=none; b=ak6dOIv/cL8H1SUtkXI+Y0G/lTLhz0gzw418abTizLrvgh3+hqCjeEFlsIzt7Df29kn91ruS5XMH6CGqJAojSH3YdHMtBgPbKNKbGGUCS5jYzkklNFfo2X2PgXTNvhJx5L2qTsK92RXUsgrWwV22+mxaR5Rdv1WtprJ2wiz/7kE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713506184; c=relaxed/simple;
-	bh=6yzIPDNpMLVX9Xz8Pzth7r6bTTRxdck5HIFzebwGR88=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=F7OexKVfms5z9nRgMeXVMxTrXXev8gMuK7SBBM9Ci1AGInaCQrKF1/za1jT1loN337V6Vzc1hK94RUVGzVH2sYmJQYKMFx9fAQB0f3Zy4QAKi5RGKMI2Ea5nCEHx/ARyqRe1KHp8HJj27DqRpSuamOPOCNhYyuO3/v8Qdmvojrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 43J5svZE030934;
-	Fri, 19 Apr 2024 13:54:57 +0800 (GMT-8)
-	(envelope-from liu.yeC@h3c.com)
-Received: from DAG6EX10-BJD.srv.huawei-3com.com (unknown [10.153.34.12])
-	by mail.maildlp.com (Postfix) with ESMTP id 59B962004BD6;
-	Fri, 19 Apr 2024 13:57:19 +0800 (CST)
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com (10.62.14.11) by
- DAG6EX10-BJD.srv.huawei-3com.com (10.153.34.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Fri, 19 Apr 2024 13:54:58 +0800
-Received: from DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4])
- by DAG6EX02-IMDC.srv.huawei-3com.com ([fe80::4c21:7c89:4f9d:e4c4%16]) with
- mapi id 15.02.1258.027; Fri, 19 Apr 2024 13:54:58 +0800
-From: Liuye <liu.yeC@h3c.com>
-To: Greg KH <gregkh@linuxfoundation.org>,
-        "daniel.thompson@linaro.org"
-	<daniel.thompson@linaro.org>
-CC: "dianders@chromium.org" <dianders@chromium.org>,
-        "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "kgdb-bugreport@lists.sourceforge.net"
-	<kgdb-bugreport@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>,
-        "andy.shevchenko@gmail.com"
-	<andy.shevchenko@gmail.com>
-Subject: =?utf-8?B?UmU6IFJlOiBSZe+8mltQQVRDSCBWMTFdIGtkYjogRml4IHRoZSBkZWFkbG9j?=
- =?utf-8?Q?k_issue_in_KDB_debugging.?=
-Thread-Topic: =?utf-8?B?UmU6IFJl77yaW1BBVENIIFYxMV0ga2RiOiBGaXggdGhlIGRlYWRsb2NrIGlz?=
- =?utf-8?Q?sue_in_KDB_debugging.?=
-Thread-Index: AdqSHaw21DgRgJC5RcSP9pEIk8krFg==
-Date: Fri, 19 Apr 2024 05:54:58 +0000
-Message-ID: <ac27269989394d8dac859763bc7578d6@h3c.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1713506805; c=relaxed/simple;
+	bh=7tvuNUi++6C8Vch6H2igX6msqCQ6YI1Wy+cuKDRDr9U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Soowe5ay7kp7nzaS7w3AlVskr7XaFhV2yqqTFRQl+8nf/mCFHNx/LMIfsYmg895oZhqgUB1cn3GVaQsnPW2pt8/kVXSvXo3cP3t2aBBS4FRIUStWABAyprtcKvNa8m317H+PFyyu99tPxztH1sUAjThfVCLZQ0WaeL4EHpkhz5E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=z/smkLaD; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="z/smkLaD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F55C072AA;
+	Fri, 19 Apr 2024 06:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1713506805;
+	bh=7tvuNUi++6C8Vch6H2igX6msqCQ6YI1Wy+cuKDRDr9U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=z/smkLaDcQznvq3tn+/PNN/5ghdG+wSUfweoTSNE4CB6M4uWMIr3nAQ9Bch01gn5P
+	 87DyFHEZyTaq/cSkPwM9327vo1kYTp2ohKFDy1z6GHpYuLzTT/PFAwj4XuQmNQZncZ
+	 RXtp+q2gR3REq6MBYMMaPNLNSuFvLVh4nHi/+L4E=
+Date: Fri, 19 Apr 2024 08:06:42 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Liuye <liu.yeC@h3c.com>
+Cc: "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+	"dianders@chromium.org" <dianders@chromium.org>,
+	"jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"kgdb-bugreport@lists.sourceforge.net" <kgdb-bugreport@lists.sourceforge.net>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>
+Subject: Re: Re: =?utf-8?B?UmXvvJpbUEFUQw==?= =?utf-8?Q?H?= V11] kdb: Fix the
+ deadlock issue in KDB debugging.
+Message-ID: <2024041915-flinch-cinema-9c22@gregkh>
+References: <ac27269989394d8dac859763bc7578d6@h3c.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 43J5svZE030934
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ac27269989394d8dac859763bc7578d6@h3c.com>
 
-Pk9uIFdlZCwgQXByIDE3LCAyMDI0IGF0IDExOjAxOjU2QU0gKzAwMDAsIExpdXllIHdyb3RlOg0K
-Pj4gPi0tLQ0KPj4gPlYxMCAtPiBWMTE6IFJldmVydCB0byBWOQ0KPj4gPlY5IC0+IFYxMCA6IEFk
-ZCBTaWduZWQtb2ZmLWJ5IG9mIEdyZWcgS0ggYW5kIEFuZHkgU2hldmNoZW5rbywgQWNrZWQNCj4+
-ID4gICAgICAgICAgICBieSBvZiBEYW5pZWwgVGhvbXBzb24NCj4+ID5WOCAtPiBWOTogTW9kaWZ5
-IGNhbGwgdHJhY2UgZm9ybWF0IGFuZCBtb3ZlIGlycV93b3JrLmggYmVmb3JlIG1vZHVsZS5oDQo+
-PiA+VjcgLT4gVjg6IFVwZGF0ZSB0aGUgZGVzY3JpcHRpb24gaW5mb3JtYXRpb24gYW5kIGNvbW1l
-bnRzIGluIHRoZSBjb2RlLg0KPj4gPgkgICA6IFN1Ym1pdCB0aGlzIHBhdGNoIGJhc2VkIG9uIHZl
-cnNpb24gbGludXgtNi45LXJjMi4NCj4+ID5WNiAtPiBWNzogQWRkIGNvbW1lbnRzIGluIHRoZSBj
-b2RlLg0KPj4gPlY1IC0+IFY2OiBSZXBsYWNlIHdpdGggYSBtb3JlIHByb2Zlc3Npb25hbCBhbmQg
-YWNjdXJhdGUgYW5zd2VyLg0KPj4gPlY0IC0+IFY1OiBBbnN3ZXIgd2h5IHNjaGVkdWxlIGFub3Ro
-ZXIgd29yayBpbiB0aGUgaXJxX3dvcmsgYW5kIG5vdCBkbw0KPj4gPiAgICAgICAgICB0aGUgam9i
-IGRpcmVjdGx5Lg0KPj4gPlYzIC0+IFY0OiBBZGQgY2hhbmdlbG9ncw0KPj4gPlYyIC0+IFYzOiBB
-ZGQgZGVzY3JpcHRpb24gaW5mb3JtYXRpb24NCj4+ID5WMSAtPiBWMjogdXNpbmcgaXJxX3dvcmsg
-dG8gc29sdmUgdGhpcyBwcm9wZXJseS4NCj4+ID4tLS0NCj4+DQo+PiBXaGF0IGlzIHRoZSBjdXJy
-ZW50IHN0YXR1cyBvZiBQQVRDSCBWMTE/IEFyZSB0aGVyZSBhbnkgYWRkaXRpb25hbA0KPj4gbW9k
-aWZpY2F0aW9ucyBuZWVkZWQ/DQo+DQo+SSB1bmRlcnN0b29kIHRoYXQgaXMgYmxvY2tlZCBwZW5k
-aW5nIG91dGNvbWUgb2YgdGhlIGxlZ2FsIG1hdHRlcnMNCj5yYWlzZWQgYnkgdjEwLi4uICBhbmQg
-dGhhdCB0aGlzIGlzIHdoeSB5b3Ugd2VyZSBhc2tlZCBub3QgdG8gcG9zdA0KPnYxMSB1bnRpbCB0
-aGV5IGhhZCBiZWVuIHJlc29sdmVkLg0KPg0KPlRvIGJlIGhvbmVzdCBnaXZlbiB0aGF0IFtJIHdy
-b3RlIGFsbCBvZiB0aGUgQyBjb2RlXVsxXSBmb3IgdGhlIG1vc3QNCj5yZWNlbnQgdmVyc2lvbiBv
-ZiB0aGUgcGF0Y2ggYW5kIHRoYXQgSSdkIGxpa2UgdG8gc2VlIHRoZSBidWcgZml4ZWQsDQo+dGhl
-biBJIHdpbGwgcHJvYmFibHkgaGF2ZSB0byBnaXZlIHVwIG9uIGNvLWF1dGhvcnNoaXAuIEluc3Rl
-YWQgSSBjYW4NCj5wb3N0IG15IGNvZGUgd2l0aCBhIG5ldyBjb21tZW50IGFuZCBwYXRjaCBkZXNj
-cmlwdGlvbiBhbmQgY3JlZGl0IHlvdQ0KPndpdGggYSBSZXBvcnRlZC1ieTouIFRoYXQgc2hvdWxk
-IHRha2UgdGhlIHByZXNzdXJlIG9mZiBpbiB0ZXJtcyBvZg0KPmxhbmRpbmcgdGhpcyBidWcgZml4
-Lg0KDQpARGFuaWVsDQoNClllcywgeW91IGNhbiBkbyBpdCB0aGlzIHdheS4gVG8gZml4IHRoaXMg
-YnVnIGFzIHNvb24gYXMgcG9zc2libGUsIGZvbGxvdyB3aGF0IHlvdSBzYWlkLiBJIGFncmVlLg0K
-DQo+SG93ZXZlciwgdGhlIGxlZ2FsIGlzc3VlcyBkbyBzdGlsbCBuZWVkIHRvIGJlIHJlc29sdmVk
-IG9yIHRoZXJlIGlzIGENCj5yaXNrIHRoYXQgb3RoZXIgdXBzdHJlYW0gY29udHJpYnV0aW9ucyBm
-cm9tIHlvdXIgY29tcGFueSB3aWxsIGJlDQo+ZGVsYXllZC4NCg0KQEdyZWcgS0gNCg0KVGhpcyBp
-c3N1ZSBzdGlsbCBuZWVkcyB0byBiZSByZXNvbHZlZCwgYnV0IEkgZG9uJ3Qga25vdyBob3cgdG8g
-ZG8gaXQuIA0KUGxlYXNlIHRlbGwgbWUgYW4gZWZmZWN0aXZlIHN0cmF0ZWd5LiBIb3cgc2hvdWxk
-IGZlZWRiYWNrIGJlIGdpdmVuIHRvIG1ha2UgaXQgZWZmZWN0aXZlIGZvciB5b3U/IA0KVGhlcmUg
-aXMgYWxyZWFkeSBhbiBhcHByb3ZhbCBwcm9jZXNzIGZvciBleHRlcm5hbCBlbWFpbHMgaW4gdGhl
-IGN1cnJlbnQgY29tcGFueS4gDQpBbmQgYSByZXZpZXcgbWVjaGFuaXNtIGhhcyBiZWVuIGFkZGVk
-IHdpdGhpbiB0aGUgdGVhbS4gQW5kIGludGVybmFsIHRyYWluaW5nIGlzIHByb3ZpZGVkLg0KVGhl
-IHByZXZpb3VzIG1lbnRpb25lZCBoYXMgYmVlbiBjb21wbGV0ZWQuIFdoYXQgZWxzZSBuZWVkcyB0
-byBiZSBkb25lPw0KDQpUaGFua3MNCkxpdSBZZQ0K
+On Fri, Apr 19, 2024 at 05:54:58AM +0000, Liuye wrote:
+> @Greg KH
+> 
+> This issue still needs to be resolved, but I don't know how to do it. 
+> Please tell me an effective strategy. How should feedback be given to make it effective for you? 
+> There is already an approval process for external emails in the current company. 
+> And a review mechanism has been added within the team. And internal training is provided.
+> The previous mentioned has been completed. What else needs to be done?
+
+What would you want to see if you were in my position here?
+
+Some sort of "proof" that this really is the case?  A discussion with
+your company legal group about this?  A discussion with your legal group
+and the open source legal community about how they have structured all
+of this so that it will not happen again and a discussion about how this
+did happen (i.e. a blameless post-mortum)?  A signed-off-by on your next
+patch from a lawyer in that group?
+
+In other words, what does your legal group think would be sufficient
+here?
+
+thanks,
+
+greg k-h
