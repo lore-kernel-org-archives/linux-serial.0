@@ -1,187 +1,123 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2078.outbound.protection.outlook.com [40.107.243.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA5822085
-	for <linux-serial@vger.kernel.org>; Fri, 19 Apr 2024 10:30:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713522643; cv=none; b=ZVzYWY98YswmnH/I7gM/8GSzoJvJhRyzQkLgqORbNjGRwCxw9KRCKftmK4HLTJAGdSCnQBzgCwg/Jv3G/9ZiDmecuZA6CpZ2W5xnmVfdY3wbEeRKwyFZtdyl7D/IjJ8kiuUHyfjW2YZvXk/NIAtxlzh7YcMlUqmYfEbQ2aHQYQg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713522643; c=relaxed/simple;
-	bh=C+qOn5JTN9zJb5FySGwxd2G4kTU2FmFYAYBmugqPSPE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=DmHgoismaQJBvDON+pLvkeSy+VUrvK1fPDuRDymbX5EmSpFAMHsiffUuta45W4UacGB87OIQCSlFugyJ0fCm+Ff6PrMld6gUJd+06JwE98iEcKjorAJXhxHhxrIpQcPC4XSJLM8vNZBWXBC55sqbdLy4/Qs2fjcoxzzujREMdrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OZIrMUT+; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DB67F49A;
+	Fri, 19 Apr 2024 12:05:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713528358; cv=fail; b=OgSOkb7J36daUecvlf+hbmxhEcVZw3Tps3kbDSuddSXzgaDEbyq6zyTEh4Lwt+fP+xuR+jvM/qx4ZJdkOBH0ANkwZk+3z60rvnzyJbpRxoy6j/b52ZPvJQXmmPr1JptP7vYNCQ0IKwO8OQ6WzvYByXINvdVZOAFMtBIMGPuLbkQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713528358; c=relaxed/simple;
+	bh=YOoimxnrmOmT5utXcu3b82K7hDymYuF3WwTQlf8ML+4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=IhBEx2ZNZCt/GumYyOyd1A6+9BlrncWEV/m6BS/41hDgwWZuJIUTr+sixav3tVqLI/KKskMk5PsLWclpUxiA0BKiCgp0ullzIEcGoyhbMyhTccKIH71exx0xHBzTMcj0XwIeWinuGxS4suWHGGDdOvqWFzhwNlZz2zW74R+u9s4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=aLe47f7U; arc=fail smtp.client-ip=40.107.243.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OZIrMUT+"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-41882c16824so15063455e9.3
-        for <linux-serial@vger.kernel.org>; Fri, 19 Apr 2024 03:30:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1713522639; x=1714127439; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zXfB1XmyJGycp6o9EvN2dcs3pfRs+qgNDmJ2Wpliu7Y=;
-        b=OZIrMUT+//6cXhkvDocEAfhEH1IELAy6u9w1akANGX0tQK1JsF9DyJ2dBETGMKhFBy
-         JHe4Kdc6pI9KIb3trnvSsMVNiGmS8iTX4AsLVeAcgHlqHjxwjrQecCV4MHFs9ioPvVOM
-         v4PpWCuAW7NnvzksiOooxfWBxEZ0F+ZKf47o2B1uqbgkciCxbADPhJL7a9SVxr0kVcVO
-         zVoha0DujNzBfGGVg7sGnGUSf2bv4xnHkOtlSA5MNpTskKzOTfYMWUEQORX3C0ghtJAW
-         cgZd8kkZAT2JPuO2tSe/HzmiF6gQWL6HXc/1xo3C1XIfWc8qk9SMO/kryiAvMbM+eyh4
-         tC4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713522639; x=1714127439;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zXfB1XmyJGycp6o9EvN2dcs3pfRs+qgNDmJ2Wpliu7Y=;
-        b=vWSh6OhXdWpbBV+qdF9ztqzMCmWdk6CGl5WQ51p8seexYfpzxSyQ64FRUVqEIFGETA
-         IE3jd/bBmt1RtXLWbBw9ihAkHYyIjspOsSQRsn8dmX9X9+R4WbRziFUE5I8HDQlRiA1L
-         y0hBiKww8OVwL0n5wXOMl5oT8Doj7FSnmr9hRSCdS4XEM4VZxRljqfxE9dWaDLKs8/lf
-         /FD9Lnq9FpxzCQbtgjdPQp7C6XKaq+i9Nd8NhL19wnPRtaTMAA9O31608nXb2No7jDHY
-         b/M1BzYu7YfCAtu03h7JF8A8MIZG2bQ8anpmYCpJkt8EyhlZTkdLTdLeARb52it6OsCt
-         6yeA==
-X-Forwarded-Encrypted: i=1; AJvYcCVyUxIhf6VjFGArNe1H0PmkpoPRQGMbK4Zj11YqABZKeGbZIZqdimnJVwmY0RT2dOObTmYYQiYde6dHRupfPkQXZR1lIv3lxZ0gu6Bc
-X-Gm-Message-State: AOJu0YzZ/3rFRkiHLdu7kHlNgg1bZYUR5DQx3pDXz1BLUjGLOZefpudE
-	7sjdNcYQm2rJ5hQsdn92WypANdZxGqJBZK4QBE0KgbjbL1t1MuJgjVGlPmjLsRY=
-X-Google-Smtp-Source: AGHT+IGiH7Y+JOa4zFWT4uBG5e0nxTZ7q2bT95W8eY0sXWj0RTRbbUTMVj2Y/lTD0+EbzWnZRuMC8Q==
-X-Received: by 2002:a05:600c:3ba3:b0:418:d4a5:b10c with SMTP id n35-20020a05600c3ba300b00418d4a5b10cmr1203298wms.28.1713522639574;
-        Fri, 19 Apr 2024 03:30:39 -0700 (PDT)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id jg1-20020a05600ca00100b004183e983d97sm5885615wmb.39.2024.04.19.03.30.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Apr 2024 03:30:39 -0700 (PDT)
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Date: Fri, 19 Apr 2024 11:30:01 +0100
-Subject: [PATCH] serial: kgdboc: Fix NMI-safety problems from keyboard
- reset code
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="aLe47f7U"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fQjM/oalSws//rKNo0bVPzZMWh8ct8wmAnM1uvDFpiJajckdc9YNpQhNWC68viIGX+IotqwOFz7mQ7ZHN2ainAf7q+U0WjxmuWCZs0YZ0nip6ICQD1KdVGyYCbd4oDZgFT2bQg9WlcohuWod6tKOwzaUHCefTy7fAH3qzXEbSmnAiitoZgURpreK2TEWsjw1xUS+NQxwS6bXbvbJkp0dXT+PY/ICbeqxY3OnMr78G5YdQztL6yDT/IhDBn4ohg3YYt/b/Cki9Jtjh76cux3holu4jeILjlJ8UQ52yf67ttELBozvdUTCQuan7/ZGI96RYQZz7+t7wFfFh+OHKohLDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3MiY6ZvIpFk8RK1YVJr5KZrW4OtKtJo/c84nK26TEeg=;
+ b=cW0zimoWjmOKctXNrc60BZL5AORWRaVPsuLrAsnxr29l41JB8vK4eCu9nlO4goGbA9auA2oxG4p8yUX9mYXOtjTY+n1LM8LsP690jJy6Q0FvBwViyL9DBuv+wWOIxX60K3revFIK9vaER5Yy5oOW9tZetokM8Uv7uzh1unhCStflTohzEwONkyqSrQUIG8CEu9ztnnnaBRlpMYPptkbDkwz/CPYcWjVGvn24ANJvTHmHFEaYO1aapBI6MzKcUhcXS9Ci2yoe3rWMMi08UNFziQJ5jstWcJb5cVUqHxwQh+J56x5xCgEkfzpW4MNXMIRno9JPGmuh8qNhZ2TXi7wtRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3MiY6ZvIpFk8RK1YVJr5KZrW4OtKtJo/c84nK26TEeg=;
+ b=aLe47f7UoH4KCkz+jE5e2OQrAGADvjXkqKiG6OLEwXh5VSLAR7EqnHakGS7ZnBDseaYDBego8ExpHw8u0BjNdihygh974dRpoWeD7nNC7osW+jFFZ6/sVK6xsOBtoIS+Y3d4IpwEeeq6TlCMcV6SqTRBHjWnWwdVjtMqJIXjYaM=
+Received: from DM6PR02CA0104.namprd02.prod.outlook.com (2603:10b6:5:1f4::45)
+ by DM4PR12MB6160.namprd12.prod.outlook.com (2603:10b6:8:a7::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.37; Fri, 19 Apr
+ 2024 12:05:52 +0000
+Received: from DS2PEPF00003439.namprd02.prod.outlook.com
+ (2603:10b6:5:1f4:cafe::1) by DM6PR02CA0104.outlook.office365.com
+ (2603:10b6:5:1f4::45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.30 via Frontend
+ Transport; Fri, 19 Apr 2024 12:05:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DS2PEPF00003439.mail.protection.outlook.com (10.167.18.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7452.22 via Frontend Transport; Fri, 19 Apr 2024 12:05:52 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Fri, 19 Apr
+ 2024 07:05:50 -0500
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Fri, 19 Apr 2024 07:05:45 -0500
+From: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+To: <git@amd.com>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<michal.simek@amd.com>, <p.zabel@pengutronix.de>,
+	<laurent.pinchart@ideasonboard.com>, <radhey.shyam.pandey@amd.com>,
+	<parth.gajjar@amd.com>, <u.kleine-koenig@pengutronix.de>,
+	<tglx@linutronix.de>, <julien.malik@unseenlabs.fr>, <ruanjinjie@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC: <srinivas.goud@amd.com>, <shubhrajyoti.datta@amd.com>,
+	<manion05gk@gmail.com>, Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: [PATCH 0/3] Add support for uartps controller reset
+Date: Fri, 19 Apr 2024 17:35:28 +0530
+Message-ID: <20240419120531.3775919-1-manikanta.guntupalli@amd.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240419-kgdboc_fix_schedule_work-v1-1-ff19881677e5@linaro.org>
-X-B4-Tracking: v=1; b=H4sIAKhHImYC/x2MSQqAMBDAviJztlB1BPUrIqXLqINipcUFxL9bP
- AaSPBApMEXosgcCnRzZbwmKPAM7620iwS4xlLJEiUUrlskZb9XIt4p2JnespC4fFjFKaxBNo6s
- aIeV7oCT963543w83lr0YagAAAA==
-To: Jason Wessel <jason.wessel@windriver.com>, 
- Douglas Anderson <dianders@chromium.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, Liuye <liu.yeC@h3c.com>, 
- stable@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3694;
- i=daniel.thompson@linaro.org; h=from:subject:message-id;
- bh=C+qOn5JTN9zJb5FySGwxd2G4kTU2FmFYAYBmugqPSPE=;
- b=owEBbQKS/ZANAwAKAXzjJV0594ihAcsmYgBmIke9ZVMNfK8Mz+OrFbqaCdj672YT4w8UQ6ueq
- XBwtvN/r82JAjMEAAEKAB0WIQQvNUFTUPeVarpwrPB84yVdOfeIoQUCZiJHvQAKCRB84yVdOfeI
- ofNLD/0Umjj+W7GAbBqQ40IwzKkdPszIlUlf+waYzWOInyWrpl4sPA64fuVxOM2OiIaMG76D5wZ
- TaHUmY75/p8yYCvxnDmCImLbbfksCTqMWW6U4OIg/Smf2j04Qr11sM8bjhpZsS7yDBZK6wCdFec
- ixKLPDfcJLWujuojN8mgtzUD5HDdNTytJFS7HsMTNC9sZHHUN0quVcTU3P6AaqYApXoBzQN2H6B
- HtDoEBSNjeeq/LrZCcrLHNTgWTQ9xlnZVOHFdlzCmSSMKaonGBK2Q57W3yOgcdGUqkL3fTmM97+
- EebnbAIuqfIHzbeHkFJNDThEsUCqyg4GXpHi/De94YHJoab9H8DazLfa5p1BqmVM7obUOK+4z4v
- nLTeji+w4KrvcAqxGu5y4IHL3rwd7c14dD0USQqNS32p1mnzrkJN95l7SV2MwyeBjiAFJ6j8dd7
- NEOqHbly54qnGxAKN2NNAjo6b7upiB3zBnvKB8smcKodgoNxiqDzXWmRlXWrSymGVUidj/WQBpq
- 343NQhA3JUChjQXwvXUONWV/Vka8QXMflolG+vVdOGfXbjfWyXlkWVMtNuOBFZR/1ChTcqAWYls
- 1BuHcD+sywGdEzXvb2qP7Fbc4S47aYDSAy+T2fX4aDz5z+9qpjG+EvMJniaR7tceykHS3GzOOMi
- v/BaL26UzkgkwSQ==
-X-Developer-Key: i=daniel.thompson@linaro.org; a=openpgp;
- fpr=E38BE19861669213F6E2661AA8A4E3BC5B7B28BE
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Received-SPF: None (SATLEXMB04.amd.com: manikanta.guntupalli@amd.com does not
+ designate permitted sender hosts)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PEPF00003439:EE_|DM4PR12MB6160:EE_
+X-MS-Office365-Filtering-Correlation-Id: da9222e8-ffcf-4738-9aca-08dc60690f51
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	4Je+1AxbBEPxUB1W/IWJlA8Y9TR5jh+ugvCFkJ7tFWOgyy+cLJoOKn0OIrqBabEuF/PRmm2Gayeoo6XDoVugcgBZ1zKVA8dqKW6lisR717qwXnt8wXwPYlM6tSO9uasgoAQpJvyr1FXNcsflYYP85hrexWOOPp1FX3ZwU+xniYqQbalzPetpAc9oDYEDjQAIwMzX8vh6HqO78Kyl4RyVTSn+Rz+0PMC25rcd8yuUWslVDIYL16gEojTyvY6dGfXvIa43bIS/uktCCsiJoxXuUZx9MNSkfRZlwciwDk7tQgAzVkG3N47wybTlSlDMkmbyvKSlv5+oFqGh6j0m80BwO0xZvNKH7Az54WdvYB8c3SslN7g3S14HsYnVmknNC7Z3v8HukwEDA5OVWy0FYs0uV4JGGJpftIFE8xC9zO2qLpivTYC6PZ0DdYQ8d2oX/l9DRYkS9Qmb7s9KyL/onmAsIRI0qKtz1jMIuR++mQXE7BjtNpw4EYgHhtWtui60Tofb6B2CLN+yRT4d23GDlHN3HxCWhyizuDWkKioWnw44RXHpUQ3qr1jVIkS9mnG0kncvzzndSbC3VI0w+3Kgt5+7JTZtnGAz68AamBQor0SJDSymhgK0Dw8nsWBzTELFcXmPOAi77Ptcu0WkbfiX4TDHmJXRUTVZktlzH+tjXwNjDa/OjY3D48xeLuXKjsd/iZkO6uyDq/XgJYpzxC/gYp96Xdiq3dyK4d71zDY/VjUgHov/vmyo5ndUqnFF6+cN3vuV+IzejNP+/GtTgdK/Emw8hg==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(1800799015)(376005)(36860700004)(82310400014)(7416005)(921011);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 12:05:52.1950
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: da9222e8-ffcf-4738-9aca-08dc60690f51
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS2PEPF00003439.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6160
 
-Currently, when kdb is compiled with keyboard support, then we will use
-schedule_work() to provoke reset of the keyboard status.  Unfortunately
-schedule_work() gets called from the kgdboc post-debug-exception
-handler.  That risks deadlock since schedule_work() is not NMI-safe and,
-even on platforms where the NMI is not directly used for debugging, the
-debug trap can have NMI-like behaviour depending on where breakpoints
-are placed.
+Add optional resets property for UART nodes.
+Add support for uartps controller reset.
 
-Fix this by using the irq work system, which is NMI-safe, to defer the
-call to schedule_work() to a point when it is safe to call.
+Manikanta Guntupalli (3):
+  dt-bindings: serial: cdsn,uart: Add optional reset property
+  arm64: zynqmp: Add resets property for UART nodes
+  tty: serial: uartps: Add support for uartps controller reset
 
-Reported-by: Liuye <liu.yeC@h3c.com>
-Closes: https://lore.kernel.org/all/20240228025602.3087748-1-liu.yeC@h3c.com/
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
----
- drivers/tty/serial/kgdboc.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/serial/cdns,uart.yaml   |  3 +++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi          |  2 ++
+ drivers/tty/serial/xilinx_uartps.c              | 17 +++++++++++++++++
+ 3 files changed, 22 insertions(+)
 
-diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-index 7ce7bb1640054..adcea70fd7507 100644
---- a/drivers/tty/serial/kgdboc.c
-+++ b/drivers/tty/serial/kgdboc.c
-@@ -19,6 +19,7 @@
- #include <linux/console.h>
- #include <linux/vt_kern.h>
- #include <linux/input.h>
-+#include <linux/irq_work.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/serial_core.h>
-@@ -48,6 +49,25 @@ static struct kgdb_io		kgdboc_earlycon_io_ops;
- static int                      (*earlycon_orig_exit)(struct console *con);
- #endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
- 
-+/*
-+ * When we leave the debug trap handler we need to reset the keyboard status
-+ * (since the original keyboard state gets partially clobbered by kdb use of
-+ * the keyboard).
-+ *
-+ * The path to deliver the reset is somewhat circuitous.
-+ *
-+ * To deliver the reset we register an input handler, reset the keyboard and
-+ * then deregister the input handler. However, to get this done right, we do
-+ * have to carefully manage the calling context because we can only register
-+ * input handlers from task context.
-+ *
-+ * In particular we need to trigger the action from the debug trap handler with
-+ * all its NMI and/or NMI-like oddities. To solve this the kgdboc trap exit code
-+ * (the "post_exception" callback) uses irq_work_queue(), which is NMI-safe, to
-+ * schedule a callback from a hardirq context. From there we have to defer the
-+ * work again, this time using schedule_Work(), to get a callback using the
-+ * system workqueue, which runs in task context.
-+ */
- #ifdef CONFIG_KDB_KEYBOARD
- static int kgdboc_reset_connect(struct input_handler *handler,
- 				struct input_dev *dev,
-@@ -99,10 +119,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
- 
- static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
- 
-+static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
-+{
-+	schedule_work(&kgdboc_restore_input_work);
-+}
-+
-+static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
-+
- static void kgdboc_restore_input(void)
- {
- 	if (likely(system_state == SYSTEM_RUNNING))
--		schedule_work(&kgdboc_restore_input_work);
-+		irq_work_queue(&kgdboc_restore_input_irq_work);
- }
- 
- static int kgdboc_register_kbd(char **cptr)
-@@ -133,6 +160,7 @@ static void kgdboc_unregister_kbd(void)
- 			i--;
- 		}
- 	}
-+	irq_work_sync(&kgdboc_restore_input_irq_work);
- 	flush_work(&kgdboc_restore_input_work);
- }
- #else /* ! CONFIG_KDB_KEYBOARD */
-
----
-base-commit: 0bbac3facb5d6cc0171c45c9873a2dc96bea9680
-change-id: 20240419-kgdboc_fix_schedule_work-f0cb44b8a354
-
-Best regards,
 -- 
-Daniel Thompson <daniel.thompson@linaro.org>
+2.25.1
 
