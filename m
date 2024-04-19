@@ -1,46 +1,46 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D479473;
-	Fri, 19 Apr 2024 07:01:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19892F5A;
+	Fri, 19 Apr 2024 07:17:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713510090; cv=none; b=cvV1CD4nhdZj6z6tFnY5hFdUiw6uDlvwHZZ7qi65Yx61d2x3CpMTRoVzea71uj3AfW1NClSns+i7BdyuxPHocihIcjpPc4/cc8Kr9OBYcL/5SmEg1Mw8mgEu0Hk1PKmCsrnQA3aBJr8Bas0IG47ZP1GiSzE5YVaSIjXQt/gpV6w=
+	t=1713511049; cv=none; b=bdxDysr3UCpSLhhSrVCSRiTbj3kpYidUn/5RRxv4WyH0PKBoDrANZ47EABIODEEuOhuGPubCrn1xC/quBshC5sxnJ19J8WvNAn9+SmSdYQG4mryPHAR1Y0yf4GrrujNVnKu80PnXbsVHaJH4o3nD+McXHuOUULtsM0Omm8eFAOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713510090; c=relaxed/simple;
-	bh=sH1bmGiqxkK0mQrxS4tP7f19KIwVvxNpbYcGXlJTqRg=;
+	s=arc-20240116; t=1713511049; c=relaxed/simple;
+	bh=iR4nmw/6bUlVqFo/LNyfyzNbJzhn7sOcg1mg45WUPJU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gsK+pOaIpu21YcVAzdpzk3pSjAx/eGXjBHlWXCTCkAj3y8X3RG1CD3noE+JOKMdCj6TM3cUD5wSDdvkEVdTn99Szj6tJqX6CbkCl+qwUQ4LwBaJB7hZiunECJ/sjd31Qh0j9KqsvSJ8LqZ0GiyIjAzlAnOQasV1qJj2cZB9x0MQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.182
+	 In-Reply-To:Content-Type; b=YTheCQe3vGKP2dLfw91DYt6iD8U6F9QzPUUvXqM9DAon0KUjas630QuQZlH0nQxcEBZLvV4wqVa7AwbMTLHEkjKXiWi1NEBKIhKZsDU9LtsyC169YPeLClJqXNbIvaVtYzDbBuTFDVA5sfnjyIfwr9YfDEElttAXao/EcvT7QMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2da08b07157so20685561fa.1;
-        Fri, 19 Apr 2024 00:01:25 -0700 (PDT)
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a51addddbd4so165451566b.0;
+        Fri, 19 Apr 2024 00:17:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713510084; x=1714114884;
+        d=1e100.net; s=20230601; t=1713511046; x=1714115846;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1E/MdAMpPbSlbHO+k6ZK0j1SLtIJtidvuVwVd4MJDGw=;
-        b=ccizK8AmLWpip/v5iWbiQU49gkVvk7Z6SB9HqOIYkBkBKUgwTlTn5QrXlLrOMSh5l6
-         vU8brALV4zb6BUH657GFoMtoDR6BP2VakW4/UDN/NyuRKdmx/fHYVcuGVdCExLGSVWsq
-         LVFHyibm8qZjyc1E++7jdd1Pil5NaiOs0hAb+hUXOt7j76/jz0YOflSvdf0K6Ifg1LNh
-         AJIFcalHVFGZ+DVDWcvh9nQpt2bHnZLR05PsNYcjMG3uadMzwthk2nybOJmMYKEF5o0G
-         pRUDavwQ8DBhMKeeP5iqRzv4ZzEocTWztpcVyUHszhBjL/wrtkHw9+UoWnazZ++544R/
-         GIag==
-X-Forwarded-Encrypted: i=1; AJvYcCVbykx8u4++s+2DFURX5Qfm+ORE15rOlSdTCIOEtlhQGtqAtBKUYJzo7+pYWTZAsrlybpzkaqxz19ZiPA0OFrGsH7mjFe7m4OtUOhnO
-X-Gm-Message-State: AOJu0YzEkfmyAeWfYkb956lWbMy5YfrPm21xWOvhmlV0UeUUr0ac1ccj
-	GGIEjNZwGqBt+5LGMPSsZij2OUtsnoWJqFwoya7Oh9ZMXQ+dZzP0TTwzqQ48
-X-Google-Smtp-Source: AGHT+IG/pgr30UMciHlKbZ2mBniQgj5SwevI3RmxjUw6/BwTHbSQnqzxpGN8sHyp1bjkELThiFay+A==
-X-Received: by 2002:a2e:97d4:0:b0:2d6:8868:f1a6 with SMTP id m20-20020a2e97d4000000b002d68868f1a6mr807106ljj.43.1713510083993;
-        Fri, 19 Apr 2024 00:01:23 -0700 (PDT)
+        bh=A524ROUYg+D99/aUsZkq31+BQWgTFmO+3cgBz9aHMfU=;
+        b=sv+BVcZHzo5LEjJUzf/r7ZYEH62aL6kTq41edp65OGdswZnz76Xzhe/1Vp5YaAMnYs
+         p94fwXh7Lc6M4hFQSQyBHRnMY1aF4uuW2hvni87OSV7CLk8CfacT7LzbZD3/VZrulwqa
+         LPsleA1LLxuwDYC3n0reIzT8UINwkGsxsj3jA6Lx1tKy3bYrarWF+JWVR06nlcqFcAEm
+         zgng6kffZ409LazPl8ZPYpE211xl0Tx08ik5adwahyk5IAeUvAtY7tr2EJMtPOHBmCKP
+         rM+OUUWCHv7zMj9H6LzkhTE6cYLQ2eb+6lvaIcgtXJKQx6hZ3r+LwE78b0zPIBVtkaNE
+         8udQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV3ioFX9roDoku/QvXLMg3WCEst1Xwk9hyuxw64K4GKRlXnojm4sxReojKw33FkZGdDucyte1Qtt+70vaI7/e9lEJ6Oh0uwg6UP9bEQO04eTyCLheoCJ/tDmhOUQfosqfzZD9iNcmTmOenxGw==
+X-Gm-Message-State: AOJu0Yz9GW8xdTU/r1OumHu2zMEURAlryARWs8ufLjlXc9tH3y6XZPKO
+	MQ8gtsmAJn7hTe8YW31BFmB5Ys0isbMxk89H9T41CX2cuI6gtnop
+X-Google-Smtp-Source: AGHT+IH6Rw5ZsvhPP/J/GHbZ9QM80koi5jn9dly00SMBv2qplA8ruDRBPANavyhZf8wwthFPWzN08Q==
+X-Received: by 2002:a17:906:6d05:b0:a55:653b:3981 with SMTP id m5-20020a1709066d0500b00a55653b3981mr841423ejr.50.1713511046069;
+        Fri, 19 Apr 2024 00:17:26 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id ko18-20020a170907987200b00a5565ee5c24sm1808580ejc.0.2024.04.19.00.01.23
+        by smtp.gmail.com with ESMTPSA id gx28-20020a1709068a5c00b00a5237093bd2sm1824804ejc.36.2024.04.19.00.17.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Apr 2024 00:01:23 -0700 (PDT)
-Message-ID: <4a7a1c35-f1f6-4ed3-ad57-d71891220219@kernel.org>
-Date: Fri, 19 Apr 2024 09:01:22 +0200
+        Fri, 19 Apr 2024 00:17:25 -0700 (PDT)
+Message-ID: <c6d22274-b433-4757-a36b-40211bbe5c84@kernel.org>
+Date: Fri, 19 Apr 2024 09:17:24 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,14 +48,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 3/4] serial: exar: remove unneeded parenthesis
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Parker Newman <parker@finest.io>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- Parker Newman <pnewman@connecttech.com>
-References: <cover.1713452766.git.pnewman@connecttech.com>
- <1dbe1847d92dd34d223c6dc6b5cd0731b78e98e5.1713452766.git.pnewman@connecttech.com>
- <2024041951-paradox-stable-320e@gregkh>
+Subject: Re: [PATCH 11/15] tty: msm_serial: use dmaengine_prep_slave_sg()
+To: Marek Szyprowski <m.szyprowski@samsung.com>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
+ Anders Roxell <anders.roxell@linaro.org>
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <20240405060826.2521-12-jirislaby@kernel.org>
+ <CGME20240415211716eucas1p10050cc8d4024707dd6f6331111cd3ce1@eucas1p1.samsung.com>
+ <d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com>
+ <54679d54-3957-489d-a8b5-b98ea1c8a93c@kernel.org>
+ <0335b679-da36-42c1-a1ba-8affb7a98d44@samsung.com>
+ <783c05cd-0cd2-4b0e-9dce-2a9fdfee7c74@kernel.org>
+ <c26a049c-07ef-4837-9c1f-ac19b1251c3b@samsung.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -100,39 +106,92 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <2024041951-paradox-stable-320e@gregkh>
+In-Reply-To: <c26a049c-07ef-4837-9c1f-ac19b1251c3b@samsung.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 19. 04. 24, 8:58, Greg Kroah-Hartman wrote:
-> On Thu, Apr 18, 2024 at 11:36:30AM -0400, Parker Newman wrote:
->> From: Parker Newman <pnewman@connecttech.com>
+On 17. 04. 24, 14:45, Marek Szyprowski wrote:
+> On 17.04.2024 12:50, Jiri Slaby wrote:
+>> On 17. 04. 24, 12:15, Marek Szyprowski wrote:
+>>> On 16.04.2024 12:23, Jiri Slaby wrote:
+>>>> On 15. 04. 24, 23:17, Marek Szyprowski wrote:
+>>>>> On 05.04.2024 08:08, Jiri Slaby (SUSE) wrote:
+>>>>>> This is a preparatory for the serial-to-kfifo switch. kfifo
+>>>>>> understands
+>>>>>> only scatter-gatter approach, so switch to that.
+>>>>>>
+>>>>>> No functional change intended, it's just
+>>>>>> dmaengine_prep_slave_single()
+>>>>>> inline expanded.
+>>>>>>
+>>>>>> And in this case, switch from dma_map_single() to dma_map_sg() too.
+>>>>>> This
+>>>>>> needs struct msm_dma changes. I split the rx and tx parts into an
+>>>>>> union.
+>>>>>> TX is now struct scatterlist, RX remains the old good phys-virt-count
+>>>>>> triple.
+>>>>>>
+>>>>>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>>>>>> Cc: Bjorn Andersson <andersson@kernel.org>
+>>>>>> Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>>>> Cc: linux-arm-msm@vger.kernel.org
+>>>>>
+>>>>> I've just found that this patch broke UART operation on DragonBoard
+>>>>> 410c. I briefly checked and didn't notice anything obviously wrong
+>>>>> here,
+>>>>> but the board stops transmitting any data from its serial port
+>>>>> after the
+>>>>> first message. I will try to analyze this issue a bit more tomorrow.
+>>>>
+>>>> I double checked, but I see no immediate issues in the patch too. So
+>>>> please, if you can analyze this more…
+>>>
+>>> I've spent some time digging into this issue and frankly speaking I
+>>> still have no idea WHY it doesn't work (or I seriously mixed something
+>>> in the scatterlist principles). However I found a workaround to make it
+>>> working. Maybe it will help a bit guessing what happens there.
+>> ...
+>>> @@ -434,7 +436,7 @@ static void msm_start_tx(struct uart_port *port)
+>>>            struct msm_dma *dma = &msm_port->tx_dma;
+>>>
+>>>            /* Already started in DMA mode */
+>>> -       if (sg_dma_len(&dma->tx_sg))
+>>> +       if (dma->mapped)
 >>
->> Remove unneeded parenthesis from several locations.
+>> Thanks for looking into this.
 >>
->> Based on feedback from:
->> Link: https://lore.kernel.org/linux-serial/f2353b8c-2079-b895-2707-f6be83161288@linux.intel.com
+>> I was hesitant if I should use a flag. I should have, apparently.
 >>
->> Signed-off-by: Parker Newman <pnewman@connecttech.com>
->> ---
->>   drivers/tty/serial/8250/8250_exar.c | 28 ++++++++++++++--------------
->>   1 file changed, 14 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
->> index 01748ddbf729..10725ad0f3ef 100644
->> --- a/drivers/tty/serial/8250/8250_exar.c
->> +++ b/drivers/tty/serial/8250/8250_exar.c
->> @@ -317,7 +317,7 @@ static inline u8 exar_ee_read_bit(struct exar8250 *priv)
->>
->>   	regb = exar_read_reg(priv, UART_EXAR_REGB);
->>
->> -	return (regb & UART_EXAR_REGB_EEDO ? 1 : 0);
->> +	return regb & UART_EXAR_REGB_EEDO ? 1 : 0;
+>> Quick question:
+>> What's value of CONFIG_NEED_SG_DMA_LENGTH in your .config?
 > 
-> Again, spell out the ? : stuff here please.  Using () isn't the problem :)
+> 
+> CONFIG_NEED_SG_DMA_LENGTH=y
+> 
+> 
+> I alse tried to change the "if (dma->mapped)" check in msm_start_tx() to:
+> 
+> 1. if (dma->tx_sg.length)
+> 
+> 2. if (dma->tx_sg.page_link & ~SG_PAGE_LINK_MASK)
+> 
+> but none of the above worked what is really strange and incomprehensible
+> for me.
 
-Could this in fact be inline bool exar_is_ee_set() (or alike) and return 
-that regb & UART_EXAR_REGB_EEDO directly (w/o using ternary at all)?
+Thanks. Neither for me. Could you add:
+         {
+                 static DEFINE_RATELIMIT_STATE(rs, 
+DEFAULT_RATELIMIT_INTERVAL, DEFAULT_RATELIMIT_BURST);
+                 if (dma->mapped != !!sg_dma_len(&dma->tx_sg) && 
+__ratelimit(&rs))
+                         printk_deferred(KERN_DEBUG "%s (%d): mapped=%u 
+dma_len=%u\n",
+                                         __func__, __LINE__, 
+dma->mapped, sg_dma_len(&dma->tx_sg));
+         }
+
+before each of your 'if (dma->mapped)' to see where sg_dma_len() is 
+wrong and what is its value in the bad case. I hope I did the logic right.
 
 thanks,
 -- 
