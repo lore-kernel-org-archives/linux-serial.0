@@ -1,156 +1,187 @@
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2090.outbound.protection.outlook.com [40.107.8.90])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 744C842AAF;
-	Fri, 19 Apr 2024 10:05:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.90
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713521129; cv=fail; b=LRXTcWbPujhpBMWepWGHk/a80vDB2MfTXUSq4OG1yXZCB76DSTUdHJ75mlLOeXmcSK3Ld9vM/BWfnQ3yOMYgju71YThTDgxtMHNM4zqn4Tqtyg6c95d75BB6VOoRF8uC+gztU7diDbz4Ek9yT5OrwaEp/05qKT6W+c4NA4ukoCQ=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713521129; c=relaxed/simple;
-	bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=ScUj5hVbGknVZ+z4hdzQK47L5a2UviXEd94vHRfG3PqE6I/tNO/o8CMKxSEiyOXOYbQ1eBcJ2F4fl2I3h1pcjbI0o2Npn7N/2IMGzxS51cGi2PAv0kT2Zo0xLz45UtUGY0v2oLygiwfvBY0WXi7Cf9E4ZuKzBvvJvcywmu0kM2o=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=SEO3c1ya; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=SEO3c1ya; arc=fail smtp.client-ip=40.107.8.90
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA5822085
+	for <linux-serial@vger.kernel.org>; Fri, 19 Apr 2024 10:30:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713522643; cv=none; b=ZVzYWY98YswmnH/I7gM/8GSzoJvJhRyzQkLgqORbNjGRwCxw9KRCKftmK4HLTJAGdSCnQBzgCwg/Jv3G/9ZiDmecuZA6CpZ2W5xnmVfdY3wbEeRKwyFZtdyl7D/IjJ8kiuUHyfjW2YZvXk/NIAtxlzh7YcMlUqmYfEbQ2aHQYQg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713522643; c=relaxed/simple;
+	bh=C+qOn5JTN9zJb5FySGwxd2G4kTU2FmFYAYBmugqPSPE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=DmHgoismaQJBvDON+pLvkeSy+VUrvK1fPDuRDymbX5EmSpFAMHsiffUuta45W4UacGB87OIQCSlFugyJ0fCm+Ff6PrMld6gUJd+06JwE98iEcKjorAJXhxHhxrIpQcPC4XSJLM8vNZBWXBC55sqbdLy4/Qs2fjcoxzzujREMdrQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OZIrMUT+; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="SEO3c1ya";
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="SEO3c1ya"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
- b=NYyNbY9ZYHCyyYzV7uqMVxuGmlGGNP8jSfjaXaQAsgG0biuGZJjxN/hODCEDsmm/JtRunVYfZyzPzsqaS2sImPbEOeXmNUyhl6MEuYzCgrFVH1cj60GMKviU9GqNEF+OU5OyvtqbaUCWLH2XDqvzgCvC+k6u3fPN2EV5voArexbo/Zx+2gliLOu8KOSUFfIPwD2rjfJrD2XSgltaW26xDbrTsyeu6HBW6wrJCa5NlUNQxRdtaRPsgST1MybUCvMo61hKajDjuXoEtzetcRuiwoWjA08yUSIsYHUlFXBiQkVJ3lw2OLEdaCiLN4gvDiAsqbUNcfcViU1gi/a7Kkb+qg==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
- b=LvBuS/EQgRe+TfC2q64RSX6JlM7w82iMiaFXa+ria1knKpYIMlKYiKlZsE1Ir66Cy6UnPkz8lYp9jBwYw8TbXint3r7n5PYIbig4w8tvk3ph68P4qPcB1SlncoeggDGDkire894ZX4NliIlP1pDjvBw16xOWGoX1Fnf6RgvwVyJaq6JMgeYzKIfZ89gLNBHbZlzrBQP8zQStxRsX+vMwzSbAKhvByZa+itdeeIOvVfHxyL0wIJLIA7sFFksc3nsMd71MTDPQPn/ihoXs+j2KEjs5XnCHO126KhUAE3BsNWRTlDbQWXHLvE31mczZrZCYLrBrU6aWLxw/+mPWoSerIA==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 40.69.19.60) smtp.rcpttodomain=ya.ru smtp.mailfrom=sttls.nl; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=sttls.nl; dkim=pass
- (signature was verified) header.d=sttls.nl; arc=pass (0 oda=1 ltdi=1
- spf=[1,1,smtp.mailfrom=sttls.nl] dkim=[1,1,header.d=sttls.nl]
- dmarc=[1,1,header.from=sttls.nl])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
- b=SEO3c1yaWVA4qQMEzKJxouukdfsqy6XGOyv4rbi9JDQ+QwnGGPEQ+0Z3bDAIPRxzDSXShLyeZ3XQyAirMaRHRL4LL+Jy8/pFOt1yVHjoWM10JJZx37Yr65a56QWpocrasnT/i+ukk5gZe8RWSFuiRAMoBkoiwFPe3XoI6bOOLB1yQDjPJhBjKaYdYannpGtuMwDhT/TgNKoB1to/Od9hFoHDJBNXMdfL8c4CpS7rrK9ZYA8B9hV65h9fotGDZRMqQzq7NFKR/QrnA48iBN1UKpw70UYWh75SucWiEG+l+/bj1hMKA49L5TkvGTsW8wuuuUOtJMGwrfpu3sA+JCoTdA==
-Received: from DBBPR09CA0022.eurprd09.prod.outlook.com (2603:10a6:10:c0::34)
- by AM8PR05MB7521.eurprd05.prod.outlook.com (2603:10a6:20b:1d3::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.37; Fri, 19 Apr
- 2024 10:05:22 +0000
-Received: from DU6PEPF0000B61E.eurprd02.prod.outlook.com
- (2603:10a6:10:c0:cafe::a1) by DBBPR09CA0022.outlook.office365.com
- (2603:10a6:10:c0::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.26 via Frontend
- Transport; Fri, 19 Apr 2024 10:05:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 40.69.19.60)
- smtp.mailfrom=sttls.nl; dkim=pass (signature was verified)
- header.d=sttls.nl;dmarc=pass action=none header.from=sttls.nl;
-Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
- 40.69.19.60 as permitted sender) receiver=protection.outlook.com;
- client-ip=40.69.19.60; helo=westeu100-emailsignatures-cloud.codetwo.com; pr=C
-Received: from westeu100-emailsignatures-cloud.codetwo.com (40.69.19.60) by
- DU6PEPF0000B61E.mail.protection.outlook.com (10.167.8.133) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7452.22 via Frontend Transport; Fri, 19 Apr 2024 10:05:21 +0000
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (104.47.17.105) by westeu100-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Fri, 19 Apr 2024 10:05:19 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QXAthprXQYggVdr5oJKemnXqLh8XUBIWcgMfZwTk7Eh/ftwwzMXzmIwbGbTjcUQhkjWSv1wTfjUvEgO2odI+3LNMa8nvy0lTXpG38PrIiWfJBiXL0iWiilCCDYFyyr9BnMYFjZ5wFCvyixCVSkj/+Hs8tEJAXUo+IHCCvsL+3U+J+PPmSYSsncsWvPrraWlH1bUlLXkTK2O9Icdu0FEqaMDdVHOff3w+aNdA11EIQBcQCp5dtU543Fdwj7JdpGnpRXSEK4EUm4uNMFpW1HI/pwrCaBR39vcTMDWgreX2ibDYWRau8SB41L8566Uhgo/E2u/xw1SLgg+LuaJyq7mJSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
- b=a+dUIxfsZeHDhc5+T6X8BDc2SlZRGW41Dj6Gwn+XvFOVqaja9DvQMEg3ZcwVlXUWKh0ThBE49WbxdjiYy7DOlCmrKDrOUaIJu43ugOk4xEi5MS5Ri/WCVJ9Yh5Lt8wEb8VxyWecai7vg5iFHp4e31wSwB6AKz5CthCpDeWbV9JOQlw8cngHLTOGAz83m8iQUfQo13k5uKGs/Tn6SNxRiVAbSTAmEGP9LLwLxlFdpp4r+fFdYbtG19TIaSq60pO1iVlGMx47EVuiQ3U+/aO0DeP5RQcLfbSYvvabb5VDsF2tIkUUbzksDku3gGVeOhfkTTKWzSj2R6Mbel8/scvGvog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sttls.nl; dmarc=pass action=none header.from=sttls.nl;
- dkim=pass header.d=sttls.nl; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p+5HODFulkHIiIr6ob4R5TvUJGZrRY2ZsGLD8x0DsN0=;
- b=SEO3c1yaWVA4qQMEzKJxouukdfsqy6XGOyv4rbi9JDQ+QwnGGPEQ+0Z3bDAIPRxzDSXShLyeZ3XQyAirMaRHRL4LL+Jy8/pFOt1yVHjoWM10JJZx37Yr65a56QWpocrasnT/i+ukk5gZe8RWSFuiRAMoBkoiwFPe3XoI6bOOLB1yQDjPJhBjKaYdYannpGtuMwDhT/TgNKoB1to/Od9hFoHDJBNXMdfL8c4CpS7rrK9ZYA8B9hV65h9fotGDZRMqQzq7NFKR/QrnA48iBN1UKpw70UYWh75SucWiEG+l+/bj1hMKA49L5TkvGTsW8wuuuUOtJMGwrfpu3sA+JCoTdA==
-Received: from AS8PR05MB9810.eurprd05.prod.outlook.com (2603:10a6:20b:5c2::16)
- by DB9PR05MB9549.eurprd05.prod.outlook.com (2603:10a6:10:301::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.41; Fri, 19 Apr
- 2024 10:05:15 +0000
-Received: from AS8PR05MB9810.eurprd05.prod.outlook.com
- ([fe80::b777:79ea:2f7f:8765]) by AS8PR05MB9810.eurprd05.prod.outlook.com
- ([fe80::b777:79ea:2f7f:8765%4]) with mapi id 15.20.7472.042; Fri, 19 Apr 2024
- 10:05:15 +0000
-From: Maarten Brock <Maarten.Brock@sttls.nl>
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-CC: Konstantin Pugin <ria.freelander@gmail.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
- Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko
-	<andriy.shevchenko@linux.intel.com>, Lech Perczak
-	<lech.perczak@camlingroup.com>, =?utf-8?B?SWxwbyBKw6RydmluZW4=?=
-	<ilpo.jarvinen@linux.intel.com>, Thomas Gleixner <tglx@linutronix.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Subject: RE: [PATCH v3 0/3] add support for EXAR XR20M1172 UART
-Thread-Topic: [PATCH v3 0/3] add support for EXAR XR20M1172 UART
-Thread-Index: AQHakbLQAxqe1zqBxk+zfKNZu562+rFvW8gA
-Date: Fri, 19 Apr 2024 10:05:15 +0000
-Message-ID: <AS8PR05MB9810C02BC1C3F3E301B8A590830D2@AS8PR05MB9810.eurprd05.prod.outlook.com>
-References: <20240418170610.759838-1-rilian.la.te@ya.ru>
-In-Reply-To: <20240418170610.759838-1-rilian.la.te@ya.ru>
-Accept-Language: en-US, nl-NL
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sttls.nl;
-x-ms-traffictypediagnostic:
-	AS8PR05MB9810:EE_|DB9PR05MB9549:EE_|DU6PEPF0000B61E:EE_|AM8PR05MB7521:EE_
-X-MS-Office365-Filtering-Correlation-Id: db357ad1-a04e-4ded-5af7-08dc6058392a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original:
- JFRCZSXBYyJ0Il6tRyCXDAX7ll/HT7i+e7QtJ2zk3qhGi6lohTuIJxRKZIMQ92DUtw+apR1dsWQLN+9kiksCMnKdot3cuQCxkpQ6jay2jmN17TbdHdS4Z/jLkv8u6sJ2wCBzV2VUnBT7dqJBkk0T+Mi020FGh/RPsoNV63PfqDpcWreLSQZPI1W2mGOO9ZOlt//LRDfiIKioJqPHwFii9eFwmJ2dVIOXnPrLukuL2nZisSAsygYXw+KCTM8w2Q+SJIzG84AW3V9aHQZi2NzYXLiWOTOz2KoMb4iOGVBfdBkLSLHPDLMGX1OAmzpd9iGOPxkkM/pBpZGaaIMgSBBAugWW/h8XUFgcmbB/VOr3iSyh30nn0JoBE27813fVhAlGEh4UkUkw2Jt2dSLJLIQL0SDocQOao/Lx0EocWz2nXSg+ONP7P+kX9hu0Q58CrE+5lCxM5v7IiiTbNwmKTNoKSQRNNIta9x7S7vi+CA1j8REQQKJ7FXe4WREK+RBgh1TLOd4yjCg7LXjhpmnalE5QwcTy4FOBQVLiygwUKc7BnOxUrBFyMsTJgX8XJeSLH29VdT3jv1I7b7aoTTglvHNReUbP4Ah5asNwh4Eta4BHLARLDA8Kyo+/jYxLpwJe4pjGVkAW3aLQRpcPHrU584lxY0eCTjxWMDHWJH9kcXVh2CDm8a7RkDN/cxypRUV2bPR0uUGXM0AV6MMXLKsZQ5I2Uv6pyOhcZAqfi+Bs7wH7RVI=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR05MB9810.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(7416005)(1800799015)(366007)(38070700009);DIR:OUT;SFP:1102;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OZIrMUT+"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-41882c16824so15063455e9.3
+        for <linux-serial@vger.kernel.org>; Fri, 19 Apr 2024 03:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1713522639; x=1714127439; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zXfB1XmyJGycp6o9EvN2dcs3pfRs+qgNDmJ2Wpliu7Y=;
+        b=OZIrMUT+//6cXhkvDocEAfhEH1IELAy6u9w1akANGX0tQK1JsF9DyJ2dBETGMKhFBy
+         JHe4Kdc6pI9KIb3trnvSsMVNiGmS8iTX4AsLVeAcgHlqHjxwjrQecCV4MHFs9ioPvVOM
+         v4PpWCuAW7NnvzksiOooxfWBxEZ0F+ZKf47o2B1uqbgkciCxbADPhJL7a9SVxr0kVcVO
+         zVoha0DujNzBfGGVg7sGnGUSf2bv4xnHkOtlSA5MNpTskKzOTfYMWUEQORX3C0ghtJAW
+         cgZd8kkZAT2JPuO2tSe/HzmiF6gQWL6HXc/1xo3C1XIfWc8qk9SMO/kryiAvMbM+eyh4
+         tC4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713522639; x=1714127439;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zXfB1XmyJGycp6o9EvN2dcs3pfRs+qgNDmJ2Wpliu7Y=;
+        b=vWSh6OhXdWpbBV+qdF9ztqzMCmWdk6CGl5WQ51p8seexYfpzxSyQ64FRUVqEIFGETA
+         IE3jd/bBmt1RtXLWbBw9ihAkHYyIjspOsSQRsn8dmX9X9+R4WbRziFUE5I8HDQlRiA1L
+         y0hBiKww8OVwL0n5wXOMl5oT8Doj7FSnmr9hRSCdS4XEM4VZxRljqfxE9dWaDLKs8/lf
+         /FD9Lnq9FpxzCQbtgjdPQp7C6XKaq+i9Nd8NhL19wnPRtaTMAA9O31608nXb2No7jDHY
+         b/M1BzYu7YfCAtu03h7JF8A8MIZG2bQ8anpmYCpJkt8EyhlZTkdLTdLeARb52it6OsCt
+         6yeA==
+X-Forwarded-Encrypted: i=1; AJvYcCVyUxIhf6VjFGArNe1H0PmkpoPRQGMbK4Zj11YqABZKeGbZIZqdimnJVwmY0RT2dOObTmYYQiYde6dHRupfPkQXZR1lIv3lxZ0gu6Bc
+X-Gm-Message-State: AOJu0YzZ/3rFRkiHLdu7kHlNgg1bZYUR5DQx3pDXz1BLUjGLOZefpudE
+	7sjdNcYQm2rJ5hQsdn92WypANdZxGqJBZK4QBE0KgbjbL1t1MuJgjVGlPmjLsRY=
+X-Google-Smtp-Source: AGHT+IGiH7Y+JOa4zFWT4uBG5e0nxTZ7q2bT95W8eY0sXWj0RTRbbUTMVj2Y/lTD0+EbzWnZRuMC8Q==
+X-Received: by 2002:a05:600c:3ba3:b0:418:d4a5:b10c with SMTP id n35-20020a05600c3ba300b00418d4a5b10cmr1203298wms.28.1713522639574;
+        Fri, 19 Apr 2024 03:30:39 -0700 (PDT)
+Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
+        by smtp.gmail.com with ESMTPSA id jg1-20020a05600ca00100b004183e983d97sm5885615wmb.39.2024.04.19.03.30.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Apr 2024 03:30:39 -0700 (PDT)
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Date: Fri, 19 Apr 2024 11:30:01 +0100
+Subject: [PATCH] serial: kgdboc: Fix NMI-safety problems from keyboard
+ reset code
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB9549
-X-CodeTwo-MessageID: 47c95888-8eef-4092-a5c0-96505046aaf8.20240419100519@westeu100-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DU6PEPF0000B61E.eurprd02.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	2aa4f35b-2636-4773-013d-08dc6058359c
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	4t11eTIi0yLPEU9q5X98NLXKnN4+y1gjyCtWfUHgBUU/GNAbBZho2IN4/gc/gPPvs0EyOlEGTcJEO7Jk5txTnm9irqX2YrLhrJVOMrAnpcGimw1bpMcE+suxp9Kfh3lhRAWleebXixXDJIIAShv+f734pZTPJPuvy8Oq1omiqR7XlnGEhl8hTPRtsVVLJJyg2EwIkWDmbUysDGkENhOYGeGuJ/YS2egDVDoN1XMQiLe8TEna8j0ZP+cT+8hJblBfTQM5zi7H/SVFw9Wz405nqWNmq0WQyZWu4cZJUK7oJciJSZQzHkIW2c6tKtkzaT7Gaw3ghRTHFOYdsCw81JWwQemr7v7UEbUteHWaoZDxFIS7ihg7i8mwojkicSkE4CcygXZ8oSe3Rby1RjdPYmDtJAqVi3W22QLZWlEiPtAAiy0kr15LAWsWL/l/mQtg7bmNvryVnuDKQKq3k22Fuim9i2gLoV0sokd6QavV3FvzGxgaEeoXzkf8+acIacWea/ToUpF4cVDjkVFuoL8wcR9yEsOl9HQNmkCGyv1QDbM+PYr5YIno1to5r1JuNSZkpW9pCiip/Zmb8tAAqYXP8WMLZUA0FqAkr8R4+maP7oveCg3vzYSL9nyVh6pWsg8ovUWYjBL5YJ2j3JrV9tKHpdJ/JxNqVw+oU0f8k6ulm/tLtrIk/djTI3CkOcWMLPXW4oGCJ3YWCLa6LNYokDbB5pJntvoUcjary/plxAw2iIUO0ZtrMRnlzyJHzNFBu8HcLSnR
-X-Forefront-Antispam-Report:
-	CIP:40.69.19.60;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu100-emailsignatures-cloud.codetwo.com;PTR:westeu100-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230031)(7416005)(82310400014)(1800799015)(376005)(36860700004);DIR:OUT;SFP:1102;
-X-OriginatorOrg: sttls.nl
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 10:05:21.2077
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: db357ad1-a04e-4ded-5af7-08dc6058392a
-X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[40.69.19.60];Helo=[westeu100-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU6PEPF0000B61E.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR05MB7521
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240419-kgdboc_fix_schedule_work-v1-1-ff19881677e5@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAKhHImYC/x2MSQqAMBDAviJztlB1BPUrIqXLqINipcUFxL9bP
+ AaSPBApMEXosgcCnRzZbwmKPAM7620iwS4xlLJEiUUrlskZb9XIt4p2JnespC4fFjFKaxBNo6s
+ aIeV7oCT963543w83lr0YagAAAA==
+To: Jason Wessel <jason.wessel@windriver.com>, 
+ Douglas Anderson <dianders@chromium.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, Liuye <liu.yeC@h3c.com>, 
+ stable@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3694;
+ i=daniel.thompson@linaro.org; h=from:subject:message-id;
+ bh=C+qOn5JTN9zJb5FySGwxd2G4kTU2FmFYAYBmugqPSPE=;
+ b=owEBbQKS/ZANAwAKAXzjJV0594ihAcsmYgBmIke9ZVMNfK8Mz+OrFbqaCdj672YT4w8UQ6ueq
+ XBwtvN/r82JAjMEAAEKAB0WIQQvNUFTUPeVarpwrPB84yVdOfeIoQUCZiJHvQAKCRB84yVdOfeI
+ ofNLD/0Umjj+W7GAbBqQ40IwzKkdPszIlUlf+waYzWOInyWrpl4sPA64fuVxOM2OiIaMG76D5wZ
+ TaHUmY75/p8yYCvxnDmCImLbbfksCTqMWW6U4OIg/Smf2j04Qr11sM8bjhpZsS7yDBZK6wCdFec
+ ixKLPDfcJLWujuojN8mgtzUD5HDdNTytJFS7HsMTNC9sZHHUN0quVcTU3P6AaqYApXoBzQN2H6B
+ HtDoEBSNjeeq/LrZCcrLHNTgWTQ9xlnZVOHFdlzCmSSMKaonGBK2Q57W3yOgcdGUqkL3fTmM97+
+ EebnbAIuqfIHzbeHkFJNDThEsUCqyg4GXpHi/De94YHJoab9H8DazLfa5p1BqmVM7obUOK+4z4v
+ nLTeji+w4KrvcAqxGu5y4IHL3rwd7c14dD0USQqNS32p1mnzrkJN95l7SV2MwyeBjiAFJ6j8dd7
+ NEOqHbly54qnGxAKN2NNAjo6b7upiB3zBnvKB8smcKodgoNxiqDzXWmRlXWrSymGVUidj/WQBpq
+ 343NQhA3JUChjQXwvXUONWV/Vka8QXMflolG+vVdOGfXbjfWyXlkWVMtNuOBFZR/1ChTcqAWYls
+ 1BuHcD+sywGdEzXvb2qP7Fbc4S47aYDSAy+T2fX4aDz5z+9qpjG+EvMJniaR7tceykHS3GzOOMi
+ v/BaL26UzkgkwSQ==
+X-Developer-Key: i=daniel.thompson@linaro.org; a=openpgp;
+ fpr=E38BE19861669213F6E2661AA8A4E3BC5B7B28BE
 
-PiBGcm9tOiBLb25zdGFudGluIFB1Z2luIDxyaWxpYW4ubGEudGVAeWEucnU+DQo+IFN1YmplY3Q6
-IFtQQVRDSCB2MyAwLzNdIGFkZCBzdXBwb3J0IGZvciBFWEFSIFhSMjBNMTE3MiBVQVJUDQoNCldo
-YXQgaXMgdGhlIHBvbGljeSBpbiB0aGUga2VybmVsIHNvdXJjZXMgZm9yIHRoZSBuYW1lIG9mIHRo
-ZSBtYW51ZmFjdHVyZXI/DQpUaGlzIGRyaXZlciBuZXZlciBoYWQgc3BlY2lhbCBzdXBwb3J0IGZv
-ciB0aGUgRVhBUiBjaGlwcyB3aGVuIGl0IHdhcyBzdGlsbCBFWEFSLg0KU2luY2UgMjAxNyBpdCBp
-cyBub3cgcGFydCBvZiBNYXhMaW5lYXIuIFNob3VsZCB0aGUgZHJpdmVyIHVzZSB0aGUgbmFtZSBv
-ZiB0aGUNCm9yaWdpbmFsIG1hbnVmYWN0dXJlciBvciB0aGUgbmFtZSBvZiB0aGUgbWFudWZhY3R1
-cmVyIGF0IHRoZSB0aW1lIG9mIGFkZGl0aW9uDQp0byB0aGUgc291cmNlcz8NCg0KS2luZCByZWdh
-cmRzLA0KTWFhcnRlbg0KDQo=
+Currently, when kdb is compiled with keyboard support, then we will use
+schedule_work() to provoke reset of the keyboard status.  Unfortunately
+schedule_work() gets called from the kgdboc post-debug-exception
+handler.  That risks deadlock since schedule_work() is not NMI-safe and,
+even on platforms where the NMI is not directly used for debugging, the
+debug trap can have NMI-like behaviour depending on where breakpoints
+are placed.
+
+Fix this by using the irq work system, which is NMI-safe, to defer the
+call to schedule_work() to a point when it is safe to call.
+
+Reported-by: Liuye <liu.yeC@h3c.com>
+Closes: https://lore.kernel.org/all/20240228025602.3087748-1-liu.yeC@h3c.com/
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+---
+ drivers/tty/serial/kgdboc.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+index 7ce7bb1640054..adcea70fd7507 100644
+--- a/drivers/tty/serial/kgdboc.c
++++ b/drivers/tty/serial/kgdboc.c
+@@ -19,6 +19,7 @@
+ #include <linux/console.h>
+ #include <linux/vt_kern.h>
+ #include <linux/input.h>
++#include <linux/irq_work.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/serial_core.h>
+@@ -48,6 +49,25 @@ static struct kgdb_io		kgdboc_earlycon_io_ops;
+ static int                      (*earlycon_orig_exit)(struct console *con);
+ #endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+ 
++/*
++ * When we leave the debug trap handler we need to reset the keyboard status
++ * (since the original keyboard state gets partially clobbered by kdb use of
++ * the keyboard).
++ *
++ * The path to deliver the reset is somewhat circuitous.
++ *
++ * To deliver the reset we register an input handler, reset the keyboard and
++ * then deregister the input handler. However, to get this done right, we do
++ * have to carefully manage the calling context because we can only register
++ * input handlers from task context.
++ *
++ * In particular we need to trigger the action from the debug trap handler with
++ * all its NMI and/or NMI-like oddities. To solve this the kgdboc trap exit code
++ * (the "post_exception" callback) uses irq_work_queue(), which is NMI-safe, to
++ * schedule a callback from a hardirq context. From there we have to defer the
++ * work again, this time using schedule_Work(), to get a callback using the
++ * system workqueue, which runs in task context.
++ */
+ #ifdef CONFIG_KDB_KEYBOARD
+ static int kgdboc_reset_connect(struct input_handler *handler,
+ 				struct input_dev *dev,
+@@ -99,10 +119,17 @@ static void kgdboc_restore_input_helper(struct work_struct *dummy)
+ 
+ static DECLARE_WORK(kgdboc_restore_input_work, kgdboc_restore_input_helper);
+ 
++static void kgdboc_queue_restore_input_helper(struct irq_work *unused)
++{
++	schedule_work(&kgdboc_restore_input_work);
++}
++
++static DEFINE_IRQ_WORK(kgdboc_restore_input_irq_work, kgdboc_queue_restore_input_helper);
++
+ static void kgdboc_restore_input(void)
+ {
+ 	if (likely(system_state == SYSTEM_RUNNING))
+-		schedule_work(&kgdboc_restore_input_work);
++		irq_work_queue(&kgdboc_restore_input_irq_work);
+ }
+ 
+ static int kgdboc_register_kbd(char **cptr)
+@@ -133,6 +160,7 @@ static void kgdboc_unregister_kbd(void)
+ 			i--;
+ 		}
+ 	}
++	irq_work_sync(&kgdboc_restore_input_irq_work);
+ 	flush_work(&kgdboc_restore_input_work);
+ }
+ #else /* ! CONFIG_KDB_KEYBOARD */
+
+---
+base-commit: 0bbac3facb5d6cc0171c45c9873a2dc96bea9680
+change-id: 20240419-kgdboc_fix_schedule_work-f0cb44b8a354
+
+Best regards,
+-- 
+Daniel Thompson <daniel.thompson@linaro.org>
+
