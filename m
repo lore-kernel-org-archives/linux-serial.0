@@ -1,112 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B984712DDB8;
-	Fri, 19 Apr 2024 14:08:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6F14F214;
+	Fri, 19 Apr 2024 14:15:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713535682; cv=none; b=dK5Tb56XpgxLO245k4ryebuCzB0kwTEDI3ziKRsQbDoKtbEmIHEMGgFNhaSrlFGPyzCWiVwD6L0TA5UccOKpFpsbVPkplwzRuxXfwXJNYMWkdadCCLRdZtI8ELmzFyYQ7N4IB814Dyyg9yvOqiayLOq5OlQ8qMd8tRRHh4EVoBU=
+	t=1713536143; cv=none; b=a/Ostu7B+wG+CLOwgYbLdH6EX1EA64E9khQ8AX+7WEvmFE7nZNyby/55CQBjYK5W+OrqN8JJQJjOA8CdXZ0mMjXrg5+lfllCCaTo2glajxy9qJ+FVaq+bvJFc2Lwkjgvtj4A/jETV4ccUyk2cHGzlJvZLwUyzG66fu5fxgolvwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713535682; c=relaxed/simple;
-	bh=rjZuH2RNoPHVFiJFLYwvZB1FBSLtOukO9uEvQlaCLC8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=az5KbzkTNGZSNxq9OYI1DXm0jAempLXHShJw1WOjdTjQvNqU+w+mWU/RLQv6NMYiv6syL+7e3mVYrfDrJ4oaTyQSXDK13lh9jdl6jHxdnfh71NW5eWRqWogyO4B7b0+Q5TVldIX+X7qsX7q9c1Pq135JDtHs5HBAeDzo3fChxm0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q7oQWewo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713536143; c=relaxed/simple;
+	bh=W0mdvqs2asOd11DMoCEkH+mk70+oTv/de/UTORfTO0M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=p2CLh97j/PNLm7ICjHpEqjSE4a3Em+ua2RMdYzYJ6JCC6LSMPQEl0ZTqBI7AbAGQmTkFEL7Jz7zvcro7KtP/sHE4Rly9Vzxhp/7vT1oZZ8fCeXLOwTsIgbDJUKFvd3f1tf2Yy3gkG+eJv0MmG6fVDwospSw6s/q0sbWhMJdXObo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eL0F9+1G; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q7oQWewo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25936C4AF68;
-	Fri, 19 Apr 2024 14:07:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713535682;
-	bh=rjZuH2RNoPHVFiJFLYwvZB1FBSLtOukO9uEvQlaCLC8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=q7oQWewoDaWdOgYxMQ2ukGY48LSdhEWx1Otl6NL/TTr+dfGVMzoDhU3xs8U+Vh03h
-	 h5b0vAwEUh0w5Y49GqRXTA3x6vXCtnvxjQ4gozeRKlb9SXka7NLec8p11CW/x98aJl
-	 h5Lb+91utT3HTnj0JuWh7Xi436hMqCY/QTT9qqXHmHFOk931dWFEtI8LLQsVwB7nz8
-	 LG5253uOY1du1nubU90M1bj7wt/5V/bTVlruSp8dRagHLqh2Bo5QGeuSWXlnz5Hipz
-	 /gecHLXUIG2MGhaiGur1A5yaQe4R7eEow4vtXUbWk7COMzVEaOYU8P2WPM54eleU2Z
-	 X9eUEDw0nTkew==
-Date: Fri, 19 Apr 2024 15:07:52 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: Konstantin Pugin <ria.freelander@gmail.com>,
-	Vladimir Zapolskiy <vz@mleia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] dt-bindings: sc16is7xx: Add compatible line for
- XR20M1172 UART
-Message-ID: <20240419-glue-pyramid-584728c0076a@spud>
-References: <20240419124506.1531035-1-rilian.la.te@ya.ru>
- <20240419124506.1531035-3-rilian.la.te@ya.ru>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eL0F9+1G"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-518a3e0d2ecso3277417e87.3;
+        Fri, 19 Apr 2024 07:15:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713536139; x=1714140939; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=od1HuzfQ62qye8I9y6ria+FsgJWb4Ms5/RYXQrdJrHw=;
+        b=eL0F9+1GDvvDxXN3ndO1S3ip3Xz7Dgi//9lN2dAgAipFm8xZJl5UHELNMIse7T7ALA
+         KP2aj8NOHi+IoYGEs3dL7vwe4UTfzVu98XAI7LoXSxko4sz3QVdVzlPSvPo8/XlIrPVv
+         Rp8O96zIGT9cYa7ieWgXsKClSLKGyx0irWwCfgpYMCX45YxYFFhLWk8Xk7YgvO6ZaMMu
+         8P9JVEhYYPnuTePNSJcnXKHsTgUeGIwQqeLwjtxXVNATHtfK0H8cGFlsrcQzGD0p2ITz
+         35VoEWxZHWmHYWy9yMZ8RiHJqgK4B9ke7ld2aOiHIpMBa8j1JwIB52kVkOCnXrp74Cnm
+         47iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713536139; x=1714140939;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=od1HuzfQ62qye8I9y6ria+FsgJWb4Ms5/RYXQrdJrHw=;
+        b=hxKhZdjt7aLa7bRFM/+Ub7XqrpJQ/TvWMG8ujVSWRbGsjCH1FpUSlFwFEBKcBqN5U/
+         hz0zHDkLl39BwewD95c/6k4CS9wJPJQI6JN1go9KSA7gKxbb3UfHDOEhGT8FHlPIeuGz
+         gM19rFzDnFhIYX15Dk9dh1cPauho1wYcPHvEg4UfXmwZR/hQIlE8KjlqWt71rPeBRakF
+         g2FgeCESnGR0dGx+/fIo0kXW2qQpONlcbs65H3CBPtLlFHHCWOPAKC6rNM0TbS514wcE
+         pkzF7u3f1h2OXzXkcOocy3YD+ZstUEW1C5fn3NFmcdmaNjwXQOzeOtKoh0RFknmlWC6j
+         hQ6A==
+X-Forwarded-Encrypted: i=1; AJvYcCUdDch2fhWB6Q+7lgk/PX2UOO05MKuAHOxN9rUqMJ/OqTIvyUH0FFBv+eAawH9HvB5KuMslarSAtD6oqeZplG/dS2F0a0CjibS7c9kRTnpF6HwScLnwOdvxltXitSfwZY6tYFp7zR1J18OuoRAdPXT+0HbhcMnelne0IFbLUTaaKvnXXA3HFA==
+X-Gm-Message-State: AOJu0Yzu9HoE6pTXmUDdSnMzzLOznSsS/EBzNkEJD4OjnFwDdj6WB6bO
+	8lygIwyEdTf8Hf0zWgrGEOrRaW2FdJVi0Qqix9mQIklPBluPoXLIfmNdRb8gA0arvuqQcByk1SG
+	X8w3ygJjzRVVlneTXIt5Gs/3xiug=
+X-Google-Smtp-Source: AGHT+IE1lEiJ+HQHyKO37TEXweZDgaRCH2dQqiCpfF+bVzG/msLkLTqXljXaNiBmiD8F6JAq7LVM4pgzv4o3VJhcgAI=
+X-Received: by 2002:a05:6512:38c1:b0:513:ca40:fafc with SMTP id
+ p1-20020a05651238c100b00513ca40fafcmr1600944lft.11.1713536138669; Fri, 19 Apr
+ 2024 07:15:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ov99zUVbexXa5Um/"
-Content-Disposition: inline
-In-Reply-To: <20240419124506.1531035-3-rilian.la.te@ya.ru>
-
-
---ov99zUVbexXa5Um/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20240419124506.1531035-1-rilian.la.te@ya.ru> <20240419124506.1531035-3-rilian.la.te@ya.ru>
+ <20240419-glue-pyramid-584728c0076a@spud>
+In-Reply-To: <20240419-glue-pyramid-584728c0076a@spud>
+From: "Konstantin P." <ria.freelander@gmail.com>
+Date: Fri, 19 Apr 2024 17:17:43 +0300
+Message-ID: <CAF1WSuy4OJVTU5VJdn23BSw4aTAq7i8UQ416V7BxveuQ+5=-1w@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: sc16is7xx: Add compatible line for
+ XR20M1172 UART
+To: Conor Dooley <conor@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, Vladimir Zapolskiy <vz@mleia.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Lech Perczak <lech.perczak@camlingroup.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 19, 2024 at 03:45:02PM +0300, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
->=20
-> Add EXAR XR20M1172 UART compatible line into devicetree documentation.
+On Fri, Apr 19, 2024 at 5:08=E2=80=AFPM Conor Dooley <conor@kernel.org> wro=
+te:
+>
+> On Fri, Apr 19, 2024 at 03:45:02PM +0300, Konstantin Pugin wrote:
+> > From: Konstantin Pugin <ria.freelander@gmail.com>
+> >
+> > Add EXAR XR20M1172 UART compatible line into devicetree documentation.
+>
+> What you're doing is obvious from the diff, why this exar device is
+> related to the nxp devices is what should be mentioned here.
+>
+> Thanks,
+> Conor.
 
-What you're doing is obvious from the diff, why this exar device is
-related to the nxp devices is what should be mentioned here.
+It is already mentioned in cover letter and in previous patches in the
+series. Do I need to repeat it in DTS patch?
+If so, I will do it.
 
-Thanks,
-Conor.
+Citation from my cover letter:
 
->=20
-> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
-> ---
->  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml =
-b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> index 5dec15b7e7c3..c4bedf23368b 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> @@ -12,6 +12,7 @@ maintainers:
->  properties:
->    compatible:
->      enum:
-> +      - exar,xr20m1172
->        - nxp,sc16is740
->        - nxp,sc16is741
->        - nxp,sc16is750
-> --=20
-> 2.34.1
->=20
+EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+it has additional register which can change UART multiplier
+to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+flag to guard access to its specific DLD register. It seems than
+other EXAR SPI UART modules also have this register, but I tested
+only XR20M1172.
+Yes, in datasheet this register is called "DLD - Divisor Fractional"
+or "DLD - Divisor Fractional Register", calling depends on datasheet
+version.
 
---ov99zUVbexXa5Um/
-Content-Type: application/pgp-signature; name="signature.asc"
+Also, comparision from NXP itself:
+http://www.bdtic.com/download/nxp/75017168.pdf (pp12-13 is about XR20M1172)=
+.
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZiJ6uAAKCRB4tDGHoIJi
-0s5fAP9IKK3nOQ4Jai8TvAbCaITTWmCJhHo3WB/T9hOiaHVNVQD/cVSvMGYRW79m
-TbjX6eFGGbOtnYE3sPYmC7tlV8+2PAw=
-=EuDz
------END PGP SIGNATURE-----
-
---ov99zUVbexXa5Um/--
+> >
+> > Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+> > Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yam=
+l b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> > index 5dec15b7e7c3..c4bedf23368b 100644
+> > --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> > @@ -12,6 +12,7 @@ maintainers:
+> >  properties:
+> >    compatible:
+> >      enum:
+> > +      - exar,xr20m1172
+> >        - nxp,sc16is740
+> >        - nxp,sc16is741
+> >        - nxp,sc16is750
+> > --
+> > 2.34.1
+> >
