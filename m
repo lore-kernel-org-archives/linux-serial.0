@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 257F884A5E;
-	Fri, 19 Apr 2024 13:32:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD31F85C66;
+	Fri, 19 Apr 2024 13:34:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713533553; cv=none; b=RvpIzXtrScOs/CQHf0BC+LxGu1Ua2xsVNaKoG1hPAUogauZALOgdEx1R18S7ztTCIQboSgguvLwBdedcYSeSzrAe2nINBCdlEr1zGul2kfHx3WmnS7jxscYEZTFISyFdnfFWda2vk2cp9e8S+8oMEdqYshpX88dc45IcZq9SK/Y=
+	t=1713533691; cv=none; b=tpXccbf5Y3fw0CkE1KbYPe1WKzVh0tqrmmSwlgOv0pGIXlcT/cKSiyuTTptkIfn8DJRFjjYpY6YI4+P1iCBz4nmxdjkU3kb+qBQkCdsb3lkPwS4VfO8fKyqGYBaNgf+NLP+Ubz4WNAb5q+h4Fwe5+RCU/MqUp5mi3qBMTuyBUvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713533553; c=relaxed/simple;
-	bh=qlFV2n0dp+vM+s1TtvLvw3sPeMJevEjAyruXlrxUblU=;
+	s=arc-20240116; t=1713533691; c=relaxed/simple;
+	bh=OmQXyhMeGfoV2Fmk/9xqaerAbggklguVk+gTlCW5nvs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Tu910I6Y4vI4Rlt/f3GVk0rIHMEqt8XwhG4Jv2mDqaA3rWlOytlqSlZ/7G0Zy8HhevDR7oIhRDFVvxjAvjn2S0bPPbxdanPo3V9AAIgMde+4v5w+zWQCNfMSoKEuXla3b6wdnIce/hntmjiRozTTXqO8FNqSNLQKiopO/yNr4zM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UCz6VcD7; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=LiS+CFXUOQg250/gzrTzGjaqypw/Jcq1kOfRra3nByFTHDPR8apJpGAHEd16LaH0v+j49mkxCEUCE5efcg1pfFea8Ziujul6tWwIatWqGgvd2Su41+B/CdDy2IixboHXgV9ylkJl2CaHUTyljjAium2fzW7XevVmZrFuzSlevOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aDpS5T3o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UCz6VcD7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50406C072AA;
-	Fri, 19 Apr 2024 13:32:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aDpS5T3o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0099BC072AA;
+	Fri, 19 Apr 2024 13:34:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713533552;
-	bh=qlFV2n0dp+vM+s1TtvLvw3sPeMJevEjAyruXlrxUblU=;
+	s=k20201202; t=1713533691;
+	bh=OmQXyhMeGfoV2Fmk/9xqaerAbggklguVk+gTlCW5nvs=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=UCz6VcD7u+pspjMh42RlBZLS9T32HlSIRHd9nN5pKa64skT0kRFGXq8kwKmIJD3YV
-	 jE8ZNdNI9O4KiZTIT3ZnOUDUbMfBr2xpQOZEOKOMtcCXwAnbS1/bqit0LMURniI6+T
-	 l4qw2QkO39hqrKODeRE/qLBH5j82KbQ3gmJ67y4ZtX3ZjM47vtnbd/LEm9j+VmbCXQ
-	 7yd4CSskoARCPPKdpj8xoLVpXSnshJA9Xt5kcQLgtaWW38rB49HHkDX1304dsGYKix
-	 cg3xTDQ37CeQ63Rl1619dKzKslM/pZycmwH0p7LNFVGCpc0OmuhcAU1f9ZFobbubXW
-	 cZIO0Zw9l9ACg==
-Message-ID: <7fc1a557-205e-481c-a1c6-3e0a37f7a7bc@kernel.org>
-Date: Fri, 19 Apr 2024 15:32:31 +0200
+	b=aDpS5T3ogGrhY+sw7hnSgc2X4Z5dU8KznkpK46sTF06H+gy5RYyzCPnerDtIwW/PR
+	 7WnAH9k/RNfWtrvG08c4ufl72GEdJ5tLcMNLmMM2Ru+71fU9ASdvmkSGUVEUpQnxAB
+	 mqHCkDf6kON5UnM6FhET+U2RGnHxxNu3GGNRmAz2wBcjHRcgETO2+oTKDkTOCuuGs5
+	 lYAFqWxzsoO1v7/Vo5ZIu5gO0zBqaJEeKxHHZYYQRND2dIMz2u50ECbcgKK0p2wCpo
+	 6j04VaF2Cwpe+p13msJPnAwPvsfBYeSABRCm3Nqv9Mq1XSMR6zxf+jTlTsO2ZkA6tA
+	 RIFXNRRhR4L6g==
+Message-ID: <9494c5e4-f078-4d92-8830-12c5b0f0466b@kernel.org>
+Date: Fri, 19 Apr 2024 15:34:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,22 +35,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/3] dt-bindings: sc16is7xx: Add compatible line for
- XR20M1172 UART
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: Konstantin Pugin <ria.freelander@gmail.com>,
- Vladimir Zapolskiy <vz@mleia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Lech Perczak <lech.perczak@camlingroup.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-References: <20240419124506.1531035-1-rilian.la.te@ya.ru>
- <20240419124506.1531035-3-rilian.la.te@ya.ru>
+Subject: Re: [PATCH 1/3] dt-bindings: serial: cdsn,uart: Add optional reset
+ property
+To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>, git@amd.com,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, michal.simek@amd.com,
+ p.zabel@pengutronix.de, laurent.pinchart@ideasonboard.com,
+ radhey.shyam.pandey@amd.com, parth.gajjar@amd.com,
+ u.kleine-koenig@pengutronix.de, tglx@linutronix.de,
+ julien.malik@unseenlabs.fr, ruanjinjie@huawei.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: srinivas.goud@amd.com, shubhrajyoti.datta@amd.com, manion05gk@gmail.com
+References: <20240419120531.3775919-1-manikanta.guntupalli@amd.com>
+ <20240419120531.3775919-2-manikanta.guntupalli@amd.com>
 Content-Language: en-US
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -96,48 +94,18 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240419124506.1531035-3-rilian.la.te@ya.ru>
+In-Reply-To: <20240419120531.3775919-2-manikanta.guntupalli@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 19/04/2024 14:45, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
+On 19/04/2024 14:05, Manikanta Guntupalli wrote:
+> Add optional reset device-tree property to the uartps controller.
 > 
-> Add EXAR XR20M1172 UART compatible line into devicetree documentation.
-> 
-> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
-> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
-> ---
->  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.ya
+> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
 
-This is fourth change, no cover letter, no changelog. Patch is trivial
-but you do not make it easier to understand what is happening here.
-
-Please provide proper changelog under ---.
-
-(If you wrote changelog somewhere else and then decided not to send it
-to us, it is like there was no changelog. I literally do not have it in
-my inbox).
 
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
----
-
-This is an automated instruction, just in case, because many review tags
-are being ignored. If you know the process, you can skip it (please do
-not feel offended by me posting it here - no bad intentions intended).
-If you do not know the process, here is a short explanation:
-
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions, under or above your Signed-off-by tag. Tag is "received", when
-provided in a message replied to you on the mailing list. Tools like b4
-can help here. However, there's no need to repost patches *only* to add
-the tags. The upstream maintainer will do that for tags received on the
-version they apply.
-
-https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
 
 Best regards,
 Krzysztof
