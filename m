@@ -1,123 +1,141 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E019112FB12;
-	Fri, 19 Apr 2024 14:17:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6B2712D1FE;
+	Fri, 19 Apr 2024 14:24:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713536260; cv=none; b=TJxIOu33kOXTFpPnAfenxMxcZTBvxm10Q+cy2AavTmYV0tLB4gWfNQPa9pnNLlRFTQzxtcBQykZTv/ooa9/QQfvZNdjanUBrVXBs9rhpQlYnmh9f6aZHhB3YRYjDRuRAQso+PbOLBUvoqQ2we+MW7FLA0Zt4sf9nipSK+cY5jlg=
+	t=1713536657; cv=none; b=rE5xeN1Km59hn9u4I3FaNwFiv/T373R/thp6CyTlvCPp2Dd0FcYwgx6eiknUNuKVWX4XlUgyMJeZh1SLTrrl19AnzMgdvetz1ZH87luwUG+Fj9UXTGEZW43tp7jTAvOH5UbFtEUQ0zYhtb1DUId8sLDDgzJm017u13lL93hfLNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713536260; c=relaxed/simple;
-	bh=OAeYXdnsHo/DbZFmMhO4X2AF1kWlsKRdM1cAg1u4sQQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r3f/HecG4CdqYhnkiiphQ42vXh/z4h541ssQ6M8r3mJbWohEuCqclXp8Yu91hxg9YJE4lb4OruOu6Uiv3ZZybjGyiySJYSYHmfXZ+dgN+D6AC2Z8JlAEd3vfVBPI52kFTDlSk0p3H9s5gAQzPg7pjeIGaGjU/v+fEQdfWTQo0Ww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=aNkmz85f; arc=none smtp.client-ip=74.208.4.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1713536657; c=relaxed/simple;
+	bh=SdssixGdlPbY8jaq8GaNsgqoDDyzwfpqA2Jhpw+VFec=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MAEE7YZ9ukNDuAbEQtcxe4etLqQAfIfRa00stXJ3ftA2XqHlh/h/RCmtqPfvVtwTL1SP/v3JQxL2IzWJUGEdFyodT8izCaY0wz+uawpxoXzb0h7Js72ZNkkfeMZoKE9tmmFMGE591RdyeVMJZvvD7rQee/1BsaNkP8nNAMPIxHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SxLY3P9L; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="aNkmz85f"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1713536244; x=1714141044; i=parker@finest.io;
-	bh=+oqF0TtEVeNFKa6CNbV30K8acenVtAv92jduxJuUnGU=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=aNkmz85fYlBOaGAHBNxKdo6B3ne/qJKa3N8g5PFI8PVuslkcvP9B8HwsRwq1upGL
-	 +isq3Q29HOtExiiC3RSZL35q97bCiG6D4l1njg4JDYkjEAj8X6IT6XaNvjSSowuor
-	 vWLtKXvb9ATlqw8qRpibOKyIBcca9Uy3/umw/59J9ylcdNY0awugKjVWUeWZlQFEh
-	 Bm8jXsAc+EnuAPIAeNlZgZuRN7lIo+p+LfUAGaWtZzLcntfmSnefWDfGQ0rnLPCVN
-	 x4N0NEc3EYjBxExpAFze6xF6NDyFKYAf25Q6XV9zlrQDCp3OUeyWiGNrkT0ZchPrO
-	 XKjAmif3oVVeXV1l5g==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus003
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0MBVXk-1rpXJV2uko-00AWAU; Fri, 19 Apr
- 2024 16:17:23 +0200
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Parker Newman <pnewman@connecttech.com>,
-	kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 1/4] serial: exar: add missing kernel doc function parameters
-Date: Fri, 19 Apr 2024 10:17:01 -0400
-Message-ID: <eff495e2263de22e25ff8b8d7cedf57fe0e75c65.1713533298.git.pnewman@connecttech.com>
-X-Mailer: git-send-email 2.43.2
-In-Reply-To: <cover.1713533298.git.pnewman@connecttech.com>
-References: <cover.1713533298.git.pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SxLY3P9L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC2EC072AA;
+	Fri, 19 Apr 2024 14:24:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713536657;
+	bh=SdssixGdlPbY8jaq8GaNsgqoDDyzwfpqA2Jhpw+VFec=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=SxLY3P9L2qLfmVMeCpmqihqVr+SmUfgjv+eFg47OCDiG9EG0NPWvx+wcmWDt4KxMc
+	 CcZfuEGI2rSQEO1T9ENnpWHhSZ+Z5Gd/qfzzm1bK7SU/U6GTVLL7NnmN2QIoQ6NMUe
+	 uN0mfInPBEyYhbJQGB7cW3JyjgqCXPSzZUodcVdnaNtt86AwpvR6eoYlg4kJgbkbUn
+	 FwqpgskuVcrJ1jo4+nHGJ25by7Thq63ZiuBOKlVAjSmI3biMno0yyULBRsN2X71niW
+	 JZdxewuW8GqaG5sPhxSCPqHpmRLhgvn9YcXaCY3ERFlgwCFjHm+tHVt4/+ON1+H17K
+	 zzarKwCHMgDew==
+Message-ID: <dc6573ba-37cb-4394-9a89-16b6f8caa7ad@kernel.org>
+Date: Fri, 19 Apr 2024 16:24:16 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:VUG1KUrvzth9u/JxCJmkf7s90ubBuIDoDNYWTM2YYLRx86BiZMw
- wh7jTcYzGOyVDr6C1yr4znNtQzhCoy2R6OuZxo7TA+PLrysTBK3Ni26QNCgdb9Nklquysy9
- B0mUq2PyB3s00o1abSFo+PsbTUN2uVvd4apt7p82ObFHCXckFR5UQjrdTN1pazxKnKgpYMl
- qYbVCG0W9T96Xv4/Q+paA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:gNPXuRkoSpQ=;Otn35BzurIR2v3UC2DIDbYyZH1c
- l9B3euleK2Rf87vEoM74oa8GchMDF6/cbRcFTSU7qaWla4rK8f6NaMGZS7ofdO7MrCc5jCTA0
- 0xfKwz8hR8m/kDAfyiC6vRUFhAiavjdpDfSsIMniWqWKiiOEhRI9+k9BjS0J/dwgPO8iLq+yC
- xlM5+rIuWd0zq+IJZXpyA45C2DWBUjGuBuuOu71MWxSEfono2oYsJS6UPcOgAexCFKuXw0+p0
- zHSiseIRpyqKw5EaPTrEyhDT0lHQYUXOR/l1bynjVJOJiE+CBagjPDdVkTa6HycNouZziuJTL
- 0kFuKr/v6kJ8LKDoBoYziugROsW858LMNq91XhrloekhaA/Zr20OPR3npv6lqpK0wBvXM0FZ4
- xkPm906pAmgFtrKxZnGcUIhASXhXKxYSgw0HQzzzGcCc6am9C0q6KFbFM7kajg/NlkUNmmANm
- yMaSdyeb1yC68QoFS895qa9xKiO2GaXQ7EVVOzbHXrWb/a0vOTThgxtnFMdEJmiE15zZZy/cf
- VaPBgOgCIllepLHpkzMNcNZXuROgVkS0sTk1v79K3blkpaVvcVW9VxfDpPVoIU+kFqsXjqlYi
- g0ztW68dCSq3I5TTpcs2Z/W0FUg+Q2T8a0Tvx5/sT8wNr9Tmnz96eGeZtuwoH9/Lf4OqSiHgr
- /vgUwD9sP+R+ZHfEZngJeAup6U9UjFxuF++3u08hrFxGfIEVO2XSC4ZhJYr2AHcFc6uP6Z7+8
- QhDPwdYznya4dL/BPeluoIyIuvDe5aeNoaHLRsBVi5fO5Cm0h1Q2eE=
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 2/3] dt-bindings: sc16is7xx: Add compatible line for
+ XR20M1172 UART
+To: "Konstantin P." <ria.freelander@gmail.com>,
+ Conor Dooley <conor@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, Vladimir Zapolskiy <vz@mleia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lech Perczak <lech.perczak@camlingroup.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+References: <20240419124506.1531035-1-rilian.la.te@ya.ru>
+ <20240419124506.1531035-3-rilian.la.te@ya.ru>
+ <20240419-glue-pyramid-584728c0076a@spud>
+ <CAF1WSuy4OJVTU5VJdn23BSw4aTAq7i8UQ416V7BxveuQ+5=-1w@mail.gmail.com>
+Content-Language: en-US
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <CAF1WSuy4OJVTU5VJdn23BSw4aTAq7i8UQ416V7BxveuQ+5=-1w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-From: Parker Newman <pnewman@connecttech.com>
+On 19/04/2024 16:17, Konstantin P. wrote:
+> On Fri, Apr 19, 2024 at 5:08 PM Conor Dooley <conor@kernel.org> wrote:
+>>
+>> On Fri, Apr 19, 2024 at 03:45:02PM +0300, Konstantin Pugin wrote:
+>>> From: Konstantin Pugin <ria.freelander@gmail.com>
+>>>
+>>> Add EXAR XR20M1172 UART compatible line into devicetree documentation.
+>>
+>> What you're doing is obvious from the diff, why this exar device is
+>> related to the nxp devices is what should be mentioned here.
+>>
+>> Thanks,
+>> Conor.
+> 
+> It is already mentioned in cover letter and in previous patches in the
+> series. Do I need to repeat it in DTS patch?
+> If so, I will do it.
+> 
+> Citation from my cover letter:
+> 
+> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+> it has additional register which can change UART multiplier
+> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+> flag to guard access to its specific DLD register. It seems than
+> other EXAR SPI UART modules also have this register, but I tested
+> only XR20M1172.
+> Yes, in datasheet this register is called "DLD - Divisor Fractional"
+> or "DLD - Divisor Fractional Register", calling depends on datasheet
+> version.
 
-Adds missing kernel doc function parameters to 3 functions.
+Commits must stand on their own. Cover letter is not merged. This is the
+place where you add new hardware, so here you describe and explain the
+hardware.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes:
-https://lore.kernel.org/oe-kbuild-all/202404181353.1VIC4cz9-lkp@intel.com/
-
-Signed-off-by: Parker Newman <pnewman@connecttech.com>
-=2D--
- drivers/tty/serial/8250/8250_exar.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
-/8250_exar.c
-index 5e42558cbb01..a180741da634 100644
-=2D-- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -715,6 +715,7 @@ static int cti_read_osc_freq(struct exar8250 *priv, u8=
- eeprom_offset)
- /**
-  * cti_get_port_type_xr17c15x_xr17v25x() - Get port type of xr17c15x/xr17=
-v25x
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: Port to get type of
-  *
-  * CTI xr17c15x and xr17v25x based cards port types are based on PCI IDs.
-@@ -807,6 +808,7 @@ static enum cti_port_type cti_get_port_type_xr17c15x_x=
-r17v25x(struct exar8250 *p
- /**
-  * cti_get_port_type_fpga() - Get the port type of a CTI FPGA card
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: Port to get type of
-  *
-  * FPGA based cards port types are based on PCI IDs.
-@@ -836,6 +838,7 @@ static enum cti_port_type cti_get_port_type_fpga(struc=
-t exar8250 *priv,
- /**
-  * cti_get_port_type_xr17v35x() - Read port type from the EEPROM
-  * @priv: Device's private structure
-+ * @pcidev: PCI device pointer
-  * @port_num: port offset
-  *
-  * CTI XR17V35X based cards have the port types stored in the EEPROM.
-=2D-
-2.43.2
+Best regards,
+Krzysztof
 
