@@ -1,155 +1,245 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64F30129E9A;
-	Fri, 19 Apr 2024 13:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5027FA59;
+	Fri, 19 Apr 2024 13:47:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713534314; cv=none; b=fSamcZDTiHlOKHbdyCdvsQY08b4AI55cbRWfQGzDN8o9fWoVbrYurare7tOARwkTpIE+2Cb4PHxI7+myhtGSKe7VE2K2dOYSPTzjbFmjNPL85XF56MZJc6CDG+5pWActYl9gxeWmOlvh31NcqgkK8VarDPcWVlgwmYGrLtUMCV0=
+	t=1713534469; cv=none; b=Mf9cHlVgTophYblGBhMjGMKxG7uPUZeEx3Y7iRFYsPK4k0ycXEEDCNvjXpM+Mp6MHSlrFSglbkxnp7zxADYvYmRW+jAbKk6jsXiLtIX5ZL46hvKDkStlm8a56dVjOcxHjHnlucpcXgio8QhOjvounS82BhtAOE1MUm9xFMjr76A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713534314; c=relaxed/simple;
-	bh=GA+lW5HtgYsj2a+WAq8/T30QMYc5JJ/OKGBfLyhRkqU=;
+	s=arc-20240116; t=1713534469; c=relaxed/simple;
+	bh=7t/9G7xb4CIJYOZHsfANKwbLN6ZfLsMJCoRjLg+TNgM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cwEvzn6C30WlY9KYf5BC1NF7XVzQ5nRLodeSOc91S5c3t/8WZXaHmzzVj/ZHR1toSkHO7GuLloUzN5XjEKmtv+N+IYN9ZzGuMALjiEsEHiME36I1+qpEHqZgqBBDAbfh3L52oXbM+tUq5tuJyyqflyoQJDJxXZjr0rLyh2GvIz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hyh/ouGW; arc=none smtp.client-ip=209.85.218.44
+	 To:Cc:Content-Type; b=Ul2TEAq3o1E6QlT4GfBQCYMU3IU33e65YZzewY0ZuXQCnaauY443+/92aZ8N5pURsM8gZYeSkLo4RLL5t+mJT7v6jCU9HcYId5iGCNwZaxA/dZajNMBNOrBeXpcAo7jKHxfewtXtrm9BDjOMIFR+pHH1uFqQoIlk09rGLUHl6HM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JuKAH9fo; arc=none smtp.client-ip=209.85.218.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hyh/ouGW"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a526d381d2fso549132166b.0;
-        Fri, 19 Apr 2024 06:45:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JuKAH9fo"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a55323f2ef9so247929066b.1;
+        Fri, 19 Apr 2024 06:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713534311; x=1714139111; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1713534465; x=1714139265; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=TRh/24YFoJxk/siZzuLpmoGSYfvWvbqBGJ8Jh2Xiye0=;
-        b=hyh/ouGWaiFjWKAbZmeKhThQQ9itbBsyusQMHGfgRr7LiIBPSCVEMnurKHztj44JRq
-         OMdJN/byVmazimXECc/zfps66Fsekk0Lg0NcfcP+bLAy0i3zFdYlPMRN6OBwkn2bRFkP
-         +sqkAolaZ0EpE0Rv8cClFUMKoSlDzyk+nMlhI32NfTUzCdJdZv02MBZws9nLHloKLyJF
-         iclJfpWxEgeUUpramtNnIDI7nqa98WCKlxgAso0xf4g6gExEVnAxluCqJv8zXSMje7E7
-         CpOru+UBe9jZuqjyEMXI2/130lZXXoaNxL5LLZ+LxiTkODURW3hLPXO7oNdQzyTIK+DL
-         Zk4A==
+        bh=qw+LAbHXzENBty9Qv/cdMIi07xjBtDcGEnhBj5qMQZ0=;
+        b=JuKAH9foLW0Qeu8EQU1ArbZ4o+objD6VHHtGiwy3zPw/83bhyZk8paWnr8SScyd2Nd
+         hyTX6+q/nDmUhv1G2EydSzCpz9ZnUp8PRlzfc3esvYo9hQndRRGWBn63ztfVNSEhOfU+
+         xuoTztc5CFXIHNJPFTQd5WI2HNIy4iQXgQPPZrA1ZF5Kid+AjiCpa91V9N2/7SVyvUXP
+         fil92W2BuPkq2OBkZORcqvUF1RhHWh53hgmkuLwoYOkzgv9vzvZjVSIqXByJ6gW3Xdp4
+         Itq79U2NtfbkTBVLz131IGNV8aTN4aBqC7H9aPMTquE7ykx9B+4rc7KgCDfrb7EzDxc6
+         pvYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713534311; x=1714139111;
+        d=1e100.net; s=20230601; t=1713534465; x=1714139265;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=TRh/24YFoJxk/siZzuLpmoGSYfvWvbqBGJ8Jh2Xiye0=;
-        b=AmKjFAVSdaxcHcebT7+PvnGKyhd2MtJci86wj/Xklptiwka94SMpt7hztvH11Cosho
-         BFqacLaNHIcsEO3Fgm/t/o6KAt5viyr47NkxQH+/ey+ARiWj8/slB2tRnFsxu7ExRa1H
-         7Bgx1iDKM1ScOER4v4P2f+wvDNU16OkaUgj0pM+9s+pyZdRmUZ2PAduWfT9xNt5gGMFa
-         84hG7Ft4CJ3R8SB4IMyq2kGi/f0Wys16+B1XWEoNTWpiXITJRAT4ucQUqDpoI4L6rpbY
-         dzWf861Zb3RUWbH3aM4w3nl4TizgPEpJGM7Hgy9e/taBCJ0IGD+d7FAjBbYmWGrFworp
-         emLg==
-X-Forwarded-Encrypted: i=1; AJvYcCXCsaBZdOaYaFSU5ObbOgwn/ky8fsX7D2cRE7BrpjLYHW1lOdvO0tqTKkBAH/lSJ6VMOf155c5AA/GKxBa3C1kB1j14ZxyBYWXLeUuD2HWuCpNc2CCtzjzg6jyhM+NY7Im05ubRi6/s2wxV
-X-Gm-Message-State: AOJu0YzUxeyCUk8mao9PRumGaZUqgz76UPZY2QjYTu80Lwd+Ywcho/E/
-	MQ3aTsUxE2UVO2iy8vUwx1GoxKH7SbkZXLcG9SWkgLRvDemM3/RMFqFLa8uIeZAdX6qhKuXXS1y
-	dMRysiNz9V/7w65W5QQ1ZZDbsFPCwvwf4
-X-Google-Smtp-Source: AGHT+IEPVSG1x1M980EqqKfJ05rBiFwtohCNujarxmSxJRm23YjwiyGGLe9iljy3bYUn4YThcIWirF56e+MiWAwfVlg=
-X-Received: by 2002:a17:906:7622:b0:a55:77fa:80d7 with SMTP id
- c2-20020a170906762200b00a5577fa80d7mr3813958ejn.8.1713534310522; Fri, 19 Apr
- 2024 06:45:10 -0700 (PDT)
+        bh=qw+LAbHXzENBty9Qv/cdMIi07xjBtDcGEnhBj5qMQZ0=;
+        b=WcjhpuAYqPVeincgXtCGISCc9+NWHZANdbpeqvMPZ3LFBEYuRnYBlHlcdqhCttGUZA
+         om9chYmKmIvoSe5eM/7NRM486G3jAh6k4y1M8rJQjQKovXFU4IPnqcZywR0EvbRAlMWu
+         Ey6HfX7BSdpXIL7tyJcP4evBBQWOX9G5lnpbGiVHIrYscp6J7vPx0SbgcKJ3Gvn8ULjg
+         tIeNZwZ0a3G8D5MjYgeyz+xxoLT4xE8iiHGE3Jjld/BGamGVvx+q8OyfrWO2F05sjXbt
+         K0dxBOCN2jcE1/AAY0TufgRH5/56Rcgo6WM8gB8Qa6tKcevgoeToARPTvSo9WR0q4dWa
+         IQuA==
+X-Forwarded-Encrypted: i=1; AJvYcCWixtyI0jZSTj9UBj6/IIOcVKSVr7EFXuCuuRpKbpaKe3bhTdR7yf5/VmpednEIxtewtMLR5qOEIODgSO6yNCayV4GhbdVCioQOmdGJTJdSwh4smqLUCcx0gU8qyH16moKXcw/yGmu15b3ZUWqgrGSnzLqye1j6k9mQlHUndQ6m+Q8sRLn6NQ==
+X-Gm-Message-State: AOJu0YwEgUwdqg5Od9gV2pRhb8o6rQLgR/JIlCRTkvB5TMExC6G5qSUR
+	lmlIjdifHwK7sHGv80pDYYoJGG7wtHEwgcYVPUG2AVs12dGRW3f1wPnz2b9OdXYzRpPaPoW2+T6
+	sxtjc8+YDzLoJXn2pAiIGFGJFJKg=
+X-Google-Smtp-Source: AGHT+IF4BaBHnNRPBwlqtjlPr2pi8ZujC09NvQVWslSb3woGPjhNvKFBX5YAr0MZ4IQsJo5Cq65T2/CkExfx+ICn38g=
+X-Received: by 2002:a17:907:3e1a:b0:a55:8c0b:bc00 with SMTP id
+ hp26-20020a1709073e1a00b00a558c0bbc00mr1118441ejc.62.1713534465533; Fri, 19
+ Apr 2024 06:47:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240419124506.1531035-1-rilian.la.te@ya.ru> <20240419094259.4257fefba753f6bd5962720c@hugovil.com>
-In-Reply-To: <20240419094259.4257fefba753f6bd5962720c@hugovil.com>
+References: <20240419124506.1531035-1-rilian.la.te@ya.ru> <20240419124506.1531035-3-rilian.la.te@ya.ru>
+ <7fc1a557-205e-481c-a1c6-3e0a37f7a7bc@kernel.org>
+In-Reply-To: <7fc1a557-205e-481c-a1c6-3e0a37f7a7bc@kernel.org>
 From: "Konstantin P." <ria.freelander@gmail.com>
-Date: Fri, 19 Apr 2024 16:47:14 +0300
-Message-ID: <CAF1WSuwTkM_5oz3sP9ss1aedn2kOdOP_a_ePekixL1TSpOueww@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] add support for EXAR XR20M1172 UART
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+Date: Fri, 19 Apr 2024 16:49:50 +0300
+Message-ID: <CAF1WSuxUZCQNMAdjWUyhG=RV2a8t48NSm9ryoSpd=NTZ3rEEmA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: sc16is7xx: Add compatible line for
+ XR20M1172 UART
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, Vladimir Zapolskiy <vz@mleia.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
 	Lech Perczak <lech.perczak@camlingroup.com>, 
 	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
 	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 19, 2024 at 4:43=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> =
-wrote:
+On Fri, Apr 19, 2024 at 4:32=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
 >
-> On Fri, 19 Apr 2024 15:45:00 +0300
-> Konstantin Pugin <rilian.la.te@ya.ru> wrote:
->
+> On 19/04/2024 14:45, Konstantin Pugin wrote:
 > > From: Konstantin Pugin <ria.freelander@gmail.com>
 > >
-> > EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
-> > it has additional register which can change UART multiplier
-> > to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
-> > flag to guard access to its specific DLD register. It seems than
-> > other EXAR SPI UART modules also have this register, but I tested
-> > only XR20M1172.
-> > Yes, in datasheet this register is called "DLD - Divisor Fractional"
-> > or "DLD - Divisor Fractional Register", calling depends on datasheet
-> > version.
+> > Add EXAR XR20M1172 UART compatible line into devicetree documentation.
+> >
+> > Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+> > Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.ya
 >
-> Hi Konstantin,
-> it would probably be a good idea to also add the device to the list of su=
-pported devices for this driver in the Kconfig file.
+> This is fourth change, no cover letter, no changelog. Patch is trivial
+> but you do not make it easier to understand what is happening here.
 >
-> Hugo.
+> Please provide proper changelog under ---.
+>
+> (If you wrote changelog somewhere else and then decided not to send it
+> to us, it is like there was no changelog. I literally do not have it in
+> my inbox).
+>
+>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+>
+> ---
+>
+> This is an automated instruction, just in case, because many review tags
+> are being ignored. If you know the process, you can skip it (please do
+> not feel offended by me posting it here - no bad intentions intended).
+> If you do not know the process, here is a short explanation:
+>
+> Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+> versions, under or above your Signed-off-by tag. Tag is "received", when
+> provided in a message replied to you on the mailing list. Tools like b4
+> can help here. However, there's no need to repost patches *only* to add
+> the tags. The upstream maintainer will do that for tags received on the
+> version they apply.
+>
+> https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/su=
+bmitting-patches.rst#L577
+>
+> Best regards,
+> Krzysztof
+>
 
-It is already done in V4.
->
-> >
-> > I am sorry about too many submissions and top post reply. About second =
--
-> > I do not know how to reply properly to this ML from GMail phone app. Ab=
-out first - I just
-> > get very good feedback from Andy Shevchenko, and want to fix his review=
- picks ASAP.
-> >
-> > Changes in v2:
-> >   - use full name in git authorship
-> >
-> > Changes in v3:
-> >   - change formatting of commit messages to unify width
-> >   - rework commit messages according to code review
-> >   - add XR20M117X namespace for EXAR-specific register
-> >   - do not use UPF_MAGIC_MULTIPLIER for checking EXAR chip,
-> >     use s->devtype directly
-> >   - replace while loop to fls function and expanded check
-> >   - sort compatibles
-> >   - reformat multiline comment.
-> >
-> > Changes in v4:
-> >   - rebase onto tty-next branch
-> >   - added Kconfig mention of the chip
-> >   - used rounddown_power_of_two instead of fls and manual shift
-> >   - used FIELD_PREP instead of custom macro
-> >   - removed has_dld bit from common struct, replaced by check function,
-> >     which checks directly by s->devtype
-> >   - fixed tab count
-> >   - properly apply Vladimir Zapolskiy's tag to patch 2 only
-> >
-> > Konstantin Pugin (3):
-> >   serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-> >   dt-bindings: sc16is7xx: Add compatible line for XR20M1172 UART
-> >   serial: sc16is7xx: add support for EXAR XR20M1172 UART
-> >
-> >  .../bindings/serial/nxp,sc16is7xx.yaml        |  1 +
-> >  drivers/tty/serial/Kconfig                    | 18 +++---
-> >  drivers/tty/serial/sc16is7xx.c                | 62 +++++++++++++++++--
-> >  drivers/tty/serial/sc16is7xx_i2c.c            |  1 +
-> >  drivers/tty/serial/sc16is7xx_spi.c            |  1 +
-> >  5 files changed, 70 insertions(+), 13 deletions(-)
-> >
-> >
-> > base-commit: c6795fbffc4547b40933ec368200bd4926a41b44
-> > --
-> > 2.34.1
-> >
-> >
-> >
->
->
-> --
-> Hugo Villeneuve <hugo@hugovil.com>
+I am sorry, I used git send-email, and send all 3 patches and cover
+letter. I do not know why it was not ended up in your mailbox.
+Link to all patches (version 4)
+https://lore.kernel.org/linux-serial/20240419124506.1531035-1-rilian.la.te@=
+ya.ru/.
+
+Here is a git send-email log for cover letter:
+
+```
+$ git send-email v4*.patch --cc-cmd=3D'./scripts/get_maintainer.pl
+--norolestats v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.pat=
+ch'
+v4-0000-cover-letter.patch
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch
+v4-0002-dt-bindings-sc16is7xx-Add-compatible-line-for-XR2.patch
+v4-0003-serial-sc16is7xx-add-support-for-EXAR-XR20M1172-U.patch
+To whom should the emails be sent (if anyone)?
+Message-ID to be used as In-Reply-To for the first email (if any)?
+(mbox) Adding cc: Konstantin Pugin <ria.freelander@gmail.com> from
+line 'From: Konstantin Pugin <ria.freelander@gmail.com>'
+./scripts/get_maintainer.pl: file 'v4-0000-cover-letter.patch' doesn't
+appear to be a patch.  Add -f to options?
+(cc-cmd) Adding cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+from: './scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: Jiri Slaby <jirislaby@kernel.org> from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: Hugo Villeneuve <hvilleneuve@dimonoff.com> from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> from: './scripts/get_maintainer.pl
+--norolestats v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.pat=
+ch'
+(cc-cmd) Adding cc: Lech Perczak <lech.perczak@camlingroup.com> from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: =3D?UTF-8?q?Ilpo=3D20J=3DC3=3DA4rvinen?=3D
+<ilpo.jarvinen@linux.intel.com> from: './scripts/get_maintainer.pl
+--norolestats v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.pat=
+ch'
+(cc-cmd) Adding cc: Thomas Gleixner <tglx@linutronix.de> from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: linux-kernel@vger.kernel.org from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+(cc-cmd) Adding cc: linux-serial@vger.kernel.org from:
+'./scripts/get_maintainer.pl --norolestats
+v4-0001-serial-sc16is7xx-announce-support-of-SER_RS485_RT.patch'
+
+From: Konstantin Pugin <rilian.la.te@ya.ru>
+To:
+Cc: Konstantin Pugin <ria.freelander@gmail.com>,
+       Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+       Jiri Slaby <jirislaby@kernel.org>,
+       Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+       Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+       Lech Perczak <lech.perczak@camlingroup.com>,
+       =3D?UTF-8?q?Ilpo=3D20J=3DC3=3DA4rvinen?=3D <ilpo.jarvinen@linux.inte=
+l.com>,
+       Thomas Gleixner <tglx@linutronix.de>,
+       linux-kernel@vger.kernel.org,
+       linux-serial@vger.kernel.org
+Subject: [PATCH v4 0/3] add support for EXAR XR20M1172 UART
+Date: Fri, 19 Apr 2024 15:45:00 +0300
+Message-Id: <20240419124506.1531035-1-rilian.la.te@ya.ru>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+
+   The Cc list above has been expanded by additional
+   addresses found in the patch commit message. By default
+   send-email prompts before sending whenever this occurs.
+   This behavior is controlled by the sendemail.confirm
+   configuration setting.
+
+   For additional information, run 'git send-email --help'.
+   To retain the current behavior, but squelch this message,
+   run 'git config --global sendemail.confirm auto'.
+
+Send this email? ([y]es|[n]o|[e]dit|[q]uit|[a]ll):
+OK. Log says:
+Server: smtp.yandex.ru
+MAIL FROM:<rilian.la.te@ya.ru>
+RCPT TO:<ria.freelander@gmail.com>
+RCPT TO:<gregkh@linuxfoundation.org>
+RCPT TO:<jirislaby@kernel.org>
+RCPT TO:<hvilleneuve@dimonoff.com>
+RCPT TO:<andriy.shevchenko@linux.intel.com>
+RCPT TO:<lech.perczak@camlingroup.com>
+RCPT TO:<ilpo.jarvinen@linux.intel.com>
+RCPT TO:<tglx@linutronix.de>
+RCPT TO:<linux-kernel@vger.kernel.org>
+RCPT TO:<linux-serial@vger.kernel.org>
+From: Konstantin Pugin <rilian.la.te@ya.ru>
+To:
+Cc: Konstantin Pugin <ria.freelander@gmail.com>,
+       Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+       Jiri Slaby <jirislaby@kernel.org>,
+       Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+       Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+       Lech Perczak <lech.perczak@camlingroup.com>,
+       =3D?UTF-8?q?Ilpo=3D20J=3DC3=3DA4rvinen?=3D <ilpo.jarvinen@linux.inte=
+l.com>,
+       Thomas Gleixner <tglx@linutronix.de>,
+       linux-kernel@vger.kernel.org,
+       linux-serial@vger.kernel.org
+Subject: [PATCH v4 0/3] add support for EXAR XR20M1172 UART
+Date: Fri, 19 Apr 2024 15:45:00 +0300
+Message-Id: <20240419124506.1531035-1-rilian.la.te@ya.ru>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+
+Result: 250
+
+```
