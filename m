@@ -1,46 +1,46 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E621C121;
-	Fri, 19 Apr 2024 06:07:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 002D6C8FF;
+	Fri, 19 Apr 2024 06:42:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713506876; cv=none; b=X2vTPiWcjjDFFrDrxRmTz1vLbixx4r7E+R/tBZS6NNXbL5OcD1Duh/7/wy9WikQKCKTyLCql2Pi+IaKWsdklpQFwJBxMrLPXa6zGupZ0kYfKf5zXNbpzKv6Qm6WTHFcA0qEhLkjkeMO6XOR3Ii57BqhsVS+e4AxhORCxpOonSqE=
+	t=1713508938; cv=none; b=OPykPehFEoXSvlzQNemXrLlr5TW/8AXpzacAaVmpNH8hrTtX4m66tk2y2Ain6+fzVD0lb42Xj7qZB9RVj9QgzUlO4EZG5KC19YJ6WOkzj7FOhV0VPEfKS9TdzMA0OOa0sBsKxlWgTS/yYmYLDIzqzO4m8Ik4L2Tn/YuVIjwoEGE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713506876; c=relaxed/simple;
-	bh=e8rL9wQCtwcp4ehgNV78lMdeWlBU1r4R6whdUxLxkEU=;
+	s=arc-20240116; t=1713508938; c=relaxed/simple;
+	bh=4QwSAdaHJ+jSoNAFurZ4vkDf+ZSWnJ4D31nzVNVlaOA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mrGlqw0xVzy4HJ9Ej989nSIMFou+KX188j4A2g+fJwnN7f2k+egs/ToHLoXmkvWbQKjh8+efujg4QhZSJg5Vh2iiUPX1we3N6UZz1jGOVWufqpStGgkJDfMkoqK1uqC1LbRRC3ScQgczdx5U6N7f1qA1plnNVWaMvYXxFhP6Aac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.47
+	 In-Reply-To:Content-Type; b=DOtlwrKFSze1nJQ8wVPxQsSJOanyg5vfuZMNl33U+2zc2ejWIEjhflEtXetZh5M2GfnjDaoa2JRXQRw4gHYRGAZuiDnuC4OJx88Opp4M50nRvaOFNTXoZfQw3aTMmusMXqh9wZA1wQVJ0B5jcbqso90aI6AltH5Asjmpw+aoboM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a523524e5baso165404866b.3;
-        Thu, 18 Apr 2024 23:07:54 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a556d22fa93so194304166b.3;
+        Thu, 18 Apr 2024 23:42:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713506873; x=1714111673;
+        d=1e100.net; s=20230601; t=1713508935; x=1714113735;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+QFAFdaeQGhdEPu7ZDYV3U7ePwFNPLImZP7cCf8biZg=;
-        b=KV6IyJVpwEyujCNjxuDwFyngesnYGk9OthWXeyq1lf36UCdo+zI3e4UDUel5QvmoXg
-         njq4CmQrYyj4G2a9Q7N8/8AbXp48w1VqlB3Motkkbm0LJ5mKgQ1nmfwtjLPP6SyST6OC
-         WYZZOJf+WLdGOIRpD6WY9BKhpgmReMOZ5oiGQXVPJyTyP+eAtjWEiuIJkuvDWb8MQt/g
-         FFC0VfQwJgrZ1AHU1OnM8nv8Ye1ZVR8IIzMETvq675czSHFDjDaWEUglX0EfunTFp1Ci
-         oPpHzXN8/ERKAWGsTuRNlxBH31WkxRPCo5ly7sE7SfOB3koIYMQ3KrTI500h2KGuQYzY
-         FoUA==
-X-Forwarded-Encrypted: i=1; AJvYcCWfQa6a1EUxC6RcZgFMwKlQHTMU5DwyVPKnAEIK749JoQYRsl6dNPFY7WMr8MQdUv3HC+pD0AdXrjg5ODmIHiAfoEDeObtjBsm9qS4yoZTV9X1naGjMRJ/ruN8DKlT5y8PS9vHhj0Una+wg
-X-Gm-Message-State: AOJu0YwpLICFcKCTnYNhQDcIVlK0IzXp5cdYK6LVYx6IxsYbol2BgQqK
-	Sz5PNQLFQSghyrCUxy0OvUIHnkK5rPhK4xY6t6iT+/xJhQuRjptbW1EQvG1r
-X-Google-Smtp-Source: AGHT+IHfYbwFSZHp4nTkSxcXJI/0+mqiUsW6BNDF/1+v1th/hc3R51Sgae0vQXJTDrsm722SblYJ3A==
-X-Received: by 2002:a17:906:c9d5:b0:a51:a547:c21f with SMTP id hk21-20020a170906c9d500b00a51a547c21fmr1009664ejb.5.1713506872363;
-        Thu, 18 Apr 2024 23:07:52 -0700 (PDT)
+        bh=hK1cw/DjfU20qIlgWW74LMBKEyMpUlbo8nQGzacK178=;
+        b=R7aQb4ACuxqICD658Vs/0slK333mzs2MEQDzbC69pejE2RXwqCmkDYr9FjmRX9sPjX
+         ghp8FJFTXjamAZrw7DaJcIbmUt7aI6QgvuAoi5uGeRGPHBwVtzTUbXnB6jA1CbBlO+J6
+         2sIgI1a8msWCD4a3nKc0pL286OVYNjqu9BwOhXOCa0DlT0uvPLa0Zu5kzxQxKn6DmeLU
+         mselBvh9IfDcTOXJX0MzGhQP44qntsgmeuq5P7Hl4hHb67eWvKudRCrtrObjWVkgQrpc
+         x1pFni+jxEfqWjgwaSV0l3VwGkNhZpdY5fz92LWpc2CE6kLBowEasGJvcoVPKKuXIgJd
+         VcAg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVnlid1/7k2DTZ8y2QtSPuDyIj3d5MIRCrwXN4k8hiTSQB/zhIqF7WqdloAJzddKaKyvrqcFe5JkbqrvYIs286q903573EFqlBYALoaK3zlmiwMm4pXiTWr19KmaDlaclK2TPrQGaInGBj
+X-Gm-Message-State: AOJu0YwVRsXuJ5Ot1uB9SAuo4ZcRQ4KiWvzNV8K1mJ67YZfQpQEskxVQ
+	R2wl7mndGxbjXMEH4aTSyq29Fx95zcp9/c09ewtYTgDv8k8A+XVC
+X-Google-Smtp-Source: AGHT+IFbyCbfWpvHU9qLiqtgo5nVS9UXGAK5AESXpOV+hQs4hM43DIJUzPk7rHnwrGdvTjKz1taeDA==
+X-Received: by 2002:a17:906:3450:b0:a52:5a23:3c2e with SMTP id d16-20020a170906345000b00a525a233c2emr747727ejb.43.1713508935023;
+        Thu, 18 Apr 2024 23:42:15 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id hg7-20020a170906f34700b00a4e5a6b57a2sm1738093ejb.163.2024.04.18.23.07.51
+        by smtp.gmail.com with ESMTPSA id n22-20020a170906119600b00a51a9d87570sm1796612eja.17.2024.04.18.23.42.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Apr 2024 23:07:51 -0700 (PDT)
-Message-ID: <379d43bd-d5eb-4877-8781-888c82821bb8@kernel.org>
-Date: Fri, 19 Apr 2024 08:07:50 +0200
+        Thu, 18 Apr 2024 23:42:14 -0700 (PDT)
+Message-ID: <92d2c6cb-77d5-4bf5-9d4a-ab5b03f3f044@kernel.org>
+Date: Fri, 19 Apr 2024 08:42:13 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,15 +48,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 4/4] serial: exar: change port_type ternary line
- wrapping
-To: Parker Newman <parker@finest.io>,
+Subject: Re: [PATCH v3 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
+ UART
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+Cc: Konstantin Pugin <ria.freelander@gmail.com>,
+ Vladimir Zapolskiy <vz@mleia.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Parker Newman <pnewman@connecttech.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-References: <cover.1713452766.git.pnewman@connecttech.com>
- <0081b6a7bbe1ad6ce114132f9ee86677a761de6d.1713452766.git.pnewman@connecttech.com>
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Lech Perczak <lech.perczak@camlingroup.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20240418170610.759838-1-rilian.la.te@ya.ru>
+ <20240418170610.759838-4-rilian.la.te@ya.ru>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -101,100 +106,47 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <0081b6a7bbe1ad6ce114132f9ee86677a761de6d.1713452766.git.pnewman@connecttech.com>
+In-Reply-To: <20240418170610.759838-4-rilian.la.te@ya.ru>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 18. 04. 24, 17:36, Parker Newman wrote:
-> From: Parker Newman <pnewman@connecttech.com>
+On 18. 04. 24, 19:06, Konstantin Pugin wrote:
+> From: Konstantin Pugin <ria.freelander@gmail.com>
 > 
-> Change line wrapping of ternary operators in
-> cti_get_port_type_xr17c15x_xr17v25x() for better readability.
+> XR20M1172 register set is mostly compatible with SC16IS762, but it has
+> a support for additional division rates of UART with special DLD register.
+> So, add handling this register by appropriate devicetree bindings.
 > 
-> Old example:
-> 
-> 	port_type = port_num == 0 ?
-> 			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> 
-> New:
-> 	port_type = port_num == 0 ? CTI_PORT_TYPE_RS232 :
-> 				CTI_PORT_TYPE_RS422_485;
-
-This is worse IMO. Ilpo suggested a bit different alignment. But still...
-
-> Based on feedback from:
-> Link: https://lore.kernel.org/linux-serial/f2353b8c-2079-b895-2707-f6be83161288@linux.intel.com
-
-You should have CCed the author.
-
-> Signed-off-by: Parker Newman <pnewman@connecttech.com>
+> Reviewed-by: Vladimir Zapolskiy <vz@mleia.com>
+> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
 > ---
->   drivers/tty/serial/8250/8250_exar.c | 20 ++++++++++----------
->   1 file changed, 10 insertions(+), 10 deletions(-)
+>   drivers/tty/serial/sc16is7xx.c | 55 +++++++++++++++++++++++++++++++---
+>   1 file changed, 51 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 10725ad0f3ef..a76b4e5bab4e 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -741,19 +741,19 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
->   		break;
->   	// 1x RS232, 1x RS422/RS485
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
-> -		port_type = port_num == 0 ?
-> -			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> +		port_type = port_num == 0 ? CTI_PORT_TYPE_RS232 :
-> +					CTI_PORT_TYPE_RS422_485;
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index a300eebf1401..59376c637467 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+...
+> @@ -556,16 +579,33 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+>   
+>   static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+>   {
+> +	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+>   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+> -	u8 lcr;
+> +	unsigned long clk = port->uartclk, div, div16;
+> +	bool has_dld = s->devtype->has_dld;
+> +	u8 dld_mode = XR20M117X_DLD_16X;
+>   	u8 prescaler = 0;
+> -	unsigned long clk = port->uartclk, div = clk / 16 / baud;
+> +	u8 divisor = 16;
+> +	u8 lcr;
+> +
+> +	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
+> +		divisor = 1 << (fls(DIV_ROUND_CLOSEST(clk, baud)) - 1);
 
-
-Well, could you initialize port_type = CTI_PORT_TYPE_RS232? And here do 
-only:
-if (port_num > 0)
-     return CTI_PORT_TYPE_RS422_485;
-?
-
-
->   		break;
->   	// 2x RS232, 2x RS422/RS485
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
-> -		port_type = port_num < 2 ?
-> -			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> +		port_type = port_num < 2 ? CTI_PORT_TYPE_RS232 :
-> +					CTI_PORT_TYPE_RS422_485;
-
-And so on.
-
->   		break;
->   	// 4x RS232, 4x RS422/RS485
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
-> -		port_type = port_num < 4 ?
-> -			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> +		port_type = port_num < 4 ? CTI_PORT_TYPE_RS232 :
-> +					CTI_PORT_TYPE_RS422_485;
->   		break;
->   	// RS232/RS422/RS485 HW (jumper) selectable
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
-> @@ -789,13 +789,13 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
->   		break;
->   	// 6x RS232, 2x RS422/RS485
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
-> -		port_type = port_num < 6 ?
-> -			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> +		port_type = port_num < 6 ? CTI_PORT_TYPE_RS232 :
-> +					CTI_PORT_TYPE_RS422_485;
->   		break;
->   	// 2x RS232, 6x RS422/RS485
->   	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
-> -		port_type = port_num < 2 ?
-> -			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
-> +		port_type = port_num < 2 ? CTI_PORT_TYPE_RS232 :
-> +					CTI_PORT_TYPE_RS422_485;
->   		break;
->   	default:
->   		dev_err(&pcidev->dev, "unknown/unsupported device\n");
-> --
-> 2.43.2
-> 
+Do you mimic roundup_pow_of_two()?
 
 -- 
 js
