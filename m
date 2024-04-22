@@ -1,116 +1,111 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9011813CFB7
-	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 10:06:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 947AD146012
+	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 11:11:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713780367; cv=none; b=kK4SeWlIpIV7wJmCSiQ9zZXiyDqzm+IVyL1g4hMXFt+qQDcMAFEs8KwpWzSG+PmQE0T47cMdP3RRpyRZuIYmMGhh2AtRxYW8T6ALFbHz5oKNDJsUi/62QwaJwXSD3RLb7KTgOc9Yw2qfEQlmAGQnpJuvEqUg7LCnSfX6w1LHsKQ=
+	t=1713784289; cv=none; b=jAxVKkNGqc7MYh5EORNT2FyuufQVcyZmU0ni/LxhLJQUbfMS9DTfbnh5qJdq2/YyXZg4L5NkUBberGhTyt0Ova2HEocZl93QgEZbjBCV1jojDUKW9A7vuP4I1kP9zLH3ZXutpSK2gTq4n42fJjirFbmPvCoG0/U/xrtrKpLkRuc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713780367; c=relaxed/simple;
-	bh=bL2hSvdJUbEjiVu8mOzngLcfDSFc2sqN+pYwEXjIoRA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Dhsm6wtAfYXEV88MmreuNGv0Cy62ZMwq+0N2HtwZ1y1g9TJPQGCS1bAkiNGBDWCAWXBuUYR0w9+OFJr2vgn0RYYAReqk331eQdKcYXDz4eo0QPxr94cmZDWKvaHlvJhW/ULKEDf9m17LHMsOv0OlKtklvF6K1CzGu3UoowJgkvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=u0HotfNE; arc=none smtp.client-ip=209.85.161.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1713784289; c=relaxed/simple;
+	bh=zOXyQXhCiCAbqSzm1DmnoLf7s16Jjeeh3sXMykWQ4yA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BU8vbWuTg8mbCv6JeHbHhxGPqoUWnBDSW5DF+zVwsFbw6Izusc3BcW+4SWJqAlYdO1UHoc3YRwc9/uPD/mW9vaw+O4w1IN3Jqo85NoMVwzWaUCjzNCjHSzmd9PI4IHyV8HsSgfyic7oKQyctsXpsRndAW5l6uD1C+0ikzF2Ytqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=S8+ExHGE; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u0HotfNE"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-5ad2da2196bso926760eaf.3
-        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 03:06:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="S8+ExHGE"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-41a0979b9aeso9941715e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 04:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1713780364; x=1714385164; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Pp9lUQ4HZ5PgJGPmf9IQ95ImHEOQFdQIgczUTfI1TFI=;
-        b=u0HotfNEzSISiyO9rtcg9IMvD2AtAwPquxNa0gaCu+VEpQfh6LFtCsS6MuQ0iNqEIj
-         8EMRrjwljGu0avUC76OW+0jdg8endhqeaoJXGLa4xo+RsIubY65+Z43iCHosG2KbHI9q
-         r9+DMGRdnHsuv88L4olNVnfGnexO9yTRa8ZIlmPrAfMJouw6pSmwzCqnSczoeEa094Vh
-         dX5tnK9qXID3lQlsAkMn1KRsVUYEN8R+hIEB7cmL7FkhhnOzGbsdUIA7XQZ3DTewqgHI
-         n7D3bHLyxMuepgIot7ooTXLjAfBIs2p3MWJQVVZW9dseLj6DRspMApAfDY4DM87qbKeC
-         pALg==
+        d=tuxon.dev; s=google; t=1713784286; x=1714389086; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=61hzISvK/wLrrN6ibfTaJ/oIzNgbxFUNfnYIb6kt4q8=;
+        b=S8+ExHGE7UZRml9wIgN7GdoCDFGbOMuYgW30fQxMX7T9XTBMF4mHX+QD01Z3ohorUe
+         24/J+cQ0ikD27f716BNNq8vRm6UjEMo7eExWWjop0KXE2ITXdGfjI2LhRN3D9u3fhEO1
+         biaFZA5xMkPwHgHKnMIgAhNAawvs56RxUmgkU1odYbdMjp7WRWecgP982PFC4nZI857R
+         oqtGEDj2/0GCs5AF7Tgk0dFLsAsP/tx6E6WlSVC7jigB0ObK9IM3sDCRFbW98zyZqbVs
+         g24C+u0rPRexxxqyNjLqAEbzNQtxyagSm0P3v1zv319lrhtHL0NRhT0jVqomQqjTkSfv
+         kcoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713780364; x=1714385164;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1713784286; x=1714389086;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Pp9lUQ4HZ5PgJGPmf9IQ95ImHEOQFdQIgczUTfI1TFI=;
-        b=KaV9v8GK6JpntkDZUJ2ajLXwHNkROUfhjuh9gUpppp72J7Sq3Df/fS7d0+mPk71IvS
-         DX5Tray++b0pcE16HoHhhIkSPNMZDpcRkAf0w65wXt9tD8KRdfArQB4k5cH14wM0celw
-         XWymTYZK3Bbk2x0BjeX9j7S+36WHMh7yrsl7SBBBqjTnqC+8P3OniPVvF76bB1qhPIRv
-         qMcHWUufmIaIvjhej2jFtFKzHQQvAYz+ppET/eE6Lo7p7D0WIFFuozH2cwp/1TUXCD7C
-         DvmHV2KwZPK+Mbw7v4ykFc0qRbfspHmTPtZzdKw6MEQ6eCJ/17YZGR9MRBeRob3ryeW2
-         iALw==
-X-Forwarded-Encrypted: i=1; AJvYcCW5UywNcdQCiCXYubXAnS/4E8vc7KEpaF/Ps0uCZmJLZskbSS3s/VkmAwrnAAcuNsSoxBCT38hNByXjclIjbZRq3yoIVUwojdjqaVTu
-X-Gm-Message-State: AOJu0YxRlP/xV0TPGc+mzZRc8H0PehTtCW0hHijX5gEGkr+XVYSLntKP
-	hoDTbiEuyLGKBxYcS4Wa+aTnpeAw6s/2EiNoaqIw3YiSiuvZ/PHvUZcnr88iKkwmu+3aBtvlkyf
-	QjSY8gcCsQyQZU0Y/mj+EmVaI2p9az1aYgBPb80RrJcPhonjg
-X-Google-Smtp-Source: AGHT+IH2cO2rZIY+HwOOnVAFVGLIKgIBh5VFjqWuGGTbO6sx2Y1eZMlp8KcjvsVT5MV0EfKhJfiXJpIcIBTuwaWiisY=
-X-Received: by 2002:a05:6359:4287:b0:183:dda6:4470 with SMTP id
- kp7-20020a056359428700b00183dda64470mr6527469rwb.12.1713780364561; Mon, 22
- Apr 2024 03:06:04 -0700 (PDT)
+        bh=61hzISvK/wLrrN6ibfTaJ/oIzNgbxFUNfnYIb6kt4q8=;
+        b=OtWqok3nPZnE4K49i8E2Zm+4PGsBURoS8m1GOAhqhM7KYuauQb0m1hXEHnou/0Dghz
+         wP1XaV9Ro+ToSP+Z59mm0h9I4F64+vjKmi8h1DkHvS7OGadDYGYxGMETImmfbr/0UHQ/
+         2Ix8QOyt05DRc1vcDv3hoYQTJn960i4xr2FifGxM8DetNTRKsn2YTa1Bqy0OymC3N7yK
+         fxJIgCXUIyPyu4b1cgUvUusqqUntq6TViXnwHG3Eb++YyxzoeIilLZ33/6RMbCM9yyHt
+         HLCDmY+WFFtDAp7IlcEaeI4f3sdtpZXJHhPPz2eS22AzlY9hltDVd5LVrHwR4es60svn
+         xOow==
+X-Forwarded-Encrypted: i=1; AJvYcCVrL7fmbqdnLvHli7Rn/5lKF8GXCquIWAGNbPj1IYjTLXy7Kai1Krwq9AlyEPa0UiBVoyVVhyKNf9K7cmboCqMNHBYfd7N1oYp9Hapo
+X-Gm-Message-State: AOJu0Ywsh5cIMXYBy5pLhLvIRfGAyfpWCc7/pTOX+NsjeozzxqvDb4lI
+	TmBLZVZGfSVYpJ1Nu4yL28+B8lGqxZHrLfBWKe/k6CLEcBQL3eHttGd2GFcWLz0=
+X-Google-Smtp-Source: AGHT+IGMfRYSdMcLHCdhxlRSB93POiy1y+u9GQT5dTES5qnzs1ds9F6kAbynLwEbX6sbZ/W6e01cVQ==
+X-Received: by 2002:a05:600c:46c8:b0:414:d95:cc47 with SMTP id q8-20020a05600c46c800b004140d95cc47mr9334640wmo.30.1713784285915;
+        Mon, 22 Apr 2024 04:11:25 -0700 (PDT)
+Received: from claudiu-X670E-Pro-RS.. ([82.78.167.53])
+        by smtp.gmail.com with ESMTPSA id r18-20020a05600c35d200b00418d434ae4esm16292565wmq.10.2024.04.22.04.11.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Apr 2024 04:11:25 -0700 (PDT)
+From: Claudiu <claudiu.beznea@tuxon.dev>
+X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	geert+renesas@glider.be,
+	ulf.hansson@linaro.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	claudiu.beznea@tuxon.dev
+Subject: [PATCH] serial: sh-sci: Call device_set_wakeup_path() for serial console
+Date: Mon, 22 Apr 2024 14:11:23 +0300
+Message-Id: <20240422111123.1622967-1-claudiu.beznea.uj@bp.renesas.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240405060826.2521-1-jirislaby@kernel.org> <20240405060826.2521-13-jirislaby@kernel.org>
- <CGME20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae@eucas1p2.samsung.com>
- <91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com> <d70049d5-d0fe-465f-a558-45b6785f6014@kernel.org>
- <Zh-fgtujwjiSXz7D@monster> <c091da0b-a150-428a-bf96-75f9f3eab2e2@samsung.com>
- <CADYN=9LCJS0SW4PuF+e356HUxhzJYi093K6U+BdErPohq4RDWQ@mail.gmail.com> <6ef3422c-d931-4993-856d-c080b11d72d5@kernel.org>
-In-Reply-To: <6ef3422c-d931-4993-856d-c080b11d72d5@kernel.org>
-From: Anders Roxell <anders.roxell@linaro.org>
-Date: Mon, 22 Apr 2024 12:05:53 +0200
-Message-ID: <CADYN=9LtODPtcFiuZ_Zv5O9M4S1+pAYJD8Fu8r5__67bPK98RA@mail.gmail.com>
-Subject: Re: [PATCH 12/15] tty: serial: switch from circ_buf to kfifo
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, gregkh@linuxfoundation.org, 
-	linux-amlogic@lists.infradead.org, 
-	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konrad.dybcio@linaro.org>, Neil Armstrong <neil.armstrong@linaro.org>, 
-	Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, 
-	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, 22 Apr 2024 at 08:45, Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 17. 04. 24, 13:19, Anders Roxell wrote:
-> >> I'm trying to run on two dragonboard devices db410c and db845c and both
-> >>> fails to boot see the boot failure from db845c [1], linux-next tag: next-20240415.
-> >>> I tried to apply the patch [2] (that you proposed in this thread) ontop of next-20240415. However, that didn't
-> >>> help bootlog on db845c [3].
-> >>
-> >> This is a different issue, which I've reported 2 days ago. See the
-> >> following thread:
-> >>
-> >> https://lore.kernel.org/all/d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com/
-> >
-> > Oh ok, I did the bisection on db845v, and that led me to this
-> > patch 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
->
-> Could you re-test with the today's -next?
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Tested todays next and it boots fine.
+In case the SCI is used as a UART console, no_console_suspend is
+available in bootargs and SCI is part of a software-controlled power
+domain we need to call device_set_wakeup_path(). This lets the power
+domain core code knows that this domain should not be powered off
+durring system suspend. Otherwise, the SCI power domain is turned off,
+nothing is printed while suspending and the suspend/resume process is
+blocked. This was detected on the RZ/G3S SoC while adding support
+for power domains.
 
-Tested-by: Anders Roxell <anders.roxell@linaro.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+---
+ drivers/tty/serial/sh-sci.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Cheers,
-Anders
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 97031db26ae4..57a7f18e16e4 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3441,8 +3441,12 @@ static __maybe_unused int sci_suspend(struct device *dev)
+ {
+ 	struct sci_port *sport = dev_get_drvdata(dev);
+ 
+-	if (sport)
++	if (sport) {
++		if (uart_console(&sport->port) && !console_suspend_enabled)
++			device_set_wakeup_path(dev);
++
+ 		uart_suspend_port(&sci_uart_driver, &sport->port);
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.39.2
 
->
-> In particular, with this commit:
-> commit f70f95b485d78838ad28dbec804b986d11ad7bb0
-> Author: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Date:   Fri Apr 19 10:09:31 2024 +0200
->
->      serial: msm: check dma_map_sg() return value properly
->
->
-> thanks,
-> --
-> js
-> suse labs
->
