@@ -1,108 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fgw22-7.mail.saunalahti.fi (fgw22-7.mail.saunalahti.fi [62.142.5.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A467651C46;
-	Mon, 22 Apr 2024 08:26:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE67446D1
+	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 08:32:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.83
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713774409; cv=none; b=U8GtCXvcLhrPakMdQQEWsTJafHwRHqBuqrFbHiuyfXydXOIjifpvGeAU26O++C9WXuBxiJRIC05BGrOeVVLIvTNORfbzknvdk9+nXnEcJK3hhqkIsGhdBUmfi1isD5rHtkjw/I1L6dwPqKAfizXzL+M3/rImrGH1n/VhsPKPBvM=
+	t=1713774764; cv=none; b=CZf/YjpOa7naVu14rKFZ9mYdeuvNyAG8gEYC1UBE3Igo7gKOI8cHBfvMsyK1EKh3ycAG5r30vJ0b2NbOyLyCWFHmZyFlqviymBVqXuuZ48TB3ZInpjEhyHsbxAai1LSViRitj4rfWz7EorFEOc7oQQEcJwBUKXN0q7fQjHypKyo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713774409; c=relaxed/simple;
-	bh=DqdqDFnZ+YUvebT1NAXo2ShsLjrf3XUSBWmbdnKI6HU=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=kvl56KNdxwD+v9WhNHQAgRhjw4rbDXHcqmB7FgpMlMlFu9yT2TOwpdiWgS+7uMGXGMTHwsD1GEwIl8Pb1U3+XF03Tp7bcv3t+JWrd6uSOOk8H8x6oaG+MSUxRpNt7c5XmhtUhTKmLFDWw8zt8co8Iw18Thfx2069tsMuo39iMPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G/liFmLi; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G/liFmLi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B0ABC113CC;
-	Mon, 22 Apr 2024 08:26:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713774409;
-	bh=DqdqDFnZ+YUvebT1NAXo2ShsLjrf3XUSBWmbdnKI6HU=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=G/liFmLilfjZ4Kj7Wt6Z0/xwSTwm2ArRgNWKX4SxDyvFYPIVG24dXQS/1bvlOsEER
-	 qC+o3FLrUReL6eFdAUf0V+kdrSwbou1U9WWrfMRG0Y2j3+/sTS8QtLtDE2Mu84QyFX
-	 9wVhclxgKv3im2Vr9l30p0SE9FKVfyUBrqw/QmcLIuv2QDKq62QvC3UA8483h6+Utv
-	 thqfRKH3PP8ZPfLDsty4JSq9h2WyQzG99bOHggcJQRHfRD+5VZlxDE408FNsJAd9tI
-	 H9QcePwBKNtZtDONjDhryImErCE4LnREClbrvS6z9EaUXHd5jgYBwlVsa8IszblwB8
-	 /3+rPX0kxgpFQ==
-Date: Mon, 22 Apr 2024 03:26:48 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=arc-20240116; t=1713774764; c=relaxed/simple;
+	bh=psC1NXyYFFU81tuyqjnY6lvR07j1XHlE3uIZYen4cbM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=G9mrfluke6nrUWU3IDuY/vqQrz5PqXe1ZDPCVzWmdFsaKy1E3bWIxL1CqNFNvPMqMNEgC/3REMRkQAw0LJoX2msM5iGkknr36/tcZ/LY+B/XVMyv6vldH3WV5rJkK5jzRusfR5oUfjDNwl4F7FeUX1eesiigycwYM8jFPSIukcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+Received: from localhost (88-113-25-208.elisa-laajakaista.fi [88.113.25.208])
+	by fgw22.mail.saunalahti.fi (Halon) with ESMTP
+	id e0d47807-0082-11ef-a9de-005056bdf889;
+	Mon, 22 Apr 2024 11:32:39 +0300 (EEST)
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Guanbing Huang <albanhuang@tencent.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v1 1/1] serial: 8250_pnp: Switch to DEFINE_SIMPLE_DEV_PM_OPS()
+Date: Mon, 22 Apr 2024 11:32:37 +0300
+Message-ID: <20240422083237.207447-1-andy.shevchenko@gmail.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Rob Herring <robh@kernel.org>
-To: Christoph Fritz <christoph.fritz@hexdev.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- linux-input@vger.kernel.org, linux-serial@vger.kernel.org, 
- Oliver Hartkopp <socketcan@hartkopp.net>, netdev@vger.kernel.org, 
- "David S . Miller" <davem@davemloft.net>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Benjamin Tissoires <bentiss@kernel.org>, linux-can@vger.kernel.org, 
- Marc Kleine-Budde <mkl@pengutronix.de>, Jakub Kicinski <kuba@kernel.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Eric Dumazet <edumazet@google.com>, 
- Paolo Abeni <pabeni@redhat.com>, 
- Vincent Mailhol <mailhol.vincent@wanadoo.fr>, 
- Jonathan Corbet <corbet@lwn.net>, devicetree@vger.kernel.org, 
- Andreas Lauser <andreas.lauser@mercedes-benz.com>
-In-Reply-To: <20240422065114.3185505-6-christoph.fritz@hexdev.de>
-References: <20240422065114.3185505-1-christoph.fritz@hexdev.de>
- <20240422065114.3185505-6-christoph.fritz@hexdev.de>
-Message-Id: <171377440691.455449.12311389300613565393.robh@kernel.org>
-Subject: Re: [PATCH 05/11] dt-bindings: net: can: Add serdev LIN bus dt
- bindings
+Content-Transfer-Encoding: 8bit
 
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Mon, 22 Apr 2024 08:51:08 +0200, Christoph Fritz wrote:
-> Add documentation of device tree bindings for serdev UART LIN-Bus
-> devices equipped with LIN transceivers.
-> 
-> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> ---
->  .../bindings/net/can/linux,lin-serdev.yaml    | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml
-> 
+The SIMPLE_DEV_PM_OPS() is deprecated, replace it with the
+DEFINE_SIMPLE_DEV_PM_OPS() and use pm_sleep_ptr() for setting
+the driver's PM routines.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/tty/serial/8250/8250_pnp.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml: 'maintainers' is a required property
-	hint: Metaschema for devicetree binding documentation
-	from schema $id: http://devicetree.org/meta-schemas/base.yaml#
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml: 'oneOf' conditional failed, one must be fixed:
-	'unevaluatedProperties' is a required property
-	'additionalProperties' is a required property
-	hint: Either unevaluatedProperties or additionalProperties must be present
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-Error: Documentation/devicetree/bindings/net/can/linux,lin-serdev.example.dts:18.9-15 syntax error
-FATAL ERROR: Unable to parse input tree
-make[2]: *** [scripts/Makefile.lib:427: Documentation/devicetree/bindings/net/can/linux,lin-serdev.example.dtb] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [/builds/robherring/dt-review-ci/linux/Makefile:1430: dt_binding_check] Error 2
-make: *** [Makefile:240: __sub-make] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240422065114.3185505-6-christoph.fritz@hexdev.de
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
+index 8f72a7de1d1d5..9188902fa5b35 100644
+--- a/drivers/tty/serial/8250/8250_pnp.c
++++ b/drivers/tty/serial/8250/8250_pnp.c
+@@ -10,6 +10,7 @@
+  */
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/pm.h>
+ #include <linux/pnp.h>
+ #include <linux/string.h>
+ #include <linux/kernel.h>
+@@ -506,7 +507,7 @@ static void serial_pnp_remove(struct pnp_dev *dev)
+ 		serial8250_unregister_port(line - 1);
+ }
+ 
+-static int __maybe_unused serial_pnp_suspend(struct device *dev)
++static int serial_pnp_suspend(struct device *dev)
+ {
+ 	long line = (long)dev_get_drvdata(dev);
+ 
+@@ -516,7 +517,7 @@ static int __maybe_unused serial_pnp_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused serial_pnp_resume(struct device *dev)
++static int serial_pnp_resume(struct device *dev)
+ {
+ 	long line = (long)dev_get_drvdata(dev);
+ 
+@@ -526,14 +527,14 @@ static int __maybe_unused serial_pnp_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(serial_pnp_pm_ops, serial_pnp_suspend, serial_pnp_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(serial_pnp_pm_ops, serial_pnp_suspend, serial_pnp_resume);
+ 
+ static struct pnp_driver serial_pnp_driver = {
+ 	.name		= "serial",
+ 	.probe		= serial_pnp_probe,
+ 	.remove		= serial_pnp_remove,
+ 	.driver         = {
+-		.pm     = &serial_pnp_pm_ops,
++		.pm     = pm_sleep_ptr(&serial_pnp_pm_ops),
+ 	},
+ 	.id_table	= pnp_dev_table,
+ };
+-- 
+2.44.0
 
