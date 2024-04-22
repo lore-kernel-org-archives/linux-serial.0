@@ -1,597 +1,211 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C9A54B5CD;
-	Mon, 22 Apr 2024 07:12:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 316604F20C
+	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 07:44:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713769972; cv=none; b=ETAcGrenUr4WcCNEG6PxAQV6z4fLrQWJdibKDrdP2CEwi73kBg4F60u1SwnpL/GqLpRr//PZd6D+VcYCmq4czewN/2MsT86zSG5ExHoRzQs39beKgGnk5ksuRmXZQC9PJyu/kaFa8EVdI1eJFs/UgbQXV741etlE8kGWEntkN/k=
+	t=1713771845; cv=none; b=mTAO4A1asSqBoM9qfki+4nv0PQ+4Wm6Z1lnVk8zPN2D95RtfFnvxcRtruJl+5zYGOI6VOLtQnsAmoqdBJIdysEN2VtX3uBjGok801G7DlhFy6ZBZM5FIQv+6PxKcneyS6SbaptkuGRbkXJAvWDNtKicQe64sMT5K3OhypuuESwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713769972; c=relaxed/simple;
-	bh=53kfmNBXp8PBuYBWFtT5Rf1QDubk1FPE7kikqBcuOHA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=WuHo5CdHjR4A5Yar6ghj2kRy3pXb99ap4a/R2g/v7yK4FXAc1tIlg260tX7+NPLuWXbuTCmD/a9Ii/+i8sAqUKxjkcLTFNbluDPngI/RT9amsjdEijznxPRAShuJ7rBnAzlel+ApYejotrN7Kx2r8bEc47eEsyhy+SykxUYb/Fs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=dwn8uQvr; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1713771845; c=relaxed/simple;
+	bh=ffLRdcaZUgrUwWcFf3srztERpUaDnshkDyUkPvhByj0=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=AhHGMpqEbeE9dx518ZxvkKPdkko8eGCeaw/DRUQDfJkgHBs7QLZs8fomKe1NctpWEbvdEQpWghstQlGDsImO9kQoN/QZPD8ezO+5c6G+IjxDpoST8ezk92URf+cmaddF/KIVcuoIQT7ik66GBHCaB2VRGck3dT9jEdZb/KykR7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=LFyOavKO; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="dwn8uQvr"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=gGZuRGT26LyRcBPXYXrnRIj8cHp9wmf1KhvMQG331zM=; b=dwn8uQvrfpAtmMyYwX0YUL40Fh
-	ogGq0Pd1/vOk9nS+4AzaPHwzcjoi2FYqg5JmCb9rjh56UweuYqTi6NKWty/xqPaWaaz8m1/FRATVR
-	Ds1crSm6N1m6I8g3nOCJr6zgpl7wSwoW73fA3fhnnI/dvLM4YX5OnEag1sVnYmXyoeDE=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1rynWl-001JRH-37;
-	Mon, 22 Apr 2024 08:51:48 +0200
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	linux-can@vger.kernel.org,
-	netdev@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-input@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH 06/11] can: Add support for serdev LIN adapters
-Date: Mon, 22 Apr 2024 08:51:09 +0200
-Message-Id: <20240422065114.3185505-7-christoph.fritz@hexdev.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240422065114.3185505-1-christoph.fritz@hexdev.de>
-References: <20240422065114.3185505-1-christoph.fritz@hexdev.de>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LFyOavKO"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4187c47405aso26906445e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 00:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1713771842; x=1714376642; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8EACDU5ZIYK9Tlo7z1R2GyLFJTNAKhZcDGfQ+M5Qfec=;
+        b=LFyOavKOWubM6eMsVFDgd84jWBEwl/EQW6AmgpK+yrjEng2xcCiRGCpmKCmqZh9wlE
+         NvYoflA6IbYuKGm6KSQTDkkKiTMveWaTsecZk/KkxiROQdkBv9j82dpaM8kX7UsF/kvN
+         +neGtfX9yLbbsotmS91pECZhS6ITSloDzMbrRZwezGsjwDnLpU9msegC06W4XCB1PpJ2
+         m0Pq32+tME2go7tyn4+lf0rCiouglR0mROqowdr1sy3x3c+GqkbDMUHIm93vcXMNQEJ5
+         ZfQvtpWog5/NwBhdzEZ3X0R+DbssXpaF2cJfHGQolnkqFPkB5KUd1Xkj1x8ANHYcF2sa
+         pv5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713771842; x=1714376642;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=8EACDU5ZIYK9Tlo7z1R2GyLFJTNAKhZcDGfQ+M5Qfec=;
+        b=seWWPh6hLtp6ZLtPFTVbZNJjZZA9tX4lZMrdEUJ6agxyEbNeqwVI2awGovIc4hk43Q
+         60APjO5UGeX/bPjsd/Rh4Davzf1doHAIXOzndrawRUmFlgCnNLjrcC7efcBlrfu3qiS/
+         WEcD+NEkVVCUI+kPcirSB21H4YW8tTUtAsWRp2tl+YDaYdtyHhz/7DELDFPU508gMX+N
+         0V1Ed27OusUbwyEpiS5f4Ulx84e9ZvjYIMtYktNB47JqhMfe7ezuM42rfW8quCdAD9U1
+         /p3vmyAAPcDPbLj6fzzFjwl9VdCSMrb3OBDClLDCiyj7Lol+X9HqjlrDGSJ4tISzbgtY
+         hqRg==
+X-Gm-Message-State: AOJu0YyxCii8mkmSr+biU+fp4Ngfo5o4UIq5VdBLFscbrGTfF4bBRqMz
+	LR0alM3LJjEND6LekbNXW4uj/w5wO4w27wHfoVfdrhwJyTlOR+EZywO1AeCSbic=
+X-Google-Smtp-Source: AGHT+IEobCAD1woSZ5EJiB0NRH7BEjZlQI+0HXHHE4nnOPzWe+XQOjOdqoLZt1DsJbBVAkn1X3/8fw==
+X-Received: by 2002:a05:600c:358c:b0:41a:3150:cbe7 with SMTP id p12-20020a05600c358c00b0041a3150cbe7mr2136856wmq.28.1713771842235;
+        Mon, 22 Apr 2024 00:44:02 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:982:cbb0:e5e5:892f:e81f:7cad? ([2a01:e0a:982:cbb0:e5e5:892f:e81f:7cad])
+        by smtp.gmail.com with ESMTPSA id a12-20020a056000100c00b00349ceadededsm11300565wrx.16.2024.04.22.00.43.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Apr 2024 00:44:01 -0700 (PDT)
+Message-ID: <17308e8f-59a1-40aa-9d44-2fb998b9f39c@linaro.org>
+Date: Mon, 22 Apr 2024 09:43:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+From: neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH 00/15] tty: serial: switch from circ_buf to kfifo
+To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Al Cooper <alcooperx@gmail.com>, Alexander Shiyan <shc_work@mail.ru>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>, Baruch Siach
+ <baruch@tkos.co.il>, Bjorn Andersson <andersson@kernel.org>,
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ "David S. Miller" <davem@davemloft.net>, Fabio Estevam <festevam@gmail.com>,
+ Hammer Hsieh <hammerh0314@gmail.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Chunyan Zhang <zhang.lyra@gmail.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Kevin Hilman <khilman@baylibre.com>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+ Laxman Dewangan <ldewangan@nvidia.com>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@amd.com>,
+ "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
+ =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+ Patrice Chotard <patrice.chotard@foss.st.com>,
+ Peter Korsgaard <jacmet@sunsite.dk>,
+ Richard Genoud <richard.genoud@gmail.com>,
+ Russell King <linux@armlinux.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>,
+ Shawn Guo <shawnguo@kernel.org>, Stefani Seibold <stefani@seibold.net>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Taichi Sugaya <sugaya.taichi@socionext.com>,
+ Takao Orito <orito.takao@socionext.com>,
+ Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Timur Tabi <timur@kernel.org>,
+ Vineet Gupta <vgupta@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <daf06969-15fd-470e-88b8-a717066fe312@linaro.org>
+ <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro
+In-Reply-To: <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-This commit introduces LIN-Bus support for UART devices equipped with
-LIN transceivers, utilizing the Serial Device Bus (serdev) interface.
+Hi Jiri,
 
-For more details on an adapter, visit: https://hexdev.de/hexlin#tty
+On 22/04/2024 07:51, Jiri Slaby wrote:
+> Hi,
+> 
+> On 19. 04. 24, 17:12, Neil Armstrong wrote:
+>> On 05/04/2024 08:08, Jiri Slaby (SUSE) wrote:
+>>> This series switches tty serial layer to use kfifo instead of circ_buf.
+>>>
+>>> The reasoning can be found in the switching patch in this series:
+>>> """
+>>> Switch from struct circ_buf to proper kfifo. kfifo provides much better
+>>> API, esp. when wrap-around of the buffer needs to be taken into account.
+>>> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
+>>>
+>>> Kfifo API can also fill in scatter-gather DMA structures, so it easier
+>>> for that use case too. Look at lpuart_dma_tx() for example. Note that
+>>> not all drivers can be converted to that (like atmel_serial), they
+>>> handle DMA specially.
+>>>
+>>> Note that usb-serial uses kfifo for TX for ages.
+>>> """
+> ...
+>> This patchset has at least broken all Amlogic and Qualcomm boards so far, only part of them were fixed in next-
+> 
+> So are there still not fixed problems yet?
 
-Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
----
- drivers/net/can/Kconfig      |  16 ++
- drivers/net/can/Makefile     |   1 +
- drivers/net/can/lin-serdev.c | 467 +++++++++++++++++++++++++++++++++++
- 3 files changed, 484 insertions(+)
- create mode 100644 drivers/net/can/lin-serdev.c
+My last ci run on next-20240419 was still failing on db410c.
 
-diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index 0934bbf8d03b2..b930eaea9b235 100644
---- a/drivers/net/can/Kconfig
-+++ b/drivers/net/can/Kconfig
-@@ -181,6 +181,22 @@ config CAN_LIN
- 
- 	  Actual device drivers need to be enabled too.
- 
-+config CAN_LIN_SERDEV
-+	tristate "Serial LIN Adaptors"
-+	depends on CAN_LIN && SERIAL_DEV_BUS && OF
-+	help
-+	  LIN-Bus support for UART devices equipped with LIN transceievers.
-+	  This device driver is using CAN_LIN for a userland connection on
-+	  one side and the kernel its serial device bus (serdev) interface
-+	  on the other side.
-+
-+	  If you have a hexlin tty adapter, say Y here and see
-+	  <https://hexdev.de/hexlin#tty>.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called lin-serdev.ko.
-+
-+
- config CAN_SLCAN
- 	tristate "Serial / USB serial CAN Adaptors (slcan)"
- 	depends on TTY
-diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-index 0093ee9219ca8..21ca514a42439 100644
---- a/drivers/net/can/Makefile
-+++ b/drivers/net/can/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_CAN_IFI_CANFD)	+= ifi_canfd/
- obj-$(CONFIG_CAN_JANZ_ICAN3)	+= janz-ican3.o
- obj-$(CONFIG_CAN_KVASER_PCIEFD)	+= kvaser_pciefd.o
- obj-$(CONFIG_CAN_LIN)		+= lin.o
-+obj-$(CONFIG_CAN_LIN_SERDEV)	+= lin-serdev.o
- obj-$(CONFIG_CAN_MSCAN)		+= mscan/
- obj-$(CONFIG_CAN_M_CAN)		+= m_can/
- obj-$(CONFIG_CAN_PEAK_PCIEFD)	+= peak_canfd/
-diff --git a/drivers/net/can/lin-serdev.c b/drivers/net/can/lin-serdev.c
-new file mode 100644
-index 0000000000000..18e842c39f111
---- /dev/null
-+++ b/drivers/net/can/lin-serdev.c
-@@ -0,0 +1,467 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Copyright (C) 2024 hexDEV GmbH - https://hexdev.de */
-+
-+#include <linux/module.h>
-+#include <linux/wait.h>
-+#include <linux/init.h>
-+#include <linux/errno.h>
-+#include <linux/string.h>
-+#include <linux/kernel.h>
-+#include <net/lin.h>
-+#include <linux/of.h>
-+#include <linux/serdev.h>
-+#include <linux/slab.h>
-+#include <linux/kfifo.h>
-+#include <linux/workqueue.h>
-+#include <linux/tty.h>
-+
-+#define LINSER_SAMPLES_PER_CHAR		10
-+#define LINSER_TX_BUFFER_SIZE		11
-+#define LINSER_RX_FIFO_SIZE		256
-+#define LINSER_PARSE_BUFFER		24
-+
-+struct linser_rx {
-+	u8 data;
-+	u8 flag;
-+};
-+
-+enum linser_rx_status {
-+	NEED_MORE = -1,
-+	MODE_OK = 0,
-+	NEED_FORCE,
-+};
-+
-+struct linser_priv {
-+	struct lin_device *lin_dev;
-+	struct serdev_device *serdev;
-+	DECLARE_KFIFO_PTR(rx_fifo, struct linser_rx);
-+	struct delayed_work rx_work;
-+	ulong break_usleep_min;
-+	ulong break_usleep_max;
-+	ulong post_break_usleep_min;
-+	ulong post_break_usleep_max;
-+	ulong force_timeout_jfs;
-+	struct lin_responder_answer respond_answ[LIN_NUM_IDS];
-+	struct mutex resp_lock; /* protects respond_answ */
-+};
-+
-+static int linser_get_responder_answer(struct lin_device *ldev, u8 id,
-+				       struct lin_responder_answer *answ)
-+{
-+	struct serdev_device *serdev = to_serdev_device(ldev->dev);
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+	struct lin_responder_answer *r = &priv->respond_answ[id];
-+
-+	if (!answ)
-+		return -EINVAL;
-+
-+	mutex_lock(&priv->resp_lock);
-+	memcpy(answ, r, sizeof(struct lin_responder_answer));
-+	mutex_unlock(&priv->resp_lock);
-+
-+	return 0;
-+}
-+
-+static int linser_update_resp_answer(struct lin_device *ldev,
-+				     const struct lin_responder_answer *answ)
-+{
-+	struct serdev_device *serdev = to_serdev_device(ldev->dev);
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+	struct lin_responder_answer *r = &priv->respond_answ[answ->lf.lin_id];
-+
-+	if (!answ)
-+		return -EINVAL;
-+
-+	mutex_lock(&priv->resp_lock);
-+	memcpy(r, answ, sizeof(struct lin_responder_answer));
-+	r->lf.checksum = lin_get_checksum(LIN_FORM_PID(answ->lf.lin_id),
-+					  answ->lf.len,
-+					  answ->lf.data,
-+					  answ->lf.checksum_mode);
-+	mutex_unlock(&priv->resp_lock);
-+
-+	return 0;
-+}
-+
-+static int linser_send_break(struct linser_priv *priv)
-+{
-+	struct serdev_device *serdev = priv->serdev;
-+	int ret;
-+
-+	ret = serdev_device_break_ctl(serdev, -1);
-+	if (ret)
-+		return ret;
-+	usleep_range(priv->break_usleep_min, priv->break_usleep_max);
-+
-+	ret = serdev_device_break_ctl(serdev, 0);
-+	if (ret)
-+		return ret;
-+	usleep_range(priv->post_break_usleep_min, priv->post_break_usleep_max);
-+
-+	return 0;
-+}
-+
-+static int linser_ldo_tx(struct lin_device *ldev, const struct lin_frame *lf)
-+{
-+	struct serdev_device *serdev = to_serdev_device(ldev->dev);
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+	u8 pid = LIN_FORM_PID(lf->lin_id);
-+	u8 buf[LINSER_TX_BUFFER_SIZE];
-+	ssize_t written_len, total_len;
-+	u8 checksum;
-+	int ret;
-+
-+	if (lf->len + 3 > LINSER_TX_BUFFER_SIZE) {
-+		dev_err(&serdev->dev, "Frame length %u exceeds buffer size\n", lf->len);
-+		return -EINVAL;
-+	}
-+
-+	buf[0] = LIN_SYNC_BYTE;
-+	buf[1] = pid;
-+	total_len = 2;
-+
-+	if (lf->len) {
-+		memcpy(&buf[2], lf->data, lf->len);
-+		checksum = lin_get_checksum(pid, lf->len, lf->data,
-+					    lf->checksum_mode);
-+		buf[lf->len + 2] = checksum;
-+		total_len += lf->len + 1;
-+	}
-+
-+	ret = linser_send_break(priv);
-+	if (ret)
-+		return ret;
-+
-+	written_len = serdev_device_write(serdev, buf, total_len, 0);
-+	if (written_len < total_len)
-+		return written_len < 0 ? (int)written_len : -EIO;
-+
-+	dev_dbg(&serdev->dev, "sent out: %*ph\n", (int)total_len, buf);
-+
-+	serdev_device_wait_until_sent(serdev, 0);
-+
-+	return 0;
-+}
-+
-+static void linser_derive_timings(struct linser_priv *priv, u16 bitrate)
-+{
-+	unsigned long break_baud = (bitrate * 2) / 3;
-+	unsigned long timeout_us;
-+
-+	priv->break_usleep_min = (1000000UL * LINSER_SAMPLES_PER_CHAR) /
-+					break_baud;
-+	priv->break_usleep_max = priv->break_usleep_min + 50;
-+	priv->post_break_usleep_min = (1000000UL * 1 /* 1 bit */) / break_baud;
-+	priv->post_break_usleep_max = priv->post_break_usleep_min + 30;
-+
-+	timeout_us = DIV_ROUND_CLOSEST(1000000UL * 256 /* bit */, bitrate);
-+	priv->force_timeout_jfs = usecs_to_jiffies(timeout_us);
-+}
-+
-+static int linser_update_bitrate(struct lin_device *ldev, u16 bitrate)
-+{
-+	struct serdev_device *serdev = to_serdev_device(ldev->dev);
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+	unsigned int speed;
-+
-+	speed = serdev_device_set_baudrate(serdev, bitrate);
-+	if (!bitrate || speed != bitrate)
-+		return -EINVAL;
-+
-+	linser_derive_timings(priv, bitrate);
-+
-+	return 0;
-+}
-+
-+static struct lin_device_ops linser_lindev_ops = {
-+	.ldo_tx = linser_ldo_tx,
-+	.update_bitrate = linser_update_bitrate,
-+	.get_responder_answer = linser_get_responder_answer,
-+	.update_responder_answer = linser_update_resp_answer,
-+};
-+
-+static bool linser_tx_frame_as_responder(struct linser_priv *priv, u8 id)
-+{
-+	struct lin_responder_answer *answ = &priv->respond_answ[id];
-+	struct serdev_device *serdev = priv->serdev;
-+	u8 buf[LINSER_TX_BUFFER_SIZE];
-+	u8 checksum, count, n;
-+	ssize_t write_len;
-+
-+	mutex_lock(&priv->resp_lock);
-+
-+	if (!answ->is_active)
-+		goto unlock_and_exit_false;
-+
-+	if (answ->is_event_frame) {
-+		struct lin_responder_answer *e_answ;
-+
-+		e_answ = &priv->respond_answ[answ->event_associated_id];
-+		n = min(e_answ->lf.len, LIN_MAX_DLEN);
-+		if (memcmp(answ->lf.data, e_answ->lf.data, n) != 0) {
-+			memcpy(answ->lf.data, e_answ->lf.data, n);
-+			checksum = lin_get_checksum(LIN_FORM_PID(answ->lf.lin_id),
-+						    n, e_answ->lf.data,
-+						    answ->lf.checksum_mode);
-+			answ = e_answ;
-+		} else {
-+			goto unlock_and_exit_false;
-+		}
-+	} else {
-+		checksum = answ->lf.checksum;
-+	}
-+
-+	count = min(answ->lf.len, LIN_MAX_DLEN);
-+	memcpy(&buf[0], answ->lf.data, count);
-+	buf[count] = checksum;
-+
-+	mutex_unlock(&priv->resp_lock);
-+
-+	write_len = serdev_device_write(serdev, buf, count + 1, 0);
-+	if (write_len < count + 1)
-+		return false;
-+
-+	serdev_device_wait_until_sent(serdev, 0);
-+
-+	return true;
-+
-+unlock_and_exit_false:
-+	mutex_unlock(&priv->resp_lock);
-+	return false;
-+}
-+
-+static void linser_pop_fifo(struct linser_priv *priv, size_t n)
-+{
-+	struct serdev_device *serdev = priv->serdev;
-+	struct linser_rx dummy;
-+	size_t ret, i;
-+
-+	for (i = 0; i < n; i++) {
-+		ret = kfifo_out(&priv->rx_fifo, &dummy, 1);
-+		if (ret != 1) {
-+			dev_err(&serdev->dev, "Failed to pop from FIFO\n");
-+			break;
-+		}
-+	}
-+}
-+
-+static int linser_fill_frame(struct linser_priv *priv, struct lin_frame *lf)
-+{
-+	struct serdev_device *serdev = priv->serdev;
-+	struct linser_rx buf[LINSER_PARSE_BUFFER];
-+	uint count = kfifo_out_peek(&priv->rx_fifo, buf, LINSER_PARSE_BUFFER);
-+	uint i, brk = 0;
-+
-+	memset(lf, 0, sizeof(struct lin_frame));
-+
-+	for (i = 0; i < count; i++) {
-+		dev_dbg(&serdev->dev, "buf[%d]: data=%02x, flag=%02x\n",
-+			i, buf[i].data, buf[i].flag);
-+	}
-+
-+	if (count < 3)
-+		return NEED_MORE;
-+
-+	if (buf[0].flag != TTY_BREAK || buf[1].data != LIN_SYNC_BYTE) {
-+		linser_pop_fifo(priv, 1); /* pop incorrect start */
-+		return NEED_MORE;
-+	} else if (!LIN_CHECK_PID(buf[2].data)) {
-+		linser_pop_fifo(priv, 3); /* pop incorrect header */
-+		return NEED_MORE;
-+	}
-+
-+	lf->lin_id = LIN_GET_ID(buf[2].data);
-+
-+	/* from here on we do have a correct LIN header */
-+
-+	if (count == 3)
-+		return linser_tx_frame_as_responder(priv, lf->lin_id) ?
-+		       NEED_MORE : NEED_FORCE;
-+
-+	for (i = 3; i < count && i < LINSER_PARSE_BUFFER && i < 12; i++) {
-+		if (buf[i].flag == TTY_BREAK) {
-+			brk = i;
-+			break;
-+		}
-+		lf->len++;
-+	}
-+	if (lf->len)
-+		lf->len -= 1; /* account for checksum */
-+
-+	if (brk == 3)
-+		return MODE_OK;
-+
-+	if (brk == 4) {
-+		/* suppress wrong answer data-byte in between PID and break
-+		 * because checksum is missing
-+		 */
-+		return MODE_OK;
-+	}
-+
-+	for (i = 0; i < lf->len; i++)
-+		lf->data[i] = buf[3 + i].data;
-+	lf->checksum = buf[2 + lf->len + 1].data;
-+	mutex_lock(&priv->resp_lock);
-+	lf->checksum_mode = priv->respond_answ[lf->lin_id].lf.checksum_mode;
-+	mutex_unlock(&priv->resp_lock);
-+
-+	dev_dbg(&serdev->dev, "brk:%i, len:%u, data:%*ph, checksum:%x (%s)\n",
-+		brk, lf->len, lf->len, lf->data, lf->checksum,
-+		lf->checksum_mode ? "enhanced" : "classic");
-+
-+	if (brk > 4)
-+		return MODE_OK;	/* frame in between two breaks: so complete */
-+
-+	if (lf->len == 8)
-+		return MODE_OK;
-+
-+	return NEED_FORCE;
-+}
-+
-+static int linser_process_frame(struct linser_priv *priv, bool force)
-+{
-+	struct serdev_device *serdev = priv->serdev;
-+	struct lin_frame lf;
-+	size_t bytes_to_pop;
-+	int ret = NEED_MORE;
-+
-+	while (kfifo_len(&priv->rx_fifo) >= LIN_HEADER_SIZE) {
-+		ret = linser_fill_frame(priv, &lf);
-+
-+		if (ret == MODE_OK || (ret == NEED_FORCE && force)) {
-+			dev_dbg(&serdev->dev, "lin_rx: %s\n",
-+				force ? "force" : "normal");
-+			lin_rx(priv->lin_dev, &lf);
-+			bytes_to_pop = LIN_HEADER_SIZE + lf.len +
-+				       (lf.len ? 1 : 0);
-+			linser_pop_fifo(priv, bytes_to_pop);
-+			force = false;
-+			ret = MODE_OK;
-+		} else {
-+			return ret;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static void linser_process_delayed(struct work_struct *work)
-+{
-+	struct linser_priv *priv = container_of(work, struct linser_priv,
-+						rx_work.work);
-+
-+	linser_process_frame(priv, true);
-+}
-+
-+static ssize_t linser_receive_buf_fp(struct serdev_device *serdev,
-+				     const u8 *data, const u8 *fp,
-+				     size_t count)
-+{
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+	enum linser_rx_status rx_status;
-+	ssize_t n = 0;
-+	int i;
-+
-+	cancel_delayed_work_sync(&priv->rx_work);
-+
-+	for (i = 0; i < count; i++) {
-+		struct linser_rx rx;
-+
-+		rx.data = data[i];
-+		rx.flag = (fp ? fp[i] : 0);
-+		n += kfifo_in(&priv->rx_fifo, &rx, 1);
-+		dev_dbg(&serdev->dev, "%s: n:%zd, flag:0x%02x, data:0x%02x\n",
-+			__func__, n, rx.flag, data[i]);
-+	}
-+
-+	rx_status = linser_process_frame(priv, false);
-+
-+	if (rx_status == NEED_FORCE)
-+		schedule_delayed_work(&priv->rx_work, priv->force_timeout_jfs);
-+
-+	return n;
-+}
-+
-+static const struct serdev_device_ops linser_ops = {
-+	.receive_buf_fp = linser_receive_buf_fp,
-+	.write_wakeup = serdev_device_write_wakeup,
-+};
-+
-+static int linser_probe(struct serdev_device *serdev)
-+{
-+	struct linser_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&serdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	ret = kfifo_alloc(&priv->rx_fifo, LINSER_RX_FIFO_SIZE, GFP_KERNEL);
-+	if (ret)
-+		return ret;
-+
-+	INIT_DELAYED_WORK(&priv->rx_work, linser_process_delayed);
-+
-+	priv->serdev = serdev;
-+	serdev_device_set_drvdata(serdev, priv);
-+	serdev_device_set_client_ops(serdev, &linser_ops);
-+
-+	ret = serdev_device_open(serdev);
-+	if (ret) {
-+		dev_err(&serdev->dev, "Unable to open device\n");
-+		goto err_open;
-+	}
-+
-+	serdev_device_set_flow_control(serdev, false);
-+	serdev_device_set_break_detection(serdev, true);
-+	linser_derive_timings(priv, LIN_DEFAULT_BAUDRATE);
-+
-+	mutex_init(&priv->resp_lock);
-+
-+	priv->lin_dev = register_lin(&serdev->dev, &linser_lindev_ops);
-+	if (IS_ERR_OR_NULL(priv->lin_dev)) {
-+		ret = PTR_ERR(priv->lin_dev);
-+		goto err_register_lin;
-+	}
-+
-+	return 0;
-+
-+err_register_lin:
-+	serdev_device_close(serdev);
-+err_open:
-+	kfifo_free(&priv->rx_fifo);
-+	return ret;
-+}
-+
-+static void linser_remove(struct serdev_device *serdev)
-+{
-+	struct linser_priv *priv = serdev_device_get_drvdata(serdev);
-+
-+	if (priv && priv->lin_dev)
-+		unregister_lin(priv->lin_dev);
-+
-+	serdev_device_close(serdev);
-+}
-+
-+static const struct of_device_id linser_of_match[] = {
-+	{
-+		.compatible = "linux,lin-serdev",
-+	},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, linser_of_match);
-+
-+static struct serdev_device_driver linser_driver = {
-+	.probe = linser_probe,
-+	.remove = linser_remove,
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = linser_of_match,
-+	}
-+};
-+
-+module_serdev_device_driver(linser_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Christoph Fritz <christoph.fritz@hexdev.de>");
-+MODULE_DESCRIPTION("LIN-Bus serdev driver");
--- 
-2.39.2
+> 
+>> but this serie has been merged in v1
+> 
+> Ugh, are you saying that v1 patches are not worth taking? That doesn't fit with my experience.
+
+In my experience, most of my patches are taken in v2, it's not an uncommon thing to have more versions, especially when touching core subsystems.
+
+> 
+>> with no serious testing
+> 
+> Sadly, everyone had a chance to test the series:
+>    https://lore.kernel.org/all/20240319095315.27624-1-jirislaby@kernel.org/
+> for more than two weeks before I sent this version for inclusion. And then it took another 5 days till this series appeared in -next. But noone with this HW apparently cared enough back then. I'd wish they (you) didn't. Maybe next time, people will listen more carefully:
+> ===
+> This is Request for Testing as I cannot test all the changes
+> (obviously). So please test your HW's serial properly.
+> ===
+
+This RFT was sent during the merge window, only a few people looks at the list between those 2 weeks.
+
+> 
+>> and should've been dropped immediately when the first regressions were reported.
+> 
+> Provided the RFT was mostly ignored (anyone who tested that here, or I only wasted my time?), how exactly would dropping help me finding potential issues in the series? In the end, noone is running -next in production, so glitches are sort of expected, right? And I believe I smashed them quickly enough (despite I was sidetracked to handle the n_gsm issue). But I might be wrong, as usual.
+
+So since it was ignored, it's ok to apply it as-is ??????
+
+> 
+> So no, dropping is not helping moving forward, actions taken by e.g. Marek Szyprowski <m.szyprowski@samsung.com> do, IMNSHO.
+
+well thanks to Marek, but most of Qualcomm maintainers and myself were in EOSS in Seattle for the week and came back home in Saturday, and we were busy. Hopefully Marek was available.
+
+> 
+> thanks,
+
+Neil
+
 
