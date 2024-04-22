@@ -1,46 +1,46 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4623E18EA1;
-	Mon, 22 Apr 2024 05:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1C51F61C;
+	Mon, 22 Apr 2024 06:30:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713765119; cv=none; b=BQ5GRsug/vtJU+IJd04IQ+Z+yeP94Uym89XSTxeto2hXENoTAGt4h9+uydNi6Jy5+3WYKgbGweizVeFCCSJhPm7QCAQUJusPNg4m03qD5wAPWAbdpARwVr6O36N3MrMgcELkU5kRa8IdGje/W4GMggc5C6+olKxoeC5SQGbYZfc=
+	t=1713767455; cv=none; b=Aw29ZCkuphrj5wk1jcmeQlV8Agi/XazVMPJJQ9kAX1eSqGbUA6BIaiTLvjuI3c6ctDFvvCjtGZSquI9Hq71189+Z1q8/vZjRHhMNc+ngLVZs9NxKQ4rAdXwnP9MTRym60pL9O2ALpleYUAz5TnFTQOJQQAdOL3iJSY9EHgp8urg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713765119; c=relaxed/simple;
-	bh=mO8C0+DnaefprQAj5qHiLjNWa7ajQUzDbr/Y+36xOAg=;
+	s=arc-20240116; t=1713767455; c=relaxed/simple;
+	bh=ZF8/roY0/AmpBQ3CMW4FkQw3iWV/Qxm6T515kZrXsKs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qk7+Rse+M50Gke5M+7OCVzudT5OSat5WneWdPn3qQhV7Co8y5yIvQi21lSZWAbQsthvE6g8ZC9XGIHv9eF4FyWNqqgWsfT7S5cQYi9iv6X62Y964MFxl2lk/big+rljG68lbZ9PKprOaVMyPmYMYm8TncKjPgLK0tEVBoBHbOd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.47
+	 In-Reply-To:Content-Type; b=cGswfIaf+ds4Tx7WA0oPoeIjloXSL8oJ5d959kpNG8/YlnXo1Eu5FKxrTsZbcCNJLF+R3PnJ6L9rXXdDKntpLtcfCB9nQGA8tKUEzczF2DibAwLgdcudu9y20gsCeMQbHfmrbthvDO48+a107OwpL6tnsrtuFM5G5XwycaS790Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a55ab8e8766so99167866b.3;
-        Sun, 21 Apr 2024 22:51:58 -0700 (PDT)
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-56e78970853so8090168a12.0;
+        Sun, 21 Apr 2024 23:30:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713765116; x=1714369916;
+        d=1e100.net; s=20230601; t=1713767452; x=1714372252;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T1xC9IH1uhHctutEG+h6tW/1KnsOeke58MLcXUfvXz8=;
-        b=WtzoMhuFNASrp7TKnjzsnVOtATughtjJ165teHCkR+b3idhOmgLBDOuynSwkbtKr2H
-         +g+lYXz1ID5dyLygkyeCmY9iJhPn2GqExqIihFtBYGnk1pJ9Vfg0jRImV1oMguB+RXzr
-         mKHXUgm2mES4jQW47NhdNw6DWR4SVUQoMecEOxvjipV7fKmh0dbyXsehWbN5gj9iUuha
-         NlVCrhA9jOtXW8FROBwMcSnK+1aurKNZwZwBF91Z1GFsqsHh3CXxuKfc9ve4azvFQ49G
-         HJK4OQ9k4ocbhCZGypYnBGnbVjZLoHD7qspwd0SSj+2v+04MdlAGJ+bOx2P9AgldJvZn
-         CETw==
-X-Forwarded-Encrypted: i=1; AJvYcCW1uJtwng5YzPNbv8kBt8o7zKLUWFAh2T0TOyo6VzJrLkJCgqgRKftlFP/2W/OVILBPwvuCQu4+myaZxByNY/4V9ug6ooW4Y4ZmvXmbGFb56OCnkvdmBVoG3mwiMGbQ4Ei2i2n8uL+pSoPH/A==
-X-Gm-Message-State: AOJu0YwpCJ6ZtggFAEdr3g2a7MJCYKFYcY2Lhc819W+dZ+0430Lvvof8
-	adbhhEKf9PNSA7u6WWu1llLUE0Ph0gA6cD2A3hdsRKPpP9cDRjOG
-X-Google-Smtp-Source: AGHT+IEDRFzn0r5q/74qNxeJa3z0kk9oCbDh89eIoWGbMdy9FbHdtf38egPNlEgBo6+Wds6horaIvA==
-X-Received: by 2002:a17:906:e91:b0:a51:cc20:9116 with SMTP id p17-20020a1709060e9100b00a51cc209116mr4948595ejf.68.1713765116249;
-        Sun, 21 Apr 2024 22:51:56 -0700 (PDT)
+        bh=bbek83bH+bmdJVeZSQAmI/qCW2wzUcsSL38Y65k0QiI=;
+        b=BWGl1ARggi6ugmxq10uQIsaySt9pxo+gMsUiworBd4RohtYoMsE0ZJEtZWPcIzc9Fy
+         gvQg5t5dUMxLsidjvZCZTnL0R7KT7kED0ijGhNDKdpRcgFs+WQtL2K/qFm2/QOPnwa7L
+         wCtP3oWX7MmPpZcwwb2aTo4+TxCG/ETaPKJ6fh/HqunYyS3G0lEYQWi756Gk3wR4bcU0
+         2IJdZfk8WI9vYKNlr3g12GGZkQpuR5bc83aHpfSK0EUH1s4/5yCtCeXL0b6gAwHsZdom
+         bovshqF41pnS54i0uXb6kAmaaFdsCHvu6g3+TTgqlKMoYrXAghnWR9FfH4RltYUMRMoI
+         z7TA==
+X-Forwarded-Encrypted: i=1; AJvYcCVB0v+bQWrqFt1b6mHTd+Rm5IJoyKWCXC0BS7N6dsZEznFPu9269+NU5ydJq3D/Uyj0bxinBHCiEc1J3PT1NNisiAhHoWQz9gYc3I4Thw6R/djY/lvz2yFRKHNQaWlmuqd6dyjWcFLJZvU4
+X-Gm-Message-State: AOJu0YzaVx443aqMzR3oK6EKaRZI2i3fW9S77ZozKwvEbp7a0HlXS8ex
+	j6aHMuFl0ZWZt97lvBQ8tZLTxbIYSOCSyuvbLtSp9IFYhkGP/YKf
+X-Google-Smtp-Source: AGHT+IHunsPki0d+qtMRiMmwa62qibNaTGF3JWV8VNMXzl3jYv+E6gKev6ZZ/3W0eVUnAVZOWG1AFA==
+X-Received: by 2002:a17:906:c112:b0:a55:aded:200d with SMTP id do18-20020a170906c11200b00a55aded200dmr3553154ejc.12.1713767452360;
+        Sun, 21 Apr 2024 23:30:52 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id bi10-20020a170906a24a00b00a54c12de34dsm5280037ejb.188.2024.04.21.22.51.53
+        by smtp.gmail.com with ESMTPSA id mc11-20020a170906eb4b00b00a5256d8c956sm5315446ejb.61.2024.04.21.23.30.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Apr 2024 22:51:55 -0700 (PDT)
-Message-ID: <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
-Date: Mon, 22 Apr 2024 07:51:52 +0200
+        Sun, 21 Apr 2024 23:30:51 -0700 (PDT)
+Message-ID: <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
+Date: Mon, 22 Apr 2024 08:30:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,53 +48,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/15] tty: serial: switch from circ_buf to kfifo
-To: neil.armstrong@linaro.org, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Al Cooper <alcooperx@gmail.com>, Alexander Shiyan <shc_work@mail.ru>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Alim Akhtar <alim.akhtar@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Baruch Siach
- <baruch@tkos.co.il>, Bjorn Andersson <andersson@kernel.org>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- "David S. Miller" <davem@davemloft.net>, Fabio Estevam <festevam@gmail.com>,
- Hammer Hsieh <hammerh0314@gmail.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Chunyan Zhang <zhang.lyra@gmail.com>, Jerome Brunet <jbrunet@baylibre.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Kevin Hilman <khilman@baylibre.com>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
- Laxman Dewangan <ldewangan@nvidia.com>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- "Maciej W. Rozycki" <macro@orcam.me.uk>,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@amd.com>,
- "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
- =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
- Patrice Chotard <patrice.chotard@foss.st.com>,
- Peter Korsgaard <jacmet@sunsite.dk>,
- Richard Genoud <richard.genoud@gmail.com>,
- Russell King <linux@armlinux.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>,
- Shawn Guo <shawnguo@kernel.org>, Stefani Seibold <stefani@seibold.net>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Taichi Sugaya <sugaya.taichi@socionext.com>,
- Takao Orito <orito.takao@socionext.com>,
- Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
- Thierry Reding <thierry.reding@gmail.com>, Timur Tabi <timur@kernel.org>,
- Vineet Gupta <vgupta@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20240405060826.2521-1-jirislaby@kernel.org>
- <daf06969-15fd-470e-88b8-a717066fe312@linaro.org>
+Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
+ UART
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
+ robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+ manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+ u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+ Konstantin Pugin <ria.freelander@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Herve Codina <herve.codina@bootlin.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ Lech Perczak <lech.perczak@camlingroup.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240420182223.1153195-1-rilian.la.te@ya.ru>
+ <20240420182223.1153195-4-rilian.la.te@ya.ru>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -139,66 +110,62 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <daf06969-15fd-470e-88b8-a717066fe312@linaro.org>
+In-Reply-To: <20240420182223.1153195-4-rilian.la.te@ya.ru>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi,
-
-On 19. 04. 24, 17:12, Neil Armstrong wrote:
-> On 05/04/2024 08:08, Jiri Slaby (SUSE) wrote:
->> This series switches tty serial layer to use kfifo instead of circ_buf.
->>
->> The reasoning can be found in the switching patch in this series:
->> """
->> Switch from struct circ_buf to proper kfifo. kfifo provides much better
->> API, esp. when wrap-around of the buffer needs to be taken into account.
->> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
->>
->> Kfifo API can also fill in scatter-gather DMA structures, so it easier
->> for that use case too. Look at lpuart_dma_tx() for example. Note that
->> not all drivers can be converted to that (like atmel_serial), they
->> handle DMA specially.
->>
->> Note that usb-serial uses kfifo for TX for ages.
->> """
+On 20. 04. 24, 20:22, Konstantin Pugin wrote:
+> From: Konstantin Pugin <ria.freelander@gmail.com>
+> 
+> XR20M1172 register set is mostly compatible with SC16IS762, but it has
+> a support for additional division rates of UART with special DLD register.
+> So, add handling this register by appropriate devicetree bindings.
 ...
-> This patchset has at least broken all Amlogic and Qualcomm boards so 
-> far, only part of them were fixed in next-
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+...
+> @@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+>   	return reg == SC16IS7XX_RHR_REG;
+>   }
+>   
+> +static bool sc16is7xx_has_dld(struct device *dev)
+> +{
+> +		struct sc16is7xx_port *s = dev_get_drvdata(dev);
+> +
+> +		if (s->devtype == &xr20m1172_devtype)
+> +			return true;
+> +		return false;
 
-So are there still not fixed problems yet?
+:) so this should simply be:
 
-> but this serie has been 
-> merged in v1
+return s->devtype == &xr20m1172_devtype;
 
-Ugh, are you saying that v1 patches are not worth taking? That doesn't 
-fit with my experience.
+...
+> @@ -1002,6 +1052,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
+>   				  const struct ktermios *old)
+>   {
+>   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+> +	bool has_dld = sc16is7xx_has_dld(port->dev);
+>   	unsigned int lcr, flow = 0;
+>   	int baud;
+>   	unsigned long flags;
+> @@ -1084,7 +1135,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
+>   	/* Get baud rate generator configuration */
+>   	baud = uart_get_baud_rate(port, termios, old,
+>   				  port->uartclk / 16 / 4 / 0xffff,
+> -				  port->uartclk / 16);
+> +				  port->uartclk / (has_dld ? 4 : 16));
 
-> with no serious testing
+Could you do this instead:
+unsigned int divisor = sc16is7xx_has_dld(port->dev) ? 4 : 16;
 
-Sadly, everyone had a chance to test the series:
-   https://lore.kernel.org/all/20240319095315.27624-1-jirislaby@kernel.org/
-for more than two weeks before I sent this version for inclusion. And 
-then it took another 5 days till this series appeared in -next. But 
-noone with this HW apparently cared enough back then. I'd wish they 
-(you) didn't. Maybe next time, people will listen more carefully:
-===
-This is Request for Testing as I cannot test all the changes
-(obviously). So please test your HW's serial properly.
-===
+...
 
-> and should've been dropped 
-> immediately when the first regressions were reported.
+uart_get_baud_rate(..., port->uartclk / divisor);
 
-Provided the RFT was mostly ignored (anyone who tested that here, or I 
-only wasted my time?), how exactly would dropping help me finding 
-potential issues in the series? In the end, noone is running -next in 
-production, so glitches are sort of expected, right? And I believe I 
-smashed them quickly enough (despite I was sidetracked to handle the 
-n_gsm issue). But I might be wrong, as usual.
 
-So no, dropping is not helping moving forward, actions taken by e.g. 
-Marek Szyprowski <m.szyprowski@samsung.com> do, IMNSHO.
+I am not sure the above warrants for a new version. Just in case you are 
+sending one.
 
 thanks,
 -- 
