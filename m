@@ -1,60 +1,61 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 316604F20C
-	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 07:44:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9BC4DA1F
+	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 07:50:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713771845; cv=none; b=mTAO4A1asSqBoM9qfki+4nv0PQ+4Wm6Z1lnVk8zPN2D95RtfFnvxcRtruJl+5zYGOI6VOLtQnsAmoqdBJIdysEN2VtX3uBjGok801G7DlhFy6ZBZM5FIQv+6PxKcneyS6SbaptkuGRbkXJAvWDNtKicQe64sMT5K3OhypuuESwk=
+	t=1713772247; cv=none; b=mboFF9iPxRO9wUwlBqaMNgCG4qwDHn7OZiA42dbnZw9HoEcY9r06AqHQO/PT3vj9sPZPuwfq+5pXllD7XGUq3yX/oIqQ/FKHPU+s2xf1tD1ofZ8NoXNgU31E5bsz6LJ0DGpsAoxHsQiTGxOWiZBmbuWdC7eYkSV9FL6pSYDrN84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713771845; c=relaxed/simple;
-	bh=ffLRdcaZUgrUwWcFf3srztERpUaDnshkDyUkPvhByj0=;
+	s=arc-20240116; t=1713772247; c=relaxed/simple;
+	bh=ll7xpI05vG+OSYFaHbFKnPZj/8mZGc85w/FkFElFwjw=;
 	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=AhHGMpqEbeE9dx518ZxvkKPdkko8eGCeaw/DRUQDfJkgHBs7QLZs8fomKe1NctpWEbvdEQpWghstQlGDsImO9kQoN/QZPD8ezO+5c6G+IjxDpoST8ezk92URf+cmaddF/KIVcuoIQT7ik66GBHCaB2VRGck3dT9jEdZb/KykR7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=LFyOavKO; arc=none smtp.client-ip=209.85.128.50
+	 In-Reply-To:Content-Type; b=FJ/LFrnMEcav0lcQEyLL/1EBki8p+48EYsgTTo3nsNp24U6j1CHZtnIvLhQgCFffnqik3q9dXJgen0oFweP99snO1jJZKa0T2613QYwwyeFAvPUQshG8v1CGPqRWZad1/bjnsxGkYiKV6DYCHOXUmis61nymoDcphQoImU0n/sM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=u4qienJu; arc=none smtp.client-ip=209.85.208.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LFyOavKO"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4187c47405aso26906445e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 00:44:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u4qienJu"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2dda77dfb9eso4589931fa.1
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 00:50:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1713771842; x=1714376642; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1713772244; x=1714377044; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :content-language:references:cc:to:subject:reply-to:from:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=8EACDU5ZIYK9Tlo7z1R2GyLFJTNAKhZcDGfQ+M5Qfec=;
-        b=LFyOavKOWubM6eMsVFDgd84jWBEwl/EQW6AmgpK+yrjEng2xcCiRGCpmKCmqZh9wlE
-         NvYoflA6IbYuKGm6KSQTDkkKiTMveWaTsecZk/KkxiROQdkBv9j82dpaM8kX7UsF/kvN
-         +neGtfX9yLbbsotmS91pECZhS6ITSloDzMbrRZwezGsjwDnLpU9msegC06W4XCB1PpJ2
-         m0Pq32+tME2go7tyn4+lf0rCiouglR0mROqowdr1sy3x3c+GqkbDMUHIm93vcXMNQEJ5
-         ZfQvtpWog5/NwBhdzEZ3X0R+DbssXpaF2cJfHGQolnkqFPkB5KUd1Xkj1x8ANHYcF2sa
-         pv5w==
+        bh=v+71MZ9wrQ9ox9rnQ8IGeE2LhRSl4xdE1GR9dh+ng9Q=;
+        b=u4qienJuFWayQfLR+rXFP6p7HKtoJTr8WkYR/bQUXqjGVswXq0fxL/J6dApyV2JPy+
+         PsfIoeN0jHr7SJwMIkF9lHmx51qcoN+M70bN++5wBZxsIzOkyJIfv0wZmRovB3QDjRWF
+         WN+0KnGGrP8q26gDNPUgtCqE/gphN94UqKiPEbThOwEpqDFMVZa6NHW1gzTEkA0O7Nc7
+         +vNY89qLqYguk0BsODeQ1kN85Il2+/eTy8uXoAz9ofysJoZ5IIFR3xrmPE69OqReHmUI
+         DlGWfnYPaPMdKuClbum+JPsAIK5/jdM8xaSgg4MFo+kHE/FudHivDY/0CEzgOyJEf+Ip
+         xqKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713771842; x=1714376642;
+        d=1e100.net; s=20230601; t=1713772244; x=1714377044;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :content-language:references:cc:to:subject:reply-to:from:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=8EACDU5ZIYK9Tlo7z1R2GyLFJTNAKhZcDGfQ+M5Qfec=;
-        b=seWWPh6hLtp6ZLtPFTVbZNJjZZA9tX4lZMrdEUJ6agxyEbNeqwVI2awGovIc4hk43Q
-         60APjO5UGeX/bPjsd/Rh4Davzf1doHAIXOzndrawRUmFlgCnNLjrcC7efcBlrfu3qiS/
-         WEcD+NEkVVCUI+kPcirSB21H4YW8tTUtAsWRp2tl+YDaYdtyHhz/7DELDFPU508gMX+N
-         0V1Ed27OusUbwyEpiS5f4Ulx84e9ZvjYIMtYktNB47JqhMfe7ezuM42rfW8quCdAD9U1
-         /p3vmyAAPcDPbLj6fzzFjwl9VdCSMrb3OBDClLDCiyj7Lol+X9HqjlrDGSJ4tISzbgtY
-         hqRg==
-X-Gm-Message-State: AOJu0YyxCii8mkmSr+biU+fp4Ngfo5o4UIq5VdBLFscbrGTfF4bBRqMz
-	LR0alM3LJjEND6LekbNXW4uj/w5wO4w27wHfoVfdrhwJyTlOR+EZywO1AeCSbic=
-X-Google-Smtp-Source: AGHT+IEobCAD1woSZ5EJiB0NRH7BEjZlQI+0HXHHE4nnOPzWe+XQOjOdqoLZt1DsJbBVAkn1X3/8fw==
-X-Received: by 2002:a05:600c:358c:b0:41a:3150:cbe7 with SMTP id p12-20020a05600c358c00b0041a3150cbe7mr2136856wmq.28.1713771842235;
-        Mon, 22 Apr 2024 00:44:02 -0700 (PDT)
+        bh=v+71MZ9wrQ9ox9rnQ8IGeE2LhRSl4xdE1GR9dh+ng9Q=;
+        b=RfFngnqQ11p8UJ2eWPoz6RIHuqSSJCNmbnl2J7iZTwKZSR6bOQCaGM2h3JmNcJ5b8D
+         2aVGOYtPNTsfem4N2IONrRpyIG5lCQgXU7a0CosDzsXJjHTRvo6fIw16QKgV9FGwc93Z
+         6C+amdoWNzbsQiTCKrv3wpjS+XHF9np9T5W+tgOaQpMlK7LBRozXUDs0vDjdhxCxoqGA
+         wC4D3L+d+VmpQakkMYnsuchEH82N540a4lOdUta611QSsU+XmzoMS+tkAlD1vOc/KBPv
+         FfG/90JbtLH9ZWow0TJ1vW3xCtsiKWeEkk2lNB8xc5cAZdK3G7njzVLVUIkqFLI8jljM
+         S+aA==
+X-Forwarded-Encrypted: i=1; AJvYcCV3Awf6wECMaWoogVLB94kB2U6L/uENntgY6qY1va0R0fK4B1pFnNF2fpu9Jw+0qVjiHQzNtPWGBrc0oPT1et6cIU12av9JCvvQIzCJ
+X-Gm-Message-State: AOJu0YzsTPhSn3cLQbq1CFT9hl68fLe4creNsS/QBgbadugcPgj+kJMa
+	FT+0VmMBCpNa3Z2qHteo1BeHenyqtAYZjPGvpQFN4L7oCaVc3TfshqmwLRspMIo=
+X-Google-Smtp-Source: AGHT+IEO+hs7djOE8BhqvbO1jw9iehaX2qdysNQjBTx57bMY99Rnnu0XpYuWpXJnIxcp1ufaEMbYgQ==
+X-Received: by 2002:a2e:380b:0:b0:2d8:68fb:399b with SMTP id f11-20020a2e380b000000b002d868fb399bmr5464268lja.7.1713772244119;
+        Mon, 22 Apr 2024 00:50:44 -0700 (PDT)
 Received: from ?IPV6:2a01:e0a:982:cbb0:e5e5:892f:e81f:7cad? ([2a01:e0a:982:cbb0:e5e5:892f:e81f:7cad])
-        by smtp.gmail.com with ESMTPSA id a12-20020a056000100c00b00349ceadededsm11300565wrx.16.2024.04.22.00.43.59
+        by smtp.gmail.com with ESMTPSA id ay39-20020a05600c1e2700b0041a7a923502sm982614wmb.3.2024.04.22.00.50.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Apr 2024 00:44:01 -0700 (PDT)
-Message-ID: <17308e8f-59a1-40aa-9d44-2fb998b9f39c@linaro.org>
-Date: Mon, 22 Apr 2024 09:43:58 +0200
+        Mon, 22 Apr 2024 00:50:43 -0700 (PDT)
+Message-ID: <a27572a5-2f1c-46ff-8528-4cae17c8e5e9@linaro.org>
+Date: Mon, 22 Apr 2024 09:50:40 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,12 +63,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: neil.armstrong@linaro.org
+From: Neil Armstrong <neil.armstrong@linaro.org>
 Reply-To: neil.armstrong@linaro.org
 Subject: Re: [PATCH 00/15] tty: serial: switch from circ_buf to kfifo
-To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Al Cooper <alcooperx@gmail.com>, Alexander Shiyan <shc_work@mail.ru>,
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
+ Alexander Shiyan <shc_work@mail.ru>,
  Alexandre Belloni <alexandre.belloni@bootlin.com>,
  Alexandre Torgue <alexandre.torgue@foss.st.com>,
  Alim Akhtar <alim.akhtar@samsung.com>,
@@ -108,10 +110,10 @@ Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  Takao Orito <orito.takao@socionext.com>,
  Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
  Thierry Reding <thierry.reding@gmail.com>, Timur Tabi <timur@kernel.org>,
- Vineet Gupta <vgupta@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+ Vineet Gupta <vgupta@kernel.org>
 References: <20240405060826.2521-1-jirislaby@kernel.org>
  <daf06969-15fd-470e-88b8-a717066fe312@linaro.org>
- <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
+ <2024042030-gumdrop-outdoors-fc81@gregkh>
 Content-Language: en-US, fr
 Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
@@ -138,74 +140,33 @@ Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
  QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
 Organization: Linaro
-In-Reply-To: <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
+In-Reply-To: <2024042030-gumdrop-outdoors-fc81@gregkh>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Hi Jiri,
+Hi Greg,
 
-On 22/04/2024 07:51, Jiri Slaby wrote:
-> Hi,
+On 20/04/2024 07:42, Greg KH wrote:
+> On Fri, Apr 19, 2024 at 05:12:28PM +0200, Neil Armstrong wrote:
+>> This patchset has at least broken all Amlogic and Qualcomm boards so
+>> far, only part of them were fixed in next- but this serie has been
+>> merged in v1 with no serious testing and should've been dropped
+>> immediately when the first regressions were reported.
 > 
-> On 19. 04. 24, 17:12, Neil Armstrong wrote:
->> On 05/04/2024 08:08, Jiri Slaby (SUSE) wrote:
->>> This series switches tty serial layer to use kfifo instead of circ_buf.
->>>
->>> The reasoning can be found in the switching patch in this series:
->>> """
->>> Switch from struct circ_buf to proper kfifo. kfifo provides much better
->>> API, esp. when wrap-around of the buffer needs to be taken into account.
->>> Look at pl011_dma_tx_refill() or cpm_uart_tx_pump() changes for example.
->>>
->>> Kfifo API can also fill in scatter-gather DMA structures, so it easier
->>> for that use case too. Look at lpuart_dma_tx() for example. Note that
->>> not all drivers can be converted to that (like atmel_serial), they
->>> handle DMA specially.
->>>
->>> Note that usb-serial uses kfifo for TX for ages.
->>> """
-> ...
->> This patchset has at least broken all Amlogic and Qualcomm boards so far, only part of them were fixed in next-
+> What is not yet fixed with the recent patch that was just sent to the
+> list?
 > 
-> So are there still not fixed problems yet?
+> Doing core changes like this is hard, I have seen no lack of willingness
+> to fix reported problems or major breakages that would deserve a revert.
 
-My last ci run on next-20240419 was still failing on db410c.
+It broken all Amlogic and Qualcomm boards, are we sure it didn't break other systems that are not CI tested on -next ?
 
-> 
->> but this serie has been merged in v1
-> 
-> Ugh, are you saying that v1 patches are not worth taking? That doesn't fit with my experience.
+This serie clearly deserved a v2, patch 11 wasn't seriously reviewed, and it deserved a ping on the RFT before sending a v1.
 
-In my experience, most of my patches are taken in v2, it's not an uncommon thing to have more versions, especially when touching core subsystems.
+I don't understand why speeding up this changeset and applying it without any reviews nor tests was so important.
 
-> 
->> with no serious testing
-> 
-> Sadly, everyone had a chance to test the series:
->    https://lore.kernel.org/all/20240319095315.27624-1-jirislaby@kernel.org/
-> for more than two weeks before I sent this version for inclusion. And then it took another 5 days till this series appeared in -next. But noone with this HW apparently cared enough back then. I'd wish they (you) didn't. Maybe next time, people will listen more carefully:
-> ===
-> This is Request for Testing as I cannot test all the changes
-> (obviously). So please test your HW's serial properly.
-> ===
-
-This RFT was sent during the merge window, only a few people looks at the list between those 2 weeks.
-
-> 
->> and should've been dropped immediately when the first regressions were reported.
-> 
-> Provided the RFT was mostly ignored (anyone who tested that here, or I only wasted my time?), how exactly would dropping help me finding potential issues in the series? In the end, noone is running -next in production, so glitches are sort of expected, right? And I believe I smashed them quickly enough (despite I was sidetracked to handle the n_gsm issue). But I might be wrong, as usual.
-
-So since it was ignored, it's ok to apply it as-is ??????
-
-> 
-> So no, dropping is not helping moving forward, actions taken by e.g. Marek Szyprowski <m.szyprowski@samsung.com> do, IMNSHO.
-
-well thanks to Marek, but most of Qualcomm maintainers and myself were in EOSS in Seattle for the week and came back home in Saturday, and we were busy. Hopefully Marek was available.
-
-> 
-> thanks,
-
+Thanks,
 Neil
-
+> 
+> greg k-h
 
