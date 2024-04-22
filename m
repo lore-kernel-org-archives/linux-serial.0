@@ -1,308 +1,140 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A013614A0A5;
-	Mon, 22 Apr 2024 13:32:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B24150989;
+	Mon, 22 Apr 2024 13:45:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713792774; cv=none; b=n5m9nLohcIV9JrdnTbSKL1lzUwUdY0RLtqFVKvlupk1igD410yKFdEOJQPaOrn4VMriCRAKyeSeuL/gZ+qEimgt1PJTeAjO/4WKDsixD9pynVtLxo55ZrWjYpqWq64f89VsNz6Iu/cFDxumXPLbMUW+cmSNsmScGH5uzhLpT2D0=
+	t=1713793534; cv=none; b=naw434LIlAYJXnlLa9Ef/0KsZbFSteLJ/o9EilWKX1Hl57DWJgHJAKsvxkX7QGyPFCVTgqGonc5O4kvex3VANy1ImfU8BZaqWOe2KVO9pjRtoiaNKeNz8Ic/AcXkqXqEas4r2uafLoGphW4A59jUkEUbZ3a96HeKfGX7T4mYSW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713792774; c=relaxed/simple;
-	bh=fxiwIoJyQQ0yCTKQx1+fLyT9CHX1imPCDSiq9BWJNf4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=cbL7QUrz0BIBFFe8JCyyGDL8RXQypOHHwfZO+0NMcRe6vtYYw4t1ryUrd8KmcfZF0ahBf9Y5HlDG/UMszxqUBm71H9WwrDBe6N0yWHzLh8ExPE80D4atghhQTFmjmnw2GH6p8sAwbbmzZhjBbM+f9L76YqFq9rp20q4IdHZSsh0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hw8HZpGn; arc=none smtp.client-ip=209.85.167.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1713793534; c=relaxed/simple;
+	bh=PK/1+99HtkJnMs8Ur+YHDGey4Az6Hfqq6sXIMfUaOfo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZcJ1MVZVHasEddmUazkTtjklLEvrSNl+1olzSOhnGKSSyK+oV41OIPwMbGDa+SMvcPrXdLb3F6AXJdBg3kFWbtxq0egc6xAf7tYL/bTOrzq19huhIUMIFeGAMs/dAKzmiGj8FwdI9PEvEyqHnVy/M5DMr+ahuXTNx8DqubJdRDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GF5NHarO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hw8HZpGn"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-51abd580902so2737639e87.1;
-        Mon, 22 Apr 2024 06:32:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713792771; x=1714397571; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g3lK+2Qsf1AX15DW4lwmP/OfFUHwKsLWNqGykdshUGA=;
-        b=Hw8HZpGnWLf5vEfiDqtZKPPvpjWeWzhaldVs1UjakywCGLRbNJvNNwUzqP6SePZXUP
-         d0t/N5lhjFn2ZNp51nnEGZUu/WnBsh2wGtn6LdU794bEYHmbKxKEJR2VYlWLFqEp/2UC
-         WVH/Qmhudq7rTxkYCeFesJhk60Z4a7uR27lvCPcLjl1L3M98OX66rcc7BioM8q7KE7nu
-         qWynkX2wzlYrWu/VhhEV7WkCBR4h9T0lJHWxi/Pvuz7ZERy+sUu8KZaszuiswQB3I058
-         Iy6+ACoifpmFJpSKKNNrfRniiXN5Li8sxxIrfO9E9GADukZIhQN/7idS8yeGtNTobg7Z
-         xqeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713792771; x=1714397571;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=g3lK+2Qsf1AX15DW4lwmP/OfFUHwKsLWNqGykdshUGA=;
-        b=M5905jvc6KYqz+XajkH5ukVUlFctDUlnBLDO9o2WDN8RApKzm+CIsd2Ryh6L5PAiVY
-         KuUk2A+DSFgBlxruTB2mPQyn/mSwaE9VwfuS53n73m2/aUyLSZFYQDF/5szznMlOIB0o
-         PySHg951Ao4dIoArpYQk8gRl4nXBqn7hJq2rEORrrnH12c6xqap3NFp0pi0Qdj54seNp
-         a+rIkfMjM0FPi0Yax8nYfReWexT/LeoYYtplcLF/S5mJa1JoujiKKy1RKRgi1GZayGSz
-         ITRByAQK5a4lI5TTcz2os68HmSs+IwqNFBymMDihAf0+Wm1amsQxbZLXDnPphB2gP5j6
-         Grfw==
-X-Forwarded-Encrypted: i=1; AJvYcCU0eGC8LbVv0in219vV9zEBkPYSz7HPYsXfWxLp7oOrE09Bce6fFn9D0uaSLRfU7Stiwp5i8Kn66kajDYqBbIbm5rqUisW2xPhDfdu7ayoa1+DZRt/eSc4EVXLX7AC5JuunhpuiPuvmSspd
-X-Gm-Message-State: AOJu0YxNXF++gO/wvie7ZGPV4OUFXkvy4H6ti5xNyWE6OvYoqcZhXy3D
-	lA/7Ym6Q0PcCYOv9jg+H9ZosKcVwXvJpVlIf0WcxNMZn25dPXnTE
-X-Google-Smtp-Source: AGHT+IGFFP1No2Mme1iLYqd8CBMmRNw/WnPGPFq2h9808e4rbakLjFkAyJ+yDYdSYMb2NFdZi2R2Ug==
-X-Received: by 2002:a05:6512:52d:b0:51b:6934:1cba with SMTP id o13-20020a056512052d00b0051b69341cbamr505969lfc.21.1713792770649;
-        Mon, 22 Apr 2024 06:32:50 -0700 (PDT)
-Received: from CVSIT-Server.. ([193.232.173.109])
-        by smtp.gmail.com with ESMTPSA id d22-20020ac241d6000000b0051327d2f5e5sm1729568lfi.119.2024.04.22.06.32.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Apr 2024 06:32:49 -0700 (PDT)
-From: Konstantin Pugin <ria.freelander@gmail.com>
-To: 
-Cc: krzk@kernel.org,
-	conor@kernel.org,
-	lkp@intel.com,
-	vz@mleia.com,
-	robh@kernel.org,
-	jcmvbkbc@gmail.com,
-	nicolas.ferre@microchip.com,
-	manikanta.guntupalli@amd.com,
-	corbet@lwn.net,
-	ychuang3@nuvoton.com,
-	u.kleine-koenig@pengutronix.de,
-	Maarten.Brock@sttls.nl,
-	Konstantin Pugin <ria.freelander@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v7 3/3] serial: sc16is7xx: add support for EXAR XR20M1172 UART
-Date: Mon, 22 Apr 2024 16:32:15 +0300
-Message-Id: <20240422133219.2710061-4-ria.freelander@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240422133219.2710061-1-ria.freelander@gmail.com>
-References: <20240422133219.2710061-1-ria.freelander@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GF5NHarO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7978C32782;
+	Mon, 22 Apr 2024 13:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713793534;
+	bh=PK/1+99HtkJnMs8Ur+YHDGey4Az6Hfqq6sXIMfUaOfo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GF5NHarOSO2RHJZI/JO8qZkQGS4oY5uh3nrhn8Y+VWHZQN0vBLQ4eRfVOj7bYJ3Mj
+	 8PaG5ptt/Etu0EkcHjU42wxOmDCDgUa68oOURaLloPnN/g9xoH64HlCUO0RwgEKUnf
+	 NhwyOJxHG9LkarfD6dNLfxYMxJy2GDfmBa7dzIsR3BXPPVK1f/tY7fkGwfOA3NyWPP
+	 gcjrR+ytG4PaMlKB2tH5JIhO6/JNoB9bobg+ZndCc+UONXkRc+gUjkV11XPFPl2/d9
+	 97S8pvwkDEyscBkiyigm5h8EHIyA/r9Abte2ezZysRGkaS6CDBFA51AadzGrjXdCoq
+	 IfZgpCBAJz42g==
+Message-ID: <e2989aa1-7f2b-4ac3-8fd8-822c87d61a1e@kernel.org>
+Date: Mon, 22 Apr 2024 15:45:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
+To: Konstantin Pugin <ria.freelander@gmail.com>
+Cc: conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org,
+ jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+ manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+ u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
+ Lech Perczak <lech.perczak@camlingroup.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240422133219.2710061-1-ria.freelander@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20240422133219.2710061-1-ria.freelander@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-XR20M1172 register set is mostly compatible with SC16IS762, but it has
-a support for additional division rates of UART with special DLD register.
-So, add handling this register by appropriate devicetree bindings.
+On 22/04/2024 15:32, Konstantin Pugin wrote:
+> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+> it has additional register which can change UART multiplier
+> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+> flag to guard access to its specific DLD register. It seems than
+> other EXAR SPI UART modules also have this register, but I tested
+> only XR20M1172.
+> Yes, in datasheet this register is called "DLD - Divisor Fractional"
+> or "DLD - Divisor Fractional Register", calling depends on datasheet
+> version.
+> 
+> I am sorry about too many submissions and top post reply. About second -
+> I do not know how to reply properly to this ML from GMail phone app. About first - I just
+> get very good feedback from Andy Shevchenko, and want to fix his review picks ASAP.
+> 
 
-Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
----
- drivers/tty/serial/Kconfig         |  3 +-
- drivers/tty/serial/sc16is7xx.c     | 61 ++++++++++++++++++++++++++++--
- drivers/tty/serial/sc16is7xx.h     |  1 +
- drivers/tty/serial/sc16is7xx_i2c.c |  1 +
- drivers/tty/serial/sc16is7xx_spi.c |  1 +
- 5 files changed, 62 insertions(+), 5 deletions(-)
+One patchset per 24h.
 
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 4fdd7857ef4d..9d0438cfe147 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -1029,7 +1029,7 @@ config SERIAL_SC16IS7XX_CORE
- 	select SERIAL_SC16IS7XX_SPI if SPI_MASTER
- 	select SERIAL_SC16IS7XX_I2C if I2C
- 	help
--	  Core driver for NXP SC16IS7xx UARTs.
-+	  Core driver for NXP SC16IS7xx and compatible UARTs.
- 	  Supported ICs are:
- 
- 	    SC16IS740
-@@ -1038,6 +1038,7 @@ config SERIAL_SC16IS7XX_CORE
- 	    SC16IS752
- 	    SC16IS760
- 	    SC16IS762
-+	    XR20M1172 (Exar)
- 
- 	  The driver supports both I2C and SPI interfaces.
- 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index dfcc804f558f..09c9e52d7ec2 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -10,6 +10,7 @@
- #undef DEFAULT_SYMBOL_NAMESPACE
- #define DEFAULT_SYMBOL_NAMESPACE SERIAL_NXP_SC16IS7XX
- 
-+#include <linux/bitfield.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/device.h>
-@@ -68,6 +69,7 @@
- /* Special Register set: Only if ((LCR[7] == 1) && (LCR != 0xBF)) */
- #define SC16IS7XX_DLL_REG		(0x00) /* Divisor Latch Low */
- #define SC16IS7XX_DLH_REG		(0x01) /* Divisor Latch High */
-+#define XR20M117X_DLD_REG		(0x02) /* Divisor Fractional Register */
- 
- /* Enhanced Register set: Only if (LCR == 0xBF) */
- #define SC16IS7XX_EFR_REG		(0x02) /* Enhanced Features */
-@@ -221,6 +223,20 @@
- #define SC16IS7XX_TCR_RX_HALT(words)	((((words) / 4) & 0x0f) << 0)
- #define SC16IS7XX_TCR_RX_RESUME(words)	((((words) / 4) & 0x0f) << 4)
- 
-+/*
-+ * Divisor Fractional Register bits (EXAR extension).
-+ * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
-+ * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
-+ * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
-+ * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
-+ * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
-+ */
-+
-+#define XR20M117X_DLD_16X			0
-+#define XR20M117X_DLD_DIV_MASK			GENMASK(3, 0)
-+#define XR20M117X_DLD_8X			BIT(4)
-+#define XR20M117X_DLD_4X			BIT(5)
-+
- /*
-  * TLR register bits
-  * If TLR[3:0] or TLR[7:4] are logical 0, the selectable trigger levels via the
-@@ -523,6 +539,13 @@ const struct sc16is7xx_devtype sc16is762_devtype = {
- };
- EXPORT_SYMBOL_GPL(sc16is762_devtype);
- 
-+const struct sc16is7xx_devtype xr20m1172_devtype = {
-+	.name		= "XR20M1172",
-+	.nr_gpio	= 8,
-+	.nr_uart	= 2,
-+};
-+EXPORT_SYMBOL_GPL(xr20m1172_devtype);
-+
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
-@@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
- 	return reg == SC16IS7XX_RHR_REG;
- }
- 
-+static bool sc16is7xx_has_dld(struct device *dev)
-+{
-+	struct sc16is7xx_port *s = dev_get_drvdata(dev);
-+
-+	if (s->devtype == &xr20m1172_devtype)
-+		return true;
-+	return false;
-+}
-+
- static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- {
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
--	u8 lcr;
-+	unsigned long clk = port->uartclk, div, div16;
-+	bool has_dld = sc16is7xx_has_dld(port->dev);
-+	u8 dld_mode = XR20M117X_DLD_16X;
- 	u8 prescaler = 0;
--	unsigned long clk = port->uartclk, div = clk / 16 / baud;
-+	u8 divisor = 16;
-+	u8 lcr;
-+
-+	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
-+		divisor = rounddown_pow_of_two(DIV_ROUND_CLOSEST(clk, baud));
-+
-+	div16 = (clk * 16) / divisor / baud;
-+	div = div16 / 16;
- 
- 	if (div >= BIT(16)) {
- 		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
- 		div /= 4;
- 	}
- 
-+	/* Count additional divisor for EXAR devices */
-+	if (divisor == 8)
-+		dld_mode = XR20M117X_DLD_8X;
-+	if (divisor == 4)
-+		dld_mode = XR20M117X_DLD_4X;
-+	dld_mode |= FIELD_PREP(XR20M117X_DLD_DIV_MASK, div16);
-+
- 	/* Enable enhanced features */
- 	sc16is7xx_efr_lock(port);
- 	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
-@@ -587,12 +635,14 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	regcache_cache_bypass(one->regmap, true);
- 	sc16is7xx_port_write(port, SC16IS7XX_DLH_REG, div / 256);
- 	sc16is7xx_port_write(port, SC16IS7XX_DLL_REG, div % 256);
-+	if (has_dld)
-+		sc16is7xx_port_write(port, XR20M117X_DLD_REG, dld_mode);
- 	regcache_cache_bypass(one->regmap, false);
- 
- 	/* Restore LCR and access to general register set */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
--	return DIV_ROUND_CLOSEST(clk / 16, div);
-+	return DIV_ROUND_CLOSEST(clk / divisor, div);
- }
- 
- static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
-@@ -1002,6 +1052,8 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 				  const struct ktermios *old)
- {
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-+	bool has_dld = sc16is7xx_has_dld(port->dev);
-+	u8 divisor = has_dld ? 4 : 16
- 	unsigned int lcr, flow = 0;
- 	int baud;
- 	unsigned long flags;
-@@ -1084,7 +1136,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
- 	/* Get baud rate generator configuration */
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / 4 / 0xffff,
--				  port->uartclk / 16);
-+				  port->uartclk / divisor);
- 
- 	/* Setup baudrate generator */
- 	baud = sc16is7xx_set_baud(port, baud);
-@@ -1684,6 +1736,7 @@ void sc16is7xx_remove(struct device *dev)
- EXPORT_SYMBOL_GPL(sc16is7xx_remove);
- 
- const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
-+	{ .compatible = "exar,xr20m1172",	.data = &xr20m1172_devtype, },
- 	{ .compatible = "nxp,sc16is740",	.data = &sc16is74x_devtype, },
- 	{ .compatible = "nxp,sc16is741",	.data = &sc16is74x_devtype, },
- 	{ .compatible = "nxp,sc16is750",	.data = &sc16is750_devtype, },
-diff --git a/drivers/tty/serial/sc16is7xx.h b/drivers/tty/serial/sc16is7xx.h
-index afb784eaee45..eb2e3bc86f15 100644
---- a/drivers/tty/serial/sc16is7xx.h
-+++ b/drivers/tty/serial/sc16is7xx.h
-@@ -28,6 +28,7 @@ extern const struct sc16is7xx_devtype sc16is750_devtype;
- extern const struct sc16is7xx_devtype sc16is752_devtype;
- extern const struct sc16is7xx_devtype sc16is760_devtype;
- extern const struct sc16is7xx_devtype sc16is762_devtype;
-+extern const struct sc16is7xx_devtype xr20m1172_devtype;
- 
- const char *sc16is7xx_regmap_name(u8 port_id);
- 
-diff --git a/drivers/tty/serial/sc16is7xx_i2c.c b/drivers/tty/serial/sc16is7xx_i2c.c
-index 3ed47c306d85..839de902821b 100644
---- a/drivers/tty/serial/sc16is7xx_i2c.c
-+++ b/drivers/tty/serial/sc16is7xx_i2c.c
-@@ -46,6 +46,7 @@ static const struct i2c_device_id sc16is7xx_i2c_id_table[] = {
- 	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
- 	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
- 	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
-+	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, sc16is7xx_i2c_id_table);
-diff --git a/drivers/tty/serial/sc16is7xx_spi.c b/drivers/tty/serial/sc16is7xx_spi.c
-index 73df36f8a7fd..2b278282dbd0 100644
---- a/drivers/tty/serial/sc16is7xx_spi.c
-+++ b/drivers/tty/serial/sc16is7xx_spi.c
-@@ -69,6 +69,7 @@ static const struct spi_device_id sc16is7xx_spi_id_table[] = {
- 	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
- 	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
- 	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
-+	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, sc16is7xx_spi_id_table);
--- 
-2.34.1
+Plus, you already got such review comment:
+
+This is a friendly reminder during the review process.
+
+It looks like you received a tag and forgot to add it.
+
+If you do not know the process, here is a short explanation:
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions, under or above your Signed-off-by tag. Tag is "received", when
+provided in a message replied to you on the mailing list. Tools like b4
+can help here. However, there's no need to repost patches *only* to add
+the tags. The upstream maintainer will do that for tags received on the
+version they apply.
+
+https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
+
+If a tag was not added on purpose, please state why and what changed.
+
+Just start using b4.
+
+Best regards,
+Krzysztof
 
