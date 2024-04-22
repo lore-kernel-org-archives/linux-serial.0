@@ -1,46 +1,46 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D03971391;
-	Mon, 22 Apr 2024 06:34:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48BD41F61C;
+	Mon, 22 Apr 2024 06:45:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713767690; cv=none; b=n+1nzDuoLmIsKnJKOB78XaDiYd99rEqSFrTJ6W8/vtvT8xQ7XtCWkDFN+ONFTZya8cWhTYvsk6JiKSvLxI9nR3EG3AXdd+mQJqp6xJ7Bag4wi56szPkc3aeJI/H2T2UwGE5kwqizxjtHICo5ynf2mz+qVYEtUoD9EobBHcPPsR4=
+	t=1713768353; cv=none; b=NDOxH124baUycsFYDZfMn5LMH/XKCei0madf73VqFQhMdKSiJXpuG31FijecF0/T45Sd8T9nuGilGN3DJ1BaGHkYvG+w18T0spXeiPPQ+XK5+sChPXQKjKe5ZRjk+NiJDqEIwD3RGM9QlpYFN4rQJpv3HiiYiXFJFjsfJJ4rmAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713767690; c=relaxed/simple;
-	bh=6iZAc1tIa1xnK8gdGWezPsViVb+BuSu8Iz8NpY6Sl5I=;
+	s=arc-20240116; t=1713768353; c=relaxed/simple;
+	bh=55gYPbLVDIntV96sOLdLdGIt6h1AKDgfjZMY+knQ09Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TeqtKSZEqldg+b9Y+EO9DdK6oDkuWXKpjfX3tJHmHfrcTOBqRKR09KiMOMfmMojriPLpFrvGlVl0HBjTEKCJ8NZVhS945BzJmTuVYIxRg2Q6VnR9FWfpyp7Z/shD4oO4RijY1DTaO1wU7p4WhzIZX96FZW3iziQewOjpsHuDVQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.46
+	 In-Reply-To:Content-Type; b=MBTH0krRx5KaMeIJJaGmjDayvwHp7+yRfxaR0a7+iCQ31u/OMZlrvCzQ9GhNNq0vW3+MqCPq99titdMHtSd+N4ho5Kc5RcGodMaaZg6hKMynoSsqi6KABo8M/ptH/7Y15asL/46vXtCwBhjMC8QGcor7t8JRrjfnL2P7T+2sNyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a52582ecde4so361725566b.0;
-        Sun, 21 Apr 2024 23:34:48 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-571bddd74c1so3684125a12.0;
+        Sun, 21 Apr 2024 23:45:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713767687; x=1714372487;
+        d=1e100.net; s=20230601; t=1713768350; x=1714373150;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=O5Tvvb96m7+SKcvBMlaFTAjiOhoMrHTJ45G4XuK0fIc=;
-        b=j+clLixNBKlUKFPzjQUKKxHJ4LD3UWSaYQ4rkGSM6YrDQi/t+BYbML49xM11hzXoNX
-         IDvEw0RzbedwE3tfra4TUG0+CtTSrFZTsE/0cfj3wwliuczqI43MdJ7gR2RDmJ2knHOh
-         lrPhiQyJgtnFjiYnQEkSys7vgwVVg/RIVzGEB9rUd05TLrQNp0ThuzUvmnWy5qkFSwz9
-         PNAnuAnkhqHto6UBO9fey7XivvjAw529fGrESc4V52Iet4gn0gR5yswicce1CM2e+LI/
-         iOrpLX9E6K8ITfyJhgUDnl8aVLF/aypyqRe8AG+20T+N4/FErNbkZm8iVdtAqzigHMzP
-         qUsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVDrMxzM5yDyxJvUWZBcmX4+n8nVlvXeiwtIyrwYBgLTkQ2/xZUqSoZ+7446CVMUHb3D/0dG6vNWuJiq8igLZcYzlzb/GBEnzq+NtgILuxuWUPmks+GKVzXdFhBldatK0aiLWmN5F0kKhb5
-X-Gm-Message-State: AOJu0YxhO2ai3dVZNAr75dLnYu0pe0SumKagMV/TsmYwQUtxqur1gy79
-	oLfEx7b+ny8xFNpcLqLp8S1EBukINsezRqz07jBGT870INzuRf6nl5iibuArJro=
-X-Google-Smtp-Source: AGHT+IH23NRTuItQkoS4sG76dGL7uVuMuX3gidpwsTJb5FAmPSftLzc2EGzR8tgKg3XNz/Sfwlf26w==
-X-Received: by 2002:a17:906:1786:b0:a52:3eff:13f1 with SMTP id t6-20020a170906178600b00a523eff13f1mr5662000eje.2.1713767686928;
-        Sun, 21 Apr 2024 23:34:46 -0700 (PDT)
+        bh=GhIyK0k38NfXA3SQgYdyxr+nopAq4gC1c596LtQxjg8=;
+        b=ctGozYDCH0TaCJGcuh/aMGEFDabSRe4eTqFQU48J5DwUXO8f4XB7t8mu7f1ij3jAMi
+         Y3BRbCuba0xV7I3nmYSxN9y3jBalIEKVAmP9PyuWhJ4xb6zF35s1MGjat9l/pNAUOfeA
+         R+5yWHnkw5CvRvpP0uKaMCiW1bp6fNrl5OTfu8p+WZwYNnhWOPdikD/MCsxAt6OqvW4u
+         4NzbZZHzTkTnnHsFDqsCutwlFwpso4U6PkYs6N77TyltzXUF2wX5xeXG/ljduA3VatLY
+         HwCTTo3ebGrdKurej6tLJLTUZYT32Sir7na7ySyL6wkHfpZFJtUqwQoMSK5vD1MuEo75
+         Vdsg==
+X-Forwarded-Encrypted: i=1; AJvYcCXMLJQSoL/+6wOhWO4V92cRX5qC2vtUoPmkkAA20fF9BF654U1mCBl6e9CzIw1x3V6tiINOmTzlO0oVuV5iqCYh8QBBaE6kSFHSu6qbWdTrpgBYyeT0zXxmnmOb0MStN6qdW4+ea0XYwpiZKYbfg/fL+lChwGba4pwVl2Ou7Mlm9UW1MIcl7dULJw==
+X-Gm-Message-State: AOJu0YzwWdjXhFyINGUJey7pfPojA9Bo/ZWdt2WnR8nndoEoi368lfNp
+	laHGIpTWsfBtxyXRORDxkRLPeS4QYlT2EhRqLpV59aP32VL75Pqh
+X-Google-Smtp-Source: AGHT+IF6pFeOYyFJcUR2YYwktzKqqEsVL+7YNw2LCDfI4a+snMHD6EFtqrqfydxM5T1KrxphxXBijw==
+X-Received: by 2002:a17:907:1b1e:b0:a55:ac3d:5871 with SMTP id mp30-20020a1709071b1e00b00a55ac3d5871mr2083265ejc.77.1713768350171;
+        Sun, 21 Apr 2024 23:45:50 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id s24-20020a170906355800b00a524e3f2f9esm5357249eja.98.2024.04.21.23.34.46
+        by smtp.gmail.com with ESMTPSA id sa40-20020a1709076d2800b00a5255afc856sm5357362ejc.84.2024.04.21.23.45.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Apr 2024 23:34:46 -0700 (PDT)
-Message-ID: <2f505724-4b2c-48ee-90af-52f5d5fa95d7@kernel.org>
-Date: Mon, 22 Apr 2024 08:34:45 +0200
+        Sun, 21 Apr 2024 23:45:49 -0700 (PDT)
+Message-ID: <6ef3422c-d931-4993-856d-c080b11d72d5@kernel.org>
+Date: Mon, 22 Apr 2024 08:45:48 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,15 +48,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] serial: exar: remove ternaries from
- cti_get_port_type_xr17c15x_xr17v25x()
-To: Parker Newman <parker@finest.io>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Parker Newman <pnewman@connecttech.com>
-References: <cover.1713533298.git.pnewman@connecttech.com>
- <d672326427b1026c7700303eedef8594f2688def.1713533298.git.pnewman@connecttech.com>
+Subject: Re: [PATCH 12/15] tty: serial: switch from circ_buf to kfifo
+To: Anders Roxell <anders.roxell@linaro.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: gregkh@linuxfoundation.org, linux-amlogic@lists.infradead.org,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Kevin Hilman <khilman@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <20240405060826.2521-13-jirislaby@kernel.org>
+ <CGME20240415125847eucas1p2bc180c35f40f9c490c713679871af9ae@eucas1p2.samsung.com>
+ <91ac609b-0fae-4856-a2a6-636908d7ad3c@samsung.com>
+ <d70049d5-d0fe-465f-a558-45b6785f6014@kernel.org> <Zh-fgtujwjiSXz7D@monster>
+ <c091da0b-a150-428a-bf96-75f9f3eab2e2@samsung.com>
+ <CADYN=9LCJS0SW4PuF+e356HUxhzJYi093K6U+BdErPohq4RDWQ@mail.gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -101,35 +110,33 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <d672326427b1026c7700303eedef8594f2688def.1713533298.git.pnewman@connecttech.com>
+In-Reply-To: <CADYN=9LCJS0SW4PuF+e356HUxhzJYi093K6U+BdErPohq4RDWQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 19. 04. 24, 16:17, Parker Newman wrote:
-> From: Parker Newman <pnewman@connecttech.com>
+On 17. 04. 24, 13:19, Anders Roxell wrote:
+>> I'm trying to run on two dragonboard devices db410c and db845c and both
+>>> fails to boot see the boot failure from db845c [1], linux-next tag: next-20240415.
+>>> I tried to apply the patch [2] (that you proposed in this thread) ontop of next-20240415. However, that didn't
+>>> help bootlog on db845c [3].
+>>
+>> This is a different issue, which I've reported 2 days ago. See the
+>> following thread:
+>>
+>> https://lore.kernel.org/all/d3eb9f21-f3e1-43ec-bf41-984c6aa5cfc8@samsung.com/
 > 
-> Remove ternary operators from cti_get_port_type_xr17c15x_xr17v25x() for
-> better readability.
-> 
-> Signed-off-by: Parker Newman <pnewman@connecttech.com>
+> Oh ok, I did the bisection on db845v, and that led me to this
+> patch 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
 
-Much better.
+Could you re-test with the today's -next?
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+In particular, with this commit:
+commit f70f95b485d78838ad28dbec804b986d11ad7bb0
+Author: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Date:   Fri Apr 19 10:09:31 2024 +0200
 
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -726,7 +726,7 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
->   							struct pci_dev *pcidev,
->   							unsigned int port_num)
->   {
-> -	enum cti_port_type port_type;
-> +	enum cti_port_type port_type = CTI_PORT_TYPE_RS232;
-> 
->   	switch (pcidev->subsystem_device) {
->   	// RS232 only cards
+     serial: msm: check dma_map_sg() return value properly
 
-Unrelated to this one, but // comments are discouraged in the kernel, IMO?
 
 thanks,
 -- 
