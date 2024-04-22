@@ -1,46 +1,46 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1C51F61C;
-	Mon, 22 Apr 2024 06:30:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D03971391;
+	Mon, 22 Apr 2024 06:34:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713767455; cv=none; b=Aw29ZCkuphrj5wk1jcmeQlV8Agi/XazVMPJJQ9kAX1eSqGbUA6BIaiTLvjuI3c6ctDFvvCjtGZSquI9Hq71189+Z1q8/vZjRHhMNc+ngLVZs9NxKQ4rAdXwnP9MTRym60pL9O2ALpleYUAz5TnFTQOJQQAdOL3iJSY9EHgp8urg=
+	t=1713767690; cv=none; b=n+1nzDuoLmIsKnJKOB78XaDiYd99rEqSFrTJ6W8/vtvT8xQ7XtCWkDFN+ONFTZya8cWhTYvsk6JiKSvLxI9nR3EG3AXdd+mQJqp6xJ7Bag4wi56szPkc3aeJI/H2T2UwGE5kwqizxjtHICo5ynf2mz+qVYEtUoD9EobBHcPPsR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713767455; c=relaxed/simple;
-	bh=ZF8/roY0/AmpBQ3CMW4FkQw3iWV/Qxm6T515kZrXsKs=;
+	s=arc-20240116; t=1713767690; c=relaxed/simple;
+	bh=6iZAc1tIa1xnK8gdGWezPsViVb+BuSu8Iz8NpY6Sl5I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cGswfIaf+ds4Tx7WA0oPoeIjloXSL8oJ5d959kpNG8/YlnXo1Eu5FKxrTsZbcCNJLF+R3PnJ6L9rXXdDKntpLtcfCB9nQGA8tKUEzczF2DibAwLgdcudu9y20gsCeMQbHfmrbthvDO48+a107OwpL6tnsrtuFM5G5XwycaS790Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.45
+	 In-Reply-To:Content-Type; b=TeqtKSZEqldg+b9Y+EO9DdK6oDkuWXKpjfX3tJHmHfrcTOBqRKR09KiMOMfmMojriPLpFrvGlVl0HBjTEKCJ8NZVhS945BzJmTuVYIxRg2Q6VnR9FWfpyp7Z/shD4oO4RijY1DTaO1wU7p4WhzIZX96FZW3iziQewOjpsHuDVQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-56e78970853so8090168a12.0;
-        Sun, 21 Apr 2024 23:30:54 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a52582ecde4so361725566b.0;
+        Sun, 21 Apr 2024 23:34:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713767452; x=1714372252;
+        d=1e100.net; s=20230601; t=1713767687; x=1714372487;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bbek83bH+bmdJVeZSQAmI/qCW2wzUcsSL38Y65k0QiI=;
-        b=BWGl1ARggi6ugmxq10uQIsaySt9pxo+gMsUiworBd4RohtYoMsE0ZJEtZWPcIzc9Fy
-         gvQg5t5dUMxLsidjvZCZTnL0R7KT7kED0ijGhNDKdpRcgFs+WQtL2K/qFm2/QOPnwa7L
-         wCtP3oWX7MmPpZcwwb2aTo4+TxCG/ETaPKJ6fh/HqunYyS3G0lEYQWi756Gk3wR4bcU0
-         2IJdZfk8WI9vYKNlr3g12GGZkQpuR5bc83aHpfSK0EUH1s4/5yCtCeXL0b6gAwHsZdom
-         bovshqF41pnS54i0uXb6kAmaaFdsCHvu6g3+TTgqlKMoYrXAghnWR9FfH4RltYUMRMoI
-         z7TA==
-X-Forwarded-Encrypted: i=1; AJvYcCVB0v+bQWrqFt1b6mHTd+Rm5IJoyKWCXC0BS7N6dsZEznFPu9269+NU5ydJq3D/Uyj0bxinBHCiEc1J3PT1NNisiAhHoWQz9gYc3I4Thw6R/djY/lvz2yFRKHNQaWlmuqd6dyjWcFLJZvU4
-X-Gm-Message-State: AOJu0YzaVx443aqMzR3oK6EKaRZI2i3fW9S77ZozKwvEbp7a0HlXS8ex
-	j6aHMuFl0ZWZt97lvBQ8tZLTxbIYSOCSyuvbLtSp9IFYhkGP/YKf
-X-Google-Smtp-Source: AGHT+IHunsPki0d+qtMRiMmwa62qibNaTGF3JWV8VNMXzl3jYv+E6gKev6ZZ/3W0eVUnAVZOWG1AFA==
-X-Received: by 2002:a17:906:c112:b0:a55:aded:200d with SMTP id do18-20020a170906c11200b00a55aded200dmr3553154ejc.12.1713767452360;
-        Sun, 21 Apr 2024 23:30:52 -0700 (PDT)
+        bh=O5Tvvb96m7+SKcvBMlaFTAjiOhoMrHTJ45G4XuK0fIc=;
+        b=j+clLixNBKlUKFPzjQUKKxHJ4LD3UWSaYQ4rkGSM6YrDQi/t+BYbML49xM11hzXoNX
+         IDvEw0RzbedwE3tfra4TUG0+CtTSrFZTsE/0cfj3wwliuczqI43MdJ7gR2RDmJ2knHOh
+         lrPhiQyJgtnFjiYnQEkSys7vgwVVg/RIVzGEB9rUd05TLrQNp0ThuzUvmnWy5qkFSwz9
+         PNAnuAnkhqHto6UBO9fey7XivvjAw529fGrESc4V52Iet4gn0gR5yswicce1CM2e+LI/
+         iOrpLX9E6K8ITfyJhgUDnl8aVLF/aypyqRe8AG+20T+N4/FErNbkZm8iVdtAqzigHMzP
+         qUsQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVDrMxzM5yDyxJvUWZBcmX4+n8nVlvXeiwtIyrwYBgLTkQ2/xZUqSoZ+7446CVMUHb3D/0dG6vNWuJiq8igLZcYzlzb/GBEnzq+NtgILuxuWUPmks+GKVzXdFhBldatK0aiLWmN5F0kKhb5
+X-Gm-Message-State: AOJu0YxhO2ai3dVZNAr75dLnYu0pe0SumKagMV/TsmYwQUtxqur1gy79
+	oLfEx7b+ny8xFNpcLqLp8S1EBukINsezRqz07jBGT870INzuRf6nl5iibuArJro=
+X-Google-Smtp-Source: AGHT+IH23NRTuItQkoS4sG76dGL7uVuMuX3gidpwsTJb5FAmPSftLzc2EGzR8tgKg3XNz/Sfwlf26w==
+X-Received: by 2002:a17:906:1786:b0:a52:3eff:13f1 with SMTP id t6-20020a170906178600b00a523eff13f1mr5662000eje.2.1713767686928;
+        Sun, 21 Apr 2024 23:34:46 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id mc11-20020a170906eb4b00b00a5256d8c956sm5315446ejb.61.2024.04.21.23.30.50
+        by smtp.gmail.com with ESMTPSA id s24-20020a170906355800b00a524e3f2f9esm5357249eja.98.2024.04.21.23.34.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 21 Apr 2024 23:30:51 -0700 (PDT)
-Message-ID: <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
-Date: Mon, 22 Apr 2024 08:30:50 +0200
+        Sun, 21 Apr 2024 23:34:46 -0700 (PDT)
+Message-ID: <2f505724-4b2c-48ee-90af-52f5d5fa95d7@kernel.org>
+Date: Mon, 22 Apr 2024 08:34:45 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,24 +48,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
- UART
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
- robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
- manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
- u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
- Konstantin Pugin <ria.freelander@gmail.com>,
+Subject: Re: [PATCH v2 4/4] serial: exar: remove ternaries from
+ cti_get_port_type_xr17c15x_xr17v25x()
+To: Parker Newman <parker@finest.io>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Herve Codina <herve.codina@bootlin.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Lech Perczak <lech.perczak@camlingroup.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240420182223.1153195-1-rilian.la.te@ya.ru>
- <20240420182223.1153195-4-rilian.la.te@ya.ru>
+Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Parker Newman <pnewman@connecttech.com>
+References: <cover.1713533298.git.pnewman@connecttech.com>
+ <d672326427b1026c7700303eedef8594f2688def.1713533298.git.pnewman@connecttech.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -110,62 +101,35 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240420182223.1153195-4-rilian.la.te@ya.ru>
+In-Reply-To: <d672326427b1026c7700303eedef8594f2688def.1713533298.git.pnewman@connecttech.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 20. 04. 24, 20:22, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
+On 19. 04. 24, 16:17, Parker Newman wrote:
+> From: Parker Newman <pnewman@connecttech.com>
 > 
-> XR20M1172 register set is mostly compatible with SC16IS762, but it has
-> a support for additional division rates of UART with special DLD register.
-> So, add handling this register by appropriate devicetree bindings.
-...
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-...
-> @@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
->   	return reg == SC16IS7XX_RHR_REG;
->   }
->   
-> +static bool sc16is7xx_has_dld(struct device *dev)
-> +{
-> +		struct sc16is7xx_port *s = dev_get_drvdata(dev);
-> +
-> +		if (s->devtype == &xr20m1172_devtype)
-> +			return true;
-> +		return false;
+> Remove ternary operators from cti_get_port_type_xr17c15x_xr17v25x() for
+> better readability.
+> 
+> Signed-off-by: Parker Newman <pnewman@connecttech.com>
 
-:) so this should simply be:
+Much better.
 
-return s->devtype == &xr20m1172_devtype;
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-...
-> @@ -1002,6 +1052,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
->   				  const struct ktermios *old)
+> --- a/drivers/tty/serial/8250/8250_exar.c
+> +++ b/drivers/tty/serial/8250/8250_exar.c
+> @@ -726,7 +726,7 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
+>   							struct pci_dev *pcidev,
+>   							unsigned int port_num)
 >   {
->   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-> +	bool has_dld = sc16is7xx_has_dld(port->dev);
->   	unsigned int lcr, flow = 0;
->   	int baud;
->   	unsigned long flags;
-> @@ -1084,7 +1135,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
->   	/* Get baud rate generator configuration */
->   	baud = uart_get_baud_rate(port, termios, old,
->   				  port->uartclk / 16 / 4 / 0xffff,
-> -				  port->uartclk / 16);
-> +				  port->uartclk / (has_dld ? 4 : 16));
+> -	enum cti_port_type port_type;
+> +	enum cti_port_type port_type = CTI_PORT_TYPE_RS232;
+> 
+>   	switch (pcidev->subsystem_device) {
+>   	// RS232 only cards
 
-Could you do this instead:
-unsigned int divisor = sc16is7xx_has_dld(port->dev) ? 4 : 16;
-
-...
-
-uart_get_baud_rate(..., port->uartclk / divisor);
-
-
-I am not sure the above warrants for a new version. Just in case you are 
-sending one.
+Unrelated to this one, but // comments are discouraged in the kernel, IMO?
 
 thanks,
 -- 
