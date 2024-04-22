@@ -1,33 +1,41 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A21651514C0;
-	Mon, 22 Apr 2024 13:51:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98CEC14F9EB;
+	Mon, 22 Apr 2024 14:07:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713793875; cv=none; b=pDPVer7Bv5SNk1tlNf4oEeMhpk6inayP/Q1UrS3C1C1ES4uNMB9Q9n0f1xGahzlAiJyGr24KO9dsqes3Hn+FZ6ASwDkClIMuMWZbwV1BU3JkRaK13b04qYkzuqefdp7S8Li8IROwhNhYodwvA7ylIkbYJH3H/4A4acyQpR36RjA=
+	t=1713794858; cv=none; b=Ux3fEk/AxkweFNj3Fqju1jehtS7ceZWEvq+FoCBuSmJTbVYio8sxXoR9rFM/Jz2cIMmR3wo2g7BHx9TLUwtK7Q6alRXMNXQErhitPucNCu5FqhnO8DIvf+WW4pz/43RyxP8w0mnXRnCTfRDNdPWz5igRJ9hjhHrd5jWuuqX/d2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713793875; c=relaxed/simple;
-	bh=JNEHm3ux3z1sfndGPMyBLAdE400N2USlbxSEGCS17vg=;
+	s=arc-20240116; t=1713794858; c=relaxed/simple;
+	bh=ve02Zx0DBJoDKc5rI106J1bI09M6d7pR7u1ui5cF1Ww=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ddSVZ8IhCAcd3UD5qBvnLbS8LFgFZtaPZEYA+RrFsiviAYbdwCiDBJz7PgFPiYJn8Bk/oMDyFHqpuEAMPEUVlg9UZOn6SR5VDKYsL2sUTFRKHsoyd0TjjaM4ked/nejGmag9wC7hPVSGBYFCS5//XL1sgcBpXDdrDNfNFKgDweQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=agChRsds; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=gLEoVImhq6UxgdAkUeSrpuYZuUhleo+3EokW00P8vTbbTh1BfXsHWKNXVUlgpbW9oBNB7mIFcnfCB5W80ariaD2kLgE5okn3L1COVc1/JAHyfX8IUa+47d3hVVfQAZk2+e1lPoP3AOpeMw9WP0Fdz9AUSkP+x/C0xUjBROr47tA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b=XPffQVsN; arc=none smtp.client-ip=212.227.17.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="agChRsds"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B4C3C113CC;
-	Mon, 22 Apr 2024 13:51:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713793875;
-	bh=JNEHm3ux3z1sfndGPMyBLAdE400N2USlbxSEGCS17vg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=agChRsdsb8rrtBsBijYCk14sMdx0Xl6Pe22thw8Z6Iw2dz6I/Qk0VK1bHEdg9FacX
-	 Rb5+jZWcFO6Yr/50B97Y1ze0nzL0z1WYaH42bo6qDdqgxZbk03k0ODQLN86K6KkKo4
-	 /fu+bbo85Y+bq865Jt+M2mP1xIbCI5zZsN0Yr64iPT3/ZBL6qWoD4YZbP2ZEBpOkpc
-	 u7iqWVSs8uGPRfbC5PBYe5OxHMtMN++2xlSTdbiREs9hLcoHyMF8G6LSA3UAvQ/H5i
-	 NyS2D83CU6jNCjouZ18qi4E4tA+5br1uQBkUtNDtimNNQ37zKZCVMICNFJPTg/bI73
-	 VBT6fdECPcEjA==
-Message-ID: <c5fdfc26-b8c7-4e0e-bd15-1299ec052833@kernel.org>
-Date: Mon, 22 Apr 2024 15:51:08 +0200
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=linosanfilippo@gmx.de header.b="XPffQVsN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
+	s=s31663417; t=1713794816; x=1714399616; i=linosanfilippo@gmx.de;
+	bh=ve02Zx0DBJoDKc5rI106J1bI09M6d7pR7u1ui5cF1Ww=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=XPffQVsN1ZwZceb8b15PHbHXbdJbq7GQQYaM21EzNI7U0se4CJxsrSIgZs5Wnnh0
+	 Y57qMr4doz/BoVWyFoF4THKGViEL9NzL0YBJIiPh0WM5T2rTc7Joh0RslWoNP1kUE
+	 M0aUHswqo7xuQhQFTxDc9euJemgPj2q87SL5Hq3MuMOXwtIIbfa4ZZlx1SM4pbdvY
+	 CycsCJWdFrYdnHQDuFC8ey0c96L9SyPV5vDNC9dVaBVM9p+2upcbF+nvF4a6fJ90+
+	 0gUs0qHbOtBvxrdCg5D9qywqbEMQumv1ZJPzO9xgArkwOvueyBpoyOoXvDHYwwQsu
+	 y2Z7GgX+EUjlvuDKXQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.2.42] ([84.162.15.238]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MAOJP-1rrzM43hZT-00Bw36; Mon, 22
+ Apr 2024 16:06:56 +0200
+Message-ID: <64ce1c2e-4771-42d9-8ffe-9d03b09a61d2@gmx.de>
+Date: Mon, 22 Apr 2024 16:06:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,120 +43,83 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
-To: "Konstantin P." <ria.freelander@gmail.com>
-Cc: conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org,
- jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
- manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
- u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH v6 1/3] serial: sc16is7xx: announce support of
+ SER_RS485_RTS_ON_SEND
+Content-Language: en-US
+To: "Konstantin P." <ria.freelander@gmail.com>,
+ Andy Shevchenko <andy@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, conor@kernel.org,
+ lkp@intel.com, vz@mleia.com, robh@kernel.org, jcmvbkbc@gmail.com,
+ nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net,
+ ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de,
+ Maarten.Brock@sttls.nl, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
- Lech Perczak <lech.perczak@camlingroup.com>,
+ <hvilleneuve@dimonoff.com>, Lech Perczak <lech.perczak@camlingroup.com>,
  =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240422133219.2710061-1-ria.freelander@gmail.com>
- <e2989aa1-7f2b-4ac3-8fd8-822c87d61a1e@kernel.org>
- <CAF1WSuzqLxpxwYuNYfHyvXLDMBE-ZU69YLXwBdQokZzhs49xzw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
- QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
- gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
- /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
- iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
- VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
- 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
- xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
- eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
- AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
- MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
- Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
- ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
- vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
- oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
- lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
- t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
- uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
- 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
- 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <CAF1WSuzqLxpxwYuNYfHyvXLDMBE-ZU69YLXwBdQokZzhs49xzw@mail.gmail.com>
+References: <20240422123801.2695129-1-rilian.la.te@ya.ru>
+ <20240422123801.2695129-2-rilian.la.te@ya.ru>
+ <ZiZcyhoKRgfteO5d@smile.fi.intel.com>
+ <CAF1WSuxPmzWYhCQU3tiA_GYMLowxMuvEJWRv83atithv8NCRxg@mail.gmail.com>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+In-Reply-To: <CAF1WSuxPmzWYhCQU3tiA_GYMLowxMuvEJWRv83atithv8NCRxg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:XW0kg7CnrpDJpSfJCIc3DEYwd3644An2+y7KxStItsSe+Mw81ex
+ BHjDh2i8ok/uu8nFL3H9gNz0MjTc4ImDX6jGgZ9xuUaxL1x9dg4I4fcY0j+Yq2l0cLKnAas
+ mOVVfo4pN+RCVxlioCoT7u5m/vIhOiu75r1ogDLeSEVpTfDZopSnmjfO3HtOZT642t/1p/3
+ QtOcsX6gCjwzp/NNmzhpg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:E0kV41HQXSw=;yFfTPRk3CsiuWltp8fUOsYrIhQu
+ 8gcC2Ao++R+zzBLGcDiuhWqrTsuiwyd+iASW6VnCMgTJX3wNAbZopbfqviHc42hdZceck6y4X
+ 6iWxOLWB58FfEEmEZ7kYl1TSEzBb3gPrG6IEdwuYsXukGL6uSOXsCQihaJdjQ2j37hr6FXG2P
+ WODmapJ13KTCDZ5dlSfzRw7/0D/ySqeSerBRS86Qngxc3zTbKf4dmKszuuh28/9VwlfxlGMhE
+ KwKZSsldkEp6iYFPva3zZVS46+98US0Zcl3lLhBLAqbRXaZ6OS0eKvLxeVGPV1itAnhkN8Jik
+ vFfmlODUwVEYF2AggUsvHrT57jsQbGxbMnZiLypsushgnaFS5s2IZp+X5Wc92etEJ66CC2rHE
+ dlnixO548jD9d23HebysuGcgEIuCWXzBIC91lqNvSNuhm2tafuhq4RRtWbVMmeGjqW63FRR4V
+ tg896Z20qMN90+hrDL6wGS8Yk3SxpLvW5E/M4GwreOZneyedw1s4Uwfw/X3ukrtwF53z0CWx5
+ ntb9SXISLa3uqa3LGItL0v+U25pFI4jGp/cdgOisu/cpqBev7cNvq7txMhRByMGrJmhw15roL
+ 21oQEL7u51TIKFrT++6QPINv3CJZVUgCYY/JP0D/ZpR6zL9wVV0DptKwsnmuMtO8GLZvzc3/b
+ 0n9Yi+HD3xFEgPsQGCffUSYikZdT/6ou0jds4yXanQpUyeyVAFJ03mfNtzLdadVXFWCIiIAlE
+ f1AgCdqtRSGWpJfgGImxWCir7E1LdqVBjD+yrQMsfD6PbHQxGjmD7D4kyElxNPTjE3tqDhKak
+ ihfuivw9MJkYIJZzKB77buRUQ5UHkBRN1FJ4LvUuYa5Zg=
 
-On 22/04/2024 15:50, Konstantin P. wrote:
-> On Mon, Apr 22, 2024 at 4:45 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+Hi,
+
+On 22.04.24 15:20, Konstantin P. wrote:
+> On Mon, Apr 22, 2024 at 3:56=E2=80=AFPM Andy Shevchenko <andy@kernel.org=
+> wrote:
 >>
->> On 22/04/2024 15:32, Konstantin Pugin wrote:
->>> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
->>> it has additional register which can change UART multiplier
->>> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
->>> flag to guard access to its specific DLD register. It seems than
->>> other EXAR SPI UART modules also have this register, but I tested
->>> only XR20M1172.
->>> Yes, in datasheet this register is called "DLD - Divisor Fractional"
->>> or "DLD - Divisor Fractional Register", calling depends on datasheet
->>> version.
+>> On Mon, Apr 22, 2024 at 03:37:55PM +0300, Konstantin Pugin wrote:
+>>> From: Konstantin Pugin <ria.freelander@gmail.com>
 >>>
->>> I am sorry about too many submissions and top post reply. About second -
->>> I do not know how to reply properly to this ML from GMail phone app. About first - I just
->>> get very good feedback from Andy Shevchenko, and want to fix his review picks ASAP.
->>>
+>>> The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, but
+>>> after the commit 4afeced55baa ("serial: core: fix sanitizing check for
+>>> RTS settings") we always end up with SER_RS485_RTS_AFTER_SEND set and
+>>> always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT, whic=
+h
+>>> breaks some hardware using these chips.
 >>
->> One patchset per 24h.
+>> LGTM, but I leave it to Hugo for testing and other comments, if any,
+>> as I don't have a HW.
 >>
->> Plus, you already got such review comment:
+>> Reviewed-by: Andy Shevchenko <andy@kernel.org>
 >>
->> This is a friendly reminder during the review process.
+>> --
+>> With Best Regards,
+>> Andy Shevchenko
 >>
->> It looks like you received a tag and forgot to add it.
 >>
->> If you do not know the process, here is a short explanation:
->> Please add Acked-by/Reviewed-by/Tested-by tags when posting new
->> versions, under or above your Signed-off-by tag. Tag is "received", when
->> provided in a message replied to you on the mailing list. Tools like b4
->> can help here. However, there's no need to repost patches *only* to add
->> the tags. The upstream maintainer will do that for tags received on the
->> version they apply.
->>
->> https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
->>
->> If a tag was not added on purpose, please state why and what changed.
->>
->> Just start using b4.
-> 
-> There is not only for tag. I submit fixes for version 4 by mistake,
-> so, repost to 7 was necessary, because v6 was not work (as v4). But v7
-> should be based on v5, and v5 is tested better around tty-next.
+>
+> Andy, I need to do v7 (because there is a missed fix), but Yandex do
+> not allow me to send more mail( So, can it be sent next day?
+>
 
-???
+Please add at least the linux-serial mailing list the next time. As far as=
+ I am
+concerned, I was only aware of this issue because of Andys response which =
+added
+linux-serial. Furthermore shouldnt this also got to stable?
 
-You got tag, didn't you? Then explain why you decided to skip it. In the
-changelog of patchset which ignores/skips the tag.
-
-Best regards,
-Krzysztof
-
+Regards,
+Lino
