@@ -1,170 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E51E2F5E;
-	Mon, 22 Apr 2024 20:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63F881C6B7
+	for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 21:54:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713818757; cv=none; b=L8MsnGSCtwtRpOJzImgSDTGu5d/kAlsD/MTlI0TgQTp5YkXoUxB64CiBqGXWWrZKm39TY2dZUNTU/9gfEC44EfefS6IOGIeibN185ag5OsSzcsuRFRlNI3hCq6bj62AVtG8/p+Xewc1/EgKE4bUBquwK49U5EA7hmMlZqJm+Wm0=
+	t=1713822869; cv=none; b=P3LyxizmHJCoMPJkgvuaxc4iyTUgsal7PfIsfzfVuJOx+ZfrjevfXfZbTmbrg6V9VzIpM5BlIFxf/ar7IHtLtKOD/m2B4DbtkYS4Sodb2ppHGD/n4Zs5RLfJb6Fosk28HQe5xTfM/PWwFPEbYNrWgHkHg9jd0+WPm9O4Es0NXN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713818757; c=relaxed/simple;
-	bh=Z5rccZXDv3XBwhOl4JuXrCFjJrjOQyfx+9Poe8LdT1U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OdKlJgXxEKP9ufdRlPFujUScYSfk9z+d3DmLlTkSP/mFrYe+bHcVcxQe5LJI/vNDDs8+vOjLzCj7qKkJb7lgAYn8ro7+PTXuH0KhPmXTyENxWCcr7EJEmGZqb4KCR9bFK84XJabp1QOnqLWWqrkXVHVrmFlbcMLfKu2whQMsKUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NlrgckWE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713822869; c=relaxed/simple;
+	bh=Cbt4igSSEOCM0YFndB3iSaxU9eb8wKebvbCilWGRQq8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WNQREnkpW2Tn3Xcsr9G0sC6f12fwjOC+0mc+TmnnHqTz5eGLCtytPwDoW90UFFmPyTxZrwe+5r4/KV1pdexPPjTzVzOnrmxlY/ptF2CdrhFcq9OrIewFznPP5+qsF+gEw42AAOZewnpdvhJhu9mcYk8QkKqiOXUqTWd6pbseuIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=YEhU+RcZ; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NlrgckWE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23829C113CC;
-	Mon, 22 Apr 2024 20:45:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713818756;
-	bh=Z5rccZXDv3XBwhOl4JuXrCFjJrjOQyfx+9Poe8LdT1U=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NlrgckWEG2OcunMtzW6KDKAQm8focTpHB+mjIf9UyoRw9SkVWK96XovoApiLXDZ0j
-	 RyvcgpyQR60ViwjNHIG0dxVw/5uGm/oW7AUnFtguZdK0GcvPIoaJpAMhzvojggUQP2
-	 p0fxzhRqEOiL8qS8uXQDjPG8igs2TRWBV7q8686k1cQ0YxH9/yzONRWQzhTUYEoNl9
-	 tMMn25o5P9CmEvUGNHd8FXeMFHv1QN5WhRFEqHnCbVds82jGuwEgXoODuIkzejKKZG
-	 zArcLkI6OyDSOsDcG+jxV28dRZOXPW4Q7vyp4I/9Aymudx8XrWwQbQBPgx14PQl/8I
-	 WEcQEWon+xoWw==
-Message-ID: <2be75d82-0427-4c06-adfc-a59a804ce337@kernel.org>
-Date: Mon, 22 Apr 2024 22:45:47 +0200
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="YEhU+RcZ"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-78efd0fcec4so319977185a.1
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 14:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1713822866; x=1714427666; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b4TkjiOmnf7EkU2uUP7WyZ/U9eWwbiO9i0mpJYmLC7M=;
+        b=YEhU+RcZ9DG2o7bbTF66ZGEe048wtODeAHs9XyalWF2RbKwputMXN8iO6AKtloNE2h
+         w91eHwIG6eQck4zCHy2TtyZIn1XkQ27G/BuAhLRzlXmz6x93m7BuHDy9ehA753o6M+7l
+         uEFucKm4ECEWoun3DuBvQN9DpWAaINC+Z5wL4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713822866; x=1714427666;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=b4TkjiOmnf7EkU2uUP7WyZ/U9eWwbiO9i0mpJYmLC7M=;
+        b=aKiNrjF6EALFswDsNht70RD46DoAugENRf3cM2fsGk3flFnar0HLJlzk2Y9xak+wtO
+         3xi13OjWkNM666YjoY+YHgJKtWy4GJjdGQT19TzHBeTLFGTM1EpTdzNqyMv0Znep9ftu
+         1vM4evVBB6pZMvG9br2vwGzgftTWdYe64Rafs3T2DU1pJbzLgjw/k/YkUPulqhsj6YQE
+         sN77qApbV64TlSR/DVGNmGWuytwiqieCmR0AuKnJgddAljj83swJmLFjeUJLePQqSinm
+         fqqoiMVg+qiMqXnPnlCtCfE+VwakYAwH5MSolbY5bI/P55Or53OpvRMEw4KBdPYqQoyF
+         Zw2A==
+X-Forwarded-Encrypted: i=1; AJvYcCWOfiESVcRknTiuyEcKa9JGniweteN4RLA5ORI9TYlI2tbRmeO5dsPYXa6PH8LoezzLCytd7r6mY4au1BQ61u9QjnyAuQCrPNAm1BHs
+X-Gm-Message-State: AOJu0Yz8T68vHjiq5RSM9Ljf32rrNyR5P/po9LOp/uPhYoGynxfIE/1R
+	xqU4+OC2pCXfRfFl2QFNCcrSW4jC7PKwIMAioz2RZs2CBiSCgFNn1zPt/iYeabbjIXfF2ksBNz3
+	zG18h
+X-Google-Smtp-Source: AGHT+IE+YKGsl3OM0Y9sMX2xmywGKl8XuxMl/bX9tK6TiQZOiT+vGKMvwBKdj9PapavGjRNGcosBcA==
+X-Received: by 2002:a05:620a:5583:b0:78e:fcf0:40a5 with SMTP id vq3-20020a05620a558300b0078efcf040a5mr12494490qkn.76.1713822866204;
+        Mon, 22 Apr 2024 14:54:26 -0700 (PDT)
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com. [209.85.160.181])
+        by smtp.gmail.com with ESMTPSA id l22-20020a05620a0c1600b007907ef72e1dsm359286qki.36.2024.04.22.14.54.24
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Apr 2024 14:54:25 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-439b1c72676so60271cf.1
+        for <linux-serial@vger.kernel.org>; Mon, 22 Apr 2024 14:54:24 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCX7LJ/TckKm1101rNKXJ2veP5+nbWnk88vaD3Pk1tNbj8PvneRIGQd/1fjOW1JJbdfDo91Od4tOm1xk1cRwbzXIkflGCa1hjc7XgM+L
+X-Received: by 2002:ac8:550d:0:b0:439:9aa4:41ed with SMTP id
+ j13-20020ac8550d000000b004399aa441edmr95963qtq.16.1713822864486; Mon, 22 Apr
+ 2024 14:54:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
- UART
-To: "Konstantin P." <ria.freelander@gmail.com>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>, Conor Dooley <conor@kernel.org>,
- lkp@intel.com, Vladimir Zapolskiy <vz@mleia.com>,
- Rob Herring <robh@kernel.org>, jcmvbkbc@gmail.com,
- nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net,
- ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de,
- Maarten.Brock@sttls.nl, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Herve Codina <herve.codina@bootlin.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- Lech Perczak <lech.perczak@camlingroup.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240420182223.1153195-1-rilian.la.te@ya.ru>
- <20240420182223.1153195-4-rilian.la.te@ya.ru>
- <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
- <CAF1WSuwCdonhyzAKX6EeyWAHNX11bV+tgCLJ4vXuEXTAceVvzA@mail.gmail.com>
- <afeae80e-d854-4f38-981e-7e9f414400b7@kernel.org>
- <CAF1WSuxQJ9RF-s_gdkE3W933rzXrVn6ZmHbFCawwdWufie3BZA@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <CAF1WSuxQJ9RF-s_gdkE3W933rzXrVn6ZmHbFCawwdWufie3BZA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20240419-kgdboc_fix_schedule_work-v1-1-ff19881677e5@linaro.org>
+In-Reply-To: <20240419-kgdboc_fix_schedule_work-v1-1-ff19881677e5@linaro.org>
+From: Doug Anderson <dianders@chromium.org>
+Date: Mon, 22 Apr 2024 14:54:08 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UHt7Pm-qEBs7vtK0B0DCbu9YbU465OdpSKCYZVpNuOaA@mail.gmail.com>
+Message-ID: <CAD=FV=UHt7Pm-qEBs7vtK0B0DCbu9YbU465OdpSKCYZVpNuOaA@mail.gmail.com>
+Subject: Re: [PATCH] serial: kgdboc: Fix NMI-safety problems from keyboard
+ reset code
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Jason Wessel <jason.wessel@windriver.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Liuye <liu.yeC@h3c.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 22/04/2024 22:35, Konstantin P. wrote:
-> On Mon, Apr 22, 2024, 23:11 Jiri Slaby <jirislaby@kernel.org> wrote:
-> 
->> On 22. 04. 24, 14:00, Konstantin P. wrote:
->>> On Mon, Apr 22, 2024 at 9:30 AM Jiri Slaby <jirislaby@kernel.org> wrote:
->>>>
->>>> On 20. 04. 24, 20:22, Konstantin Pugin wrote:
->>>>> From: Konstantin Pugin <ria.freelander@gmail.com>
->>>>>
->>>>> XR20M1172 register set is mostly compatible with SC16IS762, but it has
->>>>> a support for additional division rates of UART with special DLD
->> register.
->>>>> So, add handling this register by appropriate devicetree bindings.
->>>> ...
->>>>> --- a/drivers/tty/serial/sc16is7xx.c
->>>>> +++ b/drivers/tty/serial/sc16is7xx.c
->>>> ...
->>>>> @@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device
->> *dev, unsigned int reg)
->>>>>        return reg == SC16IS7XX_RHR_REG;
->>>>>    }
->>>>>
->>>>> +static bool sc16is7xx_has_dld(struct device *dev)
->>>>> +{
->>>>> +             struct sc16is7xx_port *s = dev_get_drvdata(dev);
->>>>> +
->>>>> +             if (s->devtype == &xr20m1172_devtype)
->>>>> +                     return true;
->>>>> +             return false;
->>>>
->>>> :) so this should simply be:
->>>>
->>>> return s->devtype == &xr20m1172_devtype;
->>>>
->>> I especially want to avoid this construction, because it will lead to
->>> idea than we does not have other
->>> DLD-capable UARTS, which is simply not true, there is, for example,
->>> XR20M1280 UART, which has roughly the same register set
->>> (
->> https://www.alldatasheet.com/datasheet-pdf/pdf/445109/EXAR/XR20M1280.html
->> ).
->>> I simply do not have other devices, so I do not
->>> want to risk sending untested patches upstream.
->>
->> Sorry, what?
->>
->> --
->> js
->> suse labs
->>
-> 
-> I do not wish those function to be less generic than I did. If you think
-> this change is required - I will change. But if it would be okay without a
-> change - I prefer to stay as is.
+Hi,
 
-The code does exactly the same, so what do you mean "less generic"? What
-does it even mean?
+On Fri, Apr 19, 2024 at 3:30=E2=80=AFAM Daniel Thompson
+<daniel.thompson@linaro.org> wrote:
+>
+> Currently, when kdb is compiled with keyboard support, then we will use
+> schedule_work() to provoke reset of the keyboard status.  Unfortunately
+> schedule_work() gets called from the kgdboc post-debug-exception
+> handler.  That risks deadlock since schedule_work() is not NMI-safe and,
+> even on platforms where the NMI is not directly used for debugging, the
+> debug trap can have NMI-like behaviour depending on where breakpoints
+> are placed.
+>
+> Fix this by using the irq work system, which is NMI-safe, to defer the
+> call to schedule_work() to a point when it is safe to call.
+>
+> Reported-by: Liuye <liu.yeC@h3c.com>
+> Closes: https://lore.kernel.org/all/20240228025602.3087748-1-liu.yeC@h3c.=
+com/
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+> ---
+>  drivers/tty/serial/kgdboc.c | 30 +++++++++++++++++++++++++++++-
+>  1 file changed, 29 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
+> index 7ce7bb1640054..adcea70fd7507 100644
+> --- a/drivers/tty/serial/kgdboc.c
+> +++ b/drivers/tty/serial/kgdboc.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/console.h>
+>  #include <linux/vt_kern.h>
+>  #include <linux/input.h>
+> +#include <linux/irq_work.h>
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/serial_core.h>
+> @@ -48,6 +49,25 @@ static struct kgdb_io                kgdboc_earlycon_i=
+o_ops;
+>  static int                      (*earlycon_orig_exit)(struct console *co=
+n);
+>  #endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
+>
+> +/*
+> + * When we leave the debug trap handler we need to reset the keyboard st=
+atus
+> + * (since the original keyboard state gets partially clobbered by kdb us=
+e of
+> + * the keyboard).
+> + *
+> + * The path to deliver the reset is somewhat circuitous.
+> + *
+> + * To deliver the reset we register an input handler, reset the keyboard=
+ and
+> + * then deregister the input handler. However, to get this done right, w=
+e do
+> + * have to carefully manage the calling context because we can only regi=
+ster
+> + * input handlers from task context.
+> + *
+> + * In particular we need to trigger the action from the debug trap handl=
+er with
+> + * all its NMI and/or NMI-like oddities. To solve this the kgdboc trap e=
+xit code
+> + * (the "post_exception" callback) uses irq_work_queue(), which is NMI-s=
+afe, to
+> + * schedule a callback from a hardirq context. From there we have to def=
+er the
+> + * work again, this time using schedule_Work(), to get a callback using =
+the
 
-Best regards,
-Krzysztof
+nit: schedule_work() (no capital "W").
 
+> + * system workqueue, which runs in task context.
+
+Thank you for the comment. It makes the double-jump through IRQ work
+and then normal work clearer.
+
+
+Other than the nit in the comment, this looks good to me.
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
