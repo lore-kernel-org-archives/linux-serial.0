@@ -1,87 +1,87 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5600D152511;
-	Mon, 22 Apr 2024 14:42:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B014152DE7;
+	Mon, 22 Apr 2024 14:44:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713796973; cv=none; b=d+T3w3o/X5+OGVhs3d4p4wl2Wu5AgzvOpMQOs2Aqb95wBO64FzGMb8PnZCvHd9RLCtY5d/g1xzwEYtzVgESGqE3tYv3DTg4UrTQDNK+n6DdpVRWW927VUzcygtaCRtRnckpZzeRNHt1glwRtCS/w5RZiW+yxQMbPHmc8qeLZHH8=
+	t=1713797043; cv=none; b=sNRjEf5GBNZnszqQTjqnat2nr0Xi8HSwuyUSTONGPZl2zplbmSut7cUOfWhyETHX/0WMIm+mDZywxr+bFORUljA92Wm6xR8pEyVGUGK3r5VVXcbM+/BvgFFrCCx9qvxYuvst2RzpbcK19kuMWp3v8Mw8AWURxbxNrxwDKI8AT/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713796973; c=relaxed/simple;
-	bh=TehiPdP7f3BwX4F5malLw3rlYjffDIaaSV/a4YkcBSU=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=uE5osrYryhp31qOcq5V3Fph/4ieM6pHk7oXENt7nil0ajFjuxJ2cl5nHj7OJo6HD4arUrwN3P0n9YR2/jtekfcsCRwzvBMK6Gtpixv32/55ddEVthnGzpe6W2tF3XJwhHOcr+7+z0Ptg6JeTMN89twDNVezTQDakwaXIJPLRJrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=WavaBMV7; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="WavaBMV7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=YefPl8pmVD5zRqukU6YqokO25CT5Ld8avb97hYoywE8=; b=WavaBMV7qdbl3vAb4xfKAbuJkg
-	1VifvB0ZoYvmj5cmwWbiYTHINp6/3YfUgTuzriUtOIx25FTHxAedmVo7U1BGMJVOn4gozOYfOjPT/
-	RI7/0EyydvPitXCWkcqD6jvAcER9rVrS6Yihf+7KsXYCT8vnAg2k7JOmdnYwfEoLXxuI=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:33346 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1ryusA-0007Wt-Gd; Mon, 22 Apr 2024 10:42:23 -0400
-Date: Mon, 22 Apr 2024 10:42:21 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
+	s=arc-20240116; t=1713797043; c=relaxed/simple;
+	bh=gBUYWauvGv9ThwhZ6oDCve7DncumHaHE1b9MyIXYKWs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l/6C5lXupHErq6hxo1baWEd1OBYfaBEVwJVbOsi+ZN37alXl+j8y/btwlmlx9ni70ObfR/TKIXdFtLO8eq6EONaUi848eWnNkOyEdQHTanzTawlcIeRbhUt8rfeC2o3HahvjK+hjpTEZs3kMegh815T5Xlnxe2UkfHwc8GOGc2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
+X-CSE-ConnectionGUID: 99VZ6J5RT1q57oJ/TtxaXQ==
+X-CSE-MsgGUID: l8LVkdIRSYi7K69C9TEbJA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11052"; a="9506523"
+X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
+   d="scan'208";a="9506523"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 07:44:01 -0700
+X-CSE-ConnectionGUID: sCyeB4r8Rx6Pf/2ZUlJ3ZQ==
+X-CSE-MsgGUID: MGbSjyz2SImN99WrHP67pQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
+   d="scan'208";a="28851989"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 07:43:56 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andy@kernel.org>)
+	id 1ryutc-000000005cN-1VZv;
+	Mon, 22 Apr 2024 17:43:52 +0300
+Date: Mon, 22 Apr 2024 17:43:51 +0300
+From: Andy Shevchenko <andy@kernel.org>
 To: "Konstantin P." <ria.freelander@gmail.com>
 Cc: Krzysztof Kozlowski <krzk@kernel.org>, Conor Dooley <conor@kernel.org>,
- lkp@intel.com, Vladimir Zapolskiy <vz@mleia.com>, Rob Herring
- <robh@kernel.org>, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
- manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
- u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
- Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
- Lech Perczak <lech.perczak@camlingroup.com>, Ilpo =?UTF-8?B?SsOkcnZpbmVu?=
- <ilpo.jarvinen@linux.intel.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Message-Id: <20240422104221.cb87be9a6905e681c712b024@hugovil.com>
-In-Reply-To: <CAF1WSuzzzG_vm5b55zb_ha-Vj7H+i3ZbmPyN1F-EQxS3GLaurg@mail.gmail.com>
+	lkp@intel.com, Vladimir Zapolskiy <vz@mleia.com>,
+	Rob Herring <robh@kernel.org>, jcmvbkbc@gmail.com,
+	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com,
+	corbet@lwn.net, ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
+Message-ID: <ZiZ3p8XVjolnzR4U@smile.fi.intel.com>
 References: <20240422133219.2710061-1-ria.freelander@gmail.com>
-	<e2989aa1-7f2b-4ac3-8fd8-822c87d61a1e@kernel.org>
-	<CAF1WSuzqLxpxwYuNYfHyvXLDMBE-ZU69YLXwBdQokZzhs49xzw@mail.gmail.com>
-	<c5fdfc26-b8c7-4e0e-bd15-1299ec052833@kernel.org>
-	<CAF1WSuzzzG_vm5b55zb_ha-Vj7H+i3ZbmPyN1F-EQxS3GLaurg@mail.gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <e2989aa1-7f2b-4ac3-8fd8-822c87d61a1e@kernel.org>
+ <CAF1WSuzqLxpxwYuNYfHyvXLDMBE-ZU69YLXwBdQokZzhs49xzw@mail.gmail.com>
+ <c5fdfc26-b8c7-4e0e-bd15-1299ec052833@kernel.org>
+ <CAF1WSuzzzG_vm5b55zb_ha-Vj7H+i3ZbmPyN1F-EQxS3GLaurg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.3 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+In-Reply-To: <CAF1WSuzzzG_vm5b55zb_ha-Vj7H+i3ZbmPyN1F-EQxS3GLaurg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, 22 Apr 2024 17:30:13 +0300
-"Konstantin P." <ria.freelander@gmail.com> wrote:
-
+On Mon, Apr 22, 2024 at 05:30:13PM +0300, Konstantin P. wrote:
 > I do not skip it, it added to patch 2, as you requested.
 
-Once again, please do not top post.
+You still continue top-posting!
+It's not good.
 
-Hugo.
+You missed _my_ tag.
 
+But please, please, wait a bit, you really need to slow down.
 
 > On Mon, Apr 22, 2024, 16:51 Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> 
 > > On 22/04/2024 15:50, Konstantin P. wrote:
 > > > On Mon, Apr 22, 2024 at 4:45 PM Krzysztof Kozlowski <krzk@kernel.org>
 > > wrote:
-> > >>
 > > >> On 22/04/2024 15:32, Konstantin Pugin wrote:
+
 > > >>> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
 > > >>> it has additional register which can change UART multiplier
 > > >>> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
@@ -131,12 +131,9 @@ Hugo.
 > >
 > > You got tag, didn't you? Then explain why you decided to skip it. In the
 > > changelog of patchset which ignores/skips the tag.
-> >
-> > Best regards,
-> > Krzysztof
-> >
-> >
-
 
 -- 
-Hugo Villeneuve
+With Best Regards,
+Andy Shevchenko
+
+
