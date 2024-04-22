@@ -1,158 +1,153 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6449146595;
-	Mon, 22 Apr 2024 11:25:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689E61448E5;
+	Mon, 22 Apr 2024 11:58:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713785125; cv=none; b=H+gmmA+KHe01Ed5D5OUayMeiFOnC2HrNS3Q43naksrVQpDxWan5AnzevXubOxWcDyXEQQSGTScad9yCaHHaau8gUCxswTJdUMVXWEqsLHmjEPZwCh2hz1kt/K6kzftPy9/u3k4pT72PI2YTtujpzLweEXwWswaXfbHPO6fdkBbE=
+	t=1713787090; cv=none; b=GTcGlX4SQtVGNg2bUJ5sEs574Lsqhaqoqb75GuQdamvXZVkqUlo1/KnU0aN+LcsfSmyiQoQ1sCSMbBWGaGtyzTgxl4ylAaThOPfPyaYxgvHxmEvLzhZYOvGs7R9agI8e0MjaxcaeK0b2Ipx//9lOEksa5Oq8qKUzw3o3DyNYUhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713785125; c=relaxed/simple;
-	bh=pvYpGRqfQzmXAQ7YW/DJ+a/zXvR9xu2PRQNWpbm/XbU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=efJHvk3XIGZBxTLXf0WYTWBcgcOm6XEbIH5236o9c1CcXyPGvuqT3FZoYOcPKAHkwNp5uTDYaRXb5MS+eTqR+qKqLq1eme8kE5XjAu2VIzQWWQqZTN7Nyde9J3P9YTZSN1nZP2CS/qqDRzKraRpZVfgIX/eeq3P05dR3lt+N0w4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j8VlGU2X; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713787090; c=relaxed/simple;
+	bh=VipMOGIq2wHb6Q+n91B5uUyA/cw4HteNixtQ8DSmDuM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XgxMAVeeentGNcHASrWTRCuo7bPYA9VZO+KQPRBekz6zPnmvBUDv630eNK4sxQzBnKhAvsjHQnG+7KkL5iKS3/s+kY8YYiBZLyHCAuVxxUj6hGEYsjxoT9eM+21Klxkb+BZjdoheoxy4WW5Ph5a0qTNVetWINdt47wowShTnnQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lWRe/a2S; arc=none smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j8VlGU2X"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713785124; x=1745321124;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pvYpGRqfQzmXAQ7YW/DJ+a/zXvR9xu2PRQNWpbm/XbU=;
-  b=j8VlGU2XSuwCKuo8ea5DpKGBh8vntNw85h16xOqDXZwY3ojfFcCTVtU5
-   Ef9B4+BKISr+PRCa5Xfio7ZQNQkB9pap8t+7tcFTTSuHpFvj9+B1e6rwy
-   qnIMLvC8gnrhtdPueMzsClBA3i95CWnAkhDTuqE5tFF3FT1J0F9KfIBiv
-   0JBLkHBQOtDthsfKZDdSgUy0MDWjceeNmfOZH0fU0wbRCWasVYFrkPVyX
-   CSqOi0PNWBbbKBJjj541BeruK6TmJRr8WcqwSZUEuNxFjIvBeJCREGSCn
-   uf5Jlxw5vCbslf/Tj+CsLaXEHseP7s84wJP300/llhSlW57JY6zzXgOHV
-   w==;
-X-CSE-ConnectionGUID: JrYWWxn4QRiVajmDkQcyTw==
-X-CSE-MsgGUID: GWsEvB+uQiWy/C39raHoTw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="13091854"
-X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="13091854"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:25:23 -0700
-X-CSE-ConnectionGUID: bLZUpIrkRSm28KMeRdyLZw==
-X-CSE-MsgGUID: Uxe70PzpS9aDSXtcEzLwZw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="28662284"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:25:18 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1ryrnM-00000001dHV-3v8H;
-	Mon, 22 Apr 2024 14:25:12 +0300
-Date: Mon, 22 Apr 2024 14:25:12 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
-	robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
-	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
-	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
-	Konstantin Pugin <ria.freelander@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
- UART
-Message-ID: <ZiZJGCEYlM7Jhs5k@smile.fi.intel.com>
-References: <20240420182223.1153195-1-rilian.la.te@ya.ru>
- <20240420182223.1153195-4-rilian.la.te@ya.ru>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lWRe/a2S"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5720d52eb10so763871a12.0;
+        Mon, 22 Apr 2024 04:58:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713787087; x=1714391887; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h5cT3Mjt5mWgJ6GDMQ81DpgcDSlmFscUnCMU6YJbhCw=;
+        b=lWRe/a2SJLXKg5XPwMZRPN94utV0NNrbgoDEMY+bE2StB2PXzUE+q1rm3RNt6wr6wu
+         xCKOsBShf6Rk6g7dYhcMpcRA3V2aj4W7EFQ0BUX92vvtQiae+6Lx1RD4iSjO9xLisZ5E
+         JXbWSXA4dO425pLW+0IskFTqdjHh8gU5o7Va4zAY8/fbkbNK/sR79x4LxEkfaqCwqSD3
+         JgJAxwXXQ6Flwz4Bnxkzg2KQboWXJfgFu96cBllz9LoeyotRRz1ljEF2AacmqTT4MKop
+         qJ45RRIGzNCc51fgR71dYXqosQXU7vxUVRS5IZRpHElMJbHVqP0ahF2WFCevOEqtMl0m
+         8Whw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713787087; x=1714391887;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=h5cT3Mjt5mWgJ6GDMQ81DpgcDSlmFscUnCMU6YJbhCw=;
+        b=Bpz3Qul2r/tEKFyIdFHNwM2ZvdEmGRYurj2kVmBmt//oxhwPwhJ0xyLudmKYC0I0il
+         tR9IrOsGsbOuUFdnQD2SA0bXSPmKAKHzkjIuSpXQQ1y50ZjR9hQzqXEEF+FzobNuuF9V
+         V7laNlYZ7qozr5rb4Jzr2m5GmkjNsfuXon5zC7IR8rcap+rV6XLzjYK1GcdzNXCio31X
+         R3cSwjsdfOoqLeqir8ZBgpk9VyU+56pEMkZiSlm+uewr9gF2eo/Ur6uSMwn9OLXcDBdE
+         Rw5W+ACEFYWzxfmj8+MgEYOp7MOlOC8PIjANOcm9zfOuKD2PI0AmVPj3Nw177fmEqlWW
+         vBgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUSAJCmItj9IPEzCM157l89nnmNNXy0nQs+JLDYxACebfwswnxpbYmW4RyBgrDXUA7XJEwDH6JIxNOfly+KhFsUI4uWMxlqVtxC/lLSuNkwW7+IBl8zwALhXieNrJTeDESnqhce/07V1y6E
+X-Gm-Message-State: AOJu0YwSFo1TPxRFhywdNeE8+2aIrCixC8Ak+gYEl7Ear2AjfeBNX6H6
+	K8Op8loQh0MjT7FMHlWRcOP7VH5v4R8mIcuqIdJUBBA0qRPOKbFCbe8Zdu3UUZ0S5q7/bbdpRz5
+	OkMhikmI39X0z/jhluaYeD+eGzSM=
+X-Google-Smtp-Source: AGHT+IEUsBi2dnNuzu0y32kfOfl7MQb1OlOBxXxk1146GEVgYYSUSd3929kgB0y5l3v8tbPK0j9N+CcfVu9zS3Fbgkw=
+X-Received: by 2002:a17:906:d972:b0:a52:65bd:a19a with SMTP id
+ rp18-20020a170906d97200b00a5265bda19amr6826211ejb.57.1713787086310; Mon, 22
+ Apr 2024 04:58:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240420182223.1153195-4-rilian.la.te@ya.ru>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20240420182223.1153195-1-rilian.la.te@ya.ru> <20240420182223.1153195-4-rilian.la.te@ya.ru>
+ <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
+In-Reply-To: <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
+From: "Konstantin P." <ria.freelander@gmail.com>
+Date: Mon, 22 Apr 2024 15:00:18 +0300
+Message-ID: <CAF1WSuwCdonhyzAKX6EeyWAHNX11bV+tgCLJ4vXuEXTAceVvzA@mail.gmail.com>
+Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172 UART
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, conor@kernel.org, lkp@intel.com, 
+	vz@mleia.com, robh@kernel.org, jcmvbkbc@gmail.com, 
+	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net, 
+	ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
+	Herve Codina <herve.codina@bootlin.com>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Lech Perczak <lech.perczak@camlingroup.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Apr 20, 2024 at 09:22:06PM +0300, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
-> 
-> XR20M1172 register set is mostly compatible with SC16IS762, but it has
-> a support for additional division rates of UART with special DLD register.
-> So, add handling this register by appropriate devicetree bindings.
+On Mon, Apr 22, 2024 at 9:30=E2=80=AFAM Jiri Slaby <jirislaby@kernel.org> w=
+rote:
+>
+> On 20. 04. 24, 20:22, Konstantin Pugin wrote:
+> > From: Konstantin Pugin <ria.freelander@gmail.com>
+> >
+> > XR20M1172 register set is mostly compatible with SC16IS762, but it has
+> > a support for additional division rates of UART with special DLD regist=
+er.
+> > So, add handling this register by appropriate devicetree bindings.
+> ...
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> ...
+> > @@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device =
+*dev, unsigned int reg)
+> >       return reg =3D=3D SC16IS7XX_RHR_REG;
+> >   }
+> >
+> > +static bool sc16is7xx_has_dld(struct device *dev)
+> > +{
+> > +             struct sc16is7xx_port *s =3D dev_get_drvdata(dev);
+> > +
+> > +             if (s->devtype =3D=3D &xr20m1172_devtype)
+> > +                     return true;
+> > +             return false;
+>
+> :) so this should simply be:
+>
+> return s->devtype =3D=3D &xr20m1172_devtype;
+>
+I especially want to avoid this construction, because it will lead to
+idea than we does not have other
+DLD-capable UARTS, which is simply not true, there is, for example,
+XR20M1280 UART, which has roughly the same register set
+(https://www.alldatasheet.com/datasheet-pdf/pdf/445109/EXAR/XR20M1280.html)=
+.
+I simply do not have other devices, so I do not
+want to risk sending untested patches upstream.
 
-...
-
->  	help
-> -	  Core driver for NXP SC16IS7xx UARTs.
-> +	  Core driver for NXP SC16IS7xx-compatible UARTs.
-
-'-compatible' --> ' and compatible'
-
->  	  Supported ICs are:
-> -
-> -	    SC16IS740
-> -	    SC16IS741
-> -	    SC16IS750
-> -	    SC16IS752
-> -	    SC16IS760
-> -	    SC16IS762
-> +		NXP:
-> +	    	SC16IS740
-> +	    	SC16IS741
-> +	    	SC16IS750
-> +	    	SC16IS752
-> +	    	SC16IS760
-> +	    	SC16IS762
-
-You broke the indentation (as it has mixed TABs and spaces).
-
-> +		EXAR:
-> +			XR20M1172
-
-No need to rewrite all of them, just add your line as
-
-	    XR20M1172 (Exar)
-
->  	  The driver supports both I2C and SPI interfaces.
-
-(Note, this needs to be fixed, hence it justifies a new version of the patch.)
-
-...
-
-> +/*
-> + * Divisor Fractional Register bits (EXAR extension)
-
-Missing period at the end of the line.
-
-> + * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
-> + * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
-> + * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
-> + * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
-> + * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
-> + */
-
-...
-
-> +static bool sc16is7xx_has_dld(struct device *dev)
-> +{
-> +		struct sc16is7xx_port *s = dev_get_drvdata(dev);
-> +
-> +		if (s->devtype == &xr20m1172_devtype)
-> +			return true;
-> +		return false;
-
-Besides what Jiri noticed, this has been indented one TAB too much.
-
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> ...
+> > @@ -1002,6 +1052,7 @@ static void sc16is7xx_set_termios(struct uart_por=
+t *port,
+> >                                 const struct ktermios *old)
+> >   {
+> >       struct sc16is7xx_one *one =3D to_sc16is7xx_one(port, port);
+> > +     bool has_dld =3D sc16is7xx_has_dld(port->dev);
+> >       unsigned int lcr, flow =3D 0;
+> >       int baud;
+> >       unsigned long flags;
+> > @@ -1084,7 +1135,7 @@ static void sc16is7xx_set_termios(struct uart_por=
+t *port,
+> >       /* Get baud rate generator configuration */
+> >       baud =3D uart_get_baud_rate(port, termios, old,
+> >                                 port->uartclk / 16 / 4 / 0xffff,
+> > -                               port->uartclk / 16);
+> > +                               port->uartclk / (has_dld ? 4 : 16));
+>
+> Could you do this instead:
+> unsigned int divisor =3D sc16is7xx_has_dld(port->dev) ? 4 : 16;
+>
+> ...
+>
+> uart_get_baud_rate(..., port->uartclk / divisor);
+>
+>
+> I am not sure the above warrants for a new version. Just in case you are
+> sending one.
+>
+> thanks,
+> --
+> js
+> suse labs
+>
