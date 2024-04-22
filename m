@@ -1,102 +1,156 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A4A73399F;
-	Mon, 22 Apr 2024 13:18:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E88F9282E2;
+	Mon, 22 Apr 2024 13:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713791911; cv=none; b=RAo7KntiwdSBDtrbf1g1eNFGZAXPjiSnjXuUSqlugxgFSud0SAbyKQpOJSOeDqWs4ceg6v7kmwfx3xPXyBOHnhmXsfAdnISchX8kAzYwniDZseThlJpoSeSXakG5sgJpeuVNwqvlr3kwPor7CH9niLgyhUQeGhjGUHtdsQg9cAA=
+	t=1713792745; cv=none; b=RAyjbomiHsTNumarnj5U4h6HzKQqAKrXhMpYUokozst7uD7sk3dgjhbb3d5TRh+K3zZxrHKou8zZ50VZ6JUQKgqudYBgtQlx9CSATQpyvb0hahe3uzuxUXtvLwtshg/o8ckvxIDNztxqjjizClZP7aTrOx+67ykHkY8uYQ9SiNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713791911; c=relaxed/simple;
-	bh=oH1R0IQ5okr+fcRE693xdM6cp7GPSY26awGZ2I/bPyA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PqDswts65feBKtKtosgVnTuQJPlNtlse1emLYMGXPwpzW0r+2fr6My6GK4BnScWMXB+b4CMgUaLjmlGD4jjZcTLqlSRkUnPfr4EgjUlUSHukC9bl7oQwrFiXDBuJRH2dqITnrOe7ISZL+0Z/nNsHqwuXtfOq3jypI3X5n6I+Ei8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hG9kbzbv; arc=none smtp.client-ip=209.85.167.52
+	s=arc-20240116; t=1713792745; c=relaxed/simple;
+	bh=TD0Nr7R0rbKpnTkC7WxSdse7cjReHTcsGWkAiAMmT7c=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HC5ee5jfZwQgusi5rljZ75q62UgVyLJCuurdG/UXgPkCRfZEfbTls+r9BA78Lh2iHuncx3CA7MHhV/bd/OWBSDIsPWUZC2z5X7di42pgcYF69+h9xucsyBrqLplpjOyEZ0K0MKg5MavH5LSOOI40MZC/FcpFQXqDXEKsUOaVHxE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=budmtEfK; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hG9kbzbv"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-518a56cdbcfso6842564e87.2;
-        Mon, 22 Apr 2024 06:18:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="budmtEfK"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-51967f75729so5034791e87.0;
+        Mon, 22 Apr 2024 06:32:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713791908; x=1714396708; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oH1R0IQ5okr+fcRE693xdM6cp7GPSY26awGZ2I/bPyA=;
-        b=hG9kbzbv6mhe5DAmWl8v1yDByzrRRLCBG/t5SchjEGtprRwbxeC0Lv7PyWf49afEsb
-         PNmsfgTRsLZ5h/ms6E9zsVfvhNcFkozC0L7xMl2CdMTjX5KE3ZVVlDvdq4gHOv0hTY0Q
-         oBUXi0QvitzV75Tp+urqQj5qjBjE2ltE/JpvOo8yU2hWmpY48ZIL2YKD10hjPfhVge+B
-         v8/SS/ca5z5UpkpWms6iBUSBnBU/DPXCiOcqc1gxySFS057fZf7ekR/Pyq4iG9DMNlxj
-         KGxno4hklnYfNFtXI2vX4+ipcIz/KfWOfeJ/WLcUMJIOXqC6GiYalKREiKqCPB3btUvp
-         RMPQ==
+        d=gmail.com; s=20230601; t=1713792742; x=1714397542; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=GP4sJ74Pr9f8yHIahiytzgErpIywlsdSu7yAa7u/Jhg=;
+        b=budmtEfK0ywuOk4qGHS+Px51/AWFU6h/PvPJLrNeGKyZA0XN1pfe7BfcwAkY5RKInA
+         GWMQUj0pXFxh5f/C0UsPs8zTCq1Ns/JAoUbwwWsbkykb8liXfpcCqHbw+da2/huZSxA2
+         2XSgKwYL3i917Z+/wBPN2RWl+PJ/81xYTedFOh+XruZuX/doPSEKV8hSGvPYTg3cLe8B
+         wLHdTcq4pKa4jtKLrZWTLqjiv6GsADtHrXk/jYhe9dHKoDRWcRxPiwjHfHJm6I4aFrKk
+         rd/9VG1FUqO2zf7F95X+mbdUGwwTKcvZEnhOr/zqYSTJJFmRt5SLm73/kjZJ1tOMJKl5
+         hvyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713791908; x=1714396708;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oH1R0IQ5okr+fcRE693xdM6cp7GPSY26awGZ2I/bPyA=;
-        b=marvfVVVJ8C1rEXeH9l7lyb1QOZwSAzRH8yQ7JT20UVhpGJgBWqKKs8f8CXyX3yE7x
-         /idy57nC0wQt6tGStymd92eEPrbNzNzK22Q/TQ9NU6g5jwvHLoOibmMI3xS+bs1TSi+P
-         yPnHE5L/KHc5QrQZ7l1J7NVim4PDGIwdVkY+GOTz2emGDfN64TGG1GWZeKDX864duskg
-         GfI1NzNipVoRRfXDccgvXvdfH5wGHhxqjxwDKTR9HGzokXKJCuWUZJUyvPOEfXuafLqr
-         8Njn2RKne7SQ5/Gmu7sSifv+ZgcOcq1cKWPMNrd9vmfqow8jn/PCG/6WG3qSndyDdOvg
-         DY1g==
-X-Forwarded-Encrypted: i=1; AJvYcCW8c2Axov2+VignWgtNIrLZWGZOd1fU8s0sbqALMnDBO0lqcuMTb0bJx3ziSFtNSqg4+YNecxSTWUvP1d9gA8X0BTKaoB0B5bfoqM2UdkexHGQ0HRq5LU8txeqd0pp8TvdVPVTT6pcX/IrA
-X-Gm-Message-State: AOJu0YwG1CZbXj3R3lewdj6Fpph80ST0EyhCaN39n6/y/Ticir7WJnCf
-	jzbjkLyonmzz/5ols84q464snAEhzYR/ndDekoSAhDYxlYNAhcCCiBAMRsVUomgUqqo7hM/VP9W
-	eUpn/ouZWqfb3PxnuEYfHvQesYMs=
-X-Google-Smtp-Source: AGHT+IHiF+CJbeJBpnqiMIUJlPP+HthhFpz+ac8LBycAWGHna+D5nbZF4aeIUQwuUL1OmY0B6OQGNutg+LajTART5Ug=
-X-Received: by 2002:ac2:41d6:0:b0:51a:c490:8d55 with SMTP id
- d22-20020ac241d6000000b0051ac4908d55mr6695585lfi.13.1713791908094; Mon, 22
- Apr 2024 06:18:28 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1713792742; x=1714397542;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GP4sJ74Pr9f8yHIahiytzgErpIywlsdSu7yAa7u/Jhg=;
+        b=FSuthQpNFLF5rwc2crd/Q4GsDUeXWQ/CUMTJ+42OV/zf5HRCApJ0ScgHTX2yNfobpi
+         qk8x+wTD1dgbt4XiYAaPcF5ar/4+jgaVaUXCz4UT+8Akt8maI+BCvslm81L+jDRgbi+J
+         DgnRjZ6dgdf4dlE1tRUip8VYZGDldqT/wubcIqcf3le78iGalBYI9ttl9nHU1vJ3HjNb
+         /RGQb/4VjF7TSOLewV8MLVvc1BrQj2zm5I7UjKpRtJl5N1XnZVqHx3+z/vb6iAqPBHV7
+         SDVFQpo+7zOPgVnBXUkJUDCWhN6EbGN7vZBpCuIbBKYqxDkOgfZ7OQSq5UJOMg26w6b+
+         elYg==
+X-Forwarded-Encrypted: i=1; AJvYcCVDvch7CPfdEiB2uIDvlHUpvZ4ILO8gEjNstTNhyfq1EVqt5xVmXI+XlFoYJQpqBGAdGOa7TDw1ojnyOSD9Ne7RQJ9gmBY4VwYddxzQcoAdwl669KOtwt/AGlJ/4Q017+AMSCiFSGaMnoCj
+X-Gm-Message-State: AOJu0YxIHE3QpW9s/94qXhBlEfZ1SVz7BX8BiqUBtTvSLDk3vessh6b3
+	6EJ/wkejoN+mHIqzMyA71+uIgksgi2SA2mPDo920diQ9ntwrFRXa
+X-Google-Smtp-Source: AGHT+IE7u7y6CGwPjcSkWjSR/F+mMG951zmw9TyKaxfgzFzz0SBlq5cmhp/BRuOVynZnPYI0axZEwg==
+X-Received: by 2002:ac2:5963:0:b0:518:ddc3:b3a2 with SMTP id h3-20020ac25963000000b00518ddc3b3a2mr5383160lfp.28.1713792741850;
+        Mon, 22 Apr 2024 06:32:21 -0700 (PDT)
+Received: from CVSIT-Server.. ([193.232.173.109])
+        by smtp.gmail.com with ESMTPSA id d22-20020ac241d6000000b0051327d2f5e5sm1729568lfi.119.2024.04.22.06.32.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Apr 2024 06:32:21 -0700 (PDT)
+From: Konstantin Pugin <ria.freelander@gmail.com>
+To: 
+Cc: krzk@kernel.org,
+	conor@kernel.org,
+	lkp@intel.com,
+	vz@mleia.com,
+	robh@kernel.org,
+	jcmvbkbc@gmail.com,
+	nicolas.ferre@microchip.com,
+	manikanta.guntupalli@amd.com,
+	corbet@lwn.net,
+	ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de,
+	Maarten.Brock@sttls.nl,
+	Konstantin Pugin <ria.freelander@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
+Date: Mon, 22 Apr 2024 16:32:12 +0300
+Message-Id: <20240422133219.2710061-1-ria.freelander@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240422123801.2695129-1-rilian.la.te@ya.ru> <20240422123801.2695129-2-rilian.la.te@ya.ru>
- <ZiZcyhoKRgfteO5d@smile.fi.intel.com>
-In-Reply-To: <ZiZcyhoKRgfteO5d@smile.fi.intel.com>
-From: "Konstantin P." <ria.freelander@gmail.com>
-Date: Mon, 22 Apr 2024 16:20:40 +0300
-Message-ID: <CAF1WSuxPmzWYhCQU3tiA_GYMLowxMuvEJWRv83atithv8NCRxg@mail.gmail.com>
-Subject: Re: [PATCH v6 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-To: Andy Shevchenko <andy@kernel.org>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, conor@kernel.org, lkp@intel.com, 
-	vz@mleia.com, robh@kernel.org, jcmvbkbc@gmail.com, 
-	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net, 
-	ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Lech Perczak <lech.perczak@camlingroup.com>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Apr 22, 2024 at 3:56=E2=80=AFPM Andy Shevchenko <andy@kernel.org> w=
-rote:
->
-> On Mon, Apr 22, 2024 at 03:37:55PM +0300, Konstantin Pugin wrote:
-> > From: Konstantin Pugin <ria.freelander@gmail.com>
-> >
-> > The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, but
-> > after the commit 4afeced55baa ("serial: core: fix sanitizing check for
-> > RTS settings") we always end up with SER_RS485_RTS_AFTER_SEND set and
-> > always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT, which
-> > breaks some hardware using these chips.
->
-> LGTM, but I leave it to Hugo for testing and other comments, if any,
-> as I don't have a HW.
->
-> Reviewed-by: Andy Shevchenko <andy@kernel.org>
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+it has additional register which can change UART multiplier
+to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+flag to guard access to its specific DLD register. It seems than
+other EXAR SPI UART modules also have this register, but I tested
+only XR20M1172.
+Yes, in datasheet this register is called "DLD - Divisor Fractional"
+or "DLD - Divisor Fractional Register", calling depends on datasheet
+version.
 
-Andy, I need to do v7 (because there is a missed fix), but Yandex do
-not allow me to send more mail( So, can it be sent next day?
+I am sorry about too many submissions and top post reply. About second -
+I do not know how to reply properly to this ML from GMail phone app. About first - I just
+get very good feedback from Andy Shevchenko, and want to fix his review picks ASAP.
+
+Changes in v2:
+  - use full name in git authorship
+
+Changes in v3:
+  - change formatting of commit messages to unify width
+  - rework commit messages according to code review
+  - add XR20M117X namespace for EXAR-specific register
+  - do not use UPF_MAGIC_MULTIPLIER for checking EXAR chip,
+    use s->devtype directly
+  - replace while loop to fls function and expanded check
+  - sort compatibles
+  - reformat multiline comment.
+
+Changes in v4:
+  - rebase onto tty-next branch
+  - added Kconfig mention of the chip
+  - used rounddown_power_of_two instead of fls and manual shift
+  - used FIELD_PREP instead of custom macro
+  - removed has_dld bit from common struct, replaced by check function,
+    which checks directly by s->devtype
+  - fixed tab count
+  - properly apply Vladimir Zapolskiy's tag to patch 2 only
+
+Changes in v5:
+  - fixes for tty-next branch
+  - address a new code review picks
+  - send properly to all participants
+  - added Ack tag
+
+Changes in v6:
+  - KConfig fixes
+  - New code review fixes
+
+Changes in v7:
+  - Added missed tag
+  - Added missed v5 fixes
+
+Konstantin Pugin (3):
+  serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
+  dt-bindings: sc16is7xx: Add compatible line for XR20M1172 UART
+  serial: sc16is7xx: add support for EXAR XR20M1172 UART
+
+ .../bindings/serial/nxp,sc16is7xx.yaml        |  1 +
+ drivers/tty/serial/Kconfig                    |  3 +-
+ drivers/tty/serial/sc16is7xx.c                | 63 +++++++++++++++++--
+ drivers/tty/serial/sc16is7xx.h                |  1 +
+ drivers/tty/serial/sc16is7xx_i2c.c            |  1 +
+ drivers/tty/serial/sc16is7xx_spi.c            |  1 +
+ 6 files changed, 64 insertions(+), 6 deletions(-)
+
+
+base-commit: f70f95b485d78838ad28dbec804b986d11ad7bb0
+-- 
+2.34.1
+
