@@ -1,81 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98F0C146595;
-	Mon, 22 Apr 2024 11:14:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D233145FEC;
+	Mon, 22 Apr 2024 11:16:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713784460; cv=none; b=mj/SCzSU/ZKKgADpguc/kmBpk7Lk3iPIrwlOjjAKQjlZMO0OTBhbwI50LGA8Tw86z564dS9rd30PyzFnfgKiPG/Jxn+KX8ZBacsblm5g/mm/xtISJQVzGS12uU629oxMCZxOkxxNs3PqrL2DpKy2pTXr+I/lA3pGrr6OPhbfYyQ=
+	t=1713784578; cv=none; b=Pfw3E24zo8VADK1n8PVL15LwC1KynYnF7GGRUnM3oCeW0MoBf+2YIieOsX7l6GUE9MZY3JJmXcUAejRgLZn5hi3174bf97niBhlZUeXdkWonhVmO8LT4wHnp6F2eDxsNvWUrCqEFZ4tDHQUcSE+eIXCY2bdxOhm6ktTB3Fqi6No=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713784460; c=relaxed/simple;
-	bh=XdM9JYJh7vwnARlcJo0VQR1tNERuNcRdVHmW7MTtKw4=;
+	s=arc-20240116; t=1713784578; c=relaxed/simple;
+	bh=wDbHwtY+TxaptW1s9tsA+CXbI81ldIEI6DPUe3+mBvY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LS78cNb+fhPJd9b6eWjpyLuUog4Y33hJm0G78mimKxTCIq8buIqk+piHPzf+FKjACxHyP/RAkP6kcJIXsPGGRfKHFMOp/N/yJ2EX7/s6eSo323VXu6+/UO94onovOZna2mqVwfeYjVmc38HqvNklA1831ttVnfz58XpyFJ5J74s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
-X-CSE-ConnectionGUID: rBQPvDklQx6ZEg+iRwiOBQ==
-X-CSE-MsgGUID: P4vTdR1MR5SBGKfbfzBqVw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="9194173"
+	 Content-Type:Content-Disposition:In-Reply-To; b=p7yvcPPXKLiVHDfn8aLO3DH6KgcZIKJRNVJ9JKyGCys5k5ktB9+4wb3QxNW8ZgHVxFl/LNLURTiMSO6A5ceiw3rRTnfU8BepFle9slgS1u849CmHAKTFi83bs66QQNnvDIbYGZ54JAomQoxyghiCrqtCcPjXSO6FQiIc8lZa6Bo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TMW3g3nR; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TMW3g3nR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713784577; x=1745320577;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wDbHwtY+TxaptW1s9tsA+CXbI81ldIEI6DPUe3+mBvY=;
+  b=TMW3g3nRdysYNgu1cdwMmTecpg3YPKA0LVq+Ka7aF+IOSS7cK22TCWtV
+   D2NJpIuCoJ0PkTpMOLLVOzxs/YE1CZqk1sy3me1IO6wHC4OihLbcm/mc+
+   cwMQYLpDYJeXziWDjZldcY2xISpRvNb5Hv0nQH5rXCAmZQ+EdMkCjbNZs
+   y0YIWTYCNh8FlsmPET8zdHG9bpyV0NF2t+ERjd5wv4kIWlmGRx3vU5a+e
+   EEiD4uqCDdBrqv2WND4HTakAiVF+aZ6nVjCkIZYObc1vlmYeJ/bimXwiW
+   mV7KtUGfOectI7Okb7zWWlPutWDQHt4YQYWxdI+hb0+NttSYS1z9dLUVP
+   Q==;
+X-CSE-ConnectionGUID: S8FvSFW0TxaJM3qEOVZdtA==
+X-CSE-MsgGUID: jyYtX122Q5ij6TJUOVfwzg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="31807932"
 X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="9194173"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:14:20 -0700
-X-CSE-ConnectionGUID: 0FBRhyGuRVeat8H0yfpwxg==
-X-CSE-MsgGUID: R5bIlut3TfWzcHL0R8Qkhw==
+   d="scan'208";a="31807932"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:16:17 -0700
+X-CSE-ConnectionGUID: QrqM3OGDRkuy6EK36oRdNA==
+X-CSE-MsgGUID: ABjTpl61TnSfyt0J40sxCA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="24009683"
+   d="scan'208";a="23858314"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:14:13 -0700
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 04:16:11 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andy@kernel.org>)
-	id 1ryrcf-00000001d6T-3s8o;
-	Mon, 22 Apr 2024 14:14:09 +0300
-Date: Mon, 22 Apr 2024 14:14:09 +0300
-From: Andy Shevchenko <andy@kernel.org>
-To: Konstantin Pugin <rilian.la.te@ya.ru>
-Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
-	robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ryreZ-00000001d8Q-2mcE;
+	Mon, 22 Apr 2024 14:16:07 +0300
+Date: Mon, 22 Apr 2024 14:16:07 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: "Konstantin P." <ria.freelander@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org,
+	conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org,
+	jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
 	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
 	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
-	Konstantin Pugin <ria.freelander@gmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Herve Codina <herve.codina@bootlin.com>,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	Lech Perczak <lech.perczak@camlingroup.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] dt-bindings: sc16is7xx: Add compatible line for
- XR20M1172 UART
-Message-ID: <ZiZGgWTrj5jL3ujn@smile.fi.intel.com>
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 3/3] serial: sc16is7xx: add support for EXAR XR20M1172
+ UART
+Message-ID: <ZiZG90gXb66jCaw_@smile.fi.intel.com>
 References: <20240420182223.1153195-1-rilian.la.te@ya.ru>
- <20240420182223.1153195-3-rilian.la.te@ya.ru>
+ <20240420182223.1153195-4-rilian.la.te@ya.ru>
+ <7cf31245-b2a1-419c-add6-a6a50a3f3cf1@kernel.org>
+ <CAF1WSuw9WKCNbsnyDv6F0QNJbYT78wMn=s54n7XXfM94z51oJg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240420182223.1153195-3-rilian.la.te@ya.ru>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAF1WSuw9WKCNbsnyDv6F0QNJbYT78wMn=s54n7XXfM94z51oJg@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Sat, Apr 20, 2024 at 09:22:05PM +0300, Konstantin Pugin wrote:
-> From: Konstantin Pugin <ria.freelander@gmail.com>
-> 
-> EXAR XR20M1172 UART is mostly register-compatible with NXP SPI UARTs.
-> It will be handled by same driver, so, it makes sense to add DT
-> definition for these block into driver's documentation.
+On Mon, Apr 22, 2024 at 11:35:32AM +0300, Konstantin P. wrote:
+> I do not think this is a requirement for a new version. I need to
+> wait. Some folks want to test my patches with their hardware)))
 
-Still Description is missing the part about Exar involvement here...
-OTOH, not a DT guy here and you got the Ack:s, so feel free to ignore
-my comment.
+You should not top-post!
+
+...
+
+Yes, it would be good them to provide a formal Tested-by tag, then you may send
+a v6 with the tags and Jiri's comments being addressed. Btw, I prefer to have
+them addressed now to eliminate unneeded churn in the future.
+
+> On Mon, Apr 22, 2024 at 9:30 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 20. 04. 24, 20:22, Konstantin Pugin wrote:
+
+> > I am not sure the above warrants for a new version. Just in case you are
+> > sending one.
 
 -- 
 With Best Regards,
