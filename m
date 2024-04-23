@@ -1,55 +1,55 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED18D527;
-	Tue, 23 Apr 2024 10:37:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A34D527;
+	Tue, 23 Apr 2024 10:38:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713868633; cv=none; b=cx1OdcQMtFiJTLXAoSpTvV5qEo3sWEP1a9nDWqSMPteQs2eLdu6AW3RtYGRrZz2M3WfgGrts9UkA3YLQy/RMpvIdsh5bCwf8RVah+giBfdBkT7jgVloRd/qcbS7NWt1D2KQsNZKawzUZbXwYjdEesuOQHoShYiCrBv6AQ+WjeV0=
+	t=1713868696; cv=none; b=GKx8vo7y/SBBjeF0in/6L+bgL3FjfpxO527obyAu+qUelhr0S8mvZ5or/u6amvxkB0N4bpJgv4X9uPyM4PWIeal3GhBGaRxHs8WvYYalHRDJ6K+iGjUHgbyobyw13WecxvHwox/6BMDkipRkmbT2s8Ss0csQbnPtsSanKqIRQHU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713868633; c=relaxed/simple;
-	bh=oQzpIetGYEjpNjrW802xBPkO5SLHFUj/yYs7N+iAehQ=;
+	s=arc-20240116; t=1713868696; c=relaxed/simple;
+	bh=JAz7ER0hZGqzGBLVqaDpWG4vvxgxtMzsJmpoGWXMAhw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=O4B2U1AsZW1PuHGoVXj2xr2kppxwOrF1SBZ8QzPFtb/qs7alSLkT/6u/Gnqfd9jqkalrGqBQk27Rp5/PDaID/SiYZrsIul/IYZjJr7XwSFgUWGFhXlWMDtP0lF/QUrAby8QRXg1vGwm5iO5ErcfKk0Cv/Gin5X9L8yDM3ut22Nk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GgmNbMeh; arc=none smtp.client-ip=209.85.208.49
+	 To:Cc:Content-Type; b=imYInmZ5G+vwFS4uMF4ead17nuWsqcxdGE86see2QwFZOellDKROYNSXIXhoK6BVmhHe9I1nm5FQqAlC0ApyTbMZKfi6iYwY2pcl8hFfpA68ORHZ0fbOnJAvMJSrOLQUFX7r1KLZg5eU3fb/4gKOgmDEZa6kh1DYZ+ggMOZyjDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RuEZ9wEq; arc=none smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GgmNbMeh"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-565c6cf4819so11169375a12.1;
-        Tue, 23 Apr 2024 03:37:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RuEZ9wEq"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a5557e3ebcaso899056166b.1;
+        Tue, 23 Apr 2024 03:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713868630; x=1714473430; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1713868693; x=1714473493; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4t1dFtTzt1DbzNhCtENme26b4OP2uWZCLOXLsBPkGec=;
-        b=GgmNbMehz+cIWYTcQ3+6arKep19Ybg3PE5+pcwnnGE1VQsw88KGdYpL4sBpNFxT50W
-         QyjuwBCfLxxH04mO6XiSxGL8vyPwuk4B7u9b6QOylItdNVy0LKVu25CFQ5ep5QwX06Jz
-         8QUxzRlsucxq2SBwi/9SwsjmbA7AthccV2iLu8w9izCEYNs4mNRTpaj028OOOMx8vPei
-         tHEgBdaeDm9dOM5s8aDB+5KL/QVRmVkOd+Bqc2f7xWr8wd4VWss6HiJP+msXMV6Wnrzc
-         357wobya0E2Pe83VsoKx8Gw1b9f3xuVErLb72dD1b4PP10joqHcuJFm0LgnXRwaDJMsz
-         UxIQ==
+        bh=JAz7ER0hZGqzGBLVqaDpWG4vvxgxtMzsJmpoGWXMAhw=;
+        b=RuEZ9wEq+A9HATfJUD0us+R0R5ax70p1emmpSB4ss1kfEIptM00t4V2sy9YZwdasxq
+         0sLPR42INh4usplkOPLgYyIZWgYHJMVvc6xuPATyhcjpc3emMkDIg4XXzcQZf7tdQU4J
+         64il3H4LCYhNAkgvRGi3C/6sPFc/HQVoi0qYKOZ0CvqYAYPhiDnhjBhey2gUpQHETURd
+         3jALrn9zM/0ELN8R8SAW3shXLdf92heD8CLSjPmUr73Xvu4yQKmWudrtzis/z7oeLQV5
+         Jj1UyCKo0I37WTkzM7bz0oc955a/LFl79arsNljCee8wzBSzoM8NVWPFRODa/YCC18rm
+         tODQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713868630; x=1714473430;
+        d=1e100.net; s=20230601; t=1713868693; x=1714473493;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4t1dFtTzt1DbzNhCtENme26b4OP2uWZCLOXLsBPkGec=;
-        b=AwpCquO4dSiTlR5f4v5t74Ws2DOwuHr6svUFEk5fMxr5dN1ufPkbBJSxI+2C7d6Jts
-         Q8krXdrTRQa8UY/Qb87gbhsRc7caa/L1eryqZNsHCQ6xnXeEZay+UtFDlNwBojitrS2H
-         XlHAorK+K4sRigIMqGaMRxBpcQV7iUgCPs7O3ZpD4hrNdufz81RTRSHAYesAfCox9VX4
-         v815Un4NFrP8D4xx/6EAFcgFIk/b/Q7fM3gbHh34tqhk+6eVpf1p6cJnSx8+PRR8PASU
-         cSeOXbxXngiIlBcnTyc6UGYUKMdll0kEsldt8WfeL/izziG1NY8zocGnDEDPtB+cFv2h
-         N3GQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVXUXfjY06M92p69G8GHgjuDCAIUJK2tJ4kRA+3epZa2utrI0oRgfHxPmzlult/JVYb2xyDGDGPTwv/UbtTL6IxTPhDEkraVElmHVnrFF09BTkoCGpzN6YYTq7n6iieZetCcqMD5vUc/Ea8
-X-Gm-Message-State: AOJu0Yys51WreYfyXCqftjjyfDUDRKAo42SAyjF8TefcO4GFHNbK2E1q
-	kM81wGWWuzm6dMMn3dwdrI+JtCvE0GYtHdk1kMLs1e8NgaCjIvFjyjwgmiAzb1RW/eqMa5NCE/Z
-	chZeZc9WQ72sFJr0ClzKqzgDezKM=
-X-Google-Smtp-Source: AGHT+IHeyR5nQGBgo5SeYHczmWihZE3aKnPx7Y4MP1/SAb+Xn/Xtqgb6/Zfv88R3JRQyVZHsNuV7z2K57QLyYdhJ60g=
-X-Received: by 2002:a17:906:a2cf:b0:a55:75f7:42fb with SMTP id
- by15-20020a170906a2cf00b00a5575f742fbmr2425875ejb.24.1713868629805; Tue, 23
- Apr 2024 03:37:09 -0700 (PDT)
+        bh=JAz7ER0hZGqzGBLVqaDpWG4vvxgxtMzsJmpoGWXMAhw=;
+        b=sP3J/vjmLtifIuKXJue2hHbG4oHgC2ti2l0q+rxFOjkVFOMaNc4YeL/DM9Av68iiq7
+         Ycpu63JpLzb4l7uIONS52S2BfmhF8oi9HfrL+BN1ktynLqEHShyw/7iFthiSfS1YaA9s
+         YpPecYEgYnkuthFmu9+fePnlCeNZVVUjXAQAiuwukRBetiLIlG2tMXWQ3/+5mjfRYS/f
+         IJZuTfU+B05riHoJ1CNCRy4KuRDYAhofh8NpdYVXB1yXEwUUV+RDwOIT6Q5CcIC7qpM2
+         kNt6q/449KDus8mfkuUcaQ+JR2fGcQeHSaZ3Ep2O02DE96bluTS85la4/Pl++2sxmJdR
+         8pZw==
+X-Forwarded-Encrypted: i=1; AJvYcCU+ZR+8ZcM9hBFazW4gBpup9PNh12UYcY1/Nct8OafxC9c2eoeVBJV+hI8iOBN2VRl+aT1AUrprIemW6e1SPRixLFpRpYCf8v8xB8kaB32OOxs4nu2NNoHVpdJM717OprolJ57AwmRXpRRD
+X-Gm-Message-State: AOJu0YwvwZoOCcGt95uCFnTBl8tHkey3caRLV3i1JzU7OiVdu74UsjNC
+	kkfkz71ZW1FBIksT+c02IGKmChCDFygBiEIM3vsO2YOfH6Wi664t+UiNiVoA8iFuELXdnakO/xW
+	Qd3wJ61x/jBqCHfBbT5krpA+Q6Pc=
+X-Google-Smtp-Source: AGHT+IFrqgWWS9JIN68LmtwbLNmr7fA1cTZcoVscVjnKA0fjeltVIh3nTSG2ZuJ6OcxPWQZdlmlFaaMh9qM/8rbpQAE=
+X-Received: by 2002:a17:906:46cc:b0:a58:847d:4817 with SMTP id
+ k12-20020a17090646cc00b00a58847d4817mr466084ejs.18.1713868693032; Tue, 23 Apr
+ 2024 03:38:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,11 +57,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20240409154253.3043822-1-hugo@hugovil.com> <20240409154253.3043822-4-hugo@hugovil.com>
- <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
-In-Reply-To: <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
+ <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com> <CAMuHMdWBYnhVvDMditnf9bh17TeBhrZmuz--7x9QEejivCCyJg@mail.gmail.com>
+In-Reply-To: <CAMuHMdWBYnhVvDMditnf9bh17TeBhrZmuz--7x9QEejivCCyJg@mail.gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 23 Apr 2024 13:36:33 +0300
-Message-ID: <CAHp75Vfi2YjE0wzwABURxXhcWLozAf9Cdj_pT+DL_tm8E_zm4Q@mail.gmail.com>
+Date: Tue, 23 Apr 2024 13:37:37 +0300
+Message-ID: <CAHp75VcB0LH6pBHfJ4=N4s6Q_=pGhW6MHEHWkB7E+A5m758AnQ@mail.gmail.com>
 Subject: Re: [PATCH v4 3/5] serial: sc16is7xx: split into core and I2C/SPI
  parts (core)
 To: Geert Uytterhoeven <geert@linux-m68k.org>
@@ -71,20 +71,19 @@ Cc: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org, jirislaby@ke
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 23, 2024 at 1:01=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68=
+On Tue, Apr 23, 2024 at 1:03=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68=
 k.org> wrote:
-> On Tue, Apr 9, 2024 at 5:48=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com>=
- wrote:
+> On Tue, Apr 23, 2024 at 12:01=E2=80=AFPM Geert Uytterhoeven
+> <geert@linux-m68k.org> wrote:
+> > On Tue, Apr 9, 2024 at 5:48=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.co=
+m> wrote:
 
 ...
 
-> So if SPI_MASTER or I2C is enabled, the corresponding SERIAL_SC16IS7XX_*
-> subdriver can no longer be disabled?  According to
-> https://lore.kernel.org/all/20240403123501.8ef5c99f65a40ca2c10f635a@hugov=
-il.com/
-> you did want to support that?
+> Or just rename SERIAL_SC16IS7XX_CORE back to SERIAL_SC16IS7XX.
 
-I believe it has been taken from one of the IIO drivers as an example.
+Since we do not know how many configurations elsewhere rely on this
+and we have a real use case this suggestion seems plausible to me.
 
 --=20
 With Best Regards,
