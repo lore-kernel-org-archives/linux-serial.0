@@ -1,134 +1,217 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A8CE13E3F8;
-	Tue, 23 Apr 2024 18:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 361621422DD
+	for <linux-serial@vger.kernel.org>; Tue, 23 Apr 2024 20:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713898779; cv=none; b=DOWojuCb/94TBaJSYDq7lwyYBaUTIx+SywsWQyshlhOCEFJO2LtnKpQkaBwQ1cRvRGGSF9uA7XLkPSdpA2KczNpxkk2tmeBc9uQhRc2acZz+HuaRefxMIf1RyLqRV7Jn+nA2Jlq0yb6t6g4cUHp3wYZIICSydZG+dlmXIlMpThw=
+	t=1713903115; cv=none; b=AeUI7IGy5I/dNDjeeqwD3FjopiLqewm2TKFw7GlDqQ0cE6dwR56GfOthsi3O/pCojOilRGQkwxvMP0FWf8FhzyjILzS8Be9t+lOnFHQMfbb0wegwAVvqhXczsCgl/kZ45u8qbwgfGjYn4Egl/kUSg5/gySh/CpyvXCiZO1pxOoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713898779; c=relaxed/simple;
-	bh=T7XszNRd8d+6SJEaBpiVinIwTQ8ta84/yRO4o6mv+wA=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=UeqtRV608oN2D/wZ38yAdCBAi6QDVi9oaiqcJHmWxtd8sySs5S3w8ED7vlhhxNNEI+z0RgEns8gBz8gQCF2RT2T8weBumhExRCONubC4uI3FVpWsV6ekvCZ1ajZSFIv/mnMV3dOJJQPObsaNblxA6MxoE1BiH5DhqYwk4u+HLB4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=DP04iC5C; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1713903115; c=relaxed/simple;
+	bh=GtWEfnCVXgswFizk7aj52gAU5iJE7MbaCZSvvLl+a8U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F0dmi4nhdraZETYMZaMdUUu96jOddGJnvqvRuI5mJVekYf+kzt5VwfCc27ZHz6IDWCW8HOv341+hWB6dCE2wTGaQhfPCnVi0Dsspca9TFuNhAO/K0eF4Nzex3PTJ8IqksN+b3E1cpy+GW5UgSLgJcGDE4/Yd/QHD6XxKgobOWak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=EHM61Fpl; arc=none smtp.client-ip=209.85.161.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="DP04iC5C"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=71XbR04R1YkOfno5gJ7a+xFyEwpBdthJL1F3pof/8tw=; b=DP04iC5Ci929JBdYjlKl5/6yNs
-	t/0uKrH5tUprvgZl2veE/dRXKBLuED2FrAMpBXWART1pqWxNSPZC9Cd8Xuka25jHo0GjSWH4Oc0iC
-	Eth3QIjVAbMrticl2F4RJOu4loQ1g93Kj6ADHoIhV9dLTUCzcwVEWG0Ez4mjSQCdk3vQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:53768 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1rzLME-0000Qp-VJ; Tue, 23 Apr 2024 14:59:16 -0400
-Date: Tue, 23 Apr 2024 14:59:10 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Konstantin Pugin <ria.freelander@gmail.com>
-Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
- robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
- manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
- u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Hugo
- Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
- Lech Perczak <lech.perczak@camlingroup.com>, Ilpo =?ISO-8859-1?Q?J=E4rvin?=
- =?ISO-8859-1?Q?en?= <ilpo.jarvinen@linux.intel.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Message-Id: <20240423145910.c3141dbd01665213526b54fa@hugovil.com>
-In-Reply-To: <20240422133219.2710061-2-ria.freelander@gmail.com>
-References: <20240422133219.2710061-1-ria.freelander@gmail.com>
-	<20240422133219.2710061-2-ria.freelander@gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="EHM61Fpl"
+Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-5ac8c73cf88so3962055eaf.2
+        for <linux-serial@vger.kernel.org>; Tue, 23 Apr 2024 13:11:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1713903113; x=1714507913; darn=vger.kernel.org;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yH3oxyy0+YJssphasYI28wmaF+8kABMDbhOZOPxgyXY=;
+        b=EHM61Fpl9LBtPaemMeOte7Kf1uI4D0i8F6RGFWJJUz/Cxh7lHmitmemJNeyD9Ob6iM
+         GL4rPaZpPOk9APr7KHNxtsrXDI9hCXnefNiPLPGi6/0v2YV3w+XhQno582LlFl0InBOe
+         nfjk/C7NoXwdGx8csRXKEKz6bGXGvljEWQi0U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713903113; x=1714507913;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=yH3oxyy0+YJssphasYI28wmaF+8kABMDbhOZOPxgyXY=;
+        b=CbBli5dVnygd2S3Yd99+VxFDvq5kKKUAaP28ih2UdxqCTEeZYetgeX5Vt32ItrZeI7
+         FcNg/tpVeY5zmqTkEZePAZty9G0AMo7CSOofRMPMso2VvSOfbX4pX2YHsE9EqHV1qiRL
+         ZGpyreg6+ZCp4Q6ca6TyrkpS+/sPoNpif1rae30GoohIztXaVWWbLI0+y44C7Z/SlNWZ
+         4I7bx6L0scaH/qXemajOrUdfWEg+HDsM3GWXKSblB63GU5glh8+ZDDHcSXJuP6oIx6SO
+         zHvO03TyuDQioAayynhIFr5I+JL3JlCYuORTHLRdBFSrMtLm9ICfbRzl1+WDl+yQ/0BT
+         MutQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW7d99mjvq5qUOw9HHw3hBqeVE0wy/LGrsfLak0YgmOy6Qgb0cQo/vazz9vGPyvxBYu5dkdB6D0+XnwovPCBqapuPBvPg/YgfkCDrye
+X-Gm-Message-State: AOJu0YwBEXzvPQCxEHuPMCHSS+COI+d+p/rvRM7GPGmsYqe6aQplU+4l
+	JrTo2jPkqxSjBUTP8NNRJNTc1nZ96myKir2wlDMgyqotKWK/7apgeAWe7XOCmg==
+X-Google-Smtp-Source: AGHT+IHoTLy96lnTot9lV6tf8v8y5FjCsg2pi+6/z9+EsMTq9y6GOWe4f+Kb9sW+jUBX0SWgMLT99Q==
+X-Received: by 2002:a05:6359:4119:b0:18d:8d90:5844 with SMTP id kh25-20020a056359411900b0018d8d905844mr151395rwc.8.1713903113182;
+        Tue, 23 Apr 2024 13:11:53 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id t25-20020ac87619000000b00437a6e5b3fdsm5148572qtq.66.2024.04.23.13.11.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Apr 2024 13:11:52 -0700 (PDT)
+Message-ID: <36bb7ceb-2efe-42d2-977b-b6fd6a7a5ede@broadcom.com>
+Date: Tue, 23 Apr 2024 13:11:49 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] dt-bindings: serial: brcm,bcm2835-aux-uart: convert to
+ dtschema
+To: Pratik Farkase <pratikfarkase94@gmail.com>
+Cc: Pratik Farkase <pratik.farkase@wsisweden.com>,
+ Conor Dooley <conor.dooley@microchip.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Stefan Wahren <wahrenst@gmx.net>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org
+References: <20240419134010.105297-1-pratik.farkase@wsisweden.com>
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <20240419134010.105297-1-pratik.farkase@wsisweden.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="00000000000043f6cd0616c92af1"
+
+--00000000000043f6cd0616c92af1
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -2.8 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v7 1/3] serial: sc16is7xx: announce support of
- SER_RS485_RTS_ON_SEND
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, 22 Apr 2024 16:32:13 +0300
-Konstantin Pugin <ria.freelander@gmail.com> wrote:
-
-Hi Konstantin,
-
-> The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, but
-> after the commit 4afeced55baa ("serial: core: fix sanitizing check for
-> RTS settings") we always end up with SER_RS485_RTS_AFTER_SEND set and
-> always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT, which
-> breaks some hardware using these chips.
-
-it took me a long time to properly understand what you meant in your
-commit message. In my setup, I have the property rs485-rts-active-low
-defined, and couldn't reproduce the problem. It is only after I
-commented this property that I got a warning about the "invalid RTS
-setting"... I also got it by defining rs485-rts-active-high.
-
-I suggest the following changes to the commit message:
-
-----
-When specifying flag SER_RS485_RTS_ON_SEND in RS485 configuration,
-we get the following warning after commit 4afeced55baa ("serial: core:
-fix sanitizing check for RTS settings"):
-
-    invalid RTS setting, using RTS_AFTER_SEND instead
-
-This results in SER_RS485_RTS_AFTER_SEND being set and the
-driver always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT,
-which breaks some hardware using these chips.
-
-The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, so fix
-this by announcing support for RTS_ON_SEND.
----
-
-If you agree to these changes, feel free to add:
-
-Tested-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
-Hugo.
-
-
+On 4/19/24 06:40, Pratik Farkase wrote:
+> Convert the Broadcom BCM2835 Auxiliary UART to newer DT schema.
+> Created DT schema based on the .txt file which had
+> `compatible`, `reg` `clocks` and `interrupts` as the
+> required properties. This binding is used by Broadcom BCM2835
+> SOC used in some Raspberry PI boards.
+> Changes from original file:
+> Implemented complete example which the original txt binding lacked.
 > 
-> Fixes: 267913ecf737 ("serial: sc16is7xx: Fill in rs485_supported")
-> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 03cf30e20b75..dfcc804f558f 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -1449,7 +1449,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
->  }
->  
->  static const struct serial_rs485 sc16is7xx_rs485_supported = {
-> -	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND,
-> +	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
->  	.delay_rts_before_send = 1,
->  	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
->  };
-> -- 
-> 2.34.1
-> 
-> 
-> 
+> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Pratik Farkase <pratik.farkase@wsisweden.com>
 
-
+Acked-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
-Hugo Villeneuve
+Florian
+
+
+--00000000000043f6cd0616c92af1
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
+UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
+KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
+nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
+Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
+KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
+kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
+2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
+3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
+NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
+AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDLk5aR8UHZCXU4R
+LYPrMqD3SrzK7RRZB6jcAs/QmErUMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDQyMzIwMTE1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBmE6Z9mAzC2UecCXFj8WXZXghnwk1dxWFX
+OK1AZ4/6JWh8WKqOV+3yyvfP731Xuvgu8bClvYDGg4B+frJB9tsLBLneOot26jPdGTPWaNj34263
+GkLVd38vRfARpDMhhWz7j6kLaUz+XQpfh5VV3eG09twtiUWJxKj4Yvr3QvSGR1V4+BQCJAVdoi4/
+aFU1uhlvj/ajHfaux3MBE6LaVmH+1KRlp5cAvHsFGhCyWP0kouV3thDCWnUDctCc7kq4hAtBWi/z
+P7Xpqt2I21hDG3MXY82RCaBurIWVkcLufohBGsx8c+Y7PUkD49DZVfHlPWM+51+dIfjF5Jv12x7P
+8U8U
+--00000000000043f6cd0616c92af1--
