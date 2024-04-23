@@ -1,116 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F5F46441;
-	Tue, 23 Apr 2024 07:38:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB2247A5D;
+	Tue, 23 Apr 2024 07:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713857931; cv=none; b=auiBXftCscdy1v3JteyE6UXnPdDO023fsUB1RZrT0eJj5lV2XXQ6QbP+zXeaEOZ44AVWBEL0iCz7uz7rGedi0/ZODbdZJshyic8cKxewU4/L8JUzFqmk8ATaksWz1PQj5vNIH3QvGU7gWCamQaXqaBq0JwIx8wPT6V+MQ2AEBNc=
+	t=1713858321; cv=none; b=IV/YGt1NFlLTq5VF3f2CZRtTIbMYnpWqIkPqH0b89WARVq8mcRWEDS7pRZRWh1k0O6TyRXm88GgcNREj9nxPT67zULSXXcUrdmB9T7mZg98Mw/B0AZK7Yez+wDVsHrY8p6e7kqi+5BwqsBBtYV2W8mWPSOTDhNX+Hs65zv+rrlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713857931; c=relaxed/simple;
-	bh=mjRkFfdBtZbVYBPrvsjPmWl58HkXWr16xgIBP3dQroM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=COuefhTOhK8DI4ss2fOuEjv8uAb0+mEcyP6subvAxUnwnFt4Xv/wA0S6q1dYcudFqWQs7E9pwGod0fmudnC0pU8PEWo9bLHx8OoSA/4XIUvV472TggvfkSVDmve/iE2brcMDUfSLkJuKQLMmq4XpcX09NUmVeRKEwaNGqwajEbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g2nCNumm; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g2nCNumm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713857929; x=1745393929;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mjRkFfdBtZbVYBPrvsjPmWl58HkXWr16xgIBP3dQroM=;
-  b=g2nCNummvlRj+JVkPdJL1qOV+3rWgeywty2ipzANBbnJsXrpqJJhNC7x
-   dGhRdKrMZSNTTUv7zqboihF8yRIa41pCGR5wGmoqMRkgLsiM8PALfGbR1
-   QdhdVn+mJmY7z6GSblg/InVuNT9Rjr5AtxSwnZ3T6ufoZTK95L2gBnmWx
-   axZ/DlclZSuohycmHPNp5Se6llS/di/BlqDwFb3xVT7eUAq0rvYY2Du5K
-   lXp5pwMepesZQcGKV6qnCKNpwAwNpF8ae4EQ3zNICZrq10y2XAS9Y9ttD
-   omYiHR2SC0iie8sQ17O7EN5NbilH9cgNWuen1tOzmGrUrFS0yOTUm+Cb1
-   A==;
-X-CSE-ConnectionGUID: GvO6N5AUR2yId7/OmN5Dmw==
-X-CSE-MsgGUID: SWnKJNYuTzqKvj7J1LwpQg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11052"; a="31918033"
-X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="31918033"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 00:38:48 -0700
-X-CSE-ConnectionGUID: s/KDoHdVTiSM0XnX3bJmkw==
-X-CSE-MsgGUID: mzxAigJiRoSRJZwbwrOibA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="24332315"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa006.fm.intel.com with ESMTP; 23 Apr 2024 00:38:37 -0700
-Date: Tue, 23 Apr 2024 15:33:16 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Corey Minyard <minyard@acm.org>,
-	Peter Huewe <peterhuewe@gmx.de>,
-	Jarkko Sakkinen <jarkko@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-	Xu Yilun <yilun.xu@intel.com>, Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-	Michael Hennerich <michael.hennerich@analog.com>,
-	Peter Rosin <peda@axentia.se>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-	Keyur Chudgar <keyur@os.amperecomputing.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Yisen Zhuang <yisen.zhuang@huawei.com>,
-	Salil Mehta <salil.mehta@huawei.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Xiang Chen <chenxiang66@hisilicon.com>,
-	"James E.J. Bottomley" <jejb@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Shan-Chun Hung <schung@nuvoton.com>, Arnd Bergmann <arnd@arndb.de>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Tom Rix <trix@redhat.com>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Randy Dunlap <rdunlap@infradead.org>, Rob Herring <robh@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	openipmi-developer@lists.sourceforge.net,
-	linux-integrity@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-fpga@vger.kernel.org, linux-input@vger.kernel.org,
-	linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
-	linux-omap@vger.kernel.org, linux-rtc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 33/34] drivers: remove incorrect of_match_ptr/ACPI_PTR
- annotations
-Message-ID: <ZidkPHp27jz0t6t3@yilunxu-OptiPlex-7050>
-References: <20240403080702.3509288-1-arnd@kernel.org>
- <20240403080702.3509288-34-arnd@kernel.org>
+	s=arc-20240116; t=1713858321; c=relaxed/simple;
+	bh=YlWrafYSsryw1WA2DVps2oKJSLldPSuYQXcKQNCFzkg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sv9ulGix9IUiRGLbjP+9gJG3VGbGPJqAvbQ6mGNii8h+ItvxjBmHlXjgRkRi39Y91dXM8k/X+SI9P+K6avalXJiKE8czcE4aBYebgKyXt83mJx5gx4QFISyogFDK2mtTVDx4L8f5/SJtgXA8nez2MvizCNVqEkk3p8wAjf4qnAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-61816fc256dso46471307b3.0;
+        Tue, 23 Apr 2024 00:45:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713858318; x=1714463118;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KQC2VjoXZNyCZnymCSQfxQVu+Uovh24ltYsvubEZVx0=;
+        b=QNKQn4AAhlAqJGIRLmeIQo4MrUfiMAOInIOfivUAtupgRirRJAV8fRs5bCAmkWKXzF
+         k3K3QxOrk0sGpejGZkCF8/h1ZaZqCz+22UcS30ZdfIT0LZj1g4LHgAGOnBrARgygmtWX
+         AhF449hkoReLTfHBbfJCfTvfKg3IxrFvRVuXfSu7E1D7RMNTPJb3duRaOzjwdkKAZCGm
+         cr2VoUdOALfcv9E2OL9q/DpaSOtuB9VnR6AVz+pHoHaOQJF/kSP09DSKyQRCNmvxyAqJ
+         uJXrLrCZBfDisUe57mDIdMgsJ8y5xpg7CTzZBVRK1UrCb3R2ln1ZVjOLznZ5mcEN6jBF
+         RtGw==
+X-Forwarded-Encrypted: i=1; AJvYcCUvc725/RgZeuOKefGqn1NbWf1KFNajzKBP4ed7EFqypjnnYLH8U5xSfrk8HLHBMmcOGj/GDN7KbaFHIjCqHlg2v2//joGp0oWDkbR5+G+4l1lej7gU1XcuqPkwhEaDSYm+S+Foc+TlTIMRTo8jIlj2Rvir33sBKfSrVunqKN+lSkulc4o=
+X-Gm-Message-State: AOJu0YwAQWd29RJvfvL7GNWY/t77gw8CUU/yo5RY/Oa+u0MLRCB6BzZT
+	a0Jk/FKF+RlYq/ruwEk6//9KwocPPyEFaVNtoEryB/+0Q97pIw/r01sv3W6v
+X-Google-Smtp-Source: AGHT+IHnOT9odmIj3TVq8cnVLg6puOJjxn7GuhCpsCQafwSoInzGdx8fIa2ITxbbZtjVedu729lgVQ==
+X-Received: by 2002:a05:690c:c8e:b0:618:8b6c:6c1b with SMTP id cm14-20020a05690c0c8e00b006188b6c6c1bmr13028736ywb.4.1713858318219;
+        Tue, 23 Apr 2024 00:45:18 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id df8-20020a05690c0f8800b0061ab3ff3f22sm2344729ywb.82.2024.04.23.00.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Apr 2024 00:45:18 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-de45dba15feso5399051276.3;
+        Tue, 23 Apr 2024 00:45:18 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXw6s27rCsvCgD7+O/prEhxTBuhAHFEEwNhzxCLXtVQbbe0Xqi5jerC4U9owPEuVgWPXtHs0YJdMtvwr3R7CCoFJnI2o8IPJf8vdZXLr8BxIBqxFVKX8wUOOX2FogpZe7ZUQpH6SWapvYxMYG2ssrNN05b38o13/D1qb8PcKu7F9A+xMYQ=
+X-Received: by 2002:a25:ae61:0:b0:dd1:3cc1:5352 with SMTP id
+ g33-20020a25ae61000000b00dd13cc15352mr12105050ybe.15.1713858317795; Tue, 23
+ Apr 2024 00:45:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240403080702.3509288-34-arnd@kernel.org>
+References: <20240422111123.1622967-1-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdUXRx1-95PD_WG4X=y4UefYXzTqm7T2mi+di+ZdKGUXYA@mail.gmail.com> <DU0PR04MB9417D8D052B09BC9FA58826B88112@DU0PR04MB9417.eurprd04.prod.outlook.com>
+In-Reply-To: <DU0PR04MB9417D8D052B09BC9FA58826B88112@DU0PR04MB9417.eurprd04.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 23 Apr 2024 09:45:05 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWvACWWSJUsaT9FYVN=VCzAjJpxmJJpK1h3CA_gbWKVsQ@mail.gmail.com>
+Message-ID: <CAMuHMdWvACWWSJUsaT9FYVN=VCzAjJpxmJJpK1h3CA_gbWKVsQ@mail.gmail.com>
+Subject: Re: [PATCH] serial: sh-sci: Call device_set_wakeup_path() for serial console
+To: Peng Fan <peng.fan@nxp.com>
+Cc: Claudiu <claudiu.beznea@tuxon.dev>, 
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>, 
+	"ulf.hansson@linaro.org" <ulf.hansson@linaro.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+	"linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> diff --git a/drivers/fpga/versal-fpga.c b/drivers/fpga/versal-fpga.c
-> index 3710e8f01be2..e6189106c468 100644
-> --- a/drivers/fpga/versal-fpga.c
-> +++ b/drivers/fpga/versal-fpga.c
-> @@ -69,7 +69,7 @@ static struct platform_driver versal_fpga_driver = {
->  	.probe = versal_fpga_probe,
->  	.driver = {
->  		.name = "versal_fpga_manager",
-> -		.of_match_table = of_match_ptr(versal_fpga_of_match),
-> +		.of_match_table = versal_fpga_of_match,
+Hi Peng,
 
-For this part
+On Tue, Apr 23, 2024 at 9:35=E2=80=AFAM Peng Fan <peng.fan@nxp.com> wrote:
+> > Subject: Re: [PATCH] serial: sh-sci: Call device_set_wakeup_path() for =
+serial
+> > console
+> > CC Peng
+>
+> Thanks for Ccing me, but I am not familiar with sh-sci driver (:
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+But you are with the IMX pmdomain driver, so please read on ;-)
+
+> > On Mon, Apr 22, 2024 at 1:11=E2=80=AFPM Claudiu <claudiu.beznea@tuxon.d=
+ev>
+> > wrote:
+> > > From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> > >
+> > > In case the SCI is used as a UART console, no_console_suspend is
+> > > available in bootargs and SCI is part of a software-controlled power
+> > > domain we need to call device_set_wakeup_path(). This lets the power
+> > > domain core code knows that this domain should not be powered off
+> > > durring system suspend. Otherwise, the SCI power domain is turned off=
+,
+> > > nothing is printed while suspending and the suspend/resume process is
+> > > blocked. This was detected on the RZ/G3S SoC while adding support for
+> > > power domains.
+> > >
+> > > Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+
+> > > --- a/drivers/tty/serial/sh-sci.c
+> > > +++ b/drivers/tty/serial/sh-sci.c
+> > > @@ -3441,8 +3441,12 @@ static __maybe_unused int sci_suspend(struct
+> > > device *dev)  {
+> > >         struct sci_port *sport =3D dev_get_drvdata(dev);
+> > >
+> > > -       if (sport)
+> > > +       if (sport) {
+> > > +               if (uart_console(&sport->port) && !console_suspend_en=
+abled)
+> > > +                       device_set_wakeup_path(dev);
+> >
+> > device_set_awake_path(), as of commit 10bb4e4ab7dd3898 ("PM: sleep:
+> > Add helpers to allow a device to remain powered-on") in v6.6 (although =
+I'm
+> > still a bit puzzled about the difference).
+> >
+> > > +
+> > >                 uart_suspend_port(&sci_uart_driver, &sport->port);
+> >
+> > I think it would be better to make this more general, and move the call=
+ to the
+> > existing console_suspend_enabled handling in uart_suspend_port().
+> >
+> > > +       }
+> > >
+> > >         return 0;
+> > >  }
+> >
+> > If this works, we can remove the console_suspend_enabled handling from
+> > drivers/pmdomain/renesas/rmobile-sysc.c, and revert commit
+> > 309864dcf92b76fc ("genpd: imx: scu-pd: do not power off console if
+> > no_console_suspend").
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
