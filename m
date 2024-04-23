@@ -1,120 +1,145 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F6B13BADD;
-	Tue, 23 Apr 2024 15:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D7817BA8;
+	Tue, 23 Apr 2024 15:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713884748; cv=none; b=IouaFfEhI5JFOjLh3iHzkk6DfrQ53CaqUuBR7jzQokDOr8v+YuivW9xufn2J9BT2ezO/t4GyJzAPT91dcWrQtY76beXRrxKs0RGN9dUQrdU99C8NLOsb37pIXS1U5igCZ0bfd/yi+a8mgua2qKphsKJhkH30/EbtYl3flaoWSdc=
+	t=1713886484; cv=none; b=fCDs+l3kMfwKx5GCgfRBcHaRS+fd/6pvTYxqtdlaMVM7q2XrKJue5VkEmGSc+NBQ8QY7LBSSIIUb24Kathb9P0Z5PIeeDdiERFlQoSdaG5J7ADhfso4KHRQ0xuF+eUSXpLDJ0rqmhRkb3+3G8YMhdyhKQ+3fYZoDPrUTCsaAV0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713884748; c=relaxed/simple;
-	bh=h5kV1l89BoEi9fDSpK7Gp7bev6cXdWjIrcXMe8EAFxc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kOhbKrw+K/QKmfJht9gpKP7/71iinoTQSWOxAcYKtQWzaLCOUfx3+Cx3RbWNi4Mvd72qXw1kODCYZeaeBV30Z6N0dqslzsQWc5Tr5rJTi+ejzslBhyFyEA41arz3ngPG1Mxi0/Xzpy7JX1cndTVNXdHnRS/sihxNcQQV3M6e3Wg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.161.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5ad2da2196aso2331436eaf.2;
-        Tue, 23 Apr 2024 08:05:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713884742; x=1714489542;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rAVYrqEHhFdWuNhEyQZKOUcz0r0/ZgTBbeGf7YkVpTw=;
-        b=bT/euAxKkU9GbwJlm9WFGZlYBjO2GmwEU7xW5Yvup0tjaygrYhJBaK8TEffa/N0tXW
-         mZtZJZOtP8R6U/4fxm7cfzsm084EGpcKpyX1yDj8/WpJ10iBbJvHsPcVxT8L4l6ovjus
-         9wU9ugndeXeS4PnsYc/4PPaKALqGIffajeul0jh8F7rCED1CNEhylQCqGCHaeghAMhGE
-         +iSo+Umu4obs9Mihupkip//o+Uj2gChjeUkNkEAOaWtQnCVSdtthtFXl8OcpixgKp0ya
-         nknBXSuz3GurQdNyMZe0NZ2CzIkDFRt3HZ8gss9dYC2x5Fi/yOvdG1RpZxEBH4v93Ra4
-         xItw==
-X-Forwarded-Encrypted: i=1; AJvYcCUk4RW5/UgIbOAPoNBFthz1iZR3E4R+cblw892YkX7HnkQo9JioulNIeyvgC88+DbHLPQ6+C/Fmd0rA0Nk/B0BJYiqgUpD/EvATpvAgI6jVVHBb9BtU2BVf2O+GyHX3Sc1BA8MVblKHPXSjaUnKWuHl21yf/VPWfJtur/zvpKZYc5ECDUo=
-X-Gm-Message-State: AOJu0Yxn7vLydNhuxv/86Qf4+WovsuF6lzyugueVSV+lQjSj2bx1UyBC
-	fIlhFS/S96MTe91f60dwDGmgZb9Mw0w4E0FMox9ZB8RZdWpQzKCcSuEMOXis
-X-Google-Smtp-Source: AGHT+IGXHW6AudjriUZ7U0rbyVVeOreoHKa/wNFM1GRx5XBd1bjI8PswXDqWnXR/d9m7B7DV4ROSYQ==
-X-Received: by 2002:a4a:b0c8:0:b0:5ac:5c89:2d08 with SMTP id l8-20020a4ab0c8000000b005ac5c892d08mr14998511oon.1.1713884742089;
-        Tue, 23 Apr 2024 08:05:42 -0700 (PDT)
-Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com. [209.85.161.44])
-        by smtp.gmail.com with ESMTPSA id s68-20020a4a5147000000b005a48e64c699sm2627028ooa.40.2024.04.23.08.05.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Apr 2024 08:05:40 -0700 (PDT)
-Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-5af27a0dde1so1335562eaf.3;
-        Tue, 23 Apr 2024 08:05:40 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXw/bORkETv/D41c6VoBm5srTy6YEBrXUUtObPXApu3+iKcMoKviPOI7kYIa7roZPtsaHuefScdmSzhncuCo3ex/BNsDqGqAxNtYHe9XEmF4GUFUbF/ggKaPTQ5wMZlKQViLHDD+E9yUHqy7E08Rf/QTXl53OyJELLgeXDhWPh+Oo/verk=
-X-Received: by 2002:a05:6358:b5d3:b0:17e:6a5b:4d3a with SMTP id
- wb19-20020a056358b5d300b0017e6a5b4d3amr18788376rwc.8.1713884740245; Tue, 23
- Apr 2024 08:05:40 -0700 (PDT)
+	s=arc-20240116; t=1713886484; c=relaxed/simple;
+	bh=3Z022LAb/Qc9gVEiSFfHMGtWUvt0++jo6l9pERyHz6E=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=bG68m7q0Sxd1w9Otkw69/fUf8l/Jmm4WoPx86FSIJNutwcoiT8we+WwBHgUpUn2DnDu1NeL2CVRCN8n/p+ZGY0UiwB9I+E9HfWvIz/C1movpeOfJ6V6+rbcVxJcU/UISb+LctrNJkSa9XhtDEUVafsovS8luTexgSU5IO4+MdCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=t3iNJ5QE; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="t3iNJ5QE"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=vNvK7sZ4T6Ritg0ROl4LFENFoZaJBNwoxwSP8BQf7Vg=; b=t3iNJ5QE6Xzk0W1MN0iF//uP7f
+	2+qDfcOXW2Z/lOJP0aXmFDGdyW9VeNVcbPsbS+wQQlL1liAmpdkpYpDTiAqpdkdAWAqRflFOpu5mR
+	Gc1jI1Fsdh7MIfqgjDIoaJjTzebKdOrfk2vzmNghlvJSWeaoDL9/HU2l84+5Lk203res=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:40398 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1rzI9w-0007G0-0X; Tue, 23 Apr 2024 11:34:17 -0400
+Date: Tue, 23 Apr 2024 11:34:15 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, peterz@infradead.org, mingo@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20240423113415.7e81fa1de7f98f91d244b87a@hugovil.com>
+In-Reply-To: <CAMuHMdXqc9tZkd7YzX56QRroDhjbweQAUj+th68DU8oFxpp+jg@mail.gmail.com>
+References: <20240409154253.3043822-1-hugo@hugovil.com>
+	<20240409154253.3043822-4-hugo@hugovil.com>
+	<CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
+	<CAHp75Vfi2YjE0wzwABURxXhcWLozAf9Cdj_pT+DL_tm8E_zm4Q@mail.gmail.com>
+	<CAMuHMdXqc9tZkd7YzX56QRroDhjbweQAUj+th68DU8oFxpp+jg@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240422111123.1622967-1-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdUXRx1-95PD_WG4X=y4UefYXzTqm7T2mi+di+ZdKGUXYA@mail.gmail.com> <3d8925a8-32ee-467a-aca7-d4a04f26821f@tuxon.dev>
-In-Reply-To: <3d8925a8-32ee-467a-aca7-d4a04f26821f@tuxon.dev>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 23 Apr 2024 17:05:27 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVoK_qC8JPdRUQQZvNNLzuufWidxjee2HW7KrDGiNJCMQ@mail.gmail.com>
-Message-ID: <CAMuHMdVoK_qC8JPdRUQQZvNNLzuufWidxjee2HW7KrDGiNJCMQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Call device_set_wakeup_path() for serial console
-To: claudiu beznea <claudiu.beznea@tuxon.dev>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, ulf.hansson@linaro.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.8 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v4 3/5] serial: sc16is7xx: split into core and I2C/SPI
+ parts (core)
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-Hi Claudiu,
+On Tue, 23 Apr 2024 15:11:12 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-On Tue, Apr 23, 2024 at 2:47=E2=80=AFPM claudiu beznea <claudiu.beznea@tuxo=
-n.dev> wrote:
-> On 23.04.2024 10:27, Geert Uytterhoeven wrote:
-> > On Mon, Apr 22, 2024 at 1:11=E2=80=AFPM Claudiu <claudiu.beznea@tuxon.d=
-ev> wrote:
-> >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> >>
-> >> In case the SCI is used as a UART console, no_console_suspend is
-> >> available in bootargs and SCI is part of a software-controlled power
-> >> domain we need to call device_set_wakeup_path(). This lets the power
-> >> domain core code knows that this domain should not be powered off
+Hi Geert,
+
+> Hi Andy,
+> 
+> On Tue, Apr 23, 2024 at 12:37 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Apr 23, 2024 at 1:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > On Tue, Apr 9, 2024 at 5:48 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> 
+> > > > -config SERIAL_SC16IS7XX
+> > > > -       tristate "SC16IS7xx serial support"
+> > > > +       tristate "NXP SC16IS7xx UART support"
+> > >
+> > > Hence this replaces SERIAL_SC16IS7XX_CORE by SERIAL_SC16IS7XX,
+> > > so arch/mips/configs/cu1??0-neo_defconfig needs to updated.
 > >
-> > know
+> >         select SERIAL_CORE
+> > -       depends on (SPI_MASTER && !I2C) || I2C
+> > +       select SERIAL_SC16IS7XX_SPI if SPI_MASTER
+> > +       select SERIAL_SC16IS7XX_I2C if I2C
 > >
-> >> durring system suspend. Otherwise, the SCI power domain is turned off,
+> > > So if SPI_MASTER or I2C is enabled, the corresponding SERIAL_SC16IS7XX_*
+> > > subdriver can no longer be disabled?  According to
+> > > https://lore.kernel.org/all/20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com/
+> > > you did want to support that?
 > >
-> > during
-> >
-> >> nothing is printed while suspending and the suspend/resume process is
-> >> blocked. This was detected on the RZ/G3S SoC while adding support
-> >> for power domains.
-> >>
-> >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> > I believe it has been taken from one of the IIO drivers as an example.
+> 
+> Looks like a bad example to follow:
+>   1. The driver question now pops up if both I2C and SPI_MASTER
+>      are disabled,
 
-> > If this works, we can remove the console_suspend_enabled handling
-> > from drivers/pmdomain/renesas/rmobile-sysc.c, and revert commit
-> > 309864dcf92b76fc ("genpd: imx: scu-pd: do not power off console if
-> > no_console_suspend").
->
-> OK, first I'll go with this patch and after things settles down with it
-> I'll propose changes for rmobile-sysc and imx. Is this ok for you?
+True.
 
-I have already made these changes to rmobile-sysc locally to test
-your patch ;-)
+V3 originally had this:
 
-It works fine on R-Mobile APE6, so
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>  config SERIAL_SC16IS7XX
+>         tristate "SC16IS7xx serial support"
+>         select SERIAL_CORE
+> -       depends on (SPI_MASTER && !I2C) || I2C
+> +       depends on SPI_MASTER || I2C
 
-Gr{oetje,eeting}s,
+And Andy commented "Is it?", which I probably misinterpreted as I should
+not list them as dependencies.
 
-                        Geert
+Reintroducing "depends on SPI_MASTER || I2C" fixes this issue.
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+>   2. What if SERIAL_SC16IS7XX_CORE is builtin, but I2C and/or
+>      SPI_MASTER are modular?
+
+a) SERIAL_SC16IS7XX builtin and I2C modular:
+CONFIG_SERIAL_SC16IS7XX=y
+CONFIG_SERIAL_SC16IS7XX_I2C=m
+CONFIG_SERIAL_SC16IS7XX_SPI=y
+
+SPI_MASTER is only boolean and cannot be modular.
+
+Hugo.
+
+
+> 
+> I believe the only way to fix that is by letting the sub-drivers select the
+> core driver, like before.
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> -- 
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+> 
+
+
+-- 
+Hugo Villeneuve
