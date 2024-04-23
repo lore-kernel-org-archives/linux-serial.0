@@ -1,136 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EF4C135414;
-	Tue, 23 Apr 2024 13:49:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E716138499;
+	Tue, 23 Apr 2024 14:01:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713880188; cv=none; b=uaQmvceCJxzWx+rZVugaD+Z91UWrvIeG1cJgNXd0qRgCgQqtt/n21j7adU6AmknQuypjeSlxb4yNvZrznrGRtwBG2zwGx6wGER4k7TRI9u01NnWOgA1xrIJTa4auU3KbJ9bvJu4ZsiLyhRmCQ93Jpmp81XTwjghw8eM7wFZa7oU=
+	t=1713880912; cv=none; b=kXTMx9hk0dAuZludroeeFC/38U398BmkWPSas7DWZczwsbu4idG6jNMpX6LA8skB2Jilwtb+lL1B2eazB0KoqaW0L3n49Mz7eL6bn+ypW/xVQq6Bcvw6+8Tu5KStJPXuaqKUCFj1r/tXjNfcNX3+YkJ/22yr5jCHaZcHD3zo+hs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713880188; c=relaxed/simple;
-	bh=y+FZeyag9s8pm1Ma8OkWI5S3u24aLPE9Q9mxzb0cHBk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=I7OK83xNxzUwD+4sud0nfMX/OR6SF0OVoqSaZP9sV5z432mYTOOTOqVcwQPrIjohUjARXPQd2zyXuY/I/HinRr3/y528ZzqFHpeD5+Z/N3GT/xcihy91EK5HbI2eX34LwM02qhmvS8SRQvwWKaEhiACJ0eJGeI2ikd2hL//ZQ54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EVFwk1uP; arc=none smtp.client-ip=192.198.163.17
+	s=arc-20240116; t=1713880912; c=relaxed/simple;
+	bh=jurAq+qLuaIebEVYfXbuv3sd0JBoXVXd0/D82SINrxM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H3m9ZqiCNznpaOHkpc4jOZ0J5q1JbSPZvwhNmKaDsiLSC/aMva7H+M2QvOzpU1GA6eqweHs42PGckg5TasBhrCBKXOfvzM08MXUB/TwnqF1YWEpImIYYF491v2O0w7HWoYyD/Gk2xyWJ45tDM2tgAOU9R8aQWk71SaHynP49ZuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cTVbsEpU; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EVFwk1uP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cTVbsEpU"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713880187; x=1745416187;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=y+FZeyag9s8pm1Ma8OkWI5S3u24aLPE9Q9mxzb0cHBk=;
-  b=EVFwk1uPchbDPOadAHSPHVfXeAuNnzgLdKEv+s14a/4Eo+f+6aJbG+1h
-   8QgM+SdjZhLYqE84kvMqyCHSNpQ0Y25fmZ0IiTdjDHP1BmzAGn0jSZYLr
-   N2kIPyknRSeHjatByocR6NnEwn00Kchl4/+kd4iR/8pitUbFg5F9j/rwO
-   hbemT5TTr4kqJPYhCYEHlgtRqfpeP5GwQfnfcoQIPuTNiHdoap1HjybcX
-   XtoUGqK7Bjg1xagH3R/a96ZmkJ6OiCKUI5MJ3ixG70mlqdkWTThnGMAKu
-   aD2Wfn7Vox4G5XjSglhhlzCuY/W06lDKgHOL3dFLFBol7VWV/hNXjRvtE
-   Q==;
-X-CSE-ConnectionGUID: fFmRgJ0TSVaXm/XpuXUpgQ==
-X-CSE-MsgGUID: +Rsi5yraTfuW147DeB8ebA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9328669"
+  t=1713880911; x=1745416911;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=jurAq+qLuaIebEVYfXbuv3sd0JBoXVXd0/D82SINrxM=;
+  b=cTVbsEpU/HjSSTvHVOk+b+Jig1lvORwzMD2CbtG4BKUjJIa9UmUUsfJt
+   id2rnqfU/1u8Ff8ihEu1OsVoGRiG9eURCmP3EgOvNrElLtVl0jeLZqGcy
+   eVVedvvbskdQ1vuXUJxHZw5Fa5KJ79m3JaePDuaEKY4Edb0JGf5TzywgH
+   KKLWlvDbE3DiPjXoq3r4ywihprCXKl74UP+Xb70ugyn9+0Xiu7Qp2aVqx
+   Talgkj1UOGo5S+zHmulkZnpJJjXrZ4/1+A7pH8bwRyR5qHm2dTvUI5i/N
+   N8ZuUZAKtd/8gLJh+uB34/Sx6T10PXUjCwdqqa69GjDgkzXAvUMq7ezhU
+   g==;
+X-CSE-ConnectionGUID: 1kAMYkkzTy+XPs+aQh0xxw==
+X-CSE-MsgGUID: YKqLhQD8TSueW5oGw6t1ow==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9629406"
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="9328669"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 06:49:46 -0700
-X-CSE-ConnectionGUID: oXwvmcs+SEiePFvZ/6u8nw==
-X-CSE-MsgGUID: tY/hyZlaQP+/EYsyk3kyyQ==
+   d="scan'208";a="9629406"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 07:01:50 -0700
+X-CSE-ConnectionGUID: gCqOyLsVT6OWoOWf9k9piQ==
+X-CSE-MsgGUID: PRNoTFdfQQ27b3ts/Vcb6w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="61835291"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.40])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 06:49:43 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
+   d="scan'208";a="28835722"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 07:01:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rzGiP-00000000M24-3WsT;
+	Tue, 23 Apr 2024 17:01:45 +0300
+Date: Tue, 23 Apr 2024 17:01:45 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 1/1] serial: 8250_pnp: Simplify "line" related code
-Date: Tue, 23 Apr 2024 16:49:30 +0300
-Message-Id: <20240423134930.67033-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
+Subject: Re: [PATCH 1/1] serial: 8250_pnp: Simplify "line" related code
+Message-ID: <Zie_SWPwpbsdU4mK@smile.fi.intel.com>
+References: <20240423134930.67033-1-ilpo.jarvinen@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240423134930.67033-1-ilpo.jarvinen@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-8250_pnp sets drvdata to line + 1 if the probe is successful. The users
-of drvdata are in remove, suspend and resume callbacks, none of which
-will be called if probe failed. The line acquired from drvdata can
-never be zero in those functions and the checks for that can be
-removed.
+On Tue, Apr 23, 2024 at 04:49:30PM +0300, Ilpo Järvinen wrote:
+> 8250_pnp sets drvdata to line + 1 if the probe is successful. The users
+> of drvdata are in remove, suspend and resume callbacks, none of which
+> will be called if probe failed. The line acquired from drvdata can
+> never be zero in those functions and the checks for that can be
+> removed.
+> 
+> Eliminate also +/-1 step because all users of line subtract 1 from the
+> value.
 
-Eliminate also +/-1 step because all users of line subtract 1 from the
-value.
+Also noticed that, looks like a leftover from the legacy PM callbacks that
+might be called without probe being succeeded.
 
-Signed-off-by: Ilpo JÃ¤rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_pnp.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 8f72a7de1d1d..fc206afaf671 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -434,8 +434,9 @@ static int
- serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- {
- 	struct uart_8250_port uart, *port;
--	int ret, line, flags = dev_id->driver_data;
-+	int ret, flags = dev_id->driver_data;
- 	unsigned char iotype;
-+	long line;
- 
- 	if (flags & UNKNOWN_DEV) {
- 		ret = serial_pnp_guess_board(dev);
-@@ -493,7 +494,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	if (uart_console(&port->port))
- 		dev->capabilities |= PNP_CONSOLE;
- 
--	pnp_set_drvdata(dev, (void *)((long)line + 1));
-+	pnp_set_drvdata(dev, (void *)line);
- 	return 0;
- }
- 
-@@ -502,17 +503,14 @@ static void serial_pnp_remove(struct pnp_dev *dev)
- 	long line = (long)pnp_get_drvdata(dev);
- 
- 	dev->capabilities &= ~PNP_CONSOLE;
--	if (line)
--		serial8250_unregister_port(line - 1);
-+	serial8250_unregister_port(line);
- }
- 
- static int __maybe_unused serial_pnp_suspend(struct device *dev)
- {
- 	long line = (long)dev_get_drvdata(dev);
- 
--	if (!line)
--		return -ENODEV;
--	serial8250_suspend_port(line - 1);
-+	serial8250_suspend_port(line);
- 	return 0;
- }
- 
-@@ -520,9 +518,7 @@ static int __maybe_unused serial_pnp_resume(struct device *dev)
- {
- 	long line = (long)dev_get_drvdata(dev);
- 
--	if (!line)
--		return -ENODEV;
--	serial8250_resume_port(line - 1);
-+	serial8250_resume_port(line);
- 	return 0;
- }
- 
 -- 
-2.39.2
+With Best Regards,
+Andy Shevchenko
+
 
