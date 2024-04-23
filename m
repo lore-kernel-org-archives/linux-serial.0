@@ -1,49 +1,55 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA545FB9C;
-	Tue, 23 Apr 2024 10:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED18D527;
+	Tue, 23 Apr 2024 10:37:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713866593; cv=none; b=UGbNDNJTZhaNas+wFxA1ENxtNko9Scvw3a8YyXzVbZHMPxIjUrkuD655WcbKI4ApHtN+xdZLMK6iF0SVewmbV/HtSDlwT2fL8lFICF4SqkCzcxveiBY/toLdQQew8mtvbpWnx1VPidNAqWo60VjNMzkWGdocOnCTL+40bXi0EKY=
+	t=1713868633; cv=none; b=cx1OdcQMtFiJTLXAoSpTvV5qEo3sWEP1a9nDWqSMPteQs2eLdu6AW3RtYGRrZz2M3WfgGrts9UkA3YLQy/RMpvIdsh5bCwf8RVah+giBfdBkT7jgVloRd/qcbS7NWt1D2KQsNZKawzUZbXwYjdEesuOQHoShYiCrBv6AQ+WjeV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713866593; c=relaxed/simple;
-	bh=ubi5lY9jdoMRFD0hpTrFY3X8qGf9sZbmLl66vsqVJ2w=;
+	s=arc-20240116; t=1713868633; c=relaxed/simple;
+	bh=oQzpIetGYEjpNjrW802xBPkO5SLHFUj/yYs7N+iAehQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HG++dDLfXblX37bh7naJQ9NYDVyB0SE45iIL8esfK3IqzmN6AXa91Okn6oms5Q68pK0tJRU2izEoy0pXZvOdbPONB6RLxshkRr3kIe+uQx+0u46BiA4lslKNxzGXd9+MEJGO0nCBfCEbfnBzzFLyRE2jR84WQDAAXUvXg0ZarNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	 To:Cc:Content-Type; b=O4B2U1AsZW1PuHGoVXj2xr2kppxwOrF1SBZ8QzPFtb/qs7alSLkT/6u/Gnqfd9jqkalrGqBQk27Rp5/PDaID/SiYZrsIul/IYZjJr7XwSFgUWGFhXlWMDtP0lF/QUrAby8QRXg1vGwm5iO5ErcfKk0Cv/Gin5X9L8yDM3ut22Nk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GgmNbMeh; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-617f8a59a24so45192997b3.1;
-        Tue, 23 Apr 2024 03:03:07 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GgmNbMeh"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-565c6cf4819so11169375a12.1;
+        Tue, 23 Apr 2024 03:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713868630; x=1714473430; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4t1dFtTzt1DbzNhCtENme26b4OP2uWZCLOXLsBPkGec=;
+        b=GgmNbMehz+cIWYTcQ3+6arKep19Ybg3PE5+pcwnnGE1VQsw88KGdYpL4sBpNFxT50W
+         QyjuwBCfLxxH04mO6XiSxGL8vyPwuk4B7u9b6QOylItdNVy0LKVu25CFQ5ep5QwX06Jz
+         8QUxzRlsucxq2SBwi/9SwsjmbA7AthccV2iLu8w9izCEYNs4mNRTpaj028OOOMx8vPei
+         tHEgBdaeDm9dOM5s8aDB+5KL/QVRmVkOd+Bqc2f7xWr8wd4VWss6HiJP+msXMV6Wnrzc
+         357wobya0E2Pe83VsoKx8Gw1b9f3xuVErLb72dD1b4PP10joqHcuJFm0LgnXRwaDJMsz
+         UxIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713866584; x=1714471384;
+        d=1e100.net; s=20230601; t=1713868630; x=1714473430;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8iCIO75E6eRSEMI68ISqOBTKwQen37nd2kUoY+O+raQ=;
-        b=SmXnQ+7R0E6SJqYGh02/BDkRhaX9wySaPWbJh67BdeF+/2oJHboEz9IfW3OF7uQ4bK
-         uCwO6JOies1+wrOFsGpht0oX1rbozJt3KJo2qWYX9DB7xV4r3bueLmCwP4oPfrLdH8oy
-         kxiuAFawxWl5U57ElSviepGISFbusM5hoLiq17cssDeNLZA1lTKm0zI0tBlH6obTT+Q/
-         v+7Hg6uc7nspxP+v25Ysj4ZdV1jbCc86xE1TOVj595mHdaYEcTip59SKDX6OKwIfdsqd
-         Hr5uCOGep7XwJImDbEerA293S+1VrxX7jiB3/+bvIJcYXn+3iIq6f8jpRf5uakwEeNdv
-         0J8A==
-X-Forwarded-Encrypted: i=1; AJvYcCV1egPGwd2js98JmicK1kS/PlumAFzAyBfr+lCm7Hy0FR2Ws5RQ9smusbI9SQdhbz3B+TgN0c+DKGrs3Ba9rtn64vGOi0sM74vw1YInhatek/Rl79a/zbHlwMIzOaZtC0E1cfugEujsFbHv
-X-Gm-Message-State: AOJu0YxnccOoHTV3ftfJjlBnVU38dXAOPX1nqGOPF8Sy+ONTF1flwHQp
-	HIVhDmMA8MLtKHs/17ZYdceJvyauD0gJ4cHYSBUVPgxwkNjcftGXlyJOXErb
-X-Google-Smtp-Source: AGHT+IHnWmbdRZTfwVxFQXITiziChvLPzY3uzO1kBrFNurUQsQWW3Hwr1lt9uTg4fWBtUlTTup7aiQ==
-X-Received: by 2002:a05:690c:630c:b0:61a:c439:9b36 with SMTP id ho12-20020a05690c630c00b0061ac4399b36mr15658777ywb.4.1713866584489;
-        Tue, 23 Apr 2024 03:03:04 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id t192-20020a0deac9000000b0061accf6a37esm2422375ywe.131.2024.04.23.03.02.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Apr 2024 03:03:04 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-de46da8ced2so5311154276.0;
-        Tue, 23 Apr 2024 03:02:48 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVUIqlDj2pGlKC/vRBOOOfQSQMaaseSzYevPRdGxUSjVO+0FZyz3e/c3S+WCvftZOUJHuFgVgFE39WtTfzA7ufzFMwYjlJiZkl51NkgUVbyimfPSgGfTnyvHZW4i+xp4A9385wU6CYE0LHb
-X-Received: by 2002:a25:fc17:0:b0:dcc:d694:b4a6 with SMTP id
- v23-20020a25fc17000000b00dccd694b4a6mr12051653ybd.15.1713866568604; Tue, 23
- Apr 2024 03:02:48 -0700 (PDT)
+        bh=4t1dFtTzt1DbzNhCtENme26b4OP2uWZCLOXLsBPkGec=;
+        b=AwpCquO4dSiTlR5f4v5t74Ws2DOwuHr6svUFEk5fMxr5dN1ufPkbBJSxI+2C7d6Jts
+         Q8krXdrTRQa8UY/Qb87gbhsRc7caa/L1eryqZNsHCQ6xnXeEZay+UtFDlNwBojitrS2H
+         XlHAorK+K4sRigIMqGaMRxBpcQV7iUgCPs7O3ZpD4hrNdufz81RTRSHAYesAfCox9VX4
+         v815Un4NFrP8D4xx/6EAFcgFIk/b/Q7fM3gbHh34tqhk+6eVpf1p6cJnSx8+PRR8PASU
+         cSeOXbxXngiIlBcnTyc6UGYUKMdll0kEsldt8WfeL/izziG1NY8zocGnDEDPtB+cFv2h
+         N3GQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVXUXfjY06M92p69G8GHgjuDCAIUJK2tJ4kRA+3epZa2utrI0oRgfHxPmzlult/JVYb2xyDGDGPTwv/UbtTL6IxTPhDEkraVElmHVnrFF09BTkoCGpzN6YYTq7n6iieZetCcqMD5vUc/Ea8
+X-Gm-Message-State: AOJu0Yys51WreYfyXCqftjjyfDUDRKAo42SAyjF8TefcO4GFHNbK2E1q
+	kM81wGWWuzm6dMMn3dwdrI+JtCvE0GYtHdk1kMLs1e8NgaCjIvFjyjwgmiAzb1RW/eqMa5NCE/Z
+	chZeZc9WQ72sFJr0ClzKqzgDezKM=
+X-Google-Smtp-Source: AGHT+IHeyR5nQGBgo5SeYHczmWihZE3aKnPx7Y4MP1/SAb+Xn/Xtqgb6/Zfv88R3JRQyVZHsNuV7z2K57QLyYdhJ60g=
+X-Received: by 2002:a17:906:a2cf:b0:a55:75f7:42fb with SMTP id
+ by15-20020a170906a2cf00b00a5575f742fbmr2425875ejb.24.1713868629805; Tue, 23
+ Apr 2024 03:37:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,76 +59,33 @@ MIME-Version: 1.0
 References: <20240409154253.3043822-1-hugo@hugovil.com> <20240409154253.3043822-4-hugo@hugovil.com>
  <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
 In-Reply-To: <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 23 Apr 2024 12:02:36 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWBYnhVvDMditnf9bh17TeBhrZmuz--7x9QEejivCCyJg@mail.gmail.com>
-Message-ID: <CAMuHMdWBYnhVvDMditnf9bh17TeBhrZmuz--7x9QEejivCCyJg@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 23 Apr 2024 13:36:33 +0300
+Message-ID: <CAHp75Vfi2YjE0wzwABURxXhcWLozAf9Cdj_pT+DL_tm8E_zm4Q@mail.gmail.com>
 Subject: Re: [PATCH v4 3/5] serial: sc16is7xx: split into core and I2C/SPI
  parts (core)
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, peterz@infradead.org, 
-	mingo@kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	andy.shevchenko@gmail.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	peterz@infradead.org, mingo@kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Hugo Villeneuve <hvilleneuve@dimonoff.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 23, 2024 at 12:01=E2=80=AFPM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
+On Tue, Apr 23, 2024 at 1:01=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68=
+k.org> wrote:
 > On Tue, Apr 9, 2024 at 5:48=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com>=
  wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >
-> > Split the common code from sc16is7xx driver and move the I2C and SPI bu=
-s
-> > parts into interface-specific source files.
-> >
-> > sc16is7xx becomes the core functions which can support multiple bus
-> > interfaces like I2C and SPI.
-> >
-> > No functional changes intended.
-> >
-> > Also simplify and improve Kconfig entries.
-> >   - Capitalize SPI keyword for consistency
-> >   - Display list of supported ICs each on a separate line (and aligned)=
- to
-> >     facilitate locating a specific IC model
-> >   - Add Manufacturer name at start of description string
-> >   - Add UART keyword to description string
-> >
-> > Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> Thanks for your patch, which is now commit d49216438139bca0
-> ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
-> in tty-next (next-20240415 and later).
->
-> > --- a/drivers/tty/serial/Kconfig
-> > +++ b/drivers/tty/serial/Kconfig
-> > @@ -1021,41 +1021,30 @@ config SERIAL_SCCNXP_CONSOLE
-> >           Support for console on SCCNXP serial ports.
-> >
-> >  config SERIAL_SC16IS7XX_CORE
-> > -       tristate
-> > -
-> > -config SERIAL_SC16IS7XX
-> > -       tristate "SC16IS7xx serial support"
-> > +       tristate "NXP SC16IS7xx UART support"
->
-> Hence this replaces SERIAL_SC16IS7XX_CORE by SERIAL_SC16IS7XX,
-> so arch/mips/configs/cu1??0-neo_defconfig needs to updated.
 
-Or just rename SERIAL_SC16IS7XX_CORE back to SERIAL_SC16IS7XX.
+...
 
-Gr{oetje,eeting}s,
+> So if SPI_MASTER or I2C is enabled, the corresponding SERIAL_SC16IS7XX_*
+> subdriver can no longer be disabled?  According to
+> https://lore.kernel.org/all/20240403123501.8ef5c99f65a40ca2c10f635a@hugov=
+il.com/
+> you did want to support that?
 
-                        Geert
+I believe it has been taken from one of the IIO drivers as an example.
 
 --=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+With Best Regards,
+Andy Shevchenko
