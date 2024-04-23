@@ -1,166 +1,158 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583248405D
-	for <linux-serial@vger.kernel.org>; Tue, 23 Apr 2024 12:10:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E92B385C4E;
+	Tue, 23 Apr 2024 12:54:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713874257; cv=none; b=mcCoqABojnRdj6ZjKxT7tBpX5fG9kh+cVRSc6HbOXs6p8HoanV8zbJdPqt153wvpZmP0WxMJiaJE8+uzAm0vbfMHEJQjnCCToB3xlu1YzNUiHYtQWCLB+hcJczvXeAxlA/6pkwYP6BH40SQRxKDhfoJLAaHShxizonkeb7xLSb4=
+	t=1713876886; cv=none; b=iPN0wlHcvnoIaxhriV7Nza28JYQx+/gwBxtsmt4UssnU5L1THsh5yzv1SldHPMK13A7vh8qUdFIrLQdHS5v6JqSKZCNqsogAfiLOkn3I6OKzuW1Mnur9lgwEsEwg2YGBWlGpAnjCCjlET1kdpJD8fvH5AzOnbFCqdceTrrWERBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713874257; c=relaxed/simple;
-	bh=yPA0VbuDugXAyhUBMF7SNGGOl4MsvDgi2noQ/f+p+s0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CNNN/p+WI9skEoR2jqiJidmrrNbGNYYXmyy/m8Up8GQPyfRUUMG9NHQsay8vEhOEuoITWDwNQznrhihlZAwtlTe5bH2AtCzbWbYBn8FY8HSaahwbaiJSab6FGv878h9fSOyh34jQMnn1i/XWUEn8a75ViKVs0snjPT12QTWRxUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=UWTl7xH1; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="UWTl7xH1"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-346406a5fb9so4469072f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 23 Apr 2024 05:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1713874254; x=1714479054; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kV5g9dBqJQB3acwPivqgb+A6yJex6eirm5nXSFy64Yw=;
-        b=UWTl7xH1qlg/6CmZOfMcqotaF3sj2DLT5IndhJokVzfLuNqvXQa/+OKZyQmUInuy9f
-         lgMmHT3wvEBuytJlDmka3yMqwaJFT4fgyAdzK8tOwANx1gBl4ShlvXcnYMM8VSazzrq/
-         gNunBf3X0v0rqZJPWKCSNq2K4ETggUsZtlWzBdUAWI7HTCSq1lY2q8wa7UP42tJazotS
-         gza6W3n9MzFBdIdhxKm3KGN5oKjnPMP9jYr/5ca5HC+akKQcjafJS6xcwt2eBAS1WGNr
-         auEoVwTUeovN4LCYCStlPRbfurJ4fZ3QWQt6Psq/CtnNZ1l11Nf9WB3pUuESH8srB6Cx
-         qREA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713874254; x=1714479054;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kV5g9dBqJQB3acwPivqgb+A6yJex6eirm5nXSFy64Yw=;
-        b=cl6QDMiPc0emKoBlIh+F9GEJKpf4wPihW0I6fyfGnzIiihqR95UNo1BtSVrlXu6lzH
-         Nn9JkIZGj+Dk/DONxkvxsklxD5ajYS8qFrBLYLPUDCP0fIA5l0d79fIT0HqQ+rUFnaMU
-         TPyslBzaUi2Ale5niXXlgoJCJkKyI3xsIo1t0LvotWKQfLbTvGSCJ4tanLtUzDdIwrYQ
-         R0GIy9EdOq83kIFO56gL4HAPtjOfFGCGgcmsf/6R9yQG1K0cNig3lmdrCdJFjyiAFXOx
-         9vd+kHDqb9tJ9JyAgeaghVgQGwuixkdP/YNMNEHtDLDXz8NUxr89vRMDRK17eq1z/kA/
-         kLFA==
-X-Forwarded-Encrypted: i=1; AJvYcCXFR8Oaid9PMSlmPIvegZDY4lsNndjMjcQXcTv3cyYT9iMFA4wNgcvK1hpRsbDHXLmgc9V/xCY5W0C1C6Etm/n+uKpqOfoHt3GPncjZ
-X-Gm-Message-State: AOJu0Yz31fhBpKkQ/81tOKpPyfj/PdJ/L5WAE9m468bvczPHmt5/6TAG
-	DK2CsY0bSYa0K4g43fu/NGCS0Msw75OjYGYrwDNy3pWjIDvER4+CXFD0cIv8EaQ=
-X-Google-Smtp-Source: AGHT+IGzjXzz+JJVTsxvS1Lqw4gbV3f0mMHeGZ3kfY+oB0Rlj+Sv933prehjjydshXh5isd5epyUOQ==
-X-Received: by 2002:adf:eb0b:0:b0:349:cc20:2030 with SMTP id s11-20020adfeb0b000000b00349cc202030mr7842203wrn.51.1713874253453;
-        Tue, 23 Apr 2024 05:10:53 -0700 (PDT)
-Received: from [192.168.50.4] ([82.78.167.53])
-        by smtp.gmail.com with ESMTPSA id jg23-20020a05600ca01700b004189cf6bd6esm23281278wmb.22.2024.04.23.05.10.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Apr 2024 05:10:52 -0700 (PDT)
-Message-ID: <3d8925a8-32ee-467a-aca7-d4a04f26821f@tuxon.dev>
-Date: Tue, 23 Apr 2024 15:10:50 +0300
+	s=arc-20240116; t=1713876886; c=relaxed/simple;
+	bh=bZscrFVbL5MIv+tBaZTCbom6rFShV6yOHbat7bVKsf0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CERaHZoj3RMKr8zF6XolCrxQ+PN1EshI3NLpyrMLwOIDpkWqXW1Lo7vtVIe6JRCTP7XA/dqsGLe2CX8jkZIhYOsN3Eam9vH0A2m7vNyH7xb5bgClO+x0FkVfFTwYDix2Rx9p0ox09sC1iya2NiVYpM8tK39FfgOWhoAR7xJFOYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
+X-CSE-ConnectionGUID: pGUV6ildRXSS0gCvzTNqZQ==
+X-CSE-MsgGUID: vbb4DcbzQqOB3apoJkAOOg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11052"; a="9996722"
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="9996722"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 05:54:39 -0700
+X-CSE-ConnectionGUID: qARixsnoRCCYCfWyxvIvXA==
+X-CSE-MsgGUID: bvVD3QNSSZuve+4VIQIGTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="55557007"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 05:54:34 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andy@kernel.org>)
+	id 1rzFfL-00000000KxX-0nMB;
+	Tue, 23 Apr 2024 15:54:31 +0300
+Date: Tue, 23 Apr 2024 15:54:30 +0300
+From: Andy Shevchenko <andy@kernel.org>
+To: "Konstantin P." <ria.freelander@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Conor Dooley <conor@kernel.org>,
+	lkp@intel.com, Vladimir Zapolskiy <vz@mleia.com>,
+	Rob Herring <robh@kernel.org>, jcmvbkbc@gmail.com,
+	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com,
+	corbet@lwn.net, ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v7 0/3] add support for EXAR XR20M1172 UART
+Message-ID: <ZievhgXTstnfr_zQ@smile.fi.intel.com>
+References: <20240422133219.2710061-1-ria.freelander@gmail.com>
+ <e2989aa1-7f2b-4ac3-8fd8-822c87d61a1e@kernel.org>
+ <CAF1WSuzqLxpxwYuNYfHyvXLDMBE-ZU69YLXwBdQokZzhs49xzw@mail.gmail.com>
+ <c5fdfc26-b8c7-4e0e-bd15-1299ec052833@kernel.org>
+ <CAF1WSuzzzG_vm5b55zb_ha-Vj7H+i3ZbmPyN1F-EQxS3GLaurg@mail.gmail.com>
+ <ZiZ3p8XVjolnzR4U@smile.fi.intel.com>
+ <CAF1WSuyfsjgwnum0SLsCeYVv44w_02JmRYxpe9THgtgff3VXMg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: sh-sci: Call device_set_wakeup_path() for serial
- console
-Content-Language: en-US
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, ulf.hansson@linaro.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-pm@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-References: <20240422111123.1622967-1-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdUXRx1-95PD_WG4X=y4UefYXzTqm7T2mi+di+ZdKGUXYA@mail.gmail.com>
-From: claudiu beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <CAMuHMdUXRx1-95PD_WG4X=y4UefYXzTqm7T2mi+di+ZdKGUXYA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAF1WSuyfsjgwnum0SLsCeYVv44w_02JmRYxpe9THgtgff3VXMg@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi, Geert,
+On Mon, Apr 22, 2024 at 05:57:31PM +0300, Konstantin P. wrote:
+> On Mon, Apr 22, 2024 at 5:45 PM Andy Shevchenko <andy@kernel.org> wrote:
+> > On Mon, Apr 22, 2024 at 05:30:13PM +0300, Konstantin P. wrote:
+> > > I do not skip it, it added to patch 2, as you requested.
+> >
+> > You still continue top-posting!
+> > It's not good.
+> >
+> > You missed _my_ tag.
+> >
+> > But please, please, wait a bit, you really need to slow down.
+> >
+> > > On Mon, Apr 22, 2024, 16:51 Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > > > On 22/04/2024 15:50, Konstantin P. wrote:
+> > > > > On Mon, Apr 22, 2024 at 4:45 PM Krzysztof Kozlowski <krzk@kernel.org>
+> > > > wrote:
+> > > > >> On 22/04/2024 15:32, Konstantin Pugin wrote:
+> >
+> > > > >>> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+> > > > >>> it has additional register which can change UART multiplier
+> > > > >>> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+> > > > >>> flag to guard access to its specific DLD register. It seems than
+> > > > >>> other EXAR SPI UART modules also have this register, but I tested
+> > > > >>> only XR20M1172.
+> > > > >>> Yes, in datasheet this register is called "DLD - Divisor Fractional"
+> > > > >>> or "DLD - Divisor Fractional Register", calling depends on datasheet
+> > > > >>> version.
+> > > > >>>
+> > > > >>> I am sorry about too many submissions and top post reply. About second
+> > > > -
+> > > > >>> I do not know how to reply properly to this ML from GMail phone app.
+> > > > About first - I just
+> > > > >>> get very good feedback from Andy Shevchenko, and want to fix his
+> > > > review picks ASAP.
+> > > > >>>
+> > > > >>
+> > > > >> One patchset per 24h.
+> > > > >>
+> > > > >> Plus, you already got such review comment:
+> > > > >>
+> > > > >> This is a friendly reminder during the review process.
+> > > > >>
+> > > > >> It looks like you received a tag and forgot to add it.
+> > > > >>
+> > > > >> If you do not know the process, here is a short explanation:
+> > > > >> Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+> > > > >> versions, under or above your Signed-off-by tag. Tag is "received", when
+> > > > >> provided in a message replied to you on the mailing list. Tools like b4
+> > > > >> can help here. However, there's no need to repost patches *only* to add
+> > > > >> the tags. The upstream maintainer will do that for tags received on the
+> > > > >> version they apply.
+> > > > >>
+> > > > >>
+> > > > https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
+> > > > >>
+> > > > >> If a tag was not added on purpose, please state why and what changed.
+> > > > >>
+> > > > >> Just start using b4.
+> > > > >
+> > > > > There is not only for tag. I submit fixes for version 4 by mistake,
+> > > > > so, repost to 7 was necessary, because v6 was not work (as v4). But v7
+> > > > > should be based on v5, and v5 is tested better around tty-next.
+> > > >
+> > > > ???
+> > > >
+> > > > You got tag, didn't you? Then explain why you decided to skip it. In the
+> > > > changelog of patchset which ignores/skips the tag.
+> >
+> I am sorry about your tag, I did not notice it, if I do new version, I
+> will for sure add it. About top-posting - I do not know, how not to
+> top-post from GMail phone app(
 
-On 23.04.2024 10:27, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> CC Peng
-> 
-> Thanks for your patch!
-> 
-> On Mon, Apr 22, 2024 at 1:11 PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> In case the SCI is used as a UART console, no_console_suspend is
->> available in bootargs and SCI is part of a software-controlled power
->> domain we need to call device_set_wakeup_path(). This lets the power
->> domain core code knows that this domain should not be powered off
-> 
-> know
-> 
->> durring system suspend. Otherwise, the SCI power domain is turned off,
-> 
-> during
-> 
->> nothing is printed while suspending and the suspend/resume process is
->> blocked. This was detected on the RZ/G3S SoC while adding support
->> for power domains.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->> ---
->>  drivers/tty/serial/sh-sci.c | 6 +++++-
->>  1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
->> index 97031db26ae4..57a7f18e16e4 100644
->> --- a/drivers/tty/serial/sh-sci.c
->> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -3441,8 +3441,12 @@ static __maybe_unused int sci_suspend(struct device *dev)
->>  {
->>         struct sci_port *sport = dev_get_drvdata(dev);
->>
->> -       if (sport)
->> +       if (sport) {
->> +               if (uart_console(&sport->port) && !console_suspend_enabled)
->> +                       device_set_wakeup_path(dev);
-> 
-> device_set_awake_path(), as of commit 10bb4e4ab7dd3898 ("PM: sleep:
-> Add helpers to allow a device to remain powered-on") in v6.6
-> (although I'm still a bit puzzled about the difference).
+I remember I was able to answer from mobile phone, but I stopped using GMail
+App as it's awfully made. So, you may do it via browser and web-gmail.
 
-Ok, I wasn't aware of it. I'll switch to this one.
+> Also, I added a linux-serial mailing list into all my mail, I do not
+> know why my emails are missing.
 
-> 
->> +
->>                 uart_suspend_port(&sci_uart_driver, &sport->port);
-> 
-> I think it would be better to make this more general, and move the call
-> to the existing console_suspend_enabled handling in uart_suspend_port().
+I have a script [1] that I'm using almost on a daily-basis, you may try it or
+take an ideas, or even patch and send a PR if you think it can be made better.
 
-Ok, I'll try this way.
+[1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
 
-> 
->> +       }
->>
->>         return 0;
->>  }
-> 
-> If this works, we can remove the console_suspend_enabled handling
-> from drivers/pmdomain/renesas/rmobile-sysc.c, and revert commit
-> 309864dcf92b76fc ("genpd: imx: scu-pd: do not power off console if
-> no_console_suspend").
+-- 
+With Best Regards,
+Andy Shevchenko
 
-OK, first I'll go with this patch and after things settles down with it
-I'll propose changes for rmobile-sysc and imx. Is this ok for you?
 
-Thank you,
-Claudiu Beznea
-
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
