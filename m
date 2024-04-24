@@ -1,73 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from dianne.skoll.ca (dianne.skoll.ca [144.217.161.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D1D13C9DE;
-	Wed, 24 Apr 2024 21:23:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5716C13C9DE;
+	Wed, 24 Apr 2024 21:31:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.217.161.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713993832; cv=none; b=IDUiGlC4o+DtNDEjx/N+tmJcXSOd+csbm7lVXPPrLICS4CnFfz50f9RKV8ZbWTYZjPAznfQv8/Ufc3LIMrjxI6cfDCTLSyBOUNePgbB0eQQKyFkuv1xehzDWhxisBzYVmbyqIEFdNzvTzfyu1c9HUvqONldkPSjf+cnTZXqIPIk=
+	t=1713994285; cv=none; b=AacgdOZiZeu19DxfJbWbzu5VkxNtCVB/Q9PGWlC1+VjW67hpnvreNINiDbt1cof4Hrnfmn/Zhi5ttvscnTDssSgzV0k78D1znssIDp64TbRvzY7Sz6EyHZrL1Q/zXhdUOsBgPquUvXy3rb4EFckb+Fo3gQSswvnz7aOPHfNyYss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713993832; c=relaxed/simple;
-	bh=vkoQ3xlxRkOTA/ExiXKlpU0HDe2Y8nnTPrKZAKD/jho=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uDBafKdTa1O8Z2T2JQAv3929hzqn7OlwF8coDZaFrb36jBr82R3vRlgBCKIqJRMhZj3rEzTmjpJfl7jvOIw1afgAQj1OQXRJTf/WOzE3yZ6/+WJ6jxuRa7Vu65/u+9nNWcuqxeeuVDWBmzj3vLXZ+jdZwMS7WAoPuLE+fBT9FRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=oK0aO8jp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713994285; c=relaxed/simple;
+	bh=QQYEnBmWJr1g+ELcn8hSNT35DEr8cmUpviFzxPLvmT0=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=MFEJ7f/SS47O4PB+bOv83jBJ9K30vrJFLOn9Nd+HDuIeq9VK9bDcNBiX6aShhOe6QxzapVqu+VXoqJpbBXxawALPfqATjjShc8RUFGyaJQx791HASVkHJQvjvOalON1pPMPKFIePThLhhPjZozwzOXBeFZa2JemKtvE3eYPGFN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca; spf=pass smtp.mailfrom=skoll.ca; dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b=OezVXx3Y; arc=none smtp.client-ip=144.217.161.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=skoll.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oK0aO8jp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 824F5C113CD;
-	Wed, 24 Apr 2024 21:23:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713993831;
-	bh=vkoQ3xlxRkOTA/ExiXKlpU0HDe2Y8nnTPrKZAKD/jho=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oK0aO8jpxvVEH6ur4FPKIRrs9mR8FHc3mmj34ZHUanWUV7K7kEKNX/xbOCiH/jhSC
-	 RNlshUKkGcKQMcJyf2Y33oyVfM9fXeyu148SW9ERlRr2/HQXWWYLYp3GBWjcePsAcq
-	 1SryWxrrT+3ukSuQyhaeF9HpgsPwpj+1W7+5i7Y4=
-Date: Wed, 24 Apr 2024 14:23:42 -0700
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Jason Wessel <jason.wessel@windriver.com>,
-	Douglas Anderson <dianders@chromium.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	kgdb-bugreport@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Liuye <liu.yeC@h3c.com>,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2] serial: kgdboc: Fix NMI-safety problems from keyboard
- reset code
-Message-ID: <2024042427-luster-unbend-5ed6@gregkh>
-References: <20240424-kgdboc_fix_schedule_work-v2-1-50f5a490aec5@linaro.org>
+	dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b="OezVXx3Y"
+Received: from pi4.skoll.ca ([192.168.84.18])
+	by dianne.skoll.ca (8.17.1.9/8.17.1.9/Debian-2) with ESMTPS id 43OLVGWb636929
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 24 Apr 2024 17:31:17 -0400
+Received: from gato.skoll.ca (gato.skoll.ca [192.168.83.21])
+	by pi4.skoll.ca (Postfix) with ESMTPS id 4VPscN4ZlWzgd52Y;
+	Wed, 24 Apr 2024 17:31:16 -0400 (EDT)
+Date: Wed, 24 Apr 2024 17:31:14 -0400
+From: Dianne Skoll <dianne@skoll.ca>
+To: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+ <jirislaby@kernel.org>
+Subject: N_HDLC line discipline: Race condition
+Message-ID: <20240424173114.035ddd7b@gato.skoll.ca>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="MP_/+i1Aaa_lVkITwC_AIx1F5nM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skoll.ca; h=date
+	:from:to:cc:subject:message-id:mime-version:content-type; s=
+	canit2; bh=jr0e+TcL/8llOHDMICBg3cEEx5gL/J6qoyzPalX/RT4=; b=OezVX
+	x3YDElOPnIIVVJil04TX9lenmnNIuR33u+TsvxHyW/b6mz8s7X97GVsMHGozM5Fa
+	IEsaVmFti3RyF6gGdPndlwcFqy+t9jhyfkmDTB95Y1wLolnsAjCefiIUKnW6dkyi
+	V0LFjGwiETG5ffXdDKNq2IGxwlu5T6xAml1ZQIzbYnuvkCgPpUrngNXr7KUaL9YY
+	uGjEYGkfn+KAS/h16fkFKEJF0t+sMnpBtx1ryFoGFEm28bHkDg43xYlpsLgdJ2D2
+	QhAX71omuLTVXXIJ4Kew+ivYXKwpvXPwy5fxOJjpOBLHdYiTjRsLKyW5mDlUG/oT
+	L68nKE1+h80RSrUDw==
+X-Scanned-By: CanIt (www . roaringpenguin . com)
+X-Scanned-By: mailmunge 3.16 on 192.168.83.18
+X-Spam-Score: undef - relay 192.168.84.18 marked with skip_spam_scan
+X-CanIt-Geo: No geolocation information available for 192.168.84.18
+X-CanItPRO-Stream: outbound (inherits from default)
+X-Canit-Stats-ID: Bayes signature not available
+X-CanIt-Archive-Cluster: tWKWaF/NcZkqjWIj0BEJTBHJhwY
+X-CanIt-Archived-As: base/20240424 / 01cf9vh1g
+
+--MP_/+i1Aaa_lVkITwC_AIx1F5nM
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-In-Reply-To: <20240424-kgdboc_fix_schedule_work-v2-1-50f5a490aec5@linaro.org>
 
-On Wed, Apr 24, 2024 at 03:21:41PM +0100, Daniel Thompson wrote:
-> Currently, when kdb is compiled with keyboard support, then we will use
-> schedule_work() to provoke reset of the keyboard status.  Unfortunately
-> schedule_work() gets called from the kgdboc post-debug-exception
-> handler.  That risks deadlock since schedule_work() is not NMI-safe and,
-> even on platforms where the NMI is not directly used for debugging, the
-> debug trap can have NMI-like behaviour depending on where breakpoints
-> are placed.
-> 
-> Fix this by using the irq work system, which is NMI-safe, to defer the
-> call to schedule_work() to a point when it is safe to call.
-> 
-> Reported-by: Liuye <liu.yeC@h3c.com>
-> Closes: https://lore.kernel.org/all/20240228025602.3087748-1-liu.yeC@h3c.com/
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-> ---
-> @Greg: I'm assuming this could/should go via your tree but feel free
->        to share an ack if you want me to hoover it up instead.
+Hi,
 
-Hoover away!
+I'm reposting here (originally emailed GregKH and Jiri Slaby directly
+as they are listed as tty maintainers) as well as responding to a
+reply from Greg.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Original mail:
 
+Some people have been reporting bugs using synchronous PPP with the
+rp-pppoe user-space program.  See for example
+https://github.com/dfskoll/rp-pppoe/issues/32
+
+I've narrowed this down to the N_HDLC line discipline sometimes
+concatenating two packets on the write side into a single read on the
+other side.  I have attached a proof-of-concept program illustrating
+the problem.
+
+If you run:
+
+./test_n_hdlc
+
+with no arguments, then the program makes two writes in quick succession
+to the tty followed by a read.  It generally only takes one or two tries
+on my computer before I see both writes being combined in a single read.
+
+On the other hand, if you run:
+
+./test_n_hdlc foo
+
+with a single argument, then the program sleeps for 0.1s between writes,
+and I never see them being combined in a single read, even after 20 tries.
+
+I'm running mainline kernel 6.8.7 on amd64; the processor model name
+per cpuinfo is: AMD Ryzen Threadripper 3970X 32-Core Processor
+
+Regards,
+
+Dianne.
+
+Greg's reply with my responses inline:
+
+> What is wrong with that?  Does the N_HDLC line discipline somewhere
+> state that this is not possible to happen?  Normal write combining
+> happens for other tty ldiscs.  Userspace should be able to handle
+> this, unless again, the N_HDLC ldisc somehow says that this should
+> never happen.
+
+> Ok, I looked at the comments at the top of the the ldisc, and it says
+> this should not happen, so something is odd, I agree.
+
+Right.  It's done that way so a PPP 'pty' helper always gets exactly one
+frame when it reads from the tty file dscriptor.
+
+> Did this change recently?  Or has this always been the case?  Meaning
+> did something in the kernel change to cause this to break?
+
+I haven't used this mode of PPP in over a decade, so I know it used to work,
+but no longer does.  I'm sorry I can't narrow down more precisely as to
+when it stopped working.
+
+> Also, please cc: the linux-serial list for tty issues, doing stuff in
+> private is generally not a good idea.
+
+OK, sorry about that... I misread the bug reporting instructions and
+forgot to Cc the lists.
+
+Regards,
+
+Dianne.
+
+--MP_/+i1Aaa_lVkITwC_AIx1F5nM
+Content-Type: application/gzip
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=test_n_hdlc.tar.gz
+
+H4sICCpqKWYCA3Rlc3Rfbl9oZGxjLnRhcgDtV/tv2zYQ9q/TX3FJ4EB2PUfyK0PcFGidACmW2UPi
+Yhu6QpAlKhEiU4ZIxw0W92/vkXpRymMDhgQowA+ILfLuPt7xHnI4YdyhzrUfeQeNF4KFOBwOxbd9
+OLTU7xwNezCye73R0OqPGpaNq34Dho1XwJpxNwFo+AF7Vu/f5D8ouJL/39wbEoQReYn8jwaDJ/Nv
+230l/6hn97ECGmDp/L843Cg6AqUIDENZVCRdlHkRcemR8VOyhJ8DVQjtb0ZD48fu/0qyX6//B31r
+mPf/4HCA7wl7YPeGuv9fA3s+jnxKwPlz9vvp1LmcfbqYnMLIsoy9kHrR2ifwlnE/jLvX76pbUbio
+7gUe5VF1a8XvqhtrGqJpnSsJ6VV1j4dLInaM3L/5xcfTS+hZhnEbh77hx84mCTkxQ8oh8DvgXWMW
+vZgyDm0kbBn/GIAQ4gSOIVUWiiiUHxGhplBsjaXiCn3ggbmbKjZRscnwz2+hcdP/m+52oLAWh7ZU
+jg4kSLM1DBQI1xLi+plnuSPSv8U6+NyzBr98GVeck+qCHeUdEAo1p6RCs6JQdSvJDMIAzATegdWC
+9FiVBY3R6r7ZbbN7aZlIwsx0Kz8TwtcJhURGI2+aRYSsbMtaMjOPBUNeexxEjtiKeCBVxGpsSPlB
+G05I5N5BECdgdW1gBDPjM2gfpPa5fpffOihDr6zxQwlNRXbxIxEOcJGdQV0aS21zvzDqwPTT+XmR
+CVi6IZVpcJMrLyuRdhsXt5+/VAqkTEdYPi4Dv1wE8Zr6pZ9qta04K/WYauSHTAQwdc5Ozifj/3R1
+eCharGIWfnXiFaErbs6ci5M/Lu5nznQ2mc//qpWGqlrWBNK0MkZRYFeJSzlSpduqeS4RhV4xT2uq
+YFjTKPZuHqUoRJVmqVLgHYmwOKPukjzCkUsyClZSoCQnYfJuRKgm7nagdjHyYfrhfDb5tcYuTZpM
+8U7as+olhbHHI1MeOv84m1yezk86sC9yWKNLFZuKXuu5q0vV2f/kZRVe7LB5cgfrFfA4G42ypGTH
+8WuSzjsmpAuChbpc4Az1sSjBBYbDNiJy6OQNKazM8NgeQ/j2WNLh05s36hApBq4McPeMRFEMu1kE
++egRfYbTx1YN1QgvRbXj8fJAOVPQPb4hhGYOY6gKZTERsvFTSrZP+bWJk8hXOR639+OahyJR+eBm
+RXmqsaEGzqIHoanhnb0/e78DMjN7Tf8I5pgIvonzZGxI8kwudmSaw9rJaXbS2WNXReUdbGFzjf+2
+ZaMf9vdhR9rUspPu1fxf4Nk39YvdGsXbZOeBVRHtctkBN+AkwRoFfIcT7ClKbnHN3I2sQiX4J+Pu
+yrhl0VXeRF4UM6LkIl2Xo4N8DblppcNe/4zX0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQqOA7Z7kBcwAo
+AAA=
+
+--MP_/+i1Aaa_lVkITwC_AIx1F5nM--
