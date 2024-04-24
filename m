@@ -1,138 +1,151 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2078.outbound.protection.outlook.com [40.107.244.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15AB3158DD0;
-	Wed, 24 Apr 2024 09:49:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713952154; cv=none; b=tLe+TohMLjHrxxLTPiDAZLr8V3ZMQvNL4Pr9c2pwqWm2hkFAIYyhDzRJWfoidt1wli2LdA7MJKjWczetIIFjHeMyVIQ46FiuWLLkEuClKPO7wB7SsWT9WFbWg2YLYxZbUJ26eHD6Nka1jSs8LbJmKOXfpT6NvVjlxlBQ7kEqqHY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713952154; c=relaxed/simple;
-	bh=u4lx/JULd5SMfiKzIJbC77K4KRfvpML7qMWfMAaioYI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F2gdxJAKM09qO6j/olhEgNinNv3v++7CBqA6+G6roNS0uWTV4edrrtgwyI0r/uoN9lyN4f8tlf0HfZ4ynFonhsIdu7O25MompuJ0mxwCmj2qgoJ9d56oQhZZnr4FBajRYH0a/vu6+k91MLH6Mk1CAv4oP5XqjONyghOVvirBYVo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-6164d7a02d2so77061907b3.3;
-        Wed, 24 Apr 2024 02:49:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713952151; x=1714556951;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6hEIVy3ACld9hvMVKRp+y3fj+DcJwYS/FFKJpxDdjEk=;
-        b=pHKZ4hWJuPcjwcvyjratQ3RaLJgo06y9lX8aYOI1923An0zQHhzOWxMjvyRMTme7np
-         44Gfd96Uq+NR++TGXIi5JYZ0an3vvI7faY52tVV6HuKBK6tCPjcYbbJtn25UaHlIpglx
-         TMJsUBY4ozFedyErJcxfj+T1OAf2w8UzQBxngxIssT9QpZR5UzSQEEnHKiSd/Fun8LM+
-         CA965R8gmVCVttCAqxYzSm8+MQBX3u53eMLMK1AcNhyTNfrY8frq3lSDRrhHOAei5dh9
-         2751PEog24WQXSWVCervNd57yX4cnxRJh0M/7mGw/9M/abEC6khK0cPHOCoQKWATFlmv
-         7WPw==
-X-Forwarded-Encrypted: i=1; AJvYcCUbmiQ3ZVRHP1m/ePvgygKx0517qQibNry2jDvkPEgSITPWNnt9AqUEQn1GFSxambur6L3D0kcMgMiHjLSYEXtcVYSG34oDxCVFq6dPDpGVefWrNZ76HGDJB47a5oHsUTR1fsHYQyUWUXj2
-X-Gm-Message-State: AOJu0YyMjZOkyEmfNnnUQARtFeBoRpEWnKe0vVXNl+LrI2b8nhWrz8Hu
-	Z+KElyO3l/LA2bmAMNHcr97Gw51G2lbBEJGTvv4eG4aswLFqGB+aUQC79E49
-X-Google-Smtp-Source: AGHT+IH1iqlvmzpGDqai+9wt7Uee4X8myKBxX98jbIgMafOaNXdduo1g5zc/B5bvH3eEPvukJrk6DA==
-X-Received: by 2002:a05:690c:690f:b0:615:1527:aa2 with SMTP id if15-20020a05690c690f00b0061515270aa2mr2011913ywb.10.1713952151348;
-        Wed, 24 Apr 2024 02:49:11 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id a6-20020a81bc06000000b0061440b93ce5sm2887954ywi.37.2024.04.24.02.49.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Apr 2024 02:49:11 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dc23bf7e5aaso7001285276.0;
-        Wed, 24 Apr 2024 02:49:11 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWX51NhinKIz7FdYdVhRj/dv7r9KRpueSI+VXUuboIVfNqmFF9KcWhsIVEz/LoIus9kA4BmLsAXLvVxxFU7raraOtXm3J8aABYesv9gmPKSqz4zpnAqocSrgcS33ZwKkuGqwmBvWHXoUicN
-X-Received: by 2002:a25:e30d:0:b0:de5:5089:32b8 with SMTP id
- z13-20020a25e30d000000b00de5508932b8mr1657304ybd.63.1713952150942; Wed, 24
- Apr 2024 02:49:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7205213DDD9;
+	Wed, 24 Apr 2024 11:29:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.78
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713958194; cv=fail; b=n17x5JPvK8CWONi8JT78cnFJ/IzKJxTQbW6A6x4hFNK7jOvJ0pIM/3XGI8UiMXxenAuFEfM17cIud9Gtwa/PP0Fsbl0sOUJ+MLjB1wBQk546ywSjQNepYyW1hP337tEHuAQ24ky4vr9ArR4PdIEGbKelGpvlL4bL7fdcWGIA+jc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713958194; c=relaxed/simple;
+	bh=jsamBX08jd1EraLOdiflxD8v4642xFN8xqYfMQ78JG0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dpwZWRdJDG27NDSAPOk8suotuklMvBlMz3qGiqmQid5XNUxD4Ki3pU6//l59/x2O5aDJBCL0AugifakxDOfF/yWk67k9oT5yMH1vkVFDvinbiylqPPkvFdhwmK/Zb36pKDbsRDk4Og4KHhk5WVwM5BJIIqWuCzeLBnwkDP0KmQ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=T0N/p32k; arc=fail smtp.client-ip=40.107.244.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="T0N/p32k"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RrMe4rep1EsvBPfhjrhjAxVsM+IMKZwECUKnSjF0TkQnyhKbatmsrmtafI1vBanwliFeXZf0QnmFyhSfbv75ZNFmp4ExtgFJHpSVYRvkIrM71vGNey2XpLz6YQSYfMjE74700nvEDvlON8Xy5ccfxiTyMm3WeBySvfIoCWbW7cFswW92ppU3DeQ7OFKI8zJRAnvs+mvrSRv60SiUiIXJ8ybMnC9VopemyaXWY864obcaQmflf1clyk96+FRUdp88FZk5rhS1kubWuC9rD9s+rECzbwI3MNv6prbpL2n7S3ptJyxhT9Nn2gEt2lRuQFBBPumX+za8010zkKaZ/EDhQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wt5pI4ikjk89DRKN6vnI4USyoQ7HwxtUQYLxNZhCGc4=;
+ b=bscoDnQVyYBC6SZQ+xoSeKJEsI46oB+YTrV3rjtGClVM3omUFxjgjYi9uDJd4AjEtAp+XoSADawksgj4d5Xi8WkmAnuBQWTZ5Niv6NdtoxcAeE+pfCe44g4/Shnh8HDafWCi8sHE13P0/Z9+D04oTQ6th10DGZgGjcNpQhKxlH7g984e7kLtTxNS5LLJnKNlBs7lTVuS30u82BuyM8fEI3uEGfLImFFUsNpxMJsX5W7ASXOMk3y/6w28DZl7qmFKnny5z0e/ltjs6CWQgcgVK2j63s8GQFAgEyZj8qO/tl8QDo9dJXozSCjTCSRqR5iOF/ntXxH7sBqYo1QjmUdtJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wt5pI4ikjk89DRKN6vnI4USyoQ7HwxtUQYLxNZhCGc4=;
+ b=T0N/p32kqKRqsYtBuT7F2sOdH+d1gziX9HowYDqsE0hyAxaPWi6oDbevyjqfyDkEZi7g54SfVr7gz4UCMlah0SsGrGyQzxi0LXBMkJqsCe/fYw5hMQ4iggmI02ozhGTxHzlZQTgPXLASXvM0D6ppGrjkKrlGbC852a+NA2fE7PU=
+Received: from BN9PR03CA0181.namprd03.prod.outlook.com (2603:10b6:408:f9::6)
+ by MW6PR12MB7087.namprd12.prod.outlook.com (2603:10b6:303:238::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Wed, 24 Apr
+ 2024 11:29:44 +0000
+Received: from BN2PEPF000044A6.namprd04.prod.outlook.com
+ (2603:10b6:408:f9:cafe::69) by BN9PR03CA0181.outlook.office365.com
+ (2603:10b6:408:f9::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.32 via Frontend
+ Transport; Wed, 24 Apr 2024 11:29:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN2PEPF000044A6.mail.protection.outlook.com (10.167.243.100) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7519.19 via Frontend Transport; Wed, 24 Apr 2024 11:29:44 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 24 Apr
+ 2024 06:29:43 -0500
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Wed, 24 Apr 2024 06:29:37 -0500
+From: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+To: <git@amd.com>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<michal.simek@amd.com>, <p.zabel@pengutronix.de>,
+	<laurent.pinchart@ideasonboard.com>, <radhey.shyam.pandey@amd.com>,
+	<parth.gajjar@amd.com>, <u.kleine-koenig@pengutronix.de>,
+	<tglx@linutronix.de>, <julien.malik@unseenlabs.fr>, <ruanjinjie@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC: <srinivas.goud@amd.com>, <shubhrajyoti.datta@amd.com>,
+	<manion05gk@gmail.com>, Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: [PATCH V2 0/3] Add support for uartps controller reset
+Date: Wed, 24 Apr 2024 16:59:30 +0530
+Message-ID: <20240424112933.3528590-1-manikanta.guntupalli@amd.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240416123545.7098-4-wsa+renesas@sang-engineering.com> <20240416123545.7098-6-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20240416123545.7098-6-wsa+renesas@sang-engineering.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 24 Apr 2024 11:48:59 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
-Message-ID: <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] serial: sh-sci: always cancel hrtimer when DMA RX
- is invalidated
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, Dirk Behme <dirk.behme@de.bosch.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Aleksandar Mitev <amitev@visteon.com>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+Received-SPF: None (SATLEXMB04.amd.com: manikanta.guntupalli@amd.com does not
+ designate permitted sender hosts)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A6:EE_|MW6PR12MB7087:EE_
+X-MS-Office365-Filtering-Correlation-Id: c16bc185-0f14-44f4-44de-08dc6451d746
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?C/w90pwK22rEehZ7XiyctMJfdOToXu8ftQsYzoeejUApKeMpMNonCDyQxSGb?=
+ =?us-ascii?Q?KjvEeFJDHemWvtCloeglzYC/0vZ79gf+NHraLlzf3OenhThJftwlmzKrUthK?=
+ =?us-ascii?Q?FHilErKNMEo7X6DCkALtr8QaHOfcN6jtZry08rijLnnS0dT5fpsaqv3EAw0A?=
+ =?us-ascii?Q?QasiREoNdHRlCG9q8eCQLecif4Kzd5CPDAkSv8nZ3ctqpdA0wS9F/rs1a6CC?=
+ =?us-ascii?Q?T2yrernvjm2Odsox6DSdMdWq86pvD6Qa/KV85OfREiPY/5dnWlAxGMKtUASw?=
+ =?us-ascii?Q?q+lfg42fD8XSBUoMAbm0P28RjXtk1EYZsU4DhDlW4aMYiXkYQHJWUv3XJLg8?=
+ =?us-ascii?Q?HmvyWZcAWpFm69ZOkhlAev3I6BKu2jAba3FWCRSxcqDytdi2XCltMuxsI8UJ?=
+ =?us-ascii?Q?jfgrBAwQlcBVPOB5hwW6gkpzGJPdl/Te9Do3zNW/tDdMnXnaEYKyETI9cTP3?=
+ =?us-ascii?Q?IxYQLQOjEkzFLs+IJzHzHBUnr94FtALDQH7GZQ+NRmsrky55cj0e3O4S6iGG?=
+ =?us-ascii?Q?oRCnp9Sh2nI6ujPMgjfXNXb9afpHshtAvqEasJx+lPzv9FgxoRnbghiUuc0k?=
+ =?us-ascii?Q?xNP6WZfVrlWlrcXPSNy/xDGDRuj/AGVaiqDN4Avzxh9DQX/bkNeVWzpWrPlZ?=
+ =?us-ascii?Q?LSIcsoyk1s0XNNnH2z08nQB8nMtriRRPIRBzdphPVpJeD16YTEnwYfcrRqjK?=
+ =?us-ascii?Q?UxjV5SQXJct53XIigco+6okspoLfq2wtS136H6NWhrZdZ3sVeHkvy7YFNvaG?=
+ =?us-ascii?Q?Bicjwq9EezR72OeLhEDMOhdrFuhpViUMWPHAUzaTfFiq3ZK/u4bfHruF5lDC?=
+ =?us-ascii?Q?+EKLWqjZhbCFZgWXDsETHDcoHEQ7CIthQsb8LhIDfIYD06FUWnH8Hjq+tMbb?=
+ =?us-ascii?Q?X3d1bzIHgl5f5kJhfxluL/GKSkRSy2iLFF+dgA57rUmzTdSWtpzv0Jy4MSBM?=
+ =?us-ascii?Q?dqkcwILFQqaOh1420q5+z5a4mPQiaBb+Elbua5f34LQmXMz5kbpRpPz8UvhK?=
+ =?us-ascii?Q?tBvM7KMmvSe/Zg5Q55urNSlzmasosNJtidcJl9uwJriWrMRh5EgYMRMLHxKd?=
+ =?us-ascii?Q?+xGusmfzbjIku+nOCM51HlBluKvkEIt9jv2e78RjwWFOgMoGmljYZ9FNKPjO?=
+ =?us-ascii?Q?MlGq/E2Zky2AkD2WVjEOlSHl9kL309g+zJTpQ6e4eDsyoYxmrsndbesl9p8N?=
+ =?us-ascii?Q?PpcY1fSOAm7qzy7EiuDttqOF9bpRwkhUaTPNnBxitwAfb5VUTo+nY1YEcXOO?=
+ =?us-ascii?Q?iO/eZtqAPEwshCkY7CHu0PCpUmgvRNgU1dqigq3zJU4NxVWShiosOLESMQlk?=
+ =?us-ascii?Q?VtulpTp5XIdS+wfnrS4b3o01oLtm6t+u9ggM1afq46OG8iIsyNps9u527jZZ?=
+ =?us-ascii?Q?c5h/70YkAcV+PbulAT+9rJGJZ5gR?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376005)(1800799015)(7416005)(36860700004)(82310400014)(921011);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2024 11:29:44.6134
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c16bc185-0f14-44f4-44de-08dc6451d746
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000044A6.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7087
 
-Hi Wolfram,
+Add optional resets property for UART nodes.
+Add support for uartps controller reset.
+---
+Changes for V2:
+Added ack signature for binding patch.
+Remove check for reset_control_deassert, as reset_control_deassert
+function internally has NULL check.
 
-On Tue, Apr 16, 2024 at 2:35=E2=80=AFPM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> Clear the timer whenever 'chan_rx' is cleared to avoid an OOPS.
-> Currently, the driver only runs the timer when 'chan_rx' is set before.
-> However, it is good defensive programming to make sure the hrtimer is
-> always stopped before clearing the 'chan_rx' pointer.
->
-> Reported-by: Dirk Behme <dirk.behme@de.bosch.com>
-> Closes: https://lore.kernel.org/r/ee6c9e16-9f29-450e-81da-4a8dceaa8fc7@de=
-.bosch.com
-> Fixes: 9ab765566086 ("serial: sh-sci: Remove timer on shutdown of port")
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Manikanta Guntupalli (3):
+  dt-bindings: serial: cdsn,uart: Add optional reset property
+  arm64: zynqmp: Add resets property for UART nodes
+  tty: serial: uartps: Add support for uartps controller reset
 
-Thanks for your patch!
+ .../devicetree/bindings/serial/cdns,uart.yaml     |  3 +++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi            |  2 ++
+ drivers/tty/serial/xilinx_uartps.c                | 15 +++++++++++++++
+ 3 files changed, 20 insertions(+)
 
-> Locking needs to be double-checked here. This patch is mainly calling
-> for opinions.
+-- 
+2.25.1
 
-I do think you need to cancel the timer: even when not restarting
-the timer in sci_dma_rx_complete() due to a DMA failure, the previous
-timer may still be running, and will cause a NULL pointer dereference
-on s->chan_rx on timer expiry.
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -1262,6 +1262,7 @@ static void sci_dma_rx_chan_invalidate(struct sci_p=
-ort *s)
->  {
->         unsigned int i;
->
-> +       hrtimer_cancel(&s->rx_timer);
-
-Is it safe to do this unconditionally on shutdown (cfr. the old check
-for s->chan_rx_saved)?
-
->         s->chan_rx =3D NULL;
->         for (i =3D 0; i < ARRAY_SIZE(s->cookie_rx); i++)
->                 s->cookie_rx[i] =3D -EINVAL;
-> @@ -2242,14 +2243,6 @@ static void sci_shutdown(struct uart_port *port)
->                        scr & (SCSCR_CKE1 | SCSCR_CKE0 | s->hscif_tot));
->         uart_port_unlock_irqrestore(port, flags);
->
-> -#ifdef CONFIG_SERIAL_SH_SCI_DMA
-> -       if (s->chan_rx_saved) {
-> -               dev_dbg(port->dev, "%s(%d) deleting rx_timer\n", __func__=
-,
-> -                       port->line);
-> -               hrtimer_cancel(&s->rx_timer);
-> -       }
-> -#endif
-> -
->         if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0)
->                 del_timer_sync(&s->rx_fifo_timer);
->         sci_free_irq(s);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
