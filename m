@@ -1,121 +1,167 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C04B015B143
-	for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 13:06:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D52D15821F;
+	Wed, 24 Apr 2024 13:21:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713963993; cv=none; b=a/x03DYiPx3UoBgxLHHKa5YQN5ebfveT6UFtXZ80d4NZTzE2lPpMeMCwDTEAltj2rmOhcmeRVdolGpV9fqzUKukA9VtnUm1VG1u+xCiux+252XdKVI7svFtoTh8oF4MvxucIEPY95X9yQ7JegkCy/hsSP7wn9neEAzj1+FEv5vY=
+	t=1713964883; cv=none; b=eWx/va08RijE0fPY1x0ILTO1MwyyblCirvl51fbm5DuyW6BcSHb/7NpUi5/MTOxYRcee7vJPMoTXUNarlMqg7H0YCX3mCHU7Wt4SOPTmEEcYzCjFWXIWspq3atFmwPka1geqTe3dfqzR/6lc56cSnfVDVEDEimbOsOyHjM9xiX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713963993; c=relaxed/simple;
-	bh=lvGq478npegdfe7X33ro4L3C4YXKBVJlBkfyJxEJbXo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ekJwiLCh8xG62bE6npk+p8qrkQ4YsS5z/S3+BBiKxU9zvzGXufD7fh4C8o/9Y8FRUCN/m7QB4EPCLxPoMt84V604eTreYWEtJVtR3cqaatsy2SYsOiYZezF5AP1FlsMwairbvGO2NrTiT6ZPMrwcgmAOzOIj9kV2dH15dZA/Wyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=McPBIgIf; arc=none smtp.client-ip=209.85.210.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1713964883; c=relaxed/simple;
+	bh=bABuUtxtwMiaDJEDth6yYKqkY4fMD7xJ78zqRkijgc0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=d+f4eerOeh8o2zWpWiktseCsT9DvruN4cxFpblOXYXB9DCsdEaaAdx/kWcBep+qEnEvYTfc2fbtVTooam0Jelh8mtpOIYlaWvck60V6+LsabgCQ4dcLASXLNsT3CzG0N0MqC5XXf7PDA1MyMyQGMaJAlfbyUygRyQg+qrJDvMw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=oPBxCIqj; arc=none smtp.client-ip=91.207.212.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="McPBIgIf"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-6ed32341906so6568274b3a.1
-        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 06:06:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1713963990; x=1714568790; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZWmvHblwyLfpV+rEC2PSqDTFbQMnE4MDRNUxWTIYKmE=;
-        b=McPBIgIfkGSRkg6nVkKfnpiWJ72i3SZ6PIocpp0PgvijkzJ+L2JrlrVVGO8WWp9/Ko
-         7HIZz0gNBSsAWkm3GzQy5UtULLMz2J4uEXvZVt8J7x1Pr0BnRsxRf9CqlRrxvzVU+H8X
-         n43ZvyrPBXhvaigwVjMMFttxgWzH+bjK2wI+E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713963990; x=1714568790;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZWmvHblwyLfpV+rEC2PSqDTFbQMnE4MDRNUxWTIYKmE=;
-        b=muMZmOJQ9xIdXi3P8SDOttvEB6v1df8VPj2mdM2gjOvmkZ3B+CgaWR45cgPPopeu38
-         2KxIYyEPmnl1NkSJCv1R4yndiH+XjNCeW8FkgiYG7SfpTbeoWcg85XE+befQP06pJETW
-         J8xlQIZXsUJ6qo8EEETlVbevOFuCVZm1BTgw0qyyH+5iH0VCMasT93YN4oQw6MCKnkKo
-         UH5FPvWAbNmh6vADqPdAXHK16vuKtVvkEc0KyfkB3RdkRhNfkbu+u5lWI1kF9n1gItxg
-         UfWnsCEZ5f9c8ZH9L53ZkxwuyI1ug14j7Q0G0Y+zyhNlvod8jOfhjo/c+fro0TnkteK2
-         dg0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXXXXUiXXCkA58MfB+4y2SAsgPmwm7v0krU/wV8xFNAB4eQzwCCe3vI1DovvgqQdItuL9uhbhTJiyVEtePi06mUCpR5m96GkgqtoeFI
-X-Gm-Message-State: AOJu0YyJB+VioV1OFq5z97cAmg6cr3dZ+GCZvEvyrnzrlQHOuuIv+pCP
-	jcjznYadA5DpnIaIHQIv8WNEQhLwPOI3vtvrH32Zvs/4CyPT4HWddZgho1jm6A==
-X-Google-Smtp-Source: AGHT+IGxaNdfLyHIQirpTurMn+c1hdzjWlDQY5IRavD5VXu6cW703ROJBZd0shDax7VyQ2G08e/VqQ==
-X-Received: by 2002:a05:6a20:c6cd:b0:1ad:7fd1:ee2e with SMTP id gw13-20020a056a20c6cd00b001ad7fd1ee2emr2131046pzb.13.1713963989985;
-        Wed, 24 Apr 2024 06:06:29 -0700 (PDT)
-Received: from treapking.tpe.corp.google.com ([2401:fa00:1:10:836:835b:e0f2:a3a0])
-        by smtp.gmail.com with ESMTPSA id y5-20020a637d05000000b005f3d2a9a91bsm9981158pgc.89.2024.04.24.06.06.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 06:06:29 -0700 (PDT)
-From: Pin-yen Lin <treapking@chromium.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: linux-kernel@vger.kernel.org,
-	Hilda Wu <hildawu@realtek.com>,
-	Pin-yen Lin <treapking@chromium.org>,
-	KidmanLee <kidman@realtek.com>,
-	linux-mediatek@lists.infradead.org,
-	Archie Pusaka <apusaka@chromium.org>,
-	Chen-Yu Tsai <wenst@chromium.org>,
-	linux-serial@vger.kernel.org,
-	Al Cooper <alcooperx@comcast.net>,
-	linux-arm-kernel@lists.infradead.org,
-	Hsin-Te Yuan <yuanhsinte@chromium.org>
-Subject: [PATCH v2] serial: 8520_mtk: Set RTS on shutdown for Rx in-band wakeup
-Date: Wed, 24 Apr 2024 20:58:08 +0800
-Message-ID: <20240424130619.2924456-1-treapking@chromium.org>
-X-Mailer: git-send-email 2.44.0.769.g3c40516874-goog
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="oPBxCIqj"
+Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 43OC4omW029734;
+	Wed, 24 Apr 2024 14:20:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	selector1; bh=hkSUB26Hij3YoH4d4gONssMZiD9lhMIi9MYuoDahbc0=; b=oP
+	BxCIqjZqjU5yIPdolezp3gucfYE43BpO2moF0boJpv1s74317nNrf8tTbYX5usOd
+	rlKx/FhS1Qy6Jkjea82P6nnIhij2k6RtqQ72RGkfOKHZzW/rYU1jige7eN6glRBm
+	Gr/fYnvQ0nI1FFIhwyV+FpQcOob58VqnssUOpcpR/bfBeTjXY5MTu8NY0VN5oLNt
+	baPC6vo+Z6OwTORIZk9BIz6pJZyBiWpxinx+vs127hpTMIh3Q7+NTYQB11bqSkWu
+	wTRZ/tTR1dd1WWC/yQviBRPlU7NtgpxHp9kyOZz9PzdXYOFqZatkp9e4ugAKrRJ2
+	ZAcLVNQAQ/E+lH5KwgDw==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3xmrnj5npa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 24 Apr 2024 14:20:39 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 16FD54002D;
+	Wed, 24 Apr 2024 14:20:30 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0C4C621A91F;
+	Wed, 24 Apr 2024 14:19:21 +0200 (CEST)
+Received: from [10.48.86.79] (10.48.86.79) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 24 Apr
+ 2024 14:19:18 +0200
+Message-ID: <a0bd94ce-3ddb-4448-ada9-7070323cc98f@foss.st.com>
+Date: Wed, 24 Apr 2024 14:19:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 06/13] of: property: fw_devlink: Add support for
+ "access-controller"
+To: Saravana Kannan <saravanak@google.com>,
+        Gatien Chevallier
+	<gatien.chevallier@foss.st.com>
+CC: <Oleksii_Moisieiev@epam.com>, <gregkh@linuxfoundation.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <vkoul@kernel.org>, <jic23@kernel.org>,
+        <olivier.moysan@foss.st.com>, <arnaud.pouliquen@foss.st.com>,
+        <mchehab@kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <andi.shyti@kernel.org>, <ulf.hansson@linaro.org>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hugues.fruchet@foss.st.com>, <lee@kernel.org>, <will@kernel.org>,
+        <catalin.marinas@arm.com>, <arnd@kernel.org>,
+        <richardcochran@gmail.com>, Frank Rowand <frowand.list@gmail.com>,
+        <peng.fan@oss.nxp.com>, <lars@metafoo.de>, <rcsekar@samsung.com>,
+        <wg@grandegger.com>, <mkl@pengutronix.de>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-phy@lists.infradead.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, Rob Herring <robh@kernel.org>
+References: <20240105130404.301172-1-gatien.chevallier@foss.st.com>
+ <20240105130404.301172-7-gatien.chevallier@foss.st.com>
+ <CAGETcx8HdnspNfDEJP+cqShJPsDryzGkOVq6B99cFQzkZi3dMg@mail.gmail.com>
+Content-Language: en-US
+From: Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <CAGETcx8HdnspNfDEJP+cqShJPsDryzGkOVq6B99cFQzkZi3dMg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1011,Hydra:6.0.650,FMLib:17.11.176.26
+ definitions=2024-04-24_10,2024-04-23_02,2023-05-22_02
 
-When Rx in-band wakeup is enabled, set RTS to true in mtk8250_shutdown()
-so the connected device can still send message and trigger IRQ when the
-system is suspended.
+Hi Saravana
 
-Fixes: 18c9d4a3c249 ("serial: When UART is suspended, set RTS to false")
-Signed-off-by: Pin-yen Lin <treapking@chromium.org>
+On 4/24/24 07:57, Saravana Kannan wrote:
+> On Fri, Jan 5, 2024 at 5:03 AM Gatien Chevallier
+> <gatien.chevallier@foss.st.com> wrote:
+>>
+>> Allows tracking dependencies between devices and their access
+>> controller.
+>>
+>> Signed-off-by: Gatien Chevallier <gatien.chevallier@foss.st.com>
+>> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> Please cc me on fw_devlink patches. Also, this patch is breaking the
+> norm below. Please send a fix up patch.
+> 
+>> ---
+>> Changes in V9:
+>>          - Added Rob's review tag
+>>
+>> Changes in V6:
+>>          - Renamed access-controller to access-controllers
+>>
+>> Changes in V5:
+>>          - Rename feature-domain* to access-control*
+>>
+>> Patch not present in V1
+>>
+>>   drivers/of/property.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/of/property.c b/drivers/of/property.c
+>> index afdaefbd03f6..7f737eac91b2 100644
+>> --- a/drivers/of/property.c
+>> +++ b/drivers/of/property.c
+>> @@ -1268,6 +1268,7 @@ DEFINE_SIMPLE_PROP(leds, "leds", NULL)
+>>   DEFINE_SIMPLE_PROP(backlight, "backlight", NULL)
+>>   DEFINE_SIMPLE_PROP(panel, "panel", NULL)
+>>   DEFINE_SIMPLE_PROP(msi_parent, "msi-parent", "#msi-cells")
+>> +DEFINE_SIMPLE_PROP(access_controllers, "access-controllers", "#access-controller-cells")
+>>   DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
+>>   DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
+>>
+>> @@ -1363,6 +1364,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
+>>          { .parse_prop = parse_regulators, },
+>>          { .parse_prop = parse_gpio, },
+>>          { .parse_prop = parse_gpios, },
+>> +       { .parse_prop = parse_access_controllers, },
+> 
+> All the simple properties are listed before the suffix ones as the
+> suffix checks are more expensive. So, you should have inserted this
+> right before the suffix properties. Also, there's a merge conflict in
+> linux-next. So make sure you take that into account when sending the
+> fix up and picking the order.
 
----
+I'm fixing the stm32-next branch by inserting
 
-Changes in v2:
-- Replase serial8250_set_mctrl() with serial8250_do_set_mctrl()
+         { .parse_prop = parse_access_controllers, },
+just before
 
- drivers/tty/serial/8250/8250_mtk.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+	{ .parse_prop = parse_regulators, },
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index c365a349421a..b9cca210e171 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -209,15 +209,19 @@ static int mtk8250_startup(struct uart_port *port)
- 
- static void mtk8250_shutdown(struct uart_port *port)
- {
--#ifdef CONFIG_SERIAL_8250_DMA
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct mtk8250_data *data = port->private_data;
-+	int irq = data->rx_wakeup_irq;
- 
-+#ifdef CONFIG_SERIAL_8250_DMA
- 	if (up->dma)
- 		data->rx_status = DMA_RX_SHUTDOWN;
- #endif
- 
--	return serial8250_do_shutdown(port);
-+	serial8250_do_shutdown(port);
-+
-+	if (irq >= 0)
-+		serial8250_do_set_mctrl(&up->port, TIOCM_RTS);
- }
- 
- static void mtk8250_disable_intrs(struct uart_8250_port *up, int mask)
--- 
-2.44.0.769.g3c40516874-goog
 
+> 
+> -Saravana
+> 
+>>          {}
+>>   };
+> 
+>>
+>> --
+>> 2.35.3
+>>
