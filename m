@@ -1,244 +1,216 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ECAD19BDC;
-	Wed, 24 Apr 2024 22:26:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8F5A16EC0F
+	for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 22:51:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713997586; cv=none; b=LmSiBGRzV9STNirPzIS654tLn8xzOvG4k5m/zNvnxLFwdN6s+0+jzg/LH/JTvYmgRmAilIjkYtnwKZCcYJ9tIPYWp4QSbz7/5Ze1GgA7GWcaKq6cMMiNAcSNy3y6XPkOgdZfFV3Uei3OAG4ih88CH0PaMwyuItMQh3vBn/QkuaY=
+	t=1713999079; cv=none; b=qIOCS0OdxPW4HzQD6KNSxA4W2+O3gy1HOzwuIb2KOustAHLOMs5AOawVos7XImrdxa+vz7qLVCzwzUGaSN7GmVdQqmCFq6q7XIVGAkOsnrqPel6+3QMLhVUbk5KJsVJbHPtZCeDLlvuE2R+d+grZX8tEEebLlH1BZZPQrt4EXTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713997586; c=relaxed/simple;
-	bh=kYSprDKt2ocCU0Du1HIsySgyKDzcYxzXurGCOXmZ1uM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SkgQqT+xmGZFznqfvrZcNtXSq50PZj/7KqO+nhVthuR/WE6ExuzhwDMzxmjJgurcp1lKkeY1kU3zgR1ZAJgwSaBqAiaFPKGpEQqkSC+iD/SqDUgiASV+ywnTctupCgZf1z2LlBZsyE2m8f7Asz+b/j/VBq5HwNYdYbB1Zc4HrkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CIs1tsG/; arc=none smtp.client-ip=209.85.219.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1713999079; c=relaxed/simple;
+	bh=6BJHh97AYrQ08KbyZ1bdOxxcMSFeXu9Cf5YBhGb0oWE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BziI7zzQZhc6XZuPyUGxf/Q0HlYQiWCCV8tUU4PmG5qrlsr0UgwypYEmFFFU14MsejKKaQEr0nhml6JGbyHUheC0lBaXzSBlMagJYwueA+gTKr0nHOeaxDF6gIHVUfva1/wNpHZZ8jFTKEztM8LbKHG1SRrFsQIWVaJ7B6L+0/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=fj05nP4D; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CIs1tsG/"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6a05f376effso3488756d6.0;
-        Wed, 24 Apr 2024 15:26:24 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="fj05nP4D"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-78ebc7e1586so142555285a.1
+        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 15:51:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713997584; x=1714602384; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ym3VgXJbWcYcEe4KybsNIPr7idfeC5mrGPvyD3lUpGs=;
-        b=CIs1tsG/pahpPBVmCEKkThJslTJCup/O2CfmzS72WzS4i5O6phJqHIHl/HngCecl+w
-         XDy9U5/nR8QXaWuYGDZ2U6/ZjDDvTwqgo/7J0bYHwI52diFpgeAYArCMjaGjZkIZ+ctl
-         FGjYWDMjVgdCw9Mfr7P0Og/dOrr0Uu3M4+J1ww3barnNuqpFQEIv9l73Fy7PtdlPq7zm
-         QBWGMoNKE1nQS7noCLry6jKMMsZMVwtNgdpqBdngKx5G26Z4w3AjCdFdGGTjEstlKX5U
-         +n460DPMRPPinMOz9vfGsC1KhVTdyt2g3SXIQQeqLHqvRuc4U1020pMITUU25KFjNFZn
-         X+lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713997584; x=1714602384;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=broadcom.com; s=google; t=1713999076; x=1714603876; darn=vger.kernel.org;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ym3VgXJbWcYcEe4KybsNIPr7idfeC5mrGPvyD3lUpGs=;
-        b=jSYHUVBsctNsCVq6CVooFrFt6na85+puQ57F258cCSHeo36Q3v3Wq7H3xbgse1l/MG
-         AzQWOp1sQIrB5x2LZrwJGOvhJFIEZV5qdTFrn1ltjAWkPVRFKKlDpVds7XJLOmFqcCnT
-         TNaQdUVQDvVD/RV5z0aJMfE2syY2Tg0tpwiI1CvhuPr6T+KjEiTysCxev9M+ZmRaC2fK
-         u1jovAbDVceVwFFBk/UMGxgL7UE8Ji7c3y1w3M5Lq90yRUg8otbmLwCOQIxTUQ25uoL8
-         1rNURjdjZ1zdyGhmJfl6oc+i0KI3QjTR9/TYFGk1yCYZNAI0DAj8KhLKZLi8bcK3S18U
-         WSyg==
-X-Forwarded-Encrypted: i=1; AJvYcCVThx/YlRPhGrgkIu5mcLCkN6RWQopxy4X90ZGej2muxoBVcHL/8ErFtN7yuc446lZdpI/ZgkKlcIJX9nu6i9pTR0iTVCaTKvmbdMdkAT+e5qqdMpj5v7DV9OuzffmwguUfCjF9ew2zFFdRBNqmJx2ULvYNqNM3wYqwBxFNqvdKl2+y
-X-Gm-Message-State: AOJu0Yxh2i0vh5zAOhaufwTy/Pr+JByL+IcBWDR+X2gdEanizYtRMfzS
-	Ur5r0db4b2O+COevlRYrGo93vFcpKEFIYr8jb48Snr41Re7VtqpI
-X-Google-Smtp-Source: AGHT+IEN/eOmWKZtauJSE4F4dd5kc4I+58m1qeyQJ/7gAfOox+dXx4IJhkDrqvCUWvRqUWhtKTG3AA==
-X-Received: by 2002:ad4:548c:0:b0:69f:793d:cade with SMTP id pv12-20020ad4548c000000b0069f793dcademr3983820qvb.19.1713997583805;
-        Wed, 24 Apr 2024 15:26:23 -0700 (PDT)
-Received: from stbirv-lnx-1.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v15-20020a0c8e0f000000b0069b4ddcbd42sm5572591qvb.0.2024.04.24.15.26.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 15:26:23 -0700 (PDT)
-From: Doug Berger <opendmb@gmail.com>
-To: Al Cooper <alcooperx@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: bcm-kernel-feedback-list@broadcom.com,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Doug Berger <opendmb@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] serial: 8250_bcm7271: use default_mux_rate if possible
-Date: Wed, 24 Apr 2024 15:25:59 -0700
-Message-Id: <20240424222559.1844045-1-opendmb@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=jODReqDGhi6t+OrtLGmDsBOCsRj4IddKN/97eK4ST4c=;
+        b=fj05nP4DVCf/3BKmIOL1nTGLgTCV41AprCQx5cRq2xhBlFEVoodCPtQC473Mb5WXpa
+         nb9DH+w2LuYR7sEj+RwZsK/U4NI+Y6Y8P87qnOnU3UjZknOiF+/ZAyqZHSlY21j9ru+f
+         QJy9BGdYqAsWD4H08YXNHVHbpNvGBLrS37d10=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713999076; x=1714603876;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=jODReqDGhi6t+OrtLGmDsBOCsRj4IddKN/97eK4ST4c=;
+        b=kBrVJS++bbBzCC6BIU4SX3QIX6hiJAeBTGMdKxVsZfdjp2mw3NsOBClTVFGq7/M7BK
+         rSUDV6CyUBMwahp38tbRHp3J5oytqtufcmrUvBTWuif47OicOPYnw2nyUaxvBDL1Qc7H
+         pXdcFTm6iL91xXmtiwvN57c/LUb+mM+/c7PJC/+pVvTlNtISK63DnkTqju2H8wKGHB0f
+         45buWo4h8tn0BWxugSPxUYePSJd+dxQYwO7YihH5Kwuvungwkgi6pilO4CF9cQAoRdnd
+         QADJlrSxCB9QO1rbUighUSZjvO5dsr4APJtdEHPdWIXCFnhL/hzA9p1IDsc45Yw3tPU3
+         Di/g==
+X-Forwarded-Encrypted: i=1; AJvYcCXkNVpbDImNfkuMwE7mJtexgxdkzT3XzPgdha9l2wv4JH4crmltGrp3x+xn0RaER9eaE9A69zZP3MlKl4r9YlyIQDzvA5JXHJseHlFK
+X-Gm-Message-State: AOJu0YyFICW5kB6lofS3zIY9TEt4WUf7AfZDacHzOx5NHNA/rcZ/29xV
+	nYzplykc6zxpZCSFtOFuu0nerr0kFqW8rIhYV1sjEb2xQxF6laD/X1g8gGjhcg==
+X-Google-Smtp-Source: AGHT+IEGyRkJp56uqcLg16yNEr9JYUsnNLnHDnpZPvnONwKA/rpbFTa0rAhGNSybwNmF+EY5JzIPPQ==
+X-Received: by 2002:a05:620a:470a:b0:790:9976:9d5c with SMTP id bs10-20020a05620a470a00b0079099769d5cmr1000349qkb.21.1713999075730;
+        Wed, 24 Apr 2024 15:51:15 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f10-20020a05620a15aa00b0079061110054sm4719829qkk.13.2024.04.24.15.51.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Apr 2024 15:51:14 -0700 (PDT)
+Message-ID: <62cf51b8-0597-4e42-bdc2-54f01ecb91e1@broadcom.com>
+Date: Wed, 24 Apr 2024 15:51:12 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] serial: 8250_bcm7271: use default_mux_rate if possible
+To: Doug Berger <opendmb@gmail.com>, Al Cooper <alcooperx@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: bcm-kernel-feedback-list@broadcom.com, Jiri Slaby <jirislaby@kernel.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20240424222559.1844045-1-opendmb@gmail.com>
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <20240424222559.1844045-1-opendmb@gmail.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="00000000000013d48c0616df828d"
 
-There is a scenario when resuming from some power saving states
-with no_console_suspend where console output can be generated
-before the 8250_bcm7271 driver gets the opportunity to restore
-the baud_mux_clk frequency. Since the baud_mux_clk is at its
-default frequency at this time the output can be garbled until
-the driver gets the opportunity to resume.
+--00000000000013d48c0616df828d
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Since this is only an issue with console use of the serial port
-during that window and the console isn't likely to use baud
-rates that require alternate baud_mux_clk frequencies, allow the
-driver to select the default_mux_rate if it is accurate enough.
+On 4/24/24 15:25, Doug Berger wrote:
+> There is a scenario when resuming from some power saving states
+> with no_console_suspend where console output can be generated
+> before the 8250_bcm7271 driver gets the opportunity to restore
+> the baud_mux_clk frequency. Since the baud_mux_clk is at its
+> default frequency at this time the output can be garbled until
+> the driver gets the opportunity to resume.
+> 
+> Since this is only an issue with console use of the serial port
+> during that window and the console isn't likely to use baud
+> rates that require alternate baud_mux_clk frequencies, allow the
+> driver to select the default_mux_rate if it is accurate enough.
+> 
+> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Doug Berger <opendmb@gmail.com>
----
-Changes in v2:
-  Added "Cc: stable@vger.kernel.org"
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Tested-by: Florian Fainelli <florian.fainelli@broadcom.com>
 
- drivers/tty/serial/8250/8250_bcm7271.c | 101 +++++++++++++++----------
- 1 file changed, 60 insertions(+), 41 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index de270863eb5e..2569ca69223f 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -673,18 +673,46 @@ static void init_real_clk_rates(struct device *dev, struct brcmuart_priv *priv)
- 	clk_set_rate(priv->baud_mux_clk, priv->default_mux_rate);
- }
- 
-+static u32 find_quot(struct device *dev, u32 freq, u32 baud, u32 *percent)
-+{
-+	u32 quot;
-+	u32 rate;
-+	u64 hires_rate;
-+	u64 hires_baud;
-+	u64 hires_err;
-+
-+	rate = freq / 16;
-+	quot = DIV_ROUND_CLOSEST(rate, baud);
-+	if (!quot)
-+		return 0;
-+
-+	/* increase resolution to get xx.xx percent */
-+	hires_rate = div_u64((u64)rate * 10000, (u64)quot);
-+	hires_baud = (u64)baud * 10000;
-+
-+	/* get the delta */
-+	if (hires_rate > hires_baud)
-+		hires_err = (hires_rate - hires_baud);
-+	else
-+		hires_err = (hires_baud - hires_rate);
-+
-+	*percent = (unsigned long)DIV_ROUND_CLOSEST_ULL(hires_err, baud);
-+
-+	dev_dbg(dev, "Baud rate: %u, MUX Clk: %u, Error: %u.%u%%\n",
-+		baud, freq, *percent / 100, *percent % 100);
-+
-+	return quot;
-+}
-+
- static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
- 			u32 baud)
- {
- 	u32 percent;
- 	u32 best_percent = UINT_MAX;
- 	u32 quot;
-+	u32 freq;
- 	u32 best_quot = 1;
--	u32 rate;
--	int best_index = -1;
--	u64 hires_rate;
--	u64 hires_baud;
--	u64 hires_err;
-+	u32 best_freq = 0;
- 	int rc;
- 	int i;
- 	int real_baud;
-@@ -693,44 +721,35 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
- 	if (priv->baud_mux_clk == NULL)
- 		return;
- 
--	/* Find the closest match for specified baud */
--	for (i = 0; i < ARRAY_SIZE(priv->real_rates); i++) {
--		if (priv->real_rates[i] == 0)
--			continue;
--		rate = priv->real_rates[i] / 16;
--		quot = DIV_ROUND_CLOSEST(rate, baud);
--		if (!quot)
--			continue;
--
--		/* increase resolution to get xx.xx percent */
--		hires_rate = (u64)rate * 10000;
--		hires_baud = (u64)baud * 10000;
--
--		hires_err = div_u64(hires_rate, (u64)quot);
--
--		/* get the delta */
--		if (hires_err > hires_baud)
--			hires_err = (hires_err - hires_baud);
--		else
--			hires_err = (hires_baud - hires_err);
--
--		percent = (unsigned long)DIV_ROUND_CLOSEST_ULL(hires_err, baud);
--		dev_dbg(up->dev,
--			"Baud rate: %u, MUX Clk: %u, Error: %u.%u%%\n",
--			baud, priv->real_rates[i], percent / 100,
--			percent % 100);
--		if (percent < best_percent) {
--			best_percent = percent;
--			best_index = i;
--			best_quot = quot;
-+	/* Try default_mux_rate first */
-+	quot = find_quot(up->dev, priv->default_mux_rate, baud, &percent);
-+	if (quot) {
-+		best_percent = percent;
-+		best_freq = priv->default_mux_rate;
-+		best_quot = quot;
-+	}
-+	/* If more than 1% error, find the closest match for specified baud */
-+	if (best_percent > 100) {
-+		for (i = 0; i < ARRAY_SIZE(priv->real_rates); i++) {
-+			freq = priv->real_rates[i];
-+			if (freq == 0 || freq == priv->default_mux_rate)
-+				continue;
-+			quot = find_quot(up->dev, freq, baud, &percent);
-+			if (!quot)
-+				continue;
-+
-+			if (percent < best_percent) {
-+				best_percent = percent;
-+				best_freq = freq;
-+				best_quot = quot;
-+			}
- 		}
- 	}
--	if (best_index == -1) {
-+	if (!best_freq) {
- 		dev_err(up->dev, "Error, %d BAUD rate is too fast.\n", baud);
- 		return;
- 	}
--	rate = priv->real_rates[best_index];
--	rc = clk_set_rate(priv->baud_mux_clk, rate);
-+	rc = clk_set_rate(priv->baud_mux_clk, best_freq);
- 	if (rc)
- 		dev_err(up->dev, "Error selecting BAUD MUX clock\n");
- 
-@@ -739,8 +758,8 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
- 		dev_err(up->dev, "Error, baud: %d has %u.%u%% error\n",
- 			baud, percent / 100, percent % 100);
- 
--	real_baud = rate / 16 / best_quot;
--	dev_dbg(up->dev, "Selecting BAUD MUX rate: %u\n", rate);
-+	real_baud = best_freq / 16 / best_quot;
-+	dev_dbg(up->dev, "Selecting BAUD MUX rate: %u\n", best_freq);
- 	dev_dbg(up->dev, "Requested baud: %u, Actual baud: %u\n",
- 		baud, real_baud);
- 
-@@ -749,7 +768,7 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
- 	i += (i / 2);
- 	priv->char_wait = ns_to_ktime(i);
- 
--	up->uartclk = rate;
-+	up->uartclk = best_freq;
- }
- 
- static void brcmstb_set_termios(struct uart_port *up,
+Thanks!
 -- 
-2.34.1
+Florian
 
+
+--00000000000013d48c0616df828d
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
+UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
+KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
+nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
+Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
+KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
+kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
+2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
+3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
+NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
+AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN2VoUWPfAgt1ieY
+9k+mhiHkDMJNQ+RRhTVK4/ZFW3t9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDQyNDIyNTExNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDZoGIerPOL5RM0aGeF33ZmmdHZmqHvwhNR
+5p7gFxhlpea8D9kvE1u7CYRqgDBLL7jjQxHYn4oUq0qmDip1v+xDy9hxo7cy5EGoxIJnh1v0ab+a
+7Yc5uXFHeu7fXVUxFIWusO7xI8Msn90Nr5U2/+pF0Q1HWAsowM9LlIKGarmAaXf8LvutCbCJAg8j
++KMVse4Hbs4PahG9b740tjFD/KwmHu12KFfKd5RqYigesThEqv+g3sFotVb2tSO26goZAbjcJgEp
+f8xDwGug33nDEw8fsq3v2E4XG/ORcFFF/ww8wg8b9G1DNz11BfYD8s6y30t3OvlIuhyEcNNwhtA0
+O6Jy
+--00000000000013d48c0616df828d--
