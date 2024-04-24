@@ -1,240 +1,341 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7FBF193
-	for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 00:15:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8048156876
+	for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 05:50:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713917752; cv=none; b=qmawyCbo3U7WSbBwxYIYruAXrQFhBFjOVTdZPrZZsDHVNHNSaCZXyBApxcdhU6oMKGBcKOm106EIu/sCcX3B3JTz9OvnFT44l/YNL4HlDjHb3ubRp/vwkjHAxMNearMgxzTocP5IjWQPMCGglxoZCSCc+YBMCTMvTDeeXUuiTxU=
+	t=1713937820; cv=none; b=g/PxIC/jYLdH3uM7jKO+a5Xcp4QSLNkfHOCcN16yC1UtmrWC9+6LiWdLcOWFHxEIp/jItp6jHQXJVlh40QFwyXTSQKKs7PFpmNTIZSQNg5xv2TO2tj5UuUn3td7XJDXVZpATtbtNXTxu0vtV4kw2NjALAeehz5HA/gAfA4/VrGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713917752; c=relaxed/simple;
-	bh=txmM8AxcQAAnQxUzKbokq71Wk3YTmkhZ/DPOgxhV9dQ=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=LDoTGq31Xc5r0Ob4EzYz7URCb6bDiEx8s8nilvHa9SGEBZpqIC/dlpqs/efWhp7bTCdgFFTqj739gPjF0JYjR4IK7BnVsnMMQttAUHcyak4w5SETCqf4SF22TjKvMGqNwFy6VnxdXFHidqqoT83OAnSj+hLEN2+syyBYlTSPVEM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ENojtHOd; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1713937820; c=relaxed/simple;
+	bh=WgCUbfzNS3QF4DTL9ufCocSLSVuxeOwnd2Vq2/rJecE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=JIi9FeYj0KcT+hD9W1r9uGPDmJNNFzBwCCj76nqXOYYorEGHpi0H1ysNHzPkvNZULF/TmIrnTPI/J0f8+d1FFyxoZCWy4e20R1n4IOWeR7oXFgBnNTc2wJdl/ZtZMDJ5J/lMfs63MmFEAs8/HaPnYHLbl8bYjG2+EzEg0uNJwOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=daniel.starke@siemens.com header.b=E78uxt4r; arc=none smtp.client-ip=185.136.65.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ENojtHOd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713917751; x=1745453751;
-  h=date:from:to:cc:subject:message-id;
-  bh=txmM8AxcQAAnQxUzKbokq71Wk3YTmkhZ/DPOgxhV9dQ=;
-  b=ENojtHOdqb61wrXB+fi+3zi6abBiO4JTL23BCzXyEYxXJ8IJg7Ua/LHv
-   BHgnwLSM+KTcp4JEkQqoyo1TidzY+EJ3q79RpQeLIq3VB8jR0TmLDVOu6
-   JAla/WfdE7nB2fJar3K1a2MnBsELai0gAlYvXT8feOeVA31P9mKa2eMXb
-   w1O3eiKV8sNGh1p+8XFWB64yH1KXI1SwWNpT+uBaV9WGbX3mr0770qxlv
-   fSz9+nJPoMr5reuvX82yOc2Qmy1E+iX1UMV3O5qbGKijlfqkvMMrUhPSg
-   crPsywwpqUPEccOfRzDruap+XpRriTaXCcwh9PLO5eHjjUbuzlBE/CiOJ
-   w==;
-X-CSE-ConnectionGUID: nlO0eKb/SgOjchWvdHHKQA==
-X-CSE-MsgGUID: 1bfO8aZ9SBOh1lwtTYdgWw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="20678173"
-X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="20678173"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 17:15:50 -0700
-X-CSE-ConnectionGUID: Ah+FALV0SzKj2vlBFZKl+g==
-X-CSE-MsgGUID: UygWVjjQSdqKy17cQJmXKw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="29016587"
-Received: from lkp-server01.sh.intel.com (HELO e434dd42e5a1) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 23 Apr 2024 17:15:48 -0700
-Received: from kbuild by e434dd42e5a1 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rzQIc-0000ei-1E;
-	Wed, 24 Apr 2024 00:15:46 +0000
-Date: Wed, 24 Apr 2024 08:15:27 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 660a708098569a66a47d0abdad998e29e1259de6
-Message-ID: <202404240824.ITo3H9QQ-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=daniel.starke@siemens.com header.b="E78uxt4r"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20240424055012b252d33da0fa0e4ffb
+        for <linux-serial@vger.kernel.org>;
+        Wed, 24 Apr 2024 07:50:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=jJAfwSw6KITZv+CcSJwARJnFg2yhGSqyR70vWWtPD8k=;
+ b=E78uxt4rxWd6hEOQoZDw9OUqvm+Z6VdUbxnclMmhO9vNdVnUzTfjPOP0WYiJ+EJhw8l+vW
+ HF72aMNMt+pFxZXsExCgC1Y+fbHGxBQ207v053Xvwg9q9SLNlWom3y4B+Yk2ZaaNb8Oxcb7C
+ bFQYm6CUCQJBmr1SLfqEkGt93WFhY=;
+From: "D. Starke" <daniel.starke@siemens.com>
+To: linux-serial@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	ilpo.jarvinen@linux.intel.com
+Cc: linux-kernel@vger.kernel.org,
+	j51569436@gmail.com,
+	Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 2/2] tty: n_gsm: fix missing receive state reset after mode switch
+Date: Wed, 24 Apr 2024 07:48:42 +0200
+Message-Id: <20240424054842.7741-2-daniel.starke@siemens.com>
+In-Reply-To: <20240424054842.7741-1-daniel.starke@siemens.com>
+References: <20240424054842.7741-1-daniel.starke@siemens.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 660a708098569a66a47d0abdad998e29e1259de6  Merge 6.9-rc5 into tty-next
+From: Daniel Starke <daniel.starke@siemens.com>
 
-elapsed time: 731m
+The current implementation uses either gsm0_receive() or gsm1_receive()
+depending on whether the user configured the mux in basic or advanced
+option mode. Both functions share some state values over the same logical
+elements of the frame. However, both frame types differ in their nature.
+gsm0_receive() uses non-transparency framing, whereas gsm1_receive() uses
+transparency mechanism. Switching between both modes leaves the receive
+function in an undefined state when done during frame reception.
 
-configs tested: 163
-configs skipped: 3
+Fix this by splitting both states. Add gsm0_receive_state_check_and_fix()
+and gsm1_receive_state_check_and_fix() to ensure that gsm->state is reset
+after a change of gsm->receive.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Note that gsm->state is only accessed in:
+- gsm0_receive()
+- gsm1_receive()
+- gsm_error()
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20240424   gcc  
-arc                   randconfig-002-20240424   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   clang
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                   randconfig-001-20240424   gcc  
-arm                   randconfig-002-20240424   gcc  
-arm                   randconfig-003-20240424   gcc  
-arm                   randconfig-004-20240424   clang
-arm64                            allmodconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                 randconfig-001-20240424   clang
-arm64                 randconfig-002-20240424   gcc  
-arm64                 randconfig-003-20240424   gcc  
-arm64                 randconfig-004-20240424   clang
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20240424   gcc  
-csky                  randconfig-002-20240424   gcc  
-hexagon                          allmodconfig   clang
-hexagon                           allnoconfig   clang
-hexagon                          allyesconfig   clang
-hexagon                             defconfig   clang
-hexagon               randconfig-001-20240424   clang
-hexagon               randconfig-002-20240424   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20240423   clang
-i386         buildonly-randconfig-002-20240423   clang
-i386         buildonly-randconfig-003-20240423   gcc  
-i386         buildonly-randconfig-004-20240423   clang
-i386         buildonly-randconfig-005-20240423   clang
-i386         buildonly-randconfig-006-20240423   gcc  
-i386                                defconfig   clang
-i386                  randconfig-001-20240423   gcc  
-i386                  randconfig-002-20240423   gcc  
-i386                  randconfig-003-20240423   clang
-i386                  randconfig-004-20240423   gcc  
-i386                  randconfig-005-20240423   clang
-i386                  randconfig-006-20240423   clang
-i386                  randconfig-011-20240423   gcc  
-i386                  randconfig-012-20240423   clang
-i386                  randconfig-013-20240423   clang
-i386                  randconfig-014-20240423   gcc  
-i386                  randconfig-015-20240423   gcc  
-i386                  randconfig-016-20240423   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20240424   gcc  
-loongarch             randconfig-002-20240424   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20240424   gcc  
-nios2                 randconfig-002-20240424   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                randconfig-001-20240424   gcc  
-parisc                randconfig-002-20240424   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc               randconfig-001-20240424   clang
-powerpc               randconfig-002-20240424   gcc  
-powerpc               randconfig-003-20240424   gcc  
-powerpc64             randconfig-001-20240424   gcc  
-powerpc64             randconfig-002-20240424   gcc  
-powerpc64             randconfig-003-20240424   gcc  
-riscv                            allmodconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   clang
-riscv                               defconfig   clang
-riscv                 randconfig-001-20240424   gcc  
-riscv                 randconfig-002-20240424   clang
-s390                             allmodconfig   clang
-s390                              allnoconfig   clang
-s390                             allyesconfig   gcc  
-s390                                defconfig   clang
-s390                  randconfig-001-20240424   gcc  
-s390                  randconfig-002-20240424   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                    randconfig-001-20240424   gcc  
-sh                    randconfig-002-20240424   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                               defconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64               randconfig-001-20240424   gcc  
-sparc64               randconfig-002-20240424   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   gcc  
-um                                  defconfig   clang
-um                             i386_defconfig   gcc  
-um                    randconfig-001-20240424   gcc  
-um                    randconfig-002-20240424   clang
-um                           x86_64_defconfig   clang
-x86_64                            allnoconfig   clang
-x86_64                           allyesconfig   clang
-x86_64       buildonly-randconfig-001-20240424   clang
-x86_64       buildonly-randconfig-002-20240424   clang
-x86_64       buildonly-randconfig-003-20240424   gcc  
-x86_64       buildonly-randconfig-004-20240424   gcc  
-x86_64       buildonly-randconfig-005-20240424   gcc  
-x86_64       buildonly-randconfig-006-20240424   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20240424   clang
-x86_64                randconfig-002-20240424   clang
-x86_64                randconfig-003-20240424   gcc  
-x86_64                randconfig-004-20240424   gcc  
-x86_64                randconfig-005-20240424   clang
-x86_64                randconfig-006-20240424   clang
-x86_64                randconfig-011-20240424   clang
-x86_64                randconfig-012-20240424   gcc  
-x86_64                randconfig-013-20240424   gcc  
-x86_64                randconfig-014-20240424   gcc  
-x86_64                randconfig-015-20240424   clang
-x86_64                randconfig-016-20240424   gcc  
-x86_64                randconfig-071-20240424   clang
-x86_64                randconfig-072-20240424   clang
-x86_64                randconfig-073-20240424   gcc  
-x86_64                randconfig-074-20240424   clang
-x86_64                randconfig-075-20240424   gcc  
-x86_64                randconfig-076-20240424   gcc  
-x86_64                          rhel-8.3-rust   clang
-xtensa                            allnoconfig   gcc  
-xtensa                randconfig-001-20240424   gcc  
-xtensa                randconfig-002-20240424   gcc  
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 133 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 92 insertions(+), 41 deletions(-)
 
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 7c697dab6f84..be35f7334ecd 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -245,16 +245,18 @@ enum gsm_encoding {
+ 
+ enum gsm_mux_state {
+ 	GSM_SEARCH,
+-	GSM_START,
+-	GSM_ADDRESS,
+-	GSM_CONTROL,
+-	GSM_LEN,
+-	GSM_DATA,
+-	GSM_FCS,
+-	GSM_OVERRUN,
+-	GSM_LEN0,
+-	GSM_LEN1,
+-	GSM_SSOF,
++	GSM0_ADDRESS,
++	GSM0_CONTROL,
++	GSM0_LEN0,
++	GSM0_LEN1,
++	GSM0_DATA,
++	GSM0_FCS,
++	GSM0_SSOF,
++	GSM1_START,
++	GSM1_ADDRESS,
++	GSM1_CONTROL,
++	GSM1_DATA,
++	GSM1_OVERRUN,
+ };
+ 
+ /*
+@@ -2847,6 +2849,30 @@ static void gsm_queue(struct gsm_mux *gsm)
+ 	return;
+ }
+ 
++/**
++ * gsm0_receive_state_check_and_fix	-	check and correct receive state
++ * @gsm: gsm data for this ldisc instance
++ *
++ * Ensures that the current receive state is valid for basic option mode.
++ */
++
++static void gsm0_receive_state_check_and_fix(struct gsm_mux *gsm)
++{
++	switch (gsm->state) {
++	case GSM_SEARCH:
++	case GSM0_ADDRESS:
++	case GSM0_CONTROL:
++	case GSM0_LEN0:
++	case GSM0_LEN1:
++	case GSM0_DATA:
++	case GSM0_FCS:
++	case GSM0_SSOF:
++		break;
++	default:
++		gsm->state = GSM_SEARCH;
++		break;
++	}
++}
+ 
+ /**
+  *	gsm0_receive	-	perform processing for non-transparency
+@@ -2860,26 +2886,27 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ {
+ 	unsigned int len;
+ 
++	gsm0_receive_state_check_and_fix(gsm);
+ 	switch (gsm->state) {
+ 	case GSM_SEARCH:	/* SOF marker */
+ 		if (c == GSM0_SOF) {
+-			gsm->state = GSM_ADDRESS;
++			gsm->state = GSM0_ADDRESS;
+ 			gsm->address = 0;
+ 			gsm->len = 0;
+ 			gsm->fcs = INIT_FCS;
+ 		}
+ 		break;
+-	case GSM_ADDRESS:	/* Address EA */
++	case GSM0_ADDRESS:	/* Address EA */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		if (gsm_read_ea(&gsm->address, c))
+-			gsm->state = GSM_CONTROL;
++			gsm->state = GSM0_CONTROL;
+ 		break;
+-	case GSM_CONTROL:	/* Control Byte */
++	case GSM0_CONTROL:	/* Control Byte */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		gsm->control = c;
+-		gsm->state = GSM_LEN0;
++		gsm->state = GSM0_LEN0;
+ 		break;
+-	case GSM_LEN0:		/* Length EA */
++	case GSM0_LEN0:		/* Length EA */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		if (gsm_read_ea(&gsm->len, c)) {
+ 			if (gsm->len > gsm->mru) {
+@@ -2889,14 +2916,14 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ 			}
+ 			gsm->count = 0;
+ 			if (!gsm->len)
+-				gsm->state = GSM_FCS;
++				gsm->state = GSM0_FCS;
+ 			else
+-				gsm->state = GSM_DATA;
++				gsm->state = GSM0_DATA;
+ 			break;
+ 		}
+-		gsm->state = GSM_LEN1;
++		gsm->state = GSM0_LEN1;
+ 		break;
+-	case GSM_LEN1:
++	case GSM0_LEN1:
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		len = c;
+ 		gsm->len |= len << 7;
+@@ -2907,11 +2934,11 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ 		}
+ 		gsm->count = 0;
+ 		if (!gsm->len)
+-			gsm->state = GSM_FCS;
++			gsm->state = GSM0_FCS;
+ 		else
+-			gsm->state = GSM_DATA;
++			gsm->state = GSM0_DATA;
+ 		break;
+-	case GSM_DATA:		/* Data */
++	case GSM0_DATA:		/* Data */
+ 		gsm->buf[gsm->count++] = c;
+ 		if (gsm->count >= MAX_MRU) {
+ 			gsm->bad_size++;
+@@ -2922,14 +2949,14 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ 				gsm->fcs = gsm_fcs_add_block(gsm->fcs, gsm->buf,
+ 							     gsm->count);
+ 			}
+-			gsm->state = GSM_FCS;
++			gsm->state = GSM0_FCS;
+ 		}
+ 		break;
+-	case GSM_FCS:		/* FCS follows the packet */
++	case GSM0_FCS:		/* FCS follows the packet */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+-		gsm->state = GSM_SSOF;
++		gsm->state = GSM0_SSOF;
+ 		break;
+-	case GSM_SSOF:
++	case GSM0_SSOF:
+ 		gsm->state = GSM_SEARCH;
+ 		if (c == GSM0_SOF)
+ 			gsm_queue(gsm);
+@@ -2942,6 +2969,29 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ 	}
+ }
+ 
++/**
++ * gsm1_receive_state_check_and_fix	-	check and correct receive state
++ * @gsm: gsm data for this ldisc instance
++ *
++ * Ensures that the current receive state is valid for advanced option mode.
++ */
++
++static void gsm1_receive_state_check_and_fix(struct gsm_mux *gsm)
++{
++	switch (gsm->state) {
++	case GSM_SEARCH:
++	case GSM1_START:
++	case GSM1_ADDRESS:
++	case GSM1_CONTROL:
++	case GSM1_DATA:
++	case GSM1_OVERRUN:
++		break;
++	default:
++		gsm->state = GSM_SEARCH;
++		break;
++	}
++}
++
+ /**
+  *	gsm1_receive	-	perform processing for non-transparency
+  *	@gsm: gsm data for this ldisc instance
+@@ -2952,6 +3002,7 @@ static void gsm0_receive(struct gsm_mux *gsm, u8 c)
+ 
+ static void gsm1_receive(struct gsm_mux *gsm, u8 c)
+ {
++	gsm1_receive_state_check_and_fix(gsm);
+ 	/* handle XON/XOFF */
+ 	if ((c & ISO_IEC_646_MASK) == XON) {
+ 		gsm->constipated = true;
+@@ -2964,11 +3015,11 @@ static void gsm1_receive(struct gsm_mux *gsm, u8 c)
+ 	}
+ 	if (c == GSM1_SOF) {
+ 		/* EOF is only valid in frame if we have got to the data state */
+-		if (gsm->state == GSM_DATA) {
++		if (gsm->state == GSM1_DATA) {
+ 			if (gsm->count < 1) {
+ 				/* Missing FSC */
+ 				gsm->malformed++;
+-				gsm->state = GSM_START;
++				gsm->state = GSM1_START;
+ 				return;
+ 			}
+ 			/* Remove the FCS from data */
+@@ -2984,14 +3035,14 @@ static void gsm1_receive(struct gsm_mux *gsm, u8 c)
+ 			gsm->fcs = gsm_fcs_add(gsm->fcs, gsm->buf[gsm->count]);
+ 			gsm->len = gsm->count;
+ 			gsm_queue(gsm);
+-			gsm->state  = GSM_START;
++			gsm->state  = GSM1_START;
+ 			return;
+ 		}
+ 		/* Any partial frame was a runt so go back to start */
+-		if (gsm->state != GSM_START) {
++		if (gsm->state != GSM1_START) {
+ 			if (gsm->state != GSM_SEARCH)
+ 				gsm->malformed++;
+-			gsm->state = GSM_START;
++			gsm->state = GSM1_START;
+ 		}
+ 		/* A SOF in GSM_START means we are still reading idling or
+ 		   framing bytes */
+@@ -3012,30 +3063,30 @@ static void gsm1_receive(struct gsm_mux *gsm, u8 c)
+ 		gsm->escape = false;
+ 	}
+ 	switch (gsm->state) {
+-	case GSM_START:		/* First byte after SOF */
++	case GSM1_START:		/* First byte after SOF */
+ 		gsm->address = 0;
+-		gsm->state = GSM_ADDRESS;
++		gsm->state = GSM1_ADDRESS;
+ 		gsm->fcs = INIT_FCS;
+ 		fallthrough;
+-	case GSM_ADDRESS:	/* Address continuation */
++	case GSM1_ADDRESS:	/* Address continuation */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		if (gsm_read_ea(&gsm->address, c))
+-			gsm->state = GSM_CONTROL;
++			gsm->state = GSM1_CONTROL;
+ 		break;
+-	case GSM_CONTROL:	/* Control Byte */
++	case GSM1_CONTROL:	/* Control Byte */
+ 		gsm->fcs = gsm_fcs_add(gsm->fcs, c);
+ 		gsm->control = c;
+ 		gsm->count = 0;
+-		gsm->state = GSM_DATA;
++		gsm->state = GSM1_DATA;
+ 		break;
+-	case GSM_DATA:		/* Data */
++	case GSM1_DATA:		/* Data */
+ 		if (gsm->count > gsm->mru || gsm->count > MAX_MRU) {	/* Allow one for the FCS */
+-			gsm->state = GSM_OVERRUN;
++			gsm->state = GSM1_OVERRUN;
+ 			gsm->bad_size++;
+ 		} else
+ 			gsm->buf[gsm->count++] = c;
+ 		break;
+-	case GSM_OVERRUN:	/* Over-long - eg a dropped SOF */
++	case GSM1_OVERRUN:	/* Over-long - eg a dropped SOF */
+ 		break;
+ 	default:
+ 		pr_debug("%s: unhandled state: %d\n", __func__, gsm->state);
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
