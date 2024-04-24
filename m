@@ -1,68 +1,68 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BCFE1772F;
-	Wed, 24 Apr 2024 22:16:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ECAD19BDC;
+	Wed, 24 Apr 2024 22:26:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713997016; cv=none; b=paQIfyd0r/Bmm6j/gOepSG+lXc0FVXB+vX9VElI/chh1WncinNksZYFrWyTolnGCfr/AzYyAHaZLbHQeUIhysqmQ2tDZR1VFZ4zh3mcOLQLA7xcW5WjZLRWhIOgKO4lXV7EV81x91RAsOOkkdC4PfSnKq0g6nGtmBerX+KYRFkY=
+	t=1713997586; cv=none; b=LmSiBGRzV9STNirPzIS654tLn8xzOvG4k5m/zNvnxLFwdN6s+0+jzg/LH/JTvYmgRmAilIjkYtnwKZCcYJ9tIPYWp4QSbz7/5Ze1GgA7GWcaKq6cMMiNAcSNy3y6XPkOgdZfFV3Uei3OAG4ih88CH0PaMwyuItMQh3vBn/QkuaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713997016; c=relaxed/simple;
-	bh=/yLFzn2f7TzQB8zUF0y9sJy+jO37et3cW0yoOU8T9k8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cncRyKuFzUtO2nmpOqiqDaoNHeM2kO6ZYnUe2jJY+c5Df4u+62y0jdChwWQcY2yvtvnLCbYP35TrM8eB/r0SULsX6sr5kWZ5liIqzOxZnl/NplSwsL7/GRgXkRwlhGZ06GffGQIp0w2ismDvfg0y4D/EIM2ZTCRkU81tKI3aTW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K2rJnMIg; arc=none smtp.client-ip=209.85.160.169
+	s=arc-20240116; t=1713997586; c=relaxed/simple;
+	bh=kYSprDKt2ocCU0Du1HIsySgyKDzcYxzXurGCOXmZ1uM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SkgQqT+xmGZFznqfvrZcNtXSq50PZj/7KqO+nhVthuR/WE6ExuzhwDMzxmjJgurcp1lKkeY1kU3zgR1ZAJgwSaBqAiaFPKGpEQqkSC+iD/SqDUgiASV+ywnTctupCgZf1z2LlBZsyE2m8f7Asz+b/j/VBq5HwNYdYbB1Zc4HrkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CIs1tsG/; arc=none smtp.client-ip=209.85.219.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K2rJnMIg"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-43716c1616dso2632041cf.2;
-        Wed, 24 Apr 2024 15:16:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CIs1tsG/"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6a05f376effso3488756d6.0;
+        Wed, 24 Apr 2024 15:26:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713997014; x=1714601814; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1713997584; x=1714602384; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=W6PS2pwOfBu3kj7Fmn59K60LPIRKsK3MY9Ejj2YtdjI=;
-        b=K2rJnMIgRbkfibt+cMzhkpt7K4q70R2SnqXvAqF/H+5qN9YDVEJovN8oFu3kMT320g
-         lrDp8Q7IF1yPFYywEed1lDJvMiX3m2zQV6APV3vta9iBYGZupD4WWyFGFTOuejkRXRwj
-         vp/Y9U1V0ZYi8TXt48JVyPSPHAyM6XsMjKgcerSlV2L7UaNeS91yI4Xz8ZDO822/caqF
-         /oG6fPoJMB/iryHicYIdzCe7GY2v8YrC0ExUjI3mJA78hCGWquI70kchqxJVQenT5Z54
-         7vpI1lF+dAhUyQEaLU04yIv9Jg2ZjLqA44D3/T2AviHlLVnEcBBHAGSxXL8n3Xs2E+qf
-         fXYw==
+        bh=ym3VgXJbWcYcEe4KybsNIPr7idfeC5mrGPvyD3lUpGs=;
+        b=CIs1tsG/pahpPBVmCEKkThJslTJCup/O2CfmzS72WzS4i5O6phJqHIHl/HngCecl+w
+         XDy9U5/nR8QXaWuYGDZ2U6/ZjDDvTwqgo/7J0bYHwI52diFpgeAYArCMjaGjZkIZ+ctl
+         FGjYWDMjVgdCw9Mfr7P0Og/dOrr0Uu3M4+J1ww3barnNuqpFQEIv9l73Fy7PtdlPq7zm
+         QBWGMoNKE1nQS7noCLry6jKMMsZMVwtNgdpqBdngKx5G26Z4w3AjCdFdGGTjEstlKX5U
+         +n460DPMRPPinMOz9vfGsC1KhVTdyt2g3SXIQQeqLHqvRuc4U1020pMITUU25KFjNFZn
+         X+lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713997014; x=1714601814;
+        d=1e100.net; s=20230601; t=1713997584; x=1714602384;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=W6PS2pwOfBu3kj7Fmn59K60LPIRKsK3MY9Ejj2YtdjI=;
-        b=p5linhvj1WkFY4+XKj/HzdXHH1oqZmnw/ZaDdidYNetF9F+1aoYVBMtJB3QMkHiuRx
-         YdRforBVEGl396fP+eaOfHML9TMADu8Odi3GnYPHbf1fvV5GJeEtiZ7hUWLJ6xGndecx
-         ZKwcdr07bbM4eeuxXp0G+jWEfVbEn7mMJccxVV4V+TRBfptFI2sWBbe6fOhBHbZVo3PY
-         wL8/nHMrArQYUSXX13gbHUZcNCpAptkoNNcew7irHfNlVwIB6NbwnYP7uGCKGtQ0Veom
-         xJcvFMvo/nrHgRp24e9hMxw/80aVZbASAsx+anv1OsPERH0dgdFsZ/h0LSVAZoRnMu8B
-         OVVg==
-X-Forwarded-Encrypted: i=1; AJvYcCVE9u0fhEYxRFvnoKgOrlH7vaEiQmgyF4oznDTZcSaFCcJvxz2HXVgcRooGg1WeSORQ+3AGoZDFmM9t+HDnqe7q9z1prqeltSBbiIEz8TJTLE1BzLejN6I8zpGpXgCGw8MaI/RYyEl0GmiE
-X-Gm-Message-State: AOJu0YxVHmqnSavE0rCSI+vxULs1cfqtTsEVDz0n/lxUGZj+eKkeaELw
-	9oX3KyGt1LQrM0kijeY+FAZOTqoeDR3pl08abRMVX1OTIWd1k3uF
-X-Google-Smtp-Source: AGHT+IE0BMrTVL8aZCcSneN09lqvYXMx4Na7OUXXkHaYA2G9383ajw63HFXmbYbvv3JOvf5g4QHPOg==
-X-Received: by 2002:a05:622a:20b:b0:431:5f79:6748 with SMTP id b11-20020a05622a020b00b004315f796748mr4257671qtx.51.1713997014061;
-        Wed, 24 Apr 2024 15:16:54 -0700 (PDT)
+        bh=ym3VgXJbWcYcEe4KybsNIPr7idfeC5mrGPvyD3lUpGs=;
+        b=jSYHUVBsctNsCVq6CVooFrFt6na85+puQ57F258cCSHeo36Q3v3Wq7H3xbgse1l/MG
+         AzQWOp1sQIrB5x2LZrwJGOvhJFIEZV5qdTFrn1ltjAWkPVRFKKlDpVds7XJLOmFqcCnT
+         TNaQdUVQDvVD/RV5z0aJMfE2syY2Tg0tpwiI1CvhuPr6T+KjEiTysCxev9M+ZmRaC2fK
+         u1jovAbDVceVwFFBk/UMGxgL7UE8Ji7c3y1w3M5Lq90yRUg8otbmLwCOQIxTUQ25uoL8
+         1rNURjdjZ1zdyGhmJfl6oc+i0KI3QjTR9/TYFGk1yCYZNAI0DAj8KhLKZLi8bcK3S18U
+         WSyg==
+X-Forwarded-Encrypted: i=1; AJvYcCVThx/YlRPhGrgkIu5mcLCkN6RWQopxy4X90ZGej2muxoBVcHL/8ErFtN7yuc446lZdpI/ZgkKlcIJX9nu6i9pTR0iTVCaTKvmbdMdkAT+e5qqdMpj5v7DV9OuzffmwguUfCjF9ew2zFFdRBNqmJx2ULvYNqNM3wYqwBxFNqvdKl2+y
+X-Gm-Message-State: AOJu0Yxh2i0vh5zAOhaufwTy/Pr+JByL+IcBWDR+X2gdEanizYtRMfzS
+	Ur5r0db4b2O+COevlRYrGo93vFcpKEFIYr8jb48Snr41Re7VtqpI
+X-Google-Smtp-Source: AGHT+IEN/eOmWKZtauJSE4F4dd5kc4I+58m1qeyQJ/7gAfOox+dXx4IJhkDrqvCUWvRqUWhtKTG3AA==
+X-Received: by 2002:ad4:548c:0:b0:69f:793d:cade with SMTP id pv12-20020ad4548c000000b0069f793dcademr3983820qvb.19.1713997583805;
+        Wed, 24 Apr 2024 15:26:23 -0700 (PDT)
 Received: from stbirv-lnx-1.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o14-20020ac841ce000000b00437a3bcc83asm6217997qtm.36.2024.04.24.15.16.52
+        by smtp.gmail.com with ESMTPSA id v15-20020a0c8e0f000000b0069b4ddcbd42sm5572591qvb.0.2024.04.24.15.26.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 15:16:53 -0700 (PDT)
+        Wed, 24 Apr 2024 15:26:23 -0700 (PDT)
 From: Doug Berger <opendmb@gmail.com>
 To: Al Cooper <alcooperx@gmail.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable@vger.kernel.org,
-	bcm-kernel-feedback-list@broadcom.com,
+Cc: bcm-kernel-feedback-list@broadcom.com,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Doug Berger <opendmb@gmail.com>
-Subject: [PATCH] serial: 8250_bcm7271: use default_mux_rate if possible
-Date: Wed, 24 Apr 2024 15:16:19 -0700
-Message-Id: <20240424221619.1840014-1-opendmb@gmail.com>
+	Doug Berger <opendmb@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: 8250_bcm7271: use default_mux_rate if possible
+Date: Wed, 24 Apr 2024 15:25:59 -0700
+Message-Id: <20240424222559.1844045-1-opendmb@gmail.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -85,8 +85,12 @@ rates that require alternate baud_mux_clk frequencies, allow the
 driver to select the default_mux_rate if it is accurate enough.
 
 Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
+Cc: stable@vger.kernel.org
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
+Changes in v2:
+  Added "Cc: stable@vger.kernel.org"
+
  drivers/tty/serial/8250/8250_bcm7271.c | 101 +++++++++++++++----------
  1 file changed, 60 insertions(+), 41 deletions(-)
 
