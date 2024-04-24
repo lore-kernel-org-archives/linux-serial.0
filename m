@@ -1,89 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from forward502a.mail.yandex.net (forward502a.mail.yandex.net [178.154.239.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A85568A;
-	Wed, 24 Apr 2024 19:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B88F6745D9;
+	Wed, 24 Apr 2024 19:19:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.82
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713986296; cv=none; b=TW1t0NAmLQFHrFT0zb2u66XwEqtjxFaUpkb9kuDHweObAoQUzIYqQb+U34EkU4wmvYjrO57ubPgeCuJ8xdeotTTj/sxcWb8BvU+4PxyZWzkCftj7+U4LueRgQzUb9lL8Y1mZIO39nltmEyvpGNaxLqpGwuCIy4OYboRN5b9GRAo=
+	t=1713986372; cv=none; b=cPfXgjO74TE+oFrvxSjnTCA4Fl/JW0dWE2xhCXFZIvVKUPSw2nugSdMex848uznA2KmFvoZUg+LdG1P+QneEy5cwBn7Q5oLURLAGWU50gxeg0nuKHzJQ7P1lONF2TCkEkq8lkrpFxG6f4OBKw7/W2dwII+8HT07WLYFbza9V3ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713986296; c=relaxed/simple;
-	bh=UnAUwzO2559vcgVgMa9POjX+k5ATpzHsJexpuTT9rDw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BQ4P5a4yV1l2aDRl5c25upInf3QpMMUwQYRiLEGR4n9JwrqK85QUNTFEg54jP7H1LVu/ZKuRp9bNFwLx68YgtJPrIy3iJDlmAunMkzQbcxDcw3h/HNKF1+XtR5fdvgC3a01XuGNFXEdzzoztWm3/WraF20cX5CplryZ9pqpN/ts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pIIuMGv7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713986372; c=relaxed/simple;
+	bh=CHH7TL/5RLahwBG0WvRUPQJrqDTWKGexNu7vMZIs6UY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=go1Wk3LA5tnCvsvmL6BAY6ZzgDxCPQ1hSicXqxoz/iHuzJoIWcQMLGGVy7n80NdFZUMZiH8kUG87UGug3PeQNSBWPtLeBCpYQWZ1q0H9jRIsNQ/qpopXaRRx7MYVQ3wdOwB81elNtgtJOaOihcC61WslnFmshQYY4R3q6WPkk4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru; spf=pass smtp.mailfrom=ya.ru; dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b=baWM8vAt; arc=none smtp.client-ip=178.154.239.82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ya.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ya.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pIIuMGv7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 054C1C113CD;
-	Wed, 24 Apr 2024 19:18:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713986296;
-	bh=UnAUwzO2559vcgVgMa9POjX+k5ATpzHsJexpuTT9rDw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pIIuMGv7o31zrYHjWo3wlKbj/vwHzyrgML3IfBH/6UvhS+DWLVYfHQYeWPvkGG30T
-	 R9ojRaKkVQMNHk66hRglCLuK4bcfLTMO2igPFnOZXpHtNuGTkXgT/gmSTK4hOruOmF
-	 7e21MDbtyvfZUU12ZriKBT82Q0SL5+hrAFjGsitjooEqty9msYew3SOM/I3Tr7pb0D
-	 t1PfbPJA+kyixyhrGDTqHVD37U/PLey29GBHGOSKEf7yAUl7z6sVggEf1De1DFYkgo
-	 3g8s1j5w0eXFaVaxUk8WVJJiaWU2OK4jT2Qn/ybQADpjjqh85XCtIjCdauCHWH+qm3
-	 DXpCI8V2RR6xA==
-Date: Wed, 24 Apr 2024 14:18:13 -0500
-From: Rob Herring <robh@kernel.org>
-To: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-Cc: git@amd.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, michal.simek@amd.com,
-	p.zabel@pengutronix.de, laurent.pinchart@ideasonboard.com,
-	radhey.shyam.pandey@amd.com, parth.gajjar@amd.com,
-	u.kleine-koenig@pengutronix.de, tglx@linutronix.de,
-	julien.malik@unseenlabs.fr, ruanjinjie@huawei.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	srinivas.goud@amd.com, shubhrajyoti.datta@amd.com,
-	manion05gk@gmail.com,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH V2 1/3] dt-bindings: serial: cdsn,uart: Add optional
- reset property
-Message-ID: <20240424191813.GA324342-robh@kernel.org>
-References: <20240424112933.3528590-1-manikanta.guntupalli@amd.com>
- <20240424112933.3528590-2-manikanta.guntupalli@amd.com>
+	dkim=pass (1024-bit key) header.d=ya.ru header.i=@ya.ru header.b="baWM8vAt"
+Received: from mail-nwsmtp-smtp-production-main-54.iva.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-54.iva.yp-c.yandex.net [IPv6:2a02:6b8:c0c:332e:0:640:784d:0])
+	by forward502a.mail.yandex.net (Yandex) with ESMTPS id CD82C60A6A;
+	Wed, 24 Apr 2024 22:19:24 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-54.iva.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id IJRtcgXMoCg0-w9WlDAHt;
+	Wed, 24 Apr 2024 22:19:23 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail;
+	t=1713986363; bh=f8EnQH1L/dXaphsBpNH1E4suYCwQaxstBt1xwrlcsu4=;
+	h=Message-ID:Date:In-Reply-To:Cc:Subject:References:To:From;
+	b=baWM8vAtYLNcQzEm1HzE78kwWCEgch8k+UJjazC/lMgZ991cFtfbW11eIenI7/dHz
+	 NDDV82LP4eTm7hnPnbCqPK3WbYQW4mJadb5cdK+t36l6luvSA06Ztg0wGY8DyhTJrD
+	 lg0Oexn1BcIJWU+oZJGnag2ctBBsI7nCiEpNAWtk=
+Authentication-Results: mail-nwsmtp-smtp-production-main-54.iva.yp-c.yandex.net; dkim=pass header.i=@ya.ru
+From: Konstantin Pugin <rilian.la.te@ya.ru>
+To: 
+Cc: krzk@kernel.org,
+	conor@kernel.org,
+	lkp@intel.com,
+	vz@mleia.com,
+	robh@kernel.org,
+	jcmvbkbc@gmail.com,
+	nicolas.ferre@microchip.com,
+	manikanta.guntupalli@amd.com,
+	corbet@lwn.net,
+	ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de,
+	Maarten.Brock@sttls.nl,
+	Konstantin Pugin <ria.freelander@gmail.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v8 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
+Date: Wed, 24 Apr 2024 22:18:52 +0300
+Message-ID: <20240424191908.32565-2-rilian.la.te@ya.ru>
+X-Mailer: git-send-email 2.44.0
+In-Reply-To: <20240424191908.32565-1-rilian.la.te@ya.ru>
+References: <20240424191908.32565-1-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240424112933.3528590-2-manikanta.guntupalli@amd.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 24, 2024 at 04:59:31PM +0530, Manikanta Guntupalli wrote:
-> Add optional reset device-tree property to the uartps controller.
+From: Konstantin Pugin <ria.freelander@gmail.com>
 
-Typo in the subject.
+When specifying flag SER_RS485_RTS_ON_SEND in RS485 configuration,
+we get the following warning after commit 4afeced55baa ("serial: core:
+fix sanitizing check for RTS settings"):
 
-> 
-> Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
-> Changes for V2:
-> Added ack signature.
-> ---
->  Documentation/devicetree/bindings/serial/cdns,uart.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/cdns,uart.yaml b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> index 2129247d7c81..d7f047b0bf24 100644
-> --- a/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/cdns,uart.yaml
-> @@ -46,6 +46,9 @@ properties:
->    power-domains:
->      maxItems: 1
->  
-> +  resets:
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> -- 
-> 2.25.1
-> 
+    invalid RTS setting, using RTS_AFTER_SEND instead
+
+This results in SER_RS485_RTS_AFTER_SEND being set and the
+driver always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT,
+which breaks some hardware using these chips.
+
+The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, so fix
+this by announcing support for RTS_ON_SEND.
+
+Fixes: 267913ecf737 ("serial: sc16is7xx: Fill in rs485_supported")
+Tested-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 03cf30e20b75..dfcc804f558f 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1449,7 +1449,7 @@ static int sc16is7xx_setup_mctrl_ports(struct sc16is7xx_port *s,
+ }
+ 
+ static const struct serial_rs485 sc16is7xx_rs485_supported = {
+-	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND,
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
+ 	.delay_rts_before_send = 1,
+ 	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
+ };
+-- 
+2.44.0
+
