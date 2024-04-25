@@ -1,118 +1,100 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0CCE5D477;
-	Thu, 25 Apr 2024 07:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38DD241C64;
+	Thu, 25 Apr 2024 09:11:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714031335; cv=none; b=MfiNw1Ic6mKVDn9nuJYW8B7em7lEVoNHzipyJHJ1Z6MuOmuKhUsI/VHHUKqe7r0II238hm0j5xST1RepoMbHiqyKSjBirDi/Z3hNJfwJpHSa9cx1MmGvZ2kTjyHScAi+YG80qrhawD9J1P0Vl88LseYhZpVsORAywduncAYa+So=
+	t=1714036314; cv=none; b=WILM4lWymG3WzASEBDK8lRmq+Fddx/jbzQz6fnmGYkLZPAiXPTNWoU83uOmuHpGVvXjtVhJWTPo/fHbDTAiYT9U3BB+xwaZ0Ehdpfp/LPZ/mUTVIb8XPVfOeEWPNBqoMgbPfSss2As0Q4vYKjbwTXTUA9k2Tw5ZUYdJhZymFH7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714031335; c=relaxed/simple;
-	bh=QWzMqnvNDE3uWpTxgV5Wt0uL05nTU10AMdyKsaDyklo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=erq9r3H6ntdhqxpOFq9UnIwMUtT9WXcA8NBggdrGotswXbrHpMtjnTDROcgg2WVlaRV9Q/9ciGhMTVWsVrieaLNiEdylD9KfeqJpPGJUjLmkz4vEwNQf4wYVWYbUMmR/v69n9ffbFOv66Nw7Ic/e+LSbvgOaSB2TB9cfBjrwkPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-617cd7bd929so6972277b3.3;
-        Thu, 25 Apr 2024 00:48:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714031332; x=1714636132;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jCeLs5NAma1XU37XgksPfxny5o1JTn/LLmRqHaQAAv4=;
-        b=oBTZ/fM+KgsoyB6VwO+2xK6hqHtiXcghR+qvILjU7p5ICnoi2zNFMqQZEJUnYD2ZFe
-         ODZ8uBCLBW/+pTauzs9Nch2CHbDEdOJnXDDZ7vFvqsiJs5FjhmqhD0TTsjiX6o+ZABLB
-         MqeM/f5VhREVHK2sXsCUZMT505PzRqVC9x9qxoy6uefmjlsg5+RtOMSzAhnLZpLcZyt5
-         +ieCj6eWidYQjwzKtp+YXG8I86lUg0M8BemwTOM++uq5EcxDnhf/UCs+tSgAQSPxkk+Z
-         j6tsFCdf/XkD684u6vnv7f0OGevERxRQPdwCvQDo17wEpK49jAhzQITlmrS8vv0eVeH+
-         bpqA==
-X-Forwarded-Encrypted: i=1; AJvYcCXjoI9DSIO39MCFkBW4GB8avXjTsTUTQ4HEbnmQE1JOnaCJyW8MjhYR7JTlpIsopiLQdpL41J+QpGsy68wfHwVPchlCjKm9RQ164GmrvKJWyecREB8xM7gFJVsrDtxA9D9h2cM15M/L8ODZ/icDOiC1M9FsT2fypgPf5KnD3tbvgWrKQVU=
-X-Gm-Message-State: AOJu0YzQjJMUiKJ1MDL+xgC+Q57rSGHbrCrKv0EvpMl5iq2H2yel9Zir
-	n17A/QjliZ/p2RmqHf2qeS4oAm0WoE3RecWCgy6BeLnk93gLQj/2i5MZuSNyfCA=
-X-Google-Smtp-Source: AGHT+IE8f1uBQL5109KAnWBYTJPPcWetC/Iced96NtbTjIMA1h56Su4gVQVTQW5GAZS82XBh7TnJJg==
-X-Received: by 2002:a05:690c:64c3:b0:61a:dc61:25e2 with SMTP id ht3-20020a05690c64c300b0061adc6125e2mr5247377ywb.49.1714031332194;
-        Thu, 25 Apr 2024 00:48:52 -0700 (PDT)
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com. [209.85.128.171])
-        by smtp.gmail.com with ESMTPSA id y76-20020a0dd64f000000b00609f4170662sm3444253ywd.54.2024.04.25.00.48.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Apr 2024 00:48:51 -0700 (PDT)
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-6184acc1ef3so6633687b3.0;
-        Thu, 25 Apr 2024 00:48:51 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWqzvnLZ8UI4QbwgPaqbVZqQymjU2WOO1r8Z04I7cVK+BGwlU9DyNL/8YvCugB6ZqwYfF9Myoym4kfjHnandmfM6KIo/MtISDxTuMXf/WROio32h1I5ZJ5vdpMH85qP4/Elah6pk754IlgKDWe0H0rGkFR5AtCTUTks6iU/Ec6w+g2wAr4=
-X-Received: by 2002:a25:109:0:b0:de5:5aaa:7881 with SMTP id
- 9-20020a250109000000b00de55aaa7881mr5977202ybb.49.1714031331725; Thu, 25 Apr
- 2024 00:48:51 -0700 (PDT)
+	s=arc-20240116; t=1714036314; c=relaxed/simple;
+	bh=2BiK9cirnO0J3vdykzdZ1+Q8/T/xoaz14pvT9WYFNUw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Lu6vU8HFq0WaoSS+wqNawwbLv7v2NyBaEzB0OR4neP1LzNuUWYaMtjOizCtLPEfKwpghcIsTcIql7H0BKCgqTu5zEkZ2sMzGtszJkNbSRGIjS+KIRjD/3PTh7I5bceJb5XIk1b6ERLKDsbxXeaWWq3jjLUSUyMLHOPsH0T0hQHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+X-CSE-ConnectionGUID: 97sgVFwlQ4+tdU3CNxPW0w==
+X-CSE-MsgGUID: xjKMEg+XTdyNAHY3AB5sMw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="32200219"
+X-IronPort-AV: E=Sophos;i="6.07,228,1708416000"; 
+   d="scan'208";a="32200219"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:11:53 -0700
+X-CSE-ConnectionGUID: 2Lwo97tmRT+PGdVSDmeNcw==
+X-CSE-MsgGUID: Y6kuxSRyRSuWA6KyLwJFLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,228,1708416000"; 
+   d="scan'208";a="24999126"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:11:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andy.shevchenko@gmail.com>)
+	id 1rzv8o-00000000wF7-1EEi;
+	Thu, 25 Apr 2024 12:11:42 +0300
+Date: Thu, 25 Apr 2024 12:11:41 +0300
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+To: "Konstantin P." <ria.freelander@gmail.com>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org,
+	conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org,
+	jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v8 2/3] dt-bindings: sc16is7xx: Add compatible line for
+ XR20M1172 UART
+Message-ID: <ZioeTQZ6i0FbcDIv@smile.fi.intel.com>
+References: <20240424191908.32565-1-rilian.la.te@ya.ru>
+ <20240424191908.32565-3-rilian.la.te@ya.ru>
+ <CAHp75VfpRBDTjnZCdOKK+YWZKJ+wbjsg-n4wxjA7qVE0L1WSxw@mail.gmail.com>
+ <CAF1WSuxAFHbSVAV1r2cDzZms=T_Qg6y3qbgU5rrjySuAd3FUNw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240425070936.547100-1-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20240425070936.547100-1-claudiu.beznea.uj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 25 Apr 2024 09:48:39 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX_uojDmx3pH--KsBcae=1VmcNupedGBwovVQcU+z14sg@mail.gmail.com>
-Message-ID: <CAMuHMdX_uojDmx3pH--KsBcae=1VmcNupedGBwovVQcU+z14sg@mail.gmail.com>
-Subject: Re: [RFT PATCH v2] serial: core: Call device_set_awake_path() for
- console port
-To: Claudiu <claudiu.beznea@tuxon.dev>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com, 
-	andriy.shevchenko@linux.intel.com, l.sanfilippo@kunbus.com, 
-	tglx@linutronix.de, geert+renesas@glider.be, ulf.hansson@linaro.org, 
-	peng.fan@nxp.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-pm@vger.kernel.org, Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAF1WSuxAFHbSVAV1r2cDzZms=T_Qg6y3qbgU5rrjySuAd3FUNw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 25, 2024 at 9:09=E2=80=AFAM Claudiu <claudiu.beznea@tuxon.dev> =
-wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> In case the UART port is used as a console, no_console_suspend is
-> available in bootargs and UART port is part of a software-controlled powe=
-r
-> domain we need to call device_set_awake_path(). This lets the power
-> domain core code know that this domain should not be powered off
-> during system suspend. Otherwise, the UART port power domain is turned of=
-f,
-> nothing is printed while suspending and the suspend/resume process is
-> blocked. This was detected on the Renesas RZ/G3S SoC while adding support
-> for power domains.
->
-> Based on code investigation, this issue is present on other SoCs (e.g.,
-> Renesas R-Mobile A1 [1], IMX8QXP [2]) and different SoCs have particular
-> implementation to handle it. Due to this the patch added the call of
-> device_set_awake_path() in uart_suspend_port() instead of having it in
-> the platform specific UART driver.
->
-> [1] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/ren=
-esas/rmobile-sysc.c#L116
-> [2] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/imx=
-/scu-pd.c#L357
->
-> Suggested-by: Ulf Hansson <ulf.hansson@linaro.org>
-> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Thu, Apr 25, 2024 at 10:25:41AM +0300, Konstantin P. wrote:
+> On Wed, Apr 24, 2024 at 10:34 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Wed, Apr 24, 2024 at 10:19 PM Konstantin Pugin <rilian.la.te@ya.ru> wrote:
+> > >
+> > > From: Konstantin Pugin <ria.freelander@gmail.com>
+> > >
+> > > EXAR XR20M1172 UART is mostly register-compatible with NXP SPI UARTs.
+> > > It will be handled by same driver, so, it makes sense to add DT
+> > > definition for these block into driver's documentation.
+> >
+> > blocks
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+...
 
-Works fine on R-Mobile APE6 with console suspend support removed from
-rmobile-sysc.c
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > Reviewed-by: Andy Shevchenko <andy@kernel.org>
+> >
+> > Hmm... Did I? IIRC I only reviewed patches 1 and 3. Am I mistaken?
+> 
+> I think it is my mistake, not yours. If you want, I can do a new
+> version without a tag.
 
-Gr{oetje,eeting}s,
+Yes, but give a chance to others to have a look at the code and the rest.
 
-                        Geert
+-- 
+With Best Regards,
+Andy Shevchenko
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
