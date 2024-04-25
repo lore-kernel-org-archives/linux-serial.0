@@ -1,97 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38DD241C64;
-	Thu, 25 Apr 2024 09:11:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF7584FA9;
+	Thu, 25 Apr 2024 09:50:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714036314; cv=none; b=WILM4lWymG3WzASEBDK8lRmq+Fddx/jbzQz6fnmGYkLZPAiXPTNWoU83uOmuHpGVvXjtVhJWTPo/fHbDTAiYT9U3BB+xwaZ0Ehdpfp/LPZ/mUTVIb8XPVfOeEWPNBqoMgbPfSss2As0Q4vYKjbwTXTUA9k2Tw5ZUYdJhZymFH7g=
+	t=1714038625; cv=none; b=Aeznhcz3HEq5jx0GRzvbsZHI0tT5FBvXTxISRTZ51yD20te/u1aiOwe8/brVlFTdDPhQ5Y0l5V1qqj/JoZ/O4u0YJy1M2tTvUOFm5h7v38kCNuGkgw4AFkU2Y5BHDcb70yDruebXMoMSulj0zqjoxt8HUmFjnXM975cvr5Up/4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714036314; c=relaxed/simple;
-	bh=2BiK9cirnO0J3vdykzdZ1+Q8/T/xoaz14pvT9WYFNUw=;
+	s=arc-20240116; t=1714038625; c=relaxed/simple;
+	bh=uC4kA70xl93pLuFD/UoEPvIqfy9CGMqdBnnLhXJ/cBo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Lu6vU8HFq0WaoSS+wqNawwbLv7v2NyBaEzB0OR4neP1LzNuUWYaMtjOizCtLPEfKwpghcIsTcIql7H0BKCgqTu5zEkZ2sMzGtszJkNbSRGIjS+KIRjD/3PTh7I5bceJb5XIk1b6ERLKDsbxXeaWWq3jjLUSUyMLHOPsH0T0hQHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-X-CSE-ConnectionGUID: 97sgVFwlQ4+tdU3CNxPW0w==
-X-CSE-MsgGUID: xjKMEg+XTdyNAHY3AB5sMw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="32200219"
-X-IronPort-AV: E=Sophos;i="6.07,228,1708416000"; 
-   d="scan'208";a="32200219"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:11:53 -0700
-X-CSE-ConnectionGUID: 2Lwo97tmRT+PGdVSDmeNcw==
-X-CSE-MsgGUID: Y6kuxSRyRSuWA6KyLwJFLA==
+	 Content-Type:Content-Disposition:In-Reply-To; b=m0RrrI19gRVwFEpxYvxqueOhkz1wUcivqBgg18MRUiCEaIGjTBJXZsmN2LmnV+IdkY5gj3kkZYr2dvRFyED63gwfliuBAStpbuX3PRVq2LW25BL/dbUE1eBsOMaw/U5Oy8sUHA8oMRJ1zLeBT9UQTdPt+gCwa1EgBD4yR8SXDwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P+5+CW2w; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P+5+CW2w"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714038625; x=1745574625;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uC4kA70xl93pLuFD/UoEPvIqfy9CGMqdBnnLhXJ/cBo=;
+  b=P+5+CW2wjWoxriDmMXkV0lP7dNpw1xrmOiVYlrV1lioC8DqWVM6RJXS5
+   yaq8r/ufyDpyz7oF/p5QAp69Wuj1LjpaW8oFM77v6Dz8OKUqezHTaWy2/
+   HxuoNievGncRYftJrwGq9ez82Ir2CzaqG8f59/yej7+hdcAM2wNtCgHtj
+   aVj82Pzxlj4lsw/ew4p9XQLei6HfLvySvldckUYBQOTaP+riB9k2ra145
+   WWDseSA2bCwdW1uNNcFxtr26cWIMcAR28yTLUOXpPvO55xTcT0gGnyUGk
+   Ycpz395fxtobQ8p0jIiQhjHQxD+/AORIMKAD6MD4+8zffOXZusvl4HWSf
+   w==;
+X-CSE-ConnectionGUID: GwBduIHkQ1aIAq7rPCE8FQ==
+X-CSE-MsgGUID: 0LCnd31GQJePku8meyYfpQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="13546863"
+X-IronPort-AV: E=Sophos;i="6.07,229,1708416000"; 
+   d="scan'208";a="13546863"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:50:24 -0700
+X-CSE-ConnectionGUID: BWhnmIHyQm+oMO9OMsFKcw==
+X-CSE-MsgGUID: tnRuId7DRZe98pwRC8vrCw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,228,1708416000"; 
-   d="scan'208";a="24999126"
+X-IronPort-AV: E=Sophos;i="6.07,229,1708416000"; 
+   d="scan'208";a="29644225"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:11:47 -0700
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:50:20 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andy.shevchenko@gmail.com>)
-	id 1rzv8o-00000000wF7-1EEi;
-	Thu, 25 Apr 2024 12:11:42 +0300
-Date: Thu, 25 Apr 2024 12:11:41 +0300
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-To: "Konstantin P." <ria.freelander@gmail.com>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org,
-	conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org,
-	jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
-	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
-	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rzvk8-00000000x7w-3GXg;
+	Thu, 25 Apr 2024 12:50:16 +0300
+Date: Thu, 25 Apr 2024 12:50:16 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Claudiu <claudiu.beznea@tuxon.dev>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com,
+	l.sanfilippo@kunbus.com, tglx@linutronix.de,
+	geert+renesas@glider.be, ulf.hansson@linaro.org, peng.fan@nxp.com,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 2/3] dt-bindings: sc16is7xx: Add compatible line for
- XR20M1172 UART
-Message-ID: <ZioeTQZ6i0FbcDIv@smile.fi.intel.com>
-References: <20240424191908.32565-1-rilian.la.te@ya.ru>
- <20240424191908.32565-3-rilian.la.te@ya.ru>
- <CAHp75VfpRBDTjnZCdOKK+YWZKJ+wbjsg-n4wxjA7qVE0L1WSxw@mail.gmail.com>
- <CAF1WSuxAFHbSVAV1r2cDzZms=T_Qg6y3qbgU5rrjySuAd3FUNw@mail.gmail.com>
+	linux-pm@vger.kernel.org,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [RFT PATCH v2] serial: core: Call device_set_awake_path() for
+ console port
+Message-ID: <ZionWJ7ods60zuYX@smile.fi.intel.com>
+References: <20240425070936.547100-1-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAF1WSuxAFHbSVAV1r2cDzZms=T_Qg6y3qbgU5rrjySuAd3FUNw@mail.gmail.com>
+In-Reply-To: <20240425070936.547100-1-claudiu.beznea.uj@bp.renesas.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 25, 2024 at 10:25:41AM +0300, Konstantin P. wrote:
-> On Wed, Apr 24, 2024 at 10:34 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Wed, Apr 24, 2024 at 10:19 PM Konstantin Pugin <rilian.la.te@ya.ru> wrote:
-> > >
-> > > From: Konstantin Pugin <ria.freelander@gmail.com>
-> > >
-> > > EXAR XR20M1172 UART is mostly register-compatible with NXP SPI UARTs.
-> > > It will be handled by same driver, so, it makes sense to add DT
-> > > definition for these block into driver's documentation.
-> >
-> > blocks
-
-...
-
-> > > Reviewed-by: Andy Shevchenko <andy@kernel.org>
-> >
-> > Hmm... Did I? IIRC I only reviewed patches 1 and 3. Am I mistaken?
+On Thu, Apr 25, 2024 at 10:09:36AM +0300, Claudiu wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 > 
-> I think it is my mistake, not yours. If you want, I can do a new
-> version without a tag.
+> In case the UART port is used as a console, no_console_suspend is
+> available in bootargs and UART port is part of a software-controlled power
+> domain we need to call device_set_awake_path(). This lets the power
+> domain core code know that this domain should not be powered off
+> during system suspend. Otherwise, the UART port power domain is turned off,
+> nothing is printed while suspending and the suspend/resume process is
+> blocked. This was detected on the Renesas RZ/G3S SoC while adding support
+> for power domains.
+> 
+> Based on code investigation, this issue is present on other SoCs (e.g.,
+> Renesas R-Mobile A1 [1], IMX8QXP [2]) and different SoCs have particular
+> implementation to handle it. Due to this the patch added the call of
+> device_set_awake_path() in uart_suspend_port() instead of having it in
+> the platform specific UART driver.
 
-Yes, but give a chance to others to have a look at the code and the rest.
+> [1] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/renesas/rmobile-sysc.c#L116
+> [2] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/imx/scu-pd.c#L357
+
+No need to have the HTTP links into the kernel sources, you may simply refer to
+the files in the source tree.
+
+[1] drivers/pmdomain/renesas/rmobile-sysc.c:L116
+[2] drivers/pmdomain/imx/scu-pd.c:L357
+
+> Suggested-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+
+The rest makes sense to me as we also have an internal hack to achieve
+something similar in the case of Intel LPSS (8250_dw).
+
+But I like Tony to comment on this, from my perspective it's good:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 -- 
 With Best Regards,
