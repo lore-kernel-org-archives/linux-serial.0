@@ -1,434 +1,303 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91A6737143;
-	Thu, 25 Apr 2024 20:50:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BE8214F9ED;
+	Thu, 25 Apr 2024 21:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714078211; cv=none; b=Penixw2ZacX+pR3tRypPZKkMcyv7Nf+oweSDcQDRI4lrhEBvr2XFHyvxc7iCEZKG1Y5IdZrUrIDd06Wz9bKibzueJP3yzsKyQIjT7hEoCd3adC5W/Djgjng0LVcFxoLfmDHet6sLwykg+VE51YEySXMBbK22YlpzEqSaj4tY6rg=
+	t=1714079992; cv=none; b=kkxqTR7r7JsJ6I5NfEJz+q7oYYLlpXa1JPbCGPThSJ/Re3TYhnF2atNGN26JB8fYU1ef50Bupxl3wo9yoyu3ebB4KRatGjmlaoM3jrnEBLXGfy9NNuhylepL9nP84cnKqmQ4eUNB1WHfjVyJ/XX+xgTy/UjpDpXuiqEvogOqUQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714078211; c=relaxed/simple;
-	bh=JlZ5SNw/c8lgIyAIwwqks3l+7NUsINRYRqt1oaRFElM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fFepNOfz2xk945j5o00hvuB8jdFEaxGxplrnoFwZw7zGz0ViHWMd0HLNeZZG9XiJrlE1eHwPbPxKp691sBDW3Q+QNKR8VwJXbBAu3RQFSIJgb6P07e40z/POm4H15Grwg6tZ0A0D8FWBZjTJHdSGMU8hs2IbvmHjpjbC3lvQ3B8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=D6I+DXvK; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1714079992; c=relaxed/simple;
+	bh=eUA2iPzJsAR/2n0hm58VxO2buOYeElIJOIUHe9tWI9I=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=YDxk7OnBhVXZtHG2gro0oVAyV2aKt1Ys+9QvazxXVJxgx0fNo05PvEBzUYZYKZzu2qJXbhDLMOS6VijQdBBEzO5Xl2ldMPRvnwxaUO/643+HoEw3XzY7evmCxH0dxXSDIaAjRLY+crugLpYLLX2J0GThAzcxV1sMHYd0L3giyLM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=U7ZAXor8; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="D6I+DXvK"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=3++3z5ylpnDhpBpGdZfltMNRCAtctEtUSEKoliPaLzY=; b=D6I+DXvKKRGuwPZDMb6VKmy4bC
-	j5tfqY470Lc3/nCQ7wW6qzi5cgyKnfljidykRQC+ZJZORWzXcILTnBzRP1LaVT7mnzovdJh5gRQkp
-	lXRlbCV7SyncU4Sss0JSPj/R0yKlgaHhzhAQmD5U+TN7yD4TDC6+VNp3re/VNALVMUVY=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1s062M-001PQI-05;
-	Thu, 25 Apr 2024 22:49:46 +0200
-Message-ID: <97b22f7e79540fe228250414452c6049a255f310.camel@hexdev.de>
-Subject: Re: [PATCH 02/11] HID: hexLIN: Add support for USB LIN bus adapter
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-Reply-To: christoph.fritz@hexdev.de
-To: Benjamin Tissoires <bentiss@kernel.org>
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>, Marc Kleine-Budde
- <mkl@pengutronix.de>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>, "David
- S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
- Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Greg
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="U7ZAXor8"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=JndD6dbSXciIbSPIMqswIhIFF+4sh7M610lAcSbjhCI=; b=U7ZAXor8Dx7OZNbw1EwnWBiPyN
+	yJUtBHZ+k2D2kXfIMFQVMIU7mf5V95DtuGdj+SMeEbQZ+G94tYN+I+7Pwh8vm68rf+RicYPOuuBSj
+	ndTOM4vbFsZfwVMzItlS4sGL5NIcFDIKrr08AxNEOF3l7i9IjtNVZpXoKO+Tc0sEP4Y8=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:38228 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1s06V3-0005dh-LW; Thu, 25 Apr 2024 17:19:26 -0400
+Date: Thu, 25 Apr 2024 17:19:24 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
+ robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+ manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+ u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, Konstantin Pugin
+ <ria.freelander@gmail.com>, Andy Shevchenko <andy@kernel.org>, Greg
  Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Andreas Lauser <andreas.lauser@mercedes-benz.com>,
- Jonathan Corbet <corbet@lwn.net>,  linux-can@vger.kernel.org,
- netdev@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-input@vger.kernel.org, linux-serial@vger.kernel.org
-Date: Thu, 25 Apr 2024 22:49:43 +0200
-In-Reply-To: <5w4fhdfplmaowyiu7i327pziniwqnftgpn3ei6uttuezwgfgql@xnxikjjv6fob>
-References: <20240422065114.3185505-1-christoph.fritz@hexdev.de>
-	 <20240422065114.3185505-3-christoph.fritz@hexdev.de>
-	 <5w4fhdfplmaowyiu7i327pziniwqnftgpn3ei6uttuezwgfgql@xnxikjjv6fob>
-Organization: hexDEV GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4-2 
+ <jirislaby@kernel.org>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Herve Codina
+ <herve.codina@bootlin.com>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Anup Patel <apatel@ventanamicro.com>, Hugo
+ Villeneuve <hvilleneuve@dimonoff.com>, Lech Perczak
+ <lech.perczak@camlingroup.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Message-Id: <20240425171924.839ec71e2b34dee959444091@hugovil.com>
+In-Reply-To: <20240425183251.174412-4-rilian.la.te@ya.ru>
+References: <20240425183251.174412-1-rilian.la.te@ya.ru>
+	<20240425183251.174412-4-rilian.la.te@ya.ru>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.7 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v9 3/3] serial: sc16is7xx: add support for EXAR
+ XR20M1172 UART
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-Hi Benjamin,
+On Thu, 25 Apr 2024 21:32:35 +0300
+Konstantin Pugin <rilian.la.te@ya.ru> wrote:
 
- thanks for your review, please see my answers below.
+> From: Konstantin Pugin <ria.freelander@gmail.com>
+> 
+> XR20M1172 register set is mostly compatible with SC16IS762, but it
+> supports for additional division rates with special DLD register.
+> 
+> Reviewed-by: Andy Shevchenko <andy@kernel.org>
+> Signed-off-by: Konstantin Pugin <ria.freelander@gmail.com>
+> ---
+>  drivers/tty/serial/Kconfig         |  3 +-
+>  drivers/tty/serial/sc16is7xx.c     | 61 ++++++++++++++++++++++++++++--
+>  drivers/tty/serial/sc16is7xx.h     |  1 +
+>  drivers/tty/serial/sc16is7xx_i2c.c |  1 +
+>  drivers/tty/serial/sc16is7xx_spi.c |  1 +
+>  5 files changed, 62 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+> index 4fdd7857ef4d..9d0438cfe147 100644
+> --- a/drivers/tty/serial/Kconfig
+> +++ b/drivers/tty/serial/Kconfig
+> @@ -1029,7 +1029,7 @@ config SERIAL_SC16IS7XX_CORE
+>  	select SERIAL_SC16IS7XX_SPI if SPI_MASTER
+>  	select SERIAL_SC16IS7XX_I2C if I2C
+>  	help
+> -	  Core driver for NXP SC16IS7xx UARTs.
+> +	  Core driver for NXP SC16IS7xx and compatible UARTs.
+>  	  Supported ICs are:
+>  
+>  	    SC16IS740
+> @@ -1038,6 +1038,7 @@ config SERIAL_SC16IS7XX_CORE
+>  	    SC16IS752
+>  	    SC16IS760
+>  	    SC16IS762
+> +	    XR20M1172 (Exar)
+>  
+>  	  The driver supports both I2C and SPI interfaces.
+>  
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index dfcc804f558f..2b40600243a9 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -10,6 +10,7 @@
+>  #undef DEFAULT_SYMBOL_NAMESPACE
+>  #define DEFAULT_SYMBOL_NAMESPACE SERIAL_NXP_SC16IS7XX
+>  
+> +#include <linux/bitfield.h>
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+>  #include <linux/device.h>
+> @@ -68,6 +69,7 @@
+>  /* Special Register set: Only if ((LCR[7] == 1) && (LCR != 0xBF)) */
+>  #define SC16IS7XX_DLL_REG		(0x00) /* Divisor Latch Low */
+>  #define SC16IS7XX_DLH_REG		(0x01) /* Divisor Latch High */
+> +#define XR20M117X_DLD_REG		(0x02) /* Divisor Fractional (requires EFR[4] = 1) */
+>  
+>  /* Enhanced Register set: Only if (LCR == 0xBF) */
+>  #define SC16IS7XX_EFR_REG		(0x02) /* Enhanced Features */
+> @@ -221,6 +223,20 @@
+>  #define SC16IS7XX_TCR_RX_HALT(words)	((((words) / 4) & 0x0f) << 0)
+>  #define SC16IS7XX_TCR_RX_RESUME(words)	((((words) / 4) & 0x0f) << 4)
+>  
+> +/*
+> + * Divisor Fractional Register bits (EXAR extension).
+> + * EXAR hardware is mostly compatible with SC16IS7XX, but supports additional feature:
+> + * 4x and 8x divisor, instead of default 16x. It has a special register to program it.
+> + * Bits 0 to 3 is fractional divisor, it used to set value of last 16 bits of
+> + * uartclk * (16 / divisor) / baud, in case of default it will be uartclk / baud.
+> + * Bits 4 and 5 used as switches, and should not be set to 1 simultaneously.
+> + */
+> +
+> +#define XR20M117X_DLD_16X			0
+> +#define XR20M117X_DLD_DIV_MASK			GENMASK(3, 0)
+> +#define XR20M117X_DLD_8X			BIT(4)
+> +#define XR20M117X_DLD_4X			BIT(5)
+> +
+>  /*
+>   * TLR register bits
+>   * If TLR[3:0] or TLR[7:4] are logical 0, the selectable trigger levels via the
+> @@ -523,6 +539,13 @@ const struct sc16is7xx_devtype sc16is762_devtype = {
+>  };
+>  EXPORT_SYMBOL_GPL(sc16is762_devtype);
+>  
+> +const struct sc16is7xx_devtype xr20m1172_devtype = {
+> +	.name		= "XR20M1172",
+> +	.nr_gpio	= 8,
+> +	.nr_uart	= 2,
+> +};
+> +EXPORT_SYMBOL_GPL(xr20m1172_devtype);
+> +
+>  static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
+>  {
+>  	switch (reg) {
+> @@ -555,18 +578,43 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+>  	return reg == SC16IS7XX_RHR_REG;
+>  }
+>  
+> +static bool sc16is7xx_has_dld(struct device *dev)
+> +{
+> +	struct sc16is7xx_port *s = dev_get_drvdata(dev);
+> +
+> +	if (s->devtype == &xr20m1172_devtype)
+> +		return true;
+> +	return false;
+> +}
+> +
+>  static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+>  {
+>  	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+> -	u8 lcr;
+> +	unsigned long clk = port->uartclk, div, div16;
+> +	bool has_dld = sc16is7xx_has_dld(port->dev);
+> +	u8 dld_mode = XR20M117X_DLD_16X;
+>  	u8 prescaler = 0;
+> -	unsigned long clk = port->uartclk, div = clk / 16 / baud;
+> +	u8 divisor = 16;
+> +	u8 lcr;
+> +
+> +	if (has_dld && DIV_ROUND_CLOSEST(clk, baud) < 16)
+> +		divisor = rounddown_pow_of_two(DIV_ROUND_CLOSEST(clk, baud));
+> +
+> +	div16 = (clk * 16) / divisor / baud;
+> +	div = div16 / 16;
+>  
+>  	if (div >= BIT(16)) {
+>  		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
+>  		div /= 4;
+>  	}
+>  
+> +	/* Count additional divisor for EXAR devices */
+> +	if (divisor == 8)
+> +		dld_mode = XR20M117X_DLD_8X;
+> +	if (divisor == 4)
+> +		dld_mode = XR20M117X_DLD_4X;
+> +	dld_mode |= FIELD_PREP(XR20M117X_DLD_DIV_MASK, div16);
+> +
+>  	/* Enable enhanced features */
+>  	sc16is7xx_efr_lock(port);
+>  	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
+> @@ -587,12 +635,14 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+>  	regcache_cache_bypass(one->regmap, true);
+>  	sc16is7xx_port_write(port, SC16IS7XX_DLH_REG, div / 256);
+>  	sc16is7xx_port_write(port, SC16IS7XX_DLL_REG, div % 256);
+> +	if (has_dld)
+> +		sc16is7xx_port_write(port, XR20M117X_DLD_REG, dld_mode);
+>  	regcache_cache_bypass(one->regmap, false);
+>  
+>  	/* Restore LCR and access to general register set */
+>  	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
+>  
+> -	return DIV_ROUND_CLOSEST(clk / 16, div);
+> +	return DIV_ROUND_CLOSEST(clk / divisor, div);
 
-...
-> > +
-> > +static int hexlin_tx_req_status(struct hexlin_priv_data *priv,
-> > +				const void *out_report, int len)
-> > +{
-> > +	int ret;
-> > +	unsigned long t;
-> > +
-> > +	mutex_lock(&priv->tx_lock);
-> 
-> AFAICT, any operation using the device will use this function and
-> therefore this is enforcing a single user at the same time.
-> 
-> Is this a bus or a hw limitation?
+While trying to review your code, it made me realize there is a bug
+with the current return value. I will send a patch to fix it, and you
+will be able to rebase your patchset on it after that.
 
-It's a hw limitation.
-
-> > +
-> > +	reinit_completion(&priv->wait_in_report);
-> > +
-> > +	ret = hexlin_tx_report(priv, out_report, len);
-> > +	if (ret)
-> > +		goto tx_exit;
-> > +
-> > +	t = wait_for_completion_killable_timeout(&priv->wait_in_report,
-> > +						 msecs_to_jiffies(1000));
-> > +	if (!t)
-> > +		ret = -ETIMEDOUT;
-> > +
-> > +	if (priv->is_error)
-> > +		ret = -EINVAL;
-> > +
-> > +tx_exit:
-> > +	mutex_unlock(&priv->tx_lock);
-> > +
-> > +	return ret;
-> > +}
-...
-> > +static int hexlin_raw_event(struct hid_device *hdev,
-> > +			    struct hid_report *report, u8 *data, int sz)
-> > +{
-> > +	struct hexlin_priv_data *priv;
-> > +	int ret;
-> > +
-> > +	if (sz < 1 || sz > HEXLIN_PKGLEN_MAX)
-> > +		return -EREMOTEIO;
-> > +
-> > +	priv = hid_get_drvdata(hdev);
-> > +
-> > +	hid_dbg(hdev, "%s, size:%i, data[0]: 0x%02x\n", __func__, sz, data[0]);
-> > +
-> > +	priv->is_error = false;
-> > +
-> > +	switch (data[0]) {
-> > +	case HEXLIN_SUCCESS:
-> > +		if (sz != 1)
-> > +			return -EREMOTEIO;
-> 
-> Could we have some #define for all of these sizes (here and in all of
-> the other branches)?
-
-OK
-
-> 
-> > +		hid_dbg(hdev, "HEXLIN_SUCCESS: 0x%02x\n", data[0]);
-> > +		complete(&priv->wait_in_report);
-> 
-> Shouldn't you ensure that you currently have a request pending?
-> This works as long as no-one opens the hidraw node (see my remark
-> below).
-
-Thanks for the heads up, there is no need for hidraw.
-
-> > +		break;
-> > +	case HEXLIN_FAIL:
-> > +		if (sz != 1)
-> > +			return -EREMOTEIO;
-> > +		hid_err(hdev, "HEXLIN_FAIL: 0x%02x\n", data[0]);
-> > +		priv->is_error = true;
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_VERSION:
-> > +		if (sz != 2)
-> > +			return -EREMOTEIO;
-> > +		priv->fw_version = data[1];
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_RESPONDER_ANSWER_ID:
-> > +		if (sz != 20)
-> > +			return -EREMOTEIO;
-> > +		BUILD_BUG_ON(sizeof(priv->rar) != 20);
-> 
-> magical constants again
-
-OK
-
-> 
-> > +		memcpy(&priv->rar, data, sizeof(priv->rar));
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_BAUDRATE:
-> > +		if (sz != 3)
-> > +			return -EREMOTEIO;
-> > +		BUILD_BUG_ON(sizeof(priv->baudrate) != 2);
-> > +		memcpy(&priv->baudrate, &data[1], sizeof(priv->baudrate));
-> > +		le16_to_cpus(priv->baudrate);
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	/* following cases not initiated by us, so no complete() */
-> > +	case HEXLIN_FRAME:
-> > +		if (sz != 17) {
-> > +			hid_err_once(hdev, "frame size mismatch: %i\n", sz);
-> > +			return -EREMOTEIO;
-> > +		}
-> > +		ret = hexlin_queue_frames_insert(priv, &data[1], sz-1);
-> > +		if (ret) {
-> > +			hid_err(hdev, "failed to add frame: %i\n", ret);
-> > +			return ret;
-> > +		}
-> > +		break;
-> > +	case HEXLIN_ERROR:
-> > +		hid_err(hdev, "error from adapter\n");
-> > +		break;
-> > +	default:
-> > +		hid_err(hdev, "unknown event: 0x%02x\n", data[0]);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int init_hw(struct hexlin_priv_data *priv)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = hexlin_reset_dev(priv);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret = hexlin_get_version(priv);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	priv->baudrate = LIN_DEFAULT_BAUDRATE;
-> > +	ret = hexlin_set_baudrate(priv, priv->baudrate);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int hexlin_probe(struct hid_device *hdev,
-> > +			const struct hid_device_id *id)
-> > +{
-> > +	struct hexlin_priv_data *priv;
-> > +	int ret;
-> > +
-> > +	priv = devm_kzalloc(&hdev->dev, sizeof(*priv), GFP_KERNEL);
-> > +	if (!priv)
-> > +		return -ENOMEM;
-> > +
-> > +	priv->hid_dev = hdev;
-> > +	hid_set_drvdata(hdev, priv);
-> > +
-> > +	mutex_init(&priv->tx_lock);
-> > +
-> > +	ret = hid_parse(hdev);
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid parse failed with %d\n", ret);
-> > +		goto fail_and_free;
-> > +	}
-> > +
-> > +	ret = hid_hw_start(hdev, HID_CONNECT_HIDRAW);
-> 
-> Are you sure you want HID_CONNECT_HIDRAW?
-> 
-> Given that your whole driver relies on the assumption that any command
-> sent to the device is guarded by the mutex, if one client opens the
-> hidraw node and starts sending commands behind your back you are
-> screwed...
-> 
-> Maybe use HID_CONNECT_DRIVER instead.
-
-HID_CONNECT_DRIVER it is
-
-> 
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid hw start failed with %d\n", ret);
-> > +		goto fail_and_stop;
-> > +	}
-> > +
-> > +	ret = hid_hw_open(hdev);
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid hw open failed with %d\n", ret);
-> > +		goto fail_and_close;
-> > +	}
-> > +
-> > +	init_completion(&priv->wait_in_report);
-> > +
-> > +	hid_device_io_start(hdev);
-> > +
-> > +	ret = init_hw(priv);
-> > +	if (ret)
-> > +		goto fail_and_close;
-> > +
-> > +	priv->ldev = register_lin(&hdev->dev, &hexlin_ldo);
-> > +	if (IS_ERR_OR_NULL(priv->ldev)) {
-> > +		ret = PTR_ERR(priv->ldev);
-> > +		goto fail_and_close;
-> > +	}
-> > +
-> > +	hid_info(hdev, "hexLIN (fw-version: %u) probed\n", priv->fw_version);
-> 
-> you are not calling hid_hw_close(hdev) here (on purpose I guess).
-> 
-> However, this prevents the device to enter any sleep mode as the kernel
-> will always consider it to be in use.
-> Is there some open/close mechanism in LIN or in CAN that can tell the
-> device that it needs to be opened or do we assume that the device needs
-> to be powered on all the time?
-
-One can bring the LIN device up and down, just like any other Ethernet
-or CAN device. So, for revision 2 of this patchset, I added open/stop
-handling. This allows for hid_hw_close(hdev) here and also makes
-remove() handling way easier. Thanks for the heads up.
-
-> 
-> > +
-> > +	return 0;
-> > +
-> > +fail_and_close:
-> > +	hid_hw_close(hdev);
-> > +fail_and_stop:
-> > +	hid_hw_stop(hdev);
-> > +fail_and_free:
-> > +	mutex_destroy(&priv->tx_lock);
-> > +	return ret;
-> > +}
-> > +
-> > +static void hexlin_remove(struct hid_device *hdev)
-> > +{
-> > +	struct hexlin_priv_data *priv = hid_get_drvdata(hdev);
-> > +
-> > +	complete(&priv->wait_in_report);
-> 
-> what if you get one LIN request just now, between those 2 calls?
-> 
-> You should probably disable the ability to take the mutex before sending
-> the complete call above or you might still have the mutex taken here.
-> 
-> Also shouldn't you set priv->is_error = true before the complete?
-> 
-> > +	unregister_lin(priv->ldev);
-> > +	hid_hw_close(hdev);
-> > +	hid_hw_stop(hdev);
-> > +	mutex_destroy(&priv->tx_lock);
-> 
-> Given how the device works, I think it would be safer to do this in the
-> following order:
-> 
-> // prevent any incoming event (assuming hidraw is not available)
-> hid_hw_close(hdev);
-> // ensure the device is powered off
-> hid_hw_stop(hdev);
-> // mark any pending request as failed
-> priv->is_error = true;
-> // mark the device as unusable
-> priv->removed = true;
-> complete(&priv->wait_in_report);
-> // unregister
-> unregister_lin(priv->ldev);
-> // mutex is not used anymore
-> mutex_destroy(&priv->tx_lock);
-> 
-> (I might be wrong but this seems more sensible to me).
-> 
-> Actually, instead of having a priv->removed boolean, you could also take
-> and release the mutex before releasing it, this way you are sure to not
-> be in the critical code section. This should work because you are using
-> wait_for_completion_killable_timeout() and so after 1 s you are
-> guaranteed to exit the mutex.
-
-Thanks for the great explanation.
-
-> > +}
-> > +
-> > +static const struct hid_device_id hexlin_table[] = {
-> > +	{ HID_USB_DEVICE(USB_VENDOR_ID_MCS, USB_DEVICE_ID_MCS_HEXLIN) },
-> > +	{ }
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(hid, hexlin_table);
-> > +
-> > +static struct hid_driver hexlin_driver = {
-> > +	.name = "hexLIN",
-> > +	.id_table = hexlin_table,
-> > +	.probe = hexlin_probe,
-> > +	.remove = hexlin_remove,
-> > +	.raw_event = hexlin_raw_event,
-> > +};
-> > +
-> > +static int __init hexlin_init(void)
-> > +{
-> > +	return hid_register_driver(&hexlin_driver);
-> > +}
-> > +
-> > +static void __exit hexlin_exit(void)
-> > +{
-> > +	hid_unregister_driver(&hexlin_driver);
-> > +}
-> > +
-> > +/*
-> > + * When compiled into the kernel, initialize after the hid bus.
-> > + */
-> > +late_initcall(hexlin_init);
-> > +module_exit(hexlin_exit);
-> > +
-> > +MODULE_LICENSE("GPL");
-> > +MODULE_AUTHOR("Christoph Fritz <christoph.fritz@hexdev.de>");
-> > +MODULE_DESCRIPTION("LIN bus driver for hexLIN USB adapter");
-> > diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-> > index 8376fb5e2d0b4..157d234e1d400 100644
-> > --- a/drivers/hid/hid-ids.h
-> > +++ b/drivers/hid/hid-ids.h
-> > @@ -903,6 +903,7 @@
-> >  #define USB_DEVICE_ID_MCC_PMD1208LS	0x007a
-> >  
-> >  #define USB_VENDOR_ID_MCS		0x16d0
-> > +#define USB_DEVICE_ID_MCS_HEXLIN	0x0648
-> >  #define USB_DEVICE_ID_MCS_GAMEPADBLOCK	0x0bcc
-> >  
-> >  #define USB_VENDOR_MEGAWORLD		0x07b5
-> > diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-> > index e0bbf0c6345d6..328fcc61303f3 100644
-> > --- a/drivers/hid/hid-quirks.c
-> > +++ b/drivers/hid/hid-quirks.c
-> > @@ -436,6 +436,9 @@ static const struct hid_device_id hid_have_special_driver[] = {
-> >  	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_2) },
-> >  	{ HID_USB_DEVICE(USB_VENDOR_ID_GYRATION, USB_DEVICE_ID_GYRATION_REMOTE_3) },
-> >  #endif
-> > +#if IS_ENABLED(CONFIG_HID_HEXLIN)
-> > +	{ HID_USB_DEVICE(USB_VENDOR_ID_MCS, USB_DEVICE_ID_MCS_HEXLIN) },
-> 
-> Generally, the pattern for drivers in the HID subsystem is to rely on
-> the vendor name, not the product, in order to be able to extend it to
-> more than one product.
-> 
-> Is your vendor name MCS? Or Hexdev?
-> 
-> If so, the driver should likely be hid-hexdev.c...
-
-We got the PID from MCS online shop here:
-
-https://www.mcselec.com/index.php?page=shop.product_details&product_id=92&option=com_phpshop
-
-Our vendor name is hexDEV, but the USB VID is MCS, and the product name
-is hexLIN...
-
-So is 'hid-hexlin.c' or 'hid-hexdev-hexlin.c' okay or does it need to
-be named 'hid-mcs-hexlin.c' in spite MCS has nearly nothing to do with
-it?
+Hugo.
 
 
-Cheers
-  -- Christoph
+>  }
+>  
+>  static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+> @@ -1002,6 +1052,8 @@ static void sc16is7xx_set_termios(struct uart_port *port,
+>  				  const struct ktermios *old)
+>  {
+>  	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+> +	bool has_dld = sc16is7xx_has_dld(port->dev);
+> +	u8 divisor = has_dld ? 4 : 16;
+>  	unsigned int lcr, flow = 0;
+>  	int baud;
+>  	unsigned long flags;
+> @@ -1084,7 +1136,7 @@ static void sc16is7xx_set_termios(struct uart_port *port,
+>  	/* Get baud rate generator configuration */
+>  	baud = uart_get_baud_rate(port, termios, old,
+>  				  port->uartclk / 16 / 4 / 0xffff,
+> -				  port->uartclk / 16);
+> +				  port->uartclk / divisor);
+>  
+>  	/* Setup baudrate generator */
+>  	baud = sc16is7xx_set_baud(port, baud);
+> @@ -1684,6 +1736,7 @@ void sc16is7xx_remove(struct device *dev)
+>  EXPORT_SYMBOL_GPL(sc16is7xx_remove);
+>  
+>  const struct of_device_id __maybe_unused sc16is7xx_dt_ids[] = {
+> +	{ .compatible = "exar,xr20m1172",	.data = &xr20m1172_devtype, },
+>  	{ .compatible = "nxp,sc16is740",	.data = &sc16is74x_devtype, },
+>  	{ .compatible = "nxp,sc16is741",	.data = &sc16is74x_devtype, },
+>  	{ .compatible = "nxp,sc16is750",	.data = &sc16is750_devtype, },
+> diff --git a/drivers/tty/serial/sc16is7xx.h b/drivers/tty/serial/sc16is7xx.h
+> index afb784eaee45..eb2e3bc86f15 100644
+> --- a/drivers/tty/serial/sc16is7xx.h
+> +++ b/drivers/tty/serial/sc16is7xx.h
+> @@ -28,6 +28,7 @@ extern const struct sc16is7xx_devtype sc16is750_devtype;
+>  extern const struct sc16is7xx_devtype sc16is752_devtype;
+>  extern const struct sc16is7xx_devtype sc16is760_devtype;
+>  extern const struct sc16is7xx_devtype sc16is762_devtype;
+> +extern const struct sc16is7xx_devtype xr20m1172_devtype;
+>  
+>  const char *sc16is7xx_regmap_name(u8 port_id);
+>  
+> diff --git a/drivers/tty/serial/sc16is7xx_i2c.c b/drivers/tty/serial/sc16is7xx_i2c.c
+> index 3ed47c306d85..839de902821b 100644
+> --- a/drivers/tty/serial/sc16is7xx_i2c.c
+> +++ b/drivers/tty/serial/sc16is7xx_i2c.c
+> @@ -46,6 +46,7 @@ static const struct i2c_device_id sc16is7xx_i2c_id_table[] = {
+>  	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
+>  	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
+>  	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
+> +	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(i2c, sc16is7xx_i2c_id_table);
+> diff --git a/drivers/tty/serial/sc16is7xx_spi.c b/drivers/tty/serial/sc16is7xx_spi.c
+> index 73df36f8a7fd..2b278282dbd0 100644
+> --- a/drivers/tty/serial/sc16is7xx_spi.c
+> +++ b/drivers/tty/serial/sc16is7xx_spi.c
+> @@ -69,6 +69,7 @@ static const struct spi_device_id sc16is7xx_spi_id_table[] = {
+>  	{ "sc16is752",	(kernel_ulong_t)&sc16is752_devtype, },
+>  	{ "sc16is760",	(kernel_ulong_t)&sc16is760_devtype, },
+>  	{ "sc16is762",	(kernel_ulong_t)&sc16is762_devtype, },
+> +	{ "xr20m1172",	(kernel_ulong_t)&xr20m1172_devtype, },
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, sc16is7xx_spi_id_table);
+> -- 
+> 2.44.0
+> 
+> 
+> 
 
+
+-- 
+Hugo Villeneuve
