@@ -1,67 +1,54 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E1A06AFB6;
-	Thu, 25 Apr 2024 09:51:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C98684E0D;
+	Thu, 25 Apr 2024 10:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714038694; cv=none; b=nrdqei+j30O4jv/2xNBWoTInAFKImijSqvbbqsf8LBQE8FxTMsMfHye2uAeK+iGx8DQ91R05FtVI17FRYgJr6TTpsMmGcWiMf6L9slJEUpNIDE0eYZ2ZkObnv8CADVqx3ibfpA6/Hggm885Nvh00i0dhw/fgYIJc/81/2HQ/NHc=
+	t=1714039282; cv=none; b=ZH3yhOmm4oxN7hwkiIck9tWTPF0pc/2wFR1EtYs7T2p562rpiZSP38DDO0H8zwcrtK8fCbuI6q9wLkMAvQr6V2ja4m0FqiQGwZoZiZW87J3svzfLUoiMohqMqO8UaZ8m0E3axDLu1OzB1tDccr4A7y36w08pNEJdnSED8ovA8nQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714038694; c=relaxed/simple;
-	bh=ZtrikWN1khsLOYBb47MFnWoLnhVQt3gs3zS1wmjQmRs=;
+	s=arc-20240116; t=1714039282; c=relaxed/simple;
+	bh=ADHJqszQ9Txm7S8seePFYWigxzHqi720FOMldE5VrLk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z9pwD2hLEUyLqBriwjKJsK5M5E03zXImmsMBwxqcdJ1llpR+CfB6Xcji7g7Rv/qEeBkTp81eZgoXz2zqKnb+w5x8NvoeRTrPqIjefXxB6Dygn4jvaDgjLHxWTDUq1jQxdRPDANioledaFv2PNZPgsagajQ3HQD8waGX8rcuHrnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Joh2gjQi; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Joh2gjQi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714038693; x=1745574693;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZtrikWN1khsLOYBb47MFnWoLnhVQt3gs3zS1wmjQmRs=;
-  b=Joh2gjQi6j0ptyDmk/3U/OpSY7Cj3oEKUqtQ5lM1atO7UF13mt3Rpk3b
-   QEuAY+RjBNQ1usRBmJI3CYkfurXWVr04dDUkF394yHmuGT2jTqjSmkYIO
-   /7NyW7CNEJykT0r14FRXtxmnLIoiNuGWXSZaVI0DZ0pmPpqoQz4t7TC9k
-   68GlKiW5v5eoifHHVXusZEoeXIwikxLim02nniXEd3IijPd01MnKdwsY3
-   k7NGnI8r6QAo3rOuBvKnlbRw29GXmDtR+vPVSLyRvSEG3uSsPuMDJThmh
-   eOOctSHBpxC+tfrdBRWtOqXS2N0rwZH0/CVAz9BP8xAzXzC/2lAmlGR2q
-   A==;
-X-CSE-ConnectionGUID: dZPfilrQSAGVVk8kDw6NNA==
-X-CSE-MsgGUID: mavx0dwAS5uPPwoCzsGaPA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="9583073"
+	 Content-Type:Content-Disposition:In-Reply-To; b=qunoqBGeUhzvxdlZYr5Aj4aDRcTi9pjY4dXe7Fzf1RX9+NobWzF4pT3CNePjpHtcTzUAyMs2OQjZaJ3Zlzv4GJV0+0BlwcOHSg0Bsl1oxOHPEPIpQM3IDDCyR9AHddNUJef6nmPJiuNKF9vvpPjmdADRwvW+ZpGvlJSqh+iHtDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
+X-CSE-ConnectionGUID: AwZPqcaHScCjlqrH87V/Og==
+X-CSE-MsgGUID: Cf/IN/6kQ7Gmbl3vjOv7dw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="32205332"
 X-IronPort-AV: E=Sophos;i="6.07,229,1708416000"; 
-   d="scan'208";a="9583073"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:51:32 -0700
-X-CSE-ConnectionGUID: JeKzxkwjQ3yliVGE8lqt6g==
-X-CSE-MsgGUID: +cKS2glkRbC+ZB78m4Npfw==
+   d="scan'208";a="32205332"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 03:01:20 -0700
+X-CSE-ConnectionGUID: vluF/VF4QJWns9PuSQw9+w==
+X-CSE-MsgGUID: vQ4YuJjmSGGXK3+CRl6LhQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,229,1708416000"; 
-   d="scan'208";a="25640282"
+   d="scan'208";a="29647088"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 02:51:29 -0700
+  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2024 03:01:16 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rzvlF-00000000x8n-2GLl;
-	Thu, 25 Apr 2024 12:51:25 +0300
-Date: Thu, 25 Apr 2024 12:51:25 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Claudiu <claudiu.beznea@tuxon.dev>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com,
-	l.sanfilippo@kunbus.com, tglx@linutronix.de,
-	geert+renesas@glider.be, ulf.hansson@linaro.org, peng.fan@nxp.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [RFT PATCH v2] serial: core: Call device_set_awake_path() for
- console port
-Message-ID: <Zionncg1uUAb9BDP@smile.fi.intel.com>
-References: <20240425070936.547100-1-claudiu.beznea.uj@bp.renesas.com>
- <ZionWJ7ods60zuYX@smile.fi.intel.com>
+	(envelope-from <andy@kernel.org>)
+	id 1rzvui-00000000xMg-005v;
+	Thu, 25 Apr 2024 13:01:12 +0300
+Date: Thu, 25 Apr 2024 13:01:11 +0300
+From: Andy Shevchenko <andy@kernel.org>
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
+	robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Konstantin Pugin <ria.freelander@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v8 0/3] add support for EXAR XR20M1172 UART
+Message-ID: <Ziop56dmSsX4NJds@smile.fi.intel.com>
+References: <20240424191908.32565-1-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -70,25 +57,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZionWJ7ods60zuYX@smile.fi.intel.com>
+In-Reply-To: <20240424191908.32565-1-rilian.la.te@ya.ru>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Apr 25, 2024 at 12:50:16PM +0300, Andy Shevchenko wrote:
-> On Thu, Apr 25, 2024 at 10:09:36AM +0300, Claudiu wrote:
-> > From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Wed, Apr 24, 2024 at 10:18:51PM +0300, Konstantin Pugin wrote:
+> EXAR XR20M1172 UART is mostly SC16IS762-compatible, but
+> it has additional register which can change UART multiplier
+> to 4x and 8x, similar to UPF_MAGIC_MULTIPLIER does. So, I used this
+> flag to guard access to its specific DLD register. It seems than
+> other EXAR SPI UART modules also have this register, but I tested
+> only XR20M1172.
+> Yes, in datasheet this register is called "DLD - Divisor Fractional"
+> or "DLD - Divisor Fractional Register", calling depends on datasheet
+> version.
 
-...
+A side note about email. It seems you have To: email header empty which may
+increase chances to get these messages into spam. Again, I recommend to look
+at the implementation of my script [1] which I use on daily-basis and re-use
+it or taking an ideas how to send patches to the Linux kernel mailing lists.
+Alternatively you may study `b4` tool, it also has something like that in
+recent versions.
 
-> > [1] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/renesas/rmobile-sysc.c#L116
-> > [2] https://elixir.bootlin.com/linux/v6.9-rc5/source/drivers/pmdomain/imx/scu-pd.c#L357
-> 
-> No need to have the HTTP links into the kernel sources, you may simply refer to
-> the files in the source tree.
-> 
-> [1] drivers/pmdomain/renesas/rmobile-sysc.c:L116
-> [2] drivers/pmdomain/imx/scu-pd.c:L357
-
-Should be without 'L' to follow the `git grep -n` output format.
+[1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
 
 -- 
 With Best Regards,
