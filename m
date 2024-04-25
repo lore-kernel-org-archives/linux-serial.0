@@ -1,70 +1,81 @@
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2060.outbound.protection.outlook.com [40.107.95.60])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BB4927473;
-	Thu, 25 Apr 2024 06:14:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714025660; cv=none; b=i7kTpgoeKfhO8NGaX+rve9k/jj0peSPIydU0O0afBBgrz0kpMOHNzhpE7emN54x+oC3P77tQuG2n8vhnoqCeeWuJf8bSc7z9UjQvH2UCawdp6k39AXk7dVRJtQ/8UKyy17Iqv8ierBlcy1UVUjlw4gcwUwYBWRd4l41TWPbIRJY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714025660; c=relaxed/simple;
-	bh=CRrjSsRbZZXBe3Zg1o6lhtldh9D/juwsek3Ag08YBpY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CuLhyDboeArDaSxSuzKQPQX5gqU+X4GyP8p62u30wnSKuLvwEBhPo3iVNlvsMUtJnsOcO2xAuDEQfBpBjI05fbvUD7BpC769Ngk3EwT0txffL86C4kd/unepNF3+sX1Y13OsKIOJueSM+cgX20wcKya3VwdTpfF/Hb+esO+1HPg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ehncrRY8; arc=none smtp.client-ip=209.85.215.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45CE93EA86;
+	Thu, 25 Apr 2024 06:24:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714026255; cv=fail; b=Q5QbzZxabIxgE8eX42tAetZ5J1Bq6WLrAZgZ32HzRDEk0IRrofkBNKsUS6o5hq6pLWqFGrirgIikPfwVyLL9yeV8HZEkyRrD+JeevwC3aaPqfHeSF2ZK0DaMV1Y7zHJazv1oZrsdiwfk5umkBrKxqsitSAzAt2Lkg4zUkAPbJv4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714026255; c=relaxed/simple;
+	bh=Tp6XguxhKaj42RT9RnmzL1MQNLuE1wtbx1gBpcXC0m0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=uINJ4tgv/6ID96rlgUh19iJriqKFYypimJbEdG03EOI/cAm+T87N5NHieWOZz3GiUmAEwxYLR3ALxTN3rSs9A2KMikiAIN0zxhbUbJU/vPoLxCZB33vdzfs9ilu9FH56zzrnsE5XLNTjMXxMNa7gmyYjDvHS7EZwCuditwwwL+U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=hIDayZ4U; arc=fail smtp.client-ip=40.107.95.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ehncrRY8"
-Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-6082fd3e96eso481777a12.1;
-        Wed, 24 Apr 2024 23:14:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714025658; x=1714630458; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=P+cnrqP7ROZMYIZmqn7REt8CdXQIz/KakKw0fvi+u8k=;
-        b=ehncrRY8cmRafg0ysC+haERsyOjzcUwJmQpLoxvqi6sQR4GB3HOJ3dox8TX3Rrmo4D
-         lKQSpSsYiJta6+RA7OVjuNp02j3YE31zRuUQnoXberqwhvraTtyGcGFp8c655GmAf9Is
-         0ZsEbqZU2AfCQF/gmIn9RDV7DwjJEQMhWnzcVhbgocq1nxRXIXkvbT1nsRE2h4+WPkrC
-         +Lz/Df3DldSfpcBJjoGJXsH/VtO9CsOoi0FZ03oMB5La5qk2xo5uc99YPZ0dp1WxsPTa
-         /jvj7RfSfwQtLVhyR0D3gelu22vl6ltAgrJwplSq5cUdQywc5SNol+XcgzBpugtW2zof
-         avXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714025658; x=1714630458;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=P+cnrqP7ROZMYIZmqn7REt8CdXQIz/KakKw0fvi+u8k=;
-        b=ftT5qiPu3qsGWvAIS298DsK9geOKVp9QgqPt8vbFSJgnl4zrEv3DVYgBW4c/JgASHE
-         SnTZ3KB7brL/ky52PwRxViuRwwuy/DlqnpZqBy4zdqHexNlTtFQgAMdSiOhPHuHeztRn
-         7z3K13ypmuPj8HvhHArhL/wD0cb9ee7cYa2uIsKAzpo1Br4DYE1fUQbB3WckHoPxenzA
-         UN5xPtVqrncwEjtxCSTWSp2rzH7fa/48dAiPKKyQn1EFKSrFNVUS5IMjK/SzlvfynU6D
-         5zA/aBAO8ieJdgTd7JpiFK7ODmqgYcP/VDVfolP4Ki8I5CW452OVi8QMgnvO4MU6+8fR
-         xu/A==
-X-Forwarded-Encrypted: i=1; AJvYcCWnWmaj0mV0/9u5nsQ6LqQf3i8Pdv7/4FesoKqswhTw4mEQPhwmzdSAbpVi3Ovq9DdiWngI+eYKAReC4II+AW+q2qxcqw+z2pS20Zy/HET3Jm22SBRFXLhxr746CiKw5uVS1aQl4qhDpakM
-X-Gm-Message-State: AOJu0YzFQQOqzna6Y0oFtUf9o7BEbEdSRDUlE26Qm7LK03WjnxZpflih
-	CcPPSjYC0PK+SPgNQqrIqOLpRaC+e4d1B1311OmAhRSVatONkipW2FmKZxYw
-X-Google-Smtp-Source: AGHT+IHs42AUj8gwluZCiYM0AKuesrQTubnz7h1dTGYRvbTsCK1ahmnIaAw4hwETEPrlhp7SKP1wKw==
-X-Received: by 2002:a05:6a20:7285:b0:1a7:5402:8a92 with SMTP id o5-20020a056a20728500b001a754028a92mr5639944pzk.31.1714025658299;
-        Wed, 24 Apr 2024 23:14:18 -0700 (PDT)
-Received: from shresth-aspirea71576g.abesec.ac.in ([139.5.197.146])
-        by smtp.gmail.com with ESMTPSA id r6-20020a17090a5c8600b002ade3490b4asm6461667pji.22.2024.04.24.23.14.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 23:14:17 -0700 (PDT)
-From: Shresth Prasad <shresthprasad7@gmail.com>
-To: davem@davemloft.net,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: sparclinux@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	javier.carrasco.cruz@gmail.com,
-	Shresth Prasad <shresthprasad7@gmail.com>,
-	Julia Lawall <julia.lawall@inria.fr>
-Subject: [PATCH][next] tty: sunsu: Simplify device_node cleanup by using __free
-Date: Thu, 25 Apr 2024 11:33:04 +0530
-Message-ID: <20240425060303.8045-2-shresthprasad7@gmail.com>
-X-Mailer: git-send-email 2.44.0
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="hIDayZ4U"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cD4J2KIKclonDiQPpQ98CLWla8Pv1RX1zdTn7V3AJliDccRsg8VqhGI4jV67eWKFCtrCpgunutr4zvK0OUROqoNFYQIphYkNdA1w5QBt/IbbBqtPF+re7xuakLBWMBOefgX6jPnn47QvWmcu9q8njnA/c/KxDkfvcBy67otn8tuqN1a08X13AuNQIRsbv5Vao6qNkxA2SdPt6wmTW8OFcF+LUPsaN+QgLHRDTv1bWlo/pCIFscknLDCQQKYYQtYP8excQJRHis68zuFn2j9NsvYxp7VHD+TFjwLY94w+yC/ReuP+r8hhpbZdn/SPrFgzXGfs8qX50ld7f35/1oQKnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6MXYMXALXCRlDvlVA0r1J9RnGVeFpBttlnPZnxmBSYY=;
+ b=MI7cQuXag0TOv8cj4wPe8jyMyhX3uzgJj39fnqdXaw1yHA0PGFJkCeZvsPouc33mYKuhH4exrNhH1HX2mo00S2Tj4QvhY7k10A+GYL/HMHNJ+EFuJG6haz7VsqyECFPPr4KBZKjj8xFDBuHNouE0lFlA2dJjNh0hiHU9F0GkYtj7Jmi5zQpdm9XaUgrTStEps+gSfA143bjFa263HhilvlC39fxkpEwyNeRYl2VdLjUtLqvC44DCYXw2aw+AoNYSpcwEg6t/tgK/EDwCF3WMuMXCbTweGkLVbOYn4RFmuHrX881IBWU4HXfZaVLj2vjMhPF9utSERQGXTIKp5W31aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6MXYMXALXCRlDvlVA0r1J9RnGVeFpBttlnPZnxmBSYY=;
+ b=hIDayZ4U8mU7fcQowviWuQ1kHI5iH47j2Xrd1BXuRLfUfnEJTsaYa6SRZSeAmqgkAXowlgcxO5q6wF6byJ7cyhSyx53c52ePM+ibHIWVySbh3jWbLootybAq74PKx0pYN4Se3yWGJbvHTnc+UgFPsDC9cJPeVy87QG8YqpKOvLk=
+Received: from DM6PR06CA0015.namprd06.prod.outlook.com (2603:10b6:5:120::28)
+ by SJ2PR12MB8807.namprd12.prod.outlook.com (2603:10b6:a03:4d0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Thu, 25 Apr
+ 2024 06:24:07 +0000
+Received: from DS2PEPF00003444.namprd04.prod.outlook.com
+ (2603:10b6:5:120:cafe::5c) by DM6PR06CA0015.outlook.office365.com
+ (2603:10b6:5:120::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.25 via Frontend
+ Transport; Thu, 25 Apr 2024 06:24:07 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DS2PEPF00003444.mail.protection.outlook.com (10.167.17.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7519.19 via Frontend Transport; Thu, 25 Apr 2024 06:24:07 +0000
+Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Thu, 25 Apr
+ 2024 01:24:07 -0500
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
+ (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Thu, 25 Apr
+ 2024 01:24:06 -0500
+Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Thu, 25 Apr 2024 01:24:01 -0500
+From: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+To: <git@amd.com>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+	<robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<michal.simek@amd.com>, <p.zabel@pengutronix.de>,
+	<laurent.pinchart@ideasonboard.com>, <radhey.shyam.pandey@amd.com>,
+	<parth.gajjar@amd.com>, <u.kleine-koenig@pengutronix.de>,
+	<tglx@linutronix.de>, <julien.malik@unseenlabs.fr>, <ruanjinjie@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC: <srinivas.goud@amd.com>, <shubhrajyoti.datta@amd.com>,
+	<manion05gk@gmail.com>, Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: [PATCH V3 0/3] Add support for uartps controller reset
+Date: Thu, 25 Apr 2024 11:53:55 +0530
+Message-ID: <20240425062358.1347684-1-manikanta.guntupalli@amd.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -72,81 +83,74 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PEPF00003444:EE_|SJ2PR12MB8807:EE_
+X-MS-Office365-Filtering-Correlation-Id: 943acd8a-0a49-4c75-7ef9-08dc64f05016
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?9emTQqJBFFHobgEOYDnwLsc+XfZTgdia8/GXMKGTQ7IXlgvqJVrv/kzF40Xj?=
+ =?us-ascii?Q?Ws+KZygbqqIo03aLqhbGoCiIQVddF+A4D1a7Y3oRuT9z+fX66BtBIFfNcpd8?=
+ =?us-ascii?Q?Q7REEWU2HpK+oN4+2x4aEnBmZMzusOlYiPXYhesY8ZoF72WQF0nbiYStGDfX?=
+ =?us-ascii?Q?qBG2b2ZrLSQXncaY3Cy+twYNRB57tzUu94NBVjugXfoNS4lp3cV+oQopPElF?=
+ =?us-ascii?Q?NR/7eqFA9h+QpLGP3ElpoZiFuAHMiq6N3Phgs2roIacIdAxqMdORT7k7HPE0?=
+ =?us-ascii?Q?7l9hbwvxLnurWJe0mxkZl/CtzNa1dc8sxZKQ83ouo66UjQFk9HK/4xp+YqHk?=
+ =?us-ascii?Q?B8WCHGv54bCB1KuV1YyU/g9qs62A+VJzHN9iW3h029JLqb0pkwKS8pDADDSn?=
+ =?us-ascii?Q?F+Ay1kE8J+EirUY0CyxTygJfeoB4OpF0wPpKTzM9TrgNejZl4jB+LLR9zIOC?=
+ =?us-ascii?Q?UVJtXsnPwpRNPlYbycNjN4o73L/thOwLncNVw4wNDh4kcYxs/jSbntGEt972?=
+ =?us-ascii?Q?kOuTNNdt+kO0K5h5al0swSaxMHrwSC2/xKAtQTVuWU1gsRzeU2zs36y7Km5I?=
+ =?us-ascii?Q?Sv+/vqmbdq6wmS1zUosjta0+xcD4EUFrj8e/Kl60erFj5eYtMabvQrSc8XBq?=
+ =?us-ascii?Q?0a2gWZp7kOG6U8ddFQqNiUwMxplCHz1zi/pjzBDrT6+jIdLERhMY4Xn3SN91?=
+ =?us-ascii?Q?jsJuauQCO0ouoSBQCLzKF04J5fbT+CewEI+t9t9wgzeM9xI92NWu3gmH72EF?=
+ =?us-ascii?Q?y6fd9W5X4bg9ANyjYg3WDmwYU+9Fg5LGnlRrBOyqbMj/BnwP7CH5abeyEwkS?=
+ =?us-ascii?Q?1Cxs+nNuh2QXXdUZBom1gvidx4N7IjCVi/G+egciK9aPxIzyPUuJMjSOvonL?=
+ =?us-ascii?Q?AJnjd+GOegxXMiQFdpapAiBmOnrm3UBFfLVAyaZW1mwZcGs1Rfw5vhq6u145?=
+ =?us-ascii?Q?/m9tqg3aDgedpiwuAhfYQAvJQQlONtlYfHUQAki5iJCqkIj7XwgsxYgQk7ly?=
+ =?us-ascii?Q?b0hQEmdkJsJMdU0yaoXpSURhurtDYkxUOHoe/Fp/+ud5d4fY+quAVwpeJpCx?=
+ =?us-ascii?Q?C0gDKv6NBGOQmXv1aEZGshmN2wp3OfxjugAuINNAS45wy8ndovno8ja9vtvp?=
+ =?us-ascii?Q?LID/fW9dobkj+Oyp94vwdjcKVroxFHq8VxWd+l7+WNInZkEgeEMowZ0LOBNu?=
+ =?us-ascii?Q?8036bKBZWBk0A31tdG5GPO05OXdTnQ5HoaxoathZk477rd5/2b7EuBJ+Cnzf?=
+ =?us-ascii?Q?rVoBufPCe1YbCdS4V3eaweQYbGQ9yT+ZCoWlkA5ZU7QAWiJWGI0jQGD9zVgG?=
+ =?us-ascii?Q?f/qu+zFrty8doE1OFMBwAcyn4XYELAF7UUiic732O8j050MWqav855z9YuUr?=
+ =?us-ascii?Q?C0Zr2dWDFcYrJLS/USQ8Vt9eGe65?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376005)(1800799015)(7416005)(36860700004)(82310400014)(921011);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2024 06:24:07.7410
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 943acd8a-0a49-4c75-7ef9-08dc64f05016
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS2PEPF00003444.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8807
 
-Add `__free` function attribute to `ap` and `match` pointer
-initialisations which ensure that the pointers are freed as soon as they
-go out of scope, thus removing the need to manually free them using
-`of_node_put`.
-
-This also removes the need for the `goto` statement and the `rc`
-variable.
-
-Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
+Add optional resets property for UART nodes.
+Add support for uartps controller reset.
 ---
- drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
+Changes for V2:
+Added ack signature for binding patch.
+Remove check for reset_control_deassert, as reset_control_deassert
+function internally has NULL check.
 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 67a5fc70bb4b..0f463da5e7ce 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
- 
- static enum su_type su_get_type(struct device_node *dp)
- {
--	struct device_node *ap = of_find_node_by_path("/aliases");
--	enum su_type rc = SU_PORT_PORT;
-+	struct device_node *ap __free(device_node) =
-+			    of_find_node_by_path("/aliases");
- 
- 	if (ap) {
- 		const char *keyb = of_get_property(ap, "keyboard", NULL);
- 		const char *ms = of_get_property(ap, "mouse", NULL);
--		struct device_node *match;
- 
- 		if (keyb) {
--			match = of_find_node_by_path(keyb);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(keyb);
- 
--			/*
--			 * The pointer is used as an identifier not
--			 * as a pointer, we can drop the refcount on
--			 * the of__node immediately after getting it.
--			 */
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_KBD;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_KBD;
- 		}
- 		if (ms) {
--			match = of_find_node_by_path(ms);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(ms);
- 
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_MS;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_MS;
- 		}
- 	}
--
--out:
--	of_node_put(ap);
--	return rc;
-+	return SU_PORT_PORT;
- }
- 
- static int su_probe(struct platform_device *op)
+Changes for V3:
+Corrected typo in subject of binding patch.
+
+Manikanta Guntupalli (3):
+  dt-bindings: serial: cdns,uart: Add optional reset property
+  arm64: zynqmp: Add resets property for UART nodes
+  tty: serial: uartps: Add support for uartps controller reset
+
+ .../devicetree/bindings/serial/cdns,uart.yaml     |  3 +++
+ arch/arm64/boot/dts/xilinx/zynqmp.dtsi            |  2 ++
+ drivers/tty/serial/xilinx_uartps.c                | 15 +++++++++++++++
+ 3 files changed, 20 insertions(+)
+
 -- 
-2.44.0
+2.25.1
 
