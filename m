@@ -1,216 +1,296 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8F5A16EC0F
-	for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 22:51:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D518200DB
+	for <linux-serial@vger.kernel.org>; Thu, 25 Apr 2024 04:00:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713999079; cv=none; b=qIOCS0OdxPW4HzQD6KNSxA4W2+O3gy1HOzwuIb2KOustAHLOMs5AOawVos7XImrdxa+vz7qLVCzwzUGaSN7GmVdQqmCFq6q7XIVGAkOsnrqPel6+3QMLhVUbk5KJsVJbHPtZCeDLlvuE2R+d+grZX8tEEebLlH1BZZPQrt4EXTs=
+	t=1714017622; cv=none; b=F/n26MGczUB9leELCHyU+0hfqE1IftGcnUPumz+OR4Z9uUEHFUo+CMmt6CiF9D24KwdGAW5qnjTUPIyZsTEE4uKTdcppQ/XLge7k+cZk1WFjH4Vx0DvDAExJbDoYXJKUWKKL9MjxH81Zca5meEUgbqe+nH0qt2hhideTiOv7Dcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713999079; c=relaxed/simple;
-	bh=6BJHh97AYrQ08KbyZ1bdOxxcMSFeXu9Cf5YBhGb0oWE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BziI7zzQZhc6XZuPyUGxf/Q0HlYQiWCCV8tUU4PmG5qrlsr0UgwypYEmFFFU14MsejKKaQEr0nhml6JGbyHUheC0lBaXzSBlMagJYwueA+gTKr0nHOeaxDF6gIHVUfva1/wNpHZZ8jFTKEztM8LbKHG1SRrFsQIWVaJ7B6L+0/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=fj05nP4D; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="fj05nP4D"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-78ebc7e1586so142555285a.1
-        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 15:51:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1713999076; x=1714603876; darn=vger.kernel.org;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jODReqDGhi6t+OrtLGmDsBOCsRj4IddKN/97eK4ST4c=;
-        b=fj05nP4DVCf/3BKmIOL1nTGLgTCV41AprCQx5cRq2xhBlFEVoodCPtQC473Mb5WXpa
-         nb9DH+w2LuYR7sEj+RwZsK/U4NI+Y6Y8P87qnOnU3UjZknOiF+/ZAyqZHSlY21j9ru+f
-         QJy9BGdYqAsWD4H08YXNHVHbpNvGBLrS37d10=
+	s=arc-20240116; t=1714017622; c=relaxed/simple;
+	bh=TPNPxwZ9vL4N9SlZkEDreRETsvDf83ZwbjXXy9p5hrs=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=jIwdvLgUHw1rXKGIPYCHaXEnDM5/L44pH9XSwuIbA2BAECdMdnfDn2Nokt5ufACjSYpNjlplgBYl9mZ6vdNGXOxF1Q7Svj/EkW/gdj5TtuC369XOMTNgrw6r/Ngv35+MUCAqDYnJd0/eY1mIIaediLZn1gXWQCROjeSY5fdZXGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3699565f54fso6331205ab.0
+        for <linux-serial@vger.kernel.org>; Wed, 24 Apr 2024 21:00:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713999076; x=1714603876;
-        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jODReqDGhi6t+OrtLGmDsBOCsRj4IddKN/97eK4ST4c=;
-        b=kBrVJS++bbBzCC6BIU4SX3QIX6hiJAeBTGMdKxVsZfdjp2mw3NsOBClTVFGq7/M7BK
-         rSUDV6CyUBMwahp38tbRHp3J5oytqtufcmrUvBTWuif47OicOPYnw2nyUaxvBDL1Qc7H
-         pXdcFTm6iL91xXmtiwvN57c/LUb+mM+/c7PJC/+pVvTlNtISK63DnkTqju2H8wKGHB0f
-         45buWo4h8tn0BWxugSPxUYePSJd+dxQYwO7YihH5Kwuvungwkgi6pilO4CF9cQAoRdnd
-         QADJlrSxCB9QO1rbUighUSZjvO5dsr4APJtdEHPdWIXCFnhL/hzA9p1IDsc45Yw3tPU3
-         Di/g==
-X-Forwarded-Encrypted: i=1; AJvYcCXkNVpbDImNfkuMwE7mJtexgxdkzT3XzPgdha9l2wv4JH4crmltGrp3x+xn0RaER9eaE9A69zZP3MlKl4r9YlyIQDzvA5JXHJseHlFK
-X-Gm-Message-State: AOJu0YyFICW5kB6lofS3zIY9TEt4WUf7AfZDacHzOx5NHNA/rcZ/29xV
-	nYzplykc6zxpZCSFtOFuu0nerr0kFqW8rIhYV1sjEb2xQxF6laD/X1g8gGjhcg==
-X-Google-Smtp-Source: AGHT+IEGyRkJp56uqcLg16yNEr9JYUsnNLnHDnpZPvnONwKA/rpbFTa0rAhGNSybwNmF+EY5JzIPPQ==
-X-Received: by 2002:a05:620a:470a:b0:790:9976:9d5c with SMTP id bs10-20020a05620a470a00b0079099769d5cmr1000349qkb.21.1713999075730;
-        Wed, 24 Apr 2024 15:51:15 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f10-20020a05620a15aa00b0079061110054sm4719829qkk.13.2024.04.24.15.51.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Apr 2024 15:51:14 -0700 (PDT)
-Message-ID: <62cf51b8-0597-4e42-bdc2-54f01ecb91e1@broadcom.com>
-Date: Wed, 24 Apr 2024 15:51:12 -0700
+        d=1e100.net; s=20230601; t=1714017620; x=1714622420;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YkkHSSSTB0CocaopvtpYuNr0ZoJmuQtEpepwrvwJ4s4=;
+        b=ecZ+81wy+Up4j29M8+am+siIez2/bQqSHNWGyIB0l2xEfX6+C48z5SP3/fsHUVeEFe
+         HDhsxWJBAGNQ0sNOq50Y3DKTdGVUHSgcJXyR+2aW0H2XwIfldF1l6g5RwhMWw+LNMXFI
+         YoYJLfxlarVQTHLW86tPYvIMquUnFTyC5oZ6ESc0ALF/pecDaCObAKpHmEwZa2vNlCqn
+         eesmFx7jM3GMzsFO8a5wjalNgX0Eh7n6VKMPZeW046YoBnY0sRBhjxVKVCHuOd9CWwtr
+         uvtOPVlxKB+++amKxIys5moioscL4weu/zCeRxXtg+E9zsm19bSiZjirsPNbJBK4YP7C
+         kOGQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUYec3Ktr/l8j/DwjJWSRAzytsMNWzsOwpbN+Qfx+h/vqe1CqpmOI3VZw6hYYLaiTJjZ0DZfrOKvlwwZ0LiVrwAFwx21Kh8toQvM5qG
+X-Gm-Message-State: AOJu0YwXUS22MGK45y1aEPEYpUmbWCFiBmxWtT+Gxn/wGuS00sw5PgBc
+	+Ztje+eXYeU6J2TP7NAOQxnD4Loyqta2wwapzSJJKooy6KZ4teD23D6AglGwNh9ZyjQOvVVBFca
+	VExO/TORDwY+IlcWyTnB5jPJSlMBxSgJSPNThwi5YGS2BpJXoETG6CFc=
+X-Google-Smtp-Source: AGHT+IHrZq+kGFtTQ+1wukUqwCFCkw/wL0DXgKMlBF50iVi/vAbI/MAb/zcLavaIOjPGgmiqQtDhFYOrBTCIuv06relNkA+1CFMV
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: 8250_bcm7271: use default_mux_rate if possible
-To: Doug Berger <opendmb@gmail.com>, Al Cooper <alcooperx@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: bcm-kernel-feedback-list@broadcom.com, Jiri Slaby <jirislaby@kernel.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20240424222559.1844045-1-opendmb@gmail.com>
-From: Florian Fainelli <florian.fainelli@broadcom.com>
-Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
- xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
- M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
- JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
- PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
- KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
- AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
- IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
- ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
- bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
- Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
- tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
- TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
- zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
- WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
- IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
- U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
- 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
- pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
- MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
- IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
- gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
- obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
- N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
- CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
- C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
- wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
- EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
- fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
- MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
- 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
- 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240424222559.1844045-1-opendmb@gmail.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="00000000000013d48c0616df828d"
+X-Received: by 2002:a05:6e02:1a8b:b0:369:fba0:e97d with SMTP id
+ k11-20020a056e021a8b00b00369fba0e97dmr239258ilv.3.1714017620291; Wed, 24 Apr
+ 2024 21:00:20 -0700 (PDT)
+Date: Wed, 24 Apr 2024 21:00:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006588730616e3d3d8@google.com>
+Subject: [syzbot] [serial?] possible deadlock in uart_write (2)
+From: syzbot <syzbot+57cc2f20a84cb4346354@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
---00000000000013d48c0616df828d
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Hello,
 
-On 4/24/24 15:25, Doug Berger wrote:
-> There is a scenario when resuming from some power saving states
-> with no_console_suspend where console output can be generated
-> before the 8250_bcm7271 driver gets the opportunity to restore
-> the baud_mux_clk frequency. Since the baud_mux_clk is at its
-> default frequency at this time the output can be garbled until
-> the driver gets the opportunity to resume.
-> 
-> Since this is only an issue with console use of the serial port
-> during that window and the console isn't likely to use baud
-> rates that require alternate baud_mux_clk frequencies, allow the
-> driver to select the default_mux_rate if it is accurate enough.
-> 
-> Fixes: 41a469482de2 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
+syzbot found the following issue on:
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
-Tested-by: Florian Fainelli <florian.fainelli@broadcom.com>
+HEAD commit:    7b4f2bc91c15 Add linux-next specific files for 20240418
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=15db8e10980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ae644165a243bf62
+dashboard link: https://syzkaller.appspot.com/bug?extid=57cc2f20a84cb4346354
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
 
-Thanks!
--- 
-Florian
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/524a18e6c5be/disk-7b4f2bc9.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/029f1b84d653/vmlinux-7b4f2bc9.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/c02d1542e886/bzImage-7b4f2bc9.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+57cc2f20a84cb4346354@syzkaller.appspotmail.com
+
+sp0: Synchronizing with TNC
+------------[ cut here ]------------
+======================================================
+WARNING: possible circular locking dependency detected
+6.9.0-rc4-next-20240418-syzkaller #0 Not tainted
+------------------------------------------------------
+syz-executor.4/6662 is trying to acquire lock:
+ffffffff8e327d60 (console_owner){....}-{0:0}, at: console_trylock_spinning kernel/printk/printk.c:1994 [inline]
+ffffffff8e327d60 (console_owner){....}-{0:0}, at: vprintk_emit+0x3cf/0x770 kernel/printk/printk.c:2344
+
+but task is already holding lock:
+ffffffff94aa1878 (&port_lock_key){-.-.}-{2:2}, at: uart_port_lock_irqsave include/linux/serial_core.h:618 [inline]
+ffffffff94aa1878 (&port_lock_key){-.-.}-{2:2}, at: uart_write+0x10e/0x320 drivers/tty/serial/serial_core.c:604
+
+which lock already depends on the new lock.
 
 
---00000000000013d48c0616df828d
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+the existing dependency chain (in reverse order) is:
 
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
-9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
-UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
-KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
-nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
-Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
-KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
-kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
-2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
-3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
-NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
-AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN2VoUWPfAgt1ieY
-9k+mhiHkDMJNQ+RRhTVK4/ZFW3t9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDQyNDIyNTExNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDZoGIerPOL5RM0aGeF33ZmmdHZmqHvwhNR
-5p7gFxhlpea8D9kvE1u7CYRqgDBLL7jjQxHYn4oUq0qmDip1v+xDy9hxo7cy5EGoxIJnh1v0ab+a
-7Yc5uXFHeu7fXVUxFIWusO7xI8Msn90Nr5U2/+pF0Q1HWAsowM9LlIKGarmAaXf8LvutCbCJAg8j
-+KMVse4Hbs4PahG9b740tjFD/KwmHu12KFfKd5RqYigesThEqv+g3sFotVb2tSO26goZAbjcJgEp
-f8xDwGug33nDEw8fsq3v2E4XG/ORcFFF/ww8wg8b9G1DNz11BfYD8s6y30t3OvlIuhyEcNNwhtA0
-O6Jy
---00000000000013d48c0616df828d--
+-> #1 (&port_lock_key){-.-.}-{2:2}:
+       lock_acquire+0x1ed/0x550 kernel/locking/lockdep.c:5754
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0xd5/0x120 kernel/locking/spinlock.c:162
+       uart_port_lock_irqsave include/linux/serial_core.h:618 [inline]
+       serial8250_console_write+0x1a8/0x1770 drivers/tty/serial/8250/8250_port.c:3352
+       console_emit_next_record kernel/printk/printk.c:2928 [inline]
+       console_flush_all+0x867/0xfd0 kernel/printk/printk.c:2994
+       console_unlock+0x13b/0x4d0 kernel/printk/printk.c:3063
+       vprintk_emit+0x5a6/0x770 kernel/printk/printk.c:2345
+       _printk+0xd5/0x120 kernel/printk/printk.c:2370
+       register_console+0x722/0xce0 kernel/printk/printk.c:3596
+       univ8250_console_init+0x49/0x50 drivers/tty/serial/8250/8250_core.c:723
+       console_init+0x1b8/0x6f0 kernel/printk/printk.c:3742
+       start_kernel+0x2d3/0x500 init/main.c:1034
+       x86_64_start_reservations+0x2a/0x30 arch/x86/kernel/head64.c:507
+       x86_64_start_kernel+0x99/0xa0 arch/x86/kernel/head64.c:488
+       common_startup_64+0x13e/0x147
+
+-> #0 (console_owner){....}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3134 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3253 [inline]
+       validate_chain+0x18cb/0x58e0 kernel/locking/lockdep.c:3869
+       __lock_acquire+0x1346/0x1fd0 kernel/locking/lockdep.c:5137
+       lock_acquire+0x1ed/0x550 kernel/locking/lockdep.c:5754
+       console_trylock_spinning kernel/printk/printk.c:1994 [inline]
+       vprintk_emit+0x3ec/0x770 kernel/printk/printk.c:2344
+       _printk+0xd5/0x120 kernel/printk/printk.c:2370
+       __report_bug lib/bug.c:195 [inline]
+       report_bug+0x346/0x500 lib/bug.c:219
+       handle_bug+0x3e/0x70 arch/x86/kernel/traps.c:239
+       exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:260
+       asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:621
+       uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:605
+       tnc_init drivers/net/hamradio/6pack.c:531 [inline]
+       sixpack_open+0x790/0xa80 drivers/net/hamradio/6pack.c:628
+       tty_ldisc_open drivers/tty/tty_ldisc.c:432 [inline]
+       tty_ldisc_reinit+0x2d4/0x4a0 drivers/tty/tty_ldisc.c:661
+       tty_reopen+0x20b/0x2d0 drivers/tty/tty_io.c:1366
+       tty_open_by_driver drivers/tty/tty_io.c:2082 [inline]
+       tty_open+0xa26/0xdf0 drivers/tty/tty_io.c:2135
+       chrdev_open+0x5b0/0x630 fs/char_dev.c:414
+       do_dentry_open+0x95a/0x1720 fs/open.c:955
+       do_open fs/namei.c:3650 [inline]
+       path_openat+0x289f/0x3280 fs/namei.c:3807
+       do_filp_open+0x235/0x490 fs/namei.c:3834
+       do_sys_openat2+0x13e/0x1d0 fs/open.c:1405
+       do_sys_open fs/open.c:1420 [inline]
+       __do_sys_openat fs/open.c:1436 [inline]
+       __se_sys_openat fs/open.c:1431 [inline]
+       __x64_sys_openat+0x247/0x2a0 fs/open.c:1431
+       do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+       do_syscall_64+0xf5/0x240 arch/x86/entry/common.c:83
+       entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&port_lock_key);
+                               lock(console_owner);
+                               lock(&port_lock_key);
+  lock(console_owner);
+
+ *** DEADLOCK ***
+
+3 locks held by syz-executor.4/6662:
+ #0: ffff88805f95e1c0 (&tty->legacy_mutex){+.+.}-{3:3}, at: tty_lock_interruptible+0x68/0xc0 drivers/tty/tty_mutex.c:27
+ #1: ffff88805f95e0a0 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:289 [inline]
+ #1: ffff88805f95e0a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock+0x6c/0xc0 drivers/tty/tty_ldisc.c:313
+ #2: ffffffff94aa1878 (&port_lock_key){-.-.}-{2:2}, at: uart_port_lock_irqsave include/linux/serial_core.h:618 [inline]
+ #2: ffffffff94aa1878 (&port_lock_key){-.-.}-{2:2}, at: uart_write+0x10e/0x320 drivers/tty/serial/serial_core.c:604
+
+stack backtrace:
+CPU: 0 PID: 6662 Comm: syz-executor.4 Not tainted 6.9.0-rc4-next-20240418-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/27/2024
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x241/0x360 lib/dump_stack.c:114
+ check_noncircular+0x36a/0x4a0 kernel/locking/lockdep.c:2187
+ check_prev_add kernel/locking/lockdep.c:3134 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3253 [inline]
+ validate_chain+0x18cb/0x58e0 kernel/locking/lockdep.c:3869
+ __lock_acquire+0x1346/0x1fd0 kernel/locking/lockdep.c:5137
+ lock_acquire+0x1ed/0x550 kernel/locking/lockdep.c:5754
+ console_trylock_spinning kernel/printk/printk.c:1994 [inline]
+ vprintk_emit+0x3ec/0x770 kernel/printk/printk.c:2344
+ _printk+0xd5/0x120 kernel/printk/printk.c:2370
+ __report_bug lib/bug.c:195 [inline]
+ report_bug+0x346/0x500 lib/bug.c:219
+ handle_bug+0x3e/0x70 arch/x86/kernel/traps.c:239
+ exc_invalid_op+0x1a/0x50 arch/x86/kernel/traps.c:260
+ asm_exc_invalid_op+0x1a/0x20 arch/x86/include/asm/idtentry.h:621
+RIP: 0010:uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:605
+Code: 74 08 48 89 df e8 a0 9e be fc 48 83 3b 00 74 74 e8 05 4e 59 fc eb 97 e8 fe 4d 59 fc 45 31 e4 eb 08 e8 f4 4d 59 fc 45 31 ed 90 <0f> 0b 90 45 84 e4 74 0a e8 e3 4d 59 fc 45 31 f6 eb 84 e8 d9 4d 59
+RSP: 0018:ffffc90009fcf4b8 EFLAGS: 00010046
+RAX: ffffffff853d0f92 RBX: dffffc0000000000 RCX: 0000000000040000
+RDX: ffffc90013601000 RSI: 000000000001ba5f RDI: 000000000001ba60
+RBP: ffff88801f720f48 R08: 0000000000000003 R09: fffff520013f9e74
+R10: dffffc0000000000 R11: fffff520013f9e74 R12: 0000000000000000
+R13: 0000000000000246 R14: ffff88801f720be8 R15: ffffffff94aa1860
+ tnc_init drivers/net/hamradio/6pack.c:531 [inline]
+ sixpack_open+0x790/0xa80 drivers/net/hamradio/6pack.c:628
+ tty_ldisc_open drivers/tty/tty_ldisc.c:432 [inline]
+ tty_ldisc_reinit+0x2d4/0x4a0 drivers/tty/tty_ldisc.c:661
+ tty_reopen+0x20b/0x2d0 drivers/tty/tty_io.c:1366
+ tty_open_by_driver drivers/tty/tty_io.c:2082 [inline]
+ tty_open+0xa26/0xdf0 drivers/tty/tty_io.c:2135
+ chrdev_open+0x5b0/0x630 fs/char_dev.c:414
+ do_dentry_open+0x95a/0x1720 fs/open.c:955
+ do_open fs/namei.c:3650 [inline]
+ path_openat+0x289f/0x3280 fs/namei.c:3807
+ do_filp_open+0x235/0x490 fs/namei.c:3834
+ do_sys_openat2+0x13e/0x1d0 fs/open.c:1405
+ do_sys_open fs/open.c:1420 [inline]
+ __do_sys_openat fs/open.c:1436 [inline]
+ __se_sys_openat fs/open.c:1431 [inline]
+ __x64_sys_openat+0x247/0x2a0 fs/open.c:1431
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf5/0x240 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fd50cc7dea9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 20 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fd50d96c0c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 00007fd50cdabf80 RCX: 00007fd50cc7dea9
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: ffffffffffffff9c
+RBP: 00007fd50ccca4a4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 000000000000000b R14: 00007fd50cdabf80 R15: 00007ffeacd13b38
+ </TASK>
+WARNING: CPU: 0 PID: 6662 at drivers/tty/serial/serial_core.c:605 uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:605
+Modules linked in:
+CPU: 0 PID: 6662 Comm: syz-executor.4 Not tainted 6.9.0-rc4-next-20240418-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 03/27/2024
+RIP: 0010:uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:605
+Code: 74 08 48 89 df e8 a0 9e be fc 48 83 3b 00 74 74 e8 05 4e 59 fc eb 97 e8 fe 4d 59 fc 45 31 e4 eb 08 e8 f4 4d 59 fc 45 31 ed 90 <0f> 0b 90 45 84 e4 74 0a e8 e3 4d 59 fc 45 31 f6 eb 84 e8 d9 4d 59
+RSP: 0018:ffffc90009fcf4b8 EFLAGS: 00010046
+RAX: ffffffff853d0f92 RBX: dffffc0000000000 RCX: 0000000000040000
+RDX: ffffc90013601000 RSI: 000000000001ba5f RDI: 000000000001ba60
+RBP: ffff88801f720f48 R08: 0000000000000003 R09: fffff520013f9e74
+R10: dffffc0000000000 R11: fffff520013f9e74 R12: 0000000000000000
+R13: 0000000000000246 R14: ffff88801f720be8 R15: ffffffff94aa1860
+FS:  00007fd50d96c6c0(0000) GS:ffff8880b9400000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffd65b98000 CR3: 0000000011650000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ tnc_init drivers/net/hamradio/6pack.c:531 [inline]
+ sixpack_open+0x790/0xa80 drivers/net/hamradio/6pack.c:628
+ tty_ldisc_open drivers/tty/tty_ldisc.c:432 [inline]
+ tty_ldisc_reinit+0x2d4/0x4a0 drivers/tty/tty_ldisc.c:661
+ tty_reopen+0x20b/0x2d0 drivers/tty/tty_io.c:1366
+ tty_open_by_driver drivers/tty/tty_io.c:2082 [inline]
+ tty_open+0xa26/0xdf0 drivers/tty/tty_io.c:2135
+ chrdev_open+0x5b0/0x630 fs/char_dev.c:414
+ do_dentry_open+0x95a/0x1720 fs/open.c:955
+ do_open fs/namei.c:3650 [inline]
+ path_openat+0x289f/0x3280 fs/namei.c:3807
+ do_filp_open+0x235/0x490 fs/namei.c:3834
+ do_sys_openat2+0x13e/0x1d0 fs/open.c:1405
+ do_sys_open fs/open.c:1420 [inline]
+ __do_sys_openat fs/open.c:1436 [inline]
+ __se_sys_openat fs/open.c:1431 [inline]
+ __x64_sys_openat+0x247/0x2a0 fs/open.c:1431
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xf5/0x240 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fd50cc7dea9
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 20 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fd50d96c0c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 00007fd50cdabf80 RCX: 00007fd50cc7dea9
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: ffffffffffffff9c
+RBP: 00007fd50ccca4a4 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 000000000000000b R14: 00007fd50cdabf80 R15: 00007ffeacd13b38
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
