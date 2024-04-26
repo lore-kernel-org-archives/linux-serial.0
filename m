@@ -1,88 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA2612C7FB;
-	Fri, 26 Apr 2024 14:45:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E891E52A;
+	Fri, 26 Apr 2024 15:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714142756; cv=none; b=aig5X6MIXkzJoDGNUEXlYIgD/DSgthqFHQSg//JR3Dmn2CzvDStOYJNw7cEKNKJg8iqpflMkEogoNgIjFtWnO//xZPELHNroI3VDNDqtVtSVd/hWkJd22d9VYj/y7WMSu1yk4tSsdJTAVL271EIcCN5rSFdBMuWVN4IPGHxnq7M=
+	t=1714143629; cv=none; b=LFCGBRjIkmISJ9pTHzxnFVcX7XYIhUvR8ivRQdViuQ0smQlbzlLdEwLRz+KDhWfKojF9Y5ExxYSd57GYqUTSHUN/fO1VcCGlZAVZwpyfkw4+1c58ZbnmfiN/WjtDsPUPUnzyAmHRIUSBAbdsvddPu14jlgYXSXmTzP5oJ8mMt0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714142756; c=relaxed/simple;
-	bh=4kHshSLluo35vKBkcvlnt2An+iSygvE7sAOsh4y5pxQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m1KZIF+K6FDBZmYMtR7/J1lALs2WqCeA2TBEmP9KjcDVA/KvDUNoC+AcJ43PZSAUzgbd/M8kWi3HjbEzgEPM3H7D6YPu0mdFm+x664Gd4H30HkZ3xXx17H7ThUoei1aPcdbMXhBc8iwbVAHnaQIGuoXTOemUIgmPGzyH9PuyP/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XOzwoJxg; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714143629; c=relaxed/simple;
+	bh=D0JTVPMoItreQXaR98u8YlOOBXWYx6Lk1Qa1JuIAaSQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MKlDbrQbq3wo/pHel62V7lSLyWRGlwjYD4zzzKFVbPxisAMZGVL47QXc0gRtrMFiVGnUDbUDRmpc40OwM44ZeDLOUcneJs0qT7bO70dKg19Yts9/6Hc/qBJwjftatl5b1o/oC6V98KABPqpjbreCV0FSWTnEsEm4Bn5KLEIJY/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RMfGfSnX; arc=none smtp.client-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XOzwoJxg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714142755; x=1745678755;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4kHshSLluo35vKBkcvlnt2An+iSygvE7sAOsh4y5pxQ=;
-  b=XOzwoJxggAcUrb64m5pXySeaOcMaJGE7KNGOm0BejCQ5hiREsXgifjSu
-   VpcUclEB9Me/9n2vbPOS6SGnAx4go/rYuNd9nvnPujhboIrKI4POFVJgj
-   icLvppem1HbAkOjYDho7EmeiAufhgaDB8l5VsH7/jg61n+D+y1UIAL6pC
-   yC6h5PafYt1+7PMc+o6eKEGU0pREI94gKgF6Q+OslSCvonQhyDAOla5WX
-   1tUZDOboGR/MdOwTqvYdgHuAON0zC8y7qudhb/dOuzQ8Nm5tszOqPCQgF
-   IML93imtXW/M6ucPTY0EMMevqREPCmJH/KNoR1vRY1OnRCKip5eer/SFx
-   w==;
-X-CSE-ConnectionGUID: 8oDS4AMMSZCcaNui5d0lQw==
-X-CSE-MsgGUID: r3swzGasQpKnXxhgT14gNw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11056"; a="12813850"
-X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
-   d="scan'208";a="12813850"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 07:45:54 -0700
-X-CSE-ConnectionGUID: F5nX7GqTQGmqsppbDxe/5g==
-X-CSE-MsgGUID: R312I55TTYOS8yoBb1jLiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
-   d="scan'208";a="62916669"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 07:45:53 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s0Mph-00000001LiQ-3SGP;
-	Fri, 26 Apr 2024 17:45:49 +0300
-Date: Fri, 26 Apr 2024 17:45:49 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: lumingyindetect@126.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
-Subject: Re: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
-Message-ID: <Ziu-HUUE43xsjnia@smile.fi.intel.com>
-References: <20240426114716.1275085-1-lumingyindetect@126.com>
- <87d376e4-84f1-48c3-8c5d-955f706f3bfb@moroto.mountain>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RMfGfSnX"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-51967f75729so2603710e87.0;
+        Fri, 26 Apr 2024 08:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714143626; x=1714748426; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RI2DiQ7WK0ETjEb7x2y6HuwkQosPYs9rpRMVtAeop9s=;
+        b=RMfGfSnXsAevX68ExAyv3pObRfsEdEZEI/kx/kmebLl5eNYX7HIOooBVXhS2vZrnVD
+         21awBqdwaY4Sg5zO0u0YSQKglQFb+7qF4cXnhssqGi2cP4pR5MieG8zSLJx2KYk3CtaB
+         KTwtZUejAXZ7Usq3Q8wYexIhQcXjeQljYenOOyZ8dsqffKUKPXGew2tQLSsKiTTILbjj
+         dN7FQ1Oc8uedUADd+oH+jSSIovKZu6uDytEf4a42VKqBgPWvjB4sCiU7A9SQqcvTa8F2
+         uQ79exNqGwykp1/ddF9x7YK2N1HejC5LSIxr1wid7oQV3hFp+GkExHoeIAg6zb+zB/D6
+         A5Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714143626; x=1714748426;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RI2DiQ7WK0ETjEb7x2y6HuwkQosPYs9rpRMVtAeop9s=;
+        b=jEhU5byBQra2YdKDHU2VvJRZpTxt6gTGmkdg0gJCX8KXSMr4A2J1RoimqLgvcIjRqu
+         NRqpWkVD4JlFGhxfbdiN/r92adnIIu9WjO/Zv5ypVnCP35EdwRkzktscu0g9miOA0vG1
+         vZNDqsObh0vkQs6KRvE+jtQp6cVdTck1owBueMFwcBuCKocWfR4indinkdAmeO9i6mkS
+         MNhb1VSYoCQtBkrNm4WpcAaoEbVKbkQsI3/0qoOagYsMvjfg7veqqLijW9eis7dm5nZF
+         4a9U1QwznpiMdKOVMt0QBa2m8WVlCtCeb7mER0vJEUayWw8JzY+woWnxbUTUrhB2trl+
+         m/HA==
+X-Forwarded-Encrypted: i=1; AJvYcCVwOMO1wlDmxNZJmw+3KApagT4dUlCOx2lxoWomxaIknYPXwFwXihcfQH2ddACz4aVTG6FfD57FCU9K9DUcjQNliUmXukK6j5neP4Tv8BNpFhc80/LNHk7TP67H6RHnCkt5lixmUlaqq+5L
+X-Gm-Message-State: AOJu0YxurWazZGw5L2/jNZ7pl1p3Nq6+orZYlSmMJbm2/R2s6QadbT6s
+	/6YuxqB4XPlUH9/b44Grg5wihrrF7/p03fQJChUk0ItjH3X0fLQVHyRq1CcnBFfBKzi4xLzPElH
+	jKr2vELGieZvqOJmWiip6o3pE+G0=
+X-Google-Smtp-Source: AGHT+IEwD4iMuIADNunV7sRblpdAQlKFbRFk+5S1HncPH8Y25XFpKIsg9gfDB526o1V5pE7D74cG/adKVGl7SrTmgG4=
+X-Received: by 2002:a05:6512:4012:b0:51c:bc4f:2026 with SMTP id
+ br18-20020a056512401200b0051cbc4f2026mr1606484lfb.51.1714143625992; Fri, 26
+ Apr 2024 08:00:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87d376e4-84f1-48c3-8c5d-955f706f3bfb@moroto.mountain>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20240425183251.174412-1-rilian.la.te@ya.ru> <20240425183251.174412-2-rilian.la.te@ya.ru>
+ <Ziu7DpoHGLrURI_9@smile.fi.intel.com>
+In-Reply-To: <Ziu7DpoHGLrURI_9@smile.fi.intel.com>
+From: "Konstantin P." <ria.freelander@gmail.com>
+Date: Fri, 26 Apr 2024 18:02:48 +0300
+Message-ID: <CAF1WSuytbkoMfRotBiQyKHGKacwicSJtkSrbLis9UVwD83WVKQ@mail.gmail.com>
+Subject: Re: [PATCH v9 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
+To: Andy Shevchenko <andy@kernel.org>
+Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, conor@kernel.org, lkp@intel.com, 
+	vz@mleia.com, robh@kernel.org, jcmvbkbc@gmail.com, 
+	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net, 
+	ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Lech Perczak <lech.perczak@camlingroup.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 26, 2024 at 04:53:18PM +0300, Dan Carpenter wrote:
+On Fri, Apr 26, 2024 at 5:36=E2=80=AFPM Andy Shevchenko <andy@kernel.org> w=
+rote:
+>
+> On Thu, Apr 25, 2024 at 09:32:33PM +0300, Konstantin Pugin wrote:
+> > From: Konstantin Pugin <ria.freelander@gmail.com>
+> >
+> > When specifying flag SER_RS485_RTS_ON_SEND in RS485 configuration,
+> > we get the following warning after commit 4afeced55baa ("serial: core:
+> > fix sanitizing check for RTS settings"):
+> >
+> >     invalid RTS setting, using RTS_AFTER_SEND instead
+> >
+> > This results in SER_RS485_RTS_AFTER_SEND being set and the
+> > driver always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT=
+,
+> > which breaks some hardware using these chips.
+> >
+> > The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, so fix
+> > this by announcing support for RTS_ON_SEND.
+>
+> Greg KH, who is maintainer of TTY/serial subsystem, usually asks to separ=
+ate
+> fixes from new features. So, sending this patch separately may not only h=
+elp
+> him, but let's move forward with your stuff.
+>
 
-> > Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
-> 
-> This is the wrong hash and the format is wrong.  It should be:
-> 
-> Fixes: 254cc7743e84 ("serial: 8250_lpss: Switch over to MSI interrupts")
-
-Since you are here, just pay attention that this does NOT fix anything
-as it uses pcim_enable_device(). I hope smatch won't stumble over this
-and produce false positives.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Do I need to increase the version number in split send? And if I need
+to do so, then how I should do it? Only on new driver? Or only on fix?
+Should I CC linux-stable in fix patch?
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
