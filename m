@@ -1,92 +1,106 @@
-Received: from m16.mail.126.com (m16.mail.126.com [117.135.210.7])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D69DC14533F;
-	Fri, 26 Apr 2024 11:48:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.7
+Received: from mout.web.de (mout.web.de [212.227.15.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C74F14535C;
+	Fri, 26 Apr 2024 12:29:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714132129; cv=none; b=WWhMHRqQHVS7o/onLywucVsOPEUW8t14tQDKSla1uBlKabwFUz2pJTMuik/ahb1g+B8e51wB4CxL09UDXlsgBfhKze4ZmLXDQxC8JUFfcpCqTc2eUYrqxjV0t8fJ3bmUma9zPdnsDC/Q0+d3l2B2gGfsxQAgBWKtI7r6/MFvsIk=
+	t=1714134558; cv=none; b=KDede91p+vC/O5Wg5xWS6w21+wzInr5mQZUez3UZw6Tr0rQBLTH1yQDa9hu+2Y0IEDajJYGardPhXkMbOk2DcVNZjlZ3jUVx6inUz+YUdnnqkP9kDPf4CIxl6rus8WaumI0Tvej8VtzL5lapUOTE37eH8rNXIJdlJWTOiez7JN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714132129; c=relaxed/simple;
-	bh=/SN/zjSnuky3OM1kz6zYORox+mvKrXnMtsKEX2ub648=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=dJJnq4s0RUWdDg/5iOgKlLIw8XnCfXPaeG4zN5Mi3DSPsP91PtNp6jcZd+Qz/HflkdAYeTC8AoWSVxFDrykVDJfrQM9WrrxkKhL3eITEmVl2IEX6OuyGF4FXJRhv08atW6hmbNKUHjF8wKKZVHjt8pXC5QP2tNXZEYcXUmKJThg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=bTqjKFnl; arc=none smtp.client-ip=117.135.210.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+	s=arc-20240116; t=1714134558; c=relaxed/simple;
+	bh=H4p73NShfY5YEqWp7dPCAHt3mIwIFXwsuZPdnZOnwYc=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=NQm42F/rtqU0y8x73aNIgW/YljeYp8kobLar3CArNxZigFCe6ydeMeugCH/3HhcoGIWq4cmhVlH1VRdVDm8ggkbWha7G1tlGGmXU2ynKmvHygtG9Ra57D0x0foganLqC8OxGAvEGxCRvr6mX9kudccdH8oxTtJaArjA29oifR/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=q4EABXFn; arc=none smtp.client-ip=212.227.15.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="bTqjKFnl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6MWsS
-	mdYALQgj2DpgEGwlSeW/uW9ibfcAZbE4CpfAhE=; b=bTqjKFnlbpEgmyGJD3kez
-	tEyy0qG8mJmp4HY0TM6auVKvLRAhvE3bp+WTpY4CLNP/NvHvxYjbxDX78/zN+Va8
-	Wouq83fnBygu0yRrLYx0dMftaFio5GXshrbyX6CsxB2BT8Zclkr87AK9EwGKj4j8
-	n15ny4dZl0VkbN0rNBj1AU=
-Received: from localhost.localdomain (unknown [111.198.54.11])
-	by gzga-smtp-mta-g1-0 (Coremail) with SMTP id _____wD3f2tGlCtmh+bjBQ--.51640S2;
-	Fri, 26 Apr 2024 19:47:19 +0800 (CST)
-From: lumingyindetect@126.com
-To: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: ilpo.jarvinen@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
-Subject: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
-Date: Fri, 26 Apr 2024 12:47:16 +0100
-Message-Id: <20240426114716.1275085-1-lumingyindetect@126.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="q4EABXFn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1714134525; x=1714739325; i=markus.elfring@web.de;
+	bh=mST+U+wJ6B+mYy57rbG1uACdL69LsS+O3Z/CbYAv0JU=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=q4EABXFnG7Gexe7YQbV/SxHcb8p68+yWYEecI7nzT3pzxaTW9SYDoRKxFtA5t0Vb
+	 D4fjPL6A1vffMLxFburoAjTnXKU2EjGRLbOjZdR8QsiKQbCXpW+puTAOQPs/LezXm
+	 kLSQU685FeA4ZAzheYsMnbVnVnIHKogAu00V9BhPVC/ozhVwGRWFWCZ/l0sCkjSjj
+	 XKjz7wMlqYPNImHE/zgAs18H7mYeba6yk3J2MeBc+rt/jUs/mCnHIVFpGScNuR8AG
+	 aVabMd7mcmqTUXuq5WJRiA8HV+ZvQVA8dRgEZ0ftIJTQHvAPA8TVYLTQ4vCS05vw0
+	 NTOqRnC+sip3q81BoQ==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.21] ([94.31.85.95]) by smtp.web.de (mrweb005
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1N4eGJ-1siZB40xrb-00vGRE; Fri, 26
+ Apr 2024 14:28:45 +0200
+Message-ID: <42c5d1f0-d16a-483b-8bb1-4c5768aa3a8c@web.de>
+Date: Fri, 26 Apr 2024 14:28:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3f2tGlCtmh+bjBQ--.51640S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Cw45Zr15XFW8CF45tw43Jrb_yoW8Aw1DpF
-	s0kF9IyFyFqFy2gw1UAr4qqr1rAFZ7Xa47CrZrK3sI9FZFyFn3tFn3t34SyF18XrZ5tFy2
-	va1jyF45Aa4UJaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bbJ5rUUUUU=
-X-CM-SenderInfo: poxpx0hj1l0vphwhu3a6rslhhfrp/1tbiEAfM9mVLbFgvQQABsY
+User-Agent: Mozilla Thunderbird
+To: lumingyindetect@126.com, linux-serial@vger.kernel.org,
+ kernel-janitors@vger.kernel.org
+Cc: LKML <linux-kernel@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Jiri Slaby <jirislaby@kernel.org>
+References: <20240426114716.1275085-1-lumingyindetect@126.com>
+Subject: Re: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20240426114716.1275085-1-lumingyindetect@126.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:K0LIFsUWA2FDQcBUvUBsrmBxoRuc2xMc+8BbJxJCbdF3i89gYsF
+ 9JA6MRNdjpgs0PYw4y+BQOYyF4/HiU5YcFrUn7kr1I5OetyYxtAacJFehMEqerevYi7fNht
+ ZiQ4/fIiDjZVYxf/o0CM36ZvVFF9soYFUw8l4x7/uAsVIcKl/YTi2zSmGe4bVM3TYvnxYA7
+ cHV5ymDNWdnT9D6mnoRYQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:ciZyN5Jlt8Q=;C/Iie5z125EquYpm2Q+F+1hhRhp
+ aGR3YA2W4MZY1uaMUVFv8JV6rfuEvho3081LHhC/lsxsrPqf3YIB98uKcCqoIjEYyK9WyBqDA
+ aH0IXzswPU4b++xjmqJJdXmFmhV0Zb9IHoyFMEZT7ruP88B12Bmw4clemsR+WGDhbKiVaQIXl
+ LgiJUC06k5aGDWFTqmjRBof1DqVNJkUR138NlaIYb3aPrPVOztN2MwylFYuarUT1ZZ+COjKz4
+ AjkLJWuHBNzzZs6syH3uy2d8iOx/XE6/TjTOC6iyv3j3oo8ZRstx7gVC3GY4nCvrtY6PQ56WT
+ 30qcmFx81DMJxFZ3AybdBz5IxJKUravLMt6Ds0vesZCnhJ9aN+ojoJcA4BDM7V/LlxKWzxjas
+ B+/AJMo+RvbnR8gl6UlbC6y2Ss/nx4AN8/e599niUqbXdqVz+twj2m3J1KttrP58uEoGaNBgd
+ d49vgpgx5NgUfKSwhuVouRwf9hssrB7Xly82/7qz/QicrSQvlZlfts1q7vKJPh3ry4EC1pViA
+ ScT9fSK2lqrMbpnJZ5IRWOES9Vm9iss69+KXmuBSslYo3KxC9CgT+lIAt2KuqpyNnb+U2uMOI
+ NWLR0iLEcXoj9ESAjxN67+1mtF2gnjrC4zPU5sssk7kltZRyyQZffocVUywvZVHCCKvKgKGZw
+ t5lza2RksqXK0nSejuudvvU4U0HATorWOIDgOCeSufkUpUjsQifqMhkTK0aEYvvCRBqWvtPJR
+ 37A70Niu5iuu4EE9b/QlSU76IlneLCnoeQKRD5Cd9AivrP2faHyMehWz2UDNI/jogcgGYNVyZ
+ E2tztddjhlApeKqWtPRLI1oUumG0RQT5jnRCJoxQ0IsuU=
 
-From: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+=E2=80=A6
+> In the lpss8250_probe() function, I added a label named "free_irq_vector=
+s" to release the dynamically allocated memory region pointed to by the va=
+riable pdev, and replaced the two return statements mentioned above with g=
+oto statements to this label.
 
-In the execution logic of the lpss8250_probe() function, the function may directly return via a return statement at either line 347 or line 351.
-Unlike lines 357 or 361, where the return statement is used directly without releasing the dynamically allocated memory region pointed to by the variable pdev, causing a memory leak of the variable pdev.
-In the lpss8250_probe() function, I added a label named "free_irq_vectors" to release the dynamically allocated memory region pointed to by the variable pdev, and replaced the two return statements mentioned above with goto statements to this label.
+* Please improve the word wrapping according to line length preferences
+  for change descriptions.
 
-Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
+* Please choose corresponding imperative wordings.
 
-Signed-off-by: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
----
- drivers/tty/serial/8250/8250_lpss.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index c3cd6cb9ac80..fa9fd4dc86c7 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -344,11 +344,11 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	uart.port.mapbase = pci_resource_start(pdev, 0);
- 	uart.port.membase = pcim_iomap(pdev, 0, 0);
- 	if (!uart.port.membase)
--		return -ENOMEM;
-+		goto free_irq_vectors;
- 
- 	ret = lpss->board->setup(lpss, &uart.port);
- 	if (ret)
--		return ret;
-+		goto free_irq_vectors;
- 
- 	dw8250_setup_port(&uart.port);
- 
-@@ -367,6 +367,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- err_exit:
- 	lpss->board->exit(lpss);
-+free_irq_vectors:
- 	pci_free_irq_vectors(pdev);
- 	return ret;
- }
--- 
-2.25.1
+> Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
 
+Please add a commit subject for this tag.
+
+
+> Signed-off-by: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+
+I find the author email addresses suspicious according to the Developer's =
+Certificate of Origin.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
+cumentation/process/submitting-patches.rst?h=3Dv6.9-rc5#n398
+
+Would other email addresses be more appropriate for desired patch communic=
+ation?
+
+Regards,
+Markus
