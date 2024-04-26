@@ -1,92 +1,157 @@
-Received: from m16.mail.126.com (m16.mail.126.com [117.135.210.7])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6880D147C95;
-	Fri, 26 Apr 2024 13:41:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.7
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01053147C63;
+	Fri, 26 Apr 2024 13:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714138871; cv=none; b=g+jBfQ1iydTBX/kLJsabMPmuZ/43AxUIDrZ8G9Xd5xehiV94xNuBtlGk7YfkhenENRHNr1mIl/GWuiCkyp80hDenj9Stgts97P914uIS5biAoLsLGUERrivcLdE+CN0rciVpTXiaEqYQuEF2Z+52ic2aNm6cO0T+PFyTCGI36ao=
+	t=1714139115; cv=none; b=B6wpRB1HBxd76b5g9kiYgKdz+qh5URq3GEPAWPW3c+RR2RI1frl6sVDH/INX2BV5c8lQ2V4+GV/b9A3N1zu6NjY5gPQqyBWscCBRQb8WaZLxiL5Z6W7LgjOBGfZG9v1geRVxsAYHItvg/Qo9SJNfXZUx9CJHN1qIZnEF5g03tTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714138871; c=relaxed/simple;
-	bh=UXjzwyHD3xU06AXyGFYmDxIwYgvujORr2saZ8aiLHQY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QiRRV3nWMSz3QGHiq9cc0iAW3jafI5MpR4MYfVMMsolJbEBp52i824GBp8OolV9VhTjp5UEuCpF9G6P/4NUkW0+3dun7p3jQDMoat+KrcSfRnVSWvrm/ICKlYCiERcdgq6XfQHBgO8DMeGPMsiL2fobg5PnOXXCOcdQ/peJ2Nw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=kMhA+QR7; arc=none smtp.client-ip=117.135.210.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+	s=arc-20240116; t=1714139115; c=relaxed/simple;
+	bh=OzT1/9oISTl67fDxCXw/M+/aEXiDIcb72ojGQ3tkaX4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=kRGRbGY5x1apUbt5LNxzZnvpytnJIUZ/QMq+7kOYrhO+XOsfZV4sRJhGz2QxMHgj/AtraA4KL/WigwW/VssgQcCBt1qvifHpMFbQyOLGw+iQNLWvxMEqM/0DDKzznHkEESTW9VTGjG2l99i8NP0B9egkrJnrOkg7Za3sBkO42pc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DEUL+j9E; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="kMhA+QR7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=AocrA
-	75mqcRUL0QWSUoM3dEaQjCJ8gV8EQHfgGHvBrE=; b=kMhA+QR7pv2AWw5e3Q7yi
-	qXUpN6oisGUAxmMLrGJZYlPua9etZBOrZpzTVLDhAwsgUUnRG1ueNKZGhLG/uMtD
-	gQKwCT8VwpjRXTDiGLxQUnY7DM1jAftB/rif5mC0Kb9NtNL9Wni6nHijgc/t+Og4
-	elXEy4XbmvMNUB560Q7anc=
-Received: from localhost.localdomain (unknown [111.198.54.11])
-	by gzga-smtp-mta-g1-5 (Coremail) with SMTP id _____wDnL5KwritmM0DuBQ--.25861S2;
-	Fri, 26 Apr 2024 21:40:01 +0800 (CST)
-From: lumingyindetect@126.com
-To: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: ilpo.jarvinen@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.or,
-	LuMingYin <lumingyindetect@126.com>
-Subject: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
-Date: Fri, 26 Apr 2024 14:39:59 +0100
-Message-Id: <20240426133959.1294012-1-lumingyindetect@126.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DEUL+j9E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714139114; x=1745675114;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=OzT1/9oISTl67fDxCXw/M+/aEXiDIcb72ojGQ3tkaX4=;
+  b=DEUL+j9EW2ZyAca5/h45bVqBGXkU1uTtiKuHHKH0t+nkOvTnyvTSgvrk
+   K1yfCYeYfeedWRm0vy1URxX8RRO9GGBpU+N4trQ96I1rl+fVMsqBV5hUg
+   hk163uOzBUIwPMS3rtOa3EP91LP6pHJVZIcj1xnSndOlnbETYQD8shGxw
+   hg3YZYz7EG6r508ANu8A4D7auWX2aUwmR/LIa63+jvKSLXIQjaV2DH08f
+   aHyIT8oegbGaCCNphkff8aFKz8dlTP6VaBvij0zf9Q65ATHdRy5NHHgbs
+   qbJborVwMAYBCePaAAZg4Qisioac3CQLQEkWnsx4RiU83BzaOVSCjDJYw
+   Q==;
+X-CSE-ConnectionGUID: 12HfRcLeSByO7NUpW0UYfQ==
+X-CSE-MsgGUID: q6WpUZ6nQlmtnkXjV3W/og==
+X-IronPort-AV: E=McAfee;i="6600,9927,11056"; a="9987225"
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="9987225"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 06:45:13 -0700
+X-CSE-ConnectionGUID: tWv2y6TqT123dc69raLdfQ==
+X-CSE-MsgGUID: Y9QkQZEYRN6sdY3fVDTSuQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="56350305"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.43])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 06:45:11 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 26 Apr 2024 16:45:06 +0300 (EEST)
+To: lumingyindetect@126.com
+cc: LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+Subject: Re: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
+In-Reply-To: <20240426114716.1275085-1-lumingyindetect@126.com>
+Message-ID: <c6df7432-a76a-54e3-32f8-a94e9a18a3a3@linux.intel.com>
+References: <20240426114716.1275085-1-lumingyindetect@126.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDnL5KwritmM0DuBQ--.25861S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KryfAFW5WF1UJFW8GF4fuFg_yoW8XFWDpF
-	s0kFsIkFy0q3WIga40yr4jqF15uFWxX347CrZrC3sI9rZIyF97tF1ftFy7tF10grWktFnF
-	ya1UtF45Ca4UXFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07js0edUUUUU=
-X-CM-SenderInfo: poxpx0hj1l0vphwhu3a6rslhhfrp/1tbiEBXM9mVLbFpVzQAAs-
+Content-Type: text/plain; charset=US-ASCII
 
-From: LuMingYin <lumingyindetect@126.com>
+On Fri, 26 Apr 2024, lumingyindetect@126.com wrote:
 
-The return statements at line 347 and line 351 in the lpss8250_probe() function result in a memory leak of the variable pdev.
-Add a label named free_irq_vectors in the lpss8250_probe() function to release the memory area pointed to by pdev.
-Modify the two return statements mentioned above to jump to the label "free_irq_vectors" instead.
+Hi,
 
-Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67 ("serial: 8250_lpss: fix memory in lpss8250_probe()")
+Your patch should have had now (the version is missing):
 
-Signed-off-by: LuMingYin <lumingyindetect@126.com>
----
- drivers/tty/serial/8250/8250_lpss.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Subject: [PATCH v3] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
 
-diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
-index c3cd6cb9ac80..fa9fd4dc86c7 100644
---- a/drivers/tty/serial/8250/8250_lpss.c
-+++ b/drivers/tty/serial/8250/8250_lpss.c
-@@ -344,11 +344,11 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	uart.port.mapbase = pci_resource_start(pdev, 0);
- 	uart.port.membase = pcim_iomap(pdev, 0, 0);
- 	if (!uart.port.membase)
--		return -ENOMEM;
-+		goto free_irq_vectors;
- 
- 	ret = lpss->board->setup(lpss, &uart.port);
- 	if (ret)
--		return ret;
-+		goto free_irq_vectors;
- 
- 	dw8250_setup_port(&uart.port);
- 
-@@ -367,6 +367,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- err_exit:
- 	lpss->board->exit(lpss);
-+free_irq_vectors:
- 	pci_free_irq_vectors(pdev);
- 	return ret;
- }
+> From: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+> 
+> In the execution logic of the lpss8250_probe() function, the function may directly return via a return statement at either line 347 or line 351.
+
+Don't refer to line numbers and state too obvious things, effectively cut 
+the "via a return statement at either ..." part out.
+
+Like I already mentioned, there should be newline characters so that you 
+don't exceed 75 characters.
+
+> Unlike lines 357 or 361, where the return statement is used directly without releasing the dynamically allocated memory region pointed to by the variable pdev, causing a memory leak of the variable pdev.
+
+Perhaps add part of this into the previous sentence (and again leave the 
+talk about line numbers and return statement out of it, we all know that 
+returning is done via return statement so it's uninteresting detail):
+
+"... may directly return without releasing ..."
+
+> In the lpss8250_probe() function, I added a label named "free_irq_vectors" to release the dynamically allocated memory region pointed to by the variable pdev, and replaced the two return statements mentioned above with goto statements to this label.
+
+This is quite verbose way to state what can be read from the patch itself. 
+Perhaps something like this can be used as replacement:
+
+"Fix the issue by rolling back irq vector allocation."
+
+> Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
+
+This gives you some examples:
+
+git log | grep 'Fixes:'
+
+Further information also available under Documentation/process/.
+
+> 
+
+Don't leave empty line here between Fixes and S-o-b tags.
+
+> Signed-off-by: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+> ---
+
+And here you should have listed changes you've made for each version (see 
+ML archives for examples):
+
+v3:
+- ...
+
+v2:
+- ...
+
+>  drivers/tty/serial/8250/8250_lpss.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+> index c3cd6cb9ac80..fa9fd4dc86c7 100644
+> --- a/drivers/tty/serial/8250/8250_lpss.c
+> +++ b/drivers/tty/serial/8250/8250_lpss.c
+> @@ -344,11 +344,11 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	uart.port.mapbase = pci_resource_start(pdev, 0);
+>  	uart.port.membase = pcim_iomap(pdev, 0, 0);
+>  	if (!uart.port.membase)
+> -		return -ENOMEM;
+> +		goto free_irq_vectors;
+>  
+>  	ret = lpss->board->setup(lpss, &uart.port);
+>  	if (ret)
+> -		return ret;
+> +		goto free_irq_vectors;
+>  
+>  	dw8250_setup_port(&uart.port);
+>  
+> @@ -367,6 +367,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  err_exit:
+>  	lpss->board->exit(lpss);
+> +free_irq_vectors:
+>  	pci_free_irq_vectors(pdev);
+>  	return ret;
+>  }
+> 
+
 -- 
-2.25.1
+ i.
 
