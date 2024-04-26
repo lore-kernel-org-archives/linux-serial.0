@@ -1,55 +1,55 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0E891E52A;
-	Fri, 26 Apr 2024 15:00:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F37824B3;
+	Fri, 26 Apr 2024 15:07:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714143629; cv=none; b=LFCGBRjIkmISJ9pTHzxnFVcX7XYIhUvR8ivRQdViuQ0smQlbzlLdEwLRz+KDhWfKojF9Y5ExxYSd57GYqUTSHUN/fO1VcCGlZAVZwpyfkw4+1c58ZbnmfiN/WjtDsPUPUnzyAmHRIUSBAbdsvddPu14jlgYXSXmTzP5oJ8mMt0M=
+	t=1714144058; cv=none; b=OEyCG8xAJHrBorc/jasCoSVx9rTrTDj/6tRe61ySD7X6ZxkWReqQ47yNckTca2a9uMBnDcJMXXEsaLyCno6NxY50gEMcJwSrdCU+MKQyKE+Ds8Pil+avsEsRlzZ7oqZ6Xk2MMCbn0grdRbDn0o+bzxp3rOwVlgQxsa4IAm7d7lE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714143629; c=relaxed/simple;
-	bh=D0JTVPMoItreQXaR98u8YlOOBXWYx6Lk1Qa1JuIAaSQ=;
+	s=arc-20240116; t=1714144058; c=relaxed/simple;
+	bh=JaZKF4JEW8k/ojMAq3do6VQz5UoEqr8o/qtVLZD0DZ4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MKlDbrQbq3wo/pHel62V7lSLyWRGlwjYD4zzzKFVbPxisAMZGVL47QXc0gRtrMFiVGnUDbUDRmpc40OwM44ZeDLOUcneJs0qT7bO70dKg19Yts9/6Hc/qBJwjftatl5b1o/oC6V98KABPqpjbreCV0FSWTnEsEm4Bn5KLEIJY/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RMfGfSnX; arc=none smtp.client-ip=209.85.167.46
+	 To:Cc:Content-Type; b=hmB5QrCARYEt7kowQQVVZpjf3Fvasadk1FsPZqGyktdnENbemTc3/L8ui51O+0P4ejXqtfK7rIA3VWPkjKEMYYshO0mcp52Iu5//h6CP+J6qytZJqTzoP4Zha5RNLxE2R+WNLBNTJH91sJEcmVJOXZbakL1Vq7gQXveE/7oO9hA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SwZ3W+EH; arc=none smtp.client-ip=209.85.208.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RMfGfSnX"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-51967f75729so2603710e87.0;
-        Fri, 26 Apr 2024 08:00:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SwZ3W+EH"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-57222fc625aso2825174a12.3;
+        Fri, 26 Apr 2024 08:07:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714143626; x=1714748426; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1714144055; x=1714748855; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RI2DiQ7WK0ETjEb7x2y6HuwkQosPYs9rpRMVtAeop9s=;
-        b=RMfGfSnXsAevX68ExAyv3pObRfsEdEZEI/kx/kmebLl5eNYX7HIOooBVXhS2vZrnVD
-         21awBqdwaY4Sg5zO0u0YSQKglQFb+7qF4cXnhssqGi2cP4pR5MieG8zSLJx2KYk3CtaB
-         KTwtZUejAXZ7Usq3Q8wYexIhQcXjeQljYenOOyZ8dsqffKUKPXGew2tQLSsKiTTILbjj
-         dN7FQ1Oc8uedUADd+oH+jSSIovKZu6uDytEf4a42VKqBgPWvjB4sCiU7A9SQqcvTa8F2
-         uQ79exNqGwykp1/ddF9x7YK2N1HejC5LSIxr1wid7oQV3hFp+GkExHoeIAg6zb+zB/D6
-         A5Ug==
+        bh=7rWg8uWsM6rcF9oX3+JxLs1amXLCiiE4r+xkrX8csuA=;
+        b=SwZ3W+EHoeQY9JaYfaYn626r7yOm+2qoNQDODjShX34b4ci7gZgcosPzIfqa3UchP/
+         QSRS2R3tN6TDygm8Uzvt7n66mVN6dS1KsNSCjFfCP0wOu68xAiuWUY+xKbqFYzy9Pm3F
+         RAeEPQXCq6qxV5MumYZEQOpAgIwclR/c2HwCvcd5CpgY/3afShw49CQ0CLi+QSxZlIyp
+         ys9RsHZBzeaypUATFwV6YoN2NWkeXoL7eg625dNdqiu4b/tDMDT5VI0DKORFR8fL+Rpv
+         yENAEQ7jFLohEt7ry7+8b1bc3DtbtjCbZrpArsFLHdiDMN04lAbFmVbFL85tXq+3W7L4
+         xyRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714143626; x=1714748426;
+        d=1e100.net; s=20230601; t=1714144055; x=1714748855;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=RI2DiQ7WK0ETjEb7x2y6HuwkQosPYs9rpRMVtAeop9s=;
-        b=jEhU5byBQra2YdKDHU2VvJRZpTxt6gTGmkdg0gJCX8KXSMr4A2J1RoimqLgvcIjRqu
-         NRqpWkVD4JlFGhxfbdiN/r92adnIIu9WjO/Zv5ypVnCP35EdwRkzktscu0g9miOA0vG1
-         vZNDqsObh0vkQs6KRvE+jtQp6cVdTck1owBueMFwcBuCKocWfR4indinkdAmeO9i6mkS
-         MNhb1VSYoCQtBkrNm4WpcAaoEbVKbkQsI3/0qoOagYsMvjfg7veqqLijW9eis7dm5nZF
-         4a9U1QwznpiMdKOVMt0QBa2m8WVlCtCeb7mER0vJEUayWw8JzY+woWnxbUTUrhB2trl+
-         m/HA==
-X-Forwarded-Encrypted: i=1; AJvYcCVwOMO1wlDmxNZJmw+3KApagT4dUlCOx2lxoWomxaIknYPXwFwXihcfQH2ddACz4aVTG6FfD57FCU9K9DUcjQNliUmXukK6j5neP4Tv8BNpFhc80/LNHk7TP67H6RHnCkt5lixmUlaqq+5L
-X-Gm-Message-State: AOJu0YxurWazZGw5L2/jNZ7pl1p3Nq6+orZYlSmMJbm2/R2s6QadbT6s
-	/6YuxqB4XPlUH9/b44Grg5wihrrF7/p03fQJChUk0ItjH3X0fLQVHyRq1CcnBFfBKzi4xLzPElH
-	jKr2vELGieZvqOJmWiip6o3pE+G0=
-X-Google-Smtp-Source: AGHT+IEwD4iMuIADNunV7sRblpdAQlKFbRFk+5S1HncPH8Y25XFpKIsg9gfDB526o1V5pE7D74cG/adKVGl7SrTmgG4=
-X-Received: by 2002:a05:6512:4012:b0:51c:bc4f:2026 with SMTP id
- br18-20020a056512401200b0051cbc4f2026mr1606484lfb.51.1714143625992; Fri, 26
- Apr 2024 08:00:25 -0700 (PDT)
+        bh=7rWg8uWsM6rcF9oX3+JxLs1amXLCiiE4r+xkrX8csuA=;
+        b=HVx6UD134JqT9R2dr2mzf9p3aXYpOJmg8rGNGYKbiad3PjFOWHgMd6ygj8mfysMGJM
+         hANeGCDBcwW+KeYn7FB+Jcq3QK1a66bFtBDzYtz09ksCDPMiNuOghJK5GRc0oWW2Vd9T
+         UaEIJmoQf1WaxWf3g+UKHjDueicY5n7fWxI8PnQjbM+r1BIpkuurw+eGhZiH2ZpaJymM
+         PXiyLex8Oge1bD9gpflyjL6mjgf4xBmKEO0/0PWGQbp6wBbCTKVg+zk7GWlsXAIh1PqF
+         IuL9y+CguY10mNvLhIV/SN3nQvWPxd20eJ3TUbsx9DptRWGrp91w751oAuIvifZ1CKI2
+         hLIA==
+X-Forwarded-Encrypted: i=1; AJvYcCV8Jvvj5QLD+JJisWQKbe9eJBNn47I/AJV8TFuqc5WFwCdD++uJuDS3kHZQ377d1H4Gf562WycDJfRXNCgym7CNgoZ+Rqrkel/VmeLHxErBupKp5sf2frQXLn0GFwsf/fn+IXV2QKWfC4Nq
+X-Gm-Message-State: AOJu0Yy5WY/2dRI5owHmOokXkaOd/qkYy00dESh8hD2EpJE+F4m3Nn3x
+	y/NL7G8sop/nVIIt5v7tqckXFpjURKzHDjZzelvDR35Em+ulKufO3CwJJNMLEWbOVcBB23cIvs3
+	hmx9ZfrrfZm+nLHNC417oY5mZg7w=
+X-Google-Smtp-Source: AGHT+IG+b5jQqydkBMnRRHIkfegkomqnpTN07A0Z4rwBk7VqX/iEX46D2h2+rvNoz6CRUjPHFonvwurAE/s/vshsEU0=
+X-Received: by 2002:a17:906:2356:b0:a52:696:5c6d with SMTP id
+ m22-20020a170906235600b00a5206965c6dmr2539333eja.37.1714144054844; Fri, 26
+ Apr 2024 08:07:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,56 +57,52 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20240425183251.174412-1-rilian.la.te@ya.ru> <20240425183251.174412-2-rilian.la.te@ya.ru>
- <Ziu7DpoHGLrURI_9@smile.fi.intel.com>
-In-Reply-To: <Ziu7DpoHGLrURI_9@smile.fi.intel.com>
-From: "Konstantin P." <ria.freelander@gmail.com>
-Date: Fri, 26 Apr 2024 18:02:48 +0300
-Message-ID: <CAF1WSuytbkoMfRotBiQyKHGKacwicSJtkSrbLis9UVwD83WVKQ@mail.gmail.com>
+ <Ziu7DpoHGLrURI_9@smile.fi.intel.com> <CAF1WSuytbkoMfRotBiQyKHGKacwicSJtkSrbLis9UVwD83WVKQ@mail.gmail.com>
+In-Reply-To: <CAF1WSuytbkoMfRotBiQyKHGKacwicSJtkSrbLis9UVwD83WVKQ@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 26 Apr 2024 18:06:58 +0300
+Message-ID: <CAHp75Vc9k8-LggzaHO+Qg2MgnmxA3purw9_YcVhAWC=S0eND3Q@mail.gmail.com>
 Subject: Re: [PATCH v9 1/3] serial: sc16is7xx: announce support of SER_RS485_RTS_ON_SEND
-To: Andy Shevchenko <andy@kernel.org>
-Cc: Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, conor@kernel.org, lkp@intel.com, 
-	vz@mleia.com, robh@kernel.org, jcmvbkbc@gmail.com, 
-	nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, corbet@lwn.net, 
-	ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Lech Perczak <lech.perczak@camlingroup.com>, 
+To: "Konstantin P." <ria.freelander@gmail.com>
+Cc: Andy Shevchenko <andy@kernel.org>, Konstantin Pugin <rilian.la.te@ya.ru>, krzk@kernel.org, 
+	conor@kernel.org, lkp@intel.com, vz@mleia.com, robh@kernel.org, 
+	jcmvbkbc@gmail.com, nicolas.ferre@microchip.com, manikanta.guntupalli@amd.com, 
+	corbet@lwn.net, ychuang3@nuvoton.com, u.kleine-koenig@pengutronix.de, 
+	Maarten.Brock@sttls.nl, Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Lech Perczak <lech.perczak@camlingroup.com>, 
 	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 26, 2024 at 5:36=E2=80=AFPM Andy Shevchenko <andy@kernel.org> w=
-rote:
->
-> On Thu, Apr 25, 2024 at 09:32:33PM +0300, Konstantin Pugin wrote:
-> > From: Konstantin Pugin <ria.freelander@gmail.com>
-> >
-> > When specifying flag SER_RS485_RTS_ON_SEND in RS485 configuration,
-> > we get the following warning after commit 4afeced55baa ("serial: core:
-> > fix sanitizing check for RTS settings"):
-> >
-> >     invalid RTS setting, using RTS_AFTER_SEND instead
-> >
-> > This results in SER_RS485_RTS_AFTER_SEND being set and the
-> > driver always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT=
-,
-> > which breaks some hardware using these chips.
-> >
-> > The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, so fix
-> > this by announcing support for RTS_ON_SEND.
->
-> Greg KH, who is maintainer of TTY/serial subsystem, usually asks to separ=
-ate
-> fixes from new features. So, sending this patch separately may not only h=
-elp
-> him, but let's move forward with your stuff.
->
+On Fri, Apr 26, 2024 at 6:00=E2=80=AFPM Konstantin P. <ria.freelander@gmail=
+.com> wrote:
+> On Fri, Apr 26, 2024 at 5:36=E2=80=AFPM Andy Shevchenko <andy@kernel.org>=
+ wrote:
+> > On Thu, Apr 25, 2024 at 09:32:33PM +0300, Konstantin Pugin wrote:
 
-Do I need to increase the version number in split send? And if I need
-to do so, then how I should do it? Only on new driver? Or only on fix?
-Should I CC linux-stable in fix patch?
-> --
-> With Best Regards,
-> Andy Shevchenko
+...
+
+> > Greg KH, who is maintainer of TTY/serial subsystem, usually asks to sep=
+arate
+> > fixes from new features. So, sending this patch separately may not only=
+ help
+> > him, but let's move forward with your stuff.
 >
->
+> Do I need to increase the version number in split send?
+
+Nope, the opposite, i.e. drop it to v1 (and mention in the comments
+area, that's after the cutter '---' line, that it's a split from this
+series).
+
+>  And if I need
+> to do so, then how I should do it? Only on new driver? Or only on fix?
+> Should I CC linux-stable in fix patch?
+
+Everything else is documented:
+https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+
+--=20
+With Best Regards,
+Andy Shevchenko
