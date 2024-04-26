@@ -1,173 +1,89 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0982714831E;
-	Fri, 26 Apr 2024 14:08:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD93B1FC4;
+	Fri, 26 Apr 2024 14:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714140492; cv=none; b=Sko1lQ+OPTNSxa3sjA7Wo0LOkHFP5mJnjukJzbp7xmydCLI/noOIa8/m4n85HCie6nAoxxrm2/3VVj7YuTcJhEDfFEzYX23rGkJrp0kwolHq+FOA2g5qSG+MOQsmzWYe16JHJwWCX3eTgZYltgyBGwwKCB8NwsnPBEO1kwEabBw=
+	t=1714141977; cv=none; b=cZX8NlbCiE0tribtFeqvWeeDcOcuF2OF96laU/CgslLLJuAlJNGys/ZapxUph82MbvCRVHE0w2DTKgUqeb5bGSaCdTUIv0vzcqjsmXaBFmIZAOAVeRmH23/4jeosaSafL58aYVuDAkJiA/ZvuzdN3jf3nJcUggmI6F//GHsh3QA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714140492; c=relaxed/simple;
-	bh=+aTLzk7JOk81DejGi5QpW5fiZbYuHYRSeE08utfOlpM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ezuqWcmmDmLdOr3E6OVf1+dYyFg84IPJtDlE1QcIH9Mp9hm9rPymTFfYnRAZEqmZrG1Gp3TWtCTs8G0UNCCtHBjCqw/rI3V+jg1Z2aB0qqQFxpLpyDDcOYDIzZMsoEnUl2IeM5gVYmfVJ6RN79uYVJtvnBl21WekPdGWOiFPjQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JUK9bVTl; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JUK9bVTl"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a55ab922260so299403666b.3;
-        Fri, 26 Apr 2024 07:08:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714140489; x=1714745289; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=COQPJRSVyOS1oi1cYEIQpwZeWRGmcbcrGicpacT17Ik=;
-        b=JUK9bVTlHf27sNHRb1En1e8RbhI5ys1MbR1zs4pc0JK3hqAokQSoKJ5OoNqeyEf0BB
-         dfKJl6GVRwPxB7o4FQdHx8XZ4sVCqIqsCM/0vrlFgcahX01K2CqN6o8GjUrYrVKgClBw
-         ddxrOwIYTLzn8UIZFiXUmEFHDbAC0oAeVS52lLcTydg69Nq30yTC3WEM+18XRecu8X/L
-         /aZ5M9kNpSH+3iAteBSzsDw9By+l5cEfAfpIpoQd1VL4spL7ZhQB6bwJkuZlhIhxVn+S
-         CKJ/oI7wcrx9poTrAqIPJUF8np0ADzH0l8Tn73E41JEI1Skvri92koe1GrElOgg3aooy
-         SAeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714140489; x=1714745289;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=COQPJRSVyOS1oi1cYEIQpwZeWRGmcbcrGicpacT17Ik=;
-        b=i0/E6/sbjCFQcqgqfQScsoPNqoz3ISsqXYNOANxFnLOHTNfvnTfoh/MotSR1I/DJHf
-         k3XBagyOfCAIkLQsL+XcHt84dxi/VwnMdIWefeVY+ygxPTNZsDHTpLnBBC9m5au3DsJc
-         fBrABjFTNBTh2JROxrzJBaME3shfWLmFGa444WJt9a5uZblsMNwU3HXs3wXHfRZZp2A8
-         aFnCYzfyJ9JHk+WbrGRTrCiuPZJitTjEo3U96qu6bnFTqyoVJ9b3KwOCpQysTBdtJGPa
-         FY/WDMEJFEPBoT++f1efsG8H4lmhMuMcJt0MMkxYw4L8N+uDV7M8JoC1JukQInSJtIdN
-         ZhKg==
-X-Forwarded-Encrypted: i=1; AJvYcCWQkRKk+n7ZXljj4bJ2apFPcnYEYHEL9yVbrLRrMBFjf/Bmi8njTfa/VxavkepvEtFE4GqzLV8+M8Q4zruIE1Wci2R1uvpPG9yP6h/UZButsh15TbQlSzxcxvEczTHxesVnA4lu55u3mxNLyvZlmetJGf11AzC+Y3fMn/GpPPTTdIo+
-X-Gm-Message-State: AOJu0Yze5mvthN26TFu8WfpyxW71MCYomgs3AB+YIkqSs3t5jNW7KApL
-	YsIHGsAPEuUhAzqLNyeyDqkoMmqrrKwdF758CtAzedhK7QrSTo8ud2N9M1KxPJi08V9Z9tn8AZt
-	nofPPJOb9WiKEBBISxHeOn4JjkBinVXPB
-X-Google-Smtp-Source: AGHT+IFrPeGqCdDLMxEk/fY8rJBfvNVTkvVULlYAtdksblzM5U9eSQi9z1SXm8Oa1N1FNroV8Dn/+jnHkliqofKUqB4=
-X-Received: by 2002:a17:906:c182:b0:a55:59e6:13f5 with SMTP id
- g2-20020a170906c18200b00a5559e613f5mr2151094ejz.26.1714140488963; Fri, 26 Apr
- 2024 07:08:08 -0700 (PDT)
+	s=arc-20240116; t=1714141977; c=relaxed/simple;
+	bh=kuY2xevYet7iwELgIpHpbnhaszdDogTO2VH3y4LUsLo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UXBdB3pJFIHAqCyzwNWNl4n25OeF44ue9Pxh0uhwQbvRrn5GcVMW4mZm9DYeRUS1oDji+h1q2b1IT0PA0EBpq+fDkGEQSTmJtcRlanyMCx7HAj6oSwgJyoJ+UhGluWGxZtI+EWKqwAxJ59caxtGiUn5wNEG1+T+FoUCfVJblGN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
+X-CSE-ConnectionGUID: yGUG0yxnSCumv48uPnsVLQ==
+X-CSE-MsgGUID: TBbuBWBtTBq/zyWsfjiyKA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11056"; a="10092384"
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="10092384"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 07:32:55 -0700
+X-CSE-ConnectionGUID: 6nTkIPWhS2SY5XOJhJlJhg==
+X-CSE-MsgGUID: qZLUUijfTKOI8QBpnXYuXw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="25508048"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 07:32:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andy@kernel.org>)
+	id 1s0Md4-00000001LW3-3zOv;
+	Fri, 26 Apr 2024 17:32:46 +0300
+Date: Fri, 26 Apr 2024 17:32:46 +0300
+From: Andy Shevchenko <andy@kernel.org>
+To: Konstantin Pugin <rilian.la.te@ya.ru>
+Cc: krzk@kernel.org, conor@kernel.org, lkp@intel.com, vz@mleia.com,
+	robh@kernel.org, jcmvbkbc@gmail.com, nicolas.ferre@microchip.com,
+	manikanta.guntupalli@amd.com, corbet@lwn.net, ychuang3@nuvoton.com,
+	u.kleine-koenig@pengutronix.de, Maarten.Brock@sttls.nl,
+	Konstantin Pugin <ria.freelander@gmail.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Lech Perczak <lech.perczak@camlingroup.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v9 1/3] serial: sc16is7xx: announce support of
+ SER_RS485_RTS_ON_SEND
+Message-ID: <Ziu7DpoHGLrURI_9@smile.fi.intel.com>
+References: <20240425183251.174412-1-rilian.la.te@ya.ru>
+ <20240425183251.174412-2-rilian.la.te@ya.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240426135937.3810959-1-hugo@hugovil.com>
-In-Reply-To: <20240426135937.3810959-1-hugo@hugovil.com>
-From: "Konstantin P." <ria.freelander@gmail.com>
-Date: Fri, 26 Apr 2024 17:10:29 +0300
-Message-ID: <CAF1WSuy60hWPX5gnhg+uWYu6E=i6=Gn-wFcYKNrXKSqCZ54LAg@mail.gmail.com>
-Subject: Re: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
- using prescaler
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jon Ringle <jringle@gridpoint.com>, Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240425183251.174412-2-rilian.la.te@ya.ru>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Apr 26, 2024 at 4:59=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> =
-wrote:
->
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> When using a high speed clock with a low baud rate, the 4x prescaler is
-> automatically selected if required. In that case, sc16is7xx_set_baud()
-> properly configures the chip registers, but returns an incorrect baud
-> rate by not taking into account the prescaler value. This incorrect baud
-> rate is then fed to uart_update_timeout().
->
-> For example, with an input clock of 80MHz, and a selected baud rate of 50=
-,
-> sc16is7xx_set_baud() will return 200 instead of 50.
->
-> Fix this by first changing the prescaler variable to hold the selected
-> prescaler value instead of the MCR bitfield. Then properly take into
-> account the selected prescaler value in the return value computation.
->
-> Also add better documentation about the divisor value computation.
->
-> Fixes: dfeae619d781 ("serial: sc16is7xx")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> ---
->  drivers/tty/serial/sc16is7xx.c | 23 ++++++++++++++++++-----
->  1 file changed, 18 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7x=
-x.c
-> index 03cf30e20b75..dcd6c5615401 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -555,16 +555,28 @@ static bool sc16is7xx_regmap_noinc(struct device *d=
-ev, unsigned int reg)
->         return reg =3D=3D SC16IS7XX_RHR_REG;
->  }
->
-> +/*
-> + * Configure programmable baud rate generator (divisor) according to the
-> + * desired baud rate.
-> + *
-> + * From the datasheet, the divisor is computed according to:
-> + *
-> + *              XTAL1 input frequency
-> + *             -----------------------
-> + *                    prescaler
-> + * divisor =3D ---------------------------
-> + *            baud-rate x sampling-rate
-> + */
->  static int sc16is7xx_set_baud(struct uart_port *port, int baud)
->  {
->         struct sc16is7xx_one *one =3D to_sc16is7xx_one(port, port);
->         u8 lcr;
-> -       u8 prescaler =3D 0;
-> +       int prescaler =3D 1;
->         unsigned long clk =3D port->uartclk, div =3D clk / 16 / baud;
->
->         if (div >=3D BIT(16)) {
-> -               prescaler =3D SC16IS7XX_MCR_CLKSEL_BIT;
-> -               div /=3D 4;
-> +               prescaler =3D 4;
-> +               div /=3D prescaler;
->         }
->
->         /* Enable enhanced features */
-> @@ -574,9 +586,10 @@ static int sc16is7xx_set_baud(struct uart_port *port=
-, int baud)
->                               SC16IS7XX_EFR_ENABLE_BIT);
->         sc16is7xx_efr_unlock(port);
->
-> +       /* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activat=
-ed. */
->         sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
->                               SC16IS7XX_MCR_CLKSEL_BIT,
-> -                             prescaler);
-> +                             prescaler =3D=3D 1 ? 0 : SC16IS7XX_MCR_CLKS=
-EL_BIT);
->
->         /* Backup LCR and access special register set (DLL/DLH) */
->         lcr =3D sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
-> @@ -592,7 +605,7 @@ static int sc16is7xx_set_baud(struct uart_port *port,=
- int baud)
->         /* Restore LCR and access to general register set */
->         sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
->
-> -       return DIV_ROUND_CLOSEST(clk / 16, div);
-> +       return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
->  }
->
->  static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxl=
-en,
->
-> base-commit: 660a708098569a66a47d0abdad998e29e1259de6
-> --
-> 2.39.2
->
+On Thu, Apr 25, 2024 at 09:32:33PM +0300, Konstantin Pugin wrote:
+> From: Konstantin Pugin <ria.freelander@gmail.com>
+> 
+> When specifying flag SER_RS485_RTS_ON_SEND in RS485 configuration,
+> we get the following warning after commit 4afeced55baa ("serial: core:
+> fix sanitizing check for RTS settings"):
+> 
+>     invalid RTS setting, using RTS_AFTER_SEND instead
+> 
+> This results in SER_RS485_RTS_AFTER_SEND being set and the
+> driver always write to the register field SC16IS7XX_EFCR_RTS_INVERT_BIT,
+> which breaks some hardware using these chips.
+> 
+> The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND modes, so fix
+> this by announcing support for RTS_ON_SEND.
 
-For me, looks normal. Does not cause problems on my vendored kernel
-with my XR20M1172 patches. Do I need to integrate those inside my
-patch? Or how should I do?
+Greg KH, who is maintainer of TTY/serial subsystem, usually asks to separate
+fixes from new features. So, sending this patch separately may not only help
+him, but let's move forward with your stuff.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
