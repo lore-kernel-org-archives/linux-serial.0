@@ -1,127 +1,101 @@
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14411148841;
-	Fri, 26 Apr 2024 15:13:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.126.134
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 720391494A6
+	for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2024 15:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714144412; cv=none; b=Iy7EU3SiYSm82Jfjfk7AfxJcF2ZlOJi+AtQ5eLA13yfPp6FsgCJxr1+IHWlhAi2PC8KpKe0JZrGS/BpUE/l/pc+QvvSobo+w3zMUiklh1KusY3mrZDktVGchMyhvJDsqhujPCgAGE0btv7/B6pJTozIjHPgNrXgW+PPK/NCll5U=
+	t=1714145562; cv=none; b=gp8qoUJQP9sy50U29WW1c3F6xiFBwBqljk5i9TVDhTmNKr7om/tYzxBBXjvQU7VLCBtzX+IXCxVcUQA4ya6CdfvHEunvtRhZ8j7khLweVkuRzstSTMSA7cD4MhaiNJ4qNqtYQ9kKr9RFb6aMbfqoZnX9JYMsHn0irbcGQbS6Z0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714144412; c=relaxed/simple;
-	bh=OVAcxKVWCr0cVxx6IPinXqZ82ZD2FZUL7lrWQzu5m3A=;
+	s=arc-20240116; t=1714145562; c=relaxed/simple;
+	bh=qklciRQxec8j59g3ZMuTPWOVbw7bNHFK9MOa3OI5oBg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g4lJQiKzKKhxm2tPukZ6yEMbK4ripCO7FvJGLvAss+LB1xkDwKFrOqMbVtiFTsw4Ubd2Ov9pgXuVn99N+I2MorOWbHmvtF5h6e4vIX5K0ONA+P/ayOPB/q5qfVwn88P/9URHmFFEouv74mCe8RQp0wtZuUg7dG2NzGUQewUbPnA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=heusel.eu; spf=pass smtp.mailfrom=heusel.eu; dkim=pass (2048-bit key) header.d=heusel.eu header.i=christian@heusel.eu header.b=ABHvjftG; arc=none smtp.client-ip=212.227.126.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=heusel.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=heusel.eu
+	 Content-Type:Content-Disposition:In-Reply-To; b=eVunE8u82dgAs/XHuAejHYsMdK4oguMLjnD3jrJs+uZ4FaPMQKKgUqwH8Ocw/9QSAYN+9eFwPb7kI2FWCoZxzPxyewHBJ4VBH+76O+NDvjp/uSIBWyS7HI11C/HARd2Oxfl3SxvjdxurcGm3SQ8cM8t5fmOLxRRlZ/9z+Wv9mww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=A28551tf; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=heusel.eu header.i=christian@heusel.eu header.b="ABHvjftG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=heusel.eu;
-	s=s1-ionos; t=1714144403; x=1714749203; i=christian@heusel.eu;
-	bh=OVAcxKVWCr0cVxx6IPinXqZ82ZD2FZUL7lrWQzu5m3A=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:In-Reply-To:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=ABHvjftGT0Nk3HBK1fiPfDov+IDVymBD7H7YU7emp8EJf43BI+/DVBuovADzBOQy
-	 9E5D6DGsGbW9sSZwkRYZ+l6+u9+ZtfopSdi/q03blpgmHOQ/D8rDRXSnpC4ACIl/R
-	 o/Dh4as+a9ZEYmCm9b+YpzVKA9G9cOzuZs9aJxDO1gnUKeWEsDR1ayilUwY7VkY3r
-	 atlM687qTOxjmh4d2I0XP08IZaRZTMPpvPKTo7TbdHSLwWHyeP2FeHVHNM6+JRqYN
-	 Hvgi99PhkmXK3q7y4Gc8nzazJYWXbS0EpJMEELjMleXcJEsKR3dsqaWi3lZIXYR7k
-	 zcfFeqVUvJx7hqQ/Bw==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from localhost ([80.187.67.249]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MZTa2-1sE6gn1Mk2-00WUQI; Fri, 26 Apr 2024 17:07:31 +0200
-Date: Fri, 26 Apr 2024 17:07:29 +0200
-From: Christian Heusel <christian@heusel.eu>
-To: lumingyindetect <lumingyindetect@126.com>
-Cc: Markus Elfring <Markus.Elfring@web.de>, linux-serial@vger.kernel.org, 
-	kernel-janitors@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Jiri Slaby <jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="A28551tf"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-572511ae0c2so1371292a12.3
+        for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2024 08:32:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1714145559; x=1714750359; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gd6ILVzk0t6uXM79Zttkn5VJ29kj20R5ZD7OwenGmLo=;
+        b=A28551tf4kbu1BWESsy4bxyXyR2ba8bom2utsMw0Hg72G0xIITj3xZfKWgE5xY5WXU
+         NFd3IJxvzScIibRBwpGr3rTMgMaUlS/2+xKlM8KNQz42p4x6hHay6+O1Pd8Eqj/2n6sx
+         Kx5DdMEhJFrWJf/SE1e+TjtaNp5+rDyDLB03m2Zj9hS0PJQozPKn9BS29o+dsP5yIV1b
+         bPYktCaCov0pq6s+G7N5/yIXFI0Tsqpi97Nc4fh96lE+eZTzgJZgL7ebGdCUf3GCxuzs
+         dcIB3dHROUfVMYPw8Z3R737XfyXMpJLlHhuk6bhk7oYCfJKG8VbVumwhtnljdfDgXVli
+         Y2TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714145559; x=1714750359;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gd6ILVzk0t6uXM79Zttkn5VJ29kj20R5ZD7OwenGmLo=;
+        b=YLU4/NPrOlqmQGsBu4gYu5/nEsNP+kzSN3C2ej4b24g3H1Q6MMnuVRt8A63obVpRG7
+         6yG6kbcIWQK5k/P81av1YxUz2ho1jrUC2VkHT13mRFOnVti4KV7UEsTUusAgoSyp0p/v
+         +pCovHnncp1BZU5mg0EFs1GhmSKlCCBDBtJbt0ynTATCBu82okTLyuOvxZ+g+dYQBMSj
+         qyle6d2w2kNkL+N24h7/yuK4hUL4/KvQcvxMWBWJgyESVtrvkxD5r+ZfBTApHGzhzphS
+         ZdUKPMDNY+rap78xXPiqkCdAzH/p5keDPEr5dBXWKBbRkIu+a7KnIgxjwqZWYA0Eo3tY
+         efsA==
+X-Forwarded-Encrypted: i=1; AJvYcCU6UcFNcMi+LMz6laF8pSbgqKpDhsVcykqap1EdXENCEedL8ys/Waovc8W/+zwTZmLV3AyCeRFBjZgY3563oBLWzGXfjqwvsUczFt2L
+X-Gm-Message-State: AOJu0Yx21W4qhRM4Ix68NO/H2fVdaNpWDGa5HNIfPgct293QYuVSAi1I
+	oYs/znCJ1AjhzcA31pq4TFaXxDw9g4FtMa2lPkkCJhvdjGgGGr6a9eT/N6qOBBk=
+X-Google-Smtp-Source: AGHT+IHO9ZwNd+bCnrGqjMRC0t/4lWSuJQ5CiOnjwm37ZKk+bzMBetUelSmBBHMySLB81gG6EG9SRw==
+X-Received: by 2002:a17:906:13c7:b0:a51:f463:cfa6 with SMTP id g7-20020a17090613c700b00a51f463cfa6mr2046211ejc.29.1714145558440;
+        Fri, 26 Apr 2024 08:32:38 -0700 (PDT)
+Received: from localhost ([102.222.70.76])
+        by smtp.gmail.com with ESMTPSA id z12-20020a170906270c00b00a55895c7f50sm9192735ejc.151.2024.04.26.08.32.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Apr 2024 08:32:37 -0700 (PDT)
+Date: Fri, 26 Apr 2024 18:32:33 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: lumingyindetect@126.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
 Subject: Re: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
-Message-ID: <xoqjkheigkwozgpckrdpyrfwzw33gjs564plbhbujzfdqwhcti@bsvrni5a624e>
+Message-ID: <047e490b-0dbf-49b7-9506-996f0053e92d@moroto.mountain>
 References: <20240426114716.1275085-1-lumingyindetect@126.com>
- <42c5d1f0-d16a-483b-8bb1-4c5768aa3a8c@web.de>
- <4e6966e0.a07e.18f1a7f7863.Coremail.lumingyindetect@126.com>
+ <87d376e4-84f1-48c3-8c5d-955f706f3bfb@moroto.mountain>
+ <Ziu-HUUE43xsjnia@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qlpmab66ws2khlm3"
-Content-Disposition: inline
-In-Reply-To: <4e6966e0.a07e.18f1a7f7863.Coremail.lumingyindetect@126.com>
-X-Provags-ID: V03:K1:BJSzN70N91LqLh0w0cohyxHpkNGCi7Es93xSvdmob6OTS6JRc7N
- MrZOLp8DUt0HrkNl9f/Xy05GJi2sWIaO8IH7epsxbrri/Jqgn8XcT0e4usgLQTImX5HSYgD
- jlUpl2v9E1wJNSejsg/F1RKvL6rtiNFavCu/B8lVVLebP+eyuGPeSyoZN1WANsqR8rGENTt
- IH8gomiSalf5ki+mzCyng==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:h0eGSJvPrfo=;l9RT6DJoa/wuUZb+AfO1LhYfqsG
- 8zK2nxNUJ7iTDdqdNlgO739LoW+B6kaMm9721WjnhF+TNhOYkVhppWGyCEgplLJyzc+vC/woY
- FjFdmjC7Ju9+sbKh+88Rx69Ec+BH6v0U2PXcEMMY8NxsEgHE+JEiqczKYCjyEyPPn0Tx5YMp9
- fgIlrIS+4wbFSEDawzCG1uur08+ofjTUSSt6bBCtEpqWVgCYeX5dpa/JMBdEU1AiCB2nNzdX5
- qouexPsDVbL+jLlF+SUoYGSj63Sg0GxbxguUOgI4wMnvArS1vrUApopNOgvJJiKe0WPPbtcdA
- DI+II290Levat0yfMCzmCjsdvF+gjFx+lqrkmkSpG1LjcC2rlPhM11z3XJLXr7GSj6r2aTfTR
- Qo1nD7sb7IZ62RqsQ/bIXBlvBXNugps7XQhRdTY/RJ1BSXsy7mLLlAvqFWvM3iNoVvf9iuiB8
- lfqVvlYDD0j7YoeQJ8YnUn+oh4l7/Z8UTlAJXfbWjyjabQBz+rpGOO0BYSK5majISxwxjQDQD
- JBHwfSdtuEYcjRAG2Af8kwvWRy0ubseGYVQ/uo/c6tgLY8ZYNb0b3fTDHyJIDwRF3IS/OXech
- NkuY7OyVKXEmsAKnn0H9Aoeo2ty3Qn/zDdQbskUorb/JMedb3a87oRe7shB2LVwOr8qhcchyx
- 80SMKAqW8NOtCc2hNuJYIHq8b6/PjtTOLwMSSDqL9h4iCZwLmapP3N9CdbOZAW2yDlDUzryMO
- rtMEx6tWk1Fnya9EtYfGR5+lFBSAZWJsRDw8gCfoNy20aZQILHSkHY=
-
-
---qlpmab66ws2khlm3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <Ziu-HUUE43xsjnia@smile.fi.intel.com>
 
-On 24/04/26 09:01PM, lumingyindetect wrote:
-> Dear Markus,
->
-> Thank you for your patient guidance and advice! This is my first time submitting a patch, and I haven't fully understood the meaning of "add a commit subject for this tag" yet. Could you please provide some examples or guidance on how to add it? I appreciate your help!
->
-> Best regards,
-> LuMingYin
+On Fri, Apr 26, 2024 at 05:45:49PM +0300, Andy Shevchenko wrote:
+> On Fri, Apr 26, 2024 at 04:53:18PM +0300, Dan Carpenter wrote:
+> 
+> > > Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
+> > 
+> > This is the wrong hash and the format is wrong.  It should be:
+> > 
+> > Fixes: 254cc7743e84 ("serial: 8250_lpss: Switch over to MSI interrupts")
+> 
+> Since you are here, just pay attention that this does NOT fix anything
+> as it uses pcim_enable_device(). I hope smatch won't stumble over this
+> and produce false positives.
+> 
 
-Hey LuMingYin,
+Ah...  No, this isn't a Smatch warning.  I think I tried to add it but
+was told it was wrong because I have this in my unpublished code.  :P
 
-just for your information that while he means well the advice from
-Markus is not always shared by other maintainers and their inablility to
-adapt to such feedback got them banned for a while on lkml. See i.e.
-https://lore.kernel.org/all/2024042547-shimmy-guileless-c7f2@gregkh/
-for an instance where greg is sending a relevant reply to one of their
-requested changes / feedback to patches.
+// Are these affected by pcim_enable_device()?
+//      { "pci_alloc_irq_vectors", ALLOC, 0, "$",  &int_one, &int_max },
+//      { "pci_free_irq_vectors", RELEASE, 0, "$" },
 
-So just evaluate for yourself whether the feedback makes sense and just
-go along of the official documentation[0] and feedback you get from the
-relevant subsystem maintainers.
+So when we're using pcim_enable_device(), calling pci_free_irq_vectors()
+is harmless but not necessary?
 
-Cheers,
-chris
-
-[0]: https://www.kernel.org/doc/html/v4.17/process/submitting-patches.html
-
---qlpmab66ws2khlm3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEb3ea3iR6a4oPcswTwEfU8yi1JYUFAmYrwzAACgkQwEfU8yi1
-JYVbMxAAvKybMp/z4Oapf3lItgsKsaqCqtaaeTpi3qPqwtX8ZUkbpJh2QxJ5dUph
-YPJ+7HSMRtEY9S19Qt8d5GnTG2L/wXEPk5bMVIrizs/5tXfT5Gp05wfbKUKHZUqF
-3m5n2Y1O9deSaFAKngJxwtM9qdRfRlF7Oef5+pX9IpooxNf1hgSwq9xlNryv0yhF
-8wxT9e3e/4EdQcPeJl6S/lUr6KDH32+sotVipPEUevqNitr8h0MsP+H5CLj3B2Cr
-9OxmbMTmuhla2dEzJuTFRJdrc424LaKml3qMARpGrsuLH8NbIQBGWmm2CeaCpQd3
-5qYnlrsf/IFR2t2+dCc9TVbYdOHYFazcc6NVclNI5Eaifnsh1gGiDTxNGK7kChKU
-1g6USkDOTicC9mLO/+hHDkoI4NzgulriDLHuZJF0mBzBlMXQm4H65TZ4ubIO0Vva
-YFAKuGJ/D46gPuWGIKxSykZKMLOgn0hoIsvY3FPriUXTWEzsh0aQQafzZlO0aPHW
-uk/Nz0yw4Ot5krRNltpAed4kuQd/24tQNrkEIwbkivzLIfd4MkFUD3q7DN2Bzkru
-7mXcE6hUNDN+LSGd4mctl4xQe++mKbUw9N8OM9hliry8G7nS+pIpCZIvXlcoFEIO
-yPRtXTgFGYZ32ctg/baGBtGgXxbC4qgo5j31wVZUFZuQuto692M=
-=iecE
------END PGP SIGNATURE-----
-
---qlpmab66ws2khlm3--
+regards,
+dan carpenter
