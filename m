@@ -1,99 +1,150 @@
-Received: from mout.web.de (mout.web.de [212.227.15.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD4C7147C81;
-	Fri, 26 Apr 2024 13:51:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD4D1F956
+	for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2024 13:53:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714139506; cv=none; b=EUmgD6L35YcIZlEkDvxRUQULZniIBrYJCD2oZ9YSZa1/4aDcT+VOD7sH/ywGgqyuM6vQW8e9GnSl+B720hnevDLNtBMRj/wCTPRjrTBZrnUnR5+Lhdflckgvo2aNQ7VWupbPKwT1jhAofMiyUpjnxNYUsH7YA21cER4tHPL0X1U=
+	t=1714139606; cv=none; b=XWhWy5ofytb9BbjbT9qt7mQhAN+emymYTmNmTrKsSsUJoBVYAZZ0c2WhJcg/Z8FBSF45CvITX27AVc5dz/lTC8SvyJ5MtvQkr/HSyS5pPhx8ivH0fRcSOW8GtKa7aiWOWWIh9xZ53hUgrF/A7FAObyZDIuCxHpeAYE8q2Frf5DQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714139506; c=relaxed/simple;
-	bh=sfPc8vA1asOT4uhPnXFYAb1MYP7/75SGuCAI7eNLkxs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JHuKeyiLatg0gdk1o7ZS/AxJSJ/XUw8yMH0WHmDBndfYSi7bFowEv7YK9nZuq8EM1qghU3uSWJwb2GxuwxfNQ55ZCJeD+L3BJ/2nXq74YZxpNC6aLBc1u73qDKnPTLWvLV4xbGosiC54xkUz0Q99wzWN4Q1Xz8cxWWVQOU3vzUA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=dbft3gR5; arc=none smtp.client-ip=212.227.15.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1714139606; c=relaxed/simple;
+	bh=kfoxr5MPT8Y3C1vwEbZQqbvK0Cu7jbe/sUQY8skyjXU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jVUANPNWE/iFIX2vJJa2ZyAEXOpYUMabHYm25RE4ByxLtxSxKxbgFVkXI23drycjWYWsEFr5wB/mhkgMFaX+Q3XSNpdLRK7tri4Ts8z1lHpLAmZ2v1LwdoKv/NSfW4ziNVtQzHmN4jigQQcGE1INkV0hIS/P4tkBFzTWenY6Vog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mzeUyjnD; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="dbft3gR5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1714139474; x=1714744274; i=markus.elfring@web.de;
-	bh=sfPc8vA1asOT4uhPnXFYAb1MYP7/75SGuCAI7eNLkxs=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=dbft3gR5I9p9ervltEZx+omyOiwLyxFKXShxNiup9mHSMcJ/zHQsGTU0dBH6RNkE
-	 Rw3qZpUt+zG+YEHw7BqN4numkvzMBtU9k/6/Q3cV9Yc+vGsXxrMq0J9UZjXcR8ytQ
-	 y2hU2C2q+xtTVVTlKig80ST1hsWMmAOCGVjyBinfWu6M76QkA77GnVABTAJH8laHC
-	 k3EkqSNPiE4hUsq3Kl3pXLASl7bPrUC3rNPy0OeKX5/uia+bx96MwL+2hVfGlmaQ5
-	 UXDeSJwX8XmMFvxQXUqGtJIMHP8TWGgBo0GkhbKCCCBPHYwDKdGccp9ZLltmofWSd
-	 FGRx5BZrByfzEjDd0Q==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.85.95]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1MFayw-1ruGeC2EL0-00H4ZR; Fri, 26
- Apr 2024 15:51:14 +0200
-Message-ID: <801e8f98-7e26-429b-9601-9e42d0e304e7@web.de>
-Date: Fri, 26 Apr 2024 15:51:10 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mzeUyjnD"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-41bab13ca80so2061285e9.0
+        for <linux-serial@vger.kernel.org>; Fri, 26 Apr 2024 06:53:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1714139603; x=1714744403; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TcMN14IZtAud1SzWuvyCQx4H2upUNwp8wShEfmdsMaU=;
+        b=mzeUyjnDwBpDeAXWorypUmlLrH/Gd1qmU3W4/8w+dVJ8SEgdApiWU/WXsgXnkkjaoI
+         OaRwIIqe3LfuZ+igE1uhhaGaMu6+OUISuDhM884em52UBwhjlossdvl1fntzACjb/OWh
+         7r39KkdwYWrDZDy94xzZapJrdusN4pNe4rwNznLei22AywR9JyLHIMjFErbRi9xP8FN/
+         RZQ5RbDvVeNs6UV4L4tO+EA+O8up3SbkPxG1UaxD8DGRWWQXIrKhzLNFq3ybENTXbmL3
+         E00+qY6KQBWGnMReM3DKvYeQL+/zIgsS/C0Ru8+FfZN28AH4EVK8poz14bOZ09/xpIkW
+         Dqzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714139603; x=1714744403;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TcMN14IZtAud1SzWuvyCQx4H2upUNwp8wShEfmdsMaU=;
+        b=C2Ebkd0OKqxpgEJgQ3ZKSvi5nJV9XxhVPw1CjT60omGwng/l0c4YFiKuCDv224BZ6d
+         vZhrButHEjaX3PNg8P5MXKTavLDo7iR/uL4XEjr/wxzORhTvFsSnGJwpF0irHiuN/At3
+         Y1xAKskhT7JCzoM13MvHG6txK1r+HA+ikBY45vtw+cneZGVHgVXPEdtrRxpBzWp+xpTf
+         qsob7eGCMQv6qmO6bsZ23PSxN68hmPkMYX6jmmafnEas+33NEPbSzUgGPK8AYBI4xI1w
+         IA8zMnnRVLUmcw6onTCbW/tYeDbGYhItpnxITSCIdyQroPFWNJL9rwA+8HUN7nvYSWa1
+         2lJg==
+X-Forwarded-Encrypted: i=1; AJvYcCVGfG+WqOJaiGHSrd39ayvsfLTFE5g1EhkT+OaY8UXWG+XBtbSbHBBWjB2jW1njKPsq7o5gbXiwL24BmrC61ae/Wg7U9gyeaj4w5uCp
+X-Gm-Message-State: AOJu0YwHpAF0uy0RL0zEtrJwjhoNTDFvGz+FIvpC1qP9QHEdWiSF20jT
+	739erS4uvm6ykcq8BTAj9ppaD/VWpU3/KpgIS7BehvJ5iJ20zE9gEXeyV3DT1F0=
+X-Google-Smtp-Source: AGHT+IE83jWZzVOng5zKH0QSGdpbtE4+Wt+APtbatCw3dZ/Qc0dSNlMokp6KwGnYkxFdJsCiBVpVKw==
+X-Received: by 2002:a05:600c:474d:b0:41a:408b:dbd4 with SMTP id w13-20020a05600c474d00b0041a408bdbd4mr2373100wmo.7.1714139603241;
+        Fri, 26 Apr 2024 06:53:23 -0700 (PDT)
+Received: from localhost ([102.222.70.76])
+        by smtp.gmail.com with ESMTPSA id q15-20020a05600c46cf00b00416e2c8b290sm35048249wmo.1.2024.04.26.06.53.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Apr 2024 06:53:22 -0700 (PDT)
+Date: Fri, 26 Apr 2024 16:53:18 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: lumingyindetect@126.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+Subject: Re: [PATCH] serial: 8250_lpss: Fix memory leak in lpss8250_probe()
+Message-ID: <87d376e4-84f1-48c3-8c5d-955f706f3bfb@moroto.mountain>
+References: <20240426114716.1275085-1-lumingyindetect@126.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: serial: 8250_lpss: Fix memory leak in lpss8250_probe()
-To: lumingyindetect@126.com
-Cc: linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org,
- LKML <linux-kernel@vger.kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20240426114716.1275085-1-lumingyindetect@126.com>
- <42c5d1f0-d16a-483b-8bb1-4c5768aa3a8c@web.de>
- <4e6966e0.a07e.18f1a7f7863.Coremail.lumingyindetect@126.com>
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <4e6966e0.a07e.18f1a7f7863.Coremail.lumingyindetect@126.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:44/Zkz0wQLU2wdmqoRfUmes0z8Qej6S5BBJmxijUrzSXSpyNFAQ
- +E5Eem4AzytWFighTHTFnb4PMQu8lzwJwYw80dFkexUl9AGGTfHAKZBMewyY1Fu4VfarQVY
- 8MKJR+641KXxt+iz99ddMO3fEwye3/y2T6QJHBccizzd6lbAm4ZHsPUjyF7MxPtpMZ+H0bR
- 9Ai3cJ198zZ75ZUKyOpZw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:hrkOPrdjhYQ=;JoqKRc4NrL4MMWqyzGtOVb24Aa3
- YG/73oK/MqpKXnEUjtpn+3lyeU7akHH2X2080bFuXrIWfhRgIV6qE/ok/R5XOWt+3EsPqaWOv
- g2nFBs+aHFd1DwKl1OKsNnLJQjS/6BaCIjiLTNNXnuMOD8rSoYiuJRCnj97kr2juvqrvQnRzg
- nVTRXx0+ynxLiQNmloU2Yb7XFLK8gXQ/fEzZfvx0/bzvAsSAWHwbLUVxDW0jb5eRw4QS1sUyU
- D5nkNYUHaQwjKk3ip2UCcf/kYgjbR/0U4lMGfH5vhtRmjF/d2YjlZgT0xPjEr//xp3Z9ox+kb
- ngzbpViIJtpqHcv2sWBS6Ts9Aw750AULXuCcDCiS4vAztl0/FTqtajjlo8MOkASd7BQdCjTTL
- mosK27aACUBn4FsXAxCjTL9ZZ2olX6MIZeY4wl+JaFhhkDtel7GOsEfMelzmJVfYNlF4hdC5C
- PeUu/aUAbyWpHofEkrTeQcem77DT7Yg/+vTPD1El9dAqRCtwzGuq4K2lg6tQoOKj2fG7q36L8
- CN58dy86BtEZ5/daUhTEd3+3n6QwBpP0wwayhkkrMRdD4FcsA1aNAYxT3Ype+G+jjgW6/za8T
- HAqegjPT0sjnI/XzPjvwxENUtkOLmRCvv62hGJ1hSc3dkyGZD8Q4yCytIeMD6a8fCJgftYAd+
- 9XDYDYJFQZSv/2zImY1EEtjTYmYNbuf54s9Ft7b/vX7tTVrFOPLCmIJaLMQvcEBYK/vUmz7CB
- 4Df+35/FErG/Haz3PUH1tPNhpLJeZhWKr/xn/82paZN8CVtlkpb8GPf6c0zr8PWy0KV6RPhUU
- ALfoATZPUtpYyBk5pu7pVcCoI/cHIguujWGzW3mqxr6Rg=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240426114716.1275085-1-lumingyindetect@126.com>
 
-> This is my first time submitting a patch, and I haven't fully understood=
- the meaning of "add a commit subject for this tag" yet.
+Run scripts/checkpatch.pl --strict on your patch.
 
-Would you like to take available information from published information so=
-urces
-better into account?
+WARNING: Prefer a maximum 75 chars per line (possible unwrapped commit description?)
+#15: 
+In the execution logic of the lpss8250_probe() function, the function may directly return via a return statement at either line 347 or line 351.
+WARNING: Please use correct Fixes: style 'Fixes: <12 chars of sha1> ("<title line>")' - ie: 'Fixes: 12dadc409c2b ("Linux 6.8.7")'
+#19: 
+Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
 
-Please take another look also at advices from the section =E2=80=9CDescrib=
-e your changes=E2=80=9D.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
-cumentation/process/submitting-patches.rst?h=3Dv6.9-rc5#n145
+On Fri, Apr 26, 2024 at 12:47:16PM +0100, lumingyindetect@126.com wrote:
+> From: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Fix this email address.
 
+> 
+> In the execution logic of the lpss8250_probe() function, the function may directly return via a return statement at either line 347 or line 351.
 
-By the way:
-Did you try the development tool =E2=80=9Cscripts/checkpatch.pl=E2=80=9D o=
-ut for your change approach?
+The line numbers are not important and they change all the time.
+Instead say "if pcim_iomap() or lpss->board->setup() fail then ...".
 
-Regards,
-Markus
+> Unlike lines 357 or 361, where the return statement is used directly without releasing the dynamically allocated memory region pointed to by the variable pdev, causing a memory leak of the variable pdev.
+> In the lpss8250_probe() function, I added a label named "free_irq_vectors" to release the dynamically allocated memory region pointed to by the variable pdev, and replaced the two return statements mentioned above with goto statements to this label.
+
+Just say "Use a goto to release this memory".  No need to explain
+further.
+
+> 
+> Fixes: e88c4cfcb7b888ac374916806f86c17d8ecaeb67
+
+This is the wrong hash and the format is wrong.  It should be:
+
+Fixes: 254cc7743e84 ("serial: 8250_lpss: Switch over to MSI interrupts")
+
+> 
+> Signed-off-by: LuMingYin <11570291+yin-luming@user.noreply.gitee.com>
+> ---
+>  drivers/tty/serial/8250/8250_lpss.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_lpss.c b/drivers/tty/serial/8250/8250_lpss.c
+> index c3cd6cb9ac80..fa9fd4dc86c7 100644
+> --- a/drivers/tty/serial/8250/8250_lpss.c
+> +++ b/drivers/tty/serial/8250/8250_lpss.c
+> @@ -344,11 +344,11 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	uart.port.mapbase = pci_resource_start(pdev, 0);
+>  	uart.port.membase = pcim_iomap(pdev, 0, 0);
+>  	if (!uart.port.membase)
+> -		return -ENOMEM;
+> +		goto free_irq_vectors;
+
+This needs to be:
+
+	if (!uart.port.membase) {
+		ret = -ENOMEM;
+		goto free_irq_vectors;
+	}
+
+regards,
+dan carpenter
+
+>  
+>  	ret = lpss->board->setup(lpss, &uart.port);
+>  	if (ret)
+> -		return ret;
+> +		goto free_irq_vectors;
+>  
+>  	dw8250_setup_port(&uart.port);
+>  
+> @@ -367,6 +367,7 @@ static int lpss8250_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  err_exit:
+>  	lpss->board->exit(lpss);
+> +free_irq_vectors:
+>  	pci_free_irq_vectors(pdev);
+>  	return ret;
+>  }
+
