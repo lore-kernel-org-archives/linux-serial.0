@@ -1,73 +1,126 @@
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8334423772
-	for <linux-serial@vger.kernel.org>; Mon, 29 Apr 2024 09:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.86.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D673745C5;
+	Mon, 29 Apr 2024 13:47:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714382094; cv=none; b=m6RP4160ajSGRwNCnoavgEQpdHRu7/st5Yga9qXsBRjZWyOBUe6R0n0xilnAElyml9GAFcPXFzSLn4l3KDsZ/LQuQdA4E3PIo3taXiYBGQIxL35bv6HRtJguvSHupjzKqIFpNrc3ooWhBQNaVlaBBdUhH5zBhAfycn9ECPqcnk4=
+	t=1714398452; cv=none; b=bJDspt5mPf02BtbxhslPwii8L7knqw3D1MFoGwuQV73jPG1zsGNsa5MR95b3vdH8OfkvWOeifNhvNOtETGoOqmNlAbkXLkCLHcGTbmmVemBGJaiBZQnWIGdiA0Y+IhlYWoxbWvrhkBsubXlBuZM/T5qyO8Ax0/XgaOJH6d08CPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714382094; c=relaxed/simple;
-	bh=TwIt8dL4+4FciE3Jbqznx0mwOtJY9K54EjWjrWQb+TQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 MIME-Version:Content-Type; b=TSUJwPNSPXvcQma9bj5jLw44jEuXtCiLeRRzmIPdh3EHg3t+x6RuJ7qSL3pl3TInUx/cnlefxm77/3cOrvLrHQRaIROBJEgqteM9om1D0YUnLi4WtnCymOeWDN1wqVg+F0k6rp5l16TJhgu76X3r/WLvBkZKbihrXw5ckFyMNHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM; spf=pass smtp.mailfrom=aculab.com; arc=none smtp.client-ip=185.58.86.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ACULAB.COM
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aculab.com
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with both STARTTLS and AUTH (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-83-8-pfOq6XNPGGCsa-FnWE_A-1; Mon, 29 Apr 2024 10:14:43 +0100
-X-MC-Unique: 8-pfOq6XNPGGCsa-FnWE_A-1
-Received: from AcuMS.Aculab.com (10.202.163.4) by AcuMS.aculab.com
- (10.202.163.4) with Microsoft SMTP Server (TLS) id 15.0.1497.48; Mon, 29 Apr
- 2024 10:14:06 +0100
-Received: from AcuMS.Aculab.com ([::1]) by AcuMS.aculab.com ([::1]) with mapi
- id 15.00.1497.048; Mon, 29 Apr 2024 10:14:06 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Jiri Slaby' <jirislaby@kernel.org>, Hugo Villeneuve <hugo@hugovil.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jon Ringle
-	<jringle@gridpoint.com>
-CC: "ria.freelander@gmail.com" <ria.freelander@gmail.com>, Hugo Villeneuve
-	<hvilleneuve@dimonoff.com>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: RE: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
- using prescaler
-Thread-Topic: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
- using prescaler
-Thread-Index: AQHamf/sWZGWHPbUOU+NpCCP8YCCu7F+9eqA
-Date: Mon, 29 Apr 2024 09:14:06 +0000
-Message-ID: <6ea689ace38d47f285efe026772efcae@AcuMS.aculab.com>
-References: <20240426135937.3810959-1-hugo@hugovil.com>
- <17d2cc58-cf68-430d-9248-25abe4c5b0f0@kernel.org>
+	s=arc-20240116; t=1714398452; c=relaxed/simple;
+	bh=8qW/AiTuh5RfV5Y3WsEwv1Sr3kSET/1uMKux5Eab8c0=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=APwWBUtb/sKydEqXFD04le3YDMcLxA/gfkK72Q8TNa2rcy7PXhtKDEDpyC40BLDS6XlUijoxgwtU1bxyijofV09D3IVAVAg8ueWDGCAzaVFf7ypYj2TtVVN4z0AJeCs+iWf8HfGfLOlJGZKBFUBblfPUZElv0KKew9ldQzhd9kA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=cYHKVQPi; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="cYHKVQPi"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=JOScwd5emOA8f50rEfismq1Niilar7kDI+5Uq6EhCPs=; b=cYHKVQPi227WuXG120+O8hG3qn
+	XjmPCTL36uOSO+8lXNETngTWDy2ooeTc6iIGIV4yPmFBkcOM7VjDiniSTMLjeYWy0AzyDf4eUWtA/
+	1E/EZM0pe7qlFh7UOuMoHB6PEGdU+gmlDnov857ZlO7BE8UcDhR6o7r2lmYPSSGk3RxM=;
+Received: from [70.80.174.168] (port=58788 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1s1RLi-00052M-6X; Mon, 29 Apr 2024 09:47:18 -0400
+Date: Mon, 29 Apr 2024 09:47:17 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jon Ringle
+ <jringle@gridpoint.com>, ria.freelander@gmail.com, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, stable@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Message-Id: <20240429094717.de45ad35814e3c618e08c36b@hugovil.com>
 In-Reply-To: <17d2cc58-cf68-430d-9248-25abe4c5b0f0@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
+References: <20240426135937.3810959-1-hugo@hugovil.com>
+	<17d2cc58-cf68-430d-9248-25abe4c5b0f0@kernel.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -1.1 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
+ using prescaler
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-RnJvbTogSmlyaSBTbGFieQ0KPiBTZW50OiAyOSBBcHJpbCAyMDI0IDA3OjM5DQouLi4NCj4gPiAt
-CXU4IHByZXNjYWxlciA9IDA7DQo+ID4gKwlpbnQgcHJlc2NhbGVyID0gMTsNCj4gDQo+IFVnaCwg
-d2h5IGRvIHlvdSBtb3ZlIHRvIHNpZ25lZCBhcml0aG1ldGljcz8NCg0KQW55IGFyaXRobWV0aWMg
-d291bGQgYWx3YXlzIGhhdmUgYmVlbiBzaWduZWQuDQp1OCBpcyBwcm9tb3RlZCB0byAnc2lnbmVk
-IGludCcgYmVmb3JlIGJlaW5nIHVzZWQgZm9yIHByZXR0eSBtdWNoIGFueXRoaW5nLg0KDQondW5z
-aWduZWQgaW50IHByZXNjYWxlcicgbWlnaHQgaGF2ZSBjaGFuZ2VkIGFyaXRobWV0aWMgdG8gYmUg
-dW5zaWduZWQuDQoNCk9UT0ggeW91IHByb2JhYmx5IGRvbid0IHdhbnQgYSB1OCAtIHRoYXQgbWln
-aHQgcmVxdWlyZSB0aGUgY29tcGlsZXINCm1hc2sgYW4gYXJpdGhtZXRpYyByZXN1bHQgdG8gOCBi
-aXRzLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5
-IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRp
-b24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Mon, 29 Apr 2024 08:39:22 +0200
+Jiri Slaby <jirislaby@kernel.org> wrote:
 
+> On 26. 04. 24, 15:59, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > When using a high speed clock with a low baud rate, the 4x prescaler is
+> > automatically selected if required. In that case, sc16is7xx_set_baud()
+> > properly configures the chip registers, but returns an incorrect baud
+> > rate by not taking into account the prescaler value. This incorrect baud
+> > rate is then fed to uart_update_timeout().
+> > 
+> > For example, with an input clock of 80MHz, and a selected baud rate of 50,
+> > sc16is7xx_set_baud() will return 200 instead of 50.
+> > 
+> > Fix this by first changing the prescaler variable to hold the selected
+> > prescaler value instead of the MCR bitfield. Then properly take into
+> > account the selected prescaler value in the return value computation.
+> > 
+> > Also add better documentation about the divisor value computation.
+> > 
+> > Fixes: dfeae619d781 ("serial: sc16is7xx")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > ---
+> >   drivers/tty/serial/sc16is7xx.c | 23 ++++++++++++++++++-----
+> >   1 file changed, 18 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > index 03cf30e20b75..dcd6c5615401 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -555,16 +555,28 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+> >   	return reg == SC16IS7XX_RHR_REG;
+> >   }
+> >   
+> > +/*
+> > + * Configure programmable baud rate generator (divisor) according to the
+> > + * desired baud rate.
+> > + *
+> > + * From the datasheet, the divisor is computed according to:
+> > + *
+> > + *              XTAL1 input frequency
+> > + *             -----------------------
+> > + *                    prescaler
+> > + * divisor = ---------------------------
+> > + *            baud-rate x sampling-rate
+> > + */
+> >   static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+> >   {
+> >   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+> >   	u8 lcr;
+> > -	u8 prescaler = 0;
+> > +	int prescaler = 1;
+> 
+> Ugh, why do you move to signed arithmetics?
+
+Hi Jiri,
+before this patch, the variable prescaler was used to store an 8 bit
+bitfield. Now the variable meaning is changed to be used as the
+prescaler value, which can be 1 or 4 in this case. Leaving
+it as u8 would still be ok, or making it "unsigned int" maybe?
+
+Hugo.
+
+-- 
+Hugo Villeneuve
