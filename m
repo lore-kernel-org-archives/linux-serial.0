@@ -1,140 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6279213ADC;
-	Mon, 29 Apr 2024 06:13:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 462D21118A;
+	Mon, 29 Apr 2024 06:39:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714371217; cv=none; b=qESQcnm/m/iB8b0TT2SrNcQdr6d2nxyW1xozFWsQs0gvLQdxVWEjyepuLfv9AhuO98zfQO7MMXU4R7L1ahmwTXQzUYqE9kd7yFMWio16vbJ4fGsLCKdz4oItbDflYkNwWMhD99WJx6PtTFYYxwbKBge2kNqD7uLZ3LJqQdvgQj8=
+	t=1714372768; cv=none; b=REOPkz1WtdUSWQp/Kpg6j+yOFX6+Pb2dIfyGBvJ2nm0Cjj6UJW8kKzgMNJkZsoLTE0tHsdQfFcJUGdzdkxoZvvDEpp7FgL//+nk5hO1jUA+w6NAqa2JtSfiJ/D4Pw/KFycqvsxBa4irSGMZ3AD5Is84KaeXAUsaFgV2KaOD11cg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714371217; c=relaxed/simple;
-	bh=olMoaF0fyLLXi+xIJXPbcT5w0xG9yrfaILJ4F+6pn24=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M51FwLeB3TM7e4Wru3Pttk2V+74GRL+EespUbRNFfK/KzgQhCBCOxYgH4POvqxxqBCF9fqG4ouZ4qynHNlKKFAr0hhtPmYUN+hbCOVyfaCvHB0s2dZSz1S/np1lK6TGSKluK4+cJ3MXjVCWXpXNjBTKAsWLXlvx4yxzC2w1bNkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ftO3uxKY; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ftO3uxKY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620FAC113CD;
-	Mon, 29 Apr 2024 06:13:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714371216;
-	bh=olMoaF0fyLLXi+xIJXPbcT5w0xG9yrfaILJ4F+6pn24=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ftO3uxKYv1c6C4rlusFWdOKaYQgdVIqhr/uX1uprXBQSK/MHt46DJzRyKPHHr4yM2
-	 IlowzMOpVmUu/z8vpuX+bbLOQEJUt+ToaJymPyIuKzchYB7muhS7ekzeB0TRQZ/YmE
-	 ForaAuY1ZotZ8MiSrLIY1itihVcfZoXO0MneS2Do=
-Date: Mon, 29 Apr 2024 08:13:33 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: "Sergio Ammirata, Ph.D." <sergio.ammirata@sipradius.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	jirislaby@kernel.org
-Subject: Re: Patch:  Allow the use of =?utf-8?Q?the?=
- =?utf-8?B?IHVhcnTigJlzIENU?= =?utf-8?Q?S?= (clear to send) signal to trigger
- the cd_change ldisk event.
-Message-ID: <2024042948-preoccupy-headfirst-8c9d@gregkh>
-References: <76A55B35-0954-4AEF-BAEB-61F2EF32CE95@sipradius.com>
+	s=arc-20240116; t=1714372768; c=relaxed/simple;
+	bh=0uTdj+DLwPtNgb7rqdkpWnQhW3OkgzuJ/zq7PblRgPQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=acoRHsKZxFg05v+wIqhjCDxi8K2ErfdhEy13hiMW1gWMlxDG9Y72PC2qyKpPYyetSsMqZELOCzWYf2x1Tz4MFbMGwUAFaIj5voqQ65XJ673aghQwkDj46XoOspuyLLVce+4W46+L/8pMIF5LKJvXOEYhwQAB6hMwhlqs7+5VGK8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-56e477db7fbso6665006a12.3;
+        Sun, 28 Apr 2024 23:39:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714372764; x=1714977564;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OY9oeBWyxdXXlsTYn0DXXRwkgynS0Yhyhd4AqIGsWyY=;
+        b=kJ96GsWAilVwV663nLUbsrt7nzMB0bGWMwTB9hPzBRlhuDbBjs5nXiRb0Nsys6tgMY
+         ZdLnLDYPxACOnHSxp5BPI2cC7ZM8YBUyt2hiV5hm0eGvzVMCAuTT7/rZIh3kkfANOZe5
+         OIO4JKD7Ef7/bOxPveBEG6uCSN1VtFmViyJZsRiNVKHIDWl4OgvIZOGdqq0da7zGPHXG
+         KAnGKJf1GSB8aMlfzd91qIU7Yt+EVXHRX3mupqyjsvQSyy9/NMYKBBFikR6nVwg06+Mu
+         cmwsJmTtDzAxqsw4FfkW1SpWXXFqIrn25LoMEMNWuniTYuqg2Ms+P5y7+e1WggWoTtox
+         wo0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU1tIEMgUIhJzdWqLjSMqH2wDmS5zeRnlpMU52YxDU0B3rYl2eQW3vlHaqv8W5p8o2lLc+/Fd5yOrwa+S/rpPLL6l1L3KR8PK2sp+qA67SRxTXrq5UZVt4xh7gtzAmS95WhjPtjpRVWLaCynknneg1KHMafXPPav5ZOv3p+UJxnUc90
+X-Gm-Message-State: AOJu0YyZz0bvZbpe9eSDBlIaQghsjol4mDMrixTuBIbpYQbm5f9AQj2i
+	D5a5rttVxt04Fq6CoNA8Y+HZvcAkRtOFKq2MTgBvwI3eI2MYCIkA
+X-Google-Smtp-Source: AGHT+IHGhz5rOceE37OOJuNYQOh5BT5cJ3AQu8BjMY7uzLBItL/SNywwJrzVBQbwQjsGZoCCmW/RPw==
+X-Received: by 2002:a50:a6da:0:b0:56e:60d:9b16 with SMTP id f26-20020a50a6da000000b0056e060d9b16mr6416549edc.6.1714372764391;
+        Sun, 28 Apr 2024 23:39:24 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id c26-20020aa7c99a000000b00572405680e8sm4224454edt.21.2024.04.28.23.39.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Apr 2024 23:39:23 -0700 (PDT)
+Message-ID: <17d2cc58-cf68-430d-9248-25abe4c5b0f0@kernel.org>
+Date: Mon, 29 Apr 2024 08:39:22 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <76A55B35-0954-4AEF-BAEB-61F2EF32CE95@sipradius.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
+ using prescaler
+To: Hugo Villeneuve <hugo@hugovil.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jon Ringle <jringle@gridpoint.com>
+Cc: ria.freelander@gmail.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+ stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20240426135937.3810959-1-hugo@hugovil.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240426135937.3810959-1-hugo@hugovil.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, Apr 28, 2024 at 09:45:29PM -0400, Sergio Ammirata, Ph.D. wrote:
-> Hello Greg, Jiri,
+On 26. 04. 24, 15:59, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> commit eb8cb8d62ff718d2fcf7583da8699ba29196f707 (HEAD -> master)
-> Author: Sergio Ammirata <sergio@ammirata.net>
-> Date:   Sat Apr 27 22:22:25 2024 -0400
+> When using a high speed clock with a low baud rate, the 4x prescaler is
+> automatically selected if required. In that case, sc16is7xx_set_baud()
+> properly configures the chip registers, but returns an incorrect baud
+> rate by not taking into account the prescaler value. This incorrect baud
+> rate is then fed to uart_update_timeout().
 > 
->    Allow the use of the uart’s CTS (clear to send) signal to trigger the cd_change ldisk event.
->    This is particularly useful for the PPS ldisk as it is common to use the uart’s CD or CTS indistinguishably for PPS. The userspace apps such as gpsd and chronyd already recognize and use both signals for timing data in userspace and will now be able to use CTS for kernel KPPS to significantly increase the accuracy of the measurement.
+> For example, with an input clock of 80MHz, and a selected baud rate of 50,
+> sc16is7xx_set_baud() will return 200 instead of 50.
 > 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index c476d8843..8128f64c4 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3515,6 +3515,10 @@ EXPORT_SYMBOL_GPL(uart_handle_dcd_change);
->  */
-> void uart_handle_cts_change(struct uart_port *uport, bool active)
-> {
-> +       struct tty_port *port = &uport->state->port;
-> +       struct tty_struct *tty = port->tty;
-> +       struct tty_ldisc *ld;
-> +
->        lockdep_assert_held_once(&uport->lock);
->          uport->icount.cts++;
-> @@ -3532,7 +3536,13 @@ void uart_handle_cts_change(struct uart_port *uport, bool active)
->                                uport->ops->stop_tx(uport);
->                        }
->                }
-> -
-> +       } else if (tty) {
-> +               ld = tty_ldisc_ref(tty);
-> +               if (ld) {
-> +                       if (ld->ops->dcd_change)
-> +                               ld->ops->dcd_change(tty, active);
-> +                       tty_ldisc_deref(ld);
-> +               }
->        }
-> }
-> EXPORT_SYMBOL_GPL(uart_handle_cts_change);
+> Fix this by first changing the prescaler variable to hold the selected
+> prescaler value instead of the MCR bitfield. Then properly take into
+> account the selected prescaler value in the return value computation.
 > 
-> Regards,
+> Also add better documentation about the divisor value computation.
 > 
-> Sergio Ammirata, Ph.D.
+> Fixes: dfeae619d781 ("serial: sc16is7xx")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
+>   drivers/tty/serial/sc16is7xx.c | 23 ++++++++++++++++++-----
+>   1 file changed, 18 insertions(+), 5 deletions(-)
 > 
-> 
-> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 03cf30e20b75..dcd6c5615401 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -555,16 +555,28 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
+>   	return reg == SC16IS7XX_RHR_REG;
+>   }
+>   
+> +/*
+> + * Configure programmable baud rate generator (divisor) according to the
+> + * desired baud rate.
+> + *
+> + * From the datasheet, the divisor is computed according to:
+> + *
+> + *              XTAL1 input frequency
+> + *             -----------------------
+> + *                    prescaler
+> + * divisor = ---------------------------
+> + *            baud-rate x sampling-rate
+> + */
+>   static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+>   {
+>   	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+>   	u8 lcr;
+> -	u8 prescaler = 0;
+> +	int prescaler = 1;
 
+Ugh, why do you move to signed arithmetics?
 
-Hi,
+regards,
+-- 
+js
+suse labs
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- Your patch contains warnings and/or errors noticed by the
-  scripts/checkpatch.pl tool.
-
-- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
-  and can not be applied.  Please read the file,
-  Documentation/process/email-clients.rst in order to fix this.
-
-- Your patch does not have a Signed-off-by: line.  Please read the
-  kernel file, Documentation/process/submitting-patches.rst and resend
-  it after adding that line.  Note, the line needs to be in the body of
-  the email, before the patch, not at the bottom of the patch or in the
-  email signature.
-
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what is needed in
-  order to properly describe the change.
-
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what a proper
-  Subject: line should look like.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
