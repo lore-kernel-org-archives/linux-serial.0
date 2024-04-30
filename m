@@ -1,44 +1,44 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C15C217106E;
-	Tue, 30 Apr 2024 13:00:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F8242AA5;
+	Tue, 30 Apr 2024 13:03:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714482003; cv=none; b=TAKNOgjaEERYmmhhDwurqsd9xJj7pd+3U30kl0VZq50eC4v1e/TMtCW7UGFOYEbr+Brr0j45D5vtlbM5TQKSr6zE3AeZJ7XfKiMSsTJSePmSrcU4pSIA2UDfbN1fXmvt0oIti2NN5EAP/pX94kQmbPFJADhAiTVOT0qgU9arbIo=
+	t=1714482225; cv=none; b=FGbQW/MtdfcOU9+iYV0hYCigHhYq8kSPZ3n9TQ+2dA8XwkiWzX0C8TDA6qlWOgcBB7zr9vFvmgMnxz+xseu3p2o/RBmMPQZa1kfllL2q8IQmgN4M7r387dtKK0Jcs2rNPc8Lc+WtTsiiOOAI9veE6APlvlBTvwan7OHbm6Yac5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714482003; c=relaxed/simple;
-	bh=UMZaNGe7QnAugACQXwrO9a+rEKCYn71GJR5PuFqiQdg=;
+	s=arc-20240116; t=1714482225; c=relaxed/simple;
+	bh=t9lIC5lX/qJ52x4Z/b7MoUypbNqa69SfxpVrBUPmDuk=;
 	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=BK9MuBseGKb/1DN+VxWE34p6x6icJIRf/xpjMLjaozlItFG2zUm6zETJuwRhl+mPwk5U722LzCJ0xXnqwooRRkAVq25g28GKQNFn5jYHFEFMkbyvp75dvd+JlHyYKtDnnYd4jtJeOuZ4uks1cJZLOPD6WeQP6lY4Jco6Bsc5y/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=d65giP2e; arc=none smtp.client-ip=162.243.120.170
+	 Content-Type:Subject; b=Z5YTZOpVwqytT1Mjy8upPulmXb9gdbgO6ZJbHlJ2BCkrPULqgjOcJgKLkpm28Vb7yDk+YLhixccZ7elJK0gMmFikqL2SeJqgRaXICj4WsKxm8paKCqOxNA0X8mRsAC3QRl3YyobtIUOwK9jrI/3CLxjR22ybNv3GdIHJOOg9e20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=tkuzoWZI; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="d65giP2e"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="tkuzoWZI"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
 	:Date:subject:date:message-id:reply-to;
-	bh=M/QoApjdCuoD3z41eYPaP9f9N+N5yYGGcDa+/3o9sWU=; b=d65giP2esg8toD56CmvT0uTjbv
-	m36EyH9rtwY/ivUSbLbcLqQC5qKri6fJNKOix9G3HkHgHxFsSkYaTcDa+KNKSGKcNLW+d078SAAP0
-	5btBeS9yQ6r8pLX+TdzRGKDu+zdSi7u+CcOrA+c+0vETqX6UKPUMjjiHLsyz9+CSh4Fo=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:54324 helo=pettiford)
+	bh=EnngSO3iBdBLENfBDSJPT5nGlya4oHKjjR8tHo8Z+LM=; b=tkuzoWZIV+Anja+BKYloZnWhR6
+	69pNBLu2xSGqR9qYqvElWWtBXXekgUiCxJupqgt1nCBtmjbEbNw64I0A1cylR43vAkKY0umxCfuSS
+	6K5CuhkmOYgNoacn27C5WBJzrYxYrNGWGUdpeJEw1gLfxPf3g9S3mpD/Q0HZS+Oh3oWs=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:45896 helo=pettiford)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1s1n5P-00038o-6Y; Tue, 30 Apr 2024 08:59:55 -0400
-Date: Tue, 30 Apr 2024 08:59:54 -0400
+	id 1s1n8w-00039n-13; Tue, 30 Apr 2024 09:03:34 -0400
+Date: Tue, 30 Apr 2024 09:03:33 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jon Ringle
- <jringle@gridpoint.com>, ria.freelander@gmail.com, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, stable@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Message-Id: <20240430085954.1ac828e0d2c64cccdf47bdfc@hugovil.com>
-In-Reply-To: <af116cb5-41d8-4a33-97ba-0c7cc821add1@kernel.org>
-References: <20240426135937.3810959-1-hugo@hugovil.com>
-	<17d2cc58-cf68-430d-9248-25abe4c5b0f0@kernel.org>
-	<20240429094717.de45ad35814e3c618e08c36b@hugovil.com>
-	<af116cb5-41d8-4a33-97ba-0c7cc821add1@kernel.org>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, peterz@infradead.org, mingo@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ andy.shevchenko@gmail.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Message-Id: <20240430090333.5c5f029553cabcdf699310cb@hugovil.com>
+In-Reply-To: <20240423091410.28cb286b212789250b1485dd@hugovil.com>
+References: <20240409154253.3043822-1-hugo@hugovil.com>
+	<20240409154253.3043822-4-hugo@hugovil.com>
+	<CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
+	<20240423091410.28cb286b212789250b1485dd@hugovil.com>
 X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -46,101 +46,161 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
 	* -1.1 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when
- using prescaler
+Subject: Re: [PATCH v4 3/5] serial: sc16is7xx: split into core and I2C/SPI
+ parts (core)
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, 30 Apr 2024 07:22:54 +0200
-Jiri Slaby <jirislaby@kernel.org> wrote:
+On Tue, 23 Apr 2024 09:14:10 -0400
+Hugo Villeneuve <hugo@hugovil.com> wrote:
 
-> On 29. 04. 24, 15:47, Hugo Villeneuve wrote:
-> > On Mon, 29 Apr 2024 08:39:22 +0200
-> > Jiri Slaby <jirislaby@kernel.org> wrote:
-> > 
-> >> On 26. 04. 24, 15:59, Hugo Villeneuve wrote:
-> >>> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >>>
-> >>> When using a high speed clock with a low baud rate, the 4x prescaler is
-> >>> automatically selected if required. In that case, sc16is7xx_set_baud()
-> >>> properly configures the chip registers, but returns an incorrect baud
-> >>> rate by not taking into account the prescaler value. This incorrect baud
-> >>> rate is then fed to uart_update_timeout().
-> >>>
-> >>> For example, with an input clock of 80MHz, and a selected baud rate of 50,
-> >>> sc16is7xx_set_baud() will return 200 instead of 50.
-> >>>
-> >>> Fix this by first changing the prescaler variable to hold the selected
-> >>> prescaler value instead of the MCR bitfield. Then properly take into
-> >>> account the selected prescaler value in the return value computation.
-> >>>
-> >>> Also add better documentation about the divisor value computation.
-> >>>
-> >>> Fixes: dfeae619d781 ("serial: sc16is7xx")
-> >>> Cc: stable@vger.kernel.org
-> >>> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >>> ---
-> >>>    drivers/tty/serial/sc16is7xx.c | 23 ++++++++++++++++++-----
-> >>>    1 file changed, 18 insertions(+), 5 deletions(-)
-> >>>
-> >>> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> >>> index 03cf30e20b75..dcd6c5615401 100644
-> >>> --- a/drivers/tty/serial/sc16is7xx.c
-> >>> +++ b/drivers/tty/serial/sc16is7xx.c
-> >>> @@ -555,16 +555,28 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
-> >>>    	return reg == SC16IS7XX_RHR_REG;
-> >>>    }
-> >>>    
-> >>> +/*
-> >>> + * Configure programmable baud rate generator (divisor) according to the
-> >>> + * desired baud rate.
-> >>> + *
-> >>> + * From the datasheet, the divisor is computed according to:
-> >>> + *
-> >>> + *              XTAL1 input frequency
-> >>> + *             -----------------------
-> >>> + *                    prescaler
-> >>> + * divisor = ---------------------------
-> >>> + *            baud-rate x sampling-rate
-> >>> + */
-> >>>    static int sc16is7xx_set_baud(struct uart_port *port, int baud)
-> >>>    {
-> >>>    	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
-> >>>    	u8 lcr;
-> >>> -	u8 prescaler = 0;
-> >>> +	int prescaler = 1;
-> >>
-> >> Ugh, why do you move to signed arithmetics?
-> > 
-> > Hi Jiri,
-> > before this patch, the variable prescaler was used to store an 8 bit
-> > bitfield. Now the variable meaning is changed to be used as the
-> > prescaler value, which can be 1 or 4 in this case. Leaving
-> > it as u8 would still be ok, or making it "unsigned int" maybe?
+> On Tue, 23 Apr 2024 12:01:23 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 > 
-> Both :). What you prefer -- uint matches more IMO, given it's now a 
-> value and not a register...
+> > Hi Hugo,
+> > 
+> > On Tue, Apr 9, 2024 at 5:48 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > >
+> > > Split the common code from sc16is7xx driver and move the I2C and SPI bus
+> > > parts into interface-specific source files.
+> > >
+> > > sc16is7xx becomes the core functions which can support multiple bus
+> > > interfaces like I2C and SPI.
+> > >
+> > > No functional changes intended.
+> > >
+> > > Also simplify and improve Kconfig entries.
+> > >   - Capitalize SPI keyword for consistency
+> > >   - Display list of supported ICs each on a separate line (and aligned) to
+> > >     facilitate locating a specific IC model
+> > >   - Add Manufacturer name at start of description string
+> > >   - Add UART keyword to description string
+> > >
+> > > Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Thanks for your patch, which is now commit d49216438139bca0
+> > ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
+> > in tty-next (next-20240415 and later).
+> > 
+> > > --- a/drivers/tty/serial/Kconfig
+> > > +++ b/drivers/tty/serial/Kconfig
+> > > @@ -1021,41 +1021,30 @@ config SERIAL_SCCNXP_CONSOLE
+> > >           Support for console on SCCNXP serial ports.
+> > >
+> > >  config SERIAL_SC16IS7XX_CORE
+> > > -       tristate
+> > > -
+> > > -config SERIAL_SC16IS7XX
+> > > -       tristate "SC16IS7xx serial support"
+> > > +       tristate "NXP SC16IS7xx UART support"
+> > 
+> > Hence this replaces SERIAL_SC16IS7XX_CORE by SERIAL_SC16IS7XX,
+> > so arch/mips/configs/cu1??0-neo_defconfig needs to updated.
+> 
+> Hi Geert,
+> yes you are right, sorry I missed that.
+> 
+> > 
+> > >         select SERIAL_CORE
+> > > -       depends on (SPI_MASTER && !I2C) || I2C
+> > > +       select SERIAL_SC16IS7XX_SPI if SPI_MASTER
+> > > +       select SERIAL_SC16IS7XX_I2C if I2C
+> > 
+> > So if SPI_MASTER or I2C is enabled, the corresponding SERIAL_SC16IS7XX_*
+> > subdriver can no longer be disabled?  According to
+> > https://lore.kernel.org/all/20240403123501.8ef5c99f65a40ca2c10f635a@hugovil.com/
+> > you did want to support that?
+> 
+> Just to clarify, SPI subdriver will be disabled if
+> SPI_MASTER is disabled, even if I2C is enabled, and vice versa.
+> 
+> It was not my original intention, V1 of the patch offered the
+> possibility to enable/disable each subdriver individually, but Andy
+> pointed out that was maybe not the standard/usual/recommended way of
+> defining it, and to look into what other subsystems were doing,
+> especially iio. After some research, I settled on this approach as a
+> compromise.
 
-Hi Jiri,
-I will go with uint.
+Hi Andy and Geert,
+if you are ok with what I explained, I will send a patch.
 
-Thank you,
 Hugo.
 
 
 > 
-> thanks,
-> -- 
-> js
-> suse labs
+> 
+> Hugo.
+> 
+> > 
+> > >         help
+> > > -         This selects support for SC16IS7xx serial ports.
+> > > -         Supported ICs are SC16IS740, SC16IS741, SC16IS750, SC16IS752,
+> > > -         SC16IS760 and SC16IS762. Select supported buses using options below.
+> > > +         Core driver for NXP SC16IS7xx UARTs.
+> > > +         Supported ICs are:
+> > > +
+> > > +           SC16IS740
+> > > +           SC16IS741
+> > > +           SC16IS750
+> > > +           SC16IS752
+> > > +           SC16IS760
+> > > +           SC16IS762
+> > > +
+> > > +         The driver supports both I2C and SPI interfaces.
+> > >
+> > >  config SERIAL_SC16IS7XX_I2C
+> > > -       bool "SC16IS7xx for I2C interface"
+> > > -       depends on SERIAL_SC16IS7XX
+> > > -       depends on I2C
+> > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+> > > -       select REGMAP_I2C if I2C
+> > > -       default y
+> > > -       help
+> > > -         Enable SC16IS7xx driver on I2C bus,
+> > > -         If required say y, and say n to i2c if not required,
+> > > -         Enabled by default to support oldconfig.
+> > > -         You must select at least one bus for the driver to be built.
+> > > +       tristate
+> > > +       select REGMAP_I2C
+> > >
+> > >  config SERIAL_SC16IS7XX_SPI
+> > > -       bool "SC16IS7xx for spi interface"
+> > > -       depends on SERIAL_SC16IS7XX
+> > > -       depends on SPI_MASTER
+> > > -       select SERIAL_SC16IS7XX_CORE if SERIAL_SC16IS7XX
+> > > -       select REGMAP_SPI if SPI_MASTER
+> > > -       help
+> > > -         Enable SC16IS7xx driver on SPI bus,
+> > > -         If required say y, and say n to spi if not required,
+> > > -         This is additional support to existing driver.
+> > > -         You must select at least one bus for the driver to be built.
+> > > +       tristate
+> > > +       select REGMAP_SPI
+> > >
+> > >  config SERIAL_TIMBERDALE
+> > >         tristate "Support for timberdale UART"
+> > 
+> > Gr{oetje,eeting}s,
+> > 
+> >                         Geert
+> > 
+> > -- 
+> > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> > 
+> > In personal conversations with technical people, I call myself a hacker. But
+> > when I'm talking to journalists I just say "programmer" or something like that.
+> >                                 -- Linus Torvalds
+> > 
 > 
 > 
 
