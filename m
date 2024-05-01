@@ -1,72 +1,43 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4976212D779
-	for <linux-serial@vger.kernel.org>; Wed,  1 May 2024 12:20:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123B012BEBE;
+	Wed,  1 May 2024 12:59:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714566017; cv=none; b=nB9ovAj7mwd0RrkijmxTeBCVFZ7EEXADyjpRpGKTov5KEVh8XxEq+zciwzeSEZLCUd1BLza4asbFdCvKqh59wKpmykTi4IHppgH0G/gcHEzL/S6/EhmM12NhqFvQxGLMciDE/1Wfzi0wRQ3K0zB30wqYeE3kZJBMNGh5eIcvV/g=
+	t=1714568384; cv=none; b=Ql/Y4AsQyaacR6czoWiFrBozJ4RNcGbd79WbviMet4tF1wwGyd2Bnpp8NV98mbbxT/iOUzkcqwVc/dwLtAkA469e2kqe4/LneYr4p6QmHJFihj5u/oI+mCyqpsOciYlPq8TzZfbgorBbrqwWLOM3s/CYc4kwz34pPZdDuHHXh9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714566017; c=relaxed/simple;
-	bh=VlgCsjgHFwA68EYgPCGJqFoun4py/yY/7/kh2NDKDJI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ZY3EW1/gly5aBRETyUPtj6xeSKnwEmQTv3nCmTPrsU/R+4pQ2BBhqJ8Bida8NSuTVg9a9MKJ4tRSPo2BkEjaPrAyzLI8w31E55LdRVOCe/S4dIauxcmbjuoxodAEaqnzvKnKrSoYes8A0GJ2m0cRhUsAgg1SHB2665DXrjJ8Rq4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=Glp0pIEB; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1714568384; c=relaxed/simple;
+	bh=KxstT7yaWo1HV/VdY87oK/SPbrVfRoguXq0JxrzWNVQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MYLwZFHmNThxwdbfULiyi35RrusPqFKtA1st7XpQBs/cM67PuU+jkgeWl+H/km+2QIBlR7n0n5STOB6f9hW92cShHJXnfCNiGzP4Hn5d9JWWKzndGqZQ6PgRiFwCjMCQXpM04PzJFB+sijVc5pJns6tYA+6HiP74nbtD3potPg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WRiju2N6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="Glp0pIEB"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-1e834159f40so53998415ad.2
-        for <linux-serial@vger.kernel.org>; Wed, 01 May 2024 05:20:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714566015; x=1715170815; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NA6fALA+ztvPArpqc5Jdn/FWi0fZsP181uxTjKG28r0=;
-        b=Glp0pIEBnVyWeZfWxXYwNzC8oBfI/wqSyuBNSK23gqbox17wl8dbxbg3SLmsFTLuBc
-         aFmZvcC5mFntdKMRgAyyLdoPUf5w10nExohVbqrACvqZfyvpmualCzeh4MeCQb33XFUN
-         TfcsYtAApQ4/CbhKCTUEqy5m2PcmhLUY0veX7jB7ec3fX5NGhc2xpvz5nr1GEcpbCwY6
-         tiWnjhdCIJICqwtQpFlohK+LmIVwmu4JKc1HIdGvTwk6OnIQEN63TYyyYEoAgYfI63QQ
-         z8wr9ovAubxPsHobyewJw+ZPDK0fOge/1KstpFBphf6a5HhU8WaIvFMwe3CQxl7oILnj
-         yL7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714566015; x=1715170815;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NA6fALA+ztvPArpqc5Jdn/FWi0fZsP181uxTjKG28r0=;
-        b=pIoyGagkvz00DcBRY+Bcmln95pwprzELrNQlpGfMqmWfVwXYUoEVsfXW8xSGy0chIJ
-         xANvnx7KeagvTtya9tx3wkcri/CeDV323+PYeQ2eKuQH+HRo4mXKg5nyn7aTBIbodAVZ
-         sgobiEILrJa+Whh6Xw1X47JLneBBShSRUt+FniUG8SQMrNxPa38O5mNw0oej6h4S86dc
-         gEv5YnXcX+oZ3XFXJxiev00RucFsNpgOqTBiEVHLcutGci+2WV+0BP3BiS5jAbEU+e+0
-         Fcm7uj3dJDwXm3tp8ymH7k+3wdZ6d39aMDJzG4HztEJyOWGwnVRWCxrJgYfBtBXCjgRb
-         ZA8g==
-X-Forwarded-Encrypted: i=1; AJvYcCVGHcaHyOIK9Dl/LktBN5FkcaDbbowoVuvE0IZ7+2K/pjC09tfJH+mUgnNjlKrIQo1uFrfoRpIXa0cfNwafnR4fVtfKCjJM1NGq2z/1
-X-Gm-Message-State: AOJu0YzOdtfSpGgvbQbSgGiHSgaPSS2Yv4LEciJdWmSuDjm4aHHKRcO8
-	9nvkftP2Sgtm27RTnHaDnwMk1n4JDyp2wJfZgCmlvuk9toLq6OojLYbIxxg5+pQ=
-X-Google-Smtp-Source: AGHT+IHYfyPObdgft5ubD0a+EdF/ZUFESa543BOMp550uRgpGcGY3JeWyQR+nmnrayByMoL+UjNZmA==
-X-Received: by 2002:a17:902:ed01:b0:1eb:494f:dc66 with SMTP id b1-20020a170902ed0100b001eb494fdc66mr2209312pld.23.1714566015601;
-        Wed, 01 May 2024 05:20:15 -0700 (PDT)
-Received: from sunil-pc.Dlink ([106.51.188.106])
-        by smtp.gmail.com with ESMTPSA id im15-20020a170902bb0f00b001ec8888b22esm1336900plb.65.2024.05.01.05.20.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 05:20:15 -0700 (PDT)
-From: Sunil V L <sunilvl@ventanamicro.com>
-To: linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WRiju2N6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A68C4AF18;
+	Wed,  1 May 2024 12:59:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714568383;
+	bh=KxstT7yaWo1HV/VdY87oK/SPbrVfRoguXq0JxrzWNVQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=WRiju2N6FSf6SmX8/SeiqxqDPVUn58NouaFEjSc492GjsVq4LUVMxAbS8dWnH+EOS
+	 NNvZWiF33xtYtN0AMZ/wOMIZBhl9LzLBvpzq04+5viXGioH02aT1aqueLlUGeTAsdM
+	 bevXE43WHP0/R0GnK6QMm88pTy7hn66rPkS4mlV1/0atSqvc9CF/t+aC8qAta3BZsI
+	 //c6VwQ+zBloA+jYaSXYVQUA7E3ie3k1NbdK8HBck3G7AUQlbIvkWcqwnZJRENxiwv
+	 9uIJBgNvmE9nr+qDv4ZZM2RRjByu9o2FhpZR9aikuuH2Go/7bd6e+GprMLjydr/dpR
+	 xRW1NZVyGuhVA==
+Date: Wed, 1 May 2024 13:59:35 +0100
+From: Will Deacon <will@kernel.org>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	acpica-devel@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
 	Paul Walmsley <paul.walmsley@sifive.com>,
 	Albert Ou <aou@eecs.berkeley.edu>,
 	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
+	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
 	Anup Patel <anup@brainfault.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Samuel Holland <samuel.holland@sifive.com>,
@@ -80,180 +51,37 @@ Cc: Catalin Marinas <catalin.marinas@arm.com>,
 	Atish Kumar Patra <atishp@rivosinc.com>,
 	Andrei Warkentin <andrei.warkentin@intel.com>,
 	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-	Sunil V L <sunilvl@ventanamicro.com>
-Subject: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
-Date: Wed,  1 May 2024 17:47:42 +0530
-Message-Id: <20240501121742.1215792-18-sunilvl@ventanamicro.com>
-X-Mailer: git-send-email 2.40.1
-In-Reply-To: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [PATCH v5 01/17] arm64: PCI: Migrate ACPI related functions to
+ pci-acpi.c
+Message-ID: <20240501125935.GA15380@willie-the-truck>
 References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+ <20240501121742.1215792-2-sunilvl@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240501121742.1215792-2-sunilvl@ventanamicro.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-RISC-V has non-PNP generic 16550A compatible UART which needs to be
-enumerated as ACPI platform device. Add driver support for such devices
-similar to 8250_of.
+On Wed, May 01, 2024 at 05:47:26PM +0530, Sunil V L wrote:
+> The functions defined in arm64 for ACPI support are required
+> for RISC-V also. To avoid duplication, move these functions
+> to common location.
+> 
+> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> ---
+>  arch/arm64/kernel/pci.c | 191 ----------------------------------------
+>  drivers/pci/pci-acpi.c  | 182 ++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 182 insertions(+), 191 deletions(-)
 
-The driver is enabled when the CONFIG_SERIAL_ACPI_PLATFORM option is
-enabled. Enable this option for RISC-V.
+Looks like a straight-forward move of the code, so:
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
----
- arch/riscv/configs/defconfig        |  1 +
- drivers/tty/serial/8250/8250_acpi.c | 96 +++++++++++++++++++++++++++++
- drivers/tty/serial/8250/Kconfig     |  8 +++
- drivers/tty/serial/8250/Makefile    |  1 +
- 4 files changed, 106 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_acpi.c
+Acked-by: Will Deacon <will@kernel.org>
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 3cae018f9315..bea8241f52eb 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -150,6 +150,7 @@ CONFIG_SERIAL_8250=y
- CONFIG_SERIAL_8250_CONSOLE=y
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_SERIAL_ACPI_PLATFORM=y
- CONFIG_SERIAL_SH_SCI=y
- CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
- CONFIG_VIRTIO_CONSOLE=y
-diff --git a/drivers/tty/serial/8250/8250_acpi.c b/drivers/tty/serial/8250/8250_acpi.c
-new file mode 100644
-index 000000000000..3682443bb69c
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_acpi.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Serial Port driver for ACPI platform devices
-+ *
-+ * This driver is for generic 16550 compatible UART enumerated via ACPI
-+ * platform bus instead of PNP bus like PNP0501. This is not a full
-+ * driver but mostly provides the ACPI wrapper and uses generic
-+ * 8250 framework for rest of the functionality.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/serial_reg.h>
-+#include <linux/serial_8250.h>
-+
-+#include "8250.h"
-+
-+struct acpi_serial_info {
-+	int	line;
-+};
-+
-+static int acpi_platform_serial_probe(struct platform_device *pdev)
-+{
-+	struct acpi_serial_info *data;
-+	struct uart_8250_port port8250;
-+	struct device *dev = &pdev->dev;
-+	struct resource *regs;
-+
-+	int ret, irq;
-+
-+	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!regs) {
-+		dev_err(dev, "no registers defined\n");
-+		return -EINVAL;
-+	}
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	memset(&port8250, 0, sizeof(port8250));
-+
-+	spin_lock_init(&port8250.port.lock);
-+
-+	port8250.port.mapbase           = regs->start;
-+	port8250.port.irq               = irq;
-+	port8250.port.type              = PORT_16550A;
-+	port8250.port.flags             = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_FIXED_PORT |
-+					  UPF_IOREMAP | UPF_FIXED_TYPE;
-+	port8250.port.dev               = dev;
-+	port8250.port.mapsize           = resource_size(regs);
-+	port8250.port.iotype            = UPIO_MEM;
-+	port8250.port.irqflags          = IRQF_SHARED;
-+
-+	port8250.port.membase = devm_ioremap(dev, port8250.port.mapbase, port8250.port.mapsize);
-+	if (!port8250.port.membase)
-+		return -ENOMEM;
-+
-+	ret = uart_read_and_validate_port_properties(&port8250.port);
-+	if (ret)
-+		return -EINVAL;
-+
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->line = serial8250_register_8250_port(&port8250);
-+	if (data->line < 0)
-+		return data->line;
-+
-+	platform_set_drvdata(pdev, data);
-+	return 0;
-+}
-+
-+static void acpi_platform_serial_remove(struct platform_device *pdev)
-+{
-+	struct acpi_serial_info *data = platform_get_drvdata(pdev);
-+
-+	serial8250_unregister_port(data->line);
-+}
-+
-+static const struct acpi_device_id acpi_platform_serial_table[] = {
-+	{ "RSCV0003", 0 },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, acpi_platform_serial_table);
-+
-+static struct platform_driver acpi_platform_serial_driver = {
-+	.driver = {
-+		.name			= "acpi_serial",
-+		.acpi_match_table	= ACPI_PTR(acpi_platform_serial_table),
-+	},
-+	.probe			= acpi_platform_serial_probe,
-+	.remove_new		= acpi_platform_serial_remove,
-+};
-+
-+builtin_platform_driver(acpi_platform_serial_driver);
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index 47ff50763c04..fbfe4d3501b1 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -576,3 +576,11 @@ config SERIAL_OF_PLATFORM
- 	  are probed through devicetree, including Open Firmware based
- 	  PowerPC systems and embedded systems on architectures using the
- 	  flattened device tree format.
-+
-+config SERIAL_ACPI_PLATFORM
-+	tristate "ACPI platform bus based probing for 8250 ports"
-+	depends on SERIAL_8250 && ACPI
-+	default n
-+	help
-+	  This option is used for generic 8250 compatible serial ports
-+	  that are enumerated through ACPI platform bus.
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index ea2e81f58eac..8c0ef357fc4e 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -18,6 +18,7 @@ obj-$(CONFIG_SERIAL_8250_CONSOLE)	+= 8250_early.o
- 
- obj-$(CONFIG_SERIAL_8250_ACCENT)	+= 8250_accent.o
- obj-$(CONFIG_SERIAL_8250_ACORN)		+= 8250_acorn.o
-+obj-$(CONFIG_SERIAL_ACPI_PLATFORM)	+= 8250_acpi.o
- obj-$(CONFIG_SERIAL_8250_ASPEED_VUART)	+= 8250_aspeed_vuart.o
- obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
- obj-$(CONFIG_SERIAL_8250_BCM7271)	+= 8250_bcm7271.o
--- 
-2.40.1
-
+Will
