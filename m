@@ -1,147 +1,72 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F1E217B514;
-	Tue, 30 Apr 2024 20:04:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76B782572;
+	Wed,  1 May 2024 04:31:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714507488; cv=none; b=DnEZEpAkhbyT6fQUAy2xUm2Z+RwCTO2hilGaCP4T9XRNwNAJBKPUDip58Cf+vsWQHwqoTyMbSwDds53uuEBishqXqO3WcZti5z3Z1KiZFfHyHeGJ2TPQO782e+1+zlAu6yFkfpccfImhqIf7A2H6NIQo8T5vHmmlqAEhrvwwnUI=
+	t=1714537873; cv=none; b=b0ZV/8XPSSeX8BY/OxWp493FTu4mp0psXI0I/mOl9bNM5avh6QAdgLyh34XAD+xg9963gIyoG69E7mQv/QZQRGOwj8eFiTroUZ7UZhg/4ebW7Jbg2a6lKX94NoyRuKISBj8KtmNps0lRy74Jtuc7ViWTRUmOtPD2Nlm+KwlLOxs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714507488; c=relaxed/simple;
-	bh=CRudngwwFqEb5JkD9tyr3v9H3uVKI58dqmSAZwNlhLA=;
-	h=From:To:Cc:Date:Message-Id:MIME-Version:Subject; b=rVb/UVeps+LibZe49Obevjuw0D9Qpfz+9RgTtk1YyFDaycWvTW2pP6cIFrG9rkWsM2JiqJldaKPl6REe60dX4DGZygEn1elYgV7AXsNtSb5vAGs4MhHVEgRsKE2rLS4Vxu5sPt8Kj3gH9COGOXPjs8QKojy2cDyRbAfq1R+gwfY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=YRghvhWW; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1714537873; c=relaxed/simple;
+	bh=ehtlKgUoW2wMkIdQbSn6yZOg4NRiq5q4R0ZqTQom8Y4=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=k2G57g9cJtPsqsEUaUH14lGNMMOSIgUNVkqxR4+16n/APc+/BPjw66nbf4kcr7WyHi2b62l8OOFgX6uCiMa8XgoU3VlMUmW8uzTMViJCkE6NdmT99f/GMeCR7Xi7Z0lvMZaGcQRQvp4qaDaRX9O/gAe3RuLvVpkQCJ8C4SLkT4I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SWXlYc1r; arc=none smtp.client-ip=209.85.210.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="YRghvhWW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-	:From:subject:date:message-id:reply-to;
-	bh=EpMG0aEBxpsvqvhiJSjNm3u60yLj5lLNLQykLwZWCdM=; b=YRghvhWWNz/Z8+sY5K2sqgOodF
-	OItBrAWOjBTOExlNIlmi/nDITvP8Eq8Q1DzAmbtvjXOo9PTBLEMaPlYWhKeU386vGXaCCFk9tFXvB
-	JXwNWR2g+TpxEpV0uheYUXPRkvqvPQtAHKI7VUqGln+5V5ClMbchYykqrcSR8WwXE3RM=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57260 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1s1tiN-0007JJ-AS; Tue, 30 Apr 2024 16:04:35 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jon Ringle <jringle@gridpoint.com>
-Cc: hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	stable@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Date: Tue, 30 Apr 2024 16:04:30 -0400
-Message-Id: <20240430200431.4102923-1-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SWXlYc1r"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-6f0b9f943cbso5259581b3a.0;
+        Tue, 30 Apr 2024 21:31:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714537872; x=1715142672; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=ehtlKgUoW2wMkIdQbSn6yZOg4NRiq5q4R0ZqTQom8Y4=;
+        b=SWXlYc1ryY5wEvUW62/+r13niO0VUNQq5V2fPu3wX+Mcu6JDhi5FcI5YK9o0+z5x7L
+         /yOIHMbncHhlZNIBu0wc2A3fjF5DyCg/B+4X4tmYE1abciqkmerOojbKadvxsMALOxjq
+         8p/6tbYNRBWc8HPubS8lzNn9ZJatDs37GVTwQ+XfBVkxmA1hCP7ipe+g9HM1S68qdaKN
+         Rky2d9fWJlupOVZZjV3dJlMuGUaNXanc67zbxFE9h1ab3JZs1JRJKY1cfilU6SYbWsPc
+         6BuFt/WNXoTPYYH/NgRVyCurN9Ku6tQIyet1dJ8DsS4HlCgApBr1bDwNWCH1xymjrs18
+         e6Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714537872; x=1715142672;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ehtlKgUoW2wMkIdQbSn6yZOg4NRiq5q4R0ZqTQom8Y4=;
+        b=c70oWwmouLsvLCMPVc7seThZrYVn2nHr86RLPat0COsFcsAS1duIc70xaBAJAJw58F
+         4gUcdNueHe0u5mzKy3yhh2gu24Z1RGBffE2Vu1TWFsYy5hA5xNJYuHjl45RttuM/JAGB
+         ZGqaoT1woImw6DZVxAu0YJAYC2t6KFO1iqd8EDWi7I6cVvbKPpWSu1j/tbYuTYgdexxA
+         VYsQkjtysaM4O844ciojwjHA1XanzITkJCDOOOMJOn0bMmK2UxbJ43zkZy7zmtY8kEe0
+         d4XOawtR1wAYGjZAiECj+JfmldZaD6f9BymO4/KXRnwS97CexaZ2OqwvrEoI5Gsd6yC0
+         i6Jw==
+X-Forwarded-Encrypted: i=1; AJvYcCVjB85NDn9sIAkhdXHw9pG4itRsjo22HTd32HJHEtDH3nPoV+StB+iDMQLKga82RSgwxQOgi0i/Rs6dTIeT5fnwA6Wfm4K8TQnNYQd55PdqiJ2F8QRVDfwp7dVpHMuy0KVjKz8gCn10MYJjV7PSgOTzBTsXT2DbjU6z/06DUWGiU9gFGeOImA==
+X-Gm-Message-State: AOJu0Yxb5DE52m3HhRNRK1BZvN+XiZDIRSrcGeTp5aYQ1UWZHFTs8gh0
+	sgclW+zjreiDG6W9SqZVlMzLObavl/s5NJ9eRHyKD2yyXXtNgwvTp+sXLyNvdClvsE1L7pay6ff
+	YiiMvuDDPBX5YkxtrZMdHht6pdUI=
+X-Google-Smtp-Source: AGHT+IF1S+z589TJNkRFleq3ZlYQTlbiZ8DyCgYD0YriYJog/J956Bm/0/tLqzT9TTV754T6OCSvrlxbQELm9a2NVVw=
+X-Received: by 2002:a05:6a20:d491:b0:1aa:6178:345 with SMTP id
+ im17-20020a056a20d49100b001aa61780345mr2108072pzb.7.1714537871593; Tue, 30
+ Apr 2024 21:31:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH v2] serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when using prescaler
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+From: Shresth Prasad <shresthprasad7@gmail.com>
+Date: Wed, 1 May 2024 10:01:00 +0530
+Message-ID: <CAE8VWi+UwYWw+RBMPi5ozg+sQHKtyxp2i2K3u9e3b42Gt8D+qw@mail.gmail.com>
+Subject: Re: [PATCH][next] tty: sunsu: Simplify device_node cleanup by using __free
+To: gregkh@linuxfoundation.org, davem@davemloft.net, jirislaby@kernel.org, 
+	linux-serial@vger.kernel.org
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>, Julia Lawall <julia.lawall@inria.fr>, 
+	Shuah Khan <skhan@linuxfoundation.org>, sparclinux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Shresth Prasad <shresthprasad7@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Hi,
 
-When using a high speed clock with a low baud rate, the 4x prescaler is
-automatically selected if required. In that case, sc16is7xx_set_baud()
-properly configures the chip registers, but returns an incorrect baud
-rate by not taking into account the prescaler value. This incorrect baud
-rate is then fed to uart_update_timeout().
+Could I please get some feedback for this patch?
 
-For example, with an input clock of 80MHz, and a selected baud rate of 50,
-sc16is7xx_set_baud() will return 200 instead of 50.
-
-Fix this by first changing the prescaler variable to hold the selected
-prescaler value instead of the MCR bitfield. Then properly take into
-account the selected prescaler value in the return value computation.
-
-Also add better documentation about the divisor value computation.
-
-Fixes: dfeae619d781 ("serial: sc16is7xx")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
----
-
-Changes for V2:
-- Change prescaler type to "unsigned int" (Jiri S.)
-
----
- drivers/tty/serial/sc16is7xx.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 03cf30e20b75..bf0065d1c8e9 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -555,16 +555,28 @@ static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
- 	return reg == SC16IS7XX_RHR_REG;
- }
- 
-+/*
-+ * Configure programmable baud rate generator (divisor) according to the
-+ * desired baud rate.
-+ *
-+ * From the datasheet, the divisor is computed according to:
-+ *
-+ *              XTAL1 input frequency
-+ *             -----------------------
-+ *                    prescaler
-+ * divisor = ---------------------------
-+ *            baud-rate x sampling-rate
-+ */
- static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- {
- 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
- 	u8 lcr;
--	u8 prescaler = 0;
-+	unsigned int prescaler = 1;
- 	unsigned long clk = port->uartclk, div = clk / 16 / baud;
- 
- 	if (div >= BIT(16)) {
--		prescaler = SC16IS7XX_MCR_CLKSEL_BIT;
--		div /= 4;
-+		prescaler = 4;
-+		div /= prescaler;
- 	}
- 
- 	/* Enable enhanced features */
-@@ -574,9 +586,10 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 			      SC16IS7XX_EFR_ENABLE_BIT);
- 	sc16is7xx_efr_unlock(port);
- 
-+	/* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activated. */
- 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
- 			      SC16IS7XX_MCR_CLKSEL_BIT,
--			      prescaler);
-+			      prescaler == 1 ? 0 : SC16IS7XX_MCR_CLKSEL_BIT);
- 
- 	/* Backup LCR and access special register set (DLL/DLH) */
- 	lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
-@@ -592,7 +605,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	/* Restore LCR and access to general register set */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
--	return DIV_ROUND_CLOSEST(clk / 16, div);
-+	return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
- }
- 
- static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
-
-base-commit: 660a708098569a66a47d0abdad998e29e1259de6
--- 
-2.39.2
-
+Regards,
+Shresth
