@@ -1,157 +1,243 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7DB39FFB;
-	Wed,  1 May 2024 08:41:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FCF452F96
+	for <linux-serial@vger.kernel.org>; Wed,  1 May 2024 12:18:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714552901; cv=none; b=UN3iB1qNzZL1b59XdaLRWcD5WKeAZUTuoKW6ymjEIoHFybcHKXlPn/CwdBh9A0tS5BK6lykPzIxS2dp0MwmF46UNIRqYG0CuqeKqH0IeqkReg/qwjefvys9RH/UbnF0qmjhJKsBi2kbCwHm8CpFgOMk1Zb3BbeAsBtU5qgZ3tsI=
+	t=1714565887; cv=none; b=eKkku7IfsdjbMniuOnqXXS7KNJ69GuL6dhuttsS5kZCmjZZQ1Q79FkuTsgAR4F+Qm76Id9piLHQCcDsvgqG+fHVJoQXjbzn8po+dUJSwI+oqA1yQD/X/7J57sF+UsiUqIvHt+lCDVj228fSKeRN57qbU68rFEhdZs+hG5Uplb/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714552901; c=relaxed/simple;
-	bh=1rBxLhkgeuavduZH//Lz0Tf/8rm0k3X7h/lFl7E10qc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=M5AnS9qeJVgQ/Fkn17BrMWetlg7u9G2r3u+LYBEAPOZWQ/kr4nQFzBM1obe+Pd6R4tBU6CJ8LPm9N0s3puWgWvkbyc7KF5fKT20704iDJWgLhRZr7qTk3QMSmj6N+fPYZPAM8MFEELvAR0yvl1B90d75oy1+Jqp8npOtLrHPbtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ekMQ6Sr7; arc=none smtp.client-ip=209.85.210.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1714565887; c=relaxed/simple;
+	bh=EWOsbQ8d8Nb/EJHNU/jBnJqaPWlguzEkjOm3OBX3Ncc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=i4RGN6F2bLbg3ttf9RfbgvVuZR66L9iHh+tTJeRDAzRmnVL8O6NKPsWn3rWOI1aS1JEQjmXmVotCqd/G/Y1nPrfpRjgHJWi6wmD+VfYY44bp9++J9/eCyMClw47oIn55uQWkOSJiOOdlEjGJKMWhgD3VCn8BKfJHKePfF35bZg8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=mb3DeCIb; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ekMQ6Sr7"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-6ed691fb83eso5765088b3a.1;
-        Wed, 01 May 2024 01:41:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="mb3DeCIb"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1ec92e355bfso5023425ad.3
+        for <linux-serial@vger.kernel.org>; Wed, 01 May 2024 05:18:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714552899; x=1715157699; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1714565884; x=1715170684; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Nk32MppqLYyzvvpjGhxvJDk9rGDas0edOjH8vlcv3TM=;
-        b=ekMQ6Sr7LJXqyMSkR8ThCXXoLixwrX01Ue3B4+GmfwaNHrsF/YOhRxNP796gJRqx06
-         LTu4pcddaVisuvbW6aR2HEOFGrlaBOdAp/PbB2FLvzSlIFuddZlR/8C405QF9JLCvCaP
-         aDVGABdPRgw7tg5Op+IFmhSjLw3ma5byzNWj9nHvcbRkUjrClOVTvOmgzYCSz0Rbi1Hv
-         zfhcWeM+rpstT42jInQg8iA+jduFQ5SrB6CdbbQrAkkvbiIaCQxv6FjlPg7YcfInsv2Z
-         1DpP19FszTP/ELF9CjkmN66YnKY8wIP7hCwbmb19xTllKKnl/qgcgJPh2Mub7TbEx+vt
-         yPvQ==
+        bh=9EhfEaMFfLrGfmVLdeaNNG6PlGGzfTCBnCOLnM+VG1c=;
+        b=mb3DeCIbbmpn3mHmnE+oFMaBcjecbbNlK/QZrkms2jJA+3UDdtWoHK2u6fd8O99oZV
+         DZBPdOibNnGXR/3fneUHY+xliWTnRI4Yk251Fr01JZPBrtLxyecpW6F6JERJZOJHfhnU
+         9VSHoa/4LO5UkRm2Cq4GDGXTbYnbX62v3YbATpAkiiC0SwS+qHzgeqWWKsrvz+muHPZx
+         a5Bem5TxCjlzNR6RyHla9iEHu2QstpVxZq5QL+K436kdbR9ARUGPE1DtoWHHOoNcgnVj
+         sP/QXa/KGts1fsgIsDV4V1xUJv/SPujSnedypd6/rUF4JVGitabA+3a0Rc4ZtYqP6hYB
+         i7eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714552899; x=1715157699;
+        d=1e100.net; s=20230601; t=1714565884; x=1715170684;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Nk32MppqLYyzvvpjGhxvJDk9rGDas0edOjH8vlcv3TM=;
-        b=kPQfx8FdFFzzBo12X7JETOFmd4oYzaDnwfFMUeh72UV0Dk1FzPbbhezabvbL+ME8ON
-         wiTA0OCnnAqkV+n/+uL4O5Rueeb1CI6ilq2KbTABfieyTdZutOX+UXiPvM8gpqHlJQnc
-         GRmoqR0t7422ti6KzZGXWUqpZwqQhQkfgeOONWsxr5hi//Fo4uyAMPkeVZoB0OTOWwjF
-         KEtmfzvGOzpPeoUD8H4TuSlv/FBXLNH1+wRJVSc04krS73XFpvfRmliB1y6D+hhj078F
-         +nRQJ0eitKP655ohX58mQXGhVDXcMdaRVc8ir1jZkn07OwcTfBv8sI3ueFwKwdzB+cg/
-         aeeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVZbFTRK9BaBYdv+TZ/W4Ie2F3xdB0DhBmBEB10CDWvi9r5PQuYzbxdAFRPbm47sWOlQlN0fLws4oi4Hn0A0tIIYpOIxvIM0pVsz72ud1RpkbZ+TjWdwOYnhjx8eofuBb72Qpn2r7/O7E+p
-X-Gm-Message-State: AOJu0YwEA6McAjwyBzWGMuVM9TC/scN+LC5OLNK5hYf1lMgPJtuSroQ2
-	C6M96iXtVMUU9yyqhAfDznYho2vUn+YFi4Qh9IS/tnn+FzyQhe3U
-X-Google-Smtp-Source: AGHT+IFdMgsivwUAwFkQnIOUgQV65FC8VM+NDSAIMsU5iviWctfVG1fGtAfk/j8w5WdwVR5ohOw/Xg==
-X-Received: by 2002:a05:6a21:788a:b0:1a7:bb6d:6589 with SMTP id bf10-20020a056a21788a00b001a7bb6d6589mr1745740pzc.29.1714552898848;
-        Wed, 01 May 2024 01:41:38 -0700 (PDT)
-Received: from shresth-aspirea71576g.abesec.ac.in ([139.5.197.146])
-        by smtp.gmail.com with ESMTPSA id li6-20020a17090b48c600b002b0dea23239sm878052pjb.49.2024.05.01.01.41.34
+        bh=9EhfEaMFfLrGfmVLdeaNNG6PlGGzfTCBnCOLnM+VG1c=;
+        b=hcvNKI+uygncfrCyRnwF03H3+rjXSQaHL55C+V2efcm72GlLBZg/FZAQ71y/2l5Dyy
+         lwnSbI4CFwjTTiF/YGPmoO65W6JAyQcUc+rVTV5VOUz9228vWSlCyhZoseXdT9EMmqKs
+         Ihaa8EvUx7FgGizfIe8HxGZ6ILIfCx7SSgPlHXyyu1GpP0fh2+8NHUOjTejC4MKyeGpa
+         lSexjJHPmfxvDFHpypSZwmre1HhGxMdvde6+ktkHSKhMiCg4v/eLQ9MDG5CU9nNK0pcg
+         FtV6L3jaVqxz6j245swV4sXceII3qRkYzfiGA4XiI/c7jg6J2/2eY+PEP4LPNuRuHkyU
+         4MAA==
+X-Forwarded-Encrypted: i=1; AJvYcCWsHRpDhOdHFht1VV9GFNSJXyUVOOs2eyU1oPa/IVbGkGlkFKN2hMPPH/bcdiLP7fMS8EoFs8u/2ckPgWL0KVAs7fSdMauY/URdrt2B
+X-Gm-Message-State: AOJu0Ywnur1KyqI2Iz+4TD0ZZIDcJ6Mco+n7XtdjRtXFCw/6BP/GG+/o
+	ykvd1Lqmc2ZkWYmBSuBfH2+DdDh0bMRkBBnfy2qJSxohC9i6h1dkZnmSDnDsuzY=
+X-Google-Smtp-Source: AGHT+IGKp6Ma/BFy2R+UnRNFa2ZVdvrW3j2wb0D3bLNHdRHpaQg8W2PvjVIveWAJa/pc36T5TUO8jg==
+X-Received: by 2002:a17:902:efcf:b0:1e5:c06b:3330 with SMTP id ja15-20020a170902efcf00b001e5c06b3330mr2036008plb.24.1714565884004;
+        Wed, 01 May 2024 05:18:04 -0700 (PDT)
+Received: from sunil-pc.Dlink ([106.51.188.106])
+        by smtp.gmail.com with ESMTPSA id im15-20020a170902bb0f00b001ec8888b22esm1336900plb.65.2024.05.01.05.17.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 01:41:38 -0700 (PDT)
-From: Shresth Prasad <shresthprasad7@gmail.com>
-To: davem@davemloft.net,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: sparclinux@vger.kernel.org,
+        Wed, 01 May 2024 05:18:03 -0700 (PDT)
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	javier.carrasco.cruz@gmail.com,
-	skhan@linuxfoundation.org,
-	Shresth Prasad <shresthprasad7@gmail.com>,
-	Julia Lawall <julia.lawall@inria.fr>
-Subject: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by using __free
-Date: Wed,  1 May 2024 14:11:11 +0530
-Message-ID: <20240501084110.4165-2-shresthprasad7@gmail.com>
-X-Mailer: git-send-email 2.45.0
+	acpica-devel@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Anup Patel <anup@brainfault.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Andrei Warkentin <andrei.warkentin@intel.com>,
+	Haibo1 Xu <haibo1.xu@intel.com>,
+	=?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+	Sunil V L <sunilvl@ventanamicro.com>
+Subject: [PATCH v5 00/17] RISC-V: ACPI: Add external interrupt controller support
+Date: Wed,  1 May 2024 17:47:25 +0530
+Message-Id: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.40.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Add `__free` function attribute to `ap` and `match` pointer
-initialisations which ensure that the pointers are freed as soon as they
-go out of scope, thus removing the need to manually free them using
-`of_node_put`.
+This series adds support for the below ECR approved by ASWG.
+1) MADT - https://drive.google.com/file/d/1oMGPyOD58JaPgMl1pKasT-VKsIKia7zR/view?usp=sharing
 
-This also removes the need for the `goto` statement and the `rc`
-variable.
+The series primarily enables irqchip drivers for RISC-V ACPI based
+platforms.
 
-Tested using a qemu x86_64 virtual machine.
+The series can be broadly categorized like below. 
 
-Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
----
-Changes in v2:
-    - Specify how the patch was tested
+1) PCI ACPI related functions are migrated from arm64 to common file so
+that we don't need to duplicate them for RISC-V.
 
- drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
+2) Added support for re-ordering the probe of interrupt controllers when
+IRQCHIP_ACPI_DECLARE is used.
 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 67a5fc70bb4b..0f463da5e7ce 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
- 
- static enum su_type su_get_type(struct device_node *dp)
- {
--	struct device_node *ap = of_find_node_by_path("/aliases");
--	enum su_type rc = SU_PORT_PORT;
-+	struct device_node *ap __free(device_node) =
-+			    of_find_node_by_path("/aliases");
- 
- 	if (ap) {
- 		const char *keyb = of_get_property(ap, "keyboard", NULL);
- 		const char *ms = of_get_property(ap, "mouse", NULL);
--		struct device_node *match;
- 
- 		if (keyb) {
--			match = of_find_node_by_path(keyb);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(keyb);
- 
--			/*
--			 * The pointer is used as an identifier not
--			 * as a pointer, we can drop the refcount on
--			 * the of__node immediately after getting it.
--			 */
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_KBD;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_KBD;
- 		}
- 		if (ms) {
--			match = of_find_node_by_path(ms);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(ms);
- 
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_MS;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_MS;
- 		}
- 	}
--
--out:
--	of_node_put(ap);
--	return rc;
-+	return SU_PORT_PORT;
- }
- 
- static int su_probe(struct platform_device *op)
+3) To ensure probe order between interrupt controllers and devices,
+implicit dependency is created similar to when _DEP is present.
+
+4) Added 8250 serial driver for a generic 16550 UART which is enumerated
+as ACPI platform device.
+
+5) ACPI support added in RISC-V interrupt controller drivers.
+
+Changes since RFC v4:
+	1) Removed RFC tag as the RFCv4 design looked reasonable.
+	2) Dropped PCI patch needed to avoid warning when there is no MSI
+	   controller. This will be sent later separately after the
+	   current series.
+	3) Dropped PNP handling of _DEP since there is new ACPI ID for
+	   generic 16550 UART. Added the serial driver patch instead.
+	4) Rebased to latest linux-next.
+	5) Reordered/squashed patches in the series
+
+Changes since RFC v3:
+	1) Moved to _DEP method instead of fw_devlink.
+	2) PLIC/APLIC driver probe using namespace devices.
+	3) Handling PNP devices as part of clearing dependency.
+	4) Rebased to latest linux-next to get AIA DT drivers.
+
+Changes since RFC v2:
+	1) Introduced fw_devlink for ACPI nodes for IRQ dependency.
+	2) Dropped patches in drivers which are not required due to
+	   fw_devlink support.
+	3) Dropped pci_set_msi() patch and added a patch in
+	   pci_create_root_bus().
+	4) Updated pnp_irq() patch so that none of the actual PNP
+	   drivers need to change.
+
+Changes since RFC v1:
+	1) Abandoned swnode approach as per Marc's feedback.
+	2) To cope up with AIA series changes which changed irqchip driver
+	   probe from core_initcall() to platform_driver, added patches
+	   to support deferred probing.
+	3) Rebased on top of Anup's AIA v11 and added tags.
+
+To test the series,
+
+1) qemu should be built using the riscv_acpi_namespace_v2 branch at
+https://github.com/vlsunil/qemu.git
+
+2) EDK2 should be built using the instructions at:
+https://github.com/tianocore/edk2/blob/master/OvmfPkg/RiscVVirt/README.md
+
+NOTE: One should be able to use u-boot as well as per instructions from Björn.
+https://lore.kernel.org/lkml/87a5lqsrvh.fsf@all.your.base.are.belong.to.us/
+
+3) Build Linux using this series.
+
+Run Qemu:
+qemu-system-riscv64 \
+ -M virt,pflash0=pflash0,pflash1=pflash1,aia=aplic-imsic \
+ -m 2G -smp 8 \
+ -serial mon:stdio \
+ -device virtio-gpu-pci -full-screen \
+ -device qemu-xhci \
+ -device usb-kbd \
+ -blockdev node-name=pflash0,driver=file,read-only=on,filename=RISCV_VIRT_CODE.fd \
+ -blockdev node-name=pflash1,driver=file,filename=RISCV_VIRT_VARS.fd \
+ -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
+ -kernel arch/riscv/boot/Image \
+ -initrd rootfs.cpio \
+ -append "root=/dev/ram ro console=ttyS0 rootwait earlycon=uart8250,mmio,0x10000000"
+
+To boot with APLIC only, use aia=aplic.
+To boot with PLIC, remove aia= option.
+
+This series is also available in acpi_b2_v5 branch at
+https://github.com/vlsunil/linux.git
+
+Based-on: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tag/?h=next-20240501
+
+Sunil V L (17):
+  arm64: PCI: Migrate ACPI related functions to pci-acpi.c
+  ACPI: scan: Add a weak function to reorder the IRQCHIP probe
+  ACPI: bus: Add acpi_riscv_init function
+  ACPI: scan: Refactor dependency creation
+  ACPI: scan: Add RISC-V interrupt controllers to honor list
+  ACPI: scan: Define weak function to populate dependencies
+  ACPI: bus: Add RINTC IRQ model for RISC-V
+  ACPI: pci_link: Clear the dependencies after probe
+  ACPI: RISC-V: Implement PCI related functionality
+  ACPI: RISC-V: Implement function to reorder irqchip probe entries
+  ACPI: RISC-V: Initialize GSI mapping structures
+  ACPI: RISC-V: Implement function to add implicit dependencies
+  irqchip/riscv-intc: Add ACPI support for AIA
+  irqchip/riscv-imsic: Add ACPI support
+  irqchip/riscv-aplic: Add ACPI support
+  irqchip/sifive-plic: Add ACPI support
+  serial: 8250: Add 8250_acpi driver
+
+ arch/arm64/kernel/pci.c                    | 191 ------------
+ arch/riscv/Kconfig                         |   3 +
+ arch/riscv/configs/defconfig               |   1 +
+ arch/riscv/include/asm/irq.h               |  57 ++++
+ arch/riscv/kernel/acpi.c                   |  31 +-
+ drivers/acpi/Kconfig                       |   3 +
+ drivers/acpi/bus.c                         |   4 +
+ drivers/acpi/pci_link.c                    |   3 +
+ drivers/acpi/riscv/Makefile                |   2 +-
+ drivers/acpi/riscv/init.c                  |  14 +
+ drivers/acpi/riscv/init.h                  |   4 +
+ drivers/acpi/riscv/irq.c                   | 329 +++++++++++++++++++++
+ drivers/acpi/scan.c                        |  65 ++--
+ drivers/irqchip/irq-riscv-aplic-direct.c   |  20 +-
+ drivers/irqchip/irq-riscv-aplic-main.c     |  70 +++--
+ drivers/irqchip/irq-riscv-aplic-main.h     |   1 +
+ drivers/irqchip/irq-riscv-aplic-msi.c      |   9 +-
+ drivers/irqchip/irq-riscv-imsic-early.c    |  52 +++-
+ drivers/irqchip/irq-riscv-imsic-platform.c |  32 +-
+ drivers/irqchip/irq-riscv-imsic-state.c    | 115 ++++---
+ drivers/irqchip/irq-riscv-imsic-state.h    |   2 +-
+ drivers/irqchip/irq-riscv-intc.c           | 102 ++++++-
+ drivers/irqchip/irq-sifive-plic.c          |  89 ++++--
+ drivers/pci/pci-acpi.c                     | 182 ++++++++++++
+ drivers/tty/serial/8250/8250_acpi.c        |  96 ++++++
+ drivers/tty/serial/8250/Kconfig            |   8 +
+ drivers/tty/serial/8250/Makefile           |   1 +
+ include/acpi/acpi_bus.h                    |   2 +
+ include/linux/acpi.h                       |   9 +
+ include/linux/irqchip/riscv-imsic.h        |  10 +
+ 30 files changed, 1155 insertions(+), 352 deletions(-)
+ create mode 100644 drivers/acpi/riscv/init.c
+ create mode 100644 drivers/acpi/riscv/init.h
+ create mode 100644 drivers/acpi/riscv/irq.c
+ create mode 100644 drivers/tty/serial/8250/8250_acpi.c
+
 -- 
-2.44.0
+2.40.1
 
