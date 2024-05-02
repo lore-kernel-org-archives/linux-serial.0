@@ -1,135 +1,254 @@
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF0C316FF2B
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 18:17:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D4D171669;
+	Thu,  2 May 2024 18:20:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714673861; cv=none; b=hqiRasxjJ7tJRL5HI4dCdaE8VcpC/1rsKY1EMLazvXSjUapJ+SFB2M2Lad/sOxcOrlEFy/c7mMQTesgHg4Gpe4Thb3iGvL9LkLA71YYEMKzalCck+56+jWa0SNdIsG1PAOTdXaIFqnmccjWzNvUUe85CIDZLV3j+/oXMzaTsAvQ=
+	t=1714674004; cv=none; b=s0mrBJOmd2y61NeTWn0Ruyx8Zu1m7s3npGXcXjzKhwpVXCOqXrcBsZcruz1er809HOmICSMwHF63iY1deTazc0jq6pu6FVSfDVI406SCSO+hl/fM/xZVbXrvimDqyaSTX0h5PofE3/PQ3+YcfcXtFsOgX5+ZHdRRPYwloyH/4So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714673861; c=relaxed/simple;
-	bh=KhdkdyVLO1m1Lp33vPRYarXehHaipcBx459m/LvdYGM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YUDKuD3m3R0k3WkIdnk1gLsD92GbR8LdBvpngToiyKXrDp/PUkKqhxcQGBWl/Ft9X69DSt4K8EB2Uzj0Or+A+DjuT2YhFxC52iy6y9s1HrarMVLHtvzGQ8Nx5biN+7ULzmFni4xG45vUGjpgc4fyIRehykSlpMfKr1143JEA+Aw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=EUyD36SC; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1714674004; c=relaxed/simple;
+	bh=DkDZ0BO2Nq2CclwEjcWx28N5dvPWqQoQyz/ra0jAc6o=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=SAbSrr3lSytH9jH62cf3ee+iFBsrj0SrnK6PoT+bvdHq8/+sXUyjksShnWnMVrqUZiWK4Vq/n6hq7tzT1u/SYuUKicjMHGXdj8B4c7oSkV2F5Mhuf5cxRqFA4oDT/zxqP8oJXZANlUe0AXbO7pNonUc9UnQ2faTrIihhUotpo34=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=oDSpHg5X; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="EUyD36SC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=ra8p
-	SWsauUgo3TWihYTMQJ5qhlBnHKFupkcSfPmlHL4=; b=EUyD36SC3T6b7DHFxdIV
-	zbkesz6FiHj7eeUDDY+1h4GwM52KL4aaJGReqseJfcBjmxQCw3ga8NAYSeS2heIK
-	/6gpZ3XTLDTIJUfJq3bPFrZD8qcltWPNM3fNaZeGLL9c27EKhdA+pVQgKBEyqQxH
-	4T9PhEHJrfdYE8ga8SYW4Br3jSAQQzPJ/ZgBb5KbBSp/X4deTO6bqHuRwO++pnlG
-	ajN3Ctinf5EZmBuu/G2h30SFZjLH2A0ss0gWF6jrOxjJx9jwTagXAWQWNIZYpNq8
-	j26xX0U8LYwujzJtpb/nqDf5INtFZzDehkQlhs0x5nfD7gCJ+VW2vFrv+Bp8/Mru
-	7Q==
-Received: (qmail 3332279 invoked from network); 2 May 2024 20:17:37 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 2 May 2024 20:17:37 +0200
-X-UD-Smtp-Session: l3s3148p1@BLgvnnwXNKlehhrT
-Date: Thu, 2 May 2024 20:17:37 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-renesas-soc@vger.kernel.org, Dirk Behme <dirk.behme@de.bosch.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Aleksandar Mitev <amitev@visteon.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] serial: sh-sci: always cancel hrtimer when DMA
- RX is invalidated
-Message-ID: <20240502181737.b5vvghnwzievvlgj@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	linux-renesas-soc@vger.kernel.org,
-	Dirk Behme <dirk.behme@de.bosch.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Aleksandar Mitev <amitev@visteon.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-References: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
- <20240416123545.7098-6-wsa+renesas@sang-engineering.com>
- <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="oDSpHg5X"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=yGgKhs0asb1Y2UFT7ihSdsoF/Rm6jsqksB68r4YXvWE=; b=oDSpHg5X2es8aMHxNsxiUoUGVt
+	fPSG/h6J+tNXV9K0vQPdUbbfbMvw8txbZtZaUFOkszJaoj/vMXh1CB1dDhuft34SzDYFX4HoUILay
+	w4e1mJL5CCXYxmqaFrQULwU9a5MZc4YT43oWwIG4qox8XbP0WNQNMmFTbBqI8UumLwPo=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s2b26-001ZZf-0X;
+	Thu, 02 May 2024 20:19:50 +0200
+Message-ID: <1359a0e5024445d0e2bc1c8659094c35dc85c090.camel@hexdev.de>
+Subject: Re: [PATCH v2 07/12] can: Add support for serdev LIN adapters
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>, Marc Kleine-Budde
+ <mkl@pengutronix.de>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>, "David
+ S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
+ Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin
+ Tissoires <bentiss@kernel.org>,  Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, Linus
+ Walleij <linus.walleij@linaro.org>, Andreas Lauser
+ <andreas.lauser@mercedes-benz.com>,  Jonathan Corbet <corbet@lwn.net>,
+ Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, 
+ netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-input@vger.kernel.org,  linux-serial@vger.kernel.org
+Date: Thu, 02 May 2024 20:19:48 +0200
+In-Reply-To: <6ae3c1af-4368-4a3e-bfb5-366080048dac@kernel.org>
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+	 <20240502075534.882628-8-christoph.fritz@hexdev.de>
+	 <6ae3c1af-4368-4a3e-bfb5-366080048dac@kernel.org>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="h6vetrfs6rdknizx"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 
+On Thu, 2024-05-02 at 10:44 +0200, Jiri Slaby wrote:
+> On 02. 05. 24, 9:55, Christoph Fritz wrote:
+> > This commit introduces LIN-Bus support for UART devices equipped with
+> > LIN transceivers, utilizing the Serial Device Bus (serdev) interface.
+> > 
+> > For more details on an adapter, visit: https://hexdev.de/hexlin#tty
+> ...
+> > --- /dev/null
+> > +++ b/drivers/net/can/lin-serdev.c
+> > @@ -0,0 +1,514 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +/* Copyright (C) 2024 hexDEV GmbH - https://hexdev.de */
+> > +
+> > +#include <linux/module.h>
+> > +#include <linux/wait.h>
+> > +#include <linux/init.h>
+> > +#include <linux/errno.h>
+> > +#include <linux/string.h>
+> > +#include <linux/kernel.h>
+> 
+> What do you need kernel.h for? You should explicitly require what you 
+> need (you apparently do), so kernel.h should not be needed.
 
---h6vetrfs6rdknizx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+OK
 
-Hi Geert,
+> 
+> > +#include <net/lin.h>
+> > +#include <linux/of.h>
+> > +#include <linux/serdev.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/kfifo.h>
+> > +#include <linux/workqueue.h>
+> > +#include <linux/tty.h>
+> 
+> Might be eaier to maintain if you sort them.
 
-good news, I was able to trigger the DMA rx code path. I dunno what I
-did wrong last time. I started from scratch again and it worked easily
-by dd-ing random data to the second non-console debug port.
+OK, hid driver gets also sorted
 
-> I do think you need to cancel the timer: even when not restarting
-> the timer in sci_dma_rx_complete() due to a DMA failure, the previous
-> timer may still be running, and will cause a NULL pointer dereference
-> on s->chan_rx on timer expiry.
+> 
+> > +#define LINSER_SAMPLES_PER_CHAR		10
+> > +#define LINSER_TX_BUFFER_SIZE		11
+> > +#define LINSER_RX_FIFO_SIZE		256
+> > +#define LINSER_PARSE_BUFFER		24
+> > +
+> > +struct linser_rx {
+> > +	u8 data;
+> > +	u8 flag;
+> > +};
+> > +
+> > +enum linser_rx_status {
+> > +	NEED_MORE = -1,
+> > +	MODE_OK = 0,
+> > +	NEED_FORCE,
+> > +};
+> > +
+> > +struct linser_priv {
+> > +	struct lin_device *lin_dev;
+> > +	struct serdev_device *serdev;
+> > +	DECLARE_KFIFO_PTR(rx_fifo, struct linser_rx);
+> > +	struct delayed_work rx_work;
+> > +	ulong break_usleep_min;
+> > +	ulong break_usleep_max;
+> > +	ulong post_break_usleep_min;
+> > +	ulong post_break_usleep_max;
+> > +	ulong force_timeout_jfs;
+> 
+> The same as for uint :)
 
-Taking locking into account, I think this patch is bogus. If we run into
-this NULL-pointer, we have a locking problem and cancelling the timer in
-sci_dma_rx_chan_invalidate() is not going to fix the underlying locking
-problem. sci_dma_rx_chan_invalidate() does not only clear the pointer
-but also the cookie_rx-array. sci_dma_rx_timer_fn() bails out via
-sci_dma_rx_find_active() if that array is cleared. It does so before
-accessing the chan_rx-pointer. So, it looks to me that should work once
-all calls to sci_dma_rx_chan_invalidate() are protected. And there is
-one path where this is not true, namely via sci_dma_rx_release() during
-shutdown. This is why I asked Dirk if the system was about to shutdown.
-Currently, I don't see any other problematic code path.
+OK
 
-> > -#ifdef CONFIG_SERIAL_SH_SCI_DMA
-> > -       if (s->chan_rx_saved) {
-> > -               dev_dbg(port->dev, "%s(%d) deleting rx_timer\n", __func__,
-> > -                       port->line);
-> > -               hrtimer_cancel(&s->rx_timer);
-> > -       }
-> > -#endif
+> 
+> > +	struct lin_responder_answer respond_answ[LIN_NUM_IDS];
+> > +	struct mutex resp_lock; /* protects respond_answ */
+> > +	bool is_stopped;
+> > +};
+> ...
+> > +static void linser_derive_timings(struct linser_priv *priv, u16 bitrate)
+> > +{
+> > +	unsigned long break_baud = (bitrate * 2) / 3;
+> > +	unsigned long timeout_us;
+> > +
+> 
+> Are those 1000000UL USEC_PER_SEC?
 
-Also, this chunk needs to stay. I suggested in patch 1 to cancel the
-timer on successful dma_rx_complete, so the timer only runs when a DMA
-is in progress. Then, of course, we need to cancel it in shutdown.
+yes
 
-I hope I am not seeing "no wood for the trees" by now. I am not
-convinced that I actually found Dirk's race condition yet...
+> 
+> > +	priv->break_usleep_min = (1000000UL * LINSER_SAMPLES_PER_CHAR) /
+> > +				 break_baud;
+> > +	priv->break_usleep_max = priv->break_usleep_min + 50;
+> > +	priv->post_break_usleep_min = (1000000UL * 1 /* 1 bit */) / break_baud;
+> > +	priv->post_break_usleep_max = priv->post_break_usleep_min + 30;
+> > +
+> > +	timeout_us = DIV_ROUND_CLOSEST(1000000UL * 256 /* bit */, bitrate);
+> > +	priv->force_timeout_jfs = usecs_to_jiffies(timeout_us);
+> > +}
+> ...
+> > +static bool linser_tx_frame_as_responder(struct linser_priv *priv, u8 id)
+> > +{
+> > +	struct lin_responder_answer *answ = &priv->respond_answ[id];
+> > +	struct serdev_device *serdev = priv->serdev;
+> > +	u8 buf[LINSER_TX_BUFFER_SIZE];
+> > +	u8 checksum, count, n;
+> > +	ssize_t write_len;
+> > +
+> > +	mutex_lock(&priv->resp_lock);
+> > +
+> > +	if (!answ->is_active)
+> > +		goto unlock_and_exit_false;
+> > +
+> > +	if (answ->is_event_frame) {
+> > +		struct lin_responder_answer *e_answ;
+> > +
+> > +		e_answ = &priv->respond_answ[answ->event_associated_id];
+> > +		n = min(e_answ->lf.len, LIN_MAX_DLEN);
+> > +		if (memcmp(answ->lf.data, e_answ->lf.data, n) != 0) {
+> > +			memcpy(answ->lf.data, e_answ->lf.data, n);
+> > +			checksum = lin_get_checksum(LIN_FORM_PID(answ->lf.lin_id),
+> > +						    n, e_answ->lf.data,
+> > +						    answ->lf.checksum_mode);
+> > +			answ = e_answ;
+> > +		} else {
+> > +			goto unlock_and_exit_false;
+> 
+> Can't you simply use guard(mutex) above and avoid the error-prone 
+> gotos/cleanup completely?
 
-All the best,
+OK
 
-   Wolfram
+> 
+> > +		}
+> > +	} else {
+> > +		checksum = answ->lf.checksum;
+> > +	}
+> > +
+> > +	count = min(answ->lf.len, LIN_MAX_DLEN);
+> > +	memcpy(&buf[0], answ->lf.data, count);
+> > +	buf[count] = checksum;
+> > +
+> > +	mutex_unlock(&priv->resp_lock);
+> > +
+> > +	write_len = serdev_device_write(serdev, buf, count + 1, 0);
+> > +	if (write_len < count + 1)
+> > +		return false;
+> > +
+> > +	serdev_device_wait_until_sent(serdev, 0);
+> > +
+> > +	return true;
+> > +
+> > +unlock_and_exit_false:
+> > +	mutex_unlock(&priv->resp_lock);
+> > +	return false;
+> > +}
+> > +
+> > +static void linser_pop_fifo(struct linser_priv *priv, size_t n)
+> > +{
+> > +	struct serdev_device *serdev = priv->serdev;
+> > +	struct linser_rx dummy;
+> > +	size_t ret, i;
+> > +
+> > +	for (i = 0; i < n; i++) {
+> > +		ret = kfifo_out(&priv->rx_fifo, &dummy, 1);
+> 
+> Does kfifo_skip() not work for records? (I added it recently for serial.)
 
+Using kfifo_skip() greatly simplifies this function and it works for
+records (uses __kfifo_skip_r), tests are successful.
 
---h6vetrfs6rdknizx
-Content-Type: application/pgp-signature; name="signature.asc"
+Maybe the comment in kfifo.h could be made more clear from:
 
------BEGIN PGP SIGNATURE-----
+ "kfifo_skip - skip output data"
+to
+ "kfifo_skip - skip the next fifo record"
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmYz2L0ACgkQFA3kzBSg
-KbbZQRAAsQIP51T8nRbMyG0IcszboQuFisobiJLZh/Bshh57hC/j3aIacLk8kpBm
-V3rR1WRUgfMdFlRxxoo3W1kYFZC0O8JXQvM5+5J3VAfvD3+7ukEbmYvBe/6brMf+
-Ji4p9kow5Q6mCaB7aQLmwkFf8NDtbThYX2/jSKug4MPE9ta4KK49XecNfnJHNeD4
-imOH3XWX65wb4qNomiDagbmM8FHeVWq7hNh0ERrlkHWXZQNSO0gRHEUj19FNgLmX
-ctDJNJNZQEe1y6UapsukFQyycJXvOn2WIRbDdqk1ysew8Vol/wF4s9XRbCnT4HDc
-Ga851NbnAP7ke19XRs3PT65PAFVjobknnNFi1Bm0zlCGnS3gcMX+/wJ1yQbU3zot
-mqeLYxzZU/VKzA48dni/pHT2SGTUb9OZOZCTq2LjwnPkEhwFKmZgWzXqixewFqpI
-MhYh41dViiUvPVgVDYgB63Zu3TyAlE0j9L6zGTK9cxrfLiwidObp4N4SchNtf6G2
-UsibHNx4Px3QiCOw17EbWzqTsr35xkOiB1elw+Uzq5Yk6REFgpjx1yy1SrF3XkiW
-1ZbgFr9hHPqWVol8Wb/NGj6vflSqGyDYBbxchfZD6s2Y2LfFopxnsybB3m+SCVV1
-5GfdQrHI6MVQOt+HfpWJaJ1lVgj/ztN7zYkqrCBy+9AgF7u8oUc=
-=PYh5
------END PGP SIGNATURE-----
+> 
+> > +		if (ret != 1) {
+> > +			dev_err(&serdev->dev, "Failed to pop from FIFO\n");
+> > +			break;
+> > +		}
+> > +	}
+> > +}
+> 
 
---h6vetrfs6rdknizx--
+Let me address these points and reroll in v3.
+
+Thanks
+  -- Christoph
