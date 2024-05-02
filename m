@@ -1,57 +1,57 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2673143AB3
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 09:50:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B985644F
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 09:55:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714643423; cv=none; b=DnMcM7hUzvJYbaaQOXJScP/GLccCYCHB0ExqRDFYYieVhMYwRSH2qmDk+fRkYWyHGwX2ivYMDzm9/0D37gbhMCbo3vxNY17TvTZ/bwQfuzdcW39O5pq3qeNxOoQ7NVr0kHKM+VvA4psWvHiO4PDQXCAyoqOn0mYd4WFcOKcSveA=
+	t=1714643718; cv=none; b=gTLdJBNzpA9NIUPX7F+piebi7fQo2y1ndsj/If6pe6hlKh3SeXE1WRe0Ckky3GY5SizDpx6GsI2b/JtRKlw4EQ8CnXGtFWm6BUJeT0bRQFAdO96iY+mwhhM4HNz3u4VgdrN/9HxsPGFm7YnKE0IrQYZOIr67Nc0grtPHR2ycwg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714643423; c=relaxed/simple;
-	bh=0JWiyOm7Ozvw+jRdtZ5s7Kqw86qKGc6L0YC4qTgpF0E=;
+	s=arc-20240116; t=1714643718; c=relaxed/simple;
+	bh=qRdP1MaAcqny7WVri5XKFV3uC/ES+lwc76NtRhAJ63U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WwHpnQtgbWxHN173CH43epyRt80YIU/IZViC6+oCmiFh9SL0MKvmtv+IRVAPninnj0Qr4P9WD0R8j0OQ8E7AdNz03HwzBt2H4nsBnG0zpRfR9g5YJcC6oPPuhftlRETnILzlZPJgXnQf3JSPe7jT/6wsNtSp7SF7ZLhed4ZrSh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=ZGqYpXF+; arc=none smtp.client-ip=209.85.214.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=a7GJynq6P0yiMjsgonXK+Hyxn7cdPEjgOXQBkszqH+t/jmYZ8aEPn5kP4FKUQ+EGSC62UCR4GJu12ZpqKWVWBq0uUQ3Q4ZX8eqxpaLXv/O5UUteWX6f+g/C6DhosHNdT5U3q9JMs5XVK0aCaBUzhJHjfwqN09iOcd448LBhWhmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=WD6C0WeX; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="ZGqYpXF+"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1ecff927a45so2222845ad.0
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 02:50:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="WD6C0WeX"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-1eca195a7c8so12240485ad.2
+        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 02:55:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714643421; x=1715248221; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1714643717; x=1715248517; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0L3flH7yZNX51bFJ6y3B+1+jhZGz/TS681Tx1TYzzOY=;
-        b=ZGqYpXF+nnoJEhgTquFu/m98uKm0DoxPbnU1x7kf2a1dRapq4ze9ky8B5iGgloKyOl
-         RcmMGe7abWMqC7X+US4brJGhTTDfOA3A7JPx1DDAC+k217xfSkrDnyCjxOkK+FaP97qJ
-         82SVkZuGISn3IGL+dylMsPyHz9I6KtdWveWddk/JhprQdbxwBy3LZLerNkmtgg4Qtiy9
-         3YQbgcRndZUk4fiDYlsR8bJWYhqXhyjsedfcWExo8OJH837A6OWSMjsSoikTkyDaXZE/
-         eOLt3putyHsYIwcn1O0YXIZhJz7dE2muEOklbkcoy3fV6jvkfnLXKkiT5two+n1n/yk+
-         Zk/g==
+        bh=NL6wf55BXPa+yyuBuN45neIFKGEebMs0pSULB1fzRIU=;
+        b=WD6C0WeXH6sRZovf9W46qUF4W2Ncg5Vw+flKXSqE3F/7A+DxQ8ICk7VFG7pscqYqc0
+         qmZ9tg3TwJCwg+IaKxASoOyqdwZG4r17JzQ2o5ezDZ6MqavkBPV8FdMr6S8/DmKggJO/
+         pPv2eup29iAieYBWyd28ZP5HsXwqYtUzVkfSmjOI/3wyBJNGu/StALD/K2hr55OrZIRV
+         j/4wmo3AVJ7G29eO0ixgQadmF439ZZ1i0q5muCUQCJ0T2O1c/Nqubi57pIpLiFeNM+MH
+         ztDuzJUwSnA6vreLH3rkphKejTs0PlOrWv8lIwlM7UFsKVPcm6P5/vmbEyaryO3Quuu8
+         4lbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714643421; x=1715248221;
+        d=1e100.net; s=20230601; t=1714643717; x=1715248517;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=0L3flH7yZNX51bFJ6y3B+1+jhZGz/TS681Tx1TYzzOY=;
-        b=DfqNR7+K8kfByE2JvI43AvcHzNoJYp0OcStfSp9piHMq8X3wJXEqpz8bofDMJfXwQ1
-         Oh0sdujCGtFkR8J7KWVhM9x6oFXrimBUHKUcK5XL9nC9L34tf83zA5BIJ6IoHn1gIrok
-         Ga7v0bHMQLnuPpL3kp1QO2yjFY86Jt7Eq/TyRy1VSpUzUEG5i+VnGZsrQrw+nxCfWUFz
-         pvteG5J+ags5/ofN9UhFM37BoiEeLwL7zLOEZpinWksf3j4DbILlLswUL38YgpbVjFuP
-         n8p+uP7sf73E8GCCEljWPGYhHpFeABuXZTCFceCwgu6DpKoqC9Y8NKY8BPBmufH3/d1d
-         B0RA==
-X-Forwarded-Encrypted: i=1; AJvYcCX3PN9H1THAR1KwStWogs1UOOHY2v6+sddVsffDa1WWI+abfMwSvOccSQ+KTojvLK5mXqBQnj93QutEewLRzFrXBh4WA82lp10n2pqs
-X-Gm-Message-State: AOJu0YytGpSZAqvRm1zqo2v+7tw8mXOA+dO6wZG47bt69b7V3oNjq0nJ
-	6xWcY84q3gQkMgdhZb6GSSHPQ4w+etvFKdUJPZ5d185k3TjtbRpNvyJUSrAotgQ=
-X-Google-Smtp-Source: AGHT+IF3qps04ERKWX4kOxvSEDon6CGWqD+FZR4lIipoIhxGureiukZlSMZ76xOlV5hwocc8u3+KoQ==
-X-Received: by 2002:a17:902:c404:b0:1ec:3f2e:d8e2 with SMTP id k4-20020a170902c40400b001ec3f2ed8e2mr6671474plk.15.1714643421414;
-        Thu, 02 May 2024 02:50:21 -0700 (PDT)
+        bh=NL6wf55BXPa+yyuBuN45neIFKGEebMs0pSULB1fzRIU=;
+        b=ZCJMZwTp43/2lXGlFScNOUPbBa3BqPd1QJFuo91iuU2mHX4ydzAWeNOxyF6aRX+D1J
+         8elMTGITG+wy5ipRlvK4y3CTvFT0DPClzQBpL5/Jecq10BFA2rmNHVECbRWPYC7MAtD1
+         JY5r+OVHeN3yMMXqFuvKLwc3mKCj/iGOs0Zhalz6Ete0mzfzM4rmi3DFm949KGfIJuz+
+         evfYUQqVoP4+Ipo7tzcDv/buzxqM5zBn2Px33NbkYqYp35iPKsl/i6LMTYC1QQWTCpzr
+         flKW+5rn8CUUNP2+b+t3lnQyC8rUo0Y+LLykuSSXf7lNNmUqq19kE8piwUy1dEEeCV5C
+         kaRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWBtuqdkVLIIp0ztyQb60ZthzDIZtnC96ovWnQkMpJ8C/1Sjt+BgmO4css8k8MWGUSqZQW2DVxfObLig6BbIh1fz2XA9dkTpbEOUorz
+X-Gm-Message-State: AOJu0YzwmH3klyxpdNQeK0ZtkRH6jYF7DXvfLyFjE/2hn66Ib7jUk/Qc
+	zWh/HVZpQKb3Z9vtvcWVSnHFb+0WBEfOFoab7/SRC+rdgp1pGynMxx6Hw9ujWFM=
+X-Google-Smtp-Source: AGHT+IFpK3bIq8mezuHv2XyP6jnQjh19B8eyQtbmKS7Jf/SgRv411rIyzxq+sdALFrGRrZq6EWk8mA==
+X-Received: by 2002:a17:902:e80b:b0:1dd:c288:899f with SMTP id u11-20020a170902e80b00b001ddc288899fmr5793344plg.18.1714643716808;
+        Thu, 02 May 2024 02:55:16 -0700 (PDT)
 Received: from sunil-laptop ([106.51.190.19])
-        by smtp.gmail.com with ESMTPSA id u2-20020a17090341c200b001e5e6877494sm852994ple.238.2024.05.02.02.50.11
+        by smtp.gmail.com with ESMTPSA id jv21-20020a170903059500b001e0e977f655sm867362plb.159.2024.05.02.02.55.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 May 2024 02:50:20 -0700 (PDT)
-Date: Thu, 2 May 2024 15:20:08 +0530
+        Thu, 02 May 2024 02:55:16 -0700 (PDT)
+Date: Thu, 2 May 2024 15:25:05 +0530
 From: Sunil V L <sunilvl@ventanamicro.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -77,11 +77,11 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	Andrei Warkentin <andrei.warkentin@intel.com>,
 	Haibo1 Xu <haibo1.xu@intel.com>,
 	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
-Message-ID: <ZjNh0Llcx+0VHevy@sunil-laptop>
+Subject: Re: [PATCH v5 04/17] ACPI: scan: Refactor dependency creation
+Message-ID: <ZjNi+QaVZUX0Ntiv@sunil-laptop>
 References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-18-sunilvl@ventanamicro.com>
- <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
+ <20240501121742.1215792-5-sunilvl@ventanamicro.com>
+ <ZjNaxvh2ZSfDcTa8@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,56 +90,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
+In-Reply-To: <ZjNaxvh2ZSfDcTa8@smile.fi.intel.com>
 
-On Thu, May 02, 2024 at 12:17:59PM +0300, Andy Shevchenko wrote:
-> On Wed, May 01, 2024 at 05:47:42PM +0530, Sunil V L wrote:
-> > RISC-V has non-PNP generic 16550A compatible UART which needs to be
-> > enumerated as ACPI platform device. Add driver support for such devices
-> > similar to 8250_of.
+On Thu, May 02, 2024 at 12:20:06PM +0300, Andy Shevchenko wrote:
+> On Wed, May 01, 2024 at 05:47:29PM +0530, Sunil V L wrote:
+> > Some architectures like RISC-V will use implicit dependencies like GSI
+> > map to create dependencies between interrupt controller and devices. To
+> > support doing that, the function which creates the dependency, is
+> > refactored bit and made public so that dependency can be added from
+> > outside of scan.c as well.
 > 
-> ...
+> Side note: If you haven't used --histogram diff algo when preparing
+> the patches, do it from now on.
 > 
-> > + * This driver is for generic 16550 compatible UART enumerated via ACPI
-> > + * platform bus instead of PNP bus like PNP0501. This is not a full
-> 
-> This has to be told in the commit message. Anyway, we don't need a duplication
-> code, please use 8250_pnp.
-> 
-Hi Andy,
+No, I didn't use. Thank you very much for letting me know. I will use in
+next version.
 
-Thank you for the review!. Major issue with PNP0501 is, it gets enumerated
-in a different way which causes issue to get _DEP to work.
-pnpacpi_init() creates PNP data structures which gets skipped if the
-UART puts _DEP on the GSI provider (interrupt controller). In that case,
-we need to somehow reinitialize such PNP devices after interrupt
-controller gets probed. I tried a solution [1] but it required several
-functions to be moved out of __init. 
-
-This driver is not a duplicate of 8250_pnp. It just relies on UART
-enumerated as platform device instead of using PNP interfaces.
-Isn't it better and simple to have an option to enumerate as platform
-device instead of PNP? 
-
-[1] - https://patchwork.kernel.org/project/linux-pci/patch/20240415170113.662318-14-sunilvl@ventanamicro.com/
-
-Thanks,
+Thanks!
 Sunil
-> ...
-> 
-> > +	{ "RSCV0003", 0 },
-> 
-> Does it have _CID to be PNP0501?
-> If not, add this ID to the 8250_pnp.
-> 
-> ...
-> 
-> P.S.
-> The code you submitted has a lot of small style issues, I can comment on them
-> if you want, but as I said this code is not needed at all.
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
