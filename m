@@ -1,154 +1,150 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6EE022F00;
-	Thu,  2 May 2024 07:56:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C670200A0;
+	Thu,  2 May 2024 07:56:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714636566; cv=none; b=PNXCQNlSgp9Vmk2PvejcaDIqwiBrAdgSXxdhisTECYocXE25t+WkEjWiOC1tvUD4l+fiEK2b9CXKDr+bxyiJhTc3WLs9o9A9BWjZrrkmq+Mj07Nw8gIuOPIUdu1D1KxzOzWdhKUNx9j67UJmlosHJwPtoRYwKUI244QWHU/BuTg=
+	t=1714636607; cv=none; b=okU7JE7uYZBV4VDjMeiGIiqezvh0GIn9uGWX+2IdRmxaXX3F+Ph5GmCB4wG8SadSv3cSJjDiMic6vz6WT5UDkrPNwQt6JXey4GLxfG2uMQXt3GCFDOrYiFegy/36Z593c+J4VOpoY9mT0UYOQF5BXCypbbMm7M8fW3eUy5czdrQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714636566; c=relaxed/simple;
-	bh=Vc+UiWe/PFfiLW9+QHsBDK/nqefj6balOiVXYNuF3i0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IT0Tvdm0tQ517aRMic8XKB88AqjVVPVmfuWT7lFhqLVV+kNJWbUsfgd5qJbzRZVBjp+mCcV9/MjIBeI/F9bo3klOopRaAmKlc0GsyEVdGdOS9B164S4NUSGd3gzS+b7iMKsepVdNh/5XzWFIJfbJ8KAtyljQtguOYdCA4Z7zLOQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a58e787130fso265321966b.0;
-        Thu, 02 May 2024 00:56:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714636563; x=1715241363;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gCHs5AyIZZ846owNPHrscIolxUHAkH2dX6I4QmI8RyU=;
-        b=XPkIocWuy4hwM7UhR0NcfEzSxSsMW104AseASWvLZDx5Fmox9+lc3Mw9kzXf3AA/DT
-         j54EQuBspHA6jzGRiKiZdpWZAoPeaRJ0Uq0jCxrxFhPvmMBZUlfjN6qbShHzQe3Lm1Tf
-         nn6U7X2ZVMk/M4l8UOhFoChwEAtzDe5UlJv9l2g47Gi7mIRVdUzLtKbNNcB5vWxtU2uj
-         /qcQYA3akFC1md2l8pZljyQKQq/sVW3ltwa5g84Rl/u/gmSFknFH+rDeC3+tUl8PA/uz
-         EmMa/O4kZ7gMZbYkidGRX78GmqYdwrfajxQznCHCYgUb6O4hCdfl/OROYryL3cgf4p16
-         5xHw==
-X-Forwarded-Encrypted: i=1; AJvYcCU1JJb/A6BlJU3bP7Bg3jnt6vhBiXGygiYx9N0hsCp1TaQom1HfdFlFPOG+fZWnKnGlo69GHfnwSdA+fmlR4pLjXTyXo4kscAsPJI2UI8IlV5uTfqUX9no7BOIiqeA5+eA7dihZURNMXkQx
-X-Gm-Message-State: AOJu0Yw4rbkGyS1ndTzVFkkROF5rGJyuVofAzuaGAacPeAOeCRa3w979
-	Z29XppxPPAQQ3qvEuwDz0Midcwrpn09q+mE5D7Hj/qh5KMjc2t7c
-X-Google-Smtp-Source: AGHT+IGFME45YUcGSIYJpvtT0MBUCcOSCBGxBO1lqQJPYJ00YYSsDdQL+TsG9vmbcHd1ZjwEt6x6mw==
-X-Received: by 2002:a17:906:1ccc:b0:a58:85ab:354c with SMTP id i12-20020a1709061ccc00b00a5885ab354cmr1587893ejh.1.1714636562454;
-        Thu, 02 May 2024 00:56:02 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id jw20-20020a17090776b400b00a4660b63502sm253754ejc.12.2024.05.02.00.56.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 May 2024 00:56:02 -0700 (PDT)
-Message-ID: <01cbcdf5-8a7a-4b47-a2aa-05c041e3cab2@kernel.org>
-Date: Thu, 2 May 2024 09:56:00 +0200
+	s=arc-20240116; t=1714636607; c=relaxed/simple;
+	bh=ZrFdSLcIMeL0Gw5YEaKUCGUEp/+XyImajt9Wq1/xfjE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Hv6kpB3aeLoAS4MIcMCJqW9TTkDwVOUelSYPK10lW9FREcsaft5+2OEemxgPSwth7/ehoI3I2J3yFDN+2C2YWU1oR7xAm9j/pdgXRQNMFOUNo4Axm7a4iW6GQgLyhTJ5Ia+FTGTatZ529uEpV2oO/9htXhMFzVW4VTtjuH2FQJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=ig7BB6RC; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="ig7BB6RC"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=ekCjuw1duvOWVggYCKKNCs0aIF99UZrHoS1CtHiTWfg=; b=ig7BB6RCwLMH866/CZi96QIftI
+	dcIdraX20HU3RrpL/n7DR1l1cNJypVYf0eToJqsGZbWr6+gsmO2S0rR1qf74SYOH7tQRGrqC/ttFT
+	svgoB9oC12687OxMmxGSPvG+7ASwW3Wxv+s2RAQNW/o6yr0YsbVKoyLGTqTnQXXGm6bU=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s2RIx-001Yg7-0R;
+	Thu, 02 May 2024 09:56:35 +0200
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+To: Oliver Hartkopp <socketcan@hartkopp.net>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>
+Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+	linux-can@vger.kernel.org,
+	netdev@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v2 03/12] tty: serdev: Add flag buffer aware receive_buf_fp()
+Date: Thu,  2 May 2024 09:55:25 +0200
+Message-Id: <20240502075534.882628-4-christoph.fritz@hexdev.de>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
- using __free
-To: Shresth Prasad <shresthprasad7@gmail.com>, davem@davemloft.net,
- gregkh@linuxfoundation.org
-Cc: sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com,
- skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
-References: <20240501084110.4165-2-shresthprasad7@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240501084110.4165-2-shresthprasad7@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 01. 05. 24, 10:41, Shresth Prasad wrote:
-> Add `__free` function attribute to `ap` and `match` pointer
-> initialisations which ensure that the pointers are freed as soon as they
-> go out of scope, thus removing the need to manually free them using
-> `of_node_put`.
-> 
-> This also removes the need for the `goto` statement and the `rc`
-> variable.
-> 
-> Tested using a qemu x86_64 virtual machine.
-> 
-> Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-> Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
-> ---
-> Changes in v2:
->      - Specify how the patch was tested
-> 
->   drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
->   1 file changed, 11 insertions(+), 26 deletions(-)
+This patch introduces an additional receive buffer callback variation
+besides the already existing receive_buf(). This new callback function
+also passes the flag buffer (TTY_NORMAL, TTY_BREAK, and friends).
 
-Nice cleanup.
+If defined, this function gets prioritized and called instead of the
+standard receive_buf().
 
-> --- a/drivers/tty/serial/sunsu.c
-> +++ b/drivers/tty/serial/sunsu.c
-> @@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
->   
->   static enum su_type su_get_type(struct device_node *dp)
->   {
-> -	struct device_node *ap = of_find_node_by_path("/aliases");
-> -	enum su_type rc = SU_PORT_PORT;
-> +	struct device_node *ap __free(device_node) =
-> +			    of_find_node_by_path("/aliases");
+An alternative approach could have been to enhance the receive_buf()
+function and update all drivers that use it.
 
-If we used c++, that would be even nicer; like:
-Destroyer ap(of_find_node_by_path("/aliases"));
+Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+---
+ drivers/tty/serdev/serdev-ttyport.c |  2 +-
+ include/linux/serdev.h              | 17 ++++++++++++++---
+ 2 files changed, 15 insertions(+), 4 deletions(-)
 
-But we don't :P. OTOH. can't we achieve that with macro-fu and typeof() 
-magic? Perhaps not really exactly the above, but something like
-   Destroyer(ap, of_find_node_by_path("/aliases"));
-maybe?
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-thanks,
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index 3d7ae7fa50186..bb47691afdb21 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -32,7 +32,7 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
+ 	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+ 		return 0;
+ 
+-	ret = serdev_controller_receive_buf(ctrl, cp, count);
++	ret = serdev_controller_receive_buf(ctrl, cp, fp, count);
+ 
+ 	dev_WARN_ONCE(&ctrl->dev, ret > count,
+ 				"receive_buf returns %zu (count = %zu)\n",
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index ff78efc1f60df..c6ef5a8988e07 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -23,11 +23,17 @@ struct serdev_device;
+  * struct serdev_device_ops - Callback operations for a serdev device
+  * @receive_buf:	Function called with data received from device;
+  *			returns number of bytes accepted; may sleep.
++ * @receive_buf_fp:	Function called with data and flag buffer received
++ *			from device; If defined, this function gets called
++ *			instead of @receive_buf;
++ *			returns number of bytes accepted; may sleep.
+  * @write_wakeup:	Function called when ready to transmit more data; must
+  *			not sleep.
+  */
+ struct serdev_device_ops {
+ 	size_t (*receive_buf)(struct serdev_device *, const u8 *, size_t);
++	ssize_t (*receive_buf_fp)(struct serdev_device *, const u8 *,
++				  const u8 *, size_t);
+ 	void (*write_wakeup)(struct serdev_device *);
+ };
+ 
+@@ -186,15 +192,20 @@ static inline void serdev_controller_write_wakeup(struct serdev_controller *ctrl
+ }
+ 
+ static inline size_t serdev_controller_receive_buf(struct serdev_controller *ctrl,
+-						   const u8 *data,
++						   const u8 *data, const u8 *fp,
+ 						   size_t count)
+ {
+ 	struct serdev_device *serdev = ctrl->serdev;
+ 
+-	if (!serdev || !serdev->ops->receive_buf)
++	if (!serdev || !serdev->ops)
+ 		return 0;
+ 
+-	return serdev->ops->receive_buf(serdev, data, count);
++	if (serdev->ops->receive_buf_fp)
++		return serdev->ops->receive_buf_fp(serdev, data, fp, count);
++	else if (serdev->ops->receive_buf)
++		return serdev->ops->receive_buf(serdev, data, count);
++
++	return 0;
+ }
+ 
+ #if IS_ENABLED(CONFIG_SERIAL_DEV_BUS)
 -- 
-js
-suse labs
+2.39.2
 
