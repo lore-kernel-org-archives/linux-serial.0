@@ -1,130 +1,175 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 621E25FDD3
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 11:01:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A20B58228;
+	Thu,  2 May 2024 11:03:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714647672; cv=none; b=GDSweh77+rqu/pFY+b3l4IU2Xa8Xd8EX+lk0bRW4MReonXIY0xc5hmfUvXh4LV/6cXfwBX483LV6IhMbdmet3u1P46/whqwzFaVnbBLB7jHpUc1RtQNAaHYrRRY1VsdiRumLjW4aOnHu2Jm0ekmyMUNeGhRU1LkfE0HR7FDlanE=
+	t=1714647840; cv=none; b=q1F56w+w4iF8Di2jTjNtNGawUbLFCzHWvdyrQo5V+/CXTZgUfLuhOiPndAh4hXx6odZ7vOnP2mdBSkjMc/tAWUK9beF1sEgBg9XYnxwABRe2FX2ybDpvQ1MmT9Y7x6sqopQBDTJaj5vSgQQnrGWtkzBwSDlMNI0GB+yR9989yj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714647672; c=relaxed/simple;
-	bh=ndLSvNTaHy7rcB+YkF1gfmdHrNAQTVgDr2rY9G9+Z/k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hhDIaMWGhbg+lJ0IXrxP+yIOA3nJgGDNiTQRqfm3KuCGz8CZv3vpmXltmH8sJ+vVkrUADdfKPt09sCAl5CEFCyve3//O0Rvy9DaIeM19AlluWkUet1sEsrVtKPo0R3saY8GqnTNgiUPZ263G+cnRqFrYWsebXWfP29pCig809Zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=idqeKlgv; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1714647840; c=relaxed/simple;
+	bh=fBAaoFlZfEYbgWcR99nmTfqssQTQgju1ZEXTW9eeSuA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=iQI3vas9qkDFJfRGSikZQw2Y5z51xB9e3ZsunS9aojhByCeAyFnrH8o0iACSeP+ntx05oXmTB7ZteG5FwHoWudAw/iXOQ+XLFesRwB63R+PB5QTuEN+zo9vF+fqhPnNadP1tr3/nfw9A6WdBmn8U/KT8dZAn/dBH8AHyu3JSNoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=w8Daq/DZ; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="idqeKlgv"
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-615019cd427so61851767b3.3
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 04:01:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714647670; x=1715252470; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yjTLbsaK8lFll8/qZ6Wbe+KOojRpVIeEGiQdgeTUV/M=;
-        b=idqeKlgvQ+/lcZpWrTfTYFW/DJvkRNzbSS/eMoELdnj27RVAT9IZIsCp2ZLtlQg9ii
-         Lv/zb2fzYXGAgRbPddqlbdffFnILvXi3IoHjeFYOsgVNlo6IUfMi5Ctu1RSwOA3cTQyf
-         r/k2FPrtIWLFtA/TB+LgGcpohrpc6aaaCXUU3Y9Ca/9EmCQ/LsU/qIEMRdak9pdUFm1P
-         WLQzyEXFBC5IGdq8LPrTlm7zJOhSGOOVGZH/QLpW6E8FDQ/i64Z0keQKdFJUzHN7J35k
-         1+/Y7vW5phfhT91m31swW5c5LeRVRpIMZ5/w1TGGxH7izyQfX8ZmGHa/ZWSvcVczatxC
-         0HWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714647670; x=1715252470;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yjTLbsaK8lFll8/qZ6Wbe+KOojRpVIeEGiQdgeTUV/M=;
-        b=eDy1zqX8nJ1rdr4M6xBN1cTKBuE195hI6oBPAihhnQhVn132xGEVh8ZpsadMPkvBe/
-         hrWCFpyTEpkAkzHz9v2dbxzyXVnv3xSGG4Z4qu3VWVVFErR0EVqc0zcz562AlaLhZtn3
-         bWuXIi9wQI7MBjpFLphjtXqIWkUV1KVs8i0FtB55/26V7e8K4ZqFNXYJjn3QfPgLpGwE
-         X2Rm6IlD1Hy8si2Q4ruq7dzGxcY63A+oxw+mU+78/azOoEDrrX/KB8OkwAllOUea1c2B
-         0adVsIb3PRdaYNU0wGyQlodhkrXsQqzHqwmle105tqGVbm7jYwwql3q6LuKOOdXbptj7
-         Uzkw==
-X-Forwarded-Encrypted: i=1; AJvYcCXkTlQgvQ2YSVVkYeNEaPGctF4Pj55ilwjWDP2e957qR1Df9IK+nHEbVM3OoKBySr2NDi1Hwid2EZU4UmTLoYpjxPUT5FA7SdXecBe0
-X-Gm-Message-State: AOJu0YwAzFm7B/7jcnCh04RWJkiaJPdGtz8UgGEO8j9chDR4oulXGO1A
-	fNFP/T9wcK2tH+zpnCzFCQd2bexn2ArUEtXw0tRL15Ukmw3CJtRXjD+Oz8GWmPo=
-X-Google-Smtp-Source: AGHT+IHfkJrlGnon/mEX5fWtLywYkDj4de083FrQTvrfO2XC94gdhaKM/ttBrgT+XJ2VbkvvaIQxaw==
-X-Received: by 2002:a05:690c:d88:b0:61a:d2d9:5488 with SMTP id da8-20020a05690c0d8800b0061ad2d95488mr6160180ywb.7.1714647670339;
-        Thu, 02 May 2024 04:01:10 -0700 (PDT)
-Received: from sunil-laptop ([106.51.190.19])
-        by smtp.gmail.com with ESMTPSA id dg17-20020a05690c0fd100b0061adfb01cc2sm147882ywb.90.2024.05.02.04.01.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 May 2024 04:01:09 -0700 (PDT)
-Date: Thu, 2 May 2024 16:30:50 +0530
-From: Sunil V L <sunilvl@ventanamicro.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 03/17] ACPI: bus: Add acpi_riscv_init function
-Message-ID: <ZjNyYkgpyAa47F4b@sunil-laptop>
-References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-4-sunilvl@ventanamicro.com>
- <ZjNbvlUoCfa5UUHF@smile.fi.intel.com>
- <ZjNksbTQF1lMQ0k0@sunil-laptop>
- <ZjNnG6JqFCZGj1qv@bogus>
- <ZjNoy6KLtOCTe52q@smile.fi.intel.com>
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="w8Daq/DZ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=xrJZEtQCkguErjBYfgKPVVDWS0LKbQlBAZ4XgRsohl4=; b=w8Daq/DZymap2DLm1CeW8Nw4I5
+	j+RVpAvi3xizokSsLbEw6qsCi2BiEen1O7JWqsLMoZjR4P8OX+LC554+ib4cTAeBLrLC0WZIwJnPf
+	cYvUWLR5yY88z44C/H4/D/JjkM8Y27hHNhfN1aYOWxCA0ibj/54xsTQrxABJ6g9NFbss=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s2UE3-001Z33-21;
+	Thu, 02 May 2024 13:03:44 +0200
+Message-ID: <48c55b05dae4628d4e811178bfd5e855ac93ee77.camel@hexdev.de>
+Subject: Re: [PATCH v2 06/12] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, Sebastian Reichel
+ <sre@kernel.org>,  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, 
+ Jiri Kosina <jikos@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>,  Andreas Lauser
+ <andreas.lauser@mercedes-benz.com>, Marc Kleine-Budde <mkl@pengutronix.de>,
+ Benjamin Tissoires <bentiss@kernel.org>, devicetree@vger.kernel.org, Eric
+ Dumazet <edumazet@google.com>, Jonathan Corbet <corbet@lwn.net>, Jakub
+ Kicinski <kuba@kernel.org>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+ Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+ netdev@vger.kernel.org,  linux-input@vger.kernel.org, Pavel Pisa
+ <pisa@cmp.felk.cvut.cz>, Oliver Hartkopp <socketcan@hartkopp.net>, "David S
+ . Miller" <davem@davemloft.net>
+Date: Thu, 02 May 2024 13:03:42 +0200
+In-Reply-To: <171464227142.1356329.4931419696225319861.robh@kernel.org>
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+	 <20240502075534.882628-7-christoph.fritz@hexdev.de>
+	 <171464227142.1356329.4931419696225319861.robh@kernel.org>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZjNoy6KLtOCTe52q@smile.fi.intel.com>
+Content-Transfer-Encoding: 7bit
 
-On Thu, May 02, 2024 at 01:19:55PM +0300, Andy Shevchenko wrote:
-> On Thu, May 02, 2024 at 11:12:43AM +0100, Sudeep Holla wrote:
-> > On Thu, May 02, 2024 at 03:32:25PM +0530, Sunil V L wrote:
-> > > On Thu, May 02, 2024 at 12:24:14PM +0300, Andy Shevchenko wrote:
-> > > > On Wed, May 01, 2024 at 05:47:28PM +0530, Sunil V L wrote:
-> > > > > Add a new function for RISC-V to do any architecture specific
-> > > > > initialization. This function will be used to create platform devices
-> > > > > like APLIC, PLIC, RISC-V IOMMU etc. This is similar to acpi_arm_init().
-> > > >
-> > > > What is the special about this architecture that it requires a separate
-> > > > initialization that is _not_ going to be in other cases?
-> > > > Please, elaborate.
-> > > >
-> > > This init function will be used to create GSI mapping structures and in
-> > > future may be others like iommu. Like I mentioned, ARM already has
-> > > similar function acpi_arm_init(). So, it is not new right?
+On Thu, 2024-05-02 at 04:31 -0500, Rob Herring (Arm) wrote:
+> On Thu, 02 May 2024 09:55:28 +0200, Christoph Fritz wrote:
+> > This patch adds dt-bindings for serial LIN bus adapters. These adapters are
+> > basically just LIN transceivers that get hard-wired with serial devices.
 > > 
-> > Just to add:
+> > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> > ---
+> >  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++++
+> >  1 file changed, 32 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
 > > 
-> > This is to initialise everything around all the arch specific tables
-> > which you will not have on any other architectures. We could execute
-> > on all architectures but the tables will never be found. The main point
-> > is why do we want to do that if we can optimise and skip on all other
-> > archs.
 > 
-> You need to carefully write the commit messages. Some kind of the above
-> paragraphs has to be in there.
+> My bot found errors running 'make dt_binding_check' on your patch:
 > 
-Sure, let me update the commit message on similar lines.
+> yamllint warnings/errors:
+> 
+> dtschema/dtc warnings/errors:
+> Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dtb: /example-0/serial/linbus: failed to match any schema with compatible: ['linux,lin-serdev']
 
-Thanks,
-Sunil
+Yes, that's obviously still false and will be fixed in v3.
+
+> 
+> doc reference errors (make refcheckdocs):
+> 
+> See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240502075534.882628-7-christoph.fritz@hexdev.de
+> 
+> The base for the series is generally the latest rc1. A different dependency
+> should be noted in *this* patch.
+> 
+> If you already ran 'make dt_binding_check' and didn't see the above
+> error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> date:
+> 
+> pip3 install dtschema --upgrade
+> 
+> Please check and re-submit after running the above command yourself. Note
+> that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+> your schema. However, it must be unset to test all examples with your schema.
+> 
+
+I'm wondering why my local run of dt_binding_check does not catch this:
+
+$ pip3 install dtschema --upgrade
+Requirement already satisfied: dtschema in ./venv/lib/python3.11/site-packages (2024.4)
+Requirement already satisfied: ruamel.yaml>0.15.69 in ./venv/lib/python3.11/site-packages (from dtschema) (0.18.6)
+Requirement already satisfied: jsonschema<4.18,>=4.1.2 in ./venv/lib/python3.11/site-packages (from dtschema) (4.17.3)
+Requirement already satisfied: rfc3987 in ./venv/lib/python3.11/site-packages (from dtschema) (1.3.8)
+Requirement already satisfied: pylibfdt in ./venv/lib/python3.11/site-packages (from dtschema) (1.7.0.post1)
+Requirement already satisfied: attrs>=17.4.0 in ./venv/lib/python3.11/site-packages (from jsonschema<4.18,>=4.1.2->dtschema) (23.2.0)
+Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 in ./venv/lib/python3.11/site-packages (from jsonschema<4.18,>=4.1.2->dtschema) (0.20.0)
+Requirement already satisfied: ruamel.yaml.clib>=0.2.7 in ./venv/lib/python3.11/site-packages (from ruamel.yaml>0.15.69->dtschema) (0.2.8)
+
+$ git diff
+diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+index c178eb9be1391..385cbe132258d 100644
+--- a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
++++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+@@ -27,6 +27,6 @@ examples:
+   - |
+     serial {
+         linbus {
+-            compatible = "hexdev,lin-serdev";
++            compatible = "linux,lin-serdev";
+         };
+     };
+
+$ make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/dtc/dtc.o
+  HOSTCC  scripts/dtc/flattree.o
+  HOSTCC  scripts/dtc/fstree.o
+  HOSTCC  scripts/dtc/data.o
+  HOSTCC  scripts/dtc/livetree.o
+  HOSTCC  scripts/dtc/treesource.o
+  HOSTCC  scripts/dtc/srcpos.o
+  HOSTCC  scripts/dtc/checks.o
+  HOSTCC  scripts/dtc/util.o
+  LEX     scripts/dtc/dtc-lexer.lex.c
+  YACC    scripts/dtc/dtc-parser.tab.[ch]
+  HOSTCC  scripts/dtc/dtc-lexer.lex.o
+  HOSTCC  scripts/dtc/dtc-parser.tab.o
+  HOSTLD  scripts/dtc/dtc
+  HOSTCC  scripts/dtc/libfdt/fdt.o
+  HOSTCC  scripts/dtc/libfdt/fdt_ro.o
+  HOSTCC  scripts/dtc/libfdt/fdt_wip.o
+  HOSTCC  scripts/dtc/libfdt/fdt_sw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_rw.o
+  HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
+  HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
+  HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
+  HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+  HOSTCC  scripts/dtc/fdtoverlay.o
+  HOSTLD  scripts/dtc/fdtoverlay
+  LINT    Documentation/devicetree/bindings
+  CHKDT   Documentation/devicetree/bindings/processed-schema.json
+  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+/home/ch/linux/Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml: ignoring, error in schema: properties: brcm,tperst-clk-ms: type
+/home/ch/linux/Documentation/devicetree/bindings/hwmon/microchip,emc2305.yaml: ignoring, error in schema: properties: emcs205,max-state: description
+  DTEX    Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dts
+  DTC_CHK Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dtb
+
+Any ideas?
+
+I'm using a python venv here, maybe this is related?
+
+Thanks
+  -- Christoph
