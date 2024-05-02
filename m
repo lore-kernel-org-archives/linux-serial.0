@@ -1,177 +1,106 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D71E1EA6F;
-	Thu,  2 May 2024 16:51:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A042EB11;
+	Thu,  2 May 2024 17:20:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714668689; cv=none; b=f/HiCJyTBqCyr4hgeQOf//7WEINWKT67J1bPaOM5UUAMF/1AE3Od0fHJviDKAksBhRMR5ocwTFRZpWiHnpWIWLDOmqCODHkjmM0mq4yDy60HkB38+u46+XciLBelR1kfZqEyepsBbYInl9OT1ePtZJY0cFhGspbhOle0OTpWbT0=
+	t=1714670408; cv=none; b=A1CcFQufdytz9KfamUaAIJsgf3TjeUhL39n/QuCgqg5IoRPV/pA2AGyGA4ebEQCAFJrH0EWPoMVLKmO+PJlBmz7tH5iIZgLxC+Ex8Shw6MdjUUc2GOwzePoKZXjxOnJQ3uJWTtQO9WW4W45z9mS8drzrgYemAscDt/A9saPEWqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714668689; c=relaxed/simple;
-	bh=OHjeZeI4MZi130KNodmkNYdmSRbL11ZHV6UaEXjwIN8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iThR1GoUDb6UFeoRrk9aE6IZz4A2NNp8gbmKvCB+92P4MEx7qhA3DIVr9EcB/PPUjwFMjbhOlfbeMRfQIpeV9TidGyGe6GywG+Cb2m6jq/kIZK/ysz2gqW4Fkpao4ttfbW66MOUCHS5Y9Sj4bT6ZaUG6X8cUCDDNcqrQj6j8eF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bvSVvB61; arc=none smtp.client-ip=209.85.210.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1714670408; c=relaxed/simple;
+	bh=H1r0dFqw/FdPrkaepk5MGTXmiIihWSraJ3Ov/oH+da0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PQkwPW3LL4rmcFPWoFyNp/K5hzWgJq5idEd1xYHwbJSfVxtPz+XtSC/qwDRbNtdrslqthuDhpr3ZYFBZmSh+5VTXDW/xOTI/FWOcjk2VzRihHSvj5XjG7+zqgYoB5pd2738HYyhtaEOtmpmyal69HW4tvb4hT6DVfVhdleQnBRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PGZZtTEb; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bvSVvB61"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6ed3cafd766so7383182b3a.0;
-        Thu, 02 May 2024 09:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714668688; x=1715273488; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Zb2LQ7ZyHWxH6durNQbJmMpdtE7d3QFAS1SL6VR1M9c=;
-        b=bvSVvB61EOUWdYeTkBK8APBf/LvXN5XpLhcU/eFVytEPXwoNTFdX9ZjK/+XeiNr/ir
-         Cwv+KX1YLFTCDyf/s9OrdHErBMGM1UHsLk8PP1/HPuAFoOm4Ib8xxGsqhl3lY6+OOULD
-         xh+KTCEhg3aWkNkLrrgueAYx7iKc5ZAjfVyS2tKrYnC7CvinCP4Er4ZV3A8M2YR9mwwJ
-         Qzi86mPt+a9eM5S1GRo3NJprlSqBRmsaGUOC+5bdjwDpexIYxFkosBpIuNq7qXId2f7r
-         gSx4IDcM+6ojWf22adj5gUmFpLD4g6aTMHXqx9/HWfvL3yYb/4LN0XKwFyqz1DzXr0i1
-         zALQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714668688; x=1715273488;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Zb2LQ7ZyHWxH6durNQbJmMpdtE7d3QFAS1SL6VR1M9c=;
-        b=nD09c5FPO7Rj4lSmzaYKcY5fTxGPQJiVBdBscNQdna8Q/lqHJP7GOjm9DQx2XUB9nF
-         gG/1f4iMyE7t6mVcqnUpUL0JNervitFNOO8GzV2olmRgQCWux5/oo5+0v6vHZYz0LT/V
-         XEIn349cDJjywb7EPK6Ca010ca8NvNNvmTmFEgEj7TJqMN4M/sqR4yvpaoG3OGFWnb5N
-         p7vE2T68WIUbnagefrEZ65GhsfjZ7pTLfoN63YhD+xxEl3yaaSYnc5MYuIVRerbB0n9m
-         AYYyT+YnjQ0SeB+Ih17baie4PHDUIw1k7/Ja8Ji+VRQx5hCUaeVsmZ35JDY+Ruqcy1MN
-         NoPA==
-X-Forwarded-Encrypted: i=1; AJvYcCUY+dn6OmROsX4yLcp4pGnlgEd1NfrHbmEVv7AeRUgZ3BPueLj1rIPhjK/iySFXklmPNVZ2BsDeYS6fUVkGHAuWnPje6hHQCF/EnkutEWe0PwkPkKEV/eSm4p6dGklJ8C+6YaatPTZ4y1r8wylBxWBFWwtwV9XmqvuGzty4MmVcUOH+58VmBQ==
-X-Gm-Message-State: AOJu0YzUCA9VUl1wSOHJoMEW7yUL2j6dy7sdxWOeJH8YalfHvyK7d6KH
-	o9BUEnwBfKXb+Gl25Ta+1DA2VKSM4vWRt9O3CKhK+f7Z6q/Xp67orXKjqRSC/WeK3I9MBAU7Qdd
-	6jiU5L/fvpMV2Ol3BZa1Y23B1OB4=
-X-Google-Smtp-Source: AGHT+IE4L/gTAyjTdmR5GRd/iAA9g48rAosir3aWSZYrXAJKAi3C3OZ7Qth6wGGpGQJkCXAaUDlQOOcsmhbVVkiaJyE=
-X-Received: by 2002:a05:6a21:3d94:b0:1a7:5334:fbf3 with SMTP id
- bj20-20020a056a213d9400b001a75334fbf3mr230314pzc.55.1714668687682; Thu, 02
- May 2024 09:51:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PGZZtTEb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714670407; x=1746206407;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=H1r0dFqw/FdPrkaepk5MGTXmiIihWSraJ3Ov/oH+da0=;
+  b=PGZZtTEbFu92asBvm4whCR6akWTrRynjGP1lm/5hUVUpZw9W00Fph4s9
+   RlHZfWHkF9ThpsMjcOihmH1aUEmZ7buRFBjp+AOIVgA84BAOJlF6wK6bk
+   HbaYXPp1cBAWrloNm5TiR5ctOvHBT2ukFYOvmM3vpS9OhdOzquNIVllzI
+   hg4UahUWzqVUYNPxZU3mkNosYCeSoorop+F9UU89CeuiyzBrzYs6NvnBF
+   uCAd8fROcDqQ2KZowIkZv2CNpMCNKnDcxPDHqYl/SgxCGIyghua/mjPX5
+   Zb6SyNr0Ozethrwk7lom6nfmpnR0e8gLEHG/+gZ0JMqUb6H2ntgTVSeqT
+   Q==;
+X-CSE-ConnectionGUID: oZO9deo4Sa2KyDcGbr8pOg==
+X-CSE-MsgGUID: wxMmL3vdTEurMObksBOcXA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10672867"
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="10672867"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 10:20:06 -0700
+X-CSE-ConnectionGUID: GwxzvMC6RVuJch4h+jyxeQ==
+X-CSE-MsgGUID: oV/NS6ryRR6Jhdam4E7xMQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="32000691"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 10:20:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s2a6D-00000003Ogg-1sUg;
+	Thu, 02 May 2024 20:20:01 +0300
+Date: Thu, 2 May 2024 20:20:01 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
+Message-ID: <ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+ <20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
+ <702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240501084110.4165-2-shresthprasad7@gmail.com> <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
-In-Reply-To: <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
-From: Shresth Prasad <shresthprasad7@gmail.com>
-Date: Thu, 2 May 2024 22:21:16 +0530
-Message-ID: <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
-Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
- using __free
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: davem@davemloft.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com, 
-	skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, May 2, 2024 at 9:35=E2=80=AFPM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Wed, 1 May 2024, Shresth Prasad wrote:
->
-> > Add `__free` function attribute to `ap` and `match` pointer
-> > initialisations which ensure that the pointers are freed as soon as the=
-y
-> > go out of scope, thus removing the need to manually free them using
-> > `of_node_put`.
-> >
-> > This also removes the need for the `goto` statement and the `rc`
-> > variable.
-> >
-> > Tested using a qemu x86_64 virtual machine.
->
-> Eh, how can you test this with an x86_64 VM ???
->
-> config SERIAL_SUNSU
->         tristate "Sun SU serial support"
->         depends on SPARC && PCI
->
+On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo Järvinen wrote:
+> On Thu, 2 May 2024, Andy Shevchenko wrote:
 
-By that, I mean that I compiled the kernel and ran the produced bzImage
-on a x86_64 qemu machine.
-I unfortunately don't have the hardware to test it on, but I don't
-think the change is complex enough to require testing on real hardware
-(unless I'm assuming incorrectly).
+...
 
-Regards,
-Shresth
+> >  	// Send address to read from
+> > -	for (i = 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>= 1)
+> > -		exar_ee_write_bit(priv, (ee_addr & i));
+> > +	for (i = UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >= 0; i--)
+> > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
+> >  
+> >  	// Read data 1 bit at a time
+> >  	for (i = 0; i <= UART_EXAR_REGB_EE_DATA_SIZE; i++) {
+> > -		data <<= 1;
+> > -		data |= exar_ee_read_bit(priv);
+> > +		if (exar_ee_read_bit(priv))
+> > +			data |= BIT(i);
+> 
+> Does this end up reversing the order of bits? In the original, data was left
+> shifted which moved the existing bits and added the lsb but the replacement
+> adds highest bit on each iteration?
 
-> > Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-> > Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
-> > ---
-> > Changes in v2:
-> >     - Specify how the patch was tested
-> >
-> >  drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
-> >  1 file changed, 11 insertions(+), 26 deletions(-)
-> >
-> > diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-> > index 67a5fc70bb4b..0f463da5e7ce 100644
-> > --- a/drivers/tty/serial/sunsu.c
-> > +++ b/drivers/tty/serial/sunsu.c
-> > @@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(voi=
-d)
-> >
-> >  static enum su_type su_get_type(struct device_node *dp)
-> >  {
-> > -     struct device_node *ap =3D of_find_node_by_path("/aliases");
-> > -     enum su_type rc =3D SU_PORT_PORT;
-> > +     struct device_node *ap __free(device_node) =3D
-> > +                         of_find_node_by_path("/aliases");
-> >
-> >       if (ap) {
-> >               const char *keyb =3D of_get_property(ap, "keyboard", NULL=
-);
-> >               const char *ms =3D of_get_property(ap, "mouse", NULL);
-> > -             struct device_node *match;
-> >
-> >               if (keyb) {
-> > -                     match =3D of_find_node_by_path(keyb);
-> > +                     struct device_node *match __free(device_node) =3D
-> > +                                         of_find_node_by_path(keyb);
-> >
-> > -                     /*
-> > -                      * The pointer is used as an identifier not
-> > -                      * as a pointer, we can drop the refcount on
-> > -                      * the of__node immediately after getting it.
-> > -                      */
-> > -                     of_node_put(match);
-> > -
-> > -                     if (dp =3D=3D match) {
-> > -                             rc =3D SU_PORT_KBD;
-> > -                             goto out;
-> > -                     }
-> > +                     if (dp =3D=3D match)
-> > +                             return SU_PORT_KBD;
-> >               }
-> >               if (ms) {
-> > -                     match =3D of_find_node_by_path(ms);
-> > +                     struct device_node *match __free(device_node) =3D
-> > +                                         of_find_node_by_path(ms);
-> >
-> > -                     of_node_put(match);
-> > -
-> > -                     if (dp =3D=3D match) {
-> > -                             rc =3D SU_PORT_MS;
-> > -                             goto out;
-> > -                     }
-> > +                     if (dp =3D=3D match)
-> > +                             return SU_PORT_MS;
-> >               }
-> >       }
-> > -
-> > -out:
-> > -     of_node_put(ap);
-> > -     return rc;
-> > +     return SU_PORT_PORT;
-> >  }
-> >
-> >  static int su_probe(struct platform_device *op)
-> >
+Oh, seems a good catch!
+
+I was also wondering, but missed this somehow. Seems the EEPROM is in BE mode,
+so two loops has to be aligned.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
