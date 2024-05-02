@@ -1,57 +1,57 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6477B5644E
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 09:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD86357888
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 10:02:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714643801; cv=none; b=F8LF+9By8G4nRygCchnNcKXbPxHYCo7vExLOJy1woER9nWG0VEYHZczzUYT/D5YEHnSgGe3cNkfnQi3sMI5fR/ANryVOe/eZ+/EsOzBwunJuOKgAqHmI4KcdnS/91IRm+eM3Sb0TOrYwCzXjsF7PJJp1dthmHb49Fb42NccN9/4=
+	t=1714644162; cv=none; b=BYIELT3RVI9zxlROOtUUMMVPRMKfsknAHzCOYn0l48Y1MM2ZlaD7Klu2Dlov00ABlysm4cyvFvJiwpaS2iyf49xjuK9fux81pVc6Bohr8j9zeIoovwWGQIUopu6xUeEbJvpMrFexfdou+KHdZbdcoyRaQv0FDGf0nKaxjeO4kto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714643801; c=relaxed/simple;
-	bh=3l3zV1CvMpPQ6M3agjT4bErcSYjrF9CaWcpEI3wJ9GQ=;
+	s=arc-20240116; t=1714644162; c=relaxed/simple;
+	bh=Jyakk2Re/yXumSvffFIqIAQUyky6V4gBP2YcQa+LJI8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lCnT6sXfmNbseH34qupx1/olSMDB9eQJUtxfgPbDxm5OzlomozXuRwCxeLEFmqHqFeEHQ/blo4QcM1JqN59kzkICIzZklFxk81jqnROqcy+BaRDs81V9xJHSIw+ZPSXAmImI7rYBnmyz61vYwlCN8qeA7CTtMKDXsuxfEPmdFqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=R5TBtt59; arc=none smtp.client-ip=209.85.210.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=gHGcNltu2y/fu+ryPutdOcpbuiSdU2JnBCWFbFZ0Pw0ht14BoPnq7/dYOx97LEVgKv/7IT+4NlVs6+PKwFNzEVGH+7q2acsi7qnAazys967uvMfY7w8gdL4mfLhl2OWvVhRkX+1GlmVtge4yqFL2YRlMrihUmkZjdbn9qTZ3F58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=DQqmBh4m; arc=none smtp.client-ip=209.85.214.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="R5TBtt59"
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6effe9c852eso6837813b3a.3
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 02:56:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="DQqmBh4m"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1ecc23e6c9dso7983845ad.2
+        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 03:02:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714643800; x=1715248600; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1714644160; x=1715248960; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sucCdO5kXmwHz0FAAtAAGExlkRhEC3HqOy4Cv/qw8KI=;
-        b=R5TBtt59vRw7pDNWPRdtnfrGzClC8OtQpN13oIl6mLbBGMWFqAhCgjMJ77PVbuTvdK
-         w76Sq5hiI2T6WsreDf4rWfkHBD5ekHGzRUAuuKldv+z9sSBPcUWUkS6lxI3E11+Kz5gx
-         8TPx0FK8znm3jozKmGlvT3OEr40HlR1WZ6nC9NafGgEwr4qvWEQs+Q56/Zi7X7HW4Xp/
-         cEhnVJ4XtgJSpYnDJ3aIieLt6bYy+QAlpkvO5opoA/0pS+FqUOJ9XvXpsS898BH0yRsx
-         Y3+GCMzFw2feSDRYNRSL6Daa8xbWWBIVz43B3hZs6+vvvWnlLjNFsfP7TGH5Pg/k3+qa
-         oWBg==
+        bh=+kMTT3PzTLyPVaeH+DM1bYJEhGQDgrI4wH+0p7ikXNM=;
+        b=DQqmBh4mp6/pzjPZTKqH0p2FqsO02oCnzubXyzXAeTGoYGfn6wHXxecXlsfx1ltAHY
+         TTeATZziUIZhC3Y4NurLD8gWd9QT5KBP7KZdJnwyeZrkrxgy6rQPWcODJEzP3QOhji94
+         qafZmuoJnnwLvtKssFFMf/FsYoGTgwUz0GDH6u04iyPkccTBg4WXd9fO8YfL+8YtkVHP
+         ZJakestkypepSyAfoIhJRJ6vXqhdDeL+G6D6aukxxv6aK1sUZNyNa4LbWsoNjNFmG3L5
+         IhEtUmEQGoR4ZoM+OkwUcyGbEFQSPQN9GRGf4Nw1gv3oWOJDtPWDajn1xdO4AbPHqIBs
+         9kNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714643800; x=1715248600;
+        d=1e100.net; s=20230601; t=1714644160; x=1715248960;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sucCdO5kXmwHz0FAAtAAGExlkRhEC3HqOy4Cv/qw8KI=;
-        b=wtPIIEr63y2BVj1DSq9Ue6JGl6wseBuP7P4wy0YpUlMxh6XCY3Edidx0T/+rW7OBuY
-         BsikdlM79koCurIaXTnS0bEr6g1rvOEej4y5IjAwmfem5pDTiZXhVO/g1ZzyiBTXcwIE
-         FK0gSsqMPwwv83lckAFwvbWjrHM6nDKtuv4J3/UQeZU3JUQE4Van57oIowxb3nMla22l
-         ACevK5SGfLJiNxxu3BkhlRti9Rajreo8lbgUGC64dYl2ELbcrGZ5x7lzaMgOiA7z9JYO
-         zeCC8H1KrzgWCLuRMjQO5Y5uZvTS6Vz5Qy6NLnWM2YsBVZksrYGVNybp7SNhAFKc3cGW
-         uz4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUISruuewC58AsIjFKDXWVfileu42p32pySwiYAjF5ipGBcPqndeIZi6HgFFYLAWzIxtFkOzzubKH1VIjnqg8DjxO9cx1EjPU5I47HO
-X-Gm-Message-State: AOJu0Yz9Ila78LMbrYvIDaNjdA8VWvRcphcXnEH/ToOIOHJhks2VN4V8
-	SCIcugEamdjXpRHteHRIHT5lfNQBbn3cLUovBrUM4CX6i19zkSFontZIGS/Mvtw=
-X-Google-Smtp-Source: AGHT+IEdqN4j0tZUjqkf7AiQCf6AILBV0FVoUPT7pSiU8sVSt1YtTCq7aHm3fUhXEYUOJZhfGVfIwA==
-X-Received: by 2002:a05:6a20:7f86:b0:1a7:5402:8a92 with SMTP id d6-20020a056a207f8600b001a754028a92mr1702915pzj.31.1714643799826;
-        Thu, 02 May 2024 02:56:39 -0700 (PDT)
+        bh=+kMTT3PzTLyPVaeH+DM1bYJEhGQDgrI4wH+0p7ikXNM=;
+        b=Li5MEATEW3fGzqrPgnhYz75n+qhyQXOGl8fPsSvCHyKclyNAD+gjdy9kIv9kx6Bd0p
+         QNxtxQ/dNdW0W2PSOkHwRekTg/6uloNPXj9cXfS8K0yrJAljWDt9PFPfJbJMo5QUsN3F
+         npe1lwpNedSgyAwdJRgfXoMqFJQcu3XnrcTL3qcleqSMjOI7hRuAX3dYdgRfVhKLdtla
+         JzFYXzgyWuYkcWbeZZ0XBhak2t04Noo7mdVtW1oSTRriVYkSRGzgcG3XAC5nSQrIHad1
+         e7fi7uUji9L8CX812ipecBiR2aZYHdWL/3E2TQvO+xy4oiwpGcTI1V9DYGzpu0ozXvVl
+         IH0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVKZhA1ovaHUcR3VsaGiC116tTS3BpkrBQg9kT83rh5e2hu43V6gxESJh0Kq3vLSTsfkBzSn0jga4I8Z5tIJGnAYU9Gcg4BWVQ/qGbo
+X-Gm-Message-State: AOJu0Yw2fItsjryHmxHj7hv49ISKnGtEObhnqiHtCV31Cuf1qQtm4wFa
+	1ewLbzVoycpBA/NE1pUSC54DCke8o+Do5ruki7IzNODK5vX6v9OKPaY1pzbEids=
+X-Google-Smtp-Source: AGHT+IFMGhdu0SIDQn/0fGRllf2r0ZaqwxTF1S1fhXPFoF9kfSM7pOtZuP9eC/v0lBtCNsAcHvZnOg==
+X-Received: by 2002:a17:902:ce8e:b0:1eb:5323:c320 with SMTP id f14-20020a170902ce8e00b001eb5323c320mr7103763plg.56.1714644157999;
+        Thu, 02 May 2024 03:02:37 -0700 (PDT)
 Received: from sunil-laptop ([106.51.190.19])
-        by smtp.gmail.com with ESMTPSA id lf12-20020a170902fb4c00b001eb53dcf458sm864846plb.188.2024.05.02.02.56.30
+        by smtp.gmail.com with ESMTPSA id u9-20020a1709026e0900b001e604438791sm896026plk.156.2024.05.02.03.02.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 May 2024 02:56:39 -0700 (PDT)
-Date: Thu, 2 May 2024 15:26:26 +0530
+        Thu, 02 May 2024 03:02:37 -0700 (PDT)
+Date: Thu, 2 May 2024 15:32:25 +0530
 From: Sunil V L <sunilvl@ventanamicro.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -77,12 +77,11 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	Andrei Warkentin <andrei.warkentin@intel.com>,
 	Haibo1 Xu <haibo1.xu@intel.com>,
 	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 01/17] arm64: PCI: Migrate ACPI related functions to
- pci-acpi.c
-Message-ID: <ZjNjSpJus7EYT6zn@sunil-laptop>
+Subject: Re: [PATCH v5 03/17] ACPI: bus: Add acpi_riscv_init function
+Message-ID: <ZjNksbTQF1lMQ0k0@sunil-laptop>
 References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-2-sunilvl@ventanamicro.com>
- <ZjNbVPYIjINdk4Fn@smile.fi.intel.com>
+ <20240501121742.1215792-4-sunilvl@ventanamicro.com>
+ <ZjNbvlUoCfa5UUHF@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -91,21 +90,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZjNbVPYIjINdk4Fn@smile.fi.intel.com>
+In-Reply-To: <ZjNbvlUoCfa5UUHF@smile.fi.intel.com>
 
-On Thu, May 02, 2024 at 12:22:28PM +0300, Andy Shevchenko wrote:
-> On Wed, May 01, 2024 at 05:47:26PM +0530, Sunil V L wrote:
-> > The functions defined in arm64 for ACPI support are required
-> > for RISC-V also. To avoid duplication, move these functions
-> > to common location.
+On Thu, May 02, 2024 at 12:24:14PM +0300, Andy Shevchenko wrote:
+> On Wed, May 01, 2024 at 05:47:28PM +0530, Sunil V L wrote:
+> > Add a new function for RISC-V to do any architecture specific
+> > initialization. This function will be used to create platform devices
+> > like APLIC, PLIC, RISC-V IOMMU etc. This is similar to acpi_arm_init().
 > 
-> ...
+> What is the special about this architecture that it requires a separate
+> initialization that is _not_ going to be in other cases?
+> Please, elaborate.
 > 
-> There are -M -C parameters to git format-patch. Use them in the next version of
-> the series. (Note, you may add percentage numbers to each of those parameters
-> to get prettier result.)
-> 
-Yeah, I tried different combination of percentage after you told me last
-time. I just didn't see any difference in the patch generated. Let me
-try again while sending next version. Thanks!
+This init function will be used to create GSI mapping structures and in
+future may be others like iommu. Like I mentioned, ARM already has
+similar function acpi_arm_init(). So, it is not new right?
 
+Thanks,
+Sunil
