@@ -1,46 +1,46 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8161922EF2;
-	Thu,  2 May 2024 07:48:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6EE022F00;
+	Thu,  2 May 2024 07:56:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714636113; cv=none; b=fkNAlhY86xit6soZ3cey19hK9mrwZwO5T7Ya79xmbrZMwXILuqrag0MYLt4wwTK5kJFbQh6Wzi/so9zHwQGVcePinGMlDdRy2u0TrydsyYc6/S6OihJwwGuBKIB9ggfGwByyCp79UZCBN6tBG4pnaeRDnz2PSv7/tuD6Oz7J3pg=
+	t=1714636566; cv=none; b=PNXCQNlSgp9Vmk2PvejcaDIqwiBrAdgSXxdhisTECYocXE25t+WkEjWiOC1tvUD4l+fiEK2b9CXKDr+bxyiJhTc3WLs9o9A9BWjZrrkmq+Mj07Nw8gIuOPIUdu1D1KxzOzWdhKUNx9j67UJmlosHJwPtoRYwKUI244QWHU/BuTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714636113; c=relaxed/simple;
-	bh=AyqpGCcx3pzUH4PEPahOYjVChU9L8yeZkhdfWdIn+kA=;
+	s=arc-20240116; t=1714636566; c=relaxed/simple;
+	bh=Vc+UiWe/PFfiLW9+QHsBDK/nqefj6balOiVXYNuF3i0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nTgzv2J9qU2ElphHC69ESZ9Ry03sW8L+NSKWU3CW/EKytomTh0FkkRCdah+lN1PQLXaXuTJlhimUFYWaLXONDOnwlNfgaBeZZcAWtIRISPF9wzhxMLXtTpx7yicim4TV0dJi5y7zQDn04Wk9BIMI3rWBvpMS5vI3FrJw26lPGpA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.47
+	 In-Reply-To:Content-Type; b=IT0Tvdm0tQ517aRMic8XKB88AqjVVPVmfuWT7lFhqLVV+kNJWbUsfgd5qJbzRZVBjp+mCcV9/MjIBeI/F9bo3klOopRaAmKlc0GsyEVdGdOS9B164S4NUSGd3gzS+b7iMKsepVdNh/5XzWFIJfbJ8KAtyljQtguOYdCA4Z7zLOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a58772187d8so889347666b.3;
-        Thu, 02 May 2024 00:48:31 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a58e787130fso265321966b.0;
+        Thu, 02 May 2024 00:56:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714636110; x=1715240910;
+        d=1e100.net; s=20230601; t=1714636563; x=1715241363;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=J1VeJE3uwbizswlqzCeytkGg3Ha1OSAITb8Byl9VcCo=;
-        b=RD9a5srTsjk4kqoPSc7fesU1BlV6bJIYtHn5Q/EeK8kHz0CH6DGV3fi2pvH4KISb3x
-         iKxVOlhfZ3s792azjQMTQHRWAVhBFRt+eBQFWSuZSJCFeyOH0R0CGRL88Q9u1dqxQDXK
-         WWmBmNgvSz0u/dd9pLnljDrcMNzpfkAx72WjGhi1Wzq6X73nBMw/GitRrsOZ9XbWv9A9
-         xQbuIZ27uC6mJcOAv7ULA6gdJkst6CpDTKLd0Zr1VD7AhqVa79/C5aJJ0CfKs9B53392
-         yrM0WsawdyFHGQrwa/gngh8r6PSFm6r16lNhLPV0PjyzL1AyKU1bM7GN8a9cUMFlDXUv
-         39dg==
-X-Forwarded-Encrypted: i=1; AJvYcCUORSlUIpTuav0xgHboihtPh0b7TTU++mB0TxgxZ6bIM1DX0J3FNg/hBCwSiU0YNeAYPJvfYSi03HHtcDUdlHuoKhiH0OG6O9IkxtkmT0jBLmxcW6aMqbV12FlR3t74qG0L36wwRk+3+JkRNYvKbrAspebiOM0YdtMSuYBUpztzw12R
-X-Gm-Message-State: AOJu0Yw/33TpF/iBIRzBc/npXTREhuR9KBJQj+LWqt4tksl0FyGWtCNI
-	qo6ukHGdkWxB7K6RTyPePBj/VLZVkLNpO/1SIhIeK2J6+cP0QBNTvuIsm6IA
-X-Google-Smtp-Source: AGHT+IHw6JGrVZHzINIDlMQEgZSuZ1lMjhWpjRZ7CAqnhXIyKbkwyF/GiLlboDRyVURWz71mf3MR9g==
-X-Received: by 2002:a17:906:c2ca:b0:a58:ab31:638e with SMTP id ch10-20020a170906c2ca00b00a58ab31638emr1002475ejb.44.1714636109493;
-        Thu, 02 May 2024 00:48:29 -0700 (PDT)
+        bh=gCHs5AyIZZ846owNPHrscIolxUHAkH2dX6I4QmI8RyU=;
+        b=XPkIocWuy4hwM7UhR0NcfEzSxSsMW104AseASWvLZDx5Fmox9+lc3Mw9kzXf3AA/DT
+         j54EQuBspHA6jzGRiKiZdpWZAoPeaRJ0Uq0jCxrxFhPvmMBZUlfjN6qbShHzQe3Lm1Tf
+         nn6U7X2ZVMk/M4l8UOhFoChwEAtzDe5UlJv9l2g47Gi7mIRVdUzLtKbNNcB5vWxtU2uj
+         /qcQYA3akFC1md2l8pZljyQKQq/sVW3ltwa5g84Rl/u/gmSFknFH+rDeC3+tUl8PA/uz
+         EmMa/O4kZ7gMZbYkidGRX78GmqYdwrfajxQznCHCYgUb6O4hCdfl/OROYryL3cgf4p16
+         5xHw==
+X-Forwarded-Encrypted: i=1; AJvYcCU1JJb/A6BlJU3bP7Bg3jnt6vhBiXGygiYx9N0hsCp1TaQom1HfdFlFPOG+fZWnKnGlo69GHfnwSdA+fmlR4pLjXTyXo4kscAsPJI2UI8IlV5uTfqUX9no7BOIiqeA5+eA7dihZURNMXkQx
+X-Gm-Message-State: AOJu0Yw4rbkGyS1ndTzVFkkROF5rGJyuVofAzuaGAacPeAOeCRa3w979
+	Z29XppxPPAQQ3qvEuwDz0Midcwrpn09q+mE5D7Hj/qh5KMjc2t7c
+X-Google-Smtp-Source: AGHT+IGFME45YUcGSIYJpvtT0MBUCcOSCBGxBO1lqQJPYJ00YYSsDdQL+TsG9vmbcHd1ZjwEt6x6mw==
+X-Received: by 2002:a17:906:1ccc:b0:a58:85ab:354c with SMTP id i12-20020a1709061ccc00b00a5885ab354cmr1587893ejh.1.1714636562454;
+        Thu, 02 May 2024 00:56:02 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a21-20020a170906369500b00a596ea236f4sm237646ejc.212.2024.05.02.00.48.28
+        by smtp.gmail.com with ESMTPSA id jw20-20020a17090776b400b00a4660b63502sm253754ejc.12.2024.05.02.00.56.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 May 2024 00:48:28 -0700 (PDT)
-Message-ID: <4f960a0b-85f3-403f-b75a-47fb1b4ea6aa@kernel.org>
-Date: Thu, 2 May 2024 09:48:27 +0200
+        Thu, 02 May 2024 00:56:02 -0700 (PDT)
+Message-ID: <01cbcdf5-8a7a-4b47-a2aa-05c041e3cab2@kernel.org>
+Date: Thu, 2 May 2024 09:56:00 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,14 +48,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: sc16is7xx: fix bug in sc16is7xx_set_baud()
- when using prescaler
-To: Hugo Villeneuve <hugo@hugovil.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jon Ringle <jringle@gridpoint.com>
-Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240430200431.4102923-1-hugo@hugovil.com>
+Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
+ using __free
+To: Shresth Prasad <shresthprasad7@gmail.com>, davem@davemloft.net,
+ gregkh@linuxfoundation.org
+Cc: sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com,
+ skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
+References: <20240501084110.4165-2-shresthprasad7@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -100,41 +100,54 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240430200431.4102923-1-hugo@hugovil.com>
+In-Reply-To: <20240501084110.4165-2-shresthprasad7@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 30. 04. 24, 22:04, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On 01. 05. 24, 10:41, Shresth Prasad wrote:
+> Add `__free` function attribute to `ap` and `match` pointer
+> initialisations which ensure that the pointers are freed as soon as they
+> go out of scope, thus removing the need to manually free them using
+> `of_node_put`.
 > 
-> When using a high speed clock with a low baud rate, the 4x prescaler is
-> automatically selected if required. In that case, sc16is7xx_set_baud()
-> properly configures the chip registers, but returns an incorrect baud
-> rate by not taking into account the prescaler value. This incorrect baud
-> rate is then fed to uart_update_timeout().
+> This also removes the need for the `goto` statement and the `rc`
+> variable.
 > 
-> For example, with an input clock of 80MHz, and a selected baud rate of 50,
-> sc16is7xx_set_baud() will return 200 instead of 50.
+> Tested using a qemu x86_64 virtual machine.
 > 
-> Fix this by first changing the prescaler variable to hold the selected
-> prescaler value instead of the MCR bitfield. Then properly take into
-> account the selected prescaler value in the return value computation.
-> 
-> Also add better documentation about the divisor value computation.
-> 
-> Fixes: dfeae619d781 ("serial: sc16is7xx")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
+> Suggested-by: Julia Lawall <julia.lawall@inria.fr>
+> Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
 > ---
+> Changes in v2:
+>      - Specify how the patch was tested
 > 
-> Changes for V2:
-> - Change prescaler type to "unsigned int" (Jiri S.)
+>   drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
+>   1 file changed, 11 insertions(+), 26 deletions(-)
 
-Thanks.
+Nice cleanup.
+
+> --- a/drivers/tty/serial/sunsu.c
+> +++ b/drivers/tty/serial/sunsu.c
+> @@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
+>   
+>   static enum su_type su_get_type(struct device_node *dp)
+>   {
+> -	struct device_node *ap = of_find_node_by_path("/aliases");
+> -	enum su_type rc = SU_PORT_PORT;
+> +	struct device_node *ap __free(device_node) =
+> +			    of_find_node_by_path("/aliases");
+
+If we used c++, that would be even nicer; like:
+Destroyer ap(of_find_node_by_path("/aliases"));
+
+But we don't :P. OTOH. can't we achieve that with macro-fu and typeof() 
+magic? Perhaps not really exactly the above, but something like
+   Destroyer(ap, of_find_node_by_path("/aliases"));
+maybe?
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
+thanks,
 -- 
 js
 suse labs
