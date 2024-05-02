@@ -1,218 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB70154C15;
-	Thu,  2 May 2024 15:03:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C25C15B104;
+	Thu,  2 May 2024 15:15:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714662195; cv=none; b=jVEBvp6970Jq51+TNhzgc+WIrwqoDmZjjnWpahu3bkpe+MYdTfn7BJqgPw9YsgddWDGw/+LeEOuF9Cn7I5OXlJpoVDcL4P1VwySGY1yC3ebkFcWsujoKZsBZr9c4RmDsEoKSG/tNgWByoIWKN6dFa9v4r0wutI0g9293Sokipfs=
+	t=1714662956; cv=none; b=dUMhZuiB0b3jLKUOUo9eDMOmaHj9YQbxodZCYGJQ7lb0JHNjXLY/HaND/WRqVNPjJe8u72KRCNAJ4snqCqwfdsTV72TvO0hdCk9ROGNsuJQa5hxtxUFzy0BfaecxzcdVyyeEmSo2O4pB8ZA3PqjEAIXahgUgTnfWDmDoHZCE3so=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714662195; c=relaxed/simple;
-	bh=0/D/3orQyLIxlrLlfuPBXHhZ+OC7Ep+EQJbm8XOpe94=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FKyJwYtzQIylCBfo15O5uSDSBZHUGjO0TMZTCHyiNfLy4Eun8PxFZY2YeDHDSd00zJqxu1b9LLrIPW/YXnKS3pVHcnVbQc7nXmzkMKWPJbsj5ysmM8L7028D233GCdV8kIIJ5E7vJgxG5jRwgdGK912AeUo8iqAMYLF7OWTuYjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jjwYpEbc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1714662956; c=relaxed/simple;
+	bh=yhtMbrbMPDv/iKoCEbGAbo//epyTLe07+dULFYfPs/0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fu88l1s57NaLi7cPqhfdG42QGHrrNb+8jNxsEZ3ze2AVO1nEOPYynhLt6suF4IqtSDXgFLp5DbdthhB5JMZ9AYgcHAWvqCYeDivOtnKuuHUxt4z4PaRIVV85iEOPd84xqWuVkTyuflcwyBs9KvDse7/fxK0xbNMjtOHpfJXt19Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZTZi/F95; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jjwYpEbc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF93C4AF1A;
-	Thu,  2 May 2024 15:03:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1714662195;
-	bh=0/D/3orQyLIxlrLlfuPBXHhZ+OC7Ep+EQJbm8XOpe94=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=jjwYpEbcYKt++DFA3dEJjELaJbghgGFNOT+1SqU5w4Ca/kIOSW5LPC508Wr6JW/xJ
-	 Qa13mKDjvobwhq0k6cMrL/nnqDdFnupgocDVebKuEZLkaU4Gv/cPPWVNGGJd7BUsf2
-	 rQ3TBTSTVSN4iI+AJz5VYKUdCDKbNFTWKWZ/67h6SE6EgByvybpC28MJAYOY+rKKS4
-	 wTS+R45kjV9v5Cfv9ZWZphP5JsOAySEUlPuzW+2glyBQdMz9wYnn+FsjMgdkGmAp7x
-	 Z12AlZ4VnLdCJTa/+73roWWbwI5aC3wYHifh0xhurp+0ZvQQCq/zdkBhk3pLt3bvu5
-	 8E1Qj87U+mn8w==
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2e1fa824504so9252041fa.0;
-        Thu, 02 May 2024 08:03:15 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUkqbzfXUGL8b9ZwHC02XOZOLpZGAbnb6MOOVX5EFQeI3gUuOInjPV3Q3PW/RWUYOqCQy5/zzfXQiCw2dJvmtwxQipatSJnvir0DFyCLBkXBrp9p8/LX2XxRgphtsVNJQU8J+Sq6BgT1fIsBcPxqoME21+TXfqN/kCFxioDa0t6VLOL4uKT7Zg55/beI1hFKx34R7J7FPxb3yKc0x6NEGqdAhG9OYPGoN3/f9Qdog9rl+q0KlDRAjF4
-X-Gm-Message-State: AOJu0YzW8CEups6a96c+SOkL+RuUhLdUF076wHFRW2p6drN9jkLlq/dG
-	pxdKhUCOFXKutWKvOxBAf7uzv4FwhzyxT74EGmWqDvXXetZWcXhJuH2Yfc8Q4eQsZT2pOHAcQ0C
-	2yxZo4NaycUgDcLq9lOQWtenq1A==
-X-Google-Smtp-Source: AGHT+IGES7kDbfk0VUx7WlN+rqE+2KtZ3O8wqcOG/0tlTyJbKym9ll1q8hr3CrUhSN2mTjRc2qgzAnvzqQtLGFf5DGo=
-X-Received: by 2002:a2e:9ccc:0:b0:2e1:e795:3f81 with SMTP id
- g12-20020a2e9ccc000000b002e1e7953f81mr1275404ljj.44.1714662193358; Thu, 02
- May 2024 08:03:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZTZi/F95"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714662954; x=1746198954;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yhtMbrbMPDv/iKoCEbGAbo//epyTLe07+dULFYfPs/0=;
+  b=ZTZi/F954P2SyaHyXIaIHB+cXiYY5QlrrDGdlUI1qc8c/IWeyBf2b1oN
+   EGZ3zdAQzgwqRjjNj2awiUi7gJQ8taeUneI2jj+1XXXXMVH6KPg4OaNkq
+   H1LUhVKggQ2xTqKhUyi6vhKBaO/AujZMUrRRpor7ctiFnUqI6xRwT7jAV
+   hWEs6bLizJgIoqGcWUnrQ2DaiVPOrOxzugCGqTDOPpYwgDHjjz254UdBn
+   lIIeIm4OoHwvnFjJoO2tTxAX3ypIN40auM5TT0PDI5VvS7zgntx5x87kr
+   Cr7WDjbdyKFUCaARA9ZTdqWN3yzs6NjGEbtNGeacP9JNE26zWzglhrg0U
+   g==;
+X-CSE-ConnectionGUID: lHLlUhq4Q0+SqZLI91wEoQ==
+X-CSE-MsgGUID: VP+mtfR2RNKF9TlvnmuOZg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10312004"
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="10312004"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:15:53 -0700
+X-CSE-ConnectionGUID: U/65pNpXQnGfqAqhItqp8w==
+X-CSE-MsgGUID: mKgdWI7BRqKUjn/LEL8QqA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="31643319"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:15:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1s2YA1-00000003MHp-1CQw;
+	Thu, 02 May 2024 18:15:49 +0300
+Date: Thu, 2 May 2024 18:15:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Weifeng Liu <weifeng.liu.z@gmail.com>
+Cc: platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [RFC PATCH 2/2] platform/surface: aggregator: Log critical
+ errors during SAM probing
+Message-ID: <ZjOuJC9NcYHvgWcY@smile.fi.intel.com>
+References: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
+ <20240502040255.655957-4-weifeng.liu.z@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
- <20240502075534.882628-7-christoph.fritz@hexdev.de> <171464227142.1356329.4931419696225319861.robh@kernel.org>
- <48c55b05dae4628d4e811178bfd5e855ac93ee77.camel@hexdev.de>
-In-Reply-To: <48c55b05dae4628d4e811178bfd5e855ac93ee77.camel@hexdev.de>
-From: Rob Herring <robh@kernel.org>
-Date: Thu, 2 May 2024 10:03:01 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqK0__mzwNHuq4enJ3uvQTNWGYyk=TGYnnFX8kLDoGuNeQ@mail.gmail.com>
-Message-ID: <CAL_JsqK0__mzwNHuq4enJ3uvQTNWGYyk=TGYnnFX8kLDoGuNeQ@mail.gmail.com>
-Subject: Re: [PATCH v2 06/12] dt-bindings: net/can: Add serial (serdev) LIN adapter
-To: christoph.fritz@hexdev.de
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 
-	Linus Walleij <linus.walleij@linaro.org>, Jiri Kosina <jikos@kernel.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Andreas Lauser <andreas.lauser@mercedes-benz.com>, Marc Kleine-Budde <mkl@pengutronix.de>, 
-	Benjamin Tissoires <bentiss@kernel.org>, devicetree@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Jonathan Corbet <corbet@lwn.net>, Jakub Kicinski <kuba@kernel.org>, 
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>, Paolo Abeni <pabeni@redhat.com>, 
-	linux-can@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-input@vger.kernel.org, Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
-	Oliver Hartkopp <socketcan@hartkopp.net>, "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240502040255.655957-4-weifeng.liu.z@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, May 2, 2024 at 6:03=E2=80=AFAM Christoph Fritz
-<christoph.fritz@hexdev.de> wrote:
->
-> On Thu, 2024-05-02 at 04:31 -0500, Rob Herring (Arm) wrote:
-> > On Thu, 02 May 2024 09:55:28 +0200, Christoph Fritz wrote:
-> > > This patch adds dt-bindings for serial LIN bus adapters. These adapte=
-rs are
-> > > basically just LIN transceivers that get hard-wired with serial devic=
-es.
-> > >
-> > > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> > > ---
-> > >  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++=
-++
-> > >  1 file changed, 32 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,=
-lin-serdev.yaml
-> > >
-> >
-> > My bot found errors running 'make dt_binding_check' on your patch:
-> >
-> > yamllint warnings/errors:
-> >
-> > dtschema/dtc warnings/errors:
-> > Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dtb=
-: /example-0/serial/linbus: failed to match any schema with compatible: ['l=
-inux,lin-serdev']
->
-> Yes, that's obviously still false and will be fixed in v3.
->
-> >
-> > doc reference errors (make refcheckdocs):
-> >
-> > See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/2024=
-0502075534.882628-7-christoph.fritz@hexdev.de
-> >
-> > The base for the series is generally the latest rc1. A different depend=
-ency
-> > should be noted in *this* patch.
-> >
-> > If you already ran 'make dt_binding_check' and didn't see the above
-> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> > date:
-> >
-> > pip3 install dtschema --upgrade
-> >
-> > Please check and re-submit after running the above command yourself. No=
-te
-> > that DT_SCHEMA_FILES can be set to your schema file to speed up checkin=
-g
-> > your schema. However, it must be unset to test all examples with your s=
-chema.
-> >
->
-> I'm wondering why my local run of dt_binding_check does not catch this:
->
-> $ pip3 install dtschema --upgrade
-> Requirement already satisfied: dtschema in ./venv/lib/python3.11/site-pac=
-kages (2024.4)
-> Requirement already satisfied: ruamel.yaml>0.15.69 in ./venv/lib/python3.=
-11/site-packages (from dtschema) (0.18.6)
-> Requirement already satisfied: jsonschema<4.18,>=3D4.1.2 in ./venv/lib/py=
-thon3.11/site-packages (from dtschema) (4.17.3)
-> Requirement already satisfied: rfc3987 in ./venv/lib/python3.11/site-pack=
-ages (from dtschema) (1.3.8)
-> Requirement already satisfied: pylibfdt in ./venv/lib/python3.11/site-pac=
-kages (from dtschema) (1.7.0.post1)
-> Requirement already satisfied: attrs>=3D17.4.0 in ./venv/lib/python3.11/s=
-ite-packages (from jsonschema<4.18,>=3D4.1.2->dtschema) (23.2.0)
-> Requirement already satisfied: pyrsistent!=3D0.17.0,!=3D0.17.1,!=3D0.17.2=
-,>=3D0.14.0 in ./venv/lib/python3.11/site-packages (from jsonschema<4.18,>=
-=3D4.1.2->dtschema) (0.20.0)
-> Requirement already satisfied: ruamel.yaml.clib>=3D0.2.7 in ./venv/lib/py=
-thon3.11/site-packages (from ruamel.yaml>0.15.69->dtschema) (0.2.8)
->
-> $ git diff
-> diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.=
-yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> index c178eb9be1391..385cbe132258d 100644
-> --- a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> +++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> @@ -27,6 +27,6 @@ examples:
->    - |
->      serial {
->          linbus {
-> -            compatible =3D "hexdev,lin-serdev";
-> +            compatible =3D "linux,lin-serdev";
->          };
->      };
->
-> $ make dt_binding_check DT_SCHEMA_FILES=3DDocumentation/devicetree/bindin=
-gs/net/can/hexdev,lin-serdev.yaml
->   HOSTCC  scripts/basic/fixdep
->   HOSTCC  scripts/dtc/dtc.o
->   HOSTCC  scripts/dtc/flattree.o
->   HOSTCC  scripts/dtc/fstree.o
->   HOSTCC  scripts/dtc/data.o
->   HOSTCC  scripts/dtc/livetree.o
->   HOSTCC  scripts/dtc/treesource.o
->   HOSTCC  scripts/dtc/srcpos.o
->   HOSTCC  scripts/dtc/checks.o
->   HOSTCC  scripts/dtc/util.o
->   LEX     scripts/dtc/dtc-lexer.lex.c
->   YACC    scripts/dtc/dtc-parser.tab.[ch]
->   HOSTCC  scripts/dtc/dtc-lexer.lex.o
->   HOSTCC  scripts/dtc/dtc-parser.tab.o
->   HOSTLD  scripts/dtc/dtc
->   HOSTCC  scripts/dtc/libfdt/fdt.o
->   HOSTCC  scripts/dtc/libfdt/fdt_ro.o
->   HOSTCC  scripts/dtc/libfdt/fdt_wip.o
->   HOSTCC  scripts/dtc/libfdt/fdt_sw.o
->   HOSTCC  scripts/dtc/libfdt/fdt_rw.o
->   HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
->   HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
->   HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
->   HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
->   HOSTCC  scripts/dtc/fdtoverlay.o
->   HOSTLD  scripts/dtc/fdtoverlay
->   LINT    Documentation/devicetree/bindings
->   CHKDT   Documentation/devicetree/bindings/processed-schema.json
->   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
-> /home/ch/linux/Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml: =
-ignoring, error in schema: properties: brcm,tperst-clk-ms: type
-> /home/ch/linux/Documentation/devicetree/bindings/hwmon/microchip,emc2305.=
-yaml: ignoring, error in schema: properties: emcs205,max-state: description
->   DTEX    Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.exa=
-mple.dts
->   DTC_CHK Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.exa=
-mple.dtb
->
-> Any ideas?
->
-> I'm using a python venv here, maybe this is related?
+On Thu, May 02, 2024 at 12:02:47PM +0800, Weifeng Liu wrote:
+> Emits messages upon errors during probing of SAM.  Hopefully this could
+> provide useful context to user for the purpose of diagnosis when
+> something miserable happen.
 
-No. There are 2 possibilities. What kernel version are you on? This
-check is enabled with the '-m' option on dt-validate which was only
-recently (6.9) enabled by default for the bindings. You can enable it
-with 'DT_CHECKER_FLAGS=3D"-m"'. The other possibility is I noticed that
-the flag has an interaction with DT_SCHEMA_FILES in that we don't set
-the flag by default if DT_SCHEMA_FILES is set. (If you explicitly set
-DT_CHECKER_FLAGS in the newer kernels it should still give the
-warning.)  I think we don't enable it because you would get false
-positives if your example has compatible strings not documented within
-the schema you are testing. I need to double check that as how the
-tools work in this regard has evolved. In any case, DT_SCHEMA_FILES is
-a shortcut and it is always possible your changes can introduce
-warnings in other examples, so ultimately "make dt_binding_check" has
-to be run without DT_SCHEMA_FILES set.
+...
 
-Rob
+> -	if (gpiod_count(&serdev->dev, NULL) < 0)
+> +	if (gpiod_count(&serdev->dev, NULL) < 0) {
+> +		dev_err(&serdev->dev, "no GPIO found\n");
+>  		return -ENODEV;
+
+Why not
+
+	return dev_err_probe(...);
+
+?
+
+Also while at it, unshadow the error code
+
+	status = gpiod_count(&serdev->dev, NULL);
+	if (status < 0)
+		return dev_err_probe(..., status, ...);
+
+> +	}
+
+...
+
+>  	astatus = ssam_serdev_setup_via_acpi(ssh->handle, serdev);
+>  	if (ACPI_FAILURE(astatus)) {
+>  		status = -ENXIO;
+> +		dev_err(&serdev->dev, "failed to setup serdev\n");
+
+In the similar way
+
+		status = dev_err(&serdev->dev, -ENXIO, "failed to setup serdev\n");
+
+>  		goto err_devinit;
+>  	}
+
+...
+
+>  	status = ssam_log_firmware_version(ctrl);
+> -	if (status)
+> +	if (status) {
+> +		dev_err(&serdev->dev, "failed to get firmware version\n");
+>  		goto err_initrq;
+
+Use dev_err_probe() everywhere for the sake of uniform output format.
+
+> +	}
+
+...
+
+>  	status = ssam_ctrl_notif_d0_entry(ctrl);
+> -	if (status)
+> +	if (status) {
+> +		dev_err(&serdev->dev, "failed to notify EC of entry of D0\n");
+>  		goto err_initrq;
+
+Ditto.
+
+> +	}
+>  
+>  	status = ssam_ctrl_notif_display_on(ctrl);
+> -	if (status)
+> +	if (status) {
+> +		dev_err(&serdev->dev, "failed to notify EC of display on\n");
+>  		goto err_initrq;
+
+Ditto.
+
+> +	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
