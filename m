@@ -1,96 +1,113 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FFB717106F;
-	Thu,  2 May 2024 17:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 747DC171664
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 18:01:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714672704; cv=none; b=B1CAiW1oa/ueM+Zl5lTaqUKnqLOkrSD9lY4/stHhP08rJEQJyzIhuQkcOI1LmEzFqPuf1q/Ghm/fJ/SuPhHTXYSgIKotS+SnlLxHFqaXp7UrtclDPs6z7hwXNS+Q42v43g1Tvkm9JaOegDv1MGSuuQuSoqhLXeEJOcuVnlDjweg=
+	t=1714672916; cv=none; b=IsC5ymE38lOEavnDqld8N8h7ptHPhERfIZfQ53O4+aFgNT+BVrpIsVTpY3hWlGObDgJMNvNIkYskOrugQADf94wk7vBPU3XPEwkSzAMuNqqpfCprJ+AwaSBcYAkSd1Jt1Yy+eCXEc0eUx9e1Z+V7QA9aVxQBlHo2U0vAf+OlbFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714672704; c=relaxed/simple;
-	bh=hPvWHIKHOLLZg+RYAssh+cqqvv0iLnjyhrFBvRcUh1s=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=EgRYLKRFTe9oAapAD0q7TxwJFNLKVKgIR83Eb7rlVoIzK8hxLphpqlfFnxhDHK2JRaJV0d96dypr7A0Ryp55umhyaxXQg/4OqVbPUP5Y86ja/xl/ur+qUDtOim3mzC1ia5JZJXum+ZHwlyy63Tu4Dq/FzlXAIhSZqcJxqB23oRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=GYtJ2PJy; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1714672916; c=relaxed/simple;
+	bh=DAkYBXQJBlpsNF/cl0LhpQ554Vz5rmbPd7g3ktFfzqg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BSGE2u404Y8HCUkWKcTLttADyUY8UjwncR/3I9bQ2PaENKC7ySVW+lvKygPiuOWwvGCZ3v6yiVSBugxKJvlzO4lr2tBllkKFq4jxsFUiMn6e4KB+zPnfaWef6E1Gc+zgIqufA3dIkVSNlOs0sTAcLE9doGLKlAYkUArTsTvQv6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=L7u2MDey; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="GYtJ2PJy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=54XLdwy/ecV6ue5R6kYST/HDSq5RRwsTeNeLlM8uqKU=; b=GYtJ2PJyngGUUvSkz0AQp0a6DI
-	09VnAC7Tv5lkOArrwfoYvhSBrJvqf6kPlusHooFm41BExGb0seBW2jGX8Z0RRuegZasbyXDQb0+WW
-	K7PCcag2Q/9dDTapiFo+mWqhu1MhcF9URRvOxK6UDiNPR71DxoZ6KiPQlZWtitUsCidE=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1s2agz-001ZYi-2t;
-	Thu, 02 May 2024 19:58:02 +0200
-Message-ID: <95ec67608b913913f94c4fa767fca4221c772dae.camel@hexdev.de>
-Subject: Re: [PATCH v2 08/12] can: lin: Add special frame id for rx offload
- config
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-Reply-To: christoph.fritz@hexdev.de
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>, Marc Kleine-Budde
- <mkl@pengutronix.de>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>, "David
- S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
- Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin
- Tissoires <bentiss@kernel.org>,  Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Sebastian
- Reichel <sre@kernel.org>,  Linus Walleij <linus.walleij@linaro.org>,
- Andreas Lauser <andreas.lauser@mercedes-benz.com>, Jonathan Corbet
- <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>,
- linux-can@vger.kernel.org,  netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
- linux-serial@vger.kernel.org
-Date: Thu, 02 May 2024 19:58:00 +0200
-In-Reply-To: <1c56d103-bc2c-489f-a72c-875b8b8cfe71@kernel.org>
-References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
-	 <20240502075534.882628-9-christoph.fritz@hexdev.de>
-	 <1c56d103-bc2c-489f-a72c-875b8b8cfe71@kernel.org>
-Organization: hexDEV GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="L7u2MDey"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=DAkY
+	BXQJBlpsNF/cl0LhpQ554Vz5rmbPd7g3ktFfzqg=; b=L7u2MDey/d4F/lQ7UABU
+	Z/M6vmijg7t+e+DEuCECZapnyPou4ovwXIhWAT0JM3JY7KwVvTdwympoZLsdyIWp
+	qDhDthErgimKMhw3t3fzGgHm33jDUUwjsm3H5V++cdq+N7SRYmmwc7B/yaZJ6JLB
+	Ho3q2OHEGD7QoDyw+Q0KP1wo+KLI1jIEhwaPn1tUFwR3Xbe9s+Dnm6iJGMee3D4p
+	HzwHsu+onP+7LerXS9ho7953JHaBmgPgETbKH6geWWvkOVediD/L8UlKulMRI9vK
+	AG30A8O3kpqU0+bDjwcw+BgZ2dvhCUiqc3+GpP3i1jUkUe5Q6NjSLMVl2DbEJsIZ
+	4A==
+Received: (qmail 3328518 invoked from network); 2 May 2024 20:01:51 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 2 May 2024 20:01:51 +0200
+X-UD-Smtp-Session: l3s3148p1@aBfBZXwXBu1ehhrT
+Date: Thu, 2 May 2024 20:01:50 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: Dirk Behme <dirk.behme@de.bosch.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] serial: sh-sci: start hrtimer after setting up
+ DMA
+Message-ID: <20240502180150.r3pb2izsjlpqzszz@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	linux-renesas-soc@vger.kernel.org,
+	Dirk Behme <dirk.behme@de.bosch.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
+ <20240416123545.7098-5-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="js57najwoohyptm3"
+Content-Disposition: inline
+In-Reply-To: <20240416123545.7098-5-wsa+renesas@sang-engineering.com>
 
-On Thu, 2024-05-02 at 12:27 +0200, Krzysztof Kozlowski wrote:
-> On 02/05/2024 09:55, Christoph Fritz wrote:
-> > A LIN bus supports up to 64 identifiers in one byte. This commit adds a
-> > special frame ID, beyond the actual LIN identifiers, for signaling RX
-> > offload configuration requests. This ID will be utilized in future LIN
-> > enhancements to the CAN broadcast manager.
-> > 
-> > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> > ---
-> >  include/net/lin.h | 1 +
-> 
-> You just added this file in other patch. What is the point of splitting
-> line-per-line additions?
 
-My intention was to make the review process easier by separating the
-BCM (Broadcast Manager) logic from the basic driver implementation.
+--js57najwoohyptm3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> There is no user of this in this patch. Squash it with the patch adding
-> the file.
+On Tue, Apr 16, 2024 at 02:35:47PM +0200, Wolfram Sang wrote:
+> In the RX DMA completion handler, the hrtimer was restarted before DMA
+> was set up. If DMA failed, for some reason, it would clean up and the
+> hrtimer would run into a NULL-pointer. Restart the timer after DMA was
+> successfully set up.
 
-OK
+Further investigations, please review:
 
-v3 is coming up
+Originally, I thought this was the race condition Dirk encountered. But
+I didn't take locking into account. sci_dma_rx_timer_fn() is protected
+by the uart_port_lock. sci_dma_rx_complete() is also protected by the
+uart_port_lock. So, the position of restarting the hrtimer should not
+matter.
 
-Thanks
-  -- Christoph
+However, I still think it is good coding practice (and easier to
+understand) if we cancel the hrtimer at the begin of
+sci_dma_rx_complete() and reenable it only if setting DMA was
+successful. Because that basically means the timer only runs when DMA
+was scheduled and has not finished yet.
 
+There is some unnecessary unlock/lock in the error handling of
+sci_dma_rx_complete(). I'll simplify this by moving the dev_err
+downwards.
+
+
+--js57najwoohyptm3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmYz1Q4ACgkQFA3kzBSg
+KbZm0w//eZ5cZq4DX8pPTTvVIVuT9AjpiB59BUYA79fhrfvqyyCVCBp723SSdNJT
+7O+8oUCVy+jpkDb0CTCFYy2ejvEwDVBoq5TMgRREpGw04MnBzSvYmogeLhdKdqro
+JCTuIdoU4K3OzXZsbqLi98ZQwpZmXaxNPF4Hjq3hQN+atJu9cmIgQq/2jbNptx7e
+Cq9ow1Jowp1RngMR9i0CVypjwwz4FsPk2u8j9jhrv1+Jnj68ThkoTePx0wof2ky0
+kYS6uNd+7P5MWVcLuFRCXAcPNNAxm4VgIRdd2qNJZ7G1v49uDwJ5IKlDlem5i3XQ
+WpyXOx0RizXXxlDbho+eQi6WgaafJ9q8KgcqE5iIBkp4gPp6oZ+2sd0bTUT2Xu97
+deDVQPoh1oiyY9T3reM50dRZ43zp/Yrt6Q8WC+zK7V6mNfuWQ6upN4umbOXPObCH
+t3Si8GOtMEox8fhg96hbbw3qNDPMv85Vr11dGGXmwOc6VY7WA61B299blH82gacT
+tPaa1oYuo7cm4yGc3ErqrwEs8a7rplctQNiE9YkTfIfhmysXiSjN4QwB6spxq3Ps
+09Rgews6i6y+Lzez1/CTn7xEvXWKoPoYNFOYr/wnkE81dOqcTvFT3ca3mUFLBtNv
+i0y/k12/IuQGweQn2G0lx5A4ahvtrGIKAzW28dHeJoVj7T6wq3c=
+=4p+v
+-----END PGP SIGNATURE-----
+
+--js57najwoohyptm3--
