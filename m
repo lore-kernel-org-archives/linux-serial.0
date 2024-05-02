@@ -1,224 +1,130 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D00B75C60D;
-	Thu,  2 May 2024 10:41:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 621E25FDD3
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 11:01:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714646489; cv=none; b=p7NCMXWlmc5l0TFrYKn+wubv2Ejxjf2gB+Vibr7l3DcS6HmuslFNApJELT9tGHKnbQxVb2wPZaXZslUYqThG+JE2qigiOQgRv0/uEQJnyUjz/hzWxqa73qvQEsogUoK/38lNjYY9AyXnGfwuHfKHXl87keEKxZjvbaROgbhTt14=
+	t=1714647672; cv=none; b=GDSweh77+rqu/pFY+b3l4IU2Xa8Xd8EX+lk0bRW4MReonXIY0xc5hmfUvXh4LV/6cXfwBX483LV6IhMbdmet3u1P46/whqwzFaVnbBLB7jHpUc1RtQNAaHYrRRY1VsdiRumLjW4aOnHu2Jm0ekmyMUNeGhRU1LkfE0HR7FDlanE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714646489; c=relaxed/simple;
-	bh=OqJ+yIymupM8os2NNtWYxIDzuic0X9q0L/FNYuyp6NQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=uLMzAxtLt+XgVp7LFnWf5hoRuWfyErgdq8swm6k7gHfjkR89a/h3/NHt3aCbf1SfVPE1PBNdB9ebzucGDriCB96KoLTxrFGONftbxkio4RiaF77sFvRHJr9A3j4dKCT/K1x45lPYu+tdLnEnMKsX/hHzvQqYyf0IZTqg3mJLIUU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=DDqJ6uWX; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1714647672; c=relaxed/simple;
+	bh=ndLSvNTaHy7rcB+YkF1gfmdHrNAQTVgDr2rY9G9+Z/k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hhDIaMWGhbg+lJ0IXrxP+yIOA3nJgGDNiTQRqfm3KuCGz8CZv3vpmXltmH8sJ+vVkrUADdfKPt09sCAl5CEFCyve3//O0Rvy9DaIeM19AlluWkUet1sEsrVtKPo0R3saY8GqnTNgiUPZ263G+cnRqFrYWsebXWfP29pCig809Zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=idqeKlgv; arc=none smtp.client-ip=209.85.128.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="DDqJ6uWX"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=4UUHAno7rypybrcQtRJnCbtjDnm2b3MTrzNRoHFFT+4=; b=DDqJ6uWXnxC+eCkZQ7gN9aIjkb
-	o+Ouhe7Rg91OXbK1/odgrwOFaA6dXxRBbs6uy+CzYzxCFJteto934oK/rKoev1Ntg9s9p+GYVVzIC
-	VfVAcwv8kpe+bOYZDEa5Jb6VBisVxPmFjJQH2n9IxGJJcuvjxi7NH887u+P62++5sogo=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1s2TsE-001Z1U-1D;
-	Thu, 02 May 2024 12:41:11 +0200
-Message-ID: <2ab875b8216dd32d0d1e495a52a20c02a40e3e5d.camel@hexdev.de>
-Subject: Re: [PATCH v2 02/12] HID: hexLIN: Add support for USB LIN bus
- adapter
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-Reply-To: christoph.fritz@hexdev.de
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>, Marc Kleine-Budde
- <mkl@pengutronix.de>, Vincent Mailhol <mailhol.vincent@wanadoo.fr>, "David
- S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
- Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin
- Tissoires <bentiss@kernel.org>,  Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Sebastian Reichel <sre@kernel.org>, Linus
- Walleij <linus.walleij@linaro.org>, Andreas Lauser
- <andreas.lauser@mercedes-benz.com>,  Jonathan Corbet <corbet@lwn.net>,
- Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, 
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-input@vger.kernel.org,  linux-serial@vger.kernel.org
-Date: Thu, 02 May 2024 12:41:07 +0200
-In-Reply-To: <acf0251e-41b9-410d-a663-ff6c34d2bc3e@kernel.org>
-References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
-	 <20240502075534.882628-3-christoph.fritz@hexdev.de>
-	 <acf0251e-41b9-410d-a663-ff6c34d2bc3e@kernel.org>
-Organization: hexDEV GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="idqeKlgv"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-615019cd427so61851767b3.3
+        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 04:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1714647670; x=1715252470; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yjTLbsaK8lFll8/qZ6Wbe+KOojRpVIeEGiQdgeTUV/M=;
+        b=idqeKlgvQ+/lcZpWrTfTYFW/DJvkRNzbSS/eMoELdnj27RVAT9IZIsCp2ZLtlQg9ii
+         Lv/zb2fzYXGAgRbPddqlbdffFnILvXi3IoHjeFYOsgVNlo6IUfMi5Ctu1RSwOA3cTQyf
+         r/k2FPrtIWLFtA/TB+LgGcpohrpc6aaaCXUU3Y9Ca/9EmCQ/LsU/qIEMRdak9pdUFm1P
+         WLQzyEXFBC5IGdq8LPrTlm7zJOhSGOOVGZH/QLpW6E8FDQ/i64Z0keQKdFJUzHN7J35k
+         1+/Y7vW5phfhT91m31swW5c5LeRVRpIMZ5/w1TGGxH7izyQfX8ZmGHa/ZWSvcVczatxC
+         0HWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714647670; x=1715252470;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yjTLbsaK8lFll8/qZ6Wbe+KOojRpVIeEGiQdgeTUV/M=;
+        b=eDy1zqX8nJ1rdr4M6xBN1cTKBuE195hI6oBPAihhnQhVn132xGEVh8ZpsadMPkvBe/
+         hrWCFpyTEpkAkzHz9v2dbxzyXVnv3xSGG4Z4qu3VWVVFErR0EVqc0zcz562AlaLhZtn3
+         bWuXIi9wQI7MBjpFLphjtXqIWkUV1KVs8i0FtB55/26V7e8K4ZqFNXYJjn3QfPgLpGwE
+         X2Rm6IlD1Hy8si2Q4ruq7dzGxcY63A+oxw+mU+78/azOoEDrrX/KB8OkwAllOUea1c2B
+         0adVsIb3PRdaYNU0wGyQlodhkrXsQqzHqwmle105tqGVbm7jYwwql3q6LuKOOdXbptj7
+         Uzkw==
+X-Forwarded-Encrypted: i=1; AJvYcCXkTlQgvQ2YSVVkYeNEaPGctF4Pj55ilwjWDP2e957qR1Df9IK+nHEbVM3OoKBySr2NDi1Hwid2EZU4UmTLoYpjxPUT5FA7SdXecBe0
+X-Gm-Message-State: AOJu0YwAzFm7B/7jcnCh04RWJkiaJPdGtz8UgGEO8j9chDR4oulXGO1A
+	fNFP/T9wcK2tH+zpnCzFCQd2bexn2ArUEtXw0tRL15Ukmw3CJtRXjD+Oz8GWmPo=
+X-Google-Smtp-Source: AGHT+IHfkJrlGnon/mEX5fWtLywYkDj4de083FrQTvrfO2XC94gdhaKM/ttBrgT+XJ2VbkvvaIQxaw==
+X-Received: by 2002:a05:690c:d88:b0:61a:d2d9:5488 with SMTP id da8-20020a05690c0d8800b0061ad2d95488mr6160180ywb.7.1714647670339;
+        Thu, 02 May 2024 04:01:10 -0700 (PDT)
+Received: from sunil-laptop ([106.51.190.19])
+        by smtp.gmail.com with ESMTPSA id dg17-20020a05690c0fd100b0061adfb01cc2sm147882ywb.90.2024.05.02.04.01.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 May 2024 04:01:09 -0700 (PDT)
+Date: Thu, 2 May 2024 16:30:50 +0530
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	acpica-devel@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Anup Patel <anup@brainfault.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Andrei Warkentin <andrei.warkentin@intel.com>,
+	Haibo1 Xu <haibo1.xu@intel.com>,
+	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Subject: Re: [PATCH v5 03/17] ACPI: bus: Add acpi_riscv_init function
+Message-ID: <ZjNyYkgpyAa47F4b@sunil-laptop>
+References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+ <20240501121742.1215792-4-sunilvl@ventanamicro.com>
+ <ZjNbvlUoCfa5UUHF@smile.fi.intel.com>
+ <ZjNksbTQF1lMQ0k0@sunil-laptop>
+ <ZjNnG6JqFCZGj1qv@bogus>
+ <ZjNoy6KLtOCTe52q@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZjNoy6KLtOCTe52q@smile.fi.intel.com>
 
-On Thu, 2024-05-02 at 10:30 +0200, Jiri Slaby wrote:
-> On 02. 05. 24, 9:55, Christoph Fritz wrote:
-> > This patch introduces driver support for the hexLIN USB LIN bus adapter,
-> > enabling LIN communication over USB for both controller and responder
-> > modes. The driver interfaces with the CAN_LIN framework for userland
-> > connectivity.
+On Thu, May 02, 2024 at 01:19:55PM +0300, Andy Shevchenko wrote:
+> On Thu, May 02, 2024 at 11:12:43AM +0100, Sudeep Holla wrote:
+> > On Thu, May 02, 2024 at 03:32:25PM +0530, Sunil V L wrote:
+> > > On Thu, May 02, 2024 at 12:24:14PM +0300, Andy Shevchenko wrote:
+> > > > On Wed, May 01, 2024 at 05:47:28PM +0530, Sunil V L wrote:
+> > > > > Add a new function for RISC-V to do any architecture specific
+> > > > > initialization. This function will be used to create platform devices
+> > > > > like APLIC, PLIC, RISC-V IOMMU etc. This is similar to acpi_arm_init().
+> > > >
+> > > > What is the special about this architecture that it requires a separate
+> > > > initialization that is _not_ going to be in other cases?
+> > > > Please, elaborate.
+> > > >
+> > > This init function will be used to create GSI mapping structures and in
+> > > future may be others like iommu. Like I mentioned, ARM already has
+> > > similar function acpi_arm_init(). So, it is not new right?
 > > 
-> > For more details on the adapter, visit: https://hexdev.de/hexlin/
+> > Just to add:
 > > 
-> > Tested-by: Andreas Lauser <andreas.lauser@mercedes-benz.com>
-> > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> ...
-> > --- /dev/null
-> > +++ b/drivers/hid/hid-hexdev-hexlin.c
-> > @@ -0,0 +1,630 @@
-> ...
-> > +static int hexlin_stop(struct lin_device *ldev)
-> > +{
-> > +	struct hid_device *hdev = to_hid_device(ldev->dev);
-> > +	struct hexlin_priv_data *priv = hid_get_drvdata(hdev);
-> > +
-> > +	hid_hw_close(hdev);
-> > +
-> > +	priv->is_error = true;
-> > +	complete(&priv->wait_in_report);
-> > +
-> > +	mutex_lock(&priv->tx_lock);
-> > +	mutex_unlock(&priv->tx_lock);
+> > This is to initialise everything around all the arch specific tables
+> > which you will not have on any other architectures. We could execute
+> > on all architectures but the tables will never be found. The main point
+> > is why do we want to do that if we can optimise and skip on all other
+> > archs.
 > 
-> This is a weird way to implement a completion. It looks like you need 
-> another one.
-
-They are not necessary, even more so when I can drop the
-mutex_destroy() below.
-
+> You need to carefully write the commit messages. Some kind of the above
+> paragraphs has to be in there.
 > 
-> > +	return 0;
-> > +}
-> ...> +static int hexlin_probe(struct hid_device *hdev,
-> > +			const struct hid_device_id *id)
-> > +{
-> > +	struct hexlin_priv_data *priv;
-> > +	int ret;
-> > +
-> > +	priv = devm_kzalloc(&hdev->dev, sizeof(*priv), GFP_KERNEL);
-> > +	if (!priv)
-> > +		return -ENOMEM;
-> > +
-> > +	priv->hid_dev = hdev;
-> > +	hid_set_drvdata(hdev, priv);
-> > +
-> > +	mutex_init(&priv->tx_lock);
-> > +
-> > +	ret = hid_parse(hdev);
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid parse failed with %d\n", ret);
-> > +		goto fail_and_free;
-> > +	}
-> > +
-> > +	ret = hid_hw_start(hdev, HID_CONNECT_DRIVER);
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid hw start failed with %d\n", ret);
-> > +		goto fail_and_stop;
-> > +	}
-> > +
-> > +	ret = hid_hw_open(hdev);
-> > +	if (ret) {
-> > +		hid_err(hdev, "hid hw open failed with %d\n", ret);
-> > +		goto fail_and_close;
-> > +	}
-> > +
-> > +	init_completion(&priv->wait_in_report);
-> > +
-> > +	hid_device_io_start(hdev);
-> > +
-> > +	ret = init_hw(priv);
-> > +	if (ret)
-> > +		goto fail_and_close;
-> > +
-> > +	priv->ldev = register_lin(&hdev->dev, &hexlin_ldo);
-> > +	if (IS_ERR_OR_NULL(priv->ldev)) {
-> > +		ret = PTR_ERR(priv->ldev);
-> > +		goto fail_and_close;
-> > +	}
-> > +
-> > +	hid_hw_close(hdev);
-> > +
-> > +	hid_info(hdev, "hexLIN (fw-version: %u) probed\n", priv->fw_version);
-> > +
-> > +	return 0;
-> > +
-> > +fail_and_close:
-> > +	hid_hw_close(hdev);
-> > +fail_and_stop:
-> > +	hid_hw_stop(hdev);
-> > +fail_and_free:
-> > +	mutex_destroy(&priv->tx_lock);
-> > +	return ret;
-> > +}
-> > +
-> > +static void hexlin_remove(struct hid_device *hdev)
-> > +{
-> > +	struct hexlin_priv_data *priv = hid_get_drvdata(hdev);
-> > +
-> > +	unregister_lin(priv->ldev);
-> > +	hid_hw_stop(hdev);
-> > +	mutex_destroy(&priv->tx_lock);
-> 
-> It is unusual to destroy a mutex. Why do you do that?
-> 
+Sure, let me update the commit message on similar lines.
 
-Just for code clarity and it should help if someone wants to use
-CONFIG_DEBUG_MUTEXES.
-
-To be able to drop the lock/unlock from above, I could add the
-lock/unlock here or just drop the mutex_destroy() completely.
-
-I'll just drop it in upcoming v3.
-
-> > +}
-> ...
-> > +static int __init hexlin_init(void)
-> > +{
-> > +	return hid_register_driver(&hexlin_driver);
-> > +}
-> > +
-> > +static void __exit hexlin_exit(void)
-> > +{
-> > +	hid_unregister_driver(&hexlin_driver);
-> > +}
-> 
-> 
-> 
-> > +
-> > +/*
-> > + * When compiled into the kernel, initialize after the hid bus.
-> > + */
-> > +late_initcall(hexlin_init);
-> 
-> Hmm, why not module_init() then? (And module_hid_driver().)
-
-Looking at the other hid drivers and testing with just
-
-module_hid_driver(hexlin_driver)
-
-works here fine for compiled into the kernel and as a module.
-
-> 
-> > +module_exit(hexlin_exit);
-> > +
-> > +MODULE_LICENSE("GPL");
-> > +MODULE_AUTHOR("Christoph Fritz <christoph.fritz@hexdev.de>");
-> > +MODULE_DESCRIPTION("LIN bus driver for hexLIN USB adapter");
-
-Thanks
-  -- Christoph
+Thanks,
+Sunil
