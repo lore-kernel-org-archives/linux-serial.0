@@ -1,66 +1,66 @@
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8721B299;
-	Thu,  2 May 2024 04:03:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDFB61CA81;
+	Thu,  2 May 2024 04:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714622605; cv=none; b=o51KvV+FKpvm1c5dxeP2eXeg1ucveUksC3J2NKuBmPBSmYtPDPtDwAmoO3WuMUfGe5u5w6/Vhu0/bZeRiirBwUgwd35h1a+FvZ7ll/4Wv7VX/9rri4/ZCZ0AK3qK6veUXGnlVzC/k+GJbQxAkdUq8gmATDzUSozMlGLIzMSKswM=
+	t=1714622608; cv=none; b=BMD4w9df1E0oxp8UmwC8upOmDgtBVdQwjIPKcMPgAVhwUGAcyLiARx8ptdnk1fDqOSzLGh8qXH9+BH5SfA9OnATNpQnYPfSlS9ukELrFA4Oab1GHYLLc6hOunOI0lHzEQjVGmPgA0w+fkJAqhoPDyoPtBT1O9eRPAN+0zgClEHQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714622605; c=relaxed/simple;
-	bh=h7tE368ohDcwrOQAQzkVk1DtOFsO1SY5csh/GFh4Txo=;
+	s=arc-20240116; t=1714622608; c=relaxed/simple;
+	bh=IuncjCinTZcslylQsvcuG6xMFQyq83RRDqafU+ZCgxY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hhARSEuNdSjAtJOyb9wsJscXt+CYuGstts/EGZh6v18Wxky4Lc3aFgvs0Mmg0DXq+W2tBQwfsFaSUZwAPy+ha6Gf9YsniVtRW6pI4pN7B9nkTQbuSMta740Qko6083ushl4WK8hn/expBifK3nDSuGTw5POIFLkNwIWNpbvjr8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CaVzLHH0; arc=none smtp.client-ip=209.85.210.179
+	 MIME-Version; b=dMJvSOIZUiKTJ9NE9iSoqgSMtqO56JPONs2XulJDu03KuE3FRzRRPgkh/MEKgJeF0cfbByLyk6EAnEVGfYPYqDdnSLRaHaSj49PjhdaRO0KiBALTT2h+DHUMfG32783okTQcAZgtj7uAQaEptsuKtq19ra62hy5Zz604xQD8PQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JBcfYu/h; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CaVzLHH0"
-Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-6f4302187c0so377137b3a.1;
-        Wed, 01 May 2024 21:03:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JBcfYu/h"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1e4266673bbso67885265ad.2;
+        Wed, 01 May 2024 21:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714622603; x=1715227403; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1714622606; x=1715227406; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FnJuU2X/pt87elIj/zhh9UvoGxDEvntsc67nDMvs9CE=;
-        b=CaVzLHH0f0kCdX5YuTIQmkaBhcVJ1K1uN+O9IoaojgzxpYOdU8fTIGQPbvSjPkXxUW
-         ECoLc1BMZX+MaYVC9RGLehiKdQl8s/Rz/76KIrGygkpzfS5Uj51RmJO59075Ulwb9fv9
-         F6BcvLMfswfb5oc2HIReam7gtN5GIVg7huYmHbNIHgvyHzacR58fB5tWMP3jVVCt2/xK
-         l40wjfoyCvmUPSikYRfYemeykwgg5f4nB+aZsk4jAFPj1O3rpPmW03S3qYs1xqkLrpkh
-         ANRqHGg75I5HHLNwXaOKav5bNlpGQztbI+E6uQaiIhQ4XZEqRVvyfTVYems6UyPxSvr4
-         Uqiw==
+        bh=jzB+rQYevMvBz8BfUKIQPgyqZ5Qo5yjxtUsNJAd5VcU=;
+        b=JBcfYu/h5rvZPoIYuhvnqzkag3hU73o4ld4SAbonh3ToBVNdbxeSRSOVOyDKuGl5EN
+         r0O3NQ0IfjPBu+x/+OMj6wIMOg9/wj2ZoLeoUIT3ZElQ/EWHW6KC7EpuyFNyD0OsyPMI
+         1haqqPiCWq3lSo5oe5mdLZ382K7aBitdzGciWz80hAsnow2UmziMeMUzh2b9rqVR2JSx
+         n5JO8N5Oowu5R+BesSZ536C/dO1/K80YWa14BqITL/Lj+l+tGGW3jsyx8g3DtwEGHRMD
+         +BNHMIavWzYyt0Hxz/cUn+PQhjMWcfdqBG7nIHHzvNgIUF5l6G6C67Y+5bkrRaItFNGu
+         B/Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714622603; x=1715227403;
+        d=1e100.net; s=20230601; t=1714622606; x=1715227406;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FnJuU2X/pt87elIj/zhh9UvoGxDEvntsc67nDMvs9CE=;
-        b=KLXp7XoD6EGaLw9UOeOcT9rIM5qIbDUiVBgmb74NH1Wx4nRGz6opkXAZmPuiZMM2q+
-         xB4qNTiccmqDfzpLwoMU/wUqjHMLom5Iio1O5WqUjgCEtkozOjaCxA8Z/AB5FODTEkj0
-         9uqK87uSIyGnCQMV5IFP5KFO6NQgOKC8ZKhzURnd9Noho7o6/zzjSgIGXHqXCv9uyPsy
-         AWQiFTwknUCEe2pBzJ+xd6HXyGKk1Zov9p4AmKlt0ZvQzAZOHy58k1AYGn/eyp5o/HYp
-         QXfJYt68EYAY1Z3hDi7OxMcz4RXQcO5dDJ6fEApMlrfZ2513LDiGWC4kI4JY03JJycNr
-         STFw==
-X-Forwarded-Encrypted: i=1; AJvYcCW3+Z0RhTiMfMERqm6KFwhUOEiWZ1TX26uAfQVf+tnZxAn9FfzNgaeYTeaPshjTxZ6oyPm2Mn9bFoMdF6oTwhSwItofCCcR6F8rOa7n
-X-Gm-Message-State: AOJu0Yw1R2ZFefRNnq0x/HjmYi/+rUtrIm3j0tSeaGX04+ODCJ6boP5U
-	Odb8trC8yGSloaYMKJnR8eI8zqeYLTkvEu3m8ryw5ggIDIgOtWR4wgfr2XprRhkyUWMw
-X-Google-Smtp-Source: AGHT+IGn4j4g9u9/GacxiHFcbFD4eOStwgvsekoIUj48l2bfdkYOs3d5lIsT4GtBL9BSvtkTtIr7rA==
-X-Received: by 2002:a05:6a20:2d23:b0:1a3:a821:f297 with SMTP id g35-20020a056a202d2300b001a3a821f297mr2373731pzl.2.1714622602952;
-        Wed, 01 May 2024 21:03:22 -0700 (PDT)
+        bh=jzB+rQYevMvBz8BfUKIQPgyqZ5Qo5yjxtUsNJAd5VcU=;
+        b=mU2b+uGIoGwJgrSKc/yjh5ZoPdCmCZhL4lI5qxtrJDNcQvDFUNolrt9r+jINWH2WPy
+         yQlT7kMbXoGjSVueNUlvOr5e2C2nm2nBAG2P2cQLB0eSSKacr++Uu+OuSaFTJzMS1Ryl
+         e1bS+pi2TLxSadYtVN2OQpYdB7Q72MImg8VAHVZQpzDnUOP1w9hXCYuMHOc0prn7V+9b
+         G7qTNtGcXNOtvLXO4p649KnPa2JIuYDiunSz+MjWCPIp+tWDIME1wBePAG7s0HqjYEzU
+         eqOUsyZ1XPoFF/WbXRGJ+aba0x2n9CR40X/zPnOoLfnpfqIrX0UXsYpLG67fcDUFvxL2
+         0S0w==
+X-Forwarded-Encrypted: i=1; AJvYcCUwciB8eqfryFSmhZO+Lx1ADVTi0R7fIKBoNvnDxm+EG2z0dltyufsaIXQr539ncf97LmCNseAl4SJsdmuW7tcEml/yA/vmDZItZrkj
+X-Gm-Message-State: AOJu0YwIVVozQqNvB1kRux0OPGREylRZirkSoQdNWZhToyjxnXcKfrqV
+	lEA7N3qIR/Fu7obeU9HlUjFacnH5kYsFPSmx33wnG1sn9J9OmTqC1Yc1m2LclPRVndfp
+X-Google-Smtp-Source: AGHT+IEgmgmDky3WRliZBT1htC7pgAKivWc36rcaCzUAStw0m/Yj4RL/HpOTXm0ONiO30QMMbkiXyA==
+X-Received: by 2002:a17:902:c14c:b0:1ea:1d2:90bc with SMTP id 12-20020a170902c14c00b001ea01d290bcmr4393641plj.24.1714622605733;
+        Wed, 01 May 2024 21:03:25 -0700 (PDT)
 Received: from localhost ([103.192.225.104])
-        by smtp.gmail.com with ESMTPSA id g9-20020aa79dc9000000b006eae2d9298esm185842pfq.194.2024.05.01.21.03.22
+        by smtp.gmail.com with ESMTPSA id w6-20020a170902e88600b001e96982c4fbsm158119plg.118.2024.05.01.21.03.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 21:03:22 -0700 (PDT)
+        Wed, 01 May 2024 21:03:25 -0700 (PDT)
 From: Weifeng Liu <weifeng.liu.z@gmail.com>
 To: platform-driver-x86@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Weifeng Liu <weifeng.liu.z@gmail.com>,
 	Maximilian Luz <luzmaximilian@gmail.com>,
 	Hans de Goede <hdegoede@redhat.com>
-Subject: [RFC PATCH 1/2] platform/surface: aggregator: Defer probing when serdev is not ready
-Date: Thu,  2 May 2024 12:02:46 +0800
-Message-ID: <20240502040255.655957-3-weifeng.liu.z@gmail.com>
+Subject: [RFC PATCH 2/2] platform/surface: aggregator: Log critical errors during SAM probing
+Date: Thu,  2 May 2024 12:02:47 +0800
+Message-ID: <20240502040255.655957-4-weifeng.liu.z@gmail.com>
 X-Mailer: git-send-email 2.44.0
 In-Reply-To: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
 References: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
@@ -72,49 +72,90 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is an attempt to alleviate race conditions in the SAM driver where
-essential resources like serial device and GPIO pins are not ready at
-the time ssam_serial_hub_probe() is called.  Instead of giving up
-probing, a better way would be to defer the probing by returning
--EPROBE_DEFER, allowing the kernel try again later.
+Emits messages upon errors during probing of SAM.  Hopefully this could
+provide useful context to user for the purpose of diagnosis when
+something miserable happen.
 
-However, there is no way of identifying all such cases from other real
-errors in a few days.  So let's take a gradual approach identify and
-address these cases as they arise.  This commit marks the initial step
-in this process.
-
-Suggested-by: Maximilian Luz <luzmaximilian@gmail.com>
 Signed-off-by: Weifeng Liu <weifeng.liu.z@gmail.com>
 ---
- drivers/platform/surface/aggregator/core.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/platform/surface/aggregator/core.c | 26 +++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
-index 9591a28bc38a..72a521dd729c 100644
+index 72a521dd729c..4e2e70f4dcf5 100644
 --- a/drivers/platform/surface/aggregator/core.c
 +++ b/drivers/platform/surface/aggregator/core.c
-@@ -645,9 +645,20 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 	/* Set up serdev device. */
- 	serdev_device_set_drvdata(serdev, ctrl);
- 	serdev_device_set_client_ops(serdev, &ssam_serdev_ops);
-+
-+	/* The following step can fail when it's called too early before the
-+	 * underlying uart device is ready (in this case -ENXIO is returned).
-+	 * Instead of simply giving up and losing everything, we can defer
-+	 * the probing by returning -EPROBE_DEFER so that the kernel would be
-+	 * able to retry later. */
- 	status = serdev_device_open(serdev);
--	if (status)
-+	if (status == -ENXIO)
-+		status = -EPROBE_DEFER;
-+	if (status) {
-+		dev_err_probe(&serdev->dev, status,
-+			      "failed to open serdev device\n");
- 		goto err_devopen;
+@@ -623,8 +623,10 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
+ 	acpi_status astatus;
+ 	int status;
+ 
+-	if (gpiod_count(&serdev->dev, NULL) < 0)
++	if (gpiod_count(&serdev->dev, NULL) < 0) {
++		dev_err(&serdev->dev, "no GPIO found\n");
+ 		return -ENODEV;
 +	}
  
+ 	status = devm_acpi_dev_add_driver_gpios(&serdev->dev, ssam_acpi_gpios);
+ 	if (status)
+@@ -637,8 +639,11 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
+ 
+ 	/* Initialize controller. */
+ 	status = ssam_controller_init(ctrl, serdev);
+-	if (status)
++	if (status) {
++		dev_err_probe(&serdev->dev, status,
++			      "failed to initialize ssam controller\n");
+ 		goto err_ctrl_init;
++	}
+ 
+ 	ssam_controller_lock(ctrl);
+ 
+@@ -663,6 +668,7 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
  	astatus = ssam_serdev_setup_via_acpi(ssh->handle, serdev);
  	if (ACPI_FAILURE(astatus)) {
+ 		status = -ENXIO;
++		dev_err(&serdev->dev, "failed to setup serdev\n");
+ 		goto err_devinit;
+ 	}
+ 
+@@ -678,16 +684,22 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
+ 	 * states.
+ 	 */
+ 	status = ssam_log_firmware_version(ctrl);
+-	if (status)
++	if (status) {
++		dev_err(&serdev->dev, "failed to get firmware version\n");
+ 		goto err_initrq;
++	}
+ 
+ 	status = ssam_ctrl_notif_d0_entry(ctrl);
+-	if (status)
++	if (status) {
++		dev_err(&serdev->dev, "failed to notify EC of entry of D0\n");
+ 		goto err_initrq;
++	}
+ 
+ 	status = ssam_ctrl_notif_display_on(ctrl);
+-	if (status)
++	if (status) {
++		dev_err(&serdev->dev, "failed to notify EC of display on\n");
+ 		goto err_initrq;
++	}
+ 
+ 	status = sysfs_create_group(&serdev->dev.kobj, &ssam_sam_group);
+ 	if (status)
+@@ -695,8 +707,10 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
+ 
+ 	/* Set up IRQ. */
+ 	status = ssam_irq_setup(ctrl);
+-	if (status)
++	if (status) {
++		dev_err_probe(&serdev->dev, status, "failed to setup IRQ\n");
+ 		goto err_irq;
++	}
+ 
+ 	/* Finally, set main controller reference. */
+ 	status = ssam_try_set_controller(ctrl);
 -- 
 2.44.0
 
