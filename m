@@ -1,65 +1,46 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 348362E859
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 08:39:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634B146447;
+	Thu,  2 May 2024 08:44:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714639141; cv=none; b=fmSQ/moyif0gDHDcQwP6i7ob4QumwHTtqWYayeU2w5nfr9qofD/lY8F3+uau9PnFIrXKkY/kIwOy25PDwzliFsyNTLoKCa76Mwxx8aE+Q3UKHkfW0o3UdkHb/o15UcdL0LMADPOGZu858YGyJygNBCGRCumkPeqD33am5tRFnWY=
+	t=1714639492; cv=none; b=hKQrfl81ECkt9px9UfiB+mpfO3uxGvlHn9up4/dWXbD7vk5zD37itlTFu1F1VC+nyHlUfue63u6/j5s65KHOI37fAagw2mdpqDWMIsYjBUnsN/oUTUXW14LzI3K8MADFa+Rc2IW5oN/iwtCs5chNdhLmJBJ2EOFWAhKszzg5g0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714639141; c=relaxed/simple;
-	bh=ilrFFY6gpqsREXL0hStdjMoDt3s4SbHsDOogLS0qdRA=;
+	s=arc-20240116; t=1714639492; c=relaxed/simple;
+	bh=+NLHBhZRBYI95WFHsn7dVOTxgbFKRVWzxhhF4X4AOvM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=M1tvUE5pNWiu5tq5Q1+fGKKDrihqoHaWN90eIpP0ShKtIaJlky/VU4yYAONO1GY3o7LZ9xYEW4i4HO72wSGubGFX95W8gZ1UUIXOAAWLAYHLpW+3xM7dZW0apScI0GubIRZAdr0ZQt8K1qZa+aspaDmqeqCqjk0o460blgQRcEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JwwYdYne; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JwwYdYne"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1714639139;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=c31vrJZLeYpGeljEYJNMs2vOunRYlPKu2sBlSVFxYg8=;
-	b=JwwYdYne29a+Tg3H+3XtR3IrvA/Ctl8qNAkr1dOkwKfgx1AJhFXfb5dChtBj+sbFkvbpkG
-	QPLdv1u1W9TGJE0Lk0jfartjwoLaGW+f5+ZeNQUfl3+NA6gfHgjrnsKxlT5L+/s7y1i1mK
-	HGHV0uu1dA6nQCc0JCZeE1mTTr+FUJs=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-454-Ocotf4diNwKTUqHIja1OXQ-1; Thu, 02 May 2024 04:38:57 -0400
-X-MC-Unique: Ocotf4diNwKTUqHIja1OXQ-1
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-a5190b1453fso501069666b.2
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 01:38:57 -0700 (PDT)
+	 In-Reply-To:Content-Type; b=hJwL1D3IddKAuNbc1dNiNPZ/qE0gHB/uS6LoXjl2rMSKAsuOiVoly5xQanxulYgamaMFhP6k5lIZ+cEHkaDCxXRQ3qLc3l+EEMfyLQOOyAOjs6pU9Tgzeh8sExZD7Jh5J7woD+098wK/+Omj9I+9Ky99fFbRdQjG71a5LYeX0h0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a5878caeb9eso924482966b.1;
+        Thu, 02 May 2024 01:44:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714639136; x=1715243936;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=c31vrJZLeYpGeljEYJNMs2vOunRYlPKu2sBlSVFxYg8=;
-        b=UhfKxgBZxqQlktELPgGDQSwTKqkLNmqKdPCErWuiMjwkWkCbTkVS0LlAMg9dFThoGb
-         w52plJ4Biyxxly+qBgqMR3QhcF0b7fjahjvrUcEcrc5gYULMFnA4xG57MLaf4BrVDLut
-         RVLEl11wVfKNL2ZBM07DbP/p5jlz/Kd+64zwwuFLcznieIqz35c1dFP1l0XMvJdzhZuX
-         wb4KQOw+7f4LS8uNKeEfGeWYG5KE50O6rmF7rC4ebV+HAXQ+sPwj0zOW5dXyUgdeSigB
-         T0ZX+80600ojeMZV2F435Hp+37hlAyRpf9km7OfhCVMR14it0xPCcE9YuDiwkkkyAwVx
-         1gQA==
-X-Forwarded-Encrypted: i=1; AJvYcCUz2zzpTkW0mxv+4YlHiAuJrh66egvUwctY/dUstqrOG8oPfNgirBbDBcXxfBP89VBX7KHjymRGILIucmEQjCjEyb2Bi5iQU+JoWw7X
-X-Gm-Message-State: AOJu0YzZSX8qXOGMohHq2rm/ZRhyDPAMs6MHO4fm5GHf3PbGZp/kNKd+
-	hp9MXOGVzwVy5a0q258kwNvzSypD2wiH+6UWL6mvv3nPZ3WOPJ7GldNX9ykP45890vaLT4Qo1aP
-	tnzLcbMbct44nzYpWjXTbBYiMdlMtAneh/svb7UlcmJqpnOUi5JZvAK+rNAqPxg==
-X-Received: by 2002:a17:907:760f:b0:a59:62f5:e81d with SMTP id jx15-20020a170907760f00b00a5962f5e81dmr1502924ejc.48.1714639136735;
-        Thu, 02 May 2024 01:38:56 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFozuGaQ9i7FrTfhc8WZ9SlinQ341gN1S7oDrnyTC5jvrZ2XKSVrXXBUtT70huwAJT6mQwHng==
-X-Received: by 2002:a17:907:760f:b0:a59:62f5:e81d with SMTP id jx15-20020a170907760f00b00a5962f5e81dmr1502909ejc.48.1714639136313;
-        Thu, 02 May 2024 01:38:56 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
-        by smtp.gmail.com with ESMTPSA id v2-20020a17090606c200b00a5910978658sm277502ejb.208.2024.05.02.01.38.55
+        d=1e100.net; s=20230601; t=1714639489; x=1715244289;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xyUR0PVRexJrQieSgPDu+6a93eOrFLP5eQgOtFYkWn8=;
+        b=ecsThdGuNOLYxc8lH3dYQ55JZ/L7tWzauZoEt1ebJpmzgXLGviz1AIUMbml/osslLN
+         Dk5KQlcnGHO8f0nbwx8/FXtdYKF6fAkD+ixb/KQnjbfoPl9eehzjuRL3YATZR7yh0BFb
+         KgH2hGAShJYSTgY1sh/zqzuhwl7Ns5EjOhGcGOj4x0tC9boF44HEMPTJW/5cyMg+gjPv
+         1sL8ETHFg+TfBlmUnfPgcg1JfUwYjfxN9X0uUsQHyLiiH0Dl52lz4xTD3ghyK8Uzpzlq
+         EUlIymIRxADrXEeJuDWGGwOhawuzR/qTciP0cWqEK7NKyFQ2O06a7RGr5qMnTEI+UBxO
+         7L0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW4wJSvC3ldYbQR7jBrvaKVegBqYLtjaa12U7W+dmXFIbFVU5QwY1GOn0mog7sYpPCJYhmQvJDPfjc1YxOhViCjmrYeHZWjkHj0krkn0/I5ML1MB/gL/N9W0RFUh7sYgp0plWH2EYFDIC1wikPvtUCxgXiLxdd4pkploTt2lI8i9lPFaAIbBCAMczfQSAHQqur2OhuOI/vb/FfO2a2a8HJVKVnLkrrOMvUYZd+srP59EIXfz/m0TDR1
+X-Gm-Message-State: AOJu0YxojFuaS3dbOZsi9nHnXKfy7pBdD7dB4DvsrL8YFEkYIE9AEEeO
+	ROtZrjYHy8uNSVA0FpfeAbLROLP3Bb+FWUYXK4h+FgLJOtJ0Eh+y
+X-Google-Smtp-Source: AGHT+IGEQIirZ0qBejPyDoJk4QL6GI0vA+1pbCVirhPev7LTDbO1LHmOhOOg/ZWB8jg0YyHzdfb4SA==
+X-Received: by 2002:a17:906:340f:b0:a58:e789:8eb7 with SMTP id c15-20020a170906340f00b00a58e7898eb7mr2958300ejb.74.1714639488468;
+        Thu, 02 May 2024 01:44:48 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id og20-20020a1709071dd400b00a5970e88670sm198140ejc.176.2024.05.02.01.44.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 May 2024 01:38:55 -0700 (PDT)
-Message-ID: <b08a6155-0701-403a-9c33-b1e24fd99e42@redhat.com>
-Date: Thu, 2 May 2024 10:38:55 +0200
+        Thu, 02 May 2024 01:44:47 -0700 (PDT)
+Message-ID: <6ae3c1af-4368-4a3e-bfb5-366080048dac@kernel.org>
+Date: Thu, 2 May 2024 10:44:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,106 +48,233 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/2] Defer probing of SAM if serdev device is not
- ready
-To: Weifeng Liu <weifeng.liu.z@gmail.com>,
- platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Maximilian Luz <luzmaximilian@gmail.com>
-References: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
-From: Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US, nl
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v2 07/12] can: Add support for serdev LIN adapters
+To: Christoph Fritz <christoph.fritz@hexdev.de>,
+ Oliver Hartkopp <socketcan@hartkopp.net>,
+ Marc Kleine-Budde <mkl@pengutronix.de>,
+ Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ Benjamin Tissoires <bentiss@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Sebastian Reichel <sre@kernel.org>, Linus Walleij <linus.walleij@linaro.org>
+Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+ Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+ <20240502075534.882628-8-christoph.fritz@hexdev.de>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240502075534.882628-8-christoph.fritz@hexdev.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Weifeng,
+On 02. 05. 24, 9:55, Christoph Fritz wrote:
+> This commit introduces LIN-Bus support for UART devices equipped with
+> LIN transceivers, utilizing the Serial Device Bus (serdev) interface.
+> 
+> For more details on an adapter, visit: https://hexdev.de/hexlin#tty
+...
+> --- /dev/null
+> +++ b/drivers/net/can/lin-serdev.c
+> @@ -0,0 +1,514 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/* Copyright (C) 2024 hexDEV GmbH - https://hexdev.de */
+> +
+> +#include <linux/module.h>
+> +#include <linux/wait.h>
+> +#include <linux/init.h>
+> +#include <linux/errno.h>
+> +#include <linux/string.h>
+> +#include <linux/kernel.h>
 
-On 5/2/24 6:02 AM, Weifeng Liu wrote:
-> Greetings,
-> 
-> This series is intended to remedy a race condition where surface
-> aggregator module (SAM) which is a serdev driver could fail to probe if
-> the underlying UART port is not ready to open.  In such circumstance,
-> invoking serdev_device_open() gets errno -ENXIO, leading to failure in
-> probing of SAM.  However, if the probe is retried in a short delay,
-> serdev_device_open() would work as expected and everything just goes
-> fine.  As a workaround, adding the serial driver (8250_dw) into
-> initramfs or building it into the kernel image significantly mitigates
-> the likelihood of encountering this race condition, as in this way the
-> serial device would be initialized much earlier than probing of SAM.
-> 
-> However, IMO we should reliably avoid this sort of race condition.  A
-> good way is returning -EPROBE_DEFER when serdev_device_open returns
-> -ENXIO so that the kernel will be able to retry the probing later.  This
-> is what the first patch tries to do.
-> 
-> Though this solution might be a good enough solution for this specific
-> issue, I am wondering why this kind of race condition could ever happen,
-> i.e., why a serdes device could be not ready yet at the moment the
-> serdev driver gets called and tries to bind it.  And even if this is an
-> expected behavior how serdev driver works, I do feel it a little bit
-> weird that we need to identify serdev_device_open() returning -ENXIO as
-> non-fatal error and thus return -EPROBE_DEFER manually in such case, as
-> I don't see this sort of behavior in other serdev driver.  Maximilian
-> and Hans suggested discussing the root cause of the race condition here.
-> I will be grateful if you could provide some reasoning and insights on
-> this.
+What do you need kernel.h for? You should explicitly require what you 
+need (you apparently do), so kernel.h should not be needed.
 
-Ack, I have no objection against the changes and if Maximilian is ok with
-it I can merge these right away as an interim fix, but I would really
-like to know why the serdev core / tty code is registering a serdev
-device for a serial port before it is ready to have serdev_device_open()
-called on it. To me it seems that the root cause is in somewhere in
-the 8250_dw code or the serdev core code.
+> +#include <net/lin.h>
+> +#include <linux/of.h>
+> +#include <linux/serdev.h>
+> +#include <linux/slab.h>
+> +#include <linux/kfifo.h>
+> +#include <linux/workqueue.h>
+> +#include <linux/tty.h>
 
-Resources sometimes not being ready is sometimes which drivers generally
-speaking need to handle, but in this case the resource which is not
-ready is the device the driver is binding to, so it seems that
-the device is registered too soon.
+Might be eaier to maintain if you sort them.
 
-If someone familiar with the serial / serdev code can provide some
-insight here that would be great.
+> +#define LINSER_SAMPLES_PER_CHAR		10
+> +#define LINSER_TX_BUFFER_SIZE		11
+> +#define LINSER_RX_FIFO_SIZE		256
+> +#define LINSER_PARSE_BUFFER		24
+> +
+> +struct linser_rx {
+> +	u8 data;
+> +	u8 flag;
+> +};
+> +
+> +enum linser_rx_status {
+> +	NEED_MORE = -1,
+> +	MODE_OK = 0,
+> +	NEED_FORCE,
+> +};
+> +
+> +struct linser_priv {
+> +	struct lin_device *lin_dev;
+> +	struct serdev_device *serdev;
+> +	DECLARE_KFIFO_PTR(rx_fifo, struct linser_rx);
+> +	struct delayed_work rx_work;
+> +	ulong break_usleep_min;
+> +	ulong break_usleep_max;
+> +	ulong post_break_usleep_min;
+> +	ulong post_break_usleep_max;
+> +	ulong force_timeout_jfs;
 
-Regards,
+The same as for uint :)
 
-Hans
+> +	struct lin_responder_answer respond_answ[LIN_NUM_IDS];
+> +	struct mutex resp_lock; /* protects respond_answ */
+> +	bool is_stopped;
+> +};
+...
+> +static void linser_derive_timings(struct linser_priv *priv, u16 bitrate)
+> +{
+> +	unsigned long break_baud = (bitrate * 2) / 3;
+> +	unsigned long timeout_us;
+> +
+
+Are those 1000000UL USEC_PER_SEC?
+
+> +	priv->break_usleep_min = (1000000UL * LINSER_SAMPLES_PER_CHAR) /
+> +				 break_baud;
+> +	priv->break_usleep_max = priv->break_usleep_min + 50;
+> +	priv->post_break_usleep_min = (1000000UL * 1 /* 1 bit */) / break_baud;
+> +	priv->post_break_usleep_max = priv->post_break_usleep_min + 30;
+> +
+> +	timeout_us = DIV_ROUND_CLOSEST(1000000UL * 256 /* bit */, bitrate);
+> +	priv->force_timeout_jfs = usecs_to_jiffies(timeout_us);
+> +}
+...
+> +static bool linser_tx_frame_as_responder(struct linser_priv *priv, u8 id)
+> +{
+> +	struct lin_responder_answer *answ = &priv->respond_answ[id];
+> +	struct serdev_device *serdev = priv->serdev;
+> +	u8 buf[LINSER_TX_BUFFER_SIZE];
+> +	u8 checksum, count, n;
+> +	ssize_t write_len;
+> +
+> +	mutex_lock(&priv->resp_lock);
+> +
+> +	if (!answ->is_active)
+> +		goto unlock_and_exit_false;
+> +
+> +	if (answ->is_event_frame) {
+> +		struct lin_responder_answer *e_answ;
+> +
+> +		e_answ = &priv->respond_answ[answ->event_associated_id];
+> +		n = min(e_answ->lf.len, LIN_MAX_DLEN);
+> +		if (memcmp(answ->lf.data, e_answ->lf.data, n) != 0) {
+> +			memcpy(answ->lf.data, e_answ->lf.data, n);
+> +			checksum = lin_get_checksum(LIN_FORM_PID(answ->lf.lin_id),
+> +						    n, e_answ->lf.data,
+> +						    answ->lf.checksum_mode);
+> +			answ = e_answ;
+> +		} else {
+> +			goto unlock_and_exit_false;
+
+Can't you simply use guard(mutex) above and avoid the error-prone 
+gotos/cleanup completely?
+
+> +		}
+> +	} else {
+> +		checksum = answ->lf.checksum;
+> +	}
+> +
+> +	count = min(answ->lf.len, LIN_MAX_DLEN);
+> +	memcpy(&buf[0], answ->lf.data, count);
+> +	buf[count] = checksum;
+> +
+> +	mutex_unlock(&priv->resp_lock);
+> +
+> +	write_len = serdev_device_write(serdev, buf, count + 1, 0);
+> +	if (write_len < count + 1)
+> +		return false;
+> +
+> +	serdev_device_wait_until_sent(serdev, 0);
+> +
+> +	return true;
+> +
+> +unlock_and_exit_false:
+> +	mutex_unlock(&priv->resp_lock);
+> +	return false;
+> +}
+> +
+> +static void linser_pop_fifo(struct linser_priv *priv, size_t n)
+> +{
+> +	struct serdev_device *serdev = priv->serdev;
+> +	struct linser_rx dummy;
+> +	size_t ret, i;
+> +
+> +	for (i = 0; i < n; i++) {
+> +		ret = kfifo_out(&priv->rx_fifo, &dummy, 1);
+
+Does kfifo_skip() not work for records? (I added it recently for serial.)
+
+> +		if (ret != 1) {
+> +			dev_err(&serdev->dev, "Failed to pop from FIFO\n");
+> +			break;
+> +		}
+> +	}
+> +}
 
 
-
-
-> 
-> Following is the code path when the issue occurs:
-> 
-> 	ssam_serial_hub_probe()
-> 	serdev_device_open()
-> 	ctrl->ops->open()	/* this callback being ttyport_open() */
-> 	tty->ops->open()	/* this callback being uart_open() */
-> 	tty_port_open()
-> 	port->ops->activate()	/* this callback being uart_port_activate() */
-> 	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
-> 
-> I notice that flag UPF_DEAD would be set in serial_core_register_port()
-> during calling serial_core_add_one_port() but don't have much idea
-> what's going on under the hood.
-> 
-> Additionally, add logs to the probe procedure of SAM in the second
-> patch, hoping it could help provide context to user when something
-> miserable happens.
-> 
-> Context of this series is available in [1].
-> 
-> Best regards,
-> Weifeng
-> 
-> [1] https://github.com/linux-surface/kernel/pull/152
-> 
-> Weifeng Liu (2):
->   platform/surface: aggregator: Defer probing when serdev is not ready
->   platform/surface: aggregator: Log critical errors during SAM probing
-> 
->  drivers/platform/surface/aggregator/core.c | 39 ++++++++++++++++++----
->  1 file changed, 32 insertions(+), 7 deletions(-)
-> 
+thanks,
+-- 
+js
+suse labs
 
