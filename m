@@ -1,128 +1,121 @@
-Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD2CD4778B;
-	Thu,  2 May 2024 09:14:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 054C353365;
+	Thu,  2 May 2024 09:18:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714641274; cv=none; b=cFO02Ov2VKWsvIvSW6nwA2Bz3GE9woEC1Cm9GZjjUlDKb1oiJAPvVVT/Nr+COCuJFrlss4ID1N21H64ks7KazGjgXL7yR3HSeMTkBKUWSFQ5FOsAEBWUlOzP8n1XkP0tiDpiZ74y6cmORIVGs9vCrq/+x0yfKzZuz9lDyC5P2E0=
+	t=1714641505; cv=none; b=A73qrNWhkX1TjCvYciFAJoXhhCA0Fud9ZrBwoLJropFr2Z4bvk/kEN5M1Q/ualTlo8sNQixsONeKqevJHmIILKUDe0cxl1M6Cy6mh7RVCavx8kD8/gL3xTUJ/76VgpJrUifBC3w8jqM59U3zLMNnf0CHCfrvMIsT8wK5T/z6kys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714641274; c=relaxed/simple;
-	bh=b0K7N5VFNQhgz8A7fXjMU5postVykzp+1WBrbx0HmIA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=HloaSawd09twH1oKulzrchdclAT/rrHEFNu8r22m6MeLDOFhR0Yg8mxbIDn59OTlMnL3egojQnJdUrwq5cUXbAwWKjsdmZKMvowuV6MBaMqID5yZSA0E3FXms2U6AxHJ1/DQFo0CPeW2w87rI63xdf9DEa4Z6DtvjfrH1tsv3EA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=LkfbHs/k; arc=none smtp.client-ip=188.40.30.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1714641505; c=relaxed/simple;
+	bh=a/QufiF272o3DvR0cKkQMFkYPKhS35DQjuKoUIBYmTk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SEKEY2BM4wh8Np0eB9jza57Iv9HdGgCY2grnJRixp5zNox4IRT+j1W1R0gWrphsfD2lfLfdoZsLnJPvSoy5bq/HGgV/ICk75kmBcGNEFxIeHNy7S/1HbD1xWL7XeHke12FTtbKoLM02ey60MfPi5fXKFMT5kY96VPyx8Q12/6/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kbmXp/1B; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="LkfbHs/k"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
-	s=default2211; h=Content-Type:MIME-Version:Message-ID:Date:References:
-	In-Reply-To:Subject:Cc:To:From:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=/NoG3XHUWmdniOQeHszLWB0bpcAI3VvsLE8CKkJdHFk=; b=LkfbHs/kiemciZ+KBclNVjo+5i
-	owEwK121ksZa5gsrjbj+gmNjRh9unNi3UKTF5YTfhpNvWuqnRpdOHMBzOZzaNWX+Ah90WZ03lTsxI
-	djRFv661Sm9QpE7pzz8PcEr++Zu//MugKgZtgrg+09lyvCcHE+2Mle32eBrLCBUWXwr8ZjgNiN1fc
-	5Yt2BbgYY1skbfgtsRUB5WoOHSSkDAmNtD1q2rnhmVJP9VoFdO1IEhHF81WGDY2gRIN1gAtizuSXA
-	UcadbFoxtBJ35l32msLOTCok72N7n+XzOfEQWx23SkiN4As2dRzrycPcqdlyPmXXSKrlSEY8k6qMs
-	ihfcVQfg==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <esben@geanix.com>)
-	id 1s2SWJ-000KDR-JC; Thu, 02 May 2024 11:14:27 +0200
-Received: from [185.17.218.86] (helo=localhost)
-	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <esben@geanix.com>)
-	id 1s2SWI-0003XL-2e;
-	Thu, 02 May 2024 11:14:26 +0200
-From: Esben Haabendal <esben@geanix.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>, Sergey Organov
- <sorganov@gmail.com>,  Jiri Slaby <jirislaby@kernel.org>,  Shawn Guo
- <shawnguo@kernel.org>,  Sascha Hauer <s.hauer@pengutronix.de>,
-  Pengutronix Kernel Team <kernel@pengutronix.de>,  Fabio Estevam
- <festevam@gmail.com>,  linux-kernel@vger.kernel.org,
-  linux-serial@vger.kernel.org,  imx@lists.linux.dev,
-  linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3] serial: imx: Introduce timeout when waiting on
- transmitter empty
-In-Reply-To: <919647898c337a46604edcabaf13d42d80c0915d.1712837613.git.esben@geanix.com>
-	(Esben Haabendal's message of "Thu, 11 Apr 2024 14:19:23 +0200")
-References: <cf197182beab7acf6ea7ead54fb4324e97e18cbc.1712733269.git.esben@geanix.com>
-	<919647898c337a46604edcabaf13d42d80c0915d.1712837613.git.esben@geanix.com>
-Date: Thu, 02 May 2024 11:14:26 +0200
-Message-ID: <87sez060el.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kbmXp/1B"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714641504; x=1746177504;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=a/QufiF272o3DvR0cKkQMFkYPKhS35DQjuKoUIBYmTk=;
+  b=kbmXp/1B21yUuwq+qOXE9zjQItJoxrW/2C+eEUrkEy3LQ2lH2jLxIwx+
+   AwSJZ/EJQAarnaf0qoNWS1XruUMeZOcD0Hw4/6e3/SmV462wYdArSITZR
+   uiKAHHtUJOpAgm+8qVYoRLiKG109tgbtt2vW/YKqxVSZY/OSB/0DjxIki
+   ePXmaRk8zCc1diDzeESnQdEb9NqDZx+FEHlC8yL8xX6cKfwAIr2kPzlXG
+   /PsqvqsLBIcrSFDDJ5LHdCZjG1d7XyQZGiBevTx1/u3g595JG7K27FVMy
+   lx1UZI0cnQlpl/NL3DjqXOr11cEKYayYGO4klvuv29rJgVwayr3lRxD9j
+   g==;
+X-CSE-ConnectionGUID: qO8Ei41dSN+87NW0pzD3ow==
+X-CSE-MsgGUID: srmRrpYlQcKNIfeZHPqxwQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11061"; a="10274161"
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="10274161"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 02:18:10 -0700
+X-CSE-ConnectionGUID: weq2NrOvSyClDOUB0O6Igw==
+X-CSE-MsgGUID: iZzhZm4ZT9S/eDC2HeXt4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="27142469"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 02:18:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s2SZk-00000003GCl-0xR0;
+	Thu, 02 May 2024 12:18:00 +0300
+Date: Thu, 2 May 2024 12:17:59 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	acpica-devel@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Anup Patel <anup@brainfault.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Andrei Warkentin <andrei.warkentin@intel.com>,
+	Haibo1 Xu <haibo1.xu@intel.com>,
+	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
+Message-ID: <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
+References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+ <20240501121742.1215792-18-sunilvl@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Authenticated-Sender: esben@geanix.com
-X-Virus-Scanned: Clear (ClamAV 0.103.10/27263/Thu May  2 10:23:13 2024)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240501121742.1215792-18-sunilvl@ventanamicro.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Esben Haabendal <esben@geanix.com> writes:
+On Wed, May 01, 2024 at 05:47:42PM +0530, Sunil V L wrote:
+> RISC-V has non-PNP generic 16550A compatible UART which needs to be
+> enumerated as ACPI platform device. Add driver support for such devices
+> similar to 8250_of.
 
-> By waiting at most 1 second for USR2_TXDC to be set, we avoid a potential
-> deadlock.
->
-> In case of the timeout, there is not much we can do, so we simply ignore
-> the transmitter state and optimistically try to continue.
->
-> Signed-off-by: Esben Haabendal <esben@geanix.com>
-> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> ---
->
-> v2:
-> - Fixed commit message typo
-> - Remove reference to patch series it originated from. This is a
->   stand-alone patch
->
-> v3:
-> - Moved this version information into the correct patch section
+...
 
-Anything more needed in order to get this merged?
+> + * This driver is for generic 16550 compatible UART enumerated via ACPI
+> + * platform bus instead of PNP bus like PNP0501. This is not a full
 
-/Esben
+This has to be told in the commit message. Anyway, we don't need a duplication
+code, please use 8250_pnp.
 
->
->  drivers/tty/serial/imx.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index e14813250616..09c1678ddfd4 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -26,6 +26,7 @@
->  #include <linux/slab.h>
->  #include <linux/of.h>
->  #include <linux/io.h>
-> +#include <linux/iopoll.h>
->  #include <linux/dma-mapping.h>
->  
->  #include <asm/irq.h>
-> @@ -2010,7 +2011,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
->  	struct imx_port *sport = imx_uart_ports[co->index];
->  	struct imx_port_ucrs old_ucr;
->  	unsigned long flags;
-> -	unsigned int ucr1;
-> +	unsigned int ucr1, usr2;
->  	int locked = 1;
->  
->  	if (sport->port.sysrq)
-> @@ -2041,8 +2042,8 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
->  	 *	Finally, wait for transmitter to become empty
->  	 *	and restore UCR1/2/3
->  	 */
-> -	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC));
-> -
-> +	read_poll_timeout_atomic(imx_uart_readl, usr2, usr2 & USR2_TXDC,
-> +				 0, USEC_PER_SEC, false, sport, USR2);
->  	imx_uart_ucrs_restore(sport, &old_ucr);
->  
->  	if (locked)
+...
+
+> +	{ "RSCV0003", 0 },
+
+Does it have _CID to be PNP0501?
+If not, add this ID to the 8250_pnp.
+
+...
+
+P.S.
+The code you submitted has a lot of small style issues, I can comment on them
+if you want, but as I said this code is not needed at all.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
