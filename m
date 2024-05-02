@@ -1,157 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BBC513FF6;
-	Wed,  1 May 2024 16:56:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0463F19478;
+	Thu,  2 May 2024 04:03:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714582577; cv=none; b=fI7lkGFhIajUZZMNurhtQdEiXoRY3PrTHzLBgQdpaebMWNxSTfYr3LQ/4y4yhKXc5Ch0zKoXN66AlQdF/mHsnEI2MOBn40jCG43CqNZ+79b+bBxxNZr/fmiN0XZolGp3yfpPheR7aabIzer8f21lrEGBMjfiq3V0d0iyG9jHddg=
+	t=1714622603; cv=none; b=Le+wjtdDF6EvA0gTIaDEyvYPKaHIUdqyCV1q/UfkrIVj4fvk9X8xwzXz2kHkTCWn9gzVNKnO+HnUNiicJuB7Dnvh8LtGxBTpmbTXnOkVv1gdiOHDsfLKi9fEjqgqAtGsGz6IpbxpGQ6CcPlrOJFq8w4QkPm9hq8xQozLTqsYutI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714582577; c=relaxed/simple;
-	bh=SfIUnFvTodi3ZAdSokEGwrQBZQMoBGP2gvIdsXxo1z8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=D5xabfYICiRdM0GdfDmOH0nzsEQWjB2W/U/nTi3G7sYIsUsXPb7MPhT9LdnfBdP2ulwOJfH410ACBzlZjmM8rSPHaGyMDZGCdHDWQnL54LzB/aUTkf8Keuodi+HuaZHOsCGy2Xa0sVXEJxV2rb7LMzDwEMA1vtZlb9/xkpsksmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nwrFK+fQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1714622603; c=relaxed/simple;
+	bh=gN64eOf42HsNbWKuw6bxq2dc37o1Di5PiibRGJf5Guo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I9R4apas05pg9Zma/zmyUGDMtDv68yoiEBJJkSsdwr1rmyC+cH3L+nTwRo4HvSeAzljzKEGbMLh0sb7Yo5/CsShX1lGYDYBGla7YZxfYMEPA6F3Xlq4bj83mJTcuOotQMweVFrSBPmd8cAUP8vG9GpZw+p5MKO9kXwJUJ5U8dvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SSjmqekL; arc=none smtp.client-ip=209.85.210.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nwrFK+fQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC497C072AA;
-	Wed,  1 May 2024 16:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1714582577;
-	bh=SfIUnFvTodi3ZAdSokEGwrQBZQMoBGP2gvIdsXxo1z8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=nwrFK+fQYl6W4IHr6gnMS8swEZfLcfdSm4TEcZt5aWvI5cpqh7w4by/NlSlrVYjZL
-	 nSyMc1JZUgqnVPi3l4AskQDTBIg9ssQDqVRKrNblj13co5FmyvpEeH/66UR7xpkZOB
-	 00NeWDZlTLiVmA0UQWYWoqUKgZkqpFbxOsnnVkdBIiEpBc979vFlZAfENsKIP5C4FP
-	 ZgIXwvnYDTXwcasDNez+ynbUOZgMUa5OPy4YdrNoLJ+KdsG164DtG/7BQjY2pA2zWK
-	 GEd3kS4ypFHM9mTJOQSG/RGht9W4bkGnY7CGz8RqZ+/Ebp1vm8DPjQkVyYEp898vFN
-	 W1ZUMK9aRV32A==
-Date: Wed, 1 May 2024 11:56:15 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Sunil V L <sunilvl@ventanamicro.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 08/17] ACPI: pci_link: Clear the dependencies after
- probe
-Message-ID: <20240501165615.GA758227@bhelgaas>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SSjmqekL"
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-6ed3cafd766so6744775b3a.0;
+        Wed, 01 May 2024 21:03:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714622600; x=1715227400; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gIiiJAMb0hd82fV5a9ljk4muPzg1aujZ9+bTCRYQsyA=;
+        b=SSjmqekLtAYXG+yckuTFywABJNzcLbng1XGLkb4KMwh7GCT1AkwWIbdO7/i48qH8UN
+         YmkvbCLgyR1b8IM+33XBoBTEr5IHQptA5pQfRNcy9eDDhL2bMAKUWTOvS5dFQpb2s2Hy
+         n/Sav9p/nWHuJH63xNsikW54bje2cXAhy36EdwoOTBHiqM+o+XNs57oghdbIIzC/YjT3
+         /VBX1hOCAQsOTWUHXxjoNHAvpo4vOXZBjp+dxaE/xAZpCdeSlMz1coS+uhADzgMrShfz
+         Pkbqm7s0KtkPc2Tf1KaViNjoTJDiRheVNBmvjz2hO0ioWW3u6xT3Zy6SQC/HbIfbpdtR
+         M1IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714622600; x=1715227400;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gIiiJAMb0hd82fV5a9ljk4muPzg1aujZ9+bTCRYQsyA=;
+        b=lT/a6ePdLZbKfZvn8Uc2jMu7NJ0iXY5r8LxeO5qPUkXogFrVVBIHYy/IGMETHfTbVb
+         3XezwSDp+djkKaDTeWe6vup57nXGH/VQ0e/BS43yF5PYl2UqteEjFvMVVTvw9U9MhNYK
+         M6Gud3TVlCWe0HkQJzgwckSznzP2F+d+YbBEil/JJDataQnjK7cstRICCBwxqtkxZgPH
+         twQ/6StRVtgP7xbSNiPT7yqfGmkh+FWPLVQ6yQ2xoxWUez3EIgfphYch831dCThpatNm
+         aCOU78GLCYZzj91dZMDK7ZnFSWeoUBTgjvLAn2CpeSw2gqyrlT8GrTFcFOAl1W8xNaA4
+         2N2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWosXUoYI349FbNjTJOQKYG0wVWIceLBur858SGPQgRi72GLbmsCqHamuQH3JxMhnZx7j9bRA0+hnC2RZehG5uGovMBFivV4YXXz8Em
+X-Gm-Message-State: AOJu0Yw2zO6+DqxxdQfmmTS3SRwjM4og//lDIpEAdlaXXbNWyBmdg0DS
+	yMYwapePx6187PHR8/0DRvcFnJfwmitZQTejc0mG1x15743xRaeJD7cZqroMzio2Ndt5
+X-Google-Smtp-Source: AGHT+IEmE85q3WMG3lIZA/rag5w8RC/lJPRjTPjJsCLoKWIUNzEw7+jZKQ81lglg/RuFwiI24jQqCA==
+X-Received: by 2002:a05:6a00:1acd:b0:6ea:d149:c4e with SMTP id f13-20020a056a001acd00b006ead1490c4emr1085004pfv.14.1714622600344;
+        Wed, 01 May 2024 21:03:20 -0700 (PDT)
+Received: from localhost ([103.192.225.104])
+        by smtp.gmail.com with ESMTPSA id f7-20020a056a001ac700b006f3f062c4f4sm188083pfv.136.2024.05.01.21.03.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 May 2024 21:03:19 -0700 (PDT)
+From: Weifeng Liu <weifeng.liu.z@gmail.com>
+To: platform-driver-x86@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Weifeng Liu <weifeng.liu.z@gmail.com>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: [RFC PATCH 0/2] Defer probing of SAM if serdev device is not ready
+Date: Thu,  2 May 2024 12:02:45 +0800
+Message-ID: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240501121742.1215792-9-sunilvl@ventanamicro.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 01, 2024 at 05:47:33PM +0530, Sunil V L wrote:
-> RISC-V platforms need to use dependencies between PCI host bridge, Link
-> devices and the interrupt controllers to ensure probe order. The
-> dependency is like below.
-> 
-> Interrupt controller <-- Link Device <-- PCI Host bridge.
-> 
-> If there is no dependency added between Link device and PCI Host Bridge,
-> then the PCI end points can get probed prior to link device, unable to
-> get mapping for INTx.
-> 
-> So, add the link device's HID to dependency honor list and also clear it
-> after its probe.
-> 
-> Since this is required only for architectures like RISC-V, enable this
-> code under a new config option and set this only in RISC-V.
-> 
-> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
-> ---
->  arch/riscv/Kconfig      | 1 +
->  drivers/acpi/Kconfig    | 3 +++
->  drivers/acpi/pci_link.c | 3 +++
->  drivers/acpi/scan.c     | 1 +
->  4 files changed, 8 insertions(+)
-> 
-> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-> index f961449ca077..f7a36d79ff1a 100644
-> --- a/arch/riscv/Kconfig
-> +++ b/arch/riscv/Kconfig
-> @@ -14,6 +14,7 @@ config RISCV
->  	def_bool y
->  	select ACPI_GENERIC_GSI if ACPI
->  	select ACPI_REDUCED_HARDWARE_ONLY if ACPI
-> +	select ARCH_ACPI_DEFERRED_GSI if ACPI
->  	select ARCH_DMA_DEFAULT_COHERENT
->  	select ARCH_ENABLE_HUGEPAGE_MIGRATION if HUGETLB_PAGE && MIGRATION
->  	select ARCH_ENABLE_SPLIT_PMD_PTLOCK if PGTABLE_LEVELS > 2
-> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-> index e3a7c2aedd5f..ebec1707f662 100644
-> --- a/drivers/acpi/Kconfig
-> +++ b/drivers/acpi/Kconfig
-> @@ -587,6 +587,9 @@ config ACPI_PRMT
->  	  substantially increase computational overhead related to the
->  	  initialization of some server systems.
->  
-> +config ARCH_ACPI_DEFERRED_GSI
-> +	bool
-> +
->  endif	# ACPI
->  
->  config X86_PM_TIMER
-> diff --git a/drivers/acpi/pci_link.c b/drivers/acpi/pci_link.c
-> index aa1038b8aec4..48cdcedafad6 100644
-> --- a/drivers/acpi/pci_link.c
-> +++ b/drivers/acpi/pci_link.c
-> @@ -748,6 +748,9 @@ static int acpi_pci_link_add(struct acpi_device *device,
->  	if (result)
->  		kfree(link);
->  
-> +	if (IS_ENABLED(CONFIG_ARCH_ACPI_DEFERRED_GSI))
-> +		acpi_dev_clear_dependencies(device);
+Greetings,
 
-This is really a question for Rafael, but it doesn't seem right that
-this completely depends on a config option.
+This series is intended to remedy a race condition where surface
+aggregator module (SAM) which is a serdev driver could fail to probe if
+the underlying UART port is not ready to open.  In such circumstance,
+invoking serdev_device_open() gets errno -ENXIO, leading to failure in
+probing of SAM.  However, if the probe is retried in a short delay,
+serdev_device_open() would work as expected and everything just goes
+fine.  As a workaround, adding the serial driver (8250_dw) into
+initramfs or building it into the kernel image significantly mitigates
+the likelihood of encountering this race condition, as in this way the
+serial device would be initialized much earlier than probing of SAM.
 
-Is there a reason this wouldn't work for all architectures, i.e., what
-would happen if you just called acpi_dev_clear_dependencies()
-unconditionally?
+However, IMO we should reliably avoid this sort of race condition.  A
+good way is returning -EPROBE_DEFER when serdev_device_open returns
+-ENXIO so that the kernel will be able to retry the probing later.  This
+is what the first patch tries to do.
 
-> +
->  	return result < 0 ? result : 1;
->  }
->  
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 3eeb4ce39fcc..67677a6ff8e3 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -834,6 +834,7 @@ static const char * const acpi_honor_dep_ids[] = {
->  	"INTC10CF", /* IVSC (MTL) driver must be loaded to allow i2c access to camera sensors */
->  	"RSCV0001", /* RISC-V PLIC */
->  	"RSCV0002", /* RISC-V APLIC */
-> +	"PNP0C0F",  /* PCI Link Device */
->  	NULL
->  };
->  
-> -- 
-> 2.40.1
-> 
-> 
+Though this solution might be a good enough solution for this specific
+issue, I am wondering why this kind of race condition could ever happen,
+i.e., why a serdes device could be not ready yet at the moment the
+serdev driver gets called and tries to bind it.  And even if this is an
+expected behavior how serdev driver works, I do feel it a little bit
+weird that we need to identify serdev_device_open() returning -ENXIO as
+non-fatal error and thus return -EPROBE_DEFER manually in such case, as
+I don't see this sort of behavior in other serdev driver.  Maximilian
+and Hans suggested discussing the root cause of the race condition here.
+I will be grateful if you could provide some reasoning and insights on
+this.
+
+Following is the code path when the issue occurs:
+
+	ssam_serial_hub_probe()
+	serdev_device_open()
+	ctrl->ops->open()	/* this callback being ttyport_open() */
+	tty->ops->open()	/* this callback being uart_open() */
+	tty_port_open()
+	port->ops->activate()	/* this callback being uart_port_activate() */
+	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+
+I notice that flag UPF_DEAD would be set in serial_core_register_port()
+during calling serial_core_add_one_port() but don't have much idea
+what's going on under the hood.
+
+Additionally, add logs to the probe procedure of SAM in the second
+patch, hoping it could help provide context to user when something
+miserable happens.
+
+Context of this series is available in [1].
+
+Best regards,
+Weifeng
+
+[1] https://github.com/linux-surface/kernel/pull/152
+
+Weifeng Liu (2):
+  platform/surface: aggregator: Defer probing when serdev is not ready
+  platform/surface: aggregator: Log critical errors during SAM probing
+
+ drivers/platform/surface/aggregator/core.c | 39 ++++++++++++++++++----
+ 1 file changed, 32 insertions(+), 7 deletions(-)
+
+-- 
+2.44.0
+
