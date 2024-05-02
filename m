@@ -1,129 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 314BD44374;
-	Thu,  2 May 2024 09:25:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DECC535BF;
+	Thu,  2 May 2024 09:31:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714641948; cv=none; b=QRP3VqI0HRa0in+S486691EH6rp0MSBS//Vurhlf8QqL9MpgLcfXGexv7vz5f7+U/sicF2dVz+CTDWojmeAekIAWx0iGQmM1TVf01NLf6/HZAibC7ZBZ747SicnCS0+EhfVIanxFyeJLjmUeuC4fvzIZPqAoasxsgo5iZyEHSew=
+	t=1714642273; cv=none; b=e4Rxsj+Fk13SILg/i7ovr/5p/idcxI7WPvmqXOQkpvbHvGC4kRaflfGwy3N/Jl61ZcDZqKbKe7NYsd5qT9eVLVRkYo11/nuYZxqQpbWv5lsX5mkI4ZGCPULmBmhFSpgl1+FLMV22nFVB4ZMYH47tixSArKB8PJeUE24zVSS40Pk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714641948; c=relaxed/simple;
-	bh=orCRNPEGAfKwIw6UvvJyK2arZHKNDah7xC0rf7Z7J6s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gwVF7J6U4Gp2594kDucLKJGSVv4ONQaNWGmS5xVNn66RAzyPE9EtrXQgw2y6kgtEY8HO+ZnQvrd8tKzNXFf3iNhs2Rk+g90RiJMAjjcguMDwgpiwnTXjRPMiZ5R08qEqu1+XTLhYMjRwfYw+XbaZ5lQzSKVDniO3rj+JLsdSxro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V6dnYg4B; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714642273; c=relaxed/simple;
+	bh=nxJJn2KewqMIkJ3dMF9ZpNtiUYcYj+4rxjpVDnMCCH4=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=Ewp+thh4GWusv7hevUrvELQLHBLuSqURrKEKsKf4C7H4FdRJJIrK9FPu8TeHY5Uj3lzi+Wq/SUQkiWOA0OFF6Lbc+ZO7Pey4fI4hdm4ybmXYS5qXzf50RFLOK6YMmNNFd1cNJpP3ZmBgs2/YdriqWnBat+uPQ85hH6W8lvE63ME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PQ/rCVqO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V6dnYg4B"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714641947; x=1746177947;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=orCRNPEGAfKwIw6UvvJyK2arZHKNDah7xC0rf7Z7J6s=;
-  b=V6dnYg4B9UEz6gdTQ/uKhWauHh9BtDAznDSvrU3J17Pft1BpfI/2KmOH
-   pApUte/7Ztl1v8W/W3xgNzMBRGrYGNiO0djHYy3+PcYyISn1U+uGoMtuH
-   zWIfwWx9JFdSqVz6Q+TcVTZ9B7QxnMijb55BFDX7/V5vUwpUyrhK92cS2
-   mx/mZ1MjZQD6CzCc2jLtGugo5NhhfHv/wXs+6krxTAKOj8BzCjdGWFH5Y
-   hg7BaX0T830cHU8PGFihyVvKY0fBz+3LDamXWnStttAOgw+zy3T9WJwVa
-   QxBMV8YuqPTz7+q6zQ9gk4fvd4F6QpZY9COIVmqqSWOZwckkDQXpGRl/j
-   Q==;
-X-CSE-ConnectionGUID: JGFFjM++ScW3Lsc7GC25lw==
-X-CSE-MsgGUID: SfQibMlUQaOo6YAk52UzOw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11061"; a="10259498"
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="10259498"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 02:25:46 -0700
-X-CSE-ConnectionGUID: yWLUxasgQhKC0pOq8PsOKA==
-X-CSE-MsgGUID: kfSrOKcPQKK7QxLmkg/vWw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="58264038"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 02:25:39 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s2Sh6-00000003GJd-0vLh;
-	Thu, 02 May 2024 12:25:36 +0300
-Date: Thu, 2 May 2024 12:25:35 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Sunil V L <sunilvl@ventanamicro.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 08/17] ACPI: pci_link: Clear the dependencies after
- probe
-Message-ID: <ZjNcDyLRm9c7BAi3@smile.fi.intel.com>
-References: <20240501121742.1215792-9-sunilvl@ventanamicro.com>
- <20240501165615.GA758227@bhelgaas>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PQ/rCVqO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CD2AC113CC;
+	Thu,  2 May 2024 09:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714642272;
+	bh=nxJJn2KewqMIkJ3dMF9ZpNtiUYcYj+4rxjpVDnMCCH4=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=PQ/rCVqONlYul6a7Vey4ZpsZNR/8RHzWfdCsO0OjVsN++uyuidq/GnK7jFsjk8jRt
+	 6GYrk20mqMEzqCeniofiDenRPQsr43EJTz7LpOAXqonFCzL9/nzdyJBy9DBA//tjt+
+	 7hu4b2CMF8bmkqi3naK0gZSAKurPzKecyIuo95xxZE3z3M4cENY6f05TgTgvFhr//w
+	 VEm+BzvNqOAPMaxafKctqMturibXSvjuLbR8Bb7Pn/CAhJw6vc+5ZKi3al9GhAwZKs
+	 dKM/uarhG9uUE6yY5fLINmUezz7y8T+Dm8M9+YRDImItM9bLcw2Txf3MQPpTT+p1Nn
+	 p+4roxajhRGdQ==
+Date: Thu, 02 May 2024 04:31:11 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240501165615.GA758227@bhelgaas>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Sebastian Reichel <sre@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ linux-serial@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, 
+ Jiri Kosina <jikos@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Andreas Lauser <andreas.lauser@mercedes-benz.com>, 
+ Marc Kleine-Budde <mkl@pengutronix.de>, 
+ Benjamin Tissoires <bentiss@kernel.org>, devicetree@vger.kernel.org, 
+ Eric Dumazet <edumazet@google.com>, Jonathan Corbet <corbet@lwn.net>, 
+ Jakub Kicinski <kuba@kernel.org>, 
+ Vincent Mailhol <mailhol.vincent@wanadoo.fr>, 
+ Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org, 
+ netdev@vger.kernel.org, linux-input@vger.kernel.org, 
+ Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
+ Oliver Hartkopp <socketcan@hartkopp.net>, 
+ "David S . Miller" <davem@davemloft.net>
+In-Reply-To: <20240502075534.882628-7-christoph.fritz@hexdev.de>
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+ <20240502075534.882628-7-christoph.fritz@hexdev.de>
+Message-Id: <171464227142.1356329.4931419696225319861.robh@kernel.org>
+Subject: Re: [PATCH v2 06/12] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
 
-On Wed, May 01, 2024 at 11:56:15AM -0500, Bjorn Helgaas wrote:
-> On Wed, May 01, 2024 at 05:47:33PM +0530, Sunil V L wrote:
-> > RISC-V platforms need to use dependencies between PCI host bridge, Link
-> > devices and the interrupt controllers to ensure probe order. The
-> > dependency is like below.
-> > 
-> > Interrupt controller <-- Link Device <-- PCI Host bridge.
-> > 
-> > If there is no dependency added between Link device and PCI Host Bridge,
-> > then the PCI end points can get probed prior to link device, unable to
-> > get mapping for INTx.
-> > 
-> > So, add the link device's HID to dependency honor list and also clear it
-> > after its probe.
-> > 
-> > Since this is required only for architectures like RISC-V, enable this
-> > code under a new config option and set this only in RISC-V.
 
-...
-
-> > +	if (IS_ENABLED(CONFIG_ARCH_ACPI_DEFERRED_GSI))
-> > +		acpi_dev_clear_dependencies(device);
+On Thu, 02 May 2024 09:55:28 +0200, Christoph Fritz wrote:
+> This patch adds dt-bindings for serial LIN bus adapters. These adapters are
+> basically just LIN transceivers that get hard-wired with serial devices.
 > 
-> This is really a question for Rafael, but it doesn't seem right that
-> this completely depends on a config option.
+> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> ---
+>  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> 
 
-+1 here, fells like a hack and looks like a hack.
+My bot found errors running 'make dt_binding_check' on your patch:
 
-> Is there a reason this wouldn't work for all architectures, i.e., what
-> would happen if you just called acpi_dev_clear_dependencies()
-> unconditionally?
+yamllint warnings/errors:
 
--- 
-With Best Regards,
-Andy Shevchenko
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dtb: /example-0/serial/linbus: failed to match any schema with compatible: ['linux,lin-serdev']
 
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240502075534.882628-7-christoph.fritz@hexdev.de
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
