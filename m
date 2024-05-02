@@ -1,57 +1,57 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B985644F
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 09:55:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6477B5644E
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 09:56:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714643718; cv=none; b=gTLdJBNzpA9NIUPX7F+piebi7fQo2y1ndsj/If6pe6hlKh3SeXE1WRe0Ckky3GY5SizDpx6GsI2b/JtRKlw4EQ8CnXGtFWm6BUJeT0bRQFAdO96iY+mwhhM4HNz3u4VgdrN/9HxsPGFm7YnKE0IrQYZOIr67Nc0grtPHR2ycwg8=
+	t=1714643801; cv=none; b=F8LF+9By8G4nRygCchnNcKXbPxHYCo7vExLOJy1woER9nWG0VEYHZczzUYT/D5YEHnSgGe3cNkfnQi3sMI5fR/ANryVOe/eZ+/EsOzBwunJuOKgAqHmI4KcdnS/91IRm+eM3Sb0TOrYwCzXjsF7PJJp1dthmHb49Fb42NccN9/4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714643718; c=relaxed/simple;
-	bh=qRdP1MaAcqny7WVri5XKFV3uC/ES+lwc76NtRhAJ63U=;
+	s=arc-20240116; t=1714643801; c=relaxed/simple;
+	bh=3l3zV1CvMpPQ6M3agjT4bErcSYjrF9CaWcpEI3wJ9GQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a7GJynq6P0yiMjsgonXK+Hyxn7cdPEjgOXQBkszqH+t/jmYZ8aEPn5kP4FKUQ+EGSC62UCR4GJu12ZpqKWVWBq0uUQ3Q4ZX8eqxpaLXv/O5UUteWX6f+g/C6DhosHNdT5U3q9JMs5XVK0aCaBUzhJHjfwqN09iOcd448LBhWhmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=WD6C0WeX; arc=none smtp.client-ip=209.85.214.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=lCnT6sXfmNbseH34qupx1/olSMDB9eQJUtxfgPbDxm5OzlomozXuRwCxeLEFmqHqFeEHQ/blo4QcM1JqN59kzkICIzZklFxk81jqnROqcy+BaRDs81V9xJHSIw+ZPSXAmImI7rYBnmyz61vYwlCN8qeA7CTtMKDXsuxfEPmdFqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=R5TBtt59; arc=none smtp.client-ip=209.85.210.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="WD6C0WeX"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-1eca195a7c8so12240485ad.2
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 02:55:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="R5TBtt59"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6effe9c852eso6837813b3a.3
+        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 02:56:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714643717; x=1715248517; darn=vger.kernel.org;
+        d=ventanamicro.com; s=google; t=1714643800; x=1715248600; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NL6wf55BXPa+yyuBuN45neIFKGEebMs0pSULB1fzRIU=;
-        b=WD6C0WeXH6sRZovf9W46qUF4W2Ncg5Vw+flKXSqE3F/7A+DxQ8ICk7VFG7pscqYqc0
-         qmZ9tg3TwJCwg+IaKxASoOyqdwZG4r17JzQ2o5ezDZ6MqavkBPV8FdMr6S8/DmKggJO/
-         pPv2eup29iAieYBWyd28ZP5HsXwqYtUzVkfSmjOI/3wyBJNGu/StALD/K2hr55OrZIRV
-         j/4wmo3AVJ7G29eO0ixgQadmF439ZZ1i0q5muCUQCJ0T2O1c/Nqubi57pIpLiFeNM+MH
-         ztDuzJUwSnA6vreLH3rkphKejTs0PlOrWv8lIwlM7UFsKVPcm6P5/vmbEyaryO3Quuu8
-         4lbw==
+        bh=sucCdO5kXmwHz0FAAtAAGExlkRhEC3HqOy4Cv/qw8KI=;
+        b=R5TBtt59vRw7pDNWPRdtnfrGzClC8OtQpN13oIl6mLbBGMWFqAhCgjMJ77PVbuTvdK
+         w76Sq5hiI2T6WsreDf4rWfkHBD5ekHGzRUAuuKldv+z9sSBPcUWUkS6lxI3E11+Kz5gx
+         8TPx0FK8znm3jozKmGlvT3OEr40HlR1WZ6nC9NafGgEwr4qvWEQs+Q56/Zi7X7HW4Xp/
+         cEhnVJ4XtgJSpYnDJ3aIieLt6bYy+QAlpkvO5opoA/0pS+FqUOJ9XvXpsS898BH0yRsx
+         Y3+GCMzFw2feSDRYNRSL6Daa8xbWWBIVz43B3hZs6+vvvWnlLjNFsfP7TGH5Pg/k3+qa
+         oWBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714643717; x=1715248517;
+        d=1e100.net; s=20230601; t=1714643800; x=1715248600;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NL6wf55BXPa+yyuBuN45neIFKGEebMs0pSULB1fzRIU=;
-        b=ZCJMZwTp43/2lXGlFScNOUPbBa3BqPd1QJFuo91iuU2mHX4ydzAWeNOxyF6aRX+D1J
-         8elMTGITG+wy5ipRlvK4y3CTvFT0DPClzQBpL5/Jecq10BFA2rmNHVECbRWPYC7MAtD1
-         JY5r+OVHeN3yMMXqFuvKLwc3mKCj/iGOs0Zhalz6Ete0mzfzM4rmi3DFm949KGfIJuz+
-         evfYUQqVoP4+Ipo7tzcDv/buzxqM5zBn2Px33NbkYqYp35iPKsl/i6LMTYC1QQWTCpzr
-         flKW+5rn8CUUNP2+b+t3lnQyC8rUo0Y+LLykuSSXf7lNNmUqq19kE8piwUy1dEEeCV5C
-         kaRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWBtuqdkVLIIp0ztyQb60ZthzDIZtnC96ovWnQkMpJ8C/1Sjt+BgmO4css8k8MWGUSqZQW2DVxfObLig6BbIh1fz2XA9dkTpbEOUorz
-X-Gm-Message-State: AOJu0YzwmH3klyxpdNQeK0ZtkRH6jYF7DXvfLyFjE/2hn66Ib7jUk/Qc
-	zWh/HVZpQKb3Z9vtvcWVSnHFb+0WBEfOFoab7/SRC+rdgp1pGynMxx6Hw9ujWFM=
-X-Google-Smtp-Source: AGHT+IFpK3bIq8mezuHv2XyP6jnQjh19B8eyQtbmKS7Jf/SgRv411rIyzxq+sdALFrGRrZq6EWk8mA==
-X-Received: by 2002:a17:902:e80b:b0:1dd:c288:899f with SMTP id u11-20020a170902e80b00b001ddc288899fmr5793344plg.18.1714643716808;
-        Thu, 02 May 2024 02:55:16 -0700 (PDT)
+        bh=sucCdO5kXmwHz0FAAtAAGExlkRhEC3HqOy4Cv/qw8KI=;
+        b=wtPIIEr63y2BVj1DSq9Ue6JGl6wseBuP7P4wy0YpUlMxh6XCY3Edidx0T/+rW7OBuY
+         BsikdlM79koCurIaXTnS0bEr6g1rvOEej4y5IjAwmfem5pDTiZXhVO/g1ZzyiBTXcwIE
+         FK0gSsqMPwwv83lckAFwvbWjrHM6nDKtuv4J3/UQeZU3JUQE4Van57oIowxb3nMla22l
+         ACevK5SGfLJiNxxu3BkhlRti9Rajreo8lbgUGC64dYl2ELbcrGZ5x7lzaMgOiA7z9JYO
+         zeCC8H1KrzgWCLuRMjQO5Y5uZvTS6Vz5Qy6NLnWM2YsBVZksrYGVNybp7SNhAFKc3cGW
+         uz4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUISruuewC58AsIjFKDXWVfileu42p32pySwiYAjF5ipGBcPqndeIZi6HgFFYLAWzIxtFkOzzubKH1VIjnqg8DjxO9cx1EjPU5I47HO
+X-Gm-Message-State: AOJu0Yz9Ila78LMbrYvIDaNjdA8VWvRcphcXnEH/ToOIOHJhks2VN4V8
+	SCIcugEamdjXpRHteHRIHT5lfNQBbn3cLUovBrUM4CX6i19zkSFontZIGS/Mvtw=
+X-Google-Smtp-Source: AGHT+IEdqN4j0tZUjqkf7AiQCf6AILBV0FVoUPT7pSiU8sVSt1YtTCq7aHm3fUhXEYUOJZhfGVfIwA==
+X-Received: by 2002:a05:6a20:7f86:b0:1a7:5402:8a92 with SMTP id d6-20020a056a207f8600b001a754028a92mr1702915pzj.31.1714643799826;
+        Thu, 02 May 2024 02:56:39 -0700 (PDT)
 Received: from sunil-laptop ([106.51.190.19])
-        by smtp.gmail.com with ESMTPSA id jv21-20020a170903059500b001e0e977f655sm867362plb.159.2024.05.02.02.55.08
+        by smtp.gmail.com with ESMTPSA id lf12-20020a170902fb4c00b001eb53dcf458sm864846plb.188.2024.05.02.02.56.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 May 2024 02:55:16 -0700 (PDT)
-Date: Thu, 2 May 2024 15:25:05 +0530
+        Thu, 02 May 2024 02:56:39 -0700 (PDT)
+Date: Thu, 2 May 2024 15:26:26 +0530
 From: Sunil V L <sunilvl@ventanamicro.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -77,11 +77,12 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	Andrei Warkentin <andrei.warkentin@intel.com>,
 	Haibo1 Xu <haibo1.xu@intel.com>,
 	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 04/17] ACPI: scan: Refactor dependency creation
-Message-ID: <ZjNi+QaVZUX0Ntiv@sunil-laptop>
+Subject: Re: [PATCH v5 01/17] arm64: PCI: Migrate ACPI related functions to
+ pci-acpi.c
+Message-ID: <ZjNjSpJus7EYT6zn@sunil-laptop>
 References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-5-sunilvl@ventanamicro.com>
- <ZjNaxvh2ZSfDcTa8@smile.fi.intel.com>
+ <20240501121742.1215792-2-sunilvl@ventanamicro.com>
+ <ZjNbVPYIjINdk4Fn@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -90,21 +91,21 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZjNaxvh2ZSfDcTa8@smile.fi.intel.com>
+In-Reply-To: <ZjNbVPYIjINdk4Fn@smile.fi.intel.com>
 
-On Thu, May 02, 2024 at 12:20:06PM +0300, Andy Shevchenko wrote:
-> On Wed, May 01, 2024 at 05:47:29PM +0530, Sunil V L wrote:
-> > Some architectures like RISC-V will use implicit dependencies like GSI
-> > map to create dependencies between interrupt controller and devices. To
-> > support doing that, the function which creates the dependency, is
-> > refactored bit and made public so that dependency can be added from
-> > outside of scan.c as well.
+On Thu, May 02, 2024 at 12:22:28PM +0300, Andy Shevchenko wrote:
+> On Wed, May 01, 2024 at 05:47:26PM +0530, Sunil V L wrote:
+> > The functions defined in arm64 for ACPI support are required
+> > for RISC-V also. To avoid duplication, move these functions
+> > to common location.
 > 
-> Side note: If you haven't used --histogram diff algo when preparing
-> the patches, do it from now on.
+> ...
 > 
-No, I didn't use. Thank you very much for letting me know. I will use in
-next version.
+> There are -M -C parameters to git format-patch. Use them in the next version of
+> the series. (Note, you may add percentage numbers to each of those parameters
+> to get prettier result.)
+> 
+Yeah, I tried different combination of percentage after you told me last
+time. I just didn't see any difference in the patch generated. Let me
+try again while sending next version. Thanks!
 
-Thanks!
-Sunil
