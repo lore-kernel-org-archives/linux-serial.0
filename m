@@ -1,64 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0502015B117;
-	Thu,  2 May 2024 15:29:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AA4642078;
+	Thu,  2 May 2024 15:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714663752; cv=none; b=Im/q4XQgD1L66OOuYpZYC7TeVRkUznnFc0V1tpt8moRMNI1kHzhZB6vuH6BQeN+KStMqBdIUPLaE/7VX3EcPc9+J8xpD6dvTsdIWvL+m2xpAKJwiW8R8SPXRFt6kM4QHQnVZpxv9nHpku1eVplcA9TSSam1tyMp0qZ8rdrIAMEw=
+	t=1714664165; cv=none; b=B9r7PdIo5zajKEwNUkW4NJ9o1wYrfVXo2/8TTp9bRYaQu87kcMFHFlIenNPeVD1+SnzrTwF3+QdApUB/G8u5U6vIUwYfLvtrR05onmUvm+pQ2+c0j6mQsL3yJVWXvt8JpTnCXmxlSOSF1LRppca3YnbESqw0pll6jBic4/oyMw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714663752; c=relaxed/simple;
-	bh=cPGa8qLZCWdSfi3FLowd1sGPDmQvoIjKXRVt4ZJcvo0=;
+	s=arc-20240116; t=1714664165; c=relaxed/simple;
+	bh=E8C2qPCeaHtiAjUVZaWnodtIyl8a3pqbTM+93AmJ71Y=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IJsuST65HBrJzM+KmYVjqpffhM2rrHgWQGyED3wIj6r1YxO2Ej5RQfV42itU7dzrzo0YlthboToieaOzCXMsy51AAY2jJxBiUTvBPRNd7uYK/G91pIPSonvveFxeBSqi4x0awx7ligWgUBs+Nn0F4u/tvNjYQqtGM/Wmls+CgZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l9U77uTj; arc=none smtp.client-ip=198.175.65.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=eHsS09wZNnrml+C/kCBpxg8Ocm6dMUBcwzfT0jcGM++KG2e5VI6F3hsU9CcXuszjtbIW+tLfUcyGvwZy4Wc3NeJ7ixMflfXZN/iDTeUUuWDHEh8rhKLqjVr1LYrbOsFKhaEi2TwQJEbbe+E1FyWFZO4u/ZGbnitlYI38auzMtPY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WSyuE7uS; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l9U77uTj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WSyuE7uS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714663751; x=1746199751;
+  t=1714664163; x=1746200163;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=cPGa8qLZCWdSfi3FLowd1sGPDmQvoIjKXRVt4ZJcvo0=;
-  b=l9U77uTj8rsuUsMksX4V7ADV/1V1GOAG5FGpJaI30v34khSnEbjJ1gwk
-   rARBBA1fXZ4WxdmEcCfuqpD+IEPEImFUuMyjf0CxHIB6digPPvtkT1qb0
-   vho4sDIlOzOvnUfRWVn7wRqBoe/87FSVmErWs13jdw9Dbg7G3OgDIIpvd
-   j5wPiq6ntXcGL3VvSaUPKJlxde4yh7zMCct8se0r8lbi3Jsgj6cUq/VmV
-   OcvDeHsYDXX14b0JBZGUu6nHcv16OtwBlsBQVWLyUgzv++maIc/LklO9z
-   4g+g9VBLPO93pX+2EdQY2HvQPCvAL7sIJk3wFqvtJO+Bvzv5pxtvZ7tgB
+  bh=E8C2qPCeaHtiAjUVZaWnodtIyl8a3pqbTM+93AmJ71Y=;
+  b=WSyuE7uSwU5f/7bYnjCXajYcotet4DvVdtYvisV+WbZlIN+mgLRTKmu0
+   U5LrDEAujnZx5TmPTii1ZqJDqVGhqC7uESRMInvsmmtWWOL/hwn7CTauF
+   ku9hPAdmlg/j56hOeoJwBElDg9091xB+/Ex0nn+ZTIayzwdFyIc6xIAlc
+   YXi6A4qrY7833yA1gvDD5OD9LoHvFJJM2797elqGBMR4++R+jiOWg58bG
+   8D6Vmf2khptkDZyK3ck6aaZN133B80CARECS/8GsQ/eCLxY55fVZYKXG3
+   S1M+9Dv5kwE3JrfAzQyuZIH8V4VdWnQz16Fh6n8B1/Ne0z/0Mst/jbgxK
    A==;
-X-CSE-ConnectionGUID: EpXw65IiSmW8drCIqrapCw==
-X-CSE-MsgGUID: OzXC1p55SWeS3CHSZDdqNA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="21585714"
+X-CSE-ConnectionGUID: j/T38Oz4RBaWKUjvoQIXqA==
+X-CSE-MsgGUID: XdkusnyqSei3J51cvACd4Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10570068"
 X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="21585714"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:29:10 -0700
-X-CSE-ConnectionGUID: qW6WCQrGQ8OLazAZ0dlIGQ==
-X-CSE-MsgGUID: B6Bb5c08RSC2Z3CHlB3T0g==
+   d="scan'208";a="10570068"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:36:03 -0700
+X-CSE-ConnectionGUID: b+Q2+7rHQo2NCSK+Z3AvIg==
+X-CSE-MsgGUID: qhp105huQHCdu0Ee90JJ7Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="27160860"
+   d="scan'208";a="27208567"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:29:09 -0700
+  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:35:56 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s2YMr-00000003MXs-3dAB;
-	Thu, 02 May 2024 18:29:05 +0300
-Date: Thu, 2 May 2024 18:29:05 +0300
+	id 1s2YTQ-00000003Mdz-43wp;
+	Thu, 02 May 2024 18:35:52 +0300
+Date: Thu, 2 May 2024 18:35:52 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	acpica-devel@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Anup Patel <anup@brainfault.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 03/13] serial: 8250_exar: Kill CTI_PCI_DEVICE()
-Message-ID: <ZjOxQWc1OtGWatKC@smile.fi.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
- <20240502144626.2716994-4-andriy.shevchenko@linux.intel.com>
- <20240502111314.63d66b54@SWDEV2.connecttech.local>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Andrei Warkentin <andrei.warkentin@intel.com>,
+	Haibo1 Xu <haibo1.xu@intel.com>,
+	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
+Message-ID: <ZjOy2G0qN5G076i0@smile.fi.intel.com>
+References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+ <20240501121742.1215792-18-sunilvl@ventanamicro.com>
+ <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
+ <ZjNh0Llcx+0VHevy@sunil-laptop>
+ <ZjNmdfR2J6hNnYle@smile.fi.intel.com>
+ <ZjN3GQI3gegYOIgS@sunil-laptop>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,46 +89,30 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240502111314.63d66b54@SWDEV2.connecttech.local>
+In-Reply-To: <ZjN3GQI3gegYOIgS@sunil-laptop>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, May 02, 2024 at 11:13:14AM -0400, Parker Newman wrote:
-> On Thu,  2 May 2024 17:43:57 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> > The CTI_PCI_DEVICE() duplicates EXAR_DEVICE(). Kill the former.
+On Thu, May 02, 2024 at 04:50:57PM +0530, Sunil V L wrote:
+> On Thu, May 02, 2024 at 01:09:57PM +0300, Andy Shevchenko wrote:
+> > On Thu, May 02, 2024 at 03:20:08PM +0530, Sunil V L wrote:
+> > > On Thu, May 02, 2024 at 12:17:59PM +0300, Andy Shevchenko wrote:
 
 ...
 
-> > -// For Connect Tech cards with Connect Tech vendor/device PCI IDs (FPGA based)
-> > -#define CTI_PCI_DEVICE(devid, bd) {                     \
-> > -	PCI_DEVICE_SUB(                                 \
-> > -		PCI_VENDOR_ID_CONNECT_TECH,             \
-> > -		PCI_DEVICE_ID_CONNECT_TECH_PCI_##devid, \
+> > > This driver is not a duplicate of 8250_pnp. It just relies on UART
+> > > enumerated as platform device instead of using PNP interfaces.
+> > > Isn't it better and simple to have an option to enumerate as platform
+> > > device instead of PNP? 
+> > 
+> > Ah, then extract platform driver first from 8250_core.c.
+> > 
+> Let me know if I understand your suggestion correctly. Do you mean call
+> something like serial8250_acpi_init() from serial8250_init() and
+> register the driver directly in serial8250_acpi_init()?
 
-
-#define PCI_DEVICE_SUB(vend, dev, subvend, subdev) \
-        .vendor = (vend), .device = (dev), \
-        .subvendor = (subvend), .subdevice = (subdev)
-
-#define PCI_DEVICE_DATA(vend, dev, data) \
-        .vendor = PCI_VENDOR_ID_##vend, .device = PCI_DEVICE_ID_##vend##_##dev, \
-        .subvendor = PCI_ANY_ID, .subdevice = PCI_ANY_ID, 0, 0, \
-        .driver_data = (kernel_ulong_t)(data)
-
-
-> > -		PCI_ANY_ID,                             \
-> > -		PCI_ANY_ID), 0, 0,                      \
-> > -		(kernel_ulong_t)&bd                     \
-> > -	}
-> > -
-> >  #define EXAR_DEVICE(vend, devid, bd) { PCI_DEVICE_DATA(vend, devid, &bd) }
-
-> This is not correct. The CTI_PCI_DEVICE() macro is for cards that have the
-> Connect Tech PCI Vendor ID (not Sub-Vendor ID). EXAR_DEVICE() is for cards with
-> Exar PCI Vendor ID.
-
-Above I added current code of these macros, can you elaborate how it's incorrect?
+Extract the code to be 8250_platform.c and update that file.
+I have locally the extraction of RSA code, I will see if I can help you
+with the rest.
 
 -- 
 With Best Regards,
