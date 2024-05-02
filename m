@@ -1,46 +1,65 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B05E1F17B;
-	Thu,  2 May 2024 08:30:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 348362E859
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 08:39:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714638635; cv=none; b=Zd/XatN94UIY+9b1TQMVnpPNYKr+kbE/Z93ndAfmJ9Hen5v4gue68OPqUfl3B7LfYrLk6iEhRlp6jXwRXht0EUhR7W5no3EnHRk0w5/DTxrxGXidFndtRTYuL4qYAmBIYmYnD8J/VJ7E8wlEeNTzfWsZQWQm86T7CZDOf018/J8=
+	t=1714639141; cv=none; b=fmSQ/moyif0gDHDcQwP6i7ob4QumwHTtqWYayeU2w5nfr9qofD/lY8F3+uau9PnFIrXKkY/kIwOy25PDwzliFsyNTLoKCa76Mwxx8aE+Q3UKHkfW0o3UdkHb/o15UcdL0LMADPOGZu858YGyJygNBCGRCumkPeqD33am5tRFnWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714638635; c=relaxed/simple;
-	bh=JhvLdeIFoIVobHMRld9FPEDzk017zSxjlF1PyrnK4bw=;
+	s=arc-20240116; t=1714639141; c=relaxed/simple;
+	bh=ilrFFY6gpqsREXL0hStdjMoDt3s4SbHsDOogLS0qdRA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PlNAjh/kql4bKQxNNziLG6sl6i5+g1iAvCEdhzT8jQDKm3745AiksJlf1AWiiGdM2h18N9w9hbSskh8PT3wzItnRMQq4P4EAhTRfU3V8UHOeupy9RXuG5MGR2hjE4mXYHTpyXMhNYzZKgfeMUO3dzP0w1eNtGDLdxOZZN+ZY980=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5708d8beec6so9369707a12.0;
-        Thu, 02 May 2024 01:30:33 -0700 (PDT)
+	 In-Reply-To:Content-Type; b=M1tvUE5pNWiu5tq5Q1+fGKKDrihqoHaWN90eIpP0ShKtIaJlky/VU4yYAONO1GY3o7LZ9xYEW4i4HO72wSGubGFX95W8gZ1UUIXOAAWLAYHLpW+3xM7dZW0apScI0GubIRZAdr0ZQt8K1qZa+aspaDmqeqCqjk0o460blgQRcEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JwwYdYne; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JwwYdYne"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1714639139;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=c31vrJZLeYpGeljEYJNMs2vOunRYlPKu2sBlSVFxYg8=;
+	b=JwwYdYne29a+Tg3H+3XtR3IrvA/Ctl8qNAkr1dOkwKfgx1AJhFXfb5dChtBj+sbFkvbpkG
+	QPLdv1u1W9TGJE0Lk0jfartjwoLaGW+f5+ZeNQUfl3+NA6gfHgjrnsKxlT5L+/s7y1i1mK
+	HGHV0uu1dA6nQCc0JCZeE1mTTr+FUJs=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-454-Ocotf4diNwKTUqHIja1OXQ-1; Thu, 02 May 2024 04:38:57 -0400
+X-MC-Unique: Ocotf4diNwKTUqHIja1OXQ-1
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-a5190b1453fso501069666b.2
+        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 01:38:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714638632; x=1715243432;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/nqDs8aP0Ox7FEuplQ3aDuJPLYaqPbB8MPDq15KMt80=;
-        b=KnFnEZTnxge0JcClWo9FIxRDdZryAwBCn2ECjBa6knwjpk3v6cdlj7qcUvQf/wQnsM
-         oD+CwsoL89FsS/5c9LkpcXsQVtr9/8IG8J6lBrbj+lQmzN1f1zthOzR9TuUex5FENzAi
-         FQ1nt0yyBZdow/yOLrNXh2C63nDMe+l8IQ0OKH1jiKmjW7YX2UfRzB4c0+InX0KbbJA1
-         LVel8akwiZc+8xan+YjuVMaQWdBq2RcYyq0WmboRXPj0XYN7rfRVSwlQV78fgLtToMBY
-         BcDH7treO99w9N2iB20nn/Lgp0AXtrD2nWXDUcfMT73zPIUiYrU/rgJT36wc+NpczrWv
-         uZEg==
-X-Forwarded-Encrypted: i=1; AJvYcCUaQ1bS+qJAvC7wYntdtimizjgpe51KbsrYlhqCMsCXJLvD6P2Ekl/DQSlzgV80ychGFw3SukUdygpmqgxwdgtozmSTxJ5Cb1OfHHXJSSQNin+pq+jpg/mTOwfCMyyGARgLfyvNvhPIs9qUqyKUckAEDMI7dc8fZs5jdXE2fxZQgth7N2KzQ03AmmFo58HPSXSjnKq2/VfP+RVMtbxPGMO0eiB9RuNsDW+Q3p1YdyVxs+yJZux6//g9
-X-Gm-Message-State: AOJu0Yx44ahGYI4QO3vP8iCTtaA+OR4I9AKYp+pkhnTmSeoOY2M97CDp
-	YL7L3w6hIQlm6M/GL+W/m08Lw5DYeTMbg+cti2AvClaTvsKHUXL5
-X-Google-Smtp-Source: AGHT+IEETnj/81l1N+gAbN1FKpJVqKnmVUPZ1k8ir7VsptrXf1wp0M49h4+sRvcM5Outr3PjKIV7SQ==
-X-Received: by 2002:a50:9ee2:0:b0:56d:fb36:c388 with SMTP id a89-20020a509ee2000000b0056dfb36c388mr1429740edf.9.1714638631645;
-        Thu, 02 May 2024 01:30:31 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id q12-20020a50c34c000000b00572459a4ffesm275430edb.56.2024.05.02.01.30.29
+        d=1e100.net; s=20230601; t=1714639136; x=1715243936;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=c31vrJZLeYpGeljEYJNMs2vOunRYlPKu2sBlSVFxYg8=;
+        b=UhfKxgBZxqQlktELPgGDQSwTKqkLNmqKdPCErWuiMjwkWkCbTkVS0LlAMg9dFThoGb
+         w52plJ4Biyxxly+qBgqMR3QhcF0b7fjahjvrUcEcrc5gYULMFnA4xG57MLaf4BrVDLut
+         RVLEl11wVfKNL2ZBM07DbP/p5jlz/Kd+64zwwuFLcznieIqz35c1dFP1l0XMvJdzhZuX
+         wb4KQOw+7f4LS8uNKeEfGeWYG5KE50O6rmF7rC4ebV+HAXQ+sPwj0zOW5dXyUgdeSigB
+         T0ZX+80600ojeMZV2F435Hp+37hlAyRpf9km7OfhCVMR14it0xPCcE9YuDiwkkkyAwVx
+         1gQA==
+X-Forwarded-Encrypted: i=1; AJvYcCUz2zzpTkW0mxv+4YlHiAuJrh66egvUwctY/dUstqrOG8oPfNgirBbDBcXxfBP89VBX7KHjymRGILIucmEQjCjEyb2Bi5iQU+JoWw7X
+X-Gm-Message-State: AOJu0YzZSX8qXOGMohHq2rm/ZRhyDPAMs6MHO4fm5GHf3PbGZp/kNKd+
+	hp9MXOGVzwVy5a0q258kwNvzSypD2wiH+6UWL6mvv3nPZ3WOPJ7GldNX9ykP45890vaLT4Qo1aP
+	tnzLcbMbct44nzYpWjXTbBYiMdlMtAneh/svb7UlcmJqpnOUi5JZvAK+rNAqPxg==
+X-Received: by 2002:a17:907:760f:b0:a59:62f5:e81d with SMTP id jx15-20020a170907760f00b00a5962f5e81dmr1502924ejc.48.1714639136735;
+        Thu, 02 May 2024 01:38:56 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFozuGaQ9i7FrTfhc8WZ9SlinQ341gN1S7oDrnyTC5jvrZ2XKSVrXXBUtT70huwAJT6mQwHng==
+X-Received: by 2002:a17:907:760f:b0:a59:62f5:e81d with SMTP id jx15-20020a170907760f00b00a5962f5e81dmr1502909ejc.48.1714639136313;
+        Thu, 02 May 2024 01:38:56 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:c32:7800:5bfa:a036:83f0:f9ec? (2001-1c00-0c32-7800-5bfa-a036-83f0-f9ec.cable.dynamic.v6.ziggo.nl. [2001:1c00:c32:7800:5bfa:a036:83f0:f9ec])
+        by smtp.gmail.com with ESMTPSA id v2-20020a17090606c200b00a5910978658sm277502ejb.208.2024.05.02.01.38.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 May 2024 01:30:30 -0700 (PDT)
-Message-ID: <acf0251e-41b9-410d-a663-ff6c34d2bc3e@kernel.org>
-Date: Thu, 2 May 2024 10:30:29 +0200
+        Thu, 02 May 2024 01:38:55 -0700 (PDT)
+Message-ID: <b08a6155-0701-403a-9c33-b1e24fd99e42@redhat.com>
+Date: Thu, 2 May 2024 10:38:55 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,209 +67,106 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 02/12] HID: hexLIN: Add support for USB LIN bus adapter
-To: Christoph Fritz <christoph.fritz@hexdev.de>,
- Oliver Hartkopp <socketcan@hartkopp.net>,
- Marc Kleine-Budde <mkl@pengutronix.de>,
- Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
- "David S . Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
- Benjamin Tissoires <bentiss@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Sebastian Reichel <sre@kernel.org>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>,
- Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>,
- linux-can@vger.kernel.org, netdev@vger.kernel.org,
- devicetree@vger.kernel.org, linux-input@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
- <20240502075534.882628-3-christoph.fritz@hexdev.de>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240502075534.882628-3-christoph.fritz@hexdev.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [RFC PATCH 0/2] Defer probing of SAM if serdev device is not
+ ready
+To: Weifeng Liu <weifeng.liu.z@gmail.com>,
+ platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Maximilian Luz <luzmaximilian@gmail.com>
+References: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US, nl
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 02. 05. 24, 9:55, Christoph Fritz wrote:
-> This patch introduces driver support for the hexLIN USB LIN bus adapter,
-> enabling LIN communication over USB for both controller and responder
-> modes. The driver interfaces with the CAN_LIN framework for userland
-> connectivity.
+Hi Weifeng,
+
+On 5/2/24 6:02 AM, Weifeng Liu wrote:
+> Greetings,
 > 
-> For more details on the adapter, visit: https://hexdev.de/hexlin/
+> This series is intended to remedy a race condition where surface
+> aggregator module (SAM) which is a serdev driver could fail to probe if
+> the underlying UART port is not ready to open.  In such circumstance,
+> invoking serdev_device_open() gets errno -ENXIO, leading to failure in
+> probing of SAM.  However, if the probe is retried in a short delay,
+> serdev_device_open() would work as expected and everything just goes
+> fine.  As a workaround, adding the serial driver (8250_dw) into
+> initramfs or building it into the kernel image significantly mitigates
+> the likelihood of encountering this race condition, as in this way the
+> serial device would be initialized much earlier than probing of SAM.
 > 
-> Tested-by: Andreas Lauser <andreas.lauser@mercedes-benz.com>
-> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-...
-> --- /dev/null
-> +++ b/drivers/hid/hid-hexdev-hexlin.c
-> @@ -0,0 +1,630 @@
-...
-> +static int hexlin_stop(struct lin_device *ldev)
-> +{
-> +	struct hid_device *hdev = to_hid_device(ldev->dev);
-> +	struct hexlin_priv_data *priv = hid_get_drvdata(hdev);
-> +
-> +	hid_hw_close(hdev);
-> +
-> +	priv->is_error = true;
-> +	complete(&priv->wait_in_report);
-> +
-> +	mutex_lock(&priv->tx_lock);
-> +	mutex_unlock(&priv->tx_lock);
+> However, IMO we should reliably avoid this sort of race condition.  A
+> good way is returning -EPROBE_DEFER when serdev_device_open returns
+> -ENXIO so that the kernel will be able to retry the probing later.  This
+> is what the first patch tries to do.
+> 
+> Though this solution might be a good enough solution for this specific
+> issue, I am wondering why this kind of race condition could ever happen,
+> i.e., why a serdes device could be not ready yet at the moment the
+> serdev driver gets called and tries to bind it.  And even if this is an
+> expected behavior how serdev driver works, I do feel it a little bit
+> weird that we need to identify serdev_device_open() returning -ENXIO as
+> non-fatal error and thus return -EPROBE_DEFER manually in such case, as
+> I don't see this sort of behavior in other serdev driver.  Maximilian
+> and Hans suggested discussing the root cause of the race condition here.
+> I will be grateful if you could provide some reasoning and insights on
+> this.
 
-This is a weird way to implement a completion. It looks like you need 
-another one.
+Ack, I have no objection against the changes and if Maximilian is ok with
+it I can merge these right away as an interim fix, but I would really
+like to know why the serdev core / tty code is registering a serdev
+device for a serial port before it is ready to have serdev_device_open()
+called on it. To me it seems that the root cause is in somewhere in
+the 8250_dw code or the serdev core code.
 
-> +	return 0;
-> +}
-...> +static int hexlin_probe(struct hid_device *hdev,
-> +			const struct hid_device_id *id)
-> +{
-> +	struct hexlin_priv_data *priv;
-> +	int ret;
-> +
-> +	priv = devm_kzalloc(&hdev->dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->hid_dev = hdev;
-> +	hid_set_drvdata(hdev, priv);
-> +
-> +	mutex_init(&priv->tx_lock);
-> +
-> +	ret = hid_parse(hdev);
-> +	if (ret) {
-> +		hid_err(hdev, "hid parse failed with %d\n", ret);
-> +		goto fail_and_free;
-> +	}
-> +
-> +	ret = hid_hw_start(hdev, HID_CONNECT_DRIVER);
-> +	if (ret) {
-> +		hid_err(hdev, "hid hw start failed with %d\n", ret);
-> +		goto fail_and_stop;
-> +	}
-> +
-> +	ret = hid_hw_open(hdev);
-> +	if (ret) {
-> +		hid_err(hdev, "hid hw open failed with %d\n", ret);
-> +		goto fail_and_close;
-> +	}
-> +
-> +	init_completion(&priv->wait_in_report);
-> +
-> +	hid_device_io_start(hdev);
-> +
-> +	ret = init_hw(priv);
-> +	if (ret)
-> +		goto fail_and_close;
-> +
-> +	priv->ldev = register_lin(&hdev->dev, &hexlin_ldo);
-> +	if (IS_ERR_OR_NULL(priv->ldev)) {
-> +		ret = PTR_ERR(priv->ldev);
-> +		goto fail_and_close;
-> +	}
-> +
-> +	hid_hw_close(hdev);
-> +
-> +	hid_info(hdev, "hexLIN (fw-version: %u) probed\n", priv->fw_version);
-> +
-> +	return 0;
-> +
-> +fail_and_close:
-> +	hid_hw_close(hdev);
-> +fail_and_stop:
-> +	hid_hw_stop(hdev);
-> +fail_and_free:
-> +	mutex_destroy(&priv->tx_lock);
-> +	return ret;
-> +}
-> +
-> +static void hexlin_remove(struct hid_device *hdev)
-> +{
-> +	struct hexlin_priv_data *priv = hid_get_drvdata(hdev);
-> +
-> +	unregister_lin(priv->ldev);
-> +	hid_hw_stop(hdev);
-> +	mutex_destroy(&priv->tx_lock);
+Resources sometimes not being ready is sometimes which drivers generally
+speaking need to handle, but in this case the resource which is not
+ready is the device the driver is binding to, so it seems that
+the device is registered too soon.
 
-It is unusual to destroy a mutex. Why do you do that?
+If someone familiar with the serial / serdev code can provide some
+insight here that would be great.
 
-> +}
-...
-> +static int __init hexlin_init(void)
-> +{
-> +	return hid_register_driver(&hexlin_driver);
-> +}
-> +
-> +static void __exit hexlin_exit(void)
-> +{
-> +	hid_unregister_driver(&hexlin_driver);
-> +}
+Regards,
+
+Hans
 
 
 
-> +
-> +/*
-> + * When compiled into the kernel, initialize after the hid bus.
-> + */
-> +late_initcall(hexlin_init);
 
-Hmm, why not module_init() then? (And module_hid_driver().)
-
-> +module_exit(hexlin_exit);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_AUTHOR("Christoph Fritz <christoph.fritz@hexdev.de>");
-> +MODULE_DESCRIPTION("LIN bus driver for hexLIN USB adapter");
-
-thanks,
--- 
-js
-suse labs
+> 
+> Following is the code path when the issue occurs:
+> 
+> 	ssam_serial_hub_probe()
+> 	serdev_device_open()
+> 	ctrl->ops->open()	/* this callback being ttyport_open() */
+> 	tty->ops->open()	/* this callback being uart_open() */
+> 	tty_port_open()
+> 	port->ops->activate()	/* this callback being uart_port_activate() */
+> 	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+> 
+> I notice that flag UPF_DEAD would be set in serial_core_register_port()
+> during calling serial_core_add_one_port() but don't have much idea
+> what's going on under the hood.
+> 
+> Additionally, add logs to the probe procedure of SAM in the second
+> patch, hoping it could help provide context to user when something
+> miserable happens.
+> 
+> Context of this series is available in [1].
+> 
+> Best regards,
+> Weifeng
+> 
+> [1] https://github.com/linux-surface/kernel/pull/152
+> 
+> Weifeng Liu (2):
+>   platform/surface: aggregator: Defer probing when serdev is not ready
+>   platform/surface: aggregator: Log critical errors during SAM probing
+> 
+>  drivers/platform/surface/aggregator/core.c | 39 ++++++++++++++++++----
+>  1 file changed, 32 insertions(+), 7 deletions(-)
+> 
 
