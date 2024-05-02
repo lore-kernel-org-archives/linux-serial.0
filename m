@@ -1,144 +1,94 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C1DD60882
-	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 11:21:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC5913C68D;
+	Thu,  2 May 2024 14:46:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714648876; cv=none; b=Bgytm2NtIis3J8vpaFd/niHLzY4TpN/cnLVoIUDno3oXee2wJ7k2vSMNhLH6cmmM3Hyt2z8EKSHvmk9FYMyXE4ixRL0+/0ZdEnB+aVpa0wQMfsxU/NZ2wSCbLkvzbbG8YksSI4c6RxLs7VHbSffPksQfBmIhCRVXgwuw2pR9urg=
+	t=1714661195; cv=none; b=blSy5BuKTPjIPosOqgjXkSaQKwGGKR2WY19K2XX8Jc2ZWJKxlwrPFmORoUZ9oi1fyIYAp9c5QHi/PFnDf4y8I+YzLDg2lyoLkDLOHzkz5aQrxfQN4lj4WKfm92Ha0tL5NSObTMwGXV9nxWktcQkriFv2HfQXSAIGz1PsBcekIf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714648876; c=relaxed/simple;
-	bh=oyv2s2+UJW+8uzUyt2wKXdhw0Bt0e8jLiqgVDuivZtc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WUebFcGXFG09u/8BiwKaetKvTHZlMOx6v3PwJRagADCSUQRl/Dwyx+KoXMNHhTH3c9WW3JNUPYjikKSqjaFIBXKDlPUIgl35qqENGoA2Tf4K4/JoJN2h4tE8freFGql0nF4jkWYsNSntQhOajKYn+CvA3w6iZEg7MPotHe27xww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=Rwm3SAUl; arc=none smtp.client-ip=209.85.128.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1714661195; c=relaxed/simple;
+	bh=XptqbUg5xNIQKmQKuni+sa4YXQiyH4WIn+t4Dt1W1MA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=K2OWXSetx1RnLpe/7/uZFr5v4p+XqOSPbYO4LDLv7LwQBQL3sU0sIgiP61XWsv5dNC3B5EcdFp65jdQevRRpQM/tqd8EAFQJ2+KFdVbsZ2ywFiC110yKhfjckxxlKP+ZJGSPLqbkJW/5wREkV3MKYeWFsxMiuYjmx2AUKvVLRi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TzbQefYl; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="Rwm3SAUl"
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-61be4b9869dso36020507b3.1
-        for <linux-serial@vger.kernel.org>; Thu, 02 May 2024 04:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714648874; x=1715253674; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9rhZwyyx5fhbpC3BrgW8PW9voWjesLYpxFqigfVNmtY=;
-        b=Rwm3SAUlka6pR0PqNs2jsyTsxIHLXOv1LjuNvZ3LpnRTjSq9y37h911NDbDogNOUB8
-         CwAauG+ZZecLq+lz5jHXAbMv9vvNTu4cF8sBXDrs7KQhYFahj3Lylnhy2cGz3loD2e50
-         mVp85JqcS9u2gpG5gfAMVRgciNffAA6JD2ILxnQ/11KUKRnoPtjF1Bjisy6mmlpML3pa
-         dd5oXYGa2Vu924hUS4W8yQvLfolk8qURGT24OtbMvSDsCqjJakWDU1XHjcK5w18mNllN
-         o0GItQdvcnDaEoky3qaduemvzPpPBFfwFNJ24vD76Y3YrWHV3jJok4b9wMVrGxLKq8Sh
-         SIiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714648874; x=1715253674;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9rhZwyyx5fhbpC3BrgW8PW9voWjesLYpxFqigfVNmtY=;
-        b=UcTKAgP7qRqWZzGojZtHrBXgVRqEoc24SVx1MkaMDjCHEFFX8Qu47lcsLzhC/XnhiO
-         1OvAvBDQ7uMidJvYeYK8CdVY/zTpZ2rNGXmY34ZLZE9zcoYj2GHl60JhjtADxQXGYD8D
-         oBh9xQBVx8ubtKGHI7TL/Q1wfXV8YOn+PYws0IyA2+R+njMs/FBUr4wTsmq3f6jVT4aj
-         ZrGeKmRB+igEjZmPPy1Zs85tal2/7469Q1w5MOkbeo3BbpIKNsmtwWnuCKoRD+QataLY
-         YQQLSnzc95sugojGZ62meDe0LsX44GlHINCXG/NR9XvnWr32BynEZoDrjY75MtR9eT2P
-         M/BQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUfm0j8wiz8I8dnm8ssOqKMCAaVV64pxeAx/BOTBSiwEW8v0nKG9O76TdMSuL3SyTbtONGAtNO3IDU5H/BDMcKeJkrOzlbTn6Eq2mOK
-X-Gm-Message-State: AOJu0Yze2BWLG5E9nYtIKB42U2pODaWzPS2dGSPG3UR12YWDxhvIgghv
-	+btyM9p5kImQniZQ0kjPl6eIXvX5kSt4uC06r9HKCjrUoDy1LLQLW6Hg7CclZ3o=
-X-Google-Smtp-Source: AGHT+IGdb1BqZxt9QFOczg0KUBkNrWvHSOjTP2hFKx0LDlEWOPANBNbI5rvucoOu4m97AQfAwJklfQ==
-X-Received: by 2002:a05:690c:6d11:b0:61b:330e:3fec with SMTP id iv17-20020a05690c6d1100b0061b330e3fecmr1843234ywb.45.1714648872054;
-        Thu, 02 May 2024 04:21:12 -0700 (PDT)
-Received: from sunil-laptop ([106.51.190.19])
-        by smtp.gmail.com with ESMTPSA id m24-20020a81ae18000000b0061bec8ccb67sm155149ywh.76.2024.05.02.04.21.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 May 2024 04:21:11 -0700 (PDT)
-Date: Thu, 2 May 2024 16:50:57 +0530
-From: Sunil V L <sunilvl@ventanamicro.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
-Message-ID: <ZjN3GQI3gegYOIgS@sunil-laptop>
-References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-18-sunilvl@ventanamicro.com>
- <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
- <ZjNh0Llcx+0VHevy@sunil-laptop>
- <ZjNmdfR2J6hNnYle@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TzbQefYl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714661194; x=1746197194;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XptqbUg5xNIQKmQKuni+sa4YXQiyH4WIn+t4Dt1W1MA=;
+  b=TzbQefYlZfoO4Ied6SJD86PSCr3VjWq7dCi0jyiB1DRZ+/lnwP84omaB
+   YYWJycfkECXnbxhoMywYIN+8d+fL7B3DNsn50ZoaT8uTp4kaD+q1863mI
+   C7/kCQKWSsGJWR0PCfEPWBKB6yoQ0MXnunv7wluKcc5XdQtSgPe3Ilfw3
+   OB6BocLi+VDgs6e8wqQKv2EPT8991g+ahVRP6apSRcyjpUcj7NHB/ENa1
+   nkV4qCC8zmDrvVfv0jzo9yPz9NFW4SLu/NaTJ4+kslF9wiCF8CdlUIMXo
+   Cy/mYfmpPV21VhESmJxDQVc/vGIwvy7IA6auJsxeN/h3hH4xgoNd3B2tu
+   g==;
+X-CSE-ConnectionGUID: vHCHbcF2Tti5eRWqocDCGQ==
+X-CSE-MsgGUID: Hx/Ip/E3QcqrTQeqT/oNvA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10306065"
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="10306065"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 07:46:33 -0700
+X-CSE-ConnectionGUID: qIjp9/dATeyAA7Ij6nuAeA==
+X-CSE-MsgGUID: ivJ0cS98Tg2/N32pmd+ugQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="31632823"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa003.fm.intel.com with ESMTP; 02 May 2024 07:46:32 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id B087817E; Thu,  2 May 2024 17:46:30 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Parker Newman <pnewman@connecttech.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
+Date: Thu,  2 May 2024 17:43:54 +0300
+Message-ID: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZjNmdfR2J6hNnYle@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 02, 2024 at 01:09:57PM +0300, Andy Shevchenko wrote:
-> On Thu, May 02, 2024 at 03:20:08PM +0530, Sunil V L wrote:
-> > On Thu, May 02, 2024 at 12:17:59PM +0300, Andy Shevchenko wrote:
-> > > On Wed, May 01, 2024 at 05:47:42PM +0530, Sunil V L wrote:
-> 
-> ...
-> 
-> > > > + * This driver is for generic 16550 compatible UART enumerated via ACPI
-> > > > + * platform bus instead of PNP bus like PNP0501. This is not a full
-> > > 
-> > > This has to be told in the commit message. Anyway, we don't need a duplication
-> > > code, please use 8250_pnp.
-> > 
-> > Thank you for the review!. Major issue with PNP0501 is, it gets enumerated
-> > in a different way which causes issue to get _DEP to work.
-> > pnpacpi_init() creates PNP data structures which gets skipped if the
-> > UART puts _DEP on the GSI provider (interrupt controller). In that case,
-> > we need to somehow reinitialize such PNP devices after interrupt
-> > controller gets probed.
-> 
-> Then fix that code, we don't want a hack driver on top of the existing one for
-> the same.
-> 
-> What I might think out of head is that used IRQ core for your case should
-> return a deferred probe error code when it's not ready, then 8250_pnp will
-> get reprobed.
-> 
-Deferred probe was ruled out in prior discussion. Also, deferred probe
-will not work with _DEP approach. The reason is, PNP devices itself are
-not getting created from the ACPI name space when they have _DEP. Hence,
-serial_pnp_probe() will not be called at all.
+After a rework for CONNTECH was done, the driver may need a bit of
+love in order to become less verbose (in terms of indentation and
+code duplication) and hence easier to read.
 
-> > I tried a solution [1] but it required several
-> > functions to be moved out of __init. 
-> 
-> > This driver is not a duplicate of 8250_pnp. It just relies on UART
-> > enumerated as platform device instead of using PNP interfaces.
-> > Isn't it better and simple to have an option to enumerate as platform
-> > device instead of PNP? 
-> 
-> Ah, then extract platform driver first from 8250_core.c.
-> 
-Let me know if I understand your suggestion correctly. Do you mean call
-something like serial8250_acpi_init() from serial8250_init() and
-register the driver directly in serial8250_acpi_init()?
+This clean up series fixes a couple of (not so critical) issues and
+cleans up the recently added code. No functional change indented by
+the cleaning up part.
 
-Thanks,
-Sunil
+Andy Shevchenko (13):
+  serial: 8250_exar: Don't return positive values as error codes
+  serial: 8250_exar: Describe all parameters in kernel doc
+  serial: 8250_exar: Kill CTI_PCI_DEVICE()
+  serial: 8250_exar: Use PCI_SUBVENDOR_ID_IBM for subvendor ID
+  serial: 8250_exar: Trivia typo fixes
+  serial: 8250_exar: Extract cti_board_init_osc_freq() helper
+  serial: 8250_exar: Kill unneeded ->board_init()
+  serial: 8250_exar: Decrease indentation level
+  serial: 8250_exar: Return directly from switch-cases
+  serial: 8250_exar: Switch to use dev_err_probe()
+  serial: 8250_exar: Use BIT() in exar_ee_read()
+  serial: 8250_exar: Make type of bit the same in exar_ee_*_bit()
+  serial: 8250_exar: Keep the includes sorted
+
+ drivers/tty/serial/8250/8250_exar.c | 454 ++++++++++++----------------
+ 1 file changed, 200 insertions(+), 254 deletions(-)
+
+-- 
+2.43.0.rc1.1336.g36b5255a03ac
+
