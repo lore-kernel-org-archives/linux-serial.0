@@ -1,245 +1,218 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A658B158A12;
-	Thu,  2 May 2024 14:46:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB70154C15;
+	Thu,  2 May 2024 15:03:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714661205; cv=none; b=derreMWAYtxQFuBTKA3MW7DqDZzAY+oibuqkWStmZqmaysi9q3J3daVWc+Y7GUTHgDGIGLYaybd3w01cSlr2bp/LIzIOVTAY0SDB4O9ZGLhTDGF/LOiU/gnJieu0pZ1NgKLmRxJpzHNTfWLxQfUpI2JuVn3JRM+ZjWuHAOpv3uE=
+	t=1714662195; cv=none; b=jVEBvp6970Jq51+TNhzgc+WIrwqoDmZjjnWpahu3bkpe+MYdTfn7BJqgPw9YsgddWDGw/+LeEOuF9Cn7I5OXlJpoVDcL4P1VwySGY1yC3ebkFcWsujoKZsBZr9c4RmDsEoKSG/tNgWByoIWKN6dFa9v4r0wutI0g9293Sokipfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714661205; c=relaxed/simple;
-	bh=lcpyqo/kIZ8bG16xlC0SZOBkBwextMe9kvhdGFvCZgI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=o5dJfOlDJ7Dztt1NwuwQo8+xEnhJbNt1twYquiQLU1xF5q2CcEsANpfE4/U6xCPkp6ElhmajH0xmtD1r2XFdHEH+E0TzztK+TbuMeDKOKEyo/pZbAMWg8Jj5ttrwwKQmr0gx/KuUZHZWNQbIfouL7lZQ0umzhY6DxK5HAm4oiXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=acEX/PIL; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714662195; c=relaxed/simple;
+	bh=0/D/3orQyLIxlrLlfuPBXHhZ+OC7Ep+EQJbm8XOpe94=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FKyJwYtzQIylCBfo15O5uSDSBZHUGjO0TMZTCHyiNfLy4Eun8PxFZY2YeDHDSd00zJqxu1b9LLrIPW/YXnKS3pVHcnVbQc7nXmzkMKWPJbsj5ysmM8L7028D233GCdV8kIIJ5E7vJgxG5jRwgdGK912AeUo8iqAMYLF7OWTuYjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jjwYpEbc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="acEX/PIL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714661204; x=1746197204;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lcpyqo/kIZ8bG16xlC0SZOBkBwextMe9kvhdGFvCZgI=;
-  b=acEX/PILDDr15Q5ul0WGPxrwR9Jr0HT4raootaOZGI+83s9ZgApXKqAY
-   wIBSeu2waegmiQmKsCRQSINMGOPNaYeUBALOY48Orx3XmszTw5CpSDgrA
-   9Rnf3rcZxk3hP6Y/1bCk2JEges9v4v/n6an7++daJfWS+Om/XW3DSNseC
-   hTt1r91IYGrJegPx+7DuAPsBzG4YXY96KVZGm1YAPZRmajnMPdE22UslB
-   NPMCWGdxTwGj59OnlIOP+T2+vQkyte8PFYd1LDSDGZ/fhc3TJFKcGP1kR
-   61Cyo7aJ/loq7dyeBwd8v6GjhcgnXMMHs743fjENN3CtYM+K02oJlX32H
-   g==;
-X-CSE-ConnectionGUID: IxKRMC/mRkC6sdvNgFFPsg==
-X-CSE-MsgGUID: lbpNRUeASKSzk8ir0qxowg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10306116"
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="10306116"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 07:46:36 -0700
-X-CSE-ConnectionGUID: 3bhdqyNtSre0Jzcary/QMA==
-X-CSE-MsgGUID: URBp+H6SSLicbhPXDz23OA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="31632846"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa003.fm.intel.com with ESMTP; 02 May 2024 07:46:34 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 3D2BDB5F; Thu,  2 May 2024 17:46:31 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <pnewman@connecttech.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 09/13] serial: 8250_exar: Return directly from switch-cases
-Date: Thu,  2 May 2024 17:44:03 +0300
-Message-ID: <20240502144626.2716994-10-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
-In-Reply-To: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jjwYpEbc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF93C4AF1A;
+	Thu,  2 May 2024 15:03:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714662195;
+	bh=0/D/3orQyLIxlrLlfuPBXHhZ+OC7Ep+EQJbm8XOpe94=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=jjwYpEbcYKt++DFA3dEJjELaJbghgGFNOT+1SqU5w4Ca/kIOSW5LPC508Wr6JW/xJ
+	 Qa13mKDjvobwhq0k6cMrL/nnqDdFnupgocDVebKuEZLkaU4Gv/cPPWVNGGJd7BUsf2
+	 rQ3TBTSTVSN4iI+AJz5VYKUdCDKbNFTWKWZ/67h6SE6EgByvybpC28MJAYOY+rKKS4
+	 wTS+R45kjV9v5Cfv9ZWZphP5JsOAySEUlPuzW+2glyBQdMz9wYnn+FsjMgdkGmAp7x
+	 Z12AlZ4VnLdCJTa/+73roWWbwI5aC3wYHifh0xhurp+0ZvQQCq/zdkBhk3pLt3bvu5
+	 8E1Qj87U+mn8w==
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2e1fa824504so9252041fa.0;
+        Thu, 02 May 2024 08:03:15 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUkqbzfXUGL8b9ZwHC02XOZOLpZGAbnb6MOOVX5EFQeI3gUuOInjPV3Q3PW/RWUYOqCQy5/zzfXQiCw2dJvmtwxQipatSJnvir0DFyCLBkXBrp9p8/LX2XxRgphtsVNJQU8J+Sq6BgT1fIsBcPxqoME21+TXfqN/kCFxioDa0t6VLOL4uKT7Zg55/beI1hFKx34R7J7FPxb3yKc0x6NEGqdAhG9OYPGoN3/f9Qdog9rl+q0KlDRAjF4
+X-Gm-Message-State: AOJu0YzW8CEups6a96c+SOkL+RuUhLdUF076wHFRW2p6drN9jkLlq/dG
+	pxdKhUCOFXKutWKvOxBAf7uzv4FwhzyxT74EGmWqDvXXetZWcXhJuH2Yfc8Q4eQsZT2pOHAcQ0C
+	2yxZo4NaycUgDcLq9lOQWtenq1A==
+X-Google-Smtp-Source: AGHT+IGES7kDbfk0VUx7WlN+rqE+2KtZ3O8wqcOG/0tlTyJbKym9ll1q8hr3CrUhSN2mTjRc2qgzAnvzqQtLGFf5DGo=
+X-Received: by 2002:a2e:9ccc:0:b0:2e1:e795:3f81 with SMTP id
+ g12-20020a2e9ccc000000b002e1e7953f81mr1275404ljj.44.1714662193358; Thu, 02
+ May 2024 08:03:13 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240502075534.882628-1-christoph.fritz@hexdev.de>
+ <20240502075534.882628-7-christoph.fritz@hexdev.de> <171464227142.1356329.4931419696225319861.robh@kernel.org>
+ <48c55b05dae4628d4e811178bfd5e855ac93ee77.camel@hexdev.de>
+In-Reply-To: <48c55b05dae4628d4e811178bfd5e855ac93ee77.camel@hexdev.de>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 2 May 2024 10:03:01 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqK0__mzwNHuq4enJ3uvQTNWGYyk=TGYnnFX8kLDoGuNeQ@mail.gmail.com>
+Message-ID: <CAL_JsqK0__mzwNHuq4enJ3uvQTNWGYyk=TGYnnFX8kLDoGuNeQ@mail.gmail.com>
+Subject: Re: [PATCH v2 06/12] dt-bindings: net/can: Add serial (serdev) LIN adapter
+To: christoph.fritz@hexdev.de
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-serial@vger.kernel.org, 
+	Linus Walleij <linus.walleij@linaro.org>, Jiri Kosina <jikos@kernel.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>, Marc Kleine-Budde <mkl@pengutronix.de>, 
+	Benjamin Tissoires <bentiss@kernel.org>, devicetree@vger.kernel.org, 
+	Eric Dumazet <edumazet@google.com>, Jonathan Corbet <corbet@lwn.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>, Paolo Abeni <pabeni@redhat.com>, 
+	linux-can@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-input@vger.kernel.org, Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
+	Oliver Hartkopp <socketcan@hartkopp.net>, "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-There are two similar switch-cases which use different style.
-Unify them and one more to return from the cases directly.
+On Thu, May 2, 2024 at 6:03=E2=80=AFAM Christoph Fritz
+<christoph.fritz@hexdev.de> wrote:
+>
+> On Thu, 2024-05-02 at 04:31 -0500, Rob Herring (Arm) wrote:
+> > On Thu, 02 May 2024 09:55:28 +0200, Christoph Fritz wrote:
+> > > This patch adds dt-bindings for serial LIN bus adapters. These adapte=
+rs are
+> > > basically just LIN transceivers that get hard-wired with serial devic=
+es.
+> > >
+> > > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> > > ---
+> > >  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++=
+++
+> > >  1 file changed, 32 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,=
+lin-serdev.yaml
+> > >
+> >
+> > My bot found errors running 'make dt_binding_check' on your patch:
+> >
+> > yamllint warnings/errors:
+> >
+> > dtschema/dtc warnings/errors:
+> > Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.example.dtb=
+: /example-0/serial/linbus: failed to match any schema with compatible: ['l=
+inux,lin-serdev']
+>
+> Yes, that's obviously still false and will be fixed in v3.
+>
+> >
+> > doc reference errors (make refcheckdocs):
+> >
+> > See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/2024=
+0502075534.882628-7-christoph.fritz@hexdev.de
+> >
+> > The base for the series is generally the latest rc1. A different depend=
+ency
+> > should be noted in *this* patch.
+> >
+> > If you already ran 'make dt_binding_check' and didn't see the above
+> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> > date:
+> >
+> > pip3 install dtschema --upgrade
+> >
+> > Please check and re-submit after running the above command yourself. No=
+te
+> > that DT_SCHEMA_FILES can be set to your schema file to speed up checkin=
+g
+> > your schema. However, it must be unset to test all examples with your s=
+chema.
+> >
+>
+> I'm wondering why my local run of dt_binding_check does not catch this:
+>
+> $ pip3 install dtschema --upgrade
+> Requirement already satisfied: dtschema in ./venv/lib/python3.11/site-pac=
+kages (2024.4)
+> Requirement already satisfied: ruamel.yaml>0.15.69 in ./venv/lib/python3.=
+11/site-packages (from dtschema) (0.18.6)
+> Requirement already satisfied: jsonschema<4.18,>=3D4.1.2 in ./venv/lib/py=
+thon3.11/site-packages (from dtschema) (4.17.3)
+> Requirement already satisfied: rfc3987 in ./venv/lib/python3.11/site-pack=
+ages (from dtschema) (1.3.8)
+> Requirement already satisfied: pylibfdt in ./venv/lib/python3.11/site-pac=
+kages (from dtschema) (1.7.0.post1)
+> Requirement already satisfied: attrs>=3D17.4.0 in ./venv/lib/python3.11/s=
+ite-packages (from jsonschema<4.18,>=3D4.1.2->dtschema) (23.2.0)
+> Requirement already satisfied: pyrsistent!=3D0.17.0,!=3D0.17.1,!=3D0.17.2=
+,>=3D0.14.0 in ./venv/lib/python3.11/site-packages (from jsonschema<4.18,>=
+=3D4.1.2->dtschema) (0.20.0)
+> Requirement already satisfied: ruamel.yaml.clib>=3D0.2.7 in ./venv/lib/py=
+thon3.11/site-packages (from ruamel.yaml>0.15.69->dtschema) (0.2.8)
+>
+> $ git diff
+> diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.=
+yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> index c178eb9be1391..385cbe132258d 100644
+> --- a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> +++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> @@ -27,6 +27,6 @@ examples:
+>    - |
+>      serial {
+>          linbus {
+> -            compatible =3D "hexdev,lin-serdev";
+> +            compatible =3D "linux,lin-serdev";
+>          };
+>      };
+>
+> $ make dt_binding_check DT_SCHEMA_FILES=3DDocumentation/devicetree/bindin=
+gs/net/can/hexdev,lin-serdev.yaml
+>   HOSTCC  scripts/basic/fixdep
+>   HOSTCC  scripts/dtc/dtc.o
+>   HOSTCC  scripts/dtc/flattree.o
+>   HOSTCC  scripts/dtc/fstree.o
+>   HOSTCC  scripts/dtc/data.o
+>   HOSTCC  scripts/dtc/livetree.o
+>   HOSTCC  scripts/dtc/treesource.o
+>   HOSTCC  scripts/dtc/srcpos.o
+>   HOSTCC  scripts/dtc/checks.o
+>   HOSTCC  scripts/dtc/util.o
+>   LEX     scripts/dtc/dtc-lexer.lex.c
+>   YACC    scripts/dtc/dtc-parser.tab.[ch]
+>   HOSTCC  scripts/dtc/dtc-lexer.lex.o
+>   HOSTCC  scripts/dtc/dtc-parser.tab.o
+>   HOSTLD  scripts/dtc/dtc
+>   HOSTCC  scripts/dtc/libfdt/fdt.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_ro.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_wip.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_sw.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_rw.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_strerror.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_empty_tree.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_addresses.o
+>   HOSTCC  scripts/dtc/libfdt/fdt_overlay.o
+>   HOSTCC  scripts/dtc/fdtoverlay.o
+>   HOSTLD  scripts/dtc/fdtoverlay
+>   LINT    Documentation/devicetree/bindings
+>   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+>   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> /home/ch/linux/Documentation/devicetree/bindings/pci/brcm,stb-pcie.yaml: =
+ignoring, error in schema: properties: brcm,tperst-clk-ms: type
+> /home/ch/linux/Documentation/devicetree/bindings/hwmon/microchip,emc2305.=
+yaml: ignoring, error in schema: properties: emcs205,max-state: description
+>   DTEX    Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.exa=
+mple.dts
+>   DTC_CHK Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.exa=
+mple.dtb
+>
+> Any ideas?
+>
+> I'm using a python venv here, maybe this is related?
 
-While at it, add missing default in another switch-case.
+No. There are 2 possibilities. What kernel version are you on? This
+check is enabled with the '-m' option on dt-validate which was only
+recently (6.9) enabled by default for the bindings. You can enable it
+with 'DT_CHECKER_FLAGS=3D"-m"'. The other possibility is I noticed that
+the flag has an interaction with DT_SCHEMA_FILES in that we don't set
+the flag by default if DT_SCHEMA_FILES is set. (If you explicitly set
+DT_CHECKER_FLAGS in the newer kernels it should still give the
+warning.)  I think we don't enable it because you would get false
+positives if your example has compatible strings not documented within
+the schema you are testing. I need to double check that as how the
+tools work in this regard has evolved. In any case, DT_SCHEMA_FILES is
+a shortcut and it is always possible your changes can introduce
+warnings in other examples, so ultimately "make dt_binding_check" has
+to be run without DT_SCHEMA_FILES set.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_exar.c | 80 +++++++++++------------------
- 1 file changed, 29 insertions(+), 51 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 1f04d4562878..51f6af16c557 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -627,6 +627,8 @@ pci_fastcom335_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 		writeb(0xc0, p + UART_EXAR_MPIOINV_7_0);
- 		writeb(0xc0, p + UART_EXAR_MPIOSEL_7_0);
- 		break;
-+	default:
-+		break;
- 	}
- 	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
- 	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
-@@ -723,8 +725,6 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
- 							struct pci_dev *pcidev,
- 							unsigned int port_num)
- {
--	enum cti_port_type port_type;
--
- 	switch (pcidev->subsystem_device) {
- 	// RS232 only cards
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_232:
-@@ -734,24 +734,17 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_232_NS:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_232_NS:
--		port_type = CTI_PORT_TYPE_RS232;
--		break;
-+		return CTI_PORT_TYPE_RS232;
- 	// 1x RS232, 1x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_1_1:
--		port_type = (port_num == 0) ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
--		break;
-+		return (port_num == 0) ? CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
- 	// 2x RS232, 2x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_2:
--		port_type = (port_num < 2) ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
--		break;
-+		return (port_num < 2) ? CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
- 	// 4x RS232, 4x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_SP:
--		port_type = (port_num < 4) ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
--		break;
-+		return (port_num < 4) ? CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
- 	// RS232/RS422/RS485 HW (jumper) selectable
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4:
-@@ -774,32 +767,24 @@ static enum cti_port_type cti_get_port_type_xr17c15x_xr17v25x(struct exar8250 *p
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_XP_OPTO:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_4_XPRS_OPTO:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP:
--		port_type = CTI_PORT_TYPE_RS232_422_485_HW;
--		break;
-+		return CTI_PORT_TYPE_RS232_422_485_HW;
- 	// RS422/RS485 HW (jumper) selectable
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_485:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_4_485:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_485:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_SP_485:
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_8_XPRS_LP_485:
--		port_type = CTI_PORT_TYPE_RS422_485;
--		break;
-+		return CTI_PORT_TYPE_RS422_485;
- 	// 6x RS232, 2x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_6_2_SP:
--		port_type = (port_num < 6) ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
--		break;
-+		return (port_num < 6) ? CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
- 	// 2x RS232, 6x RS422/RS485
- 	case PCI_SUBDEVICE_ID_CONNECT_TECH_PCI_UART_2_6_SP:
--		port_type = (port_num < 2) ?
--			CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
--		break;
-+		return (port_num < 2) ? CTI_PORT_TYPE_RS232 : CTI_PORT_TYPE_RS422_485;
- 	default:
- 		dev_err(&pcidev->dev, "unknown/unsupported device\n");
--		port_type = CTI_PORT_TYPE_NONE;
-+		return CTI_PORT_TYPE_NONE;
- 	}
--
--	return port_type;
- }
- 
- /**
-@@ -816,20 +801,15 @@ static enum cti_port_type cti_get_port_type_fpga(struct exar8250 *priv,
- 						struct pci_dev *pcidev,
- 						unsigned int port_num)
- {
--	enum cti_port_type port_type;
--
- 	switch (pcidev->device) {
- 	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
- 	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
- 	case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
--		port_type = CTI_PORT_TYPE_RS232_422_485_HW;
--		break;
-+		return CTI_PORT_TYPE_RS232_422_485_HW;
- 	default:
- 		dev_err(&pcidev->dev, "unknown/unsupported device\n");
- 		return CTI_PORT_TYPE_NONE;
- 	}
--
--	return port_type;
- }
- 
- /**
-@@ -1493,35 +1473,33 @@ static irqreturn_t exar_misc_handler(int irq, void *data)
- 	return IRQ_HANDLED;
- }
- 
--static unsigned int exar_get_nr_ports(struct exar8250_board *board,
--					struct pci_dev *pcidev)
-+static unsigned int exar_get_nr_ports(struct exar8250_board *board, struct pci_dev *pcidev)
- {
--	unsigned int nr_ports = 0;
-+	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO)
-+		return BIT(((pcidev->device & 0x38) >> 3) - 1);
- 
--	if (pcidev->vendor == PCI_VENDOR_ID_ACCESSIO) {
--		nr_ports = BIT(((pcidev->device & 0x38) >> 3) - 1);
--	} else if (board->num_ports > 0) {
--		// Check if board struct overrides number of ports
--		nr_ports = board->num_ports;
--	} else if (pcidev->vendor == PCI_VENDOR_ID_EXAR) {
--		// Exar encodes # ports in last nibble of PCI Device ID ex. 0358
--		nr_ports = pcidev->device & 0x0f;
--	} else  if (pcidev->vendor == PCI_VENDOR_ID_CONNECT_TECH) {
--		// Handle CTI FPGA cards
-+	// Check if board struct overrides number of ports
-+	if (board->num_ports > 0)
-+		return board->num_ports;
-+
-+	// Exar encodes # ports in last nibble of PCI Device ID ex. 0358
-+	if (pcidev->vendor == PCI_VENDOR_ID_EXAR)
-+		return pcidev->device & 0x0f;
-+
-+	// Handle CTI FPGA cards
-+	if (pcidev->vendor == PCI_VENDOR_ID_CONNECT_TECH) {
- 		switch (pcidev->device) {
- 		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG00X:
- 		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_12_XIG01X:
--			nr_ports = 12;
--			break;
-+			return 12;
- 		case PCI_DEVICE_ID_CONNECT_TECH_PCI_XR79X_16:
--			nr_ports = 16;
--			break;
-+			return 16;
- 		default:
--			break;
-+			return 0;
- 		}
- 	}
- 
--	return nr_ports;
-+	return 0;
- }
- 
- static int
--- 
-2.43.0.rc1.1336.g36b5255a03ac
-
+Rob
