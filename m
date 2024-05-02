@@ -1,128 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01071172BC4;
-	Thu,  2 May 2024 18:02:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF0C316FF2B
+	for <linux-serial@vger.kernel.org>; Thu,  2 May 2024 18:17:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714672922; cv=none; b=pQRg9pObOXT5z1TRRqVeIw5r2U6uhozmNQv/s3q+3RNMdNLaOHuOlSbw07wdLWykQyJIlpunnOsQe/JAZtFUPodOmv5OsSISbxpn9SYiwGlUGtK8HP4SyzmnDaoVLN5zzHtSXtiEMtuM5p32Ptxca5COYajm6hYmg08xa0ejWsU=
+	t=1714673861; cv=none; b=hqiRasxjJ7tJRL5HI4dCdaE8VcpC/1rsKY1EMLazvXSjUapJ+SFB2M2Lad/sOxcOrlEFy/c7mMQTesgHg4Gpe4Thb3iGvL9LkLA71YYEMKzalCck+56+jWa0SNdIsG1PAOTdXaIFqnmccjWzNvUUe85CIDZLV3j+/oXMzaTsAvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714672922; c=relaxed/simple;
-	bh=fK6rNh5/XVxawqcuFnoZCcn6CMceXixxzj9TBw5xcps=;
+	s=arc-20240116; t=1714673861; c=relaxed/simple;
+	bh=KhdkdyVLO1m1Lp33vPRYarXehHaipcBx459m/LvdYGM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wz7BKsX9KyswzmWHVncZopVPX06eQIcyZ8IWruSHmy+agXdhiImDkIPc8V7eHq3YvmlKYGs1qkWfFrEbmCAf0faljPimz5o1SX1z3e1K+ARVykX0RMOgJYIA8WCSgoZ9Nghr+iBH081JXpOBgTgNhEwPHvRATqh6wR3J8tr1csU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VVHdByLD; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=YUDKuD3m3R0k3WkIdnk1gLsD92GbR8LdBvpngToiyKXrDp/PUkKqhxcQGBWl/Ft9X69DSt4K8EB2Uzj0Or+A+DjuT2YhFxC52iy6y9s1HrarMVLHtvzGQ8Nx5biN+7ULzmFni4xG45vUGjpgc4fyIRehykSlpMfKr1143JEA+Aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=EUyD36SC; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VVHdByLD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714672921; x=1746208921;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fK6rNh5/XVxawqcuFnoZCcn6CMceXixxzj9TBw5xcps=;
-  b=VVHdByLD8NQfCA69/1ierfECZ3T+NfC/5VQeC/3jB5zUyb69H+ctxYXh
-   jasDHEvU17+c15QKe8FltTkyltrJdiV9D+UrU3t6v1wGuy+4/UpWc8c9d
-   JVmRKvhf9TR89CUYMq+ztBmTHhOTcpVkGT0WUW8Kur97rJZ9k/BryQrfT
-   8pB/MAmkepV9t58cKjHd9X7A2+oPZwoatdCwPKTSyARGJc1jyoJwHEGSk
-   6MkSeAkDAcgr+w6s7MacItT0J2YYi5/3BjOxW5SGuIsRvOjqj1jYi5N15
-   I+eqh8Lew4Db2fQEZ50n2UAoe++Cau/QAIewvt2GPKSb0ECkrBEQDNJOk
-   A==;
-X-CSE-ConnectionGUID: 6DT+PsdvS/amnhrJdyLeig==
-X-CSE-MsgGUID: 3w2qxByRR46njA/ooDYdpA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="35843501"
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="35843501"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 11:01:59 -0700
-X-CSE-ConnectionGUID: ALCyUXnTRta/n8RVrZdtWQ==
-X-CSE-MsgGUID: VmkOh0UbSN6P1HEw+ByJNA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="58089293"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa002.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 11:01:58 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s2akk-00000003POD-2k3S;
-	Thu, 02 May 2024 21:01:54 +0300
-Date: Thu, 2 May 2024 21:01:54 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="EUyD36SC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=ra8p
+	SWsauUgo3TWihYTMQJ5qhlBnHKFupkcSfPmlHL4=; b=EUyD36SC3T6b7DHFxdIV
+	zbkesz6FiHj7eeUDDY+1h4GwM52KL4aaJGReqseJfcBjmxQCw3ga8NAYSeS2heIK
+	/6gpZ3XTLDTIJUfJq3bPFrZD8qcltWPNM3fNaZeGLL9c27EKhdA+pVQgKBEyqQxH
+	4T9PhEHJrfdYE8ga8SYW4Br3jSAQQzPJ/ZgBb5KbBSp/X4deTO6bqHuRwO++pnlG
+	ajN3Ctinf5EZmBuu/G2h30SFZjLH2A0ss0gWF6jrOxjJx9jwTagXAWQWNIZYpNq8
+	j26xX0U8LYwujzJtpb/nqDf5INtFZzDehkQlhs0x5nfD7gCJ+VW2vFrv+Bp8/Mru
+	7Q==
+Received: (qmail 3332279 invoked from network); 2 May 2024 20:17:37 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 2 May 2024 20:17:37 +0200
+X-UD-Smtp-Session: l3s3148p1@BLgvnnwXNKlehhrT
+Date: Thu, 2 May 2024 20:17:37 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-renesas-soc@vger.kernel.org, Dirk Behme <dirk.behme@de.bosch.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
- <20240502114645.4445b3da@SWDEV2.connecttech.local>
- <ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
- <20240502120840.02c65f30@SWDEV2.connecttech.local>
- <ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
- <20240502134949.5e780635@SWDEV2.connecttech.local>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Aleksandar Mitev <amitev@visteon.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [RFC PATCH 2/2] serial: sh-sci: always cancel hrtimer when DMA
+ RX is invalidated
+Message-ID: <20240502181737.b5vvghnwzievvlgj@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	linux-renesas-soc@vger.kernel.org,
+	Dirk Behme <dirk.behme@de.bosch.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Aleksandar Mitev <amitev@visteon.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+References: <20240416123545.7098-4-wsa+renesas@sang-engineering.com>
+ <20240416123545.7098-6-wsa+renesas@sang-engineering.com>
+ <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="h6vetrfs6rdknizx"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdUEvft0B9WdfZ936ccomZW4Qea8MVNSj-Q-Dyn8EKSUdA@mail.gmail.com>
+
+
+--h6vetrfs6rdknizx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240502134949.5e780635@SWDEV2.connecttech.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
-> On Thu, 2 May 2024 20:22:47 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
-> > > On Thu, 2 May 2024 19:01:01 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
-> > > > > On Thu,  2 May 2024 17:43:54 +0300
-> > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > >
-> > > > > > After a rework for CONNTECH was done, the driver may need a bit of
-> > > > > > love in order to become less verbose (in terms of indentation and
-> > > > > > code duplication) and hence easier to read.
-> > > > > >
-> > > > > > This clean up series fixes a couple of (not so critical) issues and
-> > > > > > cleans up the recently added code. No functional change indented by
-> > > > > > the cleaning up part.
-> > > > >
-> > > > > Just an FYI I submitted a patch series that fixed several of these issues but I
-> > > > > think it fell through the cracks (I know everyone is very busy!).
-> > > > >
-> > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.git.pnewman@connecttech.com/
-> > > > >
-> > > > > I believe my previous patch series is no longer required. This one fixes
-> > > > > everything.
-> > > >
-> > > > I haven't noticed that, if it contains duplicated patches, I may replace mine
-> > > > with yours if you insist.
-> > > >
-> > > > In any case it's better to reply there that you prefer this series to be
-> > > > applied, so Greg will not pick it up.
-> > > >
-> > >
-> > > I do not have a preference. I am fine with using yours if it is easier on
-> > > the maintainers.
-> >
-> > Up to you, there is no issue to take your patches in case they are the same
-> > (or quite similar) as mine. I can pick them up, just tell me if you want this
-> > to happen with a list of the patches (as mail Message-Id).
-> 
-> Just use yours.
+Hi Geert,
 
-Okay, thanks!
+good news, I was able to trigger the DMA rx code path. I dunno what I
+did wrong last time. I started from scratch again and it worked easily
+by dd-ing random data to the second non-console debug port.
 
-If you are going to test, better to pay attention to the BIT() conversion patch
-as Ilpo noted an issue. I believe it's easy to drop (via local git-rebase run)
-or move and test separately.
+> I do think you need to cancel the timer: even when not restarting
+> the timer in sci_dma_rx_complete() due to a DMA failure, the previous
+> timer may still be running, and will cause a NULL pointer dereference
+> on s->chan_rx on timer expiry.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Taking locking into account, I think this patch is bogus. If we run into
+this NULL-pointer, we have a locking problem and cancelling the timer in
+sci_dma_rx_chan_invalidate() is not going to fix the underlying locking
+problem. sci_dma_rx_chan_invalidate() does not only clear the pointer
+but also the cookie_rx-array. sci_dma_rx_timer_fn() bails out via
+sci_dma_rx_find_active() if that array is cleared. It does so before
+accessing the chan_rx-pointer. So, it looks to me that should work once
+all calls to sci_dma_rx_chan_invalidate() are protected. And there is
+one path where this is not true, namely via sci_dma_rx_release() during
+shutdown. This is why I asked Dirk if the system was about to shutdown.
+Currently, I don't see any other problematic code path.
+
+> > -#ifdef CONFIG_SERIAL_SH_SCI_DMA
+> > -       if (s->chan_rx_saved) {
+> > -               dev_dbg(port->dev, "%s(%d) deleting rx_timer\n", __func__,
+> > -                       port->line);
+> > -               hrtimer_cancel(&s->rx_timer);
+> > -       }
+> > -#endif
+
+Also, this chunk needs to stay. I suggested in patch 1 to cancel the
+timer on successful dma_rx_complete, so the timer only runs when a DMA
+is in progress. Then, of course, we need to cancel it in shutdown.
+
+I hope I am not seeing "no wood for the trees" by now. I am not
+convinced that I actually found Dirk's race condition yet...
+
+All the best,
+
+   Wolfram
 
 
+--h6vetrfs6rdknizx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmYz2L0ACgkQFA3kzBSg
+KbbZQRAAsQIP51T8nRbMyG0IcszboQuFisobiJLZh/Bshh57hC/j3aIacLk8kpBm
+V3rR1WRUgfMdFlRxxoo3W1kYFZC0O8JXQvM5+5J3VAfvD3+7ukEbmYvBe/6brMf+
+Ji4p9kow5Q6mCaB7aQLmwkFf8NDtbThYX2/jSKug4MPE9ta4KK49XecNfnJHNeD4
+imOH3XWX65wb4qNomiDagbmM8FHeVWq7hNh0ERrlkHWXZQNSO0gRHEUj19FNgLmX
+ctDJNJNZQEe1y6UapsukFQyycJXvOn2WIRbDdqk1ysew8Vol/wF4s9XRbCnT4HDc
+Ga851NbnAP7ke19XRs3PT65PAFVjobknnNFi1Bm0zlCGnS3gcMX+/wJ1yQbU3zot
+mqeLYxzZU/VKzA48dni/pHT2SGTUb9OZOZCTq2LjwnPkEhwFKmZgWzXqixewFqpI
+MhYh41dViiUvPVgVDYgB63Zu3TyAlE0j9L6zGTK9cxrfLiwidObp4N4SchNtf6G2
+UsibHNx4Px3QiCOw17EbWzqTsr35xkOiB1elw+Uzq5Yk6REFgpjx1yy1SrF3XkiW
+1ZbgFr9hHPqWVol8Wb/NGj6vflSqGyDYBbxchfZD6s2Y2LfFopxnsybB3m+SCVV1
+5GfdQrHI6MVQOt+HfpWJaJ1lVgj/ztN7zYkqrCBy+9AgF7u8oUc=
+=PYh5
+-----END PGP SIGNATURE-----
+
+--h6vetrfs6rdknizx--
