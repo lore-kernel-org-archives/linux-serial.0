@@ -1,161 +1,177 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDFB61CA81;
-	Thu,  2 May 2024 04:03:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49ADA1CA81;
+	Thu,  2 May 2024 05:27:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714622608; cv=none; b=BMD4w9df1E0oxp8UmwC8upOmDgtBVdQwjIPKcMPgAVhwUGAcyLiARx8ptdnk1fDqOSzLGh8qXH9+BH5SfA9OnATNpQnYPfSlS9ukELrFA4Oab1GHYLLc6hOunOI0lHzEQjVGmPgA0w+fkJAqhoPDyoPtBT1O9eRPAN+0zgClEHQ=
+	t=1714627648; cv=none; b=iLcYAgyqKNARERkmNTbUyqIDaH+BuWG3/qBza3c+9n7Xaj/9enKurOEvBphOQ50cnP3gfPDv7te4CHpu0DZWzXi6PD7tMkslQ9yJp1sy35tlw+T3EDOPVQVmlKgJIp/v3UG+VH9MsWTRvkfiLns2QU9CUXfcDwAg7mAZw+zkg14=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714622608; c=relaxed/simple;
-	bh=IuncjCinTZcslylQsvcuG6xMFQyq83RRDqafU+ZCgxY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dMJvSOIZUiKTJ9NE9iSoqgSMtqO56JPONs2XulJDu03KuE3FRzRRPgkh/MEKgJeF0cfbByLyk6EAnEVGfYPYqDdnSLRaHaSj49PjhdaRO0KiBALTT2h+DHUMfG32783okTQcAZgtj7uAQaEptsuKtq19ra62hy5Zz604xQD8PQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JBcfYu/h; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1714627648; c=relaxed/simple;
+	bh=ftHzH9qvJa3de0MGd82tHpZ8K22GEeMdMaS34WhIAiU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=hbdwWQwKTsF4fTdG1OiijVO42PWmTK8b0MmHYNoZiY0/u2k5jHRsr1Z3dOC422mv6JJge7kyCvfiY1wQGnP5DzgAAvY8hSzNmL+FCY8oX9+O4lRV2WLDdbmjokS2i0HZgp6FS8eGjTq0D2qm/jlg9oqPNtNzC+9mQViPvCVIfJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=UJCR0hkD; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JBcfYu/h"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1e4266673bbso67885265ad.2;
-        Wed, 01 May 2024 21:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714622606; x=1715227406; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jzB+rQYevMvBz8BfUKIQPgyqZ5Qo5yjxtUsNJAd5VcU=;
-        b=JBcfYu/h5rvZPoIYuhvnqzkag3hU73o4ld4SAbonh3ToBVNdbxeSRSOVOyDKuGl5EN
-         r0O3NQ0IfjPBu+x/+OMj6wIMOg9/wj2ZoLeoUIT3ZElQ/EWHW6KC7EpuyFNyD0OsyPMI
-         1haqqPiCWq3lSo5oe5mdLZ382K7aBitdzGciWz80hAsnow2UmziMeMUzh2b9rqVR2JSx
-         n5JO8N5Oowu5R+BesSZ536C/dO1/K80YWa14BqITL/Lj+l+tGGW3jsyx8g3DtwEGHRMD
-         +BNHMIavWzYyt0Hxz/cUn+PQhjMWcfdqBG7nIHHzvNgIUF5l6G6C67Y+5bkrRaItFNGu
-         B/Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714622606; x=1715227406;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jzB+rQYevMvBz8BfUKIQPgyqZ5Qo5yjxtUsNJAd5VcU=;
-        b=mU2b+uGIoGwJgrSKc/yjh5ZoPdCmCZhL4lI5qxtrJDNcQvDFUNolrt9r+jINWH2WPy
-         yQlT7kMbXoGjSVueNUlvOr5e2C2nm2nBAG2P2cQLB0eSSKacr++Uu+OuSaFTJzMS1Ryl
-         e1bS+pi2TLxSadYtVN2OQpYdB7Q72MImg8VAHVZQpzDnUOP1w9hXCYuMHOc0prn7V+9b
-         G7qTNtGcXNOtvLXO4p649KnPa2JIuYDiunSz+MjWCPIp+tWDIME1wBePAG7s0HqjYEzU
-         eqOUsyZ1XPoFF/WbXRGJ+aba0x2n9CR40X/zPnOoLfnpfqIrX0UXsYpLG67fcDUFvxL2
-         0S0w==
-X-Forwarded-Encrypted: i=1; AJvYcCUwciB8eqfryFSmhZO+Lx1ADVTi0R7fIKBoNvnDxm+EG2z0dltyufsaIXQr539ncf97LmCNseAl4SJsdmuW7tcEml/yA/vmDZItZrkj
-X-Gm-Message-State: AOJu0YwIVVozQqNvB1kRux0OPGREylRZirkSoQdNWZhToyjxnXcKfrqV
-	lEA7N3qIR/Fu7obeU9HlUjFacnH5kYsFPSmx33wnG1sn9J9OmTqC1Yc1m2LclPRVndfp
-X-Google-Smtp-Source: AGHT+IEgmgmDky3WRliZBT1htC7pgAKivWc36rcaCzUAStw0m/Yj4RL/HpOTXm0ONiO30QMMbkiXyA==
-X-Received: by 2002:a17:902:c14c:b0:1ea:1d2:90bc with SMTP id 12-20020a170902c14c00b001ea01d290bcmr4393641plj.24.1714622605733;
-        Wed, 01 May 2024 21:03:25 -0700 (PDT)
-Received: from localhost ([103.192.225.104])
-        by smtp.gmail.com with ESMTPSA id w6-20020a170902e88600b001e96982c4fbsm158119plg.118.2024.05.01.21.03.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 21:03:25 -0700 (PDT)
-From: Weifeng Liu <weifeng.liu.z@gmail.com>
-To: platform-driver-x86@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="UJCR0hkD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=iw9sb5bPm/obi3rgls3+3/4K0A0MuMZb4NR+Kz+bqj0=; b=UJCR0hkDNdfxATyaw5BU3n50vf
+	LphM+CQi668+Gn1auChFaligiaHZoThnzPncO/8TioOmvKhqkIbAUNFTdT1TKvKfRy38ufnVVwoiR
+	JqIZea/fWsEufV4vr/rJVO7A54QkB8nM0dT8OVu7PSUMrMKyl2x5N6JeMPXdnkc8eb6A=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s2OyD-001YZ2-2d;
+	Thu, 02 May 2024 07:27:02 +0200
+Message-ID: <77d0b2c62aad02c7c6f291676673b672ab35528a.camel@hexdev.de>
+Subject: Re: [PATCH 05/11] dt-bindings: net: can: Add serdev LIN bus dt
+ bindings
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Krzysztof Kozlowski <krzk@kernel.org>, Oliver Hartkopp
+ <socketcan@hartkopp.net>, Marc Kleine-Budde <mkl@pengutronix.de>, Vincent
+ Mailhol <mailhol.vincent@wanadoo.fr>, "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
+ Slaby <jirislaby@kernel.org>
+Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>, Jonathan Corbet
+	 <corbet@lwn.net>, linux-can@vger.kernel.org, netdev@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
 	linux-serial@vger.kernel.org
-Cc: Weifeng Liu <weifeng.liu.z@gmail.com>,
-	Maximilian Luz <luzmaximilian@gmail.com>,
-	Hans de Goede <hdegoede@redhat.com>
-Subject: [RFC PATCH 2/2] platform/surface: aggregator: Log critical errors during SAM probing
-Date: Thu,  2 May 2024 12:02:47 +0800
-Message-ID: <20240502040255.655957-4-weifeng.liu.z@gmail.com>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
-References: <20240502040255.655957-2-weifeng.liu.z@gmail.com>
+Date: Thu, 02 May 2024 07:26:59 +0200
+In-Reply-To: <784d78a8-3809-4a53-a9f2-7d9682b82c58@kernel.org>
+References: <20240422065114.3185505-1-christoph.fritz@hexdev.de>
+	 <20240422065114.3185505-6-christoph.fritz@hexdev.de>
+	 <784d78a8-3809-4a53-a9f2-7d9682b82c58@kernel.org>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Emits messages upon errors during probing of SAM.  Hopefully this could
-provide useful context to user for the purpose of diagnosis when
-something miserable happen.
+Hello Krzysztof,
 
-Signed-off-by: Weifeng Liu <weifeng.liu.z@gmail.com>
----
- drivers/platform/surface/aggregator/core.c | 26 +++++++++++++++++-----
- 1 file changed, 20 insertions(+), 6 deletions(-)
+ thanks for your feedback, please see my answers below.
 
-diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
-index 72a521dd729c..4e2e70f4dcf5 100644
---- a/drivers/platform/surface/aggregator/core.c
-+++ b/drivers/platform/surface/aggregator/core.c
-@@ -623,8 +623,10 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 	acpi_status astatus;
- 	int status;
- 
--	if (gpiod_count(&serdev->dev, NULL) < 0)
-+	if (gpiod_count(&serdev->dev, NULL) < 0) {
-+		dev_err(&serdev->dev, "no GPIO found\n");
- 		return -ENODEV;
-+	}
- 
- 	status = devm_acpi_dev_add_driver_gpios(&serdev->dev, ssam_acpi_gpios);
- 	if (status)
-@@ -637,8 +639,11 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 
- 	/* Initialize controller. */
- 	status = ssam_controller_init(ctrl, serdev);
--	if (status)
-+	if (status) {
-+		dev_err_probe(&serdev->dev, status,
-+			      "failed to initialize ssam controller\n");
- 		goto err_ctrl_init;
-+	}
- 
- 	ssam_controller_lock(ctrl);
- 
-@@ -663,6 +668,7 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 	astatus = ssam_serdev_setup_via_acpi(ssh->handle, serdev);
- 	if (ACPI_FAILURE(astatus)) {
- 		status = -ENXIO;
-+		dev_err(&serdev->dev, "failed to setup serdev\n");
- 		goto err_devinit;
- 	}
- 
-@@ -678,16 +684,22 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 	 * states.
- 	 */
- 	status = ssam_log_firmware_version(ctrl);
--	if (status)
-+	if (status) {
-+		dev_err(&serdev->dev, "failed to get firmware version\n");
- 		goto err_initrq;
-+	}
- 
- 	status = ssam_ctrl_notif_d0_entry(ctrl);
--	if (status)
-+	if (status) {
-+		dev_err(&serdev->dev, "failed to notify EC of entry of D0\n");
- 		goto err_initrq;
-+	}
- 
- 	status = ssam_ctrl_notif_display_on(ctrl);
--	if (status)
-+	if (status) {
-+		dev_err(&serdev->dev, "failed to notify EC of display on\n");
- 		goto err_initrq;
-+	}
- 
- 	status = sysfs_create_group(&serdev->dev.kobj, &ssam_sam_group);
- 	if (status)
-@@ -695,8 +707,10 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
- 
- 	/* Set up IRQ. */
- 	status = ssam_irq_setup(ctrl);
--	if (status)
-+	if (status) {
-+		dev_err_probe(&serdev->dev, status, "failed to setup IRQ\n");
- 		goto err_irq;
-+	}
- 
- 	/* Finally, set main controller reference. */
- 	status = ssam_try_set_controller(ctrl);
--- 
-2.44.0
+On Mon, 2024-04-22 at 09:54 +0200, Krzysztof Kozlowski wrote:
+> On 22/04/2024 08:51, Christoph Fritz wrote:
+> > Add documentation of device tree bindings for serdev UART LIN-Bus
+> > devices equipped with LIN transceivers.
+> 
+> A nit, subject: drop second/last, redundant "dt bindings". The
+> "dt-bindings" prefix is already stating that these are bindings.
+> See also:
+> https://elixir.bootlin.com/linux/v6.7-rc8/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
+
+OK
+
+> 
+> > 
+> > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> > ---
+> >  .../bindings/net/can/linux,lin-serdev.yaml    | 29 +++++++++++++++++++
+> >  1 file changed, 29 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml b/Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml
+> > new file mode 100644
+> > index 0000000000000..cb4e932ff249c
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/can/linux,lin-serdev.yaml
+> > @@ -0,0 +1,29 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/can/linux,lin-serdev.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Linux serdev LIN-Bus Support
+> 
+> This looks like Linux binding, but we expect here description of hardware.
+
+OK
+
+
+> > +
+> > +description: |
+> > +  LIN-Bus support for UART devices equipped with LIN transceivers,
+> > +  utilizing the Serial Device Bus (serdev) interface.
+> 
+> serdev is Linux thingy, AFAIR. Please describe the hardware.
+
+OK, in v2 it will get changed to:
+
+"""
+LIN transceiver, mostly hard-wired to a serial device, used for
+communication on a LIN bus.
+"""
+
+> 
+> > +
+> > +  For more details on an adapter, visit: https://hexdev.de/hexlin#tty
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: linux,lin-serdev
+> 
+> Feels confusing. Your link describes real hardware, but you wrote
+> bindings for software construct.
+> 
+> If you add this to DT, then it is hard-wired on the board, right?
+
+Yes, it is hard-wired.
+
+>  If so, how this could be a software construct?
+
+It's not, but fairly generic, that's why I used 'linux,lin-serdev' as
+compatible string. In v2 I'll change it to 'hexdev,lin-serdev'.
+
+> > +
+> > +required:
+> > +  - compatible
+> > +
+> > +examples:
+> > +  - |
+> > +    &uart2 {
+> 
+> & does not make much sense here. I think you wanted it to be serial bus,
+> so serial.
+
+OK
+
+> 
+> > +      status = "okay";
+> 
+> Drop, it was not disabled anywhere.
+
+OK
+
+> 
+> 
+> > +      linbus {
+> > +        compatible = "linux,lin-serdev";
+> > +      };
+> > +    };
+
+Let me address these points, fix warnings from dt_binding_check and
+reroll in v2.
+
+Thanks
+  -- Christoph
 
