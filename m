@@ -1,113 +1,177 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D391586D5;
-	Thu,  2 May 2024 16:18:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D71E1EA6F;
+	Thu,  2 May 2024 16:51:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714666699; cv=none; b=ptzukVU7CSl/IzMdfV4Qo8ADAxCbTnC4uyeUKsyiaqwFBXTzZNPlGix0S3+e5frR7ne3SArxWSGSAHnuIc1O/NMonXf/uH0xXsv0An0HMeLBNLCGF7Yk9wfwZzQimsYNrdBL45dP7qrq737yEBM5xcKztASZLeQpd/FAtnl2SrE=
+	t=1714668689; cv=none; b=f/HiCJyTBqCyr4hgeQOf//7WEINWKT67J1bPaOM5UUAMF/1AE3Od0fHJviDKAksBhRMR5ocwTFRZpWiHnpWIWLDOmqCODHkjmM0mq4yDy60HkB38+u46+XciLBelR1kfZqEyepsBbYInl9OT1ePtZJY0cFhGspbhOle0OTpWbT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714666699; c=relaxed/simple;
-	bh=PXiRo4w2E0/4qzbSWCaMbbfTifqyV+g9KZhxk0A5rDY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mdkljCIARI6QLcfRRDx/wTt9WhZRsz14PRrVeahNbKRzNGCVYUht7LqTDcWgoD3Hk4+0sFRL12XkM9hNYV/RsszNB/F2M1r2TO6F6TqzJhMgyFLjTvfY3n8yeEu9PUEnvWotmiQjgAPs/kMSE9QqshSvrYJunOgB/2k4lqYxSh0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=0qShFYzd; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1714668689; c=relaxed/simple;
+	bh=OHjeZeI4MZi130KNodmkNYdmSRbL11ZHV6UaEXjwIN8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=iThR1GoUDb6UFeoRrk9aE6IZz4A2NNp8gbmKvCB+92P4MEx7qhA3DIVr9EcB/PPUjwFMjbhOlfbeMRfQIpeV9TidGyGe6GywG+Cb2m6jq/kIZK/ysz2gqW4Fkpao4ttfbW66MOUCHS5Y9Sj4bT6ZaUG6X8cUCDDNcqrQj6j8eF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bvSVvB61; arc=none smtp.client-ip=209.85.210.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="0qShFYzd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714666691; x=1715271491; i=parker@finest.io;
-	bh=LKoyu6h7KDiFRhiij4H8trRflZZKdIgkV1s5K2caVw4=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=0qShFYzdeOFnC7PRxHcpNziw9g1XxHTEvbdm6NJM5ZRZaaR2rR9SQyzO8caCq7CV
-	 QyLjYvrB/JWwl+QJkTCtWaGT1VbcYamyO2lHpIWdcz57nt6NEmZhsAtJzgcl7MFA1
-	 bak5RcA9ivrrwbykj/uMhxNjOpjDceHMw0wN2qfrHZouOwK0FHillWCiVZpROjWON
-	 CEtW/lmENGXxAbKK2hBzfczCvnYwcnpengSCDFqIUN+UbYNnzGvTlNNGTvuhmMd3Y
-	 c0/dv0xjrg5u446vL02T5vDOIDJgHGkjfWywRSwe2AZqJsvVe41pBGm2973eNa+fy
-	 /pfAKs70CFd0jVpWFg==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 1N7AIq-1sjKTH2Eii-017S1k; Thu, 02 May 2024 18:18:11 +0200
-Date: Thu, 2 May 2024 12:18:09 -0400
-From: Parker Newman <parker@finest.io>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Parker
- Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v2 0/4] serial: exar: fix kbuild warnings and code style
-Message-ID: <20240502121809.30491a67@SWDEV2.connecttech.local>
-In-Reply-To: <cover.1713533298.git.pnewman@connecttech.com>
-References: <cover.1713533298.git.pnewman@connecttech.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bvSVvB61"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-6ed3cafd766so7383182b3a.0;
+        Thu, 02 May 2024 09:51:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714668688; x=1715273488; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zb2LQ7ZyHWxH6durNQbJmMpdtE7d3QFAS1SL6VR1M9c=;
+        b=bvSVvB61EOUWdYeTkBK8APBf/LvXN5XpLhcU/eFVytEPXwoNTFdX9ZjK/+XeiNr/ir
+         Cwv+KX1YLFTCDyf/s9OrdHErBMGM1UHsLk8PP1/HPuAFoOm4Ib8xxGsqhl3lY6+OOULD
+         xh+KTCEhg3aWkNkLrrgueAYx7iKc5ZAjfVyS2tKrYnC7CvinCP4Er4ZV3A8M2YR9mwwJ
+         Qzi86mPt+a9eM5S1GRo3NJprlSqBRmsaGUOC+5bdjwDpexIYxFkosBpIuNq7qXId2f7r
+         gSx4IDcM+6ojWf22adj5gUmFpLD4g6aTMHXqx9/HWfvL3yYb/4LN0XKwFyqz1DzXr0i1
+         zALQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714668688; x=1715273488;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Zb2LQ7ZyHWxH6durNQbJmMpdtE7d3QFAS1SL6VR1M9c=;
+        b=nD09c5FPO7Rj4lSmzaYKcY5fTxGPQJiVBdBscNQdna8Q/lqHJP7GOjm9DQx2XUB9nF
+         gG/1f4iMyE7t6mVcqnUpUL0JNervitFNOO8GzV2olmRgQCWux5/oo5+0v6vHZYz0LT/V
+         XEIn349cDJjywb7EPK6Ca010ca8NvNNvmTmFEgEj7TJqMN4M/sqR4yvpaoG3OGFWnb5N
+         p7vE2T68WIUbnagefrEZ65GhsfjZ7pTLfoN63YhD+xxEl3yaaSYnc5MYuIVRerbB0n9m
+         AYYyT+YnjQ0SeB+Ih17baie4PHDUIw1k7/Ja8Ji+VRQx5hCUaeVsmZ35JDY+Ruqcy1MN
+         NoPA==
+X-Forwarded-Encrypted: i=1; AJvYcCUY+dn6OmROsX4yLcp4pGnlgEd1NfrHbmEVv7AeRUgZ3BPueLj1rIPhjK/iySFXklmPNVZ2BsDeYS6fUVkGHAuWnPje6hHQCF/EnkutEWe0PwkPkKEV/eSm4p6dGklJ8C+6YaatPTZ4y1r8wylBxWBFWwtwV9XmqvuGzty4MmVcUOH+58VmBQ==
+X-Gm-Message-State: AOJu0YzUCA9VUl1wSOHJoMEW7yUL2j6dy7sdxWOeJH8YalfHvyK7d6KH
+	o9BUEnwBfKXb+Gl25Ta+1DA2VKSM4vWRt9O3CKhK+f7Z6q/Xp67orXKjqRSC/WeK3I9MBAU7Qdd
+	6jiU5L/fvpMV2Ol3BZa1Y23B1OB4=
+X-Google-Smtp-Source: AGHT+IE4L/gTAyjTdmR5GRd/iAA9g48rAosir3aWSZYrXAJKAi3C3OZ7Qth6wGGpGQJkCXAaUDlQOOcsmhbVVkiaJyE=
+X-Received: by 2002:a05:6a21:3d94:b0:1a7:5334:fbf3 with SMTP id
+ bj20-20020a056a213d9400b001a75334fbf3mr230314pzc.55.1714668687682; Thu, 02
+ May 2024 09:51:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20240501084110.4165-2-shresthprasad7@gmail.com> <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
+In-Reply-To: <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
+From: Shresth Prasad <shresthprasad7@gmail.com>
+Date: Thu, 2 May 2024 22:21:16 +0530
+Message-ID: <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
+Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
+ using __free
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: davem@davemloft.net, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com, 
+	skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:McQlekSsgghGBLIcmt0S/h4x/zjxzWYi8l3YZYVrmqTi0lS/ikz
- 73RvGTSS59v1dbZQTjNvArFEmt1hl85dLfOVFANO0uJpvjbK6ZfQW0S1axCrEtDjdaVpyvV
- +FKcfhbQoJWc3p/G3vTdv/kmYFIabNEHWsulRFYy470zGj1ame8vGJpw6ctVAU83mMHB+lr
- qlwJG7tvdBkkVN5NtewjQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:WpY9wamyheo=;EI1vgfvixcJRoW+SJ+tLi4qspYU
- 9wZoI9rxxAskBXqHg7xHEUEjHbIluDv3NAX9SgiJzUpLRt30R+02DB40gdanCo2eiSblt9uDi
- KrY0WWE9GylBA30Gt5+IOUljerf143Uv61QHpQehSwUFW84OO/Y09imLa7nu+kdJNBl00fEJ2
- GCxabS8IPSt9qlu+T6Tp00g4M325aIClz6GQsfMHkV4wNZzjuUIblF5CGKPqtXuVOeZApbRDf
- zGPURMV0oI8dAcSb0Lo8gOS8cV9fPobSmbGIDCkymNQhdO7CgL490zBje/UrxZSNqLCEkbVAW
- ws6j7YhqNdmEpOhksCFpoGUm4N0V59PSy9AMq3k6Y5Rtphapx3obC9+ZPtyjmkz3iJJLTJVzv
- KjCfY7DnrujAVSt2qp2Nd8lrB206bQZuuGe6neIEDE1pX8eu2rVbOJnJmu+gX2yVXjttPGyNe
- 7EJnXWwcBehOuFXxX8cmnZkJJxDgkHu5MRLjVmBq2HDrYSsxusKjMBNNJ1xCf17in9IdQSo0S
- wF94KBx1n8FwhDBV2xXjl1atdoTNuH2aB9xCH0M8EEblED0wFiR47S+meBRZ+ZCiG6keTuQgR
- qBjziAxL0zPAvmG2mGQ9HzVOHRc9t/tAKJenpKI/5bs793xkjOKJi+ujlNStzzE/pQREtUHPL
- gf9hWhG3R/rP1efE3v9jGThVjTMLxHJqpD/wIbZbtZBiw6OEViUo13Shy9Q+9A/GqJwzzX5Dw
- GZDhN7qPrc5vsJbQCywc9KLJCBT+CjB33QegqPtDPuYdtb7l6Zwz90=
 
-On Fri, 19 Apr 2024 10:17:00 -0400
-Parker Newman <parker@finest.io> wrote:
-
-> From: Parker Newman <pnewman@connecttech.com>
+On Thu, May 2, 2024 at 9:35=E2=80=AFPM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
 >
-> This is a series of small patches fixing kbuilds error and code style
-> issues based on feedback during review of main patches.
+> On Wed, 1 May 2024, Shresth Prasad wrote:
 >
-> Original patches thread:
-> Link: https://lore.kernel.org/linux-serial/cover.1713382717.git.pnewman@=
-connecttech.com/
+> > Add `__free` function attribute to `ap` and `match` pointer
+> > initialisations which ensure that the pointers are freed as soon as the=
+y
+> > go out of scope, thus removing the need to manually free them using
+> > `of_node_put`.
+> >
+> > This also removes the need for the `goto` statement and the `rc`
+> > variable.
+> >
+> > Tested using a qemu x86_64 virtual machine.
+>
+> Eh, how can you test this with an x86_64 VM ???
+>
+> config SERIAL_SUNSU
+>         tristate "Sun SU serial support"
+>         depends on SPARC && PCI
 >
 
-These patches should not be required anymore. Andy Shevchenko has
-submitted a more comprehensive clean up patch set that makes this
-set unneeded.
+By that, I mean that I compiled the kernel and ran the produced bzImage
+on a x86_64 qemu machine.
+I unfortunately don't have the hardware to test it on, but I don't
+think the change is complex enough to require testing on real hardware
+(unless I'm assuming incorrectly).
 
-Link: https://lore.kernel.org/linux-serial/20240502144626.2716994-1-andriy=
-.shevchenko@linux.intel.com/
+Regards,
+Shresth
 
-Thanks,
-Parker
-
-> Parker Newman (4):
->   serial: exar: add missing kernel doc function parameters
->   serial: exar: use return dev_err_probe instead of returning error code
->   serial: exar: return bool from exar_ee_read_bit()
->   serial: exar: remove ternaries from
->     cti_get_port_type_xr17c15x_xr17v25x()
->
->  drivers/tty/serial/8250/8250_exar.c | 36 ++++++++++++++---------------
->  1 file changed, 18 insertions(+), 18 deletions(-)
->
->
-> base-commit: c6795fbffc4547b40933ec368200bd4926a41b44
-> --
-> 2.43.2
->
-
+> > Suggested-by: Julia Lawall <julia.lawall@inria.fr>
+> > Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
+> > ---
+> > Changes in v2:
+> >     - Specify how the patch was tested
+> >
+> >  drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
+> >  1 file changed, 11 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+> > index 67a5fc70bb4b..0f463da5e7ce 100644
+> > --- a/drivers/tty/serial/sunsu.c
+> > +++ b/drivers/tty/serial/sunsu.c
+> > @@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(voi=
+d)
+> >
+> >  static enum su_type su_get_type(struct device_node *dp)
+> >  {
+> > -     struct device_node *ap =3D of_find_node_by_path("/aliases");
+> > -     enum su_type rc =3D SU_PORT_PORT;
+> > +     struct device_node *ap __free(device_node) =3D
+> > +                         of_find_node_by_path("/aliases");
+> >
+> >       if (ap) {
+> >               const char *keyb =3D of_get_property(ap, "keyboard", NULL=
+);
+> >               const char *ms =3D of_get_property(ap, "mouse", NULL);
+> > -             struct device_node *match;
+> >
+> >               if (keyb) {
+> > -                     match =3D of_find_node_by_path(keyb);
+> > +                     struct device_node *match __free(device_node) =3D
+> > +                                         of_find_node_by_path(keyb);
+> >
+> > -                     /*
+> > -                      * The pointer is used as an identifier not
+> > -                      * as a pointer, we can drop the refcount on
+> > -                      * the of__node immediately after getting it.
+> > -                      */
+> > -                     of_node_put(match);
+> > -
+> > -                     if (dp =3D=3D match) {
+> > -                             rc =3D SU_PORT_KBD;
+> > -                             goto out;
+> > -                     }
+> > +                     if (dp =3D=3D match)
+> > +                             return SU_PORT_KBD;
+> >               }
+> >               if (ms) {
+> > -                     match =3D of_find_node_by_path(ms);
+> > +                     struct device_node *match __free(device_node) =3D
+> > +                                         of_find_node_by_path(ms);
+> >
+> > -                     of_node_put(match);
+> > -
+> > -                     if (dp =3D=3D match) {
+> > -                             rc =3D SU_PORT_MS;
+> > -                             goto out;
+> > -                     }
+> > +                     if (dp =3D=3D match)
+> > +                             return SU_PORT_MS;
+> >               }
+> >       }
+> > -
+> > -out:
+> > -     of_node_put(ap);
+> > -     return rc;
+> > +     return SU_PORT_PORT;
+> >  }
+> >
+> >  static int su_probe(struct platform_device *op)
+> >
