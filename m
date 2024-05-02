@@ -1,61 +1,52 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BD9115CD7B;
-	Thu,  2 May 2024 16:09:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9287460BB6;
+	Thu,  2 May 2024 16:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714666153; cv=none; b=aFtuPKA45XX8oRCUt3QUfh07Gk7EnJ8ZafHs2rcBncTXubzLHSFO43HfAe0sTyZBeKgrmst302xmuiaMzDBiL/Se89g3IVXzrj1p2/wC+vofhEI0Wo/JCneVMmphLuKrNtRRd0ME3pXddM3N7a4rp2/QkLPIP+9neO8FnVAHvGE=
+	t=1714666458; cv=none; b=kfQUITt5yb5Q2AaO1BgSwQxZT0sZJVJUmw6D8JbzzyC13JuoK3bVUFX9L4tyUYsBS9YaskUchvZQv7Pp/EdDqz0NWd4s6DBDgDSA0W74zRSouVZYuy6CBAHRVZ2jzeag8BQxQhrEOviZyhTfEPMkJpmMj58qMB0NHbrulLR2UqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714666153; c=relaxed/simple;
-	bh=bEIqQ5F5YN4F9JTpN1ESGIlQIRXLOYQv3szua/b9Dhs=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=K8QJbEPY7dfLz5WwCKBjb2lerY4tY2HtyQu6p6pK8QHM5C/R6kWE/3UQFGwQ5cwsEJr9idb7d4ER24IvDfxKNTTxAp3WAex+hAPnoKrfzG7EKo2unLjslrtb1mV8x5samyzklm5UcgAiUh7uInWCdDA9jhpVs5cfrLMFhYygo/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SjOpADPw; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714666458; c=relaxed/simple;
+	bh=EYyBIpXtLbrojJ0gwTNmKNe8NZCDfNPHVGhDJtgJFL4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JUL30wiflJi+rftvnzMcIvpQYinozrNNQMxfA0sZfNMjMUVO/xQeQlWSXL+XggEmadHpJ47K0/Ly3PK8p6uSgnygwuWxrOacbvVaVlEsRlqKsIRgn2Xd2JOES0qp/atencdO7WiX97AicW0WJF8S2K+OaWsN4FWAiIsaOYs7EWg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=AiMtJSxM; arc=none smtp.client-ip=74.208.4.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SjOpADPw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714666152; x=1746202152;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=bEIqQ5F5YN4F9JTpN1ESGIlQIRXLOYQv3szua/b9Dhs=;
-  b=SjOpADPwVdwSK+j/pVMjAF2Yf00W62AWBVzh33mE98SECOIKXrxIwcFP
-   hMTN3V4UyNwvIpE5M3HhlgAldWEvk/93+pWNalxbsnZ7lGS2z/rbJfVs7
-   VTWifE8A9KkpK1SZLKCVvl2bahvSY/7D6LbIUWNZyAbTDuiW3oOfNZjdW
-   bZ/ZfZV9g0hJwfdJ6ZmBzveVLFM1WxQ/CqSSvuL192t4Mf/ecNJ4zboL3
-   px5VpaK04GZfVDkYlNAGr9vWCyxA9Ce4PcOt5yNmPJGM+qMMWaa4cSVbw
-   aa3jKXBo/OKUxtGJfcNSYIHsVKNPns4orN/WEaIqTGnPfR8hy0T+Z1tZ4
-   Q==;
-X-CSE-ConnectionGUID: wxzK+aQoQQyp/aB4lN6qmQ==
-X-CSE-MsgGUID: sUpDfCthSse3UJhuzf7+HA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="27975649"
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="27975649"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 09:08:30 -0700
-X-CSE-ConnectionGUID: TXl1Wl+XRlC2W6neqMOg5g==
-X-CSE-MsgGUID: Etv4bJKsRVy+2meoIb9Y9Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
-   d="scan'208";a="27143502"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.54])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 09:08:27 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Thu, 2 May 2024 19:08:21 +0300 (EEST)
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="AiMtJSxM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1714666452; x=1715271252; i=parker@finest.io;
+	bh=F1Ux9cZrOuJh9vuypt4bqQwJFsHtjYpAaryxJnzC8UU=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=AiMtJSxMjCb+kfDU2A/JPuN5r3PE1QqXY10l88NeBVQF0PAXqKDa2MwZtZpKshhN
+	 PnEPGikcO1ZX5rmLRufde5ecl2HnXURqQZUz44/hKK/m+InG+FuYJ1WqTOD+Q8tCr
+	 8saN3QuXY+W4cWq2ReaC/CU70YgImhhOlCFIBl115upW9Gz/X3j8pjBB05Posyeb/
+	 2UByhCmoOy2IRfKU+TJORwY3LyE2IG540b8ikdE9/SYUtZ4+p2xq/y0J3ftJCkHqD
+	 IvkSht3zcLKRoCYcYTF33BMRdqnPfb+ljxaBGfSXEUIdwANSCIC1tRIFcwcm8JtKT
+	 Yy9d1sxO5RsLZI2viA==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MNa9c-1rzmlW1OiQ-001dPt; Thu, 02 May 2024 18:08:48 +0200
+Date: Thu, 2 May 2024 12:08:40 -0400
+From: Parker Newman <parker@finest.io>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-cc: Parker Newman <pnewman@connecttech.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in
- exar_ee_read()
-In-Reply-To: <20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
-Message-ID: <702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com> <20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240502120840.02c65f30@SWDEV2.connecttech.local>
+In-Reply-To: <ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+	<20240502114645.4445b3da@SWDEV2.connecttech.local>
+	<ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,40 +54,67 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:wQQFg7JqXeyMc7J73yaQ3i6/8bCsSfUwf0eyYZhDGpSV4C2Mv2x
+ JTendR9EQupIO/Pd9qAVsd5yJShMGZ8QXCgqhinFWqRPUwGI0rs5phSJZ2QzJ5Nf6qfJNUB
+ V9pSo9Xm7tTTzNBK90bs7WZN+q2Y6qHhlQ9hWlpOopnhoE30t8rHvdjl/rDnPVvJCjmnJgu
+ V4wtVuG/m/6Dzm91mmp9Q==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:s0b9kt01wnY=;NqVlvOczYkO9YsE+8ETmlKaC1Zx
+ RckKbwJGmHeqMNlH6eJsN2Kllaw9z36miib9msAcsG1svYihv8ITSlLGeeUK0HUv3xOU0cmO6
+ GpWVh80Q2uhCOzwylw1/6zAkCHrQHvmcbREydYiVhDb8gcUZhgc3jM1ObTqUrx1sU1WCCOEwh
+ Y6Y4OC74tRozI8LWRE090MIZ8pj3O8HDO5BJkcU4FqoNSDTM4SSfc+pSbA+X92SUanqNmfBz0
+ z3VVX5aCst+d4NGwh75IRMOuOAOzUNxUlrdQo9OOrYrCeDDdkc12r5xWRrjkpMX97McvOjw1i
+ 2xvTGO4ty+/wYFJE4jtaBzB6GYYpj2KSym+LwP4jcYT9kCS802GqHs3wtjvX/NtCump+5kWnH
+ RRiU30o/CihhCeScbNHvPUVd0ZXRCc/2F1GFi1vdNpk8m8bxrEfWUWtsjLT94dp8EUbTBQzwS
+ 1ghS+If3FsRmpcZ2//g+dPgLBhbFsxj0rcsgJtxgJNOzWQJWMlecNwuu0gMZ8HvlpAWxskDwf
+ +LzeZEzqF8zhezgAM9K0T5lkRexY+106+XxSwIq41+iSyzLIAhRhBqVV397jDiLyJMaFlq9PZ
+ am6SHL3ufrLaoJbIrlNHJGzhvJAkqE3ffIPW3TpqI5+vL21Zj1WxaQycHm3Z6v11GFigra0uE
+ XRg1hCwh48ETNB9k2o4hfEc8HNvM5IaayZvD7UMk4iJ6V9KQDVXlpZvRaY49UDpDXHVOorExg
+ 1P8S4u+aHqc5FiyYfBokzztxV7CZPrLYinY+C1LAfrgIMkuZ84ssNs=
 
-On Thu, 2 May 2024, Andy Shevchenko wrote:
+On Thu, 2 May 2024 19:01:01 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> Use BIT() in exar_ee_read() like other functions do.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/tty/serial/8250/8250_exar.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> index 306bc6d7c141..bf3730f4231d 100644
-> --- a/drivers/tty/serial/8250/8250_exar.c
-> +++ b/drivers/tty/serial/8250/8250_exar.c
-> @@ -340,13 +340,13 @@ static u16 exar_ee_read(struct exar8250 *priv, u8 ee_addr)
->  	exar_ee_write_bit(priv, 0);
->  
->  	// Send address to read from
-> -	for (i = 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>= 1)
-> -		exar_ee_write_bit(priv, (ee_addr & i));
-> +	for (i = UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >= 0; i--)
-> +		exar_ee_write_bit(priv, ee_addr & BIT(i));
->  
->  	// Read data 1 bit at a time
->  	for (i = 0; i <= UART_EXAR_REGB_EE_DATA_SIZE; i++) {
-> -		data <<= 1;
-> -		data |= exar_ee_read_bit(priv);
-> +		if (exar_ee_read_bit(priv))
-> +			data |= BIT(i);
+> On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
+> > On Thu,  2 May 2024 17:43:54 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > > After a rework for CONNTECH was done, the driver may need a bit of
+> > > love in order to become less verbose (in terms of indentation and
+> > > code duplication) and hence easier to read.
+> > >
+> > > This clean up series fixes a couple of (not so critical) issues and
+> > > cleans up the recently added code. No functional change indented by
+> > > the cleaning up part.
+> > >
+> >
+> > Just an FYI I submitted a patch series that fixed several of these iss=
+ues but I
+> > think it fell through the cracks (I know everyone is very busy!).
+> >
+> > Link: https://lore.kernel.org/linux-serial/cover.1713533298.git.pnewma=
+n@connecttech.com/
+> >
+> > I believe my previous patch series is no longer required. This one fix=
+es
+> > everything.
+>
+> I haven't noticed that, if it contains duplicated patches, I may replace=
+ mine
+> with yours if you insist.
+>
+> In any case it's better to reply there that you prefer this series to be
+> applied, so Greg will not pick it up.
+>
 
-Does this end up reversing the order of bits? In the original, data was 
-left shifted which moved the existing bits and added the lsb but the 
-replacement adds highest bit on each iteration?
+I do not have a preference. I am fine with using yours if it is easier on
+the maintainers.
 
--- 
- i.
+I will send a reply on my previous series that it is not needed and link
+to this. I am new to the mailing lists so I didn't know what the procedure
+is for this situation.
+
+Thanks for the fixes :),
+Parker
 
