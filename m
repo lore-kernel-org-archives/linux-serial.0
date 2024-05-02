@@ -1,127 +1,93 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08C7D5103D;
-	Thu,  2 May 2024 15:36:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D86C415B14D;
+	Thu,  2 May 2024 15:44:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714664181; cv=none; b=SS+GbXuYjB3qmDEhhrpXgOgZ40UDlZ9sbiB4COICzD5ZeTI8TtcZ8k7ZJnh/6+A265TGwFKIgG2s3seF0Lhsy0rnzR/gZFJBavI+GYRhvwj2dWODngKMzt3HgEXlX1H+WfpP+Rj22UoBbYhPLDKQmJ1wAbP9xu1RTXWZ3i2Vnvc=
+	t=1714664645; cv=none; b=FLWR2ppvHfZV9bVG1CDdlr9jJIYg5EntQ4pDSo2wAfLcOKyykvRZIdXuPN7SzC6uuDOZ+uWnj3L54xN0f9JTs7wbThWRBghsDNPmDkl9NIbv5tLcdVmU0sI8gQpMVshVeIiLBbMYW9tFdbJ7rqLBhc+d5YCaQbthln6HOFvCLaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714664181; c=relaxed/simple;
-	bh=pynW+jXzeH7NsB+O42ERsKQuANfOkFi1iL6uf8ALyaI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bNtLMg7u1N8bIp60shpEob0Zs02PWiJBXBbJsRLChPhB0SDj8f76Gr2+9hte05zQpcXy/5aSyMLeP0aJ0y7HkmTMvcymfBk1EpvPeP9JfUisTH9+Bcb7j/idva1R23MEbnE8f1S7r9wWCipi6zYnq9apC6ubZiHPrp/hXKgtg4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=hNraKQzQ; arc=none smtp.client-ip=74.208.4.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1714664645; c=relaxed/simple;
+	bh=xh4y8j04z59/8X1Tg3qhrjwIBeBWw7wpTCRNn/GaHfU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JW0YZysDE5UG4J7LxKE1/J+47PqU5KYxzaASMt1GIcNT0ySzk7DhmCcXVA8pDBO4aID8qLCcuNUTHBRbPuyWID4iPViXsTNPuS/py/ksA5dD5Npzt8Xaj47Ukl8T/JJDKR0gNsYCNf0HBGomnSo7q8+isH9GSgoXqq0eJ2aLMH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bP3v/spu; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="hNraKQzQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714664172; x=1715268972; i=parker@finest.io;
-	bh=W0LitNlEcqi8JRY/15+qeV+pHGz20lY39zLVjASVSzA=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=hNraKQzQzfg9hwK4XywSR3UPzf5WnW7ygFNsKSmNe8uEhT5HFv0+1rMQFB/mG10F
-	 Yr4duYhL5IWuTg2WDnjr72S4bAjPHSwOKpPkR4rPNVgO+QAz79F5dKYwy4PKcRVyN
-	 MMpnDtbNalcOl7KjUU6wIYLGVRHZ/adpqSsvlQ+B9iypOxSz0efqfQ+x/kuuBaAXF
-	 607B4puDO8SfzdsU3hHMlkuW+cVzBsrz0neVotRXoGNuWUQDzW6PMGLUXI/ucvCI5
-	 dXRcEyaYKS/sPdpopm7cb4Odo7kVY+sF9dP5nMQ1DquV1oSlNvYika1h4qTIYzVg5
-	 dsvhbWQPJ2uxuO4IXA==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0Lr0QH-1sWN7n1xJL-00cd3U; Thu, 02 May 2024 17:36:12 +0200
-Date: Thu, 2 May 2024 11:36:10 -0400
-From: Parker Newman <parker@finest.io>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bP3v/spu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714664644; x=1746200644;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xh4y8j04z59/8X1Tg3qhrjwIBeBWw7wpTCRNn/GaHfU=;
+  b=bP3v/spuhJS4+LBQIl5BIDdl9CRYICPX7MufiGxUmX9A5pHfsWz70dCi
+   T9N/Hp0ozIGDyY3A18uYF04gRVc+L+xtMCdspa/GKxlZbcsLoPLzbOUOZ
+   3+fw3g+YZ5CS+6sVxVxhljHWJZUvYeB7FYdkuL2dO9HxgTvWau7I5cSba
+   ffiuyvTIeDLcVfj6qbVI3W2oPimfpc9lF1x/btzwyNs3unoXt6UrzdyPL
+   zOKEmBw511nGwJGbosVdOrhc1VOyRyhnNjd4ErA2krATSSfTrBXKirPv9
+   fghIEDjnRe4vCTDXpcFa3SO351P90uauRzHR6RqLfnQIg8xvqzgCFKbJ6
+   w==;
+X-CSE-ConnectionGUID: 3sc//M3wRdmD2XsZJpOIdg==
+X-CSE-MsgGUID: /+4Vzhz0Q1qBn4I9f2zIxg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11062"; a="10296349"
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="10296349"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:44:03 -0700
+X-CSE-ConnectionGUID: /CdbWWBLQFO+s2GkNM8hWw==
+X-CSE-MsgGUID: /kBsAxPnT222dZF7RJdavw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,247,1708416000"; 
+   d="scan'208";a="31767231"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2024 08:44:01 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s2YbH-00000003Mn2-18qx;
+	Thu, 02 May 2024 18:43:59 +0300
+Date: Thu, 2 May 2024 18:43:59 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Parker Newman <parker@finest.io>
 Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+	linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
 Subject: Re: [PATCH v1 03/13] serial: 8250_exar: Kill CTI_PCI_DEVICE()
-Message-ID: <20240502113610.01881f3b@SWDEV2.connecttech.local>
-In-Reply-To: <ZjOxQWc1OtGWatKC@smile.fi.intel.com>
+Message-ID: <ZjO0v9i0-adEM9Nq@smile.fi.intel.com>
 References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-	<20240502144626.2716994-4-andriy.shevchenko@linux.intel.com>
-	<20240502111314.63d66b54@SWDEV2.connecttech.local>
-	<ZjOxQWc1OtGWatKC@smile.fi.intel.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <20240502144626.2716994-4-andriy.shevchenko@linux.intel.com>
+ <20240502111314.63d66b54@SWDEV2.connecttech.local>
+ <ZjOxQWc1OtGWatKC@smile.fi.intel.com>
+ <20240502113610.01881f3b@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rW8qwN/6FTe7Q3pgYRWho80xuLlutrj0X5GUe8euHWDFknsFnTO
- gCm0rgz+y7PM1ORFFnshHVrBppMZw0/C4roH4W3/w5YT2xE/J+nyu+a9oqk99Nkgn45pSMQ
- 1/922dnKLfy0aT0RzsR0kqcJG6NI9VgmwHcYY3dk9zOjRCjGpKaDTvd5msR2Tpl1sU77FdO
- 7FdyM1s1q6494yytAGb9w==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:V42GeMkZp+U=;g/7zFTFhk+E+9KwKYQBi1S+4mzp
- J5JD3EqF1HW234Ux9zR3huPG3BwknTMczlp8C5f3jVpoxLGuM5H7rjVWNubYzb1gk4YRGLOCo
- lfmgQmx3KiJXNhT0/EsIQVm5zuylrtMIS+cvQrWNPMMioIaDY20IyDwfDY6N3dx0nEeFRM9VQ
- wGdpkL1cxu0KLxf1Sbi5fjg2KRRZMEskBSkCuxYSGU2M0c/2mbN+Ss6T4BVPSk/aB1lpbk/2I
- dIRoOdvLSQVbTDTyIRG1Ivp/hfnuI6ZUWqrPZLKzk+2dL8nQwa/B+QHi8i966sRoHUHSCOG/J
- AJC8uZ68mbV+hqXXrhEsyVNtN5kfjMbmUhFOkSAESuPG3IiRpYvht3omMIWgGE5j7F41D+Fhc
- tjSdk0N4hjPaM2c7Q6tMfwDWKNj5prRzyC/U5qAO4GaQQOlNNHVpFJbZ6NDnF495RA6QBDGS4
- i4IOdO2ikylhHAWwgPUDZo76GbhZuu5pei6gVKJhms6WQeByJnrZjoURWLB7cYHsh6WFrNPZU
- RB9m9KVwtH5iUwjYC6k6gGuD47HClLy+wNp74MLxw9MjlodiyM9DI7Ep5o9MFqb35WMOmkeP1
- NUwXh8qzQopgGzcI3DwdLGIuWcVj02XJ159v7ArpB3R7SUJcTGEmZ7y6EA5e0bbIhQR0hPIEv
- Ads0xAhD+lZQ7xPcStyD+NhQUtYU3B6euvp4wEL9ocef6VYRMcVrphYdJ19popiOQNjPe3tNX
- N5aCdnqik9Co9BqXlhUA0B89oz31U6mSq+rS6QQ+2OPAk8Fx4W8JJc=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240502113610.01881f3b@SWDEV2.connecttech.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, 2 May 2024 18:29:05 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Thu, May 02, 2024 at 11:36:10AM -0400, Parker Newman wrote:
+> On Thu, 2 May 2024 18:29:05 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Thu, May 02, 2024 at 11:13:14AM -0400, Parker Newman wrote:
 
-> On Thu, May 02, 2024 at 11:13:14AM -0400, Parker Newman wrote:
-> > On Thu,  2 May 2024 17:43:57 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > > The CTI_PCI_DEVICE() duplicates EXAR_DEVICE(). Kill the former.
->
-> ...
->
-> > > -// For Connect Tech cards with Connect Tech vendor/device PCI IDs (=
-FPGA based)
-> > > -#define CTI_PCI_DEVICE(devid, bd) {                     \
-> > > -	PCI_DEVICE_SUB(                                 \
-> > > -		PCI_VENDOR_ID_CONNECT_TECH,             \
-> > > -		PCI_DEVICE_ID_CONNECT_TECH_PCI_##devid, \
->
->
-> #define PCI_DEVICE_SUB(vend, dev, subvend, subdev) \
->         .vendor =3D (vend), .device =3D (dev), \
->         .subvendor =3D (subvend), .subdevice =3D (subdev)
->
-> #define PCI_DEVICE_DATA(vend, dev, data) \
->         .vendor =3D PCI_VENDOR_ID_##vend, .device =3D PCI_DEVICE_ID_##ve=
-nd##_##dev, \
->         .subvendor =3D PCI_ANY_ID, .subdevice =3D PCI_ANY_ID, 0, 0, \
->         .driver_data =3D (kernel_ulong_t)(data)
->
->
-> > > -		PCI_ANY_ID,                             \
-> > > -		PCI_ANY_ID), 0, 0,                      \
-> > > -		(kernel_ulong_t)&bd                     \
-> > > -	}
-> > > -
-> > >  #define EXAR_DEVICE(vend, devid, bd) { PCI_DEVICE_DATA(vend, devid,=
- &bd) }
->
-> > This is not correct. The CTI_PCI_DEVICE() macro is for cards that have=
- the
-> > Connect Tech PCI Vendor ID (not Sub-Vendor ID). EXAR_DEVICE() is for c=
-ards with
-> > Exar PCI Vendor ID.
->
-> Above I added current code of these macros, can you elaborate how it's i=
-ncorrect?
->
+...
 
-Sorry, you are correct. I was mixed up.
-Thanks,
-Parker
+> > Above I added current code of these macros, can you elaborate how it's incorrect?
+> 
+> Sorry, you are correct. I was mixed up.
+
+No problem. And since you are here, can you tell me what type of EEPROM is
+connected to the chip in your case?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
