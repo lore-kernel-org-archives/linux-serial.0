@@ -1,145 +1,153 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CD3152535;
-	Fri,  3 May 2024 11:54:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E8128F5;
+	Fri,  3 May 2024 12:36:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714737286; cv=none; b=Bf/hEw+WLOBu6itpu2D/93M5vQvuqDiqp2q2pe/3N7evtAtKeTely2+E7WKgM3PTPNl86J8XDEVkw/19jmLnGrGgbAMKmT+xUdDQ8R+33NN+JwNDZ9YLbsAmfpjlGH2M/NAQqc/SjIxqIEW+66uU5tLwsjGg8qY74/RmMmrz0MU=
+	t=1714739810; cv=none; b=IJn/lQMJ5ax5EzvzwA3aYLXzYjeSlae3epHcaZIJOWlLZtoQ9zAkHnoRZ2t8JVmwTzW9dBFr8utXXvNtQoDbruEm8OQNFVnx9E2VVfEeOBFFuxnomKGdUxatdqcdYx58IRoDrNqa1W4Rk3oTUi7lspwZ24ErI7jWVBevXGcBJv8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714737286; c=relaxed/simple;
-	bh=3uoLblbVviTSySfRLQkzlYKhujxP1w39CaWd7TOXBiM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lRuLB2OOpWz+j51HjBNdN91DL8mQBYJXX0j3v+cCDjofpxu43+PXMgzwnjQoebeTPzf7ejOKt9yaNYxn/qLgChchwxcNGTopaUSg8eVpP1cFs+nqcdu2m4jpv7UX7SqmAwVY6wKwxzFnUnp0eSeC4Bf/43Hyh+eFsiCXtdKaf0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hTfKBZV2; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1714739810; c=relaxed/simple;
+	bh=nXZwx6IVJMBUefq5xdQYjmzDRIJO0v+73VppqwXi8oY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SukCMBSo0+ujholigsqmCKSyWH0wpT2Xlmsy2inSosLc9UdC6pueqypeAnjVxMbMp3DtGLBXcQqKWDYnL6D0i9Mf0RM6gXRZ1Xfjlr4RChiU4b2HBCJL0/RcIQYQH1TdS5CEZFmn8vgJ/IPInfIzf1R8c+UZFid2w8jlTIiiLlA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=FNAgmZVE; arc=none smtp.client-ip=74.208.4.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hTfKBZV2"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a55bf737cecso1184666066b.0;
-        Fri, 03 May 2024 04:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714737283; x=1715342083; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0oauZc70ukT9KbYDGTPtwlZBYsnxCGZgVEqDznEFYqQ=;
-        b=hTfKBZV22SKavLho8JhWoMMCQQjXYbAuC/d3UJVyEuxiw5HPK5IDU4qiapAJhvpIhY
-         2dMRRmxcxcWfMc6sLsTGAfEj1gggD2cuHQgV+fE0UbZH41zSZnwn0weowUT3s6pPADZp
-         fkcdoe0Ya7LnRbjTkcI4Uc+uozY8vqfeQwDhvdFqsNcjtJix/R/kagDRsnwFVTLe5KiX
-         u3xp1ESVM7AmVpQlSLCbqpvTIqyzgpEX/KvYSi3v8OrEwU+ZyHOAICBKaQppMc7iXxgf
-         pGf3wpLNbnlHZ5HQsybaYGYb0PW3cOffJZ8jbMhFuS3amHDZ/kt4Xrx8HFgnvG/8JLf5
-         eflw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714737283; x=1715342083;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0oauZc70ukT9KbYDGTPtwlZBYsnxCGZgVEqDznEFYqQ=;
-        b=P1B80E5ooCDaooVeQvF94gXmkaPMJkap9NNuS3FQY1GuTyA7xaVGLTMzkOeTe8dyK0
-         VHQDufKhHMHNytROABqeEGisjijACzmDuOMbwhcbPV5LX23bcx2qSB7hIngYStTxIkpD
-         ndNhwBDMm/M0WQsoo9/KVibIkViboCPdU5NAOmun7TawU0EktkZp2EK4UqdDKa07PRBW
-         qOnEGXaQnjtIaHQAJmHbBh5P0hw1Y4uDZKGWksF8lNayiGcJ8oOQJq17zq0ydCkvtFqy
-         5N4xqAi7hpLby3yrxP1UCPsIDbdoJRUjZ5mkwZ7zgVn27kasT5o2NR29P0rpswNmBjF4
-         tikg==
-X-Forwarded-Encrypted: i=1; AJvYcCVw/HvnykNDeKF2MVTtCgB0YSmNjUyE5ZoRZSVW/EamoR4vbeGyvtwOjQnUvA6p/GTeAi9EI7MKf7XZlb3z/fGOM22jHeiLxkmVirA27/vwRKgG+aawl9IsrPxEeIat1q7n4pYspQ/09UwI
-X-Gm-Message-State: AOJu0YzH2Evqmqh1api02Pa6dSVKRl26YId/Nka3fUga2K3hkDy9DWnR
-	Jzupdgbq071taCZ1+telaPBLEQYTjxKIj2iQlKGYOhWL5KZ3aZj7
-X-Google-Smtp-Source: AGHT+IHW15hSCP1X3duU6HX04FPukVySYrSsXbGUmXqmySFFVYB0m9NveeVvpZJWpndt2EmA6KT6JA==
-X-Received: by 2002:a17:906:b7da:b0:a58:e4dc:ad99 with SMTP id fy26-20020a170906b7da00b00a58e4dcad99mr1573887ejb.2.1714737283388;
-        Fri, 03 May 2024 04:54:43 -0700 (PDT)
-Received: from [192.168.0.31] (84-115-213-47.cable.dynamic.surfer.at. [84.115.213.47])
-        by smtp.gmail.com with ESMTPSA id a21-20020a170906369500b00a596ea236f4sm1631792ejc.212.2024.05.03.04.54.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 03 May 2024 04:54:42 -0700 (PDT)
-Message-ID: <3823976c-13b6-4662-a9fd-7615cf69475a@gmail.com>
-Date: Fri, 3 May 2024 13:54:41 +0200
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="FNAgmZVE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1714739800; x=1715344600; i=parker@finest.io;
+	bh=LPHhZm5lowvrZny9uJ95Cq5UJFclBqQhK3jaWOkbXOI=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=FNAgmZVEZ/orShUL7OL8sfx3sPurnAzvRjAn7KBacU5F10Rzm103golGxICUUB5B
+	 QKQRheBvnEN53kSh3jA8tp/yfB/aSmIHsmWQW5+pCnYM/ctpb6/SQGsVY9cG8Czxh
+	 fxyxev4g9GV62wL57rlIr8ogMltMOgzgpKQWyUZO6TQ2uk1++o/8OyNQ8TrJEXfRc
+	 6MycymvBk3d69xMfwci/Cs++qr19qd4Ib7e9M5Ss7VFHH8fh/vPTNqnmXEbkze192
+	 dtOuMLJ+6JIbyOLDEZwwbJqinwrflZgokjCMXSNZGmNTAWP/m3PKMLpqMUhlws3CI
+	 306Qop0yDfljSrV4Hg==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0M3z4W-1su0jq2fD8-00rZ6e; Fri, 03 May 2024 14:36:40 +0200
+Date: Fri, 3 May 2024 08:36:38 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240503083638.0f8d9afb@SWDEV2.connecttech.local>
+In-Reply-To: <ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+	<20240502114645.4445b3da@SWDEV2.connecttech.local>
+	<ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
+	<20240502120840.02c65f30@SWDEV2.connecttech.local>
+	<ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
+	<20240502134949.5e780635@SWDEV2.connecttech.local>
+	<ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: hvc: hvc_opal: eliminate uses of of_node_put()
-To: Lu Dai <dai.lu@exordes.com>, npiggin@gmail.com,
- christophe.leroy@csgroup.eu, naveen.n.rao@linux.ibm.com
-Cc: mpe@ellerman.id.au, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, shuah@kernel.org
-References: <20240503114330.221764-1-dai.lu@exordes.com>
-Content-Language: en-US, de-AT
-From: Javier Carrasco <javier.carrasco.cruz@gmail.com>
-In-Reply-To: <20240503114330.221764-1-dai.lu@exordes.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:n6/uzA2IhZbVt2TgRaG7NyI/MlOCAXoi9/8kT6hEFaqRH/NC3VZ
+ QInZr2mb9GSRUWHP82V7ASj9KQhTYkF5B1uacj8gipX0langyvY6v5oRNBpFVvIWGy10+Nk
+ +pKxEr5g+CzJgPmure6SaTGHUJLCxuQ1bZQZu4UbY+A7NJ0yanwNoNM1xn024910V5WS2/b
+ pza/H6Vc9BMROZ8St3ZCw==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:Y80D4vzoXK8=;wqrCnw9oWycvF2C1VXvSnRUeY2O
+ 2UQenEnZ5DBZ69bOXzzeM347nuuR+yPYrVZ2rT4V61xVu+tya3C7LO2W9x0WKi9FX5YdnBSS5
+ /NEPilaLmPfbZu7h1CE7xOATDIDGSNg5VYaNCRHVEA0Pz1LvINl+CiSOENFqSOhKiO86rUT3g
+ LBvPDsooqSRaRuI9DdKpnFs3IkutqtJOcV9MJB95t2736SmPX69go+vBtPJh67KnhudNo/nJb
+ SwmiERK5OgAR84PsxFxibxlIwG7JSCCmkl9squG6bBXhpmrDMjLJBLKMu6iDJrRHbhpj0Dwwn
+ jbcGVeYu/9jH1rHARsPnb55FLIJM1UlrDcUTbmKVsxs5nfprZHNjAo/Fw0Jo2rppq6+5k1t8S
+ uvC+If+31ZpKdjfCes7YRLgvM4k8dPBr8ju1LIElosiM4q5LCt+rffOKFbwWpCFJetGHHDlPh
+ 3DKAEP4Atz3iRe47gi7yKIk/9+3UNES4eghY5RrRLhGCmajNImaqclpyTv0BBU2MqDL0r5p0x
+ 0W6erUMd75ARsxkcqQNbhapDLtkNUPAJGeaCyodIGk+3lqngAGVr7dgjycqiVOpDdRXv+ghj2
+ 8hyUGV1/gdyWjFDwlGndrkc0AziOGGyrNNzpOCtV9e+I/grl2x+HUJHI4D5T5Tw1sJskPldMi
+ xUW/oj6NDbP7LWKV4v1b5gfv6mRNo15a+fD8nlsQ5U38lM9jEp7XSgYZnuDbGiLzZFjCCMIYX
+ dw1/byrpKxPQmndO60p5Vtd+VLxenL06j6Xo2Wx+R5BwQOm5KkADzk=
 
-On 5/3/24 13:43, Lu Dai wrote:
-> Make use of the __free() cleanup handler to automatically free nodes
-> when they get out of scope.
-> 
-> Removes the need for a 'goto' as an effect.
-> 
-> Signed-off-by: Lu Dai <dai.lu@exordes.com>
-> ---
->  drivers/tty/hvc/hvc_opal.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-> index 095c33ad10f8..67e90fa993a3 100644
-> --- a/drivers/tty/hvc/hvc_opal.c
-> +++ b/drivers/tty/hvc/hvc_opal.c
-> @@ -327,14 +327,14 @@ static void udbg_init_opal_common(void)
->  
->  void __init hvc_opal_init_early(void)
->  {
-> -	struct device_node *stdout_node = of_node_get(of_stdout);
-> +	struct device_node *stdout_node __free(device_node) = of_node_get(of_stdout);
->  	const __be32 *termno;
->  	const struct hv_ops *ops;
->  	u32 index;
->  
->  	/* If the console wasn't in /chosen, try /ibm,opal */
->  	if (!stdout_node) {
-> -		struct device_node *opal, *np;
+On Thu, 2 May 2024 21:01:54 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Generally, you should always initialize the variable where it is
-declared. What would happen if the variable goes out of scope before it
-gets initialized? Now it is not dangerous, but if new code is added and
-it returns because of some error, we might run into trouble.
+> On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
+> > On Thu, 2 May 2024 20:22:47 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
+> > > > On Thu, 2 May 2024 19:01:01 +0300
+> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
+> > > > > > On Thu,  2 May 2024 17:43:54 +0300
+> > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > >
+> > > > > > > After a rework for CONNTECH was done, the driver may need a =
+bit of
+> > > > > > > love in order to become less verbose (in terms of indentatio=
+n and
+> > > > > > > code duplication) and hence easier to read.
+> > > > > > >
+> > > > > > > This clean up series fixes a couple of (not so critical) iss=
+ues and
+> > > > > > > cleans up the recently added code. No functional change inde=
+nted by
+> > > > > > > the cleaning up part.
+> > > > > >
+> > > > > > Just an FYI I submitted a patch series that fixed several of t=
+hese issues but I
+> > > > > > think it fell through the cracks (I know everyone is very busy=
+!).
+> > > > > >
+> > > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.gi=
+t.pnewman@connecttech.com/
+> > > > > >
+> > > > > > I believe my previous patch series is no longer required. This=
+ one fixes
+> > > > > > everything.
+> > > > >
+> > > > > I haven't noticed that, if it contains duplicated patches, I may=
+ replace mine
+> > > > > with yours if you insist.
+> > > > >
+> > > > > In any case it's better to reply there that you prefer this seri=
+es to be
+> > > > > applied, so Greg will not pick it up.
+> > > > >
+> > > >
+> > > > I do not have a preference. I am fine with using yours if it is ea=
+sier on
+> > > > the maintainers.
+> > >
+> > > Up to you, there is no issue to take your patches in case they are t=
+he same
+> > > (or quite similar) as mine. I can pick them up, just tell me if you =
+want this
+> > > to happen with a list of the patches (as mail Message-Id).
+> >
+> > Just use yours.
+>
+> Okay, thanks!
+>
+> If you are going to test, better to pay attention to the BIT() conversio=
+n patch
+> as Ilpo noted an issue. I believe it's easy to drop (via local git-rebas=
+e run)
+> or move and test separately.
+>
 
-In this particular case you can solve this easily by putting together
-your modification and the assignment right after the comment.
-
-
-> +		struct device_node *opal __free(device_node), *np;
->  
->  		/* Current OPAL takeover doesn't provide the stdout
->  		 * path, so we hard wire it
-> @@ -356,7 +356,6 @@ void __init hvc_opal_init_early(void)
->  				break;
->  			}
->  		}
-> -		of_node_put(opal);
->  	}
->  	if (!stdout_node)
->  		return;
-> @@ -382,13 +381,11 @@ void __init hvc_opal_init_early(void)
->  		hvsilib_establish(&hvc_opal_boot_priv.hvsi);
->  		pr_devel("hvc_opal: Found HVSI console\n");
->  	} else
-> -		goto out;
-> +		return;
->  	hvc_opal_boot_termno = index;
->  	udbg_init_opal_common();
->  	add_preferred_console("hvc", index, NULL);
->  	hvc_instantiate(index, index, ops);
-> -out:
-> -	of_node_put(stdout_node);
->  }
->  
->  #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL_RAW
-
-
-Best regards,
-Javier Carrasco
+I am working on testing now but patches 7 and 12 did not apply with git am=
+.
+Both failed around lines 1095/1096.
+I can apply them manually but I may be using the wrong branch (tty-next).
+Which branch/commit did you create your patches from? I don't see it in th=
+e
+patch submission.
