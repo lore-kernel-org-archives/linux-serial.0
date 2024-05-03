@@ -1,120 +1,110 @@
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sxb1plsmtpa01-16.prod.sxb1.secureserver.net (sxb1plsmtpa01-16.prod.sxb1.secureserver.net [188.121.53.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA4A14D446;
-	Fri,  3 May 2024 09:01:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5A0C15219D
+	for <linux-serial@vger.kernel.org>; Fri,  3 May 2024 11:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.121.53.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714726896; cv=none; b=I9RIeEwxmK5SGAEXfxiuLL+Ze55cjW8JZFh2HOGZL4NoOl9j1Ho+wEg36FQoxItZLxy0GAqMtsNezpx7PwnJlU4sPfVQlPUuvI038ucCMDELdMb7YsukUoXj3lvZGcc623yvsRWdbRjUFZ1obgbhk74HyDhCCp8G6S6pOMOToB4=
+	t=1714736734; cv=none; b=Tix3d0IuarWxGCW7fENZgB4PiDWzcHygaHatgFsvyW4dgJ97zC045JDAaqsnrHHjItomtq3S+/vl3FQ2Ac2Tzc8z9jCB46ygO4YKvFLNiKZzykrResP8qb2oSxBbQgUArJCtnmO3OgZVEVM2QKnt7cmpj6Oa9pcLRjtoDG5w/v8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714726896; c=relaxed/simple;
-	bh=u5aZ5ipEo3sZMpL59dkvKjOGLqG20DnDPQajCwv//Gg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GJK3NOfvGd+2LzP4yIPsfz2WZdf7gaAX3cTZfPG/QfWKPKN41wDBbD5MjNez/YAuJjMizQNNwDL9W0BYwiw5VQnpyouaZtIJrdQeWUa2kRmyNuKst6WRm/1fD9OrZ1GFy7omzqQaFOwLzHpgORYw+T4Hp7ulFANKeZiCf1lKQXA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FOIWqWVl; arc=none smtp.client-ip=209.85.219.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FOIWqWVl"
-Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-de46da8ced2so9974376276.0;
-        Fri, 03 May 2024 02:01:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714726894; x=1715331694; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vkGVDEWe+Eb6TEpNRfPQCdPoBlVyFk9pNDKSkhdvzdM=;
-        b=FOIWqWVlN+7BGAAFHogCPRirMPPK1q6xxO9CXoFzZVdOecXwp5Ejyb5Jn1kXuJ0ibd
-         8F0L8HMYJEPQENaZyyHDZoy2QAIoUMqfUSRlrT/B1FKah17nJRK0EPZq5+72O/rJwRTr
-         wti/O/qmIXBGesysxr+bRZHru3z5lkmT7494AGRyNQw6wnmgpEJWNJM2kp+zCFSbkDoP
-         Aho8W3emiFi6nNk+a5LCPdTJutrHSt42T+09bRZX5v4igkoWYKYhq44wp8QgcwC2tRs6
-         +vTLbhfZTska8tReQycHdI+Q39e7CZ/MXr3xCBp1XJIYWqgne5kwWK7OIKNXdAZ6zXif
-         WGRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714726894; x=1715331694;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vkGVDEWe+Eb6TEpNRfPQCdPoBlVyFk9pNDKSkhdvzdM=;
-        b=bW8W8ShJEDxgKwza+Vkk+zed1vPnS336+Tb3RDb4bDHhCsI4NVJsJL+AWxSYCBLGO7
-         FqhCbxpDjvAhdp3Lc4GjC94HbtiYLZr7VcadQrCC8C4OFNNoOUKezmbl2PImRRXK4LEt
-         4eI53sEAk/9Utu3jSF/FiExt2cT539DYhTQ6O/G7mWzzmCoz9k9bXYZBKDHx0Uj9i1G/
-         ELrol6sf3NgV1lhudJ8/R7/ammH52Ed94/OqykDghPf9fRrKWSo4MLco4wh925BP8AXw
-         gk7JWUHELiGhi5l9ONsAwNJ3+icXFqsji4INjZz74Na/ZMlS+ZhsI594ytYKF7OFgJEz
-         bsDw==
-X-Forwarded-Encrypted: i=1; AJvYcCXlE/nvAnw2jAuvMng+OC69bKFWR9vzHSecfOa6b/5fuApAk5Z22ZdMBGScf/WSI21I++WptG7jaBwCterNskqhAzEZiMDJeuoXd8pGBWONo5KWmjXwoYkFvzR2xrTW6t6C3zfeo2Sr7YtyEcAXM2MAF/rAhuXSXfKjFxG1nnYCfzgogE2TYQ==
-X-Gm-Message-State: AOJu0Yybzr0RMWF9WuFNd7+Kz7cH1STlWHQrFG5WCPe9qt/UEtYK+let
-	xpOd8idZS9WtaRvo0V2q64LrB5viNRXgv5QJrcZjeYAWaYnFcvEl2DDZd2tiy9a/KsqG5uHOvJi
-	z4sU+qEegBcCE8a5SgDE+ZJ/LCDs=
-X-Google-Smtp-Source: AGHT+IFn82EPy+JQW20yMvW5rRI+OPX1TAUiG082KOHrrEp3VW6buI2A7Zzw7E0HNx2IVj6osbOIG0rJKuAhFonyozI=
-X-Received: by 2002:a05:6902:2510:b0:dc8:5e26:f501 with SMTP id
- dt16-20020a056902251000b00dc85e26f501mr2505239ybb.61.1714726894369; Fri, 03
- May 2024 02:01:34 -0700 (PDT)
+	s=arc-20240116; t=1714736734; c=relaxed/simple;
+	bh=rJO+5Tco0kQuR3XfHDUrQjWSLzQoah3amsobRRbC3wk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Wt3i0JhLIiEdTA+FEucBaUWzhIfR4WXyy6F91S40Sl4isMh4LjFJ0J1fGI7X+F3y8VYi1swBQL5q9FT2AVMelL1i5OjBfVebLSPQKl7w6fbESqZUKOt/dc/hVTMmJ9P17G5eqagbXtJPa1iH/wTr4U8hsmN+ibAXlH+4iuRFv5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com; spf=pass smtp.mailfrom=exordes.com; arc=none smtp.client-ip=188.121.53.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exordes.com
+Received: from exordes.com ([87.92.66.153])
+	by :SMTPAUTH: with ESMTPSA
+	id 2rJYsBkACnpx02rJbsRacx; Fri, 03 May 2024 04:43:00 -0700
+X-CMAE-Analysis: v=2.4 cv=P7HxhTAu c=1 sm=1 tr=0 ts=6634cdc5
+ a=13ZijDARommhillvnyM9pA==:117 a=13ZijDARommhillvnyM9pA==:17 a=eCYXQZmkAAAA:8
+ a=yasIzMgEaC0_WTIPdd8A:9 a=77AlN4CNbnqoG63BkLSu:22
+X-SECURESERVER-ACCT: dai.lu@exordes.com
+From: Lu Dai <dai.lu@exordes.com>
+To: npiggin@gmail.com,
+	christophe.leroy@csgroup.eu,
+	naveen.n.rao@linux.ibm.com
+Cc: Lu Dai <dai.lu@exordes.com>,
+	mpe@ellerman.id.au,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	javier.carrasco.cruz@gmail.com,
+	shuah@kernel.org
+Subject: [PATCH] tty: hvc: hvc_opal: eliminate uses of of_node_put()
+Date: Fri,  3 May 2024 14:43:30 +0300
+Message-Id: <20240503114330.221764-1-dai.lu@exordes.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240501084110.4165-2-shresthprasad7@gmail.com>
- <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com> <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
- <2024050357-shading-fedora-2d4f@gregkh>
-In-Reply-To: <2024050357-shading-fedora-2d4f@gregkh>
-From: Shresth Prasad <shresthprasad7@gmail.com>
-Date: Fri, 3 May 2024 14:31:22 +0530
-Message-ID: <CAE8VWi+-HVuGo-ojGPwKubpLweBmJ4-L097nh03QkezcsciorA@mail.gmail.com>
-Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
- using __free
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	davem@davemloft.net, jirislaby@kernel.org, sparclinux@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	javier.carrasco.cruz@gmail.com, skhan@linuxfoundation.org, 
-	Julia Lawall <julia.lawall@inria.fr>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfGFLoAN7m+wK5DQwW5rMwK7zWeDspUOif9J3EvUOXg5V/16O/NGMl1iQkVENAVe5aTQiL7KS/A/fbUS994+hSiJW+OmWqAV/m9+WeYpNkcYrLJHA5qLC
+ sHd66kpLKgdCO8eVVQIYsSFmvgWklhZ+TChh+61taxAUleY5YSRIaoKkPW7nqKKbytBsXQJXnVheHEPmBKyhNN/RglwE9qFL7DASNxF5fFOmoPEDpnXylQOs
+ 0WinVufDb9e2mx96aowrVT+IBwu4oaRozz4FGIW2BrR2yzxYiVs/DUpprBSJ9fBOcfidcqlVnEvAmCSyOChbKdkIRxoEsDrt7Fhr+wzHU4BKgPQxAO/YfA3I
+ pmEKEdz++gJHDroru0UckXBWoGQ+HQRnjRSNsrNwsAJhR/zp+vG4+TEil+5q5EyepdfBUNurXcwQ9xrOAsHEnJpXiOY1xsmfSYZdd6/T+evrWZ4+dZ7j2RqB
+ DTyp47hI6L2TwN696onBajOhZpzQZ9qJ60aeAUmTqGyZHqfXWK0lsyv+/I0LRJ2KLIVmhCDNWS2WXrdBkMRx0dEWbXeyaxmywQRcKRFidjPwdRMNHl9r7SQ8
+ +V4=
 
-On Fri, May 3, 2024 at 11:04=E2=80=AFAM Greg KH <gregkh@linuxfoundation.org=
-> wrote:
->
-> On Thu, May 02, 2024 at 10:21:16PM +0530, Shresth Prasad wrote:
-> > On Thu, May 2, 2024 at 9:35=E2=80=AFPM Ilpo J=C3=A4rvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
-> > >
-> > > On Wed, 1 May 2024, Shresth Prasad wrote:
-> > >
-> > > > Add `__free` function attribute to `ap` and `match` pointer
-> > > > initialisations which ensure that the pointers are freed as soon as=
- they
-> > > > go out of scope, thus removing the need to manually free them using
-> > > > `of_node_put`.
-> > > >
-> > > > This also removes the need for the `goto` statement and the `rc`
-> > > > variable.
-> > > >
-> > > > Tested using a qemu x86_64 virtual machine.
-> > >
-> > > Eh, how can you test this with an x86_64 VM ???
-> > >
-> > > config SERIAL_SUNSU
-> > >         tristate "Sun SU serial support"
-> > >         depends on SPARC && PCI
-> > >
-> >
-> > By that, I mean that I compiled the kernel and ran the produced bzImage
-> > on a x86_64 qemu machine.
->
-> But you didn't include the driver you were testing :(
->
-> > I unfortunately don't have the hardware to test it on, but I don't
-> > think the change is complex enough to require testing on real hardware
-> > (unless I'm assuming incorrectly).
->
-> That's why I asked if you had tested this or not...
->
+Make use of the __free() cleanup handler to automatically free nodes
+when they get out of scope.
 
-Really sorry about that, I thought compiling and booting would qualify
-as testing. What should I be doing then?
+Removes the need for a 'goto' as an effect.
 
-Regards,
-Shresth
+Signed-off-by: Lu Dai <dai.lu@exordes.com>
+---
+ drivers/tty/hvc/hvc_opal.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+index 095c33ad10f8..67e90fa993a3 100644
+--- a/drivers/tty/hvc/hvc_opal.c
++++ b/drivers/tty/hvc/hvc_opal.c
+@@ -327,14 +327,14 @@ static void udbg_init_opal_common(void)
+ 
+ void __init hvc_opal_init_early(void)
+ {
+-	struct device_node *stdout_node = of_node_get(of_stdout);
++	struct device_node *stdout_node __free(device_node) = of_node_get(of_stdout);
+ 	const __be32 *termno;
+ 	const struct hv_ops *ops;
+ 	u32 index;
+ 
+ 	/* If the console wasn't in /chosen, try /ibm,opal */
+ 	if (!stdout_node) {
+-		struct device_node *opal, *np;
++		struct device_node *opal __free(device_node), *np;
+ 
+ 		/* Current OPAL takeover doesn't provide the stdout
+ 		 * path, so we hard wire it
+@@ -356,7 +356,6 @@ void __init hvc_opal_init_early(void)
+ 				break;
+ 			}
+ 		}
+-		of_node_put(opal);
+ 	}
+ 	if (!stdout_node)
+ 		return;
+@@ -382,13 +381,11 @@ void __init hvc_opal_init_early(void)
+ 		hvsilib_establish(&hvc_opal_boot_priv.hvsi);
+ 		pr_devel("hvc_opal: Found HVSI console\n");
+ 	} else
+-		goto out;
++		return;
+ 	hvc_opal_boot_termno = index;
+ 	udbg_init_opal_common();
+ 	add_preferred_console("hvc", index, NULL);
+ 	hvc_instantiate(index, index, ops);
+-out:
+-	of_node_put(stdout_node);
+ }
+ 
+ #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL_RAW
+-- 
+2.39.2
+
