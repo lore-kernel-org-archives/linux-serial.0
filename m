@@ -1,52 +1,55 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8E1618C3D;
-	Fri,  3 May 2024 14:26:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C934206A;
+	Fri,  3 May 2024 14:47:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714746405; cv=none; b=l2ug0QkFqBUUgdsKpPBehs4+0fCDO5op58fEoLishst8KLTuyBjK+25RfsSqJrvzbMCb21F+WmmprHCwdOVg0aJkIP+sdMXqqQ2BtYybjnP+QJHYFXIuL6p7RtKpN1LcLNpdsIwLlXLNx6IKomr+UgeJYS1Jcu+PaLxogqDNIgc=
+	t=1714747662; cv=none; b=FZgQYz0FmlTiaQXaCGXLQtVO6FRyo5H//HTcpIYR9idN226AoHxm0UJWYVCmihxot0NxVGchguJtbQ0FWfjXcK8TQf7Xv4AOqSaeDJljjRsGmnPQX8xlnPrWyuIOeHab1EPbG/OgDIEksSkxGHFIPpcqSrTq6WSGGv+EKHGISLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714746405; c=relaxed/simple;
-	bh=VRjQzG8TQv5gV0C3Rxv5HRYKNeCIuch5dLMNR1+wUgY=;
+	s=arc-20240116; t=1714747662; c=relaxed/simple;
+	bh=TZJCI1romHYB3K7M0RnD7je7ZU6T6c8LjcioM4SVmjg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XSPDj15hRSyhL5WczCh3jbhj+kK5u149yGH2Rep9VirxG0GvE/D9Cn4LpcDZsyFMarzUUeaQeVSX+D+Qwwa9PBhGZeIgO9Peaq9ihbp+jG2HbmrWhcgrC2jD4xVjYcmKNXD6xJepIQEq+PXbOvCBkwCKUKI+fMWzIFOOzMF2dHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=CEICGNm3; arc=none smtp.client-ip=74.208.4.196
+	 MIME-Version:Content-Type; b=RqtfUkR07oShb9RcUWQy+ueztgvIzs5tXRQUXf0jskHRmRrt8IOkcV/FkssOPDUXEDBCRXV7LukvIVaSvZmLv5fi6mKkcJVAME/m2jIQlqasumON4noaJ4Tw2HLZlk/yJqceincG50E632T9Tg9jlgOndrLCZfbRQWnfmmcFA78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=yn2Kqd6b; arc=none smtp.client-ip=74.208.4.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="CEICGNm3"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="yn2Kqd6b"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714746395; x=1715351195; i=parker@finest.io;
-	bh=qUfNnCg79Uktap5ZMBiA0j0ZtbeQ48ApVbCwVGMRNWU=;
+	s=s1-ionos; t=1714747652; x=1715352452; i=parker@finest.io;
+	bh=T+69W9y9gDlQCEnhSbezE3ef/Q0WYMrfqF0FGdvI5SA=;
 	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=CEICGNm3L6S7psFtqiPdUDY0X5qoDjmKTqFlHUrakkKb196KClhQKiUwxM3nJPnO
-	 tNcGMxp8zqscuhnhF5KpDA5Qv+SS+IRwPXuFqTQ7vBNY6wJ0YBzZS0qCr8uJ/iE8k
-	 WMkbbf3wXCxTtnOZhW4nbndg4DF80ShJY4GVmhAAUH664zdFZQcnqpVZqSnGGiY57
-	 sQ+dhRH3eexL9XnMaIFdbWCPLYAlbV37b4pesX3FE7YE/oniFp5zF+pUJjd5cCEFI
-	 kmObEeepqhiFiEioMtM82dD+ZxGmFvwytBOH0IL/RXoeIGDhf6cJ875DiTZG0hKDs
-	 5Fpu6nkPi8fCnh3MLg==
+	b=yn2Kqd6b3pRoSSrbwBF8FrgYEwKgNcWBS+J91CM2AQpwOrN0x9q1Z71m0wCAgX8D
+	 mIh80H/I4xrGZNm3EgtAi/2t0nouoiD3eChAkU+ZC7u8Cugm7VlpL2cTLEk0/l1Yc
+	 FRdBRLCwl+/hy/2B6jELkjaEqfCl5EW6x6+q19B+RdWi7YagT1X8Hvh5/j0z8VtgX
+	 9KQSUMf44dr9NeaWfo6LhroJBoRRtNHXVTw/w6PFv91Q3b/eiKjvt6aTT01XsLFbb
+	 miIWGpsju+b9RBLbkqv8QbJ90yPylnwGni5uAjUPSvC7Dy+7pT8bcXtfJ+SmkRw9t
+	 fWoYtiE1ItKwkHx02Q==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0MCKl5-1ruLIR3F45-0097wH; Fri, 03 May 2024 16:26:34 +0200
-Date: Fri, 3 May 2024 10:26:32 -0400
+ mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0M1DzC-1svgi348z2-00xAg6; Fri, 03 May 2024 16:47:32 +0200
+Date: Fri, 3 May 2024 10:47:30 -0400
 From: Parker Newman <parker@finest.io>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Parker
- Newman <pnewman@connecttech.com>, LKML <linux-kernel@vger.kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
  <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
-Message-ID: <20240503102632.112a34bd@SWDEV2.connecttech.local>
-In-Reply-To: <ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240503104730.3e0f55d0@SWDEV2.connecttech.local>
+In-Reply-To: <20240503083638.0f8d9afb@SWDEV2.connecttech.local>
 References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-	<20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
-	<702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
-	<ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+	<20240502114645.4445b3da@SWDEV2.connecttech.local>
+	<ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
+	<20240502120840.02c65f30@SWDEV2.connecttech.local>
+	<ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
+	<20240502134949.5e780635@SWDEV2.connecttech.local>
+	<ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
+	<20240503083638.0f8d9afb@SWDEV2.connecttech.local>
 Organization: Connect Tech Inc.
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -55,74 +58,109 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BZqodeJrrjLNWsR+BGJEWQCKDTJkZYkEqljtAekrB2HHvKhc3Lj
- +l4I2D+Sc/oPvLN7mD9XzJFLY4c3hYClJLkvhRakkg9WfD+LtMomRsFfUvbYyZBAlxIfE0b
- Prxx0Kgr8nigkDqIvhFsVI4iGRBxquobU5LleKgFQBdgdBbud9qDv2tCIfpYfr3VIrjWpxl
- luj7x67xNlbzGAvbkRgtA==
+X-Provags-ID: V03:K1:H/QltAz0nGlYfQDl9r0XHlXOofS8l7UvFlDkn49Jwh3MvBzTn26
+ OI6KbRdnUUp69MOTajTvFjM8WlY5pJf3Mz1siEKM/lJVi1rzsNd7tGm/h9MSdl9TteSLcbg
+ /9/zNCWabhcDZBmg2F5aTEH5qeoZSZi+yne7V5jlrD/8zYFPFfI3aBa61fHLNWexlkSOUdm
+ 3LP1/V1XKDXS7HluBRWsg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:hw/IaLlh8sI=;BvyzJB1ag/J7juyaFuRSiqM2srX
- 1Fvy9ykiwlh0bHBqoxdRlkaVJsuVVBI2VIcZ+ist/JeCBXH2YkmAC2pM/5x12HGboxi5r46dp
- XZcSexsbCbY+5TPmE5UPzJSn41DEOYddYwm9UPNK9OWg2Dprpd0GGCjjJAg/wE7RsR16WKWt8
- NkhhDvHz8GYgn5RqBpSHiQ0b9zwRSt1RA3oiDvBEWmIKXbrszKddaGY1kHoFCWpFOK/Rzmjak
- dMGzEjbC7LISFY/xTyC5m+zIxrwp6NYMe0fzw/Y6Or4aceVndQZo1h2MOKhvy+Je+IF/wvfd4
- eCQIEeBBaU4rJCOPGW9cislu9syUDeEDzATxnoiNarqGoY6YiLcRtn+tD3PMy9umrhhsIdcQx
- HgC1SyZZhyK1t2xYx+bomuFSAK3q3YfeuNVwRmvYi4xvwT7bqNrgmodS8aTthKoEBSr5ucTzw
- wKV9AJOcdlV59BaSR75B85J6eePeXqrmApxDQrAJpp+FC5txB4v88NFgUomFiEGHu4RJ1rNEI
- LNG6hx4NiEi9GKbjWH9yas23UE1aDHw93wyFw/BYgQ4Rgt9oQs/uxCCuptYiH4wCh8NQ4jxC3
- 2xYADNW6faz3uLZEtq3mk1knFElVd7GknnXegYmDqQMIAMEdh+JheqOUDe9jagsRhS3qTSeQR
- pEDE8hQtC/sp5rJOSgsys2l61hWtP92150EuhBRtpb1hA4V4rokOj9qOzK5xKP/mWbuEyM1Ol
- b2O1tfvhV86nZ05oq9rzmIDJ5+VN8UaeIi/sMuAD2zMqP08V2s/9do=
+UI-OutboundReport: notjunk:1;M01:P0:n8xASmWg36Y=;WXw9ghYm9n6Z43z2zipX7m+qDlx
+ ntsqrm2aVP27mlEp2NXGVmTDQJhvw6DWl+aEZdrWMoFOcGcR/Xv9JNygmLDS3pvy1Ge+EADyF
+ wPLn0nDsIoVjvQzx+jM20zl066uWiCO1m2p2kOmgTwcIFZ5hV3osadsDWA8YwLk06huvhWLFJ
+ kqvOsTcJIsQdH/9D7LS2JGzytlaxnR8TkYckbDx4GvN/zqaQX3fHyiwEXPBF9M6P5Efg+SpsO
+ jxJyzibDPM0WJE+vUfciXkf2ZuZzo2tU8e8NF3rMsZ4bqbgknBOaeMc+1efRZy0OEXA9B71ft
+ ta39w+AI3Igcr3usJwPDw34Ga7nGOvodO9ahzF9V/Ynw6SjVVd/bz7Bzuh3LoU3nV4bwVOKuy
+ f6ojCTwcGWQlIlCBnnvTKNw9JVTJGl0bbeGqLU3OaMyzBdUMXEJ6rC81UlgeILmCYqgsNuM6m
+ gP7TcCcIIjuhQtsGCLDMHK/FLeSlYQsi55qadkYKAUlhODXBw6Z16tioQWE8tVW9bJElzQ0vy
+ dGx2l5NViIzydug2oICZSDTz017/aoGYXiGM0iqpEcrHEdbv9TW6TBPpEv60KYPOjuZvItcGS
+ IkdT+mrZ64leVFtQN6fG/BEOgvoEwh834zhIVSry/TQyrU5mG5f4B2P4jPgMdy8EYeHkVsmAt
+ 7pKY4XQebvfhN9OIRWUWXStondShibvfwVEijZG5I2NaEWW2dGO1fQtl64/mjdP+rFqyv6zDc
+ nM8mXNNEAvzHcpqiSNSXvGcpAMAmFU5xk7FmrShld3037zwvpx76Dg=
 
-On Thu, 2 May 2024 20:20:01 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, 3 May 2024 08:36:38 -0400
+Parker Newman <parker@finest.io> wrote:
 
-> On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo J=C3=A4rvinen wrote:
-> > On Thu, 2 May 2024, Andy Shevchenko wrote: =20
->=20
-> ...
->=20
-> > >  	// Send address to read from
-> > > -	for (i =3D 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>=3D 1)
-> > > -		exar_ee_write_bit(priv, (ee_addr & i));
-> > > +	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
-> > > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
-> > > =20
-> > >  	// Read data 1 bit at a time
-> > >  	for (i =3D 0; i <=3D UART_EXAR_REGB_EE_DATA_SIZE; i++) {
-> > > -		data <<=3D 1;
-> > > -		data |=3D exar_ee_read_bit(priv);
-> > > +		if (exar_ee_read_bit(priv))
-> > > +			data |=3D BIT(i); =20
-> >=20
-> > Does this end up reversing the order of bits? In the original, data was=
- left
-> > shifted which moved the existing bits and added the lsb but the replace=
-ment
-> > adds highest bit on each iteration? =20
->=20
-> Oh, seems a good catch!
->=20
-> I was also wondering, but missed this somehow. Seems the EEPROM is in BE =
-mode,
-> so two loops has to be aligned.
->=20
+> On Thu, 2 May 2024 21:01:54 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>
+> > On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
+> > > On Thu, 2 May 2024 20:22:47 +0300
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
+> > > > > On Thu, 2 May 2024 19:01:01 +0300
+> > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
+> > > > > > > On Thu,  2 May 2024 17:43:54 +0300
+> > > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > > >
+> > > > > > > > After a rework for CONNTECH was done, the driver may need =
+a bit of
+> > > > > > > > love in order to become less verbose (in terms of indentat=
+ion and
+> > > > > > > > code duplication) and hence easier to read.
+> > > > > > > >
+> > > > > > > > This clean up series fixes a couple of (not so critical) i=
+ssues and
+> > > > > > > > cleans up the recently added code. No functional change in=
+dented by
+> > > > > > > > the cleaning up part.
+> > > > > > >
+> > > > > > > Just an FYI I submitted a patch series that fixed several of=
+ these issues but I
+> > > > > > > think it fell through the cracks (I know everyone is very bu=
+sy!).
+> > > > > > >
+> > > > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.=
+git.pnewman@connecttech.com/
+> > > > > > >
+> > > > > > > I believe my previous patch series is no longer required. Th=
+is one fixes
+> > > > > > > everything.
+> > > > > >
+> > > > > > I haven't noticed that, if it contains duplicated patches, I m=
+ay replace mine
+> > > > > > with yours if you insist.
+> > > > > >
+> > > > > > In any case it's better to reply there that you prefer this se=
+ries to be
+> > > > > > applied, so Greg will not pick it up.
+> > > > > >
+> > > > >
+> > > > > I do not have a preference. I am fine with using yours if it is =
+easier on
+> > > > > the maintainers.
+> > > >
+> > > > Up to you, there is no issue to take your patches in case they are=
+ the same
+> > > > (or quite similar) as mine. I can pick them up, just tell me if yo=
+u want this
+> > > > to happen with a list of the patches (as mail Message-Id).
+> > >
+> > > Just use yours.
+> >
+> > Okay, thanks!
+> >
+> > If you are going to test, better to pay attention to the BIT() convers=
+ion patch
+> > as Ilpo noted an issue. I believe it's easy to drop (via local git-reb=
+ase run)
+> > or move and test separately.
+> >
+>
+> I am working on testing now but patches 7 and 12 did not apply with git =
+am.
+> Both failed around lines 1095/1096.
+> I can apply them manually but I may be using the wrong branch (tty-next)=
+.
+> Which branch/commit did you create your patches from? I don't see it in =
+the
+> patch submission.
 
-I just tested this and Ilpo is correct, the read loop portion is backwards =
-as=20
-expected. This is the corrected loop:
+I figured it out. git am was applying the typo fix patch out of order.
+Sorry, I didn't notice that. Patches should be fine.
 
-    // Read data 1 bit at a time
-    for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
-        if (exar_ee_read_bit(priv))
-            data |=3D BIT(i);
-    }
+I can do a final test once you decide what to do with the BIT() conversion=
+ patch.
 
-I know this looks wrong because its looping from 16->0 rather than the=20
-more intuitive 15->0 for a 16bit value. This is actually correct however=20
-because according to the AT93C46D datasheet there is always dummy 0 bit
-before the actual 16 bits of data.
-
-I hope that helps,
--Parker
+Parker
