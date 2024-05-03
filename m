@@ -1,63 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC7F63FE37;
-	Fri,  3 May 2024 16:36:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DF41CFA8;
+	Fri,  3 May 2024 17:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714754203; cv=none; b=ooO8cHLB+vYNoJOPglIl3mYCyqA4mcGx8qYRk4w0/q6Uu3ViGatxGcz7eh5LqRUgpBMBwrDETkNJ8ZeSa20ZIuQQiOGKr48urdrtnx5qRzHACDiWTC5czbGpBFOifsLBTEtvYRwSkwgB/Xse1OC1khnLrtScm2yQ91Z+a7tbu7I=
+	t=1714755830; cv=none; b=V47IMioM4xBzFKwWVqGBCzx77yzREa7t0qcyRE91OL3VdF3p6tHuLBu78bLLshjiAcir/88eedvJ+cd67z0zExUQov8SyPYqssCfmMQEiE3AIJiglKygCiZA4+zO9xTv+x1KZrXY/F0+cKlrsNFmVojs938ve04N3C9nAnugd2E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714754203; c=relaxed/simple;
-	bh=TbsE5XWoVWXOvVkel0jaEgt8y2oJdFmW18kZ/X9G25k=;
+	s=arc-20240116; t=1714755830; c=relaxed/simple;
+	bh=IHaogS4BpfHwwVZgIjmFoYz8T5L3ZgNwBy07RNbf7/o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OAmC+PLx4GdUGSBCWVjlAlYLyOKkkYtnrdUfcL1mwC2FW5niEG1rcN4m/2qlRwSVARbQOk3brnFa9nS87VQtvsKmwNI7TIxXHHsVcJVRxytC8NoEisbwGVFPVXb3fwFf6JgKPlh6mbwBfigJXJR3pqSRDzD6/V0GZZsU1LZUnzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hDYYR+Mt; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=VMQScZo5NncxfVEBa4mpo/qwKHq3gzJkj6b2utOAMDnLseWme9ssj4jRH51kfWWQejY3bdejIJNcsMQIq/1cIJwqeOoQa5wKESEzYz4eYGWIlDWfFl5yro6bYmPDC0ustpf9bYhpdWiBmJuk6WkmDMXj1W/Z+8vYVEzlilyQqXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QwMRHz9u; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hDYYR+Mt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QwMRHz9u"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714754202; x=1746290202;
+  t=1714755829; x=1746291829;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=TbsE5XWoVWXOvVkel0jaEgt8y2oJdFmW18kZ/X9G25k=;
-  b=hDYYR+MtSgtYVjSUrnUOK5T8RN86Hz5H9+Ko0+nit7V/GIIUL/JdrD5N
-   oO52kLVjZXnGRcTO2Mgmrq8CIQ2JENOk5dbEGzD7OjeAtXfZl9FPiK6qs
-   WWg1CP1FZnfd5+6mhSMY3Co+vTkcvqnlYf+X6EAaO9an9EQr/ZrSoRk2Z
-   km26oNK+9I0ewDERJkcYxcUAOhB7udNv8t2q/WItiWIfRwd1qPypSEcD6
-   ZlalwyN1/w6KKrp6ILDBr9KE7JqtYYxtJOSTHi7Br4fdG+PYO/RBKE1XY
-   0fA7CshfGvFJbN+95KWLb27YJq9o4SHWg4B47En4tZd/UszTuv8T458Zf
-   g==;
-X-CSE-ConnectionGUID: VXYVNuHrSGqcyAxG2uys3g==
-X-CSE-MsgGUID: q82k83d5Qzu9bTXUSHNAPw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="14377493"
+  bh=IHaogS4BpfHwwVZgIjmFoYz8T5L3ZgNwBy07RNbf7/o=;
+  b=QwMRHz9uEMZ/sJJyUny/bhnlyl34vs+WTBBYflwGcguWHe6m9kel6rzX
+   JdbHx42MrSZmkG91oI0YbXIQ/e3ImAA7mEE1qQoM04x1t6bM+9UhQYIhR
+   BnCV1d5NJwSdJsrBcE9TLCa2dwT7VCkESCOdngeFOar1TzjV2/0M7rCcu
+   YSFjd/qPcoEG8jP2Jhnxf15TkQCwMTOZtYpAxduMLk8d80y5Dk2Apd6RF
+   sYiJMBz4y83aCOaJ3V+vGP2m+LdD8uLz6PsycfFKRleckrtRA5vjlJX2v
+   Ofr/KRLbF0Sg/PQhiU4X11QnXI+RauIGxPmrKNdwb2qmu1eZXBXBVW3/D
+   A==;
+X-CSE-ConnectionGUID: T8DhYVMrSmuRkdyTWi9AcQ==
+X-CSE-MsgGUID: xVM68qkkT2GmR+CgwrNKZg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="10727252"
 X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="14377493"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 09:36:41 -0700
-X-CSE-ConnectionGUID: 9uS3u0VIT9WCzQzkIKCixQ==
-X-CSE-MsgGUID: nCic0Oq1SeOKQmul+nqp3w==
+   d="scan'208";a="10727252"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:03:48 -0700
+X-CSE-ConnectionGUID: cdnab/rgS9ierNcdHnZvwA==
+X-CSE-MsgGUID: tfr1HdQWT5qFCac/A5T6nA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="27584532"
+   d="scan'208";a="32311759"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 09:36:39 -0700
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:03:46 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s2vtl-00000003hya-0V3q;
-	Fri, 03 May 2024 19:36:37 +0300
-Date: Fri, 3 May 2024 19:36:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1s2wJz-00000003iQ0-3au3;
+	Fri, 03 May 2024 20:03:43 +0300
+Date: Fri, 3 May 2024 20:03:43 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Weifeng Liu <weifeng.liu.z@gmail.com>
 Cc: platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
 	Maximilian Luz <luzmaximilian@gmail.com>,
 	Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 2/2] platform/surface: aggregator: Log critical errors
- during SAM probing
-Message-ID: <ZjUSlNKVvtROHNnl@smile.fi.intel.com>
+Subject: Re: [PATCH v2 1/2] platform/surface: aggregator: Defer probing when
+ serdev is not ready
+Message-ID: <ZjUY7xPXszBulKap@smile.fi.intel.com>
 References: <20240503030900.1334763-1-weifeng.liu.z@gmail.com>
- <20240503030900.1334763-3-weifeng.liu.z@gmail.com>
+ <20240503030900.1334763-2-weifeng.liu.z@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,51 +66,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240503030900.1334763-3-weifeng.liu.z@gmail.com>
+In-Reply-To: <20240503030900.1334763-2-weifeng.liu.z@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, May 03, 2024 at 11:08:47AM +0800, Weifeng Liu wrote:
-> Emits messages upon errors during probing of SAM.  Hopefully this could
-> provide useful context to user for the purpose of diagnosis when
-> something miserable happen.
+On Fri, May 03, 2024 at 11:08:46AM +0800, Weifeng Liu wrote:
+> This is an attempt to alleviate race conditions in the SAM driver where
+> essential resources like serial device and GPIO pins are not ready at
+> the time ssam_serial_hub_probe() is called.  Instead of giving up
+> probing, a better way would be to defer the probing by returning
+> -EPROBE_DEFER, allowing the kernel try again later.
+> 
+> However, there is no way of identifying all such cases from other real
+> errors in a few days.  So let's take a gradual approach identify and
+> address these cases as they arise.  This commit marks the initial step
+> in this process.
 
 ...
 
->  	acpi_status astatus;
->  	int status;
->  
-> -	if (gpiod_count(&serdev->dev, NULL) < 0)
-> -		return -ENODEV;
-> +	status = gpiod_count(&serdev->dev, NULL);
-> +	if (status < 0)
-> +		return dev_err_probe(&serdev->dev, status, "no GPIO found\n");
+> +	/*
+> +	 * The following step can fail when it's called too early before the
+> +	 * underlying UART device is ready (in this case -ENXIO is returned).
+> +	 * Instead of simply giving up and losing everything, we can defer
+> +	 * the probing by returning -EPROBE_DEFER so that the kernel would be
+> +	 * able to retry later.
+> +	 */
 
-Note, with
+You can add the following to the
+serial_core.c (at the top after the headers)
 
-	struct device *dev = &serdev->dev;
+#undef ENXIO
+#define ENXIO __LINE__
 
-this and other lines become shorter and you may join some of them...
+And I'm pretty much sure it will point out you to the uart_port_activate().
+If it's the case you may elaborate this in the comment.
+Otherwise you may add the same hack to other files and find the culprit.
 
-...
-
-> +		status = dev_err_probe(&serdev->dev, -ENXIO,
-> +				       "failed to setup serdev\n");
-
-...like here:
-
-		status = dev_err_probe(dev, -ENXIO, "failed to setup serdev\n");
-
-...
-
-> +		dev_err_probe(&serdev->dev, status,
-> +			      "failed to get firmware version\n");
-
-...or here.
-
-...
-
-With the above being addressed,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Also it might be that we add some error code substitution inside serdev core.
+At least there more data is available to make the (better) decision.
 
 -- 
 With Best Regards,
