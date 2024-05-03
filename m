@@ -1,84 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA8F1C69D;
-	Fri,  3 May 2024 05:34:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3CFA2B2DA;
+	Fri,  3 May 2024 08:09:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714714468; cv=none; b=GQkuGrlqU7wJO4oM1Ckei+kUBBOqxLVFqL9+O0K453UK5v9n/OYwm9tTTmcqM3C0mTwBFl8Ctq9LLcmgGV0MvJ66cKQ8UvfVQsFX5oO6ROsx4UQ418cNbcmgVHP9SmEgD+0N/cc7l6wweiQ1ylBxaMmrAyCwWCqArYwhHQXa/Dg=
+	t=1714723757; cv=none; b=W2mrbYcRamEA1pCI37aSLBV1MVB7cbcuXlXILTOfucRLaPJRmIkAELSL+nay6c1EKfGwpFiuR37SizE2NOvciEqPTzdMx22XS/29TKJW9M7IIYLBJsIbR6ren6Cr6tMrkQx8mHGxVmOeYua+IaViygO1Jvr67MMCItOGkuE3W8Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714714468; c=relaxed/simple;
-	bh=GcoFEG78oRmOEqdye4jXox30wukosSt6f14MGQzy2xs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dcTIv/BOh61mgfU6TDbIzaMgPk8EYNczPmyYfl32BMD0gHlkCvGUXj/JiApGq6bc+Ju/64F+Kh3eZY7ccpoXHDX/DxG4VUdSSocsGEpfNAeXp39cWn7McNVvQJw7k8zyNzS11SWTT0xSdHSBHsAcKbgrFPdyabBzM/ykk6uzjGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=GI69xPgE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1714723757; c=relaxed/simple;
+	bh=ENBYZblky69TdSDJSNn9y3+7hJ7kpBrY9SAKhxMcPLk=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
+	 References:In-Reply-To; b=C0kVzNkdPNDivaXy0inSW7Zc2G08k62aeFUlx99RBiCcwra/sfLlLBPBUtPtZBhoT1PglSLikZfkkvRtxrfGQt/L1RJzLsX+/JYytDlDPdVoBpLTCXh1N8iGLZQI5ODnDBXfphwyb8FnOhrxlMqm0RnR/CQ95p294yvDqbRqMIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=Blluietw; arc=none smtp.client-ip=217.70.183.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="GI69xPgE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5784C116B1;
-	Fri,  3 May 2024 05:34:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714714468;
-	bh=GcoFEG78oRmOEqdye4jXox30wukosSt6f14MGQzy2xs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GI69xPgEwXqz7gWnO5NqqPE6fMGxHiJrzquB8ZwNQyl60XRExkoofvEye9bnip7Pd
-	 HOJRVto5dqfBtSugWlGA0/4iZjt9lFn2W3TlkSNvHhd3NiVw9K1iJIuouOqooRKR4m
-	 hyBXzZhV2pbfiiTDYmIuXi8SbX1bGamqtp8KmeLA=
-Date: Fri, 3 May 2024 07:34:25 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Shresth Prasad <shresthprasad7@gmail.com>
-Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	davem@davemloft.net, jirislaby@kernel.org,
-	sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com,
-	skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
-Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
- using __free
-Message-ID: <2024050357-shading-fedora-2d4f@gregkh>
-References: <20240501084110.4165-2-shresthprasad7@gmail.com>
- <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
- <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="Blluietw"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D375D60002;
+	Fri,  3 May 2024 08:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1714723753;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ENBYZblky69TdSDJSNn9y3+7hJ7kpBrY9SAKhxMcPLk=;
+	b=Blluietw4pdtohmjHd2RzatVreMetUg/mhou3P2N6SwAWZIfAublpJzB8x4GBuP641Dhle
+	mp3mE/SWphoWWrNIsdu1xOqu8wSkQifXZUwY0WRDtluUVSLtPcEIBuoPS69rNpHXKIZtF6
+	DW2KDGrnCMpfTEZRNBz32RuZ/11EpUS/AZYm1A2dYLjkQi5uMsF45CCo80rAsoXbM5NddF
+	ksfXnxsKBZnK7343Hx5sa5ji/suafrAsmgIV8HVttMDGk609QKi2S2mxqSvPBDywCDQzUH
+	YAddw6CACoSTKIIxjzuUeWxY+ieHwjyJYbUcofDi0pQ/KRQa5Ri3XD8urKrjyw==
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Fri, 03 May 2024 10:09:08 +0200
+Message-Id: <D0ZUU7BGDGRN.1NJ3GVVIBL3P1@bootlin.com>
+Cc: "Sergey Senozhatsky" <senozhatsky@chromium.org>, "Steven Rostedt"
+ <rostedt@goodmis.org>, "Thomas Gleixner" <tglx@linutronix.de>,
+ <linux-kernel@vger.kernel.org>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>, "Russell
+ King" <linux@armlinux.org.uk>, "Tony Lindgren" <tony@atomide.com>, "Andy
+ Shevchenko" <andriy.shevchenko@linux.intel.com>,
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "Linus
+ Walleij" <linus.walleij@linaro.org>, "Hongyu Xie" <xiehongyu1@kylinos.cn>,
+ "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>, "Arnd Bergmann"
+ <arnd@arndb.de>, "Lino Sanfilippo" <l.sanfilippo@kunbus.com>,
+ <linux-serial@vger.kernel.org>
+To: "John Ogness" <john.ogness@linutronix.de>, "Petr Mladek"
+ <pmladek@suse.com>
+From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
+Subject: Re: [PATCH printk v5 09/30] serial: core: Introduce wrapper to set
+ @uart_port->cons
+X-Mailer: aerc 0.17.0
+References: <20240502213839.376636-1-john.ogness@linutronix.de>
+ <20240502213839.376636-10-john.ogness@linutronix.de>
+In-Reply-To: <20240502213839.376636-10-john.ogness@linutronix.de>
+X-GND-Sasl: theo.lebrun@bootlin.com
 
-On Thu, May 02, 2024 at 10:21:16PM +0530, Shresth Prasad wrote:
-> On Thu, May 2, 2024 at 9:35 PM Ilpo Järvinen
-> <ilpo.jarvinen@linux.intel.com> wrote:
-> >
-> > On Wed, 1 May 2024, Shresth Prasad wrote:
-> >
-> > > Add `__free` function attribute to `ap` and `match` pointer
-> > > initialisations which ensure that the pointers are freed as soon as they
-> > > go out of scope, thus removing the need to manually free them using
-> > > `of_node_put`.
-> > >
-> > > This also removes the need for the `goto` statement and the `rc`
-> > > variable.
-> > >
-> > > Tested using a qemu x86_64 virtual machine.
-> >
-> > Eh, how can you test this with an x86_64 VM ???
-> >
-> > config SERIAL_SUNSU
-> >         tristate "Sun SU serial support"
-> >         depends on SPARC && PCI
-> >
-> 
-> By that, I mean that I compiled the kernel and ran the produced bzImage
-> on a x86_64 qemu machine.
+Hello,
 
-But you didn't include the driver you were testing :(
+On Thu May 2, 2024 at 11:38 PM CEST, John Ogness wrote:
+> Introduce uart_port_set_cons() as a wrapper to set @cons of a
+> uart_port. The wrapper sets @cons under the port lock in order
+> to prevent @cons from disappearing while another context is
+> holding the port lock. This is necessary for a follow-up
+> commit relating to the port lock wrappers, which rely on @cons
+> not changing between lock and unlock.
+>
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-> I unfortunately don't have the hardware to test it on, but I don't
-> think the change is complex enough to require testing on real hardware
-> (unless I'm assuming incorrectly).
+Tested series on Mobileye EyeQ5, a MIPS64 platform that uses PL011.
 
-That's why I asked if you had tested this or not...
+Tested-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com> # EyeQ5, AMBA-PL011
+
+Thanks,
+
+--
+Th=C3=A9o Lebrun, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
