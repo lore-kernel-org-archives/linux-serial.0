@@ -1,111 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DF41CFA8;
-	Fri,  3 May 2024 17:03:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8161178276;
+	Fri,  3 May 2024 17:12:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714755830; cv=none; b=V47IMioM4xBzFKwWVqGBCzx77yzREa7t0qcyRE91OL3VdF3p6tHuLBu78bLLshjiAcir/88eedvJ+cd67z0zExUQov8SyPYqssCfmMQEiE3AIJiglKygCiZA4+zO9xTv+x1KZrXY/F0+cKlrsNFmVojs938ve04N3C9nAnugd2E=
+	t=1714756376; cv=none; b=XQJZ7DdZOTrRF3bKGrIX1qYQUU8KU/EuFomh4w8l2w/66gz1nTlfHd+7NN0HYUJ8m8H2bbNf1pDgheT8BrmQMxQDHKAdOP3+LmXbZ5E/jJ1uBw5FL0K5SFWfnQTvt/Yk5jlX1SJbih5+S2x7ZqlTb4jB+/IEfimr409sp9quFxY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714755830; c=relaxed/simple;
-	bh=IHaogS4BpfHwwVZgIjmFoYz8T5L3ZgNwBy07RNbf7/o=;
+	s=arc-20240116; t=1714756376; c=relaxed/simple;
+	bh=j1AlBmA8EvR89RnAFEz1pY/E0yUi35JufxzFz9CJ0aY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VMQScZo5NncxfVEBa4mpo/qwKHq3gzJkj6b2utOAMDnLseWme9ssj4jRH51kfWWQejY3bdejIJNcsMQIq/1cIJwqeOoQa5wKESEzYz4eYGWIlDWfFl5yro6bYmPDC0ustpf9bYhpdWiBmJuk6WkmDMXj1W/Z+8vYVEzlilyQqXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QwMRHz9u; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=OUX9lwRAnq5roOimv/F4oVYdZpCiQHClY+XGwmFLsU/bwUi5rl2wMD/qMsGzPVA6qQVtKxYE6Gz6jZQLpyu1Ng4hHl6CoZOGi5QRul2jpODX2bFTT7Simjn2/X0NmT42+Yefv77TbaOf+TPXHdLl3qaTFIxn2DhZrErynryWa9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X5bpwIbT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QwMRHz9u"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714755829; x=1746291829;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IHaogS4BpfHwwVZgIjmFoYz8T5L3ZgNwBy07RNbf7/o=;
-  b=QwMRHz9uEMZ/sJJyUny/bhnlyl34vs+WTBBYflwGcguWHe6m9kel6rzX
-   JdbHx42MrSZmkG91oI0YbXIQ/e3ImAA7mEE1qQoM04x1t6bM+9UhQYIhR
-   BnCV1d5NJwSdJsrBcE9TLCa2dwT7VCkESCOdngeFOar1TzjV2/0M7rCcu
-   YSFjd/qPcoEG8jP2Jhnxf15TkQCwMTOZtYpAxduMLk8d80y5Dk2Apd6RF
-   sYiJMBz4y83aCOaJ3V+vGP2m+LdD8uLz6PsycfFKRleckrtRA5vjlJX2v
-   Ofr/KRLbF0Sg/PQhiU4X11QnXI+RauIGxPmrKNdwb2qmu1eZXBXBVW3/D
-   A==;
-X-CSE-ConnectionGUID: T8DhYVMrSmuRkdyTWi9AcQ==
-X-CSE-MsgGUID: xVM68qkkT2GmR+CgwrNKZg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="10727252"
-X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="10727252"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:03:48 -0700
-X-CSE-ConnectionGUID: cdnab/rgS9ierNcdHnZvwA==
-X-CSE-MsgGUID: tfr1HdQWT5qFCac/A5T6nA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="32311759"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:03:46 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1s2wJz-00000003iQ0-3au3;
-	Fri, 03 May 2024 20:03:43 +0300
-Date: Fri, 3 May 2024 20:03:43 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Weifeng Liu <weifeng.liu.z@gmail.com>
-Cc: platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-	Maximilian Luz <luzmaximilian@gmail.com>,
-	Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2 1/2] platform/surface: aggregator: Defer probing when
- serdev is not ready
-Message-ID: <ZjUY7xPXszBulKap@smile.fi.intel.com>
-References: <20240503030900.1334763-1-weifeng.liu.z@gmail.com>
- <20240503030900.1334763-2-weifeng.liu.z@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X5bpwIbT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D46C116B1;
+	Fri,  3 May 2024 17:12:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714756376;
+	bh=j1AlBmA8EvR89RnAFEz1pY/E0yUi35JufxzFz9CJ0aY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=X5bpwIbT9mTSo+G1s5jqROstAZvjypQL7s6c2tLAQ7VbQitlkGrEhRbNW/j3ZsJMW
+	 zUud7VDAvN8lABU9AdCzSkl+VkSpWYl9DzDDXQK/+2ShanKw/XNteSUI+KGIIqXFS3
+	 UhRXda6SJsIgb5vtEP8M8LqEMCzijTSLy+j0paxRCh+FntKRbvJqb7p+VnVDslz+9E
+	 RPsN6jOcDc+d9yTqHLREDlVmSP9VCYug1ZuqQcH6oXuSc3SYeF1+WdGtbnSIJe4eWy
+	 cIn8Qs8Lg6N08dMOqCuNO1eXfM/akKJ5ayzKHHR0HlRSpR9iVAvFnXPjbwNIpvg/U8
+	 Gq6m0tOCYYiPg==
+Date: Fri, 3 May 2024 18:12:49 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 06/11] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
+Message-ID: <20240503-fading-extruding-2105bbd8b479@spud>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
+ <20240502182804.145926-7-christoph.fritz@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="wALyyOjqkAbb5csW"
+Content-Disposition: inline
+In-Reply-To: <20240502182804.145926-7-christoph.fritz@hexdev.de>
+
+
+--wALyyOjqkAbb5csW
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240503030900.1334763-2-weifeng.liu.z@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 03, 2024 at 11:08:46AM +0800, Weifeng Liu wrote:
-> This is an attempt to alleviate race conditions in the SAM driver where
-> essential resources like serial device and GPIO pins are not ready at
-> the time ssam_serial_hub_probe() is called.  Instead of giving up
-> probing, a better way would be to defer the probing by returning
-> -EPROBE_DEFER, allowing the kernel try again later.
-> 
-> However, there is no way of identifying all such cases from other real
-> errors in a few days.  So let's take a gradual approach identify and
-> address these cases as they arise.  This commit marks the initial step
-> in this process.
+On Thu, May 02, 2024 at 08:27:59PM +0200, Christoph Fritz wrote:
+> Add dt-bindings for serial LIN bus adapters. These adapters are
+> basically just LIN transceivers that are hard-wired to serial devices.
+>=20
+> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> ---
+>  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,lin-=
+serdev.yaml
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.=
+yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> new file mode 100644
+> index 0000000000000..c178eb9be1391
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> @@ -0,0 +1,32 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can/hexdev,lin-serdev.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Serial LIN Adapter
+> +
+> +description:
+> +  LIN transceiver, mostly hard-wired to a serial device, used for commun=
+ication
+> +  on a LIN bus.
+> +  For more details on an adapter, visit <https://hexdev.de/hexlin#tty>.
+> +
+> +maintainers:
+> +  - Christoph Fritz <christoph.fritz@hexdev.de>
+> +
+> +properties:
+> +  compatible:
+> +    const: hexdev,lin-serdev
 
-...
+Maybe I've just missed something on earlier versions that I didn't
+read, but the name of the device on the website you link is "hexLIN",
+so why is "lin-serdev" used here instead?
 
-> +	/*
-> +	 * The following step can fail when it's called too early before the
-> +	 * underlying UART device is ready (in this case -ENXIO is returned).
-> +	 * Instead of simply giving up and losing everything, we can defer
-> +	 * the probing by returning -EPROBE_DEFER so that the kernel would be
-> +	 * able to retry later.
-> +	 */
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    serial {
+> +        linbus {
+> +            compatible =3D "hexdev,lin-serdev";
+> +        };
+> +    };
+> --=20
+> 2.39.2
+>=20
 
-You can add the following to the
-serial_core.c (at the top after the headers)
+--wALyyOjqkAbb5csW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-#undef ENXIO
-#define ENXIO __LINE__
+-----BEGIN PGP SIGNATURE-----
 
-And I'm pretty much sure it will point out you to the uart_port_activate().
-If it's the case you may elaborate this in the comment.
-Otherwise you may add the same hack to other files and find the culprit.
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZjUbEQAKCRB4tDGHoIJi
+0swqAQCF8l5qprfFPZ6cZ7vHJYmcFVMucGf+WHsQS/KyE583BwEAv8DFN0XXp2jS
+E0yi6lEyzextMZsTck5ziHMgFfOMZAk=
+=6TI4
+-----END PGP SIGNATURE-----
 
-Also it might be that we add some error code substitution inside serdev core.
-At least there more data is available to make the (better) decision.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--wALyyOjqkAbb5csW--
