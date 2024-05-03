@@ -1,132 +1,118 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E0C8158866;
-	Fri,  3 May 2024 18:29:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D198F2E646;
+	Fri,  3 May 2024 18:33:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714760992; cv=none; b=P2g4v4HWxauRbZOBMXaGkCPAj1QQeTQBjU73a8sfL+cmlm/0sv5btBm70zHblscjF/e+GfzKTyLCL0bz+GnROBv3GnoPrUYhFQjtdFtJVkBsFXIPFgwAAaQEIo7HGYs12+2UamrQ2/z1uPcPakb/AIDCeOwuzp+SgHoAd8Yytkg=
+	t=1714761207; cv=none; b=nODRKnBUDeffKTrZLQuxMlLGdMStBtQ9ozv5o/553TIKE+iIXiD9ucNUkhtNqr/SD8FgRBIzJ7LDzliqjluene/YgRsS7cTpbCoaG8xgPPXVT41sh9XofxRLtB+XrtSeXxtAUDbyoJ03fo2XVbCJDcQmavbKYp5jDulcxlyMWDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714760992; c=relaxed/simple;
-	bh=e6ynbt8+QgxzbH/E73GTS+ubMG/h4wOsFbzFgj/kgyM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=nhLfjdpv2NIJ+ouHl9mO+ny244RWGHNO25GhDAy2OzCQ4hZL0vCMkD1fyt9z8KFMUe9HrsanIyqtHBBR2XykkGmWiJCEut6cKIrPPDq7oEYRpXVCw+3Q5osLm28aa2OrHGfGluxWo0esAdUdsuB6cd4ujgOzbpl7o9w0doGvuVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=jcYIdUNN; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1714761207; c=relaxed/simple;
+	bh=22XhEY7vXhT21sOWfVvwQyhmCuaRe5IA2N+3Oas/3Uw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=X4vbEyyEBsrZE9ZXdVNjXcJUrzXVIdTJDFVEbHY9AJMBcQZA7RjLA22d5hM75JvQvoum0yOhzklx0M37Y/ghpofPXLTcQmzRKToDaWzNBG4zwrhOhDkPDrt9aRwUlwypWwq3fHiyex77/bs+Q9SNzgVkLpCy8+31TwUc0jVFs2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=M/Z9Mozo; arc=none smtp.client-ip=74.208.4.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="jcYIdUNN"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=gsmaW6yu2jr4Gxl/DMVyniBNsiaG9rH9ORl++Cua8YA=; b=jcYIdUNNrnGBnjJCd2kt159D5n
-	GZ7PdVcmuvmeEJg3t72W8DVoPl6nrYUZFNktgbaSVxnYtzKwYLdZNCfGoMSzlE2DOk94SbiRWszL7
-	+fMD4AhUVD2/UAwOZxo+Ub27B9PuY0a2SFGJ+8G5euEUsp6sbh7mbxXk7CwfGq3AFw/E=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1s2xep-001awL-0X;
-	Fri, 03 May 2024 20:29:19 +0200
-Message-ID: <a5b894f8dc2ab0cf087a5b4972d7f752e6c17c16.camel@hexdev.de>
-Subject: Re: [PATCH v3 06/11] dt-bindings: net/can: Add serial (serdev) LIN
- adapter
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-Reply-To: christoph.fritz@hexdev.de
-To: Conor Dooley <conor@kernel.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Oliver Hartkopp
- <socketcan@hartkopp.net>,  Marc Kleine-Budde <mkl@pengutronix.de>, Vincent
- Mailhol <mailhol.vincent@wanadoo.fr>, "David S . Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
- <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor Dooley
- <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
- <bentiss@kernel.org>,  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Sebastian Reichel <sre@kernel.org>, Linus Walleij
- <linus.walleij@linaro.org>, Andreas Lauser
- <andreas.lauser@mercedes-benz.com>,  Jonathan Corbet <corbet@lwn.net>,
- Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, 
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-input@vger.kernel.org,  linux-serial@vger.kernel.org
-Date: Fri, 03 May 2024 20:29:15 +0200
-In-Reply-To: <20240503-fading-extruding-2105bbd8b479@spud>
-References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
-	 <20240502182804.145926-7-christoph.fritz@hexdev.de>
-	 <20240503-fading-extruding-2105bbd8b479@spud>
-Organization: hexDEV GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="M/Z9Mozo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1714761185; x=1715365985; i=parker@finest.io;
+	bh=v7kJzyUvZiR5tE18FRC14zJTkTgmWaOraudEp3nzKek=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=M/Z9MozosaYDT++n7HDh8bNpKhJDF4kwBth1ZoRvKfaD8LkIEj86DwPl0kET8uU4
+	 Y/VTiOnBfZ+yxMQCVAvS0eSZ8p6Xfvf/nNL69mToV3oARFasn9mNH0UWV1lwagJog
+	 VCIlGyYip7ToVubwuzKOWQ2d+gQliKuHoHZfvP7ofgxYNKUYLPGmUDYS7hbNkqHe0
+	 cc0rCmvqBZE+ptHdGO+IluDmEHqkdlu5BjLEM3f1hBKxWEQydG5uTRodsoGjpeCZ3
+	 qTdLkQP9trMpAv7M0+h7jkuo1IN/nJVcOYTE7IQ7QHjqOmziTL7TDcQwse9ekbF/O
+	 rOEGDjIuiUdQttv3RQ==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0M6SuT-1ss36g0mwF-00rxd0; Fri, 03 May 2024 20:33:05 +0200
+Date: Fri, 3 May 2024 14:33:03 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240503143303.15bf82bc@SWDEV2.connecttech.local>
+In-Reply-To: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:F1IeiN1k56yuKR+6PWmO0mM4xoZZm3//U46G+/nOhE+QBjJcUMR
+ dDFUZPQ2RwW0++HvTVp9vFIhjKz2ac0IQAg5wPMxaFvrGzGwE+BZRtneE++B+69+DXXUQcX
+ RzGk8ZA4Ci3r5PGBM5mf2jgIbsltIm3k6vYpfQDcLQlRVJ1nmjR/6MtnWZn5duCUMOg46tg
+ a5T/QpiqDJQnmwLvRNlew==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:z6tPXeVmnlA=;EnWuVFXag5b+89g7vcHid7uBS0j
+ cJzBLP0zciG67QYq4nXDKis0mdiLlNZaUC3/vTuH7zqpaw5RWOT/7igoO5UYHavWrzDc1Jfkk
+ Ql5I4PDsBM29DCFWNyQKQ2RbHfiLWMoo9p4yMr6xtjJAcOc0X99xO2NKZgEUeIp3HrAuy3zk/
+ c+QSzzPN8wnMwlgOaFfYww7qU6QhmYBFAPB+rFzqbAPF/cNKwlPGUERqdjXlr2lJvr5WRm+Y7
+ lTLFYFTOI2edV+d71/pg+7YBoNQggs3dxZd/VLD3jzu9+EWW99zUQcIR6l87lwoxLKo/Ecw1r
+ oKCSuwVCNu6l9LNlcCH/JsgZfCbAeOTa8j++AzlqwhAj+0XmcIfHrUss3MeyykzLxQV7Rda27
+ GrUArWkw4jcDjUfe5B3oCbuI2rIZRTXBXFIz8uCuQZFbm4KYwmp/Hg+2e+Sanr5rq1s721rmK
+ rvkaZcVdeX0ShaIFwLQRm2COkO6pUBaik0fKNxtDl8d2w6XaZvsMTVI41aZphFkQJ7qMopCQP
+ JLEImCKbYDh6wRc4RU1HVKtEE9q7u9QdqHPbOXtV0SnOnRcAr7N88rEZ9VHlyLg5He8R+dq79
+ bDjOJW6YXKslrUOKNdYgItuyL7qcWr/N7br+Vzty+FFSLg0GiHb7GGRM1hVwQGodnMenE2fYS
+ PG8rWuidwUpAzW2RvfBZLCMB6Zb0xt/dt8bytnmKcYXWYPd5+TrwI9y3sYDxrQPOiDmMTSoCF
+ qIPOubzqyi+7UL+AkouqQodqKoXjvuRw4ivsr+0koqQimsZM66Vm5M=
 
-Hello Conor,
+On Fri,  3 May 2024 20:15:52 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
- thanks for having an eye on this, please see my answer below.
+> After a rework for CONNTECH was done, the driver may need a bit of
+> love in order to become less verbose (in terms of indentation and
+> code duplication) and hence easier to read.
+>
+> This clean up series fixes a couple of (not so critical) issues and
+> cleans up the recently added code. No functional change indented by
+> the cleaning up part.
+>
+> Parker, please test this and give your formal Tested-by tag
+> (you may do it by replying to this message if all patches are
+>  successfully tested; more details about tags are available in
+>  the Submitting Patches documentation).
+>
 
-On Fri, 2024-05-03 at 18:12 +0100, Conor Dooley wrote:
-> On Thu, May 02, 2024 at 08:27:59PM +0200, Christoph Fritz wrote:
-> > Add dt-bindings for serial LIN bus adapters. These adapters are
-> > basically just LIN transceivers that are hard-wired to serial devices.
-> > 
-> > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> > ---
-> >  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++++
-> >  1 file changed, 32 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> > new file mode 100644
-> > index 0000000000000..c178eb9be1391
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
-> > @@ -0,0 +1,32 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/can/hexdev,lin-serdev.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Serial LIN Adapter
-> > +
-> > +description:
-> > +  LIN transceiver, mostly hard-wired to a serial device, used for communication
-> > +  on a LIN bus.
-> > +  For more details on an adapter, visit <https://hexdev.de/hexlin#tty>.
-> > +
-> > +maintainers:
-> > +  - Christoph Fritz <christoph.fritz@hexdev.de>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: hexdev,lin-serdev
-> 
-> Maybe I've just missed something on earlier versions that I didn't
-> read, but the name of the device on the website you link is "hexLIN",
-> so why is "lin-serdev" used here instead?
+I was able to test the Connect Tech related code and everything is
+work as expected. I can't test the non-CTI related changes but they
+are pretty minor.
 
-The USB one is called hexLIN and has it's own HID driver.
+Tested-by: Parker Newman <pnewman@connecttech.com>
 
-This serial LIN adapter doesn't really have a product name. Currently
-on our website it's generically called 'UART LIN Adapter'.
+> In v2:
+> - fixed the EEPROM reading data loop (Ilpo, Parker)
+>
+> Andy Shevchenko (13):
+>   serial: 8250_exar: Don't return positive values as error codes
+>   serial: 8250_exar: Describe all parameters in kernel doc
+>   serial: 8250_exar: Kill CTI_PCI_DEVICE()
+>   serial: 8250_exar: Use PCI_SUBVENDOR_ID_IBM for subvendor ID
+>   serial: 8250_exar: Trivia typo fixes
+>   serial: 8250_exar: Extract cti_board_init_osc_freq() helper
+>   serial: 8250_exar: Kill unneeded ->board_init()
+>   serial: 8250_exar: Decrease indentation level
+>   serial: 8250_exar: Return directly from switch-cases
+>   serial: 8250_exar: Switch to use dev_err_probe()
+>   serial: 8250_exar: Use BIT() in exar_ee_read()
+>   serial: 8250_exar: Make type of bit the same in exar_ee_*_bit()
+>   serial: 8250_exar: Keep the includes sorted
+>
+>  drivers/tty/serial/8250/8250_exar.c | 459 ++++++++++++----------------
+>  1 file changed, 203 insertions(+), 256 deletions(-)
+>
 
-This LIN adapter is basically just a LIN transceiver and very generic,
-so that one could solder it to any single-board computer with an uart.
-
-I think 'lin-serdev' for LIN and serial device fits great, also serdev
-is the name of the used kernel infrastructure (besides the LIN glue
-driver).
-
-If you still don't like it, I'm open to other names. What about
-"hexlin-uart" or "linser"?
-
-Thanks
-  -- Christoph
-> 
