@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F456158853;
-	Fri,  3 May 2024 17:19:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3024158A07;
+	Fri,  3 May 2024 17:19:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714756788; cv=none; b=h+NuEtxjLaZ0mQKeDtil2pOkwChPDpQK5XL4YAPufaN8oA7Q++qZmXBMgg6vJy8hn0ZYbGgw5PQjmPPsCwCWTei1hABy/iIJ2aEqFGZWvFXMAl9HVQY9jtfZv+dhjqxYKjlHGBJ2wtEzfdxPyjqnvu4P7kBXbLy/nTiFVTGU0Dg=
+	t=1714756788; cv=none; b=fydnY7H/HXBoiRV59LMk78Rt1OXAMmXdec2o0s0c8fFnxXXjbs+HGWeDukLYrS7LlYJGeyM8G/k7TavXJF56RoFMSBuSYnWSfQI9MCldWgxOlQSBRDsXaneIJbM+92LvxpWUVtnYRzZgb9q6+5aIHyV3613DRUXw9AdCzIuX+rk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1714756788; c=relaxed/simple;
-	bh=0P8W5/r5S5k6SwXf7VCCJC2Qrhne6InBiWz5NUC6oPI=;
+	bh=HSPO3BYYrHNKLlywx1qmFZnk+RVxu/4s6sl1HAdCBHQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KuVYL9XlV7LeEBI7hCjOMSfu5GQJJfawb/Foa60GcRaftgQxEAyZptx1VeZP8E3wMTwsyv0164BOIDj+mLSQu5RmxlocdVUIfsIHLLOJ3q4fWgfqFJlFezDXffufz5qM5dnwEguXelxS2oJe97QM8Hew3yke4vb++7EsHrK1lrc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XT6mUd65; arc=none smtp.client-ip=192.198.163.7
+	 MIME-Version; b=h3OvGNywblhGdPrK4m0+VLZ4P/rfkm6IGm0jwOCl3TZYAK0qXCaBIPFyGKc5/oV/Lp5Tz0v8YYHFeWGbYma5Ug1OVanEld/FSaG3nm4MffFs38kJZQSt/YheG33iamL3vnO+q6WwoQdBoxFGI+vnZyxrGrtvgvqFBJl9HIXbzp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FM8XKVSs; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XT6mUd65"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FM8XKVSs"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714756785; x=1746292785;
+  t=1714756786; x=1746292786;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=0P8W5/r5S5k6SwXf7VCCJC2Qrhne6InBiWz5NUC6oPI=;
-  b=XT6mUd654wiUQ4Bq6uOrr9wsmOdImXThpaztTL/RlDlZEu0CZfGTg8gl
-   eTYGZuePM6CYUJXC8sWAJ8QFRhtyo5puZ7xrDd/mpvCcA22JtWRzhTutH
-   ocMgFoaAxZDgybcGJVANu50+r96yp4uyhZj3gnnQzGRzYcIbHZr2M0VOP
-   lUYiYg6TbpfAPquZgqbhjVSZtjGug4JLKdlaRoS95u/RJ739klGza6Uxr
-   i6VVXOIIzX3WQA16VwGAvt9rDI6zpRfA3joms4hYXZfKFDnJlWf5XUXOY
-   tcmM/IBowg4ORfsE0imXfAozDvBudrEEoxwpvPB9WrX2gbhrs5ryQAI/C
-   Q==;
-X-CSE-ConnectionGUID: e6aR1tFZSK6ES7ORgJJS/w==
-X-CSE-MsgGUID: 9hq/X+e4SISmHqtSFz/JeA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="35962105"
+  bh=HSPO3BYYrHNKLlywx1qmFZnk+RVxu/4s6sl1HAdCBHQ=;
+  b=FM8XKVSsA4gMPahmf2QG5HxjUoPz3nLlD0cMeqToNBF8uLStG3T9gfzK
+   lFWZm8rzszgArQbAiMTB1IM0bM/NtxyDwH0JCi1Bj233ecdS/lTIbuojA
+   GEWST4th7iSkCMBA08Ygj7WrOg9LxSazQ3AyEGB+ApxJ8tXxtKw6FLspD
+   wcwdf1GYLGdBdP861/V0fpbQV8cgzP1RPTHfS17tf8qYzAMNT1q82nZ2E
+   YMkeeZ7B2V49RrYfEP7RIS3oOo9gAYnBjo616h39lopIQvPAmAj5CkmWO
+   DQNMO5hPtwus7fIBiuSLfX+3khVf/6RwHY8AzkW1HcHPUncrwGV/VWmQE
+   A==;
+X-CSE-ConnectionGUID: lduSk7ykTfG0NcnwiX+CGg==
+X-CSE-MsgGUID: 5Vq0t4bFR6C127elLUgLnQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="11107819"
 X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="35962105"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:19:44 -0700
-X-CSE-ConnectionGUID: VRw+1/qcSJafBnw+I0soJw==
-X-CSE-MsgGUID: cbpKREC1TyGqC+jHb26UvA==
+   d="scan'208";a="11107819"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 10:19:44 -0700
+X-CSE-ConnectionGUID: k7YE1zu7QG2Gy40YjxVtmg==
+X-CSE-MsgGUID: oVe/rjzDTTGMxgTvIVH2hA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="28098215"
+   d="scan'208";a="58415426"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa008.jf.intel.com with ESMTP; 03 May 2024 10:19:42 -0700
+  by orviesa002.jf.intel.com with ESMTP; 03 May 2024 10:19:42 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 7521F48B; Fri,  3 May 2024 20:19:38 +0300 (EEST)
+	id 8C2E5699; Fri,  3 May 2024 20:19:38 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Parker Newman <pnewman@connecttech.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -52,9 +52,9 @@ To: Parker Newman <pnewman@connecttech.com>,
 	linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v2 08/13] serial: 8250_exar: Decrease indentation level
-Date: Fri,  3 May 2024 20:16:00 +0300
-Message-ID: <20240503171917.2921250-9-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 10/13] serial: 8250_exar: Switch to use dev_err_probe()
+Date: Fri,  3 May 2024 20:16:02 +0300
+Message-ID: <20240503171917.2921250-11-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
 In-Reply-To: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
 References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
@@ -66,159 +66,68 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Decrease indentation level in some places.
-No functional change intended.
+Switch to use dev_err_probe() to simplify the error path and
+unify a message template.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_exar.c | 100 ++++++++++++++--------------
- 1 file changed, 50 insertions(+), 50 deletions(-)
+ drivers/tty/serial/8250/8250_exar.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 4e683ca76de0..1f04d4562878 100644
+index 51f6af16c557..306bc6d7c141 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -607,28 +607,30 @@ pci_fastcom335_setup(struct exar8250 *priv, struct pci_dev *pcidev,
- 	writeb(32, p + UART_EXAR_TXTRG);
- 	writeb(32, p + UART_EXAR_RXTRG);
+@@ -889,11 +889,8 @@ static int cti_port_setup_common(struct exar8250 *priv,
+ 	port->port.uartclk = priv->osc_freq;
  
-+	/* Skip the initial (per device) setup */
-+	if (idx)
-+		return 0;
-+
- 	/*
- 	 * Setup Multipurpose Input/Output pins.
- 	 */
--	if (idx == 0) {
--		switch (pcidev->device) {
--		case PCI_DEVICE_ID_COMMTECH_4222PCI335:
--		case PCI_DEVICE_ID_COMMTECH_4224PCI335:
--			writeb(0x78, p + UART_EXAR_MPIOLVL_7_0);
--			writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
--			writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
--			break;
--		case PCI_DEVICE_ID_COMMTECH_2324PCI335:
--		case PCI_DEVICE_ID_COMMTECH_2328PCI335:
--			writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
--			writeb(0xc0, p + UART_EXAR_MPIOINV_7_0);
--			writeb(0xc0, p + UART_EXAR_MPIOSEL_7_0);
--			break;
--		}
--		writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
--		writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
--		writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
-+	switch (pcidev->device) {
-+	case PCI_DEVICE_ID_COMMTECH_4222PCI335:
-+	case PCI_DEVICE_ID_COMMTECH_4224PCI335:
-+		writeb(0x78, p + UART_EXAR_MPIOLVL_7_0);
-+		writeb(0x00, p + UART_EXAR_MPIOINV_7_0);
-+		writeb(0x00, p + UART_EXAR_MPIOSEL_7_0);
-+		break;
-+	case PCI_DEVICE_ID_COMMTECH_2324PCI335:
-+	case PCI_DEVICE_ID_COMMTECH_2328PCI335:
-+		writeb(0x00, p + UART_EXAR_MPIOLVL_7_0);
-+		writeb(0xc0, p + UART_EXAR_MPIOINV_7_0);
-+		writeb(0xc0, p + UART_EXAR_MPIOSEL_7_0);
-+		break;
- 	}
-+	writeb(0x00, p + UART_EXAR_MPIOINT_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIO3T_7_0);
-+	writeb(0x00, p + UART_EXAR_MPIOOD_7_0);
- 
- 	return 0;
- }
-@@ -853,21 +855,19 @@ static enum cti_port_type cti_get_port_type_xr17v35x(struct exar8250 *priv,
- 	port_flags = exar_ee_read(priv, offset);
- 
- 	port_type = FIELD_GET(CTI_EE_MASK_PORT_FLAGS_TYPE, port_flags);
--	if (!CTI_PORT_TYPE_VALID(port_type)) {
--		/*
--		 * If the port type is missing the card assume it is a
--		 * RS232/RS422/RS485 card to be safe.
--		 *
--		 * There is one known board (BEG013) that only has
--		 * 3 of 4 port types written to the EEPROM so this
--		 * acts as a work around.
--		 */
--		dev_warn(&pcidev->dev,
--			"failed to get port %d type from EEPROM\n", port_num);
--		port_type = CTI_PORT_TYPE_RS232_422_485_HW;
--	}
-+	if (CTI_PORT_TYPE_VALID(port_type))
-+		return port_type;
- 
--	return port_type;
-+	/*
-+	 * If the port type is missing the card assume it is a
-+	 * RS232/RS422/RS485 card to be safe.
-+	 *
-+	 * There is one known board (BEG013) that only has 3 of 4 port types
-+	 * written to the EEPROM so this acts as a work around.
-+	 */
-+	dev_warn(&pcidev->dev, "failed to get port %d type from EEPROM\n", port_num);
-+
-+	return CTI_PORT_TYPE_RS232_422_485_HW;
- }
- 
- static int cti_rs485_config_mpio_tristate(struct uart_port *port,
-@@ -1190,11 +1190,10 @@ static void setup_gpio(struct pci_dev *pcidev, u8 __iomem *p)
- 	 * devices will export them as GPIOs, so we pre-configure them safely
- 	 * as inputs.
- 	 */
--
- 	u8 dir = 0x00;
- 
- 	if  ((pcidev->vendor == PCI_VENDOR_ID_EXAR) &&
--		(pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL)) {
-+	     (pcidev->subsystem_vendor != PCI_VENDOR_ID_SEALEVEL)) {
- 		// Configure GPIO as inputs for Commtech adapters
- 		dir = 0xff;
- 	} else {
-@@ -1284,27 +1283,28 @@ static int sealevel_rs485_config(struct uart_port *port, struct ktermios *termio
- 	if (ret)
+ 	ret = serial8250_pci_setup_port(pcidev, port, 0, offset, 0);
+-	if (ret) {
+-		dev_err(&pcidev->dev,
+-			"failed to setup pci for port %d err: %d\n", idx, ret);
++	if (ret)
  		return ret;
- 
--	if (rs485->flags & SER_RS485_ENABLED) {
--		old_lcr = readb(p + UART_LCR);
-+	if (!(rs485->flags & SER_RS485_ENABLED))
-+		return 0;
- 
--		/* Set EFR[4]=1 to enable enhanced feature registers */
--		efr = readb(p + UART_XR_EFR);
--		efr |= UART_EFR_ECB;
--		writeb(efr, p + UART_XR_EFR);
-+	old_lcr = readb(p + UART_LCR);
- 
--		/* Set MCR to use DTR as Auto-RS485 Enable signal */
--		writeb(UART_MCR_OUT1, p + UART_MCR);
-+	/* Set EFR[4]=1 to enable enhanced feature registers */
-+	efr = readb(p + UART_XR_EFR);
-+	efr |= UART_EFR_ECB;
-+	writeb(efr, p + UART_XR_EFR);
- 
--		/* Set LCR[7]=1 to enable access to DLD register */
--		writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
-+	/* Set MCR to use DTR as Auto-RS485 Enable signal */
-+	writeb(UART_MCR_OUT1, p + UART_MCR);
- 
--		/* Set DLD[7]=1 for inverted RS485 Enable logic */
--		dld = readb(p + UART_EXAR_DLD);
--		dld |= UART_EXAR_DLD_485_POLARITY;
--		writeb(dld, p + UART_EXAR_DLD);
-+	/* Set LCR[7]=1 to enable access to DLD register */
-+	writeb(old_lcr | UART_LCR_DLAB, p + UART_LCR);
- 
--		writeb(old_lcr, p + UART_LCR);
 -	}
-+	/* Set DLD[7]=1 for inverted RS485 Enable logic */
-+	dld = readb(p + UART_EXAR_DLD);
-+	dld |= UART_EXAR_DLD_485_POLARITY;
-+	writeb(dld, p + UART_EXAR_DLD);
-+
-+	writeb(old_lcr, p + UART_LCR);
  
- 	return 0;
- }
+ 	port->port.private_data = (void *)priv;
+ 	port->port.pm = exar_pm;
+@@ -1522,11 +1519,8 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 	maxnr = pci_resource_len(pcidev, bar) >> (board->reg_shift + 3);
+ 
+ 	nr_ports = exar_get_nr_ports(board, pcidev);
+-	if (nr_ports == 0) {
+-		dev_err_probe(&pcidev->dev, -ENODEV,
+-				"failed to get number of ports\n");
+-		return -ENODEV;
+-	}
++	if (nr_ports == 0)
++		return dev_err_probe(&pcidev->dev, -ENODEV, "failed to get number of ports\n");
+ 
+ 	priv = devm_kzalloc(&pcidev->dev, struct_size(priv, line, nr_ports), GFP_KERNEL);
+ 	if (!priv)
+@@ -1559,7 +1553,7 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 	for (i = 0; i < nr_ports && i < maxnr; i++) {
+ 		rc = board->setup(priv, pcidev, &uart, i);
+ 		if (rc) {
+-			dev_err(&pcidev->dev, "Failed to setup port %u\n", i);
++			dev_err_probe(&pcidev->dev, rc, "Failed to setup port %u\n", i);
+ 			break;
+ 		}
+ 
+@@ -1568,10 +1562,9 @@ exar_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *ent)
+ 
+ 		priv->line[i] = serial8250_register_8250_port(&uart);
+ 		if (priv->line[i] < 0) {
+-			dev_err(&pcidev->dev,
+-				"Couldn't register serial port %lx, irq %d, type %d, error %d\n",
+-				uart.port.iobase, uart.port.irq,
+-				uart.port.iotype, priv->line[i]);
++			dev_err_probe(&pcidev->dev, priv->line[i],
++				"Couldn't register serial port %lx, type %d, irq %d\n",
++				uart.port.iobase, uart.port.iotype, uart.port.irq);
+ 			break;
+ 		}
+ 	}
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
