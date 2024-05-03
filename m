@@ -1,153 +1,81 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E8128F5;
-	Fri,  3 May 2024 12:36:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B96215383F;
+	Fri,  3 May 2024 13:30:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714739810; cv=none; b=IJn/lQMJ5ax5EzvzwA3aYLXzYjeSlae3epHcaZIJOWlLZtoQ9zAkHnoRZ2t8JVmwTzW9dBFr8utXXvNtQoDbruEm8OQNFVnx9E2VVfEeOBFFuxnomKGdUxatdqcdYx58IRoDrNqa1W4Rk3oTUi7lspwZ24ErI7jWVBevXGcBJv8=
+	t=1714743043; cv=none; b=b58mU+XymrKywELvCAZr0Wngn4K9lMvxnaSA7drSgx9P6AyKRxTYMTA86MrekvlPnBL8OP3/DyAl2rIc/wy0Omfbu9veK1+F+rN0Al7kUrsofatU7Ne5xT8BvUmL0abVWs4nvQxe0d7krp2j4QJXdTr+i4ueUQd94bE2mQMcJFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714739810; c=relaxed/simple;
-	bh=nXZwx6IVJMBUefq5xdQYjmzDRIJO0v+73VppqwXi8oY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SukCMBSo0+ujholigsqmCKSyWH0wpT2Xlmsy2inSosLc9UdC6pueqypeAnjVxMbMp3DtGLBXcQqKWDYnL6D0i9Mf0RM6gXRZ1Xfjlr4RChiU4b2HBCJL0/RcIQYQH1TdS5CEZFmn8vgJ/IPInfIzf1R8c+UZFid2w8jlTIiiLlA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=FNAgmZVE; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1714743043; c=relaxed/simple;
+	bh=A7dzyePxuFRV9t0HZbbsE57jhBBAmttYWYl3rdnPMI0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TBewXaK6+olItUvngghHSnfi2nA/nilDF42Ve/KNCWwmGsgTlTghGBPLjjrSQ7XjRfLZCF52Z66VKwjFTQPe1Dfki27wzPwY+bBzljsrP3nn1Np5nXqlZc9ZfiRyCMaeeDkQ4wrwiB6ughIAr5H+sVrCmNnf0zUFs1jWK5r6W+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=QvhTzU7m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="FNAgmZVE"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714739800; x=1715344600; i=parker@finest.io;
-	bh=LPHhZm5lowvrZny9uJ95Cq5UJFclBqQhK3jaWOkbXOI=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=FNAgmZVEZ/orShUL7OL8sfx3sPurnAzvRjAn7KBacU5F10Rzm103golGxICUUB5B
-	 QKQRheBvnEN53kSh3jA8tp/yfB/aSmIHsmWQW5+pCnYM/ctpb6/SQGsVY9cG8Czxh
-	 fxyxev4g9GV62wL57rlIr8ogMltMOgzgpKQWyUZO6TQ2uk1++o/8OyNQ8TrJEXfRc
-	 6MycymvBk3d69xMfwci/Cs++qr19qd4Ib7e9M5Ss7VFHH8fh/vPTNqnmXEbkze192
-	 dtOuMLJ+6JIbyOLDEZwwbJqinwrflZgokjCMXSNZGmNTAWP/m3PKMLpqMUhlws3CI
-	 306Qop0yDfljSrV4Hg==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0M3z4W-1su0jq2fD8-00rZ6e; Fri, 03 May 2024 14:36:40 +0200
-Date: Fri, 3 May 2024 08:36:38 -0400
-From: Parker Newman <parker@finest.io>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <20240503083638.0f8d9afb@SWDEV2.connecttech.local>
-In-Reply-To: <ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-	<20240502114645.4445b3da@SWDEV2.connecttech.local>
-	<ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
-	<20240502120840.02c65f30@SWDEV2.connecttech.local>
-	<ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
-	<20240502134949.5e780635@SWDEV2.connecttech.local>
-	<ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="QvhTzU7m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 240C3C2BBFC;
+	Fri,  3 May 2024 13:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1714743042;
+	bh=A7dzyePxuFRV9t0HZbbsE57jhBBAmttYWYl3rdnPMI0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QvhTzU7m/riWYaloVcIJAcV7kqeW6FBOCokBVjYbFqDfHlSfpX8XWqq/Qv8ywnD/n
+	 0wyeYej37U/WtHfT0tXtrJ7rv2+6PJ73GqYWp4dJ/TNOa5jTmrxDMvWu2VdHAW7T1+
+	 cSy6KJS8K+7W9i288JHBMXHbJDBMdZyC2qz1GiMY=
+Date: Fri, 3 May 2024 15:30:36 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Lu Dai <dai.lu@exordes.com>
+Cc: npiggin@gmail.com, christophe.leroy@csgroup.eu,
+	naveen.n.rao@linux.ibm.com, mpe@ellerman.id.au,
+	jirislaby@kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	javier.carrasco.cruz@gmail.com, shuah@kernel.org
+Subject: Re: [PATCH] tty: hvc: hvc_opal: eliminate uses of of_node_put()
+Message-ID: <2024050313-lustrous-handcraft-0b84@gregkh>
+References: <20240503114330.221764-1-dai.lu@exordes.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:n6/uzA2IhZbVt2TgRaG7NyI/MlOCAXoi9/8kT6hEFaqRH/NC3VZ
- QInZr2mb9GSRUWHP82V7ASj9KQhTYkF5B1uacj8gipX0langyvY6v5oRNBpFVvIWGy10+Nk
- +pKxEr5g+CzJgPmure6SaTGHUJLCxuQ1bZQZu4UbY+A7NJ0yanwNoNM1xn024910V5WS2/b
- pza/H6Vc9BMROZ8St3ZCw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Y80D4vzoXK8=;wqrCnw9oWycvF2C1VXvSnRUeY2O
- 2UQenEnZ5DBZ69bOXzzeM347nuuR+yPYrVZ2rT4V61xVu+tya3C7LO2W9x0WKi9FX5YdnBSS5
- /NEPilaLmPfbZu7h1CE7xOATDIDGSNg5VYaNCRHVEA0Pz1LvINl+CiSOENFqSOhKiO86rUT3g
- LBvPDsooqSRaRuI9DdKpnFs3IkutqtJOcV9MJB95t2736SmPX69go+vBtPJh67KnhudNo/nJb
- SwmiERK5OgAR84PsxFxibxlIwG7JSCCmkl9squG6bBXhpmrDMjLJBLKMu6iDJrRHbhpj0Dwwn
- jbcGVeYu/9jH1rHARsPnb55FLIJM1UlrDcUTbmKVsxs5nfprZHNjAo/Fw0Jo2rppq6+5k1t8S
- uvC+If+31ZpKdjfCes7YRLgvM4k8dPBr8ju1LIElosiM4q5LCt+rffOKFbwWpCFJetGHHDlPh
- 3DKAEP4Atz3iRe47gi7yKIk/9+3UNES4eghY5RrRLhGCmajNImaqclpyTv0BBU2MqDL0r5p0x
- 0W6erUMd75ARsxkcqQNbhapDLtkNUPAJGeaCyodIGk+3lqngAGVr7dgjycqiVOpDdRXv+ghj2
- 8hyUGV1/gdyWjFDwlGndrkc0AziOGGyrNNzpOCtV9e+I/grl2x+HUJHI4D5T5Tw1sJskPldMi
- xUW/oj6NDbP7LWKV4v1b5gfv6mRNo15a+fD8nlsQ5U38lM9jEp7XSgYZnuDbGiLzZFjCCMIYX
- dw1/byrpKxPQmndO60p5Vtd+VLxenL06j6Xo2Wx+R5BwQOm5KkADzk=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240503114330.221764-1-dai.lu@exordes.com>
 
-On Thu, 2 May 2024 21:01:54 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, May 03, 2024 at 02:43:30PM +0300, Lu Dai wrote:
+> Make use of the __free() cleanup handler to automatically free nodes
+> when they get out of scope.
+> 
+> Removes the need for a 'goto' as an effect.
+> 
+> Signed-off-by: Lu Dai <dai.lu@exordes.com>
+> ---
+>  drivers/tty/hvc/hvc_opal.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+> index 095c33ad10f8..67e90fa993a3 100644
+> --- a/drivers/tty/hvc/hvc_opal.c
+> +++ b/drivers/tty/hvc/hvc_opal.c
+> @@ -327,14 +327,14 @@ static void udbg_init_opal_common(void)
+>  
+>  void __init hvc_opal_init_early(void)
+>  {
+> -	struct device_node *stdout_node = of_node_get(of_stdout);
+> +	struct device_node *stdout_node __free(device_node) = of_node_get(of_stdout);
+>  	const __be32 *termno;
+>  	const struct hv_ops *ops;
+>  	u32 index;
+>  
+>  	/* If the console wasn't in /chosen, try /ibm,opal */
+>  	if (!stdout_node) {
+> -		struct device_node *opal, *np;
+> +		struct device_node *opal __free(device_node), *np;
 
-> On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
-> > On Thu, 2 May 2024 20:22:47 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
-> > > > On Thu, 2 May 2024 19:01:01 +0300
-> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
-> > > > > > On Thu,  2 May 2024 17:43:54 +0300
-> > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > >
-> > > > > > > After a rework for CONNTECH was done, the driver may need a =
-bit of
-> > > > > > > love in order to become less verbose (in terms of indentatio=
-n and
-> > > > > > > code duplication) and hence easier to read.
-> > > > > > >
-> > > > > > > This clean up series fixes a couple of (not so critical) iss=
-ues and
-> > > > > > > cleans up the recently added code. No functional change inde=
-nted by
-> > > > > > > the cleaning up part.
-> > > > > >
-> > > > > > Just an FYI I submitted a patch series that fixed several of t=
-hese issues but I
-> > > > > > think it fell through the cracks (I know everyone is very busy=
-!).
-> > > > > >
-> > > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.gi=
-t.pnewman@connecttech.com/
-> > > > > >
-> > > > > > I believe my previous patch series is no longer required. This=
- one fixes
-> > > > > > everything.
-> > > > >
-> > > > > I haven't noticed that, if it contains duplicated patches, I may=
- replace mine
-> > > > > with yours if you insist.
-> > > > >
-> > > > > In any case it's better to reply there that you prefer this seri=
-es to be
-> > > > > applied, so Greg will not pick it up.
-> > > > >
-> > > >
-> > > > I do not have a preference. I am fine with using yours if it is ea=
-sier on
-> > > > the maintainers.
-> > >
-> > > Up to you, there is no issue to take your patches in case they are t=
-he same
-> > > (or quite similar) as mine. I can pick them up, just tell me if you =
-want this
-> > > to happen with a list of the patches (as mail Message-Id).
-> >
-> > Just use yours.
->
-> Okay, thanks!
->
-> If you are going to test, better to pay attention to the BIT() conversio=
-n patch
-> as Ilpo noted an issue. I believe it's easy to drop (via local git-rebas=
-e run)
-> or move and test separately.
->
+*np needs to be on a separate line, right?
 
-I am working on testing now but patches 7 and 12 did not apply with git am=
-.
-Both failed around lines 1095/1096.
-I can apply them manually but I may be using the wrong branch (tty-next).
-Which branch/commit did you create your patches from? I don't see it in th=
-e
-patch submission.
+thanks,
+
+greg k-h
