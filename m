@@ -1,48 +1,54 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D198F2E646;
-	Fri,  3 May 2024 18:33:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97F215884C;
+	Fri,  3 May 2024 18:56:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714761207; cv=none; b=nODRKnBUDeffKTrZLQuxMlLGdMStBtQ9ozv5o/553TIKE+iIXiD9ucNUkhtNqr/SD8FgRBIzJ7LDzliqjluene/YgRsS7cTpbCoaG8xgPPXVT41sh9XofxRLtB+XrtSeXxtAUDbyoJ03fo2XVbCJDcQmavbKYp5jDulcxlyMWDM=
+	t=1714762616; cv=none; b=aGntvuiuU2ujiJBt+xsBhdt9qExP7lM1z8LqVxc6op+/hlAuKeUmD+L7ZXPV1jnTfa7RS64jLavtaV02n+AKYEooMETLlQo0DumnDCFeuactlolzZwDzdjxh70D5aW2BwFI9S18kocThVHEvdS0mswdL01cBH3EzjIxpk+qQlDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714761207; c=relaxed/simple;
-	bh=22XhEY7vXhT21sOWfVvwQyhmCuaRe5IA2N+3Oas/3Uw=;
+	s=arc-20240116; t=1714762616; c=relaxed/simple;
+	bh=wJ634xpkzIW5+9cg7GtEgMU2T9hlxHpUT5PrKa7/e40=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=X4vbEyyEBsrZE9ZXdVNjXcJUrzXVIdTJDFVEbHY9AJMBcQZA7RjLA22d5hM75JvQvoum0yOhzklx0M37Y/ghpofPXLTcQmzRKToDaWzNBG4zwrhOhDkPDrt9aRwUlwypWwq3fHiyex77/bs+Q9SNzgVkLpCy8+31TwUc0jVFs2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=M/Z9Mozo; arc=none smtp.client-ip=74.208.4.194
+	 MIME-Version:Content-Type; b=Hhn2XIgiMMI7Ta+bTskhJBnSRcSHUXRFisClaFvF5TTo+/cNmZK+mtxjACgvyta0iAVQLNIihDWlv5gsPg3i6VO0hdnlviQTDDUYFnwWEcPacoKeCJRxH5Or5EILBGIYBThQkwjQz4SduJxguxVYlo5ZKaXNnkdYJdZakDOiyZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=N5W60pLl; arc=none smtp.client-ip=74.208.4.196
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="M/Z9Mozo"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="N5W60pLl"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714761185; x=1715365985; i=parker@finest.io;
-	bh=v7kJzyUvZiR5tE18FRC14zJTkTgmWaOraudEp3nzKek=;
+	s=s1-ionos; t=1714762595; x=1715367395; i=parker@finest.io;
+	bh=6jD/844a5M7wlwxOsH8KRJLg5R5CU6wJg3iF2lJi4n0=;
 	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=M/Z9MozosaYDT++n7HDh8bNpKhJDF4kwBth1ZoRvKfaD8LkIEj86DwPl0kET8uU4
-	 Y/VTiOnBfZ+yxMQCVAvS0eSZ8p6Xfvf/nNL69mToV3oARFasn9mNH0UWV1lwagJog
-	 VCIlGyYip7ToVubwuzKOWQ2d+gQliKuHoHZfvP7ofgxYNKUYLPGmUDYS7hbNkqHe0
-	 cc0rCmvqBZE+ptHdGO+IluDmEHqkdlu5BjLEM3f1hBKxWEQydG5uTRodsoGjpeCZ3
-	 qTdLkQP9trMpAv7M0+h7jkuo1IN/nJVcOYTE7IQ7QHjqOmziTL7TDcQwse9ekbF/O
-	 rOEGDjIuiUdQttv3RQ==
+	b=N5W60pLlJLl/P+B7DtyS444/0ckFwnMmovbc6bmFL8ZlcTSAnQg4i1LDMVs0rRG7
+	 iKYdMl+FTpXuU8KFdj5vLCUHbrSQQh1eQHxLRwBkB3gRlJiUMuUz/tsTiQH90gq1e
+	 kJjBjn4Sd0HGGxSlU1J5a6bKB0IH7M9uIpsSLp7ICsgdSK2yA+HpcSXsUpScrQy1J
+	 DxExWPy3Ly+j/xkjGPqh4i7FFr+Hye0gF5pRWmRdmrrZ+anWplqz1XUtFdUGo7jqB
+	 z8ocuJCPcjRg6pNNiPGUr5lqH4itt7VS2AXnQAo20ZKpF1CPdj14I8aIEDfybwP4O
+	 eGGm0vNKR8rxJh4W5A==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0M6SuT-1ss36g0mwF-00rxd0; Fri, 03 May 2024 20:33:05 +0200
-Date: Fri, 3 May 2024 14:33:03 -0400
+ mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0LxhYD-1sjCVE00Wx-017GzL; Fri, 03 May 2024 20:56:35 +0200
+Date: Fri, 3 May 2024 14:56:33 -0400
 From: Parker Newman <parker@finest.io>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman
+Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Parker
+ Newman <pnewman@connecttech.com>, LKML <linux-kernel@vger.kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman
  <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <20240503143303.15bf82bc@SWDEV2.connecttech.local>
-In-Reply-To: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
-References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
+Message-ID: <20240503145633.1ad55378@SWDEV2.connecttech.local>
+In-Reply-To: <ZjUEURneUmZ4nmbC@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+	<20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
+	<702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
+	<ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+	<20240503102632.112a34bd@SWDEV2.connecttech.local>
+	<ZjUEURneUmZ4nmbC@smile.fi.intel.com>
 Organization: Connect Tech Inc.
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -51,68 +57,98 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:F1IeiN1k56yuKR+6PWmO0mM4xoZZm3//U46G+/nOhE+QBjJcUMR
- dDFUZPQ2RwW0++HvTVp9vFIhjKz2ac0IQAg5wPMxaFvrGzGwE+BZRtneE++B+69+DXXUQcX
- RzGk8ZA4Ci3r5PGBM5mf2jgIbsltIm3k6vYpfQDcLQlRVJ1nmjR/6MtnWZn5duCUMOg46tg
- a5T/QpiqDJQnmwLvRNlew==
+X-Provags-ID: V03:K1:cLVJIpyEfukT7LHtxza3jwsgSVQAv89BtasT0nnie4B6k/uh3Wn
+ MN2xos2eIgojKXgZlDmDHW3cdHH3EFB5zFJq0FGPf5yIP3iXRvLHvG5oqQaJ7IcBwGA80GF
+ yRYmnPe3XBSwRspHA+0noB0Z1cb4GrW7VtD5FCZyMXqKXKNVmluJ+9RyADCHJFKhOSxRSd6
+ 6uf8O04as/SkHttot+zvA==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:z6tPXeVmnlA=;EnWuVFXag5b+89g7vcHid7uBS0j
- cJzBLP0zciG67QYq4nXDKis0mdiLlNZaUC3/vTuH7zqpaw5RWOT/7igoO5UYHavWrzDc1Jfkk
- Ql5I4PDsBM29DCFWNyQKQ2RbHfiLWMoo9p4yMr6xtjJAcOc0X99xO2NKZgEUeIp3HrAuy3zk/
- c+QSzzPN8wnMwlgOaFfYww7qU6QhmYBFAPB+rFzqbAPF/cNKwlPGUERqdjXlr2lJvr5WRm+Y7
- lTLFYFTOI2edV+d71/pg+7YBoNQggs3dxZd/VLD3jzu9+EWW99zUQcIR6l87lwoxLKo/Ecw1r
- oKCSuwVCNu6l9LNlcCH/JsgZfCbAeOTa8j++AzlqwhAj+0XmcIfHrUss3MeyykzLxQV7Rda27
- GrUArWkw4jcDjUfe5B3oCbuI2rIZRTXBXFIz8uCuQZFbm4KYwmp/Hg+2e+Sanr5rq1s721rmK
- rvkaZcVdeX0ShaIFwLQRm2COkO6pUBaik0fKNxtDl8d2w6XaZvsMTVI41aZphFkQJ7qMopCQP
- JLEImCKbYDh6wRc4RU1HVKtEE9q7u9QdqHPbOXtV0SnOnRcAr7N88rEZ9VHlyLg5He8R+dq79
- bDjOJW6YXKslrUOKNdYgItuyL7qcWr/N7br+Vzty+FFSLg0GiHb7GGRM1hVwQGodnMenE2fYS
- PG8rWuidwUpAzW2RvfBZLCMB6Zb0xt/dt8bytnmKcYXWYPd5+TrwI9y3sYDxrQPOiDmMTSoCF
- qIPOubzqyi+7UL+AkouqQodqKoXjvuRw4ivsr+0koqQimsZM66Vm5M=
+UI-OutboundReport: notjunk:1;M01:P0:zDp5WcS2eQM=;TSYrBciSm/jwQqbvmJA0qfCe+NU
+ r3LkB5LaQkBs7ICgII1lBFUXPyymwsroAoPflGcIzdF2dksMjyFYjF9zVr812RRGGDBISC8Mf
+ UcGlzImEEHT02Y0W72WVQixhWO3PbRGMZO8Zoz+ZP8oLzi71E9mJinbtkaAHTotzqNuQF9ZLQ
+ MsMv5apOSxW2Utu9jjYW8+YEnYXEbeXf9z2Ksjv+S1+jFh7N+ftLkRWI2rknvwqiq4fwYbQOH
+ YTnio80b8DL8xnmFWDULBaWc5yu1kOuq6XzPbOumTNIBVxBShzsZQPJldTFjZPogXRsNaSEXH
+ I5Qd5I52psTm2jO/V+bPsBNTQv5kE4kMOQ6l1iYmFZcGmDcg+QvuSj/D6ZKBdBkJG5vsg9OYE
+ 2vIftqczONnZ9A3iZ4EBsDDsbF6uJjRnSU4XyOYNGPvgEXGqwn2VvqRx0u/u8R4JvvyvbCPKT
+ VU9H6A7kiD1fXqAtR1nTDDHBcF+SGAF27d0+xOTtTM13hrlwkE7iM5fCNc/X/mEkjBz0ywgGj
+ bEdz5FyBQXjZxDa0OhSQTTUcT7VOPhMpbQzGmcrOFsqzgHYkqZfOoxMkeUrOlPJSukmA+0Hhe
+ VLattDaWR3yIvztXp9MZp1+R0Yo31GxXsEsz0yCiH6F7E16SJCnBCtxRZ44UvW7jIFEzOWSlV
+ yE8zModPoVoCF43kAPBCIlz2+UtQmxZRgCb0cgQXNmprgKpCLuHAx2aV1DR/GgLMPJrjAUmoS
+ PDuYkBDD6Dreh7przY0/nYvOnNxvRT/PYPCxNyhpw5us+jXmtEl7WM=
 
-On Fri,  3 May 2024 20:15:52 +0300
+On Fri, 3 May 2024 18:35:45 +0300
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> After a rework for CONNTECH was done, the driver may need a bit of
-> love in order to become less verbose (in terms of indentation and
-> code duplication) and hence easier to read.
->
-> This clean up series fixes a couple of (not so critical) issues and
-> cleans up the recently added code. No functional change indented by
-> the cleaning up part.
->
-> Parker, please test this and give your formal Tested-by tag
-> (you may do it by replying to this message if all patches are
->  successfully tested; more details about tags are available in
->  the Submitting Patches documentation).
->
+> On Fri, May 03, 2024 at 10:26:32AM -0400, Parker Newman wrote:
+> > On Thu, 2 May 2024 20:20:01 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote: =20
+> > > On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo J=C3=A4rvinen wrote: =
+=20
+> > > > On Thu, 2 May 2024, Andy Shevchenko wrote:   =20
+>=20
+> ...
+>=20
+> > > > >  	// Send address to read from
+> > > > > -	for (i =3D 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>=3D 1)
+> > > > > -		exar_ee_write_bit(priv, (ee_addr & i));
+> > > > > +	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
+> > > > > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
+> > > > > =20
+> > > > >  	// Read data 1 bit at a time
+> > > > >  	for (i =3D 0; i <=3D UART_EXAR_REGB_EE_DATA_SIZE; i++) {
+> > > > > -		data <<=3D 1;
+> > > > > -		data |=3D exar_ee_read_bit(priv);
+> > > > > +		if (exar_ee_read_bit(priv))
+> > > > > +			data |=3D BIT(i);   =20
+> > > >=20
+> > > > Does this end up reversing the order of bits? In the original, data=
+ was left
+> > > > shifted which moved the existing bits and added the lsb but the rep=
+lacement
+> > > > adds highest bit on each iteration?   =20
+> > >=20
+> > > Oh, seems a good catch!
+> > >=20
+> > > I was also wondering, but missed this somehow. Seems the EEPROM is in=
+ BE mode,
+> > > so two loops has to be aligned.
+> > >  =20
+> >=20
+> > I just tested this and Ilpo is correct, the read loop portion is backwa=
+rds as=20
+> > expected. This is the corrected loop:
+> >=20
+> >     // Read data 1 bit at a time
+> >     for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
+> >         if (exar_ee_read_bit(priv))
+> >             data |=3D BIT(i);
+> >     }
+> >=20
+> > I know this looks wrong because its looping from 16->0 rather than the=
+=20
+> > more intuitive 15->0 for a 16bit value. This is actually correct howeve=
+r=20
+> > because according to the AT93C46D datasheet there is always dummy 0 bit
+> > before the actual 16 bits of data.
+> >=20
+> > I hope that helps, =20
+>=20
+> Yes, it helps and means that we need that comment to be added to the code=
+. Is
+> it the same applicable to the write part above (for address)? Because AFA=
+IU
+> mine is one bit longer than yours. Maybe in the original code is a bug? H=
+ave
+> you tried to read high addresses?
 
-I was able to test the Connect Tech related code and everything is
-work as expected. I can't test the non-CTI related changes but they
-are pretty minor.
+The address portion is 6 bits, nothing extra, so what you have is correct.
 
-Tested-by: Parker Newman <pnewman@connecttech.com>
+The original code was legacy, I cleaned it up but didn't change those loops=
+.=20
 
-> In v2:
-> - fixed the EEPROM reading data loop (Ilpo, Parker)
->
-> Andy Shevchenko (13):
->   serial: 8250_exar: Don't return positive values as error codes
->   serial: 8250_exar: Describe all parameters in kernel doc
->   serial: 8250_exar: Kill CTI_PCI_DEVICE()
->   serial: 8250_exar: Use PCI_SUBVENDOR_ID_IBM for subvendor ID
->   serial: 8250_exar: Trivia typo fixes
->   serial: 8250_exar: Extract cti_board_init_osc_freq() helper
->   serial: 8250_exar: Kill unneeded ->board_init()
->   serial: 8250_exar: Decrease indentation level
->   serial: 8250_exar: Return directly from switch-cases
->   serial: 8250_exar: Switch to use dev_err_probe()
->   serial: 8250_exar: Use BIT() in exar_ee_read()
->   serial: 8250_exar: Make type of bit the same in exar_ee_*_bit()
->   serial: 8250_exar: Keep the includes sorted
->
->  drivers/tty/serial/8250/8250_exar.c | 459 ++++++++++++----------------
->  1 file changed, 203 insertions(+), 256 deletions(-)
->
+Your method works out the the same number of bits as the legacy method
+which sets bit 5 and has to shift right 6 times to get i =3D 0 which ends t=
+he loop.
 
+Parker
