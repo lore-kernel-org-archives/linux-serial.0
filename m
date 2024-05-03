@@ -1,166 +1,144 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C934206A;
-	Fri,  3 May 2024 14:47:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63FCA1514E5;
+	Fri,  3 May 2024 15:32:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714747662; cv=none; b=FZgQYz0FmlTiaQXaCGXLQtVO6FRyo5H//HTcpIYR9idN226AoHxm0UJWYVCmihxot0NxVGchguJtbQ0FWfjXcK8TQf7Xv4AOqSaeDJljjRsGmnPQX8xlnPrWyuIOeHab1EPbG/OgDIEksSkxGHFIPpcqSrTq6WSGGv+EKHGISLM=
+	t=1714750343; cv=none; b=TtwCo6USa1nGBfA+5jCs9GnKOOBSFNFMDHdiw8EtM2WshkCKcTpiKv3WU0cJuCwpFP44N5SM4uZZ0kp1KOx1b1wpue9ZJUtJ6OqfPSev+avRJAjAhJ/FkAeroyOHq9+EAgRXuES53EysI1dSBKV+2Nuh8OjTjF/MMk3bzdEXneY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714747662; c=relaxed/simple;
-	bh=TZJCI1romHYB3K7M0RnD7je7ZU6T6c8LjcioM4SVmjg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RqtfUkR07oShb9RcUWQy+ueztgvIzs5tXRQUXf0jskHRmRrt8IOkcV/FkssOPDUXEDBCRXV7LukvIVaSvZmLv5fi6mKkcJVAME/m2jIQlqasumON4noaJ4Tw2HLZlk/yJqceincG50E632T9Tg9jlgOndrLCZfbRQWnfmmcFA78=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=yn2Kqd6b; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1714750343; c=relaxed/simple;
+	bh=yxFVHXgO+anV8vLASPVvYb2Vlv6942qfs+GdKOTjrw4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OLuIOJWJP51SEF9wj8OXVvfih1mvZLIJ2F92EHREXKJVlqQF+O4gNQrKKO8lx4Ofd8TmfP6WLMKLC0Ui9IozVre/pkrMruR0+D3URG5tBRlWkuNTGH2ERI7QZCLcevpKw6uLTvaAgRJ3yL6FDvOM125BM0h1/EXaYguX7c2g2/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BsRENZ7u; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="yn2Kqd6b"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714747652; x=1715352452; i=parker@finest.io;
-	bh=T+69W9y9gDlQCEnhSbezE3ef/Q0WYMrfqF0FGdvI5SA=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=yn2Kqd6b3pRoSSrbwBF8FrgYEwKgNcWBS+J91CM2AQpwOrN0x9q1Z71m0wCAgX8D
-	 mIh80H/I4xrGZNm3EgtAi/2t0nouoiD3eChAkU+ZC7u8Cugm7VlpL2cTLEk0/l1Yc
-	 FRdBRLCwl+/hy/2B6jELkjaEqfCl5EW6x6+q19B+RdWi7YagT1X8Hvh5/j0z8VtgX
-	 9KQSUMf44dr9NeaWfo6LhroJBoRRtNHXVTw/w6PFv91Q3b/eiKjvt6aTT01XsLFbb
-	 miIWGpsju+b9RBLbkqv8QbJ90yPylnwGni5uAjUPSvC7Dy+7pT8bcXtfJ+SmkRw9t
-	 fWoYtiE1ItKwkHx02Q==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0M1DzC-1svgi348z2-00xAg6; Fri, 03 May 2024 16:47:32 +0200
-Date: Fri, 3 May 2024 10:47:30 -0400
-From: Parker Newman <parker@finest.io>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <20240503104730.3e0f55d0@SWDEV2.connecttech.local>
-In-Reply-To: <20240503083638.0f8d9afb@SWDEV2.connecttech.local>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-	<20240502114645.4445b3da@SWDEV2.connecttech.local>
-	<ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
-	<20240502120840.02c65f30@SWDEV2.connecttech.local>
-	<ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
-	<20240502134949.5e780635@SWDEV2.connecttech.local>
-	<ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
-	<20240503083638.0f8d9afb@SWDEV2.connecttech.local>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BsRENZ7u"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714750341; x=1746286341;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yxFVHXgO+anV8vLASPVvYb2Vlv6942qfs+GdKOTjrw4=;
+  b=BsRENZ7ukJo8Qnmr4DEsX+1ZtJbgsHRVRaArPZYAnv0Ue0/SITPsHLte
+   Teb/GCWW1nVwWYTFfQ5aizD5gv3FBxcndlc9k8nQtMW3V/HgCROLWO31D
+   IQLlC6Is60D4iyZt0JLrOOAY5YbdBh2/YHWqOx36M1ohaPXq6I0/AN7nt
+   VpuZ1G+GGfcDAWfLj4u2ta30KfvmnbsW5h+CfdshEf73In0kWuAtqxCQ4
+   pWLCd49MicS/qhWZFVQOJ/EM1s8P/4ViFV8l6H5Y0CjWv9UKyulqQVx/l
+   7G4ry+3ZE00bjAeDpOd65rI8m3gDEYe6cvb7/ekyrQZ26qy5q1QSkFBzu
+   Q==;
+X-CSE-ConnectionGUID: uI+qh72/RFCU5sdhG255Nw==
+X-CSE-MsgGUID: UpGh5VboTrWuniVMwWU+Fg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="10488958"
+X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
+   d="scan'208";a="10488958"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:32:21 -0700
+X-CSE-ConnectionGUID: 2M/Q9VVTTQOObdpg6it7mw==
+X-CSE-MsgGUID: PPYkXuJ2SFy8qL2n0L+0bA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
+   d="scan'208";a="28070781"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:32:14 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s2utO-00000003gli-2OHk;
+	Fri, 03 May 2024 18:32:10 +0300
+Date: Fri, 3 May 2024 18:32:10 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	acpica-devel@lists.linux.dev,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Anup Patel <anup@brainfault.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Robert Moore <robert.moore@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Andrei Warkentin <andrei.warkentin@intel.com>,
+	Haibo1 Xu <haibo1.xu@intel.com>,
+	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
+Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
+Message-ID: <ZjUDeuCQNCuYgATA@smile.fi.intel.com>
+References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
+ <20240501121742.1215792-18-sunilvl@ventanamicro.com>
+ <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
+ <ZjNh0Llcx+0VHevy@sunil-laptop>
+ <ZjNmdfR2J6hNnYle@smile.fi.intel.com>
+ <ZjN3GQI3gegYOIgS@sunil-laptop>
+ <ZjOy2G0qN5G076i0@smile.fi.intel.com>
+ <ZjTtx88zk4GvCImk@sunil-laptop>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:H/QltAz0nGlYfQDl9r0XHlXOofS8l7UvFlDkn49Jwh3MvBzTn26
- OI6KbRdnUUp69MOTajTvFjM8WlY5pJf3Mz1siEKM/lJVi1rzsNd7tGm/h9MSdl9TteSLcbg
- /9/zNCWabhcDZBmg2F5aTEH5qeoZSZi+yne7V5jlrD/8zYFPFfI3aBa61fHLNWexlkSOUdm
- 3LP1/V1XKDXS7HluBRWsg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:n8xASmWg36Y=;WXw9ghYm9n6Z43z2zipX7m+qDlx
- ntsqrm2aVP27mlEp2NXGVmTDQJhvw6DWl+aEZdrWMoFOcGcR/Xv9JNygmLDS3pvy1Ge+EADyF
- wPLn0nDsIoVjvQzx+jM20zl066uWiCO1m2p2kOmgTwcIFZ5hV3osadsDWA8YwLk06huvhWLFJ
- kqvOsTcJIsQdH/9D7LS2JGzytlaxnR8TkYckbDx4GvN/zqaQX3fHyiwEXPBF9M6P5Efg+SpsO
- jxJyzibDPM0WJE+vUfciXkf2ZuZzo2tU8e8NF3rMsZ4bqbgknBOaeMc+1efRZy0OEXA9B71ft
- ta39w+AI3Igcr3usJwPDw34Ga7nGOvodO9ahzF9V/Ynw6SjVVd/bz7Bzuh3LoU3nV4bwVOKuy
- f6ojCTwcGWQlIlCBnnvTKNw9JVTJGl0bbeGqLU3OaMyzBdUMXEJ6rC81UlgeILmCYqgsNuM6m
- gP7TcCcIIjuhQtsGCLDMHK/FLeSlYQsi55qadkYKAUlhODXBw6Z16tioQWE8tVW9bJElzQ0vy
- dGx2l5NViIzydug2oICZSDTz017/aoGYXiGM0iqpEcrHEdbv9TW6TBPpEv60KYPOjuZvItcGS
- IkdT+mrZ64leVFtQN6fG/BEOgvoEwh834zhIVSry/TQyrU5mG5f4B2P4jPgMdy8EYeHkVsmAt
- 7pKY4XQebvfhN9OIRWUWXStondShibvfwVEijZG5I2NaEWW2dGO1fQtl64/mjdP+rFqyv6zDc
- nM8mXNNEAvzHcpqiSNSXvGcpAMAmFU5xk7FmrShld3037zwvpx76Dg=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZjTtx88zk4GvCImk@sunil-laptop>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, 3 May 2024 08:36:38 -0400
-Parker Newman <parker@finest.io> wrote:
+On Fri, May 03, 2024 at 07:29:35PM +0530, Sunil V L wrote:
+> On Thu, May 02, 2024 at 06:35:52PM +0300, Andy Shevchenko wrote:
+> > On Thu, May 02, 2024 at 04:50:57PM +0530, Sunil V L wrote:
+> > > On Thu, May 02, 2024 at 01:09:57PM +0300, Andy Shevchenko wrote:
+> > > > On Thu, May 02, 2024 at 03:20:08PM +0530, Sunil V L wrote:
+> > > > > On Thu, May 02, 2024 at 12:17:59PM +0300, Andy Shevchenko wrote:
 
-> On Thu, 2 May 2024 21:01:54 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
-> > > On Thu, 2 May 2024 20:22:47 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
-> > > > > On Thu, 2 May 2024 19:01:01 +0300
-> > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
-> > > > > > > On Thu,  2 May 2024 17:43:54 +0300
-> > > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > > >
-> > > > > > > > After a rework for CONNTECH was done, the driver may need =
-a bit of
-> > > > > > > > love in order to become less verbose (in terms of indentat=
-ion and
-> > > > > > > > code duplication) and hence easier to read.
-> > > > > > > >
-> > > > > > > > This clean up series fixes a couple of (not so critical) i=
-ssues and
-> > > > > > > > cleans up the recently added code. No functional change in=
-dented by
-> > > > > > > > the cleaning up part.
-> > > > > > >
-> > > > > > > Just an FYI I submitted a patch series that fixed several of=
- these issues but I
-> > > > > > > think it fell through the cracks (I know everyone is very bu=
-sy!).
-> > > > > > >
-> > > > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.=
-git.pnewman@connecttech.com/
-> > > > > > >
-> > > > > > > I believe my previous patch series is no longer required. Th=
-is one fixes
-> > > > > > > everything.
-> > > > > >
-> > > > > > I haven't noticed that, if it contains duplicated patches, I m=
-ay replace mine
-> > > > > > with yours if you insist.
-> > > > > >
-> > > > > > In any case it's better to reply there that you prefer this se=
-ries to be
-> > > > > > applied, so Greg will not pick it up.
-> > > > > >
-> > > > >
-> > > > > I do not have a preference. I am fine with using yours if it is =
-easier on
-> > > > > the maintainers.
-> > > >
-> > > > Up to you, there is no issue to take your patches in case they are=
- the same
-> > > > (or quite similar) as mine. I can pick them up, just tell me if yo=
-u want this
-> > > > to happen with a list of the patches (as mail Message-Id).
-> > >
-> > > Just use yours.
-> >
-> > Okay, thanks!
-> >
-> > If you are going to test, better to pay attention to the BIT() convers=
-ion patch
-> > as Ilpo noted an issue. I believe it's easy to drop (via local git-reb=
-ase run)
-> > or move and test separately.
-> >
->
-> I am working on testing now but patches 7 and 12 did not apply with git =
-am.
-> Both failed around lines 1095/1096.
-> I can apply them manually but I may be using the wrong branch (tty-next)=
-.
-> Which branch/commit did you create your patches from? I don't see it in =
-the
-> patch submission.
+...
 
-I figured it out. git am was applying the typo fix patch out of order.
-Sorry, I didn't notice that. Patches should be fine.
+> > > > > This driver is not a duplicate of 8250_pnp. It just relies on UART
+> > > > > enumerated as platform device instead of using PNP interfaces.
+> > > > > Isn't it better and simple to have an option to enumerate as platform
+> > > > > device instead of PNP? 
+> > > > 
+> > > > Ah, then extract platform driver first from 8250_core.c.
+> > > > 
+> > > Let me know if I understand your suggestion correctly. Do you mean call
+> > > something like serial8250_acpi_init() from serial8250_init() and
+> > > register the driver directly in serial8250_acpi_init()?
+> > 
+> > Extract the code to be 8250_platform.c and update that file.
+> > I have locally the extraction of RSA code, I will see if I can help you
+> > with the rest.
+> > 
+> Thanks!. That will be helpful. TBH, I don't understand what to do for
+> extracting the platform driver code. There are already several vendor
+> specific UART drivers (ex: 8250_fsl.c) which are enumerated as platform
+> devices. 8250_core.c looks cleanly supporting such drivers which can
+> register themselves with the core. For generic UART, DT has 8250_of.c
+> and ACPI has 8250_pnp.c. But 8250_pnp.c comes with baggage of PNP
+> contract. So, the driver in this patch is similar to vendor specific
+> drivers to support generic uart devices which are enumerated as platform
+> device.
 
-I can do a final test once you decide what to do with the BIT() conversion=
- patch.
+> I can rename 8250_acpi.c to 8250_platform.c if that is better.
 
-Parker
+No, that's not what I meant. We _already_ have a generic platform driver,
+it's just inline in the 8250_core.c and needs to be extracted. When it's done,
+you may simply add an ACPI table to it.
+
+> Could you please help with a patch even if not compiled so that I can
+> understand your suggestion better? 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
