@@ -1,88 +1,120 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3CFA2B2DA;
-	Fri,  3 May 2024 08:09:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA4A14D446;
+	Fri,  3 May 2024 09:01:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714723757; cv=none; b=W2mrbYcRamEA1pCI37aSLBV1MVB7cbcuXlXILTOfucRLaPJRmIkAELSL+nay6c1EKfGwpFiuR37SizE2NOvciEqPTzdMx22XS/29TKJW9M7IIYLBJsIbR6ren6Cr6tMrkQx8mHGxVmOeYua+IaViygO1Jvr67MMCItOGkuE3W8Y=
+	t=1714726896; cv=none; b=I9RIeEwxmK5SGAEXfxiuLL+Ze55cjW8JZFh2HOGZL4NoOl9j1Ho+wEg36FQoxItZLxy0GAqMtsNezpx7PwnJlU4sPfVQlPUuvI038ucCMDELdMb7YsukUoXj3lvZGcc623yvsRWdbRjUFZ1obgbhk74HyDhCCp8G6S6pOMOToB4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714723757; c=relaxed/simple;
-	bh=ENBYZblky69TdSDJSNn9y3+7hJ7kpBrY9SAKhxMcPLk=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:To:From:Subject:
-	 References:In-Reply-To; b=C0kVzNkdPNDivaXy0inSW7Zc2G08k62aeFUlx99RBiCcwra/sfLlLBPBUtPtZBhoT1PglSLikZfkkvRtxrfGQt/L1RJzLsX+/JYytDlDPdVoBpLTCXh1N8iGLZQI5ODnDBXfphwyb8FnOhrxlMqm0RnR/CQ95p294yvDqbRqMIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=Blluietw; arc=none smtp.client-ip=217.70.183.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1714726896; c=relaxed/simple;
+	bh=u5aZ5ipEo3sZMpL59dkvKjOGLqG20DnDPQajCwv//Gg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GJK3NOfvGd+2LzP4yIPsfz2WZdf7gaAX3cTZfPG/QfWKPKN41wDBbD5MjNez/YAuJjMizQNNwDL9W0BYwiw5VQnpyouaZtIJrdQeWUa2kRmyNuKst6WRm/1fD9OrZ1GFy7omzqQaFOwLzHpgORYw+T4Hp7ulFANKeZiCf1lKQXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FOIWqWVl; arc=none smtp.client-ip=209.85.219.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="Blluietw"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id D375D60002;
-	Fri,  3 May 2024 08:09:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1714723753;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ENBYZblky69TdSDJSNn9y3+7hJ7kpBrY9SAKhxMcPLk=;
-	b=Blluietw4pdtohmjHd2RzatVreMetUg/mhou3P2N6SwAWZIfAublpJzB8x4GBuP641Dhle
-	mp3mE/SWphoWWrNIsdu1xOqu8wSkQifXZUwY0WRDtluUVSLtPcEIBuoPS69rNpHXKIZtF6
-	DW2KDGrnCMpfTEZRNBz32RuZ/11EpUS/AZYm1A2dYLjkQi5uMsF45CCo80rAsoXbM5NddF
-	ksfXnxsKBZnK7343Hx5sa5ji/suafrAsmgIV8HVttMDGk609QKi2S2mxqSvPBDywCDQzUH
-	YAddw6CACoSTKIIxjzuUeWxY+ieHwjyJYbUcofDi0pQ/KRQa5Ri3XD8urKrjyw==
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FOIWqWVl"
+Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-de46da8ced2so9974376276.0;
+        Fri, 03 May 2024 02:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714726894; x=1715331694; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vkGVDEWe+Eb6TEpNRfPQCdPoBlVyFk9pNDKSkhdvzdM=;
+        b=FOIWqWVlN+7BGAAFHogCPRirMPPK1q6xxO9CXoFzZVdOecXwp5Ejyb5Jn1kXuJ0ibd
+         8F0L8HMYJEPQENaZyyHDZoy2QAIoUMqfUSRlrT/B1FKah17nJRK0EPZq5+72O/rJwRTr
+         wti/O/qmIXBGesysxr+bRZHru3z5lkmT7494AGRyNQw6wnmgpEJWNJM2kp+zCFSbkDoP
+         Aho8W3emiFi6nNk+a5LCPdTJutrHSt42T+09bRZX5v4igkoWYKYhq44wp8QgcwC2tRs6
+         +vTLbhfZTska8tReQycHdI+Q39e7CZ/MXr3xCBp1XJIYWqgne5kwWK7OIKNXdAZ6zXif
+         WGRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714726894; x=1715331694;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vkGVDEWe+Eb6TEpNRfPQCdPoBlVyFk9pNDKSkhdvzdM=;
+        b=bW8W8ShJEDxgKwza+Vkk+zed1vPnS336+Tb3RDb4bDHhCsI4NVJsJL+AWxSYCBLGO7
+         FqhCbxpDjvAhdp3Lc4GjC94HbtiYLZr7VcadQrCC8C4OFNNoOUKezmbl2PImRRXK4LEt
+         4eI53sEAk/9Utu3jSF/FiExt2cT539DYhTQ6O/G7mWzzmCoz9k9bXYZBKDHx0Uj9i1G/
+         ELrol6sf3NgV1lhudJ8/R7/ammH52Ed94/OqykDghPf9fRrKWSo4MLco4wh925BP8AXw
+         gk7JWUHELiGhi5l9ONsAwNJ3+icXFqsji4INjZz74Na/ZMlS+ZhsI594ytYKF7OFgJEz
+         bsDw==
+X-Forwarded-Encrypted: i=1; AJvYcCXlE/nvAnw2jAuvMng+OC69bKFWR9vzHSecfOa6b/5fuApAk5Z22ZdMBGScf/WSI21I++WptG7jaBwCterNskqhAzEZiMDJeuoXd8pGBWONo5KWmjXwoYkFvzR2xrTW6t6C3zfeo2Sr7YtyEcAXM2MAF/rAhuXSXfKjFxG1nnYCfzgogE2TYQ==
+X-Gm-Message-State: AOJu0Yybzr0RMWF9WuFNd7+Kz7cH1STlWHQrFG5WCPe9qt/UEtYK+let
+	xpOd8idZS9WtaRvo0V2q64LrB5viNRXgv5QJrcZjeYAWaYnFcvEl2DDZd2tiy9a/KsqG5uHOvJi
+	z4sU+qEegBcCE8a5SgDE+ZJ/LCDs=
+X-Google-Smtp-Source: AGHT+IFn82EPy+JQW20yMvW5rRI+OPX1TAUiG082KOHrrEp3VW6buI2A7Zzw7E0HNx2IVj6osbOIG0rJKuAhFonyozI=
+X-Received: by 2002:a05:6902:2510:b0:dc8:5e26:f501 with SMTP id
+ dt16-20020a056902251000b00dc85e26f501mr2505239ybb.61.1714726894369; Fri, 03
+ May 2024 02:01:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+References: <20240501084110.4165-2-shresthprasad7@gmail.com>
+ <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com> <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
+ <2024050357-shading-fedora-2d4f@gregkh>
+In-Reply-To: <2024050357-shading-fedora-2d4f@gregkh>
+From: Shresth Prasad <shresthprasad7@gmail.com>
+Date: Fri, 3 May 2024 14:31:22 +0530
+Message-ID: <CAE8VWi+-HVuGo-ojGPwKubpLweBmJ4-L097nh03QkezcsciorA@mail.gmail.com>
+Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
+ using __free
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	davem@davemloft.net, jirislaby@kernel.org, sparclinux@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	javier.carrasco.cruz@gmail.com, skhan@linuxfoundation.org, 
+	Julia Lawall <julia.lawall@inria.fr>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 03 May 2024 10:09:08 +0200
-Message-Id: <D0ZUU7BGDGRN.1NJ3GVVIBL3P1@bootlin.com>
-Cc: "Sergey Senozhatsky" <senozhatsky@chromium.org>, "Steven Rostedt"
- <rostedt@goodmis.org>, "Thomas Gleixner" <tglx@linutronix.de>,
- <linux-kernel@vger.kernel.org>, "Greg Kroah-Hartman"
- <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>, "Russell
- King" <linux@armlinux.org.uk>, "Tony Lindgren" <tony@atomide.com>, "Andy
- Shevchenko" <andriy.shevchenko@linux.intel.com>,
- =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, "Linus
- Walleij" <linus.walleij@linaro.org>, "Hongyu Xie" <xiehongyu1@kylinos.cn>,
- "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>, "Arnd Bergmann"
- <arnd@arndb.de>, "Lino Sanfilippo" <l.sanfilippo@kunbus.com>,
- <linux-serial@vger.kernel.org>
-To: "John Ogness" <john.ogness@linutronix.de>, "Petr Mladek"
- <pmladek@suse.com>
-From: =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>
-Subject: Re: [PATCH printk v5 09/30] serial: core: Introduce wrapper to set
- @uart_port->cons
-X-Mailer: aerc 0.17.0
-References: <20240502213839.376636-1-john.ogness@linutronix.de>
- <20240502213839.376636-10-john.ogness@linutronix.de>
-In-Reply-To: <20240502213839.376636-10-john.ogness@linutronix.de>
-X-GND-Sasl: theo.lebrun@bootlin.com
 
-Hello,
-
-On Thu May 2, 2024 at 11:38 PM CEST, John Ogness wrote:
-> Introduce uart_port_set_cons() as a wrapper to set @cons of a
-> uart_port. The wrapper sets @cons under the port lock in order
-> to prevent @cons from disappearing while another context is
-> holding the port lock. This is necessary for a follow-up
-> commit relating to the port lock wrappers, which rely on @cons
-> not changing between lock and unlock.
+On Fri, May 3, 2024 at 11:04=E2=80=AFAM Greg KH <gregkh@linuxfoundation.org=
+> wrote:
 >
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> On Thu, May 02, 2024 at 10:21:16PM +0530, Shresth Prasad wrote:
+> > On Thu, May 2, 2024 at 9:35=E2=80=AFPM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@linux.intel.com> wrote:
+> > >
+> > > On Wed, 1 May 2024, Shresth Prasad wrote:
+> > >
+> > > > Add `__free` function attribute to `ap` and `match` pointer
+> > > > initialisations which ensure that the pointers are freed as soon as=
+ they
+> > > > go out of scope, thus removing the need to manually free them using
+> > > > `of_node_put`.
+> > > >
+> > > > This also removes the need for the `goto` statement and the `rc`
+> > > > variable.
+> > > >
+> > > > Tested using a qemu x86_64 virtual machine.
+> > >
+> > > Eh, how can you test this with an x86_64 VM ???
+> > >
+> > > config SERIAL_SUNSU
+> > >         tristate "Sun SU serial support"
+> > >         depends on SPARC && PCI
+> > >
+> >
+> > By that, I mean that I compiled the kernel and ran the produced bzImage
+> > on a x86_64 qemu machine.
+>
+> But you didn't include the driver you were testing :(
+>
+> > I unfortunately don't have the hardware to test it on, but I don't
+> > think the change is complex enough to require testing on real hardware
+> > (unless I'm assuming incorrectly).
+>
+> That's why I asked if you had tested this or not...
+>
 
-Tested series on Mobileye EyeQ5, a MIPS64 platform that uses PL011.
+Really sorry about that, I thought compiling and booting would qualify
+as testing. What should I be doing then?
 
-Tested-by: Th=C3=A9o Lebrun <theo.lebrun@bootlin.com> # EyeQ5, AMBA-PL011
-
-Thanks,
-
---
-Th=C3=A9o Lebrun, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
+Regards,
+Shresth
