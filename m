@@ -1,153 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from sxb1plsmtpa01-08.prod.sxb1.secureserver.net (sxb1plsmtpa01-08.prod.sxb1.secureserver.net [188.121.53.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8956715357A;
-	Fri,  3 May 2024 15:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA5515098B
+	for <linux-serial@vger.kernel.org>; Fri,  3 May 2024 15:33:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.121.53.79
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714750427; cv=none; b=bYiAUqUoJ/+mFTUySJbJy81VrcQAcosUT1uvGVa2uCjgUrHLWwnd3jEQnl53IaZHokG4tJYDNSNA1TOZuTf5KYx3jpUKb8UpZIoGbwX7hdWsbgNRZAV8mxOfxVj4X1KiDm06Ec3I5ZP4tKC8aFuUy977pDyjSR/VsdBJrMOZnlg=
+	t=1714750439; cv=none; b=Y54iy5CyprWN78BlMOGMHlOspbInK5scyut9ZRXhalfXEmv5JPG+qKpDvIYj/xwR9l/kS6+yjpVO9GSn9gY3ITEYMmIOFkE7G+7M7jLfpsBu/31JDa3zDC1Ao2+qPhKcT95tIs4AREiYDxzGrlijkJl736tGBnYq3yS9nOgPafE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714750427; c=relaxed/simple;
-	bh=JXQcDcKWqzjhdoLVmcGoX/pJLAV7051JyL1j7rqs0Jo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=R3n2yBsq6YoFb2Q2IF77tuaY+VuwFRKx+t3kv4s9gHQ1ip8PWmfs9mH3BppX7yK7rX6ej5InZr2ZyMq7x+IQ+yKJ7J0vg3SX747Yfu8sDVwNPEMciVOKRz6pVIov6u17sT26Cj+RMCrciUb/cukydOx/zeFTMi1sxwRaywvwE/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nYRa2Eql; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nYRa2Eql"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714750426; x=1746286426;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JXQcDcKWqzjhdoLVmcGoX/pJLAV7051JyL1j7rqs0Jo=;
-  b=nYRa2EqljJr8J6rVpiBF3eZWhS5Y30rkmnjwqiHmCCIyhawMVNLWwe1U
-   62fzBkwKTBDeJddyahyWkyUW15NjO1cYGbZwhBNOe/3ePeM5Q/Ek9Xa5x
-   g6rZZZJ5DfHQ5wt8CP779NO7A0b3MHg+SdUryigX31KwP6f84XlmcuXvL
-   tB0Q1DxUKHYm16wjaEeSISXVXJq6RiYjI7kaxtIHxh64iABGtsiAf3Jpe
-   OWrI9qwGzV6EXvOcwIAwxZubnJKmzym6yNlyBnWjRLsqbEgWF+EXj8aV6
-   jS0NPRsFGdVZAZh9HhZbGaO3pkDTKY478fYT/sxYbJQ5ttp32YUXPPuhp
-   g==;
-X-CSE-ConnectionGUID: FLhLzZYYRKaUk3O8ueYiRA==
-X-CSE-MsgGUID: xHl3SvzuQtOlIz3FO5Zbow==
-X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="21246756"
-X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="21246756"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:33:38 -0700
-X-CSE-ConnectionGUID: NnLN++MEQZeMqitbiHkXBQ==
-X-CSE-MsgGUID: E5c4JURLQzmMoyl+EcK2qA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
-   d="scan'208";a="27565553"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:33:36 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s2uui-00000003goA-3q75;
-	Fri, 03 May 2024 18:33:32 +0300
-Date: Fri, 3 May 2024 18:33:32 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+	s=arc-20240116; t=1714750439; c=relaxed/simple;
+	bh=rS3fN73mF/lHyDsIXFmlb4B7NoytOXSeyHTGwmcS4OU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LhmFAI6yHUzfV0EmB64gbP+DpvrtdbS0/e12mYv3+3ELGDC+zbKf1DbBIcy3qpJ/AHezFFoB15XmU0G/pbL9sgx/fLfuYRAvS7hOQtSluSwzEltXe90CIbv30JgEFbBr3cN4v5VfWSQgNqm0ql+vfKdSP7dhe8rKexNXs2pjRmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com; spf=pass smtp.mailfrom=exordes.com; arc=none smtp.client-ip=188.121.53.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exordes.com
+Received: from exordes.com ([87.92.66.153])
+	by :SMTPAUTH: with ESMTPSA
+	id 2tK2scLjMxHuR2tK4sVIBL; Fri, 03 May 2024 06:51:38 -0700
+X-CMAE-Analysis: v=2.4 cv=cvxQkE4i c=1 sm=1 tr=0 ts=6634ebea
+ a=13ZijDARommhillvnyM9pA==:117 a=13ZijDARommhillvnyM9pA==:17 a=eCYXQZmkAAAA:8
+ a=uR_b-lsrg1CRw0mhrfkA:9 a=77AlN4CNbnqoG63BkLSu:22
+X-SECURESERVER-ACCT: dai.lu@exordes.com
+From: Lu Dai <dai.lu@exordes.com>
+To: npiggin@gmail.com,
+	christophe.leroy@csgroup.eu,
+	naveen.n.rao@linux.ibm.com
+Cc: Lu Dai <dai.lu@exordes.com>,
+	mpe@ellerman.id.au,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <ZjUDzB2aRjBa9dII@smile.fi.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
- <20240502114645.4445b3da@SWDEV2.connecttech.local>
- <ZjO4vYEBzxU3fpzC@smile.fi.intel.com>
- <20240502120840.02c65f30@SWDEV2.connecttech.local>
- <ZjPL5z7ah-Qkct6l@smile.fi.intel.com>
- <20240502134949.5e780635@SWDEV2.connecttech.local>
- <ZjPVEr7D0lEf86kQ@smile.fi.intel.com>
- <20240503083638.0f8d9afb@SWDEV2.connecttech.local>
- <20240503104730.3e0f55d0@SWDEV2.connecttech.local>
+	javier.carrasco.cruz@gmail.com,
+	shuah@kernel.org,
+	julia.lawall@inria.fr
+Subject: [PATCH V2] tty: hvc: hvc_opal: eliminate uses of of_node_put()
+Date: Fri,  3 May 2024 16:52:15 +0300
+Message-Id: <20240503135215.252635-1-dai.lu@exordes.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240503104730.3e0f55d0@SWDEV2.connecttech.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfK2SJXHeQgzrLA0xsB+HjKB3cxOwZkyFDlpkZ84PVaqsyCTvL/FxZ0QPWHjEOQVWn2g7LFf8Y1sq0Te1o5VFqyt1HwcJcjs4d7qSc9L9LkLzL84OVPC3
+ R3wVQKH2DMNIRl/PcfXEfC2fVHQEWtVgWax+8p8AvBieqvfs06lv5qJgSmgBhF4L0o9dmXyfB2TEq5gYV5J9LmslArOLg2caADAnqmk4YwrN+ZG6Uo/u1Hki
+ N0Sh58JOo9lh/c9kig/nXnuGFy5K8Booorzo0OLIMQppxlEmIMxOUE9Cn0jLsnNL9eKwOEgZpIkl/SbY/mbeQefS6o1Q6afx/VIdqA5x1ZtR2pEdBJmnlhei
+ u1DCKkHGmP9zDD872aSfeOQlmuWgehboPXxmPblkGmdIB/tCWNrW62kb0N/LFGRvGpO0RCwe4W9U4Sjazhe9lRohC70zG2V+uet/SFJOyiDqEuX5ArHiVYiL
+ 5itZKd5GZnpdmi/NxfkU+4Te9p3P073L2unWzktYpiuwr/UzkyYU0kPxm/rcGZywpreg1whLxXnjs8VYihOorzHmxPh+g+uNtOGL4nrOLAACp4mf5mJ9pXIz
+ M/NdkrwoKVZEe7nMGQLFbPfgZNJrWXXtgzSyoileU3hDgA==
 
-On Fri, May 03, 2024 at 10:47:30AM -0400, Parker Newman wrote:
-> On Fri, 3 May 2024 08:36:38 -0400
-> Parker Newman <parker@finest.io> wrote:
-> 
-> > On Thu, 2 May 2024 21:01:54 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > > On Thu, May 02, 2024 at 01:49:49PM -0400, Parker Newman wrote:
-> > > > On Thu, 2 May 2024 20:22:47 +0300
-> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > On Thu, May 02, 2024 at 12:08:40PM -0400, Parker Newman wrote:
-> > > > > > On Thu, 2 May 2024 19:01:01 +0300
-> > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > > > On Thu, May 02, 2024 at 11:46:45AM -0400, Parker Newman wrote:
-> > > > > > > > On Thu,  2 May 2024 17:43:54 +0300
-> > > > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > > > > >
-> > > > > > > > > After a rework for CONNTECH was done, the driver may need a bit of
-> > > > > > > > > love in order to become less verbose (in terms of indentation and
-> > > > > > > > > code duplication) and hence easier to read.
-> > > > > > > > >
-> > > > > > > > > This clean up series fixes a couple of (not so critical) issues and
-> > > > > > > > > cleans up the recently added code. No functional change indented by
-> > > > > > > > > the cleaning up part.
-> > > > > > > >
-> > > > > > > > Just an FYI I submitted a patch series that fixed several of these issues but I
-> > > > > > > > think it fell through the cracks (I know everyone is very busy!).
-> > > > > > > >
-> > > > > > > > Link: https://lore.kernel.org/linux-serial/cover.1713533298.git.pnewman@connecttech.com/
-> > > > > > > >
-> > > > > > > > I believe my previous patch series is no longer required. This one fixes
-> > > > > > > > everything.
-> > > > > > >
-> > > > > > > I haven't noticed that, if it contains duplicated patches, I may replace mine
-> > > > > > > with yours if you insist.
-> > > > > > >
-> > > > > > > In any case it's better to reply there that you prefer this series to be
-> > > > > > > applied, so Greg will not pick it up.
-> > > > > > >
-> > > > > >
-> > > > > > I do not have a preference. I am fine with using yours if it is easier on
-> > > > > > the maintainers.
-> > > > >
-> > > > > Up to you, there is no issue to take your patches in case they are the same
-> > > > > (or quite similar) as mine. I can pick them up, just tell me if you want this
-> > > > > to happen with a list of the patches (as mail Message-Id).
-> > > >
-> > > > Just use yours.
-> > >
-> > > Okay, thanks!
-> > >
-> > > If you are going to test, better to pay attention to the BIT() conversion patch
-> > > as Ilpo noted an issue. I believe it's easy to drop (via local git-rebase run)
-> > > or move and test separately.
-> > >
-> >
-> > I am working on testing now but patches 7 and 12 did not apply with git am.
-> > Both failed around lines 1095/1096.
-> > I can apply them manually but I may be using the wrong branch (tty-next).
-> > Which branch/commit did you create your patches from? I don't see it in the
-> > patch submission.
-> 
-> I figured it out. git am was applying the typo fix patch out of order.
-> Sorry, I didn't notice that. Patches should be fine.
-> 
-> I can do a final test once you decide what to do with the BIT() conversion patch.
+Make use of the __free() cleanup handler to automatically free nodes
+when they get out of scope.
 
-Can you revert it and test the rest? So we will know that they are okay.
-Or does the above implies that you already performed such a test?
+Remove the need for a 'goto' as an effect.
 
+Signed-off-by: Lu Dai <dai.lu@exordes.com>
+---
+Changes since v1:
+Move the assignment of 'opal' to its declaration
+Seperate the declaration of 'np'
+
+ drivers/tty/hvc/hvc_opal.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+index 095c33ad10f8..c17e8343ea60 100644
+--- a/drivers/tty/hvc/hvc_opal.c
++++ b/drivers/tty/hvc/hvc_opal.c
+@@ -327,19 +327,18 @@ static void udbg_init_opal_common(void)
+ 
+ void __init hvc_opal_init_early(void)
+ {
+-	struct device_node *stdout_node = of_node_get(of_stdout);
++	struct device_node *stdout_node __free(device_node) = of_node_get(of_stdout);
+ 	const __be32 *termno;
+ 	const struct hv_ops *ops;
+ 	u32 index;
+ 
+ 	/* If the console wasn't in /chosen, try /ibm,opal */
+ 	if (!stdout_node) {
+-		struct device_node *opal, *np;
+-
+ 		/* Current OPAL takeover doesn't provide the stdout
+ 		 * path, so we hard wire it
+ 		 */
+-		opal = of_find_node_by_path("/ibm,opal/consoles");
++		struct device_node *opal __free(device_node) =
++			of_find_node_by_path("/ibm,opal/consoles");
+ 		if (opal) {
+ 			pr_devel("hvc_opal: Found consoles in new location\n");
+ 		} else {
+@@ -350,13 +349,13 @@ void __init hvc_opal_init_early(void)
+ 		}
+ 		if (!opal)
+ 			return;
++		struct device_node *np;
+ 		for_each_child_of_node(opal, np) {
+ 			if (of_node_name_eq(np, "serial")) {
+ 				stdout_node = np;
+ 				break;
+ 			}
+ 		}
+-		of_node_put(opal);
+ 	}
+ 	if (!stdout_node)
+ 		return;
+@@ -382,13 +381,11 @@ void __init hvc_opal_init_early(void)
+ 		hvsilib_establish(&hvc_opal_boot_priv.hvsi);
+ 		pr_devel("hvc_opal: Found HVSI console\n");
+ 	} else
+-		goto out;
++		return;
+ 	hvc_opal_boot_termno = index;
+ 	udbg_init_opal_common();
+ 	add_preferred_console("hvc", index, NULL);
+ 	hvc_instantiate(index, index, ops);
+-out:
+-	of_node_put(stdout_node);
+ }
+ 
+ #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL_RAW
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.2
 
