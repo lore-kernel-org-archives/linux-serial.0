@@ -1,128 +1,135 @@
-Received: from sxb1plsmtpa01-08.prod.sxb1.secureserver.net (sxb1plsmtpa01-08.prod.sxb1.secureserver.net [188.121.53.79])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA5515098B
-	for <linux-serial@vger.kernel.org>; Fri,  3 May 2024 15:33:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.121.53.79
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E13D154C08;
+	Fri,  3 May 2024 15:35:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714750439; cv=none; b=Y54iy5CyprWN78BlMOGMHlOspbInK5scyut9ZRXhalfXEmv5JPG+qKpDvIYj/xwR9l/kS6+yjpVO9GSn9gY3ITEYMmIOFkE7G+7M7jLfpsBu/31JDa3zDC1Ao2+qPhKcT95tIs4AREiYDxzGrlijkJl736tGBnYq3yS9nOgPafE=
+	t=1714750552; cv=none; b=lCVyOAr0E4j2KuhSBim19U+/FdfmnsbwG4srOGgsq7R6uxGBziibzhyb14XPclMe7rgSanxTwuukzoJ4//QPsia/ZUucpUE+octeWinvfwg5hJSqUM4D885cCZb38SOLRxU4sH5+fCe1+Vwt/OPLvnIQ/UDbA1m+43zsdrNHbDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714750439; c=relaxed/simple;
-	bh=rS3fN73mF/lHyDsIXFmlb4B7NoytOXSeyHTGwmcS4OU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LhmFAI6yHUzfV0EmB64gbP+DpvrtdbS0/e12mYv3+3ELGDC+zbKf1DbBIcy3qpJ/AHezFFoB15XmU0G/pbL9sgx/fLfuYRAvS7hOQtSluSwzEltXe90CIbv30JgEFbBr3cN4v5VfWSQgNqm0ql+vfKdSP7dhe8rKexNXs2pjRmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com; spf=pass smtp.mailfrom=exordes.com; arc=none smtp.client-ip=188.121.53.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=exordes.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exordes.com
-Received: from exordes.com ([87.92.66.153])
-	by :SMTPAUTH: with ESMTPSA
-	id 2tK2scLjMxHuR2tK4sVIBL; Fri, 03 May 2024 06:51:38 -0700
-X-CMAE-Analysis: v=2.4 cv=cvxQkE4i c=1 sm=1 tr=0 ts=6634ebea
- a=13ZijDARommhillvnyM9pA==:117 a=13ZijDARommhillvnyM9pA==:17 a=eCYXQZmkAAAA:8
- a=uR_b-lsrg1CRw0mhrfkA:9 a=77AlN4CNbnqoG63BkLSu:22
-X-SECURESERVER-ACCT: dai.lu@exordes.com
-From: Lu Dai <dai.lu@exordes.com>
-To: npiggin@gmail.com,
-	christophe.leroy@csgroup.eu,
-	naveen.n.rao@linux.ibm.com
-Cc: Lu Dai <dai.lu@exordes.com>,
-	mpe@ellerman.id.au,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	javier.carrasco.cruz@gmail.com,
-	shuah@kernel.org,
-	julia.lawall@inria.fr
-Subject: [PATCH V2] tty: hvc: hvc_opal: eliminate uses of of_node_put()
-Date: Fri,  3 May 2024 16:52:15 +0300
-Message-Id: <20240503135215.252635-1-dai.lu@exordes.com>
-X-Mailer: git-send-email 2.39.2
+	s=arc-20240116; t=1714750552; c=relaxed/simple;
+	bh=+qiUyuHYdoF2a6KXNUlTVYCi8PbGgXjnFiDn9PglpeM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I98qLxEamfBZ2b5OjzIkFaYjXjiiwb6HhW5Kc9JXzo8sHpbpi22aICiEpKWPjtrGxSiGPVuxTg8YqSxgr/76ESh+XtzNiqz0bqbljbrZBgnC1gsbSYAJFG4/hMNT7BJ7rCbwR8yzIA1450Gib3/lx+va6k/p63PhzotG8c8YYdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A0AaBGf1; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A0AaBGf1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714750551; x=1746286551;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+qiUyuHYdoF2a6KXNUlTVYCi8PbGgXjnFiDn9PglpeM=;
+  b=A0AaBGf1O9E4ZxdNzyCRS5m2yuwUj3QWAZAeGg9R3wvQ6jZGs6Cb0JiY
+   NvB3o6lh0UaPyJOrlxOWTY5yy5Kbr2+Pm9ad8ZVCnnF57amXvolL0ZaD3
+   fAMJnyo7bu7jNRcIm9kOWJ6LkkCZrCUgkDeHD7jsDqFQkJEdPbmGNhdCE
+   qwChnI1f2qFfkVMPVBASXVIJViqAY6dFyGFYRifHzF45sWUfR+8FNTbeH
+   oe8eUrmYZewXhNOZDdfwEpoK5yB5XOv76UWCxEZ1ChTeu2WTlM6F3ExIE
+   M1L2XzT9qnwyEa/TyPVHOi1Sn/53jrdSRISTq+koV2wfA/R06deb1enTd
+   Q==;
+X-CSE-ConnectionGUID: 1AXXTsaBQJ+FPpljLtAkmQ==
+X-CSE-MsgGUID: WfT/VcznQzuf0gQkdadWXA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="21713269"
+X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
+   d="scan'208";a="21713269"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:35:51 -0700
+X-CSE-ConnectionGUID: U3TqNEvQQwCYqIVjk76aMA==
+X-CSE-MsgGUID: UjPF7OFaR/acqaIhouctQA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,251,1708416000"; 
+   d="scan'208";a="27358043"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 08:35:49 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s2uwr-00000003gr7-3yxQ;
+	Fri, 03 May 2024 18:35:45 +0300
+Date: Fri, 3 May 2024 18:35:45 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Parker Newman <parker@finest.io>
+Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Parker Newman <pnewman@connecttech.com>,
+	LKML <linux-kernel@vger.kernel.org>,
+	linux-serial <linux-serial@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
+Message-ID: <ZjUEURneUmZ4nmbC@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+ <20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
+ <702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
+ <ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+ <20240503102632.112a34bd@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CMAE-Envelope: MS4xfK2SJXHeQgzrLA0xsB+HjKB3cxOwZkyFDlpkZ84PVaqsyCTvL/FxZ0QPWHjEOQVWn2g7LFf8Y1sq0Te1o5VFqyt1HwcJcjs4d7qSc9L9LkLzL84OVPC3
- R3wVQKH2DMNIRl/PcfXEfC2fVHQEWtVgWax+8p8AvBieqvfs06lv5qJgSmgBhF4L0o9dmXyfB2TEq5gYV5J9LmslArOLg2caADAnqmk4YwrN+ZG6Uo/u1Hki
- N0Sh58JOo9lh/c9kig/nXnuGFy5K8Booorzo0OLIMQppxlEmIMxOUE9Cn0jLsnNL9eKwOEgZpIkl/SbY/mbeQefS6o1Q6afx/VIdqA5x1ZtR2pEdBJmnlhei
- u1DCKkHGmP9zDD872aSfeOQlmuWgehboPXxmPblkGmdIB/tCWNrW62kb0N/LFGRvGpO0RCwe4W9U4Sjazhe9lRohC70zG2V+uet/SFJOyiDqEuX5ArHiVYiL
- 5itZKd5GZnpdmi/NxfkU+4Te9p3P073L2unWzktYpiuwr/UzkyYU0kPxm/rcGZywpreg1whLxXnjs8VYihOorzHmxPh+g+uNtOGL4nrOLAACp4mf5mJ9pXIz
- M/NdkrwoKVZEe7nMGQLFbPfgZNJrWXXtgzSyoileU3hDgA==
+In-Reply-To: <20240503102632.112a34bd@SWDEV2.connecttech.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Make use of the __free() cleanup handler to automatically free nodes
-when they get out of scope.
+On Fri, May 03, 2024 at 10:26:32AM -0400, Parker Newman wrote:
+> On Thu, 2 May 2024 20:20:01 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo Järvinen wrote:
+> > > On Thu, 2 May 2024, Andy Shevchenko wrote:  
 
-Remove the need for a 'goto' as an effect.
+...
 
-Signed-off-by: Lu Dai <dai.lu@exordes.com>
----
-Changes since v1:
-Move the assignment of 'opal' to its declaration
-Seperate the declaration of 'np'
+> > > >  	// Send address to read from
+> > > > -	for (i = 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>= 1)
+> > > > -		exar_ee_write_bit(priv, (ee_addr & i));
+> > > > +	for (i = UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >= 0; i--)
+> > > > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
+> > > >  
+> > > >  	// Read data 1 bit at a time
+> > > >  	for (i = 0; i <= UART_EXAR_REGB_EE_DATA_SIZE; i++) {
+> > > > -		data <<= 1;
+> > > > -		data |= exar_ee_read_bit(priv);
+> > > > +		if (exar_ee_read_bit(priv))
+> > > > +			data |= BIT(i);  
+> > > 
+> > > Does this end up reversing the order of bits? In the original, data was left
+> > > shifted which moved the existing bits and added the lsb but the replacement
+> > > adds highest bit on each iteration?  
+> > 
+> > Oh, seems a good catch!
+> > 
+> > I was also wondering, but missed this somehow. Seems the EEPROM is in BE mode,
+> > so two loops has to be aligned.
+> > 
+> 
+> I just tested this and Ilpo is correct, the read loop portion is backwards as 
+> expected. This is the corrected loop:
+> 
+>     // Read data 1 bit at a time
+>     for (i = UART_EXAR_REGB_EE_DATA_SIZE; i >= 0; i--) {
+>         if (exar_ee_read_bit(priv))
+>             data |= BIT(i);
+>     }
+> 
+> I know this looks wrong because its looping from 16->0 rather than the 
+> more intuitive 15->0 for a 16bit value. This is actually correct however 
+> because according to the AT93C46D datasheet there is always dummy 0 bit
+> before the actual 16 bits of data.
+> 
+> I hope that helps,
 
- drivers/tty/hvc/hvc_opal.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+Yes, it helps and means that we need that comment to be added to the code. Is
+it the same applicable to the write part above (for address)? Because AFAIU
+mine is one bit longer than yours. Maybe in the original code is a bug? Have
+you tried to read high addresses?
 
-diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-index 095c33ad10f8..c17e8343ea60 100644
---- a/drivers/tty/hvc/hvc_opal.c
-+++ b/drivers/tty/hvc/hvc_opal.c
-@@ -327,19 +327,18 @@ static void udbg_init_opal_common(void)
- 
- void __init hvc_opal_init_early(void)
- {
--	struct device_node *stdout_node = of_node_get(of_stdout);
-+	struct device_node *stdout_node __free(device_node) = of_node_get(of_stdout);
- 	const __be32 *termno;
- 	const struct hv_ops *ops;
- 	u32 index;
- 
- 	/* If the console wasn't in /chosen, try /ibm,opal */
- 	if (!stdout_node) {
--		struct device_node *opal, *np;
--
- 		/* Current OPAL takeover doesn't provide the stdout
- 		 * path, so we hard wire it
- 		 */
--		opal = of_find_node_by_path("/ibm,opal/consoles");
-+		struct device_node *opal __free(device_node) =
-+			of_find_node_by_path("/ibm,opal/consoles");
- 		if (opal) {
- 			pr_devel("hvc_opal: Found consoles in new location\n");
- 		} else {
-@@ -350,13 +349,13 @@ void __init hvc_opal_init_early(void)
- 		}
- 		if (!opal)
- 			return;
-+		struct device_node *np;
- 		for_each_child_of_node(opal, np) {
- 			if (of_node_name_eq(np, "serial")) {
- 				stdout_node = np;
- 				break;
- 			}
- 		}
--		of_node_put(opal);
- 	}
- 	if (!stdout_node)
- 		return;
-@@ -382,13 +381,11 @@ void __init hvc_opal_init_early(void)
- 		hvsilib_establish(&hvc_opal_boot_priv.hvsi);
- 		pr_devel("hvc_opal: Found HVSI console\n");
- 	} else
--		goto out;
-+		return;
- 	hvc_opal_boot_termno = index;
- 	udbg_init_opal_common();
- 	add_preferred_console("hvc", index, NULL);
- 	hvc_instantiate(index, index, ops);
--out:
--	of_node_put(stdout_node);
- }
- 
- #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL_RAW
+
 -- 
-2.39.2
+With Best Regards,
+Andy Shevchenko
+
 
