@@ -1,57 +1,66 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B48241C0DC7;
-	Thu,  2 May 2024 21:38:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8430D29E;
+	Fri,  3 May 2024 03:10:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714685932; cv=none; b=Jm3YfVAOgson00w19oSqyoVohD4WPLY41HpqaiQP4spe1Rk6dJxpsUihBE5O0BGQ9zEPvjKzHS7Yx29Ipp4UBgbDtrlzJt0674uKIKjZekkZvJXmum+mPbV+AZBhhFks2n/1F1OIbKtBpv/q9/mW8Fz9ynLtZ0km1yAYN8Evxf8=
+	t=1714705806; cv=none; b=AtMoMNswOSWKF49XSx4l6QxrNORlRFWbx4fKU2N/U0NhGvx+HWY17K7ZUSjEgZsh6WvCs51sc7/OViDwHR6h5GwbLJ9u/OZsSDdqJ5YLT7dIvfsilcHiTOZeyfn6tCb4Te83R2i5je8U9YNcYQ0PLCHWcLu60iuRCoXUItqfAJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714685932; c=relaxed/simple;
-	bh=srR/EU4bu+X+MU/e0RZwp80S2gQQhwvRUTVL0x1Wui4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Y6UclchGm1F/SImaEabufpvfa0Ex5j51gWpSVxYT+Ds7Fd0Qj98ng4i+XGD7BF4WfyKPF+TkSsPAXbTIK04Y/D2ckDeFfbDxA4+eRnKW9PJhlYP6NvMorCHQcdCOLFuMrBhPjWECDkS9fwbgl8PePlCB6VzHxNLPBX2bgXICjzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=aZe8W9Sj; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=5+n2CmFo; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1714705806; c=relaxed/simple;
+	bh=dKqACnhDRsBcm8kKVpEu0ty0FAvZOBv7uFTmGbsEiFE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=E44AESH4a/0DSnlIvqYvfmS3ydPSIXVKRgFa9RT2VoWpGLWR1gb7TxvXmxCPqwucO9JvYT4OTzeEmw7P4KfsErdYFL/rX957v7tkJwH38Nu5nF98Qbwh3bbKY8VXeM26MyDGHP0tz0d8zk+dfSjRdZUIFYdT0JfIp82j14Ji7h4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R1HIZDLP; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="aZe8W9Sj";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="5+n2CmFo"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1714685929;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XMOfjsio8q+enlxkVZ0j+9BtcTeI3xwELU/31QEEo9o=;
-	b=aZe8W9Sjo3BYhl80HQeLmX3SjyegySo8XXe07/p5OKOmdjIzHZttvHGXsrm5YcdoZ3q+xl
-	gXhJd+vCDShiQyfCOvE6rIOqZJv8Wv/VJer3vtqsHCe00pbXQXDn08NXlaGsykeJj1iGFk
-	CdSzFHUD9jd7YWHMbN0nT5tGSSI4dmSlzw69YuhGUtrxu91tMfM5/uAW9mJVyJceWgNfBU
-	lH95YXgbBZCR2x+tEY+e8Exq1ZKtKAFqtmQgey4M1IfzK1bZbMybpafWhz661OInZpzkrJ
-	YkpignhRhoSjqtOwZ1BivJ3LnyiKZ3sTzgS3zH5ak2Ygab7CR7BNqGbKwvfR1Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1714685929;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XMOfjsio8q+enlxkVZ0j+9BtcTeI3xwELU/31QEEo9o=;
-	b=5+n2CmFoXbxIeCA3Cwr7AwJnIgNeQK2rxGV8mSQRmr2drfyQmhdUe+LxttrwvFxo7t5Bnu
-	49wei5CgqPJRv9CA==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R1HIZDLP"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-6ecff9df447so8364149b3a.1;
+        Thu, 02 May 2024 20:10:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714705804; x=1715310604; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iYlMUAZ7xJHWAbfMzwsBD0Len+US/NBR0Z3gHNhfrnk=;
+        b=R1HIZDLPabjpX+xkg/sr9i+6tvWY5yCoGEAa4yelAf5zmJD1T7oKgxGAvC+X/J7qm0
+         c44XOc2EIaKu6va04vU43Y7yyP9/ngeUkbpKu+11x9G00t7OT9+jSkiJkO8S9fInK27X
+         3g1T7tlw0v0+dXbZYgn1KJ8CFT1D5iCh5dYptY4H89q12rNbeOVo0R/h6B8YvQWWnMry
+         ou47DscPf4FrdP5C57/LMD4lTyT+P34Lj6QFzn97iaYXMm4MM3FmZe5YzN5UuJfxxnFl
+         Un/0agCFSn77p3Lz8E7cmc8XgQ1hakXsKKoiMChv0xUIX+sbmmHm9WrQREtBtzXpqyBQ
+         g6tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714705804; x=1715310604;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iYlMUAZ7xJHWAbfMzwsBD0Len+US/NBR0Z3gHNhfrnk=;
+        b=owIpIrh56E+rE70ZuifApQePvxel5Sk6Wd9vVtPzy/Hw5qCVuQgBqFyKFdDxFTbCO1
+         lHdUv1x6PkmopZQOAOhCvkVigg4FQnaMHjduYMjKHTC9xuRKtTmHLODGfphxVBI6agKc
+         I3XnrSIAGKhOaBHzsDBHAPGRk/QOCHipncPbOf/b7M9T8uwb2pVGYWOGFNBA/FufcDrI
+         +YCVnyceJzajApWdJKbMC15x6x3Zo7fnx3vp0X7zuGR4hcSIsqtEmQMsoCzMS4smuPzG
+         SEHXZ1qOy2CDTZ1sx0enR/T3V3365j7EGsu6kJF86RJqWaIR8vmYMFKYlU+y1Z4/8pqM
+         nvjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUKABUtGb7irW+8anCkjShk1WtwlE7Gi5SoKVZhPJ2fNUjnCBQfeSAYZeI/QU+6BltwTOlFf/tEspJVNLK6wwaPOH9JR6awGxPtxbdO
+X-Gm-Message-State: AOJu0YzoU7uRTjygMUM5bhaMgqY5gU2AKLQsiay0jmkOvICCm7zIMZDx
+	g9/MruYPN9mTdepT0B7Bg9ke903aSdIZm3fOnfba8wRKXgFnktzY60Y5R5CdpDfra+5v
+X-Google-Smtp-Source: AGHT+IEWFCSc7yXQ1kGar0pCfPCZSwSDVgmmQ3w/PQq1E8TouwC1yAROk01cT8sdYWJFxzFJMaZo2g==
+X-Received: by 2002:a05:6a20:2d22:b0:1af:5a6f:1c62 with SMTP id g34-20020a056a202d2200b001af5a6f1c62mr1871505pzl.4.1714705803543;
+        Thu, 02 May 2024 20:10:03 -0700 (PDT)
+Received: from localhost ([103.192.225.105])
+        by smtp.gmail.com with ESMTPSA id n93-20020a17090a2ce600b002b4478f1c0dsm204151pjd.56.2024.05.02.20.10.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 May 2024 20:10:02 -0700 (PDT)
+From: Weifeng Liu <weifeng.liu.z@gmail.com>
+To: platform-driver-x86@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH printk v5 12/30] serial: core: Implement processing in port->lock wrapper
-Date: Thu,  2 May 2024 23:44:21 +0206
-Message-Id: <20240502213839.376636-13-john.ogness@linutronix.de>
-In-Reply-To: <20240502213839.376636-1-john.ogness@linutronix.de>
-References: <20240502213839.376636-1-john.ogness@linutronix.de>
+Cc: Weifeng Liu <weifeng.liu.z@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v2 0/2] Defer probing of SAM if serdev device is not ready
+Date: Fri,  3 May 2024 11:08:45 +0800
+Message-ID: <20240503030900.1334763-1-weifeng.liu.z@gmail.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -60,181 +69,77 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently the port->lock wrappers uart_port_lock(),
-uart_port_unlock() (and their variants) only lock/unlock
-the spin_lock.
+Hi all,
 
-If the port is an nbcon console, the wrappers must also
-acquire/release the console and mark the region as unsafe. This
-allows general port->lock synchronization to be synchronized
-with the nbcon console ownership.
+This version simply resolves Andy's comments.
 
-Note that __uart_port_using_nbcon() relies on the port->lock
-being held while a console is added and removed from the
-console list (i.e. all uart nbcon drivers *must* take the
-port->lock in their device_lock() callbacks).
+Best regards,
+Weifeng
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- include/linux/serial_core.h | 82 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 2 deletions(-)
+Original letter:
 
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 038693774f21..a2f307dce221 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -12,6 +12,8 @@
- #include <linux/console.h>
- #include <linux/interrupt.h>
- #include <linux/circ_buf.h>
-+#include <linux/lockdep.h>
-+#include <linux/printk.h>
- #include <linux/spinlock.h>
- #include <linux/sched.h>
- #include <linux/tty.h>
-@@ -623,6 +625,60 @@ static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
- 	up->cons = con;
- 	__uart_port_unlock_irqrestore(up, flags);
- }
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline bool __uart_port_using_nbcon(struct uart_port *up)
-+{
-+	lockdep_assert_held_once(&up->lock);
-+
-+	if (likely(!uart_console(up)))
-+		return false;
-+
-+	/*
-+	 * @up->cons is only modified under the port lock. Therefore it is
-+	 * certain that it cannot disappear here.
-+	 *
-+	 * @up->cons->node is added/removed from the console list under the
-+	 * port lock. Therefore it is certain that the registration status
-+	 * cannot change here, thus @up->cons->flags can be read directly.
-+	 */
-+	if (hlist_unhashed_lockless(&up->cons->node) ||
-+	    !(up->cons->flags & CON_NBCON) ||
-+	    !up->cons->write_atomic) {
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline bool __uart_port_nbcon_try_acquire(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return true;
-+
-+	return nbcon_driver_try_acquire(up->cons);
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline void __uart_port_nbcon_acquire(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return;
-+
-+	while (!nbcon_driver_try_acquire(up->cons))
-+		cpu_relax();
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline void __uart_port_nbcon_release(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return;
-+
-+	nbcon_driver_release(up->cons);
-+}
-+
- /**
-  * uart_port_lock - Lock the UART port
-  * @up:		Pointer to UART port structure
-@@ -630,6 +686,7 @@ static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
- static inline void uart_port_lock(struct uart_port *up)
- {
- 	spin_lock(&up->lock);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -639,6 +696,7 @@ static inline void uart_port_lock(struct uart_port *up)
- static inline void uart_port_lock_irq(struct uart_port *up)
- {
- 	spin_lock_irq(&up->lock);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -649,6 +707,7 @@ static inline void uart_port_lock_irq(struct uart_port *up)
- static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
- {
- 	spin_lock_irqsave(&up->lock, *flags);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -659,7 +718,15 @@ static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *f
-  */
- static inline bool uart_port_trylock(struct uart_port *up)
- {
--	return spin_trylock(&up->lock);
-+	if (!spin_trylock(&up->lock))
-+		return false;
-+
-+	if (!__uart_port_nbcon_try_acquire(up)) {
-+		spin_unlock(&up->lock);
-+		return false;
-+	}
-+
-+	return true;
- }
- 
- /**
-@@ -671,7 +738,15 @@ static inline bool uart_port_trylock(struct uart_port *up)
-  */
- static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
- {
--	return spin_trylock_irqsave(&up->lock, *flags);
-+	if (!spin_trylock_irqsave(&up->lock, *flags))
-+		return false;
-+
-+	if (!__uart_port_nbcon_try_acquire(up)) {
-+		spin_unlock_irqrestore(&up->lock, *flags);
-+		return false;
-+	}
-+
-+	return true;
- }
- 
- /**
-@@ -680,6 +755,7 @@ static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long
-  */
- static inline void uart_port_unlock(struct uart_port *up)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock(&up->lock);
- }
- 
-@@ -689,6 +765,7 @@ static inline void uart_port_unlock(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irq(struct uart_port *up)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock_irq(&up->lock);
- }
- 
-@@ -699,6 +776,7 @@ static inline void uart_port_unlock_irq(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned long flags)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock_irqrestore(&up->lock, flags);
- }
- 
+Greetings,
+
+This series is intended to remedy a race condition where surface
+aggregator module (SAM) which is a serdev driver could fail to probe if
+the underlying UART port is not ready to open.  In such circumstance,
+invoking serdev_device_open() gets errno -ENXIO, leading to failure in
+probing of SAM.  However, if the probe is retried in a short delay,
+serdev_device_open() would work as expected and everything just goes
+fine.  As a workaround, adding the serial driver (8250_dw) into
+initramfs or building it into the kernel image significantly mitigates
+the likelihood of encountering this race condition, as in this way the
+serial device would be initialized much earlier than probing of SAM.
+
+However, IMO we should reliably avoid this sort of race condition.  A
+good way is returning -EPROBE_DEFER when serdev_device_open returns
+-ENXIO so that the kernel will be able to retry the probing later.  This
+is what the first patch tries to do.
+
+Though this solution might be a good enough solution for this specific
+issue, I am wondering why this kind of race condition could ever happen,
+i.e., why a serdes device could be not ready yet at the moment the
+serdev driver gets called and tries to bind it.  And even if this is an
+expected behavior how serdev driver works, I do feel it a little bit
+weird that we need to identify serdev_device_open() returning -ENXIO as
+non-fatal error and thus return -EPROBE_DEFER manually in such case, as
+I don't see this sort of behavior in other serdev driver.  Maximilian
+and Hans suggested discussing the root cause of the race condition here.
+I will be grateful if you could provide some reasoning and insights on
+this.
+
+Following is the code path when the issue occurs:
+
+	ssam_serial_hub_probe()
+	serdev_device_open()
+	ctrl->ops->open()	/* this callback being ttyport_open() */
+	tty->ops->open()	/* this callback being uart_open() */
+	tty_port_open()
+	port->ops->activate()	/* this callback being uart_port_activate() */
+	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+
+I notice that flag UPF_DEAD would be set in serial_core_register_port()
+during calling serial_core_add_one_port() but don't have much idea
+what's going on under the hood.
+
+Additionally, add logs to the probe procedure of SAM in the second
+patch, hoping it could help provide context to user when something
+miserable happens.
+
+Context of this series is available in [1].
+
+Best regards,
+Weifeng
+
+[1] https://github.com/linux-surface/kernel/pull/152
+
+Weifeng Liu (2):
+  platform/surface: aggregator: Defer probing when serdev is not ready
+  platform/surface: aggregator: Log critical errors during SAM probing
+
+ drivers/platform/surface/aggregator/core.c | 47 +++++++++++++++++-----
+ 1 file changed, 38 insertions(+), 9 deletions(-)
+
 -- 
-2.39.2
+2.44.0
 
