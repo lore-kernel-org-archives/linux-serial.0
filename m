@@ -1,136 +1,128 @@
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE0A154430
-	for <linux-serial@vger.kernel.org>; Fri,  3 May 2024 13:59:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8E1618C3D;
+	Fri,  3 May 2024 14:26:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714744792; cv=none; b=LPubeoD6rwmjjk9tYTV/oy1ZurIGZRMln26lCCOG21Vz82ZM2/Ji7onBcOpwtXiF00IiUYbq8ACUIgQugjIQKZI8MYG86wWIRVaZoHQnfciDT30l/zmXU0tJbd7INzSd9dro7H+0u3s7dReAqXRrBpvylCwfnP0ubDy8Jz4scMI=
+	t=1714746405; cv=none; b=l2ug0QkFqBUUgdsKpPBehs4+0fCDO5op58fEoLishst8KLTuyBjK+25RfsSqJrvzbMCb21F+WmmprHCwdOVg0aJkIP+sdMXqqQ2BtYybjnP+QJHYFXIuL6p7RtKpN1LcLNpdsIwLlXLNx6IKomr+UgeJYS1Jcu+PaLxogqDNIgc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714744792; c=relaxed/simple;
-	bh=9XTu69i9//N23QjLUaRVeITayCFaVH/ZcxE8frlF8/A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uLeJN6QYBVCZ+5chP+Oz62A09nsAJalPdOp2jmL1SyKohwmWVrm7YjA8C5GK1eXt6uKWISb1tNS19CQsuwFeE9MkuwpRijup5BTr0i7zc8RxrOqERJfTOa+MQEtv205EWpcHvaahu2E/5jad0lau1t4A/sKJlbtDk6M4T+B7KK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=JfmkKyfa; arc=none smtp.client-ip=209.85.219.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1714746405; c=relaxed/simple;
+	bh=VRjQzG8TQv5gV0C3Rxv5HRYKNeCIuch5dLMNR1+wUgY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XSPDj15hRSyhL5WczCh3jbhj+kK5u149yGH2Rep9VirxG0GvE/D9Cn4LpcDZsyFMarzUUeaQeVSX+D+Qwwa9PBhGZeIgO9Peaq9ihbp+jG2HbmrWhcgrC2jD4xVjYcmKNXD6xJepIQEq+PXbOvCBkwCKUKI+fMWzIFOOzMF2dHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=CEICGNm3; arc=none smtp.client-ip=74.208.4.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="JfmkKyfa"
-Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-de5a7b18acdso9077871276.3
-        for <linux-serial@vger.kernel.org>; Fri, 03 May 2024 06:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1714744789; x=1715349589; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ChPcRq4NfZHnrwL48HNhQ7iFI35ROHq79DvxMeghd44=;
-        b=JfmkKyfaJuYg5mwrmJMxqu7Eel+9ThNcdFDiYO9YqQ1kJBCkO3H/xMSHQSw6Wb9+Kg
-         05UzQEys4dw00NIr/Mlwr65do+t23F6VYKLzsFS/JuEn1Nq19druVREWyfQp09GPIMMA
-         9dU72hsdHzPZ+f02XFa0eSpBl8ubhCKk1gkfpXSjDeNsCYk/KzF6XmXKe4OlTCOEPTOa
-         KKV4x6P8fJc/wYycb4EPANAjPXBDu0IsZQYPmZ25cc/Z3uHhYS4ZxjgqtdCA4FgiUNu3
-         zmHbsv8vlZpOJ3WKrevk4/I56d3Xh3d7+zW2uVzY0KymQ8aXGh4i3907OzcyHwNGrNSW
-         VvRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714744789; x=1715349589;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ChPcRq4NfZHnrwL48HNhQ7iFI35ROHq79DvxMeghd44=;
-        b=rJux/mDMtM7mh1bW2XQMzte3dhILGapibcFcDVh+8HbnQTv7iMECDdRJkKRkWKQcga
-         yjVSJ3bxxxD92oV5ZYLLafVdcFlgIM5PZS3MOohIwWi2QPYNshOZLrnv9ZDjxFv+jIIj
-         P/aC1yqS9Z0OMtSBCUPfahrBauxfbWZ7tPiw1J5lDwSf7nqWCM8RzhA3BlaaDjIMEkYA
-         p0QTV/RAaBG/dApjJ14Q4oxY1eEOogJKVWbNYPlrySWojwv9ehLr3eMNcT91yFN3gSBg
-         TZyeT7DZly7+9Un2MX0JBWd8Kc8ywUBUPEW4S8HXOVDUUYOhyI/Mb7jkda717+NAeSMo
-         6tDA==
-X-Forwarded-Encrypted: i=1; AJvYcCUyxnQKLrZb7J9q8+0gTCl2rdHI829hJTsgF+tmxXgTCvtwKDJcf8/IShvGmdJUDHKoz6etVJ3Grs4NSvGLsUoHNyhbZ0vU6lhIam29
-X-Gm-Message-State: AOJu0Yxa9BBHJLVmj7slInv2aQ8KZ42aZbvV1G+QMKtY/8+59T+0zxtP
-	qoBnP0HRugeFlVAA852LFHvYab7d320NyUUCJre+ddYSnLE/KDzyf+0X478Goy4=
-X-Google-Smtp-Source: AGHT+IFctvodowwbTmaaEDSmGBZj/O9adwDNYje40Gk9jTBEJueLXsMCVV/UKXpClCHAizcOHif2cQ==
-X-Received: by 2002:a05:6902:246:b0:de5:e046:6ac with SMTP id k6-20020a056902024600b00de5e04606acmr2994231ybs.5.1714744789552;
-        Fri, 03 May 2024 06:59:49 -0700 (PDT)
-Received: from sunil-laptop ([106.51.191.139])
-        by smtp.gmail.com with ESMTPSA id l14-20020a25bf8e000000b00de51b87bfefsm627782ybk.18.2024.05.03.06.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 May 2024 06:59:48 -0700 (PDT)
-Date: Fri, 3 May 2024 19:29:35 +0530
-From: Sunil V L <sunilvl@ventanamicro.com>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="CEICGNm3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1714746395; x=1715351195; i=parker@finest.io;
+	bh=qUfNnCg79Uktap5ZMBiA0j0ZtbeQ48ApVbCwVGMRNWU=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=CEICGNm3L6S7psFtqiPdUDY0X5qoDjmKTqFlHUrakkKb196KClhQKiUwxM3nJPnO
+	 tNcGMxp8zqscuhnhF5KpDA5Qv+SS+IRwPXuFqTQ7vBNY6wJ0YBzZS0qCr8uJ/iE8k
+	 WMkbbf3wXCxTtnOZhW4nbndg4DF80ShJY4GVmhAAUH664zdFZQcnqpVZqSnGGiY57
+	 sQ+dhRH3eexL9XnMaIFdbWCPLYAlbV37b4pesX3FE7YE/oniFp5zF+pUJjd5cCEFI
+	 kmObEeepqhiFiEioMtM82dD+ZxGmFvwytBOH0IL/RXoeIGDhf6cJ875DiTZG0hKDs
+	 5Fpu6nkPi8fCnh3MLg==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MCKl5-1ruLIR3F45-0097wH; Fri, 03 May 2024 16:26:34 +0200
+Date: Fri, 3 May 2024 10:26:32 -0400
+From: Parker Newman <parker@finest.io>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
-Message-ID: <ZjTtx88zk4GvCImk@sunil-laptop>
-References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-18-sunilvl@ventanamicro.com>
- <ZjNaR-YtVTm4pbP7@smile.fi.intel.com>
- <ZjNh0Llcx+0VHevy@sunil-laptop>
- <ZjNmdfR2J6hNnYle@smile.fi.intel.com>
- <ZjN3GQI3gegYOIgS@sunil-laptop>
- <ZjOy2G0qN5G076i0@smile.fi.intel.com>
+Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Parker
+ Newman <pnewman@connecttech.com>, LKML <linux-kernel@vger.kernel.org>,
+ linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
+Message-ID: <20240503102632.112a34bd@SWDEV2.connecttech.local>
+In-Reply-To: <ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
+	<20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
+	<702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
+	<ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZjOy2G0qN5G076i0@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:BZqodeJrrjLNWsR+BGJEWQCKDTJkZYkEqljtAekrB2HHvKhc3Lj
+ +l4I2D+Sc/oPvLN7mD9XzJFLY4c3hYClJLkvhRakkg9WfD+LtMomRsFfUvbYyZBAlxIfE0b
+ Prxx0Kgr8nigkDqIvhFsVI4iGRBxquobU5LleKgFQBdgdBbud9qDv2tCIfpYfr3VIrjWpxl
+ luj7x67xNlbzGAvbkRgtA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:hw/IaLlh8sI=;BvyzJB1ag/J7juyaFuRSiqM2srX
+ 1Fvy9ykiwlh0bHBqoxdRlkaVJsuVVBI2VIcZ+ist/JeCBXH2YkmAC2pM/5x12HGboxi5r46dp
+ XZcSexsbCbY+5TPmE5UPzJSn41DEOYddYwm9UPNK9OWg2Dprpd0GGCjjJAg/wE7RsR16WKWt8
+ NkhhDvHz8GYgn5RqBpSHiQ0b9zwRSt1RA3oiDvBEWmIKXbrszKddaGY1kHoFCWpFOK/Rzmjak
+ dMGzEjbC7LISFY/xTyC5m+zIxrwp6NYMe0fzw/Y6Or4aceVndQZo1h2MOKhvy+Je+IF/wvfd4
+ eCQIEeBBaU4rJCOPGW9cislu9syUDeEDzATxnoiNarqGoY6YiLcRtn+tD3PMy9umrhhsIdcQx
+ HgC1SyZZhyK1t2xYx+bomuFSAK3q3YfeuNVwRmvYi4xvwT7bqNrgmodS8aTthKoEBSr5ucTzw
+ wKV9AJOcdlV59BaSR75B85J6eePeXqrmApxDQrAJpp+FC5txB4v88NFgUomFiEGHu4RJ1rNEI
+ LNG6hx4NiEi9GKbjWH9yas23UE1aDHw93wyFw/BYgQ4Rgt9oQs/uxCCuptYiH4wCh8NQ4jxC3
+ 2xYADNW6faz3uLZEtq3mk1knFElVd7GknnXegYmDqQMIAMEdh+JheqOUDe9jagsRhS3qTSeQR
+ pEDE8hQtC/sp5rJOSgsys2l61hWtP92150EuhBRtpb1hA4V4rokOj9qOzK5xKP/mWbuEyM1Ol
+ b2O1tfvhV86nZ05oq9rzmIDJ5+VN8UaeIi/sMuAD2zMqP08V2s/9do=
 
-On Thu, May 02, 2024 at 06:35:52PM +0300, Andy Shevchenko wrote:
-> On Thu, May 02, 2024 at 04:50:57PM +0530, Sunil V L wrote:
-> > On Thu, May 02, 2024 at 01:09:57PM +0300, Andy Shevchenko wrote:
-> > > On Thu, May 02, 2024 at 03:20:08PM +0530, Sunil V L wrote:
-> > > > On Thu, May 02, 2024 at 12:17:59PM +0300, Andy Shevchenko wrote:
-> 
+On Thu, 2 May 2024 20:20:01 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo J=C3=A4rvinen wrote:
+> > On Thu, 2 May 2024, Andy Shevchenko wrote: =20
+>=20
 > ...
-> 
-> > > > This driver is not a duplicate of 8250_pnp. It just relies on UART
-> > > > enumerated as platform device instead of using PNP interfaces.
-> > > > Isn't it better and simple to have an option to enumerate as platform
-> > > > device instead of PNP? 
-> > > 
-> > > Ah, then extract platform driver first from 8250_core.c.
-> > > 
-> > Let me know if I understand your suggestion correctly. Do you mean call
-> > something like serial8250_acpi_init() from serial8250_init() and
-> > register the driver directly in serial8250_acpi_init()?
-> 
-> Extract the code to be 8250_platform.c and update that file.
-> I have locally the extraction of RSA code, I will see if I can help you
-> with the rest.
-> 
-Thanks!. That will be helpful. TBH, I don't understand what to do for
-extracting the platform driver code. There are already several vendor
-specific UART drivers (ex: 8250_fsl.c) which are enumerated as platform
-devices. 8250_core.c looks cleanly supporting such drivers which can
-register themselves with the core. For generic UART, DT has 8250_of.c
-and ACPI has 8250_pnp.c. But 8250_pnp.c comes with baggage of PNP
-contract. So, the driver in this patch is similar to vendor specific
-drivers to support generic uart devices which are enumerated as platform
-device. I can rename 8250_acpi.c to 8250_platform.c if that is better.
+>=20
+> > >  	// Send address to read from
+> > > -	for (i =3D 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>=3D 1)
+> > > -		exar_ee_write_bit(priv, (ee_addr & i));
+> > > +	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
+> > > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
+> > > =20
+> > >  	// Read data 1 bit at a time
+> > >  	for (i =3D 0; i <=3D UART_EXAR_REGB_EE_DATA_SIZE; i++) {
+> > > -		data <<=3D 1;
+> > > -		data |=3D exar_ee_read_bit(priv);
+> > > +		if (exar_ee_read_bit(priv))
+> > > +			data |=3D BIT(i); =20
+> >=20
+> > Does this end up reversing the order of bits? In the original, data was=
+ left
+> > shifted which moved the existing bits and added the lsb but the replace=
+ment
+> > adds highest bit on each iteration? =20
+>=20
+> Oh, seems a good catch!
+>=20
+> I was also wondering, but missed this somehow. Seems the EEPROM is in BE =
+mode,
+> so two loops has to be aligned.
+>=20
 
-Could you please help with a patch even if not compiled so that I can
-understand your suggestion better? 
+I just tested this and Ilpo is correct, the read loop portion is backwards =
+as=20
+expected. This is the corrected loop:
 
-Thanks for your help!
-Sunil
+    // Read data 1 bit at a time
+    for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
+        if (exar_ee_read_bit(priv))
+            data |=3D BIT(i);
+    }
+
+I know this looks wrong because its looping from 16->0 rather than the=20
+more intuitive 15->0 for a 16bit value. This is actually correct however=20
+because according to the AT93C46D datasheet there is always dummy 0 bit
+before the actual 16 bits of data.
+
+I hope that helps,
+-Parker
