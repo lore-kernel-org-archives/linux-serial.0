@@ -1,45 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49453225D0;
-	Sat,  4 May 2024 16:03:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86ED740C03;
+	Sat,  4 May 2024 16:08:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714838596; cv=none; b=UDOz/5SheN7Dr+XMdy2Ib7YWlll3t2yvogDmHzSg8THg+c3uD+sP7dICWupOLP3V/Taexm6+fhiAjRaJ/D6kve5LyGPC7o507WG46NzRKZ08bkhynqTso8a0UpAWSL3TjVZhK0ymx95pFbrgwmzp3ft3Isa/Oa9bA01LQKMBytA=
+	t=1714838915; cv=none; b=emocBChL9Py1N1jHPemVzG3k4aiLIdTz2DgGtjN2nxM6tRx6RrHmVjA/xeixJmSnzP+14sRWqrHssQIiHM6lJuDMlrjyVqncFDi6nHpweaUMLaUbSJqJ4eUMDiGImASdkE6UTT/FVgYsoFIdxDYNmAGUqFIk3AatMkOjzZ+Z/oA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714838596; c=relaxed/simple;
-	bh=qQWj9cQTIT/uL819c+QTV1lqwO4CytNsjLuIpXZMtDI=;
+	s=arc-20240116; t=1714838915; c=relaxed/simple;
+	bh=wwaTRDS9tEE5USkR/1JxhoWU+nwvf1phzHVbJVUzqA0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=loC2uBQ/TlNE8bnozS1BgMD0RdI9FpZG3lxBYkcHQX1d2MpKOoNY/z1QUvMMJU4MP4PjMS3mMF5u+GTGY3B0q1tQvoxME5ctERW/AhQwTSDJ3AyBflKKRKWtYmxEF38JW/ZzJsZS7zwtzUZ7WLufuNN+gSnGsAVNYB2JQ7sfOek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Do6M31KX; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=FCIkqYzg7vmsBfAkPsomb33kyAz/8fNyekKbeGgPnEzk4ikmlhDekRb+0g2zMF2wTG+/BUA/pltwmPhxca0RcvfMxVZPEeDsNA7khZZJIGXYcejYjaRvHUzZHjPA1jWCScvsODMGO5f2aFKNlxigxcLofBJdX5PWYMzWKW7REWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=YaYlLbtj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Do6M31KX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9785FC072AA;
-	Sat,  4 May 2024 16:03:15 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="YaYlLbtj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A94C072AA;
+	Sat,  4 May 2024 16:08:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714838596;
-	bh=qQWj9cQTIT/uL819c+QTV1lqwO4CytNsjLuIpXZMtDI=;
+	s=korg; t=1714838915;
+	bh=wwaTRDS9tEE5USkR/1JxhoWU+nwvf1phzHVbJVUzqA0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Do6M31KXhTQ74JldmKCrmwhafuBv+BHvOjoedUEKv3WO/WlRtb0EZE26MXo2SYtws
-	 wDFTIc/W2+ok0gJBT1cA2TAqalVbTceIdHs4PCGcus33wdVbjRixrnjp+QN03DfMac
-	 N06v5LH1asuJie237NfQ1vcUMcb3yXmoYIi9MB08=
-Date: Sat, 4 May 2024 18:03:12 +0200
+	b=YaYlLbtjCKrLwbl2zTCOZsaIZ5NzeSfKY5zeUamsmHYVO8JclOuCzMfzta7+CKbQi
+	 qxcf+quMczY96vtiZsysJdN++RL6KWHK0jwwyfulKW1Bhb/SD1SVlDbwnda+KP/YSl
+	 59HA3TzWihmMifjtVgNyMTB8nLbyarkY6qBLaaVY=
+Date: Sat, 4 May 2024 18:08:31 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Esben Haabendal <esben@geanix.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>,
-	Sergey Organov <sorganov@gmail.com>,
-	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3] serial: imx: Introduce timeout when waiting on
- transmitter empty
-Message-ID: <2024050451-gangly-gloomily-e4eb@gregkh>
-References: <cf197182beab7acf6ea7ead54fb4324e97e18cbc.1712733269.git.esben@geanix.com>
- <919647898c337a46604edcabaf13d42d80c0915d.1712837613.git.esben@geanix.com>
- <87sez060el.fsf@geanix.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v5 12/30] serial: core: Implement processing in
+ port->lock wrapper
+Message-ID: <2024050424-agony-document-677c@gregkh>
+References: <20240502213839.376636-1-john.ogness@linutronix.de>
+ <20240502213839.376636-13-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,32 +44,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87sez060el.fsf@geanix.com>
+In-Reply-To: <20240502213839.376636-13-john.ogness@linutronix.de>
 
-On Thu, May 02, 2024 at 11:14:26AM +0200, Esben Haabendal wrote:
-> Esben Haabendal <esben@geanix.com> writes:
+On Thu, May 02, 2024 at 11:44:21PM +0206, John Ogness wrote:
+> Currently the port->lock wrappers uart_port_lock(),
+> uart_port_unlock() (and their variants) only lock/unlock
+> the spin_lock.
 > 
-> > By waiting at most 1 second for USR2_TXDC to be set, we avoid a potential
-> > deadlock.
-> >
-> > In case of the timeout, there is not much we can do, so we simply ignore
-> > the transmitter state and optimistically try to continue.
-> >
-> > Signed-off-by: Esben Haabendal <esben@geanix.com>
-> > Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> > ---
-> >
-> > v2:
-> > - Fixed commit message typo
-> > - Remove reference to patch series it originated from. This is a
-> >   stand-alone patch
-> >
-> > v3:
-> > - Moved this version information into the correct patch section
+> If the port is an nbcon console, the wrappers must also
+> acquire/release the console and mark the region as unsafe. This
+> allows general port->lock synchronization to be synchronized
+> with the nbcon console ownership.
 > 
-> Anything more needed in order to get this merged?
+> Note that __uart_port_using_nbcon() relies on the port->lock
+> being held while a console is added and removed from the
+> console list (i.e. all uart nbcon drivers *must* take the
+> port->lock in their device_lock() callbacks).
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> ---
+>  include/linux/serial_core.h | 82 ++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 80 insertions(+), 2 deletions(-)
 
-Sorry, but I don't see this in my review queue anymore.  If this isn't
-already accepted, please resend it, sorry about that.
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
