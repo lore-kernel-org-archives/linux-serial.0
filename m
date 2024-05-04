@@ -1,58 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E6A3D0A4;
-	Sat,  4 May 2024 15:53:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C764023767;
+	Sat,  4 May 2024 16:00:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714838022; cv=none; b=nmq8sN+SUE/JXepEpC2EPFAliw886bJoBEQiQITCyBbUPEH/30sQNXeU/VCx3cTj1+vMUuI1WN/ABZFIJgXXj+xtriDeNEtXxPOT9OB5zLZXc6jmDoeRBf8AxPMxT/EV/3HW1aGZbeaHuZoBqKTXBIrwKZM/kDtLqqu+xGUxmVc=
+	t=1714838406; cv=none; b=Uzc7a0VAWhd6mNEv8txU7+Tc/CHwBKmhM9Z/RMcwOqYy9qn701XIfeNlFj1bAr2IhqlKQ1cQonGLt5Ju9CEe91e549rr0Quhypb+FC4JBwGA0wDBL+tsjyR9gSr+FF0m1bi15iujyFntsemzzs7GCqXAJT9YkPnPEhSYfY7OWBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714838022; c=relaxed/simple;
-	bh=8I8m+ARERilkFj7kIbhJ3jfl4OiynemXtq1r//9ZZG0=;
+	s=arc-20240116; t=1714838406; c=relaxed/simple;
+	bh=2CfHE6U1TpkNccPPQ+ztJD0Glq/+yNTjt96lxseYs9w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FhBGtJyylf5iAZ88WUvs1TvitYOzHA6qS3HnljX8GG2AyunmIpAvvvn/sElD2DlUqhr0va8NDzbS/See0kuSZsNaHXRnWiH3RxlLD4JNY8fv9IOII+yfV6MeBWJWqxSKs/tzsxILgKAovJN51SkdId921R+QZYrHl/eYLou6jU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=nBFZQmgd; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=AFC2ixPzORGB+yeuuNlVAqLTKB6Jg8QMGKhRWTUlVuCWv2Tn3X3632Gry+Pu8V1XpBw869a9Lw981YKLIem/7QLRYHnJxCMFYhKx6r2e3f0afWBAhwglkn7Dir0xfPIFgFqYIH86xpQczT+szFXkpfy340n92oqro5Au6y/hdLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hPvSedsp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="nBFZQmgd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED39C072AA;
-	Sat,  4 May 2024 15:53:41 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hPvSedsp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D204C072AA;
+	Sat,  4 May 2024 16:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714838021;
-	bh=8I8m+ARERilkFj7kIbhJ3jfl4OiynemXtq1r//9ZZG0=;
+	s=korg; t=1714838405;
+	bh=2CfHE6U1TpkNccPPQ+ztJD0Glq/+yNTjt96lxseYs9w=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nBFZQmgdyX6pMsEUa7czdAYYb8afZ3p6iRVUD/H9YzuOfGgH1cZKo2dib2Jh93VK+
-	 8LPWbA2+H9SGLgmogKYkxW5/Q+Vq/loJY9A+poOwUtd5I2agVivdOgQXtTwcqUx+b6
-	 m+Duex3ZyppN9X/0T/ZfT4gefnqjqWMjeM41aIDI=
-Date: Sat, 4 May 2024 17:53:38 +0200
+	b=hPvSedspztdtHSPN3XsMQ+YePzhvGV6PXZbpqNBYIQKQGzEhgcWZNr+okyglg99rQ
+	 0yEk8VpMdXRQp+bRoBPshGJKkBJSqqs6Rp8o4y26mTU8wBsCgnyuGVkEcjEOyi4wsW
+	 10UmPB7I7bt1NVTHNn/zWY6PsJR864PffTHSLVb4=
+Date: Sat, 4 May 2024 18:00:01 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Sunil V L <sunilvl@ventanamicro.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	acpica-devel@lists.linux.dev,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Robert Moore <robert.moore@intel.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Andrei Warkentin <andrei.warkentin@intel.com>,
-	Haibo1 Xu <haibo1.xu@intel.com>,
-	=?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>
-Subject: Re: [PATCH v5 17/17] serial: 8250: Add 8250_acpi driver
-Message-ID: <2024050421-coil-payphone-f3a1@gregkh>
-References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-18-sunilvl@ventanamicro.com>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 03/11] tty: serdev: Add flag buffer aware
+ receive_buf_fp()
+Message-ID: <2024050410-gigolo-giddily-97b6@gregkh>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
+ <20240502182804.145926-4-christoph.fritz@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,83 +57,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240501121742.1215792-18-sunilvl@ventanamicro.com>
+In-Reply-To: <20240502182804.145926-4-christoph.fritz@hexdev.de>
 
-On Wed, May 01, 2024 at 05:47:42PM +0530, Sunil V L wrote:
-> RISC-V has non-PNP generic 16550A compatible UART which needs to be
-> enumerated as ACPI platform device. Add driver support for such devices
-> similar to 8250_of.
+On Thu, May 02, 2024 at 08:27:56PM +0200, Christoph Fritz wrote:
+> This patch introduces an additional receive buffer callback variation
+> besides the already existing receive_buf(). This new callback function
+> also passes the flag buffer (TTY_NORMAL, TTY_BREAK, and friends).
 > 
-> The driver is enabled when the CONFIG_SERIAL_ACPI_PLATFORM option is
-> enabled. Enable this option for RISC-V.
+> If defined, this function gets prioritized and called instead of the
+> standard receive_buf().
 > 
-> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> An alternative approach could have been to enhance the receive_buf()
+> function and update all drivers that use it.
+
+Please, let's do that instead of adding random letters at the end of a
+function pointer :)
+
+> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
 > ---
->  arch/riscv/configs/defconfig        |  1 +
->  drivers/tty/serial/8250/8250_acpi.c | 96 +++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/Kconfig     |  8 +++
->  drivers/tty/serial/8250/Makefile    |  1 +
->  4 files changed, 106 insertions(+)
->  create mode 100644 drivers/tty/serial/8250/8250_acpi.c
+>  drivers/tty/serdev/serdev-ttyport.c |  2 +-
+>  include/linux/serdev.h              | 17 ++++++++++++++---
+>  2 files changed, 15 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-> index 3cae018f9315..bea8241f52eb 100644
-> --- a/arch/riscv/configs/defconfig
-> +++ b/arch/riscv/configs/defconfig
-> @@ -150,6 +150,7 @@ CONFIG_SERIAL_8250=y
->  CONFIG_SERIAL_8250_CONSOLE=y
->  CONFIG_SERIAL_8250_DW=y
->  CONFIG_SERIAL_OF_PLATFORM=y
-> +CONFIG_SERIAL_ACPI_PLATFORM=y
->  CONFIG_SERIAL_SH_SCI=y
->  CONFIG_SERIAL_EARLYCON_RISCV_SBI=y
->  CONFIG_VIRTIO_CONSOLE=y
-> diff --git a/drivers/tty/serial/8250/8250_acpi.c b/drivers/tty/serial/8250/8250_acpi.c
-> new file mode 100644
-> index 000000000000..3682443bb69c
-> --- /dev/null
-> +++ b/drivers/tty/serial/8250/8250_acpi.c
-> @@ -0,0 +1,96 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Serial Port driver for ACPI platform devices
-> + *
-> + * This driver is for generic 16550 compatible UART enumerated via ACPI
-> + * platform bus instead of PNP bus like PNP0501. This is not a full
-> + * driver but mostly provides the ACPI wrapper and uses generic
-> + * 8250 framework for rest of the functionality.
+> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+> index 3d7ae7fa50186..bb47691afdb21 100644
+> --- a/drivers/tty/serdev/serdev-ttyport.c
+> +++ b/drivers/tty/serdev/serdev-ttyport.c
+> @@ -32,7 +32,7 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
+>  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
+>  		return 0;
+>  
+> -	ret = serdev_controller_receive_buf(ctrl, cp, count);
+> +	ret = serdev_controller_receive_buf(ctrl, cp, fp, count);
+>  
+>  	dev_WARN_ONCE(&ctrl->dev, ret > count,
+>  				"receive_buf returns %zu (count = %zu)\n",
+> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+> index ff78efc1f60df..c6ef5a8988e07 100644
+> --- a/include/linux/serdev.h
+> +++ b/include/linux/serdev.h
+> @@ -23,11 +23,17 @@ struct serdev_device;
+>   * struct serdev_device_ops - Callback operations for a serdev device
+>   * @receive_buf:	Function called with data received from device;
+>   *			returns number of bytes accepted; may sleep.
+> + * @receive_buf_fp:	Function called with data and flag buffer received
+> + *			from device; If defined, this function gets called
+> + *			instead of @receive_buf;
+> + *			returns number of bytes accepted; may sleep.
 
-No copyright line?  Odd, but ok, I'll take it, glad to see your company
-finally realizes the lack of needing them :)
-
-
-And as Andy said, please use the existing driver and extend what you
-need, don't write a new one, we really don't need a new one.
-
-> +static int acpi_platform_serial_probe(struct platform_device *pdev)
-> +{
-> +	struct acpi_serial_info *data;
-> +	struct uart_8250_port port8250;
-> +	struct device *dev = &pdev->dev;
-> +	struct resource *regs;
-> +
-> +	int ret, irq;
-> +
-> +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!regs) {
-> +		dev_err(dev, "no registers defined\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	if (irq < 0)
-> +		return irq;
-> +
-> +	memset(&port8250, 0, sizeof(port8250));
-> +
-> +	spin_lock_init(&port8250.port.lock);
-
-Are you sure this works?
+I don't remember waht "fp" means here, and you don't document it, so
+let's just have one recieve_buf() callback please.
 
 thanks,
 
