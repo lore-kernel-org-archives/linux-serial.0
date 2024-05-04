@@ -1,68 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5430C23767;
-	Sat,  4 May 2024 16:01:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E227E225D0;
+	Sat,  4 May 2024 16:02:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714838503; cv=none; b=cCCi07VenxZjkwbwYV//dUcXTn3QhveCJ6f+9JrRLlNuEpiaHf9rl5D/UMZbwTGYnhw0jYke3a4hA8tBrJ8nfs//4ncXDuLeCB6qVzUh3LhBGB6U7M5FlXp5PwrctV+lY8zz6yoyuW9HYhhx+vJhI8yFWCSrqA6kex2HNQyVOhg=
+	t=1714838544; cv=none; b=p1FUgLFjsU8M/KJBiieD+Wpk3u/hZ9Zr9XlFkkfRZ0XUYj2Mb/hiyUckZ3089vGTWB0NS7eNowoGiaeJR4wdUKcNF7FffzWVTif6OeD0DgtpnBp6h65wQCPC1XcFXx8a+1Opd9uTYwbjRoP/t8t1tVLb3r7G8hQrn/0hXjkuyzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714838503; c=relaxed/simple;
-	bh=gf6jZj0RO14a3jrqluReftPD7w24qIhL5Sxeb0U3J/g=;
+	s=arc-20240116; t=1714838544; c=relaxed/simple;
+	bh=l7/qBYhv4Nz9jrr8QvXGoWwXYXcm+LgU7yb+s1r64Bw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CcE7PfymSNsYI9ENxD+pvTMHskGFiNBso17UWhBYJenmSrD0rJKVMqxWINLMW1BGN6i5cI/BLuW0+3sv+A2uM/b4BjZHpEmxfdYgcEgXlAM4BCv2NubYcYzjlKblfeKicQCBoyE7y2k1ns7fM/4GVKb0e7HkOUZ0l+hYf0KWX10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hLpODsBI; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=RQTGm2qtvd5uVsI4mYtITrYcZe1QIbbjnKfEnFcDZH0BSdzYpYN8FVIuoi/xTyowNWi1QyYnKvJZOkaunBgM4P+HRKUuS8Oz+FNsfEIJxKtsy0b11FuAgXQFwfmADmitKMGufUSbVMgWdidAUsVPMANCbhCpBWHGjFVD+yaXGkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2gGDGeCa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hLpODsBI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB44C072AA;
-	Sat,  4 May 2024 16:01:41 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2gGDGeCa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2895CC4AF14;
+	Sat,  4 May 2024 16:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714838502;
-	bh=gf6jZj0RO14a3jrqluReftPD7w24qIhL5Sxeb0U3J/g=;
+	s=korg; t=1714838543;
+	bh=l7/qBYhv4Nz9jrr8QvXGoWwXYXcm+LgU7yb+s1r64Bw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hLpODsBImnuuTiIGuDLc5nSv4zX3Hq5le4elqtg4qDyEKucUDtganpmV4m7g0GKKH
-	 cdhKsRIc2mh/WB8VuJHooo1rs4fvrHvvC+x4UtWvvlnXss25PBdv4TVKWmGKOdii/g
-	 GM6Np9f0xVVHSiLdadx39WIYG6goVJ6aCmgllRHA=
-Date: Sat, 4 May 2024 18:01:38 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Parker Newman <parker@finest.io>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v2 0/4] serial: exar: fix kbuild warnings and code style
-Message-ID: <2024050429-disorder-revolver-5b74@gregkh>
-References: <cover.1713533298.git.pnewman@connecttech.com>
- <20240502121809.30491a67@SWDEV2.connecttech.local>
+	b=2gGDGeCaVqyP2Oh2hdh3p0Zvc19udosCcLAX3iyJTslqHZmBZWaDpf85AoCdyUKWW
+	 eiXIDiCBuMO+KQjL7dx9ql1vU77tsVgdBUTOUoCiKGCojSa7/05pDw0HnMAvfFKDZU
+	 ubYtJ3lDX+LGfAn9VRtAbZKTz03yG1eRNPtKiYjk=
+Date: Sat, 4 May 2024 18:02:20 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Shresth Prasad <shresthprasad7@gmail.com>
+Cc: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	davem@davemloft.net, jirislaby@kernel.org,
+	sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, javier.carrasco.cruz@gmail.com,
+	skhan@linuxfoundation.org, Julia Lawall <julia.lawall@inria.fr>
+Subject: Re: [PATCH v2][next] tty: sunsu: Simplify device_node cleanup by
+ using __free
+Message-ID: <2024050402-eraser-stimulate-3908@gregkh>
+References: <20240501084110.4165-2-shresthprasad7@gmail.com>
+ <f1707254-ec32-4884-275a-c3c85b48d7d5@linux.intel.com>
+ <CAE8VWiJy-2x6sKCAmN69Uq9Kf1cTRnaJezOoLDyZ0SbgPWuHAQ@mail.gmail.com>
+ <2024050357-shading-fedora-2d4f@gregkh>
+ <CAE8VWi+-HVuGo-ojGPwKubpLweBmJ4-L097nh03QkezcsciorA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240502121809.30491a67@SWDEV2.connecttech.local>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE8VWi+-HVuGo-ojGPwKubpLweBmJ4-L097nh03QkezcsciorA@mail.gmail.com>
 
-On Thu, May 02, 2024 at 12:18:09PM -0400, Parker Newman wrote:
-> On Fri, 19 Apr 2024 10:17:00 -0400
-> Parker Newman <parker@finest.io> wrote:
-> 
-> > From: Parker Newman <pnewman@connecttech.com>
+On Fri, May 03, 2024 at 02:31:22PM +0530, Shresth Prasad wrote:
+> On Fri, May 3, 2024 at 11:04 AM Greg KH <gregkh@linuxfoundation.org> wrote:
 > >
-> > This is a series of small patches fixing kbuilds error and code style
-> > issues based on feedback during review of main patches.
+> > On Thu, May 02, 2024 at 10:21:16PM +0530, Shresth Prasad wrote:
+> > > On Thu, May 2, 2024 at 9:35 PM Ilpo Järvinen
+> > > <ilpo.jarvinen@linux.intel.com> wrote:
+> > > >
+> > > > On Wed, 1 May 2024, Shresth Prasad wrote:
+> > > >
+> > > > > Add `__free` function attribute to `ap` and `match` pointer
+> > > > > initialisations which ensure that the pointers are freed as soon as they
+> > > > > go out of scope, thus removing the need to manually free them using
+> > > > > `of_node_put`.
+> > > > >
+> > > > > This also removes the need for the `goto` statement and the `rc`
+> > > > > variable.
+> > > > >
+> > > > > Tested using a qemu x86_64 virtual machine.
+> > > >
+> > > > Eh, how can you test this with an x86_64 VM ???
+> > > >
+> > > > config SERIAL_SUNSU
+> > > >         tristate "Sun SU serial support"
+> > > >         depends on SPARC && PCI
+> > > >
+> > >
+> > > By that, I mean that I compiled the kernel and ran the produced bzImage
+> > > on a x86_64 qemu machine.
 > >
-> > Original patches thread:
-> > Link: https://lore.kernel.org/linux-serial/cover.1713382717.git.pnewman@connecttech.com/
+> > But you didn't include the driver you were testing :(
+> >
+> > > I unfortunately don't have the hardware to test it on, but I don't
+> > > think the change is complex enough to require testing on real hardware
+> > > (unless I'm assuming incorrectly).
+> >
+> > That's why I asked if you had tested this or not...
 > >
 > 
-> These patches should not be required anymore. Andy Shevchenko has
-> submitted a more comprehensive clean up patch set that makes this
-> set unneeded.
-> 
-> Link: https://lore.kernel.org/linux-serial/20240502144626.2716994-1-andriy.shevchenko@linux.intel.com/
+> Really sorry about that, I thought compiling and booting would qualify
+> as testing. What should I be doing then?
 
-Thanks for letting me know, now dropped.
+Compiling and booting the code you change would be a good start :)
+
+thanks,
 
 greg k-h
