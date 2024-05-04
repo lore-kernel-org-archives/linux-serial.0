@@ -1,154 +1,155 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97F215884C;
-	Fri,  3 May 2024 18:56:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0647DAD2D;
+	Sat,  4 May 2024 04:17:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714762616; cv=none; b=aGntvuiuU2ujiJBt+xsBhdt9qExP7lM1z8LqVxc6op+/hlAuKeUmD+L7ZXPV1jnTfa7RS64jLavtaV02n+AKYEooMETLlQo0DumnDCFeuactlolzZwDzdjxh70D5aW2BwFI9S18kocThVHEvdS0mswdL01cBH3EzjIxpk+qQlDY=
+	t=1714796232; cv=none; b=VhNVn+JYmXYI6f2l762BtDb10aRL2qpp/3nN4KWCnK1JxtDLIajpHTbE/W+/sKaAdMKn1mxU/T5chvCkqTrCUM47OKfEpikZ6evUSMGv5qQAwGxK6Igjz7e3bd1yiMOzhfOc+mFjV7pXJlC8P3PevqRadllk78awdocYTRLOYFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714762616; c=relaxed/simple;
-	bh=wJ634xpkzIW5+9cg7GtEgMU2T9hlxHpUT5PrKa7/e40=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Hhn2XIgiMMI7Ta+bTskhJBnSRcSHUXRFisClaFvF5TTo+/cNmZK+mtxjACgvyta0iAVQLNIihDWlv5gsPg3i6VO0hdnlviQTDDUYFnwWEcPacoKeCJRxH5Or5EILBGIYBThQkwjQz4SduJxguxVYlo5ZKaXNnkdYJdZakDOiyZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=N5W60pLl; arc=none smtp.client-ip=74.208.4.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1714796232; c=relaxed/simple;
+	bh=b2lTUeDMgTot2tq51wa/9lK7Ivb8jkSSeQ3JX6w03A8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=ZmxqLtpP1BBy4465BExO7OTkSBPrix54ZeCsPP+1qdbRIjKCxgodYAz6q1GgGTcM2PMbNdNAEsqCHP7cy46xFPHks/PkSoXi1WT982FC4wz/er2VqWd6+nfNa41NWUWCseINyleoqeHTOlTSrFAOShWIbk3JvhwuXXgCUY8/EAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PY9yWJfP; arc=none smtp.client-ip=209.85.161.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="N5W60pLl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1714762595; x=1715367395; i=parker@finest.io;
-	bh=6jD/844a5M7wlwxOsH8KRJLg5R5CU6wJg3iF2lJi4n0=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=N5W60pLlJLl/P+B7DtyS444/0ckFwnMmovbc6bmFL8ZlcTSAnQg4i1LDMVs0rRG7
-	 iKYdMl+FTpXuU8KFdj5vLCUHbrSQQh1eQHxLRwBkB3gRlJiUMuUz/tsTiQH90gq1e
-	 kJjBjn4Sd0HGGxSlU1J5a6bKB0IH7M9uIpsSLp7ICsgdSK2yA+HpcSXsUpScrQy1J
-	 DxExWPy3Ly+j/xkjGPqh4i7FFr+Hye0gF5pRWmRdmrrZ+anWplqz1XUtFdUGo7jqB
-	 z8ocuJCPcjRg6pNNiPGUr5lqH4itt7VS2AXnQAo20ZKpF1CPdj14I8aIEDfybwP4O
-	 eGGm0vNKR8rxJh4W5A==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0LxhYD-1sjCVE00Wx-017GzL; Fri, 03 May 2024 20:56:35 +0200
-Date: Fri, 3 May 2024 14:56:33 -0400
-From: Parker Newman <parker@finest.io>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Ilpo =?UTF-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Parker
- Newman <pnewman@connecttech.com>, LKML <linux-kernel@vger.kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v1 11/13] serial: 8250_exar: Use BIT() in exar_ee_read()
-Message-ID: <20240503145633.1ad55378@SWDEV2.connecttech.local>
-In-Reply-To: <ZjUEURneUmZ4nmbC@smile.fi.intel.com>
-References: <20240502144626.2716994-1-andriy.shevchenko@linux.intel.com>
-	<20240502144626.2716994-12-andriy.shevchenko@linux.intel.com>
-	<702a9145-5bc1-c765-a1fa-278702741637@linux.intel.com>
-	<ZjPLQeTEKvt7B3mj@smile.fi.intel.com>
-	<20240503102632.112a34bd@SWDEV2.connecttech.local>
-	<ZjUEURneUmZ4nmbC@smile.fi.intel.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PY9yWJfP"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-5af2358c7e5so343839eaf.0;
+        Fri, 03 May 2024 21:17:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714796230; x=1715401030; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tSo6zwOKqQsGcSGbmDOSdgFiHjnaPqYR6z7N4u/pMMc=;
+        b=PY9yWJfP2W4ONOG3QVoirtlCuyTmGCzuGIj+BtfAA4uoW9tbkBnhzNQlzvAzxuhLa0
+         vtTc3C+OykoLVvC339ByPH6OUnNbRa/VsSJRwuZ1QAxujBfdyXbmYplFNiQLI1lv6WF7
+         /hx1ai7hEKstDdtrNz841iuCx1U5naSdIlFxgKi5YnP7Vq/UnSlAqUZBdC+5/Wx//ndD
+         yYYQi3vYymu8SgGEZidRaQ5oEG4aRI7f2PXOa7TxV+rsXCEd6a6U32EvDArPXfYHl6Zr
+         xbM/LxLRPYt8GALXW9cHBEJp0NasrH5BArTbSR3R4WvaKTxDQUd0IHN+Okyt7r++Fhwg
+         XVdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714796230; x=1715401030;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tSo6zwOKqQsGcSGbmDOSdgFiHjnaPqYR6z7N4u/pMMc=;
+        b=Jz6yLvvuE52GTtmfask8jm7muO7zGzrDNL9V+UtWwNT6CpzmPUv3g+8F8NpldsdSLs
+         UhVL7uXmKAsUWUvvudhNOEoPY6DVbFuJwJD2ynpVILWG1gw+q2CTIQCnfxa8ACrA+wT5
+         iwEqVZRIiz1/ksn1Qkj0Tsm/rTr2XWwMKtCCPVqT68T3nnI4yJm0zCxeBR9PdsQahq5D
+         rpQvt60CbaxbWz3PPfdxTndb5ntPleS3UQn79SYXzHWGG261rn9iFAOTlE+h6CliXRbw
+         N9OuIBkHBoGBKarpBe2Y1YYqvFMJtb/Yz4jmOk0NHb/tWQmU1mKThgqE06gZh6SrOXye
+         0AuA==
+X-Forwarded-Encrypted: i=1; AJvYcCVO9ZtjMn112LRDNeGxjY7aPaeeqArFKVuYqX1bFgbUMpYaojv8xNhEDzyGNiDybwcBtYrcFKGfUy5jqiYkBWKQKgjLg0NNzuNnx/ol
+X-Gm-Message-State: AOJu0YzYDQq2lKZ2NiJmV7QPc5wP8XTdsX23CAk243NTf3Ia8v4Gx2DX
+	/ubOOKgLi2hoag96Tc4laYfNwGEs/OnYT+Q42Eye+QndvUYbIxWM
+X-Google-Smtp-Source: AGHT+IGdvZsYHYLwNI4cw0uRqUHM3E2Fqp+63lsTFTNCHPScphYrAOc4ufA4UUrHI6VTXtoHVAw+yw==
+X-Received: by 2002:a05:6358:988f:b0:18a:78c2:7ccf with SMTP id q15-20020a056358988f00b0018a78c27ccfmr5238421rwa.13.1714796229852;
+        Fri, 03 May 2024 21:17:09 -0700 (PDT)
+Received: from [192.168.5.213] ([101.229.120.80])
+        by smtp.gmail.com with ESMTPSA id d14-20020a63f24e000000b0060063c4be3bsm3911940pgk.14.2024.05.03.21.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 May 2024 21:17:09 -0700 (PDT)
+Message-ID: <15e9c1278505677e813df48190a5cd9c200453c3.camel@gmail.com>
+Subject: Re: [PATCH v2 1/2] platform/surface: aggregator: Defer probing when
+ serdev is not ready
+From: Weifeng Liu <weifeng.liu.z@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Maximilian Luz <luzmaximilian@gmail.com>, Hans de Goede
+ <hdegoede@redhat.com>
+Date: Sat, 04 May 2024 12:17:05 +0800
+In-Reply-To: <ZjUY7xPXszBulKap@smile.fi.intel.com>
+References: <20240503030900.1334763-1-weifeng.liu.z@gmail.com>
+	 <20240503030900.1334763-2-weifeng.liu.z@gmail.com>
+	 <ZjUY7xPXszBulKap@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.1 (3.52.1-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:cLVJIpyEfukT7LHtxza3jwsgSVQAv89BtasT0nnie4B6k/uh3Wn
- MN2xos2eIgojKXgZlDmDHW3cdHH3EFB5zFJq0FGPf5yIP3iXRvLHvG5oqQaJ7IcBwGA80GF
- yRYmnPe3XBSwRspHA+0noB0Z1cb4GrW7VtD5FCZyMXqKXKNVmluJ+9RyADCHJFKhOSxRSd6
- 6uf8O04as/SkHttot+zvA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:zDp5WcS2eQM=;TSYrBciSm/jwQqbvmJA0qfCe+NU
- r3LkB5LaQkBs7ICgII1lBFUXPyymwsroAoPflGcIzdF2dksMjyFYjF9zVr812RRGGDBISC8Mf
- UcGlzImEEHT02Y0W72WVQixhWO3PbRGMZO8Zoz+ZP8oLzi71E9mJinbtkaAHTotzqNuQF9ZLQ
- MsMv5apOSxW2Utu9jjYW8+YEnYXEbeXf9z2Ksjv+S1+jFh7N+ftLkRWI2rknvwqiq4fwYbQOH
- YTnio80b8DL8xnmFWDULBaWc5yu1kOuq6XzPbOumTNIBVxBShzsZQPJldTFjZPogXRsNaSEXH
- I5Qd5I52psTm2jO/V+bPsBNTQv5kE4kMOQ6l1iYmFZcGmDcg+QvuSj/D6ZKBdBkJG5vsg9OYE
- 2vIftqczONnZ9A3iZ4EBsDDsbF6uJjRnSU4XyOYNGPvgEXGqwn2VvqRx0u/u8R4JvvyvbCPKT
- VU9H6A7kiD1fXqAtR1nTDDHBcF+SGAF27d0+xOTtTM13hrlwkE7iM5fCNc/X/mEkjBz0ywgGj
- bEdz5FyBQXjZxDa0OhSQTTUcT7VOPhMpbQzGmcrOFsqzgHYkqZfOoxMkeUrOlPJSukmA+0Hhe
- VLattDaWR3yIvztXp9MZp1+R0Yo31GxXsEsz0yCiH6F7E16SJCnBCtxRZ44UvW7jIFEzOWSlV
- yE8zModPoVoCF43kAPBCIlz2+UtQmxZRgCb0cgQXNmprgKpCLuHAx2aV1DR/GgLMPJrjAUmoS
- PDuYkBDD6Dreh7przY0/nYvOnNxvRT/PYPCxNyhpw5us+jXmtEl7WM=
 
-On Fri, 3 May 2024 18:35:45 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Hi Andy,
 
-> On Fri, May 03, 2024 at 10:26:32AM -0400, Parker Newman wrote:
-> > On Thu, 2 May 2024 20:20:01 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote: =20
-> > > On Thu, May 02, 2024 at 07:08:21PM +0300, Ilpo J=C3=A4rvinen wrote: =
-=20
-> > > > On Thu, 2 May 2024, Andy Shevchenko wrote:   =20
+On Fri, 2024-05-03 at 20:03 +0300, Andy Shevchenko wrote:
+> On Fri, May 03, 2024 at 11:08:46AM +0800, Weifeng Liu wrote:
+> > This is an attempt to alleviate race conditions in the SAM driver where
+> > essential resources like serial device and GPIO pins are not ready at
+> > the time ssam_serial_hub_probe() is called.  Instead of giving up
+> > probing, a better way would be to defer the probing by returning
+> > -EPROBE_DEFER, allowing the kernel try again later.
+> >=20
+> > However, there is no way of identifying all such cases from other real
+> > errors in a few days.  So let's take a gradual approach identify and
+> > address these cases as they arise.  This commit marks the initial step
+> > in this process.
 >=20
 > ...
 >=20
-> > > > >  	// Send address to read from
-> > > > > -	for (i =3D 1 << (UART_EXAR_REGB_EE_ADDR_SIZE - 1); i; i >>=3D 1)
-> > > > > -		exar_ee_write_bit(priv, (ee_addr & i));
-> > > > > +	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
-> > > > > +		exar_ee_write_bit(priv, ee_addr & BIT(i));
-> > > > > =20
-> > > > >  	// Read data 1 bit at a time
-> > > > >  	for (i =3D 0; i <=3D UART_EXAR_REGB_EE_DATA_SIZE; i++) {
-> > > > > -		data <<=3D 1;
-> > > > > -		data |=3D exar_ee_read_bit(priv);
-> > > > > +		if (exar_ee_read_bit(priv))
-> > > > > +			data |=3D BIT(i);   =20
-> > > >=20
-> > > > Does this end up reversing the order of bits? In the original, data=
- was left
-> > > > shifted which moved the existing bits and added the lsb but the rep=
-lacement
-> > > > adds highest bit on each iteration?   =20
-> > >=20
-> > > Oh, seems a good catch!
-> > >=20
-> > > I was also wondering, but missed this somehow. Seems the EEPROM is in=
- BE mode,
-> > > so two loops has to be aligned.
-> > >  =20
-> >=20
-> > I just tested this and Ilpo is correct, the read loop portion is backwa=
-rds as=20
-> > expected. This is the corrected loop:
-> >=20
-> >     // Read data 1 bit at a time
-> >     for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
-> >         if (exar_ee_read_bit(priv))
-> >             data |=3D BIT(i);
-> >     }
-> >=20
-> > I know this looks wrong because its looping from 16->0 rather than the=
-=20
-> > more intuitive 15->0 for a 16bit value. This is actually correct howeve=
-r=20
-> > because according to the AT93C46D datasheet there is always dummy 0 bit
-> > before the actual 16 bits of data.
-> >=20
-> > I hope that helps, =20
+> > +	/*
+> > +	 * The following step can fail when it's called too early before the
+> > +	 * underlying UART device is ready (in this case -ENXIO is returned).
+> > +	 * Instead of simply giving up and losing everything, we can defer
+> > +	 * the probing by returning -EPROBE_DEFER so that the kernel would be
+> > +	 * able to retry later.
+> > +	 */
 >=20
-> Yes, it helps and means that we need that comment to be added to the code=
-. Is
-> it the same applicable to the write part above (for address)? Because AFA=
-IU
-> mine is one bit longer than yours. Maybe in the original code is a bug? H=
-ave
-> you tried to read high addresses?
+> You can add the following to the
+> serial_core.c (at the top after the headers)
+>=20
+> #undef ENXIO
+> #define ENXIO __LINE__
+>=20
+> And I'm pretty much sure it will point out you to the uart_port_activate(=
+).
+> If it's the case you may elaborate this in the comment.
+> Otherwise you may add the same hack to other files and find the culprit.
 
-The address portion is 6 bits, nothing extra, so what you have is correct.
+Indeed, uart_port_activate() is the function where we gets errno -
+ENXIO.  Please see the cover letter [1] of this series:
 
-The original code was legacy, I cleaned it up but didn't change those loops=
-.=20
 
-Your method works out the the same number of bits as the legacy method
-which sets bit 5 and has to shift right 6 times to get i =3D 0 which ends t=
-he loop.
+  ssam_serial_hub_probe()
+  serdev_device_open()
+  ctrl->ops->open()	/* this callback being ttyport_open() */
+  tty->ops->open()	/* this callback being uart_open() */
+  tty_port_open()
+  port->ops->activate()	/* this callback being uart_port_activate() */
+  Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
 
-Parker
+What confuses me is that when ssam_serial_hub_probe() (probe callback
+of a serdev driver) gets called and tries to open the provided serdev
+device by serdev_device_open(), it simply fails to open it...  The
+serdev device is not the kind of auxiliary devices but the main device
+this driver is to manage.  And I don't find other serdev driver doing
+this sort of checking and returning -EPROBE_DEFER thing when opening
+serdev device.  Thus, from the perspective of a newcomer to this area,
+I think this phenomenon is somewhat abnormal.  Maybe somehow the
+initializing of the UART device and probing of serdev driver are
+interleaved...
+
+Andy, do you have any idea what's going wrong here?  Or do you think
+this is an expected behavior?
+
+>=20
+> Also it might be that we add some error code substitution inside serdev c=
+ore.
+> At least there more data is available to make the (better) decision.
+>=20
+
+Agree.  If failing in serdev_device_open() is common in a serdev
+driver, we'd better handle it properly inside serdev core and convey
+explicit semantics to the caller.
+
+Best regards,
+Weifeng
+
+[1]
+https://lore.kernel.org/linux-serial/20240503030900.1334763-1-weifeng.liu.z=
+@gmail.com/T/#m40d73c44bf92ad45e4fca5ed5f01f9c11e30adb1
