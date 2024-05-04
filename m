@@ -1,54 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C764023767;
-	Sat,  4 May 2024 16:00:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5430C23767;
+	Sat,  4 May 2024 16:01:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714838406; cv=none; b=Uzc7a0VAWhd6mNEv8txU7+Tc/CHwBKmhM9Z/RMcwOqYy9qn701XIfeNlFj1bAr2IhqlKQ1cQonGLt5Ju9CEe91e549rr0Quhypb+FC4JBwGA0wDBL+tsjyR9gSr+FF0m1bi15iujyFntsemzzs7GCqXAJT9YkPnPEhSYfY7OWBw=
+	t=1714838503; cv=none; b=cCCi07VenxZjkwbwYV//dUcXTn3QhveCJ6f+9JrRLlNuEpiaHf9rl5D/UMZbwTGYnhw0jYke3a4hA8tBrJ8nfs//4ncXDuLeCB6qVzUh3LhBGB6U7M5FlXp5PwrctV+lY8zz6yoyuW9HYhhx+vJhI8yFWCSrqA6kex2HNQyVOhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714838406; c=relaxed/simple;
-	bh=2CfHE6U1TpkNccPPQ+ztJD0Glq/+yNTjt96lxseYs9w=;
+	s=arc-20240116; t=1714838503; c=relaxed/simple;
+	bh=gf6jZj0RO14a3jrqluReftPD7w24qIhL5Sxeb0U3J/g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AFC2ixPzORGB+yeuuNlVAqLTKB6Jg8QMGKhRWTUlVuCWv2Tn3X3632Gry+Pu8V1XpBw869a9Lw981YKLIem/7QLRYHnJxCMFYhKx6r2e3f0afWBAhwglkn7Dir0xfPIFgFqYIH86xpQczT+szFXkpfy340n92oqro5Au6y/hdLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hPvSedsp; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=CcE7PfymSNsYI9ENxD+pvTMHskGFiNBso17UWhBYJenmSrD0rJKVMqxWINLMW1BGN6i5cI/BLuW0+3sv+A2uM/b4BjZHpEmxfdYgcEgXlAM4BCv2NubYcYzjlKblfeKicQCBoyE7y2k1ns7fM/4GVKb0e7HkOUZ0l+hYf0KWX10=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=hLpODsBI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hPvSedsp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D204C072AA;
-	Sat,  4 May 2024 16:00:04 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="hLpODsBI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB44C072AA;
+	Sat,  4 May 2024 16:01:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1714838405;
-	bh=2CfHE6U1TpkNccPPQ+ztJD0Glq/+yNTjt96lxseYs9w=;
+	s=korg; t=1714838502;
+	bh=gf6jZj0RO14a3jrqluReftPD7w24qIhL5Sxeb0U3J/g=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hPvSedspztdtHSPN3XsMQ+YePzhvGV6PXZbpqNBYIQKQGzEhgcWZNr+okyglg99rQ
-	 0yEk8VpMdXRQp+bRoBPshGJKkBJSqqs6Rp8o4y26mTU8wBsCgnyuGVkEcjEOyi4wsW
-	 10UmPB7I7bt1NVTHNn/zWY6PsJR864PffTHSLVb4=
-Date: Sat, 4 May 2024 18:00:01 +0200
+	b=hLpODsBImnuuTiIGuDLc5nSv4zX3Hq5le4elqtg4qDyEKucUDtganpmV4m7g0GKKH
+	 cdhKsRIc2mh/WB8VuJHooo1rs4fvrHvvC+x4UtWvvlnXss25PBdv4TVKWmGKOdii/g
+	 GM6Np9f0xVVHSiLdadx39WIYG6goVJ6aCmgllRHA=
+Date: Sat, 4 May 2024 18:01:38 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Christoph Fritz <christoph.fritz@hexdev.de>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Oliver Hartkopp <socketcan@hartkopp.net>,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Sebastian Reichel <sre@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
-	netdev@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 03/11] tty: serdev: Add flag buffer aware
- receive_buf_fp()
-Message-ID: <2024050410-gigolo-giddily-97b6@gregkh>
-References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
- <20240502182804.145926-4-christoph.fritz@hexdev.de>
+To: Parker Newman <parker@finest.io>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v2 0/4] serial: exar: fix kbuild warnings and code style
+Message-ID: <2024050429-disorder-revolver-5b74@gregkh>
+References: <cover.1713533298.git.pnewman@connecttech.com>
+ <20240502121809.30491a67@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,57 +42,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240502182804.145926-4-christoph.fritz@hexdev.de>
+In-Reply-To: <20240502121809.30491a67@SWDEV2.connecttech.local>
 
-On Thu, May 02, 2024 at 08:27:56PM +0200, Christoph Fritz wrote:
-> This patch introduces an additional receive buffer callback variation
-> besides the already existing receive_buf(). This new callback function
-> also passes the flag buffer (TTY_NORMAL, TTY_BREAK, and friends).
+On Thu, May 02, 2024 at 12:18:09PM -0400, Parker Newman wrote:
+> On Fri, 19 Apr 2024 10:17:00 -0400
+> Parker Newman <parker@finest.io> wrote:
 > 
-> If defined, this function gets prioritized and called instead of the
-> standard receive_buf().
+> > From: Parker Newman <pnewman@connecttech.com>
+> >
+> > This is a series of small patches fixing kbuilds error and code style
+> > issues based on feedback during review of main patches.
+> >
+> > Original patches thread:
+> > Link: https://lore.kernel.org/linux-serial/cover.1713382717.git.pnewman@connecttech.com/
+> >
 > 
-> An alternative approach could have been to enhance the receive_buf()
-> function and update all drivers that use it.
-
-Please, let's do that instead of adding random letters at the end of a
-function pointer :)
-
-> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> ---
->  drivers/tty/serdev/serdev-ttyport.c |  2 +-
->  include/linux/serdev.h              | 17 ++++++++++++++---
->  2 files changed, 15 insertions(+), 4 deletions(-)
+> These patches should not be required anymore. Andy Shevchenko has
+> submitted a more comprehensive clean up patch set that makes this
+> set unneeded.
 > 
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index 3d7ae7fa50186..bb47691afdb21 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -32,7 +32,7 @@ static size_t ttyport_receive_buf(struct tty_port *port, const u8 *cp,
->  	if (!test_bit(SERPORT_ACTIVE, &serport->flags))
->  		return 0;
->  
-> -	ret = serdev_controller_receive_buf(ctrl, cp, count);
-> +	ret = serdev_controller_receive_buf(ctrl, cp, fp, count);
->  
->  	dev_WARN_ONCE(&ctrl->dev, ret > count,
->  				"receive_buf returns %zu (count = %zu)\n",
-> diff --git a/include/linux/serdev.h b/include/linux/serdev.h
-> index ff78efc1f60df..c6ef5a8988e07 100644
-> --- a/include/linux/serdev.h
-> +++ b/include/linux/serdev.h
-> @@ -23,11 +23,17 @@ struct serdev_device;
->   * struct serdev_device_ops - Callback operations for a serdev device
->   * @receive_buf:	Function called with data received from device;
->   *			returns number of bytes accepted; may sleep.
-> + * @receive_buf_fp:	Function called with data and flag buffer received
-> + *			from device; If defined, this function gets called
-> + *			instead of @receive_buf;
-> + *			returns number of bytes accepted; may sleep.
+> Link: https://lore.kernel.org/linux-serial/20240502144626.2716994-1-andriy.shevchenko@linux.intel.com/
 
-I don't remember waht "fp" means here, and you don't document it, so
-let's just have one recieve_buf() callback please.
-
-thanks,
+Thanks for letting me know, now dropped.
 
 greg k-h
