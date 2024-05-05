@@ -1,465 +1,257 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BDEABA45
-	for <linux-serial@vger.kernel.org>; Sun,  5 May 2024 08:04:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F0921803D
+	for <linux-serial@vger.kernel.org>; Sun,  5 May 2024 12:02:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714896261; cv=none; b=QPpKJe99BtD/YMJCsoTDnBDVknpMC3ruHrOAtkEdlVeMJeTe72uftvSu2EPMTJgOijwJmqG1TXii+SNyYeNyLEI3+jjMyTdPXUb4274oEUz5VYMtNbnnmX7Ge/wBlHEd+mcKRh3oU/NqhAEoZeWFLrVzH0AibfRgUhTNQS51o5k=
+	t=1714910582; cv=none; b=AQKJ0l9NJxOKuoYRzoBZJNw49aoBpSni0LPDtkc1oCCC1o59mFo9VY1LTBujrqxUFsG4n3AU3yKikN9PeV8PD2TuzIIDY71chn0SJ8th8rmmgQ8sr52SOdLokUGHujFWtRQBK7T65zDPCtgypW2agtGJUq4bVNN/gCYMKas4CB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714896261; c=relaxed/simple;
-	bh=PwtyyIvb1g/T7uC7+H+W6+wraflSrTj7M6d51TPMXGM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tM3G0RlfR+BPpRAP2feOiOtqXbSPc63hUIbYD3SYhU8AUtXpxN/9HEphwrou+LWOGMVADCDpEP0uqiS1Gu0bRp7jniK6w4srYxiAVWCC+DAywmVrR/LpMoWh+KwlPSjOpvl3KPEVvhfIFrEKjYokM4RS893bgv5HqC8uvlkIft4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b=hVTykD5c; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1714910582; c=relaxed/simple;
+	bh=Tl8N7nDspIRTCaV+3C+008xX532Hk38eRJRIsd3/fng=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=tueNhbU3gl3ldR9b9XHC49DPod6fYGhlx/NAfohULlLtwPoGehO/PUMMADDUDEV4ys2ZaYaiOpux4cF9C2XvZxvFFIxJmCo8hOxoLf1ZvG//NhKeDbADbycJWrszJNEl1iF53bzCJ2iFC+42h4u7rqW9C3b9hm3trif3G1Lm2SA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hoWJ/tZN; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smile-fr.20230601.gappssmtp.com header.i=@smile-fr.20230601.gappssmtp.com header.b="hVTykD5c"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-41bca450fa3so6210315e9.2
-        for <linux-serial@vger.kernel.org>; Sun, 05 May 2024 01:04:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20230601.gappssmtp.com; s=20230601; t=1714896257; x=1715501057; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yL+ECNUaY+eeDvfxBYwpbmB6VWF8d0j7WE6vzmylt8M=;
-        b=hVTykD5cPL6Dvq1RrrDZz2SjdCBg7gJ+64uo7KYWRKTuAggvicICx7+aUkp7r4OiAc
-         1EQDYsMs3ZAVR2iohEQbtPSWedBHRZwSSJwcQOyys/IyeOTU5QY/9/7/+bA4f2s6oVD5
-         21KiSKR+cfMEmX4BhCz1eoIg8NNASpUAFRfPekFgJYMGCVfzxjl3p0DwDARtS1mxBB/i
-         91EIWhr9Z4VldGZ068Ovg5+yp3TjZp9pfOKw+TwwSE7hBGPHAb8RbM/EIEuYjYGU9Htn
-         aXJe2T8QWDtC4hE8wNsIHMCto3IhHTey+hElu2epZD4vW8hlkv9kjIJgNAlYo7FVHR6F
-         8Ukg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714896257; x=1715501057;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yL+ECNUaY+eeDvfxBYwpbmB6VWF8d0j7WE6vzmylt8M=;
-        b=qEArxlXhXeBx35Kp4hnc4rkKcqUJYc0VGBUDMiB3istYcIhll/8HMFR2Rhi/Tww5FE
-         lGt1XtqYXfDd/a+05RATL+nrDVf7LGqrOLVCb8DzbmHiCxTbqhqz7KvJy8JrdvA5yffI
-         aj7ulzhS2ylRfgIA3S4lHRCLxo8lymSS/hg/hlWtWpNhY5rg6tifsSWAWuBfCOROiMaL
-         j3DizPI8WAc00R3jBEWVdSgv+SjFoIZJ0Rud5O+WLkxd3ssxtCjHhZMSNQRPRu7Xn/ON
-         pouWBInjxB/CbyQLIWzNcVAorCBWpeuln5V186lm2H/fr7tneUIwWMb/cgstBHqpcX+s
-         oEqg==
-X-Forwarded-Encrypted: i=1; AJvYcCVCikPhE+6vcdG8dhNTFkQO97Nqo/on+kmMYVn1Dmmi/qQhu/nhJQWhbxMrYwaZ8RVgUyLbB5BWVXfpe/aDuaxTAvquH193jwUE/iN+
-X-Gm-Message-State: AOJu0Yw4Nbfw7tdKaZtljaLTJ20bGgBkBhImGGDAlAYZ49FisoslYAE2
-	kjZjFeOLNvoBacqSUsZEiwGlwDWqcr1sC3tEZelXXcoYkhPwdA7kEqb6EtQjgE4=
-X-Google-Smtp-Source: AGHT+IFtLZkZdsLUhIgXhSK0ld2OQ7w8wy+aP5E21t4B3GTVTtsAwfk2An9izuul6EsZP832qMFibw==
-X-Received: by 2002:a05:600c:4709:b0:416:2471:e102 with SMTP id v9-20020a05600c470900b004162471e102mr5207887wmo.37.1714896257453;
-        Sun, 05 May 2024 01:04:17 -0700 (PDT)
-Received: from P-ASN-ECS-830T8C3.local ([89.159.1.53])
-        by smtp.gmail.com with ESMTPSA id s3-20020adfe003000000b0034e8a10039esm4705295wrh.10.2024.05.05.01.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 May 2024 01:04:16 -0700 (PDT)
-From: yoann.congal@smile.fr
-To: linux-fsdevel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	x86@kernel.org
-Cc: =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Darren Hart <dvhart@infradead.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Yoann Congal <yoann.congal@smile.fr>
-Subject: [PATCH RESEND v6 3/3] printk: Remove redundant CONFIG_BASE_FULL
-Date: Sun,  5 May 2024 10:03:43 +0200
-Message-Id: <20240505080343.1471198-4-yoann.congal@smile.fr>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20240505080343.1471198-1-yoann.congal@smile.fr>
-References: <20240505080343.1471198-1-yoann.congal@smile.fr>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hoWJ/tZN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714910579; x=1746446579;
+  h=date:from:to:cc:subject:message-id;
+  bh=Tl8N7nDspIRTCaV+3C+008xX532Hk38eRJRIsd3/fng=;
+  b=hoWJ/tZNwxRYHKjWY2wIX+KEjOgN3VYrxcv6f2xIiEVpycd9lHsze+T4
+   ryd9WGvP44iNfp/B7D1h6i+3E8K6tDDBAsD1EjhTu/Ng3hnu9KdJtLn6C
+   TKTjzlKR1nwAIOeLir7NVm64jn5k5j1z8WQ38OAf3ynKg4halhYALB9v3
+   TadWbFLdhMK+/s+vFif0CEq705rHvpp4DSOkorE0inlIPpDzT/XbosBxJ
+   EBHoH+2HZXqw8fVyZRmeuIyoznylFp4y67/0Y+VCGpOfK3rQDrt43KQmB
+   wGWPEZP+IYeb4zquBR3hnheWMMuP5E0oNW/w1eS7FpcsXAozOFqDwle62
+   w==;
+X-CSE-ConnectionGUID: dKbAM11pTlKggZfY0gJCtg==
+X-CSE-MsgGUID: towWYHDYQdCJBey6OXwIPw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="10819160"
+X-IronPort-AV: E=Sophos;i="6.07,256,1708416000"; 
+   d="scan'208";a="10819160"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2024 05:02:59 -0700
+X-CSE-ConnectionGUID: uMrrEENtTPO7eXEglJt9cw==
+X-CSE-MsgGUID: vIqJDo7MTN6xPfyKvHkC0A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,256,1708416000"; 
+   d="scan'208";a="32506017"
+Received: from lkp-server01.sh.intel.com (HELO 123fad1cf874) ([10.239.97.150])
+  by fmviesa004.fm.intel.com with ESMTP; 05 May 2024 05:02:57 -0700
+Received: from kbuild by 123fad1cf874 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1s3aZz-0000Bs-0c;
+	Sun, 05 May 2024 12:02:55 +0000
+Date: Sun, 05 May 2024 20:02:21 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 8492bd91aa055907c67ef04f2b56f6dadd1f44bf
+Message-ID: <202405052019.J8qAbmEm-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Yoann Congal <yoann.congal@smile.fr>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 8492bd91aa055907c67ef04f2b56f6dadd1f44bf  serial: sc16is7xx: fix bug in sc16is7xx_set_baud() when using prescaler
 
-CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
-default: CONFIG_BASE_SMALL is the special case to take care of.
-So, remove CONFIG_BASE_FULL and move the config choice to
-CONFIG_BASE_SMALL (which defaults to 'n')
+elapsed time: 1184m
 
-For defconfigs explicitely disabling BASE_FULL, explicitely enable
-BASE_SMALL.
-For defconfigs explicitely enabling BASE_FULL, drop it as it is the
-default.
+configs tested: 180
+configs skipped: 4
 
-Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
----
- arch/arm/configs/collie_defconfig                    |  2 +-
- arch/arm/configs/keystone_defconfig                  |  2 +-
- arch/arm/configs/lpc18xx_defconfig                   |  2 +-
- arch/arm/configs/moxart_defconfig                    |  2 +-
- arch/arm/configs/mps2_defconfig                      |  2 +-
- arch/arm/configs/omap1_defconfig                     |  2 +-
- arch/arm/configs/stm32_defconfig                     |  2 +-
- arch/microblaze/configs/mmu_defconfig                |  2 +-
- arch/mips/configs/rs90_defconfig                     |  2 +-
- arch/powerpc/configs/adder875_defconfig              |  2 +-
- arch/powerpc/configs/ep88xc_defconfig                |  2 +-
- arch/powerpc/configs/mpc866_ads_defconfig            |  2 +-
- arch/powerpc/configs/mpc885_ads_defconfig            |  2 +-
- arch/powerpc/configs/tqm8xx_defconfig                |  2 +-
- arch/riscv/configs/nommu_k210_defconfig              |  2 +-
- arch/riscv/configs/nommu_k210_sdcard_defconfig       |  2 +-
- arch/riscv/configs/nommu_virt_defconfig              |  2 +-
- arch/sh/configs/edosk7705_defconfig                  |  2 +-
- arch/sh/configs/se7619_defconfig                     |  2 +-
- arch/sh/configs/se7712_defconfig                     |  2 +-
- arch/sh/configs/se7721_defconfig                     |  2 +-
- arch/sh/configs/shmin_defconfig                      |  2 +-
- init/Kconfig                                         | 10 +++-------
- tools/testing/selftests/wireguard/qemu/kernel.config |  1 -
- 24 files changed, 25 insertions(+), 30 deletions(-)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-diff --git a/arch/arm/configs/collie_defconfig b/arch/arm/configs/collie_defconfig
-index 01b5a5a73f037..42cb1c8541188 100644
---- a/arch/arm/configs/collie_defconfig
-+++ b/arch/arm/configs/collie_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- CONFIG_ARCH_MULTI_V4=y
- # CONFIG_ARCH_MULTI_V7 is not set
-diff --git a/arch/arm/configs/keystone_defconfig b/arch/arm/configs/keystone_defconfig
-index 59c4835ffc977..c1291ca290b23 100644
---- a/arch/arm/configs/keystone_defconfig
-+++ b/arch/arm/configs/keystone_defconfig
-@@ -12,7 +12,7 @@ CONFIG_CGROUP_DEVICE=y
- CONFIG_CGROUP_CPUACCT=y
- CONFIG_BLK_DEV_INITRD=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_EXPERT=y
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/lpc18xx_defconfig b/arch/arm/configs/lpc18xx_defconfig
-index d169da9b2824d..f55c231e08708 100644
---- a/arch/arm/configs/lpc18xx_defconfig
-+++ b/arch/arm/configs/lpc18xx_defconfig
-@@ -8,7 +8,7 @@ CONFIG_BLK_DEV_INITRD=y
- # CONFIG_RD_LZ4 is not set
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/moxart_defconfig b/arch/arm/configs/moxart_defconfig
-index 1d41e73f4903c..34d079e03b3c5 100644
---- a/arch/arm/configs/moxart_defconfig
-+++ b/arch/arm/configs/moxart_defconfig
-@@ -6,7 +6,7 @@ CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
- # CONFIG_EVENTFD is not set
-diff --git a/arch/arm/configs/mps2_defconfig b/arch/arm/configs/mps2_defconfig
-index 3ed73f184d839..e995e50537efd 100644
---- a/arch/arm/configs/mps2_defconfig
-+++ b/arch/arm/configs/mps2_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=16
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/arm/configs/omap1_defconfig b/arch/arm/configs/omap1_defconfig
-index 729ea8157e2a5..025b595dd8375 100644
---- a/arch/arm/configs/omap1_defconfig
-+++ b/arch/arm/configs/omap1_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LOG_BUF_SHIFT=14
- CONFIG_BLK_DEV_INITRD=y
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- # CONFIG_KALLSYMS is not set
- CONFIG_PROFILING=y
-diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
-index b9fe3fbed5aec..3baec075d1efd 100644
---- a/arch/arm/configs/stm32_defconfig
-+++ b/arch/arm/configs/stm32_defconfig
-@@ -6,7 +6,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_UID16 is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/microblaze/configs/mmu_defconfig b/arch/microblaze/configs/mmu_defconfig
-index 4da7bc4ac4a37..176314f3c9aac 100644
---- a/arch/microblaze/configs/mmu_defconfig
-+++ b/arch/microblaze/configs/mmu_defconfig
-@@ -4,7 +4,7 @@ CONFIG_AUDIT=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_EXPERT=y
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- CONFIG_KALLSYMS_ALL=y
- CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR=1
- CONFIG_XILINX_MICROBLAZE0_USE_PCMP_INSTR=1
-diff --git a/arch/mips/configs/rs90_defconfig b/arch/mips/configs/rs90_defconfig
-index 4b9e36d6400e0..a53dd66e9b864 100644
---- a/arch/mips/configs/rs90_defconfig
-+++ b/arch/mips/configs/rs90_defconfig
-@@ -9,7 +9,7 @@ CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y
- # CONFIG_SGETMASK_SYSCALL is not set
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_TIMERFD is not set
- # CONFIG_AIO is not set
- # CONFIG_IO_URING is not set
-diff --git a/arch/powerpc/configs/adder875_defconfig b/arch/powerpc/configs/adder875_defconfig
-index 7f35d5bc12299..97f4d48517356 100644
---- a/arch/powerpc/configs/adder875_defconfig
-+++ b/arch/powerpc/configs/adder875_defconfig
-@@ -4,7 +4,7 @@ CONFIG_SYSVIPC=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/ep88xc_defconfig b/arch/powerpc/configs/ep88xc_defconfig
-index a98ef6a4abef6..50cc59eb36cf1 100644
---- a/arch/powerpc/configs/ep88xc_defconfig
-+++ b/arch/powerpc/configs/ep88xc_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc866_ads_defconfig b/arch/powerpc/configs/mpc866_ads_defconfig
-index 5c56d36cdfc5c..6f449411abf7b 100644
---- a/arch/powerpc/configs/mpc866_ads_defconfig
-+++ b/arch/powerpc/configs/mpc866_ads_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/powerpc/configs/mpc885_ads_defconfig b/arch/powerpc/configs/mpc885_ads_defconfig
-index 56b876e418e91..77306be62e9ee 100644
---- a/arch/powerpc/configs/mpc885_ads_defconfig
-+++ b/arch/powerpc/configs/mpc885_ads_defconfig
-@@ -7,7 +7,7 @@ CONFIG_VIRT_CPU_ACCOUNTING_NATIVE=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- CONFIG_PERF_EVENTS=y
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/powerpc/configs/tqm8xx_defconfig b/arch/powerpc/configs/tqm8xx_defconfig
-index 083c2e57520a0..383c0966e92fd 100644
---- a/arch/powerpc/configs/tqm8xx_defconfig
-+++ b/arch/powerpc/configs/tqm8xx_defconfig
-@@ -6,7 +6,7 @@ CONFIG_HIGH_RES_TIMERS=y
- CONFIG_LOG_BUF_SHIFT=14
- CONFIG_EXPERT=y
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
- CONFIG_MODULES=y
-diff --git a/arch/riscv/configs/nommu_k210_defconfig b/arch/riscv/configs/nommu_k210_defconfig
-index 146c46d0525b4..51ba0d1683383 100644
---- a/arch/riscv/configs/nommu_k210_defconfig
-+++ b/arch/riscv/configs/nommu_k210_defconfig
-@@ -11,7 +11,7 @@ CONFIG_BLK_DEV_INITRD=y
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_k210_sdcard_defconfig b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-index 95d8d1808f194..762aea9127ae4 100644
---- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
-+++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
-@@ -3,7 +3,7 @@ CONFIG_LOG_BUF_SHIFT=13
- CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/riscv/configs/nommu_virt_defconfig b/arch/riscv/configs/nommu_virt_defconfig
-index b794e2f8144e6..ab6d618c1828f 100644
---- a/arch/riscv/configs/nommu_virt_defconfig
-+++ b/arch/riscv/configs/nommu_virt_defconfig
-@@ -10,7 +10,7 @@ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
- CONFIG_EXPERT=y
- # CONFIG_SYSFS_SYSCALL is not set
- # CONFIG_FHANDLE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
- # CONFIG_TIMERFD is not set
-diff --git a/arch/sh/configs/edosk7705_defconfig b/arch/sh/configs/edosk7705_defconfig
-index 9ee35269bee26..ab3bf72264df4 100644
---- a/arch/sh/configs/edosk7705_defconfig
-+++ b/arch/sh/configs/edosk7705_defconfig
-@@ -6,7 +6,7 @@
- # CONFIG_PRINTK is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SIGNALFD is not set
-diff --git a/arch/sh/configs/se7619_defconfig b/arch/sh/configs/se7619_defconfig
-index 14d0f5ead502f..4765966fec99c 100644
---- a/arch/sh/configs/se7619_defconfig
-+++ b/arch/sh/configs/se7619_defconfig
-@@ -4,7 +4,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_KALLSYMS is not set
- # CONFIG_HOTPLUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_VM_EVENT_COUNTERS is not set
-diff --git a/arch/sh/configs/se7712_defconfig b/arch/sh/configs/se7712_defconfig
-index dc854293da435..20f07aee5bde7 100644
---- a/arch/sh/configs/se7712_defconfig
-+++ b/arch/sh/configs/se7712_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/se7721_defconfig b/arch/sh/configs/se7721_defconfig
-index c891945b8a900..00862d3c030d2 100644
---- a/arch/sh/configs/se7721_defconfig
-+++ b/arch/sh/configs/se7721_defconfig
-@@ -7,7 +7,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
- CONFIG_KALLSYMS_ALL=y
- # CONFIG_BUG is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_SHMEM is not set
- CONFIG_MODULES=y
- # CONFIG_BLK_DEV_BSG is not set
-diff --git a/arch/sh/configs/shmin_defconfig b/arch/sh/configs/shmin_defconfig
-index e078b193a78a8..bfeb004f130ec 100644
---- a/arch/sh/configs/shmin_defconfig
-+++ b/arch/sh/configs/shmin_defconfig
-@@ -5,7 +5,7 @@ CONFIG_LOG_BUF_SHIFT=14
- # CONFIG_HOTPLUG is not set
- # CONFIG_BUG is not set
- # CONFIG_ELF_CORE is not set
--# CONFIG_BASE_FULL is not set
-+CONFIG_BASE_SMALL=y
- # CONFIG_FUTEX is not set
- # CONFIG_EPOLL is not set
- # CONFIG_SHMEM is not set
-diff --git a/init/Kconfig b/init/Kconfig
-index 182f2671a49dd..2a8203628d212 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1590,11 +1590,10 @@ config PCSPKR_PLATFORM
- 	  This option allows to disable the internal PC-Speaker
- 	  support, saving some memory.
- 
--config BASE_FULL
--	default y
--	bool "Enable full-sized data structures for core" if EXPERT
-+config BASE_SMALL
-+	bool "Enable smaller-sized data structures for core" if EXPERT
- 	help
--	  Disabling this option reduces the size of miscellaneous core
-+	  Enabling this option reduces the size of miscellaneous core
- 	  kernel data structures. This saves memory on small machines,
- 	  but may reduce performance.
- 
-@@ -1949,9 +1948,6 @@ config RT_MUTEXES
- 	bool
- 	default y if PREEMPT_RT
- 
--config BASE_SMALL
--	def_bool !BASE_FULL
--
- config MODULE_SIG_FORMAT
- 	def_bool n
- 	select SYSTEM_DATA_VERIFICATION
-diff --git a/tools/testing/selftests/wireguard/qemu/kernel.config b/tools/testing/selftests/wireguard/qemu/kernel.config
-index 507555714b1d8..f314d3789f175 100644
---- a/tools/testing/selftests/wireguard/qemu/kernel.config
-+++ b/tools/testing/selftests/wireguard/qemu/kernel.config
-@@ -41,7 +41,6 @@ CONFIG_KALLSYMS=y
- CONFIG_BUG=y
- CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y
- CONFIG_JUMP_LABEL=y
--CONFIG_BASE_FULL=y
- CONFIG_FUTEX=y
- CONFIG_SHMEM=y
- CONFIG_SLUB=y
+tested configs:
+alpha                             allnoconfig   gcc  
+alpha                            allyesconfig   gcc  
+alpha                               defconfig   gcc  
+arc                              allmodconfig   gcc  
+arc                               allnoconfig   gcc  
+arc                              allyesconfig   gcc  
+arc                                 defconfig   gcc  
+arc                   randconfig-001-20240505   gcc  
+arc                   randconfig-002-20240505   gcc  
+arc                           tb10x_defconfig   gcc  
+arm                              allmodconfig   gcc  
+arm                               allnoconfig   clang
+arm                              allyesconfig   gcc  
+arm                                 defconfig   clang
+arm                          moxart_defconfig   gcc  
+arm                           omap1_defconfig   gcc  
+arm                   randconfig-001-20240505   clang
+arm                   randconfig-002-20240505   gcc  
+arm                   randconfig-003-20240505   gcc  
+arm                   randconfig-004-20240505   clang
+arm64                            allmodconfig   clang
+arm64                             allnoconfig   gcc  
+arm64                               defconfig   gcc  
+arm64                 randconfig-001-20240505   clang
+arm64                 randconfig-002-20240505   clang
+arm64                 randconfig-003-20240505   clang
+arm64                 randconfig-004-20240505   clang
+csky                             allmodconfig   gcc  
+csky                              allnoconfig   gcc  
+csky                             allyesconfig   gcc  
+csky                                defconfig   gcc  
+csky                  randconfig-001-20240505   gcc  
+csky                  randconfig-002-20240505   gcc  
+hexagon                          allmodconfig   clang
+hexagon                           allnoconfig   clang
+hexagon                          allyesconfig   clang
+hexagon                             defconfig   clang
+hexagon               randconfig-001-20240505   clang
+hexagon               randconfig-002-20240505   clang
+i386                             allmodconfig   gcc  
+i386                              allnoconfig   gcc  
+i386                             allyesconfig   gcc  
+i386         buildonly-randconfig-001-20240505   clang
+i386         buildonly-randconfig-002-20240505   clang
+i386         buildonly-randconfig-003-20240505   clang
+i386         buildonly-randconfig-004-20240505   gcc  
+i386         buildonly-randconfig-005-20240505   clang
+i386         buildonly-randconfig-006-20240505   clang
+i386                                defconfig   clang
+i386                  randconfig-001-20240505   clang
+i386                  randconfig-002-20240505   clang
+i386                  randconfig-003-20240505   gcc  
+i386                  randconfig-004-20240505   clang
+i386                  randconfig-005-20240505   gcc  
+i386                  randconfig-006-20240505   gcc  
+i386                  randconfig-011-20240505   gcc  
+i386                  randconfig-012-20240505   gcc  
+i386                  randconfig-013-20240505   clang
+i386                  randconfig-014-20240505   gcc  
+i386                  randconfig-015-20240505   gcc  
+i386                  randconfig-016-20240505   gcc  
+loongarch                        allmodconfig   gcc  
+loongarch                         allnoconfig   gcc  
+loongarch                        allyesconfig   gcc  
+loongarch                           defconfig   gcc  
+loongarch             randconfig-001-20240505   gcc  
+loongarch             randconfig-002-20240505   gcc  
+m68k                             allmodconfig   gcc  
+m68k                              allnoconfig   gcc  
+m68k                             allyesconfig   gcc  
+m68k                                defconfig   gcc  
+m68k                        m5407c3_defconfig   gcc  
+microblaze                       allmodconfig   gcc  
+microblaze                        allnoconfig   gcc  
+microblaze                       allyesconfig   gcc  
+microblaze                          defconfig   gcc  
+mips                             allmodconfig   gcc  
+mips                              allnoconfig   gcc  
+mips                             allyesconfig   gcc  
+nios2                            allmodconfig   gcc  
+nios2                             allnoconfig   gcc  
+nios2                            allyesconfig   gcc  
+nios2                               defconfig   gcc  
+nios2                 randconfig-001-20240505   gcc  
+nios2                 randconfig-002-20240505   gcc  
+openrisc                         allmodconfig   gcc  
+openrisc                          allnoconfig   gcc  
+openrisc                         allyesconfig   gcc  
+openrisc                            defconfig   gcc  
+parisc                           allmodconfig   gcc  
+parisc                            allnoconfig   gcc  
+parisc                           allyesconfig   gcc  
+parisc                              defconfig   gcc  
+parisc                randconfig-001-20240505   gcc  
+parisc                randconfig-002-20240505   gcc  
+parisc64                            defconfig   gcc  
+powerpc                           allnoconfig   gcc  
+powerpc                          allyesconfig   clang
+powerpc                        fsp2_defconfig   gcc  
+powerpc                   microwatt_defconfig   gcc  
+powerpc               randconfig-001-20240505   gcc  
+powerpc               randconfig-002-20240505   clang
+powerpc               randconfig-003-20240505   clang
+powerpc64             randconfig-001-20240505   gcc  
+powerpc64             randconfig-002-20240505   clang
+powerpc64             randconfig-003-20240505   gcc  
+riscv                            alldefconfig   gcc  
+riscv                            allmodconfig   clang
+riscv                             allnoconfig   gcc  
+riscv                            allyesconfig   clang
+riscv                               defconfig   clang
+riscv                 randconfig-001-20240505   clang
+riscv                 randconfig-002-20240505   gcc  
+s390                             allmodconfig   clang
+s390                              allnoconfig   clang
+s390                             allyesconfig   gcc  
+s390                                defconfig   clang
+s390                  randconfig-001-20240505   gcc  
+s390                  randconfig-002-20240505   gcc  
+sh                               allmodconfig   gcc  
+sh                                allnoconfig   gcc  
+sh                               allyesconfig   gcc  
+sh                                  defconfig   gcc  
+sh                    randconfig-001-20240505   gcc  
+sh                    randconfig-002-20240505   gcc  
+sh                          rsk7201_defconfig   gcc  
+sh                           se7712_defconfig   gcc  
+sh                           sh2007_defconfig   gcc  
+sh                            shmin_defconfig   gcc  
+sparc                            allmodconfig   gcc  
+sparc                             allnoconfig   gcc  
+sparc                            allyesconfig   gcc  
+sparc                               defconfig   gcc  
+sparc64                          allmodconfig   gcc  
+sparc64                          allyesconfig   gcc  
+sparc64                             defconfig   gcc  
+sparc64               randconfig-001-20240505   gcc  
+sparc64               randconfig-002-20240505   gcc  
+um                               allmodconfig   clang
+um                                allnoconfig   clang
+um                               allyesconfig   gcc  
+um                                  defconfig   clang
+um                             i386_defconfig   gcc  
+um                    randconfig-001-20240505   gcc  
+um                    randconfig-002-20240505   gcc  
+um                           x86_64_defconfig   clang
+x86_64                            allnoconfig   clang
+x86_64                           allyesconfig   clang
+x86_64       buildonly-randconfig-001-20240505   gcc  
+x86_64       buildonly-randconfig-002-20240505   clang
+x86_64       buildonly-randconfig-003-20240505   clang
+x86_64       buildonly-randconfig-004-20240505   clang
+x86_64       buildonly-randconfig-005-20240505   gcc  
+x86_64       buildonly-randconfig-006-20240505   clang
+x86_64                              defconfig   gcc  
+x86_64                randconfig-001-20240505   clang
+x86_64                randconfig-002-20240505   gcc  
+x86_64                randconfig-003-20240505   clang
+x86_64                randconfig-004-20240505   gcc  
+x86_64                randconfig-005-20240505   gcc  
+x86_64                randconfig-006-20240505   gcc  
+x86_64                randconfig-011-20240505   clang
+x86_64                randconfig-012-20240505   clang
+x86_64                randconfig-013-20240505   clang
+x86_64                randconfig-014-20240505   clang
+x86_64                randconfig-015-20240505   clang
+x86_64                randconfig-016-20240505   clang
+x86_64                randconfig-071-20240505   clang
+x86_64                randconfig-072-20240505   gcc  
+x86_64                randconfig-073-20240505   gcc  
+x86_64                randconfig-074-20240505   gcc  
+x86_64                randconfig-075-20240505   clang
+x86_64                randconfig-076-20240505   gcc  
+x86_64                          rhel-8.3-func   gcc  
+x86_64                          rhel-8.3-rust   clang
+x86_64                               rhel-8.3   gcc  
+xtensa                            allnoconfig   gcc  
+xtensa                           allyesconfig   gcc  
+xtensa                randconfig-001-20240505   gcc  
+xtensa                randconfig-002-20240505   gcc  
+
 -- 
-2.39.2
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
