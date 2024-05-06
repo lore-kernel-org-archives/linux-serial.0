@@ -1,62 +1,83 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC5213BAC7;
-	Mon,  6 May 2024 14:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B109115533A
+	for <linux-serial@vger.kernel.org>; Mon,  6 May 2024 15:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715007175; cv=none; b=o5YNBXn1kICCohuMdGkTkcXBPLQ1sMzrrGGiOY/S1HHBLCcISvOfnSTSyuLsKuiDVmSv0Q5RjFbXCpJtZodmunDeMOJ61jmKiTGmyJ/OlbU5ApRnAqLCdjX0nxelK4FBwN4O7WCOwiT95bgdyPsQGDJVj4ICr1M6BrE3jTGMNO0=
+	t=1715009797; cv=none; b=uokuni0IYePPXy6yeP56+Q8Av/RDrF1rJ7ou0vFAKMft/PNLRHuuK49sHTMbldmZrb9DslzqO2WE7F/7yY9HS+Hnx5lfP85J9l/7zW7BbKR5rbbZGjXcvMHQcT/bY1V8PoawUPI1jcriRaljPBAv6QwqdNsDGrbiXotB2795hH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715007175; c=relaxed/simple;
-	bh=DI3yNIsp/Iy/OvjzwTd2lIhn+/AKCMGXGRVuoRh7YNc=;
+	s=arc-20240116; t=1715009797; c=relaxed/simple;
+	bh=okolZHTegM6x+ttsho59LkzT+8+G6g01I/qGFOeSb1A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tYCbisPSuMdsV/v0v9HEoJAzY5ZMudW1ncY6t1z5eHTio+7nHaihQR5evH2Gaxnl1kiVlFuIRjTN9/o6y81pQg7cx+LkpPp6CgYgjFoOOLgq5n/qybuYmk79Xcu+hDe1ZNHoQkiC+PAUVytJxXJPvnAbiAv28zJ9mUAAqPz0RDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tt1VKLCm; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=IAocHagayAPBqk+P08tdc1PWtIpvzLe2XY7nH7S29obYH675dENeeSZ9U7BiKt87Vy1C2yEksAg3zgc1aFRr4AeYwWqPg5h1UbErI5GqPKYach2Gi9m8KpcY0Pr86s1D2e8nR0I+H2YlvDl6z8heDCjUEIFyztxCje/VeCaWryM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cQFpOZH5; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tt1VKLCm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715007173; x=1746543173;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DI3yNIsp/Iy/OvjzwTd2lIhn+/AKCMGXGRVuoRh7YNc=;
-  b=Tt1VKLCmXmJILT7ybTdryRfPamk73mKNxVGPitzc9Efucr9mdZ9wd4P6
-   4258ztuetL9bBtWAYqgR9gspCUs5v+3Kcw7RpUCJtcfbfyRwnxexWx7T9
-   2iQB7/h158UO7ZHaFCoh+Rt4wPpGasM2e5h1qNH4VCKoWv92xv/3qHeS5
-   0/Y6WjrULYg9PY9KAD0dpk7ObJd/7xVM1y2kCE/XiWWPo8ouTwcxMHNyy
-   kE79lyJHpRA72Dk/LcFYOawRcwVC8p/h2RGr0DneQhW0NfuX94tf2Pa/X
-   Dhm/dGVc1LDS7a0RNt5ZlOS/k/X53rehuasu6DQQnF41lIPmJgixPAXtf
-   Q==;
-X-CSE-ConnectionGUID: DAMuflN7Rku1jGhDiAaw5g==
-X-CSE-MsgGUID: qhOGIYHNToWWsEqaoco/wQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="28281051"
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="28281051"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 07:52:51 -0700
-X-CSE-ConnectionGUID: 3pyUBm5tTby3wGXV81kkWQ==
-X-CSE-MsgGUID: g+t1Na37TrqOmFoQyIM5CA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="28150764"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 07:52:50 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s3zhv-00000004jRC-2J9G;
-	Mon, 06 May 2024 17:52:47 +0300
-Date: Mon, 6 May 2024 17:52:47 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Hans de Goede <hdegoede@redhat.com>, Tony Lindgren <tony@atomide.com>
-Cc: Weifeng Liu <weifeng.liu.z@gmail.com>,
-	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
-	Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH v3 0/2] Defer probing of SAM if serdev device is not ready
-Message-ID: <Zjjuvx3t7UYQPR_y@smile.fi.intel.com>
-References: <20240505130800.2546640-1-weifeng.liu.z@gmail.com>
- <85ac363b-d129-4525-89aa-d4528b8188a7@redhat.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cQFpOZH5"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-41b5e74fa2fso17609695e9.1
+        for <linux-serial@vger.kernel.org>; Mon, 06 May 2024 08:36:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1715009793; x=1715614593; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IgNpmP+KnJqaBxDJdkx9mmwg/WMduzGDywLz1udliyw=;
+        b=cQFpOZH5Xpzym7IOsT74wRI3xbCyAlwMdjKhDrUwSQkh3C6YmrBWl84NQNRZmfINMs
+         JUkE26V2JcrNSE5moXI+qSVg3YcsTvo9jXI6QLvk8FNOuOeAw6A6o+L8HjozxigwyYp/
+         k4k1wYHcFVbmvO0DJlZNG3Q8s8KWLlY5n+MpkhY7lPwIcWlPOixgRrQXxFpnPU7Nburh
+         Gj3SCMhK2k+yLHioZ372OOb43rKXJ8I4nw6RORWJGV1tToFgzHdCLYx5tLw0w+Yj9o4L
+         riur0ex102/RYl7UW8fwIdSUVGbC1GBT10VyLWXDchWzg+ObsTMF8l9HmFXmiyS0PHLp
+         ZDeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715009793; x=1715614593;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IgNpmP+KnJqaBxDJdkx9mmwg/WMduzGDywLz1udliyw=;
+        b=UTLNc8LCNNBrNahZIxYUJ4Bw8/+mareNYFuRq6YlsiDh1ozozMH//bAFoQkd7VPZeh
+         qcfegWqFLGEqsxlOir/sNMkW8NSulIWBwZL/nszplLj0IvQXWh7Kn/l3B5OC41wZUVti
+         IUCIlaS2Mayj9zTrvcwObltP5/GpCG/oob6S+FknBhN2JQv1+rr2pI5577StM5ciOiWa
+         9IpWRjwiz2SEo4BrFtc2hORNRW/uxGt5IYP/fPGXH7mgMNj4CrAV+/WntdAa68hF6UVG
+         nCBlnlhGv5uMJgSchFHbSiuQXyOnFCDyzHcI4rBmzwA0nXxAHQar6JpaywpDESVsFGUs
+         i+aw==
+X-Forwarded-Encrypted: i=1; AJvYcCVq9+FUl2SIPZLLZ8yDHh/QEWaaL7oX3PTRPLti/lTYVXtAnxxPozOVOKuEw/VtxVQlHPUNBQL7LYJE9qpau5WKMe0hY9oQ9KLj9HQ1
+X-Gm-Message-State: AOJu0YygXMgvMm/y/gti0HH4okNvxSC3i7GNROJB2L/CW3eX6mofB8WH
+	wfOIUQUq0XuUQacaxovS6ZxMEEBZlDMSpLfEW1cQ18ESJBPqGpLGrwDrGFfIczs=
+X-Google-Smtp-Source: AGHT+IGbZTNMLu6hbhyt1bmjEn3Jajf73supUMbIrefeBp7HlOrwI13gU2mgVw4zZHXxgYrif3Od3g==
+X-Received: by 2002:a5d:5742:0:b0:34e:3cb3:6085 with SMTP id q2-20020a5d5742000000b0034e3cb36085mr7080161wrw.62.1715009793016;
+        Mon, 06 May 2024 08:36:33 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id k3-20020adff5c3000000b00349a5b8eba6sm10895265wrp.34.2024.05.06.08.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 May 2024 08:36:32 -0700 (PDT)
+Date: Mon, 6 May 2024 17:36:30 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: yoann.congal@smile.fr
+Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	x86@kernel.org,
+	=?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
+	Borislav Petkov <bp@alien8.de>, Darren Hart <dvhart@infradead.org>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH RESEND v6 3/3] printk: Remove redundant CONFIG_BASE_FULL
+Message-ID: <Zjj4_hWkz9-qHnWe@pathway.suse.cz>
+References: <20240505080343.1471198-1-yoann.congal@smile.fr>
+ <20240505080343.1471198-4-yoann.congal@smile.fr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,95 +86,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <85ac363b-d129-4525-89aa-d4528b8188a7@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20240505080343.1471198-4-yoann.congal@smile.fr>
 
-On Mon, May 06, 2024 at 04:41:19PM +0200, Hans de Goede wrote:
-> On 5/5/24 3:07 PM, Weifeng Liu wrote:
-
-...
-
-> If a serdev_device_driver is already loaded for a serdev_tty_port when it
-> gets registered by tty_port_register_device_attr_serdev() then that
-> driver's probe() method will be called immediately.
+On Sun 2024-05-05 10:03:43, yoann.congal@smile.fr wrote:
+> From: Yoann Congal <yoann.congal@smile.fr>
 > 
-> The serdev_device_driver's probe() method should then be able to call
-> serdev_device_open() successfully, but because UPF_DEAD is still dead
-> serdev_device_open() will fail with -ENXIO in this scenario:
+> CONFIG_BASE_FULL is equivalent to !CONFIG_BASE_SMALL and is enabled by
+> default: CONFIG_BASE_SMALL is the special case to take care of.
+> So, remove CONFIG_BASE_FULL and move the config choice to
+> CONFIG_BASE_SMALL (which defaults to 'n')
 > 
->   serdev_device_open()
->   ctrl->ops->open()	/* this callback being ttyport_open() */
->   tty->ops->open()	/* this callback being uart_open() */
->   tty_port_open()
->   port->ops->activate()	/* this callback being uart_port_activate() */
->   Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+> For defconfigs explicitely disabling BASE_FULL, explicitely enable
+> BASE_SMALL.
+> For defconfigs explicitely enabling BASE_FULL, drop it as it is the
+> default.
 > 
-> Fix this be clearing UPF_DEAD before tty_port_register_device_attr_serdev()
-> note this only moves up the UPD_DEAD clearing a small bit, before:
-> 
->   tty_port_register_device_attr_serdev();
->   mutex_unlock(&tty_port.mutex);
->   uart_port.flags &= ~UPF_DEAD;
->   mutex_unlock(&port_mutex);
-> 
-> after:
-> 
->   uart_port.flags &= ~UPF_DEAD;
->   tty_port_register_device_attr_serdev();
->   mutex_unlock(&tty_port.mutex);
->   mutex_unlock(&port_mutex);
+> Signed-off-by: Yoann Congal <yoann.congal@smile.fr>
 
-> Reported-by: Weifeng Liu <weifeng.liu.z@gmail.com>
-> Closes: https://lore.kernel.org/platform-driver-x86/20240505130800.2546640-1-weifeng.liu.z@gmail.com/
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-> Cc: Maximilian Luz <luzmaximilian@gmail.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Best Regards,
+Petr
 
-Can you move Cc after the cutter '---' line?
-
-The patch makes sense to me, FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-but Cc'ed Tony just in case.
-
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  drivers/tty/serial/serial_core.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index ff85ebd3a007..d9424fe6513b 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -3196,6 +3196,9 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
->  	if (uport->attr_group)
->  		uport->tty_groups[1] = uport->attr_group;
->  
-> +	/* Ensure serdev drivers can call serdev_device_open() right away */
-> +	uport->flags &= ~UPF_DEAD;
-> +
->  	/*
->  	 * Register the port whether it's detected or not.  This allows
->  	 * setserial to be used to alter this port's parameters.
-> @@ -3206,6 +3209,7 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
->  	if (!IS_ERR(tty_dev)) {
->  		device_set_wakeup_capable(tty_dev, 1);
->  	} else {
-> +		uport->flags |= UPF_DEAD;
->  		dev_err(uport->dev, "Cannot register tty device on line %d\n",
->  		       uport->line);
->  	}
-> @@ -3411,8 +3415,6 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
->  	if (ret)
->  		goto err_unregister_port_dev;
->  
-> -	port->flags &= ~UPF_DEAD;
-> -
->  	mutex_unlock(&port_mutex);
->  
->  	return 0;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+PS: I am going to take the series via the printk tree. I am sorry
+    for the delay. I somehow expected that it would go via some
+    arch tree...
+    
