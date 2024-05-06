@@ -1,106 +1,165 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CFB68002A
-	for <linux-serial@vger.kernel.org>; Mon,  6 May 2024 15:58:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01966762D2;
+	Mon,  6 May 2024 16:16:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715011125; cv=none; b=jjdbvc/rd7PVee+LvXHkqhLIKsiGNZt6F4qYXBwK83FSlyTUg92Bj/WhWEPrB05T6JpQEh1WkuSpi4lD4CnS6Z2pXnR0RP7ZqvWJGiMiQf8iiQKYuhxXdYYkDPDL9n1ZidCIWZFT7scL8xhtw1C6xWX5Nr1csOg56YW3aDd6Yzc=
+	t=1715012189; cv=none; b=bBADECh45m6ZJkEhEnJ2E5p1qphnPKCejFhrvGJKHtvoixc22tE22O/cKc/QgB6oCkFm5SEXCqPeKItW1AEiaIKbOXC0vOh4Q1Q5nEF4p+tLCi363LJg8ZYiCnm3juIKx2kAEvRVznXyZz0LQb26MzF6xGVzcexsBN8UloqNY8c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715011125; c=relaxed/simple;
-	bh=e+ZSe+ZA9xaJO5eEBFHbnwpPwoeLA8xT48mtZrmDIak=;
+	s=arc-20240116; t=1715012189; c=relaxed/simple;
+	bh=Ri+Ds/sxr7JPSlqfXZs9ek55V/5xijmm8kLTGaAtM+s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m2I92MrnKtYzhM7s2QhBO3uuqaCL6MQT1vZe2FKvbdv7td6BJsxV4b4VSr5yZlVfEyUcDMqZ21Yzgdd5e9dP+UAat9W7IPqRndmTjLBMJTRMaD19cAHbnBxEUMw1xb+LSNf/OiSoeuuR1gPsH3ba6OdE7vfYHIZsUmEHPUWOZEU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Q5Y1FjE7; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wcy8VnRakn94Suky0GqLPd0QAQxBnaHvVDbZkZY65gC5jd5gHfrSm4CSc8XXscLmCbVGvZiGe/4oL2UlARk/65WXvNnZLPWmj0zFfwAa8KeDxJYEVKc56U2RDLUuxJ3lkbl11HDXISbq1zqlAH4zEt52nsmapuoeH7zyoxZT/DM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XdjHTtbT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Q5Y1FjE7"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-34db6a29a1eso1328128f8f.1
-        for <linux-serial@vger.kernel.org>; Mon, 06 May 2024 08:58:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1715011122; x=1715615922; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=b77bW1UHopiAiUiwt+teFfDgmUSq65L4Labg5fS22oM=;
-        b=Q5Y1FjE7a/VuhZbsHhx2X9OhIrC6dc7qblhpdUdax5eI2SdbEO6kx/YJoRiKhEyy9h
-         W73ef+3G6tWk7Mw66NJ3TdC9Y/MMV6FBDqzVlAiBS63YURu1d4NotgBUPNezW3VY6e2e
-         b6LnubxGKzi+SdiIiTDsSrmgMaXPRsMs+VN6pHK0KaOycWJ5TnZFLVpfZPujHkja/zqN
-         FE+glFGwhUZigi/W9DmCMg+3CH15qrMOyxcqsbcS/DXFgK16B0x6dkBkWyfU2VSU13Zk
-         0LKmZHnuPlvHxGC9wZQTFD7VS+VszAONoOUbceXIokgaYu8E1A3Kii0C/am8BddqEDTO
-         EeLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715011122; x=1715615922;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=b77bW1UHopiAiUiwt+teFfDgmUSq65L4Labg5fS22oM=;
-        b=BoV37kRjesZXtIIUQaHGpROTNoBgAwUgRVrF2QYLc9lX3Hse4a2j4lmc3GrKgaLd+h
-         pBIOfC40/y+nVr9c0I4so4EhKfQPJFIlUeYipMt0g0+aRysqasGCPKicksW1NK5Qj4pi
-         NUgXt/Rj8hNG8Fvp9b1YfueWMVDJI1XmUtYW183aOtqkIeAtJUmZOuuvnmAhkfMMWkj3
-         nphWkHm81Gm4PcacbAd39DA/morxQia1NjJds/+Yh+84xAI+4Rl/1hTtkdDzCuTchbpt
-         XW2aD/Wyea3bBqXG466A9KXNnEr6bjbdDZyBepj9qk7Pq7skmMF6EwxPm0Us+ejEmJ+g
-         kWvg==
-X-Forwarded-Encrypted: i=1; AJvYcCVfY7G6KBtivmT5aSCOtNOOgLQQD751kTfjGGjHM4My4bjSlCHJYe0T5OAwJ0VXP8u5++QPhcC9tkwuVPzFxsE5EWzXCit5GKE3oZsU
-X-Gm-Message-State: AOJu0YxUDDrYr73UFccqDMGxtNmHyIXwEPIWoQAruWRm2+rzO+s2SCiY
-	iLEYvZFjopdx+nMwJxFervoatpWdSytkx5deuCIYcagrWuCFBCxWiMaNgSlOhTs=
-X-Google-Smtp-Source: AGHT+IFSFaunKOZ8WI6/uX/7mp9FL9IL1kmUTfFZ/AIhGtSFSDgsttFAOhXLCCCeUTyT3rqTdOQ2lw==
-X-Received: by 2002:adf:f0cd:0:b0:34d:7cdf:7fb3 with SMTP id x13-20020adff0cd000000b0034d7cdf7fb3mr7405652wro.62.1715011121850;
-        Mon, 06 May 2024 08:58:41 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id u17-20020a05600c19d100b0041bb11ff5a7sm20325100wmq.8.2024.05.06.08.58.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 May 2024 08:58:41 -0700 (PDT)
-Date: Mon, 6 May 2024 17:58:39 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: yoann.congal@smile.fr
-Cc: linux-fsdevel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	x86@kernel.org,
-	=?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-	Borislav Petkov <bp@alien8.de>, Darren Hart <dvhart@infradead.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XdjHTtbT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4133C116B1;
+	Mon,  6 May 2024 16:16:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715012188;
+	bh=Ri+Ds/sxr7JPSlqfXZs9ek55V/5xijmm8kLTGaAtM+s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XdjHTtbTI+PnJbt3+foEezrLOaFgc/U60jkZ/Jj5gbqgM8E39usquZY7RtapwnEOT
+	 VPz5GIQIFsFfd9AOr7VvKIdqL7l0dwfy5TIa4m2D1c01GtOESwC/I/xCXOpB1cee1J
+	 EsKeGp+ddI/auKBDXQZjHy0iiMg5MXVeJ015n3toLJsU3Y6u66hLSR0l+zmd/Njisz
+	 4KCaQfVYj0HwP3ajDKdQiUPaUyJzUABEChS5qZIHXOJNkgbhuZ8fEGJOEQ0mH4XF19
+	 SPWQZ0ufjnSJF6TsMM0xTsjYN+5zGrvAaYN97WinwFWyQp1E72XqMASCQ4mjgdh82t
+	 1kbe2Uj/925sw==
+Date: Mon, 6 May 2024 17:16:21 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH RESEND v6 0/3] printk: CONFIG_BASE_SMALL fix for
- LOG_CPU_MAX_BUF_SHIFT and removal of CONFIG_BASE_FULL
-Message-ID: <Zjj-L-FuVyMmRPth@pathway.suse.cz>
-References: <20240505080343.1471198-1-yoann.congal@smile.fr>
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 06/11] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
+Message-ID: <20240506-jaws-cheesy-bf94885651c1@spud>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
+ <20240502182804.145926-7-christoph.fritz@hexdev.de>
+ <20240503-fading-extruding-2105bbd8b479@spud>
+ <a5b894f8dc2ab0cf087a5b4972d7f752e6c17c16.camel@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="IZWKdHDwzN9uOGw5"
+Content-Disposition: inline
+In-Reply-To: <a5b894f8dc2ab0cf087a5b4972d7f752e6c17c16.camel@hexdev.de>
+
+
+--IZWKdHDwzN9uOGw5
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240505080343.1471198-1-yoann.congal@smile.fr>
+Content-Transfer-Encoding: quoted-printable
 
-On Sun 2024-05-05 10:03:40, yoann.congal@smile.fr wrote:
-> From: Yoann Congal <yoann.congal@smile.fr>
-> 
-> This series focuses on CONFIG_BASE_SMALL.
-> The first patch fixes LOG_CPU_MAX_BUF_SHIFT when CONFIG_BASE_SMALL is
-> used.
-> The second patch globally changes the type of CONFIG_BASE_SMALL and
-> adapts usages.
-> The third patch removes the now redundant BASE_FULL, puts BASE_SMALL
-> in its place in the config menus and updates usages in defconfigs.
+On Fri, May 03, 2024 at 08:29:15PM +0200, Christoph Fritz wrote:
+> Hello Conor,
+>=20
+>  thanks for having an eye on this, please see my answer below.
+>=20
+> On Fri, 2024-05-03 at 18:12 +0100, Conor Dooley wrote:
+> > On Thu, May 02, 2024 at 08:27:59PM +0200, Christoph Fritz wrote:
+> > > Add dt-bindings for serial LIN bus adapters. These adapters are
+> > > basically just LIN transceivers that are hard-wired to serial devices.
+> > >=20
+> > > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> > > ---
+> > >  .../bindings/net/can/hexdev,lin-serdev.yaml   | 32 +++++++++++++++++=
+++
+> > >  1 file changed, 32 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/net/can/hexdev,=
+lin-serdev.yaml
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/net/can/hexdev,lin-ser=
+dev.yaml b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> > > new file mode 100644
+> > > index 0000000000000..c178eb9be1391
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/net/can/hexdev,lin-serdev.yaml
+> > > @@ -0,0 +1,32 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/net/can/hexdev,lin-serdev.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Serial LIN Adapter
+> > > +
+> > > +description:
+> > > +  LIN transceiver, mostly hard-wired to a serial device, used for co=
+mmunication
+> > > +  on a LIN bus.
+> > > +  For more details on an adapter, visit <https://hexdev.de/hexlin#tt=
+y>.
+> > > +
+> > > +maintainers:
+> > > +  - Christoph Fritz <christoph.fritz@hexdev.de>
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: hexdev,lin-serdev
+> >=20
+> > Maybe I've just missed something on earlier versions that I didn't
+> > read, but the name of the device on the website you link is "hexLIN",
+> > so why is "lin-serdev" used here instead?
+>=20
+> The USB one is called hexLIN and has it's own HID driver.
+>=20
+> This serial LIN adapter doesn't really have a product name. Currently
+> on our website it's generically called 'UART LIN Adapter'.
+>=20
+> This LIN adapter is basically just a LIN transceiver and very generic,
+> so that one could solder it to any single-board computer with an uart.
+>=20
+> I think 'lin-serdev' for LIN and serial device fits great, also serdev
+> is the name of the used kernel infrastructure (besides the LIN glue
+> driver).
+>=20
+> If you still don't like it, I'm open to other names. What about
+> "hexlin-uart" or "linser"?
 
-The patchset has been committed into printk/linux.git,
-branch for-6.10-base-small.
+I dunno, I don't really care about it being called "hexlin,lin-serdev",
+all that much, I just found it confusing that the link in the description
+sent me to the ""Hello World" in LIN" section of your site. If it had
+dropped me off at the "UART LIN adapter" section things woud've been less
+confusing.
 
-Best Regards,
-Petr
+That said, calling the compatible after a linux-ism is a bit odd to me
+when the device seems to be called a "UART LIN adapter" on the page, not
+a "serdev".
+
+Cheers,
+Conor.
+
+--IZWKdHDwzN9uOGw5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZjkCVQAKCRB4tDGHoIJi
+0hFNAP9IZ2xs8L+8HDUj7EwsmhlcnekaNMvoaAPmci+3S7sVGwEAhYXvEL9+hMC2
+gv7FekqGBwL+ccs/QA/5F4W2A+cBpgA=
+=wRuw
+-----END PGP SIGNATURE-----
+
+--IZWKdHDwzN9uOGw5--
