@@ -1,146 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9F6143867;
-	Mon,  6 May 2024 12:12:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 999C676919
+	for <linux-serial@vger.kernel.org>; Mon,  6 May 2024 13:18:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714997534; cv=none; b=OjJOVTMbxuRxQGxZp3EPtDh8NnE/r9yv/oHFb1vWwAYfqfn0zP1YSTR0B2Y2GnWXv3KcB7jd4urFiDR6aKhyidvIzIL7Z3bjcSDY/10WWvtSHaPjZFLuqEDEx5kE2F2KADvS4nUnBw78CydAZIGJJ3rZUGiAgcX22j7c8jzPFDY=
+	t=1715001516; cv=none; b=sG8KWZFKZnyGlBHjcQkTqcuqAF6rdV0wQAkVMfDfKaNyFki0fqWtA4JXBj9dUAeaRbYOXZxbjI6sfy7L57r7VUaKq3ixh6/aV7r8Nuw9q86RGBJZ3xQ2qHiRTcnc/Jk3HInFS4hwYtngjhRYF66WIzheEDpEv1MN9S5wNZdb1qQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714997534; c=relaxed/simple;
-	bh=pR0A0OFnPbzgIVFB96xhdR9NeOvLHx9NayqjbsRWiKQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=Pvz5z8hQFjHhdVWmiJXZERruu8kYq52miml8iAEpiEnJvqCOCjpmOpvLiR+aR7/3cFnhpXq4eEij1wnYiUczvT/6Ps6v/S0mP+bYpQVM0DgXxfvp+UEPLxLXKigfm39NprWk0EyKDNANyD2LKVdJpnGTHCvaiyQP0W5g+0yNUW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BSsFY31n; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BSsFY31n"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714997533; x=1746533533;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=pR0A0OFnPbzgIVFB96xhdR9NeOvLHx9NayqjbsRWiKQ=;
-  b=BSsFY31nW061A/YxhnnNcRN4C2+dsP8pCCeLCR5fPPANPghbn5FKpBP5
-   abtJiv/fbyQvBd5usSk8J2z4iUCtXx5C0gICTvQHJN3FICNCfectsTehL
-   dAh2OwH4Kk3g+hMCyeCtGp01z9cLHnoHq+4E7YkNo0oWyoWtXw8vtdRya
-   j31NeqjcipRAJ09bt026BTxa5+Wa5vE48sqHr/L04CmE3ZNMBGgz4T9vp
-   8EI1Qm/1A8ZaYc/827yGXz9Ivk2MtRSJFS7tsJ1lisULOHjnZeil0prc/
-   ByJ6p9RAYPj4heXxCqc6+2+bVYVzIRyymErryVpKb48jm7UnRG2hLa5yw
-   Q==;
-X-CSE-ConnectionGUID: g01XFkDIRFy7vdumNXeIhw==
-X-CSE-MsgGUID: q3evOQYwR6Sk7fJAFoNWjA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11064"; a="21416122"
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="21416122"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 05:12:12 -0700
-X-CSE-ConnectionGUID: dHT+7mFiTtWP9PmxJXUe3w==
-X-CSE-MsgGUID: 8jbSaK/PT7ORwp5u80o83Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="28241035"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.68])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 05:12:10 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] serial: 8250_pnp: Simplify "line" related code
-Date: Mon,  6 May 2024 15:12:02 +0300
-Message-Id: <20240506121202.11253-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.39.2
+	s=arc-20240116; t=1715001516; c=relaxed/simple;
+	bh=SPL6PJWIpsLY8Xy/Y4ayHd7F1Fw69EcJJXevh46cttg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=EdNLtKBJkcABYLmm2z1XMfqaQ08Swe8EXKzLR+q+TIX2ypsFy03+9ZR53xrGE6VCMERQl4yahlo4QU/Lar4i/39T+fpZ/Sf0GT/0lJ7sJukgHLk5twRnBgnYzaOIWFjuqTbHuudBAe1Bajhe560EhwNK4bKqT+M1Xf/V7Db7VZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-36c5d1c48d3so19098585ab.1
+        for <linux-serial@vger.kernel.org>; Mon, 06 May 2024 06:18:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715001514; x=1715606314;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Z0qWpy7ps78v20CovDf0DA27e0024le/brm/KkAT2X0=;
+        b=EawUYSJrKmadereXu1K76J3ob9Ir7bik2YpvSOjOdGiH9V7QzNvc5lucSa1C65xYPE
+         lz1YE0G9f3784QXkZhFiMcCrwKBwrAlJonsFRMQuFybEPisXCS4oV4OeapuFSkdUoE7t
+         W0zX1YmvoOsUL9ONYi4j5yJftT+8o2n7mjqf+qU/VtRC7cXIDeC12AiYcuDLA09E4DI5
+         l2tO1LsB5uh+KEn+GQnhKIUvgJ9dggpHekH0WZBM1A18M55zVkruAjuu/k3I9bH9uvbZ
+         6fvmJ8XBPPy+/8zKwZ+Tf6Y7PKe94NJhYCXg5mX8BfJlF2nd41jrHikUd6U57CFS9xyj
+         tfjA==
+X-Forwarded-Encrypted: i=1; AJvYcCWXzGQZyvTku4VKSIPFUSQnIKeThWSQxQ6YMqbKh5gDndk0GSW0Jehp0f/Gc3fAAXXs/ZYvLtXfgs2iLnRsmofQZnwd1NrJJuUKw9KJ
+X-Gm-Message-State: AOJu0YxU+qzq/ADu1I/gzvutydJMNkX45xDxZfzP7liLOeC0OdhfWBq5
+	T0WRMfESuZNuoclJVQsDIdMYto3KRm6ziOlnOZRLWWxFtM9tLoW5CjsRDYuYbt/WjEx3ufUUBFn
+	nYQOl0ta8ftHsL7Kirv/R+fL/EBBgmo9/9AdMN1OFtt3AbvTZTHu0isI=
+X-Google-Smtp-Source: AGHT+IHFjMQ08FM1JETVO23sPsergRuWUM2m1KGHjHW3l55IVPCyrLX1HE2oY+K2F7IO6md5R5woFFWQx9BIWCc0yE5n6Mb9i1j7
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1522:b0:36c:4e5a:50aa with SMTP id
+ i2-20020a056e02152200b0036c4e5a50aamr414383ilu.0.1715001513874; Mon, 06 May
+ 2024 06:18:33 -0700 (PDT)
+Date: Mon, 06 May 2024 06:18:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000624c60617c8e8a3@google.com>
+Subject: [syzbot] Monthly serial report (May 2024)
+From: syzbot <syzbot+list833879ac7b0793dbc06f@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-8250_pnp sets drvdata to line + 1 if the probe is successful. The users
-of drvdata are in remove, suspend and resume callbacks, none of which
-will be called if probe failed. The line acquired from drvdata can
-never be zero in those functions and the checks for that can be
-removed.
+Hello serial maintainers/developers,
 
-Eliminate also +/-1 step because all users of line subtract 1 from the
-value.
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-These might have been leftover from legacy PM callbacks that could
-be called without probe being successful.
+During the period, 3 new issues were detected and 0 were fixed.
+In total, 14 issues are still open and 41 have been fixed so far.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Some of the still happening issues:
+
+Ref Crashes Repro Title
+<1> 166     Yes   INFO: rcu detected stall in worker_thread (9)
+                  https://syzkaller.appspot.com/bug?extid=225bfad78b079744fd5e
+<2> 75      Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<3> 66      Yes   BUG: soft lockup in tx
+                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<4> 6       Yes   INFO: task hung in paste_selection (2)
+                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+<5> 2       No    possible deadlock in uart_write (2)
+                  https://syzkaller.appspot.com/bug?extid=57cc2f20a84cb4346354
+<6> 1       No    KMSAN: uninit-value in gsmld_receive_buf
+                  https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
+
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-v2:
-- Rebased on top of tty-next
-- Added historical information Andy provided about legacy PM CBs
-  into commit message
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
- drivers/tty/serial/8250/8250_pnp.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
 
-diff --git a/drivers/tty/serial/8250/8250_pnp.c b/drivers/tty/serial/8250/8250_pnp.c
-index 9188902fa5b3..7c06ae79d8e2 100644
---- a/drivers/tty/serial/8250/8250_pnp.c
-+++ b/drivers/tty/serial/8250/8250_pnp.c
-@@ -435,8 +435,9 @@ static int
- serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- {
- 	struct uart_8250_port uart, *port;
--	int ret, line, flags = dev_id->driver_data;
-+	int ret, flags = dev_id->driver_data;
- 	unsigned char iotype;
-+	long line;
- 
- 	if (flags & UNKNOWN_DEV) {
- 		ret = serial_pnp_guess_board(dev);
-@@ -494,7 +495,7 @@ serial_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_id)
- 	if (uart_console(&port->port))
- 		dev->capabilities |= PNP_CONSOLE;
- 
--	pnp_set_drvdata(dev, (void *)((long)line + 1));
-+	pnp_set_drvdata(dev, (void *)line);
- 	return 0;
- }
- 
-@@ -503,17 +504,14 @@ static void serial_pnp_remove(struct pnp_dev *dev)
- 	long line = (long)pnp_get_drvdata(dev);
- 
- 	dev->capabilities &= ~PNP_CONSOLE;
--	if (line)
--		serial8250_unregister_port(line - 1);
-+	serial8250_unregister_port(line);
- }
- 
- static int serial_pnp_suspend(struct device *dev)
- {
- 	long line = (long)dev_get_drvdata(dev);
- 
--	if (!line)
--		return -ENODEV;
--	serial8250_suspend_port(line - 1);
-+	serial8250_suspend_port(line);
- 	return 0;
- }
- 
-@@ -521,9 +519,7 @@ static int serial_pnp_resume(struct device *dev)
- {
- 	long line = (long)dev_get_drvdata(dev);
- 
--	if (!line)
--		return -ENODEV;
--	serial8250_resume_port(line - 1);
-+	serial8250_resume_port(line);
- 	return 0;
- }
- 
--- 
-2.39.2
-
+You may send multiple commands in a single email message.
