@@ -1,927 +1,240 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE6F78249A;
-	Mon,  6 May 2024 14:03:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07FDA811FE
+	for <linux-serial@vger.kernel.org>; Mon,  6 May 2024 14:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715004198; cv=none; b=fVrxCnmSlXM6v4QlgturdgUoRTIeFVG5zEll3baPo1PjW4rCsy6YAfdZ1TXDtr2G+NObfMAqNWnvhaD+KuZiUMoUoT2dQ4TkD3rhT4wVucDpFDs7l708ZzlI0MiGKI4BC7fZx17upyYW1QVtqyhBQvE7p5aK6+py669ihtRY4HI=
+	t=1715006486; cv=none; b=TotC6LvMOUxKCWGqWWp1KfmXqpihpeMyR/ZwcEBtKczO9YH8cIoruix+ORnJDlGKjyDA9LnBp2IDny0w1fZiCPsbmcqdb2wOPfeCa2no7yIF652gofzjNCZkDVaQCnqwX+MgdwkXq/NnLoA+nLHDZ+fZYtX97f0YTn9UsO5zhS0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715004198; c=relaxed/simple;
-	bh=j5vgaaNqT3QDu7A1hhfFoQPgnfUjso+Pq8YbwUycBZM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QhotNaKkSaWWESyF9rwpfhBAy4/R4Ka8D4DpXMJCYHVde30PtPB7L0chi1YH0YyPobtExae/rYSBBRT62G+LAPAJNgAQEeuDBtWjZXOJkecEH6tyFqPprCnog4g1EMdQfkrf92kbFbwM73ymtix2i2QcKLyVeagff541ePnAqCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ej0PsF8L; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1715006486; c=relaxed/simple;
+	bh=/gENOmxMwr2e/wEvRGvLvi8vJZcyz4hFz/OwxmPowBo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=i0pCn3twzI0M3W/CcVhnxQgFcHoVS6qBnQDV0/LQxvjP/jGH+ItigGhoP1aY6Y36qZSpXA3rnpZ/h4Q3T1xPNexqpBd1GKK2rMlDkV6oMiNRI/zWMCGGAkrV7cmOEW+6e1UgcdogOL7qvoDrDuZtIoUF+nfrR+9TKuAI6JVkcA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=X3rgUrl8; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ej0PsF8L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715004196; x=1746540196;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=j5vgaaNqT3QDu7A1hhfFoQPgnfUjso+Pq8YbwUycBZM=;
-  b=ej0PsF8LF62FHqLp8y3RbQpXFwGpIY/6vo7TIecfZlKUjoii1VuRNGW3
-   8pYFWk6MY6/S6Ue3AYSJrrqi0jXax6oBARTwOAmO9lQYFNjBPDXsUOSNu
-   oYh74qeDjQsKsXPQGCHGlDytY6dmYtM8n/H2J8YMsbSwEs2CjcmI5aIBb
-   XFFlP7vQeP9hDZ+Ue8H5Y+CoELglxT9PjxCeRUJxHTZKGf1FZCwLn8UyH
-   E7A6u0oFoRPulbkqtYBbHcqA4OTmfaSjI5CUGyAUhINXilQQKVsRZwXtq
-   s9270nktMCe2RIdYrldauRZYU2aTlOuhlaZQxSc28JSnApeSXQu6QqCmZ
-   g==;
-X-CSE-ConnectionGUID: J5MRCOB+QEObVirc3j11AQ==
-X-CSE-MsgGUID: i+t08oOSScugwrqTBuGo0Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="13696630"
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="13696630"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 07:03:13 -0700
-X-CSE-ConnectionGUID: VK/wSyU5Rb+js5YK8Yhuzw==
-X-CSE-MsgGUID: ZMk8juXpS8GWcO2gPFXZbA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,258,1708416000"; 
-   d="scan'208";a="59044875"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa002.jf.intel.com with ESMTP; 06 May 2024 07:03:11 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id C0BA32D3; Mon, 06 May 2024 17:03:09 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Tony Lindgren <tony@atomide.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	unil V L <sunilvl@ventanamicro.com>
-Subject: [PATCH v1 2/2] serial: 8250: Extract platform driver
-Date: Mon,  6 May 2024 17:00:59 +0300
-Message-ID: <20240506140308.4040735-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
-In-Reply-To: <20240506140308.4040735-1-andriy.shevchenko@linux.intel.com>
-References: <20240506140308.4040735-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="X3rgUrl8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1715006484;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LX9FQodMEotLA8ljm1FDQuXf3GR3oBpMHpgqWmTcx70=;
+	b=X3rgUrl8KvhMBOGC3h+i0Isockk3sX0EbSFNDKqQ3H7MFxuj05OHTfTVv5srpf4XmZ0laj
+	dVrL2UJN+wwHMSBCuiqNCTY/ygsFKIbj8BBlp0wZP1bb092dpGdA43Fjy05FCkI5o5HyTi
+	Fyb6083rCHBeD8QtngOilHeTRfDJD2g=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-389-D80m_vPrNtG964Y932j7uQ-1; Mon, 06 May 2024 10:41:22 -0400
+X-MC-Unique: D80m_vPrNtG964Y932j7uQ-1
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-a599dffe736so284044666b.1
+        for <linux-serial@vger.kernel.org>; Mon, 06 May 2024 07:41:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715006481; x=1715611281;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Sn3AsUogQMn6CkvNqT/jPgA+Wq1wgG0ZJ/d0kXQVdZs=;
+        b=rezZMQHYWUgWuph2cNlU6+i5ywzSlejCaHB8Qwx5OK2VC1nfsqbivLuSHtjdcmNJRn
+         tlJY1QakESyLjaObPRf1tsqeYHh2YhxynYTAAHlfjbRUm3Na2aRGwFs5V0699vecnk1m
+         EmBlH7pgNZ/D/T9a3Zv/wJ1sN8nyHTCD7PcLlUoyLYGda94xoCjvG/a4Dr1NzrOjjzbK
+         uiqnD9RBtB7BVPKOITyjFDZLBDIeHacaGaEJOAcEHjMtlm5wHjztGKKuIn1XML/jFJwx
+         0cx7y+u3EraAo7l7gi6uOfGxwQrP7AezibPs+XjfJJZg5PQy8fErtBCMYnln5UT+jfA+
+         j+TQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUIPrthfJGoFE3DN5eTj/x7BpoIVC5YBKO+O9Vat07XnohaA2lSPMdgesD8TSuRuvYE0s/DEPTCya3B6eukoEgIB+65HkHoys8BoBfg
+X-Gm-Message-State: AOJu0YyGhga0bQ+R4KGTHnVDoKxRmZIrcuEuw7V14AyjIltss0C6i7w3
+	TT9rYHWxDFTqEcygdMxN19n7Q/rHeDd960GD1kRIv93W/Bd7YNYwCbpIJC8mj4YBTedEjDXvlJU
+	Vy5+/oVcE86vRQe0WcraplfIlnvVR7bazeZf3zAZA1BJuzYuj3E3JzpNPmDewOw==
+X-Received: by 2002:a17:906:af91:b0:a59:9eee:b1cb with SMTP id mj17-20020a170906af9100b00a599eeeb1cbmr5738377ejb.35.1715006481079;
+        Mon, 06 May 2024 07:41:21 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHIwgNqo+fQB5yv012L8nqRg3v13YGGbbufhalN/A671ZlBdrn+O8lkRqLdd+/AGoCyrYsmCQ==
+X-Received: by 2002:a17:906:af91:b0:a59:9eee:b1cb with SMTP id mj17-20020a170906af9100b00a599eeeb1cbmr5738368ejb.35.1715006480685;
+        Mon, 06 May 2024 07:41:20 -0700 (PDT)
+Received: from [10.40.98.157] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id ww1-20020a170907084100b00a59cb8c93f3sm1588733ejb.58.2024.05.06.07.41.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 May 2024 07:41:20 -0700 (PDT)
+Message-ID: <85ac363b-d129-4525-89aa-d4528b8188a7@redhat.com>
+Date: Mon, 6 May 2024 16:41:19 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/2] Defer probing of SAM if serdev device is not ready
+To: Weifeng Liu <weifeng.liu.z@gmail.com>,
+ platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Maximilian Luz <luzmaximilian@gmail.com>
+References: <20240505130800.2546640-1-weifeng.liu.z@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20240505130800.2546640-1-weifeng.liu.z@gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: multipart/mixed; boundary="------------T5dSQ8KyP7OqQv6YtD0DonW6"
+Content-Language: en-US
 
-Extract platform driver to a separate module for better maintenance
-and to reduce churn on 8250_core part changes when it's solely related
-to the former. No functional changes intended.
+This is a multi-part message in MIME format.
+--------------T5dSQ8KyP7OqQv6YtD0DonW6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250.h          |  22 +-
- drivers/tty/serial/8250/8250_core.c     | 342 +-----------------------
- drivers/tty/serial/8250/8250_platform.c | 339 +++++++++++++++++++++++
- drivers/tty/serial/8250/Makefile        |   5 +-
- 4 files changed, 369 insertions(+), 339 deletions(-)
- create mode 100644 drivers/tty/serial/8250/8250_platform.c
+Hi,
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index ac218412e54e..e5310c65cf52 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -9,7 +9,7 @@
- 
- #include <linux/bits.h>
- #include <linux/serial_8250.h>
--#include <linux/serial_reg.h>
-+#include <linux/serial_core.h>
- #include <linux/dmaengine.h>
- 
- #include "../serial_mctrl_gpio.h"
-@@ -93,6 +93,10 @@ struct serial8250_config {
- #define UART_BUG_THRE	BIT(3)	/* UART has buggy THRE reassertion */
- #define UART_BUG_TXRACE	BIT(5)	/* UART Tx fails to set remote DR */
- 
-+/* Module parameters */
-+#define UART_NR	CONFIG_SERIAL_8250_NR_UARTS
-+
-+extern unsigned int nr_uarts;
- 
- #ifdef CONFIG_SERIAL_8250_SHARE_IRQ
- #define SERIAL8250_SHARE_IRQS 1
-@@ -100,6 +104,9 @@ struct serial8250_config {
- #define SERIAL8250_SHARE_IRQS 0
- #endif
- 
-+extern unsigned int share_irqs;
-+extern unsigned int skip_txen_test;
-+
- #define SERIAL8250_PORT_FLAGS(_base, _irq, _flags)		\
- 	{							\
- 		.iobase		= _base,			\
-@@ -111,7 +118,19 @@ struct serial8250_config {
- 
- #define SERIAL8250_PORT(_base, _irq) SERIAL8250_PORT_FLAGS(_base, _irq, 0)
- 
-+extern struct uart_driver serial8250_reg;
-+void serial8250_register_ports(struct uart_driver *drv, struct device *dev);
-+
-+/* Legacy ISA bus related APIs */
-+typedef void (*serial8250_isa_config_fn)(int, struct uart_port *, u32 *);
-+extern serial8250_isa_config_fn serial8250_isa_config;
-+
-+void serial8250_isa_init_ports(void);
-+
-+extern struct platform_device *serial8250_isa_devs;
-+
- extern const struct uart_ops *univ8250_port_base_ops;
-+extern struct uart_ops univ8250_port_ops;
- 
- static inline int serial_in(struct uart_8250_port *up, int offset)
- {
-@@ -201,6 +220,7 @@ static inline bool serial8250_clear_THRI(struct uart_8250_port *up)
- 	return true;
- }
- 
-+struct uart_8250_port *serial8250_setup_port(int index);
- struct uart_8250_port *serial8250_get_port(int line);
- 
- void serial8250_rpm_get(struct uart_8250_port *p);
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 51432f89919c..192f8d19d2fe 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -6,11 +6,9 @@
-  *
-  *  Copyright (C) 2001 Russell King.
-  *
-- *  Supports: ISA-compatible 8250/16550 ports
-- *	      PNP 8250/16550 ports
-+ *  Supports:
-  *	      early_serial_setup() ports
-  *	      userspace-configurable "phantom" ports
-- *	      "serial8250" platform devices
-  *	      serial8250_register_8250_port() ports
-  */
- 
-@@ -36,47 +34,13 @@
- #include <linux/string_helpers.h>
- #include <linux/uaccess.h>
- #include <linux/io.h>
--#ifdef CONFIG_SPARC
--#include <linux/sunserialcore.h>
--#endif
- 
- #include <asm/irq.h>
- 
--#include "../serial_base.h"	/* For serial_base_add_isa_preferred_console() */
--
- #include "8250.h"
- 
--/*
-- * Configuration:
-- *   share_irqs - whether we pass IRQF_SHARED to request_irq().  This option
-- *                is unsafe when used on edge-triggered interrupts.
-- */
--static unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
--
--static unsigned int nr_uarts = CONFIG_SERIAL_8250_RUNTIME_UARTS;
--
--static struct uart_driver serial8250_reg;
--
--static unsigned int skip_txen_test; /* force skip of txen test at init time */
--
- #define PASS_LIMIT	512
- 
--#include <asm/serial.h>
--/*
-- * SERIAL_PORT_DFNS tells us about built-in ports that have no
-- * standard enumeration mechanism.   Platforms that can find all
-- * serial ports via mechanisms like ACPI or PCI need not supply it.
-- */
--#ifndef SERIAL_PORT_DFNS
--#define SERIAL_PORT_DFNS
--#endif
--
--static const struct old_serial_port old_serial_port[] = {
--	SERIAL_PORT_DFNS /* defined in asm/serial.h */
--};
--
--#define UART_NR	CONFIG_SERIAL_8250_NR_UARTS
--
- struct irq_info {
- 	struct			hlist_node node;
- 	int			irq;
-@@ -342,7 +306,7 @@ static void univ8250_release_irq(struct uart_8250_port *up)
- }
- 
- const struct uart_ops *univ8250_port_base_ops = NULL;
--static struct uart_ops univ8250_port_ops;
-+struct uart_ops univ8250_port_ops;
- 
- static const struct uart_8250_ops univ8250_driver_ops = {
- 	.setup_irq	= univ8250_setup_irq,
-@@ -370,22 +334,12 @@ struct uart_8250_port *serial8250_get_port(int line)
- }
- EXPORT_SYMBOL_GPL(serial8250_get_port);
- 
--static void (*serial8250_isa_config)(int port, struct uart_port *up,
--	u32 *capabilities);
--
--void serial8250_set_isa_configurator(
--	void (*v)(int port, struct uart_port *up, u32 *capabilities))
--{
--	serial8250_isa_config = v;
--}
--EXPORT_SYMBOL(serial8250_set_isa_configurator);
--
- static inline void serial8250_apply_quirks(struct uart_8250_port *up)
- {
- 	up->port.quirks |= skip_txen_test ? UPQ_NO_TXEN_TEST : 0;
- }
- 
--static struct uart_8250_port *serial8250_setup_port(int index)
-+struct uart_8250_port *serial8250_setup_port(int index)
- {
- 	struct uart_8250_port *up;
- 
-@@ -410,59 +364,7 @@ static struct uart_8250_port *serial8250_setup_port(int index)
- 	return up;
- }
- 
--static void __init serial8250_isa_init_ports(void)
--{
--	struct uart_8250_port *up;
--	static int first = 1;
--	int i, irqflag = 0;
--
--	if (!first)
--		return;
--	first = 0;
--
--	if (nr_uarts > UART_NR)
--		nr_uarts = UART_NR;
--
--	/*
--	 * Set up initial isa ports based on nr_uart module param, or else
--	 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
--	 * need to increase nr_uarts when setting up the initial isa ports.
--	 */
--	for (i = 0; i < nr_uarts; i++)
--		serial8250_setup_port(i);
--
--	/* chain base port ops to support Remote Supervisor Adapter */
--	univ8250_port_ops = *univ8250_port_base_ops;
--	univ8250_rsa_support(&univ8250_port_ops);
--
--	if (share_irqs)
--		irqflag = IRQF_SHARED;
--
--	for (i = 0, up = serial8250_ports;
--	     i < ARRAY_SIZE(old_serial_port) && i < nr_uarts;
--	     i++, up++) {
--		struct uart_port *port = &up->port;
--
--		port->iobase   = old_serial_port[i].port;
--		port->irq      = irq_canonicalize(old_serial_port[i].irq);
--		port->irqflags = 0;
--		port->uartclk  = old_serial_port[i].baud_base * 16;
--		port->flags    = old_serial_port[i].flags;
--		port->hub6     = 0;
--		port->membase  = old_serial_port[i].iomem_base;
--		port->iotype   = old_serial_port[i].io_type;
--		port->regshift = old_serial_port[i].iomem_reg_shift;
--
--		port->irqflags |= irqflag;
--		if (serial8250_isa_config != NULL)
--			serial8250_isa_config(i, &up->port, &up->capabilities);
--
--		serial_base_add_isa_preferred_console(serial8250_reg.dev_name, i);
--	}
--}
--
--static void __init
--serial8250_register_ports(struct uart_driver *drv, struct device *dev)
-+void __init serial8250_register_ports(struct uart_driver *drv, struct device *dev)
- {
- 	int i;
- 
-@@ -619,7 +521,7 @@ console_initcall(univ8250_console_init);
- #define SERIAL8250_CONSOLE	NULL
- #endif
- 
--static struct uart_driver serial8250_reg = {
-+struct uart_driver serial8250_reg = {
- 	.owner			= THIS_MODULE,
- 	.driver_name		= "serial",
- 	.dev_name		= "ttyS",
-@@ -720,120 +622,6 @@ void serial8250_resume_port(int line)
- }
- EXPORT_SYMBOL(serial8250_resume_port);
- 
--/*
-- * Register a set of serial devices attached to a platform device.  The
-- * list is terminated with a zero flags entry, which means we expect
-- * all entries to have at least UPF_BOOT_AUTOCONF set.
-- */
--static int serial8250_probe(struct platform_device *dev)
--{
--	struct plat_serial8250_port *p = dev_get_platdata(&dev->dev);
--	struct uart_8250_port uart;
--	int ret, i, irqflag = 0;
--
--	memset(&uart, 0, sizeof(uart));
--
--	if (share_irqs)
--		irqflag = IRQF_SHARED;
--
--	for (i = 0; p && p->flags != 0; p++, i++) {
--		uart.port.iobase	= p->iobase;
--		uart.port.membase	= p->membase;
--		uart.port.irq		= p->irq;
--		uart.port.irqflags	= p->irqflags;
--		uart.port.uartclk	= p->uartclk;
--		uart.port.regshift	= p->regshift;
--		uart.port.iotype	= p->iotype;
--		uart.port.flags		= p->flags;
--		uart.port.mapbase	= p->mapbase;
--		uart.port.mapsize	= p->mapsize;
--		uart.port.hub6		= p->hub6;
--		uart.port.has_sysrq	= p->has_sysrq;
--		uart.port.private_data	= p->private_data;
--		uart.port.type		= p->type;
--		uart.bugs		= p->bugs;
--		uart.port.serial_in	= p->serial_in;
--		uart.port.serial_out	= p->serial_out;
--		uart.dl_read		= p->dl_read;
--		uart.dl_write		= p->dl_write;
--		uart.port.handle_irq	= p->handle_irq;
--		uart.port.handle_break	= p->handle_break;
--		uart.port.set_termios	= p->set_termios;
--		uart.port.set_ldisc	= p->set_ldisc;
--		uart.port.get_mctrl	= p->get_mctrl;
--		uart.port.pm		= p->pm;
--		uart.port.dev		= &dev->dev;
--		uart.port.irqflags	|= irqflag;
--		ret = serial8250_register_8250_port(&uart);
--		if (ret < 0) {
--			dev_err(&dev->dev, "unable to register port at index %d "
--				"(IO%lx MEM%llx IRQ%d): %d\n", i,
--				p->iobase, (unsigned long long)p->mapbase,
--				p->irq, ret);
--		}
--	}
--	return 0;
--}
--
--/*
-- * Remove serial ports registered against a platform device.
-- */
--static void serial8250_remove(struct platform_device *dev)
--{
--	int i;
--
--	for (i = 0; i < nr_uarts; i++) {
--		struct uart_8250_port *up = &serial8250_ports[i];
--
--		if (up->port.dev == &dev->dev)
--			serial8250_unregister_port(i);
--	}
--}
--
--static int serial8250_suspend(struct platform_device *dev, pm_message_t state)
--{
--	int i;
--
--	for (i = 0; i < UART_NR; i++) {
--		struct uart_8250_port *up = &serial8250_ports[i];
--
--		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
--			uart_suspend_port(&serial8250_reg, &up->port);
--	}
--
--	return 0;
--}
--
--static int serial8250_resume(struct platform_device *dev)
--{
--	int i;
--
--	for (i = 0; i < UART_NR; i++) {
--		struct uart_8250_port *up = &serial8250_ports[i];
--
--		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
--			serial8250_resume_port(i);
--	}
--
--	return 0;
--}
--
--static struct platform_driver serial8250_isa_driver = {
--	.probe		= serial8250_probe,
--	.remove_new	= serial8250_remove,
--	.suspend	= serial8250_suspend,
--	.resume		= serial8250_resume,
--	.driver		= {
--		.name	= "serial8250",
--	},
--};
--
--/*
-- * This "device" covers _all_ ISA 8250-compatible serial devices listed
-- * in the table in include/asm/serial.h
-- */
--static struct platform_device *serial8250_isa_devs;
--
- /*
-  * serial8250_register_8250_port and serial8250_unregister_port allows for
-  * 16x50 serial ports to be configured at run-time, to support PCMCIA
-@@ -1110,125 +898,5 @@ void serial8250_unregister_port(int line)
- }
- EXPORT_SYMBOL(serial8250_unregister_port);
- 
--static int __init serial8250_init(void)
--{
--	int ret;
--
--	if (nr_uarts == 0)
--		return -ENODEV;
--
--	serial8250_isa_init_ports();
--
--	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
--		nr_uarts, str_enabled_disabled(share_irqs));
--
--#ifdef CONFIG_SPARC
--	ret = sunserial_register_minors(&serial8250_reg, UART_NR);
--#else
--	serial8250_reg.nr = UART_NR;
--	ret = uart_register_driver(&serial8250_reg);
--#endif
--	if (ret)
--		goto out;
--
--	ret = serial8250_pnp_init();
--	if (ret)
--		goto unreg_uart_drv;
--
--	serial8250_isa_devs = platform_device_alloc("serial8250",
--						    PLAT8250_DEV_LEGACY);
--	if (!serial8250_isa_devs) {
--		ret = -ENOMEM;
--		goto unreg_pnp;
--	}
--
--	ret = platform_device_add(serial8250_isa_devs);
--	if (ret)
--		goto put_dev;
--
--	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
--
--	ret = platform_driver_register(&serial8250_isa_driver);
--	if (ret == 0)
--		goto out;
--
--	platform_device_del(serial8250_isa_devs);
--put_dev:
--	platform_device_put(serial8250_isa_devs);
--unreg_pnp:
--	serial8250_pnp_exit();
--unreg_uart_drv:
--#ifdef CONFIG_SPARC
--	sunserial_unregister_minors(&serial8250_reg, UART_NR);
--#else
--	uart_unregister_driver(&serial8250_reg);
--#endif
--out:
--	return ret;
--}
--
--static void __exit serial8250_exit(void)
--{
--	struct platform_device *isa_dev = serial8250_isa_devs;
--
--	/*
--	 * This tells serial8250_unregister_port() not to re-register
--	 * the ports (thereby making serial8250_isa_driver permanently
--	 * in use.)
--	 */
--	serial8250_isa_devs = NULL;
--
--	platform_driver_unregister(&serial8250_isa_driver);
--	platform_device_unregister(isa_dev);
--
--	serial8250_pnp_exit();
--
--#ifdef CONFIG_SPARC
--	sunserial_unregister_minors(&serial8250_reg, UART_NR);
--#else
--	uart_unregister_driver(&serial8250_reg);
--#endif
--}
--
--module_init(serial8250_init);
--module_exit(serial8250_exit);
--
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Generic 8250/16x50 serial driver");
--
--module_param_hw(share_irqs, uint, other, 0644);
--MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
--
--module_param(nr_uarts, uint, 0644);
--MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
--
--module_param(skip_txen_test, uint, 0644);
--MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
--
--MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
--
--#ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
--#ifndef MODULE
--/* This module was renamed to 8250_core in 3.7.  Keep the old "8250" name
-- * working as well for the module options so we don't break people.  We
-- * need to keep the names identical and the convenient macros will happily
-- * refuse to let us do that by failing the build with redefinition errors
-- * of global variables.  So we stick them inside a dummy function to avoid
-- * those conflicts.  The options still get parsed, and the redefined
-- * MODULE_PARAM_PREFIX lets us keep the "8250." syntax alive.
-- *
-- * This is hacky.  I'm sorry.
-- */
--static void __used s8250_options(void)
--{
--#undef MODULE_PARAM_PREFIX
--#define MODULE_PARAM_PREFIX "8250_core."
--
--	module_param_cb(share_irqs, &param_ops_uint, &share_irqs, 0644);
--	module_param_cb(nr_uarts, &param_ops_uint, &nr_uarts, 0644);
--	module_param_cb(skip_txen_test, &param_ops_uint, &skip_txen_test, 0644);
--}
--#else
--MODULE_ALIAS("8250_core");
--#endif
--#endif
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-new file mode 100644
-index 000000000000..ded985182e04
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -0,0 +1,339 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ *  Universal/legacy platform driver for 8250/16550-type serial ports
-+ *
-+ *  Supports: ISA-compatible 8250/16550 ports
-+ *	      PNP 8250/16550 ports
-+ *	      "serial8250" platform devices
-+ */
-+#include <linux/array_size.h>
-+#include <linux/module.h>
-+#include <linux/moduleparam.h>
-+#include <linux/platform_device.h>
-+
-+#include <linux/serial_8250.h>
-+
-+#ifdef CONFIG_SPARC
-+#include <linux/sunserialcore.h>
-+#endif
-+
-+#include "../serial_base.h"	/* For serial_base_add_isa_preferred_console() */
-+#include "8250.h"
-+
-+/*
-+ * Configuration:
-+ *    share_irqs   Whether we pass IRQF_SHARED to request_irq().
-+ *                 This option is unsafe when used on edge-triggered interrupts.
-+ * skip_txen_test  Force skip of txen test at init time.
-+ */
-+unsigned int share_irqs = SERIAL8250_SHARE_IRQS;
-+unsigned int skip_txen_test;
-+
-+unsigned int nr_uarts = CONFIG_SERIAL_8250_RUNTIME_UARTS;
-+
-+#include <asm/serial.h>
-+
-+/*
-+ * SERIAL_PORT_DFNS tells us about built-in ports that have no
-+ * standard enumeration mechanism. Platforms that can find all
-+ * serial ports via mechanisms like ACPI or PCI need not supply it.
-+ */
-+#ifndef SERIAL_PORT_DFNS
-+#define SERIAL_PORT_DFNS
-+#endif
-+
-+static const struct old_serial_port old_serial_port[] = {
-+	SERIAL_PORT_DFNS /* defined in asm/serial.h */
-+};
-+
-+serial8250_isa_config_fn serial8250_isa_config;
-+void serial8250_set_isa_configurator(serial8250_isa_config_fn v)
-+{
-+	serial8250_isa_config = v;
-+}
-+EXPORT_SYMBOL(serial8250_set_isa_configurator);
-+
-+void __init serial8250_isa_init_ports(void)
-+{
-+	static int first = 1;
-+	int i, irqflag = 0;
-+
-+	if (!first)
-+		return;
-+	first = 0;
-+
-+	if (nr_uarts > UART_NR)
-+		nr_uarts = UART_NR;
-+
-+	/*
-+	 * Set up initial isa ports based on nr_uart module param, or else
-+	 * default to CONFIG_SERIAL_8250_RUNTIME_UARTS. Note that we do not
-+	 * need to increase nr_uarts when setting up the initial isa ports.
-+	 */
-+	for (i = 0; i < nr_uarts; i++)
-+		serial8250_setup_port(i);
-+
-+	/* chain base port ops to support Remote Supervisor Adapter */
-+	univ8250_port_ops = *univ8250_port_base_ops;
-+	univ8250_rsa_support(&univ8250_port_ops);
-+
-+	if (share_irqs)
-+		irqflag = IRQF_SHARED;
-+
-+	for (i = 0; i < ARRAY_SIZE(old_serial_port) && i < nr_uarts; i++) {
-+		struct uart_8250_port *up = serial8250_get_port(i);
-+		struct uart_port *port = &up->port;
-+
-+		port->iobase   = old_serial_port[i].port;
-+		port->irq      = irq_canonicalize(old_serial_port[i].irq);
-+		port->irqflags = 0;
-+		port->uartclk  = old_serial_port[i].baud_base * 16;
-+		port->flags    = old_serial_port[i].flags;
-+		port->hub6     = 0;
-+		port->membase  = old_serial_port[i].iomem_base;
-+		port->iotype   = old_serial_port[i].io_type;
-+		port->regshift = old_serial_port[i].iomem_reg_shift;
-+
-+		port->irqflags |= irqflag;
-+		if (serial8250_isa_config != NULL)
-+			serial8250_isa_config(i, &up->port, &up->capabilities);
-+
-+		serial_base_add_isa_preferred_console(serial8250_reg.dev_name, i);
-+	}
-+}
-+
-+/*
-+ * Register a set of serial devices attached to a platform device.  The
-+ * list is terminated with a zero flags entry, which means we expect
-+ * all entries to have at least UPF_BOOT_AUTOCONF set.
-+ */
-+static int serial8250_probe(struct platform_device *dev)
-+{
-+	struct plat_serial8250_port *p = dev_get_platdata(&dev->dev);
-+	struct uart_8250_port uart;
-+	int ret, i, irqflag = 0;
-+
-+	memset(&uart, 0, sizeof(uart));
-+
-+	if (share_irqs)
-+		irqflag = IRQF_SHARED;
-+
-+	for (i = 0; p && p->flags != 0; p++, i++) {
-+		uart.port.iobase	= p->iobase;
-+		uart.port.membase	= p->membase;
-+		uart.port.irq		= p->irq;
-+		uart.port.irqflags	= p->irqflags;
-+		uart.port.uartclk	= p->uartclk;
-+		uart.port.regshift	= p->regshift;
-+		uart.port.iotype	= p->iotype;
-+		uart.port.flags		= p->flags;
-+		uart.port.mapbase	= p->mapbase;
-+		uart.port.mapsize	= p->mapsize;
-+		uart.port.hub6		= p->hub6;
-+		uart.port.has_sysrq	= p->has_sysrq;
-+		uart.port.private_data	= p->private_data;
-+		uart.port.type		= p->type;
-+		uart.bugs		= p->bugs;
-+		uart.port.serial_in	= p->serial_in;
-+		uart.port.serial_out	= p->serial_out;
-+		uart.dl_read		= p->dl_read;
-+		uart.dl_write		= p->dl_write;
-+		uart.port.handle_irq	= p->handle_irq;
-+		uart.port.handle_break	= p->handle_break;
-+		uart.port.set_termios	= p->set_termios;
-+		uart.port.set_ldisc	= p->set_ldisc;
-+		uart.port.get_mctrl	= p->get_mctrl;
-+		uart.port.pm		= p->pm;
-+		uart.port.dev		= &dev->dev;
-+		uart.port.irqflags	|= irqflag;
-+		ret = serial8250_register_8250_port(&uart);
-+		if (ret < 0) {
-+			dev_err(&dev->dev, "unable to register port at index %d "
-+				"(IO%lx MEM%llx IRQ%d): %d\n", i,
-+				p->iobase, (unsigned long long)p->mapbase,
-+				p->irq, ret);
-+		}
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * Remove serial ports registered against a platform device.
-+ */
-+static void serial8250_remove(struct platform_device *dev)
-+{
-+	int i;
-+
-+	for (i = 0; i < nr_uarts; i++) {
-+		struct uart_8250_port *up = serial8250_get_port(i);
-+
-+		if (up->port.dev == &dev->dev)
-+			serial8250_unregister_port(i);
-+	}
-+}
-+
-+static int serial8250_suspend(struct platform_device *dev, pm_message_t state)
-+{
-+	int i;
-+
-+	for (i = 0; i < UART_NR; i++) {
-+		struct uart_8250_port *up = serial8250_get_port(i);
-+
-+		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
-+			uart_suspend_port(&serial8250_reg, &up->port);
-+	}
-+
-+	return 0;
-+}
-+
-+static int serial8250_resume(struct platform_device *dev)
-+{
-+	int i;
-+
-+	for (i = 0; i < UART_NR; i++) {
-+		struct uart_8250_port *up = serial8250_get_port(i);
-+
-+		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
-+			serial8250_resume_port(i);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver serial8250_isa_driver = {
-+	.probe		= serial8250_probe,
-+	.remove_new	= serial8250_remove,
-+	.suspend	= serial8250_suspend,
-+	.resume		= serial8250_resume,
-+	.driver		= {
-+		.name	= "serial8250",
-+	},
-+};
-+
-+/*
-+ * This "device" covers _all_ ISA 8250-compatible serial devices listed
-+ * in the table in include/asm/serial.h
-+ */
-+struct platform_device *serial8250_isa_devs;
-+
-+static int __init serial8250_init(void)
-+{
-+	int ret;
-+
-+	if (nr_uarts == 0)
-+		return -ENODEV;
-+
-+	serial8250_isa_init_ports();
-+
-+	pr_info("Serial: 8250/16550 driver, %d ports, IRQ sharing %s\n",
-+		nr_uarts, str_enabled_disabled(share_irqs));
-+
-+#ifdef CONFIG_SPARC
-+	ret = sunserial_register_minors(&serial8250_reg, UART_NR);
-+#else
-+	serial8250_reg.nr = UART_NR;
-+	ret = uart_register_driver(&serial8250_reg);
-+#endif
-+	if (ret)
-+		goto out;
-+
-+	ret = serial8250_pnp_init();
-+	if (ret)
-+		goto unreg_uart_drv;
-+
-+	serial8250_isa_devs = platform_device_alloc("serial8250",
-+						    PLAT8250_DEV_LEGACY);
-+	if (!serial8250_isa_devs) {
-+		ret = -ENOMEM;
-+		goto unreg_pnp;
-+	}
-+
-+	ret = platform_device_add(serial8250_isa_devs);
-+	if (ret)
-+		goto put_dev;
-+
-+	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
-+
-+	ret = platform_driver_register(&serial8250_isa_driver);
-+	if (ret == 0)
-+		goto out;
-+
-+	platform_device_del(serial8250_isa_devs);
-+put_dev:
-+	platform_device_put(serial8250_isa_devs);
-+unreg_pnp:
-+	serial8250_pnp_exit();
-+unreg_uart_drv:
-+#ifdef CONFIG_SPARC
-+	sunserial_unregister_minors(&serial8250_reg, UART_NR);
-+#else
-+	uart_unregister_driver(&serial8250_reg);
-+#endif
-+out:
-+	return ret;
-+}
-+module_init(serial8250_init);
-+
-+static void __exit serial8250_exit(void)
-+{
-+	struct platform_device *isa_dev = serial8250_isa_devs;
-+
-+	/*
-+	 * This tells serial8250_unregister_port() not to re-register
-+	 * the ports (thereby making serial8250_isa_driver permanently
-+	 * in use.)
-+	 */
-+	serial8250_isa_devs = NULL;
-+
-+	platform_driver_unregister(&serial8250_isa_driver);
-+	platform_device_unregister(isa_dev);
-+
-+	serial8250_pnp_exit();
-+
-+#ifdef CONFIG_SPARC
-+	sunserial_unregister_minors(&serial8250_reg, UART_NR);
-+#else
-+	uart_unregister_driver(&serial8250_reg);
-+#endif
-+}
-+module_exit(serial8250_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Generic 8250/16x50 serial platform driver");
-+
-+module_param_hw(share_irqs, uint, other, 0644);
-+MODULE_PARM_DESC(share_irqs, "Share IRQs with other non-8250/16x50 devices (unsafe)");
-+
-+module_param(nr_uarts, uint, 0644);
-+MODULE_PARM_DESC(nr_uarts, "Maximum number of UARTs supported. (1-" __MODULE_STRING(CONFIG_SERIAL_8250_NR_UARTS) ")");
-+
-+module_param(skip_txen_test, uint, 0644);
-+MODULE_PARM_DESC(skip_txen_test, "Skip checking for the TXEN bug at init time");
-+
-+MODULE_ALIAS_CHARDEV_MAJOR(TTY_MAJOR);
-+
-+#ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
-+#ifndef MODULE
-+/* This module was renamed to 8250_core in 3.7.  Keep the old "8250" name
-+ * working as well for the module options so we don't break people.  We
-+ * need to keep the names identical and the convenient macros will happily
-+ * refuse to let us do that by failing the build with redefinition errors
-+ * of global variables.  So we stick them inside a dummy function to avoid
-+ * those conflicts.  The options still get parsed, and the redefined
-+ * MODULE_PARAM_PREFIX lets us keep the "8250." syntax alive.
-+ *
-+ * This is hacky.  I'm sorry.
-+ */
-+static void __used s8250_options(void)
-+{
-+#undef MODULE_PARAM_PREFIX
-+#define MODULE_PARAM_PREFIX "8250_core."
-+
-+	module_param_cb(share_irqs, &param_ops_uint, &share_irqs, 0644);
-+	module_param_cb(nr_uarts, &param_ops_uint, &nr_uarts, 0644);
-+	module_param_cb(skip_txen_test, &param_ops_uint, &skip_txen_test, 0644);
-+}
-+#else
-+MODULE_ALIAS("8250_core");
-+#endif
-+#endif
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 96d97184d320..1516de629b61 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -3,10 +3,13 @@
- # Makefile for the 8250 serial device drivers.
- #
- 
--obj-$(CONFIG_SERIAL_8250)		+= 8250.o 8250_base.o
-+obj-$(CONFIG_SERIAL_8250)		+= 8250.o
- 8250-y					:= 8250_core.o
-+8250-y					+= 8250_platform.o
- 8250-$(CONFIG_SERIAL_8250_PNP)		+= 8250_pnp.o
- 8250-$(CONFIG_SERIAL_8250_RSA)		+= 8250_rsa.o
-+
-+obj-$(CONFIG_SERIAL_8250)		+= 8250_base.o
- 8250_base-y				:= 8250_port.o
- 8250_base-$(CONFIG_SERIAL_8250_DMA)	+= 8250_dma.o
- 8250_base-$(CONFIG_SERIAL_8250_DWLIB)	+= 8250_dwlib.o
--- 
-2.43.0.rc1.1336.g36b5255a03ac
+On 5/5/24 3:07 PM, Weifeng Liu wrote:
+> v3 changes:
+> * better formatting, nothing special
+> 
+> v2 changes:
+> * resolves Andy's comments
+> 
+> Original letter:
+> 
+> Greetings,
+> 
+> This series is intended to remedy a race condition where surface
+> aggregator module (SAM) which is a serdev driver could fail to probe if
+> the underlying UART port is not ready to open.  In such circumstance,
+> invoking serdev_device_open() gets errno -ENXIO, leading to failure in
+> probing of SAM.  However, if the probe is retried in a short delay,
+> serdev_device_open() would work as expected and everything just goes
+> fine.  As a workaround, adding the serial driver (8250_dw) into
+> initramfs or building it into the kernel image significantly mitigates
+> the likelihood of encountering this race condition, as in this way the
+> serial device would be initialized much earlier than probing of SAM.
+> 
+> However, IMO we should reliably avoid this sort of race condition.  A
+> good way is returning -EPROBE_DEFER when serdev_device_open returns
+> -ENXIO so that the kernel will be able to retry the probing later.  This
+> is what the first patch tries to do.
+> 
+> Though this solution might be a good enough solution for this specific
+> issue, I am wondering why this kind of race condition could ever happen,
+> i.e., why a serdes device could be not ready yet at the moment the
+> serdev driver gets called and tries to bind it.  And even if this is an
+> expected behavior how serdev driver works, I do feel it a little bit
+> weird that we need to identify serdev_device_open() returning -ENXIO as
+> non-fatal error and thus return -EPROBE_DEFER manually in such case, as
+> I don't see this sort of behavior in other serdev driver.  Maximilian
+> and Hans suggested discussing the root cause of the race condition here.
+> I will be grateful if you could provide some reasoning and insights on
+> this.
+> 
+> Following is the code path when the issue occurs:
+> 
+> 	ssam_serial_hub_probe()
+> 	serdev_device_open()
+> 	ctrl->ops->open()	/* this callback being ttyport_open() */
+> 	tty->ops->open()	/* this callback being uart_open() */
+> 	tty_port_open()
+> 	port->ops->activate()	/* this callback being uart_port_activate() */
+> 	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+> 
+> I notice that flag UPF_DEAD would be set in serial_core_register_port()
+> during calling serial_core_add_one_port() but don't have much idea
+> what's going on under the hood.
+
+Thank you this explanation + Andy's questions about this were quite
+useful. I think I have found the root cause of this problem and I have
+attached a patch which should fix this.
+
+After dropping your own fix from your local kernel you should be able
+to reproduce this 100% of the time by making the surface_aggregator
+module builtin (CONFIG_SURFACE_AGGREGATOR=y) while making 8250_dw
+a module (CONFIG_SERIAL_8250_DW=m). Although I'm not sure if the uart
+will then not simply be initialzed as something generic. You could also
+try building both into the kernel and see if the issue reproduces then.
+
+Once you can reproduce this reliably, give the attached patch a try
+to fix this please.
+
+Regards,
+
+Hans
+
+
+
+> 
+> Additionally, add logs to the probe procedure of SAM in the second
+> patch, hoping it could help provide context to user when something
+> miserable happens.
+> 
+> Context of this series is available in [1].
+> 
+> Best regards,
+> Weifeng
+> 
+> Weifeng Liu (2):
+>   platform/surface: aggregator: Defer probing when serdev is not ready
+>   platform/surface: aggregator: Log critical errors during SAM probing
+> 
+>  drivers/platform/surface/aggregator/core.c | 53 ++++++++++++++++------
+>  1 file changed, 39 insertions(+), 14 deletions(-)
+> 
+--------------T5dSQ8KyP7OqQv6YtD0DonW6
+Content-Type: text/x-patch; charset=UTF-8;
+ name="0001-serial-Clear-UPF_DEAD-before-calling-tty_port_regist.patch"
+Content-Disposition: attachment;
+ filename*0="0001-serial-Clear-UPF_DEAD-before-calling-tty_port_regist.pa";
+ filename*1="tch"
+Content-Transfer-Encoding: base64
+
+RnJvbSAyNTZlMWI4M2Q0YTIwMTViMTZiMDM2ZjJhYWEwYzNjNmY2YzYzZTRhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBIYW5zIGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgpE
+YXRlOiBNb24sIDYgTWF5IDIwMjQgMTY6MjA6NDUgKzAyMDAKU3ViamVjdDogW1BBVENIXSBzZXJp
+YWw6IENsZWFyIFVQRl9ERUFEIGJlZm9yZSBjYWxsaW5nCiB0dHlfcG9ydF9yZWdpc3Rlcl9kZXZp
+Y2VfYXR0cl9zZXJkZXYoKQoKSWYgYSBzZXJkZXZfZGV2aWNlX2RyaXZlciBpcyBhbHJlYWR5IGxv
+YWRlZCBmb3IgYSBzZXJkZXZfdHR5X3BvcnQgd2hlbiBpdApnZXRzIHJlZ2lzdGVyZWQgYnkgdHR5
+X3BvcnRfcmVnaXN0ZXJfZGV2aWNlX2F0dHJfc2VyZGV2KCkgdGhlbiB0aGF0CmRyaXZlcidzIHBy
+b2JlKCkgbWV0aG9kIHdpbGwgYmUgY2FsbGVkIGltbWVkaWF0ZWx5LgoKVGhlIHNlcmRldl9kZXZp
+Y2VfZHJpdmVyJ3MgcHJvYmUoKSBtZXRob2Qgc2hvdWxkIHRoZW4gYmUgYWJsZSB0byBjYWxsCnNl
+cmRldl9kZXZpY2Vfb3BlbigpIHN1Y2Nlc3NmdWxseSwgYnV0IGJlY2F1c2UgVVBGX0RFQUQgaXMg
+c3RpbGwgZGVhZApzZXJkZXZfZGV2aWNlX29wZW4oKSB3aWxsIGZhaWwgd2l0aCAtRU5YSU8gaW4g
+dGhpcyBzY2VuYXJpbzoKCiAgc2VyZGV2X2RldmljZV9vcGVuKCkKICBjdHJsLT5vcHMtPm9wZW4o
+KQkvKiB0aGlzIGNhbGxiYWNrIGJlaW5nIHR0eXBvcnRfb3BlbigpICovCiAgdHR5LT5vcHMtPm9w
+ZW4oKQkvKiB0aGlzIGNhbGxiYWNrIGJlaW5nIHVhcnRfb3BlbigpICovCiAgdHR5X3BvcnRfb3Bl
+bigpCiAgcG9ydC0+b3BzLT5hY3RpdmF0ZSgpCS8qIHRoaXMgY2FsbGJhY2sgYmVpbmcgdWFydF9w
+b3J0X2FjdGl2YXRlKCkgKi8KICBGaW5kIGJpdCBVUEZfREVBRCBpcyBzZXQgaW4gdXBvcnQtPmZs
+YWdzIGFuZCBmYWlsIHdpdGggZXJybm8gLUVOWElPLgoKRml4IHRoaXMgYmUgY2xlYXJpbmcgVVBG
+X0RFQUQgYmVmb3JlIHR0eV9wb3J0X3JlZ2lzdGVyX2RldmljZV9hdHRyX3NlcmRldigpCm5vdGUg
+dGhpcyBvbmx5IG1vdmVzIHVwIHRoZSBVUERfREVBRCBjbGVhcmluZyBhIHNtYWxsIGJpdCwgYmVm
+b3JlOgoKICB0dHlfcG9ydF9yZWdpc3Rlcl9kZXZpY2VfYXR0cl9zZXJkZXYoKTsKICBtdXRleF91
+bmxvY2soJnR0eV9wb3J0Lm11dGV4KTsKICB1YXJ0X3BvcnQuZmxhZ3MgJj0gflVQRl9ERUFEOwog
+IG11dGV4X3VubG9jaygmcG9ydF9tdXRleCk7CgphZnRlcjoKCiAgdWFydF9wb3J0LmZsYWdzICY9
+IH5VUEZfREVBRDsKICB0dHlfcG9ydF9yZWdpc3Rlcl9kZXZpY2VfYXR0cl9zZXJkZXYoKTsKICBt
+dXRleF91bmxvY2soJnR0eV9wb3J0Lm11dGV4KTsKICBtdXRleF91bmxvY2soJnBvcnRfbXV0ZXgp
+OwoKUmVwb3J0ZWQtYnk6IFdlaWZlbmcgTGl1IDx3ZWlmZW5nLmxpdS56QGdtYWlsLmNvbT4KQ2xv
+c2VzOiBodHRwczovL2xvcmUua2VybmVsLm9yZy9wbGF0Zm9ybS1kcml2ZXIteDg2LzIwMjQwNTA1
+MTMwODAwLjI1NDY2NDAtMS13ZWlmZW5nLmxpdS56QGdtYWlsLmNvbS8KQ2M6IE1heGltaWxpYW4g
+THV6IDxsdXptYXhpbWlsaWFuQGdtYWlsLmNvbT4KQ2M6IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5
+LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBIYW5zIGRlIEdvZWRl
+IDxoZGVnb2VkZUByZWRoYXQuY29tPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9zZXJpYWxfY29y
+ZS5jIHwgNiArKysrLS0KIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDIgZGVsZXRp
+b25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMgYi9k
+cml2ZXJzL3R0eS9zZXJpYWwvc2VyaWFsX2NvcmUuYwppbmRleCBmZjg1ZWJkM2EwMDcuLmQ5NDI0
+ZmU2NTEzYiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMKKysr
+IGIvZHJpdmVycy90dHkvc2VyaWFsL3NlcmlhbF9jb3JlLmMKQEAgLTMxOTYsNiArMzE5Niw5IEBA
+IHN0YXRpYyBpbnQgc2VyaWFsX2NvcmVfYWRkX29uZV9wb3J0KHN0cnVjdCB1YXJ0X2RyaXZlciAq
+ZHJ2LCBzdHJ1Y3QgdWFydF9wb3J0ICp1CiAJaWYgKHVwb3J0LT5hdHRyX2dyb3VwKQogCQl1cG9y
+dC0+dHR5X2dyb3Vwc1sxXSA9IHVwb3J0LT5hdHRyX2dyb3VwOwogCisJLyogRW5zdXJlIHNlcmRl
+diBkcml2ZXJzIGNhbiBjYWxsIHNlcmRldl9kZXZpY2Vfb3BlbigpIHJpZ2h0IGF3YXkgKi8KKwl1
+cG9ydC0+ZmxhZ3MgJj0gflVQRl9ERUFEOworCiAJLyoKIAkgKiBSZWdpc3RlciB0aGUgcG9ydCB3
+aGV0aGVyIGl0J3MgZGV0ZWN0ZWQgb3Igbm90LiAgVGhpcyBhbGxvd3MKIAkgKiBzZXRzZXJpYWwg
+dG8gYmUgdXNlZCB0byBhbHRlciB0aGlzIHBvcnQncyBwYXJhbWV0ZXJzLgpAQCAtMzIwNiw2ICsz
+MjA5LDcgQEAgc3RhdGljIGludCBzZXJpYWxfY29yZV9hZGRfb25lX3BvcnQoc3RydWN0IHVhcnRf
+ZHJpdmVyICpkcnYsIHN0cnVjdCB1YXJ0X3BvcnQgKnUKIAlpZiAoIUlTX0VSUih0dHlfZGV2KSkg
+ewogCQlkZXZpY2Vfc2V0X3dha2V1cF9jYXBhYmxlKHR0eV9kZXYsIDEpOwogCX0gZWxzZSB7CisJ
+CXVwb3J0LT5mbGFncyB8PSBVUEZfREVBRDsKIAkJZGV2X2Vycih1cG9ydC0+ZGV2LCAiQ2Fubm90
+IHJlZ2lzdGVyIHR0eSBkZXZpY2Ugb24gbGluZSAlZFxuIiwKIAkJICAgICAgIHVwb3J0LT5saW5l
+KTsKIAl9CkBAIC0zNDExLDggKzM0MTUsNiBAQCBpbnQgc2VyaWFsX2NvcmVfcmVnaXN0ZXJfcG9y
+dChzdHJ1Y3QgdWFydF9kcml2ZXIgKmRydiwgc3RydWN0IHVhcnRfcG9ydCAqcG9ydCkKIAlpZiAo
+cmV0KQogCQlnb3RvIGVycl91bnJlZ2lzdGVyX3BvcnRfZGV2OwogCi0JcG9ydC0+ZmxhZ3MgJj0g
+flVQRl9ERUFEOwotCiAJbXV0ZXhfdW5sb2NrKCZwb3J0X211dGV4KTsKIAogCXJldHVybiAwOwot
+LSAKMi40NC4wCgo=
+--------------T5dSQ8KyP7OqQv6YtD0DonW6--
 
