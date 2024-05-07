@@ -1,230 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CA3B46A4
-	for <linux-serial@vger.kernel.org>; Tue,  7 May 2024 02:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 241F413C3FA;
+	Tue,  7 May 2024 13:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715050759; cv=none; b=RE9aQuvhy4XNgNzCCdSnllAm/TlH/zm6b+8vpdyp6xmvPMi6umtn30/4IOry0qTCxaVzNdNV+1vUf2eTOFM3A64GbYPvB3KEmsdR1ocmjOO/4o85+gUXBfCKW6R3kVku5tHK5MzeA3XDosFBoEIu2mdGt2JP7hwrroFkSm4HY/4=
+	t=1715089519; cv=none; b=FWZAAy6qqaZMtIVfao3sFK5nbegYk1PsvUpIiIIQz+srILGahO4RoXee7H8RrccKIbf2goRUsTb04yobBST7s5Ai9Uu0pW31dZMQpLJm4fi/bWl9q35f/hR/6kpoFl/A0c9vWw8wpZllO4LHc53KYf4mMq0YFQaQTVVLs8Y42Wk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715050759; c=relaxed/simple;
-	bh=1/dvarCpp3GMpTMqc5Uu14UP10j1fObasZVSi9H7sQM=;
-	h=Date:From:To:Subject:Message-ID; b=QLmlof9q41nGF4JVWfdGDHfR8RLvQAadKcnNpb7hTrREY6GnqhGnSt/iEGjvLum6FtN3BFC1riAh81p935AZQ+RRG9Dm2R7GQ54MoAwLSkqK84Gsm2je8LYz/P0TVSjZ80+ZcMtC7A4Z7O9vzfV6Vz1mIPHcLOujdiHYdfZz39c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FVn2caS6; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1715089519; c=relaxed/simple;
+	bh=qDeG9dx9lt5c7t8P0BjaH9qK5jjsQtKxyHWfXhGiW8s=;
+	h=Message-ID:Subject:From:To:Cc:In-Reply-To:References:Content-Type:
+	 MIME-Version:Date; b=qQfnItR9Ip1o6a2iFZjkB2LfolWO+0OHma5Ln1GUGX6twjWmtYBwE76g0xBnTAMIFySuIoVrTpGEoAIb8DD6fTMCr7ICtToV3WLdEcifblFgPusCRv2JXfWn1dAkBJtU/GTE3yvFMzEn3MAej+wlwqFKGhEMvgm2LJwGoBLcGAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lv7nDSs8; arc=none smtp.client-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FVn2caS6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715050757; x=1746586757;
-  h=date:from:to:subject:message-id;
-  bh=1/dvarCpp3GMpTMqc5Uu14UP10j1fObasZVSi9H7sQM=;
-  b=FVn2caS6dts4ATsQLnN6yM2fvWK/cfAbaWl+D/a8/zq7j/ulw2RFanv+
-   2fVUklujfXCs0LyxTHvmLL6XHh9mF47jhLGkpZgPTILhom41sC7hFV2tU
-   9v6+I6I8r6NrzRyybG3yCMH+Lkr+uGfAKzdGYZyjdbhqocj2QElch5aKJ
-   Y9SdhxlLEc1Rr3DnjHgFak1GW3B5c03afed7fd94aL7L0O6kPIndZjx9z
-   J67lybAec4kcMflx1jQ5q0o6XP29+VBTnWmI/mMJXcNpc+RrSiL3w5Tym
-   WfcpbpoZqBG0K8ouZ6skM0cTwQ8WzHkHcn+/NCha/4dhVIsjs2vgHsZEh
-   g==;
-X-CSE-ConnectionGUID: H0CEAqLcQcaIcP3jYGRbVQ==
-X-CSE-MsgGUID: v2nIB5XrTICFC5jim/Vnqw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="10946946"
-X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="10946946"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 19:59:16 -0700
-X-CSE-ConnectionGUID: Pa3rXbcSRI6mTqinkkT7ow==
-X-CSE-MsgGUID: CG4/AJdERzG/5pLxysNsfQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="59219603"
-Received: from lkp-server01.sh.intel.com (HELO f8b243fe6e68) ([10.239.97.150])
-  by orviesa002.jf.intel.com with ESMTP; 06 May 2024 19:59:15 -0700
-Received: from kbuild by f8b243fe6e68 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1s4B2u-0001GM-1P
-	for linux-serial@vger.kernel.org;
-	Tue, 07 May 2024 02:59:12 +0000
-Date: Tue, 07 May 2024 10:58:19 +0800
-From: kernel test robot <lkp@intel.com>
-To: linux-serial@vger.kernel.org
-Subject: [BUILD SUCCESS] LAST PATCH: [PATCH v1 2/2] serial: 8250:
- Extract platform driver
-Message-ID: <202405071018.q4o4yXDD-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lv7nDSs8"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6f460e05101so1970285b3a.1;
+        Tue, 07 May 2024 06:45:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1715089517; x=1715694317; darn=vger.kernel.org;
+        h=user-agent:date:mime-version:content-transfer-encoding:references
+         :in-reply-to:cc:to:from:subject:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rmsg9tzz/nOWQcim8zIXBGX0XtaHp9tb6wgcsuwC3pA=;
+        b=lv7nDSs8ikADUE7wkCACEiKTsh1J4DOpZqf/pz3Mh1cf2YGLLOBnQBplEeCFKL5rgR
+         8HogO26C10M+ddy/smcEKO1WbGSEt0RCUywRs261gr/3Mk0DK67+Pia+wUgkdyAlECPK
+         UIsddo23A/KzhRYOyXC8iWNg0IiLYLgpeHnOWtwPVmK+oNoK42NhfXPognqGmZiGxNKv
+         Z7+4x/RTe7CidCGfzpabpZ6lqcZV0Mk+DgJ6vj9cyuz0gwOyrMuu6PJEZZsFIBtcRBuB
+         kLtdB3HTitdu4WSBKybeGorI+Bmhdb1czrEM3JHrTNbWOK6C41de+fcR3d7d1R8FC9mr
+         pEOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715089517; x=1715694317;
+        h=user-agent:date:mime-version:content-transfer-encoding:references
+         :in-reply-to:cc:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=Rmsg9tzz/nOWQcim8zIXBGX0XtaHp9tb6wgcsuwC3pA=;
+        b=QsUbjCmZtj01krGnqZIYe60SLNU70eBnJ2osHgKXaX1ZRGKL+rNb69Xd+ZoVTZpauA
+         ek7TQt4o54htzeiEKpba6j70ftNMFP53jyYWBrhIcKlkqG+HcQAkKiSfphd6obkxi3Ky
+         Qnwsus/Q6r328rxTEPU8/Ml7erkqMUtSruZBHHUGc2+YE9TcJTthcPKFKAwupbx1uWIn
+         buIq8P0c37+Fkxo5WoiXZn9UKhDBtTLCS4Y7DKr+RY667AKAcaSMRJzJ9J2FzwIvADMg
+         cQ5pYogZEQdpZfjrVXAKU7H5PNFpLFof0VIJ2nmylVXrXj9Llzs7UUy6m/2Xo+S5SQru
+         UhMA==
+X-Forwarded-Encrypted: i=1; AJvYcCVTlyVZJ0qRtrW/mvvgt2x3ukhQHdqlm1NmbfDgW5knGOxDgS2aI7k0AebHH/65925+3g4f13YzM6ws4024x63D8JKOHXHgTiQHdPzUKz7yDiUdAgp7R0wdPnFubsB5MTu6ixwUgMGgPCATvWFBMg/Txg==
+X-Gm-Message-State: AOJu0YwJDVkrXnK0aszDNs2oy633xyaDH8ymNgcLAKa9WT6hhZ/19t41
+	p0TlUP0jirkffxIp0eA3a98n1b6RNpcqXxgrTMR8hz5LMsPk4gBpHDcihb8B
+X-Google-Smtp-Source: AGHT+IEJOXFBZ4UXVvnaeb8oyk+NSCzXQw3reEOu9bZWmig3BkB0fWH3TBux41kzK69xZAwyIeGrYA==
+X-Received: by 2002:a05:6a00:6385:b0:6f3:8468:8bb with SMTP id gh5-20020a056a00638500b006f3846808bbmr3591550pfb.17.1715089517238;
+        Tue, 07 May 2024 06:45:17 -0700 (PDT)
+Received: from [192.168.5.213] ([101.229.120.80])
+        by smtp.gmail.com with ESMTPSA id g2-20020aa79f02000000b006f46eb9d809sm4541641pfr.126.2024.05.07.06.45.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 May 2024 06:45:16 -0700 (PDT)
+Message-ID: <020e8afb18421d740ed71b640ffc803c7b51bd63.camel@gmail.com>
+Subject: Re: [PATCH v3 0/2] Defer probing of SAM if serdev device is not
+ ready
+From: Weifeng Liu <weifeng.liu.z@gmail.com>
+To: Hans de Goede <hdegoede@redhat.com>,
+ platform-driver-x86@vger.kernel.org,  linux-serial@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Maximilian Luz
+	 <luzmaximilian@gmail.com>, Tony Lindgren <tony@atomide.com>
+In-Reply-To: <85ac363b-d129-4525-89aa-d4528b8188a7@redhat.com>
+References: <20240505130800.2546640-1-weifeng.liu.z@gmail.com>
+	 <85ac363b-d129-4525-89aa-d4528b8188a7@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Date: Tue, 07 May 2024 21:44:42 +0800
+User-Agent: Evolution 3.52.1 (3.52.1-1.fc40) 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/serial-8250-Extract-RSA-bits/20240506-220437
-base:   next-20240506
-patch link:    https://lore.kernel.org/r/20240506140308.4040735-3-andriy.shevchenko%40linux.intel.com
-patch subject: [PATCH v1 2/2] serial: 8250: Extract platform driver
+Hi,
 
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+On Mon, 2024-05-06 at 16:41 +0200, Hans de Goede wrote:
+> Hi,
+>=20
+> On 5/5/24 3:07 PM, Weifeng Liu wrote:
+> > v3 changes:
+> > * better formatting, nothing special
+> >=20
+> > v2 changes:
+> > * resolves Andy's comments
+> >=20
+> > Original letter:
+> >=20
+> > Greetings,
+> >=20
+> > This series is intended to remedy a race condition where surface
+> > aggregator module (SAM) which is a serdev driver could fail to probe if
+> > the underlying UART port is not ready to open.  In such circumstance,
+> > invoking serdev_device_open() gets errno -ENXIO, leading to failure in
+> > probing of SAM.  However, if the probe is retried in a short delay,
+> > serdev_device_open() would work as expected and everything just goes
+> > fine.  As a workaround, adding the serial driver (8250_dw) into
+> > initramfs or building it into the kernel image significantly mitigates
+> > the likelihood of encountering this race condition, as in this way the
+> > serial device would be initialized much earlier than probing of SAM.
+> >=20
+> > However, IMO we should reliably avoid this sort of race condition.  A
+> > good way is returning -EPROBE_DEFER when serdev_device_open returns
+> > -ENXIO so that the kernel will be able to retry the probing later.  Thi=
+s
+> > is what the first patch tries to do.
+> >=20
+> > Though this solution might be a good enough solution for this specific
+> > issue, I am wondering why this kind of race condition could ever happen=
+,
+> > i.e., why a serdes device could be not ready yet at the moment the
+> > serdev driver gets called and tries to bind it.  And even if this is an
+> > expected behavior how serdev driver works, I do feel it a little bit
+> > weird that we need to identify serdev_device_open() returning -ENXIO as
+> > non-fatal error and thus return -EPROBE_DEFER manually in such case, as
+> > I don't see this sort of behavior in other serdev driver.  Maximilian
+> > and Hans suggested discussing the root cause of the race condition here=
+.
+> > I will be grateful if you could provide some reasoning and insights on
+> > this.
+> >=20
+> > Following is the code path when the issue occurs:
+> >=20
+> > 	ssam_serial_hub_probe()
+> > 	serdev_device_open()
+> > 	ctrl->ops->open()	/* this callback being ttyport_open() */
+> > 	tty->ops->open()	/* this callback being uart_open() */
+> > 	tty_port_open()
+> > 	port->ops->activate()	/* this callback being uart_port_activate() */
+> > 	Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+> >=20
+> > I notice that flag UPF_DEAD would be set in serial_core_register_port()
+> > during calling serial_core_add_one_port() but don't have much idea
+> > what's going on under the hood.
+>=20
+> Thank you this explanation + Andy's questions about this were quite
+> useful. I think I have found the root cause of this problem and I have
+> attached a patch which should fix this.
+>=20
+> After dropping your own fix from your local kernel you should be able
+> to reproduce this 100% of the time by making the surface_aggregator
+> module builtin (CONFIG_SURFACE_AGGREGATOR=3Dy) while making 8250_dw
+> a module (CONFIG_SERIAL_8250_DW=3Dm). Although I'm not sure if the uart
+> will then not simply be initialzed as something generic. You could also
+> try building both into the kernel and see if the issue reproduces then.
+>=20
 
-elapsed time: 769m
+As per your instructions, I
 
-configs tested: 147
-configs skipped: 3
+* removed my fixes,
+* built surface_aggregator into the kernal,
+* built 8250_dw as a module and
+* removed 8250_dw from initramfs as well,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+and found the occurrence rate of the issue was around 30%.  With your
+patch applied, the issue disappeared completely.
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20240507   gcc  
-arc                   randconfig-002-20240507   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   clang
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                   randconfig-001-20240507   gcc  
-arm                   randconfig-002-20240507   clang
-arm                   randconfig-003-20240507   gcc  
-arm                   randconfig-004-20240507   clang
-arm64                            allmodconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                 randconfig-001-20240507   clang
-arm64                 randconfig-002-20240507   clang
-arm64                 randconfig-003-20240507   clang
-arm64                 randconfig-004-20240507   clang
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20240507   gcc  
-csky                  randconfig-002-20240507   gcc  
-hexagon                          allmodconfig   clang
-hexagon                           allnoconfig   clang
-hexagon                          allyesconfig   clang
-hexagon                             defconfig   clang
-hexagon               randconfig-001-20240507   clang
-hexagon               randconfig-002-20240507   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20240507   clang
-i386         buildonly-randconfig-002-20240507   clang
-i386         buildonly-randconfig-003-20240507   clang
-i386         buildonly-randconfig-004-20240507   gcc  
-i386         buildonly-randconfig-005-20240507   gcc  
-i386         buildonly-randconfig-006-20240507   clang
-i386                                defconfig   clang
-i386                  randconfig-001-20240507   clang
-i386                  randconfig-002-20240507   gcc  
-i386                  randconfig-003-20240507   clang
-i386                  randconfig-004-20240507   clang
-i386                  randconfig-005-20240507   clang
-i386                  randconfig-006-20240507   clang
-i386                  randconfig-011-20240507   gcc  
-i386                  randconfig-012-20240507   clang
-i386                  randconfig-013-20240507   clang
-i386                  randconfig-014-20240507   gcc  
-i386                  randconfig-015-20240507   gcc  
-i386                  randconfig-016-20240507   clang
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20240507   gcc  
-loongarch             randconfig-002-20240507   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20240507   gcc  
-nios2                 randconfig-002-20240507   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                randconfig-001-20240507   gcc  
-parisc                randconfig-002-20240507   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc               randconfig-001-20240507   gcc  
-powerpc               randconfig-002-20240507   clang
-powerpc               randconfig-003-20240507   clang
-powerpc64             randconfig-001-20240507   gcc  
-powerpc64             randconfig-002-20240507   gcc  
-powerpc64             randconfig-003-20240507   clang
-riscv                            allmodconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   clang
-riscv                               defconfig   clang
-riscv                 randconfig-001-20240507   clang
-riscv                 randconfig-002-20240507   gcc  
-s390                             allmodconfig   clang
-s390                              allnoconfig   clang
-s390                             allyesconfig   gcc  
-s390                                defconfig   clang
-s390                  randconfig-001-20240507   gcc  
-s390                  randconfig-002-20240507   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sh                    randconfig-001-20240507   gcc  
-sh                    randconfig-002-20240507   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                               defconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-sparc64               randconfig-001-20240507   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   gcc  
-um                                  defconfig   clang
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   clang
-x86_64                            allnoconfig   clang
-x86_64                           allyesconfig   clang
-x86_64       buildonly-randconfig-001-20240507   clang
-x86_64       buildonly-randconfig-002-20240507   clang
-x86_64       buildonly-randconfig-003-20240507   clang
-x86_64       buildonly-randconfig-004-20240507   clang
-x86_64       buildonly-randconfig-005-20240507   clang
-x86_64       buildonly-randconfig-006-20240507   gcc  
-x86_64                              defconfig   gcc  
-x86_64                randconfig-001-20240507   gcc  
-x86_64                randconfig-002-20240507   clang
-x86_64                randconfig-003-20240507   clang
-x86_64                randconfig-004-20240507   gcc  
-x86_64                randconfig-005-20240507   gcc  
-x86_64                randconfig-006-20240507   gcc  
-x86_64                randconfig-011-20240507   gcc  
-x86_64                          rhel-8.3-rust   clang
-xtensa                            allnoconfig   gcc  
+Tested-by: Weifeng Liu <weifeng.liu.z@gmail.com>
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Really glad to see the final solution in serial core for this issue.=20
+This might also help other serdev drivers.  Thank you all.
+
+Best regards,
+Weifeng
+
+> Once you can reproduce this reliably, give the attached patch a try
+> to fix this please.
+>=20
+> Regards,
+>=20
+> Hans
+>=20
+>=20
+>=20
+> >=20
+> > Additionally, add logs to the probe procedure of SAM in the second
+> > patch, hoping it could help provide context to user when something
+> > miserable happens.
+> >=20
+> > Context of this series is available in [1].
+> >=20
+> > Best regards,
+> > Weifeng
+> >=20
+> > Weifeng Liu (2):
+> >   platform/surface: aggregator: Defer probing when serdev is not ready
+> >   platform/surface: aggregator: Log critical errors during SAM probing
+> >=20
+> >  drivers/platform/surface/aggregator/core.c | 53 ++++++++++++++++------
+> >  1 file changed, 39 insertions(+), 14 deletions(-)
+
