@@ -1,112 +1,152 @@
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EF747D095;
-	Wed,  8 May 2024 13:38:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.104.207.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E3571DFD8;
+	Wed,  8 May 2024 16:16:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715175503; cv=none; b=ua7HuWqsEK89K5GdchMedgK9sSJ8EKhUar56JLiqsRwnjCIRQnDUlRJ2zmmZT7cu6yHySpsTTCdP7mfd9Ql3HwjybbDPK7ztGtaKK14ChV/SyFZ70bCSjfH4gpp+HUbDPPVBSMmdT3CJWOoJAxrW5xLWi+urYj8/LMD9zEEdoRE=
+	t=1715184994; cv=none; b=LgEzfyuMbS6nlMV/o0J/yUg3632Gz24Mxj9ISCU7uq9eBMdAb9gnTf0HKIhHpWmR0MPzcyNnGh4LVUO6fHXcBSQGNCKf86gCuQ12h+/KH+UTdQB8/UFcDsO3m2HA5UMhSWOc3L2SmgxIOM78DwgflqbP+M3HKNb943BxrhMOv6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715175503; c=relaxed/simple;
-	bh=vB0Sjt7S+gjdevIA1MOKWP5yvN4Z07ftcH3hTneiHdc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=o4upPQsawuwAKaxHj2vrcjoI/nG3w5RayaJarizD87MrFfytWqLVwaHqQMEyufkXk077jNyzdGjwKo800DGlwlLUrh3ZfFWxixyyXI6kAKfXNumHUNt+ehDJuozCEvNb6BTjwcircfd417BYyPtXEI7qD6c8ETwLPQW++Nd4yZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b=H2+bo0K7; dkim=fail (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=qtXJCzoe reason="key not found in DNS"; arc=none smtp.client-ip=93.104.207.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
+	s=arc-20240116; t=1715184994; c=relaxed/simple;
+	bh=7uXx6swrCcj63Q1Kq5orROu6Yte2GQluX/afoi/VjlM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pUUO66ArORYCZGqZyczkJnh88MSPhFXobdc3P2RMHOkpwH7FGXyWi3MPc3pH/SPUlgziLxNbqm9wl4Pl3y8lXJFN3JaUQGt6LfrhV50e4c8M0v4ULNZg2UBHUuhUrSXtY0JZysKDSciuwq93Tpm+sgxa+G/rzDBICSWQeq5tyYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mb+hdOq5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="H2+bo0K7";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="qtXJCzoe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1715175500; x=1746711500;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1anWl7U0g1N5ReOl67RGFJDhNdBee4tIaUiND+Vgla8=;
-  b=H2+bo0K7oLCgYvX4fiB/8hxucoN3XJyPIX8zpROAL4MnIvwOE1u3Os0a
-   980VafRB/96O/j7EQQ8WqKlJUZZNx2/QJBIh02YwoAvYBQdqsszmpTjqq
-   WLaDavkxvLEUdkLlMfqoQzTt4Gkzwh+ofOc0y5qu2DNjnJZa1VY1V+Jow
-   3rglfLXKQGY6zh3UZh3uzpNqTXPbUBQqzcYmmwbrsKfCBjuk3Mwuna13e
-   FgyeTwZazyZKs4fnC2NXaxnu6sQH8bRJNNfNYERgXajMUAksLHA2ZDN4x
-   5gfTdoKvjIp/RIhu4yp5y7WuKAZ3QPKGgv7nXkLwYNK3ke2b4JTPcJVSD
-   A==;
-X-CSE-ConnectionGUID: z54Sk1EmRBC1VdH69ne3fA==
-X-CSE-MsgGUID: 3vZd3Y/sRkKMGvbzBMbsTQ==
-X-IronPort-AV: E=Sophos;i="6.08,145,1712613600"; 
-   d="scan'208";a="36814849"
-Received: from vmailcow01.tq-net.de ([10.150.86.48])
-  by mx1.tq-group.com with ESMTP; 08 May 2024 15:38:11 +0200
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D977816E68D;
-	Wed,  8 May 2024 15:38:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ew.tq-group.com;
-	s=dkim; t=1715175487;
-	h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding; bh=1anWl7U0g1N5ReOl67RGFJDhNdBee4tIaUiND+Vgla8=;
-	b=qtXJCzoersL5wQiIkKQBAwn4D4j1wABKeNyuQudkAIie3Q8ZmvyTdD5EEbJNiX7a42Ctpk
-	W1eBU5pUlT2EFPWCm6CPi5kFsDDgkeP0OUiJjsVJct0eVihbTEg76lQCV7yAo2N+FH5Etn
-	PcWCE0YGvTmH1q9BOR0cBxOGgSPG/o0oLR1glcAgFoOz8b3+btIhMgCk1mhPeIjg7K5tBZ
-	v9qfdIH/33ko0jAiHFk/lPBP03oCDFu2N5ZCDQ391ng8zlYRQZZPbi96RHuKup5SCpW0AO
-	Q3DcCAxCoeIkVPH7W6D6WB+F0LyjF6wjePw6SGW3HHIKKh93QW/RJwxc+AfrRg==
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mb+hdOq5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B670CC113CC;
+	Wed,  8 May 2024 16:16:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715184993;
+	bh=7uXx6swrCcj63Q1Kq5orROu6Yte2GQluX/afoi/VjlM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=mb+hdOq53qmHC0tsnwHZjWvs0XBJkKZMEiwnPjJ2mn32qKcZZw4pY0Mo55+FJrmcS
+	 /XCsoVhGSe7MSvmWWAwogYlSP3eqAlzXIz9RSwbgfLmeNG7CLVhSPmpXxCzieRVYuZ
+	 cOufbq3pU4xhAFLiBblQ/ahAAQ693QQWfoRODWX7xcxLCInUUXMjUdvHgoz9yw0RMM
+	 RLtGgoM9mPdmuvYQoPD2BTDowiNH94T95q73biOqRbfHENAbkQ//ZjHtcbEpdr+UQd
+	 Vu7kDL3ejYOds/rA8GqKWvTaQTr4SnyOOM0fSjQODFHTymGa9w14L3TTHDG08v3EJe
+	 yoCD9p5pfLmbg==
+Date: Wed, 8 May 2024 17:16:25 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux@ew.tq-group.com,
-	Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-	Michael Krummsdorf <michael.krummsdorf@tq-group.com>
-Subject: [PATCH] serial: imx: Raise TX trigger level to 8
-Date: Wed,  8 May 2024 15:37:44 +0200
-Message-ID: <20240508133744.35858-1-matthias.schiffer@ew.tq-group.com>
-X-Mailer: git-send-email 2.43.2
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3 06/11] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
+Message-ID: <20240508-headwear-monorail-a425ac6fe8a8@spud>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
+ <20240502182804.145926-7-christoph.fritz@hexdev.de>
+ <20240503-fading-extruding-2105bbd8b479@spud>
+ <a5b894f8dc2ab0cf087a5b4972d7f752e6c17c16.camel@hexdev.de>
+ <20240506-jaws-cheesy-bf94885651c1@spud>
+ <f1173a7c-f18b-47cc-8873-30347489d1be@kernel.org>
+ <b716f34ce54dfed2595690d37c121d242a18ff64.camel@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="tlupBOI+4XnNwj6+"
+Content-Disposition: inline
+In-Reply-To: <b716f34ce54dfed2595690d37c121d242a18ff64.camel@hexdev.de>
 
-At the default TX trigger level of 2 in non-DMA mode (meaning that an
-interrupt is generated when less than 2 characters are left in the
-FIFO), we have observed frequent buffer underruns at 115200 Baud on an
-i.MX8M Nano. This can cause communication issues if the receiving side
-expects a continuous transfer.
 
-Increasing the level to 8 makes the UART trigger an interrupt earlier,
-giving the kernel enough time to refill the FIFO, at the cost of
-triggering one interrupt per ~24 instead of ~30 bytes of transmitted
-data (as the i.MX UART has a 32 byte FIFO).
+--tlupBOI+4XnNwj6+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Michael Krummsdorf <michael.krummsdorf@tq-group.com>
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
----
- drivers/tty/serial/imx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, May 08, 2024 at 01:34:34PM +0200, Christoph Fritz wrote:
+> On Mon, 2024-05-06 at 20:50 +0200, Krzysztof Kozlowski wrote:
+> > On 06/05/2024 18:16, Conor Dooley wrote:
+> > > > > > +maintainers:
+> > > > > > +  - Christoph Fritz <christoph.fritz@hexdev.de>
+> > > > > > +
+> > > > > > +properties:
+> > > > > > +  compatible:
+> > > > > > +    const: hexdev,lin-serdev
+> > > > >=20
+> > > > > Maybe I've just missed something on earlier versions that I didn't
+> > > > > read, but the name of the device on the website you link is "hexL=
+IN",
+> > > > > so why is "lin-serdev" used here instead?
+> > > >=20
+> > > > The USB one is called hexLIN and has it's own HID driver.
+> > > >=20
+> > > > This serial LIN adapter doesn't really have a product name. Current=
+ly
+> > > > on our website it's generically called 'UART LIN Adapter'.
+> > > >=20
+> > > > This LIN adapter is basically just a LIN transceiver and very gener=
+ic,
+> > > > so that one could solder it to any single-board computer with an ua=
+rt.
+> > > >=20
+> > > > I think 'lin-serdev' for LIN and serial device fits great, also ser=
+dev
+> > > > is the name of the used kernel infrastructure (besides the LIN glue
+> > > > driver).
+> > > >=20
+> > > > If you still don't like it, I'm open to other names. What about
+> > > > "hexlin-uart" or "linser"?
+> > >
+> > > I dunno, I don't really care about it being called "hexlin,lin-serdev=
+",
+> > > all that much, I just found it confusing that the link in the descrip=
+tion
+> > > sent me to the ""Hello World" in LIN" section of your site. If it had
+> > > dropped me off at the "UART LIN adapter" section things woud've been =
+less
+> > > confusing.
+>=20
+> Hi Conor and Krzysztof,
+>=20
+> I guess this is a chromium oddity, because browsing to
+>=20
+>  https://hexdev.de/hexlin#hexLINSER
+>=20
+> brings the user to another headline ("hexLIN" not "hexLINSER") as long
+> as headline "hexLINSER" can be also displayed.
+>=20
+> When using firefox, the top headline is hexLINSER as expected (at least
+> I do).
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 79f1503cd75b4..2eb22594960f3 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1305,7 +1305,7 @@ static void imx_uart_clear_rx_errors(struct imx_port *sport)
- 
- }
- 
--#define TXTL_DEFAULT 2 /* reset default */
-+#define TXTL_DEFAULT 8
- #define RXTL_DEFAULT 8 /* 8 characters or aging timer */
- #define TXTL_DMA 8 /* DMA burst setting */
- #define RXTL_DMA 9 /* DMA burst setting */
--- 
-TQ-Systems GmbH | Mühlstraße 2, Gut Delling | 82229 Seefeld, Germany
-Amtsgericht München, HRB 105018
-Geschäftsführer: Detlef Schneider, Rüdiger Stahl, Stefan Schneider
-https://www.tq-group.com/
 
+Yeah, I think its actually chrome that I saw it originally, but that's
+probably irrelevant. After your re-org, in Chrome, if the window is small
+enough, I still only see the "3 Open Source Tool: hexLIN" stuff, but
+that's not an issue with the binding itself, so I won't hold things up
+on that basis.
+
+--tlupBOI+4XnNwj6+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZjulWQAKCRB4tDGHoIJi
+0tMQAP9fMElMFGNJxdwBsOADn6kLSS6YLWaEOU+ouw82kF76MAEAptNwatRO9P4z
+xo6AX9qqibZldOB8BhC2XkjXXCc6BAo=
+=k3yE
+-----END PGP SIGNATURE-----
+
+--tlupBOI+4XnNwj6+--
