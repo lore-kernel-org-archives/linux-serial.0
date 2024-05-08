@@ -1,38 +1,67 @@
-Received: from air.basealt.ru (air.basealt.ru [194.107.17.39])
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20395338A;
-	Wed,  8 May 2024 09:30:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.107.17.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C9888120A;
+	Wed,  8 May 2024 11:34:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715160616; cv=none; b=BOGlZMnvMep3GH0nnKka1woQX4+z5vzxOcrEWEo1pFwfcr3Cw9/lqik0Um7Ydh8n1tIzGyO1b+TnIgJFC+G9ssGcgNCuPeOykQ11hxL/qJDOMWGr/u0bQbnnSELee350EONbe/mXSXwyesa3pSDj/3wHw3+3AadE0OONj56p/QU=
+	t=1715168092; cv=none; b=oI4QXn+Nht2/7KbBYUINsVM7Hth0EDyQ+s+ZljMxQBx/E/AlJ+3BPSAY8mB/+ljayPb9CuQ/RURpx0AIaufHJg9VXM48eye0mC8COEVbzjlGn99g7s3OLJjKZg561xsLYUPWypU17fsl6/j8wydxzjFR8kqJSQD0X0otIj7kuQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715160616; c=relaxed/simple;
-	bh=c4hP47PEyo99rjBVhRg7TCURkjQeGtkuWHONiZoyZqk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=O6gTOCqoENuc0sMqkVOVPhmyUfNpYtcasdKCxWJrnbSppqx2NjKhFyXyraacUcD0DK0ENo1PyCzgDLHdjrS7pDNt3556YsxbtJLgJmsymp7Jc632sFCAg+cNc77rgkl9ACiLWjilov7zXJv01iKiPLewMov+dbYlXRovLGyP1wc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org; spf=pass smtp.mailfrom=altlinux.org; arc=none smtp.client-ip=194.107.17.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=altlinux.org
-Received: by air.basealt.ru (Postfix, from userid 490)
-	id 4FA662F20247; Wed,  8 May 2024 09:30:08 +0000 (UTC)
-X-Spam-Level: 
-Received: from altlinux.malta.altlinux.ru (obninsk.basealt.ru [217.15.195.17])
-	by air.basealt.ru (Postfix) with ESMTPSA id DB0C82F20242;
-	Wed,  8 May 2024 09:30:07 +0000 (UTC)
-From: kovalev@altlinux.org
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: lvc-project@linuxtesting.org,
-	dutyrok@altlinux.org,
-	oficerovas@altlinux.org,
-	Vasiliy Kovalev <kovalev@altlinux.org>,
-	stable@vger.kernel.org
-Subject: [PATCH] tty: Fix possible deadlock in tty_buffer_flush
-Date: Wed,  8 May 2024 12:30:05 +0300
-Message-Id: <20240508093005.1044815-1-kovalev@altlinux.org>
-X-Mailer: git-send-email 2.33.8
+	s=arc-20240116; t=1715168092; c=relaxed/simple;
+	bh=tixuWnWaApHZa88I9VH9uCSdEVSxkxdW1LaQ2M+1bwY=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=EZcMT3SdXXmWPoBwXfG2fOJHZGo3pUcyrDA3qS0V5CFoKOl8I69pon31IADkbfTXIKI0nleX2j53a0mPLSPOHUvw06xiCsY6d3l9XwWtHEdtchXDFKws1fnWgeyqbYSuzI7d4WgX94W9i7i85bd3Q7QrtwQ4jUaAXTS5GnJx1Wk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=ARyzWnXk; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="ARyzWnXk"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=JT/pKnPhOXs9FuvMeUswkfzbqk7jg11xjzMVg++jEag=; b=ARyzWnXkp1DVrw7gVTuJiQcgnN
+	cfynAutb8zVYBi3YJWPh/Qt4kzmN6krzwKNDrDKuTD0ZS9UI1W8OfIxAtRX4C1udDhwyO1ls7/TcF
+	NLrrfGnoyF2qxjVtuz9qubprP0xl4p4bw29Re61gTZA2FPP35+JoCYKRNffXbQH+ADro=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s4fZD-001hfX-1W;
+	Wed, 08 May 2024 13:34:35 +0200
+Message-ID: <b716f34ce54dfed2595690d37c121d242a18ff64.camel@hexdev.de>
+Subject: Re: [PATCH v3 06/11] dt-bindings: net/can: Add serial (serdev) LIN
+ adapter
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Krzysztof Kozlowski <krzk@kernel.org>, Conor Dooley <conor@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Oliver Hartkopp
+ <socketcan@hartkopp.net>,  Marc Kleine-Budde <mkl@pengutronix.de>, Vincent
+ Mailhol <mailhol.vincent@wanadoo.fr>, "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>,  Paolo Abeni <pabeni@redhat.com>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>,  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Sebastian Reichel <sre@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Andreas Lauser
+ <andreas.lauser@mercedes-benz.com>,  Jonathan Corbet <corbet@lwn.net>,
+ Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, 
+ netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-input@vger.kernel.org,  linux-serial@vger.kernel.org
+Date: Wed, 08 May 2024 13:34:34 +0200
+In-Reply-To: <f1173a7c-f18b-47cc-8873-30347489d1be@kernel.org>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>
+	 <20240502182804.145926-7-christoph.fritz@hexdev.de>
+	 <20240503-fading-extruding-2105bbd8b479@spud>
+	 <a5b894f8dc2ab0cf087a5b4972d7f752e6c17c16.camel@hexdev.de>
+	 <20240506-jaws-cheesy-bf94885651c1@spud>
+	 <f1173a7c-f18b-47cc-8873-30347489d1be@kernel.org>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,145 +70,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Vasiliy Kovalev <kovalev@altlinux.org>
+On Mon, 2024-05-06 at 20:50 +0200, Krzysztof Kozlowski wrote:
+> On 06/05/2024 18:16, Conor Dooley wrote:
+> > > > > +maintainers:
+> > > > > +  - Christoph Fritz <christoph.fritz@hexdev.de>
+> > > > > +
+> > > > > +properties:
+> > > > > +  compatible:
+> > > > > +    const: hexdev,lin-serdev
+> > > > 
+> > > > Maybe I've just missed something on earlier versions that I didn't
+> > > > read, but the name of the device on the website you link is "hexLIN",
+> > > > so why is "lin-serdev" used here instead?
+> > > 
+> > > The USB one is called hexLIN and has it's own HID driver.
+> > > 
+> > > This serial LIN adapter doesn't really have a product name. Currently
+> > > on our website it's generically called 'UART LIN Adapter'.
+> > > 
+> > > This LIN adapter is basically just a LIN transceiver and very generic,
+> > > so that one could solder it to any single-board computer with an uart.
+> > > 
+> > > I think 'lin-serdev' for LIN and serial device fits great, also serdev
+> > > is the name of the used kernel infrastructure (besides the LIN glue
+> > > driver).
+> > > 
+> > > If you still don't like it, I'm open to other names. What about
+> > > "hexlin-uart" or "linser"?
+> >
+> > I dunno, I don't really care about it being called "hexlin,lin-serdev",
+> > all that much, I just found it confusing that the link in the description
+> > sent me to the ""Hello World" in LIN" section of your site. If it had
+> > dropped me off at the "UART LIN adapter" section things woud've been less
+> > confusing.
 
-A possible scenario in which a deadlock may occur is as follows:
+Hi Conor and Krzysztof,
 
-flush_to_ldisc() {
+I guess this is a chromium oddity, because browsing to
 
-  mutex_lock(&buf->lock);
+ https://hexdev.de/hexlin#hexLINSER
 
-  tty_port_default_receive_buf() {
-    tty_ldisc_receive_buf() {
-      n_tty_receive_buf2() {
-	n_tty_receive_buf_common() {
-	  n_tty_receive_char_special() {
-	    isig() {
-	      tty_driver_flush_buffer() {
-		pty_flush_buffer() {
-		  tty_buffer_flush() {
+brings the user to another headline ("hexLIN" not "hexLINSER") as long
+as headline "hexLINSER" can be also displayed.
 
-		    mutex_lock(&buf->lock); (DEADLOCK)
+When using firefox, the top headline is hexLINSER as expected (at least
+I do).
 
-flush_to_ldisc() and tty_buffer_flush() functions they use the same mutex
-(&buf->lock), but not necessarily the same struct tty_bufhead object.
-However, you should probably use a separate mutex for the
-tty_buffer_flush() function to exclude such a situation.
+> > 
+> > That said, calling the compatible after a linux-ism is a bit odd to me
+> > when the device seems to be called a "UART LIN adapter" on the page, not
+> > a "serdev".
+> > 
+> 
+> If there is no real, fixed model name, I would also propose to use
+> whatever is on the website currently and avoid Linuxism.
 
-Found by Syzkaller:
-======================================================
-WARNING: possible circular locking dependency detected
-5.10.213-std-def-alt1 #1 Not tainted
-------------------------------------------------------
-kworker/u6:8/428 is trying to acquire lock:
-ffff88810c3498b8 (&buf->lock){+.+.}-{3:3},
-        at: tty_buffer_flush+0x7b/0x2b0 drivers/tty/tty_buffer.c:228
+OK, I changed it to hexLINSER on the website and in the upcoming v4
+revision of this patchset. LINSER for LIN and serial, or like in
+"Linsen & Spätzle" :)
 
-but task is already holding lock:
-ffff888114dca2e8 (&o_tty->termios_rwsem/1){++++}-{3:3},
-        at: isig+0xef/0x440 drivers/tty/n_tty.c:1127
-
-which lock already depends on the new lock.
-
-Chain exists of:
-  &buf->lock --> &port->buf.lock/1 --> &o_tty->termios_rwsem/1
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&o_tty->termios_rwsem/1);
-                               lock(&port->buf.lock/1);
-                               lock(&o_tty->termios_rwsem/1);
-  lock(&buf->lock);
-
-stack backtrace:
-CPU: 0 PID: 428 Comm: kworker/u6:8 Not tainted 5.10.213-std-def-alt1 #1
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-                BIOS 1.16.0-alt1 04/01/2014
-Workqueue: events_unbound flush_to_ldisc
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x19b/0x203 lib/dump_stack.c:118
- print_circular_bug.cold+0x162/0x171 kernel/locking/lockdep.c:2002
- check_noncircular+0x263/0x2e0 kernel/locking/lockdep.c:2123
- check_prev_add kernel/locking/lockdep.c:2988 [inline]
- check_prevs_add kernel/locking/lockdep.c:3113 [inline]
- validate_chain kernel/locking/lockdep.c:3729 [inline]
- __lock_acquire+0x298f/0x5500 kernel/locking/lockdep.c:4955
- lock_acquire kernel/locking/lockdep.c:5566 [inline]
- lock_acquire+0x1fe/0x550 kernel/locking/lockdep.c:5531
- __mutex_lock_common kernel/locking/mutex.c:968 [inline]
- __mutex_lock+0x142/0x10c0 kernel/locking/mutex.c:1109
- mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:1124
- tty_buffer_flush+0x7b/0x2b0 drivers/tty/tty_buffer.c:228
- pty_flush_buffer+0x4e/0x170 drivers/tty/pty.c:222
- tty_driver_flush_buffer+0x65/0x80 drivers/tty/tty_ioctl.c:96
- isig+0x1e4/0x440 drivers/tty/n_tty.c:1138
- n_tty_receive_signal_char+0x24/0x160 drivers/tty/n_tty.c:1239
- n_tty_receive_char_special+0x1261/0x2a70 drivers/tty/n_tty.c:1285
- n_tty_receive_buf_fast drivers/tty/n_tty.c:1606 [inline]
- __receive_buf drivers/tty/n_tty.c:1640 [inline]
- n_tty_receive_buf_common+0x1e76/0x2b60 drivers/tty/n_tty.c:1738
- n_tty_receive_buf2+0x34/0x40 drivers/tty/n_tty.c:1773
- tty_ldisc_receive_buf+0xb1/0x1a0 drivers/tty/tty_buffer.c:441
- tty_port_default_receive_buf+0x73/0xa0 drivers/tty/tty_port.c:39
- receive_buf drivers/tty/tty_buffer.c:461 [inline]
- flush_to_ldisc+0x21c/0x400 drivers/tty/tty_buffer.c:513
- process_one_work+0x9ae/0x14b0 kernel/workqueue.c:2282
- worker_thread+0x622/0x1320 kernel/workqueue.c:2428
- kthread+0x396/0x470 kernel/kthread.c:313
- ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:299
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Vasiliy Kovalev <kovalev@altlinux.org>
----
- drivers/tty/tty_buffer.c   | 5 +++--
- include/linux/tty_buffer.h | 1 +
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 79f0ff94ce00da..e777bd5f3a2fca 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -226,7 +226,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
- 
- 	atomic_inc(&buf->priority);
- 
--	mutex_lock(&buf->lock);
-+	mutex_lock(&buf->flush_mtx);
- 	/* paired w/ release in __tty_buffer_request_room; ensures there are
- 	 * no pending memory accesses to the freed buffer
- 	 */
-@@ -241,7 +241,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
- 		ld->ops->flush_buffer(tty);
- 
- 	atomic_dec(&buf->priority);
--	mutex_unlock(&buf->lock);
-+	mutex_unlock(&buf->flush_mtx);
- }
- 
- /**
-@@ -577,6 +577,7 @@ void tty_buffer_init(struct tty_port *port)
- {
- 	struct tty_bufhead *buf = &port->buf;
- 
-+	mutex_init(&buf->flush_mtx);
- 	mutex_init(&buf->lock);
- 	tty_buffer_reset(&buf->sentinel, 0);
- 	buf->head = &buf->sentinel;
-diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-index 31125e3be3c55e..cea4eacc3b70d3 100644
---- a/include/linux/tty_buffer.h
-+++ b/include/linux/tty_buffer.h
-@@ -35,6 +35,7 @@ static inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)
- struct tty_bufhead {
- 	struct tty_buffer *head;	/* Queue head */
- 	struct work_struct work;
-+	struct mutex	   flush_mtx;	/* For use in tty_buffer_flush() */
- 	struct mutex	   lock;
- 	atomic_t	   priority;
- 	struct tty_buffer sentinel;
--- 
-2.33.8
+Thanks
+  -- Christoph 
 
