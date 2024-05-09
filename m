@@ -1,46 +1,46 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43D32D528;
-	Thu,  9 May 2024 06:31:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF17624;
+	Thu,  9 May 2024 06:41:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715236267; cv=none; b=aIcPTvybErnHcNiZeGpNVZb5H9uzbsY806+JNELy4FsZoZ4v0x/hXzhwiQXUZi5n9M9JvNHYdxHE2vZQov5K9vhu+ylGs4Z5XX8ERg7GRzlvXghTR/OwLRldS+mFAwpGwcH0mYJc+p16ytXgRUZ/P+mdQMpfOX4OYA5WPLYBdtM=
+	t=1715236883; cv=none; b=La7A0/Bv3hlbpQIWR5/cJgRAjA2gls3cTflowjMLLiGWyTUwssYGCxUKE5eT4AFX94m+m7MA7hz8MhII9Gl0+5ICmzaWDU1ya/zVHRkiWZaQ80Rpu55BP1kcAfbEX3ks8bA9mcSzetejfTie4gHra2+dtgfEFx8Aqfv2gdHpQ4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715236267; c=relaxed/simple;
-	bh=sR91nbWIRwOyq6K9ElyuyadwZV3hd1M+0aO46y81gUw=;
+	s=arc-20240116; t=1715236883; c=relaxed/simple;
+	bh=oRK+r+QFI/xe8d51/zCXf0KG6fsVEb0onJS00AWFRMo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Sk5Di5Ptmw/qOZ2BbnIjVt6JXZxohPdFknftw6xN8Ynn0nlvkObLDsYAEeJAcusfw602Tifqo6nOLChP6ACzI4dOp/V7Pw6OM+gJBv9gRmC+usBT8TE2OFNt3Jy5oJKKbtNuaW/nFk7XnVHjhrFed8vpKaUnzXAkOKEAQe2sCNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.41
+	 In-Reply-To:Content-Type; b=fgix6I2wyaEdVHYpsCaoWn2dNqfrIY+t6FwrLYymLui+F5SmBc3oN81KtQm7xFZKiTGcATJ1SyBGMNbX+hD/QkyZ6/k4kqiurLAlvJplYVnzGZxrAdpnILqutibOYHHkECmujTNN7ic3lgSqF3kdTS1wFZdxd/uGtyCouMc0KU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-34db6a29a1eso416372f8f.1;
-        Wed, 08 May 2024 23:31:05 -0700 (PDT)
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-41adf155cffso4231015e9.2;
+        Wed, 08 May 2024 23:41:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715236263; x=1715841063;
+        d=1e100.net; s=20230601; t=1715236880; x=1715841680;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iwtvTU9dGUsxu7W/GoS4WNvaRYIcCkqPS/0Zbq6tVQ8=;
-        b=qCGjzBEdIXKHbK+p07WfseF01GyGzb/gLkx0cPzTkQRZ7S8yum0PXdtfCOOKR3m6ay
-         MfTHaH9i9MsjbBmojo6+TFQlGsFTMImH6ipCtB27whXysly6OUoTcLj5uSLrvPzfsSSs
-         rWGEQouo8IxzLu3jcyXuDOEl4bjE1mOld7SoopLJehu/twd3CkgVgJr+YY8KJjLQs58N
-         Qe7liUDmDKGnYFzGEltCYY7+GjJ/P4vc8CoJR0l81kAddxvRkR9hCHB4GCZ2BDvsJgHO
-         I+6XOXxCfgiFpSWzH3FDyFvq80KL0kYz1tmx2O/DziKBacXoKj3NEnkjAnibJSSC6GsB
-         GiEA==
-X-Forwarded-Encrypted: i=1; AJvYcCUZcFBDnpeSHa5TuTic2f3Gc6b5mbjBB6Z3QSmrI6FAT3TAnWCwXLlY6WdgElBkzN+SRN33dAZ/Hf+OYKq8XOS4YqyJaGr+5Pwu2Noz
-X-Gm-Message-State: AOJu0YxYPw76aadJ6pQv4q4SojrwpmRXJNxS1OsNz5T2xMavF/7YCWa7
-	H9BAUhMD/9XVscgkcG+vIZ4KJfJPo7eY7tplpLD56q1mt0XL8qxo
-X-Google-Smtp-Source: AGHT+IGBHtp5fkttoPxbAN5MSJVlWFzCxprEicfYj7+RDXM7lxtsi5BISTb6L83Noc0GVY5FtQ86ag==
-X-Received: by 2002:a5d:4571:0:b0:34a:cc2:1a34 with SMTP id ffacd0b85a97d-34fca2448b7mr3367482f8f.42.1715236263404;
-        Wed, 08 May 2024 23:31:03 -0700 (PDT)
+        bh=OtZke5GvRA5Q1ygOLdEqDZhz3gKzUkn+WkX6FZdmhDA=;
+        b=KkH2SE1VP/3U5raiAwmLeDaE+6FqcfFE+v7FoHedoCCHiILLdk7XsjfOcxTCJK4jb1
+         hkYOJ5KY8tbMA21iXehBiTm+s01JAqJO423WCgtpNWihZ2fm9EBEumFzU0BjQCbPLrSA
+         1NY0foNlgGRMY3gmxPFybZXh0Lq23sN2/6XDx5AmM08ED+WOzF4X39rTMpv+3/QM6iTf
+         JxRIrsR7PGPSiVXq0Qr433czIjak1JIgvpxMU6Ktsk9H9lTx3/pYg57T9nDQC8u1Blgr
+         G0xKkk5sZtblaICUM/aY+n5aj1GzjqJDzwpDWKLDAmzZClwkaueCejNSkNOksTs+3nTU
+         rYkg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVIott+ugw3MhU8GnPT/mAYDSnzuKyLj9lv5NfohFy78T9t2N9i28xnpEgLnR9xwzmpkjzZ0DkYSSTI6mUy7T3S6M59on4/+anO6esYjpbCAvZfJwScL7fpaB7wHh7ZkgnkQ/+WLyudMUyoB4pBCGpCZ6sD7fy+gzjF6Z44g/QJFmL
+X-Gm-Message-State: AOJu0Yzpp/OGiUJFKpmzV9xTxvBweTZTQIO4ZJJtqfyNvonZGL5K36Mv
+	rEbO+u7Dkj8uR4jw6YJLkpNTZX0SgoI0n/duULPzYFOWMHyBqOUInhvnzA==
+X-Google-Smtp-Source: AGHT+IHM0oiKR2ualZSIpF7ByJMGe0bpbn4VxgTpK1NX2n4lzsiPH/7eTUFazXmgoVk9hUf8oVtwaw==
+X-Received: by 2002:a05:600c:4706:b0:41e:7a1a:d626 with SMTP id 5b1f17b1804b1-41f721b046emr40784725e9.31.1715236880236;
+        Wed, 08 May 2024 23:41:20 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3502b79bc83sm794033f8f.16.2024.05.08.23.31.02
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-41f87d2045asm47797715e9.27.2024.05.08.23.41.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 May 2024 23:31:02 -0700 (PDT)
-Message-ID: <f7775510-09d8-41ef-97b2-0457e721a9ec@kernel.org>
-Date: Thu, 9 May 2024 08:31:02 +0200
+        Wed, 08 May 2024 23:41:19 -0700 (PDT)
+Message-ID: <e167d14c-76d3-46b4-aca5-b6003f9cbfc1@kernel.org>
+Date: Thu, 9 May 2024 08:41:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,13 +48,12 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: vt: saturate scrollback_delta to avoid overflow
-To: Justin Stitt <justinstitt@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Nathan Chancellor <nathan@kernel.org>, Bill Wendling <morbo@google.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- llvm@lists.linux.dev
-References: <20240506-b4-sio-scrollback-delta-v1-1-4164d162a2b8@google.com>
+Subject: Re: [PATCH] tty: Fix possible deadlock in tty_buffer_flush
+To: kovalev@altlinux.org, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: lvc-project@linuxtesting.org, dutyrok@altlinux.org,
+ oficerovas@altlinux.org, stable@vger.kernel.org
+References: <20240508093005.1044815-1-kovalev@altlinux.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -99,92 +98,60 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240506-b4-sio-scrollback-delta-v1-1-4164d162a2b8@google.com>
+In-Reply-To: <20240508093005.1044815-1-kovalev@altlinux.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 06. 05. 24, 20:55, Justin Stitt wrote:
-> Using the signed overflow sanitizer with syzkaller produces this UBSAN
-> report:
+On 08. 05. 24, 11:30, kovalev@altlinux.org wrote:
+> From: Vasiliy Kovalev <kovalev@altlinux.org>
 > 
-> [   31.304043] ------------[ cut here ]------------
-> [   31.304048] UBSAN: signed-integer-overflow in ../drivers/tty/vt/vt.c:309:19
-> [   31.304055] -2147483648 + -1073741824 cannot be represented in type 'int'
-> [   31.304066] CPU: 1 PID: 3894 Comm: syz-executor Not tainted 6.8.0-rc2-00035-gb3ef86b5a957 #1
-> [   31.304073] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-> [   31.304077] Call Trace:
-> [   31.304080]  <TASK>
-> [   31.304083]  dump_stack_lvl+0x93/0xd0
-> [   31.304177]  handle_overflow+0x171/0x1b0
-> [   31.304186]  scrollfront+0xcb/0xd0
-> [   31.304196]  tioclinux+0x3cc/0x450
-> [   31.304205]  tty_ioctl+0x7fc/0xc00
-
-The rest of the stack trace can be trimmed:
-
-> [   31.304212]  ? __pfx_tty_ioctl+0x10/0x10
-> [   31.304219]  __se_sys_ioctl+0xe0/0x140
-> [   31.304228]  do_syscall_64+0xd7/0x1b0
-> [   31.304236]  ? arch_exit_to_user_mode_prepare+0x11/0x60
-> [   31.304244]  entry_SYSCALL_64_after_hwframe+0x6f/0x77
-> [   31.304254] RIP: 0033:0x7fc3902ae539
-> [   31.304263] Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 f1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 8
-> [   31.304282] RSP: 002b:00007ffc8a457998 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [   31.304289] RAX: ffffffffffffffda RBX: 00007fc3903e2f80 RCX: 00007fc3902ae539
-> [   31.304293] RDX: 0000000020000040 RSI: 000000000000541c RDI: 0000000000000003
-> [   31.304297] RBP: 00007fc39030d496 R08: 0000000000000000 R09: 0000000000000000
-> [   31.304300] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> [   31.304304] R13: 0000000000000800 R14: 00007fc3903e2f80 R15: 00007fc3903e2f80
-> [   31.304310]  </TASK>
-> [   31.304371] ---[ end trace ]---
+> A possible scenario in which a deadlock may occur is as follows:
 > 
-> This is caused by the scrollback_delta overflowing. Historically, the
-> signed integer overflow sanitizer did not work in the kernel due to its
-> interaction with `-fwrapv` but this has since been changed [1] in the
-> newest version of Clang; It being re-enabled in the kernel with Commit
-> 557f8c582a9ba8ab ("ubsan: Reintroduce signed overflow sanitizer").
+> flush_to_ldisc() {
 > 
-> Note that it would be difficult to reproduce this bug in a non-fuzzing
-> scenario as it requires inputting tons of scroll inputs via keyboard
-> before the scheduled console callback has had a chance to update.
-> Nonetheless, let's saturate scrollback_delta so it stays clamped to
-> integer bounds without wrapping around.
-
-And what is actually broken, given signed overflow is well defined under 
-the -fwrapv wings?
-
-> [1]: https://github.com/llvm/llvm-project/pull/82432
+>    mutex_lock(&buf->lock);
 > 
-> Closes: https://github.com/KSPP/linux/issues/351
-> Signed-off-by: Justin Stitt <justinstitt@google.com>
-> ---
-> Note: I am using Kees' SIO tree as a base:
-> https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/log/?h=dev/v6.8-rc2/signed-overflow-sanitizer
-> ---
->   drivers/tty/vt/vt.c | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
+>    tty_port_default_receive_buf() {
+>      tty_ldisc_receive_buf() {
+>        n_tty_receive_buf2() {
+> 	n_tty_receive_buf_common() {
+> 	  n_tty_receive_char_special() {
+> 	    isig() {
+> 	      tty_driver_flush_buffer() {
+> 		pty_flush_buffer() {
+> 		  tty_buffer_flush() {
 > 
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index 9b5b98dfc8b4..b4768336868e 100644
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-> @@ -308,7 +308,14 @@ static inline void scrolldelta(int lines)
->   	/* FIXME */
->   	/* scrolldelta needs some kind of consistency lock, but the BKL was
->   	   and still is not protecting versus the scheduled back end */
-> -	scrollback_delta += lines;
-> +
-> +	/* saturate scrollback_delta so that it never wraps around */
-> +	if (lines > 0 && unlikely(INT_MAX - lines < scrollback_delta))
-> +		scrollback_delta = INT_MAX;
-> +	else if (lines < 0 && unlikely(INT_MIN - lines > scrollback_delta))
-> +		scrollback_delta = INT_MIN;
-> +	else
-> +		scrollback_delta += lines;
+> 		    mutex_lock(&buf->lock); (DEADLOCK)
+> 
+> flush_to_ldisc() and tty_buffer_flush() functions they use the same mutex
+> (&buf->lock), but not necessarily the same struct tty_bufhead object.
 
-NACK, this is horrid.
+"not necessarily" -- so does it mean that it actually can happen (and we 
+should fix it) or not at all (and we should annotate the mutex)?
 
-Introduce a helper for this in overflow.h if we have none yet.
+> However, you should probably use a separate mutex for the
+> tty_buffer_flush() function to exclude such a situation.
+...
+
+> Cc: stable@vger.kernel.org
+
+What commit does this fix?
+
+> --- a/drivers/tty/tty_buffer.c
+> +++ b/drivers/tty/tty_buffer.c
+> @@ -226,7 +226,7 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+>   
+>   	atomic_inc(&buf->priority);
+>   
+> -	mutex_lock(&buf->lock);
+> +	mutex_lock(&buf->flush_mtx);
+
+Hmm, how does this protect against concurrent buf pickup. We free it 
+here and the racing thread can start using it, or?
+
+>   	/* paired w/ release in __tty_buffer_request_room; ensures there are
+>   	 * no pending memory accesses to the freed buffer
+>   	 */
 
 thanks,
 -- 
