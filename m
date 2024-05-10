@@ -1,225 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C78914B08C;
-	Fri, 10 May 2024 14:39:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC020446BD
+	for <linux-serial@vger.kernel.org>; Fri, 10 May 2024 16:13:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715351969; cv=none; b=TWjeIPYKDWrDPN3SC+MhbQS7FV99CPwfB3CM7yVq0F3PvVno0PgGecHZFuU2go7WXYXXsw9IiHVNjbwKzfPeB18qLQ2x3N22daO6HsxcUfuzCwXuq9RE5M3g+3iva3Q+PLiLLU9khkLPUxZ9CrB7oOfYbLoDu1EVvRaWh+LgejE=
+	t=1715357630; cv=none; b=u6FRQQ0rxa7eYqzKM1UY+1avm8lBWqr9c7H2A4svUZMkFBwMk9pgxqcYcrEhdsKwwnsyKLecW315oAYBaClop5Sa7fJv/JNW2CaIaVPVkOX7tNijbuk0dtIJ9Huhu9xgVieB2r8Lg8mX3+Uo8b8afVz9pFxSBobi9vZIMnTH8rg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715351969; c=relaxed/simple;
-	bh=1mZQpCNgLHeL3u0oeK2XgbI336g5gF4n4i2zz/VMjDM=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=OLE8PG9JQDp1PtCNlVC31oFKvsdP4KQFk6nmFHzTHWx3stVOvessrHl9J3y9ZgOBm0rsYUSc7u9WE7BzEqKS8iv1Qnwj4qGDJriUDG0SewbqYmEBml5Lf9FLnH7ZRJXWMI1N2nCNV59TbLApbeVt83fIgwFE5HHOBcCrqHw7PtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SvXgBHQj; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1715357630; c=relaxed/simple;
+	bh=b2Vtp/c0wZElNrbeWZjvkBtkRs6Hnk/JEEfb33UNJTE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mZahnmpGpaUAec17bLmyY9SjuNN+G4oRhomlQyA70uMtS+JrteqeUn3gpsDOchvPAYC4/9yZycA0hVjXMGI5s457aL+ZtZDYw0qay/qfoEk/07MaVc0UBvG2ZnpRIjKDlc5CcFb0JlKNV9sz0bbVZMdNqD5hwlms+OM4qRURatY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vbVW3k8b; arc=none smtp.client-ip=209.85.222.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SvXgBHQj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715351967; x=1746887967;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=1mZQpCNgLHeL3u0oeK2XgbI336g5gF4n4i2zz/VMjDM=;
-  b=SvXgBHQjNX2wMKP4lWONzlnSFTJLCH/2xHX8FqcTNZAT2bMcq57W5RJO
-   Pc3O6bsEelc00UYinwyX0VwvRCdOG5mTCoNy5QlC3Hdq8zjHm7NhcXPFi
-   i8VL7mcYLT3bEPxAVSnFDtS+Vn2mSKRo63NZSj+qtYtbzVvFD+Fd0IMLb
-   Ch7TqGyrVAA3Cx9TWgdyKfRBDiNbhvixFswQ7yKwHCt37AEJgGa8uoWxZ
-   ag7xehK04+b1oavmd7My5IQOlcQYRBGrgTJ81JmkSlSGxknw2s6QIzeq3
-   6FIVVYftIBGdriv2M/beQw88fGYPXxQXcM2KRMVPHqtbRi5Tk5MisojRH
-   Q==;
-X-CSE-ConnectionGUID: VH9LRxpWTqmMk5oEfLJ9fA==
-X-CSE-MsgGUID: 10qs1WjSSCSOscoBysG28w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="22006598"
-X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
-   d="scan'208";a="22006598"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 07:39:26 -0700
-X-CSE-ConnectionGUID: VVDy6M/OSrqsiWz0tSC0nA==
-X-CSE-MsgGUID: uxmhq12gTaSaAmPHBnqdFA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
-   d="scan'208";a="30018377"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.85])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 07:39:19 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 10 May 2024 17:39:14 +0300 (EEST)
-To: Christoph Fritz <christoph.fritz@hexdev.de>
-cc: Jiri Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Marc Kleine-Budde <mkl@pengutronix.de>, 
-    Oliver Hartkopp <socketcan@hartkopp.net>, 
-    Vincent Mailhol <mailhol.vincent@wanadoo.fr>, 
-    "David S . Miller" <davem@davemloft.net>, 
-    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
-    Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>, 
-    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-    Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
-    Benjamin Tissoires <bentiss@kernel.org>, 
-    Sebastian Reichel <sre@kernel.org>, 
-    Linus Walleij <linus.walleij@linaro.org>, 
-    Andreas Lauser <andreas.lauser@mercedes-benz.com>, 
-    Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
-    linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
-    devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v4 10/11] can: lin: Support setting LIN mode
-In-Reply-To: <20240509171736.2048414-11-christoph.fritz@hexdev.de>
-Message-ID: <b796b3ac-df5e-e39a-7ae2-db7b7829abaa@linux.intel.com>
-References: <20240509171736.2048414-1-christoph.fritz@hexdev.de> <20240509171736.2048414-11-christoph.fritz@hexdev.de>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vbVW3k8b"
+Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-7f395ac5b16so1100261241.0
+        for <linux-serial@vger.kernel.org>; Fri, 10 May 2024 09:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1715357628; x=1715962428; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b2Vtp/c0wZElNrbeWZjvkBtkRs6Hnk/JEEfb33UNJTE=;
+        b=vbVW3k8b8CuwO2i4y7DDdC8Zwd2VUBt/1Fkc+zhxmi9mpiZMYHAFMTQD9krnxYe7G+
+         akkK50WuYKHhx9/u43UnUnHzOMvAyOFKR0KrFqSRUobcdQa6M328zG+E0tkvEb9ZCjI3
+         95IRkok8ieJxRhYsRu6rEX5tnTRrp2Tc6mvT9M4jFh8/SjRFd5HQ7Fyi9Ho+oBlguplM
+         x/pGU0nwEeXsDsJTyWSI5VMHuM5M1g2Qr60VzLE3l7L4CzgE7MAjwyt2Yb/Dmsq0ifft
+         JLOvhguhIHVRXEnstaEBbJcWtNgLsomGjZCEbU96Ps67w6eIME6CBgHnIpkHt+wbIo9I
+         /+vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715357628; x=1715962428;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=b2Vtp/c0wZElNrbeWZjvkBtkRs6Hnk/JEEfb33UNJTE=;
+        b=IoYy94hmTza2cdNRzXbo2eY6bE8AqaVNGDUUC4cPtrv1FAQr7nOmh0cW/HObvn5Eve
+         3+lWYp0M5NmOExTRWLZTASST9Ml8LP5ewl2ASjnk95zQsCvSOf0dG1DQ+i6xCyCAUgHM
+         dAIiCfvhs4mh2zIAuadzMa0elsJeJEwOHjdFtM2zBYGQwK/1N877SFIH6OMmlYE77cAW
+         Kr0hvM4Ec1UA671Hdom2/vo3nlSlkxdQrvxi7G6yvKwlSNlqBZK9sK6N6Zm7/xcC6dBo
+         tB9MrwijRzOV8GFslUGRYCVSQ6RBeY+/FsRkBjCk3pZmvN5WWX94phAJRrXc6U98i0r4
+         82RA==
+X-Forwarded-Encrypted: i=1; AJvYcCVuDDff3I5wdvyxPCfiZjg0OX9ZahakfGJsNopiuqa5D+Kw/T6F09ITPrmWiEtL8MuXobKIfa7Vhi9Xvnj29SwLqYv6qmj93enjsm+A
+X-Gm-Message-State: AOJu0Yw9ezTJGdRDlH7XanYLvEyZpjYCl9v2U3qxbBK11OU5UaybpxCi
+	xILPX56VFNHjMDjPO8B3NsDnQDeGbQZn9E2om7SCZryqP9vrHfveNsECdWLET/Syey8FbgOSQMN
+	pce2tv25UQk1XGdftiLA1Y7I6O+o9mfp/Z7jR
+X-Google-Smtp-Source: AGHT+IG41/Va6A/PicQEwVzYdPo29oFPCeD2uQQ0q6aGV6VfwkSy/QFh16mwRnTYc1WroFao7pdgMaWgVuqXaACix2Q=
+X-Received: by 2002:a67:ec0a:0:b0:47b:ab0d:b3f2 with SMTP id
+ ada2fe7eead31-47fabb4fafcmr5674759137.9.1715357626878; Fri, 10 May 2024
+ 09:13:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20240506-b4-sio-scrollback-delta-v1-1-4164d162a2b8@google.com> <2024051039-bankable-liking-e836@gregkh>
+In-Reply-To: <2024051039-bankable-liking-e836@gregkh>
+From: Justin Stitt <justinstitt@google.com>
+Date: Fri, 10 May 2024 09:13:34 -0700
+Message-ID: <CAFhGd8oo-th9bw-VQQAPva6_zNBHQjmOp+oEcaZOM4uk+xi-oQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: vt: saturate scrollback_delta to avoid overflow
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Bill Wendling <morbo@google.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 9 May 2024, Christoph Fritz wrote:
+On Fri, May 10, 2024 at 3:40=E2=80=AFAM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, May 06, 2024 at 06:55:19PM +0000, Justin Stitt wrote:
+> > Using the signed overflow sanitizer with syzkaller produces this UBSAN
+> > report:
+>
+> <snip>
+>
+> I think you might want to hold off on these until the discussion on the
+> hardening list about overflows all settles down to a solid resolution.
+> Right now these all seem to be a mess and perhaps you will have a better
+> set of primitives to work with once that thread is finished.
 
-> A LIN node can work as commander or responder, so introduce a new
-> control mode (CAN_CTRLMODE_LIN_COMMANDER) for configuration.
-> 
-> This enables e.g. the userland tool ip from iproute2 to turn on
-> commander mode when the device is being brought up.
-> 
-> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
-> ---
->  drivers/net/can/lin.c            | 40 +++++++++++++++++++++++++++++++-
->  include/net/lin.h                |  7 ++++++
->  include/uapi/linux/can/netlink.h |  1 +
->  3 files changed, 47 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/can/lin.c b/drivers/net/can/lin.c
-> index f77abd7d7d21c..03ddf5d5a31b8 100644
-> --- a/drivers/net/can/lin.c
-> +++ b/drivers/net/can/lin.c
-> @@ -262,11 +262,40 @@ static netdev_tx_t lin_start_xmit(struct sk_buff *skb,
->  	return NETDEV_TX_OK;
->  }
->  
-> +static int lin_update_mode(struct net_device *ndev)
-> +{
-> +	struct lin_device *ldev = netdev_priv(ndev);
-> +	u32 ctrlmode = ldev->can.ctrlmode;
-> +	enum lin_mode lm;
-> +	int ret = 0;
-> +
-> +	lm = (ctrlmode & CAN_CTRLMODE_LIN_COMMANDER) ? LINBUS_COMMANDER :
-> +						       LINBUS_RESPONDER;
-> +	if (ldev->lmode != lm) {
-> +		if (!ldev->ldev_ops->update_lin_mode) {
-> +			netdev_err(ndev, "setting lin mode unsupported\n");
+Agreed.
 
-In user visible messages, it would be best to use the expected 
-capitalization, which I suppose is LIN given you use capitals in the 
-commit message yourself?
+I came to the same conclusion once I reached fs/*.
 
-> +			return -EINVAL;
-> +		}
-> +		ret = ldev->ldev_ops->update_lin_mode(ldev, lm);
-> +		if (ret) {
-> +			netdev_err(ndev, "Failed to set lin mode: %d\n", ret);
+Let's see how folks want to go forward with handling wraparound :thumbs_up:
 
-Ditto.
+>
+> thanks,
+>
+> greg k-h
 
-There might be other cases in any of the patches, please check.
-
-> +			return ret;
-> +		}
-> +		ldev->lmode = lm;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  static int lin_open(struct net_device *ndev)
->  {
->  	struct lin_device *ldev = netdev_priv(ndev);
->  	int ret;
->  
-> +	ret = lin_update_mode(ndev);
-> +	if (ret)
-> +		return ret;
-> +
->  	ldev->tx_busy = false;
->  
->  	ret = open_candev(ndev);
-> @@ -443,7 +472,7 @@ struct lin_device *register_lin(struct device *dev,
->  	ndev->sysfs_groups[0] = &lin_sysfs_group;
->  	ldev->can.bittiming.bitrate = LIN_DEFAULT_BAUDRATE;
->  	ldev->can.ctrlmode = CAN_CTRLMODE_LIN;
-> -	ldev->can.ctrlmode_supported = 0;
-> +	ldev->can.ctrlmode_supported = CAN_CTRLMODE_LIN_COMMANDER;
->  	ldev->can.bitrate_const = lin_bitrate;
->  	ldev->can.bitrate_const_cnt = ARRAY_SIZE(lin_bitrate);
->  	ldev->can.do_set_bittiming = lin_set_bittiming;
-> @@ -458,6 +487,15 @@ struct lin_device *register_lin(struct device *dev,
->  		goto exit_candev;
->  	}
->  
-> +	ldev->lmode = LINBUS_RESPONDER;
-> +	if (ldev->ldev_ops->update_lin_mode) {
-> +		ret = ldev->ldev_ops->update_lin_mode(ldev, ldev->lmode);
-> +		if (ret) {
-> +			netdev_err(ndev, "updating lin mode failed\n");
-
-Ditto.
-
-> +			goto exit_candev;
-> +		}
-> +	}
-> +
->  	ret = register_candev(ndev);
->  	if (ret)
->  		goto exit_candev;
-> diff --git a/include/net/lin.h b/include/net/lin.h
-> index 31bb0feefd188..63ac870a0ab6f 100644
-> --- a/include/net/lin.h
-> +++ b/include/net/lin.h
-> @@ -36,6 +36,11 @@ struct lin_attr {
->  	struct lin_device *ldev;
->  };
->  
-> +enum lin_mode {
-> +	LINBUS_RESPONDER = 0,
-> +	LINBUS_COMMANDER,
-> +};
-> +
->  struct lin_device {
->  	struct can_priv can;  /* must be the first member */
->  	struct net_device *ndev;
-> @@ -45,6 +50,7 @@ struct lin_device {
->  	struct work_struct tx_work;
->  	bool tx_busy;
->  	struct sk_buff *tx_skb;
-> +	enum lin_mode lmode;
->  };
->  
->  enum lin_checksum_mode {
-> @@ -71,6 +77,7 @@ struct lin_device_ops {
->  	int (*ldo_open)(struct lin_device *ldev);
->  	int (*ldo_stop)(struct lin_device *ldev);
->  	int (*ldo_tx)(struct lin_device *ldev, const struct lin_frame *frame);
-> +	int (*update_lin_mode)(struct lin_device *ldev, enum lin_mode lm);
->  	int (*update_bitrate)(struct lin_device *ldev, u16 bitrate);
->  	int (*update_responder_answer)(struct lin_device *ldev,
->  				       const struct lin_responder_answer *answ);
-> diff --git a/include/uapi/linux/can/netlink.h b/include/uapi/linux/can/netlink.h
-> index a37f56d86c5f2..cc390f6444d59 100644
-> --- a/include/uapi/linux/can/netlink.h
-> +++ b/include/uapi/linux/can/netlink.h
-> @@ -104,6 +104,7 @@ struct can_ctrlmode {
->  #define CAN_CTRLMODE_TDC_AUTO		0x200	/* CAN transiver automatically calculates TDCV */
->  #define CAN_CTRLMODE_TDC_MANUAL		0x400	/* TDCV is manually set up by user */
->  #define CAN_CTRLMODE_LIN		BIT(11)	/* LIN bus mode */
-> +#define CAN_CTRLMODE_LIN_COMMANDER	BIT(12)	/* LIN bus specific commander mode */
->  
->  /*
->   * CAN device statistics
-> 
-
--- 
- i.
-
+Thanks
+Justin
