@@ -1,37 +1,63 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B1621340;
-	Fri, 10 May 2024 11:13:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 359FB12C54B;
+	Fri, 10 May 2024 13:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715339584; cv=none; b=e66+yxDswLh4DThGRn5BY0ehRS6edL2WqDijlYpcp6o7DkvEytv7RGCFNETaLLnMdwtwitz2ikoTamlZTxJ1YZVQ9r773Nhdx6qyteIwZL5VNLqjpaZeMCwjpU9fDCTc/yjFZUJ7+xX9BfM/DUdNcp0nUp9iL0dHZyN2VhObUkI=
+	t=1715346101; cv=none; b=nGz4IweJmTFjAu4121rRxmxPkHfSUfz1Fxtuxz1/bj4+8hPoUinOhgA+/dMUE6rXpCZOiVRFBbRF62NDQNoP0bwMPgkqTGUigyEmkSsujtLAier9gWQkFaopnn1Hc1q4Llp+IF4ofrVKRzzAxy6bSwTE4pZ7EB/uxdbqXzQG8AI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715339584; c=relaxed/simple;
-	bh=ufReI0DgAjAMcbDug6FfffvNjd489WOvC5sRGF+O78o=;
+	s=arc-20240116; t=1715346101; c=relaxed/simple;
+	bh=njd3zUm5tRBduH0NHuwBDQT5jxTP3Aji7ivXBeqbQV4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hc899Lf2jhrTyYPgntktOYrX704Uuut8f8LTkU9WHgLeEIOvhJezLMOsPHCybhfuBTa0pALA9RZwlBjGDY4jEGeN1oCjVvnAORzKf6aMsT8CynXdnEwiHk7XupC0/U/MFmPbE+D23QTpq0m5S2pbO67ey1A0V9TgapQ3p7/xBIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Wv8HD1Xs; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=qtA+Qh0cejcHb61KeE6hpDeU90kUiZgCk3sNA15mSpY7cgQ2kxmcKc/jRJGmn6NaMNZp9fbj8XbmAogL/dCiPrKZNzgSowkXs3L0cHWuxf9KgCVfKgt/kYc8SH7xEYqXqffqkaJ6R4GNbyn0rxCXk0q5Ar85ByDxGSCpdG1ms2A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tty6s3a0; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Wv8HD1Xs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D58C113CC;
-	Fri, 10 May 2024 11:13:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1715339583;
-	bh=ufReI0DgAjAMcbDug6FfffvNjd489WOvC5sRGF+O78o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Wv8HD1XsRWe88oAkKVzUe2W1q7/7ed/sZgQ57tcPZP8w6n+wMPWOYtkWJBmBY2PFA
-	 CZWRhR+09ftTacjEx+Ck1pi6g2Zyj7jAenEwnsPcD3XWiqJA7G82eLjglxMlMC6Q4p
-	 vjKYCpg6SGz/UKiKr6wZBhPU06xOGUh/Wl/lqxQw=
-Date: Fri, 10 May 2024 12:13:00 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-Message-ID: <2024051046-decimeter-devotee-076a@gregkh>
-References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tty6s3a0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715346100; x=1746882100;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=njd3zUm5tRBduH0NHuwBDQT5jxTP3Aji7ivXBeqbQV4=;
+  b=Tty6s3a0L5y/BhDfzTtkGQemob2dJEKgxUD4RODVD+sePAv4Ff5FITBs
+   AcHPw1aYyXJjodGZVyixymTnnORYmjjtxDMNHkfsWylpPhoH3XIgnI697
+   1MW/qU8GR7PdopLI+tXGVwlogLfMqVDsrjvMhUDg3SKdxBwlwmFTpoggv
+   F2FLAVhQetWorcGnY5UCAIBOaIVTN5Yq+Rum8DAr+wuuHmAk9AFKBtwim
+   RTIGSlj/LQGzumtJLBWU61ZLIv6kdm7VRto3LE2dWNSROHoQNrLA40H6i
+   Scqhtim4hrPqO2mPWEm+Y4jMxeOZbSirvffPmnz4NTqrQ8uyYsoyZOhyn
+   w==;
+X-CSE-ConnectionGUID: NkA43NSjQIqw3uLK66EOoQ==
+X-CSE-MsgGUID: tog0ODRKS8iLRZGy5X1mqA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="15136361"
+X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
+   d="scan'208";a="15136361"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 06:01:39 -0700
+X-CSE-ConnectionGUID: ZAA2yO3yRUCp7wLNG7BJiw==
+X-CSE-MsgGUID: 0yjpahTXSPaJw7mUL6Na7w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,151,1712646000"; 
+   d="scan'208";a="52819266"
+Received: from bgurrier-mobl1.ger.corp.intel.com (HELO tlindgre-MOBL1) ([10.252.35.51])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 06:01:35 -0700
+Date: Fri, 10 May 2024 16:01:22 +0300
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
+	Maximilian Luz <luzmaximilian@gmail.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org,
+	Weifeng Liu <weifeng.liu.z@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] serial: Clear UPF_DEAD before calling
+ tty_port_register_device_attr_serdev()
+Message-ID: <Zj4aoqqsRq5A5Qvg@tlindgre-MOBL1>
+References: <20240509141549.63704-1-hdegoede@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,50 +66,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+In-Reply-To: <20240509141549.63704-1-hdegoede@redhat.com>
 
-On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
-> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
-> of serial core port device") changed the hierarchy of serial port devices
-> and device_find_child_by_name cannot find ttyS* devices because they are
-> no longer directly attached. Add some logic to restore symlinks creation
-> to the driver for OCP TimeCard.
+On Thu, May 09, 2024 at 04:15:49PM +0200, Hans de Goede wrote:
+> If a serdev_device_driver is already loaded for a serdev_tty_port when it
+> gets registered by tty_port_register_device_attr_serdev() then that
+> driver's probe() method will be called immediately.
 > 
-> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
-> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-> ---
-> v2:
->  add serial/8250 maintainers
-> ---
->  drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
->  1 file changed, 21 insertions(+), 9 deletions(-)
+> The serdev_device_driver's probe() method should then be able to call
+> serdev_device_open() successfully, but because UPF_DEAD is still dead
+> serdev_device_open() will fail with -ENXIO in this scenario:
+> 
+>   serdev_device_open()
+>   ctrl->ops->open()	/* this callback being ttyport_open() */
+>   tty->ops->open()	/* this callback being uart_open() */
+>   tty_port_open()
+>   port->ops->activate()	/* this callback being uart_port_activate() */
+>   Find bit UPF_DEAD is set in uport->flags and fail with errno -ENXIO.
+> 
+> Fix this be clearing UPF_DEAD before tty_port_register_device_attr_serdev()
 
-Hi,
+Looks OK to me:
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Reviewed-by: Tony Lindgren <tony.lindgren@linux.intel.com>
