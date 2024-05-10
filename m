@@ -1,99 +1,146 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A731292D5
-	for <linux-serial@vger.kernel.org>; Thu,  9 May 2024 22:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36F0161320;
+	Fri, 10 May 2024 09:31:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715292262; cv=none; b=i65gaS1ft+ZkYqKokouPvfa2iVCMlZWfIIg0kywdjpExSF4g1TN74nAg0jlaUa4sv88jTeJ5q510WDysW8KzmzgRyQBxC/EmMwhOF3Ki4VfGBvoSYXC1D/n9x0tRmUc7YQWW5W/D4e0M0ZAaaIrJjremRCh1gNr/8dlgor4vbTs=
+	t=1715333505; cv=none; b=ItpJItFN46twCQFDqtZpxk10lm4xBFGs8dNNZHxqiT1DiqMaQXkth5PooyzgrEEtPVOEg2XjvCBtqWqzjdFQ/R6D5hoa1QeqZ2LeYDHyH0rfsY8fVAs0WW4e5ckgW2EHAXo8NUPP8yhOfBFMHyT23WHtdEz9gz/AzjWglVkc/hU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715292262; c=relaxed/simple;
-	bh=OgJHhmIVrHJ1rqU9C9cLleVIC11QJQgCtRwBNIfc5aY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FYmeWL8kK9WVOR2ottUthdyjnIFjLT3ZXEc4hF7Amm6KZtdjmxyxckevPGqF0aDvI4OzlH0jlmlPf4Ko/C2qn+w8E3viMBCg/7uOqfOWyhchDwzQR3xltV4MN+kKwWPEc7pw4US3Yl7WaFcJ7hq7AxmIxMcDo/awBDzprpWnX24=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i7MkVkAM; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1715333505; c=relaxed/simple;
+	bh=CmhmnGOQuXsOk0dotnePWkVJo7uvjGnh1DT+ouho8lg=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=p+ujbxVxILWV0P7cNQiW6eHlZCaFFZgbTb4ORckQmS4EdAxhNHoTXLwA+MiXxFGvRSRxdPggxfKTJ85Oub4KrdYzcDFJukAOrphIi4XqpZPb3vs78acB0Clky+y7dVWpz9dmFVbqxKQd+aETVgKvfp0w3ZAMYZgatcySQnvABzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ezKgTlxb; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i7MkVkAM"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3c989d4e84dso910383b6e.0
-        for <linux-serial@vger.kernel.org>; Thu, 09 May 2024 15:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1715292260; x=1715897060; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eaMGWwE54MRwQe9MKn89HK8vqNbPvDPLq1+qzXPGB6k=;
-        b=i7MkVkAMBzPh/YgcMzJTj0BpTkhKa1M76CkeCG78rwjiARncOTqDqZeN0BjEQq9IGD
-         4Fg4h66nw7oSekJh9EP5cg8rMzW1P+Ast8qIBhgvNAzfvPOgS4vMgHvq+UijhdL6UaFn
-         hTsNpJ8+Pc/HQDCo0Dn/5EYm4+WdxPNsfeuxNxs33aIQaHi1CIyDISDI6kcwtWZSj6m4
-         MZDzdLZK1m6ZtPupVUwIMDkEv4kk0z4GRJ3ZkKRLYum3EytByCr92AkP4T5ZqGr03HyC
-         QkLu4CO9Oi080yDa+qq1YMICGGQZ+Bcf7PlOLkvW3nEIufZh6uZqwEwFeMXlwtPqO91u
-         Y1ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715292260; x=1715897060;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eaMGWwE54MRwQe9MKn89HK8vqNbPvDPLq1+qzXPGB6k=;
-        b=KVqKM/ylcdeN9XqIpqpdRwr3khsGUmpI5x4gSLiZzSn5ZiJr6s2wjgfxWcz4yS8qy5
-         J9frtJwueMlAlNbBZu1Q2/Mr3BoZaOyox0v9vR1fnC8aGGx6YkiY/+JStnxf5/GGO5m7
-         VP+TfQ8hN1Z0Hs2sEqIpEJl31WTrkxMq5YodG6uSLhvPu6yuuJ/F0zpYnyQxItRTUYSA
-         kjfbV7zyH8F+jtH3duy2IlV80shH3BX5F2jcAcsM1q0tSSIHx6O+dZYE63QYPznxwkkj
-         dCgs88+RJCddsiT6E7DiNeM7lnhYT5jySfdtBFKB1lZlqB/Q10HdFfl8DKEMBYArxN/A
-         /+cw==
-X-Forwarded-Encrypted: i=1; AJvYcCUnwLuJobir8EkRdxJiu5ywNe01nf6JAQDmbPKVIDt4yfS0EaMnh4bN93fIR10i23SRky1Y/3O78JmfDs8B7+XtWpLmE6CWTjNt3U4C
-X-Gm-Message-State: AOJu0YwNmFoRFtlPnC0Kj1D53f1rJUSHq4xQjOMCMy8WaoWf1PShqwAc
-	71DdciQORvZIQgDUXpXsME2JHl1hG2xJ27U8HUpWq+NHb/pdRA34vYDihWEZm0D9eSzUicBuace
-	R9c7kEFp43cPIhpbzWfmsJLha+QQiTzZgQ9nN
-X-Google-Smtp-Source: AGHT+IGOrX7CymOEEesjDKbsfowT/rCu7eZVPPyV31UhJCy/YotrYfiCNXVJAu6ojtjG96eAKvVU1kdO7vspfPuqgL4=
-X-Received: by 2002:a05:6808:1688:b0:3c7:41ba:102f with SMTP id
- 5614622812f47-3c997074664mr1087661b6e.34.1715292259867; Thu, 09 May 2024
- 15:04:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ezKgTlxb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715333504; x=1746869504;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=CmhmnGOQuXsOk0dotnePWkVJo7uvjGnh1DT+ouho8lg=;
+  b=ezKgTlxbFwImueLJ9bvzMAup2EEfcfX6LvJWdgk2y1pQAZCybhQcPxjO
+   7FpAOlsjNv6iW6XeCxB+ikHV73kpGRUuKxjgB5zWPX2DyKIt/TOYoI5RC
+   6hDkHbL1uGcDSkL2ZTx+T4emCZiEmg/54C7WUPPPxuf7tdanJzTP4NwBl
+   0qoiIzB5EdYFAp/soolIah0DNva01rARNQAhiLBltnw4+GZZlnwbDwSnP
+   wLrrnBregfS7Eh96851ch4SswPDCX8+rTOnlNjxQkSF6+2Jni5JNF/ro8
+   rtCwR3PoyDtm5eo6oC4vMLdz1Ac82FxS92kXlOXXsFVCHmpp2vFL4JtoY
+   Q==;
+X-CSE-ConnectionGUID: av0GeApZTOyJt9vUhbi0mA==
+X-CSE-MsgGUID: 50uVox6kTA2DAgW11d0DNQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11068"; a="15102054"
+X-IronPort-AV: E=Sophos;i="6.08,150,1712646000"; 
+   d="scan'208";a="15102054"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 02:31:43 -0700
+X-CSE-ConnectionGUID: ODFNwHZvR8OKLwhEHP4wkQ==
+X-CSE-MsgGUID: GUk6LxVGQcGmFr9T2LaERw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,150,1712646000"; 
+   d="scan'208";a="34092610"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.85])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 02:31:35 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 10 May 2024 12:31:31 +0300 (EEST)
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+cc: Jiri Slaby <jirislaby@kernel.org>, 
+    Oliver Hartkopp <socketcan@hartkopp.net>, 
+    Marc Kleine-Budde <mkl@pengutronix.de>, 
+    Vincent Mailhol <mailhol.vincent@wanadoo.fr>, 
+    "David S . Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>, 
+    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+    Benjamin Tissoires <bentiss@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Sebastian Reichel <sre@kernel.org>, 
+    Linus Walleij <linus.walleij@linaro.org>, 
+    Andreas Lauser <andreas.lauser@mercedes-benz.com>, 
+    Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
+    linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
+    devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v3 02/11] HID: hexLIN: Add support for USB LIN bus
+ adapter
+In-Reply-To: <02d9e48619cff27fb846b5d8f367bc033bbf91e6.camel@hexdev.de>
+Message-ID: <f558341c-288a-533c-1fcc-6c18f68e311e@linux.intel.com>
+References: <20240502182804.145926-1-christoph.fritz@hexdev.de>  <20240502182804.145926-3-christoph.fritz@hexdev.de>  <422e0d3a-3eb9-ff78-8419-56e894e04137@linux.intel.com> <02d9e48619cff27fb846b5d8f367bc033bbf91e6.camel@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240506-b4-sio-scrollback-delta-v1-1-4164d162a2b8@google.com>
- <f7775510-09d8-41ef-97b2-0457e721a9ec@kernel.org> <CAFhGd8qkYYQZi37Tsj-V5pN5S4xhcyUeAZj1of2kTXG+EtVMgg@mail.gmail.com>
-In-Reply-To: <CAFhGd8qkYYQZi37Tsj-V5pN5S4xhcyUeAZj1of2kTXG+EtVMgg@mail.gmail.com>
-From: Justin Stitt <justinstitt@google.com>
-Date: Thu, 9 May 2024 15:04:07 -0700
-Message-ID: <CAFhGd8oZy5aKjp-mVhh2d3U3tzTMzVRAfE039gvBACC0AdDNQw@mail.gmail.com>
-Subject: Re: [PATCH] tty: vt: saturate scrollback_delta to avoid overflow
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Nathan Chancellor <nathan@kernel.org>, 
-	Bill Wendling <morbo@google.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; BOUNDARY="8323328-1639080712-1715333388=:1562"
+Content-ID: <e3cb9b45-d6d0-3a2e-0556-568fa992ae76@linux.intel.com>
 
-On Thu, May 9, 2024 at 3:01=E2=80=AFPM Justin Stitt <justinstitt@google.com=
-> wrote:
->
->
-> Agreed.
->
-> Does an implementation like this look any better?
->
-> static inline void scrolldelta(int lines)
-> {
->         ...
->         /* saturate scrollback_delta so that it never wraps around */
->         if (lines > 0)
->                 scrollback_delta =3D min(scrollback_delta, INT_MAX -
-> lines) + lines;
->         else
->                 scrollback_delta =3D max(scrollback_delta, INT_MIN -
-> lines) + lines;
->         schedule_console_callback();
-> }
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I apologize for this formatting, gmail ate my tabs.
+--8323328-1639080712-1715333388=:1562
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <fec66c8d-f78a-b62f-9231-3713e918c1cc@linux.intel.com>
 
-Note to self, do NOT copy/paste from vim to gmail's web client.
+On Thu, 9 May 2024, Christoph Fritz wrote:
 
-> Thanks
-> Justin
+> On Mon, 2024-05-06 at 19:53 +0300, Ilpo J=E4rvinen wrote:
+> > On Thu, 2 May 2024, Christoph Fritz wrote:
+> >=20
+> > > This patch introduces driver support for the hexLIN USB LIN bus adapt=
+er,
+> > > enabling LIN communication over USB for both controller and responder
+> > > modes. The driver interfaces with the CAN_LIN framework for userland
+> > > connectivity.
+> > >=20
+> > > For more details on the adapter, visit: https://hexdev.de/hexlin/
+> > >=20
+> > > Tested-by: Andreas Lauser <andreas.lauser@mercedes-benz.com>
+> > > Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
+> > > ---
+
+> > > +=09le32_to_cpus(hxf.flags);
+> >=20
+> > You must use correct endianess typing. The struct hexlin_frame should h=
+ave=20
+> > __le32 flags so sparse's endianness check is happy.
+>=20
+> OK
+>=20
+> >=20
+> > But .flags are not used at all so why is this required in the first pla=
+ce?
+>=20
+> Was necessary in the development process and will be used in hid_dbg()
+> below in v4.
+
+Ok, I was expecting you'd print it out there but since it wasn't, I made=20
+the unused comment.
+
+BTW, you don't need to reply "OK" to me for the review comments which=20
+you're going to do in the next version. I trust you'll address those=20
+comments which are not replied into. It saves us both time :-).
+
+> > > +=09lf.len =3D hxf.len;
+> > > +=09lf.lin_id =3D hxf.lin_id;
+> > > +=09memcpy(lf.data, hxf.data, LIN_MAX_DLEN);
+> > > +=09lf.checksum =3D hxf.checksum;
+> > > +=09lf.checksum_mode =3D hxf.checksum_mode;
+> > > +
+> > > +=09hid_dbg(hdev, "id:%02x, len:%u, data:%*ph, checksum:%02x (%s)\n",
+> > > +=09=09   lf.lin_id, lf.len, lf.len, lf.data, lf.checksum,
+> > > +=09=09   lf.checksum_mode ? "enhanced" : "classic");
+> > > +
+> > > +=09lin_rx(priv->ldev, &lf);
+> > > +
+> > > +=09return 0;
+> > > +}
+
+
+--=20
+ i.
+--8323328-1639080712-1715333388=:1562--
