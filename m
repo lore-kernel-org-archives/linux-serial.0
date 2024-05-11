@@ -1,204 +1,244 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8012CCBE
-	for <linux-serial@vger.kernel.org>; Sat, 11 May 2024 05:52:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F233CF65;
+	Sat, 11 May 2024 08:15:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715406772; cv=none; b=tb7VlvqjqrLst+CQMZm/lL7Ihn5NEC8WymCWW3N9knjGxVZNvO3txQ2ZrOUEMAgTIx4h9q0mx3Sj+vEujIUYVYMSntwUiqr01UNdAyzvYZ2tTlquchreZREPD3ZuqT8VvLqpXTkRGpZCx1WzT8OzkbQdXR+AeouGuQpn/ty9nGs=
+	t=1715415330; cv=none; b=nWCHj8s+Y+a/kf7nNv+dOVxCPdk86bhLNkUgvfkS0bL3cFTkILUr0HlE1Z4w7WNs6cheTD3d7jOssY+VOJ6ba6Q8rpUJeO8wkvg0GBZhLQ2iTRvz5ktCNgAWLcV4+24Cx1Gm9HGFZbctrbPyrx/k9jI0rULtuPngIR6Z+WhJw+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715406772; c=relaxed/simple;
-	bh=cDbKK4Wc5TswFwefEGJZe50gxgri6z2VXLUIz/Scwn0=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=MbwRV+B5/vL96CNzSHYzr1UXsYqJNJaZFPsyM7Yni0S8rOlf6oPy4Gly43uQA+4aVr/xGVc0Ea2TKtWOhMCVBhf6sylL3EwpbyrwHaG1UBZ7h/IWEfGR8loOAtDZ+EksQoD7kTOmXirhQYJwfJKcsc/yFqOBuyUDd0vGDT7mQts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GmjKNNoy; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1715415330; c=relaxed/simple;
+	bh=jUCqp7mbe1MgeyRsxbECoRThdo43Iu1WuFBlIsZaXMk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YLjE89dgSHeO3uaC/LxNxvJs+tqwO/89LF23OEvzfrrR0yIgDQqTX6O2y9ea1QmyHZoT6c4sxoYserkpkkfOgmD/ktUJDRD5VcXPJ3i+AwQnZXhLSezVf3LM21PyYJjmvxIJTweBzC/XAR6GbSUlXU3Sk890jctLNcoVFAGqjP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=qrzd/Q6C; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GmjKNNoy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715406770; x=1746942770;
-  h=date:from:to:cc:subject:message-id;
-  bh=cDbKK4Wc5TswFwefEGJZe50gxgri6z2VXLUIz/Scwn0=;
-  b=GmjKNNoyPQbAhRKf5Cj9pWpVDAwdd4LnI6tA2OIPRccC8xMytLbybGHC
-   LgikQWNzbAbcUMHUY+GLofReZQ6PzOALskfyMKY0toAfYj8D66KIDxYvb
-   IImoqAVBCbbLchpXSuIUvX01ROhsAMqDD9ZUoLMqoKK5mxm5GGKOwnUTD
-   AHdzKja1kqYTKHQSNZXJOziSUFrcNTSIQxNd/bO2W0pIQd+hntY2XTVS/
-   moXZ/BNspe0PWguvMav8/7AcKoUybmx1Uau/OAEqcJZ4BBh5ndQCRLgbv
-   UaJrG+c79LuIJALAoKtfXCvS9m2fO9yyGCbmwJXp4TXhyGDGQma0N+2mD
-   A==;
-X-CSE-ConnectionGUID: vZOhmB+lQCKpQbtiVZyIuQ==
-X-CSE-MsgGUID: oUboMPwPTMiS+bVVZnC2uA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11069"; a="21986548"
-X-IronPort-AV: E=Sophos;i="6.08,153,1712646000"; 
-   d="scan'208";a="21986548"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2024 22:52:50 -0700
-X-CSE-ConnectionGUID: 3PIdqQi9RMSOJMbmcGikzw==
-X-CSE-MsgGUID: dFk9czlIQdi3Br4qvap5tQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,153,1712646000"; 
-   d="scan'208";a="30228539"
-Received: from lkp-server01.sh.intel.com (HELO f8b243fe6e68) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 10 May 2024 22:52:49 -0700
-Received: from kbuild by f8b243fe6e68 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1s5ff4-00070F-1m;
-	Sat, 11 May 2024 05:52:46 +0000
-Date: Sat, 11 May 2024 13:52:29 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- e21de1455a721a0cb4217b18589ede846f5b0686
-Message-ID: <202405111328.FvPXQ68x-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="qrzd/Q6C"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=JcD1RWz5//JWV1w0Jl43QQMXM9Jjam+DZ+mIDPZQTFw=; b=qrzd/Q6C+yjvVfmaP8CM53oHBP
+	yt1nUxTRAPrNE6qINHezlr0FAZWe/fEGCkhHp3m+chFZIIeuuwnK46rt23xOdkzhcE/EVnpBfzCqv
+	sMTQioQcQm3iEGsOL+r1coQ6zh7oMq8YOe8tdTFX/ZMM2DrFJjOis/k0ZpzSoNh3XvoU=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s5hsY-001mUp-12;
+	Sat, 11 May 2024 10:14:51 +0200
+Message-ID: <8738628a5c1b87c6521fdd8d05a3b36e5c32b48a.camel@hexdev.de>
+Subject: Re: [PATCH v4 02/11] HID: hexLIN: Add support for USB LIN adapter
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Kleine-Budde
+ <mkl@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>, Vincent
+ Mailhol <mailhol.vincent@wanadoo.fr>,  "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
+ <robh@kernel.org>,  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>, Sebastian Reichel <sre@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Andreas Lauser
+ <andreas.lauser@mercedes-benz.com>, Jonathan Corbet <corbet@lwn.net>, Pavel
+ Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, Netdev
+ <netdev@vger.kernel.org>,  devicetree@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>
+Date: Sat, 11 May 2024 10:14:46 +0200
+In-Reply-To: <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+	 <20240509171736.2048414-3-christoph.fritz@hexdev.de>
+	 <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: e21de1455a721a0cb4217b18589ede846f5b0686  serial: Clear UPF_DEAD before calling tty_port_register_device_attr_serdev()
+...
+> > diff --git a/drivers/hid/hid-hexdev-hexlin.c b/drivers/hid/hid-hexdev-hexlin.c
+> > new file mode 100644
+> > index 0000000000000..a9ed080b3e33e
+> > --- /dev/null
+> > +++ b/drivers/hid/hid-hexdev-hexlin.c
+> > 
+...
+> 
+> > +}
+> > +
+> > +#define HEXLIN_GET_CMD(name, enum_cmd)					\
+> > +	static int hexlin_##name(struct hexlin_priv_data *p)		\
+> > +	{								\
+> > +		u8 *req;						\
+> > +		int ret;						\
+> > +									\
+> > +		req = kmalloc(sizeof(*req), GFP_KERNEL)	;		\
+> 
+> Extra space.
+> 
+> Use:
+> 
+> u8 *req __free(kfree) = kmalloc(sizeof(*req), GFP_KERNEL);
+> 
+> > +		if (!req)						\
+> > +			return -ENOMEM;					\
+> > +									\
+> > +		*req = enum_cmd;					\
+> > +									\
+> > +		ret = hexlin_tx_req_status(p, req, sizeof(*req));	\
+> > +		if (ret)						\
+> > +			hid_err(p->hid_dev, "%s failed, error: %d\n",	\
+> > +				#name, ret);				\
+> > +									\
+> > +		kfree(req);						\
+> 
+> Not needed after using __free().
+> 
+> > +		return ret;						\
+> > +	}
+> > +
+> > +HEXLIN_GET_CMD(get_version, HEXLIN_GET_VERSION)
+> > +HEXLIN_GET_CMD(reset_dev, HEXLIN_RESET)
+> > +HEXLIN_GET_CMD(get_baudrate, HEXLIN_GET_BAUDRATE)
+> 
+> Could you convert the function in the macro into a helper function which 
+> is just called by a simple function with the relevant parameters for 
+> these 3 cases?
 
-elapsed time: 1011m
+The device actually has a lot more features that I'm using in my debug
+version and which might end up here in the future. So I would like to
+keep it. Any objections?
 
-configs tested: 127
-configs skipped: 3
+...
+> > +
+> > +static int hexlin_set_baudrate(struct hexlin_priv_data *priv, u16 baudrate)
+> > +{
+> > +	struct hexlin_baudrate_req *req;
+> > +	int ret;
+> > +
+> > +	if (baudrate < LIN_MIN_BAUDRATE || baudrate > LIN_MAX_BAUDRATE)
+> > +		return -EINVAL;
+> > +
+> > +	req = kmalloc(sizeof(*req), GFP_KERNEL);
+> 
+> Hmm... Why do you alloc this small structure (3 bytes?) with kmalloc() and 
+> not just have it in stack as a local variable?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
 
-tested configs:
-alpha                             allnoconfig   gcc  
-alpha                            allyesconfig   gcc  
-alpha                               defconfig   gcc  
-arc                              allmodconfig   gcc  
-arc                               allnoconfig   gcc  
-arc                              allyesconfig   gcc  
-arc                                 defconfig   gcc  
-arc                   randconfig-001-20240511   gcc  
-arc                   randconfig-002-20240511   gcc  
-arm                              allmodconfig   gcc  
-arm                               allnoconfig   clang
-arm                              allyesconfig   gcc  
-arm                                 defconfig   clang
-arm                   randconfig-001-20240511   clang
-arm                   randconfig-002-20240511   clang
-arm                   randconfig-003-20240511   gcc  
-arm                   randconfig-004-20240511   gcc  
-arm64                            allmodconfig   clang
-arm64                             allnoconfig   gcc  
-arm64                               defconfig   gcc  
-arm64                 randconfig-001-20240511   gcc  
-arm64                 randconfig-002-20240511   clang
-arm64                 randconfig-003-20240511   gcc  
-arm64                 randconfig-004-20240511   clang
-csky                             allmodconfig   gcc  
-csky                              allnoconfig   gcc  
-csky                             allyesconfig   gcc  
-csky                                defconfig   gcc  
-csky                  randconfig-001-20240511   gcc  
-csky                  randconfig-002-20240511   gcc  
-hexagon                          allmodconfig   clang
-hexagon                           allnoconfig   clang
-hexagon                          allyesconfig   clang
-hexagon                             defconfig   clang
-hexagon               randconfig-001-20240511   clang
-hexagon               randconfig-002-20240511   clang
-i386                             allmodconfig   gcc  
-i386                              allnoconfig   gcc  
-i386                             allyesconfig   gcc  
-i386         buildonly-randconfig-001-20240511   gcc  
-i386         buildonly-randconfig-002-20240511   clang
-i386         buildonly-randconfig-003-20240511   gcc  
-i386         buildonly-randconfig-004-20240511   clang
-i386         buildonly-randconfig-005-20240511   gcc  
-i386         buildonly-randconfig-006-20240511   gcc  
-i386                                defconfig   clang
-i386                  randconfig-001-20240511   gcc  
-i386                  randconfig-002-20240511   clang
-i386                  randconfig-003-20240511   gcc  
-i386                  randconfig-004-20240511   clang
-i386                  randconfig-005-20240511   gcc  
-i386                  randconfig-006-20240511   gcc  
-i386                  randconfig-011-20240511   clang
-i386                  randconfig-012-20240511   gcc  
-i386                  randconfig-013-20240511   clang
-i386                  randconfig-014-20240511   clang
-i386                  randconfig-015-20240511   clang
-i386                  randconfig-016-20240511   gcc  
-loongarch                        allmodconfig   gcc  
-loongarch                         allnoconfig   gcc  
-loongarch                           defconfig   gcc  
-loongarch             randconfig-001-20240511   gcc  
-loongarch             randconfig-002-20240511   gcc  
-m68k                             allmodconfig   gcc  
-m68k                              allnoconfig   gcc  
-m68k                             allyesconfig   gcc  
-m68k                                defconfig   gcc  
-microblaze                       allmodconfig   gcc  
-microblaze                        allnoconfig   gcc  
-microblaze                       allyesconfig   gcc  
-microblaze                          defconfig   gcc  
-mips                              allnoconfig   gcc  
-mips                             allyesconfig   gcc  
-nios2                            allmodconfig   gcc  
-nios2                             allnoconfig   gcc  
-nios2                            allyesconfig   gcc  
-nios2                               defconfig   gcc  
-nios2                 randconfig-001-20240511   gcc  
-nios2                 randconfig-002-20240511   gcc  
-openrisc                          allnoconfig   gcc  
-openrisc                         allyesconfig   gcc  
-openrisc                            defconfig   gcc  
-parisc                           allmodconfig   gcc  
-parisc                            allnoconfig   gcc  
-parisc                           allyesconfig   gcc  
-parisc                              defconfig   gcc  
-parisc                randconfig-001-20240511   gcc  
-parisc                randconfig-002-20240511   gcc  
-parisc64                            defconfig   gcc  
-powerpc                          allmodconfig   gcc  
-powerpc                           allnoconfig   gcc  
-powerpc                          allyesconfig   clang
-powerpc               randconfig-001-20240511   gcc  
-powerpc               randconfig-002-20240511   clang
-powerpc               randconfig-003-20240511   gcc  
-powerpc64             randconfig-001-20240511   gcc  
-powerpc64             randconfig-002-20240511   gcc  
-powerpc64             randconfig-003-20240511   gcc  
-riscv                            allmodconfig   clang
-riscv                             allnoconfig   gcc  
-riscv                            allyesconfig   clang
-riscv                               defconfig   clang
-s390                             allmodconfig   clang
-s390                              allnoconfig   clang
-s390                             allyesconfig   gcc  
-s390                                defconfig   clang
-sh                               allmodconfig   gcc  
-sh                                allnoconfig   gcc  
-sh                               allyesconfig   gcc  
-sh                                  defconfig   gcc  
-sparc                            allmodconfig   gcc  
-sparc                             allnoconfig   gcc  
-sparc                               defconfig   gcc  
-sparc64                          allmodconfig   gcc  
-sparc64                          allyesconfig   gcc  
-sparc64                             defconfig   gcc  
-um                               allmodconfig   clang
-um                                allnoconfig   clang
-um                               allyesconfig   gcc  
-um                                  defconfig   clang
-um                             i386_defconfig   gcc  
-um                           x86_64_defconfig   clang
-x86_64                            allnoconfig   clang
-x86_64                           allyesconfig   clang
-x86_64                              defconfig   gcc  
-x86_64                          rhel-8.3-rust   clang
-xtensa                            allnoconfig   gcc  
+This buffer must be suitable for DMA (see docu for struct urb).
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+So with a stack variable we would need to use kmemdup() before the
+actual sending call, but that's what you did not like since v3 so I
+changed it to this which now you also don't like.
+
+Let's dial it back to the original kmemdup() usage, ok?
+
+...
+> > +static int hexlin_queue_frames_insert(struct hexlin_priv_data *priv,
+> > +				      const struct hexlin_frame *hxf)
+> > +{
+> > +	struct hid_device *hdev = priv->hid_dev;
+> > +	struct lin_frame lf;
+> > +
+> > +	lf.len = hxf->len;
+> > +	lf.lin_id = hxf->lin_id;
+> > +	memcpy(lf.data, hxf->data, LIN_MAX_DLEN);
+> > +	lf.checksum = hxf->checksum;
+> > +	lf.checksum_mode = hxf->checksum_mode;
+> > +
+> > +	hid_dbg(hdev, "id:%02x, len:%u, data:%*ph, chk:%02x (%s), flg:%08x\n",
+> > +		lf.lin_id, lf.len, lf.len, lf.data, lf.checksum,
+> > +		lf.checksum_mode ? "enhanced" : "classic", hxf->flags);
+> > +
+> > +	lin_rx(priv->ldev, &lf);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int hexlin_raw_event(struct hid_device *hdev,
+> > +			    struct hid_report *report, u8 *data, int sz)
+> > +{
+> > +	struct hexlin_priv_data *priv;
+> > +	struct hexlin_baudrate_req *br;
+> > +	struct hexlin_responder_answer_req *rar;
+> > +	struct hexlin_unconditional_req *hfr;
+> > +	struct hexlin_val8_req *vr;
+> > +
+> > +	if (sz < 1 || sz > HEXLIN_PKGLEN_MAX)
+> > +		return -EREMOTEIO;
+> > +
+> > +	priv = hid_get_drvdata(hdev);
+> > +
+> > +	hid_dbg(hdev, "%s, size:%i, data[0]: 0x%02x\n", __func__, sz, data[0]);
+> > +
+> > +	priv->is_error = false;
+> > +
+> > +	switch (data[0]) {
+> > +	case HEXLIN_SUCCESS:
+> > +		if (sz != HEXLIN_LEN_RETCODE)
+> > +			return -EREMOTEIO;
+> > +		hid_dbg(hdev, "HEXLIN_SUCCESS: 0x%02x\n", data[0]);
+> > +		complete(&priv->wait_in_report);
+> > +		break;
+> > +	case HEXLIN_FAIL:
+> > +		if (sz != HEXLIN_LEN_RETCODE)
+> > +			return -EREMOTEIO;
+> > +		hid_err(hdev, "HEXLIN_FAIL: 0x%02x\n", data[0]);
+> > +		priv->is_error = true;
+> > +		complete(&priv->wait_in_report);
+> > +		break;
+> > +	case HEXLIN_GET_VERSION:
+> > +		if (sz != sizeof(*vr))
+> > +			return -EREMOTEIO;
+> > +		vr = (struct hexlin_val8_req *) data;
+> > +		priv->fw_version = vr->v;
+> > +		complete(&priv->wait_in_report);
+> > +		break;
+> > +	case HEXLIN_GET_RESPONDER_ANSWER_ID:
+> > +		if (sz != sizeof(*rar))
+> > +			return -EREMOTEIO;
+> > +		rar = (struct hexlin_responder_answer_req *) data;
+> > +		memcpy(&priv->answ, &rar->answ, sizeof(priv->answ));
+> > +		complete(&priv->wait_in_report);
+> > +		break;
+> > +	case HEXLIN_GET_BAUDRATE:
+> > +		if (sz != sizeof(*br))
+> > +			return -EREMOTEIO;
+> > +		br = (struct hexlin_baudrate_req *) data;
+> > +		le16_to_cpus(br->baudrate);
+> > +		priv->baudrate = br->baudrate;
+> > +		complete(&priv->wait_in_report);
+> > +		break;
+> > +	/* following cases not initiated by us, so no complete() */
+> > +	case HEXLIN_FRAME:
+> > +		if (sz != sizeof(*hfr)) {
+> > +			hid_err_once(hdev, "frame size mismatch: %i\n", sz);
+> > +			return -EREMOTEIO;
+> > +		}
+> > +		hfr = (struct hexlin_unconditional_req *) data;
+> > +		le32_to_cpus(hfr->frm.flags);
+> 
+> I'm bit worried about this from endianness perspective. Perhaps there's 
+> some struct reusing that shouldn't be happening because the same field 
+> cannot be __le32 and u32 at the same time.
+
+Can you propose a solution?
+
+> 
+...
+
+thanks
+  -- Christoph
+
+
