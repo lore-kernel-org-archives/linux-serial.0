@@ -1,244 +1,96 @@
-Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F233CF65;
-	Sat, 11 May 2024 08:15:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2B05336F
+	for <linux-serial@vger.kernel.org>; Sat, 11 May 2024 15:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715415330; cv=none; b=nWCHj8s+Y+a/kf7nNv+dOVxCPdk86bhLNkUgvfkS0bL3cFTkILUr0HlE1Z4w7WNs6cheTD3d7jOssY+VOJ6ba6Q8rpUJeO8wkvg0GBZhLQ2iTRvz5ktCNgAWLcV4+24Cx1Gm9HGFZbctrbPyrx/k9jI0rULtuPngIR6Z+WhJw+k=
+	t=1715440844; cv=none; b=Lp/SBKs4NKR74elipMUrULVQRMilH/4Cy5FabvjegBJSqzDIGgxLKUxyeoobstvAb1C6tFX3AGNWSW7MLPx8rcxtRJDnpuuC3EJ8l1VqRhSoykDJA30nKp8v51GNRR09q8f/ZIrlxtqO6XGUDwNzT5XxZKEtLVwqlW1PXRoMW3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715415330; c=relaxed/simple;
-	bh=jUCqp7mbe1MgeyRsxbECoRThdo43Iu1WuFBlIsZaXMk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=YLjE89dgSHeO3uaC/LxNxvJs+tqwO/89LF23OEvzfrrR0yIgDQqTX6O2y9ea1QmyHZoT6c4sxoYserkpkkfOgmD/ktUJDRD5VcXPJ3i+AwQnZXhLSezVf3LM21PyYJjmvxIJTweBzC/XAR6GbSUlXU3Sk890jctLNcoVFAGqjP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=qrzd/Q6C; arc=none smtp.client-ip=213.160.72.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
+	s=arc-20240116; t=1715440844; c=relaxed/simple;
+	bh=wxSw8FErhBJR354Mc/m6iIpn8aFQz7O++PY3dNSazlw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZLipbrev6G+2OLds/QU7ky/NQPISXPbnsdV7b/9F7q5xKecpBsYtr6q0Mn/bP1TyNebCqiqmEUAW88xeY4KrDu7g63dgE/yLc6wuksdVwDmrcOKr4rQ+X5evMpPt/b9Fu8dZYrxRJcf6r9zM6tdI3QK5bhZ6wdr4Uj2HbzVl4dA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ag5LYg+9; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="qrzd/Q6C"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
-	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
-	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-	List-Post:List-Owner:List-Archive;
-	bh=JcD1RWz5//JWV1w0Jl43QQMXM9Jjam+DZ+mIDPZQTFw=; b=qrzd/Q6C+yjvVfmaP8CM53oHBP
-	yt1nUxTRAPrNE6qINHezlr0FAZWe/fEGCkhHp3m+chFZIIeuuwnK46rt23xOdkzhcE/EVnpBfzCqv
-	sMTQioQcQm3iEGsOL+r1coQ6zh7oMq8YOe8tdTFX/ZMM2DrFJjOis/k0ZpzSoNh3XvoU=;
-Received: from 127.0.0.1
-	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim latest)
-	(envelope-from <christoph.fritz@hexdev.de>)
-	id 1s5hsY-001mUp-12;
-	Sat, 11 May 2024 10:14:51 +0200
-Message-ID: <8738628a5c1b87c6521fdd8d05a3b36e5c32b48a.camel@hexdev.de>
-Subject: Re: [PATCH v4 02/11] HID: hexLIN: Add support for USB LIN adapter
-From: Christoph Fritz <christoph.fritz@hexdev.de>
-Reply-To: christoph.fritz@hexdev.de
-To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Kleine-Budde
- <mkl@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>, Vincent
- Mailhol <mailhol.vincent@wanadoo.fr>,  "David S . Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
- <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
- <robh@kernel.org>,  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
- <bentiss@kernel.org>, Sebastian Reichel <sre@kernel.org>, Linus Walleij
- <linus.walleij@linaro.org>, Andreas Lauser
- <andreas.lauser@mercedes-benz.com>, Jonathan Corbet <corbet@lwn.net>, Pavel
- Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, Netdev
- <netdev@vger.kernel.org>,  devicetree@vger.kernel.org,
- linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>
-Date: Sat, 11 May 2024 10:14:46 +0200
-In-Reply-To: <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
-References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
-	 <20240509171736.2048414-3-christoph.fritz@hexdev.de>
-	 <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
-Organization: hexDEV GmbH
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ag5LYg+9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1715440842;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=ap5iZn6E52VNTy/DKwLlXZo2g8IqDogFPYuoHiYex2k=;
+	b=ag5LYg+94H2NhzKA4D+hWyp1Vd+19nAu4vsOm8to6eC5IybKlUlWaxe+6NKCTMSA+aC5yu
+	nfpVBGDBfHMRT2K4I+EOyURNWaLEZN1NC6Fx7JNYC0mk+KGWp6bVTYUPxkSee+oMOpj6aJ
+	fccoAtoMRR4CQtuQj//ldT35KnMHZXA=
+Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
+ by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-231-LbCvA40OPaiL7Zr0l23udw-1; Sat,
+ 11 May 2024 11:20:37 -0400
+X-MC-Unique: LbCvA40OPaiL7Zr0l23udw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0D536380226D;
+	Sat, 11 May 2024 15:20:37 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.39.192.11])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 193B3C7FCFA;
+	Sat, 11 May 2024 15:20:35 +0000 (UTC)
+From: Hans de Goede <hdegoede@redhat.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Hans de Goede <hdegoede@redhat.com>,
+	Pavel Machek <pavel@ucw.cz>,
+	Lee Jones <lee@kernel.org>,
+	linux-leds@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] vt: keyboard: Use led_set_brightness() in LED trigger activate() callback
+Date: Sat, 11 May 2024 17:20:30 +0200
+Message-ID: <20240511152030.4848-1-hdegoede@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.8
 
-...
-> > diff --git a/drivers/hid/hid-hexdev-hexlin.c b/drivers/hid/hid-hexdev-hexlin.c
-> > new file mode 100644
-> > index 0000000000000..a9ed080b3e33e
-> > --- /dev/null
-> > +++ b/drivers/hid/hid-hexdev-hexlin.c
-> > 
-...
-> 
-> > +}
-> > +
-> > +#define HEXLIN_GET_CMD(name, enum_cmd)					\
-> > +	static int hexlin_##name(struct hexlin_priv_data *p)		\
-> > +	{								\
-> > +		u8 *req;						\
-> > +		int ret;						\
-> > +									\
-> > +		req = kmalloc(sizeof(*req), GFP_KERNEL)	;		\
-> 
-> Extra space.
-> 
-> Use:
-> 
-> u8 *req __free(kfree) = kmalloc(sizeof(*req), GFP_KERNEL);
-> 
-> > +		if (!req)						\
-> > +			return -ENOMEM;					\
-> > +									\
-> > +		*req = enum_cmd;					\
-> > +									\
-> > +		ret = hexlin_tx_req_status(p, req, sizeof(*req));	\
-> > +		if (ret)						\
-> > +			hid_err(p->hid_dev, "%s failed, error: %d\n",	\
-> > +				#name, ret);				\
-> > +									\
-> > +		kfree(req);						\
-> 
-> Not needed after using __free().
-> 
-> > +		return ret;						\
-> > +	}
-> > +
-> > +HEXLIN_GET_CMD(get_version, HEXLIN_GET_VERSION)
-> > +HEXLIN_GET_CMD(reset_dev, HEXLIN_RESET)
-> > +HEXLIN_GET_CMD(get_baudrate, HEXLIN_GET_BAUDRATE)
-> 
-> Could you convert the function in the macro into a helper function which 
-> is just called by a simple function with the relevant parameters for 
-> these 3 cases?
+A LED trigger's activate() callback gets called when the LED trigger
+gets activated for a specific LED, so that the trigger code can ensure
+the LED state matches the current state of the trigger condition.
 
-The device actually has a lot more features that I'm using in my debug
-version and which might end up here in the future. So I would like to
-keep it. Any objections?
+led_trigger_event() is intended for trigger condition state changes and
+iterates over _all_ LEDs which are controlled by this trigger changing
+the brightness of each of them.
 
-...
-> > +
-> > +static int hexlin_set_baudrate(struct hexlin_priv_data *priv, u16 baudrate)
-> > +{
-> > +	struct hexlin_baudrate_req *req;
-> > +	int ret;
-> > +
-> > +	if (baudrate < LIN_MIN_BAUDRATE || baudrate > LIN_MAX_BAUDRATE)
-> > +		return -EINVAL;
-> > +
-> > +	req = kmalloc(sizeof(*req), GFP_KERNEL);
-> 
-> Hmm... Why do you alloc this small structure (3 bytes?) with kmalloc() and 
-> not just have it in stack as a local variable?
+In the activate() case only the brightness of the LED which is being
+activated needs to change and that LED is passed as an argument to
+activate(), switch to led_set_brightness() to only change the brightness
+of the LED being activated.
 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/tty/vt/keyboard.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-This buffer must be suitable for DMA (see docu for struct urb).
-
-So with a stack variable we would need to use kmemdup() before the
-actual sending call, but that's what you did not like since v3 so I
-changed it to this which now you also don't like.
-
-Let's dial it back to the original kmemdup() usage, ok?
-
-...
-> > +static int hexlin_queue_frames_insert(struct hexlin_priv_data *priv,
-> > +				      const struct hexlin_frame *hxf)
-> > +{
-> > +	struct hid_device *hdev = priv->hid_dev;
-> > +	struct lin_frame lf;
-> > +
-> > +	lf.len = hxf->len;
-> > +	lf.lin_id = hxf->lin_id;
-> > +	memcpy(lf.data, hxf->data, LIN_MAX_DLEN);
-> > +	lf.checksum = hxf->checksum;
-> > +	lf.checksum_mode = hxf->checksum_mode;
-> > +
-> > +	hid_dbg(hdev, "id:%02x, len:%u, data:%*ph, chk:%02x (%s), flg:%08x\n",
-> > +		lf.lin_id, lf.len, lf.len, lf.data, lf.checksum,
-> > +		lf.checksum_mode ? "enhanced" : "classic", hxf->flags);
-> > +
-> > +	lin_rx(priv->ldev, &lf);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int hexlin_raw_event(struct hid_device *hdev,
-> > +			    struct hid_report *report, u8 *data, int sz)
-> > +{
-> > +	struct hexlin_priv_data *priv;
-> > +	struct hexlin_baudrate_req *br;
-> > +	struct hexlin_responder_answer_req *rar;
-> > +	struct hexlin_unconditional_req *hfr;
-> > +	struct hexlin_val8_req *vr;
-> > +
-> > +	if (sz < 1 || sz > HEXLIN_PKGLEN_MAX)
-> > +		return -EREMOTEIO;
-> > +
-> > +	priv = hid_get_drvdata(hdev);
-> > +
-> > +	hid_dbg(hdev, "%s, size:%i, data[0]: 0x%02x\n", __func__, sz, data[0]);
-> > +
-> > +	priv->is_error = false;
-> > +
-> > +	switch (data[0]) {
-> > +	case HEXLIN_SUCCESS:
-> > +		if (sz != HEXLIN_LEN_RETCODE)
-> > +			return -EREMOTEIO;
-> > +		hid_dbg(hdev, "HEXLIN_SUCCESS: 0x%02x\n", data[0]);
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_FAIL:
-> > +		if (sz != HEXLIN_LEN_RETCODE)
-> > +			return -EREMOTEIO;
-> > +		hid_err(hdev, "HEXLIN_FAIL: 0x%02x\n", data[0]);
-> > +		priv->is_error = true;
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_VERSION:
-> > +		if (sz != sizeof(*vr))
-> > +			return -EREMOTEIO;
-> > +		vr = (struct hexlin_val8_req *) data;
-> > +		priv->fw_version = vr->v;
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_RESPONDER_ANSWER_ID:
-> > +		if (sz != sizeof(*rar))
-> > +			return -EREMOTEIO;
-> > +		rar = (struct hexlin_responder_answer_req *) data;
-> > +		memcpy(&priv->answ, &rar->answ, sizeof(priv->answ));
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	case HEXLIN_GET_BAUDRATE:
-> > +		if (sz != sizeof(*br))
-> > +			return -EREMOTEIO;
-> > +		br = (struct hexlin_baudrate_req *) data;
-> > +		le16_to_cpus(br->baudrate);
-> > +		priv->baudrate = br->baudrate;
-> > +		complete(&priv->wait_in_report);
-> > +		break;
-> > +	/* following cases not initiated by us, so no complete() */
-> > +	case HEXLIN_FRAME:
-> > +		if (sz != sizeof(*hfr)) {
-> > +			hid_err_once(hdev, "frame size mismatch: %i\n", sz);
-> > +			return -EREMOTEIO;
-> > +		}
-> > +		hfr = (struct hexlin_unconditional_req *) data;
-> > +		le32_to_cpus(hfr->frm.flags);
-> 
-> I'm bit worried about this from endianness perspective. Perhaps there's 
-> some struct reusing that shouldn't be happening because the same field 
-> cannot be __le32 and u32 at the same time.
-
-Can you propose a solution?
-
-> 
-...
-
-thanks
-  -- Christoph
-
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index a2116e135a82..804355da46f5 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -1033,9 +1033,7 @@ static int kbd_led_trigger_activate(struct led_classdev *cdev)
+ 
+ 	tasklet_disable(&keyboard_tasklet);
+ 	if (ledstate != -1U)
+-		led_trigger_event(&trigger->trigger,
+-				  ledstate & trigger->mask ?
+-					LED_FULL : LED_OFF);
++		led_set_brightness(cdev, ledstate & trigger->mask ? LED_FULL : LED_OFF);
+ 	tasklet_enable(&keyboard_tasklet);
+ 
+ 	return 0;
+-- 
+2.44.0
 
