@@ -1,54 +1,63 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A2B05336F
-	for <linux-serial@vger.kernel.org>; Sat, 11 May 2024 15:20:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5200E12E75;
+	Sun, 12 May 2024 13:08:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715440844; cv=none; b=Lp/SBKs4NKR74elipMUrULVQRMilH/4Cy5FabvjegBJSqzDIGgxLKUxyeoobstvAb1C6tFX3AGNWSW7MLPx8rcxtRJDnpuuC3EJ8l1VqRhSoykDJA30nKp8v51GNRR09q8f/ZIrlxtqO6XGUDwNzT5XxZKEtLVwqlW1PXRoMW3Q=
+	t=1715519329; cv=none; b=mn+6tuEadr4grLaCBaB9JFVVhHN2sBVwqWJGpM+Dksa4XMAOuYhy5a8BbIiDjjAHcWlc9DGQYB7npiKz6NjfljLXcsUWDex8L5KGP3BOT9EOZbEPmsKb3B1h0XGwt2EUOFVTPGMJ0cKhb9eBWQ8CE5swslGMR1hn4fNFNI2+16o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715440844; c=relaxed/simple;
-	bh=wxSw8FErhBJR354Mc/m6iIpn8aFQz7O++PY3dNSazlw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZLipbrev6G+2OLds/QU7ky/NQPISXPbnsdV7b/9F7q5xKecpBsYtr6q0Mn/bP1TyNebCqiqmEUAW88xeY4KrDu7g63dgE/yLc6wuksdVwDmrcOKr4rQ+X5evMpPt/b9Fu8dZYrxRJcf6r9zM6tdI3QK5bhZ6wdr4Uj2HbzVl4dA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ag5LYg+9; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1715519329; c=relaxed/simple;
+	bh=4dtMV0+T4itEZ3njDueGsSSCXg2qaZAkJUDSJVtpRuM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=bGonAyGT9bkKFqpIq6DHnfCss+gJR06a1mImaAwfIB2nXKLzTSJdWl9A6IyH2zrz1nDi7orLcpkm8VrndqvWLf3Aa7iSKAIhVHymgojWPr9zIvNmVSmz+IxLsWEstMQgUI+R3tGov1YDOYKMMYQGQ6vh9zDcZmfBDkylCHHKNFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=RVaywzD1; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ag5LYg+9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1715440842;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=ap5iZn6E52VNTy/DKwLlXZo2g8IqDogFPYuoHiYex2k=;
-	b=ag5LYg+94H2NhzKA4D+hWyp1Vd+19nAu4vsOm8to6eC5IybKlUlWaxe+6NKCTMSA+aC5yu
-	nfpVBGDBfHMRT2K4I+EOyURNWaLEZN1NC6Fx7JNYC0mk+KGWp6bVTYUPxkSee+oMOpj6aJ
-	fccoAtoMRR4CQtuQj//ldT35KnMHZXA=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-231-LbCvA40OPaiL7Zr0l23udw-1; Sat,
- 11 May 2024 11:20:37 -0400
-X-MC-Unique: LbCvA40OPaiL7Zr0l23udw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0D536380226D;
-	Sat, 11 May 2024 15:20:37 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.11])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 193B3C7FCFA;
-	Sat, 11 May 2024 15:20:35 +0000 (UTC)
-From: Hans de Goede <hdegoede@redhat.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Hans de Goede <hdegoede@redhat.com>,
-	Pavel Machek <pavel@ucw.cz>,
-	Lee Jones <lee@kernel.org>,
-	linux-leds@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] vt: keyboard: Use led_set_brightness() in LED trigger activate() callback
-Date: Sat, 11 May 2024 17:20:30 +0200
-Message-ID: <20240511152030.4848-1-hdegoede@redhat.com>
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="RVaywzD1"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=/RDTDK04LS9aHKEZT1A3pPZvNdlGdHaOcAg8MrbVz+Q=; b=RVaywzD1qiDcNS0derDvlImqod
+	J3qrmVjaO1x0b16KkAV/CmFAdc99Al8n95tuzFqQk8ssvD6OyJJ6n+9FFjFudPv8BrYU0ZaaBLVQ+
+	vW5LtCThUmLUoSxZy53eDqTuSNY0j5ZvYLejDciQy+awCZzP7k/k+bPSd8CNaMw5tWlM=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s68w0-001uX7-29;
+	Sun, 12 May 2024 15:08:13 +0200
+Message-ID: <3070ec70b2477560f205cc4c34dd84b320831365.camel@hexdev.de>
+Subject: Re: [PATCH v4 04/11] tty: serdev: Add method to enable break flags
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Kleine-Budde
+ <mkl@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>, Vincent
+ Mailhol <mailhol.vincent@wanadoo.fr>,  "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
+ <robh@kernel.org>,  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>, Sebastian Reichel <sre@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>, Andreas Lauser
+ <andreas.lauser@mercedes-benz.com>, Jonathan Corbet <corbet@lwn.net>, Pavel
+ Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org, Netdev
+ <netdev@vger.kernel.org>,  devicetree@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-serial <linux-serial@vger.kernel.org>
+Date: Sun, 12 May 2024 15:08:08 +0200
+In-Reply-To: <36b0d460-1d96-89d8-db4a-76d735f7ee6b@linux.intel.com>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+	 <20240509171736.2048414-5-christoph.fritz@hexdev.de>
+	 <36b0d460-1d96-89d8-db4a-76d735f7ee6b@linux.intel.com>
+Organization: hexDEV GmbH
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -56,41 +65,38 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.8
 
-A LED trigger's activate() callback gets called when the LED trigger
-gets activated for a specific LED, so that the trigger code can ensure
-the LED state matches the current state of the trigger condition.
+On Fri, 2024-05-10 at 17:21 +0300, Ilpo Järvinen wrote:
+> On Thu, 9 May 2024, Christoph Fritz wrote:
+...
+> > diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> > index 613cb356b918d..23a1e76cb553b 100644
+> > --- a/drivers/tty/serdev/core.c
+> > +++ b/drivers/tty/serdev/core.c
+> > @@ -339,6 +339,17 @@ unsigned int serdev_device_set_baudrate(struct serdev_device *serdev, unsigned i
+> >  }
+> >  EXPORT_SYMBOL_GPL(serdev_device_set_baudrate);
+> >  
+> > +void serdev_device_set_break_detection(struct serdev_device *serdev, bool enable)
+> > +{
+> > +	struct serdev_controller *ctrl = serdev->ctrl;
+> > +
+> > +	if (!ctrl || !ctrl->ops->set_break_detection)
+> > +		return;
+> 
+> Why you need to test for !ctrl?
 
-led_trigger_event() is intended for trigger condition state changes and
-iterates over _all_ LEDs which are controlled by this trigger changing
-the brightness of each of them.
+In our case we don't, it's an extra check like all the other functions
+here:
 
-In the activate() case only the brightness of the LED which is being
-activated needs to change and that LED is passed as an argument to
-activate(), switch to led_set_brightness() to only change the brightness
-of the LED being activated.
+https://elixir.bootlin.com/linux/v6.9-rc7/source/drivers/tty/serdev/core.c#L330
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/tty/vt/keyboard.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> > +	ctrl->ops->set_break_detection(ctrl, enable);
+> 
+> I'd use positive logic here:
+> 
+> 	if (ctrl->ops->set_break_detection)
+> 		ctrl->ops->set_break_detection(ctrl, enable);
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index a2116e135a82..804355da46f5 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -1033,9 +1033,7 @@ static int kbd_led_trigger_activate(struct led_classdev *cdev)
- 
- 	tasklet_disable(&keyboard_tasklet);
- 	if (ledstate != -1U)
--		led_trigger_event(&trigger->trigger,
--				  ledstate & trigger->mask ?
--					LED_FULL : LED_OFF);
-+		led_set_brightness(cdev, ledstate & trigger->mask ? LED_FULL : LED_OFF);
- 	tasklet_enable(&keyboard_tasklet);
- 
- 	return 0;
--- 
-2.44.0
 
