@@ -1,234 +1,262 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF37D14D297
-	for <linux-serial@vger.kernel.org>; Mon, 13 May 2024 11:55:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75B2914F103;
+	Mon, 13 May 2024 12:28:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715601313; cv=none; b=MHlDnilJcas6uoAI5wOb04SJ4G4XO+1ccRzqqYlZJe9TQH9KTarnEoZ2NjSEFcyUGscMUG8oJUR2eJt0tjKAoDXVoEhmSDaCAj1ANqg2JEvEkl9KxQXYx+yR/VALG3HmaJhuAsD5L8sojLm4Y/XYkAjfCn+PZpsMAFcg7ihoOsY=
+	t=1715603292; cv=none; b=BRop9kfYfQSOLAxXiiAclR4SSy6hlUh6skvQ/ud4y7xXKkUTwpAeDqIVEmoLCN60/3GN3MpAVcVMEJ5T5xJE7iGPX6VizsA5wucD2w24ScC9+uHCTFlGkVhxXvc9ETKI5pk8qWwc3CCJPmnYmLGGzVSn2PReqNBwdgnXHAIhxwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715601313; c=relaxed/simple;
-	bh=KQlIODRIAwhfMkF+svGRoQjGBP7F6iuEOCJQ2nj9DDo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=M7BJjMQB+0fspvf3D5p49SquwQPyExkxDHeH0RKynxLVDQVAWXpymEd2dFKAQwNiXarCrqVSPtOm4Bpt5hCe77IqMd7b/3+nWU7d7Ku+oVBCAA2BbRUSvUhHW1pagDoELvGFwLn5vciBlq32p0/KUnFVug4oe0UT/oKRAKmgQng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Mplv78Lu; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1715603292; c=relaxed/simple;
+	bh=pelZmS6zFQdTzAjl9pAUlFxDeQyc9gffvbQ7dqOMy98=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=IjRHh7YL6Nn2ZFnw/iadrdB5MM83T1yXoBV/tLCr4WgR1GDO2oTIU0breNH0CEnZr6skOAXm7Nto16X37WiX1qjQyg/6VYCDYXU8kUaZGWIuef2NJnhshL8dkD5uT1NGvTHW9Z5lGf6zcLtvh9bcLicrFOX1PxKpvHKpxbRdZAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tyx1nlK9; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Mplv78Lu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1715601310;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=t/Fae/1ym0klvsKzuPgGEHvQ9spkHPkxZncwd90WiW4=;
-	b=Mplv78LuXlpOi1DIrTdc6j9IlzQeUmuqgbS8nrQUOA0h8NPz8Mf90Q9ZYffX7BAyH/abTJ
-	0CUNDFsm9NaMm08tzF4Q7RNtu4yzZUy/xzvB5ltvgt43Fz4fKi+L7ZCqO2E8DyNL+JvHQH
-	UaJW752f8OChsoUciefCMqjwkB5YcNw=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-611-aDqgKEUnNxiEP9AbpcUwcQ-1; Mon, 13 May 2024 07:55:09 -0400
-X-MC-Unique: aDqgKEUnNxiEP9AbpcUwcQ-1
-Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-a59caea8836so294185566b.1
-        for <linux-serial@vger.kernel.org>; Mon, 13 May 2024 04:55:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715601308; x=1716206108;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t/Fae/1ym0klvsKzuPgGEHvQ9spkHPkxZncwd90WiW4=;
-        b=PNvqXKO2sTAqGTWNOQZnFTbk2YpxnxIAEe7Mnf5oLgD67F4d4/EFfs95ww23RjTGLy
-         8Smg2iFQnTwz+EDY6zdL4qZZMd0Thu5vM98dMcQQbNPBhFGBFLLcM0dqwqjGchDBaIXO
-         yRZHce3nG/WPupAkch8JrEDVrVlXlfCh8co+dEpcOuditmRWdHS/nXGFox54m17sLbA8
-         ys+v8u7oSW1Ibkl2z9LAILvp8uzTiTZrTTiWVsL30ZW4ecptlnkcBl0pLyl9Ax+Qhgdx
-         n12V+NWLGGBrrnJsCeZOSB10pBj49aiiondemiGNFnxqdR2iBcz5IU+y2zsNc+APDL0w
-         oGmw==
-X-Forwarded-Encrypted: i=1; AJvYcCXfEBZQUtf5GgioqMZ1hLF/ETpgMM1lHWHD1px92gobhfS8kMkRAUho88Yzz/kDMCuLWhePuOzitVDZMHQyXjQsRVtxfWTf/X1aXito
-X-Gm-Message-State: AOJu0Yz3mXBQjp+XmtYAwsFT90w5cjlj0h1dHf5hReWYy11JvXzxmlYX
-	pBBcQR9wZwu/ayPHSuQWFl5NTL3LT0KD4gBGtYBn4J2w24th1HuRJhjmTb7kO76XNsy/atgx1zu
-	JnMmqeKeLKJ8GC1FWc6aUgsPjZwX63KBllJbDjs8kUDKteAdJ8c2trFqAmDVMPA==
-X-Received: by 2002:a17:907:31c2:b0:a58:eba0:6716 with SMTP id a640c23a62f3a-a5a2d66a40bmr849997766b.60.1715601308069;
-        Mon, 13 May 2024 04:55:08 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFpKpjCc1JrU+4s9UcPB4u3qnTfouEBsIyb1FpN4T+xuY9y1xonGwdJDL7WqOesSOg/Ya4hLw==
-X-Received: by 2002:a17:907:31c2:b0:a58:eba0:6716 with SMTP id a640c23a62f3a-a5a2d66a40bmr849996966b.60.1715601307707;
-        Mon, 13 May 2024 04:55:07 -0700 (PDT)
-Received: from [10.40.98.157] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a17b17754sm585084566b.192.2024.05.13.04.55.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 May 2024 04:55:07 -0700 (PDT)
-Message-ID: <1ca0f892-72be-44d2-9a57-2bf27de305a0@redhat.com>
-Date: Mon, 13 May 2024 13:55:06 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tyx1nlK9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715603291; x=1747139291;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=pelZmS6zFQdTzAjl9pAUlFxDeQyc9gffvbQ7dqOMy98=;
+  b=Tyx1nlK9zeOZgbITWcWyGbwcVdBARt1IP9u2TDgz5774s1i1GMLWZTed
+   TwznyHjPk7eYoGGNNH9aVHReaEvtdhdCo43/Us7+p0xwylNmJOmAifvxA
+   sZHucWfM3/UIq+7TmTUmc5R3W/79BysDfg3CJS1/VViJMcArTn4z91NJC
+   O7XZc040c/4TMgr8MqSJR1JIg/mkENPPeEJJaDJW1r/dhGMS1fSEUHD4G
+   zPiLpFt40Eab5qP4nk9vBiMun59wm/GFJP/PTUjR1MdWPn0saCj/hg+Ga
+   MbP8hSc001tuQbNv8Pw4MKhNKT2MKYLSbH5TMGkTN7BOfqoVGz+lKWyKW
+   A==;
+X-CSE-ConnectionGUID: d2ruA6gpRVSDgtQnrjPYFQ==
+X-CSE-MsgGUID: 9Er9zJ2sRW+K9pcq/yb/nQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11071"; a="22682054"
+X-IronPort-AV: E=Sophos;i="6.08,158,1712646000"; 
+   d="scan'208";a="22682054"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2024 05:28:10 -0700
+X-CSE-ConnectionGUID: WF3DJ0yaRmykx5Jte4aWwg==
+X-CSE-MsgGUID: Ln+RwkV9RU2JRw/D6ynj7g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,158,1712646000"; 
+   d="scan'208";a="30437389"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.89])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2024 05:28:01 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 13 May 2024 15:27:56 +0300 (EEST)
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+cc: Jiri Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Marc Kleine-Budde <mkl@pengutronix.de>, 
+    Oliver Hartkopp <socketcan@hartkopp.net>, 
+    Vincent Mailhol <mailhol.vincent@wanadoo.fr>, 
+    "David S . Miller" <davem@davemloft.net>, 
+    Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+    Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>, 
+    Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+    Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, 
+    Benjamin Tissoires <bentiss@kernel.org>, 
+    Sebastian Reichel <sre@kernel.org>, 
+    Linus Walleij <linus.walleij@linaro.org>, 
+    Andreas Lauser <andreas.lauser@mercedes-benz.com>, 
+    Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>, 
+    linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>, 
+    devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v4 02/11] HID: hexLIN: Add support for USB LIN adapter
+In-Reply-To: <8738628a5c1b87c6521fdd8d05a3b36e5c32b48a.camel@hexdev.de>
+Message-ID: <d91451f2-5636-2526-391d-f575a7feb17c@linux.intel.com>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>  <20240509171736.2048414-3-christoph.fritz@hexdev.de>  <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com> <8738628a5c1b87c6521fdd8d05a3b36e5c32b48a.camel@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/2] platform/surface: aggregator: Log critical errors
- during SAM probing
-To: Weifeng Liu <weifeng.liu.z@gmail.com>,
- platform-driver-x86@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Maximilian Luz <luzmaximilian@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20240505130800.2546640-1-weifeng.liu.z@gmail.com>
- <20240505130800.2546640-3-weifeng.liu.z@gmail.com>
-From: Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20240505130800.2546640-3-weifeng.liu.z@gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-Hi,
+On Sat, 11 May 2024, Christoph Fritz wrote:
 
-On 5/5/24 3:07 PM, Weifeng Liu wrote:
-> Emits messages upon errors during probing of SAM.  Hopefully this could
-> provide useful context to user for the purpose of diagnosis when
-> something miserable happen.
+> ...
+> > > diff --git a/drivers/hid/hid-hexdev-hexlin.c b/drivers/hid/hid-hexdev-hexlin.c
+> > > new file mode 100644
+> > > index 0000000000000..a9ed080b3e33e
+> > > --- /dev/null
+> > > +++ b/drivers/hid/hid-hexdev-hexlin.c
+> > > 
+> ...
+> > 
+> > > +}
+> > > +
+> > > +#define HEXLIN_GET_CMD(name, enum_cmd)					\
+> > > +	static int hexlin_##name(struct hexlin_priv_data *p)		\
+> > > +	{								\
+> > > +		u8 *req;						\
+> > > +		int ret;						\
+> > > +									\
+> > > +		req = kmalloc(sizeof(*req), GFP_KERNEL)	;		\
+> > 
+> > Extra space.
+> > 
+> > Use:
+> > 
+> > u8 *req __free(kfree) = kmalloc(sizeof(*req), GFP_KERNEL);
+> > 
+> > > +		if (!req)						\
+> > > +			return -ENOMEM;					\
+> > > +									\
+> > > +		*req = enum_cmd;					\
+> > > +									\
+> > > +		ret = hexlin_tx_req_status(p, req, sizeof(*req));	\
+> > > +		if (ret)						\
+> > > +			hid_err(p->hid_dev, "%s failed, error: %d\n",	\
+> > > +				#name, ret);				\
+> > > +									\
+> > > +		kfree(req);						\
+> > 
+> > Not needed after using __free().
+> > 
+> > > +		return ret;						\
+> > > +	}
+> > > +
+> > > +HEXLIN_GET_CMD(get_version, HEXLIN_GET_VERSION)
+> > > +HEXLIN_GET_CMD(reset_dev, HEXLIN_RESET)
+> > > +HEXLIN_GET_CMD(get_baudrate, HEXLIN_GET_BAUDRATE)
+> > 
+> > Could you convert the function in the macro into a helper function which 
+> > is just called by a simple function with the relevant parameters for 
+> > these 3 cases?
 > 
-> Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Acked-by: Hans de Goede <hdegoede@redhat.com>
-> Signed-off-by: Weifeng Liu <weifeng.liu.z@gmail.com>
+> The device actually has a lot more features that I'm using in my debug
+> version and which might end up here in the future. So I would like to
+> keep it. Any objections?
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+I don't follow, HEXLIN_GET_CMD() will always produce a copy of that same 
+function even if you use it 1000 times?? (Except for the enum and string 
+which can easily be passed as arguments to a common function).
 
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
+You can still keep HEXLIN_GET_CMD() which just calls that common function
+if you want to avoid giving those two parameters directly.
 
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
-
-Regards,
-
-Hans
-
-
-
-> ---
->  drivers/platform/surface/aggregator/core.c | 42 ++++++++++++++--------
->  1 file changed, 27 insertions(+), 15 deletions(-)
+> > > +static int hexlin_set_baudrate(struct hexlin_priv_data *priv, u16 baudrate)
+> > > +{
+> > > +	struct hexlin_baudrate_req *req;
+> > > +	int ret;
+> > > +
+> > > +	if (baudrate < LIN_MIN_BAUDRATE || baudrate > LIN_MAX_BAUDRATE)
+> > > +		return -EINVAL;
+> > > +
+> > > +	req = kmalloc(sizeof(*req), GFP_KERNEL);
+> > 
+> > Hmm... Why do you alloc this small structure (3 bytes?) with kmalloc() and 
+> > not just have it in stack as a local variable?
 > 
-> diff --git a/drivers/platform/surface/aggregator/core.c b/drivers/platform/surface/aggregator/core.c
-> index 7b1871eb7a6f..046fa63446bf 100644
-> --- a/drivers/platform/surface/aggregator/core.c
-> +++ b/drivers/platform/surface/aggregator/core.c
-> @@ -618,15 +618,17 @@ static const struct acpi_gpio_mapping ssam_acpi_gpios[] = {
->  
->  static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  {
-> -	struct acpi_device *ssh = ACPI_COMPANION(&serdev->dev);
-> +	struct device *dev = &serdev->dev;
-> +	struct acpi_device *ssh = ACPI_COMPANION(dev);
->  	struct ssam_controller *ctrl;
->  	acpi_status astatus;
->  	int status;
->  
-> -	if (gpiod_count(&serdev->dev, NULL) < 0)
-> -		return -ENODEV;
-> +	status = gpiod_count(dev, NULL);
-> +	if (status < 0)
-> +		return dev_err_probe(dev, status, "no GPIO found\n");
->  
-> -	status = devm_acpi_dev_add_driver_gpios(&serdev->dev, ssam_acpi_gpios);
-> +	status = devm_acpi_dev_add_driver_gpios(dev, ssam_acpi_gpios);
->  	if (status)
->  		return status;
->  
-> @@ -637,8 +639,11 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  
->  	/* Initialize controller. */
->  	status = ssam_controller_init(ctrl, serdev);
-> -	if (status)
-> +	if (status) {
-> +		dev_err_probe(dev, status,
-> +			      "failed to initialize ssam controller\n");
->  		goto err_ctrl_init;
-> +	}
->  
->  	ssam_controller_lock(ctrl);
->  
-> @@ -657,14 +662,13 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  	if (status == -ENXIO)
->  		status = -EPROBE_DEFER;
->  	if (status) {
-> -		dev_err_probe(&serdev->dev, status,
-> -			      "failed to open serdev device\n");
-> +		dev_err_probe(dev, status, "failed to open serdev device\n");
->  		goto err_devopen;
->  	}
->  
->  	astatus = ssam_serdev_setup_via_acpi(ssh->handle, serdev);
->  	if (ACPI_FAILURE(astatus)) {
-> -		status = -ENXIO;
-> +		status = dev_err_probe(dev, -ENXIO, "failed to setup serdev\n");
->  		goto err_devinit;
->  	}
->  
-> @@ -680,25 +684,33 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  	 * states.
->  	 */
->  	status = ssam_log_firmware_version(ctrl);
-> -	if (status)
-> +	if (status) {
-> +		dev_err_probe(dev, status, "failed to get firmware version\n");
->  		goto err_initrq;
-> +	}
->  
->  	status = ssam_ctrl_notif_d0_entry(ctrl);
-> -	if (status)
-> +	if (status) {
-> +		dev_err_probe(dev, status, "D0-entry notification failed\n");
->  		goto err_initrq;
-> +	}
->  
->  	status = ssam_ctrl_notif_display_on(ctrl);
-> -	if (status)
-> +	if (status) {
-> +		dev_err_probe(dev, status, "display-on notification failed\n");
->  		goto err_initrq;
-> +	}
->  
-> -	status = sysfs_create_group(&serdev->dev.kobj, &ssam_sam_group);
-> +	status = sysfs_create_group(&dev->kobj, &ssam_sam_group);
->  	if (status)
->  		goto err_initrq;
->  
->  	/* Set up IRQ. */
->  	status = ssam_irq_setup(ctrl);
-> -	if (status)
-> +	if (status) {
-> +		dev_err_probe(dev, status, "failed to setup IRQ\n");
->  		goto err_irq;
-> +	}
->  
->  	/* Finally, set main controller reference. */
->  	status = ssam_try_set_controller(ctrl);
-> @@ -715,7 +727,7 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  	 *       resumed. In short, this causes some spurious unwanted wake-ups.
->  	 *       For now let's thus default power/wakeup to false.
->  	 */
-> -	device_set_wakeup_capable(&serdev->dev, true);
-> +	device_set_wakeup_capable(dev, true);
->  	acpi_dev_clear_dependencies(ssh);
->  
->  	return 0;
-> @@ -723,7 +735,7 @@ static int ssam_serial_hub_probe(struct serdev_device *serdev)
->  err_mainref:
->  	ssam_irq_free(ctrl);
->  err_irq:
-> -	sysfs_remove_group(&serdev->dev.kobj, &ssam_sam_group);
-> +	sysfs_remove_group(&dev->kobj, &ssam_sam_group);
->  err_initrq:
->  	ssam_controller_lock(ctrl);
->  	ssam_controller_shutdown(ctrl);
+> This buffer must be suitable for DMA (see docu for struct urb).
+> 
+> So with a stack variable we would need to use kmemdup() before the
+> actual sending call, but that's what you did not like since v3 so I
+> changed it to this which now you also don't like.
+>
+> Let's dial it back to the original kmemdup() usage, ok?
+
+I asked a question. Since you have a good reason for alloc, just keep the 
+alloc then.
+
+Now I notice it's kmalloc(), why not kzalloc()?
+
+> > > +static int hexlin_queue_frames_insert(struct hexlin_priv_data *priv,
+> > > +				      const struct hexlin_frame *hxf)
+> > > +{
+> > > +	struct hid_device *hdev = priv->hid_dev;
+> > > +	struct lin_frame lf;
+> > > +
+> > > +	lf.len = hxf->len;
+> > > +	lf.lin_id = hxf->lin_id;
+> > > +	memcpy(lf.data, hxf->data, LIN_MAX_DLEN);
+> > > +	lf.checksum = hxf->checksum;
+> > > +	lf.checksum_mode = hxf->checksum_mode;
+> > > +
+> > > +	hid_dbg(hdev, "id:%02x, len:%u, data:%*ph, chk:%02x (%s), flg:%08x\n",
+> > > +		lf.lin_id, lf.len, lf.len, lf.data, lf.checksum,
+> > > +		lf.checksum_mode ? "enhanced" : "classic", hxf->flags);
+> > > +
+> > > +	lin_rx(priv->ldev, &lf);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int hexlin_raw_event(struct hid_device *hdev,
+> > > +			    struct hid_report *report, u8 *data, int sz)
+> > > +{
+> > > +	struct hexlin_priv_data *priv;
+> > > +	struct hexlin_baudrate_req *br;
+> > > +	struct hexlin_responder_answer_req *rar;
+> > > +	struct hexlin_unconditional_req *hfr;
+> > > +	struct hexlin_val8_req *vr;
+> > > +
+> > > +	if (sz < 1 || sz > HEXLIN_PKGLEN_MAX)
+> > > +		return -EREMOTEIO;
+> > > +
+> > > +	priv = hid_get_drvdata(hdev);
+> > > +
+> > > +	hid_dbg(hdev, "%s, size:%i, data[0]: 0x%02x\n", __func__, sz, data[0]);
+> > > +
+> > > +	priv->is_error = false;
+> > > +
+> > > +	switch (data[0]) {
+> > > +	case HEXLIN_SUCCESS:
+> > > +		if (sz != HEXLIN_LEN_RETCODE)
+> > > +			return -EREMOTEIO;
+> > > +		hid_dbg(hdev, "HEXLIN_SUCCESS: 0x%02x\n", data[0]);
+> > > +		complete(&priv->wait_in_report);
+> > > +		break;
+> > > +	case HEXLIN_FAIL:
+> > > +		if (sz != HEXLIN_LEN_RETCODE)
+> > > +			return -EREMOTEIO;
+> > > +		hid_err(hdev, "HEXLIN_FAIL: 0x%02x\n", data[0]);
+> > > +		priv->is_error = true;
+> > > +		complete(&priv->wait_in_report);
+> > > +		break;
+> > > +	case HEXLIN_GET_VERSION:
+> > > +		if (sz != sizeof(*vr))
+> > > +			return -EREMOTEIO;
+> > > +		vr = (struct hexlin_val8_req *) data;
+> > > +		priv->fw_version = vr->v;
+> > > +		complete(&priv->wait_in_report);
+> > > +		break;
+> > > +	case HEXLIN_GET_RESPONDER_ANSWER_ID:
+> > > +		if (sz != sizeof(*rar))
+> > > +			return -EREMOTEIO;
+> > > +		rar = (struct hexlin_responder_answer_req *) data;
+> > > +		memcpy(&priv->answ, &rar->answ, sizeof(priv->answ));
+> > > +		complete(&priv->wait_in_report);
+> > > +		break;
+> > > +	case HEXLIN_GET_BAUDRATE:
+> > > +		if (sz != sizeof(*br))
+> > > +			return -EREMOTEIO;
+> > > +		br = (struct hexlin_baudrate_req *) data;
+> > > +		le16_to_cpus(br->baudrate);
+> > > +		priv->baudrate = br->baudrate;
+> > > +		complete(&priv->wait_in_report);
+> > > +		break;
+> > > +	/* following cases not initiated by us, so no complete() */
+> > > +	case HEXLIN_FRAME:
+> > > +		if (sz != sizeof(*hfr)) {
+> > > +			hid_err_once(hdev, "frame size mismatch: %i\n", sz);
+> > > +			return -EREMOTEIO;
+> > > +		}
+> > > +		hfr = (struct hexlin_unconditional_req *) data;
+> > > +		le32_to_cpus(hfr->frm.flags);
+> > 
+> > I'm bit worried about this from endianness perspective. Perhaps there's 
+> > some struct reusing that shouldn't be happening because the same field 
+> > cannot be __le32 and u32 at the same time.
+> 
+> Can you propose a solution?
+
+Just do a le32_to_cpu(hfr->frm.flags) in the debug print's arguments?
+
+-- 
+ i.
 
