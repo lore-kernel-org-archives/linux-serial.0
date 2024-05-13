@@ -1,46 +1,46 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E97E1146583;
-	Mon, 13 May 2024 05:09:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A6EF146006;
+	Mon, 13 May 2024 05:26:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715577000; cv=none; b=j6sIyF3np+T+GrueyCiGgZxIpSzTB9XJqWZ7DFO45X46ou/PH6F1DaZdkN4QVVfTT+AH5Oj7QaRjrGsoeMeG1G22kiA8y9IjROgeCgL/VgzueShryB+tBZcQY8t0zrKI55JNnaLkSuftv4+BFq8yTbf7Oa7xMuZLVZlqClC8NwA=
+	t=1715577972; cv=none; b=ZvpHvaTywDqs6Fh5Imk89+0k2Aqd2Zr3XyBdgSZps1+WUAF3l2Ycw4WMVh37h+NmOTv9H/K6WjwUJFWvyzsm8zn1S1nEtYcAUVpL32A4qo8tSDmCRP/9WNAQxAKeaexGoORqK9F0o7CtX7TcwqseDaNV8NhzgX/uQGGdiWa5p3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715577000; c=relaxed/simple;
-	bh=m7BRxFRNJ/i5qEvdpvMAo/4WiXJ+xVDbUAjCQFpbrh8=;
+	s=arc-20240116; t=1715577972; c=relaxed/simple;
+	bh=h/nNwkdROHIhqlfkjh2JQ26tRYtuEy/4mF4v+a+sLKo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ljKGERldvTPdRiiq5pa4NECqvZiKKZ2mqJISBOExRux2Vb+mREKeiyWZ4ZGRxXP7asTxZI5mI2ej3OeE/f/yJeJz7PpdeTGkr6C7oPA1UWb/eouCJzIWFTvuPd2lPKP6rG1Ct2E9hzxl+q4LCCAEVCz0HlRwO0QoxPOjGilPAuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.47
+	 In-Reply-To:Content-Type; b=MkDksrSf3vstHax0CM+Knqmj8/TUCMW2y+WhkqBCrKe+gMs5kLS3iuNkLoBhef5aQH5GuPWn4vqtNuESiii5A9oJfV0GltYgcdQPuWuMPY2ziACvtCorC01WGLbWM7OGbFskC2dvFvpDzvsEQdAIvuAGR5QssNFbxNeu2XiDPmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a59a609dd3fso669118566b.0;
-        Sun, 12 May 2024 22:09:58 -0700 (PDT)
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a59ad344f7dso795005466b.0;
+        Sun, 12 May 2024 22:26:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715576997; x=1716181797;
+        d=1e100.net; s=20230601; t=1715577968; x=1716182768;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=E1AR7KFIR0Zv8q1Vup6Xfc1aVtPcvMbs2Yj9nMuS/xE=;
-        b=l5EIMbAwoRvzyzI/fYFZLQuovykbbAF4I/mEcIxNmiJ3xXJXbjF+0n8+pi86NIo9mt
-         DxG5ybZblT9RzNUoSqJ18p6cSHCl7XTNGNlir05oIhuAXxJIyHUn2dKgiUugd04SOz6f
-         gEwSMB/qx2fxS7V96gf4fC1RR7hWSvnHZ/TEr4yBifOFDd8Gau3hys5+3+v4Tnnw+5OD
-         bvJC+ki+BRJ//B5Eixmm1phkAfgQBYdg4xWTq0ddIbPmNeX4uxMsMjUFpalCldhcBPcR
-         5pbh3kKiCE0KbdzEUp/eQ7YD4Fk4n0jj7vFn5MQ4H5IHOd0PzwqQhp2mnIseXQV0GHmL
-         X97g==
-X-Forwarded-Encrypted: i=1; AJvYcCVMOGFk9oLt2NrrqpFiye5sIb4zUPnHQzr8swcCP0w+yjxufCYvvErTOoi4THe8L8ijKE8ovXVU7r/mhK1U/+uCy1L8133VFthzJMbb0DiTfeCeKsMQwYDbT7zJMgZSqY8B4hH5Q6B+4w==
-X-Gm-Message-State: AOJu0YwWaU61JtMRknT1y2bKzvHcZQjYGTDmA6Cps+YrfEdiN9EIHrl7
-	EAPccy17L91hrREWilqH4HnY8tADTjUgp7zl7OEZFqUPB03H+NLo
-X-Google-Smtp-Source: AGHT+IFbZk5FlUpnAareploZlBObFiaRcWQNSYsHULOhmW1YV/nhzjocxw/+pxJzm1CnScqTV236iA==
-X-Received: by 2002:a17:906:5649:b0:a59:aa7a:3b16 with SMTP id a640c23a62f3a-a5a2d18a9a1mr733159166b.4.1715576997093;
-        Sun, 12 May 2024 22:09:57 -0700 (PDT)
+        bh=qHLzZwQi5gHnfmzUd/O46iK9xy6a6Bk4cuL6KxXx1po=;
+        b=tbFq95sSv2sjFw5DklzmRm2LYSC3m7e0+Snj9Upcm3VgDSCNdrO4TlsT+3qbMqWrKE
+         O1D7eipsFKKDFSXru0vSnjoMVVk0QkrOb3TfU04Sz58ymEdcTkwTUGspXJTgd2p9G+tU
+         P8ncl8TFUHpsFU1xDhyaCLTbsHoujXZA3OU5veyDbJb4gBAWVSkwzRCasVNAuRNYNZJt
+         dz+KidcI0ZwB33jXkvsB5cuWEr7GQ+duCNPG0owmyv3E2N4SGn+NwNCetI6iOXPaqvZl
+         cr468ztqNKsE1a52v/QGR1Z4OuF7CAiP/rrAo26VPqBvcLRS3z14q2VgFmE2w87IppcY
+         x9Zw==
+X-Forwarded-Encrypted: i=1; AJvYcCVnYdAox/9nf0Icl6u419fDW83mXBx1Xi1ZRMm3wewBIJd6INnhTGPtOSFirBIt3fAnu4ZJfYSLfNJhXUMfj6o+d+b/iqepFhTn3kgUMZGcXj476JCqlaPR+uYRAOs6G/nmMjVrBw/6yzBLK2ALYUFdQgEhK0wNG7InxAMa5UY3Aa5dsao8O2y2zBqqoISUtVbn9HnA4aQ6s+8+WEjsHoZGucNpNmKO5nfKcN/u6vyA+x3fW62L/Zk/
+X-Gm-Message-State: AOJu0YxxiVffvhoPM6V5Ofn2NJzS+6MdiWp99q9t1AE01lRDAS/xKI+Q
+	M7Q94v+I+xaAl3f4e/2B6dSjjV2K95t9Gsq6hPFhYMLn5rJtsIHlNO8xh/hf
+X-Google-Smtp-Source: AGHT+IEQmj/CsAUX+RnrSsR/oOFTJkE8oGAEEKYrgMbWKGWvf2Q5jg/FggAEQ3LnT71BavYqOh1+AA==
+X-Received: by 2002:a17:906:4a42:b0:a59:ae6e:486f with SMTP id a640c23a62f3a-a5a2d68098fmr526771166b.65.1715577967912;
+        Sun, 12 May 2024 22:26:07 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a74367a36sm18178766b.169.2024.05.12.22.09.56
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a179c822fsm541509966b.138.2024.05.12.22.26.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 May 2024 22:09:56 -0700 (PDT)
-Message-ID: <3658e1d0-913c-4f31-aa92-06fbd8b717c1@kernel.org>
-Date: Mon, 13 May 2024 07:09:55 +0200
+        Sun, 12 May 2024 22:26:07 -0700 (PDT)
+Message-ID: <1405110f-5a1b-40d5-b607-72081e5153d3@kernel.org>
+Date: Mon, 13 May 2024 07:26:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,13 +48,29 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] vt: keyboard: Use led_set_brightness() in LED trigger
- activate() callback
-To: Hans de Goede <hdegoede@redhat.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
- linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240511152030.4848-1-hdegoede@redhat.com>
+Subject: Re: [PATCH v4 02/11] HID: hexLIN: Add support for USB LIN adapter
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Simon Horman <horms@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Marc Kleine-Budde <mkl@pengutronix.de>,
+ Oliver Hartkopp <socketcan@hartkopp.net>,
+ Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+ "David S . Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+ Benjamin Tissoires <bentiss@kernel.org>, Sebastian Reichel <sre@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+ Jonathan Corbet <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+ linux-can@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-serial <linux-serial@vger.kernel.org>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+ <20240509171736.2048414-3-christoph.fritz@hexdev.de>
+ <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -99,49 +115,27 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240511152030.4848-1-hdegoede@redhat.com>
+In-Reply-To: <4bf1a5e9-904c-584e-72df-71abc3f99bd2@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 11. 05. 24, 17:20, Hans de Goede wrote:
-> A LED trigger's activate() callback gets called when the LED trigger
-> gets activated for a specific LED, so that the trigger code can ensure
-> the LED state matches the current state of the trigger condition.
+On 10. 05. 24, 15:46, Ilpo Järvinen wrote:
+>> +	reinit_completion(&priv->wait_in_report);
+>> +
+>> +	n = hid_hw_output_report(priv->hid_dev, (__u8 *) out_report, len);
 > 
-> led_trigger_event() is intended for trigger condition state changes and
-> iterates over _all_ LEDs which are controlled by this trigger changing
-> the brightness of each of them.
-> 
-> In the activate() case only the brightness of the LED which is being
-> activated needs to change and that LED is passed as an argument to
-> activate(), switch to led_set_brightness() to only change the brightness
-> of the LED being activated.
+> The usual is to not leave space between cast and what is being cast. I
+> know hid functions seem to use __u8 but that's intended for uapi and in
+> kernel, u8 should be used (somebody should eventually cleanup the hid
+> function types too).
 
-LGTM, but could you elaborate on what behavior this fixes? Should it be 
-backported to stable?
+Apart from that, you are attached to USB, so this goes down to usbhid 
+(the ll driver). Are you sure the put-const-away cast is right thing to 
+do here? (usbhid passes it to usb_interrupt_msg().)
 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->   drivers/tty/vt/keyboard.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-> index a2116e135a82..804355da46f5 100644
-> --- a/drivers/tty/vt/keyboard.c
-> +++ b/drivers/tty/vt/keyboard.c
-> @@ -1033,9 +1033,7 @@ static int kbd_led_trigger_activate(struct led_classdev *cdev)
->   
->   	tasklet_disable(&keyboard_tasklet);
->   	if (ledstate != -1U)
-> -		led_trigger_event(&trigger->trigger,
-> -				  ledstate & trigger->mask ?
-> -					LED_FULL : LED_OFF);
-> +		led_set_brightness(cdev, ledstate & trigger->mask ? LED_FULL : LED_OFF);
->   	tasklet_enable(&keyboard_tasklet);
->   
->   	return 0;
+That is the only reason why you have the cast in there in the first place…
 
-thanks,
+regards,
 -- 
 js
 
