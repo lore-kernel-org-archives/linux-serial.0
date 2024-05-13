@@ -1,143 +1,115 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD16D14AD29
-	for <linux-serial@vger.kernel.org>; Mon, 13 May 2024 07:51:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFFFA147C91;
+	Mon, 13 May 2024 09:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715586664; cv=none; b=EJ4rqRN/0ZJeCl1TEDblGqLmFooz+KVmlon370FS7F875iGFVULIXKDoI4wKjcpvbBQfJspTvwhFU/dTOXgC7jGoimcLH3fH3y34R24bWgysXP2LTBerx1i5nkCn2ZaKNw3CSpSCZOuDuQOSlsS5bKQEHEfdGrJWXH4+znCOjOY=
+	t=1715594021; cv=none; b=gTXABifL8+mEdgZM1EeGSo92A7no2/mt5IsuCUk7istVFh3J745YEnP2gOmUqNH+o0LwMjZzbbR8oqI1TORg9JeP0IbYA2OUrx873MedZDQXDsoOSolUG7DbsrtqJ7wcA+9b/C7wAFIVC5Mi3nqnLrMJr3XsrHwN0mNUKJ8nBds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715586664; c=relaxed/simple;
-	bh=sd8RwfCQQ0625j7c4dL2YanT9l001o+OAibE/UMt+kg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RNxMICfLNEtDtP+ORjHbaytA8PA2FcvIj4y4NpetdtVDkjn5b/h0glPM6VJxgwHkWOarz1NCtS5dIziFfv4AWXRhKd6b3BHvBbhSlMEWv/47YfOivLw4CyUeax4dk6CvNu8mwAMLfGq8HHzBryOrM40yFuU+EcyZYHYvzx0J08Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=bF5HHQY/; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1715594021; c=relaxed/simple;
+	bh=pSaP0oKyXtPiLCTwVDsndP7Da0tNxbGDydC7EAOZaOc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KqzfSCuhqO96ADpsZCr4mobXXZlxtDfbKwDCCc9NAlKWsuoOnAa8TB1dUUWdu6Y9tmgWDpYf3c60dTA1MrpMw2KwetrjEEzp1lgkaTZqosGP9yZ7JHKJ0k2LPIlP8qghP4esWlri+AusACHfFti7N6r67BfrW5tPnyUToTi/FIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oDH8BtR7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="bF5HHQY/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1715586661;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ij7Ce+1vjj4AF4LhtW6l4Sryy06Ixrd5OMMpflY/6vc=;
-	b=bF5HHQY/jwzukh7Kgu7a65s0LquHIJJn/qLHCH+xqy4BKhbeiCy5VWJRis6MH6eYKo2uMB
-	FTvqAdaCmRWyGGjRRqWVPRVXB1dDMAx7oIUcMNavdWeivvfUAgSMQu9DoMhgqmmwHdnzUZ
-	fGpz7SZWlujMjWM+zqaDDqOWRE6EaDw=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-658-Wp1LxQHLMvqlOi5S5nKuuQ-1; Mon, 13 May 2024 03:44:11 -0400
-X-MC-Unique: Wp1LxQHLMvqlOi5S5nKuuQ-1
-Received: by mail-lf1-f69.google.com with SMTP id 2adb3069b0e04-52348f2e47cso281238e87.1
-        for <linux-serial@vger.kernel.org>; Mon, 13 May 2024 00:44:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715586250; x=1716191050;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ij7Ce+1vjj4AF4LhtW6l4Sryy06Ixrd5OMMpflY/6vc=;
-        b=Q2Hh96PS0SUK5LPX6TZyMKz9zLTb/vEoJAdHGKG5BabdcyP7VuJBFeGEbBft5xLnkX
-         l/DR//N/hiXVZSxIMHOHKA6gSmgavVMdnbzG1WL+GUUH/8adFpNC5tjddvcBWgzIPPDL
-         e5Cb8uihpq/XX4wivhFtHViOm9y/YcdYKoP4hUYbl/PL9X3SqNa5HYiKPwg5NNRaNwae
-         yc08vBwyLHr4rNUiAXN8RsNRt/rfUR9aBqUQ1h7bpe5CYBxZfZCmrMxz9NBYxjjekieP
-         6DlF7x+nILc1jM+EBUzQIkDx7hOBRBOG/pbIKC2TejRuBQE80VAY+lLJrKrLnP8cRr6X
-         ZNjw==
-X-Forwarded-Encrypted: i=1; AJvYcCVHggsjO3vd8H7jn+EwuJJXm7l7CIlOS5SKvZScjF9EKSffNi6TSpWr9eTFuW4tSsjUB5zY5AC5DzJ2bZDuiHdOV7nYD9QaEwddLq3g
-X-Gm-Message-State: AOJu0YyPxLuOYtoMZwWnXDJBn7K00WZeBn/iJ52DUhz4AGY1LTTXkb3/
-	FeQiKbwAd7eDXGXrzcabyolJHUG//7K/wVvvqiZDLIgwYTiR7Qa0usXb+9/fzrglA63HUFLYKuc
-	HSCFzW8SgtF0RgsYw+r03lB5esTp3oL+UINSnKE2sWuH110SWx/Vnqf83BWvQsQ==
-X-Received: by 2002:a05:6512:3441:b0:51e:150e:2c45 with SMTP id 2adb3069b0e04-5220ff738acmr4529283e87.63.1715586250194;
-        Mon, 13 May 2024 00:44:10 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHnqbDyj1A/OtnPBMpsqzH5/1o5Scx5us7rY3h0CnOagZbIoLYrkcSHKWYZjEYdW6zPUFrv2w==
-X-Received: by 2002:a05:6512:3441:b0:51e:150e:2c45 with SMTP id 2adb3069b0e04-5220ff738acmr4529270e87.63.1715586249741;
-        Mon, 13 May 2024 00:44:09 -0700 (PDT)
-Received: from [10.40.98.157] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5733c2c7e18sm5890099a12.76.2024.05.13.00.44.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 May 2024 00:44:09 -0700 (PDT)
-Message-ID: <02d826fe-2db6-4d7c-a599-0af4b4740a07@redhat.com>
-Date: Mon, 13 May 2024 09:44:08 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oDH8BtR7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A134FC113CC;
+	Mon, 13 May 2024 09:53:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715594020;
+	bh=pSaP0oKyXtPiLCTwVDsndP7Da0tNxbGDydC7EAOZaOc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oDH8BtR7U1DF64D91khI6qNkuu0IIMeFSn6k0bWuBvr6N7gvCZE+agcNrkqSUmjul
+	 xqcun+22g6m4282s6JvtoQDvBKxrtOgNFNQgEQlXePsE9Z9yrWBmAyYdt4o+n6F5NM
+	 btbDXu6kHmA08Ep1pgAKCLcTS+1i5iJZE0VfvoY0YA2XrQ7zVdVCP/bniB/1hR7BwZ
+	 XsJzN7zfTVjyqBdSOeva+VKdYH39d3sq2EKXkIuOpZg0qjDo2p8A1TU9D6JbhUpbWZ
+	 8O4bI70twUxCU6nRnI5ZXnghsNWD8+3muRVF1Zr4TQH005zkZVi7ll9WwQhA9PXKnv
+	 Ny/3PndzxRSWQ==
+Date: Mon, 13 May 2024 10:52:03 +0100
+From: Simon Horman <horms@kernel.org>
+To: Christoph Fritz <christoph.fritz@hexdev.de>
+Cc: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
+	Oliver Hartkopp <socketcan@hartkopp.net>,
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Benjamin Tissoires <bentiss@kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andreas Lauser <andreas.lauser@mercedes-benz.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
+	netdev@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 01/11] can: Add LIN bus as CAN abstraction
+Message-ID: <20240513095203.GJ2787@kernel.org>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+ <20240509171736.2048414-2-christoph.fritz@hexdev.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] vt: keyboard: Use led_set_brightness() in LED trigger
- activate() callback
-To: Jiri Slaby <jirislaby@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Pavel Machek <pavel@ucw.cz>, Lee Jones <lee@kernel.org>,
- linux-leds@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240511152030.4848-1-hdegoede@redhat.com>
- <3658e1d0-913c-4f31-aa92-06fbd8b717c1@kernel.org>
-From: Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <3658e1d0-913c-4f31-aa92-06fbd8b717c1@kernel.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240509171736.2048414-2-christoph.fritz@hexdev.de>
 
-Hi Jiri,
-
-On 5/13/24 7:09 AM, Jiri Slaby wrote:
-> On 11. 05. 24, 17:20, Hans de Goede wrote:
->> A LED trigger's activate() callback gets called when the LED trigger
->> gets activated for a specific LED, so that the trigger code can ensure
->> the LED state matches the current state of the trigger condition.
->>
->> led_trigger_event() is intended for trigger condition state changes and
->> iterates over _all_ LEDs which are controlled by this trigger changing
->> the brightness of each of them.
->>
->> In the activate() case only the brightness of the LED which is being
->> activated needs to change and that LED is passed as an argument to
->> activate(), switch to led_set_brightness() to only change the brightness
->> of the LED being activated.
+On Thu, May 09, 2024 at 07:17:26PM +0200, Christoph Fritz wrote:
+> Introduce a LIN (local interconnect network) abstraction on top of CAN.
+> This is a glue driver adapting CAN on one side while offering LIN
+> abstraction on the other side. So that upcoming LIN device drivers can
+> make use of it.
 > 
-> LGTM, but could you elaborate on what behavior this fixes? Should it be backported to stable?
+> Tested-by: Andreas Lauser <andreas.lauser@mercedes-benz.com>
+> Signed-off-by: Christoph Fritz <christoph.fritz@hexdev.de>
 
-It does not really fix any user visible behavior. This is just something which
-I noticed while looking at all LED trigger activate callbacks because of some
-LED core patches I was writing.
+...
 
-The code before this patch gets the job done, it syncs the VT capslock/numlock/etc
-status to the LEDs of a newly registered input device.
+> +#define LID(_name) \
+> +	struct device_attribute linid_##_name = __ATTR(_name, 0644, \
+> +	lin_identifier_show, lin_identifier_store)
+> +
+> +LID(00); LID(01); LID(02); LID(03); LID(04); LID(05); LID(06); LID(07);
+> +LID(08); LID(09); LID(0a); LID(0b); LID(0c); LID(0d); LID(0e); LID(0f);
+> +LID(10); LID(11); LID(12); LID(13); LID(14); LID(15); LID(16); LID(17);
+> +LID(18); LID(19); LID(1a); LID(1b); LID(1c); LID(1d); LID(1e); LID(1f);
+> +LID(20); LID(21); LID(22); LID(23); LID(24); LID(25); LID(26); LID(27);
+> +LID(28); LID(29); LID(2a); LID(2b); LID(2c); LID(2d); LID(2e); LID(2f);
+> +LID(30); LID(31); LID(32); LID(33); LID(34); LID(35); LID(36); LID(37);
+> +LID(38); LID(39); LID(3a); LID(3b); LID(3c); LID(3d); LID(3e); LID(3f);
 
-But it also ends up calling led_set_brightness() on all already registered
-capslock/numlock/etc LEDs which is not necessary.
+Hi Christoph,
 
-So this is just a small optimization, not a bug fix.
+Sparse flags that the structures defined by the above code are not
+declared elsewhere, and therefore likely should be static.
+> +
+> +static struct attribute *lin_sysfs_attrs[] = {
+> +	&linid_00.attr, &linid_01.attr, &linid_02.attr, &linid_03.attr,
+> +	&linid_04.attr, &linid_05.attr, &linid_06.attr, &linid_07.attr,
+> +	&linid_08.attr, &linid_09.attr, &linid_0a.attr, &linid_0b.attr,
+> +	&linid_0c.attr, &linid_0d.attr, &linid_0e.attr, &linid_0f.attr,
+> +	&linid_10.attr, &linid_11.attr, &linid_12.attr, &linid_13.attr,
+> +	&linid_14.attr, &linid_15.attr, &linid_16.attr, &linid_17.attr,
+> +	&linid_18.attr, &linid_19.attr, &linid_1a.attr, &linid_1b.attr,
+> +	&linid_1c.attr, &linid_1d.attr, &linid_1e.attr, &linid_1f.attr,
+> +	&linid_20.attr, &linid_21.attr, &linid_22.attr, &linid_23.attr,
+> +	&linid_24.attr, &linid_25.attr, &linid_26.attr, &linid_27.attr,
+> +	&linid_28.attr, &linid_29.attr, &linid_2a.attr, &linid_2b.attr,
+> +	&linid_2c.attr, &linid_2d.attr, &linid_2e.attr, &linid_2f.attr,
+> +	&linid_30.attr, &linid_31.attr, &linid_32.attr, &linid_33.attr,
+> +	&linid_34.attr, &linid_35.attr, &linid_36.attr, &linid_37.attr,
+> +	&linid_38.attr, &linid_39.attr, &linid_3a.attr, &linid_3b.attr,
+> +	&linid_3c.attr, &linid_3d.attr, &linid_3e.attr, &linid_3f.attr,
+> +	NULL
+> +};
 
-Regards,
-
-Hans
-
-
-> 
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->>   drivers/tty/vt/keyboard.c | 4 +---
->>   1 file changed, 1 insertion(+), 3 deletions(-)
->>
->> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
->> index a2116e135a82..804355da46f5 100644
->> --- a/drivers/tty/vt/keyboard.c
->> +++ b/drivers/tty/vt/keyboard.c
->> @@ -1033,9 +1033,7 @@ static int kbd_led_trigger_activate(struct led_classdev *cdev)
->>         tasklet_disable(&keyboard_tasklet);
->>       if (ledstate != -1U)
->> -        led_trigger_event(&trigger->trigger,
->> -                  ledstate & trigger->mask ?
->> -                    LED_FULL : LED_OFF);
->> +        led_set_brightness(cdev, ledstate & trigger->mask ? LED_FULL : LED_OFF);
->>       tasklet_enable(&keyboard_tasklet);
->>         return 0;
-> 
-> thanks,
-
+...
