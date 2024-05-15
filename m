@@ -1,150 +1,88 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from dianne.skoll.ca (dianne.skoll.ca [144.217.161.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A5241F60A;
-	Wed, 15 May 2024 10:33:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4286013EFE4;
+	Wed, 15 May 2024 13:49:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.217.161.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715769209; cv=none; b=aVhFqq3QTL+xXGEgg/JxAxqx0n8koSJx1ggFwDjlG5B5Ai9IZwECS2GdR4OfIx1SXmgstTXfhJBTcqWcThotvNHdWcVMUbedVaLod7gy27C1hptlivxlTfViiYAQ6vbKGiWa+JpCrGp7v5ZBpd839dL+ZWN/W/Nss5GZTrrJovw=
+	t=1715780993; cv=none; b=W5eQVfEOH7GZCV2h+WEdHnYdY4ntApRUqKRWjoSz6ZkESMyNKGxBT24QnNyTNK0YQ+4un2Huy5K9ttAT/jn5bYlhFni6dtNYsxm58XEc78YdwxGmaY2wb30zjIHmYAyReF/xx+RrHkBy/vXnbCrnfCzM6tcf363rZfnXJTHGY7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715769209; c=relaxed/simple;
-	bh=RuTxmaXPW9TWUDmseSr162fsqIHkGzTbkbkEh1b3r6g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pi/6fsQwpr+Q6A3NWXX9M5K6MfUfrnXOS4/up5OKmOVG2bkuReIIrkF7YHvbSMNJn0kHNj+rK5LDRw9UH1C6AkcGkjStOFygX0mUEZwTgDRft9A1OA+jfIfQXdooDs9DW+ZG/uhQ2jo41A240hRGQaeH8MNeGmfzdgTNa2znkRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-571be483ccaso1561362a12.2;
-        Wed, 15 May 2024 03:33:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715769207; x=1716374007;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5E2sB2pBYr3np4xznZt/8xphLK9uMA6XWTkmu1qlwTg=;
-        b=rJQTG7+VNYBZ8N+i7upSLT2Ef7w3/l1MMu9TZQ2o+t/Ze7QELsCPmy9g0Sse3iojfj
-         t9DxZUxNfFViovpUOHs8IvO67kVjX3recfG2lEc6eqYl1u8a1ALIspCrsuyhksOlwh2c
-         EbkiV3Mfa8F4aPqv4jECBRJpBMrvWkj04Y6Pr/VOqF/Bz6bt89KkQzd0u+n7yURbeWv9
-         Shbehg+URCwcpqOl/6T1oyxQhFL4OBeX9Iq17gtEiVYkLHpdFTJPvcHcYRJ+X9oOm7rY
-         U9JJVmMEbkITgmngTMqzQIfD8p/mh7e8Okx9ax3Fh1YNZCZAyqAnS+0YmzAFhG8ACc9X
-         OG2g==
-X-Forwarded-Encrypted: i=1; AJvYcCWkjeV+zq1eVExTPb9rFawCm1JDM78RdCbVARdULy4s0HKyfMqCy2CbF5tiivOXcOo1fsH01q/gVM5hKPVqCXaP9uJVFF3yJt8DEl6aMJdEbw5SCeJ3DI+ZHGrUxs/p8WMA2Q4shmjSg1xu
-X-Gm-Message-State: AOJu0Yxss2Eh6v9RJ8XzO90hENRqHxmYWMOgr1xNMvIHfgoK2+WjQ1ob
-	ob/oqNk+V5F6yRtXUNeExrJGwD6g3pQ4nK/0XtEIZESG4Da3ephV5pIlpg==
-X-Google-Smtp-Source: AGHT+IFQo9xPQ/v3hcF+R/+n+5QkL6dRZKpRiO7brbnwT66NFGy+dXtF5mkjdTsH0xqlF7cP13Ndiw==
-X-Received: by 2002:a50:8757:0:b0:572:cfa4:3ccb with SMTP id 4fb4d7f45d1cf-5734d5c1352mr10791703a12.8.1715769206479;
-        Wed, 15 May 2024 03:33:26 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5733c2c7dd9sm8594830a12.69.2024.05.15.03.33.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 May 2024 03:33:25 -0700 (PDT)
-Message-ID: <c937cd80-ecd5-4d41-ad72-668661898039@kernel.org>
-Date: Wed, 15 May 2024 12:33:24 +0200
+	s=arc-20240116; t=1715780993; c=relaxed/simple;
+	bh=ph199rVCo0b/EbNzAie21c0eAUet5W0TtmezyXByfqw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=P2YqgzFg2/ZKNJp1QiGIs63eL4Ooy0JeGnexQguvlMRO83wfBIVCJ3CmxYT2nkiqrvliDVmpZquD+CTaIzMhrjahY33E0HV8IrE/vWv6NR87DghHzRkmUSQOaL5OhptnQCFifUHzHs6uTdzzmAq6OmV1UtgYQ3KpAFWcMb3fVAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca; spf=pass smtp.mailfrom=skoll.ca; dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b=BXG0mP7q; arc=none smtp.client-ip=144.217.161.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=skoll.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b="BXG0mP7q"
+Received: from pi4.skoll.ca ([192.168.84.18])
+	by dianne.skoll.ca (8.17.1.9/8.17.1.9/Debian-2) with ESMTPS id 44FDgrdt1088392
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 15 May 2024 09:42:54 -0400
+Received: from gato.skoll.ca (gato.skoll.ca [192.168.83.21])
+	by pi4.skoll.ca (Postfix) with ESMTPS id 4VfZDF3bvFzgd52Y;
+	Wed, 15 May 2024 09:42:53 -0400 (EDT)
+Date: Wed, 15 May 2024 09:42:52 -0400
+From: Dianne Skoll <dianne@skoll.ca>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: N_HDLC line discipline: Race condition
+Message-ID: <20240515094252.5f63fce9@gato.skoll.ca>
+In-Reply-To: <c937cd80-ecd5-4d41-ad72-668661898039@kernel.org>
+References: <20240424173114.035ddd7b@gato.skoll.ca>
+	<20240425140127.6504ade1@gato.skoll.ca>
+	<c937cd80-ecd5-4d41-ad72-668661898039@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: N_HDLC line discipline: Race condition
-To: Dianne Skoll <dianne@skoll.ca>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20240424173114.035ddd7b@gato.skoll.ca>
- <20240425140127.6504ade1@gato.skoll.ca>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240425140127.6504ade1@gato.skoll.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skoll.ca; h=date
+	:from:to:cc:subject:message-id:in-reply-to:references
+	:mime-version:content-type:content-transfer-encoding; s=canit2;
+	 bh=ZLc/hObTwxSDwUWL0r4G3UTmP3/rKzazoUIqIj/jfAc=; b=BXG0mP7qeWlb
+	8b3t+6UXjLFwfsfzJSjxJBDyggW1Ty2kdz7j8PmAgg9+w66uUqA7/aWt5iiMXYGP
+	VsA/ndoDLP4FBXNySVzbdOH0pnEOerZs/tlWzId8mMBKoMa4mIx9cSoOyiMuD3i+
+	9RlflKwC6nVZ7+z5ZjewKKqZyNv0hI0zVGuzvokxBfYVjncRNFoXplEu6fibSYHp
+	QDdISJLR11vZiQBqdcUzc2hl10OBNEsehwddEKbmNv0hBjUklVuiv1v9dZJEGyis
+	9WK4apA4PU3zKwtU8S7UB0EGuU4fYVWxz84OpHKLfvumNoWtFykH8p5mNj+hPSDd
+	bOrrSdBShA==
+X-Scanned-By: CanIt (www . roaringpenguin . com)
+X-Scanned-By: mailmunge 3.16 on 192.168.83.18
+X-Spam-Score: undef - relay 192.168.84.18 marked with skip_spam_scan
+X-CanIt-Geo: No geolocation information available for 192.168.84.18
+X-CanItPRO-Stream: outbound (inherits from default)
+X-Canit-Stats-ID: Bayes signature not available
+X-CanIt-Archive-Cluster: tWKWaF/NcZkqjWIj0BEJTBHJhwY
+X-CanIt-Archived-As: base/20240515 / 01cnpGS3r
 
-Hi,
+On Wed, 15 May 2024 12:33:24 +0200
+Jiri Slaby <jirislaby@kernel.org> wrote:
 
-On 25. 04. 24, 20:01, Dianne Skoll wrote:
-> I have (somewhat) narrowed down when the kernel bug appeared by installing
-> Debian 10, 11 and 12 in KVM virtual machines.
-> 
-> The bug is NOT present in Debian 10, kernel version 4.19.67.
+> I can repro even with 4.19:
 
-I can repro even with 4.19:
-posix_openpt = 3
-grantpt(3)  = 0
-unlockpt(3) = 0
-ptsname(3) = /dev/pts/2
-open(/dev/pts/2) = 4
-ioctl(3, TIOCSETD) = 0
-ioctl(4, TIOCSETD) = 0
-write(3, Hello , 6) = 6
-write(3, world, 5) = 5
-read(4, buf, 2048) = 6
-buf = |Hello |
-read(4, buf, 2048) = 5
-buf = |world|
-read(4, buf, 2048) = -1
-write(3, Hello , 6) = 6
-write(3, world, 5) = 5
-read(4, buf, 2048) = 11
-buf = |Hello world|
-HAHA!  Try #2: The two writes were combined in a single read!
+Huh!  I managed to make it happen on Debian's 4.19.67
+kernel.  I had to redirect stdout/stderr to a file because printing to the
+terminal slowed down the writes enough to prevent it from happening for me.
 
+I guess it's hardware-dependent because I can't reproduce it on kernel
+6.6 on a Raspberry Pi.
 
-Could you recheck?
+> > So I guess it was introduced sometime between 4.19.67 and 5.10.209.
+> >  I'll take a look to see if I can do a git bisect.
 
-> The bug IS present in Debian 11, kernel version 5.10.209
-> 
-> The bug IS present in Debian 12, kernel version 6.1.85
-> 
-> So I guess it was introduced sometime between 4.19.67 and 5.10.209.  I'll
-> take a look to see if I can do a git bisect.
+> Were you able to do so?
 
-Were you able to do so?
+Unfortunately not; the older kernels failed to compile on my machine and
+since I'm not a kernel developer and don't actually use any software that
+relies on N_HDLC, I gave up... sorry.
 
-thanks,
--- 
-js
-suse labs
+Regards,
 
+Dianne.
