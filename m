@@ -1,34 +1,55 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60B0F38DD6;
-	Fri, 17 May 2024 17:24:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61ED545007;
+	Fri, 17 May 2024 19:58:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715966683; cv=none; b=YlbcdPPDWkEfKrpXsQszbVC1/hCY4rVTs8Edw3tUP5hmn61/fx6z6qmMLz1LBeTW/T52sQRftpardiItuq+qg/YRPe3YHiYo+V3ha0ZBargytUsdq6LozpUCxbQRc47dvH/yX+mIWYhIFK+jh95ez+1de3P3ejDH8NDcNYMkcRw=
+	t=1715975887; cv=none; b=QBnizXwoPvhs7ZSB7z4J0s67uOnqmD/WVEVAyDgjH9AHziF2OsWw7L7RMTx/ySCxqDndeUHZdkHnxHiwdi8Q1EYI1YbywzPcj50uMfa+v94pM8ZoCvZo3TMxymT97Ts6XDoXHiHfYuMj1GPiNi3dVs6F/rAcwSqHrRZ8kCJDa9g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715966683; c=relaxed/simple;
-	bh=rjTs1bN+hgsUK6tXA1jKQzxe9KRIcBfqG1Hp0wZaUbE=;
+	s=arc-20240116; t=1715975887; c=relaxed/simple;
+	bh=9Ar2XINDoPbMag4DWT0GPQzhpsfd87f7xxKyprFXG3o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mC+C4AXu2Q7xTb0QBiyteczK+lfbsbWp5+ssUE06N0CuO5nPKcrrOJXhkv2kVPe7jC/NOq8o1gESWTSIrtyU8XGULstQm9xDlqVqdc4STxTGZ0LRwCWJshiztCdRMuN0WNOye3SY/ZxZNpnTjVpTdE4HzO7kc3YUHP8PbJ9bDxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M5hRCUIj; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=BHJa4gUJlxNFsftYInjEzN2wpuLwn4oloaRbOnC1D1HEhZ8KKIwK0sm6v8BcBAeL/447d5p/fq8khiOLWY8lmy3TTxhdj7acpj+XzOrAObh+XELuO7JdN+vaVRn6377Pxs9pc0RNtM1WGBNGKRt5yRAZAezez/Ss6V9VUBU2GnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VHFrBsjy; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M5hRCUIj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BACC2BD10;
-	Fri, 17 May 2024 17:24:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715966682;
-	bh=rjTs1bN+hgsUK6tXA1jKQzxe9KRIcBfqG1Hp0wZaUbE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=M5hRCUIjC9rVrZwTGH2u6b8M8J93C9mUq6Ubs923sLq747034VxoBbds4Ebnw0A0k
-	 37M1vm9bDfDzm15Voz3iUqflqKvqGmsXSMqbr54U+ZaXE59eoVoDb/4ZSrUy2aXICv
-	 jUYtDnHX/agDZIs5BMMS46zYKiUxoG7wkABQz/KkO33wx3t31uS1HH3o2QmXd3WmhS
-	 vO+ti7w1BIrn6O7m72Rp0qsjdzWH+HdhaM219dgY2qB1OABitAXi17VAklciDmdd5T
-	 gfv/a783xy85MpepntAdmuUCCWBmd2HeScUEJ4BdK7imRdaZGq3DoAkeC9U2z6n4kG
-	 UvowbL+WniRIg==
-Date: Fri, 17 May 2024 18:24:37 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VHFrBsjy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715975886; x=1747511886;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9Ar2XINDoPbMag4DWT0GPQzhpsfd87f7xxKyprFXG3o=;
+  b=VHFrBsjyiG3s3uSQc5JLM4MB3KpVMgCv0AhAZeUpxPTlqBYEvXtEl9t1
+   6c2cvMpoN4ZqRBLVtKCnYBHqMhXm8RCpSmA0oXJojTXuk8+JBIjdW+9Si
+   rT9pRH03096VVtMQiXWAyHVQ+6IAhINMV/u+Sfhk1VGcp4ypc28PqwgwZ
+   bFkfBepNBJrT78SS6nCd/Zr+/iFmD0mCXPgO9pk2GbiZ9xaVyl3tcV7mY
+   tmmGjLmkps9+EXiYtK+g0C4qdVhDu7jde6hsFCahqlSriOYfxDcl7OvQT
+   A1EG+OohC7I+R9FVCqw3Exa3UpFXTSEWjs1Deg41ZWfc9DA+T62dTt7Y1
+   g==;
+X-CSE-ConnectionGUID: eX+WY19SRvKHY/EmZOyYPA==
+X-CSE-MsgGUID: cSdfKAsgSZu/nztb2y+Gfg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11075"; a="23590269"
+X-IronPort-AV: E=Sophos;i="6.08,168,1712646000"; 
+   d="scan'208";a="23590269"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2024 12:58:05 -0700
+X-CSE-ConnectionGUID: S+ehf2qBQCSW993GIRdWFw==
+X-CSE-MsgGUID: uuFhaBxaRpO65a529+6E3g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,168,1712646000"; 
+   d="scan'208";a="36704434"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2024 12:58:03 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s83iK-00000008c2B-3SMs;
+	Fri, 17 May 2024 22:58:00 +0300
+Date: Fri, 17 May 2024 22:58:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Mark Brown <broonie@kernel.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-spi@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,50 +58,38 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	Conor Dooley <conor+dt@kernel.org>
 Subject: Re: [PATCH v1 1/1] spi: pxa2xx: Move PXA SSP bindings to the correct
  folder
-Message-ID: <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
+Message-ID: <Zke2yG-WPkaWg5PV@smile.fi.intel.com>
 References: <20240517171103.221856-1-andriy.shevchenko@linux.intel.com>
+ <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="yglz+J6siImMAjPA"
-Content-Disposition: inline
-In-Reply-To: <20240517171103.221856-1-andriy.shevchenko@linux.intel.com>
-X-Cookie: Function reject.
-
-
---yglz+J6siImMAjPA
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, May 17, 2024 at 08:11:03PM +0300, Andy Shevchenko wrote:
-> SSP stands for Serial Synchronous Protocol and has nothing to do with
-> UART, also known as USART, where 'A' stands for Asynchronous.
->=20
-> Move the SSP bindings to where it belongs.
+On Fri, May 17, 2024 at 06:24:37PM +0100, Mark Brown wrote:
+> On Fri, May 17, 2024 at 08:11:03PM +0300, Andy Shevchenko wrote:
+> > SSP stands for Serial Synchronous Protocol and has nothing to do with
+> > UART, also known as USART, where 'A' stands for Asynchronous.
+> > 
+> > Move the SSP bindings to where it belongs.
+> 
+> It's a serial device which is also used for other applications (the
+> other one upstream being audio) so I can see where the current binding
+> comes from and it's not super obvious that spi is especially better
+> here.
 
-It's a serial device which is also used for other applications (the
-other one upstream being audio) so I can see where the current binding
-comes from and it's not super obvious that spi is especially better
-here.
+Hmm... okay. Then it's question to DT people. Consider this as a report.
+Because UART (aka serial) is definitely not the place for SPI/SSP bindings
+either.
 
---yglz+J6siImMAjPA
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+With Best Regards,
+Andy Shevchenko
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmZHktQACgkQJNaLcl1U
-h9Dkegf+PfmAzJMnJ7JxbPX21j0FUyCOCV8ZS8xqbV52T3VQ0lfj0ocnx7b4gTFc
-G/brmViTfVU6isTz1SEMEkYm04dRfcCkzCQNi22abMDops27xiKvIhOhw6WlrzUN
-vljrkpudj8MI+Gb76u/dY/MXjnjASj5o3qFSIAZZoZO7B8ws6ofjLeAdynAY/Re9
-z0dokasDuiujuIeO4QY70ZNj4jezgFN/8Wnp+DUpa07XyQvTV6lvplKIRBVUbOPt
-gREMbGy996hEf55KgEwsr3Nft6HahmHVd1T4CVI6gnTHYE1OzoXzTbFmUyHeXb08
-ffJckIM6CffQdDRBbmCEeYSH/HPaaA==
-=Argb
------END PGP SIGNATURE-----
-
---yglz+J6siImMAjPA--
