@@ -1,102 +1,144 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A354067A1A
-	for <linux-serial@vger.kernel.org>; Fri, 17 May 2024 14:51:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA1812F5A7;
+	Fri, 17 May 2024 16:16:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715957485; cv=none; b=gZ9N2GRrmq+dt7sOcAqoj63irWt7yt0GG5Onu2FOwVKhxkSelGiFa0EcqOSimrdMOmJ3aAKfI3E9SdT8eWdZWfEKiJJMSRQwC+qh7yFy74tC5FvbMFpAD/W5haiF3j/dzTYo1pla8xINUdUlTxKI4aCWhtZq/IYo/S3h+41yXHs=
+	t=1715962611; cv=none; b=tMd/WJuEmLrruorLlKU8lxFjObz81CMNE1qAWB1OwtkiZt3UqaqJ9S211hrFsqAbucQIP36yNN+n0DCdBlgtY1YNlis6HH/zX9L8XJbQQjbp56stRXJj+8CCB1VE1pfe0zYI7xtpeCJonCHH2yuquNHWwYPXjQarAhNy/NtButg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715957485; c=relaxed/simple;
-	bh=1aOVgw6hSgat6smy0lHMoNOBWlOufPQjFo20G/kY2sE=;
+	s=arc-20240116; t=1715962611; c=relaxed/simple;
+	bh=sYIW6xiRFDKpO0E7qs68ZN7uyOIsz2AfW+6kxgmPMW4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gR0Yp9O72IBruzJgoF9DkjNR1L5C73smmp9oN/hKk+XWeXBnPFdmnCDbCVlIMoxQ2WYogfuRVWd24KzIPYzkHEjcGptWgYnYavioipsEH8+U5lhzVBjCiDq+xtvuc6fCaEbj3zdqjscIuV4GOTp76QnUpoMdIqPuTZjYKbikJcE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=bRTxpj/I; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=e67F7o6ue7QN4bAcn5kwxl+cS9tYDBTmBHKk9/8AU4d2R4nncjQCX8bjPvrytWH+f/pj0VDZpG+AG21Q12LKWSlv/4s3D9cNiRhMWyl1OnCd5w+zD/cG8BEzcQk4mNqCu4k4+sWv7SL5YI2HTo5CsQljizYKFrjmg19izZqNF+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aO3rRbTs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="bRTxpj/I"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-41fd5dc04f0so1618855e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 17 May 2024 07:51:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1715957481; x=1716562281; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=u1U5jaDar7OfZ99raGWnoHg7cFZibmJ1aTqNn0ttXSs=;
-        b=bRTxpj/IblmdTrVz9jPdjA02CBwgQhIQGFeNdKndT9KjyNTETRvDogbciVpdjB6tE5
-         cWEsCIfStXkQVEgyo/B7JvHqrOM4QrbsAdqptilRiyTl8cEp0n7hZvbSEHXlNZ58PuHP
-         C6r1y2juBKpD1dVKVu3V31Cy34N+FTTxeBk3SYZNwiEckTFrqBdNks5CE/IAsAUYJXkz
-         aWOCMKCu44htiDocsNttkMi0RDRJnU2n2i40aY0G2WO4g6svcEJ6+KBIgODaO4e7OZYU
-         hDBMGH14pphwJspN6n3JoyRScMIULwLGyGIZincb2QZTX88Ts/ZaHHmzguOjiu7eB8nd
-         /Usw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715957481; x=1716562281;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u1U5jaDar7OfZ99raGWnoHg7cFZibmJ1aTqNn0ttXSs=;
-        b=SbDxxLeOJyjxnw7+2IaGuPVRmLdE3Arwe7Nz21dhpbVDNKVzq6lNmXTIfsu6QGNirz
-         YVJfQzg8eUhhbh7fOiHAJg4J7+cjmosmeo/9d8uzB3l+D30xJZCY25+WLJdq4m48u0Lj
-         BPKbxyzS4S7i0YCESHY9xqr7ByTC7CW+XRA6W72mC1n1HUhVAGrdkkoXUuq4yV2Y2V9S
-         yk51TZ6foR8E8yQ+sZ46uRdMP69oi6/ym5MJadG3VJ9kPwc8tq1QGli4uiUuS3xXQWMv
-         RnVXvpcLr1sZkK6/yUDOe5VqYddfsjntKu4iBn/ChcZUWP6FpLPWn4hHNC53MgWCVEGk
-         q4dQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWfDH1MHg5JUdWhZDIBbe7Tc0tUkA0eKEs2pQAPryvnwDPjZXqGvbYVFg4ATSdGALmCo9a5OBy2KafMvw1C7aXAEyV4/98WOh/oAtCM
-X-Gm-Message-State: AOJu0YxtPiawJDAsTwe0y51+N+ik0w5rfnd+nmfSOQ97o3ncyV94pDSO
-	B8qkbNsf4VsHnX71momivEnd3KdzgJ8WHKBmeUOemXErThzD1peDiStCWXBQQc0=
-X-Google-Smtp-Source: AGHT+IGSNgAtmWQfb0w8Kl65ihzrKqCApb6t06Ku0iJmdFWRb730Oyxyj8fQ3oS7uwaOTj9nQj/rrg==
-X-Received: by 2002:a05:600c:19c8:b0:41f:d84b:1ade with SMTP id 5b1f17b1804b1-41feac5560amr234770785e9.27.1715957480894;
-        Fri, 17 May 2024 07:51:20 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4200e518984sm242602035e9.23.2024.05.17.07.51.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 May 2024 07:51:20 -0700 (PDT)
-Date: Fri, 17 May 2024 16:51:18 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aO3rRbTs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B40C2BD10;
+	Fri, 17 May 2024 16:16:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715962610;
+	bh=sYIW6xiRFDKpO0E7qs68ZN7uyOIsz2AfW+6kxgmPMW4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aO3rRbTsGNqJTNoEOosC7U8ZPlbZsUJn4QsQ0FYLQ4lV+L6hIZ8E7tZGEmOgCp+3S
+	 nx5sfSd6N3BjMVdy8MVnQPR0Xa1o1RwD8Msu53pdvMJOtYpiXn3JzCckwCricC3iy7
+	 E0GSeOILvH+9HAhs/mkdsvTXPBNUv/4ZiO3XV818Pvtrtfu8jepDNVg/QNtYf7ufMy
+	 3KZr6h6F9eozJmMX5qAJn0xS7maVdDSeAt7Uz1lSbEUS4Y5gcRfRDEGmqz/XiKKceL
+	 MqKg/px5GKaE9M00BlqwYqo0RkDxgL0B7fobm1ncnMS1Wd/ztFdun0zeKujKjVgiyZ
+	 pY8V39DEjDnMg==
+Date: Fri, 17 May 2024 17:16:45 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Hal Feng <hal.feng@starfivetech.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	=?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Hongyu Xie <xiehongyu1@kylinos.cn>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v5 09/30] serial: core: Introduce wrapper to set
- @uart_port->cons
-Message-ID: <Zkdu5v-ifyGNCV_n@pathway.suse.cz>
-References: <20240502213839.376636-1-john.ogness@linutronix.de>
- <20240502213839.376636-10-john.ogness@linutronix.de>
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/3] dt-bindings: serial: snps-dw-apb-uart: Add one
+ more reset signal for StarFive JH7110 SoC
+Message-ID: <20240517-lion-supplier-f4d15b0edcff@spud>
+References: <20240517061713.95803-1-hal.feng@starfivetech.com>
+ <20240517061713.95803-2-hal.feng@starfivetech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ET0G0aOiXXDFM+f4"
+Content-Disposition: inline
+In-Reply-To: <20240517061713.95803-2-hal.feng@starfivetech.com>
+
+
+--ET0G0aOiXXDFM+f4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240502213839.376636-10-john.ogness@linutronix.de>
+Content-Transfer-Encoding: quoted-printable
 
-On Thu 2024-05-02 23:44:18, John Ogness wrote:
-> Introduce uart_port_set_cons() as a wrapper to set @cons of a
-> uart_port. The wrapper sets @cons under the port lock in order
-> to prevent @cons from disappearing while another context is
-> holding the port lock. This is necessary for a follow-up
-> commit relating to the port lock wrappers, which rely on @cons
-> not changing between lock and unlock.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+On Fri, May 17, 2024 at 02:17:11PM +0800, Hal Feng wrote:
+> The UART of StarFive JH7110 has two reset signals.
+> Both of them are necessary for JH7110 to initialize UART.
+>=20
+> Signed-off-by: Hal Feng <hal.feng@starfivetech.com>
+> ---
+>  .../bindings/serial/snps-dw-apb-uart.yaml          | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.ya=
+ml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> index 1001d2a6ace8..a6396c5cbfb1 100644
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -13,6 +13,16 @@ allOf:
+>    - $ref: serial.yaml#
+>    - $ref: rs485.yaml#
+> =20
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: starfive,jh7110-uart
+> +    then:
+> +      properties:
+> +        resets:
+> +          minItems: 2
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+else:
+  properties:
+    resets:
+      maxItems: 1
 
-Best Regards,
-Petr
+Thanks,
+Conor.
+
+> +
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -48,6 +58,7 @@ properties:
+>            - enum:
+>                - starfive,jh7100-hsuart
+>                - starfive,jh7100-uart
+> +              - starfive,jh7110-uart
+>            - const: snps,dw-apb-uart
+>        - const: snps,dw-apb-uart
+> =20
+> @@ -82,7 +93,8 @@ properties:
+>      type: boolean
+> =20
+>    resets:
+> -    maxItems: 1
+> +    minItems: 1
+> +    maxItems: 2
+> =20
+>    reg-shift: true
+> =20
+> --=20
+> 2.43.2
+>=20
+>=20
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
+--ET0G0aOiXXDFM+f4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZkeC7QAKCRB4tDGHoIJi
+0vZ0AP0SDG3gdkl/SROzsnRuQ3RQz0FByypwdFgIWR36PF1aywD/fUifiJN9EkJS
+DWNaC36x9nDD0qUF9URCjGhdPH1TMws=
+=KlsG
+-----END PGP SIGNATURE-----
+
+--ET0G0aOiXXDFM+f4--
