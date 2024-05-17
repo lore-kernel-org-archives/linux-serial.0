@@ -1,26 +1,25 @@
-Received: from CHN02-SH0-obe.outbound.protection.partner.outlook.cn (mail-sh0chn02on2100.outbound.protection.partner.outlook.cn [139.219.146.100])
+Received: from CHN02-SH0-obe.outbound.protection.partner.outlook.cn (mail-sh0chn02on2101.outbound.protection.partner.outlook.cn [139.219.146.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A662A125AE;
-	Fri, 17 May 2024 06:18:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.146.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B134404;
+	Fri, 17 May 2024 06:33:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=139.219.146.101
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715926726; cv=fail; b=Tx4Yyv2ajELtyeepLE9Kg+q21bzNUulcRX6qSL7IfbYEFmdaQfX/CUXEaY8uzIQvV5JGIB91ryownIAi7438jxkNLNxsLgmNLRqTn7JIQeLYH/R9OnrCTPsRZYowtyvMV7sEEVCAybByQZ5bGzF/LV4QWUysl7JFbVQHMQYaC2U=
+	t=1715927609; cv=fail; b=gEy/DIlzoAVtj83MuqC8lwQU//wbhvfWkJ7F2cbrTq+AfTfCp1yvqmE5p1rTckqiYegk4hfOJYnGBAP6B1YNXgbLBnZRMum0IJcLDBdDWm+8x3nshBKhBgiY8V5LsPH/HTl3eXQYOIxAEkBaFk2zvAlraP5uOTxseIHIgHx5ews=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715926726; c=relaxed/simple;
-	bh=nVLlZzeC0Us5FkY+nUPc4t+BRTtI++PuZaC+XgC7SB8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=pYLNlJ6Yhlw6A3hZJPEY/Xq2IPsO5DPsb0uyzwCUzIiaVeXab8gqodvltJGhKbbTm5NKgz23jajbTVzyqJvnY4nrBnb/bjvziI07l3ZludanHCoRS8gMsKFJZNNcP9q49U5Ofce2J/R5BYooJUW1ZgH20sRlx+ah7qVyIhzNttY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.146.100
+	s=arc-20240116; t=1715927609; c=relaxed/simple;
+	bh=r2UqC70KrqVWdlWdqPn6KKzkK9izA845qtEZiHrGBQs=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=dMe3WSytWSvhSG0H8O5Jgxx2JpAm+2Ngw/PfAJL9Cg/9bd90/i3QgJA7pvxBQuT4M3iwuWA3jcaOdlb160vOq5SlltBf3PBaM42UlcmiGhA9v42svCLP1NcffgSHL6TFD8Eg5NzG6RcADmSLUSoSBrtyGDkdORqsxXvb1pc+f0k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com; spf=pass smtp.mailfrom=starfivetech.com; arc=fail smtp.client-ip=139.219.146.101
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=starfivetech.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=starfivetech.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Omk2gL9YSbHYX10YsFCgR2wkYDHGJ1Jm6CGzp04XYP3tRZSu124+oPbNFmplZC6Z4WqSeEYWG95CVMbNW4Zr50FRbZHEzyGCv7mOtlTD+Gu4VHvVJJD9+IG5IB3wEQU3mLFHUKdvibeZahNf2EqdXTfZMqVC9qQnDvC5k2ZZ1d9xTKxjonKhoE2GyK41hdehdAfpkuHtd5ZeDBKCuzn5T1MfLqwdizurP2rb437YDkKV89fnVDRrE7Ofo7O819Pq2av/M5G6NL8m2mde4UClE6w21trCEw04T09/UkCkeC3OQVSq5F1EhbJtJyCA93NjF7VF5reOfELrXyhh1RsGtg==
+ b=nCODFjQCIsci/Z4lW129bxNA4JNL2Y8qI/Onr3T3sf6Llhhj+/8RJz+1rQy1EOIiBAnvnbgPeMXY02vAn9915kgw+xhXFdZWRFfVwQxtv9ppMsTUqLf+WrErh65VlNigZYrlKtzgJtsdBXDvGwdQ2BAmLAEyAPVZEjwqQpZPTJQ2Zw7svkc3ZPJKiS7gwK7ACv/9cfm1Afm4DqIiIwvb+7JQnTDwQU2jO5e23p3fBRhoGrTZM9GS1wUyCvrZlv0MQTXLiky1sX9Pr7X794k5rrHJ77SsUGexWwDZpJxE+9mw2s9+ZtOL7yODVPKRK6VyCLQludlSQ+3fWkv6BeMSzw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IE4zIxAhMRPh9qWj9lE/eBl6HO2y+aTeVuj1F4gxdxQ=;
- b=XOCsxzoCh6u+u1hiCIrVzVuOkY3HLLShTyxR36g5f7FdQoDT+WVPe2SloHXEIWJq8klLxnYRr+6EUCjPUxKavnKY6np+PJfB9Oya/9gVJMpCHsewX4w7wTgaMRQCAfbIM4eKEJEhQUxW0Ui9fssa2l5A0yAajj8DqJ5H7q+Rk+nW3U+ersWPn1Z2Cv6yqcFMoi8QWVX/kJlKpLj7dBYLAju8T3Y9VBCz8m0tapr6rD+f7lJTPaxQpHnH6zrB0kwJil3g7THxv6tYfab0O9gCbbZwIOL5h/ycrx/oQbc+7ooFxtF9C6qPSiurGoUPO9CC+KCa8q18+EK/Ej6BfZo92w==
+ bh=i6Tih7vkpntM2JZIpBPkQty3njo7thVYiUmFvqckrJg=;
+ b=Ko4WgYMRK2hAn/BDOLE0APa3DaXUPTtPZxH+NjNIU46YMT8nieWla4I7WnXMHAp5KT5LhOVDBWwoHhx0I6i6gKcvcph1e+tzWqmDaVHfxfmNUU5BC5aKuMJVA5Kbjus6zhquKHaLjUAvlNWf0gC85FhM1YYKn8zZq7UWXf52AzoWEUMlcaH0UdJAu8WcVLo/fGLkB6NPhBg0WYZozCLe5EZFaPtZ94V5Gu6uEhlF+1Doib3H4fBhsfdwElq0slBQOEU12TQOs+u8GwZkPf62CPJIE3sB+1hjKzuzMvNqa8dWbNUjbLJ09o/KjYfTvzEF8D8O7QEfMQQ3zYSql5mYOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=starfivetech.com; dmarc=pass action=none
  header.from=starfivetech.com; dkim=pass header.d=starfivetech.com; arc=none
@@ -30,11 +29,11 @@ Received: from ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
  (2406:e500:c550:7::14) by ZQ2PR01MB1164.CHNPR01.prod.partner.outlook.cn
  (2406:e500:c550:12::13) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Fri, 17 May
- 2024 06:17:24 +0000
+ 2024 06:17:20 +0000
 Received: from ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
  ([fe80::5de:15b9:3114:4f45]) by ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
  ([fe80::5de:15b9:3114:4f45%5]) with mapi id 15.20.7472.044; Fri, 17 May 2024
- 06:17:24 +0000
+ 06:17:20 +0000
 From: Hal Feng <hal.feng@starfivetech.com>
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -52,12 +51,10 @@ Cc: Emil Renner Berthing <emil.renner.berthing@canonical.com>,
 	linux-serial@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 3/3] riscv: dts: starfive: jh7110: Add the core reset and jh7110 compatible for uarts
-Date: Fri, 17 May 2024 14:17:13 +0800
-Message-ID: <20240517061713.95803-4-hal.feng@starfivetech.com>
+Subject: [PATCH v1 0/3] Add the core reset for UARTs of StarFive JH7110
+Date: Fri, 17 May 2024 14:17:10 +0800
+Message-ID: <20240517061713.95803-1-hal.feng@starfivetech.com>
 X-Mailer: git-send-email 2.43.2
-In-Reply-To: <20240517061713.95803-1-hal.feng@starfivetech.com>
-References: <20240517061713.95803-1-hal.feng@starfivetech.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: SH0PR01CA0012.CHNPR01.prod.partner.outlook.cn
@@ -71,162 +68,72 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: ZQ2PR01MB1307:EE_|ZQ2PR01MB1164:EE_
-X-MS-Office365-Filtering-Correlation-Id: fde5e8fc-bfec-485e-4ac4-08dc763904ab
+X-MS-Office365-Filtering-Correlation-Id: 122dd484-3aa7-4ea1-9d9e-08dc76390266
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	WMY847P/GwP1fHRINUFrMDoBR6ljjcfGnVnYI8s3ORUgpv2CbwjSbs95eCCYR03i6bl4ozXQ/nlGSbQsjl1jOlDnA4ZLjQsdzPH8bKTJAfES4nVRUL3JzqBEknzLQNr+db9bemf8doazSq9pPXP0+ytyLGymBZNAh5PmnC0SIyLtjJwsyMcfAlWEO7WYhj8swn68cztaydCgIweod3d8tnJDZzyFtlO7gw3l3PEAjAhAHhaQwE3V24jrb14L2kvLqbUwVknIuqJ0O0ssv+xYsqXiWum16xxXgtUP4YT8uJB6zHuadpfT47MeA6UJgR41L0dSBOcap9omJRoip6Gcypj5/+FHf8TWTlqHeVkJo9evL05ZR/NoPqTlBsYkL7HYZ3RWcNhXBldNiAOHg0rxWb8ImMflmTD3tC2mcS6jCVRpWXX/xJOHimBf/lFB0FX9Ech2Y5GBg/uYPPsKS+i7W2Yp1McDDOh+6CSB0TbSaKPVqdWw9pn3d3xCWlvuSdIi+Pxpy+nWAvh3OWy2t7zq842ywynwjQITqogZ4dvOWiw7wwFcsP1ffC4EOHi5QY0r4htDI0RiC5tmOyR6Drk20YL/KzKbNrY+OaT6kqztMADGbsHGbFSwlyXfgVHMqdXb5E3nZyPt9GQFhsDjQSoXiA==
+	hWfM8a5fXU4LW3XsisYOSgk/3HMoLkZZioTuTxgC1pCrju/bhegNAxbrzJmhmufXrfFgvPmOiKmmsG78nzKFR7RWJQDQ/+M/D99HceIiM8LYaCwZCJozKUASjubMyoy/r/DGwYfhr8/MNat+7JL/Y36gzz3ZCwhJro+1wdlEWRIPA5oblLs1WVa8nOo1gXEKx2U9mZ0VTgZxCPhAeB1kwnXko6swoSnQQ4l+AtKBtXdYqUyvIxQWDWqlOmHh2aPxvX/LlSukEJgbVDl+SLdQSGNI+qoZVH+vaP+s3LpxnjQEMA1IkoWRpsX9bEzexikZjZx71nNzT9jf6sQrY7McjCO8JYDz0JaKclq8Ht6SwuOGrSR8rLwktWSARbjGYg6BxlGV+EHcxG5ZpCh3LTwvTOAovGAF5Mw4YODJ+6dPbTOHKT3Rjbr7w/QgedVKxl/uT+UWnSe/NE5v6cgJUI/5eLxmsybjGKqDV0zHdNrxu1gEI1JPQwPSecZRx5oieElqDOEAn5slqoEAmRYDwbOTlwlIIkS9sFczPtFPMKdH2jcMnt0iIMtmyXpVKKuDmOdic3PEUZ4Z596wBTd8a28yhUDa/2tuOiGTFTX6EV1jAgLSkiYGKG4HuetRu1nxfKYwrJ/LobMLf6X4+INFyU3v8Q==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(41320700004)(52116005)(7416005)(38350700005)(921011);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?IaJ+p3XH640YzhI7qK28IjPHQZfTs8ZD827YY6U0AMAtauhFvpD0cOVmQg0X?=
- =?us-ascii?Q?u+UcYOtHixSS94P3xVVcC0Qdktxbc0JdLBMMGlLxf7IIUg0NoJtO6zx9XWN5?=
- =?us-ascii?Q?OZxmmQWSKCsl4FQGeMJF61aTyy9vQNzFZCLZ79B98KvesVQuZLJtayzewhxc?=
- =?us-ascii?Q?I+g8GuLiCsfXoTm/5QTbhT/tbI+4SODqXng9a389Ri4ftrErXro+vmIZ13C3?=
- =?us-ascii?Q?frhbGDiCCOvYKC1caYEdXZ32QAyGRCphpN63YH8WKoGAdHhLHwFZsMykx7fO?=
- =?us-ascii?Q?kruFSBCkkbgub15IeGT+e84R0FH+wZMgQYAhHC/GhZFqcRmIZHQEl2G6enn1?=
- =?us-ascii?Q?O9DnnT239iP0Bc6600bkzGjARBU3G2v9AJhkPDxbXiBfD4koSVIWrubz/efs?=
- =?us-ascii?Q?6m+c3fyhofUgBtklhjrlwzdNaAmm3pCPl2fAyEIq5j2oLjQVfMz3wmiKmmZO?=
- =?us-ascii?Q?LsZZ1xPp7V8C2lLRVLzdODbIqM1xUeM4K5WjpiDfFV2Pm8HN5QsaJVwxm2TP?=
- =?us-ascii?Q?gopgzvVDaW3PQtYmsEqktNYZGFUoox/OQvN6U1MCPPp+F1bFoSKZwdbgtNwy?=
- =?us-ascii?Q?zxBZdjBc5RwiuhznNGHTzudSIUTPNLLIhLrUZcqgD4s3ULKZDr2AZkUyyCom?=
- =?us-ascii?Q?wSY/RWcx5y4r64YTx7T7QHdUxdEOEkmGAOVrzQM+gRteHu/HxRkmRZEVCs0B?=
- =?us-ascii?Q?Iw6kVcLZl+5+2zGyaQnhMnkowSGwub0/LbyPvRK+IfAxLTVRFPmRrUyHYhFs?=
- =?us-ascii?Q?VhBsB6EAt/D1OkaiIg8iOSA+PWiUzi//AF2SKMyORYQJlUejVH53fBvw+ivj?=
- =?us-ascii?Q?uInV2aZrKVv5MHSkuCmSyxxCPck15sxHy3Pv3s+E5826y805FMXhLNpT8wJV?=
- =?us-ascii?Q?jXrSAvgkTy+OI4dKIEy+GbO21TAsY5I7TawbNSf/Pm7C73e7RnoXj/5SfS/4?=
- =?us-ascii?Q?GvnP2HDx3USotTHEgZyC5SYUNHjjuG0YaQw3L9KJHkSMvGv0X3twRBYA8LjR?=
- =?us-ascii?Q?rV0fMc8Z/uXLEinPcDYhZ5CCmZ7MFKhHFcd371Q+DGiuZ6m4P3WvzhXZVEC2?=
- =?us-ascii?Q?9xmtkmE3Hqz+inrosfab6LIOaonM4gYBGFyjEGBUIvMnI6uEQYEM9PtfmI8G?=
- =?us-ascii?Q?nz2TXqKpR8rEWXoxsiup1M07hmlIrAwiem+AEdPur24O5xRdHOJ9T9H4/Abq?=
- =?us-ascii?Q?683j52fKdHoRFpy10ir4drBKSCpb+H2cRUrWIJWyz3XYAdBmt4BLgXfy8VMK?=
- =?us-ascii?Q?5WiCgkD/iW49GP3FPP9Flc4LXg1AaBiwH/XqrJ5dCxEp8lkjnCJ90fu7Q+BJ?=
- =?us-ascii?Q?1rrGBxT15P1C0kv2RiJEVGDwHr3PKO85zz1eWz7grybnFe763G50/Mus43zf?=
- =?us-ascii?Q?DNv5gi5d5Uwwj958rSV5ficJqGvrqMYSz8SzlHb5+HwZpmx5unmTuR2CNfNZ?=
- =?us-ascii?Q?IUvuA9uVmL2FGePyKTaUFP6GaajpL26it3OwgLf5yBD0PiOrjz6LXNoZUwrb?=
- =?us-ascii?Q?yPcwLekmhESkvdKoXW/bD7ndqu3cGLPw+bVu01+0u8KdXkNxO6fykvYme/e/?=
- =?us-ascii?Q?Vw6kKrbFhCrQ2kEXYdHSNvPU8SIIU2moTS08x8q+l2V3gaTKQkPfIK6LGu3E?=
- =?us-ascii?Q?oA=3D=3D?=
+	=?us-ascii?Q?1iuc1zH1FwWBYrukmDJksmVdpYMt1ZQmHhFYaxzZ5+hMhsnxjothO9cC5vW1?=
+ =?us-ascii?Q?zsXqTtzuO4UIhWPHLpnXADvytb0jenFs4TeCf45bniQA6aFLm0Zz8OtNb0tM?=
+ =?us-ascii?Q?AQf8rwQX+y4BxI5OrGaqKdVU7NWQZz2/uFBehRG8SM1fZxaKR4JPbCDXJKLj?=
+ =?us-ascii?Q?DDSi6zKdj4YdoNDfOIs+eAhn0S7oEqhx1XGBt1osAE0e7dELD+zxpzfCUMtD?=
+ =?us-ascii?Q?gYXNOe+lS4yGu4vl4tFCyY2YdKkymKBxUxU4E4pm8dmLhI7ND9Xka1L20RE3?=
+ =?us-ascii?Q?xGvnhzHjHIV2HXmXBfdZ6l7KHYi+pwX967kMCtY/lrVzB5SoHnTh5HmZyPWA?=
+ =?us-ascii?Q?/9H9bgWA0O/udk4ngASk/Jsap4wPsv2MSdRaWB4yW41ifrkfCaM/PooNxLo8?=
+ =?us-ascii?Q?hP5ylDehlwCENS0pdk2MZ8D3m0N1Gv1UU+DZoA5edxED6KtOrdZ2bCdqTmzJ?=
+ =?us-ascii?Q?T9nbbEb/rbu55v7fchBaWbaWWOo4++Nb3xkLz1hheCvmoa60jPA7rOn7Qd1c?=
+ =?us-ascii?Q?4CymywW0ja7N2fKBHkDPFSZut6I/oics3XKsvWz7+jLMBwp1s6r9beLq70yj?=
+ =?us-ascii?Q?FZyD03Fn55Td+ri6c6JpNJ/O6V9kqYeCRqZgTL9xpETDfgPlcxvasD63wu4P?=
+ =?us-ascii?Q?aExhYb3oyUY8pH9eQH260+K/CDBAe7zXvo6I3becl3/w9wFkW17IvKLwFcr+?=
+ =?us-ascii?Q?UsgonJU00YaaWu71pV1hVfDsCy35R48RorxEmNovJoa8TPAR8/ViXHVNzSt3?=
+ =?us-ascii?Q?Vi7MMoEwnAP6bnvwZJNSxeC5PUaWzuKpFEMKdQyoiUHsC600psJZuJhySDMi?=
+ =?us-ascii?Q?56KGh7//y6WhlrdGTc3hKIDJvQZozpAAoOcK8ueCt2KitjkeXoaq1KyIkc3q?=
+ =?us-ascii?Q?lKxQQYALPvRfHw7tguG3Isw0+U7d6oI/WcdmIQC2YJSrurpFhCuAetDCj7Qo?=
+ =?us-ascii?Q?JOIrLE7p9qe16Ft7Vkx8TiexJ1puJRdpFiJNuIWYPxZ/okWrs58h7IqDwvow?=
+ =?us-ascii?Q?OUPuop7VkEznU+RdTIJmZvZbh+k3iz1XhJi56+LRmTfvUxQA5Yw2MgOU2v8M?=
+ =?us-ascii?Q?iikX3Ezry8wd7MtQx4RhJFErNns88wnERLyeTp90YWLg/VTatzb4MqYn4fFW?=
+ =?us-ascii?Q?wsBKV5Zbc8t+3qKZsQ6C4hOqe/ZmPcLBavcS1M63P+ZD7s/YQq09/PpA9CNj?=
+ =?us-ascii?Q?IMWGrOxxs6ItVyB/giOd5sFFZubB4r3AtGNEPdThPWSi1ouiKIRTguoHD0S5?=
+ =?us-ascii?Q?7XytG1IvJ94dKdIlUoda0kT51GFwGl0GUUEIZA/uN4uZYJhF3vHVb6BSZw+g?=
+ =?us-ascii?Q?tmD+OpbdV3F3M5WQvjEZzD9Cc0SCX1i4JNFkKgjJcdy8Ei+GsHwPJTcYYF2n?=
+ =?us-ascii?Q?Rmb/ylkkzvI3GoWDbNhaPnCiF4AG97MkHfzBLkm4JaI7j1W8ctUOG6JeGqDQ?=
+ =?us-ascii?Q?LV+OC2D7zH0aqjaH4ZWJznXIdqgWbXBD+Plb+4H3s7VR7JZ9bmWOGn5snTcy?=
+ =?us-ascii?Q?NI6UDz8MWQ9U39ORCTQmjAk1R9KUxe61DqTK8VPXf+5M72kQ+ewIlFeBDTy+?=
+ =?us-ascii?Q?7ThFiDgjseCWYPn8/iGMWL4z5yaGw8B1n0xQdYAxRr65KMg3W3R5BjJtIVio?=
+ =?us-ascii?Q?+w=3D=3D?=
 X-OriginatorOrg: starfivetech.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fde5e8fc-bfec-485e-4ac4-08dc763904ab
+X-MS-Exchange-CrossTenant-Network-Message-Id: 122dd484-3aa7-4ea1-9d9e-08dc76390266
 X-MS-Exchange-CrossTenant-AuthSource: ZQ2PR01MB1307.CHNPR01.prod.partner.outlook.cn
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 06:17:24.4392
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 06:17:20.6574
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 06fe3fa3-1221-43d3-861b-5a4ee687a85c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZdU+GRXhlw/fRG2nyinryx7R2G2TRexKTC2MlfgfQdbr0B48ZsHPXAoAgWMo8hK4XQctoX8UfF9LQ6V8VN5lhJL7wfaMaeYL9eMqxNWZMh8=
+X-MS-Exchange-CrossTenant-UserPrincipalName: MR5VcgBhUz+QiaSRKnFCFFhioWZqmIGbASIrx9+CZGQDj9BDAM9sbx9Bc/7h/+diVgXHkRByuvLykmc2NEMsObMtFMQblAfKcynNvZtzYrY=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZQ2PR01MB1164
 
-Add the core reset for uarts, which is necessary for uarts to work.
+The UART of StarFive JH7110 needs two reset signals (apb, core) to
+initialize. This patch series adds the missing core reset.
 
-Signed-off-by: Hal Feng <hal.feng@starfivetech.com>
----
- arch/riscv/boot/dts/starfive/jh7110.dtsi | 30 ++++++++++++++----------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+Hal Feng (3):
+  dt-bindings: serial: snps-dw-apb-uart: Add one more reset signal for
+    StarFive JH7110 SoC
+  serial: 8250_dw: Use reset array API to get resets
+  riscv: dts: starfive: jh7110: Add the core reset and jh7110 compatible
+    for uarts
 
-diff --git a/arch/riscv/boot/dts/starfive/jh7110.dtsi b/arch/riscv/boot/dts/starfive/jh7110.dtsi
-index 4a5708f7fcf7..872f52253a2e 100644
---- a/arch/riscv/boot/dts/starfive/jh7110.dtsi
-+++ b/arch/riscv/boot/dts/starfive/jh7110.dtsi
-@@ -387,12 +387,13 @@ plic: interrupt-controller@c000000 {
- 		};
- 
- 		uart0: serial@10000000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x10000000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART0_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART0_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART0_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART0_APB>,
-+				 <&syscrg JH7110_SYSRST_UART0_CORE>;
- 			interrupts = <32>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
-@@ -400,12 +401,13 @@ uart0: serial@10000000 {
- 		};
- 
- 		uart1: serial@10010000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x10010000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART1_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART1_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART1_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART1_APB>,
-+				 <&syscrg JH7110_SYSRST_UART1_CORE>;
- 			interrupts = <33>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
-@@ -413,12 +415,13 @@ uart1: serial@10010000 {
- 		};
- 
- 		uart2: serial@10020000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x10020000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART2_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART2_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART2_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART2_APB>,
-+				 <&syscrg JH7110_SYSRST_UART2_CORE>;
- 			interrupts = <34>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
-@@ -642,12 +645,13 @@ stg_syscon: syscon@10240000 {
- 		};
- 
- 		uart3: serial@12000000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x12000000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART3_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART3_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART3_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART3_APB>,
-+				 <&syscrg JH7110_SYSRST_UART3_CORE>;
- 			interrupts = <45>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
-@@ -655,12 +659,13 @@ uart3: serial@12000000 {
- 		};
- 
- 		uart4: serial@12010000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x12010000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART4_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART4_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART4_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART4_APB>,
-+				 <&syscrg JH7110_SYSRST_UART4_CORE>;
- 			interrupts = <46>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
-@@ -668,12 +673,13 @@ uart4: serial@12010000 {
- 		};
- 
- 		uart5: serial@12020000 {
--			compatible = "snps,dw-apb-uart";
-+			compatible = "starfive,jh7110-uart", "snps,dw-apb-uart";
- 			reg = <0x0 0x12020000 0x0 0x10000>;
- 			clocks = <&syscrg JH7110_SYSCLK_UART5_CORE>,
- 				 <&syscrg JH7110_SYSCLK_UART5_APB>;
- 			clock-names = "baudclk", "apb_pclk";
--			resets = <&syscrg JH7110_SYSRST_UART5_APB>;
-+			resets = <&syscrg JH7110_SYSRST_UART5_APB>,
-+				 <&syscrg JH7110_SYSRST_UART5_CORE>;
- 			interrupts = <47>;
- 			reg-io-width = <4>;
- 			reg-shift = <2>;
+ .../bindings/serial/snps-dw-apb-uart.yaml     | 14 ++++++++-
+ arch/riscv/boot/dts/starfive/jh7110.dtsi      | 30 +++++++++++--------
+ drivers/tty/serial/8250/8250_dw.c             |  2 +-
+ 3 files changed, 32 insertions(+), 14 deletions(-)
+
+
+base-commit: a38297e3fb012ddfa7ce0321a7e5a8daeb1872b6
 -- 
 2.43.2
 
