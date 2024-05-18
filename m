@@ -1,157 +1,76 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fritzc.com (mail.fritzc.com [213.160.72.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C3639FC5;
-	Sat, 18 May 2024 11:41:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3F0D53B;
+	Sat, 18 May 2024 18:30:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.160.72.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716032500; cv=none; b=qWFw8Rb1ZQIslgosxd86OPTsg01xm0cXIOwmGCvwKBqcH8812lUkec/gP2V0xMl3ya5GmpiH4Odm4zzVWlU0hBsFrGi+XST/SUlTaZSNqq1huw6xLWFTOXN/8YDkvPdl11ZF3DPV34fIvUwlYJYYCSboPvewoTSCwzB/zYTueiI=
+	t=1716057022; cv=none; b=CkRgOR8nxU7zd07dNz3T56j9f/yUSEK2lVZkwN/IUvSUgOnf3xYS9K2yD0ldaJUwpD1c7is6H3qHViJeRN2aSxjhreoRLPpJvNzGk2ej2hVQ5WkASWt7tqnqwrqXKBXATzmVAbijq7nEd9Z/jlFf47L6Yr4U/aO90jWcpCpY8LA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716032500; c=relaxed/simple;
-	bh=ur57ZY+2aICTIPOpezi/vJnYRMVcdjk1kendQiZu52Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BwFYUJqmSKDw/W/7UylPN6lSVKKV7UsbOWpjSF7bwGMzvaL7OvAuvgcGe9wojIesP7faLJX4UWjdyhk+AacfYi8u2006kCAX0uW57md5zKRa+rx0Qrv9lhJRE1IicX+NdytQM2OCsJAY3yPbeizx7p/8y9femsZf4np/Nowvr1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LQidwy/2; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1716057022; c=relaxed/simple;
+	bh=QD0AeuS6ruZUVuMGyzujUhdrK/dqTqMUs5qdHROyZ2c=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Q+ihEpARIwOLIPdfnhGKWoyz6KDziqUEl/mcLB6DSnnV8cM0ddpI41C39r/QCbZ0Lt1xovMWgVKQBJEGL3LsdiAw7vi3sfTKKFsZfOOCJNchN3O/4+BbWl+Ht3ryOrNoW0hOWHqiQlwO8SVWlqoUkMdrtOqvVDDuZ0WwERp6g7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de; spf=pass smtp.mailfrom=hexdev.de; dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b=eweixlyF; arc=none smtp.client-ip=213.160.72.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hexdev.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hexdev.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LQidwy/2"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1ecc23e6c9dso33170665ad.2;
-        Sat, 18 May 2024 04:41:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716032498; x=1716637298; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=nGZELmCIhJ0Llb0Ot0Pxzsc4Vz/WbJAcy06wKqjrN/c=;
-        b=LQidwy/20EWzDPdF5hI9iXbcDBJQwm5SQpdk+k2IteyN17Afgik0iBcz0+soW7eF7e
-         SGKYK3oqJ9pSmjLgFIDp9B6jFFfb6umHPvpZSvFq7SAb9W2zQRGTrG1d3czCKWGgXUiB
-         0X6rq2/l7FbW8GxTRvEuV84QGHmpMl1vdtAWIXmFJwabRiadBkIWet8/H7AbA6rIu4NN
-         0URj39Qnb9mqV3fzFo8LmDdT3O3nTTy1Iq+8YdZUAOef4nzOcRM/mVb2g3Z8aNZRd1ik
-         pEdkF29WeHZ3dETo0CmqXGrnsj/0yQqWKg+3ZEd8CN+TfITDZCpKy42Tcv1+bbSvGCne
-         tQuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716032498; x=1716637298;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=nGZELmCIhJ0Llb0Ot0Pxzsc4Vz/WbJAcy06wKqjrN/c=;
-        b=EW3mTrthNyJDucjW5vzGbZvW1b98NqogpiUWT1dWhS/ogw1P5jIn1z796HCl46ODJ6
-         xBdEYVnKr4GCP1F65j8jJu75aq7+9f3QKoGA2P5BzDa/J0DckJkLFS4lYejv3KgLa1Dc
-         hgiXfr9KGnmTSz31HVgpnKNEkhoMKNdIlCbb77aHGgihtiF7fS9uAtfeUZKovrkFWPsK
-         CbZeCrvHaUMvyLqYLcmpJK0mwlSPy7vXe841leVJqkwo9UGXeuS1V1OITcf+y77oyldC
-         cUMC9xJaaGrhZgDkJoDSc5OeRbYhAwNQeJIf/qknMFRrRjAIK5lMnZ47QXMLGRb7zwFM
-         I2lQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW4FrpXGevclL+6/7+/DI9rRlsVYQypZdGs9GBVjE45XbsrV+aMzHLScZCAaMM+zRJmbd9uh477f71z4ll4hwEYlfkE7/MaLz4UCuoG8CbttHu/jktSV5YEjbQrkH+2DSCq2jO+wuyQYffp
-X-Gm-Message-State: AOJu0YxMtt93OyCek1H5/tB2hdt3YxJ3mz9aSBHW+LrQ/ubhbAy16/Uv
-	Fz6QcZ5CsKYuHvrOJzFmitnaIN54oqjRqSlRRzkcR7Dq+P262sxQ
-X-Google-Smtp-Source: AGHT+IGcQGG/h1nEam/GJrnqHPM6nuFyMxbUTnxpQlFLWLE5zIiECwqVNtAcSOHXhY1243rDASNVSw==
-X-Received: by 2002:a17:902:fc4f:b0:1e8:c962:4f6e with SMTP id d9443c01a7336-1ef43d27f6fmr274274915ad.20.1716032498514;
-        Sat, 18 May 2024 04:41:38 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.212])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1ef0c035d8esm171800655ad.199.2024.05.18.04.41.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 May 2024 04:41:37 -0700 (PDT)
-From: Shresth Prasad <shresthprasad7@gmail.com>
-To: davem@davemloft.net,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: sparclinux@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Shresth Prasad <shresthprasad7@gmail.com>,
-	Julia Lawall <julia.lawall@inria.fr>
-Subject: [PATCH v3][next] tty: sunsu: Simplify device_node cleanup by using __free
-Date: Sat, 18 May 2024 17:10:53 +0530
-Message-ID: <20240518114051.18125-3-shresthprasad7@gmail.com>
-X-Mailer: git-send-email 2.45.1
+	dkim=pass (1024-bit key) header.d=fritzc.com header.i=@fritzc.com header.b="eweixlyF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fritzc.com;
+	s=dkim; h=MIME-Version:Content-Transfer-Encoding:Content-Type:References:
+	In-Reply-To:Date:Cc:To:Reply-To:From:Subject:Message-ID:Sender:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=MQd+r43EMCvOi0g8lQTgHWFiUz5ZmsoKmS6F6rcfff8=; b=eweixlyF1OjlSUo84mXPkdXbv3
+	MvDHsxO3j6jiPPFghHQjd9qz0FYO6H2Nl73/YAMqssQltUWNLRLAi9XHCTsjGRjHPsnbS6NhwLXoP
+	Vk84tgQVBsQ1UGIusAff9ZY72lX5x3/AHZOkqZ5vEELmSZr0WqALJ8lbaIAqlLLhjf5o=;
+Received: from 127.0.0.1
+	by fritzc.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim latest)
+	(envelope-from <christoph.fritz@hexdev.de>)
+	id 1s8OoU-0026If-1n;
+	Sat, 18 May 2024 20:29:47 +0200
+Message-ID: <d25357857f49efb38a80ef48becf2a15ecbaa8e4.camel@hexdev.de>
+Subject: Re: [PATCH v4 00/11] LIN Bus support for Linux
+From: Christoph Fritz <christoph.fritz@hexdev.de>
+Reply-To: christoph.fritz@hexdev.de
+To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Jiri
+ Slaby <jirislaby@kernel.org>, Simon Horman <horms@kernel.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Kleine-Budde
+ <mkl@pengutronix.de>, Oliver Hartkopp <socketcan@hartkopp.net>, Vincent
+ Mailhol <mailhol.vincent@wanadoo.fr>, "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Rob Herring
+ <robh@kernel.org>,  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jiri Kosina <jikos@kernel.org>, Benjamin Tissoires
+ <bentiss@kernel.org>, Sebastian Reichel <sre@kernel.org>, Linus Walleij
+ <linus.walleij@linaro.org>
+Cc: Andreas Lauser <andreas.lauser@mercedes-benz.com>, Jonathan Corbet
+ <corbet@lwn.net>, Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+ linux-can@vger.kernel.org,  netdev@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-input@vger.kernel.org, 
+ linux-serial@vger.kernel.org
+Date: Sat, 18 May 2024 20:29:45 +0200
+In-Reply-To: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+References: <20240509171736.2048414-1-christoph.fritz@hexdev.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.1 (3.52.1-1.fc40app1) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Add `__free` function attribute to `ap` and `match` pointer
-initialisations which ensure that the pointers are freed as soon as they
-go out of scope, thus removing the need to manually free them using
-`of_node_put`.
+> This series is introducing basic Local Interconnect Network (LIN)
+> (ISO 17987) [0] support
 
-This also removes the need for the `goto` statement and the `rc`
-variable.
+I just wanted to let you know that I'm unfortunately personally busy at
+the moment. I will resume addressing the remaining issues with v5
+sometime after the current merge window.
 
-Suggested-by: Julia Lawall <julia.lawall@inria.fr>
-Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
----
-Changes in v3:
-    - Remove incorrect testing statement
-
-I've tested the patch by cross compiling it for sparc systems and
-booting the produced `image` file in `qemu-system-sparc`.
-
----
- drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
- 1 file changed, 11 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 67a5fc70bb4b..0f463da5e7ce 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
- 
- static enum su_type su_get_type(struct device_node *dp)
- {
--	struct device_node *ap = of_find_node_by_path("/aliases");
--	enum su_type rc = SU_PORT_PORT;
-+	struct device_node *ap __free(device_node) =
-+			    of_find_node_by_path("/aliases");
- 
- 	if (ap) {
- 		const char *keyb = of_get_property(ap, "keyboard", NULL);
- 		const char *ms = of_get_property(ap, "mouse", NULL);
--		struct device_node *match;
- 
- 		if (keyb) {
--			match = of_find_node_by_path(keyb);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(keyb);
- 
--			/*
--			 * The pointer is used as an identifier not
--			 * as a pointer, we can drop the refcount on
--			 * the of__node immediately after getting it.
--			 */
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_KBD;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_KBD;
- 		}
- 		if (ms) {
--			match = of_find_node_by_path(ms);
-+			struct device_node *match __free(device_node) =
-+					    of_find_node_by_path(ms);
- 
--			of_node_put(match);
--
--			if (dp == match) {
--				rc = SU_PORT_MS;
--				goto out;
--			}
-+			if (dp == match)
-+				return SU_PORT_MS;
- 		}
- 	}
--
--out:
--	of_node_put(ap);
--	return rc;
-+	return SU_PORT_PORT;
- }
- 
- static int su_probe(struct platform_device *op)
--- 
-2.44.0
+thanks
+  -- Christoph
 
