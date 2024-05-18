@@ -1,131 +1,157 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58337C8D1;
-	Sat, 18 May 2024 09:08:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63C3639FC5;
+	Sat, 18 May 2024 11:41:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716023334; cv=none; b=Mf3ugzPE8j8UldbYwNSdm/4Eqq9n/tXVOt7ZkbgIbnpUwgZjWVsTP24mT/1UNuI1++6gc2w+dEoD7ykgS5tSaZ/rvYgTZpM+nS8eetV/PddhIGJ6f2KayAatSgFKF+6HJuRYVVENP1NM6qI1vw8nR6REot0fRe1KN0QC09Y3F2s=
+	t=1716032500; cv=none; b=qWFw8Rb1ZQIslgosxd86OPTsg01xm0cXIOwmGCvwKBqcH8812lUkec/gP2V0xMl3ya5GmpiH4Odm4zzVWlU0hBsFrGi+XST/SUlTaZSNqq1huw6xLWFTOXN/8YDkvPdl11ZF3DPV34fIvUwlYJYYCSboPvewoTSCwzB/zYTueiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716023334; c=relaxed/simple;
-	bh=bVysb/cwrM9Pn6QGUWbl+Ro5RzhkM5yqNN7jrETzyyA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=hzi8UEq1HgrIRhFvMWjJJEhZGpAggC1EABncXm70uas0u6kgENz6mvwS+kksvCBfHtDGeWSWGdmPeF5mcYjZP8l8/ULYI241RUD79bMps69JGWhaOVvdNfUFBdCk0dXSN9C08cXePOpsmk1mW01+R36jXKt3gxQBxF7X3082B9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=JIXWx0jc; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1716032500; c=relaxed/simple;
+	bh=ur57ZY+2aICTIPOpezi/vJnYRMVcdjk1kendQiZu52Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BwFYUJqmSKDw/W/7UylPN6lSVKKV7UsbOWpjSF7bwGMzvaL7OvAuvgcGe9wojIesP7faLJX4UWjdyhk+AacfYi8u2006kCAX0uW57md5zKRa+rx0Qrv9lhJRE1IicX+NdytQM2OCsJAY3yPbeizx7p/8y9femsZf4np/Nowvr1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LQidwy/2; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="JIXWx0jc"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=1a0C79DkdyNfWuSIhpXXfpQISUKfKWxaR+an4LJg0Cw=; t=1716023330; x=1716628130; 
-	b=JIXWx0jctZvXnqcErr+3sSV5apKLlSgTQjonmBZVS45oZcpMNbwEebER5UZJBEzSMGhZDCP7PJN
-	h5jiab7J2xtO7IWJdAdJ1aBJr82y6tZpQ8r7xy+H5ViKn9mzObyFUNO/F9FgWOGFMOhRz2gR0vVr5
-	0/zNv4s2F8amm03ZFsrEnj/EfmsVG+ExiraqgiYRrKam9IKGg+UCC0i2EQDexL4Qz77kXbesE6eUx
-	itj9aMYp28rMvdB7y5sbfMwyGk4kMm6XSyjPdpG9H8EhFTS66NPvRGkOA2beiqLBDPiFkqLGgBQsI
-	L4gAr4tS2+2d1U/BI1N6cAKfkJZU1xRUxXMQ==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.97)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1s8G3N-00000002L83-1Dc1; Sat, 18 May 2024 11:08:33 +0200
-Received: from dynamic-077-188-054-221.77.188.pool.telefonica.de ([77.188.54.221] helo=[192.168.178.20])
-          by inpost2.zedat.fu-berlin.de (Exim 4.97)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1s8G3M-00000003h1e-3i5d; Sat, 18 May 2024 11:08:33 +0200
-Message-ID: <455e40c03314294f9c2e64480aa69f8261a3f2d5.camel@physik.fu-berlin.de>
-Subject: Re: [RESEND v7 00/37] Device Tree support for SH7751 based board
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org
-Cc: Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette
- <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, David Airlie
- <airlied@gmail.com>,  Daniel Vetter <daniel@ffwll.ch>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner
- <tglx@linutronix.de>, Bjorn Helgaas <bhelgaas@google.com>, Lorenzo
- Pieralisi <lpieralisi@kernel.org>, Krzysztof =?UTF-8?Q?Wilczy=C5=84ski?=
- <kw@linux.com>,  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
- Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,  Daniel
- Lezcano <daniel.lezcano@linaro.org>, Rich Felker <dalias@libc.org>, Lee
- Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>, Heiko Stuebner
- <heiko.stuebner@cherry.de>, Shawn Guo <shawnguo@kernel.org>,  Sebastian
- Reichel <sre@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, Linus
- Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, David
- Rientjes <rientjes@google.com>, Hyeonggon Yoo <42.hyeyoo@gmail.com>,
- Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, Andrew
- Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>,
- Kefeng Wang <wangkefeng.wang@huawei.com>, Stephen Rothwell
- <sfr@canb.auug.org.au>,  Javier Martinez Canillas <javierm@redhat.com>, Guo
- Ren <guoren@kernel.org>, Azeem Shaikh <azeemshaikh38@gmail.com>, Max
- Filippov <jcmvbkbc@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Jacky
- Huang <ychuang3@nuvoton.com>, Herve Codina <herve.codina@bootlin.com>,
- Manikanta Guntupalli <manikanta.guntupalli@amd.com>,  Anup Patel
- <apatel@ventanamicro.com>, Biju Das <biju.das.jz@bp.renesas.com>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Sam
- Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, Laurent
- Pinchart <laurent.pinchart+renesas@ideasonboard.com>, 
- linux-ide@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
- linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- linux-pci@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-fbdev@vger.kernel.org
-Date: Sat, 18 May 2024 11:08:30 +0200
-In-Reply-To: <cover.1712205900.git.ysato@users.sourceforge.jp>
-References: <cover.1712205900.git.ysato@users.sourceforge.jp>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.1 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LQidwy/2"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1ecc23e6c9dso33170665ad.2;
+        Sat, 18 May 2024 04:41:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716032498; x=1716637298; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nGZELmCIhJ0Llb0Ot0Pxzsc4Vz/WbJAcy06wKqjrN/c=;
+        b=LQidwy/20EWzDPdF5hI9iXbcDBJQwm5SQpdk+k2IteyN17Afgik0iBcz0+soW7eF7e
+         SGKYK3oqJ9pSmjLgFIDp9B6jFFfb6umHPvpZSvFq7SAb9W2zQRGTrG1d3czCKWGgXUiB
+         0X6rq2/l7FbW8GxTRvEuV84QGHmpMl1vdtAWIXmFJwabRiadBkIWet8/H7AbA6rIu4NN
+         0URj39Qnb9mqV3fzFo8LmDdT3O3nTTy1Iq+8YdZUAOef4nzOcRM/mVb2g3Z8aNZRd1ik
+         pEdkF29WeHZ3dETo0CmqXGrnsj/0yQqWKg+3ZEd8CN+TfITDZCpKy42Tcv1+bbSvGCne
+         tQuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716032498; x=1716637298;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nGZELmCIhJ0Llb0Ot0Pxzsc4Vz/WbJAcy06wKqjrN/c=;
+        b=EW3mTrthNyJDucjW5vzGbZvW1b98NqogpiUWT1dWhS/ogw1P5jIn1z796HCl46ODJ6
+         xBdEYVnKr4GCP1F65j8jJu75aq7+9f3QKoGA2P5BzDa/J0DckJkLFS4lYejv3KgLa1Dc
+         hgiXfr9KGnmTSz31HVgpnKNEkhoMKNdIlCbb77aHGgihtiF7fS9uAtfeUZKovrkFWPsK
+         CbZeCrvHaUMvyLqYLcmpJK0mwlSPy7vXe841leVJqkwo9UGXeuS1V1OITcf+y77oyldC
+         cUMC9xJaaGrhZgDkJoDSc5OeRbYhAwNQeJIf/qknMFRrRjAIK5lMnZ47QXMLGRb7zwFM
+         I2lQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW4FrpXGevclL+6/7+/DI9rRlsVYQypZdGs9GBVjE45XbsrV+aMzHLScZCAaMM+zRJmbd9uh477f71z4ll4hwEYlfkE7/MaLz4UCuoG8CbttHu/jktSV5YEjbQrkH+2DSCq2jO+wuyQYffp
+X-Gm-Message-State: AOJu0YxMtt93OyCek1H5/tB2hdt3YxJ3mz9aSBHW+LrQ/ubhbAy16/Uv
+	Fz6QcZ5CsKYuHvrOJzFmitnaIN54oqjRqSlRRzkcR7Dq+P262sxQ
+X-Google-Smtp-Source: AGHT+IGcQGG/h1nEam/GJrnqHPM6nuFyMxbUTnxpQlFLWLE5zIiECwqVNtAcSOHXhY1243rDASNVSw==
+X-Received: by 2002:a17:902:fc4f:b0:1e8:c962:4f6e with SMTP id d9443c01a7336-1ef43d27f6fmr274274915ad.20.1716032498514;
+        Sat, 18 May 2024 04:41:38 -0700 (PDT)
+Received: from localhost.localdomain ([122.161.51.212])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1ef0c035d8esm171800655ad.199.2024.05.18.04.41.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 May 2024 04:41:37 -0700 (PDT)
+From: Shresth Prasad <shresthprasad7@gmail.com>
+To: davem@davemloft.net,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: sparclinux@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Shresth Prasad <shresthprasad7@gmail.com>,
+	Julia Lawall <julia.lawall@inria.fr>
+Subject: [PATCH v3][next] tty: sunsu: Simplify device_node cleanup by using __free
+Date: Sat, 18 May 2024 17:10:53 +0530
+Message-ID: <20240518114051.18125-3-shresthprasad7@gmail.com>
+X-Mailer: git-send-email 2.45.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Content-Transfer-Encoding: 8bit
 
-Hi Yoshinori,
+Add `__free` function attribute to `ap` and `match` pointer
+initialisations which ensure that the pointers are freed as soon as they
+go out of scope, thus removing the need to manually free them using
+`of_node_put`.
 
-On Thu, 2024-04-04 at 14:14 +0900, Yoshinori Sato wrote:
-> Sorry. previus mail is thread broken.
->=20
-> This is an updated version of something I wrote about 7 years ago.
-> Minimum support for R2D-plus and LANDISK.
-> I think R2D-1 will work if you add AX88796 to dts.
-> And board-specific functions and SCI's SPI functions are not supported.
->=20
-> You can get it working with qemu found here.
-> https://gitlab.com/yoshinori.sato/qemu/-/tree/landisk
->=20
-> v7 changes.
-> - sh/kernel/setup.c: fix kernel parameter handling.
-> - clk-sh7750.c: cleanup.
-> - sh_tmu.c: cleanup.
-> - irq-renesas-sh7751.c: IPR definition move to code.
-> - irq-renesas-sh7751irl.c: update register definition.
-> - pci-sh7751.c: Register initialization fix.=20
-> - sm501 and sm501fb: Re-design Device Tree properties.
+This also removes the need for the `goto` statement and the `rc`
+variable.
 
-Could you push your v7 version to your Gitlab [1] repository so I can fetch
-it from there?
+Suggested-by: Julia Lawall <julia.lawall@inria.fr>
+Signed-off-by: Shresth Prasad <shresthprasad7@gmail.com>
+---
+Changes in v3:
+    - Remove incorrect testing statement
 
-Thanks,
-Adrian
+I've tested the patch by cross compiling it for sparc systems and
+booting the produced `image` file in `qemu-system-sparc`.
 
-> [1] https://gitlab.com/yoshinori.sato/linux
+---
+ drivers/tty/serial/sunsu.c | 37 +++++++++++--------------------------
+ 1 file changed, 11 insertions(+), 26 deletions(-)
 
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 67a5fc70bb4b..0f463da5e7ce 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1382,44 +1382,29 @@ static inline struct console *SUNSU_CONSOLE(void)
+ 
+ static enum su_type su_get_type(struct device_node *dp)
+ {
+-	struct device_node *ap = of_find_node_by_path("/aliases");
+-	enum su_type rc = SU_PORT_PORT;
++	struct device_node *ap __free(device_node) =
++			    of_find_node_by_path("/aliases");
+ 
+ 	if (ap) {
+ 		const char *keyb = of_get_property(ap, "keyboard", NULL);
+ 		const char *ms = of_get_property(ap, "mouse", NULL);
+-		struct device_node *match;
+ 
+ 		if (keyb) {
+-			match = of_find_node_by_path(keyb);
++			struct device_node *match __free(device_node) =
++					    of_find_node_by_path(keyb);
+ 
+-			/*
+-			 * The pointer is used as an identifier not
+-			 * as a pointer, we can drop the refcount on
+-			 * the of__node immediately after getting it.
+-			 */
+-			of_node_put(match);
+-
+-			if (dp == match) {
+-				rc = SU_PORT_KBD;
+-				goto out;
+-			}
++			if (dp == match)
++				return SU_PORT_KBD;
+ 		}
+ 		if (ms) {
+-			match = of_find_node_by_path(ms);
++			struct device_node *match __free(device_node) =
++					    of_find_node_by_path(ms);
+ 
+-			of_node_put(match);
+-
+-			if (dp == match) {
+-				rc = SU_PORT_MS;
+-				goto out;
+-			}
++			if (dp == match)
++				return SU_PORT_MS;
+ 		}
+ 	}
+-
+-out:
+-	of_node_put(ap);
+-	return rc;
++	return SU_PORT_PORT;
+ }
+ 
+ static int su_probe(struct platform_device *op)
+-- 
+2.44.0
+
