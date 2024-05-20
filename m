@@ -1,178 +1,116 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98C6F1CA81
-	for <linux-serial@vger.kernel.org>; Mon, 20 May 2024 09:30:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAED3535D2;
+	Mon, 20 May 2024 10:47:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716197434; cv=none; b=p0jjtjgXmANSWzAOPj1cbsVf6AUdjXYXLN82ZZzgQZCJvXrv8VB34u8AsLT+iN0/szWH8+7NyirZfNw7mWr3jvA7lLUGN2G5Z2FQ1/h3zDEWO8rZeKia/dvTfglF3pjBCrXpyEj7fra1OcNuTiYrpbk9B0eSMFFoHItvMKd/NME=
+	t=1716202053; cv=none; b=r8d0JDwpsqz5A86EfwWut58N/gz5Fr5bI1/zTS/y0DVbXkwhmsc2RR4BgRYhKKA/6F8fmo3OKrTCtOJd/nM28//DnppkeeefA5ePz5XWcLb5lt408sg4uqZPT+LPVwrDhd13H1BLyoHqtaOigtUcofpCfw023/a7grtgJCA6x7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716197434; c=relaxed/simple;
-	bh=WlltdmOqEj9nfbnajbYQYSLXiTh257hojeLA7qO20io=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qfRkscr3L34u8WXkPuJ6a8Jkmu3q7GLmsfsDmG47Lur2p3k89BYZEIK4CueCrO7F+FI5TwJCj/ezrznvyZH+znDb+Xs3Ehm+RDLLY94RORIhfX9Ur0qhCkuM4n9yszf0OenVVJ/PNRPict7rxfyw25Viqb/9WIgawt8G5LH4OWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ESjXGBra; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1716202053; c=relaxed/simple;
+	bh=D9++WKjDS1JW5+8Ykh1MaJ5rmIn6HukYfEAwjK6ICP8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TuLPsie6gZKzY+mz0aogCd58uATzlPdo5jH00n85Bg+9pKdk8ob16S/zPawADYecbthzCwVcZ5QPMYieyN15uXHg9K2Y823Ay4dHMeVbqa9oi91DcNPMU2u09wrZTwTN/q1GGyxs8ZoyGXfIgUDTb0AhDXwDtHyjK4iEir73GhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YikS92US; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ESjXGBra"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-1ee0132a6f3so69466385ad.0
-        for <linux-serial@vger.kernel.org>; Mon, 20 May 2024 02:30:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716197432; x=1716802232; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lZej+SqY5aESetzqcyOnwLoHBkTzImD/3FnpWCBaMIM=;
-        b=ESjXGBrahMlXjhMbjFWts5dTGYOvPA3ZCax8LZ+nMhb8Mb028+LUGeCh4DEQB4P7Ds
-         CRwgiGbDHO8VMHGDv3UYXSDTL2i1hC6YWY0QDRdYILnNlyVoVMm8eQJt3LbRH6l5mu0h
-         VL9jo/SX+9AQJzZfzFSVyfP1tFmflWU97XuUbzV/1GYx6D9tmFkvcSyzcUy7vNsVyc7w
-         lSqFAN3bsNRIEDJ+bQLEsscif/epyx8AiY23wNRbOiUZam531h/jCTclCAXA/y8cx+4S
-         CR20maqdfE9DT9qUbrv9tPOd0WhM/ZgQZFlwqQTsPcySDO3yL/9rhWzut3bBY9hJEOi6
-         5wJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716197432; x=1716802232;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lZej+SqY5aESetzqcyOnwLoHBkTzImD/3FnpWCBaMIM=;
-        b=I4uixZZU8Q+EtCMdlqpRnG3GLLH+CGV2KF0h3D7sspUSS6gpBU/GaOdSzmWoDMUPlm
-         IqmbW/xDRND95zJ4g0Zm+oqP7gDck0B/9rI3z5FuBuHfUo/0o512KWwNnWYSvfdc4llw
-         d8bZ19DG3CrUvpgUZYiUUbXSORnq1OGgdxh7dVjj83auFRE4mPWpls9+oVTyRv1wcHKI
-         9gJkToX/cguKBogLnn2/R/gmmlv+kHxL+i6C8stcFPBtCl5/soT6kDsuLtLsj4f7teS5
-         gAzRNf5jyYszq9Q3XCCn0ORBESMDmCr/5yZVXxeUqnN2iHu/XT9BNGcvTQ2SqyqPAJXt
-         1S8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXhrEcL1fJ479fAa2pU87omRMSHIUhPERlchHZSOtmqYsHn/n11KyCwir2W9Oxle0/8Jgs887a6DaP9ui86v/GEkkVx37ux4BWJFBAN
-X-Gm-Message-State: AOJu0YxM+d61VEKQG3cLqIGlpbAjVGpyYMM7gcvQOvzp/6brAoLjw40l
-	e/nmyCVRy/V2bAqeSeF7+vlz16kEO9J/nVf+tQ1cHuyDnUoNp2HgLUldIaW3NTXQ/rJlr3YWjdz
-	012l7LxByRDSZ+1B2Hucb+775aOY=
-X-Google-Smtp-Source: AGHT+IF/h3zuayLKzJFygKDEHkN3Wr79ViB0rDsIcbB4I16m4wwjuQB2SXS+/lEcZ7M7kYruHBgiSr74fmJRNsT0GyU=
-X-Received: by 2002:a17:90b:37c4:b0:2b6:24bf:8222 with SMTP id
- 98e67ed59e1d1-2b6cc780371mr23838755a91.22.1716197431776; Mon, 20 May 2024
- 02:30:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YikS92US"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716202052; x=1747738052;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=D9++WKjDS1JW5+8Ykh1MaJ5rmIn6HukYfEAwjK6ICP8=;
+  b=YikS92US3FbwD+sIV/OZHevl9vHei2Ao5/MZ/TsTFf0wtOeIadbEtjiY
+   qNcT3lhQjAhIZNKH5ciL3JRpH0Ond+NvHPo9z671T/JEps9hfb0zgFFhP
+   mYTQNH1Uf7J+59nwZdNFmWE6thEQ6A3yJpdIodTVPqXISh3ddXz8BARH/
+   y2V+LZGMI5kllHFtZ+2SAvYuIQXjeqCMBQglkQLLZ0A7SUKfdDuQD+R4Q
+   LxOrBs84xbOxZS8vvkO3ELe8HDFAW7jHOvH2JAQjmq3zSpKjGRlE5JFyH
+   XPzVtemNO0XwPnf2FCL6lakKyILMdZH5L1+NvBTwW+vdsyjiQqhG64hKH
+   A==;
+X-CSE-ConnectionGUID: uEiUKmxzRNmo7c1aXVpdWw==
+X-CSE-MsgGUID: M2gkk0dYSpy4KpJJ1ZVxMA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11077"; a="37699955"
+X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
+   d="scan'208";a="37699955"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 03:47:31 -0700
+X-CSE-ConnectionGUID: BZqp9f3TSsaDbsMe3VOPPg==
+X-CSE-MsgGUID: HEqFDtDlRESSJGXjGQOiPg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
+   d="scan'208";a="55729331"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 03:47:29 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1s90YA-00000009Hy4-2iF6;
+	Mon, 20 May 2024 13:47:26 +0300
+Date: Mon, 20 May 2024 13:47:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v1 1/1] spi: pxa2xx: Move PXA SSP bindings to the correct
+ folder
+Message-ID: <ZksqPiSLY8OlE5lT@smile.fi.intel.com>
+References: <20240517171103.221856-1-andriy.shevchenko@linux.intel.com>
+ <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
+ <Zke2yG-WPkaWg5PV@smile.fi.intel.com>
+ <CAL_JsqKA7AnY7w3sjrT+khrat348v7uNpAP1+FZ=mdYMhJkf3Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240519193109.122466-1-doug@schmorgal.com> <207771fc-294a-4810-a3a2-52ea0e27360f@kernel.org>
-In-Reply-To: <207771fc-294a-4810-a3a2-52ea0e27360f@kernel.org>
-From: Jonas Gorski <jonas.gorski@gmail.com>
-Date: Mon, 20 May 2024 11:30:20 +0200
-Message-ID: <CAOiHx=mnHsZ7U79NkNRyBsqkGhaM3vy9cgaZe=uBUXM7o8=SFg@mail.gmail.com>
-Subject: Re: [PATCH] serial: pxa: Disable TX interrupt if there is no more
- data to transmit
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Doug Brown <doug@schmorgal.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAL_JsqKA7AnY7w3sjrT+khrat348v7uNpAP1+FZ=mdYMhJkf3Q@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi
+On Fri, May 17, 2024 at 03:19:51PM -0500, Rob Herring wrote:
+> On Fri, May 17, 2024 at 2:58 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> > On Fri, May 17, 2024 at 06:24:37PM +0100, Mark Brown wrote:
+> > > On Fri, May 17, 2024 at 08:11:03PM +0300, Andy Shevchenko wrote:
 
-On Mon, 20 May 2024 at 08:41, Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 19. 05. 24, 21:31, Doug Brown wrote:
-> > If a TX interrupt occurs and no new data gets loaded into the TX FIFO,
-> > the UART will never fire another TX interrupt until the UART_IER_THRI
-> > flag is toggled off and back on. If nothing ever calls stop_tx(), this
-> > effectively results in transmissions getting hung up until another
-> > unrelated UART IRQ occurs, such as an RX interrupt.
-> >
-> > The driver used to do this correctly until the transition to
-> > uart_port_tx_limited(). This didn't matter until the behavior of
-> > __uart_port_tx changed in commit 7bfb915a597a ("serial: core: only stop
-> > transmit when HW fifo is empty").
-> >
-> > Fixes: d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()")
-> > Signed-off-by: Doug Brown <doug@schmorgal.com>
-> > ---
-> >
-> > Note: I based this on v6.9 instead of tty-next since it's a fix; please
-> > let me know if that was the wrong move and I would be happy to resubmit
-> > it based on tty-next. The patch changes ever so slightly because of the
-> > circ_buf -> kfifo transition. The only difference is it needs this
-> > condition in the "if" statement instead:
-> >
-> > kfifo_is_empty(&up->port.state->port.xmit_fifo)
-> >
-> > This has been tested to work properly on tty-next as well.
-> >
-> >   drivers/tty/serial/pxa.c | 8 ++++++++
-> >   1 file changed, 8 insertions(+)
-> >
-> > diff --git a/drivers/tty/serial/pxa.c b/drivers/tty/serial/pxa.c
-> > index e395ff29c1a2..8abb85bee87c 100644
-> > --- a/drivers/tty/serial/pxa.c
-> > +++ b/drivers/tty/serial/pxa.c
-> > @@ -176,6 +176,14 @@ static void transmit_chars(struct uart_pxa_port *up)
-> >   {
-> >       u8 ch;
-> >
-> > +     /* If there is nothing left to transmit, disable the TX interrupt.
-> > +      * Otherwise we can get stuck waiting for another IRQ that never happens.
-> > +      */
-> > +     if (uart_circ_empty(&up->port.state->xmit)) {
-> > +             serial_pxa_stop_tx(&up->port);
-> > +             return;
-> > +     }
->
-> This does not make sense. If the circ buf is empty,
-> uart_port_tx_limited() should stop the TX already. You simply revert to
-> the state before 7bfb915a597a, but on a per-driver basis.
->
-> IOW all drivers using the helper would have exactly this issue after
-> 7bfb915a597a.
->
-> What driver was 7bfb915a597a about after all? The commit log of the
-> commit is hopeless (it's very vague) in this respect:
-> commit 7bfb915a597a301abb892f620fe5c283a9fdbd77
-> Author: Jonas Gorski <jonas.gorski@gmail.com>
-> Date:   Sun Mar 3 16:08:07 2024 +0100
->
->      serial: core: only stop transmit when HW fifo is empty
->
->      If the circular buffer is empty, it just means we fit all characters to
->      send into the HW fifo, but not that the hardware finished transmitting
->      them.
->
->      So if we immediately call stop_tx() after that, this may abort any
->      pending characters in the HW fifo, and cause dropped characters on the
->      console.
->
->      Fix this by only stopping tx when the tx HW fifo is actually empty.
->
->      Fixes: 8275b48b2780 ("tty: serial: introduce transmit helpers")
->
->
->
-> (And it barely fixes 8275b48b2780 per se. 8275b48b2780 only moved the
-> processing to a single place, most/all of the drivers already did it
-> that way.)
->
-> /me confused.
->
-> Perhaps, it should be reverted and the affected driver should just pass
-> UART_TX_NOSTOP instead?
->
-> >       uart_port_tx_limited(&up->port, ch, up->port.fifosize / 2,
-> >               true,
-> >               serial_out(up, UART_TX, ch),
->
-> thanks,
+...
 
-Sorry, I should have added that this is for bcm63xx_uart.c. My
-reasoning for doing it this way and not via a flag was:
+> > > > SSP stands for Serial Synchronous Protocol and has nothing to do with
+> > > > UART, also known as USART, where 'A' stands for Asynchronous.
+> > > >
+> > > > Move the SSP bindings to where it belongs.
+> > >
+> > > It's a serial device which is also used for other applications (the
+> > > other one upstream being audio) so I can see where the current binding
+> > > comes from and it's not super obvious that spi is especially better
+> > > here.
+> >
+> > Hmm... okay. Then it's question to DT people. Consider this as a report.
+> > Because UART (aka serial) is definitely not the place for SPI/SSP bindings
+> > either.
+> 
+> Move it when it is converted.
 
-1. The kernel doc for uart_ops::stop_tx() says "The driver should stop
-transmitting characters as soon as possible."
-2. bcm63xx_uart.c's stop_tx() does exactly that, by immediately
-stopping tx (leading to potentially lost output).
-3. Therefore uart_port_tx_limited() is wrong by calling stop_tx()
-while the transmitter is still busy, and the core issue is this.
+The problem is that somebody added a binding (in YAML) for SPI PXA2xx
+in the spi/ folder while this one kept unconverted.
 
-So adding the check for the hw fifo being empty seemed to me as the
-"right" fix, fixing it for all drivers that abort tx in stop_tx().
+If it dangles more, it might be that we will have two asynchronous bindings
+for the co-existed drivers.
 
-Best Regards,
-Jonas
+> Until then, I don't care too much. SPI seems better than serial at least.
+> The sound part is its own binding/node (something we wouldn't do today).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
