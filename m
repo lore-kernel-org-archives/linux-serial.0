@@ -1,116 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAED3535D2;
-	Mon, 20 May 2024 10:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B90155644B
+	for <linux-serial@vger.kernel.org>; Mon, 20 May 2024 12:22:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716202053; cv=none; b=r8d0JDwpsqz5A86EfwWut58N/gz5Fr5bI1/zTS/y0DVbXkwhmsc2RR4BgRYhKKA/6F8fmo3OKrTCtOJd/nM28//DnppkeeefA5ePz5XWcLb5lt408sg4uqZPT+LPVwrDhd13H1BLyoHqtaOigtUcofpCfw023/a7grtgJCA6x7I=
+	t=1716207776; cv=none; b=TJ+D7nXDm4dALxNd5ZNcNvfx7eyeJ7UIMdAAtCHA+r/TmKxmtrJaLpbCwCUD0qyGXEnck32/bNWr/PVn7Qm6zaBM5L5DrSCelEvtuER1kKgT8hvSNJ0lYgF12fXfTFUy0oIuu5EYzltvJa5kq+aM5NKnFb4ltgldFX1u3Da0Xds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716202053; c=relaxed/simple;
-	bh=D9++WKjDS1JW5+8Ykh1MaJ5rmIn6HukYfEAwjK6ICP8=;
+	s=arc-20240116; t=1716207776; c=relaxed/simple;
+	bh=FsjGULNLBK+FjzXLWr/t8FWTDIAjnTpWhcTrRa5F9sI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TuLPsie6gZKzY+mz0aogCd58uATzlPdo5jH00n85Bg+9pKdk8ob16S/zPawADYecbthzCwVcZ5QPMYieyN15uXHg9K2Y823Ay4dHMeVbqa9oi91DcNPMU2u09wrZTwTN/q1GGyxs8ZoyGXfIgUDTb0AhDXwDtHyjK4iEir73GhA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YikS92US; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=R+/Zd0chM4e/P2MnzushV289AwsXm/OZ75yUTSH1WOiYKIPC9UDU5yhS16o1wGQ2Rg5CnxUE8hNY0hFNd7xWyEyZyQC+f1uJrOn6oeRM5tcY4PaJwtDOB1QaPxcRC/26wyNWYfX1P9tCuQa93sv5Fgx9x76oKsomjP+AWdDjDAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=dguptPYJ; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YikS92US"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716202052; x=1747738052;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=D9++WKjDS1JW5+8Ykh1MaJ5rmIn6HukYfEAwjK6ICP8=;
-  b=YikS92US3FbwD+sIV/OZHevl9vHei2Ao5/MZ/TsTFf0wtOeIadbEtjiY
-   qNcT3lhQjAhIZNKH5ciL3JRpH0Ond+NvHPo9z671T/JEps9hfb0zgFFhP
-   mYTQNH1Uf7J+59nwZdNFmWE6thEQ6A3yJpdIodTVPqXISh3ddXz8BARH/
-   y2V+LZGMI5kllHFtZ+2SAvYuIQXjeqCMBQglkQLLZ0A7SUKfdDuQD+R4Q
-   LxOrBs84xbOxZS8vvkO3ELe8HDFAW7jHOvH2JAQjmq3zSpKjGRlE5JFyH
-   XPzVtemNO0XwPnf2FCL6lakKyILMdZH5L1+NvBTwW+vdsyjiQqhG64hKH
-   A==;
-X-CSE-ConnectionGUID: uEiUKmxzRNmo7c1aXVpdWw==
-X-CSE-MsgGUID: M2gkk0dYSpy4KpJJ1ZVxMA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11077"; a="37699955"
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="37699955"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 03:47:31 -0700
-X-CSE-ConnectionGUID: BZqp9f3TSsaDbsMe3VOPPg==
-X-CSE-MsgGUID: HEqFDtDlRESSJGXjGQOiPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="55729331"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 03:47:29 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s90YA-00000009Hy4-2iF6;
-	Mon, 20 May 2024 13:47:26 +0300
-Date: Mon, 20 May 2024 13:47:26 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-spi@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="dguptPYJ"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-52192578b95so4864274e87.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 May 2024 05:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1716207772; x=1716812572; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=6bREYXSNJx7yr5uTrce/LKMVLb4BxuBwY9vQL2AO1CY=;
+        b=dguptPYJ6eEH1U3JgYG8j8UeKVQqMosUTvjzVuQX2lW8WEoyc09NoR1oMcTG6LMoay
+         bjqhSoidZKDH6slChBbhHO91Hf0e0IzYsV4kvBNpYHR8zsHD0t4lDNi9hvzm9/E4KIZo
+         Ycq6nUEwH8GIKoRLb2pXaLkU/LfVONSFoZByMXDd9hULQ1wcAIlIGLqMdKnunohX8V84
+         9znpBAcSeYCRa52dKZ8Apzg02GVPxC/mgC0K4mHMd1OSGPBGxs1WxSwvls8v8nG7MV7k
+         iBRnym2VcpMKYvuhrj+vC+L7qU6zc2gpsuJhExZnIeMwX28fqU1dME1Vc/yimTYhaw6d
+         KZ+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716207772; x=1716812572;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6bREYXSNJx7yr5uTrce/LKMVLb4BxuBwY9vQL2AO1CY=;
+        b=oOXnMKpE/BrdE3hfNfnNKstkjQLzFeGH/6goAGB58D/YUTx9H9YSkGDBYJoIJayE5H
+         /mfCURY4ogyDnPW7Wz7peEQk76fwQfN50HXh0HCj51PssSaGAFZrcR6NT98ZEG8aOio4
+         7il7I7w+q8m9N/17nbVD59ZMPjtRtkSmke67KILxzjzwJwmU081FMPG+xp2rnxg4UJMI
+         AN+h/XG9N+CJGCCNhnHr07mkKtxf96AnxpnnpRCoeQ20fL4PjP/P7vErODrcUdfE94sU
+         0lv2+0nVZTAV2HNf/DJINB/bj6I2XXs5NsOyZkGHnBUdj9rUhcVtIyIRWI/YaNJc4Sex
+         H5yw==
+X-Forwarded-Encrypted: i=1; AJvYcCX6X+SInAtZJI1E24VJbRJjECEa8m70FEqyNRf0ohwwrF72YY8Ps6Cvd8BTzF8DdmCCxvbZ9Rjwulzd1cZ6bup8/95Tr8cifItYJYl4
+X-Gm-Message-State: AOJu0Yw7jbY8ufVI23Y/9vdV6U/P4NwxxAB+z+OOnHzaN8iV9psYZzBj
+	cKH7YUYO1aoaQIW+dSbq/up5TNRG7rLkeURWy5772fa8GC29L6LZHbYfvhyuCcc=
+X-Google-Smtp-Source: AGHT+IHrIxn8lRvzjOg1Ui/6tQPrN6PSJ3Se90i+uvDj849VnBCvGdQmYRpv36r0fn+9t2zRZhCgVQ==
+X-Received: by 2002:a05:6512:3c9e:b0:523:9493:4e63 with SMTP id 2adb3069b0e04-5239493505emr12455625e87.60.1716207771843;
+        Mon, 20 May 2024 05:22:51 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a1781cfa7sm1446680866b.33.2024.05.20.05.22.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 May 2024 05:22:51 -0700 (PDT)
+Date: Mon, 20 May 2024 14:22:50 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v1 1/1] spi: pxa2xx: Move PXA SSP bindings to the correct
- folder
-Message-ID: <ZksqPiSLY8OlE5lT@smile.fi.intel.com>
-References: <20240517171103.221856-1-andriy.shevchenko@linux.intel.com>
- <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
- <Zke2yG-WPkaWg5PV@smile.fi.intel.com>
- <CAL_JsqKA7AnY7w3sjrT+khrat348v7uNpAP1+FZ=mdYMhJkf3Q@mail.gmail.com>
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH printk v5 12/30] serial: core: Implement processing in
+ port->lock wrapper
+Message-ID: <ZktAmvpBfk-IrMr9@pathway.suse.cz>
+References: <20240502213839.376636-1-john.ogness@linutronix.de>
+ <20240502213839.376636-13-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAL_JsqKA7AnY7w3sjrT+khrat348v7uNpAP1+FZ=mdYMhJkf3Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20240502213839.376636-13-john.ogness@linutronix.de>
 
-On Fri, May 17, 2024 at 03:19:51PM -0500, Rob Herring wrote:
-> On Fri, May 17, 2024 at 2:58 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Fri, May 17, 2024 at 06:24:37PM +0100, Mark Brown wrote:
-> > > On Fri, May 17, 2024 at 08:11:03PM +0300, Andy Shevchenko wrote:
-
-...
-
-> > > > SSP stands for Serial Synchronous Protocol and has nothing to do with
-> > > > UART, also known as USART, where 'A' stands for Asynchronous.
-> > > >
-> > > > Move the SSP bindings to where it belongs.
-> > >
-> > > It's a serial device which is also used for other applications (the
-> > > other one upstream being audio) so I can see where the current binding
-> > > comes from and it's not super obvious that spi is especially better
-> > > here.
-> >
-> > Hmm... okay. Then it's question to DT people. Consider this as a report.
-> > Because UART (aka serial) is definitely not the place for SPI/SSP bindings
-> > either.
+On Thu 2024-05-02 23:44:21, John Ogness wrote:
+> Currently the port->lock wrappers uart_port_lock(),
+> uart_port_unlock() (and their variants) only lock/unlock
+> the spin_lock.
 > 
-> Move it when it is converted.
+> If the port is an nbcon console, the wrappers must also
+> acquire/release the console and mark the region as unsafe. This
+> allows general port->lock synchronization to be synchronized
+> with the nbcon console ownership.
+> 
+> Note that __uart_port_using_nbcon() relies on the port->lock
+> being held while a console is added and removed from the
+> console list (i.e. all uart nbcon drivers *must* take the
+> port->lock in their device_lock() callbacks).
+> 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-The problem is that somebody added a binding (in YAML) for SPI PXA2xx
-in the spi/ folder while this one kept unconverted.
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-If it dangles more, it might be that we will have two asynchronous bindings
-for the co-existed drivers.
-
-> Until then, I don't care too much. SPI seems better than serial at least.
-> The sound part is its own binding/node (something we wouldn't do today).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best Regards,
+Petr
