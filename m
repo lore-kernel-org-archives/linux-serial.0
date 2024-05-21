@@ -1,136 +1,123 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 795F523749
-	for <linux-serial@vger.kernel.org>; Tue, 21 May 2024 04:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 343684E1CB;
+	Tue, 21 May 2024 07:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716267519; cv=none; b=NvSISTSC/HoHUJvGnmf4JeXTsbD2YFqNmcVvEjuP7EDNakJd7h7+qS/pO/q9LziXmkble/bIymLM9sF4WFu8hktape0GUHhJUKKlK+se1oKBWJ3hqCN+6QW5RntNS2OuvsaUZ7BcffSmqfJ0AL0sTwrHVUM4aJMaTBjmHGTIhsA=
+	t=1716275993; cv=none; b=cNjToW0I4BI16KjNYHq+liD91EW9Sf5jovfyI3Xvn83pY6FA9y98aokll29C0aYr8PGI9e5kLc6hDD4NhFAhDe5czHRULjTDKIgMAeMAg80cD4swA2SCXtUNi82EHnISK2edE0GZ9y8GSpZmpP4vQXu1lfUwICL0fLToOmnG8Xw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716267519; c=relaxed/simple;
-	bh=iBDqRyjFozbZojV9Tm6jc2MTkKZ0mPZbydN4si4PcLE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FSN/u/aaA3WiGOpcOq363O0h7zrzl16TiPmiX1wbqVluoIwFSaYtt5qFkABxwBAAYEbjevt1F4nXlzv6OrF8JqlKBeeJNMhhnln5/WDv+8YUhAMvEbI5WoL8/07DTbrd+8d5TUoxJSd4esR4aIqpsv0Ldr9hsoxsdig8NFxYApw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com; spf=pass smtp.mailfrom=schmorgal.com; dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b=bGieHdSL; arc=none smtp.client-ip=209.85.161.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=schmorgal.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b="bGieHdSL"
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5b2dd35212fso396571eaf.3
-        for <linux-serial@vger.kernel.org>; Mon, 20 May 2024 21:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google; t=1716267516; x=1716872316; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XInF9u3dYy7a1N1IlIxFxMZS6Wpumf8KGKQ/ks5PIPU=;
-        b=bGieHdSL1+Iip/OjN5a7CM4fv54VjWBDZtYWIqbJc3p3HiRU1y5s7AduUrs0ZQWLeB
-         JkjjhG4AArevMmdaOeIjxKd4v7JjrAsEIvbd4hHbAEbIw+1TH5Op7w/x9qCE8yH4VLFR
-         d2QgkbFdABEH7HoXJucLcsOsnncBQki/+OrpE=
+	s=arc-20240116; t=1716275993; c=relaxed/simple;
+	bh=kZyvE9UDLl6WTYeDxRjwfmu4Q8LQcZJTjhT/YcTyaQw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CxFOBB3MMZAaKjjB6z27UtEHJkO8R2YAvQRuJwHchiEUF5kkTm6i+bVxy51jxK28gB4wkRAQrsXDWyxRIInGDf774dRBA9Y3r/ZZHsOnQyFoqdcP7WSEJaAAsFmjU7x1PK43+tv/XcNNJMQIsrltsBLNJsgFBKxtSJ+tNR2WSaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-debaa161ae3so3297561276.1;
+        Tue, 21 May 2024 00:19:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716267516; x=1716872316;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XInF9u3dYy7a1N1IlIxFxMZS6Wpumf8KGKQ/ks5PIPU=;
-        b=YPtJjmedzNL8c/YymNgd7NkplceW/7KCnVwUCSG4cIeWg2Uma4T7GRAs/+GFtW/M9N
-         uORCSHXlx1VMj3cmC6ZrOu6TwdbOXCriZhAt/98gfmvJda+zSnwM/Nu588sViYLsRq0z
-         hESDBqG4w82AP6qx8XJwSAi6zQzgWpxr/ktB3m7CPWkoh4PFGnVe95zw+54ldpZ20owu
-         fEWgEifdS1defSi4wxoRa/uSZEvaT15X0y8P//Ei3bkz4RxBDmmAENeA9zFHFtkK1y/O
-         T3S1ua5r20vK4cAb4GuRxi2RDWz49qqDgLITL/YOpEOG6+g+MxP2fB+hs7NNtQ1QfbUB
-         FUDA==
-X-Forwarded-Encrypted: i=1; AJvYcCWc7JQ1ZT3+Xm7jNG2bCKC+uYj8MK8a2A7J7G7ha/r4YWWQbU/rwI2KjdeSFV7Q4CcH35XYCSb2ZJoGmbL6Bzth/u6syXqYsyQWU6v3
-X-Gm-Message-State: AOJu0YyVX3PVLENloQ4cZ/r+jOY/Dt1OaCVqVnsf9n8tXFmuBTZXB6BM
-	mT/VL2Z661vjeYr+CjZCv8pivhvvF/BhiilGapP/0f83fZggIH/5zoVmmmGuQQc=
-X-Google-Smtp-Source: AGHT+IFMPZfMCFJRZv0SAyDHFSNN8ECXvgbal9cTdDTLJEPN5Qfd5UUIK9BX6SUNtTGY92Uj3I/eoQ==
-X-Received: by 2002:a05:6359:4c92:b0:192:5236:b1d9 with SMTP id e5c5f4694b2df-193bcfe01d5mr2925961755d.2.1716267515429;
-        Mon, 20 May 2024 21:58:35 -0700 (PDT)
-Received: from [192.168.1.33] ([50.37.206.39])
-        by smtp.googlemail.com with ESMTPSA id 41be03b00d2f7-659cf15526asm7225096a12.45.2024.05.20.21.58.34
+        d=1e100.net; s=20230601; t=1716275990; x=1716880790;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1KTzn0hU9Z4UN/kHuOvflOdET5gWXbcBejm7dn9vrh4=;
+        b=b1QTzLIt9xpLobs7DRSKJLkhNER37gVfP1GNedtU/Qq5IIfhtECds5wFSQX5gBEDDA
+         BM3ogB0OHT3sVV1P0ovDAsqBSLgu0jD9I7IFBXF+ygz6trc3ZRxiNI6zKqnCqLKDanQQ
+         0sYOyNGJi9KrATO7rjeed4Tn7/4iDAvA5nfca/MJX3M/Zb7SnXZzGm3l/SrP1DesqKSX
+         LTULJJ3oVZPi4QsGxjCqOQMGQLrbJKdKbkJTDN9dhl4LOIlDm8MPCh3NcZMcCC7ZSNcd
+         KCNUfUDOgYs7WkxtNYsGPGjEMSoCSl9NLOGyJejpZWdUZ3utlZVHIFpgb5vW+GukPYtp
+         8YwQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV+aWS18QjTItQyG4mhfGQg+0EEWDVlRIY+00Cif46nKIVrfF/47nYigOaTxZvVqRD20Ggx2NKXksxqtP4LoLbFHbTjWlbLxleNGRsRhSYPBVjkQi3EmX2gUtOSuqmRS4wPOLSMN2Bri66GsJvtfB2mFWpwVd7neBNJLUEDbB31ZyAsAwV+VxozgRh0tpdNnGJlw7dnSe3yRS8LSJaBs4X3nWzcfdhBg/7TDRey1Ou3+0uqNSURQC7Kjazy/DO7a5i2qtuE/iFU6RPbB1tOs3L5hgcT4ZJYta5KHducCERaKFe+yL+OCDNED6dmZzCK5I/7mu7ZkLR5wMr6Cig6zlB9PYvrtdnckN3lS6IqZvFgBLH7IsyDhKJlptMFnWwtAlzJ+o446YQ2B8CROCcSZ9D05Q==
+X-Gm-Message-State: AOJu0YzgqkI4XkbThQJK49Ioza1gVOWfHJs9CurXN8ggASOm46wsR5pP
+	AyOuf97pqsP2UVO7Pu16uhYb42ur9f8eQmpV0bhZXeHIMvkC8ByB1pCXXBXo
+X-Google-Smtp-Source: AGHT+IGEirqxTOMzWTamq9P57yxkEVKAurn6q9zbUNC7MEGZU4SMG3Vx0ppIBEhtkbjR13HGWAUNTA==
+X-Received: by 2002:a25:a2c6:0:b0:de6:fe6:68a2 with SMTP id 3f1490d57ef6-dee4f33732bmr41516330276.23.1716275989735;
+        Tue, 21 May 2024 00:19:49 -0700 (PDT)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id 3f1490d57ef6-debd374406asm5367730276.29.2024.05.21.00.19.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 May 2024 21:58:35 -0700 (PDT)
-Message-ID: <20d56279-2598-4a3e-9984-729199d8e67d@schmorgal.com>
-Date: Mon, 20 May 2024 21:58:33 -0700
+        Tue, 21 May 2024 00:19:48 -0700 (PDT)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-6209e8a0386so27044307b3.0;
+        Tue, 21 May 2024 00:19:48 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCV/AXipcXvNAzeXLV41yIXTwgiuy/Nj00R7q0HAh81YDdhdTHWw/66LBl792bKRzje/D/E4hdy7IPKn9ZtWp1owSFDG/c78+RMs9+iJrhUyVvJpn8hhYgIRxkSra90nGOrVAnsUjJMCyJT+zW7HtUcCJMJI0DxvK7TlN51H7dWgj3g0EPBzGo4JAiVc0XAmGzl2JjnggrJmQih7P4HnLZBqWP0wQFz77+iNMXz3Aj0rUlN2WMWed8G6jIwx9cQ2QKXXxisIlIVE9gnqrox1fwjJOmAo74ZdoG9u5Z3+lWc8rc/SvYl5Y1kgzV5E6eqMLytFeGnIIWk1QfTqq9BAF+zCsqxOTM7sz5fRYJ4YAtWOnIk27If4ePpYj3zA4/J8ipKPft+hdEy7XcPkxGArCJXDew==
+X-Received: by 2002:a81:ae5f:0:b0:61d:fd3e:8e8f with SMTP id
+ 00721157ae682-622affa8b29mr418170827b3.25.1716275988366; Tue, 21 May 2024
+ 00:19:48 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: pxa: Disable TX interrupt if there is no more
- data to transmit
-To: Jonas Gorski <jonas.gorski@gmail.com>, Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org
-References: <20240519193109.122466-1-doug@schmorgal.com>
- <207771fc-294a-4810-a3a2-52ea0e27360f@kernel.org>
- <CAOiHx=mnHsZ7U79NkNRyBsqkGhaM3vy9cgaZe=uBUXM7o8=SFg@mail.gmail.com>
-Content-Language: en-US
-From: Doug Brown <doug@schmorgal.com>
-In-Reply-To: <CAOiHx=mnHsZ7U79NkNRyBsqkGhaM3vy9cgaZe=uBUXM7o8=SFg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1712205900.git.ysato@users.sourceforge.jp>
+ <455e40c03314294f9c2e64480aa69f8261a3f2d5.camel@physik.fu-berlin.de>
+ <87fruc8wg4.wl-ysato@users.sourceforge.jp> <46c11cf9f837416470c50fa678df0ddb94a0a22e.camel@physik.fu-berlin.de>
+In-Reply-To: <46c11cf9f837416470c50fa678df0ddb94a0a22e.camel@physik.fu-berlin.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 21 May 2024 09:19:35 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWwhoWzeS78JKVJzxZ9B4-TTOSH8rX4eyYTdpYgaepjzQ@mail.gmail.com>
+Message-ID: <CAMuHMdWwhoWzeS78JKVJzxZ9B4-TTOSH8rX4eyYTdpYgaepjzQ@mail.gmail.com>
+Subject: Re: [RESEND v7 00/37] Device Tree support for SH7751 based board
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, linux-sh@vger.kernel.org, 
+	Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Rich Felker <dalias@libc.org>, Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>, 
+	Heiko Stuebner <heiko.stuebner@cherry.de>, Shawn Guo <shawnguo@kernel.org>, 
+	Sebastian Reichel <sre@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
+	Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
+	David Rientjes <rientjes@google.com>, Hyeonggon Yoo <42.hyeyoo@gmail.com>, 
+	Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Kefeng Wang <wangkefeng.wang@huawei.com>, Stephen Rothwell <sfr@canb.auug.org.au>, 
+	Javier Martinez Canillas <javierm@redhat.com>, Guo Ren <guoren@kernel.org>, 
+	Azeem Shaikh <azeemshaikh38@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Jacky Huang <ychuang3@nuvoton.com>, 
+	Herve Codina <herve.codina@bootlin.com>, 
+	Manikanta Guntupalli <manikanta.guntupalli@amd.com>, Anup Patel <apatel@ventanamicro.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Sam Ravnborg <sam@ravnborg.org>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-ide@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-pci@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jonas and Jiri,
+On Mon, May 20, 2024 at 5:25=E2=80=AFPM John Paul Adrian Glaubitz
+<glaubitz@physik.fu-berlin.de> wrote:
+> On Mon, 2024-05-20 at 22:06 +0900, Yoshinori Sato wrote:
+> > I'll be posting v8 soon.
+>
+> Sounds good! Maybe we can start merging the patches that contain fixes on=
+ly
+> and that have already been reviewed. This way, we can reduce the overall =
+size
+> of the series a bit.
 
-On 5/20/2024 2:30 AM, Jonas Gorski wrote:
-> Hi
-> 
-> On Mon, 20 May 2024 at 08:41, Jiri Slaby <jirislaby@kernel.org> wrote:
->>
->> This does not make sense. If the circ buf is empty,
->> uart_port_tx_limited() should stop the TX already. You simply revert to
->> the state before 7bfb915a597a, but on a per-driver basis.
->>
->> IOW all drivers using the helper would have exactly this issue after
->> 7bfb915a597a.
++1
 
-I tested more, and it appears you are correct, Jiri. I think
-7bfb915a597a has broken other drivers too.
+Gr{oetje,eeting}s,
 
-For some background on this, after upgrading to 6.9 I observed that
-transmits would stop working on my PXA168-based device with the pxa
-driver until I caused another UART IRQ to fire, for example by typing a
-character in the console. I bisected the problem to 7bfb915a597a.
+                        Geert
 
-I don't have a bunch of hardware to test with, but I cobbled together a
-way to emulate a BeagleBoard in an old Linaro QEMU branch, and the omap-
-serial driver also appears to be affected. Shortly after boot, the UART
-just completely hangs and all transmits stop working. I can't even type
-a character to recover it like I can with the pxa driver. Reverting
-7bfb915a597a fixes the issue.
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-I think the reason the pxa driver recovers when I type a character is
-because it always checks the THRE bit of the LSR in the IRQ handler,
-even if the IIR doesn't say there's a TX interrupt ready. (This appears
-to be a workaround for an erratum in the PXA serial IP...)
-
->> Perhaps, it should be reverted and the affected driver should just pass
->> UART_TX_NOSTOP instead?
->>
->>>        uart_port_tx_limited(&up->port, ch, up->port.fifosize / 2,
->>>                true,
->>>                serial_out(up, UART_TX, ch),
-
-I can't speak for whether that would fix the issue Jonas originally saw,
-but it does look like it needs to be reverted because other drivers are
-also broken due to this change.
-
-> 1. The kernel doc for uart_ops::stop_tx() says "The driver should stop
-> transmitting characters as soon as possible."
-
-Very interesting. I guess the correct behavior depends on the exact
-interpretation of "stop transmitting characters as soon as possible".
-:-) It looks like, at least for the existing 16550-esque drivers that
-are using the helper, they are treating stop_tx() more as a signal to
-disable the TX interrupt, but still allow any characters already in the
-FIFO to go out.
-
-All I know is, in the PXA UART, I was observing the TX IRQ firing when
-we had no data to load in the FIFO, and we weren't disabling the
-interrupt. This causes a 16550A-style UART to get hung up because the TX
-interrupt never fires again unless you disable it and re-enable it.
-
-Doug
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
