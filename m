@@ -1,126 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from dianne.skoll.ca (dianne.skoll.ca [144.217.161.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687AF8004B;
-	Tue, 21 May 2024 14:02:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F03EA1E4A2;
+	Tue, 21 May 2024 14:15:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.217.161.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716300130; cv=none; b=m7Ual5wE6Roc2T3aaXYOjml7T1oqqdAooaoOxOZJJEVKLVa5N6FbndV9Lrw3wYPBoTNUUUTjV3g8vCQS3oL6OGCP/sYBBT2i4FNQ/zI+jgV3xINhANUjX+wRTNozvGjooGreMK+4aNmutTuuEDL9JH/F4nITea17nf7Qul6kQ9M=
+	t=1716300938; cv=none; b=MSibRVvcezaFDoYSn3zu/+zbThKcQCLHElsQxY8WS8bIaXaBid9mI+lXHuhr9L2VFwx3FaijBLnMo0PF3+R2/63lg9OVY6U6Xiqif7gRccO+Z7aAa28lgLAkjpBNF1tyvwiQk2ivuXP5NiFwv90xIiQPDMSIawz8F3Tdc6WoV5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716300130; c=relaxed/simple;
-	bh=wQfXmBBSl62bShtRXM5vAkuDb1swhN55UnYuHS+luY8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q34vAvF1yv8qqXlkYNUXmVbhN83Ws+I+ntYhrICVrv6uEY58xCxOtYA7kMSwUnGq6SWTdX116+TdMjrPZ7joWhaKnqnmk20qlSaZPEmaxMfrBt5kSsUiZvEJwVsBDt37d1cDF30RwXyiydTYGntz0CU8pbiCREaQCdcY2coBbNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xlt6Klh9; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1716300938; c=relaxed/simple;
+	bh=CQY/u8kxhmHJD+6fMC5R8Nze8D98YruqQ6VlBkAoDwE=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=tjSZdP4VXHcHULn4IHNnmI5VdCu/NNGT+iIs36J9cxmBVS1ZsX5R57vQSXpb7q4XVvVYEDqOBaAvRx7F7dFnwzDcnT2NZ+0yq4YvY0URfrxWep5uTZ2p6C43VSCvELMc4lXYCBc4RIEHbQbSd177jrOnG/3ddbzk0fFgjeyw5bE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca; spf=pass smtp.mailfrom=skoll.ca; dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b=Ts6GvWNw; arc=none smtp.client-ip=144.217.161.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=skoll.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xlt6Klh9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716300128; x=1747836128;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=wQfXmBBSl62bShtRXM5vAkuDb1swhN55UnYuHS+luY8=;
-  b=Xlt6Klh9cGmbfa6pbzq6pPu67JfFzxYtYXEXez+SZcMcyNGQf7thMJZo
-   nTPBnsKMHWjES3dmxwjlf1TQNRzrG1Vs5ridajY1GqHghPjvDXwN1zMr3
-   pdrz9f6Is4T/tXS/BWDSoDWETVAWSavBmy4RExTnNmQmur+RhZLHbar9d
-   wDsnzCkr60Xziz4FW/F3vkylCjldgpxuAFcNxr/O8R1ZxBTnrIAPDqMGB
-   dg76goY+ws1pRhWFMuUtSt6iKIJffxEDnIGzE2AdEojrlVguhLvH5rhnm
-   N4Y5VgE7EixL7qCxwB1UyrfIx2+m63SVSDKsbFSeiGFG1Q/qFUOJRc6zJ
-   A==;
-X-CSE-ConnectionGUID: HFNzCFDwTbewJsjxC8AKCA==
-X-CSE-MsgGUID: Brtutuj6RFi2/8pIYAo3/Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11078"; a="12722094"
-X-IronPort-AV: E=Sophos;i="6.08,178,1712646000"; 
-   d="scan'208";a="12722094"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2024 07:02:07 -0700
-X-CSE-ConnectionGUID: NnpcorRrRxOl9UgpIatVcQ==
-X-CSE-MsgGUID: ywsKWMMdTo21rmxXRI8mCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,177,1712646000"; 
-   d="scan'208";a="70350936"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2024 07:02:05 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1s9Q42-00000009fqg-2JFR;
-	Tue, 21 May 2024 17:02:02 +0300
-Date: Tue, 21 May 2024 17:02:02 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v1 1/1] spi: pxa2xx: Move PXA SSP bindings to the correct
- folder
-Message-ID: <ZkypWt2AxfjUQSgO@smile.fi.intel.com>
-References: <20240517171103.221856-1-andriy.shevchenko@linux.intel.com>
- <e81d43f8-a3ba-41b4-a86f-af2d6943e917@sirena.org.uk>
- <Zke2yG-WPkaWg5PV@smile.fi.intel.com>
- <CAL_JsqKA7AnY7w3sjrT+khrat348v7uNpAP1+FZ=mdYMhJkf3Q@mail.gmail.com>
- <ZksqPiSLY8OlE5lT@smile.fi.intel.com>
- <20240520203600.GA1424819-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b="Ts6GvWNw"
+Received: from pi4.skoll.ca ([192.168.84.18])
+	by dianne.skoll.ca (8.17.1.9/8.17.1.9/Debian-2) with ESMTPS id 44LEFG18319952
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Tue, 21 May 2024 10:15:17 -0400
+Received: from gato.skoll.ca (gato.skoll.ca [192.168.83.21])
+	by pi4.skoll.ca (Postfix) with ESMTPS id 4VkGfr1Q0mzgd52Y;
+	Tue, 21 May 2024 10:15:16 -0400 (EDT)
+Date: Tue, 21 May 2024 10:15:14 -0400
+From: Dianne Skoll <dianne@skoll.ca>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: N_HDLC line discipline: Race condition
+Message-ID: <20240521101435.0b6b3420@gato.skoll.ca>
+In-Reply-To: <63a5a3c5-8362-4b93-a50e-10c9cdcffdd2@kernel.org>
+References: <20240424173114.035ddd7b@gato.skoll.ca>
+	<20240425140127.6504ade1@gato.skoll.ca>
+	<63a5a3c5-8362-4b93-a50e-10c9cdcffdd2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240520203600.GA1424819-robh@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skoll.ca; h=date
+	:from:to:cc:subject:message-id:in-reply-to:references
+	:mime-version:content-type:content-transfer-encoding; s=canit2;
+	 bh=s2YFZC7GmOEsW+N8EbYEKSMbTn8bmL6bKKFlud97oVQ=; b=Ts6GvWNwzAiq
+	DIuDmgOV2oME9wuzHhxo9iWwVqa8zXPl0g7RTZ64gzt6zYCazsA68oIDgGJcgmWS
+	VI8yEyijE4zM8A34rHCXNlUrAulJfL+ceIz4pknLua+j37mvii7vIWBp51h9yAT7
+	3TYZR4whLHlFzbyz0P9bHItOda0BkJ2Uyiq33apzr0viAzbqJWEFIwvUJ0QqgBtj
+	+NGGEEAFw6Dnel99ZFp2etgKGPezpnDrfFnfD/Opjb0Vus3la79CleieHNZPkQZD
+	cKXt4rtBemn6P5bQz2gDhfL++Q9B36y4wUzPTNiReuWT/NwWKcuHPKTG7PBkNirR
+	zxuIzqnpAA==
+X-Scanned-By: CanIt (www . roaringpenguin . com)
+X-Scanned-By: mailmunge 3.16 on 192.168.83.18
+X-Spam-Score: undef - relay 192.168.84.18 marked with skip_spam_scan
+X-CanIt-Geo: No geolocation information available for 192.168.84.18
+X-CanItPRO-Stream: outbound (inherits from default)
+X-Canit-Stats-ID: Bayes signature not available
+X-CanIt-Archive-Cluster: tWKWaF/NcZkqjWIj0BEJTBHJhwY
+X-CanIt-Archived-As: base/20240521 / 01cpOfh1S
 
-On Mon, May 20, 2024 at 03:36:00PM -0500, Rob Herring wrote:
-> On Mon, May 20, 2024 at 01:47:26PM +0300, Andy Shevchenko wrote:
-> > On Fri, May 17, 2024 at 03:19:51PM -0500, Rob Herring wrote:
-> > > On Fri, May 17, 2024 at 2:58 PM Andy Shevchenko
-> > > <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Fri, May 17, 2024 at 06:24:37PM +0100, Mark Brown wrote:
-> > > > > On Fri, May 17, 2024 at 08:11:03PM +0300, Andy Shevchenko wrote:
+On Tue, 21 May 2024 12:47:00 +0200
+Jiri Slaby <jirislaby@kernel.org> wrote:
 
-...
+> I believe it is a correct behavior after all. As you use pty for 
+> testing, the "framing" is lost during the pty-to-pty pass on the
+> flush to ldisc path (receive_buf()).
 
-> > > > > > SSP stands for Serial Synchronous Protocol and has nothing to do with
-> > > > > > UART, also known as USART, where 'A' stands for Asynchronous.
-> > > > > >
-> > > > > > Move the SSP bindings to where it belongs.
-> > > > >
-> > > > > It's a serial device which is also used for other applications (the
-> > > > > other one upstream being audio) so I can see where the current binding
-> > > > > comes from and it's not super obvious that spi is especially better
-> > > > > here.
-> > > >
-> > > > Hmm... okay. Then it's question to DT people. Consider this as a report.
-> > > > Because UART (aka serial) is definitely not the place for SPI/SSP bindings
-> > > > either.
-> > > 
-> > > Move it when it is converted.
-> > 
-> > The problem is that somebody added a binding (in YAML) for SPI PXA2xx
-> > in the spi/ folder while this one kept unconverted.
-> 
-> Ah, well that detail was missed.
-> 
-> > 
-> > If it dangles more, it might be that we will have two asynchronous bindings
-> > for the co-existed drivers.
-> 
-> Looks like all that is needed is adding the compatible strings and 
-> 'dmas' property to spi/marvell,mmp2-ssp.yaml. The examples in the old 
-> binding have other stuff, but looks like that's garbage.
+That might be what's happening, but I don't think it matches the documentation
+in n_hdlc.c.  If you read the comment block near the top of the file,
+it says this:
 
-I'm not an expert in DT, anybody to join them in a nicest possible way?
+ * All HDLC data is frame oriented which means:
+ *
+ * 1. tty write calls represent one complete transmit frame of data
+ *    The device driver should accept the complete frame or none of
+ *    the frame (busy) in the write method. Each write call should have
+ *    a byte count in the range of 2-65535 bytes (2 is min HDLC frame
+ *    with 1 addr byte and 1 ctrl byte). The max byte count of 65535
+ *    should include any crc bytes required. For example, when using
+ *    CCITT CRC32, 4 crc bytes are required, so the maximum size frame
+ *    the application may transmit is limited to 65531 bytes. For CCITT
+ *    CRC16, the maximum application frame size would be 65533.
+ *
+ *
+ * 2. receive callbacks from the device driver represents
+ *    one received frame. The device driver should bypass
+ *    the tty flip buffer and call the line discipline receive
+ *    callback directly to avoid fragmenting or concatenating
+ *    multiple frames into a single receive callback.
+ *
+ *    The HDLC line discipline queues the receive frames in separate
+ *    buffers so complete receive frames can be returned by the
+ *    tty read calls.
+ *
+ * 3. tty read calls returns an entire frame of data or nothing.
+[...] */
 
--- 
-With Best Regards,
-Andy Shevchenko
+Point 2 says that the driver should avoid fragmenting frames, or concatenating
+frames into a single receive callback.  Doesn't this imply that frame
+boundaries should be preserved when you read() data, which happens reliably
+when you add a small delay between write()'s?
 
+Regards,
 
+Dianne.
