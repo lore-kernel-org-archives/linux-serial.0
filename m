@@ -1,99 +1,94 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 954CC6CDA3
-	for <linux-serial@vger.kernel.org>; Wed, 22 May 2024 15:31:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54EB013DDA5;
+	Wed, 22 May 2024 15:45:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716391877; cv=none; b=OW76O2GeHNYIbcPplFtgTWFUArgqEHJO/sAcG4rhLGAAjoHw2CVd0AgZEOR0ljM9o1tFQQYFnFsKwLg+3t2CsUCxJi/LJzi6KDGmo8UkYp++JlDkWwSnYHv1ds+FtDgqEOt56SGmTSweKMbaKBDNyacp1iFA/BsEoecSX3rp2fw=
+	t=1716392744; cv=none; b=auslO3q23Ef0jzHr782478xypICzp1iTUgE4H0md052FIE43dgBqE8QyIZN9/aNlYIePZblek7a/rDMktQ/QHlBq7kUp0xdaURSHlOvGI+sNyk7pBr5c5HcWFz7iaxULttyZIU9dBtYowjSViEY79PK8nQXe0otlPOVDXy3sCyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716391877; c=relaxed/simple;
-	bh=DblYs+ScPiYd2IWFS83ByHnJTeIt6Z6vSH1U1R5ojrw=;
+	s=arc-20240116; t=1716392744; c=relaxed/simple;
+	bh=ufoYxK1fyxQsCJ6E3XPZLUf38wiUDYwMD5+3HGtWjKE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dTow7tzGdVYLauHUZX3NipmTji1zRdal3DR0GHGv/vBGEOK5W80TJ/0udgH5xJbaVL3BiPgwCIgvnu7RWcmTbxPVNqZxB44iG4LXGFbVd163zLEL0C3Iy8sbbVhRazz7nD3UCg6xfwoIoRQV+swgkep79Zdi/yudEl5MDS7yRHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ZybNjzWp; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=m/Kg8BIwplxVIcBIDSJTySXQ+49mSxunw8iNqexXAKxRYUOcUPt+Ps839TQBf0SDTMtWY32nugvlp7PkfmJk0ZCS42TJ0r/m9GZx+cg6cpDLEzd7RWJFt2rnolziLvCC0T7FaFvNnFNwrKH2nZfVexmHUElgwsIyqCPos5xS57Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ETSzzFqI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ZybNjzWp"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a59cdd185b9so221341466b.1
-        for <linux-serial@vger.kernel.org>; Wed, 22 May 2024 08:31:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1716391874; x=1716996674; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=iOnW/DfLA3xJXZ5u+WZq3O9RUUMYHYU/muej88lDrWk=;
-        b=ZybNjzWp/+wwasCT5weeIL7CIV9zPVbn/53q2/YeEdPzrRjUVaUi6s0hooWjaQLh57
-         ACf3NUu8vvJM+BtTMi3VwOKEaH8/xzva6JDJhFguY2xOMmQkWY8mVSBuTJb8+kL3Ei1W
-         QExy+8Tuw35gz8NEzePbjK1dM3BrB2q/Z+UR/BQ+r/jm5kYPftj0YT9d/Ur07hyGyh54
-         hI41sihIJIAG7qRRB0mU6h5b3pAP6phowMoKSrV/UTCd152tc2nq4KqRYI6/TqAoTCm/
-         0KdqR8UQVKLk5iHuh57Z9UHegna2I+Y+MfgeiDBIb/jwskkZSqtLHNXTUXP/p3II5wyJ
-         FsCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716391874; x=1716996674;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iOnW/DfLA3xJXZ5u+WZq3O9RUUMYHYU/muej88lDrWk=;
-        b=Knat1Q3GOLhoVTmHh5nczF6mi6XBne3RgkQ/qVn6llASOnHrPJMKJkOzOMg01ML4HH
-         gtzVgFx6MaZViemFggGeaE+JzzI3jGNY9Ztd/fxmU4WGorYP9+4+Wg7m7uee1m6XB2T1
-         9m3TFqmBJF/wF7IbM/Aae01XUBnUEyiJDh3tz+q5ytSmP41jvQWiuF4YxWSoQFnQ1o7p
-         B//TLYzs1HMc16WVie1RFbAgVj+aNqcwcIM9ln+a/EAjoqHP8Sh35erWxELda32Yyrru
-         s607nTysq+wYiHHBIWNjoA9gunJWI88mwBHdUO9YxrapuPrg05b9zSNQOYIFv68/1Mgx
-         5Z9g==
-X-Forwarded-Encrypted: i=1; AJvYcCV5VuKpttod3CePJlEKyjfB8AfwXfRdhTaftvGgq5TRmkJuIsJz1YqHynLwerISDZGI1Uxw01H8dsPVsCZ9tDXK2jhkBtcW/e0mN5cr
-X-Gm-Message-State: AOJu0Yxa0xYM3AOwuczgVFLI0HOp1GxzsB8oY3KeU/dkQZS0glRa/UmW
-	wvdCtGDOe1KjjB4uS4NKtzsgt1ZDMGNnv/ric0fmpljAiPTbCljDnxaEeShMj8g=
-X-Google-Smtp-Source: AGHT+IGqVvLYq+kT50O7GsSXXYDLUBYlTXLfwZdhz5s8zKLbBgML4M/AO44hf5zj4i1wkF2z2CAoEg==
-X-Received: by 2002:a17:906:3cea:b0:a59:9f88:f1f1 with SMTP id a640c23a62f3a-a622314c52dmr217055966b.19.1716391874015;
-        Wed, 22 May 2024 08:31:14 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a5a17894d40sm1781965366b.75.2024.05.22.08.31.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 May 2024 08:31:13 -0700 (PDT)
-Date: Wed, 22 May 2024 17:31:12 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Sreenath Vijayan <sreenath.vijayan@sony.com>
-Cc: john.ogness@linutronix.de, corbet@lwn.net, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, rdunlap@infradead.org, rostedt@goodmis.org,
-	senozhatsky@chromium.org, linux-doc@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ETSzzFqI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78512C2BBFC;
+	Wed, 22 May 2024 15:45:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716392743;
+	bh=ufoYxK1fyxQsCJ6E3XPZLUf38wiUDYwMD5+3HGtWjKE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ETSzzFqIS62XDL7IDh2iXP33WXQNjQ/0pq6ZDo4hEQUYqoS+cVKifkukR3BqfAvI6
+	 dzzvy5xd9UvgNnVdetD372bCD8w4XzAD/L0F/DJCQVEZ2+kePdrBzspEQlwe4EnsSm
+	 +3go6vrV0uwusgJ28UcXQ0/sBt2WuuuchnLb46Wpc4KmoqHHIS5Hom3ulv+QgMWaIY
+	 vrtcDhLhGp6RX5DB7GsGBSEFF/dSAbNAuVxLRP4ijEyCjI6Ci3NUWEUF+ekh8Y0xGT
+	 0aYL630Ki75pr+EUkaZ4j+7DVF3CyBjwWqem1mkIKWAHm08Uk8iz881y196RblqauO
+	 ybF9z84xv31yQ==
+Date: Wed, 22 May 2024 16:45:39 +0100
+From: Conor Dooley <conor@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Mark Brown <broonie@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-	anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH v6 2/2] tty/sysrq: Replay kernel log messages on consoles
- via sysrq
-Message-ID: <Zk4PwD2ZLldFAqEE@pathway.suse.cz>
-References: <cover.1710220326.git.sreenath.vijayan@sony.com>
- <cc3b9b1aae60a236c6aed1dc7b0ffa2c7cd1f183.1710220326.git.sreenath.vijayan@sony.com>
+	devicetree@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH] spi: dt-bindings: marvell,mmp2-ssp: Merge PXA SSP into
+ schema
+Message-ID: <20240522-festivity-remark-8d6393fada17@spud>
+References: <20240522132859.3146335-1-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="mX0BiKdZerE2Ta4F"
+Content-Disposition: inline
+In-Reply-To: <20240522132859.3146335-1-robh@kernel.org>
+
+
+--mX0BiKdZerE2Ta4F
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cc3b9b1aae60a236c6aed1dc7b0ffa2c7cd1f183.1710220326.git.sreenath.vijayan@sony.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Wed 2024-03-13 15:52:52, Sreenath Vijayan wrote:
-> When terminal is unresponsive, one cannot use dmesg to view
-> the printk ring buffer messages. Also, syslog services may be
-> disabled, especially on embedded systems, to check the messages
-> after a reboot. In this scenario, replay the messages in printk
-> ring buffer on consoles via sysrq by pressing sysrq+R.
-> 
-> The console loglevel will determine which all kernel log messages
-> are displayed. The messages will be displayed only when
-> console_trylock() succeeds. Users could repeat the sysrq key when
-> it fails. If the owner of console subsystem lock is stuck,
-> repeating the key won't work.
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
-> Reviewed-by: John Ogness <john.ogness@linutronix.de>
-> Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
+On Wed, May 22, 2024 at 08:28:58AM -0500, Rob Herring (Arm) wrote:
+> The Marvell PXA SSP block is the same or similiar to the MMP2 variant.
+> The only difference in the binding is the PXA version supports DMA (and
+> that's probably a binding difference rather than an actual h/w
+> difference).
+>=20
+> The old binding didn't belong under 'serial' as it is not a UART. The
+> SSP block also supports audio devices, so 'spi' is not a perfect fit
+> either. As the existing schema for MMP2 is there, just leave things
+> as-is.
+>=20
+> The examples in the old text binding were pretty out of sync with
+> reality. 'clock-names' and 'ssp-id' aren't documented nor used.
+>=20
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 
-Best Regards,
-Petr
+Cheers,
+Conor.
+
+--mX0BiKdZerE2Ta4F
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZk4TIwAKCRB4tDGHoIJi
+0hz4AQDqkrfj5lvbaIp9JRsRma3PhrCTRXlGlgrOV3oWp2RnywEAzo2us+p8Tf9D
+pamFjR4bwBoafa83jLVuHKG1XTNyawQ=
+=DLer
+-----END PGP SIGNATURE-----
+
+--mX0BiKdZerE2Ta4F--
