@@ -1,108 +1,207 @@
-Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106861E86A
-	for <linux-serial@vger.kernel.org>; Wed, 22 May 2024 12:39:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF2AF442F;
+	Wed, 22 May 2024 13:29:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716381568; cv=none; b=fYJpu9yJA8IA0edxC8RJZ53WdrO0GoaFy0v7Qr8zEcQC5cpLKjXJvucbALkD3uO1jILX7qTlkVJT/8FzZdY4NapmbvYgR6nrhridiiaxbtugoMY23WPKK7v4oseb9WDmUrpBihb5gh4y2Me8oTH5gc+9emK5jRBg+uqf/CqDIwM=
+	t=1716384547; cv=none; b=rEBPiNXC4sOdKmX93bM6tQvZJV4+2vgyAL0RFY65fAXe8Bsf4+Kd/dQF22UsXMkF2DU35OQ3zsJvEx4sgY2bxW9JMqWsl1SGllUBmYNgQNBH/hXgqDAWZ0G4i6sRanx7BW7cKiHoiixggDYHyCgcIcfAIVDAsoelox6OsgnFiMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716381568; c=relaxed/simple;
-	bh=vh0WxDgfQgMWm14h3/iUhT/VwFR71d9hn3Hu6cnsAD8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gwwlp1Lm2D5dIrZ1y1AhLwDyHKMj4USeRrIMakrXrg/ECpu7ML6MN3i3nb4xD5bhwz/+DdiXzWpwWoV+EsmfY5FLQCPoh/+ZceB9Tnjb0cSYtP24VJjeXwT2ApEAfhg1dfR9x80f+LdB+4fLONxXMmnMlOQ3EuwKwWcQR0bOAXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Yc+m7sr8; arc=none smtp.client-ip=95.215.58.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1716384547; c=relaxed/simple;
+	bh=wxaOmOUCkS1lix74mx1Jccpu5z2WpUnMXkHaPkATNUI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UNufGvdKR8rHyYsDudtuO5iGByOrKH4n85uW9PpS/UKX76ictt9bDqPGmZG53kJRh9nHMZ2Q8/GmSsmpUHIfFL7e1C0lrzww8IF0uTlzUE+PPF48aW64BbrWonq3ZTnXNbE0JJYotLBJU2pNNCRyRFY1w4HD6WML2iMr7jnRZng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uYkfFYb0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Yc+m7sr8"
-X-Envelope-To: gregkh@linuxfoundation.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1716381565;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ghbu8+ZnCK07q7xTXnO+Z2JVcCZZP4HpKAs3rCGet+0=;
-	b=Yc+m7sr8n7pgCQ2MFRAZVPsrMatTRsaYrXWoyoJj2YPKREJOq31owu0244arVSzc/SWa4G
-	apMJbUhDrA9AXczH0EeVCBSVWCkyZhN/u3vcA7R9lwmeajcxB4yf7xm7/+206jhZl4SCPw
-	As1WHCwGhZC5FUshEdI78V0oHN9rjg8=
-X-Envelope-To: kuba@kernel.org
-X-Envelope-To: jirislaby@kernel.org
-X-Envelope-To: jonathan.lemon@gmail.com
-X-Envelope-To: linux-serial@vger.kernel.org
-X-Envelope-To: netdev@vger.kernel.org
-Message-ID: <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
-Date: Wed, 22 May 2024 13:39:21 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uYkfFYb0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAC1C2BD11;
+	Wed, 22 May 2024 13:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716384546;
+	bh=wxaOmOUCkS1lix74mx1Jccpu5z2WpUnMXkHaPkATNUI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=uYkfFYb0u9vU3AUnhJ8XzskCsxvwQSvZnnnEDuWi/zm+NI93BcT5IRrJLwIB8sMVE
+	 sTwme/G0E96z5rCwOQh96MgxPitB52A5xKKtF9zkFy0M7W7DOcEUBr2nqlaMlpN16T
+	 czZLxAuMMOv4WlNtBRYOXBLrKClkzapSh178OEOSQQlUp3w6XlD8c0e8Gz5oTi9S5G
+	 2/Qtb52JtM8xflVmzL4SF7RWk7Bqod+WijNWnBRC80bZk/lZPX+HQBhKgMlxP6rt9S
+	 YyFzPUL4h+sgPoENpL+ihwp39ufuli9RGKS+nTUh7NsgfymT24laX4ZBwAd0Y+vh7l
+	 Eo//B8KXerjYw==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Mark Brown <broonie@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-spi@vger.kernel.org
+Subject: [PATCH] spi: dt-bindings: marvell,mmp2-ssp: Merge PXA SSP into schema
+Date: Wed, 22 May 2024 08:28:58 -0500
+Message-ID: <20240522132859.3146335-1-robh@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
- Jonathan Lemon <jonathan.lemon@gmail.com>, linux-serial@vger.kernel.org,
- netdev@vger.kernel.org
-References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
- <2024051046-decimeter-devotee-076a@gregkh>
-Content-Language: en-US
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-In-Reply-To: <2024051046-decimeter-devotee-076a@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-On 10/05/2024 12:13, Greg Kroah-Hartman wrote:
-> On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
->> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
->> of serial core port device") changed the hierarchy of serial port devices
->> and device_find_child_by_name cannot find ttyS* devices because they are
->> no longer directly attached. Add some logic to restore symlinks creation
->> to the driver for OCP TimeCard.
->>
->> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
->> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
->> ---
->> v2:
->>   add serial/8250 maintainers
->> ---
->>   drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
->>   1 file changed, 21 insertions(+), 9 deletions(-)
-> 
-> Hi,
-> 
-> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> a patch that has triggered this response.  He used to manually respond
-> to these common problems, but in order to save his sanity (he kept
-> writing the same thing over and over, yet to different people), I was
-> created.  Hopefully you will not take offence and will fix the problem
-> in your patch and resubmit it so that it can be accepted into the Linux
-> kernel tree.
-> 
-> You are receiving this message because of the following common error(s)
-> as indicated below:
-> 
-> - You have marked a patch with a "Fixes:" tag for a commit that is in an
->    older released kernel, yet you do not have a cc: stable line in the
->    signed-off-by area at all, which means that the patch will not be
->    applied to any older kernel releases.  To properly fix this, please
->    follow the documented rules in the
->    Documentation/process/stable-kernel-rules.rst file for how to resolve
->    this.
-> 
-> If you wish to discuss this problem further, or you have questions about
-> how to resolve this issue, please feel free to respond to this email and
-> Greg will reply once he has dug out from the pending patches received
-> from other developers.
+The Marvell PXA SSP block is the same or similiar to the MMP2 variant.
+The only difference in the binding is the PXA version supports DMA (and
+that's probably a binding difference rather than an actual h/w
+difference).
 
-Hi Greg!
+The old binding didn't belong under 'serial' as it is not a UART. The
+SSP block also supports audio devices, so 'spi' is not a perfect fit
+either. As the existing schema for MMP2 is there, just leave things
+as-is.
 
-Just gentle ping, I'm still looking for better solution for serial
-device lookup in TimeCard driver.
+The examples in the old text binding were pretty out of sync with
+reality. 'clock-names' and 'ssp-id' aren't documented nor used.
 
-Thanks,
-Vadim
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+---
+ .../bindings/serial/mrvl,pxa-ssp.txt          | 64 -------------------
+ .../bindings/spi/marvell,mmp2-ssp.yaml        | 35 ++++++++--
+ 2 files changed, 31 insertions(+), 68 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/mrvl,pxa-ssp.txt
+
+diff --git a/Documentation/devicetree/bindings/serial/mrvl,pxa-ssp.txt b/Documentation/devicetree/bindings/serial/mrvl,pxa-ssp.txt
+deleted file mode 100644
+index d10cc06c0c37..000000000000
+--- a/Documentation/devicetree/bindings/serial/mrvl,pxa-ssp.txt
++++ /dev/null
+@@ -1,64 +0,0 @@
+-Device tree bindings for Marvell PXA SSP ports
+-
+-Required properties:
+-
+-	- compatible:	Must be one of
+-				mrvl,pxa25x-ssp
+-				mvrl,pxa25x-nssp
+-				mrvl,pxa27x-ssp
+-				mrvl,pxa3xx-ssp
+-				mvrl,pxa168-ssp
+-				mrvl,pxa910-ssp
+-				mrvl,ce4100-ssp
+-
+-	- reg:		The memory base
+-	- dmas:		Two dma phandles, one for rx, one for tx
+-	- dma-names:	Must be "rx", "tx"
+-
+-
+-Example for PXA3xx:
+-
+-	ssp0: ssp@41000000 {
+-		compatible = "mrvl,pxa3xx-ssp";
+-		reg = <0x41000000 0x40>;
+-		ssp-id = <1>;
+-		interrupts = <24>;
+-		clock-names = "pxa27x-ssp.0";
+-		dmas = <&dma 13
+-			&dma 14>;
+-		dma-names = "rx", "tx";
+-	};
+-
+-	ssp1: ssp@41700000 {
+-		compatible = "mrvl,pxa3xx-ssp";
+-		reg = <0x41700000 0x40>;
+-		ssp-id = <2>;
+-		interrupts = <16>;
+-		clock-names = "pxa27x-ssp.1";
+-		dmas = <&dma 15
+-			&dma 16>;
+-		dma-names = "rx", "tx";
+-	};
+-
+-	ssp2: ssp@41900000 {
+-		compatibl3 = "mrvl,pxa3xx-ssp";
+-		reg = <0x41900000 0x40>;
+-		ssp-id = <3>;
+-		interrupts = <0>;
+-		clock-names = "pxa27x-ssp.2";
+-		dmas = <&dma 66
+-			&dma 67>;
+-		dma-names = "rx", "tx";
+-	};
+-
+-	ssp3: ssp@41a00000 {
+-		compatible = "mrvl,pxa3xx-ssp";
+-		reg = <0x41a00000 0x40>;
+-		ssp-id = <4>;
+-		interrupts = <13>;
+-		clock-names = "pxa27x-ssp.3";
+-		dmas = <&dma 2
+-			&dma 3>;
+-		dma-names = "rx", "tx";
+-	};
+-
+diff --git a/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml b/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
+index 5f4f6b5615d0..0a1bada8f800 100644
+--- a/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
++++ b/Documentation/devicetree/bindings/spi/marvell,mmp2-ssp.yaml
+@@ -10,12 +10,17 @@ title: PXA2xx SSP SPI Controller
+ maintainers:
+   - Lubomir Rintel <lkundrak@v3.sk>
+ 
+-allOf:
+-  - $ref: spi-controller.yaml#
+-
+ properties:
+   compatible:
+-    const: marvell,mmp2-ssp
++    enum:
++      - marvell,mmp2-ssp
++      - mrvl,ce4100-ssp
++      - mvrl,pxa168-ssp
++      - mrvl,pxa25x-ssp
++      - mvrl,pxa25x-nssp
++      - mrvl,pxa27x-ssp
++      - mrvl,pxa3xx-ssp
++      - mrvl,pxa910-ssp
+ 
+   interrupts:
+     maxItems: 1
+@@ -26,6 +31,16 @@ properties:
+   clocks:
+     maxItems: 1
+ 
++  dmas:
++    items:
++      - description: Receive DMA
++      - description: Transmit DMA
++
++  dma-names:
++    items:
++      - const: rx
++      - const: tx
++
+   ready-gpios:
+     description: |
+       GPIO used to signal a SPI master that the FIFO is filled and we're
+@@ -41,6 +56,18 @@ required:
+ dependencies:
+   ready-gpios: [ spi-slave ]
+ 
++allOf:
++  - $ref: spi-controller.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: marvell,mmp2-ssp
++    then:
++      properties:
++        dmas: false
++        dma-names: false
++
+ unevaluatedProperties: false
+ 
+ examples:
+-- 
+2.43.0
 
