@@ -1,42 +1,42 @@
-Received: from dianne.skoll.ca (dianne.skoll.ca [144.217.161.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F4771494A6;
-	Thu, 23 May 2024 12:44:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.217.161.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B70C107A8;
+	Thu, 23 May 2024 15:39:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716468278; cv=none; b=bAqz/KJ1Rp/kH2fH9kk6ACEtKZFq9hpW1k2XZ0zMSVOPI3RpvWC4eJnCsKhSfvfsmZyYva1iqoDbLhrSN74+xkm9nFsaaQtFu6rEa6fqYVbDtWvpsfZwb4zz1IduKdHBxg/5J6GKVe/3PnfrmfcOXzW6StChza1cIvKHnSCdyng=
+	t=1716478785; cv=none; b=p+JnV7bFZoVXIB5w/+jQxdgj4VR2IPgWzaqVjug7uKcCPEmFgJFq+qcVyKx+WnVmLMebFOCLUrF0oe8Y3r2iFUZOde5F8F0NuEOIMF/QBkUA9fv6TG0D+Y97pyQyqE/rPv1An3tgZqC6oiCI0PNA+G4LOHaxJW179DzbHK0tA9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716468278; c=relaxed/simple;
-	bh=FJWa/uNCr7cJhmS3SUB0xxF/4J8jPMsmYlv7f5oQz3s=;
+	s=arc-20240116; t=1716478785; c=relaxed/simple;
+	bh=clvydRDm/63x4impppU2AwpkDHe7T/Btp/JH1hYc6t8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e2y4s0JhND/P1o5DEKX4Yw07D2pmU+x9gjFz/DyrJVRAseDP/FiQIiPrsg0MP0zisZ6FyfqetpMAdAFs1U/iMKl8nI97P84kaWmiluRju2Kll7F42EDMIhTlBzK413ocnf+Kn0MFJFXaoOSwCaWkE0xQ1isKNlEEL7EVMiqh70A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca; spf=pass smtp.mailfrom=skoll.ca; dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b=DyO73YN/; arc=none smtp.client-ip=144.217.161.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=skoll.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=skoll.ca
+	 MIME-Version:Content-Type; b=Eh7QqHJpXv+3VNBDrg8u1FZ4tyvzI9NL/eLpLMJ5see2M+8k3W/NUSdlAQxZbVUyJqP9y/GU9ON3gGISrUhy7K+AnCb26bwnv9/5XA5Mk5u91H5/NpQwj1BRn6H/vPXDO0wFDS9jnmrdjBIHSIkWcOt3QwI4UIcLrk9QJnMyQ5A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQkXh993; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=skoll.ca header.i=@skoll.ca header.b="DyO73YN/"
-Received: from pi4.skoll.ca ([192.168.84.18])
-	by dianne.skoll.ca (8.17.1.9/8.17.1.9/Debian-2) with ESMTPS id 44NCiF9M495868
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 23 May 2024 08:44:16 -0400
-Received: from gato.skoll.ca (gato.skoll.ca [192.168.83.21])
-	by pi4.skoll.ca (Postfix) with ESMTPS id 4VlSXt54VRzgd52Y;
-	Thu, 23 May 2024 08:44:14 -0400 (EDT)
-Date: Thu, 23 May 2024 08:44:09 -0400
-From: Dianne Skoll <dianne@skoll.ca>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: N_HDLC line discipline: Race condition
-Message-ID: <20240523084409.150fccb1@gato.skoll.ca>
-In-Reply-To: <93ace08e-deb3-46e1-b318-18aecc210a85@kernel.org>
-References: <20240424173114.035ddd7b@gato.skoll.ca>
-	<20240425140127.6504ade1@gato.skoll.ca>
-	<63a5a3c5-8362-4b93-a50e-10c9cdcffdd2@kernel.org>
-	<20240521101435.0b6b3420@gato.skoll.ca>
-	<93ace08e-deb3-46e1-b318-18aecc210a85@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQkXh993"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43417C4AF0A;
+	Thu, 23 May 2024 15:39:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716478784;
+	bh=clvydRDm/63x4impppU2AwpkDHe7T/Btp/JH1hYc6t8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=HQkXh993tlC0PovOExg8HJKVu0BEAR/d2p2/AyntoasSUTkaxiymc1d7Tn6kJJ5N7
+	 5JRk2YKzqGxjfv4J8b+rkXiPXdqziBdb/XnfUuDZ+SOTfvrZE9SEOsMIl5UqDLU3PN
+	 7NaeIhEaFpo4BCsnHH8o8z1tj/csyvUMY45U8m5oiPxWYN+oQOsceoENXIM8J/iQBt
+	 CiqjwzFLOHeqmJ23Q1SHx2RTKi7PlyoX/t5wcyzAy/ISnVCOYO5cCmae5i+oSpHsSn
+	 D2iInNqpp4kJmnfNOqw117AsudIt2VcXnEzaaQRBia1GHcd7hf9jw55HxH6gK7GGOH
+	 jSClC7gvRRpEw==
+Date: Thu, 23 May 2024 08:39:43 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>
+Cc: Vadim Fedorenko <vadim.fedorenko@linux.dev>, Jonathan Lemon
+ <jonathan.lemon@gmail.com>, linux-serial@vger.kernel.org,
+ netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
+Message-ID: <20240523083943.6ecb60d9@kernel.org>
+In-Reply-To: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -45,61 +45,100 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skoll.ca; h=date
-	:from:to:cc:subject:message-id:in-reply-to:references
-	:mime-version:content-type:content-transfer-encoding; s=canit2;
-	 bh=5mf8k+q+wrhHknLna1GJnYemKxsMiU0vjw4WRkKWE8Y=; b=DyO73YN/mfLm
-	TEkbOo+PW0u/6+wcMkcWw15ED10uLoqUjEacT+S053Oymz//TL6/J7vyJF9+H8b8
-	nk9yr6akSKyRQYZE3ntDXfMbjFLyI5pWvdFU++fQa1jbBwDCYurMmFsbAZDOjSsQ
-	Iu1D16A7w3KyirYrLOUtwx/UCE5B+HFwUlMd/vY4VzPL7Yu2S5sgnD66KXJeoa+I
-	H0z/Qp9eBMhx69NsMhBLhwcEj2jUlTUYzHbgko6LhZz0C7Q1C+AlCWQEFSb7lfGf
-	mgtnDhjrvxUDK2NlX24VMKZ2pEgz0zSSASumMFFWHdP9bHOJa1T6zJomqHUvUK7g
-	z5Nxje7Okw==
-X-Scanned-By: CanIt (www . roaringpenguin . com)
-X-Scanned-By: mailmunge 3.16 on 192.168.83.18
-X-Spam-Score: undef - relay 192.168.84.18 marked with skip_spam_scan
-X-CanIt-Geo: No geolocation information available for 192.168.84.18
-X-CanItPRO-Stream: outbound (inherits from default)
-X-Canit-Stats-ID: Bayes signature not available
-X-CanIt-Archive-Cluster: tWKWaF/NcZkqjWIj0BEJTBHJhwY
-X-CanIt-Archived-As: base/20240523 / 01cqAIg3k
 
-On Thu, 23 May 2024 10:01:51 +0200
-Jiri Slaby <jirislaby@kernel.org> wrote:
+On Fri, 10 May 2024 11:04:05 +0000 Vadim Fedorenko wrote:
+> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
+> of serial core port device") changed the hierarchy of serial port devices
+> and device_find_child_by_name cannot find ttyS* devices because they are
+> no longer directly attached. Add some logic to restore symlinks creation
+> to the driver for OCP TimeCard.
+> 
+> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
+> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+> ---
+> v2:
+>  add serial/8250 maintainers
+> ---
+>  drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
+>  1 file changed, 21 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+> index ee2ced88ab34..50b7cb9db3be 100644
+> --- a/drivers/ptp/ptp_ocp.c
+> +++ b/drivers/ptp/ptp_ocp.c
+> @@ -25,6 +25,8 @@
+>  #include <linux/crc16.h>
+>  #include <linux/dpll.h>
+>  
+> +#include "../tty/serial/8250/8250.h"
 
-> The driver definitely behaves as described. If the ldisc is used on a
-> real HW. ptys are a different story -- it's not guaranteed there.
-> Does it make sense to use nhdlc on a pty pair? I believe not.
+Hi Greg, Jiri, does this look reasonable to you?
+The cross tree include raises an obvious red flag.
 
-OK.  Well, the use case was as follows:  pppd has an option called `pty`
-that makes it execute an arbitrary program, connect to its standard
-input and output via a pty pair, and send and receive PPP frames over that
-pty pair.
+Should serial / u8250 provide a more official API?
+Can we use device_for_each_child() to deal with the extra
+layer in the hierarchy?
 
-rp-pppoe (https://dianne.skoll.ca/projects/rp-pppoe/) includes a
-program called `pppoe` designed to be on the other end of that pty
-pair and receive/transmit the PPP frames via PPPoE.  pppd includes a
-`sync` option, and pppoe a `-s` option that enable N_HDLC on the pty.
-This lets pppoe just read/write a frame at a time without worrying
-about PPP framing bytes or dealing with PPP escape characters, which
-reduces the CPU overhead of pppoe.
-
-Now, the Linux kernel has had built-in support for PPPoE for many
-years, and I was thinking of dropping userspace PPPoE support, but I
-heard from a user who wants to keep it.  ucLinux, it seems, does not
-support dlopen(), so this user can't use pppd's `plugin` option to
-load the kernel-mode PPPoE support module and has to keep using
-user-space PPPoE.
-
-Sync support was added to pppoe decades ago and either it worked well,
-nobody used it, or nobody reported a bug until recently.  But anyway,
-if the consensus is that N_HDLC shouldn't be used on a pty pair, I'm
-fine with that.  Perhaps a comment in the source file and a note in
-the N_HDLC documentation would be good, and then I'll just remove
-support for `sync` and `-s` from pppoe, since it can't be guaranteed
-to work correctly.
-
-Regards,
-
-Dianne.
+>  #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+>  #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+>  
+> @@ -4330,11 +4332,9 @@ ptp_ocp_symlink(struct ptp_ocp *bp, struct device *child, const char *link)
+>  }
+>  
+>  static void
+> -ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
+> +ptp_ocp_link_child(struct ptp_ocp *bp, struct device *dev, const char *name, const char *link)
+>  {
+> -	struct device *dev, *child;
+> -
+> -	dev = &bp->pdev->dev;
+> +	struct device *child;
+>  
+>  	child = device_find_child_by_name(dev, name);
+>  	if (!child) {
+> @@ -4349,27 +4349,39 @@ ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
+>  static int
+>  ptp_ocp_complete(struct ptp_ocp *bp)
+>  {
+> +	struct device *dev, *port_dev;
+> +	struct uart_8250_port *port;
+>  	struct pps_device *pps;
+>  	char buf[32];
+>  
+> +	dev = &bp->pdev->dev;
+> +
+>  	if (bp->gnss_port.line != -1) {
+> +		port = serial8250_get_port(bp->gnss_port.line);
+> +		port_dev = (struct device *)port->port.port_dev;
+>  		sprintf(buf, "ttyS%d", bp->gnss_port.line);
+> -		ptp_ocp_link_child(bp, buf, "ttyGNSS");
+> +		ptp_ocp_link_child(bp, port_dev, buf, "ttyGNSS");
+>  	}
+>  	if (bp->gnss2_port.line != -1) {
+> +		port = serial8250_get_port(bp->gnss2_port.line);
+> +		port_dev = (struct device *)port->port.port_dev;
+>  		sprintf(buf, "ttyS%d", bp->gnss2_port.line);
+> -		ptp_ocp_link_child(bp, buf, "ttyGNSS2");
+> +		ptp_ocp_link_child(bp, port_dev, buf, "ttyGNSS2");
+>  	}
+>  	if (bp->mac_port.line != -1) {
+> +		port = serial8250_get_port(bp->mac_port.line);
+> +		port_dev = (struct device *)port->port.port_dev;
+>  		sprintf(buf, "ttyS%d", bp->mac_port.line);
+> -		ptp_ocp_link_child(bp, buf, "ttyMAC");
+> +		ptp_ocp_link_child(bp, port_dev, buf, "ttyMAC");
+>  	}
+>  	if (bp->nmea_port.line != -1) {
+> +		port = serial8250_get_port(bp->nmea_port.line);
+> +		port_dev = (struct device *)port->port.port_dev;
+>  		sprintf(buf, "ttyS%d", bp->nmea_port.line);
+> -		ptp_ocp_link_child(bp, buf, "ttyNMEA");
+> +		ptp_ocp_link_child(bp, port_dev, buf, "ttyNMEA");
+>  	}
+>  	sprintf(buf, "ptp%d", ptp_clock_index(bp->ptp));
+> -	ptp_ocp_link_child(bp, buf, "ptp");
+> +	ptp_ocp_link_child(bp, dev, buf, "ptp");
+>  
+>  	pps = pps_lookup_dev(bp->ptp);
+>  	if (pps)
 
