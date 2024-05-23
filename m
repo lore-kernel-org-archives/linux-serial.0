@@ -1,185 +1,114 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F38784A4E;
-	Thu, 23 May 2024 22:00:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACC712880D
+	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 23:22:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716501624; cv=none; b=lVmlH+tqNbbfpPy1HlCiVipnecqM+jEklsr0X5X1LeicfAXQL2eHi39U4pn7lgieJhFR1iO3/EqGRTQRal4uxxvb3xmCmcPKvKppVdct1oAqhtAkvRafEr1c9GGl02ygBOcsBz67nWrHagSpKwSgzErXQwuJqCGPHv6EJx1qy2Q=
+	t=1716506564; cv=none; b=m+EW9KWGnN1/eiy5bNLc7+aU4lEYhnjwznLhM2NvDrdQtXinnJxi0h2H4WGSX26z5Eh9O2dVS4bcm+xeSn5hqqSV0nLmJYqMy4+r3YEpjatuljT0wV4l2m4J5yazXWaKXLS5KT6WTIE+wYvkMDJ044LPRev4vfQQlZ09XVb76rs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716501624; c=relaxed/simple;
-	bh=U3zNsDx6nW/dLYh1FM2TrjCHAPkf8MnEIVyZTcNJdnY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=mTW3CpJRGXwR8ZuUrnMF/o3lTJj+R1Q46Um8bM5x0QTBZBrfCMCDlUvQIxYAzdHl88fHLyTndBgkYHhA5l3rZW12ycXBR40XfoGmVNKIIvUwhYLAtmteeTYjhcGmPw+IPSIt9FcUka3mf+Uh848EetcGfmOxdko3pzIAwGMLjsA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=AbYeiDrh; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hG7nVsQd; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1716506564; c=relaxed/simple;
+	bh=rgPr4Ngu722SRDj2ZtjbrxVxv2puo2dZm2D+9CkatPI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Hl6/Jwwq89yyJcHKB5ubtaB4u0KHUMWNeCDZLkLJpWypCmxJv7ObSs/43RR287hXzJn/vJPOp2oQhabkAoNSOm5FumMGKuZhnqlBopH5FdWVPKAO6bh0u8GjrZxzBhuo8kOBjRd9fpklknwnY5nNidcyyhgJZsNorsyJfNlBsSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=TttDrzA4; arc=none smtp.client-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="AbYeiDrh";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hG7nVsQd"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1716501621;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=18bFCkDiE5Sbgi4NXueQ8erF60YbZu7PrN26lvvIIBA=;
-	b=AbYeiDrhr7a8f7DpLWT7jPVQsX5p8BYnloO9JHGWZo1jwWM2TNA1GkS+RXgQQZ4kwveXJA
-	uO2F3wxgENt5+tKqVIgI6LKhXREauGP4TyVSnMEjWlqAQaaQOAFEqtPs/deTAO0TFZJ7Ty
-	XF8dZT5GJXGueFBS1ZHnF05S7WpTqg0DfkUciatQMe2lVzrH9N7yj6h8ufGhwlj3MNvTIQ
-	EyaFwwIde5NjZXu/+dN8DnAO4TXG/44owA2GfGZdyYXZKje8Uxr03QDeKC3OlmZc4fjhmF
-	yOl2dALXgw8lwL0coqnq1DwlyJLRFqb5paIzqkr2HPPs4pBa2EKFPyuWxO8WYg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1716501621;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=18bFCkDiE5Sbgi4NXueQ8erF60YbZu7PrN26lvvIIBA=;
-	b=hG7nVsQdEZxaAwZk4oZt4Q8Vn66oqj4h5KlI8OqVC3M2q2XO0TFXx9+UzcEfwt+sQD2dkW
-	Gavtq8THOFkIrzAw==
-To: Sunil V L <sunilvl@ventanamicro.com>,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-acpi@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
- acpica-devel@lists.linux.dev
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon
- <will@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou
- <aou@eecs.berkeley.edu>, "Rafael J . Wysocki" <rafael@kernel.org>, Len
- Brown <lenb@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Anup Patel
- <anup@brainfault.org>, Samuel Holland <samuel.holland@sifive.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Robert Moore <robert.moore@intel.com>, Conor
- Dooley <conor.dooley@microchip.com>, Andrew Jones
- <ajones@ventanamicro.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Marc Zyngier <maz@kernel.org>, Atish
- Kumar Patra <atishp@rivosinc.com>, Andrei Warkentin
- <andrei.warkentin@intel.com>, Haibo1 Xu <haibo1.xu@intel.com>,
- =?utf-8?B?QmrDtnJuIFTDtnBlbA==?=
- <bjorn@kernel.org>, Sunil V L <sunilvl@ventanamicro.com>
-Subject: Re: [PATCH v5 14/17] irqchip/riscv-imsic: Add ACPI support
-In-Reply-To: <20240501121742.1215792-15-sunilvl@ventanamicro.com>
-References: <20240501121742.1215792-1-sunilvl@ventanamicro.com>
- <20240501121742.1215792-15-sunilvl@ventanamicro.com>
-Date: Fri, 24 May 2024 00:00:21 +0200
-Message-ID: <871q5sfatm.ffs@tglx>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="TttDrzA4"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6f8f34cb0beso175696b3a.1
+        for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 16:22:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1716506561; x=1717111361; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZfP9vIEmS390P3O4iAtZjeM8HWFzEOcH0/2SUf3/Hok=;
+        b=TttDrzA4qnK/uWrFshTTPAVszxLlkHAJ5wbe4kgITRdvWR/nkEXrJsLEcEQw7On3/t
+         wDD8A+GalWqEFGeEcJVTZtMiTEZQKvxPxrbN0Tu5i1XuHGZyQ4gkUC9GYb2sQxyPcbVx
+         WwtM5wwMViUyTnhfzAuyhYOLcKjj6EKviLaUg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716506561; x=1717111361;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZfP9vIEmS390P3O4iAtZjeM8HWFzEOcH0/2SUf3/Hok=;
+        b=UEduT2fcpD2Xw8Gd1VFeUgH+fzuvGK/nIdxl5cQxN2ZmUBp7QSm0VKHHKxf+Ek47xU
+         bxGv2ovyI0MWItNqUk8rkJUSZ7w4JFT/xv5gh8NBRWkhWHWunmhUbJnt4Fidlg6jAgve
+         JB1ULqhfFE6vh6RGD08+RVC5V/Boo7O4tqQfizXSj/aGOZEmN/IM7/4AVgvwbLiAyXzH
+         dUbe3N9fUj7ItRaVv87NaJ9PPXy+otEWxJ2Wzc4Yi8DXGaFlD2S+hXlkB/lrQrndLgf5
+         EloDW88a9cj07xOoIBdtS6TDUEPCr/A36RMwZaoNLBJ+7EyxCZJX07S07eQdHB8dWynB
+         vKHw==
+X-Forwarded-Encrypted: i=1; AJvYcCVJY4ZQnn7Zh7hVHHgVHw4wdSFGoi/EkpYs7zkKS0HQs3Q8bY+cT1h3mmsqoNgDBtmAB7qSCtOMN1YDAjhzK+NyASsJbpV8w+orxJta
+X-Gm-Message-State: AOJu0Yw2hj12x1nDylLRtm5ns7ZoGYklv30GT38EH+c4XU6UKqihFahS
+	ZBbiqrvr869Unn9uBxUQl1Ej/zb85Q3zm+zrBw6gxuuAj0aTfc8/D5GZuYq38g==
+X-Google-Smtp-Source: AGHT+IGv12M53lM+GUULtAWysbxmBRhEDbBtm/AXwGQlH56IEyIRCa/lNDP8GHgZxm6j/t23nijr+Q==
+X-Received: by 2002:a17:902:d58c:b0:1f2:fcc0:66f with SMTP id d9443c01a7336-1f448248a0emr11751435ad.31.1716506560961;
+        Thu, 23 May 2024 16:22:40 -0700 (PDT)
+Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:b835:ba86:8e6d:41c6])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f44c797938sm1279545ad.64.2024.05.23.16.22.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 May 2024 16:22:40 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	linux-arm-msm@vger.kernel.org,
+	Johan Hovold <johan+linaro@kernel.org>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Douglas Anderson <dianders@chromium.org>,
+	Guanbing Huang <albanhuang@tencent.com>,
+	James Clark <james.clark@arm.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH 0/2] serial: Fix problems when serial transfer is happening at suspend time
+Date: Thu, 23 May 2024 16:22:11 -0700
+Message-ID: <20240523232216.3148367-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 01 2024 at 17:47, Sunil V L wrote:
 
-> RISC-V IMSIC interrupt controller provides IPI and MSI support.
-> Currently, DT based drivers setup the IPI feature early during boot but
-> defer setting up the MSI functionality. However, in ACPI systems, ACPI,
-> both IPI and MSI features need to be initialized early itself.
+This is a set of two patches that fix problems related to suspending
+while a serial transfer is going on. The two patches are independent
+from each other and can land in any order. The only thing tying them
+together is that I used the same test to reproduce both of them.
+Specifically, I could reproduce my problemes by logging in via an
+agetty on the debug serial port (which was _not_ used for kernel
+console) and running:
+  cat /var/log/messages
+...and then (via an SSH session) forcing a few suspend/resume cycles.
 
-Why?
+The first patch solves a problem that is probably more major. It was
+introduced recently and has even shown up in stable trees.
+Suspend/resume testing in ChromeOS test labs are hitting the problem
+fixed by this patch. The fix hasn't been tested in labs, but when I
+reproduced the problem locally I could see that the fix worked. IMO it
+should land ASAP.
 
-> +
-> +#ifdef CONFIG_ACPI
-> +
-> +static struct fwnode_handle *imsic_acpi_fwnode;
-> +
-> +struct fwnode_handle *imsic_acpi_get_fwnode(struct device *dev)
+The second patch fixes an ancient problem that I only found because I
+was trying to reproduce the first problem. Given how long it's been
+around it's probably not urgent but it would be nice to get fixed.
 
-Why is this function global? It's only used in the very same file and
-under the same CONFIG_ACPI #ifdef, no?
 
-> +{
-> +	return imsic_acpi_fwnode;
-> +}
-> +
-> +static int __init imsic_early_acpi_init(union acpi_subtable_headers *header,
-> +					const unsigned long end)
-> +{
-> +	struct acpi_madt_imsic *imsic = (struct acpi_madt_imsic *)header;
-> +	int rc;
-> +
-> +	imsic_acpi_fwnode = irq_domain_alloc_named_fwnode("imsic");
-> +	if (!imsic_acpi_fwnode) {
-> +		pr_err("unable to allocate IMSIC FW node\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	/* Setup IMSIC state */
-> +	rc = imsic_setup_state(imsic_acpi_fwnode, (void *)imsic);
+Douglas Anderson (2):
+  serial: port: Don't block system suspend even if bytes are left to
+    xmit
+  serial: qcom-geni: Fix qcom_geni_serial_stop_tx_fifo() while xfer
 
-Pointless (void *) cast.
+ drivers/tty/serial/qcom_geni_serial.c | 45 +++++++++++++++++++++++++--
+ drivers/tty/serial/serial_port.c      | 10 ++++++
+ 2 files changed, 52 insertions(+), 3 deletions(-)
 
-> +	if (rc) {
-> +		pr_err("%pfwP: failed to setup state (error %d)\n", imsic_acpi_fwnode, rc);
-> +		return rc;
-> +	}
-> +
-> +	/* Do early setup of IMSIC state and IPIs */
-> +	rc = imsic_early_probe(imsic_acpi_fwnode);
-> +	if (rc)
-> +		return rc;
-> +
-> +	rc = imsic_platform_acpi_probe(imsic_acpi_fwnode);
-> +
-> +#ifdef CONFIG_PCI
-> +	if (!rc)
-> +		pci_msi_register_fwnode_provider(&imsic_acpi_get_fwnode);
-> +#endif
-> +
-> +	return rc;
+-- 
+2.45.1.288.g0e0cd299f1-goog
 
-Any error return in this function leaks the firmware node and probably
-some more stuff.
-
-> +}
-> +
-> +IRQCHIP_ACPI_DECLARE(riscv_imsic, ACPI_MADT_TYPE_IMSIC, NULL,
-> +		     1, imsic_early_acpi_init);
-> +#endif
-
-...
-
-> -	/* Find number of interrupt identities */
-> -	rc = of_property_read_u32(to_of_node(fwnode), "riscv,num-ids",
-> -				  &global->nr_ids);
-> -	if (rc) {
-> -		pr_err("%pfwP: number of interrupt identities not found\n", fwnode);
-> -		return rc;
-> +		/* Find number of guest interrupt identities */
-> +		rc = of_property_read_u32(to_of_node(fwnode), "riscv,num-guest-ids",
-> +					  &global->nr_guest_ids);
-> +		if (rc)
-> +			global->nr_guest_ids = global->nr_ids;
-> +	} else {
-> +		global->guest_index_bits = imsic->guest_index_bits;
-> +		global->hart_index_bits = imsic->hart_index_bits;
-> +		global->group_index_bits = imsic->group_index_bits;
-> +		global->group_index_shift = imsic->group_index_shift;
-> +		global->nr_ids = imsic->num_ids;
-> +		global->nr_guest_ids = imsic->num_guest_ids;
->  	}
-
-Seriously?
-
-Why can't you just split out the existing DT code into a separate
-function in an initial patch which avoulds all of this unreviewable
-churn of making the DT stuff indented ?
-
-> +#ifdef CONFIG_ACPI
-> +int imsic_platform_acpi_probe(struct fwnode_handle *fwnode);
-> +struct fwnode_handle *imsic_acpi_get_fwnode(struct device *dev);
-> +#else
-> +static inline struct fwnode_handle *imsic_acpi_get_fwnode(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +#endif
-
-Oh well.
-
->  #endif
-
-Thanks,
-
-        tglx
