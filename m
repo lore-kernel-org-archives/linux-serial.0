@@ -1,63 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 804BE1EA91;
-	Wed, 22 May 2024 19:38:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5EE55EC7;
+	Thu, 23 May 2024 02:11:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716406693; cv=none; b=pieHKGxJuh2ltNeH28JYrkgk2BvEzTqF05ZoRWxdW3h3Mheew3wsYWIUol1jKQr17ZLQDu08eb/uauIQjdKrBGThmLrChETxXjDfdVJXGc30KqJpDR3e2PYvVGFe+fg9tBlO2F6uc+ehV+u2CwA7B6jL0yb3IUq65hhLvWUluzg=
+	t=1716430287; cv=none; b=faMU8aNDhfMnAyfQjyuKiaiWDpjVI5bzLepqdyZZ9H/C2+FmUJIL5wMOpWIYvJRuCBbYAV1dfqcFgss0lq5KiiLOdyVrp0A48zpL/Ra6mKBmu2gfW/cPrwzbpA01j+iwwfCRkf7a19g7ldw1xf3PUrCSHXmr0xaONW2RpkWltU8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716406693; c=relaxed/simple;
-	bh=MX5OSB+dy62ExBlTqY8rF2NlYcX4hfoDzivGnHuIS48=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=KLVohtyRrptDzNbdjJkbF/Abei9E7moRM4InNjcVYyfKzTqoHJ8zFnmgtTP0fUg1eAyBiptyLwR6UEc1eOZiYpXqKMGn+mJot+JSIrjs2vGjoPc1wMq3zOXo+RQeQH0zvOAt8DWRStMzPFZDJPvtztKji26SKXi/dIGgbrum4oI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JjrsBaGj; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JjrsBaGj"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6369FC2BBFC;
-	Wed, 22 May 2024 19:38:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1716406693;
-	bh=MX5OSB+dy62ExBlTqY8rF2NlYcX4hfoDzivGnHuIS48=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=JjrsBaGjYuw8b9r8EpcdKdzFS07tcGZ85hJCjsYCUbOUggW/6YFMxqChDYHgg8J+P
-	 rRv4nOxTDTDDX/YxYFL+wKhxYLJ2ajRB+4MIPRI5DGTMC4CefUE4WEG2YzxU+44lzd
-	 CHqAQdl23QRv642fOrSYj1CXs0+oJBUvx6VpGglYp0Za5knOxzyLu1DBOmmZfARgmI
-	 OWKobQvdnXplfAYCyrpMUIFv1FgCxOyrvA3sraZ+9U9z4rM7szd/B/aRZjqOFHMLyI
-	 ht23X8fRtlsoR7oufxx8auney04FtUVF8AZDKXPGevPZZ+zSfpSDD4NX0oWbTAdUOA
-	 3gmKsmPygX8hA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5CC31C43619;
-	Wed, 22 May 2024 19:38:13 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver changes for 6.10-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Zk4GJDYPNVCsz7AE@kroah.com>
-References: <Zk4GJDYPNVCsz7AE@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Zk4GJDYPNVCsz7AE@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc1
-X-PR-Tracked-Commit-Id: e21de1455a721a0cb4217b18589ede846f5b0686
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f6b8e86b7a65495d3947a1d1fc22183c52f786f6
-Message-Id: <171640669337.20241.6864258702618088248.pr-tracker-bot@kernel.org>
-Date: Wed, 22 May 2024 19:38:13 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	s=arc-20240116; t=1716430287; c=relaxed/simple;
+	bh=TGRqQ/gBYwVifINfQhz4oRdkJ1y9DO83Qzc6NF7fdg8=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=mIBiFpNBOtJ5WIrDyoeBC6ZUo7a1UUyf/sMGJp9mhsEdc4PEv68fysHfCd1yZ9OoXvYVWTZdiC5e4pBtrubJSG9LOnE5GVc+vuHBI4T90IjYC/oVpofIA/shuKl1/kxARAxRmfTmNqFhpkmRcTHtckK7p0L0e9hnrilSeCy6zgA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id D2C2992009C; Thu, 23 May 2024 04:11:16 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id C191192009B;
+	Thu, 23 May 2024 03:11:16 +0100 (BST)
+Date: Thu, 23 May 2024 03:11:16 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    linux-serial@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>, 
+    Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+In-Reply-To: <20240405152924.252598-2-schnelle@linux.ibm.com>
+Message-ID: <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 
-The pull request you sent on Wed, 22 May 2024 16:50:12 +0200:
+On Fri, 5 Apr 2024, Niklas Schnelle wrote:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc1
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 0d35c77fad9e..38ac5236d2ea 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -928,6 +928,7 @@ static int pci_netmos_init(struct pci_dev *dev)
+>  	return num_serial;
+>  }
+>  
+> +#ifdef CONFIG_HAS_IOPORT
+>  /*
+>   * These chips are available with optionally one parallel port and up to
+>   * two serial ports. Unfortunately they all have the same product id.
+[...]
+> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+> index 47ff50763c04..54bf98869abf 100644
+> --- a/drivers/tty/serial/8250/Kconfig
+> +++ b/drivers/tty/serial/8250/Kconfig
+> @@ -136,7 +135,7 @@ config SERIAL_8250_PCILIB
+>  
+>  config SERIAL_8250_PCI
+>  	tristate "8250/16550 PCI device support"
+> -	depends on SERIAL_8250 && PCI
+> +	depends on SERIAL_8250 && PCI && HAS_IOPORT
+>  	select SERIAL_8250_PCILIB
+>  	default SERIAL_8250
+>  	help
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f6b8e86b7a65495d3947a1d1fc22183c52f786f6
+ This is clearly wrong, there is PCIe 8250 serial hardware that does MMIO 
+only, so the option has to stay possible to enable.  I have such hardware 
+as shown in this log:
 
-Thank you!
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+serial 0001:01:00.0: enabling device (0140 -> 0142)
+serial 0001:01:00.0: detected caps 00000700 should be 00000500
+0001:01:00.0: ttyS0 at MMIO 0x600c080401000 (irq = 40, base_baud = 15625000) is a 16C950/954
+serial 0001:01:00.0: detected caps 00000700 should be 00000500
+0001:01:00.0: ttyS1 at MMIO 0x600c080401200 (irq = 40, base_baud = 15625000) is a 16C950/954
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+which is from a POWER9 system.  Which as you may know has no PCI port I/O 
+support in hardware, so it is quite relevant here.  I'd like to keep this 
+PCIe serial option functional with my system.
+
+ Also your change itself modifies 8250_pci.c (cited above for reference), 
+which would make no sense if SERIAL_8250_PCI was permanently disabled for 
+!HAS_IOPORT.  Shall I take it than that the Kconfig change I question has 
+been made merely by mistake?
+
+  Maciej
