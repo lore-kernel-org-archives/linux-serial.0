@@ -1,55 +1,57 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1F413CAA4
-	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 07:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B48A13CF95
+	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 07:58:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716451109; cv=none; b=PEKqHUhlyvlZL9zb/kYLETSXDqQo4W6qh9SdVi5BUzmCtCCSHBfTJ741JykNAR7opz9EEIqYlLQBn70N+RPYyEi4+/YiGqCIEUtZosgIWCfesZR3OH/0zMA22OMTup/3jOV3doVXqHPua3xqlkQ37usTryVVxOBpZojnCTXPhR0=
+	t=1716451111; cv=none; b=U56ZVsggYGlmIh8RyoHrDqZSyZv3/Tp4wwEHFOv8NdWQod4Al0OzVXFdoLM1GNkSJKQmVxHZRf1j9K600uW9CmPHe/6trQjRgD1xTlY1sitvt7Yc6jYJn89Ishxf22e1j2pURCB5Kw37zYJX1dYJktNIUCzfGUOHExKcBE147O0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716451109; c=relaxed/simple;
-	bh=pWvlBUsTahE00BJX6As7h5+KeekjrqWMB+YQjnR50/g=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MDHIiT4n4hbr5ihtY9klw7wDJTMCypaV4N6bXizIntWaD04HQVBDenjOhk5HEmR4xbkWOIGd5prcMKO0SFN0UJGymw/yzsjPYe8z6KTpYYKlNE2Tvz0nSDrABTZT7eB9+86X9J4cqiGxc553fb7XOolELvHhe85Hf3ufTuNcQ98=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=pfhp84pK; arc=none smtp.client-ip=209.85.128.45
+	s=arc-20240116; t=1716451111; c=relaxed/simple;
+	bh=Iws/eTrVyDn5dkbNRe+ngWkLPY2GChSsQJLxObwKLVM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=em3hVelrTBfvWYPZnCiqNnNRoIqbdIU9jo0rEaxx5AUExHj0VgCJ1KEzx65xi/CQmHdRCYXFWSvIEQEb6VQAA97xZ31Wm8IX/oeg6qbbA23/gwG4bElGLWhVTF0mVnGa8VZ7O9XN1jtwKsDY8RitNiQ6a1Uvnlp+KI2xkCHkZdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=DSEsaT0C; arc=none smtp.client-ip=209.85.208.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="pfhp84pK"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-41fd5dc0480so48991965e9.1
-        for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 00:58:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="DSEsaT0C"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2e3fa13f018so74075931fa.3
+        for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 00:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1716451106; x=1717055906; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ufllGCwa6G4RtEd5vl28DPHk2z3wosI7B9qfMgMUop8=;
-        b=pfhp84pKqyDiJ8h+fhVs1mXGPfuSk3Z4+Q7tqYRoTxQnVRpQSxC3DlHjcLyX8blDE3
-         IblQuAjRV6PglPK6yof1Qolx/+/Vj2I0f/D324cjex+fBIN+gT/6WI6/V4IJ6Xox8Tcp
-         4OMj2xNCTdO1+A0Kg+QHqMC0J7XfgLXRoE5JBvxc8IOGN0YF3Oc50sHVP7TXl1W81VHx
-         ZPoqED82PAZpkUygRfdXwpgMjGzWiCIirAqOBOv/Ky6obP5haRiQXi6tRFUuvDkCvjp7
-         8v8Gd+WeIxTQMv+vRxqta3NfXZWgI0zhZD5ZzNdxD3oc1uoS8yZ0uYSbxgqxz3AJrJ2W
-         nUKw==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1716451108; x=1717055908; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4dcME9c6ixaYcF3shVm7kMCcCObSATYl0aCrY0gY47w=;
+        b=DSEsaT0CewPiZdtsjAYPQ+DHuM43Mz4jxdj3cbYt9veo/YzDvYQFLgk87LxMwdBDP+
+         Ug4Xpdz1/YMM7SrlS8Se4oVPC1rwwaNFarsFBMtrONnornNLYUJBOA8nRlU/rW/9yYv7
+         ktSQUWIG+CVu+PmkrM5IRIDT+ob1Dj9nKfvJd5lZbtEGNi3W1HdEWrhyfR93ZO/CW4sK
+         lTAHCRNAzPwwBDDDI0yCWNumNYIPC3F7j9wChVpktj82aad6goomyUwlWtseg6bJk3Fq
+         Dg1nyQs1xH0Kil4q6yMN6HmkjCd0KpuzoF/Pn11WMUhcJ5R0uFABbPtGi61qlio6sqc8
+         /iNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716451106; x=1717055906;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ufllGCwa6G4RtEd5vl28DPHk2z3wosI7B9qfMgMUop8=;
-        b=S61oE/nLA3mXnCCXKw2jnQqrKbLlk9zhI+yVP3P4Dl2+AivaQyYwRxCkI92RIlKZOd
-         am/SKaml1F81Nxfgbg3sDRUEF4PhIv7sb22CkaSod3GoGhe8l0Wec1WFCFAUSrN4oLWl
-         NmZm4CLxGh3hZA34c7Hnr1J5tsnlLbtKH8Vzb2OptjEoqoJyKPgMS6OdQ7gVz0l+rQpk
-         YevTZN/PfltWGeqAOXAtEfu8k9AYQlnUggMbmjBViSeqYa9SyxH3nZ0WFqOGeNSGSNvi
-         5U1Fr/gW5vWvQ9h/OXB4V9HTn0CnGRfIr9WRghagrgznp9o1MTn0THClVaD7cYzULeVZ
-         MFeg==
-X-Forwarded-Encrypted: i=1; AJvYcCVrxaGZK9G4K8rGLLU7dl1y9Qv/ehGMUTr5eCtbKVY6gIO/7I7AGL9UfPBhHHbJQ5CJYd6FyUaCYgyfCZUua/JdeFoI2kWFqtoibzXk
-X-Gm-Message-State: AOJu0YyQ+dQWhZH5Ykl/WIDDKF3xFmgzjlwRMMf5B2Q8j0FxVWOD3CJN
-	VaRc49a7Ab0fr/SqjPJbSAo7gP5Bgr8YJzvuV89iZQnAdU+T04InhMYn3d6Z8cA=
-X-Google-Smtp-Source: AGHT+IFxvRFLirejbb1KOGhY+jxFHdcXdR1VdijnYqXfBvsYXq1FJc2+tHan1bu4JGQuKKYxchl8nA==
-X-Received: by 2002:a05:600c:3b8d:b0:418:6138:6777 with SMTP id 5b1f17b1804b1-420fd339b22mr30829365e9.31.1716451106146;
-        Thu, 23 May 2024 00:58:26 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1716451108; x=1717055908;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4dcME9c6ixaYcF3shVm7kMCcCObSATYl0aCrY0gY47w=;
+        b=Q1w66WX/RnJv7iazoxIl0UQMGlmbDw80T/pkMu58C3tchAnMSmOVIkuXUUwnDKbm95
+         W4QqezJOx+FvXENljYAnUGoHyePwHUdHFkcA9mR+ZtdFmJRE5uZgrrDCJ3j1K8zFc8gn
+         Q/khDuwn7y6VPLHS7ZkwHcCG1VBCul6olqYHaQEiFf+BggQsdcSz5ZUxmXR0uxJL7iQl
+         /ULNDb2DszEY7xooH4sYCPU5k8hq90wMSljaPQRH+CoEAdnoGoP4/DnmvE8B0Jii3XkU
+         m6hL9xoKROCNgLhE2jGJ+vpPCaQ7Q6L2JSBZzpDdtJfN3Y/hFpl8Pzl7/UcZiaSvsJBK
+         WbCw==
+X-Forwarded-Encrypted: i=1; AJvYcCUdOGkWzPckm6iAjxtD0SyHuInv0HVF2knQ9BeZQk6LiQ7k9/fwkRfAQtPY0yS/gcKnHwNU61KJKAUq7L0RFrRFm0aMwm1ZXsJw6wnq
+X-Gm-Message-State: AOJu0YwK4AIcBlXgCdUIgJpT0uN50WhiGkiVUcbiPPsaoE+BVVCi6Sn6
+	fx7OlOR2D16KqXfA8DPw5jsqtnrrB9ABtexLvdjTjstgSvLcln+8PFuGgvopRxw=
+X-Google-Smtp-Source: AGHT+IFpTa7+bTT/sd4yF+zlR91kFCGJP5zdGd3C9ipXu2fgsrBztORz8qI+fV4vZQJhbBvN91EpGg==
+X-Received: by 2002:a2e:3807:0:b0:2e6:dd18:ac29 with SMTP id 38308e7fff4ca-2e9494c4841mr26332501fa.20.1716451107667;
+        Thu, 23 May 2024 00:58:27 -0700 (PDT)
 Received: from blmsp.fritz.box ([2001:4091:a246:821e:6f3b:6b50:4762:8343])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f01d7fsm17359125e9.1.2024.05.23.00.58.24
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f01d7fsm17359125e9.1.2024.05.23.00.58.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 May 2024 00:58:25 -0700 (PDT)
+        Thu, 23 May 2024 00:58:26 -0700 (PDT)
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -72,10 +74,12 @@ Cc: Vibhore Vardhan <vibhore@ti.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH 0/5] serial: 8250: omap: Add am62 wakeup support
-Date: Thu, 23 May 2024 09:58:14 +0200
-Message-ID: <20240523075819.1285554-1-msp@baylibre.com>
+Subject: [PATCH 1/5] dt-bindings: serial: 8250_omap: Add wakeup pinctrl state
+Date: Thu, 23 May 2024 09:58:15 +0200
+Message-ID: <20240523075819.1285554-2-msp@baylibre.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240523075819.1285554-1-msp@baylibre.com>
+References: <20240523075819.1285554-1-msp@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -84,58 +88,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Pins associated with the 8250 omap unit can be the source of a wakeup in
+deep sleep states. To be able to wakeup, these pins have to be
+configured in a special way. To support this configuration add the
+default and wakeup pinctrl states.
 
-to support wakeup from Partial-IO using serial pins of mcu_uart0 and
-wkup_uart0, this series adds a new pinctrl state 'wakeup' in which
-specific wakeup flags are set on these pins. Partial-IO is a poweroff
-state of the SoC in which only a few pingroups are partly powered.
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+---
+ .../devicetree/bindings/serial/8250_omap.yaml    | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-If the user enabled wakeup from the serial port, the pinctrl state is
-selected on shutdown. For another deep sleep state, which is comparable
-with suspend to memory, the same pinctrl state is selected on suspend as
-well.
-
-The series is based on v6.9-rc1.
-
-This series is part of a bigger topic to support Partial-IO on am62,
-am62a and am62p. Partial-IO is a poweroff state in which some pins are
-able to wakeup the SoC. In detail MCU m_can and two serial port pins can
-trigger the wakeup.
-
-These two other series are relevant for the support of Partial-IO:
-
- - firmware: ti_sci: Partial-IO support
- - can: m_can: Add am62 wakeup support
-
-A test branch is available that includes all patches required to test
-Partial-IO:
-
-https://gitlab.baylibre.com/msp8/linux/-/tree/integration/am62-lp-sk-partialio/v6.9?ref_type=heads
-
-After enabling Wake-on-LAN the system can be powered off and will enter
-the Partial-IO state in which it can be woken up by activity on the
-specific pins:
-    ethtool -s can0 wol p
-    ethtool -s can1 wol p
-    poweroff
-
-I tested these patches on am62-lp-sk.
-
-Best,
-Markus
-
-Markus Schneider-Pargmann (5):
-  dt-bindings: serial: 8250_omap: Add wakeup pinctrl state
-  serial: 8250: omap: Remove unused wakeups_enabled
-  serial: 8250: omap: Set wakeup capable, do not enable
-  serial: 8250: omap: Support wakeup pinctrl state
-  serial: 8250: omap: Set wakeup pinctrl on suspend
-
- .../devicetree/bindings/serial/8250_omap.yaml | 16 ++++++
- drivers/tty/serial/8250/8250_omap.c           | 56 ++++++++++++++++++-
- 2 files changed, 70 insertions(+), 2 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+index 6a7be42da523..402e2ca81017 100644
+--- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
++++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+@@ -77,6 +77,22 @@ properties:
+   current-speed: true
+   overrun-throttle-ms: true
+ 
++  pinctrl-0:
++    description: Default pinctrl state
++
++  pinctrl-1:
++    description: Wakeup pinctrl state
++
++  pinctrl-names:
++    description:
++      When present should contain at least "default" describing the default pin
++      states. The second state called "wakeup" describes the pins in their
++      wakeup configuration required to exit sleep states.
++    minItems: 1
++    items:
++      - const: default
++      - const: wakeup
++
+ required:
+   - compatible
+   - reg
 -- 
 2.43.0
 
