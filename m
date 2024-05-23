@@ -1,39 +1,56 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82C21D304;
-	Thu, 23 May 2024 16:27:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2486282863;
+	Thu, 23 May 2024 19:07:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.194.8.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716481620; cv=none; b=EZ3ywkHZglFrjBeXaqQr4HxBLrIKkn9qm7xml8WZai5ryuiAlnzRdgAj/icbD3uz6lTepJZi0cvkZL8WEMxeFwbgexJNpJmQm0GF5lEL8Mxs7HTYVaqxbs663Bo6zxknFWcOHAgayVzGjACdgKvDBus6h/skxeBdt+D0ccKEL4I=
+	t=1716491261; cv=none; b=oQnT8U8ESj7pDdIMcdcHEAEGQYnGCF3uY/wsXh4DOy1Dh47TXlP/XqBIzRg1eMLK4T10CTZMKUC5N612IF2hHr1870SDJXWtVdCJ5uqqVjgX9IyKjirIVbF099uwvsRAl8agCaVBI0qQgHVgVe9W1qjkpF5pqsxYbc7hN/KV/H0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716481620; c=relaxed/simple;
-	bh=ySaFSvei7+pERUmsSe6G8jJ7vZ83vP4RNHlEGL3+E8s=;
+	s=arc-20240116; t=1716491261; c=relaxed/simple;
+	bh=+GCeN/jo7eoSFDnUBe7tntlCDggiKvh21C5SNpgJbYU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B+gaq3SHW7U9xkn3sAc8lzLtfnzULfM+0zQ/umJRfAR/864eCQPwBtL2fCHZ7GAKl9+AGDSZhVP8i1jlAyAQfQrMyhvsY1I4Lvqj2LUqTcw1BAmv8hAgD14uhPjTfgaTAEYhTC+DpANdguaLT44b5DjPhn44fmC/pN8WpwO4TAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Qzhot9WN; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kH23zQFlffVCo/shWaAPkzDxOEscMsZe3aVsu7gvV/a0KNU37I9C2xRC4hLkOe704r6BeLLMjtq20yoFcWrUeQjQN1INLTE8FzxPBjwaoJLtoQXtuPwTEcDwWOsOhoCFVoVH2izOD7LMU+YF7fG0PM7okbT1jkGOWkyAS5VqWN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it; spf=pass smtp.mailfrom=dolcini.it; dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b=XldZwpbS; arc=none smtp.client-ip=217.194.8.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolcini.it
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Qzhot9WN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84A62C2BD10;
-	Thu, 23 May 2024 16:26:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1716481620;
-	bh=ySaFSvei7+pERUmsSe6G8jJ7vZ83vP4RNHlEGL3+E8s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Qzhot9WN3Tu+Jw8kwi1ZqfmBj19LU9GMpO5Hy9xGeUTty3cq2ldWWnXEFyY8necnB
-	 VnoRoxukJp1zEwDJwSZ7W+lqRIp/mZMjjXjdmoaQoPMAjAeId+uj7PIdZkuFGmRDUK
-	 8vch2M/A8+nhOPtxHEsm6pmlTgY1xEPmd9Yplooc=
-Date: Thu, 23 May 2024 18:26:56 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Vadim Fedorenko <vadim.fedorenko@linux.dev>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-Message-ID: <2024052349-tapestry-astronaut-0de1@gregkh>
-References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
- <20240523083943.6ecb60d9@kernel.org>
+	dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b="XldZwpbS"
+Received: from francesco-nb (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+	by mail11.truemail.it (Postfix) with ESMTPA id 8003D1F9AE;
+	Thu, 23 May 2024 21:07:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolcini.it;
+	s=default; t=1716491249;
+	bh=TYtQOlvMF01mPFBxmTMKcXxJEYwS36/9vjWSr5mXPRE=; h=From:To:Subject;
+	b=XldZwpbSH70Q6hOhDnJsERiJ3RzOlrmyNpswlvcmCCqddPdpgRfWLkRuQp4oijP++
+	 itoxUy2C3Hsp2RZJJNl3OhUtFcWF01Y6HtjfeL30qT6kkRet1mJbOdfyKRvIiokc52
+	 wOWdFHSSkTtcF3UhPrwldOLuHiOJmL0um7zq1Qt6890Gg4UpgwcEIbAuTb4QkFG5eE
+	 5eB8rzV5pLNKKkWHoaJX3cUNS7lX67MgR2YqS3Zyn7cgz+GLhB/IH9ID5SE0q3We9s
+	 SHVhzkB8eohl5lHa1SDE8z342tLRWsEGSTiSGRQmb6x7opTYdoo0p3Z2Kdb1Di1sFg
+	 7njipTMcb8LSg==
+Date: Thu, 23 May 2024 21:07:24 +0200
+From: Francesco Dolcini <francesco@dolcini.it>
+To: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Tony Lindgren <tony@atomide.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Ronald Wahl <ronald.wahl@raritan.com>,
+	Thomas Richard <thomas.richard@bootlin.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Vibhore Vardhan <vibhore@ti.com>,
+	Kevin Hilman <khilman@baylibre.com>, Dhruva Gole <d-gole@ti.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 0/5] serial: 8250: omap: Add am62 wakeup support
+Message-ID: <20240523190724.GA31756@francesco-nb>
+References: <20240523075819.1285554-1-msp@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,90 +59,35 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240523083943.6ecb60d9@kernel.org>
+In-Reply-To: <20240523075819.1285554-1-msp@baylibre.com>
 
-On Thu, May 23, 2024 at 08:39:43AM -0700, Jakub Kicinski wrote:
-> On Fri, 10 May 2024 11:04:05 +0000 Vadim Fedorenko wrote:
-> > The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
-> > of serial core port device") changed the hierarchy of serial port devices
-> > and device_find_child_by_name cannot find ttyS* devices because they are
-> > no longer directly attached. Add some logic to restore symlinks creation
-> > to the driver for OCP TimeCard.
-> > 
-> > Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
-> > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-> > ---
-> > v2:
-> >  add serial/8250 maintainers
-> > ---
-> >  drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
-> >  1 file changed, 21 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-> > index ee2ced88ab34..50b7cb9db3be 100644
-> > --- a/drivers/ptp/ptp_ocp.c
-> > +++ b/drivers/ptp/ptp_ocp.c
-> > @@ -25,6 +25,8 @@
-> >  #include <linux/crc16.h>
-> >  #include <linux/dpll.h>
-> >  
-> > +#include "../tty/serial/8250/8250.h"
+Hello Markus,
+
+On Thu, May 23, 2024 at 09:58:14AM +0200, Markus Schneider-Pargmann wrote:
+> Hi,
 > 
-> Hi Greg, Jiri, does this look reasonable to you?
-> The cross tree include raises an obvious red flag.
+> to support wakeup from Partial-IO using serial pins of mcu_uart0 and
+> wkup_uart0, this series adds a new pinctrl state 'wakeup' in which
+> specific wakeup flags are set on these pins. Partial-IO is a poweroff
+> state of the SoC in which only a few pingroups are partly powered.
+> 
+> If the user enabled wakeup from the serial port, the pinctrl state is
+> selected on shutdown. For another deep sleep state, which is comparable
+> with suspend to memory, the same pinctrl state is selected on suspend as
+> well.
+> 
 
-Yeah, that looks wrong.
-
-> Should serial / u8250 provide a more official API?
-
-If it needs to, but why is this driver poking around in here at all?
-
-> Can we use device_for_each_child() to deal with the extra
-> layer in the hierarchy?
-
-Or a real function where needed?
+...
 
 > 
-> >  #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
-> >  #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
-> >  
-> > @@ -4330,11 +4332,9 @@ ptp_ocp_symlink(struct ptp_ocp *bp, struct device *child, const char *link)
-> >  }
-> >  
-> >  static void
-> > -ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
-> > +ptp_ocp_link_child(struct ptp_ocp *bp, struct device *dev, const char *name, const char *link)
-> >  {
-> > -	struct device *dev, *child;
-> > -
-> > -	dev = &bp->pdev->dev;
-> > +	struct device *child;
-> >  
-> >  	child = device_find_child_by_name(dev, name);
-> >  	if (!child) {
-> > @@ -4349,27 +4349,39 @@ ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
-> >  static int
-> >  ptp_ocp_complete(struct ptp_ocp *bp)
-> >  {
-> > +	struct device *dev, *port_dev;
-> > +	struct uart_8250_port *port;
-> >  	struct pps_device *pps;
-> >  	char buf[32];
-> >  
-> > +	dev = &bp->pdev->dev;
-> > +
-> >  	if (bp->gnss_port.line != -1) {
-> > +		port = serial8250_get_port(bp->gnss_port.line);
-> > +		port_dev = (struct device *)port->port.port_dev;
+> After enabling Wake-on-LAN the system can be powered off and will enter
+> the Partial-IO state in which it can be woken up by activity on the
+> specific pins:
+>     ethtool -s can0 wol p
+>     ethtool -s can1 wol p
+>     poweroff
 
-That cast is not going to go well.  How do you know this is always
-true?
+Confused ... Why the CAN? This is about the UART.
 
-What was the original code attempting to do?  It feels like that was
-wrong to start with if merely moving things around the device tree
-caused anything to break here.  That is not how the driver core is
-supposed to be used at all.
+Francesco
 
-thanks,
-
-greg k-h
