@@ -1,93 +1,173 @@
-Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-176.mta1.migadu.com (out-176.mta1.migadu.com [95.215.58.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2486282863;
-	Thu, 23 May 2024 19:07:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.194.8.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84DD84D04
+	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 21:06:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716491261; cv=none; b=oQnT8U8ESj7pDdIMcdcHEAEGQYnGCF3uY/wsXh4DOy1Dh47TXlP/XqBIzRg1eMLK4T10CTZMKUC5N612IF2hHr1870SDJXWtVdCJ5uqqVjgX9IyKjirIVbF099uwvsRAl8agCaVBI0qQgHVgVe9W1qjkpF5pqsxYbc7hN/KV/H0=
+	t=1716498374; cv=none; b=G06bBnMmN70vKUfyo+9O7oxezpYwQ7nvBCc7SA/w6qjWAbU+lLbgBdl2DWlhmSiyp42J50kGwZkOoR+CHHJkgYqDweGn9MIb3UTea+AyZFB3OQbzru0OQ7pwWvAQvb/6UZ+V5piCQuTTFTaK3OJwwyvygPyfPGLWF9qBd9e9G0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716491261; c=relaxed/simple;
-	bh=+GCeN/jo7eoSFDnUBe7tntlCDggiKvh21C5SNpgJbYU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kH23zQFlffVCo/shWaAPkzDxOEscMsZe3aVsu7gvV/a0KNU37I9C2xRC4hLkOe704r6BeLLMjtq20yoFcWrUeQjQN1INLTE8FzxPBjwaoJLtoQXtuPwTEcDwWOsOhoCFVoVH2izOD7LMU+YF7fG0PM7okbT1jkGOWkyAS5VqWN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it; spf=pass smtp.mailfrom=dolcini.it; dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b=XldZwpbS; arc=none smtp.client-ip=217.194.8.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolcini.it
+	s=arc-20240116; t=1716498374; c=relaxed/simple;
+	bh=FWP16rPLoiB93aLa4YgyuYQEJ8Wq3im02rMOxmEa1Es=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cpwzDaUGSbX9fmY0lQxmil39bbVM9NgNVfdAQL0IGn5of2bshmIvCvVKitX6fABvKc1ZnNPXfjOlHvIz1vwGPxg8KjvOVi+ugmoIM+8DEZjhr06F9A08B7C7V9iWBJeKdLu8+fmMQOFakD7aqPjIQZ2Skkptd0ZkNKnbVt6+NRA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=nLOmcoFH; arc=none smtp.client-ip=95.215.58.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b="XldZwpbS"
-Received: from francesco-nb (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
-	by mail11.truemail.it (Postfix) with ESMTPA id 8003D1F9AE;
-	Thu, 23 May 2024 21:07:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolcini.it;
-	s=default; t=1716491249;
-	bh=TYtQOlvMF01mPFBxmTMKcXxJEYwS36/9vjWSr5mXPRE=; h=From:To:Subject;
-	b=XldZwpbSH70Q6hOhDnJsERiJ3RzOlrmyNpswlvcmCCqddPdpgRfWLkRuQp4oijP++
-	 itoxUy2C3Hsp2RZJJNl3OhUtFcWF01Y6HtjfeL30qT6kkRet1mJbOdfyKRvIiokc52
-	 wOWdFHSSkTtcF3UhPrwldOLuHiOJmL0um7zq1Qt6890Gg4UpgwcEIbAuTb4QkFG5eE
-	 5eB8rzV5pLNKKkWHoaJX3cUNS7lX67MgR2YqS3Zyn7cgz+GLhB/IH9ID5SE0q3We9s
-	 SHVhzkB8eohl5lHa1SDE8z342tLRWsEGSTiSGRQmb6x7opTYdoo0p3Z2Kdb1Di1sFg
-	 7njipTMcb8LSg==
-Date: Thu, 23 May 2024 21:07:24 +0200
-From: Francesco Dolcini <francesco@dolcini.it>
-To: Markus Schneider-Pargmann <msp@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Tony Lindgren <tony@atomide.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Ronald Wahl <ronald.wahl@raritan.com>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Vibhore Vardhan <vibhore@ti.com>,
-	Kevin Hilman <khilman@baylibre.com>, Dhruva Gole <d-gole@ti.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 0/5] serial: 8250: omap: Add am62 wakeup support
-Message-ID: <20240523190724.GA31756@francesco-nb>
-References: <20240523075819.1285554-1-msp@baylibre.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="nLOmcoFH"
+X-Envelope-To: gregkh@linuxfoundation.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1716498369;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+HYZrZuq8Ojw1nrvcRxGdj7LQnRliXR58D/HkwOvCk8=;
+	b=nLOmcoFHCbXf9wwsA/5h7s4ORWVEJFCcBHfgZDOJKGQKu60hOcwVPTedqtWq/aPsm698fA
+	ThOdpwVGi8sGk24l3xg6HGcIh+Ed6CHuQnwAElsh6ruyXday2mFSlmsrv96jAhkQ020XUz
+	opxM5CNK/JxykYHsvoVK9hllKm5jop4=
+X-Envelope-To: kuba@kernel.org
+X-Envelope-To: jirislaby@kernel.org
+X-Envelope-To: jonathan.lemon@gmail.com
+X-Envelope-To: linux-serial@vger.kernel.org
+X-Envelope-To: netdev@vger.kernel.org
+Message-ID: <9a65d299-2c3f-43b4-a3c7-4dca397dafaa@linux.dev>
+Date: Thu, 23 May 2024 22:06:05 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240523075819.1285554-1-msp@baylibre.com>
+Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jakub Kicinski <kuba@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, linux-serial@vger.kernel.org,
+ netdev@vger.kernel.org
+References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+ <20240523083943.6ecb60d9@kernel.org>
+ <2024052349-tapestry-astronaut-0de1@gregkh>
+Content-Language: en-US
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <2024052349-tapestry-astronaut-0de1@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-Hello Markus,
-
-On Thu, May 23, 2024 at 09:58:14AM +0200, Markus Schneider-Pargmann wrote:
-> Hi,
+On 23/05/2024 17:26, Greg Kroah-Hartman wrote:
+> On Thu, May 23, 2024 at 08:39:43AM -0700, Jakub Kicinski wrote:
+>> On Fri, 10 May 2024 11:04:05 +0000 Vadim Fedorenko wrote:
+>>> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
+>>> of serial core port device") changed the hierarchy of serial port devices
+>>> and device_find_child_by_name cannot find ttyS* devices because they are
+>>> no longer directly attached. Add some logic to restore symlinks creation
+>>> to the driver for OCP TimeCard.
+>>>
+>>> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
+>>> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>> ---
+>>> v2:
+>>>   add serial/8250 maintainers
+>>> ---
+>>>   drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
+>>>   1 file changed, 21 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+>>> index ee2ced88ab34..50b7cb9db3be 100644
+>>> --- a/drivers/ptp/ptp_ocp.c
+>>> +++ b/drivers/ptp/ptp_ocp.c
+>>> @@ -25,6 +25,8 @@
+>>>   #include <linux/crc16.h>
+>>>   #include <linux/dpll.h>
+>>>   
+>>> +#include "../tty/serial/8250/8250.h"
+>>
+>> Hi Greg, Jiri, does this look reasonable to you?
+>> The cross tree include raises an obvious red flag.
 > 
-> to support wakeup from Partial-IO using serial pins of mcu_uart0 and
-> wkup_uart0, this series adds a new pinctrl state 'wakeup' in which
-> specific wakeup flags are set on these pins. Partial-IO is a poweroff
-> state of the SoC in which only a few pingroups are partly powered.
+> Yeah, that looks wrong.
 > 
-> If the user enabled wakeup from the serial port, the pinctrl state is
-> selected on shutdown. For another deep sleep state, which is comparable
-> with suspend to memory, the same pinctrl state is selected on suspend as
-> well.
+>> Should serial / u8250 provide a more official API?
 > 
+> If it needs to, but why is this driver poking around in here at all?
 
-...
+Hi Greg!
+
+Well, the original idea was to have symlinks with self-explanatory names
+to real serial devices exposed by PCIe device.
 
 > 
-> After enabling Wake-on-LAN the system can be powered off and will enter
-> the Partial-IO state in which it can be woken up by activity on the
-> specific pins:
->     ethtool -s can0 wol p
->     ethtool -s can1 wol p
->     poweroff
+>> Can we use device_for_each_child() to deal with the extra
+>> layer in the hierarchy?
+> 
+> Or a real function where needed?
 
-Confused ... Why the CAN? This is about the UART.
+yep.
 
-Francesco
+> 
+>>
+>>>   #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+>>>   #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+>>>   
+>>> @@ -4330,11 +4332,9 @@ ptp_ocp_symlink(struct ptp_ocp *bp, struct device *child, const char *link)
+>>>   }
+>>>   
+>>>   static void
+>>> -ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
+>>> +ptp_ocp_link_child(struct ptp_ocp *bp, struct device *dev, const char *name, const char *link)
+>>>   {
+>>> -	struct device *dev, *child;
+>>> -
+>>> -	dev = &bp->pdev->dev;
+>>> +	struct device *child;
+>>>   
+>>>   	child = device_find_child_by_name(dev, name);
+>>>   	if (!child) {
+>>> @@ -4349,27 +4349,39 @@ ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
+>>>   static int
+>>>   ptp_ocp_complete(struct ptp_ocp *bp)
+>>>   {
+>>> +	struct device *dev, *port_dev;
+>>> +	struct uart_8250_port *port;
+>>>   	struct pps_device *pps;
+>>>   	char buf[32];
+>>>   
+>>> +	dev = &bp->pdev->dev;
+>>> +
+>>>   	if (bp->gnss_port.line != -1) {
+>>> +		port = serial8250_get_port(bp->gnss_port.line);
+>>> +		port_dev = (struct device *)port->port.port_dev;
+> 
+> That cast is not going to go well.  How do you know this is always
+> true?
+
+AFAIU, port_dev starts with struct dev always. That's why it's safe.
+
+> 
+> What was the original code attempting to do?  It feels like that was
+> wrong to start with if merely moving things around the device tree
+> caused anything to break here.  That is not how the driver core is
+> supposed to be used at all.
+>
+
+We just want to have a symlink with meaningful name to real tty device,
+exposed by PCIe device. We provide up to 4 serial ports - GNSS, GNSS2,
+MAC and NMEA, to user space and we don't want user space to guess which
+one is which. We do have user space application which relies on symlinks
+to discover features.
+
+We don't use device tree because it's PCIe device with pre-defined
+functions, so I don't see any other way to get this info and properly
+create symlinks.
+
+Thanks,
+Vadim
+
+
+> thanks,
+> 
+> greg k-h
 
