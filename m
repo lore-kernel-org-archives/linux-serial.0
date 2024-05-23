@@ -1,57 +1,57 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 183BF13D27F
-	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 07:58:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB1913D2B2
+	for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 07:58:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716451115; cv=none; b=rBygGZ8rT5a4j7+4avC9crJPeDbUU8b7MsqkMjdR8fmZzOffatoPIo6DImQe1WtKk2fR4aMhwqzwVGjGVYp3S3glM2tActopH8yi54HxykuJujkxCcxQvTUEzRsp62QMoBeDKowgt7B0FYh8MaOvrK+XRPOvsRfUrfnswhIDuA4=
+	t=1716451118; cv=none; b=Hy8X4ovUYKuJgUOpS5DaAUt6EDgwgPl0qimQMt7GsXUCoYrj9FUA7Sa84xBisdxvlyB3PW+BhGAMK9mPVVpRYs7/6z01POBmiVJMDlHlNqYvj5ZCgGIgCUbfAHk6MFAty2Xg6kc3YJZPqRj2tAIDbWcdM6WGfFcMAv8wteeJZnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716451115; c=relaxed/simple;
-	bh=xXMdx2YgQV2v/OWZAGfu0mLEHHS2I9maO01eCHtUDpU=;
+	s=arc-20240116; t=1716451118; c=relaxed/simple;
+	bh=oY9pJCCB+gMDQTAUOCI57KbOI5M/HreuFbqNaMW9YWI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Lxr24Av/8mup7RJyuf2AhfqjD/J4bnqTIJS/6w719RPnNKfIEjOJda+KkKdbwBdSkjrLoO/ltcp7LNoIaIyO+Ih8TXNFxt2eRuvAVlhnMiVUNC1GjYrKOVcPI2nTA7KLAQu98bCYzzCQiV9pIRTDWhBdgS3RSdbkfWht5UomYRo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=a0iZ5dJI; arc=none smtp.client-ip=209.85.128.44
+	 MIME-Version; b=kBNPk6EEpQtgAWfQ/cxJPkw7v34gWa9gWjg7HwCilTrGh/gMAhnrjTCfLgNna8Fa3RFcWDCm2lDrQ/wTFtrjq8TC0t6q5+R0f9JHtssuqsanK7dTsZmSM5lP5x7/j/68DgyHeSH470+I+RNt68GcmkVgkvyuetz2Ev3PsQIUPT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=TK/gv9Ba; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="a0iZ5dJI"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-42100f37690so3109275e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 00:58:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="TK/gv9Ba"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4202dd90dcfso16744175e9.0
+        for <linux-serial@vger.kernel.org>; Thu, 23 May 2024 00:58:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1716451112; x=1717055912; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1716451114; x=1717055914; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Z8K16dWvOhO2qm+sr1y3MxtWvPvdycG1GWiFMpy3S5U=;
-        b=a0iZ5dJIddxbiN/gysft3jTV/B7x2rPIz2KUzZVqUcCgvzv9T7RGUL3LSiTNnb0jgs
-         z7Ux8xhH62YXxfv+Bl8tQkAK0TZm3qGKnKwAHT0MWS4cX8z20nRxcV0NobccQ/1S+6xg
-         uvFKJHOBpL/3XKe+g0HsXUNLktCAoBaDQfQ6frqBmE8L8Pgd7XOJeFOUWSfZdC3nwp4n
-         MX+xcxq5RHeCh7OMPxyg5ybC4I2BgdA9X6+Kg347RSWaYttSPwFSSm1LtKncoFGfswnZ
-         8tUh2Z+bwihCUlVkx+KoYhwTzIHipE/ZGrv9gHImMWN2Jzbecb2OnjwVuCNnggjwSqT7
-         hguQ==
+        bh=D8GG0qSUKW/QwiEfb1pXJnlM6Z5iknMteP/DubTFmCA=;
+        b=TK/gv9Ba/1znMN70+vHAhjN6RiQjNI7tSNplK/LWY6Q8hlaJoVjf2pzbRI8YW9NTgB
+         YbQGTguSFarzIZoVVCiGHAJtm1F4bHxtBqgYK6xjx1THBrMCzLDxhReKLU0uQQJjQoRR
+         urz0zaeqdkhvOLi+w5TZ/P67U+DqEIadDPw2z70YWmAJvHg6s7xQyuuhuxgZv9N1rZoz
+         Ms4C5vjpWQesLQJq8k0TMNU/29ziYuXW/4F5fmkV3fLmY3bekLVb5TYKC3MZoP4eotE6
+         2wlVkqOxXT+tpsVbd0IHrNflWqbd1t3NXAxnLGrUIuwu6uvn1y9vR29ssYzAGINDcGte
+         +9sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716451112; x=1717055912;
+        d=1e100.net; s=20230601; t=1716451114; x=1717055914;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Z8K16dWvOhO2qm+sr1y3MxtWvPvdycG1GWiFMpy3S5U=;
-        b=jsA8SJr5UBL2dRGRZeOCJOgONvpTFMlJzlQwJqrsvwFsq+eBsL+m91rdFynMXw47A2
-         /GI2AbbzLUP5CGdLO6dC4vIIRqPCyNFEWjgrhISP3OezR6KHjfpVNCOqL9wDx1Xl1/bB
-         fAc1l+EuW46dJx2Tzmpityl3bl2fyCqolo39OjzrTSRz2G4wk8oA37vcExEIqQx2MyBR
-         V4TWcY1xvLI7cDRFJPb4GTZSDGkb1aOlAu+tphyo2f/orPznRPnsE1AYKzYJN8BojuvG
-         w8oNuI8ZPWW6gMMK4+R3othFhteaLnX+wJYB6lI88FGoQSt326/PUydgkOvzGSD4/y7Z
-         N7xg==
-X-Forwarded-Encrypted: i=1; AJvYcCWoByLQK1yJYwAHgU/tMivE4l+p+AraaEpY2oiGIOl4rP4LpZRnAig/k7cblqhAn4kNBGMMNbti2JdquWXLxKhBtCcgM1D9ANXWzyAS
-X-Gm-Message-State: AOJu0YxQkboVZnRsy/Z8gUkIBjTfaxnmcOO0EOXIUNdOlg4PNjvvU/Go
-	bqIpCY3HQudpqFwxyXxQuRPoYu1HISXZP7AsXv5baElGQ8P/UGRv7+DiY9tOkIQ=
-X-Google-Smtp-Source: AGHT+IFfe5vIFo/LgA8ARRskHuwvWe7QRmx5Miy8yG8EWQ6t9qMTpauF9TRt5VITqvCuUrFcUT4oIw==
-X-Received: by 2002:a05:600c:4fd2:b0:418:3d59:c13a with SMTP id 5b1f17b1804b1-421015b3ca3mr13374455e9.9.1716451112348;
-        Thu, 23 May 2024 00:58:32 -0700 (PDT)
+        bh=D8GG0qSUKW/QwiEfb1pXJnlM6Z5iknMteP/DubTFmCA=;
+        b=brArdRM27y0kKj2cfoz1vHj42680SIBo3HU1jVc49DsRPnBZo3e5CgHrIRX+vSv8om
+         +j/1u2u6z7XGJ+5ICdCAWtvVL5iMEaDI11u70wC/HKAYAvbvnwHYEsP5s+gK6q1oNK6K
+         2dxcYS0XnzDVFZ+TrsJnSPiglmuGyVOWPEdFO25SUARRsJVl6JUYDUmPePr8k4Uyth8l
+         piHV/1xIBENEuTawr+qTHLhm0ns60WNdR4+V4SlJ9/tUdjNlr+Xbda2THTSPYuZRN2CN
+         MrhlX9uxBY2wyzv+J53HhyNkkXmTCbhnZ4XugAGY67IdyWTlLJIIkhMM+zUyowyU0NOh
+         +rWw==
+X-Forwarded-Encrypted: i=1; AJvYcCVv0gKjv/GggsYHNlV13M/sD0uyVn3AO3RI9c8MckIY1JJbU9c5dy5TbvX3XTgJ6ubbi4q9Xsse5uygG1sQtpdIX+QZpHMaQ8DWrxg8
+X-Gm-Message-State: AOJu0YzXD4PbMOIQsTaR0sAsImExrH78rjM1bAGJmacLYEvgxWuMsNeC
+	nEZ/Ft0gI6Kw61HSCyUUexiW1BIjal67zFo+Mux2hp7YalYMk7SSXn8y6ngBwWU=
+X-Google-Smtp-Source: AGHT+IHY1QA7e7M81Uch6zrTpW4SzcO290mENs1Q7433I/NCsVyGWKJ/Rr+g3fYyAhO+lvsDLKDNDA==
+X-Received: by 2002:a05:600c:56c1:b0:41f:e56c:ef81 with SMTP id 5b1f17b1804b1-420fd2dcc03mr34490425e9.1.1716451113999;
+        Thu, 23 May 2024 00:58:33 -0700 (PDT)
 Received: from blmsp.fritz.box ([2001:4091:a246:821e:6f3b:6b50:4762:8343])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f01d7fsm17359125e9.1.2024.05.23.00.58.30
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f01d7fsm17359125e9.1.2024.05.23.00.58.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 May 2024 00:58:31 -0700 (PDT)
+        Thu, 23 May 2024 00:58:33 -0700 (PDT)
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -74,9 +74,9 @@ Cc: Vibhore Vardhan <vibhore@ti.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH 4/5] serial: 8250: omap: Support wakeup pinctrl state
-Date: Thu, 23 May 2024 09:58:18 +0200
-Message-ID: <20240523075819.1285554-5-msp@baylibre.com>
+Subject: [PATCH 5/5] serial: 8250: omap: Set wakeup pinctrl on suspend
+Date: Thu, 23 May 2024 09:58:19 +0200
+Message-ID: <20240523075819.1285554-6-msp@baylibre.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20240523075819.1285554-1-msp@baylibre.com>
 References: <20240523075819.1285554-1-msp@baylibre.com>
@@ -88,91 +88,47 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-UART can be used as a wakeup source for am62 from a powered-off SoC
-state. To enable wakeup from UART am62 requires a wakeup flag being set
-in the pinctrl.
-
-If the device is marked as wakeup enabled, select the 'wakeup' pinctrl
-state on sys_off.
+To enable the serial driver and it's pin to be a wakeup source in
+suspend to ram states, select the wakeup pinctrl state on suspend and
+restore the default pinctrl state on resume.
 
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 39 +++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ drivers/tty/serial/8250/8250_omap.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 5b7508dfb5d8..617a421a1396 100644
+index 617a421a1396..61f056c4e78e 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -27,8 +27,10 @@
- #include <linux/pm_qos.h>
- #include <linux/pm_wakeirq.h>
- #include <linux/dma-mapping.h>
-+#include <linux/reboot.h>
- #include <linux/sys_soc.h>
- #include <linux/pm_domain.h>
-+#include <linux/pinctrl/consumer.h>
+@@ -1663,6 +1663,13 @@ static int omap8250_suspend(struct device *dev)
+ 	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+ 	int err = 0;
  
- #include "8250.h"
++	err = omap8250_select_wakeup_pinctrl(dev, priv);
++	if (err) {
++		dev_err(dev, "Failed to select wakeup pinctrl, aborting suspend %pe\n",
++			ERR_PTR(err));
++		return err;
++	}
++
+ 	serial8250_suspend_port(priv->line);
  
-@@ -149,6 +151,9 @@ struct omap8250_priv {
- 	spinlock_t rx_dma_lock;
- 	bool rx_dma_broken;
- 	bool throttled;
-+
-+	struct pinctrl *pinctrl;
-+	struct pinctrl_state *pinctrl_wakeup;
- };
+ 	err = pm_runtime_resume_and_get(dev);
+@@ -1696,6 +1703,13 @@ static int omap8250_resume(struct device *dev)
+ 	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
+ 	int err;
  
- struct omap8250_dma_params {
-@@ -1345,6 +1350,30 @@ static int omap8250_no_handle_irq(struct uart_port *port)
- 	return 0;
- }
- 
-+static int omap8250_select_wakeup_pinctrl(struct device *dev,
-+					  struct omap8250_priv *priv)
-+{
-+	if (IS_ERR_OR_NULL(priv->pinctrl_wakeup))
-+		return 0;
++	err = pinctrl_select_default_state(dev);
++	if (err) {
++		dev_err(dev, "Failed to select default pinctrl state on resume: %pe\n",
++			ERR_PTR(err));
++		return err;
++	}
 +
-+	if (!device_may_wakeup(dev))
-+		return 0;
-+
-+	return pinctrl_select_state(priv->pinctrl, priv->pinctrl_wakeup);
-+}
-+
-+static int omap8250_sysoff_handler(struct sys_off_data *data)
-+{
-+	struct omap8250_priv *priv = dev_get_drvdata(data->dev);
-+	int ret;
-+
-+	ret = omap8250_select_wakeup_pinctrl(data->dev, priv);
-+	if (ret)
-+		dev_err(data->dev, "Failed to select pinctrl state 'wakeup', continuing poweroff\n");
-+
-+	return NOTIFY_DONE;
-+}
-+
- static struct omap8250_dma_params am654_dma = {
- 	.rx_size = SZ_2K,
- 	.rx_trigger = 1,
-@@ -1566,6 +1595,16 @@ static int omap8250_probe(struct platform_device *pdev)
- 	priv->line = ret;
- 	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
-+
-+	priv->pinctrl = devm_pinctrl_get(&pdev->dev);
-+	if (!IS_ERR_OR_NULL(priv->pinctrl))
-+		priv->pinctrl_wakeup = pinctrl_lookup_state(priv->pinctrl, "wakeup");
-+
-+	devm_register_sys_off_handler(&pdev->dev,
-+				      SYS_OFF_MODE_POWER_OFF_PREPARE,
-+				      SYS_OFF_PRIO_DEFAULT,
-+				      omap8250_sysoff_handler, NULL);
-+
- 	return 0;
- err:
- 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+ 	if (uart_console(&up->port) && console_suspend_enabled) {
+ 		if (console_suspend_enabled) {
+ 			err = pm_runtime_force_resume(dev);
 -- 
 2.43.0
 
