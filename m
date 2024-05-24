@@ -1,164 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969E83A27E;
-	Fri, 24 May 2024 04:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD4E33D0;
+	Fri, 24 May 2024 07:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716523611; cv=none; b=YdwmIr1v5MXK/8XrtEQyttfiZroB2De+DG17Oje0z/FpMVX/c/b/IUkoRzQ88+rJwTuNCYZJBpYNP/EV0+O/7fkfnCASEX8hhVG3ZAdkiWBJnQaSRzkhaqnwj55zOi7Op0YM0txT4GHKFWQQGwObE2devO89c+dBvV1bOmmPM/Q=
+	t=1716536883; cv=none; b=PNyRRe8POCt1PJQAgng/m94K8mUzU0e6/vpOqexRUPFUgRt4R/+vd+O1nr44ouEoNHbkNTYsyI2l5tzkCLVZU59sDCuNQ2xYDnXlxL64+u1SJuKXoVLS/Nrrc9yS44qE1XJrS0UFV0o5AUK8U9j5Z0OdRO3hbAla3ZnMktDbOO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716523611; c=relaxed/simple;
-	bh=mvCI9+AspQM7khXp6L5EaPq+WlLu+anOKkiH9By+Tz8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=trG9eKtj6wp7PrMyK/KQW4LTdhRdhcPSpGSp1JaR7c308lIJQz5d88KvW/Y0q6lmdI6/ZtpHSdGwSy6fJ97/uqYKK0PEJ+BgMcjMzht4UyppIHufMcy5R3dVpQUWWtlj5TQVULzJeYxPlETMenj60ibfClbGkwl7LKSaR3y5KX0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KkK7PXhw; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KkK7PXhw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78025C2BBFC;
-	Fri, 24 May 2024 04:06:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1716523611;
-	bh=mvCI9+AspQM7khXp6L5EaPq+WlLu+anOKkiH9By+Tz8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KkK7PXhw4GsQyPaPh4TT1O3Cx7VI0ASmR/NGXB3jMwqgHO6a+BtYv9DEUbKK8p3NV
-	 x574jhMQZGuiW1svmw8lD2kIj2yaJTv2vAFDM6IEi2nL8XrNNd9etuBUQmWfQfNBoP
-	 UVd8ojb7IF1aBYwa93mKZQp/x24JL8q5sRREIJJk=
-Date: Fri, 24 May 2024 06:06:48 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-Message-ID: <2024052450-spoon-matchbox-e09e@gregkh>
-References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
- <20240523083943.6ecb60d9@kernel.org>
- <2024052349-tapestry-astronaut-0de1@gregkh>
- <9a65d299-2c3f-43b4-a3c7-4dca397dafaa@linux.dev>
+	s=arc-20240116; t=1716536883; c=relaxed/simple;
+	bh=xmLO/x9BvymHv0Wcd7nxb4frCFgzEWm4oGv7O7Uvo/Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=H5Yf7POFbe5Ho4vp2WABfVVxDGzdwj7Igqcgq5lY2lgTprAX6x820Iixw92T+uySgVNJ1ztLyoQMOmJK4zI7WGpkQSlgJSKZGKk1XqDsBdSO2aNcL5zL+1KbsebjJkd5/dQoD5sgBsmfvUIip1Yu5RKAe2KX34VDGQPW+Qsnk0E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-62a0826ceb0so6356697b3.1;
+        Fri, 24 May 2024 00:48:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716536880; x=1717141680;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=aENHTdUsW8qhM2dHax4VkVpC4dCLHvt2JVCa4jPrTiQ=;
+        b=uO3H37cFzyZ4VHLKSqgkRuiXXMGqvsy480WpZwfezQTImN5v5Xf2atv3a02hP82/BM
+         tmL+JTI5pDeN1MlUNiV3Oq4ix59+hYSmo95IazM2N6to9yXCPB8l6l76e81CqdhJ95p4
+         PrZ1+F1zS28znRvqMv/59wHlHK091TIUS85FDroQ1E4grMrHo4z8zI3UHg3zcnSbUI8t
+         /rkXkCrNI8BHmi8nybFCnmtGhrAfLQcOAp3tLoaOA9jnqyYa4bJGtAq6s7Oy4fsAcq3a
+         1ayunhnfccjUV42QAW4kKCuW8ZQ10itWZ290q6CN9l7zwNLPEePOZQpYyst+Y+xAWli+
+         sklQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUsCoC98VZ0d0EHhCMHbqdLz8cyki6SqJzfu/gd3IEfwY8qrgGvfl3VLyPuxC+js4sf7Zz8vJSi7F6KwJL3vLFi2sW38mh4diIC9NjSXZ8UR3YdI2NnAzIgq0DtAidvGHBfbz0R1TmeTt9/
+X-Gm-Message-State: AOJu0YwJVcDirUrAYIUz3SzmvYHXoWdxG8/VlVN6lf9tz2rLIGYeE94n
+	wNO26D3i9frB3PQLRWMM7Fk3tnnAbiGjUdDBqpMWn7VrJKTkboc+GuAfeZNN
+X-Google-Smtp-Source: AGHT+IFRCNHLSupKVi8l2G9kpa5B2pY09m+6yIKphByz9urrhoirFRjVZDcGkz+YWS5stBFf/Pzdgg==
+X-Received: by 2002:a81:6d96:0:b0:61b:1718:7302 with SMTP id 00721157ae682-62a08dfd012mr13747547b3.31.1716536879429;
+        Fri, 24 May 2024 00:47:59 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-62a0a4f34d3sm1676307b3.86.2024.05.24.00.47.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 May 2024 00:47:57 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id 3f1490d57ef6-df771983aedso579007276.1;
+        Fri, 24 May 2024 00:47:57 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU35eEXuH3fp/yKqjM/2ZFHpwA6uiW6spGNo0XLcQNwxXEAUXkaRJmpR5iKjWFbkvDx/Z7G8RPWoGb1BvLhPl+f7WK0xN/upxhRp6L4F/vHtgVsDbUK7OE2uymfhW9zpReAqs8EyyfnbFiF
+X-Received: by 2002:a25:83c4:0:b0:de6:b58:fe72 with SMTP id
+ 3f1490d57ef6-df772259b37mr1448543276.58.1716536877102; Fri, 24 May 2024
+ 00:47:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9a65d299-2c3f-43b4-a3c7-4dca397dafaa@linux.dev>
+References: <20240409154253.3043822-1-hugo@hugovil.com> <20240409154253.3043822-4-hugo@hugovil.com>
+ <CAMuHMdVq=rf-6o485KiA+zcwJPHMe5STKUtSWtFPs2nmvshu-A@mail.gmail.com>
+ <CAHp75Vfi2YjE0wzwABURxXhcWLozAf9Cdj_pT+DL_tm8E_zm4Q@mail.gmail.com>
+ <CAMuHMdXqc9tZkd7YzX56QRroDhjbweQAUj+th68DU8oFxpp+jg@mail.gmail.com>
+ <CAMuHMdX2rrncANhCVf5bo+Md5bpMOeacYAu+Sgiy7noo55PYew@mail.gmail.com> <20240523195625.fa40049802a43a76dbc2a96d@hugovil.com>
+In-Reply-To: <20240523195625.fa40049802a43a76dbc2a96d@hugovil.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 24 May 2024 09:47:44 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV_yMTyAa0t5=Qm6YNbtOFQTyZZvjYn8Y+6mO3L-GswWQ@mail.gmail.com>
+Message-ID: <CAMuHMdV_yMTyAa0t5=Qm6YNbtOFQTyZZvjYn8Y+6mO3L-GswWQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/5] serial: sc16is7xx: split into core and I2C/SPI
+ parts (core)
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, gregkh@linuxfoundation.org, 
+	jirislaby@kernel.org, peterz@infradead.org, mingo@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 23, 2024 at 10:06:05PM +0100, Vadim Fedorenko wrote:
-> On 23/05/2024 17:26, Greg Kroah-Hartman wrote:
-> > On Thu, May 23, 2024 at 08:39:43AM -0700, Jakub Kicinski wrote:
-> > > On Fri, 10 May 2024 11:04:05 +0000 Vadim Fedorenko wrote:
-> > > > The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
-> > > > of serial core port device") changed the hierarchy of serial port devices
-> > > > and device_find_child_by_name cannot find ttyS* devices because they are
-> > > > no longer directly attached. Add some logic to restore symlinks creation
-> > > > to the driver for OCP TimeCard.
-> > > > 
-> > > > Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
-> > > > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-> > > > ---
-> > > > v2:
-> > > >   add serial/8250 maintainers
-> > > > ---
-> > > >   drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
-> > > >   1 file changed, 21 insertions(+), 9 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-> > > > index ee2ced88ab34..50b7cb9db3be 100644
-> > > > --- a/drivers/ptp/ptp_ocp.c
-> > > > +++ b/drivers/ptp/ptp_ocp.c
-> > > > @@ -25,6 +25,8 @@
-> > > >   #include <linux/crc16.h>
-> > > >   #include <linux/dpll.h>
-> > > > +#include "../tty/serial/8250/8250.h"
-> > > 
-> > > Hi Greg, Jiri, does this look reasonable to you?
-> > > The cross tree include raises an obvious red flag.
-> > 
-> > Yeah, that looks wrong.
-> > 
-> > > Should serial / u8250 provide a more official API?
-> > 
-> > If it needs to, but why is this driver poking around in here at all?
-> 
-> Hi Greg!
-> 
-> Well, the original idea was to have symlinks with self-explanatory names
-> to real serial devices exposed by PCIe device.
+Hi Hugo,
 
-Why is that needed?  What is wrong with the normal device topology in
-/sys/devices/ that shows this already?
+On Fri, May 24, 2024 at 1:56=E2=80=AFAM Hugo Villeneuve <hugo@hugovil.com> =
+wrote:
+> On Thu, 23 May 2024 09:33:36 +0200
+> Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Tue, Apr 23, 2024 at 3:11=E2=80=AFPM Geert Uytterhoeven <geert@linux=
+-m68k.org> wrote:
+> > > On Tue, Apr 23, 2024 at 12:37=E2=80=AFPM Andy Shevchenko
+> > > <andy.shevchenko@gmail.com> wrote:
+> > > > On Tue, Apr 23, 2024 at 1:01=E2=80=AFPM Geert Uytterhoeven <geert@l=
+inux-m68k.org> wrote:
+> > > > > On Tue, Apr 9, 2024 at 5:48=E2=80=AFPM Hugo Villeneuve <hugo@hugo=
+vil.com> wrote:
+> > >
+> > > > > > -config SERIAL_SC16IS7XX
+> > > > > > -       tristate "SC16IS7xx serial support"
+> > > > > > +       tristate "NXP SC16IS7xx UART support"
+> > > > >
+> > > > > Hence this replaces SERIAL_SC16IS7XX_CORE by SERIAL_SC16IS7XX,
+> > > > > so arch/mips/configs/cu1??0-neo_defconfig needs to updated.
+> > > >
+> > > >         select SERIAL_CORE
+> > > > -       depends on (SPI_MASTER && !I2C) || I2C
+> > > > +       select SERIAL_SC16IS7XX_SPI if SPI_MASTER
+> > > > +       select SERIAL_SC16IS7XX_I2C if I2C
+> > > >
+> > > > > So if SPI_MASTER or I2C is enabled, the corresponding SERIAL_SC16=
+IS7XX_*
+> > > > > subdriver can no longer be disabled?  According to
+> > > > > https://lore.kernel.org/all/20240403123501.8ef5c99f65a40ca2c10f63=
+5a@hugovil.com/
+> > > > > you did want to support that?
+> > > >
+> > > > I believe it has been taken from one of the IIO drivers as an examp=
+le.
+> > >
+> > > Looks like a bad example to follow:
+> > >   1. The driver question now pops up if both I2C and SPI_MASTER
+> > >      are disabled,
+> > >   2. What if SERIAL_SC16IS7XX_CORE is builtin, but I2C and/or
+> > >      SPI_MASTER are modular?
+> > >
+> > > I believe the only way to fix that is by letting the sub-drivers sele=
+ct the
+> > > core driver, like before.
+> >
+> > FTR, this issue is now upstream.
 
-> > > Can we use device_for_each_child() to deal with the extra
-> > > layer in the hierarchy?
-> > 
-> > Or a real function where needed?
-> 
-> yep.
-> 
-> > 
-> > > 
-> > > >   #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
-> > > >   #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
-> > > > @@ -4330,11 +4332,9 @@ ptp_ocp_symlink(struct ptp_ocp *bp, struct device *child, const char *link)
-> > > >   }
-> > > >   static void
-> > > > -ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
-> > > > +ptp_ocp_link_child(struct ptp_ocp *bp, struct device *dev, const char *name, const char *link)
-> > > >   {
-> > > > -	struct device *dev, *child;
-> > > > -
-> > > > -	dev = &bp->pdev->dev;
-> > > > +	struct device *child;
-> > > >   	child = device_find_child_by_name(dev, name);
-> > > >   	if (!child) {
-> > > > @@ -4349,27 +4349,39 @@ ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
-> > > >   static int
-> > > >   ptp_ocp_complete(struct ptp_ocp *bp)
-> > > >   {
-> > > > +	struct device *dev, *port_dev;
-> > > > +	struct uart_8250_port *port;
-> > > >   	struct pps_device *pps;
-> > > >   	char buf[32];
-> > > > +	dev = &bp->pdev->dev;
-> > > > +
-> > > >   	if (bp->gnss_port.line != -1) {
-> > > > +		port = serial8250_get_port(bp->gnss_port.line);
-> > > > +		port_dev = (struct device *)port->port.port_dev;
-> > 
-> > That cast is not going to go well.  How do you know this is always
-> > true?
-> 
-> AFAIU, port_dev starts with struct dev always. That's why it's safe.
-> 
-> > 
-> > What was the original code attempting to do?  It feels like that was
-> > wrong to start with if merely moving things around the device tree
-> > caused anything to break here.  That is not how the driver core is
-> > supposed to be used at all.
-> > 
-> 
-> We just want to have a symlink with meaningful name to real tty device,
-> exposed by PCIe device. We provide up to 4 serial ports - GNSS, GNSS2,
-> MAC and NMEA, to user space and we don't want user space to guess which
-> one is which. We do have user space application which relies on symlinks
-> to discover features.
+> I replied to you and Andy a few weeks ago about this (multiple emails wit=
+h suggestions/explanations), and I even asked if you were satisfied with wh=
+at I proposed, but never got anything from you, so I am still waiting on fe=
+edback to send a patch to fix this:
+>
+> https://lore.kernel.org/all/20240430090333.5c5f029553cabcdf699310cb@hugov=
+il.com/
 
-Just use the normal serial topology please.
+Sorry, I indeed forgot to reply there.
 
-And for your named devices, use the symlinks in /dev/serial/ that are
-provided for you already.
+Please use two visible symbols (for I2C and SPI), which select
+the invisible SERIAL_SC16IS7XX_CORE.
+Thanks!
 
-> We don't use device tree because it's PCIe device with pre-defined
-> functions, so I don't see any other way to get this info and properly
-> create symlinks.
+Gr{oetje,eeting}s,
 
-Sorry, I didn't mean "dt", I mean /sys/devices/, there should not be
-anything "special" about this driver that requires custom symlinks in
-sysfs.  That's for userspace to create in /dev/serial/ as it does today.
-Please just remove all of this, as it's not a good idea at all.
+                        Geert
 
-thanks,
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-greg k-h
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
