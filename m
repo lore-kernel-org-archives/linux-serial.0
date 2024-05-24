@@ -1,186 +1,198 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95DF685920
-	for <linux-serial@vger.kernel.org>; Fri, 24 May 2024 12:12:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F93686644
+	for <linux-serial@vger.kernel.org>; Fri, 24 May 2024 15:21:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716552774; cv=none; b=YjJoQK+NcSALrd9d+nuV4pR0Nv90tfjFmeiaK8kqoibrQn5V87uv5Jos3GD08pWQSZNf8Ucw+JDi1pScioiftDQ7/goII5iVZl5/abL8CxLGJseyOXgRu8d7elKxIGkzixChFcQIY8ncLr6ARyHi61ScWZ4rJK4HA9durRtTj2I=
+	t=1716564073; cv=none; b=fl2KRA1nIHaxl2Cpg1UYYIj3Zwvm456EKKyPMNbR4qIaBRcgJO4BQh859h49cLtpb65CbHutoLqrAoXlp4kHv3k5DAj3Q0n4/wGYNA8vpES1XSE+QlgfwUrIGNwsLKcj/RFuR/BIFVNsGxCrAlObtka4MgkWlAdzM+eWWaIOJI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716552774; c=relaxed/simple;
-	bh=NLkcXVJfxaNj+x/ym/nlC1R/VqgX2dj3Yj+vQmBzw2Y=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=B1/jRaVJEzI/dVID/92Kj/O/ExHqKLkgHQrODz9HxuMAAJJ1qQIdCWPXKtfpGzBfOkPGRtQWbkmRium81E6Ls92vUcQUHjQUxc8QcINDzG1JkXLDy4iZ2dsM3fJPnR1Om0btYVzwxfnzs4q2/fW1nzUQkdX6xKJAMvpC0ocdIjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk; spf=pass smtp.mailfrom=rasmusvillemoes.dk; dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b=FTgMsFpF; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rasmusvillemoes.dk
+	s=arc-20240116; t=1716564073; c=relaxed/simple;
+	bh=yPgcE6iZuFN7YKISqfWrAmfdlGQWBE4xc36lHegonyU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=q4kFqYBqE28ovNu/JyDL9k8/i+ZkARdMA9ZOdPctwJmn6D03oG/5OMD9aZonU6QYbHIjh8xX6Ii/gy+jGX9MhmXcW81hYyi1MpLTP+Dm5LnmSb2UOIOlNevCtB8UsEqyQcvLANlsJXdzIuYko4SGSYgBevaLSWZSCLhdUuDWHUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=m/Ib4EMf; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="FTgMsFpF"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5231efd80f2so9661881e87.2
-        for <linux-serial@vger.kernel.org>; Fri, 24 May 2024 05:12:51 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="m/Ib4EMf"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-43fab2fa4ccso9625531cf.2
+        for <linux-serial@vger.kernel.org>; Fri, 24 May 2024 08:21:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google; t=1716552770; x=1717157570; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=z/kQluXbrS5/xKa378gCLMmIP4qg7U9JjmWwPqCAy5U=;
-        b=FTgMsFpF1DvO/gln29tbOWPTW5g9uqQBYj3XWJ2iJ7ZaeobKWoPGjoTMJUurG+OAvz
-         HuoI4sjXMW+1DCuP0H4mu7mUlJPtflF+UYQWwWbj61ae/UUYn62SwlqXYwn4me4mBjd+
-         CSqIeSIr9tp8OaANb96atjx75+zmwF06f7Cvc=
+        d=chromium.org; s=google; t=1716564070; x=1717168870; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gpwx3Fn+gj42VdUyf2jwE8slBOE6zAH5ZapgIRoj3Dw=;
+        b=m/Ib4EMfEQaFiGabRMgJmxYB7ukQZFMsJgTnQCpNz+OVbhGsHwqVRCjv4dIry4Ip60
+         /hwEtzhPQipe/Qq5/Tr9Q4OuEMpNfqEgDkWY1ezs602lWrsFTEnMrSkIvJIU2PNceBT6
+         /IIjcEcalOrBQY567lZxjMoAAgE6FP6y6Bu2M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716552770; x=1717157570;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=z/kQluXbrS5/xKa378gCLMmIP4qg7U9JjmWwPqCAy5U=;
-        b=dITACCf4sH6IZryCsRM207F0rZ7t0rU6OVN8lOecQmM19/hKi7hoFgKLWXh+yJ06++
-         cD1Bs8BeyNxtMYh8K1+s3/4lOI0zMYn+sKNUYbg0gYMrk5cGmXMN79GGlfRXERBbi/2u
-         L9BTJHVWo/LYFXgRzI1n0Um2tqUedPSAUwDHq1RV3IKSHARSuML4CndF9dydyaXiN7CD
-         /6VE1icdtdHgrB47pCRJTZt6l7NF6ell2txDMNmU4vD7ZuQOKBrx5MHXdMIExExUmzCc
-         CbayWXmwe8W6N4DHOx9W7W9uRwrNXkMlnvCJSXaUyGu1Wh5j9ahxsnhv27oZMTeM8t+T
-         ROpw==
-X-Forwarded-Encrypted: i=1; AJvYcCV8sZ3PhmMP5urPTlMjRCPwXf1Ql/JopC2rRHtP+SBCpj8nRt5jz0CYU6wzSKtxAZ/IFPaEwDlP5VsnMCbn3DxXh8Xt7U1WVkhN11C5
-X-Gm-Message-State: AOJu0YyJpqmfVYXvCDzPGxEduwQiX9GLrs1rUb83urbTH8MLOAsc8HqF
-	DdYan9d4lVQ9iFCSqwq3ch8OeOOlgFtsdwqawJqB6BmHDM4VaDKKUbctOtl3enc=
-X-Google-Smtp-Source: AGHT+IFDzskSYUTxKkoP6SCgQgAYltT2X4VJOr36ZAkA0ExwWVFTGCSdWPvOlsTH+ENT8Hvd6LU7KA==
-X-Received: by 2002:a05:6512:10ca:b0:51c:b73f:950 with SMTP id 2adb3069b0e04-529661f315emr1807735e87.43.1716552769459;
-        Fri, 24 May 2024 05:12:49 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52970c3313fsm164559e87.200.2024.05.24.05.12.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 May 2024 05:12:49 -0700 (PDT)
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>
-Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] serial: imx: ensure RTS signal is not left active after shutdown
-Date: Fri, 24 May 2024 14:12:45 +0200
-Message-Id: <20240524121246.1896651-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.40.1.1.g1c60b9335d
+        d=1e100.net; s=20230601; t=1716564070; x=1717168870;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gpwx3Fn+gj42VdUyf2jwE8slBOE6zAH5ZapgIRoj3Dw=;
+        b=DsomEP1PoAbi9ejv39KrSTUVZ/ZlBeKbWSxm/QbK6F7DF8FYM/fUBcysPRNG1GI9IK
+         HgRW0yLPTlrVrGlBPf7Hhwnvk6fkd4Fe104apwP6KKCD+56Phw3XShADguoKpF90ICrM
+         V02BabyPaHQngw8ZdsKO8LfxhXZbwRYv8ZhkG4Ylgq1hAfqGqh3Kwi7cQC3aBcNPR6A4
+         ys2aAEfx+dzGqVOAy0+Hk6A6ZDp/MyHeTpgLxHrJge//h8iNsEcqjpsXaY5RBM5Koi4f
+         GRSimLwV2jGGqZWYzCg0A8IW6F6cdfQ4LuPHvqzsDUqKOl7EigROPHhPMVuYK3UzdWGT
+         LFHw==
+X-Forwarded-Encrypted: i=1; AJvYcCVt/UUDkpmJBkYx/u2WQ6LqurgFHEi1tDPNKY6oOvNLu7I8KVuxuXDU0G7K7GVCXuttLIIUhcJTcC5nTEIBMWotBiFhg3pxrK1NFZMB
+X-Gm-Message-State: AOJu0YzGxICIipGmY9GxDOkZzGJkNpKgD2zAZFUtRf5ScoqolFYMToar
+	cZHbsx+vSLN52ghwPthUJFrp/80hoQtGKXT5CwoxYaVuv7A/Q3HKSlbQe29bmJPWJmy88gGp2Pk
+	=
+X-Google-Smtp-Source: AGHT+IH+XOap3RadNebrJOsuCBZR4HjUFODTzysTnwBjHfYpK4vMnkUY/z3idczx7GC0FwJ+eyXRAQ==
+X-Received: by 2002:a05:622a:3ce:b0:43e:26ab:4fbc with SMTP id d75a77b69052e-43fb0f09f36mr28384081cf.48.1716564069515;
+        Fri, 24 May 2024 08:21:09 -0700 (PDT)
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com. [209.85.160.178])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-43fb183507asm8795491cf.56.2024.05.24.08.21.08
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 May 2024 08:21:08 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-43f87dd6866so423791cf.0
+        for <linux-serial@vger.kernel.org>; Fri, 24 May 2024 08:21:08 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWlTataAuT3bLz22z8alutRuXSnbNhnVa9ayMiZ3ZLXWSBvIUMXLh8P8/axObA6GaN/6ASgP8qvUfcIgUFx0hskmTZCqta+bBn3m9FI
+X-Received: by 2002:a05:622a:1b03:b0:43f:9eff:caf7 with SMTP id
+ d75a77b69052e-43fb1642624mr2538041cf.3.1716564068055; Fri, 24 May 2024
+ 08:21:08 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240523232216.3148367-1-dianders@chromium.org>
+ <20240523162207.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid> <CAE-0n51nBXsaubmtbUxPBsNDiNuOVa1hB9O0bihm8fpEhEDjRg@mail.gmail.com>
+In-Reply-To: <CAE-0n51nBXsaubmtbUxPBsNDiNuOVa1hB9O0bihm8fpEhEDjRg@mail.gmail.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Fri, 24 May 2024 08:20:50 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WsDYOJg3BHv1Lb-qSE6PDf1Ck4SoEkXf7mf0U2s8qFdw@mail.gmail.com>
+Message-ID: <CAD=FV=WsDYOJg3BHv1Lb-qSE6PDf1Ck4SoEkXf7mf0U2s8qFdw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] serial: port: Don't block system suspend even if
+ bytes are left to xmit
+To: Stephen Boyd <swboyd@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Ogness <john.ogness@linutronix.de>, 
+	Tony Lindgren <tony@atomide.com>, linux-arm-msm@vger.kernel.org, 
+	Johan Hovold <johan+linaro@kernel.org>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Yicong Yang <yangyicong@hisilicon.com>, Guanbing Huang <albanhuang@tencent.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-If a process is killed while writing to a /dev/ttymxc* device in RS485
-mode, we observe that the RTS signal is left high, thus making it
-impossible for other devices to transmit anything.
+Hi,
 
-Moreover, the ->tx_state variable is left in state SEND, which means
-that when one next opens the device and configures baud rate etc., the
-initialization code in imx_uart_set_termios dutifully ensures the RTS
-pin is pulled down, but since ->tx_state is already SEND, the logic in
-imx_uart_start_tx() does not in fact pull the pin high before
-transmitting, so nothing actually gets on the wire on the other side
-of the transceiver. Only when that transmission is allowed to complete
-is the state machine then back in a consistent state.
+On Thu, May 23, 2024 at 5:25=E2=80=AFPM Stephen Boyd <swboyd@chromium.org> =
+wrote:
+>
+> Quoting Douglas Anderson (2024-05-23 16:22:12)
+> > Recently, suspend testing on sc7180-trogdor based devices has started
+> > to sometimes fail with messages like this:
+> >
+> >   port a88000.serial:0.0: PM: calling pm_runtime_force_suspend+0x0/0xf8=
+ @ 28934, parent: a88000.serial:0
+> >   port a88000.serial:0.0: PM: dpm_run_callback(): pm_runtime_force_susp=
+end+0x0/0xf8 returns -16
+> >   port a88000.serial:0.0: PM: pm_runtime_force_suspend+0x0/0xf8 returne=
+d -16 after 33 usecs
+> >   port a88000.serial:0.0: PM: failed to suspend: error -16
+> >
+> > I could reproduce these problem by logging in via an agetty on the
+> > debug serial port (which was _not_ used for kernel console) and
+> > running:
+> >   cat /var/log/messages
+> > ...and then (via an SSH session) forcing a few suspend/resume cycles.
+> >
+> > Tracing through the code and doing some printf debugging shows that
+> > the -16 (-EBUSY) comes from the recently added
+> > serial_port_runtime_suspend().
+> >
+> > The idea of the serial_port_runtime_suspend() function is to prevent
+> > the port from being _runtime_ suspended if it still has bytes left to
+> > transmit. Having bytes left to transmit isn't a reason to block
+> > _system_ suspend, though.
+>
+> Can you elaborate? I paused to think that maybe we would want to make
+> sure that everything that was transmitted had been transmitted but that
+> doesn't seem right because it's a problem for higher layers to solve,
+> e.g. serdev would want to make sure some sleep command sent over the
+> wire actually got sent.
 
-This is completely reproducible by doing something as simple as
+I don't have a ton of intuition about how the new "serial_port" code
+is designed to work. The patch that added it mentioned that it was
+based on suggestions by a whole bunch of people but there were no
+links to the previous discussions so it wasn't easy to get tons of
+context. I would certainly love it if people who have been involved
+could chime in and say whether my patch is correct. If anyone has any
+suggestions for something better to say in the commit message I'm
+happy to use different wording as well.
 
-  seq 10000 > /dev/ttymxc0
+In any case, looking at it I guess a serdev device would use
+serdev_device_wait_until_sent() to ensure its command was sent. That
+eventually seems to trickle down to the UART function tx_empty(). If a
+serdev device needs to block suspend while waiting then that would be
+up to the serdev device. This could be implicit if the
+serdev_device_wait_until_sent() was being called as part of the serdev
+device's suspend() function or perhaps could be through some sort of
+locking.
 
-and hitting ctrl-C, and watching with a logic analyzer.
-
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
-
-A screen dump from a logic analyzer can be seen at:
-
-  https://ibb.co/xCcP7Jy
-
-This is on an imx8mp board, with /dev/ttymxc0 and /dev/ttymxc2 both
-configured for rs485 and connected to each other. I'm writing to
-/dev/ttymxc2. This demonstrates both bugs; that RTS is left high when
-a write is interrupted, and that a subsequent write actually fails to
-have RTS high while TX'ing.
-
-I'm not sure what commit to name as a Fixes:. This certainly happens
-on 6.6 and onwards, but I assume the problem exists since the tx_state
-machine was introduced in cb1a60923609 (serial: imx: implement rts
-delaying for rs485), and possibly even before that.
+...so really I think the case we're running into is if userspace has a
+whole bunch of bytes queued up to write out the UART. That shouldn't
+block suspend. If userspace needs to block suspend they should use
+another method.
 
 
- drivers/tty/serial/imx.c | 50 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+> > The DEFINE_RUNTIME_DEV_PM_OPS() used by the
+> > serial_port code means that the system suspend function will be
+> > pm_runtime_force_suspend(). In pm_runtime_force_suspend() we can see
+> > that before calling the runtime suspend function we'll call
+> > pm_runtime_disable(). This should be a reliable way to detect that
+> > we're called from system suspend and that we shouldn't look for
+> > busyness.
+> >
+> > Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still =
+busy")
+> > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > ---
+> >
+> >  drivers/tty/serial/serial_port.c | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/seri=
+al_port.c
+> > index 91a338d3cb34..b781227cc996 100644
+> > --- a/drivers/tty/serial/serial_port.c
+> > +++ b/drivers/tty/serial/serial_port.c
+> > @@ -64,6 +64,16 @@ static int serial_port_runtime_suspend(struct device=
+ *dev)
+> >         if (port->flags & UPF_DEAD)
+> >                 return 0;
+> >
+> > +       /*
+> > +        * We only want to check the busyness of the port if PM Runtime=
+ is
+> > +        * enabled. Specifically PM Runtime will be disabled by
+> > +        * pm_runtime_force_suspend() during system suspend and we don'=
+t want
+> > +        * to block system suspend even if there is data still left to
+> > +        * transmit. We only want to block regulator PM Runtime transit=
+ions.
+>
+> s/regulator/regular/
+>
+> Is this a typo?
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2eb22594960f..35a47f4ab6ed 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1551,6 +1551,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	struct imx_port *sport = (struct imx_port *)port;
- 	unsigned long flags;
- 	u32 ucr1, ucr2, ucr4, uts;
-+	int loops;
- 
- 	if (sport->dma_is_enabled) {
- 		dmaengine_terminate_sync(sport->dma_chan_tx);
-@@ -1613,6 +1614,55 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
-+	/*
-+	 * We have to ensure the tx state machine ends up in OFF. This
-+	 * is especially important for rs485 where we must not leave
-+	 * the RTS signal high, blocking the bus indefinitely.
-+	 *
-+	 * All interrupts are now disabled, so imx_uart_stop_tx() will
-+	 * no longer be called from imx_uart_transmit_buffer(). It may
-+	 * still be called via the hrtimers, and if those are in play,
-+	 * we have to honour the delays.
-+	 */
-+	if (sport->tx_state == WAIT_AFTER_RTS || sport->tx_state == SEND)
-+		imx_uart_stop_tx(port);
-+
-+	/*
-+	 * In many cases (rs232 mode, or if tx_state was
-+	 * WAIT_AFTER_RTS, or if tx_state was SEND and there is no
-+	 * delay_rts_after_send), this will have moved directly to
-+	 * OFF. In rs485 mode, tx_state might already have been
-+	 * WAIT_AFTER_SEND and the hrtimer thus already started, or
-+	 * the above imx_uart_stop_tx() call could have started it. In
-+	 * those cases, we have to wait for the hrtimer to fire and
-+	 * complete the transition to OFF.
-+	 */
-+	loops = port->rs485.flags & SER_RS485_ENABLED ?
-+		port->rs485.delay_rts_after_send : 0;
-+	while (sport->tx_state != OFF && loops--) {
-+		uart_port_unlock_irqrestore(&sport->port, flags);
-+		msleep(1);
-+		uart_port_lock_irqsave(&sport->port, &flags);
-+	}
-+
-+	if (dev_WARN_ONCE(sport->port.dev, sport->tx_state != OFF,
-+			  "unexpected tx_state %d\n", sport->tx_state)) {
-+		/*
-+		 * This machine may be busted, but ensure the RTS
-+		 * signal is inactive in order not to block other
-+		 * devices.
-+		 */
-+		if (port->rs485.flags & SER_RS485_ENABLED) {
-+			ucr2 = imx_uart_readl(sport, UCR2);
-+			if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
-+				imx_uart_rts_active(sport, &ucr2);
-+			else
-+				imx_uart_rts_inactive(sport, &ucr2);
-+			imx_uart_writel(sport, ucr2, UCR2);
-+		}
-+		sport->tx_state = OFF;
-+	}
-+
- 	uart_port_unlock_irqrestore(&sport->port, flags);
- 
- 	clk_disable_unprepare(sport->clk_per);
--- 
-2.40.1.1.g1c60b9335d
+Yeah, I'll fix that to "regular". I'll wait (probably till Tuesday)
+before sending a v2.
 
+> Also, why is "runtime" capitalized?
+
+Somehow I thought it was supposed to be, but you're right that it
+looks weird. I guess the docs call it "runtime PM" so I'll change all
+instances to that in v2.
+
+-Doug
