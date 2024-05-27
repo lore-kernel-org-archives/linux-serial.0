@@ -1,164 +1,219 @@
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [195.130.132.52])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FC415ECC0
-	for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 12:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 535351E4AE
+	for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 13:45:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716813691; cv=none; b=CH62pgjPCt8vQR8NEh2ayKgsj9ibB2AGENBpIUQGmhNz8b7Rbb6Q9XlUqfwmgr3f/WKyqhGYa2XoSdSdSb5o28Uj9iW17hIiAcggTvjVxyaMy+X3PsdTLOnoerCVaZEEE4aESNQv89wCuGlPML4+wAvtbL36guipfYrlI63nF/I=
+	t=1716817561; cv=none; b=JihF3Q4cEOa+cJDQMFLjvVklYa3UgszBPFP0cFYpsC2ZI1A+fEGSoBEzyWdIIZUoDsgVTOKQSj44tg62rOpB4nRVnBrX4JzlI/vp7GkpXWpFHz4tKp68s0QJZvz0N5DPUYtKZptq44RNfuNsZlHR7mCO34GTOdvTwQTROD2E0sA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716813691; c=relaxed/simple;
-	bh=DKPGT9zCwjT97JfwUeLGsvdXWvcfL2iqAGQFqV9g4PU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dSX71/170EM6vZGzf626Icb+hObGwpanDpEInB1GNXb5YFw3zScSEadGGNV0788tL5uxSu5o5UPUg10bWIOc+dmJUYN6h0VvOPHDlM93ifFlgdA2DnpttKjsXTnQXfQgNAY+hFXJgbZXIEHpu5hsXRQU5HqOoF6Fvx0hMJGOUz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:c993:5573:f894:7353])
-	by xavier.telenet-ops.be with bizsmtp
-	id UChF2C0052nC7mg01ChFB4; Mon, 27 May 2024 14:41:25 +0200
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtp (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1sBZeD-00CfTf-5D;
-	Mon, 27 May 2024 14:41:14 +0200
-Received: from geert by rox.of.borg with local (Exim 4.95)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1sBZf8-003hdc-TN;
-	Mon, 27 May 2024 14:41:14 +0200
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Ulf Hansson <ulf.hansson@linaro.org>,
+	s=arc-20240116; t=1716817561; c=relaxed/simple;
+	bh=Nx5foiiBazlvj8RTv+u3oP8WZFmgrmmxvx/kNpkqBf0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F7Tp+zpjNJyNxJ2susS8gMiJWJsg93GnUN6ZKUIdnLjdHG++aqU5zc7Kwf5pJMQeefCkALiOVpwlzAP6hN391mB4uj5D3I+pccj+uahhlb4AbbIO2eCpx1elo69QKWxxl13ZWBy/aNRxNZexmvzYSbG2KIhlBIKCYka+szwYBMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=dh3q594G; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="dh3q594G"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-578626375ffso3022074a12.3
+        for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 06:45:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1716817558; x=1717422358; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mnjb6Mi3KXzRc2VXrdqyF2tyiKaAQ8iuOBdqH9Khxzw=;
+        b=dh3q594GS8C3uXWyTuQMAt1l5khR1D0do1T/jKPGV0LnnfYtC6R8wBgobzPp0vWOed
+         xJj1NPyeJ4obihELNM4z86OD9cmbK5hMct/CIpcaVyutKKYvXSR31qESzCYDeTOfL9Sm
+         9fm0aQjHtnWj5oCw94MSKMs9v42kiJbIx+89/qqKx33YXuxkkVe0/k6Bjhru+la4g9XF
+         CjMNMGyyPjffHHG+ySFhp6u/XXrV/NPer5F812+ZJqdb8Hp/xM6AI38ozuE4Ui7VlMZ5
+         y3ATyVQPOhovSByt61yaVFi6AM88OMIS1LdFcL4rBSh9qWtX+7yT7bUwgS3TKUSGXz4g
+         dEiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716817558; x=1717422358;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mnjb6Mi3KXzRc2VXrdqyF2tyiKaAQ8iuOBdqH9Khxzw=;
+        b=eHlDNJJU0oKzYdECugnIxHi+0UNQnQ0mLCnmxDWHeYIOOLQTJibsgm/wtXV4mjprZ3
+         M07FsjebMBR7QekroxCF8jviyxU6ykhFWDfcNZ+sIiYfJLb6LN/p6IatTKBMMDLiNBVD
+         OnuYWbSiZ852tw79QZo0w6j5WZ015z8hjwx5ap/YmVxHXMnO/a7vm0Ouccq+7kn6c+k/
+         QDdD75h5BqaEPfWCiW8nHn/ff3LvviG4Hm1ZOiYidVfnKuihd8zkSYkLaeIlqUMgzetF
+         3jgaUS5PZVWAVpkA2pyxug/WbuHZ1N8eKdL6Im37kRyfkKXENa8VQkj6iwaZuHB+S2iL
+         80Hw==
+X-Forwarded-Encrypted: i=1; AJvYcCUJQBW+VChBwbaHqBHKvVsI9nrO3gAhxfFFsTYiSB7QFyNmBuYAOMH9Y4VY3teHE/BnAyx7zJrI8a/5ypUuC1ir4+PFk6RQSiJMcgfT
+X-Gm-Message-State: AOJu0YzlrDBRCIflMrEbdkiZYwexrN+o33bUK0tL6wlsNJz8KS0mkEmC
+	f7X/G9vrNJuzqM8+1BT6oYsdFcpwGS6m0dytIR5W4lOwfRO+YGq7xjITvaAJgH+ypTiZP/kNIq4
+	h
+X-Google-Smtp-Source: AGHT+IGdJpB2qTzwGXzLhMxon+AJ6tq5ZCNAau0hwx6X7VTFF/HWjMsGQ/gVTXasBRtVDHE1rHySpA==
+X-Received: by 2002:a50:999b:0:b0:579:c28f:6d10 with SMTP id 4fb4d7f45d1cf-579c28f6f3dmr3030589a12.24.1716817557564;
+        Mon, 27 May 2024 06:45:57 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-579d1f94e72sm1661623a12.24.2024.05.27.06.45.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 May 2024 06:45:57 -0700 (PDT)
+Date: Mon, 27 May 2024 15:45:55 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Tony Lindgren <tony.lindgren@linux.intel.com>
+Cc: Tony Lindgren <tony@atomide.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>
-Cc: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	Peng Fan <peng.fan@nxp.com>,
-	linux-pm@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 2/3] pmdomain: core: Avoid earlycon power-down
-Date: Mon, 27 May 2024 14:41:12 +0200
-Message-Id: <7c5c0c8a10b8f755e5a75c7836b43cac63762eec.1716811405.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1716811405.git.geert+renesas@glider.be>
-References: <cover.1716811405.git.geert+renesas@glider.be>
+	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v7 1/7] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <ZlSOc5mtbf4DdI8O@pathway.suse.cz>
+References: <20240327110021.59793-1-tony@atomide.com>
+ <20240327110021.59793-2-tony@atomide.com>
+ <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
+ <ZlRqz2b0ZrtkxScL@tlindgre-MOBL1>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZlRqz2b0ZrtkxScL@tlindgre-MOBL1>
 
-If the earlycon serial port's PM Domain is shared with another device,
-and that other device is runtime-suspended before the full serial driver
-has overtaken earlycon, the serial port's PM Domain will be disabled
-inadvertently.  Any subsequent serial console output will cause a crash
-or system lock-up.
+On Mon 2024-05-27 14:13:19, Tony Lindgren wrote:
+> Hi,
+> 
+> On Fri, May 24, 2024 at 06:06:21PM +0200, Petr Mladek wrote:
+> > I have finally found time to looks at this again.
+> 
+> Great good to hear.
+> 
+> > First, about breaking the preferred console:
+> > 
+> > The patchset still causes the regression with /dev/console association
+> > as already reported for v3, see
+> > https://lore.kernel.org/r/ZWnvc6-LnXdjOQLY@alley
+> 
+> Thanks and sorry for missing this issue. I thought I had this issue
+> already handled, but looking at what I tested with earlier, looks like
+> I had the console options the wrong way around.
+>  
+> > I used the following kernel command line:
+> > 
+> >    earlycon=uart8250,io,0x3f8,115200 console=ttyS0,115200 console=tty0 ignore_loglevel log_buf_len=1M
+> > 
+> > The patchset caused that /dev/console became associated with
+> > ttyS0 instead of tty0, see the "C" flag:
+> > 
+> > 	original # cat /proc/consoles
+> > 	tty0                 -WU (EC    )    4:1
+> > 	ttyS0                -W- (E  p a)    4:64
+> > 
+> >    vs.
+> > 
+> > 	patched # cat /proc/consoles
+> > 	ttyS0                -W- (EC p a)    4:64
+> > 	tty0                 -WU (E     )    4:1
+> 
+> OK
+> 
+> > I have added some debugging messages which nicely show the reason.
+> > In the original code, __add_preferred_console() is called twice
+> > when processing the command line:
+> > 
+> > [    0.099312] __add_preferred_console[0]: ttyS, 0 (preferrred_console == 0)
+> > [    0.099982] __add_preferred_console[1]: tty, 0 (preferrred_console == 1)
+> 
+> OK thanks for tracking down where things go wrong.
+> 
+> > The code thinks that "ttyS0" has been mentioned on the command line
+> > once again. And preferred_console is _wrongly_ set back to '0'.
+> > 
+> > My view:
+> > 
+> > The delayed __add_preferred_console() is a way to hell.
+> > 
+> > The preferences are defined by the ordering on the command line.
+> > All entries have to be added when the command line options are
+> > being proceed to keep the order.
+> 
+> To me it seems we can fix this by keeping track of the console position
+> in the kernel command line. I'll send a fix for this to discuss.
 
-Avoid this by introducing a new flag to handle a PM domain that must be
-kept powered-on during early boot, and by setting this flag if the PM
-Domain contains the serial console.
+Honestly, I would prefer some alternative solution of the whole
+problem. From my POV, the current patchset is a kind of a hack.
 
-Note that the PM Domain can still be powered off later, when the serial
-port's power state agrees, e.g. during s2ram without no_console_suspend.
+  1. It hides console=DEVNAME:X.Y options so that register_console()
+     does not know about them.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/pmdomain/core.c   | 24 ++++++++++++++++++++++--
- include/linux/pm_domain.h |  4 ++++
- 2 files changed, 26 insertions(+), 2 deletions(-)
+  2. But wait, register_console() might then enable any random console
+     by default when there are not console= options. For this the 3rd patch
+     added @console_set_on_cmdline variable which would tell
+     register_console(): "Hey, I have hidden some user preferences.
+     I'll tell you about them when the right time comes."
 
-diff --git a/drivers/pmdomain/core.c b/drivers/pmdomain/core.c
-index 342779464c0d7e84..97b9b50257eb354c 100644
---- a/drivers/pmdomain/core.c
-+++ b/drivers/pmdomain/core.c
-@@ -22,6 +22,7 @@
- #include <linux/export.h>
- #include <linux/cpu.h>
- #include <linux/debugfs.h>
-+#include <linux/serial_core.h>
- 
- #define GENPD_RETRY_MAX_MS	250		/* Approximate */
- 
-@@ -129,6 +130,7 @@ static const struct genpd_lock_ops genpd_spin_ops = {
- #define genpd_is_cpu_domain(genpd)	(genpd->flags & GENPD_FLAG_CPU_DOMAIN)
- #define genpd_is_rpm_always_on(genpd)	(genpd->flags & GENPD_FLAG_RPM_ALWAYS_ON)
- #define genpd_is_opp_table_fw(genpd)	(genpd->flags & GENPD_FLAG_OPP_TABLE_FW)
-+#define genpd_is_early_on(genpd)	(genpd->flags & GENPD_FLAG_EARLY_ON)
- 
- static inline bool irq_safe_dev_in_sleep_domain(struct device *dev,
- 		const struct generic_pm_domain *genpd)
-@@ -725,8 +727,9 @@ static int genpd_power_off(struct generic_pm_domain *genpd, bool one_dev_on,
- 	 * (2) When the domain has a subdomain being powered on.
- 	 */
- 	if (genpd_is_always_on(genpd) ||
--			genpd_is_rpm_always_on(genpd) ||
--			atomic_read(&genpd->sd_count) > 0)
-+	    (genpd_is_early_on(genpd) && system_state < SYSTEM_RUNNING) ||
-+	    genpd_is_rpm_always_on(genpd) ||
-+	    atomic_read(&genpd->sd_count) > 0)
- 		return -EBUSY;
- 
- 	/*
-@@ -2367,6 +2370,10 @@ int of_genpd_add_provider_simple(struct device_node *np,
- 
- 	genpd->dev.of_node = np;
- 
-+	if (earlycon_power_domains &&
-+	    np->phandle == be32_to_cpup(earlycon_power_domains))
-+		genpd->flags |= GENPD_FLAG_EARLY_ON;
+  3. When port init matches the pattern, it adds the preferred console
+     so that the register_console() would know about it.
+
+  4. But wait, the ordering of preferred consoles is important.
+     Which would require more hacks to preserve the ordering.
+
+  5. Also serial_base_add_prefcon() adds the preferred console
+     with the generic name "ttyS" which is not specific
+     for the matched device. It just hopes that the very next
+     "register_console()" call will be the one related to
+     the matching device. Is this really guaranteed on SMP system?
+
+
+IMHO, the only solution would be to add a function which would
+return "ttySX" for the fiven device name.
+
+Honestly, I do not know the hiearachy of the structures in detail.
+But the documentation in the 7th patch says:
+
++			The mapping of the serial ports to the tty instances
++			can be viewed with:
 +
- 	/* Parse genpd OPP table */
- 	if (!genpd_is_opp_table_fw(genpd) && genpd->set_performance_state) {
- 		ret = dev_pm_opp_of_add_table(&genpd->dev);
-@@ -2447,6 +2454,19 @@ int of_genpd_add_provider_onecell(struct device_node *np,
- 		genpd->has_provider = true;
- 	}
- 
-+	if (earlycon_power_domains && earlycon_power_domains_ncells == 2 &&
-+	    np->phandle == be32_to_cpup(earlycon_power_domains)) {
-+		struct of_phandle_args genpdspec = {
-+			.np = np,
-+			.args_count = 1,
-+			.args[0] = be32_to_cpup(earlycon_power_domains + 1),
-+		};
-+
-+		genpd = data->xlate(&genpdspec, data);
-+		if (!IS_ERR(genpd))
-+			genpd->flags |= GENPD_FLAG_EARLY_ON;
-+	}
-+
- 	ret = genpd_add_provider(np, data->xlate, data);
- 	if (ret < 0)
- 		goto error;
-diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
-index 772d3280d35fafa2..012d58ffc7059e0d 100644
---- a/include/linux/pm_domain.h
-+++ b/include/linux/pm_domain.h
-@@ -92,6 +92,9 @@ struct dev_pm_domain_list {
-  * GENPD_FLAG_OPP_TABLE_FW:	The genpd provider supports performance states,
-  *				but its corresponding OPP tables are not
-  *				described in DT, but are given directly by FW.
-+ *
-+ * GENPD_FLAG_EARLY_ON:		Instructs genpd to keep the PM domain powered
-+ *				on during early boot.
-  */
- #define GENPD_FLAG_PM_CLK	 (1U << 0)
- #define GENPD_FLAG_IRQ_SAFE	 (1U << 1)
-@@ -101,6 +104,7 @@ struct dev_pm_domain_list {
- #define GENPD_FLAG_RPM_ALWAYS_ON (1U << 5)
- #define GENPD_FLAG_MIN_RESIDENCY (1U << 6)
- #define GENPD_FLAG_OPP_TABLE_FW	 (1U << 7)
-+#define GENPD_FLAG_EARLY_ON	 (1U << 8)
- 
- enum gpd_status {
- 	GENPD_STATE_ON = 0,	/* PM domain is on */
--- 
-2.34.1
++			$ ls -d /sys/bus/serial-base/devices/*:*.*/tty/*
++			/sys/bus/serial-base/devices/00:04:0.0/tty/ttyS0
 
+BTW: I get on my test system:
+
+# ls -1 -d /sys/bus/serial-base/devices/*:*.*/tty/*
+/sys/bus/serial-base/devices/00:00:0.0/tty/ttyS0
+/sys/bus/serial-base/devices/serial8250:0.1/tty/ttyS1
+/sys/bus/serial-base/devices/serial8250:0.2/tty/ttyS2
+/sys/bus/serial-base/devices/serial8250:0.3/tty/ttyS3
+...
+
+It looks like it should be possible to provide a function which would
+return:
+
+   "ttyS0" for "00:00:0.0"
+   "ttyS1" for "serial8250:0.1"
+   ...
+
+
+This function might then be used in "register_console()"
+to convert "console=DEVNAME:0.0" option to "ttyS" + "index".
+
+The advantage would be that the relation between "DEVNAME:0.0"
+and "ttyS0" will be clear. And the code would see the same hiearachy
+as the user in /sys/bus/serial-base/devices/.
+
+Of course, I might be too naive. Maybe, the sysfs hieararchy is
+created too late. Maybe, it is not easy to go throught the
+hiearachy...
+
+But still. I wonder if there is a straightforard way which would
+allow translation between "ttySX" and "DEVNAME:0.0" naming schemes.
+
+Best Regards,
+Petr
