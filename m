@@ -1,32 +1,30 @@
-Received: from gauss.telenet-ops.be (gauss.telenet-ops.be [195.130.132.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [195.130.132.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0261715ECC3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FC415ECC0
 	for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 12:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716813691; cv=none; b=JuZ2bMZ6bWapY25Jb51v/mGXkBnflIR4dmMO73A+GSWcYJgDAdHpk0tnGCtzMoJo1uBU/Izq27NXvdgTx2cG+4HeB+1C7s3LZuavUXfVWkleoUBRVpwxOFlN8ZnVQ1nPmHvYoGEGbi/+F8Vu1dmmZcX9sDdT1v6QXuTgwEYYlWM=
+	t=1716813691; cv=none; b=CH62pgjPCt8vQR8NEh2ayKgsj9ibB2AGENBpIUQGmhNz8b7Rbb6Q9XlUqfwmgr3f/WKyqhGYa2XoSdSdSb5o28Uj9iW17hIiAcggTvjVxyaMy+X3PsdTLOnoerCVaZEEE4aESNQv89wCuGlPML4+wAvtbL36guipfYrlI63nF/I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1716813691; c=relaxed/simple;
-	bh=8hdldazWVA2zqxn3teJVpbzPafUsFkhaXGXuAlZegCc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OhHl2tNhtW3zzOKsUBiocWLGr/xhR7UxqWo9sZyyPyJJUpUN4TZqdURJKJXoF/gK4WQZW2hR5AiJ3CXKgyv7hhdqPdnaYeNSkO2Ui9xIHGARG2QxteY1PiHx/1/qwyaXqsH5ycGTpcyAwmCg9yD350oxhpMHIVEz/fLWLTA7isk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.49
+	bh=DKPGT9zCwjT97JfwUeLGsvdXWvcfL2iqAGQFqV9g4PU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=dSX71/170EM6vZGzf626Icb+hObGwpanDpEInB1GNXb5YFw3zScSEadGGNV0788tL5uxSu5o5UPUg10bWIOc+dmJUYN6h0VvOPHDlM93ifFlgdA2DnpttKjsXTnQXfQgNAY+hFXJgbZXIEHpu5hsXRQU5HqOoF6Fvx0hMJGOUz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-	by gauss.telenet-ops.be (Postfix) with ESMTPS id 4VnwHq2DL9z4x0Ln
-	for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 14:41:27 +0200 (CEST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:c993:5573:f894:7353])
-	by andre.telenet-ops.be with bizsmtp
-	id UChF2C0032nC7mg01ChF7d; Mon, 27 May 2024 14:41:19 +0200
+	by xavier.telenet-ops.be with bizsmtp
+	id UChF2C0052nC7mg01ChFB4; Mon, 27 May 2024 14:41:25 +0200
 Received: from rox.of.borg ([192.168.97.57])
 	by ramsan.of.borg with esmtp (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1sBZeD-00CfTd-4Q;
+	id 1sBZeD-00CfTf-5D;
 	Mon, 27 May 2024 14:41:14 +0200
 Received: from geert by rox.of.borg with local (Exim 4.95)
 	(envelope-from <geert@linux-m68k.org>)
-	id 1sBZf8-003hdW-RS;
+	id 1sBZf8-003hdc-TN;
 	Mon, 27 May 2024 14:41:14 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Ulf Hansson <ulf.hansson@linaro.org>,
@@ -43,10 +41,12 @@ Cc: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH/RFC 0/3] pmdomain: renesas: rmobile-sysc: Remove serial console handling
-Date: Mon, 27 May 2024 14:41:10 +0200
-Message-Id: <cover.1716811405.git.geert+renesas@glider.be>
+Subject: [PATCH/RFC 2/3] pmdomain: core: Avoid earlycon power-down
+Date: Mon, 27 May 2024 14:41:12 +0200
+Message-Id: <7c5c0c8a10b8f755e5a75c7836b43cac63762eec.1716811405.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <cover.1716811405.git.geert+renesas@glider.be>
+References: <cover.1716811405.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,90 +55,110 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-	Hi all,
+If the earlycon serial port's PM Domain is shared with another device,
+and that other device is runtime-suspended before the full serial driver
+has overtaken earlycon, the serial port's PM Domain will be disabled
+inadvertently.  Any subsequent serial console output will cause a crash
+or system lock-up.
 
-Since commit a47cf07f60dcb02d ("serial: core: Call
-device_set_awake_path() for console port"), the serial driver properly
-handles the case where the serial console is part of the awake path, and
-it looked like we could start removing special serial console handling
-from PM Domain drivers like the R-Mobile SYSC PM Domain driver.
-Unfortunately the devil is in the details, as usual...
+Avoid this by introducing a new flag to handle a PM domain that must be
+kept powered-on during early boot, and by setting this flag if the PM
+Domain contains the serial console.
 
-Earlycon relies on the serial port to be initialized by the firmware
-and/or bootloader.  Linux is not aware of any hardware dependencies that
-must be met to keep the port working, and thus cannot guarantee they
-stay met, until the full serial driver takes over.
+Note that the PM Domain can still be powered off later, when the serial
+port's power state agrees, e.g. during s2ram without no_console_suspend.
 
-E.g. all unused clocks and unused PM Domains are disabled in a late
-initcall.  As this happens after the full serial driver has taken over,
-the serial port's clock and/or PM Domain are no longer deemed unused,
-and this is typically not a problem.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/pmdomain/core.c   | 24 ++++++++++++++++++++++--
+ include/linux/pm_domain.h |  4 ++++
+ 2 files changed, 26 insertions(+), 2 deletions(-)
 
-However, if the serial port's clock or PM Domain is shared with another
-device, and that other device is runtime-suspended before the full
-serial driver has probed, the serial port's clock and/or PM Domain will
-be disabled inadvertently.  Any subsequent serial console output will
-cause a crash or system lock-up.  E.g. on R/SH-Mobile SoCs, the serial
-ports share their PM Domain with several other I/O devices.  After the
-use of pwm (Armadillo-800-EVA) or i2c (KZM-A9-GT) during early boot,
-before the full serial driver takes over, the PM Domain containing the
-early serial port is powered down, causing a lock-up when booted with
-"earlycon".
-
-This RFC patch series aims to provide a mechanism for handling this, and
-to fix it for the PM Domain case:
-  1. The first patch provides a mechanism to let the clock and/or PM
-     Domain subsystem or drivers handle this, by exporting the clock and
-     PM Domain dependencies for the serial port, as available in the
-     system's device tree,
-  2. The second patch introduces a new flag to handle a PM domain that
-     must be kept powered-on during early boot, and by setting this flag
-     if the PM Domain contains the serial console (originally I handled
-     this inside rmobile-sysc, but it turned out to be easy to
-     generalize this to other platforms in the core PM Domain code).
-  3. The third patch removes the no longer needed special console
-     handling from the R-Mobile SYSC PM Domain driver.
-
-I did not fix the similar clock issue, as it is more complex (there can
-be multiple clocks, and each clock provider can have its own value of
-#clock-cells), and I do not need it for Renesas ARM platforms.
-
-This has been tested on the APE6-EVM, Armadillo-800-EVA, and KZM-A9-GT
-development boards, with and without earlycon, including s2ram with and
-without no_console_suspend.
-
-Notes:
-  - This should not be needed on RZ/G3S, where each serial port device
-    has its own PM Domain,
-  - drivers/clk/imx/clk.c and drivers/pmdomain/imx/scu-pd.c have special
-    handling for the of_stdout device, but is probably not affected, as
-    each serial port seems to share its PM Domain only with the serial
-    port's clock controller.
-
-Thanks for your comments!
-
-Geert Uytterhoeven (3):
-  earlycon: Export clock and PM Domain info from FDT
-  pmdomain: core: Avoid earlycon power-down
-  pmdomain: renesas: rmobile-sysc: Remove serial console handling
-
- drivers/pmdomain/core.c                 | 24 ++++++++++++++++--
- drivers/pmdomain/renesas/rmobile-sysc.c | 33 +------------------------
- drivers/tty/serial/earlycon.c           | 14 ++++++++++-
- include/linux/pm_domain.h               |  4 +++
- include/linux/serial_core.h             | 10 ++++++++
- 5 files changed, 50 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/pmdomain/core.c b/drivers/pmdomain/core.c
+index 342779464c0d7e84..97b9b50257eb354c 100644
+--- a/drivers/pmdomain/core.c
++++ b/drivers/pmdomain/core.c
+@@ -22,6 +22,7 @@
+ #include <linux/export.h>
+ #include <linux/cpu.h>
+ #include <linux/debugfs.h>
++#include <linux/serial_core.h>
+ 
+ #define GENPD_RETRY_MAX_MS	250		/* Approximate */
+ 
+@@ -129,6 +130,7 @@ static const struct genpd_lock_ops genpd_spin_ops = {
+ #define genpd_is_cpu_domain(genpd)	(genpd->flags & GENPD_FLAG_CPU_DOMAIN)
+ #define genpd_is_rpm_always_on(genpd)	(genpd->flags & GENPD_FLAG_RPM_ALWAYS_ON)
+ #define genpd_is_opp_table_fw(genpd)	(genpd->flags & GENPD_FLAG_OPP_TABLE_FW)
++#define genpd_is_early_on(genpd)	(genpd->flags & GENPD_FLAG_EARLY_ON)
+ 
+ static inline bool irq_safe_dev_in_sleep_domain(struct device *dev,
+ 		const struct generic_pm_domain *genpd)
+@@ -725,8 +727,9 @@ static int genpd_power_off(struct generic_pm_domain *genpd, bool one_dev_on,
+ 	 * (2) When the domain has a subdomain being powered on.
+ 	 */
+ 	if (genpd_is_always_on(genpd) ||
+-			genpd_is_rpm_always_on(genpd) ||
+-			atomic_read(&genpd->sd_count) > 0)
++	    (genpd_is_early_on(genpd) && system_state < SYSTEM_RUNNING) ||
++	    genpd_is_rpm_always_on(genpd) ||
++	    atomic_read(&genpd->sd_count) > 0)
+ 		return -EBUSY;
+ 
+ 	/*
+@@ -2367,6 +2370,10 @@ int of_genpd_add_provider_simple(struct device_node *np,
+ 
+ 	genpd->dev.of_node = np;
+ 
++	if (earlycon_power_domains &&
++	    np->phandle == be32_to_cpup(earlycon_power_domains))
++		genpd->flags |= GENPD_FLAG_EARLY_ON;
++
+ 	/* Parse genpd OPP table */
+ 	if (!genpd_is_opp_table_fw(genpd) && genpd->set_performance_state) {
+ 		ret = dev_pm_opp_of_add_table(&genpd->dev);
+@@ -2447,6 +2454,19 @@ int of_genpd_add_provider_onecell(struct device_node *np,
+ 		genpd->has_provider = true;
+ 	}
+ 
++	if (earlycon_power_domains && earlycon_power_domains_ncells == 2 &&
++	    np->phandle == be32_to_cpup(earlycon_power_domains)) {
++		struct of_phandle_args genpdspec = {
++			.np = np,
++			.args_count = 1,
++			.args[0] = be32_to_cpup(earlycon_power_domains + 1),
++		};
++
++		genpd = data->xlate(&genpdspec, data);
++		if (!IS_ERR(genpd))
++			genpd->flags |= GENPD_FLAG_EARLY_ON;
++	}
++
+ 	ret = genpd_add_provider(np, data->xlate, data);
+ 	if (ret < 0)
+ 		goto error;
+diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
+index 772d3280d35fafa2..012d58ffc7059e0d 100644
+--- a/include/linux/pm_domain.h
++++ b/include/linux/pm_domain.h
+@@ -92,6 +92,9 @@ struct dev_pm_domain_list {
+  * GENPD_FLAG_OPP_TABLE_FW:	The genpd provider supports performance states,
+  *				but its corresponding OPP tables are not
+  *				described in DT, but are given directly by FW.
++ *
++ * GENPD_FLAG_EARLY_ON:		Instructs genpd to keep the PM domain powered
++ *				on during early boot.
+  */
+ #define GENPD_FLAG_PM_CLK	 (1U << 0)
+ #define GENPD_FLAG_IRQ_SAFE	 (1U << 1)
+@@ -101,6 +104,7 @@ struct dev_pm_domain_list {
+ #define GENPD_FLAG_RPM_ALWAYS_ON (1U << 5)
+ #define GENPD_FLAG_MIN_RESIDENCY (1U << 6)
+ #define GENPD_FLAG_OPP_TABLE_FW	 (1U << 7)
++#define GENPD_FLAG_EARLY_ON	 (1U << 8)
+ 
+ enum gpd_status {
+ 	GENPD_STATE_ON = 0,	/* PM domain is on */
 -- 
 2.34.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
