@@ -1,146 +1,231 @@
-Received: from mail-il1-f208.google.com (mail-il1-f208.google.com [209.85.166.208])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E62EDDC1
-	for <linux-serial@vger.kernel.org>; Mon, 27 May 2024 06:03:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.208
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FBB2030B;
+	Mon, 27 May 2024 06:38:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716789809; cv=none; b=hHfmHWMW5voFZn70PUMzgu8ygfibBwQlOSxWoOm7oWjq+61EUathaOqG6h+7J41qlzk+1gqGrfkTZn0OYL1CHeyEOGZ4i2O7EcgTprlTPudk17qrPBbOnrdDnKbAQONWCHs5IJ1YYSli2KSzoWl/wAitYcrK4N7t0ixcMY2hg8g=
+	t=1716791900; cv=none; b=LlDVSEh5FdDKd4eVvSHKRpzhX135ZnQ6+PHb5xSU72x/OlYiJo6Lz4njCUfb26GsQY307GxieMIVpDKdrVFSaNIOZcr85peSF9676GZVZx9MKd0CLzzBjQ08cHV5pudfOe63xC5Ismgm82HWACBFpvZUlZQABBZH+FgK0t1EtNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716789809; c=relaxed/simple;
-	bh=91RmJoS8ApwBbCnKWn4Vdvz5yrryEn4O0r1bO0e2r28=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=GXwYX6svBFbgor+zZZRwyurfsb0iCDGsBDKgyqKGBEr2hHXn5mlBXCxkb2ey8HGy/zqG6dFhBM/eig05h/N637eUwFJJF2Q4dhIEcwPXO8x95viFLmoi90ocEiungv+zK8thXxfewdi5okj53r4iBggTDb4YePErDY8e+0NJ4pg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.208
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f208.google.com with SMTP id e9e14a558f8ab-3737b3ee909so30398545ab.2
-        for <linux-serial@vger.kernel.org>; Sun, 26 May 2024 23:03:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716789807; x=1717394607;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ylosgLFWkzz27URtDPQRIStv485PYnIrmAp+vnJMT5w=;
-        b=QKTPl40Ruj1fy2aPdK32l5bhIAAbWJJ4h/D6wQuUgeSwouUQcLmtVisXJjNb6zDzmt
-         hhhGwLGiLMwBTiZxO2ZfNyDL5UQYzAs26ebxYPNpqXVN9zUKW24jAXzmBwL6HUmKGw2n
-         lYo+I9XkFQuNFWC3QMlAU6z60z1TNnrKRS7A5GzEtiTn1BdnyYgIVVgYY/U7VDSytOWl
-         zynyxLh1Hey8JxuqPBIcB7jhlgtVKw+n2kXxDvqfFlbMisID7mmxwfTaSlvlFq9Btfsk
-         GY3T1h32Wg+EEcjfoq3FND7umKWGS4pHT3aTjfLoUv0GAOYfb3Q2loZ0cmzt+eWsDOEP
-         nagw==
-X-Forwarded-Encrypted: i=1; AJvYcCUw8MBzbq32SQg65X15Au6ELQ0/KlSs9Bp50QiNw/SRte25tOCbrze26fr0a+Sf9hXEL81Uy3zLSMKbnCono1MoNM5+2eNJReH8FozO
-X-Gm-Message-State: AOJu0YzhBBUjq5gOT4rpwz94jBBeCoRmlGZ8ftaW1qDOFDxODWoq10Ge
-	t2v1n60B+nNvzoC/0Ygx2O8n3teCEdv995RlSlVnd7Cm8I9DqS3dUMn9jcnZioS2KLPB5WrJREz
-	eUJQfl9mm/ctyQL9HufM/PP6fqguez86YWk+AEyPrD/MPYCZQzGMQuDw=
-X-Google-Smtp-Source: AGHT+IGziuuHeulebz6CLCVgizY+guJCFI18W9Te8LGSJfIs/iYOaxdh3laW9XqBc7ooLU5qkANCTYlary/U5tulRumwz/2bkTIh
+	s=arc-20240116; t=1716791900; c=relaxed/simple;
+	bh=HAyKOh+NXTadzGoMJcYVzr6NcwccoLiWOrt7fHRczrU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=iE/8koUpyqhwS1TdfMVkO9msHTt/f8nq5Uqps90OfSkMmyhmpVpmiEpqAdItpxJ+vcNR3oleUeMxteA9R92EMnobM/iE5HxOy5giw38/qA4mT698ueBk/58rEgAcbBRnChiCDtLGdcONX6jdS6KdEsu7itWm3BpT58RF5lFz0Sk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bgsDt2AV; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Nzrh18+g; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bgsDt2AV";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Nzrh18+g"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1716791896;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AnQvw5hbKGPn5hbjOpZYiGZWbU7Q2jFjvPJ2T+zTaAs=;
+	b=bgsDt2AVFR9ZN6vU2R2BMA2SE44w8iH215AjE26rORTHWntjLadAaajvkQzQjvEz7Vrjc9
+	0H/x2AsgefwmRmsfmuNFiaAJ88Bp1MeREOHXPTroQdvLoO4Dlzgf1SMekOoj310DWhC11a
+	jEUxQ7RqYcjox2mgbB29rpCyWB6E7DYG+T/q64SFbvSle3xcDhAzsLATZd81WCMkdurQPH
+	nijiHwp3aV1fCkwUpIKZXZF9+x0YbyNoZFsPYIXhVTdfLVVDCo9NRQkv5yRQKqi8+CB2Tv
+	MBawCdz+/NIHRvYZ8meucLv6WLcPWKUhGskYAppQkH3KVjdVtdTIbne2FjucTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1716791896;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AnQvw5hbKGPn5hbjOpZYiGZWbU7Q2jFjvPJ2T+zTaAs=;
+	b=Nzrh18+gGFfABUMUXKLvVSYmeHG/Yd23orl7BtSdGKuLXKDjQ8udE+DHKMfZ/ZxtnBu0Lj
+	fMqi4uwH7LWWecDg==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	Russell King <linux@armlinux.org.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	=?UTF-8?q?Th=C3=A9o=20Lebrun?= <theo.lebrun@bootlin.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Fabio Estevam <festevam@denx.de>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Uros Bizjak <ubizjak@gmail.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Ingo Molnar <mingo@kernel.org>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+	Joel Fernandes <joel@joelfernandes.org>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Lai Jiangshan <jiangshanlai@gmail.com>,
+	Zqiang <qiang.zhang1211@gmail.com>,
+	rcu@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Will Deacon <will@kernel.org>,
+	Waiman Long <longman@redhat.com>
+Subject: [PATCH printk v6 00/30] wire up write_atomic() printing
+Date: Mon, 27 May 2024 08:43:19 +0206
+Message-Id: <20240527063749.391035-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a92:cda6:0:b0:374:5d81:9135 with SMTP id
- e9e14a558f8ab-3745d819329mr531955ab.0.1716789807386; Sun, 26 May 2024
- 23:03:27 -0700 (PDT)
-Date: Sun, 26 May 2024 23:03:27 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009fa48a06196946dc@google.com>
-Subject: [syzbot] [serial?] WARNING in uart_write
-From: syzbot <syzbot+a38f8e1908608d337bb3@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+This is v6 of a series to wire up the nbcon consoles so that
+they actually perform printing using their write_atomic()
+callback. v5 is here [0]. For information about the motivation
+of the atomic consoles, please read the cover letter of v1 [1].
 
-HEAD commit:    124cfbcd6d18 Add linux-next specific files for 20240521
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12341062980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2c3a67a38201bdf7
-dashboard link: https://syzkaller.appspot.com/bug?extid=a38f8e1908608d337bb3
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+The main focus of this series:
 
-Unfortunately, I don't have any reproducer for this issue yet.
+- For nbcon consoles, always call write_atomic() directly from
+  printk() caller context for the panic CPU.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/ff8e45d8b821/disk-124cfbcd.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/6aeeec759cde/vmlinux-124cfbcd.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/9e7d931d0a4b/bzImage-124cfbcd.xz
+- For nbcon consoles, call write_atomic() when unlocking the
+  console lock.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a38f8e1908608d337bb3@syzkaller.appspotmail.com
+- Only perform the console lock/unlock dance if legacy or boot
+  consoles are registered.
 
-sp0: Synchronizing with TNC
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5215 at drivers/tty/serial/serial_core.c:625 uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:625
-Modules linked in:
-CPU: 0 PID: 5215 Comm: syz-executor.1 Not tainted 6.9.0-next-20240521-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 04/02/2024
-RIP: 0010:uart_write+0x2b0/0x320 drivers/tty/serial/serial_core.c:625
-Code: 74 08 48 89 df e8 c0 5e bf fc 48 83 3b 00 74 74 e8 55 7a 59 fc eb 97 e8 4e 7a 59 fc 45 31 e4 eb 08 e8 44 7a 59 fc 45 31 ed 90 <0f> 0b 90 45 84 e4 74 0a e8 33 7a 59 fc 45 31 f6 eb 84 e8 29 7a 59
-RSP: 0018:ffffc900047874b8 EFLAGS: 00010046
-RAX: ffffffff853ceb62 RBX: dffffc0000000000 RCX: 0000000000040000
-RDX: ffffc9000a14b000 RSI: 000000000001b0ec RDI: 000000000001b0ed
-RBP: ffff888020728f48 R08: 0000000000000003 R09: fffff520008f0e74
-R10: dffffc0000000000 R11: fffff520008f0e74 R12: 0000000000000000
-R13: 0000000000000246 R14: ffff888020728be8 R15: ffffffff94adece0
-FS:  00007f53ae0446c0(0000) GS:ffff8880b9400000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f1488dbcc98 CR3: 0000000079a6e000 CR4: 00000000003526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- tnc_init drivers/net/hamradio/6pack.c:531 [inline]
- sixpack_open+0x790/0xa80 drivers/net/hamradio/6pack.c:628
- tty_ldisc_open drivers/tty/tty_ldisc.c:432 [inline]
- tty_ldisc_reinit+0x2d4/0x4a0 drivers/tty/tty_ldisc.c:667
- tty_reopen+0x20b/0x2d0 drivers/tty/tty_io.c:1366
- tty_open_by_driver drivers/tty/tty_io.c:2082 [inline]
- tty_open+0xa26/0xdf0 drivers/tty/tty_io.c:2135
- chrdev_open+0x5b0/0x630 fs/char_dev.c:414
- do_dentry_open+0x95a/0x1720 fs/open.c:955
- do_open fs/namei.c:3650 [inline]
- path_openat+0x289f/0x3280 fs/namei.c:3807
- do_filp_open+0x235/0x490 fs/namei.c:3834
- do_sys_openat2+0x13e/0x1d0 fs/open.c:1405
- do_sys_open fs/open.c:1420 [inline]
- __do_sys_openat fs/open.c:1436 [inline]
- __se_sys_openat fs/open.c:1431 [inline]
- __x64_sys_openat+0x247/0x2a0 fs/open.c:1431
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xf5/0x240 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f53ad27cee9
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 20 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f53ae0440c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 00007f53ad3ac050 RCX: 00007f53ad27cee9
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: ffffffffffffff9c
-RBP: 00007f53ad2c949e R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 000000000000006e R14: 00007f53ad3ac050 R15: 00007ffc05d3f0d8
- </TASK>
+- For legacy consoles, if nbcon consoles are registered, do not
+  attempt to print from printk() caller context for the panic
+  CPU until nbcon consoles have had a chance to print the most
+  significant messages.
+
+- Mark emergency sections. In these sections printk() calls
+  will only store the messages. Upon exiting the emergency
+  section, nbcon consoles are flushed directly. If legacy
+  consoles cannot be flushed safely, an irq_work is triggered
+  to do the legacy console flushing.
+
+This series does _not_ include threaded printing or nbcon
+drivers. Those features will be added in separate follow-up
+series.
+
+Note: With this series, a system with _only_ nbcon consoles
+      registered will not perform console printing unless the
+      console lock or nbcon port lock are used or on panic.
+      This is on purpose. When nbcon kthreads are introduced,
+      they will fill the gaps.
+
+The changes since v5:
+
+- In struct console, rename @nbcon_driver_ctxt to
+  @nbcon_device_ctxt.
+
+- Rename nbcon_driver_try_acquire() to
+  nbcon_device_try_acquire().
+
+- Rename nbcon_driver_release() to nbcon_device_release().
+
+- Implement a helper function is_printk_deferred() for use in
+  nbcon_cpu_emergency_exit(), nbcon_cpu_emergency_flush(),
+  vprintk().
+
+- In nbcon_cpu_emergency_exit(), for legacy consoles, try to
+  flush directly if safe. If legacy flushing directly was
+  successful, do not trigger the irq_work.
+
+- In nbcon_cpu_emergency_exit(), do not decrement
+  @cpu_emergency_nesting if it is zero (and WARN_ON_ONCE in
+  this case).
+
+- For register_console() and unregister_console_locked(), use a
+  local variable @use_device_lock to track if locking is used
+  so that the compiler knows that the lock and unlock match.
+
+- For synchronize_rcu_expedited_wait(), move the
+  nbcon_cpu_emergency_flush() after dump_cpu_task().
+
+- Refactor nbcon_atomic_flush_pending_con() as suggested by
+  pmladek. No functional change.
+
+- Update various comments as suggested by pmladek.
+
+- In nbcon_device_try_acquire(), add missing kerneldoc for the
+  return value.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20240502213839.376636-1-john.ogness@linutronix.de
+[1] https://lore.kernel.org/lkml/20230302195618.156940-1-john.ogness@linutronix.de
+
+John Ogness (25):
+  printk: Add notation to console_srcu locking
+  printk: nbcon: Remove return value for write_atomic()
+  printk: nbcon: Add detailed doc for write_atomic()
+  printk: nbcon: Add callbacks to synchronize with driver
+  printk: nbcon: Use driver synchronization while (un)registering
+  serial: core: Provide low-level functions to lock port
+  serial: core: Introduce wrapper to set @uart_port->cons
+  console: Improve console_srcu_read_flags() comments
+  nbcon: Add API to acquire context for non-printing operations
+  serial: core: Implement processing in port->lock wrapper
+  printk: nbcon: Do not rely on proxy headers
+  printk: nbcon: Fix kerneldoc for enums
+  printk: Make console_is_usable() available to nbcon
+  printk: Let console_is_usable() handle nbcon
+  printk: Add @flags argument for console_is_usable()
+  printk: nbcon: Add helper to assign priority based on CPU state
+  printk: Track registered boot consoles
+  printk: nbcon: Use nbcon consoles in console_flush_all()
+  printk: nbcon: Add unsafe flushing on panic
+  printk: Avoid console_lock dance if no legacy or boot consoles
+  printk: Track nbcon consoles
+  printk: Coordinate direct printing in panic
+  panic: Mark emergency section in oops
+  rcu: Mark emergency sections in rcu stalls
+  lockdep: Mark emergency sections in lockdep splats
+
+Petr Mladek (1):
+  printk: Properly deal with nbcon consoles on seq init
+
+Sebastian Andrzej Siewior (1):
+  printk: Check printk_deferred_enter()/_exit() usage
+
+Thomas Gleixner (3):
+  printk: nbcon: Provide function to flush using write_atomic()
+  printk: nbcon: Implement emergency sections
+  panic: Mark emergency section in warn
+
+ drivers/tty/serial/8250/8250_core.c |   6 +-
+ drivers/tty/serial/amba-pl011.c     |   2 +-
+ drivers/tty/serial/serial_core.c    |  16 +-
+ include/linux/console.h             | 116 ++++++-
+ include/linux/printk.h              |  33 +-
+ include/linux/serial_core.h         | 117 ++++++-
+ kernel/locking/lockdep.c            |  84 ++++-
+ kernel/panic.c                      |   9 +
+ kernel/printk/internal.h            |  73 +++-
+ kernel/printk/nbcon.c               | 506 +++++++++++++++++++++++++++-
+ kernel/printk/printk.c              | 307 +++++++++++++----
+ kernel/printk/printk_ringbuffer.h   |   2 +
+ kernel/printk/printk_safe.c         |  23 +-
+ kernel/rcu/tree_exp.h               |   9 +
+ kernel/rcu/tree_stall.h             |  11 +
+ 15 files changed, 1181 insertions(+), 133 deletions(-)
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+base-commit: 596ffa476e201ecbf7ea024f1b59d4f28e91060c
+-- 
+2.39.2
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
