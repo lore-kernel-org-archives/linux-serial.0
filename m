@@ -1,135 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 710DB155C8D;
-	Mon, 27 May 2024 17:54:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A3517E8FC;
+	Mon, 27 May 2024 19:44:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716832476; cv=none; b=miZ6ZHEfPs1Ic5KPtj4k869D5aY7ZKuEHzjpoUDn8kowZ+J2jN5fgJAmNp3qPFwAy615Uyr6Y8S6rg2MzJ3F5s98M4fryb1rmGi5CY2AkHACyvfL21gQP2qcEk+gITykJKkPP0pXqgSQ4Dc0JgPr3sXWo0HTnC7VEVgFppy1Vxs=
+	t=1716839079; cv=none; b=sDKMltONTNYwdF/TBrJc12ev92S3Su49hF2+YQO9vWQCbcqtEanpq+Yh55jBGNd5Op+Y2WBEFWzYw0Pt+6diBwAIGRxtiQzJ1LCXjMOulUrZzWCdNd9hGFaheIHlJWxZVGtYS0bloDC+ikq+OtJR4rju6a7n3jVea5kDdjIkcuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716832476; c=relaxed/simple;
-	bh=pQD9hTPYdYG3waVVdZmos5TrgAbzf/0R6TMZHpPrboM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=r49bZo+xdMa/EMekvcir67BlPeJSlCAh/4RxIk5+ZyvC3IRkUk2w+nwIDL9g3apECG3DFS7R3y75Y3hfuW3L0UerJVYbNOzYoGfFQ/xc4Wy7eVCelKYfpRI1xFxVnrll5wFhmAduZdA59TSko82wHk8hCT7x7E0B92hmGm8Uokk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LsBzqnQX; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1716839079; c=relaxed/simple;
+	bh=HLBysQ19YFHo8F8KB4gsrAUlc0wV9Cj9zKghrvonL+A=;
+	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=WgkBAQ1GXq5gEJjvqkfFj/7fOv+jKM0s5xmcqJmv19Y+JJN6r/lsQeFWwNI1FjdPB51wCXnRXNo07lqmTauHkLOQeioxcsgQbkH07aUYsKfJar4a5U5IC3+kWvV1YlAlc5g0fAc+eqasCtTbiXNQMzRFdyZEtaEWEXCLjPfsQBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mY4WexIp; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LsBzqnQX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716832474; x=1748368474;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pQD9hTPYdYG3waVVdZmos5TrgAbzf/0R6TMZHpPrboM=;
-  b=LsBzqnQXyV3Xx1nnFXM45EjldD5DLqMJzGQQZDqKS7kkEGKACYq9+jAv
-   T8ggPNgT+yezRrsbtpkoLlqBeaKM1K4VtCrnRhaKLKcSFuwoiyP4qUVyn
-   ABJbKAWtbG7BOdMXJVjLwWPLqusEFG0A5CD9K/6ovsXqqfcgrqgNuYm8z
-   Kdsr+zJcwbIBWtXG0JBwxz/UeUZHSGmpuwoxLqp3uIyxPDvD/WFeTBB7v
-   8sbDUz37eePAJ+sL8pG/bE0rhKN8Zi1C+hsy7w5o0jWsU4uVCuXDcWZtk
-   R7X0Y6nimQNbgGxL7SOBLMS3DPka4pR5djDXk94c9fAz0AitLjiTfGZjP
-   Q==;
-X-CSE-ConnectionGUID: lM7sI2tDTAy/3D6scbpjWw==
-X-CSE-MsgGUID: 7OLsxJ1sS2CI5t7wgxmn4Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11085"; a="24574928"
-X-IronPort-AV: E=Sophos;i="6.08,193,1712646000"; 
-   d="scan'208";a="24574928"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2024 10:54:33 -0700
-X-CSE-ConnectionGUID: Ix3a3+nnSBC1vshm3rHFRQ==
-X-CSE-MsgGUID: vJghpWlyTH6wYE8nRgwRZQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,193,1712646000"; 
-   d="scan'208";a="39617573"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2024 10:54:30 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1sBeYF-0000000BKuj-0myM;
-	Mon, 27 May 2024 20:54:27 +0300
-Date: Mon, 27 May 2024 20:54:26 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Tony Lindgren <tony@atomide.com>, linux-arm-msm@vger.kernel.org,
-	Johan Hovold <johan+linaro@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Guanbing Huang <albanhuang@tencent.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 1/2] serial: port: Don't block system suspend even if
- bytes are left to xmit
-Message-ID: <ZlTI0pYuv7_g6x-V@smile.fi.intel.com>
-References: <20240523232216.3148367-1-dianders@chromium.org>
- <20240523162207.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mY4WexIp"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-794cbdca425so11863385a.0;
+        Mon, 27 May 2024 12:44:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716839076; x=1717443876; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:mime-version:user-agent:date
+         :message-id:from:references:cc:to:subject:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qjq5tjwzvdH+BRd/8f1cet9dJrekncN/7BkMFy2h8t8=;
+        b=mY4WexIpSKX9O4zJPv6zvaKgPZynocHG2LDji+3r+5xV59kNlYTxG3fRMAe/naiDZN
+         Gijr4xJy3VxUmU11IHqZRTsLIQUMMRQRJpUiE1sgGJ28gbiCGjuSvAFB+7uVbaUiwcYt
+         i3s5DTMJNdQuQnRyjqxJtCO9/ito4AFj1FG70nu4FY/p2drZ7B2FJAs336L5JubgVZM+
+         UXlmTzHmzigz0BscNcFd3lmxJ6PBV1TXOUu6dK1IhGOzbRovQP5sQt6n8Z8pDYibfzz9
+         8wGUjCltH1vWlv3aUF1bGtkeeCK1DDdvQM2d/mMR1kWFSfVNXyxWLreLKMAOWfsnl5Ep
+         DSWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716839076; x=1717443876;
+        h=content-transfer-encoding:in-reply-to:mime-version:user-agent:date
+         :message-id:from:references:cc:to:subject:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=qjq5tjwzvdH+BRd/8f1cet9dJrekncN/7BkMFy2h8t8=;
+        b=L7ggcIhgIjzKWqatwCCcEEaydpZ9IBi/cOWsS6xg1iGwbYpFxo1eCYKKMkxakl0tbw
+         vrU6MFimFnEA0uIxjGZZVd13/Jyp0Ps+N6oeQ7N6je0C/mA7x7+yubOmd1KeLPN3zgN/
+         e2xslsp4bZk6nEYo5wung8f5ktjFv5Lwqh89D89xyJdqSsMjpaDuMueHOZSwfnsocKIZ
+         G03NQ5rQkaWGKXeQd04NpUD+PcBTaArFmw4qqrMzY1LtKNGxkmnWzM1Jy2N957oOTg02
+         7nvzftt2SI4KSyzevynpZVA96/7r9At3HvU9weXfk7K4bPw2+gf2U2YgPUhahJMQ//CJ
+         1Qfg==
+X-Forwarded-Encrypted: i=1; AJvYcCVc2ImRKqrIkB+iPPFTbDsmWlXEpFAm5NS2EvBh22Y3as8N1Z6CGIaqjXCpupHPxaJYPMWBH0DhLAp5xb2By599lTezXf2Zvi7BijRKHEh7JQ8JZlAgNX4uWNnTmhWzfp+YOkRoL6bNtqhD
+X-Gm-Message-State: AOJu0YylgwqMkWwJpL4qiGISa1vy7dJ4CzXE+DDOBTVb7Ld8ftBgQERa
+	r/g6ZvFBfJBTWrIzKyTMfBPb4aAx9ToK8f7wne3YmS0/ozEJIOI=
+X-Google-Smtp-Source: AGHT+IEHEOkzsUc9ks53aRMP1DcBgMp4Mq7pnTVsKtvBheCkdD8g1Y0IiL00nKH1Edxq8CxrZsPx0w==
+X-Received: by 2002:a05:620a:1270:b0:790:ed57:1354 with SMTP id af79cd13be357-794ab08d7c4mr1156185485a.6.1716839076381;
+        Mon, 27 May 2024 12:44:36 -0700 (PDT)
+Received: from [120.7.1.23] (198-84-205-203.cpe.teksavvy.com. [198.84.205.203])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-794abd0740csm320873385a.81.2024.05.27.12.44.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 May 2024 12:44:35 -0700 (PDT)
+Subject: Kernel 6.10-rc1 b,Build error with [PATCH v5 2/3] serial: port: Add
+ support of PNP IRQ
+To: Guanbing Huang <albanhuang@outlook.com>, gregkh@linuxfoundation.org,
+ andriy.shevchenko@intel.com, rafael.j.wysocki@intel.com
+Cc: linux-acpi@vger.kernel.org, tony@atomide.com, john.ogness@linutronix.de,
+ yangyicong@hisilicon.com, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ lvjianmin@loongson.cn, albanhuang@tencent.com, tombinfan@tencent.com
+References: <cover.1712472167.git.albanhuang@tencent.com>
+ <PSAPR06MB4952C4112E75D882AC61CA5EC9002@PSAPR06MB4952.apcprd06.prod.outlook.com>
+From: Woody Suwalski <terraluna977@gmail.com>
+Message-ID: <cc8a93b2-2504-9754-e26c-5d5c3bd1265c@gmail.com>
+Date: Mon, 27 May 2024 15:44:42 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 SeaMonkey/2.53.18.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240523162207.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <PSAPR06MB4952C4112E75D882AC61CA5EC9002@PSAPR06MB4952.apcprd06.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 23, 2024 at 04:22:12PM -0700, Douglas Anderson wrote:
-> Recently, suspend testing on sc7180-trogdor based devices has started
-> to sometimes fail with messages like this:
-> 
->   port a88000.serial:0.0: PM: calling pm_runtime_force_suspend+0x0/0xf8 @ 28934, parent: a88000.serial:0
->   port a88000.serial:0.0: PM: dpm_run_callback(): pm_runtime_force_suspend+0x0/0xf8 returns -16
->   port a88000.serial:0.0: PM: pm_runtime_force_suspend+0x0/0xf8 returned -16 after 33 usecs
->   port a88000.serial:0.0: PM: failed to suspend: error -16
-> 
-> I could reproduce these problem by logging in via an agetty on the
-> debug serial port (which was _not_ used for kernel console) and
-> running:
->   cat /var/log/messages
-> ...and then (via an SSH session) forcing a few suspend/resume cycles.
-> 
-> Tracing through the code and doing some printf debugging shows that
+Guanbing Huang wrote:
+> From: Guanbing Huang <albanhuang@tencent.com>
+>
+> The function __uart_read_properties doesn't cover PNP devices, so add IRQ
+> processing for PNP devices in the branch.
+>
+> Signed-off-by: Guanbing Huang <albanhuang@tencent.com>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Reviewed-by: Bing Fan <tombinfan@tencent.com>
+> Tested-by: Linheng Du <dylanlhdu@tencent.com>
+> ---
+> v4 -> v5: change "pnp" and "irq" in the commit message to uppercase, modify the subject
+>            to start with "serial: port:", modify the location of the header file pnp.h
+>
+>   drivers/tty/serial/serial_port.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/serial_port.c b/drivers/tty/serial/serial_port.c
+> index 22b9eeb23e68..8504bae1d2c9 100644
+> --- a/drivers/tty/serial/serial_port.c
+> +++ b/drivers/tty/serial/serial_port.c
+> @@ -11,6 +11,7 @@
+>   #include <linux/of.h>
+>   #include <linux/platform_device.h>
+>   #include <linux/pm_runtime.h>
+> +#include <linux/pnp.h>
+>   #include <linux/property.h>
+>   #include <linux/serial_core.h>
+>   #include <linux/spinlock.h>
+> @@ -221,7 +222,11 @@ static int __uart_read_properties(struct uart_port *port, bool use_defaults)
+>   
+>   	if (dev_is_platform(dev))
+>   		ret = platform_get_irq(to_platform_device(dev), 0);
+> -	else
+> +	else if (dev_is_pnp(dev)) {
+> +		ret = pnp_irq(to_pnp_dev(dev), 0);
+> +		if (ret < 0)
+> +			ret = -ENXIO;
+> +	} else
+>   		ret = fwnode_irq_get(dev_fwnode(dev), 0);
+>   	if (ret == -EPROBE_DEFER)
+>   		return ret;
 
-printf()
+Hello all, trying to build 6.10-rc1 fails for me in serial_base.o:
+   CALL    scripts/checksyscalls.sh
+   DESCEND objtool
+   INSTALL libsubcmd_headers
+   CC [M]  drivers/tty/serial/serial_port.o
+   LD [M]  drivers/tty/serial/serial_base.o
+   MODPOST Module.symvers
+ERROR: modpost: "pnp_bus_type" [drivers/tty/serial/serial_base.ko] 
+undefined!
+make[2]: *** [scripts/Makefile.modpost:145: Module.symvers] Error 1
+make[1]: *** 
+[/woody/src/kernels/linux-6.10-pingu/work/linux-6.10/Makefile:1892: 
+modpost] Error 2
+make: *** [Makefile:246: __sub-make] Error 2
 
-...or...
+Reversing the patch "fixes" the problem :-(
+I am building on a Debian bookworm system, gcc 12.2
 
-printf()-based
+Any suggestions  how to make it work?
 
-> the -16 (-EBUSY) comes from the recently added
-> serial_port_runtime_suspend().
-> 
-> The idea of the serial_port_runtime_suspend() function is to prevent
-> the port from being _runtime_ suspended if it still has bytes left to
-> transmit. Having bytes left to transmit isn't a reason to block
-> _system_ suspend, though. The DEFINE_RUNTIME_DEV_PM_OPS() used by the
-> serial_port code means that the system suspend function will be
-> pm_runtime_force_suspend(). In pm_runtime_force_suspend() we can see
-> that before calling the runtime suspend function we'll call
-> pm_runtime_disable(). This should be a reliable way to detect that
-> we're called from system suspend and that we shouldn't look for
-> busyness.
-
-...
-
-> +	/*
-> +	 * We only want to check the busyness of the port if PM Runtime is
-> +	 * enabled. Specifically PM Runtime will be disabled by
-> +	 * pm_runtime_force_suspend() during system suspend and we don't want
-> +	 * to block system suspend even if there is data still left to
-> +	 * transmit. We only want to block regulator PM Runtime transitions.
-
-regular
-
-> +	 */
-> +	if (!pm_runtime_enabled(dev))
-> +		return 0;
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks, Woody
 
 
