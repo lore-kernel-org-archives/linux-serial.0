@@ -1,51 +1,51 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FBB2030B;
-	Mon, 27 May 2024 06:38:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E52B200A9;
+	Mon, 27 May 2024 06:38:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716791900; cv=none; b=LlDVSEh5FdDKd4eVvSHKRpzhX135ZnQ6+PHb5xSU72x/OlYiJo6Lz4njCUfb26GsQY307GxieMIVpDKdrVFSaNIOZcr85peSF9676GZVZx9MKd0CLzzBjQ08cHV5pudfOe63xC5Ismgm82HWACBFpvZUlZQABBZH+FgK0t1EtNI=
+	t=1716791904; cv=none; b=JqTVGaeofWEfsZ4sxiXX2nHX4EbtQaGMGbnLt1gOTRnC4XuBgtImQ1n/G1jnOQI+fT3/q7Sykevfw0qtGZaHLPdQa47id5o0nRvX4pzFVZP5IHjZt+7MVJ6f4HJL0XIODMRDg7Nl0CLJYUeJT5bNW6E+NbWQj2KqEwl9aCA9jbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716791900; c=relaxed/simple;
-	bh=HAyKOh+NXTadzGoMJcYVzr6NcwccoLiWOrt7fHRczrU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=iE/8koUpyqhwS1TdfMVkO9msHTt/f8nq5Uqps90OfSkMmyhmpVpmiEpqAdItpxJ+vcNR3oleUeMxteA9R92EMnobM/iE5HxOy5giw38/qA4mT698ueBk/58rEgAcbBRnChiCDtLGdcONX6jdS6KdEsu7itWm3BpT58RF5lFz0Sk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bgsDt2AV; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Nzrh18+g; arc=none smtp.client-ip=193.142.43.55
+	s=arc-20240116; t=1716791904; c=relaxed/simple;
+	bh=cFwc6eXZwJgEsJEy8i2WPFC0zBMSmXI8t49qE0YAxa8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XYBK6Qho6NegaAb33nqifYa4MVyVU78cDfAh6sHCw5Fvt3gQyD9hIIaht4Rxww+HhWk2Jb8YvSaP/gSw8RbSlRjPDcZM53TCYZ2h9GHnLpuu6SBeDALRd88IJVVHmFoY7/ytjN2oOZ6dFEoTA5LWtgKza/jD4YB9aYE8BEikqSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=alK1KWjc; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NHgWJcuS; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bgsDt2AV";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Nzrh18+g"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="alK1KWjc";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NHgWJcuS"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1716791896;
+	s=2020; t=1716791900;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=AnQvw5hbKGPn5hbjOpZYiGZWbU7Q2jFjvPJ2T+zTaAs=;
-	b=bgsDt2AVFR9ZN6vU2R2BMA2SE44w8iH215AjE26rORTHWntjLadAaajvkQzQjvEz7Vrjc9
-	0H/x2AsgefwmRmsfmuNFiaAJ88Bp1MeREOHXPTroQdvLoO4Dlzgf1SMekOoj310DWhC11a
-	jEUxQ7RqYcjox2mgbB29rpCyWB6E7DYG+T/q64SFbvSle3xcDhAzsLATZd81WCMkdurQPH
-	nijiHwp3aV1fCkwUpIKZXZF9+x0YbyNoZFsPYIXhVTdfLVVDCo9NRQkv5yRQKqi8+CB2Tv
-	MBawCdz+/NIHRvYZ8meucLv6WLcPWKUhGskYAppQkH3KVjdVtdTIbne2FjucTw==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zWt1+yEDsP6qOdCR9l91mhS5ulhADY7ilusdjp03eQI=;
+	b=alK1KWjcHbZGtwKO5rEHuvhQN+AFvXZTR2VcpjaRXXmHSJqrk9eX/rhVBhybSQfoqHDuCc
+	7BALICZJbIv1oXDy33GHvvuDEQ3lzNzd3hxfn3JbzplGji24L+K9tICF43zR0nld85t025
+	9dCd47lIiU350Crod3RGlZrFhjMMXgMznAb+zFL2JcIBMn0Y3vwKqBY0cuXvyLMkCVRZR/
+	fvUATcVHV54RAYu2GMSXKn1vivJ+WFU4AVjbn9gvdBLy647Un5fBq91UTkT+bAlUqlflco
+	NzeOJCARYpGP843XGPXlgV4LFlw0fTuYaJ9kpQAlNgElOXeEUrKSMj4UGs1Xzg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1716791896;
+	s=2020e; t=1716791900;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=AnQvw5hbKGPn5hbjOpZYiGZWbU7Q2jFjvPJ2T+zTaAs=;
-	b=Nzrh18+gGFfABUMUXKLvVSYmeHG/Yd23orl7BtSdGKuLXKDjQ8udE+DHKMfZ/ZxtnBu0Lj
-	fMqi4uwH7LWWecDg==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zWt1+yEDsP6qOdCR9l91mhS5ulhADY7ilusdjp03eQI=;
+	b=NHgWJcuS3yBBDume6ZAX5icDc5ue9u6aySYB5XIb+jN5Kcf56ppxj0jzVp2bujVbzXMeTu
+	b3Rwbfht6ZVBVjDg==
 To: Petr Mladek <pmladek@suse.com>
 Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	linux-kernel@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org,
 	Russell King <linux@armlinux.org.uk>,
 	Tony Lindgren <tony@atomide.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -58,27 +58,12 @@ Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
 	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
 	Arnd Bergmann <arnd@arndb.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uros Bizjak <ubizjak@gmail.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-	Joel Fernandes <joel@joelfernandes.org>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang1211@gmail.com>,
-	rcu@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Will Deacon <will@kernel.org>,
-	Waiman Long <longman@redhat.com>
-Subject: [PATCH printk v6 00/30] wire up write_atomic() printing
-Date: Mon, 27 May 2024 08:43:19 +0206
-Message-Id: <20240527063749.391035-1-john.ogness@linutronix.de>
+	linux-serial@vger.kernel.org
+Subject: [PATCH printk v6 09/30] serial: core: Introduce wrapper to set @uart_port->cons
+Date: Mon, 27 May 2024 08:43:28 +0206
+Message-Id: <20240527063749.391035-10-john.ogness@linutronix.de>
+In-Reply-To: <20240527063749.391035-1-john.ogness@linutronix.de>
+References: <20240527063749.391035-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,144 +73,127 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Introduce uart_port_set_cons() as a wrapper to set @cons of a
+uart_port. The wrapper sets @cons under the port lock in order
+to prevent @cons from disappearing while another context is
+holding the port lock. This is necessary for a follow-up
+commit relating to the port lock wrappers, which rely on @cons
+not changing between lock and unlock.
 
-This is v6 of a series to wire up the nbcon consoles so that
-they actually perform printing using their write_atomic()
-callback. v5 is here [0]. For information about the motivation
-of the atomic consoles, please read the cover letter of v1 [1].
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Tested-by: Théo Lebrun <theo.lebrun@bootlin.com> # EyeQ5, AMBA-PL011
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+ drivers/tty/serial/8250/8250_core.c |  6 +++---
+ drivers/tty/serial/amba-pl011.c     |  2 +-
+ drivers/tty/serial/serial_core.c    | 16 ++++++++--------
+ include/linux/serial_core.h         | 17 +++++++++++++++++
+ 4 files changed, 29 insertions(+), 12 deletions(-)
 
-The main focus of this series:
-
-- For nbcon consoles, always call write_atomic() directly from
-  printk() caller context for the panic CPU.
-
-- For nbcon consoles, call write_atomic() when unlocking the
-  console lock.
-
-- Only perform the console lock/unlock dance if legacy or boot
-  consoles are registered.
-
-- For legacy consoles, if nbcon consoles are registered, do not
-  attempt to print from printk() caller context for the panic
-  CPU until nbcon consoles have had a chance to print the most
-  significant messages.
-
-- Mark emergency sections. In these sections printk() calls
-  will only store the messages. Upon exiting the emergency
-  section, nbcon consoles are flushed directly. If legacy
-  consoles cannot be flushed safely, an irq_work is triggered
-  to do the legacy console flushing.
-
-This series does _not_ include threaded printing or nbcon
-drivers. Those features will be added in separate follow-up
-series.
-
-Note: With this series, a system with _only_ nbcon consoles
-      registered will not perform console printing unless the
-      console lock or nbcon port lock are used or on panic.
-      This is on purpose. When nbcon kthreads are introduced,
-      they will fill the gaps.
-
-The changes since v5:
-
-- In struct console, rename @nbcon_driver_ctxt to
-  @nbcon_device_ctxt.
-
-- Rename nbcon_driver_try_acquire() to
-  nbcon_device_try_acquire().
-
-- Rename nbcon_driver_release() to nbcon_device_release().
-
-- Implement a helper function is_printk_deferred() for use in
-  nbcon_cpu_emergency_exit(), nbcon_cpu_emergency_flush(),
-  vprintk().
-
-- In nbcon_cpu_emergency_exit(), for legacy consoles, try to
-  flush directly if safe. If legacy flushing directly was
-  successful, do not trigger the irq_work.
-
-- In nbcon_cpu_emergency_exit(), do not decrement
-  @cpu_emergency_nesting if it is zero (and WARN_ON_ONCE in
-  this case).
-
-- For register_console() and unregister_console_locked(), use a
-  local variable @use_device_lock to track if locking is used
-  so that the compiler knows that the lock and unlock match.
-
-- For synchronize_rcu_expedited_wait(), move the
-  nbcon_cpu_emergency_flush() after dump_cpu_task().
-
-- Refactor nbcon_atomic_flush_pending_con() as suggested by
-  pmladek. No functional change.
-
-- Update various comments as suggested by pmladek.
-
-- In nbcon_device_try_acquire(), add missing kerneldoc for the
-  return value.
-
-John Ogness
-
-[0] https://lore.kernel.org/lkml/20240502213839.376636-1-john.ogness@linutronix.de
-[1] https://lore.kernel.org/lkml/20230302195618.156940-1-john.ogness@linutronix.de
-
-John Ogness (25):
-  printk: Add notation to console_srcu locking
-  printk: nbcon: Remove return value for write_atomic()
-  printk: nbcon: Add detailed doc for write_atomic()
-  printk: nbcon: Add callbacks to synchronize with driver
-  printk: nbcon: Use driver synchronization while (un)registering
-  serial: core: Provide low-level functions to lock port
-  serial: core: Introduce wrapper to set @uart_port->cons
-  console: Improve console_srcu_read_flags() comments
-  nbcon: Add API to acquire context for non-printing operations
-  serial: core: Implement processing in port->lock wrapper
-  printk: nbcon: Do not rely on proxy headers
-  printk: nbcon: Fix kerneldoc for enums
-  printk: Make console_is_usable() available to nbcon
-  printk: Let console_is_usable() handle nbcon
-  printk: Add @flags argument for console_is_usable()
-  printk: nbcon: Add helper to assign priority based on CPU state
-  printk: Track registered boot consoles
-  printk: nbcon: Use nbcon consoles in console_flush_all()
-  printk: nbcon: Add unsafe flushing on panic
-  printk: Avoid console_lock dance if no legacy or boot consoles
-  printk: Track nbcon consoles
-  printk: Coordinate direct printing in panic
-  panic: Mark emergency section in oops
-  rcu: Mark emergency sections in rcu stalls
-  lockdep: Mark emergency sections in lockdep splats
-
-Petr Mladek (1):
-  printk: Properly deal with nbcon consoles on seq init
-
-Sebastian Andrzej Siewior (1):
-  printk: Check printk_deferred_enter()/_exit() usage
-
-Thomas Gleixner (3):
-  printk: nbcon: Provide function to flush using write_atomic()
-  printk: nbcon: Implement emergency sections
-  panic: Mark emergency section in warn
-
- drivers/tty/serial/8250/8250_core.c |   6 +-
- drivers/tty/serial/amba-pl011.c     |   2 +-
- drivers/tty/serial/serial_core.c    |  16 +-
- include/linux/console.h             | 116 ++++++-
- include/linux/printk.h              |  33 +-
- include/linux/serial_core.h         | 117 ++++++-
- kernel/locking/lockdep.c            |  84 ++++-
- kernel/panic.c                      |   9 +
- kernel/printk/internal.h            |  73 +++-
- kernel/printk/nbcon.c               | 506 +++++++++++++++++++++++++++-
- kernel/printk/printk.c              | 307 +++++++++++++----
- kernel/printk/printk_ringbuffer.h   |   2 +
- kernel/printk/printk_safe.c         |  23 +-
- kernel/rcu/tree_exp.h               |   9 +
- kernel/rcu/tree_stall.h             |  11 +
- 15 files changed, 1181 insertions(+), 133 deletions(-)
-
-
-base-commit: 596ffa476e201ecbf7ea024f1b59d4f28e91060c
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index b62ad9006780..41d74ee3d95a 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -627,11 +627,11 @@ static int univ8250_console_setup(struct console *co, char *options)
+ 
+ 	port = &serial8250_ports[co->index].port;
+ 	/* link port to console */
+-	port->cons = co;
++	uart_port_set_cons(port, co);
+ 
+ 	retval = serial8250_console_setup(port, options, false);
+ 	if (retval != 0)
+-		port->cons = NULL;
++		uart_port_set_cons(port, NULL);
+ 	return retval;
+ }
+ 
+@@ -689,7 +689,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
+ 			continue;
+ 
+ 		co->index = i;
+-		port->cons = co;
++		uart_port_set_cons(port, co);
+ 		return serial8250_console_setup(port, options, true);
+ 	}
+ 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index cf2c890a560f..347aacf8400f 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2496,7 +2496,7 @@ static int pl011_console_match(struct console *co, char *name, int idx,
+ 			continue;
+ 
+ 		co->index = i;
+-		port->cons = co;
++		uart_port_set_cons(port, co);
+ 		return pl011_console_setup(co, options);
+ 	}
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d6a58a9e072a..0c13ea6a3afa 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3145,8 +3145,15 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	state->uart_port = uport;
+ 	uport->state = state;
+ 
++	/*
++	 * If this port is in use as a console then the spinlock is already
++	 * initialised.
++	 */
++	if (!uart_console_registered(uport))
++		uart_port_spin_lock_init(uport);
++
+ 	state->pm_state = UART_PM_STATE_UNDEFINED;
+-	uport->cons = drv->cons;
++	uart_port_set_cons(uport, drv->cons);
+ 	uport->minor = drv->tty_driver->minor_start + uport->line;
+ 	uport->name = kasprintf(GFP_KERNEL, "%s%d", drv->dev_name,
+ 				drv->tty_driver->name_base + uport->line);
+@@ -3155,13 +3162,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 		goto out;
+ 	}
+ 
+-	/*
+-	 * If this port is in use as a console then the spinlock is already
+-	 * initialised.
+-	 */
+-	if (!uart_console_registered(uport))
+-		uart_port_spin_lock_init(uport);
+-
+ 	if (uport->cons && uport->dev)
+ 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+ 
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index bb3324d49453..038693774f21 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -606,6 +606,23 @@ static inline void __uart_port_unlock_irqrestore(struct uart_port *up, unsigned
+ 	spin_unlock_irqrestore(&up->lock, flags);
+ }
+ 
++/**
++ * uart_port_set_cons - Safely set the @cons field for a uart
++ * @up:		The uart port to set
++ * @con:	The new console to set to
++ *
++ * This function must be used to set @up->cons. It uses the port lock to
++ * synchronize with the port lock wrappers in order to ensure that the console
++ * cannot change or disappear while another context is holding the port lock.
++ */
++static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
++{
++	unsigned long flags;
++
++	__uart_port_lock_irqsave(up, &flags);
++	up->cons = con;
++	__uart_port_unlock_irqrestore(up, flags);
++}
+ /**
+  * uart_port_lock - Lock the UART port
+  * @up:		Pointer to UART port structure
 -- 
 2.39.2
 
