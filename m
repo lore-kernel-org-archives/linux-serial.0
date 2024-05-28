@@ -1,266 +1,150 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ACE86E611
-	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 09:40:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B9913D887
+	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 10:10:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716889229; cv=none; b=KfyRE2JNPNed+tCripAldrjnDyjrmJkMQ/J0uk2KDxaHx951FjNYnr4lv29pe+JYmqUDTwFyTTSA9bjVVTE49rMzJETEQNrWH774DZwBIbAel2lLFFIeK0VWNeZGc8sSivmyB4SMvCgUSnIMCr500YFSyDujU6000zYsbIoCpmE=
+	t=1716891026; cv=none; b=ecryllfR3tWxkUBheX1lAovlTGecSN7McczSV/2M4uaMgk52ArC8bEMpl+DCb63kRaCGbQ8KsV6asKwSO5dW1Z/zAVqETSCA3+EYGOskbG5dFp3bzWdWBl8MQoD7DTCdNmPMkBVJpQ7HLselPIC0fvgBggju1KMvLM5xmC+AHk4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716889229; c=relaxed/simple;
-	bh=UTgk+S/ntlj4DJ7vOuWu5jP7Xc1+VOJ8hpm+1blQCDw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mMGC55bLoyEPGa0BO/9rQwbvimytTTckXHEmwuMh+I9NCz/dBisWOkZU7JcJ87us1OBFmYVo+BB9OKof9NpHsVQsRw5jF1ArR8rh3Cic1DgkQCVXLb+KoENmWK52E3jH/HECfYzfAWqCZer1WNjxpKdNamcYweJyB9KvFcT7Xtc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk; spf=pass smtp.mailfrom=rasmusvillemoes.dk; dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b=YIe8z07T; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rasmusvillemoes.dk
+	s=arc-20240116; t=1716891026; c=relaxed/simple;
+	bh=KEyBvNv3y5FXKnuQWWl8Z+2elYl7IvopwqOdihU2JBY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NufHtVr+Z35+YGn95QnurH3P52LOAmK6pcqdExvnYY+SFi3uaPScvtKa9pOQZdlGlAL2etVMEBPxTF2TCjtzapn0eFQMu/lwp31/Czq3Xo6+ZsHBRvZfX4vHeMS2ChIu4Z1y0Wy4UeXiwDHWUEut+PKs+XU93sm7NpWJRRAWuAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=MX5cFsM8; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="YIe8z07T"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2e73441edf7so5751691fa.1
-        for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 02:40:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="MX5cFsM8"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-5786988ae9bso787469a12.3
+        for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 03:10:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google; t=1716889225; x=1717494025; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GsAir5s7syPxi7Z0jM8CWLgds717Ko20mRWI7Xd9NB8=;
-        b=YIe8z07TmlB+ky4JwkuFOOfyh1XrbcY+I0WVbDO6pKph8yOYHBLpuSZuK4t6see4kl
-         YvJXQoAyymRb2KkogFGyC/uAXSvflej5DSS0CL3L5TJMK4KNJLCrwJlw2LDsM373md3h
-         vhJro7rWMwBi+kz/nsi7CYYtWyyUHKK0twXbs=
+        d=suse.com; s=google; t=1716891022; x=1717495822; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=d0aISgCh4COJAaNSxf9GiLx9gPfwSU3DX1Gqw14Y4kY=;
+        b=MX5cFsM8DAz5xhcou82Su3v5uCrIK3Hpz0uhevuE2hvh9zGo6G6cgCCvAwUqArhhIz
+         GFNEnstvr1iLKdfD/EIp0HrVi1zN8DaLgj8KERytuoP9hqVW8cZ5sWp/ELW7Xo3v60+I
+         +oiR7QuZDvpplTCv36Igw2thrlrePtTDolmYUOqYuSVvi/Em6i2H6dXsga5O11xGZD1w
+         drqdpRrUPvKE9+rJvIQtTHxNE413KHuPfz5kkOs7ZacgSamgaztaI+lwKfrr+Ile0ECY
+         soRru54GQ4KyNToaB6QHRE5F6laZhuYnLvAVwR/g4XOnZAC9P4LB8xlIfYro70+Z2vbn
+         lMrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716889225; x=1717494025;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GsAir5s7syPxi7Z0jM8CWLgds717Ko20mRWI7Xd9NB8=;
-        b=AlutvdlXSQkmh1U3CZ/1TPb9AqtfQ8Z5lSD3/2erGyNWdkiYe8xLP8FxxgRoZRQarD
-         a9wkcBLtreWzfMwfsNFpWCEFvv58tjnDwcrDoVF4qzGrYDy4mHAqEOYoVnqAqKdvxyFH
-         zRtDwFQVuOAU9Z3t++FU0r14Tt7i0GXm8Mg6gG2boxxHtThxHRLQ2e10MRbj3neuBGhW
-         rxt6qLDFFjNZJ/RpB1H/UirpVKU9Gpyfy3geGQmplPXBLMg++l+SeF+jsYtGFhliGxFd
-         F1JInySMoCg0rj0ulD432ta6WLv2gNXXoT+fGfjQs8Ss2hEv4nb4NhY0zSWEuMIkhMV2
-         ayvA==
-X-Forwarded-Encrypted: i=1; AJvYcCUD7uTkaxr5DPmEmWIBywiZviShsGtoOYi3zjXhBosobwr7JSTnzSRxqtruVym7E6nOfGNoYNqc/9eD8qg0UhuySRgTE0s53sxRQs10
-X-Gm-Message-State: AOJu0YynGvWOzIxxqhdu7DO4xYkyCtubgBT2Se8I42Fiatd164KCgve1
-	UJP6pHd9+79Lkq8vyaySAXH45PO5Zg64TtwThfARDxwGItP5MZoLffjnrcm7+e0=
-X-Google-Smtp-Source: AGHT+IFRC5F+uRTEEAgRzPfgYmsVebb6vhnBeks8C4kTfMuV2pHXNUEYaRTsAAyEYxXGPFioV6UrSg==
-X-Received: by 2002:a2e:3003:0:b0:2dc:e69a:fdbc with SMTP id 38308e7fff4ca-2e95b0702bemr72083601fa.1.1716889225287;
-        Tue, 28 May 2024 02:40:25 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2e98c6bc515sm55821fa.67.2024.05.28.02.40.24
+        d=1e100.net; s=20230601; t=1716891022; x=1717495822;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=d0aISgCh4COJAaNSxf9GiLx9gPfwSU3DX1Gqw14Y4kY=;
+        b=U6cKLCgh9CEU/S96TiY7AZXg6M/YBFylTbuxP1wpGFFuYz92LM5UzRyIdWRumlbNUh
+         NNt+BzPuLpGlyrEX6GITzNM2Y2478Pma3e8wlxIvGsNcVzB7znwMgev1KKBHrQVgj1KR
+         mGaMLuwpkyBX5mAK0WAa9a2+rRqqFc0QkXrHpch55P0NgeeJE827Uyaf+ge8cSFOLHHr
+         k69Ud5HfsB6sC1A1jTnL4Mt1XzoHPBljetZDs9BfwFqq4xsTkWuw6UDGjkJnNwyROodD
+         5FyD1uYgqFkjTpdY2xcgfhu4arJbRKJOuYMB4u7mRTfriCxB6R+nWRB0fuhfGMXonnnp
+         Ycgw==
+X-Forwarded-Encrypted: i=1; AJvYcCXLJ0X2teh0JnXAEfCN11+mCJoN+OVtFn/KvT39xt3qj7Qs9h7So7IE94tew4s++UHA4b2mKdHo2HQJMzvM8V29lTmj+Rp3xLFDduzn
+X-Gm-Message-State: AOJu0Ywm4XMmzUfxaLBixHKlsFZv0iiE02enXzJNI82fo6PgojYBgbhI
+	nuZgdQEG1onbe1rR9MG62WzBCAViVcmebcSEQ14cEQk3vPUPDcDwN9VW4oT3A0U=
+X-Google-Smtp-Source: AGHT+IGpgS+uwKuH2Bpx+dmo3enX8lwr6VN0F4YXbxpz7rHlyHJJKgB6YVNlH7G8nqLwYOL9zLGHxQ==
+X-Received: by 2002:a50:8d1a:0:b0:579:cd46:cbfd with SMTP id 4fb4d7f45d1cf-579cd46cce8mr3527712a12.18.1716891022496;
+        Tue, 28 May 2024 03:10:22 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-578524bbb5dsm7015666a12.95.2024.05.28.03.10.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 May 2024 02:40:24 -0700 (PDT)
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] serial: imx: stop casting struct uart_port to struct imx_port
-Date: Tue, 28 May 2024 11:40:21 +0200
-Message-Id: <20240528094022.2161066-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.40.1.1.g1c60b9335d
+        Tue, 28 May 2024 03:10:22 -0700 (PDT)
+Date: Tue, 28 May 2024 12:10:20 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	Russell King <linux@armlinux.org.uk>,
+	Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	=?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Fabio Estevam <festevam@denx.de>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Uros Bizjak <ubizjak@gmail.com>, Lukas Wunner <lukas@wunner.de>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Ingo Molnar <mingo@kernel.org>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+	Joel Fernandes <joel@joelfernandes.org>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Lai Jiangshan <jiangshanlai@gmail.com>,
+	Zqiang <qiang.zhang1211@gmail.com>, rcu@vger.kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+	Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH printk v6 00/30] wire up write_atomic() printing
+Message-ID: <ZlWtjOGNwFIgGYdt@pathway.suse.cz>
+References: <20240527063749.391035-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240527063749.391035-1-john.ogness@linutronix.de>
 
-struct imx_port does have a struct uart_port as its first member, so
-the current code works, but it is not how kernel code is usually
-written.
+On Mon 2024-05-27 08:43:19, John Ogness wrote:
+> Hi,
+> 
+> This is v6 of a series to wire up the nbcon consoles so that
+> they actually perform printing using their write_atomic()
+> callback. v5 is here [0]. For information about the motivation
+> of the atomic consoles, please read the cover letter of v1 [1].
+> 
+> The main focus of this series:
+> 
+> - For nbcon consoles, always call write_atomic() directly from
+>   printk() caller context for the panic CPU.
+> 
+> - For nbcon consoles, call write_atomic() when unlocking the
+>   console lock.
+> 
+> - Only perform the console lock/unlock dance if legacy or boot
+>   consoles are registered.
+> 
+> - For legacy consoles, if nbcon consoles are registered, do not
+>   attempt to print from printk() caller context for the panic
+>   CPU until nbcon consoles have had a chance to print the most
+>   significant messages.
+> 
+> - Mark emergency sections. In these sections printk() calls
+>   will only store the messages. Upon exiting the emergency
+>   section, nbcon consoles are flushed directly. If legacy
+>   consoles cannot be flushed safely, an irq_work is triggered
+>   to do the legacy console flushing.
+> 
+> This series does _not_ include threaded printing or nbcon
+> drivers. Those features will be added in separate follow-up
+> series.
+> 
+> Note: With this series, a system with _only_ nbcon consoles
+>       registered will not perform console printing unless the
+>       console lock or nbcon port lock are used or on panic.
+>       This is on purpose. When nbcon kthreads are introduced,
+>       they will fill the gaps.
 
-Similar to many other serial drivers, introduce and use a
-to_imx_port() helper based on container_of(). No functional change.
+The series seems to be ready for linux-next from my POV.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/tty/serial/imx.c | 41 ++++++++++++++++++++++------------------
- 1 file changed, 23 insertions(+), 18 deletions(-)
+I am going to push it there so that we get as much testing
+as possible before the next merge window.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2eb22594960f..f5cfe5571e0e 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -264,6 +264,11 @@ static const struct of_device_id imx_uart_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
- 
-+static inline struct imx_port *to_imx_port(struct uart_port *port)
-+{
-+        return container_of(port, struct imx_port, port);
-+}
-+
- static inline void imx_uart_writel(struct imx_port *sport, u32 val, u32 offset)
- {
- 	writel(val, sport->port.membase + offset);
-@@ -377,7 +382,7 @@ static void imx_uart_disable_loopback_rs485(struct imx_port *sport)
- /* called with port.lock taken and irqs off */
- static void imx_uart_start_rx(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned int ucr1, ucr2;
- 
- 	ucr1 = imx_uart_readl(sport, UCR1);
-@@ -401,7 +406,7 @@ static void imx_uart_start_rx(struct uart_port *port)
- /* called with port.lock taken and irqs off */
- static void imx_uart_stop_tx(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	u32 ucr1, ucr4, usr2;
- 
- 	if (sport->tx_state == OFF)
-@@ -466,7 +471,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
- 
- static void imx_uart_stop_rx_with_loopback_ctrl(struct uart_port *port, bool loopback)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	u32 ucr1, ucr2, ucr4, uts;
- 
- 	ucr1 = imx_uart_readl(sport, UCR1);
-@@ -511,7 +516,7 @@ static void imx_uart_stop_rx(struct uart_port *port)
- /* called with port.lock taken and irqs off */
- static void imx_uart_enable_ms(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 
- 	mod_timer(&sport->timer, jiffies);
- 
-@@ -662,7 +667,7 @@ static void imx_uart_dma_tx(struct imx_port *sport)
- /* called with port.lock taken and irqs off */
- static void imx_uart_start_tx(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	struct tty_port *tport = &sport->port.state->port;
- 	u32 ucr1;
- 
-@@ -1043,7 +1048,7 @@ static irqreturn_t imx_uart_int(int irq, void *dev_id)
-  */
- static unsigned int imx_uart_tx_empty(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned int ret;
- 
- 	ret = (imx_uart_readl(sport, USR2) & USR2_TXDC) ?  TIOCSER_TEMT : 0;
-@@ -1058,7 +1063,7 @@ static unsigned int imx_uart_tx_empty(struct uart_port *port)
- /* called with port.lock taken and irqs off */
- static unsigned int imx_uart_get_mctrl(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned int ret = imx_uart_get_hwmctrl(sport);
- 
- 	mctrl_gpio_get(sport->gpios, &ret);
-@@ -1069,7 +1074,7 @@ static unsigned int imx_uart_get_mctrl(struct uart_port *port)
- /* called with port.lock taken and irqs off */
- static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	u32 ucr3, uts;
- 
- 	if (!(port->rs485.flags & SER_RS485_ENABLED)) {
-@@ -1112,7 +1117,7 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
-  */
- static void imx_uart_break_ctl(struct uart_port *port, int break_state)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned long flags;
- 	u32 ucr1;
- 
-@@ -1434,7 +1439,7 @@ static void imx_uart_disable_dma(struct imx_port *sport)
- 
- static int imx_uart_startup(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	int retval;
- 	unsigned long flags;
- 	int dma_is_inited = 0;
-@@ -1548,7 +1553,7 @@ static int imx_uart_startup(struct uart_port *port)
- 
- static void imx_uart_shutdown(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned long flags;
- 	u32 ucr1, ucr2, ucr4, uts;
- 
-@@ -1622,7 +1627,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- /* called with port.lock taken and irqs off */
- static void imx_uart_flush_buffer(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	struct scatterlist *sgl = &sport->tx_sgl[0];
- 
- 	if (!sport->dma_chan_tx)
-@@ -1649,7 +1654,7 @@ static void
- imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
- 		     const struct ktermios *old)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned long flags;
- 	u32 ucr2, old_ucr2, ufcr;
- 	unsigned int baud, quot;
-@@ -1852,7 +1857,7 @@ imx_uart_verify_port(struct uart_port *port, struct serial_struct *ser)
- 
- static int imx_uart_poll_init(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned long flags;
- 	u32 ucr1, ucr2;
- 	int retval;
-@@ -1901,7 +1906,7 @@ static int imx_uart_poll_init(struct uart_port *port)
- 
- static int imx_uart_poll_get_char(struct uart_port *port)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	if (!(imx_uart_readl(sport, USR2) & USR2_RDR))
- 		return NO_POLL_CHAR;
- 
-@@ -1910,7 +1915,7 @@ static int imx_uart_poll_get_char(struct uart_port *port)
- 
- static void imx_uart_poll_put_char(struct uart_port *port, unsigned char c)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	unsigned int status;
- 
- 	/* drain */
-@@ -1932,7 +1937,7 @@ static void imx_uart_poll_put_char(struct uart_port *port, unsigned char c)
- static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termios,
- 				 struct serial_rs485 *rs485conf)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 	u32 ucr2;
- 
- 	if (rs485conf->flags & SER_RS485_ENABLED) {
-@@ -1986,7 +1991,7 @@ static struct imx_port *imx_uart_ports[UART_NR];
- #if IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE)
- static void imx_uart_console_putchar(struct uart_port *port, unsigned char ch)
- {
--	struct imx_port *sport = (struct imx_port *)port;
-+	struct imx_port *sport = to_imx_port(port);
- 
- 	while (imx_uart_readl(sport, imx_uart_uts_reg(sport)) & UTS_TXFULL)
- 		barrier();
--- 
-2.40.1.1.g1c60b9335d
-
+Best Regards,
+Petr
