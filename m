@@ -1,155 +1,104 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F4FC131E3C
-	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 13:36:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D91172BB1
+	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 15:06:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716903364; cv=none; b=JAuMDu8WezTTDTdTWQWSdIAUeLWuAST674ANXcDUUqEQCJczUW23w8QmgxhBSZDf40NUI/k9gZwB6OnZVH9ooVdjO/Jb7zT9D8bSftupAkF1SNBjFYYCw9/wp6FOBJwrEGRBcT2huA3qARHuCHYh4Cmgd52K2SkAXnSTRgsvv9Y=
+	t=1716908822; cv=none; b=YxTZbaSbiyNH5SBfYQPlqUSVq6pIdckh2ofKEumD4PYzTgk2irSLG+NH7yGhMLZe6YEh+aEQwv19VhI8+f3O1D8PKELtl4TLHGSUmCxqqUNvG2F39d0GlT/MQf8T92C9UXbr8uppFVlr1ehNHrp1x2GdlnOMGyKACKEZHgfGEAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716903364; c=relaxed/simple;
-	bh=JWtHlmtusIhLMWgbZyZG5cDMUrRubiSJG0EqXMgnYnU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jadLFCTyadc89qjAbpir6rGqDGBpFsmUJp4hLyXQbwToDex7JJhzpkPmFMXd7p1NXIBYpSREwtNza9upEij9cx6ABzZOX713MqYzSm/ap24h34QennZ/nhXo+NJHujvFhwOFIYEv5xirxjw7cELnc7L+oM2V8yjgznXPAbSpfi0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=TqJdRyXC; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="TqJdRyXC"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a635a74e0deso24216166b.0
-        for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 06:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1716903360; x=1717508160; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tW6M0gf7saQEvTU4yjSGcUXDr2NTy1Qf8dzKr23/MaQ=;
-        b=TqJdRyXCTQpLGFNp/a470s5Gco0RCyVozVHwMyhUMiLZ8jYHncwPd9lzibOxmiG4Xf
-         qleLq70gWLOrJ7NP5YZUGZrqF4lEDOMZ79ypKp5K/eb+EGtCiU33Kytj0qWtGBVzO03j
-         whGYmjgppxHni7cy7Np3RULbdSj7+I/HowltPo7a19TWe8V3aMX23BVPSP0CiN6UiyuA
-         htVjIYrHa1dFLYFeqUpkN2grMK9VxCUaqWp9GcGVYVvPrbm9I/fJbFkn4p2UnRlKfrsr
-         uD332eE9qEYeSgUOyYJ6lLFt46mUnZ6imZ2tzjLApz40h2HZ+TFFa3zSnZiknpceHs6K
-         gtYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716903360; x=1717508160;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tW6M0gf7saQEvTU4yjSGcUXDr2NTy1Qf8dzKr23/MaQ=;
-        b=tjfNprZf41gnPDaFJpc0mXTJJmk17OGdwNOS9eaRHbjKvULz39Zr4wtcw6fRPCQUKl
-         Y23oNuQxXARzL4jlB31veUt4k+fPF/WO3XEoqCcsXWt5W0NKohly5ewebJFajh7mRVrr
-         nSKAgN0zGetejXkhYfyMRvybtigv9VaA/UbbD8/qd43wC1jRLcc9Ww9JHVGA+ym9bUVy
-         3nshBH9seh9MYQno4fShPfphvS42uR7JgJtaV91uy/s3gf27S6mQn/51rJmKrQnE+OYf
-         8CUpoY4NPD/EjWekKVOe4KaWkRs62BWVS01Eh6e3Hs2QwDthQo+yDPWo1DpiCu50JTXU
-         DHXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXGyymzTotlZx4HN8vQQtGA6Bh07ZGtx0P8EfCIGHIPwAyFFrg92WRkUiwQ1+hP49Sob0ODoNte7HGtOOeS150HVru44LClG4TaZT3C
-X-Gm-Message-State: AOJu0YwPo4GLlVC5zgL1JRCtVznzV0pw9Pp6Gu6rdEDEIPBES0XWXVjO
-	Ggcm8NEoa2pQm/PTvDzD0LaCL2a/3uDCQaTpWIWdiAHhTkxwWAa3ZkokYXWyChc=
-X-Google-Smtp-Source: AGHT+IEumiJvLe2iqeJZzK+4O+ttaD5gz/XEAjpw+T/85TMemHOvDBJLGV9W/n6Jlf8pqRiBNEKqLg==
-X-Received: by 2002:a17:906:2789:b0:a59:9ad2:a7f8 with SMTP id a640c23a62f3a-a626511490fmr837850666b.72.1716903359901;
-        Tue, 28 May 2024 06:35:59 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a626cc514e5sm616549866b.103.2024.05.28.06.35.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 May 2024 06:35:59 -0700 (PDT)
-Date: Tue, 28 May 2024 15:35:57 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	=?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Fabio Estevam <festevam@denx.de>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uros Bizjak <ubizjak@gmail.com>, Lukas Wunner <lukas@wunner.de>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-	Joel Fernandes <joel@joelfernandes.org>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang1211@gmail.com>, rcu@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH printk v6 00/30] wire up write_atomic() printing
-Message-ID: <ZlXdvVO2jA55Ow-B@pathway.suse.cz>
-References: <20240527063749.391035-1-john.ogness@linutronix.de>
- <ZlWtjOGNwFIgGYdt@pathway.suse.cz>
+	s=arc-20240116; t=1716908822; c=relaxed/simple;
+	bh=I+IpNMECOJXL+vdv5iTJxoyXJAP5asFI6LVgsSUqkd4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d65TMmROjvRzb4HE7p3Su8/rh/hjbu1RhGI+RPPSXx636Un303yPIr4+TnUk76NwZa0OpMAfjV9xGxbwnX2TJBKiuusMB3d8BAthn66RIoUR/x9Y6L72zmK/tBURAzVmoFXVTb5NWBbU3EHvN2hANd9itxXFu15HUEC8tIfbxFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 44SF6o8a089649;
+	Wed, 29 May 2024 00:06:50 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
+ Wed, 29 May 2024 00:06:50 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 44SF5urw089523
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Wed, 29 May 2024 00:05:56 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <d775ae2d-a2ac-439e-8e2b-134749f60f30@I-love.SAKURA.ne.jp>
+Date: Wed, 29 May 2024 00:05:53 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZlWtjOGNwFIgGYdt@pathway.suse.cz>
+User-Agent: Mozilla Thunderbird
+Subject: [PATCH] serial: drop debugging WARN_ON_ONCE() from uart_write()
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Al Cooper <alcooperx@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+        Russell King <linux@armlinux.org.uk>, Vineet Gupta <vgupta@kernel.org>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+        Alexander Shiyan <shc_work@mail.ru>, Baruch Siach <baruch@tkos.co.il>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Neil Armstrong <neil.armstrong@linar>
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <20240405060826.2521-13-jirislaby@kernel.org>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <20240405060826.2521-13-jirislaby@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue 2024-05-28 12:10:22, Petr Mladek wrote:
-> On Mon 2024-05-27 08:43:19, John Ogness wrote:
-> > Hi,
-> > 
-> > This is v6 of a series to wire up the nbcon consoles so that
-> > they actually perform printing using their write_atomic()
-> > callback. v5 is here [0]. For information about the motivation
-> > of the atomic consoles, please read the cover letter of v1 [1].
-> > 
-> > The main focus of this series:
-> > 
-> > - For nbcon consoles, always call write_atomic() directly from
-> >   printk() caller context for the panic CPU.
-> > 
-> > - For nbcon consoles, call write_atomic() when unlocking the
-> >   console lock.
-> > 
-> > - Only perform the console lock/unlock dance if legacy or boot
-> >   consoles are registered.
-> > 
-> > - For legacy consoles, if nbcon consoles are registered, do not
-> >   attempt to print from printk() caller context for the panic
-> >   CPU until nbcon consoles have had a chance to print the most
-> >   significant messages.
-> > 
-> > - Mark emergency sections. In these sections printk() calls
-> >   will only store the messages. Upon exiting the emergency
-> >   section, nbcon consoles are flushed directly. If legacy
-> >   consoles cannot be flushed safely, an irq_work is triggered
-> >   to do the legacy console flushing.
-> > 
-> > This series does _not_ include threaded printing or nbcon
-> > drivers. Those features will be added in separate follow-up
-> > series.
-> > 
-> > Note: With this series, a system with _only_ nbcon consoles
-> >       registered will not perform console printing unless the
-> >       console lock or nbcon port lock are used or on panic.
-> >       This is on purpose. When nbcon kthreads are introduced,
-> >       they will fill the gaps.
-> 
-> The series seems to be ready for linux-next from my POV.
-> 
-> I am going to push it there so that we get as much testing
-> as possible before the next merge window.
+syzbot is reporting lockdep warning upon
 
-JFYI, the patchset has been committed into printk/linux.git,
-branch rework/write-atomic.
+  int disc = 7;
+  ioctl(open("/dev/ttyS3", O_RDONLY), TIOCSETD, &disc);
 
-Best Regards,
-Petr
+sequence. Do like what commit 5f1149d2f4bf ("serial: drop debugging
+WARN_ON_ONCE() from uart_put_char()") does.
+
+Reported-by: syzbot+f78380e4eae53c64125c@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=f78380e4eae53c64125c
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+Example is https://syzkaller.appspot.com/text?tag=CrashReport&x=100271ec980000 .
+But not using this example, for this link will disappear eventually.
+
+By the way, do we want to also guard uart_port_lock'ed section using
+printk_deferred_enter()/printk_deferred_exit(), for trying to use e.g.
+WARN_ON() inside such section will result in the same lockdep warning?
+
+ drivers/tty/serial/serial_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2c1a0254d3f4..0c4d60976663 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -622,7 +622,7 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
+ 		return -EL3HLT;
+ 
+ 	port = uart_port_lock(state, flags);
+-	if (WARN_ON_ONCE(!state->port.xmit_buf)) {
++	if (!state->port.xmit_buf) {
+ 		uart_port_unlock(port, flags);
+ 		return 0;
+ 	}
+-- 
+2.18.4
+
+
