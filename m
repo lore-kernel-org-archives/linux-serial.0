@@ -1,104 +1,75 @@
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81D91172BB1
-	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 15:06:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2228E17332E;
+	Tue, 28 May 2024 16:01:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716908822; cv=none; b=YxTZbaSbiyNH5SBfYQPlqUSVq6pIdckh2ofKEumD4PYzTgk2irSLG+NH7yGhMLZe6YEh+aEQwv19VhI8+f3O1D8PKELtl4TLHGSUmCxqqUNvG2F39d0GlT/MQf8T92C9UXbr8uppFVlr1ehNHrp1x2GdlnOMGyKACKEZHgfGEAk=
+	t=1716912113; cv=none; b=doU9fBUoV+fq5XKq4WyYbER2no4M1BXkpolZtnJVJwqR+3KwHkLRvGPK4r7MQYbnQALNVakApgqJLE3rw+ma515bKaYCQ0ZkxDwdosF/wQqeY9FFN6UaFG3CJFyQ6rDIjrw1mUHjmwljHBp2uJ2NfxOCXhYUt8g1FpdCnFK+FLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716908822; c=relaxed/simple;
-	bh=I+IpNMECOJXL+vdv5iTJxoyXJAP5asFI6LVgsSUqkd4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d65TMmROjvRzb4HE7p3Su8/rh/hjbu1RhGI+RPPSXx636Un303yPIr4+TnUk76NwZa0OpMAfjV9xGxbwnX2TJBKiuusMB3d8BAthn66RIoUR/x9Y6L72zmK/tBURAzVmoFXVTb5NWBbU3EHvN2hANd9itxXFu15HUEC8tIfbxFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
-Received: from fsav411.sakura.ne.jp (fsav411.sakura.ne.jp [133.242.250.110])
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 44SF6o8a089649;
-	Wed, 29 May 2024 00:06:50 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav411.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp);
- Wed, 29 May 2024 00:06:50 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav411.sakura.ne.jp)
-Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-	(authenticated bits=0)
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 44SF5urw089523
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-	Wed, 29 May 2024 00:05:56 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <d775ae2d-a2ac-439e-8e2b-134749f60f30@I-love.SAKURA.ne.jp>
-Date: Wed, 29 May 2024 00:05:53 +0900
+	s=arc-20240116; t=1716912113; c=relaxed/simple;
+	bh=JZHasqy5LBI0hSvZ9z0NMQJ9KSGo6QMx+O4lDynTmxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bqZxZedEXeOdo8q0MyS1pwtcbIzKalXp4rap0raxH11t4TsBXfrNPbidMDjr0okWifYZSiyjs80s1kiuaqOkZGO/SYhb/lCqotaZ2HhroAXzIBcOMmEe6lNLtWSmkjnEdCoA5OvVNZNPVC8vlV9fW4aVf99EIxSCZ+iTa4mWlMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LC3e8O6f; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LC3e8O6f"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AFEEC3277B;
+	Tue, 28 May 2024 16:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716912112;
+	bh=JZHasqy5LBI0hSvZ9z0NMQJ9KSGo6QMx+O4lDynTmxU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LC3e8O6fULLq+dCBWFVZWW0nXZTUU46/d+CVgflMSoOQREx0ZbmrdEDyIDB9i0CIs
+	 CkrMhV9NGHQljQFwTXlT8YuM03c+GCyh1cbsUBnf7wVfgbT7rVbMEB/of/rRO1m3fZ
+	 wQZkal0wWfR7kWa9kUcTyBzMXlRGrp/hcZ2rB4VXMYcsjFaY6Jd7NQku7fxW1bg3g9
+	 z1mTQ/mxo3a3Ltb7gtdOO8apOv5J8KvVr0JWBUtYpW7NNS0iefWA6thH6NBxGNQ+iS
+	 vlDGxw7ifnH/KnAAK+fPjCiA92mHM0WsxGvuiExIlWnTFH5m5Bza21ykZxMYGWfHgd
+	 Bi2p3tbTZtIQg==
+Date: Tue, 28 May 2024 11:01:51 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Thomas Richard <thomas.richard@bootlin.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>, Vibhore Vardhan <vibhore@ti.com>,
+	linux-serial@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+	Conor Dooley <conor+dt@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, Dhruva Gole <d-gole@ti.com>
+Subject: Re: [PATCH 1/5] dt-bindings: serial: 8250_omap: Add wakeup pinctrl
+ state
+Message-ID: <171691210723.722570.2038595239352860907.robh@kernel.org>
+References: <20240523075819.1285554-1-msp@baylibre.com>
+ <20240523075819.1285554-2-msp@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: [PATCH] serial: drop debugging WARN_ON_ONCE() from uart_write()
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Al Cooper <alcooperx@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
-        Russell King <linux@armlinux.org.uk>, Vineet Gupta <vgupta@kernel.org>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-        Alexander Shiyan <shc_work@mail.ru>, Baruch Siach <baruch@tkos.co.il>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Neil Armstrong <neil.armstrong@linar>
-References: <20240405060826.2521-1-jirislaby@kernel.org>
- <20240405060826.2521-13-jirislaby@kernel.org>
-Content-Language: en-US
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20240405060826.2521-13-jirislaby@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240523075819.1285554-2-msp@baylibre.com>
 
-syzbot is reporting lockdep warning upon
 
-  int disc = 7;
-  ioctl(open("/dev/ttyS3", O_RDONLY), TIOCSETD, &disc);
+On Thu, 23 May 2024 09:58:15 +0200, Markus Schneider-Pargmann wrote:
+> Pins associated with the 8250 omap unit can be the source of a wakeup in
+> deep sleep states. To be able to wakeup, these pins have to be
+> configured in a special way. To support this configuration add the
+> default and wakeup pinctrl states.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> ---
+>  .../devicetree/bindings/serial/8250_omap.yaml    | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
 
-sequence. Do like what commit 5f1149d2f4bf ("serial: drop debugging
-WARN_ON_ONCE() from uart_put_char()") does.
-
-Reported-by: syzbot+f78380e4eae53c64125c@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=f78380e4eae53c64125c
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-Example is https://syzkaller.appspot.com/text?tag=CrashReport&x=100271ec980000 .
-But not using this example, for this link will disappear eventually.
-
-By the way, do we want to also guard uart_port_lock'ed section using
-printk_deferred_enter()/printk_deferred_exit(), for trying to use e.g.
-WARN_ON() inside such section will result in the same lockdep warning?
-
- drivers/tty/serial/serial_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2c1a0254d3f4..0c4d60976663 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -622,7 +622,7 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 		return -EL3HLT;
- 
- 	port = uart_port_lock(state, flags);
--	if (WARN_ON_ONCE(!state->port.xmit_buf)) {
-+	if (!state->port.xmit_buf) {
- 		uart_port_unlock(port, flags);
- 		return 0;
- 	}
--- 
-2.18.4
-
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
