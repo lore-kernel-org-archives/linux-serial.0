@@ -1,150 +1,295 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B9913D887
-	for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 10:10:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 503E416ABFA;
+	Tue, 28 May 2024 10:25:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716891026; cv=none; b=ecryllfR3tWxkUBheX1lAovlTGecSN7McczSV/2M4uaMgk52ArC8bEMpl+DCb63kRaCGbQ8KsV6asKwSO5dW1Z/zAVqETSCA3+EYGOskbG5dFp3bzWdWBl8MQoD7DTCdNmPMkBVJpQ7HLselPIC0fvgBggju1KMvLM5xmC+AHk4=
+	t=1716891955; cv=none; b=iJUytsKlFfyiY915bxKbjVESmrN6nL5/lR/WZr8GoOCwmc8Xt5WTNQ+vnt1OqnYHPUrB8A5KXUuS8NJQhIzMi2ePQj3F1XkMjtfq3CYNTNLGAHkDb5ro9V2M+Km/dOzFjptMdMCnpBzdMQa9zYyAVC3Ow8uUAia1ySehUD9kQwI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716891026; c=relaxed/simple;
-	bh=KEyBvNv3y5FXKnuQWWl8Z+2elYl7IvopwqOdihU2JBY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NufHtVr+Z35+YGn95QnurH3P52LOAmK6pcqdExvnYY+SFi3uaPScvtKa9pOQZdlGlAL2etVMEBPxTF2TCjtzapn0eFQMu/lwp31/Czq3Xo6+ZsHBRvZfX4vHeMS2ChIu4Z1y0Wy4UeXiwDHWUEut+PKs+XU93sm7NpWJRRAWuAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=MX5cFsM8; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1716891955; c=relaxed/simple;
+	bh=tgPh+RpBIfdWk/QjkJbuJ+eXr/a+KHa8hR+sOmjii/0=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=GGjRS0uISsQoxbYg5HHrCUGGNVmxaRkl/jS+06otnP3EELy53WZqOLZYYi7kkPVyuajXGrN8ebu+TnRRAPKxirRbs6GXP3N4lzwgvuseIvaoGIbDMNEO5vKWBPq7eDHPg9jfqct4MvBfu7O+STcT7+pM65MlFl6OsDmIymtlDeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SrzXGd07; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="MX5cFsM8"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-5786988ae9bso787469a12.3
-        for <linux-serial@vger.kernel.org>; Tue, 28 May 2024 03:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1716891022; x=1717495822; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=d0aISgCh4COJAaNSxf9GiLx9gPfwSU3DX1Gqw14Y4kY=;
-        b=MX5cFsM8DAz5xhcou82Su3v5uCrIK3Hpz0uhevuE2hvh9zGo6G6cgCCvAwUqArhhIz
-         GFNEnstvr1iLKdfD/EIp0HrVi1zN8DaLgj8KERytuoP9hqVW8cZ5sWp/ELW7Xo3v60+I
-         +oiR7QuZDvpplTCv36Igw2thrlrePtTDolmYUOqYuSVvi/Em6i2H6dXsga5O11xGZD1w
-         drqdpRrUPvKE9+rJvIQtTHxNE413KHuPfz5kkOs7ZacgSamgaztaI+lwKfrr+Ile0ECY
-         soRru54GQ4KyNToaB6QHRE5F6laZhuYnLvAVwR/g4XOnZAC9P4LB8xlIfYro70+Z2vbn
-         lMrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716891022; x=1717495822;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d0aISgCh4COJAaNSxf9GiLx9gPfwSU3DX1Gqw14Y4kY=;
-        b=U6cKLCgh9CEU/S96TiY7AZXg6M/YBFylTbuxP1wpGFFuYz92LM5UzRyIdWRumlbNUh
-         NNt+BzPuLpGlyrEX6GITzNM2Y2478Pma3e8wlxIvGsNcVzB7znwMgev1KKBHrQVgj1KR
-         mGaMLuwpkyBX5mAK0WAa9a2+rRqqFc0QkXrHpch55P0NgeeJE827Uyaf+ge8cSFOLHHr
-         k69Ud5HfsB6sC1A1jTnL4Mt1XzoHPBljetZDs9BfwFqq4xsTkWuw6UDGjkJnNwyROodD
-         5FyD1uYgqFkjTpdY2xcgfhu4arJbRKJOuYMB4u7mRTfriCxB6R+nWRB0fuhfGMXonnnp
-         Ycgw==
-X-Forwarded-Encrypted: i=1; AJvYcCXLJ0X2teh0JnXAEfCN11+mCJoN+OVtFn/KvT39xt3qj7Qs9h7So7IE94tew4s++UHA4b2mKdHo2HQJMzvM8V29lTmj+Rp3xLFDduzn
-X-Gm-Message-State: AOJu0Ywm4XMmzUfxaLBixHKlsFZv0iiE02enXzJNI82fo6PgojYBgbhI
-	nuZgdQEG1onbe1rR9MG62WzBCAViVcmebcSEQ14cEQk3vPUPDcDwN9VW4oT3A0U=
-X-Google-Smtp-Source: AGHT+IGpgS+uwKuH2Bpx+dmo3enX8lwr6VN0F4YXbxpz7rHlyHJJKgB6YVNlH7G8nqLwYOL9zLGHxQ==
-X-Received: by 2002:a50:8d1a:0:b0:579:cd46:cbfd with SMTP id 4fb4d7f45d1cf-579cd46cce8mr3527712a12.18.1716891022496;
-        Tue, 28 May 2024 03:10:22 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-578524bbb5dsm7015666a12.95.2024.05.28.03.10.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 May 2024 03:10:22 -0700 (PDT)
-Date: Tue, 28 May 2024 12:10:20 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	=?iso-8859-1?Q?Th=E9o?= Lebrun <theo.lebrun@bootlin.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Fabio Estevam <festevam@denx.de>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uros Bizjak <ubizjak@gmail.com>, Lukas Wunner <lukas@wunner.de>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-	Joel Fernandes <joel@joelfernandes.org>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang1211@gmail.com>, rcu@vger.kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Waiman Long <longman@redhat.com>
-Subject: Re: [PATCH printk v6 00/30] wire up write_atomic() printing
-Message-ID: <ZlWtjOGNwFIgGYdt@pathway.suse.cz>
-References: <20240527063749.391035-1-john.ogness@linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SrzXGd07"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716891954; x=1748427954;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=tgPh+RpBIfdWk/QjkJbuJ+eXr/a+KHa8hR+sOmjii/0=;
+  b=SrzXGd07Yup5olRkgoSxq3XgaCjjSF4Z6qyOzWqmZhl9lqvPUVkonUTs
+   GM2BvqKMk5DCfIBy4UIv2AvChx6asP6x1w2Pw2jh0ws1eKQtdb5Np6mvp
+   Y67JctYh4pPDW7S9eQw/Y7qT7H6QmrwK19h14Ju9YGGYWFmnkI/S9MtxV
+   QWkogBwUq8rw2eiXUK1AhJtgm8oFYATed57EfNQUgcwCcrpzDopwcO9j5
+   1w4cXJnO/Mp1y+HPCaJPnN2uIHcdmaR/y2ygPkMDLwVY1Srv8pfIsoJmT
+   UoXP1XWDu0WCJTgr6NzB1HczpX6akVdGZynRH43jQBLPfmrbUDds4lIt8
+   g==;
+X-CSE-ConnectionGUID: 9tbprW8ySRGpoXc+Ayc9hw==
+X-CSE-MsgGUID: 4x8U4z09QB6fu3WLHpUslA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11085"; a="23892143"
+X-IronPort-AV: E=Sophos;i="6.08,195,1712646000"; 
+   d="scan'208";a="23892143"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2024 03:25:54 -0700
+X-CSE-ConnectionGUID: L9RQ2n1MTXisYN38Q8FxiQ==
+X-CSE-MsgGUID: MMTs3l13TW2g4FLH0Q3cJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,195,1712646000"; 
+   d="scan'208";a="65860340"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.144])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2024 03:25:49 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 28 May 2024 13:25:45 +0300 (EEST)
+To: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
+    Sascha Hauer <s.hauer@pengutronix.de>, 
+    Pengutronix Kernel Team <kernel@pengutronix.de>, 
+    Fabio Estevam <festevam@gmail.com>, LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, imx@lists.linux.dev, 
+    linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] serial: imx: stop casting struct uart_port to struct
+ imx_port
+In-Reply-To: <20240528094022.2161066-1-linux@rasmusvillemoes.dk>
+Message-ID: <a38e5be1-bd59-9c49-9cbd-a38016339056@linux.intel.com>
+References: <20240528094022.2161066-1-linux@rasmusvillemoes.dk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240527063749.391035-1-john.ogness@linutronix.de>
+Content-Type: multipart/mixed; boundary="8323328-270992698-1716891945=:5869"
 
-On Mon 2024-05-27 08:43:19, John Ogness wrote:
-> Hi,
-> 
-> This is v6 of a series to wire up the nbcon consoles so that
-> they actually perform printing using their write_atomic()
-> callback. v5 is here [0]. For information about the motivation
-> of the atomic consoles, please read the cover letter of v1 [1].
-> 
-> The main focus of this series:
-> 
-> - For nbcon consoles, always call write_atomic() directly from
->   printk() caller context for the panic CPU.
-> 
-> - For nbcon consoles, call write_atomic() when unlocking the
->   console lock.
-> 
-> - Only perform the console lock/unlock dance if legacy or boot
->   consoles are registered.
-> 
-> - For legacy consoles, if nbcon consoles are registered, do not
->   attempt to print from printk() caller context for the panic
->   CPU until nbcon consoles have had a chance to print the most
->   significant messages.
-> 
-> - Mark emergency sections. In these sections printk() calls
->   will only store the messages. Upon exiting the emergency
->   section, nbcon consoles are flushed directly. If legacy
->   consoles cannot be flushed safely, an irq_work is triggered
->   to do the legacy console flushing.
-> 
-> This series does _not_ include threaded printing or nbcon
-> drivers. Those features will be added in separate follow-up
-> series.
-> 
-> Note: With this series, a system with _only_ nbcon consoles
->       registered will not perform console printing unless the
->       console lock or nbcon port lock are used or on panic.
->       This is on purpose. When nbcon kthreads are introduced,
->       they will fill the gaps.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-The series seems to be ready for linux-next from my POV.
+--8323328-270992698-1716891945=:5869
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-I am going to push it there so that we get as much testing
-as possible before the next merge window.
+On Tue, 28 May 2024, Rasmus Villemoes wrote:
 
-Best Regards,
-Petr
+> struct imx_port does have a struct uart_port as its first member, so
+> the current code works, but it is not how kernel code is usually
+> written.
+>=20
+> Similar to many other serial drivers, introduce and use a
+> to_imx_port() helper based on container_of(). No functional change.
+>=20
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> ---
+
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
+ i.
+
+>  drivers/tty/serial/imx.c | 41 ++++++++++++++++++++++------------------
+>  1 file changed, 23 insertions(+), 18 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 2eb22594960f..f5cfe5571e0e 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -264,6 +264,11 @@ static const struct of_device_id imx_uart_dt_ids[] =
+=3D {
+>  };
+>  MODULE_DEVICE_TABLE(of, imx_uart_dt_ids);
+> =20
+> +static inline struct imx_port *to_imx_port(struct uart_port *port)
+> +{
+> +        return container_of(port, struct imx_port, port);
+> +}
+> +
+>  static inline void imx_uart_writel(struct imx_port *sport, u32 val, u32 =
+offset)
+>  {
+>  =09writel(val, sport->port.membase + offset);
+> @@ -377,7 +382,7 @@ static void imx_uart_disable_loopback_rs485(struct im=
+x_port *sport)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_start_rx(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned int ucr1, ucr2;
+> =20
+>  =09ucr1 =3D imx_uart_readl(sport, UCR1);
+> @@ -401,7 +406,7 @@ static void imx_uart_start_rx(struct uart_port *port)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_stop_tx(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09u32 ucr1, ucr4, usr2;
+> =20
+>  =09if (sport->tx_state =3D=3D OFF)
+> @@ -466,7 +471,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
+> =20
+>  static void imx_uart_stop_rx_with_loopback_ctrl(struct uart_port *port, =
+bool loopback)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09u32 ucr1, ucr2, ucr4, uts;
+> =20
+>  =09ucr1 =3D imx_uart_readl(sport, UCR1);
+> @@ -511,7 +516,7 @@ static void imx_uart_stop_rx(struct uart_port *port)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_enable_ms(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+> =20
+>  =09mod_timer(&sport->timer, jiffies);
+> =20
+> @@ -662,7 +667,7 @@ static void imx_uart_dma_tx(struct imx_port *sport)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_start_tx(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09struct tty_port *tport =3D &sport->port.state->port;
+>  =09u32 ucr1;
+> =20
+> @@ -1043,7 +1048,7 @@ static irqreturn_t imx_uart_int(int irq, void *dev_=
+id)
+>   */
+>  static unsigned int imx_uart_tx_empty(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned int ret;
+> =20
+>  =09ret =3D (imx_uart_readl(sport, USR2) & USR2_TXDC) ?  TIOCSER_TEMT : 0=
+;
+> @@ -1058,7 +1063,7 @@ static unsigned int imx_uart_tx_empty(struct uart_p=
+ort *port)
+>  /* called with port.lock taken and irqs off */
+>  static unsigned int imx_uart_get_mctrl(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned int ret =3D imx_uart_get_hwmctrl(sport);
+> =20
+>  =09mctrl_gpio_get(sport->gpios, &ret);
+> @@ -1069,7 +1074,7 @@ static unsigned int imx_uart_get_mctrl(struct uart_=
+port *port)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctr=
+l)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09u32 ucr3, uts;
+> =20
+>  =09if (!(port->rs485.flags & SER_RS485_ENABLED)) {
+> @@ -1112,7 +1117,7 @@ static void imx_uart_set_mctrl(struct uart_port *po=
+rt, unsigned int mctrl)
+>   */
+>  static void imx_uart_break_ctl(struct uart_port *port, int break_state)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned long flags;
+>  =09u32 ucr1;
+> =20
+> @@ -1434,7 +1439,7 @@ static void imx_uart_disable_dma(struct imx_port *s=
+port)
+> =20
+>  static int imx_uart_startup(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09int retval;
+>  =09unsigned long flags;
+>  =09int dma_is_inited =3D 0;
+> @@ -1548,7 +1553,7 @@ static int imx_uart_startup(struct uart_port *port)
+> =20
+>  static void imx_uart_shutdown(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned long flags;
+>  =09u32 ucr1, ucr2, ucr4, uts;
+> =20
+> @@ -1622,7 +1627,7 @@ static void imx_uart_shutdown(struct uart_port *por=
+t)
+>  /* called with port.lock taken and irqs off */
+>  static void imx_uart_flush_buffer(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09struct scatterlist *sgl =3D &sport->tx_sgl[0];
+> =20
+>  =09if (!sport->dma_chan_tx)
+> @@ -1649,7 +1654,7 @@ static void
+>  imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+>  =09=09     const struct ktermios *old)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned long flags;
+>  =09u32 ucr2, old_ucr2, ufcr;
+>  =09unsigned int baud, quot;
+> @@ -1852,7 +1857,7 @@ imx_uart_verify_port(struct uart_port *port, struct=
+ serial_struct *ser)
+> =20
+>  static int imx_uart_poll_init(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned long flags;
+>  =09u32 ucr1, ucr2;
+>  =09int retval;
+> @@ -1901,7 +1906,7 @@ static int imx_uart_poll_init(struct uart_port *por=
+t)
+> =20
+>  static int imx_uart_poll_get_char(struct uart_port *port)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09if (!(imx_uart_readl(sport, USR2) & USR2_RDR))
+>  =09=09return NO_POLL_CHAR;
+> =20
+> @@ -1910,7 +1915,7 @@ static int imx_uart_poll_get_char(struct uart_port =
+*port)
+> =20
+>  static void imx_uart_poll_put_char(struct uart_port *port, unsigned char=
+ c)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09unsigned int status;
+> =20
+>  =09/* drain */
+> @@ -1932,7 +1937,7 @@ static void imx_uart_poll_put_char(struct uart_port=
+ *port, unsigned char c)
+>  static int imx_uart_rs485_config(struct uart_port *port, struct ktermios=
+ *termios,
+>  =09=09=09=09 struct serial_rs485 *rs485conf)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+>  =09u32 ucr2;
+> =20
+>  =09if (rs485conf->flags & SER_RS485_ENABLED) {
+> @@ -1986,7 +1991,7 @@ static struct imx_port *imx_uart_ports[UART_NR];
+>  #if IS_ENABLED(CONFIG_SERIAL_IMX_CONSOLE)
+>  static void imx_uart_console_putchar(struct uart_port *port, unsigned ch=
+ar ch)
+>  {
+> -=09struct imx_port *sport =3D (struct imx_port *)port;
+> +=09struct imx_port *sport =3D to_imx_port(port);
+> =20
+>  =09while (imx_uart_readl(sport, imx_uart_uts_reg(sport)) & UTS_TXFULL)
+>  =09=09barrier();
+>=20
+
+--8323328-270992698-1716891945=:5869--
