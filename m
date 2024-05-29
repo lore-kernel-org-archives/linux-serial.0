@@ -1,135 +1,123 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9424D1E888;
-	Wed, 29 May 2024 09:01:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A720117B4FD;
+	Wed, 29 May 2024 10:44:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716973306; cv=none; b=L+bIaX74EHXMfDEUygE5TJ3qpbwhXIm2ns6//TxhKdrmK7edXpOUBc4qxVQ/xGD/InjLRWCAnhCYTKtbqOVVnscMKYuq9qXIMOZirvQmbLCqkIImOlbpuIZ8I9NamWCUFQJ/Mxix00wUpsk+axw7inpp2PeAlof76gF2ABqFNqI=
+	t=1716979475; cv=none; b=dg/etXkMioJ1G2wvihSQX2DiDk2nSqPrJxJI+VoSZvg8/KvkFig50ODURGgXrzmLvjp/U3ZsmS8Jx7IOd9ZgXZkyQm8rnfSUKomdGi43FAg/PK7+yv8Ae1aoT/UnKaC++sLW1diSQDiPpkDJ7k7X0UaAVC3cPT1IbIPF+41qsE0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716973306; c=relaxed/simple;
-	bh=wq6Q5U9qIc0wVfPUvIazA+e9F1mn1D2Z4oXYmue4Ipo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KM6B451ZKUZH12aLtfj0s6gDwSbWe5nKMXy75lNgvj9E9ezK1TGsLJ4Tm/9WlZwcY5/xEXRo3ZTSBlnQquT9C707dtNY4sxv0iNn8tFBjNtSfKWH1u5GJjIq46x0IlgcEbMB87YBjcumIwayMW+bA0nzRXcydgcWx+lYBfpI8Ek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.219.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-df771db8b24so1737163276.3;
-        Wed, 29 May 2024 02:01:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716973302; x=1717578102;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KnYuIo1n1oD5QX7J07WFDaga5vIEVHxJRsHJ8yWO98A=;
-        b=srzF4XauBhGx3v9W7ihZ874tqY6/cY4tnfPyu6DPkjlLREC+oH1zgGhXZ8H72kbGqE
-         JYujLxLlQUjcNDcHRVXe0A9a4lDWolEdf9ZDKBdQy+l6RZam0yK6yaBbBzeI0T6PexqY
-         ECUfQVMqhwrgAU5hv0SqQlOFau+23lHyY9DtykMopNCEbLKzS0+XfMtyB/diY9mkMaO+
-         kJFkYxWro1klBxmJ+888Qkm20FdvQFMMnjbi/3duVgiWEgnANy0AABcJlurBFq7KOiLJ
-         KRBNtnLUfTQpCKlIECbSd2Yx+kKN38U0QF1RWWXQvrSwEoN4ZStRM2d0OAKuyzRJiUYo
-         GsaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXleI+4HMS3egI2rz/THTxvP56VqQjeM16D2VvTLD/gNxhg7VCbOgeQaLk1S87toZgPjlgWzxj1ZqBpDue5f6DDqtp0beDRJdBUHYqD0R4QL4Hl5Af+In/iHwv2Va7sxW/esqZoerfe5OCml8mhiMhLUeZ8JlaP/+cLD3Nnmwmca14t8cYemXGnWxb4ZGrlowtF5Vr8V1sdqZ3oCgASIqPveeXxtueqUiUDvOiKLEnYDe68EAvbNd3reu2mF2Yj/C26nrQ=
-X-Gm-Message-State: AOJu0YyfGRAOX6+bnwMDu/JUZOurEgUCOiWHI2Ppvl3MxsmShq2r+9PT
-	hjFZKHuX6T33Eo2y7l+Ei//lWAJ31sAdvd8gkxoAY64CCNdQIe8RpBwLBlm2n/8=
-X-Google-Smtp-Source: AGHT+IG1N3AmKZnNB7pxmFQEEWkmIBZaiEFCGdmbClIb8hwogzic7RLgZvMcDvl83mbqJR2oUGmFoQ==
-X-Received: by 2002:a25:8c03:0:b0:de6:1494:f144 with SMTP id 3f1490d57ef6-df7721a7766mr13396377276.28.1716973297477;
-        Wed, 29 May 2024 02:01:37 -0700 (PDT)
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
-        by smtp.gmail.com with ESMTPSA id 3f1490d57ef6-dfa482bd39fsm173285276.37.2024.05.29.02.01.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 May 2024 02:01:37 -0700 (PDT)
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-62a2424ecb8so16712377b3.1;
-        Wed, 29 May 2024 02:01:37 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUit2zCbakmG6A0AbA5CeRTuIYODupvJG1rU96PoCvZ5fukmm28XZzsQxcpl2etweQZrkOv7k8vO+GSZJhc1oYh/5+NPLloj+dRlbYkOZA4oX2rmLUFXmqkqAfVnsLEO4JFYhhWMU1cfZsByICDLHiaMzCuHE0vQOu59MGvGJbJ3+GLqqTnIXnRnD01xxtA50btf8fwXs2GyBD/P8ca7vkCYQWJVxLiNI7gKHqnZEtR6fbaMXCfRCL+iNqYzDHsSOsNdRc=
-X-Received: by 2002:a25:b202:0:b0:dfa:4ce2:3315 with SMTP id
- 3f1490d57ef6-dfa4ce234f0mr828856276.38.1716973296714; Wed, 29 May 2024
- 02:01:36 -0700 (PDT)
+	s=arc-20240116; t=1716979475; c=relaxed/simple;
+	bh=w2NUtcqQzhKZrCNj5AHZJLY6Ii4aW3hyDn3AwcSEkNk=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=QpXft65zK9FVAyRXvZsnMSi0BgygIxz2T1KGpbEnAd7qaW0No0ykDDeOA6ic6PCRRXCimwQmY+Ro3vXTke6X5QFNTCiY80edWdYu1NnTbajBynSm64hLeQiwUhyounAfSZCfF9n2Sl86vjjwViN8R9ygvoBEnM7em7wsN3lysnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=np0pjepo; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="np0pjepo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07607C32781;
+	Wed, 29 May 2024 10:44:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716979475;
+	bh=w2NUtcqQzhKZrCNj5AHZJLY6Ii4aW3hyDn3AwcSEkNk=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=np0pjepoSGg+tfmnkzQQQpy493Qf1VV2AL6xy/dHgphxXVYYYXe0eAHbGZmRs0wN+
+	 R1pG03TKfT13mCgnEfGR0W9D+abVpRhZNwJ/ebD3x6wMuoW4xNDqXVVVOgv04v4Ly8
+	 g6Gm7sxj+ao6znk0JoniHcRG9K6XWfNe8N6ri85nFajDUxVb1Y30g9c6M6tJlCPm5n
+	 bvLn2Dol8agheHA5c/GhNvm+F7X73Rwh5BXpHONBEWMzM4HZ2Qm8xa0Iz9AfAlOady
+	 y/vvIn/OGYic0xYR3CpV/3e0ZCgkKK+oxOoqxGtjD4Q7WsKdTrBkuEhg2TZHzLiR/z
+	 OAqoUUfGI46gA==
+Date: Wed, 29 May 2024 05:44:34 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1716811405.git.geert+renesas@glider.be> <efd9397662ff743f95298ca6aad4efdfa0ba1962.1716811405.git.geert+renesas@glider.be>
-In-Reply-To: <efd9397662ff743f95298ca6aad4efdfa0ba1962.1716811405.git.geert+renesas@glider.be>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 29 May 2024 11:01:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUxXQca5MzP9fGjVoUWbOvSekwRp_+HMTT618yD8wc=tw@mail.gmail.com>
-Message-ID: <CAMuHMdUxXQca5MzP9fGjVoUWbOvSekwRp_+HMTT618yD8wc=tw@mail.gmail.com>
-Subject: Re: [PATCH/RFC 1/3] earlycon: Export clock and PM Domain info from FDT
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Saravana Kannan <saravanak@google.com>, Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, 
-	Peng Fan <peng.fan@nxp.com>, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Christophe JAILLET <christophe.jaillet@wanadoo.fr>, 
+ Anup Patel <apatel@ventanamicro.com>, 
+ Linus Walleij <linus.walleij@linaro.org>, Guo Ren <guoren@kernel.org>, 
+ Kefeng Wang <wangkefeng.wang@huawei.com>, 
+ Maxime Ripard <mripard@kernel.org>, Lee Jones <lee@kernel.org>, 
+ Max Filippov <jcmvbkbc@gmail.com>, 
+ =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
+ Daniel Vetter <daniel@ffwll.ch>, linux-renesas-soc@vger.kernel.org, 
+ Herve Codina <herve.codina@bootlin.com>, 
+ Bjorn Helgaas <bhelgaas@google.com>, Rich Felker <dalias@libc.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Jernej Skrabec <jernej.skrabec@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
+ linux-clk@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>, 
+ devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, 
+ Masahiro Yamada <masahiroy@kernel.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>, Sam Ravnborg <sam@ravnborg.org>, 
+ linux-fbdev@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, 
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+ Stephen Boyd <sboyd@kernel.org>, Azeem Shaikh <azeemshaikh38@gmail.com>, 
+ Jiri Slaby <jirislaby@kernel.org>, Sebastian Reichel <sre@kernel.org>, 
+ Arnd Bergmann <arnd@arndb.de>, 
+ Javier Martinez Canillas <javierm@redhat.com>, 
+ Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Heiko Stuebner <heiko.stuebner@cherry.de>, linux-serial@vger.kernel.org, 
+ Guenter Roeck <linux@roeck-us.net>, linux-ide@vger.kernel.org, 
+ Thomas Gleixner <tglx@linutronix.de>, Sergey Shtylyov <s.shtylyov@omp.ru>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, linux-sh@vger.kernel.org, 
+ Stephen Rothwell <sfr@canb.auug.org.au>, linux-kernel@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, 
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, 
+ Chris Morgan <macromorgan@hotmail.com>, linux-pci@vger.kernel.org, 
+ David Airlie <airlied@gmail.com>, Damien Le Moal <dlemoal@kernel.org>, 
+ Niklas Cassel <cassel@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+ Baoquan He <bhe@redhat.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Helge Deller <deller@gmx.de>
+In-Reply-To: <2fb214e148e74fb0acc202543dca8dd8a170a6e6.1716965617.git.ysato@users.sourceforge.jp>
+References: <cover.1716965617.git.ysato@users.sourceforge.jp>
+ <2fb214e148e74fb0acc202543dca8dd8a170a6e6.1716965617.git.ysato@users.sourceforge.jp>
+Message-Id: <171697947326.1106773.218175911484134371.robh@kernel.org>
+Subject: Re: [DO NOT MERGE v8 22/36] dt-bindings: display: smi,sm501: SMI
+ SM501 binding json-schema
 
-On Mon, May 27, 2024 at 2:41=E2=80=AFPM Geert Uytterhoeven
-<geert+renesas@glider.be> wrote:
-> Earlycon relies on the serial port to be initialized by the firmware
-> and/or bootloader.  Linux is not aware of any hardware dependencies that
-> must be met to keep the port working, and thus cannot guarantee they
-> stay met, until the full serial driver takes over.
->
-> E.g. all unused clocks and unused PM Domains are disabled in a late
-> initcall.  As this happens after the full serial driver has taken over,
-> the serial port's clock and/or PM Domain are no longer deemed unused,
-> and this is typically not a problem.
->
-> However, if the serial port's clock or PM Domain is shared with another
-> device, and that other device is runtime-suspended before the full
-> serial driver has probed, the serial port's clock and/or PM Domain will
-> be disabled inadvertently.  Any subsequent serial console output will
-> cause a crash or system lock-up.
->
-> Provide a mechanism to let the clock and/or PM Domain subsystem or
-> drivers handle this, by exporting the clock and PM Domain dependencies
-> for the serial port, as available in the system's device tree.
-> Note that as this is done during early boot-up, the device_node
-> structure pointing to the earlycon console is not yet created, so this
-> has to resort to raw property data.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -954,6 +954,16 @@ static const bool earlycon_acpi_spcr_enable EARLYCON=
-_USED_OR_UNUSED;
->  static inline int setup_earlycon(char *buf) { return 0; }
->  #endif
->
-> +#ifdef CONFIG_OF_EARLY_FLATTREE
+On Wed, 29 May 2024 17:01:08 +0900, Yoshinori Sato wrote:
+> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> ---
+>  .../bindings/display/smi,sm501.yaml           | 443 ++++++++++++++++++
+>  1 file changed, 443 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/smi,sm501.yaml
+> 
 
-This should include a check  for CONFIG_SERIAL_EARLYCON.
+My bot found errors running 'make dt_binding_check' on your patch:
 
-> +extern const __be32 *earlycon_clocks, *earlycon_power_domains;
-> +extern int earlycon_clocks_ncells, earlycon_power_domains_ncells;
-> +#else
-> +#define earlycon_clocks                        NULL
-> +#define earlycon_clocks_ncells         0
-> +#define earlycon_power_domains         NULL
-> +#define earlycon_power_domains_ncells  0
-> +#endif
-> +
->  /* Variant of uart_console_registered() when the console_list_lock is he=
-ld. */
->  static inline bool uart_console_registered_locked(struct uart_port *port=
-)
->  {
+yamllint warnings/errors:
 
-Gr{oetje,eeting}s,
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/smi,sm501.yaml: crt: Missing additionalProperties/unevaluatedProperties constraint
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/display/smi,sm501.yaml: panel: Missing additionalProperties/unevaluatedProperties constraint
 
-                        Geert
+doc reference errors (make refcheckdocs):
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/2fb214e148e74fb0acc202543dca8dd8a170a6e6.1716965617.git.ysato@users.sourceforge.jp
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
