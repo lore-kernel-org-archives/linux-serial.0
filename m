@@ -1,126 +1,193 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2170117DE34;
-	Wed, 29 May 2024 10:44:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3EA610A03;
+	Wed, 29 May 2024 12:56:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716979477; cv=none; b=WMzKELM5gyoB7wnNVxVvzP2/JyD3oCoPMHriiPCwdxR8yj7QV53ilpY7WHR/+gl5FFdMAbw2Kq+OoFPkztzFY9XrfZGLFtp/A9puQuWxTFQVJlIlUcqkCuuoUR3lnD/yn8frt9irWxB5ffnuqXLbZEmnyFMf9MVlR9K7G1IuyXI=
+	t=1716987376; cv=none; b=q+8YcJ+cPGttXCf5trwTid44wvv3en2q3uxT1l1tR/iwsaH7assjczmQA+S5nTSF30X/G4lkTL8CEQ+63oOx+/YPVtKGENv9ZDZoNVMmffhplct1mpaNvzzoZ5RhX7IOZvwjbWwFsSX1XkkGHQOOQzK6vVt2hJenYO6euBROuJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716979477; c=relaxed/simple;
-	bh=s8KdvSWO6HOHAGUGJGDqeLCe+B13uuVSOHh4kq7jejg=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=sOCqmyku1LmOeA6fDcAM58vKG6wkdnBlsRmhftQ5gBRmhDYiMXsiNH4Ne4gqeohS7s/mEOYoX36n2I2y2p7WMkwfFtTH/A0TaJJb8gdcTrbo/imEEfcFe0tV8/axSuDcAF2tHgal36Hr3IxAuoOAnOOJU5fKPZW/JkDmmGZawzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O9K3lbkl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1716987376; c=relaxed/simple;
+	bh=gz8z8N5bHTtjf1WXKP3VLR7zy+2ou75tSdQdUmX2Vx4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DUb0B9xOXxoMuH01AVMLxEZlGBXuUrooLiiQuc3cCnPj37fNkeTH+RZ8w3JBtwsyy4aMfLmnvoqbQcEwAVREWF/YUiEcDl+QfZQTute1igQWYb9dfvT504BD/qHemH7O4xpcQ6EjybLqcAuA+FwHIX8kH7tFEZcRmxtOC9Kun5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KVTQ3Yk8; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O9K3lbkl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E84BC4AF09;
-	Wed, 29 May 2024 10:44:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1716979476;
-	bh=s8KdvSWO6HOHAGUGJGDqeLCe+B13uuVSOHh4kq7jejg=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=O9K3lbklkKB2Jie3QsfACPrRW8c9tFLYnkt2tyMY+RcM+3fncWnIGqA95YTsAs6pq
-	 0TJ5GwnaVa2sm1Exchz9DLbs1vX7ah6j0w9svRttzVoAy7miEcSpSFwJj+4Eo3NS63
-	 SSG7q2XZ8fIizkOYQr1q/gRO85p14BNgBY/F0xQ8MXtejL9Qvb3+2Y6DNz9/d7sQUi
-	 C40NMghnMIyZm5CgFiYpZL5BuEs4I2w/hXqSsFwxgttEkIbNTo0QFTIrPXormX7ptW
-	 mBOMq4TNRfeYnCXCSNnTOafBydgMPca//J5IUGd3kLly0wh9soHqYlgOkexrkNY+SE
-	 lqfzyYAot6hjw==
-Date: Wed, 29 May 2024 05:44:35 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KVTQ3Yk8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1716987375; x=1748523375;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gz8z8N5bHTtjf1WXKP3VLR7zy+2ou75tSdQdUmX2Vx4=;
+  b=KVTQ3Yk8L6lLF0SlKKAnpEMyUVPKkDcnDzC9DQYWKx+Ee0D/j5wS8jWj
+   aFE+70oEJD0vC9u1uUJTx/ampL9Tphh3THlJyyPS8Ukn4kn18vvVUsK8c
+   4s9mGPkKa1XoMOK/7X+qmVpTAseosXptqqlj7jbPtCoyc8I4jDU5KSXBV
+   ZHmZgTGM5Q+ATf42JFns4GxYgQrNbEb9+5wFl2g4Q6y/E4ErrTyoJrPj7
+   8E8hN6wW4BQGj/jW3HIXeINSUo4GBUqncw1erGowPuuHp5DyryA0S1unS
+   xhT7kAM7DoFzyHUDZK4LhEkHaj0jz1lqSUiNcammTvzyVDIKVtG8yVu1P
+   g==;
+X-CSE-ConnectionGUID: BSG6Xos3Sp+uL1jtf0ROkw==
+X-CSE-MsgGUID: M3losH2pRy2/1+utwYVpyw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11087"; a="13618479"
+X-IronPort-AV: E=Sophos;i="6.08,198,1712646000"; 
+   d="scan'208";a="13618479"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2024 05:56:13 -0700
+X-CSE-ConnectionGUID: H5QcdFF9TbONM172UGdoGg==
+X-CSE-MsgGUID: zqE6bIAkQpSvlFOcfBHkJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,198,1712646000"; 
+   d="scan'208";a="35963852"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 May 2024 05:56:00 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sCIqP-0000000BnVT-2SiK;
+	Wed, 29 May 2024 15:55:53 +0300
+Date: Wed, 29 May 2024 15:55:53 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
+	Heiko Stuebner <heiko.stuebner@cherry.de>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Masahiro Yamada <masahiroy@kernel.org>, Baoquan He <bhe@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Kefeng Wang <wangkefeng.wang@huawei.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	Azeem Shaikh <azeemshaikh38@gmail.com>, Guo Ren <guoren@kernel.org>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Herve Codina <herve.codina@bootlin.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Jacky Huang <ychuang3@nuvoton.com>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Sam Ravnborg <sam@ravnborg.org>,
+	Javier Martinez Canillas <javierm@redhat.com>,
+	Sergey Shtylyov <s.shtylyov@omp.ru>,
+	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Subject: Re: [DO NOT MERGE v8 08/36] clocksource: sh_tmu: CLOCKSOURCE support.
+Message-ID: <Zlcl2QxRDDrGh7Ru@smile.fi.intel.com>
+References: <cover.1716965617.git.ysato@users.sourceforge.jp>
+ <f40e91e3f010880b0cf7a1c3a18d0c57bb55d93a.1716965617.git.ysato@users.sourceforge.jp>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: Thomas Gleixner <tglx@linutronix.de>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
- Herve Codina <herve.codina@bootlin.com>, linux-clk@vger.kernel.org, 
- Rich Felker <dalias@libc.org>, Jonathan Corbet <corbet@lwn.net>, 
- Arnd Bergmann <arnd@arndb.de>, dri-devel@lists.freedesktop.org, 
- Heiko Stuebner <heiko.stuebner@cherry.de>, 
- Max Filippov <jcmvbkbc@gmail.com>, 
- Neil Armstrong <neil.armstrong@linaro.org>, linux-ide@vger.kernel.org, 
- Magnus Damm <magnus.damm@gmail.com>, Guenter Roeck <linux@roeck-us.net>, 
- Sergey Shtylyov <s.shtylyov@omp.ru>, linux-kernel@vger.kernel.org, 
- Conor Dooley <conor+dt@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
- Wolfram Sang <wsa+renesas@sang-engineering.com>, 
- linux-serial@vger.kernel.org, 
- Christophe JAILLET <christophe.jaillet@wanadoo.fr>, 
- Jiri Slaby <jirislaby@kernel.org>, Daniel Vetter <daniel@ffwll.ch>, 
- Michael Turquette <mturquette@baylibre.com>, 
- =?utf-8?q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>, 
- Sebastian Reichel <sre@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
- Jacky Huang <ychuang3@nuvoton.com>, Niklas Cassel <cassel@kernel.org>, 
- linux-fbdev@vger.kernel.org, Azeem Shaikh <azeemshaikh38@gmail.com>, 
- devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>, 
- David Airlie <airlied@gmail.com>, linux-sh@vger.kernel.org, 
- Andrew Morton <akpm@linux-foundation.org>, linux-pci@vger.kernel.org, 
- linux-renesas-soc@vger.kernel.org, 
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, 
- Helge Deller <deller@gmx.de>, Thomas Zimmermann <tzimmermann@suse.de>, 
- John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
- Stephen Rothwell <sfr@canb.auug.org.au>, 
- Kefeng Wang <wangkefeng.wang@huawei.com>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Masahiro Yamada <masahiroy@kernel.org>, 
- Javier Martinez Canillas <javierm@redhat.com>, 
- Maxime Ripard <mripard@kernel.org>, Damien Le Moal <dlemoal@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, Sam Ravnborg <sam@ravnborg.org>, 
- Baoquan He <bhe@redhat.com>, Guo Ren <guoren@kernel.org>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
- Anup Patel <apatel@ventanamicro.com>, 
- Lorenzo Pieralisi <lpieralisi@kernel.org>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Lee Jones <lee@kernel.org>, 
- Bjorn Helgaas <bhelgaas@google.com>
-In-Reply-To: <d54cb668f3f19221fdbf34a70a9123fb3a6b4004.1716965617.git.ysato@users.sourceforge.jp>
-References: <cover.1716965617.git.ysato@users.sourceforge.jp>
- <d54cb668f3f19221fdbf34a70a9123fb3a6b4004.1716965617.git.ysato@users.sourceforge.jp>
-Message-Id: <171697947401.1106915.1101535794733326128.robh@kernel.org>
-Subject: Re: [DO NOT MERGE v8 24/36] dt-binding: sh: cpus: Add SH CPUs
- json-schema
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f40e91e3f010880b0cf7a1c3a18d0c57bb55d93a.1716965617.git.ysato@users.sourceforge.jp>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
+On Wed, May 29, 2024 at 05:00:54PM +0900, Yoshinori Sato wrote:
+> Allows initialization as CLOCKSOURCE.
 
-On Wed, 29 May 2024 17:01:10 +0900, Yoshinori Sato wrote:
-> Renesas SH series and compatible ISA CPUs.
-> 
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> ---
->  .../devicetree/bindings/sh/cpus.yaml          | 63 +++++++++++++++++++
->  1 file changed, 63 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/sh/cpus.yaml
-> 
+...
 
-My bot found errors running 'make dt_binding_check' on your patch:
+> -	dev_info(&ch->tmu->pdev->dev, "ch%u: used for %s clock events\n",
+> -		 ch->index, periodic ? "periodic" : "oneshot");
+> +	pr_info("%s ch%u: used for %s clock events\n",
+> +		ch->tmu->name, ch->index, periodic ? "periodic" : "oneshot");
 
-yamllint warnings/errors:
+This is a step back change. We should use dev_*() if we have a device
+available. And I believe this is the case (at least for the previous boards),
+no?
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/sh/cpus.example.dtb: cpu@0: 'clock-names', 'dcache-line-size', 'dcache-size', 'icache-line-size', 'icache-size' do not match any of the regexes: 'pinctrl-[0-9]+'
-	from schema $id: http://devicetree.org/schemas/sh/cpus.yaml#
+...
 
-doc reference errors (make refcheckdocs):
+> -	ch->irq = platform_get_irq(tmu->pdev, index);
+> +	if (tmu->np)
+> +		ch->irq = of_irq_get(tmu->np, index);
+> +	else if (tmu->pdev)
+> +		ch->irq = platform_get_irq(tmu->pdev, index);
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/d54cb668f3f19221fdbf34a70a9123fb3a6b4004.1716965617.git.ysato@users.sourceforge.jp
+I found these changes counterproductive. Instead better to have up to three
+files to cover:
+- the common code (library)
+- the platform device support
+- the pure OF support.
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
+...
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+> -	res = platform_get_resource(tmu->pdev, IORESOURCE_MEM, 0);
+> -	if (!res) {
+> -		dev_err(&tmu->pdev->dev, "failed to get I/O memory\n");
+> -		return -ENXIO;
+> +	if (tmu->pdev) {
+> +		res = platform_get_resource(tmu->pdev, IORESOURCE_MEM, 0);
+> +		if (!res) {
+> +			pr_err("sh_tmu failed to get I/O memory\n");
+> +			return -ENXIO;
+> +		}
+> +
+> +		tmu->mapbase = ioremap(res->start, resource_size(res));
 
-pip3 install dtschema --upgrade
+devm_platform_ioremap_resource() should be good to have.
+Again, consider proper splitting.
 
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+>  	}
+> +	if (tmu->np)
+> +		tmu->mapbase = of_iomap(tmu->np, 0);
+
+So, how many boards are non-OF compatible? Maybe makes sense to move them to OF
+and drop these platform code entirely from everywhere?
+
+...
+
+> +	tmu->name = dev_name(&pdev->dev);
+> +	tmu->clk = clk_get(&tmu->pdev->dev, "fck");
+
+devm_ approach can help a lot in case of platform device code.
+
+> +	if (IS_ERR(tmu->clk)) {
+> +		dev_err(&tmu->pdev->dev, "cannot get clock\n");
+> +		return PTR_ERR(tmu->clk);
+
+		return dev_err_probe() ?
+
+> +	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
