@@ -1,75 +1,128 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2228E17332E;
-	Tue, 28 May 2024 16:01:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0C415B141;
+	Wed, 29 May 2024 06:15:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716912113; cv=none; b=doU9fBUoV+fq5XKq4WyYbER2no4M1BXkpolZtnJVJwqR+3KwHkLRvGPK4r7MQYbnQALNVakApgqJLE3rw+ma515bKaYCQ0ZkxDwdosF/wQqeY9FFN6UaFG3CJFyQ6rDIjrw1mUHjmwljHBp2uJ2NfxOCXhYUt8g1FpdCnFK+FLY=
+	t=1716963354; cv=none; b=ToP2r7xhFLUl0iNK2JCkvOTJLSgN4UgdufbkyZXpLL9MYcjcwXUEZi22n3+hv7/gaS5236YEDC7bT+dxNMwP1QLbnzJAdsSgU1A62BX9qj+ryVH4VHZmzww5iSXqPFSMT2wswBXeMbMJ2xS0g+9IVLTWxw0A5SZkxlz0SyMFhlg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716912113; c=relaxed/simple;
-	bh=JZHasqy5LBI0hSvZ9z0NMQJ9KSGo6QMx+O4lDynTmxU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bqZxZedEXeOdo8q0MyS1pwtcbIzKalXp4rap0raxH11t4TsBXfrNPbidMDjr0okWifYZSiyjs80s1kiuaqOkZGO/SYhb/lCqotaZ2HhroAXzIBcOMmEe6lNLtWSmkjnEdCoA5OvVNZNPVC8vlV9fW4aVf99EIxSCZ+iTa4mWlMc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LC3e8O6f; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1716963354; c=relaxed/simple;
+	bh=7UL5tAAEjUHcX7+hcSy9AlEexa/1+pvr7uBA+iBHPMw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hzOInP6puocw9Dw0IeVtZeahWZNU23gjDX24so9GubEJF/LyS/SLxXQw7TLFJ1qma4IGL/lJXvOx0vpkPxOxEVHaU33x2W4FN4rBbbsdV5GZDfy/P43XV8j9ae465phPS0cxuVuXm8hy0VnXmQ6ll9j9QU6qeo3Jl4fTFbFSy7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m0gsXUsf; arc=none smtp.client-ip=209.85.221.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LC3e8O6f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AFEEC3277B;
-	Tue, 28 May 2024 16:01:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1716912112;
-	bh=JZHasqy5LBI0hSvZ9z0NMQJ9KSGo6QMx+O4lDynTmxU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LC3e8O6fULLq+dCBWFVZWW0nXZTUU46/d+CVgflMSoOQREx0ZbmrdEDyIDB9i0CIs
-	 CkrMhV9NGHQljQFwTXlT8YuM03c+GCyh1cbsUBnf7wVfgbT7rVbMEB/of/rRO1m3fZ
-	 wQZkal0wWfR7kWa9kUcTyBzMXlRGrp/hcZ2rB4VXMYcsjFaY6Jd7NQku7fxW1bg3g9
-	 z1mTQ/mxo3a3Ltb7gtdOO8apOv5J8KvVr0JWBUtYpW7NNS0iefWA6thH6NBxGNQ+iS
-	 vlDGxw7ifnH/KnAAK+fPjCiA92mHM0WsxGvuiExIlWnTFH5m5Bza21ykZxMYGWfHgd
-	 Bi2p3tbTZtIQg==
-Date: Tue, 28 May 2024 11:01:51 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Markus Schneider-Pargmann <msp@baylibre.com>
-Cc: Thomas Richard <thomas.richard@bootlin.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>, Vibhore Vardhan <vibhore@ti.com>,
-	linux-serial@vger.kernel.org, Ronald Wahl <ronald.wahl@raritan.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, Dhruva Gole <d-gole@ti.com>
-Subject: Re: [PATCH 1/5] dt-bindings: serial: 8250_omap: Add wakeup pinctrl
- state
-Message-ID: <171691210723.722570.2038595239352860907.robh@kernel.org>
-References: <20240523075819.1285554-1-msp@baylibre.com>
- <20240523075819.1285554-2-msp@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m0gsXUsf"
+Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-4e15ac35809so502075e0c.2;
+        Tue, 28 May 2024 23:15:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716963352; x=1717568152; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=L3R+ZHPYoSGUqMaWR0E46qOgK1Bg85/ubJnAG+H028Y=;
+        b=m0gsXUsf8dPiJB3Ruh+zifOIqfkoN1RKXTuBAe/4TKWrdydxYqbmKqhM1KLvDCu+a7
+         kSt7ww6AcJlC80+T8k54iQyCmVFgCVuReDEdGuC6fx2iFlX0mJSt1h3bqdwLBmX+5jpY
+         NN38JOGUQUMZtw5Fe65XSSUJT+quj/kEFEmvHR46JB/VLMvqSK/MDJQ5XI4R54rE/3um
+         WQV0+9CeuArtJ+dw00wGnAFLzuHF8Q4V8NqSGB5bpZBlgmBNQJ9bgdQFSQlnu2q4GKFJ
+         VX+I8v88fI3HBh3p+5OT1OpUHTs6+U9QVJ7Puz2H0JZT/Ef2rybRZnNuRAcUjIFh8RA6
+         r8dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716963352; x=1717568152;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=L3R+ZHPYoSGUqMaWR0E46qOgK1Bg85/ubJnAG+H028Y=;
+        b=g0A2tYdFt8Lt82hJ+Sc8NqQuIoEbzmVX+DS/IHT8FG/OvJVmdeie2aBUuHIjfB3b9Z
+         5BiXsp7SIcbGDDvIEm1KAoLt4Z5IMmYuLBEQ8rVeixTIfPWLn9Ki55Ggg5ZatylfN3V2
+         BXVjLmceraO56DtpjdHXBhWfYGJqqKyIReuaPZMCCC/f6Zel6pQI/oh5fFdYbo/Pc7NR
+         Efg5AiiOghDbcucjkLxH7ALJfMLKI5hnfIlJlr8+dSPn3H6IPYCbxNbLkZjsixVRKuuP
+         lG+bw9DkJgB7/uOX1eA0k+6VGczXKWuJIJ3fMQbVj4fA1rLQk18diG8z8xD6lqK2a/zC
+         Nm2w==
+X-Forwarded-Encrypted: i=1; AJvYcCVd7+QES5QbmcWVCKxHjhsanC3UnySu9f7Yi2INq7/foTdRNsaSh8OwU5yX4F8cI0oDLJrJtabBnZvR1VC25EmqRUnaxuO9h5uAp23Hr5YLlOGU9v9kYFXraiIph5bVLvGpaZSrpiziphDj4/q9nobhylKE8gZnO+c1qB33FIGk3V8SyJtm9b6aJL98TN4vSJclTQn49PRcaqs6fFvU+2XKffAyimMHBCBr
+X-Gm-Message-State: AOJu0YxAz0m7dygPpOzPiFyeM/UwTg6YJIrZ53BGi5fENZg9pcagYtOY
+	EmqcVDM5elLGPmjyeFmqFZnhoCjybdyRe3w12TwRGGVobPs10SYQoGTUtu1puqXVpM5haeBCj/j
+	JUdsrmYDzLtzGTCj2zAzOZCJisWM=
+X-Google-Smtp-Source: AGHT+IGxKzOO4a6F70I0rFUbkqpZcal23aCdcbs7VzaqdTx7dCQeaRBwHMmX/dZwoneR9bkFVUJGsfqXYFNe05QHJrE=
+X-Received: by 2002:a05:6122:1798:b0:4df:1a3f:2ec1 with SMTP id
+ 71dfb90a1353d-4e4f021b92emr14545453e0c.1.1716963350441; Tue, 28 May 2024
+ 23:15:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240523075819.1285554-2-msp@baylibre.com>
+References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date: Wed, 29 May 2024 07:15:23 +0100
+Message-ID: <CA+V-a8vQr2jxrW+C5VTcmEHmDgNp6S8=3KcAT1SzcKusFaP7Gw@mail.gmail.com>
+Subject: Re: [PATCH v4 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Conor Dooley <conor+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hi Greg,
 
-On Thu, 23 May 2024 09:58:15 +0200, Markus Schneider-Pargmann wrote:
-> Pins associated with the 8250 omap unit can be the source of a wakeup in
-> deep sleep states. To be able to wakeup, these pins have to be
-> configured in a special way. To support this configuration add the
-> default and wakeup pinctrl states.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> ---
->  .../devicetree/bindings/serial/8250_omap.yaml    | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
+On Fri, Mar 22, 2024 at 2:45=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
+om> wrote:
+>
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+>
+> Hi All,
+>
+> This patch series updates DT binding doc and scif driver to add support
+> for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
+> interface.
+>
+> v3->v4
+> - patch 2/4 reverted back to version 2
+> - new patch 3/5 added
+> - Added new reg type for RZ/V2H
+>
+> v2->v3
+> - Included DT validation patches
+> - Added a new compat string for RZ/V2H(P) SoC
+> - Added driver changes for RZ/V2H(P) SoC
+> - Listed interrupts and interrupt-names for every SoC in if check
+>
+> Cheers,
+> Prabhakar
+>
+> Lad Prabhakar (5):
+>   dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+>   dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+>     'interrupt-names'
+>   dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
+>     required
+>   dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
+>     (R9A09G057) SCIF support
+>   serial: sh-sci: Add support for RZ/V2H(P) SoC
+>
+Gentle ping.
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+All the patches have been Acked/Reviewed.
 
+Cheers,
+Prabhakar
+
+>  .../bindings/serial/renesas,scif.yaml         | 136 +++++++++++++-----
+>  drivers/tty/serial/sh-sci.c                   |  55 ++++++-
+>  include/linux/serial_sci.h                    |   1 +
+>  3 files changed, 154 insertions(+), 38 deletions(-)
+>
+> --
+> 2.34.1
+>
