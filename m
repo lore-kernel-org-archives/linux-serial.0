@@ -1,155 +1,126 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC5271836E0;
-	Wed, 29 May 2024 16:27:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A7651C68AE;
+	Wed, 29 May 2024 21:29:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717000040; cv=none; b=T8fvT86fxgb20IgHqJXk06dJ/DRfndBvXUzayMQfu7EEWiAd0o6sOAMnlnH7NtqQw5EH3HvUeJ6Xihkne3+j6tNJ7vyR2ZDsCEHjX3b6/DT2X39diOUN1Y17r/iFuLhL8zIiBZcn+Nm9OTmj+38Us6dpbUsx1EYCqPRYXua2CPY=
+	t=1717018190; cv=none; b=r9fPXz00Y2Bl3JXNB4BNWrR9AlXok3Jv7sfHqQGPs6NlMqKlXG+3rNrWYTMBtCW1Q2/SxDEDu3mHh3GfIkN+1F4419A4Onm9MfnQ2irnp6aZq0d/dUHEVoOawFn14jaEiusFu7G8zL820RggbTNpZj+Gvu+btOhwr859Hnlak18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717000040; c=relaxed/simple;
-	bh=lgIJYBj3mBkbZaZC1FImJA04nZav55O5a7FH5lk9I50=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CCBOJtvBLvzkSTPccjbu77L558+5frvtreMmfzSBBC+Bb90q1HrFVLxQ8bTrDH5PreSXYPIs3BlFgewSOZ/Q1O0rG1ZFl4WjkgFQeOpJXfh4BgorJHbJYRy3DS+L/O+sYTXVRBpqdFbSpnpo+80V9PHsuHYwbmadcqwsv6FaFYg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mCXHerGs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717018190; c=relaxed/simple;
+	bh=YFT6XmkjuA1L67KGJ7Z/ys6g5VheO1R0g4CnaTAx/k8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ZJ2OkjYFh+WEOb2XbWHp6yRbooAUC21CCsY6wbCjuVG5PXQ60LnrbB6BDBKt4kqY1X8kwdhWtkPcm+yl8BB/434us5pqXGkMi4x50tzaptHq0U6AN35iFvTfhyM5qINZ0FONJ8n+rOi4zsvXnub5fFlbks5DBzLka7a6mTzlmXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=asbG9zBD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mCXHerGs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2504EC116B1;
-	Wed, 29 May 2024 16:27:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="asbG9zBD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 576DAC113CC;
+	Wed, 29 May 2024 21:29:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717000039;
-	bh=lgIJYBj3mBkbZaZC1FImJA04nZav55O5a7FH5lk9I50=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mCXHerGs2ObtKn0UKLsAM9dZ6g3iQSxtf2PHTMzQ7jpFipnk4lGi6y+aQeci5BT6H
-	 Hyg1ZNDENMzfs+rf53B8MQqEfSK0Y3cvLpgU8604ks0bob/T7pw5BNUSkKAtJ1ub46
-	 h4RDaSf1jAHDYbq4UI5M767YQRxU4H9cYkUXJWND0cg33K7Jdhavo3x2/ZUYKY4yGh
-	 ounh4lSRrj9cO41BDPp1M7Be6cJyJwa3dQehMnlfX+Hp+vGTQexILTBHCkrVlqRusv
-	 hYkNogzfo5A2FdJX8+Jigeugpxc9jUMAAbBKsAE1/RiZV4X70frvNpx9trbO8i/D9z
-	 FPF3KIPFcVV3Q==
-Date: Wed, 29 May 2024 17:27:06 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Masahiro Yamada <masahiroy@kernel.org>, Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Azeem Shaikh <azeemshaikh38@gmail.com>, Guo Ren <guoren@kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [DO NOT MERGE v8 25/36] dt-bindings: vendor-prefixes: Add iodata
-Message-ID: <20240529-cobweb-styling-2f4dafd8b2bc@spud>
-References: <cover.1716965617.git.ysato@users.sourceforge.jp>
- <a84653d4c369a57a00011c8c86447096026a0330.1716965617.git.ysato@users.sourceforge.jp>
+	s=k20201202; t=1717018190;
+	bh=YFT6XmkjuA1L67KGJ7Z/ys6g5VheO1R0g4CnaTAx/k8=;
+	h=From:Date:Subject:To:Cc:From;
+	b=asbG9zBDD1bf7uxNqV60imN7ol4BAKKLXWotP35uMcrJHa0RhgT2cS+6ozCmOPh/w
+	 y2uZPaNg0K8HW/5YTGArGXaWr+2GV8XUMi33gJIQY8vd2z88Mm80t3d/sARC1VnegJ
+	 BGRePAEAEV0mMwTozWo3kF9bozW0Lb62CMHvIrvHThLAryU6mT0k5Vw3ul8VnaZx4D
+	 FPBI9HqC2VQsX1QnUxtZ2mQ4qT5+W384dW+wJTBkXByKhDBL+WW8De3EWlrJ0ABon0
+	 SPYeTyt6la6Uvu7bLsPXfnTG7IS6YjXWwQ+f+7aBbm3hzQSQqZR3xZazc2BrZX+2Q0
+	 Jol+y8m0KqzEg==
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Wed, 29 May 2024 14:29:42 -0700
+Subject: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="HZu5E32Wqoezu/cY"
-Content-Disposition: inline
-In-Reply-To: <a84653d4c369a57a00011c8c86447096026a0330.1716965617.git.ysato@users.sourceforge.jp>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAEWeV2YC/x3NwQrCMAyA4VcZORvYghb0VcYO3ZJpDjYlnaMy9
+ u4Wj//l+w8o4ioFHt0BLrsWtdRiuHSwvGJ6Ciq3Burp2t/ojuyWcbFP2oRx/mI23wq+a3Nwtui
+ MwhRDWIcYhKA52WXV+n+M03n+AKGQncdzAAAA
+To: Jiri Slaby <jirislaby@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Kees Cook <keescook@chromium.org>, 
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ linux-serial@vger.kernel.org, imx@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, linux-hardening@vger.kernel.org, 
+ llvm@lists.linux.dev, patches@lists.linux.dev, stable@vger.kernel.org, 
+ Nathan Chancellor <nathan@kernel.org>
+X-Mailer: b4 0.14-dev
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2369; i=nathan@kernel.org;
+ h=from:subject:message-id; bh=YFT6XmkjuA1L67KGJ7Z/ys6g5VheO1R0g4CnaTAx/k8=;
+ b=owGbwMvMwCUmm602sfCA1DTG02pJDGnh83zf105XVlO+zHNmhrKxdqlJuM23XWFdKTuZpzqG+
+ Eo/nHKxo5SFQYyLQVZMkaX6sepxQ8M5ZxlvnJoEM4eVCWQIAxenAExk7wOG/2ERuht3rcpyb7Ay
+ +zCz+Hybv91x/r/M7bPL//9qdrjw7SPDP5WoQKHdR3Q2HRGTb/zYYcYlPWGz2R/WhwLhM2d/fdf
+ MyQ0A
+X-Developer-Key: i=nathan@kernel.org; a=openpgp;
+ fpr=2437CB76E544CB6AB3D9DFD399739260CB6CB716
 
+Work for __counted_by on generic pointers in structures (not just
+flexible array members) has started landing in Clang 19 (current tip of
+tree). During the development of this feature, a restriction was added
+to __counted_by to prevent the flexible array member's element type from
+including a flexible array member itself such as:
 
---HZu5E32Wqoezu/cY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  struct foo {
+    int count;
+    char buf[];
+  };
 
-Hey,
+  struct bar {
+    int count;
+    struct foo data[] __counted_by(count);
+  };
 
-On Wed, May 29, 2024 at 05:01:11PM +0900, Yoshinori Sato wrote:
-> Add IO DATA DEVICE INC.
-> https://www.iodata.com/
->=20
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+because the size of data cannot be calculated with the standard array
+size formula:
 
-This one is missing an ack:
-https://lore.kernel.org/all/20240109-frying-robin-e0f3e83966eb@spud/
+  sizeof(struct foo) * count
 
-Thanks,
-Conor.
+This restriction was downgraded to a warning but due to CONFIG_WERROR,
+it can still break the build. The application of __counted_by on the
+ports member of 'struct mxser_board' triggers this restriction,
+resulting in:
 
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Doc=
-umentation/devicetree/bindings/vendor-prefixes.yaml
-> index fbf47f0bacf1..66cf68139f07 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -716,6 +716,8 @@ patternProperties:
->      description: Inventec
->    "^inversepath,.*":
->      description: Inverse Path
-> +  "^iodata,.*":
-> +    description: IO DATA DEVICE Inc.
->    "^iom,.*":
->      description: Iomega Corporation
->    "^irondevice,.*":
-> --=20
-> 2.39.2
->=20
+  drivers/tty/mxser.c:291:2: error: 'counted_by' should not be applied to an array with element of unknown size because 'struct mxser_port' is a struct type with a flexible array member. This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
+    291 |         struct mxser_port ports[] __counted_by(nports);
+        |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+  1 error generated.
 
---HZu5E32Wqoezu/cY
-Content-Type: application/pgp-signature; name="signature.asc"
+Remove this use of __counted_by to fix the warning/error. However,
+rather than remove it altogether, leave it commented, as it may be
+possible to support this in future compiler releases.
 
------BEGIN PGP SIGNATURE-----
+Cc: stable@vger.kernel.org
+Closes: https://github.com/ClangBuiltLinux/linux/issues/2026
+Fixes: f34907ecca71 ("mxser: Annotate struct mxser_board with __counted_by")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/tty/mxser.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZldXWQAKCRB4tDGHoIJi
-0hWFAP9m/SQUazFt1Tlt8RyErIrj9VApLRgBd8L2vfvH/pp05gD/Yb0fItGZbPj5
-XKV9AI6qjNwnstXymMs1/xs/YbPrcg0=
-=xYYk
------END PGP SIGNATURE-----
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 458bb1280ebf..5b97e420a95f 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -288,7 +288,7 @@ struct mxser_board {
+ 	enum mxser_must_hwid must_hwid;
+ 	speed_t max_baud;
+ 
+-	struct mxser_port ports[] __counted_by(nports);
++	struct mxser_port ports[] /* __counted_by(nports) */;
+ };
+ 
+ static DECLARE_BITMAP(mxser_boards, MXSER_BOARDS);
 
---HZu5E32Wqoezu/cY--
+---
+base-commit: 1613e604df0cd359cf2a7fbd9be7a0bcfacfabd0
+change-id: 20240529-drop-counted-by-ports-mxser-board-ed2a66f1a6e2
+
+Best regards,
+-- 
+Nathan Chancellor <nathan@kernel.org>
+
