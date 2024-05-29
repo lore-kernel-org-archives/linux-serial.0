@@ -1,128 +1,137 @@
-Received: from mail-vk1-f172.google.com (mail-vk1-f172.google.com [209.85.221.172])
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0C415B141;
-	Wed, 29 May 2024 06:15:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64569167264;
+	Wed, 29 May 2024 07:29:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716963354; cv=none; b=ToP2r7xhFLUl0iNK2JCkvOTJLSgN4UgdufbkyZXpLL9MYcjcwXUEZi22n3+hv7/gaS5236YEDC7bT+dxNMwP1QLbnzJAdsSgU1A62BX9qj+ryVH4VHZmzww5iSXqPFSMT2wswBXeMbMJ2xS0g+9IVLTWxw0A5SZkxlz0SyMFhlg=
+	t=1716967768; cv=none; b=uBbLEJ9e9rlvCIWJvj64bXsfcF7NhTFyG8iSfuxftH+WXT2S0fCdtH57xnzPEOVRYvXUOGoLD7R8SwextWqyXy4BxnUSd/Seq0DrY7mGh7/YqMd2Vnl6Bt2jTtQ+OQvYrRFbhBeuOGUOszjJTqfVDAL2B3DInU1+D1s5BFtCSQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716963354; c=relaxed/simple;
-	bh=7UL5tAAEjUHcX7+hcSy9AlEexa/1+pvr7uBA+iBHPMw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hzOInP6puocw9Dw0IeVtZeahWZNU23gjDX24so9GubEJF/LyS/SLxXQw7TLFJ1qma4IGL/lJXvOx0vpkPxOxEVHaU33x2W4FN4rBbbsdV5GZDfy/P43XV8j9ae465phPS0cxuVuXm8hy0VnXmQ6ll9j9QU6qeo3Jl4fTFbFSy7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m0gsXUsf; arc=none smtp.client-ip=209.85.221.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1716967768; c=relaxed/simple;
+	bh=WIOCUhK39/UAXtMryFTKAaKRKRwz2on5iHGlR4EA8/I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iMlixfoCk1HtDKpt/Rhqr0gwgsMU+wO9FEy3bNTROIzy0tXnzq0Yg1Q2zqlHGP6E18SlfF+Xmj3Fess991tzr/M1Htccy+usKj5+0kHfqpnCIlfHBRXJQUscjxfl18v4G7MFEPNrHUVxQy0nmwa6hbRxUuJwhLjl/tVLkMGNJRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m0gsXUsf"
-Received: by mail-vk1-f172.google.com with SMTP id 71dfb90a1353d-4e15ac35809so502075e0c.2;
-        Tue, 28 May 2024 23:15:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716963352; x=1717568152; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L3R+ZHPYoSGUqMaWR0E46qOgK1Bg85/ubJnAG+H028Y=;
-        b=m0gsXUsf8dPiJB3Ruh+zifOIqfkoN1RKXTuBAe/4TKWrdydxYqbmKqhM1KLvDCu+a7
-         kSt7ww6AcJlC80+T8k54iQyCmVFgCVuReDEdGuC6fx2iFlX0mJSt1h3bqdwLBmX+5jpY
-         NN38JOGUQUMZtw5Fe65XSSUJT+quj/kEFEmvHR46JB/VLMvqSK/MDJQ5XI4R54rE/3um
-         WQV0+9CeuArtJ+dw00wGnAFLzuHF8Q4V8NqSGB5bpZBlgmBNQJ9bgdQFSQlnu2q4GKFJ
-         VX+I8v88fI3HBh3p+5OT1OpUHTs6+U9QVJ7Puz2H0JZT/Ef2rybRZnNuRAcUjIFh8RA6
-         r8dw==
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2e95a1eff78so22902231fa.0;
+        Wed, 29 May 2024 00:29:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716963352; x=1717568152;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L3R+ZHPYoSGUqMaWR0E46qOgK1Bg85/ubJnAG+H028Y=;
-        b=g0A2tYdFt8Lt82hJ+Sc8NqQuIoEbzmVX+DS/IHT8FG/OvJVmdeie2aBUuHIjfB3b9Z
-         5BiXsp7SIcbGDDvIEm1KAoLt4Z5IMmYuLBEQ8rVeixTIfPWLn9Ki55Ggg5ZatylfN3V2
-         BXVjLmceraO56DtpjdHXBhWfYGJqqKyIReuaPZMCCC/f6Zel6pQI/oh5fFdYbo/Pc7NR
-         Efg5AiiOghDbcucjkLxH7ALJfMLKI5hnfIlJlr8+dSPn3H6IPYCbxNbLkZjsixVRKuuP
-         lG+bw9DkJgB7/uOX1eA0k+6VGczXKWuJIJ3fMQbVj4fA1rLQk18diG8z8xD6lqK2a/zC
-         Nm2w==
-X-Forwarded-Encrypted: i=1; AJvYcCVd7+QES5QbmcWVCKxHjhsanC3UnySu9f7Yi2INq7/foTdRNsaSh8OwU5yX4F8cI0oDLJrJtabBnZvR1VC25EmqRUnaxuO9h5uAp23Hr5YLlOGU9v9kYFXraiIph5bVLvGpaZSrpiziphDj4/q9nobhylKE8gZnO+c1qB33FIGk3V8SyJtm9b6aJL98TN4vSJclTQn49PRcaqs6fFvU+2XKffAyimMHBCBr
-X-Gm-Message-State: AOJu0YxAz0m7dygPpOzPiFyeM/UwTg6YJIrZ53BGi5fENZg9pcagYtOY
-	EmqcVDM5elLGPmjyeFmqFZnhoCjybdyRe3w12TwRGGVobPs10SYQoGTUtu1puqXVpM5haeBCj/j
-	JUdsrmYDzLtzGTCj2zAzOZCJisWM=
-X-Google-Smtp-Source: AGHT+IGxKzOO4a6F70I0rFUbkqpZcal23aCdcbs7VzaqdTx7dCQeaRBwHMmX/dZwoneR9bkFVUJGsfqXYFNe05QHJrE=
-X-Received: by 2002:a05:6122:1798:b0:4df:1a3f:2ec1 with SMTP id
- 71dfb90a1353d-4e4f021b92emr14545453e0c.1.1716963350441; Tue, 28 May 2024
- 23:15:50 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1716967766; x=1717572566;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4LVtxrKov8/0ih2xFiV/RAkMoecZBEr2njLAHNHI7QE=;
+        b=vxeJPtLY6yfgociQ9PHZXizI4L0WJH/DqW97nrBaYOU6RSO6Ai+jjQQCRQiwxZtIYE
+         sLgRiLwGTPzYM9VVwasMIr5apNPicuYgQ2DzlH2EMcZAb4oOTk0IeHXVGgJzt2/TcpCa
+         ZDRgSEO/Yy/p5VCXskk/I58HJybIgVp8CdqEXGVRyK5uSu31p2OcYuoCUl4wJ/LpEEo+
+         WrSWLKgRrZUrM5PBYCTFS7yNOLOIUNf+SRrQvt9wN4MXT5jjYbCG3bUifmyrwz2i+Yqx
+         WY4FsVqRjm8TRDdpXNdo0Slv107COU1YauGnxlipoFVJvhynrjLyZc25cwNuHaN2K7mP
+         tkGA==
+X-Forwarded-Encrypted: i=1; AJvYcCWxmBNXfJDRlmXc2wWtoNT8yeVdCz36cPY/JeQ/8H2JAwc3s1KFwoPUv2fVWVGc2tsmf3iEjuLcaAAWV+b6m0tCi6QMBsWiO1mgSY2iFuHYUu/sqBsNKuDOX/1RgNMyjo0boS0Nng6CrTfgpHn3nZDcl0WSoNraUXs94m7Op5y/2tY0UG0=
+X-Gm-Message-State: AOJu0Yz1MJELLhdAKP6mHZeQJhkOcjTXnrNnts5YZ2rfDzkTqQbc2sOL
+	P+IAY41SNfdMWOE3uYyOWTXQQePRuGEkB6F3Ub0VOFj7ZzwvnPVLFQW2vg==
+X-Google-Smtp-Source: AGHT+IEnwTOHIp3cj7rUeadinrjoeSKjgMV0rKAoChzp5xrhtA1d7uEfCNsHcai1emwQGYQJZYpdrg==
+X-Received: by 2002:a2e:954e:0:b0:2e9:77ec:58eb with SMTP id 38308e7fff4ca-2e977ec599amr68239081fa.17.1716967765321;
+        Wed, 29 May 2024 00:29:25 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-421089ae976sm169446685e9.38.2024.05.29.00.29.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 May 2024 00:29:24 -0700 (PDT)
+Message-ID: <0da9785e-ba44-4718-9d08-4e96c1ba7ab2@kernel.org>
+Date: Wed, 29 May 2024 09:29:23 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Wed, 29 May 2024 07:15:23 +0100
-Message-ID: <CA+V-a8vQr2jxrW+C5VTcmEHmDgNp6S8=3KcAT1SzcKusFaP7Gw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Conor Dooley <conor+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/3] VT: Use macros to define ioctls
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Alexey Gladkov <legion@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
+ linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ linux-serial@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+ Arnd Bergmann <arnd@kernel.org>
+References: <cover.1712080158.git.legion@kernel.org>
+ <cover.1713375378.git.legion@kernel.org>
+ <e4229fe2933a003341e338b558ab1ea8b63a51f6.1713375378.git.legion@kernel.org>
+ <2024041836-most-ablaze-f417@gregkh>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <2024041836-most-ablaze-f417@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Greg,
+On 18. 04. 24, 8:18, Greg Kroah-Hartman wrote:
+> On Wed, Apr 17, 2024 at 07:37:35PM +0200, Alexey Gladkov wrote:
+>> All other headers use _IOC() macros to describe ioctls for a long time
+>> now. This header is stuck in the last century.
+>>
+>> Simply use the _IO() macro. No other changes.
+>>
+>> Signed-off-by: Alexey Gladkov <legion@kernel.org>
+>> ---
+>>   include/uapi/linux/kd.h | 96 +++++++++++++++++++++--------------------
+>>   1 file changed, 49 insertions(+), 47 deletions(-)
+> 
+> This is a nice cleanup, thanks for doing it, I'll just take this one
+> change now if you don't object.
 
-On Fri, Mar 22, 2024 at 2:45=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.c=
-om> wrote:
->
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Hi All,
->
-> This patch series updates DT binding doc and scif driver to add support
-> for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
-> interface.
->
-> v3->v4
-> - patch 2/4 reverted back to version 2
-> - new patch 3/5 added
-> - Added new reg type for RZ/V2H
->
-> v2->v3
-> - Included DT validation patches
-> - Added a new compat string for RZ/V2H(P) SoC
-> - Added driver changes for RZ/V2H(P) SoC
-> - Listed interrupts and interrupt-names for every SoC in if check
->
-> Cheers,
-> Prabhakar
->
-> Lad Prabhakar (5):
->   dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
->   dt-bindings: serial: renesas,scif: Validate 'interrupts' and
->     'interrupt-names'
->   dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
->     required
->   dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
->     (R9A09G057) SCIF support
->   serial: sh-sci: Add support for RZ/V2H(P) SoC
->
-Gentle ping.
+Unfortunately, _IOC_NONE is 1 on some archs as noted by Arnd, and this 
+commit changed the kd ioctl values in there which broke stuff as noted 
+by Al.
 
-All the patches have been Acked/Reviewed.
+We either:
+* use _IOC(0, X, Y) in here, instead of _IO(X, Y), or
+* define KDIOC(X) as _IOC(0, KD_IOCTL_BASE, X), or
+* revert the commit which landed to -rc1 already.
 
-Cheers,
-Prabhakar
+thanks,
+-- 
+js
 
->  .../bindings/serial/renesas,scif.yaml         | 136 +++++++++++++-----
->  drivers/tty/serial/sh-sci.c                   |  55 ++++++-
->  include/linux/serial_sci.h                    |   1 +
->  3 files changed, 154 insertions(+), 38 deletions(-)
->
-> --
-> 2.34.1
->
