@@ -1,20 +1,20 @@
 Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AC49199EA5;
-	Wed, 29 May 2024 08:02:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBCD216936A;
+	Wed, 29 May 2024 08:07:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=153.127.30.23
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716969756; cv=none; b=SiUMZmgVgDLrMA7NKmoCecQBX1q8q/qdFZcazP+QLj5y2FMQkZVlvuc9NfPrjuSS+VI5E5rf5kzDcm+/b1ULTqb5gLOEcO4YarcfCynKSb7ru2SDEprPqYXVu9wQyajo4Pwai+aB+mAhPy2DOukHYDZdFRo4FxKdSdMXYXtapXA=
+	t=1716970054; cv=none; b=tFA95Iw9togmxA76vLNF+dD94Z5oO+W6GoJrmLkbdWBdY1kEsPilQx1spAkcZz6/cZ7taJ4EbzkJAQZ569EnS9wzR3hWlD0otRRZFYiLROHenAv/E5a0NUIh13qvRyBi+h+zE011GQ9QNnmECtBPItfjczkx6UCIFk0NdDFrafA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716969756; c=relaxed/simple;
-	bh=HfCnaCGFqb9NsLZ2tSL9t0qOwxfZXHeNec47VwxbtkU=;
+	s=arc-20240116; t=1716970054; c=relaxed/simple;
+	bh=+jChVBe98OHShkl2slecq/QYxzAwUnQ28RTjjeoxIWQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=S6YFfhlc90SFWo0YEcmHD45AKZy+T+cai6K+WFMTtPF6dwHRhsizpU0mact6LjDPg3g8iVcH0j+h6DOeT8XDgddOA4OHmCCRkhn6yDmeL5OFs2JuzoFMupmtgeb8E+/k1La7ejXej5dEy3uJtRJIXMA8y3S0S6b8QQ9MAKaLUfg=
+	 MIME-Version; b=lVzGVNRtsvLQQ34U4pD+YqWIiAaA00Wl9TQsmDnOkpozskswslfORoPFvGCrgfDvnORC55b+wd+EGyvvzDAqkpjoeTt423cgTeFenyc1l4uQSlSbyhOWnQ+VGkx2JFsskiY79e2XtZlsw3Nnx+hwKwZ+Pa1NsTlj8EHvkDYS9rc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=users.sourceforge.jp; spf=fail smtp.mailfrom=users.sourceforge.jp; arc=none smtp.client-ip=153.127.30.23
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=users.sourceforge.jp
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=users.sourceforge.jp
 Received: from SIOS1075.ysato.name (al128006.dynamic.ppp.asahi-net.or.jp [111.234.128.6])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 278291C1083;
-	Wed, 29 May 2024 17:02:33 +0900 (JST)
+	by sakura.ysato.name (Postfix) with ESMTPSA id 4961B1C03C6;
+	Wed, 29 May 2024 17:01:33 +0900 (JST)
 From: Yoshinori Sato <ysato@users.sourceforge.jp>
 To: linux-sh@vger.kernel.org
 Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
@@ -81,9 +81,9 @@ Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v8 36/36] sh: j2_defconfig: update
-Date: Wed, 29 May 2024 17:01:22 +0900
-Message-Id: <60abd745155c465b775c3c876c0b71f0756d25a6.1716965617.git.ysato@users.sourceforge.jp>
+Subject: [DO NOT MERGE v8 03/36] sh: Enable OF support for build and configuration.
+Date: Wed, 29 May 2024 17:00:49 +0900
+Message-Id: <8249ec600f70f80c5a755a9e1d233af21907d7f9.1716965617.git.ysato@users.sourceforge.jp>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <cover.1716965617.git.ysato@users.sourceforge.jp>
 References: <cover.1716965617.git.ysato@users.sourceforge.jp>
@@ -95,61 +95,120 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-I've changed some symbols related to DeviceTree,
-so let's take care of those changes.
+IRQ, CLK and PCI will be migrated to a common driver framework.
+So if OF, disable the SH specific drivers.
 
 Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 ---
- arch/sh/configs/j2_defconfig | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ arch/sh/Kconfig                 | 11 ++++++-----
+ arch/sh/drivers/Makefile        |  2 ++
+ arch/sh/kernel/cpu/Makefile     |  9 +++++++--
+ arch/sh/kernel/cpu/sh4/Makefile |  3 +++
+ 4 files changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/arch/sh/configs/j2_defconfig b/arch/sh/configs/j2_defconfig
-index 2eb81ebe3888..cdc8ed244618 100644
---- a/arch/sh/configs/j2_defconfig
-+++ b/arch/sh/configs/j2_defconfig
-@@ -1,18 +1,15 @@
--CONFIG_SMP=y
- CONFIG_SYSVIPC=y
- CONFIG_POSIX_MQUEUE=y
- CONFIG_NO_HZ=y
- CONFIG_HIGH_RES_TIMERS=y
- CONFIG_CPU_SUBTYPE_J2=y
- CONFIG_MEMORY_START=0x10000000
--CONFIG_MEMORY_SIZE=0x04000000
- CONFIG_CPU_BIG_ENDIAN=y
--CONFIG_SH_DEVICE_TREE=y
--CONFIG_SH_JCORE_SOC=y
-+CONFIG_SH_OF_BOARD=y
- CONFIG_HZ_100=y
-+CONFIG_SMP=y
- CONFIG_CMDLINE_OVERWRITE=y
- CONFIG_CMDLINE="console=ttyUL0 earlycon"
--CONFIG_BINFMT_ELF_FDPIC=y
- CONFIG_BINFMT_FLAT=y
- CONFIG_NET=y
- CONFIG_PACKET=y
-@@ -21,7 +18,6 @@ CONFIG_INET=y
- CONFIG_DEVTMPFS=y
- CONFIG_DEVTMPFS_MOUNT=y
- CONFIG_NETDEVICES=y
--CONFIG_SERIAL_EARLYCON=y
- CONFIG_SERIAL_UARTLITE=y
- CONFIG_SERIAL_UARTLITE_CONSOLE=y
- CONFIG_I2C=y
-@@ -30,8 +26,6 @@ CONFIG_SPI_JCORE=y
- CONFIG_WATCHDOG=y
- CONFIG_MMC=y
- CONFIG_MMC_SPI=y
--CONFIG_CLKSRC_JCORE_PIT=y
--CONFIG_JCORE_AIC=y
- CONFIG_EXT4_FS=y
- CONFIG_VFAT_FS=y
- CONFIG_FAT_DEFAULT_IOCHARSET="ascii"
-@@ -40,3 +34,4 @@ CONFIG_NLS_DEFAULT="utf8"
- CONFIG_NLS_CODEPAGE_437=y
- CONFIG_NLS_ASCII=y
- CONFIG_NLS_UTF8=y
-+CONFIG_INIT_STACK_NONE=y
+diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+index d6704c57f9dc..91c7c72bc0db 100644
+--- a/arch/sh/Kconfig
++++ b/arch/sh/Kconfig
+@@ -66,10 +66,10 @@ config SUPERH
+ 	select MODULES_USE_ELF_RELA
+ 	select NEED_SG_DMA_LENGTH
+ 	select NO_DMA if !MMU && !DMA_COHERENT
+-	select NO_GENERIC_PCI_IOPORT_MAP if PCI
++	select NO_GENERIC_PCI_IOPORT_MAP if !SH_DEVICE_TREE
+ 	select OLD_SIGACTION
+ 	select OLD_SIGSUSPEND
+-	select PCI_DOMAINS if PCI
++	select PCI_DOMAINS if PCI && !SH_DEVICE_TREE
+ 	select PERF_EVENTS
+ 	select PERF_USE_VMALLOC
+ 	select RTC_LIB
+@@ -154,7 +154,7 @@ menu "System type"
+ #
+ config CPU_SH2
+ 	bool
+-	select SH_INTC
++	select SH_INTC if !SH_DEVICE_TREE
+ 
+ config CPU_SH2A
+ 	bool
+@@ -180,7 +180,7 @@ config CPU_SH4
+ 	select CPU_HAS_INTEVT
+ 	select CPU_HAS_SR_RB
+ 	select CPU_HAS_FPU if !CPU_SH4AL_DSP
+-	select SH_INTC
++	select SH_INTC if !SH_DEVICE_TREE
+ 	select SYS_SUPPORTS_SH_TMU
+ 
+ config CPU_SH4A
+@@ -523,6 +523,7 @@ config SH_PCLK_FREQ
+ 
+ config SH_CLK_CPG
+ 	def_bool y
++	depends on !COMMON_CLK
+ 
+ config SH_CLK_CPG_LEGACY
+ 	depends on SH_CLK_CPG
+@@ -667,7 +668,7 @@ config BUILTIN_DTB_SOURCE
+ 	  kernel.
+ 
+ config ZERO_PAGE_OFFSET
+-	hex
++	hex "Zero page offset"
+ 	default "0x00010000" if PAGE_SIZE_64KB || SH_RTS7751R2D || \
+ 				SH_7751_SOLUTION_ENGINE
+ 	default "0x00004000" if PAGE_SIZE_16KB || SH_SH03
+diff --git a/arch/sh/drivers/Makefile b/arch/sh/drivers/Makefile
+index 8bd10b904bf9..83f609ca1eb4 100644
+--- a/arch/sh/drivers/Makefile
++++ b/arch/sh/drivers/Makefile
+@@ -5,6 +5,8 @@
+ 
+ obj-y		+= dma/ platform_early.o
+ 
++ifndef CONFIG_SH_DEVICE_TREE
+ obj-$(CONFIG_PCI)		+= pci/
++endif
+ obj-$(CONFIG_PUSH_SWITCH)	+= push-switch.o
+ obj-$(CONFIG_HEARTBEAT)		+= heartbeat.o
+diff --git a/arch/sh/kernel/cpu/Makefile b/arch/sh/kernel/cpu/Makefile
+index 46118236bf04..e00ebf134985 100644
+--- a/arch/sh/kernel/cpu/Makefile
++++ b/arch/sh/kernel/cpu/Makefile
+@@ -16,6 +16,11 @@ obj-$(CONFIG_ARCH_SHMOBILE)	+= shmobile/
+ # Common interfaces.
+ 
+ obj-$(CONFIG_SH_ADC)		+= adc.o
++ifndef CONFIG_COMMON_CLK
++obj-y += clock.o
+ obj-$(CONFIG_SH_CLK_CPG_LEGACY)	+= clock-cpg.o
+-
+-obj-y	+= irq/ init.o clock.o fpu.o pfc.o proc.o
++endif
++ifndef CONFIG_GENERIC_IRQ_CHIP
++obj-y	+= irq/
++endif
++obj-y	+= init.o fpu.o pfc.o proc.o
+diff --git a/arch/sh/kernel/cpu/sh4/Makefile b/arch/sh/kernel/cpu/sh4/Makefile
+index 02e3ee16e15c..33da4c86feff 100644
+--- a/arch/sh/kernel/cpu/sh4/Makefile
++++ b/arch/sh/kernel/cpu/sh4/Makefile
+@@ -15,6 +15,7 @@ perf-$(CONFIG_CPU_SUBTYPE_SH7750)	:= perf_event.o
+ perf-$(CONFIG_CPU_SUBTYPE_SH7750S)	:= perf_event.o
+ perf-$(CONFIG_CPU_SUBTYPE_SH7091)	:= perf_event.o
+ 
++ifndef CONFIG_SH_DEVICE_TREE
+ # CPU subtype setup
+ obj-$(CONFIG_CPU_SUBTYPE_SH7750)	+= setup-sh7750.o
+ obj-$(CONFIG_CPU_SUBTYPE_SH7750R)	+= setup-sh7750.o
+@@ -29,5 +30,7 @@ ifndef CONFIG_CPU_SH4A
+ clock-$(CONFIG_CPU_SH4)			:= clock-sh4.o
+ endif
+ 
++endif # CONFIG_SH_DEVICE_TREE
++
+ obj-y					+= $(clock-y)
+ obj-$(CONFIG_PERF_EVENTS)		+= $(perf-y)
 -- 
 2.39.2
 
