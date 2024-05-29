@@ -1,168 +1,138 @@
-Received: from sakura.ysato.name (ik1-413-38519.vs.sakura.ne.jp [153.127.30.23])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0B9C17BB2A;
-	Wed, 29 May 2024 08:07:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=153.127.30.23
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC6607317C;
+	Wed, 29 May 2024 08:44:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716970055; cv=none; b=HXwA1wLEjo0gGY6EoTJevIcOC5EVt37UGATxrdFXebW5CSVkTcIGnBAemmBnccB+31eTNJ9akCEQUZMOl9BC7SAvQqB7S2QP6Ne5xttK3t4IPHEfJjaaydeF+i5eDfp/uk7Npnns5hIRDYOw0IeNQbhHb1Jqkic/0NHSgJNinNc=
+	t=1716972289; cv=none; b=nXQnVxGUuXxwKby4yimlN4XW2K88dUAgkJKndW8t+W42owqdolVX+Ok2F3qbS4/jRyljR6CAYRH1QGVNyP6mnONrOtJkId+7w9urvc+6hI1CCqkLmWerdHDMAd5zKnEs5f1BuWioYiZdJcqDKi0IT8N/1tXnmZJXn/5cuR1od70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716970055; c=relaxed/simple;
-	bh=ZOXJqoNpfJi51Vl3FuxgTIPEhYkHwt3DigpPUVNGTDo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BCWCHRJTCG4lSLGzxeCVJBNz6fJ51QT5IeMhHE2ltLOMfvK/rGyklXpgWSio9Szv8dWujwEnrQkPgSWZMXt+qzZBf0iofkj5dmD4D1EPky9eBD/QEwjxZflYWNykycHDQMlh7t/k/Bwpyyh3Tbf0dzuOggcabt2NCOiS/zpTLS4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=users.sourceforge.jp; spf=fail smtp.mailfrom=users.sourceforge.jp; arc=none smtp.client-ip=153.127.30.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=users.sourceforge.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=users.sourceforge.jp
-Received: from SIOS1075.ysato.name (al128006.dynamic.ppp.asahi-net.or.jp [111.234.128.6])
-	by sakura.ysato.name (Postfix) with ESMTPSA id 85A111C032B;
-	Wed, 29 May 2024 17:01:31 +0900 (JST)
-From: Yoshinori Sato <ysato@users.sourceforge.jp>
-To: linux-sh@vger.kernel.org
-Cc: Yoshinori Sato <ysato@users.sourceforge.jp>,
-	Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Lee Jones <lee@kernel.org>,
-	Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Azeem Shaikh <azeemshaikh38@gmail.com>,
-	Guo Ren <guoren@kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: [DO NOT MERGE v8 02/36] sh: Kconfig unified OF supported targets.
-Date: Wed, 29 May 2024 17:00:48 +0900
-Message-Id: <5226282870c6ea790cc4af2c723bae46658d4611.1716965617.git.ysato@users.sourceforge.jp>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <cover.1716965617.git.ysato@users.sourceforge.jp>
-References: <cover.1716965617.git.ysato@users.sourceforge.jp>
+	s=arc-20240116; t=1716972289; c=relaxed/simple;
+	bh=p40R5rFJGFDAQSsnFPDn0qgqt17MKj0Zb5AYtUv3X2M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DJ9R/8u4vrAKCkol6IP9TgcHDD2oP9QuzmMf6LmRZXMIk9BcMi+5nOd8bkXC/Bah+dsGT572oQ446dkKNczD0jB0+52RqXJS77ZkO5QnCGWf4iht4iDV1hAtGAlGwx93XUusIfM6ojJImKITCRgrV4N5seZohXfRtCH6NZHlQkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=wM/l0B3G; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="wM/l0B3G"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=62oeTUGKeiIeJZhLIw+3DjXFUnHZq5HaX9rMmbYUNjs=; b=wM/l0B3Gqohrf4/WBPLwOHYBPV
+	VVtxZBJd5JpArAHR1T1gdmXT+hHz+Aa4CbDrZyrSL2Gp8EbU5k1Wc125/r20L3kyEBTIrtjEhCoNf
+	KregjsT3qPc+EWoPFsgfq0YSRiPb3GODpxRa+AmIo6PZwSsgmCinvgOJck+M4i1jp9dWV+FDD6A2V
+	qIpOjrgiPidNsI0X/kOtIJV72uAxlOpbc2o9S6eNEneMTWGsPBIFHq+AJVxYGZW0R4HJbnjRCcz6N
+	iLM88fO8OhKwCM2mxkAizwE3e3xJ+7nM5AeLl11g2PYH1gk5rnz+7BG1otskeBZo1MscciwMOoz98
+	UeKfmVLQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.96 #2 (Red Hat Linux))
+	id 1sCEvL-002Ic4-0r;
+	Wed, 29 May 2024 08:44:43 +0000
+Date: Wed, 29 May 2024 09:44:43 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Alexey Gladkov <legion@kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
+	linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	linux-serial@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH v5 1/3] VT: Use macros to define ioctls
+Message-ID: <20240529084443.GO2118490@ZenIV>
+References: <cover.1712080158.git.legion@kernel.org>
+ <cover.1713375378.git.legion@kernel.org>
+ <e4229fe2933a003341e338b558ab1ea8b63a51f6.1713375378.git.legion@kernel.org>
+ <2024041836-most-ablaze-f417@gregkh>
+ <0da9785e-ba44-4718-9d08-4e96c1ba7ab2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0da9785e-ba44-4718-9d08-4e96c1ba7ab2@kernel.org>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-Targets that support OF should be treated as one board.
+On Wed, May 29, 2024 at 09:29:23AM +0200, Jiri Slaby wrote:
+> On 18. 04. 24, 8:18, Greg Kroah-Hartman wrote:
+> > On Wed, Apr 17, 2024 at 07:37:35PM +0200, Alexey Gladkov wrote:
+> > > All other headers use _IOC() macros to describe ioctls for a long time
+> > > now. This header is stuck in the last century.
+> > > 
+> > > Simply use the _IO() macro. No other changes.
+> > > 
+> > > Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> > > ---
+> > >   include/uapi/linux/kd.h | 96 +++++++++++++++++++++--------------------
+> > >   1 file changed, 49 insertions(+), 47 deletions(-)
+> > 
+> > This is a nice cleanup, thanks for doing it, I'll just take this one
+> > change now if you don't object.
+> 
+> Unfortunately, _IOC_NONE is 1 on some archs as noted by Arnd, and this
+> commit changed the kd ioctl values in there which broke stuff as noted by
+> Al.
+> 
+> We either:
+> * use _IOC(0, X, Y) in here, instead of _IO(X, Y), or
+> * define KDIOC(X) as _IOC(0, KD_IOCTL_BASE, X), or
+> * revert the commit which landed to -rc1 already.
 
-Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
----
- arch/sh/Kconfig        |  1 +
- arch/sh/boards/Kconfig | 23 +++++++++++++----------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+Revert, IMO.  If nothing else, _IO... macros are there to
+	* document the copyin/copyout direction
+	* make sure that argument size mismatches between the kernel
+and userland get caught
 
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index 5e6a3ead51fb..d6704c57f9dc 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -711,6 +711,7 @@ config ROMIMAGE_MMCIF
- choice
- 	prompt "Kernel command line"
- 	default CMDLINE_OVERWRITE
-+	depends on !OF || USE_BUILTIN_DTB
- 	help
- 	  Setting this option allows the kernel command line arguments
- 	  to be set.
-diff --git a/arch/sh/boards/Kconfig b/arch/sh/boards/Kconfig
-index 109bec4dad94..46387fd040ad 100644
---- a/arch/sh/boards/Kconfig
-+++ b/arch/sh/boards/Kconfig
-@@ -19,16 +19,9 @@ config SH_DEVICE_TREE
- 	select TIMER_OF
- 	select COMMON_CLK
- 	select GENERIC_CALIBRATE_DELAY
--
--config SH_JCORE_SOC
--	bool "J-Core SoC"
--	select SH_DEVICE_TREE
--	select CLKSRC_JCORE_PIT
--	select JCORE_AIC
--	depends on CPU_J2
--	help
--	  Select this option to include drivers core components of the
--	  J-Core SoC, including interrupt controllers and timers.
-+	select GENERIC_IRQ_CHIP
-+	select SYS_SUPPORTS_PCI
-+	select GENERIC_PCI_IOMAP if PCI
- 
- config SH_SOLUTION_ENGINE
- 	bool "SolutionEngine"
-@@ -293,6 +286,7 @@ config SH_LANDISK
- 	bool "LANDISK"
- 	depends on CPU_SUBTYPE_SH7751R
- 	select HAVE_PCI
-+	select SYS_SUPPORTS_PCI
- 	help
- 	  I-O DATA DEVICE, INC. "LANDISK Series" support.
- 
-@@ -369,6 +363,15 @@ config SH_APSH4AD0A
- 	help
- 	  Select AP-SH4AD-0A if configuring for an ALPHAPROJECT AP-SH4AD-0A.
- 
-+config SH_OF_BOARD
-+	bool "General Open Firmware boards"
-+	select SH_DEVICE_TREE
-+	select CLKSRC_JCORE_PIT if CPU_J2
-+	select JCORE_AIC if CPU_J2
-+	select HAVE_PCI if CPU_SUBTYPE_SH7751R
-+	help
-+	  This board means general OF supported targets.
-+
- source "arch/sh/boards/mach-r2d/Kconfig"
- source "arch/sh/boards/mach-highlander/Kconfig"
- source "arch/sh/boards/mach-sdk7780/Kconfig"
--- 
-2.39.2
+Turning 16bit hex constants into that won't serve any purpose other
+than preventing such patches in the future; adding a comment would
+deal with that just fine.
 
+BTW, the original odd choice for _IOC_NONE appears to have been motivated
+by avoiding conflicts with legacy ioctl numbers: in CSRG repo there's
+this:
+commit 02cbc6a653b48bb4ec6052cbe6b3979530011c46
+Author: Sam Leffler <sam@ucbvax.Berkeley.EDU>
+Date:   Mon Aug 2 02:22:17 1982 -0800
+
+    new ioctl's
+
+...
+
++/*
++ * Ioctl's have the command encoded in the lower word,
++ * and the size of any in or out parameters in the upper
++ * word.  The high 2 bits of the upper word are used
++ * to encode the in/out status of the parameter; for now
++ * we restrict parameters to at most 128 bytes.
++ */
++#define        IOCPARM_MASK    0x7f            /* parameters must be < 128 bytes */
++#define        IOC_VOID        0x20000000      /* no parameters */
++#define        IOC_OUT         0x40000000      /* copy out parameters */
++#define        IOC_IN          0x80000000      /* copy in parameters */
++#define        IOC_INOUT       (IOC_IN|IOC_OUT)
++/* the 0x20000000 is so we can distinguish new ioctl's from old */
++#define        _IO(x,y)        (IOC_VOID|('x'<<8)|y)
++#define        _IOR(x,y,t)     (IOC_OUT|((sizeof(t)&IOCPARM_MASK)<<16)|('x'<<8)|y)
++#define        _IOW(x,y,t)     (IOC_IN|((sizeof(t)&IOCPARM_MASK)<<16)|('x'<<8)|y)
++/* this should be _IORW, but stdio got there first */
++#define        _IOWR(x,y,t)    (IOC_INOUT|((sizeof(t)&IOCPARM_MASK)<<16)|('x'<<8)|y)
+
+FWIW, the upper limit on parameter size went up from 128 bytes to 8Kb in
+
+commit 856ed9ecd2795280feed42baf3889ac7c7f9a26d
+Author: Mike Karels <karels@ucbvax.Berkeley.EDU>
+Date:   Thu Feb 19 22:16:28 1987 -0800
+
+    larger ioctl's (for disklabels)
+
+Wonder what got us (in sparc port?) to lift it from 8Kb to 16Kb...
+In our historical tree that has happened in
+commit 1c29224f169362b671a4bef4cd864464ef810d42
+Author: Pete Zaitcev <zaitcev@redhat.com>
+Date:   Sun Mar 2 08:45:12 2003 -0800
+
+    [SPARC32/64]: Expand ioctl size field in backwards-compatible way.
+
+No explanations there...
