@@ -1,106 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 833C0168C0F;
-	Wed, 29 May 2024 07:42:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1221E167D82;
+	Wed, 29 May 2024 07:44:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716968566; cv=none; b=pvsXmHCv7GTuqErpFan/J6k/aA8re9pNgPJtOMtwNqKyGJgmPW58/Y9OE7CtKWYXATifgi18r0vZfUy2R57o87QD+XwqWEZnjvqFDvf6FGwOLtIXbZQnL5mBmbBCTbOwkZTjZQ2ccHkvAbEkgc+TeP9QqCiaDpuZQ650GFlvtFI=
+	t=1716968668; cv=none; b=gFhNPInb1Z9vCxDiF5SMUUvof204Rrg9mqWttxc+J+tXJDlVqmQu2cD8plgxDlwEOjuKPMX2UQMFSz6wbmGY/j3enBEV8XFf+M8h4JGo+q/D+Biw3WxQoTMTDAfAXR0flpR7EfJfcI9UYsg+JavDNfzU/ryosjc+bleUrr7plkM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716968566; c=relaxed/simple;
-	bh=SkhK1XhIZ1X7AgwyKwYJRp2ZVjO0FPB7fwwFSlEBnMQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wp/kDhFwu02XcmZnucUMzpf0psi9i/vB4mt6Z0Dc9+5jiF1+u6H2YBT9Re15brjQMBeL8NeZxS1kcLwXBveSc4UoOLX6eiVqAoNfp9keSh4TOQTnjNY5ztmt+ds0WW/fsbRqXg5wGrhYKXjXybPaigFzKfUT+cim3ftAFTAo33Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=TvNV7Dvi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1716968668; c=relaxed/simple;
+	bh=AzzDMJdA28GXgKKNDPed4G6wzS0vsyy1cTbdGo0qXx4=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=SQYB5ZuJrbdLDzkWoZiGB8xmKHFsNCGYRoRwVpbsH1NSkZLBa9WolELGvsmaumbp3ISFQWeDAj0Xs92qQQqrGt54CLkxt1DkaAmlmjgcap6WpW+6mxcWVDjNbu1UAvQ9CvHqB2DOoNQh0sxpCJjFmlUoB6q1FhqxSj2+afyKdDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IuFc0cXg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="TvNV7Dvi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 840C9C2BD10;
-	Wed, 29 May 2024 07:42:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1716968566;
-	bh=SkhK1XhIZ1X7AgwyKwYJRp2ZVjO0FPB7fwwFSlEBnMQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TvNV7Dviop/wlWuzrCK+PwZE1o4r2x1OLVBKJ9nln3eQ/d5R7qRH2JbStik2aCOCC
-	 fEV3XBPIO5sE17C/uVUWTTW0vdhg67ADauE0BAXnN5d4FBvEEJUxeYr9y5ZkXF/KtL
-	 aksuDfviZOGPcPIrV62awx0ciOM3Iopij/zgjtko=
-Date: Wed, 29 May 2024 09:42:50 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc: Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v4 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
-Message-ID: <2024052955-phrase-portion-8d1f@gregkh>
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CA+V-a8vQr2jxrW+C5VTcmEHmDgNp6S8=3KcAT1SzcKusFaP7Gw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IuFc0cXg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F07FEC32786;
+	Wed, 29 May 2024 07:44:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1716968667;
+	bh=AzzDMJdA28GXgKKNDPed4G6wzS0vsyy1cTbdGo0qXx4=;
+	h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+	b=IuFc0cXg7QZcBM/e78aPfrhBLd64oyBQbj++bPzquLHjN1El6N7G2cxjH1GnojcRA
+	 UAKgr8AanpQgN8kkqaHAe8P0V7JngaFfbCjhgzUImu22Xgy+mGBaWrA9phVcoHfHqO
+	 UPXcvCCmHqylLRul5mz4vw/TWykgIHybn23Iry3+RSb0wmoETVk5GDR59Vy9XVXEoj
+	 qi2YbSTTRB2zolkkfCW3W6YbxsKuatjmKdN6zpVfi0iYx38TvZehfY2onAdGON1EVG
+	 bx0Iddop5HCFibaQ+9aiEJq4H/zC3vZMNTddS9VtdcCgX5afQqorzRtPF97+YQCRGM
+	 RpgA1b5BXBrsA==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfauth.nyi.internal (Postfix) with ESMTP id BCF861200032;
+	Wed, 29 May 2024 03:44:25 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Wed, 29 May 2024 03:44:25 -0400
+X-ME-Sender: <xms:2dxWZp09F_zgveTjUahiJYfxfKwtcrUDlCKk32Euwgn0mJ4j1L61iw>
+    <xme:2dxWZgFm8nF-9Ui0ZZ7M9s3S74-EbNno_ppR7o3eiP9PBwU4VVX9Mwf5E3EFr1T6e
+    b3zKIoYXPnRMYtlWtQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrvdektddgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlhdrohhrgheqnecuggftrf
+    grthhtvghrnhepvdeviefgtedugeevieelvdfgveeuvdfgteegfeeiieejjeffgeeghedu
+    gedtveehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghrnhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduvdekhedujedt
+    vdegqddvkeejtddtvdeigedqrghrnhgupeepkhgvrhhnvghlrdhorhhgsegrrhhnuggsrd
+    guvg
+X-ME-Proxy: <xmx:2dxWZp6sJipIZmP3vYTZHtAJI65-auL8_Lbf2Jz0zwZDFGgV9xRydw>
+    <xmx:2dxWZm3fGByL6p01B6SN1ErYS7B7tw5cia8zk88c15tNPpxLkoY03Q>
+    <xmx:2dxWZsHTEgrpqSJk7YbP9EskBR6ulP_ZET3rojqM-BTs7H52ghit3w>
+    <xmx:2dxWZn8rFkl481g5QNQpWGJcK2hD297RINDbNuaqutcHZ77_zknmiA>
+    <xmx:2dxWZpkwNrdA9PO5hp2wfEY6MB5IcP2qaLlJdlASDuJ4HazGG-WRRemt>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 7935EB6008D; Wed, 29 May 2024 03:44:25 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-491-g033e30d24-fm-20240520.001-g033e30d2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+V-a8vQr2jxrW+C5VTcmEHmDgNp6S8=3KcAT1SzcKusFaP7Gw@mail.gmail.com>
+Message-Id: <b779241d-36d8-4728-a126-9340bc569a2d@app.fastmail.com>
+In-Reply-To: <0da9785e-ba44-4718-9d08-4e96c1ba7ab2@kernel.org>
+References: <cover.1712080158.git.legion@kernel.org>
+ <cover.1713375378.git.legion@kernel.org>
+ <e4229fe2933a003341e338b558ab1ea8b63a51f6.1713375378.git.legion@kernel.org>
+ <2024041836-most-ablaze-f417@gregkh>
+ <0da9785e-ba44-4718-9d08-4e96c1ba7ab2@kernel.org>
+Date: Wed, 29 May 2024 09:44:04 +0200
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Jiri Slaby" <jirislaby@kernel.org>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Alexey Gladkov" <legion@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>, kbd@lists.linux.dev,
+ linux-api@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ linux-serial@vger.kernel.org, "Alexander Viro" <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v5 1/3] VT: Use macros to define ioctls
+Content-Type: text/plain
 
-On Wed, May 29, 2024 at 07:15:23AM +0100, Lad, Prabhakar wrote:
-> Hi Greg,
-> 
-> On Fri, Mar 22, 2024 at 2:45 PM Prabhakar <prabhakar.csengg@gmail.com> wrote:
-> >
-> > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > Hi All,
-> >
-> > This patch series updates DT binding doc and scif driver to add support
-> > for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
-> > interface.
-> >
-> > v3->v4
-> > - patch 2/4 reverted back to version 2
-> > - new patch 3/5 added
-> > - Added new reg type for RZ/V2H
-> >
-> > v2->v3
-> > - Included DT validation patches
-> > - Added a new compat string for RZ/V2H(P) SoC
-> > - Added driver changes for RZ/V2H(P) SoC
-> > - Listed interrupts and interrupt-names for every SoC in if check
-> >
-> > Cheers,
-> > Prabhakar
-> >
-> > Lad Prabhakar (5):
-> >   dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
-> >   dt-bindings: serial: renesas,scif: Validate 'interrupts' and
-> >     'interrupt-names'
-> >   dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
-> >     required
-> >   dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
-> >     (R9A09G057) SCIF support
-> >   serial: sh-sci: Add support for RZ/V2H(P) SoC
-> >
-> Gentle ping.
+On Wed, May 29, 2024, at 09:29, Jiri Slaby wrote:
+> On 18. 04. 24, 8:18, Greg Kroah-Hartman wrote:
+>> 
+>> This is a nice cleanup, thanks for doing it, I'll just take this one
+>> change now if you don't object.
+>
+> Unfortunately, _IOC_NONE is 1 on some archs as noted by Arnd, and this 
+> commit changed the kd ioctl values in there which broke stuff as noted 
+> by Al.
+>
+> We either:
+> * use _IOC(0, X, Y) in here, instead of _IO(X, Y), or
+> * define KDIOC(X) as _IOC(0, KD_IOCTL_BASE, X), or
+> * revert the commit which landed to -rc1 already.
 
-It is only 3 days since the merge window ended, please be patient for
-maintainers to catch up with their pending review queue.  Especially for
-non-bugfixes like these that will be included in the 6.11-rc1 release,
-there is not any rush here for anyone just yet.
+I would prefer a simple revert, as the other options may
+end up more confusing. Another option might be a new
+global macro, if we then go an convert all plain ioctl
+command numbers to that.
 
-For example, my todo queue currently has 1458 emails to process in it,
-this thread is somewhere in the middle.
-
-In the meantime, please help review other pending patches for the
-subsystem to help enable your patches to move toward the top of the
-queue.
-
-thanks,
-
-greg k-h
+      Arnd
