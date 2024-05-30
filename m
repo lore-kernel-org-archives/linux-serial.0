@@ -1,91 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DABED46B83;
-	Thu, 30 May 2024 17:15:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE9347A73;
+	Thu, 30 May 2024 17:43:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717089307; cv=none; b=O9PuDTxAynvSCMvCASyaYo1I3RecJtwTgVkpc1WmGIn52TdB8+JAU+wIF44SrGb+qE7zc93+E+boOwjL9uzO4/MMUhEIVcO4l4/yjMsMOwj4J5BNjbFTbXxnhmNfVL6VJ//ZuUT4Ifhxtr8sZ/Eu80ucEUqJ12Xk5s0t4Qt1kT8=
+	t=1717091009; cv=none; b=A98EnyAWWBBUP6nELFgF3gRN5PuxOUGMOTO+n8Gd1B3BPeHleE72DL048A/4DWCP+7IRY8cT2sFgIrUdR5bksLx2JbigiNgI7IRTJJSQtzOLuDPO2trmGVOj7w6RQI1mC0fmAxEMYseKi92PgiU75cD3Vw6klduA+WwdrFT2tFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717089307; c=relaxed/simple;
-	bh=URqPQnPy5FP44S2DmmqfTAsVuS00f5pQbyJiST5YKkM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=r1JkxNiOKNdJKCu1HHPrc48g0xt8DByT/2s2sk8nE8PMwKSPg/9BShmVGoB9XdtKkeqi2milVLBGy55aYG6PEu+bPSipYu2XBKLMgXmkVWMhatz3kUJoGouJN5rys4EinJkzfQLY3KIoJDjmYo6FmlLeWj5n8dZOPQK2lEbtjjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=M+fVHIQp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717091009; c=relaxed/simple;
+	bh=8fcphnfj+O2CwB7e1G0DKa0lKG2nE+NF5g3drom6Aiw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YwHi14jFGLwho1XJd4wfnvSr3o86xoQC4HksJVX2C+KZccT5mZrL5+PNg/qJbYJGlbajvyDdJRHxd4ca81ehzIEP4AMFDOTYt4jJ6Gzrf2Vj6A0f8rFW1ihA/h5lGKI/uYQ2IdqD2atETdmur04jGDk+2u/65ao1NPiuAM/JTtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMcGGFQy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="M+fVHIQp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8289C32782;
-	Thu, 30 May 2024 17:15:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMcGGFQy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B43C2BBFC;
+	Thu, 30 May 2024 17:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717089306;
-	bh=URqPQnPy5FP44S2DmmqfTAsVuS00f5pQbyJiST5YKkM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=M+fVHIQpg0T/3eHcd7tocoywDYwP17uK8cfkJ9zDeNZG04tV2jk609zvJsgA4Hw5k
-	 JWHPG8Rl9ABZDwBSelkCaspwJo+IzT70B44yyNeUkgNAcbfkvtnET3NeL2SpjlSA1F
-	 hHBHeenJ3skGKNDm2yi5jpgB37DFn2OOSXSyx5TQy8VZIEfoVo195wBfpt5pQKaklJ
-	 HWffN+mjUuHC0vpZiAQsmgeW2cNOaLYDhsqv0Gl3kRlhQ75j5lF3kjyN0p+zZ2LykL
-	 8JZbuS9JYpvHpH2Ms4zZSpwAOi2BnRmi0dEEztlj2vh8seGJcK1FRaLwKJspFOkLwL
-	 5ATVzGSbzf5sA==
-Date: Thu, 30 May 2024 12:15:03 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Lee Jones <lee@kernel.org>, Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Masahiro Yamada <masahiroy@kernel.org>, Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Azeem Shaikh <azeemshaikh38@gmail.com>, Guo Ren <guoren@kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [DO NOT MERGE v8 00/36] Device Tree support for SH7751 based
- board
-Message-ID: <20240530171503.GA551834@bhelgaas>
+	s=k20201202; t=1717091009;
+	bh=8fcphnfj+O2CwB7e1G0DKa0lKG2nE+NF5g3drom6Aiw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aMcGGFQyFAeT1sScSa+Y1stGV15mVtxb5fUMSCFGMM06VxG5JpaOJjozldpE+AYUP
+	 w0T0zK2gt2Z77DddsikCWJLJmpve4SEv5rcnTg4ProZVOeFR87tJx4ETV84OazMuBm
+	 I50Xu1AffzkmoOeBkB46pqCp1/RJTkEm4Si0k3jFhrpq8O4JYsohzLIjKnM1fLnYCi
+	 h3GbpFPIlhP5D8w9jsOlFv+XqLuefxaiy/vUvbXLGNXfcheYet2zzvwjEn0smU5fsZ
+	 CV+K4AHPNw77aKq0/Y281I27I9+y1LBbeFywbz9kUuvbBUyUmKFTe3JQNmBB20a9Zf
+	 wmihACkzroVqQ==
+Date: Thu, 30 May 2024 10:43:26 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
+	patches@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
+Message-ID: <20240530174326.GB3018978@thelio-3990X>
+References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
+ <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
+ <2024053008-sadly-skydiver-92be@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -94,19 +50,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1716965617.git.ysato@users.sourceforge.jp>
+In-Reply-To: <2024053008-sadly-skydiver-92be@gregkh>
 
-On Wed, May 29, 2024 at 05:00:46PM +0900, Yoshinori Sato wrote:
-> This is an updated version of something I wrote about 7 years ago.
-> Minimum support for R2D-plus and LANDISK.
-> I think R2D-1 will work if you add AX88796 to dts.
-> And board-specific functions and SCI's SPI functions are not supported.
+On Thu, May 30, 2024 at 09:40:13AM +0200, Greg Kroah-Hartman wrote:
+> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
+> > >  This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
+> > >      291 |         struct mxser_port ports[] __counted_by(nports);
+> > >          |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+> > >    1 error generated.
+> > > 
+> > > Remove this use of __counted_by to fix the warning/error. However,
+> > > rather than remove it altogether, leave it commented, as it may be
+> > > possible to support this in future compiler releases.
+> > 
+> > This looks like a compiler bug/deficiency.
 
-I don't understand the point of this.  It's marked "DO NOT MERGE", so
-what do you want me to do?  I've posted comments several times and
-they've never been addressed, so I don't think there's any point in
-looking at this again:
+I apologize. As I commented on the nvmet-fc patch, I should have
+included where the flexible array member was within 'struct mxser_port',
+especially since I already knew it from
+https://github.com/ClangBuiltLinux/linux/issues/2026.
 
-  https://lore.kernel.org/r/20240404134652.GA1910402@bhelgaas
+I hope we can all agree now that this is not a compiler bug or issue.
 
-Bjorn
+> I agree, why not just turn that option off in the compiler so that these
+> "warnings" will not show up?
+
+I think the only part of the warning text that got quoted above should
+clarify why this is not a real solution.
+
+For the record, if this was a true issue on the compiler side, I would
+have made that very clear in the commit message (or perhaps not even
+sent the patch in the first place and worked to get it fixed on the
+compiler side, as ClangBuiltLinux has always tried to do first since the
+beginning).
+
+> > What does gcc say BTW?
+
+GCC does not have any support for __counted_by merged yet. I suspect
+that its current implementation won't say anything either, otherwise
+Kees should have noticed it in his testing. As you and Gustavo note
+further down thread, sentinel is flagged by
+-Wflex-array-member-not-at-end.
+
+  In file included from include/linux/tty_port.h:8,
+                   from include/linux/tty.h:11,
+                   from drivers/tty/mxser.c:24:
+  include/linux/tty_buffer.h:40:27: warning: structure containing a flexible array member is not at the end of another structure [-Wflex-array-member-not-at-end]
+     40 |         struct tty_buffer sentinel;
+        |                           ^~~~~~~~
+
+Gustavo has a suggested diff to resolve the issue at the GitHub issue I
+linked above that seems like a reasonable fix for both issues that is
+small enough to go into stable trees that contain f34907ecca71 like this
+one?
+
+Cheers,
+Nathan
