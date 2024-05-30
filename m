@@ -1,162 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from omta38.uswest2.a.cloudfilter.net (omta38.uswest2.a.cloudfilter.net [35.89.44.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 253CB13211A;
-	Thu, 30 May 2024 12:44:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AADEE187541;
+	Thu, 30 May 2024 15:21:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717073097; cv=none; b=tkwchYTyj8vO8loxxdI7FePHWLYeNXFpOjSaJA4gkrq3Q6qYfK7EkNxiVqtEK5LcqUy1EPvpYB0giAitK1RoSDyNh5vx3NGm48updL3ZOQPgENQ+7tlXVHHGvu1tlIto1hdZ4kumO+DkWFDjLOCTYODkyC4WuPxiU7GowRjfFBA=
+	t=1717082490; cv=none; b=aDeQ28shSApOTHZKrOcRl3HukVr3tzrnf3FtueQzyKNJWFXQ05qywV7LOSlPilZbQ06kN+5s1yjuTdeRm8NZ1+UNQ22LzqrkntsBPNooSOuK3CUU6UN/Co/rj44uW9smc9OQbv9nSdjbj+uFDFqk0g9yctXmBTeqxv2IYoIyVvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717073097; c=relaxed/simple;
-	bh=BE5vKjWoF5clRJtqrDhKP5DaIp8mpQT6m134/dlB5jY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dLgTKmEf/V9I67txFQoqLszovak8WfLjVXaHS2YMhho7cN9hh+hhYO3eZimDxuR1v6Nn3kjmORC3imd/Vc3Gtj1vimlFHyM1En1P3lqxrLouDz1IamfRTkmNWmNxxqPn0VBtAjujtj46Kd/ZlxDC5O3lfgXrYqZyWuGFG+0nQxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ioZafEyQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717082490; c=relaxed/simple;
+	bh=U5TgF7VIYvKSRNdp67128508jDwSIOgx0w/UYpTd0Uo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SyBRJJ9pchn78u3nZjznyqU6EJrBRK7sbH1hgyhC/4G4yVoQC4i8xBS1viKLPFZaJ2tfAxx4delDGTyVGyOY7c6oBKxKYdJCPRJ3DBL0qLNCFYoZYRZxIYiKPJNHwGj6e9ennGiqWiKUQtB7vXusF/gjBybfrvGfrSNISB7YZ+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=WI2EPLYT; arc=none smtp.client-ip=35.89.44.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ioZafEyQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 569AFC2BBFC;
-	Thu, 30 May 2024 12:44:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1717073096;
-	bh=BE5vKjWoF5clRJtqrDhKP5DaIp8mpQT6m134/dlB5jY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ioZafEyQtEczCqRpQo7xFcf/W2XF5tkER2qdhpO6JVZpf6j6P0711matV43Ya70gZ
-	 ii3noAJn8+slkpAUbPSJ6+bC2bf8NVi+YUhh69hDtKPZXIbTvjAiPIB5Y1rMBsor3z
-	 Dw5U8mxIVDzJn6bxhHdCCDPTplUhcJDG60LAtP2g=
-Date: Thu, 30 May 2024 14:45:02 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: CrescentCY Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: 8250: Passing attr_group to universal driver
-Message-ID: <2024053013-clapping-germless-d50d@gregkh>
-References: <20240530094457.1974-1-crescentcy.hsieh@moxa.com>
+	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="WI2EPLYT"
+Received: from eig-obgw-6001a.ext.cloudfilter.net ([10.0.30.140])
+	by cmsmtp with ESMTPS
+	id CaEesLOmjSLKxChaksA1PE; Thu, 30 May 2024 15:21:22 +0000
+Received: from gator4166.hostgator.com ([108.167.133.22])
+	by cmsmtp with ESMTPS
+	id ChajsMX6R9zHMChajs3G13; Thu, 30 May 2024 15:21:21 +0000
+X-Authority-Analysis: v=2.4 cv=fo4XZ04f c=1 sm=1 tr=0 ts=66589971
+ a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=7eglLlv4HFOW3sTsDH6Jqg==:17
+ a=IkcTkHD0fZMA:10 a=TpHVaj0NuXgA:10 a=wYkD_t78qR0A:10 a=VwQbUJbxAAAA:8
+ a=VjqEAW4Pdxq5hPAZ8QEA:9 a=QEXdDO2ut3YA:10 a=AjGcO6oz07-iQ99wixmX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=U5TgF7VIYvKSRNdp67128508jDwSIOgx0w/UYpTd0Uo=; b=WI2EPLYTdZl9H0MLSza743CvOT
+	1xSH/pmM1S9t7kmGMjm2n0Be+KYEmaP6IrWjZrupFcuKsoHRKMRmIhYkFQPfxNgXiiIyvfCvN+Fvx
+	3a9gI9uwjVPIX+WncjfkZwfz9OP/ygWuJf+B/AlUnvWqqBBfEXGvIDDo9Fcc+s0h8jFw1yY73TvdF
+	9RnhV6p5q+F4BZK+a7D0OI6csw1ffZhGzrDMu0WM1KkB9me+LMHlgWJBrkgO4uXV448+vuC9Bdjgc
+	6ev6XphlrZ5D6syOHR2rNh6EYQXK3zIudkhLSUDKSLSmLOjFWaw7OgF7+7BenED2BWq63+OAIre3P
+	or6LJIFg==;
+Received: from d58c58c2.rev.dansknet.dk ([213.140.88.194]:46746 helo=[10.0.0.182])
+	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.96.2)
+	(envelope-from <gustavo@embeddedor.com>)
+	id 1sCbQI-000zIv-2W;
+	Thu, 30 May 2024 03:46:10 -0500
+Message-ID: <bee7240b-d143-4613-bde4-822d9c598834@embeddedor.com>
+Date: Thu, 30 May 2024 10:46:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240530094457.1974-1-crescentcy.hsieh@moxa.com>
-
-On Thu, May 30, 2024 at 05:44:57PM +0800, CrescentCY Hsieh wrote:
-> Many low-level drivers in Linux kernel register their serial ports with
-> the help of universal driver (8250_core, 8250_port).
-> 
-> There is an attribute group called `serial8250_dev_attr_group` within
-> `8250_port.c` to handle the `rx_trig_bytes` attribute:
-> https://lore.kernel.org/all/20140716011931.31474.68825.stgit@yuno-kbuild.novalocal/
-> 
-> However, if a low-level driver has some HW specifications that need to
-> be set or retrieved using an attr_group, the universal driver
-> (8250_port) would overwrite the low-level driver's attr_group.
-> 
-> This patch allows the low-level driver's attr_group to be passed to the
-> universal driver (8250_port) and combines the two attr_groups. This
-> ensures that the corresponding system file will only be created if the
-> device is registered by such a low-level driver.
-
-Great!  But is this needed now by any in-kernel drivers, or is this only
-needed by things that are not in our tree?
-
-If in our tree, what driver(s) does this fix up?  If none, then for
-obvious reasons, we can't take this change.
-
-> 
-> Signed-off-by: CrescentCY Hsieh <crescentcy.hsieh@moxa.com>
-> ---
->  drivers/tty/serial/8250/8250_core.c |  9 +++++++++
->  drivers/tty/serial/8250/8250_port.c | 26 ++++++++++++++++++++++++--
->  include/linux/serial_core.h         |  1 +
->  3 files changed, 34 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 43824a174a51..01d04f9d5192 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -1130,6 +1130,8 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
->  			uart->port.pm = up->port.pm;
->  		if (up->port.handle_break)
->  			uart->port.handle_break = up->port.handle_break;
-> +		if (up->port.attr_group)
-> +			uart->port.attr_group = up->port.attr_group;
->  		if (up->dl_read)
->  			uart->dl_read = up->dl_read;
->  		if (up->dl_write)
-> @@ -1210,6 +1212,13 @@ void serial8250_unregister_port(int line)
->  		uart->port.type = PORT_UNKNOWN;
->  		uart->port.dev = &serial8250_isa_devs->dev;
->  		uart->port.port_id = line;
-> +
-> +		if (uart->port.attr_group_allocated) {
-> +			kfree(uart->port.attr_group->attrs);
-> +			kfree(uart->port.attr_group);
-> +			uart->port.attr_group_allocated = false;
-
-Why is this needed to be set to false now, how can it matter anymore?
-
-> +		}
-> +		uart->port.attr_group = NULL;
->  		uart->capabilities = 0;
->  		serial8250_init_port(uart);
->  		serial8250_apply_quirks(uart);
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 893bc493f662..ddfa8b59e562 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -3135,9 +3135,31 @@ static struct attribute_group serial8250_dev_attr_group = {
->  static void register_dev_spec_attr_grp(struct uart_8250_port *up)
->  {
->  	const struct serial8250_config *conf_type = &uart_config[up->port.type];
-> +	struct attribute **upp_attrs = NULL;
-> +	int upp_attrs_num = 0, i;
->  
-> -	if (conf_type->rxtrig_bytes[0])
-> -		up->port.attr_group = &serial8250_dev_attr_group;
-> +	up->port.attr_group_allocated = false;
-> +
-> +	if (up->port.attr_group) {
-> +		upp_attrs = up->port.attr_group->attrs;
-> +
-> +		while (upp_attrs[upp_attrs_num])
-> +			upp_attrs_num++;
-> +
-> +		up->port.attr_group = kcalloc(1, sizeof(struct attribute_group), GFP_KERNEL);
-> +		up->port.attr_group->attrs = kcalloc(upp_attrs_num + 2, sizeof(struct attribute *), GFP_KERNEL);
-> +
-> +		for (i = 0; i < upp_attrs_num; ++i)
-> +			up->port.attr_group->attrs[i] = upp_attrs[i];
-> +
-> +		if (conf_type->rxtrig_bytes[0])
-> +			up->port.attr_group->attrs[upp_attrs_num] = &dev_attr_rx_trig_bytes.attr;
-> +
-> +		up->port.attr_group_allocated = true;
-
-This feels odd, why is this all dynamically allocated?  You want to add
-another group to the existing group?
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
+To: Bill Wendling <morbo@google.com>, Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Nathan Chancellor <nathan@kernel.org>, Kees Cook <keescook@chromium.org>,
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+ Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
+ imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
+ patches@lists.linux.dev, stable@vger.kernel.org
+References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
+ <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
+ <2024053008-sadly-skydiver-92be@gregkh>
+ <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
+ <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
+ <6170ad64-ee1c-4049-97d3-33ce26b4b715@kernel.org>
+ <CAGG=3QU6kREyhAoRC+68UFX4txAKK-qK-HNvgzeqphj5-1te_g@mail.gmail.com>
+Content-Language: en-US
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <CAGG=3QU6kREyhAoRC+68UFX4txAKK-qK-HNvgzeqphj5-1te_g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 213.140.88.194
+X-Source-L: No
+X-Exim-ID: 1sCbQI-000zIv-2W
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: d58c58c2.rev.dansknet.dk ([10.0.0.182]) [213.140.88.194]:46746
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 0
+X-Org: HG=hgshared;ORG=hostgator;
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfAhf2r85ew2rJnWMrEcRvPwxDdCzQQhBJ52/4J2JitPgC5WhNBqatcvSUZqTvSs5BSImn0vV+rmTA9do1L8kHzBUelBjBEVqJFd6BmgzYlDbJs5kIDB1
+ 0i0k588Iw2m7+wwaHMC2RkEGOhffYrePS1I/RvD3ad/x/ai/N5UewN4nkTSAgWhfIPX+8vm9ttgGg93yWijn64eoLOA4D4r6h3Fa4n3yvGIkzscGNnjXcR0z
+ i6s9mpZ7b84QBa62rhjnwI43QvmF85rn14CvCmTtvc3sUPBmWxN9n8+Pks/vCVqv
 
 
-> +	} else {
-> +		if (conf_type->rxtrig_bytes[0])
-> +			up->port.attr_group = &serial8250_dev_attr_group;
-> +	}
->  }
->  
->  static void serial8250_config_port(struct uart_port *port, int flags)
-> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-> index 8cb65f50e830..3212d64c32c6 100644
-> --- a/include/linux/serial_core.h
-> +++ b/include/linux/serial_core.h
-> @@ -581,6 +581,7 @@ struct uart_port {
->  	unsigned char		console_reinit;
->  	const char		*name;			/* port name */
->  	struct attribute_group	*attr_group;		/* port specific attributes */
-> +	bool			attr_group_allocated;	/* whether attr_group is dynamic allocated */
+>> So we should get rid of all those. Sooner than later.
+>>
+> Yes! Please do this.
 
-Any way to do this without this variable?
+Definitely, we are working on that already[1]. :)
 
-thanks,
+--
+Gustavo
 
-greg k-h
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/?qt=grep&q=-Wflex-array-member-not-at-end
