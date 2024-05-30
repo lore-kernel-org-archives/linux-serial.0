@@ -1,108 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE9347A73;
-	Thu, 30 May 2024 17:43:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743CA770E2
+	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 22:46:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717091009; cv=none; b=A98EnyAWWBBUP6nELFgF3gRN5PuxOUGMOTO+n8Gd1B3BPeHleE72DL048A/4DWCP+7IRY8cT2sFgIrUdR5bksLx2JbigiNgI7IRTJJSQtzOLuDPO2trmGVOj7w6RQI1mC0fmAxEMYseKi92PgiU75cD3Vw6klduA+WwdrFT2tFo=
+	t=1717109180; cv=none; b=qrHtNe0FCP8qpGCk6n+XcJ2MOAE6/Fp0QNELYMpZaRgYRh7LbmMoIGpJ46YXpqF/Vgd/ckSYNmUv7NP5RQTIBfMFA3aEry5nDUqXomkN+wYppdWfRZS3Lqzt8vIk8Z/1GTz156AXfXh0IbjDIGnFeh3WlhN4RoYXV6iM90DMLtg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717091009; c=relaxed/simple;
-	bh=8fcphnfj+O2CwB7e1G0DKa0lKG2nE+NF5g3drom6Aiw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YwHi14jFGLwho1XJd4wfnvSr3o86xoQC4HksJVX2C+KZccT5mZrL5+PNg/qJbYJGlbajvyDdJRHxd4ca81ehzIEP4AMFDOTYt4jJ6Gzrf2Vj6A0f8rFW1ihA/h5lGKI/uYQ2IdqD2atETdmur04jGDk+2u/65ao1NPiuAM/JTtQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMcGGFQy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717109180; c=relaxed/simple;
+	bh=JSblW4xKQPWmCTufLZRebniB3Jpf5sbepE4eTR9OjBM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=as99BoecR4+/KltM1HZWCf4BBgaEIn7AqZi8+Y3KWzNt6rTpTSjAUjENRBwp5wH3LDE4m7jicUJUVEivMdsYaxBHm9vMYBJTPxyizkJ8nhF4fEwS8sRlxxcGe8MrW+1BF0VkzCPK8w3U9mVidxlp+AcmO3G4L+px6tYOI9HK69g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=UgNhswcj; arc=none smtp.client-ip=209.85.215.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMcGGFQy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B43C2BBFC;
-	Thu, 30 May 2024 17:43:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717091009;
-	bh=8fcphnfj+O2CwB7e1G0DKa0lKG2nE+NF5g3drom6Aiw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aMcGGFQyFAeT1sScSa+Y1stGV15mVtxb5fUMSCFGMM06VxG5JpaOJjozldpE+AYUP
-	 w0T0zK2gt2Z77DddsikCWJLJmpve4SEv5rcnTg4ProZVOeFR87tJx4ETV84OazMuBm
-	 I50Xu1AffzkmoOeBkB46pqCp1/RJTkEm4Si0k3jFhrpq8O4JYsohzLIjKnM1fLnYCi
-	 h3GbpFPIlhP5D8w9jsOlFv+XqLuefxaiy/vUvbXLGNXfcheYet2zzvwjEn0smU5fsZ
-	 CV+K4AHPNw77aKq0/Y281I27I9+y1LBbeFywbz9kUuvbBUyUmKFTe3JQNmBB20a9Zf
-	 wmihACkzroVqQ==
-Date: Thu, 30 May 2024 10:43:26 -0700
-From: Nathan Chancellor <nathan@kernel.org>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UgNhswcj"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-681ad26f4a5so910690a12.2
+        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1717109179; x=1717713979; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pq4RWLiz1he3jfRd8xNC5uP0QIgGNhSaJwNREYP2LeM=;
+        b=UgNhswcjsELnRyNBJ2rdtm4CDj1v3NkZCUyPqhZ03blFZuXBdoAtzLjAf0dB7JDVPt
+         o76+uFmh7Ozu9I0MluOyyPVxe6WVkPN2qI+GaYvDEYjgbccITmZhG3noCe2GBTclUYrr
+         2I5N+uaLFUhYVAnY3RMXIM15Du2wmo6yZ5/6Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717109179; x=1717713979;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pq4RWLiz1he3jfRd8xNC5uP0QIgGNhSaJwNREYP2LeM=;
+        b=SWQcFamS7uNFecHN859tBWsO7d+34Wjm78p2jolYutiMjLFEt+C20iwvi8iHqMQkho
+         mVtseo5fNeVbvIQvvhnCFYf2abnhtKs8M5A7YPKY3nc9W7JGhthyZhLjq9vqgDIvCLKi
+         anHedu7lA67MOax62mjhjJh94V2Cm6I8aeioHY2S0MAv7s2cTwflteue/f6JVqrBUWes
+         BfgE67AKB/mWQKP2vjGK98Wimvc9JJ/uexCZqm3GXB9FHhUIZbKkst5pF41X7v05G4cd
+         ZVcWZmqrGIHtsKD2iMvum6dsLVVj9JzjasOhKUtShzELFH6vzNKcp+5kKThNsn+6Uehb
+         UySA==
+X-Forwarded-Encrypted: i=1; AJvYcCUhc8cRWiPabx3nYdtEj8oZWRivJpB5Feh2xNaoaqCxmm/GogI0UZo3fgvQoZXlLb2KlCHSZ1uSh39FZIw+2SbSErZuXq3w9xGRR2AA
+X-Gm-Message-State: AOJu0YyNceCtTGIFuhFKcXbHA4pYZPImdB/ge2DxtpCeP/U7rXYaaaQk
+	x8v95FLj3j4AcmZgJcwf2hzPP5HyfbjZRWDUdDW0NebRRtAfFG7UZbQb+94gAw==
+X-Google-Smtp-Source: AGHT+IF3nsfazT0Xha9zRO3J7BNzKwddTMzOcBVLAiQtQVBr1ihR/BaRoxVkTobTsMcgIx7QzjN6Bw==
+X-Received: by 2002:a17:903:2285:b0:1f6:2cd2:ab9d with SMTP id d9443c01a7336-1f6370b1254mr1389445ad.55.1717109178630;
+        Thu, 30 May 2024 15:46:18 -0700 (PDT)
+Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:564b:72b6:4827:cf6a])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632410b20sm2955795ad.273.2024.05.30.15.46.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 May 2024 15:46:18 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
-	patches@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-Message-ID: <20240530174326.GB3018978@thelio-3990X>
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
- <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
- <2024053008-sadly-skydiver-92be@gregkh>
+Cc: linux-arm-msm@vger.kernel.org,
+	John Ogness <john.ogness@linutronix.de>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Stephen Boyd <swboyd@chromium.org>,
+	linux-serial@vger.kernel.org,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Rob Herring <robh@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH v2 0/7] serial: qcom-geni: Overhaul TX handling to fix crashes/hangs
+Date: Thu, 30 May 2024 15:45:52 -0700
+Message-ID: <20240530224603.730042-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2024053008-sadly-skydiver-92be@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 30, 2024 at 09:40:13AM +0200, Greg Kroah-Hartman wrote:
-> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
-> > >  This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
-> > >      291 |         struct mxser_port ports[] __counted_by(nports);
-> > >          |         ^~~~~~~~~~~~~~~~~~~~~~~~~
-> > >    1 error generated.
-> > > 
-> > > Remove this use of __counted_by to fix the warning/error. However,
-> > > rather than remove it altogether, leave it commented, as it may be
-> > > possible to support this in future compiler releases.
-> > 
-> > This looks like a compiler bug/deficiency.
 
-I apologize. As I commented on the nvmet-fc patch, I should have
-included where the flexible array member was within 'struct mxser_port',
-especially since I already knew it from
-https://github.com/ClangBuiltLinux/linux/issues/2026.
+While trying to reproduce -EBUSY errors that our lab was getting in
+suspend/resume testing, I ended up finding a whole pile of problems
+with the Qualcomm GENI serial driver. I've posted a fix for the -EBUSY
+issue separately [1]. This series is fixing all of the Qualcomm GENI
+problems that I found.
 
-I hope we can all agree now that this is not a compiler bug or issue.
+As far as I can tell most of the problems have been in the Qualcomm
+GENI serial driver since inception, but it can be noted that the
+behavior got worse with the new kfifo changes. Previously when the OS
+took data out of the circular queue we'd just spit stale data onto the
+serial port. Now we'll hard lockup. :-P
 
-> I agree, why not just turn that option off in the compiler so that these
-> "warnings" will not show up?
+I've tried to break this series up as much as possible to make it
+easier to understand but the final patch is still a lot of change at
+once. Hopefully it's OK.
 
-I think the only part of the warning text that got quoted above should
-clarify why this is not a real solution.
+[1] https://lore.kernel.org/r/20240530084841.v2.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid
 
-For the record, if this was a true issue on the compiler side, I would
-have made that very clear in the commit message (or perhaps not even
-sent the patch in the first place and worked to get it fixed on the
-compiler side, as ClangBuiltLinux has always tried to do first since the
-beginning).
+Changes in v2:
+- soc: qcom: geni-se: Add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
+- serial: qcom-geni: Fix the timeout in qcom_geni_serial_poll_bit()
+- serial: qcom-geni: Fix arg types for qcom_geni_serial_poll_bit()
+- serial: qcom-geni: Introduce qcom_geni_serial_poll_bitfield()
+- serial: qcom-geni: Just set the watermark level once
+- Totally rework / rename patch to handle suspend while active xfer
+- serial: qcom-geni: Rework TX in FIFO mode to fix hangs/lockups
 
-> > What does gcc say BTW?
+Douglas Anderson (7):
+  soc: qcom: geni-se: Add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
+  serial: qcom-geni: Fix the timeout in qcom_geni_serial_poll_bit()
+  serial: qcom-geni: Fix arg types for qcom_geni_serial_poll_bit()
+  serial: qcom-geni: Introduce qcom_geni_serial_poll_bitfield()
+  serial: qcom-geni: Just set the watermark level once
+  serial: qcom-geni: Fix suspend while active UART xfer
+  serial: qcom-geni: Rework TX in FIFO mode to fix hangs/lockups
 
-GCC does not have any support for __counted_by merged yet. I suspect
-that its current implementation won't say anything either, otherwise
-Kees should have noticed it in his testing. As you and Gustavo note
-further down thread, sentinel is flagged by
--Wflex-array-member-not-at-end.
+ drivers/tty/serial/qcom_geni_serial.c | 316 ++++++++++++++++----------
+ include/linux/soc/qcom/geni-se.h      |   6 +
+ 2 files changed, 203 insertions(+), 119 deletions(-)
 
-  In file included from include/linux/tty_port.h:8,
-                   from include/linux/tty.h:11,
-                   from drivers/tty/mxser.c:24:
-  include/linux/tty_buffer.h:40:27: warning: structure containing a flexible array member is not at the end of another structure [-Wflex-array-member-not-at-end]
-     40 |         struct tty_buffer sentinel;
-        |                           ^~~~~~~~
+-- 
+2.45.1.288.g0e0cd299f1-goog
 
-Gustavo has a suggested diff to resolve the issue at the GitHub issue I
-linked above that seems like a reasonable fix for both issues that is
-small enough to go into stable trees that contain f34907ecca71 like this
-one?
-
-Cheers,
-Nathan
