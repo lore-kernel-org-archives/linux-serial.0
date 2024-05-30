@@ -1,52 +1,46 @@
-Received: from omta034.useast.a.cloudfilter.net (omta034.useast.a.cloudfilter.net [44.202.169.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD50B147C6E
-	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 08:12:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7AFDDA1;
+	Thu, 30 May 2024 08:33:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717056750; cv=none; b=qRRGqNfpSxo74eowVJFIBbJ+inMJCqsCK/hmGMqVXpNph35FWVG0PVHc/6GJtSnTPZ4BggexBFuis1gxScRtTYvVwKrsIp0rtK9ZDNKfKjAPguRDhGu2Wk2i3zrFeaPJ0Q16A4DS5xmmuAFbpHosSRQPrNJ2PwPLO8IiSxC3fco=
+	t=1717057989; cv=none; b=dOm7YEdELaXjrzxT+68cFgmDasI0QecLBtNAFTn3+eZCyAiC89njeJBxojYhytYBsmjCE05t11ef4n52LnpFuwmJ74u7ueYW2rfzflGIO3LvM0zKBFx3kLS33VSCEegHk09+Mn7M9gOMQ9ZCutrTrht7qtFuzxH9JHtkVWGbFMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717056750; c=relaxed/simple;
-	bh=WezqI/UOXVIpTjMJypNZUq8DzqVTPIr5eJy3W7G97Rw=;
+	s=arc-20240116; t=1717057989; c=relaxed/simple;
+	bh=Lh0EiR8MsmykjlpKs06/3Ea3aRQO385pIfW9SimWnAg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hjfL/vdtDJmm/btJmJW9wuGSlghisFZyOSONYfHfC2SllTyFCMXrEklxx2q3/wvYFcv8HKwq8hEt/vI00nsPySk6zbils+PZ8q6fSk7425WwjTtLQO5BMp0WLvwx7vcL0wu/Emb1pbMqTU1dVuYXXrINYrlikAGeeIOOuZAWn58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=NPx7Ho5a; arc=none smtp.client-ip=44.202.169.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="NPx7Ho5a"
-Received: from eig-obgw-5008a.ext.cloudfilter.net ([10.0.29.246])
-	by cmsmtp with ESMTPS
-	id CVyasS0Vbxs4FCatas9eOZ; Thu, 30 May 2024 08:12:22 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-	by cmsmtp with ESMTPS
-	id CatYsqEaxqVixCatZslEvo; Thu, 30 May 2024 08:12:21 +0000
-X-Authority-Analysis: v=2.4 cv=KfzUsxYD c=1 sm=1 tr=0 ts=665834e5
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=7eglLlv4HFOW3sTsDH6Jqg==:17
- a=IkcTkHD0fZMA:10 a=TpHVaj0NuXgA:10 a=wYkD_t78qR0A:10 a=VwQbUJbxAAAA:8
- a=NEAV23lmAAAA:8 a=nG3MMMVrgEngwwIGFzYA:9 a=QEXdDO2ut3YA:10
- a=AjGcO6oz07-iQ99wixmX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=veiVKH1vZWe9V2vON8q6NViu4bLJsZtyTGLVtkgabHg=; b=NPx7Ho5a5jQRoP/g1eCjaTAmwc
-	G7ARIO3jxIMb7kKvdbCsbzwDL8MGIGFkvjnX3nsl/AEEHVnAPPMsTNlLdoW4dIOZWRL/Zf+2FPgtb
-	ZsJ8witC9l1Nmung92orCnCv92dQN6R63fhvbRvN27erCdjoOv7guq+XoRNqx7KoC0pWe3CiRBdO7
-	tDSjnjeydGCtZuZ7FZLjjqCmPQEb3nuT6DyqwKCP6ZG/yI5NxKroCkrt5h7zpuZIN6KycKX8CM0zt
-	gVZyP6TiUSkbhxSnkYCLdJ8LoWnqYu679pdn7rtF2cVysMQ+gwJuBQ+1VsM/A5Vhbj9MTq2XQWdWt
-	UAxYvSbg==;
-Received: from d58c58c2.rev.dansknet.dk ([213.140.88.194]:38800 helo=[10.0.0.182])
-	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <gustavo@embeddedor.com>)
-	id 1sCatX-000JCm-2c;
-	Thu, 30 May 2024 03:12:20 -0500
-Message-ID: <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
-Date: Thu, 30 May 2024 10:12:13 +0200
+	 In-Reply-To:Content-Type; b=ea5lXXaamIrBS7ZVDeRU7HSWhVYN9a9a6tURbTqMMvIsxag57MymvIZkb6ADnU0ZOjv3TWmnZDqASmgK2BsskGls9cW4S3UcySpS9VZh4UBOsoqk4sf+OFEEMMmC+Se7FZcUq//+0x1US3g1/tDNItODmVLaQuRdR4/uZUvkyjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-52b4fcbf078so779475e87.0;
+        Thu, 30 May 2024 01:33:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717057986; x=1717662786;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P08idekIOg20mZIarxRKyXgHpULyinHaFcyaYJ01jjM=;
+        b=RiVy+SiNKKisnPB5SpV10IziOe4inWzspBRodRHwWt4rVsRl9Uq+7B8FTv7mwvaMlR
+         Cf3ZX69LLcPeB/ohd2MWAsGUw+moHTcrD3VaNE6ctH5Q3kJj6Vp4NN/X2qDt31+b0iiY
+         IhgNG2H5w9GKv3Fqaw589WTa555HVlUfbDLXBUvUkp590fghRYeNmhDfBbqmBxy57Vni
+         HSimfdYrhigm4FFOgc2Rd454i2ftqVfRU31FH9hfKvu5inBtMZbp1eLe5uAkYvQAR8nW
+         5IP96NscGXZJ9wKZK1ls9AB5UqXZOwwCfpI+nBz8DQ/TGOj9WoYgCA2TRyjGgbQ4mg+o
+         lnGA==
+X-Forwarded-Encrypted: i=1; AJvYcCWYD9F0L29VsjRXKP+2Ta/u4s7RUGeNqrnnF1eEHLBcCoY4Ap5UbYfmeIgs4kLiNnzEEOfdiGN1YeHCmh73+SapGbfFcVaaafHC5Qj6rqYbL/xaXaGHPg0+QAOCV0fofqqqjpi8wgXqZnQnf6spuyVrj7M4Hf+Tg+wn48dhOQP9WyIeOe6d
+X-Gm-Message-State: AOJu0YwU7XVccfMuuALuDdKb/F0zOEVpKBojH8lErjQwdzbS5qhWXM+A
+	59Tkk0PkEo9K+J6L3NICz0iMMkGGvb2Jr2nOdf865Mvvnbe8m+yK3SRHyQ==
+X-Google-Smtp-Source: AGHT+IF4HO8WkpganMOJCdBH7V8iwOAnUumE3Ekt6DwpuB6tfpjJzjPSXyKJMzGQmQKHNUMBfqb5bg==
+X-Received: by 2002:ac2:5286:0:b0:51e:2282:63cf with SMTP id 2adb3069b0e04-52b7d46a259mr789449e87.45.1717057985739;
+        Thu, 30 May 2024 01:33:05 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-35579d7de7esm16625872f8f.14.2024.05.30.01.33.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 May 2024 01:33:04 -0700 (PDT)
+Message-ID: <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
+Date: Thu, 30 May 2024 10:33:03 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,8 +49,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>
+To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Nathan Chancellor <nathan@kernel.org>
 Cc: Kees Cook <keescook@chromium.org>,
  "Gustavo A. R. Silva" <gustavoars@kernel.org>,
  Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
@@ -66,74 +61,92 @@ Cc: Kees Cook <keescook@chromium.org>,
 References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
  <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
  <2024053008-sadly-skydiver-92be@gregkh>
+ <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
 Content-Language: en-US
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <2024053008-sadly-skydiver-92be@gregkh>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 213.140.88.194
-X-Source-L: No
-X-Exim-ID: 1sCatX-000JCm-2c
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: d58c58c2.rev.dansknet.dk ([10.0.0.182]) [213.140.88.194]:38800
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Org: HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfEwKSgpO32aB8dVIkqygHGVH2BfCBAXrTgCpgPLohrYW9INUQpqD1cQJxwv2eS2Et8vnPu6SnpAY155OIkseuoMXqzwqvg5ECh0DOSQslcP3oi6UtPgr
- 1lfHQgj3730jwkNjsRTBXOgYhZSPwAi4ib1Zkz5neWYA8wC+eqmLr+Xc5gHxxKUifdC6os0q2TEebLLz9HTIejcUATW9WUzxZfaS5l2nY9CdD7aonhU4FmRC
+Content-Transfer-Encoding: 8bit
 
-
-
-On 30/05/24 09:40, Greg Kroah-Hartman wrote:
-> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
->>>   This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
->>>       291 |         struct mxser_port ports[] __counted_by(nports);
->>>           |         ^~~~~~~~~~~~~~~~~~~~~~~~~
->>>     1 error generated.
+On 30. 05. 24, 10:12, Gustavo A. R. Silva wrote:
+> 
+> 
+> On 30/05/24 09:40, Greg Kroah-Hartman wrote:
+>> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
+>>>>   This will be an error in a future compiler version 
+>>>> [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
+>>>>       291 |         struct mxser_port ports[] __counted_by(nports);
+>>>>           |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>     1 error generated.
+>>>>
+>>>> Remove this use of __counted_by to fix the warning/error. However,
+>>>> rather than remove it altogether, leave it commented, as it may be
+>>>> possible to support this in future compiler releases.
 >>>
->>> Remove this use of __counted_by to fix the warning/error. However,
->>> rather than remove it altogether, leave it commented, as it may be
->>> possible to support this in future compiler releases.
+>>> This looks like a compiler bug/deficiency.
 >>
->> This looks like a compiler bug/deficiency.
+>> I agree, why not just turn that option off in the compiler so that these
+>> "warnings" will not show up?
 > 
-> I agree, why not just turn that option off in the compiler so that these
-> "warnings" will not show up?
+> It's not a compiler bug.
 
-It's not a compiler bug.
+It is, provided the code compiles and runs.
 
-The flexible array is nested four struct layers deep, see:
-
-ports[].port.buf.sentinel.data[]
-
-The error report could be more specific, though.
-
---
-Gustavo
-
+> The flexible array is nested four struct layers deep, see:
 > 
->> What does gcc say BTW?
->>
->>> Cc: stable@vger.kernel.org
->>> Closes: https://github.com/ClangBuiltLinux/linux/issues/2026
->>> Fixes: f34907ecca71 ("mxser: Annotate struct mxser_board with __counted_by")
->>
->> I would not say "Fixes" here. It only works around a broken compiler.
+> ports[].port.buf.sentinel.data[]
 > 
-> Agreed, don't add Fixes: for this, it's a compiler bug, not a kernel
-> issue.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+> The error report could be more specific, though.
+
+Ah, ok. The assumption is sentinel.data[] shall be unused. That's why it 
+all works. The size is well known, [] is zero size, right?
+
+Still, fix the compiler, not the code.
+
+thanks,
+-- 
+js
+suse labs
+
