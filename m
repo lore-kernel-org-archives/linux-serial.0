@@ -1,54 +1,54 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BBBC1862A2
-	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 22:46:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E4841862BF
+	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 22:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717109188; cv=none; b=pTvOYnvf6Cy92D9Vf5D2eXFDddBfR2qBC31Mies8MQWVNoRbCvFyaPDIZztX+e13ExVpmn3dp9Kp98/V+qOCJwxjfw1qNaCcDOE1jF0c3YI4DI4hNcRz9GRyzkg9Gqs/JBUG2BzUkWTsSmt2KTjT397HhZqPDAa2gLKvhk/l2S0=
+	t=1717109190; cv=none; b=NYTtq0tcBkx1Pyj9YCrjmzIjBIomuC/Hi4KyNootTyhPbInKc0AuhHJ3K6rqtfQWMpIZc/0VbYoAZRsIsQYWZ4N/4xg2eggXaLV36dooGPc0urZwb/YraaRNNObpNm0RB53OWhKMzI3hWPyc5s4I4O9jHwg5Z/T3myJd554kg4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717109188; c=relaxed/simple;
-	bh=OHNRIjCt/AbOcKb2xouTeXmLM+pYeA2+sCM+PeZUBHc=;
+	s=arc-20240116; t=1717109190; c=relaxed/simple;
+	bh=cQNJ3XMzHwi5FaJGdzzeq5t/gSbidgfxwp2JxpD4I2Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mg2CxCpDbVK5AftiA60bCAREVZGlecN+dTNC69rMqJwuxfbxfCEloFf+0r78YVEptC3tajEJCYM8cPKuzE/mg5zPa/CcxAP7+O8IJaklpCbS3PFU2Svb9mjYownhhDugZ2XA8HusGuwgErUBnPBMyHm2NEBUZZ8YF8BKf86VHiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=kb3Lrb30; arc=none smtp.client-ip=209.85.214.176
+	 MIME-Version; b=GxC+iT6qVk1mCmb1O3TJ9TtuSaMQEartCZ17TJP08IHy3KzpnhvZfe4zy1z2Xpq7CMghDB9ZslluyXhTXQueOadZmdaKZpVIslbDc2QDgZ2KALIateUXKxeHWs60ZAWcmgSUdVgzRV9+oBIhn5mtKjQEaR7rIC9BmfcnBNfEH98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=iFIMusMJ; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="kb3Lrb30"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1f4a5344ec7so10870355ad.1
-        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:46:26 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iFIMusMJ"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1f4a0050b9aso3378915ad.2
+        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1717109186; x=1717713986; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1717109188; x=1717713988; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=UNGi3BaacIMJpkAV5tddhgVoLNe/JGSac2Iso/bclHo=;
-        b=kb3Lrb30Bzxzp4hqWqNBdk2HVDHGurJUy1K2epaQtYVdH3NSQLgbkcZ4rUmblVRjdp
-         wQChU1otXpzX/uRYQ4yYrshdLOI2d6/Il9Gkdbge3kmVAHYtqwwWNcWaR3xTUSzmnSa8
-         +u7X/etJRzqyqVl1iWIJbm1ShV2NtofjvS0pM=
+        bh=vGiOTL7ihlI5Yhs010iFkTmajDvoSp2W9SJUSNub5/M=;
+        b=iFIMusMJDubVZ/kcABU8xhG0Ad/x5rACFtKQ+tQNrW/26dZpeEaREYmht8dyfH9lqB
+         0KNmgDAB37VbA3//YyU6RRbR65eLMbpg8JUhIiDNlCstF4u6OZzbQbgpZBEI1PBhFOFH
+         EzDgx4PAFmxHB7W98te9SXmXLB3sgX2hz+aLk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717109186; x=1717713986;
+        d=1e100.net; s=20230601; t=1717109188; x=1717713988;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UNGi3BaacIMJpkAV5tddhgVoLNe/JGSac2Iso/bclHo=;
-        b=cMw3q9ZvF45n86a07RGyKSGwByT2Z91LL1hB8IzhoV3sAIzgNR/uiTG8OIbfPPDc6h
-         YsCO2/Zt3LcSYqncb/fE/yVkyPoCTbax1A27kpZ6sEQR9jRdDbNBJWNu4gVhHCSVKu7R
-         MpGkxVByCAtaN7OYToSgH6iIzrly7gjmsk4BQDi0SL5QGNtK+8iAKg/0S3AUuk1cVgf7
-         uDOWuc23qUWiMb+bmWCONnRjruqdbwkbycBz/YlrDBIQpYIKQDOydgwNYDWfwZtj/79T
-         fNVinmSOjSosw25yfnjEujHXWxXXxSFyd2s2RH6cUcjJivcg+iau/Emdz0OjscvwR2eL
-         0lSA==
-X-Forwarded-Encrypted: i=1; AJvYcCUNP+ggPXZGE9sfHV4Z9QqmHy3ltVbz77ZCiNt3YNua53ni54LQukk3FYlW0xPz5NXXEttKj/WgJHRTOzCMLzNn9T7kCMF/LZ7NrMuH
-X-Gm-Message-State: AOJu0YyazR7TS7Z4Ijsn4Q3eVZ5m8xwiiVhHnElvqcCUWs/CYsJmg03x
-	StLf0whE0YV+u1kCh09Ls+BgGSvFZJ516xC+qpNNDr8g4X/4AxtvksJBcMqn/g==
-X-Google-Smtp-Source: AGHT+IGPRBGVd/Uds8lu/CwCOmUT5FA6Rwai1ahagYPAZWNotAwpSu3qyKimjG2+vC0ln3VA0ZBt+w==
-X-Received: by 2002:a17:902:c401:b0:1f0:8cbf:c1b5 with SMTP id d9443c01a7336-1f6359c9c78mr3578145ad.16.1717109185878;
-        Thu, 30 May 2024 15:46:25 -0700 (PDT)
+        bh=vGiOTL7ihlI5Yhs010iFkTmajDvoSp2W9SJUSNub5/M=;
+        b=OGiAWue8Hoiir+x+yyN3sET8F4Jujm1I15ZabebxZjwtWV6cFTrEPOGoKGPNe9PMHS
+         AONrjejjFGVU7cditGwL9jHGaL9BS044SZbJBQRxMQHscJTexH1Cf26A9B1Vq2yuUpf+
+         Uib+kaUBtxqiRolLeOPdcNz8RJkK3zhErVYbQJPE9Tfn5nn1vPzIfzgY+T6CsI0x1nNh
+         xr2SrczMh9ojnHN40xnSrXmS7/jV739SApEUGGgqBtQEvv/KNMTYHz5PtfrQs7/l8dR8
+         JogQZYNBO4CLUBiDG9YHt8QRN+Jgo8ZLLIJLh30Kak+gAqhcXHFewbwDjUsaNIDOdvxg
+         MhoA==
+X-Forwarded-Encrypted: i=1; AJvYcCWuvZy5yyZUzOggNRJn69Mz8HHYBfy1jSoVHUjK72dlxRfaftivacGfyFAxIlxL+kWisOqpEi0S0qUFBOEcFLA537I5blJDFqrvQrwg
+X-Gm-Message-State: AOJu0YzdqhqfHPsb7pT9kTuvhtlfG2tCF62gPG2dwcVk9WBiNoHaisUb
+	3iPOw6JA280t91QYknosCZzl7uxhYDXO7KeYvfO8mLwdh8jTdNDa0RyL5t0Vew==
+X-Google-Smtp-Source: AGHT+IGuNQy9vE7scNu6gP4OcjlhzBXrYXmV0BA270Yt9wNFVO3IPAIRHxMOBYrMyEWGHmskZxQBhg==
+X-Received: by 2002:a17:903:32c2:b0:1f3:b55:e247 with SMTP id d9443c01a7336-1f6370a783bmr1589435ad.55.1717109188230;
+        Thu, 30 May 2024 15:46:28 -0700 (PDT)
 Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:564b:72b6:4827:cf6a])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632410b20sm2955795ad.273.2024.05.30.15.46.23
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632410b20sm2955795ad.273.2024.05.30.15.46.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 May 2024 15:46:24 -0700 (PDT)
+        Thu, 30 May 2024 15:46:27 -0700 (PDT)
 From: Douglas Anderson <dianders@chromium.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -65,10 +65,11 @@ Cc: linux-arm-msm@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Konrad Dybcio <konrad.dybcio@linaro.org>,
 	Douglas Anderson <dianders@chromium.org>,
-	Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 3/7] serial: qcom-geni: Fix arg types for qcom_geni_serial_poll_bit()
-Date: Thu, 30 May 2024 15:45:55 -0700
-Message-ID: <20240530154553.v2.3.I24a0de52dd7336908df180fa6b698e001f3aff82@changeid>
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH v2 4/7] serial: qcom-geni: Introduce qcom_geni_serial_poll_bitfield()
+Date: Thu, 30 May 2024 15:45:56 -0700
+Message-ID: <20240530154553.v2.4.Ic6411eab8d9d37acc451705f583fb535cd6dadb2@changeid>
 X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
 In-Reply-To: <20240530224603.730042-1-dianders@chromium.org>
 References: <20240530224603.730042-1-dianders@chromium.org>
@@ -80,35 +81,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The "offset" passed in should be unsigned since it's always a positive
-offset from our memory mapped IO.
+With a small modification the qcom_geni_serial_poll_bit() function
+could be used to poll more than just a single bit. Let's generalize
+it. We'll make the qcom_geni_serial_poll_bit() into just a wrapper of
+the general function.
 
-The "field" should be u32 since we're anding it with a 32-bit value
-read from the device.
-
-Suggested-by: Stephen Boyd <swboyd@chromium.org>
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
+The new function isn't used yet (except by the wrapper) but will be
+used in a future change.
 
 Changes in v2:
 - New
 
- drivers/tty/serial/qcom_geni_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/qcom_geni_serial.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 32e025705f99..71258eefa654 100644
+index 71258eefa654..539a6ac85511 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -266,7 +266,7 @@ static bool qcom_geni_serial_secondary_active(struct uart_port *uport)
+@@ -265,8 +265,8 @@ static bool qcom_geni_serial_secondary_active(struct uart_port *uport)
+ 	return readl(uport->membase + SE_GENI_STATUS) & S_GENI_CMD_ACTIVE;
  }
  
- static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
--				int offset, int field, bool set)
-+				      unsigned int offset, u32 field, bool set)
+-static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+-				      unsigned int offset, u32 field, bool set)
++static bool qcom_geni_serial_poll_bitfield(struct uart_port *uport,
++					   unsigned int offset, u32 field, u32 val)
  {
  	u32 reg;
  	struct qcom_geni_serial_port *port;
+@@ -321,7 +321,7 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+ 	timeout_us = DIV_ROUND_UP(timeout_us, 10) * 10;
+ 	while (timeout_us) {
+ 		reg = readl(uport->membase + offset);
+-		if ((bool)(reg & field) == set)
++		if ((reg & field) == val)
+ 			return true;
+ 		udelay(10);
+ 		timeout_us -= 10;
+@@ -329,6 +329,12 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+ 	return false;
+ }
+ 
++static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
++				      unsigned int offset, u32 field, bool set)
++{
++	return qcom_geni_serial_poll_bitfield(uport, offset, field, set ? field : 0);
++}
++
+ static void qcom_geni_serial_setup_tx(struct uart_port *uport, u32 xmit_size)
+ {
+ 	u32 m_cmd;
 -- 
 2.45.1.288.g0e0cd299f1-goog
 
