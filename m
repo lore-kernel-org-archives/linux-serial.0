@@ -1,548 +1,153 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A5A9194C61
-	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 22:46:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B65117618F
+	for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 22:51:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717109197; cv=none; b=iRhknTbos+uHuehINNaWnlGcuTq4rGFsaJlUcPZwd7dzpW9hnkAVKHsk9iTJV8m1H98iCm3hsNL8cKQyl8Y8I4MJ0wNxyckTiTmDO1yM0RrTPxhkMBZknii4bTwJfZ+yIAEEOJANSprkMDlxbH8hay4ZSmGTEy4xdj8KBo2ILjQ=
+	t=1717109466; cv=none; b=NgCEWJ7vl/L1QBWcn8/1x07Q+KblmaOtVKMVERFjPKZgr6FIrMugAR9OoNF/m/bGmatB2Y54ouCLSW+5Xb61bj1iq6bGt8fsyFNGcF+nWk1dKgIuX2qbWIlgTIHqHE4M79wJFtpngtYqNVFFYg7fPuoWDR8Cog0P5Ejp9b06yyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717109197; c=relaxed/simple;
-	bh=dYQG2uZdy/1rVNXujDXBm4SlFNLD74RGPIkgsTY0dMI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VA8BjapR+/t941BiVNMr1BuBV0gnQHkfotxIye623ST00N+UGOeDxamPo28OV2X6pZyjkDZtu2+/paNduZsAl+F2RAgWPiSNNfh3fyerWZNryzsRECmng6zhaAPIjLDJkU+ro/vJfw9QtwcNGZDuayDXAr3iw61Y7CEhN4OyOP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=iREbt5V0; arc=none smtp.client-ip=209.85.214.180
+	s=arc-20240116; t=1717109466; c=relaxed/simple;
+	bh=33aiZOcyTr7wjCXj4MkSVQHEobDBn6/UxXRCxIgAnUo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jYnU3olyvA+nUOvh/spf71ZihkwuRuzOQ72nBgZw6OSiA2v64CyZ3KMzZQ/+JkCV6buqAry8H+9MamITc79uqA8XcfPoBI9kucCfoX5kOZaTSZ45IRBt5oqjlsyhVsSWbkeCo9W8O2J2rkHTnEnnFlZJqub1cCbjGsNcH97tlPY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=jxXmydaU; arc=none smtp.client-ip=209.85.167.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iREbt5V0"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1f4a0050b9aso3379695ad.2
-        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:46:35 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jxXmydaU"
+Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3d1d78b7418so830058b6e.1
+        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:51:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1717109195; x=1717713995; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=chromium.org; s=google; t=1717109462; x=1717714262; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HsgVqar/ZibnobIU2tZqJgfYFupn4BGm0JZevOJYAUY=;
-        b=iREbt5V0MPhTw0SIHk8bpoJdINZGAgaF9ADdNMB4/9MXvVpJO1sqX3RvUyfP/rSZ6z
-         2tRzCIp9bBdudJtssjhtK6DeujqBzeNc/DIdFc3llZ2yY0phBJ4PdZ/sv8wl/CcNGcJh
-         oJbh1LHIeLAqvCJvKcndt6LaKvF6Hardkis5s=
+        bh=33aiZOcyTr7wjCXj4MkSVQHEobDBn6/UxXRCxIgAnUo=;
+        b=jxXmydaUgpRYFtRRbvzuCOTGgyIua5SvfQ0imqM/BXOlP6/GeM9KZ65IZsODoYRoRI
+         /LFv0+rFLzHP8DK9kq8Eba7u6Mcb5mg+wIay8WFimV1/Y2KGkAe5c7MSSURDn9IPOIFq
+         SxO0iehbyNFTvw85wSPTkn1D2mdCBJvtp1qe4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717109195; x=1717713995;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1717109462; x=1717714262;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=HsgVqar/ZibnobIU2tZqJgfYFupn4BGm0JZevOJYAUY=;
-        b=fOKSkDlQQHks92fgYQturkS7s4fUmmiPJ5MofsyzvRxQLbLRDL6mdXgShqy1yV6yBa
-         4TlfjIM5kXc0D3yME1BBb+aZWqqHUF2Yw2xcEyRM6VS4/Ak2CbKFErDSJy3lcQKiQ6HM
-         ZzTeQtb9RTNbMhJraIm0bVNa+81BI6B1lPEB69kMy2E1RLebYuQrvY/O1euWbMcZ3iXP
-         waIYhsHF9Tis4xF93a3xtjIqXVqbPwSBc+CBI7KYoBj2PFzaL4QUXELPOZSjPeILhu7W
-         Bq4Q5YiSdzpM9Jg57lPXJrMz6E7YuGBOg1tNy+HsU/X5YoLS5wDixUPPC6sATqjowwhP
-         Fwxw==
-X-Forwarded-Encrypted: i=1; AJvYcCXXn9okkpNnYEsNJwtj2f57RD6QkG3/XBDBsOXeScNbkkpJbKbAdK/lOzbSbgVu5p3RvlSqjxTSGoiMnrTFvt1dq1b/jf3OexjELZO2
-X-Gm-Message-State: AOJu0YwLS5d/b4euSXvvMX2vwoGXZAEcx4lMBRA3KdSoRl1BRpGGk52A
-	65sCyL3QlFt6qyCfVNOkKaahcG1qaNF0goWmGzNF6gdweYiOjGAoNEA+37E/YA==
-X-Google-Smtp-Source: AGHT+IF/BnecJTcUljBsfx7blUPfSOOrIEqvvao0pHu4k4PsQWZAQS7ovwUVFXdlILFJGbMA9vd5WA==
-X-Received: by 2002:a17:903:2285:b0:1e2:9aa7:fd21 with SMTP id d9443c01a7336-1f6370a77admr1664575ad.54.1717109195265;
-        Thu, 30 May 2024 15:46:35 -0700 (PDT)
-Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:564b:72b6:4827:cf6a])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632410b20sm2955795ad.273.2024.05.30.15.46.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 May 2024 15:46:34 -0700 (PDT)
-From: Douglas Anderson <dianders@chromium.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org,
-	John Ogness <john.ogness@linutronix.de>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Stephen Boyd <swboyd@chromium.org>,
-	linux-serial@vger.kernel.org,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [PATCH v2 7/7] serial: qcom-geni: Rework TX in FIFO mode to fix hangs/lockups
-Date: Thu, 30 May 2024 15:45:59 -0700
-Message-ID: <20240530154553.v2.7.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
-X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
-In-Reply-To: <20240530224603.730042-1-dianders@chromium.org>
-References: <20240530224603.730042-1-dianders@chromium.org>
+        bh=33aiZOcyTr7wjCXj4MkSVQHEobDBn6/UxXRCxIgAnUo=;
+        b=Ds4KyykXJ7gZxWs694LlIUonpDJtACTTWLBi3Ksf7K6BYwVFxkyUVoF+yH+yYg6738
+         4NsaHPKPZMDZp4xZEuNOHk+BRqVMyos+Ru5byslL15cgQQgHH/EweTwwvfiaiZczsyV/
+         ea0NlUbNBZNK/h+M3xIjhgYwhQPOY86w3XyRfqbq3qVNAN/K1qcHSk4q8AYXaGoUzcgT
+         hU0ZKYWKpouP98oLg8CEBmItbca+G/kTspJpzxp6xwXN6soTHmufQWP15vC/3I6S/qA+
+         x4qNh+2BZQzjFQkmRSvRY8UUBSzX3jJilTZg8LqS7igv395wsRg8iB8HpKeeTCpkm6YG
+         EMGg==
+X-Forwarded-Encrypted: i=1; AJvYcCWgEvX4ycXCQGpucZAN0p6An9iLccVUE01SDYF+qQg58plTtSQU9giquve9rxAx925hQbwvVpSyAQURPiOr5uLcvkCvI3KZCr4oqi4w
+X-Gm-Message-State: AOJu0YzfQx5haHxERno8ypn5ew1bSyNWs/Q/EW5SbpoxhsJH8Sj9CO45
+	/QocsIWENiTVaPzb15/27hfezeOh2W3+Mg8fJNcU8VlhHX2fdw820epJOqwrFRWT0lbvHcqSzDK
+	Apg==
+X-Google-Smtp-Source: AGHT+IEBXeDiVDIOEX5+u07sQjm4r9dfxvoxVDzvjLkElfIkh4hUx5akOE+1FXXCVevE5wNGFXdjZA==
+X-Received: by 2002:a05:6808:1589:b0:3c9:9294:8d8a with SMTP id 5614622812f47-3d1e35c14f2mr147303b6e.36.1717109461575;
+        Thu, 30 May 2024 15:51:01 -0700 (PDT)
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com. [209.85.160.181])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6ae4a74d6fesm2247236d6.55.2024.05.30.15.50.59
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 May 2024 15:51:00 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-43dfe020675so121221cf.0
+        for <linux-serial@vger.kernel.org>; Thu, 30 May 2024 15:50:59 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVw2QLkEzMH/8dXuEg1aqKPDSpUj7WG6ML5OTPzEMXArmAbsHClURyAlbUKkpvdX/vYSCneDHSSma8KGHSyJJSATyB6Yl5wT8HvgOV7
+X-Received: by 2002:a05:622a:1b03:b0:43f:db90:2557 with SMTP id
+ d75a77b69052e-43ff4f8d821mr207311cf.21.1717109458702; Thu, 30 May 2024
+ 15:50:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240523232216.3148367-1-dianders@chromium.org>
+ <20240523162207.2.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid>
+ <CAE-0n53F3Xg2vOdgy-Vpjw4Kirdgi6B+BnO51fd6qOtDu0iXCg@mail.gmail.com> <CAD=FV=VeKiiHeOwmt_6uf7OSoGvOJLrLLMULVERubU1ut-=WqQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=VeKiiHeOwmt_6uf7OSoGvOJLrLLMULVERubU1ut-=WqQ@mail.gmail.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Thu, 30 May 2024 15:50:41 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WJ6oyhbiY89MDbJkq1q1UDwneJ9p+9PVY6ZHdAg==rng@mail.gmail.com>
+Message-ID: <CAD=FV=WJ6oyhbiY89MDbJkq1q1UDwneJ9p+9PVY6ZHdAg==rng@mail.gmail.com>
+Subject: Re: [PATCH 2/2] serial: qcom-geni: Fix qcom_geni_serial_stop_tx_fifo()
+ while xfer
+To: Stephen Boyd <swboyd@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, John Ogness <john.ogness@linutronix.de>, 
+	Tony Lindgren <tony@atomide.com>, linux-arm-msm@vger.kernel.org, 
+	Johan Hovold <johan+linaro@kernel.org>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
+	Yicong Yang <yangyicong@hisilicon.com>, James Clark <james.clark@arm.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The fact that the Qualcomm GENI hardware interface is based around
-"packets" is really awkward to fit into Linux's UART design.
-Specifically, in order to send bytes you need to start up a new
-"command" saying how many bytes you want to send and then you need to
-send all those bytes. Once you've committed to sending that number of
-bytes it's very awkward to change your mind and send fewer, especially
-if you want to do so without dropping bytes on the ground.
+Hi,
 
-There may be a few cases where you might want to send fewer bytes than
-you originally expected:
-1. You might want to interrupt the transfer with something higher
-   priority, like the kernel console or kdb.
-2. You might want to enter system suspend.
-3. The user might have killed the program that had queued bytes for
-   sending over the UART.
+On Fri, May 24, 2024 at 5:17=E2=80=AFPM Doug Anderson <dianders@chromium.or=
+g> wrote:
+>
+> 1. It appears that M_GP_LENGTH can still advance after the FIFO
+> becomes 0, which is extra proof that the transfer is still happening
+> even though the FIFO says it's done. Presumably we could keep track of
+> how many bytes we have enqueued into the FIFO for this command and
+> then compare. As I was trying to do this, though, I noticed another
+> option...
+>
+> 2. It appears that instead of "cancelling" the current command we can
+> just issue a new 0-byte transfer and wait for the 0-byte transfer to
+> be "done". This causes geni to give us back a "M_CMD_OVERRUN"
+> interrupt, but that's fine and we can ignore it. That interrupt just
+> says "hey, you gave me a command before the previous one was done" but
+> it does seem to properly accept the new command and it doesn't drop
+> any bytes.
+>
+> ...it turns out that we (apparently) already have been using option #2
+> to interrupt a transfer without dropping bytes. When the UART is
+> shared between an agetty and the kernel console this happens all the
+> time. In qcom_geni_serial_console_write() we'll issue a new command
+> before finishing a current one and then re-issue the current command
+> with any remaining bytes. So not only should this be safe but it's
+> already tested to work.
+>
+> I'll need to spend a little more time on this to really confirm it
+> works as I expect and I'll send up a v2 using approach #2.
 
-Despite this awkwardness the Linux driver has still tried to send
-bytes using large transfers. Whenever the driver started a new
-transfer it would look at the number of bytes in the OS's queue and
-start a transfer for that many. The idea of using larger transfers is
-that it should be more efficient. When we're in the middle of a large
-transfer we can get interrupted when the hardware FIFO is close to
-empty and add more bytes in. Whenever we get to the end of a transfer
-we have to wait until the transfer is totally done before we can add
-more bytes and, depending on interrupt latency, that can cause the
-UART to idle a bit.
+Just to connect the dots more, I did more testing and option #2
+totally didn't work. The console/kdb stuff was working mostly through
+ugly fragile hacks. Polling GP_LENGTH seemed like the only option,
+though when I dug more I found that this wasn't the right place to do
+it anyway...
 
-Unfortunately there were lots of corner cases that the Linux driver
-didn't handle.
 
-One problem with the current driver is that if the user killed the
-program that queued bytes for sending over the UART then bad things
-would happen. Before commit 1788cf6a91d9 ("tty: serial: switch from
-circ_buf to kfifo") we'd just send stale data out the UART. After that
-commit we'll hard lockup.
+> Also note that while spending more time on this I found _yet another_
+> bug, this one more serious. My original testing was done on kernel 6.6
+> (with stable backports) and I just did confirmation on mainline.
+> That's why I didn't see this new bug originally. ...but this time I
+> spent more time testing on mainline. It turns out that the recent
+> patches for kfifo on mainline have badly broken geni serial.
+> Specifically, if you just do "cat /var/log/messages" and then "Ctrl-C"
+> the machine will hard lockup! Yikes! This is yet another side effect
+> of the geni "packet"-based protocol biting us (so related to the
+> problems in ${SUBJECT}, but not identical). Whenever we setup a TX
+> transfer we set it up for the number of bytes in the queue at the
+> time. If that number goes down then we're in trouble. Specifically, it
+> can be noted that:
+> * When we start transmitting we look at the current queue size, setup
+> a transfer, and store "tx_remaining".
+> * Whenever there's space in the FIFO we add bytes and remove them from
+> the queue and "tx_remaining".
+> * We don't ever expect bytes to disappear from the queue. I think in
+> the old code if this happened we're just transfer some bogus bytes.
+> Now we'll loop in qcom_geni_serial_send_chunk_fifo() because
+> uart_fifo_out() will keep returning 0.
+>
+> I'll try to take a gander at that, too...
 
-Another problem with the current driver can be seen if you queue a
-bunch of data to the UART and enter kdb. Specifically on a device
-_without_ kernel console on the UART, with an agetty on the uart, and
-with kgdb on the UART, I did `cat /var/log/messages` and then dropped
-into kdb. After resuming from kdb console output stopped.
+I spent _far_ too long poking at this and I've finally come up with a
+v2 that _I think_ fixes everything. For reference:
 
-Let's give up on trying to use large transfers in FIFO mode on GENI
-UART since there doesn't appear to be any way to solve these problems
-cleanly. Visually inspecting the console output even after these
-patches doesn't show any big pauses so this should be fine.
-
-In order to make this all work:
-- Switch the watermark interrupt to just being used to prime the TX
-  pump. Once transfers are running we'll use "done" to queue the next
-  batch. As part of this, change the watermark to fire whenever the
-  queue is empty.
-- Never queue more than what can fit in the FIFO. This means we don't
-  need to keep track of a command we're partway through.
-- For the console code and kgdb code where we can safely block while
-  the queue empties we can just do that rather than trying to queue a
-  command when one was already in progress. This didn't actually work
-  so well which is presumably why there were some weird/awkward hacks
-  in qcom_geni_serial_console_write().
-- Leave the CMD_DONE interrupt enabled all the time since there's
-  never any reason we don't want to see it.
-- Start using the "SE_GENI_M_IRQ_EN_SET" and "SE_GENI_M_IRQ_EN_CLEAR"
-  registers to avoid read-modify-write of the "SE_GENI_M_IRQ_EN"
-  register. We could do this in more of the driver if needed but for
-  now just update code we're touching.
-
-Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-Fixes: a1fee899e5be ("tty: serial: qcom_geni_serial: Fix softlock")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
-I'm listing two "fixes" commits here. The first is the kfifo change
-since it is very easy to see a hardlockup after that change. Almost
-certainly anyone with the kfifo patch wants this patch. I've also
-listed a much earlier patch as one being fixed since that was the one
-that made us send larger transfers.
-
-I've tested this commit on an sc7180-trogdor board both with and
-without kernel console going to the UART. I've tested across some
-suspend/resume cycles and with kgdb. I've also confirmed that
-bluetooth, which uses the DMA paths in this driver, continues to work.
-That all being said, a lot of things change here so I'd love any
-testing folks want to do.
-
-Changes in v2:
-- New
-
- drivers/tty/serial/qcom_geni_serial.c | 192 +++++++++++++-------------
- 1 file changed, 94 insertions(+), 98 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 10aeb0313f9b..853f5288dde5 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -78,7 +78,7 @@
- #define GENI_UART_CONS_PORTS		1
- #define GENI_UART_PORTS			3
- #define DEF_FIFO_DEPTH_WORDS		16
--#define DEF_TX_WM			2
-+#define DEF_TX_WM			1
- #define DEF_FIFO_WIDTH_BITS		32
- #define UART_RX_WM			2
- 
-@@ -129,8 +129,8 @@ struct qcom_geni_serial_port {
- 	void *rx_buf;
- 	u32 loopback;
- 	bool brk;
-+	bool tx_fifo_stopped;
- 
--	unsigned int tx_remaining;
- 	unsigned int tx_total;
- 	int wakeup_irq;
- 	bool rx_tx_swap;
-@@ -363,6 +363,14 @@ static void qcom_geni_serial_poll_tx_done(struct uart_port *uport)
- 							M_CMD_ABORT_EN, true);
- 	}
- 	writel(irq_clear, uport->membase + SE_GENI_M_IRQ_CLEAR);
-+
-+	/*
-+	 * Re-enable the TX watermark interrupt when we clear the "done"
-+	 * in case we were waiting on the "done" bit before starting a new
-+	 * command. The interrupt routine will re-disable this if it's not
-+	 * appropriate.
-+	 */
-+	writel(M_TX_FIFO_WATERMARK_EN, uport->membase +	SE_GENI_M_IRQ_EN_SET);
- }
- 
- static void qcom_geni_serial_drain_tx_fifo(struct uart_port *uport)
-@@ -384,7 +392,7 @@ static void qcom_geni_serial_drain_tx_fifo(struct uart_port *uport)
- 	 * get lost.
- 	 */
- 	qcom_geni_serial_poll_bitfield(uport, SE_GENI_M_GP_LENGTH, 0xffffffff,
--				       port->tx_total - port->tx_remaining);
-+				       port->tx_total);
- 
- 	/*
- 	 * If clearing the FIFO made us inactive then we're done--no need for
-@@ -413,14 +421,6 @@ static void qcom_geni_serial_drain_tx_fifo(struct uart_port *uport)
- 		writel(M_CMD_ABORT_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 	}
- 	writel(M_CMD_CANCEL_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
--
--	/*
--	 * We've cancelled the current command. "tx_remaining" stores how
--	 * many bytes are left to finish in the current command so we know
--	 * when to start a new command. Since the command was cancelled we
--	 * need to zero "tx_remaining".
--	 */
--	port->tx_remaining = 0;
- }
- 
- static void qcom_geni_serial_abort_rx(struct uart_port *uport)
-@@ -480,11 +480,12 @@ static int qcom_geni_serial_get_char(struct uart_port *uport)
- static void qcom_geni_serial_poll_put_char(struct uart_port *uport,
- 							unsigned char c)
- {
-+	qcom_geni_serial_drain_tx_fifo(uport);
-+
- 	qcom_geni_serial_setup_tx(uport, 1);
- 	WARN_ON(!qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
- 						M_TX_FIFO_WATERMARK_EN, true));
- 	writel(c, uport->membase + SE_GENI_TX_FIFOn);
--	writel(M_TX_FIFO_WATERMARK_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 	qcom_geni_serial_poll_tx_done(uport);
- }
- #endif
-@@ -514,6 +515,8 @@ __qcom_geni_serial_console_write(struct uart_port *uport, const char *s,
- 	int i;
- 	u32 bytes_to_send = count;
- 
-+	qcom_geni_serial_drain_tx_fifo(uport);
-+
- 	for (i = 0; i < count; i++) {
- 		/*
- 		 * uart_console_write() adds a carriage return for each newline.
-@@ -564,7 +567,6 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 	bool locked = true;
- 	unsigned long flags;
- 	u32 geni_status;
--	u32 irq_en;
- 
- 	WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
- 
-@@ -580,38 +582,10 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
- 
- 	geni_status = readl(uport->membase + SE_GENI_STATUS);
- 
--	if (!locked) {
--		/*
--		 * We can only get here if an oops is in progress then we were
--		 * unable to get the lock. This means we can't safely access
--		 * our state variables like tx_remaining. About the best we
--		 * can do is wait for the FIFO to be empty before we start our
--		 * transfer, so we'll do that.
--		 */
--		qcom_geni_serial_poll_bit(uport, SE_GENI_M_IRQ_STATUS,
--					  M_TX_FIFO_NOT_EMPTY_EN, false);
--	} else if ((geni_status & M_GENI_CMD_ACTIVE) && !port->tx_remaining) {
--		/*
--		 * It seems we can't interrupt existing transfers if all data
--		 * has been sent, in which case we need to look for done first.
--		 */
--		qcom_geni_serial_poll_tx_done(uport);
--
--		if (!kfifo_is_empty(&uport->state->port.xmit_fifo)) {
--			irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--			writel(irq_en | M_TX_FIFO_WATERMARK_EN,
--					uport->membase + SE_GENI_M_IRQ_EN);
--		}
--	}
--
- 	__qcom_geni_serial_console_write(uport, s, count);
- 
--
--	if (locked) {
--		if (port->tx_remaining)
--			qcom_geni_serial_setup_tx(uport, port->tx_remaining);
-+	if (locked)
- 		uart_port_unlock_irqrestore(uport, flags);
--	}
- }
- 
- static void handle_rx_console(struct uart_port *uport, u32 bytes, bool drop)
-@@ -688,9 +662,9 @@ static void qcom_geni_serial_stop_tx_dma(struct uart_port *uport)
- 
- 	if (port->tx_dma_addr) {
- 		geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr,
--				      port->tx_remaining);
-+				      port->tx_total);
- 		port->tx_dma_addr = 0;
--		port->tx_remaining = 0;
-+		port->tx_total = 0;
- 	}
- 
- 	geni_se_cancel_m_cmd(&port->se);
-@@ -735,26 +709,27 @@ static void qcom_geni_serial_start_tx_dma(struct uart_port *uport)
- 		qcom_geni_serial_stop_tx_dma(uport);
- 		return;
- 	}
--
--	port->tx_remaining = xmit_size;
- }
- 
- static void qcom_geni_serial_start_tx_fifo(struct uart_port *uport)
- {
--	u32 irq_en;
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 
--	irq_en = readl(uport->membase +	SE_GENI_M_IRQ_EN);
--	irq_en |= M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN;
--	writel(irq_en, uport->membase +	SE_GENI_M_IRQ_EN);
-+	port->tx_fifo_stopped = false;
-+
-+	/* Prime the pump to get data flowing. */
-+	writel(M_TX_FIFO_WATERMARK_EN, uport->membase +	SE_GENI_M_IRQ_EN_SET);
- }
- 
- static void qcom_geni_serial_stop_tx_fifo(struct uart_port *uport)
- {
--	u32 irq_en;
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 
--	irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--	irq_en &= ~(M_CMD_DONE_EN | M_TX_FIFO_WATERMARK_EN);
--	writel(irq_en, uport->membase + SE_GENI_M_IRQ_EN);
-+	/*
-+	 * We can't do anything to safely pause the bytes that have already
-+	 * been queued up so just set a flag saying we shouldn't queue any more.
-+	 */
-+	port->tx_fifo_stopped = true;
- }
- 
- static void qcom_geni_serial_handle_rx_fifo(struct uart_port *uport, bool drop)
-@@ -922,10 +897,20 @@ static void qcom_geni_serial_stop_tx(struct uart_port *uport)
- 	uport->ops->stop_tx(uport);
- }
- 
-+static void qcom_geni_serial_enable_cmd_done(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+
-+	/* If we're not in FIFO mode we don't use CMD_DONE. */
-+	if (port->dev_data->mode != GENI_SE_FIFO)
-+		return;
-+
-+	writel(M_CMD_DONE_EN, uport->membase + SE_GENI_M_IRQ_EN_SET);
-+}
-+
- static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
- 					     unsigned int chunk)
- {
--	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	unsigned int tx_bytes, remaining = chunk;
- 	u8 buf[BYTES_PER_FIFO_WORD];
- 
-@@ -938,52 +923,74 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
- 		iowrite32_rep(uport->membase + SE_GENI_TX_FIFOn, buf, 1);
- 
- 		remaining -= tx_bytes;
--		port->tx_remaining -= tx_bytes;
- 	}
- }
- 
--static void qcom_geni_serial_handle_tx_fifo(struct uart_port *uport,
--					    bool done, bool active)
-+static void qcom_geni_serial_handle_tx_fifo(struct uart_port *uport)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	struct tty_port *tport = &uport->state->port;
- 	size_t avail;
- 	size_t pending;
- 	u32 status;
--	u32 irq_en;
- 	unsigned int chunk;
-+	bool active;
- 
--	status = readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
--
--	/* Complete the current tx command before taking newly added data */
--	if (active)
--		pending = port->tx_remaining;
--	else
--		pending = kfifo_len(&tport->xmit_fifo);
-+	/*
-+	 * The TX watermark interrupt is only used to "prime the pump" for
-+	 * transfers. Once transfers have been kicked off we always use the
-+	 * "done" interrupt to queue the next batch. Once were here we can
-+	 * always disable the TX watermark interrupt.
-+	 *
-+	 * NOTE: we use the TX watermark in this way because we don't ever
-+	 * kick off TX transfers larger than we can stuff into the FIFO. This
-+	 * is because bytes from the OS's circular queue can disappear and
-+	 * there's no known safe/non-blocking way to cancel the larger
-+	 * transfer when bytes disappear. See qcom_geni_serial_drain_tx_fifo()
-+	 * for an example of a safe (but blocking) way to drain, but that's
-+	 * not appropriate in an IRQ handler. We also can't just kick off one
-+	 * large transfer and queue bytes whenever because we're using 4 bytes
-+	 * per FIFO word and thus we can only queue non-multiple-of-4 bytes as
-+	 * in the last word of a transfer.
-+	 */
-+	writel(M_TX_FIFO_WATERMARK_EN, uport->membase +	SE_GENI_M_IRQ_EN_CLEAR);
- 
--	/* All data has been transmitted and acknowledged as received */
--	if (!pending && !status && done) {
--		qcom_geni_serial_stop_tx_fifo(uport);
-+	/*
-+	 * If we've got an active TX command running then we expect to still
-+	 * see the "done" bit in the future and we can't kick off another
-+	 * transfer till then. Bail. NOTE: it's important that we read "active"
-+	 * after we've cleared the "done" interrupt (which the caller already
-+	 * did for us) so that we know that if we show as non-active we're
-+	 * guaranteed to later get "done".
-+	 *
-+	 * If nothing is pending we _also_ want to bail. Later start_tx()
-+	 * will start transfers again by temporarily turning on the TX
-+	 * watermark.
-+	 */
-+	active = readl(uport->membase + SE_GENI_STATUS) & M_GENI_CMD_ACTIVE;
-+	pending = port->tx_fifo_stopped ? 0 : kfifo_len(&tport->xmit_fifo);
-+	if (active || !pending)
- 		goto out_write_wakeup;
--	}
- 
-+	/* Calculate how much space is available in the FIFO right now. */
-+	status = readl(uport->membase + SE_GENI_TX_FIFO_STATUS);
- 	avail = port->tx_fifo_depth - (status & TX_FIFO_WC);
- 	avail *= BYTES_PER_FIFO_WORD;
- 
--	chunk = min(avail, pending);
--	if (!chunk)
-+	/*
-+	 * It's a bit odd if we get here and have bytes pending and we're
-+	 * handling a "done" or "TX watermark" interrupt but we don't
-+	 * have space in the FIFO. Stick in a warning and bail.
-+	 */
-+	if (!avail) {
-+		dev_warn(uport->dev, "FIFO unexpectedly out of space\n");
- 		goto out_write_wakeup;
--
--	if (!port->tx_remaining) {
--		qcom_geni_serial_setup_tx(uport, pending);
--		port->tx_remaining = pending;
--
--		irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--		if (!(irq_en & M_TX_FIFO_WATERMARK_EN))
--			writel(irq_en | M_TX_FIFO_WATERMARK_EN,
--					uport->membase + SE_GENI_M_IRQ_EN);
- 	}
- 
-+
-+	/* We're ready to throw some bytes into the FIFO. */
-+	chunk = min(avail, pending);
-+	qcom_geni_serial_setup_tx(uport, chunk);
- 	qcom_geni_serial_send_chunk_fifo(uport, chunk);
- 
- 	/*
-@@ -991,17 +998,9 @@ static void qcom_geni_serial_handle_tx_fifo(struct uart_port *uport,
- 	 * cleared it in qcom_geni_serial_isr it will have already reasserted
- 	 * so we must clear it again here after our writes.
- 	 */
--	writel(M_TX_FIFO_WATERMARK_EN,
--			uport->membase + SE_GENI_M_IRQ_CLEAR);
-+	writel(M_TX_FIFO_WATERMARK_EN, uport->membase + SE_GENI_M_IRQ_CLEAR);
- 
- out_write_wakeup:
--	if (!port->tx_remaining) {
--		irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
--		if (irq_en & M_TX_FIFO_WATERMARK_EN)
--			writel(irq_en & ~M_TX_FIFO_WATERMARK_EN,
--					uport->membase + SE_GENI_M_IRQ_EN);
--	}
--
- 	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
- 		uart_write_wakeup(uport);
- }
-@@ -1011,10 +1010,10 @@ static void qcom_geni_serial_handle_tx_dma(struct uart_port *uport)
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	struct tty_port *tport = &uport->state->port;
- 
--	uart_xmit_advance(uport, port->tx_remaining);
--	geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr, port->tx_remaining);
-+	uart_xmit_advance(uport, port->tx_total);
-+	geni_se_tx_dma_unprep(&port->se, port->tx_dma_addr, port->tx_total);
- 	port->tx_dma_addr = 0;
--	port->tx_remaining = 0;
-+	port->tx_total = 0;
- 
- 	if (!kfifo_is_empty(&tport->xmit_fifo))
- 		qcom_geni_serial_start_tx_dma(uport);
-@@ -1028,7 +1027,6 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 	u32 m_irq_en;
- 	u32 m_irq_status;
- 	u32 s_irq_status;
--	u32 geni_status;
- 	u32 dma;
- 	u32 dma_tx_status;
- 	u32 dma_rx_status;
-@@ -1046,7 +1044,6 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 	s_irq_status = readl(uport->membase + SE_GENI_S_IRQ_STATUS);
- 	dma_tx_status = readl(uport->membase + SE_DMA_TX_IRQ_STAT);
- 	dma_rx_status = readl(uport->membase + SE_DMA_RX_IRQ_STAT);
--	geni_status = readl(uport->membase + SE_GENI_STATUS);
- 	dma = readl(uport->membase + SE_GENI_DMA_MODE_EN);
- 	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
- 	writel(m_irq_status, uport->membase + SE_GENI_M_IRQ_CLEAR);
-@@ -1093,9 +1090,7 @@ static irqreturn_t qcom_geni_serial_isr(int isr, void *dev)
- 	} else {
- 		if (m_irq_status & m_irq_en &
- 		    (M_TX_FIFO_WATERMARK_EN | M_CMD_DONE_EN))
--			qcom_geni_serial_handle_tx_fifo(uport,
--					m_irq_status & M_CMD_DONE_EN,
--					geni_status & M_GENI_CMD_ACTIVE);
-+			qcom_geni_serial_handle_tx_fifo(uport);
- 
- 		if (s_irq_status & (S_RX_FIFO_WATERMARK_EN | S_RX_FIFO_LAST_EN))
- 			qcom_geni_serial_handle_rx_fifo(uport, drop_rx);
-@@ -1203,6 +1198,7 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
- 	geni_se_select_mode(&port->se, port->dev_data->mode);
- 	writel(DEF_TX_WM, uport->membase + SE_GENI_TX_WATERMARK_REG);
-+	qcom_geni_serial_enable_cmd_done(uport);
- 	qcom_geni_serial_start_rx(uport);
- 	port->setup = true;
- 
--- 
-2.45.1.288.g0e0cd299f1-goog
-
+https://lore.kernel.org/r/20240530224603.730042-1-dianders@chromium.org
