@@ -1,46 +1,46 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7AFDDA1;
-	Thu, 30 May 2024 08:33:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCA9817618F;
+	Thu, 30 May 2024 08:41:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717057989; cv=none; b=dOm7YEdELaXjrzxT+68cFgmDasI0QecLBtNAFTn3+eZCyAiC89njeJBxojYhytYBsmjCE05t11ef4n52LnpFuwmJ74u7ueYW2rfzflGIO3LvM0zKBFx3kLS33VSCEegHk09+Mn7M9gOMQ9ZCutrTrht7qtFuzxH9JHtkVWGbFMc=
+	t=1717058471; cv=none; b=EZuWCuQetXaUDgmSSV1afCN4dNnYn1mbWboRFh/0ItnWrl4W7h1q2OIO7r90Ax+3RMxQ1emao3pTIg3J8GCLHDs+W4qoWt7ivBigjbR1+OAtznYnoTaMYTBk1ZQaVkgaPIHSPp0pWN4v0l4JgFqfl4VyPH0wZYHXT/hY0V96wCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717057989; c=relaxed/simple;
-	bh=Lh0EiR8MsmykjlpKs06/3Ea3aRQO385pIfW9SimWnAg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ea5lXXaamIrBS7ZVDeRU7HSWhVYN9a9a6tURbTqMMvIsxag57MymvIZkb6ADnU0ZOjv3TWmnZDqASmgK2BsskGls9cW4S3UcySpS9VZh4UBOsoqk4sf+OFEEMMmC+Se7FZcUq//+0x1US3g1/tDNItODmVLaQuRdR4/uZUvkyjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.51
+	s=arc-20240116; t=1717058471; c=relaxed/simple;
+	bh=vNXsLx4YLa+k5jmJZka0O+9B23pM1FLkUtEOUnXLZ+Q=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=j2Cj2rMAyZJAV1jpoEIwtfTbqVv/HUvhXboejPNKEdjTib8rVXfT18uskdjazRcXPTxqROBVXVfCn3+xuZFxsl8TZAYB0dvQZo4xp5+9xno4QS5w7wjkwY4zPlCtml/tO03mK290+0tam9TUIMUxqDf5BuUtn8QRYCMLrNX4uv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-52b4fcbf078so779475e87.0;
-        Thu, 30 May 2024 01:33:07 -0700 (PDT)
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2e968e77515so7726801fa.0;
+        Thu, 30 May 2024 01:41:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717057986; x=1717662786;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=P08idekIOg20mZIarxRKyXgHpULyinHaFcyaYJ01jjM=;
-        b=RiVy+SiNKKisnPB5SpV10IziOe4inWzspBRodRHwWt4rVsRl9Uq+7B8FTv7mwvaMlR
-         Cf3ZX69LLcPeB/ohd2MWAsGUw+moHTcrD3VaNE6ctH5Q3kJj6Vp4NN/X2qDt31+b0iiY
-         IhgNG2H5w9GKv3Fqaw589WTa555HVlUfbDLXBUvUkp590fghRYeNmhDfBbqmBxy57Vni
-         HSimfdYrhigm4FFOgc2Rd454i2ftqVfRU31FH9hfKvu5inBtMZbp1eLe5uAkYvQAR8nW
-         5IP96NscGXZJ9wKZK1ls9AB5UqXZOwwCfpI+nBz8DQ/TGOj9WoYgCA2TRyjGgbQ4mg+o
-         lnGA==
-X-Forwarded-Encrypted: i=1; AJvYcCWYD9F0L29VsjRXKP+2Ta/u4s7RUGeNqrnnF1eEHLBcCoY4Ap5UbYfmeIgs4kLiNnzEEOfdiGN1YeHCmh73+SapGbfFcVaaafHC5Qj6rqYbL/xaXaGHPg0+QAOCV0fofqqqjpi8wgXqZnQnf6spuyVrj7M4Hf+Tg+wn48dhOQP9WyIeOe6d
-X-Gm-Message-State: AOJu0YwU7XVccfMuuALuDdKb/F0zOEVpKBojH8lErjQwdzbS5qhWXM+A
-	59Tkk0PkEo9K+J6L3NICz0iMMkGGvb2Jr2nOdf865Mvvnbe8m+yK3SRHyQ==
-X-Google-Smtp-Source: AGHT+IF4HO8WkpganMOJCdBH7V8iwOAnUumE3Ekt6DwpuB6tfpjJzjPSXyKJMzGQmQKHNUMBfqb5bg==
-X-Received: by 2002:ac2:5286:0:b0:51e:2282:63cf with SMTP id 2adb3069b0e04-52b7d46a259mr789449e87.45.1717057985739;
-        Thu, 30 May 2024 01:33:05 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1717058468; x=1717663268;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vZv4+BlSGakHOy+YGxnox9Z8B/DUI14pHVDE+6Sat00=;
+        b=kQZUBj9q6jGSRKXSqulYBlHPjq6YNdNp/tfEB2RTHgjdDHbtbAqyhBUmjU7JWWsqZC
+         o69Zr8j9kL2l7d7QYmlCTQcyvou/sOByEiUVuF/rT6TIWehPmab+Mv+RF6lzdROKuOeo
+         epN9fECKnLTY/dYJ+U7GavTW9CNOSbTSVvG9XHm/pT7lZCgChlniLTQruKWz/KIygU1L
+         pnCKjWP25Q6Y8/6jF+3hLklirDhScpBJHND3grsvrRt7WjAYrKVEviN0xZUHzEZXmbbc
+         vYna+WlFqMc/G5BpqljUM2CNEIOi+xD/GJNxJM5gorkmfX4ghvM7yHIZQIKeB3Km6gaP
+         3rhw==
+X-Forwarded-Encrypted: i=1; AJvYcCUqxABs8T89qTgm0L5FaoOObfOZflQ0ptgFMEdOzHqst1VSou7DwTHmqjSFONF3LEBFCMQYc0BRMpDqsmF/4UBgHSjM0NSAVuP1IgD2Rwwi1yPqzM0I+v5Tnjs3jsoOIkDQG/wjUNLgj6Df8PhXGPeiz6j6LlsPpdmq5ixxZ4Hy6UwGyGu7
+X-Gm-Message-State: AOJu0YyHsk0wMPCr2/X97WBPYqttNPahgBSRJdP/ybW737zMotFy+44K
+	L8XbZRzYZsWIadUNYzf3sMf5DI610ggLqvPl5GzLfIIDF7mWUtgL
+X-Google-Smtp-Source: AGHT+IHTAsijZ4zBBGlMo44sYNh9u1hf3BwYBkucnjZPnVGPkHPPIsIk5rUUJ3Vnub0PLKpUyVTjmA==
+X-Received: by 2002:a05:651c:1186:b0:2df:e0c4:8429 with SMTP id 38308e7fff4ca-2ea847fa4ebmr9127971fa.18.1717058467590;
+        Thu, 30 May 2024 01:41:07 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-35579d7de7esm16625872f8f.14.2024.05.30.01.33.04
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4212708a706sm17733315e9.42.2024.05.30.01.41.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 May 2024 01:33:04 -0700 (PDT)
-Message-ID: <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
-Date: Thu, 30 May 2024 10:33:03 +0200
+        Thu, 30 May 2024 01:41:07 -0700 (PDT)
+Message-ID: <6170ad64-ee1c-4049-97d3-33ce26b4b715@kernel.org>
+Date: Thu, 30 May 2024 10:41:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,6 +49,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
+From: Jiri Slaby <jirislaby@kernel.org>
 To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Nathan Chancellor <nathan@kernel.org>
@@ -62,8 +63,8 @@ References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel
  <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
  <2024053008-sadly-skydiver-92be@gregkh>
  <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
+ <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -106,46 +107,56 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
+In-Reply-To: <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 30. 05. 24, 10:12, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 30/05/24 09:40, Greg Kroah-Hartman wrote:
->> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
->>>>   This will be an error in a future compiler version 
->>>> [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
->>>>       291 |         struct mxser_port ports[] __counted_by(nports);
->>>>           |         ^~~~~~~~~~~~~~~~~~~~~~~~~
->>>>     1 error generated.
->>>>
->>>> Remove this use of __counted_by to fix the warning/error. However,
->>>> rather than remove it altogether, leave it commented, as it may be
->>>> possible to support this in future compiler releases.
->>>
->>> This looks like a compiler bug/deficiency.
+On 30. 05. 24, 10:33, Jiri Slaby wrote:
+> On 30. 05. 24, 10:12, Gustavo A. R. Silva wrote:
 >>
->> I agree, why not just turn that option off in the compiler so that these
->> "warnings" will not show up?
+>>
+>> On 30/05/24 09:40, Greg Kroah-Hartman wrote:
+>>> On Thu, May 30, 2024 at 08:22:03AM +0200, Jiri Slaby wrote:
+>>>>>   This will be an error in a future compiler version 
+>>>>> [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
+>>>>>       291 |         struct mxser_port ports[] __counted_by(nports);
+>>>>>           |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>>     1 error generated.
+>>>>>
+>>>>> Remove this use of __counted_by to fix the warning/error. However,
+>>>>> rather than remove it altogether, leave it commented, as it may be
+>>>>> possible to support this in future compiler releases.
+>>>>
+>>>> This looks like a compiler bug/deficiency.
+>>>
+>>> I agree, why not just turn that option off in the compiler so that these
+>>> "warnings" will not show up?
+>>
+>> It's not a compiler bug.
 > 
-> It's not a compiler bug.
-
-It is, provided the code compiles and runs.
-
-> The flexible array is nested four struct layers deep, see:
+> It is, provided the code compiles and runs.
 > 
-> ports[].port.buf.sentinel.data[]
+>> The flexible array is nested four struct layers deep, see:
+>>
+>> ports[].port.buf.sentinel.data[]
+>>
+>> The error report could be more specific, though.
 > 
-> The error report could be more specific, though.
+> Ah, ok. The assumption is sentinel.data[] shall be unused. That's why it 
+> all works. The size is well known, [] is zero size, right?
+> 
+> Still, fix the compiler, not the code.
 
-Ah, ok. The assumption is sentinel.data[] shall be unused. That's why it 
-all works. The size is well known, [] is zero size, right?
+Or fix the code (properly).
 
-Still, fix the compiler, not the code.
+Flex arrays (even empty) in the middle of structs (like 
+ports[].port.buf.sentinel.data[] above is) are deprecated since gcc 14:
+https://gcc.gnu.org/pipermail/gcc-patches/2023-August/626516.html
 
-thanks,
+So we should get rid of all those. Sooner than later.
+
+> thanks,
+-- 
 -- 
 js
 suse labs
