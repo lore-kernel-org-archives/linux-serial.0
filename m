@@ -1,231 +1,139 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D3CF1CD35;
-	Fri, 31 May 2024 09:57:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A56115098C;
+	Fri, 31 May 2024 10:20:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717149425; cv=none; b=G3XdTga2krT/U3hOn7davQ/wxbcVaccYs1RIR6zOWy/ymL1O18Uxk2TnmpfKewfBaXHgCVy6YGkBnowmQg99yLuNZdQvRU0Fph2w6xYo/pYgjNns2IQUEB3btyerL+v/4VCirNJQiQ6aZcQu34S2YtjEacbmSYGTZXKlYIyLGww=
+	t=1717150817; cv=none; b=Q3LHuBCOGUtkkcgZPIh9JSJ3qwGPgMFmTcK28iYGdnoPPCMn4dFlnSLi0Jun+W05H9JaB0AaA2S7aHO+rgRiLS7azFMDRLS8js8B//pDCZewPUXxid3Hhey7uyhlDGGJICddPHfy+EU6K5c08FDUI+ywKvSh4EQH+l1lwNwPROk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717149425; c=relaxed/simple;
-	bh=pG1FuJNpg4iD5VvuUxyaJG1TPUBzdsFzeembK8i33cE=;
+	s=arc-20240116; t=1717150817; c=relaxed/simple;
+	bh=Afg/BlhPvdSwFvJIkGAy0jB6SLKbdIicJ+mDUKhcUZE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QSooPByyUkRjkWzBjLh9BoUUR0xWLdDPQmL7VUmXupIGXM6npxUaaZ4ppyNso7km0sJopNLEs4TVdEg5IgahXYmSWpUKq5934p0e6xDaSUltaW92PinNGwqv020vsZa3iIBGASytf3rySiuJNqEWwmCnncAqwLZ6wB96oRCi8RE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hu5bMmVB; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=N1uhegJMQac4PfJZ4mRTymPi8otifvoaDnihCFaVRSiQk3KXwTWDFUBKobLoYzZ7emzgtOyxOdpMCKswHztHtqFRcCpUHCx4ZwOZfugbIm9EzkaWEoT7mxRsntC8USDWr3eDv+mmKqRl3tIcoXA/er2MI7bB3/qphHpGX96sDks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Pbkpsz6+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hu5bMmVB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65A56C116B1;
-	Fri, 31 May 2024 09:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717149424;
-	bh=pG1FuJNpg4iD5VvuUxyaJG1TPUBzdsFzeembK8i33cE=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Pbkpsz6+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A45FC116B1;
+	Fri, 31 May 2024 10:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1717150816;
+	bh=Afg/BlhPvdSwFvJIkGAy0jB6SLKbdIicJ+mDUKhcUZE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hu5bMmVBc986akPDt9Ge9tIAY28LTFO3zwiOt/Joe+hTEGWcqkK1uspvfXfUgXXxe
-	 37xIAg+mkLYdlb3Hs9WdiXpCF1VeQrUhl78CihP1szlXYNSBa15MdkJ/xVV25GxxSe
-	 GoFHLTigYu0YGr12LUzpQPJDP6vTnVpL49ILbXi3zxAMPLAoxFNkYdK1EVTmNJFn7f
-	 CA1vM3tFKh3BQ8+a2Mrj8F6+o+ltODCoNMa/d4HHrTNiLP+FE/f+tft+dne1biNKt8
-	 EM2SBRlBln82aT4Aeemi64mL4//CHv+Iem7UQVhtCKN9l9VGh3B5qbmCfUa1q0Ty4h
-	 r2ZCGXufem1Qw==
-Date: Fri, 31 May 2024 10:56:50 +0100
-From: Lee Jones <lee@kernel.org>
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: linux-sh@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Rich Felker <dalias@libc.org>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Helge Deller <deller@gmx.de>,
-	Heiko Stuebner <heiko.stuebner@cherry.de>,
-	Neil Armstrong <neil.armstrong@linaro.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Masahiro Yamada <masahiroy@kernel.org>, Baoquan He <bhe@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Kefeng Wang <wangkefeng.wang@huawei.com>,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Azeem Shaikh <azeemshaikh38@gmail.com>, Guo Ren <guoren@kernel.org>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Herve Codina <herve.codina@bootlin.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Jacky Huang <ychuang3@nuvoton.com>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Sam Ravnborg <sam@ravnborg.org>,
-	Javier Martinez Canillas <javierm@redhat.com>,
-	Sergey Shtylyov <s.shtylyov@omp.ru>,
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-	linux-ide@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	linux-pci@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Subject: Re: [DO NOT MERGE v8 23/36] mfd: sm501: Convert platform_data to OF
- property
-Message-ID: <20240531095650.GD8682@google.com>
-References: <cover.1716965617.git.ysato@users.sourceforge.jp>
- <c139d3a42c61d978296aa2e513de073c643e4fbe.1716965617.git.ysato@users.sourceforge.jp>
+	b=Pbkpsz6+RCa6ou+xQVlEVSG9k91genUwaUZzEHbczs0OubFSPXsT+YPRRtOencDdw
+	 SQCtkV6GIOTiabdn7N9aNU9dE0xHbzklbnPiNzkOaOblZWKVVXnaR7jGxwa7EKL7iR
+	 Fc49cUza/3xp4R0bs+0AVxMFpB5IAm55b3Uk2Qk0=
+Date: Fri, 31 May 2024 12:20:22 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: 8250: Passing attr_group to universal driver
+Message-ID: <2024053105-stony-surreal-5e0a@gregkh>
+References: <20240530094457.1974-1-crescentcy.hsieh@moxa.com>
+ <2024053013-clapping-germless-d50d@gregkh>
+ <ZlmRNVONKs3MWnM8@localhost.localdomain>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c139d3a42c61d978296aa2e513de073c643e4fbe.1716965617.git.ysato@users.sourceforge.jp>
+In-Reply-To: <ZlmRNVONKs3MWnM8@localhost.localdomain>
 
-On Wed, 29 May 2024, Yoshinori Sato wrote:
-
-> Various parameters of SM501 can be set using platform_data,
-> so parameters cannot be passed in the DeviceTree target.
-> Expands the parameters set in platform_data so that they can be
-> specified using DeviceTree properties.
+On Fri, May 31, 2024 at 04:58:29PM +0800, Crescent CY Hsieh wrote:
+> On Thu, May 30, 2024 at 02:45:02PM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, May 30, 2024 at 05:44:57PM +0800, CrescentCY Hsieh wrote:
+> > > Many low-level drivers in Linux kernel register their serial ports with
+> > > the help of universal driver (8250_core, 8250_port).
+> > > 
+> > > There is an attribute group called `serial8250_dev_attr_group` within
+> > > `8250_port.c` to handle the `rx_trig_bytes` attribute:
+> > > https://lore.kernel.org/all/20140716011931.31474.68825.stgit@yuno-kbuild.novalocal/
+> > > 
+> > > However, if a low-level driver has some HW specifications that need to
+> > > be set or retrieved using an attr_group, the universal driver
+> > > (8250_port) would overwrite the low-level driver's attr_group.
+> > > 
+> > > This patch allows the low-level driver's attr_group to be passed to the
+> > > universal driver (8250_port) and combines the two attr_groups. This
+> > > ensures that the corresponding system file will only be created if the
+> > > device is registered by such a low-level driver.
+> > 
+> > Great!  But is this needed now by any in-kernel drivers, or is this only
+> > needed by things that are not in our tree?
+> > 
+> > If in our tree, what driver(s) does this fix up?  If none, then for
+> > obvious reasons, we can't take this change.
 > 
-> Signed-off-by: Yoshinori Sato <ysato@users.sourceforge.jp>
-> ---
->  drivers/mfd/sm501.c           | 238 ++++++++++++++++++++++++++++++++++
->  drivers/video/fbdev/sm501fb.c |  87 +++++++++++++
->  2 files changed, 325 insertions(+)
+> Currently, no in-kernel drivers utilize this, but I can add a patch in
+> v2 to demonstrate how this patch would work.
+
+It would be a requirement if this is to even be considered, you know
+that, why submit this without that?
+
+But step back, why would we want a serial port driver to have the
+ability to have different attributes than the normal ones?  What
+attribute would it want to have at this layer that would be unique to
+the driver that is controlling it?
+
+That is almost never a good idea, it only can cause confusion and
+complex userspace issues when a device type can have different types of
+attributes just because of something "below" it controlling it.  So in
+this case, why not create a proper child device of it's own specific
+type  with those unique attributes instead?
+
+> > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > > index 893bc493f662..ddfa8b59e562 100644
+> > > --- a/drivers/tty/serial/8250/8250_port.c
+> > > +++ b/drivers/tty/serial/8250/8250_port.c
+> > > @@ -3135,9 +3135,31 @@ static struct attribute_group serial8250_dev_attr_group = {
+> > >  static void register_dev_spec_attr_grp(struct uart_8250_port *up)
+> > >  {
+> > >  	const struct serial8250_config *conf_type = &uart_config[up->port.type];
+> > > +	struct attribute **upp_attrs = NULL;
+> > > +	int upp_attrs_num = 0, i;
+> > >  
+> > > -	if (conf_type->rxtrig_bytes[0])
+> > > -		up->port.attr_group = &serial8250_dev_attr_group;
+> > > +	up->port.attr_group_allocated = false;
+> > > +
+> > > +	if (up->port.attr_group) {
+> > > +		upp_attrs = up->port.attr_group->attrs;
+> > > +
+> > > +		while (upp_attrs[upp_attrs_num])
+> > > +			upp_attrs_num++;
+> > > +
+> > > +		up->port.attr_group = kcalloc(1, sizeof(struct attribute_group), GFP_KERNEL);
+> > > +		up->port.attr_group->attrs = kcalloc(upp_attrs_num + 2, sizeof(struct attribute *), GFP_KERNEL);
+> > > +
+> > > +		for (i = 0; i < upp_attrs_num; ++i)
+> > > +			up->port.attr_group->attrs[i] = upp_attrs[i];
+> > > +
+> > > +		if (conf_type->rxtrig_bytes[0])
+> > > +			up->port.attr_group->attrs[upp_attrs_num] = &dev_attr_rx_trig_bytes.attr;
+> > > +
+> > > +		up->port.attr_group_allocated = true;
+> > 
+> > This feels odd, why is this all dynamically allocated?  You want to add
+> > another group to the existing group?
 > 
-> diff --git a/drivers/mfd/sm501.c b/drivers/mfd/sm501.c
-> index b3592982a83b..d373aded0c3b 100644
-> --- a/drivers/mfd/sm501.c
-> +++ b/drivers/mfd/sm501.c
-> @@ -20,6 +20,7 @@
->  #include <linux/gpio/driver.h>
->  #include <linux/gpio/machine.h>
->  #include <linux/slab.h>
-> +#include <linux/clk.h>
->  
->  #include <linux/sm501.h>
->  #include <linux/sm501-regs.h>
-> @@ -82,6 +83,16 @@ struct sm501_devdata {
->  	unsigned int			 rev;
->  };
->  
-> +struct sm501_config_props_uint {
-> +	char *name;
-> +	u32 shift;
-> +};
-> +
-> +struct sm501_config_props_flag {
-> +	char *clr_name;
-> +	char *set_name;
-> +	u32 bit;
-> +};
->  
->  #define MHZ (1000 * 1000)
->  
-> @@ -1370,6 +1381,227 @@ static int sm501_init_dev(struct sm501_devdata *sm)
->  	return 0;
->  }
->  
-> +#define FIELD_WIDTH 4
-> +struct dt_values {
-> +	char *name;
-> +	unsigned int offset;
-> +	unsigned int width;
-> +	char *val[(1 << FIELD_WIDTH) + 1];
-> +};
-> +
-> +#define fld(_name, _offset, _width, ...)	\
-> +	{ \
-> +		.name = _name, \
-> +		.offset = _offset, \
-> +		.width = _width,	\
-> +		.val = { __VA_ARGS__, NULL},	\
-> +	}
-> +
-> +static const struct dt_values misc_timing[] = {
-> +	fld("ex", 28, 4,
-> +	    "none", "16", "32", "48", "64", "80", "96", "112",
-> +	    "128", "144", "160", "176", "192", "208", "224", "240"),
-> +	fld("xc", 24, 2, "internal-pll", "hclk", "gpio30"),
-> +	fld("us", 23, 1, "disable", "enable"),
-> +	fld("ssm1", 20, 1, "288", "divider"),
-> +	fld("sm1", 16, 4,
-> +	    "1", "2", "4", "8", "16", "32", "64", "128",
-> +	    "3", "6", "12", "24", "48", "96", "192", "384"),
-> +	fld("ssm0", 12, 1, "288", "divider"),
-> +	fld("sm0", 8, 4,
-> +	    "1", "2", "4", "8", "16", "32", "64", "128",
-> +	    "3", "6", "12", "24", "48", "96", "192", "384"),
-> +	fld("deb", 7, 1, "input-reference", "output"),
-> +	fld("a", 6, 1, "no-acpi", "acpi"),
-> +	fld("divider", 4, 2, "336", "288", "240", "192"),
-> +	fld("u", 3, 1, "normal", "simulation"),
-> +	fld("delay", 0, 3, "none", "0.5", "1.0", "1.5", "2.0", "2.5"),
-> +	{ .name = NULL },
-> +};
-> +
-> +static const struct dt_values misc_control[] = {
-> +	fld("pad", 30, 2, "24", "12", "8"),
-> +	fld("usbclk", 28, 2, "xtal", "96", "48"),
-> +	fld("ssp", 27, 1, "uart1", "ssp1"),
-> +	fld("lat", 26, 1, "disable", "enable"),
-> +	fld("fp", 25, 1, "18", "24"),
-> +	fld("freq", 24, 1, "24", "12"),
-> +	fld("refresh", 21, 2, "8", "16", "32", "64"),
-> +	fld("hold", 18, 3, "fifo-empty", "8", "16", "24", "32"),
-> +	fld("sh", 17, 1, "active-low", "active-high"),
-> +	fld("ii", 16, 1, "normal", "inverted"),
-> +	fld("pll", 15, 1, "disable", "enable"),
-> +	fld("gap", 13, 2, "0"),
-> +	fld("dac", 12, 1, "enable", "disable"),
-> +	fld("mc", 11, 1, "cpu", "8051"),
-> +	fld("bl", 10, 8, "1"),
-> +	fld("usb", 9, 1, "master", "slave"),
-> +	fld("vr", 4, 1, "0x1e00000", "0x3e00000"),
-> +	{ .name = NULL },
-> +};
+> Yes, this approach aims to add the `attr_group` which declared in the
+> low-level driver to the existing one in universal driver (8250_port.c),
+> so that it will have the attributes from both low-level and universal
+> drivers. This ensures that other device nodes utilizing the universal
+> driver will not create the unsupported system file(s).
 
-I've been avoiding this set for a while now!
+What files would be "unsupported" here?
 
-I appreciate the amount of work that you've put into this, but this is a
-bit of a disaster.  It's a hell of lot of over-complex infrastructure
-just to pull out some values from DT.
+I think we need a real example to understand what you are attempting to
+do here.  serial ports should usually never have unique sysfs files as
+the serial core code should all control them properly and provide the
+needed interfaces to the device.  If not, then why not add it to the
+generic serial port type so that all can use them?
 
-Forgive me if I have this wrong, but it looks like you're defining
-various structs then populating static versions with hard-coded offsets
-into DT arrays!  Then you have a bunch of hoop-jumpy functions to
-firstly parse the offset-structs, then conduct look-ups to pull the
-final value which in turn gets shifted into an encoded variable ready
-for to write out to the registers.  Bonkers.
+thanks,
 
-What does 'timing' even mean in this context?  Clocks?
-
-What other devices require this kind of handling?  Why is this device so
-different from all other supported devices to date?  Instead of
-attempting to shoehorn this into a 20 year old driver, why not reshape
-it to bring it into alignment with how we do things today?
-
-E.g. handle all clocking from the clock driver, all display settings
-(including timing?) from the display driver, etc.
-
--- 
-Lee Jones [李琼斯]
+greg k-h
