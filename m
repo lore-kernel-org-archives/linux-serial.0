@@ -1,45 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D142249F5;
-	Fri, 31 May 2024 05:21:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 168E07FBAE;
+	Fri, 31 May 2024 06:54:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717132887; cv=none; b=iY7dwRQI3PBwHoU0a+o1DTAGKIDQt4xKJ75O+5YXl/0+AuDCmymYXAKdj9fWyyPXvZBuQ1oKb6P3qwU2IyDK7xstIINjcO9LZiZJOjpBXCZsPi88YUChZQl4IHyszsqwkO5SFwjuxl6zD0R1oKPagFtSCgLwaiRSoA7ENm3aopY=
+	t=1717138498; cv=none; b=Ip7+UhdlfVkBCv+keSJ/NzzrYK1E3K7Lt7dMcfryv8hkeJW6t92TQt+Dxm2AUMUkKbH0Q9fUESau58OAeKkC77DKRrL4KFEzjr+ildxobEN72t28BykTsjhWBx/EozHQPgy+2HZDGicP/lDOY3SvZ284WN0KJfqQ6S5UZvlEH18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717132887; c=relaxed/simple;
-	bh=WJYFVQABthkurcVYkwWrzXsplNA67V49oLFB3N0V99A=;
+	s=arc-20240116; t=1717138498; c=relaxed/simple;
+	bh=vj/iKG5SOv70qFtt9ZacYP3jJGUG03ItpLbMK39Ejt8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cNoWGM/iCfp4h2Dq1ZMddytrW5z2TO4m4XNO2HAAZwTZPP1YUb88WTcX3gGEPcIM04XuQfB2js8SQtAPHWMhJx589pGLB14md31alVMJCRDtbT//Y5iXMA3JF5/I9XBqaAMQk2AlziIKvEL+Zr4pQVk8QJww7yt/coLOF547QjY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=yHLSfYWG; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=mEVxeDd7GZjlvLxTzxo8mDVsPgqMbOK5QbeUCQgAbz6C4qGf1DYtcQ8L1ctag5XUTq1BTKvzwYYz938FevAz2GSQI3wJkgFbhWXnRUt2EBEb52RzgQoE27IpB8OO7jDOLNt9o/7TWuM2YEWr3zVxlU/78qE1fGL4jj8aD2Z1ZIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BcVRHzov; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yHLSfYWG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192ECC116B1;
-	Fri, 31 May 2024 05:21:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1717132886;
-	bh=WJYFVQABthkurcVYkwWrzXsplNA67V49oLFB3N0V99A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=yHLSfYWGdwuyVoAzOb3yuif43BPrZEDs0ZasAB0wHoHw9z9XLTxEOlU5/1G2xtdlt
-	 JZCL7g824tOR0gzim1SlUUBo22tOf1HyjOFne88JQfUJPzQUx7ALFkC5Cwp3AGzn8h
-	 Nm/Gq6wVdmOe6ZbqQhG0iQH7ko+boNrUtbyw04k4=
-Date: Fri, 31 May 2024 07:21:31 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BcVRHzov"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717138497; x=1748674497;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vj/iKG5SOv70qFtt9ZacYP3jJGUG03ItpLbMK39Ejt8=;
+  b=BcVRHzovUhu8czM/PT5y8VV+EVAdY4Q8XEKIl6GWnJTrhVK7havS+Ks3
+   PYO2Djc8o4MxuAw9Aqe6M2zcL2II3uHHD7WxF8f1OttZ7NdrzPnnBEXhV
+   PL+A25/45kL0Ds01VIzxTwTuu8BK3dkCPMbDjMOI2c+MZ48GxDD7Toloa
+   dRl6PxdWVAUJYLPzxogj6nRI9bAtxUKgrYku33Dqa4BDqwS0iqaMzA+kQ
+   l1q4I+y2zouLRFkb8Ducme5lAWFy/N+FK4noGF2mI7uHoKSv/EmZyhwFg
+   +/NyRebqxboLU85oNBG/tbMZH4CIVk4VEbBt8SlefvL4iWQSiGmjL5Rax
+   w==;
+X-CSE-ConnectionGUID: 0auM96zMRDO20Koa43zoOQ==
+X-CSE-MsgGUID: 6ndYnhpjRiO1SP16efHrrg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="13507510"
+X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
+   d="scan'208";a="13507510"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 23:54:57 -0700
+X-CSE-ConnectionGUID: 7bYeZLVjRP201gzqW9q7GA==
+X-CSE-MsgGUID: inShIAHCT7W0bVAdMoLxrw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
+   d="scan'208";a="73549945"
+Received: from rrware-mobl.amr.corp.intel.com (HELO tlindgre-MOBL1) ([10.125.108.14])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 23:54:50 -0700
+Date: Fri, 31 May 2024 09:54:42 +0300
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: Tony Lindgren <tony@atomide.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
-	linux-arm-msm@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-	Guanbing Huang <albanhuang@tencent.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2] serial: port: Don't block system suspend even if
- bytes are left to xmit
-Message-ID: <2024053112-subsonic-legibly-e386@gregkh>
-References: <20240530084841.v2.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v7 1/7] printk: Save console options for
+ add_preferred_console_match()
+Message-ID: <Zll0Mg-Ovqx0n7Zd@tlindgre-MOBL1>
+References: <20240327110021.59793-1-tony@atomide.com>
+ <20240327110021.59793-2-tony@atomide.com>
+ <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,79 +75,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240530084841.v2.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
+In-Reply-To: <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
 
-On Thu, May 30, 2024 at 08:48:46AM -0700, Douglas Anderson wrote:
-> Recently, suspend testing on sc7180-trogdor based devices has started
-> to sometimes fail with messages like this:
-> 
->   port a88000.serial:0.0: PM: calling pm_runtime_force_suspend+0x0/0xf8 @ 28934, parent: a88000.serial:0
->   port a88000.serial:0.0: PM: dpm_run_callback(): pm_runtime_force_suspend+0x0/0xf8 returns -16
->   port a88000.serial:0.0: PM: pm_runtime_force_suspend+0x0/0xf8 returned -16 after 33 usecs
->   port a88000.serial:0.0: PM: failed to suspend: error -16
-> 
-> I could reproduce these problems by logging in via an agetty on the
-> debug serial port (which was _not_ used for kernel console) and
-> running:
->   cat /var/log/messages
-> ...and then (via an SSH session) forcing a few suspend/resume cycles.
-> 
-> Tracing through the code and doing some printf()-based debugging shows
-> that the -16 (-EBUSY) comes from the recently added
-> serial_port_runtime_suspend().
-> 
-> The idea of the serial_port_runtime_suspend() function is to prevent
-> the port from being _runtime_ suspended if it still has bytes left to
-> transmit. Having bytes left to transmit isn't a reason to block
-> _system_ suspend, though. If a serdev device in the kernel needs to
-> block system suspend it should block its own suspend and it can use
-> serdev_device_wait_until_sent() to ensure bytes are sent.
-> 
-> The DEFINE_RUNTIME_DEV_PM_OPS() used by the serial_port code means
-> that the system suspend function will be pm_runtime_force_suspend().
-> In pm_runtime_force_suspend() we can see that before calling the
-> runtime suspend function we'll call pm_runtime_disable(). This should
-> be a reliable way to detect that we're called from system suspend and
-> that we shouldn't look for busyness.
-> 
-> Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still busy")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> In v1 [1] this was part of a 2-patch series. I'm now just sending this
-> patch on its own since the Qualcomm GENI serial driver has ended up
-> having a whole pile of problems that are taking a while to unravel.
-> It makes sense to disconnect the two efforts. The core problem fixed
-> by this patch and the geni problems never had any dependencies anyway.
-> 
-> [1] https://lore.kernel.org/r/20240523162207.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid/
-> 
+On Fri, May 24, 2024 at 06:06:21PM +0200, Petr Mladek wrote:
+> A solution might be to store "devname" separately in
+> struct console_cmdline and allow empty "name". We could
+> implement then a function similar to
+> add_preferred_console_match() which would try to match
+> "devname" and set/update "name", "index" value when matched.
 
-Hi,
+This sounds nice, the empty name can be used to defer consoles that
+are not known early. And on console_setup() we only set the devname
+for such cases.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+To me it seems we additionally still need to save the kernel command
+line position of the console too in struct kernel_cmdline so we can
+set the preferred_console for the deferred cases.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Regards,
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Tony
