@@ -1,72 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 168E07FBAE;
-	Fri, 31 May 2024 06:54:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F30B417BD3;
+	Fri, 31 May 2024 08:34:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717138498; cv=none; b=Ip7+UhdlfVkBCv+keSJ/NzzrYK1E3K7Lt7dMcfryv8hkeJW6t92TQt+Dxm2AUMUkKbH0Q9fUESau58OAeKkC77DKRrL4KFEzjr+ildxobEN72t28BykTsjhWBx/EozHQPgy+2HZDGicP/lDOY3SvZ284WN0KJfqQ6S5UZvlEH18=
+	t=1717144453; cv=none; b=EIlRzqKrn+pdIRAOusErCFHZHzC/TbrPvG5UuCO/lUjeL1AUGkwMJJljmoLh9GOg5OhnexpwKRiycInThA5NvDkCgS5l9JhHFJtrpWp/mHsG4v7Ne8qC7UOUZaAXHVQ3WS1t4ZZHqDHbysD8q8v8nu83Dk3mQxSVFUI+XW0h+38=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717138498; c=relaxed/simple;
-	bh=vj/iKG5SOv70qFtt9ZacYP3jJGUG03ItpLbMK39Ejt8=;
+	s=arc-20240116; t=1717144453; c=relaxed/simple;
+	bh=QF9y72FW35E/OygFsYZ7X7acmvYINn8Pq3PGdnUcBCc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mEVxeDd7GZjlvLxTzxo8mDVsPgqMbOK5QbeUCQgAbz6C4qGf1DYtcQ8L1ctag5XUTq1BTKvzwYYz938FevAz2GSQI3wJkgFbhWXnRUt2EBEb52RzgQoE27IpB8OO7jDOLNt9o/7TWuM2YEWr3zVxlU/78qE1fGL4jj8aD2Z1ZIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BcVRHzov; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=bCBZpV34STSNu2sj/04Nvf0yZQWkenstYcZ9kGuEkLwd011c0kTkg80A4341Nw5Xw0A6OFwt6WtGCtRf23Fctuf9UmeYLPZCie2lICp8QoISzCHa0Gk9lahkVorqrA8nUg+JVsSc9cKzPIQ0b7BlYYx/Twa4CP/EPOAra/kiXQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jstrGEHg; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BcVRHzov"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jstrGEHg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717138497; x=1748674497;
+  t=1717144452; x=1748680452;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=vj/iKG5SOv70qFtt9ZacYP3jJGUG03ItpLbMK39Ejt8=;
-  b=BcVRHzovUhu8czM/PT5y8VV+EVAdY4Q8XEKIl6GWnJTrhVK7havS+Ks3
-   PYO2Djc8o4MxuAw9Aqe6M2zcL2II3uHHD7WxF8f1OttZ7NdrzPnnBEXhV
-   PL+A25/45kL0Ds01VIzxTwTuu8BK3dkCPMbDjMOI2c+MZ48GxDD7Toloa
-   dRl6PxdWVAUJYLPzxogj6nRI9bAtxUKgrYku33Dqa4BDqwS0iqaMzA+kQ
-   l1q4I+y2zouLRFkb8Ducme5lAWFy/N+FK4noGF2mI7uHoKSv/EmZyhwFg
-   +/NyRebqxboLU85oNBG/tbMZH4CIVk4VEbBt8SlefvL4iWQSiGmjL5Rax
-   w==;
-X-CSE-ConnectionGUID: 0auM96zMRDO20Koa43zoOQ==
-X-CSE-MsgGUID: 6ndYnhpjRiO1SP16efHrrg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="13507510"
+  bh=QF9y72FW35E/OygFsYZ7X7acmvYINn8Pq3PGdnUcBCc=;
+  b=jstrGEHg01StL1EAPd70HtAfsGH1r0/sqgVEuegTI8lrSecbKz1RVHnJ
+   O5OeXHLLzNn0txyA1jE4670aUC9lNx7xQ5h6Kkhcxvee8X3OzZx56JsFS
+   DDgFvcnGXsc8RzP1oioJ4ppey/UfkDnZU7kScQhGggdMDFkJrd5sci5+Q
+   ImZP2cFNkGyUmwSFcLyIV3PRSodVYv10DRFD504r7FjafHCPMvV4+Elr/
+   7U2CQaP1v0wl94p1NwDHn4nRlCSriNZA2OihgDSIiHOjTLaGdiLHiTCoe
+   kPyLr0koUg2X3Ax3fFzucQUrb7aBtxhVLXq4sNnP8la3Oaaj2vQcu2FWA
+   g==;
+X-CSE-ConnectionGUID: q3yjZC4EScmEgdNJ/C1yqw==
+X-CSE-MsgGUID: tXjfpO0pRWCJABGDIyVoFg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="24237741"
 X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
-   d="scan'208";a="13507510"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 23:54:57 -0700
-X-CSE-ConnectionGUID: 7bYeZLVjRP201gzqW9q7GA==
-X-CSE-MsgGUID: inShIAHCT7W0bVAdMoLxrw==
+   d="scan'208";a="24237741"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2024 01:34:11 -0700
+X-CSE-ConnectionGUID: iqdmU3a3TQSNAfEiX1ieNw==
+X-CSE-MsgGUID: O1GMYy5KT0qG9N7qV3JSKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,203,1712646000"; 
-   d="scan'208";a="73549945"
-Received: from rrware-mobl.amr.corp.intel.com (HELO tlindgre-MOBL1) ([10.125.108.14])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2024 23:54:50 -0700
-Date: Fri, 31 May 2024 09:54:42 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: Tony Lindgren <tony@atomide.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Steven Rostedt <rostedt@goodmis.org>,
+   d="scan'208";a="41014389"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2024 01:34:08 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sCxi8-0000000CPyf-1hVQ;
+	Fri, 31 May 2024 11:34:04 +0300
+Date: Fri, 31 May 2024 11:34:03 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-arm-msm@vger.kernel.org,
 	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 1/7] printk: Save console options for
- add_preferred_console_match()
-Message-ID: <Zll0Mg-Ovqx0n7Zd@tlindgre-MOBL1>
-References: <20240327110021.59793-1-tony@atomide.com>
- <20240327110021.59793-2-tony@atomide.com>
- <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: Re: [PATCH v2 2/7] serial: qcom-geni: Fix the timeout in
+ qcom_geni_serial_poll_bit()
+Message-ID: <ZlmLe4d10TrnoyjQ@smile.fi.intel.com>
+References: <20240530224603.730042-1-dianders@chromium.org>
+ <20240530154553.v2.2.I3e1968bbeee67e28fd4e15509950805b6665484a@changeid>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,23 +76,49 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
+In-Reply-To: <20240530154553.v2.2.I3e1968bbeee67e28fd4e15509950805b6665484a@changeid>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, May 24, 2024 at 06:06:21PM +0200, Petr Mladek wrote:
-> A solution might be to store "devname" separately in
-> struct console_cmdline and allow empty "name". We could
-> implement then a function similar to
-> add_preferred_console_match() which would try to match
-> "devname" and set/update "name", "index" value when matched.
+On Thu, May 30, 2024 at 03:45:54PM -0700, Douglas Anderson wrote:
+> The qcom_geni_serial_poll_bit() is supposed to be able to be used to
+> poll a bit that's will become set when a TX transfer finishes. Because
+> of this it tries to set its timeout based on how long the UART will
+> take to shift out all of the queued bytes. There are two problems
+> here:
+> 1. There appears to be a hidden extra word on the firmware side which
+>    is the word that the firmware has already taken out of the FIFO and
+>    is currently shifting out. We need to account for this.
+> 2. The timeout calculation was assuming that it would only need 8 bits
+>    on the wire to shift out 1 byte. This isn't true. Typically 10 bits
+>    are used (8 data bits, 1 start and 1 stop bit), but as much as 13
+>    bits could be used (14 if we allowed 9 bits per byte, which we
+>    don't).
+> 
+> The too-short timeout was seen causing problems in a future patch
+> which more properly waited for bytes to transfer out of the UART
+> before cancelling.
 
-This sounds nice, the empty name can be used to defer consoles that
-are not known early. And on console_setup() we only set the devname
-for such cases.
+...
 
-To me it seems we additionally still need to save the kernel command
-line position of the console too in struct kernel_cmdline so we can
-set the preferred_console for the deferred cases.
+> +		/*
+> +		 * Add 1 to tx_fifo_depth to account for the hidden register
+> +		 * on the firmware side that can hold a word.
+> +		 */
+> +		max_queued_bytes =
+> +			DIV_ROUND_UP((port->tx_fifo_depth + 1) * port->tx_fifo_width,
+> +				     BITS_PER_BYTE);
 
-Regards,
+BITS_TO_BYTES()
 
-Tony
+...
+
+> -		timeout_us = ((fifo_bits * USEC_PER_SEC) / baud) + 500;
+> +		timeout_us = ((max_queued_bits * USEC_PER_SEC) / baud) + 500;
+
+Too many parentheses. (The outer ones can be dropped.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
