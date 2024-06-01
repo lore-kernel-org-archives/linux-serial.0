@@ -1,72 +1,36 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7970A4C7C;
-	Fri, 31 May 2024 15:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A82212E55;
+	Sat,  1 Jun 2024 06:16:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717169427; cv=none; b=KxNYqM5Ama1tRB88aRp432zPq5Kjj7KRqyGLZlmMHfU28xh3u/ZuJcwuzvyBs64/sRdRUGsifiERzZcTKmBo/+8QRzRMJLZYLS/kOJVh5Hngfxv0A5aOhgy1usKe8ixXTUcfbEPOyGM8mhyc0u//Hye2J0OxHaDvGnJhodXgChY=
+	t=1717222594; cv=none; b=uYAqeHFnYEegkO16rZaCxJTh3bMhmLzml0VcfucNgxKMMBaJ82ffLp55BztZsq6H6TOEj/zq280yF+/Gr5Ptmvj7lvMThVEt5xN4oaLk/HgFlYm3sHRTPK1BIXrjhAi1eQmQdb0g0l7Wcpb99+M0zqdXU75VOv3m1Rl+fVj/I98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717169427; c=relaxed/simple;
-	bh=LMKo8cO4a5a84Rip7QNsCoS0nQcXswBiCLWRnMnn6yQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b6rfwoAIi25iZ7Mi1p7+pHDCRp9Q88QTeJpzg0QLbkh4rV0V+y1SCz4t5be7+DRrsuSx6mICRlEhrGLSk1OsEyw8UqxyViIzsokAifqMKqui2bSzU7WjhkC9gllzoRVw4hExqCreNCdMDQxitW+gxJCUk7YLHAyqi67Pw3c1k4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g+yjWoVQ; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1717222594; c=relaxed/simple;
+	bh=vVcP5jiWCp7KZP6g68w/ZgwT3HccqxwQFBIOQ3HSitI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=sfOBv2iNluVOXE6Lj9st+ZBIRj3zOb+mt20+DcxWAI/LP5+KB8uLAdAprRw4fCOBMZw6XR7q1FZOOvV1+A8PYyLuYvldiYiaRWpPojEt65QSJr4MDhZ+5GCcKdy7N2wKa+h6MITJW4Wpz/i/E+z+EyCKlaVaIo0VwK49eawoV60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Uj9n1MM9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g+yjWoVQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717169426; x=1748705426;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LMKo8cO4a5a84Rip7QNsCoS0nQcXswBiCLWRnMnn6yQ=;
-  b=g+yjWoVQWyyKapB2k4A0YXAIfY61qZfPY1Zt+4HpcYgVJhQFhqRKMbu4
-   /xm2IhOYP5PlLfksTiYv1pdK7EwW7kiDpTc8+9NBWZ6R0jcCMkdzL+JmU
-   9rG8FsyH0hws4wiUH2KZ1WoGg3T08h1DkOgmUX9z8CmvDNcOJtIVrp1/N
-   GJIEFHDLHnv/KhrCTPp/8tUoIz3b7ibsw9awQjCxkijcThRCyAXvCKnua
-   rTYkSJ1Rleh9WrhTg+jPtLPnAMeV50DKjjfMiaPZ8Mn6lyPB9mjVxVUUu
-   01XD/KmCBvTIpbpNoLBUVbptXQ7h4+9XmNl4WdUZVXIS/sMhJTA/xVnks
-   w==;
-X-CSE-ConnectionGUID: S5qer6VeQqKTjOua9K04vA==
-X-CSE-MsgGUID: AaJyaOCUTWmgNCX6qO+qxQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11088"; a="17514218"
-X-IronPort-AV: E=Sophos;i="6.08,204,1712646000"; 
-   d="scan'208";a="17514218"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2024 08:30:25 -0700
-X-CSE-ConnectionGUID: l5lsMTrXSpaytGx0KmxbDA==
-X-CSE-MsgGUID: vMNB4v87Tj2UN1JX9a5lsQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,204,1712646000"; 
-   d="scan'208";a="36209148"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2024 08:30:19 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1sD4Ct-0000000CVRR-3uji;
-	Fri, 31 May 2024 18:30:15 +0300
-Date: Fri, 31 May 2024 18:30:15 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	linux-arm-msm@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-	stable@vger.kernel.org,
-	Tony Lindgren <tony.lindgren@linux.intel.com>,
-	Bing Fan <tombinfan@tencent.com>,
-	Guanbing Huang <albanhuang@tencent.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3] serial: port: Don't block system suspend even if
- bytes are left to xmit
-Message-ID: <ZlntB9t6glOZC_HX@smile.fi.intel.com>
-References: <20240531080914.v3.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Uj9n1MM9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B98BC116B1;
+	Sat,  1 Jun 2024 06:16:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1717222593;
+	bh=vVcP5jiWCp7KZP6g68w/ZgwT3HccqxwQFBIOQ3HSitI=;
+	h=Date:From:To:Cc:Subject:From;
+	b=Uj9n1MM9SjKAUqhDooL+gGVzHQidX66s6i7GM0Md2OQLt8DxRVIbQzHMbnbgp7uL9
+	 EFd53eso1I4QOkGb2xn+Z5yfthlMc20JXW4U0pGrvvP73qkjTHeSIv/IGCHgAs56eR
+	 np42k15gZxcqaEiLHHKA8+fScCcgBXJJKTiU0zUw=
+Date: Sat, 1 Jun 2024 08:16:40 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY driver fix for 6.10-rc2
+Message-ID: <Zlq8yMiUBTOisuWp@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,63 +39,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240531080914.v3.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, May 31, 2024 at 08:09:18AM -0700, Douglas Anderson wrote:
-> Recently, suspend testing on sc7180-trogdor based devices has started
-> to sometimes fail with messages like this:
-> 
->   port a88000.serial:0.0: PM: calling pm_runtime_force_suspend+0x0/0xf8 @ 28934, parent: a88000.serial:0
->   port a88000.serial:0.0: PM: dpm_run_callback(): pm_runtime_force_suspend+0x0/0xf8 returns -16
->   port a88000.serial:0.0: PM: pm_runtime_force_suspend+0x0/0xf8 returned -16 after 33 usecs
->   port a88000.serial:0.0: PM: failed to suspend: error -16
-> 
-> I could reproduce these problems by logging in via an agetty on the
-> debug serial port (which was _not_ used for kernel console) and
-> running:
->   cat /var/log/messages
-> ...and then (via an SSH session) forcing a few suspend/resume cycles.
-> 
-> Tracing through the code and doing some printf()-based debugging shows
-> that the -16 (-EBUSY) comes from the recently added
-> serial_port_runtime_suspend().
-> 
-> The idea of the serial_port_runtime_suspend() function is to prevent
-> the port from being _runtime_ suspended if it still has bytes left to
-> transmit. Having bytes left to transmit isn't a reason to block
-> _system_ suspend, though. If a serdev device in the kernel needs to
-> block system suspend it should block its own suspend and it can use
-> serdev_device_wait_until_sent() to ensure bytes are sent.
-> 
-> The DEFINE_RUNTIME_DEV_PM_OPS() used by the serial_port code means
-> that the system suspend function will be pm_runtime_force_suspend().
-> In pm_runtime_force_suspend() we can see that before calling the
-> runtime suspend function we'll call pm_runtime_disable(). This should
-> be a reliable way to detect that we're called from system suspend and
-> that we shouldn't look for busyness.
-> 
-> Fixes: 43066e32227e ("serial: port: Don't suspend if the port is still busy")
-> Cc: stable@vger.kernel.org
-> Reviewed-by: Tony Lindgren <tony.lindgren@linux.intel.com>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+The following changes since commit 1613e604df0cd359cf2a7fbd9be7a0bcfacfabd0:
 
-...
+  Linux 6.10-rc1 (2024-05-26 15:20:12 -0700)
 
-> +	/*
-> +	 * Nothing to do on pm_runtime_force_suspend(), see
-> +	 * DEFINE_RUNTIME_DEV_PM_OPS.
+are available in the Git repository at:
 
-	 * DEFINE_RUNTIME_DEV_PM_OPS().
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc2
 
-(in case you need to send a new version)
+for you to fetch changes up to 7bc4244c882a7d7d79f4afefc50893244eb11d07:
 
-> +	 */
-> +	if (!pm_runtime_enabled(dev))
-> +		return 0;
+  Revert "VT: Use macros to define ioctls" (2024-06-01 07:28:21 +0200)
 
--- 
-With Best Regards,
-Andy Shevchenko
+----------------------------------------------------------------
+TTY fix for 6.10-rc2
 
+Here is a single revert for a much-reported regression in 6.10-rc1 when
+it comes to a few older architectures.  Turns out that the VT ioctls
+don't work the same across all cpu types because of some old
+compatibility requrements for stuff like alpha and powerpc.  So revert
+the change that attempted to have them use the _IO() macros and go back
+to the known-working values instead.
 
+This has NOT been in linux-next but has had many reports that it fixes
+the issue with 6.10-rc1.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Greg Kroah-Hartman (1):
+      Revert "VT: Use macros to define ioctls"
+
+ include/uapi/linux/kd.h | 96 ++++++++++++++++++++++++-------------------------
+ 1 file changed, 47 insertions(+), 49 deletions(-)
