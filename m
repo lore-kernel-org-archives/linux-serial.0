@@ -1,46 +1,46 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417C62D057;
-	Mon,  3 Jun 2024 06:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A673B297;
+	Mon,  3 Jun 2024 07:10:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717394880; cv=none; b=oEnvwrMDoe0fcrv0zEwsdjaXO8ngDgOiwwMwSplO9PtCRYi45Sk+A++ty7frNhLBsFICBI5T80rNlteU3oEXtfmU6MEO6eDdZNTrGTr5dHklXE4/v0wpknIW59qRoXKG7mgJjrqJoyJRaA037sHZHkd04r99xwt0YXa1kv/MTLU=
+	t=1717398632; cv=none; b=X8dWNl0bnnSj5XaalN7dbHeg0Sm+pevinTu+4i+QdC02ylJLJK3POfIr44o7SpSQkm1z8zEySnDEKfwAl/gwriQy3zmBKAaPZZQDj2bGWrq+FWQr6kEE2/xNCSexcs1hO2XOQz5VRqw5or6ibX9+yjm99ABf3tfbX45VYlAPxS0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717394880; c=relaxed/simple;
-	bh=0PFHYEhS00N3FhCWAGZ6Rp1hIGoUMvxsNAF1pTofkP0=;
+	s=arc-20240116; t=1717398632; c=relaxed/simple;
+	bh=j9aXwTELLGPGbXulQxflPG1rJKnbAbvE3K4OP3C8uys=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qH6NjKCqhmTMAVjqru3iTaeT6dMlkTnnUgMjWNEwcPWSW59Ae43oCgpT7rcW1BUjeO6jhu47RrlM6lPU0cluaLv0d+5ZBkXr9pAVoSBL84x/27S6LAJD136NyWrejgFHVrGhFvIroamw5Az5A/3MXdL3zgm4Ry5/yrbDNDT/eVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.50
+	 In-Reply-To:Content-Type; b=CP3uOx5rtQkD9vYg+hNKcsfte4KzddO7cBsCE+al1iZa3nfZ7e2ouwqN8PXRUGbb8M1w5l6uPh+H2DX4cGkvm0/2SD40HscZtoY937OEORn4whoztuYXht/CDiOmWdNqbqCE5DrGuHF+7yruykvSm5qgnLdkY+ypSSzs1mi6m9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-57a32b0211aso3238472a12.2;
-        Sun, 02 Jun 2024 23:07:58 -0700 (PDT)
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a68b41ef3f6so138370466b.1;
+        Mon, 03 Jun 2024 00:10:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717394877; x=1717999677;
+        d=1e100.net; s=20230601; t=1717398629; x=1718003429;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KpamzJuuJ6oiANwBbtDeDpEwVtyHNFHi2jGdgruhkZg=;
-        b=GJw3RvyQA1cz3KyjKwEDGcKib5eDDNoiEwUHKLTTp41Y52B4H3Ar7Bm5qnCuyzz9UD
-         YQE6nqE4F13eq0huYxZ9rPtb4zJFfG2cIjEisNkh+/ySp508nS5QvimOsYYbeE7mZ21T
-         sCqY/WH31WYqcayx2wdKeuy+q49mv6oC/3SI/6vFJFgUPNZv1pBHRs8TXexqpxFY/iLv
-         P0aiUFQ850aXS+LvHQ7uhpulbNl1U0aeVfVbbjxl46tpYsecn20+13cD7o1aaUgSblBI
-         JphmqttKSaIFTYJNCujbNhTeXzdmzlwkXOLgOJmc8TKO1KJMffe34h/fUNAod2PodTzH
-         AVWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVTJwUi13EhrOtw96zHENX6uEB6MXK5+gcSw6AUH6JZVbS0SUXQASjucLiCgHoL5SRF3m1/ImnL5B8lUO+lH18nICKe5w+uU6tIZcgkrLU3RnG5ZHlQaqL2ZxfcG1rKaAYw37s7RH6UAnGk6ZyhIHfFmF5obbwaHYA58dYWcmM0YogowknD
-X-Gm-Message-State: AOJu0Ywq+qqc7Z6gpRGWzxD1LqFPKMXDiPUafoL8l2S2wA4iLG/2cidg
-	z8cP3oGrmHCzJnOPZ6BdpWflIFqMZdBT+74j5crn4iSpIlJi2T/u
-X-Google-Smtp-Source: AGHT+IGwiafwcd/WwuoeRpCNTd9infkmEqKN4ICGHWiJH1Oh7447HFvMolSZPrNQf6v3z3dYFN5JzA==
-X-Received: by 2002:a17:907:9115:b0:a68:b73d:30cf with SMTP id a640c23a62f3a-a68b73d3742mr276645566b.13.1717394877300;
-        Sun, 02 Jun 2024 23:07:57 -0700 (PDT)
+        bh=aa1bPa/u5cBszkr5yIv73pVk7NzZmNC6oGrBpLcxj3k=;
+        b=FrwT4ezqkXeCskdtTyWM0K6ZjvAaRhodNdJPFbKSzVw8Lium7svuf4uxhgRT8sydVX
+         aV4kHTzlWQ4qI/YiLfFxr1Y+mJtMq73MoKnREq9sbtm4ecxxw5MXatCVKyr3DAVoSneu
+         G1rNMUUm7HRKy/QY/GEi5nYJFhaglR6AxRPT2P+Eaj/TXlm2fMFc1Eapi/73Lyr7JjsX
+         VzN5WIyXZJoADQglOtfgNsdtsOto6wst2USqWR7pCc4sYjHCoZD4kX9ULwG02PraQyJb
+         ek6LlsBXZeIq+n74/3LzP2VdmxZZEXeL5IQG5igKbfBNS3z8KfeM9lFIrA4K5flYlafv
+         pfQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWM47SHPqRmO1JQipvWY7/+0+ya7ks5BOb8EsuG7aRCWDYBxzc/UXuV4+ta1ItwOjffRgE0WxgT4c3Xn2mI9q/07dZVwiWo5xu4gdC1
+X-Gm-Message-State: AOJu0Ywaylav4n7zrtnYN56Jmv+c97HADYpH/VPKd4Uw4ffDVW6LqVts
+	mWpKxBNTHbA/iUk9lD4f6DTz10qnOh7F2GzTSRIWb4RjMF+8lZhS
+X-Google-Smtp-Source: AGHT+IE9W+zhfs5b5nRKuPziS7SDcEIYahat/kFCGBPuODYsf/pve7LGQq43aQQf7nxbzSMM2Vts2A==
+X-Received: by 2002:a17:906:6894:b0:a69:ceb:587 with SMTP id a640c23a62f3a-a690ceb06e2mr98898666b.11.1717398628585;
+        Mon, 03 Jun 2024 00:10:28 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a68ed647945sm202315466b.9.2024.06.02.23.07.56
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a68efe2f1easm205289766b.85.2024.06.03.00.10.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Jun 2024 23:07:56 -0700 (PDT)
-Message-ID: <1313c7a5-d074-4a8f-9ab9-07e4a7716fb9@kernel.org>
-Date: Mon, 3 Jun 2024 08:07:55 +0200
+        Mon, 03 Jun 2024 00:10:27 -0700 (PDT)
+Message-ID: <acfef6bc-08eb-4ab6-b6d4-9ad03c714517@kernel.org>
+Date: Mon, 3 Jun 2024 09:10:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,24 +48,26 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-To: "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
- Bill Wendling <morbo@google.com>, Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Nathan Chancellor <nathan@kernel.org>, Kees Cook <keescook@chromium.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
- patches@lists.linux.dev, stable@vger.kernel.org
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
- <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
- <2024053008-sadly-skydiver-92be@gregkh>
- <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
- <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
- <6170ad64-ee1c-4049-97d3-33ce26b4b715@kernel.org>
- <CAGG=3QU6kREyhAoRC+68UFX4txAKK-qK-HNvgzeqphj5-1te_g@mail.gmail.com>
- <bee7240b-d143-4613-bde4-822d9c598834@embeddedor.com>
+Subject: Re: [PATCH] serial: drop debugging WARN_ON_ONCE() from uart_write()
+To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+ gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Al Cooper <alcooperx@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+ Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
+ Russell King <linux@armlinux.org.uk>, Vineet Gupta <vgupta@kernel.org>,
+ Richard Genoud <richard.genoud@gmail.com>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Alexander Shiyan <shc_work@mail.ru>, Baruch Siach <baruch@tkos.co.il>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>, Shawn Guo <shawnguo@kernel.org>,
+ Sascha Hauer <s.hauer@pengutronix.de>, Fabio Estevam <festevam@gmail.com>,
+ Neil Armstrong <neil.armstrong@linar>
+References: <20240405060826.2521-1-jirislaby@kernel.org>
+ <20240405060826.2521-13-jirislaby@kernel.org>
+ <d775ae2d-a2ac-439e-8e2b-134749f60f30@I-love.SAKURA.ne.jp>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -110,29 +112,48 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <bee7240b-d143-4613-bde4-822d9c598834@embeddedor.com>
+In-Reply-To: <d775ae2d-a2ac-439e-8e2b-134749f60f30@I-love.SAKURA.ne.jp>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 30. 05. 24, 10:46, Gustavo A. R. Silva wrote:
+On 28. 05. 24, 17:05, Tetsuo Handa wrote:
+> syzbot is reporting lockdep warning upon
 > 
->>> So we should get rid of all those. Sooner than later.
->>>
->> Yes! Please do this.
+>    int disc = 7;
+>    ioctl(open("/dev/ttyS3", O_RDONLY), TIOCSETD, &disc);
 > 
-> Definitely, we are working on that already[1]. :)
+> sequence. Do like what commit 5f1149d2f4bf ("serial: drop debugging
+> WARN_ON_ONCE() from uart_put_char()") does.
+> 
+> Reported-by: syzbot+f78380e4eae53c64125c@syzkaller.appspotmail.com
+> Closes: https://syzkaller.appspot.com/bug?extid=f78380e4eae53c64125c
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-FWIW undoing:
-commit 7391ee16950e772076d321792d9fbf030f921345
-Author: Peter Hurley <peter@hurleysoftware.com>
-Date:   Sat Jun 15 09:36:07 2013 -0400
+Ugh, definitely:
 
-     tty: Simplify flip buffer list with 0-sized sentinel
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
 
+> ---
+> Example is https://syzkaller.appspot.com/text?tag=CrashReport&x=100271ec980000 .
+> But not using this example, for this link will disappear eventually.
+> 
+> By the way, do we want to also guard uart_port_lock'ed section using
+> printk_deferred_enter()/printk_deferred_exit(), for trying to use e.g.
+> WARN_ON() inside such section will result in the same lockdep warning?
+At this point, I don't know the answer.
 
-would do the job, IMO.
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -622,7 +622,7 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
+>   		return -EL3HLT;
+>   
+>   	port = uart_port_lock(state, flags);
+> -	if (WARN_ON_ONCE(!state->port.xmit_buf)) {
+> +	if (!state->port.xmit_buf) {
+>   		uart_port_unlock(port, flags);
+>   		return 0;
+>   	}
 
-thanks,
 -- 
 js
 suse labs
