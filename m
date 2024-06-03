@@ -1,62 +1,57 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A00983CD8;
-	Mon,  3 Jun 2024 23:24:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4014083CD8;
+	Mon,  3 Jun 2024 23:25:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717457098; cv=none; b=ZUu9dx42BmMJO99SUzrYEf3gcazN0sx/7VxXs+Vig3gCZ+8j2PI/kFUmS3krP5Kflb9iokX8eHK/CF8W14q99phCPx7bAuiG3QeYzPpoY3uDJ4dWP2oF526Kd2Fgufl4IRdjCFKe776+o9OAKSg96Sa6QV8upVuedeMy0jQ6rLk=
+	t=1717457104; cv=none; b=Xmk6eTV/uHGJkIQp/I2Zx0KpB/OFRzpf1tnZl5HOIMzZiQVV3WpHLrqLoXv5ERHfQbNDLr2RI5sKh2CNmKD3NkJl97cWL3kNCFD6dh14EVIjSARY2ATAeBFPBwlqZfO+nfvBpIS2tLVCUjbMnW/2ozbHool9HMIBnmLlaZ2DHvA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717457098; c=relaxed/simple;
-	bh=xEijcAO2AhGEVfNLJuthJe2r8sxc48zcP+LRMU6em88=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=GJqWrzhDHA4rB1iRcQojPTF6mkIba633EOPnrq5WcE1x1po94bRUS9qJ6/CAH2JVcfAloJmd7Uhgcw4jtU4/7YvusDZ7kNxtlutXP/Z+EQOM4I5Xci9vd0/lfQAwPTlkbfcfEbskQ4tuQt8g+KXfSwbZEbNg/UEJ7YLgqVdtUOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=nkm/6N/z; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=/EjlJVvg; arc=none smtp.client-ip=193.142.43.55
+	s=arc-20240116; t=1717457104; c=relaxed/simple;
+	bh=iFe7QTOJaIZ96iBr5IJNXeHec/OczXjluE+9uE64m5U=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=lJrVoRFOsFVWhsqvTwKcg9zQvN/GrFgKlahjsLlomwns1YticUBjJqPFyFQQ3jD7ciFpFbXvSGM0ohhGdTQdR7VadiSp8gPjd41Q0sXmuKpBiPoaacdvORy+Hwl1P0Dd22f2sRhrIGjuZj62/jwAUGuHVnX6J5FDSqxEZDhju1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=RubfaJ21; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3VHXF6oe; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="nkm/6N/z";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="/EjlJVvg"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RubfaJ21";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3VHXF6oe"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1717457094;
+	s=2020; t=1717457100;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=LeID2lqZO2NfvUDbTydXHW7F5KBd3prAyYph5If2D2k=;
-	b=nkm/6N/zwJHmyPt6qIc5rDHq38x2vgLf4FBqzcs5Od8hS7gRsAorY6cIRVEWI7iuLRMfqm
-	n1XN2ogwQ+5Pr3NcoqsHiJcLGNGWiFjTO6sbTnmf5rPIuno98QCV3ytdXHJOJ9u7x4coQl
-	wmzsAf7n7DiVN27PNt24lJBOb8kJTtj7wQaE+XMXMMUza4irxMjbC5Cz2JvrMBLlav2Qno
-	ALabOpQCHumIWbhN+70/fDh8VO3TVyuJu9Q7Hh7rt399lAQXFB6WKfUCp4XPeUJ2YwIQ2A
-	amMVUigMEf6GH5PQJE01w73Fa/11KSthkG86fNkpNldw8dEfdPcXE+fxVsCGjg==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=AVOojb4+PpMY1V+1K9x0e9ZnUQCXKs719BnreW8cqRo=;
+	b=RubfaJ21CaXktnflUH7lDlQT0oDJ4xfHIFVQvMDtT+1w44RUsTKBxRViXeoUKY/zceV1bU
+	HeKeZJZCjUGlxY6yPU4wsaIvbr4iZmKHEwbTRtw3obLvtsaflGd5f8UboRPVqulLAKb8in
+	L1Fn5CZ4HvOwhDwxxfm9OwL084/7aHPe3BhdwoxV3kXlPmPB/8dYsgcy8TLx7PERR92b67
+	FmijEEwoF3KWX+M5aSlP8VQpUd9jwzHKEHGThEDGmE9pAYI3umf7dUSf2IUm6pOLDJ4Szi
+	wh/xDjw+FjX72Owum1j34Q4tAjE63HMzH5daPzimwddr9eoqSOFcntGa9UqVgA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1717457094;
+	s=2020e; t=1717457100;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=LeID2lqZO2NfvUDbTydXHW7F5KBd3prAyYph5If2D2k=;
-	b=/EjlJVvgqFM8pAjjycMP/r4jHdn7kuIzmk8rkU2X/AM16jN+Sz775gDOBWcLZxA/CTkBUd
-	90+xxfvxfd54iwAw==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=AVOojb4+PpMY1V+1K9x0e9ZnUQCXKs719BnreW8cqRo=;
+	b=3VHXF6oejKzbZBE03RCA1YmIECu7IUwL9FS6L0OkNOAerzWOodexOCtM1ODvmzCfeJRKkM
+	j4oOnwZIuGB5DFDg==
 To: Petr Mladek <pmladek@suse.com>
 Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	linux-kernel@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Sreenath Vijayan <sreenath.vijayan@sony.com>,
-	Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>,
-	Tomas Mudrunka <tomas.mudrunka@gmail.com>,
-	linux-doc@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Josh Poimboeuf <jpoimboe@kernel.org>,
-	"Borislav Petkov (AMD)" <bp@alien8.de>,
-	Xiongwei Song <xiongwei.song@windriver.com>
-Subject: [PATCH printk v2 00/18] add threaded printing + the rest
-Date: Tue,  4 Jun 2024 01:30:35 +0206
-Message-Id: <20240603232453.33992-1-john.ogness@linutronix.de>
+	linux-serial@vger.kernel.org
+Subject: [PATCH printk v2 15/18] tty: sysfs: Add nbcon support for 'active'
+Date: Tue,  4 Jun 2024 01:30:50 +0206
+Message-Id: <20240603232453.33992-16-john.ogness@linutronix.de>
+In-Reply-To: <20240603232453.33992-1-john.ogness@linutronix.de>
+References: <20240603232453.33992-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,111 +60,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Allow the 'active' attribute to list nbcon consoles.
 
-This is v2 of a series to implement threaded console printing as well
-as some other minor pieces (such as proc and sysfs support). This
-series is only a subset of the original v1 [0]. In particular, this
-series represents patches 11, 12, 15 of the v1 series. For information
-about the motivation of the nbcon consoles, please read the cover
-letter of v1.
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ drivers/tty/tty_io.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-This series provides the remaining pieces of the printk rework. All
-other components are either already mainline or are currently in
-linux-next. In particular this series does:
-
-- Implement dedicated printing threads per nbcon console.
-
-- Implement "threadprintk" boot argument to force threading of legacy
-  consoles.
-
-- Implement nbcon support for proc and sysfs console-related files.
-
-- Provide a new helper function nbcon_reacquire() to allow nbcon
-  console drivers to reacquire ownership.
-
-Note that this series does *not* provide an nbcon console driver. That
-will come in a follow-up series.
-
-Also note that the first 3 patches of the series are either already
-mainline or are queued for 6.11. They are included in this series for
-completeness when applied to the printk for-next branch.
-
-Much has changed since v1 and the patches no longer correlate
-1:1. Here is an attempt to list the changes:
-
-- Implement a special dedicated thread to force threading of legacy
-  console drivers.
-
-- Add "threadprintk" boot argument to force threading of legacy
-  console drivers. (For PREEMPT_RT, this is automatically enabled.)
-
-- Add sparse notation for console_srcu_read_lock/unlock().
-
-- Define a dedicated wait queue for the legacy thread.
-
-- Stop threads on shutdown/reboot for a clean transition to atomic
-  printing.
-
-- Print a replay message when a higher priority printer context takes
-  over another printer context.
-
-- Reset lockdep context for legacy printing on !PREEMPT_RT to avoid
-  false positive lockdep splats.
-
-- Use write_thread() callback if printing from console_flush_all() and
-  @do_cond_resched is 1.
-
-- Do not allocate separate pbufs for printing threads. Use the same
-  pbufs that the atomic printer uses.
-
-- Wake printing threads without considering nbcon lock state.
-
-- Implement rcuwait_has_sleeper() to check for waiting tasks instead
-  of using a custom atomic variable @kthread_waiting.
-
-John Ogness
-
-[0] https://lore.kernel.org/lkml/20230302195618.156940-1-john.ogness@linutronix.de
-
-John Ogness (13):
-  printk: Atomic print in printk context on shutdown
-  printk: nbcon: Add context to console_is_usable()
-  printk: nbcon: Stop threads on shutdown/reboot
-  printk: nbcon: Start printing threads
-  printk: Provide helper for message prepending
-  printk: nbcon: Show replay message on takeover
-  printk: Add kthread for all legacy consoles
-  proc: consoles: Add notation to c_start/c_stop
-  proc: Add nbcon support for /proc/consoles
-  tty: sysfs: Add nbcon support for 'active'
-  printk: Provide threadprintk boot argument
-  printk: Avoid false positive lockdep report for legacy printing
-  printk: nbcon: Add function for printers to reacquire ownership
-
-Sreenath Vijayan (3):
-  printk: Add function to replay kernel log on consoles
-  tty/sysrq: Replay kernel log messages on consoles via sysrq
-  printk: Rename console_replay_all() and update context
-
-Thomas Gleixner (2):
-  printk: nbcon: Introduce printing kthreads
-  printk: nbcon: Add printer thread wakeups
-
- .../admin-guide/kernel-parameters.txt         |  12 +
- Documentation/admin-guide/sysrq.rst           |   9 +
- drivers/tty/sysrq.c                           |  13 +-
- drivers/tty/tty_io.c                          |   9 +-
- fs/proc/consoles.c                            |  16 +-
- include/linux/console.h                       |  38 ++
- include/linux/printk.h                        |   6 +-
- kernel/printk/internal.h                      |  55 +-
- kernel/printk/nbcon.c                         | 421 ++++++++++++++-
- kernel/printk/printk.c                        | 482 +++++++++++++++---
- 10 files changed, 945 insertions(+), 116 deletions(-)
-
-
-base-commit: f3760c80d06a838495185c0fe341c043e6495142
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 407b0d87b7c1..c9c914bc033c 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3567,8 +3567,13 @@ static ssize_t show_cons_active(struct device *dev,
+ 	for_each_console(c) {
+ 		if (!c->device)
+ 			continue;
+-		if (!c->write)
+-			continue;
++		if (c->flags & CON_NBCON) {
++			if (!c->write_atomic && !c->write_thread)
++				continue;
++		} else {
++			if (!c->write)
++				continue;
++		}
+ 		if ((c->flags & CON_ENABLED) == 0)
+ 			continue;
+ 		cs[i++] = c;
 -- 
 2.39.2
 
