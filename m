@@ -1,117 +1,86 @@
-Received: from omta040.useast.a.cloudfilter.net (omta040.useast.a.cloudfilter.net [44.202.169.39])
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09BC5674B
-	for <linux-serial@vger.kernel.org>; Mon,  3 Jun 2024 08:26:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D21A12C522;
+	Mon,  3 Jun 2024 12:37:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717403214; cv=none; b=DJcRsVrtMZd+q0Lo5YILhvMc0fZ1/XhArc9pdhyzJIpGhgpH2C5+LaYSmNbtVt9OuKHPGacqsVXS72NSr1CncGYz4775z2L0EWYbC4UF8wWvoCbVmLk2qDCOZXWpcQEIq7hKslzwh6JjXLlGs/Ud9ttvSDe7Atc6rPhM7yeidKA=
+	t=1717418267; cv=none; b=cjiAdDYrWgH+hHU6QP5H5LkADqIC1jTkJZFOVFCMNLwfc359uWZMvf7ed6IzuDZrEPSN1abEZuuTf2ezsnwLEHTVc8ZV7qjLP3tFh6OODczlKQiT/BwLwy530piwTOhJoe6oMVM16B9gNlfyjr//8tTRMlA942YZy+7RVliB+wY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717403214; c=relaxed/simple;
-	bh=DCx2r/p/OFxtmxhQQlPl/IZZVkzLeeoV7K53BAsOblg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DamkdxkjQJyic2Jvu4qYk7bnk2t3Msnae/4n1G11IWkiLQjYazgRXgjnsNiJ+zIJ5PgiI9ov2jeOmg5nZdBEXw6+u9kv1Qk5Lxy3EAktvpzAVlin2noyj3jAOx9XtKDwwHiWiNyc4eIK2lMXHedgRhSpEzuWwx9K0rVC1ux6yPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=e2WBLhak; arc=none smtp.client-ip=44.202.169.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
+	s=arc-20240116; t=1717418267; c=relaxed/simple;
+	bh=iNqoXL3l6pGrCO8tF1wXllFct7L4FEYTzyPho9173rY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LeKzglNU3DWop6g+oHdf5gFWZ9dQT5Or0JkgiaGfA9V3J9WRXcJkA/5Kjtp4IpOT1Dkje4C7x6Fa9pURmL9eelU1lWAjoHrcLm5eBDaWHWQlq0iFCcZOQ+JIY/g8gBxRxXMh0Nl6eTgEvAjMRxSkzjOYuxUcwRkWm5exZnLJlo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=gJIX7C0w; arc=none smtp.client-ip=185.125.188.120
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="e2WBLhak"
-Received: from eig-obgw-5009a.ext.cloudfilter.net ([10.0.29.176])
-	by cmsmtp with ESMTPS
-	id E1EDsHopySqshE31isNjPk; Mon, 03 Jun 2024 08:26:46 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-	by cmsmtp with ESMTPS
-	id E31hs4m8AFeImE31hsn5i3; Mon, 03 Jun 2024 08:26:45 +0000
-X-Authority-Analysis: v=2.4 cv=JO89sdKb c=1 sm=1 tr=0 ts=665d7e45
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=oyxFDGXHj6VF3crgWAIVWQ==:17
- a=IkcTkHD0fZMA:10 a=T1WGqf2p2xoA:10 a=wYkD_t78qR0A:10 a=xGRsDScCAAAA:8
- a=rifHBRH1XTZtWdLw4JwA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=zEVfNvAIcUWeczMkmY0T:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=CpKO348auTtOkpaYxnYFFOrDsx8VkfciEW5JtRsobmk=; b=e2WBLhak2xvyRkPsJmDRs3IROQ
-	YVXA+bZDSAY8Di4iBWMtbISchapu1sHGzDwmq/5+dXSgHIAW1ie9mIg/BIVkkKh5yUT9QCAnMOoER
-	j7xlKy9eSy2nlP0AO2CI+owhmjla/lpFxGA1aGCZF1itJUBajvl5H5sv4y64nx0kNFb9Vf/UotnDq
-	Kfs/u85G0HY1vlLlw6mQkyHXties1riA0UUskDbyrXCRcRRrYYffJ9zGn3Jw6PlALiVo3cEuBAqWv
-	qsXMfvNBe72rde9k84Mkwis5PZl0W5HpniYIM7KzwpmXgyRB0RHuPNE3RZfCFamzBsj45qDWU6Y/n
-	BDTgayGg==;
-Received: from 81-67-36-78.rev.numericable.fr ([81.67.36.78]:35236 helo=[10.7.154.191])
-	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <gustavo@embeddedor.com>)
-	id 1sE31f-0022kp-1V;
-	Mon, 03 Jun 2024 03:26:44 -0500
-Message-ID: <4da5ba72-6dff-46f1-b596-158c62b34f18@embeddedor.com>
-Date: Mon, 3 Jun 2024 10:26:31 +0200
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="gJIX7C0w"
+Received: from hwang4-ThinkPad-T14s-Gen-2a.conference (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id ECF243F5DC;
+	Mon,  3 Jun 2024 12:37:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1717418256;
+	bh=F5M+W+x3E5jyNkr7sCMlyiuydTbGqQoGu0AaMJzisok=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=gJIX7C0wCbNvEPyuplbpqn1Rx1l36yx+fxa6xV9X1OwyynZFvjLallTKBnek4sykJ
+	 wmeRWToP5fYinagzivKKlxh1ibDDD5aVNG2wHTVqFxEEUOBJx1ZOnHcAbP3ut0Quwd
+	 R0Oaggnjovy2k+JEEJj0qzjWI9iogJkHEllmZRtlhaR7DeELD3sk2W4f7/SJsZ0luy
+	 SkXwWzo5xsNpIncHY4TEHqoSc3kmi0iERvCWZN8AHKtj/p3utdBhVVn7aLeq0GKW4c
+	 ihnZ/Ldt1q0KOVDa3HOXpaelM0Y7NEg5pUeYkZiVY/YMeaoiesJ/w91pA0enGqutTu
+	 RIE0ELS9FvE1g==
+From: Hui Wang <hui.wang@canonical.com>
+To: linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	hvilleneuve@dimonoff.com,
+	hui.wang@canonical.com
+Subject: [PATCH 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
+Date: Mon,  3 Jun 2024 20:37:09 +0800
+Message-Id: <20240603123710.649549-1-hui.wang@canonical.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-To: Jiri Slaby <jirislaby@kernel.org>, Bill Wendling <morbo@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Nathan Chancellor <nathan@kernel.org>, Kees Cook <keescook@chromium.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
- patches@lists.linux.dev, stable@vger.kernel.org
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
- <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
- <2024053008-sadly-skydiver-92be@gregkh>
- <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
- <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
- <6170ad64-ee1c-4049-97d3-33ce26b4b715@kernel.org>
- <CAGG=3QU6kREyhAoRC+68UFX4txAKK-qK-HNvgzeqphj5-1te_g@mail.gmail.com>
- <bee7240b-d143-4613-bde4-822d9c598834@embeddedor.com>
- <1313c7a5-d074-4a8f-9ab9-07e4a7716fb9@kernel.org>
-Content-Language: en-US
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <1313c7a5-d074-4a8f-9ab9-07e4a7716fb9@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 81.67.36.78
-X-Source-L: No
-X-Exim-ID: 1sE31f-0022kp-1V
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 81-67-36-78.rev.numericable.fr ([10.7.154.191]) [81.67.36.78]:35236
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Org: HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfNCLIUNxSEY6CGw7+Pu8uOkMuL5Vd+FtEdQWewbzmZlEjf8CZR9cAbSjVUDvQI0XUMfHqI8NcgFzHTQ4TWu8yRYe8B2GszyHPENGCSJFHHehKsLXHGPJ
- L2iuFkimZe+X52IEv/1TXcD+BdIMgkRaAvz80OYudtjH3I4kud6+vFlv1tCYwcOxXPPIHVeQMUNwrloR1CX61Z1rXplu+rvPFzUzyQ1wRtKDKaQ5QEfNuCpt
 
+In some designs, the chip reset pin is connected to a gpio, this
+gpio needs to be set correctly before probing the driver, so adding
+a reset-gpios in the device tree.
 
-> FWIW undoing:
-> commit 7391ee16950e772076d321792d9fbf030f921345
-> Author: Peter Hurley <peter@hurleysoftware.com>
-> Date:   Sat Jun 15 09:36:07 2013 -0400
-> 
->      tty: Simplify flip buffer list with 0-sized sentinel
-> 
-> 
-> would do the job, IMO.
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+---
+ Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-So, not even _sentinel_ is actually needed? Awesome!
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+index 5dec15b7e7c3..62aff6e034cb 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+@@ -28,6 +28,9 @@ properties:
+   clocks:
+     maxItems: 1
+ 
++  reset-gpios:
++    maxItems: 1
++
+   clock-frequency:
+     description:
+       When there is no clock provider visible to the platform, this
+@@ -120,6 +123,7 @@ examples:
+             compatible = "nxp,sc16is752";
+             reg = <0x54>;
+             clocks = <&clk20m>;
++            reset-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
+             interrupt-parent = <&gpio3>;
+             interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+             nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
+-- 
+2.34.1
 
-I wish all of these FAMs-in-the-middle were like this one. :)
-
---
-Gustavo
