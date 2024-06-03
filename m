@@ -1,87 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FFECE57B;
-	Mon,  3 Jun 2024 13:18:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F355F1877;
+	Mon,  3 Jun 2024 13:46:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717420733; cv=none; b=esC3Y3hRq8x757FwCPhhX9Qv9tlLVzrTqGmQViUkdaky6ithSeDzKlgc/0YhTyF9LyJWMO/QsrfnVxmbyBOdnHekYOz/9DTM+Aq/5deDxwFTbeCZouRx/OjKlZW4R3utk7G8Vrz3dzB9T2ZptUNKUSHKkuOyVsWi8305yIdth8E=
+	t=1717422381; cv=none; b=rJck61TIlIYQ7dSo6y0d8vl7eLzt8ZThqUwKVklrbjhUyIjIqdA1ny0Lema2YxOXnoI6bRE9yLocw3qAuAZ3rlnvItXEOSJadcv/4STjTKwyBbsSZYtJKZSS7v7weaQn7qZXX+krIlJ8+uGoRQQEvlVE+Tyuw0uELIhV4CCCfe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717420733; c=relaxed/simple;
-	bh=LgL/MmSAZeLxCV+OpLpwFCLxjkw3tEWshcGOE6SuJMU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vE1tEA8S6yW+WBGsGxQNUtOMCIxzj6z566kuXE8xBsk0nIu8h5X5DbwHPBMrrs3ZIYRnkfXrtKoFFV+s5Rvdee1GCNMixIPkNnzS1KepkUvgAtmy9ITM8dRn90tYtCu5yL1tuSEwnSo/48hLVD181ABKd8EhhElaJ3wmurlYLFk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V96NyI0S; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717422381; c=relaxed/simple;
+	bh=d4eJmzKz2SNxrPcPd+qatcbZ80D3Ow31WgkU36pFokc=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=lRW4ULSIO6a5FKOe58VEXjHI7X32uXbFcuW1MQO6QMQ/KItkVXjqVDLV4gcWdvCSLoaCceru5fKZNsf7ZRJH/qoOdNitQKySQ8pXiIFupMMva4jjpLQkgrzOZuIqVmUuoHvIejGffxnouO5mEEzmUuoJafpEOMfEZScF1ApW+vE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=evTuihQp; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V96NyI0S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0EF9C2BD10;
-	Mon,  3 Jun 2024 13:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717420733;
-	bh=LgL/MmSAZeLxCV+OpLpwFCLxjkw3tEWshcGOE6SuJMU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=V96NyI0Sb7svQf1lh3W8DIKv7BOjMHAsU9ywIzZa0s8NzCZaMgO8k94GmP097WuRK
-	 PTxjc7xXlDQ+Jlu9y9EXBjrhtxdiOOOyKKcqoblhnZlJxvQ1lDNAuMEhPK5MeqPTyL
-	 hgfl2bV8QHNV98YnxbozrBO86Dr6f17Dymuy3eORGt++4do3IHemYIDcZB25JMvfP1
-	 Xzr/8IVGzEIEfZ5lh9yshjK5PTJph1YNqPlj++AThhCuulqA85WyD97SeKkDwVhv1k
-	 dyRmlxJTwQvgsEsks2y2QCxHLA0VyYewYujgrYxJvRB4YyUdb5g8a+Ux2u0mRykjwP
-	 8kxHC1HsuJcfg==
-Date: Mon, 3 Jun 2024 08:18:50 -0500
-From: Rob Herring <robh@kernel.org>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="evTuihQp"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=pGQW7Y124egT0UTndX/Fi1ujBEUpNQr3uL1t6F5bA8g=; b=evTuihQpzdJg8Tu7cz5wVn0Lg0
+	N2LuNEyfM661tSgJvGQgyM0gPYorWCcjZyzHONXEyyKbRCI2atdy4cKO8QLelrmb4OuDkZrz1FgdJ
+	EdVxmrVI0jxkM5xcM20hCNLv/OfEA4sb1Ryg+Ys3hKu0zh63uehlmO/Qx/haIvjkezHU=;
+Received: from [184.161.19.61] (port=58820 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1sE7TE-0008M2-Dz; Mon, 03 Jun 2024 09:11:28 -0400
+Date: Mon, 3 Jun 2024 09:11:12 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
 To: Hui Wang <hui.wang@canonical.com>
 Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	hvilleneuve@dimonoff.com
-Subject: Re: [PATCH 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
-Message-ID: <20240603131850.GA148307-robh@kernel.org>
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com
+Message-Id: <20240603091112.d3491b3be00830126580662e@hugovil.com>
+In-Reply-To: <20240603123710.649549-2-hui.wang@canonical.com>
 References: <20240603123710.649549-1-hui.wang@canonical.com>
+	<20240603123710.649549-2-hui.wang@canonical.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240603123710.649549-1-hui.wang@canonical.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -2.5 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 2/2] serial: sc16is7xx: setup reset pin if it is defined
+ in device tree
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, Jun 03, 2024 at 08:37:09PM +0800, Hui Wang wrote:
-> In some designs, the chip reset pin is connected to a gpio, this
-> gpio needs to be set correctly before probing the driver, so adding
-> a reset-gpios in the device tree.
+On Mon,  3 Jun 2024 20:37:10 +0800
+Hui Wang <hui.wang@canonical.com> wrote:
+
+Hi Hui,
+
+> Certain designs connect a gpio to the reset pin, and the reset pin
+> needs to be setup correctly before accessing the chip.
+> 
+> Here adding a function to handle the reset pin. This change has no
+> impact if there is no reset_gpios defined in the device tree.
 > 
 > Signed-off-by: Hui Wang <hui.wang@canonical.com>
 > ---
->  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/tty/serial/sc16is7xx.c     | 22 ++++++++++++++++++++++
+>  drivers/tty/serial/sc16is7xx.h     |  2 ++
+>  drivers/tty/serial/sc16is7xx_i2c.c |  2 ++
+>  drivers/tty/serial/sc16is7xx_spi.c |  2 ++
+>  4 files changed, 28 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> index 5dec15b7e7c3..62aff6e034cb 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> @@ -28,6 +28,9 @@ properties:
->    clocks:
->      maxItems: 1
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index bf0065d1c8e9..53bfb603b03c 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/kthread.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> +#include <linux/of_gpio.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/sched.h>
+> @@ -1467,6 +1468,27 @@ static const struct serial_rs485 sc16is7xx_rs485_supported = {
+>  	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
+>  };
 >  
-> +  reset-gpios:
-> +    maxItems: 1
+> +void sc16is7xx_setup_reset_pin(struct device *dev)
+
+Potentially rename to sc16is7xx_reset() based on my comments below
+about software reset.
+
+> +{
+> +	struct device_node *np = dev->of_node;
+> +	int reset_gpio, err;
 > +
->    clock-frequency:
->      description:
->        When there is no clock provider visible to the platform, this
-> @@ -120,6 +123,7 @@ examples:
->              compatible = "nxp,sc16is752";
->              reg = <0x54>;
->              clocks = <&clk20m>;
-> +            reset-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
+> +	reset_gpio = of_get_named_gpio(np, "reset-gpios", 0);
 
-Missing the header for the define.
+Maybe use devm_gpiod_get_optional() to simplify and avoid OF-specific
+code.
 
-Test your bindings before sending.
+> +	if (!gpio_is_valid(reset_gpio))
+> +		return;
+> +
+> +	err = devm_gpio_request_one(dev, reset_gpio, GPIOF_OUT_INIT_LOW,
+> +				    "sc16is7xx-reset");
+> +	if (err) {
+> +		dev_err(dev, "failed to request sc16is7xx-reset-gpios: %d\n", err);
+> +		return;
 
->              interrupt-parent = <&gpio3>;
->              interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
->              nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
+When this error happens, you return no error to the calling function,
+why? If you specify a reset GPIO in your device tree, and you cannot use
+it, seems like an error worth reporting.
+
+> +	}
+> +
+> +	/* Deassert the reset pin */
+
+Do you respect the manufacturer's minimum reset pulse width? The
+datasheet states that its 3 us, so maybe add a delay before deassertion.
+
+> +	gpio_set_value_cansleep(reset_gpio, 1);
+> +}
+> +EXPORT_SYMBOL_GPL(sc16is7xx_setup_reset_pin);
+> +
+>  int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>  		    struct regmap *regmaps[], int irq)
+>  {
+> diff --git a/drivers/tty/serial/sc16is7xx.h b/drivers/tty/serial/sc16is7xx.h
+> index afb784eaee45..f4ae114cc41a 100644
+> --- a/drivers/tty/serial/sc16is7xx.h
+> +++ b/drivers/tty/serial/sc16is7xx.h
+> @@ -33,6 +33,8 @@ const char *sc16is7xx_regmap_name(u8 port_id);
+>  
+>  unsigned int sc16is7xx_regmap_port_mask(unsigned int port_id);
+>  
+> +void sc16is7xx_setup_reset_pin(struct device *dev);
+> +
+>  int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>  		    struct regmap *regmaps[], int irq);
+>  
+> diff --git a/drivers/tty/serial/sc16is7xx_i2c.c b/drivers/tty/serial/sc16is7xx_i2c.c
+> index 3ed47c306d85..9833c3b935c2 100644
+> --- a/drivers/tty/serial/sc16is7xx_i2c.c
+> +++ b/drivers/tty/serial/sc16is7xx_i2c.c
+> @@ -21,6 +21,8 @@ static int sc16is7xx_i2c_probe(struct i2c_client *i2c)
+>  	if (!devtype)
+>  		return dev_err_probe(&i2c->dev, -ENODEV, "Failed to match device\n");
+>  
+> +	sc16is7xx_setup_reset_pin(&i2c->dev);
+
+Move this call inside sc16is7xx_probe() function, since it is common to
+both i2c and spi interfaces. Also, you will see in sc16is7xx_probe()
+that we already issue a software reset. If you
+specify a hardware reset pin, then you shouldn't issue the software
+reset.
+
+> +
+>  	memcpy(&regcfg, &sc16is7xx_regcfg, sizeof(struct regmap_config));
+>  
+>  	for (i = 0; i < devtype->nr_uart; i++) {
+> diff --git a/drivers/tty/serial/sc16is7xx_spi.c b/drivers/tty/serial/sc16is7xx_spi.c
+> index 73df36f8a7fd..ce38561faaf0 100644
+> --- a/drivers/tty/serial/sc16is7xx_spi.c
+> +++ b/drivers/tty/serial/sc16is7xx_spi.c
+> @@ -38,6 +38,8 @@ static int sc16is7xx_spi_probe(struct spi_device *spi)
+>  	if (!devtype)
+>  		return dev_err_probe(&spi->dev, -ENODEV, "Failed to match device\n");
+>  
+> +	sc16is7xx_setup_reset_pin(&spi->dev);
+> +
+>  	memcpy(&regcfg, &sc16is7xx_regcfg, sizeof(struct regmap_config));
+>  
+>  	for (i = 0; i < devtype->nr_uart; i++) {
 > -- 
 > 2.34.1
 > 
+> 
+> 
+
+
+-- 
+Hugo Villeneuve
