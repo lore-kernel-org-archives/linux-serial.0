@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5A0F146A86;
-	Tue,  4 Jun 2024 13:29:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB740145A1D;
+	Tue,  4 Jun 2024 13:30:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717507789; cv=none; b=GgE3LjHGyyP4xj5t5u0laM9iOXzUJrCsC9o1dXuBWzDQfFcZX+F4ierohjjo1U7tjlRQg7PNTKCjo/vwAb4UGk31rycVscrxDZRANBa9rcKCdb6M3DSvVRzcBLAfik8ctq6Z9PT0eM2PIBXKiYnVxdN1GNL0cp5T25RaC4Ao1VQ=
+	t=1717507817; cv=none; b=raa107l4rcPhBqyHc3tiYjtFDHSzgKkxHmiB+FO0fSHfY5BnEpd7Ijw+J6BcYWzSJX/SEn5fs5Wxi1hW0hhKoS/NsztYO+o6Xf+rij2QbOHTFITa6QPVIjJNxcW0Te4DUQJZ3a9GyuTEsfg2Qv/JCM2vg1R9C3AkfzWPQU7EFnM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717507789; c=relaxed/simple;
-	bh=1Rdi3WSK7zWhr426+K9KgRPtkRxfoxP3Sov4bdGRbb4=;
+	s=arc-20240116; t=1717507817; c=relaxed/simple;
+	bh=4UU6t2GKweZMNEZHbQA9vbv1BZ0qx5SHGmURNH6BzH4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TZsAQKpmTleKJHtGWKncm9mq/6Ej8eCUgL8Do1TLT5D1kwWSdayb07NImhq/LQvBysnUkMXC0O++hf7Gr+kwI6jQOSASRKxsxEysN1EGvXJyoSdwdTj49go8grOoOsrURdWZPBM36aRY1835g56HtclZ9Cd6tW5UbML7yCNTkRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G1kOSLfJ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=TQN7YvjngDXPxckH3q5jNbnfkFNBz+u2mA3XxqsGrPh6qX3gLp4jHOQ+Rbc2g1FVQEoa6qefEu2OfaI8M6pS1fUnpzAsqWgWSLbky2nTrpLYwIkPoV7zxcSgUSuigexL9ptM0Ly3oL02wi45tdyDJjZ7eI9CziWui42HIyvb23U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c65Go//A; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G1kOSLfJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B17BC4AF07;
-	Tue,  4 Jun 2024 13:29:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c65Go//A"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE13C2BBFC;
+	Tue,  4 Jun 2024 13:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717507789;
-	bh=1Rdi3WSK7zWhr426+K9KgRPtkRxfoxP3Sov4bdGRbb4=;
+	s=k20201202; t=1717507817;
+	bh=4UU6t2GKweZMNEZHbQA9vbv1BZ0qx5SHGmURNH6BzH4=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=G1kOSLfJxlt/tCYFLcpzR3Onn9y6D9lYZrZOmFRGFCRDddLVxAr6iBLKb8KtwIl2O
-	 5Wzf/kqooI92lXp5OQ4YyRWwz+ixJEQKlxfxv+0Ak4KWrK+kY+2zwotIXbUYvbqfFI
-	 puc7XUL2uBsp/e6IzcNehxCLGoTuy0aG4KcIxYp9Ylfocwfi7rkZFrOeIHR4oKFT1R
-	 u7xAuhnOR9uPbzX/wpb1UjsLcVpWm87LNkyhHhtS9OfVxAIQ/dXUlnCIcDQYzzZV59
-	 ngwLojohMOp8sSpzoI8SDomHTUPoH+TASIXZm75Pibye2oEbKQJdwgIL+h8AEjgxKn
-	 q58s4FSIGR4Gw==
-Message-ID: <1c56b7b3-faea-4d17-88ee-c954e0f69994@kernel.org>
-Date: Tue, 4 Jun 2024 15:29:44 +0200
+	b=c65Go//Ae1T/LXSLS5hFocRsyyYg+5vwejd70sPuCp6HhtOWhnP1v8EdNSI1bacQd
+	 0zuJkcgxiE253x5C2zri278Wv725AvEW5Ekp5KkIpH4MjCZoeeo7cEmrJodpkdRvVl
+	 MxuuJXKAOlouRvJo5ympRbkyy0Ck++8aZWuc58HleHXvxf4fy3cH35XHadGpNV9h4H
+	 xoCnpXWg1K1EAcDsM5/yE99K3Dr6GE7+NvnzpZmBnJBkFDTZWUvDJww6CSx1lI8sEe
+	 NVEqjw2oyloMGZmpmrygTCdApV4CcFG2XqnDhQzK+NCtFFlzwHYtvHijfnq4eQw5RV
+	 /S0fXKZv/a+qg==
+Message-ID: <4d4f5c9f-276f-4437-8646-aeea413254a5@kernel.org>
+Date: Tue, 4 Jun 2024 15:30:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
+Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
+ reset-gpios is defined in dt
 To: Hui Wang <hui.wang@canonical.com>, linux-serial@vger.kernel.org,
  devicetree@vger.kernel.org, gregkh@linuxfoundation.org
 Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
  lech.perczak@camlingroup.com
 References: <20240604132726.1272475-1-hui.wang@canonical.com>
+ <20240604132726.1272475-2-hui.wang@canonical.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -87,24 +89,21 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240604132726.1272475-1-hui.wang@canonical.com>
+In-Reply-To: <20240604132726.1272475-2-hui.wang@canonical.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 04/06/2024 15:27, Hui Wang wrote:
-> In some designs, the chip reset pin is connected to a gpio, this
-> gpio needs to be set correctly before probing the driver, so adding
-> a reset-gpios in the device tree.
+> Certain designs connect a gpio to the reset pin, and the reset pin
+> needs to be setup correctly before accessing the chip.
 > 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Here adding a function to handle the chip reset. If the reset-gpios is
+> defined in the dt, do the hard reset through this gpio, othwerwise do
+> the soft reset as before.
+> 
+> Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Where did these happen?!?!?
-
-NAK
-
-Please talk with your colleagues in Canonical to explain how this works.
-Then read submitting patches document.
+No, stop making up tags!
 
 Best regards,
 Krzysztof
