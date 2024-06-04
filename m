@@ -1,88 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00FC81487EF;
-	Tue,  4 Jun 2024 16:54:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA200149C7E;
+	Tue,  4 Jun 2024 17:05:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717520071; cv=none; b=aQBEmeBttp4KUvkdFybTTwA8nLtA0x8F8QfuoLH2jcsfb/uaKWTiIW+VqrQtMfUi6F1PMGJzQe+pTU2KFrIyCqEhGrN8KxoFOJzBSXCZvku+nmZux9OXbIvsb1hMoe2hP7JkQttltFOm4cKk9CkNsxZd7+9/CtEUvaxDFp1zTeA=
+	t=1717520745; cv=none; b=ughEFwcjiEDSIAJRgptcdT/4i5mXtgERY0VOdL42EDX77HTCJQNSpTQoLc/AFAB3FuwUTmXeeYMTA/fu/WBqmHEyfFjrMFsb5Abxc2piT4qmJKBO4xup2SsQa1s0sKSetdXPEUpASHWaoD2qxyLhirBoAKpMjR9HnzDqN0k0vYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717520071; c=relaxed/simple;
-	bh=9QxiAFyRtObELcKE8Pdt8Q3G8VNOVmS0MGj3q8rQD1Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mrPOWjkwDZwW34Uywz6aEMaSHoO1WLKkjWC+AWADvl9z7lqi/D7EXKAd3H3kD7yEfz2s5jJDkUJan3k7CNkkVqNrhLMJWKz8RGC5vDOaDLo1QocFgChMIf8brR+iQbEXCEbloBIkjEK6uEhIke0xTJgAiw8UeXQPZ9SOsxtkRNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vfjd0UrE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717520745; c=relaxed/simple;
+	bh=t9IVtsFePdlpttmOU4a5WpS6hMzeoXmyIQ0CJUC+xQA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tgyisdxFj5NBCBeB8hnyacAAEK+7EcHzsZtFd03VdrVrUqsVOGdkJ3SBOARngSmobTEgMcWPbOfPmnDJth7eWA7DSO74T7Lzb5WpC7qqXdzjgvTiJi11T76dK1nMbo+mDYJDIQRJ6OaJoZNDEXCP05o5lbHvAswxcbpEnGTWabU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BXexvQj9; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vfjd0UrE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2A47C2BBFC;
-	Tue,  4 Jun 2024 16:54:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717520070;
-	bh=9QxiAFyRtObELcKE8Pdt8Q3G8VNOVmS0MGj3q8rQD1Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Vfjd0UrE2T+Gw7EaDN2F9IKww+eROskhaELkjqCbX0lg+lVJ+MLsrQfelrViaAjRK
-	 vrTuTLxSPpypv72kmQAt8Cde37e0dM0by7sRAXP0j2/P0ICSo/VDotdM1ThDn23VKx
-	 nchFMcSkJp3H1Go+ZPvoQgK90QywEjPLEfPc5m0fmGSr4lmmVyUpdTi9T1esqkrB7z
-	 jFUz8p5LZUBgPwHI4sb84alubcVZSfqIdk1ar2MEhpeU0hXfVlNr6Mm8btlKkr6y7g
-	 8V5ZydI77l33AdOWULTvZm554rTgl5qkqVRCqnb5gvWo5bWP4Btsqp0X02t8eUcyp3
-	 H/GbHVznSCciA==
-Date: Tue, 4 Jun 2024 17:54:25 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Hal Feng <hal.feng@starfivetech.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BXexvQj9"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-52b7ffd9f6eso5756808e87.3;
+        Tue, 04 Jun 2024 10:05:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717520742; x=1718125542; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+ooTOrfVE1G77riynjLsXH5hVGEdf4cn+UvIXHa74yk=;
+        b=BXexvQj9ZGNWUhabz+vADi3qCrh3kAFspAKPYl+uE1vH62+DWU5cM6fKW7TqWG/P79
+         AMiEqQfF1K5Pb4w7LAXPxvvTPMTROSKK2K8cQQLdrE0lPFJPNotqkgCpMSQVwn5UlfbM
+         fzoZh89dt4ogt55fG0x41CtvrDUGX7WbByLKDamztB5BSVnj9jjGMLtrMYVkBduENlS+
+         er7FyWTANX7T53MICPpbCIgvUpyroRKYJso2JfaBWHA58sI+d11BAGYAQ2N0FbUi3VHE
+         br0MY9LD9RX3gjWhC3XAJFMHBSo6kiKso0Lq3/+qsovgT9AgiHDPLVLWevXPhq984M0z
+         7iVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717520742; x=1718125542;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+ooTOrfVE1G77riynjLsXH5hVGEdf4cn+UvIXHa74yk=;
+        b=OHrntdMzmjHiFYVf80O8vn/6UGll8H/nlPebyWpsZnZBj9njzVkDjxvmklLBdCPt7Z
+         TCL6AZTW9VKkdiNnML23Gy6bMXWiUJzardUaowtLrRIBf6549TcalV51C3cLPAsLG8PC
+         /rRWNXUnwQ6vYijhqC9RFMaSRz+Qca6TdjNnHTKUv5O1BlprtGHCVLI5HKsNkMkwnQSX
+         t7l6JMXOAubaZPDfS5ddDOQUAAIIVDXzeJYi/k9fbq9E/CwGghlvcsl0AsKZRR/zRm5w
+         Wn4WYHeXEzbrd7YNIT2bNOvp1yLkommg46KmT3YNVgz4fXYhQiSnliIFPKQvrAowWkfH
+         qktw==
+X-Forwarded-Encrypted: i=1; AJvYcCXdpsf5YdsbzxiVVSKSkmsDx5WwQncatDbZNckCmHQe0ivopgeJh5odPxkLDhks1+iz4DrdzlCgu2Nf271f+Wu40hY+DztWQj9OFAnRkdjPtesw1HTZdZ1/hF1GdH2yihre28/F6fVr37FnIESDVTCfbo5909oawy0qS1GQT3wtL7pR3bX2LgTDjt7U7vhexWbKyoVSGFi/72xBmJgKu/5JyC19gLIgS4y/
+X-Gm-Message-State: AOJu0YyPyw1S83MiowSnvCWxKN/WrnY6Ew9lTlmvXNWlpCF/uAAQJRrO
+	gkUVcUsb226aKznbii1fFKWCMimBfsy0ROsMSNTo8RmjYETiMiOK
+X-Google-Smtp-Source: AGHT+IF0P8+2G2asyqapUINs+aTvB/wwEy3aI1z09I741Ea3xfCSOlDaqPlAmJfHe7TnUZt8LhBjbw==
+X-Received: by 2002:a05:6512:3091:b0:51c:dc6:a1cf with SMTP id 2adb3069b0e04-52bab4cf236mr138303e87.34.1717520741692;
+        Tue, 04 Jun 2024 10:05:41 -0700 (PDT)
+Received: from prasmi.home ([2a00:23c8:2500:a01:2595:4364:d152:dff3])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-35dd04c0f2asm12244077f8f.3.2024.06.04.10.05.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jun 2024 10:05:41 -0700 (PDT)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: serial: snps-dw-apb-uart: Add one
- more reset signal for StarFive JH7110 SoC
-Message-ID: <20240604-sagging-unbiased-17083b875576@spud>
-References: <20240604084729.57239-1-hal.feng@starfivetech.com>
- <20240604084729.57239-2-hal.feng@starfivetech.com>
+	Magnus Damm <magnus.damm@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v5 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
+Date: Tue,  4 Jun 2024 18:05:08 +0100
+Message-Id: <20240604170513.522631-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="gEvQNIf624IsR0Q/"
-Content-Disposition: inline
-In-Reply-To: <20240604084729.57239-2-hal.feng@starfivetech.com>
+Content-Transfer-Encoding: 8bit
 
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
---gEvQNIf624IsR0Q/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi All,
 
-On Tue, Jun 04, 2024 at 04:47:27PM +0800, Hal Feng wrote:
-> The UART of StarFive JH7110 has two reset signals.
-> Both of them are necessary for JH7110 to initialize UART.
->=20
-> Signed-off-by: Hal Feng <hal.feng@starfivetech.com>
+This patch series updates DT binding doc and scif driver to add support
+for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
+interface.
 
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+v4->v5
+- Rebased the changes on v6.10-rc2
+- Included Acks and RB tags
 
-Thanks,
-Conor.
+v3->v4
+- patch 2/4 reverted back to version 2
+- new patch 3/5 added
+- Added new reg type for RZ/V2H
 
---gEvQNIf624IsR0Q/
-Content-Type: application/pgp-signature; name="signature.asc"
+v2->v3
+- Included DT validation patches
+- Added a new compat string for RZ/V2H(P) SoC
+- Added driver changes for RZ/V2H(P) SoC
+- Listed interrupts and interrupt-names for every SoC in if check
 
------BEGIN PGP SIGNATURE-----
+Cheers,
+Prabhakar
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZl9GwQAKCRB4tDGHoIJi
-0pIEAQCPDEC7F3bwjXqRwHk8slfZh89WNAGHTG3bfBDIyQqRJAD/Rel/CIsjO73v
-ESIZqBFtkTn9zKJuSZN0Z3XX9Kv1qwc=
-=tyjt
------END PGP SIGNATURE-----
+Lad Prabhakar (5):
+  dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+  dt-bindings: serial: renesas,scif: Validate 'interrupts' and
+    'interrupt-names'
+  dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
+    required
+  dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
+    (R9A09G057) SCIF support
+  serial: sh-sci: Add support for RZ/V2H(P) SoC
 
---gEvQNIf624IsR0Q/--
+ .../bindings/serial/renesas,scif.yaml         | 136 +++++++++++++-----
+ drivers/tty/serial/sh-sci.c                   |  55 ++++++-
+ include/linux/serial_sci.h                    |   1 +
+ 3 files changed, 154 insertions(+), 38 deletions(-)
+
+-- 
+2.34.1
+
