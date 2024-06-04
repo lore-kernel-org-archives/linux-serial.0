@@ -1,110 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45A6144D2E;
-	Tue,  4 Jun 2024 13:18:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 076E8146587;
+	Tue,  4 Jun 2024 13:27:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.121
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717507082; cv=none; b=MdVa1+ax1LfQu3ko2jbhAcKJrNXDVS84O7tGuQtlcZxckoojYGdOlj7pnHunM90s4yRM7hcD3T+V7JCYrDFW1jKL2RT5My0mXpv0/Z80hJrAtGo/Zi0D77lNOZpzYtWjSrzuTI/fLSKnX8nNLncbFk4ZMVeYFYc6oQIHvBl0RmY=
+	t=1717507682; cv=none; b=hUHJP3TnV7+G/cRIfEA53w1/i7GqRIfIwUiy6EaoLnC+IdQ5OCEm7Orqo6M7sKtBcXo/dPoBbc4/9yMmpHDlmPcUdAQbQHs45rq5Z4Fu/M3SuoOJCewviMoxi2Yu1OPwCLm9m+w3QW5J7db4BJvdjPK7XOxG2+YopaaGXT4IREU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717507082; c=relaxed/simple;
-	bh=lH1YSHW+QRtl0PgeKbxOgI/6+SHrKNvBO9ZLRDA4uzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t5zHCvnQFcX6GttsljEUCvS1BBob5oOZUW6KFdQLa2wx4REExlLWs5myRCjnw5czRlH5l8a/6vY8txzxz5FVWIzU7oIxyvTpY2o1M336V9cE8hR1c6cTWI6sbpIsNuOEjTXF0C1Mfu8INwHx4rSJE9ekJ16wcmc3vFe67oUVC00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lDoW2IOo; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1717507682; c=relaxed/simple;
+	bh=XD7sGTd2Gsxw6auJAyBns8W6FqefWrT3nEzqQT0Lca8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=L1+dao4J5tn8ufnBGuccPGgqa4dj8MPMtYrvt6f6dli7F4KDJwsOi6Jx0K5yqsTo4oyo9hbhj56wRQCCSj6p2iubR7IE4ZDMQKYjrRueKbJUv0JnPAvetQPWUI75CKLa7TMMyIIXyF0Y9ZASQCAoqTsKLSv+sOOro9zuDyV2o3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=mHb7GBUL; arc=none smtp.client-ip=185.125.188.121
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lDoW2IOo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717507081; x=1749043081;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lH1YSHW+QRtl0PgeKbxOgI/6+SHrKNvBO9ZLRDA4uzw=;
-  b=lDoW2IOoc+MgLuenK33eRCe/PyOyz/o+KvHkp3MT96+44SVO7j3ZJHh/
-   3JaDoNK4z5RFvA/b5TndDC5CBBNVHSBTVQTP9GGuzS9aoBqTaCYgE6J8m
-   40V+IwuZWmSb87eo2CIrMFF9Ge5+5pJ7ZagJ49DN4FjxuuXAr+FFBfiUb
-   FSMq6aN3PcytviqNtRdiV9X+Dvrg1uVLYN51Kun273XeHMKMVo/LG8WKb
-   QeqxD4YpeJOe4O1LLXzOIfVErn5Kxr4E+k0hM9yHa/XSes2XvDg3jEW6A
-   6tWcYCeC13p9MvchkwC2lYn/k3SztW2c3VTKEnuIbzujRzC71gXcQxf0v
-   w==;
-X-CSE-ConnectionGUID: H6GjsBv/Q0mYKrWfFnA3yQ==
-X-CSE-MsgGUID: zBr33mITRBKwbplH7aMNgg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11093"; a="14275845"
-X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
-   d="scan'208";a="14275845"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 06:18:00 -0700
-X-CSE-ConnectionGUID: npG3c61kQDeJTyufGWscDw==
-X-CSE-MsgGUID: x8TPzEm0SRi7mLbo0hmLQw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,213,1712646000"; 
-   d="scan'208";a="60426903"
-Received: from unknown (HELO tlindgre-MOBL1) ([10.245.247.168])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2024 06:17:54 -0700
-Date: Tue, 4 Jun 2024 16:17:47 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: Tony Lindgren <tony@atomide.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Dhruva Gole <d-gole@ti.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Vignesh Raghavendra <vigneshr@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 1/7] printk: Save console options for
- add_preferred_console_match()
-Message-ID: <Zl8T-0zpTYy5GFau@tlindgre-MOBL1>
-References: <20240327110021.59793-1-tony@atomide.com>
- <20240327110021.59793-2-tony@atomide.com>
- <ZlC6_Um4P4b-_WQE@pathway.suse.cz>
- <Zll0Mg-Ovqx0n7Zd@tlindgre-MOBL1>
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="mHb7GBUL"
+Received: from hwang4-ThinkPad-T14s-Gen-2a.conference (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 09942407AA;
+	Tue,  4 Jun 2024 13:27:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1717507676;
+	bh=+rTEg07k9uO3gI73BYv1gqqZWfRUljeZMZ+vQPgJl7A=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+	b=mHb7GBULCdVEnDIXP+HRZfNv5bbYo6ONwzJgzXQp1pKbG0QGKtIaTKSsd3ua8yYWz
+	 tLXRCN4fCNqcM26unkZTS99EZslV2+4VWFSszMHSCny+abZqR3A8JerH1V1ynQiMVP
+	 yaK22fMEO1Fn66EvdEE0cG/Y/q+JKtLryeGq9Mxo0YA3dIOky9NPpkDmPBN4U0vyPw
+	 /n8d3Wd6y/z7Mf2cwIyKwnru2C8iCrK9t7Zb6WkXGpMEjbsX5xlqrTMi6Ey+o1UYS8
+	 /R3SF6qbpFIsVLi02OJtGvB0bDPyqKQH4TIYSHluLiWxe++mobGGycyUtxYF36ycS7
+	 0ZMQQKKdiLMPQ==
+From: Hui Wang <hui.wang@canonical.com>
+To: linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	hvilleneuve@dimonoff.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	andy@kernel.org,
+	lech.perczak@camlingroup.com,
+	hui.wang@canonical.com
+Subject: [PATCH v2 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
+Date: Tue,  4 Jun 2024 21:27:25 +0800
+Message-Id: <20240604132726.1272475-1-hui.wang@canonical.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zll0Mg-Ovqx0n7Zd@tlindgre-MOBL1>
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 31, 2024 at 09:54:42AM +0300, Tony Lindgren wrote:
-> On Fri, May 24, 2024 at 06:06:21PM +0200, Petr Mladek wrote:
-> > A solution might be to store "devname" separately in
-> > struct console_cmdline and allow empty "name". We could
-> > implement then a function similar to
-> > add_preferred_console_match() which would try to match
-> > "devname" and set/update "name", "index" value when matched.
-> 
-> This sounds nice, the empty name can be used to defer consoles that
-> are not known early. And on console_setup() we only set the devname
-> for such cases.
+In some designs, the chip reset pin is connected to a gpio, this
+gpio needs to be set correctly before probing the driver, so adding
+a reset-gpios in the device tree.
 
-Yup reserving a slot for a devname console at console_setup() time
-in console_commandline[] allows keeping the consoles in the right
-order again :)
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+---
+In the v2:
+ - include the gpio.h
+ - run the 'make dt_binding_check' and 'make dtbs_check'
 
-> To me it seems we additionally still need to save the kernel command
-> line position of the console too in struct kernel_cmdline so we can
-> set the preferred_console for the deferred cases.
+ Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Then with the command line consoles in the right order, there's no need
-to save the position separately.
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+index 5dec15b7e7c3..88871480018e 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+@@ -28,6 +28,9 @@ properties:
+   clocks:
+     maxItems: 1
+ 
++  reset-gpios:
++    maxItems: 1
++
+   clock-frequency:
+     description:
+       When there is no clock provider visible to the platform, this
+@@ -91,6 +94,7 @@ unevaluatedProperties: false
+ examples:
+   - |
+     #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
+     i2c {
+         #address-cells = <1>;
+         #size-cells = <0>;
+@@ -120,6 +124,7 @@ examples:
+             compatible = "nxp,sc16is752";
+             reg = <0x54>;
+             clocks = <&clk20m>;
++            reset-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
+             interrupt-parent = <&gpio3>;
+             interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+             nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
+-- 
+2.34.1
 
-And I think then we can also revert commit b73c9cbe4f1f ("printk: Flag
-register_console() if console is set on command line"). But I need to
-test the fixes some more before sending out.
-
-Regards,
-
-Tony
