@@ -1,39 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3225145FF9;
-	Tue,  4 Jun 2024 12:00:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE714144D21;
+	Tue,  4 Jun 2024 12:00:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717502423; cv=none; b=Z4Uffl+/iqBbmGPnpTBwG4X8njKM9VO6iN2qh2YhqJxLOKR8DV6RArelf5gQkIA1KkaE5javDs4aHX5HC38wd/lCcoyZxC3EgekMbJer8xaVhRxUK/7pEHo3qQeVK4oDRKhgCHVmWiJ35CXTRN8T9BeyoKr6O1iltOG3M9o/pLU=
+	t=1717502431; cv=none; b=siJl7B+GWUixPsvZ6gamoDAXR6i8J8Pp4X3lMyCcEp2pAC9a3Pw25ZdCoz3Q5Cte9tSUBIveyyDsjLPLhYcomHovHS7XcgUTr8vwGcgaf5TK/ejvV4npxh5msmjLYcNsr0czd3sSPCl54gCgzE3Xw9LEg9F6eEAWxhmpXDWlf5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717502423; c=relaxed/simple;
-	bh=w5mWNUL5jxIc30HBPwzkBv4ciJQ19LBfMfB+svf/32g=;
+	s=arc-20240116; t=1717502431; c=relaxed/simple;
+	bh=uqC1CdqJrQZsKoI9p56FyhoJ8ZKHafWpVDbwRS7y2lo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lQqxJPckoj1mF7DSy8wi87efz+laZ3F2zytx5NhGxXxxRrKizNyP+FexaOT17lYnmUFXMRPRxuBi2BtYdYPgZQj9X3FI8X7xZYnDGe6f7W4PbTFQNSyN8BVZTZmnzkZgJ9rWXCleA7d2waMwcKVOQE0GofUlJkKYKkCY6d1PORI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=oo+2jigT; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=T+0sio6rQB8JciSWImzyxC936byA/XNgCRss90jLJleJzWlZS3ofW3u+PPo0b4hVdhfAY7czwgzAXrkEUNEksuf875+2GIvOlIslWix18dl8Wjsw9SLaBm4LLsmL6zrfiR89ApzOGyHP3QBaVN6qUO1JRiMGJ/Sko39IJooKCR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=bXUi4eQa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oo+2jigT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B30CC4AF0A;
-	Tue,  4 Jun 2024 12:00:22 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="bXUi4eQa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A6EC2BBFC;
+	Tue,  4 Jun 2024 12:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1717502423;
-	bh=w5mWNUL5jxIc30HBPwzkBv4ciJQ19LBfMfB+svf/32g=;
+	s=korg; t=1717502430;
+	bh=uqC1CdqJrQZsKoI9p56FyhoJ8ZKHafWpVDbwRS7y2lo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oo+2jigT2TIcmpgLRq94ZgWSlilujMupc2xbKaYIKojG0fcRgyk6TxmzLotRwy1Hi
-	 GUR1EK4KZAun7Bu9v3YF2erlv9+2LXyhBK6E0tJw+T4DJzJ8RuFIYVyws2BxYC+e+m
-	 JSsUxpoZz6F2KYj5lEtkCOJ4daY6r/ZnScBc0w00=
-Date: Tue, 4 Jun 2024 13:50:49 +0200
+	b=bXUi4eQa0Ms/AUNphYr4mmeszGwtmlI2nrH4Fgpb2tDaW7KxBo64jhMx9bjrbG+fB
+	 OSnDStbCivdLQ6SqQd4lOEQ828Tsr7/vxPG8zuxoXzXikpls8hoc+Edz0ySuDei7Ec
+	 WbYysoeGZ9P7TdMnc0+mSBK8Kr4Yjm2US1qXqNjI=
+Date: Tue, 4 Jun 2024 13:56:00 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-Message-ID: <2024060428-childcare-clunky-067c@gregkh>
-References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
- <2024051046-decimeter-devotee-076a@gregkh>
- <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Mark Brown <broonie@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH] spi: dt-bindings: marvell,mmp2-ssp: Merge PXA SSP into
+ schema
+Message-ID: <2024060451-stuffed-letdown-23ba@gregkh>
+References: <20240522132859.3146335-1-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,61 +45,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
+In-Reply-To: <20240522132859.3146335-1-robh@kernel.org>
 
-On Wed, May 22, 2024 at 01:39:21PM +0100, Vadim Fedorenko wrote:
-> On 10/05/2024 12:13, Greg Kroah-Hartman wrote:
-> > On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
-> > > The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
-> > > of serial core port device") changed the hierarchy of serial port devices
-> > > and device_find_child_by_name cannot find ttyS* devices because they are
-> > > no longer directly attached. Add some logic to restore symlinks creation
-> > > to the driver for OCP TimeCard.
-> > > 
-> > > Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
-> > > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-> > > ---
-> > > v2:
-> > >   add serial/8250 maintainers
-> > > ---
-> > >   drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
-> > >   1 file changed, 21 insertions(+), 9 deletions(-)
-> > 
-> > Hi,
-> > 
-> > This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> > a patch that has triggered this response.  He used to manually respond
-> > to these common problems, but in order to save his sanity (he kept
-> > writing the same thing over and over, yet to different people), I was
-> > created.  Hopefully you will not take offence and will fix the problem
-> > in your patch and resubmit it so that it can be accepted into the Linux
-> > kernel tree.
-> > 
-> > You are receiving this message because of the following common error(s)
-> > as indicated below:
-> > 
-> > - You have marked a patch with a "Fixes:" tag for a commit that is in an
-> >    older released kernel, yet you do not have a cc: stable line in the
-> >    signed-off-by area at all, which means that the patch will not be
-> >    applied to any older kernel releases.  To properly fix this, please
-> >    follow the documented rules in the
-> >    Documentation/process/stable-kernel-rules.rst file for how to resolve
-> >    this.
-> > 
-> > If you wish to discuss this problem further, or you have questions about
-> > how to resolve this issue, please feel free to respond to this email and
-> > Greg will reply once he has dug out from the pending patches received
-> > from other developers.
+On Wed, May 22, 2024 at 08:28:58AM -0500, Rob Herring (Arm) wrote:
+> The Marvell PXA SSP block is the same or similiar to the MMP2 variant.
+> The only difference in the binding is the PXA version supports DMA (and
+> that's probably a binding difference rather than an actual h/w
+> difference).
 > 
-> Hi Greg!
+> The old binding didn't belong under 'serial' as it is not a UART. The
+> SSP block also supports audio devices, so 'spi' is not a perfect fit
+> either. As the existing schema for MMP2 is there, just leave things
+> as-is.
 > 
-> Just gentle ping, I'm still looking for better solution for serial
-> device lookup in TimeCard driver.
+> The examples in the old text binding were pretty out of sync with
+> reality. 'clock-names' and 'ssp-id' aren't documented nor used.
+> 
+> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>  .../bindings/serial/mrvl,pxa-ssp.txt          | 64 -------------------
+>  .../bindings/spi/marvell,mmp2-ssp.yaml        | 35 ++++++++--
+>  2 files changed, 31 insertions(+), 68 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/mrvl,pxa-ssp.txt
+> 
 
-See my comment on the other patch in this thread.
-
-In short, you shouldn't need to do any of this.
-
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
