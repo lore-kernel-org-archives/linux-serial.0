@@ -1,122 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70AE13E888;
-	Tue,  4 Jun 2024 06:54:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D87013E05B;
+	Tue,  4 Jun 2024 07:08:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717484098; cv=none; b=OnqxlHFGm9OISGELv6ISncEYCYhH/mYLLQDPDGrowhDTFTS6uZHihCWGrPDF/4I8bfejz6CBQU+85yKXriRi2lMeA2ssxtJpVWMfZ8BIfDxQ1K7qPXjQCLZcOxqS7loNoyx2yFXXWXKqrCBuumB1b/BWPyTmRhP7GOsy47gzyIs=
+	t=1717484914; cv=none; b=icNiAB0n5IunuM9U6qpilsfaKhpeLucxGoOFsP1pE0n1Z70TGR68jz6Wr3kXCnR3HmuSWSPAFy12H1x1RBiqa6BGbRPGYsEVRN6KTpb3i3ROjetdwhVCk8g108oMy6DqP9tSUKiKsJrVOT4TH1eq3bdkmdp+3wKRkXzu+6c5KZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717484098; c=relaxed/simple;
-	bh=FQ9QCFdBiMjWV1NNNxOu9AXTsxl6JqkgeC71/msI7xg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Efc+Yx+CeNMAj6eRR0RvkPjtRWPQIk47iH/VJIrLYiSfXgdQ+U/WUZr/n9SyXf1UioU9MlINtlN0Z0jLPcGrvAGTPN1dQDjcrU4KU7A5VcFVWdYh2JcBNtnfUXq6C/oyGIuseGh4mwqPCmb4HV10fP+8df8mMBdp7nrBesRYQyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IychoSrk; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IychoSrk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C41FC2BBFC;
-	Tue,  4 Jun 2024 06:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717484098;
-	bh=FQ9QCFdBiMjWV1NNNxOu9AXTsxl6JqkgeC71/msI7xg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=IychoSrkS8EeIRGCHPH2YfS1Mdonbh7UdjbMuY+nA+5osHOfeP2D/pGWW/qtn5mxz
-	 gnIWsYud3L1at15Pu3uIeqLD5JfVbnvSoVpHudcaCtARy2bO1eo8DcZMgsVNP+tkcl
-	 9cb9DZ9b9aOKiIfyPBQWXcF2zNBhZLheNqRU5PQ2I2IK4CN/bxiguOdsY0nNR0rfzL
-	 GOEGKb9uhnN+vTy8J/ENzfoKiwOEWTAUKxecORrCZASqbevBKabV7zRMqULJoHKA3h
-	 eBsxihbguEbIKPQdWQ+Khs9YItwdj4vSQTvPylE6cFrXKIGR1LG6C11REYDG4lr+Po
-	 YYJwUG8aWLtUQ==
-Message-ID: <9f41e66a-3545-4b23-b34e-608fd36fb2ea@kernel.org>
-Date: Tue, 4 Jun 2024 08:54:54 +0200
+	s=arc-20240116; t=1717484914; c=relaxed/simple;
+	bh=8ylGpk81HGWaR4ucvdzGGtqUFC0eznPY76KdxBBdV1U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WfiKXMZUj7qkVu22Rb9yQFCSj/EfUOMpzEptVe5wNOBZcpyNIqkpyJneAAaaWGofp3zgjjbQ0UQKQdIcARFS+I/em2tA+ZvZ3QlTiceZhAlJBfUAdcuyuDPVYD3dZ6Yc4vX48YyrDahpUEfVxWKyDOMvf/XZqa7zw26qgX1fbQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-62a0849f5a8so51985217b3.2;
+        Tue, 04 Jun 2024 00:08:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717484910; x=1718089710;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5X6u+stsd+tfYvF8pXNh8WFecifUW8/FZJLC/QeGp5E=;
+        b=sikoKhoWPQprunm/bwUCV7AWrg4NbWoOkuFdLUDgwwFNxCtHKeqMRUzQqAfvj7JWtM
+         y/Mr+hS+C0qK3NWGxc5BwU0S0LpqULNVEy8kWFOpJFBdMBH81sPmErSMUbUaVot2Qg6U
+         G+o4S8W+7gWRqUUXHT9QhCmVPBX40qBbohB0n06SarngJS/5biy0Wwj93XjTC5bgClYk
+         oBy6668KogwwgMpD6o3MZo0trKfFKa+DY59DtdCVa3elpQLJEXFy+9eE1HPiGv4c57B0
+         ulPaKZ5z0AEjwC8AmDvyflm1BhjS/sqllLttVD6hlDW+jquYqPEk6H7dEOms90ycAMUs
+         2W0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU+LePO3bJQ4cdnF7aH6AIFNdN1LcbyQ2Ei9RB+HmFo8pk+E3KXyadIF/mO7G0V1coMutEnQbsGEqUNBWDhLxylWHE1DFvCPme+d+HBrPPVNqgyw5w8HWNM9lK2awCURDrt1q+C4uG0IwWU
+X-Gm-Message-State: AOJu0Yx7L2IwMuxWmgaWeLpCRDky9pNaGHc9/osBs7Zi1CWf1vp9RjBs
+	9jFQsdEr2JMEwqZOs2Q5KUx5i9tjUi9bYSymUuEEbXa/3RP+/A3BjOyr0K88
+X-Google-Smtp-Source: AGHT+IHG6sLq69djTYwVLvY55htVHu3eNTGjpRYkhVYuy4pYsqLwyYgGjZBFq/YBsPChN/UzB9QW0w==
+X-Received: by 2002:a81:eb0d:0:b0:622:d6af:2555 with SMTP id 00721157ae682-62c796bf74dmr109287557b3.2.1717484909854;
+        Tue, 04 Jun 2024 00:08:29 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-62c766b3286sm17570767b3.113.2024.06.04.00.08.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Jun 2024 00:08:29 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id 3f1490d57ef6-dfa4876a5bbso4742434276.2;
+        Tue, 04 Jun 2024 00:08:29 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUfeK7Z7AucFMuzsgkA5xT/QayGXyJ9P7WBV+f1+2vD9lRVwUizqv7bD+fkcUr/EiP9OjkAXfJLOTjn/a39yXnQcbTyGVnkxLNelJR2/ox3UfYMFvYXJnD9vtfF1R39onNqpPZL/+fAY2jW
+X-Received: by 2002:a25:242:0:b0:dfa:85e4:c8bc with SMTP id
+ 3f1490d57ef6-dfa85e4ccddmr7649646276.6.1717484909249; Tue, 04 Jun 2024
+ 00:08:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
-To: Hui Wang <hui.wang@canonical.com>, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com
-References: <20240603123710.649549-1-hui.wang@canonical.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240603123710.649549-1-hui.wang@canonical.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20240603152601.3689319-1-hugo@hugovil.com> <20240603152601.3689319-2-hugo@hugovil.com>
+In-Reply-To: <20240603152601.3689319-2-hugo@hugovil.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 4 Jun 2024 09:08:17 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWqTiAUp4Pxdo9bSP4Au7yKHq0v2BrCMXU1k7KbRnigBQ@mail.gmail.com>
+Message-ID: <CAMuHMdWqTiAUp4Pxdo9bSP4Au7yKHq0v2BrCMXU1k7KbRnigBQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] serial: sc16is7xx: rename Kconfig CONFIG_SERIAL_SC16IS7XX_CORE
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 03/06/2024 14:37, Hui Wang wrote:
-> In some designs, the chip reset pin is connected to a gpio, this
-> gpio needs to be set correctly before probing the driver, so adding
-> a reset-gpios in the device tree.
-> 
-> Signed-off-by: Hui Wang <hui.wang@canonical.com>
-> ---
->  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+On Mon, Jun 3, 2024 at 5:26=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
+rote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+>
+> Commit d49216438139
+> ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
+> renamed SERIAL_SC16IS7XX_CORE by SERIAL_SC16IS7XX. This means that some
+> configs should have been updated when I submitted the original patch, but
+> unfortunately they were not. Geert mentioned for example:
+>     arch/mips/configs/cu1??0-neo_defconfig
+>
+> Rename SERIAL_SC16IS7XX to SERIAL_SC16IS7XX_CORE so that existing configs
+> will still work correctly.
+>
+> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Fixes: d49216438139 ("serial: sc16is7xx: split into core and I2C/SPI part=
+s (core)")
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Please use scripts/get_maintainers.pl to get a list of necessary people
-and lists to CC. It might happen, that command when run on an older
-kernel, gives you outdated entries. Therefore please be sure you base
-your patches on recent Linux kernel.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Tools like b4 or scripts/get_maintainer.pl provide you proper list of
-people, so fix your workflow. Tools might also fail if you work on some
-ancient tree (don't, instead use mainline), work on fork of kernel
-(don't, instead use mainline) or you ignore some maintainers (really
-don't). Just use b4 and everything should be fine, although remember
-about `b4 prep --auto-to-cc` if you added new patches to the patchset.
+Gr{oetje,eeting}s,
 
-You missed at least devicetree list (maybe more), so this won't be
-tested by automated tooling. Performing review on untested code might be
-a waste of time.
+                        Geert
 
-Please kindly resend and include all necessary To/Cc entries.
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-Best regards,
-Krzysztof
-
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
