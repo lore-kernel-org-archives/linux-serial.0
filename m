@@ -1,119 +1,115 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B04861411C3;
-	Tue,  4 Jun 2024 07:09:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64FA5446CF
+	for <linux-serial@vger.kernel.org>; Tue,  4 Jun 2024 08:09:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717484968; cv=none; b=FeDyQi6dtBArveAX4YbVWhXhcOK8GTr8vEZuiV+ZbRnnilrC+CavdE/TIzhHDxY/UweYqYNLwHAZdNgtOJzoVzkQh7kth50GDaYaVQNspgUlq1rot9hMF9XMmMsjPHGaIIw2lFW0z4o5pJYycaVF8heIw6RL61qgcKszR8Cl2IA=
+	t=1717488564; cv=none; b=VmKBNkYv2hgzqtmYkQRoEOtsYlaNX6yAO6ZR+ISjyFrYnwhqZlnhSwngDM7GHTgXnnVF6Oh0JGY9ZkM8FGWnpD4fLCXIk/Ykh4oqh6EmuMkycZp157Q2KjQ801JroHcRKLnYtCnNumFTXKjS+VgpOb7LOpZbLD4vrGbUQOiCDbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717484968; c=relaxed/simple;
-	bh=A3/3UWbr7tB6Pwqmw5cQ4r6ZRN3gWJ7+oVpZNka9V2k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nMxQUMM4Sq8b8lJkjULp+GFinjGfFmzWtMsT7eDWafqRjCL0VGN8r2iycL9PjjwMnqadTCN2EQEPs78h+pfAPbP9bK7rPN2ABLBnnpNFpQQduUf10gfJuRqN+4OlF6KiHrt1iWxSbLuiw3RkGt3Mxx6XYHj5VCcpSaHjMPQP87U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-62a052f74c1so40300587b3.1;
-        Tue, 04 Jun 2024 00:09:26 -0700 (PDT)
+	s=arc-20240116; t=1717488564; c=relaxed/simple;
+	bh=jsmPz/k1p+Y8GO04dOldgsBBp7w7NBWf3VP4rZu1Rpo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hughMEK2tv72+vzLiRz775JmXGW3WdPUlTgQA8DjAfcR90v/oRsBgq2GW0PmcUxiqXL9xjbLVDDGVv8MWfZt1JBV4Qx81WauGzvej70QwRM/4XzOdMu4LWue0Qk6JMhOC3QUYC1gv3PE831PkUpDcqK/jihepektAn2phKLPF1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ImsqvZgH; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ImsqvZgH"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-35e5604abdcso1210208f8f.0
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2024 01:09:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1717488560; x=1718093360; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=w3/eSMbfH3GxJXiAeW4Zl8FzceN/5F/2l8oFwai4K1E=;
+        b=ImsqvZgH0PvaFRrZjMzv1mC3zveA4ZqbO10BYTKfHu4VIgqJWU4tcWhOaLV8+NjYqx
+         CebGsiucgo33qGJCJEDl++s1lLsmA4FqPnYsT0Emu5djuBswqVZkkkvuvRHkJDATMkEl
+         8yRaDxuJb3kY/h/b8lMjpNdV33xnJAfRKtXfDf3aqJI8cmsSo/GZRmrKb4b0IPyUO5Vt
+         iFxNolSnejAqqNp8BOXXWjNdncVmzypbp8GlOBEP/DC5UAHmtYP5N79ktjP+5vw0fvuo
+         AiLyOCuXlQqY00GQBfwT/BGO87OfHgO7x9jxoZ4Cb2fJNhcfc8IUoH5ELeLiRpbkY9rV
+         re1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717484965; x=1718089765;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H80MceH/Axu7a3UTONeNo9Hwh9a4GRgNTJAXzjxJWVk=;
-        b=NMRDfF1ghiEXCbtYXCjzudaZyLeXkZT9CNy1A+Uvc1XhRIWjfeazyz0ztCUSV93jPs
-         Xjv/202aaEYjims5WZigwrARUmcL8nR/mmSolH/Olwlv0cuwHfyAXFLX7Z05EHm8HASl
-         V55Sj6ezAwVbmWN9QyOg6enQKpTmjhM91ORgLrq1vX1cVzOi+5BT87f3w2UdvDdis/En
-         nxk6iAKyRByvrx1516Rg2PZYEO0iXnq36tI53KQYQtgMz50vhsBJCwaLX8DHFV8oFJli
-         Fv76Z/CJk/A17z11Mgp7zGoO+yhZYS7aGGoSCmR2i4zEw+mlahWMkttWStzjvdFmkt5q
-         +sTw==
-X-Forwarded-Encrypted: i=1; AJvYcCUQLCqmEom90ElOb8PVaW63EbW4H/tBXM8F20F3q0WH07ZNWDNq5ZHen2tn6RRH/iz8dlff7OFJ88xsf6GF0Br+4tC4WeIh/QGiNBoj753+niQ0ahBGQdMW2rSSz/txXjZoyE+TSA/IcYhg
-X-Gm-Message-State: AOJu0YwMgdPm1fZLAAD32yccCOKfy2VwdN3DxruNycvlLbf+a32vK8jW
-	oRWlFQ8m1UjcYGN+JjJTIE0+a5OsYSs+8q/rmQoJxudHiQTjXLnksARUKDje
-X-Google-Smtp-Source: AGHT+IEGEEfymXaJmH9/ja3NDM9JMaZN+LyHVTpB/PXffFTuLgzz9Vd3FXcMohLkWjHooEvSBdSjcQ==
-X-Received: by 2002:a05:690c:4445:b0:61b:e13c:e3f4 with SMTP id 00721157ae682-62cabc89d17mr12181577b3.15.1717484964885;
-        Tue, 04 Jun 2024 00:09:24 -0700 (PDT)
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com. [209.85.219.177])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-62c7667d5bbsm17269447b3.97.2024.06.04.00.09.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Jun 2024 00:09:24 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-dfac121b6a6so97454276.0;
-        Tue, 04 Jun 2024 00:09:24 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCW86EC7kePORvYsXiFBcvvx354gLBxNxNfhwOCADOQzYOsyNAryrTaUo6T5exIlpU3VUPi5nBihO7ujaP8LNsjNgsHdvFR3bFoe0NeYzdQ/57o18VJGlWf9mDth+J9fPUYJC6Mjixo29jEz
-X-Received: by 2002:a25:31d5:0:b0:dc6:c670:c957 with SMTP id
- 3f1490d57ef6-dfab8b463b7mr1214769276.32.1717484964217; Tue, 04 Jun 2024
- 00:09:24 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1717488560; x=1718093360;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=w3/eSMbfH3GxJXiAeW4Zl8FzceN/5F/2l8oFwai4K1E=;
+        b=rtvS/XdHnU1U36Wk5gC36EAqUYYo/o2pO6pE7ezjxuKhQTWccTbMOhVyqlEdw8p5fR
+         GKLFZRsmJvcD2theuxp2Je1Q0rQ75CJkgUlyrhs/WhIUm1hPt5Wuu69KTOmA9E6a1l99
+         iNKddA119Nanxn6/77OEblSzHpT5CMukvwWvWBEYYKa9oq7rZA9SVRb3O483vx2d5ALB
+         t++kzb8FbKvciggHfkxYiqr/7ehSOgM+tjglxPW9Es5UdR/Dx87njCyZYWBfseXYEDVj
+         Sfs8bhEQtQjIFXVqWQOPt50laK+n09oOhoJFHxOKn+rctCp6mUGCgvm/WV76ZnvkCJip
+         n50Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWGF5we1RKyyYVjB1bwwd4dvTbR1aefdb6zLS/0eSe73UZc2937K3LpGKrD2iD7X8oQY1WTo3/+QPp4WZa2XnaH4jafwsWQglQPdKms
+X-Gm-Message-State: AOJu0Yw4AkzCjINLD6N6jeUhqgwnKSAbdYpMz69gbKzggc9nlJ3stQdt
+	FBhxTWaBxVdsndVBmPsH0lEEUUrTKUI0EDODs1ITW6xU2ZWAe8R9iX35PGYAMUM=
+X-Google-Smtp-Source: AGHT+IE1yuIeQdvfaLUlHn16HLkz5ku2FV+gfSnKv2NqvwgiNpGtvNC3MCPso6YmvpVD0Etm1p+EUQ==
+X-Received: by 2002:a5d:55c9:0:b0:354:de40:2942 with SMTP id ffacd0b85a97d-35e7c52d673mr1546703f8f.12.1717488559721;
+        Tue, 04 Jun 2024 01:09:19 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f6324167f5sm78117595ad.282.2024.06.04.01.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Jun 2024 01:09:19 -0700 (PDT)
+Date: Tue, 4 Jun 2024 10:09:07 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Sreenath Vijayan <sreenath.vijayan@sony.com>
+Cc: john.ogness@linutronix.de, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, rdunlap@infradead.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
+	anandakumar.balasubramaniam@sony.com
+Subject: Re: [PATCH] printk: Rename console_replay_all() and update context
+Message-ID: <Zl7Lo5eGJKLjbTUc@pathway.suse.cz>
+References: <66582edb.650a0220.8de7.c591SMTPIN_ADDED_BROKEN@mx.google.com>
+ <ZlmPAZUeKIDFKLdf@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240603152601.3689319-1-hugo@hugovil.com> <20240603152601.3689319-3-hugo@hugovil.com>
-In-Reply-To: <20240603152601.3689319-3-hugo@hugovil.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 4 Jun 2024 09:09:12 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
-Message-ID: <CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: re-add Kconfig SPI or I2C dependency
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZlmPAZUeKIDFKLdf@pathway.suse.cz>
 
-Hi Hugo,
+On Fri 2024-05-31 10:49:08, Petr Mladek wrote:
+> On Thu 2024-05-30 13:15:47, Sreenath Vijayan wrote:
+> > Rename console_replay_all() to console_try_replay_all() to make
+> > clear that the implementation is best effort. Also, the function
+> > should not be called in NMI context as it takes locks, so update
+> > the comment in code.
+> > 
+> > Fixes: 693f75b91a91 ("printk: Add function to replay kernel log on consoles")
+> > Fixes: 1b743485e27f ("tty/sysrq: Replay kernel log messages on consoles via sysrq")
+> > Suggested-by: Petr Mladek <pmladek@suse.com>
+> > Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
+> > Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
+> 
+> Thanks for the fix.
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+ 
+> PS: I am going to queue it for 6.11. It is not critical
+>     to hurry it into 6.10-rcX.
 
-On Mon, Jun 3, 2024 at 5:26=E2=80=AFPM Hugo Villeneuve <hugo@hugovil.com> w=
-rote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
->
-> Commit d49216438139
-> ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
-> removed Kconfig SPI_MASTER or I2C dependency for SERIAL_SC16IS7XX (core).
-> This removal was done because I inadvertently misinterpreted some review
-> comments.
->
-> Because of that, the driver question now pops up if both I2C and
-> SPI_MASTER are disabled.
->
-> Re-add Kconfig SPI_MASTER or I2C dependency to fix the problem.
->
-> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Fixes: d49216438139 ("serial: sc16is7xx: split into core and I2C/SPI part=
-s (core)")
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+JFYI, the patch has been comitted into printk/linux.git,
+branch for-6.11.
 
-Thanks for your patch!
+BTW:
 
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -1025,6 +1025,7 @@ config SERIAL_SCCNXP_CONSOLE
->
->  config SERIAL_SC16IS7XX
->         tristate "NXP SC16IS7xx UART support"
-> +       depends on SPI_MASTER || I2C
+I have pushed a patch which came to my mailbox with ID
 
-You may want to add "|| COMPILE_TEST".
+   66582edb.650a0220.8de7.c591SMTPIN_ADDED_BROKEN@mx.google.com
 
->         select SERIAL_CORE
->         select SERIAL_SC16IS7XX_SPI if SPI_MASTER
->         select SERIAL_SC16IS7XX_I2C if I2C
+From some reasons, it is not available in the official archive
+at lore.kernel.org. Instead, I have mentioned in the commit
+message
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+     https://lore.kernel.org/r/Zlguq/wU21Z8MqI4@sreenath.vijayan@sony.com
 
-Gr{oetje,eeting}s,
+which points to the same patch (same changes), exists at
+lore.kernel.org but I havn't got that one from some reason.
 
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Best Regards,
+Petr
