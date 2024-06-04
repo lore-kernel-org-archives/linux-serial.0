@@ -1,110 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF4B913C8FE;
-	Tue,  4 Jun 2024 12:06:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AEE145B1C;
+	Tue,  4 Jun 2024 12:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717502808; cv=none; b=XL0f5Cy1wyRilMfIbIXw6Gx6KYZhhricQmgWGR1nPen/HyDaexQ+PEvZWgzR7L7i4ZR4eG8OyKLCcWg8FS4gL/rwy2N5VXGIbVOyp86RIsrq2zcmUtlvW9uOQbCQ+z70EntOZP++rPzqy7O/G4K+DTDMnclkMrTqdqHq1V0xi0k=
+	t=1717504345; cv=none; b=LiaBvNMzc+KWV/7I7i75DXYHrU7UHl0GQf6gGDrSh8HAz8AawD6KPqoMP9iZItZxkRVlJaVbJvFSzcQNKkMJNM/JodWZQj1msOVio25SeHSQjLivE6YOPw/IAOrGV4Ajpthb5xx2L5eVw+a3oZzIowr+IXY80i8GNPs9o+rnDK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717502808; c=relaxed/simple;
-	bh=hTef1Kd2x1vlByypJaJA7O2Ekfbjp5Lq97ZRfku+bII=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FsJQZErOK0i7KpztgyGpOHyZJVqvoNBiyJjMD0qaXGschSHqJ56RQM9iU6Z68tGVCgb+3OsFbHN3eiGAzt4qa6TYpxH0vV8LJKH4fyfFHv8fXGLlZMWxIwptqHWffkpQ48w61zI2YpGlYqGD9v6luIvbprjKWrj7Z7wGbQYJD/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=YrTrUOSc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717504345; c=relaxed/simple;
+	bh=iA3g8bwEgMixe5xQYp76A3mHSq/qJillg/hgf4HjgeE=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=VSFYT91XwYgrQLKNc9EH2lfPf0fdTg3v3YTbIiuJt4T70HHsO6mJPgZYlq0f6VMsVrNrdky4wmetMkjuZrL9K4FkBjYMVx200MVEBCnTxt7m0JNIG3/IpwHifeYi3ZpJtEDYSu4S2PIoDliJeYKscgaaor5wfmzgpkVvpQtpmE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=NvJA4rZa; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="YrTrUOSc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91C2DC2BBFC;
-	Tue,  4 Jun 2024 12:06:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1717502807;
-	bh=hTef1Kd2x1vlByypJaJA7O2Ekfbjp5Lq97ZRfku+bII=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YrTrUOScv3Jx/Qd+5d8wYw2YATtNevRjrWSAoXH7rbuT3w2ZkOq+SGGXFTsc8OL14
-	 aokUfUCUxOhDFeMFhJYs86/TDaeCYiCmjyqWvpy2NRXVz6XM+uFaWJAvo6GhqOikGB
-	 JUpUgeeq2ZTgKin6tPw4tUsRcYJxmog0snd19n6I=
-Date: Tue, 4 Jun 2024 14:03:02 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc: Conor Dooley <conor+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v4 0/5] Add SCIF support for Renesas RZ/V2H(P) SoC
-Message-ID: <2024060426-radiance-reappear-c77a@gregkh>
-References: <20240322144355.878930-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CA+V-a8vQr2jxrW+C5VTcmEHmDgNp6S8=3KcAT1SzcKusFaP7Gw@mail.gmail.com>
- <2024052955-phrase-portion-8d1f@gregkh>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="NvJA4rZa"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=RaxHgWk6jYpH+0zhyTKnZK+FxoUWw7STphYHCwBMzIw=; b=NvJA4rZa1Dtn9N2BZHc4m5KPe0
+	DcMS1KrBmAbBTMPwgNAiuLnwfglS7hKAOFXT2p9AbYZLuXXIVdCk5Ow1mfZrRJyXrgD372Md8TdWr
+	PYztiyEY/pi+lPXVEvzjJE1+HmQEa4FnBljOkxmn4U2+T9bMohnuSdBek68icYRjpbDQ=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:57106 helo=debian-lenovo)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1sETKo-0003cs-Dp; Tue, 04 Jun 2024 08:32:15 -0400
+Date: Tue, 4 Jun 2024 08:31:59 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ hvilleneuve@dimonoff.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>
+Message-Id: <20240604083159.d984dd08741396ea4ca46418@hugovil.com>
+In-Reply-To: <CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
+References: <20240603152601.3689319-1-hugo@hugovil.com>
+	<20240603152601.3689319-3-hugo@hugovil.com>
+	<CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2024052955-phrase-portion-8d1f@gregkh>
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -2.5 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 2/2] serial: sc16is7xx: re-add Kconfig SPI or I2C
+ dependency
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Wed, May 29, 2024 at 09:42:50AM +0200, Greg Kroah-Hartman wrote:
-> On Wed, May 29, 2024 at 07:15:23AM +0100, Lad, Prabhakar wrote:
-> > Hi Greg,
-> > 
-> > On Fri, Mar 22, 2024 at 2:45 PM Prabhakar <prabhakar.csengg@gmail.com> wrote:
-> > >
-> > > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > >
-> > > Hi All,
-> > >
-> > > This patch series updates DT binding doc and scif driver to add support
-> > > for the Renesas RZ/V2H(P) SoC. RZ/V2H(P) SoC supports one channel SCIF
-> > > interface.
-> > >
-> > > v3->v4
-> > > - patch 2/4 reverted back to version 2
-> > > - new patch 3/5 added
-> > > - Added new reg type for RZ/V2H
-> > >
-> > > v2->v3
-> > > - Included DT validation patches
-> > > - Added a new compat string for RZ/V2H(P) SoC
-> > > - Added driver changes for RZ/V2H(P) SoC
-> > > - Listed interrupts and interrupt-names for every SoC in if check
-> > >
-> > > Cheers,
-> > > Prabhakar
-> > >
-> > > Lad Prabhakar (5):
-> > >   dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
-> > >   dt-bindings: serial: renesas,scif: Validate 'interrupts' and
-> > >     'interrupt-names'
-> > >   dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as
-> > >     required
-> > >   dt-bindings: serial: Add documentation for Renesas RZ/V2H(P)
-> > >     (R9A09G057) SCIF support
-> > >   serial: sh-sci: Add support for RZ/V2H(P) SoC
-> > >
-> > Gentle ping.
+On Tue, 4 Jun 2024 09:09:12 +0200
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+
+> Hi Hugo,
 > 
-> It is only 3 days since the merge window ended, please be patient for
-> maintainers to catch up with their pending review queue.  Especially for
-> non-bugfixes like these that will be included in the 6.11-rc1 release,
-> there is not any rush here for anyone just yet.
+> On Mon, Jun 3, 2024 at 5:26 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> >
+> > Commit d49216438139
+> > ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
+> > removed Kconfig SPI_MASTER or I2C dependency for SERIAL_SC16IS7XX (core).
+> > This removal was done because I inadvertently misinterpreted some review
+> > comments.
+> >
+> > Because of that, the driver question now pops up if both I2C and
+> > SPI_MASTER are disabled.
+> >
+> > Re-add Kconfig SPI_MASTER or I2C dependency to fix the problem.
+> >
+> > Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Fixes: d49216438139 ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> For example, my todo queue currently has 1458 emails to process in it,
-> this thread is somewhere in the middle.
+> Thanks for your patch!
 > 
-> In the meantime, please help review other pending patches for the
-> subsystem to help enable your patches to move toward the top of the
-> queue.
+> > --- a/drivers/tty/serial/Kconfig
+> > +++ b/drivers/tty/serial/Kconfig
+> > @@ -1025,6 +1025,7 @@ config SERIAL_SCCNXP_CONSOLE
+> >
+> >  config SERIAL_SC16IS7XX
+> >         tristate "NXP SC16IS7xx UART support"
+> > +       depends on SPI_MASTER || I2C
+> 
+> You may want to add "|| COMPILE_TEST".
 
-And this patch series does not even apply, so how could it be accepted?
+Hi Geert,
+I will add this to my TODO list, since this patch series is already in Greg's tty tree.
 
-Please fix and resend with the proper reviews added.
+Hugo
 
-greg k-h
+> 
+> >         select SERIAL_CORE
+> >         select SERIAL_SC16IS7XX_SPI if SPI_MASTER
+> >         select SERIAL_SC16IS7XX_I2C if I2C
+> 
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> -- 
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+> 
+
+
+-- 
+Hugo Villeneuve <hugo@hugovil.com>
