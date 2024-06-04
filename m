@@ -1,39 +1,39 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E0B51350FD;
-	Tue,  4 Jun 2024 14:23:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA1F13C8FF;
+	Tue,  4 Jun 2024 14:34:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717511030; cv=none; b=VIhJXQ8HyPySg3JVaj9wMTtYsZ/wkTBSvdCkmJTonGwZoDIyFEBchOAnMw2Qq8pUmzDFLT0b0uqdMbUgZSbVC6QIYeUKQBwcu1FpaV0uw+7P718mezqsg7eExpOgRNpisQtE9Y5PMK5EQddJ2Y/8DgFlnz73W8s59k6ZdorTZiY=
+	t=1717511687; cv=none; b=SpGuatOz3gyQzof31CGmDfVd022uCOZHx7pGvsCDWVqU6zsLIWH1hqUzWM9/BVV4bnpI68HAkLkj4eFWii7OUCynp2GIz3dOnkHVwS/XWChNrbB+6eCIqQakB/cvfBuOvAheUyEU1SnTUrFXk/HEaPy95GbqHIWm+knD//wrWtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717511030; c=relaxed/simple;
-	bh=pCQY+N6l4H18wxaw5gxmOhVyJDkVn+Ebkn9kvwlJUs4=;
+	s=arc-20240116; t=1717511687; c=relaxed/simple;
+	bh=qBOszgyAe7DvhMHQ9GgeVY4+5d3pwosm0/EBy5pzsTQ=;
 	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=nGUG4mY7fnYmXfzGEQLg4vtOaPkn71JIqZbsrRZajPXfV2OWclTniS+kyGuEF3U7pDA8+800ZiYZIZeM5YOyQ5v/a5sVxrpyRUlXo5ejwpZyc3mIavzCWINYJ19/P4JDrcZ3aToPxEJ3LDL066fkyqWv/kT3/Daes2tQpEAvVTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=B51ss2se; arc=none smtp.client-ip=162.243.120.170
+	 Content-Type:Subject; b=LUPBQ3HIfw4N4GW1V82v2CSbhrQOaHNgf824Up2oKYVotiJf7gXLj4eOFKfTaXlUSBv5m5QqFwCPYlUTr4zEsC9PG86LBfW+wRfOQQM+ZTw/4yLORCVLCaLbnpl+KGNs5Z9bc1IYmdqrfNjCXtwlU5kNAlGpr2MDqDX6eV/FqqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=JJ76W048; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="B51ss2se"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="JJ76W048"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
 	:Date:subject:date:message-id:reply-to;
-	bh=FmX0YSshk1XRwqALGyf3/5Mk84vKqfV3CkydSmmClhc=; b=B51ss2seQgH3Ofby5e4Gm/S2qk
-	mIv5B9/kYJODDzGVzTojm72qxrZrxvu+54a7kSb1Kcd4xV5+fxdR0f51Z5u+SwcwIIJbggazruG++
-	c+oRumZVGkViGW8ilH80PcEFDbH1lpVzk+qv4zzU92s0PzToEe/LCSOn0Fv/SeNbdI20=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:42510 helo=pettiford.lan)
+	bh=Estvv8Ei2SlTou5vQk51by5E0FAtZV1RZrncXelPgeY=; b=JJ76W048/9MpbOT4yDK+ggZ65Q
+	kutNxN8340Ln/roNgva7J+zFfcKlbDD9U7YG84pSc7P2MH5WqOW7wqbHZlIIHStJq6aYncLZpWoka
+	xml1Grn498LbFbV9Z+LeIQ8BnWC0kFGls8S0mR5S4QlO6+D9JggeAcmivqG5+vMW5d4s=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:54300 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1sEV4e-0005J5-4K; Tue, 04 Jun 2024 10:23:40 -0400
-Date: Tue, 4 Jun 2024 10:23:23 -0400
+	id 1sEVFL-0005Sm-Rg; Tue, 04 Jun 2024 10:34:44 -0400
+Date: Tue, 4 Jun 2024 10:34:27 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: Hui Wang <hui.wang@canonical.com>
 Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
  gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
  robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
  lech.perczak@camlingroup.com
-Message-Id: <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
+Message-Id: <20240604103427.8986166ad4cf34e1e9357c5c@hugovil.com>
 In-Reply-To: <20240604132726.1272475-2-hui.wang@canonical.com>
 References: <20240604132726.1272475-1-hui.wang@canonical.com>
 	<20240604132726.1272475-2-hui.wang@canonical.com>
@@ -64,19 +64,19 @@ Hui Wang <hui.wang@canonical.com> wrote:
 Hi Hui,
 
 > Certain designs connect a gpio to the reset pin, and the reset pin
+
+"Some boards..."
+
 > needs to be setup correctly before accessing the chip.
 > 
 > Here adding a function to handle the chip reset. If the reset-gpios is
+
+"Add a function..."
+
 > defined in the dt, do the hard reset through this gpio, othwerwise do
 > the soft reset as before.
 > 
 > Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-
-I never gave you permission to add this tag, remove it. Make sure you
-fully understand the meaning of tags by reading patches submission
-guidelines.
-
-
 > Signed-off-by: Hui Wang <hui.wang@canonical.com>
 > ---
 > In the v2:
@@ -103,57 +103,21 @@ guidelines.
 >  	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
 >  };
 >  
-
-Add function description from original comment "Reset device,
-purging any pending irq / data", since the comment applies to both
-hardware and software reset,
-
 > +static int sc16is7xx_reset(struct device *dev, struct regmap *regmaps[])
-
-Simply pass "struct regmap *regmap" as the second argument. See
-sc16is7xx_setup_mctrl_ports() for example.
-
 > +{
 > +	struct gpio_desc *reset_gpiod;
-
-reset_gpiod -> reset_gpio
-
 > +
 > +	reset_gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 > +	if (!reset_gpiod)
-
-Follow Andy's suggestion here.
-
 > +		/* soft reset device, purging any pending irq / data */
-
-"Software reset".
-
 > +		regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
 > +			     SC16IS7XX_IOCONTROL_SRESET_BIT);
 > +	else if (!IS_ERR(reset_gpiod)) {
 > +		/* delay 5 us (at least 3 us) and deassert the gpio to exit the hard reset */
-
-You can omit the "delay 5 us" since it is obvious from the code. Maybe
-add that "The minimum reset pulse width is 3 us" as stated in the
-datasheet.
-
-As a general note for your comments: capitalize the first letter,
-ex: "Deassert GPIO" and not "deassert GPIO".
-
-
 > +		udelay(5);
 > +		gpiod_set_value_cansleep(reset_gpiod, 0);
-
-Move the comment "deassert the gpio to exit the hard reset" here. You
-could also simplify it as "Deassert GPIO.".
-
-
 > +	} else
 > +		return PTR_ERR(reset_gpiod);
-
-return dev_err_probe(dev, PTR_ERR(reset_gpiod), "Failed to get reset
-GPIO\n");
-
 > +
 > +	return 0;
 > +}
