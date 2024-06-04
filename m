@@ -1,123 +1,128 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AEE145B1C;
-	Tue,  4 Jun 2024 12:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642BA144D2E
+	for <linux-serial@vger.kernel.org>; Tue,  4 Jun 2024 13:04:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717504345; cv=none; b=LiaBvNMzc+KWV/7I7i75DXYHrU7UHl0GQf6gGDrSh8HAz8AawD6KPqoMP9iZItZxkRVlJaVbJvFSzcQNKkMJNM/JodWZQj1msOVio25SeHSQjLivE6YOPw/IAOrGV4Ajpthb5xx2L5eVw+a3oZzIowr+IXY80i8GNPs9o+rnDK4=
+	t=1717506293; cv=none; b=gPuHz0DQZeZmoM0NzpWxOdzqc5dqZwLUe98TVp2P8N4qUG9JXd5AiRziqI7Ttm4gUDpaUmUUkYOdM//E0FnNJTy3bmzz5pG6F9mCJbNWoEXyAPitfQwlhqREF1HmwzFobR4LbQO2ZPMS3wEbp0X1DhKo8xunKL4RM78LzhvgqPM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717504345; c=relaxed/simple;
-	bh=iA3g8bwEgMixe5xQYp76A3mHSq/qJillg/hgf4HjgeE=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=VSFYT91XwYgrQLKNc9EH2lfPf0fdTg3v3YTbIiuJt4T70HHsO6mJPgZYlq0f6VMsVrNrdky4wmetMkjuZrL9K4FkBjYMVx200MVEBCnTxt7m0JNIG3/IpwHifeYi3ZpJtEDYSu4S2PIoDliJeYKscgaaor5wfmzgpkVvpQtpmE8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=NvJA4rZa; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1717506293; c=relaxed/simple;
+	bh=wFXmRvaYN39Y38/uhX81xTt2b/XpDZwa9KK2+1Okj/g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eEK5+FZ4obtcMmJfMds9mH0BIkgkTPGq1Des8SEThl5jpvsRtxyCDay52XR7psO1Z8wb6X6rZA1u+yzBZFBBpzsnDQ0hVl+zMROiVIBuxUUidngf5yE7BqYlI++yAuVkAwdQhCib+xBha/VPvjX9/tUz5vozuY0fDRGhHIhfELs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l0eKXqI2; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="NvJA4rZa"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=RaxHgWk6jYpH+0zhyTKnZK+FxoUWw7STphYHCwBMzIw=; b=NvJA4rZa1Dtn9N2BZHc4m5KPe0
-	DcMS1KrBmAbBTMPwgNAiuLnwfglS7hKAOFXT2p9AbYZLuXXIVdCk5Ow1mfZrRJyXrgD372Md8TdWr
-	PYztiyEY/pi+lPXVEvzjJE1+HmQEa4FnBljOkxmn4U2+T9bMohnuSdBek68icYRjpbDQ=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:57106 helo=debian-lenovo)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1sETKo-0003cs-Dp; Tue, 04 Jun 2024 08:32:15 -0400
-Date: Tue, 4 Jun 2024 08:31:59 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- hvilleneuve@dimonoff.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>
-Message-Id: <20240604083159.d984dd08741396ea4ca46418@hugovil.com>
-In-Reply-To: <CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
-References: <20240603152601.3689319-1-hugo@hugovil.com>
-	<20240603152601.3689319-3-hugo@hugovil.com>
-	<CAMuHMdUo7yPdkPKHXYiWqsqM9Zs4rr2G1tQbH9mZ=bjNLgKamw@mail.gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l0eKXqI2"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-6f8ec7e054dso3842712b3a.2
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2024 06:04:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1717506292; x=1718111092; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=CKNxwUDIw+ztmPJxdmPnbCQgYBjvk+0A0Y7/Sg6UaVQ=;
+        b=l0eKXqI2MDJ7u7M6LPVRiEhh6YWzpkSa5efW95fiascVpccphKY21uhDaWxR+Z47D+
+         xEsqDa3zIMy8p1jtH/7QGx7nlWyTKoGxEYLfPUoFKbxwUjllLRfThInbF0RgTSLoXYbJ
+         Iqs7pDNO8rSvGuLdqFCmhogljObuLfwP9x8vzoN5yzf3F0rUXOfr/ZmhK5YReY6lQrJu
+         cFtIvYJT1YDt2ISsKhvtzV7b6tdgbW1sDcTdhjDBBWzSlPD6OlMaV6jibtz+ns3bxAnu
+         MQ+LVLNZENqr/15At0JYzJRNbefMy6hgF/GokSoWrOnQsJeg1MeZ6MrL0fKCZM5bQphd
+         QxrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717506292; x=1718111092;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CKNxwUDIw+ztmPJxdmPnbCQgYBjvk+0A0Y7/Sg6UaVQ=;
+        b=f2zZoM83lRXT+Q+9AAyx7SgMR1izZN3+JOm/OQ1MCVpR+LFkX3wg+IHr7DPbbTk6gG
+         xDAoZzNaiy2q+57UWH7CREhRQCmASNIpvNYUHjKlqhkW8YxddzTxPZQsNQHrqhxSxtVa
+         jOZ947D5atojvkWXghcUiAHZ0nczg8FvP0kTuqOHAYIdOJybbpYo5VraIRfu4a0cpMjT
+         T8vQItuKzPTQITMDWU3i1GuljTRxQncSbtfZhhQcZ0uXtNOnxxqkwYrsXEOrNaEsXiXY
+         d/hK8IA9BAGsiqpcT6npkZPavsOBAtXOPvEH0iB7XdfA1Vp/Vq+eVwVgkQnks9kktYfC
+         BlLA==
+X-Forwarded-Encrypted: i=1; AJvYcCXyRGyenP0lXZczaDliP6okkxAKTtT0wgr8xedNBcu3fi1N3BaItRmJZwbNZ+E9CJ6czzzYlfPL/P7OkfnxrMViRqu++0MIssIbArSs
+X-Gm-Message-State: AOJu0Yy95jumi5DVL9flSNC+VuXWXRk9aa13VRBZzIHVupVIkwq9ETeG
+	+464VtGuXniknoFfvdo1/QUgSv8Yz7PCwx7+3to0wuv4QDPcq/BJPvwxF1zEbVwKd4YFyjgzlxd
+	uOakmTzHNW6I//cyiEtUcSdMnfEDOzhYB
+X-Google-Smtp-Source: AGHT+IFYJebxHNZm1mNj5fUQLIQ+L/7M7QlonYMXBE15UjBlm+7L7g1rWbTMMb+Nok/GxkERKV82QTrRGYtHqz6Xr0g=
+X-Received: by 2002:a17:90b:19cf:b0:2c1:b92a:f385 with SMTP id
+ 98e67ed59e1d1-2c1dc5d371fmr10937782a91.46.1717506291480; Tue, 04 Jun 2024
+ 06:04:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -2.5 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: re-add Kconfig SPI or I2C
- dependency
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+References: <20240519193109.122466-1-doug@schmorgal.com> <207771fc-294a-4810-a3a2-52ea0e27360f@kernel.org>
+ <CAOiHx=mnHsZ7U79NkNRyBsqkGhaM3vy9cgaZe=uBUXM7o8=SFg@mail.gmail.com>
+ <20d56279-2598-4a3e-9984-729199d8e67d@schmorgal.com> <f7d2289a-2992-470b-97e3-187386ec3f5d@schmorgal.com>
+In-Reply-To: <f7d2289a-2992-470b-97e3-187386ec3f5d@schmorgal.com>
+From: Jonas Gorski <jonas.gorski@gmail.com>
+Date: Tue, 4 Jun 2024 15:04:40 +0200
+Message-ID: <CAOiHx=mVSp4v0bxCW4HQ8SJUQ_7JN_8HMWvoB4-CR2mKtxTjaA@mail.gmail.com>
+Subject: Re: [PATCH] serial: pxa: Disable TX interrupt if there is no more
+ data to transmit
+To: Doug Brown <doug@schmorgal.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, 4 Jun 2024 09:09:12 +0200
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+Hi,
 
-> Hi Hugo,
-> 
-> On Mon, Jun 3, 2024 at 5:26 PM Hugo Villeneuve <hugo@hugovil.com> wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >
-> > Commit d49216438139
-> > ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
-> > removed Kconfig SPI_MASTER or I2C dependency for SERIAL_SC16IS7XX (core).
-> > This removal was done because I inadvertently misinterpreted some review
-> > comments.
-> >
-> > Because of that, the driver question now pops up if both I2C and
-> > SPI_MASTER are disabled.
-> >
-> > Re-add Kconfig SPI_MASTER or I2C dependency to fix the problem.
-> >
-> > Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Fixes: d49216438139 ("serial: sc16is7xx: split into core and I2C/SPI parts (core)")
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> 
-> Thanks for your patch!
-> 
-> > --- a/drivers/tty/serial/Kconfig
-> > +++ b/drivers/tty/serial/Kconfig
-> > @@ -1025,6 +1025,7 @@ config SERIAL_SCCNXP_CONSOLE
-> >
-> >  config SERIAL_SC16IS7XX
-> >         tristate "NXP SC16IS7xx UART support"
-> > +       depends on SPI_MASTER || I2C
-> 
-> You may want to add "|| COMPILE_TEST".
+On Sun, 2 Jun 2024 at 19:24, Doug Brown <doug@schmorgal.com> wrote:
+>
+> Hi Jonas,
+>
+> >> On Mon, 20 May 2024 at 08:41, Jiri Slaby <jirislaby@kernel.org> wrote:
+> >>>
+> >>> Perhaps, it should be reverted and the affected driver should just pass
+> >>> UART_TX_NOSTOP instead?
+> >>>
+> >>>>        uart_port_tx_limited(&up->port, ch, up->port.fifosize / 2,
+> >>>>                true,
+> >>>>                serial_out(up, UART_TX, ch),
+> Does the bcm63xx_uart driver work correctly if 7bfb915a597a is reverted
+> and UART_TX_NOSTOP is used instead?
+>
+> I was able to further confirm on hardware (BeagleBoard) that omap-serial
+> is also broken after 7bfb915a597a. I'm trying to figure out how to
+> safely revert it while also allowing bcm63xx to continue to work properly.
 
-Hi Geert,
-I will add this to my TODO list, since this patch series is already in Greg's tty tree.
+So I went through all users of uart_port_tx(_limited()), and
+expectedly most do just disable the IRQ (or do nothing) in their
+stop_tx() call back.
 
-Hugo
+The notable exceptions I could identify are:
 
-> 
-> >         select SERIAL_CORE
-> >         select SERIAL_SC16IS7XX_SPI if SPI_MASTER
-> >         select SERIAL_SC16IS7XX_I2C if I2C
-> 
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> -- 
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-> 
+- bcm63xx_uart: disables the emitter as well
+- mxs-uart: disables the emitter (introduced and uses UART_TX_NOSTOP)
+- sprd_serial: stops alls dma transfers as well
+- atmel_serial: stops dma and disables emitter as well
 
+I suspect sprd_serial and atmel_serial to not work properly with the
+old behavior, but I have no devices where I could test this.
 
--- 
-Hugo Villeneuve <hugo@hugovil.com>
+There are a few more exceptions in those that do not use
+uart_port_tx(_limited()), like I've seen drivers blocking in stop_tx()
+until the FIFO is empty. Not sure if that is expected.
+
+The quick solutions for bcm63xx_uart to either pass UART_TX_NOSTOP
+[1], or make stop_tx() (and start_tx()) not touch the emitter (or
+revert the uart_port_tx_limited() usage).
+
+Regardless of the chosen quick fix, it feels like stop_tx() is the
+wrong thing to use for uart_port_tx(), and just happened to do the
+right thing for the majority or drivers. But the correct function
+(something along "done submitting tx") also doesn't exist.
+
+But I'm no maintainer for tty/serial, nor do I have much (intimate)
+knowledge there. This is just from looking at it from the outside, and
+my thoughts may very well be wrong.
+
+[1] https://lore.kernel.org/lkml/20240225151426.1342285-1-jonas.gorski@gmail.com/
+
+Best Regards,
+Jonas
