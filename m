@@ -1,54 +1,54 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87FD146D49
-	for <linux-serial@vger.kernel.org>; Tue,  4 Jun 2024 16:01:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B8814830B
+	for <linux-serial@vger.kernel.org>; Tue,  4 Jun 2024 16:01:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717516907; cv=none; b=HLhCyaj364ov/oSWnOXD66R0xkm2DnHEfcI63l8d49XQe6HgBjvyeP5yVIgBibCKyzPRAFMQpv9b4TaMefJL9IlNSrLIdabLwmy0yViWVNKYb57FZAs3WLjY4sKMwgbWO6iZBU72HCXP5gx2cNtk2j4/Y6NawqRYF6oig9h/atA=
+	t=1717516908; cv=none; b=h8MLocKm3Wl87xpfDche0k0YJNV83uxbfZeepi3kHB13Lx0T6eZNoy9z7CnpsVTck63YP2n2z4HaO8yIxXw2W9dgPtl8jp6U6VOOo5Ovgo+BFACRGf/8TleyLNv8gaLfppBTxnAJnHH83i55uk0lcPSnnUAXjnysKcHOiriCZWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717516907; c=relaxed/simple;
-	bh=eNI9NbGlMBE/dfZEleY3KsoUvrO1tZDSmMJ0X+X0MGY=;
+	s=arc-20240116; t=1717516908; c=relaxed/simple;
+	bh=SZcj9nvPAkd/Cv7HVInVaV/p1RAb1UQMCQMy3RYGV4k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=aMez8jjQWkXm6drbGObug1GtZPhj/fCffUXV+REGZhpo7x/06oVfhIumMoHFUEdgIgs624G1B+FvCAV426/0+jcK9Vn4epzi5u+tYSI5sEIitNrnccgrMuOUavByWK06VBhyjPC15KnWkLmUlCXw1FQvCTab70kUmoE7G9eqecI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=dWWmY77M; arc=none smtp.client-ip=209.85.214.169
+	 MIME-Version:Content-Type; b=HHg1qcho+3uZwpPkqHH0Eo2L9ohuHdNQckTd3dXNDaWe9DIm2uUiA8wC86UpVUMDu3ZJOpQoyq7GItZH5XfIJSoJSu+I3TvP57loXbcM7CVlddIaXp//swvyBUJhTGVg+JXpBIdKXRMa80t2kPYhn0UU+aCRpSrcu/epP5PpsTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=PHDZhjU8; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="dWWmY77M"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-1f6559668e1so23916295ad.3
-        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2024 09:01:44 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PHDZhjU8"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1f48b825d8cso11037995ad.2
+        for <linux-serial@vger.kernel.org>; Tue, 04 Jun 2024 09:01:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1717516904; x=1718121704; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1717516906; x=1718121706; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Dk/4AF49oXXnNFUX5+Su2//neZ/RJyiCOhQzShR517w=;
-        b=dWWmY77MmJz1wcpYB9iFB3yKS0xNqv84Xw/fhPN9m/htFT7/fTyURD+8xkwz/rQQAl
-         jf+w68fA16Cn1lH8CI7ceB4ubbZGqDxOyrD+HU7jLkziZF8Bh6e4i+zn3QZ3HHPB/02A
-         fkoEhnjRzoA/6Jibkyl21DYxNfRgpJa2JVKOQ=
+        bh=8L66kUAR7RZnRxdJympn4knIixZh8QJnRreM7SkXnIs=;
+        b=PHDZhjU87FCa/woTn5B+LsXFc5SLP9rge/BHqrkT3JozpMrCsueD/6Q1onRGdn99QZ
+         GQWlYPxTNzjkeSaD43MbarGuRa3aPMDGAa0tLXrI4Kv9P+Fd35s6t30x6kW97dl82ECx
+         vK/K+RoS9ZHBT5+hPCYiGre7cYLQ2Mry62/1g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717516904; x=1718121704;
+        d=1e100.net; s=20230601; t=1717516906; x=1718121706;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Dk/4AF49oXXnNFUX5+Su2//neZ/RJyiCOhQzShR517w=;
-        b=VsNNgE13148A+cT6H1RAoWXaRIsJfu/0FZ3HKsOnWnKCPoS2NsfOZe8UxG/m4Sa5DT
-         o2Vq6T8fJgTU46OJInmCqE4aNpZcf2CXn5ER0rXLMWgTspIaD+QSLNEz2MSn2RJ31I5D
-         YyhuatI3S7YcPgHNKDGsWyEkRGf5rpqBCMqzCPue4NtcRIQb4aC0w+fe5O38lmutgUSi
-         lIN6U/8hrR18cZPlVKSwqFqk7b4iiDLHdzW93qdY+oyi4i7Q435DaKG3ngNxUlpuoN10
-         zqOHZCl5f9AA9/YC9WETwR2a/z8UowfwooSNmgz3nn2Q0QJ2h0e2D7K6aiKIShCK8Q/P
-         xLBg==
-X-Forwarded-Encrypted: i=1; AJvYcCUvcmmbczeV6XMLdA84opRHltGj6AaFLXVSO9iIJZnmDse/1mOBv4iyt4njyOKY0RK8KxgoHN92yvHTlvWmH478SChI62UOLFCZEC4i
-X-Gm-Message-State: AOJu0YxTiYLu228Xt1uWI8L+46eBVztP8LQDcJrFYDOW1YrFNAXxE4TG
-	C27tD1aAT+kwkJOxcMVeuBqRGbQcaAPJ8hy1JX3fQd1IQPA7/Q+6E7ACMl1WEw==
-X-Google-Smtp-Source: AGHT+IH3gIE1OtM086DyyhTOWjAt4JmRQYlQLYPgpkVt7dUI95yVU9Qm9mU9ANKuP1Vy3e7A+IdyKg==
-X-Received: by 2002:a17:902:ce82:b0:1e4:c8b3:dbaf with SMTP id d9443c01a7336-1f6370296c6mr142181615ad.33.1717516904142;
-        Tue, 04 Jun 2024 09:01:44 -0700 (PDT)
+        bh=8L66kUAR7RZnRxdJympn4knIixZh8QJnRreM7SkXnIs=;
+        b=CgZBOlp/sYQ9KWGTklOTGfwMupF2olyovGRl3D4CjaMXBfbgqEZHCT4g4J/qearNMn
+         vil8E2TO7mBnHABm2M63bqJa/P898NAccsCVaspwiuur0XDPcltCtdrDM42Nrl1ONvbo
+         18w5cjGoULMmj3yPCr1ZE3tYvZUByEAv8Ioi+1vhGtkGcCtNOQMIp+8w+MtSnrhDF5oG
+         Gtswjjd0V7sSvYGX745P4M1zzpezpOm2Zrxd5oFh5NcwqPnX5RYpxIv6SHfQBLOJsOf7
+         J6ubBoYSCMgtsNNpRKbbkDJScDFohHA8QIsiIL+nOW2Bz9mN8WNb90TVIhZcVE3GeZcS
+         n3AA==
+X-Forwarded-Encrypted: i=1; AJvYcCUTeXzXnw1fe1ug+c+k3QMc3+jcMN7IYtv4NW+rnaV4E2acGqwGQXSV5NLbEl+X9F0WcxWtdvuBSoxxlH2+/PxEUb9+h02dOopvGCYr
+X-Gm-Message-State: AOJu0YyqmPHm3RHCtbYFK4O2+nbG0A6ZJDGiBQCKhgy94fHdByMeuMSy
+	TJR7pqu2OPdz5ntd2KMn9HfihzrRBAnZ7UWFEriZnDwRd+Ei6ZXu0j+NAVSyjA==
+X-Google-Smtp-Source: AGHT+IFWJPCmpq0DFcieDsuM0+aWSb9NMUBLcE0cIna9MhVfPCFPZ5c3x+pgfaV2fn4lU+Pr+8VKRg==
+X-Received: by 2002:a17:903:32c4:b0:1f6:1f90:987a with SMTP id d9443c01a7336-1f636ffe77fmr169865145ad.3.1717516906396;
+        Tue, 04 Jun 2024 09:01:46 -0700 (PDT)
 Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:3609:ff79:4625:8a71])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632358519sm86118385ad.82.2024.06.04.09.01.42
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f632358519sm86118385ad.82.2024.06.04.09.01.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Jun 2024 09:01:43 -0700 (PDT)
+        Tue, 04 Jun 2024 09:01:45 -0700 (PDT)
 From: Douglas Anderson <dianders@chromium.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
@@ -65,10 +65,12 @@ Cc: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
 	Stephen Boyd <swboyd@chromium.org>,
 	Johan Hovold <johan+linaro@kernel.org>,
 	Bjorn Andersson <andersson@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH v3 1/7] soc: qcom: geni-se: Add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
-Date: Tue,  4 Jun 2024 09:00:27 -0700
-Message-ID: <20240604090028.v3.1.Ife7ced506aef1be3158712aa3ff34a006b973559@changeid>
+	Douglas Anderson <dianders@chromium.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH v3 2/7] serial: qcom-geni: Fix the timeout in qcom_geni_serial_poll_bit()
+Date: Tue,  4 Jun 2024 09:00:28 -0700
+Message-ID: <20240604090028.v3.2.I3e1968bbeee67e28fd4e15509950805b6665484a@changeid>
 X-Mailer: git-send-email 2.45.1.288.g0e0cd299f1-goog
 In-Reply-To: <20240604160123.2029413-1-dianders@chromium.org>
 References: <20240604160123.2029413-1-dianders@chromium.org>
@@ -78,60 +80,113 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-For UART devices the M_GP_LENGTH is the TX word count. For other
-devices this is the transaction word count.
+The qcom_geni_serial_poll_bit() is supposed to be able to be used to
+poll a bit that's will become set when a TX transfer finishes. Because
+of this it tries to set its timeout based on how long the UART will
+take to shift out all of the queued bytes. There are two problems
+here:
+1. There appears to be a hidden extra word on the firmware side which
+   is the word that the firmware has already taken out of the FIFO and
+   is currently shifting out. We need to account for this.
+2. The timeout calculation was assuming that it would only need 8 bits
+   on the wire to shift out 1 byte. This isn't true. Typically 10 bits
+   are used (8 data bits, 1 start and 1 stop bit), but as much as 13
+   bits could be used (14 if we allowed 9 bits per byte, which we
+   don't).
 
-For UART devices the S_GP_LENGTH is the RX word count.
+The too-short timeout was seen causing problems in a future patch
+which more properly waited for bytes to transfer out of the UART
+before cancelling.
 
-The IRQ_EN set/clear registers allow you to set or clear bits in the
-IRQ_EN register without needing a read-modify-write.
+Rather than fix the calculation, replace it with the core-provided
+uart_fifo_timeout() function.
 
-Acked-by: Bjorn Andersson <andersson@kernel.org>
+NOTE: during earlycon, uart_fifo_timeout() has the same limitations
+about not being able to figure out the exact timeout that the old
+function did. Luckily uart_fifo_timeout() returns the same default
+timeout of 20ms in this case. We'll add a comment about it, though, to
+make it more obvious what's happening.
+
+Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
+Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
-Since these new definitions are used in the future UART patches and
-Bjorn has Acked them, I'd expect them to go through the same tree as
-the UART patches that need them.
 
-(no changes since v2)
+Changes in v3:
+- Use uart_fifo_timeout() for timeout.
 
 Changes in v2:
 - New
 
- include/linux/soc/qcom/geni-se.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/tty/serial/qcom_geni_serial.c | 37 +++++++++++++--------------
+ 1 file changed, 18 insertions(+), 19 deletions(-)
 
-diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
-index 0f038a1a0330..8d07c442029b 100644
---- a/include/linux/soc/qcom/geni-se.h
-+++ b/include/linux/soc/qcom/geni-se.h
-@@ -88,11 +88,15 @@ struct geni_se {
- #define SE_GENI_M_IRQ_STATUS		0x610
- #define SE_GENI_M_IRQ_EN		0x614
- #define SE_GENI_M_IRQ_CLEAR		0x618
-+#define SE_GENI_M_IRQ_EN_SET		0x61c
-+#define SE_GENI_M_IRQ_EN_CLEAR		0x620
- #define SE_GENI_S_CMD0			0x630
- #define SE_GENI_S_CMD_CTRL_REG		0x634
- #define SE_GENI_S_IRQ_STATUS		0x640
- #define SE_GENI_S_IRQ_EN		0x644
- #define SE_GENI_S_IRQ_CLEAR		0x648
-+#define SE_GENI_S_IRQ_EN_SET		0x64c
-+#define SE_GENI_S_IRQ_EN_CLEAR		0x650
- #define SE_GENI_TX_FIFOn		0x700
- #define SE_GENI_RX_FIFOn		0x780
- #define SE_GENI_TX_FIFO_STATUS		0x800
-@@ -101,6 +105,8 @@ struct geni_se {
- #define SE_GENI_RX_WATERMARK_REG	0x810
- #define SE_GENI_RX_RFR_WATERMARK_REG	0x814
- #define SE_GENI_IOS			0x908
-+#define SE_GENI_M_GP_LENGTH		0x910
-+#define SE_GENI_S_GP_LENGTH		0x914
- #define SE_DMA_TX_IRQ_STAT		0xc40
- #define SE_DMA_TX_IRQ_CLR		0xc44
- #define SE_DMA_TX_FSM_RST		0xc58
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2bd25afe0d92..a48a15c2555e 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -124,7 +124,6 @@ struct qcom_geni_serial_port {
+ 	dma_addr_t tx_dma_addr;
+ 	dma_addr_t rx_dma_addr;
+ 	bool setup;
+-	unsigned int baud;
+ 	unsigned long clk_rate;
+ 	void *rx_buf;
+ 	u32 loopback;
+@@ -269,24 +268,25 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+ 				int offset, int field, bool set)
+ {
+ 	u32 reg;
+-	struct qcom_geni_serial_port *port;
+-	unsigned int baud;
+-	unsigned int fifo_bits;
+-	unsigned long timeout_us = 20000;
+-	struct qcom_geni_private_data *private_data = uport->private_data;
++	unsigned long timeout_us;
+ 
+-	if (private_data->drv) {
+-		port = to_dev_port(uport);
+-		baud = port->baud;
+-		if (!baud)
+-			baud = 115200;
+-		fifo_bits = port->tx_fifo_depth * port->tx_fifo_width;
+-		/*
+-		 * Total polling iterations based on FIFO worth of bytes to be
+-		 * sent at current baud. Add a little fluff to the wait.
+-		 */
+-		timeout_us = ((fifo_bits * USEC_PER_SEC) / baud) + 500;
+-	}
++	/*
++	 * This function is used to poll bits, some of which (like CMD_DONE)
++	 * might take as long as it takes for the FIFO plus the temp register
++	 * on the geni side to drain. The Linux core calculates such a timeout
++	 * for us and we can get it from uart_fifo_timeout().
++	 *
++	 * It should be noted that during earlycon the variables that
++	 * uart_fifo_timeout() makes use of in "uport" may not be setup yet.
++	 * It's difficult to set things up for earlycon since it can't
++	 * necessarily figure out the baud rate and reading the FIFO depth
++	 * from the wrapper means some extra MMIO maps that we don't get by
++	 * default. This isn't a big problem, though, since uart_fifo_timeout()
++	 * gives back its "slop" of 20ms as a minimum and that should be
++	 * plenty of time for earlycon unless we're running at an extremely
++	 * low baud rate.
++	 */
++	timeout_us = jiffies_to_usecs(uart_fifo_timeout(uport));
+ 
+ 	/*
+ 	 * Use custom implementation instead of readl_poll_atomic since ktimer
+@@ -1224,7 +1224,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	qcom_geni_serial_stop_rx(uport);
+ 	/* baud rate */
+ 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
+-	port->baud = baud;
+ 
+ 	sampling_rate = UART_OVERSAMPLING;
+ 	/* Sampling rate is halved for IP versions >= 2.5 */
 -- 
 2.45.1.288.g0e0cd299f1-goog
 
