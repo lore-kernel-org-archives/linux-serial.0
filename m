@@ -1,241 +1,252 @@
-Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2134.outbound.protection.outlook.com [40.107.103.134])
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 417BF17C96;
-	Wed,  5 Jun 2024 10:30:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.103.134
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717583433; cv=fail; b=OOC8nDSx/A15EzFyzl9g1+Q8usAbs/vKP9Ea3Mtl+Y4RW7cKVDE8a2HkPRtqdkcPij68DQUhtbJMHVXko4dMTzTvor7dOqYaP7zow3OpyYU9trzKGYvIMK9KKIidnj83+/vANKlEGmWOBB5TZg8BQvdyElkEh1LoIt+eq4qA+mA=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717583433; c=relaxed/simple;
-	bh=ufTdhIethcfMRmMNS9+9I3Bl28OZrY+S9WWbUhy7et0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=tNgqBPrLZuxuRSz6gyAmYBfNkJZZRNVrm+dAScZn//rRS87KEtDk64JoygNxv/m3hSrxjeUMNSDuNCqKgqqnxtsZd0Yvv2lpBJJk+J8DBgB+ltz5m14TqnfBznKZ3fwVOO4vMS1fe6E3jHyzcili9NCC0pg3Av/PVlWniqPzyk8=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=M4eUijGS; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=M4eUijGS; arc=fail smtp.client-ip=40.107.103.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF1E119146A;
+	Wed,  5 Jun 2024 10:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717584104; cv=none; b=qPC3cV25vZWgUDKCh48KDRQuCGSJJqcms9pLYSRmsYtvhSm2dlkrLPqBhrLaDwGWdHzpIGXSHc8ySJyEWW0Lz0irxEEES/bYEi/mY9STgk6agDtB8nyTc33nvz88MWBVlVi4WCx3uDR9QRS/+wDtVCc7IXfOF+DFHSyjPErh904=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717584104; c=relaxed/simple;
+	bh=dF8Hyv5BGB5ML/6Y0GvTgWdhOCnuAj4OntK5X0AYDog=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hU6ffQTvZ2WFZkTyTebP6qe092o6K5yJIYzgdBthi2V5gYQR0Sioh0CkqkiGN+nXA76cNn/+tjTiwuT2+OoOCo7rVUOXS7Ffg6UKWRCnAAYkb2MsaRAJvBckMKAIQq0+9GNkmOFYPLmVeHjZ4nIbUT1rTaEN+taEMWDcZV9DE70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=AoKj0FmX; arc=none smtp.client-ip=213.167.242.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="M4eUijGS";
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="M4eUijGS"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=pass;
- b=cRJ/w7QCu3Y8olYF0foRGTEFzIHwD0Sd2kkbEhiaB56E4JDgsf3NEeAm6PHSShvUDg6EUcyESjxhC6QIRR3UWd9Z//tnIFuJUi+lT2lGzwaEdbJiVeNbz+EZmg6+MZ8fTI6aYldW+dEI/6qw5baOvN9vY+X5iWNabIJ8z/M+KQwwATv4tq6X9QEjud8ogj4r617HHn2HgUQaObY7T/xG7rrkh9DkWLBo3LEKDPoi0/elLVBBNzBconHxkdvGHolwFGHodmxpl2JIBwwgwAcH/UdBs+SKBIMdlEpyDniLjCQo7O99gDyuvscKLeevv12uKCmazysBlAHIvJY+8Hc6Nw==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ufTdhIethcfMRmMNS9+9I3Bl28OZrY+S9WWbUhy7et0=;
- b=YXOEJZG/I0CjXJyMWFPBvLp9PKb7CnRjk/j4dOQjZsrfSQGuAhC5XCjZTODsCgTZO+81SX6iFNt0N9cG6HITZWy9k1Dn7tyOXTko4MDFIwDYdRoi6+gS6XLtoraRB6oZuljDlmT2GakmtXRFu9TGecjWKiOmGl6JIgoDGjfK479/vCBzsiy3tOFLOn4e8F3CxOx/Qx4N0ye95Fn1aywBLFOLcpJjJGumx/e00dPoF/hn89tzagNmRWNHKtBI4aDNoe4v0wylmKGXSBT7aFRIiZPbSlqVeXJWSDw6g7bM7L9fBC+vxRxmf5aIysF4BcZH0tKiPKgzq41iCVb4s4Hb6g==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
- 13.93.42.39) smtp.rcpttodomain=hugovil.com smtp.mailfrom=sttls.nl; dmarc=pass
- (p=none sp=none pct=100) action=none header.from=sttls.nl; dkim=pass
- (signature was verified) header.d=sttls.nl; arc=pass (0 oda=1 ltdi=1
- spf=[1,1,smtp.mailfrom=sttls.nl] dkim=[1,1,header.d=sttls.nl]
- dmarc=[1,1,header.from=sttls.nl])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufTdhIethcfMRmMNS9+9I3Bl28OZrY+S9WWbUhy7et0=;
- b=M4eUijGSiSxV5AqIgdYaRLNekqC97qGse0pwfdj5HRvFjJmfuPftAXqDVUOhTdvhNsnnqK7HS2LYQXn27ili5grMfGBJqHHAABRU0M/0YEJBIe+Sj4DsJsm53h38A+BjLsF4N0vcGVHuurkDebOkucnlQapUKYARTBaUsAEoPOQ+C2Ql+gkpJ8Mx80L/4w/W7AWP7bejm9F10NWsXp7I2BkVlRT1JNjg0u0wXG7gLjsy6rdLRqM/5BavjIqlgz4tndAjgvaWUCZHnoSDnfBtXNUPKd1vUH0VhAwXggB9H1H0J0JuJgFp9Lm3uu4KOyrwSUSRuSpiZPyVosFM7eP/gw==
-Received: from DB3PR08CA0036.eurprd08.prod.outlook.com (2603:10a6:8::49) by
- AS1PR05MB9084.eurprd05.prod.outlook.com (2603:10a6:20b:4d8::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.24; Wed, 5 Jun
- 2024 10:30:26 +0000
-Received: from DU2PEPF00028D09.eurprd03.prod.outlook.com
- (2603:10a6:8:0:cafe::84) by DB3PR08CA0036.outlook.office365.com
- (2603:10a6:8::49) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7656.16 via Frontend
- Transport; Wed, 5 Jun 2024 10:30:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 13.93.42.39)
- smtp.mailfrom=sttls.nl; dkim=pass (signature was verified)
- header.d=sttls.nl;dmarc=pass action=none header.from=sttls.nl;
-Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
- 13.93.42.39 as permitted sender) receiver=protection.outlook.com;
- client-ip=13.93.42.39; helo=westeu12-emailsignatures-cloud.codetwo.com; pr=C
-Received: from westeu12-emailsignatures-cloud.codetwo.com (13.93.42.39) by
- DU2PEPF00028D09.mail.protection.outlook.com (10.167.242.169) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7633.15 via Frontend Transport; Wed, 5 Jun 2024 10:30:25 +0000
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (104.47.0.51) by westeu12-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Wed, 05 Jun 2024 10:30:24 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CF6BKu+5Dh5L6Rk8mWsIwyf+dpjhJJtMqjHqbo7EO2y9lS4zC3LaHePoitlhbjYI7gyulO4Cwi1YAAxIIa3LJXLGwpOaw8EwOLLoUB2I9KkNvG5m6XS04zlGpiYD7mF9GczQZG2rXBMHc3C5T153s783/sQDRrPiVDmLcnPE2tAvIUFzYhp65y7+yhsGU3P/CaBfTnG1Qx9p1d3TRIOADogREYGUX8qOdXVlIAoh0jRe6FUmlSyIWlMNTWYsajDzvuq7yPNjiaq6np+d3evhc1SaD3uqTjwB9lB4CHUIUtZhXu+l7JT2XNNakpgiXuJWYAORI0dh2ESBoJsW5AU1dA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ufTdhIethcfMRmMNS9+9I3Bl28OZrY+S9WWbUhy7et0=;
- b=jvty8+4ul0Ksk6mKk0Dygrcl9ddy3yZgXldNPjzttjCUJdYPZVKo9ONzmee2aGkJ9yLpFP8n5/8uDYDSnWXORB+VhondJOm5X4XfgBL2ZPIa9W1jGMbckGVS9BrnYljMfTYzw/TkUmKF86L436gquh4HwfVeybT/DN8ZYzlQCJfmJq6KTQDlB3LNEYqhsjcITIRe3fBgB48nrHH5AK5TtruVkP53Y2ijtoYguvnsFWJIZn5COrpyeZM5Ahf9MvLXg7TwraMUqb0T/yN4aBizkmg6aB2zcylQif+Y1xl6UQbygl+u5PG1VT/sro3YJsNNhu2GWQtLC/6iPsqdmFkRRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sttls.nl; dmarc=pass action=none header.from=sttls.nl;
- dkim=pass header.d=sttls.nl; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ufTdhIethcfMRmMNS9+9I3Bl28OZrY+S9WWbUhy7et0=;
- b=M4eUijGSiSxV5AqIgdYaRLNekqC97qGse0pwfdj5HRvFjJmfuPftAXqDVUOhTdvhNsnnqK7HS2LYQXn27ili5grMfGBJqHHAABRU0M/0YEJBIe+Sj4DsJsm53h38A+BjLsF4N0vcGVHuurkDebOkucnlQapUKYARTBaUsAEoPOQ+C2Ql+gkpJ8Mx80L/4w/W7AWP7bejm9F10NWsXp7I2BkVlRT1JNjg0u0wXG7gLjsy6rdLRqM/5BavjIqlgz4tndAjgvaWUCZHnoSDnfBtXNUPKd1vUH0VhAwXggB9H1H0J0JuJgFp9Lm3uu4KOyrwSUSRuSpiZPyVosFM7eP/gw==
-Received: from AS8PR05MB9810.eurprd05.prod.outlook.com (2603:10a6:20b:5c2::16)
- by DB9PR05MB8685.eurprd05.prod.outlook.com (2603:10a6:10:2c8::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.36; Wed, 5 Jun
- 2024 10:30:21 +0000
-Received: from AS8PR05MB9810.eurprd05.prod.outlook.com
- ([fe80::841e:3b57:8c60:5734]) by AS8PR05MB9810.eurprd05.prod.outlook.com
- ([fe80::841e:3b57:8c60:5734%2]) with mapi id 15.20.7633.021; Wed, 5 Jun 2024
- 10:30:21 +0000
-From: Maarten Brock <Maarten.Brock@sttls.nl>
-To: Hugo Villeneuve <hugo@hugovil.com>, Hui Wang <hui.wang@canonical.com>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>, "hvilleneuve@dimonoff.com"
-	<hvilleneuve@dimonoff.com>, "robh@kernel.org" <robh@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>, "conor+dt@kernel.org"
-	<conor+dt@kernel.org>, "andy@kernel.org" <andy@kernel.org>,
-	"lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
-Subject: RE: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
- reset-gpios is defined in dt
-Thread-Topic: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
- reset-gpios is defined in dt
-Thread-Index: AQHatoMSmrKlXbpByE24p7W3ELDzzLG3qHyAgAFOd4A=
-Date: Wed, 5 Jun 2024 10:30:20 +0000
-Message-ID: <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
-References: <20240604132726.1272475-1-hui.wang@canonical.com>
-	<20240604132726.1272475-2-hui.wang@canonical.com>
- <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
-In-Reply-To: <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
-Accept-Language: en-US, nl-NL
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sttls.nl;
-x-ms-traffictypediagnostic:
-	AS8PR05MB9810:EE_|DB9PR05MB8685:EE_|DU2PEPF00028D09:EE_|AS1PR05MB9084:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a0f7539-56f7-4569-c5cf-08dc854a8359
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230031|7416005|1800799015|366007|376005|38070700009;
-X-Microsoft-Antispam-Message-Info-Original:
- =?utf-8?B?OGNTYUx4cmlBVHpXQi9LMndZdnBNeWZYVjk0SGRNcUpyKzhHWWN0U1dXQzdH?=
- =?utf-8?B?Y1l3TWdUdnhBZFBKckhyUlBqazdVMllvdSs5amQ4aTRpNms5cDA5SnhJWFpY?=
- =?utf-8?B?SXVNZGowYnJJMFVmSkExY2xJeWJPSzcrTklHMTJ5NnlEaXRvalpRRmYwYmVB?=
- =?utf-8?B?OVcwNW9wQks5YnVBT2ZEWjJDaDZJcG54SEluTW1UN28zVGtiRGdFMUQ3dDAv?=
- =?utf-8?B?MXhxbXRaZXZlSno4b1FZNTJYZk1UUWJJZkRvSjRyRUdMMkdwN280bjdyMUxx?=
- =?utf-8?B?WEMrOXdLWVpNdi9nMXBsZlYyU0QvNkNJQVhzUEp3Wm5IcE5oT3BNOTFnMlNN?=
- =?utf-8?B?WHlZV1kxb0t4bVNhaVRtNW1mdU5vK05XTVViZ2tzc0hxSm5TTmh3V3Z0dkQ0?=
- =?utf-8?B?V0g2cVRTcUk0N0JvVTVkZnQ3V1R4Vi8vV2NIbGZhZDBPYVJzeGoyeWxxdUtw?=
- =?utf-8?B?WDZJTHFUNndYZGxKckpoV3NMRThwY0NtbDNOeGFhMmVHTFRKY3Bac3ZmQVpn?=
- =?utf-8?B?RzQrUTlrS1VmeTkwZGlPUjNZS2VSYUVaWVZlS081OG44MDhxTDNWcVlTd3Jo?=
- =?utf-8?B?N0VKTEZaTVZJemh3d3NLWDR6alNDWUNYVU54ZHovYmNrOUFYQ3d1YnpRemdt?=
- =?utf-8?B?VlhZbXpRVlJ3VWE1eXJ3dHNjR3BwVTIyL2Z3VzJZbnBPb21Vc1NCc2dUMGU5?=
- =?utf-8?B?cDdFOU5mSVpRekdtMUtoQXA3eG1jdWVYS1BrSDVDaUh5RnhRSmM1S2YvRzZk?=
- =?utf-8?B?UFQrbktGVVM4UkRkeGhFMXdERXdWWW9hKzVvOGhXL1pPUVo3SnQrRWI5Ym9z?=
- =?utf-8?B?amVWZHpZdEJucW9QZElxbm5oeDJabUpxdUUvc3IyVXEyWXFuY2JsVVRxZXJ2?=
- =?utf-8?B?eS9oaGNsT3k4YUxxK1VSY0J3TmZ3a01PQXlNanptS3owZnhSbVpWMU9naFR1?=
- =?utf-8?B?ekdPdERjOEh0YXBDR0RWUGpzL0p2QWI3cVdDUjNUN2xqZnpTL1Mvc2M1R2tw?=
- =?utf-8?B?YzZPMVN0OUEzRWFGMy84b1FJRndHWW91eXZBVFBpM1M2M25aTHB5MUVIa0cr?=
- =?utf-8?B?Z1VQeE9KUHBCbjlXUFVkSmFWR3VodlBrQVhjOUhRZG81YUNoNWRHL0N3UEo3?=
- =?utf-8?B?bDhjTUtFNmZqcEl2R2k1MURGT2E3ZGxLZ3ZKYlp2cDNFZklZTjhQNnl3N2xT?=
- =?utf-8?B?V1F5R1NuWnMrT1R2WVZjMEFtdTZUN21yZFpyeUgzL0VGU3lUSm1oOFp6YWR4?=
- =?utf-8?B?ekhOS2VHZUxkT0hZbUlVdXZTOGlHWUJzWFBidHpPYmd6YlBCWVl4Y3BSNU52?=
- =?utf-8?B?NHNGVzdFMC9QbWtTTERrVGtCNUMvYnpWNWdZTDB5aVE5K1lhUUE2d2FreXlZ?=
- =?utf-8?B?YjlNQWpNek9Jd2haRmxDNjNOMFVaY3ZWN3FyN01oa0VHeVRGSWRGVnJOU3NV?=
- =?utf-8?B?NDJqSWYyVzFaWWxUc3BDV0QzOEhhVEJzUWxBM0JlUHlrTDJKQ3AyZXdiaUtL?=
- =?utf-8?B?d2FrWkpVM29NL3VhS0tIZ1IrYnVzM2RuaEdUM1NYMEtKVjQzK1VRMlRuSHBT?=
- =?utf-8?B?bENiWGMxUFdVcDc3ZUNvMWdCVDAxdDdVQXpiY0pnWTN1M2tZODVVSHZsVlZy?=
- =?utf-8?B?MlJwUVo0UnArS2xXZWJHV1k1eHBaVGdIOE44dmJadjFpdTlXb25QNGN6MkVh?=
- =?utf-8?B?M0kzVENudEMxbjZkam1iZHFTeUxwamFlUnJNdVUrQlNsYjZ0Um9NUVBqbzd5?=
- =?utf-8?B?N1ZZcmduelo1OFlxVlE0NDhWRTd3VzhJemhIV0hmRVE3S3pPNmhHY3NwL3hx?=
- =?utf-8?Q?A7P/t4dkETJnm+L8jWRNqyvGXz7AEbIj+xDd0=3D?=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR05MB9810.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(1800799015)(366007)(376005)(38070700009);DIR:OUT;SFP:1102;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="AoKj0FmX"
+Received: from [192.168.88.20] (91-158-144-210.elisa-laajakaista.fi [91.158.144.210])
+	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 899A816D4;
+	Wed,  5 Jun 2024 12:41:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+	s=mail; t=1717584092;
+	bh=dF8Hyv5BGB5ML/6Y0GvTgWdhOCnuAj4OntK5X0AYDog=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=AoKj0FmXPPEViiwJflZ5mO5fZ5g4/kdHLRZY3Vt8ZTsGpyfrNnnLtcg+RJ4cmmqDP
+	 uns2jeDI46+HXFInMxEICup/7FmFVoy6+xOSfjYd6VQkF7TzB+sKTe3m/zAPNkV1wx
+	 pwgYF9d3z6Kvnc9rEiHkd95rlVMVw7GaqlkMOxbE=
+Message-ID: <0a025885-ed95-45d3-bf76-d2a043baaed7@ideasonboard.com>
+Date: Wed, 5 Jun 2024 13:41:36 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB8685
-X-CodeTwo-MessageID: 09ced323-2d39-4eaa-b503-83047d4c16fb.20240605103024@westeu12-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DU2PEPF00028D09.eurprd03.prod.outlook.com
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	12f2bbeb-4da9-4974-f349-08dc854a808b
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|376005|36860700004|1800799015|7416005|82310400017|35042699013;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?aDNJYmRtanNZVVM2Q0hZdno2WWFYSTREOUxiMm5keW9Ockdnam1lY3dmbzFk?=
- =?utf-8?B?bHBocGNVMUg2aXpXa0xCTWQ1bmowMHdJK2tXYldvaThsTDEvQ3V2UWxXK3Uz?=
- =?utf-8?B?eVYrNUNZejZEREs3MWRnNktKVTQ2NWZlMHBmMmJPWEN1b0t4NVN6SGFpN0Rs?=
- =?utf-8?B?aDRINytQd3ZKZTBHZ1ludnZOSmFkam9wMEdidVNXS2NHRlA0WEJUczc4T3Jl?=
- =?utf-8?B?WlV6Z3JoanFxVFp5dDJ2NlNiWHJBWFFLQXkzcFpiNVc5QXVsUHRrQTRMalBY?=
- =?utf-8?B?MUpUTmU4Zk5pNnY5ZVc4MVpYRGRBNGdIaUZLQTFBVnZRMmpiUW1qWGpSc1k4?=
- =?utf-8?B?ZWhhQ3IzSmNlUStxOGxvUk1aTFhhYUgzMnpGTGtMb0Y2elplNWJYVTJMUUpU?=
- =?utf-8?B?WVpGQlZxWUZEcWJvRTl3UU1HMFNUOHNPYUlKOVM2cFY3U0ltK2VIcGs1N1M0?=
- =?utf-8?B?ODJGMklRSWVkbmpQUnNWYnZQL0tncUk2WmtKT0E1SjlNMEZ0cDJyYUltZUIv?=
- =?utf-8?B?WS9qNlJhclllQW9rMVpMQTVpN25KcXlNRGc2ODZsQU42L0dSNTB5ZGFMMWN5?=
- =?utf-8?B?RW5rVW9pbDBPQ294WU9RR1lNbTljVXV1SUZJaUJ4S29zVWIzbkZ5ZHJDOFdq?=
- =?utf-8?B?RVJwUTZGb0tITEthbGd6SCtIMnNxcm5kTytVaDU3dllkY3YvMEZxTk40bUJx?=
- =?utf-8?B?UXg3VGZhakRJWklIVjNJQUM3TDJyRkxKR1lGSXpoNzA3cUZ3SGViYm5xR2xh?=
- =?utf-8?B?ZHIyQnhaWDErK2YwVDd2Z0orcHRvTndCSE12RWNXQndXTGw4blhsUXRRWFVs?=
- =?utf-8?B?ZEpYaFdNU2NWZFYvTHRJUUU5dlZHMzJMeW5tVU5mK1FLajJhaUpRTlM0czJM?=
- =?utf-8?B?T1RNRGU1WDk0MUswS0tjQWtHY0ZiVnhNM0w4NnRZNC90M0RzY3hwWk1uTlVv?=
- =?utf-8?B?a3N6RWhsT1RqcHQzdUFlWUdSQ3VWaEVTWE1kTWwvWmIyNm9FWWpWRlJhalpT?=
- =?utf-8?B?UlJnc2Q0Y1lJeU8yZ1pja2kxbTlGWm9pZUU5Q3pleURCRmhUS2lPckF6QVpa?=
- =?utf-8?B?dU4rYmtnVG8rbnFyN2M5cERqZzBvamZzemR5SUFvL2EzdEpyZ05TY0Y4cTZG?=
- =?utf-8?B?RjV6UnBCbVdiVHkzZFJuQUorOHJ0V3BoSitrcXdudEVPKzlOa2oxQW9WMUxI?=
- =?utf-8?B?dGY3d1ZKakcvV2hGdjNscWdISnUvRE5yVDRVbnN0SUxYU2VsZWRMTEpDMjZC?=
- =?utf-8?B?WnlSZ0FrWG9Pdzc2ME00dlNKNkU5VjkySzdNYTU4WDZWSU8zRFFmUkF5TWZK?=
- =?utf-8?B?cWRjcEQ3dGxCZlg2UHFSSW5qK2JPcU5JQmlKZkpBNUV3ci9lTmxhU0haTjFX?=
- =?utf-8?B?WjlmRTNCdEJaTllGWXBGb2laelBkamVjbVExbmpvdmJ4SmhpOXFZTHZhL2Yv?=
- =?utf-8?B?S3NJN2xmanltQkpQbXpObnJJUWVMR3ZJaEgzYXlEM1VsdDNZaDRmaWdqbWJF?=
- =?utf-8?B?bW5KR3NSSGlrTzZpcDNjbTVRTm81dE1zVVJxcGlvVnY0VjFzN2p2WWkyWXN0?=
- =?utf-8?B?UERzaVpOSUE3S3AzNjBscFdFOHk2UmVjL2Uvbk03SXFJUFN5WHI1VlJBdG1q?=
- =?utf-8?B?WTViblUzbjF4RU5iQSt3MGl0aUtSOXNsT0NmL0g1QzdMNlAwaW5RbCttdnh1?=
- =?utf-8?B?RHRnS3E2ZjFUZll6WEc0OXUvdVEyYUQyN0VmSVRYUkR5cUF4Nm5PWTFoWDU3?=
- =?utf-8?B?SmVJRzRxTXdBVkJRUmthTVAxVWtiN21oTWhJc3JRcGdzelIrWFNOaDNsMTlt?=
- =?utf-8?B?Y1hsRWIxL0ZPVmNrVTg2eUlZYVBzSUV3WlV5OXQrVG5XSmNFZi9ISkplaTFH?=
- =?utf-8?B?Vk5nb1l3eUdxV0h0aW1qY1FUT1M1eERoUlI1ZjIxS2Y1ekE9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:13.93.42.39;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu12-emailsignatures-cloud.codetwo.com;PTR:westeu12-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230031)(376005)(36860700004)(1800799015)(7416005)(82310400017)(35042699013);DIR:OUT;SFP:1102;
-X-OriginatorOrg: sttls.nl
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2024 10:30:25.5196
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a0f7539-56f7-4569-c5cf-08dc854a8359
-X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[13.93.42.39];Helo=[westeu12-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DU2PEPF00028D09.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR05MB9084
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH/RFC 0/3] pmdomain: renesas: rmobile-sysc: Remove serial
+ console handling
+To: Ulf Hansson <ulf.hansson@linaro.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, "Rafael J . Wysocki" <rafael@kernel.org>,
+ Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+ Peng Fan <peng.fan@nxp.com>, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Devarsh Thakkar <devarsht@ti.com>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+References: <cover.1716811405.git.geert+renesas@glider.be>
+ <CAPDyKFpa4LZF3eN7x-NT+b9=dKB3Oe6RY8RAyetdRBSR1-LQoQ@mail.gmail.com>
+Content-Language: en-US
+From: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Autocrypt: addr=tomi.valkeinen@ideasonboard.com; keydata=
+ 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
+In-Reply-To: <CAPDyKFpa4LZF3eN7x-NT+b9=dKB3Oe6RY8RAyetdRBSR1-LQoQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-PiBGcm9tOiBIdWdvIFZpbGxlbmV1dmUgPGh1Z29AaHVnb3ZpbC5jb20+DQo+IFNlbnQ6IFR1ZXNk
-YXksIDQgSnVuZSAyMDI0IDE2OjIzDQoNCjwuLi4+DQoNCj4gQWRkIGZ1bmN0aW9uIGRlc2NyaXB0
-aW9uIGZyb20gb3JpZ2luYWwgY29tbWVudCAiUmVzZXQgZGV2aWNlLA0KPiBwdXJnaW5nIGFueSBw
-ZW5kaW5nIGlycSAvIGRhdGEiLCBzaW5jZSB0aGUgY29tbWVudCBhcHBsaWVzIHRvIGJvdGgNCj4g
-aGFyZHdhcmUgYW5kIHNvZnR3YXJlIHJlc2V0LA0KDQpObyBpdCBkb2VzIG5vdCAoYXQgdGhpcyBt
-b21lbnQpLiBTZWUgYmVsb3cuDQoNCj4gPiArc3RhdGljIGludCBzYzE2aXM3eHhfcmVzZXQoc3Ry
-dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcmVnbWFwICpyZWdtYXBzW10pDQo+IA0KPiBTaW1wbHkg
-cGFzcyAic3RydWN0IHJlZ21hcCAqcmVnbWFwIiBhcyB0aGUgc2Vjb25kIGFyZ3VtZW50LiBTZWUN
-Cj4gc2MxNmlzN3h4X3NldHVwX21jdHJsX3BvcnRzKCkgZm9yIGV4YW1wbGUuDQo+IA0KPiA+ICt7
-DQo+ID4gKwlzdHJ1Y3QgZ3Bpb19kZXNjICpyZXNldF9ncGlvZDsNCj4gDQo+IHJlc2V0X2dwaW9k
-IC0+IHJlc2V0X2dwaW8NCj4gDQo+ID4gKwllbHNlIGlmICghSVNfRVJSKHJlc2V0X2dwaW9kKSkg
-ew0KPiA+ICsJCS8qIGRlbGF5IDUgdXMgKGF0IGxlYXN0IDMgdXMpIGFuZCBkZWFzc2VydCB0aGUg
-Z3BpbyB0byBleGl0IHRoZSBoYXJkDQo+IHJlc2V0ICovDQo+IA0KPiBZb3UgY2FuIG9taXQgdGhl
-ICJkZWxheSA1IHVzIiBzaW5jZSBpdCBpcyBvYnZpb3VzIGZyb20gdGhlIGNvZGUuIE1heWJlDQo+
-IGFkZCB0aGF0ICJUaGUgbWluaW11bSByZXNldCBwdWxzZSB3aWR0aCBpcyAzIHVzIiBhcyBzdGF0
-ZWQgaW4gdGhlDQo+IGRhdGFzaGVldC4NCj4gDQo+IEFzIGEgZ2VuZXJhbCBub3RlIGZvciB5b3Vy
-IGNvbW1lbnRzOiBjYXBpdGFsaXplIHRoZSBmaXJzdCBsZXR0ZXIsDQo+IGV4OiAiRGVhc3NlcnQg
-R1BJTyIgYW5kIG5vdCAiZGVhc3NlcnQgR1BJTyIuDQo+IA0KPiANCj4gPiArCQl1ZGVsYXkoNSk7
-DQo+ID4gKwkJZ3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVwKHJlc2V0X2dwaW9kLCAwKTsNCj4gDQo+
-IE1vdmUgdGhlIGNvbW1lbnQgImRlYXNzZXJ0IHRoZSBncGlvIHRvIGV4aXQgdGhlIGhhcmQgcmVz
-ZXQiIGhlcmUuIFlvdQ0KPiBjb3VsZCBhbHNvIHNpbXBsaWZ5IGl0IGFzICJEZWFzc2VydCBHUElP
-LiIuDQoNClRoZSBwcm9ibGVtIGhlcmUgaXMgdGhhdCB0aGlzIG9ubHkgZGVhc3NlcnRzIHRoZSBy
-ZXNldCBpZiBpdCB3ZXJlIGFzc2VydGVkIGJlZm9yZS4NCk5vdGhpbmcgaGFwcGVucyBpZiBpdCBh
-bHJlYWR5IHdhcyBkZWFzc2VydGVkLiBUaGlzIG1ha2VzIHRoZSBkZWxheSBhbHNvIHByZXR0eQ0K
-dXNlbGVzcy4NCg0KVG8gbWFrZSB0aGlzIGEgcHJvcGVyIHJlc2V0IHB1bHNlIGZvciB0aGUgZGV2
-aWNlIHlvdSBtdXN0IGZpcnN0IGFzc2VydCB0aGUgcmVzZXQsDQp0aGVuIHdhaXQgPjN1cywgYW5k
-IGZpbmFsbHkgZGVhc3NlcnQgdGhlIHJlc2V0Lg0KDQpNYWFydGVuIEJyb2NrDQoNCg==
+Hi Ulf,
+
+On 05/06/2024 12:34, Ulf Hansson wrote:
+> + Tomi
+> 
+> On Mon, 27 May 2024 at 14:41, Geert Uytterhoeven
+> <geert+renesas@glider.be> wrote:
+>>
+>>          Hi all,
+>>
+>> Since commit a47cf07f60dcb02d ("serial: core: Call
+>> device_set_awake_path() for console port"), the serial driver properly
+>> handles the case where the serial console is part of the awake path, and
+>> it looked like we could start removing special serial console handling
+>> from PM Domain drivers like the R-Mobile SYSC PM Domain driver.
+>> Unfortunately the devil is in the details, as usual...
+>>
+>> Earlycon relies on the serial port to be initialized by the firmware
+>> and/or bootloader.  Linux is not aware of any hardware dependencies that
+>> must be met to keep the port working, and thus cannot guarantee they
+>> stay met, until the full serial driver takes over.
+>>
+>> E.g. all unused clocks and unused PM Domains are disabled in a late
+>> initcall.  As this happens after the full serial driver has taken over,
+>> the serial port's clock and/or PM Domain are no longer deemed unused,
+>> and this is typically not a problem.
+>>
+>> However, if the serial port's clock or PM Domain is shared with another
+>> device, and that other device is runtime-suspended before the full
+>> serial driver has probed, the serial port's clock and/or PM Domain will
+>> be disabled inadvertently.  Any subsequent serial console output will
+>> cause a crash or system lock-up.  E.g. on R/SH-Mobile SoCs, the serial
+>> ports share their PM Domain with several other I/O devices.  After the
+>> use of pwm (Armadillo-800-EVA) or i2c (KZM-A9-GT) during early boot,
+>> before the full serial driver takes over, the PM Domain containing the
+>> early serial port is powered down, causing a lock-up when booted with
+>> "earlycon".
+> 
+> Hi Geert,
+> 
+> Thanks for the detailed description of the problem! As pointed out in
+> regards to another similar recent patch [1], this is indeed a generic
+> problem, not limited to the serial console handling.
+> 
+> At Linaro Connect a few weeks ago I followed up with Saravana from the
+> earlier discussions at LPC last fall. We now have a generic solution
+> for genpd drafted on plain paper, based on fw_devlink and the
+> ->sync_state() callback. I am currently working on the genpd series,
+> while Saravana will re-spin the series (can't find the link to the
+> last version) for the clock framework. Ideally, we want these things
+> to work in a very similar way.
+> 
+> That said, allow me to post the series for genpd in a week or two to
+> see if it can solve your problem too, for the serial console.
+
+Both the genpd and the clock solutions will make suppliers depend on all 
+their consumers to be probed, right?
+
+I think it is a solution, and should be worked on, but it has the 
+drawback that suppliers that have consumers that will possibly never be 
+probed, will also never be able to turn off unused resources.
+
+This was specifically the case with the TI ti-sci pmdomain case I was 
+looking at: the genpd driver (ti_sci_pm_domains.c) provides a lot of 
+genpds for totally unrelated devices, and so if, e.g., you don't have or 
+don't want to load a driver for the GPU, all PDs are affected.
+
+Even here the solutions you mention will help: instead of things getting 
+broken because genpds get turned off while they are actually in use, the 
+genpds will be kept enabled, thus fixing the breakage. Unfortunately, 
+they'll be kept enabled forever.
+
+I've been ill for quite a while so I haven't had the chance to look at 
+this more, but before that I was hacking around a bit with something I 
+named .partial_sync_state(). .sync_state() gets called when all the 
+consumers have probed, but .partial_sync_state() gets called when _a_ 
+consumer has been probed.
+
+For the .sync_state() things are easy for the driver, as it knows 
+everything related has been probed, but for .partial_sync_state() the 
+driver needs to track resources internally. .partial_sync_state() will 
+tell the driver that a consumer device has probed, the driver can then 
+find out which specific resources (genpds in my case) that consumer 
+refers to, and then... Well, that's how far I got with my hacks =).
+
+So, I don't know if this .partial_sync_state() can even work, but I 
+think we do need something more on top of the .sync_state().
+
+  Tomi
+
+> 
+> Kind regards
+> Uffe
+> 
+> [1]
+> https://lore.kernel.org/linux-arm-kernel/CAPDyKFqShuq98qV5nSPzSqwLLUZ7LxLvp1eihGRBkU4qUKdWwQ@mail.gmail.com/
+> 
+>>
+>> This RFC patch series aims to provide a mechanism for handling this, and
+>> to fix it for the PM Domain case:
+>>    1. The first patch provides a mechanism to let the clock and/or PM
+>>       Domain subsystem or drivers handle this, by exporting the clock and
+>>       PM Domain dependencies for the serial port, as available in the
+>>       system's device tree,
+>>    2. The second patch introduces a new flag to handle a PM domain that
+>>       must be kept powered-on during early boot, and by setting this flag
+>>       if the PM Domain contains the serial console (originally I handled
+>>       this inside rmobile-sysc, but it turned out to be easy to
+>>       generalize this to other platforms in the core PM Domain code).
+>>    3. The third patch removes the no longer needed special console
+>>       handling from the R-Mobile SYSC PM Domain driver.
+>>
+>> I did not fix the similar clock issue, as it is more complex (there can
+>> be multiple clocks, and each clock provider can have its own value of
+>> #clock-cells), and I do not need it for Renesas ARM platforms.
+> 
+> I will defer to Sarvana here, but ideally his series for the clock
+> framework should solve this case too.
+> 
+>>
+>> This has been tested on the APE6-EVM, Armadillo-800-EVA, and KZM-A9-GT
+>> development boards, with and without earlycon, including s2ram with and
+>> without no_console_suspend.
+>>
+>> Notes:
+>>    - This should not be needed on RZ/G3S, where each serial port device
+>>      has its own PM Domain,
+>>    - drivers/clk/imx/clk.c and drivers/pmdomain/imx/scu-pd.c have special
+>>      handling for the of_stdout device, but is probably not affected, as
+>>      each serial port seems to share its PM Domain only with the serial
+>>      port's clock controller.
+>>
+>> Thanks for your comments!
+>>
+>> Geert Uytterhoeven (3):
+>>    earlycon: Export clock and PM Domain info from FDT
+>>    pmdomain: core: Avoid earlycon power-down
+>>    pmdomain: renesas: rmobile-sysc: Remove serial console handling
+>>
+>>   drivers/pmdomain/core.c                 | 24 ++++++++++++++++--
+>>   drivers/pmdomain/renesas/rmobile-sysc.c | 33 +------------------------
+>>   drivers/tty/serial/earlycon.c           | 14 ++++++++++-
+>>   include/linux/pm_domain.h               |  4 +++
+>>   include/linux/serial_core.h             | 10 ++++++++
+>>   5 files changed, 50 insertions(+), 35 deletions(-)
+>>
+>> --
+> 
+> Kind regards
+> Uffe
+
