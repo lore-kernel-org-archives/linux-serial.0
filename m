@@ -1,178 +1,122 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A95A191484
-	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 10:54:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7DA1946D3;
+	Wed,  5 Jun 2024 10:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717584874; cv=none; b=OX7I58YusmJ9k5yLU9Hhp0E+I5bNJiIeY3M9tY24k+NX6OPswicUsvpCU/t1co/dhIOgAMfylvdBqOdbWG0vGom3MUEU4Pc1bxwMuTazYhL4kSQD5s83KM02lH6W/zdbs7+UDZoMKpZFAVHhj9gOUSlAOTTvugssoYop0FA1xFc=
+	t=1717584934; cv=none; b=HmattJsg8TdoHnsIogcpylQjZbNWKb0ZGJerTS01QZtUg2uZrvIgC3JLkW9Z9oJpLNo629Uy9zpRqRGW3Xy0m5YJ8jX2S2U27AbiMH1c8NTRX6YkpHEOpbI5BR09zcAcABlLI1fXi2Su780Z9s8VQnIp4Ru0+t84ab5O3nD6fSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717584874; c=relaxed/simple;
-	bh=FTgBRYYy6JQRexZRZJFjuNAFj4Osr8S9dZDMnD+Hpkg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aXX8k2HfDSrFrrkQAno93Sb4R3hwyILoAbWEXhgJk+mvkHbAgyqJfDewnAh/ATDsN03TXRx4OwzCPOOOfb5z/HDE0p2RceYTJNOYiGeX7E7Hr+Ep7qF2EA/97zk9DrvNQTcAKxBRCWigDW+vEaHt0Csf4wFrRncMjTWMYu5sLnQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qOy05tkp; arc=none smtp.client-ip=209.85.219.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1717584934; c=relaxed/simple;
+	bh=W+U7qhUjCbi51uRgvg/U9wrwMMR6x0KWroJZjDdtMrQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Q1MM7+u77mfVcK7pUXkz0yO0IC8DNw8GVsYPhwINPqXBa3GCcSNtPkt0MXyK/PM5TNF7KXYH2Hmuxeymg898fdGSzvbzzhaa80Ca3JPbGBK7WS251zBxCz8XcJsG3ci/nKUwOLajTkGnaL9y54v4iuj91lHLx2LnQp/PRR7v8fA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=qSfIEj16; arc=none smtp.client-ip=185.125.188.120
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qOy05tkp"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-dfac121b6a6so662319276.0
-        for <linux-serial@vger.kernel.org>; Wed, 05 Jun 2024 03:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1717584871; x=1718189671; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=jwOYdBEP20eHqXfiLB/uZRRK7vGmn2sMRMDnSyVKlSw=;
-        b=qOy05tkp1Jh9xyTIiDfcWBORdVYV9xOpdRiBq5wfsDPG3C03dKc5lIEI9cgtiUDw97
-         79BOWCujxAwC42Ia9HJuq2CvetruFN1Qq3klniYjWPtZziiBVZwXkDiyu1bZ9NBpaLcv
-         6JR90CNU4nd3KyrUKWJRQJ9XnGk4xbt0KjoltJUCC+NpAqnfeFjBeB7g711/V8MVfRqy
-         l6pTVZ5fII/62FaGvHXWr87DRgtumoiP1M/gyccN6P6yV1e1U5OfFv1OGwJLpV6iFYNa
-         X5XIfjQBNF6tKb9wJDbvjfxyxgi52+59XVhrRIZYvKGru9tjjlS886D+XZHB8rOU9jIW
-         fFug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717584871; x=1718189671;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jwOYdBEP20eHqXfiLB/uZRRK7vGmn2sMRMDnSyVKlSw=;
-        b=eqGbz0nJvP1j0vbcWJGvXICPA2AG88ewAM68IhOlHEgH1R2I93N/slMXd7DcUYvaRH
-         ItnUpB0uKKa0vGzZWeEQlkfbHMW3GZnXn5cERoExu+VifQ9R4rJZaqFMOKA63Fj50oQo
-         82jYkzOac2X2zCRPEa28tT1ahtt9CoKEMt78WXlQm0Slc4yJwM3gS3Yh+a6l+UXRwv7Q
-         jW1y2M3oN9Nj7NyN/DFmU4hB6cV9aMSphvoEj5uGQOO1bVcy65g65TIyQWu/fj38fg41
-         GT2RSkMUzNBXk3G8mee+0gJ6fCS1YEmhO3T67amCzIcxYVSsfyWoUEGs36OU9KO6G6vt
-         Z+6w==
-X-Forwarded-Encrypted: i=1; AJvYcCUHp5igKlAjfSg+cVUjONshKlobkNbuUzKP327yzS1g1TzNvj0ZwbmNhGVfPxaXmjd2TPFIP6CIbu8I9cwF7XbR+TYBw1eEEwlkg/TH
-X-Gm-Message-State: AOJu0YwJ2LjJBuy2GOm1MgROZi+MlCCvIai0bIiUHsb/qQr3H1BHls0K
-	qjqbCy0p9v7yFFAIOFuB3XVPXBce363WkdkKEuyUZ3z0XyWZroB6VaiSXSm1qHrSivduRFj3iHs
-	vrEQtoO9abw9aePNqHz3DSamns6725XS/OmUCjw==
-X-Google-Smtp-Source: AGHT+IFCIpk76VQM4IGtOzYy0kvzCqfdvB04uHsR5vs8p9fLuPGESGvnInQIi3EisoXfHVIM/A1cG1VKEJLdP84nFxo=
-X-Received: by 2002:a25:c102:0:b0:df4:d98d:3e4f with SMTP id
- 3f1490d57ef6-dfab854c9c8mr4052568276.12.1717584871226; Wed, 05 Jun 2024
- 03:54:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="qSfIEj16"
+Received: from [192.168.0.106] (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 9D2BC3F30B;
+	Wed,  5 Jun 2024 10:55:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1717584926;
+	bh=A2fBCgA/gmiLrr61al6cFFR/2iFB/YAMVzE2ZejjVMs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type;
+	b=qSfIEj16dUGorAnUStJ++FqiIxosMfqnqB5U9uH2sE3zXuGR8t4wNXATbFd44sL3O
+	 lBNPXAYAlpRO9E8T5FbnDJT6V/1TqDYANWDmIHaynLHtZPj7wURRZRdT2/RuFfQU9Q
+	 Qhfe+qJ1oWkfGuFF+lHEOgsC+lZEeeLFanFImgMnJii+2oY6b0DutsaFMWARkneSaK
+	 X+R67pgRi5tpa7roEZ7IB1ZbLb7BRe9+8jCkhsDMq298CqKUfmMCQm2Bum9LbJyOVx
+	 HNgPkSp6J1147m9y5DMWIL5V4MVDqwVIrwYF63qmEicsCQX/qWLTMBHq3pu1lQD5Vz
+	 07FTVK409dbXw==
+Message-ID: <f56a2c59-9ae4-4d5c-8321-fff9639c5405@canonical.com>
+Date: Wed, 5 Jun 2024 18:55:16 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1716811405.git.geert+renesas@glider.be> <CAPDyKFpa4LZF3eN7x-NT+b9=dKB3Oe6RY8RAyetdRBSR1-LQoQ@mail.gmail.com>
- <0a025885-ed95-45d3-bf76-d2a043baaed7@ideasonboard.com>
-In-Reply-To: <0a025885-ed95-45d3-bf76-d2a043baaed7@ideasonboard.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Wed, 5 Jun 2024 12:53:55 +0200
-Message-ID: <CAPDyKFrxUDhnUUfz5wHpGVQfNYssxoWO5Eb2wtmZMTcMYhEjxQ@mail.gmail.com>
-Subject: Re: [PATCH/RFC 0/3] pmdomain: renesas: rmobile-sysc: Remove serial
- console handling
-To: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	"Rafael J . Wysocki" <rafael@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Saravana Kannan <saravanak@google.com>, Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, 
-	Peng Fan <peng.fan@nxp.com>, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Devarsh Thakkar <devarsht@ti.com>, 
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
+ reset-gpios is defined in dt
+To: Maarten Brock <Maarten.Brock@sttls.nl>, Hugo Villeneuve <hugo@hugovil.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ "jirislaby@kernel.org" <jirislaby@kernel.org>,
+ "hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
+ "robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org"
+ <krzk+dt@kernel.org>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
+ "andy@kernel.org" <andy@kernel.org>,
+ "lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
+References: <20240604132726.1272475-1-hui.wang@canonical.com>
+ <20240604132726.1272475-2-hui.wang@canonical.com>
+ <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
+ <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+Content-Language: en-US
+From: Hui Wang <hui.wang@canonical.com>
+In-Reply-To: <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 5 Jun 2024 at 12:41, Tomi Valkeinen
-<tomi.valkeinen@ideasonboard.com> wrote:
->
-> Hi Ulf,
->
-> On 05/06/2024 12:34, Ulf Hansson wrote:
-> > + Tomi
-> >
-> > On Mon, 27 May 2024 at 14:41, Geert Uytterhoeven
-> > <geert+renesas@glider.be> wrote:
-> >>
-> >>          Hi all,
-> >>
-> >> Since commit a47cf07f60dcb02d ("serial: core: Call
-> >> device_set_awake_path() for console port"), the serial driver properly
-> >> handles the case where the serial console is part of the awake path, and
-> >> it looked like we could start removing special serial console handling
-> >> from PM Domain drivers like the R-Mobile SYSC PM Domain driver.
-> >> Unfortunately the devil is in the details, as usual...
-> >>
-> >> Earlycon relies on the serial port to be initialized by the firmware
-> >> and/or bootloader.  Linux is not aware of any hardware dependencies that
-> >> must be met to keep the port working, and thus cannot guarantee they
-> >> stay met, until the full serial driver takes over.
-> >>
-> >> E.g. all unused clocks and unused PM Domains are disabled in a late
-> >> initcall.  As this happens after the full serial driver has taken over,
-> >> the serial port's clock and/or PM Domain are no longer deemed unused,
-> >> and this is typically not a problem.
-> >>
-> >> However, if the serial port's clock or PM Domain is shared with another
-> >> device, and that other device is runtime-suspended before the full
-> >> serial driver has probed, the serial port's clock and/or PM Domain will
-> >> be disabled inadvertently.  Any subsequent serial console output will
-> >> cause a crash or system lock-up.  E.g. on R/SH-Mobile SoCs, the serial
-> >> ports share their PM Domain with several other I/O devices.  After the
-> >> use of pwm (Armadillo-800-EVA) or i2c (KZM-A9-GT) during early boot,
-> >> before the full serial driver takes over, the PM Domain containing the
-> >> early serial port is powered down, causing a lock-up when booted with
-> >> "earlycon".
-> >
-> > Hi Geert,
-> >
-> > Thanks for the detailed description of the problem! As pointed out in
-> > regards to another similar recent patch [1], this is indeed a generic
-> > problem, not limited to the serial console handling.
-> >
-> > At Linaro Connect a few weeks ago I followed up with Saravana from the
-> > earlier discussions at LPC last fall. We now have a generic solution
-> > for genpd drafted on plain paper, based on fw_devlink and the
-> > ->sync_state() callback. I am currently working on the genpd series,
-> > while Saravana will re-spin the series (can't find the link to the
-> > last version) for the clock framework. Ideally, we want these things
-> > to work in a very similar way.
-> >
-> > That said, allow me to post the series for genpd in a week or two to
-> > see if it can solve your problem too, for the serial console.
->
-> Both the genpd and the clock solutions will make suppliers depend on all
-> their consumers to be probed, right?
->
-> I think it is a solution, and should be worked on, but it has the
-> drawback that suppliers that have consumers that will possibly never be
-> probed, will also never be able to turn off unused resources.
->
-> This was specifically the case with the TI ti-sci pmdomain case I was
-> looking at: the genpd driver (ti_sci_pm_domains.c) provides a lot of
-> genpds for totally unrelated devices, and so if, e.g., you don't have or
-> don't want to load a driver for the GPU, all PDs are affected.
->
-> Even here the solutions you mention will help: instead of things getting
-> broken because genpds get turned off while they are actually in use, the
-> genpds will be kept enabled, thus fixing the breakage. Unfortunately,
-> they'll be kept enabled forever.
->
-> I've been ill for quite a while so I haven't had the chance to look at
-> this more, but before that I was hacking around a bit with something I
-> named .partial_sync_state(). .sync_state() gets called when all the
-> consumers have probed, but .partial_sync_state() gets called when _a_
-> consumer has been probed.
->
-> For the .sync_state() things are easy for the driver, as it knows
-> everything related has been probed, but for .partial_sync_state() the
-> driver needs to track resources internally. .partial_sync_state() will
-> tell the driver that a consumer device has probed, the driver can then
-> find out which specific resources (genpds in my case) that consumer
-> refers to, and then... Well, that's how far I got with my hacks =).
->
-> So, I don't know if this .partial_sync_state() can even work, but I
-> think we do need something more on top of the .sync_state().
 
-Thanks for the update!
+On 6/5/24 18:30, Maarten Brock wrote:
+>> From: Hugo Villeneuve <hugo@hugovil.com>
+>> Sent: Tuesday, 4 June 2024 16:23
+> <...>
+>
+>> Add function description from original comment "Reset device,
+>> purging any pending irq / data", since the comment applies to both
+>> hardware and software reset,
+> No it does not (at this moment). See below.
+>
+>>> +static int sc16is7xx_reset(struct device *dev, struct regmap *regmaps[])
+>> Simply pass "struct regmap *regmap" as the second argument. See
+>> sc16is7xx_setup_mctrl_ports() for example.
+>>
+>>> +{
+>>> +	struct gpio_desc *reset_gpiod;
+>> reset_gpiod -> reset_gpio
+>>
+>>> +	else if (!IS_ERR(reset_gpiod)) {
+>>> +		/* delay 5 us (at least 3 us) and deassert the gpio to exit the hard
+>> reset */
+>>
+>> You can omit the "delay 5 us" since it is obvious from the code. Maybe
+>> add that "The minimum reset pulse width is 3 us" as stated in the
+>> datasheet.
+>>
+>> As a general note for your comments: capitalize the first letter,
+>> ex: "Deassert GPIO" and not "deassert GPIO".
+>>
+>>
+>>> +		udelay(5);
+>>> +		gpiod_set_value_cansleep(reset_gpiod, 0);
+>> Move the comment "deassert the gpio to exit the hard reset" here. You
+>> could also simplify it as "Deassert GPIO.".
+> The problem here is that this only deasserts the reset if it were asserted before.
+> Nothing happens if it already was deasserted. This makes the delay also pretty
+> useless.
+>
+> To make this a proper reset pulse for the device you must first assert the reset,
+> then wait >3us, and finally deassert the reset.
+>
+> Maarten Brock
+Hi Maarten,
 
-You certainly have a point, but rather than implementing some platform
-specific method, I think we should be able enforce the call to
-->sync_state(), based upon some condition/timeout - and even if all
-consumers haven't been probed.
+My understanding is when calling devm_gpiod_get_optional(dev, "reset", 
+GPIOD_OUT_LOW) and returning a valid (gpio_desc *), the flag 
+GPIOD_OUT_LOW guarantees the GPIO is set to output and low (assert the 
+reset pin).
 
-[...]
+Thanks,
 
-Kind regards
-Uffe
+Hui.
+
+
+>
