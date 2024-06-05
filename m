@@ -1,49 +1,57 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7431D1A1860;
-	Wed,  5 Jun 2024 11:51:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209581ACAED;
+	Wed,  5 Jun 2024 11:52:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717588306; cv=none; b=INAwsJiCDaMHEN2Dl46UI4iDvoCHrs+hr08Qrd31ccfte4ACmLKe28Ph6C5vfIwNxN5O9BefVgrqAwr7ix+u7z7Ji6u1XKLOL6roh4ORNLLW+I8Ci8CxqBG/Wg7VQNVEgZt0Q46m1MnMeh1+k4RxPnGR8YHgVymSAJWodtN4v/M=
+	t=1717588370; cv=none; b=DJ9QNGa31vrwewA2iGjD9zJF5bF9n8n0TaZ/AqzbGqJ3eYHc9BmgJEeG6F7EJPLArvPtG5ND7Q+48S7BuywwM25IiOiTkL+8ZWaBWU4Eg5++DE6dKPmMAB3gJRHzK/mcJCzHWCX4nOJHNuZSJnL3UgEGXc+uq0A7bHaRMc6VtNE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717588306; c=relaxed/simple;
-	bh=/koGbcjt/brA1y2OEcG0TQp5Myw75w2PN2xhFyfAxqg=;
+	s=arc-20240116; t=1717588370; c=relaxed/simple;
+	bh=NJFTVtrYvnLF1VTPy4CYKSB9Or0i1HT1MkKZ6bHtDg0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eSAyHCKsJ/ewEsOEWqdpdCApvKNiSDf1XgXuOGmf0SWlK2ghqjXt2F8/UsYla1Hx77fkkHiCiFlv5ra4EG+ehFI+h1spo5swyBB+5FyZJwkBWkh7utBwfyilMc3zuWnBItmtjyLmDvyQdBTd1Qy5j3WmSbzXBqD/C3VOXRuJCtc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rBYs6BaH; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=T//OTVMU8qoKmuBO+m8cH1SaP0r86GGitYxaezS2W5hVU4w9JFdGd21j+xq1SOPeGTkMdw5DGk5lY1/qeWjSZuQAPbEi5NOGFAaSFDTC/x6M5Ml9dudofrPScVc97O8qZ6GCHbt6kZZB7OskAPOGOy59B+HrzytJStivdqy4K6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DEqjDiQ9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rBYs6BaH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264ABC32786;
-	Wed,  5 Jun 2024 11:51:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DEqjDiQ9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11471C32781;
+	Wed,  5 Jun 2024 11:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717588306;
-	bh=/koGbcjt/brA1y2OEcG0TQp5Myw75w2PN2xhFyfAxqg=;
+	s=k20201202; t=1717588370;
+	bh=NJFTVtrYvnLF1VTPy4CYKSB9Or0i1HT1MkKZ6bHtDg0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rBYs6BaHUfKmIq+xNOesILNOuDpU42yoCTJtoou2jMaWyB6uGcafhV6JVpRpVfqZV
-	 MZYV/1UpE0heY6MUGNIxtzikCjnnF/OKFAI3TRVNWGgRVr+D83ex8Pu+/it4cB/J1k
-	 Vxo5gnWwoRoR9aR2VoGmZGbCSG5kyJl2wczzTjCyW0pT9pxEKn+gzLhhdQ4mpgH7P/
-	 1TJvprCUebZf9fZsTk8T/r1oM0G7VJGn+XPITU4CUgca7Kwcwy9wN2LnJnWpKVEprN
-	 m+z7wPbT5wIv1y0RdiPo9lRwarTKlJ3eADDBMLav88jNyAQSuz2KJTNrKJrVfghP5Q
-	 OuRDn9PIdO/jQ==
+	b=DEqjDiQ9IJkYAOXQzb/GUyteQJ4+jFM0zhZ059+8m+GoegxSgUO5Z0xjdYTxteWpx
+	 z52CPQhsb6uAG8+I2r4P8Sqg8/pZskdutgvVLHJ8Rv34Tthj/6CUpsHQZ4OPncz3fD
+	 kppVFwmGWAhG2qJsIz37WWYKwJZEtX9pVsUykKIi27lCxO3lb+1/W2LPEgiJX/3FPP
+	 OsTIYAqta+2m+4PmWzm+eu1wJwkPjkVBCjbhRUKtgruXOz9rRImLT5MEbCRs+OsFzl
+	 lAOn7uwZv9hRvrz5NaW8fPBvXtLOzcAbSPY32KBGPKPEEjYLtUyfTsR4MCcOhZO+MS
+	 wnPsklbPC3Vug==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Daniel Starke <daniel.starke@siemens.com>,
-	syzbot <syzbot+dbac96d8e73b61aa559c@syzkaller.appspotmail.com>,
+Cc: Esben Haabendal <esben@geanix.com>,
+	Marc Kleine-Budde <mkl@pengutronix.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sasha Levin <sashal@kernel.org>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.8 17/24] tty: add the option to have a tty reject a new ldisc
-Date: Wed,  5 Jun 2024 07:50:27 -0400
-Message-ID: <20240605115101.2962372-17-sashal@kernel.org>
+	jirislaby@kernel.org,
+	shawnguo@kernel.org,
+	u.kleine-koenig@pengutronix.de,
+	cniedermaier@dh-electronics.com,
+	l.sanfilippo@kunbus.com,
+	ilpo.jarvinen@linux.intel.com,
+	christophe.jaillet@wanadoo.fr,
+	tglx@linutronix.de,
+	rickaran@axis.com,
+	martin.fuzzey@flowbird.group,
+	linux-serial@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.6 11/20] serial: imx: Introduce timeout when waiting on transmitter empty
+Date: Wed,  5 Jun 2024 07:51:54 -0400
+Message-ID: <20240605115225.2963242-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240605115101.2962372-1-sashal@kernel.org>
-References: <20240605115101.2962372-1-sashal@kernel.org>
+In-Reply-To: <20240605115225.2963242-1-sashal@kernel.org>
+References: <20240605115225.2963242-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,112 +60,60 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.8.12
+X-stable-base: Linux 6.6.32
 Content-Transfer-Encoding: 8bit
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Esben Haabendal <esben@geanix.com>
 
-[ Upstream commit 6bd23e0c2bb6c65d4f5754d1456bc9a4427fc59b ]
+[ Upstream commit e533e4c62e9993e62e947ae9bbec34e4c7ae81c2 ]
 
-... and use it to limit the virtual terminals to just N_TTY.  They are
-kind of special, and in particular, the "con_write()" routine violates
-the "writes cannot sleep" rule that some ldiscs rely on.
+By waiting at most 1 second for USR2_TXDC to be set, we avoid a potential
+deadlock.
 
-This avoids the
+In case of the timeout, there is not much we can do, so we simply ignore
+the transmitter state and optimistically try to continue.
 
-   BUG: sleeping function called from invalid context at kernel/printk/printk.c:2659
-
-when N_GSM has been attached to a virtual console, and gsmld_write()
-calls con_write() while holding a spinlock, and con_write() then tries
-to get the console lock.
-
-Tested-by: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Daniel Starke <daniel.starke@siemens.com>
-Reported-by: syzbot <syzbot+dbac96d8e73b61aa559c@syzkaller.appspotmail.com>
-Closes: https://syzkaller.appspot.com/bug?extid=dbac96d8e73b61aa559c
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Link: https://lore.kernel.org/r/20240423163339.59780-1-torvalds@linux-foundation.org
+Signed-off-by: Esben Haabendal <esben@geanix.com>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/919647898c337a46604edcabaf13d42d80c0915d.1712837613.git.esben@geanix.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/tty_ldisc.c    |  6 ++++++
- drivers/tty/vt/vt.c        | 10 ++++++++++
- include/linux/tty_driver.h |  8 ++++++++
- 3 files changed, 24 insertions(+)
+ drivers/tty/serial/imx.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-index 3f68e213df1f7..d80e9d4c974b4 100644
---- a/drivers/tty/tty_ldisc.c
-+++ b/drivers/tty/tty_ldisc.c
-@@ -545,6 +545,12 @@ int tty_set_ldisc(struct tty_struct *tty, int disc)
- 		goto out;
- 	}
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index c77831e91ec20..a1476e47c6aab 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -26,6 +26,7 @@
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/io.h>
++#include <linux/iopoll.h>
+ #include <linux/dma-mapping.h>
  
-+	if (tty->ops->ldisc_ok) {
-+		retval = tty->ops->ldisc_ok(tty, disc);
-+		if (retval)
-+			goto out;
-+	}
-+
- 	old_ldisc = tty->ldisc;
+ #include <asm/irq.h>
+@@ -2009,7 +2010,7 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	struct imx_port *sport = imx_uart_ports[co->index];
+ 	struct imx_port_ucrs old_ucr;
+ 	unsigned long flags;
+-	unsigned int ucr1;
++	unsigned int ucr1, usr2;
+ 	int locked = 1;
  
- 	/* Shutdown the old discipline. */
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 52e6ca1ba21df..09126aed97bc1 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -3396,6 +3396,15 @@ static void con_cleanup(struct tty_struct *tty)
- 	tty_port_put(&vc->port);
- }
+ 	if (sport->port.sysrq)
+@@ -2040,8 +2041,8 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
+ 	 *	Finally, wait for transmitter to become empty
+ 	 *	and restore UCR1/2/3
+ 	 */
+-	while (!(imx_uart_readl(sport, USR2) & USR2_TXDC));
+-
++	read_poll_timeout_atomic(imx_uart_readl, usr2, usr2 & USR2_TXDC,
++				 0, USEC_PER_SEC, false, sport, USR2);
+ 	imx_uart_ucrs_restore(sport, &old_ucr);
  
-+/*
-+ * We can't deal with anything but the N_TTY ldisc,
-+ * because we can sleep in our write() routine.
-+ */
-+static int con_ldisc_ok(struct tty_struct *tty, int ldisc)
-+{
-+	return ldisc == N_TTY ? 0 : -EINVAL;
-+}
-+
- static int default_color           = 7; /* white */
- static int default_italic_color    = 2; // green (ASCII)
- static int default_underline_color = 3; // cyan (ASCII)
-@@ -3515,6 +3524,7 @@ static const struct tty_operations con_ops = {
- 	.resize = vt_resize,
- 	.shutdown = con_shutdown,
- 	.cleanup = con_cleanup,
-+	.ldisc_ok = con_ldisc_ok,
- };
- 
- static struct cdev vc0_cdev;
-diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index 7372124fbf90b..dd4b31ce6d5d4 100644
---- a/include/linux/tty_driver.h
-+++ b/include/linux/tty_driver.h
-@@ -154,6 +154,13 @@ struct serial_struct;
-  *
-  *	Optional. Called under the @tty->termios_rwsem. May sleep.
-  *
-+ * @ldisc_ok: ``int ()(struct tty_struct *tty, int ldisc)``
-+ *
-+ *	This routine allows the @tty driver to decide if it can deal
-+ *	with a particular @ldisc.
-+ *
-+ *	Optional. Called under the @tty->ldisc_sem and @tty->termios_rwsem.
-+ *
-  * @set_ldisc: ``void ()(struct tty_struct *tty)``
-  *
-  *	This routine allows the @tty driver to be notified when the device's
-@@ -372,6 +379,7 @@ struct tty_operations {
- 	void (*hangup)(struct tty_struct *tty);
- 	int (*break_ctl)(struct tty_struct *tty, int state);
- 	void (*flush_buffer)(struct tty_struct *tty);
-+	int (*ldisc_ok)(struct tty_struct *tty, int ldisc);
- 	void (*set_ldisc)(struct tty_struct *tty);
- 	void (*wait_until_sent)(struct tty_struct *tty, int timeout);
- 	void (*send_xchar)(struct tty_struct *tty, u8 ch);
+ 	if (locked)
 -- 
 2.43.0
 
