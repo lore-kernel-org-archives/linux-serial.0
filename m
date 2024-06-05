@@ -1,161 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD56219A2B9;
-	Wed,  5 Jun 2024 12:22:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F00AF14D435;
+	Wed,  5 Jun 2024 13:02:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717590149; cv=none; b=qPBVfR8NyBVUPzfBZlqxTw4DxVO5lM0ndveZdzCCidYo7XpIXcQWJzZO45WtxOA0TYV/PnlheUU50q4Q5I+X8MKCJOI+vTc5op2vBNP6JxzMF0HwADDD1spzFTFwu/u/0VXQ3ybY6kIlMX0bQIZ/FFGJPH0bovHm61iLE+1kkmk=
+	t=1717592532; cv=none; b=PZNybo+iqQzMSbEK9Hrf+myPa4sNTMI5Z3UMoyXCbm32rX5jTWJa1/mmhCZBD0GBfR5C4jViaNsLh7AT5kG79Xv7hwro/os79+RDPyl4uUOUDGhPmiUc2aN6VWHJ3apiAi2x84P0EZQzrXHbxMiMVZzNEdRje/M6umySfrD0Gnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717590149; c=relaxed/simple;
-	bh=8TYpI0Sc6XL37qpMHuVUCVeU0MMlAF5i9HTwI7oGbHk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aHd5+3yCjAO4P2dwtPeVudVyiiZPRPEyT0jonu7t/O5skvEZZ6P9CWPfi4bqsdH9d0R76PrGKR3OfkMLlAX6A9eftlroZlbM79IAOEZTVrMeNUhnj7O1YBkMpnAKkiLtuKIiRp0pEDrPYjB9TWwX96Gom8UfjqxtVkmZ5IfRcZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=DYjqA5Th; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1717592532; c=relaxed/simple;
+	bh=Hi8bBS84ks95pjw7iOOuGpCf6sztKJkWcQyHl46a098=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rWpJZfmaXue0Mjxo6O3zvAkD10E50DZyrcZOQWDTDS+9gWmdbj+kUJK+b2jOZAxXY2VAvMe7IYQo20F3z2gLvpc8+72ZH4nUOtOkjUqv+WnTM4tSTyC2bZHl2ppSvP7zOCpzARmd1a0duDb1r4DfdfryuhqdDFDZjy57VIVvbnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=sPCILkok; arc=none smtp.client-ip=185.125.188.120
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="DYjqA5Th"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C532C32781;
-	Wed,  5 Jun 2024 12:22:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1717590149;
-	bh=8TYpI0Sc6XL37qpMHuVUCVeU0MMlAF5i9HTwI7oGbHk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DYjqA5Th+RA+f+HXfmD4LmI/DgBE+GFUESMjA8+cmKlO6g9MlxrGiewSKMacJFO4c
-	 kqFM9TCmCzLiZENjVewPgCoVREnBIqfyMFccmFe5ALuluOUoq4Tx4ueydy2FI8IUy5
-	 /bM2VIn5rcNVKI3pl2REybsJHlk6isrHslOGMUgY=
-Date: Wed, 5 Jun 2024 14:22:28 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Jonathan Lemon <jonathan.lemon@gmail.com>,
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
-Message-ID: <2024060551-grazing-handling-e9ed@gregkh>
-References: <2024051046-decimeter-devotee-076a@gregkh>
- <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
- <2024060428-childcare-clunky-067c@gregkh>
- <d59e00e1-d390-4140-b34f-58eaf13baee7@linux.dev>
- <2024060505-expose-crouch-00b1@gregkh>
- <cbcf7cbb-809f-47f8-bd98-e140875bc2d1@linux.dev>
- <2024060514-recess-unblessed-431c@gregkh>
- <15f59e29-ac03-4018-bbc3-c4ac5a2964db@linux.dev>
- <2024060503-subsonic-pupil-bbee@gregkh>
- <f226b16c-e603-409b-a9a7-f1a201da10a0@linux.dev>
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="sPCILkok"
+Received: from [192.168.0.106] (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 6DD5040FB7;
+	Wed,  5 Jun 2024 13:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1717592529;
+	bh=Hi8bBS84ks95pjw7iOOuGpCf6sztKJkWcQyHl46a098=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type;
+	b=sPCILkokWdWrYGNBa7RX1yr7hdffKnPcKcWZCrbZfmGV7no+adN/+IjgQYFCLV9sU
+	 kv0GrCYEKDP6hoiA8fzARUl4isX8fJortyf7p8e0KGzE2RmYqqyzp9iqQEyTP805fW
+	 8iWO74dqgcI2puqp8iQ49VUtfPDP94QYCYtdKiby3K6MheNPs0RT0u1BjaLuQfvhwI
+	 RtZCGQW3YSSWarDywX+uYJs51SB3zBu3gxEJkP4Kq8Hhei5oAU7ocSwaSCixgWyP83
+	 SldVgyw9VEc1zV3wfzJaSScRjpzbjZRwt3+C22HXmED4dWOEKUgHzMMsO5U6jdXhcv
+	 5klC84omAAR9w==
+Message-ID: <4189bea0-8f7c-446c-bddd-7b4a213ba59b@canonical.com>
+Date: Wed, 5 Jun 2024 21:01:59 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f226b16c-e603-409b-a9a7-f1a201da10a0@linux.dev>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
+ reset-gpios is defined in dt
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Maarten Brock <Maarten.Brock@sttls.nl>, Hugo Villeneuve <hugo@hugovil.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ "jirislaby@kernel.org" <jirislaby@kernel.org>,
+ "hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
+ "robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org"
+ <krzk+dt@kernel.org>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
+ "andy@kernel.org" <andy@kernel.org>,
+ "lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
+References: <20240604132726.1272475-1-hui.wang@canonical.com>
+ <20240604132726.1272475-2-hui.wang@canonical.com>
+ <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
+ <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+ <f56a2c59-9ae4-4d5c-8321-fff9639c5405@canonical.com>
+ <AS8PR05MB98104348D77097F60396B82883F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+ <e3f81288-3000-4965-80a5-b68ffccb47fe@kernel.org>
+Content-Language: en-US
+From: Hui Wang <hui.wang@canonical.com>
+In-Reply-To: <e3f81288-3000-4965-80a5-b68ffccb47fe@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 05, 2024 at 12:25:26PM +0100, Vadim Fedorenko wrote:
-> On 05/06/2024 12:07, Greg Kroah-Hartman wrote:
-> > On Wed, Jun 05, 2024 at 11:59:30AM +0100, Vadim Fedorenko wrote:
-> > > On 05/06/2024 11:41, Greg Kroah-Hartman wrote:
-> > > > On Wed, Jun 05, 2024 at 11:14:28AM +0100, Vadim Fedorenko wrote:
-> > > > > On 05/06/2024 11:05, Greg Kroah-Hartman wrote:
-> > > > > > On Wed, Jun 05, 2024 at 12:53:13AM +0100, Vadim Fedorenko wrote:
-> > > > > > > On 04/06/2024 12:50, Greg Kroah-Hartman wrote:
-> > > > > > > > On Wed, May 22, 2024 at 01:39:21PM +0100, Vadim Fedorenko wrote:
-> > > > > > > > > On 10/05/2024 12:13, Greg Kroah-Hartman wrote:
-> > > > > > > > > > On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
-> > > > > > > > > > > The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
-> > > > > > > > > > > of serial core port device") changed the hierarchy of serial port devices
-> > > > > > > > > > > and device_find_child_by_name cannot find ttyS* devices because they are
-> > > > > > > > > > > no longer directly attached. Add some logic to restore symlinks creation
-> > > > > > > > > > > to the driver for OCP TimeCard.
-> > > > > > > > > > > 
-> > > > > > > > > > > Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
-> > > > > > > > > > > Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
-> > > > > > > > > > > ---
-> > > > > > > > > > > v2:
-> > > > > > > > > > >       add serial/8250 maintainers
-> > > > > > > > > > > ---
-> > > > > > > > > > >       drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
-> > > > > > > > > > >       1 file changed, 21 insertions(+), 9 deletions(-)
-> > > > > > > > > > 
-> > > > > > > > > > Hi,
-> > > > > > > > > > 
-> > > > > > > > > > This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-> > > > > > > > > > a patch that has triggered this response.  He used to manually respond
-> > > > > > > > > > to these common problems, but in order to save his sanity (he kept
-> > > > > > > > > > writing the same thing over and over, yet to different people), I was
-> > > > > > > > > > created.  Hopefully you will not take offence and will fix the problem
-> > > > > > > > > > in your patch and resubmit it so that it can be accepted into the Linux
-> > > > > > > > > > kernel tree.
-> > > > > > > > > > 
-> > > > > > > > > > You are receiving this message because of the following common error(s)
-> > > > > > > > > > as indicated below:
-> > > > > > > > > > 
-> > > > > > > > > > - You have marked a patch with a "Fixes:" tag for a commit that is in an
-> > > > > > > > > >        older released kernel, yet you do not have a cc: stable line in the
-> > > > > > > > > >        signed-off-by area at all, which means that the patch will not be
-> > > > > > > > > >        applied to any older kernel releases.  To properly fix this, please
-> > > > > > > > > >        follow the documented rules in the
-> > > > > > > > > >        Documentation/process/stable-kernel-rules.rst file for how to resolve
-> > > > > > > > > >        this.
-> > > > > > > > > > 
-> > > > > > > > > > If you wish to discuss this problem further, or you have questions about
-> > > > > > > > > > how to resolve this issue, please feel free to respond to this email and
-> > > > > > > > > > Greg will reply once he has dug out from the pending patches received
-> > > > > > > > > > from other developers.
-> > > > > > > > > 
-> > > > > > > > > Hi Greg!
-> > > > > > > > > 
-> > > > > > > > > Just gentle ping, I'm still looking for better solution for serial
-> > > > > > > > > device lookup in TimeCard driver.
-> > > > > > > > 
-> > > > > > > > See my comment on the other patch in this thread.
-> > > > > > > > 
-> > > > > > > > In short, you shouldn't need to do any of this.
-> > > > > > > 
-> > > > > > > Got it, thanks. I'll try to find another way.
-> > > > > > 
-> > > > > > Wait, no, please just remove all that, it should not be needed at all.
-> > > > > 
-> > > > > Do you mean remove symlinks from the driver? We have open-source
-> > > > > user-space software which relies on them to discover proper devices. If
-> > > > > I remove symlinks it will break the software.
-> > > > 
-> > > > the symlinks should be done in userspace in the /dev/serial/ directory,
-> > > > why would userspace need to know the symlink of the serial device in
-> > > > a sysfs tree?  What exactly are you trying to represent here that
-> > > > requires this to be a custom thing?
-> > > 
-> > > Well, the hardware exposes up to 4 different serial ports for different
-> > > functions. And only driver knows which feature is attached to which port
-> > > because of differences in the HW. There is no way for user-space to get
-> > > this information on it's own.
-> > 
-> > The serial ports have a specific parent, why aren't those parents
-> > described differently in userspace?  Why not tell userspace those
-> > functions?
-> 
-> There is only 1 parent for the serial ports - the pci device driven by
-> ptp_ocp. The physical devices behind these serial ports are not able to
-> do proper pci function.
 
-Then make those "physical devices" on the aux bus, splitting the PCI
-device "apart".  That's what the aux bus is for.
+On 6/5/24 19:24, Krzysztof Kozlowski wrote:
+> On 05/06/2024 13:19, Maarten Brock wrote:
+>>>> To make this a proper reset pulse for the device you must first assert the reset,
+>>>> then wait >3us, and finally deassert the reset.
+>>>>
+>>>> Maarten Brock
+>>> Hi Maarten,
+>>>
+>>> My understanding is when calling devm_gpiod_get_optional(dev, "reset",
+>>> GPIOD_OUT_LOW) and returning a valid (gpio_desc *), the flag
+>>> GPIOD_OUT_LOW guarantees the GPIO is set to output and low (assert the
+>>> reset pin).
+>> Ah, right. Sorry, I missed that.
+>> So GPIOD_OUT_LOW disregards the inversion from GPIO_ACTIVE_LOW.
+> It doesn't.
+>
+>> And gpiod_set_value_cansleep(reset_gpiod, 0) uses the inversion to make the pin high.
+>> Looks fine to me now.
+> They both respect pin polarity.
 
-> > > And one more thing, some HW versions
-> > > expose special attributes in sysfs consumed by the same software.
-> > > And there are setups with several boards in the system. Currently we
-> > > separate them by providing different sysfs entries only, the software
-> > > then figures all details automatically.
-> > 
-> > Again, export that info to userspace and have it choose, don't create
-> > random symlinks in sysfs for your specific policy, that is not what
-> > sysfs is for at all.
-> 
-> Yes, that's what I'm thinking about now - export serial ports as another
-> attributes of the device.
+Will correct it.
 
-Or use the aux bus :)
+Thanks.
 
-thanks,
-
-greg k-h
+>
+> Best regards,
+> Krzysztof
+>
