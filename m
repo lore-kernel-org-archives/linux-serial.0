@@ -1,130 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-186.mta0.migadu.com (out-186.mta0.migadu.com [91.218.175.186])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7344F8F6A;
-	Wed,  5 Jun 2024 11:24:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3660B192B97
+	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 11:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.186
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717586693; cv=none; b=a7Dz2PjDIIi588e33GFYogMY9quRyNB8vtmAKTsypGma+gDAQJOGxUZdqePAA9H5aF8E0PvBrI9LI6MRHyyVjwZhkrWHQsJ2Hbfdi090/mTjS+6tCvIFF/tMLWBerCJ4+UhIYIqVVG7ApBZvJ8fJGIt6736hNYpeYsKhuXbar9w=
+	t=1717586733; cv=none; b=fSZOvDL8fKD3oNRSpbGCs0tke+kvO9ie+KYMZaeNsmxbsvD4S6fK0lHVWMSQHU0yKsRcWmMv7GyHh8Lodws0yfhGtRZgwiIW5m6UkLJwC1oo0EqC6r1ATFaSURzSmVvbm/dVphGneMgfv1eFcVIAfRsWKcEdCGAJbmEadOrd4Nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717586693; c=relaxed/simple;
-	bh=t869eoOHjsg3BKrhxGVMPSQUCOTmolC92nbJteoKkSE=;
+	s=arc-20240116; t=1717586733; c=relaxed/simple;
+	bh=IMMoDCC4VcpK+LW+/dqs+0FvV9znFYxoS/Z3vJCkSiI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SmKl5XlCNXgr0ix8tZvIvEj853pFWrP0VB8JhKsTqtVkZe2LOKdF63cVG/L85+XsNjussNLFc4ueGVm4FVlTq9PJDeoQSaZ8uROS8rmKclfgtPC5uKWLa74NpZK3u1K68CC2JANt5kxr5xKmbpRKqHm/773JU+105+uyciHEwEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l7X1WKkO; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=qQXE+OWe+7zpAV4f90uSquzAKQcX7ex4ux5d8BpY7gjxChIVH2JrAW85TswKukAcpYQDJKfmNbulJDJjousL0ql1ftn5/uC9wXTjwe+f8O4NonlHUimJNy1DXQLiA5F7YrcXFES+R4HJWWSms/GNEJH3BTsfITUajUKo4JgUGps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=xkHLytXC; arc=none smtp.client-ip=91.218.175.186
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l7X1WKkO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DBBEC3277B;
-	Wed,  5 Jun 2024 11:24:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717586692;
-	bh=t869eoOHjsg3BKrhxGVMPSQUCOTmolC92nbJteoKkSE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=l7X1WKkO1+38/L1/MZrvPpSMO7FnpSGVYJA+N/TZSHK/+aHwIiins93i759wisoTF
-	 FUAFCfl4P90aTlr0PIXtrt1CcKxE54T9gjXNGpWMPAGkmhSGfnVYpL6KanLN69YlIn
-	 G8rpqn+UkwWWEtiUNB1CcKr34xC2Nn9g7YaRr4FZPN+4bmE9X8sjg169QoPC+ooBhV
-	 Lx3U1JHJ/kS9xsL5jj91Ats+gzHNEBHooD+4xHVyyRynAInkhsDnQ1MyANzt9YuCfH
-	 r8oDph8wWGrl+MH5+ClvBKobHpyBxZu5ynjv01/JjxHQYcZbaWvnhndi6ekIEXWGDU
-	 zSskR3EWmvxaQ==
-Message-ID: <e3f81288-3000-4965-80a5-b68ffccb47fe@kernel.org>
-Date: Wed, 5 Jun 2024 13:24:48 +0200
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="xkHLytXC"
+X-Envelope-To: gregkh@linuxfoundation.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1717586729;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LRePLicU5Pb41IxxnoAyisv7Ahd1nPgIkHlSXOlYpzQ=;
+	b=xkHLytXCsBiIJw+yrt58Ygk2ZEzvUJqeW6JJ8xMjrqnbId1CR3xtow1aGDzK5S0HZnDSvm
+	20ReNs3IVSVPrqHy6rtfQyDD9n0FnvY4HwHlV1MVnoC0vnoNclNiRqX+I2cZ7nn0nsk9hn
+	OyDms8bUPEcs3D6luDH9M/mHfMxVYJw=
+X-Envelope-To: kuba@kernel.org
+X-Envelope-To: jirislaby@kernel.org
+X-Envelope-To: jonathan.lemon@gmail.com
+X-Envelope-To: linux-serial@vger.kernel.org
+X-Envelope-To: netdev@vger.kernel.org
+Message-ID: <f226b16c-e603-409b-a9a7-f1a201da10a0@linux.dev>
+Date: Wed, 5 Jun 2024 12:25:26 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
- reset-gpios is defined in dt
-To: Maarten Brock <Maarten.Brock@sttls.nl>, Hui Wang
- <hui.wang@canonical.com>, Hugo Villeneuve <hugo@hugovil.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "jirislaby@kernel.org" <jirislaby@kernel.org>,
- "hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
- "robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org"
- <krzk+dt@kernel.org>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
- "andy@kernel.org" <andy@kernel.org>,
- "lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
-References: <20240604132726.1272475-1-hui.wang@canonical.com>
- <20240604132726.1272475-2-hui.wang@canonical.com>
- <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
- <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
- <f56a2c59-9ae4-4d5c-8321-fff9639c5405@canonical.com>
- <AS8PR05MB98104348D77097F60396B82883F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, linux-serial@vger.kernel.org,
+ netdev@vger.kernel.org
+References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+ <2024051046-decimeter-devotee-076a@gregkh>
+ <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
+ <2024060428-childcare-clunky-067c@gregkh>
+ <d59e00e1-d390-4140-b34f-58eaf13baee7@linux.dev>
+ <2024060505-expose-crouch-00b1@gregkh>
+ <cbcf7cbb-809f-47f8-bd98-e140875bc2d1@linux.dev>
+ <2024060514-recess-unblessed-431c@gregkh>
+ <15f59e29-ac03-4018-bbc3-c4ac5a2964db@linux.dev>
+ <2024060503-subsonic-pupil-bbee@gregkh>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <AS8PR05MB98104348D77097F60396B82883F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <2024060503-subsonic-pupil-bbee@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
-On 05/06/2024 13:19, Maarten Brock wrote:
->>> To make this a proper reset pulse for the device you must first assert the reset,
->>> then wait >3us, and finally deassert the reset.
+On 05/06/2024 12:07, Greg Kroah-Hartman wrote:
+> On Wed, Jun 05, 2024 at 11:59:30AM +0100, Vadim Fedorenko wrote:
+>> On 05/06/2024 11:41, Greg Kroah-Hartman wrote:
+>>> On Wed, Jun 05, 2024 at 11:14:28AM +0100, Vadim Fedorenko wrote:
+>>>> On 05/06/2024 11:05, Greg Kroah-Hartman wrote:
+>>>>> On Wed, Jun 05, 2024 at 12:53:13AM +0100, Vadim Fedorenko wrote:
+>>>>>> On 04/06/2024 12:50, Greg Kroah-Hartman wrote:
+>>>>>>> On Wed, May 22, 2024 at 01:39:21PM +0100, Vadim Fedorenko wrote:
+>>>>>>>> On 10/05/2024 12:13, Greg Kroah-Hartman wrote:
+>>>>>>>>> On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
+>>>>>>>>>> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
+>>>>>>>>>> of serial core port device") changed the hierarchy of serial port devices
+>>>>>>>>>> and device_find_child_by_name cannot find ttyS* devices because they are
+>>>>>>>>>> no longer directly attached. Add some logic to restore symlinks creation
+>>>>>>>>>> to the driver for OCP TimeCard.
+>>>>>>>>>>
+>>>>>>>>>> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
+>>>>>>>>>> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>>>>>>>>> ---
+>>>>>>>>>> v2:
+>>>>>>>>>>       add serial/8250 maintainers
+>>>>>>>>>> ---
+>>>>>>>>>>       drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
+>>>>>>>>>>       1 file changed, 21 insertions(+), 9 deletions(-)
+>>>>>>>>>
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+>>>>>>>>> a patch that has triggered this response.  He used to manually respond
+>>>>>>>>> to these common problems, but in order to save his sanity (he kept
+>>>>>>>>> writing the same thing over and over, yet to different people), I was
+>>>>>>>>> created.  Hopefully you will not take offence and will fix the problem
+>>>>>>>>> in your patch and resubmit it so that it can be accepted into the Linux
+>>>>>>>>> kernel tree.
+>>>>>>>>>
+>>>>>>>>> You are receiving this message because of the following common error(s)
+>>>>>>>>> as indicated below:
+>>>>>>>>>
+>>>>>>>>> - You have marked a patch with a "Fixes:" tag for a commit that is in an
+>>>>>>>>>        older released kernel, yet you do not have a cc: stable line in the
+>>>>>>>>>        signed-off-by area at all, which means that the patch will not be
+>>>>>>>>>        applied to any older kernel releases.  To properly fix this, please
+>>>>>>>>>        follow the documented rules in the
+>>>>>>>>>        Documentation/process/stable-kernel-rules.rst file for how to resolve
+>>>>>>>>>        this.
+>>>>>>>>>
+>>>>>>>>> If you wish to discuss this problem further, or you have questions about
+>>>>>>>>> how to resolve this issue, please feel free to respond to this email and
+>>>>>>>>> Greg will reply once he has dug out from the pending patches received
+>>>>>>>>> from other developers.
+>>>>>>>>
+>>>>>>>> Hi Greg!
+>>>>>>>>
+>>>>>>>> Just gentle ping, I'm still looking for better solution for serial
+>>>>>>>> device lookup in TimeCard driver.
+>>>>>>>
+>>>>>>> See my comment on the other patch in this thread.
+>>>>>>>
+>>>>>>> In short, you shouldn't need to do any of this.
+>>>>>>
+>>>>>> Got it, thanks. I'll try to find another way.
+>>>>>
+>>>>> Wait, no, please just remove all that, it should not be needed at all.
+>>>>
+>>>> Do you mean remove symlinks from the driver? We have open-source
+>>>> user-space software which relies on them to discover proper devices. If
+>>>> I remove symlinks it will break the software.
 >>>
->>> Maarten Brock
->> Hi Maarten,
+>>> the symlinks should be done in userspace in the /dev/serial/ directory,
+>>> why would userspace need to know the symlink of the serial device in
+>>> a sysfs tree?  What exactly are you trying to represent here that
+>>> requires this to be a custom thing?
 >>
->> My understanding is when calling devm_gpiod_get_optional(dev, "reset",
->> GPIOD_OUT_LOW) and returning a valid (gpio_desc *), the flag
->> GPIOD_OUT_LOW guarantees the GPIO is set to output and low (assert the
->> reset pin).
+>> Well, the hardware exposes up to 4 different serial ports for different
+>> functions. And only driver knows which feature is attached to which port
+>> because of differences in the HW. There is no way for user-space to get
+>> this information on it's own.
 > 
-> Ah, right. Sorry, I missed that.
-> So GPIOD_OUT_LOW disregards the inversion from GPIO_ACTIVE_LOW.
+> The serial ports have a specific parent, why aren't those parents
+> described differently in userspace?  Why not tell userspace those
+> functions?
 
-It doesn't.
+There is only 1 parent for the serial ports - the pci device driven by
+ptp_ocp. The physical devices behind these serial ports are not able to
+do proper pci function.
 
-> And gpiod_set_value_cansleep(reset_gpiod, 0) uses the inversion to make the pin high.
-> Looks fine to me now.
+>> And one more thing, some HW versions
+>> expose special attributes in sysfs consumed by the same software.
+>> And there are setups with several boards in the system. Currently we
+>> separate them by providing different sysfs entries only, the software
+>> then figures all details automatically.
+> 
+> Again, export that info to userspace and have it choose, don't create
+> random symlinks in sysfs for your specific policy, that is not what
+> sysfs is for at all.
 
-They both respect pin polarity.
+Yes, that's what I'm thinking about now - export serial ports as another 
+attributes of the device.
 
-Best regards,
-Krzysztof
-
+Thanks,
+Vadim
