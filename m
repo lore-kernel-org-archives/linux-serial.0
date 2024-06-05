@@ -1,81 +1,114 @@
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F30190463;
-	Wed,  5 Jun 2024 06:43:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C11CD138C;
+	Wed,  5 Jun 2024 07:32:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717569785; cv=none; b=IaKpqdfnICYsC4nMz+dyw8qfawgtvfIWIg3dnIEKeI5dnpoj9ffvY90G3DuD4FBlFE6x+8lJfhjUGbu00flOmBVkJtO8aOZFqxPciPzXLFsdn7LXwUn8yLQ5/iiGQ/bo13fbFDjBLlmq/vDLt76zygZ5zRq1zOihb5/WdG5Zhco=
+	t=1717572730; cv=none; b=CodvWOc7NyEf0HxsLGvOrtKvnzq/nBijhq/J1N7alkqMsuDWLMza9QhuUsHhoTdBiTQja5FMJfzoMApwgW2tTf69MEuWJpQLjrT1rwH1x0rcnzk3zBd3NM3pExDZqup1DngD6OAeEncudvS/q2h+7HufgpRsgbfoedjOjcHOr5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717569785; c=relaxed/simple;
-	bh=yJKv7AecPwKyIXSNdkr0KT5zq5C6ItLlyPG9V8UGefs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SvRrR2iixtbbcr76fS5t7BclhvbVCo+aaX6TGCCsj2SqYit2wxvz+m8KZLg2rV+vYwY01ur/+TeN136D4zElrvjFILRTN25mcR4HoJexcE56NFjFz8V2jFU4CWTSbLLrh1HNMBm8AwSLPuxXWcMRbJvOuNzFnMqIAq/Cspv+BXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=c/SgttII; arc=none smtp.client-ip=185.125.188.120
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="c/SgttII"
-Received: from [192.168.0.106] (unknown [123.112.65.116])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 420D940F6E;
-	Wed,  5 Jun 2024 06:42:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1717569780;
-	bh=da2PMN2NaLuPFjAiwZ7RWbO+G5Iadto7S5KAihRqBag=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type;
-	b=c/SgttIIkqc5btVIzqXwT9XPZH7rwAq0pmNkPxBa7QgfT+Dv+Bieyg6v/zRu3jCRa
-	 17Azza3HRh/RG/2tPqi9ookC8F7HJwTXraf6ayfQ3C9lX75kAlaFLXiTUV4N8PCVeW
-	 YsQvRN0h4XYjORHAqVRUQetygvVi0sqqZtd/plcRYDFtyg5uaz5HkKDTTxL+kJKOvF
-	 A54BS5nSjoDjiCUiozQJYqTPkPuH2x1/BZg1ZgcM8xdQugChnl8IZyT4DzIR2SsygI
-	 dqy9G9MSqPs/iwIrp8unUbViG+/MryKJGZwUtkwwz1KDXyYEq37ZmBsCDHaOR4ZQTP
-	 MbPAsO2xAJHCA==
-Message-ID: <eab136d3-ca2c-416d-b4e3-43ff922c105d@canonical.com>
-Date: Wed, 5 Jun 2024 14:42:49 +0800
+	s=arc-20240116; t=1717572730; c=relaxed/simple;
+	bh=L7felvgTDTE09ggPSnDZ0q3MJbdTQWtdAg9r/F9GJCY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=l1fh0aFLFM/CRRdi89XXYjFT9OfLZP+n5jFU2rH4o4MmWs7NBhTSAD11KtgFmm/7Z+gji7a8xjtPEutlWRUD0ipgsoaaRNdYThnU/ASKj+EyK0xSJ45Mhxy3j8uAR9hFReHwpQhth+maliCoCMpot9lQBjYUFJEyyQdD3ETYUHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-62a08091c2bso70318417b3.0;
+        Wed, 05 Jun 2024 00:32:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717572727; x=1718177527;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4PbSG6kROXGWqIVI9Do+T1m9UykpgRSg/ltc8bSc+ps=;
+        b=mXQkRZoC/lEBUkiBOB2pdhXFLCUcTuxXNw2n7AE+pWIdJ2GIFKjy3FltZxrrGGJq43
+         WpjsQFRYcmOEAHD/TsoFlnlWogk7xpN9ia2QH8wB+rmMfjDXzT+KNvCu+gis7K0dsQJn
+         UoFopAptA3vi2DJTuJsmO3uvylGUPMWLXzv/i8vm8a762FCH3K0QC1ZUYj/cTiGIf+8o
+         lxih1aasG8TIxVANavs6UfhfrMeSUKzDa/WUomNOpQ7H4HOVpTHv4BKk12Du1BmBoK9n
+         QqQHOEKpsmoEWvtVd9nHOA+G0dzvgOvB1dliF7T8fyh809GrkOFCLkRBUAL1k4m8wd1E
+         97yg==
+X-Forwarded-Encrypted: i=1; AJvYcCXPGACfa4QW+DohVR8bF52BfMTIEaJBTcupTFPT9HMA6yWV4TFDMtWUfr6Gw84SnwRQAbDDvo89qzg55uZ2Jol2yMHfUCAaCDMPNnxv8ac8Rs/8jxG3hEog2HZqDeo49f9K57lNroXkbKTWYPBN70k9hgeTtGKA/xcDx0oy9MfXq6kM3JzLqu1wdV6X+dl6vMiJoR2HlXYXjGOV/iAHa4D6mXGpaPOSiggl
+X-Gm-Message-State: AOJu0YzETCh65CipwMqzHR4oSQ8+W0J4xBBnCp2c9i03dYAqQWXNP63K
+	fJl8q+6KrrPLsZLSr0ETkIYBvcswDVz/G3KZYXud283ko0Al6O/FCco+Jvr/
+X-Google-Smtp-Source: AGHT+IHhb5USEURkf/NEn1JZyFqHRnUBmdMa4dZ51guZsp5nhRbvocVkqJOKh282PLyDPenEJSdgMw==
+X-Received: by 2002:a81:f003:0:b0:627:dfbd:89e with SMTP id 00721157ae682-62cbb4a936fmr16219117b3.11.1717572727436;
+        Wed, 05 Jun 2024 00:32:07 -0700 (PDT)
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-62c765e63fasm21483307b3.32.2024.06.05.00.32.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jun 2024 00:32:07 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id 3f1490d57ef6-dfa4ad7f6dfso6048184276.1;
+        Wed, 05 Jun 2024 00:32:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCW3noEfFBn+eBjfTYNQSXM0jCNDaQ9duPvz+GSwdIWFdQPOrVjvBKmr1Y9luYhcxPgAtJj7BkUy2630LvaXSgEIil8DS8mZ7Oj/JYiuU731WSJ3Izy5RQhoRFeoAktdAXu5Gba6+xByQIYIah63FakyXh1ZyZT8jxspx+uF9OUGJe13vVTxUz2OvHWxYwtv+G3/CEWJx0v27oOTROM2uzKzPZNy57ZbZk8R
+X-Received: by 2002:a25:b2a5:0:b0:dfa:57e4:2df8 with SMTP id
+ 3f1490d57ef6-dfacac33113mr1782340276.23.1717572727091; Wed, 05 Jun 2024
+ 00:32:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
- reset-gpios is defined in dt
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
- lech.perczak@camlingroup.com
-References: <20240604132726.1272475-1-hui.wang@canonical.com>
- <20240604132726.1272475-2-hui.wang@canonical.com>
- <20240604103427.8986166ad4cf34e1e9357c5c@hugovil.com>
-Content-Language: en-US
-From: Hui Wang <hui.wang@canonical.com>
-In-Reply-To: <20240604103427.8986166ad4cf34e1e9357c5c@hugovil.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240604170513.522631-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20240604170513.522631-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20240604170513.522631-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 5 Jun 2024 09:31:55 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXsGLrgAfe=5VsL1F_sTjG1jxzU36s5iHaSeW3Nb3qwgA@mail.gmail.com>
+Message-ID: <CAMuHMdXsGLrgAfe=5VsL1F_sTjG1jxzU36s5iHaSeW3Nb3qwgA@mail.gmail.com>
+Subject: Re: [PATCH v5 5/5] serial: sh-sci: Add support for RZ/V2H(P) SoC
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+Hu Prabhakar,
 
-On 6/4/24 22:34, Hugo Villeneuve wrote:
-> On Tue,  4 Jun 2024 21:27:26 +0800
-> Hui Wang <hui.wang@canonical.com> wrote:
+On Tue, Jun 4, 2024 at 7:05=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.co=
+m> wrote:
+> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 >
-> Hi Hui,
+> Add serial support for RZ/V2H(P) SoC with earlycon.
 >
->> Certain designs connect a gpio to the reset pin, and the reset pin
-> "Some boards..."
+> The SCIF interface in the Renesas RZ/V2H(P) is similar to that available
+> in the RZ/G2L (R9A07G044) SoC, with the following differences:
 >
->> needs to be setup correctly before accessing the chip.
->>
->> Here adding a function to handle the chip reset. If the reset-gpios is
-> "Add a function..."
+> - RZ/V2H(P) SoC has three additional interrupts: one for Tx end/Rx ready
+>   and two for Rx and Tx buffer full, all of which are edge-triggered.
+> - RZ/V2H(P) supports asynchronous mode, whereas RZ/G2L supports both
+>   synchronous and asynchronous modes.
+> - There are differences in the configuration of certain registers such
+>   as SCSMR, SCFCR, and SCSPTR between the two SoCs.
 >
+> To handle these differences on RZ/V2H(P) SoC SCIx_RZV2H_SCIF_REGTYPE
+> is added.
 >
-Got them, will fix them in the v3.
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> Hi Geert, Ive restored your RB tag after rebase (as the changes were triv=
+al)
+> hope that's OK.
 
-Thanks.
+Thanks, LGTM!
 
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
