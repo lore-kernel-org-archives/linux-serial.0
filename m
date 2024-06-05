@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FAE1B3732;
-	Wed,  5 Jun 2024 11:54:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED7861B4C26;
+	Wed,  5 Jun 2024 11:54:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717588474; cv=none; b=qdBqIZN9guWmJ4r93J/w9yJEtcPStMFp8QlLGB9JTbV6T3ZMsKX56KLX2Oofl7KI6Xoaq9KRamPhEERPPftLLfonjTpI3WOavVM6q7qDfJvuH+TU5JrKrYA3kZ/XbAPsqzgt6VpGrjE4NsPLOiLzkjQUAlRZ3PxlhOQ0FllPnt0=
+	t=1717588497; cv=none; b=NnQCDJvts/rJ2XrO3vnYP35x1J0rtf71M7gBQzZAjZ1GVQQ0kYGsxGGrU0XFcRHpvnzirms+VnCSqr+imNeVsgTX4nGPEWzMMPCuPrlWAjHO+DIxKHtPDsynGkNAHBrtMD/UfVl/3hoKDlDYJdDvjhlLZmUFyt36sfiCjmUYhaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717588474; c=relaxed/simple;
-	bh=hPekeq1yzvbyCB5hZKxJKY6/XubkRzeKQ1eUS/E0MTE=;
+	s=arc-20240116; t=1717588497; c=relaxed/simple;
+	bh=sc1O7xPeix1Ghi4AI3U+TX/IROk0X2kwxoGlHy37ysI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=SK/7KpUgE33n+Blw5c2GFhPhG9mAgcHQZK6N1K5oPvKabvLh6v06ERKV2n0Lm2AdnhlkiB9mXewx0rKIScWUpwALZtBVr1bspN5jWCeiGnBv9fR6pDwVP4ozro+UeYghKoGXbcmvxFngSKsgZjIFqtJ+BiUjSmTquQiltdXEs3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SwmabxFP; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=cjK925JY05aHEpAqhqkzY3Mc8W448mBIJs+k9LePoucL8f9B3KGqleFNvHOORZ0jxxE4kYpK3n40xjZf9n+cHpr6gl1qNSnfMpcLjs2VSwqsCiXTYAQuLRjHUYbZBRGNa01FeQVpxFe3puV+CcLdEs9ozMiZ9dnMjz9jpCIUDAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dxL2Y70d; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SwmabxFP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CDD7C3277B;
-	Wed,  5 Jun 2024 11:54:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxL2Y70d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 564F4C32781;
+	Wed,  5 Jun 2024 11:54:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1717588474;
-	bh=hPekeq1yzvbyCB5hZKxJKY6/XubkRzeKQ1eUS/E0MTE=;
+	s=k20201202; t=1717588496;
+	bh=sc1O7xPeix1Ghi4AI3U+TX/IROk0X2kwxoGlHy37ysI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=SwmabxFP2sbjy5BE+a0gcH/2+y6IZvRhsgMP8oFMfZTpFFwdK0xOyMnvJDx0/cpez
-	 oHaUcvjfwRDy9siZ9soh2znVpCzmUdEkEq3wY71PaqYAKW6sHTCTlspzOuXAs/84RU
-	 ZUxkekuJ3RqFpkPWnnq1Q+9XZFAj48a1nnOqr8l+TJnfmjaa2lEof7ZI9jVRwe377G
-	 junuP436Q1AC/sb15ZbFoVpmRkJ7hbLrBabyOcF8NvYAbxodtKsCj/5KIDno2n/i3T
-	 KadYlwjUG/hVbeRKD92D0oILU93YkpCt0q7djjDZd/W7wYepEMp1uQBNZSN47H3Rfx
-	 /kkZ7PITjCvig==
+	b=dxL2Y70dqQffBRfbOTC4O2w8HnSTTgVUub31T8j6LOTy/6z+dvcJvicRojkARmy/A
+	 0P7O0RYmgeZefR9E+hDiT2TgAKbBg3Q70DoRnYNBNp1OEqNP5j2P2AQUPlWGKBEnHy
+	 /OrLCD5U0FksZVO9FveTebdHHL9jAEAFtlkD37n1qQ1NiCxNauiBM2Lw37I/G7Jkmq
+	 bfZRjqsIH5Bq+dLsDoQOM0HBYcEuEVYiJ2RPV6dIw49JOd84KTt7yhNWb0kC1EDJO+
+	 aW0W6Gf58j7VGob6KiowxltwdSnrcQz/4cOyUB6T00X6uIHDyT8kpJJ7RhDPCNScLl
+	 FxAbKaIy4PueA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -34,15 +34,15 @@ Cc: Parker Newman <pnewman@connecttech.com>,
 	Sasha Levin <sashal@kernel.org>,
 	jirislaby@kernel.org,
 	andriy.shevchenko@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com,
 	matthew.howell@sealevel.com,
+	ilpo.jarvinen@linux.intel.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 8/9] serial: exar: adding missing CTI and Exar PCI ids
-Date: Wed,  5 Jun 2024 07:54:06 -0400
-Message-ID: <20240605115415.2964165-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 6/7] serial: exar: adding missing CTI and Exar PCI ids
+Date: Wed,  5 Jun 2024 07:54:35 -0400
+Message-ID: <20240605115442.2964376-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240605115415.2964165-1-sashal@kernel.org>
-References: <20240605115415.2964165-1-sashal@kernel.org>
+In-Reply-To: <20240605115442.2964376-1-sashal@kernel.org>
+References: <20240605115442.2964376-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,7 +51,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.15.160
+X-stable-base: Linux 5.10.218
 Content-Transfer-Encoding: 8bit
 
 From: Parker Newman <pnewman@connecttech.com>
@@ -69,7 +69,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 42 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 48769e059772a..a38820a1c5cd2 100644
+index 7c28d2752a4cd..3d09f8f30e02a 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
 @@ -41,8 +41,50 @@
