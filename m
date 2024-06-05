@@ -1,147 +1,145 @@
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16CB218F2CB
-	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 09:03:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33ECD18FDB0
+	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 09:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717578214; cv=none; b=kMicCVJ72ZSS5bRnHRD7clkeXXTSK4TjflV6D70YwEv0KLCF88k/vFt47xmVrdfioSS3nRJhhMk/RjLE2T/heXFJ5ENWwAiOjpGbiVTfdTPZ/LD/PBFavjJnKMi9o905FB/h0iieKlY5EW83WqZiAlC1SvK3HEieLWd5p1IrXCM=
+	t=1717579945; cv=none; b=YqRg3BN/XUeeXi7oEGDxQk/58VSf5q5p7SCRPa0BZ25gE5p5ikzGpE7TiqsgvpaPxdprR6ONi4QeXSWJ3/9yOeSS+jn3Yvq3pOiicxwO/JJ/U8AZiLkxjTRiUe1CU4Bn+M3m8b+y2Prp5dKw3VoemV5uzYXG21njqeVrbkbI0/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717578214; c=relaxed/simple;
-	bh=1Ydk+OWiTnXAHwOuMX34qo5U40tky81PZQBs4gDvO7g=;
-	h=From:To:In-Reply-To:Subject:Date:Message-ID:MIME-Version:
-	 Content-Type:References; b=tqdgoUXEQK83cY5aW3nonSuZuVsXrFI3Gvv8Cmx7RLUhLWd5zja6N7sZYS/QE3o/Wbl1U6/a2MUk/+EkAF3zEpjzh3TZ3s+kGbSbJp2gBWyyGIKIWmae81wgeIZQ/tn7UHsrjg9SWXZVGtHMhur8IWdBSC1Ft7rCyZG3O3rowJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=OReSv/02; arc=none smtp.client-ip=203.254.224.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1717579945; c=relaxed/simple;
+	bh=A/gOzPUwckRQSfrNHNR843u/F/x3yV4eQiL9bWvwnB4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=tMPRPBb2ddVvCpOtXo8Z75YsyXzXVfC23zMEdyrt2X54qiN4O6fDIVZAUzs91BCCYlwcelEHR0itk2tBAWft7oMM7pZd2+GH0rryc8sGZuxjpa7YS/CtQL1AJ5XWaZ84LRbl2eWJKVdjuWMzuM5H1Bp9MmGdTlK+fidHZ4PBlNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PZqa1nTm; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="OReSv/02"
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20240605090327epoutp03c173c1f007baa8a161b7cab6c8a84aeb~WEEd9HKcZ0819108191epoutp03Y
-	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 09:03:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20240605090327epoutp03c173c1f007baa8a161b7cab6c8a84aeb~WEEd9HKcZ0819108191epoutp03Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1717578207;
-	bh=1Ydk+OWiTnXAHwOuMX34qo5U40tky81PZQBs4gDvO7g=;
-	h=From:To:In-Reply-To:Subject:Date:References:From;
-	b=OReSv/02hefZTHnFeuuUX8pa47sDD+OnGNCwF0vG+ItLFat5HLybE+k57nGXi3rH5
-	 9qhAZZulidlc8CNx+NgDP/UMjgVYQvEierfK/Vk1UygbUOt0WUoWUAunW9P7i50Tdh
-	 eaI1rKSQsXqJHdh40Pp5H1ezty92/qZ1e/LUh4fc=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-	epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-	20240605090326epcas5p124538737401f364639c29aa6c627870b~WEEdug8cK1283012830epcas5p1A;
-	Wed,  5 Jun 2024 09:03:26 +0000 (GMT)
-Received: from epsmgec5p1-new.samsung.com (unknown [182.195.38.177]) by
-	epsnrtp2.localdomain (Postfix) with ESMTP id 4VvM252P1rz4x9QG; Wed,  5 Jun
-	2024 09:03:25 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-	epsmgec5p1-new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	6C.29.19174.CD920666; Wed,  5 Jun 2024 18:03:24 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-	epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-	20240605090323epcas5p4ceef993ef6a017c805687bbaf94a8fa8~WEEbDQY8e0902409024epcas5p4A;
-	Wed,  5 Jun 2024 09:03:23 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-	epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240605090323epsmtrp28cef3b2557b53d95927d7fed626dffb4~WEEbCmtov1690916909epsmtrp2n;
-	Wed,  5 Jun 2024 09:03:23 +0000 (GMT)
-X-AuditID: b6c32a50-87fff70000004ae6-55-666029dc9085
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-	epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	CA.8B.08622.BD920666; Wed,  5 Jun 2024 18:03:23 +0900 (KST)
-Received: from INBRO002756 (unknown [107.122.12.5]) by epsmtip2.samsung.com
-	(KnoxPortal) with ESMTPA id
-	20240605090322epsmtip2c40d30d045f5c56fc09af4f3e7cb61a0~WEEZ_oY8r1486814868epsmtip2F;
-	Wed,  5 Jun 2024 09:03:22 +0000 (GMT)
-From: "Alim Akhtar" <alim.akhtar@samsung.com>
-To: "'Kwanghoon Son'" <k.son@samsung.com>, <krzk@kernel.org>,
-	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-	<linux-samsung-soc@vger.kernel.org>, <linux-serial@vger.kernel.org>
-In-Reply-To: <20240605040719.160778-1-k.son@samsung.com>
-Subject: RE: [PATCH] serial: samsung: Change MAX_CLK_NAME_LENGTH to 17
-Date: Wed, 5 Jun 2024 14:33:21 +0530
-Message-ID: <033801dab727$3835d2f0$a8a178d0$@samsung.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PZqa1nTm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1717579943;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=EIHWoHv/QvLBTsW9LF2D/X7toxaXXwp5mTAPZT4vSL4=;
+	b=PZqa1nTmU2uapPVHxr4IromQM2gN/8Zpb1RyAq5sODJLJytvfbNNN46uOeBTnL1Lz2oJSS
+	glpeMVpIK+Z+JntcY+dz9mkMmR+BCW5wu1Kqi7WWVx932Y44wN2O9lDhFDx48JWMVOL19s
+	bCfzAqSNNGdwccB5oDAR31bPuBX0gQQ=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-529-neANozFfPJatYcMdy9dLUA-1; Wed, 05 Jun 2024 05:32:21 -0400
+X-MC-Unique: neANozFfPJatYcMdy9dLUA-1
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-6ab80cb23beso16345846d6.2
+        for <linux-serial@vger.kernel.org>; Wed, 05 Jun 2024 02:32:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717579941; x=1718184741;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EIHWoHv/QvLBTsW9LF2D/X7toxaXXwp5mTAPZT4vSL4=;
+        b=OZZdKlI8NSeaCPtrAgph3lnIFJPyHp5nYKyPy5JsUCwdPsbBoeDB0UQi6ZFPNId3iY
+         jr0yWywUzwYgzUrhPbi8WHy+jgqJUqhvGbcXmhUNEv6JMDiWFed2iCXK0gXKlmRRWOHh
+         xPwv0gYhF0JQKHaCGL9UfPtvBtOQsL8G3TolxvKBP4Q0GZ7OUO8TQV0DCZ4qg1j0iXTG
+         1LFXP3J6N8wb4lw160qZpQRZ8FjqJtdMQuVC1oKavk/qdYoju6/AriFpvzuA83gbd/ci
+         MXoRfnYPCUwoWAg25GfolyZNniYFhTaXh0c6Cf6wQ6qjF/xyYV9suR9omkubGQCWbVlc
+         MKqg==
+X-Forwarded-Encrypted: i=1; AJvYcCXWrAlw/UCQ4wfsyacMEW112vowk+XbwQSEQrE9HhUygplZkWkqo4KmEq8hP3ntFf2kDu9eCRVBzCSVaHnw5DKYNHYbzbCqr8cQMjxX
+X-Gm-Message-State: AOJu0Yw+wH1B20XAbIhAxWyp73AhzRO/1FF1o/tbPP7GwrhNjCsnOvNY
+	2a4kKcCPAZ5w+CIqD25TBELaNqDRTDXZAlrogG8nWMImV16G5+Dum16NUTsPhPAx4mVAm6mNbgn
+	FQzqGRXagPkeblV8gapkgVtrVNBer284hnmkUs0qMcmEuIJdq1nEK0e+hx1CDtw==
+X-Received: by 2002:a05:6214:3a89:b0:6af:2676:1a67 with SMTP id 6a1803df08f44-6b02bf749b2mr20745066d6.28.1717579941388;
+        Wed, 05 Jun 2024 02:32:21 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE5ikW1FE7KKc1M+K4oFqEtBv+CXhwGrhdL4tT32ka2r1ldJIrtTLooEIM1RfE/m26z2wnCxA==
+X-Received: by 2002:a05:6214:3a89:b0:6af:2676:1a67 with SMTP id 6a1803df08f44-6b02bf749b2mr20744926d6.28.1717579941039;
+        Wed, 05 Jun 2024 02:32:21 -0700 (PDT)
+Received: from jlelli-thinkpadt14gen4.remote.csb ([176.206.3.168])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6ae4b405e14sm46658136d6.80.2024.06.05.02.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jun 2024 02:32:20 -0700 (PDT)
+Date: Wed, 5 Jun 2024 11:32:15 +0200
+From: Juri Lelli <juri.lelli@redhat.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sreenath Vijayan <sreenath.vijayan@sony.com>,
+	Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>,
+	Tomas Mudrunka <tomas.mudrunka@gmail.com>,
+	linux-doc@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Josh Poimboeuf <jpoimboe@kernel.org>,
+	"Borislav Petkov (AMD)" <bp@alien8.de>,
+	Xiongwei Song <xiongwei.song@windriver.com>
+Subject: Re: [PATCH printk v2 00/18] add threaded printing + the rest
+Message-ID: <ZmAwn3pc5wpyA8fm@jlelli-thinkpadt14gen4.remote.csb>
+References: <20240603232453.33992-1-john.ogness@linutronix.de>
+ <aqkcpca4vgadxc3yzcu74xwq3grslj5m43f3eb5fcs23yo2gy4@gcsnqcts5tos>
+ <875xunx13r.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJsKbdffATXsgma7My52wvbWvpMKAFCuxyIsIvjyzA=
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAJsWRmVeSWpSXmKPExsWy7bCmuu4dzYQ0g6kfeCyaF69ns3g3V8ai
-	d81VJovz5zewW8w4v4/J4sziXnYHNo9NqzrZPPbPXcPu0bdlFaPH501yASxR2TYZqYkpqUUK
-	qXnJ+SmZeem2St7B8c7xpmYGhrqGlhbmSgp5ibmptkouPgG6bpk5QLuVFMoSc0qBQgGJxcVK
-	+nY2RfmlJakKGfnFJbZKqQUpOQUmBXrFibnFpXnpenmpJVaGBgZGpkCFCdkZq+cdZCt4yVdx
-	auNitgbGRr4uRk4OCQETidamXexdjFwcQgJ7GCWmPVnABuF8YpRo+POBEaRKSOAbo8TS27Iw
-	Hcs3bWKEKNrLKPF++24WCOcFo8SrcxtZQarYBHQldixuYwOxRQR2M0o8+soPYnMKWEgseLOO
-	BcQWFnCT+HP0O1MXIwcHi4CKxIS3miBhXgFLiUvLLzFC2IISJ2c+AStnFtCWWLbwNTPEEQoS
-	P58uY4UYbyWx5flPVogacYmXR4+AvSMh8JNdYv+xBlaIBheJ6R/6mSBsYYlXx7ewQ9hSEp/f
-	7WWDsLMljl+cBWVXSHS3foSqsZfY+egmC8idzAKaEut36UPs4pPo/f0E7HwJAV6JjjYhiGpV
-	ieZ3V1kgbGmJid3dUBd4SHyeuwsabt2MEnM617JNYFSYheTNWUjenIXknVkImxcwsqxilEot
-	KM5NT002LTDUzUsth0d4cn7uJkZw0tQK2MG4esNfvUOMTByMhxglOJiVRHj9iuPThHhTEiur
-	Uovy44tKc1KLDzGaAsN+IrOUaHI+MG3nlcQbmlgamJiZmZlYGpsZKonzvm6dmyIkkJ5Ykpqd
-	mlqQWgTTx8TBKdXAVGI94TzjE7mIwOCGk5mcFR+T1KJ+FbfIMUSzlVzsCnthtalW6uL2NE2G
-	f9ZS6dq3sy5+KAtXVa7d/cTTpyVwZYqXqvonTvZzU6afn5wor9pnqXIrUrwvtp6b45J2An/n
-	duHL5Qp3S0N1V0a++JwkfnRClD7rq/q718SP7RCeGzhVnXGu9IlX4dfYtr87scVI4Ubzge6g
-	FvudHbYWLcxvv2Z/iV72Pvz9kuYH3vxKb472Cs1i637XJbTm5bTrK464t/i+c6ypY7YLXy7c
-	qn7fPmD9MZ6FIsLbJL3Pbmg0+e2t3s/JXM361LlB4p3+xVvf+I/PurhOfm8t+wpLpd2t746p
-	JE6cmD7HIyp9SZkSS3FGoqEWc1FxIgDo5iKbIwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrLLMWRmVeSWpSXmKPExsWy7bCSvO5tzYQ0g8YXphbNi9ezWbybK2PR
-	u+Yqk8X58xvYLWac38dkcWZxL7sDm8emVZ1sHvvnrmH36NuyitHj8ya5AJYoLpuU1JzMstQi
-	fbsErozWmbPYC65wV/zcsJ2xgfEdZxcjJ4eEgInE8k2bGLsYuTiEBHYzSjxaM5cRIiEtcX3j
-	BHYIW1hi5b/n7BBFzxglbp87BpZgE9CV2LG4jQ0kISJwkFGisf00VFUno8SZjlusIFWcAhYS
-	C96sYwGxhQXcJP4c/c7UxcjBwSKgIjHhrSZImFfAUuLS8kuMELagxMmZT8DKmQW0JXoftjLC
-	2MsWvmaGuEhB4ufTZWDjRQSsJLY8/8kKUSMu8fLoEfYJjEKzkIyahWTULCSjZiFpWcDIsopR
-	MrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIzhGtLR2MO5Z9UHvECMTB+MhRgkOZiURXr/i
-	+DQh3pTEyqrUovz4otKc1OJDjNIcLErivN9e96YICaQnlqRmp6YWpBbBZJk4OKUamI5IP0u+
-	w+rP0iRfdCQljD2Cv8xc3J3L6FPoQe0WfrvprZ+Fp8VK2GX4GzalFsxcs7C8+I+CpsP5G7+u
-	FM+bUSvw63uT6vXg+KkdVT5bj641Drxlz+vY01G0TGOy9/TUkP984rdOV5+/eLhf/ELXhKdf
-	xL4UbODxdrHOtwt2tq7eHsN8Y0Vt1bsQV+7r1m3WJk1t84x4/ZZy73VeVrnFvaUwfuKK3c94
-	tQQNu8tDj0qvaNilpyX6/mLViWhbhvIndfvrd816JHX44ZSjzNNW8Rg3HWyTq2GIarq2b+dW
-	gbum8T/qkvYs+b3x4/Jcyb1peyKaul13vN3O8LP8w4wbh95kPTBjE/Oq7P19fFGvEktxRqKh
-	FnNRcSIAKwW4yQADAAA=
-X-CMS-MailID: 20240605090323epcas5p4ceef993ef6a017c805687bbaf94a8fa8
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20240605040759epcas1p36d200e262d9a98f9879cf7fd0ee94bba
-References: <CGME20240605040759epcas1p36d200e262d9a98f9879cf7fd0ee94bba@epcas1p3.samsung.com>
-	<20240605040719.160778-1-k.son@samsung.com>
+In-Reply-To: <875xunx13r.fsf@jogness.linutronix.de>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On 05/06/24 10:15, John Ogness wrote:
 
+...
 
-> -----Original Message-----
-> From: Kwanghoon Son <k.son=40samsung.com>
-> Sent: Wednesday, June 5, 2024 9:37 AM
-> To: krzk=40kernel.org; alim.akhtar=40samsung.com; gregkh=40linuxfoundatio=
-n.org;
-> jirislaby=40kernel.org; linux-samsung-soc=40vger.kernel.org; linux-
-> serial=40vger.kernel.org
-> Cc: Kwanghoon Son <k.son=40samsung.com>
-> Subject: =5BPATCH=5D serial: samsung: Change MAX_CLK_NAME_LENGTH to 17
->=20
-> clkname =22clk_uart_baud=22 already 13 byte, so compiler warns
-> drivers/tty/serial/samsung_tty.c:1392:17: note: =E2=80=98sprintf=E2=80=99=
-=20output=20between=2015=20and=0D=0A>=2017=20bytes=20into=20a=20destination=
-=20of=20size=2015=0D=0A=0D=0AThere=20was=20a=20similar=20discussion=20aroun=
-d=20buffer=20size=20of=20clkname=20last=20year=0D=0Ahttps://www.spinics.net=
-/lists/arm-kernel/msg1039769.html=20=0D=0Aand=20it=20was=20concluded=20that=
-=20it=E2=80=99s=20a=20false=20warning=20AFAIR.=20=0D=0A=20=0D=0A=0D=0A>=20=
-=0D=0A>=20Signed-off-by:=20Kwanghoon=20Son=20<k.son=40samsung.com>=0D=0A>=
-=20---=0D=0A>=20=20drivers/tty/serial/samsung_tty.c=20=7C=202=20+-=0D=0A>=
-=20=201=20file=20changed,=201=20insertion(+),=201=20deletion(-)=0D=0A>=20=
-=0D=0A>=20diff=20--git=20a/drivers/tty/serial/samsung_tty.c=20b/drivers/tty=
-/serial/samsung_tty.c=0D=0A>=20index=20dc35eb77d2ef..cad838ac8aa2=20100644=
-=0D=0A>=20---=20a/drivers/tty/serial/samsung_tty.c=0D=0A>=20+++=20b/drivers=
-/tty/serial/samsung_tty.c=0D=0A>=20=40=40=20-1339,7=20+1339,7=20=40=40=20st=
-atic=20void=20s3c24xx_serial_pm(struct=20uart_port=20*port,=0D=0A>=20unsign=
-ed=20int=20level,=0D=0A>=20=20=20*=0D=0A>=20=20=20*/=0D=0A>=20=0D=0A>=20-=
-=23define=20MAX_CLK_NAME_LENGTH=2015=0D=0A>=20+=23define=20MAX_CLK_NAME_LEN=
-GTH=2017=0D=0A>=20=0D=0A>=20=20static=20inline=20u8=20s3c24xx_serial_getsou=
-rce(struct=20uart_port=20*port)=20=20=7B=0D=0A>=20--=0D=0A>=202.39.2=0D=0A=
-=0D=0A=0D=0A
+> Yes, that probably is a good candidate for emergency mode.
+> 
+> However, your report is also identifying a real issue:
+> nbcon_cpu_emergency_flush() was implemented to be callable from
+> non-emergency contexts (in which case it should do nothing). However, in
+> order to check if it is an emergency context, migration needs to be
+> disabled.
+
+I see.
+
+> Perhaps the below change can be made for v2 of this series?
+
+Yes, this seems to cure it.
+
+Thanks for the super quick reply and patch!
+
+Best,
+Juri
+
+> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> index 4b9645e7ed70..eeaf8465f492 100644
+> --- a/kernel/printk/nbcon.c
+> +++ b/kernel/printk/nbcon.c
+> @@ -1581,8 +1581,19 @@ void nbcon_cpu_emergency_exit(void)
+>   */
+>  void nbcon_cpu_emergency_flush(void)
+>  {
+> +	bool is_emergency;
+> +
+> +	/*
+> +	 * If the current context is not an emergency context, preemption
+> +	 * might be enabled. To be sure, disable preemption when checking
+> +	 * if this is an emergency context.
+> +	 */
+> +	preempt_disable();
+> +	is_emergency = (*nbcon_get_cpu_emergency_nesting() != 0);
+> +	preempt_enable();
+> +
+>  	/* The explicit flush is needed only in the emergency context. */
+> -	if (*(nbcon_get_cpu_emergency_nesting()) == 0)
+> +	if (!is_emergency)
+>  		return;
+>  
+>  	nbcon_atomic_flush_pending();
+> 
+
