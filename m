@@ -1,122 +1,146 @@
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+Received: from out-182.mta0.migadu.com (out-182.mta0.migadu.com [91.218.175.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7DA1946D3;
-	Wed,  5 Jun 2024 10:55:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3175191493
+	for <linux-serial@vger.kernel.org>; Wed,  5 Jun 2024 10:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717584934; cv=none; b=HmattJsg8TdoHnsIogcpylQjZbNWKb0ZGJerTS01QZtUg2uZrvIgC3JLkW9Z9oJpLNo629Uy9zpRqRGW3Xy0m5YJ8jX2S2U27AbiMH1c8NTRX6YkpHEOpbI5BR09zcAcABlLI1fXi2Su780Z9s8VQnIp4Ru0+t84ab5O3nD6fSc=
+	t=1717585180; cv=none; b=lwqsKnoPM02IaNiHlEmgVV70vixluEuF9S2DvwLGLDOjyjDaNtXvTVdwqkBwipCSmUhB8CwPJa99ZqR6b4u1gYImUKHL1nxvbb+ctnOzUKn/LBb7/bnKtF2sR0+I/Kox+gIWbqZRaBMgRVAEKW1BSzP+mrKd1h+QxuEn4pxIWPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717584934; c=relaxed/simple;
-	bh=W+U7qhUjCbi51uRgvg/U9wrwMMR6x0KWroJZjDdtMrQ=;
+	s=arc-20240116; t=1717585180; c=relaxed/simple;
+	bh=GIHJpbUa4dcfv6cQe5j4NgCQ1VgghAMwPcaeXNqPSoA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q1MM7+u77mfVcK7pUXkz0yO0IC8DNw8GVsYPhwINPqXBa3GCcSNtPkt0MXyK/PM5TNF7KXYH2Hmuxeymg898fdGSzvbzzhaa80Ca3JPbGBK7WS251zBxCz8XcJsG3ci/nKUwOLajTkGnaL9y54v4iuj91lHLx2LnQp/PRR7v8fA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=qSfIEj16; arc=none smtp.client-ip=185.125.188.120
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+	 In-Reply-To:Content-Type; b=HnWpN23KYTR+i9TsBYJIBcjp8B7xvyrFW2Fv9rAO7t9yXd4GWx2nb1Bj1WfpQDMCDtdTFwbPrKmtAI7LgLFwoMQylYfJ54LG0zCIiw74BWtFPVzoo6kKt59dGLD7JIXHr3PJ9baTsmjY7DVXVZ4ty8Zomr1Fs4n+gOYKU3PwMBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=TX8BeerZ; arc=none smtp.client-ip=91.218.175.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="qSfIEj16"
-Received: from [192.168.0.106] (unknown [123.112.65.116])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 9D2BC3F30B;
-	Wed,  5 Jun 2024 10:55:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1717584926;
-	bh=A2fBCgA/gmiLrr61al6cFFR/2iFB/YAMVzE2ZejjVMs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type;
-	b=qSfIEj16dUGorAnUStJ++FqiIxosMfqnqB5U9uH2sE3zXuGR8t4wNXATbFd44sL3O
-	 lBNPXAYAlpRO9E8T5FbnDJT6V/1TqDYANWDmIHaynLHtZPj7wURRZRdT2/RuFfQU9Q
-	 Qhfe+qJ1oWkfGuFF+lHEOgsC+lZEeeLFanFImgMnJii+2oY6b0DutsaFMWARkneSaK
-	 X+R67pgRi5tpa7roEZ7IB1ZbLb7BRe9+8jCkhsDMq298CqKUfmMCQm2Bum9LbJyOVx
-	 HNgPkSp6J1147m9y5DMWIL5V4MVDqwVIrwYF63qmEicsCQX/qWLTMBHq3pu1lQD5Vz
-	 07FTVK409dbXw==
-Message-ID: <f56a2c59-9ae4-4d5c-8321-fff9639c5405@canonical.com>
-Date: Wed, 5 Jun 2024 18:55:16 +0800
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="TX8BeerZ"
+X-Envelope-To: gregkh@linuxfoundation.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1717585176;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YLUG0E9rHHwaYveOUuRCOlFfTsn4mIqBwn1WKQ5TD0g=;
+	b=TX8BeerZZcuDinCp2LvLArr7P2aiXNKun0ISCAlJHA7G/QcUUdZME72K41pb8jKhAKxsvi
+	jBmOJneP1whTnFZ19tFiSO3PwVK/EOK2hEnewyMK2p7ECVVDYMcou2tcjwgnnIaRta896O
+	m9fi7f9E/Bl4+A9ceakTMYZKiM1UZMw=
+X-Envelope-To: kuba@kernel.org
+X-Envelope-To: jirislaby@kernel.org
+X-Envelope-To: jonathan.lemon@gmail.com
+X-Envelope-To: linux-serial@vger.kernel.org
+X-Envelope-To: netdev@vger.kernel.org
+Message-ID: <15f59e29-ac03-4018-bbc3-c4ac5a2964db@linux.dev>
+Date: Wed, 5 Jun 2024 11:59:30 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serial: sc16is7xx: hard reset the chip if
- reset-gpios is defined in dt
-To: Maarten Brock <Maarten.Brock@sttls.nl>, Hugo Villeneuve <hugo@hugovil.com>
-Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "jirislaby@kernel.org" <jirislaby@kernel.org>,
- "hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
- "robh@kernel.org" <robh@kernel.org>, "krzk+dt@kernel.org"
- <krzk+dt@kernel.org>, "conor+dt@kernel.org" <conor+dt@kernel.org>,
- "andy@kernel.org" <andy@kernel.org>,
- "lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
-References: <20240604132726.1272475-1-hui.wang@canonical.com>
- <20240604132726.1272475-2-hui.wang@canonical.com>
- <20240604102323.b2a305fa03161df3c2eec16c@hugovil.com>
- <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+Subject: Re: [PATCH v2 net] ptp: ocp: adjust serial port symlink creation
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jakub Kicinski <kuba@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+ Jonathan Lemon <jonathan.lemon@gmail.com>, linux-serial@vger.kernel.org,
+ netdev@vger.kernel.org
+References: <20240510110405.15115-1-vadim.fedorenko@linux.dev>
+ <2024051046-decimeter-devotee-076a@gregkh>
+ <cf74065c-7b68-48d8-b1af-b18ab413f732@linux.dev>
+ <2024060428-childcare-clunky-067c@gregkh>
+ <d59e00e1-d390-4140-b34f-58eaf13baee7@linux.dev>
+ <2024060505-expose-crouch-00b1@gregkh>
+ <cbcf7cbb-809f-47f8-bd98-e140875bc2d1@linux.dev>
+ <2024060514-recess-unblessed-431c@gregkh>
 Content-Language: en-US
-From: Hui Wang <hui.wang@canonical.com>
-In-Reply-To: <AS8PR05MB9810940582493046F2FBFDB983F92@AS8PR05MB9810.eurprd05.prod.outlook.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+In-Reply-To: <2024060514-recess-unblessed-431c@gregkh>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
 
+On 05/06/2024 11:41, Greg Kroah-Hartman wrote:
+> On Wed, Jun 05, 2024 at 11:14:28AM +0100, Vadim Fedorenko wrote:
+>> On 05/06/2024 11:05, Greg Kroah-Hartman wrote:
+>>> On Wed, Jun 05, 2024 at 12:53:13AM +0100, Vadim Fedorenko wrote:
+>>>> On 04/06/2024 12:50, Greg Kroah-Hartman wrote:
+>>>>> On Wed, May 22, 2024 at 01:39:21PM +0100, Vadim Fedorenko wrote:
+>>>>>> On 10/05/2024 12:13, Greg Kroah-Hartman wrote:
+>>>>>>> On Fri, May 10, 2024 at 11:04:05AM +0000, Vadim Fedorenko wrote:
+>>>>>>>> The commit b286f4e87e32 ("serial: core: Move tty and serdev to be children
+>>>>>>>> of serial core port device") changed the hierarchy of serial port devices
+>>>>>>>> and device_find_child_by_name cannot find ttyS* devices because they are
+>>>>>>>> no longer directly attached. Add some logic to restore symlinks creation
+>>>>>>>> to the driver for OCP TimeCard.
+>>>>>>>>
+>>>>>>>> Fixes: b286f4e87e32 ("serial: core: Move tty and serdev to be children of serial core port device")
+>>>>>>>> Signed-off-by: Vadim Fedorenko <vadim.fedorenko@linux.dev>
+>>>>>>>> ---
+>>>>>>>> v2:
+>>>>>>>>      add serial/8250 maintainers
+>>>>>>>> ---
+>>>>>>>>      drivers/ptp/ptp_ocp.c | 30 +++++++++++++++++++++---------
+>>>>>>>>      1 file changed, 21 insertions(+), 9 deletions(-)
+>>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+>>>>>>> a patch that has triggered this response.  He used to manually respond
+>>>>>>> to these common problems, but in order to save his sanity (he kept
+>>>>>>> writing the same thing over and over, yet to different people), I was
+>>>>>>> created.  Hopefully you will not take offence and will fix the problem
+>>>>>>> in your patch and resubmit it so that it can be accepted into the Linux
+>>>>>>> kernel tree.
+>>>>>>>
+>>>>>>> You are receiving this message because of the following common error(s)
+>>>>>>> as indicated below:
+>>>>>>>
+>>>>>>> - You have marked a patch with a "Fixes:" tag for a commit that is in an
+>>>>>>>       older released kernel, yet you do not have a cc: stable line in the
+>>>>>>>       signed-off-by area at all, which means that the patch will not be
+>>>>>>>       applied to any older kernel releases.  To properly fix this, please
+>>>>>>>       follow the documented rules in the
+>>>>>>>       Documentation/process/stable-kernel-rules.rst file for how to resolve
+>>>>>>>       this.
+>>>>>>>
+>>>>>>> If you wish to discuss this problem further, or you have questions about
+>>>>>>> how to resolve this issue, please feel free to respond to this email and
+>>>>>>> Greg will reply once he has dug out from the pending patches received
+>>>>>>> from other developers.
+>>>>>>
+>>>>>> Hi Greg!
+>>>>>>
+>>>>>> Just gentle ping, I'm still looking for better solution for serial
+>>>>>> device lookup in TimeCard driver.
+>>>>>
+>>>>> See my comment on the other patch in this thread.
+>>>>>
+>>>>> In short, you shouldn't need to do any of this.
+>>>>
+>>>> Got it, thanks. I'll try to find another way.
+>>>
+>>> Wait, no, please just remove all that, it should not be needed at all.
+>>
+>> Do you mean remove symlinks from the driver? We have open-source
+>> user-space software which relies on them to discover proper devices. If
+>> I remove symlinks it will break the software.
+> 
+> the symlinks should be done in userspace in the /dev/serial/ directory,
+> why would userspace need to know the symlink of the serial device in
+> a sysfs tree?  What exactly are you trying to represent here that
+> requires this to be a custom thing?
 
-On 6/5/24 18:30, Maarten Brock wrote:
->> From: Hugo Villeneuve <hugo@hugovil.com>
->> Sent: Tuesday, 4 June 2024 16:23
-> <...>
->
->> Add function description from original comment "Reset device,
->> purging any pending irq / data", since the comment applies to both
->> hardware and software reset,
-> No it does not (at this moment). See below.
->
->>> +static int sc16is7xx_reset(struct device *dev, struct regmap *regmaps[])
->> Simply pass "struct regmap *regmap" as the second argument. See
->> sc16is7xx_setup_mctrl_ports() for example.
->>
->>> +{
->>> +	struct gpio_desc *reset_gpiod;
->> reset_gpiod -> reset_gpio
->>
->>> +	else if (!IS_ERR(reset_gpiod)) {
->>> +		/* delay 5 us (at least 3 us) and deassert the gpio to exit the hard
->> reset */
->>
->> You can omit the "delay 5 us" since it is obvious from the code. Maybe
->> add that "The minimum reset pulse width is 3 us" as stated in the
->> datasheet.
->>
->> As a general note for your comments: capitalize the first letter,
->> ex: "Deassert GPIO" and not "deassert GPIO".
->>
->>
->>> +		udelay(5);
->>> +		gpiod_set_value_cansleep(reset_gpiod, 0);
->> Move the comment "deassert the gpio to exit the hard reset" here. You
->> could also simplify it as "Deassert GPIO.".
-> The problem here is that this only deasserts the reset if it were asserted before.
-> Nothing happens if it already was deasserted. This makes the delay also pretty
-> useless.
->
-> To make this a proper reset pulse for the device you must first assert the reset,
-> then wait >3us, and finally deassert the reset.
->
-> Maarten Brock
-Hi Maarten,
-
-My understanding is when calling devm_gpiod_get_optional(dev, "reset", 
-GPIOD_OUT_LOW) and returning a valid (gpio_desc *), the flag 
-GPIOD_OUT_LOW guarantees the GPIO is set to output and low (assert the 
-reset pin).
+Well, the hardware exposes up to 4 different serial ports for different
+functions. And only driver knows which feature is attached to which port
+because of differences in the HW. There is no way for user-space to get
+this information on it's own. And one more thing, some HW versions
+expose special attributes in sysfs consumed by the same software.
+And there are setups with several boards in the system. Currently we
+separate them by providing different sysfs entries only, the software
+then figures all details automatically.
 
 Thanks,
+Vadim
 
-Hui.
-
-
->
