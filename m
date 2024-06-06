@@ -1,180 +1,255 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2067.outbound.protection.outlook.com [40.107.100.67])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47B3D19D898;
-	Thu,  6 Jun 2024 06:51:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717656679; cv=fail; b=MfwxBnV+VXpZvyHxTApnxf/nLDFPWmXoLxJJhT5wtZNk14I/5HdYiqbF8Y8GhInoCOqKcF+284U0BBGIndHdJ4i/8OXdKAfNMJX/+2VW4qKo5ZtNsWpQotwkWUzYglG5QmA1KsyY0ugqU3FaBHgvIMAh/5ipwS/aHUXlm/YGIyI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717656679; c=relaxed/simple;
-	bh=nGvW4yOXM4JnO1HUKDUS/bk+9RulcBQl9R66MLoM6gI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qSum2QR3wp+iezEt/InfnskU6Yy77N3UR2yfylUWgRBBPs9q5vKeOirNrwxLUTmn7/0dDdV/xomB1EpRDHi6rRWu7MxOdr6z5S4nj14MIqUijiou5zw1gnhWGURJu8V+8++PkOPJw+QAOS+e6Tpmw7N/vEkXAAhJ7tdaiCAGjSA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com; spf=pass smtp.mailfrom=sony.com; dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b=eyLVBPdx; arc=fail smtp.client-ip=40.107.100.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sony.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sony.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D16B51953A3;
+	Thu,  6 Jun 2024 11:42:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1717674155; cv=none; b=JPTQxdbzbnAJvLeNERsqNz2VpcGbbRwhU3M6zMzlEr6HuuxzsIND3v29RM1bVQ0F+tCvRDgkIB1Dt0QZ9E/mkohCkufkc0Is4qEoAzxwF9Uom7rGeYvr7wpXbhrvq+YJA3zF8DJMuezsqkzf+bd6TbqekuuRkUQBZSImMQ6DBHo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1717674155; c=relaxed/simple;
+	bh=RAGJkpD68Hqusq6qO4OhmRMmWyl3gF2xM/kl6DZbdQE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oJ/GkluTIP1ev6TGBx4IUU4ZMzTOg6ik9wu+xlV3pIV1HLrlw0gH9pEBAF3m6NXUW4A55qv4YDO3hxY5grfA5OSBtrG6A9/a3wbIQ1VdP9RiUCgRwWdF6M7TYpliTJOHVKaZ8zGuR3kKvAnf46bppw20NMbcD7wzMzywJ+TIBeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nMfN4Mj5; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=Sony.onmicrosoft.com header.i=@Sony.onmicrosoft.com header.b="eyLVBPdx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lAz4qE4+27xk67s7wY6+5nttPfkJ/+vhlLJi4OY1GkApV3I92vCsZhQR8Be2YfH2djcwbMMNlnqNMqXFPa6fb9yhLynfUcQJyNwNhvv8VyEXN0mKZMNMvE8QHXwyZGJdqgjUiVEsCUVC+nCj99NM8ImfwCB0dd7ot9/xH8znOTWBm4bvqzd5OhpniFpuT5WTFY9dOIvY4m3lhaK27jgqZFWOmFnjNjD57aFAMD04G7AyEOyyK5dSx9iv7boklDszK/6SUTvj3tCKsQSYFAZ6EEdJ+BFd+yVL2319ADOlEIXlHA19Vtb5FCItEX0C0vPImFoRLkIcBc7mZjmUVn0ZoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zWnl6b3x/8NzNd6mnRPaBXIO0coTbMS4V1K0jRQSvYw=;
- b=UBPMvDOiD1mjJgEiyE/Zg3mW3nIv51pGYEnw9sRxGXkdV0vjKbQv8x19hyVTfh+zWdV0KdqQltVpmx6vIQflXrJNgrWGr0IVPUtgJ6CsJFRLXhJoBbKWZP8Ga6P/BpUIUT170tND5StUjpPvj6hBRXxlmSnEMfWyTr3w2hMjUyK2Gs8D479Mguyy7LMEUHfaadLqa54caG+QG3M8CloCfmQV2PGTqinpqyWa5xeF9XIIqPeuiOrPrJRLYnUqApz25C0Rq6fK7RL0hMcxBJ0Ztk5nnmpRgixoA8rB5C22mR9fuQ7dZInxocTzrwmNI4ZAJ/ObREcPIomcRvD4Oiox9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 121.100.38.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=sony.com;
- dmarc=fail (p=none sp=none pct=100) action=none header.from=sony.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
- s=selector2-Sony-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zWnl6b3x/8NzNd6mnRPaBXIO0coTbMS4V1K0jRQSvYw=;
- b=eyLVBPdxHa2JQCsmQofeuQ/XtIlYDeSEiJxwCaMych3xrnkzuHaBz9+dx+ohFay1UbH2mZK1Huydkzwrby4KY0kAhZ+bYpydD9b7uKhT8jVhAuOSWu6yz9+hWwhpZiytwkYUiwTnBk1cKE9LP3f1scXnJaTfN6pMKHDx1alujoM=
-Received: from CH2PR14CA0041.namprd14.prod.outlook.com (2603:10b6:610:56::21)
- by PH0PR13MB4987.namprd13.prod.outlook.com (2603:10b6:510:75::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.20; Thu, 6 Jun
- 2024 06:51:14 +0000
-Received: from CH1PEPF0000AD83.namprd04.prod.outlook.com
- (2603:10b6:610:56:cafe::56) by CH2PR14CA0041.outlook.office365.com
- (2603:10b6:610:56::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.31 via Frontend
- Transport; Thu, 6 Jun 2024 06:51:13 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 121.100.38.198)
- smtp.mailfrom=sony.com; dkim=none (message not signed)
- header.d=none;dmarc=fail action=none header.from=sony.com;
-Received-SPF: Fail (protection.outlook.com: domain of sony.com does not
- designate 121.100.38.198 as permitted sender)
- receiver=protection.outlook.com; client-ip=121.100.38.198;
- helo=gepdcl09.sg.gdce.sony.com.sg;
-Received: from gepdcl09.sg.gdce.sony.com.sg (121.100.38.198) by
- CH1PEPF0000AD83.mail.protection.outlook.com (10.167.244.85) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7452.22 via Frontend Transport; Thu, 6 Jun 2024 06:51:13 +0000
-Received: from gepdcl02.s.gdce.sony.com.sg (SGGDCSE1NS07.sony.com.sg [146.215.123.196])
-	by gepdcl09.sg.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 4566ogC1000973;
-	Thu, 6 Jun 2024 14:50:54 +0800
-Received: from mail.sony.com ([43.88.80.246])
-	by gepdcl02.s.gdce.sony.com.sg (8.14.7/8.14.4) with ESMTP id 4566ofwH016350;
-	Thu, 6 Jun 2024 14:50:41 +0800
-Received: by mail.sony.com (Postfix, from userid 1001)
-	id 1E7731D8018C; Thu,  6 Jun 2024 12:20:41 +0530 (IST)
-Date: Thu, 6 Jun 2024 12:20:40 +0530
-From: Sreenath Vijayan <sreenath.vijayan@sony.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: john.ogness@linutronix.de, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, rdunlap@infradead.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        taichi.shimoyashiki@sony.com, daniel.palmer@sony.com,
-        anandakumar.balasubramaniam@sony.com
-Subject: Re: [PATCH] printk: Rename console_replay_all() and update context
-Message-ID: <ZmFcQPDi+de6egqY@sreenath.vijayan@sony.com>
-References: <66582edb.650a0220.8de7.c591SMTPIN_ADDED_BROKEN@mx.google.com>
- <ZlmPAZUeKIDFKLdf@pathway.suse.cz>
- <Zl7Lo5eGJKLjbTUc@pathway.suse.cz>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nMfN4Mj5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1717674154; x=1749210154;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RAGJkpD68Hqusq6qO4OhmRMmWyl3gF2xM/kl6DZbdQE=;
+  b=nMfN4Mj5lkpyVCaap0VgraNj/KVwUNDLbNEJ+IxEjTrKo9ZjX/6GkQ4U
+   Ylmm5F/gRZ05XH9010Nsn7yOiWVJHid0Rc+eP+MPSpDtbXMSmDn83Qp7o
+   q9re8S6/lMuw0lB3hch28N5idqMF8AClcojvx2P2sq94/5p51YKiNFb5T
+   8tKFnPLsLppD0R3VXa1iv24TDW891Z2yJMKK451VNCu2J+fGomDWB/Ah2
+   Kqw3tUD68YsrjDPaKoTcW+8PWb7QI1ECVievjLNLjaSpK9yWmmPh2tFIW
+   x4fx4LlYhkYrkKpxVB9xso9LHNCFwquvfMCu1yJEA2J02u5DRMn0cw6oM
+   Q==;
+X-CSE-ConnectionGUID: vdE5y/k0SzGQDNzSTEWmUg==
+X-CSE-MsgGUID: l1bm8Z16Rm6pYWHmBIuvCg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="14517445"
+X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
+   d="scan'208";a="14517445"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 04:42:33 -0700
+X-CSE-ConnectionGUID: 0n3L5t4YRTa/+zCnGy+seQ==
+X-CSE-MsgGUID: f+l+sHIVQ7aDRjtPdZq6GQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
+   d="scan'208";a="42514901"
+Received: from unknown (HELO tlindgre-MOBL1.intel.com) ([10.245.247.177])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 04:42:29 -0700
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org,
+	Tony Lindgren <tony.lindgren@linux.intel.com>,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] printk: Track command line console positions to fix console order
+Date: Thu,  6 Jun 2024 14:41:46 +0300
+Message-ID: <20240606114149.118633-1-tony.lindgren@linux.intel.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zl7Lo5eGJKLjbTUc@pathway.suse.cz>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD83:EE_|PH0PR13MB4987:EE_
-X-MS-Office365-Filtering-Correlation-Id: d093c78b-f195-4d0d-4bf8-08dc85f50e93
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|82310400017|376005|36860700004|1800799015;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?rKKr1rMzBILCjpRCXAzPd0kIUcicY13L2Y7GuH7EEK9xZxLj0rHVfanwG66M?=
- =?us-ascii?Q?hK+mI4NNrq14gQsiQ9epr7OMv/Z37tpgRixy90WC/afwxSvFN2L71iVdcxXU?=
- =?us-ascii?Q?b0Jawt2ISHgV/dme+TddAjIsie4mI/+g3N8epWndoZhNtm+0Y8CqncmO9+gJ?=
- =?us-ascii?Q?xHZpOsX5wgfaJ0spqIfURMjsbh2hQlVR9wsqrfChnu5wGeQ4oxcGm1XpuFvf?=
- =?us-ascii?Q?8ZSpi1GhBsnbjOgKo/QXEqzxEiHLypthwJYJ67xOur4YTBA+iMahnHZj2EF1?=
- =?us-ascii?Q?It2j0xwdVeci5gB1i3sHxOTEMlEiWdqvzus7GDYDL7n92ee8zAaSYRgxnQjQ?=
- =?us-ascii?Q?Wx1SdFzSpG6IVL8libxWy0glOcZQ1XTYTvVm4mc2dt7o4kONhv4OzolEjoBp?=
- =?us-ascii?Q?a12GefQ3as3/9v76PLNUkEfqlxoIyTpyFLe4Gy5rJmWt/+iZWCofHbqBpCEh?=
- =?us-ascii?Q?Gkmv7PGvD8ApNgSY9ma0F0iqX8CXBZ4iTxzd976LxNiBGewuOo5aE8r7IEvz?=
- =?us-ascii?Q?hivg3VTzQ0zYSzXQ2awl/weVXQfaN7LE131+fWN9Be7v0WzH0n9zRrImoQZu?=
- =?us-ascii?Q?ejyEUBRuc4FuQorZDrPs8XOxe7oaX2YBJZAmY9tNqzKXc5msP8uDRFmVju4m?=
- =?us-ascii?Q?4vcorABL3ylhaZbP1mkSP2ZXYVtuapZEcE7O3l3/LNwN8voUaUPlLh+Dgf0v?=
- =?us-ascii?Q?XVp6bkf74X+zcJ1SE74OglB/5NRppRz1Q3PpYGui50lPJb0GIHPfZMDcSSjF?=
- =?us-ascii?Q?cR/ovmnGPiVCUN3ogF89Qo+Sar7rr7yzZFLWBD8GDiLoNhABETTOJqRZMFeJ?=
- =?us-ascii?Q?R7ZrM1HSC5YILfn4Fbu8znwD98zcPk3+eITwLEj7KsSFANUEn8vRWAqLP2nE?=
- =?us-ascii?Q?oqPbC4Jslu1iH/KXNIGsbedHzY7J8sLoGsU1ip+xaXuUZ9WqXts/ms5DxKmU?=
- =?us-ascii?Q?YFAJp6j3o1Mp0oj1awidu78tY6+9VHr6Jq/o56sJu1+0pHVrAqueqCfUMuyI?=
- =?us-ascii?Q?AunL/5IJ+zdsDYQGqQeUG8oD7+5GFQr5178Y3KieGefEHKTjDprZnEDmXOxr?=
- =?us-ascii?Q?4MHRD1gRi+hvAvm0mZPTBZDn3mkKJ5bJUzdfTtPVKHPwX4vJbGolN4xsf0Vz?=
- =?us-ascii?Q?NCk6jB3f5GB6h/Rj4H9EnOIGLIzCvxGEOvcIDcG9nO38DB9KrhuhQKxGVz2a?=
- =?us-ascii?Q?N1tNkUZX1sR8ZX4s4hREDf0T/+TmAELNr8sUkj+aOmLnMBXEU6lrJ8XH41zE?=
- =?us-ascii?Q?8BAJ7eZQWkcByR18EOB1xTdUNrtst7h2f5WOogIZUwot1eotj6+0VNvhXquW?=
- =?us-ascii?Q?dG4pwQokhTtp148tPNDfbplPYIjvoJNzs9tswlGdPh9yHHwt32hNN7pqcyKy?=
- =?us-ascii?Q?uHOnNBoAsicQoDGJGgXnyb8FD9ClqJcEDcmZ8+VG9wQNajoU9g=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:121.100.38.198;CTRY:SG;LANG:;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:gepdcl09.sg.gdce.sony.com.sg;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(82310400017)(376005)(36860700004)(1800799015);DIR:OUT;SFP:1101;
-X-OriginatorOrg: sony.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jun 2024 06:51:13.0596
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d093c78b-f195-4d0d-4bf8-08dc85f50e93
-X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[121.100.38.198];Helo=[gepdcl09.sg.gdce.sony.com.sg]
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-CH1PEPF0000AD83.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4987
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 04, 2024 at 10:09:07AM +0200, Petr Mladek wrote:
-> On Fri 2024-05-31 10:49:08, Petr Mladek wrote:
-> > On Thu 2024-05-30 13:15:47, Sreenath Vijayan wrote:
-> > > Rename console_replay_all() to console_try_replay_all() to make
-> > > clear that the implementation is best effort. Also, the function
-> > > should not be called in NMI context as it takes locks, so update
-> > > the comment in code.
-> > > 
-> > > Fixes: 693f75b91a91 ("printk: Add function to replay kernel log on consoles")
-> > > Fixes: 1b743485e27f ("tty/sysrq: Replay kernel log messages on consoles via sysrq")
-> > > Suggested-by: Petr Mladek <pmladek@suse.com>
-> > > Signed-off-by: Shimoyashiki Taichi <taichi.shimoyashiki@sony.com>
-> > > Signed-off-by: Sreenath Vijayan <sreenath.vijayan@sony.com>
-> > 
-> > Thanks for the fix.
-> > 
-> > Reviewed-by: Petr Mladek <pmladek@suse.com>
->  
-> > PS: I am going to queue it for 6.11. It is not critical
-> >     to hurry it into 6.10-rcX.
-> 
-> JFYI, the patch has been comitted into printk/linux.git,
-> branch for-6.11.
->
+Recent changes to allow using DEVNAME:0.0 style console names caused a
+regression to the kernel command line handling for the console options.
 
-Ok, thank you for the update.
+The last preferred console added gets used for init. This is documented
+in the comments for add_preferred_console(). Now the kernel command line
+options for console=ttyS0,115200 console=tty0 are wrongly handled and
+cause the /dev/console to be associated with ttyS0 instead of tty0.
+
+This happens because we are calling __add_preferred_console() later on
+from serial8250_isa_init_ports() after console_setup() and the console
+gets treated as the last added preferred console. As the DEVNAME:0.0 style
+console device is not known at console_setup() time, and we need to call
+__add_preferred_console() later.
+
+Let's fix the issue by reserving a position in console_cmdline for a
+deferred console, and then populate the reserved entry before calling
+__add_preferred_console().
+
+Note that we now need to check for valid preferred console too in
+__add_preferred_console().
+
+Reported-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/linux-serial/ZlC6_Um4P4b-_WQE@pathway.suse.cz/
+Fixes: f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
+Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
+---
+ kernel/printk/conopt.c          |  2 +-
+ kernel/printk/console_cmdline.h |  6 ++-
+ kernel/printk/printk.c          | 68 ++++++++++++++++++++++++++++++---
+ 3 files changed, 67 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/printk/conopt.c b/kernel/printk/conopt.c
+index 9d507bac3657..08dded8fbb3b 100644
+--- a/kernel/printk/conopt.c
++++ b/kernel/printk/conopt.c
+@@ -140,7 +140,7 @@ int add_preferred_console_match(const char *match, const char *name,
+ 	if (con->has_brl_opt)
+ 		brl_opt = con->brl_opt;
  
-> BTW:
-> 
-> I have pushed a patch which came to my mailbox with ID
-> 
->    66582edb.650a0220.8de7.c591SMTPIN_ADDED_BROKEN@mx.google.com
-> 
-> >From some reasons, it is not available in the official archive
-> at lore.kernel.org. Instead, I have mentioned in the commit
-> message
-> 
->      https://lore.kernel.org/r/Zlguq/wU21Z8MqI4@sreenath.vijayan@sony.com
-> 
-> which points to the same patch (same changes), exists at
-> lore.kernel.org but I havn't got that one from some reason.
-> 
-> Best Regards,
-> Petr
+-	console_opt_add_preferred_console(name, idx, con->opt, brl_opt);
++	console_opt_add_preferred_console(match, name, idx, con->opt, brl_opt);
+ 
+ 	return 0;
+ }
+diff --git a/kernel/printk/console_cmdline.h b/kernel/printk/console_cmdline.h
+index a125e0235589..e22021e3e28b 100644
+--- a/kernel/printk/console_cmdline.h
++++ b/kernel/printk/console_cmdline.h
+@@ -5,13 +5,15 @@
+ #define MAX_CMDLINECONSOLES 8
+ 
+ int console_opt_save(const char *str, const char *brl_opt);
+-int console_opt_add_preferred_console(const char *name, const short idx,
+-				      char *options, char *brl_options);
++int console_opt_add_preferred_console(const char *devname, const char *name,
++				      const short idx, char *options,
++				      char *brl_options);
+ 
+ struct console_cmdline
+ {
+ 	char	name[16];			/* Name of the driver	    */
+ 	int	index;				/* Minor dev. to use	    */
++	char	devname[32];			/* DEVNAME:0.0 style device name */
+ 	bool	user_specified;			/* Specified by command line vs. platform */
+ 	char	*options;			/* Options for the driver   */
+ #ifdef CONFIG_A11Y_BRAILLE_CONSOLE
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 420fd310129d..52bdd7dcdb6f 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2426,6 +2426,24 @@ static void set_user_specified(struct console_cmdline *c, bool user_specified)
+ 	console_set_on_cmdline = 1;
+ }
+ 
++/* Checks if a console is the last user specified preferred console */
++static bool is_last_user_prefcon(int position)
++{
++	struct console_cmdline *c = console_cmdline;
++	int last_user_specified = -1;
++	int i;
++
++	for (i = 0; i < MAX_CMDLINECONSOLES; i++, c++) {
++		if (!c->name[0] && !c->devname[0])
++			break;
++
++		if (c->user_specified || c->devname[0])
++			last_user_specified = i;
++	}
++
++	return position == last_user_specified;
++}
++
+ static int __add_preferred_console(const char *name, const short idx, char *options,
+ 				   char *brl_options, bool user_specified)
+ {
+@@ -2445,10 +2463,10 @@ static int __add_preferred_console(const char *name, const short idx, char *opti
+ 	 *	if we have a slot free.
+ 	 */
+ 	for (i = 0, c = console_cmdline;
+-	     i < MAX_CMDLINECONSOLES && c->name[0];
++	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+ 	     i++, c++) {
+ 		if (strcmp(c->name, name) == 0 && c->index == idx) {
+-			if (!brl_options)
++			if (!brl_options && (!user_specified || is_last_user_prefcon(i)))
+ 				preferred_console = i;
+ 			set_user_specified(c, user_specified);
+ 			return 0;
+@@ -2467,6 +2485,25 @@ static int __add_preferred_console(const char *name, const short idx, char *opti
+ 	return 0;
+ }
+ 
++/* Reserves a console_cmdline position for a deferred devname console */
++static void reserve_deferred_console(const char *str)
++{
++	struct console_cmdline *c = console_cmdline;
++	size_t namelen;
++	int i;
++
++	namelen = strcspn(str, ",");
++	if (namelen == 0 || namelen >= sizeof(c->devname))
++		return;
++
++	for (i = 0; i < MAX_CMDLINECONSOLES; i++, c++) {
++		if (c->name[0] || c->devname[0])
++			continue;
++		strscpy(c->devname, str, namelen + 1);
++		return;
++	}
++}
++
+ static int __init console_msg_format_setup(char *str)
+ {
+ 	if (!strcmp(str, "syslog"))
+@@ -2508,8 +2545,10 @@ static int __init console_setup(char *str)
+ 	console_set_on_cmdline = 1;
+ 
+ 	/* Don't attempt to parse a DEVNAME:0.0 style console */
+-	if (strchr(str, ':'))
++	if (strchr(str, ':')) {
++		reserve_deferred_console(str);
+ 		return 1;
++	}
+ 
+ 	/*
+ 	 * Decode str into name, index, options.
+@@ -2542,9 +2581,26 @@ static int __init console_setup(char *str)
+ __setup("console=", console_setup);
+ 
+ /* Only called from add_preferred_console_match() */
+-int console_opt_add_preferred_console(const char *name, const short idx,
+-				      char *options, char *brl_options)
++int console_opt_add_preferred_console(const char *devname, const char *name,
++				      const short idx, char *options,
++				      char *brl_options)
+ {
++	struct console_cmdline *c = console_cmdline;
++	int i;
++
++	/* Populate a reserved console based on devname */
++	for (i = 0; i < MAX_CMDLINECONSOLES; i++, c++) {
++		if (!c->name[0] && !strcmp(c->devname, devname)) {
++			strscpy(c->name, name);
++			c->index = idx;
++			c->options = options;
++#ifdef CONFIG_A11Y_BRAILLE_CONSOLE
++			c->brl_options = brl_options;
++#endif
++			break;
++		}
++	}
++
+ 	return __add_preferred_console(name, idx, options, brl_options, true);
+ }
+ 
+@@ -3333,7 +3389,7 @@ static int try_enable_preferred_console(struct console *newcon,
+ 	int i, err;
+ 
+ 	for (i = 0, c = console_cmdline;
+-	     i < MAX_CMDLINECONSOLES && c->name[0];
++	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+ 	     i++, c++) {
+ 		if (c->user_specified != user_specified)
+ 			continue;
+-- 
+2.45.2
 
-Understood.
-
-Regards,
-Sreenath
