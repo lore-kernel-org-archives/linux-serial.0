@@ -1,59 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02C1C4652D;
-	Thu,  6 Jun 2024 18:48:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB8F544361
+	for <linux-serial@vger.kernel.org>; Thu,  6 Jun 2024 19:58:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717699728; cv=none; b=k/KL/bqIVuFwMhjrd3Jf9OlXq7bVI/aGdeQfv2nVIfXNFv1fu6JT4xO8QMBNs4xjSQ4LrU6lJL3lzQ+7Q7P4HzK7SOvvhKnVzUuAfOc/rqErmij8kzX25tFALGLifL7eAwDoaLMH+Yq9WqlKG8p9yUXWZWAMN76o5zP2Yyc5NT4=
+	t=1717703899; cv=none; b=CahgOLrS2+8mzyTDSFev7UE+GOkWd2wFJxh/IP1KnZCNGoi8NEcYPTLlV5Xs4iSjnmx/VuqW/qt5Q8XAqctHz0s+bI+xJ4OIYCa5EJZNZczzfSPyB89/tZq5Zh3mE7CbieOvOhBaplbU7DFrIGG5eMn6Gvs/wfuAk/u5cfx/CVA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717699728; c=relaxed/simple;
-	bh=f+7fBhtcJlXgCJbJkgh56o4Pav2IO44UtKl6YoXUVAs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HDctpB+PZvF92UUcGL4cQTSum8X9GE7peagHZSyBzj5YNHtp1Isi2eKmy+7XK89jDgAl/EXnSWkyo6Ev5pitTf4BAfksr7B7S30NgfX0l5hEssx74HwZyFbvm313ghtmCsIsUepC6WqaDd8BnWG9IruHgLf6YWSCO9XtBk39708=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D6hQ/cSa; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1717703899; c=relaxed/simple;
+	bh=XlerXq91GdgAsRzJWZ9lOnfrmJtdEDDhSrBbmzEhJu8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=A69N7X3QDrvhgc5GDE7n25oE0+D6uARnb9wh+0F3TTY3oqNtcGfuvdbeOFNp+EyFJdj2c4fYml+2H1wUdsJuGGMjh+Ks/xX7+goumzTAma/rdEUCNhxeeyQzxti8wC6NMEm4J/RZ53NjaMzyqrhMkLjmCQ66wNRy1MQmahNgPtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com; spf=pass smtp.mailfrom=schmorgal.com; dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b=ZQ7Sku5/; arc=none smtp.client-ip=209.85.215.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=schmorgal.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D6hQ/cSa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717699727; x=1749235727;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=f+7fBhtcJlXgCJbJkgh56o4Pav2IO44UtKl6YoXUVAs=;
-  b=D6hQ/cSaF576EwugZKO76pY9mRN5ovVSFudaELQwI6AACHci6NiT/8iT
-   b+OliaRJuy12CxYuGxDezEX+DyuQt1tfBkyfug6ui9uPIQfzUYGPhYMg+
-   Tdl72/8epCoxijMT15uXVoHow+zAepExVc/QKzaLCv0oNYy200wqBMYw0
-   s8SOpPrNMH7IkKOY/BTz+ZTkbQ0Vf9rs9fr37kzB/gN6fkRYC7E9EBtYD
-   bpxeXS+yw8OPAWrHy0WwIrgASNiGKI91UPy6xzKhIjputj9DxsJzxDmM0
-   vC+skY2LY1GzJb2qMSH7BzUa/Pp+dkCz9bu0Q4OiVP2lYfQWBdAl0oEXn
-   w==;
-X-CSE-ConnectionGUID: v99+iC7LQoy1GLxKjh59Kg==
-X-CSE-MsgGUID: CGs3sbFUTzqy7UIBYs3aWA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11095"; a="14548043"
-X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
-   d="scan'208";a="14548043"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 11:48:46 -0700
-X-CSE-ConnectionGUID: RumPFe7yROqUFc9Uinxspg==
-X-CSE-MsgGUID: zxQRNvS9Tc6m0XeCeGiL2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
-   d="scan'208";a="38179579"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa009.fm.intel.com with ESMTP; 06 Jun 2024 11:48:45 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id BC2621C9; Thu, 06 Jun 2024 21:48:43 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b="ZQ7Sku5/"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-6c87835b8c5so170700a12.1
+        for <linux-serial@vger.kernel.org>; Thu, 06 Jun 2024 12:58:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=schmorgal.com; s=google; t=1717703897; x=1718308697; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3o/J0UJ9ACwmzWlKh3CN5VJQYcVvkxTrq2dn4n2oDpA=;
+        b=ZQ7Sku5/lY+VEbi7K+J5j8m4GU4NjHaspOkJlfWLkiNHyDW7e2Iu7tuapbutaAe9O1
+         gJBsH+dfihRImeifdmhTPSzeW1dE57b4ZJHUYXsmAyGLZitQTvHrsU/dU93jD4hP6ur1
+         JqrMPP6wKHJ6uEiiDNdlS7H1NKoaWcBu26SyE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717703897; x=1718308697;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3o/J0UJ9ACwmzWlKh3CN5VJQYcVvkxTrq2dn4n2oDpA=;
+        b=jCdxEZTrLr+Gw4Ugplk37jjBPpUTU/7fIKR0hH+GID6SC45ZaJudVbxVmulOJA2LQK
+         rTgPa8FgAHtcM6FnIZg5QgDLTacYYT1YHvTXTMekcOIjkweAO3SzNy/NpvxI0zqkSdvN
+         P16p2ibk25YtJEVxmqGtA+jBZotASd1R0LV92eAk5uRGF/2+50dosKc+MFPBF0/5qZJ3
+         KY0wxGkoONXaBrdrsuZSm3vjBLoSBVo9W5hjbjOKEWdS0AjbHlPKnYnulRYx6ypAuriz
+         rQAFrlm3ogmHuwFeu6bWTpQUPH4cMArkaHfgQQV1iugxMVP57Byj9A9g7rDUU0Kr6qFF
+         6+dQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWLbzgBQmmInJ6t8vZ3k4C71WI5mI8Jl7rW/Y2o/PhBGzzk+DJbKNmjBhx5Hs1wEfxrbloHdJR+p/2jMl9LMYqED/l0cD+DUHaLIdrB
+X-Gm-Message-State: AOJu0YwbzWDS9xMiZGTjOCgdKMxC2JiulVc4YxytSCwDSCUH+itkN3JZ
+	V9b0f+cFb9Kr7+SnCf/+8vx2bnBzW9SNWiLsNbyHzDF2pdoJhbfSKpmhAw7Fe7Q=
+X-Google-Smtp-Source: AGHT+IHP3oJ5uiT5goiX/QRvbrVniUhcGYG1Aq8eRRpKWSxQWiEE3NOsD2jZep22X3z+xLy++gkDIA==
+X-Received: by 2002:a05:6a20:9696:b0:1af:ce9c:6421 with SMTP id adf61e73a8af0-1b2f151f836mr598858637.0.1717703896970;
+        Thu, 06 Jun 2024 12:58:16 -0700 (PDT)
+Received: from doug-ryzen-5700G.. ([50.37.206.39])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-703fd394f20sm1446787b3a.55.2024.06.06.12.58.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jun 2024 12:58:16 -0700 (PDT)
+From: Doug Brown <doug@schmorgal.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 1/1] serial: 8250_platform: Explicitly show we initialise ISA ports only once
-Date: Thu,  6 Jun 2024 21:48:41 +0300
-Message-ID: <20240606184841.3102545-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+Cc: Jonas Gorski <jonas.gorski@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org,
+	Doug Brown <doug@schmorgal.com>
+Subject: [PATCH v2 0/3] serial: Fix regression in omap-serial and pxa
+Date: Thu,  6 Jun 2024 12:56:30 -0700
+Message-Id: <20240606195632.173255-1-doug@schmorgal.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -62,57 +66,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-serial8250_isa_init_ports() uses home grown approach to make itself
-a singleton. Instead, explicitly show that we initialise ISA ports
-once by providing a helper function which calls the original function
-via DO_ONCE() macro.
+This series fixes a problem observed starting with v6.9 on the PXA168
+Chumby 8 and the OMAP3530 BeagleBoard. The UART would hang and stop
+transmitting further data.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_platform.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+The root cause ended up being the change in commit 7bfb915a597a
+("serial: core: only stop transmit when HW fifo is empty") that
+restricted when tx_stop() could be called. It broke omap-serial and pxa.
 
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index ded985182e04..5817c1d72314 100644
---- a/drivers/tty/serial/8250/8250_platform.c
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -9,6 +9,7 @@
- #include <linux/array_size.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
-+#include <linux/once.h>
- #include <linux/platform_device.h>
- 
- #include <linux/serial_8250.h>
-@@ -53,15 +54,10 @@ void serial8250_set_isa_configurator(serial8250_isa_config_fn v)
- }
- EXPORT_SYMBOL(serial8250_set_isa_configurator);
- 
--void __init serial8250_isa_init_ports(void)
-+static void __init __serial8250_isa_init_ports(void)
- {
--	static int first = 1;
- 	int i, irqflag = 0;
- 
--	if (!first)
--		return;
--	first = 0;
--
- 	if (nr_uarts > UART_NR)
- 		nr_uarts = UART_NR;
- 
-@@ -102,6 +98,11 @@ void __init serial8250_isa_init_ports(void)
- 	}
- }
- 
-+void __init serial8250_isa_init_ports(void)
-+{
-+	DO_ONCE(__serial8250_isa_init_ports);
-+}
-+
- /*
-  * Register a set of serial devices attached to a platform device.  The
-  * list is terminated with a zero flags entry, which means we expect
+The change was intended to fix an issue with bcm63xx-uart after commit
+d11cc8c3c4b6 ("tty: serial: use uart_port_tx_limited()"). Instead, go
+back to Jonas' original patch series that fixes the issue directly in
+the bcm63xx-uart driver [1].
+
+Changes since V1 [2]:
+
+- Revert the broken commit and apply Jonas' patches for bcm63xx-uart
+  instead of directly fixing the issue in the pxa driver (at the time, I
+  didn't realize omap-serial was also affected).
+
+[1] https://lore.kernel.org/lkml/20240225151426.1342285-1-jonas.gorski@gmail.com/
+[2] https://lore.kernel.org/linux-serial/20240519193109.122466-1-doug@schmorgal.com/
+
+Doug Brown (1):
+  Revert "serial: core: only stop transmit when HW fifo is empty"
+
+Jonas Gorski (2):
+  serial: core: introduce uart_port_tx_limited_flags()
+  serial: bcm63xx-uart: fix tx after conversion to
+    uart_port_tx_limited()
+
+ drivers/tty/serial/bcm63xx_uart.c |  7 +++++--
+ include/linux/serial_core.h       | 21 +++++++++++++++++++--
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
 -- 
-2.43.0.rc1.1336.g36b5255a03ac
+2.34.1
 
