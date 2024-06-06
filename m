@@ -1,107 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3DC519580C;
-	Thu,  6 Jun 2024 11:42:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18B6FC02
+	for <linux-serial@vger.kernel.org>; Thu,  6 Jun 2024 18:25:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717674164; cv=none; b=oWOu8qzEJAHO1+ctXG6M8Y0cGTjCobcTdAyEMRS94lThLmiz02bi1eki8tDT95nBGs6EdWdgaJASPToxMhse6uSWAUS09VP63rdAoc/ej2KBY7kEMwa4jzqJl3U+gMhSTlyChz83pJ03o+N1YbhpQN31yUBFgADofr3XicWhuaY=
+	t=1717698350; cv=none; b=N80RQwE4d3Rv5CTT5ZP2i6Tp4M6HPAwttUIjMLiId/942kON4N+67Uj6U8AicqzeZAaWoaKcx0AfR3Z0+31hHQRyRIS3ocb8I+9aGRdeW4G126WArvZ9KDOXhUryfNKhMrV9rxmvp2MWpsonxHNqIktbFeBtkEnTWYVDWqF1rDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717674164; c=relaxed/simple;
-	bh=ZmU91IMTzL3EbILWOMUaRcnOPrsPyfbS4xQgTphHPZQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NkL/nyfAWnPdfuCF6nTv0P/iyrAwKcKEwBD7g2ihbBnsFAQTvpSWbPZL5l0Gj6XsM8oEoxqgAMoYlXPYQ9RWaysd55jYsuBQDye7eUuj163izKonauyLw1C/D9L5QsxAuwEcv9Y+D3FvzZwS/9zMPc0nMTb4u+aMaM9l4Exlhs8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EJaPyw21; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1717698350; c=relaxed/simple;
+	bh=gCj3Vlj0qU6Lpsy9oSFTpXWU4JEuaUj+Chyk30mOTu8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RBM4jqL5UzXXosNj8p7QwordgLthRGSRDO3Z/CmvF45w7w50iPPbFeAhwz3H4CHTu3NZMwuZtqkhyNaZy5lq72AvVmIZV+5vaqwLYuS436bjEkxYkEqqofAsaFHvkIhFRdKmxNrDGZ4LbrJUZR8+qFPo2lMMgL+jOV+ND3eSZnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com; spf=pass smtp.mailfrom=schmorgal.com; dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b=JAQ0Bvxf; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=schmorgal.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=schmorgal.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EJaPyw21"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1717674163; x=1749210163;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZmU91IMTzL3EbILWOMUaRcnOPrsPyfbS4xQgTphHPZQ=;
-  b=EJaPyw21C7aRe6Ug78tGr4RzOG6CgtZ/9s84Lo+vJ2GsNXVJRt7/Bx4C
-   Yqupz1pTDFzZMYPacXCX4PVVIhDtcF28vUK9rGHu5trDdsIan+WCXTaG+
-   xFU2mryVGt/5K6oWHnrxV3FZ6fq2fgJ9vvBr6fCIArHjbiIptJo/mW7bt
-   yWMtBREnX8RYfxg29JjiavcQB/Yaf3BRbEo3l6SKs30/Iyq86Gt38PsA0
-   8olo4P9meW47b0OaPHMBJLgu2GeRiVniZIQyuRUptlGfyP6FAibCVPMGd
-   HeEucTu0a4DrYAkw2Q3oN/9zOGLdAa5Oks4qZsiY1ciEQ2O5iUZKNlyUn
-   Q==;
-X-CSE-ConnectionGUID: ZDYwbEm6QOune/YGSsqiVg==
-X-CSE-MsgGUID: NhNNbIYGT3KTgMJm3YGB9w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11094"; a="14517465"
-X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
-   d="scan'208";a="14517465"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 04:42:42 -0700
-X-CSE-ConnectionGUID: KIvjY8cFQsG2VkZvGz6RLg==
-X-CSE-MsgGUID: SbU9GlMET92bldHYUhbBZw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,219,1712646000"; 
-   d="scan'208";a="42514908"
-Received: from unknown (HELO tlindgre-MOBL1.intel.com) ([10.245.247.177])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2024 04:42:38 -0700
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	Tony Lindgren <tony.lindgren@linux.intel.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Revert "printk: Flag register_console() if console is set on command line"
-Date: Thu,  6 Jun 2024 14:41:47 +0300
-Message-ID: <20240606114149.118633-2-tony.lindgren@linux.intel.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240606114149.118633-1-tony.lindgren@linux.intel.com>
-References: <20240606114149.118633-1-tony.lindgren@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=schmorgal.com header.i=@schmorgal.com header.b="JAQ0Bvxf"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1f2e3249d5eso2195855ad.3
+        for <linux-serial@vger.kernel.org>; Thu, 06 Jun 2024 11:25:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=schmorgal.com; s=google; t=1717698348; x=1718303148; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VLSb2hjypAsHGdsIQL+DaybMyTAuRzQ0qjbEdPf3ZHw=;
+        b=JAQ0BvxfizXOk5BuaAwKxZwsRZ57+LAf9G1RAZsfVTCQPuSOy1FSKM/WgjGzfgWQLc
+         s2SN93X5IWZj7xvP5mT1qs64VwMf/atG25C5p6t9NW/dzAHQKQggt5LDL2B7Ut5Xk229
+         FG2iEG07t9mD3BZguW5PHIViHVXM8powu4zSw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1717698348; x=1718303148;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VLSb2hjypAsHGdsIQL+DaybMyTAuRzQ0qjbEdPf3ZHw=;
+        b=eX9KfTjqCQjnoq1P7joeK6UhWr9Hs/DQOFr82YLuvBUdoYqDQdUEoPKAzQ2NaDQTRJ
+         4A9I1XzxpyOYUWcLP4KcK1d25yq3DDLeGBUkxHkRdRJpRSq+p6avpioTTxTThmgP0rM9
+         eEAcPAJAehfmV99KCV1v3U4SYlzxVo0IOkYdINusyfPVSgICO5F2xSeBK03/xT7nmRlT
+         U08ouv2EYW2wspJmbqeFhfBX7udtmwIwe7J1e/EnbKO4hXh9CoSc3/NJyJBeiypbXEbA
+         klM8os0oXb7faeuqieM8cNAdsMQUt9pNjOPMBbKQUUGhzZ+IzuXUIlgayejhW0VH+Y6w
+         gbMg==
+X-Forwarded-Encrypted: i=1; AJvYcCWadG00K1rIXOEoJ49i722R88i+s4J9yMVY6vLeFzcnWGIST0mmmGZwrjr5VFNW0jzWDGcbC4sTZT01CYgwcxDC1ovD/21MeJKu7RCe
+X-Gm-Message-State: AOJu0Yw+dWlgkS2KU+Yez2+d1AtdBW2du0CMrzVR8nS70QAYP+YSvRAh
+	EnYXaG7mni3OsQ7JkgKhTG1Kbg6E2+CaYDXyN7wg2FI4KMCFtpP0RvGNvxPlaBDmSedhGnzd2TV
+	BbLzSdg==
+X-Google-Smtp-Source: AGHT+IGOqHP880AZ0K6Vri0cdxrrMPSdEyAMZMLwDmnXejDbFNN3scvM1VcULEQlZul3ezHPHhxtrA==
+X-Received: by 2002:a17:902:d4d2:b0:1f5:e635:21eb with SMTP id d9443c01a7336-1f6d0221838mr5091155ad.0.1717698347917;
+        Thu, 06 Jun 2024 11:25:47 -0700 (PDT)
+Received: from [192.168.1.33] ([50.37.206.39])
+        by smtp.googlemail.com with ESMTPSA id d9443c01a7336-1f6bd75ef63sm18410295ad.4.2024.06.06.11.25.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Jun 2024 11:25:47 -0700 (PDT)
+Message-ID: <986c588e-2a14-4167-8664-95452f1dc38a@schmorgal.com>
+Date: Thu, 6 Jun 2024 11:25:45 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: pxa: Disable TX interrupt if there is no more
+ data to transmit
+To: Jonas Gorski <jonas.gorski@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org
+References: <20240519193109.122466-1-doug@schmorgal.com>
+ <207771fc-294a-4810-a3a2-52ea0e27360f@kernel.org>
+ <CAOiHx=mnHsZ7U79NkNRyBsqkGhaM3vy9cgaZe=uBUXM7o8=SFg@mail.gmail.com>
+ <20d56279-2598-4a3e-9984-729199d8e67d@schmorgal.com>
+ <f7d2289a-2992-470b-97e3-187386ec3f5d@schmorgal.com>
+ <CAOiHx=mVSp4v0bxCW4HQ8SJUQ_7JN_8HMWvoB4-CR2mKtxTjaA@mail.gmail.com>
+Content-Language: en-US
+From: Doug Brown <doug@schmorgal.com>
+In-Reply-To: <CAOiHx=mVSp4v0bxCW4HQ8SJUQ_7JN_8HMWvoB4-CR2mKtxTjaA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This reverts commit b73c9cbe4f1fc02645228aa575998dd54067f8ef.
+Hi Jonas,
 
-There is no need for this change now that we are reserving console_cmdline
-slots for the DEVNAME:0.0 style consoles.
+On 6/4/2024 6:04 AM, Jonas Gorski wrote:
+> Hi,
+> 
+> On Sun, 2 Jun 2024 at 19:24, Doug Brown <doug@schmorgal.com> wrote:
+>>
+>> Hi Jonas,
+>>
+>>>> On Mon, 20 May 2024 at 08:41, Jiri Slaby <jirislaby@kernel.org> wrote:
+>>>>>
+>>>>> Perhaps, it should be reverted and the affected driver should just pass
+>>>>> UART_TX_NOSTOP instead?
+>>>>>
+>>>>>>         uart_port_tx_limited(&up->port, ch, up->port.fifosize / 2,
+>>>>>>                 true,
+>>>>>>                 serial_out(up, UART_TX, ch),
+>> Does the bcm63xx_uart driver work correctly if 7bfb915a597a is reverted
+>> and UART_TX_NOSTOP is used instead?
+>>
+>> I was able to further confirm on hardware (BeagleBoard) that omap-serial
+>> is also broken after 7bfb915a597a. I'm trying to figure out how to
+>> safely revert it while also allowing bcm63xx to continue to work properly.
+> 
+> So I went through all users of uart_port_tx(_limited()), and
+> expectedly most do just disable the IRQ (or do nothing) in their
+> stop_tx() call back.
+> 
+> The notable exceptions I could identify are:
+> 
+> - bcm63xx_uart: disables the emitter as well
+> - mxs-uart: disables the emitter (introduced and uses UART_TX_NOSTOP)
+> - sprd_serial: stops alls dma transfers as well
+> - atmel_serial: stops dma and disables emitter as well
+> 
+> I suspect sprd_serial and atmel_serial to not work properly with the
+> old behavior, but I have no devices where I could test this.
 
-Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
----
- kernel/printk/printk.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+I see what you mean. Unfortunately I also don't have the ability to test
+either of those drivers. It looks like atmel_serial didn't previously
+have a stop_tx() anywhere in the code that was refactored to use
+uart_port_tx(), so I'm assuming it should also have UART_TX_NOSTOP
+added. I'm not confident enough to submit a patch for it though.
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 52bdd7dcdb6f..8b746eeb77fa 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2541,9 +2541,6 @@ static int __init console_setup(char *str)
- 	if (console_opt_save(str, brl_options))
- 		return 1;
- 
--	/* Flag register_console() to not call try_enable_default_console() */
--	console_set_on_cmdline = 1;
--
- 	/* Don't attempt to parse a DEVNAME:0.0 style console */
- 	if (strchr(str, ':')) {
- 		reserve_deferred_console(str);
-@@ -3578,7 +3575,7 @@ void register_console(struct console *newcon)
- 	 * Note that a console with tty binding will have CON_CONSDEV
- 	 * flag set and will be first in the list.
- 	 */
--	if (preferred_console < 0 && !console_set_on_cmdline) {
-+	if (preferred_console < 0) {
- 		if (hlist_empty(&console_list) || !console_first()->device ||
- 		    console_first()->flags & CON_BOOT) {
- 			try_enable_default_console(newcon);
--- 
-2.45.2
+sprd_serial prior to the uart_port_tx_limited() refactor was calling
+stop_tx() when uart_circ_empty() was true -- in fact it was almost
+identical to the pxa driver's code -- so I feel like any bug in there
+related to stopping too early would have predated any of these changes.
 
+> Regardless of the chosen quick fix, it feels like stop_tx() is the
+> wrong thing to use for uart_port_tx(), and just happened to do the
+> right thing for the majority or drivers. But the correct function
+> (something along "done submitting tx") also doesn't exist.
+
+That makes complete sense to me.
+
+> But I'm no maintainer for tty/serial, nor do I have much (intimate)
+> knowledge there. This is just from looking at it from the outside, and
+> my thoughts may very well be wrong.
+
+I'm in the same boat. I wouldn't feel comfortable submitting a large fix
+for something like that. There are so many hardware platforms that are
+using this code, it seems very intimidating to work on. Thanks for the
+analysis, and thanks for linking your previous patch! I'll work on
+submitting a quick fix for this at least. I think if we go back to the
+approach your earlier patchset used, it will fix the issue I'm seeing on
+omap-serial and pxa while also working properly on bcm63xx_uart.
+
+Doug
