@@ -1,46 +1,46 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B39171E7C;
-	Tue, 11 Jun 2024 07:36:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321FB1E52F;
+	Tue, 11 Jun 2024 07:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718091375; cv=none; b=hz2PrdguC9HSQM2o2r+70q/+vw5lznaXOPLFdBq+MxfBmLl5rx1yzgjY3ZcG9giJoPngPxpK5lEqaPL1c4ohFBI5XI+3PHzQPSNtlCyyLYsFUWoxHeylU5cKXwXSfuPDJATaqgOGi0sil3S2Pv01CwKHqk2P5kjCzXkoWa59E1A=
+	t=1718091578; cv=none; b=e4sNaP3wB9fw/hji5wCk8peTYxVeLAs6On+2jK9b8vds9QVlCEI5obYwnIaRa5LTZnA3fAbGlBOVtAcw7oLRnCYb5QiWHf0P3DWLBYpfbaZqFANhlDp5ZFyH+70ZBk+n8Ziyq4fDSlo6KqVbRBi74W9kDQYWPkhXoYRsMo9vT78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718091375; c=relaxed/simple;
-	bh=ARZe1loMVP74ruyMn8+10+hSh8A6o2hBc6fLxjaGuTA=;
+	s=arc-20240116; t=1718091578; c=relaxed/simple;
+	bh=637fUC182B/p/l0RQRC6xJXtXmBqhsWjWsCEztSAM6o=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MYg5YZKrAVal/FzZr9d5AmE4fuH1fdno9m9eA9KUyDJvKRVHXvNVjPuYXV2eqxCAPvHZgLMCpXhDIPAlfU5OObablyl+IeGuKB6t4Vo941VEZtxWIzn6CLf9nIzlElYUz2l1SF0kWqYX0JadIyEMw/fxq4ozu/6yFxXiYh/kEjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.50
+	 In-Reply-To:Content-Type; b=oGlGdE8bwd2KZ9knB8gkoMqb6ZIMD7stnxjF6lRU4+XavDwx5wkj7pKhrNfVECEESLbe3akST1gqzZQZanqoTPb8/LSm26vHUmrd5szM7DvJ7T9J54XFj8ax+mJT4j+h4gsOBn+MAXiox1pGdZ/dUUtjGNfGdUlxbXFdMbUKwmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a6e43dad8ecso594600566b.1;
-        Tue, 11 Jun 2024 00:36:13 -0700 (PDT)
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57a1fe63947so949175a12.1;
+        Tue, 11 Jun 2024 00:39:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718091372; x=1718696172;
+        d=1e100.net; s=20230601; t=1718091575; x=1718696375;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zARE2ykaZLKe2LSa6sB/L8tQ+x3s44Gn7f7syKk8L1k=;
-        b=foLsM6UlNRXv87BpSHSJxCC7g93rfxfVUd5/NJ/CYblOa/GsjV0GappyfHaakKdhto
-         XCSQaXjb5mTyaoDoQw49DsZ2+E+Mbp57EJo28wtjUN11FMD2AX9DYo5vYMgcMNgOA23J
-         IXjqssL+Thk0XKDi2eAj/KDh1fQpkOAZoRBjQes+tUk0iBXOKH5AUtLVS5DV41mWMf60
-         EJEKgqZiOA5BtKKwNMAtpGsTT5ABr+Xjv7ssZVgPh+i5wTLGog7lKvNreH4M5kdq4oib
-         VGElMvlder9KttrdRuLjCgl5QQrUHNTz7e+Tdt3vWUoh0GIC9pudYqK9iR7pj4/jxKzS
-         WfrA==
-X-Forwarded-Encrypted: i=1; AJvYcCXd/mUoQF8n7h1bmkTvHiO5RLThD2zEubtI74BWzGmS7qevbtDG7nODmlgjhVqLNhvwZWgYhFvGOSwG7pqzmnQfN3lS1d3eOU+s/+sER3ZMpCkmp4jhLEBaYaqVERJlHtKPNxnyr3wz5N/PZQ==
-X-Gm-Message-State: AOJu0YyXRi1M3jwAzcfYSBYknVFjsIoLWbjjz1XRXIVIxR7b3Co5cNLo
-	jlRYIbQj5KYxxtyOklWh8dovX035/ahsFfjE93TN7+YCP/oNylTZ
-X-Google-Smtp-Source: AGHT+IGifzxIzPgrUuvBOKMpLojTJWEC748lXgYAK6UW8TVQ3vyaf2l/29NCw2JCSi2KAWJ/maByfQ==
-X-Received: by 2002:a17:906:b885:b0:a6e:fdc8:ae42 with SMTP id a640c23a62f3a-a6f34cb468bmr116133866b.12.1718091371938;
-        Tue, 11 Jun 2024 00:36:11 -0700 (PDT)
+        bh=d5Wm7OMeX6zk0x9ibqIrwPq0dr9kqWdXX7o1Kro22Zo=;
+        b=t7CAe/Tc+j9b0NfLMwCkEbQ3TAnuPLLVPUiwtAwZ4iakJH7daLPWAvCNtlw7RP2IQv
+         MYfmY3y7bdhuPfQCITlAf35wXHNYwFUfCuLrmS9bPBvlIyzY0pFsIltxj6NbVtBUgdyC
+         ugxjysRp6br2hpJ3CPE5pNo97gJPD3zUBS/kSEcaIvXVeU77lYE92Rcb04PYzcP3EjMW
+         NZWRD7c8fZOAKvDEUWiIwKCRLUa7o2J1ZElkVrKRhOPa6S9eCtNZPP0em7+KTgguFvUp
+         /2NrP0pECMwx565/nhJQ0GjRG6HQJdNL7oHxbuTeQuEgd4hlmLoJeMv0h90AxaU/S68q
+         GdeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUc7dcx0NdnAwwz4RVfFy2rBeKeD6yz2NmU55TMB4WtMzw+3p6qOn+a8FLqA2YIBwAKRwYtJrNUSms/Y0C0RI1IhF5JSjQQhi1eSiqF
+X-Gm-Message-State: AOJu0Yx6jCP4qqW7yWby6MNZatvBhNM0hpIE65CZYMFV+1hXq3CHWkaH
+	EPQNVjln/tmM0w/mHVcD/Nq27C+sDDAsP6yPn6trZkhJRFed3rzf
+X-Google-Smtp-Source: AGHT+IGDcxVTO7D+1PyfZLiZ15QbdR7bwirSYTPcTt0NHFuqezRYUa/3OzHnBGMRnprrWqWu/lDHcA==
+X-Received: by 2002:a50:d681:0:b0:57c:673f:f262 with SMTP id 4fb4d7f45d1cf-57c673ff3a8mr6709485a12.30.1718091575316;
+        Tue, 11 Jun 2024 00:39:35 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6c80727e04sm721596766b.188.2024.06.11.00.36.09
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57c69d06729sm5958583a12.56.2024.06.11.00.39.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jun 2024 00:36:11 -0700 (PDT)
-Message-ID: <5e46e5dc-cb38-4851-875f-732c99c5f34f@kernel.org>
-Date: Tue, 11 Jun 2024 09:36:08 +0200
+        Tue, 11 Jun 2024 00:39:34 -0700 (PDT)
+Message-ID: <4a748c05-c74c-4b4b-bacf-664b774a490e@kernel.org>
+Date: Tue, 11 Jun 2024 09:39:34 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,57 +48,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/15] tty: serial: switch from circ_buf to kfifo
-To: Ferry Toth <fntoth@gmail.com>, neil.armstrong@linaro.org,
- gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Al Cooper <alcooperx@gmail.com>, Alexander Shiyan <shc_work@mail.ru>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Alim Akhtar <alim.akhtar@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>, Baruch Siach
- <baruch@tkos.co.il>, Bjorn Andersson <andersson@kernel.org>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- "David S. Miller" <davem@davemloft.net>, Fabio Estevam <festevam@gmail.com>,
- Hammer Hsieh <hammerh0314@gmail.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- Chunyan Zhang <zhang.lyra@gmail.com>, Jerome Brunet <jbrunet@baylibre.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Kevin Hilman <khilman@baylibre.com>,
- Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
- Laxman Dewangan <ldewangan@nvidia.com>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- "Maciej W. Rozycki" <macro@orcam.me.uk>,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@amd.com>,
- "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Nicholas Piggin <npiggin@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
- =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
- Patrice Chotard <patrice.chotard@foss.st.com>,
- Peter Korsgaard <jacmet@sunsite.dk>,
- Richard Genoud <richard.genoud@gmail.com>,
- Russell King <linux@armlinux.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>,
- Shawn Guo <shawnguo@kernel.org>, Stefani Seibold <stefani@seibold.net>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Taichi Sugaya <sugaya.taichi@socionext.com>,
- Takao Orito <orito.takao@socionext.com>,
- Tharun Kumar P <tharunkumar.pasumarthi@microchip.com>,
- Thierry Reding <thierry.reding@gmail.com>, Timur Tabi <timur@kernel.org>,
- Vineet Gupta <vgupta@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20240405060826.2521-1-jirislaby@kernel.org>
- <daf06969-15fd-470e-88b8-a717066fe312@linaro.org>
- <cebad7f8-3f47-4e6a-93b7-32fcf2367874@kernel.org>
- <f42ef4a3-4bfe-4354-9220-ed742e093c86@gmail.com>
- <364fbb96-006f-4582-a0f8-a0f9edd50f6f@gmail.com>
+Subject: Re: [PATCH 1/6] tty: serial: 8250: Fix the amount of ports doesn't
+ match the device
+To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20240607114336.4496-1-crescentcy.hsieh@moxa.com>
+ <20240607114336.4496-2-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -143,34 +99,55 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <364fbb96-006f-4582-a0f8-a0f9edd50f6f@gmail.com>
+In-Reply-To: <20240607114336.4496-2-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10. 06. 24, 22:16, Ferry Toth wrote:
->> One question though: in 8250_dma.c serial8250_tx_dma() you mention "/* 
->> kfifo can do more than one sg, we don't (quite yet) */".
->>
->> I see the opportunity to use 2 sg entries to get all the data out in 
->> one dma transfer, but there doesn't seem to be much documentation or 
->> examples on how to do that. It seems just increasing nents to 2 would 
->> do the trick?
+On 07. 06. 24, 13:43, Crescent Hsieh wrote:
+> Normally, the amount of ports is written at the third digit of device ID
+> of Moxa PCI boards, for example: `0x1121` indicates a 2 ports device.
 > 
-> Nevertheless I got this to work. Very nice. Thanks for this series.
-> I am seeing only 2 interrupts (x2 as each interrupt happens twice), one 
-> for dma complete. The 2nd, not sure but likely, uart tx done.
-> In any case the whole buffer is transferred without interchar gaps.
+> However, `CP116E_A_A` and `CP116E_A_B` are two exceptions, which has 8
+> ports but the third digit of device ID is `6`.
 > 
->> So, what was the reason to "don't (quite yet)"?
+> This patch fixes the issue above by adding checks.
 > 
-> Before considering to send out a patch for this, are there any caveats 
-> that I'm overlooking?
+> Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> ---
+>   drivers/tty/serial/8250/8250_pci.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+> index 40af74b55933..4e88ee07e548 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -2041,6 +2041,10 @@ static int pci_moxa_init(struct pci_dev *dev)
+>   	unsigned int num_ports = (device & 0x00F0) >> 4, i;
+>   	u8 val, init_mode = MOXA_RS232;
+>   
+> +	if (device == PCI_DEVICE_ID_MOXA_CP116E_A_A ||
+> +	    device == PCI_DEVICE_ID_MOXA_CP116E_A_B)
+> +		num_ports = 8;
 
-Not any I am aware of. It just needed testers.
+Can you perhaps introduce a helper like:
+static unsigned short mxser_get_nports(struct pci_dev *pdev)
+{
+   switch (pdev->device) {
+   case ...CP116E_A_A:
+   case ...CP116E_A_B:
+     return 8;
+   }
 
-Please send a patch.
+   return FIELD_GET(0x00F0, pdev->device);
+}
 
-thanks,
+?
+
+> +
+>   	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
+>   		init_mode = MOXA_RS422;
+>   	}
+
 -- 
 js
 suse labs
