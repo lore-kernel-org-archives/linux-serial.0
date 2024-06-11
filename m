@@ -1,46 +1,46 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321FB1E52F;
-	Tue, 11 Jun 2024 07:39:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C382172791;
+	Tue, 11 Jun 2024 07:42:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718091578; cv=none; b=e4sNaP3wB9fw/hji5wCk8peTYxVeLAs6On+2jK9b8vds9QVlCEI5obYwnIaRa5LTZnA3fAbGlBOVtAcw7oLRnCYb5QiWHf0P3DWLBYpfbaZqFANhlDp5ZFyH+70ZBk+n8Ziyq4fDSlo6KqVbRBi74W9kDQYWPkhXoYRsMo9vT78=
+	t=1718091761; cv=none; b=pNx4NFny9lTlbNBtV2QrF3WFSiT4XymK1mZAHMAB7XYVRugukVtX9FaudQDuRcwdM+t1f1Wni+FhUxDY4EiUmVu5z4v1OGXMTBRDF05MVKMXeoHfOk5gJQ0CvHUV5CirhpHmJGQefwrIu8gnDfVwiovWRFKGAEwUqcml97UkSCs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718091578; c=relaxed/simple;
-	bh=637fUC182B/p/l0RQRC6xJXtXmBqhsWjWsCEztSAM6o=;
+	s=arc-20240116; t=1718091761; c=relaxed/simple;
+	bh=o1zahQxIWD+/98sedHnveo2KBjxi7jCNvDC5mVk0MfQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oGlGdE8bwd2KZ9knB8gkoMqb6ZIMD7stnxjF6lRU4+XavDwx5wkj7pKhrNfVECEESLbe3akST1gqzZQZanqoTPb8/LSm26vHUmrd5szM7DvJ7T9J54XFj8ax+mJT4j+h4gsOBn+MAXiox1pGdZ/dUUtjGNfGdUlxbXFdMbUKwmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.49
+	 In-Reply-To:Content-Type; b=qVZaNO0nZdloCG60psyZBP9vDK9M+teBeoCrwRDjl4y0ojO03aAS/Ave8rB4h6tnh+bk8JPJeGgdFCxHmo8SqLypyV6eazgXxGprp0nHuy6jdii33Y43KhKm0bbAxHPj2z/cXQjLMY5Jxde0k6nLCmPYbKdAenclqh8FkNm/q80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57a1fe63947so949175a12.1;
-        Tue, 11 Jun 2024 00:39:36 -0700 (PDT)
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-57c681dd692so3833556a12.3;
+        Tue, 11 Jun 2024 00:42:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718091575; x=1718696375;
+        d=1e100.net; s=20230601; t=1718091758; x=1718696558;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=d5Wm7OMeX6zk0x9ibqIrwPq0dr9kqWdXX7o1Kro22Zo=;
-        b=t7CAe/Tc+j9b0NfLMwCkEbQ3TAnuPLLVPUiwtAwZ4iakJH7daLPWAvCNtlw7RP2IQv
-         MYfmY3y7bdhuPfQCITlAf35wXHNYwFUfCuLrmS9bPBvlIyzY0pFsIltxj6NbVtBUgdyC
-         ugxjysRp6br2hpJ3CPE5pNo97gJPD3zUBS/kSEcaIvXVeU77lYE92Rcb04PYzcP3EjMW
-         NZWRD7c8fZOAKvDEUWiIwKCRLUa7o2J1ZElkVrKRhOPa6S9eCtNZPP0em7+KTgguFvUp
-         /2NrP0pECMwx565/nhJQ0GjRG6HQJdNL7oHxbuTeQuEgd4hlmLoJeMv0h90AxaU/S68q
-         GdeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUc7dcx0NdnAwwz4RVfFy2rBeKeD6yz2NmU55TMB4WtMzw+3p6qOn+a8FLqA2YIBwAKRwYtJrNUSms/Y0C0RI1IhF5JSjQQhi1eSiqF
-X-Gm-Message-State: AOJu0Yx6jCP4qqW7yWby6MNZatvBhNM0hpIE65CZYMFV+1hXq3CHWkaH
-	EPQNVjln/tmM0w/mHVcD/Nq27C+sDDAsP6yPn6trZkhJRFed3rzf
-X-Google-Smtp-Source: AGHT+IGDcxVTO7D+1PyfZLiZ15QbdR7bwirSYTPcTt0NHFuqezRYUa/3OzHnBGMRnprrWqWu/lDHcA==
-X-Received: by 2002:a50:d681:0:b0:57c:673f:f262 with SMTP id 4fb4d7f45d1cf-57c673ff3a8mr6709485a12.30.1718091575316;
-        Tue, 11 Jun 2024 00:39:35 -0700 (PDT)
+        bh=fsQWNnrH8jmRHztYPzNkoqj4xc0t7XwdNHf/EVwsa/8=;
+        b=NQ3K/J35ZHbajSYPjT0AfiJ8aYGg/PgEhz82xgc2uSmuE3kSGhuV+03v4ApBN5HqKC
+         YzJhyJyx+Ehxoc99qBaUE0EzJ6yftMzIPo2XX9PcIgiePGE4xJWoV9jzHTZGKuChk/Oj
+         NHatuksVl+oWirHNygcTCUCPBW0wkxxXene10W0VutQ5p+hbVrfQdb06Gjj3h8ZbJV1D
+         Uf/XDJtYXF93Nz+ehvFVEW7EyfTCT2uMfTt/wprLN+s6inNJcTdpmE9sN1QbMilm7uKb
+         BBc2z0dLDTU31CzSZpUgfvJDZqIMub0r6BvhvWqnEHYat5zujJvrtD0hxuVuTUVoAgH+
+         UhNg==
+X-Forwarded-Encrypted: i=1; AJvYcCVi6X7Qp5i6A2dXsns76YLD4lHKDZP8f6+b0JPQP6B1ObtAL+tYodwAQuo9N98eGEUaPd5ufX2F9sfmzxZ2oDTr+tjRbEJB5h1SsBy4
+X-Gm-Message-State: AOJu0YwoEkiMt36l6zA9Wh6/nGr9oWwR1654bejLCc77SdFqHv96rM+B
+	t1BYPj2I/f0sW/svguiC5DnQSsta5X6qyCTEeP/Mx1teeCmjZOcHpPh1E+1FNgY=
+X-Google-Smtp-Source: AGHT+IEf9G6NJ7DC44th3DnZlFQqr/OKhUOxs3hywcJPukJUxU+XaHYzyqOXwhNEIO6nlZViFMOwfA==
+X-Received: by 2002:a17:906:fe49:b0:a68:fdfd:8041 with SMTP id a640c23a62f3a-a6cd7a843f0mr983795866b.42.1718091757537;
+        Tue, 11 Jun 2024 00:42:37 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57c69d06729sm5958583a12.56.2024.06.11.00.39.34
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6f01a060dcsm418635266b.182.2024.06.11.00.42.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jun 2024 00:39:34 -0700 (PDT)
-Message-ID: <4a748c05-c74c-4b4b-bacf-664b774a490e@kernel.org>
-Date: Tue, 11 Jun 2024 09:39:34 +0200
+        Tue, 11 Jun 2024 00:42:37 -0700 (PDT)
+Message-ID: <0d8da651-4e41-4af2-81cc-732f17aab403@kernel.org>
+Date: Tue, 11 Jun 2024 09:42:36 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,13 +48,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/6] tty: serial: 8250: Fix the amount of ports doesn't
- match the device
+Subject: Re: [PATCH 3/6] tty: mxser: serial: 8250: Relocate device IDs from
+ mxser to 8250_pci
 To: Crescent Hsieh <crescentcy.hsieh@moxa.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20240607114336.4496-1-crescentcy.hsieh@moxa.com>
- <20240607114336.4496-2-crescentcy.hsieh@moxa.com>
+ <20240607114336.4496-4-crescentcy.hsieh@moxa.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -99,56 +99,98 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240607114336.4496-2-crescentcy.hsieh@moxa.com>
+In-Reply-To: <20240607114336.4496-4-crescentcy.hsieh@moxa.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 07. 06. 24, 13:43, Crescent Hsieh wrote:
-> Normally, the amount of ports is written at the third digit of device ID
-> of Moxa PCI boards, for example: `0x1121` indicates a 2 ports device.
-> 
-> However, `CP116E_A_A` and `CP116E_A_B` are two exceptions, which has 8
-> ports but the third digit of device ID is `6`.
-> 
-> This patch fixes the issue above by adding checks.
+> The devices in mxser could be supported by 8250_pci, so this patch
+> relocates these device IDs from mxser into 8250_pci.
 > 
 > Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
 > ---
->   drivers/tty/serial/8250/8250_pci.c | 4 ++++
->   1 file changed, 4 insertions(+)
+>   drivers/tty/mxser.c                | 50 ------------------------------
+>   drivers/tty/serial/8250/8250_pci.c | 50 ++++++++++++++++++++++++++++++
+>   2 files changed, 50 insertions(+), 50 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-> index 40af74b55933..4e88ee07e548 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -2041,6 +2041,10 @@ static int pci_moxa_init(struct pci_dev *dev)
->   	unsigned int num_ports = (device & 0x00F0) >> 4, i;
->   	u8 val, init_mode = MOXA_RS232;
+> diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+> index 458bb1280ebf..b0e7ea6611bf 100644
+> --- a/drivers/tty/mxser.c
+> +++ b/drivers/tty/mxser.c
+> @@ -160,31 +160,6 @@
+>   #define MXSER_CUSTOM_DIVISOR	(MXSER_BAUD_BASE * 16)
 >   
-> +	if (device == PCI_DEVICE_ID_MOXA_CP116E_A_A ||
-> +	    device == PCI_DEVICE_ID_MOXA_CP116E_A_B)
-> +		num_ports = 8;
+>   #define PCI_DEVICE_ID_MOXA_RC7000	0x0001
+> -#define PCI_DEVICE_ID_MOXA_CP102	0x1020
+> -#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
+> -#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
+> -#define PCI_DEVICE_ID_MOXA_CP102UF	0x1023
+> -#define PCI_DEVICE_ID_MOXA_C104		0x1040
+> -#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
+> -#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
+> -#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
+> -#define PCI_DEVICE_ID_MOXA_POS104UL	0x1044
+> -#define PCI_DEVICE_ID_MOXA_CB108	0x1080
+> -#define PCI_DEVICE_ID_MOXA_CP112UL	0x1120
+> -#define PCI_DEVICE_ID_MOXA_CT114	0x1140
+> -#define PCI_DEVICE_ID_MOXA_CP114	0x1141
+> -#define PCI_DEVICE_ID_MOXA_CB114	0x1142
+> -#define PCI_DEVICE_ID_MOXA_CP114UL	0x1143
+> -#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
+> -#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
+> -#define PCI_DEVICE_ID_MOXA_CP132	0x1320
+> -#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
+> -#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
+> -#define PCI_DEVICE_ID_MOXA_CB134I	0x1341
+> -#define PCI_DEVICE_ID_MOXA_CP138U	0x1380
+> -#define PCI_DEVICE_ID_MOXA_C168		0x1680
+> -#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
+> -#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
+>   
+>   #define MXSER_NPORTS(ddata)		((ddata) & 0xffU)
+>   #define MXSER_HIGHBAUD			0x0100
+> @@ -212,32 +187,7 @@ static const struct {
+>   /* driver_data correspond to the lines in the structure above
+>      see also ISA probe function before you change something */
+>   static const struct pci_device_id mxser_pcibrds[] = {
+> -	{ PCI_DEVICE_DATA(MOXA, C168,		8) },
+> -	{ PCI_DEVICE_DATA(MOXA, C104,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP132,		2) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP114,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CT114,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP102,		2 | MXSER_HIGHBAUD) },
 
-Can you perhaps introduce a helper like:
-static unsigned short mxser_get_nports(struct pci_dev *pdev)
-{
-   switch (pdev->device) {
-   case ...CP116E_A_A:
-   case ...CP116E_A_B:
-     return 8;
-   }
+How is this MXSER_HIGHBAUD handled in 8250_pci?
 
-   return FIELD_GET(0x00F0, pdev->device);
-}
+> -	{ PCI_DEVICE_DATA(MOXA, CP104U,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP168U,		8) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP132U,		2) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP134U,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP104JU,	4) },
+>   	{ PCI_DEVICE_DATA(MOXA, RC7000,		8) }, /* RC7000 */
 
-?
+Can you simply add this exception to mxser_get_nports() I suggested in 
+1/6 and drop the whole mxser then \o/?
 
-> +
->   	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
->   		init_mode = MOXA_RS422;
->   	}
+I had a long-term plan to mount mxser onto serial-core (or 8250). I 
+haven't managed the conversion yet. So I am glad to see this.
 
+> -	{ PCI_DEVICE_DATA(MOXA, CP118U,		8) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP102UL,	2) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP102U,		2) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP118EL,	8) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP168EL,	8) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP104EL,	4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CB108,		8) },
+> -	{ PCI_DEVICE_DATA(MOXA, CB114,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CB134I,		4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP138U,		8) },
+> -	{ PCI_DEVICE_DATA(MOXA, POS104UL,	4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP114UL,	4) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP102UF,	2) },
+> -	{ PCI_DEVICE_DATA(MOXA, CP112UL,	2) },
+>   	{ }
+>   };
 -- 
 js
-suse labs
 
