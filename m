@@ -1,168 +1,172 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6245417F517
-	for <linux-serial@vger.kernel.org>; Wed, 12 Jun 2024 14:48:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52E8117F4F5;
+	Wed, 12 Jun 2024 14:50:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.121
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718203696; cv=none; b=osSf8gUHaxbI8FAB4AjrUoraidnIRJXLthSX1CghZCEknRcvNQY9jVUvw+LcwBUSGf3Hctjx6S9ajyJXgIUKSyT4tDx8DzX44yW7V+amq8VXcnWUc/KviyNBiwCIBfADJuB3VHSVpniXrjAG8Uk5rArpk1z735en2cb9NJJYsvQ=
+	t=1718203817; cv=none; b=n2WetYcr3nrs8OtHuDNR0TK+jWbeWj0Io+gBfQmqTLGSr0oO1kTscdrd8AX8yZD+spk/bNZu9dCyI5D8mwdpcpypDUmp+vtOu3Q7H+N9So70WLmbjXbEsTVD6kKeFnw36PtMIH7kEPZirGL2n5+xShBbC1d76Smdk2wtwBDKGGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718203696; c=relaxed/simple;
-	bh=gTvUfeVcV0WBX/VSstMj3P4uHESmQaeTlXAV82NwTbY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iOts+Cew4+syJAX4Qkiz3JkvpJYiMtRqiz8bdijzv736h1PdofkNPzPeuP4KIMwslGTn9yca4pAB3s7X30ICbgn0mx7hcApqAbaRRwnMdJinJu0M+qdvMkjwaPeg6caG9f00hQjO0WauGR88FZOSTTHMiBzBtV4VVhKPvbTc+1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=cqY9wgKi; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1718203817; c=relaxed/simple;
+	bh=gTVjA1lU2IXRk2J6/Gdpx6FdAP/OUlGWT/y2xhtrS7w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=X+IMxhdUbSIRNbVMRb9LMawHqq4ZSNSG0LlGIRqGgkJKc3Oy9R8xPEKouD3/E7loEzpd9obbqLoLPOqWAJW1ZCTAH/xLKPZCGl3U+fC4si+z6+XetrMiqOStmajCttoMoQ9ASRlOJqjYHALVGxM2mzsTL4HLBoSp8s0J284M/r0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=ebLq0quz; arc=none smtp.client-ip=185.125.188.121
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="cqY9wgKi"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a6f3efa1cc7so179760966b.0
-        for <linux-serial@vger.kernel.org>; Wed, 12 Jun 2024 07:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1718203693; x=1718808493; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8IWtwzoqSJWM3Lgz12Iah6lW8otD2wfGj7uZTal1qAE=;
-        b=cqY9wgKiuy/ci4WOO9TbMUPtNwcwMQ34cJH3IY9Frn0/1QtkzeFZ0/Enb4mBdslaKX
-         7539l0Iolf4DarmHzWhJyCLey7SdTSsnjNAlP7NUKW64XYgijMBoVK6rHGxb699Zg5Lj
-         3+kil24oBa/8I8eoXdvKPdSph69/MY7lBrhshKAdE9RPKp1dTev6JFaBJN4AbiE2dket
-         TcYZgyMAQ6387fnjs/iO331jpXQLwmhpFXS2PlCGusNu7FJAtk0EX9o2CHW9Lw3CTDGV
-         U5T0vr2xB/fzegSBsrVr9uKjj2Zdps6cmun3TGsy8O19GHR2Mz92CSP6g+VWUJZ4bFAX
-         LtUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718203693; x=1718808493;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8IWtwzoqSJWM3Lgz12Iah6lW8otD2wfGj7uZTal1qAE=;
-        b=qvLi69umfMnYl8HOBWi4Vuc+MJKTuMBZhfoCrPHKVbsz8VdoFkQl0r3IXslYozR+Xf
-         CA6DRszvFcNOpmdM9fmNtWJTfV+fIcXFj4y/Ex+YgsZoleXNXjwj+23xI+oyeA1IuolQ
-         ENWuI1If7lYBS3X669dlk+x5RgSW3v3BR8WNsaiYeYVRNKFpXh3aRT+jC70jU34F3D4Q
-         5VQC1M488DDzO4vfyraxmzlW6lO10m3Q+6bNL/zBqT1JixED8LYolZDOqE6afuU+b/ev
-         IrY4jGbcQEiDQReXIiRBgCsD0QnfJimpJKjAcPNLygpb5dHZUoRev7M5xQd5/u8xocXy
-         P/uQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVx0c5FzpgVCUrIP97j4qrRZd5dqFyUgrRgr5F2Z5qPzGC8AFKqnd+JHGhTMxHAOn1REBPd1WB63N5HlsQq5eitpQZlM2VS7mpvLLo1
-X-Gm-Message-State: AOJu0YyNGj+pd8fKN55cqolo/3KOr7V3uAONcxLlovotnh0RwpKEeY4P
-	aOpiT9wlFKIV58lSKCm+X1NL/ybBPWiHEAEOb7biVP8J9YeyzgvENs5FrGP1ETk=
-X-Google-Smtp-Source: AGHT+IFe/XnrBiMyULWYXvobbO+KULp/ZOLbfPDdM4O64ls/uoXWS6C0Worus7xXfYnO3Uc+wuChjQ==
-X-Received: by 2002:a17:906:ce44:b0:a6f:51b3:cbad with SMTP id a640c23a62f3a-a6f51b3cc99mr5567166b.25.1718203692687;
-        Wed, 12 Jun 2024 07:48:12 -0700 (PDT)
-Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6f19171cd0sm453652766b.61.2024.06.12.07.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jun 2024 07:48:12 -0700 (PDT)
-Date: Wed, 12 Jun 2024 16:48:10 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Tony Lindgren <tony.lindgren@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] printk: Track command line console positions to fix
- console order
-Message-ID: <Zmm1KpOKkigPRyrG@pathway.suse.cz>
-References: <20240606114149.118633-1-tony.lindgren@linux.intel.com>
- <ZmgIB2lQaW9oqn3O@pathway.suse.cz>
- <ZmgfZr5ccHATnkAA@tlindgre-MOBL1>
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="ebLq0quz"
+Received: from [192.168.0.106] (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 96AFE3F1D3;
+	Wed, 12 Jun 2024 14:50:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1718203811;
+	bh=EVeO/ntZpuwYpx+X1bX9nEioZ0b1qYOSTHEmiyczwwk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type;
+	b=ebLq0quzNIevLXUytjTmaDHbW2I5o8dvNodx7eydc53D/s8ulZACazCg9DjpFkyTv
+	 HUzkcVf6LUtIjxIbqJWwgGXqyPmdLq0vAesah+vow7BWRx+ktFSkAf0j9Bt2jGAvZK
+	 nosqeMGn/v4pvirKDcCm2a3Ux/A8NFvtqwV7MGEEflsAIXiQ6Ue8/9n42i/kBensND
+	 6dlYjAVfHEdsmFqvdCag7Gw4sp11Gy4wJpPtjw41xCqRnhbtKJdKjH7KZ6wVZpbWze
+	 yGbjMz1YMK2iWTzKld1aZVblZfRSSw0N8yxqSFZo3IgG9i+Ns0ZHaCBJUdjwgrUH0O
+	 kRwR35VOV98Pg==
+Message-ID: <a4daaf0e-2484-4943-9ac2-589485d69993@canonical.com>
+Date: Wed, 12 Jun 2024 22:50:01 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZmgfZr5ccHATnkAA@tlindgre-MOBL1>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/2] serial: sc16is7xx: hardware reset chip if
+ reset-gpios is defined in DT
+To: Lech Perczak <lech.perczak@camlingroup.com>,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
+ Maarten.Brock@sttls.nl
+References: <20240612131454.49671-1-hui.wang@canonical.com>
+ <20240612131454.49671-2-hui.wang@canonical.com>
+ <18a1beeb-e45b-4d6d-bd21-74b85c33dc2c@camlingroup.com>
+Content-Language: en-US
+From: Hui Wang <hui.wang@canonical.com>
+In-Reply-To: <18a1beeb-e45b-4d6d-bd21-74b85c33dc2c@camlingroup.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue 2024-06-11 12:56:54, Tony Lindgren wrote:
-> On Tue, Jun 11, 2024 at 10:17:11AM +0200, Petr Mladek wrote:
-> > On Thu 2024-06-06 14:41:46, Tony Lindgren wrote:
-> > > Recent changes to allow using DEVNAME:0.0 style console names caused a
-> > > regression to the kernel command line handling for the console options.
-> > 
-> > Sigh, I have missed that it has already ended in the mainline via
-> > the tty tree :-/
-> > 
-> > Honestly, I would prefer to revert it and implement it a clean way.
-> > I see a lot of existing and possible problems:
-> 
-> Naturally no objection from me for reverting if there are issues that are
-> unfixable from the printk point of view. I'll update the fix along the
-> lines you're suggesting below though, let's see if that's enough for the
-> -rc cycle.
 
-OK, let's see how the updated fix looks like.
+On 6/12/24 21:56, Lech Perczak wrote:
+> Hi,
+> Some comments inline.
+>
+> W dniu 12.06.2024 o 15:14, Hui Wang pisze:
+>> Some boards connect a GPIO to the reset pin, and the reset pin needs
+>> to be setup correctly before accessing the chip.
+>>
+>> Add a function to handle the chip reset. If the reset-gpios is defined
+>> in the DT, do hardware reset through this GPIO, othwerwise do software
+>> reset as before.
+>>
+>> Signed-off-by: Hui Wang <hui.wang@canonical.com>
+>> ---
+>> In the v3:
+>>   - drop Reviewed-by
+>>   - adjust the sequence of if, else if and else
+>>   - replace PTR_ERR(reset_gpiod) with dev_err_probe
+>>   - change GPIOD_OUT_LOW to GPIOD_OUT_HIGH, this will assert the reset pin after requesting the GPIO
+>>   - change the 2nd parameter struct regmap *regmap[] to struct regmap *regmap
+>>   - address all spelling and description issues in the v2
+>>
+>>   drivers/tty/serial/sc16is7xx.c | 33 +++++++++++++++++++++++++++++----
+>>   1 file changed, 29 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+>> index bf0065d1c8e9..8c7e0fe76049 100644
+>> --- a/drivers/tty/serial/sc16is7xx.c
+>> +++ b/drivers/tty/serial/sc16is7xx.c
+>> @@ -14,6 +14,7 @@
+>>   #include <linux/delay.h>
+>>   #include <linux/device.h>
+>>   #include <linux/export.h>
+>> +#include <linux/gpio/consumer.h>
+>>   #include <linux/gpio/driver.h>
+>>   #include <linux/idr.h>
+>>   #include <linux/kthread.h>
+>> @@ -1467,6 +1468,30 @@ static const struct serial_rs485 sc16is7xx_rs485_supported = {
+>>          .delay_rts_after_send = 1,      /* Not supported but keep returning -EINVAL */
+>>   };
+>>
+>> +/* Reset device, purging any pending irq / data */
+>> +static int sc16is7xx_reset(struct device *dev, struct regmap *regmap)
+>> +{
+>> +       struct gpio_desc *reset_gpio;
+>> +
+>> +       /* The reset GPIO is ACTIVE_LOW, flag GPIOD_OUT_HIGH asserts the reset GPIO */
+> s/reset GPIO is ACTIVE_LOW /reset input is active low/ - because we're referring to the chip input here, and this is reflected in DT bindings.
+>
+> Also, it isn't clear from the comment that GPIO is asserted immediately.
+Got it.
+>
+>
+>> +       reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
+>> +       if (IS_ERR(reset_gpio))
+>> +               return dev_err_probe(dev, PTR_ERR(reset_gpio), "Failed to get reset GPIO\n");
+>> +
+>> +       if (reset_gpio) {
+>> +               /* The minimum reset pulse width is 3 us. */
+>> +               udelay(5);
+> Prefer usleep_range() over that, since maximum reset time isn't all that critical.
+Got it.
+>
+>
+>> +               gpiod_set_value_cansleep(reset_gpio, 0);
+>> +               /* Deassert GPIO */
+> This comment should go one line above or be removed entirely.
 
-> > 1. Where and how is DEVNAME:0.0 defined?
-> > 
-> >    The only documentation seems to be in
-> >    Documentation/admin-guide/kernel-parameters.txt for the console=
-> >    parameter:
-> > 
-> > <paste>
-> >                <DEVNAME>:<n>.<n>[,options]
-> >                         Use the specified serial port on the serial core bus.
-> >                         The addressing uses DEVNAME of the physical serial port
-> >                         device, followed by the serial core controller instance,
-> >                         and the serial port instance. The options are the same
-> >                         as documented for the ttyS addressing above.
-> > 
-> >                         The mapping of the serial ports to the tty instances
-> >                         can be viewed with:
-> > 
-> >                         $ ls -d /sys/bus/serial-base/devices/*:*.*/tty/*
-> >                         /sys/bus/serial-base/devices/00:04:0.0/tty/ttyS0
-> > 
-> >                         In the above example, the console can be addressed with
-> >                         console=00:04:0.0. Note that a console addressed this
-> >                         way will only get added when the related device driver
-> >                         is ready. The use of an earlycon parameter in addition to
-> >                         the console may be desired for console output early on.
-> > </paste>
-> > 
-> >    This seems to be a brand new bus.
-> > 
-> >    Is it stable?
-> >    Is it documented in Documentation/ABI/stable/?
-> 
-> I think the DEVNAME originates from udev to be used for various rules. Yes
-> it should be documented somewhere though. I'd say it's stable as it's been
-> in use for years :)
-> 
-> >    It seems that the feature will cover "only" serial consoles.
-> >    But DEVNAME is a generic name. It might make more sense to
-> >    call it "SERIAL_BASE_DEVNAME" or "SERIAL_DEVNAME" or "SBASE_DEVNAME" or so.
-> > 
-> >    Anyway, console= is an interface with the user space. We will need to
-> >    maintain the backward compatibility "forever".
-> > 
-> >       => we should think twice about the interface !!!
-> 
-> I think we want to keep it generic with DEVNAME, I don't see why we'd want
-> make it serial console specific, at least in the code. For the documentation,
-> I think the kernel parameters example  is clear on the serial port usage?
+Got it.
 
-OK, let's keep the DEVNAME in both the code and documentation,
+Thanks.
 
-> > 3. The delimiter between "DEVNAME" and X.Y numbers is ":".
-> >    But ":" is also part of the sample DEVNAME "00:00"
-> > 
-> >    Is it a good idea?
-> > 
-> >    Is the current naming scheme a well known historic one
-> >    or something invented for the new bus?
-> 
-> PCI and USB use a ":" already for the device naming. Also a "-" can be used
-> by the device names, many platform devices do that. I don't think we can
-> pick any better limiter here, at least out of the ":", "-" and "." options.
-
-OK, it seems that ':' is the best choice.
-
-And thanks for explaining the other details. Everything makes more sense now.
-
-Best Regards,
-Petr
+>
+>
+>> +       } else {
+>> +               /* Software reset */
+>> +               regmap_write(regmap, SC16IS7XX_IOCONTROL_REG,
+>> +                            SC16IS7XX_IOCONTROL_SRESET_BIT);
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>>   int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>>                      struct regmap *regmaps[], int irq)
+>>   {
+>> @@ -1527,6 +1552,10 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>>          s->devtype = devtype;
+>>          dev_set_drvdata(dev, s);
+>>
+>> +       ret = sc16is7xx_reset(dev, regmaps[0]);
+>> +       if (ret)
+>> +               goto out_clk;
+>> +
+>>          kthread_init_worker(&s->kworker);
+>>          s->kworker_task = kthread_run(kthread_worker_fn, &s->kworker,
+>>                                        "sc16is7xx");
+>> @@ -1536,10 +1565,6 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>>          }
+>>          sched_set_fifo(s->kworker_task);
+>>
+>> -       /* reset device, purging any pending irq / data */
+>> -       regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
+>> -                    SC16IS7XX_IOCONTROL_SRESET_BIT);
+>> -
+>>          /* Mark each port line and status as uninitialised. */
+>>          for (i = 0; i < devtype->nr_uart; ++i) {
+>>                  s->p[i].port.line = SC16IS7XX_MAX_DEVS;
+>> --
+>> 2.34.1
