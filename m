@@ -1,103 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C883F181D05;
-	Wed, 12 Jun 2024 16:58:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5978E180A99;
+	Wed, 12 Jun 2024 18:09:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718211524; cv=none; b=NBGrVmsJwKavgObcCY1AV0TuCnEYA77UwRGwmMcLfEMYFABq8eVeoMSG31SgoOW0sTkI7sgROJXprpCKK/LeRWd5IflOusGMw7CK9xyftailRhkNpK/rf66vxqp6REn2YlBd/V62abnLUoH1Woy6PyhX+YXQagdQJJZ9u5srNoA=
+	t=1718215744; cv=none; b=W/EfMoUbgp6nf8eEjd5x5cUiGgBs9iVM48GpQJ5vRrL0NvTR4mobiKSSwhmgrOnUtcGSkuxCz0QCtkLzMiv+UocI4oxlKVRKRKFbelFTqD18iJkvc4ftytgq4XU251a5Twr94F7Z/Pj0orXEgE4En6lRkJXg1j3XDdwUJhjcnak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718211524; c=relaxed/simple;
-	bh=MbojNuzNsbnxWYGBAKUy/NmL5mQV3wk0tJ4121HL8pI=;
+	s=arc-20240116; t=1718215744; c=relaxed/simple;
+	bh=RRNxGY9uc2EaF8nuRd/G8iHqK8yIo4zN2MQ/fl1O4h0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P1Ym9ebFhGIoNj7IResD4BiH4TN8ieSM5gpB9PXLDa4MGQPfnasrzOvJRBZDqy7+7rR6gYEPnqJ7fQ8rFkUwGTVeBznkyElvsjaeY1T79Du2X8d5XbF5WMfwdMIYzTbCVcFm5GkBWL43C67PdIfYf7LIhXab9uueBFyBnA3Xopo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r5qrUew4; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=IUqXCHUWSzVzzBpep/PDmHqy2fQMLsmXElax52eYejHNK1MMSIHFEeYrBQdYhD43zRipe5P2RLlUe+fgI2fRripymlQXWcR+IK+TDIwN+Z26W/KwoqrmDth99omO4u0OZrFKMc90aWNyXcawHqObioGSC5yoYYONSN7T6tdsISQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oYZykKJa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r5qrUew4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DE4C4AF1A;
-	Wed, 12 Jun 2024 16:58:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oYZykKJa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA22AC116B1;
+	Wed, 12 Jun 2024 18:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718211524;
-	bh=MbojNuzNsbnxWYGBAKUy/NmL5mQV3wk0tJ4121HL8pI=;
+	s=k20201202; t=1718215743;
+	bh=RRNxGY9uc2EaF8nuRd/G8iHqK8yIo4zN2MQ/fl1O4h0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=r5qrUew4kVr6qBRQP11l7p4atN2eJKqmhXhdFoDbLehxBUNJ0ukqXBLK4HI7zx9ci
-	 7mHoratmeMN4a10CxGBzfBfFuKjJwQlP4AE/vOt59ONNU7CoAooSofwa2YIFqMpApN
-	 DV+UAG3v9fa7uhFZIg4jqpMQCoY22KBFm7jdctpSuRtFX1iG+XpWUNucZacFKvy4N+
-	 Pilw7nph1Q72NwR8ry/Pu8IKd5BIEYJLOsLb8o2Ws442KxFIDyOK0YhsPeL0y18/BF
-	 xFc7SkR5cb7n45i4mBhCjbOhuTBNaOH919epxqqEU8DIlRyrhwaspXvK87j5GdARxd
-	 sETeZzuMdOAjg==
-Date: Wed, 12 Jun 2024 17:58:39 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Hui Wang <hui.wang@canonical.com>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, hvilleneuve@dimonoff.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
-	lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
-Message-ID: <20240612-spectacle-pentagram-6ad4357e148d@spud>
-References: <20240612131454.49671-1-hui.wang@canonical.com>
- <20240612-skeleton-bullseye-71067b2244b4@spud>
- <20240612124943.5ce6996abdf670651d0231a5@hugovil.com>
+	b=oYZykKJaJUs5tzXCUsQOfoxqW+JUR2S/UzJLs6cCRNQD9xiLMGO+Jq1UNwZGw2HAH
+	 yUuw4jXmI597oiKjz/CoOqRb5bWTkFovTkdYjNHKu/6JMimpMHF739Tm4PsWHM7xvY
+	 yUc1eBXI47+OiaXjvGXaMUWfBfp7uPtAMNPSxs15CZtanSvyrMKd/03wkY+hAwS4oj
+	 /YqUKJFzXl3hLEG9mVzwTO+w/r9tTAfzaofWTaGf8eHDfTIFPWgTKEfjBm28mLveA/
+	 GEFKIrXSrE0e8H2pJqHEzEqH+Ateqq5fG/xnsWPSRF+N75OLMq9hTaJbxLfJEaVDmi
+	 yx9aSCOf7Fulg==
+Date: Wed, 12 Jun 2024 12:09:02 -0600
+From: Rob Herring <robh@kernel.org>
+To: Animesh Agarwal <animeshagarwal28@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@nxp.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: nxp,sc16is7xx: Add missing child
+ node
+Message-ID: <20240612180902.GA3178463-robh@kernel.org>
+References: <20240612165457.103575-1-animeshagarwal28@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Ymap2M9CjY+gIjjC"
-Content-Disposition: inline
-In-Reply-To: <20240612124943.5ce6996abdf670651d0231a5@hugovil.com>
-
-
---Ymap2M9CjY+gIjjC
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20240612165457.103575-1-animeshagarwal28@gmail.com>
 
-On Wed, Jun 12, 2024 at 12:49:43PM -0400, Hugo Villeneuve wrote:
-> On Wed, 12 Jun 2024 17:37:30 +0100
-> Conor Dooley <conor@kernel.org> wrote:
->=20
-> > On Wed, Jun 12, 2024 at 09:14:53PM +0800, Hui Wang wrote:
-> > > In some designs, the chip reset pin is connected to a GPIO, and this
-> > > GPIO needs to be set correctly before probing the driver, so add a
-> > > reset-gpios in the device tree.
-> > >=20
-> > > Signed-off-by: Hui Wang <hui.wang@canonical.com>
-> > > ---
-> > > In the v3:
-> > >  - drop the Reviewed-by
-> > >  - change gpio to GPIO
-> > >  - change "this GPIO" to "and this GPIO"
-> > >  - change "so adding" to "so add"
-> >=20
-> > There's no need to drop an R-b for grammar changes in a commit message.
->=20
-> Hi Conor,
-> The R-b tags were never given in the first place, that is why they are
-> removed:
->=20
-> https://lore.kernel.org/all/6b1b0635-304c-48d7-a941-fae30962083a@canonica=
-l.com/
+On Wed, Jun 12, 2024 at 10:24:55PM +0530, Animesh Agarwal wrote:
+> Add missing child node property clock-sc16is7xx to nxp,sc16is7xx.yaml. This
+> fixes the following warning upon running make dtbs_check:
+> 
+> ./arch/arm64/boot/dts/freescale/fsl-ls1012a-frdm.dtb: serial@0:
+> Unevaluated properties are not allowed ('clock-sc16is7xx' was unexpected)
+> from schema $id: http://devicetree.org/schemas/serial/nxp,sc16is7xx.yaml#
 
-lmao, yea that's justified (and probably should've been mentioned).
+That's a pretty odd case. Lots of devices can a crystal and this is not 
+how we describe it. I think the clock node should just be moved out of 
+this node to the top level to fix this.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Ideally, when the schema was converted, the warnings from it were looked 
+at and were either fixed in the schema on conversion (with notes in 
+commit msg) or the warnings were left as to be fixed in the .dts files. 
 
-Thanks,
-Conor.
+BTW, dtbs_check is run on every schema patch for the schema in the 
+patch. Results are here[1].
 
---Ymap2M9CjY+gIjjC
-Content-Type: application/pgp-signature; name="signature.asc"
+Rob
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZmnTvwAKCRB4tDGHoIJi
-0sApAP9dZh8177YB5bl1g4AIoNKqB/1NfHZp09VxMHzsKNc/sAEA2+RT9qDcIOkZ
-Q6YIhAaKRhA/SvgLtwi40hu3qW8vZw0=
-=LjNq
------END PGP SIGNATURE-----
-
---Ymap2M9CjY+gIjjC--
+[1] https://patchwork.ozlabs.org/project/devicetree-bindings/list/
