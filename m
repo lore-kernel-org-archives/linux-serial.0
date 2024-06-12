@@ -1,103 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5678616C69B;
-	Wed, 12 Jun 2024 07:23:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61AC512DD9B;
+	Wed, 12 Jun 2024 07:38:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718177000; cv=none; b=k25S3Ppj9SdHwY17O5r5TrRViUE10Kn4Oh0Jp/2neqmrqV/oJPrNHs0jKlOqjuZOzpfwkZBENC53yXvXzE/OzUdw45cbCCcFIzWVqLsHTWqmejZFBd20jyQ0jFXfr6V3+jNj39LDd5aeoKpmRhULm9h0c/qJ/uUI8q1mmkHJsVc=
+	t=1718177900; cv=none; b=lF+t42HP0DOlioMhRxmD7gb8oSrdHrjeRdKpHMZOHiCxSjD2nHboxJ9vdkwJfJn4oq2T2ebAFG7T4RjTFD1ljmCrAQAZHJH57OGLaF0cu1FnAWmfcQDsdU1Y28wnJHHcaOvoMtvFlR0H855aQLMKiD8xj4+0acCv1iFE2VjGRIM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718177000; c=relaxed/simple;
-	bh=om+CeYPKCOnLN4dmJthXsArxlQeFcaDsrz+sk8PbJrU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ft96gPOvfIeEpiUpEyH9FKbMHM+5zSnfNxPMxVA5Ogl82Y1Z5yeeF28/LIp+UevtpnV1qw8EE2ANzEP1NclPXPb//PeNojueRUgixcP84SC2b7JDAeQLC9Ds3TdewGQ6yzahVuTOx0+OrPrx3499GAFVxHs9Sd/kHaaYVU1BY18=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=xIpiJo5W; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718177900; c=relaxed/simple;
+	bh=SRTOkK8vWEME9QApRo3c7TilPvpi/6OLtqm8jG7e20U=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=QET8JN3FlBRdE9wEy/uOHAkO8DroNxJLDawW4UaTUZxIfTWKKQiXYBvxLPd8Zh002uVTI8aIcHlYJH2HFuCZknBkQ4vVtFbjKTaMmueW7zuuei2+XDhheFdi1YwxSK5QuA7eD41NEJuRpfCcUjVhxbVpFKlM4SxPcwiloRya9/A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aSto2ezH; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="xIpiJo5W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 812F0C3277B;
-	Wed, 12 Jun 2024 07:23:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1718176999;
-	bh=om+CeYPKCOnLN4dmJthXsArxlQeFcaDsrz+sk8PbJrU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=xIpiJo5WPsePjV0XEHViYmADYGGw0Idy1sMoarLMMycZPYsGnbCmYEKb+AaATfUwe
-	 gaCMrTv/JB9y9Q/QIROz+iqz6InfM41GKjziRU40+ChL0guUgFHm0j3lo+onhQVuSD
-	 xHt4denCAz7zylMLbfOM5zTb5A9snk6Z6HNQr/N0=
-Date: Wed, 12 Jun 2024 09:23:17 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jacky Huang <ychuang570808@gmail.com>
-Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
-Subject: Re: [PATCH] tty: serial: ma35d1: Add a NULL check for of_node
-Message-ID: <2024061226-laborious-jubilance-8df8@gregkh>
-References: <20240611092251.159149-1-ychuang570808@gmail.com>
- <2024061118-sycamore-leggings-05a9@gregkh>
- <73d2167a-84ee-40a4-a68d-ba25229ff8ce@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aSto2ezH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718177899; x=1749713899;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=SRTOkK8vWEME9QApRo3c7TilPvpi/6OLtqm8jG7e20U=;
+  b=aSto2ezHJhiXo79H5hJvdCyUhW7CahukGD+HLTFKaQ0BwUjq/mHmbIfm
+   bqemET3RDrurjinEqhX2Y7AjeDlJDLq/VZUFo053l6CX0hDSpJ/KR1Lj1
+   N3V1rAut0sjCBWZrrfMLPEHZi433Y+HeAcUlbTzYc4xO+yKLtP9OuwPp+
+   rAcTsofDJ5vl4eLK/3O13fN9g7pFxFl+Xt3WiDzs0bn1qpFApgZ32TljY
+   N9KS/8E1nGRKsgCBeTliI+CmMng0Vzv4YoWKRQzSaLSjzHOR7bkXd0NBW
+   eM8ThICQV1VdrxquD2zvcRfgNJ3N6FByapU5caYr4p9k0MrHONL+5xi5J
+   g==;
+X-CSE-ConnectionGUID: P0gk9DqfQuWUnsqNRJ6fsw==
+X-CSE-MsgGUID: cF8tf6jcRNC/wPn6PzhmYQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11100"; a="14722439"
+X-IronPort-AV: E=Sophos;i="6.08,232,1712646000"; 
+   d="scan'208";a="14722439"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 00:38:18 -0700
+X-CSE-ConnectionGUID: sIJBPyJiQk2LWkQF+l5nXg==
+X-CSE-MsgGUID: XzBC8xt2QZeDhWU8YfCBRQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,232,1712646000"; 
+   d="scan'208";a="44096445"
+Received: from unknown (HELO localhost) ([10.245.247.204])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 00:38:14 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 12 Jun 2024 10:38:08 +0300 (EEST)
+To: Douglas Anderson <dianders@chromium.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>, 
+    Tony Lindgren <tony@atomide.com>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Johan Hovold <johan+linaro@kernel.org>, 
+    John Ogness <john.ogness@linutronix.de>, linux-arm-msm@vger.kernel.org, 
+    Bjorn Andersson <andersson@kernel.org>, 
+    Konrad Dybcio <konrad.dybcio@linaro.org>, 
+    Stephen Boyd <swboyd@chromium.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4 2/8] tty: serial: Add uart_fifo_timeout_ms()
+In-Reply-To: <20240610152420.v4.2.I65a6430ab75f74d20c28b5c5f819dd5b8455933d@changeid>
+Message-ID: <0bb414fa-851b-40cf-ede9-fc6252c6b173@linux.intel.com>
+References: <20240610222515.3023730-1-dianders@chromium.org> <20240610152420.v4.2.I65a6430ab75f74d20c28b5c5f819dd5b8455933d@changeid>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <73d2167a-84ee-40a4-a68d-ba25229ff8ce@gmail.com>
+Content-Type: multipart/mixed; boundary="8323328-260151195-1718177888=:1312"
 
-On Wed, Jun 12, 2024 at 08:43:54AM +0800, Jacky Huang wrote:
-> Dear Greg,
-> 
-> 
-> On 2024/6/11 下午 07:11, Greg KH wrote:
-> > On Tue, Jun 11, 2024 at 09:22:51AM +0000, Jacky Huang wrote:
-> > > From: Jacky Huang <ychuang3@nuvoton.com>
-> > > 
-> > > The pdev->dev.of_node can be NULL if the "serial" node is absent.
-> > > Add a NULL check to return an error in such cases.
-> > > 
-> > > Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-> > > ---
-> > >   drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
-> > >   1 file changed, 7 insertions(+), 6 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-> > > index 19f0a305cc43..3b4206e815fe 100644
-> > > --- a/drivers/tty/serial/ma35d1_serial.c
-> > > +++ b/drivers/tty/serial/ma35d1_serial.c
-> > > @@ -688,12 +688,13 @@ static int ma35d1serial_probe(struct platform_device *pdev)
-> > >   	struct uart_ma35d1_port *up;
-> > >   	int ret = 0;
-> > > -	if (pdev->dev.of_node) {
-> > > -		ret = of_alias_get_id(pdev->dev.of_node, "serial");
-> > > -		if (ret < 0) {
-> > > -			dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
-> > > -			return ret;
-> > > -		}
-> > > +	if (!pdev->dev.of_node)
-> > > +		return -ENODEV;
-> > > +
-> > > +	ret = of_alias_get_id(pdev->dev.of_node, "serial");
-> > > +	if (ret < 0) {
-> > > +		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
-> > > +		return ret;
-> > >   	}
-> > >   	up = &ma35d1serial_ports[ret];
-> > >   	up->port.line = ret;
-> > What commit id does this fix?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> This patch fix the in tree ma35d1 serial driver.
-> The last commit for ma35d1_serial.c is
-> '6b64f8e360c00f180cffa1806095cdd2abc55b16'.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-That is obviously not the commit that causes this problem, which is what
-I was looking for here.  Shouldn't you include a "Fixes:" line if this
-is resolving a bug?
+--8323328-260151195-1718177888=:1312
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-thanks,
+On Mon, 10 Jun 2024, Douglas Anderson wrote:
 
-greg k-h
+> The current uart_fifo_timeout() returns jiffies, which is not always
+> the most convenient for callers. Add a variant uart_fifo_timeout_ms()
+> that returns the timeout in milliseconds.
+>=20
+> NOTES:
+> - msecs_to_jiffies() rounds up, unlike nsecs_to_jiffies(). This is
+>   because msecs_to_jiffies() is actually intended for device drivers
+>   to calculate timeout value. This means we don't need to take the max
+>   of the timeout and "1" since the timeout will always be > 0 ms (we
+>   add 20 ms of slop).
+> - uart_fifo_timeout_ms() returns "unsigned int" but we leave
+>   uart_fifo_timeout() returning "unsigned long". This matches the
+>   types of msecs_to_jiffies().
+>=20
+> Suggested-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+>=20
+> Changes in v4:
+> - New
+>=20
+>  include/linux/serial_core.h | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+> index 8cb65f50e830..97968acfd564 100644
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -889,14 +889,21 @@ unsigned int uart_get_divisor(struct uart_port *por=
+t, unsigned int baud);
+>  /*
+>   * Calculates FIFO drain time.
+>   */
+> -static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+> +static inline unsigned int uart_fifo_timeout_ms(struct uart_port *port)
+>  {
+>  =09u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->fifosiz=
+e;
+> +=09unsigned int fifo_timeout_ms =3D div_u64(fifo_timeout, NSEC_PER_MSEC)=
+;
+> =20
+> -=09/* Add .02 seconds of slop */
+> -=09fifo_timeout +=3D 20 * NSEC_PER_MSEC;
+> +=09/*
+> +=09 * Add .02 seconds of slop. This also helps account for the fact that
+> +=09 * when we converted from ns to ms that we didn't round up.
+> +=09 */
+> +=09return fifo_timeout_ms + 20;
+> +}
+> =20
+> -=09return max(nsecs_to_jiffies(fifo_timeout), 1UL);
+> +static inline unsigned long uart_fifo_timeout(struct uart_port *port)
+> +{
+> +=09return msecs_to_jiffies(uart_fifo_timeout_ms(port));
+>  }
+
+Hi,
+
+This is definitely towards the right direction! However, it now does=20
+double conversion, first div_u64() and then msecs_to_jiffies(). Perhaps it=
+=20
+would be better to retain the nsecs version (maybe rename it to _ns for=20
+consistency) and add _ms variant that does the nsec -> msec conversion.
+
+--=20
+ i.
+
+--8323328-260151195-1718177888=:1312--
