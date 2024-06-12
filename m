@@ -1,175 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE5880607;
-	Tue, 11 Jun 2024 20:28:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8877364F;
+	Wed, 12 Jun 2024 00:43:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718137722; cv=none; b=P1VdPRNzbDBhQr8onqf929LLPoRn66etALie6RzKUH0R8C0+1WtgB2KIl7SGHwqtGoxBerX/cp3q9LPLLgBivVTt2KYHin6OdRt7+GrfP9J3YpqX2jjyIOgCR0FvHUsrvyPW9RI1sDfIQhCXPNDqts/67NLgi6dF9voLlB/bZjM=
+	t=1718153040; cv=none; b=cYPrRxVH9WFlTKo9AaZKISCTOQQyRMveCmOXOLDP7l4OXpnifZqmZslg7VrxE7DSvo7MADx6bpU2rAHjgOiiDHHuW6YF2NYi+/x6TXix1LtxOFi/AwKRxrZ1Fk0cUwU+B2feWka3a/wKPsN9pv97Le1PJcUMim6dJz7xF4kreMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718137722; c=relaxed/simple;
-	bh=luJqMwS1juyB7P9FhCZ/2se2iPbzDsWfhWxvaQJ4Lx8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jY7xrrlBLIu0hlXmmEgov1yhD3xdK0Ogf6s8GS9B6tnpt3LTlV28/cL0CznrLqlbeF5BCSfT84w+Dhjxte+pnQt5MzF/EeU2F0QyldT+yurPxsrInf6F0Pg2PwtlSfG9/g4WI2YzOy6Fm/iclwm8MQLG6KJAA+kHlAwwOeCKnr8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pqkVo+uV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1718153040; c=relaxed/simple;
+	bh=b9mo09yNzGoE/7R3RSYrjl4NabCxMXQrrMwm9TWQX0A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=e6Qp4uGnk2LtSTQaVWBkgXcOsLjIQvIoPR5MHZ6tR8+pAoh/Ue979/UfSScBarmtdg5pFN0xVcJo5LJAPB1fBIuhQocODOxPGgv1n1xhaYMqWDKG7ym0rb+WPiVlO5ONtNpl48ref1hTBsCOo7IJ7i8t+/WkMQ0F+5W2utsYWIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zeu1wSQx; arc=none smtp.client-ip=209.85.210.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pqkVo+uV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68795C2BD10;
-	Tue, 11 Jun 2024 20:28:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1718137721;
-	bh=luJqMwS1juyB7P9FhCZ/2se2iPbzDsWfhWxvaQJ4Lx8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pqkVo+uVymCiP3JT77u6WNfcHkvoxjkXutcuhekMKo20I1IoAblmmG/t9e9X4vmFX
-	 0HOxijcjlxHswh2xFpVEwfqvkjTt0s8Yb0mrXcxhfUrp9ph2N1/3DCOPcfNBEBdwew
-	 E0D/mFVERXxwZCPUQhvL+Ddlje9dku/CLAAGAfA5U0ACrZGbSsm9EscwN4ItitVA/c
-	 9zzcYv2ZwPv3bRQkeWtS9f4RyRJhGllD9sa6dM06ZcjqKvWyDaT/v8MPgi9nEsAGp8
-	 FXHNQxmNRwSkXwG6Oou+HM5B78ZhyR/rXY064HEyyhKmIkdUIwnyXdMBJ53NTJ3VZd
-	 u9tKcAXmG9tGQ==
-Date: Tue, 11 Jun 2024 14:28:40 -0600
-From: Rob Herring <robh@kernel.org>
-To: Kanak Shilledar <kanakshilledar@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Kanak Shilledar <kanakshilledar111@protonmail.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: vt8500-uart: convert to json-schema
-Message-ID: <20240611202840.GA3013140-robh@kernel.org>
-References: <20240611121048.225887-1-kanakshilledar@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zeu1wSQx"
+Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-6f96f8489feso2428405a34.0;
+        Tue, 11 Jun 2024 17:43:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718153037; x=1718757837; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5NTY7O9vlYiJDnsoEIMvSsij28gjoEQl+bA1Z5C+Mlg=;
+        b=Zeu1wSQxYbmLL6zsVamzpj5+yPFDw07sZETHo5a9Hb/zgGxMBjmxaA4+4ovQxxp+Qy
+         X0uK19zEGNW8xH8fbctU1TgilLoyxiWczlTM3O6oDj/wGm39Kdjcv7y4/4w2GfYGdtLY
+         /Zn4vAHzndftqAC6RfjU9taU1ISL/0Lw7ELDdvOauEllNAvPv4dZTFGRVS8nFtltFKj0
+         wubcFPrqhk/YVYPy5aCpPEBV2pv5Oy8o0kOQN6qif244Sw+FLYN6lR3Twollz26zPsgo
+         /i3fd0UdnrMpzO5TSeTo2XjZsFMiHGn0pHoR5GL0XWmh+Q56tjSybnWcKgRxl4ii/eN5
+         aPKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718153037; x=1718757837;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5NTY7O9vlYiJDnsoEIMvSsij28gjoEQl+bA1Z5C+Mlg=;
+        b=D87zXIVw8t1XioVu0KE1YDvs86V4HuH0Yg0Bvptoe3x0nhKEc7S6ediigihtE2lFnn
+         u+suuFPc3+/ANLT6yH3SsQAcnmzUxumbT6ARAziOvcPoDz0Ik+kLfRfVLlXh1NSI2Prn
+         MpXThiB8eIsrdZ+QWFb1NhcZk/T8KbqC8BTB4HZs+StDAdYvTZFcwWOySSjIr6q1Aovu
+         1fMR+xwEKO0a2Yw1cwsjsNdysDkhMjUBRUhPwURbrpi20VB19DcvrNpry/cUTEq9L90O
+         jyvYZ22YUE2//brdoxxsbW46ndSetWOgFpUjfqP/cMGJ0ey2Yj1J6IyHxIg3zbqD79NI
+         dZeA==
+X-Forwarded-Encrypted: i=1; AJvYcCWH7t1o8771zdfmLLBl8lzNWMdFqMUTQ0I4+5RPtatFtJSQeLKXDhIT1kd2wAx66Y9hnf/aNJQtIU5SWz2fp5Ul31jpHAp2jD4t39Xx1z88PFRxBwhc65lWed1OL2N7zOjTfVnAFZj+SrGo
+X-Gm-Message-State: AOJu0YyX9ni0R6fqrryQiJ07UMyWaLKl1il8WY1RIzKcw0IPITkUkjB4
+	t+YGpqc0y/NB0sfiaYoUvONuKG39XArfq5uvarNU/IdA3yuU+yk9
+X-Google-Smtp-Source: AGHT+IHiQCKVYLK92Z9lWkx2GmQLTJkXl3ttzKo2rRRld+zTQSoZDg5YxwhqKOzQdSXlyDhZJj/k6w==
+X-Received: by 2002:a05:6871:286:b0:250:8970:499d with SMTP id 586e51a60fabf-25514bfd7b0mr482657fac.3.1718153037424;
+        Tue, 11 Jun 2024 17:43:57 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7042d87b216sm6103901b3a.11.2024.06.11.17.43.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jun 2024 17:43:56 -0700 (PDT)
+Message-ID: <73d2167a-84ee-40a4-a68d-ba25229ff8ce@gmail.com>
+Date: Wed, 12 Jun 2024 08:43:54 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240611121048.225887-1-kanakshilledar@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: serial: ma35d1: Add a NULL check for of_node
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
+References: <20240611092251.159149-1-ychuang570808@gmail.com>
+ <2024061118-sycamore-leggings-05a9@gregkh>
+Content-Language: en-US
+From: Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <2024061118-sycamore-leggings-05a9@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 11, 2024 at 05:40:43PM +0530, Kanak Shilledar wrote:
-> Convert the VIA VT8500 and WonderMedia WM8xxx UART Controller to
-> newer DT schema. Created DT schema based on the .txt file which had
-> `compatible`, `reg`, `interrupts` and `clocks` as required properties.
-> 
-> Additions to the original binding
-> - changed the file name from vt8500-uart to via,vt8500-uart.yaml
-> - removed unnecessary alias from the example.
-> - added Greg and Jiri as maintainers (referred MAINTAINERS file).
-> 
-> Signed-off-by: Kanak Shilledar <kanakshilledar@gmail.com>
-> ---
->  .../bindings/serial/via,vt8500-uart.yaml      | 52 +++++++++++++++++++
->  .../bindings/serial/vt8500-uart.txt           | 27 ----------
->  2 files changed, 52 insertions(+), 27 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml
->  delete mode 100644 Documentation/devicetree/bindings/serial/vt8500-uart.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml b/Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml
-> new file mode 100644
-> index 000000000000..b38925ab23a1
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/via,vt8500-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: VIA VT8500 and WonderMedia WM8xxx UART Controller
-> +
-> +maintainers:
-> +  - Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> +  - Jiri Slaby <jirislaby@kernel.org>
+Dear Greg,
 
-Don't put subsystem maintainers here. It should be someone with h/w. 
-(The VT8500 maintainer if there is one?). If you can't come up with 
-anyone, you can put me.
 
-> +  - Kanak Shilledar <kanakshilledar111@protonmail.com>
-> +
-> +allOf:
-> +  - $ref: serial.yaml
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - via,vt8500-uart
-> +      - wm,wm8880-uart
-> +
-> +    description: |
+On 2024/6/11 下午 07:11, Greg KH wrote:
+> On Tue, Jun 11, 2024 at 09:22:51AM +0000, Jacky Huang wrote:
+>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>
+>> The pdev->dev.of_node can be NULL if the "serial" node is absent.
+>> Add a NULL check to return an error in such cases.
+>>
+>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>> ---
+>>   drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
+>>   1 file changed, 7 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+>> index 19f0a305cc43..3b4206e815fe 100644
+>> --- a/drivers/tty/serial/ma35d1_serial.c
+>> +++ b/drivers/tty/serial/ma35d1_serial.c
+>> @@ -688,12 +688,13 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+>>   	struct uart_ma35d1_port *up;
+>>   	int ret = 0;
+>>   
+>> -	if (pdev->dev.of_node) {
+>> -		ret = of_alias_get_id(pdev->dev.of_node, "serial");
+>> -		if (ret < 0) {
+>> -			dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+>> -			return ret;
+>> -		}
+>> +	if (!pdev->dev.of_node)
+>> +		return -ENODEV;
+>> +
+>> +	ret = of_alias_get_id(pdev->dev.of_node, "serial");
+>> +	if (ret < 0) {
+>> +		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+>> +		return ret;
+>>   	}
+>>   	up = &ma35d1serial_ports[ret];
+>>   	up->port.line = ret;
+> What commit id does this fix?
+>
+> thanks,
+>
+> greg k-h
 
-Don't need '|' if no formatting.
+This patch fix the in tree ma35d1 serial driver.
+The last commit for ma35d1_serial.c is 
+'6b64f8e360c00f180cffa1806095cdd2abc55b16'.
 
-> +      Should be "via,vt8500-uart" (for VIA/WonderMedia chips up to and
-> +      including WM8850/WM8950), or "wm,wm8880-uart" (for WM8880 and later)
 
-Just add a comment after the compatible strings (e.g. "# up 
-to WM8850/WM8950") and drop this.
+Best Regards,
+Jacky Huang
 
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - clocks
-> +  - interrupts
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    serial@d8200000 {
-> +        compatible = "via,vt8500-uart";
-> +        reg = <0xd8200000 0x1040>;
-> +        interrupts = <32>;
-> +        clocks = <&clkuart0>;
-> +    };
-> diff --git a/Documentation/devicetree/bindings/serial/vt8500-uart.txt b/Documentation/devicetree/bindings/serial/vt8500-uart.txt
-> deleted file mode 100644
-> index 2b64e6107fb3..000000000000
-> --- a/Documentation/devicetree/bindings/serial/vt8500-uart.txt
-> +++ /dev/null
-> @@ -1,27 +0,0 @@
-> -* VIA VT8500 and WonderMedia WM8xxx UART Controller
-> -
-> -Required properties:
-> -- compatible: should be "via,vt8500-uart" (for VIA/WonderMedia chips up to and
-> -	including WM8850/WM8950), or "wm,wm8880-uart" (for WM8880 and later)
-> -
-> -- reg: base physical address of the controller and length of memory mapped
-> -	region.
-> -
-> -- interrupts: hardware interrupt number
-> -
-> -- clocks: shall be the input parent clock phandle for the clock. This should
-> -	be the 24Mhz reference clock.
-> -
-> -Aliases may be defined to ensure the correct ordering of the uarts.
-> -
-> -Example:
-> -	aliases {
-> -		serial0 = &uart0;
-> -	};
-> -
-> -	uart0: serial@d8200000 {
-> -		compatible = "via,vt8500-uart";
-> -		reg = <0xd8200000 0x1040>;
-> -		interrupts = <32>;
-> -		clocks = <&clkuart0>;
-> -	};
-> -- 
-> 2.45.2
-> 
+
+
