@@ -1,52 +1,59 @@
-Received: from omta34.uswest2.a.cloudfilter.net (omta34.uswest2.a.cloudfilter.net [35.89.44.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8118F52F62
-	for <linux-serial@vger.kernel.org>; Wed, 12 Jun 2024 20:04:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8AC79C0;
+	Thu, 13 Jun 2024 02:54:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718222684; cv=none; b=LuuzfvLB5sBi+07whu63l4DcZV+0AJnWCLS4VJkqdT+EsCfUWYE/hyYR7chFzoFQvAbVrf5WWtVMkDYrwEKlaYfTw7Ey9lQzC+vluu3r6C/QFie6zoWfOCtHsahUGx3Ev2om9UUMK+mpdBRJmszMaRo1w4o730QLmMS5L8CG0ZY=
+	t=1718247257; cv=none; b=Bt0aqMvXZ+Cwm2uIDNCkdrbu7U6hua/0+dvn1iQIhO0FmDCX1AV5QGQOJmmXSD+puR6TF7mFHQyWQhCuOoiCOtzliq8Ls6N3DJOfAqopDam8DXDYZNSFH0gBwM8oOP7dbjhP7N2I9lv05QvX4xjXWQ2V293yHcESiH/r1vwNluI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718222684; c=relaxed/simple;
-	bh=5C6E8Y9SDchcIWwSmH36JEqE6WSYVVh9PjV5yurQ6WA=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=tNWDfMboQpoven+JzVpCDY7w/h35OSEzlKdnc80XSiCjdGRdy97OQOv4Cy7Y+NJlWTyK1pI5ljyvQB3Sd9y13p02ZFoB2RF46BcA/2ktAgp7HQiU0F9fVFaKlRqCYhjdBegYoNskL1r8RpfU7nlPhoEK2W8HdWSGoXyqQy126/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=IaMH4Jce; arc=none smtp.client-ip=35.89.44.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
+	s=arc-20240116; t=1718247257; c=relaxed/simple;
+	bh=832EzqDxWJ7nN/P5FfuAYp/Z11o7CeTnyqHfsasbrm8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RYqTR1vO49Zdee4HsuPe5qYrSg6yJgTzKHrVYBAQpw3J4h+CToJUkEp0W6fVs5O5sPTX35IzmV1K2VJeB1kXxekLVuKH6ZpWtOS3mTCXSxqr4CqCDJgLZaMjTyfTsgUjVfpPq30J5MC2uBdcQtj0nZLaRUKdOX4X0w7o8VYNRCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bKvjd8qb; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="IaMH4Jce"
-Received: from eig-obgw-5001a.ext.cloudfilter.net ([10.0.29.139])
-	by cmsmtp with ESMTPS
-	id HMe9slymYkQe8HUCxsOfZQ; Wed, 12 Jun 2024 20:04:35 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-	by cmsmtp with ESMTPS
-	id HUCwsv42cCaXoHUCwsGqeA; Wed, 12 Jun 2024 20:04:34 +0000
-X-Authority-Analysis: v=2.4 cv=deBL3mXe c=1 sm=1 tr=0 ts=6669ff52
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=frY+GlAHrI6frpeK1MvySw==:17
- a=IkcTkHD0fZMA:10 a=T1WGqf2p2xoA:10 a=wYkD_t78qR0A:10 a=xGRsDScCAAAA:8
- a=pKTFDrzG_x3V9sfl7PQA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=zEVfNvAIcUWeczMkmY0T:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:References:Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=/QPeIjovkvV/E5oIolQo/mIlJ+pmqKXHutHu0+C0FVs=; b=IaMH4JcelzjtzZ8l052lUZoo73
-	sI8xPNQtYOTq4SBbq7wbYV19M4bbN7/tIy0GGJ0daZKbJwwMBPgru1JOSJbZkKTTDHj0JkGj6CfDt
-	hvpFYVQwNVSs+gUb3q2uK4cvQYtAxfknNNRP9/IGljJQJwQvF18bbmwdWdjPF3qHJVBySzDRqbMmP
-	R/PTadZMsEQNP/1lFtMBtB/gWcW0n3l7fL+kWu3KgjClJyS963c82KeIRgpmL91Iheiihvd02mP7k
-	A+x5MhXqNQVGRaXeDMCx8FkrVQayyvm0QZwzu0xmSKR1RFVQEvDn4K4AjQMI/Pc+P6Ek/OvMUyUID
-	m04LJ4DQ==;
-Received: from [201.172.173.139] (port=40652 helo=[192.168.15.10])
-	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <gustavo@embeddedor.com>)
-	id 1sHUCv-004Bhn-0e;
-	Wed, 12 Jun 2024 15:04:33 -0500
-Message-ID: <c80e41e6-793e-4311-8e15-f5eda91e723e@embeddedor.com>
-Date: Wed, 12 Jun 2024 14:04:31 -0600
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bKvjd8qb"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-705c739b878so756530b3a.1;
+        Wed, 12 Jun 2024 19:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718247256; x=1718852056; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=uNmwMejHmNOh8I+RARUVaSfw/MphRluAD/hWf+7EyHM=;
+        b=bKvjd8qbuqszAWGmOoB8PwT5G3E+mgOFJjf5siuVPSY4+hmxgnTs578I6ThWgxMhpi
+         yov03gOC7rwMeJDjoRAX3E/EC6StGx6+jBv+2if1AdjMvzy3luqY5CUKAwp7QQX2GOFt
+         PWcRFtZRXJ67ZdRWV4//Ke5zZmAQ7nv6T7hS1RPC+Womy0iqLpbqPWKTtldKtjUQfuUE
+         01UMnc1tInL7CUB7PgjQXWgwLe30AdmTttJ04qQn0/31icNHdBjFyYdABqwsNnIXe7kc
+         8rxfob/uYVl9kVTZfGK5do1s1mV1H14MbG7BXPYq4RRQ31Ddz8bcuGMJ/6n0NwmFuGbz
+         azeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718247256; x=1718852056;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=uNmwMejHmNOh8I+RARUVaSfw/MphRluAD/hWf+7EyHM=;
+        b=EtJY6GObqyYNeHUY/BozU2aDYJwg0UQDULSUcx0V2NI5qfd3p1BqDoiViZHQCVVyxY
+         CVsJ0OabMV6QckLrntr/3fJsrAeJgJc+KmTGTtWpOTxS3mx/Q2gIR95aRRsP18A1HLnX
+         NZ1+8pqFTBWCvs5kJswN57ADqO2j2lvPPNr8FzL2gDWnJAnyXR5tieG5KndZJrXqYFjl
+         xkaC/aijqHvhplYtB3Xj1rO39taC+9ANLvLKmlN+W1cW4kAVcAjzlKSqR82VS2VQLB7q
+         fIqKKIqayk4IvcZgDRpbWlamMDf4069GLDCftcyattdmn7Mewx/kpMoh5Ly8j2dYI95B
+         8S1A==
+X-Forwarded-Encrypted: i=1; AJvYcCXkpgiPRkczceBsP9V1Jlwcr9u2k3gW+NMaEM+nOAum3Zw0XxyDoZqImw+Vb7lTgFI3pbey+0ZoPnelEcdbqZYVX7QVPCzKaSQ5bY1yH+Rcj+5R6w7zgW+qTgAjWWb1aZKfUYcS7vR6yZVI
+X-Gm-Message-State: AOJu0YyrtkjwAn+GKRuksAcU5RZ6wjAyqMjhjfXzrHXM6vZGGUgl9/k4
+	tvfnKmxIfUktNetSdrqYf2xyjQTLmTH34eamFXZEYqb1CJr2ukAg
+X-Google-Smtp-Source: AGHT+IGbL59FB/N0ejH67gB7kJ3RteUZ72f6jaqWjh8P39UHzwD8iyB1oIQqw4Is9dSdRe11OIbXhg==
+X-Received: by 2002:a05:6a20:7485:b0:1b6:dc44:8211 with SMTP id adf61e73a8af0-1b8bef9e17emr2373909637.1.1718247255601;
+        Wed, 12 Jun 2024 19:54:15 -0700 (PDT)
+Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-705cc925fe7sm296762b3a.19.2024.06.12.19.54.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jun 2024 19:54:15 -0700 (PDT)
+Message-ID: <12baa918-2066-47b1-ab88-27d1dc6041b2@gmail.com>
+Date: Thu, 13 Jun 2024 10:54:12 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,114 +61,86 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To: Jiri Slaby <jirislaby@kernel.org>, Bill Wendling <morbo@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Nathan Chancellor <nathan@kernel.org>, Kees Cook <keescook@chromium.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
- patches@lists.linux.dev, stable@vger.kernel.org
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
- <d7c19866-6883-4f98-b178-a5ccf8726895@kernel.org>
- <2024053008-sadly-skydiver-92be@gregkh>
- <09445a96-4f86-4d34-9984-4769bd6f4bc1@embeddedor.com>
- <68293959-9141-4184-a436-ea67efa9aa7c@kernel.org>
- <6170ad64-ee1c-4049-97d3-33ce26b4b715@kernel.org>
- <CAGG=3QU6kREyhAoRC+68UFX4txAKK-qK-HNvgzeqphj5-1te_g@mail.gmail.com>
- <bee7240b-d143-4613-bde4-822d9c598834@embeddedor.com>
- <1313c7a5-d074-4a8f-9ab9-07e4a7716fb9@kernel.org>
- <4da5ba72-6dff-46f1-b596-158c62b34f18@embeddedor.com>
+Subject: Re: [PATCH] tty: serial: ma35d1: Add a NULL check for of_node
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
+References: <20240611092251.159149-1-ychuang570808@gmail.com>
+ <2024061118-sycamore-leggings-05a9@gregkh>
+ <73d2167a-84ee-40a4-a68d-ba25229ff8ce@gmail.com>
+ <2024061226-laborious-jubilance-8df8@gregkh>
 Content-Language: en-US
-In-Reply-To: <4da5ba72-6dff-46f1-b596-158c62b34f18@embeddedor.com>
+From: Jacky Huang <ychuang570808@gmail.com>
+In-Reply-To: <2024061226-laborious-jubilance-8df8@gregkh>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.172.173.139
-X-Source-L: No
-X-Exim-ID: 1sHUCv-004Bhn-0e
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.15.10]) [201.172.173.139]:40652
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Org: HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfDFOgzLHrrZ95byKg6DHoy+oYMgLCcl3O8yPv34At5wbiKR4Sxymd/SpYRdOsrh2dzuPVXGd6xU+x7If6pjdh2F1slCTQ7aV3XqIirGiY3gatXlFssTK
- b70olSnMgG9oB+6Qf5LO7Uhw+9TdrVTaRjG9gw7vlU5b0ho+IK0hdBl4cjaavLkar0I8z8amKYUSzNxJWIRr4S5aunhpArzpSfPJ97D/No2WlhIZocuxPFz0
+
+Dear Greg,
 
 
-
-On 6/3/24 02:26, Gustavo A. R. Silva wrote:
-> 
->> FWIW undoing:
->> commit 7391ee16950e772076d321792d9fbf030f921345
->> Author: Peter Hurley <peter@hurleysoftware.com>
->> Date:   Sat Jun 15 09:36:07 2013 -0400
->>
->>      tty: Simplify flip buffer list with 0-sized sentinel
+On 2024/6/12 下午 03:23, Greg KH wrote:
+> On Wed, Jun 12, 2024 at 08:43:54AM +0800, Jacky Huang wrote:
+>> Dear Greg,
 >>
 >>
->> would do the job, IMO.
-> 
-> So, not even _sentinel_ is actually needed? Awesome!
-> 
+>> On 2024/6/11 下午 07:11, Greg KH wrote:
+>>> On Tue, Jun 11, 2024 at 09:22:51AM +0000, Jacky Huang wrote:
+>>>> From: Jacky Huang <ychuang3@nuvoton.com>
+>>>>
+>>>> The pdev->dev.of_node can be NULL if the "serial" node is absent.
+>>>> Add a NULL check to return an error in such cases.
+>>>>
+>>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+>>>> ---
+>>>>    drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
+>>>>    1 file changed, 7 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+>>>> index 19f0a305cc43..3b4206e815fe 100644
+>>>> --- a/drivers/tty/serial/ma35d1_serial.c
+>>>> +++ b/drivers/tty/serial/ma35d1_serial.c
+>>>> @@ -688,12 +688,13 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+>>>>    	struct uart_ma35d1_port *up;
+>>>>    	int ret = 0;
+>>>> -	if (pdev->dev.of_node) {
+>>>> -		ret = of_alias_get_id(pdev->dev.of_node, "serial");
+>>>> -		if (ret < 0) {
+>>>> -			dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+>>>> -			return ret;
+>>>> -		}
+>>>> +	if (!pdev->dev.of_node)
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	ret = of_alias_get_id(pdev->dev.of_node, "serial");
+>>>> +	if (ret < 0) {
+>>>> +		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
+>>>> +		return ret;
+>>>>    	}
+>>>>    	up = &ma35d1serial_ports[ret];
+>>>>    	up->port.line = ret;
+>>> What commit id does this fix?
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>> This patch fix the in tree ma35d1 serial driver.
+>> The last commit for ma35d1_serial.c is
+>> '6b64f8e360c00f180cffa1806095cdd2abc55b16'.
+> That is obviously not the commit that causes this problem, which is what
+> I was looking for here.  Shouldn't you include a "Fixes:" line if this
+> is resolving a bug?
+>
+> thanks,
+>
+> greg k-h
 
-It seems that a clean revert is not possible at this point, as
-the original patch is more than a decade old. If _sentinel_ is
-not needed, and based on the original patch, would the following
-suffice?
+I got it. The  commit that cause this problem is '930cbf92db01'.
+And I will send v2 patch with the "Fixes:" line.
+Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver 
+support")
 
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 79f0ff94ce00..1b77019cc510 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -135,10 +135,7 @@ void tty_buffer_free_all(struct tty_port *port)
-         llist_for_each_entry_safe(p, next, llist, free)
-                 kfree(p);
 
--       tty_buffer_reset(&buf->sentinel, 0);
--       buf->head = &buf->sentinel;
--       buf->tail = &buf->sentinel;
--
-+       buf->tail = NULL;
-         still_used = atomic_xchg(&buf->mem_used, 0);
-         WARN(still_used != freed, "we still have not freed %d bytes!",
-                         still_used - freed);
-@@ -578,9 +575,8 @@ void tty_buffer_init(struct tty_port *port)
-         struct tty_bufhead *buf = &port->buf;
+Best Regards,
+Jacky Huang
 
-         mutex_init(&buf->lock);
--       tty_buffer_reset(&buf->sentinel, 0);
--       buf->head = &buf->sentinel;
--       buf->tail = &buf->sentinel;
-+       buf->head = NULL;
-+       buf->tail = NULL;
-         init_llist_head(&buf->free);
-         atomic_set(&buf->mem_used, 0);
-         atomic_set(&buf->priority, 0);
-diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-index 31125e3be3c5..75fb041e43fe 100644
---- a/include/linux/tty_buffer.h
-+++ b/include/linux/tty_buffer.h
-@@ -37,7 +37,6 @@ struct tty_bufhead {
-         struct work_struct work;
-         struct mutex       lock;
-         atomic_t           priority;
--       struct tty_buffer sentinel;
-         struct llist_head free;         /* Free queue head */
-         atomic_t           mem_used;    /* In-use buffers excluding free list */
-         int                mem_limit;
-
-Thanks
---
-Gustavo
