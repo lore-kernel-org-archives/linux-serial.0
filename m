@@ -1,94 +1,207 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AEC65F;
-	Thu, 13 Jun 2024 05:13:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59E5B137933;
+	Thu, 13 Jun 2024 06:56:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718255634; cv=none; b=BNGEhOOBRPH00d/YN3ABA9Ajw3EA6FmR4KNMkfvplSSRvwQ+SJEGuIcDSW9R9FRhts5UWIB8OrXq1s9fSYa+9XgB9YfV/W3aC2NP3FSKqhYwZw0M6nuai6TTXGv+SGZ7yzB7qCE2NzoXYBawA/uSbVm8HFJyamniUq/hVQX+124=
+	t=1718261774; cv=none; b=Ev3XZ2GGMjxuYvSsY6qZ5JWL7NZvUQkMIvH4EhX7Mkk7pMGjx8EMyWrT9a6PsWSIPji2XeDV8okg/8JR1NlaEEcr+PJ3FPjZ7j40+GlGQ7UA7kbCh0w1Ph3RgHanIJiMt4ImSQtvgQJn3Md+hi6cGgf2DQNoEDKObbhH0hJWKTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718255634; c=relaxed/simple;
-	bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z0TcoLay26tiXVqAyiwTld09JeLR8Qzd65WFMXH3ymTCk3/vuR6yfjSVJhDJFKaouVMrPc/OJOMJclHyGW5QwDrcPdKH70dw5R3yJ5CiVctX48JflHPu1pVq6yqHzr4dnGZYPg2kj5Oc473miB/OQj6AWpKXCcRTwFTb2CLSrZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YU9mD4LL; arc=none smtp.client-ip=209.85.219.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718261774; c=relaxed/simple;
+	bh=WpxKaln42QaWmGoIIAoSAtunAaG5uokc4CAg6/rTG64=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=dIKfW7JzZ57uE1+lGB50wc6idfFUJ5vzhxt/2eE+pg2LEOq40nMz4PaV0Pa+jwjNjAe5RQHuzewfXqA6SOfq5FgqUptp2VrQ6BErAsoXEGOCne429m2UXtsGvmUzl18UlfeC7X7G5MqpMxTNu9Ri52ldMDYC9DjT2Hii860UCAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=htkJPuU8; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YU9mD4LL"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6b060f0f48aso3197876d6.1;
-        Wed, 12 Jun 2024 22:13:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718255632; x=1718860432; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
-        b=YU9mD4LLt6UIUM1lxf5T6eYhLWuIZBFi0MG5HODfbmCFB2Ts5UbJdT6OxhN1uoLaZA
-         DXhvMhH01ST5YS0UWlCRyuBymgvNfInBBdyGkSKaqgGeNaNFA0locz0blJ7v8ChUmwjd
-         5d+3pn4n1iIAYIeRwqGASXUzj0r6iTRXbHgf7+urTc+q6197wun0ak2rzO5i8UV1LZFu
-         vjYAIGqs5oFqldbKUXsSTFwgxzCuQdp8a8jb3ldVGOxH+4Qq3sDUOQVjrKYCPSYrPaUs
-         QbJrhJbyQSg4JmsVQfOnhNwX4Yq+4LAe480gMQF9GgdcXVPg3fYDygvFBpWpw1zgCRPn
-         RVbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718255632; x=1718860432;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
-        b=NZlZsvF8vtVGcAXrgzh5B1Mao6DyDTLsgWmYGt2Wprgx9HdwFjKBTqp9hs1/I52+sD
-         OKmFnAIyd70vXS9rKTaWyUsjBDl9CC+mpd9/YzklPRI7eJcniEOL4tgubJaXuSleGrHb
-         sjzjDCotTfOpOT36GM9GDMQ5krFaFyw3j9P79MObZKPWXD+Q/dfnTbuJg+YMzTML4ZH3
-         gCOySu/AShraJJyPiUYoMrOxxF/Epw0mG1A7i5VyTke30QSizs4nRE+3DOruSmdBmo22
-         vnKaQad1PSNsFgwQBrSg1xUzfaGRB1d04suhhFLXidz5/PLoSwmbyYF/RH2TltmpwXJD
-         GrDg==
-X-Forwarded-Encrypted: i=1; AJvYcCX2s0jOtA6WSLpfdKedPEtPSCPFVP/l4pK0u+AlwamaxujizCFWl1kKFr/uljGx8WSnSMtsuTjoww73el6QK9SsJ+vHjWeIgH3wYEi8UYGdYiHae69rarZ/U63WGlIHirL+1tZU2E2VjsHpTJqYdSFNUftzWnBKvTKlcGqRGgxuqZocGSGQiw==
-X-Gm-Message-State: AOJu0YwfwviU4GBlyrs4nQ1huUjNgtQ4zsgxIFldbOhvJWbQv/MXbxq1
-	SMqhqDSDHt81bxXCEJGnhNG411pqLmmEzrpLdV56KQcH3YngF3Ecsx6fD+zEq9Iu4DsCLjcX4vP
-	SakbedZ/a1OATORBBPbpkoYLa/uGz+KNA87Yimg==
-X-Google-Smtp-Source: AGHT+IGA/60BeVBcSGOZs2ZPs2s0isSjEHC6dloesC4nDItXtIqTS5fn0q30oP5yguqs2uRGIDtioTO6gpNUkOcindI=
-X-Received: by 2002:a05:6214:4688:b0:6b0:6d9c:8eb6 with SMTP id
- 6a1803df08f44-6b1b5c0afedmr48758286d6.58.1718255632046; Wed, 12 Jun 2024
- 22:13:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="htkJPuU8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1718261773; x=1749797773;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=WpxKaln42QaWmGoIIAoSAtunAaG5uokc4CAg6/rTG64=;
+  b=htkJPuU833v4tPB7EdUL8rQxC+aitfH+UsKwLF9H/gqJSJmoIEgwJCI+
+   bcajD4+en47Ticv5hIcuVq0JNpVP3jVC3fQxJSBxLVXalMsZv60Zw9SBs
+   IRKZyviQ9APHkE5YCTYbCWINlduIAnhxhKZsTL9PauNRRXbdMMhu9JFfj
+   arsJXXUUZlRkbWe6MPU69uG7Dx2M64H+45W3pJO+KpvBgm49mwBDdkkrO
+   KreT5fkBsyLLe7GUY5svXBy4zJZPuzjK7L7HpN07/xlxO/P1eTev8uVwc
+   gmJxn3PdA917YcLfp9p79789B+7YJ5QStthvdaSxd2JYHRnyaUO19IUCf
+   A==;
+X-CSE-ConnectionGUID: TYju+PcqQsarh3BUL+ceDA==
+X-CSE-MsgGUID: n16lizVoQTKiBIsYb+YjtQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11101"; a="15187781"
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="15187781"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 23:56:12 -0700
+X-CSE-ConnectionGUID: x+oAxnUzSWOOR928zu+KfQ==
+X-CSE-MsgGUID: jvydUJVJTA+nD7QtCZWztg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,234,1712646000"; 
+   d="scan'208";a="44487294"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.209])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2024 23:56:06 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Thu, 13 Jun 2024 09:56:02 +0300 (EEST)
+To: Doug Anderson <dianders@chromium.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>, 
+    Tony Lindgren <tony@atomide.com>, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Johan Hovold <johan+linaro@kernel.org>, 
+    John Ogness <john.ogness@linutronix.de>, linux-arm-msm@vger.kernel.org, 
+    Bjorn Andersson <andersson@kernel.org>, 
+    Konrad Dybcio <konrad.dybcio@linaro.org>, 
+    Stephen Boyd <swboyd@chromium.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    =?ISO-8859-15?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v4 2/8] tty: serial: Add uart_fifo_timeout_ms()
+In-Reply-To: <CAD=FV=WWrTHRdwrbOFBrZ94HpWQo6v6FkLTxa1vgN31SC6GqDA@mail.gmail.com>
+Message-ID: <ed012fe3-e704-de86-2b5d-bc8d71ebbeaa@linux.intel.com>
+References: <20240610222515.3023730-1-dianders@chromium.org> <20240610152420.v4.2.I65a6430ab75f74d20c28b5c5f819dd5b8455933d@changeid> <0bb414fa-851b-40cf-ede9-fc6252c6b173@linux.intel.com>
+ <CAD=FV=WWrTHRdwrbOFBrZ94HpWQo6v6FkLTxa1vgN31SC6GqDA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240612153847.52647-2-kanakshilledar@gmail.com>
-In-Reply-To: <20240612153847.52647-2-kanakshilledar@gmail.com>
-From: Alexey Charkov <alchark@gmail.com>
-Date: Thu, 13 Jun 2024 09:13:40 +0400
-Message-ID: <CABjd4YxqDkrcZw2_mp6sXkhXndRcODHoA2tCLLqP0ernojV6GQ@mail.gmail.com>
-Subject: Re: [PATCH v3] dt-bindings: serial: vt8500-uart: convert to json-schema
-To: Kanak Shilledar <kanakshilledar@gmail.com>
-Cc: kanakshilledar111@protonmail.com, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="8323328-1323085982-1718261762=:1023"
 
-Hi Kanak,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Thank you for reworking this one.
+--8323328-1323085982-1718261762=:1023
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-On Wed, Jun 12, 2024 at 7:39=E2=80=AFPM Kanak Shilledar
-<kanakshilledar@gmail.com> wrote:
+On Wed, 12 Jun 2024, Doug Anderson wrote:
+> On Wed, Jun 12, 2024 at 12:38=E2=80=AFAM Ilpo J=C3=A4rvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> >
+> > On Mon, 10 Jun 2024, Douglas Anderson wrote:
+> >
+> > > The current uart_fifo_timeout() returns jiffies, which is not always
+> > > the most convenient for callers. Add a variant uart_fifo_timeout_ms()
+> > > that returns the timeout in milliseconds.
+> > >
+> > > NOTES:
+> > > - msecs_to_jiffies() rounds up, unlike nsecs_to_jiffies(). This is
+> > >   because msecs_to_jiffies() is actually intended for device drivers
+> > >   to calculate timeout value. This means we don't need to take the ma=
+x
+> > >   of the timeout and "1" since the timeout will always be > 0 ms (we
+> > >   add 20 ms of slop).
+> > > - uart_fifo_timeout_ms() returns "unsigned int" but we leave
+> > >   uart_fifo_timeout() returning "unsigned long". This matches the
+> > >   types of msecs_to_jiffies().
+> > >
+> > > Suggested-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > > ---
+> > >
+> > > Changes in v4:
+> > > - New
+> > >
+> > >  include/linux/serial_core.h | 15 +++++++++++----
+> > >  1 file changed, 11 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/include/linux/serial_core.h b/include/linux/serial_core.=
+h
+> > > index 8cb65f50e830..97968acfd564 100644
+> > > --- a/include/linux/serial_core.h
+> > > +++ b/include/linux/serial_core.h
+> > > @@ -889,14 +889,21 @@ unsigned int uart_get_divisor(struct uart_port =
+*port, unsigned int baud);
+> > >  /*
+> > >   * Calculates FIFO drain time.
+> > >   */
+> > > -static inline unsigned long uart_fifo_timeout(struct uart_port *port=
+)
+> > > +static inline unsigned int uart_fifo_timeout_ms(struct uart_port *po=
+rt)
+> > >  {
+> > >       u64 fifo_timeout =3D (u64)READ_ONCE(port->frame_time) * port->f=
+ifosize;
+> > > +     unsigned int fifo_timeout_ms =3D div_u64(fifo_timeout, NSEC_PER=
+_MSEC);
+> > >
+> > > -     /* Add .02 seconds of slop */
+> > > -     fifo_timeout +=3D 20 * NSEC_PER_MSEC;
+> > > +     /*
+> > > +      * Add .02 seconds of slop. This also helps account for the fac=
+t that
+> > > +      * when we converted from ns to ms that we didn't round up.
+> > > +      */
+> > > +     return fifo_timeout_ms + 20;
+> > > +}
+> > >
+> > > -     return max(nsecs_to_jiffies(fifo_timeout), 1UL);
+> > > +static inline unsigned long uart_fifo_timeout(struct uart_port *port=
+)
+> > > +{
+> > > +     return msecs_to_jiffies(uart_fifo_timeout_ms(port));
+> > >  }
+> >
+> > Hi,
+> >
+> > This is definitely towards the right direction! However, it now does
+> > double conversion, first div_u64() and then msecs_to_jiffies(). Perhaps=
+ it
+> > would be better to retain the nsecs version (maybe rename it to _ns for
+> > consistency) and add _ms variant that does the nsec -> msec conversion.
+>=20
+> I spent a bit of time thinking about it and I don't agree. If you feel
+> very strongly about it or someone else wants to jump in and break the
+> tie then I can look again, but:
 >
-> Convert the VIA VT8500 and WonderMedia WM8xxx UART Controller to
-> newer DT schema. Created DT schema based on the .txt file which had
-> `compatible`, `reg`, `interrupts` and `clocks` as required properties.
->
-> Additions to the original binding
-> - changed the file name from vt8500-uart to via,vt8500-uart.yaml
-> - removed unnecessary alias from the example.
->
-> Signed-off-by: Kanak Shilledar <kanakshilledar@gmail.com>
+> 1. The comment before nsecs_to_jiffies() specifically states that it's
+> not supposed to be used for this purpose. Specifically, it says:
+>=20
+>  * Unlike {m,u}secs_to_jiffies, type of input is not unsigned int but u64=
+=2E
+>  * And this doesn't return MAX_JIFFY_OFFSET since this function is design=
+ed
+>  * for scheduler, not for use in device drivers to calculate timeout valu=
+e.
+>=20
+> ...so switching away from nsecs_to_jiffies() to msecs_to_jiffies() is
+> arguably a "bugfix", or at least avoids using the API in a way that's
+> against the documentation.
 
-Acked-by: Alexey Charkov <alchark@gmail.com>
+Okay, I see. However, there's no way around using u64 here even with your=
+=20
+version that does not use nsecs_to_jiffies() because nsecs is the most=20
+useful form of input when starting from frame_time, usecs is a bit=20
+coarse-grained for higher data rates.
 
-Best regards,
-Alexey
+> 2. As mentioned in the commit message, nsecs_to_jiffies() truncates
+> where msecs_to_jiffies() rounds up. Presumably this difference is
+> related to the comment above where the "ns" version is intended for
+> the scheduler. Using the "ms" version allows us to get rid of the
+> extra call to "max()" which is a benefit. Technically since the
+> timeout is at least 20 ms the minimum HZ is 100 I guess we didn't need
+> the max anyway, but I guess someone thought it was cleaner and now we
+> can definitely get rid of it.
+>=20
+> 3. These functions are inline anyway, so I don't think it's causing a
+> huge bloat of instructions. In fact, moving from 64-bit math to 32-bit
+> math sooner could make the code smaller.
+>
+> 4. I don't feel like it hurts the readability to convert down to ms
+> and then to jiffies. In fact, IMO it helps since it makes it more
+> obvious that we're working with ms.
+
+I'd be lying if I'd say I feel strongly about it but my only argument=20
+involves doing an extra divide which is somewhat costly. It's a=20
+plain 32-bit divide though so not as bad as the u64 one that is=20
+unavoidable.
+
+
+--=20
+ i.
+
+--8323328-1323085982-1718261762=:1023--
