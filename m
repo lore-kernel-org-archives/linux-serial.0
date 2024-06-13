@@ -1,146 +1,94 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8AC79C0;
-	Thu, 13 Jun 2024 02:54:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AEC65F;
+	Thu, 13 Jun 2024 05:13:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718247257; cv=none; b=Bt0aqMvXZ+Cwm2uIDNCkdrbu7U6hua/0+dvn1iQIhO0FmDCX1AV5QGQOJmmXSD+puR6TF7mFHQyWQhCuOoiCOtzliq8Ls6N3DJOfAqopDam8DXDYZNSFH0gBwM8oOP7dbjhP7N2I9lv05QvX4xjXWQ2V293yHcESiH/r1vwNluI=
+	t=1718255634; cv=none; b=BNGEhOOBRPH00d/YN3ABA9Ajw3EA6FmR4KNMkfvplSSRvwQ+SJEGuIcDSW9R9FRhts5UWIB8OrXq1s9fSYa+9XgB9YfV/W3aC2NP3FSKqhYwZw0M6nuai6TTXGv+SGZ7yzB7qCE2NzoXYBawA/uSbVm8HFJyamniUq/hVQX+124=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718247257; c=relaxed/simple;
-	bh=832EzqDxWJ7nN/P5FfuAYp/Z11o7CeTnyqHfsasbrm8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RYqTR1vO49Zdee4HsuPe5qYrSg6yJgTzKHrVYBAQpw3J4h+CToJUkEp0W6fVs5O5sPTX35IzmV1K2VJeB1kXxekLVuKH6ZpWtOS3mTCXSxqr4CqCDJgLZaMjTyfTsgUjVfpPq30J5MC2uBdcQtj0nZLaRUKdOX4X0w7o8VYNRCk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bKvjd8qb; arc=none smtp.client-ip=209.85.210.173
+	s=arc-20240116; t=1718255634; c=relaxed/simple;
+	bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Z0TcoLay26tiXVqAyiwTld09JeLR8Qzd65WFMXH3ymTCk3/vuR6yfjSVJhDJFKaouVMrPc/OJOMJclHyGW5QwDrcPdKH70dw5R3yJ5CiVctX48JflHPu1pVq6yqHzr4dnGZYPg2kj5Oc473miB/OQj6AWpKXCcRTwFTb2CLSrZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YU9mD4LL; arc=none smtp.client-ip=209.85.219.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bKvjd8qb"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-705c739b878so756530b3a.1;
-        Wed, 12 Jun 2024 19:54:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YU9mD4LL"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6b060f0f48aso3197876d6.1;
+        Wed, 12 Jun 2024 22:13:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718247256; x=1718852056; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uNmwMejHmNOh8I+RARUVaSfw/MphRluAD/hWf+7EyHM=;
-        b=bKvjd8qbuqszAWGmOoB8PwT5G3E+mgOFJjf5siuVPSY4+hmxgnTs578I6ThWgxMhpi
-         yov03gOC7rwMeJDjoRAX3E/EC6StGx6+jBv+2if1AdjMvzy3luqY5CUKAwp7QQX2GOFt
-         PWcRFtZRXJ67ZdRWV4//Ke5zZmAQ7nv6T7hS1RPC+Womy0iqLpbqPWKTtldKtjUQfuUE
-         01UMnc1tInL7CUB7PgjQXWgwLe30AdmTttJ04qQn0/31icNHdBjFyYdABqwsNnIXe7kc
-         8rxfob/uYVl9kVTZfGK5do1s1mV1H14MbG7BXPYq4RRQ31Ddz8bcuGMJ/6n0NwmFuGbz
-         azeQ==
+        d=gmail.com; s=20230601; t=1718255632; x=1718860432; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
+        b=YU9mD4LLt6UIUM1lxf5T6eYhLWuIZBFi0MG5HODfbmCFB2Ts5UbJdT6OxhN1uoLaZA
+         DXhvMhH01ST5YS0UWlCRyuBymgvNfInBBdyGkSKaqgGeNaNFA0locz0blJ7v8ChUmwjd
+         5d+3pn4n1iIAYIeRwqGASXUzj0r6iTRXbHgf7+urTc+q6197wun0ak2rzO5i8UV1LZFu
+         vjYAIGqs5oFqldbKUXsSTFwgxzCuQdp8a8jb3ldVGOxH+4Qq3sDUOQVjrKYCPSYrPaUs
+         QbJrhJbyQSg4JmsVQfOnhNwX4Yq+4LAe480gMQF9GgdcXVPg3fYDygvFBpWpw1zgCRPn
+         RVbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718247256; x=1718852056;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=uNmwMejHmNOh8I+RARUVaSfw/MphRluAD/hWf+7EyHM=;
-        b=EtJY6GObqyYNeHUY/BozU2aDYJwg0UQDULSUcx0V2NI5qfd3p1BqDoiViZHQCVVyxY
-         CVsJ0OabMV6QckLrntr/3fJsrAeJgJc+KmTGTtWpOTxS3mx/Q2gIR95aRRsP18A1HLnX
-         NZ1+8pqFTBWCvs5kJswN57ADqO2j2lvPPNr8FzL2gDWnJAnyXR5tieG5KndZJrXqYFjl
-         xkaC/aijqHvhplYtB3Xj1rO39taC+9ANLvLKmlN+W1cW4kAVcAjzlKSqR82VS2VQLB7q
-         fIqKKIqayk4IvcZgDRpbWlamMDf4069GLDCftcyattdmn7Mewx/kpMoh5Ly8j2dYI95B
-         8S1A==
-X-Forwarded-Encrypted: i=1; AJvYcCXkpgiPRkczceBsP9V1Jlwcr9u2k3gW+NMaEM+nOAum3Zw0XxyDoZqImw+Vb7lTgFI3pbey+0ZoPnelEcdbqZYVX7QVPCzKaSQ5bY1yH+Rcj+5R6w7zgW+qTgAjWWb1aZKfUYcS7vR6yZVI
-X-Gm-Message-State: AOJu0YyrtkjwAn+GKRuksAcU5RZ6wjAyqMjhjfXzrHXM6vZGGUgl9/k4
-	tvfnKmxIfUktNetSdrqYf2xyjQTLmTH34eamFXZEYqb1CJr2ukAg
-X-Google-Smtp-Source: AGHT+IGbL59FB/N0ejH67gB7kJ3RteUZ72f6jaqWjh8P39UHzwD8iyB1oIQqw4Is9dSdRe11OIbXhg==
-X-Received: by 2002:a05:6a20:7485:b0:1b6:dc44:8211 with SMTP id adf61e73a8af0-1b8bef9e17emr2373909637.1.1718247255601;
-        Wed, 12 Jun 2024 19:54:15 -0700 (PDT)
-Received: from [172.19.1.47] (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-705cc925fe7sm296762b3a.19.2024.06.12.19.54.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jun 2024 19:54:15 -0700 (PDT)
-Message-ID: <12baa918-2066-47b1-ab88-27d1dc6041b2@gmail.com>
-Date: Thu, 13 Jun 2024 10:54:12 +0800
+        d=1e100.net; s=20230601; t=1718255632; x=1718860432;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Yz59tQWkv01hPFKbE+8vks+JGjl0tcpj9w+w7TTxogs=;
+        b=NZlZsvF8vtVGcAXrgzh5B1Mao6DyDTLsgWmYGt2Wprgx9HdwFjKBTqp9hs1/I52+sD
+         OKmFnAIyd70vXS9rKTaWyUsjBDl9CC+mpd9/YzklPRI7eJcniEOL4tgubJaXuSleGrHb
+         sjzjDCotTfOpOT36GM9GDMQ5krFaFyw3j9P79MObZKPWXD+Q/dfnTbuJg+YMzTML4ZH3
+         gCOySu/AShraJJyPiUYoMrOxxF/Epw0mG1A7i5VyTke30QSizs4nRE+3DOruSmdBmo22
+         vnKaQad1PSNsFgwQBrSg1xUzfaGRB1d04suhhFLXidz5/PLoSwmbyYF/RH2TltmpwXJD
+         GrDg==
+X-Forwarded-Encrypted: i=1; AJvYcCX2s0jOtA6WSLpfdKedPEtPSCPFVP/l4pK0u+AlwamaxujizCFWl1kKFr/uljGx8WSnSMtsuTjoww73el6QK9SsJ+vHjWeIgH3wYEi8UYGdYiHae69rarZ/U63WGlIHirL+1tZU2E2VjsHpTJqYdSFNUftzWnBKvTKlcGqRGgxuqZocGSGQiw==
+X-Gm-Message-State: AOJu0YwfwviU4GBlyrs4nQ1huUjNgtQ4zsgxIFldbOhvJWbQv/MXbxq1
+	SMqhqDSDHt81bxXCEJGnhNG411pqLmmEzrpLdV56KQcH3YngF3Ecsx6fD+zEq9Iu4DsCLjcX4vP
+	SakbedZ/a1OATORBBPbpkoYLa/uGz+KNA87Yimg==
+X-Google-Smtp-Source: AGHT+IGA/60BeVBcSGOZs2ZPs2s0isSjEHC6dloesC4nDItXtIqTS5fn0q30oP5yguqs2uRGIDtioTO6gpNUkOcindI=
+X-Received: by 2002:a05:6214:4688:b0:6b0:6d9c:8eb6 with SMTP id
+ 6a1803df08f44-6b1b5c0afedmr48758286d6.58.1718255632046; Wed, 12 Jun 2024
+ 22:13:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: serial: ma35d1: Add a NULL check for of_node
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
-References: <20240611092251.159149-1-ychuang570808@gmail.com>
- <2024061118-sycamore-leggings-05a9@gregkh>
- <73d2167a-84ee-40a4-a68d-ba25229ff8ce@gmail.com>
- <2024061226-laborious-jubilance-8df8@gregkh>
-Content-Language: en-US
-From: Jacky Huang <ychuang570808@gmail.com>
-In-Reply-To: <2024061226-laborious-jubilance-8df8@gregkh>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20240612153847.52647-2-kanakshilledar@gmail.com>
+In-Reply-To: <20240612153847.52647-2-kanakshilledar@gmail.com>
+From: Alexey Charkov <alchark@gmail.com>
+Date: Thu, 13 Jun 2024 09:13:40 +0400
+Message-ID: <CABjd4YxqDkrcZw2_mp6sXkhXndRcODHoA2tCLLqP0ernojV6GQ@mail.gmail.com>
+Subject: Re: [PATCH v3] dt-bindings: serial: vt8500-uart: convert to json-schema
+To: Kanak Shilledar <kanakshilledar@gmail.com>
+Cc: kanakshilledar111@protonmail.com, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Dear Greg,
+Hi Kanak,
 
+Thank you for reworking this one.
 
-On 2024/6/12 下午 03:23, Greg KH wrote:
-> On Wed, Jun 12, 2024 at 08:43:54AM +0800, Jacky Huang wrote:
->> Dear Greg,
->>
->>
->> On 2024/6/11 下午 07:11, Greg KH wrote:
->>> On Tue, Jun 11, 2024 at 09:22:51AM +0000, Jacky Huang wrote:
->>>> From: Jacky Huang <ychuang3@nuvoton.com>
->>>>
->>>> The pdev->dev.of_node can be NULL if the "serial" node is absent.
->>>> Add a NULL check to return an error in such cases.
->>>>
->>>> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
->>>> ---
->>>>    drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
->>>>    1 file changed, 7 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
->>>> index 19f0a305cc43..3b4206e815fe 100644
->>>> --- a/drivers/tty/serial/ma35d1_serial.c
->>>> +++ b/drivers/tty/serial/ma35d1_serial.c
->>>> @@ -688,12 +688,13 @@ static int ma35d1serial_probe(struct platform_device *pdev)
->>>>    	struct uart_ma35d1_port *up;
->>>>    	int ret = 0;
->>>> -	if (pdev->dev.of_node) {
->>>> -		ret = of_alias_get_id(pdev->dev.of_node, "serial");
->>>> -		if (ret < 0) {
->>>> -			dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
->>>> -			return ret;
->>>> -		}
->>>> +	if (!pdev->dev.of_node)
->>>> +		return -ENODEV;
->>>> +
->>>> +	ret = of_alias_get_id(pdev->dev.of_node, "serial");
->>>> +	if (ret < 0) {
->>>> +		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
->>>> +		return ret;
->>>>    	}
->>>>    	up = &ma35d1serial_ports[ret];
->>>>    	up->port.line = ret;
->>> What commit id does this fix?
->>>
->>> thanks,
->>>
->>> greg k-h
->> This patch fix the in tree ma35d1 serial driver.
->> The last commit for ma35d1_serial.c is
->> '6b64f8e360c00f180cffa1806095cdd2abc55b16'.
-> That is obviously not the commit that causes this problem, which is what
-> I was looking for here.  Shouldn't you include a "Fixes:" line if this
-> is resolving a bug?
+On Wed, Jun 12, 2024 at 7:39=E2=80=AFPM Kanak Shilledar
+<kanakshilledar@gmail.com> wrote:
 >
-> thanks,
+> Convert the VIA VT8500 and WonderMedia WM8xxx UART Controller to
+> newer DT schema. Created DT schema based on the .txt file which had
+> `compatible`, `reg`, `interrupts` and `clocks` as required properties.
 >
-> greg k-h
+> Additions to the original binding
+> - changed the file name from vt8500-uart to via,vt8500-uart.yaml
+> - removed unnecessary alias from the example.
+>
+> Signed-off-by: Kanak Shilledar <kanakshilledar@gmail.com>
 
-I got it. The  commit that cause this problem is '930cbf92db01'.
-And I will send v2 patch with the "Fixes:" line.
-Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver 
-support")
+Acked-by: Alexey Charkov <alchark@gmail.com>
 
-
-Best Regards,
-Jacky Huang
-
+Best regards,
+Alexey
