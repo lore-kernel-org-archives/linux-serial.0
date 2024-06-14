@@ -1,101 +1,81 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F3F13B588;
-	Thu, 13 Jun 2024 20:48:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9776F8479;
+	Fri, 14 Jun 2024 02:48:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718311715; cv=none; b=BDyHQ4yDBaHbwi4/WMDq/+z/yWdR6STfMIRNEzQnjMc6dDWFfOBdMSXHrIpATJSRmXFuZAhkDM/m+e0bVxddkcFNoZ976LXfz+id3B0vXXbRvdmeuOt8gmRHU17cWNAHSDWSzof0ShSFBj81ys8s3YFkTh8OrXjccRTRAz+DJRE=
+	t=1718333322; cv=none; b=JwZDdbqcp24TrkjPui+AB6jgA/VuVtcTMAHSA8p1hfFN3ew6hyVsjGzDPSAm/vfD/q/LGJ+O6VZHYjaX8NJc9ZP8h7QX+0WfoYx9VaZdNwfI+Ezdb6ZYsUOIF7TDf4cBJ4dasBzAu3I2zR2rTesmG3qJ4vUv8VW2hAHfqUWOPu0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718311715; c=relaxed/simple;
-	bh=L0KOOhVuxd60mrMOguSYJIgTVodk+yK+4lWwef/NX5E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OGQWx9L31D4K0duYqH9E4eCyoBL0ecAXtmCPWYNgYrz4DvtFz81JDJmVwks+tlH4A3CKNMWzvUJpUyiCDm5HX75jCBC85ocme7nm3A6fMTlixkZGcgxtFLZ8FiZ7Kpzr3+dxLdqc0YBsVmjYVaRw2PzB1xbKRgkJNnFg09nnEtg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NoVlJBcz; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718333322; c=relaxed/simple;
+	bh=nJRJKGj8sglZBrfOY3WDwe7MIgU1n4E9xkGE5RJEtAw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sYVepTtOCdA/nX8pgAUtH73x+m+/LmRzFuIfZbeHD2d2KcyXMEVyqFKzlrPzca1tr0JPSwJLDIjeklX9R2PwKz7hXL0J+kJ0SAyhALiW1zbJWrpiP8AdkD2kxdg3E7Wq9rIOSsDME6ZW2ZAd754T1nO0R7KctOFhLy6rJU0CwlA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=s5g1m7OS; arc=none smtp.client-ip=185.125.188.120
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NoVlJBcz"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-a6efae34c83so195519566b.0;
-        Thu, 13 Jun 2024 13:48:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718311712; x=1718916512; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rvk0v4yG3/t6YZyQfeNudt0AkpCPJ7jKM98d8gPFSTI=;
-        b=NoVlJBczu7ICMMcpQpoCPqmlg6HFtFBhoyVAIZyazmBMbqRWrQoYxSWRQssJb4ScQ9
-         37+r8w3aw2n3OO43CiUkoaTbS6aKwFoBPEHqcV8u+1mLU34Zo0vRe8gK8BK2vr1zZV/P
-         DABQgnxR6WxQYlUEc8nmkFK/f6dN/wi5faVP6PnfPfamAkJCkOB3xHgZZIHDK3m32Kdw
-         S9iBtOozdlIGsp9y/pVx5qn64Nwa/oBQz7i8ZASCr2v5xiOiCHpMDMb43s2Xpl/jeLhY
-         GhqHkG1JThZjt3MX1GNb7bLcOhshW5rI2JFZ9GCXzuJTNjv3m1PR2T5WtyE3/iN6D6oD
-         ocCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718311712; x=1718916512;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rvk0v4yG3/t6YZyQfeNudt0AkpCPJ7jKM98d8gPFSTI=;
-        b=bD5b98OUsrj29SJJlNdSDtQFHFr+DaUxhvUe69g4rsZ5ux/m8npdIxTUkJA5OPW6dV
-         bqkiMH1iz1pGZDHCoHoe1UJUQp+TDvZDr5dKJHdahSJJxbAdFW/IgoOo7K7acfggRqjE
-         A4UEzTU3SV2qDTZYXpHh/+h/WBVRo6yuy+HXuh6tLCUDtjgTh+2jz+wq3wGs4gLNBeo2
-         bWLsqoe52RQmH/XG4+aTyGJG9RBApkV7GBspfgpyZIC87juCe8ZjZ1wrDHh6iZexu3nk
-         /ylh6s+HZnYyfIiglmn6Nf2JLNw3qoJ0fqVv1HWx8gkkT9DFcUJLrulwlZYmpaP5KpuA
-         PFrg==
-X-Forwarded-Encrypted: i=1; AJvYcCWAiArLu2mLsRghvp2EOBIe++51/tLL5cKDy2bib013jL89aFPwUA2GfqXNucN+hhLPwbUvLtqlmwUPINJrE85OfXCN3vCayTIRLw==
-X-Gm-Message-State: AOJu0Yy4I1FaKgqCGAWUvON0iDYXFn1cCzhgiKe6OYI1mwvViDxiMzbu
-	YvUIbz5kOwabi1d6C8PYeLg3FLASiBbZof9oPZhPwKhcJU6SxZl70QUdxTE7nETN8K0Hv1BiRN9
-	k9MBxBB9eXqa9IlP5wo2id8gSpefXGGN9fm+62g==
-X-Google-Smtp-Source: AGHT+IHyDh4OwJuVVLPRPUIEuzM7hBD6hlZs2pDuXDTrOXcX6l7ZkjvT/zo0+umsZaIkXSyToKl3k1BnsORmyrYmlVs=
-X-Received: by 2002:a17:906:f901:b0:a6f:309d:ec23 with SMTP id
- a640c23a62f3a-a6f60de68bdmr45626766b.72.1718311711947; Thu, 13 Jun 2024
- 13:48:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="s5g1m7OS"
+Received: from [192.168.0.106] (unknown [123.112.65.116])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C0A2F3F372;
+	Fri, 14 Jun 2024 02:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1718333311;
+	bh=bJmc0GU+aqdQAqb6VqCMe+1Dm0FPkfRALI+Y1NzLVAE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type;
+	b=s5g1m7OSlXsoPjRPXIOk2wEBPkMVvw2y54K2rGiyg1dbed7zPQ57lKddmydYmMVHT
+	 Hg/v3zb4xv/sZnh8kEebINU1DyIJZVQskQeZ2c7JFwzSZgHdxZ3+iOyy32NaNLhxyQ
+	 UjzIVUQQg/86wNe+7yGdjXnyYXu4RxyYQphphu8Pc5vC+YSws6Rs/ArYxf2NdXw2te
+	 iASRLi2FLuXiUvTWbEf1nActaJHNOh31+7H1vKBu6qTGqXM4i1gBFV65kIsn//oh8j
+	 IoYNyQa+u//Suc5xpAa06DJ0VLdU0z1w+qeYpSKc9/JjGvzzwi1CzWTjjvKXtfOFEb
+	 zOMW1/9QpWF4w==
+Message-ID: <51900a3f-9702-4b65-bfe7-cb8671f1668d@canonical.com>
+Date: Fri, 14 Jun 2024 10:48:22 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240613082528.22591-1-hui.wang@canonical.com> <20240613082528.22591-2-hui.wang@canonical.com>
-In-Reply-To: <20240613082528.22591-2-hui.wang@canonical.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 13 Jun 2024 22:47:55 +0200
-Message-ID: <CAHp75VcuobPDHX8eAskc-=SL5_527PqRiNCSfq09=RpP9EH0cA@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v4 2/2] serial: sc16is7xx: hardware reset chip if
  reset-gpios is defined in DT
-To: Hui Wang <hui.wang@canonical.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org, 
-	lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
+ lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
+References: <20240613082528.22591-1-hui.wang@canonical.com>
+ <20240613082528.22591-2-hui.wang@canonical.com>
+ <CAHp75VcuobPDHX8eAskc-=SL5_527PqRiNCSfq09=RpP9EH0cA@mail.gmail.com>
+Content-Language: en-US
+From: Hui Wang <hui.wang@canonical.com>
+In-Reply-To: <CAHp75VcuobPDHX8eAskc-=SL5_527PqRiNCSfq09=RpP9EH0cA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jun 13, 2024 at 10:26=E2=80=AFAM Hui Wang <hui.wang@canonical.com> =
-wrote:
 
-> Some boards connect a GPIO to the reset pin, and the reset pin needs
-> to be setup correctly before accessing the chip.
-
-set up
-
-> Add a function to handle the chip reset. If the reset-gpios is defined
-> in the DT, do hardware reset through this GPIO, othwerwise do software
-
-otherwise
-
-> reset as before.
-
-...
-
-> +               /* The minimum reset pulse width is 3 us. */
-> +               usleep_range(5, 10);
-
-Simply use fsleep() and it will take care of the sane API to be called.
-
-> +               gpiod_set_value_cansleep(reset_gpio, 0); /* Deassert GPIO=
- */
-
---=20
-With Best Regards,
-Andy Shevchenko
+On 6/14/24 04:47, Andy Shevchenko wrote:
+> On Thu, Jun 13, 2024 at 10:26 AM Hui Wang <hui.wang@canonical.com> wrote:
+>
+>> Some boards connect a GPIO to the reset pin, and the reset pin needs
+>> to be setup correctly before accessing the chip.
+> set up
+Got it.
+>> Add a function to handle the chip reset. If the reset-gpios is defined
+>> in the DT, do hardware reset through this GPIO, othwerwise do software
+> otherwise
+Got it.
+>> reset as before.
+> ...
+>
+>> +               /* The minimum reset pulse width is 3 us. */
+>> +               usleep_range(5, 10);
+> Simply use fsleep() and it will take care of the sane API to be called.
+OK, Thanks.
+>
+>> +               gpiod_set_value_cansleep(reset_gpio, 0); /* Deassert GPIO */
