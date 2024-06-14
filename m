@@ -1,202 +1,304 @@
-Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B08713B2AD
-	for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2024 11:33:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.86.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D15219FA9A
+	for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2024 17:17:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718364784; cv=none; b=H6ksI0WP3yLlm5b0HcwIbRB1AJLv2lw2kLOr6DPfs4AZftiiR1p2NkGxU/MoDFATlAzXu3zHX3jDvs0I9Cu1fMFBjwH3R2D6uphXuexHBazWfrWY1CHBkXz5yrkEkUDqDjLOGDRX9sLR/TDxlG9ZUX9wMi53uXU97xd4BjySm6A=
+	t=1718385447; cv=none; b=p1OCbf0FrN6tEyPJWNfjGe1RvUR0UwypnGpQUcM/aInHHaOJ1/wW8yXpsARelwXChM9z1UXUFuHp153rZ0G5mKfT2lp21Hjld3ng1w4FihYw9Nmpr6JrVHoABFcK3rt7o/KwmmFmouo+5C3Enifu3/mnvB+E2MQ3MsyKTp7AdzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718364784; c=relaxed/simple;
-	bh=1zgSzz3jfz99v5f0YhtznF9yd5rSOj7q4PJu1k5xWnM=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 MIME-Version:Content-Type; b=EnieTY/MGzP2PYM+0+jJymxCoA/00RX8PMQtBJtKV6N1mNvnsB9Xiu7P9AlRXZj4vTDH6J9DT0Gv4AujDc21noIAOSL+SLytWRUdbA1cDau/EXfGNhFHrGqPehZyOcdO0XgsXWDWInW2QwAsamPAh5oZGWQlrlCum6N8+ceds8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com; spf=pass smtp.mailfrom=camlingroup.com; dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b=gNI7Ja4Z; arc=none smtp.client-ip=185.58.86.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=camlingroup.com
+	s=arc-20240116; t=1718385447; c=relaxed/simple;
+	bh=HCYPoefMJuvnLICEcsjkvKE9RgjD/qUfnxq3sUrdD4I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OuRPtaejqGl+jjn4FEoMJAX5bf24mCZSP5ueSnf+1hn6/fGoDCtgZf+tM9ZR2G4ymFbp2nF3ExnRL0fMvvEKBCOCHlMabDBVT1NMBZBgibQYpnggl2bM8eG4iar7q6r/ZsipY1KWdj8GOFn07UgSzf9oqejUOzdR7qNP6FAgLks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Af/p5VQ4; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b="gNI7Ja4Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-	s=mimecast20210310; t=1718364780;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=D0ydGSAkjaL7nI5gcYzQKY03XTshCFOCF7AH9qjPGVY=;
-	b=gNI7Ja4ZBWUDSceb6csEWwQHe9Omwr1QgRUTOFPTBMciPVTiuRdEDknX8Mf2zj+HfDT224
-	MA7nAsTwm2nP6PeOQLiXXt8YWoWBD0oB0OFE0y7u2cX4RUNGI24E+SD6X3yZHn2yYntcRB
-	Gd0EJLMQwLnI2OgK20QEQZjSXbIuurE=
-Received: from GBR01-CWX-obe.outbound.protection.outlook.com
- (mail-cwxgbr01lp2041.outbound.protection.outlook.com [104.47.85.41]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-323-CbU9F9AHMcKNxP4JhWDJiQ-1; Fri, 14 Jun 2024 12:31:17 +0100
-X-MC-Unique: CbU9F9AHMcKNxP4JhWDJiQ-1
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
- by LO8P123MB8051.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:3d6::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.25; Fri, 14 Jun
- 2024 11:31:13 +0000
-Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::f866:62f9:716e:ca4f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- ([fe80::f866:62f9:716e:ca4f%4]) with mapi id 15.20.7677.026; Fri, 14 Jun 2024
- 11:31:13 +0000
-Message-ID: <34b415cb-871c-4baf-acb3-566615734091@camlingroup.com>
-Date: Fri, 14 Jun 2024 13:31:10 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
-To: Hui Wang <hui.wang@canonical.com>, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, gregkh@linuxfoundation.org
-CC: jirislaby@kernel.org, hvilleneuve@dimonoff.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
- Maarten.Brock@sttls.nl
-References: <20240614102952.679806-1-hui.wang@canonical.com>
-From: Lech Perczak <lech.perczak@camlingroup.com>
-In-Reply-To: <20240614102952.679806-1-hui.wang@canonical.com>
-X-ClientProxiedBy: WA1P291CA0021.POLP291.PROD.OUTLOOK.COM
- (2603:10a6:1d0:19::21) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:400:142::9)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Af/p5VQ4"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a6266ffdba8so295048866b.1
+        for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2024 10:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1718385442; x=1718990242; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Redv4EIrxDLFGUnzlh3BgiGC6w3p9xU8N5sr8hyRmTw=;
+        b=Af/p5VQ4HZNM6QUkbf4kl/Fg/qgCa1wXKX8L6FCL2G2WIP046T8hasDFfT2C8yLCr+
+         dvhbez6G7NvARreziRWBfgCTl7fM3h+/PHkm93ec13sMUQj0gVno8mVaFX7xcopFFOJk
+         NAOjGl4/yWsHInbNWEAOzPZq4R4m1I4Kw5HHsREGVq/HvkTlN2i9HbPY7w/8wlnOEq0A
+         3ULUANLhyaWjrEdv9UGnUhbwwsJpX4Y94Ok4v/Njv1k8+5WK8AJ4bGOh+tst4vixmg5g
+         IORewSB7Hcv0gaO+RyPnpJEhLVpGmqQoHYhXqzydqWvgdXSGYx3iIDHZrZFM3WMvOTEa
+         GdWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718385443; x=1718990243;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Redv4EIrxDLFGUnzlh3BgiGC6w3p9xU8N5sr8hyRmTw=;
+        b=dA18ySMxHLTrIBvlnCt23PDdiuqEkRQ5M8xm4yoOBmaiX5s1e+0J9LPTlgX2VyaN0L
+         9xLnZHUhSiKs71Hd6vSyd3elryIFkr8+5bbXz0zI97MFFSlS93Z1FfH/Q+NWwKR5NAQ5
+         zdhazdf48BKEsclb7h8DioPZDlIHujGlrR8hfaLW+OGSNpVpiQXIZ4Pw+/2SCNSH+xec
+         8GFc6IMpaoLolga1a9vkF2VJM6AmTnF8uSkR4E7BVDE9OsQW69dQXutGhE5P/k8rT2se
+         aom0DeR0fHDY7QCMU+0KT56KTfB3jjuaXHc4iLQKfSjAHgH6IDpu30zGEC2zzOmrFvpL
+         Ww1Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXawLY0AF0HDNEvfKScZ8c3/X/q0TWtFhhdMTIcPBXdkyzWMrctdR51sGK8ULKRW7H60uHs/Vgm5KsPJym9bA6dy5CdIPLtI8lCtNeG
+X-Gm-Message-State: AOJu0YycP87tic3kFy2IXFZLyVY3BPNJrI7uU7uUnaX7kxN9Q3N7b3sk
+	P+koiq/X3CIe9GSNUYGBrfnUh6IzJ3mNObvi1lyq39TEWfyBfDwk3U02opGSlphw5kHXno6SyEh
+	x
+X-Google-Smtp-Source: AGHT+IGbKvAzNhBrqGh9T8tnWby88aNyE8nSpywOnAj2Knqo/DlxbowgUdtx0FAOQoO9jPadTiyEuQ==
+X-Received: by 2002:a17:906:c194:b0:a6f:1e97:b177 with SMTP id a640c23a62f3a-a6f60de1094mr241550266b.64.1718385442488;
+        Fri, 14 Jun 2024 10:17:22 -0700 (PDT)
+Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6f56da3f41sm204791566b.33.2024.06.14.10.17.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jun 2024 10:17:22 -0700 (PDT)
+Date: Fri, 14 Jun 2024 19:17:20 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Tony Lindgren <tony.lindgren@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] printk: Add update_preferred_console()
+Message-ID: <Zmx7IPQX4FVdSe1J@pathway.suse.cz>
+References: <20240613125113.219700-1-tony.lindgren@linux.intel.com>
+ <20240613125113.219700-3-tony.lindgren@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|LO8P123MB8051:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ecad2ef-b562-4c25-69ba-08dc8c657ede
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230037|366013|376011|7416011|1800799021
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?jhzqnfv9y4B4BIC9OPoaV+CPizlB4ytCCn1W2FQaoNlDtIWzJ2QLFZA9rgWa?=
- =?us-ascii?Q?MmLSKCFMBDgylU7h8zhEaNlvX1k68mUQz9kiGdqnmnNoHScfKfvafrbu7tyK?=
- =?us-ascii?Q?QSlS1DJqDm/8GPRIzUEkxxwlINmsVkdjpvjXabWcolGvcyGG5jmL6ZEP08wQ?=
- =?us-ascii?Q?ufCx1PLzOk4meZJIqCJHEf72LORaYydS40dNJkK2C7+AzRiP2/L2keNhx42x?=
- =?us-ascii?Q?dsn3YAovaChosug8Ixdn30u8hWW3N2wPIv0KD8aU+UbMuohe0pGiQRW6FXbY?=
- =?us-ascii?Q?abqiaGaKEQuaIOgQ4dcpPgLXaQhbiw63KFImIq8yOz2MGGNcrjsi2iI8M4XY?=
- =?us-ascii?Q?6LZ17XH7y+PTQ2o+HTJ8OnOEesKOcQASdxjt1+dZ2BuY9uCh3mOvt2BfcaB7?=
- =?us-ascii?Q?YbNn5TRNzZXEaziDyl/WIVWGwQN5xRMx6ZvDm6gvOrDQF9tfA65RaLSVd2gt?=
- =?us-ascii?Q?urFodHAcnuXFp0fWVqncOcxgPNxuFYUXVUgP9SdsPhqJvwySPGT2HwSsTbCi?=
- =?us-ascii?Q?gaDOpXwChWrHKQ37xVuTON5RoZ0cgvGb2AmwXncvyIEoFD6qVy7GsOfPEfxO?=
- =?us-ascii?Q?j9H6JAR29mrZ3B1z1CwhBeULoaatf8i7Div3uHRsFWS/Oi+MygpkD/QyPOoK?=
- =?us-ascii?Q?/gI2z5xkSQCP3MbFIBB9gyyOtjQBgWfTuTjxFYBT8CMHYvmv9ngtDRNxofSk?=
- =?us-ascii?Q?iQZ9lL5iFq7dokJRIuV6j8fzZYz71yo8Ix1Tq3SvCnSJmLCriEdQ8fD7fsos?=
- =?us-ascii?Q?evkjEQhSI9lZnE19TxIR/QtwGA2arkcKQRMXs3BWV9GkslcnYlbBU6VG8ILi?=
- =?us-ascii?Q?rlYjDBpBSmTJaRDHkaoN3NldnOchhTNUvS8PoP7F0xO7GyNHnmU4C4dA24hz?=
- =?us-ascii?Q?Xyj8umxOZyJ5v2aXLEKTa61euHsHKVYYgUK58E4P/0doFQslqoACkDGBbcMw?=
- =?us-ascii?Q?5pfirQV0KvYN+g25rndbvY8ir6w+4LHcc93DECaTTs28FOpSZ3yG9zfisNAu?=
- =?us-ascii?Q?EXzPxk0UltZa97E27FZx8NLUipVlTVnCPZeLQJrvkrOPgC6zNptCaKtajK8L?=
- =?us-ascii?Q?GP+nNo6yyucQwm+Jq+PzcnIuMF63yiLwmjDVaCUw/yKepH1kVhpHDToqUps+?=
- =?us-ascii?Q?sqs9HSDgZ7zc/d3RY4JD7Ze2oVp1Z0vZDafo+v+WRPEbNZBCuM9m1ldOi+Ir?=
- =?us-ascii?Q?gxBUUEi1AsEPwQ9QOFQ7k26NrBkWajSBsAjrmv2GC1K45XoFP1E55TJWKohe?=
- =?us-ascii?Q?J8hcGsddBTY2Q0QAlsjc?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230037)(366013)(376011)(7416011)(1800799021);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HNj0dxa/jKptxfrNypIj32oIrstxNHjOypp33/wihQNMnF6Dsb9gb+Gx0O2R?=
- =?us-ascii?Q?wglh3/W4dEI85qG6KBVSnM1kgIj5x2UoaVZfCJ8boNndbVKNkIqZQsAVKZEl?=
- =?us-ascii?Q?bbfGfWrIPQ7ErfKfxXfBgIYyu+Nnrr6O0uRmUXBImQr0wX+A/Fe/rRF1hwCE?=
- =?us-ascii?Q?WL0Uqsu5u+AJ2ECAAlcZ+K5Vz+UsZpvEDIe/Fyz3Sitauc07Am2/eAaoW3hG?=
- =?us-ascii?Q?N6vncvdeApjzBMDZX4YR6GxgQkepgi2NetCycSGH5gIos93EbgNvJwBpdzPI?=
- =?us-ascii?Q?2YcM7H9jnQC+Cx7P618l/jvhuzHEMCaN81OY00xRUUbxEMxvP+Gm71RuLXwt?=
- =?us-ascii?Q?hbgucDqtfKH3q5BJMkwVLKmyuhc6byWpL2UW9sq8fPtBI7APrbGJ5ZcEWaOv?=
- =?us-ascii?Q?tNvLDUDekTqhY8Z5v6Ntu7JLfUqbB/0Xb3T2zUEe+6R9eFDCVhWDBB9GAx03?=
- =?us-ascii?Q?UfmP2G3oGdC8GdzFE4nc4nPEPG45vDc24Lujsb9sFdtHKU4+hvF33f0jxWUi?=
- =?us-ascii?Q?CyT8oTKMWuwyTIMvQEuD1vdJcb38lxRTA2050gp3B2ilWdSUA6/GepgHxmFV?=
- =?us-ascii?Q?DeZU2dmYuR+98AswSpEYzfwwyjWeCDKhuhnQ5FxDBcybxXZQo0Nkx7jAp+s8?=
- =?us-ascii?Q?PxtgO5sF+q6Wq+sd9ofh7paMmZZj6EK3HNH5IsoKeUVr/Fxq6BP6vTjStMx9?=
- =?us-ascii?Q?BZUFEYe5Ln1bzsRkSJLMa+pIucaywvJ4vW1gukAIGvNUZh4i8Wmy5xb/oVjR?=
- =?us-ascii?Q?JiDsRyERUUUlzStkExG4u1TTmPn1onPlnX1ffuNk3NC4CAigr+NR0QB88yky?=
- =?us-ascii?Q?3VmoS9AqUq8+OvICGVDoCoGuQGWPQpt/xFCM+jdtxHL2qu9jhtDYe8PJG6nN?=
- =?us-ascii?Q?Gbz5bzLFCMhwtQOYKfH+zVD7pqrKY5t/M7pFRYJq7ENzW/Av/sEYqBTnI214?=
- =?us-ascii?Q?0czlxwdADrzZK6xKpQ0hdh8sXisCb1A9XVNyrlccq2Jc5KaPgrVIdNPGqqgm?=
- =?us-ascii?Q?BM3xHxlhkEUvW/ql3ky1swaZPrWsM9qq0eIm1JnMp7Zn1r09NZ6Eks/BLNVh?=
- =?us-ascii?Q?T2lucW1CogHu+wnUzU5TKDIOsP+8pFFPyenNo4OO6uF4DGw6m1X50m6cZMRq?=
- =?us-ascii?Q?/b5lfKGIko7v0B1YfetMMM2ifJN7v3PfkbSwCXrQeYpBdotrQBxB7SnjQFra?=
- =?us-ascii?Q?nE3gPnEvfZScFuqMPN5Q+YJLNiT7GQeTAmg/i+TP2qFnB2LnJBHyeuQchmMn?=
- =?us-ascii?Q?ItmxG0IIEdFnsY4sBDMF2+2tvzmqi8qgJo9WrAABldk5OtxxiUAB1u7NG+s0?=
- =?us-ascii?Q?2VodJcHOH19kbNHf+K2wEFEatF1TS38m6mKZlTsSvG/raZFD02kUL7EzBel5?=
- =?us-ascii?Q?q1e6P9PnEBXWN7iXmGGg5gaa1oOrm58x8lV4i0tFlrbtSxqAxHwXrkuoOvWv?=
- =?us-ascii?Q?cJDz/BnVg0UyA7SCWPPSK5vy0ymNCKtnHijvWdF7cZQX2+rFGGxZ5wjEQv/3?=
- =?us-ascii?Q?iY0xOI2Knmt6A9XxTMYszDa1TsVOx+uUQOJv12lXHQdjhhePT0GjOp6hhAYi?=
- =?us-ascii?Q?JUUlocLUKOjq9LsTrAYgab8+a5cogib2R5VEDbrD0aDpm1MwQaDMCG61GLXF?=
- =?us-ascii?Q?AH/i3laWDWlAiGPklLhv8L85qqO1yy/X3s4acwDNSeRbT2oJ3Qq9jxDYuwLa?=
- =?us-ascii?Q?+LJZFw=3D=3D?=
-X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ecad2ef-b562-4c25-69ba-08dc8c657ede
-X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2024 11:31:12.9821
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XOioBz3Xm6qEVW/B3s1tyY464loKF3wurO9N5kxPyI5GxbkbU0stgQzUoC3tjJjM2B6QmpQvmP8cHiJxSsSAHDA/sdm29MNqEPsHot2LeXs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO8P123MB8051
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: camlingroup.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240613125113.219700-3-tony.lindgren@linux.intel.com>
 
+On Thu 2024-06-13 15:51:08, Tony Lindgren wrote:
+> Let's add update_preferred_console() for driver subsystems to call during
+> init when the console is ready, and it's character device name is known.
+> For now, we use it only for the serial layer to allow console=DEVNAME:0.0
+> style hardware based addressing for consoles.
+> 
+> The earlier attempt on doing this caused a regression with the kernel
+> command line console order as it added calling __add_preferred_console()
+> again later on during init. A better approach was suggested by Petr where
+> we add the deferred console to the console_cmdline[] and update it later
+> on when the console is ready.
 
-W dniu 14.06.2024 o=C2=A012:29, Hui Wang pisze:
-> In some designs, the chip reset pin is connected to a GPIO, and this
-> GPIO needs to be set correctly before probing the driver, so add a
-> reset-gpios in the device tree.
->
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Hui Wang <hui.wang@canonical.com>
-> ---
-> No change in the v5
->
->  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml =
-b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> index 5dec15b7e7c3..88871480018e 100644
-> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-> @@ -28,6 +28,9 @@ properties:
->    clocks:
->      maxItems: 1
->
-> +  reset-gpios:
-> +    maxItems: 1
+The patch seems to work well. And I am surprised that it is so small ;-)
+I have some rather cosmetic comments.
+
+> diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+> index 5ebacb982f9e..a34f55ef6f37 100644
+> --- a/drivers/tty/serial/serial_base_bus.c
+> +++ b/drivers/tty/serial/serial_base_bus.c
+> @@ -210,7 +210,13 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+>  static int serial_base_add_one_prefcon(const char *match, const char *dev_name,
+>  				       int port_id)
+
+I would suggest to rename also functions on the serial_base side.
+The function is not adding prefcon. It is doing some match_and_update
+job.
+
+>  {
+> -	return 0;
+> +	int ret;
 > +
->    clock-frequency:
->      description:
->        When there is no clock provider visible to the platform, this
-> @@ -91,6 +94,7 @@ unevaluatedProperties: false
->  examples:
->    - |
->      #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
->      i2c {
->          #address-cells =3D <1>;
->          #size-cells =3D <0>;
-> @@ -120,6 +124,7 @@ examples:
->              compatible =3D "nxp,sc16is752";
->              reg =3D <0x54>;
->              clocks =3D <&clk20m>;
-> +            reset-gpios =3D <&gpio5 13 GPIO_ACTIVE_LOW>;
->              interrupt-parent =3D <&gpio3>;
->              interrupts =3D <7 IRQ_TYPE_EDGE_FALLING>;
->              nxp,modem-control-line-ports =3D <0 1>; /* Ports 0 and 1 as =
-modem control lines */
-> --
-> 2.34.1
-Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> +	ret = update_preferred_console(match, dev_name, port_id);
+> +	if (ret == -ENOENT)
+> +		return 0;
+> +
+> +	return ret;
+>  }
+>  
+>  #ifdef __sparc__
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -2486,8 +2495,8 @@ __setup("console_msg_format=", console_msg_format_setup);
+>   */
+>  static int __init console_setup(char *str)
+>  {
+> -	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
+> -	char *s, *options, *brl_options = NULL;
 
---=20
-Pozdrawiam/With kind regards,
-Lech Perczak
+I would add
 
-Sr. Software Engineer
-Camlin Technologies Poland Limited Sp. z o.o.
-Strzegomska 54,
-53-611 Wroclaw
-Tel:     (+48) 71 75 000 16
-Email:   lech.perczak@camlingroup.com
-Website: http://www.camlingroup.com
+	static_assert(sizeof(console_cmdline[0].devname) >= sizeof(console_cmdline[0].name));
 
+> +	char buf[sizeof(console_cmdline[0].devname)]; /* name with "ttyS" prefix or devname */
+> +	char *s, *options, *brl_options = NULL, *chardev = NULL, *devname = NULL;
+
+The name "chardev" sounds as generic as "devname". I would use one of
+
+   + "name" like the parameter in __add_preferred_console
+   + "ttyname" as it is mostly used for "tty*" console names
+   + "conname" like a name in struct console.
+
+Also please split the variables per-line so that future diff's are
+easier to follow. Something like:
+
+	static_assert(sizeof(console_cmdline[0].devname) >= sizeof(console_cmdline[0].name));
+	char buf[sizeof(console_cmdline[0].devname)];
+	char *brl_options = NULL;
+	char *ttyname = NULL;
+	char *devname = NULL;
+	char *options;
+	char *s;
+	int idx;
+
+>  	int idx;
+>  
+>  	/*
+> @@ -2496,17 +2505,23 @@ static int __init console_setup(char *str)
+>  	 * for exactly this purpose.
+>  	 */
+>  	if (str[0] == 0 || strcmp(str, "null") == 0) {
+> -		__add_preferred_console("ttynull", 0, NULL, NULL, true);
+> +		__add_preferred_console("ttynull", 0, NULL, NULL, NULL, true);
+>  		return 1;
+>  	}
+>  
+>  	if (_braille_console_setup(&str, &brl_options))
+>  		return 1;
+>  
+> +	/* For a DEVNAME:0.0 style console the character device is unknown early */
+> +	if (strchr(str, ':'))
+> +		devname = buf;
+> +	else
+> +		chardev = buf;
+> +
+>  	/*
+>  	 * Decode str into name, index, options.
+>  	 */
+> -	if (isdigit(str[0]))
+> +	if (chardev && isdigit(str[0]))
+>  		scnprintf(buf, sizeof(buf), "ttyS%s", str);
+>  	else
+>  		strscpy(buf, str);
+> @@ -2523,12 +2538,12 @@ static int __init console_setup(char *str)
+>  #endif
+>  
+>  	for (s = buf; *s; s++)
+> -		if (isdigit(*s) || *s == ',')
+> +		if ((chardev && isdigit(*s)) || *s == ',')
+>  			break;
+>  	idx = simple_strtoul(s, NULL, 10);
+
+The @idx value is not really important when @devname is used.
+But it still would be more clear to set it to -1.
+
+	/* @idx will get defined when devname matches. */
+	if (devname)
+		idx=-1;
+	else
+		idx = simple_strtoul(s, NULL, 10);
+
+>  	*s = 0;
+>  
+> -	__add_preferred_console(buf, idx, options, brl_options, true);
+> +	__add_preferred_console(chardev, idx, devname, options, brl_options, true);
+>  	return 1;
+>  }
+>  __setup("console=", console_setup);
+> @@ -2548,7 +2563,38 @@ __setup("console=", console_setup);
+>   */
+>  int add_preferred_console(const char *name, const short idx, char *options)
+>  {
+> -	return __add_preferred_console(name, idx, options, NULL, false);
+> +	return __add_preferred_console(name, idx, NULL, options, NULL, false);
+> +}
+> +
+> +/**
+> + * update_preferred_console - Updates a preferred console if a match is found
+> + * @devname: Expected console on kernel command line, such as console=DEVNAME:0.0
+> + * @name: Name of the console character device to add such as ttyS
+> + * @idx: Index for the console
+> + *
+> + * Allows driver subsystems to update a console after translating the command
+> + * line name to the character device name used for the console.
+
+I am not sure what the above sentence exactly means.
+IMHO, the character device is too generic term.
+
+> + *
+> + * Return: 0 on success, negative error code on failure.
+> + */
+
+My proposal might be kind of naive. Some people might say that
+it describes obvious things. But the API is for device driver
+users which do not know much about how printk handles
+the console command line and the registration.
+
+<proposal>
+/**
+ * match_devname_and_update_preferred_console - Update a preferred console
+ *	when matching devname is found.
+ * @devname: DEVNAME:0.0 style device name
+ * @name: Name of the corresponding console driver, e.g. "ttyS"
+ * @idx: Console index, e.g. port number.
+ *
+ * The function checks whether a device with the given @devname is
+ * preferred via the console=DEVNAME:0.0 command line option.
+ * It fills the missing console driver name and console index
+ * so that a later register_console() call could find (match)
+ * and enable this device.
+ *
+ * It might be used when a driver subsystem initializes particular
+ * devices with already known DEVNAME:0.0 style names. And it
+ * could predict which console driver name and index this device
+ * would later get associated with.
+ *
+ * Return: 0 on success, negative error code on failure.
+ */
+</proposal>
+
+At least, this is my understanding of how this works.
+
+I do not know the whole history. And maybe I get something wrong.
+IMHO, the main problem is that the printk console code
+historically uses TTY device names. But we want to register/enable
+the consoles ASAP when the HW devices are ready for writing().
+It happens before the TTY subsystem gets initialized so
+that we could not use the sysfs kobjects for matching
+the tty device driver names with HW device driver names.
+And we need this kind of hacks.
+
+But maybe I do not have the right picture about the initialization
+and the names of the pieces.
+
+
+> +int update_preferred_console(const char *devname, const char *name, const short idx)
+> +{
+> +	struct console_cmdline *c = console_cmdline;
+> +	int i;
+> +
+> +	if (!devname || !strlen(devname) || !name || !strlen(name) || idx < 0)
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
+> +	     i++, c++) {
+> +		if (!strcmp(devname, c->devname)) {
+
+I would add here:
+
+			pr_info("associate the preferred console \"%s\" with \"%s%d\"\n",
+				devname, name, idx);
+
+> +			strscpy(c->name, name);
+> +			c->index = idx;
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	return -ENOENT;
+>  }
+>  
+>  bool console_suspend_enabled = true;
+
+Best Regards,
+Petr
