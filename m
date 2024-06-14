@@ -1,67 +1,57 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BF12146D76;
-	Fri, 14 Jun 2024 05:45:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDFBB393;
+	Fri, 14 Jun 2024 06:13:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718343960; cv=none; b=DaIE6CYg39lOS+YbsAI9Cl5YVtJjzcG4O5nfgSxpMtaukc6U1PIgBx2BF+1qK1hM77SOZCk0nd7mRmJSgi/ySqFbvGZ8Vu21bgfe0pfChJnwPUnxbbgfP6kiYgsU0iIY72zsIhJipJm3jVKv8xhkmXduWPiX11GOR71bvNrcybU=
+	t=1718345639; cv=none; b=BOK/hYqCMJYVIipK0QkUIinfGo82+hWn1XLEx043TYQQiWHAv3vb2pM7nAtn699Y0T2P9HwKTu8U2OFOs2XhLoFnNZi2jLbFzWqS1kPMLNTz9SEWzu1Csu0JsRdCCmkkR2y3fhNQRFsI/BZXSidBC0uDw0c/W9U3dpLiOVHXFUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718343960; c=relaxed/simple;
-	bh=cwZyF+XEGrqGRrFP15+iF9G07AtfyPuX0yJNnxRLfrU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=m7+eXsF5pq9hnrsHR+9UL8HboFt5aH+mnZeCt3h9byOm685c+ijlst79JJ2MS1UgJFOxeYXxY5FBjzTp+M6jeGGp8imqKXTdpkTtapnYukKfRy9Urx9V7sV5+tVW9ndfs+qB1mAHx0lpLlV4L13kd7kyyI69tNb24xL05aPnQqM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pek3zBe9; arc=none smtp.client-ip=209.85.216.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718345639; c=relaxed/simple;
+	bh=dINWXejZejeNvy4vTa+5QjhOC1IhShPhljwOH1oq2kE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=unY9lpca9K3NTWBGlRo0M5KDyEFcCwV7P6MS9jKrdl19ngAdvfQ4ytXCfUh0KLyJIOfQK9h8zXERhG/yyEkBmhlWMtCSQExhJm6aHyQ5sW8Uw8TzSO6iNbbLf3+CaPd5nCJ2bUmAjzkZFb+1R6pmIVUiLtw8MRpBg9JDll2Na2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=oPG9e+KI; arc=none smtp.client-ip=198.47.19.142
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pek3zBe9"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-2c2dee9d9cfso1603478a91.3;
-        Thu, 13 Jun 2024 22:45:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718343959; x=1718948759; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iFWPlulDgeo8nuyNyqmM5xu7CgTaxuH0bDTkaYa0rIc=;
-        b=Pek3zBe956DKVArJdOPXQLT3WpldMHRmY2tx4QLUzNYPAr2cTCA1+sP6rnC+/4Nhmv
-         YhmVqVPjnzywsRICbXQvQkdMLLvbOryz/hle3Srw1wzCksLUuEOKWMJxjAm78ombAWxE
-         QK+NVqAQmrsWvvmDGblVT36Zn99jmZPwqnTNyC26bay7sf6ZG0Rs53KPOELUgAg+/waG
-         n/QUVweLOsCP3jKfyvCUTkgc0d2Uf7tyzSfyZf/pleGcGA8jCjDkPV8us4fxqlykwbOa
-         eonrtwFoCzjtzqC+3OD2RzRVZ8vMn8dVnBU4W+2LdNL6SBFuB9wP1wnVWWy5IR3njwpF
-         teJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718343959; x=1718948759;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iFWPlulDgeo8nuyNyqmM5xu7CgTaxuH0bDTkaYa0rIc=;
-        b=Fb18W26lAUP8+PMl8VKTTbBIPsAFBgeIDPsslHuSArGhpjvZ7IQxW87kDYR1bxTjXM
-         rlor0c93Jx1t4JtIJDmDwToxj97Glo60OzoJYYmXFGCUREJxLzfUd/izjeUjfV6c09RZ
-         +K7oi/5LOGtQuA+glGgrxINaCn1jdmyALWslxulBL/4YrZr6xTd0qsLLUuK2V6goDP97
-         IYgvfCNfVz9GuMkzwsZwuvvRhQKvr3a24CgAIn0UJciIiYO3oqeXE3IGd+vc120NATMI
-         sWnIY7lQVoXT+MSf4m7TzX4co/CsQ3cDbptEFdvYnJ8gyeJFjmsc6WD4dDESzOPxQmg8
-         JWTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWxpwsvC0tlQwtSo+RGdE9MI3KA09uyFLzmGdAcd7pBk6WjXny1C2v0BmRR7rXChiyDApixcpbBeV37el6iJH+fxQr6EjyZ9QlID0DimdHADaR/aCuncWjljK3eBCscoziLi75G9XzJEf7M
-X-Gm-Message-State: AOJu0YwU60khRZyqMzuDlzBZed1A3NQRtwoH66W2O9ckc5L8i38TJBlg
-	L/aptLiI1rY8bvMpAE8xLD4b9LuJ02si1FbY2bk23zAiei0vOCOK
-X-Google-Smtp-Source: AGHT+IFN83p9O9atJzcMT+s+gHJY2ZZ2Q2NH1n5vXQA4BDtC2yeINZ7PMPFxt2qa8rJKgBFabUYAnw==
-X-Received: by 2002:a17:90a:af04:b0:2c3:4ea:94bc with SMTP id 98e67ed59e1d1-2c4dbd440a1mr1581525a91.47.1718343958670;
-        Thu, 13 Jun 2024 22:45:58 -0700 (PDT)
-Received: from a28aa0606c51.. (60-250-192-107.hinet-ip.hinet.net. [60.250.192.107])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2c4a769c8aesm5115536a91.39.2024.06.13.22.45.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jun 2024 22:45:58 -0700 (PDT)
-From: Jacky Huang <ychuang570808@gmail.com>
-To: dan.carpenter@linaro.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Jacky Huang <ychuang3@nuvoton.com>
-Subject: [PATCH v2] tty: serial: ma35d1: Add a NULL check for of_node
-Date: Fri, 14 Jun 2024 05:45:54 +0000
-Message-Id: <20240614054554.80-1-ychuang570808@gmail.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="oPG9e+KI"
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45E6DWOZ027648;
+	Fri, 14 Jun 2024 01:13:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1718345612;
+	bh=nwOhQ5GEl1mes6kpUbvK009JH5lDGyw8RkwUP7+kb+U=;
+	h=From:To:CC:Subject:Date;
+	b=oPG9e+KIT8W/VpjXOcin87RH8gqO4PLdcuiaa5xRrxRodtTxI7iaLvGl4LsRwWCac
+	 nqIxdpeDwh/QexbOE0H8ywd64ILOGVK/SArXHeta09qQod1ldUpBH/85X7q9xH+Cq/
+	 pX04AWd6BmV42w7+hlbjiMw1AHtWrO8mIwvgsvys=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+	by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45E6DWhs021266
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 14 Jun 2024 01:13:32 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 14
+ Jun 2024 01:13:32 -0500
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Fri, 14 Jun 2024 01:13:32 -0500
+Received: from udit-HP-Z2-Tower-G9-Workstation-Desktop-PC.dhcp.ti.com (udit-hp-z2-tower-g9-workstation-desktop-pc.dhcp.ti.com [172.24.227.18])
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45E6DSuq026165;
+	Fri, 14 Jun 2024 01:13:29 -0500
+From: Udit Kumar <u-kumar1@ti.com>
+To: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <u.kleine-koenig@pengutronix.de>, <ronald.wahl@raritan.com>,
+        <thomas.richard@bootlin.com>, <tglx@linutronix.de>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        Udit Kumar
+	<u-kumar1@ti.com>
+Subject: [PATCH] serial: 8250_omap: Implementation of Errata i2310
+Date: Fri, 14 Jun 2024 11:43:14 +0530
+Message-ID: <20240614061314.290840-1-u-kumar1@ti.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,42 +59,65 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-From: Jacky Huang <ychuang3@nuvoton.com>
+As per Errata i2310[0], Erroneous timeout can be triggered,
+if this Erroneous interrupt is not cleared then it may leads
+to strom of interrupts, therefore apply Errata i2310 solution.
 
-The pdev->dev.of_node can be NULL if the "serial" node is absent.
-Add a NULL check to return an error in such cases.
+[0] https://www.ti.com/lit/pdf/sprz536 page 23
 
-Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
+Signed-off-by: Udit Kumar <u-kumar1@ti.com>
 ---
- drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
-index 19f0a305cc43..3b4206e815fe 100644
---- a/drivers/tty/serial/ma35d1_serial.c
-+++ b/drivers/tty/serial/ma35d1_serial.c
-@@ -688,12 +688,13 @@ static int ma35d1serial_probe(struct platform_device *pdev)
- 	struct uart_ma35d1_port *up;
- 	int ret = 0;
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 170639d12b2a..38eb639f78d3 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -115,6 +115,10 @@
+ /* RX FIFO occupancy indicator */
+ #define UART_OMAP_RX_LVL		0x19
  
--	if (pdev->dev.of_node) {
--		ret = of_alias_get_id(pdev->dev.of_node, "serial");
--		if (ret < 0) {
--			dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
--			return ret;
--		}
-+	if (!pdev->dev.of_node)
-+		return -ENODEV;
++/* Timeout Low and High */
++#define UART_OMAP_TO_L                 0x26
++#define UART_OMAP_TO_H                 0x27
 +
-+	ret = of_alias_get_id(pdev->dev.of_node, "serial");
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
-+		return ret;
+ /*
+  * Copy of the genpd flags for the console.
+  * Only used if console suspend is disabled
+@@ -663,13 +667,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 
+ 	/*
+ 	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
+-	 * FIFO has been drained, in which case a dummy read of RX FIFO
+-	 * is required to clear RX TIMEOUT condition.
++	 * FIFO has been drained or erroneously.
++	 * So apply solution of Errata i2310 as mentioned in
++	 * https://www.ti.com/lit/pdf/sprz536
+ 	 */
+ 	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
+-	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
+-	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
+-		serial_port_in(port, UART_RX);
++		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
++		unsigned char efr2, timeout_h, timeout_l;
++
++		efr2 = serial_in(up, UART_OMAP_EFR2);
++		timeout_h = serial_in(up, UART_OMAP_TO_H);
++		timeout_l = serial_in(up, UART_OMAP_TO_L);
++		serial_out(up, UART_OMAP_TO_H, 0xFF);
++		serial_out(up, UART_OMAP_TO_L, 0xFF);
++		serial_out(up, UART_OMAP_EFR2, 0x1);
++		serial_in(up, UART_IIR);
++		serial_out(up, UART_OMAP_EFR2, efr2);
++		serial_out(up, UART_OMAP_TO_H, timeout_h);
++		serial_out(up, UART_OMAP_TO_L, timeout_l);
  	}
- 	up = &ma35d1serial_ports[ret];
- 	up->port.line = ret;
+ 
+ 	/* Stop processing interrupts on input overrun */
 -- 
 2.34.1
 
