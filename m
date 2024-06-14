@@ -1,133 +1,189 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2132.outbound.protection.outlook.com [40.107.255.132])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47CF21836DE;
-	Fri, 14 Jun 2024 08:28:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718353713; cv=none; b=RD+EhWUoj5pDu0vZng+JPruKf8HSno/KYH9nBNrBHo6fsjhXQWm6sSuNfPPvF0ckdmI8MXboEaYzme28BnHOqrfy6Gwdf9j+MHqT3RuHCqdiZESCizE26GsIbTioOr41o9q556ZEcObgbiI2MSbCAa/BpZTHQ3uYaqnFMxXUuOs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718353713; c=relaxed/simple;
-	bh=3Wg/Po2Loo+reS1EmZmVGQq87fLm9QQsUXRnohnMAbo=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=ZXS2K92ynMYmiey/nENXOAQ7i0z9+AkX698sEdqEfSWkcZpzg2b0y1YiuzFMDU0fWZIaQDj9lKAkOpH/8iHvndQzRyjTlqcGBS4BOOugYaxpUTm6JjBVnAU79+w0yEW5vzP04zG/TQup9QM4CpGwQw6rEWcj8Af1UsOldUdk1B8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jlXE9xfI; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 909E5192B9D;
+	Fri, 14 Jun 2024 09:03:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.132
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718355823; cv=fail; b=O22vh3emDLe4z2zJBZMVxPezUYiiLpWZjvJUzSsTvlZY8vxsXEWFwxCwnddnjksMeFHOdV0OmjkyHPe69Mvdu2gY/ZtrmnibVNR3kHN6OAORwv2SEyNuXNlBozVByjvg8/nD35MOFpSpxvJsJcOHGqYsGo8+iEDsztWrh6fenso=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718355823; c=relaxed/simple;
+	bh=u0zAHyAxW0ArytTJpmDP69GWog/xFGwss8Kv0Dz+f8I=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=kLZLkczt7w36N0rSdT8WhxcFzhoJtG5n0h7viVSSu2ZIA66Ic0xf3duKN5VfZT/QGEkziIKODiHqg+O2jSa04rx6OzfYIvMuiJMglJ3CWyeq0Ql5qMN0/HvseNmdrX2QU4P6r4ChOQq41k8WIDCpyxaUkZyzh5oumaScD0fRx8s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=aCtzUszt; arc=fail smtp.client-ip=40.107.255.132
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jlXE9xfI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718353712; x=1749889712;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=3Wg/Po2Loo+reS1EmZmVGQq87fLm9QQsUXRnohnMAbo=;
-  b=jlXE9xfIFYXggu501qbNu34pWBW9nmrLB12eHOLmLu6iE6Ao7Den987P
-   uCKpNqnR0w+CI6EJKW+USZ7zgv70dXULhRDZ52sFLskhVKz77WVRYJNxE
-   T+UYRYEhYkQXJIeNMATmIrFCiqNTwy/C8HV/l5pP8deUUgYzSoU2ZBNho
-   J4aBst3ZTjfYHCL6eZ9MF3wwzxrQr0ZADnDw0fBrOnrDIy2qWR0bR9ELt
-   pXZS41NMdZ9Fepl4AzD8ApLVg8cKJglaJc98NpkQRNapvEHomcrIIOvfa
-   fWOPagzgjwBK1V3JDUuDk7dY6F5l+rVZdhkRXPa5L4T6oISLvERxKxYus
-   g==;
-X-CSE-ConnectionGUID: J+2u2QbuS1SxhHTH0nmkRg==
-X-CSE-MsgGUID: 6750PwdgReOa7FkhwacaxQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11102"; a="15389740"
-X-IronPort-AV: E=Sophos;i="6.08,237,1712646000"; 
-   d="scan'208";a="15389740"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2024 01:28:31 -0700
-X-CSE-ConnectionGUID: lKJeMOyDStGEerfMw5hvrQ==
-X-CSE-MsgGUID: jcZo1bZjRxak9W8kutW/DA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,237,1712646000"; 
-   d="scan'208";a="40398062"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.247.222])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2024 01:28:27 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 14 Jun 2024 11:28:23 +0300 (EEST)
-To: Udit Kumar <u-kumar1@ti.com>
-cc: vigneshr@ti.com, nm@ti.com, Tony Lindgren <tony@atomide.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, u.kleine-koenig@pengutronix.de, 
-    ronald.wahl@raritan.com, thomas.richard@bootlin.com, tglx@linutronix.de, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_omap: Implementation of Errata i2310
-In-Reply-To: <20240614061314.290840-1-u-kumar1@ti.com>
-Message-ID: <9ed7e96a-c538-aac1-5b52-b7b1d72bb6a0@linux.intel.com>
-References: <20240614061314.290840-1-u-kumar1@ti.com>
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="aCtzUszt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OhlDZImtZgs43UlWQGoYMvtbx5uvkS7ushLNLZULuqKDqRGVAimd4Z39qeS7oOOblklCDBQr8L5fkHfLp+vfcYdkDRy4qSxGA+xLYIrVtB/PO/Wrs4Z7aiRSChTA/bkSJAOQUGs4llpdudFmNaO0vdbnzWzVK/iBGkqopiZORk2bxYCHm8Y0Zpd0Hrc2rBwtvgNB/UPoCvrlld32NRx0cFbsN0Qw56QxMYmUeHVZF2tm+20laLp8P8sVYDKkm4fvCBEzSOf1D/v/E9Ed9yaHJa7Olt6bOB6lLIc6tOdbFbqG//F/cik6+qlOQMOUIRiMY2H/nDPCKex12oRyMTNhiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zqycyrf5RVtVINt5+f9e/TlA5YTPaEyKoVPmQO0LCOY=;
+ b=dnPmydzLqtXGTIDhCFMOhhERpEtUfGIeOSlWFL5ujzsZ9IFQgXbisxO9TK7PizO+2yf9a15lEfwsFpK2x8u80V6urtBhfARJKSowIDQvaABiqRTsrs6bAjWhJLgX35ncv+NBzpDq1LEDC4GyhfmpA8o10ZwDcz53LgTYYvkzKKrheHT0bDIcgZL3UIF1b5KxIfJMPgeIzxWBF4jVfj6Sycy1YZ3j7rE4ydveJehupRk3LNJ4d31DoHt4FnYPy94qWcIahhCSB4G3lhdCCCQPO9b1nXF38jwvJonxUuB31Ny0McdodzZHP57jjsVSYPDHyjOJiiFzJ0my8k5wlZmrCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zqycyrf5RVtVINt5+f9e/TlA5YTPaEyKoVPmQO0LCOY=;
+ b=aCtzUsztIiWVqKQ8NW+Zy6Pjr9Igimq7J5CW7q0bBLmmFCtmrWHEsD60fBMaKmnZOCjf4+ZtR599UJT7aqOkxZb4LalUu4CZtMuaUK7915D+6gCfvy9HcLRLMApj9w0iMtBHqcNzMoCTVrPZclTDClDEcV0EZAiPExSYhz2PSOk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by TY0PR0101MB4820.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:278::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.24; Fri, 14 Jun
+ 2024 09:03:37 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::60ab:8615:ab67:8817]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::60ab:8615:ab67:8817%5]) with mapi id 15.20.7677.024; Fri, 14 Jun 2024
+ 09:03:36 +0000
+From: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Crescent Hsieh <crescentcy.hsieh@moxa.com>
+Subject: [PATCH] tty: serial: 8250: Fixes: Fix port count mismatch with the device
+Date: Fri, 14 Jun 2024 17:03:22 +0800
+Message-Id: <20240614090322.2303-1-crescentcy.hsieh@moxa.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYCP286CA0282.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:3c9::9) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TY0PR0101MB4820:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9daa763b-8278-4e6a-a11b-08dc8c50e032
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230035|1800799019|366011|376009|52116009|38350700009;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?TloJjzoGjIU+vF8gKrlvgShfEqlG4L5N//VI6bWhiArBoNTiBznWfALz3+oC?=
+ =?us-ascii?Q?Tcn61NkxSDj/ZkWE6aqZaYfdQO+XV/rn+qYhvnXqzTxheb0ChDWKB3vDYCGl?=
+ =?us-ascii?Q?KladVg2jsQx7dJehzAUL1GynGDZS1mZ0JdnvZahIKMCl20P02fU1VbhCdiHT?=
+ =?us-ascii?Q?VG7ytL2t71NfFfkgmrCFihwIThZ1pm3Y/33+qkmZIM7PABcBS6c2RbZax5ER?=
+ =?us-ascii?Q?d3/xA3gXCOOi0UEx51KPCZBTE7fKtWciJmg4wh1V2AJXD6n1grk1LEp0I6tz?=
+ =?us-ascii?Q?h/MVH5J7IHwuATVIRgE9WPHJa0YDDn0QSWStCu7O6pprQefS710vAX5Z2w5b?=
+ =?us-ascii?Q?/bvWNBvMQTwBiMsHjijzbStXUj0CWaNWz5b9hxlHldauGS95pNfA7OhjlP/J?=
+ =?us-ascii?Q?TfAcFsxcmlNToE6z5SEwVJivS67LiuFRasZhXMXr7B4O018X5iCWN7YRDvuM?=
+ =?us-ascii?Q?QnYKps+4wIrRIxqPNEYzRNavsVX5Qsz6Cu9hvuRqme9209gDCJjfRGvUGVNI?=
+ =?us-ascii?Q?q/N10x4lpFplnzlEmTq6pIC0CzrctyCBY3wCxKmlpAXbF/r96OEKf/H0gKna?=
+ =?us-ascii?Q?eOuav+UUpkGp0NDcrPg27rK0jAkUyToMg/7kIC01dBNByA+M0f2KbPv92UsK?=
+ =?us-ascii?Q?b3rya8hOih09a858ET0e6WEyhOF3/NgqcoFd2IrCYrbBLxteWWs638Ht2xxm?=
+ =?us-ascii?Q?HmbmrZjObvR9oS1a3z4CjPJv/r1BXpwBlerUqvnZ61/UiCHVDLGhs7NYF35q?=
+ =?us-ascii?Q?LaOnY5A6ygfTWMNPeWf9Ke49iy0hmME0uzBxyGFk/f6L/0bZ3elgQZeLKQnv?=
+ =?us-ascii?Q?g4m3xuyPSK3d9KoA9V0ssY7E9GwhKYOyPHFuBIoB33KN5eNwm7BHFfRERDxQ?=
+ =?us-ascii?Q?vFkm76i6mrc3c8bw62e1SB+v/NrjAFzSkpQeHh+SuFfiNeVKLyqQZTucjj8H?=
+ =?us-ascii?Q?yEWtb/A/8ELQPiaWpXrgsO375XnxE6wcATgI/862LEV4gugN8hMF382f/Qot?=
+ =?us-ascii?Q?IxaTQJBKbwsoI3EMuST1/66tzqqium+eoLdSgjg/Qc2Q24/+5t+Df0x+XgmQ?=
+ =?us-ascii?Q?JOuHeocBoW7GN1niBPY/44q8ElIrCL3YAP+dV03h3YiSnpgQtrEfkhBxB2OW?=
+ =?us-ascii?Q?Lk4qGjl3JAEZY1xF3N+WinG5/+5nRd8fe9jjSdKGBSV8zJjeQrchU4QuOfz5?=
+ =?us-ascii?Q?QrfuLPBGrcfYc56aNh7R5q72GGuGuqCmH2fBN6fMSPwlXU/TwPtgQAFPjuMS?=
+ =?us-ascii?Q?UKTCP5HPnhLnAQHhQ36V1qC0xJHOmJZvGwCUZtvwEyu1bN4L1SNbiuowZHht?=
+ =?us-ascii?Q?5jzWuKRKZ6JoQ/kWLT+EBl5WpyvwDFJMWJzJfqItOERA+9KWVF/UpEWlXQg+?=
+ =?us-ascii?Q?1QVXdIo=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230035)(1800799019)(366011)(376009)(52116009)(38350700009);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?KBGIIaNJGIZV+HwAlW71VnccvNm1zBtqMsjr/4zDR+AGjDe2uDw+YQax3QnQ?=
+ =?us-ascii?Q?zXMRFjHpeQKcXtfYFaI+ciOxhJmBqWng4wqMwbKT2UfyExXoEqIEVS9ZOjjT?=
+ =?us-ascii?Q?8soiJupGSZ8XlRCcVrF6PPmdpwBxh/DYypiIYQa7LKFMfbPUsGdUuTlbSigx?=
+ =?us-ascii?Q?xODEhPwZvGMHCCcxBHJwTS482NBuUPLo5aCumPUcjvw+hW4RIx7AnSY5lvme?=
+ =?us-ascii?Q?+eJMcKt06VXxfrusdJPoFFDZBF4CywE7g0xcz9Bz6gtrglldXpLtll1sZk+A?=
+ =?us-ascii?Q?8GL8SagvQDC7TxrIB67w+mO28N5NNqLgiXtangV1sw3yR94L5bcVlCmm1lQL?=
+ =?us-ascii?Q?t/KnQD5TchKfdHJS0FUfgy/spREdwfaVZfmDOYYblQmFOINTZ5JGL1HPVKMU?=
+ =?us-ascii?Q?fNavDsrBIuJfWROKim2KVIqbZ2FtEcWH9YgZyEj7lG1dGa4GA4tgRciO8Btj?=
+ =?us-ascii?Q?50qWNEYUrePEQw8a9om8NcQfODEOWk8p9/KnKKKklFGxNj3BNdOQ+S9JKNiN?=
+ =?us-ascii?Q?w+K/LyoxZTiSk3fgkU7+zixrZyy3LhiOoPj3wX7fuw1wjH+TDzR3NW42zu5v?=
+ =?us-ascii?Q?+fGqvVkIxLJblxKwxYIiFlAAFgLgQ2FISztN0cs09hJfE4vcgWHXBlQ67B3z?=
+ =?us-ascii?Q?413Yej25KU2AvErMR9sgmp506kDWhN4ml6tfe6FUFNlHeaz8WUMm+1dQvMa+?=
+ =?us-ascii?Q?oLRzQ5V37Jk1bvpmYYciU/qEKIJ7WmjsSWELxeUrQRyfN5McepdnJgE+E8Xs?=
+ =?us-ascii?Q?4o5gdRVpT7pj2nTTzplt5VR+NXpXxDxvD1f8ACFZsxNlwPd2hLmg4IavDMbU?=
+ =?us-ascii?Q?SzTCyF9GHCWybVJJ6wBUdWOTdTV03I1Tivjby1oC/YAstuhJmmyt4CMNtvnI?=
+ =?us-ascii?Q?ciBVm9oAM1XzFXNY5XBJMsDB9H/Jl4CHWEdkZESFALoEEHWbQONxOZxft/Nf?=
+ =?us-ascii?Q?8DTcuJkGciiO9shuuwYhigplrcoAT5GSiA259EECXzW/P3z4mh22M3ul/ZaE?=
+ =?us-ascii?Q?Zgon2han4HCJwsbC5M8hW+/fGvD3Bqp5durCRxoWbqldOXDTBb3fgDHXZf83?=
+ =?us-ascii?Q?3tn/vzDpwlca1OHnT4zUNYWfVZhFKfzglrdmip/pavhiCVveGGscPF4looDS?=
+ =?us-ascii?Q?EHOdVyOkhc7sQA1WsQZbHe82WOEtf0AN0TP3fKaeAMPTAKiJQ2Lm6buXMX9x?=
+ =?us-ascii?Q?twHbPVsSKI4y1zFgJ5dCoOQW2D8zgO83Xo8y+0UUC5a9nxgdqwBwLXKSPg0y?=
+ =?us-ascii?Q?JUQArn9QaczxL30g0l3EadqKNj9gP5XjGJSLcj1rxaD3AQMUOzP+EaqOcJv6?=
+ =?us-ascii?Q?kU5vnJ9NcNc/GOknr4X5W15Pz/it/BGcWR69LLQCxuFoOwDMNiErGIjdO/B2?=
+ =?us-ascii?Q?B7tjku6+6FR0qjiNlIhiURKukKLQM8mOxYM5G7nxKy8oFEcV+jhsS4yA8Jrr?=
+ =?us-ascii?Q?RZ0aRZzeEPdCUUg8yhZjxPaQlshCtcbrl+wU/YIgsWSfmJfkxnrAMFxuY6oo?=
+ =?us-ascii?Q?b44+jF0SzOZY9ftp86phyCNSQ8mNP0IEy8qyKt+SZ+ESyI9Yn/KEMxdtbLSZ?=
+ =?us-ascii?Q?Id803eiXcIi1dbOj6w2CQd5c5R4ud2o+Z6l71C+etxVsbQTH/Tep0pDi3CYO?=
+ =?us-ascii?Q?Xw=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9daa763b-8278-4e6a-a11b-08dc8c50e032
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2024 09:03:36.8282
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gOzkTxPnzQ0+vCSH9njCmckg30pRN3mmTxTfP8LoyAWKoPMMtyVPwkllgCnK9+wkixqaE7NYOtLN16eLhjvvOJJV/WDZ8f8DxGc74FeUwOU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR0101MB4820
 
-On Fri, 14 Jun 2024, Udit Kumar wrote:
+Normally, the number of ports is indicated by the third digit of the
+device ID on Moxa PCI serial boards. For example, `0x1121` indicates a
+device with 2 ports.
 
-> As per Errata i2310[0], Erroneous timeout can be triggered,
-> if this Erroneous interrupt is not cleared then it may leads
-> to strom of interrupts, therefore apply Errata i2310 solution.
-> 
-> [0] https://www.ti.com/lit/pdf/sprz536 page 23
-> 
-> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 170639d12b2a..38eb639f78d3 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -115,6 +115,10 @@
->  /* RX FIFO occupancy indicator */
->  #define UART_OMAP_RX_LVL		0x19
->  
-> +/* Timeout Low and High */
-> +#define UART_OMAP_TO_L                 0x26
-> +#define UART_OMAP_TO_H                 0x27
-> +
->  /*
->   * Copy of the genpd flags for the console.
->   * Only used if console suspend is disabled
-> @@ -663,13 +667,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
->  
->  	/*
->  	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
-> -	 * FIFO has been drained, in which case a dummy read of RX FIFO
-> -	 * is required to clear RX TIMEOUT condition.
-> +	 * FIFO has been drained or erroneously.
-> +	 * So apply solution of Errata i2310 as mentioned in
-> +	 * https://www.ti.com/lit/pdf/sprz536
->  	 */
->  	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
-> -	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-> -	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
-> -		serial_port_in(port, UART_RX);
-> +		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
-> +		unsigned char efr2, timeout_h, timeout_l;
-> +
-> +		efr2 = serial_in(up, UART_OMAP_EFR2);
-> +		timeout_h = serial_in(up, UART_OMAP_TO_H);
-> +		timeout_l = serial_in(up, UART_OMAP_TO_L);
-> +		serial_out(up, UART_OMAP_TO_H, 0xFF);
-> +		serial_out(up, UART_OMAP_TO_L, 0xFF);
-> +		serial_out(up, UART_OMAP_EFR2, 0x1);
+However, `CP116E_A_A` and `CP116E_A_B` are exceptions; they have 8
+ports, but the third digit of the device ID is `6`.
 
-Eh, this doesn't match the workaround in the errata???
+This patch introduces a function to retrieve the number of ports on Moxa
+PCI serial boards, addressing the issue described above.
 
-Also, don't use literals but name the bits with defines (for the correct 
-bit there's probably a pre-existing define but it's not named as good as 
-it could be, I'd say it should be named as 
-UART_OMAP_EFR2_TIMEOUT_PERIODIC).
+Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+---
+ drivers/tty/serial/8250/8250_pci.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-> +		serial_in(up, UART_IIR);
-> +		serial_out(up, UART_OMAP_EFR2, efr2);
-> +		serial_out(up, UART_OMAP_TO_H, timeout_h);
-> +		serial_out(up, UART_OMAP_TO_L, timeout_l);
-
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 40af74b55933..e1d7aa2fa347 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1985,6 +1985,17 @@ enum {
+ 	MOXA_SUPP_RS485 = BIT(2),
+ };
+ 
++static unsigned short moxa_get_nports(unsigned short device)
++{
++	switch (device) {
++	case PCI_DEVICE_ID_MOXA_CP116E_A_A:
++	case PCI_DEVICE_ID_MOXA_CP116E_A_B:
++		return 8;
++	}
++
++	return FIELD_GET(0x00F0, device);
++}
++
+ static bool pci_moxa_is_mini_pcie(unsigned short device)
+ {
+ 	if (device == PCI_DEVICE_ID_MOXA_CP102N	||
+@@ -2038,7 +2049,7 @@ static int pci_moxa_init(struct pci_dev *dev)
+ {
+ 	unsigned short device = dev->device;
+ 	resource_size_t iobar_addr = pci_resource_start(dev, 2);
+-	unsigned int num_ports = (device & 0x00F0) >> 4, i;
++	unsigned int i, num_ports = moxa_get_nports(device);
+ 	u8 val, init_mode = MOXA_RS232;
+ 
+ 	if (!(pci_moxa_supported_rs(dev) & MOXA_SUPP_RS232)) {
 -- 
- i.
+2.34.1
 
