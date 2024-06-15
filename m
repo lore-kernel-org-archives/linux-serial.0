@@ -1,119 +1,167 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2116.outbound.protection.outlook.com [40.107.255.116])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65EC8179BC
-	for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2024 17:18:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718385504; cv=none; b=ey6o8bjCiKG6eE3lVmJ/32w69d/lIKZ+9RKibG8zmctaNoaTdjZzzkMciBdF/ZjVDtdsntOmQJUfJbZ9vrZ0w7xHEUJth18ex5VoKQ7tqY5BOKJdQ4viFUa7PMBEoQ78SjkQkRy9spgPpRN7eyW2AeNsLDFXtCZsPssiu+ooGhg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718385504; c=relaxed/simple;
-	bh=RbQiXk//5LE0+CQFSTyMsBkvBONsF/BYSpqN0fdUO34=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TkITU/8ddg97nP2hc+opXitdrMI4SY+RyozoQDXPjBfF5u7bQyc66WIgH5LwsYhFZoCSShMSreWdMEKRMRNGU8GrJ12rjdp7p1i7Jr0GhNquo2Oo0t75ZI82PmlZYiKK+hEs7SZN+DR0BEdtknzSExymdutqFsy4SbW/iQBn4IU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=e75WSjAI; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 217FF168A9;
+	Sat, 15 Jun 2024 05:36:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.116
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1718429822; cv=fail; b=UDzDY3+VVv+69SaAbSRT+fBd+9pY/W8ZJ2ChtRfxHFnvSOhju1eePGdLVu+e//SzmuZE+BFXLvqZRcCU1hgX+Nh8ji65NVdOvxE8dtVQCyfg3jRzohPNR5BOaCquiTB6cgQGHXE2qp242KFZMCN5X3bI55ks7aTnOcbjA6OeY0A=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1718429822; c=relaxed/simple;
+	bh=FRODpj66hRy9DfY7U1UBRKcpKghYI3klyNk7DvFdvRs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=lDdun1jmZf39/iBYMMX7824xUkk93nuzgJFwY38Ni1HmmnSMS9DsjW1a7rd2dtRhnJRLr2S7epe/oZp/egMkKJaFjWXHdE2/TH5/AVjtOlGNw/U0NjAujvogE+l62qs9haGdAhTG+0UtRSSpsTpc7cLpqPOITWX4z0Rd53YSBN0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com; spf=pass smtp.mailfrom=moxa.com; dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b=L3DTj9Lw; arc=fail smtp.client-ip=40.107.255.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=moxa.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=moxa.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="e75WSjAI"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a6f0e153eddso329415366b.0
-        for <linux-serial@vger.kernel.org>; Fri, 14 Jun 2024 10:18:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1718385501; x=1718990301; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xGKaapsSeNQ6/aDBUFIiYP/WXTn0IiML89dBYrB59AE=;
-        b=e75WSjAIOWwSXEtKPZgiqQvXtdth5VESQoe0nlW+FreKOL4DUzKW3OzL9rzKrUa5T4
-         PwfdrxJojL5jAG8nOheCoGqR5EApOxCKUIk95AtI5p95HkDnfbp+rg6KzP0StjMV/uYO
-         HPIVu5kPxEht8x4z38908/p7LjEMCS073Sz1yKvMCi6KoGXW3P/mCq0ACC/7z7OghVia
-         8lEK9M3jOU4eb14xxfacR8uZKRhPbdKCYE970Fc9c+CytkslfhrsywUoMYHVAIjzxly/
-         Lg/UW23YUERHR+5TNUGGFkBlv8BRQvIVfUxDXKjXLWY1vNaCexbv+vLXIdYNmFmhU1Yo
-         b3PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718385501; x=1718990301;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xGKaapsSeNQ6/aDBUFIiYP/WXTn0IiML89dBYrB59AE=;
-        b=akynyy0eqwBro91wUy69vP+PKzZy5rVzUKjVPpKNzOBhxv6JTvYaznaP5OENpN01ya
-         azKc0XF/SyfuIMYWpg5CluIZbbkQ9MNwYiM1k3QzXrhiYSumRt+gdNy0iaEj0TGQ9G1K
-         YO+pLRL6UFhSeyucReBdvbjURF+wHDphz0GfwXJpd7MMV3J0K+3ufEhNENPsa4jED3YP
-         wzaBedo+iwuq6qi/z7Lmn59+IED2cLicVckwkmAPrAJpcw9kAfuZ+yb9YXM8atQCMIoT
-         e+isGu+ak64c2QpghbUbQ9w/qwL1E3Iul4ocku2RahmBT+S6ZR4HgFDPCLlTVp+XkT1x
-         tx0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWCDyaETaFAC/h9H10dC651DUJ+eemCtB9VbetMYQhfJg+a6lzJFn6SgVz0DA3BYOPMQa2u0TgIvvdOmGH2jBbIY6pogH2r2IcJYhnG
-X-Gm-Message-State: AOJu0Yx79AEdlFbZZEz9ixLiO611ajPAULSVkY7tZmgIlboTCJOJYclX
-	NyCOL/vVGAfHPQrfTno/cWFBVtM6n9ldUC96kmDXvM6Li1D4wW97OxA1jetCDPM=
-X-Google-Smtp-Source: AGHT+IE2pnKt3XqbaHN9Co4Oidy2AJcBt7lNvOT56d1TzhME8fheTGSbeTsXXWSoOEi/pV9hIJFLPw==
-X-Received: by 2002:a17:906:5648:b0:a6f:ce5:2875 with SMTP id a640c23a62f3a-a6f60dc5169mr224168366b.50.1718385500681;
-        Fri, 14 Jun 2024 10:18:20 -0700 (PDT)
-Received: from pathway.suse.cz (nat2.prg.suse.com. [195.250.132.146])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a6f56db6743sm205257466b.90.2024.06.14.10.18.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jun 2024 10:18:20 -0700 (PDT)
-Date: Fri, 14 Jun 2024 19:18:18 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Tony Lindgren <tony.lindgren@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] printk: Revert add_preferred_console_match()
- related commits
-Message-ID: <Zmx7WiwzQ2Ne_UoT@pathway.suse.cz>
-References: <20240613125113.219700-1-tony.lindgren@linux.intel.com>
- <20240613125113.219700-2-tony.lindgren@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=moxa.com header.i=@moxa.com header.b="L3DTj9Lw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dd9svoBta9IiMAb9MgsmtE6HsqIfbdJjyqcAa+JWRixScG4mtM9w3b/bv5UI3HU+ubDdvuYnp5JULOI33k1PNyxg/VY0lMvqMNheA9eNoJW9VWYNCZsQaUnCOPkSG29p93xvwuARSDiY+YbBTefUSSo/uDV3yMNNNpeZ7HHWmWliDbDZc8JzVA+XR7/7gmhF8/Ov3GqEDhbZo95yheLfCfSZ6zabVZMFyIaGdxPlnedPkRC8D2ZOIUHizSmUvNkicmlnaxIGyGVh720D9lN4UK1sAYYP4EXQiqyK0+IeS/uDC/amKDRVXSncA3zxiSjSMp/+/Nzj6RbljRuC84xfRg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0nUK4PEh8hNIhC+Rpiya+h3akbo1+uvOym5Efc/EMME=;
+ b=B2vyJay+rJmDel/G4WaHJ0PONEReMJFHCxhxnHb48ONto+/G/L0ViwH7VY+2ht2WYcI5nXVHRlD731g47fC1R3LJSPMc1fWb5WiJRc3CI25yvhwjEXVTEm+kjKkMxqv3A5C0E+LRD3CbiaUr2UosyR62rI2zghPb/c2G5m9X367czPqWBXLTifv2+X+3eQ9JPyvdxQGaH0raSH1l6ynRfKnWcam079F9F+0BwQfNi2S9VeCAhGTkj0hn/5c607OGJtf3CKZ15QaK0HbqDy35uwSyoQDNFMabfH7jcPfNlTzEczy89YOVPETR9XqLW3g4SRhnAZ1UKygcG2nmQhbvQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=moxa.com; dmarc=pass action=none header.from=moxa.com;
+ dkim=pass header.d=moxa.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=moxa.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0nUK4PEh8hNIhC+Rpiya+h3akbo1+uvOym5Efc/EMME=;
+ b=L3DTj9Lw45MQTFA+aS/u3gs59ngj2Nhwumrb5I9fJfjhTuLgwVp7CP89J8C1ObEf5/uX3pt/JEjebnHfG07OSKVjcPfgbBvUhBd18ClNpJkAkmBGGutloIGXT3Gd6aiI7mkXIv5mkZtul5UvUdiRAfGyVmfw9De1j7MbXYFvZkE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=moxa.com;
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14) by TY0PR0101MB4238.apcprd01.prod.exchangelabs.com
+ (2603:1096:400:1b9::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7677.25; Sat, 15 Jun
+ 2024 05:36:56 +0000
+Received: from PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::60ab:8615:ab67:8817]) by PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ ([fe80::60ab:8615:ab67:8817%5]) with mapi id 15.20.7677.024; Sat, 15 Jun 2024
+ 05:36:56 +0000
+Date: Sat, 15 Jun 2024 13:36:52 +0800
+From: Crescent CY Hsieh <crescentcy.hsieh@moxa.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: 8250: Fixes: Fix port count mismatch with
+ the device
+Message-ID: <Zm0odLN7ZJ/qI1nX@localhost.localdomain>
+References: <20240614090322.2303-1-crescentcy.hsieh@moxa.com>
+ <2024061406-simmering-sanded-17ef@gregkh>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2024061406-simmering-sanded-17ef@gregkh>
+X-ClientProxiedBy: TYCPR01CA0144.jpnprd01.prod.outlook.com
+ (2603:1096:400:2b7::20) To PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+ (2603:1096:301:115::14)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240613125113.219700-2-tony.lindgren@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PUZPR01MB5405:EE_|TY0PR0101MB4238:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3289349d-d5a6-4654-9668-08dc8cfd2b35
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230037|366013|376011|52116011|1800799021|38350700011;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?8v6LqqclyyqEwP8Hf7PM1OvRJfi+4S8exu1WMQhOGD3qnT4//aUNFeC5BBHA?=
+ =?us-ascii?Q?gXqYhmcCmNBpVZrJW3DcsDEb62HKqCylA+zH0l5140bIj1LquuVBUp4ECt9U?=
+ =?us-ascii?Q?RFKU8Ao2en9CHpA966nzrNlx0mYJVPjkgU5kTGJg0LXovyT2Ov3pdjV/eVU2?=
+ =?us-ascii?Q?HLLrziCAOqupZ3S2WtekeiE4wyCyKX9GypaI2dxkGAGY+shEPc96Frfp3MQu?=
+ =?us-ascii?Q?CK0I9AVt5PbX/6d4KwdcYezERr7gme+FHC32ecQmf1wQNoY08wP1X5eLFz9r?=
+ =?us-ascii?Q?AAf0DklTxDu56o9Wu+yrd4mHK/R8zgaOL1Fw+e5AZ3ga4Pti1s1qs65BCaPL?=
+ =?us-ascii?Q?32DDPNdnNnhEQK9vNsUmoaYBA0Z0oMT2JIhKkKOTMw1YsqQBJ0brgdcpt0iR?=
+ =?us-ascii?Q?ZOfu8nU8V9z810VrC8StCEIAjCuUCqKIJuj+6MwZPD94TbmpHdKLv5rK/9K7?=
+ =?us-ascii?Q?OqedRcwcoyVcU3mmXLpviOiMNFvaWzZMzxMEeQhcL9g195ifrLN/i9qP36N6?=
+ =?us-ascii?Q?+jnmYHeMlmUnJ0g3Q6iGM6rHbktnIUws0+uG51HYQCIyj4pSrqT6y7bymmAn?=
+ =?us-ascii?Q?wEhKPPgKJ6Hh7VopUR6cF/VsNkKh7mmjKbEOuuEjD9iiHW57/6vAK16xuvs1?=
+ =?us-ascii?Q?/uZtouoZxESTzonppmJEnW41PynOfhaf+AEygaxf7OnQBnzrVU5Q/PTvrvwK?=
+ =?us-ascii?Q?Lq7s87j4qHN4msgq9nInrhHw5KJoH8JVvVbE2UP9rrxjCc4WczBkainVwzKu?=
+ =?us-ascii?Q?PzF70mDMIWR3fxWYbS5l+3vJpML9VfLDpoJ3kW3KfRAl7UKxcppfpIcKdPQb?=
+ =?us-ascii?Q?+Uz1Wq8BsVboeYh0sv0TRWzyyQRnntlg9lAcYrww0iniMDTtgYZQ7oIHB1ta?=
+ =?us-ascii?Q?6KzdBNlbZ046tsxhqTbnpPugxCpoQwIC7G7RGb5iGXASHMG4qDTOHbhZr4As?=
+ =?us-ascii?Q?Cd9PqX2NwCJ4jYXRKMcD7x8CLka/FVCuc1kgNJLBjX9TbwFdgjNKRCzbSaT/?=
+ =?us-ascii?Q?f5PYwf8RGU/X5a0gWpROTuAerho612Wm6i/NAoM07bxCylBdBj2g9tErirED?=
+ =?us-ascii?Q?HuzemrsGOUaLVrFWmG+o1DRhMW2V4lp2dPxbZplufjEc8WBWDZe4CLh4tJ8V?=
+ =?us-ascii?Q?cZBsstq/z4bCfXzd7IbIHgeSG8SthQqxLBTjSAjprkwu5sG2UT4eY5fo6b+j?=
+ =?us-ascii?Q?VO6SWIc/Jpr0m3wyJNmh4vy7gfn/228+e5r4vi4sH92Xrnb/YgDCFW3isO13?=
+ =?us-ascii?Q?v4yBrnmeYKLLcyzsScBQmGcojjtCxWKsuGPKtVB/dPVoHhTrljtNIYuroJwv?=
+ =?us-ascii?Q?JMStsUpqrM2R3iaNXoBvBXbYPPLfM80XWUefXbIqCTT1tUW75W54qyiaROQX?=
+ =?us-ascii?Q?A3nvwAc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR01MB5405.apcprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230037)(366013)(376011)(52116011)(1800799021)(38350700011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?v6j+kRbMR8SRYiXlRJ+Ql8yeDPXIbU+NhhkYKZJjIHHyx0QQSIjofRA6E1u2?=
+ =?us-ascii?Q?3yzUNyZs9WnXLp9Tgw3H4gJYJGrfIrhgp7JBfbbmemxgvRS7fy+Dcq0eGXsh?=
+ =?us-ascii?Q?kHr02LCOoWOkbsTl1Y4VdMTfqX9NACoYr64S6ydcj/FzsoruAuuxMpry9Y7/?=
+ =?us-ascii?Q?XE2YFFUCxnOlb/rIVg7sbGZ3ozWloraHmUAQ4JrSbKcg8QHY4D7RQhCOcgFH?=
+ =?us-ascii?Q?ZNKH6+6jzzkXUg72xejfZsBvTiNEEguBylfTZCNKGds+pnPMK1Ke7yUKCGiG?=
+ =?us-ascii?Q?x1yRf8bvlVCtsZs7DrAfqXRLFxBrz/KfdDRwn3haltdEEvPz3IKrcYTBEF4B?=
+ =?us-ascii?Q?Q/Yr+PORx0v9ixpuK+t7c+JI1hKbWlKzRpFOQ92VbSNASukvyNTDvTwFEgsn?=
+ =?us-ascii?Q?shq47ez3k+4/fthe10bVdJSr1hiMx2+ID1MBDhoOFqoUBZoBvknM+1r85BTv?=
+ =?us-ascii?Q?URtaqmnzOSIVPwdbMX8PZUuN0istDxXGZSWcf1oXLqUW+GlXDQp64/+lglK6?=
+ =?us-ascii?Q?EmHieE9DPPj5Y5Szy9Jm/dwTQo6SludeDwQ2JbVn+0i14KpCJVvwCI/bDFd5?=
+ =?us-ascii?Q?dkZhzdscBZBM8HyJlux0jBRZpv7v4UwMYRxBcIprJ+Fs4D5HCot+9rItiPey?=
+ =?us-ascii?Q?ffIRgS9FDNb9PyvuqVSIJINThuFtSO4YtG5zEGHhfYRwVPzKb+m6xB/4x1HI?=
+ =?us-ascii?Q?JFysLn5BMST2loJvJKyzH916MNtOheiVo6T4DuvJZQQym2R6y+I1VTaTexuk?=
+ =?us-ascii?Q?acsetLsDPiWE/d110aRApvjcx4KvU5+u124oU4ncK6XFa+sTVQuNTqqrpJWQ?=
+ =?us-ascii?Q?P+aR2jMcqYfyTQFiEEwvG/NeIDaYiCHMS+W6UNFK5B2t7WhJsa4k76jfjw73?=
+ =?us-ascii?Q?OQ9zJCFQjtm6e/90StoJqSx9GWq8SYsARliw/C35rbiTYF7B0zmOkWsrbcIW?=
+ =?us-ascii?Q?freEKDcfYlly4RXGv/Jss8xNyM3lHaRMpcGRlYqLBcfhM9G/nqXct+2v9Erm?=
+ =?us-ascii?Q?ohxf8yTWy5CuMDlsgKtub06WmKDth3N5zwjgM/UaEMyKMbx6pu07ocUJS9n4?=
+ =?us-ascii?Q?Cdgvr1E/gMAsx/5ME77D6F483/BE0buKhxExE9uxNZGHYeM+v98Bpv4Xg7jM?=
+ =?us-ascii?Q?O7jX9aZn7vpN8GTDyaPI5gK70j8NTQ1tlYAR/38zTsaK0486asWDyLmR2nvs?=
+ =?us-ascii?Q?9e06e6Rx4Z5ciDTuMuUszNHiK7UvGUrorHpMFa9IjowhoTrgmK+V95+oH/d0?=
+ =?us-ascii?Q?sVrc1v6sD6XKQt4HBNNHn+IRtXLgwkFTvMW2YUeStw1bqgUQUKv6Xc0D+jlu?=
+ =?us-ascii?Q?il1IV9n/OJio33E2Ul5pkxazRWW/dPMKjUZs9FwLl32s9uNIMmYgGYa9p9LO?=
+ =?us-ascii?Q?lWU0JpeeBwE7fLuOOAO42PfBX/s3R836hH0ywbwABGDbHAr6MkzqHn/iZedO?=
+ =?us-ascii?Q?LYV3Iyre8LWexugH4HA85VyhZzXzSIUITklGfyRu4gzxo2P1GpgjVSLqIpCJ?=
+ =?us-ascii?Q?b2tubvfLZ4HTSFfAKh0ZqeT+3Qx1XSFVYY5szDbsIp58mPRUacXAH9rDlvNI?=
+ =?us-ascii?Q?G6yBEUR8Y2a30NbmFGQCV3flYEFxj09TX0FP8Uc6keRqWGTSDmTBx8tGaVB0?=
+ =?us-ascii?Q?Sw=3D=3D?=
+X-OriginatorOrg: moxa.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3289349d-d5a6-4654-9668-08dc8cfd2b35
+X-MS-Exchange-CrossTenant-AuthSource: PUZPR01MB5405.apcprd01.prod.exchangelabs.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2024 05:36:56.1298
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5571c7d4-286b-47f6-9dd5-0aa688773c8e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XzcsAUKjNs8BaDFKHsY2XwnU6/epF1JG5TD+5oMnSnDcxPCb51noseTu+vofkAoR5Iqs7M1BTZSH7y4fEfieKMw3wOjCM3nrzN1UarN3kVs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR0101MB4238
 
-On Thu 2024-06-13 15:51:07, Tony Lindgren wrote:
-> Recent changes to allow using DEVNAME:0.0 style console names caused a
-> regression to the kernel command line handling for the console options.
+On Fri, Jun 14, 2024 at 11:07:29AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jun 14, 2024 at 05:03:22PM +0800, Crescent Hsieh wrote:
+> > Normally, the number of ports is indicated by the third digit of the
+> > device ID on Moxa PCI serial boards. For example, `0x1121` indicates a
+> > device with 2 ports.
+> > 
+> > However, `CP116E_A_A` and `CP116E_A_B` are exceptions; they have 8
+> > ports, but the third digit of the device ID is `6`.
+> > 
+> > This patch introduces a function to retrieve the number of ports on Moxa
+> > PCI serial boards, addressing the issue described above.
+> > 
+> > Signed-off-by: Crescent Hsieh <crescentcy.hsieh@moxa.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_pci.c | 13 ++++++++++++-
+> >  1 file changed, 12 insertions(+), 1 deletion(-)
 > 
-> The last preferred console added gets used for init. This is documented
-> in the comments for add_preferred_console(). Now the kernel command line
-> options for console=ttyS0,115200 console=tty0 are wrongly handled and
-> cause the /dev/console to be associated with ttyS0 instead of tty0.
-> 
-> This happens because we are calling __add_preferred_console() later on
-> from serial8250_isa_init_ports() after console_setup() and the console
-> gets treated as the last added preferred console. As the DEVNAME:0.0 style
-> console device is not known at console_setup() time, I added a call to
-> __add_preferred_console() later on when the console is ready.
-> 
-> To fix the issue, let's revert the printk related commits:
-> 
-> f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
-> b73c9cbe4f1f ("printk: Flag register_console() if console is set on command line")
-> 8a831c584e6e ("printk: Don't try to parse DEVNAME:0.0 console options")
-> 
-> We need to also drop the call for add_preferred_console_match() from
-> serial_base_add_one_prefcon() added by commit 787a1cabac01 ("serial: core:
-> Add support for DEVNAME:0.0 style naming for kernel console").
-> 
-> Petr has suggested a better way to handle the deferred consoles that does
-> not rely on calling __add_preferred_console() again.
-> 
-> Reported-by: Petr Mladek <pmladek@suse.com>
-> Link: https://lore.kernel.org/linux-serial/ZlC6_Um4P4b-_WQE@pathway.suse.cz/
-> Fixes: f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
-> Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
+> What commit id does this fix?
 
-It seems that it really reverts the right parts.
+None, it's just a normal patch, I might have mistakenly added the "fix"
+tag.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-
-Best Regards,
-Petr
+---
+Sincerely,
+Crescent Hsieh
