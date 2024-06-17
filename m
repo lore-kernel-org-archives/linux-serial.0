@@ -1,59 +1,60 @@
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F46198843
-	for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 19:02:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0C1198E8C
+	for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 19:10:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718650947; cv=none; b=AqF1KUwSyyRp/OeSLTPlifxv47fkUnlY+wREANzfJsLTDce4lDPpe04dVTKpIj0KI72YPuK0J2zCGg+t6Rygz+7nzTOnsX2aBu/jfBIOOMSxKjnoSDzMhveildXHE180NEbV/bGeNRhMnaupmdavdUxv0CXf8J8myiT7EYRxVMA=
+	t=1718651414; cv=none; b=SW5Vo0f1G5m60RM+8IwG9ZiSb1IQF5/8Y+VIm0PHJofM7MVlGfa3yk7piv8PbGsFP7CjXtEKMExyAP9w7G5Mz/6VpasMs9eU9eZoo22scVC5qQ/Heq1OKPknKpvEK42wF8pf8gHnygaQ3E2TvosyICvogYVC/x9tjg6IzCs3+5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718650947; c=relaxed/simple;
-	bh=MWSn9TBjOwS2vg8xx5VVZIugFpI93VfejC92HrxWgPM=;
+	s=arc-20240116; t=1718651414; c=relaxed/simple;
+	bh=wcl7+zOsJr1+gN0g0Rlxn/gVOmWy+fNU6sY89FCPmyg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=n2Bna63USsy5ffd8f2KULIA0pC3w884OcK4MV1wd6BGvE02P0tb75/ctOed+ZbEOYPtIf2zCmpS4/ogR+vWIAVJpplORLyA0ZSmLAhrFMcnzcOdTokebl0PAJtXykm+MkzE8Hg7bNBpfUfw0ZMRSv0j3m+0ns4zKza46/g9bv4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=gYq2WY8K; arc=none smtp.client-ip=209.85.208.176
+	 In-Reply-To:Content-Type; b=SqJ5rbBtcbzRU5u1yfbTeC9f6HHqnFp0DvYcxpxtjJ7NME0eCWeEWOfT7eVMxUYMwRxoY20VncAavmO9bRDCcS9OGKci5oaZvzoTxmW3r4MeR9X6bVV7HKiD+SquDOS7XAG4jOoAJ55oJ2ztnRw+FPL5QPVmk0OTyo8TpaEvsmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=TVdvByBL; arc=none smtp.client-ip=209.85.167.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gYq2WY8K"
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2ec1ac1aed2so33662581fa.3
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 12:02:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="TVdvByBL"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-52c85a7f834so6032966e87.0
+        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 12:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1718650943; x=1719255743; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1718651411; x=1719256211; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=e6SrWLHt58GYbBezUKilQJH2NVZYtT03QBjIfd+Sim4=;
-        b=gYq2WY8KIULJBDmLP3ZarQ+OMr51unZEHSLS5KV6jrCSlysIaD6d+4DsPW7b36MgFq
-         nKw0hLIs+pWrsRUJ38X1eZZ+HcwlXhFvtHa6Q6gfBh0fgCNcIzHXlKKwm1jx/KL7TKyv
-         cFcG3oZvhaLYnG+XJFGFdTtS7yOwr06eqfZ+MuPtVmkM9J+c06wWU9Id3sbsemLAfcsy
-         kyEpChFWHLC4gpUHJpql0aumZhZ40bHS7KVJsmQp8XU2NVnscKUBURWd0Ra3JJt8n7Wv
-         0Q8z/czdh7hJmn8JoJzaaneXDgJYF6g6tsoVOqIsVDMr6Ga95P9vF9Sg/5P8nGJlhDLL
-         M1gw==
+        bh=B7UUqmYzt5Fad8Nwjz29EcFeQsVZigIrkSENxKW+D/U=;
+        b=TVdvByBLvNQRg3Dk/A1GWyTEKv5kOwvsg6xlM7AM35QPMY3vNGhkpSG03Fv2uuC4XF
+         HE+3vtjRByisXJ5/urcx98uKyfRKy0ZrezsuSOMyMsBzgCNVXKDpIX1vuVcYeG/hQb6B
+         mGVhhbrgixvDFnbLVr5AcqfzT7taOSqMsBefhMy3fbOz/7oMYIUk6xgPrrqo8bdqTkEQ
+         7jSORlLPPm/rriUimEkAB5r5oTIAB3G7zu2f9ItQ23Ohb0fkbengNwR5g+GmkFWkHNYw
+         m1TBH4ayxmiaHSb9H3jrBvf+TXv71wtuwm9Zhvm+AnqAhNDT1MWE9j+3GOJAyVeillwS
+         BTgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718650943; x=1719255743;
+        d=1e100.net; s=20230601; t=1718651411; x=1719256211;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e6SrWLHt58GYbBezUKilQJH2NVZYtT03QBjIfd+Sim4=;
-        b=jSZI7TW7QwxxUlnomnEFcIJAzfz8BG9h5W664WaVS4DKPYW+Ck4vJa1mMy6z30uqRa
-         NBqH6K9RZvdQuEBW8O9beBmbambSYlwZLrUMMn6D9+TRz0E1j3O01YW8MP8WvtytY2GA
-         wZv5QMY7GmFxZvvkIfa8Qb76ysEimF7ATGAcbTpWj+7SqkLZYfwwP/adpsVmHccHsKM8
-         92j7e6afOwQa39YCqDg78pZa6yuM87Q/KbHS6QGUEpEZ4oSQEhioIvd8/BfLY+ZN8qjo
-         0oho7cXBB7AyWCpKQz8l66QNwrLW44jlXTjlEMJ15MTCS40jFZ9a8F4Pj71h858fGafd
-         dd2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUgnOoE3F48lNtYyuSFFgLHXD6Aa3qJ/AM2BB9Ck3Y+9xAHxXn/G4PNh3EJ4sZz2NQEmtkkQmgmkvyY+QhAdyBlOHYhhrz83eNHJZeA
-X-Gm-Message-State: AOJu0Yz93POzM0MKtVuxdy8FHi86W3tMIfJCrvKPAuHs3QhnQSuKGBCo
-	hzHmrTIiEULB0r1vX93Xu5cQL7x/2d5BYXflogcnjSRIjIoohqQ8EsjsR34KjFM=
-X-Google-Smtp-Source: AGHT+IH5YGd+qGuXOU5UKQe5p1ChD3oRExLbGKUgR6iEmBhGv1dD9uZKX1AH4vpF2z+cj8C49W/oqw==
-X-Received: by 2002:a2e:9254:0:b0:2eb:d825:e720 with SMTP id 38308e7fff4ca-2ec0e5c6d3amr71014321fa.22.1718650943345;
-        Mon, 17 Jun 2024 12:02:23 -0700 (PDT)
+        bh=B7UUqmYzt5Fad8Nwjz29EcFeQsVZigIrkSENxKW+D/U=;
+        b=lReiVrJqjpuRIkDl6uU6DVYXjCr54K6h+LfGiiN6m7MVXnDWJEGrFrIiy2FPa6RlF5
+         2UJZ6+6t0JWYQD6axDtWpJ+y+lnmGIV6K4pRep9r9hsaHVLrWQk8f4JUKXr7FGfKzL3f
+         06bzcCkOQqcwMMCb31KV7dsuRtc5n4+bbdBRQXU8OB5dV7IsLkBEv8D7M7y5BrIX9NN/
+         SeR6jYzrDEokYeqM8zDgs8sQLsDS0XVr+ZeuAwpRCRvUpsgdUL3bzxXKU1od3AG54zkU
+         QqKKMMz821GhBG3oNrPIRgxhT3YtIt/fkmHyQbO2Dh0QEM/4Oh0Qm5CTKbXN1KW9WH0H
+         rKHg==
+X-Forwarded-Encrypted: i=1; AJvYcCXYeHNRiMLtGtzJzRpqi9RDZkLU5WUAKvfB5mFNAVH1OfzViLnL6upJjcFvQ6WCOXWxiJZC+/tjx+keceBFeIkLFHRUHtz8lMuYcxtl
+X-Gm-Message-State: AOJu0Yxb5PyPWsca8TKyhHY0oVNKsM6aHFu9HCl7BaqlRvGtMdcZMQti
+	0S/Es0FKTQa3/i66joLOPKEYTyWBOzqxQ9e9E9H1vLLSxM/pECyDe9uljsCZew1k6pkZaZ+PATI
+	d
+X-Google-Smtp-Source: AGHT+IHz0efUjCHMuOtSGmYf5fBexuE5AlUAyxRPBDkh+DJ46L6ZAbXr0lp0Kpx9rY5b9wdeHBiOVQ==
+X-Received: by 2002:a05:6512:3112:b0:52c:7f16:d439 with SMTP id 2adb3069b0e04-52ca6e6e286mr6166946e87.39.1718651410939;
+        Mon, 17 Jun 2024 12:10:10 -0700 (PDT)
 Received: from ?IPV6:2a00:f41:cb2:a9df:9f88:17b:c7e7:fa59? ([2a00:f41:cb2:a9df:9f88:17b:c7e7:fa59])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ec346d009esm492831fa.89.2024.06.17.12.02.21
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-52ca287ae9asm1313968e87.211.2024.06.17.12.10.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jun 2024 12:02:23 -0700 (PDT)
-Message-ID: <004b1060-3217-4ab9-805e-c1b8c95b119c@linaro.org>
-Date: Mon, 17 Jun 2024 21:02:20 +0200
+        Mon, 17 Jun 2024 12:10:10 -0700 (PDT)
+Message-ID: <bc4892b7-7c34-4fcb-b4c0-e383890162f8@linaro.org>
+Date: Mon, 17 Jun 2024 21:10:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,8 +62,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 7/8] serial: qcom-geni: Fix suspend while active UART
- xfer
+Subject: Re: [PATCH v4 8/8] serial: qcom-geni: Rework TX in FIFO mode to fix
+ hangs/lockups
 To: Douglas Anderson <dianders@chromium.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>
@@ -75,70 +76,44 @@ Cc: Yicong Yang <yangyicong@hisilicon.com>, Tony Lindgren <tony@atomide.com>,
  Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org,
  =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- Thomas Gleixner <tglx@linutronix.de>
+ Rob Herring <robh@kernel.org>
 References: <20240610222515.3023730-1-dianders@chromium.org>
- <20240610152420.v4.7.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid>
+ <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
 Content-Language: en-US
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20240610152420.v4.7.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid>
+In-Reply-To: <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
 On 6/11/24 00:24, Douglas Anderson wrote:
-> On devices using Qualcomm's GENI UART it is possible to get the UART
-> stuck such that it no longer outputs data. Specifically, logging in
-> via an agetty on the debug serial port (which was _not_ used for
-> kernel console) and running:
->    cat /var/log/messages
-> ...and then (via an SSH session) forcing a few suspend/resume cycles
-> causes the UART to stop transmitting.
-> 
-> The root of the problems was with qcom_geni_serial_stop_tx_fifo()
-> which is called as part of the suspend process. Specific problems with
-> that function:
-> - When an in-progress "tx" command is cancelled it doesn't appear to
->    fully drain the FIFO. That meant qcom_geni_serial_tx_empty()
->    continued to report that the FIFO wasn't empty. The
->    qcom_geni_serial_start_tx_fifo() function didn't re-enable
->    interrupts in this case so the driver would never start transferring
->    again.
-> - When the driver cancelled the current "tx" command but it forgot to
->    zero out "tx_remaining". This confused logic elsewhere in the
->    driver.
-> - From experimentation, it appears that cancelling the "tx" command
->    could drop some of the queued up bytes.
-> 
-> While qcom_geni_serial_stop_tx_fifo() could be fixed to drain the FIFO
-> and shut things down properly, stop_tx() isn't supposed to be a slow
-> function. It is run with local interrupts off and is documented to
-> stop transmitting "as soon as possible". Change the function to just
-> stop new bytes from being queued. In order to make this work, change
-> qcom_geni_serial_start_tx_fifo() to remove some conditions. It's
-> always safe to enable the watermark interrupt and the IRQ handler will
-> disable it if it's not needed.
-> 
-> For system suspend the queue still needs to be drained. Failure to do
-> so means that the hardware won't provide new interrupts until a
-> "cancel" command is sent. Add draining logic (fixing the issues noted
-> above) at suspend time.
-> 
-> NOTE: It would be ideal if qcom_geni_serial_stop_tx_fifo() could
-> "pause" the transmitter right away. There is no obvious way to do this
-> in the docs and experimentation didn't find any tricks either, so
-> stopping TX "as soon as possible" isn't very soon but is the best
-> possible.
-> 
-> Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
+> The fact that the Qualcomm GENI hardware interface is based around
+> "packets" is really awkward to fit into Linux's UART design.
+> Specifically, in order to send bytes you need to start up a new
+> "command" saying how many bytes you want to send and then you need to
+> send all those bytes. Once you've committed to sending that number of
+> bytes it's very awkward to change your mind and send fewer, especially
+> if you want to do so without dropping bytes on the ground.
 
-This all looks good in my eyes, with the assumption that sending an ABORT
-can't somehow be rejected by the hardware.. I wouldn't normally think of
-that, but GENI is peculiar at times
+[...]
+
+  
+> +static void qcom_geni_serial_enable_cmd_done(struct uart_port *uport)
+> +{
+> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
+> +
+> +	/* If we're not in FIFO mode we don't use CMD_DONE. */
+> +	if (port->dev_data->mode != GENI_SE_FIFO)
+> +		return;
+> +
+> +	writel(M_CMD_DONE_EN, uport->membase + SE_GENI_M_IRQ_EN_SET);
+> +}
+
+IDK if this is worth of a separate function, instead of checking for the
+FIFO in port_setup and writing it there, but generally this patch looks
+good to me
 
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
 Konrad
-
