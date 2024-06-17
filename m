@@ -1,110 +1,130 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F82A48
-	for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 08:03:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5D71802A3;
+	Mon, 17 Jun 2024 10:00:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718611400; cv=none; b=SFWcnuvmwii9de9b72+2H1eXgKa2OX4I1PnCs+QBKNEtJTI7aHSC0Agb8+U6BuGctmRcBQdhClx5RLH7UOqm97KDwKn3lP1AbtpSNDzD0Gaz2IKt/yNvqB0j8cAOJtcZurREgYo4nnx4ClQ5NmUUIYr7ogeO2nd6vx2vHtwzn5g=
+	t=1718618437; cv=none; b=RKhW5I+Mc2ek8DfGCbt86QroWdIWtK9gaLlAvXuj3b2w6E2NNton8D6jFR78PDufZi10QOLMir3l3uvB3x21avcOV0B8/0D+i4JY9yA/iYigCSHyEmjthYQr/n/K4y2LHpl0cwHRTOHfVVyjypYvMvnyN4xjAOQlp7ddocVOKfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718611400; c=relaxed/simple;
-	bh=qP2c8SI7c8LR+At+5MSM/4ZIzSxkMD7apY0IYjLrXGY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M/O7MJn8jf+769SEDlgD/lG22tGNt/Dl971yeddEA88pscAvc3jGuQVMMSmX5qLHPDvbYGMglxShzVyjkHRWl6P1aAFiyG//qWIxn6yIfQpQSnU5iItn78NSeek0jtlVN9kvxxA5kESo0Gi/8z/hE4OY7dHAwlKhBHuuuaJXKoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=U5wHCExs; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1718618437; c=relaxed/simple;
+	bh=CMVlDxSdOUy+95XNw5zblVX9VgDs93mSI+wzmAgDr1c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=JyB+pHx0sVHq+EW3YD0yAq8zUJXOgZ1tiGuqO/OjQ9ZJr5SD8rYAwJnKK4ogD+NZt7ZfPdeCTlpx+fniXes6zcK2FFluon/oxF87il1HlUlDy1vS5HyL4DE24Zm2vZ36skbGTD+WPOALO+FYmuRi4LKio4GSdKiwBZ3E6K2yyYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=EKQ33z5j; arc=none smtp.client-ip=198.47.19.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="U5wHCExs"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a6f51660223so235374666b.0
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 01:03:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1718611397; x=1719216197; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RiRNeXTNLkPeYnOsXqevm4dREEioiq1cUZc3k0Sc504=;
-        b=U5wHCExsDw4t9fbecOpMzS3lP527aheiPXXCoz6uwZ3ccGd9CQWhmi/AY3wnFLHawp
-         f190J2peabReJ/PaKRkDn4ztzl08kRunkz6XHn/Zx6eKtPXx1PcLXrB9EgLaQ64iEBE+
-         ETrVB9dH+K8J4aFdFfyN4VZjBeC5SNir00lnr+670nsP8K9vqfnEMc4tOP/sCY6fhq6h
-         L2jU0FrTfFSvP0AFgpUo0niKzjLR7WHcR8fEyLjj/DaNpkp8scrazuiAevqn4PuqalBr
-         BV/PGayvO2tGOn0slTnX2OSNqRumFUXUMNHLfTAJCL7KB8gMEzz55fc91ZHSXr0zP4d8
-         MXSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718611397; x=1719216197;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RiRNeXTNLkPeYnOsXqevm4dREEioiq1cUZc3k0Sc504=;
-        b=lIO4bPvmAuzpngu1nMZMpiVYBwTOURf25lRbM7uXmEX0zk3bG6p385Tcz+M7CINf8C
-         2uIUUxA4lQjxloOxYDUyAVZj1vrtwBQR6XVgm62OgiLGF9/TN2iXynhDngza3K18TiiA
-         cL82kgun1MZNBKwIu73+x3r/ArEmCTdJOBl6G0uvaGtPwmgRPd8rvfaVLwV4toft8r6U
-         ysUnK6xu/X1KTuUA0ZOxyJJo6TdQhycSoFFCE9rbsoP4+ZUNu9GmPZQhvtEHhwF3YrOg
-         9liiuJyPgwJ4hbFFENtvtK1Y6UX+P3ubJLUBqcpDQpHmXxLsQqYwRP8op+MuKWaswY3J
-         sMdg==
-X-Forwarded-Encrypted: i=1; AJvYcCUFww3gdZsqkzYMOuMGbZYZOTXQZtfiS5jvgilpwO5BtNa6lfcPeotKyx/0alSEdpVrzXvN+ZoEIfrd3Jt9TLmxCpUeIDts5VRIg+hz
-X-Gm-Message-State: AOJu0YwnKBTVIO3JXSmEZfHyuBmIc8kY0L5LAL+A07mtMI3IANAiV3R9
-	c918ywwcKfh7AWeObwH+R/tBeGwSEmkC338yBs0KocnfAqEZ+rseC7+z1vfM6B0=
-X-Google-Smtp-Source: AGHT+IFSpUQt6d/6ildUpfUWV+522s+T+z60M3/a+FlFj8a7tqsP/iWZSODumewUHkkMrpN8DgzmeA==
-X-Received: by 2002:a50:d759:0:b0:57c:5874:4f5c with SMTP id 4fb4d7f45d1cf-57cbd6c7561mr7237780a12.32.1718611396832;
-        Mon, 17 Jun 2024 01:03:16 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-57cd245c408sm2743993a12.79.2024.06.17.01.03.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jun 2024 01:03:16 -0700 (PDT)
-Date: Mon, 17 Jun 2024 10:03:14 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Tony Lindgren <tony.lindgren@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] printk: Add update_preferred_console()
-Message-ID: <Zm_tdcWDEQjQns_G@pathway.suse.cz>
-References: <20240613125113.219700-1-tony.lindgren@linux.intel.com>
- <20240613125113.219700-3-tony.lindgren@linux.intel.com>
- <Zmx7IPQX4FVdSe1J@pathway.suse.cz>
- <Zm_j2eq3QcaA-g-e@tlindgre-MOBL1>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="EKQ33z5j"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45H9lwgp046206;
+	Mon, 17 Jun 2024 04:47:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1718617678;
+	bh=6EvuFkTe3ohvJlyxpb98f49oOrF2H7bMHIXzcQ0Hi9Q=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=EKQ33z5jEbGFdn+FjRBzGdqyn7iJvKoi1OJAht/68XRcqAB0ZqRJIgyovxs/Fem1F
+	 mP+UZb89pDFSlfeWfmuyf2DLVAFFAO73XQWOpXU6Q+2YZcDMsJsURXZg/BtZ99KyZa
+	 STwMz+5pIwvMeQJMu76+X75qkoEa/Wf+c6Qf37bM=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45H9lwdg030511
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 17 Jun 2024 04:47:58 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 17
+ Jun 2024 04:47:58 -0500
+Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Mon, 17 Jun 2024 04:47:58 -0500
+Received: from [172.24.18.200] (lt5cd2489kgj.dhcp.ti.com [172.24.18.200])
+	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45H9lsh9010450;
+	Mon, 17 Jun 2024 04:47:55 -0500
+Message-ID: <46e0461e-08e2-4fcd-80dc-f1213d57489b@ti.com>
+Date: Mon, 17 Jun 2024 15:17:54 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Zm_j2eq3QcaA-g-e@tlindgre-MOBL1>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] serial: 8250_omap: Implementation of Errata i2310
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>, <jirislaby@kernel.org>,
+        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
+        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>
+References: <20240617052253.2188140-1-u-kumar1@ti.com>
+ <2024061704-vengeful-exemplify-261a@gregkh>
+Content-Language: en-US
+From: "Kumar, Udit" <u-kumar1@ti.com>
+In-Reply-To: <2024061704-vengeful-exemplify-261a@gregkh>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-On Mon 2024-06-17 10:20:57, Tony Lindgren wrote:
-> On Fri, Jun 14, 2024 at 07:17:20PM +0200, Petr Mladek wrote:
-> > On Thu 2024-06-13 15:51:08, Tony Lindgren wrote:
-> > > The earlier attempt on doing this caused a regression with the kernel
-> > > command line console order as it added calling __add_preferred_console()
-> > > again later on during init. A better approach was suggested by Petr where
-> > > we add the deferred console to the console_cmdline[] and update it later
-> > > on when the console is ready.
-> > 
-> > > --- a/kernel/printk/printk.c
-> > > +++ b/kernel/printk/printk.c
-> > > @@ -2486,8 +2495,8 @@ __setup("console_msg_format=", console_msg_format_setup);
-> > >   */
-> > >  static int __init console_setup(char *str)
-> > >  {
-> > > -	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
-> > > -	char *s, *options, *brl_options = NULL;
-> > 
-> > I would add
-> > 
-> > 	static_assert(sizeof(console_cmdline[0].devname) >= sizeof(console_cmdline[0].name));
-> 
-> That check should still be >= sizeof(console_cmdline[0].name) + 4, right?
-> For the "number only" consoles we add the "ttyS" prefix.
+Hi Greg
 
-Right. Great catch!
+On 6/17/2024 11:52 AM, Greg KH wrote:
+> On Mon, Jun 17, 2024 at 10:52:53AM +0530, Udit Kumar wrote:
+>> As per Errata i2310[0], Erroneous timeout can be triggered,
+>> if this Erroneous interrupt is not cleared then it may leads
+>> to storm of interrupts, therefore apply Errata i2310 solution.
+>>
+>> [0] https://www.ti.com/lit/pdf/sprz536 page 23
+>>
+>> Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
+>> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+>> ---
+>> Test logs
+>> https://gist.github.com/uditkumarti/7a7ab6994581bbb09cf1a4271c592d8e
+>>
+>> Change logs
+>> Changes in v2:
+>> - Added Fixes Tag and typo correction in commit message
+>> - Corrected bit position to UART_OMAP_EFR2_TIMEOUT_BEHAVE
+>> Link to v1
+>> https://lore.kernel.org/all/20240614061314.290840-1-u-kumar1@ti.com/
+>>
+>>   drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
+>>   1 file changed, 20 insertions(+), 5 deletions(-)
+> Hi,
+>
+> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+> a patch that has triggered this response.  He used to manually respond
+> to these common problems, but in order to save his sanity (he kept
+> writing the same thing over and over, yet to different people), I was
+> created.  Hopefully you will not take offence and will fix the problem
+> in your patch and resubmit it so that it can be accepted into the Linux
+> kernel tree.
+>
+> You are receiving this message because of the following common error(s)
+> as indicated below:
+>
+> - You have marked a patch with a "Fixes:" tag for a commit that is in an
+>    older released kernel, yet you do not have a cc: stable line in the
+>    signed-off-by area at all, which means that the patch will not be
+>    applied to any older kernel releases.  To properly fix this, please
+>    follow the documented rules in the
+>    Documentation/process/stable-kernel-rules.rst file for how to resolve
+>    this.
+>
+> If you wish to discuss this problem further, or you have questions about
+> how to resolve this issue, please feel free to respond to this email and
+> Greg will reply once he has dug out from the pending patches received
+> from other developers.
 
-Best Regards,
-Petr
+
+I realized the same due to other patches, this not getting applied 
+cleanly on stable (using git am).
+
+Let me know if you are ok,  I will port this to stable kernel, once this 
+is merged into Linux tree.
+
+
+>
+> thanks,
+>
+> greg k-h's patch email bot
