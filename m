@@ -1,89 +1,112 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACEE6194ADF;
-	Mon, 17 Jun 2024 10:55:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 548BA14EC62;
+	Mon, 17 Jun 2024 15:49:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718621714; cv=none; b=GUID6Lb/FHyA8vgr7p1FCpGBqWZzX1j0NBAqHf0tWuxS/wWod0Ct/uyGiIE7pUKreYq5k5xKyST/Xr1tlXM7WyBA0Q+LYhgtjYo31Zh0tY4QMSP3YNNwHLQr0DCNy8DPcGA8th+FThKWqtJa3fANJvCR1Orp+v/sG5p8dAAGNhU=
+	t=1718639387; cv=none; b=tfMIMkWpm670k/cKMArsOZXFHXgCt4zHxQjWZMCsx1rhIweov5xIOD8wdzmgLcNeT0MgBsYkEqo04pdY6BhR2/BVMffubdXtTjNHbvp9ZM1zDBNHR0lt+GY7bUEDVyJ5VLHpC9cXGqUJsAp/E/85g0lQRr9/frFiJdN9z+Ss320=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718621714; c=relaxed/simple;
-	bh=aww+GRz1G+zdXDSLQYOikf/6y6UCPSbXlRG5aOMYsZY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aoRVg4WhE8qeo59CuiDjIEgkTwadYP7k3ghUofF2IkIvXqRHFtxbBaUUBN2P2syld1Z8IMDS2CZbiieQrKFcCnQxfnEcHYKnjp5QcqACJDdnOuBk/BQG43S0aWCcdfGWQzNfQsEvw4wzsRiKcTWaG6mIPPyGE12T/l8UrADsYBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GR4HB3n1; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1718639387; c=relaxed/simple;
+	bh=PfgonVgFYp61t/c8MZcCMIQbGRvfn27Xsd4DtpDziwQ=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=p/DxtGsoKco6LmeC5rrC1q3/Xfz7f2ok8iySMauZB6NbLy0eGR4dMEtzqPtKni+DcIfFrGINrLrhZHrVE8k1sOfEAhHeSXiyB4U0/8a0MFDOGfF1VZ/cvMh5BbUiQww3UHDxiUUiTEWNRLS1/ghYuRkxfvs836yypPMzSjhAqBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=MZ+kQN7y; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GR4HB3n1"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-a6f11a2d18aso553075166b.2;
-        Mon, 17 Jun 2024 03:55:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718621711; x=1719226511; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aww+GRz1G+zdXDSLQYOikf/6y6UCPSbXlRG5aOMYsZY=;
-        b=GR4HB3n1xicgyD9FH2mCaMepQ8F1SHFmyAy1uCnbH6dBDfuOKARbcw66Vyjpab/4ie
-         e90X9ThIDPPaTGFJQ0AqUi/tZvYmeuFnIYEXwHljTbMSumra42gfqpUu4lZArcLeRB5w
-         JOy0bLIRIfVOKG5DfdpLmYYfHBGjFTIJj4jV9BPi3eWCdBdu1M25zKvH8dYI6Wn3TKLg
-         OJ8fAnE+qBFFpM3fnQcRNXePHxY1HRi/J1n6bMThnv/a4jAkAHGmHjeaBYZnt9/A6ytj
-         ncDNdzO7LRk1+bY+HU2zvFSCiKJdTg98vsNrSgHt83FLZyYfTfYL93uSbiaD3st+cFV7
-         ubNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718621711; x=1719226511;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aww+GRz1G+zdXDSLQYOikf/6y6UCPSbXlRG5aOMYsZY=;
-        b=XFIIcJjxqdm6y8aFdFYeATaYmq1kd+oiXaDBqQEqns9UWU1JkN55zmEyA6HyZOwNAk
-         9Ef1RwLsqQlNq2lh5PC53hS1bW3TAg+9HYYd8Faf+U2UrHRmGUxyAd8/qmxdv+iWvJUO
-         HI7Css8aS/9SIPPRlxBmBNydHlN1zBmEJ7qZvelZDCvitsmpu1LBPjy6oSrI/SpNj7gA
-         2AVLYWr7oMgiKM407nd8MzsDxEXYPAU9EsiAGE+bvJFrmpwio8ke6ee4DeyQs3U1M9Ww
-         ug023sveUcAgDet+ZKFLVEnyKXYTLv6LCJMjUz0ybJtb9lrtQNXECtyiFJ1XpmydkIr2
-         9vKA==
-X-Forwarded-Encrypted: i=1; AJvYcCUC7GtbCG4u4QobBB+60tDNeJ5ttw3N7tWihne0q00tTzWCD/EaTJSWmWfmhOZFXXHOESMPK2SGj2zWZZZf+KQ4D8l2MQNFr5ZaZ4hcKAfoUsJd/wcFttpQ9mqCC8GUlQw3EvlBO9CwBmKI
-X-Gm-Message-State: AOJu0YwtZNvr0L8yAWu1/EB+b/AX68C1ONJ8wDnXLoMHMaqRX5EK3/YM
-	jsC3hgz+8cIEqT3NzQCPQssL0lLc/PkQSTsOC4K69emJFHO/neo4hR0d8+t8VI12gFTVNCBAmwq
-	1QHfPBKs7wAYjd3C1XRn/QZRRWHw=
-X-Google-Smtp-Source: AGHT+IGnKZ/yGWVHcYepGYcyp37kPuPQstZNz+gE5Sney0NwBAUmsg8axI6Pzi4ShY+hA5Xm2dDGfETFxzop0DXpBPI=
-X-Received: by 2002:a17:907:76c2:b0:a6f:5b98:bfa5 with SMTP id
- a640c23a62f3a-a6f60dc3636mr630445366b.52.1718621710656; Mon, 17 Jun 2024
- 03:55:10 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="MZ+kQN7y"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=pajbFnbgEHmNkP9OmvMt+YaCSM1Vfl2Psgvjwr2BIfk=; b=MZ+kQN7yQoQBm+Se75WsLfLfg0
+	I09oaBimbkGffo1m20hJbQRIKR1yButSr8+LQ3M/fW9/icPX/ZxQFY3YZJRRJGUC348OFS/RIRs9m
+	WCIAJLR+6eQYJdCBWB3gmplBhKRdmWpL4MQ/lN/CJaIFDiPLkYADiwqejlyOTScYg+pw=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:56466 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1sJEbw-000781-HN; Mon, 17 Jun 2024 11:49:36 -0400
+Date: Mon, 17 Jun 2024 11:49:14 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Hui Wang <hui.wang@canonical.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
+ lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
+Message-Id: <20240617114914.329fb547ff82776b1c03e4e9@hugovil.com>
+In-Reply-To: <20240614102952.679806-1-hui.wang@canonical.com>
+References: <20240614102952.679806-1-hui.wang@canonical.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20240617063058.18866-1-crescentcy.hsieh@moxa.com>
-In-Reply-To: <20240617063058.18866-1-crescentcy.hsieh@moxa.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 17 Jun 2024 12:54:34 +0200
-Message-ID: <CAHp75VfAOqyeMF6wbHenDSpmOL8AFQFDjjL1zRfOqLOXdUahQA@mail.gmail.com>
-Subject: Re: [PATCH v2] tty: serial: 8250: Fix port count mismatch with the device
-To: Crescent Hsieh <crescentcy.hsieh@moxa.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
+	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v5 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, Jun 17, 2024 at 8:31=E2=80=AFAM Crescent Hsieh
-<crescentcy.hsieh@moxa.com> wrote:
->
-> Normally, the number of ports is indicated by the third digit of the
-> device ID on Moxa PCI serial boards. For example, `0x1121` indicates a
-> device with 2 ports.
->
-> However, `CP116E_A_A` and `CP116E_A_B` are exceptions; they have 8
-> ports, but the third digit of the device ID is `6`.
->
-> This patch introduces a function to retrieve the number of ports on Moxa
-> PCI serial boards, addressing the issue described above.
+On Fri, 14 Jun 2024 18:29:51 +0800
+Hui Wang <hui.wang@canonical.com> wrote:
 
-Now it makes sense to me.
-Reviewed-by: Andy Shevchenko <andy@kernel.org>
+> In some designs, the chip reset pin is connected to a GPIO, and this
+> GPIO needs to be set correctly before probing the driver, so add a
+> reset-gpios in the device tree.
+> 
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Hui Wang <hui.wang@canonical.com>
+> ---
+> No change in the v5
+> 
+>  Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> index 5dec15b7e7c3..88871480018e 100644
+> --- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> +++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+> @@ -28,6 +28,9 @@ properties:
+>    clocks:
+>      maxItems: 1
+>  
+> +  reset-gpios:
+> +    maxItems: 1
+> +
+>    clock-frequency:
+>      description:
+>        When there is no clock provider visible to the platform, this
+> @@ -91,6 +94,7 @@ unevaluatedProperties: false
+>  examples:
+>    - |
+>      #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+>      i2c {
+>          #address-cells = <1>;
+>          #size-cells = <0>;
+> @@ -120,6 +124,7 @@ examples:
+>              compatible = "nxp,sc16is752";
+>              reg = <0x54>;
+>              clocks = <&clk20m>;
+> +            reset-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
+>              interrupt-parent = <&gpio3>;
+>              interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+>              nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
+> -- 
+> 2.34.1
+> 
 
---=20
-With Best Regards,
-Andy Shevchenko
+Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Tested-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+ 
+-- 
+Hugo Villeneuve
