@@ -1,212 +1,124 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BB76198E87;
-	Mon, 17 Jun 2024 18:01:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A45B8198826
+	for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 18:46:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718647309; cv=none; b=YCvmufKjI6nO69iFiMd8W8Ohn0BkvSpZT8BeVfmnH2EfANOz+y3ufydgcSMs1OUQcsxaCliae2bwLXP6eCCkxvLsTwZW/Z6fFbwmQjic9ZksUALI2cwnm3226isRGZENY4jV1mmgcI0gtaNsCCAYFYQSvoU5FQ84DoO2KrCHJAs=
+	t=1718649972; cv=none; b=CjQUJdfP3pGsgE0PJuo8voYD2tabeJYZ6ufWRTm+RSs+BBTULzX4dab3gKn0zgvu8DGiQVh3C4a6O4tuqZvAUywLeccPspjJqxS9ioOauf7mshD7pl/N0ffmfijf38xkWXizEdHBGtLYALAjyx3NR6NPxWhNN/Ube7uT2nMWPQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718647309; c=relaxed/simple;
-	bh=7GRFpuN+7pAX/fY1FhybaRDLqr9EDJaNQq18Ywgc9RY=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=iTMdkoMpx/6p+gVL25aN0utyOS6UW0Mys6JVQQI+0luTMgERcKXM09RtC8s/E/BcE+bIA2w0VF7cC9xhCfKLZC7Na/wVtoU50Smo2snKT+DIh0NsF/OE/xgWGUISC+QekyIjHtYNAwAeIuwvapDb0Nj/zJ0S8/+YzpH6wFWS5qQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=AKOPosEB; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1718649972; c=relaxed/simple;
+	bh=vrAyJilbjcV5By4evqrxxBOp4Ux0PY6zIiSvzKsRCa0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ju0PcaYgwU6g1hYE0PGFeIoXRoFhbaqA+b+DaFSFBTILpId29NprU1Mzm7h7GmQanI74m5J8bm7xOG1FVBElZ3M+veHYeEz0X4A0Xw/8sKgA0WJCdcrhiQNZpArow7KSTGJxvdbzp0fbAQZ6ypZ4zdqpX1s/X/v/tnM/Q+ac93M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dhrp9DpT; arc=none smtp.client-ip=209.85.208.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="AKOPosEB"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=3ahKqWqY39omHevjl7wSJNdYFIXYIUBOZqU3mUeM6oo=; b=AKOPosEBFWOUyOeznhhM7koty+
-	+1Gq6irnV4W906bVgTlh+uLxYqAUNApg8xD1fb9rTCt5FFQDnfMZKtVW+c4GFzBE1xCnesS10Tqlf
-	kjO1gzpAo5+lF3jrZVCX85vRhC8y2NZNi9izORy7dB/VhcbT3GrHPflsLWvoOzniNJJ4=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:52516 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1sJGfl-000840-Ur; Mon, 17 Jun 2024 14:01:42 -0400
-Date: Mon, 17 Jun 2024 14:01:20 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Lech Perczak <lech.perczak@camlingroup.com>
-Cc: Hui Wang <hui.wang@canonical.com>, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, hvilleneuve@dimonoff.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org,
- Maarten.Brock@sttls.nl
-Message-Id: <20240617140120.e2ad6ffb8df327e5bb461efb@hugovil.com>
-In-Reply-To: <274b7ed0-28fd-4348-adfe-c4302fea0c09@camlingroup.com>
-References: <20240614102952.679806-1-hui.wang@canonical.com>
-	<20240614102952.679806-2-hui.wang@canonical.com>
-	<20240617120347.907e8e1e8eae5824930dcc48@hugovil.com>
-	<274b7ed0-28fd-4348-adfe-c4302fea0c09@camlingroup.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dhrp9DpT"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2ebd95f136bso53505641fa.0
+        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 11:46:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1718649969; x=1719254769; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BgOgT/09Gam/jySqVngD92Hs65MR72xFegxS0POAmPU=;
+        b=dhrp9DpTCelF22LL0cAoCQxhCRWGO0EmsChOhEr7wuXKRJYnPpBB8cuqvRyzvwnXrS
+         bMl5qjvN161UvU3HSJkPcwcyIK9KHsfRuim4LPu0Cn10LBVbHj3LpTonwa8xhs8bdK6n
+         il7qu6oYrFpKhPTERoK/iTR9C53HCFodOTN/rbYe9czXz6J4AuN0d/H27G5on+ixxm15
+         b6PgJT6jqj1rfYAKdpYDhlG4Hc6EBOA2KpaVjABhe/gzq5j70q46i5VFABrwq8Zm1laU
+         tW++dfXDhH1mQvqZcpGxcyL9qcOxYDAcZqjjBa33vWyxj+mE5mFx8A/NeqbMZVV7jWlW
+         C/Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718649969; x=1719254769;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BgOgT/09Gam/jySqVngD92Hs65MR72xFegxS0POAmPU=;
+        b=QSUrI7MwnyTiSs0GNnFBxeqoG2s0xuQB1aAJD8hWfr+FBwyIlwALZIvfdVAPrMJ1f5
+         eA00wZdb0KuedcVbSHjxowYpQzm9gdDDxh3h0t0qThycX3KzSG38MHxtIWh1VbV1Ksij
+         vPfMyEnu9A1aptfwO+C6MYih5RbzgE+M79RTsjRYpmmmFHVS4hGexXrDwMkrZ8TpUXWi
+         4XveJztoTOLZG2auYZiwpjisvXYNJ5oP+0NqOwp8zAKJhhdwLhZKv50gSKh1GqhwSbCC
+         z0xtcBc2Oi4mRd05N2LqGk4bhGyqhC9YyDBqAltcmShl8PYj5ldGqlj59vfDyy0sY28h
+         pJVg==
+X-Forwarded-Encrypted: i=1; AJvYcCXcPvd0ZpC5O+1F8JvztWBfLcUeDze/ySwBdhCh74M7FGtBUF1U4Pr3KfSBqXo9+II9Shbn8EDcPsrk1ALq30MfFLRaQD5bmfhY7F2S
+X-Gm-Message-State: AOJu0YxaX/UwVaR+6bB9zgEEFGhynIwwcSP1iz2Ytq3vUW4pYT1UC9zg
+	DRGdtpeKHebQ0jwG4o4xAma77mYglmqZiRDj8Ery/sonh01Ss7EMxQL+RJJkXz4=
+X-Google-Smtp-Source: AGHT+IGTvrqA0QMatNcJ9Ht9SMK9eh4QoBCbNSEqn42ZlCChdETJHTwIvkwYiX47qYq6wfh+YlZliA==
+X-Received: by 2002:a2e:2d02:0:b0:2ec:2525:95c with SMTP id 38308e7fff4ca-2ec25250c0bmr37270941fa.23.1718649968683;
+        Mon, 17 Jun 2024 11:46:08 -0700 (PDT)
+Received: from ?IPV6:2a00:f41:cb2:a9df:9f88:17b:c7e7:fa59? ([2a00:f41:cb2:a9df:9f88:17b:c7e7:fa59])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ec05c78400sm14420951fa.84.2024.06.17.11.46.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jun 2024 11:46:08 -0700 (PDT)
+Message-ID: <5960e011-dd10-41c1-8805-765e0c1ddcde@linaro.org>
+Date: Mon, 17 Jun 2024 20:46:04 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 3/8] serial: qcom-geni: Fix the timeout in
+ qcom_geni_serial_poll_bit()
+To: Douglas Anderson <dianders@chromium.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Yicong Yang <yangyicong@hisilicon.com>, Tony Lindgren <tony@atomide.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Johan Hovold <johan+linaro@kernel.org>,
+ John Ogness <john.ogness@linutronix.de>, linux-arm-msm@vger.kernel.org,
+ Bjorn Andersson <andersson@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+References: <20240610222515.3023730-1-dianders@chromium.org>
+ <20240610152420.v4.3.I3e1968bbeee67e28fd4e15509950805b6665484a@changeid>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20240610152420.v4.3.I3e1968bbeee67e28fd4e15509950805b6665484a@changeid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.0 T_SCC_BODY_TEXT_LINE No description available.
-	* -1.4 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v5 2/2] serial: sc16is7xx: hardware reset chip if
- reset-gpios is defined in DT
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, 17 Jun 2024 18:49:30 +0200
-Lech Perczak <lech.perczak@camlingroup.com> wrote:
 
-> Hello,
+
+On 6/11/24 00:24, Douglas Anderson wrote:
+> The qcom_geni_serial_poll_bit() is supposed to be able to be used to
+> poll a bit that's will become set when a TX transfer finishes. Because
+> of this it tries to set its timeout based on how long the UART will
+> take to shift out all of the queued bytes. There are two problems
+> here:
+> 1. There appears to be a hidden extra word on the firmware side which
+>     is the word that the firmware has already taken out of the FIFO and
+>     is currently shifting out. We need to account for this.
+> 2. The timeout calculation was assuming that it would only need 8 bits
+>     on the wire to shift out 1 byte. This isn't true. Typically 10 bits
+>     are used (8 data bits, 1 start and 1 stop bit), but as much as 13
+>     bits could be used (14 if we allowed 9 bits per byte, which we
+>     don't).
 > 
-> W dniu 17.06.2024 o 18:03, Hugo Villeneuve pisze:
-> > On Fri, 14 Jun 2024 18:29:52 +0800
-> > Hui Wang <hui.wang@canonical.com> wrote:
-> >
-> > Hi Hui,
-> >
-> >> Some boards connect a GPIO to the reset pin, and the reset pin needs
-> >> to be set up correctly before accessing the chip.
-> >>
-> >> Add a function to handle the chip reset. If the reset-gpios is defined
-> >> in the DT, do hardware reset through this GPIO, otherwise do software
-> >> reset as before.
-> >>
-> >> Signed-off-by: Hui Wang <hui.wang@canonical.com>
-> >> ---
-> >> in the V5:
-> >>  - change setup to set up in the commit header
-> >>  - change othwerwise to otherwise in the commit header
-> >>  - change usleep_range(5, 10) to fsleep(5)
-> >>
-> >> drivers/tty/serial/sc16is7xx.c | 34 +++++++++++++++++++++++++++++++---
-> >>  1 file changed, 31 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> >> index bf0065d1c8e9..eefa40006c71 100644
-> >> --- a/drivers/tty/serial/sc16is7xx.c
-> >> +++ b/drivers/tty/serial/sc16is7xx.c
-> >> @@ -14,6 +14,7 @@
-> >>  #include <linux/delay.h>
-> >>  #include <linux/device.h>
-> >>  #include <linux/export.h>
-> >> +#include <linux/gpio/consumer.h>
-> >>  #include <linux/gpio/driver.h>
-> >>  #include <linux/idr.h>
-> >>  #include <linux/kthread.h>
-> >> @@ -1467,6 +1468,32 @@ static const struct serial_rs485 sc16is7xx_rs485_supported = {
-> >>       .delay_rts_after_send = 1,      /* Not supported but keep returning -EINVAL */
-> >>  };
-> >>
-> >> +/* Reset device, purging any pending irq / data */
-> >> +static int sc16is7xx_reset(struct device *dev, struct regmap *regmap)
-> >> +{
-> >> +     struct gpio_desc *reset_gpio;
-> >> +
-> >> +     /*
-> >> +      * The reset input is active low, and flag GPIOD_OUT_HIGH ensures the
-> >> +      * GPIO is low once devm_gpiod_get_optional returns a valid gpio_desc.
-> >> +      */
-> > I would replace all the above comments with:
-> >
-> >   /* Assert reset GPIO if defined and valid. */
-> >
-> > The correct polarity is already defined by the device
-> > tree reset-gpios entry, and can be high or low depending on the design
-> > (ex: there can be an inverter between the CPU and the chip reset input,
-> > etc).
-> Seconded - this way it's clear for the reader.
-> >> +     reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-> >> +     if (IS_ERR(reset_gpio))
-> >> +             return dev_err_probe(dev, PTR_ERR(reset_gpio), "Failed to get reset GPIO\n");
-> >> +
-> >> +     if (reset_gpio) {
-> >> +             /* The minimum reset pulse width is 3 us. */
-> >> +             fsleep(5);
-> >> +             gpiod_set_value_cansleep(reset_gpio, 0); /* Deassert GPIO */
-> >> +     } else {
-> >> +             /* Software reset */
-> >> +             regmap_write(regmap, SC16IS7XX_IOCONTROL_REG,
-> >> +                          SC16IS7XX_IOCONTROL_SRESET_BIT);
-> >> +     }
-> >> +
-> >> +     return 0;
-> >> +}
-> >> +
-> >>  int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-> >>                   struct regmap *regmaps[], int irq)
-> >>  {
-> >> @@ -1536,9 +1563,9 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-> >>       }
-> >>       sched_set_fifo(s->kworker_task);
-> >>
-> >> -     /* reset device, purging any pending irq / data */
-> >> -     regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
-> >> -                  SC16IS7XX_IOCONTROL_SRESET_BIT);
-> >> +     ret = sc16is7xx_reset(dev, regmaps[0]);
-> >> +     if (ret)
-> >> +             goto out_kthread;
-> >>
-> >>       /* Mark each port line and status as uninitialised. */
-> >>       for (i = 0; i < devtype->nr_uart; ++i) {
-> >> @@ -1663,6 +1690,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-> >>                       uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
-> >>       }
-> >>
-> >> +out_kthread:
-> >>       kthread_stop(s->kworker_task);
-> >>
-> >>  out_clk:
-> >> --
-> >> 2.34.1
-> >>
-> > I could not test the validity of the 3us delay since I do not have an
-> > oscilloscope, but testing with a 10s delay instead and a
-> > multimeter showed that it works ok. You can add my Tested-by tag:
-> >
-> > Tested-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> My hardware doesn't connect this line to the CPU's GPIOs, so I couldn't test this properly - but you can at least have my R-b tag.
-
-Hi Lech,
-just to mention that on my hardware the SC16 reset line is also not
-connected to the CPU, so I only tested the GPIO assert/deassert logic.
-
-Hugo.
-
-
-
-> >
-> > And if you modify the comment as I suggested above, then you can add my
-> > R-b tag:
-> >
-> > Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >
-> >
-> > --
-> > Hugo Villeneuve
-> >
-> > ___
-> > This email originated from outside of Camlin Group. Do not click on links or open attachments unless you are confident they are secure. If in doubt, please raise a security incident via the following portal: Camlin Helpdesk – Report an Information Security Incident/Non-Conformance <https://camlin-helpdesk.atlassian.net/servicedesk/customer/portal/2/group/34/create/62>
+> The too-short timeout was seen causing problems in a future patch
+> which more properly waited for bytes to transfer out of the UART
+> before cancelling.
 > 
-> -- 
-> Pozdrawiam/With kind regards,
-> Lech Perczak
+> Rather than fix the calculation, replace it with the core-provided
+> uart_fifo_timeout() function.
 > 
-> Sr. Software Engineer
-> Camlin Technologies Poland Limited Sp. z o.o.
-> Strzegomska 54,
-> 53-611 Wroclaw
-> Tel:     (+48) 71 75 000 16
-> Email:   lech.perczak@camlingroup.com
-> Website: http://www.camlingroup.com
+> NOTE: during earlycon, uart_fifo_timeout() has the same limitations
+> about not being able to figure out the exact timeout that the old
+> function did. Luckily uart_fifo_timeout() returns the same default
+> timeout of 20ms in this case. We'll add a comment about it, though, to
+> make it more obvious what's happening.
+> 
+> Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
+> Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
 
+Acked-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
--- 
-Hugo Villeneuve
+Konrad
