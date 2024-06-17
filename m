@@ -1,132 +1,94 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9250C186287
-	for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 19:54:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F406DDD7;
+	Mon, 17 Jun 2024 20:44:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718654086; cv=none; b=LS1M/le9/uhthtpsRXTKygdTBuGZJ+QBTbNIjS8vyVvv6Z2n+eeOmcyPO1tz7NoGZkwGIcEe+TLZHChQrJmXwaaA3sy4ST/1PrVgbmwu82dLG33YOdNeqaSo/bmgQLyl2LCIiLYGi/jDIHwBVVG5QsCMpv8Rw81cIEHLg24jyXg=
+	t=1718657059; cv=none; b=no92sUFWTEsx3GKnIBGqDF6rJS6i+lfiWZs03yKO3D1LWPxKeBSdyAFo9MR5rOZqfgpybAPON3YwtMNpI712X4pqPF++QEW9DcCXM67NcMKCYMz1QXy+S2eIMhpHJm/VlA/1gMk/7L0HqSOhHQ5ZcSd3EsggWYhtoHnzYo6oZRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718654086; c=relaxed/simple;
-	bh=Ki+PTbc1GxfDrvhVqHJ57W/XR1v1M3XS3dBT4kzMlkU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q1EB4ovXzt/4oLEQqlRBdCWeb8x9De5dZPdvi1KiwHUMuWzcHlNhEEidHkUdlG6OIFR12zjCTdB4MqmOdWoykiXE0v68Xafysi8DgPnk3SQeY6CvieFZGvEHtE4YhraKyqLOJZzKf4xIWvKoZN0j6bY0ERSenZ7m5j88GVWMfy0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=chfZ60Dz; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1718657059; c=relaxed/simple;
+	bh=W8iIc5qhkqkINfKQNN/EjMnm6fnzz724bCAZOq4GB6A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OspTHJwPxW7b2bc/LgA6A5imkJcn9XsjzgQIyJa3Dz5l7A4QmP3InusVtxkfN8Em7AwhgHUUSDHQaBPQttUHzbolIMeKbAfmoCvZc7JVXEvTvhdJJ1PQIy7WxpcFoJGgyYv9HVBBZ7NOddkUbwDL1Y4ixatjwi9V8keG/mvLfqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bYVquqPq; arc=none smtp.client-ip=209.85.208.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="chfZ60Dz"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2ebf961e504so51354891fa.2
-        for <linux-serial@vger.kernel.org>; Mon, 17 Jun 2024 12:54:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bYVquqPq"
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2ec17eb4493so53757471fa.2;
+        Mon, 17 Jun 2024 13:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1718654083; x=1719258883; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D48MDGlr810xqpuSk4MZZtp4IG/NVS2nfRA2oR5Rofk=;
-        b=chfZ60DzE6l/kGOpAr0wAopbA9UTdLa+Scu5MkoUz2z9dUMRlO4g96KOLfddrF4Mog
-         g6YiB4lDm6dpLW8p7UmCfXMW4uCuHgjMtnlnzu0RASkPhQH/hY87K+bukLc26fnimKLE
-         VqPz9j1vZwXYzhBXzx3MkVJ6mDvuEDWptbkpeSNdCTNUaIfvLydPvJI/bPi0ucC9bDjP
-         EjlsXLn73qdggXcdf7QYN8HKgndjjkDWuyT05FnEWENOWSXjWOwVMQ4+ASuDLDqPsZN7
-         HAWZzoiX7uAqOpoOnIoCytzohez96CIAz0pSrYQQsxP4N3aZuVDF8CEKJJ8mtQi07OiF
-         Eiiw==
+        d=gmail.com; s=20230601; t=1718657056; x=1719261856; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=W8iIc5qhkqkINfKQNN/EjMnm6fnzz724bCAZOq4GB6A=;
+        b=bYVquqPqAdJheeZT71tls1SYvGDKMwpmsTULfkIIVeL6KcSDlHcklkBM9Fzc3BIHAI
+         MkvmfSZ/bOldOn/OnHe7A4JsrtMV/vNZHydO8jRayvVhaiOtbvpc+LEnu8SzksXcYCjY
+         dmf8vgGdz65HU3LoRkMRfC7w3oYo8th98zOHLwxkUKpXSS7VdvOoVqaXQomaHwAewyH3
+         OWicyre0ZhUcmbR0n3xPdmbDU1+hjE2kS/TQxVKgLlDobJTHDA7X7G+cDevO0wWk6sNS
+         qo7ND4IF20vpuIIIAnvKHN3FD5Dxf8f6AhnY8pqHVh79x98XkPud+03CEHdY+AAYE4pe
+         goSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718654083; x=1719258883;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D48MDGlr810xqpuSk4MZZtp4IG/NVS2nfRA2oR5Rofk=;
-        b=TVIQqNhAyCb8vRvjdra1szYFF8Y9Ke5phSEqTGFqxr02VM/R7izRjZIEpPeOlcJljw
-         ejWRr0EVWusczeeqozEr30IT9mPxMSxohQt2WvQ+klSJSJ6LEBFyD9r/nWXcvt+ANhLD
-         jBkKqoHuag/JOCaqQ0z/Zi0io0oTFSQE9dUD73PvdRXgX3udFkUXkGauOk//64r/Prix
-         UKl7fGljfE/TaGjvobN2UvdDWXP+I+CnWiHj4l6bTleoy0PpORoyS51n1mlp4cxp710U
-         7ZIK/gEZdMur2tpMW5l/KcMoYQ8wp276TR0x2HkyHZsf0rv8edo1o9FAHPaFpboXa8z8
-         KIaA==
-X-Forwarded-Encrypted: i=1; AJvYcCU8jamrocne2xyh6VM4DaE4T/3uiCZQswLjtPuzZRI7Q1nYtsOuc0Qg+HQx5+wF4iCdFnfdLPjtu0Zz2Fypm6YSlsmpqTvPfosDQe+t
-X-Gm-Message-State: AOJu0Yy9TeiMCohtFmTpWazgDWl4SBbPzrXUaU1FaaDmvELhIJnVa/Ds
-	ezYkWPaWDyG7TjaaAQp7989oW/qqk46LmXFSdXkCq40XlEdzpyn+A86xgH9m83I=
-X-Google-Smtp-Source: AGHT+IHlIabr4uY5f6ymwX+qGJ4PmeSSEGNGNnK+82sLd5GTqP8sxe4S2CCHMad+L/kqLlQE0QMBcQ==
-X-Received: by 2002:a2e:9913:0:b0:2ec:35b5:81ce with SMTP id 38308e7fff4ca-2ec35b584c3mr782941fa.32.1718654082758;
-        Mon, 17 Jun 2024 12:54:42 -0700 (PDT)
-Received: from ?IPV6:2a00:f41:cb2:a9df:5ff5:5bcf:651f:66f5? ([2a00:f41:cb2:a9df:5ff5:5bcf:651f:66f5])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ec05c8a2a1sm14790851fa.114.2024.06.17.12.54.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jun 2024 12:54:42 -0700 (PDT)
-Message-ID: <b7b04cb8-03cb-4175-8575-b56004e65775@linaro.org>
-Date: Mon, 17 Jun 2024 21:54:39 +0200
+        d=1e100.net; s=20230601; t=1718657056; x=1719261856;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=W8iIc5qhkqkINfKQNN/EjMnm6fnzz724bCAZOq4GB6A=;
+        b=dA+pDw6Orqdl7noPLx7p8aE0QE1OukawR4NHSj0oXZvb+ORWwuE3EabhkMWQr+mV3P
+         Nnml+39dXNoLgxUNKVJkiohwFFNKLeDArr7ZzzrHMlQcWKK2uBraLMgfSKXJ0Qk0gJtT
+         jBOI3U3H53uhW9sw+hQIBJeqeQnKlE35U8HMQonV+J825vNOkMRerc584N5P24qeMaZp
+         NaR3iroeY0I0otd2L5FwxNfHt46V9ldN09LhxAOb+seZ5UAbtlKhA3ekWXh73gFybZir
+         7Uw+qsoEXpU2jOVarrAmUwYJhR+8BC0It0zBxO+JWA96P6OLcw6tPRVy6LbjGokdDhl2
+         cpLw==
+X-Forwarded-Encrypted: i=1; AJvYcCWdZ7D4uxHkAiBxE1TySH4gIIV0bEoxADMegi1QCs2BzGh13Gmk85n6ZsEYfBuRNpROTEE+lRMf6dP7qa5uSX4lJo1NlkKJ3YjOYHT4zDF+C7tnf4f42n6seYy0SDOgYO779XddG+pZZQ==
+X-Gm-Message-State: AOJu0Yz/zc9C35UH7IDKqVs6DtqaU99gnnnCZXBEhfcJErKwqGbDuMMB
+	A38sSwOO1Dkacl6L26N602gFSLlNuZsj1HiJQT5lNmmRJUdCkzYyvfa3Ump5rvRWfrjI2J1fIYJ
+	4spwDaae8ov1R1N9IPBoROwBvSSk=
+X-Google-Smtp-Source: AGHT+IE4RZo3/SD0sNa5Y0pH0ocAVmsUWsfs8YhWunn+YJsNin9DjD9ZIKp0Oo2hXdLOTP4QvA+OrGx310R4ntSil9c=
+X-Received: by 2002:a2e:968c:0:b0:2eb:d963:d8cc with SMTP id
+ 38308e7fff4ca-2ec0e5c9e20mr80476691fa.49.1718657055314; Mon, 17 Jun 2024
+ 13:44:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 8/8] serial: qcom-geni: Rework TX in FIFO mode to fix
- hangs/lockups
-To: Doug Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Yicong Yang <yangyicong@hisilicon.com>,
- Tony Lindgren <tony@atomide.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Johan Hovold <johan+linaro@kernel.org>,
- John Ogness <john.ogness@linutronix.de>, linux-arm-msm@vger.kernel.org,
- Bjorn Andersson <andersson@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- Rob Herring <robh@kernel.org>
-References: <20240610222515.3023730-1-dianders@chromium.org>
- <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
- <bc4892b7-7c34-4fcb-b4c0-e383890162f8@linaro.org>
- <CAD=FV=UuChPf0DH7aYq8r2XLCr7D+mbm4QSfthf-9ezvFeNUbg@mail.gmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <CAD=FV=UuChPf0DH7aYq8r2XLCr7D+mbm4QSfthf-9ezvFeNUbg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20240614102952.679806-1-hui.wang@canonical.com>
+ <20240614102952.679806-2-hui.wang@canonical.com> <20240617120347.907e8e1e8eae5824930dcc48@hugovil.com>
+ <274b7ed0-28fd-4348-adfe-c4302fea0c09@camlingroup.com>
+In-Reply-To: <274b7ed0-28fd-4348-adfe-c4302fea0c09@camlingroup.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 17 Jun 2024 22:43:38 +0200
+Message-ID: <CAHp75VeGnpqKNKaK_nUm+HXuqqTX3SzbkjgH4ki6-m=j2O-YbQ@mail.gmail.com>
+Subject: Re: [PATCH v5 2/2] serial: sc16is7xx: hardware reset chip if
+ reset-gpios is defined in DT
+To: Lech Perczak <lech.perczak@camlingroup.com>
+Cc: Hugo Villeneuve <hugo@hugovil.com>, Hui Wang <hui.wang@canonical.com>, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, andy@kernel.org, 
+	Maarten.Brock@sttls.nl
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jun 17, 2024 at 6:49=E2=80=AFPM Lech Perczak
+<lech.perczak@camlingroup.com> wrote:
+> W dniu 17.06.2024 o 18:03, Hugo Villeneuve pisze:
+> On Fri, 14 Jun 2024 18:29:52 +0800
+> Hui Wang <hui.wang@canonical.com> wrote:
+
+...
+
+> My hardware doesn't connect this line to the CPU's GPIOs, so I couldn't t=
+est this properly - but you can at least have my R-b tag.
+
+Lech, you need to provide a formal tag as it's described in Submitting Patc=
+hes.
 
 
-
-On 6/17/24 21:37, Doug Anderson wrote:
-> Hi,
-> 
-> On Mon, Jun 17, 2024 at 12:10 PM Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>
->>
->>
->> On 6/11/24 00:24, Douglas Anderson wrote:
->>> The fact that the Qualcomm GENI hardware interface is based around
->>> "packets" is really awkward to fit into Linux's UART design.
->>> Specifically, in order to send bytes you need to start up a new
->>> "command" saying how many bytes you want to send and then you need to
->>> send all those bytes. Once you've committed to sending that number of
->>> bytes it's very awkward to change your mind and send fewer, especially
->>> if you want to do so without dropping bytes on the ground.
->>
->> [...]
->>
->>
->>> +static void qcom_geni_serial_enable_cmd_done(struct uart_port *uport)
->>> +{
->>> +     struct qcom_geni_serial_port *port = to_dev_port(uport);
->>> +
->>> +     /* If we're not in FIFO mode we don't use CMD_DONE. */
->>> +     if (port->dev_data->mode != GENI_SE_FIFO)
->>> +             return;
->>> +
->>> +     writel(M_CMD_DONE_EN, uport->membase + SE_GENI_M_IRQ_EN_SET);
->>> +}
->>
->> IDK if this is worth of a separate function, instead of checking for the
->> FIFO in port_setup and writing it there, but generally this patch looks
->> good to me
-> 
-> Sure. Somehow it felt weird to me to put it straight in there, but I
-> could go either way. Do you think I should spin the series just for
-> this, or just make this change if I happen to need to spin the series
-> for something else?
-
-The latter.
-
-Konrad
+--=20
+With Best Regards,
+Andy Shevchenko
