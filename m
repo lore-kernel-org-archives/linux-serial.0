@@ -1,36 +1,38 @@
 Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8867E139D11;
-	Tue, 18 Jun 2024 11:27:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93351139D11;
+	Tue, 18 Jun 2024 11:28:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.121
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718710080; cv=none; b=hVo/64bwWMwyy7tCLoVMGmyjoKmgUvkYBHjvE3F47FFAOQaUwsjy+l6/+HJER1OzH/LVhb1qp+RFQ3L/t9wNQCLcWQmqd0i6Dj/QaHfgSW9V8ul7qFhTVyxFfvzcYbS+lVdZPPiLsY+GffC2M+dEFk7DixxH86DCvhHjEJ+kGBU=
+	t=1718710087; cv=none; b=Pk0AT9mjiFcgQWDXcMp2y3hXspl68ojtrg7Q87ilJfRPqoR4Chx4IF15SPzgmKHsTwjR2jHMMDC8+NjEe0YfqIiAom3zVfEZIHYSVPKD+Vf9SQ5EMWp400CEJCy0L0xCnGwyFDWEx6liG+LUUDnNslA9nUtDnQRaDCaqCLD0g3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718710080; c=relaxed/simple;
-	bh=9cakxw16MG1Is2XYxq435WdMffeoOQdzvmvP9zz7Jv4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=k47ZzN4o2N2I87jRgZWj8WqC3KQ13B/uAxXofH+vUfyWrsFxtFls8BBy5R6tgmxBxu3v8Y4sbRSqq4hfzOlaGcJiGmc06v/f/PwFNHfKARh/srQdRZHaA+WT1j8ly1C0KQRk/b2kcmB5mCsxLZspIrVVfDz8z52E/TGOhHyeHfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=kuPNntk1; arc=none smtp.client-ip=185.125.188.121
+	s=arc-20240116; t=1718710087; c=relaxed/simple;
+	bh=liqIQf/51gU0hCkHyFFUyrlyRfkSWPW0/N0Yi+ZfDcI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Ce4keZk3mYwg5xRqQlXsO5xdrPcfc9oamcjmUE0dTRlbNdcjpqe2M6uC0+10eg0q43Wvrhstd+2YpvXxd/ezGJXg5bfufQo16Wc8bnVhiREvla2BHFye43KLFgVi8BZn5EaAHqhvzMqxrxAE+NTPje0h6Di0OKQswpbBd3YFcJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=m4qIfuH3; arc=none smtp.client-ip=185.125.188.121
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="kuPNntk1"
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="m4qIfuH3"
 Received: from hwang4-ThinkPad-T14s-Gen-2a.conference (unknown [123.112.65.116])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 15ED33F1E5;
-	Tue, 18 Jun 2024 11:27:49 +0000 (UTC)
+	by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9A7E04087E;
+	Tue, 18 Jun 2024 11:27:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1718710075;
-	bh=MevBdRTfcD5TvScobUERArql+8UMb7ptftVJJxjWRKA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-	b=kuPNntk1ecl6ISDOmdh3CSO4M/FJWNrb52Y2tCJUFXHtrgR9QMrpkk8EIvqQugz21
-	 9Y8uvEdNbxTfuGcjuhvrBSD5WW9GeJLnhVsd3mEdvBu2CX6ae7wLfYpWGdGrO+dbxT
-	 8Jm8A4n70xuEvPR0k74uadgtErr7STUSGbCwEX25PjYUXPHAwmIUqxL3ZRxHIde+aR
-	 C39itLrAqF0TELAE3628LdJW1Xjf5IrxlwwXJ0zxXFERJNVcXyBMoSB/1fvZ9DR6XQ
-	 vPqBDuSJF5MFMMvrkwcDvBMphzxdizJ7I5PwsVPUue3iC5Ixs3TnFPcfNyBLy+6Nop
-	 cmXn9oXdUo8MA==
+	s=20210705; t=1718710082;
+	bh=EuA5G7ftWh/W73RPr/IVD057SZHjTDVJktOyJiM2CIg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version;
+	b=m4qIfuH3MKe+j/BXGdj3BV9+Rzttew9kgDSdgMX1eRM7e4dsBYRK1dyOJ2yHWcAOp
+	 sHVqdYUlkxk5urYWsCnOKmQgr8jAwRYxz/AjxZWitE98rnN8flAcZnWena5NTMjwTt
+	 rJIvYe49gk/AQJ9VRQhAtaPAGDbVIUIbVy+2dCNdMNn+5EVKf0hVDxPwXC/m6epvbe
+	 eiBPL0UTC2lcsQ/hZsiqhgrC1ATh9PMhQsaqqLkFgST9MCejgmLjQ5gYwc1aVRSMEA
+	 YN+PRMlsexkRZHSo5GTue44TD2MjIF+PdNXk8/7sMrBYIr3aB/VX8jG9x0azu7fERQ
+	 4OQ/d5a6+FpPQ==
 From: Hui Wang <hui.wang@canonical.com>
 To: linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org,
@@ -44,10 +46,12 @@ Cc: jirislaby@kernel.org,
 	lech.perczak@camlingroup.com,
 	Maarten.Brock@sttls.nl,
 	hui.wang@canonical.com
-Subject: [PATCH v6 1/2] dt-bindings: serial: sc16is7xx: add reset-gpios
-Date: Tue, 18 Jun 2024 19:26:19 +0800
-Message-Id: <20240618112620.152848-1-hui.wang@canonical.com>
+Subject: [PATCH v6 2/2] serial: sc16is7xx: hardware reset chip if reset-gpios is defined in DT
+Date: Tue, 18 Jun 2024 19:26:20 +0800
+Message-Id: <20240618112620.152848-2-hui.wang@canonical.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240618112620.152848-1-hui.wang@canonical.com>
+References: <20240618112620.152848-1-hui.wang@canonical.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -56,51 +60,90 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In some designs, the chip reset pin is connected to a GPIO, and this
-GPIO needs to be set correctly before probing the driver, so add a
-reset-gpios in the device tree.
+Some boards connect a GPIO to the reset pin, and the reset pin needs
+to be set up correctly before accessing the chip.
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Add a function to handle the chip reset. If the reset-gpios is defined
+in the DT, do hardware reset through this GPIO, otherwise do software
+reset as before.
+
 Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
 Tested-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 Signed-off-by: Hui Wang <hui.wang@canonical.com>
 ---
-No change in the v6
+In the v6:
+ - change the comment "The reset input is active low, and flag
+   GPIOD_OUT_HIGH ensures the GPIO is low once devm_gpiod_get_optional
+   returns a valid gpio_desc" to "Assert reset GPIO if defined and
+   valid"
 
- Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 31 ++++++++++++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-index 5dec15b7e7c3..88871480018e 100644
---- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-+++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
-@@ -28,6 +28,9 @@ properties:
-   clocks:
-     maxItems: 1
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index bf0065d1c8e9..c79dcd7c8d1a 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -14,6 +14,7 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/export.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/gpio/driver.h>
+ #include <linux/idr.h>
+ #include <linux/kthread.h>
+@@ -1467,6 +1468,29 @@ static const struct serial_rs485 sc16is7xx_rs485_supported = {
+ 	.delay_rts_after_send = 1,	/* Not supported but keep returning -EINVAL */
+ };
  
-+  reset-gpios:
-+    maxItems: 1
++/* Reset device, purging any pending irq / data */
++static int sc16is7xx_reset(struct device *dev, struct regmap *regmap)
++{
++	struct gpio_desc *reset_gpio;
 +
-   clock-frequency:
-     description:
-       When there is no clock provider visible to the platform, this
-@@ -91,6 +94,7 @@ unevaluatedProperties: false
- examples:
-   - |
-     #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-     i2c {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -120,6 +124,7 @@ examples:
-             compatible = "nxp,sc16is752";
-             reg = <0x54>;
-             clocks = <&clk20m>;
-+            reset-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
-             interrupt-parent = <&gpio3>;
-             interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-             nxp,modem-control-line-ports = <0 1>; /* Ports 0 and 1 as modem control lines */
++	/* Assert reset GPIO if defined and valid. */
++	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(reset_gpio))
++		return dev_err_probe(dev, PTR_ERR(reset_gpio), "Failed to get reset GPIO\n");
++
++	if (reset_gpio) {
++		/* The minimum reset pulse width is 3 us. */
++		fsleep(5);
++		gpiod_set_value_cansleep(reset_gpio, 0); /* Deassert GPIO */
++	} else {
++		/* Software reset */
++		regmap_write(regmap, SC16IS7XX_IOCONTROL_REG,
++			     SC16IS7XX_IOCONTROL_SRESET_BIT);
++	}
++
++	return 0;
++}
++
+ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 		    struct regmap *regmaps[], int irq)
+ {
+@@ -1536,9 +1560,9 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 	}
+ 	sched_set_fifo(s->kworker_task);
+ 
+-	/* reset device, purging any pending irq / data */
+-	regmap_write(regmaps[0], SC16IS7XX_IOCONTROL_REG,
+-		     SC16IS7XX_IOCONTROL_SRESET_BIT);
++	ret = sc16is7xx_reset(dev, regmaps[0]);
++	if (ret)
++		goto out_kthread;
+ 
+ 	/* Mark each port line and status as uninitialised. */
+ 	for (i = 0; i < devtype->nr_uart; ++i) {
+@@ -1663,6 +1687,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 			uart_remove_one_port(&sc16is7xx_uart, &s->p[i].port);
+ 	}
+ 
++out_kthread:
+ 	kthread_stop(s->kworker_task);
+ 
+ out_clk:
 -- 
 2.34.1
 
