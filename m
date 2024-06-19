@@ -1,137 +1,105 @@
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F33513211E;
-	Wed, 19 Jun 2024 10:59:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E43D520B34
+	for <linux-serial@vger.kernel.org>; Wed, 19 Jun 2024 12:08:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718794785; cv=none; b=gcNLPbmtsTpnI+w0nCuYj2cCpDpbqRdo5qCZ0BNDnCVMsoOyInGGBxv8gKam6cg2zO5I08n0FJaS4Gi+CvpKkBse3Sx6bDyRF0NSA52Pyt3HD3C6XF5pRgSngq3LN1ZheskxTVpRH4gzlvKWiSpKLAFQ0XwnibWJtG4clsSJnSw=
+	t=1718798935; cv=none; b=ZrMbcUHQr2W4pWLElP0N6cE/uEHQmlV/voIMWIMZM1Z0w3o5j8LfmYQIMZPMqX3BmfE22v/DPGPp/GFhw2YgxKBsvy5NO6hIzyV/RdgxbbC7FXbp8GdWjzFf6qKkqnKBshi3hpebecx49/lRzrK5+3lovE+YHTgW0WXR1KaHO0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718794785; c=relaxed/simple;
-	bh=/vfOnndZfejtIjb7e80KeoWWOgBV9A26jTwVuCxtQFs=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JnPzNE0X0/PKBZxCii4g+91EbjuDF41RmJlvS9AbTRyG/MXX/EOQuEjvClWLBBTTblJsx94dGQ9iHItAe0B/jOrBt4vudEvyPc+aU3Vb4MF01tLNRsyQtgGoyLP43M0Dclly6o9XmJGJFpQa9TkI3P8ixrvQmYEJda8oSj53ei8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=s8pUEesR; arc=none smtp.client-ip=198.47.23.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1718798935; c=relaxed/simple;
+	bh=fTvB1hEbxSBWiNyMp6BrQ//M2l+mBY4sasDhPslCkf8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eUs5E1Rb6ZV+ueC9NIqadvvemUgSdNma6YSuF9DLSizc4yP6Fx+fYFJMyzQBVogT8qT/GTRs29GDieuh/VStZhemvMQc0NFEUxIMqL6tEqtqnOAp0GDeMOxfwt6YUe7L4mxn28FMyQZme2/Q1/Eha1qvaB+utJsBhxU5rSFRyC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ednkHCdY; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="s8pUEesR"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45JAxHZD037469;
-	Wed, 19 Jun 2024 05:59:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1718794757;
-	bh=0TIJJzknXePVmSmptrCrvtKE4z/WNxe6G74dTzh8fxM=;
-	h=From:To:CC:Subject:Date;
-	b=s8pUEesRILN4TNWVxQo2In/WhLuS3RTB/P2vHK/jIRPj6U9Ioc2F9R+9ftWkwpd5L
-	 0w3+BqGpivN9TDZP9xCF/qgdurzpMQ9AImLCFTZqqUWlaaY12XYbkblvL/3jY7zWX/
-	 dsl/cQEbRl95sYzVUxGFRjy8a+Nyzx7s6EqnGgYE=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45JAxHWh106223
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 19 Jun 2024 05:59:17 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 19
- Jun 2024 05:59:17 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Wed, 19 Jun 2024 05:59:17 -0500
-Received: from udit-HP-Z2-Tower-G9-Workstation-Desktop-PC.dhcp.ti.com (udit-hp-z2-tower-g9-workstation-desktop-pc.dhcp.ti.com [172.24.227.18])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45JAxDSJ070686;
-	Wed, 19 Jun 2024 05:59:13 -0500
-From: Udit Kumar <u-kumar1@ti.com>
-To: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
-        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
-        Udit Kumar
-	<u-kumar1@ti.com>, <stable@vger.kernel.org>
-Subject: [PATCH v3] serial: 8250_omap: Implementation of Errata i2310
-Date: Wed, 19 Jun 2024 16:29:03 +0530
-Message-ID: <20240619105903.165434-1-u-kumar1@ti.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ednkHCdY"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2ebe785b234so65002871fa.1
+        for <linux-serial@vger.kernel.org>; Wed, 19 Jun 2024 05:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1718798931; x=1719403731; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4Z91cdWhBSDARxTwwrjzqK6+kNXQCrIMh1WvKGrr9e4=;
+        b=ednkHCdYH2eogjaKBYnrL/+W+79v6Hjcwuz/LubW+GcFijJSXG9fiJNtANznqKgW5T
+         nS1iYJ9M+r3EDKKUTpp9ZAOAKxzyQjaN8s6Lv3AIftep0am9NmDuCuhSLGEYauUv7s+4
+         l1hygFEYZOE0U10+VjzNz3T3DVq1blr1TFwZ1PArDOPq1bufPy2fgoftG8b52WpyriIj
+         WHTNccUfNrYsm5OTkDepBqFZzjdObsWudmdULUVirdOUQ/GdoaofL0vmsK+QYl7zcES1
+         UqcnSlc2ePV4BRU7Ug+cJeB8HwJjEPTjcx+FsX4CSConWp424INyXJeEjHASLy1qwi02
+         yN1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718798931; x=1719403731;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4Z91cdWhBSDARxTwwrjzqK6+kNXQCrIMh1WvKGrr9e4=;
+        b=JIobQnEhpHkBh/g4iO7K4G26Mn4j+kxo68ITLRwAeGU9zt1nYaxa/CvadbTHs/XfVS
+         RI2H+q9Wx0NYmUhjJYpLi+hCuB7nlnIWoaHu/agjCukL/qrw3B6NsNHS/VkwpEtE6b0N
+         aSnQl98JdRqq0mm0C1wQrZaBlUwkAw2GX1Grf4hdjvRp96jXDaJL/1jJvGt8Srfn/W48
+         hFdOvNMNa/2JScLTLZoRODmH6wdf3tU9L8I2zi6ViXeh2zZAOSHGDIUlVxu+4lv3z4+m
+         JO8H9g79Y5GNG3i2INH68ySXtOozH39fPLeOIcmSKx623cg9t1QwM9j/YupqdOxr/dqx
+         H6sQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUoxLLvM9U+Crue7n/gpOfwAmPJ4TYqZ+nivI24BQsir771ki5/zqSnPVuMejhempsPlZWQecR90UNFJraNWmmftbpYLw5TXJNTRjFp
+X-Gm-Message-State: AOJu0YxqQZPWMRaylFzoAAeDsDAv3nliRnypT2/L+Fjl+vCFS2/rkH5g
+	VCPIFnCE7RuoHSKvul687bj+9X2J8JORCPGJ2LxnpEiV3Koq5f82t0/GUSVfO5M=
+X-Google-Smtp-Source: AGHT+IHxReTN0w2QaraX/PX9vfS48WsKjPuPHQ7NZwaQgMrkK4rxI3TUUAV/ivACQRkZaw1lT7yL1A==
+X-Received: by 2002:a2e:a311:0:b0:2ec:27e6:39ba with SMTP id 38308e7fff4ca-2ec3cffce6emr16794281fa.53.1718798930960;
+        Wed, 19 Jun 2024 05:08:50 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-6fedf49d7b1sm9480897a12.51.2024.06.19.05.08.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jun 2024 05:08:50 -0700 (PDT)
+Date: Wed, 19 Jun 2024 14:08:40 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Tony Lindgren <tony.lindgren@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/3] serial: core: Rename preferred console handling
+ for match and update
+Message-ID: <ZnLKSEzKBTXYvOMe@pathway.suse.cz>
+References: <20240618045458.14731-1-tony.lindgren@linux.intel.com>
+ <20240618045458.14731-4-tony.lindgren@linux.intel.com>
+ <ZnGQ8JAu2OQf0GX8@pathway.suse.cz>
+ <ZnJg6KQeIs95UFAB@tlindgre-MOBL1>
+ <ZnKGGoboxRMwkeWm@tlindgre-MOBL1>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZnKGGoboxRMwkeWm@tlindgre-MOBL1>
 
-As per Errata i2310[0], Erroneous timeout can be triggered,
-if this Erroneous interrupt is not cleared then it may leads
-to storm of interrupts, therefore apply Errata i2310 solution.
+On Wed 2024-06-19 10:17:46, Tony Lindgren wrote:
+> On Wed, Jun 19, 2024 at 07:39:04AM +0300, Tony Lindgren wrote:
+> > On Tue, Jun 18, 2024 at 03:51:44PM +0200, Petr Mladek wrote:
+> > > It seems to try whether c->devname matches a number "X", or "ttySX".
+> > > It even tries the sparc-specific transformations in
+> > > serial_base_add_sparc_console()
+> > > 
+> > > But this is the original format which does _not_ include ":".
+> > > It never will be stored in c->devname and will never match.
+> > 
+> > Good catch, this won't do anything now with console_setup()
+> > checking for ":" for deferred consoles. So we should revert commit
+> > a0f32e2dd998 ("serial: core: Handle serial console options").
+> 
+> Heh actually we can revert a lot more, basically leaving only
+> the renamed serial_base_match_and_update_preferred_console().
 
-[0] https://www.ti.com/lit/pdf/sprz536 page 23
+I wonder if it would be cleaner to revert all patches adding
+the feature and then add back just the minimalist solution.
 
-Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
-Cc: stable@vger.kernel.org
-Signed-off-by: Udit Kumar <u-kumar1@ti.com>
----
-Change logs
-Changes in v3:
-- CC stable in commit message
-Link to v2:
-https://lore.kernel.org/all/20240617052253.2188140-1-u-kumar1@ti.com/
-
-Changes in v2:
-- Added Fixes Tag and typo correction in commit message
-- Corrected bit position to UART_OMAP_EFR2_TIMEOUT_BEHAVE
-Link to v1
-https://lore.kernel.org/all/20240614061314.290840-1-u-kumar1@ti.com/
-
- drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 170639d12b2a..ddac0a13cf84 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -115,6 +115,10 @@
- /* RX FIFO occupancy indicator */
- #define UART_OMAP_RX_LVL		0x19
- 
-+/* Timeout low and High */
-+#define UART_OMAP_TO_L                 0x26
-+#define UART_OMAP_TO_H                 0x27
-+
- /*
-  * Copy of the genpd flags for the console.
-  * Only used if console suspend is disabled
-@@ -663,13 +667,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 
- 	/*
- 	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
--	 * FIFO has been drained, in which case a dummy read of RX FIFO
--	 * is required to clear RX TIMEOUT condition.
-+	 * FIFO has been drained or erroneously.
-+	 * So apply solution of Errata i2310 as mentioned in
-+	 * https://www.ti.com/lit/pdf/sprz536
- 	 */
- 	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
--	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
--	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
--		serial_port_in(port, UART_RX);
-+		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
-+		unsigned char efr2, timeout_h, timeout_l;
-+
-+		efr2 = serial_in(up, UART_OMAP_EFR2);
-+		timeout_h = serial_in(up, UART_OMAP_TO_H);
-+		timeout_l = serial_in(up, UART_OMAP_TO_L);
-+		serial_out(up, UART_OMAP_TO_H, 0xFF);
-+		serial_out(up, UART_OMAP_TO_L, 0xFF);
-+		serial_out(up, UART_OMAP_EFR2, UART_OMAP_EFR2_TIMEOUT_BEHAVE);
-+		serial_in(up, UART_IIR);
-+		serial_out(up, UART_OMAP_EFR2, efr2);
-+		serial_out(up, UART_OMAP_TO_H, timeout_h);
-+		serial_out(up, UART_OMAP_TO_L, timeout_l);
- 	}
- 
- 	/* Stop processing interrupts on input overrun */
--- 
-2.34.1
-
+Best Regards,
+Petr
