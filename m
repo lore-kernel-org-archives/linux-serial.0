@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBE2351016;
-	Thu, 20 Jun 2024 12:46:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1879351016;
+	Thu, 20 Jun 2024 12:46:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718887570; cv=none; b=uIlU+zx+tYwovJgAzEUwh7wYnzfUgq+CjcPwQcfDW9eRBpAFD5EUpOF//6Nihw/acMm1f/UlyTcc6rOxAH3MsoB07gYIcxdRhTbnwUqiN3/JV9OFsmJTfTI6wk8y6XSTx0zx02H5cj+1jadXy3F/6/uULw0mMX26uFmLr6j7dg8=
+	t=1718887581; cv=none; b=DWiZTNYzrXUljJcUQLXNMoJrCArOJfV0NgwjNhvfGn+9+KP06JXpZL2gc6E7N4DWPeFaL5LXeJ3G1ehLmk9a1iPkQpfmAFTLvztHRUNRNKC4/n0e8YGu3GxuPXUkg0exWirjSixLWs6iEbfiUkJhq/MvOiOLBHvOl+/9z4nUHJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718887570; c=relaxed/simple;
-	bh=dRvHz07AuwR9uE2bzGqCPI1tGZ4hBQrYmbiU4GczRC8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nQ1M9wel5C+xeBZCsDHw/WsW8+Pnotw9SuFREfien2ssziCOqsLSfmGAU4FGKf6kt090bwkEvnxqJyzmVMBg6lknB7gy40uS8hoxCBiH+o7PWM+MmT9vMYtIZ6rKcIhgZhMcHz9ydmS2ju8iPVhzIY+4+YDhsBEb44ZqyQzCBaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F0zhj8kc; arc=none smtp.client-ip=198.175.65.13
+	s=arc-20240116; t=1718887581; c=relaxed/simple;
+	bh=ykmFHjLmQcgg09LU3W6SLx0qpasqzoUvmrp1nqXPat0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=o/ppkb8R+OHx0n+q4il0s+WGs9QxJxOotupb9exewfrg8qmxus9JzJKqfkzm4fMIg7T5CDqsN3VbxuZjozX6+Du+bts/AVvPKH8l/3i1w0E9NPVshEqh+p9XpkBp+dV2t3EpN2649mRoqUu2gDqw8N6DioP+RdJm2mVaWRDbYCA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NznqrL8k; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F0zhj8kc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NznqrL8k"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718887569; x=1750423569;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dRvHz07AuwR9uE2bzGqCPI1tGZ4hBQrYmbiU4GczRC8=;
-  b=F0zhj8kclp8jOrHXjE/s+oM9HV6hi7PTKQZWfoBLdufTlk8AyHXs/co6
-   2zUp+nLg0s8SEYMqWxCSV6HIUIIjgSPNyNcSn3xU+Chfaq6uZMxBTCUwb
-   hBsuE/5LX4u3zxLRvHmBM1fDb6tPnd5QirfNF+9rP1YvHiF969QU/Y7LX
-   m/eP62RArTv/uiOl8ICwXTHNjvUflLIJKwaZFXkoIdrei7vX50a1IsQM7
-   uFAs94dovWuu1w+5AexeqVcIIR3UFbD92Y/njT1QmLsjnVeOzUDSNX43n
-   9thU0L+VH6fJgiD0Vts8+UiZ8AUncOuKCY5Os/+0xKe3gRnF74yqNzDjt
+  t=1718887577; x=1750423577;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ykmFHjLmQcgg09LU3W6SLx0qpasqzoUvmrp1nqXPat0=;
+  b=NznqrL8kH8tZj+HDuHHgKfBVoaGVs8tTmGR9gxHX9lNMtCm7W13RQ6yw
+   Vd6kbG/QZ8/TOeekW/KKw4buI8a5Rtx3qHLVe+E4jxbMPqjz7C4h5nwsf
+   YLEE22Ea3yZ24yhDu/PtYkomGjBmv7LT8zTOgM33NbQYSYJr0btaNrf33
+   t+qgpJrnOulUne0/KrWYaOsA/UkhlCKf4mveK3hPoQFY55X1NqEILCX2n
+   ZXj9DXeJO8umRC68rzYK5HC14MAma3ndGxdUJc4qYZPTAW4aOdGDmu6FK
+   bXq+0HwqvNYqhXsXuZ57kBITH8IHqRQ5b5mVOlZJcRq0rudV+w7wd7Wty
    Q==;
-X-CSE-ConnectionGUID: 8KCHWjqdTPK4snxH+QhNHw==
-X-CSE-MsgGUID: Xb8/vI+5QbOqzvCDsCWGoA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="26985648"
+X-CSE-ConnectionGUID: SbTsIBpmQ9eIA/B2w82wWg==
+X-CSE-MsgGUID: gcw6S6dOSteuxJZmuEI+FA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="26985661"
 X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="26985648"
+   d="scan'208";a="26985661"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:08 -0700
-X-CSE-ConnectionGUID: PzqiClnJQKekorXeJd1UhA==
-X-CSE-MsgGUID: WyAjNsV3SI2yUpebpf9rEg==
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:17 -0700
+X-CSE-ConnectionGUID: XB+SXQuATLKI9Btx+atutQ==
+X-CSE-MsgGUID: EG6QYQ/7Td6eRej8XXPXVg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="42888510"
+   d="scan'208";a="42888579"
 Received: from ijarvine-desk1.ger.corp.intel.com (HELO tlindgre-MOBL1.intel.com) ([10.245.247.35])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:04 -0700
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:12 -0700
 From: Tony Lindgren <tony.lindgren@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -49,16 +50,18 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>
+	Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	linux-serial@vger.kernel.org,
 	Tony Lindgren <tony.lindgren@linux.intel.com>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/4] Fixes for console command line ordering
-Date: Thu, 20 Jun 2024 15:45:25 +0300
-Message-ID: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
+Subject: [PATCH v4 1/4] printk: Revert add_preferred_console_match() related commits
+Date: Thu, 20 Jun 2024 15:45:26 +0300
+Message-ID: <20240620124541.164931-2-tony.lindgren@linux.intel.com>
 X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
+References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,83 +70,316 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Recent changes to allow using DEVNAME:0.0 style console names caused a
+regression to the kernel command line handling for the console options.
 
-Recent changes to add support for DEVNAME:0.0 style consoles caused a
-regression with the preferred console order where the last console on
-the kernel command line is no longer the preferred console.
+The last preferred console added gets used for init. This is documented
+in the comments for add_preferred_console(). Now the kernel command line
+options for console=ttyS0,115200 console=tty0 are wrongly handled and
+cause the /dev/console to be associated with ttyS0 instead of tty0.
 
-The following four changes fix the issue using Petr's suggestion that
-does not involve calling __add_preferred_console() later on again, and
-adds the deferred consoles to the console_cmdline[] directly to be
-updated when the console is ready.
+This happens because we are calling __add_preferred_console() later on
+from serial8250_isa_init_ports() after console_setup() and the console
+gets treated as the last added preferred console. As the DEVNAME:0.0 style
+console device is not known at console_setup() time, I added a call to
+__add_preferred_console() later on when the console is ready.
 
-We revert the earlier printk related changes, and then add back the
-DEVNAME:0.0 functionality based on Petr's code snippet. And we end up
-reducing the code quite a bit too this way.
+To fix the issue, let's revert the printk related commits:
 
-And we also revert all the unusable serial core console quirk handling,
-it does not do anything for the legacy "ttyS" named consoles. And then
-we add a minimal serial_base_match_and_update_preferred_console().
+f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
+b73c9cbe4f1f ("printk: Flag register_console() if console is set on command line")
+8a831c584e6e ("printk: Don't try to parse DEVNAME:0.0 console options")
 
-The reason we want DEVNAME:0.0 style consoles is it helps addressing the
-console based on the connected serial port controller device rather than
-using the hardcoded ttyS addressing. And that helps with issues related
-to the console moving around after togging the HSUART option in the BIOS,
-or when new ports are enabled in devicetree and aliases are not updated.
+We need to also drop the call for add_preferred_console_match() from
+serial_base_add_one_prefcon() added by commit 787a1cabac01 ("serial: core:
+Add support for DEVNAME:0.0 style naming for kernel console").
 
-Regards,
+Petr has suggested a better way to handle the deferred consoles that does
+not rely on calling __add_preferred_console() again.
 
-Tony
-
-Changes since v3:
-
-- Revert the unusable serial core console quirk handling
-
-- Add a minimal patch for serial_base_match_and_update_preferred_console()
-
-Changes since v2:
-
-- Use match_devname_and_update_preferred_console() naming and update
-  the comments
-
-- Add a patch to rename the serial functions to use match and update
-  naming
-
-- Use ttyname instad of chardev in console_setup()
-
-- Split variables per-line in console_setup()
-
-- Initialize idx to -1 for devname in console_setup()
-
-- Add pr_info() statement when a preferred console is associated with
-  a devname
-
-Changes since v1:
-
-- Revert the problem causing printk changes and switch to using the
-  solution based on Petr's suggestion and code snippet
-
-Tony Lindgren (4):
-  printk: Revert add_preferred_console_match() related commits
-  printk: Add match_devname_and_update_preferred_console()
-  serial: core: Revert unusable console quirk handling
-  serial: core: Add serial_base_match_and_update_preferred_console()
-
- drivers/tty/serial/8250/8250_core.c  |   5 -
- drivers/tty/serial/serial_base.h     |  22 +---
- drivers/tty/serial/serial_base_bus.c | 116 +++------------------
- drivers/tty/serial/serial_core.c     |   2 +-
- include/linux/printk.h               |   5 +-
+Reported-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/linux-serial/ZlC6_Um4P4b-_WQE@pathway.suse.cz/
+Fixes: f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
+---
+ drivers/tty/serial/serial_base_bus.c |   8 +-
+ include/linux/printk.h               |   3 -
  kernel/printk/Makefile               |   2 +-
  kernel/printk/conopt.c               | 146 ---------------------------
- kernel/printk/console_cmdline.h      |   7 +-
- kernel/printk/printk.c               | 122 ++++++++++++++++------
- 9 files changed, 112 insertions(+), 315 deletions(-)
+ kernel/printk/console_cmdline.h      |   6 --
+ kernel/printk/printk.c               |  23 +----
+ 6 files changed, 6 insertions(+), 182 deletions(-)
  delete mode 100644 kernel/printk/conopt.c
 
-
-base-commit: 6ba59ff4227927d3a8530fc2973b80e94b54d58f
+diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
+index 73c6ee540c83..5ebacb982f9e 100644
+--- a/drivers/tty/serial/serial_base_bus.c
++++ b/drivers/tty/serial/serial_base_bus.c
+@@ -210,13 +210,7 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+ static int serial_base_add_one_prefcon(const char *match, const char *dev_name,
+ 				       int port_id)
+ {
+-	int ret;
+-
+-	ret = add_preferred_console_match(match, dev_name, port_id);
+-	if (ret == -ENOENT)
+-		return 0;
+-
+-	return ret;
++	return 0;
+ }
+ 
+ #ifdef __sparc__
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 40afab23881a..65c5184470f1 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -60,9 +60,6 @@ static inline const char *printk_skip_headers(const char *buffer)
+ #define CONSOLE_LOGLEVEL_DEFAULT CONFIG_CONSOLE_LOGLEVEL_DEFAULT
+ #define CONSOLE_LOGLEVEL_QUIET	 CONFIG_CONSOLE_LOGLEVEL_QUIET
+ 
+-int add_preferred_console_match(const char *match, const char *name,
+-				const short idx);
+-
+ extern int console_printk[];
+ 
+ #define console_loglevel (console_printk[0])
+diff --git a/kernel/printk/Makefile b/kernel/printk/Makefile
+index 040fe7d1eda2..39a2b61c7232 100644
+--- a/kernel/printk/Makefile
++++ b/kernel/printk/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-y	= printk.o conopt.o
++obj-y	= printk.o
+ obj-$(CONFIG_PRINTK)	+= printk_safe.o nbcon.o
+ obj-$(CONFIG_A11Y_BRAILLE_CONSOLE)	+= braille.o
+ obj-$(CONFIG_PRINTK_INDEX)	+= index.o
+diff --git a/kernel/printk/conopt.c b/kernel/printk/conopt.c
+deleted file mode 100644
+index 9d507bac3657..000000000000
+--- a/kernel/printk/conopt.c
++++ /dev/null
+@@ -1,146 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * Kernel command line console options for hardware based addressing
+- *
+- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
+- * Author: Tony Lindgren <tony@atomide.com>
+- */
+-
+-#include <linux/console.h>
+-#include <linux/init.h>
+-#include <linux/string.h>
+-#include <linux/types.h>
+-
+-#include <asm/errno.h>
+-
+-#include "console_cmdline.h"
+-
+-/*
+- * Allow longer DEVNAME:0.0 style console naming such as abcd0000.serial:0.0
+- * in addition to the legacy ttyS0 style naming.
+- */
+-#define CONSOLE_NAME_MAX	32
+-
+-#define CONSOLE_OPT_MAX		16
+-#define CONSOLE_BRL_OPT_MAX	16
+-
+-struct console_option {
+-	char name[CONSOLE_NAME_MAX];
+-	char opt[CONSOLE_OPT_MAX];
+-	char brl_opt[CONSOLE_BRL_OPT_MAX];
+-	u8 has_brl_opt:1;
+-};
+-
+-/* Updated only at console_setup() time, no locking needed */
+-static struct console_option conopt[MAX_CMDLINECONSOLES];
+-
+-/**
+- * console_opt_save - Saves kernel command line console option for driver use
+- * @str: Kernel command line console name and option
+- * @brl_opt: Braille console options
+- *
+- * Saves a kernel command line console option for driver subsystems to use for
+- * adding a preferred console during init. Called from console_setup() only.
+- *
+- * Return: 0 on success, negative error code on failure.
+- */
+-int __init console_opt_save(const char *str, const char *brl_opt)
+-{
+-	struct console_option *con;
+-	size_t namelen, optlen;
+-	const char *opt;
+-	int i;
+-
+-	namelen = strcspn(str, ",");
+-	if (namelen == 0 || namelen >= CONSOLE_NAME_MAX)
+-		return -EINVAL;
+-
+-	opt = str + namelen;
+-	if (*opt == ',')
+-		opt++;
+-
+-	optlen = strlen(opt);
+-	if (optlen >= CONSOLE_OPT_MAX)
+-		return -EINVAL;
+-
+-	for (i = 0; i < MAX_CMDLINECONSOLES; i++) {
+-		con = &conopt[i];
+-
+-		if (con->name[0]) {
+-			if (!strncmp(str, con->name, namelen))
+-				return 0;
+-			continue;
+-		}
+-
+-		/*
+-		 * The name isn't terminated, only opt is. Empty opt is fine,
+-		 * but brl_opt can be either empty or NULL. For more info, see
+-		 * _braille_console_setup().
+-		 */
+-		strscpy(con->name, str, namelen + 1);
+-		strscpy(con->opt, opt, CONSOLE_OPT_MAX);
+-		if (brl_opt) {
+-			strscpy(con->brl_opt, brl_opt, CONSOLE_BRL_OPT_MAX);
+-			con->has_brl_opt = 1;
+-		}
+-
+-		return 0;
+-	}
+-
+-	return -ENOMEM;
+-}
+-
+-static struct console_option *console_opt_find(const char *name)
+-{
+-	struct console_option *con;
+-	int i;
+-
+-	for (i = 0; i < MAX_CMDLINECONSOLES; i++) {
+-		con = &conopt[i];
+-		if (!strcmp(name, con->name))
+-			return con;
+-	}
+-
+-	return NULL;
+-}
+-
+-/**
+- * add_preferred_console_match - Adds a preferred console if a match is found
+- * @match: Expected console on kernel command line, such as console=DEVNAME:0.0
+- * @name: Name of the console character device to add such as ttyS
+- * @idx: Index for the console
+- *
+- * Allows driver subsystems to add a console after translating the command
+- * line name to the character device name used for the console. Options are
+- * added automatically based on the kernel command line. Duplicate preferred
+- * consoles are ignored by __add_preferred_console().
+- *
+- * Return: 0 on success, negative error code on failure.
+- */
+-int add_preferred_console_match(const char *match, const char *name,
+-				const short idx)
+-{
+-	struct console_option *con;
+-	char *brl_opt = NULL;
+-
+-	if (!match || !strlen(match) || !name || !strlen(name) ||
+-	    idx < 0)
+-		return -EINVAL;
+-
+-	con = console_opt_find(match);
+-	if (!con)
+-		return -ENOENT;
+-
+-	/*
+-	 * See __add_preferred_console(). It checks for NULL brl_options to set
+-	 * the preferred_console flag. Empty brl_opt instead of NULL leads into
+-	 * the preferred_console flag not set, and CON_CONSDEV not being set,
+-	 * and the boot console won't get disabled at the end of console_setup().
+-	 */
+-	if (con->has_brl_opt)
+-		brl_opt = con->brl_opt;
+-
+-	console_opt_add_preferred_console(name, idx, con->opt, brl_opt);
+-
+-	return 0;
+-}
+diff --git a/kernel/printk/console_cmdline.h b/kernel/printk/console_cmdline.h
+index a125e0235589..3ca74ad391d6 100644
+--- a/kernel/printk/console_cmdline.h
++++ b/kernel/printk/console_cmdline.h
+@@ -2,12 +2,6 @@
+ #ifndef _CONSOLE_CMDLINE_H
+ #define _CONSOLE_CMDLINE_H
+ 
+-#define MAX_CMDLINECONSOLES 8
+-
+-int console_opt_save(const char *str, const char *brl_opt);
+-int console_opt_add_preferred_console(const char *name, const short idx,
+-				      char *options, char *brl_options);
+-
+ struct console_cmdline
+ {
+ 	char	name[16];			/* Name of the driver	    */
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 420fd310129d..dddb15f48d59 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -383,6 +383,9 @@ static int console_locked;
+ /*
+  *	Array of consoles built from command line options (console=)
+  */
++
++#define MAX_CMDLINECONSOLES 8
++
+ static struct console_cmdline console_cmdline[MAX_CMDLINECONSOLES];
+ 
+ static int preferred_console = -1;
+@@ -2500,17 +2503,6 @@ static int __init console_setup(char *str)
+ 	if (_braille_console_setup(&str, &brl_options))
+ 		return 1;
+ 
+-	/* Save the console for driver subsystem use */
+-	if (console_opt_save(str, brl_options))
+-		return 1;
+-
+-	/* Flag register_console() to not call try_enable_default_console() */
+-	console_set_on_cmdline = 1;
+-
+-	/* Don't attempt to parse a DEVNAME:0.0 style console */
+-	if (strchr(str, ':'))
+-		return 1;
+-
+ 	/*
+ 	 * Decode str into name, index, options.
+ 	 */
+@@ -2541,13 +2533,6 @@ static int __init console_setup(char *str)
+ }
+ __setup("console=", console_setup);
+ 
+-/* Only called from add_preferred_console_match() */
+-int console_opt_add_preferred_console(const char *name, const short idx,
+-				      char *options, char *brl_options)
+-{
+-	return __add_preferred_console(name, idx, options, brl_options, true);
+-}
+-
+ /**
+  * add_preferred_console - add a device to the list of preferred consoles.
+  * @name: device name
+@@ -3522,7 +3507,7 @@ void register_console(struct console *newcon)
+ 	 * Note that a console with tty binding will have CON_CONSDEV
+ 	 * flag set and will be first in the list.
+ 	 */
+-	if (preferred_console < 0 && !console_set_on_cmdline) {
++	if (preferred_console < 0) {
+ 		if (hlist_empty(&console_list) || !console_first()->device ||
+ 		    console_first()->flags & CON_BOOT) {
+ 			try_enable_default_console(newcon);
 -- 
 2.45.2
 
