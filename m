@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A0C1ACE73;
-	Thu, 20 Jun 2024 12:46:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E10721ACE73;
+	Thu, 20 Jun 2024 12:46:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718887587; cv=none; b=cr7Wn9UG1C9PtTIa+d9+B4WmZWgBYlDfR9tCtN8YuOaBXKxoJlu1ieK3fi/F5SyeS/+fekiZesdGikTfXWZcR0TDXNUjyARHlp+YPNvWf5Gnrd68ln3+kmzQj4kGWFezAuorGOBz+jwFazT1I2M9w42MblxaL6V7qBiDzIHqBvI=
+	t=1718887597; cv=none; b=stH8jvRiCRQesl4y+cqkv3nR7pGhNGQ0rRDHvkOIadZylnfAPl5J1nPotWPLJpCK8WW2nxTkHoraHicv7vHthPrUbaLy4vyYGPF3UC/gFtBG6+LyIGHTlIZ+085cp+aCkD6luXmsm+OV4pR3ns0BZx2J5qhEq8r2c5bQWRo8iOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718887587; c=relaxed/simple;
-	bh=Zfo5p2XS+UpBhCaGmUZEdR7V1ETFipCjP8W5TnHmIiw=;
+	s=arc-20240116; t=1718887597; c=relaxed/simple;
+	bh=wryTky+f8DBKHxvuyF6uPMNEDIH64K2MCv4fOtZirPQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YWFBtnt8FwYek1eTUoE+QiUhJKizNVDreOn+91ilDHf+osBsu42CYYzPT9AdQ76DxDZmfpv/T86Y281vHA7De5WJ8uPFVQClxcyvWQ7NJ/PDseYt7ht1VX+5r0TAx/Inms/JHc1XE7jFcY+B+ydHfrIbT9qrp7zpsiAmfYIOj4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f8jS/MB5; arc=none smtp.client-ip=198.175.65.13
+	 MIME-Version; b=FBeNgOoeqQNuCiJtdfP0RC8kdTbbiTXra67jVmnyhCMD4H6W/h7KjWmQfem5667k46NEw6SRAaz7bi+GBzkQ68xrMoi0seIz84w2G+aojhnFGx5R4LG1CaMkIx4iPwNOzyguGTUuklrHK/Sf4EOdez8Wi8Keu+sXe2b6q2XVjOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z1VtS8QX; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f8jS/MB5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z1VtS8QX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718887586; x=1750423586;
+  t=1718887596; x=1750423596;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Zfo5p2XS+UpBhCaGmUZEdR7V1ETFipCjP8W5TnHmIiw=;
-  b=f8jS/MB5F+63hs8f+Z6Ln59kLLddnuT/f3Q1PXHmMU57Q+Z4YsPNsjVv
-   az3VLG0y6YGDdlBbOhUQIzDD1oxWKMCU3YdR4HRDeoYAPn/f52f7Ab+xq
-   tH/PoGiFluO9aG/hwq8zYC6+HM7ZGhRsnT+GFwPzvPFWZRWDD14sIpaoH
-   hM57Jp2soFg58LDLDp1w6hm7WejMuiG8Fo90mBfLMJYkMuu32MALTEUmG
-   nBHI9ISLJd1fCEBgXGKApO51YgDBlSPAXNtCkHfHp7CZ+VbO0dtfSbZFD
-   53EHQ+lVIXrCPqY0Q+bjNexCmC//gXdFkjQowTnxddvQZRpW6iMVKC7H2
-   A==;
-X-CSE-ConnectionGUID: HL/7htdlR9+jA+O/X/ou0g==
-X-CSE-MsgGUID: 1Kyt3dW6QD+qHMtPbS0Ddw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="26985670"
+  bh=wryTky+f8DBKHxvuyF6uPMNEDIH64K2MCv4fOtZirPQ=;
+  b=Z1VtS8QXYWaZLzz453LZBsD23xAELVmXoDkSy8sXgNc2LDzbYTIiHud1
+   PgqpT8c7DLj4RzFHNAWibOgBA8yyUwZ7q3FamqsnNpZj0kV+Y/EC3dsZk
+   FpF/gELnHkQGb7pHMY2PjzBA93YlrrnEbht7SCm4HW0YhMI8iuMBfyoY+
+   G3sWNbUQ2kMMo2d0Uoo1w0nqD/cnM0tWpyZqVc/ZCoGET31m6Pi/8FmO9
+   UsC/8rhpcQg/ZT96UFaIdS72gKjzLdh4Uiq7GwkWUiRzfefuP5X/grh8e
+   w3Aq+bqUw/pGnKBkWvtaA+i5mTMoFd97RZqeAJguNE4re+gPPLqCcA8Rr
+   Q==;
+X-CSE-ConnectionGUID: ojvtZ+1ASv6X09UrLVYy6A==
+X-CSE-MsgGUID: DD9wwq2eQwiQWGMeTWI8+g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="26985677"
 X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="26985670"
+   d="scan'208";a="26985677"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:26 -0700
-X-CSE-ConnectionGUID: nEKjr2BISbqmVdISbfwbLQ==
-X-CSE-MsgGUID: FBzR+O2JR9W573rVLTFEEw==
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:36 -0700
+X-CSE-ConnectionGUID: Dd1Dq2EbSJmy/Vc4WOIOCg==
+X-CSE-MsgGUID: e50AX1CfQQWmnlEOUEaxvg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="42888676"
+   d="scan'208";a="42888747"
 Received: from ijarvine-desk1.ger.corp.intel.com (HELO tlindgre-MOBL1.intel.com) ([10.245.247.35])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:21 -0700
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:31 -0700
 From: Tony Lindgren <tony.lindgren@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -56,9 +56,9 @@ Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	linux-serial@vger.kernel.org,
 	Tony Lindgren <tony.lindgren@linux.intel.com>,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/4] printk: Add match_devname_and_update_preferred_console()
-Date: Thu, 20 Jun 2024 15:45:27 +0300
-Message-ID: <20240620124541.164931-3-tony.lindgren@linux.intel.com>
+Subject: [PATCH v4 3/4] serial: core: Revert unusable console quirk handling
+Date: Thu, 20 Jun 2024 15:45:28 +0300
+Message-ID: <20240620124541.164931-4-tony.lindgren@linux.intel.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
 References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
@@ -70,262 +70,269 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Let's add match_devname_and_update_preferred_console() for driver
-subsystems to call during init when the console is ready, and it's
-character device name is known. For now, we use it only for the serial
-layer to allow console=DEVNAME:0.0 style hardware based addressing for
-consoles.
+There is no point of trying to handle the console quirks in the serial
+core instead of console_setup() currently.
 
-The earlier attempt on doing this caused a regression with the kernel
-command line console order as it added calling __add_preferred_console()
-again later on during init. A better approach was suggested by Petr where
-we add the deferred console to the console_cmdline[] and update it later
-on when the console is ready.
+With the console_setup() related changes, we are now deferring the
+DEVNAME:0.0 style consoles based on the ":" naming only. So the serial
+core console quirk handling would not do anything for the "ttyS" named
+consoles as they are not deferred.
+
+Also the earlier approach would have depended on further changes to be
+able to drop the serial port quirk handling from console_setup().
+
+Let's revert the following console quirk handling related serial core
+commits:
+
+b20172ca6bf4 ("serial: core: Fix ifdef for serial base console functions")
+4547cd76f08a ("serial: 8250: Fix add preferred console for serial8250_isa_init_ports()")
+a8b04cfe7dad ("serial: 8250: Add preferred console in serial8250_isa_init_ports()")
+a0f32e2dd998 ("serial: core: Handle serial console options")
+787a1cabac01 ("serial: core: Add support for DEVNAME:0.0 style naming for kernel console")
+
+Once the console quirk handling is gone, we add back the DEVNAME:0.0
+functionality with a minimal patch.
 
 Suggested-by: Petr Mladek <pmladek@suse.com>
-Co-developed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
+Link: https://lore.kernel.org/linux-serial/ZnGQ8JAu2OQf0GX8@pathway.suse.cz/
 Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
 ---
- drivers/tty/serial/serial_base_bus.c |   8 ++-
- include/linux/printk.h               |   4 ++
- kernel/printk/console_cmdline.h      |   1 +
- kernel/printk/printk.c               | 103 +++++++++++++++++++++++----
- 4 files changed, 100 insertions(+), 16 deletions(-)
+ drivers/tty/serial/8250/8250_core.c  |   5 --
+ drivers/tty/serial/serial_base.h     |  30 -------
+ drivers/tty/serial/serial_base_bus.c | 129 ---------------------------
+ drivers/tty/serial/serial_core.c     |   4 -
+ 4 files changed, 168 deletions(-)
 
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index ff15022369e4..b0adafc44747 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -15,7 +15,6 @@
+  */
+ 
+ #include <linux/acpi.h>
+-#include <linux/cleanup.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/ioport.h>
+@@ -42,8 +41,6 @@
+ 
+ #include <asm/irq.h>
+ 
+-#include "../serial_base.h"	/* For serial_base_add_isa_preferred_console() */
+-
+ #include "8250.h"
+ 
+ /*
+@@ -563,8 +560,6 @@ static void __init serial8250_isa_init_ports(void)
+ 		port->irqflags |= irqflag;
+ 		if (serial8250_isa_config != NULL)
+ 			serial8250_isa_config(i, &up->port, &up->capabilities);
+-
+-		serial_base_add_isa_preferred_console(serial8250_reg.dev_name, i);
+ 	}
+ }
+ 
+diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
+index 743a72ac34f3..b6c38d2edfd4 100644
+--- a/drivers/tty/serial/serial_base.h
++++ b/drivers/tty/serial/serial_base.h
+@@ -49,33 +49,3 @@ void serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port
+ 
+ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port);
+ void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port);
+-
+-#ifdef CONFIG_SERIAL_CORE_CONSOLE
+-
+-int serial_base_add_preferred_console(struct uart_driver *drv,
+-				      struct uart_port *port);
+-
+-#else
+-
+-static inline
+-int serial_base_add_preferred_console(struct uart_driver *drv,
+-				      struct uart_port *port)
+-{
+-	return 0;
+-}
+-
+-#endif
+-
+-#ifdef CONFIG_SERIAL_8250_CONSOLE
+-
+-int serial_base_add_isa_preferred_console(const char *name, int idx);
+-
+-#else
+-
+-static inline
+-int serial_base_add_isa_preferred_console(const char *name, int idx)
+-{
+-	return 0;
+-}
+-
+-#endif
 diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-index 5ebacb982f9e..2cf86f1ff298 100644
+index 2cf86f1ff298..4df2a4b10445 100644
 --- a/drivers/tty/serial/serial_base_bus.c
 +++ b/drivers/tty/serial/serial_base_bus.c
-@@ -210,7 +210,13 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
- static int serial_base_add_one_prefcon(const char *match, const char *dev_name,
- 				       int port_id)
- {
+@@ -8,7 +8,6 @@
+  * The serial core bus manages the serial core controller instances.
+  */
+ 
+-#include <linux/cleanup.h>
+ #include <linux/container_of.h>
+ #include <linux/device.h>
+ #include <linux/idr.h>
+@@ -205,134 +204,6 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+ 	put_device(&port_dev->dev);
+ }
+ 
+-#ifdef CONFIG_SERIAL_CORE_CONSOLE
+-
+-static int serial_base_add_one_prefcon(const char *match, const char *dev_name,
+-				       int port_id)
+-{
+-	int ret;
+-
+-	ret = match_devname_and_update_preferred_console(match, dev_name, port_id);
+-	if (ret == -ENOENT)
+-		return 0;
+-
+-	return ret;
+-}
+-
+-#ifdef __sparc__
+-
+-/* Handle Sparc ttya and ttyb options as done in console_setup() */
+-static int serial_base_add_sparc_console(const char *dev_name, int idx)
+-{
+-	const char *name;
+-
+-	switch (idx) {
+-	case 0:
+-		name = "ttya";
+-		break;
+-	case 1:
+-		name = "ttyb";
+-		break;
+-	default:
+-		return 0;
+-	}
+-
+-	return serial_base_add_one_prefcon(name, dev_name, idx);
+-}
+-
+-#else
+-
+-static inline int serial_base_add_sparc_console(const char *dev_name, int idx)
+-{
 -	return 0;
-+	int ret;
-+
-+	ret = match_devname_and_update_preferred_console(match, dev_name, port_id);
-+	if (ret == -ENOENT)
-+		return 0;
-+
-+	return ret;
- }
- 
- #ifdef __sparc__
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index 65c5184470f1..7239976698e4 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -60,6 +60,10 @@ static inline const char *printk_skip_headers(const char *buffer)
- #define CONSOLE_LOGLEVEL_DEFAULT CONFIG_CONSOLE_LOGLEVEL_DEFAULT
- #define CONSOLE_LOGLEVEL_QUIET	 CONFIG_CONSOLE_LOGLEVEL_QUIET
- 
-+int match_devname_and_update_preferred_console(const char *match,
-+					       const char *name,
-+					       const short idx);
-+
- extern int console_printk[];
- 
- #define console_loglevel (console_printk[0])
-diff --git a/kernel/printk/console_cmdline.h b/kernel/printk/console_cmdline.h
-index 3ca74ad391d6..0ab573b6d4dc 100644
---- a/kernel/printk/console_cmdline.h
-+++ b/kernel/printk/console_cmdline.h
-@@ -6,6 +6,7 @@ struct console_cmdline
+-}
+-
+-#endif
+-
+-static int serial_base_add_prefcon(const char *name, int idx)
+-{
+-	const char *char_match __free(kfree) = NULL;
+-	const char *nmbr_match __free(kfree) = NULL;
+-	int ret;
+-
+-	/* Handle ttyS specific options */
+-	if (strstarts(name, "ttyS")) {
+-		/* No name, just a number */
+-		nmbr_match = kasprintf(GFP_KERNEL, "%i", idx);
+-		if (!nmbr_match)
+-			return -ENODEV;
+-
+-		ret = serial_base_add_one_prefcon(nmbr_match, name, idx);
+-		if (ret)
+-			return ret;
+-
+-		/* Sparc ttya and ttyb */
+-		ret = serial_base_add_sparc_console(name, idx);
+-		if (ret)
+-			return ret;
+-	}
+-
+-	/* Handle the traditional character device name style console=ttyS0 */
+-	char_match = kasprintf(GFP_KERNEL, "%s%i", name, idx);
+-	if (!char_match)
+-		return -ENOMEM;
+-
+-	return serial_base_add_one_prefcon(char_match, name, idx);
+-}
+-
+-/**
+- * serial_base_add_preferred_console - Adds a preferred console
+- * @drv: Serial port device driver
+- * @port: Serial port instance
+- *
+- * Tries to add a preferred console for a serial port if specified in the
+- * kernel command line. Supports both the traditional character device such
+- * as console=ttyS0, and a hardware addressing based console=DEVNAME:0.0
+- * style name.
+- *
+- * Translates the kernel command line option using a hardware based addressing
+- * console=DEVNAME:0.0 to the serial port character device such as ttyS0.
+- * Cannot be called early for ISA ports, depends on struct device.
+- *
+- * Note that duplicates are ignored by add_preferred_console().
+- *
+- * Return: 0 on success, negative error code on failure.
+- */
+-int serial_base_add_preferred_console(struct uart_driver *drv,
+-				      struct uart_port *port)
+-{
+-	const char *port_match __free(kfree) = NULL;
+-	int ret;
+-
+-	ret = serial_base_add_prefcon(drv->dev_name, port->line);
+-	if (ret)
+-		return ret;
+-
+-	port_match = kasprintf(GFP_KERNEL, "%s:%i.%i", dev_name(port->dev),
+-			       port->ctrl_id, port->port_id);
+-	if (!port_match)
+-		return -ENOMEM;
+-
+-	/* Translate a hardware addressing style console=DEVNAME:0.0 */
+-	return serial_base_add_one_prefcon(port_match, drv->dev_name, port->line);
+-}
+-
+-#endif
+-
+-#ifdef CONFIG_SERIAL_8250_CONSOLE
+-
+-/*
+- * Early ISA ports initialize the console before there is no struct device.
+- * This should be only called from serial8250_isa_init_preferred_console(),
+- * other callers are likely wrong and should rely on earlycon instead.
+- */
+-int serial_base_add_isa_preferred_console(const char *name, int idx)
+-{
+-	return serial_base_add_prefcon(name, idx);
+-}
+-
+-#endif
+-
+ static int serial_base_init(void)
  {
- 	char	name[16];			/* Name of the driver	    */
- 	int	index;				/* Minor dev. to use	    */
-+	char	devname[32];			/* DEVNAME:0.0 style device name */
- 	bool	user_specified;			/* Specified by command line vs. platform */
- 	char	*options;			/* Options for the driver   */
- #ifdef CONFIG_A11Y_BRAILLE_CONSOLE
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index dddb15f48d59..7d91593f0ecf 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -2429,18 +2429,23 @@ static void set_user_specified(struct console_cmdline *c, bool user_specified)
- 	console_set_on_cmdline = 1;
- }
+ 	int ret;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 0c4d60976663..2a8006e3d687 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3422,10 +3422,6 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
+ 	if (ret)
+ 		goto err_unregister_ctrl_dev;
  
--static int __add_preferred_console(const char *name, const short idx, char *options,
-+static int __add_preferred_console(const char *name, const short idx,
-+				   const char *devname, char *options,
- 				   char *brl_options, bool user_specified)
- {
- 	struct console_cmdline *c;
- 	int i;
- 
-+	if (!name && !devname)
-+		return -EINVAL;
-+
- 	/*
- 	 * We use a signed short index for struct console for device drivers to
- 	 * indicate a not yet assigned index or port. However, a negative index
--	 * value is not valid for preferred console.
-+	 * value is not valid when the console name and index are defined on
-+	 * the command line.
- 	 */
--	if (idx < 0)
-+	if (name && idx < 0)
- 		return -EINVAL;
- 
- 	/*
-@@ -2448,9 +2453,10 @@ static int __add_preferred_console(const char *name, const short idx, char *opti
- 	 *	if we have a slot free.
- 	 */
- 	for (i = 0, c = console_cmdline;
--	     i < MAX_CMDLINECONSOLES && c->name[0];
-+	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
- 	     i++, c++) {
--		if (strcmp(c->name, name) == 0 && c->index == idx) {
-+		if ((name && strcmp(c->name, name) == 0 && c->index == idx) ||
-+		    (devname && strcmp(c->devname, devname) == 0)) {
- 			if (!brl_options)
- 				preferred_console = i;
- 			set_user_specified(c, user_specified);
-@@ -2461,7 +2467,10 @@ static int __add_preferred_console(const char *name, const short idx, char *opti
- 		return -E2BIG;
- 	if (!brl_options)
- 		preferred_console = i;
--	strscpy(c->name, name, sizeof(c->name));
-+	if (name)
-+		strscpy(c->name, name);
-+	if (devname)
-+		strscpy(c->devname, devname);
- 	c->options = options;
- 	set_user_specified(c, user_specified);
- 	braille_set_options(c, brl_options);
-@@ -2486,8 +2495,13 @@ __setup("console_msg_format=", console_msg_format_setup);
-  */
- static int __init console_setup(char *str)
- {
--	char buf[sizeof(console_cmdline[0].name) + 4]; /* 4 for "ttyS" */
--	char *s, *options, *brl_options = NULL;
-+	static_assert(sizeof(console_cmdline[0].devname) >= sizeof(console_cmdline[0].name) + 4);
-+	char buf[sizeof(console_cmdline[0].devname)];
-+	char *brl_options = NULL;
-+	char *ttyname = NULL;
-+	char *devname = NULL;
-+	char *options;
-+	char *s;
- 	int idx;
- 
- 	/*
-@@ -2496,17 +2510,23 @@ static int __init console_setup(char *str)
- 	 * for exactly this purpose.
- 	 */
- 	if (str[0] == 0 || strcmp(str, "null") == 0) {
--		__add_preferred_console("ttynull", 0, NULL, NULL, true);
-+		__add_preferred_console("ttynull", 0, NULL, NULL, NULL, true);
- 		return 1;
- 	}
- 
- 	if (_braille_console_setup(&str, &brl_options))
- 		return 1;
- 
-+	/* For a DEVNAME:0.0 style console the character device is unknown early */
-+	if (strchr(str, ':'))
-+		devname = buf;
-+	else
-+		ttyname = buf;
-+
- 	/*
- 	 * Decode str into name, index, options.
- 	 */
--	if (isdigit(str[0]))
-+	if (ttyname && isdigit(str[0]))
- 		scnprintf(buf, sizeof(buf), "ttyS%s", str);
- 	else
- 		strscpy(buf, str);
-@@ -2523,12 +2543,18 @@ static int __init console_setup(char *str)
- #endif
- 
- 	for (s = buf; *s; s++)
--		if (isdigit(*s) || *s == ',')
-+		if ((ttyname && isdigit(*s)) || *s == ',')
- 			break;
--	idx = simple_strtoul(s, NULL, 10);
-+
-+	/* @idx will get defined when devname matches. */
-+	if (devname)
-+		idx = -1;
-+	else
-+		idx = simple_strtoul(s, NULL, 10);
-+
- 	*s = 0;
- 
--	__add_preferred_console(buf, idx, options, brl_options, true);
-+	__add_preferred_console(ttyname, idx, devname, options, brl_options, true);
- 	return 1;
- }
- __setup("console=", console_setup);
-@@ -2548,7 +2574,51 @@ __setup("console=", console_setup);
-  */
- int add_preferred_console(const char *name, const short idx, char *options)
- {
--	return __add_preferred_console(name, idx, options, NULL, false);
-+	return __add_preferred_console(name, idx, NULL, options, NULL, false);
-+}
-+
-+/**
-+ * match_devname_and_update_preferred_console - Update a preferred console
-+ *	when matching devname is found.
-+ * @devname: DEVNAME:0.0 style device name
-+ * @name: Name of the corresponding console driver, e.g. "ttyS"
-+ * @idx: Console index, e.g. port number.
-+ *
-+ * The function checks whether a device with the given @devname is
-+ * preferred via the console=DEVNAME:0.0 command line option.
-+ * It fills the missing console driver name and console index
-+ * so that a later register_console() call could find (match)
-+ * and enable this device.
-+ *
-+ * It might be used when a driver subsystem initializes particular
-+ * devices with already known DEVNAME:0.0 style names. And it
-+ * could predict which console driver name and index this device
-+ * would later get associated with.
-+ *
-+ * Return: 0 on success, negative error code on failure.
-+ */
-+int match_devname_and_update_preferred_console(const char *devname,
-+					       const char *name,
-+					       const short idx)
-+{
-+	struct console_cmdline *c = console_cmdline;
-+	int i;
-+
-+	if (!devname || !strlen(devname) || !name || !strlen(name) || idx < 0)
-+		return -EINVAL;
-+
-+	for (i = 0; i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
-+	     i++, c++) {
-+		if (!strcmp(devname, c->devname)) {
-+			pr_info("associate the preferred console \"%s\" with \"%s%d\"\n",
-+				devname, name, idx);
-+			strscpy(c->name, name);
-+			c->index = idx;
-+			return 0;
-+		}
-+	}
-+
-+	return -ENOENT;
- }
- 
- bool console_suspend_enabled = true;
-@@ -3318,8 +3388,11 @@ static int try_enable_preferred_console(struct console *newcon,
- 	int i, err;
- 
- 	for (i = 0, c = console_cmdline;
--	     i < MAX_CMDLINECONSOLES && c->name[0];
-+	     i < MAX_CMDLINECONSOLES && (c->name[0] || c->devname[0]);
- 	     i++, c++) {
-+		/* Console not yet initialized? */
-+		if (!c->name[0])
-+			continue;
- 		if (c->user_specified != user_specified)
- 			continue;
- 		if (!newcon->match ||
+-	ret = serial_base_add_preferred_console(drv, port);
+-	if (ret)
+-		goto err_unregister_port_dev;
+-
+ 	ret = serial_core_add_one_port(drv, port);
+ 	if (ret)
+ 		goto err_unregister_port_dev;
 -- 
 2.45.2
 
