@@ -1,183 +1,90 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38C11AC799;
-	Thu, 20 Jun 2024 12:46:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CEF91B3F27;
+	Thu, 20 Jun 2024 16:30:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718887605; cv=none; b=VALYywVcHwfTU2nFPo0e4763Gex1mA+RWNUdZqzYmnSJypUAYCdRFRuCWgLx1+Ltih329z64mse6ChQfRwQnW8rZOVoz8htk7IUgYK+tAUiH76cLrRUqy1x8IG1e4XI7+N2SpfP+YCO52lzlfb2zm2HmmKd7UXQASw5DbuuLjwQ=
+	t=1718901007; cv=none; b=A6r/HiNt0Gcc/5l9Pp3qpkNr1AgJKRcMMommoPrzL+mjS4lzS7rltrbEQf3nAst/0eflVBpvEcffnTXgKUiJ7rKO55LzAqTESCTViDfNzUqMWoUoGAqIwXU/eCfoC7rDBnOeJ3RoQonbxxsm6U7VhBUUy/tcYTfndGq6o4q1D8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718887605; c=relaxed/simple;
-	bh=eaqYx0tP7xE/NKkuA/s0zoqf+t488PDvb5zZwZQtox0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=O2KlRqb4XPCFZKlQf/GqsCFSuKu8clk2RMbFYAde60rUyBDsV1tkDVXQkOw3vaL4t3EueAzD2dAfgy/8OYN2iqPpchPbZJ4rDCp3IUJ1w65/zNP+If5+8VGtL1EQceax2VbgsfWlmEf2xKcicGWpk0/Tb+BLAjoQC0Cr7EY9D6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PnB1hhJd; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1718901007; c=relaxed/simple;
+	bh=/soEwOsXYvmwlCsfRcQRkZNG24EUSF5AHLtkwpy6oo8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=It9ISxlbDaGCkRgJaUAmaFQqPKbZdiIqkBpfBtnpApAMb8tPRUFw2EjOpl5eUN648jzH3xePnN522jECqBbhBjgyMmZ892cu7ZXEzmTbDsf+iC4fMLrmnVAtHKGbFdL5dCT88jPnaO0KCykfr+/LGownoaeivVDc0n64BbTWzWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org; spf=none smtp.mailfrom=yoseli.org; dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b=N3ge/7JN; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yoseli.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PnB1hhJd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1718887604; x=1750423604;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eaqYx0tP7xE/NKkuA/s0zoqf+t488PDvb5zZwZQtox0=;
-  b=PnB1hhJdV7w2U1PpH3FAa+0a8UT6s8Ae1zOrtJ9Y76PKcfLbBniVtZzu
-   ammVgYieepp8VTY7NRI8Nw5mUfD0ERzmMaRXNLMWV0uj7yZC/BvEtC6fH
-   5OMGMpzHoSiBatxrDIa1V7GjIbF1EnLjk3bqmGSok2/7mFokVTTlROqIq
-   /biSapXIB/kpeqGr+H33hQHpOHTGaEC0KD+FTPHV+sKaDHsOmsqU4xWTv
-   RLJjRgQzkFJ7IGPA1KQOowRJ7+G3tW35nzE8huSV+ebuEREAPUZBUarmB
-   /5T/lnxP03T40K0tysxVSJxxgNIo6FUPaZFkbj1fFx2I8GUsd0VR95pgn
-   Q==;
-X-CSE-ConnectionGUID: egMwXlQkSZOHDvJ5u4Aswg==
-X-CSE-MsgGUID: GJDKnLGbR9GwaGXnqnLlDQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11108"; a="26985698"
-X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="26985698"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:43 -0700
-X-CSE-ConnectionGUID: bKrI8d5JQ1CaEc9iGsMd9Q==
-X-CSE-MsgGUID: K0oDnHn1T1msDYgNtXmxCg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,252,1712646000"; 
-   d="scan'208";a="42888798"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO tlindgre-MOBL1.intel.com) ([10.245.247.35])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2024 05:46:39 -0700
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org,
-	Tony Lindgren <tony.lindgren@linux.intel.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 4/4] serial: core: Add serial_base_match_and_update_preferred_console()
-Date: Thu, 20 Jun 2024 15:45:29 +0300
-Message-ID: <20240620124541.164931-5-tony.lindgren@linux.intel.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
-References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b="N3ge/7JN"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 5CF8AC0005;
+	Thu, 20 Jun 2024 16:30:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yoseli.org; s=gm1;
+	t=1718901003;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=2l9XFMSJOQ1iC3dqfs25C13h1WnTn5dSzlS6Cd2EIro=;
+	b=N3ge/7JNfmSYsW6DocjiuMOMTHbHu788Pha83GoMj3gkgwHeiFhoRn23TPlCR90NDnx49r
+	thz+PifKkQua3ctkKpqJPAjeblSD8zdXLA+6H5+OsMvQvKKZiyxJ9j8jx7CIjWGuAPWAfC
+	+1uTMsSatHjFV+fPF6zo7U+MudA+qLd/+w17FecS2e2ecAx0y2JblaewBEz5Du+NMP0156
+	2BH/3yrNDJ4zrmUwF6mKhRNrIUqSi0IL0+ldVpzE6FZ1sb3R2zrGiAnNnXHZVGRPtQYdIb
+	dNsGUF/d0p5e7O4utj4AvvuuDvW31TQn5SIR+2jGUudQmwIIY8Jt7mK6lCg7wg==
+From: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+Date: Thu, 20 Jun 2024 18:29:59 +0200
+Subject: [PATCH] tty: mcf: MCF54418 has 10 UARTS
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240620-upstream-uart-v1-1-a9d0d95fb19e@yoseli.org>
+X-B4-Tracking: v=1; b=H4sIAAZZdGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDMyMD3dKC4pKi1MRc3dLEohLdZPO0ZMM0c8tUCxMjJaCegqLUtMwKsHn
+ RsbW1AGJ1lAFfAAAA
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-m68k@lists.linux-m68k.org, 
+ Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1718901003; l=866;
+ i=jeanmichel.hautbois@yoseli.org; s=20240608; h=from:subject:message-id;
+ bh=/soEwOsXYvmwlCsfRcQRkZNG24EUSF5AHLtkwpy6oo8=;
+ b=8E2xpAF+BNXNfVh0F3kifXiRo74IpecD+sBXRHvwn1dp/g0246AwLeVdDP7rGuu/U5EWXuHXe
+ TSgsS9Y54aRAOYiwZo+9Oa1NlbqLBLfmQ2Q1i7F8zmut+3WEeY/i9dz
+X-Developer-Key: i=jeanmichel.hautbois@yoseli.org; a=ed25519;
+ pk=oMZuYhJzT0j5MI73RlNUVYaA8VdWpFR/Sao0JKz1D2I=
+X-GND-Sasl: jeanmichel.hautbois@yoseli.org
 
-Let's add serial_base_match_and_update_preferred_console() for consoles
-using DEVNAME:0.0 style naming.
+Most of the colfires have up to 5 UARTs but MCF54418 has up-to 10 !
+Change the maximum value authorized.
 
-The earlier approach to add it caused issues in the kernel command line
-ordering as we were calling __add_preferred_console() again for the
-deferred consoles.
-
-Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
+Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
 ---
- drivers/tty/serial/serial_base.h     | 16 ++++++++++++
- drivers/tty/serial/serial_base_bus.c | 37 ++++++++++++++++++++++++++++
- drivers/tty/serial/serial_core.c     |  4 +++
- 3 files changed, 57 insertions(+)
+ drivers/tty/serial/mcf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_base.h b/drivers/tty/serial/serial_base.h
-index b6c38d2edfd4..0d50db5b660b 100644
---- a/drivers/tty/serial/serial_base.h
-+++ b/drivers/tty/serial/serial_base.h
-@@ -49,3 +49,19 @@ void serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index b0604d6da025..58858dd352c5 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -462,7 +462,7 @@ static const struct uart_ops mcf_uart_ops = {
+ 	.verify_port	= mcf_verify_port,
+ };
  
- int serial_core_register_port(struct uart_driver *drv, struct uart_port *port);
- void serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port);
-+
-+#ifdef CONFIG_SERIAL_CORE_CONSOLE
-+
-+int serial_base_match_and_update_preferred_console(struct uart_driver *drv,
-+						   struct uart_port *port);
-+
-+#else
-+
-+static inline
-+int serial_base_match_and_update_preferred_console(struct uart_driver *drv,
-+						   struct uart_port *port)
-+{
-+	return 0;
-+}
-+
-+#endif
-diff --git a/drivers/tty/serial/serial_base_bus.c b/drivers/tty/serial/serial_base_bus.c
-index 4df2a4b10445..d822499ba9d6 100644
---- a/drivers/tty/serial/serial_base_bus.c
-+++ b/drivers/tty/serial/serial_base_bus.c
-@@ -8,6 +8,7 @@
-  * The serial core bus manages the serial core controller instances.
-  */
+-static struct mcf_uart mcf_ports[4];
++static struct mcf_uart mcf_ports[10];
  
-+#include <linux/cleanup.h>
- #include <linux/container_of.h>
- #include <linux/device.h>
- #include <linux/idr.h>
-@@ -204,6 +205,42 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
- 	put_device(&port_dev->dev);
- }
+ #define	MCF_MAXPORTS	ARRAY_SIZE(mcf_ports)
  
-+#ifdef CONFIG_SERIAL_CORE_CONSOLE
-+
-+/**
-+ * serial_base_match_and_update_preferred_console - Match and update a preferred console
-+ * @drv: Serial port device driver
-+ * @port: Serial port instance
-+ *
-+ * Tries to match and update the preferred console for a serial port for
-+ * the kernel command line option console=DEVNAME:0.0.
-+ *
-+ * Cannot be called early for ISA ports, depends on struct device.
-+ *
-+ * Return: 0 on success, negative error code on failure.
-+ */
-+int serial_base_match_and_update_preferred_console(struct uart_driver *drv,
-+						   struct uart_port *port)
-+{
-+	const char *port_match __free(kfree) = NULL;
-+	int ret;
-+
-+	port_match = kasprintf(GFP_KERNEL, "%s:%d.%d", dev_name(port->dev),
-+			       port->ctrl_id, port->port_id);
-+	if (!port_match)
-+		return -ENOMEM;
-+
-+	ret = match_devname_and_update_preferred_console(port_match,
-+							 drv->dev_name,
-+							 port->line);
-+	if (ret == -ENOENT)
-+		return 0;
-+
-+	return ret;
-+}
-+
-+#endif
-+
- static int serial_base_init(void)
- {
- 	int ret;
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2a8006e3d687..9a18d0b95a41 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3422,6 +3422,10 @@ int serial_core_register_port(struct uart_driver *drv, struct uart_port *port)
- 	if (ret)
- 		goto err_unregister_ctrl_dev;
- 
-+	ret = serial_base_match_and_update_preferred_console(drv, port);
-+	if (ret)
-+		goto err_unregister_port_dev;
-+
- 	ret = serial_core_add_one_port(drv, port);
- 	if (ret)
- 		goto err_unregister_port_dev;
+
+---
+base-commit: e5b3efbe1ab1793bb49ae07d56d0973267e65112
+change-id: 20240620-upstream-uart-c7fc1f79e842
+
+Best regards,
 -- 
-2.45.2
+Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
 
