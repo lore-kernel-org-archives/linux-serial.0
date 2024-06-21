@@ -1,57 +1,57 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C95B3838A
-	for <linux-serial@vger.kernel.org>; Fri, 21 Jun 2024 12:15:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27813152E0A
+	for <linux-serial@vger.kernel.org>; Fri, 21 Jun 2024 12:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718972124; cv=none; b=KdjtMLF3hvhlicZHkcMm/4Pl/DOTIls2scjYrQi8PxchrQPdjAFgDP+WMu5jRPt6INKCagDQ5GPY0lMJt1hgJz5fjJIO0Zjpn7yD+xtbe4FbOvpiHuorRmSYDoUSCeBXpmp1Sheyp2+614B+aTuKKHAByKI7WiHMpt4jX79Qr/g=
+	t=1718973461; cv=none; b=O3E3Lu+sLbKSiGzUZJC6Q1xs+doFsY7xXRS/5nURxOuNUodJMTi6Ho2MWNHl3e6cWJES4+tgpEeBGgYa4J6illKuJseF7owGd/9GwOuwg1LnXxEyQyaOMFOJORpdIuv/Fp/wVFaLvTxz1Off5NX2R8ombY++RZxCGaWOhXL0xT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718972124; c=relaxed/simple;
-	bh=Ul4UPYH/+TY+vUx++IuWcHjMYpRIIfVR+t0N7A/0g94=;
+	s=arc-20240116; t=1718973461; c=relaxed/simple;
+	bh=ucGBNSY5cLhxSCcr2l1oye2DVnHmbbMRC+prxXPLvqM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dbQrH8VYwrb2GVA4ZKyEguz7hSnOm7NgOZkmtxc2E8PKysdlawFjP93AK4TcthHb9SC9b2j2GzHpvOMhhXfN9LpeD48WRkOiMZ9iBsx12O/mbWdi6q3OHcFVrZ7MUo0uZ3zFeEejvJqd4BZLGqpgaP+RDnN9IpvwfAmJe1j+9B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=br6XBrqI; arc=none smtp.client-ip=209.85.208.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=iMrFsM50Ubx6qvktrsPrIhNDAZfcSy0+WeM1Gc4LvvdH40ecJaH5LxvuK2qmd2dTc7aoV0L8cqckWzJOZ/tofvLA2tJW0LWG0Es1KJ0dknYeis9LtEEM+GCm9mWfieM+mFc7ZjrYKj0UtTtXsCMCusQWFoq8EJomJCdV1u85YKM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WSv578Hi; arc=none smtp.client-ip=209.85.208.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="br6XBrqI"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2eaae2a6dc1so36797451fa.0
-        for <linux-serial@vger.kernel.org>; Fri, 21 Jun 2024 05:15:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WSv578Hi"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2ec52fbb50aso257041fa.3
+        for <linux-serial@vger.kernel.org>; Fri, 21 Jun 2024 05:37:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1718972119; x=1719576919; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1718973456; x=1719578256; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6xH4TjJ1vLeO7hvhqxB1jVAlRByyOLroRcKk1YzxwLQ=;
-        b=br6XBrqIgFKrlXfFCWa2cyRVqNBbxtwrzvbhZV77Z35bkJ+YKAfa1UVKxThHs64KR1
-         9CplcFrFXuDWqr9a4OLgzEM3cdMG2ougs9IcO2kpj4WFYDyC+QqTK0DesC8RV5yw3/7v
-         Tmtf6xcS2IUWLsrPVornHpkRb4zjwdtFprb2vbmAQxzJ97rHrbOaxR2YmrLLAro9NWJ4
-         CgEqspfaUx71anH5H6mtVSJ0oAdDZ02kOgUY46PBJT2CNOG7guU37g+3r8xHM+nLv/Ut
-         HO9J48O6qMuzoK8yFxMdK1UphQIeHikgWgMwURtZVa3dJ+A0KoXQ1MtKjdL/KZ6502Qw
-         6/gg==
+        bh=vQ7xhLx/NPL19GrCC3b6EYi+DH6zLU+tizNYvDxMgL8=;
+        b=WSv578HiSF0b53guJrBEkcLuZ843Q0dN/wlSS0b2UhvK+vq7fZDFZm7VyKtYEjuGiG
+         YLKNyQDE+bp519WDdadQb5Zg70+5R+t8+HqGmNGgUUdI6xv7pmS18JJIdBDTvzjwutxW
+         j9DA9uS++tbOwkcdLvbW6eAsZuCJ+YkF3OPQRG6XCnjFMIp5qwmGkVwThycGvSFlb5wV
+         BiJlQJCwwLlUG3LaomYiURS4hzIB3EcbLJZoj8J4PzhpTitk0hqPEdSBpKEgEWmBg0fh
+         Qf2zX71w0OX9Y2IIULhnwVIHzaasIV5hoWOmc1ZNwlI14WaR4jbGLVgLGcTOSfH6TfK7
+         P0pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718972119; x=1719576919;
+        d=1e100.net; s=20230601; t=1718973456; x=1719578256;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6xH4TjJ1vLeO7hvhqxB1jVAlRByyOLroRcKk1YzxwLQ=;
-        b=MXvc1iqp+Dpsq9fFQ9UCklBFVY7+xDxpG0wHKkH78tnUdFJQ8LI/yaK+DsULeZlycE
-         h+Mg3astoQVNZPjTg9hRWeVndJSLt3Ft2td3ZhA4iFXXp7/dhjf5mzsZWAV3mulhW5UQ
-         Ojj4Ufk+axPDE05PlPmiUql107Ql/EDyQ8FKT0ESeXafP4kFx/SCb5WwiH+6FBqJDY8D
-         dpn2Stzr2Xf2BXQkbed/pcesHcbImsjcPNckCH19qEbhoGxTQLKKEnqfccDGbhEaSFZv
-         KrfJy7V/UMzsqwOwDZlQTBXtQLzklKaMxuhFkdZL7kJ5uUNVCNKVBvYRRN1AMWcHN3hm
-         MMVQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVuGYzzuQcEFGNJB9LK3ra/oSDVDNgKX5laTs1lPk0kgn9zmfGSw/PpJ8UOC2+16NSWpACLzgZ57sUteOTt+Qwq6D04kHqUiFK+05gw
-X-Gm-Message-State: AOJu0Yyv4pBLu7lAwjs28zIyU68iD9Mj+7KGOjvC5/NP0DfZKq9fY8qg
-	EVwAfVaOTlKF/zjT4ebmXdKu1Y6L0b1YI2iUsQhKY0rvJMkWtfPYS+r7W3s+lVw=
-X-Google-Smtp-Source: AGHT+IGTk3TufthfvrmTzsIzthh/R+FGLBg4ydeD9dSFSJdwe3KkpatXVXYn3/PLrKsUx4xzR+4XkQ==
-X-Received: by 2002:a2e:7c10:0:b0:2ea:e1fe:2059 with SMTP id 38308e7fff4ca-2ec3ced180emr63245121fa.27.1718972119493;
-        Fri, 21 Jun 2024 05:15:19 -0700 (PDT)
+        bh=vQ7xhLx/NPL19GrCC3b6EYi+DH6zLU+tizNYvDxMgL8=;
+        b=UHdDiBbpNwedjRUVdzNaX8pGCX2LOQE+pJhg5rtcpM+RvA9JOSt6vR406MXOcE4xZ8
+         +0VhdpQNoGmHmNnovw3P5orJoKsbDXKG5q5oxCXk4UKq0NaxIAW0NrC1+JIivIhKPRTT
+         9PQtrTTSdYiA/GMi+HCKH7drMR7BBKSSEA5zv3WANLu0dUY9tLD7RJm3hNpfywEhKrka
+         /xS9NIjVTzInbUF7C3AEcSC7s8G6tRffBwK7Y0Dd8CYuS4f7Zs1LypwaBO16clg2yICU
+         J/qHgBhIUQKHQYv7xO2Isyes4pSMp9iMXhdud6j32s7JJgx6q3nPmGs6BWLZNpNrF8sV
+         IzOw==
+X-Forwarded-Encrypted: i=1; AJvYcCXrsLrFSPJu/JegLOMQghKKOrjJIz3RCA/KnqPwf/VrucpjJAL9jDkfaquoWyCGJdn6hiSmTQU275Ke8oB/sJVjyqWIXt6OKixeuycU
+X-Gm-Message-State: AOJu0YzBbkZzaTNImz3tL0Z3PsgrJztm8eOsXJs16RFqK8IDkM4uyZ4m
+	Kr0WNmHlR4Pp+eokgr0f06yFF/zwYbYTMVXvL1H97XqWcXAaCqBFLo+hMP82Ye8=
+X-Google-Smtp-Source: AGHT+IHWhMY+R5rYPYKLHQgcL7L8rEMwsrZbeOOm0QIpCgEhM5DPDA6TIdgrpLdPY4KDJY5mbC2Y6Q==
+X-Received: by 2002:a2e:2e0c:0:b0:2eb:fe31:cae6 with SMTP id 38308e7fff4ca-2ec3cee126dmr64557801fa.37.1718973456371;
+        Fri, 21 Jun 2024 05:37:36 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f9eb321c24sm12834335ad.97.2024.06.21.05.15.14
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7065107b5c8sm1296692b3a.6.2024.06.21.05.37.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jun 2024 05:15:18 -0700 (PDT)
-Date: Fri, 21 Jun 2024 14:15:09 +0200
+        Fri, 21 Jun 2024 05:37:35 -0700 (PDT)
+Date: Fri, 21 Jun 2024 14:37:27 +0200
 From: Petr Mladek <pmladek@suse.com>
 To: Tony Lindgren <tony.lindgren@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -59,15 +59,15 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Tony Lindgren <tony@atomide.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
 	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] serial: core: Revert unusable console quirk
- handling
-Message-ID: <ZnVuzXMqoH_HLdhB@pathway.suse.cz>
+Subject: Re: [PATCH v4 4/4] serial: core: Add
+ serial_base_match_and_update_preferred_console()
+Message-ID: <ZnV0B4wakVehASn4@pathway.suse.cz>
 References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
- <20240620124541.164931-4-tony.lindgren@linux.intel.com>
+ <20240620124541.164931-5-tony.lindgren@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,37 +76,103 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240620124541.164931-4-tony.lindgren@linux.intel.com>
+In-Reply-To: <20240620124541.164931-5-tony.lindgren@linux.intel.com>
 
-On Thu 2024-06-20 15:45:28, Tony Lindgren wrote:
-> There is no point of trying to handle the console quirks in the serial
-> core instead of console_setup() currently.
+On Thu 2024-06-20 15:45:29, Tony Lindgren wrote:
+> Let's add serial_base_match_and_update_preferred_console() for consoles
+> using DEVNAME:0.0 style naming.
 > 
-> With the console_setup() related changes, we are now deferring the
-> DEVNAME:0.0 style consoles based on the ":" naming only. So the serial
-> core console quirk handling would not do anything for the "ttyS" named
-> consoles as they are not deferred.
+> The earlier approach to add it caused issues in the kernel command line
+> ordering as we were calling __add_preferred_console() again for the
+> deferred consoles.
 > 
-> Also the earlier approach would have depended on further changes to be
-> able to drop the serial port quirk handling from console_setup().
-> 
-> Let's revert the following console quirk handling related serial core
-> commits:
-> 
-> b20172ca6bf4 ("serial: core: Fix ifdef for serial base console functions")
-> 4547cd76f08a ("serial: 8250: Fix add preferred console for serial8250_isa_init_ports()")
-> a8b04cfe7dad ("serial: 8250: Add preferred console in serial8250_isa_init_ports()")
-> a0f32e2dd998 ("serial: core: Handle serial console options")
-> 787a1cabac01 ("serial: core: Add support for DEVNAME:0.0 style naming for kernel console")
-> 
-> Once the console quirk handling is gone, we add back the DEVNAME:0.0
-> functionality with a minimal patch.
-> 
-> Suggested-by: Petr Mladek <pmladek@suse.com>
-> Link: https://lore.kernel.org/linux-serial/ZnGQ8JAu2OQf0GX8@pathway.suse.cz/
 > Signed-off-by: Tony Lindgren <tony.lindgren@linux.intel.com>
 
+Looks good and seems to work well:
+
 Reviewed-by: Petr Mladek <pmladek@suse.com>
+Tested-by: Petr Mladek <pmladek@suse.com>
+
+See an idea below.
+
+> --- a/drivers/tty/serial/serial_base_bus.c
+> +++ b/drivers/tty/serial/serial_base_bus.c
+> @@ -204,6 +205,42 @@ void serial_base_port_device_remove(struct serial_port_device *port_dev)
+>  	put_device(&port_dev->dev);
+>  }
+>  
+> +#ifdef CONFIG_SERIAL_CORE_CONSOLE
+> +
+> +/**
+> + * serial_base_match_and_update_preferred_console - Match and update a preferred console
+> + * @drv: Serial port device driver
+> + * @port: Serial port instance
+> + *
+> + * Tries to match and update the preferred console for a serial port for
+> + * the kernel command line option console=DEVNAME:0.0.
+> + *
+> + * Cannot be called early for ISA ports, depends on struct device.
+> + *
+> + * Return: 0 on success, negative error code on failure.
+> + */
+> +int serial_base_match_and_update_preferred_console(struct uart_driver *drv,
+> +						   struct uart_port *port)
+> +{
+> +	const char *port_match __free(kfree) = NULL;
+> +	int ret;
+> +
+> +	port_match = kasprintf(GFP_KERNEL, "%s:%d.%d", dev_name(port->dev),
+> +			       port->ctrl_id, port->port_id);
+> +	if (!port_match)
+> +		return -ENOMEM;
+
+The name is going to be compared with:
+
+struct console_cmdline
+{
+[...]
+	char	devname[32];			/* DEVNAME:0.0 style device name */
+
+It looks like an overkill to allocate such a small buffer. It would
+be perfectly fine to use a buffer on stack.
+
+Well, we would need to define somewhere (likely in include/linux/console.h):
+
+#define CONSOLE_DEVNAME_LEN 32
+
+and then do
+
+	char port_match[CONSOLE_DEVNAME_LEN];
+	int len;
+
+	len = snprintf(port_match, ARRAY_SIZE(port_match), "%s:%d.%d",
+		       dev_name(port->dev), port->ctrl_id, port->port_id);
+	if (len >= ARRAY_SIZE(port_match)) {
+		pr_warn("Console devname does not fit into the buffer: "%s:%d.%d\n",
+			 dev_name(port->dev), port->ctrl_id, port->port_id);
+		return -ENOMEM;
+	}
+
+The advantage is that it would warn when there are longer device names.
+It would help to catch situations when CONSOLE_DEVNAME_LEN is not big enough.
+
+It might be done in a separate patch.
+
+> +
+> +	ret = match_devname_and_update_preferred_console(port_match,
+> +							 drv->dev_name,
+> +							 port->line);
+> +	if (ret == -ENOENT)
+> +		return 0;
+> +
+> +	return ret;
+> +}
+> +
+> +#endif
+> +
+>  static int serial_base_init(void)
+>  {
+>  	int ret;
 
 Best Regards,
 Petr
