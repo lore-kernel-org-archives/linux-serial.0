@@ -1,107 +1,243 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 699A213777F;
-	Thu, 20 Jun 2024 23:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C3EDB642
+	for <linux-serial@vger.kernel.org>; Fri, 21 Jun 2024 01:08:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718925238; cv=none; b=cJHSvzpchC8+Z2TDOTyt9InAvYmaMWiHFfXNgG6Onmq6ZQCpTQDYxyGZKOeeWmB9ASnxSYbWegc8BpJYMDSQ+ibzO/uDfZyIhl+Jo2tvtmyg9Uhqpb1G7T7MGLtkShOWawN3lfSUN17Jy26ZmWHBMHZzTVPcn0r3H68/YxKZ1Yw=
+	t=1718932082; cv=none; b=Qkny7Z7wS6thpki+6i0Iwl1B6oQzjWGFp4R0Ygyvei0iJ7w+5HxBc9EmVT1syoV+Ea4AFaddl5hRcOd16+SHUdql+sKlezha1Y+6TMN1UylRr5SD4mBG4ugqBveRh3XV6Jw1Ai/p6F6HIl4mQEpxM7lHhGNAd9L7tFgh3kbh/NA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718925238; c=relaxed/simple;
-	bh=9HzkK7C6QP0wU1bz0WqLU2lp3y7wTd1ilGjTm87GnD0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WXTrRRyHM79QtF8GI/gBtpkn7IibIH2akcLxYD8JxknXwbB+oZvEVwZW6XJtCw8JTxMzrqamz+qiJHQ/HM6iuwg5WVQv8WToYbM24IBnOy1bvDa6ss9vGZOeFlwZGmZhnnRibkR/AeBBmfKLz0+BmF1mopz7Tf4jzlDm4k6IYfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=hTvJBcuw; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1718932082; c=relaxed/simple;
+	bh=jalegPIbn+AP7VNc2KA+5u5x9/D9v5CerlM8o45H0lg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DHHg+l9D/wN5gWKEm+/RHNt9Kt6iAw7uAmOxIZARjPjfYnGnOT8XIfLxC14ol+94w3OKjkdonn3Fk0od7BNDzSWGLayvs4nMILGW33s9XFClVusnXixUwfjslRkx4PwmkBC7LT83Yycui94TsUnVpJ0eKlLFz5wV7zhF2UJhTtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GKgKb3v6; arc=none smtp.client-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="hTvJBcuw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1718925234;
-	bh=9HzkK7C6QP0wU1bz0WqLU2lp3y7wTd1ilGjTm87GnD0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hTvJBcuwQluvJb6oWZQw82YRvsdGMW08czC0IhEoBELreca39SSJrIS9dbUgnd+E/
-	 Ua3QHIXMFiXvuHOjsciB3C7Kk3QB5hQTfuuaS9JWgIqea2IbL826GqFS9QjBdTjOvx
-	 9Z9np1yOnjQCtKzptaVN4GQE7+nijeikrO6Y5pGLR+OosSszB2+uPUcTWwst/i6Mcw
-	 tsJNu1K9/sf8vz8blusGs9JJo7uJz6X3/UA89vfMk8IGIijuZTst4YdYRnGctEv4j8
-	 ooaf77QS7Wg3GoThF6tfrk/4ap/VMg82vtpuDam54f3xzeukKXd7y80PfGbwPEY0X5
-	 y71iPD8cArRvQ==
-Received: from notapiano (zone.collabora.co.uk [167.235.23.81])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: nfraprado)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 4F48B37820FA;
-	Thu, 20 Jun 2024 23:13:51 +0000 (UTC)
-Date: Thu, 20 Jun 2024 19:13:49 -0400
-From: =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-arm-msm@vger.kernel.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Rob Herring <robh@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
-	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: Re: [PATCH v4 0/8] serial: qcom-geni: Overhaul TX handling to fix
- crashes/hangs
-Message-ID: <46f57349-1217-4594-85b2-84fa3a365c0c@notapiano>
-References: <20240610222515.3023730-1-dianders@chromium.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GKgKb3v6"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-443586c2091so222801cf.0
+        for <linux-serial@vger.kernel.org>; Thu, 20 Jun 2024 18:08:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1718932079; x=1719536879; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RdQ0lVDvBBPg2VjlcnH8vb7UwZ7F+RAkB6K0VjIZf5A=;
+        b=GKgKb3v6B6ISt4BoB/ttcopvptm7hN+3kCw9GEOJcwVHdcQXCISLZ/pJt9JRQBh9rb
+         fvwzAubV20PeMAU2x4ezQ0cMwea6L7iFopb07NsOJ04eO+XVz17bFbsxgwbJdznvrgvf
+         PJ2pQFme920lIYBVzdpAaj+atV7D60RM4PccF6qZW1b4Gs9KlwCEYkdCaqNOc4+xc/T9
+         L8MxaWWWGRiN16tMLRmjgkCfhAKxIqBov8d9hY7FdMwJO8PYOOJsoGFi9eddBWq9/OEk
+         z49Q6L88q/CAZRYd82oTSrUxiN8hcWJ8S9p+hhfzQystt2i9lBCNLf7FzYk8KOBPTMkf
+         fpIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718932079; x=1719536879;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RdQ0lVDvBBPg2VjlcnH8vb7UwZ7F+RAkB6K0VjIZf5A=;
+        b=bmirk8rKBXhzp3lYdcXFUA0/ubuIQ5ANqjeqkjX7u8qYy95tkcsmhah4Ff170y3fua
+         s8DZ0O+iiUn7PQs0r2FgBdbDIz+P2485W/W3INPOuB/1ci0q7BmiMrN7aie45iCUVrbQ
+         lwqAqJ7K1e2e3JVZWx6QbO8L2iMCOhP/xswBiPMwyFLecpML/9y4CHL21WTY35zfufTy
+         BQZS4t0R2JTkiNBlBPX+TpN6sZprnnvT+oiLo4YSJHebHWFgvFqbOgCIteludzCNaxCF
+         j2rBGLQwXMXNs2Eg0gHkg5gOQvbYv4BoCweW7XjssZ2OjfFUBl9zgt+cv/lZBPV3x3dC
+         1e6A==
+X-Forwarded-Encrypted: i=1; AJvYcCXOL4g6Sc3w1HtQWFGn1FnAJ9AdBPlNp5+jQ0zhczUYCue7jYEUhl/mtP9siHQiqluycyssBNlOf8OQAbKnIq0vQ2EXgcLbH4TqP8eD
+X-Gm-Message-State: AOJu0Yw4p2VCkkevAP5ImjVwfZiINqfhlN4YdXPElmu8RwVcTDf+ICSL
+	WEwK8tDxTGrcGxldSd5bUCiDVp1ztosxQ78rlntyJ93/+GO1kcEBw8ezXravAdNrhqLFd+pKdE2
+	EygTLDKhaChGaq0Kdxw/1iZm/GP6/Y29Vn8rz
+X-Google-Smtp-Source: AGHT+IHNKO5qr2WTmG1Oxs7Fv63Gwg/dT8tseRKkrxi6AKbLZajjRe3K0QfYDRO/F5TDQy2urTyYGLj+kwmP0/ISKjY=
+X-Received: by 2002:ac8:57cf:0:b0:43f:fbb0:b74 with SMTP id
+ d75a77b69052e-444c362afdemr839581cf.29.1718932079140; Thu, 20 Jun 2024
+ 18:07:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240610222515.3023730-1-dianders@chromium.org>
+References: <cover.1716811405.git.geert+renesas@glider.be> <CAPDyKFpa4LZF3eN7x-NT+b9=dKB3Oe6RY8RAyetdRBSR1-LQoQ@mail.gmail.com>
+ <0a025885-ed95-45d3-bf76-d2a043baaed7@ideasonboard.com> <CAPDyKFrxUDhnUUfz5wHpGVQfNYssxoWO5Eb2wtmZMTcMYhEjxQ@mail.gmail.com>
+ <1bda8e8f-10df-4a10-a217-26cf50ef3577@ideasonboard.com>
+In-Reply-To: <1bda8e8f-10df-4a10-a217-26cf50ef3577@ideasonboard.com>
+From: Saravana Kannan <saravanak@google.com>
+Date: Thu, 20 Jun 2024 18:07:20 -0700
+Message-ID: <CAGETcx-T54w=x=gv524dUJtnRGmOiXFA2CRYHE5Pawbux8_Tig@mail.gmail.com>
+Subject: Re: [PATCH/RFC 0/3] pmdomain: renesas: rmobile-sysc: Remove serial
+ console handling
+To: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	"Rafael J . Wysocki" <rafael@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, Peng Fan <peng.fan@nxp.com>, 
+	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Devarsh Thakkar <devarsht@ti.com>, 
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 10, 2024 at 03:24:18PM -0700, Douglas Anderson wrote:
-> 
-> While trying to reproduce -EBUSY errors that our lab was getting in
-> suspend/resume testing, I ended up finding a whole pile of problems
-> with the Qualcomm GENI serial driver. I've posted a fix for the -EBUSY
-> issue separately [1]. This series is fixing all of the Qualcomm GENI
-> problems that I found.
-> 
-> As far as I can tell most of the problems have been in the Qualcomm
-> GENI serial driver since inception, but it can be noted that the
-> behavior got worse with the new kfifo changes. Previously when the OS
-> took data out of the circular queue we'd just spit stale data onto the
-> serial port. Now we'll hard lockup. :-P
-> 
-> I've tried to break this series up as much as possible to make it
-> easier to understand but the final patch is still a lot of change at
-> once. Hopefully it's OK.
-> 
-> [1] https://lore.kernel.org/r/20240530084841.v2.1.I2395e66cf70c6e67d774c56943825c289b9c13e4@changeid
+On Wed, Jun 5, 2024 at 4:16=E2=80=AFAM Tomi Valkeinen
+<tomi.valkeinen@ideasonboard.com> wrote:
+>
+> On 05/06/2024 13:53, Ulf Hansson wrote:
+> > On Wed, 5 Jun 2024 at 12:41, Tomi Valkeinen
+> > <tomi.valkeinen@ideasonboard.com> wrote:
+> >>
+> >> Hi Ulf,
+> >>
+> >> On 05/06/2024 12:34, Ulf Hansson wrote:
+> >>> + Tomi
+> >>>
+> >>> On Mon, 27 May 2024 at 14:41, Geert Uytterhoeven
+> >>> <geert+renesas@glider.be> wrote:
+> >>>>
+> >>>>           Hi all,
+> >>>>
+> >>>> Since commit a47cf07f60dcb02d ("serial: core: Call
+> >>>> device_set_awake_path() for console port"), the serial driver proper=
+ly
+> >>>> handles the case where the serial console is part of the awake path,=
+ and
+> >>>> it looked like we could start removing special serial console handli=
+ng
+> >>>> from PM Domain drivers like the R-Mobile SYSC PM Domain driver.
+> >>>> Unfortunately the devil is in the details, as usual...
+> >>>>
+> >>>> Earlycon relies on the serial port to be initialized by the firmware
+> >>>> and/or bootloader.  Linux is not aware of any hardware dependencies =
+that
+> >>>> must be met to keep the port working, and thus cannot guarantee they
+> >>>> stay met, until the full serial driver takes over.
+> >>>>
+> >>>> E.g. all unused clocks and unused PM Domains are disabled in a late
+> >>>> initcall.  As this happens after the full serial driver has taken ov=
+er,
+> >>>> the serial port's clock and/or PM Domain are no longer deemed unused=
+,
+> >>>> and this is typically not a problem.
+> >>>>
+> >>>> However, if the serial port's clock or PM Domain is shared with anot=
+her
+> >>>> device, and that other device is runtime-suspended before the full
+> >>>> serial driver has probed, the serial port's clock and/or PM Domain w=
+ill
+> >>>> be disabled inadvertently.  Any subsequent serial console output wil=
+l
+> >>>> cause a crash or system lock-up.  E.g. on R/SH-Mobile SoCs, the seri=
+al
+> >>>> ports share their PM Domain with several other I/O devices.  After t=
+he
+> >>>> use of pwm (Armadillo-800-EVA) or i2c (KZM-A9-GT) during early boot,
+> >>>> before the full serial driver takes over, the PM Domain containing t=
+he
+> >>>> early serial port is powered down, causing a lock-up when booted wit=
+h
+> >>>> "earlycon".
+> >>>
+> >>> Hi Geert,
+> >>>
+> >>> Thanks for the detailed description of the problem! As pointed out in
+> >>> regards to another similar recent patch [1], this is indeed a generic
+> >>> problem, not limited to the serial console handling.
+> >>>
+> >>> At Linaro Connect a few weeks ago I followed up with Saravana from th=
+e
+> >>> earlier discussions at LPC last fall. We now have a generic solution
+> >>> for genpd drafted on plain paper, based on fw_devlink and the
+> >>> ->sync_state() callback. I am currently working on the genpd series,
+> >>> while Saravana will re-spin the series (can't find the link to the
+> >>> last version) for the clock framework. Ideally, we want these things
+> >>> to work in a very similar way.
+> >>>
+> >>> That said, allow me to post the series for genpd in a week or two to
+> >>> see if it can solve your problem too, for the serial console.
+> >>
+> >> Both the genpd and the clock solutions will make suppliers depend on a=
+ll
+> >> their consumers to be probed, right?
+> >>
+> >> I think it is a solution, and should be worked on, but it has the
+> >> drawback that suppliers that have consumers that will possibly never b=
+e
+> >> probed, will also never be able to turn off unused resources.
+> >>
+> >> This was specifically the case with the TI ti-sci pmdomain case I was
+> >> looking at: the genpd driver (ti_sci_pm_domains.c) provides a lot of
+> >> genpds for totally unrelated devices, and so if, e.g., you don't have =
+or
+> >> don't want to load a driver for the GPU, all PDs are affected.
+> >>
+> >> Even here the solutions you mention will help: instead of things getti=
+ng
+> >> broken because genpds get turned off while they are actually in use, t=
+he
+> >> genpds will be kept enabled, thus fixing the breakage. Unfortunately,
+> >> they'll be kept enabled forever.
+> >>
+> >> I've been ill for quite a while so I haven't had the chance to look at
+> >> this more, but before that I was hacking around a bit with something I
+> >> named .partial_sync_state(). .sync_state() gets called when all the
+> >> consumers have probed, but .partial_sync_state() gets called when _a_
+> >> consumer has been probed.
+> >>
+> >> For the .sync_state() things are easy for the driver, as it knows
+> >> everything related has been probed, but for .partial_sync_state() the
+> >> driver needs to track resources internally. .partial_sync_state() will
+> >> tell the driver that a consumer device has probed, the driver can then
+> >> find out which specific resources (genpds in my case) that consumer
+> >> refers to, and then... Well, that's how far I got with my hacks =3D).
+> >>
+> >> So, I don't know if this .partial_sync_state() can even work, but I
+> >> think we do need something more on top of the .sync_state().
+> >
+> > Thanks for the update!
+> >
+> > You certainly have a point, but rather than implementing some platform
+> > specific method, I think we should be able enforce the call to
+> > ->sync_state(), based upon some condition/timeout - and even if all
+> > consumers haven't been probed.
+>
+> Hmm, I think that was already implemented in some of the serieses out
+> there (or even in mainline already?), as I remember doing some
+> experiments with it. I don't like it much, though.
+>
+> With a simple timeout, it'll always be just a bit too early for some
+> user (nfs mount took a bit more time than expected -> board frozen).
+>
+> The only condition I can see that would somewhat work is a manual
+> trigger from the userspace. The boot scripts could then signal the
+> kernel when all the modules have been loaded and probably a suitable,
+> platform/use case specific amount of time has passed to allow the
+> drivers to probe.
 
-Hi,
+This is also already supported in mainline.
 
-we've experienced issues with missing kernel messages in the serial on the
-sc7180 based platforms in our lab for a while now.
+Devices with sync_state() implementations (once Ulf adds it) will have
+a state_synced file in sysfs. It shows where it has been called yet or
+not. But you can also echo 1 into it to force the sync_state()
+callback (only if it hasn't been called already). So, yeah, all
+methods of handling this are available if you implement the
+sync_state() callback.
 
-I've just run a batch of jobs that just boot and write some messages to
-/dev/kmsg on sc7180-trogdor-lazor-limozeen. Before the patch, in 18 out of
-20 runs the first message would be missing in the logs causing the test to fail.
-After the patch all 20 runs passed. So this is a clear fix, and I'm very happy
-to say goodbye to this issue. Thank you!
+By default it's all strict (wait till all consumers probe
+successfully). But you can set it to timeout (fw_devlink.sync_state).
+And you also have the option I mentioned above that you can use with
+both cases.
 
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+-Saravana
 
-FTR, this is the issue ticket in KernelCI:
-https://github.com/kernelci/kernelci-project/issues/380
-
-Thanks,
-Nícolas
+>
+> It just feels a bit too much of a "let's hope this work" approach.
+>
+> That said, the timeout/condition is probably acceptable for many cases,
+> where turning off a resource forcefully will just result in, say, a
+> temporarily blanked display, or something else that gets fixed if and
+> when the proper driver is probed.
+>
+> Unfortunately, here with the case I have, the whole board gets halted if
+> the display subsystem genpd is turned off and the display driver is
+> loaded after that.
+>
+>   Tomi
+>
