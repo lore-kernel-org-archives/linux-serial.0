@@ -1,116 +1,120 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from vpsf.regnarg.cz (vpsf.regnarg.cz [37.205.8.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78B3C7581B;
-	Fri, 21 Jun 2024 15:38:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B7B63A27E
+	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 07:08:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.8.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718984329; cv=none; b=dfUol3TJ6kTij31cvzGEXG6PKjLbDgQ0ZO+hnGSyku3hGlEx3MZJH8wWXauBGaOlHyJf6L3o+OTDzfos3Npfcdzrlg7qFRnFMLyiHXiP1xGz3EV2yZIx1VQp+snx0qMlKpbsF0a3DuZVRxJxbWUwjN+hZpWt3yQl/T56Bi7/Kzg=
+	t=1719212939; cv=none; b=B/PwCMT4DQ4G/g+++XGM2JA/SBe7XyCXJ9gvhPLBJSPlVZoZ6emRTqMCapRoT9ssVAOPB1s2poR/WbtPz51MqhsocoIPUPAgXN60xznti1IoDC07amCWS4qSo61nrk0oM5yLCQSymPQTNr8VWkJEcvSrMKTjWn5qf80QsaqjVg0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718984329; c=relaxed/simple;
-	bh=kCl/MMZVsBt2uE6AgyIV3XMIFogLKH0WHMvLYmRV4mA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PCFZUqNL/g4aK0iI1hhjcr1R01e9T/W5xEdkqAxPY1UctuH9oB/1wEQkC28eJK2oXg0zlH3DCtcSw+eQt7Vb+mWRsbGK3/1x7sb0xUKej/qieXWQk/PMtEUEqBMxkGqP6PM1gAegxERhmxTEGzu3n65M5SweAxeXiNMhXj27OAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lqHrmq45; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lqHrmq45"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-421d32fda86so24259155e9.0;
-        Fri, 21 Jun 2024 08:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1718984326; x=1719589126; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=oOPm3vCa0hebn5PQU85PCCbT9jGBNVDgsMo+2JVto90=;
-        b=lqHrmq45B4vETz/kT0U9oG9X6u4iYu+zhv6rxU+we8G48zxFvuegh3dI2WoC0kBn6M
-         /raNL2o1xfIr1TegSCbug3HFsqaPfS/+ZyF8IZMmsq+tzZFGUIrJHF1dF97YSmACCnVh
-         NGDgoYFWXabQIZVW7R8Ha5+YWC9Ivc0v6aAv6zXE/k518aK1RZ6W9Pre5Kn+NxABPlB+
-         21aTO+t0OelV5/84eLbo1LRdFH+DV7pmcHOWZYBt4cmY2TZbUQTvKHQ9rXS7aRCipfyb
-         ipEAGjf2SNyHHBa16DhavySyYR2AGRBIuUeI6azKCYl9H+AeLpPFbNg2KJR9472hJnng
-         qOIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718984326; x=1719589126;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oOPm3vCa0hebn5PQU85PCCbT9jGBNVDgsMo+2JVto90=;
-        b=VD7tTelYcNSHMOrCQSVG/pd1euCweCUnZXOdEWw3As4+UR3arUg4G9+w3hJ3hfr0ui
-         oDM0M/F1w+S32QfTnMVuwsYLVPOzjn17mNbbwln0LyAxBZN/aCqdnX8r//KBL8yPXQCf
-         W/21teQJuIw7sbZhgW6WDVA3rT3Q4n5sc2k19xLjeYMOIPvNHBrXZPL8q/Pds9jsPIRg
-         IKF9zv3VNq8RFPVOemQ6nuSupi/W27SBynzBGbPikyXm3V+YAy+7YpD9svF9TNNJpEMF
-         sqbyYIgSkPfJ4q8ZBBS37U31QJX369Bwt/CONu77mcZgdp3R24GC5fmi5PzLkfc2lhiA
-         dkuw==
-X-Forwarded-Encrypted: i=1; AJvYcCVMLHOwajc85EOJjXJpHAufAqeX3Zu7ZVTkoleY199+FUJnHPMszbg+NpPiEvCnyhCMWC/ZPKS3cFuVNJm2u0EqL3LwvhhzEvTYK7dz
-X-Gm-Message-State: AOJu0Yy76uJ1p8vIF0Dt0Vvohfi5GldkY/EzEgEr+gLhyqDLL6tceUH3
-	ooqsjQ5sjvP8lBJUU5yhwdK6vMAu3IQE/spUlELVEXYE2Ic+q8DG
-X-Google-Smtp-Source: AGHT+IHuPmxHPN0gA69T7fWEolN/fR1P/BeIEUc2ajvI/YlolQuTbQvkvhMs5isoyekjPRiuDRSXow==
-X-Received: by 2002:a05:600c:314a:b0:424:82eb:7270 with SMTP id 5b1f17b1804b1-42482eb739dmr22422585e9.32.1718984325542;
-        Fri, 21 Jun 2024 08:38:45 -0700 (PDT)
-Received: from eichest-laptop.lan ([2a02:168:af72:0:b162:502a:9bd1:4c8b])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4247d21226asm69793115e9.47.2024.06.21.08.38.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jun 2024 08:38:45 -0700 (PDT)
-From: Stefan Eichenberger <eichest@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	shawnguo@kernel.org,
-	s.hauer@pengutronix.de,
-	kernel@pengutronix.de,
-	festevam@gmail.com,
-	l.sanfilippo@kunbus.com,
-	cniedermaier@dh-electronics.com,
-	john.ogness@linutronix.de,
-	esben@geanix.com,
-	rickaran@axis.com,
-	tglx@linutronix.de,
-	stefan@agner.ch,
-	francesco.dolcini@toradex.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Stefan Eichenberger <stefan.eichenberger@toradex.com>
-Subject: [PATCH v1] serial: imx: set receiver level before starting uart
-Date: Fri, 21 Jun 2024 17:37:49 +0200
-Message-ID: <20240621153829.183780-1-eichest@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1719212939; c=relaxed/simple;
+	bh=dHvT+Ckb4dYQhjSrkHJf3htGeUTsUbupYqX4YCPGO9Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=LrnwK2nv0QE0+Gkp0E2uVOizZ0lStqESviCimQMyKGAN5Fis8eVlHq/TTukIOnPMcSjur7As4qGc1dNV8nOY9jpkf+tSy8+4ri6JpyVCOAFlLK9jyNRoIdtCGUC+4bFY+2ChgidkURNPeiN/DEaKFAoAcB9VudHSbQQouRWxYIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=regnarg.cz; spf=pass smtp.mailfrom=regnarg.cz; arc=none smtp.client-ip=37.205.8.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=regnarg.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=regnarg.cz
+Received: by vpsf.regnarg.cz (Postfix, from userid 1001)
+	id BA3F396A4B; Mon, 24 Jun 2024 08:59:33 +0200 (CEST)
+Date: Mon, 24 Jun 2024 08:59:33 +0200
+From: Filip =?utf-8?B?xaB0xJtkcm9uc2vDvQ==?= <r.lkml@regnarg.cz>
+To: linux-serial@vger.kernel.org
+Cc: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Subject: DW UART EM485 broken because autoconfig resets UART_CAP_NOTEMT
+Message-ID: <x6mi5lvykjfzk7alvivuuefwc5ya5mykirtrmfcum4t5sgrqaj@icbl5wjgj2h6>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 
-From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Hi,
 
-Set the receiver level to something > 0 before calling imx_uart_start_rx
-in rs485_config. This is necessary to avoid an interrupt storm that
-might prevent the system from booting. This was seen on an i.MX7 device
-when the rs485-rts-active-low property was active in the device tree.
+it seems that the EM485 mode on Designware UART controller is broken.
+At the start of transmission, the RTS line is correctly asserted, but
+it never gets deasserted.
 
-Fixes: 6d215f83e5fc ("serial: imx: warn user when using unsupported configuration")
-Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
----
- drivers/tty/serial/imx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Checked this with a logic analyzer. See:
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 2eb22594960f3..f4f40c9373c2f 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1952,8 +1952,10 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+    https://regnarg.cz/tmp/em485_bad.sr (PulseView dump)
+    https://regnarg.cz/tmp/em485_bad.png
+
+The test system is FriendlyElec NanoPi Neo-LTS (Allwinner H3).
+For reference, the test userspace program I used:
+
+    https://regnarg.cz/tmp/485.c
+
+The mechanism seems to be this:
+
+- The DW UART driver sets UART_CAP_NOTEMT when creating the port
+  (8250_dwlib.c:dw8250_setup_port) to indicate that the controller
+  does not generate interrupt on emptying the shift register.
+
+- This should be then used in 8250_port.c:__stop_tx to use a timer
+  instead of an interrupt to trigger DE deassertion.
+
+- However, the port also goes through the 8250 autoconfig mechanism.
+  For my controller, dw8250_setup_port does _not_ set UPF_FIXED_TYPE,
+  so it tries to autodetect port type. As part of this, the
+  up->capabilities field is reset, dropping the UART_CAP_NOTEMT
+  (8250_port.c:autoconfig).
+    * On this particular controller, the Component Version Register
+      (DW_UART_UCV) returns zero, so the dw8250_setup_port function
+      returns after this block:
+
+          reg = dw8250_readl_ext(p, DW_UART_UCV);
+              return;
+
+- Without UART_CAP_NOTEMT, __stop_tx does not set up a timer and instead
+  leaves deasserting DE to an interrupt that never comes.
+
+If I hotfix autoconfig to preserve UART_CAP_NOTEMT, the
+EM485 functionality seems to work correctly:
+
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 893bc493f662..1c2d24074722 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1140,6 +1140,7 @@ static void autoconfig(struct uart_8250_port *up)
+ 	struct uart_port *port = &up->port;
+ 	unsigned long flags;
+ 	unsigned int old_capabilities;
++	unsigned int preserved_capabilities;
  
- 	/* Make sure Rx is enabled in case Tx is active with Rx disabled */
- 	if (!(rs485conf->flags & SER_RS485_ENABLED) ||
--	    rs485conf->flags & SER_RS485_RX_DURING_TX)
-+	    rs485conf->flags & SER_RS485_RX_DURING_TX) {
-+		imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
- 		imx_uart_start_rx(port);
-+	}
+ 	if (!port->iobase && !port->mapbase && !port->membase)
+ 		return;
+@@ -1155,7 +1156,8 @@ static void autoconfig(struct uart_8250_port *up)
+ 	 */
+ 	uart_port_lock_irqsave(port, &flags);
  
- 	return 0;
- }
--- 
-2.43.0
+-	up->capabilities = 0;
++	preserved_capabilities = up->capabilities & UART_CAP_NOTEMT;
++	up->capabilities = preserved_capabilities;
+ 	up->bugs = 0;
+ 
+ 	if (!(port->flags & UPF_BUGGY_UART)) {
+@@ -1266,7 +1268,7 @@ static void autoconfig(struct uart_8250_port *up)
+ 
+ 	port->fifosize = uart_config[up->port.type].fifo_size;
+ 	old_capabilities = up->capabilities;
+-	up->capabilities = uart_config[port->type].flags;
++	up->capabilities = uart_config[port->type].flags | preserved_capabilities;
+ 	up->tx_loadsz = uart_config[port->type].tx_loadsz;
+ 
+ 	if (port->type == PORT_UNKNOWN)
 
+And the result:
+
+    https://regnarg.cz/tmp/em485_good.sr (PulseView dump)
+    https://regnarg.cz/tmp/em485_good.png
+
+But I am not quite sure what the 'proper' fix is, as I am missing a lot
+of context regarding the relationship between DW UART, 8250 and the
+various port types.
+
+Filip Štědronský
