@@ -1,146 +1,84 @@
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E5242F24;
-	Mon, 24 Jun 2024 16:46:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37522F24;
+	Mon, 24 Jun 2024 16:54:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719247608; cv=none; b=MsWimIeHNgLauxYKZUj+gyRv0Za059jUFkrYmnEqLUj0/bwkZBL1N5teWJQaXmFu7iWbwuT1gZ2mSDDSwiyTHo45jZUWlCY4AheQgcaC1+Y+4yuVtPB29Bb6kMUnQ0EVrzX8mNt0Llxj+eex88N7vxrZVOLxKxwuZ+CY1T79l6c=
+	t=1719248093; cv=none; b=fmsoEKJ+hBvz30rrOqN7dbK19Jp8MkCgJ6wloVeQJhdRmzbLa+hFaNBJ+tTciiBLPfPQC9lEMESHbRgVDSdg9psHUQhc9EaUBGSwhx6D0UPvPHVJSrFP8Xt0qkDlS7zl/bdiy0y+HyHXtbfHnJPL9ctIYC5G1dBo7PmfTWeOEJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719247608; c=relaxed/simple;
-	bh=Z0KOoAgihY9+2olzC1EakZj1hVSDqO9ADCzWhcqulHw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=oPruGRN1FyqVklvuTcsJQ+z8yYEDxsldPbua+zR5uEHEcl4XjASJ8lNjv+3aWWsCLPgNdNTYaf4QvCHTKXu+cXtp/1Eps0WywBxNMcxJF4bsO9eErB0mkJHWGRhaJxyOAKnVceoF/y/fbGA7IufpupdQfK6yM8sMNCuTC5v9sYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=fZB2jBe1; arc=none smtp.client-ip=198.47.19.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1719248093; c=relaxed/simple;
+	bh=Uwv+K0RBgShdFEgwsCqjkVywOnyT8K9fp50gjDKdzSM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WSX7E/c5O+mHLLXZzxXhJYV9dbuwWBs86fxwlgelGGM8bYyeQdxDIq3kXSqs0F9+Ji+oAOeeHWJNbOLXK8bawfFWDPmzDvNNS01p/SZYxvc+pZA/6l5Bzk4E/uHFtfS5QEwgvqtD2094qfYYveF9/uz1F4rdtU8rtgLKfPx4MTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fzfZLeE7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="fZB2jBe1"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45OGkIgZ099626;
-	Mon, 24 Jun 2024 11:46:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1719247578;
-	bh=ftKRQUamjpJWDefpfpwbKp7EZqAIxw/kXhR8Z/Mx5zs=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=fZB2jBe1GUWTGU75xB7pLY7UhFEn3HYvewkq5kyAi+/eEvYDBMponWXnJxO/O5NID
-	 Go4QUK0V6VnoC9bUYlmqUncnOtuqIQ9c6zT4e/3TtUbiA7xykxUhK/XcpjTikJibDk
-	 Gv8OdQKX2Uno445OwA1TIGcD5DpXTey4CgQLBSlk=
-Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45OGkInC079934
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 24 Jun 2024 11:46:18 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE104.ent.ti.com
- (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 24
- Jun 2024 11:46:18 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 24 Jun 2024 11:46:18 -0500
-Received: from [10.249.142.56] ([10.249.142.56])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45OGkEin083808;
-	Mon, 24 Jun 2024 11:46:15 -0500
-Message-ID: <e96d0c55-0b12-4cbf-9d23-48963543de49@ti.com>
-Date: Mon, 24 Jun 2024 22:16:13 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fzfZLeE7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188AEC2BBFC;
+	Mon, 24 Jun 2024 16:54:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719248093;
+	bh=Uwv+K0RBgShdFEgwsCqjkVywOnyT8K9fp50gjDKdzSM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fzfZLeE74prGw8oCXjR5/rO1KjhmsGoc9161nfGRNSbcvYsMdPHOfZKTwHeqHX9Yh
+	 3JatS+dLKc9d4qecawuIGwKbC8NtSegb90VteEJf/B5AtLQ0mIDoCrhC7+hItOtDfr
+	 lC7CHLnkFKq0SyuZ1AoDAEhxF23ZbMfRXo2+QcYVFOJIBAr8X7cMR/rjsuSdrCVG54
+	 CpRIrwVZS2eIonaEphM9fE7qF/w//pazAU+9OfE27fA1U091NNzVhvxyP+DIJVoDkJ
+	 QBhuOvoMqo3eyNPhoD5ogN34E5p+w6QIfWy/1rmgeSaN6rqdaXzP+O/sIiWsxtiJy9
+	 iX0mWI909Cy6g==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan@kernel.org>)
+	id 1sLmy2-0000000038V-2H1o;
+	Mon, 24 Jun 2024 18:54:59 +0200
+Date: Mon, 24 Jun 2024 18:54:58 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	linux-arm-msm@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v4 7/8] serial: qcom-geni: Fix suspend while active UART
+ xfer
+Message-ID: <Znmk4oYapM9EQH37@hovoldconsulting.com>
+References: <20240610222515.3023730-1-dianders@chromium.org>
+ <20240610152420.v4.7.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid>
+ <ZnlilDj5UrvrVasv@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3] serial: 8250_omap: Implementation of Errata i2310
-To: Udit Kumar <u-kumar1@ti.com>, <nm@ti.com>, <tony@atomide.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
-        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
-        <stable@vger.kernel.org>
-References: <20240619105903.165434-1-u-kumar1@ti.com>
-From: "Raghavendra, Vignesh" <vigneshr@ti.com>
-Content-Language: en-US
-In-Reply-To: <20240619105903.165434-1-u-kumar1@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZnlilDj5UrvrVasv@hovoldconsulting.com>
 
+On Mon, Jun 24, 2024 at 02:12:04PM +0200, Johan Hovold wrote:
 
+> I've prepared a minimal three patch series which fixes most of the
+> discussed issues (hard and soft lockup and garbage characters) and that
+> should be backportable as well.
+> 
+> Currently, the diffstat is just:
+> 
+> 	 drivers/tty/serial/qcom_geni_serial.c | 36 +++++++++++++++++++++++++-----------
+> 	 1 file changed, 25 insertions(+), 11 deletions(-)
+> 
+> Fixing the hard lockup 6.10-rc1 regression is just a single line.
 
-On 6/19/2024 4:29 PM, Udit Kumar wrote:
-> As per Errata i2310[0], Erroneous timeout can be triggered,
-> if this Erroneous interrupt is not cleared then it may leads
-> to storm of interrupts, therefore apply Errata i2310 solution.
-> 
-> [0] https://www.ti.com/lit/pdf/sprz536 page 23
-> 
-> Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
-> ---
-> Change logs
-> Changes in v3:
-> - CC stable in commit message
-> Link to v2:
-> https://lore.kernel.org/all/20240617052253.2188140-1-u-kumar1@ti.com/
-> 
-> Changes in v2:
-> - Added Fixes Tag and typo correction in commit message
-> - Corrected bit position to UART_OMAP_EFR2_TIMEOUT_BEHAVE
-> Link to v1
-> https://lore.kernel.org/all/20240614061314.290840-1-u-kumar1@ti.com/
-> 
->  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
->  1 file changed, 20 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 170639d12b2a..ddac0a13cf84 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -115,6 +115,10 @@
->  /* RX FIFO occupancy indicator */
->  #define UART_OMAP_RX_LVL		0x19
->  
-> +/* Timeout low and High */
-> +#define UART_OMAP_TO_L                 0x26
-> +#define UART_OMAP_TO_H                 0x27
-> +
->  /*
->   * Copy of the genpd flags for the console.
->   * Only used if console suspend is disabled
-> @@ -663,13 +667,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
->  
->  	/*
->  	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
-> -	 * FIFO has been drained, in which case a dummy read of RX FIFO
-> -	 * is required to clear RX TIMEOUT condition.
-> +	 * FIFO has been drained or erroneously.
-> +	 * So apply solution of Errata i2310 as mentioned in
-> +	 * https://www.ti.com/lit/pdf/sprz536
->  	 */
->  	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
-> -	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-> -	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
-> -		serial_port_in(port, UART_RX);
-> +		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
+For the record, I've posted the series here:
 
-This still doesn't match the errata workaround described in the above
-doc. Need a check for RX FIFO LVL to be empty (like before). Else we end
-up applying workaround on every timeout (including those that are not
-spurious) which is undesirable in the IRQ hotpath.
-
-> +		unsigned char efr2, timeout_h, timeout_l;
-> +
-> +		efr2 = serial_in(up, UART_OMAP_EFR2);
-> +		timeout_h = serial_in(up, UART_OMAP_TO_H);
-> +		timeout_l = serial_in(up, UART_OMAP_TO_L);
-> +		serial_out(up, UART_OMAP_TO_H, 0xFF);
-> +		serial_out(up, UART_OMAP_TO_L, 0xFF);
-> +		serial_out(up, UART_OMAP_EFR2, UART_OMAP_EFR2_TIMEOUT_BEHAVE);
-> +		serial_in(up, UART_IIR);
-> +		serial_out(up, UART_OMAP_EFR2, efr2);
-> +		serial_out(up, UART_OMAP_TO_H, timeout_h);
-> +		serial_out(up, UART_OMAP_TO_L, timeout_l);
->  	}
->  
->  	/* Stop processing interrupts on input overrun */
+	https://lore.kernel.org/lkml/20240624133135.7445-1-johan+linaro@kernel.org/
+ 
+Johan
