@@ -1,64 +1,146 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6ED113A86A;
-	Mon, 24 Jun 2024 13:37:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E5242F24;
+	Mon, 24 Jun 2024 16:46:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719236253; cv=none; b=ZJBAJGU6InyS47mO0cKcniVwrmuRubC6tzueCdXba1egBecQLafjUaB2VOgwvxjtMUAk/fAtuaKrNJo7QLA1T4mnyRXOHyKnuPJxQo4g6OMIE/sh7ErKQYdw6DBp4WrewCjn+8B2Donky/0yCF7UK2sD+2YMZos10AIxLVQ9Ulc=
+	t=1719247608; cv=none; b=MsWimIeHNgLauxYKZUj+gyRv0Za059jUFkrYmnEqLUj0/bwkZBL1N5teWJQaXmFu7iWbwuT1gZ2mSDDSwiyTHo45jZUWlCY4AheQgcaC1+Y+4yuVtPB29Bb6kMUnQ0EVrzX8mNt0Llxj+eex88N7vxrZVOLxKxwuZ+CY1T79l6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719236253; c=relaxed/simple;
-	bh=1cgL7/UMBWpOqRwOkjepbWNoCYLDMNABKYbz44Gt3QY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lCD4NSgJRCTdoj8/aIQ25yZ/Au6v7PTKrlJVXh9g9IbZQXECNU/ULl9/eB1Sko9rc/V9gZwA8xe87CuS75kFRFPNJmKXljwxhdF3hjbPP7PVbN0WBZYmUcXiUZTq+SWk4f19BAlvrmY93TxfZNlEuIRhFYLv0RQHfGsspKPLaJA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zyDIt5HE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719247608; c=relaxed/simple;
+	bh=Z0KOoAgihY9+2olzC1EakZj1hVSDqO9ADCzWhcqulHw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=oPruGRN1FyqVklvuTcsJQ+z8yYEDxsldPbua+zR5uEHEcl4XjASJ8lNjv+3aWWsCLPgNdNTYaf4QvCHTKXu+cXtp/1Eps0WywBxNMcxJF4bsO9eErB0mkJHWGRhaJxyOAKnVceoF/y/fbGA7IufpupdQfK6yM8sMNCuTC5v9sYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=fZB2jBe1; arc=none smtp.client-ip=198.47.19.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zyDIt5HE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041FBC2BBFC;
-	Mon, 24 Jun 2024 13:37:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1719236252;
-	bh=1cgL7/UMBWpOqRwOkjepbWNoCYLDMNABKYbz44Gt3QY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=zyDIt5HEof/y1y+siBNeA+CSVAOtQkc4PceG9oHrEwwTmy6b2ocTDk/30VP3X8YPc
-	 pEJLtDoCiF/WvE3suQRNlGaJTTj/D82Ju0KFqRpSsTPNNJrIpbBrbfGFhL60ue1psN
-	 wN3AeWBgzxuD3EtI+ZssAl+2taleGAQfxpyORExc=
-Date: Mon, 24 Jun 2024 15:37:29 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jacky Huang <ychuang570808@gmail.com>
-Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
-Subject: Re: [PATCH v2] tty: serial: ma35d1: Add a NULL check for of_node
-Message-ID: <2024062404-avoid-grieving-a3fa@gregkh>
-References: <20240614054554.80-1-ychuang570808@gmail.com>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="fZB2jBe1"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45OGkIgZ099626;
+	Mon, 24 Jun 2024 11:46:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1719247578;
+	bh=ftKRQUamjpJWDefpfpwbKp7EZqAIxw/kXhR8Z/Mx5zs=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=fZB2jBe1GUWTGU75xB7pLY7UhFEn3HYvewkq5kyAi+/eEvYDBMponWXnJxO/O5NID
+	 Go4QUK0V6VnoC9bUYlmqUncnOtuqIQ9c6zT4e/3TtUbiA7xykxUhK/XcpjTikJibDk
+	 Gv8OdQKX2Uno445OwA1TIGcD5DpXTey4CgQLBSlk=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45OGkInC079934
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 24 Jun 2024 11:46:18 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 24
+ Jun 2024 11:46:18 -0500
+Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Mon, 24 Jun 2024 11:46:18 -0500
+Received: from [10.249.142.56] ([10.249.142.56])
+	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45OGkEin083808;
+	Mon, 24 Jun 2024 11:46:15 -0500
+Message-ID: <e96d0c55-0b12-4cbf-9d23-48963543de49@ti.com>
+Date: Mon, 24 Jun 2024 22:16:13 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240614054554.80-1-ychuang570808@gmail.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v3] serial: 8250_omap: Implementation of Errata i2310
+To: Udit Kumar <u-kumar1@ti.com>, <nm@ti.com>, <tony@atomide.com>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
+        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
+        <stable@vger.kernel.org>
+References: <20240619105903.165434-1-u-kumar1@ti.com>
+From: "Raghavendra, Vignesh" <vigneshr@ti.com>
+Content-Language: en-US
+In-Reply-To: <20240619105903.165434-1-u-kumar1@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-On Fri, Jun 14, 2024 at 05:45:54AM +0000, Jacky Huang wrote:
-> From: Jacky Huang <ychuang3@nuvoton.com>
+
+
+On 6/19/2024 4:29 PM, Udit Kumar wrote:
+> As per Errata i2310[0], Erroneous timeout can be triggered,
+> if this Erroneous interrupt is not cleared then it may leads
+> to storm of interrupts, therefore apply Errata i2310 solution.
 > 
-> The pdev->dev.of_node can be NULL if the "serial" node is absent.
-> Add a NULL check to return an error in such cases.
+> [0] https://www.ti.com/lit/pdf/sprz536 page 23
 > 
-> Fixes: 930cbf92db01 ("tty: serial: Add Nuvoton ma35d1 serial driver support")
-> Signed-off-by: Jacky Huang <ychuang3@nuvoton.com>
-
-You forgot a "Reported-by:" line as Dan did report this to you.
-
+> Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
 > ---
->  drivers/tty/serial/ma35d1_serial.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
+> Change logs
+> Changes in v3:
+> - CC stable in commit message
+> Link to v2:
+> https://lore.kernel.org/all/20240617052253.2188140-1-u-kumar1@ti.com/
+> 
+> Changes in v2:
+> - Added Fixes Tag and typo correction in commit message
+> - Corrected bit position to UART_OMAP_EFR2_TIMEOUT_BEHAVE
+> Link to v1
+> https://lore.kernel.org/all/20240614061314.290840-1-u-kumar1@ti.com/
+> 
+>  drivers/tty/serial/8250/8250_omap.c | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 170639d12b2a..ddac0a13cf84 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -115,6 +115,10 @@
+>  /* RX FIFO occupancy indicator */
+>  #define UART_OMAP_RX_LVL		0x19
+>  
+> +/* Timeout low and High */
+> +#define UART_OMAP_TO_L                 0x26
+> +#define UART_OMAP_TO_H                 0x27
+> +
+>  /*
+>   * Copy of the genpd flags for the console.
+>   * Only used if console suspend is disabled
+> @@ -663,13 +667,24 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+>  
+>  	/*
+>  	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
+> -	 * FIFO has been drained, in which case a dummy read of RX FIFO
+> -	 * is required to clear RX TIMEOUT condition.
+> +	 * FIFO has been drained or erroneously.
+> +	 * So apply solution of Errata i2310 as mentioned in
+> +	 * https://www.ti.com/lit/pdf/sprz536
+>  	 */
+>  	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
+> -	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
+> -	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
+> -		serial_port_in(port, UART_RX);
+> +		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
 
-Also, no info as to what changed from v1 :(
+This still doesn't match the errata workaround described in the above
+doc. Need a check for RX FIFO LVL to be empty (like before). Else we end
+up applying workaround on every timeout (including those that are not
+spurious) which is undesirable in the IRQ hotpath.
 
-thanks,
-
-greg k-h
+> +		unsigned char efr2, timeout_h, timeout_l;
+> +
+> +		efr2 = serial_in(up, UART_OMAP_EFR2);
+> +		timeout_h = serial_in(up, UART_OMAP_TO_H);
+> +		timeout_l = serial_in(up, UART_OMAP_TO_L);
+> +		serial_out(up, UART_OMAP_TO_H, 0xFF);
+> +		serial_out(up, UART_OMAP_TO_L, 0xFF);
+> +		serial_out(up, UART_OMAP_EFR2, UART_OMAP_EFR2_TIMEOUT_BEHAVE);
+> +		serial_in(up, UART_IIR);
+> +		serial_out(up, UART_OMAP_EFR2, efr2);
+> +		serial_out(up, UART_OMAP_TO_H, timeout_h);
+> +		serial_out(up, UART_OMAP_TO_L, timeout_l);
+>  	}
+>  
+>  	/* Stop processing interrupts on input overrun */
