@@ -1,130 +1,122 @@
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0F8A1EA87;
-	Mon, 24 Jun 2024 17:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A9B219EEC6
+	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 17:39:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719248959; cv=none; b=TDffEnUUdLYn7KYP1yFbzRE061j6UrILbWqLFwkk+kf29l8FOD3dieesFYy6Ccu97udkJoVdz9vzm56gHV3wTeMhIqPvVvVZFJ8aFyn9YC0dzHK1DTs4Zus+ZpHFhhXTR7QMKyFlpt2Iowqz0e/Rj2eHJT4Dy03toFBBhEW65d4=
+	t=1719250767; cv=none; b=A7cQkoct7pS3m7EyOq+0e22QLB4EcQInVCXtEhkxvEbuop5g9o9tQ9co92PdXnNlYZBYVAP28KCoByRCehT/kUeXYI9WYI6xOglErqi6jsPSvkt+aknQ7sh+Ioe6J0SrDtdhapAW218cN5M1/QwqFa6DL31YkXXfMbV7zQpP+Q4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719248959; c=relaxed/simple;
-	bh=dwEPjDc/BlYER6gzVye1cYTBbiMlwD39qUuDxRhvp3o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=VtRpZ9dNsSOUhbUHHM0sLPX81tFPXehi0eORLqYIgRroCBPHB/n0J/btyKLna8oArrAOQaV/wCojotPGp+WsnOH5bbVnXXWwlbpZqJMkGG7lFN4jrCL6/NeWk0zVi58UmKhhZWEEPDu9DLjIaxr9Iky55jgjTWngucX2tog0PEo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=Hau3DsbR; arc=none smtp.client-ip=198.47.23.248
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1719250767; c=relaxed/simple;
+	bh=RmWwBKqpQhgnS45GQ4aaZI6SvIbgoTYxZp32M5eQP5A=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=chs8pavqlq9TcmyT18hGjaLcb7dmp/kuQ2qB3FiUnUVbnTDsSez9+2U9WgrOEEQCj+qEemZ3rifHYe0S3NIuzuVHYn+2gkUtWFDJXNe8ihGHgi4pX/ust0yrwuQrGc5ugLP5ZdRyl+BzXiUZlq9gTXn9Qc75PB7YWp83zYJFe/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=ML0Y+EyK; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="Hau3DsbR"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45OH8sUs131022;
-	Mon, 24 Jun 2024 12:08:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1719248934;
-	bh=GAL79usfS5BXcnKgQIqFLVN5w19xXDo6oQmCqfMOimM=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=Hau3DsbR+OoDtcYVWY1O6vB947vzPQ460bV1HzJfcd+DmIMtE6G+KUPGqqRpsChW6
-	 UbJl0fpbQXnhLP54YbYZtihoebiZS6Uj6QgaPqsjYUJ2r10wQPwdlrN66Nkp2jjfCZ
-	 GVWXUk8Z1Jh54P/QwBpGBU8fMPkmKyB1xoZ18Mtc=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45OH8s0e093596
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 24 Jun 2024 12:08:54 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Mon, 24
- Jun 2024 12:08:54 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Mon, 24 Jun 2024 12:08:54 -0500
-Received: from [10.249.142.56] ([10.249.142.56])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45OH8oAe119122;
-	Mon, 24 Jun 2024 12:08:50 -0500
-Message-ID: <d59c67e3-1445-4005-8b2c-92cb7c898770@ti.com>
-Date: Mon, 24 Jun 2024 22:38:49 +0530
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ML0Y+EyK"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6b2c6291038so36418966d6.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 10:39:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1719250764; x=1719855564; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8bcigEvxElFnNf6XQZ1LGyn+920C2Rwm5nJUAotnto8=;
+        b=ML0Y+EyKNiVdw+KpF8EYsjABUHPy2ApYl+20TlGRetEgKhyzKR1uVtdJQ1b6+78ea4
+         1GmzoNFlLZXkd/28e1gra9helEvyM3LdVlJdyaEufFwizV+1sE5bh+htAt7hAxbvnz0j
+         FoHFC4NweDvyltpghFKryt9BsG77nxUSwLQDo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719250764; x=1719855564;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8bcigEvxElFnNf6XQZ1LGyn+920C2Rwm5nJUAotnto8=;
+        b=sqYHRM9AMIlTqKwPQKkVEib5bb9TvYpGVTFbZas+yPw1DwGUtRaMqgpkNgax4DvZUx
+         ha1QoBPGXCDH4Eat7WO6F0Px42ge4bjkM+nNYnqHqfuenTGHXZacgqdEBMe84dO2kb+2
+         My7oplvzb9lA3sw4tT6rkfyBT73KtjX7DAvs0uvqfQlZdbPxSEqoMsfzH6R73Ynt/jGz
+         sA3xUm8GGWtWcjhQBoHCTtPofGw3mXdy2lpvKUPxm2DrWeXsN4JOLlrlGWjLcd1KFENt
+         tt8XJEw9U0cTLf+YbccTTCu3pgnCQVgebpIqnxmI6jVbyTxklKCyYkEsKXFfmOsw6ypw
+         oimQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUWX/oHzg3CcX+XHszxxuxVMfR9wTjy+fDKenreaC/Oo8wpRMpc6KTXFUag7DzXJHKgp4xg4djjR3n96sLSmeOr+a/ZUGa2K3Ifjvwc
+X-Gm-Message-State: AOJu0YxaVV/LpyrDgpqAeKQwSyjRNDl0myQTZKArtqfhZ2/S3TZGb3dT
+	5Q63DM/w2M4Qe6edUA4c0yHy8jkRk3cIjTP1Iog4k5Hr0S/kESVrxXEFAovTgW0ti/duxJ1yna4
+	=
+X-Google-Smtp-Source: AGHT+IEz+xJhA5WUqWSNaj8VgoJpA/4jprFv4Z+AZHn8vuU3KbkXq5il+RusOEjIyz3x+fvGAx3k0A==
+X-Received: by 2002:ad4:4ee7:0:b0:6b5:2aa3:3a7f with SMTP id 6a1803df08f44-6b53223157dmr97728026d6.20.1719250764328;
+        Mon, 24 Jun 2024 10:39:24 -0700 (PDT)
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com. [209.85.160.172])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b51ef4a12asm35750686d6.104.2024.06.24.10.39.23
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jun 2024 10:39:23 -0700 (PDT)
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-443586c2091so26701cf.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 10:39:23 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWh48XLMdpGvIh7j5wlQKX8WvCpePfWpTAsYKA3PSh1d+a8iBFl7D6f+0DdrM/jJklPlEpC4GMT/KT1HaNgd/K3j/kpxuz+aJX9Asq7
+X-Received: by 2002:a05:622a:4b18:b0:444:e11d:709a with SMTP id
+ d75a77b69052e-444f2520e93mr65771cf.20.1719250762638; Mon, 24 Jun 2024
+ 10:39:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v4] serial: 8250_omap: Implementation of Errata i2310
-To: Udit Kumar <u-kumar1@ti.com>, <nm@ti.com>, <tony@atomide.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
-        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
-        <stable@vger.kernel.org>
-References: <20240624165656.2634658-1-u-kumar1@ti.com>
-From: "Raghavendra, Vignesh" <vigneshr@ti.com>
-Content-Language: en-US
-In-Reply-To: <20240624165656.2634658-1-u-kumar1@ti.com>
+References: <20240624133135.7445-1-johan+linaro@kernel.org> <20240624133135.7445-2-johan+linaro@kernel.org>
+In-Reply-To: <20240624133135.7445-2-johan+linaro@kernel.org>
+From: Doug Anderson <dianders@chromium.org>
+Date: Mon, 24 Jun 2024 10:39:07 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
+Message-ID: <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] serial: qcom-geni: fix hard lockup on buffer flush
+To: Johan Hovold <johan+linaro@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, Bjorn Andersson <andersson@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: quoted-printable
 
+Hi,
 
-
-On 6/24/2024 10:26 PM, Udit Kumar wrote:
-> As per Errata i2310[0], Erroneous timeout can be triggered,
-> if this Erroneous interrupt is not cleared then it may leads
-> to storm of interrupts, therefore apply Errata i2310 solution.
-> 
-> [0] https://www.ti.com/lit/pdf/sprz536 page 23
-> 
-> Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+On Mon, Jun 24, 2024 at 6:31=E2=80=AFAM Johan Hovold <johan+linaro@kernel.o=
+rg> wrote:
+>
+> The Qualcomm GENI serial driver does not handle buffer flushing and used
+> to print garbage characters when the circular buffer was cleared. Since
+> commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo") this
+> instead results in a lockup due to qcom_geni_serial_send_chunk_fifo()
+> spinning indefinitely in the interrupt handler.
+>
+> This is easily triggered by interrupting a command such as dmesg in a
+> serial console but can also happen when stopping a serial getty on
+> reboot.
+>
+> Fix the immediate issue by printing NUL characters until the current TX
+> command has been completed.
+>
+> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> Reported-by: Douglas Anderson <dianders@chromium.org>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
+>  drivers/tty/serial/qcom_geni_serial.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-[...]
+I don't love this, though it's better than a hard lockup. I will note
+that it doesn't exactly restore the old behavior which would have
+(most likely) continued to output data that had previously been in the
+FIFO but that had been cancelled.
 
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 170639d12b2a..1af9aed99c65 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -115,6 +115,10 @@
->  /* RX FIFO occupancy indicator */
->  #define UART_OMAP_RX_LVL		0x19
->  
-> +/* Timeout low and High */
-> +#define UART_OMAP_TO_L                 0x26
-> +#define UART_OMAP_TO_H                 0x27
-> +
->  /*
->   * Copy of the genpd flags for the console.
->   * Only used if console suspend is disabled
-> @@ -663,13 +667,25 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
->  
->  	/*
->  	 * On K3 SoCs, it is observed that RX TIMEOUT is signalled after
-> -	 * FIFO has been drained, in which case a dummy read of RX FIFO
-> -	 * is required to clear RX TIMEOUT condition.
-> +	 * FIFO has been drained or erroneously.
-> +	 * So apply solution of Errata i2310 as mentioned in
-> +	 * https://www.ti.com/lit/pdf/sprz536
->  	 */
->  	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
->  	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
->  	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
-> -		serial_port_in(port, UART_RX);
-> +		unsigned char efr2, timeout_h, timeout_l;
-> +
-> +		efr2 = serial_in(up, UART_OMAP_EFR2);
-> +		timeout_h = serial_in(up, UART_OMAP_TO_H);
-> +		timeout_l = serial_in(up, UART_OMAP_TO_L);
-> +		serial_out(up, UART_OMAP_TO_H, 0xFF);
-> +		serial_out(up, UART_OMAP_TO_L, 0xFF);
-> +		serial_out(up, UART_OMAP_EFR2, UART_OMAP_EFR2_TIMEOUT_BEHAVE);
-> +		serial_in(up, UART_IIR);
-> +		serial_out(up, UART_OMAP_EFR2, efr2);
-> +		serial_out(up, UART_OMAP_TO_H, timeout_h);
-> +		serial_out(up, UART_OMAP_TO_L, timeout_l);
->  	}
->  
->  	/* Stop processing interrupts on input overrun */
+...actually, if we're looking for a short term fix that mimics the old
+behavior more closely, what would you think about having a
+driver-local buffer that we fill when we kick off the transfer. Then
+the data can't go away from underneath us. It's an extra copy, but
+it's just a memory-to-memory copy which is much faster than the MMIO
+copy we'll eventually need to do anyway... This local buffer would
+essentially act as a larger FIFO.
 
-Reviewed-by: Vignesh Raghavendra <vigneshr@ti.com>
+You could choose the local buffer size to balance being able to cancel
+quickly vs. using the FIFO efficiently.
+
+-Doug
