@@ -1,31 +1,31 @@
 Received: from ustc.edu.cn (smtp2.ustc.edu.cn [202.38.64.46])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 03BDE49644;
-	Mon, 24 Jun 2024 08:15:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 76A104AECE;
+	Mon, 24 Jun 2024 08:22:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.38.64.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719216927; cv=none; b=odSA8EWxuLioNDMA64xD+Ff8kqCs+7A0j6EZGCL4tqp2kuBIZg39nwM/QGWYcSdbRvcCivzlu3jOzUZRnwOW3TA+VnPSr4T15qo5BbuoPAk4RHFO7F17aS9dBqtF0ShTPtf8UjEcBgkBHOT3mg3YGthlTUuJ+iwrPbdqKRMN5xQ=
+	t=1719217374; cv=none; b=uaBVWp1WEwkMJZrfV4PnHFXDAfAd5h0hruuYjoR/BzD3Z0bb+objglwEEQnuWcOH23miIsqf3CddayAHAnJvnNMtfeeg7mepYou0cpyMJJUlrH6DApLy1s97tsLetoqBgc2UfKcpU4ZgFnswL3I8kfnLZ+s0WLudIp36IFx6HqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719216927; c=relaxed/simple;
-	bh=jS+HkOkfyqt1EAVj5Okkieni2LhROznnF9X/3EeNPwM=;
-	h=Content-Type:Message-ID:Date:MIME-Version:To:Cc:From:Subject; b=HLMQYfrL0GmbUne9cqt9sb8hbqHesHYuR8QRmYXHUHhjPLtpHi2aN+MSJEN/IzALXcOUkGyBgqvq4ugjoJ+6532EjwLDX50g+/Bjl3+D7NzgQisJAFqwbribCg5xUYbeuVi4Az3SKX2bdPyX5wHCPmWacFekjKIi8VGgQMLljqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn; spf=pass smtp.mailfrom=mail.ustc.edu.cn; dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b=adgGN3oE; arc=none smtp.client-ip=202.38.64.46
+	s=arc-20240116; t=1719217374; c=relaxed/simple;
+	bh=SzSCBsoRKc4c1Q44hegEtjDGK46LLTCj1qZtK4DfP3Q=;
+	h=Content-Type:Message-ID:Date:MIME-Version:From:Subject:To:Cc; b=Ark9yqWw0rH9OgAIlXpq4KFPJa94oYQFy17vIGXesH9bE8039BcQhJcD225mptSOL5TESlI1ipVWBrTv+fD90ScpDXK1iVF+0stICnoe6twUKIDHdD3/GPCO47bAnPx+7LwgdHIRLMluEf94tEdet+798rCBPqOfNMXIzghHS0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn; spf=pass smtp.mailfrom=mail.ustc.edu.cn; dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b=ZNWtUpCg; arc=none smtp.client-ip=202.38.64.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mail.ustc.edu.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mail.ustc.edu.cn
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b="adgGN3oE"
+	dkim=pass (1024-bit key) header.d=mail.ustc.edu.cn header.i=@mail.ustc.edu.cn header.b="ZNWtUpCg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=mail.ustc.edu.cn; s=dkim; h=Received:Content-Type:Message-ID:
-	Date:MIME-Version:User-Agent:To:Cc:From:Autocrypt:Subject; bh=Al
-	/VZUxHdlVY4QDS11nHX0uRt4jrdskiHyikpRBxQ24=; b=adgGN3oEvbyh1rLW0L
-	fu9mn2TE4YCjIk6HT0mHhws2yb+y2U0WcXr12lyQQT9fdLO4clI4+fo60OnBWxC0
-	i06mVonLSSlKL0kzoIHfEIJHv9dxmCo1jm8IZg+oAxSmQAjWqquRYi+dKdaTmuSf
-	Y3DViwlgKzp81fpda6+3Rg58Y=
+	Date:MIME-Version:User-Agent:From:Subject:To:Cc:Autocrypt; bh=ah
+	F+fWViRykJUW5Ga/4r0RkMiA0dqbLKtNvJ9N3Pd70=; b=ZNWtUpCgAs4v6VHSX5
+	pbV1bFx0tsMiwgVGgjUHPJrihuxPTaK0CMJdj0XIGhKSb58VQDxhTte9/GdWxSoc
+	yjgGtPwLKCQZ9Iw/HppNt8g/XL4Gnjq6ntoQcAdjVCjYNR+vVKVtJfHgRBCUyTsF
+	q0Y0GdrtowS8Tudoxou3A3Nxc=
 Received: from [192.168.154.215] (unknown [223.104.134.79])
-	by mailimap2024 (Coremail) with SMTP id 3pYKCgDXWgrfKnlm+EceAA--.9421S2;
-	Mon, 24 Jun 2024 16:14:24 +0800 (CST)
-Content-Type: multipart/mixed; boundary="------------Ac1uEXxKhvybBQEnK9swgxhw"
-Message-ID: <d6f55517-a955-475d-ae10-c2ffd63fb34b@mail.ustc.edu.cn>
-Date: Mon, 24 Jun 2024 16:14:23 +0800
+	by mailimap2024 (Coremail) with SMTP id 3pYKCgAnvBvMLHlmulQeAA--.9946S2;
+	Mon, 24 Jun 2024 16:22:37 +0800 (CST)
+Content-Type: multipart/mixed; boundary="------------cL0iTlb2vICdQS0sZ7tKTlPq"
+Message-ID: <fa4a7e17-ad33-4eb6-bfd3-c3e6bae13cec@mail.ustc.edu.cn>
+Date: Mon, 24 Jun 2024 16:22:36 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -33,10 +33,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+From: lcx <lichunxiaona@mail.ustc.edu.cn>
+Subject: INFO: rcu detected stall in tty_ioctl
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org
-From: lcx <lichunxiaona@mail.ustc.edu.cn>
 Autocrypt: addr=lichunxiaona@mail.ustc.edu.cn; keydata=
  xsDNBGZ5JMQBDACYC3ibC/iBAFaBZJZLkyRwPTaCBh/EmblnuJVLk5nLV45AnwlIc5yGCCXf
  KAK7elhxv+uSQGv4N9nLcahMnjyJ20ayEz8JCfjW4B2DGX4azfxYuxSBs3wi++a0PNMTdcPW
@@ -71,30 +72,30 @@ Autocrypt: addr=lichunxiaona@mail.ustc.edu.cn; keydata=
  fKXQzPCKjCnd+Ps/8R/otcLKUgPftuT9NanE4IDuJInAN1gjYcWalYblg4l9tjnkC1+ZFE4R
  93kHrG/eYDCNd5+yD/nEvkVf1/GRYpb+M/PyIcrxbDvwOm6dwrbXaiK9VJHHAkyCcRY/14At
  JgzGJg8MRnw=
-Subject: INFO: rcu detected stall in tty_ioctl
-X-CM-TRANSID:3pYKCgDXWgrfKnlm+EceAA--.9421S2
+X-CM-TRANSID:3pYKCgAnvBvMLHlmulQeAA--.9946S2
 X-Coremail-Antispam: 1UD129KBjvJXoW3GFyrJFWDXr1rGw45Kr48WFg_yoWfZrW8pr
 	W7tr4UCr48XryUJa1xAFn5Ary3Ja13AFW7Wrs7Jr95XF1Ykw1UJr10yF47JF98Jr4UZry3
-	trn8Zw40gryUAaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUD2b7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+	trn8Zw40gryUAaUanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUqab7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
 	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xII
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
 	jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
 	C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487M2AExVA0xI80
-	1c8C04v7McIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4I
-	kC6x0Yz7v_Jr0_Gr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUGVWU
-	WwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIF0xvE2Ix0cI
-	8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAv
-	wI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
-	v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07beF4iUUUUU=
+	1c8C04v7McIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4I
+	kC6x0Yz7v_Jr0_Gr1lc7CjxVAaw2AFwI0_JF0_Jw1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
+	x2IqxVAqx4xG67AKxVWUGVWUWwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
+	v26r126r1DMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v2
+	6r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8Jw
+	CI42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07bnnQUUUUUU
+	=
 X-CM-SenderInfo: xolfx35q0lt01qd6zt1loo32lwfovvfxof0/
 
 This is a multi-part message in MIME format.
---------------Ac1uEXxKhvybBQEnK9swgxhw
+--------------cL0iTlb2vICdQS0sZ7tKTlPq
 Content-Type: multipart/alternative;
- boundary="------------46Ye7Vf0VSKWJ4L4c3ZfjvDC"
+ boundary="------------UULMHY3Br008Ie90b7eImh8b"
 
---------------46Ye7Vf0VSKWJ4L4c3ZfjvDC
+--------------UULMHY3Br008Ie90b7eImh8b
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
@@ -252,19 +253,18 @@ R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
   </TASK>
 INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.369 msecs
 
---------------46Ye7Vf0VSKWJ4L4c3ZfjvDC
+--------------UULMHY3Br008Ie90b7eImh8b
 Content-Type: text/html; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 <!DOCTYPE html>
 <html>
   <head>
-
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   </head>
   <body>
     <pre class="bz_comment_text" id="comment_text_0"
-style="font-size: medium; width: 50em; font-family: monospace; white-space: pre-wrap; color: rgb(232, 230, 227); font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">Dear Linux maintainers and reviewers:
+style="font-size: medium; width: 50em; font-family: monospace; white-space: pre-wrap; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">Dear Linux maintainers and reviewers:
 
 We would like to report a linux kernel bug, found by a modified version of syzkaller.
 
@@ -417,12 +417,11 @@ R10: 000000000000000e R11: 0000000000000246 R12: 00007ffe35094c24
 R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
  &lt;/TASK&gt;
 INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.369 msecs</pre>
-    <p></p>
   </body>
 </html>
 
---------------46Ye7Vf0VSKWJ4L4c3ZfjvDC--
---------------Ac1uEXxKhvybBQEnK9swgxhw
+--------------UULMHY3Br008Ie90b7eImh8b--
+--------------cL0iTlb2vICdQS0sZ7tKTlPq
 Content-Type: text/plain; charset=UTF-8; name="config"
 Content-Disposition: attachment; filename="config"
 Content-Transfer-Encoding: base64
@@ -5246,7 +5245,7 @@ TCBpcyBub3Qgc2V0CkNPTkZJR19BUkNIX1VTRV9NRU1URVNUPXkKIyBDT05GSUdfTUVNVEVT
 VCBpcyBub3Qgc2V0CiMgZW5kIG9mIEtlcm5lbCBUZXN0aW5nIGFuZCBDb3ZlcmFnZQoKIwoj
 IFJ1c3QgaGFja2luZwojCiMgZW5kIG9mIFJ1c3QgaGFja2luZwojIGVuZCBvZiBLZXJuZWwg
 aGFja2luZwo=
---------------Ac1uEXxKhvybBQEnK9swgxhw
+--------------cL0iTlb2vICdQS0sZ7tKTlPq
 Content-Type: text/plain; charset=UTF-8; name="repro.c"
 Content-Disposition: attachment; filename="repro.c"
 Content-Transfer-Encoding: base64
@@ -5320,5 +5319,5 @@ TlJfbW1hcCwgMHgyMDAwMDAwMHVsLCAweDEwMDAwMDB1bCwgN3VsLCAweDMydWwsIC0xLCAw
 dWwpOw0KCXN5c2NhbGwoX19OUl9tbWFwLCAweDIxMDAwMDAwdWwsIDB4MTAwMHVsLCAwdWws
 IDB4MzJ1bCwgLTEsIDB1bCk7DQoJCQlsb29wKCk7DQoJcmV0dXJuIDA7DQp9DQo=
 
---------------Ac1uEXxKhvybBQEnK9swgxhw--
+--------------cL0iTlb2vICdQS0sZ7tKTlPq--
 
