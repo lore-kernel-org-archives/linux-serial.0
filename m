@@ -1,74 +1,75 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A9B219EEC6
-	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 17:39:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D507845010
+	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 20:45:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719250767; cv=none; b=A7cQkoct7pS3m7EyOq+0e22QLB4EcQInVCXtEhkxvEbuop5g9o9tQ9co92PdXnNlYZBYVAP28KCoByRCehT/kUeXYI9WYI6xOglErqi6jsPSvkt+aknQ7sh+Ioe6J0SrDtdhapAW218cN5M1/QwqFa6DL31YkXXfMbV7zQpP+Q4=
+	t=1719261941; cv=none; b=DoOQIJH6+RIw9jNsyAx2jsPXvAhgbDRLyoSQAOo75Hm0eVjXjzOZWuQrwor3N9PCm0l7tU1bfLOQVMRqJ+8knnaOO74I9nM2BMMOSiSV7hGBPizyNB+JdkFPraw+qHkRH8y6Z5bEDabPNEjPa1D4rX5aqMEa2UBJaNhWjN715MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719250767; c=relaxed/simple;
-	bh=RmWwBKqpQhgnS45GQ4aaZI6SvIbgoTYxZp32M5eQP5A=;
+	s=arc-20240116; t=1719261941; c=relaxed/simple;
+	bh=Ofe5Udbju62wIPycBMd9BKkYVB1oN6NMkyEzC9dWzk0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=chs8pavqlq9TcmyT18hGjaLcb7dmp/kuQ2qB3FiUnUVbnTDsSez9+2U9WgrOEEQCj+qEemZ3rifHYe0S3NIuzuVHYn+2gkUtWFDJXNe8ihGHgi4pX/ust0yrwuQrGc5ugLP5ZdRyl+BzXiUZlq9gTXn9Qc75PB7YWp83zYJFe/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=ML0Y+EyK; arc=none smtp.client-ip=209.85.219.42
+	 To:Cc:Content-Type; b=O6RQNKGdSXul8r8FMtmvoEIj6Jio0avrFkrniLJlhq8fAJMIxjUdBFFsq6cy+OU0DV9Okfa+VPCAMTyk1cIJZNCsK1QnF96O/RAGUS2l3Ho8rhHuRMfUnVwN9SkNHxfY+xBbuzloX6YE71E2vBXTN6RkXmw0S9aj6115nbdiEIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=SjK5BkHH; arc=none smtp.client-ip=209.85.161.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ML0Y+EyK"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6b2c6291038so36418966d6.0
-        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 10:39:26 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SjK5BkHH"
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-5b9776123a3so2162406eaf.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 13:45:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1719250764; x=1719855564; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1719261937; x=1719866737; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8bcigEvxElFnNf6XQZ1LGyn+920C2Rwm5nJUAotnto8=;
-        b=ML0Y+EyKNiVdw+KpF8EYsjABUHPy2ApYl+20TlGRetEgKhyzKR1uVtdJQ1b6+78ea4
-         1GmzoNFlLZXkd/28e1gra9helEvyM3LdVlJdyaEufFwizV+1sE5bh+htAt7hAxbvnz0j
-         FoHFC4NweDvyltpghFKryt9BsG77nxUSwLQDo=
+        bh=zTharbi6ZPnC1Zed84UrT9QU8P9auaSnZ5aSyQ0TZ6o=;
+        b=SjK5BkHHc65brFskRSyt+n4DIicZp+KlRY09/CNGwHjk5LZa1ECNHlkXUgfdtJJRur
+         isdTUyRJY3bVImH/SB3M2TP2RhoDwlnSO4Y5zuRfGr6xPz2jGem2eDPQ6limxUT3PUdN
+         rVP98scW+aB01svD7dQeazDYhfawjQYd8qHM8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719250764; x=1719855564;
+        d=1e100.net; s=20230601; t=1719261937; x=1719866737;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=8bcigEvxElFnNf6XQZ1LGyn+920C2Rwm5nJUAotnto8=;
-        b=sqYHRM9AMIlTqKwPQKkVEib5bb9TvYpGVTFbZas+yPw1DwGUtRaMqgpkNgax4DvZUx
-         ha1QoBPGXCDH4Eat7WO6F0Px42ge4bjkM+nNYnqHqfuenTGHXZacgqdEBMe84dO2kb+2
-         My7oplvzb9lA3sw4tT6rkfyBT73KtjX7DAvs0uvqfQlZdbPxSEqoMsfzH6R73Ynt/jGz
-         sA3xUm8GGWtWcjhQBoHCTtPofGw3mXdy2lpvKUPxm2DrWeXsN4JOLlrlGWjLcd1KFENt
-         tt8XJEw9U0cTLf+YbccTTCu3pgnCQVgebpIqnxmI6jVbyTxklKCyYkEsKXFfmOsw6ypw
-         oimQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUWX/oHzg3CcX+XHszxxuxVMfR9wTjy+fDKenreaC/Oo8wpRMpc6KTXFUag7DzXJHKgp4xg4djjR3n96sLSmeOr+a/ZUGa2K3Ifjvwc
-X-Gm-Message-State: AOJu0YxaVV/LpyrDgpqAeKQwSyjRNDl0myQTZKArtqfhZ2/S3TZGb3dT
-	5Q63DM/w2M4Qe6edUA4c0yHy8jkRk3cIjTP1Iog4k5Hr0S/kESVrxXEFAovTgW0ti/duxJ1yna4
+        bh=zTharbi6ZPnC1Zed84UrT9QU8P9auaSnZ5aSyQ0TZ6o=;
+        b=BDZYUbanRaByum9YC+7fi4syxkFIJGbESOIQWzV8xpe6mCgkfW/CkNukBZGYMrAtXz
+         aDw42s/B/UY3a/uogLJXsaGVka1fyLpXwrV2FgkP/FhHt/q3d0Go/3lELvI4TStGWNQE
+         gvwroqNMWorCqzFHQJMhoagjBgdWbHhDvIKp1HT/Xxpz3TK/0UHd8Je/W7DNIIC4UtZh
+         0sA10R+QUZdoMg+Ut0QQA2GYIGzFotIt9hmuljDKN7Rj5QX61WSSZMXv48EydRiY0zoo
+         TT5qmcQjzeVMeVE6iWdVoPJj39Dd9zVrfaE12JGilUWJdiHsadsDYe6m5FutCKLPBusV
+         A80Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVGPxr/dJVkMVjr4iG46VY6Te6j4WIWayGsp5Af7ZzXsLZrNWdpiZEQZB4YcpHQ7+c/SkwTZZmQRd88sl79qFlsOIkvcsmdWEKLB0LT
+X-Gm-Message-State: AOJu0Ywwn6BemYxEBSrPboIsrYoybnPCdtY0CBgRiCcZRmeVKZXNArNj
+	4yLj3LYTtVCK6T1OD6YjBbQgZZ05zb6uUlP9sodpw3wckSF2Iev6/pn9+LftehQXWWJL59kcIIY
 	=
-X-Google-Smtp-Source: AGHT+IEz+xJhA5WUqWSNaj8VgoJpA/4jprFv4Z+AZHn8vuU3KbkXq5il+RusOEjIyz3x+fvGAx3k0A==
-X-Received: by 2002:ad4:4ee7:0:b0:6b5:2aa3:3a7f with SMTP id 6a1803df08f44-6b53223157dmr97728026d6.20.1719250764328;
-        Mon, 24 Jun 2024 10:39:24 -0700 (PDT)
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com. [209.85.160.172])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b51ef4a12asm35750686d6.104.2024.06.24.10.39.23
+X-Google-Smtp-Source: AGHT+IGiXMjXQ5OjRMhv4NXy2Mj5zeAdARbuZPR5ovun509Qg60VcPYXq6rdkuTYLn6uKj/Uuy/lQw==
+X-Received: by 2002:a05:6358:e485:b0:19f:4be7:435a with SMTP id e5c5f4694b2df-1a23fe0f613mr679076855d.25.1719261936853;
+        Mon, 24 Jun 2024 13:45:36 -0700 (PDT)
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com. [209.85.160.175])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6b51ed3ffc5sm37498456d6.49.2024.06.24.13.45.35
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jun 2024 10:39:23 -0700 (PDT)
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-443586c2091so26701cf.0
-        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 10:39:23 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWh48XLMdpGvIh7j5wlQKX8WvCpePfWpTAsYKA3PSh1d+a8iBFl7D6f+0DdrM/jJklPlEpC4GMT/KT1HaNgd/K3j/kpxuz+aJX9Asq7
-X-Received: by 2002:a05:622a:4b18:b0:444:e11d:709a with SMTP id
- d75a77b69052e-444f2520e93mr65771cf.20.1719250762638; Mon, 24 Jun 2024
- 10:39:22 -0700 (PDT)
+        Mon, 24 Jun 2024 13:45:36 -0700 (PDT)
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-443586c2091so27661cf.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 13:45:35 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVkLhbhwW3+vRz5h35JwYD+u1dZLagjpmicUZQERHSvs0wY/xPhoSJWXObqfy5+6ip1P5uh3GQ2NiDfYgRpw77OiLCF0QZR0NEa4ax8
+X-Received: by 2002:ac8:5f0c:0:b0:43e:295:f160 with SMTP id
+ d75a77b69052e-444f2520a22mr883301cf.24.1719261935354; Mon, 24 Jun 2024
+ 13:45:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240624133135.7445-1-johan+linaro@kernel.org> <20240624133135.7445-2-johan+linaro@kernel.org>
-In-Reply-To: <20240624133135.7445-2-johan+linaro@kernel.org>
+References: <20240624133135.7445-1-johan+linaro@kernel.org>
+ <20240624133135.7445-2-johan+linaro@kernel.org> <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
+In-Reply-To: <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
 From: Doug Anderson <dianders@chromium.org>
-Date: Mon, 24 Jun 2024 10:39:07 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
-Message-ID: <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
+Date: Mon, 24 Jun 2024 13:45:17 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UwyzA614tDoq7BntW1DWmic=DOszr+iRJVafVEYrXhpw@mail.gmail.com>
+Message-ID: <CAD=FV=UwyzA614tDoq7BntW1DWmic=DOszr+iRJVafVEYrXhpw@mail.gmail.com>
 Subject: Re: [PATCH 1/3] serial: qcom-geni: fix hard lockup on buffer flush
 To: Johan Hovold <johan+linaro@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
@@ -80,43 +81,107 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Mon, Jun 24, 2024 at 6:31=E2=80=AFAM Johan Hovold <johan+linaro@kernel.o=
+On Mon, Jun 24, 2024 at 10:39=E2=80=AFAM Doug Anderson <dianders@chromium.o=
 rg> wrote:
 >
-> The Qualcomm GENI serial driver does not handle buffer flushing and used
-> to print garbage characters when the circular buffer was cleared. Since
-> commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo") this
-> instead results in a lockup due to qcom_geni_serial_send_chunk_fifo()
-> spinning indefinitely in the interrupt handler.
+> Hi,
 >
-> This is easily triggered by interrupting a command such as dmesg in a
-> serial console but can also happen when stopping a serial getty on
-> reboot.
+> On Mon, Jun 24, 2024 at 6:31=E2=80=AFAM Johan Hovold <johan+linaro@kernel=
+.org> wrote:
+> >
+> > The Qualcomm GENI serial driver does not handle buffer flushing and use=
+d
+> > to print garbage characters when the circular buffer was cleared. Since
+> > commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo") this
+> > instead results in a lockup due to qcom_geni_serial_send_chunk_fifo()
+> > spinning indefinitely in the interrupt handler.
+> >
+> > This is easily triggered by interrupting a command such as dmesg in a
+> > serial console but can also happen when stopping a serial getty on
+> > reboot.
+> >
+> > Fix the immediate issue by printing NUL characters until the current TX
+> > command has been completed.
+> >
+> > Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> > Reported-by: Douglas Anderson <dianders@chromium.org>
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > ---
+> >  drivers/tty/serial/qcom_geni_serial.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Fix the immediate issue by printing NUL characters until the current TX
-> command has been completed.
+> I don't love this, though it's better than a hard lockup. I will note
+> that it doesn't exactly restore the old behavior which would have
+> (most likely) continued to output data that had previously been in the
+> FIFO but that had been cancelled.
 >
-> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-> Reported-by: Douglas Anderson <dianders@chromium.org>
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> ...actually, if we're looking for a short term fix that mimics the old
+> behavior more closely, what would you think about having a
+> driver-local buffer that we fill when we kick off the transfer. Then
+> the data can't go away from underneath us. It's an extra copy, but
+> it's just a memory-to-memory copy which is much faster than the MMIO
+> copy we'll eventually need to do anyway... This local buffer would
+> essentially act as a larger FIFO.
+>
+> You could choose the local buffer size to balance being able to cancel
+> quickly vs. using the FIFO efficiently.
 
-I don't love this, though it's better than a hard lockup. I will note
-that it doesn't exactly restore the old behavior which would have
-(most likely) continued to output data that had previously been in the
-FIFO but that had been cancelled.
+Also: if we're looking at quick/easy to land and just fix the hard
+lockup, I'd vote for this (I can send a real patch, though I'm about
+to go on vacation):
 
-...actually, if we're looking for a short term fix that mimics the old
-behavior more closely, what would you think about having a
-driver-local buffer that we fill when we kick off the transfer. Then
-the data can't go away from underneath us. It's an extra copy, but
-it's just a memory-to-memory copy which is much faster than the MMIO
-copy we'll eventually need to do anyway... This local buffer would
-essentially act as a larger FIFO.
+--
 
-You could choose the local buffer size to balance being able to cancel
-quickly vs. using the FIFO efficiently.
+@@ -904,8 +904,8 @@ static void qcom_geni_serial_handle_tx_fifo(struct
+uart_port *uport,
+                goto out_write_wakeup;
 
--Doug
+        if (!port->tx_remaining) {
+-               qcom_geni_serial_setup_tx(uport, pending);
+-               port->tx_remaining =3D pending;
++               port->tx_remaining =3D min(avail, pending);
++               qcom_geni_serial_setup_tx(uport, port->tx_remaining);
+
+                irq_en =3D readl(uport->membase + SE_GENI_M_IRQ_EN);
+                if (!(irq_en & M_TX_FIFO_WATERMARK_EN))
+
+--
+
+That will fix the hard lockup, is short and sweet, and also doesn't
+end up outputting NUL bytes.
+
+I measured time with that. I've been testing with a file I created
+called "alphabet.txt" that just contains the letters A-Z repeated 3
+times followed by a "\n", over and over again. I think gmail will kill
+me with word wrapping, but basically:
+
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW=
+XYZ
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW=
+XYZ
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW=
+XYZ
+ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVW=
+XYZ
+...
+...
+
+FWIW:
+
+head -200 /var/alphabet.txt  | wc
+    200     200   15800
+
+Before my patch I ran `time head -200 /var/alphabet.txt` and I got:
+
+real    0m1.386s
+
+After my patch I ran the same thing and got:
+
+real    0m1.409s
+
+So it's slower, but that's not 25% slower. I get 1.7% slower:
+
+In [6]: (1.409 - 1.386) / 1.386 * 100
+Out[6]: 1.659451659451669
+
+IMO that seems like a fine slowdown in order to avoid printing NUL bytes.
