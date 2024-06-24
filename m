@@ -1,62 +1,62 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B768B45010
-	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 20:58:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE8949656
+	for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 21:22:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719262731; cv=none; b=gbjaM7oMdlso54XBelyGagkZmg8GSi4EFUVTfR3a1EEFzfNb6egiyJ+yTRMKmzWqqeZHAJlN159b8u+IuqRNdIQsOFSfScWrc77R9QC7gDZrGeBDjOLlzmuIDlj+1NR20FdSFGSzJGd5Z2qBX8x8K3gQP9hMzwjHzBGC3F4ZzvU=
+	t=1719264142; cv=none; b=evhqx/wIdlhclXIykfwUkvLpGwivOzrzefHkePHvJyxGV+89XEN2EYs+dhJLd4kXoNbo/fjExY+yRlFXKv+8JdROCnf00VwWdYtv15qdcQlvRChLUzDzn2++O5zxHK6wWl8TGCbgLi+qKpVRFfZLaoAOWtV7ZXhf6Zow84cBL34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719262731; c=relaxed/simple;
-	bh=rc+uf24RV4wU1ZmPVkashso27WnRydS2+EKRJ3fw3uo=;
+	s=arc-20240116; t=1719264142; c=relaxed/simple;
+	bh=1aS1C8+rNiEE9y97Tf7/4pGGQHLNNIZeCB3/TynbVHY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eqEeZRwvwE8e02Hd8JniHG1ZTiE26JgNZfX8nLy9s6/KM2l6pZD5g9km9TH+Yp1/Bk21ZERkP/KTC+HfUNI15L6qARYCOp9EfJpqECp4BMrj38QDjit/uoUA2U69w9RTXJp6yYAXnox9K4Ro8yr3R8bELNLboH+My1ArNdAd74s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=aaq6yggM; arc=none smtp.client-ip=209.85.160.169
+	 To:Cc:Content-Type; b=d09BW9aicOrnx6m4OMmmk6mmfZxTv4u8YcqeiuoT35fntgcHyhcpf4qmNFhVWaS0CdbVYwrhAHelVKxmEQ3b6if2me7rsrYh5oMOXBj6kaivLTgAPOH0kRl66uP+Puj+yJbPAxBjoO64o1hYsf4/gt3vQ5knkcHi56o086msKJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=bXEu0L6l; arc=none smtp.client-ip=209.85.160.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="aaq6yggM"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-440581d6a50so23145151cf.0
-        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 13:58:49 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bXEu0L6l"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-440655e64bdso21666701cf.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 14:22:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1719262728; x=1719867528; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1719264140; x=1719868940; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F26ETBZiZjhwFkvNSbxGcmTBqIZI6iLTpohts+kXXh4=;
-        b=aaq6yggMnmm0yitIXZRAmvfEdQsYysRVY2s3RnVI9fMu0fwBpdWosKKQK7qq/ELqjL
-         zO5DBFjsqL7qtIwZLmMNOaw9dNDU3vF5fzEx+O2xjYHlnSSBhVKcR8TUpvQRX7ae8dVs
-         yaVfejsT7duydt/mgemvj30BrifBgaEEBjMVg=
+        bh=F/CQWIetOrwwmsDk4Xx3Bzc7g2Sp+y6oh+LBYo/o6no=;
+        b=bXEu0L6lCT4juBDnXJkPFFZEuZc9PmJelRSuIuIaTonrCW2FzISn9qOv53ZuJeBfUo
+         jHHbdXgqTeaEisOfiZCzh2eEUoSyy0/XLnY8dBi7uZPEeKZ266WrXEtv+nDbWdsY7QN0
+         XOy5wFkHDoB4TQRCxXi7TH0Is2yJ7X9FIXBzA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719262728; x=1719867528;
+        d=1e100.net; s=20230601; t=1719264140; x=1719868940;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=F26ETBZiZjhwFkvNSbxGcmTBqIZI6iLTpohts+kXXh4=;
-        b=Anu/7rPGvGRGFmJeSRBtulmojLyqY1aaWvR2quTi9GOLXSRWXpiL7ypHNmuolkjgRk
-         bmKJS4MpnV/6lcOtkcI4mmtugivJXaN/4YdfHpdcgP5S/XBAHIJtq4WwTDQ1lgmMvOUO
-         RE5YeaCFO3irGkNELPJai1D82jgyC5A56/LtGrtqA9xRy+pWRhJchvkqpG2xbCdNU7AI
-         0h7rBIyxXSnN43zWf5YoXPayD5pU4QcdroFh6JJJUFTRcfIJ0f1ulWpBDOeUqZZMFop4
-         KeHaz0Eu4IlTDWENzC+8SGYnK+i9C/Igi926dDwWt7VL3/ZOhG5I27G1whsRY7cqPdWC
-         LT4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUYl7PpBGRXPBwpLxF6DEE6J2bFLcSDB+Oqv0Kxm5myLNo292sV5Rs7IYDprKHgTLFCiMnua165Tk3e43tSH+X2/JaZpi4sFHs1trHf
-X-Gm-Message-State: AOJu0YxseaFUYoxcWbShxNQRHw2Xn52Gisy1GYcQfXOSWiy/PhynejiP
-	h+Ec9kk6h/5bYZ4S64FvMj8he1kfq4jVgIOxMjUWRIjbykuuNw5Kjy2qcKGTionbQqphX3o8Z2c
+        bh=F/CQWIetOrwwmsDk4Xx3Bzc7g2Sp+y6oh+LBYo/o6no=;
+        b=BwI8UxXfleC0sXMiXicTJizDO1D3J/M0tR1DbMcH5M140hJ7pe6g/cD4jFdU7hvvGe
+         Pa1qxc11STptIkPBfQxJDpeMykLB4Pa6RA4Guudz8AagrEc12bDEze9yjmMVGjmAE3D9
+         6JJv7c8KZFlHdvxP1tGkyoYE230SfTujTB/fhwySzFKEKxk2Or4kvxbzeIUYzjnQbw9X
+         eh/4DVeaysLpkFC8WY7Bq99Y3mmEDcqm++XSqhTJ8zLa0cd/0Vww7xSS0eymywgp9ZeV
+         Y6itZrBg6HwqI+kc+hcVSNnd0n1AA7eyqk+mNijGcPavmvLJOTDWReNhGl6axPVaE80x
+         U7oA==
+X-Forwarded-Encrypted: i=1; AJvYcCUVQsD/zygQ4LODmHaqfHeWoKAAGOuE2X/BnwdcEvUdXfMaNAsU+qGqtGGMdK4+dt5daouz8gvAeMQp9dqB39hqlfiOYSvt5jQ1AGxk
+X-Gm-Message-State: AOJu0Yw0DZxYnKUgcKJebJWVQd0tR7SW3iiNjrpEJT5dxgdg8gDsAO6+
+	kXWI9H2K6dqJ4BdVI2p7mrEXiDB3PQeMM38W+mxuKw//Ar4/f5HWvzs7PfLyUVwQPEnJCPqEOWo
 	=
-X-Google-Smtp-Source: AGHT+IEZpJbtdJmI63b2VKtuYyE4xXrAM2cahr59ertvsIxUVzNyEVCFLtLcwSmhLgS+sS30tXeSNQ==
-X-Received: by 2002:a05:622a:650:b0:441:1452:1321 with SMTP id d75a77b69052e-444d9219454mr81603801cf.23.1719262727603;
-        Mon, 24 Jun 2024 13:58:47 -0700 (PDT)
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com. [209.85.160.169])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-444c2b36822sm46327761cf.18.2024.06.24.13.58.46
+X-Google-Smtp-Source: AGHT+IFsl3dzYUl1H8m4amh5+m03jUZF8yeHkQQb9ZYpJiOVNrlMQxJzeBgBjr62Gd4BAl0eOcWDFg==
+X-Received: by 2002:a05:622a:4d3:b0:43a:dac9:d9b7 with SMTP id d75a77b69052e-444d921bfa7mr51736051cf.39.1719264139608;
+        Mon, 24 Jun 2024 14:22:19 -0700 (PDT)
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com. [209.85.160.181])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-444f02d909asm5288851cf.5.2024.06.24.14.22.19
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jun 2024 13:58:46 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-44056f72257so27751cf.0
-        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 13:58:46 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWv/UMqbQucRy8wHOCVPWwYpSKYBDjdr0sn4UvKSye9KF1TWxBCBgQ4iNkKKWaHOOVx4Zm/CwnJay4gu/5RaTQeXFNAgAnHE72qdXf8
-X-Received: by 2002:a05:622a:283:b0:442:1bc4:8fb2 with SMTP id
- d75a77b69052e-444f2566f1fmr919771cf.20.1719262726353; Mon, 24 Jun 2024
- 13:58:46 -0700 (PDT)
+        Mon, 24 Jun 2024 14:22:19 -0700 (PDT)
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-44056f72257so35611cf.0
+        for <linux-serial@vger.kernel.org>; Mon, 24 Jun 2024 14:22:19 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVUoacMnfECC8jYD20qmdRBC0O+1rXDIU4amBaXpmAUV3xJqRbjKTqY2DVHwLzXZ5PFOZrLjj6kdMBEszeqgcQur9Yyj3Lupysm37AJ
+X-Received: by 2002:a05:622a:1981:b0:441:4920:1fc4 with SMTP id
+ d75a77b69052e-444f256621dmr960771cf.28.1719263719282; Mon, 24 Jun 2024
+ 14:15:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,13 +64,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20240610222515.3023730-1-dianders@chromium.org>
- <20240610152420.v4.7.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid> <ZnlilDj5UrvrVasv@hovoldconsulting.com>
-In-Reply-To: <ZnlilDj5UrvrVasv@hovoldconsulting.com>
+ <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid> <Znlp1_F1u-70D3QQ@hovoldconsulting.com>
+In-Reply-To: <Znlp1_F1u-70D3QQ@hovoldconsulting.com>
 From: Doug Anderson <dianders@chromium.org>
-Date: Mon, 24 Jun 2024 13:58:34 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U=C+Myrb4cpGyV-J=RHn39C2aF1WT_Xt5M2vczbZ-AbA@mail.gmail.com>
-Message-ID: <CAD=FV=U=C+Myrb4cpGyV-J=RHn39C2aF1WT_Xt5M2vczbZ-AbA@mail.gmail.com>
-Subject: Re: [PATCH v4 7/8] serial: qcom-geni: Fix suspend while active UART xfer
+Date: Mon, 24 Jun 2024 14:15:07 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XmuKUKvCq7gG+wM-jAAgHLHnYw4NteFEKz5Fmczd=U7g@mail.gmail.com>
+Message-ID: <CAD=FV=XmuKUKvCq7gG+wM-jAAgHLHnYw4NteFEKz5Fmczd=U7g@mail.gmail.com>
+Subject: Re: [PATCH v4 8/8] serial: qcom-geni: Rework TX in FIFO mode to fix hangs/lockups
 To: Johan Hovold <johan@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Yicong Yang <yangyicong@hisilicon.com>, Tony Lindgren <tony@atomide.com>, 
@@ -81,100 +81,101 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org, 
 	linux-kernel@vger.kernel.org, 
 	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, 
-	Thomas Gleixner <tglx@linutronix.de>
+	Rob Herring <robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Mon, Jun 24, 2024 at 5:12=E2=80=AFAM Johan Hovold <johan@kernel.org> wro=
+On Mon, Jun 24, 2024 at 5:43=E2=80=AFAM Johan Hovold <johan@kernel.org> wro=
 te:
 >
-> On Mon, Jun 10, 2024 at 03:24:25PM -0700, Douglas Anderson wrote:
-> > On devices using Qualcomm's GENI UART it is possible to get the UART
-> > stuck such that it no longer outputs data. Specifically, logging in
-> > via an agetty on the debug serial port (which was _not_ used for
-> > kernel console) and running:
-> >   cat /var/log/messages
-> > ...and then (via an SSH session) forcing a few suspend/resume cycles
-> > causes the UART to stop transmitting.
->
-> An easier way to trigger this old bug is to just run a command like
-> dmesg and hit ctrl-s in a serial console to stop tx. Interrupting the
-> command or hitting ctrl-q to restart tx then triggers the soft lockup.
->
-> > The root of the problems was with qcom_geni_serial_stop_tx_fifo()
-> > which is called as part of the suspend process. Specific problems with
-> > that function:
-> > - When an in-progress "tx" command is cancelled it doesn't appear to
-> >   fully drain the FIFO. That meant qcom_geni_serial_tx_empty()
-> >   continued to report that the FIFO wasn't empty. The
-> >   qcom_geni_serial_start_tx_fifo() function didn't re-enable
-> >   interrupts in this case so the driver would never start transferring
-> >   again.
-> > - When the driver cancelled the current "tx" command but it forgot to
-> >   zero out "tx_remaining". This confused logic elsewhere in the
-> >   driver.
-> > - From experimentation, it appears that cancelling the "tx" command
-> >   could drop some of the queued up bytes.
+> On Mon, Jun 10, 2024 at 03:24:26PM -0700, Douglas Anderson wrote:
+> > The fact that the Qualcomm GENI hardware interface is based around
+> > "packets" is really awkward to fit into Linux's UART design.
+> > Specifically, in order to send bytes you need to start up a new
+> > "command" saying how many bytes you want to send and then you need to
+> > send all those bytes. Once you've committed to sending that number of
+> > bytes it's very awkward to change your mind and send fewer, especially
+> > if you want to do so without dropping bytes on the ground.
 > >
-> > While qcom_geni_serial_stop_tx_fifo() could be fixed to drain the FIFO
-> > and shut things down properly, stop_tx() isn't supposed to be a slow
-> > function. It is run with local interrupts off and is documented to
-> > stop transmitting "as soon as possible". Change the function to just
-> > stop new bytes from being queued. In order to make this work, change
-> > qcom_geni_serial_start_tx_fifo() to remove some conditions. It's
-> > always safe to enable the watermark interrupt and the IRQ handler will
-> > disable it if it's not needed.
+> > There may be a few cases where you might want to send fewer bytes than
+> > you originally expected:
+> > 1. You might want to interrupt the transfer with something higher
+> >    priority, like the kernel console or kdb.
+> > 2. You might want to enter system suspend.
+> > 3. The user might have killed the program that had queued bytes for
+> >    sending over the UART.
 > >
-> > For system suspend the queue still needs to be drained. Failure to do
-> > so means that the hardware won't provide new interrupts until a
-> > "cancel" command is sent. Add draining logic (fixing the issues noted
-> > above) at suspend time.
+> > Despite this awkwardness the Linux driver has still tried to send
+> > bytes using large transfers. Whenever the driver started a new
+> > transfer it would look at the number of bytes in the OS's queue and
+> > start a transfer for that many. The idea of using larger transfers is
+> > that it should be more efficient. When you're in the middle of a large
+> > transfer you can get interrupted when the hardware FIFO is close to
+> > empty and add more bytes in. Whenever you get to the end of a transfer
+> > you have to wait until the transfer is totally done before you can add
+> > more bytes and, depending on interrupt latency, that can cause the
+> > UART to idle a bit.
 >
-> So I spent the better part of the weekend looking at this driver and
-> this is one of the bits I worry about with your approach as relying on
-> draining anything won't work with hardware flow control.
+> As I mentioned last week, the slowdown from this is quite noticeable
+> (e.g. 25% slowdown at @115200), but this may be the price we need to pay
+> for correctness, at least temporarily.
 >
-> Cancelling commands can result stalled TX in a number of ways and
-> there's still at least one that you don't handle. If you end up with
-> data in in the FIFO, the watermark interrupt may never fire when you try
-> to restart tx.
+> An alternative might be to switch to using a 16 byte fifo. This should
+> reduce console latency even further, and may be able avoid the idling
+> UART penalty by continuing to use the watermark interrupt for refilling
+> the FIFO.
 
-Ah, that's a good call. Right now it doesn't really happen since
-people tend to hook up the debug UART without flow control lines (as
-far as I've seen), but it's good to make sure it works.
+I'm a bit confused. Right now we're using (effectively) a 64-byte
+FIFO. The FIFO is 16-words deep and we have 4 bytes per word. ...so
+I'm not sure what you mean by switching to a 16-byte FIFO. Do you mean
+to make less use of the FIFO, or something else?
+
+Overall the big problem I found in all my testing was that I needed to
+wait for a "command done" before kicking off a new command. When the
+"command done" arrives then the UART has stopped transmitting and
+you've got to suffer an interrupt latency before you can start
+transferring again. Essentially:
+
+1. Pick a transfer size.
+2. You can keep sending bytes / using the FIFO efficiently as long as
+there are still bytes left in the transfer.
+3. When you get to the end of the transfer, you have to wait for the
+UART to stop, report that it's done, and then suffer an interrupt
+latency to start a new transfer.
+
+So to be efficient you want to pick a big transfer size but if there's
+any chance that you might not need to transfer that many bytes then
+you need to figure out what to do. If you can handle that properly
+then that's great. If not then we have to make sure we never kick off
+a transfer that we might not finish.
+
+I'd also mention that, as talked about in my response to your other
+patch [1], I'm not seeing a 25% slowdown. I tested both with my simple
+proposal and with this whole series applied and my slowdown is less
+than 2%. I guess there must be something different with your setup?
+Trying to think about what kind of slowdown would be reasonable for my
+patch series at 115200:
+
+a) We send 64 bytes efficiently, which takes 5.6ms (64 * 1000 / 11520)
+
+b) We stop transferring and wait for an interrupt.
+
+c) We start transferring 64 bytes again.
+
+Let's say that your interrupt latency is 1 ms, which would be really
+terrible. In that case you'll essentially transfer 64 bytes in 6.6ms
+instead of 5.6 ms, right? That would be an 18% hit. Let's imagine
+something more sensible and say that most of the time you can handle
+an interrupt in 100 ms. That would be about a 1.7% slowdown, which
+actually matches what I was seeing. For reference, even an old arm32
+rk3288-veyron device I worked with years ago could usually handle
+interrupts in ~100-200 ms since dwc2 needs you to handle at least one
+(sometimes more) interrupt per USB uFrame (250ms).
+
+...so I'm confused about where your 25% number is coming from...
 
 
-> I'm leaning towards fixing the immediate hard lockup regression
-> separately and then we can address the older bugs and rework driver
-> without having to rush things.
-
-Yeah, that's fair. I've responded to your patch with a
-counter-proposal to fix the hard lockup regression, but I agree that
-should take priority.
-
-
-> I've prepared a minimal three patch series which fixes most of the
-> discussed issues (hard and soft lockup and garbage characters) and that
-> should be backportable as well.
->
-> Currently, the diffstat is just:
->
->          drivers/tty/serial/qcom_geni_serial.c | 36 +++++++++++++++++++++=
-++++-----------
->          1 file changed, 25 insertions(+), 11 deletions(-)
-
-I'll respond more in dept to your patches, but I suspect that your
-patch series won't fix the issues that N=C3=ADcolas reported [1]. I also
-tested and your patch series doesn't fix the kdb issue talked about in
-my patch #8. Part of my reworking of stuff also changed the way that
-the console and the polling commands worked since they were pretty
-broken. Your series doesn't touch them.
-
-We'll probably need something in-between taking advantage of some of
-the stuff you figured out with "cancel" but also doing a bigger rework
-than you did.
-
-[1] https://lore.kernel.org/r/46f57349-1217-4594-85b2-84fa3a365c0c@notapian=
-o
+[1] https://lore.kernel.org/r/CAD=3DFV=3DUwyzA614tDoq7BntW1DWmic=3DDOszr+iR=
+JVafVEYrXhpw@mail.gmail.com
