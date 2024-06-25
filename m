@@ -1,114 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04AFE11CA0;
-	Tue, 25 Jun 2024 14:53:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B68F816FF33;
+	Tue, 25 Jun 2024 16:08:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719327228; cv=none; b=O7hpMAFp0oKtI2+NPryWDWYRUhLyc59vJYiivnbXoNCfQ9W++WU2iO8hx+kGFQxMyL3LjZjiocog+FuaXUZPrIZOsXEthHYVy1e2FKBrPJ52/6lQyMc50UVmYUtxG91T/8f0uuJyOE0Bq7x0Ok4oilMLtMWoGOyrzg3clcUq3vU=
+	t=1719331685; cv=none; b=V7X/TBScixR71XUfHixejmwUoJsK9ciebpGnsvPd9DIozhHhtBdTXI7oXX3vv07YD4tth9w/pLq49STXuG3jRm4aO7orgeQczzlM0C7u0DBaiDJAj5mvQOnhFyjffZsG+2Djokm7HXZoP9nrjJpjHDyoynOZSiBeEy01iMSOxvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719327228; c=relaxed/simple;
-	bh=qabJPWm+MHILu6/Jx4re8Ge4P7ZupVRoClKSGqQZNOo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EJYAx7EqD83uIUgvWb5TtcGQgVx0h5Ri4Q6fKWUx1zZG9XQwSE0eekon4oaDmf2o7oPloZ6Dc2cERJe12eiCOTQOZKdGjo3xsNcnWqewtPvZNxWA5/obcEQDxTIv+T3tpwqDMS45uAe7HjuXIdL9WamKnxrebNncaGig7EFpgjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JJSIav5s; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719331685; c=relaxed/simple;
+	bh=YFQd4AGBmj/dBhWp9vE7IpteCEtWvtn5T0veylKLQsQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=jcyxPKk4zWKRic5IKNTZTAz+/2Ktx2+eycwWEdk7vhlxTeJibSJgr8FB3VPQbMvImUmlXLdKu+7ToOj4ZZaSGkbTSLSWJRkyqD39ahoaJGhCUfTq+rviPH0JvLgWxf8oS4CoJzTpgL4wG0wxso1omANPnkC+dmlwIpg3g+ma2PM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=pZ/R2Q18; arc=none smtp.client-ip=198.47.19.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JJSIav5s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68425C32781;
-	Tue, 25 Jun 2024 14:53:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719327227;
-	bh=qabJPWm+MHILu6/Jx4re8Ge4P7ZupVRoClKSGqQZNOo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JJSIav5slwoM68N/APnxXoRRPfo5AKq1jj/FSAYEKlQZttDWoqlyGtnQaPoSiCwvj
-	 2U3M2xzTmr2J7AwV8SrvtGwEJ3bm2QLdFUVaFdHM8U+6VutQ82+MSg+9IQvlmIA6i3
-	 W8mDvFReOyzQNIgqrsElTfxAf8Im+sSZhF3VG3qpWKSVh4vydJ3rXvG6yGsPY1Kx0v
-	 xzfsoW40qrZl2it/e5Ca8qltL7sIXGhpW3VSb7b94NN841sEOdfYqDVqD0nNkGFpSl
-	 f36bG72EyCFXYbW534uuCnXaakrnXw/KQ1xE4enULCHUi50IbVceBmj+USUwAN2lyt
-	 jBpPCW3Pr807A==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1sM7YQ-000000005T2-42Tl;
-	Tue, 25 Jun 2024 16:53:55 +0200
-Date: Tue, 25 Jun 2024 16:53:54 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Johan Hovold <johan+linaro@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] serial: qcom-geni: fix hard lockup on buffer flush
-Message-ID: <ZnraAlR9QeYhd628@hovoldconsulting.com>
-References: <20240624133135.7445-1-johan+linaro@kernel.org>
- <20240624133135.7445-2-johan+linaro@kernel.org>
- <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
- <CAD=FV=UwyzA614tDoq7BntW1DWmic=DOszr+iRJVafVEYrXhpw@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="pZ/R2Q18"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45PG7h84089051;
+	Tue, 25 Jun 2024 11:07:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1719331663;
+	bh=urAGycXTBoHdLtPtjfxHTcGyuwKBYenkT3TbkTOFkAk=;
+	h=From:To:CC:Subject:Date;
+	b=pZ/R2Q18HcSnlwK24ZMqS5X8GOW/1K66pkaCb90lP/QSzT+xUYvy24N6/blAUrZxw
+	 mYcxtdMAB73BIgdtA5ugVTDiAcw1rrdv0NbB7tRWn6GOMtl679zxZlS0sHme1/Dt8y
+	 zRtP2ut+/UPZ2AL/BiQfS/v0LIcFQh2QguM6YMU4=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45PG7hx2069246
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 25 Jun 2024 11:07:43 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 25
+ Jun 2024 11:07:43 -0500
+Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Tue, 25 Jun 2024 11:07:43 -0500
+Received: from udit-HP-Z2-Tower-G9-Workstation-Desktop-PC.dhcp.ti.com (udit-hp-z2-tower-g9-workstation-desktop-pc.dhcp.ti.com [172.24.227.18])
+	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45PG7dxE122229;
+	Tue, 25 Jun 2024 11:07:40 -0500
+From: Udit Kumar <u-kumar1@ti.com>
+To: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
+        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, Udit Kumar <u-kumar1@ti.com>,
+        <stable@vger.kernel.org>
+Subject: [PATCH v2] serial: 8250_omap: Fix Errata i2310 with RX FIFO level check
+Date: Tue, 25 Jun 2024 21:37:25 +0530
+Message-ID: <20240625160725.2102194-1-u-kumar1@ti.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD=FV=UwyzA614tDoq7BntW1DWmic=DOszr+iRJVafVEYrXhpw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-On Mon, Jun 24, 2024 at 01:45:17PM -0700, Doug Anderson wrote:
+Errata i2310[0] says, Erroneous timeout can be triggered,
+if this Erroneous interrupt is not cleared then it may leads
+to storm of interrupts.
 
-> Also: if we're looking at quick/easy to land and just fix the hard
-> lockup, I'd vote for this (I can send a real patch, though I'm about
-> to go on vacation):
-> 
-> --
-> 
-> @@ -904,8 +904,8 @@ static void qcom_geni_serial_handle_tx_fifo(struct
-> uart_port *uport,
->                 goto out_write_wakeup;
-> 
->         if (!port->tx_remaining) {
-> -               qcom_geni_serial_setup_tx(uport, pending);
-> -               port->tx_remaining = pending;
-> +               port->tx_remaining = min(avail, pending);
-> +               qcom_geni_serial_setup_tx(uport, port->tx_remaining);
-> 
->                 irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
->                 if (!(irq_en & M_TX_FIFO_WATERMARK_EN))
-> 
-> --
-> 
-> That will fix the hard lockup, is short and sweet, and also doesn't
-> end up outputting NUL bytes.
+Commit 9d141c1e6157 ("serial: 8250_omap: Implementation of Errata i2310")
+which added the workaround but missed ensuring RX FIFO is really empty
+before applying the errata workaround as recommended in the errata text.
+Fix this by adding back check for UART_OMAP_RX_LVL to be 0 for
+workaround to take effect.
 
-Yeah, this might be a good stop gap even if performance suffers.
+[0] https://www.ti.com/lit/pdf/sprz536 page 23
 
-> I measured time with that. I've been testing with a file I created
-> called "alphabet.txt" that just contains the letters A-Z repeated 3
-> times followed by a "\n", over and over again. I think gmail will kill
-> me with word wrapping, but basically:
+Fixes: 9d141c1e6157 ("serial: 8250_omap: Implementation of Errata i2310")
+Cc: stable@vger.kernel.org
+Reported-by: Vignesh Raghavendra <vigneshr@ti.com>
+Closes: https://lore.kernel.org/all/e96d0c55-0b12-4cbf-9d23-48963543de49@ti.com/
+Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+---
+Testlogs
+https://gist.github.com/uditkumarti/4f5120f203a238fbebe411eb82b63753
 
-> head -200 /var/alphabet.txt  | wc
->     200     200   15800
-> 
-> Before my patch I ran `time head -200 /var/alphabet.txt` and I got:
-> 
-> real    0m1.386s
-> 
-> After my patch I ran the same thing and got:
-> 
-> real    0m1.409s
-> 
-> So it's slower, but that's not 25% slower. I get 1.7% slower:
-> 
-> In [6]: (1.409 - 1.386) / 1.386 * 100
-> Out[6]: 1.659451659451669
-> 
-> IMO that seems like a fine slowdown in order to avoid printing NUL bytes.
+Changelog:
+Changes in v2
+- Update commit message, subject, Fixes tag
+link to v1:
+https://lore.kernel.org/all/20240625051338.2761599-1-u-kumar1@ti.com/
 
-With my 500K dmesg file test I see a similar performance drop as with
-your full series even if seems to behave slightly better (e.g. 20% drop
-instead of 24%). 
+ drivers/tty/serial/8250/8250_omap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Johan
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index ddac0a13cf84..1af9aed99c65 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -672,7 +672,8 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 	 * https://www.ti.com/lit/pdf/sprz536
+ 	 */
+ 	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
+-		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
++	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
++	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
+ 		unsigned char efr2, timeout_h, timeout_l;
+ 
+ 		efr2 = serial_in(up, UART_OMAP_EFR2);
+-- 
+2.34.1
+
