@@ -1,91 +1,158 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5667D1494B2;
-	Tue, 25 Jun 2024 09:07:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1555817BCC;
+	Tue, 25 Jun 2024 11:21:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719306456; cv=none; b=dI6k3tk2hg14+TM7dsnebZ9OT3WYisVP1omWS3hND3JwyjhxGZUseIAN+U+PzJ+VseQG/LzhxpSXRszAqvHR7iIvBT+wH/AewG4pQfevshtU7ypDKOC4S5tgrCHEAxltCxgOZsy4zISoik2XoyTakr4lUnQBwIkj2pNqVCESAJU=
+	t=1719314465; cv=none; b=VJ2Zao6T6sQc2zF6qXTbWXCd2igsZPh1RdT0bK85y33kW8krug6tAYaiKmPbA2lijosRk4B0U022WSAHGHEEpo0OYldNXunaHrfVd2aeKMA0do2J3KA0cFNIVk8+UoyHlc3At2qCIy3k7Zvx56CTDhPoTy0xR+kA58uP4lp0FdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719306456; c=relaxed/simple;
-	bh=FPBLWpIySdiT64ZGcbMIqX3pSE/qddtPDIhVXAyZM3c=;
+	s=arc-20240116; t=1719314465; c=relaxed/simple;
+	bh=qOGaxfsfM5iSyfa788L/8bzOZXv6TrPtFFQKAZc4E4A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gh/+CVGY0IGeK6fgWtNaUDc/89oNODVZfIecjEJ83LmvFnvtKs3Qi7/ym27Cz0eT2KQOg87P39cy5tSF03clq8701d+kOaggj8oTJ0tHMEsmY05kD0Y8XZOnXaZxbfvQ+V6DgD4LuzyQGFzWfKeHbA7KM2FY9fw4s6e8RxOpU3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IQpc9bDc; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=d9DbiRgpRIXp/hAPFEC1adZaKBIo19YKskbPhq8y+zcQp8UfMlFMs6bZVvlMqjWAGOWZb9NL9EM6n0tvUGzJ3Hs3Ujl+3VUqLeK3jidEa6myyGLKBDRNyUJZ1VDAd19i1O95q/rWGdE0zdxjEA00dLgZ0W1TB6UHqFD0TuPNcVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qfmEArOl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IQpc9bDc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719306455; x=1750842455;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FPBLWpIySdiT64ZGcbMIqX3pSE/qddtPDIhVXAyZM3c=;
-  b=IQpc9bDcZWMVMq5VwjieZ7g78xIWj0emc+O2VcUffoiO9O+6Xf0/SY4Y
-   JuShBzHFCT5jfkqviIr6PHIIpylmZYMZtZRWQ6byWptx2gQO6uA7hitbn
-   cEmbJor+n4mQ9zdI7KgjsoXxrUgooVP/pOCK7x8Xc+5qK0L5DSI4f/KdA
-   LkkbyFE+TzUqHMFJk407u512VohgGrQcsPXvkDoSYE4YtnI0sNTKVYg5q
-   KNTBNR0hbaF9kmF+zDcamLbejHq4zg+htrjN7TQYI2Q+ovY57N+uDDVii
-   FYF6olfT3VwrvurHJfvGXDDs4HsulIKGm2qgwYupeG2vYAZsqrV5E5IYd
-   w==;
-X-CSE-ConnectionGUID: xu4WKmI4SwGOVs3v+T5B3w==
-X-CSE-MsgGUID: DX3oCvBFSDCu+flgiVnUeQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11113"; a="33847333"
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="33847333"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 02:07:32 -0700
-X-CSE-ConnectionGUID: aXM/UFz4SgGQ+hH8ddWv5w==
-X-CSE-MsgGUID: j6iP4eI7RfCJZrqSM/8SLA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="44227663"
-Received: from unknown (HELO tlindgre-MOBL1) ([10.245.247.67])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 02:07:28 -0700
-Date: Tue, 25 Jun 2024 12:07:22 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Petr Mladek <pmladek@suse.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qfmEArOl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D13CC32781;
+	Tue, 25 Jun 2024 11:21:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719314464;
+	bh=qOGaxfsfM5iSyfa788L/8bzOZXv6TrPtFFQKAZc4E4A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qfmEArOlYEgMbTlry56ebv1Pl5/Rz4cwO95FE0Q+i+xziu88qSGFhizZkAXQ0SV3X
+	 EvJiKaquyr6X5N1emlau22G9eOgsIx30bserkZ8EN9dVYjdBpLBs/2gZYNJS0t8LE+
+	 RQkDGSEwbHf/JwaD+4lLUCfsE2cRura+HaaQbnLB8lQ99NGgBYL0v7zNMw/gg5gVU3
+	 +EPbIFW2nzM4fsRza0qSdIOBSDIvKaDdu7N+ZdJHlMJenoucs81voATqBqfOxLRil4
+	 UI9SBmTEe7COieYPoLHIB6FiLDzabc5GUvm0mvGpHL0UMAJ7s3PWeIERXZbYsi/c/c
+	 yY+2VIafdUO+Q==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan@kernel.org>)
+	id 1sM4Ea-000000002rA-0j0F;
+	Tue, 25 Jun 2024 13:21:12 +0200
+Date: Tue, 25 Jun 2024 13:21:12 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Doug Anderson <dianders@chromium.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Linus Torvalds <torvalds@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Yicong Yang <yangyicong@hisilicon.com>,
 	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] Fixes for console command line ordering
-Message-ID: <ZnqIykv2_4xb1Q6E@tlindgre-MOBL1>
-References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
- <ZnWRup3MvcVQ4MX8@pathway.suse.cz>
- <2024062403-skid-gotten-7585@gregkh>
- <ZnpRozsdw6zbjqze@tlindgre-MOBL1>
- <2024062551-hubcap-bauble-fae5@gregkh>
- <ZnqBYAV7iplmeh1R@pathway.suse.cz>
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	linux-arm-msm@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 8/8] serial: qcom-geni: Rework TX in FIFO mode to fix
+ hangs/lockups
+Message-ID: <ZnqoKDnUMxqf7QRy@hovoldconsulting.com>
+References: <20240610222515.3023730-1-dianders@chromium.org>
+ <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
+ <Znlp1_F1u-70D3QQ@hovoldconsulting.com>
+ <CAD=FV=XmuKUKvCq7gG+wM-jAAgHLHnYw4NteFEKz5Fmczd=U7g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZnqBYAV7iplmeh1R@pathway.suse.cz>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAD=FV=XmuKUKvCq7gG+wM-jAAgHLHnYw4NteFEKz5Fmczd=U7g@mail.gmail.com>
 
-On Tue, Jun 25, 2024 at 10:36:17AM +0200, Petr Mladek wrote:
-> On Tue 2024-06-25 08:20:06, Greg Kroah-Hartman wrote:
-> > All now reverted, thanks!
+On Mon, Jun 24, 2024 at 02:15:07PM -0700, Doug Anderson wrote:
+> On Mon, Jun 24, 2024 at 5:43 AM Johan Hovold <johan@kernel.org> wrote:
+
+> > As I mentioned last week, the slowdown from this is quite noticeable
+> > (e.g. 25% slowdown at @115200), but this may be the price we need to pay
+> > for correctness, at least temporarily.
+> >
+> > An alternative might be to switch to using a 16 byte fifo. This should
+> > reduce console latency even further, and may be able avoid the idling
+> > UART penalty by continuing to use the watermark interrupt for refilling
+> > the FIFO.
 > 
-> Great, thanks Greg!
+> I'm a bit confused. Right now we're using (effectively) a 64-byte
+> FIFO. The FIFO is 16-words deep and we have 4 bytes per word. ...so
+> I'm not sure what you mean by switching to a 16-byte FIFO. Do you mean
+> to make less use of the FIFO, or something else?
+
+I meant switching to using one-byte words so that we end up with a
+16-byte FIFO where we don't have the issue of adding more data when the
+last word is not a full four-byte one.
+
+> Overall the big problem I found in all my testing was that I needed to
+> wait for a "command done" before kicking off a new command. When the
+> "command done" arrives then the UART has stopped transmitting and
+> you've got to suffer an interrupt latency before you can start
+> transferring again. Essentially:
 > 
-> Tony, could you please send a new patchset which would provide
-> the new solution on top of this revert? It might make sense
-> to wait until the revert reaches mainline.
+> 1. Pick a transfer size.
+> 2. You can keep sending bytes / using the FIFO efficiently as long as
+> there are still bytes left in the transfer.
+> 3. When you get to the end of the transfer, you have to wait for the
+> UART to stop, report that it's done, and then suffer an interrupt
+> latency to start a new transfer.
+> 
+> So to be efficient you want to pick a big transfer size but if there's
+> any chance that you might not need to transfer that many bytes then
+> you need to figure out what to do. If you can handle that properly
+> then that's great. If not then we have to make sure we never kick off
+> a transfer that we might not finish.
 
-Yup will do.
+Right. But with a 16 1-byte word FIFO, we may be able to kick of a
+really long transfer and just keep it running until it needs to be
+kicked again (cf. enabling TX). The console code can easily insert
+characters in the FIFO while the transfer is running (and would only
+have to wait for 16 characters to drain in the worst case).
 
-Thanks,
+Effectively, most of the identified issues would just go away, as
+there's basically never any need to cancel anything except at port
+shutdown.
 
-Tony
+> I'd also mention that, as talked about in my response to your other
+> patch [1], I'm not seeing a 25% slowdown. I tested both with my simple
+> proposal and with this whole series applied and my slowdown is less
+> than 2%. I guess there must be something different with your setup?
+> Trying to think about what kind of slowdown would be reasonable for my
+> patch series at 115200:
+> 
+> a) We send 64 bytes efficiently, which takes 5.6ms (64 * 1000 / 11520)
+> 
+> b) We stop transferring and wait for an interrupt.
+> 
+> c) We start transferring 64 bytes again.
+> 
+> Let's say that your interrupt latency is 1 ms, which would be really
+> terrible. In that case you'll essentially transfer 64 bytes in 6.6ms
+> instead of 5.6 ms, right? That would be an 18% hit. Let's imagine
+> something more sensible and say that most of the time you can handle
+> an interrupt in 100 ms. That would be about a 1.7% slowdown, which
+> actually matches what I was seeing. For reference, even an old arm32
+> rk3288-veyron device I worked with years ago could usually handle
+> interrupts in ~100-200 ms since dwc2 needs you to handle at least one
+> (sometimes more) interrupt per USB uFrame (250ms).
+> 
+> ...so I'm confused about where your 25% number is coming from...
+
+I didn't do an in-depth analysis of the slowdown, but I did rerun the
+tests now and I'm still seeing a 22-24% slowdown on x1e80100 with rc5.
+This is a new platform so I compared with sc8280xp, which shows similar
+numbers even if it's slightly faster to begin with:
+
+					sc8280xp	x1e80100
+
+	rc5 full series			61 s		67 s
+	rc5 last patch reverted		50 s		54 s
+
+I have a getty running and cat a 10x dmesg file of 543950 bytes to
+/dev/ttyMSM0 from an ssh session (just catting in a serial console gives
+similar numbers). 
+
+Johan
