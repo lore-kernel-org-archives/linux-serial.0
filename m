@@ -1,108 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D7D5146587;
-	Tue, 25 Jun 2024 08:46:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5667D1494B2;
+	Tue, 25 Jun 2024 09:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719305187; cv=none; b=qjINeJR4rXlN8ps+Nyeo8kYpeO8C+eM/fDg9TOwCJ8+hPMhQ1Jxv3iV741CLMliozUcfECGGvgvIpFlmT70KBq9PWPdvGB5Mj5vs7q0XLhLMvTioWQbJ9AdJrUhh634iovlqPf7mUgeMLlFIFpYx1KCp0Va9DeCerlHaRVAdjNQ=
+	t=1719306456; cv=none; b=dI6k3tk2hg14+TM7dsnebZ9OT3WYisVP1omWS3hND3JwyjhxGZUseIAN+U+PzJ+VseQG/LzhxpSXRszAqvHR7iIvBT+wH/AewG4pQfevshtU7ypDKOC4S5tgrCHEAxltCxgOZsy4zISoik2XoyTakr4lUnQBwIkj2pNqVCESAJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719305187; c=relaxed/simple;
-	bh=io+YsU06PfnGMLgZdDSi+i1wl+f5UWTu++sK/jgkxBQ=;
+	s=arc-20240116; t=1719306456; c=relaxed/simple;
+	bh=FPBLWpIySdiT64ZGcbMIqX3pSE/qddtPDIhVXAyZM3c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UEy+2lN5Qr/8zpmtqSlPX5dZCH7hiUp0pXKerAq4Ysif5ANCUgjMPYuXvjiw5n2Ja1/c6nPU1Tla49KO2gUXAxzwPfVoG8A3ieVG1NsvZLCfPmz45/TtJfX6XpLSv/fFN24MkQrPr/0h/AGLij6mWougkF9367rprdvnvNSesRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=utoHYsjX; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=gh/+CVGY0IGeK6fgWtNaUDc/89oNODVZfIecjEJ83LmvFnvtKs3Qi7/ym27Cz0eT2KQOg87P39cy5tSF03clq8701d+kOaggj8oTJ0tHMEsmY05kD0Y8XZOnXaZxbfvQ+V6DgD4LuzyQGFzWfKeHbA7KM2FY9fw4s6e8RxOpU3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IQpc9bDc; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="utoHYsjX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFFE9C32786;
-	Tue, 25 Jun 2024 08:46:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719305186;
-	bh=io+YsU06PfnGMLgZdDSi+i1wl+f5UWTu++sK/jgkxBQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=utoHYsjX6B17GPU9bmbscNnPG2m3iCvktmccxfRIjsYuJ800o4hUu/rRux0nLWYAj
-	 9YOTYBAwPdmfzWqvkKk5A8ohSNCGfx36FobavrpeDrBW5B8ikaJc23rBrJx3BIxkda
-	 XHaCBxnksbQxhJFz0vetUvGB9ouEkVhYaHFDHdbXXovx/h6vLpRkMEBaOtng7YNQrT
-	 d4NWQ+hQpZl8UUAQ5q4juhACDdfEdfo6IkYwksegU1ME+yTqQ/YJ+8fWEK9Xin4aea
-	 G8zn8M77C+/YARQ7iZ+NpFCnkA6dnBKIJCMKYyRnX8urKwCT36BUfpDdgVJ9MYW2vh
-	 d09u2I40rd6uA==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1sM1ov-000000005yW-0F2h;
-	Tue, 25 Jun 2024 10:46:33 +0200
-Date: Tue, 25 Jun 2024 10:46:33 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IQpc9bDc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1719306455; x=1750842455;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FPBLWpIySdiT64ZGcbMIqX3pSE/qddtPDIhVXAyZM3c=;
+  b=IQpc9bDcZWMVMq5VwjieZ7g78xIWj0emc+O2VcUffoiO9O+6Xf0/SY4Y
+   JuShBzHFCT5jfkqviIr6PHIIpylmZYMZtZRWQ6byWptx2gQO6uA7hitbn
+   cEmbJor+n4mQ9zdI7KgjsoXxrUgooVP/pOCK7x8Xc+5qK0L5DSI4f/KdA
+   LkkbyFE+TzUqHMFJk407u512VohgGrQcsPXvkDoSYE4YtnI0sNTKVYg5q
+   KNTBNR0hbaF9kmF+zDcamLbejHq4zg+htrjN7TQYI2Q+ovY57N+uDDVii
+   FYF6olfT3VwrvurHJfvGXDDs4HsulIKGm2qgwYupeG2vYAZsqrV5E5IYd
+   w==;
+X-CSE-ConnectionGUID: xu4WKmI4SwGOVs3v+T5B3w==
+X-CSE-MsgGUID: DX3oCvBFSDCu+flgiVnUeQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11113"; a="33847333"
+X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
+   d="scan'208";a="33847333"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 02:07:32 -0700
+X-CSE-ConnectionGUID: aXM/UFz4SgGQ+hH8ddWv5w==
+X-CSE-MsgGUID: j6iP4eI7RfCJZrqSM/8SLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
+   d="scan'208";a="44227663"
+Received: from unknown (HELO tlindgre-MOBL1) ([10.245.247.67])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2024 02:07:28 -0700
+Date: Tue, 25 Jun 2024 12:07:22 +0300
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Petr Mladek <pmladek@suse.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Linus Torvalds <torvalds@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Johan Hovold <johan+linaro@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
 	John Ogness <john.ogness@linutronix.de>,
-	linux-arm-msm@vger.kernel.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v4 7/8] serial: qcom-geni: Fix suspend while active UART
- xfer
-Message-ID: <ZnqD6ZFxfU6P5yN5@hovoldconsulting.com>
-References: <20240610222515.3023730-1-dianders@chromium.org>
- <20240610152420.v4.7.I0f81a5baa37d368f291c96ee4830abca337e3c87@changeid>
- <ZnlilDj5UrvrVasv@hovoldconsulting.com>
- <CAD=FV=U=C+Myrb4cpGyV-J=RHn39C2aF1WT_Xt5M2vczbZ-AbA@mail.gmail.com>
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/4] Fixes for console command line ordering
+Message-ID: <ZnqIykv2_4xb1Q6E@tlindgre-MOBL1>
+References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
+ <ZnWRup3MvcVQ4MX8@pathway.suse.cz>
+ <2024062403-skid-gotten-7585@gregkh>
+ <ZnpRozsdw6zbjqze@tlindgre-MOBL1>
+ <2024062551-hubcap-bauble-fae5@gregkh>
+ <ZnqBYAV7iplmeh1R@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=U=C+Myrb4cpGyV-J=RHn39C2aF1WT_Xt5M2vczbZ-AbA@mail.gmail.com>
+In-Reply-To: <ZnqBYAV7iplmeh1R@pathway.suse.cz>
 
-On Mon, Jun 24, 2024 at 01:58:34PM -0700, Doug Anderson wrote:
-> On Mon, Jun 24, 2024 at 5:12 AM Johan Hovold <johan@kernel.org> wrote:
-
-> > I'm leaning towards fixing the immediate hard lockup regression
-> > separately and then we can address the older bugs and rework driver
-> > without having to rush things.
+On Tue, Jun 25, 2024 at 10:36:17AM +0200, Petr Mladek wrote:
+> On Tue 2024-06-25 08:20:06, Greg Kroah-Hartman wrote:
+> > All now reverted, thanks!
 > 
-> Yeah, that's fair. I've responded to your patch with a
-> counter-proposal to fix the hard lockup regression, but I agree that
-> should take priority.
+> Great, thanks Greg!
 > 
-> > I've prepared a minimal three patch series which fixes most of the
-> > discussed issues (hard and soft lockup and garbage characters) and that
-> > should be backportable as well.
-> >
-> > Currently, the diffstat is just:
-> >
-> >          drivers/tty/serial/qcom_geni_serial.c | 36 +++++++++++++++++++++++++-----------
-> >          1 file changed, 25 insertions(+), 11 deletions(-)
-> 
-> I'll respond more in dept to your patches, but I suspect that your
-> patch series won't fix the issues that Nícolas reported [1]. I also
-> tested and your patch series doesn't fix the kdb issue talked about in
-> my patch #8. Part of my reworking of stuff also changed the way that
-> the console and the polling commands worked since they were pretty
-> broken. Your series doesn't touch them.
+> Tony, could you please send a new patchset which would provide
+> the new solution on top of this revert? It might make sense
+> to wait until the revert reaches mainline.
 
-Right, I never claimed to fix all the issues, only some of the most
-obvious and severe ones. 
+Yup will do.
 
-> We'll probably need something in-between taking advantage of some of
-> the stuff you figured out with "cancel" but also doing a bigger rework
-> than you did.
+Thanks,
 
-Quite likely. My intention was to try to find minimal fixes for
-individual issues, which could also be backported, before doing a larger
-rework if that turns out to be necessary (and which can also be done in
-more than way, e.g. using 16-byte fifos).
-
-Johan
+Tony
