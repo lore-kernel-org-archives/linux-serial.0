@@ -1,39 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B9613C9A2;
-	Tue, 25 Jun 2024 04:41:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C960A13C907;
+	Tue, 25 Jun 2024 04:42:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719290462; cv=none; b=gCEz+o2BnZwQS5ErYxqYTvx4FXpSzdkdD3wpRH9gafxX0IsS1B/TQQomRxcOWj2dV/iEtbZXZZQ3Ms47MXBxwl6rqDDboB9BfEJxuFyYUCZ9D7n2SlDqlS3Oo1jsXkZRX/5MTdPZMKdN6gAr/+RxxPS+u4vFcM69VuEw+niXH9c=
+	t=1719290531; cv=none; b=qucAFLWhaz1fUMvD4O6w3X6UUwO2JQwsMT0rbrtC7hqRLvCS/8Ab9HLAYCR+8JjLz+6n/hPhUU8JSbOAVZHiP1x3sgxAY8ughgHonDHFqzdwyqAqQ/FpSWk87uStjEM8KDww4A00QT5E9ZLbtw6SNrQ2iAWAOMYwfKO17NZ+O3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719290462; c=relaxed/simple;
-	bh=D7IIeOXloXwbPh6kcp6AarwDbWuitjPwrJSr2qfNFLw=;
+	s=arc-20240116; t=1719290531; c=relaxed/simple;
+	bh=5Iel3gIemmTqgmdoFgLDuJp3DyqVPqYisMuF5wmmuwY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LRYjlXIRSx9PL6fISTMDNzVA9+Dyhiz7MqBbp2ZiyAbS9GjjUT+qCoMr1bL2lSFIfBG/gFzrM1/qdFKZggEzyIPkhwRcQDHZC3xWIsrRNfv7zE7DkM2uim0OFaPPUeZfD+oQMkEl6hAEiYz7Bbs107xb+DIkQ3u3P02ZUrEs++Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=kwJkbyO2; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kPOkJNDwyu7waOa8FcRTO1b74Uxt7HOwDvTOVHee8GCteg0U+tHPz04Yt1Agu3JaqJ3uLv6/5qgAiTSnbgFNmUctYybP/ol7SiIMPemyzj25rhLFZTeeIG1enSWM1EK5Zse83hfwKa0VC3W/TATcX5pRQE0MOG4jjiTm1w+wIAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=PG5ERh9C; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="kwJkbyO2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811F4C32782;
-	Tue, 25 Jun 2024 04:41:01 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PG5ERh9C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0FB6C32782;
+	Tue, 25 Jun 2024 04:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1719290462;
-	bh=D7IIeOXloXwbPh6kcp6AarwDbWuitjPwrJSr2qfNFLw=;
+	s=korg; t=1719290531;
+	bh=5Iel3gIemmTqgmdoFgLDuJp3DyqVPqYisMuF5wmmuwY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kwJkbyO2t5aAPDDtUFSL5ygieGeKli086ona1nncN0naWo6Rx5Dw4bCZHxLRvGZ0m
-	 15NjjrXadD2AeKVUGe3qk8t2YXwDwIw5r4ozwYbZGC48z4jrSEAs4s+q45BfMzTIAh
-	 uggp5EbN0VOHY4mUQ3zLqWIiSNO/PpOJcfeE6vko=
-Date: Tue, 25 Jun 2024 06:40:58 +0200
+	b=PG5ERh9CDjtbjgjSLU4sWpSTqrx9siGeKsNo1P1bjON33MURLWvEfGm07b1tL1RBO
+	 AmQFvaPNrOAkdoRWbeEf2XHAriMfXIm5vHEpBkFSODYx2h/r+1y9E1KBSkEj2dwBFr
+	 jMx+7eRZo45R+4HL3JsgJeveQnelFCUB+EZj5JJQ=
+Date: Tue, 25 Jun 2024 06:42:08 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Udit Kumar <u-kumar1@ti.com>
-Cc: vigneshr@ti.com, nm@ti.com, tony@atomide.com, jirislaby@kernel.org,
-	ronald.wahl@raritan.com, thomas.richard@bootlin.com,
-	tglx@linutronix.de, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v4] serial: 8250_omap: Implementation of Errata i2310
-Message-ID: <2024062525-venue-twine-aa79@gregkh>
-References: <20240624165656.2634658-1-u-kumar1@ti.com>
+To: Jacky Huang <ychuang570808@gmail.com>
+Cc: dan.carpenter@linaro.org, jirislaby@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Jacky Huang <ychuang3@nuvoton.com>
+Subject: Re: [PATCH v3] tty: serial: ma35d1: Add a NULL check for of_node
+Message-ID: <2024062539-juicy-movable-0e94@gregkh>
+References: <20240625032919.73-1-ychuang570808@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,21 +40,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240624165656.2634658-1-u-kumar1@ti.com>
+In-Reply-To: <20240625032919.73-1-ychuang570808@gmail.com>
 
-On Mon, Jun 24, 2024 at 10:26:56PM +0530, Udit Kumar wrote:
-> As per Errata i2310[0], Erroneous timeout can be triggered,
-> if this Erroneous interrupt is not cleared then it may leads
-> to storm of interrupts, therefore apply Errata i2310 solution.
+On Tue, Jun 25, 2024 at 03:29:19AM +0000, Jacky Huang wrote:
+> From: Jacky Huang <ychuang3@nuvoton.com>
 > 
-> [0] https://www.ti.com/lit/pdf/sprz536 page 23
+> The pdev->dev.of_node can be NULL if the "serial" node is absent.
+> Add a NULL check to return an error in such cases.
 > 
-> Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+> v3:
+>     - Added "Reported-by:" line.
+> v2:
+>     - Added "Fixes" line.
 
-As I have already taken the v3 patch to my tree, please send a "fix"
-patch on top of it, as I can not rebase a public tree.
+As per the kernel documentation, these "v3:" information goes below the
+--- line.
+
+Please fix up and send a v4.
 
 thanks,
 
