@@ -1,110 +1,166 @@
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B68F816FF33;
-	Tue, 25 Jun 2024 16:08:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B833D171E41
+	for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 16:25:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719331685; cv=none; b=V7X/TBScixR71XUfHixejmwUoJsK9ciebpGnsvPd9DIozhHhtBdTXI7oXX3vv07YD4tth9w/pLq49STXuG3jRm4aO7orgeQczzlM0C7u0DBaiDJAj5mvQOnhFyjffZsG+2Djokm7HXZoP9nrjJpjHDyoynOZSiBeEy01iMSOxvU=
+	t=1719332753; cv=none; b=FTLMtzN2VCENTVa6+JsnLHqvpdm5AkzyXVBjngncFhiZS0Jspn576zHujvsl/EpDadsGJ4Q5DZxh57pvr3gd5e7ldWDumtGnVD9kAmIdll67WeT2tZfxB1ztNW43Z7uzlH527ku9USjF35F+oUuQXdH5H4hvPeAVgr2kSOPOYRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719331685; c=relaxed/simple;
-	bh=YFQd4AGBmj/dBhWp9vE7IpteCEtWvtn5T0veylKLQsQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=jcyxPKk4zWKRic5IKNTZTAz+/2Ktx2+eycwWEdk7vhlxTeJibSJgr8FB3VPQbMvImUmlXLdKu+7ToOj4ZZaSGkbTSLSWJRkyqD39ahoaJGhCUfTq+rviPH0JvLgWxf8oS4CoJzTpgL4wG0wxso1omANPnkC+dmlwIpg3g+ma2PM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=pZ/R2Q18; arc=none smtp.client-ip=198.47.19.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1719332753; c=relaxed/simple;
+	bh=B2YDtkHg6fs4L+dcYvgZ3sVe0CW9/lPIvU9kwWcZ9V0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=YHSMv4q0BYr4J1lgNEm5RxWW6e21sQDnM2PobSHxlDV0y0HReY+SwiVRm6lUVs1VVJAi7EnhIZHjq4VD2sSG0b7pBSRR08vltkD6l4u9daj6FK0DCwjmJlQWYzt3WXgCOvfEBmuOpyjNxEj+itplYD3vpMzVyB8UYTXqSHpkLqo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=BehKRk/4; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="pZ/R2Q18"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45PG7h84089051;
-	Tue, 25 Jun 2024 11:07:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1719331663;
-	bh=urAGycXTBoHdLtPtjfxHTcGyuwKBYenkT3TbkTOFkAk=;
-	h=From:To:CC:Subject:Date;
-	b=pZ/R2Q18HcSnlwK24ZMqS5X8GOW/1K66pkaCb90lP/QSzT+xUYvy24N6/blAUrZxw
-	 mYcxtdMAB73BIgdtA5ugVTDiAcw1rrdv0NbB7tRWn6GOMtl679zxZlS0sHme1/Dt8y
-	 zRtP2ut+/UPZ2AL/BiQfS/v0LIcFQh2QguM6YMU4=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45PG7hx2069246
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 25 Jun 2024 11:07:43 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 25
- Jun 2024 11:07:43 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Tue, 25 Jun 2024 11:07:43 -0500
-Received: from udit-HP-Z2-Tower-G9-Workstation-Desktop-PC.dhcp.ti.com (udit-hp-z2-tower-g9-workstation-desktop-pc.dhcp.ti.com [172.24.227.18])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45PG7dxE122229;
-	Tue, 25 Jun 2024 11:07:40 -0500
-From: Udit Kumar <u-kumar1@ti.com>
-To: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>
-CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
-        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, Udit Kumar <u-kumar1@ti.com>,
-        <stable@vger.kernel.org>
-Subject: [PATCH v2] serial: 8250_omap: Fix Errata i2310 with RX FIFO level check
-Date: Tue, 25 Jun 2024 21:37:25 +0530
-Message-ID: <20240625160725.2102194-1-u-kumar1@ti.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="BehKRk/4"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-70677422857so1790110b3a.2
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 09:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1719332750; x=1719937550; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=V5Tt7Lc2+N1dSi7KU9Dntd7EOp1nzs8phsS0Ld5X6so=;
+        b=BehKRk/4Fg9+4rrmw24bAdsawNF6eS9ayOo0Rt8dBrauNCgXgqFdAkg3avorEC7mrc
+         2e9dRSltimTOxUTIpSd/BLg6FfbinxbMjlnAipEqjmJELB5zfOrnqm76rwcGtuQWUveu
+         NMCUxp3w2z1pb/uDNwTEu8kDR96aJw3I0SrNg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719332750; x=1719937550;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=V5Tt7Lc2+N1dSi7KU9Dntd7EOp1nzs8phsS0Ld5X6so=;
+        b=b2J8FwMWWIO2bgyDHJsEcNJXe6TURthJyS1HRtwy+/Z8u0JseopaWaoMNfj+5kFk+4
+         QYegFt7eU4qRfVHucgMvVlwBeVXiBrsaQzCXvrA7wVdL+OE7z7LtzJW2t3R5Y4wG+4j4
+         0n2rD8GRBzhNx+vke7oNLw400MIxxZeWd47OwGe7UMZQAuGx72/zUA8AucoN8m2ASFXG
+         rjS3d7T/CR5xZtgd2tIKCUzV9PHgx2LNkvFVORYJKjuKg0gPmDmQFXuUSQraGD+qkpVr
+         hEXG7vj4A/OR30XP6Z8XirA28C9POYFqGNoEeZK4tfuWKBxnXHkgKuZdRyOriZ1TCdcj
+         bk6w==
+X-Forwarded-Encrypted: i=1; AJvYcCXjoE2meEnokwMDAGtrnvpXKw7chV9AI9TVgFXmTJ6BVXAGq2/hGN0JYV0zl44G3/doBGPDYH4lZ4EN4SQSUCII6OgomXyxJqa3Lpb8
+X-Gm-Message-State: AOJu0Yyu7eRQks+ay8werq7BXA+NehLwdbcExhBSEp03AjAF7hgo/bvC
+	eniz0ZwbSeyaIDSFp2H92XYpO+GoHbVrlzmYVocedeIf4czDa29u9xbZHTv1/g==
+X-Google-Smtp-Source: AGHT+IEhsjk6aekAxj8P+vBahLkJqDcR0bi6Msxsp/13kv2NwnQagIIUi6/qZFjte+RAGbc4YnBoNg==
+X-Received: by 2002:aa7:8611:0:b0:706:375e:220d with SMTP id d2e1a72fcca58-706746fa56cmr7358170b3a.30.1719332749891;
+        Tue, 25 Jun 2024 09:25:49 -0700 (PDT)
+Received: from dianders.sjc.corp.google.com ([2620:15c:9d:2:3491:3ec9:c533:e23])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7068a63c8bfsm3535919b3a.27.2024.06.25.09.25.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jun 2024 09:25:49 -0700 (PDT)
+From: Douglas Anderson <dianders@chromium.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tony Lindgren <tony@atomide.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-arm-msm@vger.kernel.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Stephen Boyd <swboyd@chromium.org>,
+	linux-serial@vger.kernel.org,
+	=?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= <nfraprado@collabora.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	Yicong Yang <yangyicong@hisilicon.com>,
+	Johan Hovold <johan+linaro@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Rob Herring <robh@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Subject: [PATCH] serial: qcom-geni: Avoid hard lockup if bytes are dropped
+Date: Tue, 25 Jun 2024 09:24:44 -0700
+Message-ID: <20240625092440.1.Icf914852be911b95aefa9d798b6f1cd1a180f985@changeid>
+X-Mailer: git-send-email 2.45.2.741.gdbec12cfda-goog
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-Errata i2310[0] says, Erroneous timeout can be triggered,
-if this Erroneous interrupt is not cleared then it may leads
-to storm of interrupts.
+If you start sending a large chunk of text over the UART (like `cat
+/var/log/messages`) and then hit Ctrl-C to stop it then, as of commit
+1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo"), you'll
+get a hard lockup. Specifically, the driver ends up looping in
+qcom_geni_serial_send_chunk_fifo(). uart_fifo_out() will return 0
+bytes were transferred and the loop will never make progress.
 
-Commit 9d141c1e6157 ("serial: 8250_omap: Implementation of Errata i2310")
-which added the workaround but missed ensuring RX FIFO is really empty
-before applying the errata workaround as recommended in the errata text.
-Fix this by adding back check for UART_OMAP_RX_LVL to be 0 for
-workaround to take effect.
+Avoid the hard lockup by making sure we never kick off a transfer that
+is larger than we can queue up immediately.
 
-[0] https://www.ti.com/lit/pdf/sprz536 page 23
+The issue stems from the fact that the geni serial driver tried to be
+more efficient by kicking off large transfers. It tried to do this
+because the design of geni means that whenever we get to the end of a
+transfer there is a period of time where the line goes idle while we
+wait for an interrupt to start a new transfer.
 
-Fixes: 9d141c1e6157 ("serial: 8250_omap: Implementation of Errata i2310")
-Cc: stable@vger.kernel.org
-Reported-by: Vignesh Raghavendra <vigneshr@ti.com>
-Closes: https://lore.kernel.org/all/e96d0c55-0b12-4cbf-9d23-48963543de49@ti.com/
-Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+The geni serial driver kicked off large transfers by peeking into the
+Linux software FIFO and kicking off a transfer based on the number of
+bytes there. While that worked (mostly), there was an unhandled corner
+case when the Linux software FIFO shrank, as happens when you kill a
+process that had queued up lots of data to send.
+
+Prior to the recent kfifo change, the geni driver would keep sending
+data that had been "removed" from the Linux software FIFO. While
+definitely wrong, this didn't feel too terrible. In the above instance
+of hitting Ctrl-C while catting a large file you'd see the file keep
+spewing out to the console for a few hundred milliseconds after the
+process died. As mentioned above, after the kfifo change we get a hard
+lockup.
+
+Digging into the geni serial driver shows a whole pile of issues and
+those should be fixed. One patch series attempting to fix the issue
+has had positive testing/reviews [1] but it's a fairly large change.
+While debating / researching the right long term solution, this small
+patch at least prevents the hard lockup.
+
+NOTE: this change does have performance impacts. On my sc7180-trogdor
+device I measured something like a 2% slowdown. Others has seen
+something more like a 20-25% slowdown [2]. However, correctness trumps
+performance so landing this makes sense while better solutions are
+devised.
+
+[1] https://lore.kernel.org/r/20240610222515.3023730-1-dianders@chromium.org
+[2] https://lore.kernel.org/r/ZnraAlR9QeYhd628@hovoldconsulting.com
+
+Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
-Testlogs
-https://gist.github.com/uditkumarti/4f5120f203a238fbebe411eb82b63753
+As discussed with Johan [3], this probably makes sense to land as a
+stopgap while we come to agreement on how to solve the larger issues.
 
-Changelog:
-Changes in v2
-- Update commit message, subject, Fixes tag
-link to v1:
-https://lore.kernel.org/all/20240625051338.2761599-1-u-kumar1@ti.com/
+NOTE: I'll be away from my work computer for the next 1.5 weeks.
+Hopefully this can land in the meantime. If it needs spinning /
+reworking I wouldn't object to someone else taking it on.
 
- drivers/tty/serial/8250/8250_omap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I've removed all "Tested-by" tags here since the code is pretty
+different and it only solves a subset of the issues of the larger
+series.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index ddac0a13cf84..1af9aed99c65 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -672,7 +672,8 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
- 	 * https://www.ti.com/lit/pdf/sprz536
- 	 */
- 	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
--		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
-+	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
-+	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
- 		unsigned char efr2, timeout_h, timeout_l;
+[3] https://lore.kernel.org/r/ZnraAlR9QeYhd628@hovoldconsulting.com
+
+ drivers/tty/serial/qcom_geni_serial.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 2bd25afe0d92..fc202233a3ee 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -904,8 +904,8 @@ static void qcom_geni_serial_handle_tx_fifo(struct uart_port *uport,
+ 		goto out_write_wakeup;
  
- 		efr2 = serial_in(up, UART_OMAP_EFR2);
+ 	if (!port->tx_remaining) {
+-		qcom_geni_serial_setup_tx(uport, pending);
+-		port->tx_remaining = pending;
++		qcom_geni_serial_setup_tx(uport, chunk);
++		port->tx_remaining = chunk;
+ 
+ 		irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
+ 		if (!(irq_en & M_TX_FIFO_WATERMARK_EN))
 -- 
-2.34.1
+2.45.2.741.gdbec12cfda-goog
 
