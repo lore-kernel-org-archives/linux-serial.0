@@ -1,126 +1,190 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4139B172BA4
-	for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 16:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C295E17B428
+	for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 18:42:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719332843; cv=none; b=hEerYFcQ2G3cb2sYcvajfMr55uZpNd7uJPTudDTzSp0asV9LXEG03oHzAWfvZ+SAiT14O0l2WhVbNkqEP81ndVVSR5VElxDUZ2DfzIY0Yug2cxZQoq2x+i30Ps6ZAxL9mURhgjQvbLEkjqs5To4/wuR9cwoOxm/ZU1FBkUSYEhM=
+	t=1719340949; cv=none; b=mVZjWblReI+i+F6849R6G/yEjsjkgIimfqPL9bE1HpdoAoi3AH3v+wAvHctcltKjYx74dvSaC7qkUXLcRxiJ3Q1LrzgA7kI0e7sb2JcR3KSYeMSZPN8UyuSZd5wuZjtzCSxevYcsrM/qrB9j7Oo8KhzqOtejHdG0oFoFWacnel4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719332843; c=relaxed/simple;
-	bh=FBgM8X7N6EV6X8VIVrL7KoXestIzzEPz81jUwgaNSTc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=obs54zi8bLB/KojP2XzRGwxv/mUXqzNcj67Np+rCdJ9TNlGIfqLznDUiaTerE9qo3/be9FtqYzU+KoXGmH9sp6ChwMSuIzF2iTOlAm+0bZJ0W1m/zvwANcJwn5/W1WwfoHfIhZpCXhRfIga81lt4nTR4Cn+1wcuNRGv/7XPwBiU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=kr5ItlXs; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1719340949; c=relaxed/simple;
+	bh=bFf47hFEVUuKOmXsiB4H2YqzJawoxVMdG5DGlAtPhD4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KkL/aw7Uof7Y2bCrEEPqBqLB8wXQ+TZ8gReB4EZFmihDkKRaAKDaIJgaCugyp+5CJ0lbQ/6bYrzj9HzYP2VFncSXXtM5df6dNy3SNDd+u7aLdBVg2LmdTa3KO7XJ7lfBEMyBf5RFnrTLyO+aTABZmmFsY4sjPDsE6CKmv2NnNr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk; spf=pass smtp.mailfrom=rasmusvillemoes.dk; dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b=bN3vJuoE; arc=none smtp.client-ip=209.85.167.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rasmusvillemoes.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rasmusvillemoes.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="kr5ItlXs"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-444e9ca8b68so9712701cf.1
-        for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 09:27:22 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=rasmusvillemoes.dk header.i=@rasmusvillemoes.dk header.b="bN3vJuoE"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-52ce6c93103so2928896e87.3
+        for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 11:42:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1719332839; x=1719937639; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kd5y9hhIUx6r9hI0VhGrF9yxcbBN+8LVyQQ2ESHR5Ew=;
-        b=kr5ItlXssd5XHeMY3sR1Gp0Eay0spKkS7xHUCx9FGrGtfco4rexAN4zQYVzqDowoBG
-         iUWcsXjztqDDRQ2qFRDMdOwQKUuyVoaxWPp0O8yq1aZeT3MW9kpvrt2xeZYjl8IiFhPd
-         ROOyNnP990NW/ELwJLehH+2lpVlpdSBR970Co=
+        d=rasmusvillemoes.dk; s=google; t=1719340946; x=1719945746; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=fTRHmcetGLaYy17XrKZXgDqE5GMBbK+wOczjMxAfiWo=;
+        b=bN3vJuoENHZov+rE9nFpJ6n6P4T2gJ9iYrl6nfrosotzqqNG6XisYxCrbnmSf5O4Br
+         sSZc/HshQjU5yVEBr/JlK9DJ13D2u2kSt64XfjQBGzflPcNY6YSnyBSVAicuW+QokAjA
+         Rlz7tR/O/FmEWJIR3mdFm9Jut7fPqftrtJg7Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719332839; x=1719937639;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Kd5y9hhIUx6r9hI0VhGrF9yxcbBN+8LVyQQ2ESHR5Ew=;
-        b=pK60I4h7bc4/UvhLFLfkeQiils9Mbfung1bJ8MMMMH6hHllrPtHXDpRDkiqA96rs7i
-         nE9JHgG2XzuY7lXNKMtGMR00v/xiI57JkI2FxxDaL3s4PZBfYQTuW2BbBo+24fy6XuaI
-         JGrfKnY/41eZsr44IEv594bMi0TWRQwz4JaG/Wv8WiFRRkIJO1Rif4tiEgtkMDL7uKTQ
-         mEcns65fMWNJTxuicC0D9ZpGFtG3+hqXFPXKRibuAsM/utUw1IJ1V5jW8bAWQiAXIBBj
-         kV5N/kB9DK0tA/f+y7ToW8rXwbRsfSQsFIo0PYA78uqpFMeRrp/GsvL8bejbyu5+AAFm
-         NBrQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVjC9zlmJdzR45py7ZjavjEPfNU8gTDFtMjvwHtIAjzodpfx/AlQAZjPXQmr/f9ZDowhnjlP6JKgH0AZBcNkUKNKc9lM8olZRNTkW7H
-X-Gm-Message-State: AOJu0YwIahFztWc2ZAIiz0Or/NcP6Fu4wx6hU5uCRWbSpaLYllQm12az
-	8iB8Bd8J7lFuZnFVTKiFbbkVKYacPImZHIe/bGwHbfElzGVzbYX5b/zudwncMoH32neFdHLy3WM
-	=
-X-Google-Smtp-Source: AGHT+IHygNq2ciWnx4WwZtxqbWajNGHgxdLoWYQeqCAE5QVjQc2BA9Q7SFIE+Zo7qrWtoWUZ0DyOUA==
-X-Received: by 2002:ac8:7e82:0:b0:441:78:4ddd with SMTP id d75a77b69052e-444d9208f1dmr88053791cf.32.1719332839305;
-        Tue, 25 Jun 2024 09:27:19 -0700 (PDT)
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com. [209.85.160.182])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-444f3eb260fsm9822051cf.85.2024.06.25.09.27.18
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Jun 2024 09:27:18 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-445022f78e1so109271cf.1
-        for <linux-serial@vger.kernel.org>; Tue, 25 Jun 2024 09:27:18 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXJPSVlLDNOJNXUgFpMuY5QlEdMECRWObD9aCsXed/1i7/imOrcb0kXop3RmLytQx56VM4sqHOd1ZiQxgkMbh3MDrjtaXGelwcfkZXv
-X-Received: by 2002:a05:622a:2a1a:b0:444:fe9d:7bc9 with SMTP id
- d75a77b69052e-444fe9d7f9amr1978871cf.8.1719332837590; Tue, 25 Jun 2024
- 09:27:17 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1719340946; x=1719945746;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fTRHmcetGLaYy17XrKZXgDqE5GMBbK+wOczjMxAfiWo=;
+        b=Kymg+CR5lZM8Kl/qlIzsBjduWfD9EkiXdFAyV7/uIkTIhEzrw3WVK3Ey/RIksoQk/1
+         IWdY4XWuU4LOVq5RgqrkQp5ThO7Aw7izuEn7p6/gtkmM8Ly82k34M+ev5EqIGzRQGl1g
+         T0JXVEMLuLPknOnnuNdg+x/aAAm8qu76NUUJjnNVaSWSgPKld3jr3+vkcIr/WGm1RYGx
+         NpvNBTCzlHmiycJAcC0md4OXJq6r1c8Q+yz3Janek4JW1XdqR1DLduuj4mnaB0SgXvRl
+         q5AKot1EQI6/XnnmyjLfCrYL01CF1jbsn9rFlE80sKtyHmDn17Y6OsrmzTKdNSFLk50f
+         bqCA==
+X-Forwarded-Encrypted: i=1; AJvYcCWihQAuXTf+KhxkDBD8XdYDgaD9y5egxmTa/G7wn+9Wy0puZjGkb+/N8LfESHX5kkxM3p9Th1l92dgUij404beQpvOgIbjM+gM2g15Z
+X-Gm-Message-State: AOJu0YzdyYyj4SLi1tCp6FxyZuUgdyrYRzZG4SwYurbKjNulZSm6Aud5
+	bspQFshI2+O1oqGf+IF/yOoI6iPxACuAbB7NvlsvIZBNn+Jnr4tN1rHpP/lXJlc=
+X-Google-Smtp-Source: AGHT+IHzd9Y3KJ+ekIIDdL14O7HCRFyG0RNRJ50heb9Bv7+zAcEg6cULMA2lGBbpiJbMQj4at+FLzg==
+X-Received: by 2002:ac2:4c41:0:b0:52c:e1cd:39bd with SMTP id 2adb3069b0e04-52ce1cd3a79mr8123147e87.13.1719340944752;
+        Tue, 25 Jun 2024 11:42:24 -0700 (PDT)
+Received: from localhost (77.33.185.10.dhcp.fibianet.dk. [77.33.185.10])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7261795c58sm154993866b.118.2024.06.25.11.42.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Jun 2024 11:42:23 -0700 (PDT)
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] serial: imx: ensure RTS signal is not left active after shutdown
+Date: Tue, 25 Jun 2024 20:42:05 +0200
+Message-ID: <20240625184206.508837-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240624133135.7445-1-johan+linaro@kernel.org>
- <20240624133135.7445-2-johan+linaro@kernel.org> <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
- <CAD=FV=UwyzA614tDoq7BntW1DWmic=DOszr+iRJVafVEYrXhpw@mail.gmail.com> <ZnraAlR9QeYhd628@hovoldconsulting.com>
-In-Reply-To: <ZnraAlR9QeYhd628@hovoldconsulting.com>
-From: Doug Anderson <dianders@chromium.org>
-Date: Tue, 25 Jun 2024 09:27:01 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=U+D34mkDoFkmEXUm9fCAhC_RKbHnKXHsDZFQPxDaPmtg@mail.gmail.com>
-Message-ID: <CAD=FV=U+D34mkDoFkmEXUm9fCAhC_RKbHnKXHsDZFQPxDaPmtg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] serial: qcom-geni: fix hard lockup on buffer flush
-To: Johan Hovold <johan@kernel.org>
-Cc: Johan Hovold <johan+linaro@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Konrad Dybcio <konrad.dybcio@linaro.org>, Bjorn Andersson <andersson@kernel.org>, 
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi,
+If a process is killed while writing to a /dev/ttymxc* device in RS485
+mode, we observe that the RTS signal is left high, thus making it
+impossible for other devices to transmit anything.
 
-On Tue, Jun 25, 2024 at 7:53=E2=80=AFAM Johan Hovold <johan@kernel.org> wro=
-te:
->
-> On Mon, Jun 24, 2024 at 01:45:17PM -0700, Doug Anderson wrote:
->
-> > Also: if we're looking at quick/easy to land and just fix the hard
-> > lockup, I'd vote for this (I can send a real patch, though I'm about
-> > to go on vacation):
-> >
-> > --
-> >
-> > @@ -904,8 +904,8 @@ static void qcom_geni_serial_handle_tx_fifo(struct
-> > uart_port *uport,
-> >                 goto out_write_wakeup;
-> >
-> >         if (!port->tx_remaining) {
-> > -               qcom_geni_serial_setup_tx(uport, pending);
-> > -               port->tx_remaining =3D pending;
-> > +               port->tx_remaining =3D min(avail, pending);
-> > +               qcom_geni_serial_setup_tx(uport, port->tx_remaining);
-> >
-> >                 irq_en =3D readl(uport->membase + SE_GENI_M_IRQ_EN);
-> >                 if (!(irq_en & M_TX_FIFO_WATERMARK_EN))
-> >
-> > --
-> >
-> > That will fix the hard lockup, is short and sweet, and also doesn't
-> > end up outputting NUL bytes.
->
-> Yeah, this might be a good stop gap even if performance suffers.
+Moreover, the ->tx_state variable is left in state SEND, which means
+that when one next opens the device and configures baud rate etc., the
+initialization code in imx_uart_set_termios dutifully ensures the RTS
+pin is pulled down, but since ->tx_state is already SEND, the logic in
+imx_uart_start_tx() does not in fact pull the pin high before
+transmitting, so nothing actually gets on the wire on the other side
+of the transceiver. Only when that transmission is allowed to complete
+is the state machine then back in a consistent state.
 
-I've officially posted this as:
+This is completely reproducible by doing something as simple as
 
-https://lore.kernel.org/r/20240625092440.1.Icf914852be911b95aefa9d798b6f1cd=
-1a180f985@changeid
+  seq 10000 > /dev/ttymxc0
 
-I realized that I didn't need to re-calculate "chunk" so the patch is
-very slightly different than I posted above but should be effectively
-the same.
+and hitting ctrl-C, and watching with a logic analyzer.
 
--Doug
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+---
+v2: Use dev_warn() instead of dev_WARN_ONCE().
+
+v1: https://lore.kernel.org/lkml/20240524121246.1896651-1-linux@rasmusvillemoes.dk/
+
+A screen dump from a logic analyzer can be seen at:
+
+  https://ibb.co/xCcP7Jy
+
+This is on an imx8mp board, with /dev/ttymxc0 and /dev/ttymxc2 both
+configured for rs485 and connected to each other. I'm writing to
+/dev/ttymxc2. This demonstrates both bugs; that RTS is left high when
+a write is interrupted, and that a subsequent write actually fails to
+have RTS high while TX'ing.
+
+I'm not sure what commit to name as a Fixes:. This certainly happens
+on 6.6 and onwards, but I assume the problem exists since the tx_state
+machine was introduced in cb1a60923609 (serial: imx: implement rts
+delaying for rs485), and possibly even before that.
+
+
+ drivers/tty/serial/imx.c | 51 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 2eb22594960f..85c240e8c24e 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1551,6 +1551,7 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	struct imx_port *sport = (struct imx_port *)port;
+ 	unsigned long flags;
+ 	u32 ucr1, ucr2, ucr4, uts;
++	int loops;
+ 
+ 	if (sport->dma_is_enabled) {
+ 		dmaengine_terminate_sync(sport->dma_chan_tx);
+@@ -1613,6 +1614,56 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	ucr4 &= ~UCR4_TCEN;
+ 	imx_uart_writel(sport, ucr4, UCR4);
+ 
++	/*
++	 * We have to ensure the tx state machine ends up in OFF. This
++	 * is especially important for rs485 where we must not leave
++	 * the RTS signal high, blocking the bus indefinitely.
++	 *
++	 * All interrupts are now disabled, so imx_uart_stop_tx() will
++	 * no longer be called from imx_uart_transmit_buffer(). It may
++	 * still be called via the hrtimers, and if those are in play,
++	 * we have to honour the delays.
++	 */
++	if (sport->tx_state == WAIT_AFTER_RTS || sport->tx_state == SEND)
++		imx_uart_stop_tx(port);
++
++	/*
++	 * In many cases (rs232 mode, or if tx_state was
++	 * WAIT_AFTER_RTS, or if tx_state was SEND and there is no
++	 * delay_rts_after_send), this will have moved directly to
++	 * OFF. In rs485 mode, tx_state might already have been
++	 * WAIT_AFTER_SEND and the hrtimer thus already started, or
++	 * the above imx_uart_stop_tx() call could have started it. In
++	 * those cases, we have to wait for the hrtimer to fire and
++	 * complete the transition to OFF.
++	 */
++	loops = port->rs485.flags & SER_RS485_ENABLED ?
++		port->rs485.delay_rts_after_send : 0;
++	while (sport->tx_state != OFF && loops--) {
++		uart_port_unlock_irqrestore(&sport->port, flags);
++		msleep(1);
++		uart_port_lock_irqsave(&sport->port, &flags);
++	}
++
++	if (sport->tx_state != OFF) {
++		dev_warn(sport->port.dev, "unexpected tx_state %d\n",
++			 sport->tx_state);
++		/*
++		 * This machine may be busted, but ensure the RTS
++		 * signal is inactive in order not to block other
++		 * devices.
++		 */
++		if (port->rs485.flags & SER_RS485_ENABLED) {
++			ucr2 = imx_uart_readl(sport, UCR2);
++			if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
++				imx_uart_rts_active(sport, &ucr2);
++			else
++				imx_uart_rts_inactive(sport, &ucr2);
++			imx_uart_writel(sport, ucr2, UCR2);
++		}
++		sport->tx_state = OFF;
++	}
++
+ 	uart_port_unlock_irqrestore(&sport->port, flags);
+ 
+ 	clk_disable_unprepare(sport->clk_per);
+-- 
+2.45.2
+
