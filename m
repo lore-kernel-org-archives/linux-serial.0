@@ -1,172 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86C4F143890;
-	Tue, 25 Jun 2024 05:12:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CAB143C5A;
+	Tue, 25 Jun 2024 05:14:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719292334; cv=none; b=UgwwQqtRtOk13QTVGW3jMuJRCrUu4DzPaOT/FgmzZz4jG9Ed7pQtQ6ZpEjv9TCqeJnjkmn32Wl33tQokIEHt2QQE22cjvK5lR9cSasPmz2w8sSm6/PMKiVXcTky9ARI3qbQFTnQZoQgE0WM1fYicRelyTse6YLaNB7YxxFZitUc=
+	t=1719292449; cv=none; b=o3CQvikM5NHX31TgTmg8sj3T4R/L4evk4Eyn1nCj3dcyajBIvrZNobbtIVJtTZ1nAJ12ZwcENDKHMSqw1SFJXn+3rA1CFu6SbiZ0Bv4DT5mPdX73u1CcK26biDyHjyWmlLVOxhRzQt9XG5Hi1QAO2X5VKps9FcDtzMUJFtKtObo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719292334; c=relaxed/simple;
-	bh=yN7B03ww6l4oUQ4hgTuqfvuuUwySdOP1eBJ2aUO1pAY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tyc4AaY/DcFaKI8rCbWOZltggulLpERM+KNT0yg1OJsRQGBp5dmFj0md6Os0VHx7/PiBHn/rQzqjmMjGCQqrmY4gVP5ZMwRC5PoBxr8NILpb8JamHBiKuToz0IBr/40oqBJXrk0rTKVonoa+mDNDbqWUq/Y6qnsVtgpYWYHS+SQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fM37+rzp; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1719292449; c=relaxed/simple;
+	bh=BBjidLX4wCJ4bJu2ERUDqOPmnH03v0e8Y5wWJjYUxYE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gkbAOBD3/UGD+mjcLyEw0ZHIcP+g0hN18mdfpP9r/9AMva5R6+LJk9kUuRmRaBfr9nbIyEVUaOBiJ1/EY7m2JFewfCZRua4eQw9wG8vrCPqjJp+yxCmNrZxc4oHS9/4h4S7OLJvXRc145vDE9T0NByILyG/OYB8DvsT0XjDFOaw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=m2FTDB2f; arc=none smtp.client-ip=198.47.19.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fM37+rzp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719292333; x=1750828333;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yN7B03ww6l4oUQ4hgTuqfvuuUwySdOP1eBJ2aUO1pAY=;
-  b=fM37+rzpcCJ7YU+PCddhneBddEqlSqTxC5hgn8QUP0rWIAOjJYeqgYJd
-   i8n6hlyKOs6tOFRq9+FE26PD2qBJhVwvMZ89ZM5yIhyTq6EQ5eeHM5HZ0
-   0EUxRL34pNT9o+5lM8VWM9YcZ2ppKlkzQEPHtu++RDNNcXXQXu2Z1S0FD
-   2LmXj5R6JvigOkENBPIwXbPbC83e2CoqyDWOrANJG0PKooQf5i6C0O3X2
-   BrCxWEASffH2XHyZwyQrq2MO9+ZXhdZ0nl9CBfg4yljaurDB9bnwu9D7k
-   OtVRA6I+og1ymLNlASX91BnyDHrRJ0U4iZbuSym7yn/5QsZ+imG7nwUoA
-   w==;
-X-CSE-ConnectionGUID: 73pykXluRTG54h+SlXWS4Q==
-X-CSE-MsgGUID: 00Gtfzm/T4yk12+1apxleA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11113"; a="16434017"
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="16434017"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2024 22:12:12 -0700
-X-CSE-ConnectionGUID: iSUXVXohR3eOK6BykvmqsQ==
-X-CSE-MsgGUID: RlnSrIcLTe2g6WCYE8S47Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,263,1712646000"; 
-   d="scan'208";a="48694455"
-Received: from unknown (HELO tlindgre-MOBL1) ([10.245.247.67])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2024 22:12:08 -0700
-Date: Tue, 25 Jun 2024 08:12:03 +0300
-From: Tony Lindgren <tony.lindgren@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Petr Mladek <pmladek@suse.com>,
-	Linus Torvalds <torvalds@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/4] Fixes for console command line ordering
-Message-ID: <ZnpRozsdw6zbjqze@tlindgre-MOBL1>
-References: <20240620124541.164931-1-tony.lindgren@linux.intel.com>
- <ZnWRup3MvcVQ4MX8@pathway.suse.cz>
- <2024062403-skid-gotten-7585@gregkh>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="m2FTDB2f"
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+	by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 45P5Dmct022509;
+	Tue, 25 Jun 2024 00:13:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1719292428;
+	bh=fBU2x+vbwdBiGXkNVPBk+/aEoIBCo6MAZ+TjymLS+k4=;
+	h=From:To:CC:Subject:Date;
+	b=m2FTDB2fZKp8ZSJ02RWTjAa72p/vf4hefYht21EQCVgQbCyjGc8H12bx3w1oYhtLZ
+	 8BoXhoHi1+mjXsDARClnfZtSyus8+Kk32QHoIZiqu7xPaIuvecQ65/YSmTiN5Q6RPj
+	 dC3vPlmnExxRKtBWwjDnVDYOqh3JEYZ+VKpDDBI4=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 45P5DmT0092945
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 25 Jun 2024 00:13:48 -0500
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 25
+ Jun 2024 00:13:48 -0500
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Tue, 25 Jun 2024 00:13:48 -0500
+Received: from udit-HP-Z2-Tower-G9-Workstation-Desktop-PC.dhcp.ti.com (udit-hp-z2-tower-g9-workstation-desktop-pc.dhcp.ti.com [172.24.227.18])
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 45P5Dig5042615;
+	Tue, 25 Jun 2024 00:13:44 -0500
+From: Udit Kumar <u-kumar1@ti.com>
+To: <vigneshr@ti.com>, <nm@ti.com>, <tony@atomide.com>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ronald.wahl@raritan.com>, <thomas.richard@bootlin.com>,
+        <tglx@linutronix.de>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <ilpo.jarvinen@linux.intel.com>,
+        Udit Kumar
+	<u-kumar1@ti.com>, <stable@vger.kernel.org>
+Subject: [PATCH] serial: 8250_omap: Implementation of Errata i2310 adding fifo level check
+Date: Tue, 25 Jun 2024 10:43:38 +0530
+Message-ID: <20240625051338.2761599-1-u-kumar1@ti.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2024062403-skid-gotten-7585@gregkh>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 
-On Mon, Jun 24, 2024 at 03:35:39PM +0200, Greg Kroah-Hartman wrote:
-> On Fri, Jun 21, 2024 at 04:44:10PM +0200, Petr Mladek wrote:
-> > Added Linus into Cc.
-> > 
-> > On Thu 2024-06-20 15:45:25, Tony Lindgren wrote:
-> > > Hi,
-> > > 
-> > > Recent changes to add support for DEVNAME:0.0 style consoles caused a
-> > > regression with the preferred console order where the last console on
-> > > the kernel command line is no longer the preferred console.
-> > > 
-> > > The following four changes fix the issue using Petr's suggestion that
-> > > does not involve calling __add_preferred_console() later on again, and
-> > > adds the deferred consoles to the console_cmdline[] directly to be
-> > > updated when the console is ready.
-> > > 
-> > > We revert the earlier printk related changes, and then add back the
-> > > DEVNAME:0.0 functionality based on Petr's code snippet. And we end up
-> > > reducing the code quite a bit too this way.
-> > > 
-> > > And we also revert all the unusable serial core console quirk handling,
-> > > it does not do anything for the legacy "ttyS" named consoles. And then
-> > > we add a minimal serial_base_match_and_update_preferred_console().
-> > > 
-> > > The reason we want DEVNAME:0.0 style consoles is it helps addressing the
-> > > console based on the connected serial port controller device rather than
-> > > using the hardcoded ttyS addressing. And that helps with issues related
-> > > to the console moving around after togging the HSUART option in the BIOS,
-> > > or when new ports are enabled in devicetree and aliases are not updated.
-> > > 
-> > > Tony Lindgren (4):
-> > >   printk: Revert add_preferred_console_match() related commits
-> > >   printk: Add match_devname_and_update_preferred_console()
-> > >   serial: core: Revert unusable console quirk handling
-> > >   serial: core: Add serial_base_match_and_update_preferred_console()
-> > > 
-> > >  drivers/tty/serial/8250/8250_core.c  |   5 -
-> > >  drivers/tty/serial/serial_base.h     |  22 +---
-> > >  drivers/tty/serial/serial_base_bus.c | 116 +++------------------
-> > >  drivers/tty/serial/serial_core.c     |   2 +-
-> > >  include/linux/printk.h               |   5 +-
-> > >  kernel/printk/Makefile               |   2 +-
-> > >  kernel/printk/conopt.c               | 146 ---------------------------
-> > >  kernel/printk/console_cmdline.h      |   7 +-
-> > >  kernel/printk/printk.c               | 122 ++++++++++++++++------
-> > >  9 files changed, 112 insertions(+), 315 deletions(-)
-> > >  delete mode 100644 kernel/printk/conopt.c
-> > 
-> > The patchset looks ready for linux-next. And I have pushed it
-> > into printk/linux.git, branch for-6.10-register-console-devname.
-> > 
-> > I am not sure about the mainline. We need to fix the regression in 6.10.
-> > The change is not trivial and rc5 is knocking on the doors.
-> > 
-> > Unfortunately, the patchset intermixes reverts and new code.
-> > So that it can't be used for simple revert as is.
-> > 
-> > I am quite confident that the new code works as expected.
-> > It changes tricky code but the logic of the change is quite
-> > straightforward.
-> > 
-> > 
-> > I see three solutions:
-> > 
-> > 1. Linus could merge the changes directly into rc5.
-> > 
-> > 2. I could send a pull request after it survives few days in
-> >    linux-next.
-> > 
-> > 3. Or we rework the patchset. And do pure revert for 6.10 and
-> >    add the feature a clean way for-6.11.
-> 
-> Pure revert for 6.10 might be good, as it's late in the cycle.  Let me
-> know the git ids and I can do that.
+As per Errata i2310[0], Erroneous timeout can be triggered,
+if this Erroneous interrupt is not cleared then it may leads
+to storm of interrupts.
 
-Here's the list of git ids to revert:
+This patch adding fifo empty check before applying errata.
 
-$ git log --abbrev=12 --pretty=format:"%h (\"%s\")" v6.9..v6.10-rc5 \
---author="Tony Lindgren" kernel/printk drivers/tty/ Documentation/admin-guide/
-b20172ca6bf4 ("serial: core: Fix ifdef for serial base console functions")
-4547cd76f08a ("serial: 8250: Fix add preferred console for serial8250_isa_init_ports()")
-5c3a766e9f05 ("Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports")
-a8b04cfe7dad ("serial: 8250: Add preferred console in serial8250_isa_init_ports()")
-a0f32e2dd998 ("serial: core: Handle serial console options")
-787a1cabac01 ("serial: core: Add support for DEVNAME:0.0 style naming for kernel console")
-b73c9cbe4f1f ("printk: Flag register_console() if console is set on command line")
-8a831c584e6e ("printk: Don't try to parse DEVNAME:0.0 console options")
-f03e8c1060f8 ("printk: Save console options for add_preferred_console_match()")
+[0] https://www.ti.com/lit/pdf/sprz536 page 23
 
-> > I personally prefer the 3rd solution. But I am super conservative.
-> > I guess that most other people would go with the other 2 solutions.
-> 
-> I'll be conservative here as well.
+Fixes: b67e830d38fa ("serial: 8250: 8250_omap: Fix possible interrupt storm on K3 SoCs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Udit Kumar <u-kumar1@ti.com>
+---
+This is check is added on top of errata implementation v3 patch 
+https://lore.kernel.org/all/20240619105903.165434-1-u-kumar1@ti.com/
 
-Conservative is good.
 
-Regards,
+ drivers/tty/serial/8250/8250_omap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Tony
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index ddac0a13cf84..1af9aed99c65 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -672,7 +672,8 @@ static irqreturn_t omap8250_irq(int irq, void *dev_id)
+ 	 * https://www.ti.com/lit/pdf/sprz536
+ 	 */
+ 	if (priv->habit & UART_RX_TIMEOUT_QUIRK &&
+-		(iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT) {
++	    (iir & UART_IIR_RX_TIMEOUT) == UART_IIR_RX_TIMEOUT &&
++	    serial_port_in(port, UART_OMAP_RX_LVL) == 0) {
+ 		unsigned char efr2, timeout_h, timeout_l;
+ 
+ 		efr2 = serial_in(up, UART_OMAP_EFR2);
+-- 
+2.34.1
+
