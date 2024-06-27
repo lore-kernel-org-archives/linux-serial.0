@@ -1,91 +1,118 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB44523BE;
-	Thu, 27 Jun 2024 15:33:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 605021990C8;
+	Thu, 27 Jun 2024 15:39:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719502417; cv=none; b=dT9XlOKXcb7QENXFx5cH4FlMdPScpVXOsaO/vXZXwMadrQvF6vjc9L2WNvonR9zaHrL7dZVTIiQ/poRy8gjhjrTqaG31ZI2EpAROcpwpX8uEXipZczYKhbfU9rYrAw10p1IQk44nBGh31IZVtmJYOBAoK9OJUAFtu3HT/2kzWGw=
+	t=1719502787; cv=none; b=EOtAnlsmNuWiEXNu6T7H2uYr+lMOSOvny14wAX+5qtotn5NPlNOW6LWmfBS7HdEXBmYNkgkgFemqA3E/vfGbvEzV98DyRunb1kpFbKJFhpR+V5kRlsWtzwxKbe8Q6TsPVV71xKcc77phX3+j1clhKP8ju/vrJgnuxBK/BhecZjI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719502417; c=relaxed/simple;
-	bh=sjhvfdn3QVidrXxxOLsJ8Iays3T/xDMwydCui3MqP+g=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=poT+OgS+LQUjqSvfgQjiCLPIbLLyzui/b4OLe8mw0UzYexoUMjpQXaIbG5W5HMybCvRScubVe0iPJrIF21EQCSo0TZvaYSKZL2HIBwqpKSzA735BOJt3nWzE96XO23t2Ws2dCxBCwPvya60vYJMaNwlcjKMGZKR2zCYdezNDdbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-From: Yixun Lan <dlan@gentoo.org>
-Date: Thu, 27 Jun 2024 15:31:24 +0000
-Subject: [PATCH v2 10/10] riscv: defconfig: enable SpacemiT SoC
+	s=arc-20240116; t=1719502787; c=relaxed/simple;
+	bh=Ywx8pgA49G69DV3dqyJz6NtRDDw0b8MnCogTK2pHYOs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qr0PXOtSOVtCkGFfSoL2Fi6LzeRotaUBOdBaePmPvMPzB0sdx6DPFIE4UTvwwjQMRN2BjYIDbVV81TIAGhKA8YCJJ+nglQog792u3iCx2i6tL7DNm+SgiF2xxK8R546KA26fcRlqxRjOJ6/xDWWY+IdobU4xutWrrC077tfXEx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QVx9fyYP; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QVx9fyYP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C35CDC2BBFC;
+	Thu, 27 Jun 2024 15:39:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719502786;
+	bh=Ywx8pgA49G69DV3dqyJz6NtRDDw0b8MnCogTK2pHYOs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QVx9fyYPbM6G44pHTfQyI5umZjBKQU707w9S1MdX8L73Q8lJcDUB1/l7i7JuigntQ
+	 V7AaHYrk0TscJQninZ6TloyAmYwVdEvIt9YlnucjFmmUzlc4+lpLR/HhfLB5iuOz85
+	 KjqjRq1+ZXxJChF3GSoqahnjhGHlmooNhyFc7e4vVS2Ph7/lnmEOgc0FgIRmJwZX05
+	 cliOI60EaO8105GJDjWgR8wMDycYwiYVNhp+jwhJO288xuQGHFjSfiDLhNxy29B4yL
+	 Pp1k+Djq+JO81hntJo13fZkPMk/h1h2zUDZSiM59jOWC3cBZPxAdBI2YN+QGodHD+C
+	 CWcs7RXdZ0ghA==
+Date: Thu, 27 Jun 2024 16:39:40 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Yixun Lan <dlan@gentoo.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
+	Meng Zhang <zhangmeng.kevin@spacemit.com>,
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH v2 00/10] riscv: add initial support for SpacemiT K1
+Message-ID: <20240627-flinch-rented-1f2a2e5d73ca@spud>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240627-k1-01-basic-dt-v2-10-cc06c7555f07@gentoo.org>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="B/g3FF/HUcTA5w9b"
+Content-Disposition: inline
 In-Reply-To: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>, 
- Paul Walmsley <paul.walmsley@sifive.com>, 
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Samuel Holland <samuel.holland@sifive.com>, 
- Anup Patel <anup@brainfault.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org, 
- linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>, 
- Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>, 
- Yixun Lan <dlan@gentoo.org>
-X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=694; i=dlan@gentoo.org;
- h=from:subject:message-id; bh=0K4ao+VU11AdvF+9uh5x4EN2IBtmFYnrwob9vqhF5jE=;
- b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmfYX95TEqSfytY8nhsyKLbPKKtiu66fvm/DZGw
- igFFx7X+taJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZn2F/V8UgAAAAAAuAChp
- c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
- CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277Z0PEACbVCFa7pvmng4Xz0
- 58UY88QmMGAR0UL/tB5Ag4oPNQKQX0VdrLoYcRsv84toABHKLJJ02XgfR/xBKC6TmcFid+m8rro
- 5FDSCQxgNZgDCZJST95bu1b+90Z2F7lkZ0CeD6LiJ4WPSb8zUNbjg3EUFQ3z1i47vEnWSbi3Nv2
- 9Lep8tCguQudnUxrTUrSC+BckMqD6MZmvOxUwFu2qDahl7KFEIGklpwAX/8p4Qs9447MPdyGb7D
- jJO4znTG7VKvIyuLV6AcpanVkdNmr2+9346yhbKFCsNlX4t94cAW9+xjjbCuFDKTRoPG0PBgeNn
- f2dQc8GdrkjUUvqVIyJcd0TpwCIsQ+NQ0byZS1rZnXxAakNt1d1y0gixI2tUcZEek4eVAv+8gGZ
- YcGpF2CXHWfCoeQBEgUosB8GY+jiH7/8UG37ug3zuUZDWzaKxgZ5+jMjpb8oN/OaziKQoNwkjUp
- A2mcHuob7zMTgcgrTb3A6RSt1HRPruSyXpv8kVwLaWzasFZaKpUgKL2f2F8AxrSIJzKZFUMBRcZ
- ca9qPPkJ6oPJMSX/EyYkoBgQdsDV6eQtwlrOflRPYYOO0U0t3GBiUd3VN5MdAlblPZp0EZoAfZ1
- MYiDvhsUVmTIkfuiv6I77pyQ5F+p5etJoK6N5BnfHVzp6k2XOKIt/GFe+cEWV0TkbTdQ==
-X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
- fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
-From: Yangyu Chen <cyy@cyyself.name>
 
-Enable SpacemiT SoC config in defconfig to allow the default upstream
-kernel to boot on Banana Pi BPI-F3 board.
+--B/g3FF/HUcTA5w9b
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-Signed-off-by: Yixun Lan <dlan@gentoo.org>
----
- arch/riscv/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Thu, Jun 27, 2024 at 03:31:14PM +0000, Yixun Lan wrote:
+> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+> 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> people to participate in building drivers to mainline for it.
+>=20
+> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+> booted to busybox on initrd with this log[3].
+>=20
+> As previous discussion in patch v1[4], maintainer expect more basic drive=
+rs
+> ready before really merging it, which would be fine. For other follow-up =
+patches,=20
+> that are clk, pinctrl/gpio, reset.. My current goal would target at a hea=
+dless
+> system including SD card, emmc, and ethernet.
+>=20
+> P.S: talked to Yangyu, I will help and take care of this patch series, th=
+anks
+> ---
+> Changes in v2:
+>  - fix timebase-frequency according to current setting
+>  - add other uart dt nodes, fix input frequency
+>  - introduce new uart compatible for K1 SoC
+>  - add 'k1' prefix to bananapi-f3.dts
+>  - fix k1-clint compatible
+>  - fix some typos
+>  - Link to v1: https://lore.kernel.org/r/tencent_BC64B7B1876F5D10479BD191=
+12F73F262505@qq.com
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 12dc8c73a8acf..5287ae81bbb78 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -29,6 +29,7 @@ CONFIG_ARCH_MICROCHIP=y
- CONFIG_ARCH_RENESAS=y
- CONFIG_ARCH_SIFIVE=y
- CONFIG_ARCH_SOPHGO=y
-+CONFIG_ARCH_SPACEMIT=y
- CONFIG_SOC_STARFIVE=y
- CONFIG_ARCH_SUNXI=y
- CONFIG_ARCH_THEAD=y
+I will take a closer look at this series later, but there's a few
+patches here missing Acks that I gave alongside some nitpick remarks.
+Could you look at v1 again and add those to whatever other comments I
+leave when I take a closer look?
 
--- 
-2.45.2
+Thanks,
+Conor.
 
+--B/g3FF/HUcTA5w9b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZn2HvAAKCRB4tDGHoIJi
+0tlKAP9lICc0h2PXA8woQQ1/YJesp1lYcTXaG9wmSbBAioDPdwEAjAML4ZKw+0ho
+TiRw0/v5b6+QjdIR1CH3r6zIy7etrg8=
+=/Fdc
+-----END PGP SIGNATURE-----
+
+--B/g3FF/HUcTA5w9b--
