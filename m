@@ -1,22 +1,22 @@
 Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C20A198E81;
-	Thu, 27 Jun 2024 15:32:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870301990BE;
+	Thu, 27 Jun 2024 15:32:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719502353; cv=none; b=J+ltHuwR+k7JYHQ+lF3Ekm2MwLPFl06subR/JM7zBU2BEaUqL1RzNtanyB0hcW2uDAhnxwVH7s3D/lUP2+865TS4EspAI7LtVl9nSVvrISmipGo1xbNyHfbAcSvo4AR7XpQ1v2+OXaZ12xo+OcGMCWPS3Av9w2u4nfBCuDEV0h4=
+	t=1719502359; cv=none; b=ndTmyLsT1iQ7xKLtFRJ5FNiK1+MfzVkjyMGmmN+1yBiRkCM3L0+0wMBTyPhKE1HX6i/cwAB3Ld5VtrpNk1e/2UFwhFFL0E7iFk360B+sXWxFsQdu8JjsOplX8RFmymFzLMlbuju0OYnDGdAFDNE2ZuBGr65DdGHrOQWfgf3zGXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719502353; c=relaxed/simple;
-	bh=AmRVyrrnbky9NGM25IDJL98iq6w0qLUaV8yzYOFQOrk=;
+	s=arc-20240116; t=1719502359; c=relaxed/simple;
+	bh=e2VERBSC3hvoUe3+71zYxaKEO87k4x7VETYOMNHFzPg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UBxcGyKHlPahXcQuLf1Rle/9ErgscHVbsLg1j2At9ElqW9Rv4L8YLgH5l6zSMUCBNALc1oBrM8ukDCoa0gzHdAd0pKHfNSYX6OdApeRO+LMriCc7mw/pyOXcHuMr3zQY/Qz0jAhs4PRZ0z9uRxWelSphuaV6cY2HCK3NLvWi0pg=
+	 In-Reply-To:To:Cc; b=BPEezY06TAvNZxBShg5XN9YHb8NhkcfA4NkzSDl60IzyplXw4w/L9WBRMA70HbQifwxGos5r7YctpzpfXO1sDjaMGj/mnDTeR48U/lQt0Z+LC5Y0mYA5wnW8SZqHvWThrkEH13wAGYAUwXizy+T4I9hlV202uo0WuRuo8MjqYm0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
 From: Yixun Lan <dlan@gentoo.org>
-Date: Thu, 27 Jun 2024 15:31:15 +0000
-Subject: [PATCH v2 01/10] dt-bindings: vendor-prefixes: add spacemit
+Date: Thu, 27 Jun 2024 15:31:16 +0000
+Subject: [PATCH v2 02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240627-k1-01-basic-dt-v2-1-cc06c7555f07@gentoo.org>
+Message-Id: <20240627-k1-01-basic-dt-v2-2-cc06c7555f07@gentoo.org>
 References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
 In-Reply-To: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -44,49 +44,49 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>, 
  Yixun Lan <dlan@gentoo.org>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=920; i=dlan@gentoo.org;
- h=from:subject:message-id; bh=EJxb7EeTC9u7CCdTJTxx28CPOGa+wgjU03pSv3TtRsE=;
- b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmfYXfZMfeOnLAd+tWnxhngeusAefsZ+c5pev+Q
- Okj1g4AdqyJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZn2F318UgAAAAAAuAChp
+X-Developer-Signature: v=1; a=openpgp-sha256; l=853; i=dlan@gentoo.org;
+ h=from:subject:message-id; bh=oiadtAT5r7xDGzsCnaCGPJ2frMTxz+XpkwmHxkPFkkA=;
+ b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmfYXjsrZOKxCkQrojHnkDrw7pdrxsCq7ycSSsn
+ /C9MT4rJyWJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZn2F418UgAAAAAAuAChp
  c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
- CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277QRgD/98O7jkOqAavN5KZS
- lMvJzyEW6LAEmNlyCJyxwdyUayJtH8GIZJgUWRVdt7ZX7j3De/gRwkjRmeVuzj10B8q8MDGXHNv
- 3TCZ0F0DFhJoWtByqxbIkKNXtGzJF82Zy4kIOhbsTS4Tc25wvUiSqM19my2DeR18Yu8O4AY6Rgw
- AA2VZwFTSFu+oK87nwdGerGGQUCSY/YORBN2+pGMLa3+NItSvRyd9YAbo7N6h/smGaCnGFFwFHO
- npkERepOD1AZipXwXNJ6coqrqqBJ6Hjh4ljZJ+OgZTLSUTdGb/2aY+VclN0AF7saAFQYr/aMe2d
- vQ1yHOd00kQyEOegy8PT+SYEd2x+8C1/zSFPVF6PLpBo5GS+Kv3VzuNwFqtpAuvc0QM9ajr5Biq
- jxCCQKn52dnx+s7wLLh1rgAb++1lEBfEX9SrWpMY/cEavhNEw5j5ONYSHQEE1zvRt5XqrZ2AzpE
- jZ2Im+ZEfkRIwGw62CEGOKzhNID8XnwadTDPYomSGJwLWQnlo0/v/6gekxutdGo2PuE/IelbyCo
- oIWZg8sTFab16kVerHXlpvCcPBVdlOSgru0NFHArR7f5+IML/U1eg2Jc1/M2v7edcw9ZUAgL4E2
- Rg7Y34eUg8WOWRB6hBU8RhPCRCsO32WySw9et6RwPkqJ0t2uUxJ6NJcMg/uJf9oDW3pA==
+ CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277RwQD/4hzCsplIb2vrQt9n
+ 5IXGzH3kWcO5Wtvxw6BcBTbWTVcA0hMvgoxjVeVIOlsmUAcrtJqKuK4dskwimO6KOVhXekrZzxW
+ Lv5YMu1bJnPMNVvEnNdWFKR2PLk26ncFYAA1hO/1Fk3MRXwCFsAzMTpAgnVgeDg76lucL8pJpkY
+ PtcZI5NATDRsxPvvgiv2+UziB1KrFd2hUgel6BTFo8GAY2fNDJNxstMtpDAz20xCwEwQwWphEVQ
+ rDT0pgrIjCExeRud32LcP37hWNT4Y3vLiceZepRtl5C/GV0wIvVuRy5eFQfVzij7KT+nxR1OwtI
+ RxgzzsVhhla0s+UNS2uyZlLJe4pSfSZ+q5Ow16LuoXrIR6OPE1oNQXxn+zggYHVq51vnGISfzJl
+ Szx7htGmM5WskMVzQ92wSMhiGVukwfkS0l+ew40E22OqvV181B/TOQQ+uSbNaGdpgb56pL9FACn
+ GuRRCs3GMIveibo6psuy4FN0Y7p+2oUyrBumBMNu4Y0ebKQB9FWoOqtMp8jmm1EsaHQvLlJbxR+
+ naEblORmjEiRmE4G1KmFs20mvJqr4YUj5KJY2j9lVMsX9U7ESNgxkwbS+Z8boltEiiKA+WOJ4ih
+ Yysj4umnW23flwGzvqopfZoZpj6yJNvcmt02bn553k4ZzdCO2QFiAySGpS/i7Mls8wKQ==
 X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
  fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
 From: Yangyu Chen <cyy@cyyself.name>
 
-Add new vendor strings to dt bindings for SpacemiT K1 SoC.
+The X60 is RISC-V CPU cores from SpacemiT and currently used in their K1
+SoC.
 
-Link: https://www.spacemit.com/en/spacemit-key-stone-2/
+Link: https://www.spacemit.com/en/spacemit-x60-core/
 
 Signed-off-by: Yangyu Chen <cyy@cyyself.name>
 Signed-off-by: Yixun Lan <dlan@gentoo.org>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/riscv/cpus.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index fbf47f0bacf1a..7ee6e4a89376e 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1362,6 +1362,8 @@ patternProperties:
-     description: Sophgo Technology Inc.
-   "^sourceparts,.*":
-     description: Source Parts Inc.
-+  "^spacemit,.*":
-+    description: SpacemiT (Hangzhou) Technology Co. Ltd
-   "^spansion,.*":
-     description: Spansion Inc.
-   "^sparkfun,.*":
+diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+index d87dd50f1a4b5..5ad9cb4103356 100644
+--- a/Documentation/devicetree/bindings/riscv/cpus.yaml
++++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+@@ -46,6 +46,7 @@ properties:
+               - sifive,u7
+               - sifive,u74
+               - sifive,u74-mc
++              - spacemit,x60
+               - thead,c906
+               - thead,c910
+               - thead,c920
 
 -- 
 2.45.2
