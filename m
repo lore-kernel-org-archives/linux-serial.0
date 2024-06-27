@@ -1,106 +1,151 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6462619A2A8;
-	Thu, 27 Jun 2024 17:14:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D301C6A1;
+	Thu, 27 Jun 2024 17:22:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719508446; cv=none; b=UIIrXUe2OLQUoT2oT6dUsEltAUEFQTfjcE8O91HBc5eWmOEUHp5EcpzlPm+Sbdhtfd9gGXgvqPRfLnYBYYgzWHI9FNIvX28HGmU4L2mg76AKyRKSxgMj3Uqs1iO85wgzsQjFy/qw5D6GMB4sp/qngGH30Kw5k/PpqPQCSSll5NM=
+	t=1719508964; cv=none; b=P/AgqIvwunxGjJBMyZLt0LG6YUQyMyTbZCx02GFoIg232jBiQDh7idq7nMFlu+JDOxXMogy0VYLrKjbaSNnmap1AaugmhcQrTaEEfaY5rCt/PetRJ/ES/oW+N/iqFZ5qz8IxiYaKdsTMrdncT8eoF4qJehn75KwKLg0QXbyCyCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719508446; c=relaxed/simple;
-	bh=tNR6ArIGiHkLTpGQkaqhID9T8qBWrrtgctZsjePiA8k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ec4NOu1vEK7HIOu30BjmyTMUJJmT+at+IyEv9FEE/5mcm3ajRNiZjCpXeeL8JD+Nnw4yIYoaC+Kb82MTwXJkWKEyPSvd+2+zmobukfLIkQjpo6qpg/HrGMDUCInYXkGFLyWQdbuO1lYCKizgf1C4dStWHhdzTiM13sQ8PuRyaac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RtAcu1FG; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719508964; c=relaxed/simple;
+	bh=JGOEZ5Tm2D4nLMCdnsx15EawEOq2g50RQqicR1oAUYM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=f67hQCKMIMa8yoW8XVgh8D+bV2cMbjUKQziox27iXpdmLB0KcYJsvm6K1qhWPdJIgPUs00TCqSwyh1IJN9m0xCe8aGxk6StuMrTtUqdzzTyIBbfZPUR67b7lkI3TFKNMAXFyUBUnlf6TB9V51OjxveOoTwA80YE1IgtdxAEPW9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XJvk8JmG; arc=none smtp.client-ip=209.85.208.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RtAcu1FG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09DF5C2BD10;
-	Thu, 27 Jun 2024 17:14:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719508446;
-	bh=tNR6ArIGiHkLTpGQkaqhID9T8qBWrrtgctZsjePiA8k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RtAcu1FGJ6P2bbf/X4dsur5Hnf5L/FVULlmeohzDRYKuz6ePZ+uKKYm74H3EdgNmo
-	 XlWBAZeCr43+0xZjyJrKO78GGKQ785KXaJGxLHBbA+7vLgm8dj5LPhJLEdRfFSeXwr
-	 FzJSivkdhNDkiLgaKBQA001ga1cAY/Tp37wpV9noXkqcWyZ4fBhv6RIsjNPqYLiIbx
-	 R/u4GNIbrvU1JRSvc2fyK2KxRnnepks0MHIywrbegr/DKmu06qiHTZnd/A5lsnwNny
-	 j6JSGuPX7j0jJww7j2jrCZvvQKOucgU4nDRiE3PYJCL0T8PFOfIc4lDIGr76Iam4Dn
-	 AvxHsaRMYypIw==
-Date: Thu, 27 Jun 2024 10:14:05 -0700
-From: Kees Cook <kees@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>, linux-serial@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-hardening@vger.kernel.org, llvm@lists.linux.dev,
-	patches@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-Message-ID: <202406271009.4E90DF8@keescook>
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XJvk8JmG"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2ec50a5e230so64458211fa.0;
+        Thu, 27 Jun 2024 10:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1719508961; x=1720113761; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/SQuN64kMBEMrDTMkthTTQmcMNtDEEjHIDdkT3P8+2M=;
+        b=XJvk8JmGK+XQFKOFUhhZJmrHz1pd8SGaQA1YmaqyoIr/c+WIXrmzE7rrRARXV03wmT
+         CQGxnHVs64WqEHegMmNCeO0K6+VTJfkk5peCS9iPeBPgakGQvSz2lYwyvJTOVdpYsY9f
+         d6PwAd3WZR7BU7DlgP1KCNwdqnxMGyOT342fqFpJu91u5wsU7Kym/IleOfj8RoojZyCk
+         q2T1EVcLZkGZo7A0SmnwMihCz+YfMGWOIIa5Py82ziiGYNgSLU40G7w6PJeK19BeZGNr
+         0rztTL+JT2F6pTuqxNePFZN0UbnEWOpy5e99nwrCB5/6u0dVKOg4mK3CIfKS8xWsXMst
+         /3VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1719508961; x=1720113761;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/SQuN64kMBEMrDTMkthTTQmcMNtDEEjHIDdkT3P8+2M=;
+        b=WiQto2IKdpe0IW/1l3MkQcwx5mYRvSn41eODiJ1DKwgLWGkK6DCEkraMyMDzy0uqNt
+         ZjPSbcpeUNqTclt5jYrPx5ac5FGLML1/zHUvfwr1oRxS49ZPTH53L0q3943EV7HQhqNP
+         Di6++sXTh9LZWot1KPmcZXQJjqgQRmkeqWhON+P3Oz/RIETncqwMh3FDz4iU+tCobl+q
+         v4wGSY9EF94IAk8oY8ZBAWvH7EJda0+BHMmraqvTGEuljnDRnjEtHgc47phkMDHLQ6P8
+         5ujyNe+AZfJN/JRFZuBWZH6Q1+8AAeGvKcgRV67vF4VOLeoFONC7XFoYvBFue75XCLDh
+         PRJg==
+X-Forwarded-Encrypted: i=1; AJvYcCWhZg6wgobu2Y3EBGquOcqrZYnI51Uv+Na1j3mijs3/irq0C0HtUe8i43/9wm5ngkN+Nuuyky++l2nXZpOXWqQQS8EWcwJo+6dr3DWPsJ+ukj6OjJOIm5nFV7x36ecGMsiim6qncI/rxLJ0XWhUjU5x0rHUaeARtwdB7fhcPneJGG+Lm+Qr
+X-Gm-Message-State: AOJu0Yx+OhT7AUYQ7MUPxVnVYwTkGt9sx44N2qAsxFaOjY4wj/VH26JJ
+	uPnfLweCPtXIcho3VJFP9mKJyWSpFllLSsuHIToQZ/zijwE2xmbsY9GCJg==
+X-Google-Smtp-Source: AGHT+IE1agfkKzRssvuaXjbBA3jEy0XkDdoTzKeYm9f4SZ2KOrUvWk1wpTnpe2H+dYbg3ntUhzwx1w==
+X-Received: by 2002:a2e:b6ca:0:b0:2ec:4eda:6b55 with SMTP id 38308e7fff4ca-2ec5b2e94a9mr83132311fa.50.1719508961062;
+        Thu, 27 Jun 2024 10:22:41 -0700 (PDT)
+Received: from localhost ([213.79.110.82])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ee4a4bee93sm3181131fa.112.2024.06.27.10.22.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Jun 2024 10:22:40 -0700 (PDT)
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Viresh Kumar <vireshk@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Vinod Koul <vkoul@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v3 0/6] dmaengine: dw: Fix src/dst addr width misconfig
+Date: Thu, 27 Jun 2024 20:22:16 +0300
+Message-ID: <20240627172231.24856-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 29, 2024 at 02:29:42PM -0700, Nathan Chancellor wrote:
-> Work for __counted_by on generic pointers in structures (not just
-> flexible array members) has started landing in Clang 19 (current tip of
-> tree). During the development of this feature, a restriction was added
-> to __counted_by to prevent the flexible array member's element type from
-> including a flexible array member itself such as:
-> 
->   struct foo {
->     int count;
->     char buf[];
->   };
-> 
->   struct bar {
->     int count;
->     struct foo data[] __counted_by(count);
->   };
-> 
-> because the size of data cannot be calculated with the standard array
-> size formula:
-> 
->   sizeof(struct foo) * count
-> 
-> This restriction was downgraded to a warning but due to CONFIG_WERROR,
-> it can still break the build. The application of __counted_by on the
-> ports member of 'struct mxser_board' triggers this restriction,
-> resulting in:
-> 
->   drivers/tty/mxser.c:291:2: error: 'counted_by' should not be applied to an array with element of unknown size because 'struct mxser_port' is a struct type with a flexible array member. This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
->     291 |         struct mxser_port ports[] __counted_by(nports);
->         |         ^~~~~~~~~~~~~~~~~~~~~~~~~
->   1 error generated.
-> 
-> Remove this use of __counted_by to fix the warning/error. However,
-> rather than remove it altogether, leave it commented, as it may be
-> possible to support this in future compiler releases.
-> 
-> Cc: stable@vger.kernel.org
-> Closes: https://github.com/ClangBuiltLinux/linux/issues/2026
-> Fixes: f34907ecca71 ("mxser: Annotate struct mxser_board with __counted_by")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+The main goal of this series is to fix the data disappearance in case of
+the DW UART handled by the DW AHB DMA engine. The problem happens on a
+portion of the data received when the pre-initialized DEV_TO_MEM
+DMA-transfer is paused and then disabled. The data just hangs up in the
+DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
+suspension (see the second commit log for details). On a way to find the
+denoted problem fix it was discovered that the driver doesn't verify the
+peripheral device address width specified by a client driver, which in its
+turn if unsupported or undefined value passed may cause DMA-transfer being
+misconfigured. It's fixed in the first patch of the series.
 
-Since this fixes a build issue under Clang, can we please land this so
-v6.7 and later will build again? Gustavo is still working on the more
-complete fix (which was already on his radar, so it won't be lost).
+In addition to that three cleanup patches follow the fixes described above
+in order to make the DWC-engine configuration procedure more coherent.
+First one simplifies the CTL_LO register setup methods. Second and third
+patches simplify the max-burst calculation procedure and unify it with the
+rest of the verification methods. Please see the patches log for more
+details.
 
-If it's easier/helpful, I can land this via the hardening tree? I was
-the one who sent the bad patch originally. :)
+Final patch is another cleanup which unifies the status variables naming
+in the driver.
 
-Thanks!
+Link: https://lore.kernel.org/dmaengine/20240416162908.24180-1-fancer.lancer@gmail.com/
+Changelog v2:
+- Add a note to the Patch #1 commit message about having the verification
+  method called in the dwc_config() function. (Andy)
+- Add hyphen to "1byte" in the in-situ comment. (Andy)
+- Convert "err" to "ret" variables and add a new patch which unifies the
+  status variables naming. (Andy)
+- Add a in-situ comment regarding why the memory-side bus width
+  verification was required. (Andy)
+- Group sms+dms and smsize+dmsize local variables initializations up. (Andy)
+- Move the zero initializations out to the variables init block
+  in the prepare_ctllo() callbacks. (Andy)
+- Directly refer to dwc_config() in the commit messages. (Andy)
+- Convert dwc_verify_maxburst() to returning zero. (Andy)
+- Add a comment regarding the values utilized in dwc_verify_p_buswidth()
+  being pre-verified before the method is called. (Andy)
+- Add new patches:
+  [PATCH v2 4/6] dmaengine: dw: Define encode_maxburst() above prepare_ctllo() callbacks
+  [PATCH v2 6/6] dmaengine: dw: Unify ret-val local variable naming
+  (Andy)
 
--Kees
+Link: https://lore.kernel.org/dmaengine/20240419175655.25547-1-fancer.lancer@gmail.com/
+Changelog v3:
+- Rebase onto the kernel 6.10-rc4.
+- Just resend.
+
+base-commit: 6ba59ff4227927d3a8530fc2973b80e94b54d58f
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: dmaengine@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (6):
+  dmaengine: dw: Add peripheral bus width verification
+  dmaengine: dw: Add memory bus width verification
+  dmaengine: dw: Simplify prepare CTL_LO methods
+  dmaengine: dw: Define encode_maxburst() above prepare_ctllo()
+    callbacks
+  dmaengine: dw: Simplify max-burst calculation procedure
+  dmaengine: dw: Unify ret-val local variables naming
+
+ drivers/dma/dw/core.c     | 131 +++++++++++++++++++++++++++++++-------
+ drivers/dma/dw/dw.c       |  40 +++++++-----
+ drivers/dma/dw/idma32.c   |  19 +++---
+ drivers/dma/dw/platform.c |  20 +++---
+ drivers/dma/dw/regs.h     |   1 -
+ 5 files changed, 154 insertions(+), 57 deletions(-)
 
 -- 
-Kees Cook
+2.43.0
+
