@@ -1,145 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F63160796;
-	Wed, 26 Jun 2024 08:19:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 461D2198A34;
+	Thu, 27 Jun 2024 15:32:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719389997; cv=none; b=leGbUA0IZKVzRwkmGdm3kHYIxX/mzXvUujZPXy3Zst1ZtykbvkhAYVJL9j+nGFj1M7jl1LbzbA81tgMs9xkHvumliH/aqepB2emgCcggnr8fdcYbiNnyfxLydFru7MUP0WYvVFLw/0SN77HcSregGrrqi2SgXXA/qd6lHBklSy8=
+	t=1719502345; cv=none; b=ZEEjcAmHnMABNADPLKi7YiszfnQ16jKVJcTLX8FMLSN1FkX3nO5K808M5Nly+yMtxmTHzUdb9sXyXns3tRXdWQdyR9CStCbR/HPvaML0pO01T+SBsGJfqTy/2Q25PndGRLpKskOBgKkGLCMc2p8LMLK7NjzBkJP620nttAu7wLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719389997; c=relaxed/simple;
-	bh=E4oJGv2ln2F2mkHKg0UbQEmnSuGrODj0fkfA9bN5peI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sCtAavcIdeNx1MYRbu/YGFXWgQ06QtysS2wjThcHZ83UyjZ0appv8eqQD/hqdPsmrGxcxqS2GJMmQlsO+8o/uJZlvhzlGC6iBusHPoePsCm4VG3o+hAGSnkLrCM0uydfa7h8RHXGdLLtcP3cRhOJ6Vk+PpgDdQYxD232nuJWDRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u9JLOF7l; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u9JLOF7l"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D6AC4AF09;
-	Wed, 26 Jun 2024 08:19:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719389996;
-	bh=E4oJGv2ln2F2mkHKg0UbQEmnSuGrODj0fkfA9bN5peI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=u9JLOF7l/LQc72Xi9LTPGpSarhpjtdwbfoclqsxQ4iynBlNSbXJk65aStw3Xpoo6k
-	 PZMrYCk1rk34uMZuA/XV+5t6IpjQP0sfJvVrXnH/KZzRPGvk4GwEUe1TG33dIuEIsd
-	 qAFKqEAowip7IvdR2uU61HTUjklCO15fZNX1m0Tj8k52OYAxrA857O198pLHhlzgce
-	 KklT+2wAYffkn6ZOIppL/74dnQFGyT1biwMrXNkZ5XSLn0zBuMRvLKaB7eLrY9m77O
-	 V/7It5joG3n9XpJd8UjLFVY/WVviLc/0F93UXaI5fJpYkECg8kxygu9qXZljdZRVQP
-	 7ez6oestrwL8g==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1sMNss-000000000hd-25Eq;
-	Wed, 26 Jun 2024 10:20:06 +0200
-Date: Wed, 26 Jun 2024 10:20:06 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Yicong Yang <yangyicong@hisilicon.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-arm-msm@vger.kernel.org,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	Stephen Boyd <swboyd@chromium.org>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 8/8] serial: qcom-geni: Rework TX in FIFO mode to fix
- hangs/lockups
-Message-ID: <ZnvPNiWWIIsugbhN@hovoldconsulting.com>
-References: <20240610222515.3023730-1-dianders@chromium.org>
- <20240610152420.v4.8.I1af05e555c42a9c98435bb7aee0ee60e3dcd015e@changeid>
- <Znlp1_F1u-70D3QQ@hovoldconsulting.com>
- <CAD=FV=XmuKUKvCq7gG+wM-jAAgHLHnYw4NteFEKz5Fmczd=U7g@mail.gmail.com>
- <ZnqoKDnUMxqf7QRy@hovoldconsulting.com>
- <CAD=FV=Ux+ro90xnEEnALiwtjnOk+LT_qaHmE8jS7adWgBPSDbg@mail.gmail.com>
+	s=arc-20240116; t=1719502345; c=relaxed/simple;
+	bh=aVbM1IQMkrPPckh5xWOxqYkHnsmPqgtjycwr/CEZgeY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dXUye54xRAy4Kj5n0+unJ/CBv7N98JNEl6pEFtwq8gj9zENH7poUWIVXfhei3NCHfEQom/quMMuzDp3ARh9KvgDb17Z2XecIjAOXjACoXeLLv3dRpC4LTX9oaPpa4xpHqDkF+uP08nAbXtWodBe6LaEbjEao8B7SIp5kqyfI7Vw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+From: Yixun Lan <dlan@gentoo.org>
+Subject: [PATCH v2 00/10] riscv: add initial support for SpacemiT K1
+Date: Thu, 27 Jun 2024 15:31:14 +0000
+Message-Id: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=Ux+ro90xnEEnALiwtjnOk+LT_qaHmE8jS7adWgBPSDbg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMKFfWYC/x3MPQqAMAxA4atIZgNtlA5eRRz6EzUIVVoRofTuF
+ sdveK9A5iScYeoKJH4kyxkbqO/A7zZujBKagRSNypDBQ6PS6GwWj+FGbe2gmdn5QNCiK/Eq7z+
+ cl1o/6qWQ5mAAAAA=
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>, 
+ Paul Walmsley <paul.walmsley@sifive.com>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Thomas Gleixner <tglx@linutronix.de>, 
+ Samuel Holland <samuel.holland@sifive.com>, 
+ Anup Patel <anup@brainfault.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org, 
+ linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>, 
+ Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>, 
+ Yixun Lan <dlan@gentoo.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4039; i=dlan@gentoo.org;
+ h=from:subject:message-id; bh=aVbM1IQMkrPPckh5xWOxqYkHnsmPqgtjycwr/CEZgeY=;
+ b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmfYXcZao4t4/seNTZQlv12YCD3ueUpvzGIelTI
+ x+XqLaMjFiJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZn2F3F8UgAAAAAAuAChp
+ c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
+ CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277UNTD/98/CPAZzXwZUxG50
+ N+CfEzPFoSR+6m6Z+zjvH74DWMIFuLEeghYIrET4c3lEE9WtK3QxuZJNh/3Zf9KOgFaRmHRppb/
+ tfwgMiOpFJOr8RlwT4FUBRvqsbfQfNq8pHfdkdj+adTpXPBqOo2i8zEW+GxuA13T7XKWLWumM8V
+ AJjXlmuOFnlbRRncxhaqXwx0YrDsaLoOKnj9PNYj0wn0fl0Kotx6mqeOXtCiZDiHh56xrW2z5g6
+ /Zd8HaIIr6Ir+7niOSRa6PupQmjZ7o2BEv0FMMR7BL3mOL16ELhgFbrp5jeStt7NuE1eN5c6Ixf
+ kgGzDV0KGymWAVw4rPp6ix7FHy2LhRD1ku/ijbIy1xsCb3xJcOML9AoWir/AvXWOyfVMUJPc8Yy
+ k0JVjw+ex1UCVqaAzgf8ejAVl0d55iT6Xsag1OAnQew5+Wsgm3d121LJoUDdLKuSa7JFj8K0P1+
+ RuvdhxoMTMKK+PwTQqNwIiRKCTwtmJB9Ek764dXGc1XJFzdiWX5kNF3VmcLcqtHtbG1y4BlYqFX
+ xPvHS7BCo3I7Yt4/SfgTR6BHTpkTsOq7rtcdARSOh08+Yj5Y0GZDpn0HEefur6Bjb85AbYFD+li
+ Es2bfCsSg+sz2/klkwIHqYvAHk2EMDoptVQCDlM1Axa0T0Gk+uSRxS7ubmHXHb2TnAaQ==
+X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
+ fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
-On Tue, Jun 25, 2024 at 07:29:38AM -0700, Doug Anderson wrote:
-> On Tue, Jun 25, 2024 at 4:21 AM Johan Hovold <johan@kernel.org> wrote:
+SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+1.0 and Zicond evaluation now. Add initial support for it to allow more
+people to participate in building drivers to mainline for it.
 
-> > Right. But with a 16 1-byte word FIFO, we may be able to kick of a
-> > really long transfer and just keep it running until it needs to be
-> > kicked again (cf. enabling TX). The console code can easily insert
-> > characters in the FIFO while the transfer is running (and would only
-> > have to wait for 16 characters to drain in the worst case).
-> >
-> > Effectively, most of the identified issues would just go away, as
-> > there's basically never any need to cancel anything except at port
-> > shutdown.
-> 
-> Yeah, though you'd still have to make sure that the corner cases
-> worked OK. You'll have to pick _some_ sort of fixed transfer size and
-> make sure that all the special cases / console / kdb work if they show
-> up right at the end of the transfer.
+This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+booted to busybox on initrd with this log[3].
 
-Yes, there are some details like that would need to be worked out.
+As previous discussion in patch v1[4], maintainer expect more basic drivers
+ready before really merging it, which would be fine. For other follow-up patches, 
+that are clk, pinctrl/gpio, reset.. My current goal would target at a headless
+system including SD card, emmc, and ethernet.
 
-> I was also a bit curious if there could be power implications with
-> leaving an active TX command always in place. Perhaps geni wouldn't be
-> able to drop some resources? Do you happen to know?
+P.S: talked to Yangyu, I will help and take care of this patch series, thanks
+---
+Changes in v2:
+ - fix timebase-frequency according to current setting
+ - add other uart dt nodes, fix input frequency
+ - introduce new uart compatible for K1 SoC
+ - add 'k1' prefix to bananapi-f3.dts
+ - fix k1-clint compatible
+ - fix some typos
+ - Link to v1: https://lore.kernel.org/r/tencent_BC64B7B1876F5D10479BD19112F73F262505@qq.com
 
-Hmm, good point. I'll see if I can ask someone with access to docs.
+Link: https://github.com/BPI-SINOVOIP/armbian-build/tree/v24.04.30 [1]
+Link: https://gist.github.com/cyyself/a07096e6e99c949ed13f8fa16d884402 [2]
+Link: https://gist.github.com/cyyself/a2201c01f5c8955a119641f97b7d0280 [3]
+Link: https://lore.kernel.org/r/20240618-hardwood-footrest-ab5ec5bce3cf@wendy [4]
 
-But I guess we can still continue to stop the command on stop_tx() (as
-we are considering anyway) to avoid that.
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Conor Dooley <conor@kernel.org>
+To: Paul Walmsley <paul.walmsley@sifive.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>
+To: Albert Ou <aou@eecs.berkeley.edu>
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+To: Samuel Holland <samuel.holland@sifive.com>
+To: Anup Patel <anup@brainfault.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+To: Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: Palmer Dabbelt <palmer@sifive.com>
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: Inochi Amaoto <inochiama@outlook.com>
+Cc: Meng Zhang <zhangmeng.kevin@spacemit.com>
 
-> > I didn't do an in-depth analysis of the slowdown, but I did rerun the
-> > tests now and I'm still seeing a 22-24% slowdown on x1e80100 with rc5.
-> > This is a new platform so I compared with sc8280xp, which shows similar
-> > numbers even if it's slightly faster to begin with:
-> >
-> >                                         sc8280xp        x1e80100
-> >
-> >         rc5 full series                 61 s            67 s
-> >         rc5 last patch reverted         50 s            54 s
-> >
-> > I have a getty running and cat a 10x dmesg file of 543950 bytes to
-> > /dev/ttyMSM0 from an ssh session (just catting in a serial console gives
-> > similar numbers).
-> 
-> That's really weird / unexpected. Your hardware should be fancier than
-> mine so, if anything, I'd expect it to be faster. Is there something
-> causing you really bad interrupt latency or something? ...or is some
-> clock misconfigured and "geni" is behaving sub-optimally?
+Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+Signed-off-by: Yixun Lan <dlan@gentoo.org>
 
-That may be the case. I'm not seeing more interrupts with the last patch
-applied, and not more time spent servicing interrupts (based on a quick
-look at top), so it may just be geni taking a lot of time to start or
-stop commands.
+---
+Yangyu Chen (9):
+      dt-bindings: vendor-prefixes: add spacemit
+      dt-bindings: riscv: Add SpacemiT X60 compatibles
+      dt-bindings: riscv: add SpacemiT K1 bindings
+      dt-bindings: timer: Add SpacemiT K1 CLINT
+      dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
+      riscv: add SpacemiT SOC family Kconfig support
+      riscv: dts: add initial SpacemiT K1 SoC device tree
+      riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
+      riscv: defconfig: enable SpacemiT SoC
 
-> ...although it wouldn't explain the slowness, I'd at least be a little
-> curious if you've confirmed that you're running with a 16-word FIFO
-> depth. See the function geni_se_get_tx_fifo_depth() where newer
-> hardware can actually have larger FIFO depths.
+Yixun Lan (1):
+      dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
 
-No, I had confirmed that it is using 16 words (64 bytes).
- 
-> Just in case it matters, I'd be curious if you have
-> `CONFIG_IRQ_TIME_ACCOUNTING=y`
+ .../interrupt-controller/sifive,plic-1.0.0.yaml    |   5 +-
+ Documentation/devicetree/bindings/riscv/cpus.yaml  |   1 +
+ .../devicetree/bindings/riscv/spacemit.yaml        |  24 ++
+ Documentation/devicetree/bindings/serial/8250.yaml |   4 +-
+ .../devicetree/bindings/timer/sifive,clint.yaml    |   1 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ arch/riscv/Kconfig.socs                            |   5 +
+ arch/riscv/boot/dts/Makefile                       |   1 +
+ arch/riscv/boot/dts/spacemit/Makefile              |   2 +
+ arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts    |  19 ++
+ arch/riscv/boot/dts/spacemit/k1.dtsi               | 378 +++++++++++++++++++++
+ arch/riscv/configs/defconfig                       |   1 +
+ 12 files changed, 441 insertions(+), 2 deletions(-)
+---
+base-commit: f2661062f16b2de5d7b6a5c42a9a5c96326b8454
+change-id: 20240626-k1-01-basic-dt-1aa31eeebcd2
 
-I do, yes.
+Best regards,
+-- 
+Yixun Lan <dlan@gentoo.org>
 
-> Oh: one last thing to confirm: do you have kernel console output
-> disabled for your tests? I've been doing tests with the kernel console
-> _not_ enabled over the serial port and just an agetty there. I could
-> believe things might be different if the kernel console was sending
-> messages over the same port.
-
-Yes, there has been no console output during my tests, and I get similar
-results with the console disabled.
-
-Johan
