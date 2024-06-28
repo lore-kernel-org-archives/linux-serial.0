@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3539654BD4;
-	Fri, 28 Jun 2024 07:33:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F533B29D;
+	Fri, 28 Jun 2024 07:34:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719559983; cv=none; b=QjN0pfb4+ETSXaJ5onsVGWg0Xlg4W+bmi87se2woteHG33NBjuSo1n2apY/moVPmWvTYIhuLd4lzpS2toeDHi+YnHsx9ZmoygMiZVSWuh1lidoWLPxvB91ciobSWeQ2C0mHjvfN0C32e/kkzvCTgR0PVotsC8UMFA/4Jr+kVcAM=
+	t=1719560077; cv=none; b=G6m2H5UTbsmquTjmyUu5CQ5iUlHeZ2cizOfVf4fmeSyKfFlHB/R9xv0xwKehmQbEhIiyKQXxy9osClhKHp9ByCkB4ygt8bmtgnnAGw1kcM0neM6qDFx5Ds9W/VvLS29zo0tJru8kKoDFuPOv2CSyD1PNZxMJOXR7cTKLb6dQCBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719559983; c=relaxed/simple;
-	bh=atYDRZGv2wPyuhFP2xfANv9df+nkmPvlsRewheA6zC4=;
+	s=arc-20240116; t=1719560077; c=relaxed/simple;
+	bh=aCLzZojIDeS8ELo7rpyMosGMNLUgbYoSbezhTpQBEDQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hCFAzv+df/QXA1SAuYNoBWj+hw2Zzw9Nzi7/M92SHujvn63UHjaYgubfNGc9zKD8c7p1zJNXhqZTUYrCj7MOlLIhI0AarQxJ+7oJ8wX5C6GyCnizgF+hAts07QP8Eg7O8d0sRg0VH36BC1cNvGo52IBNQOB1izOvKM7UUWkmVmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nwpElAs8; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=sNviJoSZgw4X1NVzZxX3UWkvycfThwZ6jfXBvinSBXVje5xXi0W+a8svU4ErBv57ZEX10xtUDK551/3XeHWhStMLzU44EPwCAP4fE84ib8HG/7dSKLa9DTfX1YlLP4oZmXoNcUo7A+Xm7OI8nkPn9cEi0Ztl3NCaUsEZOe6KtLA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sIofh/+W; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nwpElAs8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 604D7C2BD10;
-	Fri, 28 Jun 2024 07:32:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sIofh/+W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F9CC116B1;
+	Fri, 28 Jun 2024 07:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719559982;
-	bh=atYDRZGv2wPyuhFP2xfANv9df+nkmPvlsRewheA6zC4=;
+	s=k20201202; t=1719560077;
+	bh=aCLzZojIDeS8ELo7rpyMosGMNLUgbYoSbezhTpQBEDQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=nwpElAs8hqVGc4pKp4mceW9qTGTlWDzBJwqULG6JLPFBqAX4YZCiv8FDgZtmczKt2
-	 Cjst1hw70MVOUaFS1MRNCj8nMQ8+KzzUq4CA8F/6wmzvxK3ouhESnmpI1fLhiyB07r
-	 OLTDhh2ECnODreRJ0UsegykCiq8QxzfPNGqRhzIpzyq6l/dyvjNoZuRSCmisIfkePs
-	 sF3C0i1aE/+HDibCoFVQ3+pXAqKlRYMzrA5zrm2F96XmarA1jvoY0n9nhIONRBTkV3
-	 EryhsUT8lswcBzALkRtVkweuzPYo3YLu4v5sjSIBefLoo1VwXWojHjpLRK9vegXp5y
-	 GrOn/LNgxXnaQ==
-Message-ID: <9e0ea356-7bed-4516-9e1f-739190d63be4@kernel.org>
-Date: Fri, 28 Jun 2024 09:32:53 +0200
+	b=sIofh/+WJrYZstxvVpHtsHm50FqW5sL/7pOXERIVc8ZjjB+Aru5P+tafpiZFkjyMN
+	 0sP1WUsrksUptI/nfVPnJkuRjMraOr8gvm9Wl1W0K+p/CMBz4oAPQvJ398tasYVhR7
+	 nakRnRZYh7Ujb3vSvhjOaOQI0Sw2U4gJkJj4awCLXgG2/qkgXxB301d5JGABF7LwyO
+	 BGcqdt8Qotf7ztJHVHBAYVBQMgiIU9GK5whB/ZkfkLaaVYKAIy6OO3+pW5YlrgVLSA
+	 +gGAvFFTSlpTB2VDqAED5wHW1A3O2MB+zhp3iVFu0YiKL/IBAfouUSJ0V4Qv0bLprp
+	 K34vNyljWyoNw==
+Message-ID: <eb05af3d-85b8-4068-961e-20f2f7d7d0c2@kernel.org>
+Date: Fri, 28 Jun 2024 09:34:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/10] dt-bindings: vendor-prefixes: add spacemit
+Subject: Re: [PATCH v2 03/10] dt-bindings: riscv: add SpacemiT K1 bindings
 To: Yixun Lan <dlan@gentoo.org>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
@@ -51,7 +51,7 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
  Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>
 References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-1-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-3-cc06c7555f07@gentoo.org>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -97,39 +97,26 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240627-k1-01-basic-dt-v2-1-cc06c7555f07@gentoo.org>
+In-Reply-To: <20240627-k1-01-basic-dt-v2-3-cc06c7555f07@gentoo.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 27/06/2024 17:31, Yixun Lan wrote:
 > From: Yangyu Chen <cyy@cyyself.name>
 > 
-> Add new vendor strings to dt bindings for SpacemiT K1 SoC.
+> Add DT binding documentation for the SpacemiT K1 Soc[1] and the Banana
+> Pi BPi-F3 board[2] which used it.
 > 
-> Link: https://www.spacemit.com/en/spacemit-key-stone-2/
-> 
-> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-> Signed-off-by: Yixun Lan <dlan@gentoo.org>
+> [1] https://www.spacemit.com/en/spacemit-key-stone-2/
+> [2] https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
 
-So you just ignored all feedback and tags?
+You got a bug reported by tool and you send the same version again,
+producing the same bug.
 
-<form letter>
-This is a friendly reminder during the review process.
+In case it is not clear:
 
-It looks like you received a tag and forgot to add it.
-
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions, under or above your Signed-off-by tag. Tag is "received", when
-provided in a message replied to you on the mailing list. Tools like b4
-can help here. However, there's no need to repost patches *only* to add
-the tags. The upstream maintainer will do that for tags received on the
-version they apply.
-
-https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
-
-If a tag was not added on purpose, please state why and what changed.
-</form letter>
+*You cannot ignore* bug reports, comments, reviewer requests or any
+other reply to your patchset. Each one must be addressed one way or another.
 
 Best regards,
 Krzysztof
