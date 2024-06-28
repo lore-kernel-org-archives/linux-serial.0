@@ -1,23 +1,22 @@
 Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5C7E43AC0;
-	Fri, 28 Jun 2024 08:44:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 120532139D4;
+	Fri, 28 Jun 2024 08:51:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719564283; cv=none; b=ZsFjhWSA42zVCqfX6OX8tV3x3IDz3O7DCFamLTj7pXUrS1p7krCq0JRsmB8ywXcnodrOJ/sb/tQ8SlPfo3FptMgQNh/jFn9k7b9Pvp0utKFHAPLLFODilglf+goDuuJwRyoR5bQA+XULZ9PmJglmmvoVyjNKK25D2QDLgFj+4M4=
+	t=1719564662; cv=none; b=FI8kYUv/HLg0WFCJGxhKabIzCUlGQf13HGn0xucsJLOmQp4Egxhcy8hEbrgQwECPyAHBoDO/JvnmeAJyT081UrHlK3u/J5ODXAwlIPumS1viUxjIvK/2izdbkV2aR4tW3uiemOCZmVB6nEkJjlKlu8LgfHkZWLbwroSzgJ7Lyg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719564283; c=relaxed/simple;
-	bh=rjY3yb4wtSMvrFArcSzxrYzmsyqAuKcfTtVos4HkRYo=;
+	s=arc-20240116; t=1719564662; c=relaxed/simple;
+	bh=sRiRwWssI1hNcvOqmyyk/vUQCAeh5SUxpNfB6bvBIkY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=En2E3pClvmrTPf0oJgm5paEC0C+i07nWTQiVpc6UFnahUPAkq8UA2isamvUviactPl1VqwM6zPGKNr24SsCRPoeeQBhNMropvSKiilask5aBCCxpp2/Q16HK1YZTXLasQqagaERgnvS6/0VmzpM042Kz/wVe7Qlt6UCVbEGdNyU=
+	 Content-Type:Content-Disposition:In-Reply-To; b=K1EaneClx7z+fM4MaxHL2s9tC5Z9shoq5ng8uJ1x2B0IX3CTEHz5WUFYWDNzVB5ckMQis7yE0kaHLWgS1lRKp86ko7ak/12v1TCRoUxM8AZIU388m6gPWJrnCb7p2Ym7owXfkv8sSZEFF7Y53zruSBXMgaHpZ+hiKiUMbsn5jAI=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Date: Fri, 28 Jun 2024 08:44:34 +0000
+Date: Fri, 28 Jun 2024 08:50:55 +0000
 From: Yixun Lan <dlan@gentoo.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
 	Paul Walmsley <paul.walmsley@sifive.com>,
 	Palmer Dabbelt <palmer@dabbelt.com>,
@@ -27,17 +26,17 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Samuel Holland <samuel.holland@sifive.com>,
 	Anup Patel <anup@brainfault.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
 	linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
 	Meng Zhang <zhangmeng.kevin@spacemit.com>,
 	Yangyu Chen <cyy@cyyself.name>
-Subject: Re: [PATCH v2 03/10] dt-bindings: riscv: add SpacemiT K1 bindings
-Message-ID: <20240628084434.GA1752165@ofsar>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-3-cc06c7555f07@gentoo.org>
- <eb05af3d-85b8-4068-961e-20f2f7d7d0c2@kernel.org>
+Subject: Re: [PATCH v2 05/10] dt-bindings: interrupt-controller: Add SpacemiT
+ K1 PLIC
+Message-ID: <20240628085055.GB1752165@ofsar>
+References: <20240627-k1-01-basic-dt-v2-0-3ffa8c189c66@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-5-3ffa8c189c66@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,30 +45,52 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <eb05af3d-85b8-4068-961e-20f2f7d7d0c2@kernel.org>
+In-Reply-To: <20240627-k1-01-basic-dt-v2-5-3ffa8c189c66@gentoo.org>
 
-On 09:34 Fri 28 Jun     , Krzysztof Kozlowski wrote:
-> On 27/06/2024 17:31, Yixun Lan wrote:
-> > From: Yangyu Chen <cyy@cyyself.name>
-> > 
-> > Add DT binding documentation for the SpacemiT K1 Soc[1] and the Banana
-> > Pi BPi-F3 board[2] which used it.
-> > 
-> > [1] https://www.spacemit.com/en/spacemit-key-stone-2/
-> > [2] https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
-> 
-> You got a bug reported by tool and you send the same version again,
-> producing the same bug.
-> 
-> In case it is not clear:
-> 
-> *You cannot ignore* bug reports, comments, reviewer requests or any
-> other reply to your patchset. Each one must be addressed one way or another.
-> 
-sorry, it's my fault, I rushed to send out this series.
-and yes, I should really go back and check all the thread..
+Hi Conor:
 
-I will fix all the issues in next version (tags, dt error..)
+On 15:11 Thu 27 Jun     , Yixun Lan wrote:
+> From: Yangyu Chen <cyy@cyyself.name>
+> 
+> Add compatible string for SpacemiT K1 PLIC.
+> 
+> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+> Signed-off-by: Yixun Lan <dlan@gentoo.org>
+> ---
+>  .../devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml  | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> index 709b2211276bd..3d0426b569042 100644
+> --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> @@ -59,6 +59,7 @@ properties:
+>            - enum:
+>                - canaan,k210-plic
+>                - sifive,fu540-c000-plic
+> +              - spacemit,k1-plic
+>                - starfive,jh7100-plic
+>                - starfive,jh7110-plic
+>            - const: sifive,plic-1.0.0
+
+..
+> @@ -71,7 +72,9 @@ properties:
+>                - thead,th1520-plic
+>            - const: thead,c900-plic
+>        - items:
+> -          - const: sifive,plic-1.0.0
+> +          - enum:
+> +              - sifive,plic-1.0.0
+> +              - spacemit,k1-plic
+I think this is not needed, will fix it (also dts) in next version
+(sorry, I missed your comment..)
+
+>            - const: riscv,plic0
+>          deprecated: true
+>          description: For the QEMU virt machine only
+> 
+> -- 
+> 2.45.2
 
 -- 
 Yixun Lan (dlan)
