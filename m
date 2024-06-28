@@ -1,52 +1,33 @@
-Received: from omta034.useast.a.cloudfilter.net (omta034.useast.a.cloudfilter.net [44.202.169.33])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77589125DB
-	for <linux-serial@vger.kernel.org>; Fri, 28 Jun 2024 02:51:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3539654BD4;
+	Fri, 28 Jun 2024 07:33:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719543100; cv=none; b=f1pK1Wot363neaulT+yOyjtfeCUESMxdKldc13VsGKo+sCEYYh/ADKHWI+A+zkPXAPkXJg66SaWbop4DC3oXqxq06ctBmOmFf46GpBgtn8nWoEGD34sx6eIZNcX/0IfeLPCE0TKHOz5P2uCgjaRXxxwaFS4nYZDbxRph+53Iw4o=
+	t=1719559983; cv=none; b=QjN0pfb4+ETSXaJ5onsVGWg0Xlg4W+bmi87se2woteHG33NBjuSo1n2apY/moVPmWvTYIhuLd4lzpS2toeDHi+YnHsx9ZmoygMiZVSWuh1lidoWLPxvB91ciobSWeQ2C0mHjvfN0C32e/kkzvCTgR0PVotsC8UMFA/4Jr+kVcAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719543100; c=relaxed/simple;
-	bh=khjubVaOAxvuDngZUIjd9rj1xxZGvg6ZvVt20JfCRyY=;
+	s=arc-20240116; t=1719559983; c=relaxed/simple;
+	bh=atYDRZGv2wPyuhFP2xfANv9df+nkmPvlsRewheA6zC4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oYePun5zFKs0XycOyrB222Uzl5osVZ7f6dFJy++FCtJ3HmWUFGzbc298zFSLN93X2OU7H8kU3ftVauYaSu76ICgjwP87YtJkjv79Q+Ha3VQed1LRdaPK/OOQefqvlzkqie6uTmKBW2npjA+7frHH5o0mSAicKyEWZVYwhvxI1jw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=VrcU1cKb; arc=none smtp.client-ip=44.202.169.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
+	 In-Reply-To:Content-Type; b=hCFAzv+df/QXA1SAuYNoBWj+hw2Zzw9Nzi7/M92SHujvn63UHjaYgubfNGc9zKD8c7p1zJNXhqZTUYrCj7MOlLIhI0AarQxJ+7oJ8wX5C6GyCnizgF+hAts07QP8Eg7O8d0sRg0VH36BC1cNvGo52IBNQOB1izOvKM7UUWkmVmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nwpElAs8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="VrcU1cKb"
-Received: from eig-obgw-5003a.ext.cloudfilter.net ([10.0.29.159])
-	by cmsmtp with ESMTPS
-	id Mx23s6dhKxs4FN1hyshr7L; Fri, 28 Jun 2024 02:51:30 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-	by cmsmtp with ESMTPS
-	id N1hwsGMO2sT9BN1hwsjJ2h; Fri, 28 Jun 2024 02:51:28 +0000
-X-Authority-Analysis: v=2.4 cv=LIutQ4W9 c=1 sm=1 tr=0 ts=667e2531
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=frY+GlAHrI6frpeK1MvySw==:17
- a=IkcTkHD0fZMA:10 a=T1WGqf2p2xoA:10 a=wYkD_t78qR0A:10 a=VwQbUJbxAAAA:8
- a=NEAV23lmAAAA:8 a=_Wotqz80AAAA:8 a=ijWZ9xZranq7hUifA4EA:9 a=QEXdDO2ut3YA:10
- a=AjGcO6oz07-iQ99wixmX:22 a=buJP51TR1BpY-zbLSsyS:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=rKRBHzZAJa8Y5uaYN9KzLXlsQxprz1t3tpmpYAAPIhA=; b=VrcU1cKb+9PGWke1O9Eg07jCns
-	cEqyuC544UwG5leDIPUCgceMBYSUMRHn9IY1WY5WRoINOFKk0ysi/r30O9AZSsZidOw5RZiGijYJx
-	UuxpvyG4Rx4IBZHnm+Axp5mHRB+6KrIWIrv4uQL3Ti++VdCLPxs9XtRdRleTYZFoVAQHaS++tysuP
-	lm+mHRqfVMrfp6PQac+PwDQlp4cIniJFazfMlVbg9vsHkhOL+zsUaOr9K1WzDQz9ZB2hHMU47r7W0
-	6a4vvOmWKNa2K2CekofNvgNM7wDZvLU6PHbi5zjp/47osjSB0fLMDRNIb/1iWNCoD0UpbmdQCUF7p
-	PlGiuv4Q==;
-Received: from [201.172.173.139] (port=40218 helo=[192.168.15.14])
-	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <gustavo@embeddedor.com>)
-	id 1sN1hv-003DhV-1b;
-	Thu, 27 Jun 2024 21:51:27 -0500
-Message-ID: <4c347ab7-97f6-4e18-9aca-dcb48e8fc75a@embeddedor.com>
-Date: Thu, 27 Jun 2024 20:51:23 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nwpElAs8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 604D7C2BD10;
+	Fri, 28 Jun 2024 07:32:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719559982;
+	bh=atYDRZGv2wPyuhFP2xfANv9df+nkmPvlsRewheA6zC4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=nwpElAs8hqVGc4pKp4mceW9qTGTlWDzBJwqULG6JLPFBqAX4YZCiv8FDgZtmczKt2
+	 Cjst1hw70MVOUaFS1MRNCj8nMQ8+KzzUq4CA8F/6wmzvxK3ouhESnmpI1fLhiyB07r
+	 OLTDhh2ECnODreRJ0UsegykCiq8QxzfPNGqRhzIpzyq6l/dyvjNoZuRSCmisIfkePs
+	 sF3C0i1aE/+HDibCoFVQ3+pXAqKlRYMzrA5zrm2F96XmarA1jvoY0n9nhIONRBTkV3
+	 EryhsUT8lswcBzALkRtVkweuzPYo3YLu4v5sjSIBefLoo1VwXWojHjpLRK9vegXp5y
+	 GrOn/LNgxXnaQ==
+Message-ID: <9e0ea356-7bed-4516-9e1f-739190d63be4@kernel.org>
+Date: Fri, 28 Jun 2024 09:32:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,101 +35,102 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: mxser: Remove __counted_by from mxser_board.ports[]
-To: Kees Cook <kees@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- linux-serial@vger.kernel.org, imx@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-hardening@vger.kernel.org,
- llvm@lists.linux.dev, patches@lists.linux.dev, stable@vger.kernel.org
-References: <20240529-drop-counted-by-ports-mxser-board-v1-1-0ab217f4da6d@kernel.org>
- <202406271009.4E90DF8@keescook>
+Subject: Re: [PATCH v2 01/10] dt-bindings: vendor-prefixes: add spacemit
+To: Yixun Lan <dlan@gentoo.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Samuel Holland <samuel.holland@sifive.com>, Anup Patel
+ <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+ linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
+ Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-1-cc06c7555f07@gentoo.org>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <202406271009.4E90DF8@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20240627-k1-01-basic-dt-v2-1-cc06c7555f07@gentoo.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.172.173.139
-X-Source-L: No
-X-Exim-ID: 1sN1hv-003DhV-1b
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.15.14]) [201.172.173.139]:40218
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 7
-X-Org: HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfMuSyLcRSXjWd+BXZa3uxiWdkfFycGTgCQFOnx8yJJMold46poGNvzVCcmczslbGdhqMfuUGhMdu3/1WGM6Akn7DOzTdJN1yDYD02qPGwYUPp2j7Xgth
- u1KdcHEPmpIPr/N63sJ+0xRj7pbZOl4gWmBdN+zuWvHhMjkzh+1xVQSoeEeIRBLsOfjkU+5CFI99dJ4Y7fO1LO5AJj+2u3aC40eHu7bRBaGUkEUzOhpp3U5/
 
-
-
-On 27/06/24 11:14, Kees Cook wrote:
-> On Wed, May 29, 2024 at 02:29:42PM -0700, Nathan Chancellor wrote:
->> Work for __counted_by on generic pointers in structures (not just
->> flexible array members) has started landing in Clang 19 (current tip of
->> tree). During the development of this feature, a restriction was added
->> to __counted_by to prevent the flexible array member's element type from
->> including a flexible array member itself such as:
->>
->>    struct foo {
->>      int count;
->>      char buf[];
->>    };
->>
->>    struct bar {
->>      int count;
->>      struct foo data[] __counted_by(count);
->>    };
->>
->> because the size of data cannot be calculated with the standard array
->> size formula:
->>
->>    sizeof(struct foo) * count
->>
->> This restriction was downgraded to a warning but due to CONFIG_WERROR,
->> it can still break the build. The application of __counted_by on the
->> ports member of 'struct mxser_board' triggers this restriction,
->> resulting in:
->>
->>    drivers/tty/mxser.c:291:2: error: 'counted_by' should not be applied to an array with element of unknown size because 'struct mxser_port' is a struct type with a flexible array member. This will be an error in a future compiler version [-Werror,-Wbounds-safety-counted-by-elt-type-unknown-size]
->>      291 |         struct mxser_port ports[] __counted_by(nports);
->>          |         ^~~~~~~~~~~~~~~~~~~~~~~~~
->>    1 error generated.
->>
->> Remove this use of __counted_by to fix the warning/error. However,
->> rather than remove it altogether, leave it commented, as it may be
->> possible to support this in future compiler releases.
->>
->> Cc: stable@vger.kernel.org
->> Closes: https://github.com/ClangBuiltLinux/linux/issues/2026
->> Fixes: f34907ecca71 ("mxser: Annotate struct mxser_board with __counted_by")
->> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On 27/06/2024 17:31, Yixun Lan wrote:
+> From: Yangyu Chen <cyy@cyyself.name>
 > 
-> Since this fixes a build issue under Clang, can we please land this so
-> v6.7 and later will build again? Gustavo is still working on the more
-> complete fix (which was already on his radar, so it won't be lost).
+> Add new vendor strings to dt bindings for SpacemiT K1 SoC.
 > 
-> If it's easier/helpful, I can land this via the hardening tree? I was
-> the one who sent the bad patch originally. :)
+> Link: https://www.spacemit.com/en/spacemit-key-stone-2/
+> 
+> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+> Signed-off-by: Yixun Lan <dlan@gentoo.org>
 
-+1 (It'd be great if you take it.)
+So you just ignored all feedback and tags?
 
-Also, it'd be great if somebody can confirm this is an acceptable fix
-for the issue:
+<form letter>
+This is a friendly reminder during the review process.
 
-https://lore.kernel.org/linux-hardening/c80e41e6-793e-4311-8e15-f5eda91e723e@embeddedor.com/
+It looks like you received a tag and forgot to add it.
 
-Thanks
---
-Gustavo
+If you do not know the process, here is a short explanation:
+Please add Acked-by/Reviewed-by/Tested-by tags when posting new
+versions, under or above your Signed-off-by tag. Tag is "received", when
+provided in a message replied to you on the mailing list. Tools like b4
+can help here. However, there's no need to repost patches *only* to add
+the tags. The upstream maintainer will do that for tags received on the
+version they apply.
+
+https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
+
+If a tag was not added on purpose, please state why and what changed.
+</form letter>
+
+Best regards,
+Krzysztof
+
