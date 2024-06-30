@@ -1,38 +1,38 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99813152E06;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2B331534FB;
 	Sun, 30 Jun 2024 15:37:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719761873; cv=none; b=kvC4tiGRxnbJw+r9drpe1xsRp2fH1mG/xhsRantfrvWmb24Ww1QrEjNNPWCpb6YDIELCxrSaXll51jmzK3Sm41+eP55fzlIU3sUmKeVyVBoiPXP2/fHKvigZIM6bwgDhRMuJxzWXQJgtdvWfjVbqd4UgSjyh/pcL3RPJfRAq0MY=
+	t=1719761873; cv=none; b=boeyDKCb3azHIxauREMbjwmMeL2veejz5yYhrDyNSodyAX4IJWrZr2iHmP4Ae10/rDUFKnkdQI+8bVLRWeJsQYNRM26Lhv6UTpCq/j7emtjXlnGLckw7L2NR8ZUKmsonDUixrYtfaruHgx92JOZCiIKZTkc4o+QLF9do/Irrdw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719761873; c=relaxed/simple;
-	bh=3Z/M5cg/J/IA9+p9ob+z7Y78E58DUBaEpY5pEblPWjk=;
+	bh=Snna4vWkVe7VrHMEWqWpceKl+iHu1h0a2wRLIPoC/ms=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=UkdQelP9OmMA6RDQkLGu4oRleB6GdXXhvQrslqjrT4g3+R9XDcvWXpHS3dZQM5zU0OfksMMHBks8eoiI+t4O+XkaEYMyrvWiUoypNlCct3pJ73Up1tKteHAvP4IqvMklQ5HI4/jvrJ1vIJY/K2Y4o+LijzkNFNfvW4vDCeRnsFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=qGzzQJuB; arc=none smtp.client-ip=212.227.15.15
+	 MIME-Version; b=ld1TbJTE/Wk/vdxQhnFjdw8yfKP/edYRK7YY5TuBBQZrFnEx0gDSv2jvyI9iFRramQWDdFfCCerGVk0J1uOqVYN0PJddhdBpbomhFZaDBD9KufTFnZmu0xQyo/oFweaKsZEqEL8sYHo+HFtCbpP9hUQchZfPmTCH7Pb9HaZkY74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=HqwyRkuo; arc=none smtp.client-ip=212.227.15.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="qGzzQJuB"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="HqwyRkuo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1719761843; x=1720366643; i=wahrenst@gmx.net;
-	bh=g8bLwDV9vv1b9MjKzssmd/pW+2/RUfnLBRsyg8CTzsY=;
+	s=s31663417; t=1719761839; x=1720366639; i=wahrenst@gmx.net;
+	bh=ih3wUQeDzJJqL1OWTddn6+L5ffHfGjRbiVctGOrH+AM=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=qGzzQJuBaoggAKtGrq8PdHltRSA+ZJEhsqNuVhNzZ7MQcWP8si8dNNOFewgGaY2V
-	 gWpQ00aFkvrLUmT0LBVQ+F4yCN13o4Tz1Y3UKNJRDjdCjSSsDZC1BH735Kai3h3w+
-	 rk3PMPpUEgDIQiSkPhkC/hfNCOTtFzDvlUR3Z4cA7L/D5JGH2uW7bOrJY0vb4+XLA
-	 V7qg7FixqNeYnMJG2D8YBiRu+HVuQctHjVzNFxK/eVuJn7GwAAMMiwKjrDHJ4DKbC
-	 GYlvj5QwZoXr53rdnD7ZeRDj2Kjv5xYcittddBB3CkdGU6ajJ3ppiiMAKI3tONvW1
-	 92nnXAbToM6oKfs0sg==
+	b=HqwyRkuoE+qRsI0+bsGC/P5S+k1ntwg9R2iHcaSt4zBPCsVFbokHB3+hnVE6g+4K
+	 IZ2akmhbed3E639JN7lTkCI8LvV6gP5hN4McqVggJj69w+A6h2Z8ZItSK/070OMkn
+	 RnoD50XogkbvhLocYP7iobTjkghA84DEPBP1rY8PCRmXUJtwz6KJkZmFJEfXGtfwY
+	 jTYH0JiE2zcfI3j1LR6rm6vWJ4gICa5tkgTY77NyIORF9n2T91GjYrnFqTz2CEWwa
+	 ErloGGNjt2nxnwCGsA9Oc09dswosSEfyT9A1VvEzsMHv3LhiR1vAlGXZx0RsF7xvy
+	 k6067PpRJRfl2m7XHw==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MoO2E-1s4DqU34eG-00qLoN; Sun, 30
- Jun 2024 17:37:22 +0200
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Msq2E-1s8baQ3Q64-00ufFH; Sun, 30
+ Jun 2024 17:37:18 +0200
 From: Stefan Wahren <wahrenst@gmx.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -59,9 +59,9 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
 	linux-arm-kernel@lists.infradead.org,
 	kernel-list@raspberrypi.com,
 	Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 06/11] drm/vc4: hdmi: Handle error case of pm_runtime_resume_and_get
-Date: Sun, 30 Jun 2024 17:36:47 +0200
-Message-Id: <20240630153652.318882-7-wahrenst@gmx.net>
+Subject: [PATCH 02/11] mailbox: bcm2835: Fix timeout during suspend mode
+Date: Sun, 30 Jun 2024 17:36:43 +0200
+Message-Id: <20240630153652.318882-3-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240630153652.318882-1-wahrenst@gmx.net>
 References: <20240630153652.318882-1-wahrenst@gmx.net>
@@ -72,69 +72,90 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:o69+hBbDReia1Doo4Ua3Ap4tjIE5FyVFPvweuwOPKrNdWE2Eyje
- By+/XWKIkUjXGa4HdY4rDd0THstR9kLGO9WtHySi849Aq8O8XA0QTYI1kuLhjGrc2pDXAxV
- Rnq+qCbeXhbq0oaML/vuatyAXa3F2q54Y4s7gx1Ss/AqUnBGUfUaCMExkbfCYl2qMowQT6N
- WX1CXhGE/fU4mw+tKg2WQ==
+X-Provags-ID: V03:K1:+eS7VjvylTmd2ce6rQQXNQVZzMe2xTWuYOen4qDXgVNExxnGsfd
+ DRRDc00e/b7oFfw1PtqTPjPGxawx4evTppOhjkFTdloe2+teyYa0P9+O3rja0FohGjpcLGf
+ QZAa1N0wPmLsjx9sMQ69FB6QKU1teVj1vxft+Q/rpDQoxKFmkJz+s+7F54inVXqEdNkGiIO
+ 85++VrQYxeuQAPABACv2Q==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:NDt+LCOQYCA=;vGODWVysfJmV2IQbHHklMS9vJx+
- SH7O3KrTaP3EhoIqV9fGlnhmH1+b2Vsd5E8JUkyUXWNuYj49dgZEmD3sVKNIfy0rGA+BnSlWw
- bohaFfTzLm2qMSEk7ZVuTxI2/4Lj9Turh4sXwHzZXbDKwGryOu9G4Wn1K6nM9DLGWI8fYKni+
- JB1iC8/9Z9V7TRVxIflCDnThLTRzTaTdD5fo2j5y7gt+B45duZ31yTl/TNDteYbb60A93rUFH
- zOCUwgZDoeXomGbFRSmQMWoGsvSW+BFrctwUI2hb5w09h1HmDv6/y3e489MdKlzdIInBbgjXM
- t1mQaOl9TK5roixBzDXdkfI6mTKUyVKe94lF8ZFhhvhMSvyduUyQ4rD597w4HxpL1b4/EuhK7
- QuuYuAaaOwjes5WRORS7XYJ2mz3ESub7m2b0usrX60HKbN5rwnB2LRg5OKYEcSsiEw9BLyC+6
- Er/CwjWf+DKk46xsVdblADf8B69FeIzmorRUxV7Er69s3IFCsqVXdd0BqdmR7dYIdVSlUsdb7
- iHmz7H2iOPnXWNjGivMU1ywfwOhhXj60wPm+KyPeb18Zsu6TFstx8ygeAFs/LT2AY0JYsQnoT
- W9rJTjSXavcMUUJv1YKPHKrEimrOvJaTexrnQe0FjRthC/A+CS18vSrvYaDllq2ORmwb5S8iW
- Vuc5ROWWSMRUMA6svk6Sr/jXiTvbHgGt3snp/5FxNbj6wQggN2s8MMOmirkmiASRY4qwkbZXh
- KnidWOdaabSuyzvjoHdtonCXhTOf0CLtU/4ma2QsW25f1YffG/OGbbQUdgfgHhGOXF54/yu92
- pXmAaYiNa1gDdD9DzH8TFRt8ve4lC2EZI2XvW8a9g4ZVQ=
+UI-OutboundReport: notjunk:1;M01:P0:8EW4z9MobNc=;JJUIZttLMZqr1SkeydBcjP1xOPu
+ Unjiw4xtRYZWx+8jWNS7/NFujaE44rLoAreuM9ovzixRSOHuwaiX5IvDXc/ZBWuIS4Dx+FT26
+ WmSSk9Xr0y7JZyOGarctrjVEZqeHcm69gMSEGwcXeQfIF9c/GkufHP17W/AeO5QqJKa7hxkpC
+ qSTfqxiSahJcX9E4ihmngP9fID9fZMEagemuUc1EPX/exRL2YMAqqwK/D31hzCoznCsydQmrX
+ G/ti47qlJ+GHDSD+WFTnuFtJ0EqHhfj60z3EHojwBJJ7xO34z8+9dusRBtT8h+NXARmlx6Jd/
+ d61c1fWDeZZ3AeiYVinXdj06R/RL56GpV+fNPpXhnKpBn95fw4/kB/MMGpjnLezLnD4QAEEiv
+ KtTN7E4dOlumDkeQFdgBp4/9GdAqfQbQF3sD/h/7n9DV4EzjrUoZfrMV5fKZz/cj4uLeLHAMs
+ bu7vHdtNBtQiSz2twOkSJunW3EJkENGSBcrgZuO56v/amzdzJVihzreqRTJ70L5/zNx3G3ogR
+ aG8NJWb+/WNa/HyEySRyOzEJ5OOmG0vGEqCj6yMYi/oHCzDQG8vN4afVwj7WtQ85iea/gspxv
+ QsOHYQLTTorNxa4lLkIVBrWi+ux5KgiEgubR87zoCcB3sFilayjUJftidRGic8eY9/jYcW2et
+ 3qMbMpA9jqp5AhK8g0Y2uwqASCSYgCRIhsvcfhiB33cT3w1zLgkYreCSOdwlqAhKSUZ1hrYzy
+ xtMd9N578XdAkaW1MnqYyWn7IF9Mh2/cYZy9WgweNk2Te24+8SlVCftIgk4GYxjGuKSxWqksu
+ aLO+1f5vwa7QqijA/YXsn08LcgY7Zct48NRYwB70/OJv0=
 
-The commit 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is
-powered in detect") introduced the necessary power management handling
-to avoid register access while controller is powered down.
-Unfortunately it just print a warning if pm_runtime_resume_and_get()
-fails and proceed anyway.
+During noirq suspend phase the Raspberry Pi power driver suffer of
+firmware property timeouts. The reason is that the IRQ of the underlying
+BCM2835 mailbox is disabled and rpi_firmware_property_list() will always
+run into a timeout [1].
 
-This could happen during suspend to idle. So we must assume it is unsafe
-to access the HDMI register. So bail out properly.
+Since the VideoCore side isn't consider as a wakeup source, set the
+IRQF_NO_SUSPEND flag for the mailbox IRQ in order to keep it enabled
+during suspend-resume cycle.
 
-Fixes: 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is powered i=
-n detect")
+[1]
+PM: late suspend of devices complete after 1.754 msecs
+WARNING: CPU: 0 PID: 438 at drivers/firmware/raspberrypi.c:128
+ rpi_firmware_property_list+0x204/0x22c
+Firmware transaction 0x00028001 timeout
+Modules linked in:
+CPU: 0 PID: 438 Comm: bash Tainted: G         C         6.9.3-dirty #17
+Hardware name: BCM2835
+Call trace:
+unwind_backtrace from show_stack+0x18/0x1c
+show_stack from dump_stack_lvl+0x34/0x44
+dump_stack_lvl from __warn+0x88/0xec
+__warn from warn_slowpath_fmt+0x7c/0xb0
+warn_slowpath_fmt from rpi_firmware_property_list+0x204/0x22c
+rpi_firmware_property_list from rpi_firmware_property+0x68/0x8c
+rpi_firmware_property from rpi_firmware_set_power+0x54/0xc0
+rpi_firmware_set_power from _genpd_power_off+0xe4/0x148
+_genpd_power_off from genpd_sync_power_off+0x7c/0x11c
+genpd_sync_power_off from genpd_finish_suspend+0xcc/0xe0
+genpd_finish_suspend from dpm_run_callback+0x78/0xd0
+dpm_run_callback from device_suspend_noirq+0xc0/0x238
+device_suspend_noirq from dpm_suspend_noirq+0xb0/0x168
+dpm_suspend_noirq from suspend_devices_and_enter+0x1b8/0x5ac
+suspend_devices_and_enter from pm_suspend+0x254/0x2e4
+pm_suspend from state_store+0xa8/0xd4
+state_store from kernfs_fop_write_iter+0x154/0x1a0
+kernfs_fop_write_iter from vfs_write+0x12c/0x184
+vfs_write from ksys_write+0x78/0xc0
+ksys_write from ret_fast_syscall+0x0/0x54
+Exception stack(0xcc93dfa8 to 0xcc93dff0)
+[...]
+PM: noirq suspend of devices complete after 3095.584 msecs
+
+Link: https://github.com/raspberrypi/firmware/issues/1894
+Fixes: 0bae6af6d704 ("mailbox: Enable BCM2835 mailbox support")
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 =2D--
- drivers/gpu/drm/vc4/vc4_hdmi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/mailbox/bcm2835-mailbox.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi=
-.c
-index d57c4a5948c8..b3a42b709718 100644
-=2D-- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -429,6 +429,7 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_co=
-nnector *connector,
- {
- 	struct vc4_hdmi *vc4_hdmi =3D connector_to_vc4_hdmi(connector);
- 	enum drm_connector_status status =3D connector_status_disconnected;
-+	int ret;
+diff --git a/drivers/mailbox/bcm2835-mailbox.c b/drivers/mailbox/bcm2835-m=
+ailbox.c
+index fbfd0202047c..ea12fb8d2401 100644
+=2D-- a/drivers/mailbox/bcm2835-mailbox.c
++++ b/drivers/mailbox/bcm2835-mailbox.c
+@@ -145,7 +145,8 @@ static int bcm2835_mbox_probe(struct platform_device *=
+pdev)
+ 	spin_lock_init(&mbox->lock);
 
- 	/*
- 	 * NOTE: This function should really take vc4_hdmi->mutex, but
-@@ -441,7 +442,11 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_c=
-onnector *connector,
- 	 * the lock for now.
- 	 */
-
--	WARN_ON(pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev));
-+	ret =3D pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
-+	if (ret) {
-+		DRM_ERROR("Failed to retain HDMI power domain: %d\n", ret);
-+		return status;
-+	}
-
- 	if (vc4_hdmi->hpd_gpio) {
- 		if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
+ 	ret =3D devm_request_irq(dev, irq_of_parse_and_map(dev->of_node, 0),
+-			       bcm2835_mbox_irq, 0, dev_name(dev), mbox);
++			       bcm2835_mbox_irq, IRQF_NO_SUSPEND, dev_name(dev),
++			       mbox);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register a mailbox IRQ handler: %d\n",
+ 			ret);
 =2D-
 2.34.1
 
