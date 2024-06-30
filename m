@@ -1,120 +1,63 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 061A0156967;
-	Sun, 30 Jun 2024 15:37:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE3A25B1E0;
+	Sun, 30 Jun 2024 16:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719761877; cv=none; b=jpFKpnfGDrIab0QmUl411fAybccERJUpxBqBq+ysQxN/6k9GOtHG5VpJ4TDXHWwbqjPufL+BE3pTRRy62uOqMuKB0iUnBrVmqQnQgo12dKGcP0crCwNBy7hka+84P3miUwQuUC26XPdT+GcCRBY9F+Z+534pTzADVooBO/8Xrdo=
+	t=1719764886; cv=none; b=kPAKzfM4OG3HFhiHY1SJ5/gJ1pDz7bDePZOf2Jtp6udJqCjGsR5+bbNHowABY0u/oRMtnHecTnflzK1WbFDGp/Edr1i7Hz+T4gQ7rbdZ6z6k7rWwRQAQ/oeH3J0+Y9O0NEpH1+TttXB3f/OjZPbuS7TbeUiJ2P4lssEQvB7kePI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719761877; c=relaxed/simple;
-	bh=Z/y0IFADfKfJvFiNwnyAj1kXb+3X4rxM/FOzZQk6XVw=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=X7dEhntk67cEfwC9n2ElcPFdgUU2EmG3o76169GviC6EgCjrdytLpAu0lSURN/D7iQQbHXIIWYLq7N13abx9GUf5uryRZrUQIwfaFn1BIF9NMYJC4oK7wjK42qKKoHYS3ImnG8afEBooniCB4xDUlKnN89o6iRL5/uTeAHpE9ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=Gpf1//3s; arc=none smtp.client-ip=212.227.15.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	s=arc-20240116; t=1719764886; c=relaxed/simple;
+	bh=dUSY9WlVjpaC0jibaT6PWQbRPziL6WMnbcskSU/tty8=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=nWxqlycWDOedj1nuUcg2JekMTlE4VdkIu4NT+AEd1JJFSYIVRnB/ODWjbE9gJsVHLlysD+YQQmSs/7dDK7DQlRz4XvnGmyP0Ht0U0R1PXtnQoHgHCAudszeezaFgy57iPrE/p1TjWGFtoLc7EYj5QmYqSqGTfLs/IwxENo1gqe0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XDsg4qJc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Gpf1//3s"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1719761844; x=1720366644; i=wahrenst@gmx.net;
-	bh=lCFQBeBlbmpUg9EyXUyqn5DC7Bbo3JN2mDc4pQ7TCIw=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=Gpf1//3sptoh0BqAY9+K8DWuGeBmw+14AW5vGaMnqtdrUtrC60rP9HwuSjH1nEq2
-	 tZjNmkjPkCQCVY/FwfeTawoESM8K2FlwLo2aszffrrayuQu7Rp6L8z3WrPMVEfscV
-	 aI/SuHreY7rXStZY+T+VNyIgNIJvbJrVV5fo86kgPZfwHq5KVCN8xhTF4YQyAgruF
-	 MNTtarpzEYfcKuThXAZ4QelWbD6n+1lbxJYkG51dKwPeK+ro7nEH+C9yM3P2fJXh8
-	 FIcpAptoxrmAcTSDvQs+3GGUE4UrNB0vppZxNjumCGCLmkiYoQsY+vvAmiFLNRla1
-	 9QYMcbfMC8rclpxwIg==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MFsZ3-1seevT2qMh-00Fv84; Sun, 30
- Jun 2024 17:37:24 +0200
-From: Stefan Wahren <wahrenst@gmx.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>,
-	Scott Branden <sbranden@broadcom.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Minas Harutyunyan <hminas@synopsys.com>
-Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Peter Robinson <pbrobinson@gmail.com>,
-	dri-devel@lists.freedesktop.org,
-	bcm-kernel-feedback-list@broadcom.com,
-	linux-pm@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	kernel-list@raspberrypi.com,
-	Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 08/11] usb: dwc2: debugfs: Print parameter no_clock_gating
-Date: Sun, 30 Jun 2024 17:36:49 +0200
-Message-Id: <20240630153652.318882-9-wahrenst@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240630153652.318882-1-wahrenst@gmx.net>
-References: <20240630153652.318882-1-wahrenst@gmx.net>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XDsg4qJc"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B0715C2BD10;
+	Sun, 30 Jun 2024 16:28:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719764886;
+	bh=dUSY9WlVjpaC0jibaT6PWQbRPziL6WMnbcskSU/tty8=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=XDsg4qJc4g0Kf/WJs+dKn2xM4TRVTMz9LPV+m3yCr67ZRUnOafqPATXkWxqi+acIM
+	 6hV4PJz1olhmRMXkW6Sz0eIparoVKzaWprMXF0KbGJ/b+GcL8PsNfDCzQ/JEyfEXgL
+	 b8Og9zv80b7+dkpQnvVsgJHQralqBKHcgfoihBj/oRQstCUu8AaxEhQM/ZLl4k9YbD
+	 aED/xaiyJ38NvMHdHjWaU+1XBJ7BUvfzTHBxBLraJ9uk5IQYeVzl1uiOWDS1ynujrH
+	 IT0bwprbBjd1TawDz7w3zVVjeYnqi+E371GbKsv8IPqtLx6sH0pN8MeFNxr5P87aQn
+	 C9XNRcQLUGuPA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A65F3C433E9;
+	Sun, 30 Jun 2024 16:28:06 +0000 (UTC)
+Subject: Re: [GIT PULL] TTY / Serial driver fixes for 6.10-rc6
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZoFnsuNJy_Fz8_qE@kroah.com>
+References: <ZoFnsuNJy_Fz8_qE@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <ZoFnsuNJy_Fz8_qE@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc6
+X-PR-Tracked-Commit-Id: cc8d5a2f09a54405321769abfd6ec3395482336a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3e334486ec5cc6e79e7b0c4f58757fe8e05fbe5a
+Message-Id: <171976488667.24413.1678305741571152562.pr-tracker-bot@kernel.org>
+Date: Sun, 30 Jun 2024 16:28:06 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Y2/ydqCyqYHWHavK5/XG4b46LsgTWvQ3AzoHTM5k/IIqoHGxAdu
- YmHJwmsQJKG3BiEcn/lVB63s5ODVPmRQCXvi1v/puqwcPbB9y/BglDKYBDHBcNlySv4Pux8
- Aiv2WHULsE2ioRoX6rVAL9MGN7wv0b+hY9DQIVE8t7jRYaaD3R4y47BjYJtZHz3kf9g40YU
- kCRuybOwyGdQwQf6CYwQw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:1mr6sDBPqAY=;ZVkIx5NNUR0ZJQM95skTQK9wG9G
- YQ//jV7KGMQwMhiLuozF7iwuXXsavmAxKDlwYcvpTnqcCoQ4cRO7JXS8WvjpeO0CGzkH8/CeZ
- KVwxEH49j4t+hhkiUBoSh0Udkzx8SNT1KQg2pu/qFHDnfYsRY1t5HRznGr3/GZ1ad6gI32WII
- mfDwlCe1hjdKj56Peofvihz41IHFncxcDsOt9SP1pBGjqR9EnDVUJe777Xrx5bEk9Nf+jNEB8
- NtQ5DAFBDZGx+31cDrhg06e59qTg7leiT67FUse0/SQWvvHBRGDSd/fniQSS3YwBs2KJxgUhT
- bH/YZp+tZZjUuMC5XdAXNBANuhFGAFE4YVA/eR81UBc10kVDFfH/cmBREY98OMGdbi58569/X
- lgsygz2Vq0ponplUSfg7M+o3YZG9zxjRhG7aUkJ3dCWPWpxREe00h2Qbd6oXLGmP0y0c3NVQO
- cK8eoYBXpmBm6qUhrpKYvvfQmmM5YEFCPgxNVOQydubkcppzK1MYa+bBSfvZrnODoMEvQ+GMB
- ArEDD2Za/Bsi5Xom854maKOkcXgySDsNHH2pPopgQJQH6jEZU/xwynvwjqFZCHdpk/uO1YM91
- hrdlK8rrbRVH5vs/tVA3e3lz5jlByvi/IQ7zat3EBsVHwzeQBFr1bc+biyxd+e0RPr/aPKcil
- Sy9u6YyxO/gY/or8MPDKihrxH/0N7bad414NbWboObpHEd2Yvb8VP2JbXBTs1xb5rOVxGP3tD
- xvItjcHC7chExI5cbgLJs98U5I4t3QtKlDfUVEt4s3uXrYoGfP6/p1UVQ5307NO1sbYcrCgmc
- /55cQvNWI6q+ZRrzkWJCoJojDh6UMUCt3bm0ZICYtxtpk=
 
-The commit c4a0f7a6ab54 ("usb: dwc2: Skip clock gating on Samsung
-SoCs") introduced a parameter to skip enabling clock gating mode
-even the hardware platform should supports it.
+The pull request you sent on Sun, 30 Jun 2024 16:12:02 +0200:
 
-In order to make this more visible also print this in show
-parameters of debugfs.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc6
 
-Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-=2D--
- drivers/usb/dwc2/debugfs.c | 1 +
- 1 file changed, 1 insertion(+)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3e334486ec5cc6e79e7b0c4f58757fe8e05fbe5a
 
-diff --git a/drivers/usb/dwc2/debugfs.c b/drivers/usb/dwc2/debugfs.c
-index 7c82ab590401..3116ac72747f 100644
-=2D-- a/drivers/usb/dwc2/debugfs.c
-+++ b/drivers/usb/dwc2/debugfs.c
-@@ -702,6 +702,7 @@ static int params_show(struct seq_file *seq, void *v)
- 	print_param(seq, p, uframe_sched);
- 	print_param(seq, p, external_id_pin_ctl);
- 	print_param(seq, p, power_down);
-+	print_param(seq, p, no_clock_gating);
- 	print_param(seq, p, lpm);
- 	print_param(seq, p, lpm_clock_gating);
- 	print_param(seq, p, besl);
-=2D-
-2.34.1
+Thank you!
 
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
