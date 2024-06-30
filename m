@@ -1,38 +1,38 @@
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7211422A8;
-	Sun, 30 Jun 2024 15:37:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99813152E06;
+	Sun, 30 Jun 2024 15:37:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719761873; cv=none; b=m/bbXBZ/x1cykIbglrP2eTwoXkSSZ9yoUwRnoSBPcN2cffaTkuhk1rgP+ip3HvN2WnoWoeVKe3wmM3vvBit2Zv884FQSzONUiuIpaizaxUs5Uu2cMobN6hUDbdehoHleXTO70nwjg/AjMy2Ztp7YDxKHe2mbYPdSAJ+VAuj2JCM=
+	t=1719761873; cv=none; b=kvC4tiGRxnbJw+r9drpe1xsRp2fH1mG/xhsRantfrvWmb24Ww1QrEjNNPWCpb6YDIELCxrSaXll51jmzK3Sm41+eP55fzlIU3sUmKeVyVBoiPXP2/fHKvigZIM6bwgDhRMuJxzWXQJgtdvWfjVbqd4UgSjyh/pcL3RPJfRAq0MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719761873; c=relaxed/simple;
-	bh=qQwi+KPDIZxW5GZlpRAbTobx32sUz3lKs/edcSv1W+w=;
+	bh=3Z/M5cg/J/IA9+p9ob+z7Y78E58DUBaEpY5pEblPWjk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=cuXIHuF2cIFey1tC8ATcVZxcpMi9q8ve41Y4AfWad/RtRGSx2sevlGeySvK1ft03oTIYJW1A0nFed8235R1VJoRe+bVZ36omXcq4xsbLjUN4/OjeQiv/Z4GKJt12Au2PrGEYZ4XeVfg0MBFI1VlFot9bkkPspb9yAVjwwPQSfbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=ep8yM1Uq; arc=none smtp.client-ip=212.227.15.15
+	 MIME-Version; b=UkdQelP9OmMA6RDQkLGu4oRleB6GdXXhvQrslqjrT4g3+R9XDcvWXpHS3dZQM5zU0OfksMMHBks8eoiI+t4O+XkaEYMyrvWiUoypNlCct3pJ73Up1tKteHAvP4IqvMklQ5HI4/jvrJ1vIJY/K2Y4o+LijzkNFNfvW4vDCeRnsFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=qGzzQJuB; arc=none smtp.client-ip=212.227.15.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="ep8yM1Uq"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="qGzzQJuB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1719761838; x=1720366638; i=wahrenst@gmx.net;
-	bh=+rxQ791ubcSxhOIK3kEqE6IzwyoFm1gQrUg4Eh9bhfg=;
+	s=s31663417; t=1719761843; x=1720366643; i=wahrenst@gmx.net;
+	bh=g8bLwDV9vv1b9MjKzssmd/pW+2/RUfnLBRsyg8CTzsY=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=ep8yM1UqjNI4tYbUGxYXd3MWHdd7qpwG3ZkN+8Bb00WnDJx0khVHLkZA9LcxzS3R
-	 ociMgBcDCGrxxvuHZfBWVtVaMGPj50QAer6BMcyerrpNVl0O/EhKDqt7gtstfLPtw
-	 XIM/GvEGcubFQNYLTwAwZmiP9BwWtD/QoqY/cwjuFh72HdFpRcDisMlqKxTbM5+p0
-	 M5pWJvFc8YD3FzEalcfoaX2NkMWlUGsvIjmi7GoWBw4dsJCIk0WFN87axKNCGdHzE
-	 4KroQkD/cMQLzTbjpNJiUrc7woXa1KQjtRsY5F+hN0szsaSeOS7ihjbiqlatWeDT3
-	 k2sEiCiyniboX57PbA==
+	b=qGzzQJuBaoggAKtGrq8PdHltRSA+ZJEhsqNuVhNzZ7MQcWP8si8dNNOFewgGaY2V
+	 gWpQ00aFkvrLUmT0LBVQ+F4yCN13o4Tz1Y3UKNJRDjdCjSSsDZC1BH735Kai3h3w+
+	 rk3PMPpUEgDIQiSkPhkC/hfNCOTtFzDvlUR3Z4cA7L/D5JGH2uW7bOrJY0vb4+XLA
+	 V7qg7FixqNeYnMJG2D8YBiRu+HVuQctHjVzNFxK/eVuJn7GwAAMMiwKjrDHJ4DKbC
+	 GYlvj5QwZoXr53rdnD7ZeRDj2Kjv5xYcittddBB3CkdGU6ajJ3ppiiMAKI3tONvW1
+	 92nnXAbToM6oKfs0sg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N1wq3-1sH5tc3gcb-013lvq; Sun, 30
- Jun 2024 17:37:18 +0200
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MoO2E-1s4DqU34eG-00qLoN; Sun, 30
+ Jun 2024 17:37:22 +0200
 From: Stefan Wahren <wahrenst@gmx.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -59,9 +59,9 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
 	linux-arm-kernel@lists.infradead.org,
 	kernel-list@raspberrypi.com,
 	Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 01/11] firmware: raspberrypi: Improve timeout warning
-Date: Sun, 30 Jun 2024 17:36:42 +0200
-Message-Id: <20240630153652.318882-2-wahrenst@gmx.net>
+Subject: [PATCH 06/11] drm/vc4: hdmi: Handle error case of pm_runtime_resume_and_get
+Date: Sun, 30 Jun 2024 17:36:47 +0200
+Message-Id: <20240630153652.318882-7-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240630153652.318882-1-wahrenst@gmx.net>
 References: <20240630153652.318882-1-wahrenst@gmx.net>
@@ -72,59 +72,69 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:+fDSsr7/+1m0xx5jNNZO5K4aelCIX1oa9z/e7EF4bCJ/BqcX+/l
- GZB4P+Dbvny3hJik8esZBgJdKLMNoMLwRyuDU9g9cw7nCo6Niu37bmQS83d06fYvF821c51
- xt0tuKV93IfqN1Xco4x4g/807GrrMeshXjpmWMufSWbTQcuQ9m/i5yabx49vm/MS9bZWtD4
- QWgSi7beLjp8V/oAvMMKg==
+X-Provags-ID: V03:K1:o69+hBbDReia1Doo4Ua3Ap4tjIE5FyVFPvweuwOPKrNdWE2Eyje
+ By+/XWKIkUjXGa4HdY4rDd0THstR9kLGO9WtHySi849Aq8O8XA0QTYI1kuLhjGrc2pDXAxV
+ Rnq+qCbeXhbq0oaML/vuatyAXa3F2q54Y4s7gx1Ss/AqUnBGUfUaCMExkbfCYl2qMowQT6N
+ WX1CXhGE/fU4mw+tKg2WQ==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:qL3riX2MGg4=;D2/m4WXwE9Wy2ZsgCNs/qwYDp9R
- lSBIPwXiITay4NnuZ1BzTnJ6onPzOWqZ00kx5YARH9TP8jR0tjxOPf6a7VlPjbySxELwm0AlS
- R+CBtdyPakaNEQHdUaRdNkaeIyKqFnIud+Bpi6PqoOhyOKRMBv/0mu8GnY4C3JiEzuIdz+1EU
- LEhUirQ45fWoXvlx9u7jHbT4QHXQSSpgBA6bs7VN1KOwF2AP+9lbfAmEyDUBFM2nyJlQgSS+n
- e7cv+pFv/iQdaqD41ksPD3t6UaEHL6YLHPEzoICMpMIiYN7Y1jXoZRFn/3u4b7ctp1hNJRyJ+
- WboLv6atSIyjgrPCPDNXEADzkm5nrESe/2/MOGpp5nmHkhzYug+eHqPK73lzdmchS4LLm8Fr0
- +A0VkFy+VSOBl9qOaRKxog4ScP8Yf2IrvOj6oCuXsv5hxpiiOD2bt9L2yOcPr9T0enCW4o+gJ
- 6sD+zcMzSEI4MBCKLVqJj7ueoX9kDfPOMuQ5kCCCnYmmGyZBsNTM0gePhzsTBMeiE8KUUPlB5
- awyGxW3T9NrvLGfpyyMVPC/vVq236X2tS4o6fwriTbIWYsbGmsxWfF/Q1crAFFKsp8Zv9Cz71
- 9ZbOF0AzPlBDBrJuYPT7tAks0r3L3N/smARjTwD/Ua6FlYo0zek54GgroF7CFHMIuRWYMMstP
- nru+phMPCC8uYUcCOjixlBvp5lhTOgkQ8OyAsGuJDZouSG3Ln6ThWXcB04dWFidDhg/EcOylf
- F2Rsa8SulqGm/wOoyCclP1zhZnevUJBfPPrmiE48zbFnr/O16IaPuKJRM/gS0HWKECg7Ywzzv
- /pOMkfXgsHxNvJE5JzZpDu5oENBKoPLMf3phzmlUdypr8=
+UI-OutboundReport: notjunk:1;M01:P0:NDt+LCOQYCA=;vGODWVysfJmV2IQbHHklMS9vJx+
+ SH7O3KrTaP3EhoIqV9fGlnhmH1+b2Vsd5E8JUkyUXWNuYj49dgZEmD3sVKNIfy0rGA+BnSlWw
+ bohaFfTzLm2qMSEk7ZVuTxI2/4Lj9Turh4sXwHzZXbDKwGryOu9G4Wn1K6nM9DLGWI8fYKni+
+ JB1iC8/9Z9V7TRVxIflCDnThLTRzTaTdD5fo2j5y7gt+B45duZ31yTl/TNDteYbb60A93rUFH
+ zOCUwgZDoeXomGbFRSmQMWoGsvSW+BFrctwUI2hb5w09h1HmDv6/y3e489MdKlzdIInBbgjXM
+ t1mQaOl9TK5roixBzDXdkfI6mTKUyVKe94lF8ZFhhvhMSvyduUyQ4rD597w4HxpL1b4/EuhK7
+ QuuYuAaaOwjes5WRORS7XYJ2mz3ESub7m2b0usrX60HKbN5rwnB2LRg5OKYEcSsiEw9BLyC+6
+ Er/CwjWf+DKk46xsVdblADf8B69FeIzmorRUxV7Er69s3IFCsqVXdd0BqdmR7dYIdVSlUsdb7
+ iHmz7H2iOPnXWNjGivMU1ywfwOhhXj60wPm+KyPeb18Zsu6TFstx8ygeAFs/LT2AY0JYsQnoT
+ W9rJTjSXavcMUUJv1YKPHKrEimrOvJaTexrnQe0FjRthC/A+CS18vSrvYaDllq2ORmwb5S8iW
+ Vuc5ROWWSMRUMA6svk6Sr/jXiTvbHgGt3snp/5FxNbj6wQggN2s8MMOmirkmiASRY4qwkbZXh
+ KnidWOdaabSuyzvjoHdtonCXhTOf0CLtU/4ma2QsW25f1YffG/OGbbQUdgfgHhGOXF54/yu92
+ pXmAaYiNa1gDdD9DzH8TFRt8ve4lC2EZI2XvW8a9g4ZVQ=
 
-Recent work on raspberry-power driver showed that even the
-stacktrace on firmware property timeout doesn't provide
-enough information. So add the first tag name to the warning
-to be in line with a status error.
+The commit 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is
+powered in detect") introduced the necessary power management handling
+to avoid register access while controller is powered down.
+Unfortunately it just print a warning if pm_runtime_resume_and_get()
+fails and proceed anyway.
 
+This could happen during suspend to idle. So we must assume it is unsafe
+to access the HDMI register. So bail out properly.
+
+Fixes: 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is powered i=
+n detect")
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 =2D--
- drivers/firmware/raspberrypi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi=
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi=
 .c
-index ac34876a97f8..18cc34987108 100644
-=2D-- a/drivers/firmware/raspberrypi.c
-+++ b/drivers/firmware/raspberrypi.c
-@@ -62,7 +62,6 @@ rpi_firmware_transaction(struct rpi_firmware *fw, u32 ch=
-an, u32 data)
- 			ret =3D 0;
- 		} else {
- 			ret =3D -ETIMEDOUT;
--			WARN_ONCE(1, "Firmware transaction timeout");
- 		}
- 	} else {
- 		dev_err(fw->cl.dev, "mbox_send_message returned %d\n", ret);
-@@ -125,6 +124,8 @@ int rpi_firmware_property_list(struct rpi_firmware *fw=
-,
- 		dev_err(fw->cl.dev, "Request 0x%08x returned status 0x%08x\n",
- 			buf[2], buf[1]);
- 		ret =3D -EINVAL;
-+	} else if (ret =3D=3D -ETIMEDOUT) {
-+		WARN_ONCE(1, "Firmware transaction 0x%08x timeout", buf[2]);
- 	}
+index d57c4a5948c8..b3a42b709718 100644
+=2D-- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -429,6 +429,7 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_co=
+nnector *connector,
+ {
+ 	struct vc4_hdmi *vc4_hdmi =3D connector_to_vc4_hdmi(connector);
+ 	enum drm_connector_status status =3D connector_status_disconnected;
++	int ret;
 
- 	dma_free_coherent(fw->chan->mbox->dev, PAGE_ALIGN(size), buf, bus_addr);
+ 	/*
+ 	 * NOTE: This function should really take vc4_hdmi->mutex, but
+@@ -441,7 +442,11 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_c=
+onnector *connector,
+ 	 * the lock for now.
+ 	 */
+
+-	WARN_ON(pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev));
++	ret =3D pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
++	if (ret) {
++		DRM_ERROR("Failed to retain HDMI power domain: %d\n", ret);
++		return status;
++	}
+
+ 	if (vc4_hdmi->hpd_gpio) {
+ 		if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
 =2D-
 2.34.1
 
