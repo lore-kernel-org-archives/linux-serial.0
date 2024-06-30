@@ -1,169 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B378157A4D
-	for <linux-serial@vger.kernel.org>; Fri, 28 Jun 2024 16:54:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28F92149E1D;
+	Sun, 30 Jun 2024 14:12:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719593696; cv=none; b=Ta34TLgh3f7JrJJmnHKEWng3JKaYtqtyDPdwmgLWIEySjsC5OIXcnOdln1ciIHqbXMkJcIKMmDDMWKVvdVtN6nsxjnb6FkWIqhmFlp11mhlDvBtgd22JqCpqDmEsHkhsGF3J6HBuTBcCL5VLuT26YrQ7BqJ57kpQl0U+BrEuHZ0=
+	t=1719756731; cv=none; b=nanDI37iS5up5AfkXU4PQz4JhxfghZbfDH9W7K6Ff0CzESxLtMhEcqGVJoef3JpvDs2SlexZjxvGfoTociPpl3I4BtVGsrVUkzK4BmzJ6KEtKB48FEAzS0VxgTdaLAXhO6H+PXtLoMMu+otYDd4O55q3pKcXx8cxFT4w9yEKNMo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719593696; c=relaxed/simple;
-	bh=tjtI21mrNOHhxsxhFEemHqxjIJca9cR2qnqNQCyTYCI=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=e042na05rSCBT1FzpqjCNQkBuL9UrVls0jMpUX2sfL7JSA1tSoTL+BbmTm4OddhveHaBbfnWvpVBzYyei0DoAI00q+ZUSlE4ZgqXQGM1vrZLruPTtrS8cxwazZD3Was+zjK5bvmK3MKo5sa02V0h3NZTuYhK1CVJfwoZMbMv8DQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UA3PKRGP; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1719756731; c=relaxed/simple;
+	bh=Sw7Xxp9857TGCrUX14kXY/yWAwS58JTrKb5Jy7LKf0A=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=txlDfiknKJYceKuSydlb4cUND7Vd0vwRGtxCNiV+nJo+/Ika5DtaeoXSNC49RQKjXAf/gZSvVU2DT4jj38ZgiCpbrkFJy865jf3JCEuEFycCYVYCTyGx58R9Ep4pMd6nc2sWFs3N35XtLWGipdPWRfPZR/4JEDuQxsi2r9eBduM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=MWgGAAqc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UA3PKRGP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719593694; x=1751129694;
-  h=date:from:to:cc:subject:message-id;
-  bh=tjtI21mrNOHhxsxhFEemHqxjIJca9cR2qnqNQCyTYCI=;
-  b=UA3PKRGPHgeulGQuMDT30/HO38W2EiUzsQ0lO/ULOvUc+n5645FCY5jV
-   QzZd7yDAb5SXgJyTJMWGx6bA/yHan36akBwkaFO9tXWVnIFZ8kbOnCeOj
-   9hJ9R5jHJ6rESn4hDgbPOs4jok0CJFSTiNsnUqQAHovwTaOSBa42ex1n2
-   vyz82Qg3AFBrAO6tCcR3CuHUOPtlxjNIys1Q9SE5/iHIcYQXKO0tchGyD
-   MsIdn+0JRuIaLxCTIRRQzneOOvBZuAMDJXo1tuBiceDJhDZ0DYzUzlQCA
-   +aEo3ZK8CkSQPuVEwwCeT9ZRVF9HoLAHzXZfAGK8I4mtfnXXOpPR0b7jt
-   Q==;
-X-CSE-ConnectionGUID: Z+gLH/qsRfiXShalWHHWpQ==
-X-CSE-MsgGUID: 8qJnh3MdQV6efHkyx/M4ug==
-X-IronPort-AV: E=McAfee;i="6700,10204,11117"; a="27918843"
-X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
-   d="scan'208";a="27918843"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2024 09:54:54 -0700
-X-CSE-ConnectionGUID: BSxwmizkR7iLXdwWN2EexQ==
-X-CSE-MsgGUID: 4NyvR90IT82PUT0ouFQ0MQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,169,1716274800"; 
-   d="scan'208";a="75988141"
-Received: from lkp-server01.sh.intel.com (HELO 68891e0c336b) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 28 Jun 2024 09:54:53 -0700
-Received: from kbuild by 68891e0c336b with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sNEs7-000HVC-0s;
-	Fri, 28 Jun 2024 16:54:51 +0000
-Date: Sat, 29 Jun 2024 00:54:48 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 4fb92bdb8e84e618f8c289dc56a923b914a72cac
-Message-ID: <202406290046.VwSjo0dq-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="MWgGAAqc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19387C2BD10;
+	Sun, 30 Jun 2024 14:12:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1719756729;
+	bh=Sw7Xxp9857TGCrUX14kXY/yWAwS58JTrKb5Jy7LKf0A=;
+	h=Date:From:To:Cc:Subject:From;
+	b=MWgGAAqc/sPp2gTV5pO5MUXochNZJbyUlBwQe3LJvlBHco5vqGmY56f4hGzrvqG/n
+	 DZ4Rn1dgsry2cy5gh0eCKubpxY/xYWeZ1ASkcKr8vxwPGmEQI/7it4fkbQi6HSoINg
+	 3ppyxZI34c7WHXIBrFpruwlxlQmshPzKj+ynnbqE=
+Date: Sun, 30 Jun 2024 16:12:02 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver fixes for 6.10-rc6
+Message-ID: <ZoFnsuNJy_Fz8_qE@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 4fb92bdb8e84e618f8c289dc56a923b914a72cac  serial: sc16is7xx: hardware reset chip if reset-gpios is defined in DT
+The following changes since commit 6ba59ff4227927d3a8530fc2973b80e94b54d58f:
 
-elapsed time: 5899m
+  Linux 6.10-rc4 (2024-06-16 13:40:16 -0700)
 
-configs tested: 92
-configs skipped: 2
+are available in the Git repository at:
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-rc6
 
-tested configs:
-alpha                             allnoconfig   gcc-13.2.0
-arc                               allnoconfig   gcc-13.2.0
-arc                   randconfig-001-20240625   gcc-13.2.0
-arc                   randconfig-002-20240625   gcc-13.2.0
-arc                        vdk_hs38_defconfig   gcc-13.2.0
-arm                       aspeed_g4_defconfig   clang-19
-arm                         assabet_defconfig   clang-15
-arm                          ixp4xx_defconfig   gcc-13.2.0
-arm                         mv78xx0_defconfig   clang-19
-arm                           omap1_defconfig   gcc-13.2.0
-arm                   randconfig-003-20240625   gcc-13.2.0
-arm                   randconfig-004-20240625   gcc-13.2.0
-arm                        shmobile_defconfig   gcc-13.2.0
-arm                       spear13xx_defconfig   gcc-13.2.0
-arm                           sunxi_defconfig   gcc-13.2.0
-arm                        vexpress_defconfig   gcc-13.2.0
-arm                         vf610m4_defconfig   gcc-13.2.0
-arm64                             allnoconfig   gcc-13.2.0
-arm64                 randconfig-001-20240625   gcc-13.2.0
-arm64                 randconfig-002-20240625   gcc-13.2.0
-arm64                 randconfig-004-20240625   gcc-13.2.0
-csky                              allnoconfig   gcc-13.2.0
-csky                  randconfig-001-20240625   gcc-13.2.0
-csky                  randconfig-002-20240625   gcc-13.2.0
-i386         buildonly-randconfig-001-20240628   gcc-10
-i386         buildonly-randconfig-002-20240628   gcc-10
-i386         buildonly-randconfig-003-20240628   gcc-10
-i386         buildonly-randconfig-004-20240625   gcc-13
-i386         buildonly-randconfig-004-20240628   gcc-10
-i386         buildonly-randconfig-005-20240628   gcc-10
-i386         buildonly-randconfig-006-20240628   gcc-10
-i386                  randconfig-001-20240625   gcc-13
-i386                  randconfig-001-20240628   gcc-10
-i386                  randconfig-002-20240628   gcc-10
-i386                  randconfig-003-20240625   gcc-7
-i386                  randconfig-003-20240628   gcc-10
-i386                  randconfig-004-20240628   gcc-10
-i386                  randconfig-005-20240628   gcc-10
-i386                  randconfig-006-20240625   gcc-13
-i386                  randconfig-006-20240628   gcc-10
-i386                  randconfig-011-20240628   gcc-10
-i386                  randconfig-012-20240625   gcc-13
-i386                  randconfig-012-20240628   gcc-10
-i386                  randconfig-013-20240628   gcc-10
-i386                  randconfig-014-20240628   gcc-10
-i386                  randconfig-015-20240625   gcc-12
-i386                  randconfig-015-20240628   gcc-10
-i386                  randconfig-016-20240625   gcc-10
-i386                  randconfig-016-20240628   gcc-10
-loongarch                         allnoconfig   gcc-13.2.0
-loongarch             randconfig-001-20240625   gcc-13.2.0
-loongarch             randconfig-002-20240625   gcc-13.2.0
-m68k                              allnoconfig   gcc-13.2.0
-m68k                          hp300_defconfig   gcc-13.2.0
-microblaze                        allnoconfig   gcc-13.2.0
-mips                              allnoconfig   gcc-13.2.0
-mips                     cu1000-neo_defconfig   gcc-13.2.0
-nios2                             allnoconfig   gcc-13.2.0
-nios2                 randconfig-001-20240625   gcc-13.2.0
-nios2                 randconfig-002-20240625   gcc-13.2.0
-openrisc                          allnoconfig   gcc-13.2.0
-openrisc                            defconfig   gcc-13.2.0
-parisc                            allnoconfig   gcc-13.2.0
-parisc                              defconfig   gcc-13.2.0
-parisc                randconfig-001-20240625   gcc-13.2.0
-parisc                randconfig-002-20240625   gcc-13.2.0
-powerpc                           allnoconfig   gcc-13.2.0
-powerpc                      katmai_defconfig   clang-19
-powerpc               randconfig-002-20240625   gcc-13.2.0
-powerpc               randconfig-003-20240625   gcc-13.2.0
-powerpc                      walnut_defconfig   gcc-13.2.0
-powerpc64             randconfig-001-20240625   gcc-13.2.0
-riscv                             allnoconfig   gcc-13.2.0
-riscv                               defconfig   clang-19
-riscv                 randconfig-001-20240625   gcc-13.2.0
-s390                              allnoconfig   gcc-13.2.0
-sh                                allnoconfig   gcc-13.2.0
-sh                                  defconfig   gcc-13.2.0
-sparc                       sparc32_defconfig   gcc-13.2.0
-sparc64                             defconfig   gcc-13.2.0
-um                                allnoconfig   gcc-13.2.0
-um                             i386_defconfig   gcc-13
-x86_64       buildonly-randconfig-001-20240625   gcc-13
-x86_64                randconfig-002-20240625   gcc-13
-x86_64                randconfig-003-20240625   gcc-13
-x86_64                randconfig-006-20240625   gcc-13
-x86_64                randconfig-012-20240625   gcc-13
-x86_64                randconfig-015-20240625   gcc-13
-x86_64                randconfig-016-20240625   gcc-11
-x86_64                randconfig-071-20240625   gcc-13
-x86_64                randconfig-074-20240625   gcc-13
-xtensa                            allnoconfig   gcc-13.2.0
+for you to fetch changes up to cc8d5a2f09a54405321769abfd6ec3395482336a:
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+  Revert "printk: Save console options for add_preferred_console_match()" (2024-06-25 07:58:10 +0200)
+
+----------------------------------------------------------------
+TTY/Serial/Console fixes for 6.10-rc6
+
+Here are a bunch of fixes/reverts for 6.10-rc6.  Include in here are:
+  - revert the bunch of tty/serial/console changes that landed in -rc1
+    that didn't quite work properly yet.  Everyone agreed to just revert
+    them for now and will work on making them better for a future
+    release instead of trying to quick fix the existing changes this
+    late in the release cycle
+  - 8250 driver port count bugfix
+  - Other tiny serial port bugfixes for reported issues
+
+All of these have been in linux-next this week with no reported issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Crescent Hsieh (1):
+      tty: serial: 8250: Fix port count mismatch with the device
+
+Doug Brown (1):
+      Revert "serial: core: only stop transmit when HW fifo is empty"
+
+Greg Kroah-Hartman (9):
+      Revert "serial: core: Fix ifdef for serial base console functions"
+      Revert "serial: 8250: Fix add preferred console for serial8250_isa_init_ports()"
+      Revert "Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports"
+      Revert "serial: 8250: Add preferred console in serial8250_isa_init_ports()"
+      Revert "serial: core: Handle serial console options"
+      Revert "serial: core: Add support for DEVNAME:0.0 style naming for kernel console"
+      Revert "printk: Flag register_console() if console is set on command line"
+      Revert "printk: Don't try to parse DEVNAME:0.0 console options"
+      Revert "printk: Save console options for add_preferred_console_match()"
+
+Jean-Michel Hautbois (1):
+      tty: mcf: MCF54418 has 10 UARTS
+
+Jonas Gorski (2):
+      serial: core: introduce uart_port_tx_limited_flags()
+      serial: bcm63xx-uart: fix tx after conversion to uart_port_tx_limited()
+
+Stefan Eichenberger (1):
+      serial: imx: set receiver level before starting uart
+
+Udit Kumar (1):
+      serial: 8250_omap: Implementation of Errata i2310
+
+ Documentation/admin-guide/kernel-parameters.txt |  19 ---
+ drivers/tty/serial/8250/8250_core.c             |   5 -
+ drivers/tty/serial/8250/8250_omap.c             |  25 +++-
+ drivers/tty/serial/8250/8250_pci.c              |  13 ++-
+ drivers/tty/serial/bcm63xx_uart.c               |   7 +-
+ drivers/tty/serial/imx.c                        |   4 +-
+ drivers/tty/serial/mcf.c                        |   2 +-
+ drivers/tty/serial/serial_base.h                |  30 -----
+ drivers/tty/serial/serial_base_bus.c            | 129 ---------------------
+ drivers/tty/serial/serial_core.c                |   4 -
+ include/linux/printk.h                          |   3 -
+ include/linux/serial_core.h                     |  21 +++-
+ kernel/printk/Makefile                          |   2 +-
+ kernel/printk/conopt.c                          | 146 ------------------------
+ kernel/printk/console_cmdline.h                 |   6 -
+ kernel/printk/printk.c                          |  23 +---
+ 16 files changed, 65 insertions(+), 374 deletions(-)
+ delete mode 100644 kernel/printk/conopt.c
