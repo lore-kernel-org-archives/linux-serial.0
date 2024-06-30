@@ -1,37 +1,38 @@
 Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A752154426;
-	Sun, 30 Jun 2024 15:37:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A75EA282F1;
+	Sun, 30 Jun 2024 15:37:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719761875; cv=none; b=gUKWODp53BMd/pbNm8a5r/9M8trEsnkBw2wLK02v+u/9FjUC8DCYncwDUjIhke+mnvAJ9VV+irztVPj5dNR9ocUZALiY5TAsQPPDeCxo6VgRacK1kMhaUQXZ52BnUPhg4MUstqAfGM1vg65Ibo3dJhM8+Iey4CG/ftsQ5BtzRUo=
+	t=1719761875; cv=none; b=V+jN1CWhpDh3WYV3xPr/L5bLAmFKugDyq3dp4yDZiiN1Uuq7iLtBmmZhAvSIWEl5fOhOrjSsUQLY5/4fb5QnJfrC61HXx1/rdHkZow6yyqN/Dged8qzSxrccmXLasU76kKANq2QEzMkB4pdrc1lr7ObBbFVlxZ5y+u9gdp7RWNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719761875; c=relaxed/simple;
-	bh=VGgTqYEtkLlfGU1mP6wdMoWPqx6+ivlPB6F7NoSQjmw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ikfscb31M67XjFye3mFtCizBKnjtsXToLMVsEKRBHnGRVxmaFvXWXAdh4wJiRoxxcY4rQTWX1SXx9lJULEv3QQCfsX29C9OFcN0dDCsrGqWDfEudkXSWQr4bRptaGJidqJ16iQnLq/0BpTrj/ihqRtyaLHhlIzl8Wvwvj0/EMu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=iJkhsSqr; arc=none smtp.client-ip=212.227.15.19
+	bh=m6tWh5VFeUVuRWlJSVFGRTLpHvqDFP6glRqtCEMizSg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=mlNb7rzYRRkl1A4esF2J7MibzLytDQTcPe4luC+rEN7IhpqgaIPcNA9w16XqAQOCuXZLr+FI6Ycm587YQj2SsFdyZrbdToDx2Fgz6a1oQydghuaxZi8DZkaIV8oEhXvDhJKH2dMXut/wsMR+gegvjInYaKYcUIN+ei4PJzkn+6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=X7aik6t4; arc=none smtp.client-ip=212.227.15.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="iJkhsSqr"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="X7aik6t4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1719761837; x=1720366637; i=wahrenst@gmx.net;
-	bh=zA9YlRZEzaOCiDAUQ+MTNt0D6Y/5h+AikyQcZnvDVyk=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:
-	 MIME-Version:Content-Transfer-Encoding:cc:
+	s=s31663417; t=1719761841; x=1720366641; i=wahrenst@gmx.net;
+	bh=4r6Hb3gvtnU8vTL9qCacD/NYc/kZfSz2IGu4cIiUycI=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=iJkhsSqrGIn7W1qq4lwfqq+Nng5ErmxnweyIJs+oTAejs3uaJJDot695pkSeMjKO
-	 KwW4rD8OklsdJDtUe1VkqfHbYufcew+uWMsGkwwqFONEKueUW+EAqsgzccLri6Nj0
-	 Q+5ZMTs+UOuZSg1/i52E62FiCaKwU3nRI/XX7i/DyedzCNG4hF3YgGXKK+aj5Iv+3
-	 LTWnAO3BinkU85gmcLOPYwgSU+/yS32Cb1CSUrPGqbt9BcGpfqBQoYO+zpti2TrJO
-	 119DE3R5ERPlZsRfexCBlZh3obd6GAXnwQqwdmn8xK7nzu2Hehavnnu+ViU0M/cmp
-	 WAkV6ZV+hWhNnmp/aA==
+	b=X7aik6t4uOtmi1FCRIFUupfyyTLgagoIq7hhRty+/4yPBBwYYNy6kibUV/P4dDvz
+	 3DVT2dWV3Fhl14S5VlVhZQUif/I4o6x6S57hYdb0qt02WXNTjesd/uu/bHbMVLnoz
+	 jjZ84GvzEi7gry6K4jLAVo5DRtrhMBtbI1JwGLYhsEGV5EqmK3Fumsoek082N/5QT
+	 POtPk+3tLrYIRnSZpjRekiAF8bXqcNtljOYH4OEScH0zg1Ct2y6yA9msU7RVuN4dJ
+	 YVrjYD4uboyoTthXotFaHDOrWOtwkjuTmcaHuUU/OvzyFXnruZ0cdj+mr8SZQRXYW
+	 7dPtbj18gvi3vRpoCA==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N1wq3-1sH5td3j1F-013lvq; Sun, 30
- Jun 2024 17:37:17 +0200
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MtOGa-1sAG1H2vzq-00t1Ll; Sun, 30
+ Jun 2024 17:37:21 +0200
 From: Stefan Wahren <wahrenst@gmx.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -58,10 +59,12 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
 	linux-arm-kernel@lists.infradead.org,
 	kernel-list@raspberrypi.com,
 	Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 00/11] ARM: bcm2835: Implement initial S2Idle for Raspberry Pi
-Date: Sun, 30 Jun 2024 17:36:41 +0200
-Message-Id: <20240630153652.318882-1-wahrenst@gmx.net>
+Subject: [PATCH 05/11] irqchip/bcm2835: Enable SKIP_SET_WAKE and MASK_ON_SUSPEND
+Date: Sun, 30 Jun 2024 17:36:46 +0200
+Message-Id: <20240630153652.318882-6-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240630153652.318882-1-wahrenst@gmx.net>
+References: <20240630153652.318882-1-wahrenst@gmx.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,91 +72,55 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:1Fi98xX7qIA+CaoFmv9hWLBSKpWxyuRQs35WEXEoT2wbzxbg51n
- EtDuvHww+9XsAJDnMOqsmQJbj44weEEuI8uu508Qo3y5XIcNJ1g94X9S27n+UqBUDgvW74r
- nsEkaTnSvU2TUrJY7xLejkA79gutrXCK0JUpmUwqwsak4ITqVsuzWsn+KujmkwGRPGjImtl
- cdYg4hq9PiHHDczpkv5kQ==
+X-Provags-ID: V03:K1:gG2zMh+5jv70iXOh5vFMJHOoLe5umeeOapkAwXLaixUOKZ+w9QA
+ jPqoLpaAOuyJxVXORl0vegF1SRPmg4dQxiGU8L7EH9QB/4Iz219fGjQXz8DwSGSKM66yRXr
+ vnStIUjEtjuzJgL5OnFe2GRajHR2k6x/xHH4MarDtqWy6tVBMieMywmH14JIEdqGeNs3PgU
+ XqknQyYVH7TRn7AyZjuHw==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Vb8zIloFvmw=;fAnhE6UScJij9u5eJiTV3r0B88v
- veevuVw3++FcPOYr7wRDBvceSSLJUz/bKwkV1RLZZEq0rGehYqLna7WsLHiybA1ntdzhu07h2
- L912qUYzM5vav6F8+b3CuG6TuRyZ1D8HbEH3BIvyb8UiUurb1D8gSZeeSaCXsmK0m0clAX1Zm
- IP+jl37kXEywMqv1wcWv0kJfUcwKurZAJMWtcygxVX4aFSseVN4nDgNYdOVHkgZL8lab961YL
- lkIuCwaWEpDetC45GWraboRaXUC6OEyo37AwVY008keKm37r5j+IoGeeHehE+WC4DsiBOJOf8
- DtuASJq7VtS4JBuIwEgfmLam5PCme2yG/ZLbsMOzKlUHZCGPfBbxDxxhYZUJBJF7XHsDq46Oq
- IqCWxwYG8QpCg3xz1WOoxRSvna4sw0BesQVsPA0goQ0ULE6UK4DZTpnLwtbJeIs4vMP4uXjpE
- 9c/EmiFvpYPLCSLYla9NsNOchZahIcPwbT/boNBMNXsbRPDu4ut9F8Y0ke47stDKdoaUP8ytg
- 8ZvQg6dO5qLJCLRMRRfKTvsDqYEDqEbmXz8gsvK6GPkd0JbhD/d5zo4jaAdkKdBTYro6ruWke
- lE9Hq9zxxI5Vnhdf0nKJ5A/P56aDHlQ10tJ7/AQKrXBsgM7T6nZPihQTEYKYa2H0RSOqiEkH+
- AGiVaDYpxFD0EiN9gRQChKkWrBrlB9OE4lBG0idzgAvMrJclfK1zj3CkXfgZiMjAVrceT7hQs
- RhhKAuM3InsH6XveTLYqzumZxzhEqZsq1uMT6aQqpB6o75GI9BgNO6kRLrU7V88/0I7v+2yN+
- INPyXn2trcOSxyr3t9dvwP9zo6HhAuAsvAD8DuD3PL70A=
+UI-OutboundReport: notjunk:1;M01:P0:kq6aJGVKb94=;BpeGVYzb1ZqeBqbopRubsnmH5ax
+ bfoCiueu4CjcjLXZqr3WtEX2tERwkAFYxJP/aQQQ1ojQA3+bsxkQoAH/ojzLQIOHuLKP4XPAc
+ PVgiBTqos9NLSBi+/Xv0YpPxTvJGupp//SFJjyqj4Q7FG2tkr1mG2Zlr0vJlUZSXQgZEK9vWW
+ aEKsjAfBXct9DD+JcXevmysY/sO5N12Perafl3iY1mVumAySBHh0xOv1wrN4d5eavdYi8D0nq
+ VdsG4kfE6nx3o3pkcOFo4REsD+nIXEW3kiMPyzof0uk6e+rA0xJVxe2AgPkmcCfzGIwXmmzow
+ KgWcg+s29ZVRXJjDxEvxK3LPWrvWVfrRA98sq876H7KB2rkqEmfMsnWVQnCQFvN1uS+qooUzJ
+ L8iiBIWRQ3KKNvIyX6yW+DcOrh+qz2oh1JuixG68LlNouCGAPPl5FlTdW6zbxqXicYhZvsJ7C
+ q/n6LSVxb6bxweJlN2HLWEIEhBI57OEvPgQUBjIFslAP/2xVbBOqYsYTo7bXWS8mEeKyceJbh
+ rmEWYJ8Yl7tEZZL4JlPyO22is1EbNRtKO1pcwLJ0X3Igb22rk9e4GbwUk3STI9Wj/6DLIQAmq
+ WsqlUXHWR+1/rj0KTlQeLszN2nzIkuLQBdiUxkjqJiRw2DPsw9jl2HUn/es64EDRjVI+oL7Dh
+ XzBhIbs7rYrrcC0zKHr1C67qXW71zhy6ZGGgYWq2kpIAhQa/lGQ0xAqeVD0dti8yme6Nxr4NF
+ sEm1K1J3fThW8EXVaHpon1QQO+XAThqSD1IiUIslRPDG5I4OUmnWJqKR80tKncoNLLLqazLfW
+ +F/fKvsXndGa6dgyAok+CecJ2A2ytKP4v/QEeRwH6wEaA=
 
-This series implement the initial Suspend-To-Idle support for
-the Raspberry Pi, which was a long time on my TODO list [1]. The
-changes allow to suspend and resume the Raspberry Pi via debug UART.
-The focus is on the BCM2835 SoC, because it's less complex than its
-successors and have enough documentation.
+The BCM2835 ARMCTRL interrupt controller doesn't provide any facility
+to configure the wakeup sources. That's the reason why this
+implementation lacks the irq_set_wake implementation. But this prevent
+us from properly entering power management states like "suspend to
+idle".
 
-The series is a loose collection of fixes and improvements.
-So cherry-picking should be fine.
+So enable the flags IRQCHIP_SKIP_SET_WAKE and
+IRQCHIP_MASK_ON_SUSPEND to let the irqchip core allows and handles
+the power management.
 
-Test steps:
-- configure debug console (pl011 or mini UART) as wakeup source
-- send system to idle state
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+=2D--
+ drivers/irqchip/irq-bcm2835.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-  echo freeze > /sys/power/state
+diff --git a/drivers/irqchip/irq-bcm2835.c b/drivers/irqchip/irq-bcm2835.c
+index e94e2882286c..6c20604c2242 100644
+=2D-- a/drivers/irqchip/irq-bcm2835.c
++++ b/drivers/irqchip/irq-bcm2835.c
+@@ -102,7 +102,9 @@ static void armctrl_unmask_irq(struct irq_data *d)
+ static struct irq_chip armctrl_chip =3D {
+ 	.name =3D "ARMCTRL-level",
+ 	.irq_mask =3D armctrl_mask_irq,
+-	.irq_unmask =3D armctrl_unmask_irq
++	.irq_unmask =3D armctrl_unmask_irq,
++	.flags =3D IRQCHIP_MASK_ON_SUSPEND |
++		 IRQCHIP_SKIP_SET_WAKE,
+ };
 
-- wakeup system by console traffic
-
-The implementation isn't perfect and contains workarounds like
-patch 4 and 9. So there is still room for improvements, but
-at least the system won't freeze forever as before [2].
-
-Here are some figures for the Raspberry Pi 1 (without any
-devices connected except of a debug UART):
-
-running but CPU idle =3D 1.67 W
-suspend to idle      =3D 1.33 W
-
-The series has been tested on the following platforms:
-Raspberry Pi 1 B
-Raspberry Pi 3 A+
-Raspberry Pi 3 B+
-
-Known issues:
-- currently it's not possible to power down the USB domain [3]
-- there seems to be an issue with the DWC2 suspend handling [4]
-
-[1] - https://github.com/lategoodbye/rpi-zero/issues/9
-[2] - https://bugzilla.redhat.com/show_bug.cgi?id=3D2283978
-[3] - https://github.com/raspberrypi/firmware/issues/1894
-[4] - https://lore.kernel.org/linux-usb/3fd0c2fb-4752-45b3-94eb-42352703e1=
-fd@gmx.net/T/
-
-Stefan Wahren (11):
-  firmware: raspberrypi: Improve timeout warning
-  mailbox: bcm2835: Fix timeout during suspend mode
-  pmdomain: raspberrypi-power: Adjust packet definition
-  pmdomain: raspberrypi-power: Avoid powering down USB
-  irqchip/bcm2835: Enable SKIP_SET_WAKE and MASK_ON_SUSPEND
-  drm/vc4: hdmi: Handle error case of pm_runtime_resume_and_get
-  drm/vc4: hdmi: Disable connector status polling during suspend
-  usb: dwc2: debugfs: Print parameter no_clock_gating
-  usb: dwc2: Skip clock gating on Broadcom SoCs
-  serial: 8250_bcm2835aux: add PM suspend/resume support
-  ARM: bcm2835_defconfig: Enable SUSPEND
-
- arch/arm/configs/bcm2835_defconfig        |  2 --
- drivers/firmware/raspberrypi.c            |  3 ++-
- drivers/gpu/drm/vc4/vc4_hdmi.c            | 18 +++++++++++++++++-
- drivers/irqchip/irq-bcm2835.c             |  4 +++-
- drivers/mailbox/bcm2835-mailbox.c         |  3 ++-
- drivers/pmdomain/bcm/raspberrypi-power.c  | 17 ++++++++++++-----
- drivers/tty/serial/8250/8250_bcm2835aux.c | 23 +++++++++++++++++++++++
- drivers/usb/dwc2/debugfs.c                |  1 +
- drivers/usb/dwc2/params.c                 |  1 +
- 9 files changed, 61 insertions(+), 11 deletions(-)
-
+ static int armctrl_xlate(struct irq_domain *d, struct device_node *ctrlr,
 =2D-
 2.34.1
 
