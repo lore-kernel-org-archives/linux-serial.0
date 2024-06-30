@@ -1,38 +1,38 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EEF0153509;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E047515383E;
 	Sun, 30 Jun 2024 15:37:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719761874; cv=none; b=c0xfvw8hBJrsU1K2aBQj55tpNCq1QrIcHopZl8wdnmkeYF2UXHjXP8WJEuWt4+NlPFuFvoW7i4x4NGsY6eYyRmSXegux17Jyx+o3S222t/c13AzIWM+EyBdRH6IGdCWCXRGBaTlGWIF0Xh5ct4iD5evA/li/gaa4Zl3CI0hzmxw=
+	t=1719761874; cv=none; b=g9ch/67kYs3eSB1s3cn7jro1tfrnBScqc8lTDf7gH12s55SRdJxNIjtKce1nI6b89VP2S3bdGfl/i+QfBnt6LM+uNVTrDNTymjyM3tBozNr2XXjff3cV89H27mN6/0cnG2flhcqjWFFplAag4Z9YNnwKv0IRGeAJ77Nkvg+muns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719761874; c=relaxed/simple;
-	bh=2zWnTrB0QP7kA65GnHCUHymZBdeqdF6gXuwowGyI+og=;
+	bh=OepjnN1m7XIniciruK8E2vJ6wGJGpCI6r606OxLFd24=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=akxCzZEYaGQ1DdJ78yqg4nYulX77PfULi9PLSzg0fV889MnhrDsM1q2vwT+fxCjGGXKfrhGaA9x8JlUU3Pp08WOQX/EiWvMHBRtV9hUC7JLPj/Pnt1IhBNe9pWkGap1q6PlbjLcAVPsuTQycOM6iUQNuta7saYKa7SCwyxMzrcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=fVdknZ5m; arc=none smtp.client-ip=212.227.15.15
+	 MIME-Version; b=l4Bp0Paw9E9uGsWJvulRJQB/jAeqWoq0WSw5kP4Ut9L0uwYu82iAoivLFJatR16eBo25/QuX2zjibpNTaIUINyYy+VgwmSQM2ocs6Jw991IWIX8x908SdAer4RcjiS23b6iTeBK7cA4RnHnciAqhOdddRjUdrunjMm+alWR8Zhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=o7ZIFkdy; arc=none smtp.client-ip=212.227.15.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="fVdknZ5m"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="o7ZIFkdy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1719761843; x=1720366643; i=wahrenst@gmx.net;
-	bh=jR2qUoYJWjo62ss14f32ABLuwKjco/WEcCrvFX1iwUQ=;
+	s=s31663417; t=1719761840; x=1720366640; i=wahrenst@gmx.net;
+	bh=uvy/JYKDHmXcPICPfORiHDhkAZe5s5Om1p3LDeO8diw=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=fVdknZ5mjA66HYdyBZ1DkGQaXT1SWXB65A7CaQGtGJCzBR3QToSHQr5r5B09qGYt
-	 G8/Po3Lt0aO6l54ZSXR+GYw8CNwgdWQ15sOcBRGnkvUULa5JXF0fUUFn+ztWmP32Q
-	 I96YP5NZoVEc5zi8sEcxwRidcCTyA63bethzXNmlmI++nnzxYAGvyLzYSOt5O66M8
-	 rgVH6dap01enPILApRp5myHV42WB1+uWMkpiewrDSHAVMh9Q+zLenIA3zkOS9wi6K
-	 pll2eFx9a+L3JWpZVtp/4xSMG8eLecAaCm2FrBulde/nDfXTPi7thiRAaf96r22BK
-	 J62yRkV/D6ZFmn6R+w==
+	b=o7ZIFkdyeolSFgsqSlg9F/907y+3/o7oltU/Jq7EwFbSxRgN9WmwgYBH7zyUedaA
+	 iX5zayU7f5hw1XFRSfb9dJzB2C4L0atfWCnUIEfmZHGbb7YnrQFDYKThhhlyaWmDX
+	 Zfe4+6HdzhCMfMgdM6bqCm/DumILbrYhN3daXBiqKp2A2fWg0lNSV/qWv8daZ+Wxf
+	 1XS3snIsP2fA4YDE7wBWZMQfnUC9/vmP3TFSBoZEw2KrK5q2dJasPZNgW1j8gSm8v
+	 GEq5qLwVKmGWYqBPnG02Nwc42bd07SX5Zt7eZERafXerVIstRn862hdo4gu4rjLQt
+	 9A/c57oZjPZ1k0BmJg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M6Ue3-1sUF4c2wHZ-008jJu; Sun, 30
- Jun 2024 17:37:23 +0200
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MdvmO-1rqXH42uNa-00ZIdt; Sun, 30
+ Jun 2024 17:37:20 +0200
 From: Stefan Wahren <wahrenst@gmx.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
@@ -59,9 +59,9 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
 	linux-arm-kernel@lists.infradead.org,
 	kernel-list@raspberrypi.com,
 	Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH 07/11] drm/vc4: hdmi: Disable connector status polling during suspend
-Date: Sun, 30 Jun 2024 17:36:48 +0200
-Message-Id: <20240630153652.318882-8-wahrenst@gmx.net>
+Subject: [PATCH 04/11] pmdomain: raspberrypi-power: Avoid powering down USB
+Date: Sun, 30 Jun 2024 17:36:45 +0200
+Message-Id: <20240630153652.318882-5-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240630153652.318882-1-wahrenst@gmx.net>
 References: <20240630153652.318882-1-wahrenst@gmx.net>
@@ -72,84 +72,57 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:16Ngb9tSxp2iZwHbx5dqk16AQEKX8kLcRlkqIw9cY3Qs9QzfZno
- XUBl7sn846cccKtsEHGyLm7q5kzaqH90IJ8JhAqcwRSCXHyTQ/DrwFhPNE5q3XMfEO9LpX4
- UqsN5Ie+oAMtdG/IpeKtp5/GiHPbugvdU8ZZkjpvdkZcCfLb8CqLsZD2odXAP2AzNekfdOR
- W55XynRw/dHEi6zCgg2FA==
+X-Provags-ID: V03:K1:22tg+yWWqKf6rCi94aIzD/RkT7pXmbRAAhSxwf6W8WcCzyNMjbd
+ j47KQebfJCVLSl1XFpvwPcIB8kmB6vxytQOXHOoKX8vpukqcVyRvtoMxZctNIgUXZrZsbyP
+ M1Ez1s8XIAFhhBqA7HoCa2qTcc9wcGRMyyFUoiMebKnLHrL9JQpT3spS1oOrMAtG46pk3fq
+ T3JonfyI1KZaJXlZvgoog==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:75eQMN8yRdA=;haDMuV5WnSJ3HWguPxybuI47jn1
- e4lnr87wp77Gm16QAmleCGaZxLNO8UADI6b+3GHMbw8T70H8BaaETJzGOYaSEumgQ1zAyPBHp
- whCKx3IaXlR99Jto1W+YBWWMoM3+gB/0CnPOGYWUvQVbCKpCPcLGkXHzoiCBnTJ8VfYyj1vOR
- nEFO2xKx/UB1QjUcOpBYYDPs5uQ46ufs/WEWzoVr+sJer6FHSisICR4k0aXz0YXM9ltGhm3i4
- VUaupQ7XCkMHi77rpWLTFw4ZDtMt0sdQuCVH+FcWqzLSFGzidhUBg0Z9PCZw1qgsVHXo3eJsa
- ehOxUR4RsD7LK2DhS/HWQLfU/EYAlZRN2rqMoc/79LEGhlD38XK7QYhDLrDxZEhC4236NFFHU
- vQm3dqi9zkQVh6u7OWqD1lacC2Pn1n+mKANxv1oid7QjuP9QKceGByCyOHbzvHMa2bfTeToNM
- Ya1YjdXYiZb5supX0l4tWBuzEI5nKm419FkiGDVzYYLSsHvNI4hJQ+M6u0mwzmf/FUlzszXML
- 0q3ETBjs93rhiom3cv5s8OoWtHuT0IwJ2pnNMZfii+2uRvNeYZvKbsf4oVmG41A6yqU0U/vcn
- vy0JDfubHvUehe9EKHSXPPPBlhJbBFQjWz6YFk8fujUbLOnl+fnYR4GtPf0wIDEKDGyxfyvb/
- NIhztcr86voQaj6e4oxNaTwfZvL7XizyCUsr7pnxGgcJ6ZlhorN2/YvuiYocNpWMpHGtUiCLb
- OQFqSCezyx/m2r67/6HWhfzcgML/FhOXYig2GJmsnjdyIK4+h9yjWKA95tnRAaUXQvmNuNRL+
- Tg1HaAqYr3KYh3d5ChmNnibKOufTBfrq1wbwJKba4o7qQ=
+UI-OutboundReport: notjunk:1;M01:P0:o0N5jBQm4iM=;q+71ifQ2Zv2GDZeVPGzKI9bBQMg
+ ITd5Q5iGfSSBWp1p+vKU/AGRKQRK0/1CRitQt627JVfEC+5K6pRuadGo6eJOMsKAtbFZqNVeQ
+ lhOHahQLH8rAycR2oLJcj0QWrzH5OOQU7p5oHeG7WHkQUjEV7W2HoPpZtw32Wv8AsteukZPvG
+ a6wu0r60xiYh3Lam5CeGSMxW7GhxYmMT2zDlu7YJUDRmUcEHSBDoUgHZ+y7dTSQexufltzMTL
+ emG8cSNkyd+S8kvewoKGpWsxttU/+FVoim/lSrB4Mm/mPkQD8FB8IcE0Ya+AJFZ9WW06WkfY1
+ 9Cm+rrfNlrIs3Q6DR5Q3G91yw2KJBgfJlu6bznnvx/y8FmfMXIN5Ygq4lr6UdN4ikQrc5H1xi
+ PMGylNcIWhchhU0R+n7gFWY0CqlJ4uYg64gukNxTkjQBTj0yCYl3ZKNsFejBbArpGOl80JJh6
+ 5L5kNRFt2yD8M/OTHGO+AuxATLHgDbkr564L9MOXV1jEXJQF9F/mdQnumfsiG1HjsltqT9qDE
+ 4o/QkeaB4AINfhLyW3lHskid4rPKLH+PosKU4BEUgu6XKT2Y9tPCPifMB/EKQ/Rdy+qDeLl+t
+ 9yrd8eQqAUTSCoxynVkqNmNB4+q7CqSg4EFEvJlYPoVy6BSGJREeU0NBCl9HrvMCCwxfV6sgK
+ /m8zFFKSppQdn1yn07r0fSXPNCxYYRMfXHEPNr0WzFarq3I+ceGxHfAn81QWO72P87aBTA314
+ o0pgOZ6eaWF/eBiPrBqPlKePK0OPlurpagJ9qr/Wbgr6sxEX75mWLGZr2biwlnyHRmz4fUAz5
+ tV4WK6UkzNRqhEgrwXuILugRk3uih7RHVUhbDt44Wg690=
 
-Suspend of VC4 HDMI will likely triggers a warning from
-vc4_hdmi_connector_detect_ctx() during poll of connector status.
-The power management will prevent the resume and keep the relevant
-power domain disabled.
+During supend to idle any request to power off the USB domain
+leads to a timeout. As a temporary workaround don't register
+the relevant power off handler.
 
-Since there is no reason to poll the connector status during
-suspend, the polling should be disabled during this.
-
-It not possible to use drm_mode_config_helper_suspend() here,
-because the callbacks might be called during bind phase and not all
-components are fully initialized.
-
-Link: https://lore.kernel.org/dri-devel/7003512d-7303-4f41-b0d6-a8af5bf8e4=
-97@gmx.net/
+Link: https://github.com/raspberrypi/firmware/issues/1894
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 =2D--
- drivers/gpu/drm/vc4/vc4_hdmi.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/pmdomain/bcm/raspberrypi-power.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi=
-.c
-index b3a42b709718..e80495cea6ac 100644
-=2D-- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -3106,6 +3106,13 @@ static int vc5_hdmi_init_resources(struct drm_devic=
-e *drm,
- static int vc4_hdmi_runtime_suspend(struct device *dev)
- {
- 	struct vc4_hdmi *vc4_hdmi =3D dev_get_drvdata(dev);
-+	struct drm_device *drm =3D vc4_hdmi->connector.dev;
+diff --git a/drivers/pmdomain/bcm/raspberrypi-power.c b/drivers/pmdomain/b=
+cm/raspberrypi-power.c
+index 39d9a52200c3..3e7b84006acc 100644
+=2D-- a/drivers/pmdomain/bcm/raspberrypi-power.c
++++ b/drivers/pmdomain/bcm/raspberrypi-power.c
+@@ -86,7 +86,14 @@ static void rpi_common_init_power_domain(struct rpi_pow=
+er_domains *rpi_domains,
+
+ 	dom->base.name =3D name;
+ 	dom->base.power_on =3D rpi_domain_on;
+-	dom->base.power_off =3D rpi_domain_off;
 +
 +	/*
-+	 * Don't disable polling if it was never initialized
++	 * During supend to idle any request to power off the USB domain
++	 * leads to a timeout. As a temporary workaround don't register
++	 * the relevant power off handler.
 +	 */
-+	if (drm && drm->mode_config.poll_enabled)
-+		drm_kms_helper_poll_disable(drm);
++	if (strcmp("USB", name))
++		dom->base.power_off =3D rpi_domain_off;
 
- 	clk_disable_unprepare(vc4_hdmi->hsm_clock);
-
-@@ -3115,6 +3122,7 @@ static int vc4_hdmi_runtime_suspend(struct device *d=
-ev)
- static int vc4_hdmi_runtime_resume(struct device *dev)
- {
- 	struct vc4_hdmi *vc4_hdmi =3D dev_get_drvdata(dev);
-+	struct drm_device *drm =3D vc4_hdmi->connector.dev;
- 	unsigned long __maybe_unused flags;
- 	u32 __maybe_unused value;
- 	unsigned long rate;
-@@ -3159,6 +3167,9 @@ static int vc4_hdmi_runtime_resume(struct device *de=
-v)
- 	}
- #endif
-
-+	if (drm && drm->mode_config.poll_enabled)
-+		drm_kms_helper_poll_enable(drm);
-+
- 	return 0;
-
- err_disable_clk:
+ 	/*
+ 	 * Treat all power domains as off at boot.
 =2D-
 2.34.1
 
