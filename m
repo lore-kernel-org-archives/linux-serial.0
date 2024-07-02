@@ -1,129 +1,125 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2C2914E2FB;
-	Tue,  2 Jul 2024 09:42:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46D5638F83;
+	Tue,  2 Jul 2024 13:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719913362; cv=none; b=QkyKbmX8o9UonHHcyuMWzUt01FGXbq7YgWmaZtIAk5AUlCLzfRE49bROCbNkFMLzcNK/3oWmqDJEZHLlGcaYoLq0f+drUiYRwG6IfsJOvalnDkQuupW7Ck+VhII6K7ZvIRM6QUw9V5DCaKrxca0G9wT4nJo17b5cprOVc2X2gWg=
+	t=1719928085; cv=none; b=PZE9fE4OZ3yB7zzuf05jUUCh4hL4exkIIcQ4ioVmJokeD45W4VOKIqBRsELwHjU5Sfu3lNqNA1kzxgF6N+f8gTaDFF4Hr/iQKy81MLmfgdm8BrElOTItu4CPAF3QXBzfMiWK7ISMlr4UZ+4M+/ILqup334LzdylaRplt6VXDrkA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719913362; c=relaxed/simple;
-	bh=eEipO0eOiE/f2CIFA7wvUWVXg4f0TbJAAfs+ySTN0I4=;
+	s=arc-20240116; t=1719928085; c=relaxed/simple;
+	bh=POJpBLzMZtl3kVsUtAA1PJiP5FlqLS4DRvmTGZpjDXs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XJxaLcKjr7cKpI6HdvEgw+hK/AziPEt3EgzZreMyl6CREPi1adAkCM89LB939X38UyC4vDT2KIAMSYQ+vEEuV2RCwKPZBFP5iuj7/Fsa8e4+s6NB9MtanUhEN9jIhwGtXLwP1s30MplmUyv8rHEHlnT0yc+dsrZZY/Js0nGGui4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Date: Tue, 2 Jul 2024 09:42:35 +0000
-From: Yixun Lan <dlan@gentoo.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>,
-	Yangyu Chen <cyy@cyyself.name>
-Subject: Re: [PATCH v2 03/10] dt-bindings: riscv: add SpacemiT K1 bindings
-Message-ID: <20240702094235.GA2506224@ofsar>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-3-cc06c7555f07@gentoo.org>
- <20240701-undercook-flatterer-7f18f7420a6d@spud>
+	 Content-Type:Content-Disposition:In-Reply-To; b=q2OLhyT8S2E5Dxmi3y4Vkc97I7PkbcTT61UzxEOeUf1UVo9HTx9GzzR/hoFfizSyfw9RLtj4SGaT0A88HMA94omB+AFCM44nFpf6HMVadoZMx+SXOWFEq+ME1oSlDkv1uVFDRXXxV0BcQMlST++SGfZWZNdid8+PeoLqnusYelg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QhDDUx2j; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QhDDUx2j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49193C116B1;
+	Tue,  2 Jul 2024 13:48:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1719928084;
+	bh=POJpBLzMZtl3kVsUtAA1PJiP5FlqLS4DRvmTGZpjDXs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QhDDUx2jnwbewWOnEtvAimQ1AOfa7YUwwYz98BP8HDl52MK7IiArBtlr3Kc0+dnyP
+	 7NQwv75ILJ47KxmHHD1tQ471mljWxTOY8ceiFgwIBiOpA+IXkIOw+3uii/zaAHHARY
+	 5ouBtksYlL9UzZIe5g49wS6LvUTDbi/DRnOBS92RkdkgjXgIKtILWJ+78RyctwG4LY
+	 ETMgr8TNaUFmrClTAP0393pkw4T3dUd2eBmUAkeb2BkuABmBgvHPv/0wB8MTAWMMuI
+	 ulyeOWaSQGINEeA3Wd8BpbEJwJqhlWBIPWMU44XjsankiWPOCjh7IrSq/fOga8wHVD
+	 +w/WjJedQ6RQQ==
+Date: Tue, 2 Jul 2024 15:48:02 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Stefan Wahren <wahrenst@gmx.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
+	Scott Branden <sbranden@broadcom.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Ulf Hansson <ulf.hansson@linaro.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>, 
+	Dave Stevenson <dave.stevenson@raspberrypi.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>, 
+	Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org, 
+	bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kernel-list@raspberrypi.com
+Subject: Re: [PATCH 07/11] drm/vc4: hdmi: Disable connector status polling
+ during suspend
+Message-ID: <20240702-qualified-archetypal-worm-416a2f@houat>
+References: <20240630153652.318882-1-wahrenst@gmx.net>
+ <20240630153652.318882-8-wahrenst@gmx.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="6llmvbphtnayplvp"
+Content-Disposition: inline
+In-Reply-To: <20240630153652.318882-8-wahrenst@gmx.net>
+
+
+--6llmvbphtnayplvp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240701-undercook-flatterer-7f18f7420a6d@spud>
+Content-Transfer-Encoding: quoted-printable
 
-Hi
+Hi,
 
-On 13:24 Mon 01 Jul     , Conor Dooley wrote:
-> On Thu, Jun 27, 2024 at 03:31:17PM +0000, Yixun Lan wrote:
-> > From: Yangyu Chen <cyy@cyyself.name>
-> > 
-> > Add DT binding documentation for the SpacemiT K1 Soc[1] and the Banana
-> > Pi BPi-F3 board[2] which used it.
-> > 
-> > [1] https://www.spacemit.com/en/spacemit-key-stone-2/
-> > [2] https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
-> > 
-> 
-> Please make these link tags when you resend, like
-> 
-> Link: https://foo [1]
-> 
-> and don't leave blank lines between them and the signoff.
-> 
-sure, will fix in v3
+On Sun, Jun 30, 2024 at 05:36:48PM GMT, Stefan Wahren wrote:
+> Suspend of VC4 HDMI will likely triggers a warning from
+> vc4_hdmi_connector_detect_ctx() during poll of connector status.
+> The power management will prevent the resume and keep the relevant
+> power domain disabled.
+>=20
+> Since there is no reason to poll the connector status during
+> suspend, the polling should be disabled during this.
+>=20
+> It not possible to use drm_mode_config_helper_suspend() here,
+> because the callbacks might be called during bind phase and not all
+> components are fully initialized.
+>=20
+> Link: https://lore.kernel.org/dri-devel/7003512d-7303-4f41-b0d6-a8af5bf8e=
+497@gmx.net/
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> ---
+>  drivers/gpu/drm/vc4/vc4_hdmi.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>=20
+> diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdm=
+i.c
+> index b3a42b709718..e80495cea6ac 100644
+> --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
+> +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+> @@ -3106,6 +3106,13 @@ static int vc5_hdmi_init_resources(struct drm_devi=
+ce *drm,
+>  static int vc4_hdmi_runtime_suspend(struct device *dev)
+>  {
+>  	struct vc4_hdmi *vc4_hdmi =3D dev_get_drvdata(dev);
+> +	struct drm_device *drm =3D vc4_hdmi->connector.dev;
+> +
+> +	/*
+> +	 * Don't disable polling if it was never initialized
+> +	 */
+> +	if (drm && drm->mode_config.poll_enabled)
+> +		drm_kms_helper_poll_disable(drm);
 
-> > Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-> > Signed-off-by: Yixun Lan <dlan@gentoo.org>
-> > ---
-> >  .../devicetree/bindings/riscv/spacemit.yaml        | 24 ++++++++++++++++++++++
-> >  1 file changed, 24 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-> > new file mode 100644
-> > index 0000000000000..3b151fd02473e
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-> > @@ -0,0 +1,24 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/riscv/spacemit.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: SpacemiT SoC-based boards
-> > +
-> > +description:
-> > +  SpacemiT SoC-based boards
-> 
-> Please work out who is gonna maintain these SoCs and add that here to
-> resolve the bot's report.
-> 
-sure, talked to Yangyu, will also add him as maintainer
-this should fix bot's complaint..
+Does it make sense to add it to runtime_suspend?
 
-btw, thanks for all your other comments in the whole thread, will fix them all
-> Thanls,
-> Conor.
-> 
-> > +
-> > +properties:
-> > +  $nodename:
-> > +    const: '/'
-> > +  compatible:
-> > +    oneOf:
-> > +      - items:
-> > +          - enum:
-> > +              - bananapi,bpi-f3
-> > +          - const: spacemit,k1
-> > +
-> > +additionalProperties: true
-> > +
-> > +...
-> > 
-> > -- 
-> > 2.45.2
-> > 
+What if the board boots without a display connected, and only after a
+while one is connected? Wouldn't that prevent the driver from detecting
+it?
 
+Maxime
 
+--6llmvbphtnayplvp
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCZoQFEQAKCRDj7w1vZxhR
+xUcYAP0YlWR0ZuDtA9KJMgk7F8lTvGRgIEvJmoavoyU/a9BZCgD/aDVTPguo0KhG
+fL9qskoopigvTc4187S0uVSHehb/tgU=
+=y7a7
+-----END PGP SIGNATURE-----
+
+--6llmvbphtnayplvp--
