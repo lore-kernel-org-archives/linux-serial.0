@@ -1,86 +1,122 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 204DA16D4DE
-	for <linux-serial@vger.kernel.org>; Mon,  1 Jul 2024 15:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175D88830;
+	Tue,  2 Jul 2024 01:28:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719849021; cv=none; b=IggN8jlquF+f3POthrV4ZBnEJnFMJP1/J8XrsVPF1mmD21n8jHqSN1FpvIe3CJ12zdieabfIXaIntdeexL8FtaMPddKBs+QvK1sMeq9WxqMKNzyj+3FyShzwIaVHN2zI/ht3qOcFzwaQN55/SB2DAx2wbZU7Vg1pOychOqRjjCc=
+	t=1719883735; cv=none; b=GkGEkchaArgpKogbiVlWCQ0n72MomVj3Ryq6amo2NXMf8OwIorA3zLG8TZqapRqPJtkwn4VfjNsVxnLpMrQwsVH++ZVzGDq7+kBVYH5/eW/WPBLei3XBoUlblgQUgCgN2Jv6rDR+9yzhoC0n4XkfAUPOgS+r5xubwmgj+/sPD7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719849021; c=relaxed/simple;
-	bh=Qk8oUFF+A4W1ahD6THSI/ajDbhSQB7YK+eadVO8mj2A=;
+	s=arc-20240116; t=1719883735; c=relaxed/simple;
+	bh=CnHqwkeS90MMNuM2cK3PUfFffxA7KW+C+qvrwEke0jg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GB6q/45n0gsCZ9q9jZGfVCB4v4QMO3uWupWf3e18iEGZ2BGkZru6Zo7RPkE0Z7oDeT0UdcxFTTkLyk7pVkDuafxV2GoyrEZfG943c+w/tbBDsiRgspgRVzMt6zHEjXttIOt5HlcrRTJgiWIJcngWudwz87CN6cc/MWVGb/4g9Rk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=B/uYVcS2; arc=none smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="B/uYVcS2"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2ec002caeb3so37930781fa.2
-        for <linux-serial@vger.kernel.org>; Mon, 01 Jul 2024 08:50:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1719849017; x=1720453817; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1DNku0/oWyFaFP/Y9JNMp4HONNLih0gP4BElhknkFCs=;
-        b=B/uYVcS2VgUTe6VXURqm3Efqr85ns5tWkWoMqZP0Az+RKFSAT+/9V5hUS7pvMKIxHD
-         bGN9XuYCSpUlr9DIsDGEPbXIr2WnUXdbev1GchFdIAxzwgPz93OH0X7JFS1jMeXRKYB/
-         qO/9XstBjthJ5nXJMPRlCmHUzZExPoSrXrk0ItiMvCSi0bgl6V/daDRo1zGxGiUh6GVT
-         49AdCGkMkAMiXEdpEVZmt1o4k1Xw+UFOrmpWLYmIC7YRdH4dcDm8xb9ZCvXezBOtHEJY
-         WoDiqXdQ7e2fdGRX1MbpfyaSYUel35r7UqU9yvEjVEsGgNrSvfEBT5dz3ZYn1xjIdrAJ
-         W11Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719849017; x=1720453817;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1DNku0/oWyFaFP/Y9JNMp4HONNLih0gP4BElhknkFCs=;
-        b=TFeBcTBL8lI6zRAsKZDPU82RgXfAcXH5kb7omFxBd6bmfoiDHaanfJwz2nqYCqx6P6
-         Qu1MSi2onvUqYxv00JbcyViDKcvKm8UsgirMkgNx7uvRkP9nHXuircy9cqktp8za+i+E
-         dAB0Ev2SUDLknI1g39+LbeyVbajtM43V+rEGYEj2Wzdt56gCES3+QhY+PuK4arfkyi/5
-         DBeAwwUAvl+8Rxvj7A5LZ2tT0GmZWVPRXFt8VuPJhXSZP57wGjK/u8ZoMidkxU3Rk+k0
-         n/X5ghXXyYPVbfkRt7Xq5vy/WMlS1HOtFj+QE9v31NeyaQFHtqiM5WWPnKMu1MI+1MqV
-         PW2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWRzAG3qlxo+o5ShV5KTdRL7RTa2ElMA1oenZZP8nq/6G6xKCU3pd6PjGRPUtImILBtTqQw50gUWtbGDMdg5UvKpBL6Z+Yrhlhq0z7v
-X-Gm-Message-State: AOJu0YwxK+nchP5XapwKY15E+ksM9Xhd+qZ95KsDKEtM5pY4hZQTeQFe
-	eSzWfiLnWZf2dSfIkyeM+Op0SxnTnM4jL07tsd6H9AKSjx15x0ebua8xA3QDeWdVw3zQeS9P2Uu
-	R
-X-Google-Smtp-Source: AGHT+IH0ZVnB39TMB6oazNb4dsuEITV59qCGirhuXUBkT4kEZEs1fXv/9Fdu/JEanJrzEidB5JsXJA==
-X-Received: by 2002:a2e:bcc1:0:b0:2ee:6a72:f006 with SMTP id 38308e7fff4ca-2ee6a72f0e6mr27541801fa.21.1719849017311;
-        Mon, 01 Jul 2024 08:50:17 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fac11d9685sm66381265ad.111.2024.07.01.08.50.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Jul 2024 08:50:16 -0700 (PDT)
-Date: Mon, 1 Jul 2024 17:50:07 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+	 Content-Type:Content-Disposition:In-Reply-To; b=rz8+etkwkXDfzrbfmXtl1WJbwcV4DGmGCVUeNFRNfeVNHVDpd+WpVl+xCGwys4S660BUbILKHXOb5OIyg71CMqsOQlhSCfejY87cdMOhyMSSd/vh0nRipyEp+r/KXhlbVU6UmbGJJy/mFngRC/3TTjR78YtDRyYTPemy5HNGZJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Date: Tue, 2 Jul 2024 01:28:47 +0000
+From: Yixun Lan <dlan@gentoo.org>
+To: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH printk v2 15/18] tty: sysfs: Add nbcon support for
- 'active'
-Message-ID: <ZoLQL6rdDM7Iv0Dk@pathway.suse.cz>
-References: <20240603232453.33992-1-john.ogness@linutronix.de>
- <20240603232453.33992-16-john.ogness@linutronix.de>
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
+	Meng Zhang <zhangmeng.kevin@spacemit.com>,
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device
+ tree
+Message-ID: <20240702012847.GA2447193@ofsar>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org>
+ <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20240603232453.33992-16-john.ogness@linutronix.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
 
-On Tue 2024-06-04 01:30:50, John Ogness wrote:
-> Allow the 'active' attribute to list nbcon consoles.
+On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
+> Yixun Lan wrote:
+> > From: Yangyu Chen <cyy@cyyself.name>
+> >
+> > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
+> >
+> > Key features:
+> > - 4 cores per cluster, 2 clusters on chip
+> > - UART IP is Intel XScale UART
+> >
+> > Some key considerations:
+> > - ISA string is inferred from vendor documentation[2]
+> > - Cluster topology is inferred from datasheet[1] and L2 in vendor dts[3]
+> > - No coherent DMA on this board
+> >     Inferred by taking vendor ethernet and MMC drivers to the mainline
+> >     kernel. Without dma-noncoherent in soc node, the driver fails.
+> > - No cache nodes now
+> >     The parameters from vendor dts are likely to be wrong. It has 512
+> >     sets for a 32KiB L1 Cache. In this case, each set is 64B in size.
+> >     When the size of the cache line is 64B, it is a directly mapped
+> >     cache rather than a set-associative cache, the latter is commonly
+> >     used. Thus, I didn't use the parameters from vendor dts.
+> >
+> > Currently only support booting into console with only uart, other
+> > features will be added soon later.
+> >
+...
+
+> > +		clint: timer@e4000000 {
+> > +			compatible = "spacemit,k1-clint", "sifive,clint0";
+> > +			reg = <0x0 0xe4000000 0x0 0x10000>;
+> > +			interrupts-extended = <&cpu0_intc 3>, <&cpu0_intc 7>,
+> > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
+> > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
+> > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
+> > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
+> > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
+> > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
+> > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
+> > +		};
+> > +
+> > +		uart0: serial@d4017000 {
+> > +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
+> > +			reg = <0x0 0xd4017000 0x0 0x100>;
+> > +			interrupts = <42>;
+> > +			clock-frequency = <14857000>;
+> > +			reg-shift = <2>;
+> > +			reg-io-width = <4>;
+> > +			status = "disabled";
+> > +		};
+> > +
+> > +		/* note: uart1 skipped */
 > 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> The datasheet page you link to above says "-UART (×10)", but here you're
+> skipping one of them. Why? I can see the vendor tree does the same, but it
+> would be nice with an explanation of what's going on.
+> 
+/* note: uart1 in 0xf0612000, reserved for TEE usage */
+I would put something like this, does this sound ok to you?
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicated for TEE purpose,
+It won't be exposed to Linux once TEE feature is enabled..
 
-Best Regards,
-Petr
+skipping uart1 may make people confused but we are trying to follow datasheet..
+
+
+-- 
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
