@@ -1,114 +1,129 @@
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5087E2B9A5;
-	Tue,  2 Jul 2024 04:04:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.62.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2C2914E2FB;
+	Tue,  2 Jul 2024 09:42:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719893075; cv=none; b=tSpmNCX4GYUHd7dooblQdWAIKrsWc94IrxdcIxvA1IxrN3orolmOUyeQdXjjBMFtugUcHb6JyJytx28u3ZkQqF/EE8RD3IDIZY3GjoBPxW0C3NosXkU8fo3+rwLW6VaXMm9LikDE8c5B9GcfYCcvtJZMCWTPw6EUpTEJsIuP5n8=
+	t=1719913362; cv=none; b=QkyKbmX8o9UonHHcyuMWzUt01FGXbq7YgWmaZtIAk5AUlCLzfRE49bROCbNkFMLzcNK/3oWmqDJEZHLlGcaYoLq0f+drUiYRwG6IfsJOvalnDkQuupW7Ck+VhII6K7ZvIRM6QUw9V5DCaKrxca0G9wT4nJo17b5cprOVc2X2gWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719893075; c=relaxed/simple;
-	bh=PjOPq/KxgdAbmyXPSE1+iFm7bMKb7JfGCfUQymEbRzY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TobYRM3PRCXtUiABGxLqIDkDg67lmjSuA4aQwMpphxZUVMHqaa73dSEunOOM3AOJ7zNIakjq9ARHjseCoVl54qq9XM7oul4GOe8Nzz2A0HMSmblEkMyFSNjU1thsISZ7ixE+Dr/adEHK/Xb2kBvwHHC0P0Ia/LupGx8NPCkW+as=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de; spf=pass smtp.mailfrom=denx.de; dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b=gm0RF4Hw; arc=none smtp.client-ip=85.214.62.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=denx.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b="gm0RF4Hw"
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: marex@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id 4FD458871C;
-	Tue,  2 Jul 2024 06:04:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1719893071;
-	bh=cwSotBxejvSMra+ZSFbi6qdkr/Lg5NoHvKxFGJcRHsI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gm0RF4Hwm96KgeUnZYKga3luMPjM9fU6FNUrgRHyiCbQvqIwN9WURROOA9/h895nm
-	 uIaYXfxEtfG0kuRsrQ2H7HvFHKkAuEEzCIyIrfHY+i227reZJLY+f5khvj3PfRgOrb
-	 DNUteB3Ensk0eYWbU7rO7oxfr9ztyHi/fmpIPsyII7UTuLNmOAlS6FP6GYd0IXn6er
-	 XnQ0BrPxSaHNK5KehgdoECI/y4zBN/gFve33Hc29YOagHOQzDzvWlChu0Z7rgjdzvt
-	 YFjo6ecqEX3BDeiDlVNZiuznFP4k3i/okKXGY6mKx5SONwR+ANTiDWTu6GMJN8XgKG
-	 h1hSJc4Lo6llw==
-Message-ID: <d36485a2-7cce-44be-b70f-54b00d671861@denx.de>
-Date: Tue, 2 Jul 2024 06:02:41 +0200
+	s=arc-20240116; t=1719913362; c=relaxed/simple;
+	bh=eEipO0eOiE/f2CIFA7wvUWVXg4f0TbJAAfs+ySTN0I4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XJxaLcKjr7cKpI6HdvEgw+hK/AziPEt3EgzZreMyl6CREPi1adAkCM89LB939X38UyC4vDT2KIAMSYQ+vEEuV2RCwKPZBFP5iuj7/Fsa8e4+s6NB9MtanUhEN9jIhwGtXLwP1s30MplmUyv8rHEHlnT0yc+dsrZZY/Js0nGGui4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Date: Tue, 2 Jul 2024 09:42:35 +0000
+From: Yixun Lan <dlan@gentoo.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org, Inochi Amaoto <inochiama@outlook.com>,
+	Meng Zhang <zhangmeng.kevin@spacemit.com>,
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH v2 03/10] dt-bindings: riscv: add SpacemiT K1 bindings
+Message-ID: <20240702094235.GA2506224@ofsar>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-3-cc06c7555f07@gentoo.org>
+ <20240701-undercook-flatterer-7f18f7420a6d@spud>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: imx: ensure RTS signal is not left active
- after shutdown
-To: Fabio Estevam <festevam@gmail.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
- Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20240625184206.508837-1-linux@rasmusvillemoes.dk>
- <CAOMZO5AejtxU4hTMWa8PK9duXYAKUGzGm_mmeLuEW=tRk7GSCQ@mail.gmail.com>
-Content-Language: en-US
-From: Marek Vasut <marex@denx.de>
-In-Reply-To: <CAOMZO5AejtxU4hTMWa8PK9duXYAKUGzGm_mmeLuEW=tRk7GSCQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240701-undercook-flatterer-7f18f7420a6d@spud>
 
-On 6/25/24 10:39 PM, Fabio Estevam wrote:
-> [Adding Christoph and Marek]
+Hi
+
+On 13:24 Mon 01 Jul     , Conor Dooley wrote:
+> On Thu, Jun 27, 2024 at 03:31:17PM +0000, Yixun Lan wrote:
+> > From: Yangyu Chen <cyy@cyyself.name>
+> > 
+> > Add DT binding documentation for the SpacemiT K1 Soc[1] and the Banana
+> > Pi BPi-F3 board[2] which used it.
+> > 
+> > [1] https://www.spacemit.com/en/spacemit-key-stone-2/
+> > [2] https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3
+> > 
 > 
-> On Tue, Jun 25, 2024 at 3:42 PM Rasmus Villemoes
-> <linux@rasmusvillemoes.dk> wrote:
->>
->> If a process is killed while writing to a /dev/ttymxc* device in RS485
->> mode, we observe that the RTS signal is left high, thus making it
->> impossible for other devices to transmit anything.
->>
->> Moreover, the ->tx_state variable is left in state SEND, which means
->> that when one next opens the device and configures baud rate etc., the
->> initialization code in imx_uart_set_termios dutifully ensures the RTS
->> pin is pulled down, but since ->tx_state is already SEND, the logic in
->> imx_uart_start_tx() does not in fact pull the pin high before
->> transmitting, so nothing actually gets on the wire on the other side
->> of the transceiver. Only when that transmission is allowed to complete
->> is the state machine then back in a consistent state.
->>
->> This is completely reproducible by doing something as simple as
->>
->>    seq 10000 > /dev/ttymxc0
->>
->> and hitting ctrl-C, and watching with a logic analyzer.
->>
->> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
->> ---
->> v2: Use dev_warn() instead of dev_WARN_ONCE().
->>
->> v1: https://lore.kernel.org/lkml/20240524121246.1896651-1-linux@rasmusvillemoes.dk/
->>
->> A screen dump from a logic analyzer can be seen at:
->>
->>    https://ibb.co/xCcP7Jy
->>
->> This is on an imx8mp board, with /dev/ttymxc0 and /dev/ttymxc2 both
->> configured for rs485 and connected to each other. I'm writing to
->> /dev/ttymxc2. This demonstrates both bugs; that RTS is left high when
->> a write is interrupted, and that a subsequent write actually fails to
->> have RTS high while TX'ing.
->>
->> I'm not sure what commit to name as a Fixes:. This certainly happens
->> on 6.6 and onwards, but I assume the problem exists since the tx_state
->> machine was introduced in cb1a60923609 (serial: imx: implement rts
->> delaying for rs485), and possibly even before that.
+> Please make these link tags when you resend, like
+> 
+> Link: https://foo [1]
+> 
+> and don't leave blank lines between them and the signoff.
+> 
+sure, will fix in v3
 
-Wow, thank you for the detailed analysis of the issue.
+> > Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+> > Signed-off-by: Yixun Lan <dlan@gentoo.org>
+> > ---
+> >  .../devicetree/bindings/riscv/spacemit.yaml        | 24 ++++++++++++++++++++++
+> >  1 file changed, 24 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> > new file mode 100644
+> > index 0000000000000..3b151fd02473e
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
+> > @@ -0,0 +1,24 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/riscv/spacemit.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: SpacemiT SoC-based boards
+> > +
+> > +description:
+> > +  SpacemiT SoC-based boards
+> 
+> Please work out who is gonna maintain these SoCs and add that here to
+> resolve the bot's report.
+> 
+sure, talked to Yangyu, will also add him as maintainer
+this should fix bot's complaint..
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+btw, thanks for all your other comments in the whole thread, will fix them all
+> Thanls,
+> Conor.
+> 
+> > +
+> > +properties:
+> > +  $nodename:
+> > +    const: '/'
+> > +  compatible:
+> > +    oneOf:
+> > +      - items:
+> > +          - enum:
+> > +              - bananapi,bpi-f3
+> > +          - const: spacemit,k1
+> > +
+> > +additionalProperties: true
+> > +
+> > +...
+> > 
+> > -- 
+> > 2.45.2
+> > 
+
+
+
+-- 
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
