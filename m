@@ -1,174 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAB01AD9E7;
-	Tue,  2 Jul 2024 15:25:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8261CE0BC;
+	Tue,  2 Jul 2024 19:47:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.60.130.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719933913; cv=none; b=CJjlJDP3drjdIPSaaKCZT3hbHTAIe/+rAAZJ3guTZARc6dJDzakIEDHi9PAU2tAZGCJxXbzZ5WEK6b8SRvXfH7MTFj7QnJnxhS6GV8zKktzRnrllrr590lRaPMsVabzejhHIEkR4at09nYahgvaO2jKXBHPYroGxPjBsMcrzBWI=
+	t=1719949627; cv=none; b=un8PWMGyYrvhDe3xH1W3X/VtXiPk0YmyvXkdgGIvTNCHfZLIAIYAXBCko6paBcXt3Av6MZ8ADkQ4aq26TRloMxFjFLBulaOHM2IKs7uaOQ+FP05ttfTcS8ZoHLa8SqpF9OZEHhIe1/PyOGaAGW5EmQTr+Ef5ZJaTOFdCTn1xXwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719933913; c=relaxed/simple;
-	bh=cc7nvHqqj6c3V+LFIi1X86+pPFAUbngIvHertngi76w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=owLpjFFqf1zVWErpSN1v122a+7JsIWh4gMF9asaEXwVypnjcwLB5rK32DQhgsFLY06yf+gEO+QFc/1XAilGBVaaG1H+jmaiyMdZCvFXiWRyHItqe7gr5hQOiQ1tFHPFNfD0o9Aw+azNbk3dwkGvz8QKgS19LxJ9qXHh+7arOaJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OhK+QYhE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1719949627; c=relaxed/simple;
+	bh=K4x11SUOMM6y1zNMKACNbl8folHmYwsL2pwPSCj15uM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OHaWls+VTZTKwoFpyDm0g2vC/h1J7rZvggiFn6sVhHyIM9DzbPHVxvL8FivAWglebw/gbV2SM7LY/wukaskFV5HOaZ/4+QRJMlkqOIk0qLBQT/jwMVszfKCYMw1UFvEdazoIRVCV3Yd5ILl5ak+kUvx2VUuC6imxPENHYiRMJgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=igalia.com; spf=pass smtp.mailfrom=igalia.com; dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b=Gn3N4xBd; arc=none smtp.client-ip=178.60.130.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=igalia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=igalia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OhK+QYhE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 523A0C116B1;
-	Tue,  2 Jul 2024 15:25:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1719933912;
-	bh=cc7nvHqqj6c3V+LFIi1X86+pPFAUbngIvHertngi76w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OhK+QYhE7XaL488ISYDfSItk/bnFEpOvq9q6T8ma2uPOF1C2yzK2VHrRMvApxk+yi
-	 l9CfI7GmUe2VQKzm/CJbV7E+Drx5kPrTL+YH5sNAbp/CgVgHrf5naOTT11Dj8fgy5m
-	 3HJ6rwcgKb+swO0wtLyfIVWndxnTo287pRy7YYlRVh6kiZ1NDkEMe4bnah5/teQwsL
-	 PexfjxVWll9z7nCb06g6s4wZ77uCimP5ayt2mmwxDLMxMyxaCrkQyx6rA0FbOncQKB
-	 lGhQQJu22xAdPvM9YPx9cDG1LZejEOIulj0QmT15yu71eH9GOEtLqTMpK2KFlLSUkc
-	 0YUj40EpeB3Pw==
-Date: Tue, 2 Jul 2024 16:25:06 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Inochi Amaoto <inochiama@outlook.com>
-Cc: Yixun Lan <dlan@gentoo.org>,
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Palmer Dabbelt <palmer@sifive.com>, linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>,
-	Yangyu Chen <cyy@cyyself.name>
-Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device
- tree
-Message-ID: <20240702-appease-attire-6afbe758bf0f@spud>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org>
- <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
- <20240702012847.GA2447193@ofsar>
- <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="Gn3N4xBd"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+	s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+	References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=7Y/kIBa4MocqL5VsX4pa8YlTzbYsFHxrleMVSoRGylU=; b=Gn3N4xBdm+qM8pwbIk7A5brYm7
+	LexsVZJ2whsJBS+iv3Ia2IW+LxgYzbSkz3gi0Zbtip7pmL3yAxQRAJ8Pe/ejdn3AKXwITEsy4NYUX
+	C2vKGo/5jifhIwFVu8HuXl3D0UgDBdW1wfnCHj46j0lEF9YJQldF5U06WiRH7tw5N3KuziY6PI0dt
+	HqE6LXEPstM4BUYS6lLqWwjMLoemkOMRlrpL324EFjEJ8fV10h7KuS2l/VnIFJ+XOLxkyizifp5oC
+	Njsy0wi0DMtb2QkxqkX1bWiRj1DAEaVdJQn9qZdKZCU6rt/YzLC4Vb3E2v1mQeIkOewXf+gVdAj5y
+	NjzTm7tQ==;
+Received: from [187.36.213.55] (helo=[192.168.1.212])
+	by fanzine2.igalia.com with esmtpsa 
+	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+	id 1sOjSK-00ARCD-DC; Tue, 02 Jul 2024 21:46:24 +0200
+Message-ID: <1e8b7043-b92f-4a91-8b71-48117a2da0c0@igalia.com>
+Date: Tue, 2 Jul 2024 16:46:12 -0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8t7ClsDF1V/WRNDh"
-Content-Disposition: inline
-In-Reply-To: <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 06/11] drm/vc4: hdmi: Handle error case of
+ pm_runtime_resume_and_get
+To: Stefan Wahren <wahrenst@gmx.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Jassi Brar <jassisinghbrar@gmail.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+References: <20240630153652.318882-1-wahrenst@gmx.net>
+ <20240630153652.318882-7-wahrenst@gmx.net>
+Content-Language: en-US
+From: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>
+Autocrypt: addr=mcanal@igalia.com; keydata=
+ xjMEZIsaeRYJKwYBBAHaRw8BAQdAGU6aY8oojw61KS5rGGMrlcilFqR6p6ID45IZ6ovX0h3N
+ H01haXJhIENhbmFsIDxtY2FuYWxAaWdhbGlhLmNvbT7CjwQTFggANxYhBDMCqFtIvFKVRJZQ
+ hDSPnHLaGFVuBQJkixp5BQkFo5qAAhsDBAsJCAcFFQgJCgsFFgIDAQAACgkQNI+cctoYVW5u
+ GAEAwpaC5rI3wD8zqETKwGVoXd6+AbmGfZuVD40xepy7z/8BAM5w95/oyPsHUqOsg/xUTlNp
+ rlbhA+WWoaOXA3XgR+wCzjgEZIsaeRIKKwYBBAGXVQEFAQEHQGoOK0jgh0IorMAacx6WUUWb
+ s3RLiJYWUU6iNrk5wWUbAwEIB8J+BBgWCAAmFiEEMwKoW0i8UpVEllCENI+cctoYVW4FAmSL
+ GnkFCQWjmoACGwwACgkQNI+cctoYVW6cqwD/Q9R98msvkhgRvi18fzUPFDwwogn+F+gQJJ6o
+ pwpgFkAA/R2zOfla3IT6G3SBoV5ucdpdCpnIXFpQLbmfHK7dXsAC
+In-Reply-To: <20240630153652.318882-7-wahrenst@gmx.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 6/30/24 12:36, Stefan Wahren wrote:
+> The commit 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is
+> powered in detect") introduced the necessary power management handling
+> to avoid register access while controller is powered down.
+> Unfortunately it just print a warning if pm_runtime_resume_and_get()
+> fails and proceed anyway.
+> 
+> This could happen during suspend to idle. So we must assume it is unsafe
+> to access the HDMI register. So bail out properly.
+> 
+> Fixes: 0f5251339eda ("drm/vc4: hdmi: Make sure the controller is powered in detect")
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 
---8t7ClsDF1V/WRNDh
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ From the docs, I see that `DRM_ERROR` was deprecated in favor of
+`pr_err()` (although I'm seeing some drivers using `dev_err()`). So,
+after this change, this is:
 
-On Tue, Jul 02, 2024 at 09:35:45AM +0800, Inochi Amaoto wrote:
-> On Tue, Jul 02, 2024 at 01:28:47AM GMT, Yixun Lan wrote:
-> > On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
-> > > Yixun Lan wrote:
-> > > > From: Yangyu Chen <cyy@cyyself.name>
-> > > >
-> > > > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
-> > > >
-> > > > Key features:
-> > > > - 4 cores per cluster, 2 clusters on chip
-> > > > - UART IP is Intel XScale UART
-> > > >
-> > > > Some key considerations:
-> > > > - ISA string is inferred from vendor documentation[2]
-> > > > - Cluster topology is inferred from datasheet[1] and L2 in vendor d=
-ts[3]
-> > > > - No coherent DMA on this board
-> > > >     Inferred by taking vendor ethernet and MMC drivers to the mainl=
-ine
-> > > >     kernel. Without dma-noncoherent in soc node, the driver fails.
-> > > > - No cache nodes now
-> > > >     The parameters from vendor dts are likely to be wrong. It has 5=
-12
-> > > >     sets for a 32KiB L1 Cache. In this case, each set is 64B in siz=
-e.
-> > > >     When the size of the cache line is 64B, it is a directly mapped
-> > > >     cache rather than a set-associative cache, the latter is common=
-ly
-> > > >     used. Thus, I didn't use the parameters from vendor dts.
-> > > >
-> > > > Currently only support booting into console with only uart, other
-> > > > features will be added soon later.
-> > > >
-> > ...
-> >=20
-> > > > +		clint: timer@e4000000 {
-> > > > +			compatible =3D "spacemit,k1-clint", "sifive,clint0";
-> > > > +			reg =3D <0x0 0xe4000000 0x0 0x10000>;
-> > > > +			interrupts-extended =3D <&cpu0_intc 3>, <&cpu0_intc 7>,
-> > > > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
-> > > > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
-> > > > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
-> > > > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
-> > > > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
-> > > > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
-> > > > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
-> > > > +		};
-> > > > +
-> > > > +		uart0: serial@d4017000 {
-> > > > +			compatible =3D "spacemit,k1-uart", "intel,xscale-uart";
-> > > > +			reg =3D <0x0 0xd4017000 0x0 0x100>;
-> > > > +			interrupts =3D <42>;
-> > > > +			clock-frequency =3D <14857000>;
-> > > > +			reg-shift =3D <2>;
-> > > > +			reg-io-width =3D <4>;
-> > > > +			status =3D "disabled";
-> > > > +		};
-> > > > +
-> > > > +		/* note: uart1 skipped */
-> > >=20
-> > > The datasheet page you link to above says "-UART (=D710)", but here y=
-ou're
-> > > skipping one of them. Why? I can see the vendor tree does the same, b=
-ut it
-> > > would be nice with an explanation of what's going on.
-> > >=20
-> > /* note: uart1 in 0xf0612000, reserved for TEE usage */
-> > I would put something like this, does this sound ok to you?
-> >=20
-> > more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicated f=
-or TEE purpose,
-> > It won't be exposed to Linux once TEE feature is enabled..
-> >=20
-> > skipping uart1 may make people confused but we are trying to follow dat=
-asheet..
->=20
-> Instead of skipping it, I suggest adding this to reserved-memory area,=20
-> which make all node visible and avoid uart1 being touched by mistake.
+Reviewed-by: Maíra Canal <mcanal@igalia.com>
 
-No, don't make it reserved-memory - instead add it as
-status =3D "reserved"; /* explanation for why */
-Also, I'd appreciate if the nodes were sorted by unit address in the
-dtsi.
+It would be nice to have a follow-up patch changing other vc4 files,
+as they are using `DRM_ERROR` when returning the error from
+`pm_runtime_resume_and_get()`.
 
-Thanks,
-Conor.
+Best Regards,
+- Maíra
 
---8t7ClsDF1V/WRNDh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZoQb0gAKCRB4tDGHoIJi
-0tEwAQDbZqSQrUgTmMpfdmDuQPr0P0SBOkFpJs0/aPbXIvDa3AEAltJ5Hgikal1T
-3Be6wU3wIZBpw+4BQ/NmiOt4fe2a7AA=
-=zeit
------END PGP SIGNATURE-----
-
---8t7ClsDF1V/WRNDh--
+> ---
+>   drivers/gpu/drm/vc4/vc4_hdmi.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+> index d57c4a5948c8..b3a42b709718 100644
+> --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
+> +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+> @@ -429,6 +429,7 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_connector *connector,
+>   {
+>   	struct vc4_hdmi *vc4_hdmi = connector_to_vc4_hdmi(connector);
+>   	enum drm_connector_status status = connector_status_disconnected;
+> +	int ret;
+> 
+>   	/*
+>   	 * NOTE: This function should really take vc4_hdmi->mutex, but
+> @@ -441,7 +442,11 @@ static int vc4_hdmi_connector_detect_ctx(struct drm_connector *connector,
+>   	 * the lock for now.
+>   	 */
+> 
+> -	WARN_ON(pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev));
+> +	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
+> +	if (ret) {
+> +		DRM_ERROR("Failed to retain HDMI power domain: %d\n", ret);
+> +		return status;
+> +	}
+> 
+>   	if (vc4_hdmi->hpd_gpio) {
+>   		if (gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio))
+> --
+> 2.34.1
+> 
