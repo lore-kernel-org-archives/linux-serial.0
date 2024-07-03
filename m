@@ -1,23 +1,23 @@
 Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C1217D8A9;
-	Wed,  3 Jul 2024 14:57:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3876D180A86;
+	Wed,  3 Jul 2024 14:57:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720018634; cv=none; b=TVxEQA4K9bYnSckRDr5g8zoXq4T3y3RtckrTkeNL5a/hGUnY/QNN0tDXviz/ogfEyhAzQvePQ3Af8Q34XvQKYzfMXVtvBKAF/TJTwMuLTImM235ywzkVPqMUd9NnvBfIYL/GM7qlXI61e/7E4erjutLQfDm9Y0BOAxqttXcP4FU=
+	t=1720018642; cv=none; b=kpXvgD9dJggCMW5/qgvoq1a2tuaCWwqaxlSyl1W3k2doJEmmAZTfgHJyWZiO3ztBdU032xLn7h52I1WGv+9YTQEX55sQqjkeoBTBSlbacbCr+qEdJlMulc2P45tuvq/zrUwEWtMiAkHhiQ6B4r2uGUAvphC0zOFX/wp0q5fhuwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720018634; c=relaxed/simple;
-	bh=7bPf74c93KISG1l2PpPGtKZFZIcEcKvCKOaP4od3cEg=;
+	s=arc-20240116; t=1720018642; c=relaxed/simple;
+	bh=5e5axpOVSop7tU9RM2+kMzY3QIqZVpK1c93FNqEco2I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ehIKdJIIcPRKk/QqKFy9RTpRF+TjFcTTx7XNa7oVQc0mpBCLG+TrduQL97TS7CSrUFlO/1dtg7/u3ZlsPWDPS6c8yR5vGJmV07a9spxguS0UhXkN/esPo2wYJayurp7u+pJ/UjrioVsicxSIkDo+H8rJfWxFrzWB1lKinJZlPNk=
+	 In-Reply-To:To:Cc; b=XzPvsMk12NJers9okt8QEYSj3/uzWWu7ED05tAp3B4Xsh5AvpKZbE6qGJ6oXgjzaSTYsjqKWQUP59+VE+eaEkWGxREab/8wX6Adm4AUnpzZ/7sfo+9dZOq+dzJBgd3AJZPF6Z8hCp0IXeaG9V5IhKXJuKnKIZsJjKApkXNj2exE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
 From: Yixun Lan <dlan@gentoo.org>
-Date: Wed, 03 Jul 2024 14:55:08 +0000
-Subject: [PATCH v3 05/11] dt-bindings: interrupt-controller: Add SpacemiT
- K1 PLIC
+Date: Wed, 03 Jul 2024 14:55:09 +0000
+Subject: [PATCH v3 06/11] dt-bindings: serial: 8250: Add SpacemiT K1 uart
+ compatible
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -26,7 +26,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240703-k1-01-basic-dt-v3-5-12f73b47461e@gentoo.org>
+Message-Id: <20240703-k1-01-basic-dt-v3-6-12f73b47461e@gentoo.org>
 References: <20240703-k1-01-basic-dt-v3-0-12f73b47461e@gentoo.org>
 In-Reply-To: <20240703-k1-01-basic-dt-v3-0-12f73b47461e@gentoo.org>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -43,48 +43,50 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
  Inochi Amaoto <inochiama@outlook.com>, Icenowy Zheng <uwu@icenowy.me>, 
  Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>, 
- Yixun Lan <dlan@gentoo.org>
+ Yixun Lan <dlan@gentoo.org>, Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=938; i=dlan@gentoo.org;
- h=from:subject:message-id; bh=uRDxzRoYQ7f7fJazlLn1rqbODikLZ47/5BjNLxbuT6w=;
- b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmhWaENPQj8iXtrdapEWZeKRMe8hkFBF/6q52xM
- hpXpz2JlHmJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZoVmhF8UgAAAAAAuAChp
+X-Developer-Signature: v=1; a=openpgp-sha256; l=965; i=dlan@gentoo.org;
+ h=from:subject:message-id; bh=5e5axpOVSop7tU9RM2+kMzY3QIqZVpK1c93FNqEco2I=;
+ b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmhWaHMmSptOnr/OPT3AL7ue3HGBaaLS9L6fVFt
+ SmnHVQleB6JApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZoVmh18UgAAAAAAuAChp
  c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
- CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277drnD/sFlyiJvOUffW+pp9
- 06mCWwC4Jprn2bPlLQrl1NVJHukpthpKNBHVfB7Nz1PwS1+4XKMQpxcZd7uoR1QMOzeFF3UjVnz
- NQLwIMQli9f8Qbg7+OyCatDYjSRxfbWjUwSxHsN9WBr7HPnNnzUycddyWZcThY1GppqeUMxRxhu
- vTePyd9Ykb4V0j/AozyzaWcYBlYQgx6tdyNLTNh9Cwz28uTvWdZZhlfRbolr9WPHl6eOcnqH9NB
- NQvvu6s7ToLimuGAtIoPEh7W/iJehnnPeY8qIGcxbyDVmaOKY3fg0ZD54qn5OUcFJU0acv3FfjH
- 9/zDFLRp7wJZabC+mkqDcs+fQgKRgoyiB29nvZ6IHvYwfdOYs91fizOpYGqAf3c6d+8yc8Rd93V
- Ms/I1DSB7mIYDDf7uTIV2P1To0cBFJLvaIts0ZF6MnW1HJdaiNoG3L/YAlitak6TICB1VBMnYdB
- 0wQ/oUeTFI2oOmkZpD5m3WyRVfZK9+J+4pM5ZJ0dzLupqbzUTHkhidkyCooJJOjojZpxMbW2SlV
- s4pho7FgGZ5evKVeJcX3WqHCJpnjzB1QqVvMGmCjkjdNgn/nIGf+8a7tKBoLROWYrYKAman3RRB
- 5JxeoEdcA6BwIqjaMjK0HfnHnw0O2kiii6nAJrMPGUPM6l280mwV2/5Ez6yswC3CNckw==
+ CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277TWoEACZ/cu+fJlqsyNJnx
+ zb++o56J7JkhUx7IvfXl062IMdW/16flA0fZCuVznqtzEALWHEDUKMplkXcxyusxoytQjoSspAN
+ UjKI5bO2a2R3995xsYewM63V1i5EEdGvs4IZueDzkN7dLOpQIzM452jeTNM6DOVQeJlOrbTWONM
+ ySCgpQzVZ2Gb/p0/QyMLkhJeqV5U0DyzVzHAc7kUE+YOaJRFCoaiOPspL2sO2bhLAAKc/4xDw7l
+ 3H5aPMi3+gJ6xCtVKucV07OEbpgYp0rBKXiikZY9HvitxnAIMzgXS9CKIOsmvLAvH3PNutfUJSk
+ 0PQ22qQH6zx1C2maj1ojzOeUj9lGkALmyJKY9ivvETG75PrL/DlCUz+ozTuZkoKupLI+voy/rTz
+ nycpbW/9+oxNtpqRPPQ8edTH6AhBLCzaMBZAgHBwo3nj0reF6UXJy6JrbRC/BgMUNE2w1MHMNTk
+ m2VIRtmAhDzey3EjUG5UuVlhaRjHR6/6kkKQhJbzuJjIdBcw6/lgo/9saepI/nczXVe0YWDR1Zv
+ EzRwIojWDj0tu0QTpEzInCvR+M7Lo929MNS2nCeBo2sgYHxNTXB3HytCTwgq4B+IycIZdoepjaY
+ WSPmGv6TIW4soqf7gGWIt/a74+2T4n/blD8un74YnH2gdxDETiosG4KMjRSslAoIqARw==
 X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
  fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
-From: Yangyu Chen <cyy@cyyself.name>
+Found SpacemiT's K1 uart controller is compatible with
+Intel's Xscale uart, but it's still worth to introduce a new compatible.
 
-Add compatible string for SpacemiT K1 PLIC.
-
-Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Yixun Lan <dlan@gentoo.org>
 ---
- .../devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml      | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/serial/8250.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-index 709b2211276bd..f473ca3479efd 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
-@@ -59,6 +59,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index 692aa05500fd5..0bde2379e8647 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -111,7 +111,9 @@ properties:
+               - mediatek,mt7623-btif
+           - const: mediatek,mtk-btif
+       - items:
+-          - const: mrvl,mmp-uart
++          - enum:
++              - mrvl,mmp-uart
++              - spacemit,k1-uart
+           - const: intel,xscale-uart
+       - items:
            - enum:
-               - canaan,k210-plic
-               - sifive,fu540-c000-plic
-+              - spacemit,k1-plic
-               - starfive,jh7100-plic
-               - starfive,jh7110-plic
-           - const: sifive,plic-1.0.0
 
 -- 
 2.45.2
