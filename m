@@ -1,202 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 797FA20125A
-	for <linux-serial@vger.kernel.org>; Tue,  2 Jul 2024 20:55:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65C113C9B9;
+	Wed,  3 Jul 2024 09:40:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719953753; cv=none; b=uXeTZvWTNDSzyVpQlRl3jBsH+ECXNwtERINzqRVL/0/ToivvgVz2NNLyKTAVP94qPgz+ZZ5Wkl6SG30iBpbPqlfRIsxqnRYWJHbgAMZEBLrzmpBcBRFkiroleUUG/5Yvqj5MeRxyBwQPbPxvTlNcHn/E8DKYrM1CuCb7CN72hBo=
+	t=1719999656; cv=none; b=QTJkp6uWDrvQmvhr0irtRl9H8WEXwGbcoR9fc6HLDonNmsnCQlQr+rBrXmy33d82DO47N8I0T3jAz4lentwNXcwGkuFF398Kv7Ut/Wk64TZJ/f6DJTgqW7YagQpFZh2LQqvNRgwGYwI8OfigagDttYQsXYF0EoUmShMt8JebqtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719953753; c=relaxed/simple;
-	bh=uUqtyjIBevpv3axTn89EiAqRZ9jg1h/EEqp6jZ6Wggw=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=ClBhb6xDajWSJlTgB4aYUPvsiCUDje8fQQWCBTtVD8tYqAjRQiS22VEIsb8s0RlAVrf+Tvq3t61b5Ms8Adkkq6JRdIS7B20j/41KZVAvuHgNYkHHLjWLvEVNng6T21ivtKLyCOE/D9P+2f5PwODQ+HhihcmyvexWQB1AjLJLOhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NMq378Nh; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NMq378Nh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1719953751; x=1751489751;
-  h=date:from:to:cc:subject:message-id;
-  bh=uUqtyjIBevpv3axTn89EiAqRZ9jg1h/EEqp6jZ6Wggw=;
-  b=NMq378NhD7Ro0kUU9NKvhXYjpWXiR4vsHOhcTS+Z1twFMbmbANvnuS0S
-   5UiQigDVb6aPJLEXyHrWFEuvlMJjeYX5x9agVuxqIBJn4nSsb/qpnA7oD
-   1JbCAFPW7RwJ9SQkP7udsUokwoF6dJjcXjZlAxaXjcMdMhqvGH/NU1+KL
-   Z5HiLL15zDylEUriNTCfDBzqZ6mnjeMeN+r9iwsAkkkROja30t7iNA9vi
-   YL9UbqKUiAteSIMWfMLOe2SvNDvmO6QOB1zn7p/wPIxoe1zIiUY3R1JzM
-   EUDkj9TwBj7qZSKTBvxz/1ajmD/rDy/U3Tkt6VosP9qU37EmqXOicGAxq
-   w==;
-X-CSE-ConnectionGUID: DqxqugYnQp6+gbrwzzj3VA==
-X-CSE-MsgGUID: GnHcPUNZQDm7xVk4iu7szg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11121"; a="17363626"
-X-IronPort-AV: E=Sophos;i="6.09,180,1716274800"; 
-   d="scan'208";a="17363626"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2024 13:55:50 -0700
-X-CSE-ConnectionGUID: bsc/jiGOTKaV52qsM4pttQ==
-X-CSE-MsgGUID: hhmNfzXZR2iVu3f8rAPIqw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,180,1716274800"; 
-   d="scan'208";a="46019860"
-Received: from lkp-server01.sh.intel.com (HELO 68891e0c336b) ([10.239.97.150])
-  by fmviesa009.fm.intel.com with ESMTP; 02 Jul 2024 13:55:49 -0700
-Received: from kbuild by 68891e0c336b with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1sOkXT-000OfP-2k;
-	Tue, 02 Jul 2024 20:55:47 +0000
-Date: Wed, 03 Jul 2024 04:55:19 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 33827dc4ad8982c987ad4066d643693403ce7fd0
-Message-ID: <202407030417.d2Mxw4Ai-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	s=arc-20240116; t=1719999656; c=relaxed/simple;
+	bh=Dzj7c/tM7TZu0j0NpI+S/5IQqQYH5umY4V08HZXaVu8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jn16BCX61dPdwm76dvBVeyC2Fjo74T9KDyRXpRDi6P9MwhPUtRUgKVjO5rXAa0rziBzogdaoDonpwX4YDfS8m5MnsRW1mvujpJRk+XIizlFLwbOmu/uYl1owO/o64CzYmRgjc955KYzfDBWmBR7dAYSNdWPtj0HC7ChM9C2TpFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Date: Wed, 3 Jul 2024 09:40:49 +0000
+From: Yixun Lan <dlan@gentoo.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Inochi Amaoto <inochiama@outlook.com>,
+	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+	Meng Zhang <zhangmeng.kevin@spacemit.com>,
+	Yangyu Chen <cyy@cyyself.name>
+Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device
+ tree
+Message-ID: <20240703094049.GB2676251@ofsar>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org>
+ <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
+ <20240702012847.GA2447193@ofsar>
+ <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
+ <20240702-appease-attire-6afbe758bf0f@spud>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240702-appease-attire-6afbe758bf0f@spud>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 33827dc4ad8982c987ad4066d643693403ce7fd0  Merge 6.10-rc6 into tty-next
+Hi Conor:
 
-elapsed time: 1905m
+On 16:25 Tue 02 Jul     , Conor Dooley wrote:
+> On Tue, Jul 02, 2024 at 09:35:45AM +0800, Inochi Amaoto wrote:
+> > On Tue, Jul 02, 2024 at 01:28:47AM GMT, Yixun Lan wrote:
+> > > On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
+> > > > Yixun Lan wrote:
+> > > > > From: Yangyu Chen <cyy@cyyself.name>
+> > > > >
+> > > > > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
+> > > > >
+> > > > > Key features:
+> > > > > - 4 cores per cluster, 2 clusters on chip
+> > > > > - UART IP is Intel XScale UART
+> > > > >
+> > > > > Some key considerations:
+> > > > > - ISA string is inferred from vendor documentation[2]
+> > > > > - Cluster topology is inferred from datasheet[1] and L2 in vendor dts[3]
+> > > > > - No coherent DMA on this board
+> > > > >     Inferred by taking vendor ethernet and MMC drivers to the mainline
+> > > > >     kernel. Without dma-noncoherent in soc node, the driver fails.
+> > > > > - No cache nodes now
+> > > > >     The parameters from vendor dts are likely to be wrong. It has 512
+> > > > >     sets for a 32KiB L1 Cache. In this case, each set is 64B in size.
+> > > > >     When the size of the cache line is 64B, it is a directly mapped
+> > > > >     cache rather than a set-associative cache, the latter is commonly
+> > > > >     used. Thus, I didn't use the parameters from vendor dts.
+> > > > >
+> > > > > Currently only support booting into console with only uart, other
+> > > > > features will be added soon later.
+> > > > >
+> > > ...
+> > > 
+> > > > > +		clint: timer@e4000000 {
+> > > > > +			compatible = "spacemit,k1-clint", "sifive,clint0";
+> > > > > +			reg = <0x0 0xe4000000 0x0 0x10000>;
+> > > > > +			interrupts-extended = <&cpu0_intc 3>, <&cpu0_intc 7>,
+> > > > > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
+> > > > > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
+> > > > > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
+> > > > > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
+> > > > > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
+> > > > > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
+> > > > > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
+> > > > > +		};
+> > > > > +
+> > > > > +		uart0: serial@d4017000 {
+> > > > > +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
+> > > > > +			reg = <0x0 0xd4017000 0x0 0x100>;
+> > > > > +			interrupts = <42>;
+> > > > > +			clock-frequency = <14857000>;
+> > > > > +			reg-shift = <2>;
+> > > > > +			reg-io-width = <4>;
+> > > > > +			status = "disabled";
+> > > > > +		};
+> > > > > +
+> > > > > +		/* note: uart1 skipped */
+> > > > 
+> > > > The datasheet page you link to above says "-UART (×10)", but here you're
+> > > > skipping one of them. Why? I can see the vendor tree does the same, but it
+> > > > would be nice with an explanation of what's going on.
+> > > > 
+> > > /* note: uart1 in 0xf0612000, reserved for TEE usage */
+> > > I would put something like this, does this sound ok to you?
+> > > 
+> > > more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicated for TEE purpose,
+> > > It won't be exposed to Linux once TEE feature is enabled..
+> > > 
+> > > skipping uart1 may make people confused but we are trying to follow datasheet..
+> > 
+> > Instead of skipping it, I suggest adding this to reserved-memory area, 
+> > which make all node visible and avoid uart1 being touched by mistake.
+> 
+> No, don't make it reserved-memory - instead add it as
+> status = "reserved"; /* explanation for why */
+Ok, got
 
-configs tested: 125
-configs skipped: 0
+> Also, I'd appreciate if the nodes were sorted by unit address in the
+> dtsi.
+so I would move "plic, clint" after node of uart9 as this suggestion
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+for uart1, its unit-address is 0xf0610000, it should be moved to after clint
+(once unit-address sorted), if we follow this rule strictly.
+but it occur to me this is not very intuitive, if no objection, I would put
+it between uart0 and uart2 (thus slightly break the rule..)
 
-tested configs:
-alpha                             allnoconfig   gcc-13.2.0
-arc                               allnoconfig   gcc-13.2.0
-arc                   randconfig-001-20240702   gcc-13.2.0
-arc                   randconfig-002-20240702   gcc-13.2.0
-arm                               allnoconfig   clang-19
-arm                               allnoconfig   gcc-13.2.0
-arm                   randconfig-001-20240702   gcc-13.2.0
-arm                   randconfig-002-20240702   gcc-13.2.0
-arm                   randconfig-003-20240702   gcc-13.2.0
-arm                   randconfig-004-20240702   gcc-13.2.0
-arm64                             allnoconfig   gcc-13.2.0
-arm64                 randconfig-001-20240702   gcc-13.2.0
-arm64                 randconfig-002-20240702   clang-19
-arm64                 randconfig-002-20240702   gcc-13.2.0
-arm64                 randconfig-003-20240702   gcc-13.2.0
-arm64                 randconfig-004-20240702   gcc-13.2.0
-csky                              allnoconfig   gcc-13.2.0
-csky                  randconfig-001-20240702   gcc-13.2.0
-csky                  randconfig-002-20240702   gcc-13.2.0
-hexagon                           allnoconfig   clang-19
-hexagon               randconfig-001-20240702   clang-19
-hexagon               randconfig-002-20240702   clang-19
-i386         buildonly-randconfig-001-20240702   gcc-13
-i386         buildonly-randconfig-002-20240702   gcc-10
-i386         buildonly-randconfig-002-20240702   gcc-13
-i386         buildonly-randconfig-003-20240702   gcc-13
-i386         buildonly-randconfig-004-20240702   clang-18
-i386         buildonly-randconfig-004-20240702   gcc-13
-i386         buildonly-randconfig-005-20240702   gcc-10
-i386         buildonly-randconfig-005-20240702   gcc-13
-i386         buildonly-randconfig-006-20240702   gcc-13
-i386                  randconfig-001-20240702   gcc-10
-i386                  randconfig-001-20240702   gcc-13
-i386                  randconfig-002-20240702   gcc-12
-i386                  randconfig-002-20240702   gcc-13
-i386                  randconfig-003-20240702   gcc-13
-i386                  randconfig-004-20240702   gcc-13
-i386                  randconfig-005-20240702   gcc-10
-i386                  randconfig-005-20240702   gcc-13
-i386                  randconfig-006-20240702   clang-18
-i386                  randconfig-006-20240702   gcc-13
-i386                  randconfig-011-20240702   gcc-13
-i386                  randconfig-011-20240702   gcc-9
-i386                  randconfig-012-20240702   clang-18
-i386                  randconfig-012-20240702   gcc-13
-i386                  randconfig-013-20240702   gcc-11
-i386                  randconfig-013-20240702   gcc-13
-i386                  randconfig-014-20240702   clang-18
-i386                  randconfig-014-20240702   gcc-13
-i386                  randconfig-015-20240702   clang-18
-i386                  randconfig-015-20240702   gcc-13
-i386                  randconfig-016-20240702   clang-18
-i386                  randconfig-016-20240702   gcc-13
-loongarch                        allmodconfig   gcc-13.2.0
-loongarch                         allnoconfig   gcc-13.2.0
-loongarch             randconfig-001-20240702   gcc-13.2.0
-loongarch             randconfig-002-20240702   gcc-13.2.0
-m68k                             allmodconfig   gcc-13.2.0
-m68k                              allnoconfig   gcc-13.2.0
-m68k                             allyesconfig   gcc-13.2.0
-microblaze                       allmodconfig   gcc-13.2.0
-microblaze                        allnoconfig   gcc-13.2.0
-microblaze                       allyesconfig   gcc-13.2.0
-mips                              allnoconfig   gcc-13.2.0
-nios2                             allnoconfig   gcc-13.2.0
-nios2                 randconfig-001-20240702   gcc-13.2.0
-nios2                 randconfig-002-20240702   gcc-13.2.0
-openrisc                          allnoconfig   gcc-13.2.0
-parisc                            allnoconfig   gcc-13.2.0
-parisc                randconfig-001-20240702   gcc-13.2.0
-parisc                randconfig-002-20240702   gcc-13.2.0
-powerpc                           allnoconfig   gcc-13.2.0
-powerpc               randconfig-001-20240702   gcc-13.2.0
-powerpc               randconfig-002-20240702   clang-16
-powerpc               randconfig-002-20240702   gcc-13.2.0
-powerpc               randconfig-003-20240702   gcc-13.2.0
-powerpc64             randconfig-001-20240702   clang-19
-powerpc64             randconfig-001-20240702   gcc-13.2.0
-powerpc64             randconfig-002-20240702   gcc-13.2.0
-powerpc64             randconfig-003-20240702   clang-19
-powerpc64             randconfig-003-20240702   gcc-13.2.0
-riscv                             allnoconfig   gcc-13.2.0
-riscv                 randconfig-001-20240702   gcc-13.2.0
-riscv                 randconfig-002-20240702   gcc-13.2.0
-s390                              allnoconfig   gcc-13.2.0
-s390                  randconfig-001-20240702   clang-19
-s390                  randconfig-001-20240702   gcc-13.2.0
-s390                  randconfig-002-20240702   gcc-13.2.0
-sh                                allnoconfig   gcc-13.2.0
-sh                    randconfig-001-20240702   gcc-13.2.0
-sh                    randconfig-002-20240702   gcc-13.2.0
-sparc64               randconfig-001-20240702   gcc-13.2.0
-sparc64               randconfig-002-20240702   gcc-13.2.0
-um                                allnoconfig   gcc-13.2.0
-um                    randconfig-001-20240702   gcc-13.2.0
-um                    randconfig-001-20240702   gcc-8
-um                    randconfig-002-20240702   gcc-13
-um                    randconfig-002-20240702   gcc-13.2.0
-x86_64       buildonly-randconfig-001-20240702   gcc-8
-x86_64       buildonly-randconfig-002-20240702   clang-18
-x86_64       buildonly-randconfig-003-20240702   clang-18
-x86_64       buildonly-randconfig-004-20240702   clang-18
-x86_64       buildonly-randconfig-005-20240702   gcc-13
-x86_64       buildonly-randconfig-006-20240702   clang-18
-x86_64                randconfig-001-20240702   clang-18
-x86_64                randconfig-002-20240702   gcc-11
-x86_64                randconfig-003-20240702   gcc-13
-x86_64                randconfig-004-20240702   gcc-9
-x86_64                randconfig-005-20240702   clang-18
-x86_64                randconfig-006-20240702   gcc-13
-x86_64                randconfig-011-20240702   clang-18
-x86_64                randconfig-012-20240702   gcc-8
-x86_64                randconfig-013-20240702   clang-18
-x86_64                randconfig-014-20240702   gcc-13
-x86_64                randconfig-015-20240702   gcc-13
-x86_64                randconfig-016-20240702   clang-18
-x86_64                randconfig-071-20240702   clang-18
-x86_64                randconfig-072-20240702   gcc-13
-x86_64                randconfig-073-20240702   gcc-8
-x86_64                randconfig-074-20240702   clang-18
-x86_64                randconfig-075-20240702   gcc-13
-x86_64                randconfig-076-20240702   gcc-8
-xtensa                            allnoconfig   gcc-13.2.0
-xtensa                randconfig-001-20240702   gcc-13.2.0
-xtensa                randconfig-002-20240702   gcc-13.2.0
+P.S: I can cook a separated patch for adding uart1 node, should better for review
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
