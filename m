@@ -1,78 +1,76 @@
 Received: from mailfilter03-out30.webhostingserver.nl (mailfilter03-out30.webhostingserver.nl [195.211.72.164])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FA32BB13
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 21:28:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFCE5191F6F
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 21:28:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=195.211.72.164
 ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720042094; cv=pass; b=neY3Se0OtHQGkHpxtfsyEYa3ge8i6dkEyVMHFXMe7oKWv2lxxxj9Jcn9K3V9cbPES79LIvbPxGPTDhGhVctNfEeHvdIromjxVZaLWMlpxIzB2gkZ1fGqvAESkYi/Gu64ejBuiPeLBvv0D9u3N6q/T7jZSCVOAmgP315dKWfs+JU=
+	t=1720042104; cv=pass; b=foJiMP0gq1RddN2uh2RUkGNj0FOolUCW658AaL7sPIV9YuKP2oAXzpqjP1CRqAhdiJj3heyTey9Zd5NhRBlleJro0d9hOd2Re6dKXEQEbaQb0Mn7eyAoG1GglrA7UqqolZkftcXOcyp8cnyXpfxu9MSc5QEUJZHYAltfhvW17AA=
 ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720042094; c=relaxed/simple;
-	bh=bucvDq82UCNSD+67uMZYm6q8M4bzaWSZUAKzstC+xig=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=esFH49UR3iLwP2cytga+jFoV1TDCC4BnvbNjVwjd5hX0vXLbf+t10euM9K4BwT6xD0SJk+YmiKKyDS/wPh/luC0ca4uwU7wfd53L7dwP+BTI5VW3H4qpBwD0dpR8Z5Y0sncF9CGOaiGYfIZYjTCJxzKkLbxGEudnwIAd3dh0IhI=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=exalondelft.nl; spf=pass smtp.mailfrom=exalondelft.nl; dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b=JWybxTsr; arc=pass smtp.client-ip=195.211.72.164
+	s=arc-20240116; t=1720042104; c=relaxed/simple;
+	bh=Lzr/U/qKnONsBIfrOpzHoAvCwRD3pTy9JeYEDVNUKpI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fTUJJFlMl4/QPdYkcampWZNCgrk4PUs51UrpiwcKVRyjSiQzkcAZzzpj/RSEiU01Grnrhu4hETfSWg96NOhVT1rU+ev+jjsW5mzr+1VlUMYnoDvOvkur2GRz5mAyvoxBC6GvpR5iDPTk+1Ol2m0qBH0GDW+QqwhncBEsVXICOUQ=
+ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=exalondelft.nl; spf=pass smtp.mailfrom=exalondelft.nl; dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b=cegEaOyM; arc=pass smtp.client-ip=195.211.72.164
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=exalondelft.nl
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exalondelft.nl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b="JWybxTsr"
-ARC-Seal: i=2; a=rsa-sha256; t=1720042088; cv=pass;
+	dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b="cegEaOyM"
+ARC-Seal: i=2; a=rsa-sha256; t=1720042033; cv=pass;
 	d=webhostingserver.nl; s=whs1;
-	b=yWhxrBDYK7HnBUjr3DBqvxxz7AruYcvkh9WTKRSDJh09F42xb5bOSOPcdG7dGewPqeAQDYQEv5NCH
-	 nv+MpEMPB6Ph5kpURJJYQyk0sOS3UFFDLlMwtg0diGPTPg0EPuAJGdPJyn2k4xbTmkN4EENIoG7ZjH
-	 1Xqn46ZTDl6AN0J1oDh1ai7/Dn/bpuxGT31FK5OIpVW13NkhRU6VIAR/N1vT8ep/8NgG/NWROocqVW
-	 sFIHp2ch8aDkydmY9xjAImqgJcdk4RAXI5f9tR6EdifBfl58wh3S7kHIG5Q+IL1sA8UeqpyJ9hUF2w
-	 O+nPSzBDD6NHV8OUCKXgJe6tiFMeBjA==
+	b=tmUNeLmp+mvw2XoHIqFvjKueqOF2Y9EmvWhGiYt0Z0ESP3wwRZZVUmGKHVWVtlA+E3Ir/IQvgwzZm
+	 W+uCqVH2icFheuth3M5eYU1JsnIlfp5X1VscFxi7kPjNQ4zbzZRr0aS/SbRNTsfYI957q6OQMZEjg7
+	 DSekKxml7vzttqkVLgu2PLICVnfLRS7BotXXXfyDCtGHdNrLIYTLnddtimByb2X5I4p+1mI5F50pmJ
+	 OeRVcKCK3A0PCvMmTEURgJmVrXlVwN/PGGscvxnj3Vu0cbgpkuRVtKof94rx0PqBagoNOS03Blyn5y
+	 3PREs0NX5Nn0Opn6j/1Fs1NTjQaEf9Q==
 ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
 	d=webhostingserver.nl; s=whs1;
-	h=content-transfer-encoding:mime-version:references:in-reply-to:message-id:date:
-	 subject:cc:to:from:dkim-signature:from;
-	bh=ExCvBq2B6b3v1cz2QJJU7mhzraTs+iDw4D8TJVszd78=;
-	b=OaUB7ssuJIc4MXtNFyUuSr72NQSuTL6nQADU83ORFotR6qEFYhahuCbhcRF5e9HUHO4NXqrrEbHmy
-	 XxTilm1yzH+69xu75g3hfKZm6lgFF+udtqqMSYvNJocNgF+DaMp8efYD0f92xoOEBguXiBf3hTAMBz
-	 3iegbEF9CZ/G91nLVl0LH2JhR/RKLpVe0kyLqXGTkbUdedfE3UhNAv4I5bGtWWxE8EuF/v/mAnBLvC
-	 jpPp0JQ3illyfujrz1Kpk8vlETs5EjBiVUYWyU9OLLn5czIxLsz4JA2jZ5c53Bx8rfJdaIJrQVHc6x
-	 8/Zx7HT5utaQJoW754sephAZw7a1Juw==
+	h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
+	 dkim-signature:from;
+	bh=PaY4INhElQh8/bXzT7uDWTqQXybclID2iv+hsZtCnWw=;
+	b=sk0mZ3cmyQofEMrUrdi1y744Qyxxy+Trl685Nsz/Qv13ikGP6ZrbWk6iLWjdPfIC0q6W2zatAvg86
+	 XRFWytylrRTkWkykwP0Yj6Pjk1dtmSubJNOFTfZQcQ28mFybdhYBpm4hkXBaMLt8CG57lUMTBYTZ28
+	 bEJHHHxF19ycTCQtv/WwSrqrdy+Y6/CuROEIAgkHhxrmOtBC/2s1qqxouXqF5MNS1tuMwtte1g2MdW
+	 a6iDOx0+5pJF6phs1eX7SdWIdTCXnpenmQeM+G49oGWk0HPIMZmT2sMRPRnByLHNeJO0nCWk5QqwuM
+	 6uRI2f+QTVdV7KR5aG7LlmJAbKS1Png==
 ARC-Authentication-Results: i=2; mailfilter03.webhostingserver.nl;
 	spf=pass smtp.mailfrom=exalondelft.nl smtp.remote-ip=141.138.168.154;
 	dmarc=pass header.from=exalondelft.nl;
 	arc=pass header.oldest-pass=0;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=exalondelft.nl; s=whs1;
-	h=content-transfer-encoding:mime-version:references:in-reply-to:message-id:date:
-	 subject:cc:to:from:from;
-	bh=ExCvBq2B6b3v1cz2QJJU7mhzraTs+iDw4D8TJVszd78=;
-	b=JWybxTsr7tW6lF1kU7nvWJvyysslL+re85VlXocx+Kc53SsEbu+i6p6Pa5d82HVsNxu4PioDf2x9j
-	 xrb/ho4/xBWBCqUWhQt5qA8B6gBKjrO0ruQ1x+uJtglhuSa2HQi9pgIP/osPX23uattHHYZlttUYzU
-	 idTdVjNtGr3SPID+bu0Riq+7oIiehDj2q2BhossmUj1O5f7NbOo+oql9cY/O5iyoQ1KQKLGkHlSxdt
-	 oocAy1rTPZT/HTU2gHqxDJAVgxGPZXnQIENDcmFwQYEPOXlnm+b0z7kRPcz3H7kcWzz6k5Y35obFqX
-	 GSCABLfWxlKnNm/atYUa2G3y5evthPw==
-X-Halon-ID: 2169d692-3983-11ef-b271-001a4a4cb9a5
+	h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
+	 from;
+	bh=PaY4INhElQh8/bXzT7uDWTqQXybclID2iv+hsZtCnWw=;
+	b=cegEaOyMQrcQzAFpISnntR0AP6FXwM7nUfJPILRNXLUtMhwKym0QowEcfUkd9qivS64ngtJ6lmj2Q
+	 tPh+fmd1TP31u7wH/ByloBMtooPo6TJuq8ytIX3MhpKsGmZFJ1fXtjqq1MmF/s9ExUJeb6CGKpITTq
+	 +UdBf9UmWkzXS1sQ5wlh155Jl2AZqfX3cHCI2DMQb9FLED0lmPod10X4SB1EWekHKPH2g9UCGQWg25
+	 qJB5WFHqVH+t5iZVUVCmuc1TnL+IfsA/6z3UCRjMDijyEMw2S0PLOAWgRRXZzH/9zOj1lvI+XL+Qm+
+	 mjJ2dM17WyHE3E1CefLb18Q68I+8Zbw==
+X-Halon-ID: 00a1e1b1-3983-11ef-b271-001a4a4cb9a5
 Received: from s198.webhostingserver.nl (s198.webhostingserver.nl [141.138.168.154])
 	by mailfilter03.webhostingserver.nl (Halon) with ESMTPSA
-	id 2169d692-3983-11ef-b271-001a4a4cb9a5;
-	Wed, 03 Jul 2024 23:28:03 +0200 (CEST)
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=webhostingserver.nl; s=whs1; t=1720042083;
-	 b=dNXQNm3UVgwJiRG1Lat5Dboc2T9kVeWArEJOaM/6LxhQPasnrNGReen1M5r++7qVtGKjIi9+s0
-	  5Qf8wt6YvGRbFFy0OL3uv0O/zVlbkA9i0o5d/LP44urpWU/2KQarDzXV2lo1scej8JwqL/2XvU
-	  gb1oDQFWZR//sT9fqYwb0m6GGV7fVh1KxyJh1fxAyk+xMUWPdS7KxnWJeOwiIuNdawzsJPlVNK
-	  4PJLD0YDuXZM2fUvOCz/z5FFOIst6/mHYzjr2Py9n758Q2CFTwf2PFRLjbP63J4DvFyMU4qQdQ
-	  eaLUXUim882uOcqUNBajDROX8H20wCYUbjrezOx67Hwaiw==;
+	id 00a1e1b1-3983-11ef-b271-001a4a4cb9a5;
+	Wed, 03 Jul 2024 23:27:08 +0200 (CEST)
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=webhostingserver.nl; s=whs1; t=1720042028;
+	 b=w6uZ5pl58x6/D4JL6lkxYe1ddu7EpXNtcji6KZWzgXtHDjcdmoNp3ib0yuXKP7V00Kki8QtnzJ
+	  JszmtbRpoFqR09Mouzj8a8QSqmMCojwmwXNxpRTi2Ze3NNzF/w013KY8czyzh5mZkFM5uKRQCa
+	  dY8+Dl87dWYxRIYA6lbfUR+M65ZoVIFwb5Wqh6rPCppHJxRKXLR3K4h3JRPWQVSysv2DEWost2
+	  Wr9RgMUXhJRR8Pm9jafMgEUiBt4Rr03ieE5Qk7xZ13K5WXtojNQDsUOzYGEvo1SUYw7P6VIQIa
+	  erzHtyJkaTaHgN5V3slR6ZO5GwNMkHPOh3LB0y/AFWLdRA==;
 ARC-Authentication-Results: i=1; webhostingserver.nl; smtp.remote-ip=2a02:a466:68ed:1:46c9:4818:36c:3aae;
 	iprev=pass (2a02-a466-68ed-1-46c9-4818-36c-3aae.fixed6.kpn.net) smtp.remote-ip=2a02:a466:68ed:1:46c9:4818:36c:3aae;
 	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
 	spf=softfail smtp.mailfrom=exalondelft.nl;
 	dmarc=skipped header.from=exalondelft.nl;
 	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=webhostingserver.nl; s=whs1; t=1720042083;
-	bh=bucvDq82UCNSD+67uMZYm6q8M4bzaWSZUAKzstC+xig=;
-	h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:
-	  Date:Subject:Cc:To:From;
-	b=Wf99J9XA0wD6dDpOTyhI0DShfE+CjPJNyPEkOBrEzj1J3eiKb9m6n4uFH54MLBsI3wMzy+0vCe
-	  Yu6ONE2gk6vDxp59WSYjPPdau5zwcpWpQUIuYJKVGq9/cuRUImgkgoP4iiiisof0STxseOYg80
-	  XKDs9ZpnjoYYsWUYZgWMWIkK4K+0NjymJ2pIqV5eCNup3uvHN5tXlByfGo+Z0lgZfRnlI7Nvxf
-	  Y1e+8F1uxujw5DTf5jAJRPxFG226uKTo2Xx4fDeCCsdFaEDEsH7pq+i2kW7FlLhqxErZWwzebW
-	  qaUAHq2FWeBAb+4uj8svo0GTQ6qqmVFM3vuOKfbneDtb9w==;
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=webhostingserver.nl; s=whs1; t=1720042028;
+	bh=Lzr/U/qKnONsBIfrOpzHoAvCwRD3pTy9JeYEDVNUKpI=;
+	h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From;
+	b=O3TKpDHQ+bl+w2US9vaXuM2LgwTQT01FydvX4BETgWU7wEmUkRmZ5FTt8pmYbFtDZ2/C0rzyAL
+	  pWrcP4nrhJ59EMHboZGxOnd1GJUKUNwH+O86lfZ2CtxqKMVYH2LJy4FnqtYENp8hyEsF5j+YS+
+	  03+OyUKd/I/ViC6gpDrjLfOdhAaAzrYCF5isNzS4p0Do6Kl5D6ShISBp4JygM6f7740gBlflmq
+	  dtLuqYJu7vKMKHrvtTpOcvLXY+tQ/NIy6gACwHqDGgsuvAP+zy+AUv5xPDPmYX8z1h5mYU13tx
+	  y2v0+6Ck+DkHqodMOSw5y9XpvHCXhVsNiMff5ZxbcOSxjg==;
 Authentication-Results: webhostingserver.nl;
 	iprev=pass (2a02-a466-68ed-1-46c9-4818-36c-3aae.fixed6.kpn.net) smtp.remote-ip=2a02:a466:68ed:1:46c9:4818:36c:3aae;
 	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
@@ -82,8 +80,8 @@ Authentication-Results: webhostingserver.nl;
 Received: from 2a02-a466-68ed-1-46c9-4818-36c-3aae.fixed6.kpn.net ([2a02:a466:68ed:1:46c9:4818:36c:3aae] helo=submission)
 	by s198.webhostingserver.nl with esmtpa (Exim 4.97.1)
 	(envelope-from <ftoth@exalondelft.nl>)
-	id 1sP7WF-0000000CSYn-0MH8;
-	Wed, 03 Jul 2024 23:28:03 +0200
+	id 1sP7VL-0000000CSYn-23jx;
+	Wed, 03 Jul 2024 23:27:07 +0200
 From: Ferry Toth <ftoth@exalondelft.nl>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
@@ -149,12 +147,10 @@ Cc: neil.armstrong@linaro.org,
 	VineetGupta <vgupta@kernel.org>,
 	MarekSzyprowski <m.szyprowski@samsung.com>,
 	PhilEdworthy <phil.edworthy@renesas.com>
-Subject: [PATCH/RFC v1 1/1] tty: serial: 8250_dma: use sgl with 2 nents to take care of buffer wrap
-Date: Wed,  3 Jul 2024 22:56:37 +0200
-Message-ID: <20240703212613.56024-2-ftoth@exalondelft.nl>
+Subject: [PATCH/RFC v1 0/1] 
+Date: Wed,  3 Jul 2024 22:56:36 +0200
+Message-ID: <20240703212613.56024-1-ftoth@exalondelft.nl>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240703212613.56024-1-ftoth@exalondelft.nl>
-References: <20240703212613.56024-1-ftoth@exalondelft.nl>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -166,68 +162,48 @@ X-ACL-Warn: Sender domain ( exalondelft.nl ) must match your domain name used in
 X-ACL-Warn: From-header domain ( exalondelft.nl} ) must match your domain name used in authenticated email user ( ferry.toth@elsinga.info )
 X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
 
-Previously 8250_dma used a circular xmit->buf as DMA output buffer. This
-causes messages that wrap around in the circular buffer to be
-transmitted using 2 DMA transfers. Depending on baud rate and processor
-load this can cause an interchar gap in the middle of the message. On
-the receiving end the gap may cause a short receive timeout, possibly
-long enough to terminate a DMA transfer, but too short to restart a
-receive DMA transfer in time thus causing a receive buffer overrun.
+Since 1788cf6a91d9 "tty: serial: switch from circ_buf to kfifo" serial 
+transmit when using DMA uses kfifo with a SG list with a single entry. 
+This obviously lead to 2 separate DMA transfers when the buffer wraps 
+around.  
 
-This is especially a problem for devices with high speed UARTs (HSU)
-where even deep 64 byte FIFO's are not sufficient to handle interrupt
-latency.
+On the receiving end depending on the UART the receive DMA might 
+terminate when there is a moment of silence (an interchar gap) of a few 
+(typcially 5) characters length. The receivers FIFO will help to extend 
+that time (depending on FIFO length and threshold).  Currently high 
+speed UARTs (HSU) can have baud rates of 3.5MBd which means terminating 
+a DMA transfer and handling a receive interrupt to set up a new DMA 
+transfer has to complete in 180us which is hard to guarantee. Especially 
+under heavy interrupt load.
 
-The circular buffer has now been replaced by kfifo which requires a SG
-list with a single entry, which still causes 2 dma transfers when a wrap
-around occurs. Fix this by allowing up to 2 entries in the sgl.
+As most serial protocols will transfer maximally a buffer length at a 
+time it makes sense to eliminate the interchar gap on buffer wraps by 
+using a SG list with 2 entries.
 
-Signed-off-by: Ferry Toth <ftoth@exalondelft.nl>
----
+The following patch has been tested on Merrifield (Intel Edison) which 
+is slow (500MHz) but has a HSU that can transmit up to 3.5MBd.
+
+This patch should be viewed as a preparation for a follow-up patch that 
+remove the interrupt on the receiving end entirely.
+
+But first I would like to make sure that: 1) either all users can 
+actually handle 2 SG entries 2) if not, get your advice on how to best 
+make the number of entries configurable per platform
+
+Possibly on RZN1 due to aa63d786cea2 ("serial: 8250: dw: Add support for 
+DMA flow controlling devices") we might anticipate problems.
+
+Please test on your platform and let me know  your suggestions.
+
+Thanks!
+
+Ferry Toth (1):
+  tty: serial: 8250_dma: use sgl with 2 nents to take care of buffer
+    wrap
+
  drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++---------
  1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 8a353e3cc3dd..d215c494ee24 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -89,7 +89,9 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 	struct tty_port			*tport = &p->port.state->port;
- 	struct dma_async_tx_descriptor	*desc;
- 	struct uart_port		*up = &p->port;
--	struct scatterlist sg;
-+	struct scatterlist		*sg;
-+	struct scatterlist		sgl[2];
-+	int i;
- 	int ret;
- 
- 	if (dma->tx_running) {
-@@ -110,18 +112,17 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 
- 	serial8250_do_prepare_tx_dma(p);
- 
--	sg_init_table(&sg, 1);
--	/* kfifo can do more than one sg, we don't (quite yet) */
--	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
-+	sg_init_table(sgl, ARRAY_SIZE(sgl));
-+
-+	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, sgl, ARRAY_SIZE(sgl),
- 					   UART_XMIT_SIZE, dma->tx_addr);
- 
--	/* we already checked empty fifo above, so there should be something */
--	if (WARN_ON_ONCE(ret != 1))
--		return 0;
-+	dma->tx_size = 0;
- 
--	dma->tx_size = sg_dma_len(&sg);
-+	for_each_sg(sgl, sg, ret, i)
-+		dma->tx_size += sg_dma_len(sg);
- 
--	desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1,
-+	desc = dmaengine_prep_slave_sg(dma->txchan, sgl, ret,
- 				       DMA_MEM_TO_DEV,
- 				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	if (!desc) {
 -- 
 2.43.0
 
