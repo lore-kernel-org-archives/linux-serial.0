@@ -1,280 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41BC17BB27;
-	Wed,  3 Jul 2024 14:27:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CBB91EB48;
+	Wed,  3 Jul 2024 14:56:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720016830; cv=none; b=hxHFz5c0RV0AN1PyrUrvQL/Ivg/74d8pTYlCKkUaSysV1fnJMFlKrTw6oyRewOJiJfl5ErsayvXpHJULxT65InD2TlNfJUstZvMokaTF4akyUwZPGvUp0M/SGhmmOPbbx8ZGygjqj6B3mdZ2x8WI2cSy1cJY+hBh8As3CGgHGw8=
+	t=1720018599; cv=none; b=aPjCj+Tctg18C8AqtlCVWzRuCwf1ryKfyDxmFMyYf8ixOQPyOm5YHuo17+ziofQCkF8mn9n9500kChMBkUToyPI9alUitJgWKJdI2pVAQ7zcusMXqQ/k/wGlAP6oAxEc/tyRzB+P/gr3tJzRgSBD/TjFdHNSVMmS/e76tLdPCNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720016830; c=relaxed/simple;
-	bh=qpbgv23Hv6YaTHHKOMnAEx6ivMHeJJRztP7r02797XE=;
-	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
-	 Message-Id:Subject; b=OWWjFaQl5AwQkXFhp/oyhMz4x/cMgE1e8qYHS1Cof6WuzySK+JtI3EvEmtfgzPkO1VuhOdhAZhzgeBEZ6KySMGvcQDWXK5OuYpUtkqpTFtSW+dKsfbjOBRZ9LXw20OUlZkOb+TXWUSPcFKMB6IFS5vH7qFM7mwPqURTchwJlzvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qauGSJ+f; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qauGSJ+f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18555C2BD10;
-	Wed,  3 Jul 2024 14:27:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720016830;
-	bh=qpbgv23Hv6YaTHHKOMnAEx6ivMHeJJRztP7r02797XE=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=qauGSJ+fHzsCMYTDzUc7AdO+QA9jijSznfoGILlrtdlU/Nk7tKbu1pSjwfYjaysOp
-	 ZQzVJEKQ7i87tKpoZnv2S3H2xE1dr29opGXibUmtgYdy4TUAcMCrbmz197kp1urpLD
-	 Oe1Rj75k9TUOaUTBFxr4nzuAjn1TMmo90MPYQOqPpw/WYOkBB0IKTHZ108tBvfmPwL
-	 OYyBfH1Vnuh7AxT0co8GKeAog69NPBgQ+cibqx+ZW+KUlYnJCfHBdd54cdf/gYcz1Y
-	 f56dtvzqUJZKCpXCtMV0B3Q4ltjDySLBYoMZWvAyf65mhQUGTbeZuT3BY+9HiNpzBO
-	 UpQffA39bUFyg==
-Date: Wed, 03 Jul 2024 08:27:09 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=arc-20240116; t=1720018599; c=relaxed/simple;
+	bh=NwPx3nsi9Frt9F3UqrolqP4cPwi7Q+jktVDtLsEkNUs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=SyCZL8pGGf6+nW/ofq49b54SkQ+trhRyPjfsNjts647hCyQl9E9JQHw5+HXBPEKUid/OAFTtHqeP1BlEDCNyYxlMrKkIV8SrUmH4v51IhuJKC5jalQ1cmCI6TyO6b2dYL92VOK2JJa5cM8JBWQUq+8GO6TUK61knZ6Tr7QazfLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+From: Yixun Lan <dlan@gentoo.org>
+Subject: [PATCH v3 00/11] riscv: add initial support for SpacemiT K1
+Date: Wed, 03 Jul 2024 14:55:03 +0000
+Message-Id: <20240703-k1-01-basic-dt-v3-0-12f73b47461e@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Varshini Rajendran <varshini.rajendran@microchip.com>
-Cc: linux-clk@vger.kernel.org, linux@armlinux.org.uk, 
- alexandre.belloni@bootlin.com, andrei.simion@microchip.com, 
- gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, sre@kernel.org, 
- p.zabel@pengutronix.de, mturquette@baylibre.com, mpe@ellerman.id.au, 
- conor+dt@kernel.org, linux-pm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, claudiu.beznea@tuxon.dev, 
- krzk+dt@kernel.org, dharma.b@microchip.com, akpm@linux-foundation.org, 
- richard.genoud@bootlin.com, linux-spi@vger.kernel.org, 
- geert+renesas@glider.be, radu_nicolae.pirea@upb.ro, arnd@arndb.de, 
- devicetree@vger.kernel.org, sboyd@kernel.org, nicolas.ferre@microchip.com, 
- linux-serial@vger.kernel.org, rdunlap@infradead.org, 
- mihai.sain@microchip.com, jirislaby@kernel.org, tglx@linutronix.de, 
- durai.manickamkr@microchip.com
-In-Reply-To: <20240703102011.193343-1-varshini.rajendran@microchip.com>
-References: <20240703102011.193343-1-varshini.rajendran@microchip.com>
-Message-Id: <172001675806.274724.11565183611251810294.robh@kernel.org>
-Subject: Re: [PATCH v5 00/27] Add support for sam9x7 SoC family
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEdmhWYC/13MQQrDIBCF4auEWXeKmmqgq96jZGHMxAyFWFSkJ
+ Xj32kA3Xf4P3rdDosiU4NrtEKlw4rC16E8duNVunpDn1qCEugijDD4kComTTexwziit7SURTW5
+ W0E7PSAu/DvA+tl455RDfh1/Ud/1Rwz9VFAp0Thg3aK0XMdw8bTmEc4gexlrrB0Oo7vutAAAA
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>, 
+ Paul Walmsley <paul.walmsley@sifive.com>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Thomas Gleixner <tglx@linutronix.de>, 
+ Samuel Holland <samuel.holland@sifive.com>, 
+ Anup Patel <anup@brainfault.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
+ Inochi Amaoto <inochiama@outlook.com>, Icenowy Zheng <uwu@icenowy.me>, 
+ Meng Zhang <zhangmeng.kevin@spacemit.com>, Yangyu Chen <cyy@cyyself.name>, 
+ Yixun Lan <dlan@gentoo.org>, Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4318; i=dlan@gentoo.org;
+ h=from:subject:message-id; bh=NwPx3nsi9Frt9F3UqrolqP4cPwi7Q+jktVDtLsEkNUs=;
+ b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmhWZ0HOav0H0NHzSndaIJgQRth3C/Xo4ktKzdn
+ 3fML2AcfpiJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZoVmdF8UgAAAAAAuAChp
+ c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
+ CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277ZvAD/9q3jxF1uPzaRjIT2
+ uJ72pkyE2r8LAfLjsTAbPexyz/OQZfWG0ITZJSDtukOJVOwyH+924ozLF+7zCXmzmExJGMJ51CX
+ 7viL8GXJRxZWMWMIBam/ZcE98zrLmlu6gzT7i8zuR5s/OmuVImdoqePXSNg+IH8QiV8lGlGVOQQ
+ FjNg/qRjhxEXiIWMoE3oXw6FXl1ZbcmVtqbhKIL9rByoT0Zmx00rbCDzEjdDi8xqCsTaJ9ftc2X
+ BgQEpQUAOP7UlRp9ExUvEP5CfMxHoquTVc00BEdfqVWjCqMkqxqTcRGWqHcO43BJx56uZZDO696
+ +DExF//8oV2OMM4bwACUAqcVEd/LIAv2Fq2Bgi0nS8+20m+BDqDELItTa3OyxrTUqe+ZsWOzlkY
+ t/bmwRleCkugSWFWXe7G0ddY/cn7IPFYP+RbShSbrIGU3BJAF+DqIaqp6Lu1PM6OTVbS+zYCPz9
+ x5BxzkH45c+HQ63mXYEPkrWsFNZK0VhtnbIQsQ5QsMbFNsSF1d/unhfohlv1NgkiC4d4DC3QjKN
+ bMiEdPcgid02XHxJ+rjxK30LkheQVZZ25GvarL6932RXv+gzu7Kxd01vt49NeSkTfaGl8psrofK
+ /VEucX+AlmM7AYmDhoOAV96vi/5eR8Rge+3gLaaaalDW4FG4lkLpmB/nlEdwikTBg4WQ==
+X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
+ fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
+SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+1.0 and Zicond evaluation now. Add initial support for it to allow more
+people to participate in building drivers to mainline for it.
 
-On Wed, 03 Jul 2024 15:50:11 +0530, Varshini Rajendran wrote:
-> This patch series adds support for the new SoC family - sam9x7.
->  - The device tree, configs and drivers are added
->  - Clock driver for sam9x7 is added
->  - Support for basic peripherals is added
->  - Target board SAM9X75 Curiosity is added
-> 
->  Changes in v5:
->  --------------
-> 
->  - Addressed all the review comments in the patches
->  - Picked up all Acked-by and Reviewed-by tags
->  - Dropped applied patches from the series
->  - Addressed the ABI breakage reported in the IRQ patch
->  - All the specific changes are captured in the corresponding patches
-> 
->  Changes in v4:
->  --------------
-> 
->  - Addressed all the review comments in the patches
->  - Picked up all Acked-by and Reviewed-by tags
->  - Dropped applied patches from the series
->  - Added pwm node and related dt binding documentation
->  - Added support for exporting some clocks to DT
->  - Dropped USB related patches and changes. See NOTE.
->  - All the specific changes are captured in the corresponding patches
-> 
->  NOTE: Owing to the discussion here
->  https://lore.kernel.org/linux-devicetree/CAL_JsqJ9PrX6fj-EbffeJce09MXs=B7t+KS_kOinxaRx38=WxA@mail.gmail.com/
->  the USB related changes are dropped from this series in order to enable
->  us to work on the mentioned issues before adding new compatibles as
->  said. The issues/warnings will be addressed in subsequent patches.
->  After which the USB related support for sam9x7 SoCs will be added. Hope
->  this works out fine.
-> 
->  Changes in v3:
->  --------------
-> 
->  - Fixed the DT documentation errors pointed out in v2.
->  - Dropped Acked-by tag in tcb DT doc patch as it had to be adapted
->    according to sam9x7 correctly.
->  - Picked by the previously missed tags.
->  - Dropped this patch "dt-bindings: usb: generic-ehci: Document clock-names
->    property" as the warning was not found while validating DT-schema for
->    at91-sam9x75_curiosity.dtb.
->  - Dropped redundant words in the commit message.
->  - Fixed the CHECK_DTBS warnings validated against
->    at91-sam9x75_curiosity.dtb.
->  - Renamed dt nodes according to naming convention.
->  - Dropped unwanted status property in dts.
->  - Removed nodes that are not in use from the board dts.
->  - Removed spi DT doc patch from the series as it was already applied
->    and a fix patch was applied subsequently. Added a patch to remove the
->    compatible to adapt sam9x7.
->  - Added sam9x7 compatibles in usb dt documentation.
-> 
-> 
->  Changes in v2:
->  --------------
-> 
->  - Added sam9x7 specific compatibles in DT with fallbacks
->  - Documented all the newly added DT compatible strings
->  - Added device tree for the target board sam9x75 curiosity and
->    documented the same in the DT bindings documentation
->  - Removed the dt nodes that are not supported at the moment
->  - Removed the configs added by previous version that are not supported
->    at the moment
->  - Fixed all the corrections in the commit message
->  - Changed all the instances of copyright year to 2023
->  - Added sam9x7 flag in PIT64B configuration
->  - Moved macro definitions to header file
->  - Added another divider in mck characteristics in the pmc driver
->  - Fixed the memory leak in the pmc driver
->  - Dropped patches that are no longer needed
->  - Picked up Acked-by and Reviewed-by tags
-> 
-> 
-> Varshini Rajendran (27):
->   dt-bindings: atmel-sysreg: add sam9x7
->   dt-bindings: atmel-ssc: add microchip,sam9x7-ssc
->   dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7.
->   ARM: at91: pm: add support for sam9x7 SoC family
->   ARM: at91: pm: add sam9x7 SoC init config
->   ARM: at91: add support in SoC driver for new sam9x7
->   dt-bindings: clocks: atmel,at91sam9x5-sckc
->   dt-bindings: clocks: atmel,at91rm9200-pmc
->   clk: at91: clk-sam9x60-pll: re-factor to support individual core freq
->     outputs
->   clk: at91: sam9x7: add support for HW PLL freq dividers
->   clk: at91: sama7g5: move mux table macros to header file
->   dt-bindings: clock: at91: Allow PLLs to be exported and referenced in
->     DT
->   clk: at91: sam9x7: add sam9x7 pmc driver
->   dt-bindings: interrupt-controller: Add support for sam9x7 aic
->   dt-bindings: interrupt-controller: Document the property
->     microchip,nr-irqs
->   irqchip/atmel-aic5: Add support to get nr_irqs from DT for sam9x60 &
->     sam9x7
->   ARM: dts: at91: sam9x60: Add nirqs property in the dt node
->   power: reset: at91-poweroff: lookup for proper pmc dt node for sam9x7
->   power: reset: at91-reset: add reset support for sam9x7 SoC
->   power: reset: at91-reset: add sdhwc support for sam9x7 SoC
->   dt-bindings: reset: atmel,at91sam9260-reset: add sam9x7
->   dt-bindings: power: reset: atmel,sama5d2-shdwc: add sam9x7
->   ARM: at91: Kconfig: add config flag for SAM9X7 SoC
->   ARM: configs: at91: enable config flags for sam9x7 SoC family
->   ARM: dts: at91: sam9x7: add device tree for SoC
->   dt-bindings: arm: add sam9x75 curiosity board
->   ARM: dts: microchip: sam9x75_curiosity: add sam9x75 curiosity board
-> 
->  .../devicetree/bindings/arm/atmel-at91.yaml   |    6 +
->  .../devicetree/bindings/arm/atmel-sysregs.txt |    7 +-
->  .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
->  .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    4 +-
->  .../interrupt-controller/atmel,aic.yaml       |   28 +-
->  .../devicetree/bindings/misc/atmel-ssc.txt    |    1 +
->  .../power/reset/atmel,sama5d2-shdwc.yaml      |    3 +
->  .../reset/atmel,at91sam9260-reset.yaml        |    4 +
->  .../bindings/serial/atmel,at91-usart.yaml     |    9 +-
->  arch/arm/boot/dts/microchip/Makefile          |    3 +
->  .../dts/microchip/at91-sam9x75_curiosity.dts  |  312 +++++
->  arch/arm/boot/dts/microchip/sam9x60.dtsi      |    1 +
->  arch/arm/boot/dts/microchip/sam9x7.dtsi       | 1226 +++++++++++++++++
->  arch/arm/configs/at91_dt_defconfig            |    1 +
->  arch/arm/mach-at91/Kconfig                    |   22 +-
->  arch/arm/mach-at91/Makefile                   |    1 +
->  arch/arm/mach-at91/generic.h                  |    2 +
->  arch/arm/mach-at91/pm.c                       |   29 +
->  arch/arm/mach-at91/sam9x7.c                   |   33 +
->  drivers/clk/at91/Makefile                     |    1 +
->  drivers/clk/at91/clk-sam9x60-pll.c            |   42 +-
->  drivers/clk/at91/pmc.h                        |   18 +
->  drivers/clk/at91/sam9x60.c                    |    7 +
->  drivers/clk/at91/sam9x7.c                     |  946 +++++++++++++
->  drivers/clk/at91/sama7g5.c                    |   42 +-
->  drivers/irqchip/irq-atmel-aic5.c              |    8 +-
->  drivers/power/reset/Kconfig                   |    4 +-
->  drivers/power/reset/at91-sama5d2_shdwc.c      |    1 +
->  drivers/soc/atmel/soc.c                       |   23 +
->  drivers/soc/atmel/soc.h                       |    9 +
->  include/dt-bindings/clock/at91.h              |    4 +
->  31 files changed, 2750 insertions(+), 49 deletions(-)
->  create mode 100644 arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dts
->  create mode 100644 arch/arm/boot/dts/microchip/sam9x7.dtsi
->  create mode 100644 arch/arm/mach-at91/sam9x7.c
->  create mode 100644 drivers/clk/at91/sam9x7.c
-> 
-> --
-> 2.25.1
-> 
-> 
-> 
+This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+booted to busybox on initrd with this log[3].
 
+As previous discussion in patch v1[4], maintainer expect more basic drivers
+ready before really merging it, which would be fine. For other follow-up patches, 
+that are clk, pinctrl/gpio, reset.. My current goal would target at a headless
+system including SD card, emmc, and ethernet.
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+P.S: talked to Yangyu, I will help and take care of this patch series, thanks
+---
+Changes in v3:
+ - fix dt_binding_check error
+ - fix plic compatible
+ - fix uart node name
+ - add uart1 dts node
+ - collect tags
+ - Link to v2: https://lore.kernel.org/r/20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
+Changes in v2:
+ - fix timebase-frequency according to current setting
+ - add other uart dt nodes, fix input frequency
+ - introduce new uart compatible for K1 SoC
+ - add 'k1' prefix to bananapi-f3.dts
+ - fix k1-clint compatible
+ - fix some typos
+ - Link to v1: https://lore.kernel.org/r/tencent_BC64B7B1876F5D10479BD19112F73F262505@qq.com
 
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
+Link: https://github.com/BPI-SINOVOIP/armbian-build/tree/v24.04.30 [1]
+Link: https://gist.github.com/cyyself/a07096e6e99c949ed13f8fa16d884402 [2]
+Link: https://gist.github.com/cyyself/a2201c01f5c8955a119641f97b7d0280 [3]
+Link: https://lore.kernel.org/r/20240618-hardwood-footrest-ab5ec5bce3cf@wendy [4]
 
-  pip3 install dtschema --upgrade
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Conor Dooley <conor@kernel.org>
+To: Paul Walmsley <paul.walmsley@sifive.com>
+To: Palmer Dabbelt <palmer@dabbelt.com>
+To: Albert Ou <aou@eecs.berkeley.edu>
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+To: Samuel Holland <samuel.holland@sifive.com>
+To: Anup Patel <anup@brainfault.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+To: Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: Inochi Amaoto <inochiama@outlook.com>
+Cc: Icenowy Zheng <uwu@icenowy.me>
+Cc: Meng Zhang <zhangmeng.kevin@spacemit.com>
 
+Signed-off-by: Yangyu Chen <cyy@cyyself.name>
+Signed-off-by: Yixun Lan <dlan@gentoo.org>
 
-New warnings running 'make CHECK_DTBS=y microchip/at91-sam9x75_curiosity.dtb' for 20240703102011.193343-1-varshini.rajendran@microchip.com:
+---
+Yangyu Chen (9):
+      dt-bindings: vendor-prefixes: add spacemit
+      dt-bindings: riscv: Add SpacemiT X60 compatibles
+      dt-bindings: riscv: add SpacemiT K1 bindings
+      dt-bindings: timer: Add SpacemiT K1 CLINT
+      dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
+      riscv: add SpacemiT SoC family Kconfig support
+      riscv: dts: add initial SpacemiT K1 SoC device tree
+      riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
+      riscv: defconfig: enable SpacemiT SoC
 
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /ahb/mmc@80000000: failed to match any schema with compatible: ['microchip,sam9x7-sdhci', 'microchip,sam9x60-sdhci']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /ahb/mmc@80000000: failed to match any schema with compatible: ['microchip,sam9x7-sdhci', 'microchip,sam9x60-sdhci']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /ahb/mmc@90000000: failed to match any schema with compatible: ['microchip,sam9x7-sdhci', 'microchip,sam9x60-sdhci']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /ahb/mmc@90000000: failed to match any schema with compatible: ['microchip,sam9x7-sdhci', 'microchip,sam9x60-sdhci']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/dma-controller@f0008000: failed to match any schema with compatible: ['microchip,sam9x7-dma', 'atmel,sama5d4-dma']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/dma-controller@f0008000: failed to match any schema with compatible: ['microchip,sam9x7-dma', 'atmel,sama5d4-dma']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/ssc@f0010000: failed to match any schema with compatible: ['microchip,sam9x7-ssc', 'atmel,at91sam9g45-ssc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/ssc@f0010000: failed to match any schema with compatible: ['microchip,sam9x7-ssc', 'atmel,at91sam9g45-ssc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/timer@f0028000: failed to match any schema with compatible: ['microchip,sam9x7-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/timer@f0028000: failed to match any schema with compatible: ['microchip,sam9x7-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/timer@f0040000: failed to match any schema with compatible: ['microchip,sam9x7-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/timer@f0040000: failed to match any schema with compatible: ['microchip,sam9x7-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: timer@f8008000: compatible:0: 'microchip,sam9x7-tcb' is not one of ['atmel,at91rm9200-tcb', 'atmel,at91sam9x5-tcb', 'atmel,sama5d2-tcb']
-	from schema $id: http://devicetree.org/schemas/soc/microchip/atmel,at91rm9200-tcb.yaml#
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: timer@f8008000: compatible:1: 'simple-mfd' was expected
-	from schema $id: http://devicetree.org/schemas/soc/microchip/atmel,at91rm9200-tcb.yaml#
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: timer@f8008000: compatible:2: 'syscon' was expected
-	from schema $id: http://devicetree.org/schemas/soc/microchip/atmel,at91rm9200-tcb.yaml#
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: timer@f8008000: compatible: ['microchip,sam9x7-tcb', 'atmel,sama5d2-tcb', 'simple-mfd', 'syscon'] is too long
-	from schema $id: http://devicetree.org/schemas/soc/microchip/atmel,at91rm9200-tcb.yaml#
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/timer@f8008000: failed to match any schema with compatible: ['microchip,sam9x7-tcb', 'atmel,sama5d2-tcb', 'simple-mfd', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/sfr@f8050000: failed to match any schema with compatible: ['microchip,sam9x7-sfr', 'microchip,sam9x60-sfr', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/sfr@f8050000: failed to match any schema with compatible: ['microchip,sam9x7-sfr', 'microchip,sam9x60-sfr', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/matrix@ffffde00: failed to match any schema with compatible: ['microchip,sam9x7-matrix', 'atmel,at91sam9x5-matrix', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/matrix@ffffde00: failed to match any schema with compatible: ['microchip,sam9x7-matrix', 'atmel,at91sam9x5-matrix', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/ecc-engine@ffffe000: failed to match any schema with compatible: ['microchip,sam9x7-pmecc', 'atmel,at91sam9g45-pmecc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/ecc-engine@ffffe000: failed to match any schema with compatible: ['microchip,sam9x7-pmecc', 'atmel,at91sam9g45-pmecc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/mpddrc@ffffe800: failed to match any schema with compatible: ['microchip,sam9x7-ddramc', 'atmel,sama5d3-ddramc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/mpddrc@ffffe800: failed to match any schema with compatible: ['microchip,sam9x7-ddramc', 'atmel,sama5d3-ddramc']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/smc@ffffea00: failed to match any schema with compatible: ['microchip,sam9x7-smc', 'atmel,at91sam9260-smc', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/smc@ffffea00: failed to match any schema with compatible: ['microchip,sam9x7-smc', 'atmel,at91sam9260-smc', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400: failed to match any schema with compatible: ['microchip,sam9x7-pinctrl', 'microchip,sam9x60-pinctrl', 'simple-mfd']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400: failed to match any schema with compatible: ['microchip,sam9x7-pinctrl', 'microchip,sam9x60-pinctrl', 'simple-mfd']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff400: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff400: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff400: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff600: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff600: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff600: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff800: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff800: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffff800: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffffa00: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffffa00: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/pinctrl@fffff400/gpio@fffffa00: failed to match any schema with compatible: ['microchip,sam9x7-gpio', 'microchip,sam9x60-gpio', 'atmel,at91rm9200-gpio']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/syscon@fffffe60: failed to match any schema with compatible: ['microchip,sam9x7-gpbr', 'atmel,at91sam9260-gpbr', 'syscon']
-arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dtb: /apb/syscon@fffffe60: failed to match any schema with compatible: ['microchip,sam9x7-gpbr', 'atmel,at91sam9260-gpbr', 'syscon']
+Yixun Lan (2):
+      dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
+      riscv: dts: spacemit: add uart1 node for K1 SoC
 
+ .../interrupt-controller/sifive,plic-1.0.0.yaml    |   1 +
+ Documentation/devicetree/bindings/riscv/cpus.yaml  |   1 +
+ .../devicetree/bindings/riscv/spacemit.yaml        |  28 ++
+ Documentation/devicetree/bindings/serial/8250.yaml |   4 +-
+ .../devicetree/bindings/timer/sifive,clint.yaml    |   1 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ arch/riscv/Kconfig.socs                            |   5 +
+ arch/riscv/boot/dts/Makefile                       |   1 +
+ arch/riscv/boot/dts/spacemit/Makefile              |   2 +
+ arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts    |  19 +
+ arch/riscv/boot/dts/spacemit/k1.dtsi               | 386 +++++++++++++++++++++
+ arch/riscv/configs/defconfig                       |   1 +
+ 12 files changed, 450 insertions(+), 1 deletion(-)
+---
+base-commit: 22a40d14b572deb80c0648557f4bd502d7e83826
+change-id: 20240626-k1-01-basic-dt-1aa31eeebcd2
 
-
-
+Best regards,
+-- 
+Yixun Lan <dlan@gentoo.org>
 
