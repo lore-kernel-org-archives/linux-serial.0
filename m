@@ -1,201 +1,132 @@
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 428B11891C1
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 11:22:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA40F17B410;
+	Wed,  3 Jul 2024 11:26:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720005734; cv=none; b=ZXGaRTP93hD6xLkzJ5936N+mrTBnWUv/vVWgh+/I0G2LZPqEOA3I/i7B3vDXFB+4f/angav+kXuwuJa1fwa2OaOLN2Y/gMXpEAsnGaqCgX5+wf4dUTV2uOGS84QXeJuaA2viY1DF81Y596VA7U7QXWPgSOmq/qOrjRBBqklHfEw=
+	t=1720005978; cv=none; b=Y4s0uA9bnXfSUi6u+yTclyqY1ZRVmEk8rwEQ87V0GEtMf2k40XQadon7h8DkKkCzPOol6C0xWujtuCcwge2UZxDPzQDlSAl3jHnQ2Q9EHvZ4Flscc0qGbJ5VpaffKGW4CkwQkBJWy+17eQcnHGJUNYgPi1mvrNwgxIVyeXouyTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720005734; c=relaxed/simple;
-	bh=XGvJWi2ACdeOImN/SwBAgmGV5CjAcEGdLvKIxHnA/Ig=;
-	h=From:In-Reply-To:References:Mime-Version:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TK0eAw5p64xMya3uwcJqdOQwY6QmrCzj3k+IELDD5hTsdpdDlAtB29MQC7j/7Nc6zhBl7W+vQXsgZmXuDOoTf1k5Y6jzwLE4FxPEhaETAfiufNIKXNv2Aydosc+ch8S76TG04DcT6HoosZTuJlGu3fD46tuDpgGKI0uG/K11cZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=cz2tAQ3Y; arc=none smtp.client-ip=185.125.188.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+	s=arc-20240116; t=1720005978; c=relaxed/simple;
+	bh=8JndRnspM5RDjpsWE9ZsbTjXeCN5YcBE71YC4B5qx14=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Jy6yhb9Gw2jOyY4VCfcCyGlhf+1QnThclPljDzCR3t5cz9EOb+31/3s5nERXRd7X+tBVEhRqbb5qDOsQZ1wZUDVi26Spbgiu8f/sKLk7v7HW3CfUtGwM9JGBcIHZV5OMv2rdFxuM72oGgveFSxH6WILzI+cqWEOyB62Z3x7BsrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O9nWnPWe; arc=none smtp.client-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="cz2tAQ3Y"
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 007CD404AA
-	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 11:22:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1720005728;
-	bh=1qFVnINiw1OmtrqIdL6Ri9JaQ6L530vAhDFXUjoyBpE=;
-	h=From:In-Reply-To:References:Mime-Version:Date:Message-ID:Subject:
-	 To:Cc:Content-Type;
-	b=cz2tAQ3YJgplOqOIOjBs0tLeTtOEWjAYaWzOn0Kkvj1l0Qu6sDQrlAfvZUOlkXMWZ
-	 R5klxSZC55XlRIV9SlRWqjJ1tD2PlrOxaJhrD/XU2gRO6GS63hb4qqphMeQA3+PFmU
-	 jCEwNKXNxoy3oa64PprG6PWOfoxfF9lmyAwzirn9AOtX3C9H1qI5RKUuJQA/AE1jfz
-	 +SV3ocD4y2KqHyPmLGsrbNIwt3rep5QXG2IB4nSbm9AZ8vcEHI54eWj30zX9hr4b5z
-	 48IQcotTfJqCtINscQ/CTTLmDoGbmdLv6cX6e+CLvwGsnT72ZfN8pMoieJ6wjVeYJJ
-	 s9eTdwdVUusQA==
-Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-444fd3f52fbso74030041cf.1
-        for <linux-serial@vger.kernel.org>; Wed, 03 Jul 2024 04:22:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O9nWnPWe"
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-2eaa89464a3so53910481fa.3;
+        Wed, 03 Jul 2024 04:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1720005975; x=1720610775; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=A+2MqGa7e9k/H+mBR0AcQlM4kYrNvHVCP7g1hxy4Qxw=;
+        b=O9nWnPWetj2jYCRNCve3MSUmtOshfK9DxV5k9eGQYY/Phlsl46jLB4W1ypQ7BOFV+o
+         xAJFlD32six0VgJUZaGa3gFWBGfNuEecSst0h8x3N9II+ZtyI+fa+IJHWP8AOhaS5BiE
+         KTbO5XxNpFmvfDBUfLkmODGM/uHILaTtKDuN+XU8P/5rzvRK8TALrd0t+ro+vrFfKprP
+         fToogKHPse/D59eWlOv2SmAPnNwe8WQgQanHGeP3T2rXwZhXBR73dcw/qpiSZ4wbUvzY
+         nBz6n8sYR1lYKasLAk15y63k5Xq2XGdMo+2omCVy1lpNdE2CmSuboajhMJUe4ttBEf04
+         tkig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720005725; x=1720610525;
-        h=content-transfer-encoding:cc:to:subject:message-id:date
-         :mime-version:references:in-reply-to:from:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=1qFVnINiw1OmtrqIdL6Ri9JaQ6L530vAhDFXUjoyBpE=;
-        b=GPaAOryVBRUQL4tyWuCw4dmQGN2xjX+8AJIi9OCTfSAeVQFLD36/TcyQ4OZd0cQKYS
-         U+1nynqvZ8pac5Qtnt+Qi5QbQPRtl6QfJxpQAQwFttxWuYyajzd/Xq/oTluS70260X3k
-         AbMv7ynTfFYC24iGRUxpl/o3rYiDd525Ycm1z3O9D+IuOK3jlLo1RA+C8FIUi25efvWo
-         naTAf5S4GUJURh83cUYz4B6sy0zbr22tomAyy435bUrXqVD1t3E+AxKlvO+SsL2EnIoP
-         VC8F4QDkh1ujtqVlkx+P0FftjnwomU+P0AdQgULUfI0wftDeC/cwygBjtLomYH7D0VQ+
-         yggQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWC/k0M3dWO083cnxE7J2+2ZJV7RAbiJSB7U60nl4dG/BKgaF0JxdCS5POQ3gc5t90ZDUNbmRYruEOnjabFtevL0J5M+bbUhILhGfpS
-X-Gm-Message-State: AOJu0Yy+RierXhXIO4i6EnFriTNbjlup8DUclNShIiI8SlVRRWd6FX24
-	8FS2JZ5tYaH25mbqRmENhwS2+urKVOun103yudMD0ejEnGi8h8GNBVIqwrQQevnqLv6nurv45Yq
-	JJgz4bQtYSzned3yzZdaOmxwdcNMvETL50oyOxU+T0tSE7alUHNujdmCopVviTMBofZDcO33Cca
-	5t7TsJpuSf7cZOiFBWiBicsmlyy/w41TXPF71JRzSovODOdlQh70q9
-X-Received: by 2002:ac8:58c8:0:b0:446:5d98:bbb1 with SMTP id d75a77b69052e-44662e5b600mr160719561cf.32.1720005725499;
-        Wed, 03 Jul 2024 04:22:05 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGKJRX5E4PZN5AIkzZDqalz4GIxVyhLTZcy2t5CI2qf3j37GtaHnJJ1/0FVMsH63722yIHL+BLfMdPGdU70kDQ=
-X-Received: by 2002:ac8:58c8:0:b0:446:5d98:bbb1 with SMTP id
- d75a77b69052e-44662e5b600mr160719281cf.32.1720005725057; Wed, 03 Jul 2024
- 04:22:05 -0700 (PDT)
-Received: from 348282803490 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 3 Jul 2024 04:22:04 -0700
-From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
-In-Reply-To: <20240703094049.GB2676251@ofsar>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org> <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
- <20240702012847.GA2447193@ofsar> <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
- <20240702-appease-attire-6afbe758bf0f@spud> <20240703094049.GB2676251@ofsar>
+        d=1e100.net; s=20230601; t=1720005975; x=1720610775;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=A+2MqGa7e9k/H+mBR0AcQlM4kYrNvHVCP7g1hxy4Qxw=;
+        b=jzbM/EC160R9/4nsvucZ1QWHSwar9+UayUubsx+EZz4dvRH5HnqCzSLl14xKuZ3R1C
+         3rztAoBbjgA7HoH4h0V+Fpp1HqneTsJulTGlI/9H7ONHleHt2aLTDPVVQYd8qp3iv0mV
+         VIiN30Dxnq1+YHajlgH2H8YfOXzWlZVXoPHQia5/svgOGTmhj9XJFGhbVlBj6JoUfoTO
+         P8ObD88EE7Zgsm8yh3WRYYvtC7sGaoR2971w9F83c0RHzE/UTo+xbO8nd5WCXoZgB+em
+         msgIdh/V2vtTFjr+wXh/8fUu8nj6R5I84y5Z6LW9iaPerW2JQbNcoFVnGp6PZw0bv7yS
+         R37w==
+X-Forwarded-Encrypted: i=1; AJvYcCXUkSRCRN+L4W3boHITs0fKfJroCyeiJa5iKODJPy7zdkgzEYX//uUB6Mggu1JevQqiYXbbKYuXRmPaP38UqtL/RvFT8FKthFU3WxX0
+X-Gm-Message-State: AOJu0Yxl+VRdLRnDxGMWC8v70knFQHeck2SoUbnz0FQnJhvQ4kf+6wk0
+	bknVrU6BfhnSai5e4ucF0MSJKBkMqcIPcoSoCEshvpKP8fuxiJ2m
+X-Google-Smtp-Source: AGHT+IEJXFekNY3fsB5tfjE9fQZRtx+cCV4tRGUY0n2mFuccdc2QjvzsFIB813RbvbxYXhi1K/b+xw==
+X-Received: by 2002:a2e:2409:0:b0:2ee:4d91:3d88 with SMTP id 38308e7fff4ca-2ee5e39e5e2mr64257721fa.16.1720005974635;
+        Wed, 03 Jul 2024 04:26:14 -0700 (PDT)
+Received: from eichest-laptop.corp.toradex.com (31-10-206-125.static.upc.ch. [31.10.206.125])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4256af37828sm242351875e9.9.2024.07.03.04.26.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Jul 2024 04:26:14 -0700 (PDT)
+From: Stefan Eichenberger <eichest@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	shawnguo@kernel.org,
+	s.hauer@pengutronix.de,
+	kernel@pengutronix.de,
+	festevam@gmail.com,
+	cniedermaier@dh-electronics.com,
+	stefan.eichenberger@toradex.com,
+	l.sanfilippo@kunbus.com,
+	tglx@linutronix.de,
+	rickaran@axis.com,
+	francesco.dolcini@toradex.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v1] serial: imx: only set receiver level if it is zero
+Date: Wed,  3 Jul 2024 13:25:40 +0200
+Message-ID: <20240703112543.148304-1-eichest@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Date: Wed, 3 Jul 2024 04:22:04 -0700
-Message-ID: <CAJM55Z9AdOq_yd7sK_VhkutokK+-QKscdq9i759H3N1UKVwJkQ@mail.gmail.com>
-Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
-To: Yixun Lan <dlan@gentoo.org>, Conor Dooley <conor@kernel.org>
-Cc: Inochi Amaoto <inochiama@outlook.com>, 
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Samuel Holland <samuel.holland@sifive.com>, 
-	Anup Patel <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-serial@vger.kernel.org, Meng Zhang <zhangmeng.kevin@spacemit.com>, 
-	Yangyu Chen <cyy@cyyself.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Yixun Lan wrote:
-> Hi Conor:
->
-> On 16:25 Tue 02 Jul     , Conor Dooley wrote:
-> > On Tue, Jul 02, 2024 at 09:35:45AM +0800, Inochi Amaoto wrote:
-> > > On Tue, Jul 02, 2024 at 01:28:47AM GMT, Yixun Lan wrote:
-> > > > On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
-> > > > > Yixun Lan wrote:
-> > > > > > From: Yangyu Chen <cyy@cyyself.name>
-> > > > > >
-> > > > > > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
-> > > > > >
-> > > > > > Key features:
-> > > > > > - 4 cores per cluster, 2 clusters on chip
-> > > > > > - UART IP is Intel XScale UART
-> > > > > >
-> > > > > > Some key considerations:
-> > > > > > - ISA string is inferred from vendor documentation[2]
-> > > > > > - Cluster topology is inferred from datasheet[1] and L2 in vend=
-or dts[3]
-> > > > > > - No coherent DMA on this board
-> > > > > >     Inferred by taking vendor ethernet and MMC drivers to the m=
-ainline
-> > > > > >     kernel. Without dma-noncoherent in soc node, the driver fai=
-ls.
-> > > > > > - No cache nodes now
-> > > > > >     The parameters from vendor dts are likely to be wrong. It h=
-as 512
-> > > > > >     sets for a 32KiB L1 Cache. In this case, each set is 64B in=
- size.
-> > > > > >     When the size of the cache line is 64B, it is a directly ma=
-pped
-> > > > > >     cache rather than a set-associative cache, the latter is co=
-mmonly
-> > > > > >     used. Thus, I didn't use the parameters from vendor dts.
-> > > > > >
-> > > > > > Currently only support booting into console with only uart, oth=
-er
-> > > > > > features will be added soon later.
-> > > > > >
-> > > > ...
-> > > >
-> > > > > > +		clint: timer@e4000000 {
-> > > > > > +			compatible =3D "spacemit,k1-clint", "sifive,clint0";
-> > > > > > +			reg =3D <0x0 0xe4000000 0x0 0x10000>;
-> > > > > > +			interrupts-extended =3D <&cpu0_intc 3>, <&cpu0_intc 7>,
-> > > > > > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
-> > > > > > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
-> > > > > > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
-> > > > > > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
-> > > > > > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
-> > > > > > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
-> > > > > > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
-> > > > > > +		};
-> > > > > > +
-> > > > > > +		uart0: serial@d4017000 {
-> > > > > > +			compatible =3D "spacemit,k1-uart", "intel,xscale-uart";
-> > > > > > +			reg =3D <0x0 0xd4017000 0x0 0x100>;
-> > > > > > +			interrupts =3D <42>;
-> > > > > > +			clock-frequency =3D <14857000>;
-> > > > > > +			reg-shift =3D <2>;
-> > > > > > +			reg-io-width =3D <4>;
-> > > > > > +			status =3D "disabled";
-> > > > > > +		};
-> > > > > > +
-> > > > > > +		/* note: uart1 skipped */
-> > > > >
-> > > > > The datasheet page you link to above says "-UART (=C3=9710)", but=
- here you're
-> > > > > skipping one of them. Why? I can see the vendor tree does the sam=
-e, but it
-> > > > > would be nice with an explanation of what's going on.
-> > > > >
-> > > > /* note: uart1 in 0xf0612000, reserved for TEE usage */
-> > > > I would put something like this, does this sound ok to you?
-> > > >
-> > > > more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicat=
-ed for TEE purpose,
-> > > > It won't be exposed to Linux once TEE feature is enabled..
-> > > >
-> > > > skipping uart1 may make people confused but we are trying to follow=
- datasheet..
-> > >
-> > > Instead of skipping it, I suggest adding this to reserved-memory area=
-,
-> > > which make all node visible and avoid uart1 being touched by mistake.
-> >
-> > No, don't make it reserved-memory - instead add it as
-> > status =3D "reserved"; /* explanation for why */
-> Ok, got
->
-> > Also, I'd appreciate if the nodes were sorted by unit address in the
-> > dtsi.
-> so I would move "plic, clint" after node of uart9 as this suggestion
->
-> for uart1, its unit-address is 0xf0610000, it should be moved to after cl=
-int
-> (once unit-address sorted), if we follow this rule strictly.
-> but it occur to me this is not very intuitive, if no objection, I would p=
-ut
-> it between uart0 and uart2 (thus slightly break the rule..)
+From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
 
-No, please order nodes by their address as Conor said. It actually says so =
-in
-the DTS coding style:
+With commit a81dbd0463ec ("serial: imx: set receiver level before
+starting uart") we set the receiver level to its default value. This
+caused a regression when using SDMA, where the receiver level is 9
+instead of 8 (default). This change will first check if the receiver
+level is zero and only then set it to the default. This still avoids the
+interrupt storm when the receiver level is zero.
 
-https://docs.kernel.org/devicetree/bindings/dts-coding-style.html
+Fixes: a81dbd0463ec ("serial: imx: set receiver level before starting uart")
+Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+---
+ drivers/tty/serial/imx.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-/Emil
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index f4f40c9373c2f..e22be8f45c93e 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -120,6 +120,7 @@
+ #define UCR4_OREN	(1<<1)	/* Receiver overrun interrupt enable */
+ #define UCR4_DREN	(1<<0)	/* Recv data ready interrupt enable */
+ #define UFCR_RXTL_SHF	0	/* Receiver trigger level shift */
++#define UFCR_RXTL_MASK	0x3F	/* Receiver trigger 6 bits wide */
+ #define UFCR_DCEDTE	(1<<6)	/* DCE/DTE mode select */
+ #define UFCR_RFDIV	(7<<7)	/* Reference freq divider mask */
+ #define UFCR_RFDIV_REG(x)	(((x) < 7 ? 6 - (x) : 6) << 7)
+@@ -1933,7 +1934,7 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+ 				 struct serial_rs485 *rs485conf)
+ {
+ 	struct imx_port *sport = (struct imx_port *)port;
+-	u32 ucr2;
++	u32 ucr2, ufcr;
+ 
+ 	if (rs485conf->flags & SER_RS485_ENABLED) {
+ 		/* Enable receiver if low-active RTS signal is requested */
+@@ -1953,7 +1954,10 @@ static int imx_uart_rs485_config(struct uart_port *port, struct ktermios *termio
+ 	/* Make sure Rx is enabled in case Tx is active with Rx disabled */
+ 	if (!(rs485conf->flags & SER_RS485_ENABLED) ||
+ 	    rs485conf->flags & SER_RS485_RX_DURING_TX) {
+-		imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
++		/* If the receiver trigger is 0, set it to a default value */
++		ufcr = imx_uart_readl(sport, UFCR);
++		if ((ufcr & UFCR_RXTL_MASK) == 0)
++			imx_uart_setup_ufcr(sport, TXTL_DEFAULT, RXTL_DEFAULT);
+ 		imx_uart_start_rx(port);
+ 	}
+ 
+-- 
+2.43.0
+
