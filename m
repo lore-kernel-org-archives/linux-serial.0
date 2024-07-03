@@ -1,215 +1,201 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACA7D174EFC;
-	Wed,  3 Jul 2024 10:38:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 428B11891C1
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 11:22:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720003131; cv=none; b=r4/INWpD/I9EOj9UDIXdTMaNMby767ttIzrf3cMjwucmSYapYJCK2Z4Vnutd55U36A0crQEhWw8N9ZTKm1KYqR7JMVQWG1Wcxk3pqjGn4xdmsUCAYTZ75j41+OlV9XKKsxM00/KngC4Qd9VsLoNGB+ETHr7KD+YjWbC4+EEluuI=
+	t=1720005734; cv=none; b=ZXGaRTP93hD6xLkzJ5936N+mrTBnWUv/vVWgh+/I0G2LZPqEOA3I/i7B3vDXFB+4f/angav+kXuwuJa1fwa2OaOLN2Y/gMXpEAsnGaqCgX5+wf4dUTV2uOGS84QXeJuaA2viY1DF81Y596VA7U7QXWPgSOmq/qOrjRBBqklHfEw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720003131; c=relaxed/simple;
-	bh=imYEkBXowZEctWnX7RSJaxD8kZRYLJFmccuWAyTSK7w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hZ2gaGvWk4rLmnrliowh1iqj/3YZRPWUPmgcwqPFC7lNG/mQQtdUsPGiuur27Hhc8aJ2r1dE+Xh6ZTLqLibDuCYJTJFyOHCEKTEgesAWowM80FjkFiBoOvYGof5d9pIObXqkAEDjr3S4V0luWQ8L6V0ayVrIpMfdKmZAGcrFrMo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=aLctC95x; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1720005734; c=relaxed/simple;
+	bh=XGvJWi2ACdeOImN/SwBAgmGV5CjAcEGdLvKIxHnA/Ig=;
+	h=From:In-Reply-To:References:Mime-Version:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TK0eAw5p64xMya3uwcJqdOQwY6QmrCzj3k+IELDD5hTsdpdDlAtB29MQC7j/7Nc6zhBl7W+vQXsgZmXuDOoTf1k5Y6jzwLE4FxPEhaETAfiufNIKXNv2Aydosc+ch8S76TG04DcT6HoosZTuJlGu3fD46tuDpgGKI0uG/K11cZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=cz2tAQ3Y; arc=none smtp.client-ip=185.125.188.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="aLctC95x"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 42E2C40006;
-	Wed,  3 Jul 2024 10:38:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1720003126;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1Bx2CQCZLnvl2mGaHzoLhHeTCe30chHxVgbi6fu5d+s=;
-	b=aLctC95xt2Q6rMLnoKMX3FJ/PPaRdMHQEBg8Yh4ab3FSY9cbwu/dUFTyd2apLZ20deWbHL
-	p+IzkHN10jVZ1AG9Zn60wT53j8GY4YjZh45RcrSYSRiZO/UmHE3QPIVv0XvnhM2mXl2hWz
-	VOJOVdL5ZPhpZJKh1jWQ96KV9qbUgn5W/5TTMt7H+C2eSDixGWwEKYYBbQX1xXqSkyGHz5
-	91ju+rAKcnrwNcrolgluBFlh3QFO+/DQF5Wl+7Xbh+KtpnaGIUDYbYcsxewuu+9dpHQeok
-	x6ehLSPvrF/uwBxNqrMB68JqQwCZNKNJ8SkpeUBfTvTBYcpghA0kpCr+80jVbg==
-From: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Date: Wed, 03 Jul 2024 12:37:04 +0200
-Subject: [PATCH 20/20] of: deprecate and rename of_property_for_each_u32()
+	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="cz2tAQ3Y"
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 007CD404AA
+	for <linux-serial@vger.kernel.org>; Wed,  3 Jul 2024 11:22:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+	s=20210705; t=1720005728;
+	bh=1qFVnINiw1OmtrqIdL6Ri9JaQ6L530vAhDFXUjoyBpE=;
+	h=From:In-Reply-To:References:Mime-Version:Date:Message-ID:Subject:
+	 To:Cc:Content-Type;
+	b=cz2tAQ3YJgplOqOIOjBs0tLeTtOEWjAYaWzOn0Kkvj1l0Qu6sDQrlAfvZUOlkXMWZ
+	 R5klxSZC55XlRIV9SlRWqjJ1tD2PlrOxaJhrD/XU2gRO6GS63hb4qqphMeQA3+PFmU
+	 jCEwNKXNxoy3oa64PprG6PWOfoxfF9lmyAwzirn9AOtX3C9H1qI5RKUuJQA/AE1jfz
+	 +SV3ocD4y2KqHyPmLGsrbNIwt3rep5QXG2IB4nSbm9AZ8vcEHI54eWj30zX9hr4b5z
+	 48IQcotTfJqCtINscQ/CTTLmDoGbmdLv6cX6e+CLvwGsnT72ZfN8pMoieJ6wjVeYJJ
+	 s9eTdwdVUusQA==
+Received: by mail-qt1-f200.google.com with SMTP id d75a77b69052e-444fd3f52fbso74030041cf.1
+        for <linux-serial@vger.kernel.org>; Wed, 03 Jul 2024 04:22:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720005725; x=1720610525;
+        h=content-transfer-encoding:cc:to:subject:message-id:date
+         :mime-version:references:in-reply-to:from:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=1qFVnINiw1OmtrqIdL6Ri9JaQ6L530vAhDFXUjoyBpE=;
+        b=GPaAOryVBRUQL4tyWuCw4dmQGN2xjX+8AJIi9OCTfSAeVQFLD36/TcyQ4OZd0cQKYS
+         U+1nynqvZ8pac5Qtnt+Qi5QbQPRtl6QfJxpQAQwFttxWuYyajzd/Xq/oTluS70260X3k
+         AbMv7ynTfFYC24iGRUxpl/o3rYiDd525Ycm1z3O9D+IuOK3jlLo1RA+C8FIUi25efvWo
+         naTAf5S4GUJURh83cUYz4B6sy0zbr22tomAyy435bUrXqVD1t3E+AxKlvO+SsL2EnIoP
+         VC8F4QDkh1ujtqVlkx+P0FftjnwomU+P0AdQgULUfI0wftDeC/cwygBjtLomYH7D0VQ+
+         yggQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWC/k0M3dWO083cnxE7J2+2ZJV7RAbiJSB7U60nl4dG/BKgaF0JxdCS5POQ3gc5t90ZDUNbmRYruEOnjabFtevL0J5M+bbUhILhGfpS
+X-Gm-Message-State: AOJu0Yy+RierXhXIO4i6EnFriTNbjlup8DUclNShIiI8SlVRRWd6FX24
+	8FS2JZ5tYaH25mbqRmENhwS2+urKVOun103yudMD0ejEnGi8h8GNBVIqwrQQevnqLv6nurv45Yq
+	JJgz4bQtYSzned3yzZdaOmxwdcNMvETL50oyOxU+T0tSE7alUHNujdmCopVviTMBofZDcO33Cca
+	5t7TsJpuSf7cZOiFBWiBicsmlyy/w41TXPF71JRzSovODOdlQh70q9
+X-Received: by 2002:ac8:58c8:0:b0:446:5d98:bbb1 with SMTP id d75a77b69052e-44662e5b600mr160719561cf.32.1720005725499;
+        Wed, 03 Jul 2024 04:22:05 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGKJRX5E4PZN5AIkzZDqalz4GIxVyhLTZcy2t5CI2qf3j37GtaHnJJ1/0FVMsH63722yIHL+BLfMdPGdU70kDQ=
+X-Received: by 2002:ac8:58c8:0:b0:446:5d98:bbb1 with SMTP id
+ d75a77b69052e-44662e5b600mr160719281cf.32.1720005725057; Wed, 03 Jul 2024
+ 04:22:05 -0700 (PDT)
+Received: from 348282803490 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 3 Jul 2024 04:22:04 -0700
+From: Emil Renner Berthing <emil.renner.berthing@canonical.com>
+In-Reply-To: <20240703094049.GB2676251@ofsar>
+References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
+ <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org> <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
+ <20240702012847.GA2447193@ofsar> <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
+ <20240702-appease-attire-6afbe758bf0f@spud> <20240703094049.GB2676251@ofsar>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240703-of_property_for_each_u32-v1-20-42c1fc0b82aa@bootlin.com>
-References: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
-In-Reply-To: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
-To: Miguel Ojeda <ojeda@kernel.org>, Rob Herring <robh@kernel.org>, 
- Saravana Kannan <saravanak@google.com>, 
- Nathan Chancellor <nathan@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Tony Lindgren <tony@atomide.com>, 
- Bjorn Andersson <andersson@kernel.org>, 
- =?utf-8?q?Emilio_L=C3=B3pez?= <emilio@elopez.com.ar>, 
- Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Bartosz Golaszewski <brgl@bgdev.pl>, Jonathan Cameron <jic23@kernel.org>, 
- Lee Jones <lee@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
- Pengutronix Kernel Team <kernel@pengutronix.de>, 
- =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Richard Leitner <richard.leitner@linux.dev>, 
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
- Nicolas Ferre <nicolas.ferre@microchip.com>, 
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
- Christophe Leroy <christophe.leroy@csgroup.eu>, 
- "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
- Damien Le Moal <dlemoal@kernel.org>
-Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, 
- Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
- llvm@lists.linux.dev, linux-clk@vger.kernel.org, linux-omap@vger.kernel.org, 
- linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-sunxi@lists.linux.dev, linux-samsung-soc@vger.kernel.org, 
- linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-usb@vger.kernel.org, patches@opensource.cirrus.com, 
- linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
- linux-riscv@lists.infradead.org, Luca Ceresoli <luca.ceresoli@bootlin.com>
-X-Mailer: b4 0.14.0
-X-GND-Sasl: luca.ceresoli@bootlin.com
+Mime-Version: 1.0
+Date: Wed, 3 Jul 2024 04:22:04 -0700
+Message-ID: <CAJM55Z9AdOq_yd7sK_VhkutokK+-QKscdq9i759H3N1UKVwJkQ@mail.gmail.com>
+Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
+To: Yixun Lan <dlan@gentoo.org>, Conor Dooley <conor@kernel.org>
+Cc: Inochi Amaoto <inochiama@outlook.com>, 
+	Emil Renner Berthing <emil.renner.berthing@canonical.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Samuel Holland <samuel.holland@sifive.com>, 
+	Anup Patel <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-serial@vger.kernel.org, Meng Zhang <zhangmeng.kevin@spacemit.com>, 
+	Yangyu Chen <cyy@cyyself.name>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-of_property_for_each_u32() is meant to disappear. All the call sites not
-using the 3rd and 4th arguments have already been replaced by
-of_property_for_each_u32_new().
+Yixun Lan wrote:
+> Hi Conor:
+>
+> On 16:25 Tue 02 Jul     , Conor Dooley wrote:
+> > On Tue, Jul 02, 2024 at 09:35:45AM +0800, Inochi Amaoto wrote:
+> > > On Tue, Jul 02, 2024 at 01:28:47AM GMT, Yixun Lan wrote:
+> > > > On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
+> > > > > Yixun Lan wrote:
+> > > > > > From: Yangyu Chen <cyy@cyyself.name>
+> > > > > >
+> > > > > > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
+> > > > > >
+> > > > > > Key features:
+> > > > > > - 4 cores per cluster, 2 clusters on chip
+> > > > > > - UART IP is Intel XScale UART
+> > > > > >
+> > > > > > Some key considerations:
+> > > > > > - ISA string is inferred from vendor documentation[2]
+> > > > > > - Cluster topology is inferred from datasheet[1] and L2 in vend=
+or dts[3]
+> > > > > > - No coherent DMA on this board
+> > > > > >     Inferred by taking vendor ethernet and MMC drivers to the m=
+ainline
+> > > > > >     kernel. Without dma-noncoherent in soc node, the driver fai=
+ls.
+> > > > > > - No cache nodes now
+> > > > > >     The parameters from vendor dts are likely to be wrong. It h=
+as 512
+> > > > > >     sets for a 32KiB L1 Cache. In this case, each set is 64B in=
+ size.
+> > > > > >     When the size of the cache line is 64B, it is a directly ma=
+pped
+> > > > > >     cache rather than a set-associative cache, the latter is co=
+mmonly
+> > > > > >     used. Thus, I didn't use the parameters from vendor dts.
+> > > > > >
+> > > > > > Currently only support booting into console with only uart, oth=
+er
+> > > > > > features will be added soon later.
+> > > > > >
+> > > > ...
+> > > >
+> > > > > > +		clint: timer@e4000000 {
+> > > > > > +			compatible =3D "spacemit,k1-clint", "sifive,clint0";
+> > > > > > +			reg =3D <0x0 0xe4000000 0x0 0x10000>;
+> > > > > > +			interrupts-extended =3D <&cpu0_intc 3>, <&cpu0_intc 7>,
+> > > > > > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
+> > > > > > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
+> > > > > > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
+> > > > > > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
+> > > > > > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
+> > > > > > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
+> > > > > > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
+> > > > > > +		};
+> > > > > > +
+> > > > > > +		uart0: serial@d4017000 {
+> > > > > > +			compatible =3D "spacemit,k1-uart", "intel,xscale-uart";
+> > > > > > +			reg =3D <0x0 0xd4017000 0x0 0x100>;
+> > > > > > +			interrupts =3D <42>;
+> > > > > > +			clock-frequency =3D <14857000>;
+> > > > > > +			reg-shift =3D <2>;
+> > > > > > +			reg-io-width =3D <4>;
+> > > > > > +			status =3D "disabled";
+> > > > > > +		};
+> > > > > > +
+> > > > > > +		/* note: uart1 skipped */
+> > > > >
+> > > > > The datasheet page you link to above says "-UART (=C3=9710)", but=
+ here you're
+> > > > > skipping one of them. Why? I can see the vendor tree does the sam=
+e, but it
+> > > > > would be nice with an explanation of what's going on.
+> > > > >
+> > > > /* note: uart1 in 0xf0612000, reserved for TEE usage */
+> > > > I would put something like this, does this sound ok to you?
+> > > >
+> > > > more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicat=
+ed for TEE purpose,
+> > > > It won't be exposed to Linux once TEE feature is enabled..
+> > > >
+> > > > skipping uart1 may make people confused but we are trying to follow=
+ datasheet..
+> > >
+> > > Instead of skipping it, I suggest adding this to reserved-memory area=
+,
+> > > which make all node visible and avoid uart1 being touched by mistake.
+> >
+> > No, don't make it reserved-memory - instead add it as
+> > status =3D "reserved"; /* explanation for why */
+> Ok, got
+>
+> > Also, I'd appreciate if the nodes were sorted by unit address in the
+> > dtsi.
+> so I would move "plic, clint" after node of uart9 as this suggestion
+>
+> for uart1, its unit-address is 0xf0610000, it should be moved to after cl=
+int
+> (once unit-address sorted), if we follow this rule strictly.
+> but it occur to me this is not very intuitive, if no objection, I would p=
+ut
+> it between uart0 and uart2 (thus slightly break the rule..)
 
-Deprecate the old macro. Also rename it to minimize the number of new
-usages and encourage conversion to the of_property_for_each_u32_new() macro
-in not(-yet)-upstream code.
+No, please order nodes by their address as Conor said. It actually says so =
+in
+the DTS coding style:
 
-Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+https://docs.kernel.org/devicetree/bindings/dts-coding-style.html
 
----
-
-Notes:
-
- * The following files have not been build-tested simply because I haven't
-   managed to have a config that enables them so far:
-
-     drivers/irqchip/irq-pic32-evic.c
-     drivers/pinctrl/pinctrl-k210.c
-
- * These have not been converted yet as they are not trivial, and they will
-   need to use a more specific function that does the lookup they need and
-   returns the result:
-
-     drivers/clk/clk-si5351.c
-     drivers/clk/clk.c
----
- .clang-format                    | 2 +-
- drivers/clk/clk-si5351.c         | 4 ++--
- drivers/clk/clk.c                | 2 +-
- drivers/irqchip/irq-pic32-evic.c | 2 +-
- drivers/pinctrl/pinctrl-k210.c   | 2 +-
- include/linux/of.h               | 3 ++-
- 6 files changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/.clang-format b/.clang-format
-index db25cde2651a..a91b9bb39d9b 100644
---- a/.clang-format
-+++ b/.clang-format
-@@ -569,8 +569,8 @@ ForEachMacros:
-   - 'nr_node_for_each_safe'
-   - 'of_for_each_phandle'
-   - 'of_property_for_each_string'
--  - 'of_property_for_each_u32'
-   - 'of_property_for_each_u32_new'
-+  - 'of_property_for_each_u32_old'
-   - 'pci_bus_for_each_resource'
-   - 'pci_dev_for_each_resource'
-   - 'pcl_for_each_chunk'
-diff --git a/drivers/clk/clk-si5351.c b/drivers/clk/clk-si5351.c
-index 4ce83c5265b8..ff990b15d616 100644
---- a/drivers/clk/clk-si5351.c
-+++ b/drivers/clk/clk-si5351.c
-@@ -1191,7 +1191,7 @@ static int si5351_dt_parse(struct i2c_client *client,
- 	 * property silabs,pll-source : <num src>, [<..>]
- 	 * allow to selectively set pll source
- 	 */
--	of_property_for_each_u32(np, "silabs,pll-source", prop, p, num) {
-+	of_property_for_each_u32_old(np, "silabs,pll-source", prop, p, num) {
- 		if (num >= 2) {
- 			dev_err(&client->dev,
- 				"invalid pll %d on pll-source prop\n", num);
-@@ -1232,7 +1232,7 @@ static int si5351_dt_parse(struct i2c_client *client,
- 	pdata->pll_reset[0] = true;
- 	pdata->pll_reset[1] = true;
- 
--	of_property_for_each_u32(np, "silabs,pll-reset-mode", prop, p, num) {
-+	of_property_for_each_u32_old(np, "silabs,pll-reset-mode", prop, p, num) {
- 		if (num >= 2) {
- 			dev_err(&client->dev,
- 				"invalid pll %d on pll-reset-mode prop\n", num);
-diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-index 8ea168c00997..aae940c18459 100644
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -5383,7 +5383,7 @@ const char *of_clk_get_parent_name(const struct device_node *np, int index)
- 	/* if there is an indices property, use it to transfer the index
- 	 * specified into an array offset for the clock-output-names property.
- 	 */
--	of_property_for_each_u32(clkspec.np, "clock-indices", prop, vp, pv) {
-+	of_property_for_each_u32_old(clkspec.np, "clock-indices", prop, vp, pv) {
- 		if (index == pv) {
- 			index = count;
- 			break;
-diff --git a/drivers/irqchip/irq-pic32-evic.c b/drivers/irqchip/irq-pic32-evic.c
-index 1d9bb28d13e5..d9aec87f8b59 100644
---- a/drivers/irqchip/irq-pic32-evic.c
-+++ b/drivers/irqchip/irq-pic32-evic.c
-@@ -196,7 +196,7 @@ static void __init pic32_ext_irq_of_init(struct irq_domain *domain)
- 	int i = 0;
- 	const char *pname = "microchip,external-irqs";
- 
--	of_property_for_each_u32(node, pname, prop, p, hwirq) {
-+	of_property_for_each_u32_old(node, pname, prop, p, hwirq) {
- 		if (i >= ARRAY_SIZE(priv->ext_irqs)) {
- 			pr_warn("More than %d external irq, skip rest\n",
- 				ARRAY_SIZE(priv->ext_irqs));
-diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
-index b6d1ed9ec9a3..03acca8b01ef 100644
---- a/drivers/pinctrl/pinctrl-k210.c
-+++ b/drivers/pinctrl/pinctrl-k210.c
-@@ -797,7 +797,7 @@ static int k210_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
- 	if (ret < 0)
- 		goto exit;
- 
--	of_property_for_each_u32(np, "pinmux", prop, p, pinmux_group) {
-+	of_property_for_each_u32_old(np, "pinmux", prop, p, pinmux_group) {
- 		const char *group_name, *func_name;
- 		u32 pin = FIELD_GET(K210_PG_PIN, pinmux_group);
- 		u32 func = FIELD_GET(K210_PG_FUNC, pinmux_group);
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 756847539384..15c291ab6e71 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -1429,7 +1429,8 @@ static inline int of_property_read_s32(const struct device_node *np,
- 	     err == 0;							\
- 	     err = of_phandle_iterator_next(it))
- 
--#define of_property_for_each_u32(np, propname, prop, p, u)	\
-+/* deprecated - will be removed */
-+#define of_property_for_each_u32_old(np, propname, prop, p, u)	\
- 	for (prop = of_find_property(np, propname, NULL),	\
- 		p = of_prop_next_u32(prop, NULL, &u);		\
- 		p;						\
-
--- 
-2.34.1
-
+/Emil
