@@ -1,149 +1,117 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D65C113C9B9;
-	Wed,  3 Jul 2024 09:40:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4719E17741;
+	Wed,  3 Jul 2024 10:06:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719999656; cv=none; b=QTJkp6uWDrvQmvhr0irtRl9H8WEXwGbcoR9fc6HLDonNmsnCQlQr+rBrXmy33d82DO47N8I0T3jAz4lentwNXcwGkuFF398Kv7Ut/Wk64TZJ/f6DJTgqW7YagQpFZh2LQqvNRgwGYwI8OfigagDttYQsXYF0EoUmShMt8JebqtQ=
+	t=1720001192; cv=none; b=cVeNH2RWsuG+A9A2SGGY8LtGzY0XTTb5Q6u5Z8kbO9aIJkxQ9LbLqGsLu1HKtjozt5gNc6YFWKDMEortbFMzyTv987fC8QlVkdSbM8K8sDympcUpl9iZNn4vPtTp0xGpv5v1PBrbIVBtsvDssSrycuOHiInTpgZ9N3xCF6qs1lk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719999656; c=relaxed/simple;
-	bh=Dzj7c/tM7TZu0j0NpI+S/5IQqQYH5umY4V08HZXaVu8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jn16BCX61dPdwm76dvBVeyC2Fjo74T9KDyRXpRDi6P9MwhPUtRUgKVjO5rXAa0rziBzogdaoDonpwX4YDfS8m5MnsRW1mvujpJRk+XIizlFLwbOmu/uYl1owO/o64CzYmRgjc955KYzfDBWmBR7dAYSNdWPtj0HC7ChM9C2TpFk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Date: Wed, 3 Jul 2024 09:40:49 +0000
-From: Yixun Lan <dlan@gentoo.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Inochi Amaoto <inochiama@outlook.com>,
-	Emil Renner Berthing <emil.renner.berthing@canonical.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
+	s=arc-20240116; t=1720001192; c=relaxed/simple;
+	bh=+1vQzUvu3r9PEMJ7qsiZPsHa2RvNRoThVCOWZ8xnLC4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Grs3Z6xwqDg/dhNCQ/1Wj08B+lKPVX5Xofrg/NSzzCWlwyDnx4hrpbrZ6Q3F1LnrnIzRlXGxix9bXl2CVA6gvlna54V0bSB3sWIaYWu11bMtQmdDUeiBIeAxHajm1SrnmONawj2PFHmJYJI/yil05ET80R8saToyIDCNUtxuE/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tco+SJkO; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tco+SJkO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1720001191; x=1751537191;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+1vQzUvu3r9PEMJ7qsiZPsHa2RvNRoThVCOWZ8xnLC4=;
+  b=Tco+SJkOqpDl/ojFg3cXLv6gimAfOXyPkXuy3HFDMrf7Xfn2R3Db3rDH
+   PX7+wznvakjkD5orDit3QGLdtyWLgc6EV6jwn0tw3HMD5jN6uj4mZjFtA
+   AB//zdkWxn0NpSdpQO+He/C8J7+GBC7NIR4CkMNLarukluI9MJUBYcdP1
+   IcpsD07kJEUuZnrhoxwGr9zliwRnyyDO6f0ZqupFz/+Ps39oRr4GlUnjd
+   bS+iINKzsltZY8ohzVHBpVKV1ZZ7QIsm8saDgAmai70r1wtX14NHSsEco
+   nkmxmcjFEvuuyr67k4cP/E8NE5SZCUczJIFb5yWEgUo3kao4Cn9j5j2Kd
+   A==;
+X-CSE-ConnectionGUID: 8JoZAv8MQ3qzL/bmUR72TQ==
+X-CSE-MsgGUID: K954mPpSRwuoO684ySdajQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11121"; a="21093758"
+X-IronPort-AV: E=Sophos;i="6.09,181,1716274800"; 
+   d="scan'208";a="21093758"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2024 03:06:30 -0700
+X-CSE-ConnectionGUID: ZZWx7fBsTOaHwVmIQaiOEg==
+X-CSE-MsgGUID: iHSAQsCkS66N/RAEVx7mag==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,181,1716274800"; 
+   d="scan'208";a="69384958"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO tlindgre-MOBL1.intel.com) ([10.245.244.185])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2024 03:06:25 -0700
+From: Tony Lindgren <tony.lindgren@linux.intel.com>
+To: Jonathan Corbet <corbet@lwn.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>,
-	Yangyu Chen <cyy@cyyself.name>
-Subject: Re: [PATCH v2 08/10] riscv: dts: add initial SpacemiT K1 SoC device
- tree
-Message-ID: <20240703094049.GB2676251@ofsar>
-References: <20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org>
- <20240627-k1-01-basic-dt-v2-8-cc06c7555f07@gentoo.org>
- <CAJM55Z9jeAQTsVjRiLeofDm1RyMWCuHXC0a-pdKtpUiTkSjJCA@mail.gmail.com>
- <20240702012847.GA2447193@ofsar>
- <IA1PR20MB4953C031CB453AA0E51657B3BBDC2@IA1PR20MB4953.namprd20.prod.outlook.com>
- <20240702-appease-attire-6afbe758bf0f@spud>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org,
+	Tony Lindgren <tony.lindgren@linux.intel.com>,
+	Dhruva Gole <d-gole@ti.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] Add back DEVNAME:0.0 console handling
+Date: Wed,  3 Jul 2024 13:06:07 +0300
+Message-ID: <20240703100615.118762-1-tony.lindgren@linux.intel.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240702-appease-attire-6afbe758bf0f@spud>
 
-Hi Conor:
+Hi all,
 
-On 16:25 Tue 02 Jul     , Conor Dooley wrote:
-> On Tue, Jul 02, 2024 at 09:35:45AM +0800, Inochi Amaoto wrote:
-> > On Tue, Jul 02, 2024 at 01:28:47AM GMT, Yixun Lan wrote:
-> > > On 12:49 Mon 01 Jul     , Emil Renner Berthing wrote:
-> > > > Yixun Lan wrote:
-> > > > > From: Yangyu Chen <cyy@cyyself.name>
-> > > > >
-> > > > > Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
-> > > > >
-> > > > > Key features:
-> > > > > - 4 cores per cluster, 2 clusters on chip
-> > > > > - UART IP is Intel XScale UART
-> > > > >
-> > > > > Some key considerations:
-> > > > > - ISA string is inferred from vendor documentation[2]
-> > > > > - Cluster topology is inferred from datasheet[1] and L2 in vendor dts[3]
-> > > > > - No coherent DMA on this board
-> > > > >     Inferred by taking vendor ethernet and MMC drivers to the mainline
-> > > > >     kernel. Without dma-noncoherent in soc node, the driver fails.
-> > > > > - No cache nodes now
-> > > > >     The parameters from vendor dts are likely to be wrong. It has 512
-> > > > >     sets for a 32KiB L1 Cache. In this case, each set is 64B in size.
-> > > > >     When the size of the cache line is 64B, it is a directly mapped
-> > > > >     cache rather than a set-associative cache, the latter is commonly
-> > > > >     used. Thus, I didn't use the parameters from vendor dts.
-> > > > >
-> > > > > Currently only support booting into console with only uart, other
-> > > > > features will be added soon later.
-> > > > >
-> > > ...
-> > > 
-> > > > > +		clint: timer@e4000000 {
-> > > > > +			compatible = "spacemit,k1-clint", "sifive,clint0";
-> > > > > +			reg = <0x0 0xe4000000 0x0 0x10000>;
-> > > > > +			interrupts-extended = <&cpu0_intc 3>, <&cpu0_intc 7>,
-> > > > > +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
-> > > > > +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
-> > > > > +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
-> > > > > +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
-> > > > > +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
-> > > > > +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
-> > > > > +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
-> > > > > +		};
-> > > > > +
-> > > > > +		uart0: serial@d4017000 {
-> > > > > +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> > > > > +			reg = <0x0 0xd4017000 0x0 0x100>;
-> > > > > +			interrupts = <42>;
-> > > > > +			clock-frequency = <14857000>;
-> > > > > +			reg-shift = <2>;
-> > > > > +			reg-io-width = <4>;
-> > > > > +			status = "disabled";
-> > > > > +		};
-> > > > > +
-> > > > > +		/* note: uart1 skipped */
-> > > > 
-> > > > The datasheet page you link to above says "-UART (×10)", but here you're
-> > > > skipping one of them. Why? I can see the vendor tree does the same, but it
-> > > > would be nice with an explanation of what's going on.
-> > > > 
-> > > /* note: uart1 in 0xf0612000, reserved for TEE usage */
-> > > I would put something like this, does this sound ok to you?
-> > > 
-> > > more detail, iomem range from 0xf000,0000 - 0xf080,0000 are dedicated for TEE purpose,
-> > > It won't be exposed to Linux once TEE feature is enabled..
-> > > 
-> > > skipping uart1 may make people confused but we are trying to follow datasheet..
-> > 
-> > Instead of skipping it, I suggest adding this to reserved-memory area, 
-> > which make all node visible and avoid uart1 being touched by mistake.
-> 
-> No, don't make it reserved-memory - instead add it as
-> status = "reserved"; /* explanation for why */
-Ok, got
+Here are the changes to add back the DEVNAME:0.0 style kernel command
+line console handling.
 
-> Also, I'd appreciate if the nodes were sorted by unit address in the
-> dtsi.
-so I would move "plic, clint" after node of uart9 as this suggestion
+The earlier attempt to add DEVNAME:0.0 style console handling caused a
+regression to the kernel command line console ordering, and we reverted
+the whole series. The fixes would have been too intrusive for the
+v6.10-rc series as discussed in [0] below.
 
-for uart1, its unit-address is 0xf0610000, it should be moved to after clint
-(once unit-address sorted), if we follow this rule strictly.
-but it occur to me this is not very intuitive, if no objection, I would put
-it between uart0 and uart2 (thus slightly break the rule..)
+These patches are based on v6.10-rc6, and essentially the same as in [0].
+Because of the rebase, I've left out Petr's Reviewed-by and Tested-by tags.
 
-P.S: I can cook a separated patch for adding uart1 node, should better for review
+Compared to the original DEVNAME:0.0 patch series [1], things are much
+simplified. We now have rewritten the printk deferred console handling
+thanks to Petr, and have renamed the serial functions accordingly. And as
+we are not deferring ttyS named consoles, the serial core console quirk
+handling been been left out.
 
+Regards,
+
+Tony
+
+[0] https://lore.kernel.org/linux-serial/20240620124541.164931-1-tony.lindgren@linux.intel.com/
+[1] https://lore.kernel.org/linux-serial/20240327110021.59793-1-tony@atomide.com/
+
+Tony Lindgren (3):
+  printk: Add match_devname_and_update_preferred_console()
+  serial: core: Add serial_base_match_and_update_preferred_console()
+  Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial
+    ports
+
+ .../admin-guide/kernel-parameters.txt         |  19 ++++
+ drivers/tty/serial/serial_base.h              |  16 +++
+ drivers/tty/serial/serial_base_bus.c          |  37 +++++++
+ drivers/tty/serial/serial_core.c              |   4 +
+ include/linux/printk.h                        |   4 +
+ kernel/printk/console_cmdline.h               |   1 +
+ kernel/printk/printk.c                        | 103 +++++++++++++++---
+ 7 files changed, 169 insertions(+), 15 deletions(-)
+
+
+base-commit: 22a40d14b572deb80c0648557f4bd502d7e83826
 -- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+2.45.2
+
