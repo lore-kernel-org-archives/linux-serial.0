@@ -1,56 +1,56 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D02201ABC25
-	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:11:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297BB1AED5F
+	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:13:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720102300; cv=none; b=pNmItTOsAgi5xa7mSX3QATXSKBpUhvx+ApHiJwVFuSYmioda9J8K80RY4Vs43l3K/AuJ3i4C1LaSmcqp38e0l37Ygx7zAXz6Uc6C5KExnhUN+98TCz4TwqActG06nfZozi2SN1vLLXJ77SrmNeK9QkHLH75AMhnQ4i29LXNrtCU=
+	t=1720102384; cv=none; b=jd8mWKiFrfccvLYlFCoqSr4rjYvxJlDUbJ2aj9GxQ+pdFPc2HuXS3QXBPwovdqtqizMbNWLSoO+Njv5NvVIY8iFwFOe5MS99mMnxMWuGts9ELBea7JU1OuWgCnWIixGMv/+UM5kKE7A/nAoTzJEOVLufDcet4LN9/xZkmnrkruQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720102300; c=relaxed/simple;
-	bh=6q3t4OwUCKibW/lhC85JFVls3XUt4r3os+lD+11OF3w=;
+	s=arc-20240116; t=1720102384; c=relaxed/simple;
+	bh=/MGUNnDuHE1hF+0im+x5fM2YozglRhrXhIkRD4kKSjQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UV8pXHEhc9yDiC9CN1+zhaVg1tZ3i25BgWaagVLg4+GWqi4Va4ljE0mQhtjJuvESywykA1UGvD7PMzlsvDeAuo89Mkjo4Vn0gH4GQlfWC0PyHgSIvCgffFpOnMP4vGRhluZxuaLoDbsDzz5e0QrD3eH1F4hqArkbd5umZyNz/PA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=HEw5BOow; arc=none smtp.client-ip=209.85.214.181
+	 In-Reply-To:Content-Type; b=TfduinClSIFxUD4nZAkKrG5I24UWtsNr6mlxdjQYCtvUjDdPqrrB40zvlfHOO51o5wsYYfatp1ESVqGk3CML9hVWpkaaQD9jLEgGHUy9FEA2YjW5Sl8ILIxOZpUfl3d7xPCJyw104nww/XkoaR+IHXHEzRc1DMuGV2hMKACsIME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=Q+5MS4q8; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="HEw5BOow"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1fb3cf78ff3so3217995ad.0
-        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:11:38 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="Q+5MS4q8"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-79d5d14fa8bso162602385a.0
+        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:13:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1720102298; x=1720707098; darn=vger.kernel.org;
+        d=broadcom.com; s=google; t=1720102381; x=1720707181; darn=vger.kernel.org;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=xdqSpccFmyXSKNd294FcLHwAB2jgyGAvk1LchVff1EY=;
-        b=HEw5BOow8TNsmGgwB72u7Eq/rLXlhIsel7ibWdYyEU2aKtBYkMzzKk3+f45ZmGomca
-         dhAt2YpaeLnEJEZMuVlqp/WeXI9DBrZu0ITBEPRQd+ABPkWzdBMPVbKtD9DzYNnDPfDG
-         V9yYsIcnXLRzOAx8QmaFcfbsitXmAxeO1lTMM=
+        bh=m4piJEUDE3oQXNYmccZB9GGTOFKDg7p4aQI1wCYxUZU=;
+        b=Q+5MS4q8MKrx9HmwHaDargHh3VbynHmm2J+xO0gYvg3UDjb3ysiHM9ySO2UuAnISp7
+         TNiFx9iqPSUI0hBSMnplD7miJywIc2XTctjSkLx/gyfaCxvLNiZ0oJnrp57NYfFwSXxo
+         WS0CuSsdqxjZ2WoscsBPew8BBToDY8lA55Oms=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720102298; x=1720707098;
+        d=1e100.net; s=20230601; t=1720102381; x=1720707181;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=xdqSpccFmyXSKNd294FcLHwAB2jgyGAvk1LchVff1EY=;
-        b=L+ZGCRnhbPn3CVYR4vXYEMnUIlWeQbgnw+g+ERtSK8yG7Fh2MGM4jfr05zu/CaqAVw
-         0ICYjb16Wdp1YHwiQmD1GZYTsrfSzIGG6ZJC6zutAm9FURiDdOxbSJAeex+++cFxUFZS
-         ou+7RBNGXHzkQczftDs6rEoaX4tZm6owPUTG5P+9mQYUEV5NRfR/YFAaXE5WLDBwRhbI
-         YD5LHSjy3XU/as+BmOSACt4SH9+a6FupDjgO8lwtb8ggOonKpdFkOsyT002Rg2IYhL9D
-         soJcILzBdpWccPZ1tfKGUeniuUYfVU2Fv4/xGbNI/eYlXcbrGDtVWsiUFQyYc1LJSYSH
-         /JTg==
-X-Forwarded-Encrypted: i=1; AJvYcCXNGM7jxEnIuRR56T9NlbV6vQ8JZfRVqodBgfz+F1yxj9cA1NFLBnZkWBXFlNKX+78cJBP/aC7rto/yjuLJIrdZfztW8pi0LA+93NjU
-X-Gm-Message-State: AOJu0YyE3yhGh/piqamEZ+Yu1JPeTeMLT7WYoV+pwMmlFuelrQGsJhE7
-	MUyQ8xHI9sGbW23OU0ETJIjXW+6dFEPlaxQ1BStFoD2pW9CvzJ/OXnF9qwVVXA==
-X-Google-Smtp-Source: AGHT+IHyCoQeFtMQ1zKUiilu29pAHD5KerfvrevUcYiPvLHm4Y8t9zB57H8y8qClJfNio83Lu+ygrw==
-X-Received: by 2002:a17:903:22c6:b0:1fa:12a5:a4f9 with SMTP id d9443c01a7336-1fb33efe2b6mr14725455ad.47.1720102298181;
-        Thu, 04 Jul 2024 07:11:38 -0700 (PDT)
-Received: from [10.40.5.113] ([89.207.175.15])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fac1596657sm123250375ad.255.2024.07.04.07.11.30
+        bh=m4piJEUDE3oQXNYmccZB9GGTOFKDg7p4aQI1wCYxUZU=;
+        b=JSgAYKcenWg8iSouqpGqi75uJGfNdYeUXGH5h75HnvEsLOY5vOSLSuzY+qbX4SRevQ
+         cUpeGeaqnRsqU92T1UH55GB1RglcPs0jVhO/ngJxDdTxA6YdWxfgRBpFw3FQnVtImIt+
+         gqSdP3hqko+00CvGsKtVwbOmtRwEVjX4lqlmDU7/cW/UPiONVLhzSikFJ+kzDyFT3xEo
+         Vuu3Veikv0pIxLCCn9ENm9iNvnitg6uqCL7koC3iDZGVjCTUADtms5ilzwLXY6hJePSs
+         ji/0cXDXEQxqevDtcojDPG7xEUccgwEzQSR+DGrLXRMlsIzYQ+x3VxsFL0Z3WFgWD3D8
+         EIlA==
+X-Forwarded-Encrypted: i=1; AJvYcCWDSmzX2vJPrMYSa05Uk1u9Ix74lAzY+rIN4C6hJ1azfKOqPlor9yby2PN1XSaWnCTWp/2OSyARe8AutLKxYqG/B72YdxWIhu3n16A9
+X-Gm-Message-State: AOJu0YwsfpPLkB6P59K7vMckia/31dJpNYNkOp/vRjIAAKuPpspNDjvn
+	g7sxG1JX1Pe813CBG6UeMhv4sSzVmdmr5rqItqCSI+4ZLHHutPFO/hFZYAzNmg==
+X-Google-Smtp-Source: AGHT+IFBEG9+/D5d42wXwUlBbIyJNvFXZz+rh/6M84PbUVv+JPfYiKubVfYxon2cJ5yyFgWdL/q1vw==
+X-Received: by 2002:a05:620a:901:b0:795:4a3a:7170 with SMTP id af79cd13be357-79eef3a994bmr230162885a.18.1720102381184;
+        Thu, 04 Jul 2024 07:13:01 -0700 (PDT)
+Received: from [10.230.29.79] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-79d692f05dcsm683324585a.92.2024.07.04.07.12.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jul 2024 07:11:37 -0700 (PDT)
-Message-ID: <41f89d96-079e-46fa-ad77-255ebe70e9a2@broadcom.com>
-Date: Thu, 4 Jul 2024 15:11:29 +0100
+        Thu, 04 Jul 2024 07:13:00 -0700 (PDT)
+Message-ID: <6b987d6c-daa0-481f-8333-9e0fb9996a69@broadcom.com>
+Date: Thu, 4 Jul 2024 15:12:42 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -58,8 +58,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/11] irqchip/bcm2835: Enable SKIP_SET_WAKE and
- MASK_ON_SUSPEND
+Subject: Re: [PATCH RFT 10/11] serial: 8250_bcm2835aux: add PM suspend/resume
+ support
 To: Stefan Wahren <wahrenst@gmx.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ray Jui
  <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
@@ -75,7 +75,7 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
 References: <20240630153652.318882-1-wahrenst@gmx.net>
- <20240630153652.318882-6-wahrenst@gmx.net>
+ <20240630165304.323095-1-wahrenst@gmx.net>
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
@@ -109,36 +109,50 @@ Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
  7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
  95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240630153652.318882-6-wahrenst@gmx.net>
+In-Reply-To: <20240630165304.323095-1-wahrenst@gmx.net>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000007c3a81061c6c86dd"
+	boundary="0000000000006dbf8b061c6c8b33"
 
---0000000000007c3a81061c6c86dd
+--0000000000006dbf8b061c6c8b33
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
-On 6/30/2024 4:36 PM, 'Stefan Wahren' via BCM-KERNEL-FEEDBACK-LIST,PDL 
-wrote:
-> The BCM2835 ARMCTRL interrupt controller doesn't provide any facility
-> to configure the wakeup sources. That's the reason why this
-> implementation lacks the irq_set_wake implementation. But this prevent
-> us from properly entering power management states like "suspend to
-> idle".
-> 
-> So enable the flags IRQCHIP_SKIP_SET_WAKE and
-> IRQCHIP_MASK_ON_SUSPEND to let the irqchip core allows and handles
-> the power management.
+On 6/30/2024 5:53 PM, Stefan Wahren wrote:
+> This adds suspend/resume support for the 8250_bcm2835aux
+> driver to provide power management support on attached
+> devices.
 > 
 > Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> ---
+> 
+> Since i don't have a RS485 setup, any test feedback would be great.
+> 
+>   drivers/tty/serial/8250/8250_bcm2835aux.c | 23 +++++++++++++++++++++++
+>   1 file changed, 23 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> index 121a5ce86050..cccd2a09cb6f 100644
+> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> @@ -213,11 +213,34 @@ static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
+>   };
+>   MODULE_DEVICE_TABLE(acpi, bcm2835aux_serial_acpi_match);
+> 
+> +static int __maybe_unused bcm2835aux_suspend(struct device *dev)
+> +{
+> +	struct bcm2835aux_data *data = dev_get_drvdata(dev);
+> +
+> +	serial8250_suspend_port(data->line);
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Don't you also need to disable the clock here, unless the device is a 
+wake-up source, and conversely re-enable the clock upon resume?
 -- 
 Florian
 
---0000000000007c3a81061c6c86dd
+--0000000000006dbf8b061c6c8b33
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -209,14 +223,14 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIPQbeM0zSvkK7aTg
-xxgrh+IdJRKWJbfHIQqo/kJ7cBTeMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDcwNDE0MTEzOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAYuXLohUuScCWoP
+gga6loHhWxl08L4Dw8uj86AXjhdLMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDcwNDE0MTMwMVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCKxvBQNwoTJ46hULhTdhYeoRMgL8eXJgrb
-IabscgNQSIpVim1YiYrLSaFXOOlmo1n/JbQvP0YWz+yjFFRH1ijX9kRloC5AhCjo/Ifp6mlbmFUa
-mW7AlolcMA6sQ7qE3EovHBaa2DAV9WQUyUb+SCpO54HxAQqv4soiiEvNCPPCal1T7ctGiGKs0Kj5
-hneCnmLET1Y7HgRlgxlFRVuqSojRfZzQUm04QpsL3R8/BbxskdxbAGD5PSvTtcydZz/VavhPlxTu
-pUJxVw/Gernm86lyz6QESTNaf+IYbUnW6c+LzCEaA51Hd8Ht3xeHT1MQaBbwG/eit1ulujPz57uT
-jt62
---0000000000007c3a81061c6c86dd--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCfWPsl7Q/J6e7PiuBlS7SKch3abi1zH1Ob
+g2eaMmNBA5qxZTcSeFCdPa1czRTa1f4dm5xSMzbaMY9jIq9v0m9kvVwCenR0JuKhseWcr5P+nXrm
+aHufOcbClxWNfUsWjwOtyRB8+i3X7J1zBSKygqEeCBTdfkF04I0yMmt/fXeXwr/8fwFvRbvqKrVr
+N/NX5cyk1Qdn2n81HwFUQBYkwYsNOd5T+BSFvyqil6cyCSSZWlzxsHqhk0xZRlZM+J9xa2MPBjC2
+1jUaGaDNVnUXsdCOe9/FAzDxp1RtaCJvD4aSE5x8lTt5/SFwSksCt+TY4UJW6tYUJay4X1m0/jn/
+wUp3
+--0000000000006dbf8b061c6c8b33--
