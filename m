@@ -1,499 +1,215 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF951AE840;
-	Thu,  4 Jul 2024 14:02:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BA61AE87F
+	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:10:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720101723; cv=none; b=bQeKkTFSZf6C4TPgr7BEd2G348s2WTsUa2WasWzsfNDUBaZ5UmVwMHUYYFWaNJPBke0ogZ7IVpqyHvqd+JjNaQWnR4/HpxJByykGTHIU1DNTk+O2BH73LbRZw4vkz5z2Xq0EMbRIjIXT/ZcSCKn+dYKKPuC0PU0i7Yisnk5GEWA=
+	t=1720102224; cv=none; b=Y+3xUfOuoRkFFIKW85w2wSDQBjUU7SVpASPqt6lNlBlI76Xlllnq2GW/0kDJ7HlfN7NP3T40VqNTR39Zljqb+xcqx5WB5LYp40Y5TXMTV8UqzcSjdfCoAYHs2Ey5HHMTbWh398/FxUZNOPdU7Px9R2s/g9VPQ0yoKwspoczd6oE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720101723; c=relaxed/simple;
-	bh=BpgPLUkOxoys4/2xP23JGgah9GInBRwSP+wjBYdzIYU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NZVAz6E8rDqoGImN0ED74gEx8NwtM88+/XWFwY8FT7Eh2sei3hVnMwFN+77UE79O+zY/xpJTNv+NoJYkVaFRsLG+FYjIemexS0qVRc7+ZPx1AKbh/tydbST0CejG21wdXZbd5DtuL45OzRSbCWP6p0lMRV2+GLpCgohcIo7PMRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Da1TNbJS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1720102224; c=relaxed/simple;
+	bh=1c91U5+0jFbr8HNwrdFsVvyAjTeOlpubJoh1B1mVltM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Enyn6U8pY7lDABDN/eHbSBZMpCV6/OvzwsfTydwVXTD76fgFfOTOA1/ScGC5qocphoPob9kie6YWTIaesqyUeqDIHmPWuknS9yTQn9G1ebppYqneiNUushQme97+FAQ3pDmAI1nE63MCCA7uVyAv9rTULbyetEKxfdLjbz8BnL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=J1bes3t6; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Da1TNbJS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A046CC3277B;
-	Thu,  4 Jul 2024 14:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720101722;
-	bh=BpgPLUkOxoys4/2xP23JGgah9GInBRwSP+wjBYdzIYU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Da1TNbJS4oyiLPxoe0do3ahhBFHdPpP/92cYYxhME/EhsT7pFCrqYou+Eyh/nuMMe
-	 nyJID5aPSXH1mdR1ktRtyf00c8ldMQfNTnaYX6yYKv6dCo6xJDY2CBiEx003hwn/VK
-	 a91aDKsZX4S1A2sv0OiiC24Q4fN1PuC9Hf5I0RDPwybLnQ0Fgcol5SPd6kYmrHnAc/
-	 +I2EM8UMuvLFC6Qnawzvi0Gh1v/Rxsd1hGoOyyuP1ew/LWh/9UnHzYPv5n9/2m5L+t
-	 wVuGPl7ApYzdicxZLvMYN/U+8qEnNHzxG+ZlZ0haiT88cRiH/4V00Qw9eVCnnQZGqW
-	 ht67i//WLOCgw==
-Date: Thu, 4 Jul 2024 21:46:46 +0800
-From: Jisheng Zhang <jszhang@kernel.org>
-To: Yixun Lan <dlan@gentoo.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Conor Dooley <conor@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Yangyu Chen <cyy@cyyself.name>,
-	Inochi Amaoto <inochiama@outlook.com>, linux-serial@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>
-Subject: Re: [PATCH v3 08/11] riscv: dts: add initial SpacemiT K1 SoC device
- tree
-Message-ID: <Zoanxksn0nio4MPg@xhacker>
-References: <20240703-k1-01-basic-dt-v3-0-12f73b47461e@gentoo.org>
- <20240703-k1-01-basic-dt-v3-8-12f73b47461e@gentoo.org>
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="J1bes3t6"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-70af8128081so528871b3a.1
+        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1720102222; x=1720707022; darn=vger.kernel.org;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4KClz7jROWmBNWgFo1JkryBBaDPAROGTVjFQmQixcPM=;
+        b=J1bes3t6Z/ig118uGGBoCvmvRkgn4TES1McwHg+mF1ffXZmPqUtGbdE7EdzIV4fltZ
+         8K6t92kyNr+u4N04QBSCmXv8puUr2N/Qkf/ltQLTIBz/v+v5OhzCHpip5UGHPScysxnL
+         4Mjv6lrrj7YgV72dg2v/yI6YVdkqP1XFBFxO8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720102222; x=1720707022;
+        h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=4KClz7jROWmBNWgFo1JkryBBaDPAROGTVjFQmQixcPM=;
+        b=Sf1Eai0fknQEOnknfkDhLojadfOxlW8qgxwqN98yxTRfQkMRVfkBp2m6DdfKR23Faj
+         zCaDbjoI/+AGxzicREYeE7HJbZRTkUhHBGYiYdaW1MrWSAoYPKGg4ee6zG0c0VvCsuF5
+         2hnXCdb16EpZy6MHg52RBONxNXybCYJQSN5KVYoFP64yXaQj8oFLk+L66jeTZr5L8azL
+         D1v4z2jjm+S8vYZG7cikQuygBaaTqjJ4xwEUEXDoCgd+dueMhv3a2IAYsTYgxUn74msR
+         sCQ+pafMonLKPFdu76YsSbN77iiD1KzSgJva/kJm1Ig47A6jCY2piibLGTnWBySABTbJ
+         dG9A==
+X-Forwarded-Encrypted: i=1; AJvYcCVKCx4z2/vZ4n33g2ve8SFNLDsY+4AuhwFMclWwKK2Ms5PJSs+ecss/z6j+tlNO1lGVm6Z5SQQ1s5lAlPr6rg57LUjEnleluOFBBgjZ
+X-Gm-Message-State: AOJu0YxsVruHo5oC/Ot+EmR1VsuZk1Hw/hPfONTm7V6Om8C12TYMHsup
+	0YSK01KaQLuzGgBtjTo3lFW0prbxf7tAc4uyjCqGBNG8iBc8JlGkVF7W/fZVxA==
+X-Google-Smtp-Source: AGHT+IF8hxSelLaskDjQ0b8nlLP2ANXkSzhsrySOhljC4/pq4lcE7UrtCIFlnhR+QblsaDLjm/iN5g==
+X-Received: by 2002:a05:6a20:3ca9:b0:1be:d1f7:e91d with SMTP id adf61e73a8af0-1c0cc75dc87mr1890296637.29.1720102221857;
+        Thu, 04 Jul 2024 07:10:21 -0700 (PDT)
+Received: from [10.40.5.113] ([89.207.175.15])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fac10d2652sm123286975ad.1.2024.07.04.07.10.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Jul 2024 07:10:21 -0700 (PDT)
+Message-ID: <212ae02a-52f0-4dd6-868a-91f76de1f0a0@broadcom.com>
+Date: Thu, 4 Jul 2024 15:10:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240703-k1-01-basic-dt-v3-8-12f73b47461e@gentoo.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 01/11] firmware: raspberrypi: Improve timeout warning
+To: Stefan Wahren <wahrenst@gmx.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Jassi Brar <jassisinghbrar@gmail.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+References: <20240630153652.318882-1-wahrenst@gmx.net>
+ <20240630153652.318882-2-wahrenst@gmx.net>
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <20240630153652.318882-2-wahrenst@gmx.net>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+	boundary="000000000000f3774e061c6c8127"
 
-On Wed, Jul 03, 2024 at 02:55:11PM +0000, Yixun Lan wrote:
-> From: Yangyu Chen <cyy@cyyself.name>
-> 
-> Banana Pi BPI-F3 motherboard is powered by SpacemiT K1[1].
-> 
-> Key features:
-> - 4 cores per cluster, 2 clusters on chip
-> - UART IP is Intel XScale UART
-> 
-> Some key considerations:
-> - ISA string is inferred from vendor documentation[2]
-> - Cluster topology is inferred from datasheet[1] and L2 in vendor dts[3]
-> - No coherent DMA on this board
->     Inferred by taking vendor ethernet and MMC drivers to the mainline
->     kernel. Without dma-noncoherent in soc node, the driver fails.
-> - No cache nodes now
->     The parameters from vendor dts are likely to be wrong. It has 512
->     sets for a 32KiB L1 Cache. In this case, each set is 64B in size.
->     When the size of the cache line is 64B, it is a directly mapped
->     cache rather than a set-associative cache, the latter is commonly
->     used. Thus, I didn't use the parameters from vendor dts.
-> 
-> Currently only support booting into console with only uart, other
-> features will be added soon later.
-> 
-> Link: https://docs.banana-pi.org/en/BPI-F3/SpacemiT_K1_datasheet [1]
-> Link: https://developer.spacemit.com/#/documentation?token=BWbGwbx7liGW21kq9lucSA6Vnpb [2]
-> Link: https://gitee.com/bianbu-linux/linux-6.1/blob/bl-v1.0.y/arch/riscv/boot/dts/spacemit/k1-x.dtsi [3]
-> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-> Signed-off-by: Yixun Lan <dlan@gentoo.org>
-> ---
->  arch/riscv/boot/dts/spacemit/k1.dtsi | 376 +++++++++++++++++++++++++++++++++++
->  1 file changed, 376 insertions(+)
-> 
-> diff --git a/arch/riscv/boot/dts/spacemit/k1.dtsi b/arch/riscv/boot/dts/spacemit/k1.dtsi
-> new file mode 100644
-> index 0000000000000..a076e35855a2e
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/spacemit/k1.dtsi
-> @@ -0,0 +1,376 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR MIT
-> +/*
-> + * Copyright (C) 2024 Yangyu Chen <cyy@cyyself.name>
-> + */
-> +
-> +/dts-v1/;
-> +/ {
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +	model = "SpacemiT K1";
-> +	compatible = "spacemit,k1";
-> +
-> +	aliases {
-> +		serial0 = &uart0;
-> +		serial1 = &uart2;
-> +		serial2 = &uart3;
-> +		serial3 = &uart4;
-> +		serial4 = &uart5;
-> +		serial5 = &uart6;
-> +		serial6 = &uart7;
-> +		serial7 = &uart8;
-> +		serial8 = &uart9;
-> +	};
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		timebase-frequency = <24000000>;
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu_0>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu_1>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu_2>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu_3>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu_4>;
-> +				};
-> +				core1 {
-> +					cpu = <&cpu_5>;
-> +				};
-> +				core2 {
-> +					cpu = <&cpu_6>;
-> +				};
-> +				core3 {
-> +					cpu = <&cpu_7>;
-> +				};
-> +			};
-> +		};
-> +
-> +		cpu_0: cpu@0 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <0>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu0_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_1: cpu@1 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <1>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu1_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_2: cpu@2 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <2>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu2_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_3: cpu@3 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <3>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu3_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_4: cpu@4 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <4>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu4_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_5: cpu@5 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <5>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu5_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_6: cpu@6 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <6>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu6_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +		cpu_7: cpu@7 {
-> +			compatible = "spacemit,x60", "riscv";
-> +			device_type = "cpu";
-> +			reg = <7>;
-> +			riscv,isa = "rv64imafdcv_zicbom_zicbop_zicboz_zicntr_zicond_zicsr_zifencei_zihintpause_zihpm_zfh_zba_zbb_zbc_zbs_zkt_zvfh_zvkt_sscofpmf_sstc_svinval_svnapot_svpbmt";
-> +			riscv,isa-base = "rv64i";
-> +			riscv,isa-extensions = "i", "m", "a", "f", "d", "c", "v", "zicbom",
-> +					       "zicbop", "zicboz", "zicntr", "zicond", "zicsr",
-> +					       "zifencei", "zihintpause", "zihpm", "zfh", "zba",
-> +					       "zbb", "zbc", "zbs", "zkt", "zvfh", "zvkt",
-> +					       "sscofpmf", "sstc", "svinval", "svnapot", "svpbmt";
-> +			riscv,cbom-block-size = <64>;
-> +			riscv,cbop-block-size = <64>;
-> +			riscv,cboz-block-size = <64>;
-> +			mmu-type = "riscv,sv39";
-> +
-> +			cpu7_intc: interrupt-controller {
-> +				compatible = "riscv,cpu-intc";
-> +				interrupt-controller;
-> +				#interrupt-cells = <1>;
-> +			};
-> +		};
-> +
-> +	};
-> +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		interrupt-parent = <&plic>;
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		dma-noncoherent;
-> +		ranges;
-> +
-> +		uart0: serial@d4017000 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
+--000000000000f3774e061c6c8127
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-no, this is not a correct hw modeling. The doc on spacemit says
-all the uart support 64 bytes FIFO, declaring xscale only makes
-use of 32 bytes FIFO.
 
-IIRC, 8250_pxa is a xscale uart with 64 bytes FIFO, so this should be
-"mrvl,pxa-uart" or "mrvl,mmp-uart"
 
-> +			reg = <0x0 0xd4017000 0x0 0x100>;
-> +			interrupts = <42>;
-> +			clock-frequency = <14857000>;
-
-once clk is ready, you will remove this property and add clk phandles,
-so why not bring clk, pinctrl, reset before hand?
-
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart2: serial@d4017100 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017100 0x0 0x100>;
-> +			interrupts = <44>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart3: serial@d4017200 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017200 0x0 0x100>;
-> +			interrupts = <45>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart4: serial@d4017300 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017300 0x0 0x100>;
-> +			interrupts = <46>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart5: serial@d4017400 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017400 0x0 0x100>;
-> +			interrupts = <47>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart6: serial@d4017500 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017500 0x0 0x100>;
-> +			interrupts = <48>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart7: serial@d4017600 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017600 0x0 0x100>;
-> +			interrupts = <49>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart8: serial@d4017700 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017700 0x0 0x100>;
-> +			interrupts = <50>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		uart9: serial@d4017800 {
-> +			compatible = "spacemit,k1-uart", "intel,xscale-uart";
-> +			reg = <0x0 0xd4017800 0x0 0x100>;
-> +			interrupts = <51>;
-> +			clock-frequency = <14857000>;
-> +			reg-shift = <2>;
-> +			reg-io-width = <4>;
-> +			status = "disabled";
-> +		};
-> +
-> +		plic: interrupt-controller@e0000000 {
-> +			compatible = "spacemit,k1-plic", "sifive,plic-1.0.0";
-> +			reg = <0x0 0xe0000000 0x0 0x4000000>;
-> +			interrupts-extended = <&cpu0_intc 11>, <&cpu0_intc 9>,
-> +					      <&cpu1_intc 11>, <&cpu1_intc 9>,
-> +					      <&cpu2_intc 11>, <&cpu2_intc 9>,
-> +					      <&cpu3_intc 11>, <&cpu3_intc 9>,
-> +					      <&cpu4_intc 11>, <&cpu4_intc 9>,
-> +					      <&cpu5_intc 11>, <&cpu5_intc 9>,
-> +					      <&cpu6_intc 11>, <&cpu6_intc 9>,
-> +					      <&cpu7_intc 11>, <&cpu7_intc 9>;
-> +			interrupt-controller;
-> +			#address-cells = <0>;
-> +			#interrupt-cells = <1>;
-> +			riscv,ndev = <159>;
-> +		};
-> +
-> +		clint: timer@e4000000 {
-> +			compatible = "spacemit,k1-clint", "sifive,clint0";
-> +			reg = <0x0 0xe4000000 0x0 0x10000>;
-> +			interrupts-extended = <&cpu0_intc 3>, <&cpu0_intc 7>,
-> +					      <&cpu1_intc 3>, <&cpu1_intc 7>,
-> +					      <&cpu2_intc 3>, <&cpu2_intc 7>,
-> +					      <&cpu3_intc 3>, <&cpu3_intc 7>,
-> +					      <&cpu4_intc 3>, <&cpu4_intc 7>,
-> +					      <&cpu5_intc 3>, <&cpu5_intc 7>,
-> +					      <&cpu6_intc 3>, <&cpu6_intc 7>,
-> +					      <&cpu7_intc 3>, <&cpu7_intc 7>;
-> +		};
-> +	};
-> +};
+On 6/30/2024 4:36 PM, Stefan Wahren wrote:
+> Recent work on raspberry-power driver showed that even the
+> stacktrace on firmware property timeout doesn't provide
+> enough information. So add the first tag name to the warning
+> to be in line with a status error.
 > 
-> -- 
-> 2.45.2
-> 
-> 
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+-- 
+Florian
+
+--000000000000f3774e061c6c8127
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVgwggRAoAMCAQICDBP8P9hKRVySg3Qv5DANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMjA5MTAxMjE4MTFaFw0yNTA5MTAxMjE4MTFaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEZsb3JpYW4gRmFpbmVsbGkxLDAqBgkqhkiG
+9w0BCQEWHWZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA+oi3jMmHltY4LMUy8Up5+1zjd1iSgUBXhwCJLj1GJQF+GwP8InemBbk5rjlC
+UwbQDeIlOfb8xGqHoQFGSW8p9V1XUw+cthISLkycex0AJ09ufePshLZygRLREU0H4ecNPMejxCte
+KdtB4COST4uhBkUCo9BSy1gkl8DJ8j/BQ1KNUx6oYe0CntRag+EnHv9TM9BeXBBLfmMRnWNhvOSk
+nSmRX0J3d9/G2A3FIC6WY2XnLW7eAZCQPa1Tz3n2B5BGOxwqhwKLGLNu2SRCPHwOdD6e0drURF7/
+Vax85/EqkVnFNlfxtZhS0ugx5gn2pta7bTdBm1IG4TX+A3B1G57rVwIDAQABo4IB3jCCAdowDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAoBgNVHREEITAfgR1mbG9yaWFuLmZhaW5lbGxpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
+BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUwwfJ6/F
+KL0fRdVROal/Lp4lAF0wDQYJKoZIhvcNAQELBQADggEBAKBgfteDc1mChZjKBY4xAplC6uXGyBrZ
+kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
+2s1RH00JOkO5SkYdwCHj4DB9B7KEnLatJtD8MBorvt+QxTuSh4ze96Jz3kEIoHMvwGFkgObWblsc
+3/YcLBmCgaWpZ3Ksev1vJPr5n8riG3/N4on8gO5qinmmr9Y7vGeuf5dmZrYMbnb+yCBalkUmZQwY
+NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
+AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
+LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ8RRN5zFU+yK0Hd
+1Jdpoh3I4AchHHX01p/cg77YiBErMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDcwNDE0MTAyMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCPSuxghRdUyrIS2qm8MM5Mcc7UTqrUnA8X
+TJH0TIjDmDVAmAk6rBmOQAHAUeuDUCdf59Ir2AJOP0iVw6YS3Hcun3eZ64aeBbnqYkpklIdzApTQ
+40L4NmsuZfpujcm+MIXFu7UgYsXGGcmPcUAfz2O48NFCEiJp+I7QiB9Za8BeJ8Ov12DWQa8SkkEZ
+GR1m7zXBfzlsr8KFd9RCTxjej9+rwayWdYo3kcl265Rr/b3eKfMDWVqMbqlVlgOEywCWmu00Jxlh
+AWujB8Vc/bghAJPRSi0fgm3EdX8vr5h4RG7IIsJxs9HvRVXDF2SslBEDsA+zRuGv6Cy+f0d3XEXt
+L5ac
+--000000000000f3774e061c6c8127--
