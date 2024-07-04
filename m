@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7AD18FC81;
-	Thu,  4 Jul 2024 09:59:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E2E1AB508;
+	Thu,  4 Jul 2024 10:08:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720087143; cv=none; b=MSW0VHEGIDHRE8si+RTB4EzIssCsUhLyjfFy3J5qbL0UI+Z7YDiNaIu7oQmTuR6psGc7X1c7Ergj4nP7glYFvM6rh0MftslnuHeG1J8q0w11gr2PVOkIG3wCqNTCqyLDSSRqgXgbTcsvp7kGRdeW8Qi7ZalrhaOYKpd7dYvaBxU=
+	t=1720087693; cv=none; b=D32AvVIzgB+++VcA6+Hfc6/TS5zA7XPVNbaF6mVQQYFIfPBm0hhRNAYUvh1Fzx/jMMJ1eVEap9de5epvyS7tZy/Way96V0TG0EVuQDwDfHLlwlvqA3uIIi0LPraoIjELmimK0/JnkObLyKivyoBzGL3FF2MM3rWGBmWoYdjSS+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720087143; c=relaxed/simple;
-	bh=qwr0HlQT+E3A2hy1BA/HWVICCAADse5XNZIpsoHJffU=;
+	s=arc-20240116; t=1720087693; c=relaxed/simple;
+	bh=4L+j5Nb3YdQBIueSA07q/26gPF/oUqNFVZ1jfZL8ij8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mX3xkLKnBA1nt5E3L6RUJHphp43tZEBzyggkGAhaja5sZsARTMOrEnEC3P5ZlBhC8FhogV4TOJjHri2pHly0BIRo3Wio82WXgis8Wy/qj8RwkSVzIc5Txwni+1hNZkbn17GC5SCdf8+uKXD+H5lS7jxn8Eswu+Ut/yxCYpaP1nE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lGzONv9m; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=h/PkldlddKJyugNZVcELE6/7inlWbnW4iZvk+ZAdMrycV3h8cBsRerjPFItWgnzpkqH13XI5H5zWl2uYpQihty5hN6Ef6YbCCHF9kcWHLhpBkc0QsM6C0aONsi/1gSAzM5HD8bzTJTX+1nAzN5RImJRis8kcUaxYr2/OL0mzdYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WCQjqfLP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lGzONv9m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB81C3277B;
-	Thu,  4 Jul 2024 09:59:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WCQjqfLP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59EADC3277B;
+	Thu,  4 Jul 2024 10:08:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720087142;
-	bh=qwr0HlQT+E3A2hy1BA/HWVICCAADse5XNZIpsoHJffU=;
+	s=k20201202; t=1720087693;
+	bh=4L+j5Nb3YdQBIueSA07q/26gPF/oUqNFVZ1jfZL8ij8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lGzONv9m4mYXt24+d067cOIRY3kEXZWZE+UrGj8RfjMB7mu8B68bEj5Q+zfS6QhKp
-	 lFXxg3kOqVAwM6O8k5G2E0i4J0Z/Qjm6f8Ep312Wy74HrzLeiLJgW9VQfmJizA59J3
-	 v6H9U/Z2HNTrkO1PtvkaMJGD7eWWEvV6k6ey31dz4SX7ynl4m4PM7CSAEBjJLzTH5P
-	 mimkOxbXCg8UbyvnQ7vrTF93vI3kuyEhdg3ULjRgd+5U3ppMpDNYC3pDo3wIiZFIY1
-	 aR8sZE2GSwsuNj2OZfh3kF3/gygUk2mspCjA0mnDEISdrg566irxQipw3VmRKbGm9T
-	 rEaBH9VsIMZLw==
+	b=WCQjqfLPaxHLmhe3DumLRvPJ9rGhBGH4sSFlDDCYfZ2pLQfZcca1yascUph7jg+hm
+	 ZkO8o2yMQj6EuPl99C6k9mJUtrcx5hSmhCRmnvyDVhhdEhbiPo7sU9Q3VYYnVd3sqT
+	 d+QAQ9lUs0aih2fyXnkh0XBZxa54CzaTnVYhBP9kA8qaYtlYeSbWJplWUk2J/mIf+d
+	 gKLo7pvBQWbTrys4teWQZKx/vQwPI/TIZVdxbH6T52TlsdTCFoJp5j033VA9c7Yh6I
+	 gnLGuu5gMUzx8ojovcsGKBTeXdcEKjP1QjHYIN1u+/UPlkor8tPM8pVuvwXPpLIEYX
+	 DBG1+y+PVfcrA==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan@kernel.org>)
-	id 1sPJEz-000000007iG-28dB;
-	Thu, 04 Jul 2024 11:59:02 +0200
-Date: Thu, 4 Jul 2024 11:59:01 +0200
+	id 1sPJNt-000000007p9-0V98;
+	Thu, 04 Jul 2024 12:08:13 +0200
+Date: Thu, 4 Jul 2024 12:08:13 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Doug Anderson <dianders@chromium.org>
 Cc: Johan Hovold <johan+linaro@kernel.org>,
@@ -39,64 +39,57 @@ Cc: Johan Hovold <johan+linaro@kernel.org>,
 	Konrad Dybcio <konrad.dybcio@linaro.org>,
 	Bjorn Andersson <andersson@kernel.org>,
 	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] serial: qcom-geni: fix hard lockup on buffer flush
-Message-ID: <ZoZyZcVyLvI9t4fH@hovoldconsulting.com>
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 2/3] serial: qcom-geni: fix soft lockup on sw flow
+ control and suspend
+Message-ID: <ZoZ0jSbohdYAqY4E@hovoldconsulting.com>
 References: <20240624133135.7445-1-johan+linaro@kernel.org>
- <20240624133135.7445-2-johan+linaro@kernel.org>
- <CAD=FV=VZXnnbwTNc6dSqZvyCUc0=Wjg9mvBYsA1FJK3xR6bDEg@mail.gmail.com>
- <ZnrW5EcGKGYzS8qf@hovoldconsulting.com>
+ <20240624133135.7445-3-johan+linaro@kernel.org>
+ <CAD=FV=UauWffRM45FsU2SHoKtkVaOEf=Adno+jV+Ashf7NFHuA@mail.gmail.com>
+ <CAD=FV=XPKqjMcWhqk4OKxSOPgDKh-VM4J4oMEdQtgpFBw8WSXA@mail.gmail.com>
+ <ZnvJQDX6NkyRCA8y@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ZnrW5EcGKGYzS8qf@hovoldconsulting.com>
+In-Reply-To: <ZnvJQDX6NkyRCA8y@hovoldconsulting.com>
 
-On Tue, Jun 25, 2024 at 04:40:36PM +0200, Johan Hovold wrote:
-> On Mon, Jun 24, 2024 at 10:39:07AM -0700, Doug Anderson wrote:
-> > On Mon, Jun 24, 2024 at 6:31 AM Johan Hovold <johan+linaro@kernel.org> wrote:
-> > >
-> > > The Qualcomm GENI serial driver does not handle buffer flushing and used
-> > > to print garbage characters when the circular buffer was cleared. Since
-> > > commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo") this
-> > > instead results in a lockup due to qcom_geni_serial_send_chunk_fifo()
-> > > spinning indefinitely in the interrupt handler.
-> > >
-> > > This is easily triggered by interrupting a command such as dmesg in a
-> > > serial console but can also happen when stopping a serial getty on
-> > > reboot.
-> > >
-> > > Fix the immediate issue by printing NUL characters until the current TX
-> > > command has been completed.
+On Wed, Jun 26, 2024 at 09:54:40AM +0200, Johan Hovold wrote:
+> On Mon, Jun 24, 2024 at 02:58:39PM -0700, Doug Anderson wrote:
 
-> > I don't love this, though it's better than a hard lockup. I will note
-> > that it doesn't exactly restore the old behavior which would have
-> > (most likely) continued to output data that had previously been in the
-> > FIFO but that had been cancelled.
+> > 1. The function is named qcom_geni_serial_clear_tx_fifo() which
+> > implies that when it finishes that the hardware FIFO will have nothing
+> > in it. ...but how does your code ensure this?
 > 
-> Ah, yes, you're right. I went back and compared with 6.9 and the effect
-> was indeed (often) that the machine felt sluggish when you hit ctrl-c to
-> interrupt something like dmesg and the driver would continue to print up
-> to 4k characters after that (e.g. 350 ms at 115200).
-> 
-> The idea here was to fix the lockup regression separately and then have
-> the third patch address the buffer flush failure, which could also be
-> backported without depending on the kfifo conversion.
-> 
-> But running with this series since yesterday, I realise there are still
-> some unresolved interaction with the console code, which can now trigger
-> a soft (instead of hard) lockup on reboot...
+> Yeah, I realised after I sent out the series that this may not be the
+> case. I was under the impression that cancelling a command would discard
+> the data in the FIFO (e.g. when starting the next command) but that was
+> probably an error in my mental model.
 
-I've reworked my series to avoid the remaining lockup, which was due to
-v1 not handling some cases where cancelling a command left stale data in
-the fifo.
+I went back and did some more reverse engineering and have now confirmed
+that the hardware works as I assumed for v1, that is, that cancelling a
+command leaves data in the fifo, which is later discarded when a new
+command is issued.
 
-I've also reordered the patches to avoid printing NUL characters as an
-intermediate fix.
+> > 3. On my hardware you're setting the FIFO level to 16 here. The docs I
+> > have say that if the FIFO level is "less than" the value you set here
+> > then the interrupt will go off and further clarifies that if you set
+> > the register to 1 here then you'll get interrupted when the FIFO is
+> > empty. So what happens with your solution if the FIFO is completely
+> > full? In that case you'd have to set this to 17, right? ...but then I
+> > could believe that might confuse the interrupt handler which would get
+> > told to start transmitting when there is no room for anything.
+> 
+> Indeed. I may implicitly be relying on the absence of hardware flow
+> control as well so that waiting for one character to be sent is what
+> makes this work.
+
+I'm keeping the watermark level unchanged in v2 and instead restart tx
+by issuing a short transfer command to clear any stale data from the
+fifo which could prevent the watermark interrupt from firing.
 
 Johan
