@@ -1,56 +1,56 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3721B0100
-	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:14:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C21F16A95F
+	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:15:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720102456; cv=none; b=jDOZN6neJhgTpS6FJ2OjTKXDiaRCcJKJ9Q5qcRD0UE8HzsuwkTe9F7D2nxYnSHLVC/HVmmSLq4jF2JXGJQwojcicbAYsWG3fX2UCoXvOigH8wngRBITY3U4Ioynxz9q4kByjjXQIz94hmt780K5YKDJ74sZt9eODIAFhZl4A//0=
+	t=1720102533; cv=none; b=Tm7JGFMY9Rek/2hGIsBrty0xlq/HMO7WKl/ZQCFnxdCF5h+kRkqVU1bfSmNTRTUsntUB1SUpEAK2eK8Vq7xJPLhDeAdAFS1MyyYYWctQ5RiP/uec80IapP4nHdzHjy6Y4Up/hJu1VHfauAIfVKMJUKb75sS9AsWdMie7a4cDy3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720102456; c=relaxed/simple;
-	bh=guq82+FUAQJF2vlpI6pHNS7tidcGOnHx7AYzFCry5CA=;
+	s=arc-20240116; t=1720102533; c=relaxed/simple;
+	bh=WQz05So2IkXKhVqVnQCTEkCn9zkcJ7ZSmvzMvZPdn1k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jdEa4ZDmb4PdpeR+psTiIlsVdNN7+ClJyzlQKNaikOtwYk1E3ObP2rmdoYydxPF9Pxamp7HaMTinYzRSlzqjZF739fxPfCIaC4flom4AdaDBI964NTNogG1CLnuNmMo1BcQ5rp4csOShyDxXgAZ6tOTDaipxTMXpRSFaE1gmb8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=UDC9Ad9h; arc=none smtp.client-ip=209.85.161.47
+	 In-Reply-To:Content-Type; b=jt6bMkNIEUYD1uAr3DIAVDJ2FR1FpW4pjCIUD3zNE5JwIzSJz1jGHwLBktYW1WaY/YQhtBwPkNCiCnAzjDG68TmaT6ToPnjHbXEU7Nlk3RimJQhNi4PP5jQxyErrabcRU/uH4DKV63UzwG55/+y8ffnBHz/1Ya9u38gPMXAjce4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=Lc0ZI8Ce; arc=none smtp.client-ip=209.85.160.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="UDC9Ad9h"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5b53bb4bebaso345247eaf.0
-        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:14:14 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="Lc0ZI8Ce"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-444fdb6c1cfso3671101cf.3
+        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:15:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1720102454; x=1720707254; darn=vger.kernel.org;
+        d=broadcom.com; s=google; t=1720102529; x=1720707329; darn=vger.kernel.org;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+A4e3fnXrcpw9mZAgp2FmLBF7SF8H+1ZPkrhmaaVugk=;
-        b=UDC9Ad9hIxmQSLxSvvKWLSY3G/m1W4dyYJdpvUY5RCcaGYUd7HaRsDb666WBg+oG3l
-         VD7RthSj3XaNnwV3PhNWD/yjg/ZtYYgPeYbC4EAoDvlZcW2a7mJHPe96beSYfe7ZjHri
-         YPHWq5KFj7QOty97hk9boX+lF0PMgQgwuWo2M=
+        bh=R2smKSY+8g3yV8AIcela7VsoSge3fhfS8qKGfBpkk2A=;
+        b=Lc0ZI8Ceuky3o/0DEnctDG13DCXWwMkfPE5VnAYLwXyFXgv3IIJxeWdScz3vEaIZLx
+         E6shRgyuvm3EohZYwz5iCpUt3DKZrc8k5B5XNj8BrLQHP08qrWCqvMtkgef/Wf/hK/Ij
+         iiKBUhHvvbU0JLJ3hpl9GT1I2/LPWcjI7feUA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720102454; x=1720707254;
+        d=1e100.net; s=20230601; t=1720102529; x=1720707329;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=+A4e3fnXrcpw9mZAgp2FmLBF7SF8H+1ZPkrhmaaVugk=;
-        b=NtvNQEqY6pUSZUOhj2knhn1fCnrXycHgzGLm+eDlndi9STQ7ti/82dtzHslO31/xxz
-         DCygkIAUHUgumGbe5iWtvRqqlp05aO/M9vxdL3tDnHnVu6vbhsjrW03lNg1SWvCX5H29
-         980zbhwYAPxMG/Tb8lr7GNq6sS7W0PFn0WXXAtreiLBwnUgORA98ZxGRvfwHMK2m/1qV
-         PRWyZ27/EIHx5tS1xa2lKS8xE/AST5Yr9lVmnX6fIhTom/Ady08wTmR08fiPuDrC1xUi
-         gpK9EVn7q0Tnak17Mh0khQmUmY8HgC97np9vHDQ/lqdFFZvXI5QnhNCzlPW90NPX7HUq
-         D16Q==
-X-Forwarded-Encrypted: i=1; AJvYcCX/6ah/mvTQaCBBo3p6DP0QP7pzSWszttjcwJ5JXGgMhSdSydUsadtnZljkCgj8PcaOzuJAlX0opLjSu6aYseEve6AUQg2ewX3jqbb4
-X-Gm-Message-State: AOJu0YxaT/MXDj0HmNZ1cUXwALXdc1OjcyGlY6QJCYiUmwSG29uyYMoq
-	f7EBaUW6R95SS2wMYfmGhghcW4qMN+B5y6AsdMyUdhgREAX3PM+bz4CUFDsrKg==
-X-Google-Smtp-Source: AGHT+IFT29S2/XQChpc79Qq3mBvTKtkHafcbD4GyYx9MlO+jXcpUJuXaD+vn/fyCndbwcUnJ7jIzoQ==
-X-Received: by 2002:a05:6870:610f:b0:254:9ded:a3bf with SMTP id 586e51a60fabf-25e2bf1f10bmr1373747fac.45.1720102454087;
-        Thu, 04 Jul 2024 07:14:14 -0700 (PDT)
+        bh=R2smKSY+8g3yV8AIcela7VsoSge3fhfS8qKGfBpkk2A=;
+        b=HvG3i9lXPKqW80cATvKYslCftmCPkHQeTo+aZpsFp+TlRGh7IsgZxtZ3zK2kphovbQ
+         EomClpxu8x2/DM5CsyFmFt2nwQIltkU7hO5OaQLnkiWwwWpgPT2zpLwDovpcAke1GSvY
+         taBn/VK7YD8Va7eUyOQhP4V8XDsQVZiwTg8BFp745zsTBgu/DfJuwNDT2T9DSuAO+ued
+         BlBrQOq+clGbJlfASnqBlCEm1FceJgnnkn6hWKMiTO/MZrucGmJQUJIsjYz34VPuM9vf
+         m4LVmk4mG+uNdr6sxNQMuCEAf/GJmAKlKKr+y9qKGj91878sPb0Yyvf1lCzCxo5rvgDL
+         JdPA==
+X-Forwarded-Encrypted: i=1; AJvYcCXoiyUQNLKA/yTc1URmuh98u72E6xc24daoAz07L44hd+cAthiwSqtZhJGw+uo/hpd1Aq5DHTSAwB1KVQo1yIHcYj0KjkNOekdKgJoY
+X-Gm-Message-State: AOJu0Yx5UievaD5WELeBDJSmtMgkE2d5lNuwcmJYr/XqdDqsYRYzo6Et
+	FKa5SB0aMCCCv3HsQ29PlRHVWEMw/R52YXT7wnFCEK4SWXfIh9K16w0hxXTFrA==
+X-Google-Smtp-Source: AGHT+IFoHKgvRZCR3o8yLRgn0980orYJt0ZatXips8K28yIHFP8sKyQ6o0Q1GbUvtPDe4OhtC5hD2A==
+X-Received: by 2002:a05:622a:1306:b0:446:501f:3dad with SMTP id d75a77b69052e-447cbf660abmr19538511cf.36.1720102529152;
+        Thu, 04 Jul 2024 07:15:29 -0700 (PDT)
 Received: from [10.230.29.79] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4465140bf35sm60862281cf.37.2024.07.04.07.13.58
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4465140bf35sm60870711cf.37.2024.07.04.07.14.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jul 2024 07:14:13 -0700 (PDT)
-Message-ID: <86705667-1320-436f-b845-da5efdd80de3@broadcom.com>
-Date: Thu, 4 Jul 2024 15:13:56 +0100
+        Thu, 04 Jul 2024 07:15:28 -0700 (PDT)
+Message-ID: <95762956-b46a-4dfa-b22f-bccbfa39558d@broadcom.com>
+Date: Thu, 4 Jul 2024 15:14:50 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/11] usb: dwc2: debugfs: Print parameter no_clock_gating
+Subject: Re: [PATCH 09/11] usb: dwc2: Skip clock gating on Broadcom SoCs
 To: Stefan Wahren <wahrenst@gmx.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ray Jui
  <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
@@ -74,7 +74,7 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
 References: <20240630153652.318882-1-wahrenst@gmx.net>
- <20240630153652.318882-9-wahrenst@gmx.net>
+ <20240630153652.318882-10-wahrenst@gmx.net>
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
@@ -108,33 +108,80 @@ Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
  7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
  95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240630153652.318882-9-wahrenst@gmx.net>
+In-Reply-To: <20240630153652.318882-10-wahrenst@gmx.net>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000c63918061c6c8fcc"
+	boundary="0000000000004034c3061c6c94d0"
 
---000000000000c63918061c6c8fcc
+--0000000000004034c3061c6c94d0
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
-On 6/30/2024 4:36 PM, 'Stefan Wahren' via BCM-KERNEL-FEEDBACK-LIST,PDL 
-wrote:
-> The commit c4a0f7a6ab54 ("usb: dwc2: Skip clock gating on Samsung
-> SoCs") introduced a parameter to skip enabling clock gating mode
-> even the hardware platform should supports it.
+On 6/30/2024 4:36 PM, Stefan Wahren wrote:
+> On resume of the Raspberry Pi the dwc2 driver fails to enable
+> HCD_FLAG_HW_ACCESSIBLE before re-enabling the interrupts.
+> This causes a situation where both handler ignore a incoming port
+> interrupt and force the upper layers to disable the dwc2 interrupt line.
+> This leaves the USB interface in a unusable state:
 > 
-> In order to make this more visible also print this in show
-> parameters of debugfs.
+> irq 66: nobody cared (try booting with the "irqpoll" option)
+> CPU: 0 PID: 0 Comm: swapper/0 Tainted: G W          6.10.0-rc3
+> Hardware name: BCM2835
+> Call trace:
+> unwind_backtrace from show_stack+0x10/0x14
+> show_stack from dump_stack_lvl+0x50/0x64
+> dump_stack_lvl from __report_bad_irq+0x38/0xc0
+> __report_bad_irq from note_interrupt+0x2ac/0x2f4
+> note_interrupt from handle_irq_event+0x88/0x8c
+> handle_irq_event from handle_level_irq+0xb4/0x1ac
+> handle_level_irq from generic_handle_domain_irq+0x24/0x34
+> generic_handle_domain_irq from bcm2836_chained_handle_irq+0x24/0x28
+> bcm2836_chained_handle_irq from generic_handle_domain_irq+0x24/0x34
+> generic_handle_domain_irq from generic_handle_arch_irq+0x34/0x44
+> generic_handle_arch_irq from __irq_svc+0x88/0xb0
+> Exception stack(0xc1b01f20 to 0xc1b01f68)
+> 1f20: 0005c0d4 00000001 00000000 00000000 c1b09780 c1d6b32c c1b04e54 c1a5eae8
+> 1f40: c1b04e90 00000000 00000000 00000000 c1d6a8a0 c1b01f70 c11d2da8 c11d4160
+> 1f60: 60000013 ffffffff
+> __irq_svc from default_idle_call+0x1c/0xb0
+> default_idle_call from do_idle+0x21c/0x284
+> do_idle from cpu_startup_entry+0x28/0x2c
+> cpu_startup_entry from kernel_init+0x0/0x12c
+> handlers:
+> [<f539e0f4>] dwc2_handle_common_intr
+> [<75cd278b>] usb_hcd_irq
+> Disabling IRQ #66
 > 
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> Disabling clock gatling workaround this issue.
 
-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Typo: gatling/gating.
+
+> 
+> Fixes: 0112b7ce68ea ("usb: dwc2: Update dwc2_handle_usb_suspend_intr function.")
+> Link: https://lore.kernel.org/linux-usb/3fd0c2fb-4752-45b3-94eb-42352703e1fd@gmx.net/T/
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> ---
+>   drivers/usb/dwc2/params.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/usb/dwc2/params.c b/drivers/usb/dwc2/params.c
+> index 5a1500d0bdd9..66580de52882 100644
+> --- a/drivers/usb/dwc2/params.c
+> +++ b/drivers/usb/dwc2/params.c
+> @@ -23,6 +23,7 @@ static void dwc2_set_bcm_params(struct dwc2_hsotg *hsotg)
+>   	p->max_transfer_size = 65535;
+>   	p->max_packet_count = 511;
+>   	p->ahbcfg = 0x10;
+> +	p->no_clock_gating = true;
+
+Could we set this depending upon whether the dwc2 host controller is a 
+wake-up source for the system or not?
 -- 
 Florian
 
---000000000000c63918061c6c8fcc
+--0000000000004034c3061c6c94d0
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -205,14 +252,14 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOqA1BQIPRkNcPTZ
-EJUh6usakW/8XoYBsi3kJlE3/Gl2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDcwNDE0MTQxNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIK8c5ndrXoaGg/os
+FT3JDuwvbXCxh8FqxA1y+KoUlMAuMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDcwNDE0MTUyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBSumw113x46gLiiaY0G7WfUhWEAZJZ1Xmk
-Y+EG9CTdj0TiUpcxcBArff5+wEO8Nzui/EIHJE523f+nKsRAWTjTVtxXv/TD0a8+rN9HM6OqwLhG
-0PzNNXpUPouj6jUD0bqrEyVdaG94t+4vlBxG6Qvk9BKTmEPFR6h7upyx0Lb5N2KYxFG8ofhRUmww
-fxoxz/zq8ThNAekzYBWfe6mg6a7UPOvf6Btg2DhoG+udGbaAstmtkmZiv5dHR4scASLlFkTc4UJJ
-PW2iRomFflCNh2RLbIdDar0Yb6Ybf0x/YAxFImM6A+bRYdRRqGLc5gKlm/vWQWMPku1e198F8XRv
-Y44J
---000000000000c63918061c6c8fcc--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQDM6t87Fi9FNGEBebQUguKNpRfFyvtRTpBy
+aH59TNR4/AkC+nUD2hdEjl1cMSZnNfffVN/eZmP8HqAtvRYZOArWti7pUpqF8V7Fy6n77GABn8hY
+G4Uz1PTH35sL31HIo9iTpVhndfaER5mkHDVOIfXL+GVnucvagE/ubMwCC2jjOgKhCWVhvTeIBqX9
+hH0iuW2NZJXAhmofx3Nde8WnMkHsyXv2EJ/RQAhbCn+cOIxR0/CEBsUemIYYUlodeNp/ax+5vCtx
+KcsA25g+76YoiD07HXnUInprkkP5uTwZ3LqGr0N4hkpkMHmkEYT+gH8dKWU94+p1PObUu9y/Ub7A
+cmdl
+--0000000000004034c3061c6c94d0--
