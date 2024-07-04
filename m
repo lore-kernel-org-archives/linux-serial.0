@@ -1,56 +1,56 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BA61AE87F
-	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AE4C1AED5B
+	for <linux-serial@vger.kernel.org>; Thu,  4 Jul 2024 14:10:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720102224; cv=none; b=Y+3xUfOuoRkFFIKW85w2wSDQBjUU7SVpASPqt6lNlBlI76Xlllnq2GW/0kDJ7HlfN7NP3T40VqNTR39Zljqb+xcqx5WB5LYp40Y5TXMTV8UqzcSjdfCoAYHs2Ey5HHMTbWh398/FxUZNOPdU7Px9R2s/g9VPQ0yoKwspoczd6oE=
+	t=1720102255; cv=none; b=oLJBizvNBBEHsl2lMLhaQ1GvHUsWyxDkjIniwXR9eypwbb3D5diXfy3TiuWwFIHpJAjf3iEH+904EjtPPnvyWiadVE3HrgvfIYbFmjRfuN2gtQOidaI5u5GtsRHKuTnQzOtgd7JdKArVqtzgiH6SJi6C63Rgava+1anGIcXOXQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720102224; c=relaxed/simple;
-	bh=1c91U5+0jFbr8HNwrdFsVvyAjTeOlpubJoh1B1mVltM=;
+	s=arc-20240116; t=1720102255; c=relaxed/simple;
+	bh=YtwxmdGtFFrTwe2t51lANDmdAC+BLpL2t9jxe+3hE2c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Enyn6U8pY7lDABDN/eHbSBZMpCV6/OvzwsfTydwVXTD76fgFfOTOA1/ScGC5qocphoPob9kie6YWTIaesqyUeqDIHmPWuknS9yTQn9G1ebppYqneiNUushQme97+FAQ3pDmAI1nE63MCCA7uVyAv9rTULbyetEKxfdLjbz8BnL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=J1bes3t6; arc=none smtp.client-ip=209.85.210.177
+	 In-Reply-To:Content-Type; b=qT/Fu/xMohsSV1auA91LCfq2UymkUPY8cYIrRiOYmuPDyILmcX8a+QcB3ImXrzBHizrXdUh3fYfqUt8XUGJnS11jok86/Gp486yKAZRBpbrX7jKaqLm+1uTcZ0aweXWlGeV3P2ML9aMo/WFSRqHu6CXeAf7YrAICcIP8r1QB9xI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=GQSBP6sm; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="J1bes3t6"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-70af8128081so528871b3a.1
-        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:10:22 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="GQSBP6sm"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-1f9de13d6baso4412315ad.2
+        for <linux-serial@vger.kernel.org>; Thu, 04 Jul 2024 07:10:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1720102222; x=1720707022; darn=vger.kernel.org;
+        d=broadcom.com; s=google; t=1720102253; x=1720707053; darn=vger.kernel.org;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4KClz7jROWmBNWgFo1JkryBBaDPAROGTVjFQmQixcPM=;
-        b=J1bes3t6Z/ig118uGGBoCvmvRkgn4TES1McwHg+mF1ffXZmPqUtGbdE7EdzIV4fltZ
-         8K6t92kyNr+u4N04QBSCmXv8puUr2N/Qkf/ltQLTIBz/v+v5OhzCHpip5UGHPScysxnL
-         4Mjv6lrrj7YgV72dg2v/yI6YVdkqP1XFBFxO8=
+        bh=0xZJi/oyPJFqLueCWe6LEdI6J6WTfEopjsAPhrlv3Ew=;
+        b=GQSBP6smS3pUHMGFkGZkLbPdksyJzMMDykK/roc+lZOTTTvPqVuJdC9dNSU4osNaON
+         gofatunFo1dcYoDNZPBPunZz5syRMnoYIv8VBbyPdxpgACFZ+vftITJBooo3lQPx1HSS
+         CMYEA59JylofaCmTxOuk9YxW4zVxK77etnnqM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720102222; x=1720707022;
+        d=1e100.net; s=20230601; t=1720102253; x=1720707053;
         h=in-reply-to:autocrypt:from:references:cc:to:subject:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=4KClz7jROWmBNWgFo1JkryBBaDPAROGTVjFQmQixcPM=;
-        b=Sf1Eai0fknQEOnknfkDhLojadfOxlW8qgxwqN98yxTRfQkMRVfkBp2m6DdfKR23Faj
-         zCaDbjoI/+AGxzicREYeE7HJbZRTkUhHBGYiYdaW1MrWSAoYPKGg4ee6zG0c0VvCsuF5
-         2hnXCdb16EpZy6MHg52RBONxNXybCYJQSN5KVYoFP64yXaQj8oFLk+L66jeTZr5L8azL
-         D1v4z2jjm+S8vYZG7cikQuygBaaTqjJ4xwEUEXDoCgd+dueMhv3a2IAYsTYgxUn74msR
-         sCQ+pafMonLKPFdu76YsSbN77iiD1KzSgJva/kJm1Ig47A6jCY2piibLGTnWBySABTbJ
-         dG9A==
-X-Forwarded-Encrypted: i=1; AJvYcCVKCx4z2/vZ4n33g2ve8SFNLDsY+4AuhwFMclWwKK2Ms5PJSs+ecss/z6j+tlNO1lGVm6Z5SQQ1s5lAlPr6rg57LUjEnleluOFBBgjZ
-X-Gm-Message-State: AOJu0YxsVruHo5oC/Ot+EmR1VsuZk1Hw/hPfONTm7V6Om8C12TYMHsup
-	0YSK01KaQLuzGgBtjTo3lFW0prbxf7tAc4uyjCqGBNG8iBc8JlGkVF7W/fZVxA==
-X-Google-Smtp-Source: AGHT+IF8hxSelLaskDjQ0b8nlLP2ANXkSzhsrySOhljC4/pq4lcE7UrtCIFlnhR+QblsaDLjm/iN5g==
-X-Received: by 2002:a05:6a20:3ca9:b0:1be:d1f7:e91d with SMTP id adf61e73a8af0-1c0cc75dc87mr1890296637.29.1720102221857;
-        Thu, 04 Jul 2024 07:10:21 -0700 (PDT)
+        bh=0xZJi/oyPJFqLueCWe6LEdI6J6WTfEopjsAPhrlv3Ew=;
+        b=OvZ3mp+qK1bpM9s1bc8XFFnIyCAESHB6peqorlpf+dow2B9lspOnvqn1qdr5ck+HC4
+         2QLbuccZtfq6r1KiZFMqN98KwQNWlVxAx9OO40hjMuC29IyvENc/gxXbTG/F27r3mn8F
+         lKpGHPRBZ2v2A7rXD8FXnBjZUpKXEKJkVgm7tla9b0yx+cKeRhRYzQsgV0FX9Slas3j7
+         /2CgNa5E793Xwa9AC2Z85ejSMfp21zcsGj4E+hL6MdXNv8oga0GosRkkWtMs5YfM2zB+
+         GUBaSixjjl6YV+TaLwpcnLSTJtTOp9DsqG28s8F1DFrim7URuQL+YEqEtHEW/UUE9Cig
+         /mwg==
+X-Forwarded-Encrypted: i=1; AJvYcCXLSwEowcAF78QJD2bauKwUrdtwKRtAkREi2sCoI3AGB0kNZy3lQM6dv5eY66IM50hHRE0aO4viB5f0U3wo25QCKzythZbw2YPQFhTg
+X-Gm-Message-State: AOJu0Ywzv0B0SzpzgqGar6mNRHM1rL4B1RzlCSth1tnPWlWxEWrbadtu
+	OguxbfVGVFw7GvWd7yEPqraS0WQf9bgEPw0kgbB12IwChTyAYNTfj1557gEjow==
+X-Google-Smtp-Source: AGHT+IG/G65UA576nNxaALdMIPzMsae+qFG3tPn0zrvwLEQffi8IBFLxt2388tiS+iyprxbhcNaBqQ==
+X-Received: by 2002:a17:903:2308:b0:1fb:2ba3:2f6c with SMTP id d9443c01a7336-1fb33ef9152mr13493465ad.52.1720102252624;
+        Thu, 04 Jul 2024 07:10:52 -0700 (PDT)
 Received: from [10.40.5.113] ([89.207.175.15])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fac10d2652sm123286975ad.1.2024.07.04.07.10.14
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1fac10d1460sm123215215ad.25.2024.07.04.07.10.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Jul 2024 07:10:21 -0700 (PDT)
-Message-ID: <212ae02a-52f0-4dd6-868a-91f76de1f0a0@broadcom.com>
-Date: Thu, 4 Jul 2024 15:10:11 +0100
+        Thu, 04 Jul 2024 07:10:51 -0700 (PDT)
+Message-ID: <df432be3-cb0a-40d1-9599-4119128c3861@broadcom.com>
+Date: Thu, 4 Jul 2024 15:10:40 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 01/11] firmware: raspberrypi: Improve timeout warning
+Subject: Re: [PATCH 02/11] mailbox: bcm2835: Fix timeout during suspend mode
 To: Stefan Wahren <wahrenst@gmx.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Ray Jui
  <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
@@ -74,7 +74,7 @@ Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
 References: <20240630153652.318882-1-wahrenst@gmx.net>
- <20240630153652.318882-2-wahrenst@gmx.net>
+ <20240630153652.318882-3-wahrenst@gmx.net>
 From: Florian Fainelli <florian.fainelli@broadcom.com>
 Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
@@ -108,11 +108,11 @@ Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
  MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
  7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
  95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
-In-Reply-To: <20240630153652.318882-2-wahrenst@gmx.net>
+In-Reply-To: <20240630153652.318882-3-wahrenst@gmx.net>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="000000000000f3774e061c6c8127"
+	boundary="000000000000c78746061c6c83e9"
 
---000000000000f3774e061c6c8127
+--000000000000c78746061c6c83e9
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
@@ -120,18 +120,57 @@ Content-Transfer-Encoding: 7bit
 
 
 On 6/30/2024 4:36 PM, Stefan Wahren wrote:
-> Recent work on raspberry-power driver showed that even the
-> stacktrace on firmware property timeout doesn't provide
-> enough information. So add the first tag name to the warning
-> to be in line with a status error.
+> During noirq suspend phase the Raspberry Pi power driver suffer of
+> firmware property timeouts. The reason is that the IRQ of the underlying
+> BCM2835 mailbox is disabled and rpi_firmware_property_list() will always
+> run into a timeout [1].
 > 
+> Since the VideoCore side isn't consider as a wakeup source, set the
+> IRQF_NO_SUSPEND flag for the mailbox IRQ in order to keep it enabled
+> during suspend-resume cycle.
+> 
+> [1]
+> PM: late suspend of devices complete after 1.754 msecs
+> WARNING: CPU: 0 PID: 438 at drivers/firmware/raspberrypi.c:128
+>   rpi_firmware_property_list+0x204/0x22c
+> Firmware transaction 0x00028001 timeout
+> Modules linked in:
+> CPU: 0 PID: 438 Comm: bash Tainted: G         C         6.9.3-dirty #17
+> Hardware name: BCM2835
+> Call trace:
+> unwind_backtrace from show_stack+0x18/0x1c
+> show_stack from dump_stack_lvl+0x34/0x44
+> dump_stack_lvl from __warn+0x88/0xec
+> __warn from warn_slowpath_fmt+0x7c/0xb0
+> warn_slowpath_fmt from rpi_firmware_property_list+0x204/0x22c
+> rpi_firmware_property_list from rpi_firmware_property+0x68/0x8c
+> rpi_firmware_property from rpi_firmware_set_power+0x54/0xc0
+> rpi_firmware_set_power from _genpd_power_off+0xe4/0x148
+> _genpd_power_off from genpd_sync_power_off+0x7c/0x11c
+> genpd_sync_power_off from genpd_finish_suspend+0xcc/0xe0
+> genpd_finish_suspend from dpm_run_callback+0x78/0xd0
+> dpm_run_callback from device_suspend_noirq+0xc0/0x238
+> device_suspend_noirq from dpm_suspend_noirq+0xb0/0x168
+> dpm_suspend_noirq from suspend_devices_and_enter+0x1b8/0x5ac
+> suspend_devices_and_enter from pm_suspend+0x254/0x2e4
+> pm_suspend from state_store+0xa8/0xd4
+> state_store from kernfs_fop_write_iter+0x154/0x1a0
+> kernfs_fop_write_iter from vfs_write+0x12c/0x184
+> vfs_write from ksys_write+0x78/0xc0
+> ksys_write from ret_fast_syscall+0x0/0x54
+> Exception stack(0xcc93dfa8 to 0xcc93dff0)
+> [...]
+> PM: noirq suspend of devices complete after 3095.584 msecs
+> 
+> Link: https://github.com/raspberrypi/firmware/issues/1894
+> Fixes: 0bae6af6d704 ("mailbox: Enable BCM2835 mailbox support")
 > Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 
 Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
 Florian
 
---000000000000f3774e061c6c8127
+--000000000000c78746061c6c83e9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -202,14 +241,14 @@ kNGap1mHJ+JngGzZCz+dDiHRQKGpXLxkHX0BvEDZLW6LGOJ83ImrW38YMOo3ZYnCYNHA9qDOakiw
 NxADYvcRBA0ySL6sZpj8BIIhWiXiuusuBmt2Mak2eEv0xDbovE6Z6hYyl/ZnRadbgK/ClgbY3w+O
 AfUXEZ0xggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwT
-/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ8RRN5zFU+yK0Hd
-1Jdpoh3I4AchHHX01p/cg77YiBErMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTI0MDcwNDE0MTAyMlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
+/D/YSkVckoN0L+QwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMmiw87idsI5QZod
+ZD1BAh1id3iKcdG4aIT+nG3c2fVGMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
+AQkFMQ8XDTI0MDcwNDE0MTA1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
 AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCPSuxghRdUyrIS2qm8MM5Mcc7UTqrUnA8X
-TJH0TIjDmDVAmAk6rBmOQAHAUeuDUCdf59Ir2AJOP0iVw6YS3Hcun3eZ64aeBbnqYkpklIdzApTQ
-40L4NmsuZfpujcm+MIXFu7UgYsXGGcmPcUAfz2O48NFCEiJp+I7QiB9Za8BeJ8Ov12DWQa8SkkEZ
-GR1m7zXBfzlsr8KFd9RCTxjej9+rwayWdYo3kcl265Rr/b3eKfMDWVqMbqlVlgOEywCWmu00Jxlh
-AWujB8Vc/bghAJPRSi0fgm3EdX8vr5h4RG7IIsJxs9HvRVXDF2SslBEDsA+zRuGv6Cy+f0d3XEXt
-L5ac
---000000000000f3774e061c6c8127--
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCfF1zYCO0EASzEjhL9SL2/AkRCwyqagblF
+clsUcNKlkjd/4LNqwe21kw+1Wy267kG05fvkddvQL8uGM0fA1HqCgWLlPAWW0r8iAlTDOEV5FZRg
+gW1Xf3zmVsAcHcbUrlcB+GIor8fRCEzBB6e9bGtw9Cp3XulhDgtVIbMdzZSXL3bBum/dkOVcUDPk
+v7EagdBpIoh8yi0aYcfRtpPHK0TrAYwJoKQ67XTphbZdfwMLcN711U4A1w3RXQhO2WJh5DRWJJ9D
+PKeGPhfbttZsOV1tQhiGkL3nVQkyPHJ0qWLfHzXInYr+Ki4ft3FNMlLnOyAvrNMUXMd2XLAIo7ma
+eLga
+--000000000000c78746061c6c83e9--
