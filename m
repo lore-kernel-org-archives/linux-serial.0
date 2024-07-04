@@ -1,108 +1,150 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D0A74C70;
-	Thu,  4 Jul 2024 16:25:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3E7D7346E;
+	Thu,  4 Jul 2024 21:32:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720110344; cv=none; b=s4GDWdGr+6zngN1HlhKQ6Oc6b/xGicdgNJWSUATNLAM0aShKFl2LPPTI7lOKIw3qZTCKYBTVxodxR16ye0J5pTETsUB75Qep2EHBVuG60RpXwFMflFOAsAm6j2UDzUTm0QiIBWZRWh5I8sGbDygM9wPa0qjqpsO1oLBlC1jsqoQ=
+	t=1720128735; cv=none; b=DZGw/OcogMQof1U3M+hlIY6X5j6CVY1XLLiEmj75OJ4vNcH67GwiW1Q8fhQ15g8G+XXA0LR330OR5vyKarSVOeeg2a9p7t47Zdes1N8Kw5+CT0kprR4Kqnmi38L02p2yYojUV/pX6wjtUxiYvnbv5yLeeGt0ZrDb0+wz78d0MAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720110344; c=relaxed/simple;
-	bh=G8nXDKhDWAf5zwXbHzmWPr4KvRFncauKrb4vRKEg3ko=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Su9J/2X/J53Ble/6CKpjD8BvUMhQoUTeV9bRwzEbULCFvsaSUnSyPCHUtpz3S6sCNFfN1Vnbs0Vk7Pn2S9LtaeaViVBc+V1eQaT7cU0qMJKxNleeU/ml3XYPZ2b76nciYCAf48afAGt1eOE/kZ5SuErLA/J4cjpoLu4jWInXIS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=NjPL3mHL; arc=none smtp.client-ip=212.227.15.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	s=arc-20240116; t=1720128735; c=relaxed/simple;
+	bh=jEOP4tmTJgNwT4VJJ/H4/e/Pm5Ggkrq6iv0SA5dQ8ws=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aEdY1vZXnp4q1ZgWKD8Vx0Yl1lmjGa63OpOWxBKnb1JMPmzahNymJaKTYM9dMXW3sfI3/I92OfBmhKNRocf2tGVCwclQLhO8sRY17opnqDGp/7nA+2sF6W46EPjS0rfT1qULVpw7otozRNkiTDVerLmxMvlGOfheEWGOHH9tEiY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=S0JEVBhI; arc=none smtp.client-ip=217.70.183.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="NjPL3mHL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1720110318; x=1720715118; i=wahrenst@gmx.net;
-	bh=G8nXDKhDWAf5zwXbHzmWPr4KvRFncauKrb4vRKEg3ko=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=NjPL3mHLpGoKd4mDJddhb//xKf4YmbApwL8JkLoLRCnRMtpSpLV29Ur5nCqGJ0I0
-	 EP+z7x0d4oAsN312Gi/JuIMZLux73x7C0W/sFQiLb0Srlio0HCAJy2xPH4QdA02y/
-	 c06o2DVCgcQL1x8NIXYTkX+0CllFtVq/wes/TZChkxv2feRI530v7Pu56u/PoGX/c
-	 KjtPtgF8nAeIO5LJTcluJPRJ1d1XZOdWKGTDq/P0QxUeDTY24h5NPbu0blu45iItQ
-	 TtjHnHu/E/vNljG4m4kA8IuxfdX9+X+1uuf9ZYYy2yRSc5w59ae+TSmo5jnhFt8vM
-	 5FYiEu96Vf8jhvgmwQ==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MMXUD-1sfYoD0zHr-00I3GP; Thu, 04
- Jul 2024 18:25:18 +0200
-Message-ID: <4d48bbdb-91fb-46f2-b101-112f45c81cdd@gmx.net>
-Date: Thu, 4 Jul 2024 18:25:16 +0200
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="S0JEVBhI"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id BD86AFF802;
+	Thu,  4 Jul 2024 21:32:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1720128729;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Rey18xTlnMgOgIPL25ImB7B15sMWYzxAsvnHNthV5S0=;
+	b=S0JEVBhI3tfc5ntPMObRrKKeyUXsGRrO+dmrSHHiA/CXiaTrDzUnuWN/8RLan/W8yEPBYy
+	WTaC4P67s78ijbrvczP1KnuPtKQbrRcwlYEqUPZPpZW0nhX/siqNP/GhziUB79nYOQPi8r
+	PhP0fpq9va52mSjevxSqg9gaf/S2Ukug9XtKh8mzSUYLpNZp80MAwL96mMkrYY7WNzzmay
+	5AT/X7DCWHP8tVhsE6o3C1PHb0Q9g3z2DXN4uHMidHU5Rwoaz4Y/LepANuZA6Uuvs21L3L
+	95mP/Ounvba0aITTStBPv4Esd+fhuzK/5YdBxhSIiG700JAP0NMtF9NGxcnshQ==
+Date: Thu, 4 Jul 2024 23:31:55 +0200
+From: Luca Ceresoli <luca.ceresoli@bootlin.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Miguel Ojeda <ojeda@kernel.org>, Saravana Kannan <saravanak@google.com>,
+ Nathan Chancellor <nathan@kernel.org>, Michael Turquette
+ <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Tony Lindgren
+ <tony@atomide.com>, Bjorn Andersson <andersson@kernel.org>, Emilio
+ =?UTF-8?Q?L=C3=B3pez?= <emilio@elopez.com.ar>, Chen-Yu Tsai
+ <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland
+ <samuel@sholland.org>, Krzysztof Kozlowski <krzk@kernel.org>, Daniel
+ Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Broadcom internal kernel
+ review list <bcm-kernel-feedback-list@broadcom.com>, Linus Walleij
+ <linus.walleij@linaro.org>, Bartosz Golaszewski <brgl@bgdev.pl>, Jonathan
+ Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>, Shawn Guo
+ <shawnguo@kernel.org>, Pengutronix Kernel Team <kernel@pengutronix.de>, Uwe
+ =?UTF-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Richard
+ Leitner <richard.leitner@linux.dev>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Nicolas Ferre
+ <nicolas.ferre@microchip.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
+ <christophe.leroy@csgroup.eu>, "Naveen N. Rao"
+ <naveen.n.rao@linux.ibm.com>, Damien Le Moal <dlemoal@kernel.org>, "Peng
+ Fan (OSS)" <peng.fan@oss.nxp.com>, Thomas Petazzoni
+ <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, llvm@lists.linux.dev,
+ linux-clk@vger.kernel.org, linux-omap@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
+ linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-usb@vger.kernel.org, patches@opensource.cirrus.com,
+ linux-sound@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 00/20] Simplify of_property_for_each_u32()
+Message-ID: <20240704233155.61b5323c@booty>
+In-Reply-To: <20240703180742.GB1245093-robh@kernel.org>
+References: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
+	<20240703180742.GB1245093-robh@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 07/11] drm/vc4: hdmi: Disable connector status polling
- during suspend
-To: Peter Robinson <pbrobinson@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Jassi Brar <jassisinghbrar@gmail.com>, Ulf Hansson <ulf.hansson@linaro.org>,
- Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>,
- Dave Stevenson <dave.stevenson@raspberrypi.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com,
- linux-pm@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- kernel-list@raspberrypi.com
-References: <20240630153652.318882-1-wahrenst@gmx.net>
- <20240630153652.318882-8-wahrenst@gmx.net>
- <CALeDE9OpdUntjW61i=Ge2b9uOyPKWRmeP+2ybxoNA2CR4DHWXg@mail.gmail.com>
-Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <CALeDE9OpdUntjW61i=Ge2b9uOyPKWRmeP+2ybxoNA2CR4DHWXg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:e9DVrq5jG1tQYjou4M48Ieq6c+HG2N8PKRsDwhcsvlXjmcfHMEm
- 5YgHnadFU/xlL1Bysj7N+xe+d1+LrvYXLxNNbLe5ueCdX+uJpIcbDAySg9Yu3QvHoJT03rH
- /CKZ/eYfoLstRyaKhkrZvKrTJg4H0jTt1qc2XHg19ULmAbwSIYIeo8cQ5K6/epGLpRxhg77
- hkFTF9VEg3w9zHkcBLceQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:4z4MiHBYFqM=;VeOJKcvLWARNmwRjqx6xlU/V35H
- 0amzJL09fb4TJD7p7usMBUW+PvbKHHHhBbtI/DMStmffuefLsHdbm4jSOFWBYN6Wn0LC8dNle
- qjJbeyh07dW1yy9uVlT9mDTerf+E5spIO8D/izpdvQdg7ZMbof9K0ION5QKNvsmeDw0kAA/Kf
- DYQIleNZkNY5c+3d3OmBQ81W6jX6MrnrLq+CyhY257AHvfiYQUSN8czl7y8q9RKXj0NVJuX3Q
- IWn0C80/cIcVQOM6yAVVfB+eRkIQzX/UcXqh6N+RIzbRZec0khkwKaMRfIIigwilECO3GXjbG
- Nlvs7g+s6bxzE9xilKE8zwyix1hsMvISlFQIRWHPT4EQ4u9WkyUSMR24BFqveNsojtIs8kQGp
- cekVd855UyIJSNmOSpBLd4wDLamAynH4pj++60eBFYsgiWuxlwdSC8Pf33NSJIueYjSEwK99M
- 2bPs6higbl8WeU/BGtXt8clemiaycV5XMvsRT8ulSk8MLKJwejaml0GZpTIyfg50kBm7AKRDn
- prMsxN98XsAx45PJ5rRx5KzVQf+9WmtLXnc4UiHTMk+HqhSnZF1jgjpQFMCgAMtaAiKpt4IAj
- 8uLYGD4QBNYhLXuddgt++vN6gOZZbI2eWw3JnIrLIZeIOghlGf/bG5GpHLX6LMoHHl+QxKVZf
- g9Os0+BbQunqBg8OwG5IpgGTlyorBhhO4ojgRgNL+cmV22XKQ2DzyvNEQ/KR/SmeCqEpZnAgZ
- pGlC9+OCCiuCicv+uXYBC8EiajhIGJ50VWGCat+Nztab3t8aa1nsHoMh/eV37t80GxNPVQQ+0
- 2YtM56sbhygAeFhWHO2AOD9OgvfG5ZnpWi1CiwzrV49QI=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: luca.ceresoli@bootlin.com
 
-Hi Peter,
+Hello Rob,
 
-Am 02.07.24 um 22:02 schrieb Peter Robinson:
-> Hi Stefan,
->
->> Suspend of VC4 HDMI will likely triggers a warning from
->> vc4_hdmi_connector_detect_ctx() during poll of connector status.
->> The power management will prevent the resume and keep the relevant
->> power domain disabled.
->>
->> Since there is no reason to poll the connector status during
->> suspend, the polling should be disabled during this.
-> What about HDMI-CEC? I don't know well enough how CEC integrates at
-> this level but CEC can wake up the device over HDMI from a TV display
-> for example so if this affects that, while it's maybe not required for
-> first pass, I know the rpi is used in a lot of media use cases so the
-> ability to wake up via CEC would certainly be welcomed.
-unfortunately i don't know much about HDMI-CEC, too. The only thing I
-noticed was that I currently cannot configure vc4 as a wakeup source.
+On Wed, 3 Jul 2024 12:07:42 -0600
+Rob Herring <robh@kernel.org> wrote:
+
+> On Wed, Jul 03, 2024 at 12:36:44PM +0200, Luca Ceresoli wrote:
+> > [Note: to reduce the noise I have trimmed the get_maintainers list
+> > manually. Should you want to be removed, or someone else added, to future
+> > versions, just tell me. Sorry for the noise.]
+> > 
+> > This series aims at simplifying of_property_for_each_u32() as well as
+> > making it more difficult to misuse it in the future.
+> > 
+> > The long-term goal is changing this pattern:
+> > 
+> >   struct property *prop;
+> >   const __be32 *p;
+> >   u32 val;
+> >  
+> >   of_property_for_each_u32(np, "xyz", prop, p, val) { ... }
+> > 
+> > to this:
+> > 
+> >   u32 val;
+> > 
+> >   of_property_for_each_u32(np, "xyz", val) { ... }
+> > 
+> > So, removing the 3rd and 4th arguments which are typically meant to be
+> > internal. Those two parameters used to be unavoidable until the kernel
+> > moved to building with the C11 standard unconditionally. Since then, it is
+> > now possible to get rid of them. However a few users of
+> > of_property_for_each_u32() do actually use those arguments, which
+> > complicates the transition. For this reason this series does the following:
+> > 
+> >  * Add of_property_for_each_u32_new(), which does not have those two
+> >    arguments (patch 1)
+> >  * Convert _almost_ every usage to of_property_for_each_u32_new()
+> >  * Rename of_property_for_each_u32() to of_property_for_each_u32_old() and
+> >    deprecate it, as a incentive to code not (yet) in mainline to upgrade
+> >    to the *_new() version (last patch)  
+> 
+> I don't really see the point of introducing the _old variant. Let's get 
+> this done in one step.
+> 
+> > 
+> > The plan for the next series is to additionally:
+> > 
+> >  * Convert the few remaining of_property_for_each_u32_old() instantes to
+> >    of_property_for_each_u32_new()
+> >  * Remove of_property_for_each_u32_old()
+> >  * Rename of_property_for_each_u32_new() to of_property_for_each_u32()  
+> 
+> Honestly, I think there's few enough users we could just convert the 
+> whole thing in one patch. It's all got to go thru 1 tree anyways. If 
+> there's new cases in -next, then I'd be happy to send it to Linus at the 
+> end of the merge window.
+
+Sure, make sense. I'll need to convert the few remaining users, then
+I'm sending a squashed v2.
+
+Luca
+
+-- 
+Luca Ceresoli, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
