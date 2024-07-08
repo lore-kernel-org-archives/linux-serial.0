@@ -1,163 +1,140 @@
-Received: from out-182.mta1.migadu.com (out-182.mta1.migadu.com [95.215.58.182])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C27A1B28A
-	for <linux-serial@vger.kernel.org>; Mon,  8 Jul 2024 07:45:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C45680046;
+	Mon,  8 Jul 2024 12:05:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720424750; cv=none; b=fd1B25Ou7EBGFi6lTxsUeQIoNgSKTzEcmtYmAaxA7EwZvOwU954+3IkyLb8lZ6zvEecyypowJPNknpfoe30qmsk1FlU1BmwVqGGGPjCRlG2BQltTwALpv2evnlfZwp/jCyEBFQMRQQWB1IYeLcoyyA8vDRa9LHrgEfhXJfviKUw=
+	t=1720440355; cv=none; b=HZiaYgaE4pUeQJdVSITh++TmoCXmXx7iNjHTC1e+/BTWgcdZWwH94Xg+dX1cbQX4DcTZQQqqEV7bjpK5w3kIRFcjJ5YGUEytqEgeDpohZrnEVSQBRiVAtlBwn05/+H2u4FkPKufQnaGTdoTfwfaLKLEij7Khul93SsPRInPv4ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720424750; c=relaxed/simple;
-	bh=Ctg0u/mGa+VwyDSlNuzK+P613udK8Frsp14C56Ebnqw=;
+	s=arc-20240116; t=1720440355; c=relaxed/simple;
+	bh=zYiZL26YpL9nyJBbsDP8s4nzF/bHXrFqq56T1M+s51E=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MyoFKImpPMGN9sOnaJ8QVsZej0C6uOujQmNd6mYfLuIcZcFzEAyefJAQdrUqXzs28ZM0V4pr/iF0nHPtakwg6hsuXJooE90kNjNAmpeReUPOtsbgYjwY34V0iqh3PW0XjizHa/1KLpn7J7RPzwHUi5/LFTq+wi26IV0FDK6pvNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=gh9N9Uw0; arc=none smtp.client-ip=95.215.58.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	 Content-Type:Content-Disposition:In-Reply-To; b=cQl1JDn/iaifH6mY60F0ZjafawAj/aYQ1K7vUA7vbHNv4tvokzLG3VmMfLGxwUdYvYUG5DsH2Qv6cTjBDS95pHFpM4u0VlEflBWKYE0m1eyFe5RbcVU7g9xBOWRp35ahvYAmHLyIRs8O9qVOtSYEujrGc8r7EO8gmHOaJoh3iI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CScz0WZ9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="gh9N9Uw0"
-X-Envelope-To: luca.ceresoli@bootlin.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1720424745;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6r0t4bqCeyTcKMQipHqJ13XIJ0M/NNLgBRa8TFFkq0k=;
-	b=gh9N9Uw0u8C6T2INQwENuJbySC4x56TU/bCYId7J19tXTNv2leS8YvS59ZHGfqV5iEcc2W
-	giRbXLJT0kVM9blL6cZF0eI0W/NaGwdLwsoCYd+qWtWL+ssOTOGgYIaHoZkEp8DXV+BDKD
-	QBEscHkTSbtdZ0QzmCUfJBvJe1gdrAw=
-X-Envelope-To: ojeda@kernel.org
-X-Envelope-To: robh@kernel.org
-X-Envelope-To: saravanak@google.com
-X-Envelope-To: nathan@kernel.org
-X-Envelope-To: mturquette@baylibre.com
-X-Envelope-To: sboyd@kernel.org
-X-Envelope-To: tony@atomide.com
-X-Envelope-To: andersson@kernel.org
-X-Envelope-To: emilio@elopez.com.ar
-X-Envelope-To: wens@csie.org
-X-Envelope-To: jernej.skrabec@gmail.com
-X-Envelope-To: samuel@sholland.org
-X-Envelope-To: krzk@kernel.org
-X-Envelope-To: daniel.lezcano@linaro.org
-X-Envelope-To: tglx@linutronix.de
-X-Envelope-To: florian.fainelli@broadcom.com
-X-Envelope-To: bcm-kernel-feedback-list@broadcom.com
-X-Envelope-To: linus.walleij@linaro.org
-X-Envelope-To: brgl@bgdev.pl
-X-Envelope-To: jic23@kernel.org
-X-Envelope-To: lee@kernel.org
-X-Envelope-To: shawnguo@kernel.org
-X-Envelope-To: kernel@pengutronix.de
-X-Envelope-To: ukleinek@kernel.org
-X-Envelope-To: gregkh@linuxfoundation.org
-X-Envelope-To: jirislaby@kernel.org
-X-Envelope-To: lgirdwood@gmail.com
-X-Envelope-To: broonie@kernel.org
-X-Envelope-To: nicolas.ferre@microchip.com
-X-Envelope-To: mpe@ellerman.id.au
-X-Envelope-To: npiggin@gmail.com
-X-Envelope-To: christophe.leroy@csgroup.eu
-X-Envelope-To: naveen.n.rao@linux.ibm.com
-X-Envelope-To: dlemoal@kernel.org
-X-Envelope-To: peng.fan@oss.nxp.com
-X-Envelope-To: thomas.petazzoni@bootlin.com
-X-Envelope-To: linux-kernel@vger.kernel.org
-X-Envelope-To: devicetree@vger.kernel.org
-X-Envelope-To: llvm@lists.linux.dev
-X-Envelope-To: linux-clk@vger.kernel.org
-X-Envelope-To: linux-omap@vger.kernel.org
-X-Envelope-To: linux-arm-msm@vger.kernel.org
-X-Envelope-To: linux-arm-kernel@lists.infradead.org
-X-Envelope-To: linux-sunxi@lists.linux.dev
-X-Envelope-To: linux-samsung-soc@vger.kernel.org
-X-Envelope-To: linux-gpio@vger.kernel.org
-X-Envelope-To: linux-iio@vger.kernel.org
-X-Envelope-To: linux-pwm@vger.kernel.org
-X-Envelope-To: linux-serial@vger.kernel.org
-X-Envelope-To: linux-usb@vger.kernel.org
-X-Envelope-To: patches@opensource.cirrus.com
-X-Envelope-To: linux-sound@vger.kernel.org
-X-Envelope-To: linuxppc-dev@lists.ozlabs.org
-X-Envelope-To: linux-riscv@lists.infradead.org
-Date: Mon, 8 Jul 2024 09:45:39 +0200
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Richard Leitner <richard.leitner@linux.dev>
-To: Luca Ceresoli <luca.ceresoli@bootlin.com>
-Cc: Miguel Ojeda <ojeda@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Saravana Kannan <saravanak@google.com>, Nathan Chancellor <nathan@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Tony Lindgren <tony@atomide.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Emilio =?utf-8?B?TMOzcGV6?= <emilio@elopez.com.ar>, Chen-Yu Tsai <wens@csie.org>, 
-	Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Florian Fainelli <florian.fainelli@broadcom.com>, 
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Linus Walleij <linus.walleij@linaro.org>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Shawn Guo <shawnguo@kernel.org>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
-	Damien Le Moal <dlemoal@kernel.org>, "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, 
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	llvm@lists.linux.dev, linux-clk@vger.kernel.org, linux-omap@vger.kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-sunxi@lists.linux.dev, linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-usb@vger.kernel.org, patches@opensource.cirrus.com, linux-sound@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 15/20] usb: usb251xb: convert to
- of_property_for_each_u32_new()
-Message-ID: <34bbebxag4neccfkb4isi4bx5uvi2dk446bqqmfmtru4vwbehk@hp7vufvfyon4>
-References: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
- <20240703-of_property_for_each_u32-v1-15-42c1fc0b82aa@bootlin.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CScz0WZ9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64675C116B1;
+	Mon,  8 Jul 2024 12:05:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1720440354;
+	bh=zYiZL26YpL9nyJBbsDP8s4nzF/bHXrFqq56T1M+s51E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CScz0WZ99qjtrVPURkXM/OG7BWNP/9toOwOYu6FHQmMXHVS6vkrvE9s+tv5Ag5GyX
+	 d+zy08c/3FCc+bWgUIJ7D1QfpyaxOclKyAHbpORvZQ3DzeBDFFpM9eKl8bF8rGjBxg
+	 O8elQO+czjq/PgK0FCDdM25lfRqHJ5rZnhexQ2hQloqpbDSQaznCXUIj6Kkm7W2zar
+	 NA8pOYoEg8GY9ARqy90GQp9O/yRmwRLa4w8v5X27EEMtbutKNUoe1k2Ys/mxs1z7WY
+	 Q5DiUvNWoCzrUZ0ZEEFqFibTyuflF0nlqRRMzfMh5DnQLLR9rKpBDr8DjJik3arWvl
+	 3VRj9O/Fa7eQg==
+Date: Mon, 8 Jul 2024 19:51:43 +0800
+From: Jisheng Zhang <jszhang@kernel.org>
+To: Yixun Lan <dlan@gentoo.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH] serial: 8250: move mmp|pxa uart earlycon code and add
+ xscale earlycon
+Message-ID: <ZovSzxZzZJRS8JWm@xhacker>
+References: <20240706101856.3077-1-jszhang@kernel.org>
+ <20240706223323.GYA367.dlan.gentoo>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240703-of_property_for_each_u32-v1-15-42c1fc0b82aa@bootlin.com>
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <20240706223323.GYA367.dlan.gentoo>
 
-Hi Luca,
+On Sat, Jul 06, 2024 at 10:33:23PM +0000, Yixun Lan wrote:
+> Hi 
+> On 18:18 Sat 06 Jul     , Jisheng Zhang wrote:
+> > There are two other drivers that bind to "mrvl,mmp-uart": the 8250_of
+> > and the 8250_pxa. The previous one is generic and the latter is binded
+> > to ARCH_PXA || ARCH_MMP. Now we may have pxa programming compatible
+> > HW to support, making use of the generic 8250_of seems a good idea.
+> > However, there's no earlycon support if we go with this solution. So
+> > move the mmp|pxa-uart earlycon code to core 8250_early.c.
+> > 
+> > At the same, add xscale earlycon support too, only build test since
+> > I have no xscale machine any more.
+> > 
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> > ---
+> >  drivers/tty/serial/8250/8250_early.c | 11 +++++++++++
+> >  drivers/tty/serial/8250/8250_pxa.c   | 16 ----------------
+> >  2 files changed, 11 insertions(+), 16 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+> > index e3f482fd3de4..6176083d0341 100644
+> > --- a/drivers/tty/serial/8250/8250_early.c
+> > +++ b/drivers/tty/serial/8250/8250_early.c
+> > @@ -171,6 +171,17 @@ OF_EARLYCON_DECLARE(ns16550a, "ns16550a", early_serial8250_setup);
+> >  OF_EARLYCON_DECLARE(uart, "nvidia,tegra20-uart", early_serial8250_setup);
+> >  OF_EARLYCON_DECLARE(uart, "snps,dw-apb-uart", early_serial8250_setup);
+> >  
+> > +static int __init early_serial8250_rs2_setup(struct earlycon_device *device,
+> > +					     const char *options)
+> > +{
+> > +	device->port.regshift = 2;
+> just wondering if possible to introduce a generic earlycon sub option? so kernel
 
-On Wed, Jul 03, 2024 at 12:36:59PM GMT, Luca Ceresoli wrote:
-> Simplify code using of_property_for_each_u32_new() as the two additional
-> parameters in of_property_for_each_u32() are not used here.
+the 8250 ealycon can parse reg-shift from dt too, so no sub option is
+needed. The reason I hardcoded here is: pxa-uart and xscale-uart doesn't
+mandate "reg-shift" property in the binding, while I did see mmp-uart
+mentions "reg-shift" is required in the DT binding.
+
+
+> can parse reg-shift from command line parameter instead of hardcoding here,
+> which would benefit more drivers (potentially without adding more OF_EARLYCON_DECLAREs..)
 > 
-> Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
-
-please feel free to add:
-
-Acked-by: Richard Leitner <richard.leitner@linux.dev>
-
-> ---
->  drivers/usb/misc/usb251xb.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+> I mean something like this:
+> Documentation/admin-guide/kernel-parameters.txt
+> uart[8250],mmio32,<addr>[,options[,reg-shift=0,1,2,4 ..]]
 > 
-> diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
-> index 7da404f55a6d..490004dbb9d8 100644
-> --- a/drivers/usb/misc/usb251xb.c
-> +++ b/drivers/usb/misc/usb251xb.c
-> @@ -382,11 +382,9 @@ static void usb251xb_get_ports_field(struct usb251xb *hub,
->  				    bool ds_only, u8 *fld)
->  {
->  	struct device *dev = hub->dev;
-> -	struct property *prop;
-> -	const __be32 *p;
->  	u32 port;
->  
-> -	of_property_for_each_u32(dev->of_node, prop_name, prop, p, port) {
-> +	of_property_for_each_u32_new(dev->of_node, prop_name, port) {
->  		if ((port >= ds_only ? 1 : 0) && (port <= port_cnt))
->  			*fld |= BIT(port);
->  		else
+> > +
+> > +	return early_serial8250_setup(device, options);
+> > +}
+> > +OF_EARLYCON_DECLARE(uart, "intel,xscale-uart", early_serial8250_rs2_setup);
+> > +OF_EARLYCON_DECLARE(uart, "mrvl,mmp-uart", early_serial8250_rs2_setup);
+> > +OF_EARLYCON_DECLARE(uart, "mrvl,pxa-uart", early_serial8250_rs2_setup);
+> > +
+> >  #ifdef CONFIG_SERIAL_8250_OMAP
+> >  
+> >  static int __init early_omap8250_setup(struct earlycon_device *device,
+> > diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+> > index ba96fa913e7f..b5d937f6f3f9 100644
+> > --- a/drivers/tty/serial/8250/8250_pxa.c
+> > +++ b/drivers/tty/serial/8250/8250_pxa.c
+> > @@ -165,22 +165,6 @@ static struct platform_driver serial_pxa_driver = {
+> >  
+> >  module_platform_driver(serial_pxa_driver);
+> >  
+> > -#ifdef CONFIG_SERIAL_8250_CONSOLE
+> > -static int __init early_serial_pxa_setup(struct earlycon_device *device,
+> > -				  const char *options)
+> > -{
+> > -	struct uart_port *port = &device->port;
+> > -
+> > -	if (!(device->port.membase || device->port.iobase))
+> > -		return -ENODEV;
+> > -
+> > -	port->regshift = 2;
+> > -	return early_serial8250_setup(device, NULL);
+> > -}
+> > -OF_EARLYCON_DECLARE(early_pxa, "mrvl,pxa-uart", early_serial_pxa_setup);
+> > -OF_EARLYCON_DECLARE(mmp, "mrvl,mmp-uart", early_serial_pxa_setup);
+> > -#endif
+> > -
+> >  MODULE_AUTHOR("Sergei Ianovich");
+> >  MODULE_LICENSE("GPL");
+> >  MODULE_ALIAS("platform:pxa2xx-uart");
+> > -- 
+> > 2.43.0
+> > 
 > 
 > -- 
-> 2.34.1
-
+> Yixun Lan (dlan)
+> Gentoo Linux Developer
+> GPG Key ID AABEFD55
