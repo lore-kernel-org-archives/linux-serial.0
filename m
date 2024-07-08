@@ -1,46 +1,46 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8295119B;
-	Mon,  8 Jul 2024 06:10:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAEA612E7F;
+	Mon,  8 Jul 2024 06:28:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720419024; cv=none; b=qddUDMIZKuZlvyWhRw1BYQ6Smev5LvC6IbJga2rLwf/iPYDkDXMhQ0G2keGfbrTLD8Jey97Zo/SoWKfgpkgvSqIQ1qO8pFjmY8HlhPimsn2WMldaRK1wkFmAp/rANjOhVv6O0kV1x/WcvohpJ4jg8kRd8+8NBS9hm9wiPUs/Lpg=
+	t=1720420096; cv=none; b=VohaHdI224q4sW+9xxIpD4Ue2u2tPQc97VDOl8FeyVf/cvdkrWSR3BaFB3F+84EJbgILwxEKbO3HKuBg+W490vugm+HzSPFRcnTql75r98M6HyxshOC19DgSUqgobkesIo2CyIcTu7ltsLwhvJW4iiZBDN8jx59cfYIO/jVmwXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720419024; c=relaxed/simple;
-	bh=hG7CzhzxSxDQio/mMJFBeY/COl8b9KFICEebwRSJWeM=;
+	s=arc-20240116; t=1720420096; c=relaxed/simple;
+	bh=r5FUaf28sD2ZSf0QfQ3bSq0xrDgrjT9z6W+Db3yQBPU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Wn4Matf5mliFk4klykIQO6vSgqWK6zABbhxhdYQfku9auMbbpeZUTiVqySla0qhzHtLl442nmx+qpcx4b4eaAH1GDiuDc3W9FrwloMVLiTVqnrtbVyLGYQdXJDJOYJk6xnXfpYOKogChTbalwij1ay80W2YRQLygzlt+JHBnhIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.181
+	 In-Reply-To:Content-Type; b=A9+cPw5XA4ttVf1p38nsQIKNhkBJ3LPvJpRFkuzmytDaamsqZIHDB2FHKOEa6TTg3j4LAjt1Rkd/Vta591SUJXnPzPhzdyoifB/ThYTfw1jplJdpAJNhlgxcGKfye2uzwNmeBeG5MFlrqee7rkYt3tNasg6Mn0haHKwGxWHp620=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2ee75ffce77so44013821fa.3;
-        Sun, 07 Jul 2024 23:10:22 -0700 (PDT)
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2ee90f56e02so33409511fa.2;
+        Sun, 07 Jul 2024 23:28:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720419021; x=1721023821;
+        d=1e100.net; s=20230601; t=1720420093; x=1721024893;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BJWtXHufDr2I769FCQbgOYlLb1GQEi3ijiiZvrcDH7k=;
-        b=N52JMgYTUhkKzO7UcIpscEVYSuoFVRl1ZHnXC5EhA0c65yJLIcP1m4WoJi8Rp5hjEd
-         htog4KQ1G5uGwaxg+nI0Tcz+kYCenHYUkbT8Cu8CRbBGxF+avjSn1vYfihmZQesPEiub
-         gfa1kXc/5wTBCB86//ax0vAxkJ+uV2B8kWf8iQLuouwjKK5QurpZSON/musswXxz2Vs7
-         ujFqjH9XCeL/60DbWrrJpk7IRR9bRO43iTEgpCW1k59ztrWVLe+GzH/u8Q1rZ+/J9vIf
-         DMs6f1nnK6ahwOjZIICzP58dEjcgfuxI3mpxUcFt70+ACXevPa7KqKR7RWztvZHedAEj
-         4qRw==
-X-Forwarded-Encrypted: i=1; AJvYcCUy1fObIWdLMNv0rDLrkYxBtAQk7puAef9WkGRZ2u8ZwGyAdhDPnb/x9W/KwbWG0ezQg8BkLud9My2pfX9c/KK6EH9MFVEELxWdN1BKU8MGksfFuP/MAxbfRkyk9kkkRLtqO61tsV6lYV3BvbRwLj43J3FoggNlauEbYt938Z5UNaC9gjDFUb3s6Q==
-X-Gm-Message-State: AOJu0YwR3Hmhs1QqKHgaBtxyLGscnC9EiBdlW2scRFbz8a//vWFMXrC9
-	PiHwdEEpVbRLwA/UY8DlqCoumjtU5VBNzwBKSqhI3UmKwgV4eQn9
-X-Google-Smtp-Source: AGHT+IEK4ddfEI+wnLkVRikN53tdJ3qtrQ2FgrihM703ynqyT8YECHSrEAAKkE+ULPFH2hXFwf61Ig==
-X-Received: by 2002:a2e:9b8f:0:b0:2ee:8720:b4b8 with SMTP id 38308e7fff4ca-2ee8ee0e946mr83389231fa.39.1720419020270;
-        Sun, 07 Jul 2024 23:10:20 -0700 (PDT)
+        bh=ok+70R6H0gvsb+eCECVSjDcVBE2i3W8XdPc2Q3RMI88=;
+        b=je3RT60YGUWT+bTmX/dS8CR5Ptc+/oR72yFdTXkDTS1PYcBTcSOmtxDy+ZViTHu4Ti
+         h5MHB4X962oUYligqh3nvU0+MOyE+UJ1d6BtmZb08u4A6GNoxoxozktDf5yvVQgO/ZMO
+         9nQAArDJw0Z7VjAiMbO64tjtcmN9YMWKc4h9IN+fNR7l+agafW2c50aq0xUZpbBhB7tf
+         qKvgCLxXWXf3MD/ZfHRVnOM9RqBK7kTQHq5wngBeP5MXiNc+uKWpXQ6D1XAOUnYZ2H4B
+         xwJsHEoQ5+eHsB43XPQzI9Oyn4/OUEaMPxluR051TkyU9H9wbMS4ubgcXx5sAPVXMyeL
+         PqpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXiFa+F2pDoCgOGPHj05WcC7PsOuUo7p4gB0GYGDapLlVzE2tusss488yzREhEUxAaT1CT93HXRm9wzYWGye6okaBHjQZj8labm7dYl
+X-Gm-Message-State: AOJu0YwKCMril+yrhKk0LjPTlfkj7pif347YnXyPo9SCMSTALMBasJ8O
+	8p0WU57rrQRlzzLgXjZfOFKwt4kEPwXwOHA4LxsbW6XJCI0UUF9s
+X-Google-Smtp-Source: AGHT+IG/Ui90NkFiRI66KU8v/cqPZNeHv9qVGGtqj64ymkSSGi3x0x31uYgrHrVr/jftuZkCh++w8A==
+X-Received: by 2002:a2e:9241:0:b0:2ee:8a92:d510 with SMTP id 38308e7fff4ca-2ee8eda7cabmr63949861fa.30.1720420092612;
+        Sun, 07 Jul 2024 23:28:12 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-367a0b09da7sm9558923f8f.69.2024.07.07.23.10.17
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42668b87496sm32296855e9.8.2024.07.07.23.28.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jul 2024 23:10:19 -0700 (PDT)
-Message-ID: <5619cca5-6d5b-4682-bbf7-51b851cef37e@kernel.org>
-Date: Mon, 8 Jul 2024 08:10:17 +0200
+        Sun, 07 Jul 2024 23:28:12 -0700 (PDT)
+Message-ID: <68b3481e-7a4d-4070-a711-709021154412@kernel.org>
+Date: Mon, 8 Jul 2024 08:28:10 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,58 +48,15 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH/RFC v1 1/1] tty: serial: 8250_dma: use sgl with 2 nents to
- take care of buffer wrap
-To: Ferry Toth <ftoth@exalondelft.nl>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- John Ogness <john.ogness@linutronix.de>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: neil.armstrong@linaro.org, AlCooper <alcooperx@gmail.com>,
- AlexanderShiyan <shc_work@mail.ru>,
- AlexandreBelloni <alexandre.belloni@bootlin.com>,
- AlexandreTorgue <alexandre.torgue@foss.st.com>,
- AlimAkhtar <alim.akhtar@samsung.com>,
- AndrewMorton <akpm@linux-foundation.org>,
- "AneeshKumarK . V" <aneesh.kumar@kernel.org>,
- AngeloGioacchinoDelRegno <angelogioacchino.delregno@collabora.com>,
- BaolinWang <baolin.wang@linux.alibaba.com>, BaruchSiach <baruch@tkos.co.il>,
- BjornAndersson <andersson@kernel.org>,
- ClaudiuBeznea <claudiu.beznea@tuxon.dev>,
- "DavidS . Miller" <davem@davemloft.net>, FabioEstevam <festevam@gmail.com>,
- HammerHsieh <hammerh0314@gmail.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- ChristopheLeroy <christophe.leroy@csgroup.eu>,
- ChunyanZhang <zhang.lyra@gmail.com>, JeromeBrunet <jbrunet@baylibre.com>,
- JonathanHunter <jonathanh@nvidia.com>, KevinHilman <khilman@baylibre.com>,
- KonradDybcio <konrad.dybcio@linaro.org>,
- KrzysztofKozlowski <krzysztof.kozlowski@linaro.org>,
- KumaravelThiagarajan <kumaravel.thiagarajan@microchip.com>,
- LaxmanDewangan <ldewangan@nvidia.com>, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, "MaciejW . Rozycki" <macro@orcam.me.uk>,
- ManivannanSadhasivam <manivannan.sadhasivam@linaro.org>,
- MartinBlumenstingl <martin.blumenstingl@googlemail.com>,
- MatthiasBrugger <matthias.bgg@gmail.com>,
- MaximeCoquelin <mcoquelin.stm32@gmail.com>,
- MichaelEllerman <mpe@ellerman.id.au>, MichalSimek <michal.simek@amd.com>,
- "NaveenN . Rao" <naveen.n.rao@linux.ibm.com>,
- NicolasFerre <nicolas.ferre@microchip.com>,
- NicholasPiggin <npiggin@gmail.com>, OrsonZhai <orsonzhai@gmail.com>,
- =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
- PatriceChotard <patrice.chotard@foss.st.com>,
- PeterKorsgaard <jacmet@sunsite.dk>, RichardGenoud
- <richard.genoud@gmail.com>, RussellKing <linux@armlinux.org.uk>,
- SaschaHauer <s.hauer@pengutronix.de>, ShawnGuo <shawnguo@kernel.org>,
- StefaniSeibold <stefani@seibold.net>, SumitSemwal <sumit.semwal@linaro.org>,
- TaichiSugaya <sugaya.taichi@socionext.com>,
- TakaoOrito <orito.takao@socionext.com>,
- TharunKumarP <tharunkumar.pasumarthi@microchip.com>,
- ThierryReding <thierry.reding@gmail.com>, TimurTabi <timur@kernel.org>,
- VineetGupta <vgupta@kernel.org>, MarekSzyprowski <m.szyprowski@samsung.com>,
- PhilEdworthy <phil.edworthy@renesas.com>
-References: <20240703212613.56024-1-ftoth@exalondelft.nl>
- <20240703212613.56024-2-ftoth@exalondelft.nl>
+Subject: Re: [PATCH v1] serial: imx: only set receiver level if it is zero
+To: Stefan Eichenberger <eichest@gmail.com>, gregkh@linuxfoundation.org,
+ shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+ festevam@gmail.com, cniedermaier@dh-electronics.com,
+ stefan.eichenberger@toradex.com, l.sanfilippo@kunbus.com,
+ tglx@linutronix.de, rickaran@axis.com, francesco.dolcini@toradex.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20240703112543.148304-1-eichest@gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -144,83 +101,46 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240703212613.56024-2-ftoth@exalondelft.nl>
+In-Reply-To: <20240703112543.148304-1-eichest@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 03. 07. 24, 22:56, Ferry Toth wrote:
-> Previously 8250_dma used a circular xmit->buf as DMA output buffer. This
-> causes messages that wrap around in the circular buffer to be
-> transmitted using 2 DMA transfers. Depending on baud rate and processor
-> load this can cause an interchar gap in the middle of the message. On
-> the receiving end the gap may cause a short receive timeout, possibly
-> long enough to terminate a DMA transfer, but too short to restart a
-> receive DMA transfer in time thus causing a receive buffer overrun.
+On 03. 07. 24, 13:25, Stefan Eichenberger wrote:
+> From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
 > 
-> This is especially a problem for devices with high speed UARTs (HSU)
-> where even deep 64 byte FIFO's are not sufficient to handle interrupt
-> latency.
+> With commit a81dbd0463ec ("serial: imx: set receiver level before
+> starting uart") we set the receiver level to its default value. This
+> caused a regression when using SDMA, where the receiver level is 9
+> instead of 8 (default). This change will first check if the receiver
+> level is zero and only then set it to the default. This still avoids the
+> interrupt storm when the receiver level is zero.
 > 
-> The circular buffer has now been replaced by kfifo which requires a SG
-> list with a single entry, which still causes 2 dma transfers when a wrap
-> around occurs. Fix this by allowing up to 2 entries in the sgl.
-
-As I stated earlier, from the DMA and TTY perspective, this looks all 
-good™. So I welcome this.
-
- From the devices perspective, obviously testers needed ;). I believe we 
-can merge this in 6.12-rc1 (or even 6.11-rc1?) and see. So please post a 
-non-RFC patch.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-> Signed-off-by: Ferry Toth <ftoth@exalondelft.nl>
+> Fixes: a81dbd0463ec ("serial: imx: set receiver level before starting uart")
+> Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
 > ---
->   drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++---------
->   1 file changed, 10 insertions(+), 9 deletions(-)
+>   drivers/tty/serial/imx.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index 8a353e3cc3dd..d215c494ee24 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -89,7 +89,9 @@ int serial8250_tx_dma(struct uart_8250_port *p)
->   	struct tty_port			*tport = &p->port.state->port;
->   	struct dma_async_tx_descriptor	*desc;
->   	struct uart_port		*up = &p->port;
-> -	struct scatterlist sg;
-> +	struct scatterlist		*sg;
-> +	struct scatterlist		sgl[2];
-> +	int i;
->   	int ret;
->   
->   	if (dma->tx_running) {
-> @@ -110,18 +112,17 @@ int serial8250_tx_dma(struct uart_8250_port *p)
->   
->   	serial8250_do_prepare_tx_dma(p);
->   
-> -	sg_init_table(&sg, 1);
-> -	/* kfifo can do more than one sg, we don't (quite yet) */
-> -	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
-> +	sg_init_table(sgl, ARRAY_SIZE(sgl));
-> +
-> +	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, sgl, ARRAY_SIZE(sgl),
->   					   UART_XMIT_SIZE, dma->tx_addr);
->   
-> -	/* we already checked empty fifo above, so there should be something */
-> -	if (WARN_ON_ONCE(ret != 1))
-> -		return 0;
-> +	dma->tx_size = 0;
->   
-> -	dma->tx_size = sg_dma_len(&sg);
-> +	for_each_sg(sgl, sg, ret, i)
-> +		dma->tx_size += sg_dma_len(sg);
->   
-> -	desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1,
-> +	desc = dmaengine_prep_slave_sg(dma->txchan, sgl, ret,
->   				       DMA_MEM_TO_DEV,
->   				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
->   	if (!desc) {
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index f4f40c9373c2f..e22be8f45c93e 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -120,6 +120,7 @@
+>   #define UCR4_OREN	(1<<1)	/* Receiver overrun interrupt enable */
+>   #define UCR4_DREN	(1<<0)	/* Recv data ready interrupt enable */
+>   #define UFCR_RXTL_SHF	0	/* Receiver trigger level shift */
+> +#define UFCR_RXTL_MASK	0x3F	/* Receiver trigger 6 bits wide */
+>   #define UFCR_DCEDTE	(1<<6)	/* DCE/DTE mode select */
+>   #define UFCR_RFDIV	(7<<7)	/* Reference freq divider mask */
 
+All these should be converted to BIT() and GENMASK(). Then, 
+UFCR_RXTL_MASK should be obviously GENMASK(5, 0).
+
+UFCR_RXTL_SHF is unused (and unneeded) BTW.
+
+>   #define UFCR_RFDIV_REG(x)	(((x) < 7 ? 6 - (x) : 6) << 7)
+
+thanks,
 -- 
 js
 
