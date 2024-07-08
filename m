@@ -1,146 +1,163 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-182.mta1.migadu.com (out-182.mta1.migadu.com [95.215.58.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAEA612E7F;
-	Mon,  8 Jul 2024 06:28:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C27A1B28A
+	for <linux-serial@vger.kernel.org>; Mon,  8 Jul 2024 07:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720420096; cv=none; b=VohaHdI224q4sW+9xxIpD4Ue2u2tPQc97VDOl8FeyVf/cvdkrWSR3BaFB3F+84EJbgILwxEKbO3HKuBg+W490vugm+HzSPFRcnTql75r98M6HyxshOC19DgSUqgobkesIo2CyIcTu7ltsLwhvJW4iiZBDN8jx59cfYIO/jVmwXs=
+	t=1720424750; cv=none; b=fd1B25Ou7EBGFi6lTxsUeQIoNgSKTzEcmtYmAaxA7EwZvOwU954+3IkyLb8lZ6zvEecyypowJPNknpfoe30qmsk1FlU1BmwVqGGGPjCRlG2BQltTwALpv2evnlfZwp/jCyEBFQMRQQWB1IYeLcoyyA8vDRa9LHrgEfhXJfviKUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720420096; c=relaxed/simple;
-	bh=r5FUaf28sD2ZSf0QfQ3bSq0xrDgrjT9z6W+Db3yQBPU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=A9+cPw5XA4ttVf1p38nsQIKNhkBJ3LPvJpRFkuzmytDaamsqZIHDB2FHKOEa6TTg3j4LAjt1Rkd/Vta591SUJXnPzPhzdyoifB/ThYTfw1jplJdpAJNhlgxcGKfye2uzwNmeBeG5MFlrqee7rkYt3tNasg6Mn0haHKwGxWHp620=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2ee90f56e02so33409511fa.2;
-        Sun, 07 Jul 2024 23:28:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720420093; x=1721024893;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ok+70R6H0gvsb+eCECVSjDcVBE2i3W8XdPc2Q3RMI88=;
-        b=je3RT60YGUWT+bTmX/dS8CR5Ptc+/oR72yFdTXkDTS1PYcBTcSOmtxDy+ZViTHu4Ti
-         h5MHB4X962oUYligqh3nvU0+MOyE+UJ1d6BtmZb08u4A6GNoxoxozktDf5yvVQgO/ZMO
-         9nQAArDJw0Z7VjAiMbO64tjtcmN9YMWKc4h9IN+fNR7l+agafW2c50aq0xUZpbBhB7tf
-         qKvgCLxXWXf3MD/ZfHRVnOM9RqBK7kTQHq5wngBeP5MXiNc+uKWpXQ6D1XAOUnYZ2H4B
-         xwJsHEoQ5+eHsB43XPQzI9Oyn4/OUEaMPxluR051TkyU9H9wbMS4ubgcXx5sAPVXMyeL
-         PqpQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXiFa+F2pDoCgOGPHj05WcC7PsOuUo7p4gB0GYGDapLlVzE2tusss488yzREhEUxAaT1CT93HXRm9wzYWGye6okaBHjQZj8labm7dYl
-X-Gm-Message-State: AOJu0YwKCMril+yrhKk0LjPTlfkj7pif347YnXyPo9SCMSTALMBasJ8O
-	8p0WU57rrQRlzzLgXjZfOFKwt4kEPwXwOHA4LxsbW6XJCI0UUF9s
-X-Google-Smtp-Source: AGHT+IG/Ui90NkFiRI66KU8v/cqPZNeHv9qVGGtqj64ymkSSGi3x0x31uYgrHrVr/jftuZkCh++w8A==
-X-Received: by 2002:a2e:9241:0:b0:2ee:8a92:d510 with SMTP id 38308e7fff4ca-2ee8eda7cabmr63949861fa.30.1720420092612;
-        Sun, 07 Jul 2024 23:28:12 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42668b87496sm32296855e9.8.2024.07.07.23.28.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Jul 2024 23:28:12 -0700 (PDT)
-Message-ID: <68b3481e-7a4d-4070-a711-709021154412@kernel.org>
-Date: Mon, 8 Jul 2024 08:28:10 +0200
+	s=arc-20240116; t=1720424750; c=relaxed/simple;
+	bh=Ctg0u/mGa+VwyDSlNuzK+P613udK8Frsp14C56Ebnqw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MyoFKImpPMGN9sOnaJ8QVsZej0C6uOujQmNd6mYfLuIcZcFzEAyefJAQdrUqXzs28ZM0V4pr/iF0nHPtakwg6hsuXJooE90kNjNAmpeReUPOtsbgYjwY34V0iqh3PW0XjizHa/1KLpn7J7RPzwHUi5/LFTq+wi26IV0FDK6pvNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=gh9N9Uw0; arc=none smtp.client-ip=95.215.58.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="gh9N9Uw0"
+X-Envelope-To: luca.ceresoli@bootlin.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1720424745;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6r0t4bqCeyTcKMQipHqJ13XIJ0M/NNLgBRa8TFFkq0k=;
+	b=gh9N9Uw0u8C6T2INQwENuJbySC4x56TU/bCYId7J19tXTNv2leS8YvS59ZHGfqV5iEcc2W
+	giRbXLJT0kVM9blL6cZF0eI0W/NaGwdLwsoCYd+qWtWL+ssOTOGgYIaHoZkEp8DXV+BDKD
+	QBEscHkTSbtdZ0QzmCUfJBvJe1gdrAw=
+X-Envelope-To: ojeda@kernel.org
+X-Envelope-To: robh@kernel.org
+X-Envelope-To: saravanak@google.com
+X-Envelope-To: nathan@kernel.org
+X-Envelope-To: mturquette@baylibre.com
+X-Envelope-To: sboyd@kernel.org
+X-Envelope-To: tony@atomide.com
+X-Envelope-To: andersson@kernel.org
+X-Envelope-To: emilio@elopez.com.ar
+X-Envelope-To: wens@csie.org
+X-Envelope-To: jernej.skrabec@gmail.com
+X-Envelope-To: samuel@sholland.org
+X-Envelope-To: krzk@kernel.org
+X-Envelope-To: daniel.lezcano@linaro.org
+X-Envelope-To: tglx@linutronix.de
+X-Envelope-To: florian.fainelli@broadcom.com
+X-Envelope-To: bcm-kernel-feedback-list@broadcom.com
+X-Envelope-To: linus.walleij@linaro.org
+X-Envelope-To: brgl@bgdev.pl
+X-Envelope-To: jic23@kernel.org
+X-Envelope-To: lee@kernel.org
+X-Envelope-To: shawnguo@kernel.org
+X-Envelope-To: kernel@pengutronix.de
+X-Envelope-To: ukleinek@kernel.org
+X-Envelope-To: gregkh@linuxfoundation.org
+X-Envelope-To: jirislaby@kernel.org
+X-Envelope-To: lgirdwood@gmail.com
+X-Envelope-To: broonie@kernel.org
+X-Envelope-To: nicolas.ferre@microchip.com
+X-Envelope-To: mpe@ellerman.id.au
+X-Envelope-To: npiggin@gmail.com
+X-Envelope-To: christophe.leroy@csgroup.eu
+X-Envelope-To: naveen.n.rao@linux.ibm.com
+X-Envelope-To: dlemoal@kernel.org
+X-Envelope-To: peng.fan@oss.nxp.com
+X-Envelope-To: thomas.petazzoni@bootlin.com
+X-Envelope-To: linux-kernel@vger.kernel.org
+X-Envelope-To: devicetree@vger.kernel.org
+X-Envelope-To: llvm@lists.linux.dev
+X-Envelope-To: linux-clk@vger.kernel.org
+X-Envelope-To: linux-omap@vger.kernel.org
+X-Envelope-To: linux-arm-msm@vger.kernel.org
+X-Envelope-To: linux-arm-kernel@lists.infradead.org
+X-Envelope-To: linux-sunxi@lists.linux.dev
+X-Envelope-To: linux-samsung-soc@vger.kernel.org
+X-Envelope-To: linux-gpio@vger.kernel.org
+X-Envelope-To: linux-iio@vger.kernel.org
+X-Envelope-To: linux-pwm@vger.kernel.org
+X-Envelope-To: linux-serial@vger.kernel.org
+X-Envelope-To: linux-usb@vger.kernel.org
+X-Envelope-To: patches@opensource.cirrus.com
+X-Envelope-To: linux-sound@vger.kernel.org
+X-Envelope-To: linuxppc-dev@lists.ozlabs.org
+X-Envelope-To: linux-riscv@lists.infradead.org
+Date: Mon, 8 Jul 2024 09:45:39 +0200
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Richard Leitner <richard.leitner@linux.dev>
+To: Luca Ceresoli <luca.ceresoli@bootlin.com>
+Cc: Miguel Ojeda <ojeda@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Saravana Kannan <saravanak@google.com>, Nathan Chancellor <nathan@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Tony Lindgren <tony@atomide.com>, Bjorn Andersson <andersson@kernel.org>, 
+	Emilio =?utf-8?B?TMOzcGV6?= <emilio@elopez.com.ar>, Chen-Yu Tsai <wens@csie.org>, 
+	Jernej Skrabec <jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, 
+	Krzysztof Kozlowski <krzk@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+	Thomas Gleixner <tglx@linutronix.de>, Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, Linus Walleij <linus.walleij@linaro.org>, 
+	Bartosz Golaszewski <brgl@bgdev.pl>, Jonathan Cameron <jic23@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Shawn Guo <shawnguo@kernel.org>, Pengutronix Kernel Team <kernel@pengutronix.de>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
+	Mark Brown <broonie@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>, 
+	Damien Le Moal <dlemoal@kernel.org>, "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, 
+	Thomas Petazzoni <thomas.petazzoni@bootlin.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	llvm@lists.linux.dev, linux-clk@vger.kernel.org, linux-omap@vger.kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-sunxi@lists.linux.dev, linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, patches@opensource.cirrus.com, linux-sound@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 15/20] usb: usb251xb: convert to
+ of_property_for_each_u32_new()
+Message-ID: <34bbebxag4neccfkb4isi4bx5uvi2dk446bqqmfmtru4vwbehk@hp7vufvfyon4>
+References: <20240703-of_property_for_each_u32-v1-0-42c1fc0b82aa@bootlin.com>
+ <20240703-of_property_for_each_u32-v1-15-42c1fc0b82aa@bootlin.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] serial: imx: only set receiver level if it is zero
-To: Stefan Eichenberger <eichest@gmail.com>, gregkh@linuxfoundation.org,
- shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
- festevam@gmail.com, cniedermaier@dh-electronics.com,
- stefan.eichenberger@toradex.com, l.sanfilippo@kunbus.com,
- tglx@linutronix.de, rickaran@axis.com, francesco.dolcini@toradex.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20240703112543.148304-1-eichest@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240703112543.148304-1-eichest@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240703-of_property_for_each_u32-v1-15-42c1fc0b82aa@bootlin.com>
+X-Migadu-Flow: FLOW_OUT
 
-On 03. 07. 24, 13:25, Stefan Eichenberger wrote:
-> From: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Hi Luca,
+
+On Wed, Jul 03, 2024 at 12:36:59PM GMT, Luca Ceresoli wrote:
+> Simplify code using of_property_for_each_u32_new() as the two additional
+> parameters in of_property_for_each_u32() are not used here.
 > 
-> With commit a81dbd0463ec ("serial: imx: set receiver level before
-> starting uart") we set the receiver level to its default value. This
-> caused a regression when using SDMA, where the receiver level is 9
-> instead of 8 (default). This change will first check if the receiver
-> level is zero and only then set it to the default. This still avoids the
-> interrupt storm when the receiver level is zero.
-> 
-> Fixes: a81dbd0463ec ("serial: imx: set receiver level before starting uart")
-> Signed-off-by: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+> Signed-off-by: Luca Ceresoli <luca.ceresoli@bootlin.com>
+
+please feel free to add:
+
+Acked-by: Richard Leitner <richard.leitner@linux.dev>
+
 > ---
->   drivers/tty/serial/imx.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
+>  drivers/usb/misc/usb251xb.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index f4f40c9373c2f..e22be8f45c93e 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -120,6 +120,7 @@
->   #define UCR4_OREN	(1<<1)	/* Receiver overrun interrupt enable */
->   #define UCR4_DREN	(1<<0)	/* Recv data ready interrupt enable */
->   #define UFCR_RXTL_SHF	0	/* Receiver trigger level shift */
-> +#define UFCR_RXTL_MASK	0x3F	/* Receiver trigger 6 bits wide */
->   #define UFCR_DCEDTE	(1<<6)	/* DCE/DTE mode select */
->   #define UFCR_RFDIV	(7<<7)	/* Reference freq divider mask */
-
-All these should be converted to BIT() and GENMASK(). Then, 
-UFCR_RXTL_MASK should be obviously GENMASK(5, 0).
-
-UFCR_RXTL_SHF is unused (and unneeded) BTW.
-
->   #define UFCR_RFDIV_REG(x)	(((x) < 7 ? 6 - (x) : 6) << 7)
-
-thanks,
--- 
-js
+> diff --git a/drivers/usb/misc/usb251xb.c b/drivers/usb/misc/usb251xb.c
+> index 7da404f55a6d..490004dbb9d8 100644
+> --- a/drivers/usb/misc/usb251xb.c
+> +++ b/drivers/usb/misc/usb251xb.c
+> @@ -382,11 +382,9 @@ static void usb251xb_get_ports_field(struct usb251xb *hub,
+>  				    bool ds_only, u8 *fld)
+>  {
+>  	struct device *dev = hub->dev;
+> -	struct property *prop;
+> -	const __be32 *p;
+>  	u32 port;
+>  
+> -	of_property_for_each_u32(dev->of_node, prop_name, prop, p, port) {
+> +	of_property_for_each_u32_new(dev->of_node, prop_name, port) {
+>  		if ((port >= ds_only ? 1 : 0) && (port <= port_cnt))
+>  			*fld |= BIT(port);
+>  		else
+> 
+> -- 
+> 2.34.1
 
