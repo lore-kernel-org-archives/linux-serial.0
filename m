@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85A713C687;
-	Tue,  9 Jul 2024 09:44:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F3E14884D;
+	Tue,  9 Jul 2024 12:54:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720518253; cv=none; b=cUe+U57qf0i5GSyBU3kB/1Fq3CyjccxIVF9R3WsVk8xmxZQ2YNZYUBANHxuu+/qpMXJkQGWa2l9/8YbIzBkvYru5HVhf+kffLjxamQI40DFjBxyVEY+NkCcZz+EsOKP/Qz14H0cEl6vY6yNdhYkDMNwNAUK/g3NH1FooTTaa+r4=
+	t=1720529698; cv=none; b=JxIsLWMT1xHk3KmlT6y/ATBE0vipzmdFaa3ErS0JVsChE0/2ftyFz554blqzo850bDziuUbLgk/d9XU1i7sD8LgJ5a+b1c2rnDz3xnW3XVTRSNyEHEMtq9cg84SjG85cvDKD42IND92rAwpPt/tNZO8y3BN57AxAa2uNm2lGYEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720518253; c=relaxed/simple;
-	bh=W4zHrXb6RE7BG7mvWfCC+xXE7F1la9heZuzvlglOIMc=;
+	s=arc-20240116; t=1720529698; c=relaxed/simple;
+	bh=ojwoScKbA6jM3k3wAvAPA697WZdlKuoGgCa0YUZCL/0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fOBm9cW8sCmMigbS0xEwphnUgeq3D3tYgCCqWo3JfziPfHeiZOzTBHkK9Ox03dNunOWvxlHNRlYUadXPRyKIIKMI4wLapgR3Y2o4fvDuM2RwoAqdScuqzNIpXzL5sEUAZsDfXYHWFgJMA8xIuqaKtnv0hat3obRoVrMhqYmtftM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EkV4N6ev; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kdl2iua8b7SIRuWVsqEiSU6R4id23y3A5D7px+Uqj+kLz2M8M/8nOb4BqOkBeZs7kfSW4GnV4oG/g2qfD1QTH+pqfBZ6FKOMAp4s8I8ELa39HP83vAs/SN+gCBhksyO+Q3lOTXA6pW29tcCtymz0rNXKSD2wOtHdjeUdfXI9Ypk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kl4XmHic; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EkV4N6ev"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C987C3277B;
-	Tue,  9 Jul 2024 09:44:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kl4XmHic"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A042CC3277B;
+	Tue,  9 Jul 2024 12:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720518253;
-	bh=W4zHrXb6RE7BG7mvWfCC+xXE7F1la9heZuzvlglOIMc=;
+	s=k20201202; t=1720529698;
+	bh=ojwoScKbA6jM3k3wAvAPA697WZdlKuoGgCa0YUZCL/0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EkV4N6evEM2MaTmygcwVAjEbuYUtoSbKb0drER2v90WlqzNfK3kAfDdQiHy7LpzFn
-	 nKVUrhhV9zTylgTUgBAsX/+xyYTgI5oyPf85WyWI19ww/vl/bR9xiBdYGE/m8FuHvM
-	 3MAmHvSsV/n0U1yBcY7v+R/eTuPDlU8LsTODdch9MrF/jtkXisFGWygfxTmEevLIuk
-	 YoHQjopjkZw0gOaWLrvWyPy2ahKUZ7jS7pFIFd1q4yqP/RFE5hjixhcbOS/bKLv4hj
-	 D+nrcRpfZESNndZ+myPSJhWtdqKGK0Bltp/0hVkY0xurb0wR8UmvzD/Cao3pqy0afs
-	 bGEV3juapMv9g==
+	b=kl4XmHic631h2HbHMXgXeiuoY0DoGPozip1bX9XU+luvZi6lLea0RIcaLuptuj1+u
+	 AIRbeGJTCId+l+I4M4AghWCktwBA45QaBXBuKWpE/BimZ9FCdU6efh45kd/hu5St+C
+	 X5yJC7N4gPqYUm9Z1S11hyaOvMjdqrESXAu9uDSSwCv+trLIQb88Wl0IMRYmNblfhQ
+	 raCWA/5KStcU8zUERl0uRcCXcJmts7jYPMpyYFpLeFV0NTAKHlqC2FPehcqKlXsnbg
+	 U+rV2Rq3ISOoah5Oda9pW9XkiQL4w+L7WblCrClOCQh4nZUJXilvdkLwyZFtPlVoLC
+	 pCWxbMPH09dMA==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan@kernel.org>)
-	id 1sR7OU-000000005d0-3CVX;
-	Tue, 09 Jul 2024 11:44:19 +0200
-Date: Tue, 9 Jul 2024 11:44:18 +0200
+	id 1sRAN5-000000003fh-12PE;
+	Tue, 09 Jul 2024 14:55:03 +0200
+Date: Tue, 9 Jul 2024 14:55:03 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Doug Anderson <dianders@chromium.org>
 Cc: Johan Hovold <johan+linaro@kernel.org>,
@@ -42,10 +42,11 @@ Cc: Johan Hovold <johan+linaro@kernel.org>,
 	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 3/3] serial: qcom-geni: do not kill the machine on
  fifo underrun
-Message-ID: <Zo0Gco1igkL185US@hovoldconsulting.com>
+Message-ID: <Zo0zJ8icZO9VFG8h@hovoldconsulting.com>
 References: <20240704101805.30612-1-johan+linaro@kernel.org>
  <20240704101805.30612-4-johan+linaro@kernel.org>
  <CAD=FV=VHOTQKNNbkWX17o57weP_wTm__MCSGPhFHQ+uG1CD+Bw@mail.gmail.com>
+ <Zo0Gco1igkL185US@hovoldconsulting.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -55,64 +56,53 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=VHOTQKNNbkWX17o57weP_wTm__MCSGPhFHQ+uG1CD+Bw@mail.gmail.com>
+In-Reply-To: <Zo0Gco1igkL185US@hovoldconsulting.com>
 
-On Mon, Jul 08, 2024 at 04:59:59PM -0700, Doug Anderson wrote:
-> On Thu, Jul 4, 2024 at 3:19 AM Johan Hovold <johan+linaro@kernel.org> wrote:
-> >
-> > The Qualcomm GENI serial driver did not handle buffer flushing and used
-> > to print discarded characters when the circular buffer was cleared.
-> > Since commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-> > this instead resulted in a hard lockup due to
-> > qcom_geni_serial_send_chunk_fifo() spinning indefinitely in the
-> > interrupt handler.
-> >
-> > The underlying bugs have now been fixed, but make sure to output NUL
-> > characters instead of killing the machine if a similar driver bug is
-> > ever reintroduced.
-> >
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> > ---
-> >  drivers/tty/serial/qcom_geni_serial.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> > index b2bbd2d79dbb..69a632fefc41 100644
-> > --- a/drivers/tty/serial/qcom_geni_serial.c
-> > +++ b/drivers/tty/serial/qcom_geni_serial.c
-> > @@ -878,7 +878,7 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
-> >                 memset(buf, 0, sizeof(buf));
-> >                 tx_bytes = min(remaining, BYTES_PER_FIFO_WORD);
-> >
-> > -               tx_bytes = uart_fifo_out(uport, buf, tx_bytes);
-> > +               uart_fifo_out(uport, buf, tx_bytes);
+On Tue, Jul 09, 2024 at 11:44:18AM +0200, Johan Hovold wrote:
+> On Mon, Jul 08, 2024 at 04:59:59PM -0700, Doug Anderson wrote:
+> > On Thu, Jul 4, 2024 at 3:19 AM Johan Hovold <johan+linaro@kernel.org> wrote:
+
+> > > @@ -878,7 +878,7 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
+> > >                 memset(buf, 0, sizeof(buf));
+> > >                 tx_bytes = min(remaining, BYTES_PER_FIFO_WORD);
+> > >
+> > > -               tx_bytes = uart_fifo_out(uport, buf, tx_bytes);
+> > > +               uart_fifo_out(uport, buf, tx_bytes);
+> > 
+> > FWIW I would have rather we output something much more obviously wrong
+> > in this case instead of a NUL byte. Maybe we should fill it with "@"
+> > characters or something? As you said: the driver shouldn't get into
+> > this error condition so it shouldn't matter, but if we have a bug in
+> > the future I'd rather it be an obvious bug instead of a subtle bug.
 > 
-> FWIW I would have rather we output something much more obviously wrong
-> in this case instead of a NUL byte. Maybe we should fill it with "@"
-> characters or something? As you said: the driver shouldn't get into
-> this error condition so it shouldn't matter, but if we have a bug in
-> the future I'd rather it be an obvious bug instead of a subtle bug.
+> Yeah, I've been running with a patch like that locally in my tests, and
+> went a bit back and forth whether I should post it. My reasoning for not
+> doing so was that the bugs have been fixed so we don't need to spend
+> cycles on memsetting the buffer to anything but NUL (I used 'X' in my
+> testing).
+> 
+> I guess that can be avoided by only padding the buffer if we ever hit an
+> underrun, but I still thinks it's questionable to spend the effort as
+> this is not something that should be needed. In any case, I didn't want
+> to spend time on it to fix the 6.10 regressions.
+> 
+> Killing the machine is perhaps an effective way to get attention to an
+> issue, but I'd much rather have an occasional NUL character in the log
+> *if* this ever becomes an issue at all again.
+> 
+> > I'm happy to post a patch or provide a Reviewed-by if you want to post
+> > a patch. Let me know.
+> 
+> If you feel strongly about this, I can either fill the buffer with
+> something else than NUL or add error handling for any such future
+> hypothetical bugs. What do you prefer?
 
-Yeah, I've been running with a patch like that locally in my tests, and
-went a bit back and forth whether I should post it. My reasoning for not
-doing so was that the bugs have been fixed so we don't need to spend
-cycles on memsetting the buffer to anything but NUL (I used 'X' in my
-testing).
+Actually we just need to clear the buffer on entry, which would do away
+with the unnecessary memset() that is there today. This should also give
+you a printable indication that something is wrong in case a similar bug
+is ever reintroduced (e.g. the last four characters would be repeated
+until the transfer is complete instead of a fixed char like '@').
 
-I guess that can be avoided by only padding the buffer if we ever hit an
-underrun, but I still thinks it's questionable to spend the effort as
-this is not something that should be needed. In any case, I didn't want
-to spend time on it to fix the 6.10 regressions.
-
-Killing the machine is perhaps an effective way to get attention to an
-issue, but I'd much rather have an occasional NUL character in the log
-*if* this ever becomes an issue at all again.
-
-> I'm happy to post a patch or provide a Reviewed-by if you want to post
-> a patch. Let me know.
-
-If you feel strongly about this, I can either fill the buffer with
-something else than NUL or add error handling for any such future
-hypothetical bugs. What do you prefer?
+Perhaps that's good enough as a compromise?
 
 Johan
