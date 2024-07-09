@@ -1,22 +1,22 @@
 Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3A9433BE;
-	Tue,  9 Jul 2024 03:20:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31A477114;
+	Tue,  9 Jul 2024 03:20:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720495208; cv=none; b=hnyL7/ZIvZFaLmUeckwffyVCtREXD9Snex5MImDXCID/yAqKYvJS6R8nPY4VLoGArTR0XNZdZJme/Vxk4+syC5uRC4jrB/NeoVVZru7lvBTa35GCaUFM8Fbgh9clFNXAY+gmzCKGom9ICqnmNulQImktNILuGr1Uh6AmoBSjY6o=
+	t=1720495217; cv=none; b=jvgui29kIg0C/QOLQjmvY5bobzgNpjL1XvJHby1QJmuYOXbij8v8c8frCLT11nSm1nlkgTRyxkJgQNe1cPruf/6A1Gx5r9IOCCHCFmh2H37HjQbYhQnj5oNVY6x98g1XU7yBF1To/9ruhCF324Es9QZR0N14owWWaGU9fC47gXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720495208; c=relaxed/simple;
-	bh=WgQEVpfwfr3WH6qhi3ZE263ZglXG867Ahbr5kPZTNtU=;
+	s=arc-20240116; t=1720495217; c=relaxed/simple;
+	bh=VvnzgRDmEIAsq9Hf5Ry7MLnNkPx6PUf9JkUVFX7jVz0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=j/f0y9BzhYt4Zhzz1jzwS1wqJ0/VgX23oKu9y2pgRu1egeVJAWTvMYks5jma7HvdoWCKxBKZgv6U8KgqApSk39eFYjUMSziHxGUxVmNl/TDVYUihegkO3prHFXbEOhBzfh9u8+/bGRJPjDB27mpmgOnXwzK1JWcTtOUFBkQkplA=
+	 In-Reply-To:To:Cc; b=UrC0l9yUShezYozFASrVKM4TXuyBqiTp0ZPJpi/g9VbsVTuWhBZDasdkT/4LNiW9NoDlBgwLec0bWMFi/uemLAeww9P1cRO9E7lhQ6jpmgO6VmVQRH7mnDUd+EgNnS8h/L8FDjMRzN1VZ4DboewZOsyjVuRRgXoMOvB4bOruwqA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
 From: Yixun Lan <dlan@gentoo.org>
-Date: Tue, 09 Jul 2024 03:18:46 +0000
-Subject: [PATCH v4 03/10] dt-bindings: riscv: add SpacemiT K1 bindings
+Date: Tue, 09 Jul 2024 03:18:47 +0000
+Subject: [PATCH v4 04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -25,7 +25,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240709-k1-01-basic-dt-v4-3-ae5bb5e56aaf@gentoo.org>
+Message-Id: <20240709-k1-01-basic-dt-v4-4-ae5bb5e56aaf@gentoo.org>
 References: <20240709-k1-01-basic-dt-v4-0-ae5bb5e56aaf@gentoo.org>
 In-Reply-To: <20240709-k1-01-basic-dt-v4-0-ae5bb5e56aaf@gentoo.org>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -44,74 +44,49 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  Inochi Amaoto <inochiama@outlook.com>, Icenowy Zheng <uwu@icenowy.me>, 
  Meng Zhang <zhangmeng.kevin@spacemit.com>, 
  Meng Zhang <kevin.z.m@hotmail.com>, Yangyu Chen <cyy@cyyself.name>, 
- Yixun Lan <dlan@gentoo.org>, Matthias Brugger <matthias.bgg@kernel.org>
+ Yixun Lan <dlan@gentoo.org>, Conor Dooley <conor.dooley@microchip.com>
 X-Mailer: b4 0.13.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1387; i=dlan@gentoo.org;
- h=from:subject:message-id; bh=npfgDVRP4ulLNRkxF5xAkZP/Tlf1HQh6E5OWv3kLTAo=;
- b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmjKwl1olP6PkNb09RY9R6a+2b6KcslR6rjkpwo
- XP2Kr0Ocp6JApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZoysJV8UgAAAAAAuAChp
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1027; i=dlan@gentoo.org;
+ h=from:subject:message-id; bh=wvQLp2j2KF1DXU6LoDgHk1K3AJ3TNpJmOxUxNu563OM=;
+ b=owEBzQIy/ZANAwAKATGq6kdZTbvtAcsmYgBmjKwoJ9JhYzGBCEuNvHOCsyEcGGruZO/c7JUBo
+ 8TRFLqj+5KJApMEAAEKAH0WIQS1urjJwxtxFWcCI9wxqupHWU277QUCZoysKF8UgAAAAAAuAChp
  c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0QjVCQUI4QzlDMzF
- CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277axbEACYHwqAIGjSupXIEa
- YeVXp/alZzj4lL3AWjM0bpIYiDp9pKctWC9ra5sF+ueseFyBiqW7otJ526mRwyBiAXmQm7TIXRT
- HmKpcXB2l9MkHIJCqSTL9wKWpzjX9Ry5H7VRzM8vJRm9z2JlFaPX1ErF3h1i8FVzxcuon0/Qu6O
- 0ank7l4qG8xMvcUc1WzcWChrkQiBPPjbX2MSPDMlDbktPawCLjCAXdeUaLsOHOFIqwG4CGPUmRL
- 1s+yOSHYh1HWQzO5P3tFCZWg0i42uJiGJmbM/YAbsnktULf880MYaRQawwOGrIut8bg1EhQMqBb
- tO9rQ7Utw1G0b164D6FGHlKJOeovmRVg9a1uyAV16EJQxnXzH1sX5Bvxneo9I8lfTHGqRzyBaR/
- Zjzu5nhGyvlvv8Ie7lM5vYLDB2zR2PjvtOkscYAVq2QOK/MP/NK1p/m5q2SxcgUmwVXeLKbAJUO
- pnMiSulPGJTY/+WEYDMrMR8C0mY2/cjvc/n5vwURVmmkxN0C/ulQYueOZ9jDwvPICnU4wFRuHLN
- QLhRUH4LUowA1yn/3jpw/NBPLTBMOZqw8viIQrCPViETC719Rcht6XK7/C5ekO+BOiEGUNFCvwX
- svEMcncFpiMsQmQkShS+9dFuAtZFuDl/eRyX3bbff2gRdc1NieasVl2TOxf5pQLTAi/w==
+ CNzExNTY3MDIyM0RDMzFBQUVBNDc1OTREQkJFRAAKCRAxqupHWU277SMBEACGqhJUmsrYkAtBv0
+ gYxjSG3KtPXmPY4v83ANmFloGZJ0iT0IW3hhUyHrDPx0oYSObj2h2Qlm34FQ+99wpJnk//0RKDm
+ M9tvDl9GyGo3BZI053SZ3KybNR9i7u66BHzgcSyD9R/UhA/AlWDboX/3UFRN+lqM6JBi+daeE17
+ grXdqWMwPBFoeUSyejWIAj0eVEaLkvEd0ky/DzTf0lgVRoLux8C3VZzbnyBxZ+5JSjRUqcL+BAc
+ b7Pf55QqX5PxtVWKw2amqq76l4+SSFrgrmGqYLaNkbXYlRvIrj9ZT+Lw3A74U+ll/GKr1oYBcel
+ 6qyf5J64gBJLF7wvq3lcla1i1S4whxgcH7+yRotn2gQyCGrcW+okpsKW7u43NswAulNcYF2gyrn
+ kblw2h5c/eES7jR3zr3oQkIPiuqWjZmvHkYsyzYVLmukG3U2NI9xguIJ5hwLJoZk/uMR9vXcXxL
+ SrwHsN6vWGq00Gfqz8JPogQcrsP7+tJz509Rtwztd9BNJjCZ2mzfbOLh1XjGQNEEMTJJxEzLiS8
+ AMfRWvwfqgmnq8yJKFekiLHvVI2gPdsQeY3X530x155ppHxtYzjxb+To6v68EsrNsRWxSNNAxAJ
+ ujU9ON1vKwRuG51nx29Z/qc9g7VqE1i7oj4p1mYjG3EZ+3wt1fA5dkAysSfnLZBG1zmw==
 X-Developer-Key: i=dlan@gentoo.org; a=openpgp;
  fpr=50B03A1A5CBCD33576EF8CD7920C0DBCAABEFD55
 
 From: Yangyu Chen <cyy@cyyself.name>
 
-Add DT binding documentation for the SpacemiT K1 SoC[1] and the Banana
-Pi BPi-F3 board[2] which used it.
+Add compatible string for SpacemiT K1 CLINT.
 
-Link: https://www.spacemit.com/en/spacemit-key-stone-2/ [1]
-Link: https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3 [2]
 Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-Reviewed-by: Matthias Brugger <matthias.bgg@kernel.org>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Yixun Lan <dlan@gentoo.org>
 ---
- .../devicetree/bindings/riscv/spacemit.yaml        | 28 ++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ Documentation/devicetree/bindings/timer/sifive,clint.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/riscv/spacemit.yaml b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-new file mode 100644
-index 0000000000000..52e55077af1ae
---- /dev/null
-+++ b/Documentation/devicetree/bindings/riscv/spacemit.yaml
-@@ -0,0 +1,28 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/riscv/spacemit.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: SpacemiT SoC-based boards
-+
-+maintainers:
-+  - Yangyu Chen <cyy@cyyself.name>
-+  - Yixun Lan <dlan@gentoo.org>
-+
-+description:
-+  SpacemiT SoC-based boards
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - bananapi,bpi-f3
-+          - const: spacemit,k1
-+
-+additionalProperties: true
-+
-+...
+diff --git a/Documentation/devicetree/bindings/timer/sifive,clint.yaml b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+index fced6f2d8ecbb..c2e68587a806a 100644
+--- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
++++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+@@ -31,6 +31,7 @@ properties:
+           - enum:
+               - canaan,k210-clint       # Canaan Kendryte K210
+               - sifive,fu540-c000-clint # SiFive FU540
++              - spacemit,k1-clint       # SpacemiT K1
+               - starfive,jh7100-clint   # StarFive JH7100
+               - starfive,jh7110-clint   # StarFive JH7110
+               - starfive,jh8100-clint   # StarFive JH8100
 
 -- 
 2.45.2
