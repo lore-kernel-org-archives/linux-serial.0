@@ -1,50 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8558114BFB0;
-	Tue,  9 Jul 2024 09:32:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85A713C687;
+	Tue,  9 Jul 2024 09:44:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720517570; cv=none; b=PnL4Aoag7FWmU9emkczUhD6un5zGnYnpVK6nyN2CWAz0a7+hPAS8xtp5T7EjzOFas+v8NpolHQ66d/Gy4eM0pczRDZiN7OQlh3v9PTU0v+rgw98oi/KnMcqw7T8xeX+w7QlzkJQYToXTH+ZuU8LtNAMOj58DXeB1eLw6Rm/+Ucg=
+	t=1720518253; cv=none; b=cUe+U57qf0i5GSyBU3kB/1Fq3CyjccxIVF9R3WsVk8xmxZQ2YNZYUBANHxuu+/qpMXJkQGWa2l9/8YbIzBkvYru5HVhf+kffLjxamQI40DFjBxyVEY+NkCcZz+EsOKP/Qz14H0cEl6vY6yNdhYkDMNwNAUK/g3NH1FooTTaa+r4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720517570; c=relaxed/simple;
-	bh=hg2hGF7K4KQBhvolAaT0MrUalgjsW8G+lwl6c2ZWnek=;
+	s=arc-20240116; t=1720518253; c=relaxed/simple;
+	bh=W4zHrXb6RE7BG7mvWfCC+xXE7F1la9heZuzvlglOIMc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DDFNhbgXfydo46FZcSS9r9VjkjCnOuJ2qsmmLZZ0qjkTLjfooNmBQ91v4S5Y78CKxk806fAwN547BRQdz3bvbJEaJQbWbQkMwXNUOFDBY+dg8rZTLOA+6/FHW0atTaLU0BLTwr5s9vK+5QfI/prkOfs8YttNkb7/MBwplnuiOTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YJJgeAyK; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fOBm9cW8sCmMigbS0xEwphnUgeq3D3tYgCCqWo3JfziPfHeiZOzTBHkK9Ox03dNunOWvxlHNRlYUadXPRyKIIKMI4wLapgR3Y2o4fvDuM2RwoAqdScuqzNIpXzL5sEUAZsDfXYHWFgJMA8xIuqaKtnv0hat3obRoVrMhqYmtftM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EkV4N6ev; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YJJgeAyK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2544FC3277B;
-	Tue,  9 Jul 2024 09:32:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EkV4N6ev"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C987C3277B;
+	Tue,  9 Jul 2024 09:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1720517570;
-	bh=hg2hGF7K4KQBhvolAaT0MrUalgjsW8G+lwl6c2ZWnek=;
+	s=k20201202; t=1720518253;
+	bh=W4zHrXb6RE7BG7mvWfCC+xXE7F1la9heZuzvlglOIMc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YJJgeAyKodBDS56LhLzxVYex44QWx+xcX8kFf1aRnTfsuzgmWJWp3V9eEXmLniWPC
-	 NYpfcCJg/pJch7EpS0bNwdfNSFAB3NQVMrINZTBsaT2bRMpEJcZYeot5dhkiYnE6cM
-	 YSq8OVrhe5a9cyfpTASGlDu/vog8W/M1BTQWLQCyX0oGeDdgnEm5OQWKHqwm0DRxGa
-	 E5V0Jl4OXIJHuLOsM4QL/hVFqg/omUMWJydnLNN6nPUVhjNxpDZSpTnWpnjdoWhiaH
-	 NXKptMNhH9CR3Tbwz31zP6+UxqxqJWcanilcXQzpdfICS7w7ksONJsmDw157kt0atr
-	 hm1AAhU1eZ1aA==
+	b=EkV4N6evEM2MaTmygcwVAjEbuYUtoSbKb0drER2v90WlqzNfK3kAfDdQiHy7LpzFn
+	 nKVUrhhV9zTylgTUgBAsX/+xyYTgI5oyPf85WyWI19ww/vl/bR9xiBdYGE/m8FuHvM
+	 3MAmHvSsV/n0U1yBcY7v+R/eTuPDlU8LsTODdch9MrF/jtkXisFGWygfxTmEevLIuk
+	 YoHQjopjkZw0gOaWLrvWyPy2ahKUZ7jS7pFIFd1q4yqP/RFE5hjixhcbOS/bKLv4hj
+	 D+nrcRpfZESNndZ+myPSJhWtdqKGK0Bltp/0hVkY0xurb0wR8UmvzD/Cao3pqy0afs
+	 bGEV3juapMv9g==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan@kernel.org>)
-	id 1sR7DT-000000005RF-2YpH;
-	Tue, 09 Jul 2024 11:32:56 +0200
-Date: Tue, 9 Jul 2024 11:32:55 +0200
+	id 1sR7OU-000000005d0-3CVX;
+	Tue, 09 Jul 2024 11:44:19 +0200
+Date: Tue, 9 Jul 2024 11:44:18 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Doug Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Johan Hovold <johan+linaro@kernel.org>,
+Cc: Johan Hovold <johan+linaro@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Konrad Dybcio <konrad.dybcio@linaro.org>,
 	Bjorn Andersson <andersson@kernel.org>,
 	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] serial: qcom-geni: fix lockups
-Message-ID: <Zo0Dx7-6mnIN4wMK@hovoldconsulting.com>
+Subject: Re: [PATCH v2 3/3] serial: qcom-geni: do not kill the machine on
+ fifo underrun
+Message-ID: <Zo0Gco1igkL185US@hovoldconsulting.com>
 References: <20240704101805.30612-1-johan+linaro@kernel.org>
- <2024070445-stunner-scrawny-1b03@gregkh>
- <CAD=FV=X0Sk0Xkz7Mcna6BNhGpxZQY5KArY=LqMPEwbocvmojQA@mail.gmail.com>
+ <20240704101805.30612-4-johan+linaro@kernel.org>
+ <CAD=FV=VHOTQKNNbkWX17o57weP_wTm__MCSGPhFHQ+uG1CD+Bw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,50 +55,64 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=X0Sk0Xkz7Mcna6BNhGpxZQY5KArY=LqMPEwbocvmojQA@mail.gmail.com>
+In-Reply-To: <CAD=FV=VHOTQKNNbkWX17o57weP_wTm__MCSGPhFHQ+uG1CD+Bw@mail.gmail.com>
 
-Hi Doug,
-
-Hope you had a good holiday.
-
-On Mon, Jul 08, 2024 at 04:57:55PM -0700, Doug Anderson wrote:
-> On Thu, Jul 4, 2024 at 3:31 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
+On Mon, Jul 08, 2024 at 04:59:59PM -0700, Doug Anderson wrote:
+> On Thu, Jul 4, 2024 at 3:19 AM Johan Hovold <johan+linaro@kernel.org> wrote:
 > >
-> > On Thu, Jul 04, 2024 at 12:18:02PM +0200, Johan Hovold wrote:
-> > > Since 6.10-rc1, Qualcomm machines with a serial port can easily lock up
-> > > hard, for example, when stopping a getty on reboot.
-> > >
-> > > This was triggered by the kfifo conversion, which turned an existing bug
-> > > that caused the driver to print discarded characters after a buffer
-> > > flush into a hard lockup.
-> > >
-> > > This series fixes the regression and a related soft lockup issue that
-> > > can be triggered on software flow control and on suspend.
-> > >
-> > > Doug has posted an alternative series of fixes here that depends on
-> > > reworking the driver a fair bit here:
-> > >
-> > >       https://lore.kernel.org/lkml/20240610222515.3023730-1-dianders@chromium.org/
-> > >
-> > > This rework has a significant impact on performance on some platforms,
-> > > but fortunately it seems such a rework can be avoided.
-> > >
-> > > There are further bugs in the console code (e.g. that can lead to lost
-> > > characters) that this series does not address, but those can be fixed
-> > > separately (and I've started working on that).
+> > The Qualcomm GENI serial driver did not handle buffer flushing and used
+> > to print discarded characters when the circular buffer was cleared.
+> > Since commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> > this instead resulted in a hard lockup due to
+> > qcom_geni_serial_send_chunk_fifo() spinning indefinitely in the
+> > interrupt handler.
 > >
-> > I'll take these now, thanks!
+> > The underlying bugs have now been fixed, but make sure to output NUL
+> > characters instead of killing the machine if a similar driver bug is
+> > ever reintroduced.
+> >
+> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > ---
+> >  drivers/tty/serial/qcom_geni_serial.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> > index b2bbd2d79dbb..69a632fefc41 100644
+> > --- a/drivers/tty/serial/qcom_geni_serial.c
+> > +++ b/drivers/tty/serial/qcom_geni_serial.c
+> > @@ -878,7 +878,7 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
+> >                 memset(buf, 0, sizeof(buf));
+> >                 tx_bytes = min(remaining, BYTES_PER_FIFO_WORD);
+> >
+> > -               tx_bytes = uart_fifo_out(uport, buf, tx_bytes);
+> > +               uart_fifo_out(uport, buf, tx_bytes);
 > 
-> Are you going to continue to work on the driver? There are still some
-> pretty bad bugs including ones that are affecting Collabora's test
-> labs. Unless you want to try to tackle it some other way, I'm going to
-> keep pushing for something like my original series to land. I can
-> re-post them atop your patches since they've landed. This will regress
-> your performance but correctness trumps performance.
+> FWIW I would have rather we output something much more obviously wrong
+> in this case instead of a NUL byte. Maybe we should fill it with "@"
+> characters or something? As you said: the driver shouldn't get into
+> this error condition so it shouldn't matter, but if we have a bug in
+> the future I'd rather it be an obvious bug instead of a subtle bug.
 
-Yes, I have a working fix for the console issue that could lead to lost
-characters. I need to spend some time on other things this week, but I
-intend to follow with fixes for the remaining issues as well.
+Yeah, I've been running with a patch like that locally in my tests, and
+went a bit back and forth whether I should post it. My reasoning for not
+doing so was that the bugs have been fixed so we don't need to spend
+cycles on memsetting the buffer to anything but NUL (I used 'X' in my
+testing).
+
+I guess that can be avoided by only padding the buffer if we ever hit an
+underrun, but I still thinks it's questionable to spend the effort as
+this is not something that should be needed. In any case, I didn't want
+to spend time on it to fix the 6.10 regressions.
+
+Killing the machine is perhaps an effective way to get attention to an
+issue, but I'd much rather have an occasional NUL character in the log
+*if* this ever becomes an issue at all again.
+
+> I'm happy to post a patch or provide a Reviewed-by if you want to post
+> a patch. Let me know.
+
+If you feel strongly about this, I can either fill the buffer with
+something else than NUL or add error handling for any such future
+hypothetical bugs. What do you prefer?
 
 Johan
