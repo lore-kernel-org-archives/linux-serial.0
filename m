@@ -1,40 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B841CA87;
-	Wed, 10 Jul 2024 05:35:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F3718FDD4;
+	Wed, 10 Jul 2024 12:53:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720589728; cv=none; b=UkaU6ZS+PfvLZu5t3iUfA3OP5DO//7/M5E9B2Op4raXFax0rZLnzPn51hu8sB6sWomQz/aEdRrRyURo8dqN7YtSa/iIQTA3Hx/i6GMeSk+8ez2RAythoS1JlyLSbJuOfofus8PqgPLJayqdJbBg+IhyRf5cCfjyQ3e5hvcBU+qo=
+	t=1720616036; cv=none; b=EKOc4/7wnrL4qMa2dyPCY+i9XsAeGrcSlKyq2H+Cezr++QnIJZxxYNioH5eNdWMUR6vn4oswAHMHDrYvqSDJuVbjlnTDai9YjP8t/HA19V89JcfX/FyvnRKYo1FRWEaKKBgHRN/lz5XqjSFeb/Wcq0DUJrLflM/f/yY0hNiLqXY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720589728; c=relaxed/simple;
-	bh=WDWPVUbSRnIeyuU8ZbS7Y1vRv/cIIU76QodPkaiYZgg=;
+	s=arc-20240116; t=1720616036; c=relaxed/simple;
+	bh=bJytAGwJkb5+HzIS7Gvp673v6K6DW4WaBn/JLdIV3KM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EV9flr0/5jO333Q1yFQ8+7FqzcNCncgP6lfp3OWvxPNnOq9VS9+9XF0Z8XaQ0LU/CpDnacKaFpTzfDThu9+mqcUIxzcBajTMC1bKdkTRt90M2ijrar0Lzn1qPVmkazZ/lutfIivhgdaPeeVmExU3zB3Z25Sr6XlUGtGyEb2dqDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=FvEL3BFd; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=d7yI4P87IK3lT5P3AlBpVJapFL4Jw7t+o1xCRI0tcxxcW81NcQrbEd2CRxAKjTY0ETAxY7KvgDJzDXKWmkRvSOHpHjVzlLiUe3MT5OpkrjAfXIvqCmkK1vOFDu8dqy45Q3Lj+EPdVv4G+1Piz/FuVyZbMChdqpJQvzVDPP7zDyI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2Den/WGY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="FvEL3BFd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D7B9C32781;
-	Wed, 10 Jul 2024 05:35:27 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2Den/WGY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B824C32781;
+	Wed, 10 Jul 2024 12:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1720589727;
-	bh=WDWPVUbSRnIeyuU8ZbS7Y1vRv/cIIU76QodPkaiYZgg=;
+	s=korg; t=1720616035;
+	bh=bJytAGwJkb5+HzIS7Gvp673v6K6DW4WaBn/JLdIV3KM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FvEL3BFdTytBBRTkgeOiUtO5KKMn6/VlPWCmetTCqwXk18EsJnfTMTmTuqz1WmFXS
-	 eZb7L1m5Aqc6jVNUgLkyNc4ypJeP6ycCYFzToTb6K2wFuat4Xhpc0W0pmDSrkO9GJK
-	 RuOoXYDOJK3QSNQRIdeSZF/NDvkbenVG5UQWserY=
-Date: Wed, 10 Jul 2024 07:35:24 +0200
+	b=2Den/WGY0sejh17n67j3SEyKdZmX0zrIIMri8BnUZnE82L/yTsFi+prcUy4YBfeRM
+	 FG9pK6w8RlwwOj13V1yduyuqG3VCkI2vDFxpHKmqqJ6RR7MyIsWWbosRJtGx/M+WRp
+	 ILCy9eq20OwMQ5Ku6UIlLkJaKRAt6jFcXBHJu+ls=
+Date: Wed, 10 Jul 2024 14:53:53 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Johan Hovold <johan@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	Johan Hovold <johan+linaro@kernel.org>,
-	Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: qcom-geni: Show '@' characters if we have a FIFO
- underrun
-Message-ID: <2024071001-justice-catfight-37f0@gregkh>
-References: <20240709162841.1.I93bf39f29d1887c46c74fbf8d4b937f6497cdfaa@changeid>
+To: Jisheng Zhang <jszhang@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH] serial: 8250: move mmp|pxa uart earlycon code and add
+ xscale earlycon
+Message-ID: <2024071028-deskbound-crisping-7f69@gregkh>
+References: <20240706101856.3077-1-jszhang@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,55 +40,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240709162841.1.I93bf39f29d1887c46c74fbf8d4b937f6497cdfaa@changeid>
+In-Reply-To: <20240706101856.3077-1-jszhang@kernel.org>
 
-On Tue, Jul 09, 2024 at 04:28:45PM -0700, Douglas Anderson wrote:
-> As of commit 2ac33975abda ("serial: qcom-geni: do not kill the machine
-> on fifo underrun") a FIFO underrun will no longer hard lockup the
-> machine. Instead, a FIFO underrun will cause the UART to output a
-> bunch of '\0' characters. The '\0' characters don't seem to show up on
-> most terminal programs and this hides the fact that we had an
-> underrun. An underrun is aq sign of problems in the driver and
-> should be obvious / debugged.
+On Sat, Jul 06, 2024 at 06:18:56PM +0800, Jisheng Zhang wrote:
+> There are two other drivers that bind to "mrvl,mmp-uart": the 8250_of
+> and the 8250_pxa. The previous one is generic and the latter is binded
+> to ARCH_PXA || ARCH_MMP. Now we may have pxa programming compatible
+> HW to support, making use of the generic 8250_of seems a good idea.
+> However, there's no earlycon support if we go with this solution. So
+> move the mmp|pxa-uart earlycon code to core 8250_early.c.
 > 
-> Change the driver to put '@' characters in the case of an underrun
-> which should make it much more obvious.
-> 
-> Adding this extra initialization doesn't add any real overhead. In
-> fact, this patch reduces code size because the code was calling
-> memset() to init 4 bytes of data. Disassembling the new code shows
-> that early in the function w22 is setup to hold the '@@@@' constant:
->   mov     w22, #0x40404040
-> 
-> Each time through the loop w22 is simply stored:
->   str     w22, [sp, #4]
-> 
-> Cc: Johan Hovold <johan@kernel.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> 
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 69a632fefc41..332eaa2faa2b 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -872,10 +872,10 @@ static void qcom_geni_serial_send_chunk_fifo(struct uart_port *uport,
->  {
->  	struct qcom_geni_serial_port *port = to_dev_port(uport);
->  	unsigned int tx_bytes, remaining = chunk;
-> -	u8 buf[BYTES_PER_FIFO_WORD];
->  
->  	while (remaining) {
-> -		memset(buf, 0, sizeof(buf));
-> +		u8 buf[BYTES_PER_FIFO_WORD] = { '@', '@', '@', '@' };
+> At the same, add xscale earlycon support too, only build test since
+> I have no xscale machine any more.
 
-Why is '@' a valid character for an underrun?  Why would any characters
-be ok?  Where is this now documented?
-
-And shouldn't you use a memset to get the BYTES_PER_FIFO_WORD amount of
-'@' here?
+When you have an "and" in the changelog, that means it should be 2
+patches.  Please split this up into one that does the move, and one that
+adds the new entry.
 
 thanks,
 
