@@ -1,87 +1,94 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25EE157A74
-	for <linux-serial@vger.kernel.org>; Fri, 12 Jul 2024 10:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B08AD512;
+	Fri, 12 Jul 2024 10:41:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720778723; cv=none; b=kgtQt155WUw+uMgkLzPP8ed9PPkYGVH42Vt2Jv60M2FxqMoX3DFaJh4yb+SJqxp+YLQYqt6gDE/L0R2Yx7WshwGiXPsnydxaDL65ChCx6IURjEyGj/RA5evfGw1t4ALczf7XHN+Wz51rltCZjODZgobL+OFwj29Wt4hmas+E8bU=
+	t=1720780865; cv=none; b=XebR9K/1QwP5p3SEHslhd/hGDZnSb4H7oKWLnehDRuNHO/AOMHoOhKGJ9ndTSQ7zsl9mhBNsff4asbpuRUr0q9Yv7tNWYt5nMNVehZeEMlEsDmTKBj3ohlKr1QKIcTrbk+OAPRQH5XEHocd3cipv7MQt7Zi1fP0TaeYSFPlfaZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720778723; c=relaxed/simple;
-	bh=cnp/jBauw5TdNqTWXgohodyEGsjA86x4uCkuOKVGfRE=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=G9uOasjv9/yKiFl4bZNRbyNabphMF3MfMBSOOj+yVYoCfciZHkbzMlFaWNXTyexEp94tkS4p1ZS807CNPr8kauHsxmxE9wuI3QxgmzXxdenx78EQT9fzKEGFBqXoegsuGx/U2KylgkJmD6U4PuMvqmCr9FLItMOhtXfqmds8BJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-7f664993edbso202076339f.2
-        for <linux-serial@vger.kernel.org>; Fri, 12 Jul 2024 03:05:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1720778721; x=1721383521;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=iyg9rhejF8Qe5A3voFgG9tU6Ju6NThvDf3tGPwmTcgg=;
-        b=DyBRtZAPDRhRwwnEPR1Uumsd2p2ZfWBVqBP/qHYKk0mNt3pBwQ8+CtDwJK+uWYZOlw
-         y+wXhrqwikp7vLe7xnR5PlRiQaq951j+K3uZ6qcmaFtwQ8P85CtCKFsY7BEMiFRGisT6
-         +dQlT/SZZXYo9lVNTQMMwVoqJQvqajEjHgH5Hzf7qi14vCjmRYHZU178f4PO2qY1KtUq
-         arv5US1nfobx255iKpqaXduGXJguJj2KZoUWVssAe9G4BUknBs8HwAYBCK9D7FA3yLho
-         iiW+arSJE7QfrzQtZHgbhJxjSaKN70Ht98ll0hb9wOFERbQT/JJKInAvQFCz1ZthtwZg
-         WHoQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVT2ShC+pSVao2X+UeW/eOvcUOf98kYeRzwzvlHhQXwx4CU7VbFnIjsOPZf5oz08CzcR+NTFY6/V8hMgNo7DJuolaBz4kRKptMBm0IF
-X-Gm-Message-State: AOJu0Yx4SbuUgo903tKUAF72uBijDQAzShgEf/kS4Bm1Asi8IpwAbut3
-	ofJz++/r6FLDOd1Eo5wjmeWnr0vzLo8QiZX9kDVE56FiUdDoR9JsSPpLh9Xbo6aukQ8Ngj4jTsH
-	G3/8j24SSHsm+SDcpr1Uay6iN+pe5SACrVrg7xF2XjaCW5f96hQLacOs=
-X-Google-Smtp-Source: AGHT+IFFBk/W1SQSv0kMIAhACc/3QzDzQ1IHiTDda01MIv9ZAbtoVD6gv6Et4UAM+5UIVNANJhxXnWsOn0amnEVcYvFYxkoWdGnx
+	s=arc-20240116; t=1720780865; c=relaxed/simple;
+	bh=TDEL5hC57yul95B5udSlmhCRtwcFbbCO8GwyqgY7/7M=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=R0n8oM1wIZs4JDxCzCpF10JnIslIbF34KTGP4hlr3ABFLXeAaZDiwlV8VOp4+Z/d+25xrET+tTZqyy49F6d5MwFPU2kSWwKAN1Z77+dlTUc8h5XPRDffaPAkF5qkwpd0jCvSQiOh8d54Onil+4mdW4kfwh45UdXBfMQG41QZTo4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=cazfjA0I; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="cazfjA0I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535ABC32782;
+	Fri, 12 Jul 2024 10:41:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1720780864;
+	bh=TDEL5hC57yul95B5udSlmhCRtwcFbbCO8GwyqgY7/7M=;
+	h=Date:From:To:Cc:Subject:From;
+	b=cazfjA0ISbn5KKssDGxfuwBkzP9tCB/BkOmWBwgqMtdI/VcIZgCCtdDoSljQ51onZ
+	 8vfPEBmyEzx9LCRyYQBRxJLyrNNpuIGN8A1rTswXiSuxRWxMkS997YTq/j+kGdnzQX
+	 mOIsU2CbztUr0Fw1LBIsc4tifkgqNpWBiyPbxK6M=
+Date: Fri, 12 Jul 2024 12:41:01 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver fixes for 6.10-final
+Message-ID: <ZpEIPXujV_586zPp@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:24d5:b0:4c0:a8a5:81f5 with SMTP id
- 8926c6da1cb9f-4c0b2b331c3mr891446173.4.1720778721119; Fri, 12 Jul 2024
- 03:05:21 -0700 (PDT)
-Date: Fri, 12 Jul 2024 03:05:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000068db93061d0a0468@google.com>
-Subject: [syzbot] Monthly serial report (Jul 2024)
-From: syzbot <syzbot+list7b2f8c4a3e5b92bb88db@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hello serial maintainers/developers,
+The following changes since commit 22a40d14b572deb80c0648557f4bd502d7e83826:
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+  Linux 6.10-rc6 (2024-06-30 14:40:44 -0700)
 
-During the period, 0 new issues were detected and 0 were fixed.
-In total, 16 issues are still open and 42 have been fixed so far.
+are available in the Git repository at:
 
-Some of the still happening issues:
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.10-final
 
-Ref Crashes Repro Title
-<1> 114     Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<2> 67      Yes   BUG: soft lockup in tx
-                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<3> 39      No    INFO: task hung in filemap_fault (6)
-                  https://syzkaller.appspot.com/bug?extid=cbbcd52813dd10467cfe
-<4> 13      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<5> 6       Yes   INFO: task hung in paste_selection (2)
-                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+for you to fetch changes up to 2ac33975abda6921896e52372aec2be2cf51ab37:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+  serial: qcom-geni: do not kill the machine on fifo underrun (2024-07-04 12:30:30 +0200)
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+----------------------------------------------------------------
+TTY/Serial fixes for 6.10-final
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
+Here are some small serial driver fixes for 6.10-final.  Included in
+here are:
+  - qcom-geni fixes for a much much much discussed issue and everyone
+    now seems to be agreed that this is the proper way forward to
+    resolve the reported lockups
+  - imx serial driver bugfixes
+  - 8250_omap errata fix
+  - ma35d1 serial driver bugfix
 
-You may send multiple commands in a single email message.
+All of these have been in linux-next for over a week with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Jacky Huang (1):
+      tty: serial: ma35d1: Add a NULL check for of_node
+
+Johan Hovold (3):
+      serial: qcom-geni: fix soft lockup on sw flow control and suspend
+      serial: qcom-geni: fix hard lockup on buffer flush
+      serial: qcom-geni: do not kill the machine on fifo underrun
+
+Rasmus Villemoes (1):
+      serial: imx: ensure RTS signal is not left active after shutdown
+
+Stefan Eichenberger (1):
+      serial: imx: only set receiver level if it is zero
+
+Udit Kumar (1):
+      serial: 8250_omap: Fix Errata i2310 with RX FIFO level check
+
+ drivers/tty/serial/8250/8250_omap.c   |  3 +-
+ drivers/tty/serial/imx.c              | 59 +++++++++++++++++++++++++++++++++--
+ drivers/tty/serial/ma35d1_serial.c    | 13 ++++----
+ drivers/tty/serial/qcom_geni_serial.c | 51 ++++++++++++++++++++++--------
+ 4 files changed, 104 insertions(+), 22 deletions(-)
