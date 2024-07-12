@@ -1,93 +1,87 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78CFDD528;
-	Fri, 12 Jul 2024 09:13:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25EE157A74
+	for <linux-serial@vger.kernel.org>; Fri, 12 Jul 2024 10:05:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720775617; cv=none; b=p7vrxKWaI7dzPbWQXBRppJfOiTIJfxSf3h5nVXa+ue+k/KmLVCgmXMPFbAOZdxFE1kOmaygLnFqXUaa7gvMZKqTp/GM62EgJwhQkgMJWZWmc00i6f+YGf2EXqxyf9F1tsqHh4bijSC7q790O8aNjVFr5+fS7FlAWiXcUB88Oqfc=
+	t=1720778723; cv=none; b=kgtQt155WUw+uMgkLzPP8ed9PPkYGVH42Vt2Jv60M2FxqMoX3DFaJh4yb+SJqxp+YLQYqt6gDE/L0R2Yx7WshwGiXPsnydxaDL65ChCx6IURjEyGj/RA5evfGw1t4ALczf7XHN+Wz51rltCZjODZgobL+OFwj29Wt4hmas+E8bU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720775617; c=relaxed/simple;
-	bh=YPMBT9Ah5xgPaDYSc0W5Pvqk3DmMxE9QvAvShd4xUZE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IkjDNYLyG83GvCG5KjfO1q6+zGGsyFclezFqeiY8uJ+iaLeMncAe+9Xi+SHBKIBoT+zPRbV/j/O5qcLO2TxcqXIBciEd/xoiYYtvzQKh2cKHBV8aS5Ug4Z+TFM4jBveqC8iFkTMvZKPPJBEnuN0xumZQsp41OQHHM1xiaHMXz7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Date: Fri, 12 Jul 2024 09:13:23 +0000
-From: Yixun Lan <dlan@gentoo.org>
-To: Conor Dooley <conor@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-	Jesse Taube <jesse@rivosinc.com>,
-	Jisheng Zhang <jszhang@kernel.org>,
-	Inochi Amaoto <inochiama@outlook.com>,
-	Icenowy Zheng <uwu@icenowy.me>,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>,
-	Meng Zhang <kevin.z.m@hotmail.com>, Yangyu Chen <cyy@cyyself.name>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Matthias Brugger <matthias.bgg@kernel.org>,
-	Haylen Chu <heylenay@outlook.com>
-Subject: Re: [PATCH v4 00/10] riscv: add initial support for SpacemiT K1
-Message-ID: <20240712091323.GYA2136013.dlan.gentoo>
-References: <20240709-k1-01-basic-dt-v4-0-ae5bb5e56aaf@gentoo.org>
- <20240711-zeppelin-property-aef2ee5fe999@spud>
+	s=arc-20240116; t=1720778723; c=relaxed/simple;
+	bh=cnp/jBauw5TdNqTWXgohodyEGsjA86x4uCkuOKVGfRE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=G9uOasjv9/yKiFl4bZNRbyNabphMF3MfMBSOOj+yVYoCfciZHkbzMlFaWNXTyexEp94tkS4p1ZS807CNPr8kauHsxmxE9wuI3QxgmzXxdenx78EQT9fzKEGFBqXoegsuGx/U2KylgkJmD6U4PuMvqmCr9FLItMOhtXfqmds8BJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-7f664993edbso202076339f.2
+        for <linux-serial@vger.kernel.org>; Fri, 12 Jul 2024 03:05:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720778721; x=1721383521;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iyg9rhejF8Qe5A3voFgG9tU6Ju6NThvDf3tGPwmTcgg=;
+        b=DyBRtZAPDRhRwwnEPR1Uumsd2p2ZfWBVqBP/qHYKk0mNt3pBwQ8+CtDwJK+uWYZOlw
+         y+wXhrqwikp7vLe7xnR5PlRiQaq951j+K3uZ6qcmaFtwQ8P85CtCKFsY7BEMiFRGisT6
+         +dQlT/SZZXYo9lVNTQMMwVoqJQvqajEjHgH5Hzf7qi14vCjmRYHZU178f4PO2qY1KtUq
+         arv5US1nfobx255iKpqaXduGXJguJj2KZoUWVssAe9G4BUknBs8HwAYBCK9D7FA3yLho
+         iiW+arSJE7QfrzQtZHgbhJxjSaKN70Ht98ll0hb9wOFERbQT/JJKInAvQFCz1ZthtwZg
+         WHoQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVT2ShC+pSVao2X+UeW/eOvcUOf98kYeRzwzvlHhQXwx4CU7VbFnIjsOPZf5oz08CzcR+NTFY6/V8hMgNo7DJuolaBz4kRKptMBm0IF
+X-Gm-Message-State: AOJu0Yx4SbuUgo903tKUAF72uBijDQAzShgEf/kS4Bm1Asi8IpwAbut3
+	ofJz++/r6FLDOd1Eo5wjmeWnr0vzLo8QiZX9kDVE56FiUdDoR9JsSPpLh9Xbo6aukQ8Ngj4jTsH
+	G3/8j24SSHsm+SDcpr1Uay6iN+pe5SACrVrg7xF2XjaCW5f96hQLacOs=
+X-Google-Smtp-Source: AGHT+IFFBk/W1SQSv0kMIAhACc/3QzDzQ1IHiTDda01MIv9ZAbtoVD6gv6Et4UAM+5UIVNANJhxXnWsOn0amnEVcYvFYxkoWdGnx
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240711-zeppelin-property-aef2ee5fe999@spud>
+X-Received: by 2002:a05:6638:24d5:b0:4c0:a8a5:81f5 with SMTP id
+ 8926c6da1cb9f-4c0b2b331c3mr891446173.4.1720778721119; Fri, 12 Jul 2024
+ 03:05:21 -0700 (PDT)
+Date: Fri, 12 Jul 2024 03:05:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000068db93061d0a0468@google.com>
+Subject: [syzbot] Monthly serial report (Jul 2024)
+From: syzbot <syzbot+list7b2f8c4a3e5b92bb88db@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Conor:
+Hello serial maintainers/developers,
 
-On 17:08 Thu 11 Jul     , Conor Dooley wrote:
-> On Tue, Jul 09, 2024 at 03:18:43AM +0000, Yixun Lan wrote:
-> > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
-> > 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> > people to participate in building drivers to mainline for it.
-> > 
-> > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> > Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
-> > booted to busybox on initrd with this log[3].
-> > 
-> > As previous discussion in patch v1[4], maintainer expect more basic drivers
-> > ready before really merging it, which would be fine. For other follow-up patches, 
-> > that are clk, pinctrl/gpio, reset.. My current goal would target at a headless
-> > system including SD card, emmc, and ethernet.
-> 
-> This stuff is already too late for 6.11 as I already sent my PRs, so
-understood, no worry, let's target 6.12, I will send an updated version
-once next -rc1 tagged.
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-> there's no immediate rush. Is there any progress made on creating the
-> clock or pinctrl drivers?
-I'm working on pinctrl, probably will send an initial version next week
-(ideally should include gpio/gpio-irq, or at least will push pinctrl part out..)
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 16 issues are still open and 42 have been fixed so far.
 
-for clk, I think Haylen is working on this..
-> 
-> Cheers,
-> Conor.
+Some of the still happening issues:
 
+Ref Crashes Repro Title
+<1> 114     Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<2> 67      Yes   BUG: soft lockup in tx
+                  https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<3> 39      No    INFO: task hung in filemap_fault (6)
+                  https://syzkaller.appspot.com/bug?extid=cbbcd52813dd10467cfe
+<4> 13      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<5> 6       Yes   INFO: task hung in paste_selection (2)
+                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
--- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
