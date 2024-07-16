@@ -1,133 +1,124 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E1D38F86;
-	Tue, 16 Jul 2024 16:57:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A962819FA9B;
+	Tue, 16 Jul 2024 18:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721149060; cv=none; b=BOxqi18FUrudx/WqvrLNR0/id2lDyMr0TNQLSeRcSIjMqEqHFw/Zq9usd9dsrWnMcp3CQPTShMPwPX8AQREn+qCbROqo+vikW28+WR4wstJV3EARl6JOn0lY1j16U4kS/2UlQELz3ChLiR1DfxPd6BCZajqiyq74Z5+QI93ZnTI=
+	t=1721152829; cv=none; b=qZjLsoRMwjyV96dUaDuK0gDIQGmGFrizPr+P/EtgxiP9nJgxTPZt/XqOPM2eKLtrccIgcPR/3zGCpHUFAHxOzYoi+m7tR9sVo69o9bofjgfcz5A0pVnpTvJcJtnqdiUbtlediq5A1OSge4RiWA/ypCjGGPMqkkf/0baUGz89jis=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721149060; c=relaxed/simple;
-	bh=KftzSd0ezYHEzF5fywwseh+yzw+kXUe0ypVapiuvJTA=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=pya7gHyDZ+JW5lWXeVkL+tJzCbIx7fjBujBSjpqM5qgDgHd0YatDzavy50eCq1ZZNTc8Rk+WQatKZaOtrOThgmujuAoThnrQAWnp76Hq7ISN5pijd/MD6bJOHrpw7ug2aEVk6ufJ26RX5z7+wOngMPBnjgY+GzOXy3JeAt5ISXs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Nyh0O/vy; arc=none smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1721152829; c=relaxed/simple;
+	bh=qmuj9g6bkirzr1j++wLweK/8Ad1fLNfo+jpMNs18pYs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=C+MO4FVhpQxAzvZm9lXuMeUSvSF3myf2amYMKw0vBEAyKWDgx2HtpHX+gX+ESbYcowymzSWOXZTDmxVladCHXr4bg1azkMfjaFujwL/JmJ6A0VDTx8rxokAKg4GNDu6kMiY+d56k3Bqwbwy5hqefkoZDOiHVrDnomqna37cAJHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K95DTl3J; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Nyh0O/vy"
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46GFMTUE019559;
-	Tue, 16 Jul 2024 16:57:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
-	from:to:cc:subject:date:message-id; s=corp-2023-11-20; bh=QJMXMY
-	B3gCRhH1WKrjs5xzAXx0PQ2pQ4aV05ctyf6R8=; b=Nyh0O/vymk7CSsZI2UMyHS
-	tr9BJsV54r86CE38ZFFuFcqMF9aoN9N9/rGbFMWDKbGjyDnp/eVHkNUwe/SYAVUO
-	7ihkJgkUzIXP/IhmWaCN2Zh2+jVr/4etzHLCIe9FPIUUv+4xkLZGrZc3xZEYZUdn
-	+rGb53NYt0493Mc9pPne17XMeHEYmdVkcGvPVGfgW/qfsBHdt+f3dSZykURyse4C
-	rzj2RDMaAOI0m+SiUXQZQQQwgroqv6Q48Q9aPXmPytgt1kDB3RxLW+UsWS6kO7X4
-	EgSIbJEydEe/R/kC4YrJsouqV4foCrSFuy4jjJK3a7cBZ+AqMJTZBzeYCVph/n7A
-	==
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 40bgc2ehtp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 16 Jul 2024 16:57:16 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 46GFmkhl040590;
-	Tue, 16 Jul 2024 16:57:15 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 40bg19maef-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 16 Jul 2024 16:57:15 +0000
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 46GGvFsf010989;
-	Tue, 16 Jul 2024 16:57:15 GMT
-Received: from gkennedy-linux.us.oracle.com (gkennedy-linux.us.oracle.com [10.152.170.45])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 40bg19madv-1;
-	Tue, 16 Jul 2024 16:57:15 +0000
-From: George Kennedy <george.kennedy@oracle.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com,
-        andriy.shevchenko@linux.intel.com, l.sanfilippo@kunbus.com,
-        tglx@linutronix.de, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc: george.kennedy@oracle.com, stable@vger.kernel.org,
-        harshit.m.mogalapalli@oracle.com
-Subject: [PATCH] serial: core: check uartclk for zero to avoid divide by zero
-Date: Tue, 16 Jul 2024 11:54:08 -0500
-Message-Id: <1721148848-9784-1-git-send-email-george.kennedy@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-07-15_19,2024-07-16_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 mlxscore=0
- phishscore=0 mlxlogscore=999 bulkscore=0 adultscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2406180000
- definitions=main-2407160125
-X-Proofpoint-GUID: RAdmJxv5KT9oBH_Seb1IUCxHRQ8tbR0m
-X-Proofpoint-ORIG-GUID: RAdmJxv5KT9oBH_Seb1IUCxHRQ8tbR0m
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K95DTl3J"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4266eda81c5so46500025e9.0;
+        Tue, 16 Jul 2024 11:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1721152826; x=1721757626; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ePgpYFkBe3qAoTduEyFM1RrNaLGJSVdjeXc5RO7/VUQ=;
+        b=K95DTl3JM59syr3cAX3RbRShTTrnwE9z7+Mm47dptMLBB/NjJNM26+1rkTOMUUWtrC
+         8Wj+9wbnPoTYPMZ7CyeGpcTOP1sCcgSfiGynhE/A9XvzjfOaMGHQhbwGAhoO/rwMMhsS
+         2YRa43alDArCZyP7cFJoqhbTniLF8PB/AuzE7VzQ4iXKjlp5+gWhzOcVV3vr7HWOBT92
+         ZyS0J44UaROQ8e2cv7sucMtoywXw12jXuif8YsSIktQZu/KIdrVXEwfExej4JV/yIbxo
+         V5RtJXUue66DqUWB6kYshavh+4D0wFmPRIONZn8nwyhKBMfUh5ClL32juXtOv8mWUAm3
+         wvDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1721152826; x=1721757626;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ePgpYFkBe3qAoTduEyFM1RrNaLGJSVdjeXc5RO7/VUQ=;
+        b=E/MdeAEoDIMNdDWBtNK5aDYPBQ/TUftv0G3G0Aj66GdjrwPSf6Jyi4K6RQxJrIJg8/
+         NlrPX+yCPqFDBu7lKkT8HjS75oQujqjzc/+ypqkPNd0V4HmJoZGoNxc55T/5XCeWMFWA
+         WIA791k1mjTjRKKrYSQddu+likg4VAbnRw2gNpFnBGsr3EHHhX2qgPe8ne20ARvA64IU
+         DRjrge4jlBw5PVYmq9B4oa+bEIoebmO/gN1Ngrc27sf+GPSH/fhDDvoWceBo/0mi44Fm
+         c5G6gUMcyc6tS0P6M9ufc1mdbn6svSgJufLapdyO6iLKpyqBit+3TbX/3olfmqplLhdH
+         16cw==
+X-Forwarded-Encrypted: i=1; AJvYcCW20rVhKyAgzkI5rc6CaEU1r3Tzi5vmvsjULLCX5xjS36Ehcy51tW06FoXd4j/5raCfrahy1mxITEC1i7A56EO+abZdO0b5bAIZV5o/LmuPLuJDI/KgMzUKFe8xUnKUr/pKd0tpsYmexhgA
+X-Gm-Message-State: AOJu0Yxcp0ZBEemXy/Q5APCe899mN/FmCOp+Rth/J6wRP817GdAgkcni
+	G3EfwDTP8q4NY7XKkVkoOqrV4D9Q8uZi3xNKJeubJfCc5VdETx5PNIh9MQ==
+X-Google-Smtp-Source: AGHT+IFEbnR254xpr2eCNt05Z8i8hkwq+V1zJCxhVNl41Xk9b4hDR6NjRNJb345aFhEo2aZlS7vM6A==
+X-Received: by 2002:a05:600c:19d1:b0:426:5b44:2be7 with SMTP id 5b1f17b1804b1-427ba66a5e9mr23251815e9.10.1721152825523;
+        Tue, 16 Jul 2024 11:00:25 -0700 (PDT)
+Received: from localhost ([2001:861:3385:e20:6384:4cf:52c5:3194])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4279f27983esm170194845e9.27.2024.07.16.11.00.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jul 2024 11:00:25 -0700 (PDT)
+From: Raphael Gallais-Pou <rgallaispou@gmail.com>
+To: Patrice Chotard <patrice.chotard@foss.st.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: st-asc: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr()
+Date: Tue, 16 Jul 2024 20:00:10 +0200
+Message-ID: <20240716180010.126987-1-rgallaispou@gmail.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Calling ioctl TIOCSSERIAL with an invalid baud_base can
-result in uartclk being zero, which will result in a
-divide by zero error in uart_get_divisor(). The check for
-uartclk being zero in uart_set_info() needs to be done
-before other settings are made as subsequent calls to
-ioctl TIOCSSERIAL for the same port would be impacted if
-the uartclk check was done where uartclk gets set.
+Letting the compiler remove these functions when the kernel is built
+without CONFIG_PM_SLEEP support is simpler and less error prone than the
+use of #ifdef based kernel configuration guards.
 
-Oops: divide error: 0000  PREEMPT SMP KASAN PTI
-RIP: 0010:uart_get_divisor (drivers/tty/serial/serial_core.c:580)
-Call Trace:
- <TASK>
-serial8250_get_divisor (drivers/tty/serial/8250/8250_port.c:2576
-    drivers/tty/serial/8250/8250_port.c:2589)
-serial8250_do_set_termios (drivers/tty/serial/8250/8250_port.c:502
-    drivers/tty/serial/8250/8250_port.c:2741)
-serial8250_set_termios (drivers/tty/serial/8250/8250_port.c:2862)
-uart_change_line_settings (./include/linux/spinlock.h:376
-    ./include/linux/serial_core.h:608 drivers/tty/serial/serial_core.c:222)
-uart_port_startup (drivers/tty/serial/serial_core.c:342)
-uart_startup (drivers/tty/serial/serial_core.c:368)
-uart_set_info (drivers/tty/serial/serial_core.c:1034)
-uart_set_info_user (drivers/tty/serial/serial_core.c:1059)
-tty_set_serial (drivers/tty/tty_io.c:2637)
-tty_ioctl (drivers/tty/tty_io.c:2647 drivers/tty/tty_io.c:2791)
-__x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:907
-    fs/ioctl.c:893 fs/ioctl.c:893)
-do_syscall_64 (arch/x86/entry/common.c:52
-    (discriminator 1) arch/x86/entry/common.c:83 (discriminator 1))
-entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
-
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: George Kennedy <george.kennedy@oracle.com>
+Signed-off-by: Raphael Gallais-Pou <rgallaispou@gmail.com>
 ---
- serial_struct baud_base=0x30000000 will cause the crash.
+ drivers/tty/serial/st-asc.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
- drivers/tty/serial/serial_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 2a8006e3d687..9967444eae10 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -881,6 +881,14 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
- 	new_flags = (__force upf_t)new_info->flags;
- 	old_custom_divisor = uport->custom_divisor;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index f91753a40a69..8aea59f8ca13 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -808,7 +808,6 @@ static void asc_serial_remove(struct platform_device *pdev)
+ 	uart_remove_one_port(&asc_uart_driver, port);
+ }
  
-+	if (!(uport->flags & UPF_FIXED_PORT)) {
-+		unsigned int uartclk = new_info->baud_base * 16;
-+		/* check needs to be done here before other settings made */
-+		if (uartclk == 0) {
-+			retval = -EINVAL;
-+			goto exit;
-+		}
-+	}
- 	if (!capable(CAP_SYS_ADMIN)) {
- 		retval = -EPERM;
- 		if (change_irq || change_port ||
+-#ifdef CONFIG_PM_SLEEP
+ static int asc_serial_suspend(struct device *dev)
+ {
+ 	struct uart_port *port = dev_get_drvdata(dev);
+@@ -823,8 +822,6 @@ static int asc_serial_resume(struct device *dev)
+ 	return uart_resume_port(&asc_uart_driver, port);
+ }
+ 
+-#endif /* CONFIG_PM_SLEEP */
+-
+ /*----------------------------------------------------------------------*/
+ 
+ #ifdef CONFIG_SERIAL_ST_ASC_CONSOLE
+@@ -932,16 +929,15 @@ static struct uart_driver asc_uart_driver = {
+ 	.cons		= ASC_SERIAL_CONSOLE,
+ };
+ 
+-static const struct dev_pm_ops asc_serial_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(asc_serial_suspend, asc_serial_resume)
+-};
++static DEFINE_SIMPLE_DEV_PM_OPS(asc_serial_pm_ops, asc_serial_suspend,
++						   asc_serial_resume);
+ 
+ static struct platform_driver asc_serial_driver = {
+ 	.probe		= asc_serial_probe,
+ 	.remove_new	= asc_serial_remove,
+ 	.driver	= {
+ 		.name	= DRIVER_NAME,
+-		.pm	= &asc_serial_pm_ops,
++		.pm	= pm_sleep_ptr(&asc_serial_pm_ops),
+ 		.of_match_table = of_match_ptr(asc_match),
+ 	},
+ };
 -- 
-2.39.3
+2.45.2
 
