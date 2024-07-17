@@ -1,229 +1,134 @@
-Received: from mailfilter03-out30.webhostingserver.nl (mailfilter03-out30.webhostingserver.nl [195.211.72.164])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB6F373478
-	for <linux-serial@vger.kernel.org>; Tue, 16 Jul 2024 21:43:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=195.211.72.164
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721166186; cv=pass; b=SAH8fYVwosc/9Ov/PKNPIAChJVmsnfsRu/r0mGwnx0Bp/n2LJWRoJnDv39D6Qma0Wxb5Z4mNimRGyePf5b/8XPDBJwW1I1iPZcIPo2GUaocHEYHtGB6k4mY9+FbKscLwlOlUEv/gsG4jUfgMpz1GcCX9+TRYhNxw106KjdUUiDY=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721166186; c=relaxed/simple;
-	bh=5nOYTiZUFbIJMQxTHzZWXFiNJ/jLiZGpNmn9mZSA4Vs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UPffY3N+r2wbRIv+qoOxgWEa8xIVi4gDdn8zUXSFrty8OutE4hLaJSoDzh1Ys+riBuDu2aXiuvRcqlMugEcLv+39hxbsvXUdAfTP+vuX9mx7m5p5Ezf7b38yiHJNsPsAoN0IoDZFWPsIHDTMDRJxFZtxstPJS6AYMkRfNHO928o=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=exalondelft.nl; spf=pass smtp.mailfrom=exalondelft.nl; dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b=Dz1ycs7r; arc=pass smtp.client-ip=195.211.72.164
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=exalondelft.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=exalondelft.nl
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D1417F378;
+	Wed, 17 Jul 2024 12:27:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1721219281; cv=none; b=Ep+w9VQocu3IDUrMV/lXgkI9GKNxV2UfZM1XT4LVVHj3gP0aUOfj6sR8WtYxwRH0esVPEhW/RgP36NPppp4xdSDifdDvMLLzq9p6brZcaHjp13HHCivsxSOl0WUTucfzwqsKz2jJq4R5F7uBtI/IivgVj30DIKhbq4Ei4+d4gnY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1721219281; c=relaxed/simple;
+	bh=8pdXIkxSbxEEaa0dOomW4yGjo/Lwu7C2h4OWoG18TK0=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=pim8UBusAsLFEe1AtysF4SIBrhDYOOguze2lQp2EeDZUpom+LRymqkbKMGsj+NDXcQ5PENqgIn/6fROHdmHE9W/KbuRCj1g1oloTpTmzapFXRhpz6vQF7Al8s5F2AFiEIqFROHuyLr9rBVdcDhCk6L3ahKClhgvwnhQ/8oMfd8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=TnQU7PO+; arc=none smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=exalondelft.nl header.i=@exalondelft.nl header.b="Dz1ycs7r"
-ARC-Seal: i=2; a=rsa-sha256; t=1721166112; cv=pass;
-	d=webhostingserver.nl; s=whs1;
-	b=xIaSRsuojISKttZ6OtZWFWxFom2BsRqw/9W7SYn48ixTrJ1moLyB/0raHe1XNMdIG9/h/Olm7w+NN
-	 OIHDwU8e6gt6Er82fJR02RAfjgUVobREFLWF9NpMG/U0syMBMFp/86uMUhWJ6CZNEZvg3ZT7knms6x
-	 jaLUwk/c5DVOB7wJRZDb15GWdc1P49npnrXVbpKQ3WyWw2T0AKtVuFuEZDw/S2RQAjOjpgxqn50MuY
-	 WMdwpqwcWCzqywNFA585YlDnh3Eoq+oOBpmLe294UakUny98Uxo8XaaPMXnwZjKeft72nYRyaF7ZEd
-	 7pjL2Nmqi8WcXS9MKOIQzJDEQ3wWNzw==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed;
-	d=webhostingserver.nl; s=whs1;
-	h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-	 dkim-signature:from;
-	bh=RrIot9/oKoIM/eEyLC2074Nb3WcaSKrIOuNVhf9pQcY=;
-	b=PiTIT3kIDizYDpij+WhAHoh9XyVJswOKy1ICuS5xtp0WqKisJd443y52NZrCuXDuilSk8ENJQd/1X
-	 +ivbfWsohFLC8pT6FeUxGu7Xn0tyiWB63qhvgSecN47afXYrbMBUxNLM4qt91xG6rSYYMZ8pva5zkJ
-	 t7Dy1iz5cD8HibltsYYKCkG8P2WUlqvrLvubMOHXFe2SmjGk3BkOX/ihvsuSwXg3p+eyWfuHv5CM7Q
-	 m8PrjmsuVjLwHGO/0q0YaGvD7rXeCtaaIOQy4w4L3sszt+0StTpyDkqaLVIPTGnNkWltvYwGey5V9P
-	 bPadNIhnUWAwOyc8GPQBhT2ZXLcISsA==
-ARC-Authentication-Results: i=2; mailfilter03.webhostingserver.nl;
-	spf=pass smtp.mailfrom=exalondelft.nl smtp.remote-ip=141.138.168.154;
-	dmarc=pass header.from=exalondelft.nl;
-	arc=pass header.oldest-pass=0;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=exalondelft.nl; s=whs1;
-	h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-	 from;
-	bh=RrIot9/oKoIM/eEyLC2074Nb3WcaSKrIOuNVhf9pQcY=;
-	b=Dz1ycs7rNKSeZMXhTzDXlaDVCEtlVRQbHkSXHxLoSyMh+LKXCGypWIK6h3IgvVuQ0ENubnyEtq3da
-	 iGbwuEQmec+/NyBIaytqGcL8Zh5AUGoQf2lcjOpvp96Kx3/67JFuSQ99nZ2c9ZaxKTsPkWp+JTGukW
-	 KvM+LIJYoavn1NKqRFiocG7+pCslKgRW85SNmsZfk8vev87vdS+Sa6eaoG0r+kFflPHBD0fE75IMqd
-	 71T1aLYhiPz5kZVo0/ViwgTttcmlB0zV9hAX9ZdNAbuP6bJCxPnlyh36LIszWD7ITZ9YJ3nrsAb7kD
-	 gfAn2hG0oKXhUAyYoA3wNjlFRgWZUmw==
-X-Halon-ID: 33e55986-43bc-11ef-83a5-001a4a4cb9a5
-Received: from s198.webhostingserver.nl (s198.webhostingserver.nl [141.138.168.154])
-	by mailfilter03.webhostingserver.nl (Halon) with ESMTPSA
-	id 33e55986-43bc-11ef-83a5-001a4a4cb9a5;
-	Tue, 16 Jul 2024 23:41:47 +0200 (CEST)
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=webhostingserver.nl; s=whs1; t=1721166107;
-	 b=GOJAta5m6JDzebBOAoiVp562w6YQe4XJIOWfbbfiRU2LNDuq5wWHplsVIF3PmktoaS3NOTQ7JT
-	  Q8Bpb+7Qo9DnvFBotF/E2gxzrrq5Jw7jeyEHWJKeEoQ1ZaplR1YWwQVcPR2GsCe60O4hAPTrZD
-	  7LWJI7D56fzorzSM0xgmYDJksjZiJOH2gHjD2/GCzM97epR4Ez8Iig7ZUYNP7/87z6RJtjTxke
-	  3+ybOQfj1flhlnNogwWNIm2TUfdZszSNTQD1/9pliFVIyNJf+ptOo/Q7XR2r2no7ALsKmJXHnn
-	  oJcPn/sfzW2Er8OSd2O1npAnIiiucLTwhLzZBtHV/X5Zag==;
-ARC-Authentication-Results: i=1; webhostingserver.nl; smtp.remote-ip=2a02:a466:68ed:1:c40e:b921:8b9f:6384;
-	iprev=pass (2a02-a466-68ed-1-c40e-b921-8b9f-6384.fixed6.kpn.net) smtp.remote-ip=2a02:a466:68ed:1:c40e:b921:8b9f:6384;
-	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
-	spf=softfail smtp.mailfrom=exalondelft.nl;
-	dmarc=skipped header.from=exalondelft.nl;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=webhostingserver.nl; s=whs1; t=1721166107;
-	bh=5nOYTiZUFbIJMQxTHzZWXFiNJ/jLiZGpNmn9mZSA4Vs=;
-	h=Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:Cc:To:From;
-	b=yy5+9Cba+S3Vze/XxPJTmcXDxn4aY9+a1iLmXV+zg3ViFrJ5zQvDBobZmR46PgTR7L1+s7mmUo
-	  Ii4Fmss1uQ2haJUktxP1WAtcUSRNm3R9cqGox9a3vesNeVFi5f2WXnCRnqcKNj2umZfRcRVjbd
-	  HN0p+ByOlVaxw9kciYmEBBtBhgM4611Ha9nOdfFpLFS8t0UR8Z5S/HnqVMsPiZVFBag+kEAFEj
-	  zZDbL2Ygmysu9gmOsdBd3UZRSDM/Hfc1JYvy2uWo3me2gt0+iVg6keyRm27M1QRrbfBvzqAhEd
-	  lnrUhkNTXwXqb9KW0ZA9j392adcdS7c/svI39Rpx5VO02Q==;
-Authentication-Results: webhostingserver.nl;
-	iprev=pass (2a02-a466-68ed-1-c40e-b921-8b9f-6384.fixed6.kpn.net) smtp.remote-ip=2a02:a466:68ed:1:c40e:b921:8b9f:6384;
-	auth=pass (PLAIN) smtp.auth=ferry.toth@elsinga.info;
-	spf=softfail smtp.mailfrom=exalondelft.nl;
-	dmarc=skipped header.from=exalondelft.nl;
-	arc=none
-Received: from 2a02-a466-68ed-1-c40e-b921-8b9f-6384.fixed6.kpn.net ([2a02:a466:68ed:1:c40e:b921:8b9f:6384] helo=submission)
-	by s198.webhostingserver.nl with esmtpa (Exim 4.97.1)
-	(envelope-from <ftoth@exalondelft.nl>)
-	id 1sTpvd-00000001LuK-3Zi8;
-	Tue, 16 Jul 2024 23:41:45 +0200
-From: Ferry Toth <ftoth@exalondelft.nl>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ferry Toth <ftoth@exalondelft.nl>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: neil.armstrong@linaro.org,
-	AlCooper <alcooperx@gmail.com>,
-	AlexanderShiyan <shc_work@mail.ru>,
-	AlexandreBelloni <alexandre.belloni@bootlin.com>,
-	AlexandreTorgue <alexandre.torgue@foss.st.com>,
-	AlimAkhtar <alim.akhtar@samsung.com>,
-	AndrewMorton <akpm@linux-foundation.org>,
-	"AneeshKumarK . V" <aneesh.kumar@kernel.org>,
-	AngeloGioacchinoDelRegno <angelogioacchino.delregno@collabora.com>,
-	BaolinWang <baolin.wang@linux.alibaba.com>,
-	BaruchSiach <baruch@tkos.co.il>,
-	BjornAndersson <andersson@kernel.org>,
-	ClaudiuBeznea <claudiu.beznea@tuxon.dev>,
-	"DavidS . Miller" <davem@davemloft.net>,
-	FabioEstevam <festevam@gmail.com>,
-	HammerHsieh <hammerh0314@gmail.com>,
-	=?ISO-8859-15?Q?Christian_K=F6nig?= <christian.koenig@amd.com>,
-	ChristopheLeroy <christophe.leroy@csgroup.eu>,
-	ChunyanZhang <zhang.lyra@gmail.com>,
-	JeromeBrunet <jbrunet@baylibre.com>,
-	JonathanHunter <jonathanh@nvidia.com>,
-	KevinHilman <khilman@baylibre.com>,
-	KonradDybcio <konrad.dybcio@linaro.org>,
-	KrzysztofKozlowski <krzysztof.kozlowski@linaro.org>,
-	KumaravelThiagarajan <kumaravel.thiagarajan@microchip.com>,
-	LaxmanDewangan <ldewangan@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	"MaciejW . Rozycki" <macro@orcam.me.uk>,
-	ManivannanSadhasivam <manivannan.sadhasivam@linaro.org>,
-	MartinBlumenstingl <martin.blumenstingl@googlemail.com>,
-	MatthiasBrugger <matthias.bgg@gmail.com>,
-	MaximeCoquelin <mcoquelin.stm32@gmail.com>,
-	MichaelEllerman <mpe@ellerman.id.au>,
-	MichalSimek <michal.simek@amd.com>,
-	"NaveenN . Rao" <naveen.n.rao@linux.ibm.com>,
-	NicolasFerre <nicolas.ferre@microchip.com>,
-	NicholasPiggin <npiggin@gmail.com>,
-	OrsonZhai <orsonzhai@gmail.com>,
-	=?ISO-8859-15?Q?Pali_Roh=E1r?= <pali@kernel.org>,
-	PatriceChotard <patrice.chotard@foss.st.com>,
-	PeterKorsgaard <jacmet@sunsite.dk>,
-	RichardGenoud <richard.genoud@gmail.com>,
-	RussellKing <linux@armlinux.org.uk>,
-	SaschaHauer <s.hauer@pengutronix.de>,
-	ShawnGuo <shawnguo@kernel.org>,
-	StefaniSeibold <stefani@seibold.net>,
-	SumitSemwal <sumit.semwal@linaro.org>,
-	TaichiSugaya <sugaya.taichi@socionext.com>,
-	TakaoOrito <orito.takao@socionext.com>,
-	TharunKumarP <tharunkumar.pasumarthi@microchip.com>,
-	ThierryReding <thierry.reding@gmail.com>,
-	TimurTabi <timur@kernel.org>,
-	VineetGupta <vgupta@kernel.org>,
-	MarekSzyprowski <m.szyprowski@samsung.com>,
-	PhilEdworthy <phil.edworthy@renesas.com>
-Subject: [PATCH v1 1/1] tty: serial: 8250_dma: use sgl with 2 nents to take care of buffer wrap
-Date: Tue, 16 Jul 2024 23:40:31 +0200
-Message-ID: <20240716214055.102269-1-ftoth@exalondelft.nl>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="TnQU7PO+"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46HCPvMC001221;
+	Wed, 17 Jul 2024 12:27:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=
+	from:to:cc:subject:date:message-id; s=corp-2023-11-20; bh=7e8rCC
+	q6Pvp/2JOR9RDufes1ne0efzU0ciVK4xUxmGw=; b=TnQU7PO+eVKarRXz7IvJnF
+	eyeDZcbIrVgbQagOKT5BYGZYzxYPqWhOlbGBq8jo8TVqpxCUEht3aLCgLr4QzIzm
+	Tx9iutcj8GeYlmWHesgKKZmv+b7y4/04vkyT/IIJE76C4AuhSIw6cX4CYFfm+Uxi
+	GREKFLQ7EBglci7OBQeZzz1koCmeBftZOHAABVKXVGpNwjQiwCKse03iJayCWqqc
+	Z8sZMdoD/3SVYxXB0jWz9K85ynaaw+0qtj4NAAhP1JVMYe/dui63WV2vsRF3zPOe
+	LAHKGLMSfDuszCOF4Zul8rSE4fKfR1IaIBdszBK3hQLuAd28toUUi9AKaKuIqtfA
+	==
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 40edxpr04v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 17 Jul 2024 12:27:46 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 46HCHgHJ006831;
+	Wed, 17 Jul 2024 12:27:45 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 40dwexgdyr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 17 Jul 2024 12:27:45 +0000
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 46HCRjXZ040778;
+	Wed, 17 Jul 2024 12:27:45 GMT
+Received: from gkennedy-linux.us.oracle.com (gkennedy-linux.us.oracle.com [10.152.170.45])
+	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 40dwexgdyd-1;
+	Wed, 17 Jul 2024 12:27:45 +0000
+From: George Kennedy <george.kennedy@oracle.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, tony@atomide.com,
+        andriy.shevchenko@linux.intel.com, l.sanfilippo@kunbus.com,
+        tglx@linutronix.de, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc: george.kennedy@oracle.com, stable@vger.kernel.org,
+        harshit.m.mogalapalli@oracle.com
+Subject: [PATCH] serial: core: check uartclk for zero to avoid divide by zero
+Date: Wed, 17 Jul 2024 07:24:38 -0500
+Message-Id: <1721219078-3209-1-git-send-email-george.kennedy@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
+ definitions=2024-07-17_08,2024-07-17_01,2024-05-17_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0 mlxscore=0
+ malwarescore=0 adultscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2407110000
+ definitions=main-2407170095
+X-Proofpoint-GUID: 8_O0akFqp8QVPViJ8t8DIDwoE3iiXNnl
+X-Proofpoint-ORIG-GUID: 8_O0akFqp8QVPViJ8t8DIDwoE3iiXNnl
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ACL-Warn: Sender domain ( exalondelft.nl ) must match your domain name used in authenticated email user ( ferry.toth@elsinga.info ).
-X-ACL-Warn: From-header domain ( exalondelft.nl} ) must match your domain name used in authenticated email user ( ferry.toth@elsinga.info )
-X-Antivirus-Scanner: Clean mail though you should still use an Antivirus
 
-Previously 8250_dma used a circular xmit->buf as DMA output buffer. This
-causes messages that wrap around in the circular buffer to be
-transmitted using 2 DMA transfers. Depending on baud rate and processor
-load this can cause an interchar gap in the middle of the message. On
-the receiving end the gap may cause a short receive timeout, possibly
-long enough to terminate a DMA transfer, but too short to restart a
-receive DMA transfer in time thus causing a receive buffer overrun.
+Calling ioctl TIOCSSERIAL with an invalid baud_base can
+result in uartclk being zero, which will result in a
+divide by zero error in uart_get_divisor(). The check for
+uartclk being zero in uart_set_info() needs to be done
+before other settings are made as subsequent calls to
+ioctl TIOCSSERIAL for the same port would be impacted if
+the uartclk check was done where uartclk gets set.
 
-This is especially a problem for devices with high speed UARTs (HSU)
-where even deep 64 byte FIFO's are not sufficient to handle interrupt
-latency.
+Oops: divide error: 0000  PREEMPT SMP KASAN PTI
+RIP: 0010:uart_get_divisor (drivers/tty/serial/serial_core.c:580)
+Call Trace:
+ <TASK>
+serial8250_get_divisor (drivers/tty/serial/8250/8250_port.c:2576
+    drivers/tty/serial/8250/8250_port.c:2589)
+serial8250_do_set_termios (drivers/tty/serial/8250/8250_port.c:502
+    drivers/tty/serial/8250/8250_port.c:2741)
+serial8250_set_termios (drivers/tty/serial/8250/8250_port.c:2862)
+uart_change_line_settings (./include/linux/spinlock.h:376
+    ./include/linux/serial_core.h:608 drivers/tty/serial/serial_core.c:222)
+uart_port_startup (drivers/tty/serial/serial_core.c:342)
+uart_startup (drivers/tty/serial/serial_core.c:368)
+uart_set_info (drivers/tty/serial/serial_core.c:1034)
+uart_set_info_user (drivers/tty/serial/serial_core.c:1059)
+tty_set_serial (drivers/tty/tty_io.c:2637)
+tty_ioctl (drivers/tty/tty_io.c:2647 drivers/tty/tty_io.c:2791)
+__x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:907
+    fs/ioctl.c:893 fs/ioctl.c:893)
+do_syscall_64 (arch/x86/entry/common.c:52
+    (discriminator 1) arch/x86/entry/common.c:83 (discriminator 1))
+entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:130)
 
-The circular buffer has now been replaced by kfifo which requires a SG
-list with a single entry, which still causes 2 dma transfers when a wrap
-around occurs. Fix this by allowing up to 2 entries in the sgl.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Ferry Toth <ftoth@exalondelft.nl>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: George Kennedy <george.kennedy@oracle.com>
 ---
- drivers/tty/serial/8250/8250_dma.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ serial_struct baud_base=0x30000000 will cause the crash.
 
-diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-index 8a353e3cc3dd..d215c494ee24 100644
---- a/drivers/tty/serial/8250/8250_dma.c
-+++ b/drivers/tty/serial/8250/8250_dma.c
-@@ -89,7 +89,9 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 	struct tty_port			*tport = &p->port.state->port;
- 	struct dma_async_tx_descriptor	*desc;
- 	struct uart_port		*up = &p->port;
--	struct scatterlist sg;
-+	struct scatterlist		*sg;
-+	struct scatterlist		sgl[2];
-+	int i;
- 	int ret;
+ drivers/tty/serial/serial_core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 2a8006e3d687..9967444eae10 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -881,6 +881,14 @@ static int uart_set_info(struct tty_struct *tty, struct tty_port *port,
+ 	new_flags = (__force upf_t)new_info->flags;
+ 	old_custom_divisor = uport->custom_divisor;
  
- 	if (dma->tx_running) {
-@@ -110,18 +112,17 @@ int serial8250_tx_dma(struct uart_8250_port *p)
- 
- 	serial8250_do_prepare_tx_dma(p);
- 
--	sg_init_table(&sg, 1);
--	/* kfifo can do more than one sg, we don't (quite yet) */
--	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
-+	sg_init_table(sgl, ARRAY_SIZE(sgl));
-+
-+	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, sgl, ARRAY_SIZE(sgl),
- 					   UART_XMIT_SIZE, dma->tx_addr);
- 
--	/* we already checked empty fifo above, so there should be something */
--	if (WARN_ON_ONCE(ret != 1))
--		return 0;
-+	dma->tx_size = 0;
- 
--	dma->tx_size = sg_dma_len(&sg);
-+	for_each_sg(sgl, sg, ret, i)
-+		dma->tx_size += sg_dma_len(sg);
- 
--	desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1,
-+	desc = dmaengine_prep_slave_sg(dma->txchan, sgl, ret,
- 				       DMA_MEM_TO_DEV,
- 				       DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	if (!desc) {
++	if (!(uport->flags & UPF_FIXED_PORT)) {
++		unsigned int uartclk = new_info->baud_base * 16;
++		/* check needs to be done here before other settings made */
++		if (uartclk == 0) {
++			retval = -EINVAL;
++			goto exit;
++		}
++	}
+ 	if (!capable(CAP_SYS_ADMIN)) {
+ 		retval = -EPERM;
+ 		if (change_irq || change_port ||
 -- 
-2.43.0
+2.39.3
 
