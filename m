@@ -1,169 +1,173 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A129875808;
-	Fri, 19 Jul 2024 12:25:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA721E489;
+	Fri, 19 Jul 2024 13:38:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721391931; cv=none; b=FRy9WaR3NH8rPaxJgk6hPncDZksfOjkazDRfAr+xNhXI7TXpG0YBCzDt6Ssl4yGg7379CmubzimeS30z9BrOssA20Pw2PGXTU3QtQNDAwtVW7zJVSJkXxWnGQ5aJqwv4TD8SS40aPapeKgXPc1nu3Jnj+xrXVeyL6+yv5TKgTwI=
+	t=1721396303; cv=none; b=BPDvp8CD8hUnEnmGWEn95MLD0dqRlA4s16x1JW6mIDKjjkRhmwdgnvXWjIrHIM2FjeHfLm+bcqPgZwv5m752dxoLuPqaDTgZ14ME5JWEwOIQ7sZY2LTpapMRvE56Yyfvv6KB35z1ZRERWaKkfphxnR8PyS8nk+oeadc2O+CyBa0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721391931; c=relaxed/simple;
-	bh=Xk2qDeqcxb0wEjPMTrR4IbGZzakWRpKrs+ppoypfJC4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Hh7A0Zk27ApB4scTKQfN6wnOAYe9+sbtv7PArhy8P78qxWTMvqPp1BLw9tTJZrdNmr48LWDDzQ/SzLVdraK97wVgMpMOeDt1pRdtSoQrWNiiGHkG/kg1/4Li41AyMHDYpj+bX6KsJvG2fC56usucNl6GBsKGSvbOLyx7X3ABbZ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2JVZkk+p; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2JVZkk+p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A475C32782;
-	Fri, 19 Jul 2024 12:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1721391931;
-	bh=Xk2qDeqcxb0wEjPMTrR4IbGZzakWRpKrs+ppoypfJC4=;
-	h=Date:From:To:Cc:Subject:From;
-	b=2JVZkk+piCr5Hy4lQiBRgeqPkoY99eX8V5TXgz4wxqzt4Uy893czBUW1pfZMSxhk2
-	 lszD11sEvIu9K+82u5ho3kOLsDHjVCwuQ2EKQRRxwQ9sHUbRNsLznS6P1jAJZGsEIZ
-	 Ww0emMdGy3ICEvrnjM0JZvYyh+BmRoONumhmFX2U=
-Date: Fri, 19 Jul 2024 14:25:27 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY / Serial driver changes for 6.11-rc1
-Message-ID: <ZppbNwwYDV4y0Leg@kroah.com>
+	s=arc-20240116; t=1721396303; c=relaxed/simple;
+	bh=bq/Aaeq5qWGCzxVVlQSS2IYQdraah38J4uDOEBoV858=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=opt2We44LRBGSaLzJcX2sc/NhrkQJb0Vli0ucz3noxhBUz3ql8oNfaRxkULp5Mali8THAC6bFkeK3Tt3IIuoGIoZK8ZzFdCdIC4iMvrS9gv63Pyy3TMNGNAMBrYQvo4B2q047frutOtcTidWMmLZJ00eHjHmDtYqkes96670r34=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from fsav117.sakura.ne.jp (fsav117.sakura.ne.jp [27.133.134.244])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 46JDbmgg087373;
+	Fri, 19 Jul 2024 22:37:48 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav117.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp);
+ Fri, 19 Jul 2024 22:37:48 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 46JDbll1087368
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Fri, 19 Jul 2024 22:37:47 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <a11e31ab-6ffc-453f-ba6a-b7f6e512c55e@I-love.SAKURA.ne.jp>
+Date: Fri, 19 Jul 2024 22:37:47 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>
+Cc: LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Subject: [PATCH] tty: tty_io: fix race between tty_fops and hung_up_tty_fops
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 22a40d14b572deb80c0648557f4bd502d7e83826:
+syzbot is reporting data race between __tty_hangup() and __fput(), and
+Dmitry Vyukov mentioned that this race has possibility of NULL pointer
+dereference, for tty_fops implements e.g. splice_read callback whereas
+hung_up_tty_fops does not.
 
-  Linux 6.10-rc6 (2024-06-30 14:40:44 -0700)
+  CPU0                                  CPU1
+  ----                                  ----
+  do_splice_read() {
+                                        __tty_hangup() {
+    // f_op->splice_read was copy_splice_read
+    if (unlikely(!in->f_op->splice_read))
+      return warn_unsupported(in, "read");
+                                          filp->f_op = &hung_up_tty_fops;
+    // f_op->splice_read is now NULL
+    return in->f_op->splice_read(in, ppos, pipe, len, flags);
+                                        }
+  }
 
-are available in the Git repository at:
+Fix possibility of NULL pointer dereference by implementing missing
+callbacks, and suppress KCSAN messages by adding __data_racy qualifier
+to "struct file"->f_op .
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.11-rc1
+Reported-by: syzbot <syzbot+b7c3ba8cdc2f6cf83c21@syzkaller.appspotmail.com>
+Closes: https://syzkaller.appspot.com/bug?extid=b7c3ba8cdc2f6cf83c21
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Marco Elver <elver@google.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+This patch has been tested using linux-next tree via my tomoyo tree since 20240611,
+and there was no response on
+  [fs] Are you OK with updating "struct file"->f_op value dynamically?
+at https://lkml.kernel.org/r/b221d2cf-7dc0-4624-a040-85c131ed72a1@I-love.SAKURA.ne.jp .
+Thus, I guess we can go with this approach.
 
-for you to fetch changes up to 17199dfccd4b7f7e0c059ef43bef6e0078423476:
+ drivers/tty/tty_io.c | 34 ++++++++++++++++++++++++++++++++++
+ include/linux/fs.h   |  2 +-
+ 2 files changed, 35 insertions(+), 1 deletion(-)
 
-  Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports (2024-07-04 15:41:44 +0200)
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 407b0d87b7c1..bc9aebcb873f 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -430,6 +430,24 @@ static ssize_t hung_up_tty_write(struct kiocb *iocb, struct iov_iter *from)
+ 	return -EIO;
+ }
+ 
++static ssize_t hung_up_copy_splice_read(struct file *in, loff_t *ppos,
++					struct pipe_inode_info *pipe,
++					size_t len, unsigned int flags)
++{
++	return -EINVAL;
++}
++
++static ssize_t hung_up_iter_file_splice_write(struct pipe_inode_info *pipe, struct file *out,
++					      loff_t *ppos, size_t len, unsigned int flags)
++{
++	return -EINVAL;
++}
++
++static int hung_up_no_open(struct inode *inode, struct file *file)
++{
++	return -ENXIO;
++}
++
+ /* No kernel lock held - none needed ;) */
+ static __poll_t hung_up_tty_poll(struct file *filp, poll_table *wait)
+ {
+@@ -462,6 +480,12 @@ static void tty_show_fdinfo(struct seq_file *m, struct file *file)
+ }
+ 
+ static const struct file_operations tty_fops = {
++	/*
++	 * WARNING: You must implement all callbacks defined in tty_fops in
++	 * hung_up_tty_fops, for tty_fops and hung_up_tty_fops are toggled
++	 * after "struct file" is published. Failure to synchronize has a risk
++	 * of NULL pointer dereference bug.
++	 */
+ 	.llseek		= no_llseek,
+ 	.read_iter	= tty_read,
+ 	.write_iter	= tty_write,
+@@ -491,14 +515,24 @@ static const struct file_operations console_fops = {
+ };
+ 
+ static const struct file_operations hung_up_tty_fops = {
++	/*
++	 * WARNING: You must implement all callbacks defined in hung_up_tty_fops
++	 * in tty_fops, for tty_fops and hung_up_tty_fops are toggled after
++	 * "struct file" is published. Failure to synchronize has a risk of
++	 * NULL pointer dereference bug.
++	 */
+ 	.llseek		= no_llseek,
+ 	.read_iter	= hung_up_tty_read,
+ 	.write_iter	= hung_up_tty_write,
++	.splice_read    = hung_up_copy_splice_read,
++	.splice_write   = hung_up_iter_file_splice_write,
+ 	.poll		= hung_up_tty_poll,
+ 	.unlocked_ioctl	= hung_up_tty_ioctl,
+ 	.compat_ioctl	= hung_up_tty_compat_ioctl,
++	.open           = hung_up_no_open,
+ 	.release	= tty_release,
+ 	.fasync		= hung_up_tty_fasync,
++	.show_fdinfo    = tty_show_fdinfo,
+ };
+ 
+ static DEFINE_SPINLOCK(redirect_lock);
+diff --git a/include/linux/fs.h b/include/linux/fs.h
+index 0283cf366c2a..636bcc59a3f5 100644
+--- a/include/linux/fs.h
++++ b/include/linux/fs.h
+@@ -1008,7 +1008,7 @@ struct file {
+ 	struct file_ra_state	f_ra;
+ 	struct path		f_path;
+ 	struct inode		*f_inode;	/* cached value */
+-	const struct file_operations	*f_op;
++	const struct file_operations	*__data_racy f_op;
+ 
+ 	u64			f_version;
+ #ifdef CONFIG_SECURITY
+-- 
+2.43.5
 
-----------------------------------------------------------------
-TTY/Serial updates for 6.11-rc1
-
-Here is a small set of tty and serial driver updates for 6.11-rc1.  Not
-much happened this cycle, unlike the previous kernel release which had
-lots of "excitement" in this part of the kernel.  Included in here are
-the following changes:
-  - dt binding updates for new platforms
-  - 8250 driver updates
-  - various small serial driver fixes and updates
-  - printk/console naming and matching attempt #2 (was reverted for
-    6.10-final, should be good to go this time around, acked by the
-    relevant maintainers).
-
-All of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andy Shevchenko (3):
-      serial: 8250: Extract RSA bits
-      serial: 8250: Extract platform driver
-      serial: 8250_platform: Explicitly show we initialise ISA ports only once
-
-Greg Kroah-Hartman (2):
-      Merge tag 'v6.10-rc4' into tty-next
-      Merge 6.10-rc6 into tty-next
-
-Hal Feng (3):
-      dt-bindings: serial: snps-dw-apb-uart: Add one more reset signal for StarFive JH7110 SoC
-      serial: 8250_dw: Use reset array API to get resets
-      riscv: dts: starfive: jh7110: Add the core reset and jh7110 compatible for uarts
-
-Hans de Goede (1):
-      vt: keyboard: Use led_set_brightness() in LED trigger activate() callback
-
-Hui Wang (2):
-      dt-bindings: serial: sc16is7xx: add reset-gpios
-      serial: sc16is7xx: hardware reset chip if reset-gpios is defined in DT
-
-Jeff Johnson (1):
-      tty: add missing MODULE_DESCRIPTION() macros
-
-Kanak Shilledar (1):
-      dt-bindings: serial: vt8500-uart: convert to json-schema
-
-Lad Prabhakar (5):
-      dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
-      dt-bindings: serial: renesas,scif: Validate 'interrupts' and 'interrupt-names'
-      dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as required
-      dt-bindings: serial: Add documentation for Renesas RZ/V2H(P) (R9A09G057) SCIF support
-      serial: sh-sci: Add support for RZ/V2H(P) SoC
-
-Rafał Miłecki (1):
-      dt-bindings: serial: mediatek,uart: add MT7988
-
-Rasmus Villemoes (1):
-      serial: imx: stop casting struct uart_port to struct imx_port
-
-Shresth Prasad (1):
-      tty: sunsu: Simplify device_node cleanup by using __free
-
-Tony Lindgren (3):
-      printk: Add match_devname_and_update_preferred_console()
-      serial: core: Add serial_base_match_and_update_preferred_console()
-      Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports
-
- Documentation/admin-guide/kernel-parameters.txt    |  19 +
- .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
- .../devicetree/bindings/serial/nxp,sc16is7xx.yaml  |   5 +
- .../devicetree/bindings/serial/renesas,scif.yaml   | 136 ++++--
- .../bindings/serial/snps-dw-apb-uart.yaml          |  18 +-
- .../bindings/serial/via,vt8500-uart.yaml           |  46 +++
- .../devicetree/bindings/serial/vt8500-uart.txt     |  27 --
- arch/riscv/boot/dts/starfive/jh7110.dtsi           |  30 +-
- drivers/tty/amiserial.c                            |   1 +
- drivers/tty/goldfish.c                             |   1 +
- drivers/tty/n_gsm.c                                |   1 +
- drivers/tty/n_hdlc.c                               |   1 +
- drivers/tty/serial/8250/8250.h                     |  29 +-
- drivers/tty/serial/8250/8250_core.c                | 460 +--------------------
- drivers/tty/serial/8250/8250_dw.c                  |   2 +-
- drivers/tty/serial/8250/8250_parisc.c              |   1 +
- drivers/tty/serial/8250/8250_pcilib.c              |   1 +
- drivers/tty/serial/8250/8250_platform.c            | 337 +++++++++++++++
- drivers/tty/serial/8250/8250_port.c                |   1 +
- drivers/tty/serial/8250/8250_pxa.c                 |   1 +
- drivers/tty/serial/8250/8250_rsa.c                 | 133 ++++++
- drivers/tty/serial/8250/Makefile                   |   6 +-
- drivers/tty/serial/8250/serial_cs.c                |   1 +
- drivers/tty/serial/esp32_acm.c                     |   1 +
- drivers/tty/serial/esp32_uart.c                    |   1 +
- drivers/tty/serial/imx.c                           |  41 +-
- drivers/tty/serial/owl-uart.c                      |   1 +
- drivers/tty/serial/sc16is7xx.c                     |  31 +-
- drivers/tty/serial/serial_base.h                   |  16 +
- drivers/tty/serial/serial_base_bus.c               |  37 ++
- drivers/tty/serial/serial_core.c                   |   4 +
- drivers/tty/serial/serial_mctrl_gpio.c             |   1 +
- drivers/tty/serial/sh-sci.c                        |  55 ++-
- drivers/tty/serial/sunsu.c                         |  37 +-
- drivers/tty/synclink_gt.c                          |   1 +
- drivers/tty/ttynull.c                              |   1 +
- drivers/tty/vt/keyboard.c                          |   4 +-
- include/linux/printk.h                             |   4 +
- include/linux/serial_sci.h                         |   1 +
- kernel/printk/console_cmdline.h                    |   1 +
- kernel/printk/printk.c                             | 103 ++++-
- 41 files changed, 1000 insertions(+), 598 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/vt8500-uart.txt
- create mode 100644 drivers/tty/serial/8250/8250_platform.c
- create mode 100644 drivers/tty/serial/8250/8250_rsa.c
