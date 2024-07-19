@@ -1,162 +1,169 @@
-Received: from sonic303-2.consmr.mail.bf2.yahoo.com (sonic303-2.consmr.mail.bf2.yahoo.com [74.6.131.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6364759164
-	for <linux-serial@vger.kernel.org>; Thu, 18 Jul 2024 12:12:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.131.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A129875808;
+	Fri, 19 Jul 2024 12:25:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721304764; cv=none; b=GX2wIZYl9hRw219PuXjwfuT2QBmxlB/7rTSEP+r7hLPJash9N6K1EGq8W8dXMuM8cLnaWKCRxgMAYsP1LtupwNgbXmAG1wYK0l7PKzDJ4m65uRIs1jHwQ8LiyC70z5tJ28EOMECbW1BQFxkMhnouyv6alOEYRKi2qIG7sXaTcY0=
+	t=1721391931; cv=none; b=FRy9WaR3NH8rPaxJgk6hPncDZksfOjkazDRfAr+xNhXI7TXpG0YBCzDt6Ssl4yGg7379CmubzimeS30z9BrOssA20Pw2PGXTU3QtQNDAwtVW7zJVSJkXxWnGQ5aJqwv4TD8SS40aPapeKgXPc1nu3Jnj+xrXVeyL6+yv5TKgTwI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721304764; c=relaxed/simple;
-	bh=UepMa331D+cyY94JmLhcAFRPs/Td7L3bh/kXcYJTGY8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Lc/ggY9aztFgk7RBkm3arj7AC3yEhRpmli5NqXTwRs5/96MlN5JKF/zaGxf9q7Dv7FjpOuRc4Z1EKCdwlDx59GA6gn0uT1pJgVm1WzMydASsFoaRa/SCNONjUhumO03OS2S3XhSVy9XumDOPHlY8w1RB21cH+BO/rA2MrE1virg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=aZbVzB8P; arc=none smtp.client-ip=74.6.131.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
+	s=arc-20240116; t=1721391931; c=relaxed/simple;
+	bh=Xk2qDeqcxb0wEjPMTrR4IbGZzakWRpKrs+ppoypfJC4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=Hh7A0Zk27ApB4scTKQfN6wnOAYe9+sbtv7PArhy8P78qxWTMvqPp1BLw9tTJZrdNmr48LWDDzQ/SzLVdraK97wVgMpMOeDt1pRdtSoQrWNiiGHkG/kg1/4Li41AyMHDYpj+bX6KsJvG2fC56usucNl6GBsKGSvbOLyx7X3ABbZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2JVZkk+p; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="aZbVzB8P"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1721304754; bh=IEA/ym12MuqvUDny7bhJK84e5eeW75NUM/WX29B50T4=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=aZbVzB8PU4b1VYSH0TCiDEm5f9uphgYalHQrdeCpqFXVAFf367yKJMed4uKL52HgxAglWXrBWJGBQo58AI+P0Gdr2HPD9ODHgjyRureVFArHsEVcUduBI/onsaUbeBq7NYorZPkjdR3K75MLUSqofaMLlmiF0lSaZ+f5Co7WhetPlxnJi+0urXKwsxebqe8DLYniVl8mL9sACDMAAhxdmZvgFTFiv5RpthXfWWTNB94fiN4VKSbwCoOlq5W+4+E7SO+jmTKF0h43iCeuUPXAwcETFAKtsaUlfCvl+jX8WuijJDWlVMJ/iISeSeVE4p0zTCjXNY8AVzCUDWQpNB0Xtw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1721304754; bh=Edr1NdzBJqdMtRuM0gMl0Cc0xX04KX5lf3Xbwh0rP+S=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=r1og7zCT9yv/5zN3C4n39tvFgM0MBjVpqrmD8bOR0CmE8d/C3kMPgYqEOvEQ5Sy7loGv/CVpAb1AJaitlLh+O319rJbQ9wE9Jf2mCLJ/eOrxUi1406JuTRL048HdbT3Y0tiBs6nEa3PBDGDHZ6NMFHFfIBd1W+DBz5s0YcpK7+/Ft0j4B6kwnULNzKNMCKu66pf9hq8/9dY0+69ha5y0CqX22MDJNVLWakXLvYmYRDSN/N4L80RO1fYOKP5mFTH5daz4qq+BLJYthMxfDxLnNyQVQPzxA0+f2Unul6zoyCee5iKCNLU3XSjmsucgHs7hDpEME3uw4WGQ4Zo/f9GJ0w==
-X-YMail-OSG: D5mKTscVM1l5dWYKdlCkscYU0D9qCYTW2jDnNFDx47sqLVq4baNM3zYEoxMRzds
- WpR0W.8jciySolrzqcxE1WNXnv8_zchLp4tKN3BNW53vp7_FqeJZ6qa_XDLodnlCIIbBhj9iUJwg
- fEislkpmYsEYQrdbNCY_UspSF4FXjTCI44ADZvqwpmkipf064EHpBW2nfGM_f060e3QAWIJgs4a8
- 11EDvyqe9bUhWS7DnfmzAYKw9c27AwSLI8gFuFoGVtjXZAVkCvL25q.7Y8v6bYuT.lLFzmYA.lL0
- 3OgK2Zmqi.5pwf3WEY4iFLIJJ5gfcZcAibnUHt1vsgh7D0tuBV4gKkAn9KONFlOJycxzIt7iIFAH
- xX4Ji29ISpt5NyqrTchX2yPj95CTuY7_LFmZzghgZeGhWmr7mVdRqubllC0gzq1VkvBSEgORGkSa
- RpE0QFHGn9pnyrJdZy.jU8vymaqlwenIUPESTfxCN_6JFFTlQV_S_Pn2l8QnuY2c1YTciFU5NHe9
- 6ovFu3GigpvpyueMDe5r5I7ZTEIfBKxPseAg7HGHcv5zwFCTfFaj1Dm1oEUFXhKD00GIZf_0zdLD
- pn_vFXwVFutb_ePAOFKD9a6Mv4A1w0406hb7VHbooH92asGTNGtyfhAy5H1InS_sZvD96ioz4qvp
- DmeRVZ7FviqfPJfzx0V.qIrKYQn5AZiVoDbFp9Ogp3jDGEDr4Ahqygo7aCNcaxxmyvIXtrqQ9uxC
- 5UvyEOyHS7Rt7WUXKqUY5bdncyWjm6bVtzKl3IoR0_GnScKhtQ38xBBs12VRh5_Av5AWkJzfcjKC
- 3OpMdRhu9ShBYsVjNIX9QtycwEQYHdNMMsfeaKBxvDIKBcD.mprgaTl6tqej5f_GOcEHkulzwSTw
- VN__6LKZBjQbi3ObBFUKmkbZx_0DweIDwt.fY5Rv24yIglzLbMxloVT61Bu.IKNjZ0uVQhwHdXC0
- SffN9dmDIF21KkgjERDUb6A7nGFZri1aUfLjGSTps6GucEV0UnwnHrMJJkdyYgDxZ8glPCn13kzC
- C8Qq2WzxVx2MEYg4YS2hgrjsv9kTIrKkqpJfmwnvJVdPBtwspcODa8sX66Bmz2wh33qeOK2.x2Y6
- HtQ_tj_anG3eB_btE4VWtQOubVhpJbSrszJoNWqjmAxVQnMxcmD1iiEDivRxevWK0K3F_VAvmBLW
- jnhC7PTfzB5KeOeUjww4ZUkPrCGdp578USyuaJ.3YNwjuTdaKbNO9EK_gE.mq.sD7cRCoza8vWC_
- g96Kmnk4z2bDEUljA1PpZtEMHFMRfbdmGfwxPtLMz4SE9WnNZjTOGXNQ8wi8uRAlRp1tVtgewbzQ
- 1dt.gI.IaY4BkgmCVmASf4bvd952_oS4mabquwu..ZGr5rsHRBWyUt_OiO3nO1dAFe.KBWoKicvJ
- IlBufNz6g2tD0wbbwzblExqP5UUwXI._86_IC0XUHPRf4ij7Cqqca96RAbBzJ1v1gAzjyl7bU1MA
- NCKdStvkH0uxaDEZ6e3CskZoRr56TXa9C5ADBMtY3gxKcZmZI5dVtJlrYmWiYTwOTe1cmpnMk9e7
- GV23_.eKSrqBZi.9N8OjycHxYO7k3889TwBADYT8bsQ5v_BmlqIHS9d_AOuaLyGk537EzYsqXX50
- dtjf8mtqCMk0hzQIi4yz30E.p1X1dzhJSbDLnn07B9a_r2kbeXyMI_sDx3yZW.jMjCCoomkWfY0a
- M.rwNqdryDWS4FJYF5MBkfIxpGlyY8tctvRVJy2yDXPNUXMam4FlVG9qTSn.4snUO40QKGJasgZ4
- FOUsJiRTs91oULO4R.I1y9wzq4xsPZwzjPug6zTAeNVE1k2K4tccFoGLUJ6blv4090hFFKr03FEc
- GV2X0zzXY4CzbTKCBkvmVuaCAQITh1R5dZrZvwK_wt5yKuw.dvAB3dMMlg7CUUacUfFx7MrQq8SN
- gHDLFr2cRc6Th_1_bJCkfmjdyDg1UvMKpK.NbQ1HrNEb1jX0197mjeeUBxhCIpLHCXrSEu1jrfAZ
- 8RqmrIyNFfOvqKohWJR0AM0FxHC9.cbZgosSpOiPY5I5QaS8__.TXPt9w1ve9mcC1RoCrfA6GzKy
- yQJ9FfZJK29HVWYeStq88WHsYy9nJVa2xwLNGV._voZFJB4JWGEOHV9TYysB2oShmHvA5yNfpGo9
- pj49.rGmI0_XPa_fLk14ID5JV5zP9BP1gpozWBhDTEhUiEg4OuT3nGHDT_B9jnKsa9gRkAzkRCd5
- U_isfzqfHgmg6gD3Y4rpssG9Rnb0WRhjZgszr9UFOtUCmXvkLxO4-
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: b64c7635-28d3-4c89-8ff1-ac7caa0f8c14
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic303.consmr.mail.bf2.yahoo.com with HTTP; Thu, 18 Jul 2024 12:12:34 +0000
-Received: by hermes--production-bf1-7bd4f49c5c-qb2hx (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 78b91f3de68e800f759283adfbdfe161;
-          Thu, 18 Jul 2024 11:52:16 +0000 (UTC)
-From: nerdopolis <bluescreen_avenger@verizon.net>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Subject: Re: When /dev/console is a disconnected /dev/ttyS0,
- TCGETS on /dev/console results in EIO (Even if TIOCCONS is called on a PTY)
-Date: Thu, 18 Jul 2024 07:52:15 -0400
-Message-ID: <114770592.nniJfEyVGO@nerdopolis2>
-In-Reply-To: <2024071238-underarm-impulsive-dc1b@gregkh>
-References: <8411114.T7Z3S40VBb.ref@nerdopolis2> <8411114.T7Z3S40VBb@nerdopolis2>
- <2024071238-underarm-impulsive-dc1b@gregkh>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2JVZkk+p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A475C32782;
+	Fri, 19 Jul 2024 12:25:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1721391931;
+	bh=Xk2qDeqcxb0wEjPMTrR4IbGZzakWRpKrs+ppoypfJC4=;
+	h=Date:From:To:Cc:Subject:From;
+	b=2JVZkk+piCr5Hy4lQiBRgeqPkoY99eX8V5TXgz4wxqzt4Uy893czBUW1pfZMSxhk2
+	 lszD11sEvIu9K+82u5ho3kOLsDHjVCwuQ2EKQRRxwQ9sHUbRNsLznS6P1jAJZGsEIZ
+	 Ww0emMdGy3ICEvrnjM0JZvYyh+BmRoONumhmFX2U=
+Date: Fri, 19 Jul 2024 14:25:27 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver changes for 6.11-rc1
+Message-ID: <ZppbNwwYDV4y0Leg@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Mailer: WebService/1.1.22501 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Friday, July 12, 2024 8:59:58 AM EDT Greg KH wrote:
-> On Fri, Jul 12, 2024 at 08:52:15AM -0400, nerdopolis wrote:
-> > Hi
-> > 
-> > Background:--------------------------------------------------------------------
-> > This issue becomes evident on VT-less kernels. As when there is no /dev/tty0
-> > device, the console defaults to being /dev/ttyS0 instead. Although this can
-> > also be replicated if booting a standard kernel with 'console=ttyS0' and ensure
-> > nothing is plugged into /dev/ttyS0.
-> > 
-> > This issue prevents systemd from logging to the console.
-> > systemd when logging to /dev/console, long story short it calls isatty() on
-> > /dev/console, and when /dev/console is actually /dev/ttyS0, and nothing is
-> > connected to /dev/ttyS0, isatty() fails on /dev/console due to an input/output
-> > error, causing systemd to not log the console output, because it rejects
-> > /dev/console as not being a terminal.
-> > 
-> > 
-> > This is noticed on a VT-less system with Plymouth. Plymouth calls the TIOCCONS
-> > ioctl on a pty device it requests, to redirect console output, and in newer
-> > versions, it displays the console logs on its own without the assistance of a
-> > VT.
-> > 
-> > This part of it works, Plymouth is able to 'see' what gets written to
-> > /dev/console, log output from processes that write to /dev/console directly
-> > (for example 'echo hi > /dev/console") do appear in plymouth's
-> > /var/log/boot.log, it is just that systemd is not writing to /dev/console
-> > because isatty() fails to report /dev/console as a tty device.
-> > 
-> > The alternate fix in for systemds https://github.com/systemd/systemd/pull/33690[1]
-> > is believed to be that when TIOCCONS is called on a PTY, or another terminal
-> > device, that trying to call TCGETS on /dev/console should no longer result
-> > in an error.
-> > 
-> > 
-> > Replicating the issue:---------------------------------------------------------
-> > 
-> > This program replicates it:
-> > -------------------------------------------------------------------------------
-> > #include <stdio.h>
-> > #include <fcntl.h>
-> > #include <unistd.h>
-> > #include <errno.h>
-> > #include <string.h>
-> > 
-> > int main(void)
-> > {
-> >         int fd;
-> > 
-> >         if (getuid() != 0) {
-> >                 printf("Must be root\n");
-> >                 return 1;
-> >         }
-> > 
-> >         fd = open ("/dev/console", O_RDONLY);
-> >         if (!isatty(fd)) {
-> >                 printf("err on /dev/console: %s\n", strerror(errno));
-> >         }
-> >         return 0;
-> > }
-> > -------------------------------------------------------------------------------
-> > 
-> > When the kernel console is /dev/ttyS0 and /dev/ttySO has no device connected,
-> > it prints "err on /dev/console: Input/output error"
-> > 
-> > When I strace it, the relevant line is:
-> > ioctl(3</dev/console<char 5:1>>, TCGETS, 0x7f...) = -1 EIO (Input/output error)
-> 
-> Do you have a proposed kernel change for this that solves this for your
-> tests here?
-> 
-> thanks,
-> 
-> greg k-h
-> 
-Hi
+The following changes since commit 22a40d14b572deb80c0648557f4bd502d7e83826:
 
-Sorry if this is a duplicate, I accidentally had rich text sending turned on,
-and did not realize until too late. Anyway, to answer the question, unfortunately
-I have been unable to come up with a fix on my own 
+  Linux 6.10-rc6 (2024-06-30 14:40:44 -0700)
 
-Thanks
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.11-rc1
 
+for you to fetch changes up to 17199dfccd4b7f7e0c059ef43bef6e0078423476:
 
+  Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports (2024-07-04 15:41:44 +0200)
+
+----------------------------------------------------------------
+TTY/Serial updates for 6.11-rc1
+
+Here is a small set of tty and serial driver updates for 6.11-rc1.  Not
+much happened this cycle, unlike the previous kernel release which had
+lots of "excitement" in this part of the kernel.  Included in here are
+the following changes:
+  - dt binding updates for new platforms
+  - 8250 driver updates
+  - various small serial driver fixes and updates
+  - printk/console naming and matching attempt #2 (was reverted for
+    6.10-final, should be good to go this time around, acked by the
+    relevant maintainers).
+
+All of these have been in linux-next for a while with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andy Shevchenko (3):
+      serial: 8250: Extract RSA bits
+      serial: 8250: Extract platform driver
+      serial: 8250_platform: Explicitly show we initialise ISA ports only once
+
+Greg Kroah-Hartman (2):
+      Merge tag 'v6.10-rc4' into tty-next
+      Merge 6.10-rc6 into tty-next
+
+Hal Feng (3):
+      dt-bindings: serial: snps-dw-apb-uart: Add one more reset signal for StarFive JH7110 SoC
+      serial: 8250_dw: Use reset array API to get resets
+      riscv: dts: starfive: jh7110: Add the core reset and jh7110 compatible for uarts
+
+Hans de Goede (1):
+      vt: keyboard: Use led_set_brightness() in LED trigger activate() callback
+
+Hui Wang (2):
+      dt-bindings: serial: sc16is7xx: add reset-gpios
+      serial: sc16is7xx: hardware reset chip if reset-gpios is defined in DT
+
+Jeff Johnson (1):
+      tty: add missing MODULE_DESCRIPTION() macros
+
+Kanak Shilledar (1):
+      dt-bindings: serial: vt8500-uart: convert to json-schema
+
+Lad Prabhakar (5):
+      dt-bindings: serial: renesas,scif: Move ref for serial.yaml at the end
+      dt-bindings: serial: renesas,scif: Validate 'interrupts' and 'interrupt-names'
+      dt-bindings: serial: renesas,scif: Make 'interrupt-names' property as required
+      dt-bindings: serial: Add documentation for Renesas RZ/V2H(P) (R9A09G057) SCIF support
+      serial: sh-sci: Add support for RZ/V2H(P) SoC
+
+Rafał Miłecki (1):
+      dt-bindings: serial: mediatek,uart: add MT7988
+
+Rasmus Villemoes (1):
+      serial: imx: stop casting struct uart_port to struct imx_port
+
+Shresth Prasad (1):
+      tty: sunsu: Simplify device_node cleanup by using __free
+
+Tony Lindgren (3):
+      printk: Add match_devname_and_update_preferred_console()
+      serial: core: Add serial_base_match_and_update_preferred_console()
+      Documentation: kernel-parameters: Add DEVNAME:0.0 format for serial ports
+
+ Documentation/admin-guide/kernel-parameters.txt    |  19 +
+ .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
+ .../devicetree/bindings/serial/nxp,sc16is7xx.yaml  |   5 +
+ .../devicetree/bindings/serial/renesas,scif.yaml   | 136 ++++--
+ .../bindings/serial/snps-dw-apb-uart.yaml          |  18 +-
+ .../bindings/serial/via,vt8500-uart.yaml           |  46 +++
+ .../devicetree/bindings/serial/vt8500-uart.txt     |  27 --
+ arch/riscv/boot/dts/starfive/jh7110.dtsi           |  30 +-
+ drivers/tty/amiserial.c                            |   1 +
+ drivers/tty/goldfish.c                             |   1 +
+ drivers/tty/n_gsm.c                                |   1 +
+ drivers/tty/n_hdlc.c                               |   1 +
+ drivers/tty/serial/8250/8250.h                     |  29 +-
+ drivers/tty/serial/8250/8250_core.c                | 460 +--------------------
+ drivers/tty/serial/8250/8250_dw.c                  |   2 +-
+ drivers/tty/serial/8250/8250_parisc.c              |   1 +
+ drivers/tty/serial/8250/8250_pcilib.c              |   1 +
+ drivers/tty/serial/8250/8250_platform.c            | 337 +++++++++++++++
+ drivers/tty/serial/8250/8250_port.c                |   1 +
+ drivers/tty/serial/8250/8250_pxa.c                 |   1 +
+ drivers/tty/serial/8250/8250_rsa.c                 | 133 ++++++
+ drivers/tty/serial/8250/Makefile                   |   6 +-
+ drivers/tty/serial/8250/serial_cs.c                |   1 +
+ drivers/tty/serial/esp32_acm.c                     |   1 +
+ drivers/tty/serial/esp32_uart.c                    |   1 +
+ drivers/tty/serial/imx.c                           |  41 +-
+ drivers/tty/serial/owl-uart.c                      |   1 +
+ drivers/tty/serial/sc16is7xx.c                     |  31 +-
+ drivers/tty/serial/serial_base.h                   |  16 +
+ drivers/tty/serial/serial_base_bus.c               |  37 ++
+ drivers/tty/serial/serial_core.c                   |   4 +
+ drivers/tty/serial/serial_mctrl_gpio.c             |   1 +
+ drivers/tty/serial/sh-sci.c                        |  55 ++-
+ drivers/tty/serial/sunsu.c                         |  37 +-
+ drivers/tty/synclink_gt.c                          |   1 +
+ drivers/tty/ttynull.c                              |   1 +
+ drivers/tty/vt/keyboard.c                          |   4 +-
+ include/linux/printk.h                             |   4 +
+ include/linux/serial_sci.h                         |   1 +
+ kernel/printk/console_cmdline.h                    |   1 +
+ kernel/printk/printk.c                             | 103 ++++-
+ 41 files changed, 1000 insertions(+), 598 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/via,vt8500-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/vt8500-uart.txt
+ create mode 100644 drivers/tty/serial/8250/8250_platform.c
+ create mode 100644 drivers/tty/serial/8250/8250_rsa.c
