@@ -1,85 +1,111 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2627616F903;
-	Mon, 22 Jul 2024 17:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A0C1B960;
+	Mon, 22 Jul 2024 22:21:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721668794; cv=none; b=guHYAUs3swjqPfvk/8NPz2Kbs5Dd2vDz18FMMcl0XdlJpx2AhnTsDkBVHXj6YcqdOGQexosuzE71r6KHWwesIzzCPC8iehImrnUSmwLmCAF9oFYSZM2Iio7Vr//cS2h2i3naeCzg+8YLwKNuhNycExT0KqjQJlf3idBUKKLNxp4=
+	t=1721686868; cv=none; b=GujsmdKG2nKfzKgwMrt4DFjAPSVZVsnykgx6IS2iOa1/YUvwLQQ5AwNS7XAsxtXtX9pU83466F9eyIR/Pet9rn8mCB9p5FDGxqrmW3Elca/X6Cggpk1ppQU6umU5Uu1uNql0kcWpkGjDWnWgJEZwJrOb0q9TE37dtYlW8/2PMJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721668794; c=relaxed/simple;
-	bh=GA0FHsOuyzgGhTea4jgXklRGbAD3dnv/ZQqXWojJ8gA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=mdIyse4kKot59vgrfOM9qea2Bpf+8zOjHj+QJRLIrppjQq8GFQ0QkJp2DoqYtNTkFKbEp6TSfCON7gcbRqs1PiGE2+Ow+P9ia6GNwBaZT2WeCV44j69pz8xkeDsRTFx6vZsoLpflS+oPnI2DzEGBJNWoiFSNsi6bS6US2b7aqy0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hscES2pM; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=5gEWP+k8; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hscES2pM";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="5gEWP+k8"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1721668785;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pSvfpE6goL/87JMNQ367S+Uq3TCC1GnMITarxZW2fNs=;
-	b=hscES2pMy9HgoeDGXcrcMmkr1+qVCf2u2H+LjM7DZNHXhqFBG/UME9KlDbRBJ3gS5QAQGa
-	InE9bVsKn0anouM1zJmo7B6YDH67hs+09TBk6RWIENOjJACPNdieRs62hxFPTy+EaffIMm
-	wZvcg8olExe+kT9M3G4Pf5sOHyNisJoQK5bfCuSgf1LYNNyRai4JbBmL/IihissOxpq+dl
-	O2Sd8/5l2zRFaHQlrcpdtkMXAHM/j6+M1ZbcFgrXkg3ymRPnEqeXPSMBqJHCy+e252x6qm
-	/7dr167XBWod0qvxU8ec9yBJWa7DTFLwp2zUUM5b1T33hGlxbQMnnZ7yhnauRA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1721668785;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pSvfpE6goL/87JMNQ367S+Uq3TCC1GnMITarxZW2fNs=;
-	b=5gEWP+k8QbKpoMCQiDgw/q9wgTUiSPQ7tjQ350PrpYYnx9CG6qHlvcEF/ptbz2jeo/zCcJ
-	GbfqpMvTdLmKnzDQ==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH printk v3 16/19] tty: sysfs: Add nbcon support for 'active'
-Date: Mon, 22 Jul 2024 19:25:36 +0206
-Message-Id: <20240722171939.3349410-17-john.ogness@linutronix.de>
-In-Reply-To: <20240722171939.3349410-1-john.ogness@linutronix.de>
-References: <20240722171939.3349410-1-john.ogness@linutronix.de>
+	s=arc-20240116; t=1721686868; c=relaxed/simple;
+	bh=u34oHSBolYvHu5PbyqOxoctMYJ2hf/tMOZnEAdGNFnc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ve6O1Jm4ecJOVNEPOGjeiO7u/7uTxxX9hwnRPZrLpQtSKRNvVLQDuH4Ug8BTFn0WNkhRwrOVlGU5Ntqv5a0zLPyHSDzsrWY1qyyLgI7OYVaUII1zx00M5hefUk140cAsfuAaP0qEVnYEksWZj+9IUk7X/Vpp8+ZsiqiMr3BCNAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
+Received: from fsav116.sakura.ne.jp (fsav116.sakura.ne.jp [27.133.134.243])
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 46MMKYWb045436;
+	Tue, 23 Jul 2024 07:20:34 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav116.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp);
+ Tue, 23 Jul 2024 07:20:34 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp)
+Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+	(authenticated bits=0)
+	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 46MMKY1t045429
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+	Tue, 23 Jul 2024 07:20:34 +0900 (JST)
+	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <e6e7cb33-f359-43bd-959e-039e82c6915a@I-love.SAKURA.ne.jp>
+Date: Tue, 23 Jul 2024 07:20:34 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: tty_io: fix race between tty_fops and
+ hung_up_tty_fops
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jan Kara <jack@suse.cz>
+Cc: Christian Brauner <brauner@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+References: <a11e31ab-6ffc-453f-ba6a-b7f6e512c55e@I-love.SAKURA.ne.jp>
+ <20240722-gehminuten-fichtenwald-9dd5a7e45bc5@brauner>
+ <20240722161041.t6vizbeuxy5kj4kz@quack3>
+ <2024072238-reversing-despise-b555@gregkh>
+Content-Language: en-US
+From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <2024072238-reversing-despise-b555@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Allow the 'active' attribute to list nbcon consoles.
+On 2024/07/23 1:24, Greg Kroah-Hartman wrote:
+> On Mon, Jul 22, 2024 at 06:10:41PM +0200, Jan Kara wrote:
+>> On Mon 22-07-24 16:41:22, Christian Brauner wrote:
+>>> On Fri, Jul 19, 2024 at 10:37:47PM GMT, Tetsuo Handa wrote:
+>>>> syzbot is reporting data race between __tty_hangup() and __fput(), and
+>>>> Dmitry Vyukov mentioned that this race has possibility of NULL pointer
+>>>> dereference, for tty_fops implements e.g. splice_read callback whereas
+>>>> hung_up_tty_fops does not.
+>>>>
+>>>>   CPU0                                  CPU1
+>>>>   ----                                  ----
+>>>>   do_splice_read() {
+>>>>                                         __tty_hangup() {
+>>>>     // f_op->splice_read was copy_splice_read
+>>>>     if (unlikely(!in->f_op->splice_read))
+>>>>       return warn_unsupported(in, "read");
+>>>>                                           filp->f_op = &hung_up_tty_fops;
+>>>>     // f_op->splice_read is now NULL
+>>>>     return in->f_op->splice_read(in, ppos, pipe, len, flags);
+>>>>                                         }
+>>>>   }
+>>>>
+>>>> Fix possibility of NULL pointer dereference by implementing missing
+>>>> callbacks, and suppress KCSAN messages by adding __data_racy qualifier
+>>>> to "struct file"->f_op .
+>>>
+>>> This f_op replacing without synchronization seems really iffy imho.
+>>
+>> Yeah, when I saw this I was also going "ouch". I was just waiting whether a
+>> tty maintainer will comment ;)
+> 
+> I really didn't want to :)
+> 
+>> Anyway this replacement of ops in file /
+>> inode has proven problematic in almost every single case where it was used
+>> leading to subtle issues.
+> 
+> Yeah, let's not do this.
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/tty_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://lkml.kernel.org/r/18a58415-4aa9-4cba-97d2-b70384407313@I-love.SAKURA.ne.jp was a patch
+that does not replace f_op, and
+https://lkml.kernel.org/r/CAHk-=wgSOa_g+bxjNi+HQpC=6sHK2yKeoW-xOhb0-FVGMTDWjg@mail.gmail.com
+was a comment from Linus.
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 407b0d87b7c1..9140825e810f 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3567,7 +3567,7 @@ static ssize_t show_cons_active(struct device *dev,
- 	for_each_console(c) {
- 		if (!c->device)
- 			continue;
--		if (!c->write)
-+		if (!(c->flags & CON_NBCON) && !c->write)
- 			continue;
- 		if ((c->flags & CON_ENABLED) == 0)
- 			continue;
--- 
-2.39.2
+> 
+> Let me dig after -rc1 is out and see if there's a better way to handle
+> this contrived race condition...
+> 
+> thanks,
+> 
+> greg k-h
 
