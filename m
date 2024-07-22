@@ -1,111 +1,118 @@
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A0C1B960;
-	Mon, 22 Jul 2024 22:21:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.181.97.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9C0B56477;
+	Mon, 22 Jul 2024 23:23:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721686868; cv=none; b=GujsmdKG2nKfzKgwMrt4DFjAPSVZVsnykgx6IS2iOa1/YUvwLQQ5AwNS7XAsxtXtX9pU83466F9eyIR/Pet9rn8mCB9p5FDGxqrmW3Elca/X6Cggpk1ppQU6umU5Uu1uNql0kcWpkGjDWnWgJEZwJrOb0q9TE37dtYlW8/2PMJE=
+	t=1721690618; cv=none; b=qMz0iP2Ys+Xg1Vo0HX1N9aPAXyHI8RWPULENdBBabLMRBjh9fNtZGf8wbBY+4pcB/SgMFjsWiilzxgA4soSxxbLfzCic6QCJNAunYmBuIeduSnE/8nprr29RiF369YbqE+y65SdFCt83J2gYEf8KeUWYPV9sx9/JrJPTgGeNq/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721686868; c=relaxed/simple;
-	bh=u34oHSBolYvHu5PbyqOxoctMYJ2hf/tMOZnEAdGNFnc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ve6O1Jm4ecJOVNEPOGjeiO7u/7uTxxX9hwnRPZrLpQtSKRNvVLQDuH4Ug8BTFn0WNkhRwrOVlGU5Ntqv5a0zLPyHSDzsrWY1qyyLgI7OYVaUII1zx00M5hefUk140cAsfuAaP0qEVnYEksWZj+9IUk7X/Vpp8+ZsiqiMr3BCNAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp; arc=none smtp.client-ip=202.181.97.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=I-love.SAKURA.ne.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=I-love.SAKURA.ne.jp
-Received: from fsav116.sakura.ne.jp (fsav116.sakura.ne.jp [27.133.134.243])
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 46MMKYWb045436;
-	Tue, 23 Jul 2024 07:20:34 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav116.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp);
- Tue, 23 Jul 2024 07:20:34 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp)
-Received: from [192.168.1.6] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-	(authenticated bits=0)
-	by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 46MMKY1t045429
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-	Tue, 23 Jul 2024 07:20:34 +0900 (JST)
-	(envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <e6e7cb33-f359-43bd-959e-039e82c6915a@I-love.SAKURA.ne.jp>
-Date: Tue, 23 Jul 2024 07:20:34 +0900
+	s=arc-20240116; t=1721690618; c=relaxed/simple;
+	bh=I5QQcB+IVKFxhVdZEGPdhNG6yw4EYUCFeA5b78A2NvA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DHBb7uZfH7U1umwnVNi9hGVdJXXPV07lDPCbNWNSvjLh+zaiM48LvpO+jIcgsRgwNzMOcUOejjv4R+w7laf418DKaVlFJeQ+nn/zxf7Bu3O4s1DeUyCCTNKH/z/oPKPo8kPlfhkHeuJzNB9/t+ngiUWcc26lzc+WmjHtVwB9w0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hjQB6qu/; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hjQB6qu/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F9DC4AF0D;
+	Mon, 22 Jul 2024 23:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1721690618;
+	bh=I5QQcB+IVKFxhVdZEGPdhNG6yw4EYUCFeA5b78A2NvA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hjQB6qu/ZHfS7HhsPNOKguDSz7Ud9U/HTLvktSWepqsmJsaCMYHXSpl5+JydTFlFf
+	 SENFFBPuTU9D1WFpAQC4D9/B72JYkAX1DaBdtIdFRqav/0eu8GHdLyC90q6pDdWzMa
+	 G8xIGJ81g8KhhhgGHTk9D1Tw7jIhDuJqaJnKf6AHh4dGnphwaIEodNCyHJwofiEQQv
+	 C90I2GNqwCsJzmFuScHYUmObrZIz4MS3zgnGOeIZDIA32qQRtpw9KOFu50z63kH7PV
+	 pxFrWz1LC9E4IVl7geOCV491UoHTJ/8Iyfmj8crs3pbdjYk+4LXPW1128bOcoYoEjm
+	 gtBCQnuQJRdpQ==
+Date: Mon, 22 Jul 2024 17:23:31 -0600
+From: Rob Herring <robh@kernel.org>
+To: =?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Tudor Ambarus <tudor.ambarus@linaro.org>,
+	Will McVicker <willmcvicker@google.com>, kernel-team@android.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: serial: samsung: avoid duplicating
+ permitted clock-names
+Message-ID: <20240722232331.GA237402-robh@kernel.org>
+References: <20240712-gs101-uart-binding-v4-0-24e9f8d4bdcb@linaro.org>
+ <20240712-gs101-uart-binding-v4-1-24e9f8d4bdcb@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: tty_io: fix race between tty_fops and
- hung_up_tty_fops
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jan Kara <jack@suse.cz>
-Cc: Christian Brauner <brauner@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>
-References: <a11e31ab-6ffc-453f-ba6a-b7f6e512c55e@I-love.SAKURA.ne.jp>
- <20240722-gehminuten-fichtenwald-9dd5a7e45bc5@brauner>
- <20240722161041.t6vizbeuxy5kj4kz@quack3>
- <2024072238-reversing-despise-b555@gregkh>
-Content-Language: en-US
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <2024072238-reversing-despise-b555@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240712-gs101-uart-binding-v4-1-24e9f8d4bdcb@linaro.org>
 
-On 2024/07/23 1:24, Greg Kroah-Hartman wrote:
-> On Mon, Jul 22, 2024 at 06:10:41PM +0200, Jan Kara wrote:
->> On Mon 22-07-24 16:41:22, Christian Brauner wrote:
->>> On Fri, Jul 19, 2024 at 10:37:47PM GMT, Tetsuo Handa wrote:
->>>> syzbot is reporting data race between __tty_hangup() and __fput(), and
->>>> Dmitry Vyukov mentioned that this race has possibility of NULL pointer
->>>> dereference, for tty_fops implements e.g. splice_read callback whereas
->>>> hung_up_tty_fops does not.
->>>>
->>>>   CPU0                                  CPU1
->>>>   ----                                  ----
->>>>   do_splice_read() {
->>>>                                         __tty_hangup() {
->>>>     // f_op->splice_read was copy_splice_read
->>>>     if (unlikely(!in->f_op->splice_read))
->>>>       return warn_unsupported(in, "read");
->>>>                                           filp->f_op = &hung_up_tty_fops;
->>>>     // f_op->splice_read is now NULL
->>>>     return in->f_op->splice_read(in, ppos, pipe, len, flags);
->>>>                                         }
->>>>   }
->>>>
->>>> Fix possibility of NULL pointer dereference by implementing missing
->>>> callbacks, and suppress KCSAN messages by adding __data_racy qualifier
->>>> to "struct file"->f_op .
->>>
->>> This f_op replacing without synchronization seems really iffy imho.
->>
->> Yeah, when I saw this I was also going "ouch". I was just waiting whether a
->> tty maintainer will comment ;)
+On Fri, Jul 12, 2024 at 03:51:17PM +0100, André Draszik wrote:
+> This binding currently duplicates the permitted clock-names in various
+> places, and when adding more compatibles, clock-names will have to be
+> duplicated even more.
 > 
-> I really didn't want to :)
+> The reason is:
+> 1) subschemas (-if: ...), still have to match the top-level:
+>        pattern: '^clk_uart_baud[0-3]$'
+> 2) there is one compatible that doesn't follow sequential numbering for
+>    the clock names (samsung,s3c6400-uart)
+> 3) when limiting the number of clock-names, we also want to enforce
+>    sequential names
+> Because of 1) and 2), the patterns can not simply be changed to
+> constant strings, and later overridden in a different subschema (for
+> samsung,s3c6400-uart only).
 > 
->> Anyway this replacement of ops in file /
->> inode has proven problematic in almost every single case where it was used
->> leading to subtle issues.
+> Since we can't populate the top-level clock-names based on the
+> compatible, and because when limiting the number of items we generally
+> want sequential numbers and not a pattern, move the permitted strings
+> into a subschema of its own and populate it based on the compatible:
+>     * 'uart clk_uart_baud2 clk_uart_baud3' for the one outlier
+>     * 'uart clk_uart_baud0..3' for everything else
 > 
-> Yeah, let's not do this.
+> This way we can avoid having to duplicate the permitted names
+> everywhere.
+> 
+> While at it, add blank lines as per the universal style, which is to
+> have blank lines between properties, except where they are booleans.
+> 
+> Also add another example using a compatible that uses the default
+> clock-names scheme, as opposed to the existing example that uses
+> samsung,s3c6400-uart's non-default clock-names. This allows testing
+> both versions of the clock-names property when running
+> dt_binding_check.
+> 
+> Signed-off-by: André Draszik <andre.draszik@linaro.org>
+> ---
+>  .../devicetree/bindings/serial/samsung_uart.yaml   | 63 +++++++++++++++++-----
+>  1 file changed, 50 insertions(+), 13 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> index 0f0131026911..cfa1c0de946f 100644
+> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+> @@ -58,12 +58,7 @@ properties:
+>    clock-names:
+>      description: N = 0 is allowed for SoCs without internal baud clock mux.
 
-https://lkml.kernel.org/r/18a58415-4aa9-4cba-97d2-b70384407313@I-love.SAKURA.ne.jp was a patch
-that does not replace f_op, and
-https://lkml.kernel.org/r/CAHk-=wgSOa_g+bxjNi+HQpC=6sHK2yKeoW-xOhb0-FVGMTDWjg@mail.gmail.com
-was a comment from Linus.
+The description doesn't really make sense on its own. I'd drop it.
 
-> 
-> Let me dig after -rc1 is out and see if there's a better way to handle
-> this contrived race condition...
-> 
-> thanks,
-> 
-> greg k-h
+With that,
 
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+
+>      minItems: 2
+> -    items:
+> -      - const: uart
+> -      - pattern: '^clk_uart_baud[0-3]$'
+> -      - pattern: '^clk_uart_baud[0-3]$'
+> -      - pattern: '^clk_uart_baud[0-3]$'
+> -      - pattern: '^clk_uart_baud[0-3]$'
+> +    maxItems: 5
