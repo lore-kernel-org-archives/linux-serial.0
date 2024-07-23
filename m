@@ -1,35 +1,56 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23426153582;
-	Tue, 23 Jul 2024 12:58:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81B50137C35;
+	Tue, 23 Jul 2024 14:29:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.149.25
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721739518; cv=none; b=UCogVBd9UnX82FDGQ320z7H8xhbqiGsN45g5BwjS8+ImIkBu49cA9ZNHVidLBK4ChwgNqfwipbY3afEchB4UWZ4zH6ur7vIfyFOgeQ1umuDugfM0/dOg47DoC1VHvMOPjv/jrti3hZoxGkLMAZP3YVV7blXGFgSixWPvBTiAXxc=
+	t=1721744983; cv=none; b=Yqh/t3UdegaJ8S66By+hmmlosQDiq4uYbNr5rbm8XxWaVsdd0ZICc0RQkJx7w+ex03PSI6ST0ddB+9YMfPQNA6oY3pTPOuvUkGcyVRt2U1UJPrwdBMmHtNJRSo/g7z2zb3h1rseZvXVGLv91EqjvkyqMaUCB9DSjSzXLrhquMxs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721739518; c=relaxed/simple;
-	bh=kSeQcsb2Iy9mD89DI1W9T/W97Me0c16VuTNwoa3LxLA=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=RbRQQf9I8GRTsQq3ZslctnowvNrpFoshe8I4J36WHqGvTE5w3H1zUkcoBgAPO2ENGqPh2qQx3CCM4dIjo0xw8rNyE7e7CAi5NN/IoZTtczTZ7ohgKvi0+yxy5gWsB4T4zwOqt5Aj1fq3CZCJX2+EjtbZRGsIPFluGpXD4bsCGT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eoLyfYrs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1721744983; c=relaxed/simple;
+	bh=Df5T8ekYlYlhVAs7eoHWEs5BY4/XAo2OkbzF/0m4JcY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tjh2RgKPoGvpfpJmdDtM98zxbRJpDJ1In2FsuHp0betlBr8AgrK5gcLbBiGq31cOXNpCMs9RcBEgHz2QoIyg6y7xJSCnvo6jid/862QLTZboror+fh4XxYkTA+EFwlSztskXbdlrhqNspQ9JQ90EfmYzBf3FmxtStdsvWVIEUQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com; spf=pass smtp.mailfrom=opensource.cirrus.com; dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b=NlXQ6s9j; arc=none smtp.client-ip=67.231.149.25
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=opensource.cirrus.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=opensource.cirrus.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eoLyfYrs"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FEC1C4AF0E;
-	Tue, 23 Jul 2024 12:58:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721739517;
-	bh=kSeQcsb2Iy9mD89DI1W9T/W97Me0c16VuTNwoa3LxLA=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=eoLyfYrsPmZ4wJcbTOllWPiC4ezzKszwpMpeBouBczI4KxP78lbuw6Rm9QzzsnXfJ
-	 ncVEDyayw/Ji/3WF9egitc7fyjGxjysuPyy7C6Mp531OL04vpgKkoV08jqe9hSieAq
-	 3C0rmxGiPiE2rGpo7DVOMOIH3aDPhogS/Pl6C1QcYr4GvXiZXOt5iAeo1lALnHF+IO
-	 80zc5nX2Tr43BvuS1p7jaGcJ69OyXQVMz8VJsYki0rQg07xvbwQ+mH5OXPogvO2OiE
-	 wO0UJ5T3DkDkvWzPZjmDuVTTLZO/HOBbcD3OuL0/yBh2vk6XUFR7C5B6/oibDUV5OD
-	 9JWPx8Y1whATg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86B28C43140;
-	Tue, 23 Jul 2024 12:58:36 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=cirrus.com header.i=@cirrus.com header.b="NlXQ6s9j"
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+	by mx0a-001ae601.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 46N4q37n006527;
+	Tue, 23 Jul 2024 09:29:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=PODMain02222019; bh=4up/RiundZ3XTKcm
+	R14Em4WUczTg1vdCrb4iDskupjY=; b=NlXQ6s9jZioibdi42M7mb+TokvfMhiFo
+	F7IEfM6Ql8X0HG2MxhvKYroKvsWsNXFOdNb8zP6ju40SwsDtVZoL8OTa9FXDAcvz
+	9s9gydAeGRmhZT+ylyBekI58qPVCZnEaEMATPGRYsZI8sDwoYyKDj+uEnpKecAKg
+	l1jMco8gWVdEZo7POeSysvfEEkMU6aOFd1R2llVHzWD6BP6DNCqteCl7wrEM+qXs
+	HJdxFQWE5divI7/YBVJ845oiJf/HnD2KoC1zJN1FX+9zljs3zZVGmgXSD4HDGPZn
+	0onO6GWB1z1V8HlEsTOEb5dQucrkuhxBXXIKy4ag76+Fz4OkBtVVgw==
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+	by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 40gamx3dt1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 Jul 2024 09:29:20 -0500 (CDT)
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 23 Jul
+ 2024 15:29:18 +0100
+Received: from ediswmail9.ad.cirrus.com (198.61.86.93) by
+ anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
+ 15.2.1544.9 via Frontend Transport; Tue, 23 Jul 2024 15:29:18 +0100
+Received: from ausswws10.ad.cirrus.com (ausswws10.ad.cirrus.com [141.131.147.77])
+	by ediswmail9.ad.cirrus.com (Postfix) with ESMTP id 09993820244;
+	Tue, 23 Jul 2024 14:29:16 +0000 (UTC)
+From: James Minor <jminor1@opensource.cirrus.com>
+To: <shubhrajyoti.datta@amd.com>, <gregkh@linuxfoundation.org>
+CC: <patches@opensource.cirrus.com>, <jirislaby@kernel.org>,
+        <michal.simek@amd.com>, <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        "James Minor" <jminor1@opensource.cirrus.com>
+Subject: [RFC PATCH] tty: xilinx_uartps: Fix break detection
+Date: Tue, 23 Jul 2024 14:28:58 +0000
+Message-ID: <20240723142858.2905083-1-jminor1@opensource.cirrus.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,49 +58,48 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 0/3] Add the core reset for UARTs of StarFive JH7110
-From: patchwork-bot+linux-riscv@kernel.org
-Message-Id: 
- <172173951654.10883.8693881019606490911.git-patchwork-notify@kernel.org>
-Date: Tue, 23 Jul 2024 12:58:36 +0000
-References: <20240604084729.57239-1-hal.feng@starfivetech.com>
-In-Reply-To: <20240604084729.57239-1-hal.feng@starfivetech.com>
-To: Hal Feng <hal.feng@starfivetech.com>
-Cc: linux-riscv@lists.infradead.org, robh@kernel.org, krzk+dt@kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org,
- ilpo.jarvinen@linux.intel.com, p.zabel@pengutronix.de, conor+dt@kernel.org,
- palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu,
- emil.renner.berthing@canonical.com, devicetree@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-Proofpoint-GUID: k74a1duqDx8rTF8RE0pa5-7_2Pcn2Yfl
+X-Proofpoint-ORIG-GUID: k74a1duqDx8rTF8RE0pa5-7_2Pcn2Yfl
+X-Proofpoint-Spam-Reason: safe
 
-Hello:
+Commit b8a6c3b3d465 ("tty: xilinx_uartps: Fix the ignore_status")
+used read_status_mask to mask the isrstatus, even though the
+commit appears to be fixing the application of the
+ignore_status_mask.  This has a side effect of clearing any
+pending CDNS_UART_IXR_FRAMING bit, which in turn means that
+cdns_uart_handle_rx break detection will only process framing
+errors when parity is enabled (INPCK set via
+cdns_uart_set_termios).
 
-This series was applied to riscv/linux.git (for-next)
-by Greg Kroah-Hartman <gregkh@linuxfoundation.org>:
+Fix this by removing the extra isrstatus masking with
+read_status_mask, which still allows the ignore_status_mask to be
+applied.
 
-On Tue,  4 Jun 2024 16:47:26 +0800 you wrote:
-> The UART of StarFive JH7110 needs two reset signals (apb, core) to
-> initialize. This patch series adds the missing core reset.
-> 
-> Changes since v1:
-> - Set maxItems to 1 for resets from other platforms.
-> 
-> History:
-> v1: https://lore.kernel.org/all/20240517061713.95803-1-hal.feng@starfivetech.com/
-> 
-> [...]
+Fixes: b8a6c3b3d465 ("tty: xilinx_uartps: Fix the ignore_status")
+Signed-off-by: James Minor <jminor1@opensource.cirrus.com>
+---
 
-Here is the summary with links:
-  - [v2,1/3] dt-bindings: serial: snps-dw-apb-uart: Add one more reset signal for StarFive JH7110 SoC
-    (no matching commit)
-  - [v2,2/3] serial: 8250_dw: Use reset array API to get resets
-    (no matching commit)
-  - [v2,3/3] riscv: dts: starfive: jh7110: Add the core reset and jh7110 compatible for uarts
-    https://git.kernel.org/riscv/c/4ed81d9dd75f
+The other alternative to this would be a straight revert of
+b8a6c3b3d465, since read_status_mask and ignore_status_mask are
+both applied in cnds_uart_handle_rx anyway.  Let me know the
+preference here and I will change accordingly.
 
-You are awesome, thank you!
+ drivers/tty/serial/xilinx_uartps.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 2acfcea403ce..e9165ae3c2e8 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -485,7 +485,6 @@ static irqreturn_t cdns_uart_isr(int irq, void *dev_id)
+ 		isrstatus &= ~CDNS_UART_IXR_TXEMPTY;
+ 	}
+ 
+-	isrstatus &= port->read_status_mask;
+ 	isrstatus &= ~port->ignore_status_mask;
+ 	/*
+ 	 * Skip RX processing if RX is disabled as RXEMPTY will never be set
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
