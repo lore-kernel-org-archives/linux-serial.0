@@ -1,78 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E5EA3770D;
-	Mon, 22 Jul 2024 23:24:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48BD314EC5E;
+	Tue, 23 Jul 2024 10:42:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721690675; cv=none; b=m8wnkDNlewVndmly78EwvXGeeuSY1XI+d7+Yd1BaRSHPVuWJQhhK5NJZmJRD17pcAo+j+gCT2Ad4I4OUptMvWv5wlHB38EbQGoaDnORlNlHrjyOynLW0Sla4yHXJRWdrzoTYjwPm3AeSfz8aUzNe133qyRiwaRoDMD2ZexHifZU=
+	t=1721731358; cv=none; b=qSMYdYnZzv2XUWKdguRPGHNtdywMdn94Y12fVK0U5S2wS8Ar0tiX95e8UvQYlmGsfFIOpI2q+05igCMYTgc4OTNGCyeYtx9b5Fzfuz2auONKDpnntjCBXQEn5hrfDXf4/Kt7za/i3frPYn9zYziZbfHo59XzUhfokz/Qr46H1x8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721690675; c=relaxed/simple;
-	bh=EaNRTQTVUZ3xOSXnhwsO79gawVw0DO92+zGDtm8hCEM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sxjFoI0G8QXe2HlDp0caQRBsiD1g62HpUTIHX/s99atBcZe3uAI3gcYEF42Bvar4oy5WP07LImq1qsDtAAFP/ylUr6BR0iukIyJHvk6dSVi2V8KQCk0e7hq9hWO7nnQEnuZ/KAWvIo2isK45Qz/4/2ISTO8ijAL+zQiafu1dU8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l5jaTq/S; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l5jaTq/S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD6EC116B1;
-	Mon, 22 Jul 2024 23:24:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1721690674;
-	bh=EaNRTQTVUZ3xOSXnhwsO79gawVw0DO92+zGDtm8hCEM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=l5jaTq/SahUf7TxNjROOgwf8QlzK2x/pjGx0xly2E7MYfQV/VEehXeMp1RP6rdpOo
-	 4PKKXvqFvDbwsAuZRBpnSaU37n252dlAZUqVnfffnCvuqdrVwayrcZNvmR/co9pO3z
-	 L4uxxaefINGU0LkJ7CHTgOdI4syDkL1GNnHXhYKrIujheFa3YnV68OfmFbcOeViap9
-	 KIhDQtIFfPMxYaBPYclwAyDGyvFBsyAKKupdGNCmbvpuOCPorCeDS1UVT2bIUA52za
-	 p/YKgQGjKxGsVqWyV1sKNwUyouQBhoPwKVnMjdKL9d9yUU+0iFZNjqg6HHeQ3oF+DL
-	 6GW5EyoI0eaaA==
-Date: Mon, 22 Jul 2024 17:24:27 -0600
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: =?iso-8859-1?Q?Andr=E9?= Draszik <andre.draszik@linaro.org>
-Cc: devicetree@vger.kernel.org, Peter Griffin <peter.griffin@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	Will McVicker <willmcvicker@google.com>,
-	linux-serial@vger.kernel.org, kernel-team@android.com,
+	s=arc-20240116; t=1721731358; c=relaxed/simple;
+	bh=snP9cPFloSQOLUnrcJKpt6/dOYNHcF8Fkv854jGiy4M=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=QS9WCh71MpZOlLAGFEksCgTmP8bQnfIOuj0XAC3Ts73PQ5qAqT7cb68bBHg1ntqPVbcEAsOtQaQEshVimTLE6N+TdU6w8C2gZylpjtRbh6pFZNPOPYg+MrWwtNQUq6NNjamqpUFUcppl/HGwxM9Jho7jJkgd0ZANao2FEVDRQoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+X-IronPort-AV: E=Sophos;i="6.09,230,1716217200"; 
+   d="scan'208";a="212369756"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 23 Jul 2024 19:37:31 +0900
+Received: from localhost.localdomain (unknown [10.226.93.79])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id B71B240065AD;
+	Tue, 23 Jul 2024 19:37:27 +0900 (JST)
+From: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
+To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Tudor Ambarus <tudor.ambarus@linaro.org>,
 	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v4 2/2] dt-bindings: serial: samsung: fix maxItems for
- gs101
-Message-ID: <172169065730.292676.195019467020873816.robh@kernel.org>
-References: <20240712-gs101-uart-binding-v4-0-24e9f8d4bdcb@linaro.org>
- <20240712-gs101-uart-binding-v4-2-24e9f8d4bdcb@linaro.org>
+Cc: Oliver Rhodes <oliver.rhodes.aj@renesas.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org
+Subject: [PATCH 5/6] dt-bindings: serial: renesas: Document RZ/G2M v3.0 (r8a774a3) scif
+Date: Tue, 23 Jul 2024 11:37:04 +0100
+Message-Id: <20240723103705.9774-6-oliver.rhodes.aj@renesas.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240723103705.9774-1-oliver.rhodes.aj@renesas.com>
+References: <20240723103705.9774-1-oliver.rhodes.aj@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240712-gs101-uart-binding-v4-2-24e9f8d4bdcb@linaro.org>
 
+Document scif bindings for the Renesas RZ/G2M v3.0 (a.k.a r8a774a3) SoC.
 
-On Fri, 12 Jul 2024 15:51:18 +0100, André Draszik wrote:
-> While gs101 needs exactly two clocks for the UART, the schema doesn't
-> currently limit the maximum number to this and instead the default of
-> five from this schema is applied.
-> 
-> Update the schema accordingly.
-> 
-> Signed-off-by: André Draszik <andre.draszik@linaro.org>
-> 
-> ---
-> v4:
-> * drop description from clocks:, it was Linux-specific and a we'll
->   implement something that makes it obsolete anyway
-> * no need to duplicate clock-names anymore
-> ---
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
+Signed-off-by: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
+---
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index afc7c05898a1..51d9fb0f4763 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -46,6 +46,7 @@ properties:
+       - items:
+           - enum:
+               - renesas,scif-r8a774a1     # RZ/G2M
++              - renesas,scif-r8a774a3     # RZ/G2M v3.0
+               - renesas,scif-r8a774b1     # RZ/G2N
+               - renesas,scif-r8a774c0     # RZ/G2E
+               - renesas,scif-r8a774e1     # RZ/G2H
+-- 
+2.34.1
 
