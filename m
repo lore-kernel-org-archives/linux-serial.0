@@ -1,24 +1,24 @@
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3EAA1172BD8;
-	Thu, 25 Jul 2024 09:56:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F1CF198A10;
+	Thu, 25 Jul 2024 10:06:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721901373; cv=none; b=upzm18EtlurYWVck/EEwKEbWe6DgXYf6GqMVjee7nH9h3k7g+9gTEvpxkD79gL9g+sGxiIhplbFM0JbLbdrw3K3ZeJl1NRu10j/TvpVGtdhJhlPF6WXXzjYxr+cjpsvX9e/ub7p/FYLydbEtdN5nnVONj4ltQ/4Bg2XSjU7LdLU=
+	t=1721901976; cv=none; b=V4JZpTzeHjJMmBYU1DuuhX0BZX4FWvLx2w6DD5XDN8vh8L7xl3pavjg8jXy8MeEzMN1++9oi1IRA69rzR7R14G1iAnZ0ZOTFtsSPVCRzTrZorfdDk8lnrBYZPxNWWKLTcAbtB2a9P/hvw7WhYwpHZKV6q9JdiwAs6cs9mdggaeE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721901373; c=relaxed/simple;
-	bh=ld7YV0ZzsWjaVRjR4PCAEpucgMMLGMheA2aUKAIiT4k=;
+	s=arc-20240116; t=1721901976; c=relaxed/simple;
+	bh=15Go/YyR0FS+UPfIjN1wXBCFcFsAhgv1qsLahF9iWIs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=lOfOZ+ulydbbXO8uv8QtglpDT6odiUKWLwCqvz3R2swg8kBBZPo6Eg4lCxxqLzaG8UG0+GXNSsbZQmLh0iB7JPC6JeTDT9r04kTi2xjn+dBWNyn55fn3DjQlDII0B6SZPEZmzqauxRPg472azbHne2ZzG2JguVhfeE2CoMvhPr4=
+	 MIME-Version; b=S7P3LgzuGIO3ulsozMwyez33hs5gMRWzV5Ijq+Cr7weUCvliVuxtO2HpV5TQvJ45WF3whQmOW8BD9QHY0m1NQvmtmR7Xmw45vY+WHLBH/GDG8g8+hUPt5uUeyQzyD2w2MqPU4MUcaVk3HiUxk8uqiFa81T4++TdGMryd17aYkvc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 X-IronPort-AV: E=Sophos;i="6.09,235,1716217200"; 
-   d="scan'208";a="216707632"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 25 Jul 2024 18:56:10 +0900
+   d="scan'208";a="216709336"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 25 Jul 2024 19:06:14 +0900
 Received: from localhost.localdomain (unknown [10.226.93.56])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1C8F140104D0;
-	Thu, 25 Jul 2024 18:56:04 +0900 (JST)
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 24A3641F6EAC;
+	Thu, 25 Jul 2024 19:06:08 +0900 (JST)
 From: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -32,11 +32,11 @@ Cc: Oliver Rhodes <oliver.rhodes.aj@renesas.com>,
 	devicetree@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org
 Subject: [PATCH V2 5/6] dt-bindings: serial: renesas: Document RZ/G2M v3.0 (r8a774a3) scif
-Date: Thu, 25 Jul 2024 10:55:29 +0100
-Message-Id: <20240725095530.5199-6-oliver.rhodes.aj@renesas.com>
+Date: Thu, 25 Jul 2024 11:05:33 +0100
+Message-Id: <20240725100534.5374-6-oliver.rhodes.aj@renesas.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240725095530.5199-1-oliver.rhodes.aj@renesas.com>
-References: <20240725095530.5199-1-oliver.rhodes.aj@renesas.com>
+In-Reply-To: <20240725100534.5374-1-oliver.rhodes.aj@renesas.com>
+References: <20240725100534.5374-1-oliver.rhodes.aj@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,6 +49,8 @@ Document scif bindings for the Renesas RZ/G2M v3.0 (a.k.a r8a774a3) SoC.
 
 Signed-off-by: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
 ---
+v2->v2 resend:
+* No change.
 v1 resend->v2:
 * No change.
 v1->v1 resend:
