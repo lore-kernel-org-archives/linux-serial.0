@@ -1,159 +1,131 @@
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6793C12B95
-	for <linux-serial@vger.kernel.org>; Thu, 25 Jul 2024 04:27:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C0416B74C
+	for <linux-serial@vger.kernel.org>; Thu, 25 Jul 2024 07:06:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1721881649; cv=none; b=WODkBZCiFy4jXMSeEyDzfJtbY69cck33ITsQ9hzKNBWyBYTyzxPLEOfon9K5GIyjOpAEJ1V/jFdX0RuUc6YpHOZK4Ucqwa2HOVFHRC24/+1WgoL4U/Ao2DECGk7Qwar/oj6yodkCryzFQfscH1gxbEGhwDXwfMLrL9l0GLW22eU=
+	t=1721891163; cv=none; b=eMVRybzFkcEDBSSQEHZwIHpocpqhzgWHK9iTqdD27XDTw3gnAE2zaeuKysD99P7limDeekOa6APSpZ39SSNDSb9TWFhymwVnXpz/boye9/1YzlNeaTyFDlaO4qTFvTYjnG28ZJHqlNkV43z/n1UoEWNl1e4t/NGwAvqYhYAZL8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1721881649; c=relaxed/simple;
-	bh=+y0LYOXdo+Rbtg55T3IOqrCtEJNFT6WwTdn6LjJQgC4=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=lkrrvb2kwaq/XTgghC0G1FR9fyCNd5YLWANyRQ400qJuVU5RbNtmZuJKx2H67UvRNjXq0a4f3G9Q9z5M2k67tS3SAMzWDVZsztAntJ+GKIujM1r+pSJIt+yoB4NUkpao2KuQdoYmbspNIxssCtA7ILoS4l1WzeSvJp3mQ3YePTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-81f8293cdb1so11512339f.2
-        for <linux-serial@vger.kernel.org>; Wed, 24 Jul 2024 21:27:27 -0700 (PDT)
+	s=arc-20240116; t=1721891163; c=relaxed/simple;
+	bh=MLYuxF+x2eABGaFPWMN34FvIWccwv9Fi+GUQwVm/QQU=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dBPmSzEP/tiDWc2GhJioEtlJoMh1gXzCRgB4rl7E7FgjbZjfdjQwMmeXLbvfOBxA/5PgtsFwVDmcPE1VoyoVwhCccn236dRvkBkgKGqk8e0a833sIqSpynTd5SGyC/Gfl2W2MbyDzgFFBeHLB/PsNLeScuaZAQWfltJEG99PgV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=WxfjqiOy; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WxfjqiOy"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a7a975fb47eso24416666b.3
+        for <linux-serial@vger.kernel.org>; Thu, 25 Jul 2024 00:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1721891160; x=1722495960; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tg+YuDiaDe8j90OxE9HnFuCfbmfa372RPc0H9GceT8Y=;
+        b=WxfjqiOyhsx2DwyO4xjNMIfiYSkRGqaZAxHwK/jDGaH/xwt+EOOyNKxtutdfQBLqLG
+         imi47GYn9yIO36RxmwivtrMcZ7si5OoT4SFpyL9oKimQ/HlrL5YV8W7vqtSPPqC+RisN
+         RTlffjRsrwnn8APSlsslVFr3mbeTHrspjE6mEsVq40DTeXLKlLJBIjMyqjedHdAnYAev
+         F6LYpt2ahvqdZ1lyleWepue6oPtvUucK6bnn635DlPzLRG62uE9UcwwK+qA1/3+RAxqw
+         cggn45nm44Fo4bBCxoa5xJvD+gq/LIAxHPsdGaorfyafz1x8ypG53NkAaS6fTfM8zg0z
+         oOnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1721881646; x=1722486446;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=/lON8fGworFpTJ7CQFsh8gPqMnx74mEVJ/DboqaaKd4=;
-        b=wLlqcFtDpzfBvAusL07unkf0zXIbHf9NhaZ1Pz17c08FUlIZoAKYtHJK1VVd7iavBg
-         rysP7omf0NWbMG8+14Bvev82w7/ekcap6JTT2M8I0zOFJOPBrpKwT0+BQjObmCYONKfr
-         HYeJdfR4zBBjdmqVEcBE/UK2v/iQnGknVYdwSlkUlzbbZ/C0wmZSGTrYicZ+4sVt4+eC
-         v7C+7F8SK1kobUpKc9JY0tG2U3j7/ABZptF9tsnijVe3XGZAD1LULnNzRFl2QIlbFyTv
-         LUnrRtvTyYuoQqD+IlEXn8ojoWsjy+tJ7keXnHTIQI0TxwiZrR6Z0GZDoX8/rUQScupK
-         pspA==
-X-Forwarded-Encrypted: i=1; AJvYcCWAlWM0EquOhmIZrV5CFEGnl4HS/xL++0+XrFESe78wyPPvXRFl59XlXwAB/p7z36c4TmoSCCpSgvEwzwbriJ95upUJpt9YK40xPzSr
-X-Gm-Message-State: AOJu0YxlWYc4E/oQVRC165w2G4N/uqE3XGAk+D+goTtC1L5jELDEQSPg
-	2vRNUjlylv3hmATCHe/wquIDwXAallL8o4rKJNTdRyMRiRwfL+iohyQF48X+kOPYy8OvCAU1C+s
-	ZP96jBkMg4NxdYblKmw1n5kuxvsJynj8mDmhc8v3FbarH7CJfvDVYJMg=
-X-Google-Smtp-Source: AGHT+IFKiVs0ynWU6sPaCWcQc5bXJcd0XJIfyj44zLasAXY91uG3+wsbMLFkmbv0EE6qda5A+h8isJyfufw+RA985Cqd6wazdMkN
+        d=1e100.net; s=20230601; t=1721891160; x=1722495960;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Tg+YuDiaDe8j90OxE9HnFuCfbmfa372RPc0H9GceT8Y=;
+        b=l/iXLtCB91SPY6/frbhTurCLUihGmyWY6uQmxVy4nFqnNEQj96mFGJ3Tlx56DI8yfD
+         XyzC1wrtIltQje06d2fzys74T7HXUpfZaBEJ+5xIoMg+RGPTGcYZMuLoEBNgL6mVMECs
+         ALqdKEhdxWdRpSnHDBIuJnnruDonAksNek1ZYYrF3kzpMmMteuYigjQlQAJZyk2D5HtU
+         IFNYUJMCadbpHmqRP/LC0YowGEMoaNM+YobO+g8OkYezD6Qrm/lJXZ/K6uEjd7mHoAxH
+         xvyJdAmqpRX1/hTqcEVhEzhYYp1bKpdr36dC/Xatv+wrOHdWdK+RpQCjFZT5jSJ93DWA
+         EdCQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUtoSq7PTT/R9M5OcuOswTdESDfsG9Vtq/SVXzgcSIHS/u4XhdwsTHKTEfHfG4uObYPxbstiWYU4ZIqe2yDYleXcskPHXfXwr3fB39y
+X-Gm-Message-State: AOJu0Yxh1ep3EzprNuV4VkloCsaYkRbapGaLPBEsfsruXnYdDUAsggiT
+	zNQMGU4dsOLbodAfv0Yd8VyF5ohRBhbQrj0m4OdDSE9rU+cJiemK5uGE+Kkwr80=
+X-Google-Smtp-Source: AGHT+IHlzKZD6dVFu3OsmAb5gHZz1N4DytQsLg4PHeR8NjL34aay8nTlp4qj2DMZ1Ncqrk1J61H5Uw==
+X-Received: by 2002:a17:907:7296:b0:a7a:abd8:77dd with SMTP id a640c23a62f3a-a7ac532fbfdmr145030166b.59.1721891160637;
+        Thu, 25 Jul 2024 00:06:00 -0700 (PDT)
+Received: from puffmais.c.googlers.com (118.240.90.34.bc.googleusercontent.com. [34.90.240.118])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7acab2311asm40253566b.18.2024.07.25.00.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Jul 2024 00:06:00 -0700 (PDT)
+From: =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
+Subject: [PATCH v5 0/2] dt-bindings: serial: samsung: style and gs101 fixes
+Date: Thu, 25 Jul 2024 08:05:57 +0100
+Message-Id: <20240725-gs101-uart-binding-v5-0-e237be8253a9@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:8412:b0:4c1:4388:46bb with SMTP id
- 8926c6da1cb9f-4c2a0d82265mr29149173.0.1721881646548; Wed, 24 Jul 2024
- 21:27:26 -0700 (PDT)
-Date: Wed, 24 Jul 2024 21:27:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e35983061e0acfa9@google.com>
-Subject: [syzbot] [serial?] general protection fault in n_tty_receive_buf_common
- (2)
-From: syzbot <syzbot+2dda672e146ff12ccb02@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAFX5oWYC/32NTQ6CMBBGr0Jm7ZhSqlVX3sOwaOkPk5iWTJFoC
+ He3cgCX7yXf+1YonskXuDUrsF+oUE4VTocGhtGk6JFcZZBCKqFbibG0osWX4RktJUcpolU6dEZ
+ qMXRnqMOJfaD3Hn30lUcqc+bP/rGon/2bWxQKlMpfw8Up6wZ7f1IynI+ZI/Tbtn0B8M24BbUAA
+ AA=
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Peter Griffin <peter.griffin@linaro.org>, 
+ Tudor Ambarus <tudor.ambarus@linaro.org>, 
+ Will McVicker <willmcvicker@google.com>, kernel-team@android.com, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ devicetree@vger.kernel.org, 
+ =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
+X-Mailer: b4 0.13.0
 
-Hello,
+This series started as a single patch [1] (as part of [2]) to fix a few
+issues with the UART on gs101.
 
-syzbot found the following issue on:
+In [3], Rob pointed out that the binding here shouldn't be duplicating
+clock-names all over the place.
 
-HEAD commit:    786c8248dbd3 Merge tag 'perf-tools-fixes-for-v6.11-2024-07..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17f0d29d980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=47beaba1a1054668
-dashboard link: https://syzkaller.appspot.com/bug?extid=2dda672e146ff12ccb02
-compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+So now we have a patch to do what Rob suggested, and my original patch to
+address the incorrect number of clocks.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+The whole series is marked as v4, because patch 2 in this series used to be
+v3 in the original series.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/e4bf4a8f547d/disk-786c8248.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/9b69a5fd8929/vmlinux-786c8248.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/e0060dfb7885/bzImage-786c8248.xz
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+Cc: Peter Griffin <peter.griffin@linaro.org>
+Cc: Tudor Ambarus <tudor.ambarus@linaro.org>
+Cc: Will McVicker <willmcvicker@google.com>
+Cc: kernel-team@android.com
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Signed-off-by: André Draszik <andre.draszik@linaro.org>
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+2dda672e146ff12ccb02@syzkaller.appspotmail.com
-
-Oops: general protection fault, probably for non-canonical address 0xdffffc000000044c: 0000 [#1] PREEMPT SMP KASAN PTI
-KASAN: probably user-memory-access in range [0x0000000000002260-0x0000000000002267]
-CPU: 1 UID: 0 PID: 12 Comm: kworker/u8:1 Not tainted 6.10.0-syzkaller-12246-g786c8248dbd3 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/27/2024
-Workqueue: events_unbound flush_to_ldisc
-RIP: 0010:n_tty_receive_buf_common+0xf3/0x1980 drivers/tty/n_tty.c:1718
-Code: 00 48 89 74 24 60 4a 8d 0c 39 4a 8d 34 3a 48 89 4c 24 70 48 89 74 24 68 48 89 84 24 a0 00 00 00 e8 b2 c7 95 fc 48 8b 44 24 68 <80> 38 00 0f 85 af 15 00 00 48 8b 44 24 18 48 8b a8 60 22 00 00 48
-RSP: 0018:ffffc90000117ad0 EFLAGS: 00010293
-RAX: dffffc000000044c RBX: 0000000000000001 RCX: dffffc0000000000
-RDX: ffff8880172fda00 RSI: ffffffff84f4beee RDI: 000000000000005c
-RBP: 0000000000000004 R08: 0000000000000001 R09: ffffed100bfcec50
-R10: ffff88805fe76287 R11: 0000000000000000 R12: ffffffff84f4d790
-R13: 0000000000000000 R14: ffff88805fe76000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9300000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f62429bcfc8 CR3: 0000000066f7a000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- tty_ldisc_receive_buf+0xa2/0x190 drivers/tty/tty_buffer.c:387
- tty_port_default_receive_buf+0x70/0xb0 drivers/tty/tty_port.c:37
- receive_buf drivers/tty/tty_buffer.c:445 [inline]
- flush_to_ldisc+0x264/0x780 drivers/tty/tty_buffer.c:495
- process_one_work+0x9c5/0x1b40 kernel/workqueue.c:3231
- process_scheduled_works kernel/workqueue.c:3312 [inline]
- worker_thread+0x6c8/0xf20 kernel/workqueue.c:3390
- kthread+0x2c1/0x3a0 kernel/kthread.c:389
- ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
- </TASK>
-Modules linked in:
----[ end trace 0000000000000000 ]---
-RIP: 0010:n_tty_receive_buf_common+0xf3/0x1980 drivers/tty/n_tty.c:1718
-Code: 00 48 89 74 24 60 4a 8d 0c 39 4a 8d 34 3a 48 89 4c 24 70 48 89 74 24 68 48 89 84 24 a0 00 00 00 e8 b2 c7 95 fc 48 8b 44 24 68 <80> 38 00 0f 85 af 15 00 00 48 8b 44 24 18 48 8b a8 60 22 00 00 48
-RSP: 0018:ffffc90000117ad0 EFLAGS: 00010293
-RAX: dffffc000000044c RBX: 0000000000000001 RCX: dffffc0000000000
-RDX: ffff8880172fda00 RSI: ffffffff84f4beee RDI: 000000000000005c
-RBP: 0000000000000004 R08: 0000000000000001 R09: ffffed100bfcec50
-R10: ffff88805fe76287 R11: 0000000000000000 R12: ffffffff84f4d790
-R13: 0000000000000000 R14: ffff88805fe76000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9300000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000055557bdc65c8 CR3: 0000000058bdc000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	48 89 74 24 60       	mov    %rsi,0x60(%rsp)
-   5:	4a 8d 0c 39          	lea    (%rcx,%r15,1),%rcx
-   9:	4a 8d 34 3a          	lea    (%rdx,%r15,1),%rsi
-   d:	48 89 4c 24 70       	mov    %rcx,0x70(%rsp)
-  12:	48 89 74 24 68       	mov    %rsi,0x68(%rsp)
-  17:	48 89 84 24 a0 00 00 	mov    %rax,0xa0(%rsp)
-  1e:	00
-  1f:	e8 b2 c7 95 fc       	call   0xfc95c7d6
-  24:	48 8b 44 24 68       	mov    0x68(%rsp),%rax
-* 29:	80 38 00             	cmpb   $0x0,(%rax) <-- trapping instruction
-  2c:	0f 85 af 15 00 00    	jne    0x15e1
-  32:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
-  37:	48 8b a8 60 22 00 00 	mov    0x2260(%rax),%rbp
-  3e:	48                   	rex.W
-
+[1] https://lore.kernel.org/all/20240710-gs101-non-essential-clocks-2-v3-1-5dcb8d040d1c@linaro.org/
+[2] https://lore.kernel.org/all/20240710-gs101-non-essential-clocks-2-v3-0-5dcb8d040d1c@linaro.org/
+[3] https://lore.kernel.org/all/20240711212359.GA3023490-robh@kernel.org/
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Changes in v5:
+- drop now-meaningless top level clock-names description (Rob)                           
+- collect tags
+- Link to v4: https://lore.kernel.org/r/20240712-gs101-uart-binding-v4-0-24e9f8d4bdcb@linaro.org
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+---
+André Draszik (2):
+      dt-bindings: serial: samsung: avoid duplicating permitted clock-names
+      dt-bindings: serial: samsung: fix maxItems for gs101
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+ .../devicetree/bindings/serial/samsung_uart.yaml   | 70 +++++++++++++++++-----
+ 1 file changed, 56 insertions(+), 14 deletions(-)
+---
+base-commit: 91e3b24eb7d297d9d99030800ed96944b8652eaf
+change-id: 20240712-gs101-uart-binding-b47f3a270c36
 
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
+Best regards,
+-- 
+André Draszik <andre.draszik@linaro.org>
 
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
