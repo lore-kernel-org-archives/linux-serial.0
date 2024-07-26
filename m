@@ -1,93 +1,168 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A8B517C211;
-	Fri, 26 Jul 2024 15:40:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03FFE2E631
+	for <linux-serial@vger.kernel.org>; Fri, 26 Jul 2024 16:22:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722008439; cv=none; b=CKiMzcGDlO7VDStPrG/yWQO73pnRkjcn/5Ugufb3P5xqkco4iCzlFafckKuBDf/RbyLsBproXnINky+MMq5KIH4iz8wLyA9G/jsRwpXIZT+mr4FBwhZRoxWvRCsNulkioRNyp4y60POy4YdnbkWXQ3HcxtIScX5ovMrp3cuwIpY=
+	t=1722010955; cv=none; b=ppuQPNIJ2EPXZbIfmV22Ckkl6ZoeOtVM6w3nn3beG5ZJe3CHuMNyGLq/i1nVaCksk18MImr7kZJIIJnfZ+S0IJJJoeqpQiO7HdIu51rPG3jOMeOz/V1Xck9dUq9R8y11HLdmn5OkVSzaHWgw1bsiuYcrHrCNab7wKyah61FUfpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722008439; c=relaxed/simple;
-	bh=vxRdGIkfgEZ04ApIbIHN/L0+nY+i/qZ5Ql/iZ0wYUs0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XtE0FedXIrDZM/CrdGypTT824uwIMyNuRDZfJYcdukMoteVpke1xTJcfFcCccWbxFABQd42zLScsIgFbvgRxE0OV5rr2NpK9HHsqbTqBVvq+oOnzASmUUFR+OnZCsPOSy/oOnINVE0e5dvmepFQqX2Mg1iTa9lFHmAi3fBERI74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	s=arc-20240116; t=1722010955; c=relaxed/simple;
+	bh=EuHCtkeudbs9CJER2oJtd3dzpDp+7S0yaBpnRqqREnM=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=e1d+sQ696SVlRPHe8YflH0qvA+Rs5Pre4pSFhWP2mI9dL3vzxUq+YnK+IeUDu9gMuDv/w8AEHQmB7jSUWoDEhwKcIu2EHhRzhnd1bUBZQO16QolP2ynbGzisM37JnZdjCM8J3xAvPatoV35KCHRU09mflQYZ7Rv1zyOoxpNXMtk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S2DPECmk; arc=none smtp.client-ip=209.85.166.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-66526e430e0so24030087b3.2;
-        Fri, 26 Jul 2024 08:40:38 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S2DPECmk"
+Received: by mail-io1-f44.google.com with SMTP id ca18e2360f4ac-80a2939265cso50343539f.3
+        for <linux-serial@vger.kernel.org>; Fri, 26 Jul 2024 09:22:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722010952; x=1722615752; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XAWHxqYOiG7RZkLUkA9MyHwfUM+srqmdVVtSXfRT4T0=;
+        b=S2DPECmkhMKHIScDVXelZLPBcGQFRxNLl7zapckbDmdYlk7jgCYQaVJe7MvM9zxjLA
+         7xvfNtKegy9MLYK+TEYe9YAulFNszvL115edyETPDmj2vuS+EieBn8tVtLF5QvaKnAjD
+         P/vzq3WGYsfwF3s/5pGPqf42CmgNibx2d8RfyieCiS18FvDJ9b6RfQHfAtCteCKLaPH6
+         +NxC2LEdofOeeIO9mXJ/l5b3uH/8VQqunlYM2s7daSGGnntxwHNgHZAIryjIC80FuJq6
+         FfbToRfNgeNfRjZOFNNtmEizWaN++wuVNcCHJQiowykaHuHP2kgtUUSh0TVJrYK1Nesh
+         LQ0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722008436; x=1722613236;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LQGrKvBmEuUvxegvJzBt910BFCTjXsTtk2JJYfaSArE=;
-        b=ZJUG4L5lmN1VBB5YpYLYvtmlLxmSlkKDJztIMyi/D4kZPdVIKlCKeViSw9lZRCOUER
-         ndZNTIpqH18UcNv15oqYcplZcjvDwQ6+6UcrxxRwbrHOs4Zhb2OfkyDXdHt2k2Auu+fL
-         SSlGm1GYZEqQFWdvS1ArSxY/qVX7D9+Mw99ny/hAUpaVm6XSKpKERZCSWREhTNs3zfVL
-         oL+u6FKRntj8KEdbFxD+r2KFcfN5JOKnNf18pK726aMvt53Vo6y7iWtG6O1ENJrQZS0f
-         I17L4L/vhWg0vRuMumKWsXDviKjd8L3q3VRWcJgIhwe6qP51vMVsEuOQ8dK8viNQoFlU
-         s8Rw==
-X-Forwarded-Encrypted: i=1; AJvYcCXaQo/cJx/SyNOJfWLnkbC2xVl/fE2yRaEbFk9f6NeVPHO2QhrRYbwbs3XpQmYTr5sPAQ+2+1kHhujPbPs7ErtfnwSmycGYtoMJytIKtKWXTU9ncgCaOfj8cNJv+xeKVHhbddhy6HiN8cQxiQxMZZ2d08lSSBJTCA1N8mYDg01MRCgqLARzXRNpbSCI
-X-Gm-Message-State: AOJu0YygHHd/RFB9OxpUh0jTn8jZKIUqzI1l5JTBvNYXhza2vUKG8K7H
-	SAdBuAgU6jgjqypgHCo2KuXoxlEIiIW33l09Op/DHahvE1FIqmugnOm23UGS68g=
-X-Google-Smtp-Source: AGHT+IE9wpgXPmekLN2tKx5jeOR7eC8uUBdxG9k9dv3tCmq2aqjpVk8qxBOuIA5CezADqv5N+1pk4Q==
-X-Received: by 2002:a0d:c8c6:0:b0:61b:1e81:4eb8 with SMTP id 00721157ae682-67a051e830dmr2000757b3.9.1722008436111;
-        Fri, 26 Jul 2024 08:40:36 -0700 (PDT)
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-67568113ceesm9122967b3.61.2024.07.26.08.40.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Jul 2024 08:40:35 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-66acac24443so24827037b3.1;
-        Fri, 26 Jul 2024 08:40:34 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWepr+qmXBSaJpxzHL4t0LK4KWtUxQQPfOs+3JccD1A4kSD8XNCCTZsTMEYumg1Ff1D88p7ehUO6n/XxFL/iVYxg4qecvYjcIPXLYKHj9Lx2OEYKI+Se0hKTYcFFFJx2Ei4IR6kEnqoffB2JX6gfTRZV0vmaEcRrKAAVcCIvwvZfeQJcnWvoE6aPvIj
-X-Received: by 2002:a05:690c:4a01:b0:64a:7040:2d8a with SMTP id
- 00721157ae682-67a074af3dbmr2628547b3.23.1722008433663; Fri, 26 Jul 2024
- 08:40:33 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1722010952; x=1722615752;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XAWHxqYOiG7RZkLUkA9MyHwfUM+srqmdVVtSXfRT4T0=;
+        b=datmTGWEvkEoH/sJaeYYJPtMGesIskvK3k9HhAoQup/w6P8byg0VTX5wgpLVVv54g0
+         l9tOZ9Z6rBeKwY2bz+y+MxIyvdj9a269H7PhnLNMKmbg3IrEpBTlP7oEhVKmS1WPtCrW
+         r9mWU5xHklAkFZ0T+WVAY3B6Yh6vPZF5zDtf64uqBfQJ8sJE44Cvd+BO0W75ZjqEoUsa
+         7HRVt2JATyDIbztC12Tpkk13jx3gbt80qpC+ogRkDModhIRxCsUZbJ3eY1XhFUWJd9R/
+         5ERf1ENX6sH2XdyFYVRMSE7ygTcnRxf9oSnut7+CFgcVDH3Fuh6NbZ1c+9etZem6+eMO
+         x6Wg==
+X-Gm-Message-State: AOJu0Yw/TfDS4iDwtqRazhZLzq/F2efPPgmfidEBFDMeI3ikhpUjdlQD
+	o+rnT7RQ9tRKPErF2SJS6GBDNL3I9AzLmm47w/XCRwBlOZxSE4+U1QqsBg==
+X-Google-Smtp-Source: AGHT+IFA7zy9zC9iI9PWCJGQDtCDyNp+i28DjwDny9EJdbTXf06phLSjKugBHZ9YJMR5ZDGY/5vAuA==
+X-Received: by 2002:a05:6602:2dca:b0:814:65dd:8cdf with SMTP id ca18e2360f4ac-81f7e49ee2bmr679896939f.10.1722010952499;
+        Fri, 26 Jul 2024 09:22:32 -0700 (PDT)
+Received: from grante (24-152-157-105.fttp.usinternet.com. [24.152.157.105])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4c29fa4158asm902569173.8.2024.07.26.09.22.31
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jul 2024 09:22:32 -0700 (PDT)
+Date: Fri, 26 Jul 2024 11:22:30 -0500
+From: Grant Edwards <grant.b.edwards@gmail.com>
+To: linux-serial@vger.kernel.org
+Subject: Confused about UART stop_tx() start_tx() functions.
+Message-ID: <ZqPNRjxL8WU_QAJ0@grante>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240725100534.5374-1-oliver.rhodes.aj@renesas.com> <20240725100534.5374-6-oliver.rhodes.aj@renesas.com>
-In-Reply-To: <20240725100534.5374-6-oliver.rhodes.aj@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 26 Jul 2024 17:40:21 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUXt0KyNLwPQhu=YLZ0cVHc5SWu7poD6ZORnh-BE3NaSA@mail.gmail.com>
-Message-ID: <CAMuHMdUXt0KyNLwPQhu=YLZ0cVHc5SWu7poD6ZORnh-BE3NaSA@mail.gmail.com>
-Subject: Re: [PATCH V2 5/6] dt-bindings: serial: renesas: Document RZ/G2M v3.0
- (r8a774a3) scif
-To: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Thu, Jul 25, 2024 at 12:06=E2=80=AFPM Oliver Rhodes
-<oliver.rhodes.aj@renesas.com> wrote:
-> Document scif bindings for the Renesas RZ/G2M v3.0 (a.k.a r8a774a3) SoC.
->
-> Signed-off-by: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
-> ---
-> v2->v2 resend:
-> * No change.
+I'm confused about the start_tx() and stop_tx() UART driver methods.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+According to include/linux/serial_core.h
 
-Gr{oetje,eeting}s,
+ * @stop_tx: ``void ()(struct uart_port *port)``
+ *
+ *      Stop transmitting characters. This might be due to the CTS line
+ *      becoming inactive or the tty layer indicating we want to stop
+ *      transmission due to an %XOFF character.
+ *
+ *      The driver should stop transmitting characters as soon as possible.
+ *
+ *      [...]
+ *
+ * @start_tx: ``void ()(struct uart_port *port)``
+ *
+ *      Start transmitting characters.
+ *
+ *      [...]
 
-                        Geert
+But in many drivers, that's not what those two functions do. For
+example in rp2.c:
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
+static void rp2_uart_stop_tx(struct uart_port *port)
+{
+        rp2_rmw_clr(port_to_up(port), RP2_TXRX_CTL, RP2_TXRX_CTL_TXIRQ_m);
+}
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+static void rp2_uart_stop_rx(struct uart_port *port)
+{
+        rp2_rmw_clr(port_to_up(port), RP2_TXRX_CTL, RP2_TXRX_CTL_RXIRQ_m);
+}
+
+Those two functions *do not start/stop transmitting characters*, they
+enable/disable the transmit interrupt. After disabling the transmit
+interrupt, the UART continues to transmit anything in the tx FIFO (up
+to 256 bytes). That hardly qualifies as "stop transmitting characters
+as soon as possible".
+
+Starting and stopping the transmission of characters is controlled by
+the RP2_TXRX_CTL_TX_EN_m bit in that same register. Clearing that bit
+will "stop transmitting characters as soon as possible" (at the end of
+the byte currently in the tx shift register).
+
+While stop/start_tx() behavior in rp2.c is clearly wrong according to
+serial_core.h, it does seems to be what is expected by the serial core
+code:
+
+#define __uart_port_tx(uport, ch, flags, tx_ready, put_char, tx_done,         \
+                       for_test, for_post)                                    \
+({                                                                            \
+        struct uart_port *__port = (uport);                                   \
+        struct tty_port *__tport = &__port->state->port;                      \
+        unsigned int pending;                                                 \
+                                                                              \
+        for (; (for_test) && (tx_ready); (for_post), __port->icount.tx++) {   \
+             [write bytes into tx FIFO]                                       \
+        }                                                                     \
+                                                                              \
+        [...]                                                                 \
+                                                                              \
+        pending = kfifo_len(&__tport->xmit_fifo);                             \
+        if (pending < WAKEUP_CHARS) {                                         \
+                uart_write_wakeup(__port);                                    \
+                                                                              \
+                if (!((flags) & UART_TX_NOSTOP) && pending == 0)              \
+                        __port->ops->stop_tx(__port);                         \
+        }                                                                     \
+                                                                              \
+        pending;                                                              \
+})
+
+
+It wouldn't make sense to copy data from the tx buffer into the tx
+FIFO and then immediately call stop_tx() because the tx buffer is now
+empty. Disabling the tx interrupt because the tx buffer is empty does
+make sense.
+
+However, there seem to be plenty of other drivers where stop_tx() and
+start_tx() do actually start and stop the transmission of characters
+as defined by serial_core.h.
+
+21285.c:
+
+#define tx_disable(port)        disable(port, tx_enabled_bit)
+
+static void serial21285_stop_tx(struct uart_port *port)
+{
+        if (is_tx_enabled(port)) {
+                disable_irq_nosync(IRQ_CONTX);
+                tx_disable(port);
+        }
+}
+
+Can somebody please clarify exactly what start_tx() and stop_tx() are
+supposed to do?
+
+Thanks
+
+--
+Grant
+
