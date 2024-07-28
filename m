@@ -1,109 +1,209 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B02BBA20;
-	Sun, 28 Jul 2024 10:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409E921105;
+	Sun, 28 Jul 2024 11:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722162672; cv=none; b=U1vvgZF/kCmza3JeHgdttw15lfOcIEB0TJmBAxj0W+Uj9W3kOyJ3OGb5hpBEzDuYfi5EKQR5jk42Ju+LMD/QmOxxItIXAPcgc5rnS1ncW43GKZy0QhSWqAXIZBAARePVcqg4RXNN/9aew9fNS8fyIMSvCJANT/uFfxCiPXiuf4w=
+	t=1722166981; cv=none; b=iYFspgkG6QiukfFiKb+EBhy7gZwJejmSVNvMJbWYb7Q43nijwEE4+5eVWT62SKNpRS67W0/6+kLfbTblh+GEVJrtcezINsNsaMvItVZcEjTOFK/2kEWnW1UQp6HMKnJpuc7RMvoj9tJG1IW8BqG1vQArAPM9JPZ/zAXe7y4Tcro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722162672; c=relaxed/simple;
-	bh=17b1KmsZq4pAU+NvEPQVCR4iwJs15gGQjUnqpFafd7I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ij2QOXyapg9fevSTJ22RnjG4SSeRQbXEyWL7XgoI3eaWvrJqespeVSYA2l96Q/L58dJwCSZ7LNCYTbXEWusOG3teaVL8bAIt2CeaaLqkLGBy5cmQ+i1NdhkfObFdamjPzrJ2ervauOxoNNn07P/4FafIYW3kaahfa2ykMePwoNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d3Lm4dQV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722166981; c=relaxed/simple;
+	bh=vqXIF19GM9IUUR5/SalBX3/7jF735N4hJXNd6kuvflY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=WAd3113IWc5l0ZpW3q6yl/DkuQl4jeqgxR6hTcJmlZCPQVOPFKpQKSRyRUZBl3erXpVDT+pLq/ixDSdrWYzTNXIY7u2kf/B22buLtELSQFq94autPNfzGVbhVzAH4yoczr7LV0PMDGmdvLRAA2D70K28B4PuhWFpgtZ359zCkAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=XXp0k5iw; arc=none smtp.client-ip=212.227.17.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d3Lm4dQV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4264C4AF09;
-	Sun, 28 Jul 2024 10:31:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722162672;
-	bh=17b1KmsZq4pAU+NvEPQVCR4iwJs15gGQjUnqpFafd7I=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=d3Lm4dQV3e4YLATou/cPITSifz+DThCJeeq2z50qYNb6Ma67yiMTu9ANq6+t9GvEq
-	 RIJEOIU1t41OLsPEFX/GL8ulHgIQN5TxIyNme2RuBsLir4KT8P28Pa1aOO7lohzelK
-	 jLdqWjqMkldOyE/W+6kRmqy82HwEpw7NKag5ZlWOSODWZqapWfl6FVe7DVSaMYiB9I
-	 ZwRzIT1gM2Uy28EF2/GgrRrS2KH0f03SVg8UlWYSs6qB2Ipc7+WXBs6MCb7HjNGMVR
-	 ZICMV7hhzqsoS5uFiC66AYZ8gl5/43MEDeTDLrEL0tnAP+2w9IuQh0upDdFLiw8Y5o
-	 YONv8115y4G4Q==
-Message-ID: <55c86b6a-0746-4e5e-b085-9bc33f95a78b@kernel.org>
-Date: Sun, 28 Jul 2024 12:31:06 +0200
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="XXp0k5iw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1722166927; x=1722771727; i=wahrenst@gmx.net;
+	bh=t9RUGYIzPmImI5RdyBcGPuYt4Ch3P3xZu5S+hkMDf8o=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=XXp0k5iwZir7n83XQ087VX+4Acj8Dh7Oc+qgMih5geYrDKIcnfyIj3ZXa/GiuBHx
+	 YOiBztY8UCKtHnLEizMh1IOC8W5gfHhJXECtis4z46DC4arFtGJmXPv49T8U56Ur+
+	 qRonJ8oOf5uxSNpkU32ep+vzK/KzkYfAIPapweF1PkPi8uffRq4lf4fJgKkrgkbqv
+	 cgqr5bXzoOv9a+5X/6fA2deVAbgBc5dmwD7FQASC/BdB5I1FlpXNaR4c58K04bP4G
+	 i/GDS4vI4+iDCHeWPxkDHBu7g7W58nuLHG5mNOn9l8h6AIXkdPFdzPhZjvcQxN/t6
+	 VYXCvpf1rJGp8oKGxg==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from stefanw-SCHENKER ([37.4.248.43]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MYvcG-1slHrT2n32-00N5HR; Sun, 28
+ Jul 2024 13:42:07 +0200
+From: Stefan Wahren <wahrenst@gmx.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	=?UTF-8?q?Ma=C3=ADra=20Canal?= <mcanal@igalia.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Minas Harutyunyan <hminas@synopsys.com>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Lukas Wunner <lukas@wunner.de>,
+	Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
+	Peter Robinson <pbrobinson@gmail.com>,
+	dri-devel@lists.freedesktop.org,
+	bcm-kernel-feedback-list@broadcom.com,
+	linux-pm@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	kernel-list@raspberrypi.com,
+	Stefan Wahren <wahrenst@gmx.net>
+Subject: [PATCH V2 00/16] ARM: bcm2835: Implement initial S2Idle for Raspberry Pi
+Date: Sun, 28 Jul 2024 13:41:44 +0200
+Message-Id: <20240728114200.75559-1-wahrenst@gmx.net>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: mediatek,uart: add MT7981
-To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- John Crispin <john@phrozen.org>, Daniel Golle <daniel@makrotopia.org>,
- =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20240727121447.1016-1-zajec5@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240727121447.1016-1-zajec5@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:YNorNR+1omM35M/GKScFU7LvaIEeYUoyTg7TYTYVxeo3HqCms2E
+ dBa0huxhCkBAH10O57ek73gOEy4q2qr7qfZ6U8wUZ6etP2maMxihZhUcCKNNV9a5dM4Cxlf
+ C1sc9GJfzt22UGFKOPHVB6XUr5ce+QvlqfFH2cIYllyOo8h98YLGhlNwcO6Z9FCUyZEiYbL
+ LUXkcX26tvWx2Qk+8w1Uw==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:WNzqUOykDu4=;CemkE6JrPK/fmO7QQsIf0PXdrqq
+ jD4X9TBuBB9UTe169GfebsNmSBw73UVxVDTrFAoO8+qDGhu1MKzSDTCxsPhDb9TfaWVs2M2YM
+ dLPPZTuiSkGlFsJ289uwm/BKkdfB5S4kKguffFLqxMAXWpJ4F0eqAjrKcy17BQ0yU50dQaZrB
+ 38KO0+djyJcBNbgNEWeBfqXw6SHiul8QE21dSLYmo30mNSzWPZVWcvk2DU+vQ1IaQxX+da/Vq
+ k88MYUq6yRVVfzMDdrWiV5pKt/tPovi+jrtjMyTa3tsNd1u4qIY02/3fAHfYshb5P46i36rFV
+ PDI2PQQo/eRjLMGiFzEQTO3B2tqiLggsSUsPzs86ECpEUbduisCH3bLxYHA8h/m0o6XAQQOYk
+ Hd+LG7Dg/tl1Bct6MJ8Z3eiwoC+Kf7CzSiA+RcwsI5hn4kA0eYxep2VT1Qj+leFPZwBJuK4NH
+ qF0yXMwSQBRbig/DGyziSiilnE1EIecqavalD1Gl/zjTiMXz0he8pL0vnqFFi1zz3F1tJnKrB
+ vLhUzb1WU+1uIRiYmhjxhJG7BRIsuL/c7jbRXXSVAyZvbfDlZ1g9Z4nduET/i2Ci3eUG1d1i7
+ OOSWwKXXvXky3iRPP2IAZIgyA5TeXGAK1VEaKa0tnVabHaXSz+qcUWD5Udbm3aOdKPKSrptqt
+ iMAOxqoyyH0k7hQsIP/IO4SdpP9KEotg64JzegYLOqFzDKpsWmGUfLhHexl1wZSXqWc4BXXPh
+ OVd/UcmrBy9CIBPdGeHJnhfEHIsL0r5aLNHZBPaLxNw65ox7YV2AcLs+3/PiXTSmCRl3JuyfJ
+ x2mvWOFmCajsBqv/xmNfeYxg==
 
-On 27/07/2024 14:14, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
-> 
-> Add compatible string for serial on MT7981 SoC.
-> 
+This series implement the initial S2Idle support for
+the Raspberry Pi, which was a long time on my TODO list [1]. The
+changes allow to suspend and resume the Raspberry Pi via debug UART.
+The focus is on the BCM2835 SoC, because it's less complex than its
+successors and have enough documentation.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The series can be roughly separated in 3 parts:
+ 1. base patches (1-5, 15, 16) which allows S2Idle support for BCM2835
+ 2. drm vc4 patches which implement S2Idle support (mostly new and not
+    really BCM2835 specific)
+ 3. dwc2 patches which handle BCM2835 specific issues (still in progress,
+    but works fine)
 
-Best regards,
-Krzysztof
+Cherry-picking of patches should be fine.
+
+Test steps:
+- configure debug console (pl011 or mini UART) as wakeup source
+- send system to idle state
+
+  echo freeze > /sys/power/state
+
+- wakeup system by console traffic
+
+The DWC2 part of the implementation isn't complete yet (especially patch 1=
+4),
+but much better than the first version. The USB domain is now powered down=
+ and
+the USB devices are still usable after resume. There is still room for
+improvements, but at least the system won't freeze forever as before [2].
+
+Here are some figures for the Raspberry Pi 1 (without any
+devices connected except of a debug UART):
+
+running but CPU idle =3D 1.67 W
+S2Idle               =3D 1.33 W
+
+In comparison with HDMI & USB keyboard connected (but neither active
+nor wakeup source):
+
+running but CPU idle =3D 1.82 W
+S2Idle               =3D 1.33 W
+
+The series has been successfully tested on the following platforms:
+Raspberry Pi 1 B
+Raspberry Pi 3 B+
+
+Changes in V2:
+- rebased against todays mainline
+- added Reviewed-by from Florian
+- added Acked-by from Minas
+- dropped "irqchip/bcm2835: Enable SKIP_SET_WAKE and MASK_ON_SUSPEND"
+  because it has been applied by Thomas Gleixner
+- dropped "pmdomain: raspberrypi-power: Avoid powering down USB"
+  because this workaround has been replaced by patch 14
+- use drm_err_once instead of DRM_ERROR and return connector_status_unknow=
+n
+  in patch 6
+- add new patch in order to clean-up all DRM_ERROR
+- add new patch to improve raspberrypi-power logging
+- add new patch to simplify V3D clock retrieval
+- add new patch 5 to avoid power down of wakeup devices
+- add new patch 12 to avoid confusion about ACPI ID of BCM283x USB
+- add new patch 8 & 10 which address the problem that HDMI
+  is not functional after s2idle
+- add more links and fix typo in patch 13
+- add new WIP patch 14 which recover DWC2 register after power down
+- take care of UART clock in patch 15 as commented by Florian
+- use SYSTEM_SLEEP_PM_OPS in patch 15
+
+[1] - https://github.com/lategoodbye/rpi-zero/issues/9
+[2] - https://bugzilla.redhat.com/show_bug.cgi?id=3D2283978
+
+Stefan Wahren (16):
+  firmware: raspberrypi: Improve timeout warning
+  mailbox: bcm2835: Fix timeout during suspend mode
+  pmdomain: raspberrypi-power: Adjust packet definition
+  pmdomain: raspberrypi-power: Add logging to rpi_firmware_set_power
+  pmdomain: raspberrypi-power: set flag GENPD_FLAG_ACTIVE_WAKEUP
+  drm/vc4: hdmi: Handle error case of pm_runtime_resume_and_get
+  drm/vc4: Get the rid of DRM_ERROR()
+  drm/vc4: hdmi: add PM suspend/resume support
+  drm/vc4: v3d: simplify clock retrieval
+  drm/vc4: v3d: add PM suspend/resume support
+  usb: dwc2: debugfs: Print parameter no_clock_gating
+  usb: dwc2: Add comment about BCM2848 ACPI ID
+  usb: dwc2: Skip clock gating on Broadcom SoCs
+  WIP: usb: dwc2: Implement recovery after PM domain off
+  serial: 8250_bcm2835aux: add PM suspend/resume support
+  ARM: bcm2835_defconfig: Enable SUSPEND
+
+ arch/arm/configs/bcm2835_defconfig        |  2 -
+ drivers/firmware/raspberrypi.c            |  3 +-
+ drivers/gpu/drm/vc4/vc4_bo.c              | 14 ++---
+ drivers/gpu/drm/vc4/vc4_dpi.c             | 14 ++---
+ drivers/gpu/drm/vc4/vc4_dsi.c             | 32 ++++++-----
+ drivers/gpu/drm/vc4/vc4_gem.c             | 11 ++--
+ drivers/gpu/drm/vc4/vc4_hdmi.c            | 70 +++++++++++++++++------
+ drivers/gpu/drm/vc4/vc4_hvs.c             |  4 +-
+ drivers/gpu/drm/vc4/vc4_irq.c             |  2 +-
+ drivers/gpu/drm/vc4/vc4_v3d.c             | 21 +++----
+ drivers/gpu/drm/vc4/vc4_validate.c        |  8 +--
+ drivers/gpu/drm/vc4/vc4_vec.c             | 10 ++--
+ drivers/mailbox/bcm2835-mailbox.c         |  3 +-
+ drivers/pmdomain/bcm/raspberrypi-power.c  | 43 ++++++++------
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 37 ++++++++++++
+ drivers/usb/dwc2/core.c                   | 16 ++++++
+ drivers/usb/dwc2/core.h                   | 17 ++++++
+ drivers/usb/dwc2/debugfs.c                |  1 +
+ drivers/usb/dwc2/gadget.c                 | 49 ++++++++++++++++
+ drivers/usb/dwc2/hcd.c                    | 49 ++++++++++++++++
+ drivers/usb/dwc2/params.c                 |  2 +
+ drivers/usb/dwc2/platform.c               | 32 +++++++++++
+ 22 files changed, 339 insertions(+), 101 deletions(-)
+
+=2D-
+2.34.1
 
