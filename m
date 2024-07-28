@@ -1,140 +1,109 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71E0F4653A;
-	Sat, 27 Jul 2024 12:14:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B02BBA20;
+	Sun, 28 Jul 2024 10:31:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722082499; cv=none; b=mbJlrLOYy0jQ4ER6y/U+BgCgeWeACrm4brJLpXD1RnYBNobQ1NY2AkcjeOyl9xxUfUqA01x2Px4Q63O+krAn4Q12BQmcsrwypHeRt/HO50MPA2i6uW0ktORuDmjga1p65ch5+JOURe4SSrWbG/PmzKUhuMdmVpXF/QG61AMUPvw=
+	t=1722162672; cv=none; b=U1vvgZF/kCmza3JeHgdttw15lfOcIEB0TJmBAxj0W+Uj9W3kOyJ3OGb5hpBEzDuYfi5EKQR5jk42Ju+LMD/QmOxxItIXAPcgc5rnS1ncW43GKZy0QhSWqAXIZBAARePVcqg4RXNN/9aew9fNS8fyIMSvCJANT/uFfxCiPXiuf4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722082499; c=relaxed/simple;
-	bh=Ifo17bDlurXIrUa8FVbIZ6wZk3uJ7gITQ26TKwOYGzk=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mxejDzL6EjQQLBFERCVf9hlikvtPcnoOot7erbvLGbRxjc3MURWIN9XnzI1NrK+dOptLPXRT2JMVJLktsMchHGzadasPDifw3M18/ZoTR1yRnsa9bl+xgjN+CJh7fF97hXto4IY3VnHOs0iec9QdxoEgI4GRXGUUjvF5g1ISKz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YK1tSTHv; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722162672; c=relaxed/simple;
+	bh=17b1KmsZq4pAU+NvEPQVCR4iwJs15gGQjUnqpFafd7I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ij2QOXyapg9fevSTJ22RnjG4SSeRQbXEyWL7XgoI3eaWvrJqespeVSYA2l96Q/L58dJwCSZ7LNCYTbXEWusOG3teaVL8bAIt2CeaaLqkLGBy5cmQ+i1NdhkfObFdamjPzrJ2ervauOxoNNn07P/4FafIYW3kaahfa2ykMePwoNM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d3Lm4dQV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YK1tSTHv"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-59589a9be92so3608864a12.2;
-        Sat, 27 Jul 2024 05:14:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722082496; x=1722687296; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PXRD4T8Sdv60h0uyEFXaREU3np3ECNbip0ZEKAYODiY=;
-        b=YK1tSTHvmpYUgpbulpjy/9XEPOLC9DqY+jAa/21UXy4UHKPYuCiHxshByGAedUpS7Q
-         khNwWQsezKMnpw2TFcuc+5gipu2ry0A+icFM65cDG79dfxVJNNe8LHWX1iMqZx43F2dy
-         j4uWDpr4WT4Jm7+nmqONqBsylHa3HrV9p6TcO5077w2xn3vQZroqQ3W2iOLOvvOkcmyi
-         jkQhDFjeUTSpdKOheBfI64VztofKsxrCJfNxlb3o0Lm0D/B6UloPDhevMElXgYI81hJx
-         25GwKYl5caZcVdvA/rK7efGxVHish9K9NtE6o/JvMfuELYFBBFtY4NYDRVKBJT3qDmpa
-         LlKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722082496; x=1722687296;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PXRD4T8Sdv60h0uyEFXaREU3np3ECNbip0ZEKAYODiY=;
-        b=TaoudYD1w1nNMydt4r96uhUzvN8iEkzKHkhyEkQRwvGWRo+DACyP39SipLx9U14256
-         kJREf7p1qRwTLKZNNnT38YRCSmtS0J8nYQyuAWgUnusz1f23CTzaYDb/UMG6EI8bDlfp
-         xp7rTPhJwmY9bhE4d6MTqOPgvhxs1ay0orSoG2E8G3WpQXbKG/k4iGLKdnyAwNjsMmf1
-         i6bbSCKQ0qjfk4hmTIVXsxAP9n89i1WimcGj/iOKVuDTIsCZBr98yD8P1NTw/M7tD2+5
-         Y6b1rSwEbAIUpKRvlCQ7SFyOdSdsAmoRtWCXxuj9gaHi/o8/n66jm8oYAgT4zRtOjqaw
-         ycvw==
-X-Forwarded-Encrypted: i=1; AJvYcCUVfQTZSZeNtt9YHkt7NrFn0QRwN1vTIAnkBYK/oe+sMcTWtR7XUZSSYrZqPZzOUaizL2qRJDD4HKOhtpQZMUWJYLqobo+rmmNwjA==
-X-Gm-Message-State: AOJu0YxK+Hq4ujeGgj/BFSvay7WUwjEHj2el6BiVGqAkfjr4ufT+UuP3
-	h9WdF9BvPDvRok3WCbSPTmuTDV4WU5b3njKx6+sET/mhGRNfxuxw
-X-Google-Smtp-Source: AGHT+IER/q48nsm2HXaWn1x7wbcIBLaFCPE9pn0FAuXkO7Bu1saORaSRwYXlWLaLbIV0bcZFhQUgbg==
-X-Received: by 2002:a05:6402:4303:b0:5a2:8c11:7e05 with SMTP id 4fb4d7f45d1cf-5b020102e6emr1627536a12.6.1722082495704;
-        Sat, 27 Jul 2024 05:14:55 -0700 (PDT)
-Received: from localhost.lan (031011218106.poznan.vectranet.pl. [31.11.218.106])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5ac63590e73sm3005180a12.35.2024.07.27.05.14.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Jul 2024 05:14:55 -0700 (PDT)
-From: =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org,
-	John Crispin <john@phrozen.org>,
-	Daniel Golle <daniel@makrotopia.org>,
-	=?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH 2/2] arm64: dts: mediatek: mt7981: add UART controllers
-Date: Sat, 27 Jul 2024 14:14:47 +0200
-Message-Id: <20240727121447.1016-2-zajec5@gmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20240727121447.1016-1-zajec5@gmail.com>
-References: <20240727121447.1016-1-zajec5@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d3Lm4dQV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4264C4AF09;
+	Sun, 28 Jul 2024 10:31:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722162672;
+	bh=17b1KmsZq4pAU+NvEPQVCR4iwJs15gGQjUnqpFafd7I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=d3Lm4dQV3e4YLATou/cPITSifz+DThCJeeq2z50qYNb6Ma67yiMTu9ANq6+t9GvEq
+	 RIJEOIU1t41OLsPEFX/GL8ulHgIQN5TxIyNme2RuBsLir4KT8P28Pa1aOO7lohzelK
+	 jLdqWjqMkldOyE/W+6kRmqy82HwEpw7NKag5ZlWOSODWZqapWfl6FVe7DVSaMYiB9I
+	 ZwRzIT1gM2Uy28EF2/GgrRrS2KH0f03SVg8UlWYSs6qB2Ipc7+WXBs6MCb7HjNGMVR
+	 ZICMV7hhzqsoS5uFiC66AYZ8gl5/43MEDeTDLrEL0tnAP+2w9IuQh0upDdFLiw8Y5o
+	 YONv8115y4G4Q==
+Message-ID: <55c86b6a-0746-4e5e-b085-9bc33f95a78b@kernel.org>
+Date: Sun, 28 Jul 2024 12:31:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: mediatek,uart: add MT7981
+To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ John Crispin <john@phrozen.org>, Daniel Golle <daniel@makrotopia.org>,
+ =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20240727121447.1016-1-zajec5@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20240727121447.1016-1-zajec5@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Rafał Miłecki <rafal@milecki.pl>
+On 27/07/2024 14:14, Rafał Miłecki wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
+> 
+> Add compatible string for serial on MT7981 SoC.
+> 
 
-MT7981 has three on-SoC UART controllers.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
- arch/arm64/boot/dts/mediatek/mt7981b.dtsi | 33 +++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
-index b096009ef99c..5cbea9cd411f 100644
---- a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
-@@ -94,6 +94,39 @@ pwm@10048000 {
- 			#pwm-cells = <2>;
- 		};
- 
-+		serial@11002000 {
-+			compatible = "mediatek,mt7981-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11002000 0 0x100>;
-+			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "uart", "wakeup";
-+			clocks = <&infracfg CLK_INFRA_UART0_SEL>,
-+				 <&infracfg CLK_INFRA_UART0_CK>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		serial@11003000 {
-+			compatible = "mediatek,mt7981-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11003000 0 0x100>;
-+			interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "uart", "wakeup";
-+			clocks = <&infracfg CLK_INFRA_UART1_SEL>,
-+				 <&infracfg CLK_INFRA_UART1_CK>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
-+		serial@11004000 {
-+			compatible = "mediatek,mt7981-uart", "mediatek,mt6577-uart";
-+			reg = <0 0x11004000 0 0x100>;
-+			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "uart", "wakeup";
-+			clocks = <&infracfg CLK_INFRA_UART2_SEL>,
-+				 <&infracfg CLK_INFRA_UART2_CK>;
-+			clock-names = "baud", "bus";
-+			status = "disabled";
-+		};
-+
- 		i2c@11007000 {
- 			compatible = "mediatek,mt7981-i2c";
- 			reg = <0 0x11007000 0 0x1000>,
--- 
-2.35.3
+Best regards,
+Krzysztof
 
