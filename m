@@ -1,188 +1,232 @@
-Received: from sonic310-14.consmr.mail.bf2.yahoo.com (sonic310-14.consmr.mail.bf2.yahoo.com [74.6.135.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD3A338DF9
-	for <linux-serial@vger.kernel.org>; Sun, 28 Jul 2024 17:56:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.135.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D3C2119;
+	Mon, 29 Jul 2024 06:56:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722189416; cv=none; b=RCLcOS885tuljPDnfJz4n9/VWhHKpq44uh6mYrsxBW4M1FIaSh2QFCt5FXbDAnUDdSf7X7FyIjTVPXf4c7Bo11/EE2tUu9pwks/dczs2ekGfvEvFlV+DfaI0OYRZ9YPUaixmbouvpUiT4/B+uYhy6tEZvuAQihps+RKuB1DouHo=
+	t=1722236202; cv=none; b=pVWtyShhlxzIB6naN5ntIkoS9Q7GRgSVr6U9A+04EqUDfDX18KxdznVS+YUxovcNMu/AMjPF3ybP9eiY4ozYLSds65IkURHbY+TarFS2yqqLtEr9tusczis9P6jsPPwggwT0jF9K3dNb67fLx2vrnK/YVZl9Gg3cYbSZv2Dhg1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722189416; c=relaxed/simple;
-	bh=Du8Y9uBFN2tQMITWqJ91SXQ4qbHuflV6EP952aYsQkk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VJ18kXHVaFfJkToOLZD9iwTRT70dIKwwkyxyGrbcikaC9QIgHBiIzZDxljVAjpWCamoUjgUyQr5h5JbtREv4djjZ4+xSkL1rWyL4XjlHPPwsD/Xkf+VNjCQDoJnjwboUh3+PglEACpfuQbUN8svwS8cITOk/Btl5PTurI5MSAsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=mZ2tl6cI; arc=none smtp.client-ip=74.6.135.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
+	s=arc-20240116; t=1722236202; c=relaxed/simple;
+	bh=4Bj6pOgZySaik8CfN968/6tFIMbD5TTGKEjxKtr17M4=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LDjPH5kHbUG4GoChERVWjtuWfomsqUb36GEm8KUnLf5AJaDghxPrx9h8Zht8WTM8zzlsPLaszQ9elzxWkCF+LQ0Yxa1o5olFNotPRWOEP11u29qAeuZBIz7tLJyZWZf8tUquogQU1CcB2KRhVOKX2fGoG/YXqe7bEDg3eOWNdp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=rrZDaPwk; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="mZ2tl6cI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1722189408; bh=gpS1CAjF2E4BxdNrrAF/J2gaU07mwhcUgr8cl9LhRqU=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=mZ2tl6cIIhLUTSkO5OpoRBmzCxxvwBsw6kQBcMu5+kvb63DwvASuAWGNxd16V1hB0soNQipIoR66K7bDDgmndg9/ewOrgZ8oZBAS9buAQdm9d/K7iSLqH8uNXWaG//LIJpi9ngYA0YNFJogR1mMT0hobPryG+N1ayLr4YOVhkSzQA6tkKl7Y2foUcmXKBCp9sN68zkEo8lkQS4gNsTsQNTW6L4tGQC8b2so4dQ1AXjZmw7Q3SUl/y3XiFDWm3udPZz2im0rnX6N12zUATdqPsOG++7he1FeicU6S61CBLhRLZ8NrJwdgJ1uk0tOVEb6zGM0OFCPs8kBs0zYpQdmViw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1722189408; bh=OiFV++KQs7Y7s1ITwj6AGrZp4j3hUF+f+zAaN7i7FIy=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=BvxHUUF7sWUA5OBu5t2gSRuEuHlNtZW9xQOCKrs4ORAzh+yllVKYeuL18wXncZXj7OPElKQrWsw/k3a6FQI36nUeU5BPKzlYc/A1JijySBWXFaYqcXSwql9Nz+C0iovePFWAFJ7H55i3DzruS3vXIk0Q4tOGUZgxthk8fFX/EASuZXKQNtaDVUbwvVVAPTMA1+9vKm6mpJH6IoycA1lPb2jUPPT/cCGGnx0iE7u5zEpqL/Xi6UEYgWsjIG4I6aneX2F7wFpk6KPEW2atGIz8uJNe3EdMD621rLaw17/1mCvkrwAJprZQ/fSB2cEiJBGHmNiE0vtBqoJgucT9Wfu54g==
-X-YMail-OSG: mHWGCJoVM1nkZXocxjVy9omjFtFVVqYPnfP7N89sVNXjdIXtn8m7jW5NPnI.HvU
- OZkWBcQMnDw.hE5F0xvNpT53dI0e7H_3KM.QVWUEtLGNTapBhB.1X3M8SIspriUxDRwFmM_0grOZ
- mcg2I35imGpW416CXDAQ8nFatyXAE0rrzag0WEpOfPham3djlDX57qHlPpP7JHqTA9um7wose3k4
- P7HZnpujMxNrzs3Fizq8MrrRTuK5sFiUxGsBhfmBkykPxbEL14rmXf_JxXhZ1N_U3kHSWdQJprqE
- DVC8DcorNRGrOlIDlZP_119T_stZeGERevgRRfTJ8okEeoMuyb3sf7k6yJ9tdma8XOu7yz8.Tt10
- TVZixkCKtC5UoGnygzINcev4qiwY31ewglmVNp0JzOPDdOTaEwJMQgVQOJeh9UfOCPIzX3s8Oedk
- 2qfTRBNFXhg8fiEkZ1ObW7hARRDhVkvcyuFooafYPA3xTdNYPY969YwskCKSvGliO_4GG1lPvwDa
- 3d1oSJ2FoGtoMbdN7s20Fd8QqhWoTCjQsOz6crwv5BaMis8tgu2AzhAKf10HAO7WjDyWzKh.QZK9
- duNUc23KS26hlABSXw5mwYyNGxssaMLJ64G_4SCyQmhMXxq_qyzwwlfiZbC5lnkVlbkmVjUOazcq
- rqQAcnvKyWDSIcgGNVLicBE93yiLYqVzCCM7I71CfD1mMs8gCQP6U8rGI_jfmbG4mS4mzya2Q9FU
- tt9lPgadEl97s8tEcVA4wSrcDhRwUIGfNmXkx3nSk_zbeDfSydbzM4mBBfQqDfzi5lQOp_RnTGpR
- tkbpGD8oLBdjsBkCdiuyWe0S6T2wssmPkfyWx7xtIq.DZRqsZ.kGzaI0UgGJLVzx8KFDCQhCpeAM
- gI9MLbw0e7S1naO6dDrDEJqz5dYtTlvxEN.ZYGu7gMAYKvxfceQ1RQvvCZdyzWyhfmLxgymHcemz
- O80zlFLb8Dczy6Og2mwqCKmZsAKlnOtDA7coOuqvoojzwkBFE.JtT8sPqJDa48wj7JSnQ9J4gCPf
- kPINIjyNDa_fNqsNiOaQqPriY5qMThxGPmjH_BDJ5YaXLceo74dwlWXZthmmx3tnphxFNFJvHbNu
- 1L68hj57yIteRl7xJbHO1y26wPg8ikgK8xqRLY.cMgKkfrIrjhgaGSF5Dv_iw7b9v0z1UT6YXxQl
- MC1cH5mR.gxLRYg.o9KM7wGjFPmy.c6cCe0jviXQq7d2u0Wsv73A6E_paP9gWZQGjCxwv9zwLOCO
- pgUNhxfW598.mb9PeTohQEFfRD3D5aOgHKWRWppTQ1YhRZtimZ.C3LEv7VsZQBYyCt4GFToFYI2Y
- F09SZ4JKP.OgA.YAzks9ywpORikL95_BQ.YDRM7KZ8Ru8ymNhufRrU2Y96tpPpaRwv8u1jMMtyHu
- JpJcBLLC53GibcD8.FPG_vYfGE.3M89sqf3piHGIBOv20M9hiJCawptCgA3HpD08cScPUuBovrhl
- 6JPWqXG2CWdRvMGf8o0vam1EDkditnkrUhPPQJiBk_vxDURPPhjqzRjqvA0Kzsz_ix9eyFAd6Q8M
- trkUk3u3thTTlISZnLUS2aH2M6cHfcD_cU6GtS4dqJ5qkC.Xsw8HGv4DxZPPf4rIT._kNVR_Nfxy
- oyA92anPQo0QeBSEmViUYPfEEPOZjsTAHZRcKEHBH_8h2NQTteccYpFDHXbfYyzLx34ZHiF3EzPc
- wxj8abTJhJOVNH0S.qL_bzjq_aG6NeyqWgMO.CfM_vIHSMgO5DbiGsHr4844XhoBYUuSnw8lK548
- Sa7FSlTQQMd70MaNDRSRoRO_rf87LxEGVJ38ujxoLCPBwhXkrkg3XIGzxemk_HKeYLn5Xkk7eCFS
- hkKzkBO0BLRM6b5BdTEiA6DrmNJSAYdBIL2wXrO9C52QkEZSJcKKV6ioMxFZois4tVDgSakWAT7Z
- SaSvQK8hwfdUIOCqdlvenvRAC1zwFLBlUN8jxKeDPFQq2m.qk3QNdK.j7PLKQwJdwavyekKQIbgy
- Q7nfysHdM4VkWDx80aqGjmxD2mpjKIsAUaBAU0mUtW2dkL7SE_MEsBx9W0O.D6aRU1UK.p4iwmvs
- ZFoGb2lPEgRjwbUxq22EmnX0C1wWT9ZYRm8Y6BcX3zyrET964TcCAHYh_Q2ypZXOQNPn2AML80Q7
- SWSDx6TwIYrwAHnZkKrsArU9Llfq9983AP.sHweDcx.LRBTGVP9V7.LBOhNPmkyayWk_79MJdEUY
- jXxcdXKysy3mZp13kPx5mJcbvmGneknrOy2LUZnLus7GgrTPgjsI-
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: 5f97efd9-8a37-4423-8a3f-53f03f8484a7
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Sun, 28 Jul 2024 17:56:48 +0000
-Received: by hermes--production-bf1-7bd4f49c5c-lhqxz (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4f618d9c1cfa518165b2e17e4ffeaa47;
-          Sun, 28 Jul 2024 17:56:44 +0000 (UTC)
-From: nerdopolis <bluescreen_avenger@verizon.net>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Subject: Re: When /dev/console is a disconnected /dev/ttyS0,
- TCGETS on /dev/console results in EIO (Even if TIOCCONS is called on a PTY)
-Date: Sun, 28 Jul 2024 13:56:43 -0400
-Message-ID: <1831764.TLkxdtWsSY@nerdopolis2>
-In-Reply-To: <2169369.OBFZWjSADL@nerdopolis2>
-References: <8411114.T7Z3S40VBb.ref@nerdopolis2> <114770592.nniJfEyVGO@nerdopolis2>
- <2169369.OBFZWjSADL@nerdopolis2>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="rrZDaPwk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1722236200; x=1753772200;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4Bj6pOgZySaik8CfN968/6tFIMbD5TTGKEjxKtr17M4=;
+  b=rrZDaPwk4m4/PNDrazQcDldXcvwCWlOBdaFwmeyiASVAatF3x+O72yO7
+   nhZYFL9vBz9276Gh3lNSNN00bf1eXxwv7hti7VEXUZQ2KFAPpJn36xNOY
+   oEl6kXRGbSA/fIV6FmNRBZVX48DUrSNF9wcbCmb/K63okvzJEz235XuVt
+   LAqTY1S6/q4EJjcMhEGXCE68WdOx/mC6SrVXQnG2B42/DS6/PsClVoawD
+   nI/Ahe1GNn2DBiwGaZOcmnxD+TXUmvvZBXWej1KUShT6lEWeb9aHjA8n2
+   GoxJOG2DB1rNOpBoWn6pnWgosrO8FTRcaUcvw1x4J+32A416BnH5UIH3E
+   A==;
+X-CSE-ConnectionGUID: kDWal4QQS/6xpsg/XCP1jw==
+X-CSE-MsgGUID: Q8MkapfqRxWh2kKHl5ZfZA==
+X-IronPort-AV: E=Sophos;i="6.09,245,1716274800"; 
+   d="scan'208";a="30453453"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jul 2024 23:56:32 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 28 Jul 2024 23:56:18 -0700
+Received: from che-lt-i67070.microchip.com (10.10.85.11) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Sun, 28 Jul 2024 23:56:06 -0700
+From: Varshini Rajendran <varshini.rajendran@microchip.com>
+To: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+	<claudiu.beznea@tuxon.dev>, <mturquette@baylibre.com>, <sboyd@kernel.org>,
+	<tglx@linutronix.de>, <lee@kernel.org>, <sre@kernel.org>,
+	<p.zabel@pengutronix.de>, <richard.genoud@bootlin.com>,
+	<radu_nicolae.pirea@upb.ro>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <linux@armlinux.org.uk>, <matthias.bgg@gmail.com>,
+	<angelogioacchino.delregno@collabora.com>, <ychuang3@nuvoton.com>,
+	<schung@nuvoton.com>, <mihai.sain@microchip.com>,
+	<varshini.rajendran@microchip.com>, <andrei.simion@microchip.com>,
+	<arnd@arndb.de>, <Jason@zx2c4.com>, <dharma.b@microchip.com>,
+	<rdunlap@infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-clk@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<linux-mediatek@lists.infradead.org>
+Subject: [PATCH v6 00/27] Add support for sam9x7 SoC family
+Date: Mon, 29 Jul 2024 12:26:03 +0530
+Message-ID: <20240729065603.1986074-1-varshini.rajendran@microchip.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Mailer: WebService/1.1.22544 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Wednesday, July 24, 2024 11:17:54 PM EDT nerdopolis wrote:
-> On Thursday, July 18, 2024 7:52:15 AM EDT nerdopolis wrote:
-> > On Friday, July 12, 2024 8:59:58 AM EDT Greg KH wrote:
-> > > On Fri, Jul 12, 2024 at 08:52:15AM -0400, nerdopolis wrote:
-> > > > Hi
-> > > > 
-> > > > Background:--------------------------------------------------------------------
-> > > > This issue becomes evident on VT-less kernels. As when there is no /dev/tty0
-> > > > device, the console defaults to being /dev/ttyS0 instead. Although this can
-> > > > also be replicated if booting a standard kernel with 'console=ttyS0' and ensure
-> > > > nothing is plugged into /dev/ttyS0.
-> > > > 
-> > > > This issue prevents systemd from logging to the console.
-> > > > systemd when logging to /dev/console, long story short it calls isatty() on
-> > > > /dev/console, and when /dev/console is actually /dev/ttyS0, and nothing is
-> > > > connected to /dev/ttyS0, isatty() fails on /dev/console due to an input/output
-> > > > error, causing systemd to not log the console output, because it rejects
-> > > > /dev/console as not being a terminal.
-> > > > 
-> > > > 
-> > > > This is noticed on a VT-less system with Plymouth. Plymouth calls the TIOCCONS
-> > > > ioctl on a pty device it requests, to redirect console output, and in newer
-> > > > versions, it displays the console logs on its own without the assistance of a
-> > > > VT.
-> > > > 
-> > > > This part of it works, Plymouth is able to 'see' what gets written to
-> > > > /dev/console, log output from processes that write to /dev/console directly
-> > > > (for example 'echo hi > /dev/console") do appear in plymouth's
-> > > > /var/log/boot.log, it is just that systemd is not writing to /dev/console
-> > > > because isatty() fails to report /dev/console as a tty device.
-> > > > 
-> > > > The alternate fix in for systemds https://github.com/systemd/systemd/pull/33690[1]
-> > > > is believed to be that when TIOCCONS is called on a PTY, or another terminal
-> > > > device, that trying to call TCGETS on /dev/console should no longer result
-> > > > in an error.
-> > > > 
-> > > > 
-> > > > Replicating the issue:---------------------------------------------------------
-> > > > 
-> > > > This program replicates it:
-> > > > -------------------------------------------------------------------------------
-> > > > #include <stdio.h>
-> > > > #include <fcntl.h>
-> > > > #include <unistd.h>
-> > > > #include <errno.h>
-> > > > #include <string.h>
-> > > > 
-> > > > int main(void)
-> > > > {
-> > > >         int fd;
-> > > > 
-> > > >         if (getuid() != 0) {
-> > > >                 printf("Must be root\n");
-> > > >                 return 1;
-> > > >         }
-> > > > 
-> > > >         fd = open ("/dev/console", O_RDONLY);
-> > > >         if (!isatty(fd)) {
-> > > >                 printf("err on /dev/console: %s\n", strerror(errno));
-> > > >         }
-> > > >         return 0;
-> > > > }
-> > > > -------------------------------------------------------------------------------
-> > > > 
-> > > > When the kernel console is /dev/ttyS0 and /dev/ttySO has no device connected,
-> > > > it prints "err on /dev/console: Input/output error"
-> > > > 
-> > > > When I strace it, the relevant line is:
-> > > > ioctl(3</dev/console<char 5:1>>, TCGETS, 0x7f...) = -1 EIO (Input/output error)
-> > > 
-> > > Do you have a proposed kernel change for this that solves this for your
-> > > tests here?
-> > > 
-> > > thanks,
-> > > 
-> > > greg k-h
-> > > 
-> > Hi
-> > 
-> > Sorry if this is a duplicate, I accidentally had rich text sending turned on,
-> > and did not realize until too late. Anyway, to answer the question, unfortunately
-> > I have been unable to come up with a fix on my own 
-> > 
-> Would the fix be to make /sys/class/tty/console/active report the terminal
-> that TIOCCONS was called against? I am probably wrong there.
-> > Thanks
-> > 
-> 
-> 
-Hi.
+This patch series adds support for the new SoC family - sam9x7.
+ - The device tree, configs and drivers are added
+ - Clock driver for sam9x7 is added
+ - Support for basic peripherals is added
+ - Target board SAM9X75 Curiosity is added
 
-So I was doing some grepping, and throwing in printk's in places, and then I
-realized  that the ttynull driver. Turning it on, as it was disabled by default
-in the base config I was using from Debian, and then booting with
-console=ttynull causes /dev/console to work when systemd logs to it, and then
-Plymouth when it calls TIOCCONS on its pty, the log messages makes it to the
-pty. (The proper systemd status messages are now working again on VT-less
-systems without the need for /dev/ttyS0 to be active)
+ Changes in v6:
+ --------------
 
-So I think I found the solution. 
+ - Addressed all the review comments in the patches
+ - Picked up all Acked-by and Reviewed-by tags
+ - Reverted the IRQ patch to that of version 3 of the same series
+ - All the specific changes are captured in the corresponding patches
 
-I think the only thing I have to ask from here is if there is a way to enable
-the ttynull driver by default with a config option, so I don't have to boot
-with console=ttynull in all my command lines
+ Changes in v5:
+ --------------
 
-Thanks
+ - Addressed all the review comments in the patches
+ - Picked up all Acked-by and Reviewed-by tags
+ - Dropped applied patches from the series
+ - Addressed the ABI breakage reported in the IRQ patch
+ - All the specific changes are captured in the corresponding patches
 
-Thanks
+ Changes in v4:
+ --------------
+
+ - Addressed all the review comments in the patches
+ - Picked up all Acked-by and Reviewed-by tags
+ - Dropped applied patches from the series
+ - Added pwm node and related dt binding documentation
+ - Added support for exporting some clocks to DT
+ - Dropped USB related patches and changes. See NOTE.
+ - All the specific changes are captured in the corresponding patches
+
+ NOTE: Owing to the discussion here
+ https://lore.kernel.org/linux-devicetree/CAL_JsqJ9PrX6fj-EbffeJce09MXs=B7t+KS_kOinxaRx38=WxA@mail.gmail.com/
+ the USB related changes are dropped from this series in order to enable
+ us to work on the mentioned issues before adding new compatibles as
+ said. The issues/warnings will be addressed in subsequent patches.
+ After which the USB related support for sam9x7 SoCs will be added. Hope
+ this works out fine.
+
+ Changes in v3:
+ --------------
+
+ - Fixed the DT documentation errors pointed out in v2.
+ - Dropped Acked-by tag in tcb DT doc patch as it had to be adapted
+   according to sam9x7 correctly.
+ - Picked by the previously missed tags.
+ - Dropped this patch "dt-bindings: usb: generic-ehci: Document clock-names
+   property" as the warning was not found while validating DT-schema for
+   at91-sam9x75_curiosity.dtb.
+ - Dropped redundant words in the commit message.
+ - Fixed the CHECK_DTBS warnings validated against
+   at91-sam9x75_curiosity.dtb.
+ - Renamed dt nodes according to naming convention.
+ - Dropped unwanted status property in dts.
+ - Removed nodes that are not in use from the board dts.
+ - Removed spi DT doc patch from the series as it was already applied
+   and a fix patch was applied subsequently. Added a patch to remove the
+   compatible to adapt sam9x7.
+ - Added sam9x7 compatibles in usb dt documentation.
 
 
+ Changes in v2:
+ --------------
+
+ - Added sam9x7 specific compatibles in DT with fallbacks
+ - Documented all the newly added DT compatible strings
+ - Added device tree for the target board sam9x75 curiosity and
+   documented the same in the DT bindings documentation
+ - Removed the dt nodes that are not supported at the moment
+ - Removed the configs added by previous version that are not supported
+   at the moment
+ - Fixed all the corrections in the commit message
+ - Changed all the instances of copyright year to 2023
+ - Added sam9x7 flag in PIT64B configuration
+ - Moved macro definitions to header file
+ - Added another divider in mck characteristics in the pmc driver
+ - Fixed the memory leak in the pmc driver
+ - Dropped patches that are no longer needed
+ - Picked up Acked-by and Reviewed-by tags
+
+
+Hari Prasath (1):
+  irqchip/atmel-aic5: Add support for sam9x7 aic
+
+Varshini Rajendran (26):
+  dt-bindings: atmel-sysreg: add sam9x7
+  dt-bindings: mfd: syscon: add microchip's sam9x7 sfr
+  dt-bindings: atmel-ssc: add microchip,sam9x7-ssc
+  dt-bindings: serial: atmel,at91-usart: add compatible for sam9x7.
+  dt-bindings: microchip: atmel,at91rm9200-tcb: add sam9x7 compatible
+  ARM: at91: pm: add support for sam9x7 SoC family
+  ARM: at91: pm: add sam9x7 SoC init config
+  ARM: at91: add support in SoC driver for new sam9x7
+  dt-bindings: clocks: atmel,at91sam9x5-sckc: add sam9x7
+  dt-bindings: clocks: atmel,at91rm9200-pmc: add sam9x7 clock controller
+  clk: at91: clk-sam9x60-pll: re-factor to support individual core freq
+    outputs
+  clk: at91: sam9x7: add support for HW PLL freq dividers
+  clk: at91: sama7g5: move mux table macros to header file
+  dt-bindings: clock: at91: Allow PLLs to be exported and referenced in
+    DT
+  clk: at91: sam9x7: add sam9x7 pmc driver
+  dt-bindings: interrupt-controller: Add support for sam9x7 aic
+  power: reset: at91-poweroff: lookup for proper pmc dt node for sam9x7
+  power: reset: at91-reset: add reset support for sam9x7 SoC
+  power: reset: at91-reset: add sdhwc support for sam9x7 SoC
+  dt-bindings: reset: atmel,at91sam9260-reset: add sam9x7
+  dt-bindings: power: reset: atmel,sama5d2-shdwc: add sam9x7
+  ARM: at91: Kconfig: add config flag for SAM9X7 SoC
+  ARM: configs: at91: enable config flags for sam9x7 SoC family
+  ARM: dts: at91: sam9x7: add device tree for SoC
+  dt-bindings: arm: add sam9x75 curiosity board
+  ARM: dts: microchip: sam9x75_curiosity: add sam9x75 curiosity board
+
+ .../devicetree/bindings/arm/atmel-at91.yaml   |    6 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt |    6 +-
+ .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
+ .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    4 +-
+ .../interrupt-controller/atmel,aic.yaml       |    1 +
+ .../devicetree/bindings/mfd/syscon.yaml       |  188 +--
+ .../devicetree/bindings/misc/atmel-ssc.txt    |    1 +
+ .../power/reset/atmel,sama5d2-shdwc.yaml      |    3 +
+ .../reset/atmel,at91sam9260-reset.yaml        |    4 +
+ .../bindings/serial/atmel,at91-usart.yaml     |    9 +-
+ .../soc/microchip/atmel,at91rm9200-tcb.yaml   |   20 +-
+ arch/arm/boot/dts/microchip/Makefile          |    3 +
+ .../dts/microchip/at91-sam9x75_curiosity.dts  |  312 +++++
+ arch/arm/boot/dts/microchip/sam9x7.dtsi       | 1226 +++++++++++++++++
+ arch/arm/configs/at91_dt_defconfig            |    1 +
+ arch/arm/mach-at91/Kconfig                    |   22 +-
+ arch/arm/mach-at91/Makefile                   |    1 +
+ arch/arm/mach-at91/generic.h                  |    2 +
+ arch/arm/mach-at91/pm.c                       |   29 +
+ arch/arm/mach-at91/sam9x7.c                   |   33 +
+ drivers/clk/at91/Makefile                     |    1 +
+ drivers/clk/at91/clk-sam9x60-pll.c            |   42 +-
+ drivers/clk/at91/pmc.h                        |   18 +
+ drivers/clk/at91/sam9x60.c                    |    7 +
+ drivers/clk/at91/sam9x7.c                     |  946 +++++++++++++
+ drivers/clk/at91/sama7g5.c                    |   42 +-
+ drivers/irqchip/irq-atmel-aic5.c              |   10 +
+ drivers/power/reset/Kconfig                   |    4 +-
+ drivers/power/reset/at91-sama5d2_shdwc.c      |    1 +
+ drivers/soc/atmel/soc.c                       |   23 +
+ drivers/soc/atmel/soc.h                       |    9 +
+ include/dt-bindings/clock/at91.h              |    4 +
+ 32 files changed, 2840 insertions(+), 140 deletions(-)
+ create mode 100644 arch/arm/boot/dts/microchip/at91-sam9x75_curiosity.dts
+ create mode 100644 arch/arm/boot/dts/microchip/sam9x7.dtsi
+ create mode 100644 arch/arm/mach-at91/sam9x7.c
+ create mode 100644 drivers/clk/at91/sam9x7.c
+
+-- 
+2.25.1
 
