@@ -1,64 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F723524C;
-	Tue, 30 Jul 2024 06:31:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E49AB1940A9;
+	Tue, 30 Jul 2024 09:11:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722321061; cv=none; b=Lbe1mJRn7hRAKHZVW7liA0tGe8UOLRwli5mUJwZeLmGR7IwK9VGU2CLWVT6MfUEkkZXj8G/3Q5VPyDoiSDHeqv9UlGVoh6IgkBCBprQaocQBAv7YeZzSuuPM3ZZZu/ddq68StYi4sE7Yr0k4QCGnEw0PpRBbV032AhoAW1DbJto=
+	t=1722330708; cv=none; b=D5cKyEujJoCgN+BM4waHKPt/wNv8iBQdmZDbuRiON6CBeAicXJxVqJJUlCyUcJo3XRSthtD80lOT+rly8Uca5GtJzH4jjeZLwUUSpO5svDUOcA0v0P+cqzvxcwHttP/od9P/YznwzP7pofPHmzjmxsrgTXfsnqsluR1mHys7FUw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722321061; c=relaxed/simple;
-	bh=113zHcxOpsbcwW11a7aMT7BENgNTSv1ngvCERVMP0f8=;
-	h=Message-ID:Date:From:To:Subject:In-Reply-To:References:Cc; b=eONhWcoJczqPXU+hv08/U4T/Ng+QKvWVtxXqYDAtzfROCrtLvqzC+2qwWEtr6PZBAOwqINQk4TrsHNNDhgxUFLQvbGGKTZGxe6RsXeLDETLh8TNkffTKlggInOMWZ4oxi8E9p/l6U8CLn37CWOloPlAQQZy+A9ab8q3SB7tx07A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D2gzYx6r; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722330708; c=relaxed/simple;
+	bh=LEB266Y/Z05ka56vMjBVHaG1mD/x2/PBj7c6e8BC2oE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KLhGGeUJp7ktkRKAX2zmyYyZOMIOG2JwhZWlizFe3iKgzkHRoGMeEREDUcjfkC/RkFro4BZc0eRF2sl+eBLawwm4LjwyUsai4e4xtwWXH+EQhb/nz+hyNp1PLGySfS9ync9ma9UEztTKae4JjDLlPD5svIRpy2piFnW9th56iVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=2lPP/0w2; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D2gzYx6r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FB7C32782;
-	Tue, 30 Jul 2024 06:31:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722321060;
-	bh=113zHcxOpsbcwW11a7aMT7BENgNTSv1ngvCERVMP0f8=;
-	h=Date:From:To:Subject:In-Reply-To:References:Cc:From;
-	b=D2gzYx6r0P05HsmdpYls3H21fhknAGjIqhHcv06vvRN3LHZT/jZgS/E2dxjcBRE3j
-	 gu1CK+c8wLLxC+g71k0vt5byDFs49n2+2eV6zlXoNMd9+bzeVmSdjFPV87oNJFlQQ1
-	 nVpZYlmHZoxoS9aaMQu8KU7BMPm2lTlOwse71KTO5rqolHCFrE0/SyMMg1cpf6G5RZ
-	 PnMWPcBdZD3AJuEr1UvTT8Lx9nSjekrTnI/9TKyWIMqvrK5YCuNLifqZYvLGGIfQxA
-	 qRedOyhRbBOSqdEODBBRdYnNAe0XBuQBp2N8tCBJ4uvZE8P3nck4XUmf2lZd0d7q6Y
-	 wlG/GTJwF52/w==
-Message-ID: <91f9c77f71fb1bce513a02d5e2800f04@kernel.org>
-Date: Tue, 30 Jul 2024 06:30:58 +0000
-From: "Maxime Ripard" <mripard@kernel.org>
-To: "Stefan Wahren" <wahrenst@gmx.net>
-Subject: Re: [PATCH V2 07/16] drm/vc4: Get the rid of DRM_ERROR()
-In-Reply-To: <20240728114200.75559-8-wahrenst@gmx.net>
-References: <20240728114200.75559-8-wahrenst@gmx.net>
-Cc: bcm-kernel-feedback-list@broadcom.com, dri-devel@lists.freedesktop.org, kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, "Artur
- Petrosyan" <Arthur.Petrosyan@synopsys.com>, "Daniel Vetter" <daniel@ffwll.ch>, "Dave
- Stevenson" <dave.stevenson@raspberrypi.com>, "David Airlie" <airlied@gmail.com>, "Florian
- Fainelli" <florian.fainelli@broadcom.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jassi
- Brar" <jassisinghbrar@gmail.com>, "Jiri Slaby" <jirislaby@kernel.org>, "Lukas
- Wunner" <lukas@wunner.de>, "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime
- Ripard" <mripard@kernel.org>, =?utf-8?b?TWHDrXJhIENhbmFs?= <mcanal@igalia.com>, "Minas
- Harutyunyan" <hminas@synopsys.com>, "Peter Robinson" <pbrobinson@gmail.com>, "Ray
- Jui" <rjui@broadcom.com>, "Scott Branden" <sbranden@broadcom.com>, "Thomas
- Zimmermann" <tzimmermann@suse.de>, "Ulf Hansson" <ulf.hansson@linaro.org>
-Content-Transfer-Encoding: 7bit
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="2lPP/0w2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1722330705;
+	bh=LEB266Y/Z05ka56vMjBVHaG1mD/x2/PBj7c6e8BC2oE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=2lPP/0w2qH48P34LkdXlBIfa47AJaeT8FXvKqwdX8wjUXbLa5od5+kRUMK8HGtRu+
+	 knpJtwns1OpAphADA6GFZWXMn/P2HPP5uFZNz07YvC0rgyVcqyDVWjTywsaUhJboUL
+	 MmYI0ZJx7dmyUZobnkqOVRRegqqkqPGTgSFDcj9YV9N43fkuMamsHxznoA/KhSQzvh
+	 6i7loo80FNRnVj92IvQ5DWNkYUlQ3n9Sizv+sT+oaevVKyfAWdZfpZMgaIdJmotOfu
+	 r+SAQDlxuY3bvQY/4ixh4I2Labfic6HQ+WrzgI48GoQF4gWm67k2V1d4gpBbEHpPsK
+	 KzbQQN5CKKggw==
+Received: from [100.113.186.2] (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 289D03780BC9;
+	Tue, 30 Jul 2024 09:11:44 +0000 (UTC)
+Message-ID: <c2e7392a-1ccd-42c7-9d4d-e079abade2f1@collabora.com>
+Date: Tue, 30 Jul 2024 11:11:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] arm64: dts: mediatek: mt7981: add UART controllers
+To: =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ John Crispin <john@phrozen.org>, Daniel Golle <daniel@makrotopia.org>,
+ =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20240727121447.1016-1-zajec5@gmail.com>
+ <20240727121447.1016-2-zajec5@gmail.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20240727121447.1016-2-zajec5@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sun, 28 Jul 2024 13:41:51 +0200, Stefan Wahren wrote:
-> DRM_ERROR() has been deprecated in favor of pr_err(). However, we
-> should prefer to use drm_err() whenever possible so we get device-
-> specific output with the error message. In error case of kcalloc,
-> we can simply drop DRM_ERROR(), because kcalloc already logs errors.
+Il 27/07/24 14:14, Rafał Miłecki ha scritto:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
+> MT7981 has three on-SoC UART controllers.
 > 
-> [ ... ]
+> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
-Reviewed-by: Maxime Ripard <mripard@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Thanks!
-Maxime
