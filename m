@@ -1,64 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A9563D;
-	Tue, 30 Jul 2024 13:32:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BE1C183CBF;
+	Tue, 30 Jul 2024 16:04:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722346352; cv=none; b=qDvhtLRQw1Oyugk5RW52ZgtT5NGSQn3FqmRhC3bhWqd+HYL4/SZlFZStj9h9QljQb58aPZRUjXODQCotmJf5afdS5rqeYZ7hUrnFObrwE6FmsbjXYj/4iiJc2GBxUCmm2Zmhgu7FDN3Zo6T3emBDgvK6mfkRLpGhLBmfEkNMMUE=
+	t=1722355479; cv=none; b=UHB8Hzh9JaBV41Eezjw3xyCNw8Q/zEjhndWxsftQdthgtKI0fMEwtUafF+Z3ZwQdYQgmw4lhn1UhrCNDZEREAimeel895CwDb04gWBB8zD+dX3JVv73FEvLdE2xX+2/IGm36rN8aV5yUisdTZqIdTQt+y6ZEoidHfuizd1exZck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722346352; c=relaxed/simple;
-	bh=Ww/3YfXLpMTtcse++NJb5y4ZU/aN97sPUvyeSo23DdI=;
-	h=Message-ID:Date:From:To:Subject:In-Reply-To:References:Cc; b=T0CUJY3T0VhGarIXBOaB/bUQCpSVVcQ84y9ZIM1OSgNtyfNZ/oxPRlP7irWjRIRS2PBG4aTHv4z8654KqOw3aleB0VTjisEyZPPZ1J81TGR7xOPdFORnRx85ZMGjyjXc+sbX0LCjKiOUuj3o2HodBONJiRRPanOSHnF4eSdIr7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DKkNToPS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722355479; c=relaxed/simple;
+	bh=yQUfoMQ1sB2S/JRGmyfBTM7XL0Ogq/QExo5lTpWE/PQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mxtsrAs1QfpUZY0WP0RJmt3iYkxrw/O/rqvqpkBTb9NnF0o4X3ypjSY8J2j0mTrU85EdpE8DTGoeVWEBAP65ol0e7fWHasWo3xP0/+VNZ7glfxif8/XvzkjqUDxsOCP3POmTI05dfDxvfZ1Q0zzF0tD1G6Yen/Hyb8mXvFcsehk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T8JtWway; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DKkNToPS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F77C4AF0A;
-	Tue, 30 Jul 2024 13:32:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T8JtWway"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2653DC4AF0C;
+	Tue, 30 Jul 2024 16:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722346350;
-	bh=Ww/3YfXLpMTtcse++NJb5y4ZU/aN97sPUvyeSo23DdI=;
-	h=Date:From:To:Subject:In-Reply-To:References:Cc:From;
-	b=DKkNToPSLS8T7sk+M5aux4vSCiJUoWztVWWYIqp+bn2ZSH/grzDx9NoII3CBNmiPd
-	 gkG2/N0kGhTZBnrTKmECYFTu2VE4hgFB/njzoBXrMcFA6HM3zqTALjphMSd+1fnNPF
-	 o7MjFhJSf9EiXy9e9RN9TuhHm2aWw8BbScyDsBTZhG04tlgL3vf34kE0cuaq2kYdqz
-	 zcVsVEg1vdJ/pKlr7KKD4IaIbEmXEfLGT8kMMHPV12bynt3HCrcyaYg48fWgrkjjg5
-	 g+9UEuYesyoBplAznq+bhkoORpx26BiZcwTYanfY6Lwa5o0E9QSp8NdY3MV9KrD2vA
-	 ynz8GyBkqogcQ==
-Message-ID: <218e3904b3f78d72cdbb7c9bf17db4ac@kernel.org>
-Date: Tue, 30 Jul 2024 13:32:28 +0000
-From: "Maxime Ripard" <mripard@kernel.org>
-To: "Stefan Wahren" <wahrenst@gmx.net>
-Subject: Re: [PATCH V2 08/16] drm/vc4: hdmi: add PM suspend/resume support
-In-Reply-To: <20240728114200.75559-9-wahrenst@gmx.net>
-References: <20240728114200.75559-9-wahrenst@gmx.net>
-Cc: bcm-kernel-feedback-list@broadcom.com, dri-devel@lists.freedesktop.org, kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, "Artur
- Petrosyan" <Arthur.Petrosyan@synopsys.com>, "Daniel Vetter" <daniel@ffwll.ch>, "Dave
- Stevenson" <dave.stevenson@raspberrypi.com>, "David Airlie" <airlied@gmail.com>, "Florian
- Fainelli" <florian.fainelli@broadcom.com>, "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jassi
- Brar" <jassisinghbrar@gmail.com>, "Jiri Slaby" <jirislaby@kernel.org>, "Lukas
- Wunner" <lukas@wunner.de>, "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>, "Maxime
- Ripard" <mripard@kernel.org>, =?utf-8?b?TWHDrXJhIENhbmFs?= <mcanal@igalia.com>, "Minas
- Harutyunyan" <hminas@synopsys.com>, "Peter Robinson" <pbrobinson@gmail.com>, "Ray
- Jui" <rjui@broadcom.com>, "Scott Branden" <sbranden@broadcom.com>, "Thomas
- Zimmermann" <tzimmermann@suse.de>, "Ulf Hansson" <ulf.hansson@linaro.org>
-Content-Transfer-Encoding: 7bit
+	s=k20201202; t=1722355479;
+	bh=yQUfoMQ1sB2S/JRGmyfBTM7XL0Ogq/QExo5lTpWE/PQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=T8JtWway2aXKKN+9FhKoAagbzZ4dHmmfa9JizwmKT1N7li58fg+Am9vYp16d9KmRs
+	 f4au8lh2KSQABZhisC7dRxrVTiJmDrEPxJRy0Z7Q2Caztx0INkgrgAMPR1Bt4xXlON
+	 yoO1ePGBtpHklMTTi2g6J+N5JTKGHdCiQmd425T0vVquJX+74wWxl3WmYeshNERZIK
+	 Rc3P7YaSC6BZUw1A2rSKN03PzRWRgUnbWNe5ezRqpkFQ4WyyiUwmaopgLQIe2BwlHN
+	 gnEGnpi25MKDJmoqUGxpT+oQnQ0D6+SaxYLnZlvE3+TewLyjGpdLioKbvWafEgKwlu
+	 LHiJAM5lFWsrg==
+Date: Tue, 30 Jul 2024 10:04:38 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	devicetree@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH V2 5/6] dt-bindings: serial: renesas: Document RZ/G2M
+ v3.0 (r8a774a3) scif
+Message-ID: <172235547750.1347847.12815614166773325487.robh@kernel.org>
+References: <20240725100534.5374-1-oliver.rhodes.aj@renesas.com>
+ <20240725100534.5374-6-oliver.rhodes.aj@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240725100534.5374-6-oliver.rhodes.aj@renesas.com>
 
-On Sun, 28 Jul 2024 13:41:52 +0200, Stefan Wahren wrote:
-> Add suspend/resume support for the VC4 HDMI component in order
-> to handle suspend to idle properly. Since the HDMI power domain
-> is powered down during suspend, this makes connector status polling
-> pointless.
+
+On Thu, 25 Jul 2024 11:05:33 +0100, Oliver Rhodes wrote:
+> Document scif bindings for the Renesas RZ/G2M v3.0 (a.k.a r8a774a3) SoC.
 > 
+> Signed-off-by: Oliver Rhodes <oliver.rhodes.aj@renesas.com>
+> ---
+> v2->v2 resend:
+> * No change.
+> v1 resend->v2:
+> * No change.
+> v1->v1 resend:
+> * No change.
+> ---
+>  Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> [ ... ]
 
-Acked-by: Maxime Ripard <mripard@kernel.org>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-Thanks!
-Maxime
