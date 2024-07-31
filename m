@@ -1,109 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E3891B29A7;
-	Wed, 31 Jul 2024 16:12:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E761773A;
+	Wed, 31 Jul 2024 16:43:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722442321; cv=none; b=dgZqbRoNnjDYtsNFWUJhTaPv3a/0Z81aVUcFvGJyWbEAVUiYWNgYj0w/IEz+zxRxQpfkEgCrc5s2oX3KOHauQ9Ieqky6TB3smyOxKiz2HLBl6oNor5OMNRxGZVb8qzCeRteQlwK803t88IWN56uMc1di7qKA6ZlMPoXQEshQRhQ=
+	t=1722444213; cv=none; b=nP30SM80k5HY6BB2HRjIqOIERS/pGT0EKGj1gfgc0G802iRZXDBsR9zSlN0sYdJjUCUN9sSJ+tEUV8w5JrAhi8R53QyrRWIHKd9Sr3tf9B4XT33aj+93X4YGiXUx2/C1ijKkHYq3VakE/nv6+7DLBuvmPo95IwgPgGZRBcLsz+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722442321; c=relaxed/simple;
-	bh=J8+0BdMzW9w3bgW56LnCnV3YtGAu/FpwNHdrhS881jk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BS/aY16ZtUCTQKZhphlco3nQzc5+sJRmajD5IDrroMlw7bssI58dC9Gj2+KYnhKRkgqKIo1SU2FOVgKiCeTC73o4ohKcWDjwsbuoB2WxJM8PffdRHf4NP6PzVVTt2q5q7VQgkk4ZFWesnX6dpD2+3N/UPfPcuuxcguiWqo5NMHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bT1yLF3M; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722444213; c=relaxed/simple;
+	bh=8ZYpBCvt2i0jwH+07fKHzqh9A/o3rs6M3lytTmw64OU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bWFZFTh2/6rMmO1WWraIV0kPNpAcn0n5S9AI5/OPueVZaxYnpgRpXl8xTqySmfaxnumALiQdHM4Ge5lT378gUHlNlUeqrNP+Yhul+qYwcqvzZLtJxJCoxFKbDHtnmtMvyPqG5em1XjBbCFSFB+JJCLalggk8sbi6V2D4X6uchOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=c8RvytmD; arc=none smtp.client-ip=212.227.15.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bT1yLF3M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08061C116B1;
-	Wed, 31 Jul 2024 16:12:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722442321;
-	bh=J8+0BdMzW9w3bgW56LnCnV3YtGAu/FpwNHdrhS881jk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bT1yLF3MLMnjlPktS2xNQUG0NSi9QpaEuz0h2gSeBZ23PHnm1pSeKmK/1CkDZ9xtS
-	 ve9nt5W1DNyUviXe5q5x1BPU/phHj7EiKCeJff/pM/N8cPjQswof626nwS3sa7i7Ia
-	 JM0sqSr8UkzcsLC5on9tgjf+/e15+IglVeyGPktU2NMXzygxoTe0FJDi/wM9OA6wdv
-	 weT4/Z/KzU5PXLghYcLJyys2VXBGV70ivl6AasWG+TErA0QG5oVNKTF4WTQbMMtYFb
-	 +2EXZJddlvF5JkrMmOMYFatbSx26zo/HKwgAGCDqTeTdUhzV08jTd+OMNMV1ejAt7s
-	 XlcxRZutSM7AA==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1sZBvv-000000003n0-23B7;
-	Wed, 31 Jul 2024 18:12:12 +0200
-Date: Wed, 31 Jul 2024 18:12:11 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	stsp <stsp2@yandex.ru>, linux-serial@vger.kernel.org,
-	Linux kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [regression] ENOTTY returned for tty fds
-Message-ID: <ZqpiWy81owgsdscR@hovoldconsulting.com>
-References: <b6f4aa5c-10ba-411b-994b-6dbed2bf63db@yandex.ru>
- <2024072452-pegboard-undying-4245@gregkh>
- <c74f1e3e-a376-42e3-86e0-a804f9a7da2c@yandex.ru>
- <2024072401-spearfish-gnarly-a09e@gregkh>
- <be1a3839-23a6-4726-9018-3d18a27163be@yandex.ru>
- <2024072401-obtain-heap-6d8d@gregkh>
- <ZqDdDPF_N9tcbu_S@gondor.apana.org.au>
- <ZqDeTlq-1NP3dne_@gondor.apana.org.au>
- <2024073111-probe-endanger-cc8c@gregkh>
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="c8RvytmD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1722444124; x=1723048924; i=wahrenst@gmx.net;
+	bh=8ZYpBCvt2i0jwH+07fKHzqh9A/o3rs6M3lytTmw64OU=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=c8RvytmDsuGD1qMoRMvDVm7e/fkbnBmjPE6iU0f5DDrSFYq3l2taEY9LlZx9C0+d
+	 bWH23DxMuUoEg7H5tW2VvFFkfACu7O4iySXegxMLRuXScPlaHSwvxF/QzuT910sKb
+	 csYmZA+bQOW7YySAW9tn7lcOoe4nieXY6ZySeI+H0R1NhIr0/SxfGTV7Qege+9+gM
+	 2FC21m3U3QA2KF9+Ox1Cu4r3qCO4lIglILnHGQMgqiKKa0kyRV/aat1xZstBfO0va
+	 Mm2cpBAvBKsav5VcGhG0WRQ4x3Ts5QZt9CWjsqFloR1wfeufCeAGUM1wMINqDqFQC
+	 TZXbmWmLaVNSPWDLtA==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZTmO-1smru941VG-00OdA3; Wed, 31
+ Jul 2024 18:42:04 +0200
+Message-ID: <b34cc73c-721f-48b6-a7a3-da8190d80dd8@gmx.net>
+Date: Wed, 31 Jul 2024 18:41:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2024073111-probe-endanger-cc8c@gregkh>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V2 09/16] drm/vc4: v3d: simplify clock retrieval
+To: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>, Jiri Slaby <jirislaby@kernel.org>,
+ Minas Harutyunyan <hminas@synopsys.com>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
+ Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+References: <20240728114200.75559-1-wahrenst@gmx.net>
+ <20240728130029.78279-1-wahrenst@gmx.net>
+ <581726ae-dd9c-476f-817d-4140f7217ec7@igalia.com>
+Content-Language: en-US
+From: Stefan Wahren <wahrenst@gmx.net>
+In-Reply-To: <581726ae-dd9c-476f-817d-4140f7217ec7@igalia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:1XEsTB1Yz6QIrPhgICNBxgzWJsapsjgGiS8Z3LpAw8WaXEwOW8H
+ TY9xd1Y3Gt7tRm7ZGLMeLmOzROUaIxpwJt5gUHRfyXmwKOwiWqOrIFF5feu4mDDpvkJ/WFT
+ WBzaxf23DzYY/PwV5nRzoVuxFOniucW/r9qeA3IfdEfg38XlseYE+FAgSpvZt0Z92jsC05A
+ ppO3hoEETMjbrYrWmgnBA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:0t+rf2WRA2Y=;g0vn5Zpq/535/wKbDqIMoQuhU4y
+ Ugr6e6bL6utv6BqL127QxAh0QZZABiONwtJO1ZBk6Bt8ZoHiVzoDnvObxOxayOnHmXiqN2eI2
+ An5IBhQkmy4iKB6LqZacKC5yjPZoOFLEpE/O8Rot9lNLj+yBldRNHhyPfrGjtQdsLpZtCShwL
+ 3iKOsCTcWg3X5wWmOWvNlMl4SRYyEk0GOsyaiJ/beY33Q5e47o+6Z3mT97KVIeF7aR4rCRy9s
+ hB0hOd9gtobYLuSeLFN2lf5mnVWnGdyKCF1a8q64GFk6F+/BJh5Nzd2VSeCLkG2AoJiW8dP/W
+ 58Cy0F72IzBhpLQg/+DaadLHqePdvPx81lTB7Vu7jWIqDbaFGz/2w+aiCiBGOR7+rprYbFoRB
+ oVhZCm6gXQoDwEie8AiPDT3DCrtz7/e8hTllEbKHWcdGoT/5Bq7MrOlkAiGi4pH08RvDxGn/y
+ dMW/AWFGbVjaw4lVrVqjaevaDKLVN9A+WbV+jMCNsURJ6oAmxRNp9P6NyRA00+d90+M+QcqvJ
+ P0fJbhCkoOeHQspJy/3sUEnPX1bEp2GNf4++0q8GMSvIghhJPvm58M9NBpH+uBgw7TPCuq2yP
+ vqLFbH+l2NUeWCoQiQp4ZmXhdXzbm/n1ZtiXkbpNheSSkKD1pkR3qQB09dpiZtUNqhrz7drmv
+ kU1nNHud2/HNIYLekf+tOsnJP8R/nPAHXbQrySkyMSjFUPITGFcyygwbwDn5iYR8a5IjuTRG/
+ fxfNHwkr6o6wa76enkzqyEIy19WXCJ5ubjCW134abbyna8z4hR7Xr5GL5pmB/2Rt/FoNk/wu8
+ 57E9E2fz8d9Gf7fLVcPGOEFg==
 
-[ For some reason I never received Herbert's replies so I didn't see
-  them until today. ]
+Hi Ma=C3=ADra,
 
-On Wed, Jul 31, 2024 at 12:25:43PM +0200, Greg Kroah-Hartman wrote:
-> On Wed, Jul 24, 2024 at 06:58:22PM +0800, Herbert Xu wrote:
-> > On Wed, Jul 24, 2024 at 06:53:00PM +0800, Herbert Xu wrote:
-> > > On Wed, Jul 24, 2024 at 12:15:39PM +0200, Greg KH wrote:
-> > > >
-> > > > -ENOTTY is the documented result of invalid ioctl arguments sent, I am
-> > > > pretty sure POSIX requires this somewhere.  So this was fixing a
-> > > > requirement here...
-> > > 
-> > > POSIX does not specify this at all:
-> > > 
-> > > https://pubs.opengroup.org/onlinepubs/9699919799/functions/ioctl.html
-> > 
-> > In fact it says:
-> > 
-> > If an underlying device driver detects an error, then ioctl() shall fail if:
-> > 
-> > [EINVAL]
-> > The request or arg argument is not valid for this device.
-> > 
-> > [ENOTTY]
-> > The file associated with the fildes argument is not a STREAMS device that accepts control functions.
-> > 
-> > Of course this is all moot since POSIX only specifies ioctl(2)
-> > for STREAMS devices, but this patch in question is literally
-> > going against the woring here.
-> 
-> That's going to be going against a lot of existing kernel code then.
-> -ENOTTY is the default action of almost all ioctl handlers when the
-> command is not a valid one, sorry.
+Am 30.07.24 um 13:23 schrieb Ma=C3=ADra Canal:
+> On 7/28/24 10:00, Stefan Wahren wrote:
+>> Common pattern of handling deferred probe can be simplified with
+>> dev_err_probe() and devm_clk_get_optional(). This results in much
+>> less code.
+>>
+>> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+>> ---
+>> =C2=A0 drivers/gpu/drm/vc4/vc4_v3d.c | 13 ++-----------
+>> =C2=A0 1 file changed, 2 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/vc4/vc4_v3d.c
+>> b/drivers/gpu/drm/vc4/vc4_v3d.c
+>> index 1ede508a67d3..4bf3a8d24770 100644
+>> --- a/drivers/gpu/drm/vc4/vc4_v3d.c
+>> +++ b/drivers/gpu/drm/vc4/vc4_v3d.c
+>> @@ -441,20 +441,11 @@ static int vc4_v3d_bind(struct device *dev,
+>> struct device *master, void *data)
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vc4->v3d =3D v3d;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v3d->vc4 =3D vc4;
+>>
+>> -=C2=A0=C2=A0=C2=A0 v3d->clk =3D devm_clk_get(dev, NULL);
+>> +=C2=A0=C2=A0=C2=A0 v3d->clk =3D devm_clk_get_optional(dev, NULL);
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(v3d->clk)) {
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret =3D PTR_=
+ERR(v3d->clk);
+>>
+>
+> Super nit: you could delete this line ^
+Can you please explain? ret is required for dev_err_probe or do you mean
+the empty line after the declaration?
+>
+> Reviewed-by: Ma=C3=ADra Canal <mcanal@igalia.com>
+>
+> Best Regards,
+> - Ma=C3=ADra
+>
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret =3D=3D -ENOENT) {
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* =
+bcm2835 didn't have a clock reference in the DT. */
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret=
+ =3D 0;
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v3d=
+->clk =3D NULL;
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } else {
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if =
+(ret !=3D -EPROBE_DEFER)
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0 dev_err(dev, "Failed to get V3D clock: %d\n",
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret);
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret=
+urn ret;
+>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return dev_err_probe(dev, r=
+et, "Failed to get V3D clock\n");
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+>>
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D platform_get_irq(pdev, 0);
+>> --
+>> 2.34.1
+>>
+>
 
-This has been discussed at length before, and Linus made it clear that
-ENOTTY is the right errno for unsupported ioctls, for example, here:
-
-	https://lore.kernel.org/lkml/BANLkTi=6W0quy1M71UapwKDe97E67b4EiA@mail.gmail.com/
-
-The tty code has been returning this since 2012 and commit bbb63c514a34
-("drivers:tty:fix up ENOIOCTLCMD error handling") except for a few cases
-that were missed and that I fixed up in 2021.
-
-If this breaks real applications me may need to revert to EINVAL for the
-affected ioctls however. Apparently, dosemu hasn't been
-updated since 2013, but it looks like it indeed expects EINVAL for
-unsupported TIOCMBIC.
-
-Johan
