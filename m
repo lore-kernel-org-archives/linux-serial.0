@@ -1,137 +1,85 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C05418C914
-	for <linux-serial@vger.kernel.org>; Tue, 30 Jul 2024 21:22:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2948801;
+	Wed, 31 Jul 2024 10:25:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722374572; cv=none; b=HeVEHoE192n8rc4aFG/PAik10BbzzDcJuzwXuZuhWVaWlJkVFcqzNLrH4uWSFEF6eSu29bHfneQzxB0YWPnYuOmShdeov6cbWz7NSSElc110TXTBplGw/w7E5Pe/ag7r+etVMAoxyIu3qWxCBpvNqBQLbh2/fTB+KHg717ANVMk=
+	t=1722421547; cv=none; b=fOYxdW+1HE6iaS/bDJQ3nBd9gWOklmp29/Xip8pec2seeeV1WBEos2YhFC0YV7YlNQjyU7fHptafANgCaiO+42yucJQte61o2GfcYu3lIRqb9/792TNRgiygYy32XL7mfDLm5K8fOOgIpWlj+zCFFdJE94JXCd9wAsP6hK6bIo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722374572; c=relaxed/simple;
-	bh=RCyXB4V21ndreCSUROM/QFnhUzJbb9FhaSwMhxqy5CA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KZWprCcGPCyn2moY7ivT70FgKQ88TZSwvxS2Qsouc8eqxK+XYD+V2srzfJ8MrLi64ns+VqxqIgHir1wcVBj8pD4XOD9BK3bzouLv0pFj5MmxyAcfqAo47pbgfIdTVZ8Tlol+UCoZ7iGUbivtURrayDO4ScPjqJ/W6v3zJVlNkro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=fiJfG0rQ; arc=none smtp.client-ip=209.85.215.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1722421547; c=relaxed/simple;
+	bh=2h6O1NClaBPnSuuunY0YO6sUq1+WbcmCZpgEFOzJ6cA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C1BEEH0i/9XdMyw8c7rkQAMsFClXEZDXY66RnYz7SyC/p+qlcpE+HG/4r2f8pbR6bYLrt5xXErBNxY7GnmnksOGaAaFN/Sjd0rwWHT7IcqRIBzy67aD6n3Oqp43ndmXn3/5HXwyOy8zHttDl4MDsNMGKIrfL0w68o1alvAjzUeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=dGVbC9Xm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="fiJfG0rQ"
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-656d8b346d2so3044954a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 30 Jul 2024 14:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1722374570; x=1722979370; darn=vger.kernel.org;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=lSAZ/0e3vxufk97FChYubRiOc48MpM651wYXnibrJl4=;
-        b=fiJfG0rQK5ZJjPeCqIIYiYsz5zUuBvo5BewcbowDxdKpy5PK8ye/vLh3T9eMY7pZ1J
-         3F4QjwEyLelRB5BIpwroaAEec/p8S8lg5nuN9aM0EkHD0mLkND0DsQwL1J66/LVOgwOX
-         DLpKcirBac3f5y6/iqu4FoO81wTZg0TGdNsE64MvsLsEjpT2VybXV6jDzfVUGsQanAWo
-         0jSS5g4ES+EJ7qXZc075vS44StZZhpoc/wq0SGooaIzyT0GHAaUOes/ox5BGD5IfTroo
-         G8/plgx2tdegUWNHW2ArI0r9N9XEnfLTed56RDeI60vsT+lB9FEobZ6mDiGLxL/xBIFQ
-         D5Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722374570; x=1722979370;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lSAZ/0e3vxufk97FChYubRiOc48MpM651wYXnibrJl4=;
-        b=cf+slXkDvoqSOhUSK9hCdrBbdJyTwrQbv91sAc9eoEBSWXuv/OiVSPvEs1XiYxr70W
-         5Bs4ZdFYzOpPv7DeA2Kftfmp1kvLOFg9DL6MYyusOPYV1WONqhFjAP39PvIOlOkB8pUO
-         GQAnvBPAqol0BasJGE3/FbJY88FSBBUoidRr7H9e7X8ZQvSct74uyqCiprdRVGhkC6/a
-         tB4M98GevqCP4p6oOsosMkkKAo6Db7kSf2tZj6JFJRJyQdPvSHSUfx9oSyfZM43BiN3v
-         7nMOYRQexf0kmGUJ6X4r9zT7iSgm3PetssijFpIQ/+bD5yFp1N+yp+Q7HhWbNi6vvdVH
-         XDbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWIuCof6Fga+2OAPzKxo/iMA/sufTu/XmRUvoNfpjHpJ2cDPxhAr8ZjpJYBI37LYpLhy7pcoxqhozWMFs3oDgsI0XDInBIPe/EAcggc
-X-Gm-Message-State: AOJu0Yy02vF1W4VZEvgLOgcj41Ausu3s0WwsPhB8tvHBjyaXn/wx+mtG
-	0IpxXKti8P4NMg4dsbtCd2McolWdZG6uNhtAcUq0byn+EUKe4dK3xdogf8CJPpw=
-X-Google-Smtp-Source: AGHT+IH9bMw0hcFAvLIjZgRgjAbIFYieWwlgocGF3033Pqj4XUKk5VtAkzU1YoxPo9v4luCXtq6pAw==
-X-Received: by 2002:a17:90a:468d:b0:2c9:7e80:6bc8 with SMTP id 98e67ed59e1d1-2cf7e71b37emr10000581a91.37.1722374570266;
-        Tue, 30 Jul 2024 14:22:50 -0700 (PDT)
-Received: from localhost (75-172-120-197.tukw.qwest.net. [75.172.120.197])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2cf28c9c764sm11119757a91.26.2024.07.30.14.22.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jul 2024 14:22:49 -0700 (PDT)
-From: Kevin Hilman <khilman@baylibre.com>
-To: Markus Schneider-Pargmann <msp@baylibre.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
- Tony Lindgren <tony@atomide.com>, John Ogness <john.ogness@linutronix.de>,
- Markus Schneider-Pargmann <msp@baylibre.com>, Uwe =?utf-8?Q?Kleine-K?=
- =?utf-8?Q?=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Ronald Wahl <ronald.wahl@raritan.com>,
- Thomas Richard <thomas.richard@bootlin.com>, Thomas Gleixner
- <tglx@linutronix.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Arnd Bergmann <arnd@arndb.de>, Vignesh Raghavendra <vigneshr@ti.com>
-Cc: Vibhore Vardhan <vibhore@ti.com>, Dhruva Gole <d-gole@ti.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH 5/5] serial: 8250: omap: Set wakeup pinctrl on suspend
-In-Reply-To: <20240523075819.1285554-6-msp@baylibre.com>
-References: <20240523075819.1285554-1-msp@baylibre.com>
- <20240523075819.1285554-6-msp@baylibre.com>
-Date: Tue, 30 Jul 2024 14:22:49 -0700
-Message-ID: <7hh6c660d2.fsf@baylibre.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="dGVbC9Xm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEBD6C116B1;
+	Wed, 31 Jul 2024 10:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1722421546;
+	bh=2h6O1NClaBPnSuuunY0YO6sUq1+WbcmCZpgEFOzJ6cA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=dGVbC9XmOLTx1O3U6DpdLZZHrH2M78iLy17BA4+9OZkn/7/S5QT1kFt1ldyHKbgC/
+	 bsHgE4l2B2uwBBQKz4OEgo0u/BCWPNZGSh9qdMfyr5dOr460NyvJgye2zc4qAHRJa/
+	 /X9IuQ97glTB/G+SzTuB9WdExvit5q1vQiB1rilo=
+Date: Wed, 31 Jul 2024 12:25:43 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, stsp <stsp2@yandex.ru>,
+	linux-serial@vger.kernel.org,
+	Linux kernel <linux-kernel@vger.kernel.org>,
+	Johan Hovold <johan@kernel.org>
+Subject: Re: [regression] ENOTTY returned for tty fds
+Message-ID: <2024073111-probe-endanger-cc8c@gregkh>
+References: <b6f4aa5c-10ba-411b-994b-6dbed2bf63db@yandex.ru>
+ <2024072452-pegboard-undying-4245@gregkh>
+ <c74f1e3e-a376-42e3-86e0-a804f9a7da2c@yandex.ru>
+ <2024072401-spearfish-gnarly-a09e@gregkh>
+ <be1a3839-23a6-4726-9018-3d18a27163be@yandex.ru>
+ <2024072401-obtain-heap-6d8d@gregkh>
+ <ZqDdDPF_N9tcbu_S@gondor.apana.org.au>
+ <ZqDeTlq-1NP3dne_@gondor.apana.org.au>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZqDeTlq-1NP3dne_@gondor.apana.org.au>
 
-Markus Schneider-Pargmann <msp@baylibre.com> writes:
+On Wed, Jul 24, 2024 at 06:58:22PM +0800, Herbert Xu wrote:
+> On Wed, Jul 24, 2024 at 06:53:00PM +0800, Herbert Xu wrote:
+> > On Wed, Jul 24, 2024 at 12:15:39PM +0200, Greg KH wrote:
+> > >
+> > > -ENOTTY is the documented result of invalid ioctl arguments sent, I am
+> > > pretty sure POSIX requires this somewhere.  So this was fixing a
+> > > requirement here...
+> > 
+> > POSIX does not specify this at all:
+> > 
+> > https://pubs.opengroup.org/onlinepubs/9699919799/functions/ioctl.html
+> 
+> In fact it says:
+> 
+> If an underlying device driver detects an error, then ioctl() shall fail if:
+> 
+> [EINVAL]
+> The request or arg argument is not valid for this device.
+> 
+> [ENOTTY]
+> The file associated with the fildes argument is not a STREAMS device that accepts control functions.
+> 
+> Of course this is all moot since POSIX only specifies ioctl(2)
+> for STREAMS devices, but this patch in question is literally
+> going against the woring here.
 
-> To enable the serial driver and it's pin to be a wakeup source in
-> suspend to ram states, select the wakeup pinctrl state on suspend and
-> restore the default pinctrl state on resume.
->
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+That's going to be going against a lot of existing kernel code then.
+-ENOTTY is the default action of almost all ioctl handlers when the
+command is not a valid one, sorry.
 
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+thanks,
 
-but with a minor nit below...
-
-> ---
->  drivers/tty/serial/8250/8250_omap.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 617a421a1396..61f056c4e78e 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -1663,6 +1663,13 @@ static int omap8250_suspend(struct device *dev)
->  	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
->  	int err = 0;
->  
-> +	err = omap8250_select_wakeup_pinctrl(dev, priv);
-> +	if (err) {
-> +		dev_err(dev, "Failed to select wakeup pinctrl, aborting suspend %pe\n",
-> +			ERR_PTR(err));
-> +		return err;
-> +	}
-> +
->  	serial8250_suspend_port(priv->line);
->  
->  	err = pm_runtime_resume_and_get(dev);
-> @@ -1696,6 +1703,13 @@ static int omap8250_resume(struct device *dev)
->  	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
->  	int err;
->  
-> +	err = pinctrl_select_default_state(dev);
-> +	if (err) {
-> +		dev_err(dev, "Failed to select default pinctrl state on resume: %pe\n",
-> +			ERR_PTR(err));
-> +		return err;
-> +	}
-
-Shouldn't this bit should be at the end of this resume function?
-Otherwise, if this fails, the UART could be left unusable, and if it's
-the console UART, you wouldn't get any logs to know why.
-
->  	if (uart_console(&up->port) && console_suspend_enabled) {
->  		if (console_suspend_enabled) {
->  			err = pm_runtime_force_resume(dev);
-> -- 
-> 2.43.0
-
-Kevin
+greg k-h
