@@ -1,153 +1,174 @@
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 201571B142A
-	for <linux-serial@vger.kernel.org>; Thu,  1 Aug 2024 15:57:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA3391B9B4A
+	for <linux-serial@vger.kernel.org>; Thu,  1 Aug 2024 17:46:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722527867; cv=none; b=buDdOH++85Lm/DKCNLUamhhWj7HP/1/GgojD6TQEmACZGaF7arrIXtqTg0fVBVPL8WeQPWo/o0r0PjFvjT99XPghk1K9gzOkTPakxXBvHD4EwpQBnfJzFZP/EL2YGkwXFGmxAj0UrFD6vRhuFyR6jiU3uovwSrPKSLZrTcZ31MI=
+	t=1722534392; cv=none; b=J/pMc7on7UF2YabKqt0wAXeEQ/K/pv+wtLgWRi/5viaA/+MUvgyE659x/uqxKtiUC8G8iHAlL93O9IRx3wNBz6iJ5r8se71D6ddiRaEKCGoUGXo38DbYMWFmSb1LMeyZIWbd4U5AwnYvZW6lr3CXfErMgnjDZedhQM8n4SAqgLc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722527867; c=relaxed/simple;
-	bh=Val1v/0+zIlxQWVpe2WCn6LToykSYu/HfcA8SyqTAsc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AvhvZVeorvOMHde+Dg2r5v2saMkHODl0livIncx7kW8h4NhfLlvPrJNkvEa8h8oJA/cNVq1w5GJ7jdhUiQFVUwstmfZugquU6hh0hkIoe28WhxG11zPCkAtGV2+LW/WkrUHHDvLnNIzEkWWcmR/CgckxTTSzlPIIhXbFkQu7Y8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=Fvf/04Cg; arc=none smtp.client-ip=209.85.221.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	s=arc-20240116; t=1722534392; c=relaxed/simple;
+	bh=lqUBCglzn3f4G/USTNUZWIqwmTKyh9NTx5PNNci0oUk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=q6blPA4FFC0MVCMOJGnDCSLpgMT2QtX8/krI5a3bu9y9LhWIk+TQ+2ZSmScAsbOfBk27AHTsvgrzciyr9ASRB43bquczJOBc9oZ3nam1Q11WfL4PGjC8LOSGuPQeMTyY3sROg+PDkv3kfK8MuXekVbTlFoflPF/24hQFUqBspkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Rzn+lc9s; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="Fvf/04Cg"
-Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-4f6e36ea1ebso2065319e0c.0
-        for <linux-serial@vger.kernel.org>; Thu, 01 Aug 2024 08:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1722527865; x=1723132665; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=snX6qmvGXBlkj4qHxmnqzT8/9j0530F70W9IbEs0MBs=;
-        b=Fvf/04CgWpLbzB/9MJu7Ro1J1ZZf5ZPP02V3aflehF9703FJneZILls8AkeNaC5vBv
-         QVm5MKRpjNl+oe9xYW6UwVF84gDErS5y8Q0a1a+QpZ5vAwiiGRfRIHRgFCmqqD5tBMRl
-         woswqaCTu9VP35qxI0BAbU9zcRhuFWSkfhayGR/jueBoMIWQ4l4nn/j7DfnuR9StU1SG
-         gtzDLlnpxtDZaCpIp1pojJRZ3Xf+nfJTXr7MCMemLdYws9yKD5G70L23noGLjNykIqZa
-         JfDlZ4cj5+X0GEd9fLcPFe/SOZX0L9+Sihs8vXA1Oih+MbxD/W33+6MMbKat7eqCN3kj
-         czKA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Rzn+lc9s"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1722534388;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=IdydxZIGJr3ghOK2fEzH68i3FlzUyX1ZkiOar1Iub4w=;
+	b=Rzn+lc9s46peLMe1/z7hy0YIgUjo6ZVyrdbV00/pHXzntyI6SHHlfRcE60KgCLXXo3tGyJ
+	sZ+dMIi3cTnEH/LhGxIMlZaoooVqomo5s6COmkbg9/0wHb9vhXImmL/XoJleWTJ9sgmtp7
+	/ibOecnauLragJz4o05YwBdW4BbH7Wc=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-684-SLNu2n55NBKvP43vN4lEgw-1; Thu, 01 Aug 2024 13:46:27 -0400
+X-MC-Unique: SLNu2n55NBKvP43vN4lEgw-1
+Received: by mail-ed1-f71.google.com with SMTP id 4fb4d7f45d1cf-5a10a3517b7so1096367a12.0
+        for <linux-serial@vger.kernel.org>; Thu, 01 Aug 2024 10:46:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722527865; x=1723132665;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=snX6qmvGXBlkj4qHxmnqzT8/9j0530F70W9IbEs0MBs=;
-        b=TB7tyH8cxI1vWQNqNN5Nu/Mi48DhzUufrXKpFYShs2SglGNykaPnxjD8fEkjyYJ/EY
-         6zMA8emfAcl8/yhF0VMKug95mGmjcmC6nrOFHc4dodeqe/Me9cL28L4ofKEER0vbHfmU
-         vP0FKxkaMwU8fT6LBlfGbyTgk4OxZGfGW8xnI9nx25wMRybyZUV3CSprjf8qPEIaWkOA
-         xS4lVDixHfhyGJDu+DINo1RcYb8xIFRy4vggKTyjjHKLjZ+x/95V/O8E+q67c4dN0Zan
-         Y6TOz1GsOSyHvNjthzbnUIIP1LRlE2HsnNIbopqyIGFkTFSfegakQGVGDbNWl2k38n34
-         tIQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUHgLcvEpApNFRmDbebp/rHOIcWgu005HzlQgnTsP36tJD+y3PcqITlkSSZl+WT5cPHIy3Fz/qCPvc9j1sYgrupr8WoViA3HAiTxsEq
-X-Gm-Message-State: AOJu0YzfRHk9liFu9i5HRR755TK28D86nM8Oe6g51gqpBg9Pm/8nEccy
-	QaGAuGa3iXIZSNYGbF6R0CdZYMWq/UJQ+W8e93okpgk8nWWFBjsKZ7vDi4auZpf8ZZRZ4v9yagK
-	nTKRcCf18FSWNhpntuxASYfohsy1PH/03Y/uf+g==
-X-Google-Smtp-Source: AGHT+IGgmhTnl/HxYppSXaq7VmYQRkFbvdmv2Ue6piokAXA8lXZkX+zswFabpVoI9oJENUYd4nOCoCEtPCB9vMYPqZM=
-X-Received: by 2002:a05:6122:1d16:b0:4f2:f1f1:a9f2 with SMTP id
- 71dfb90a1353d-4f89ff6c61dmr938235e0c.4.1722527864994; Thu, 01 Aug 2024
- 08:57:44 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1722534386; x=1723139186;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IdydxZIGJr3ghOK2fEzH68i3FlzUyX1ZkiOar1Iub4w=;
+        b=IVZTPljOR3Jf7ROIV+WGO6fxXrEYwJ5Y8Fx8qm2gkJCa1MTkRQ0Uwcikf1yg/wyOIA
+         dQscVn4QJDecrTaUaDdZSb/DBgQVjCRUHawIy/Ig4I5DAJRFomsNNwjL9Pu+FLWrAcg7
+         XEqq5uwuPZnv8fez+xnw60y1g+Jg5+FdPUjl0EsQFq98hyOpbETIbu+sVt9RSOtIZLoi
+         MBt7w5zw9sgxfhp4Dmm3ZFyKkH4jVNdm6/OyXFb6Boq4nszTj23QiHhsXKoK0TIkRiuf
+         Od7IWliaMCwJDU83QWULo4bbgNuicyKQROA862nOHVoP9xAc7oEe14evHdWzVbkrPebg
+         toXg==
+X-Forwarded-Encrypted: i=1; AJvYcCW9/tbhs/uH8nAMPY2CYkYLvxgXbU80MzL1gAPk/D+AsAMM5FyEqQvSlGojT4S2iDBlQ1MOopGcUCUo3bo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyKFX9Eirbq84mi2gHAmKjyMDgVekvw41c6tBO6gnhX4kinIxP3
+	979ozPLmVpSocWH8IlrsJ++/5zydMopyuvRQWFk9Sc1311W9QLbznaZ7IMFDIOevjRbmd+aOCjx
+	aUf8nkehXLqyZ6uRYiqBac/qDbN1Ow8mVvAJwspKepJcBIwQBeuN7MrJb+TqHeg==
+X-Received: by 2002:a17:907:3da7:b0:a7d:a4d2:a2a7 with SMTP id a640c23a62f3a-a7dc4e50c01mr44420966b.3.1722534386275;
+        Thu, 01 Aug 2024 10:46:26 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IH5Km5jd9cOTYruluysPjH0y6sNbWlr0amJSpmaneqU1ki99pbWjXrxV2Pr+1gBC+OPuM4UGw==
+X-Received: by 2002:a17:907:3da7:b0:a7d:a4d2:a2a7 with SMTP id a640c23a62f3a-a7dc4e50c01mr44419866b.3.1722534385669;
+        Thu, 01 Aug 2024 10:46:25 -0700 (PDT)
+Received: from eisenberg.fritz.box ([2001:16b8:3d4b:3000:1a1d:18ca:1d82:9859])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9e83848sm5339066b.177.2024.08.01.10.46.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Aug 2024 10:46:25 -0700 (PDT)
+From: Philipp Stanner <pstanner@redhat.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	Arnaud Ebalard <arno@natisbad.org>,
+	Srujana Challa <schalla@marvell.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Jon Mason <jdmason@kudzu.us>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Allen Hubbe <allenbh@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Cernekee <cernekee@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Mark Brown <broonie@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Philipp Stanner <pstanner@redhat.com>,
+	Jie Wang <jie.wang@intel.com>,
+	Adam Guerin <adam.guerin@intel.com>,
+	Shashank Gupta <shashank.gupta@intel.com>,
+	Damian Muszynski <damian.muszynski@intel.com>,
+	Nithin Dabilpuram <ndabilpuram@marvell.com>,
+	Bharat Bhushan <bbhushan2@marvell.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
+	Breno Leitao <leitao@debian.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org,
+	qat-linux@intel.com,
+	linux-crypto@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	ntb@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org
+Subject: [PATCH 00/10] Remove pcim_iomap_regions_request_all()
+Date: Thu,  1 Aug 2024 19:45:58 +0200
+Message-ID: <20240801174608.50592-1-pstanner@redhat.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org> <20240730-k1-01-basic-dt-v5-9-98263aae83be@gentoo.org>
-In-Reply-To: <20240730-k1-01-basic-dt-v5-9-98263aae83be@gentoo.org>
-From: Jesse Taube <jesse@rivosinc.com>
-Date: Thu, 1 Aug 2024 11:57:34 -0400
-Message-ID: <CALSpo=bUiwAr=Do6QxLT_vUzjuK4t6=nCtaWRLHzLW_qjKdicA@mail.gmail.com>
-Subject: Re: [PATCH v5 09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board
- device tree
-To: Yixun Lan <dlan@gentoo.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Yangyu Chen <cyy@cyyself.name>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Samuel Holland <samuel.holland@sifive.com>, 
-	Anup Patel <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-serial@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>, 
-	Inochi Amaoto <inochiama@outlook.com>, Icenowy Zheng <uwu@icenowy.me>, 
-	Meng Zhang <zhangmeng.kevin@spacemit.com>, Meng Zhang <kevin.z.m@hotmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 
-On Mon, Jul 29, 2024 at 8:29=E2=80=AFPM Yixun Lan <dlan@gentoo.org> wrote:
->
-> From: Yangyu Chen <cyy@cyyself.name>
->
-> Banana Pi BPI-F3 [1] is a industrial grade RISC-V development board, it
-> design with SpacemiT K1 8 core RISC-V chip [2].
->
-> Currently only support booting into console with only uart enabled,
-> other features will be added soon later.
->
-> Link: https://docs.banana-pi.org/en/BPI-F3/BananaPi_BPI-F3 [1]
-> Link: https://www.spacemit.com/en/spacemit-key-stone-2/ [2]
-> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-> Signed-off-by: Yixun Lan <dlan@gentoo.org>
-Acked-by: Jesse Taube <jesse@rivosinc.com>
+Hi all,
 
-> ---
->  arch/riscv/boot/dts/Makefile                    |  1 +
->  arch/riscv/boot/dts/spacemit/Makefile           |  2 ++
->  arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts | 19 +++++++++++++++++++
->  3 files changed, 22 insertions(+)
->
-> diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
-> index fdae05bbf5563..bff887d38abe4 100644
-> --- a/arch/riscv/boot/dts/Makefile
-> +++ b/arch/riscv/boot/dts/Makefile
-> @@ -5,6 +5,7 @@ subdir-y +=3D microchip
->  subdir-y +=3D renesas
->  subdir-y +=3D sifive
->  subdir-y +=3D sophgo
-> +subdir-y +=3D spacemit
->  subdir-y +=3D starfive
->  subdir-y +=3D thead
->
-> diff --git a/arch/riscv/boot/dts/spacemit/Makefile b/arch/riscv/boot/dts/=
-spacemit/Makefile
-> new file mode 100644
-> index 0000000000000..ac617319a5742
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/spacemit/Makefile
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +dtb-$(CONFIG_ARCH_SPACEMIT) +=3D k1-bananapi-f3.dtb
-> diff --git a/arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts b/arch/riscv=
-/boot/dts/spacemit/k1-bananapi-f3.dts
-> new file mode 100644
-> index 0000000000000..023274189b492
-> --- /dev/null
-> +++ b/arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts
-> @@ -0,0 +1,19 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR MIT
-> +/*
-> + * Copyright (C) 2024 Yangyu Chen <cyy@cyyself.name>
-> + */
-> +
-> +#include "k1.dtsi"
-> +
-> +/ {
-> +       model =3D "Banana Pi BPI-F3";
-> +       compatible =3D "bananapi,bpi-f3", "spacemit,k1";
-> +
-> +       chosen {
-> +               stdout-path =3D "serial0";
-> +       };
-> +};
-> +
-> +&uart0 {
-> +       status =3D "okay";
-> +};
->
-> --
-> 2.45.2
->
+the PCI subsystem is currently working on cleaning up its devres API. To
+do so, a few functions will be replaced with better alternatives.
+
+This series removes pcim_iomap_regions_request_all(), which has been
+deprecated already, and accordingly replaces the calls to
+pcim_iomap_table() (which were only necessary because of
+pcim_iomap_regions_request_all() in the first place) with calls to
+pcim_iomap().
+
+Would be great if you can take a look whether this behaves as you
+intended for your respective component.
+
+Cheers,
+Philipp
+
+Philipp Stanner (10):
+  PCI: Make pcim_request_all_regions() a public function
+  ata: ahci: Replace deprecated PCI functions
+  crypto: qat - replace deprecated PCI functions
+  crypto: marvell - replace deprecated PCI functions
+  intel_th: pci: Replace deprecated PCI functions
+  wifi: iwlwifi: replace deprecated PCI functions
+  ntb: idt: Replace deprecated PCI functions
+  serial: rp2: Remove deprecated PCI functions
+  ALSA: korg1212: Replace deprecated PCI functions
+  PCI: Remove pcim_iomap_regions_request_all()
+
+ .../driver-api/driver-model/devres.rst        |  1 -
+ drivers/ata/acard-ahci.c                      |  6 +-
+ drivers/ata/ahci.c                            |  6 +-
+ drivers/crypto/intel/qat/qat_420xx/adf_drv.c  | 11 +++-
+ drivers/crypto/intel/qat/qat_4xxx/adf_drv.c   | 11 +++-
+ .../marvell/octeontx2/otx2_cptpf_main.c       | 14 +++--
+ .../marvell/octeontx2/otx2_cptvf_main.c       | 13 ++--
+ drivers/hwtracing/intel_th/pci.c              |  9 ++-
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   | 16 ++---
+ drivers/ntb/hw/idt/ntb_hw_idt.c               | 13 ++--
+ drivers/pci/devres.c                          | 59 +------------------
+ drivers/tty/serial/rp2.c                      | 12 ++--
+ include/linux/pci.h                           |  3 +-
+ sound/pci/korg1212/korg1212.c                 |  6 +-
+ 14 files changed, 76 insertions(+), 104 deletions(-)
+
+-- 
+2.45.2
+
