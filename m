@@ -1,145 +1,157 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B02433C7
-	for <linux-serial@vger.kernel.org>; Fri,  2 Aug 2024 07:39:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD543D6A;
+	Fri,  2 Aug 2024 07:51:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722584360; cv=none; b=eE4C8qfub/O22vu2V5o/qB1uQVv0RZW8YMVGzRx2wy1Cfrd0c3uBKJf4ypZ+bIbVSa0Bf52JJa2XFaWS0mfKAIYfIcOwWvHU81SpE2DGLAAGyjsa2t9Jpe8uW/ewlnaJ/oDfSwNDKXn/GA4BNWUYDVTz3blsYvukC9buJjywv90=
+	t=1722585083; cv=none; b=uYAOusF+mL4xpsAp+emLY0TK0V8zt5OvFXjOQgQceKUF6DseOsI1Ivxd98Kjlak94RhmCfgunlWW377kZN3VfUO3LNZRuUL1ZxTKd51EdQjm9dxyNPVyCqqAwrw8Xxaj1shPbwXMp4E4n7f7xywYDF4ghsFCSvMgA/mjvsN8hW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722584360; c=relaxed/simple;
-	bh=XyoAsjYXR6vlNnAFOtS7SDp80nop+IcyYDiUz8xV5lU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QmyBPKLWkVRyd+fP2PBHPRY4zzQXaC0mAFmx10z0DpRLQxt0ajWnqFWp+zuQyA9ablw3dLv5GMGiqm6MJiqd+H5+1DoQbgJMFI0qNFg4f/naXs6dZQ3xbI2Jksd8EoMDnsrgsysLZ/Hc19L4A7Hw7XR+Jgd7m0omsz2oI8aj6M0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=iq+HzlKS; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1722585083; c=relaxed/simple;
+	bh=IlAxDpbVqzAVA0OkNz8S5B8RxjQK0L8So+OFjVKUXjc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=SnnWiytY70jEVOKxfUUtxhLdzxNbvufV1Gv9tjfK4UDXZlmmqeuRtHN/831cuvKPmaXC+2pVEptEqwJMU7hhDoE5gmRRG8ezcQdiLe7EZzxe6eoZvSnTw8rfW81XRhnalKORpoTWMuRkyK5xCXQAqb6DK7e5m58j8iKBZdFVYBw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M/Dw3RK9; arc=none smtp.client-ip=209.85.167.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iq+HzlKS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722584356;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XyoAsjYXR6vlNnAFOtS7SDp80nop+IcyYDiUz8xV5lU=;
-	b=iq+HzlKSA/AXyDsPJt66046TyIomT4jZ8kOYF0/T+Yjlgy4sBFPDVFFzKedIW5h3s8NeEr
-	uxAno3kip9SrbEG6/ZLSvwDqsaVTSlT/OusjdHeiBG9EL8ikb02fbvljLZctFshPuGVjIe
-	ubZe5ZqOC4W7vLY9EPT2IXIuzplrgGM=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-671-2it7G74TMgeJOYbV_mS8ag-1; Fri, 02 Aug 2024 03:39:15 -0400
-X-MC-Unique: 2it7G74TMgeJOYbV_mS8ag-1
-Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-5a0e93ebc78so1137041a12.3
-        for <linux-serial@vger.kernel.org>; Fri, 02 Aug 2024 00:39:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M/Dw3RK9"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-52efe4c7c16so11436493e87.0;
+        Fri, 02 Aug 2024 00:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722585079; x=1723189879; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+kc1D5G7TPXQ3oMx5UsRQuTJ4qZ5tkN0tDpC8JI9q0Q=;
+        b=M/Dw3RK96rU682kCJ0ZfzjyrNyBesxTN6PQdhVKOR3EZ0GDW3We/w8pTxQy/m+bOD7
+         b6SqeoIuD5mIH6NwWySvDUbOUwQ8/PaGU3x3NImuan2P4+dA/5UZIbvl7O9/IaBT+IPc
+         wU/i9PwemAhU4mHyfP5mTImaXYoRkFvULBhhJjkvzgUuU8l7oDN7vI0SnYrveBKK4UMs
+         m+8omxXjEXasfqQ72lsAfS+8jNI7+7XzC5EoUjO+V4xsErMf+YlgA+aeC0jvkvsBdRTq
+         68bywxT9l4UyZ9vkM94R7lfXoXT0zaeyHuz4VUI5E8Us1NBhG7MDscY7fEBj4ef3SF0L
+         aHyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722584354; x=1723189154;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XyoAsjYXR6vlNnAFOtS7SDp80nop+IcyYDiUz8xV5lU=;
-        b=AQZ6ufqrcg6kgkK/60dSAZIvscbGhuDM5v4PrdTqiYYg9e5J5c7whC+lid9sN9lzzh
-         qIpEcswS+9gR2J6DMwkqP8FRgS7BUDP0pP0IlVTuji7m2VENIVgd8yqHLCbZhjnIGXpe
-         CMwBlmgkMkmjHtstV+yz/aEhRaYOozjEY+x1naV91YLfop6CG67epdh54TFb4mTOipvd
-         ubC3xExYfcn5tfCcGyWhi5v7Y3Kbf4pQDNJk8UJ+0l34H1ctJxtAdz/b6seJXJOm2VA0
-         6HM1jYNv31UifLXQ2V2UbVE3O3BhVWNCGm20SJq2GFQKaOWi9oo8dAZrFyM31xVTNCEs
-         DkqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU6LurcVyI5KdABgnvMlsdmK8pYC/T1Tca7+Fys/EjMh0LCM9DiMO+WEnzKvvU9M++7AIu46hmIrvtf0TIpcp4iVXhR1jHAuET5xRV4
-X-Gm-Message-State: AOJu0YzOlAuMDo6uKAIRs9dMb62v8F1xD2PQGe9ubrnYgapkGZQAJBRY
-	r9RzttuS4kqkiDUvrne9IXNzu7uoB0oCOHNemMAu4U32nmicxUFQqLrXUb9742+McTlpCK41W1e
-	1sNulGGhUjTMUTZdl8uNq+iZItmoYwcDzrKSxhjEVa+CIUggQBZCESTWI61gSHg==
-X-Received: by 2002:a17:907:d8e:b0:a7a:a4be:2f8f with SMTP id a640c23a62f3a-a7dc4b2ed0fmr130671566b.0.1722584354330;
-        Fri, 02 Aug 2024 00:39:14 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEFONH/seRIPn55nxoXB3Ih6iDe58gzFUv6VfG3nc8IISoWvXI/jL74Kj1p+wvKOnC3k+pqpQ==
-X-Received: by 2002:a17:907:d8e:b0:a7a:a4be:2f8f with SMTP id a640c23a62f3a-a7dc4b2ed0fmr130665366b.0.1722584353684;
-        Fri, 02 Aug 2024 00:39:13 -0700 (PDT)
-Received: from eisenberg.fritz.box ([2001:16b8:3d6c:8e00:43f3:8884:76fa:d218])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9e80eb6sm66892066b.174.2024.08.02.00.39.11
+        d=1e100.net; s=20230601; t=1722585079; x=1723189879;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+kc1D5G7TPXQ3oMx5UsRQuTJ4qZ5tkN0tDpC8JI9q0Q=;
+        b=A4/MG+AMhn436uKmgCwKC4DPLwHZjlsoUc0XWyw0nvS2UGQDQExSrZ65/R25cQSzKN
+         YLg2bXOPaTqqGeBDvo1xDyvsE5wihLi8hC1qBEuzpQ1tT9o6IcnvWjSvP5ayHRR16I4M
+         x4aoZ84Gvqb31Ki35kd0o3TR/lV8GxsEYkWJVP+O52LQXvqzOZhB/uIQct0fLlQh12ML
+         SntlI0B9CyYPAW2GqldR0K6pdJF414V/XiFiDHf3SN64MLOb82mA/uFGYbhQMs+cqIw4
+         t0Ey8lQ7SD6qnmaiqNPSRWshlcLU4YJJuH7XIXllSetvYrLTa1+L+HV2p8iAjwWei8Ue
+         tkIg==
+X-Forwarded-Encrypted: i=1; AJvYcCV1JS95afBqrJDxF99yv8WtjSC1BryjhEG67MmO29WyO6BlAh/ABk+5CVNFqlNRr8CgBnmDlNWvy4Sws2fa3MSMNCjU3sGmWkhlfuNPqrHwXH0B4SshzHUD8WlM1ToE6J/XQpEGo4M3C/uMKLextx8Ct7WfD7wlFLSM4YbkXQKkKC0kKixA
+X-Gm-Message-State: AOJu0Yy/S1FvKdxqn2tDBDSsEsKVrZHRv7gqO+g/GGh/TwCSVUHtwgTO
+	9P2nDjySk+p5dWkCWLUZNxDWclgYxWizVCwWk/1H3XDz0iIR78yK
+X-Google-Smtp-Source: AGHT+IFlqHEfaaG4xUfqTDoe8WnMb+Q2hWN1L/b1lxYGa0jq8iYnl+Odghy5uRk2PUIlQZdLswWZSg==
+X-Received: by 2002:a05:6512:3d89:b0:52e:987f:cfe4 with SMTP id 2adb3069b0e04-530bb396e7amr1392918e87.30.1722585078900;
+        Fri, 02 Aug 2024 00:51:18 -0700 (PDT)
+Received: from localhost ([178.176.56.174])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-530bba35219sm156304e87.192.2024.08.02.00.51.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Aug 2024 00:39:13 -0700 (PDT)
-Message-ID: <6eb427a501499273b39439dd6514fef399c3b55f.camel@redhat.com>
-Subject: Re: [PATCH 08/10] serial: rp2: Remove deprecated PCI functions
-From: Philipp Stanner <pstanner@redhat.com>
-To: Jiri Slaby <jirislaby@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Damien Le Moal <dlemoal@kernel.org>, Niklas Cassel <cassel@kernel.org>,
- Giovanni Cabiddu <giovanni.cabiddu@intel.com>, Herbert Xu
- <herbert@gondor.apana.org.au>,  "David S. Miller" <davem@davemloft.net>,
- Boris Brezillon <bbrezillon@kernel.org>, Arnaud Ebalard
- <arno@natisbad.org>,  Srujana Challa <schalla@marvell.com>, Alexander
- Shishkin <alexander.shishkin@linux.intel.com>, Miri Korenblit
- <miriam.rachel.korenblit@intel.com>, Kalle Valo <kvalo@kernel.org>, Serge
- Semin <fancer.lancer@gmail.com>, Jon Mason <jdmason@kudzu.us>, Dave Jiang
- <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>, Bjorn Helgaas
- <bhelgaas@google.com>, Kevin Cernekee <cernekee@gmail.com>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jaroslav Kysela
- <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, Mark Brown
- <broonie@kernel.org>, David Lechner <dlechner@baylibre.com>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Jonathan
- Cameron <Jonathan.Cameron@huawei.com>,  Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Jie Wang <jie.wang@intel.com>, Adam
- Guerin <adam.guerin@intel.com>, Shashank Gupta <shashank.gupta@intel.com>,
- Damian Muszynski <damian.muszynski@intel.com>, Nithin Dabilpuram
- <ndabilpuram@marvell.com>, Bharat Bhushan <bbhushan2@marvell.com>, Johannes
- Berg <johannes.berg@intel.com>, Gregory Greenman
- <gregory.greenman@intel.com>, Emmanuel Grumbach
- <emmanuel.grumbach@intel.com>, Yedidya Benshimol
- <yedidya.ben.shimol@intel.com>, Breno Leitao <leitao@debian.org>, Ilpo
- =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, John Ogness
- <john.ogness@linutronix.de>, Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-ide@vger.kernel.org, qat-linux@intel.com,
- linux-crypto@vger.kernel.org,  linux-wireless@vger.kernel.org,
- ntb@lists.linux.dev, linux-pci@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
-Date: Fri, 02 Aug 2024 09:39:11 +0200
-In-Reply-To: <8d2e03ac-2a08-4a25-9929-dad375afb738@kernel.org>
-References: <20240801174608.50592-1-pstanner@redhat.com>
-	 <20240801174608.50592-9-pstanner@redhat.com>
-	 <8d2e03ac-2a08-4a25-9929-dad375afb738@kernel.org>
-User-Agent: Evolution 3.52.3 (3.52.3-1.fc40)
+        Fri, 02 Aug 2024 00:51:18 -0700 (PDT)
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Viresh Kumar <vireshk@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Vinod Koul <vkoul@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width misconfig
+Date: Fri,  2 Aug 2024 10:50:45 +0300
+Message-ID: <20240802075100.6475-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, 2024-08-02 at 07:18 +0200, Jiri Slaby wrote:
-> On 01. 08. 24, 19:46, Philipp Stanner wrote:
-> > pcim_iomap_table() and pcim_iomap_regions_request_all() have been
-> > deprecated by the PCI subsystem in commit e354bb84a4c1 ("PCI:
-> > Deprecate
-> > pcim_iomap_table(), pcim_iomap_regions_request_all()").
-> >=20
-> > Replace these functions with their successors, pcim_iomap() and
-> > pcim_request_all_regions()
->=20
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+The main goal of this series is to fix the data disappearance in case of
+the DW UART handled by the DW AHB DMA engine. The problem happens on a
+portion of the data received when the pre-initialized DEV_TO_MEM
+DMA-transfer is paused and then disabled. The data just hangs up in the
+DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
+suspension (see the second commit log for details). On a way to find the
+denoted problem fix it was discovered that the driver doesn't verify the
+peripheral device address width specified by a client driver, which in its
+turn if unsupported or undefined value passed may cause DMA-transfer being
+misconfigured. It's fixed in the first patch of the series.
 
-Thank you for the review.
+In addition to that three cleanup patches follow the fixes described above
+in order to make the DWC-engine configuration procedure more coherent.
+First one simplifies the CTL_LO register setup methods. Second and third
+patches simplify the max-burst calculation procedure and unify it with the
+rest of the verification methods. Please see the patches log for more
+details.
 
-I have to provide a v2 for a small bug in one of the other patches.
-While I'm at it, I would rename the title of this patch =E2=84=968 here so =
-that
-it's "Replace" instead of "Remove", making it consistent with the other
-ones.
+Final patch is another cleanup which unifies the status variables naming
+in the driver.
 
-I'd assume that keeping your RB then would be alright. Please tell me
-if not.
+Link: https://lore.kernel.org/dmaengine/20240416162908.24180-1-fancer.lancer@gmail.com/
+Changelog v2:
+- Add a note to the Patch #1 commit message about having the verification
+  method called in the dwc_config() function. (Andy)
+- Add hyphen to "1byte" in the in-situ comment. (Andy)
+- Convert "err" to "ret" variables and add a new patch which unifies the
+  status variables naming. (Andy)
+- Add a in-situ comment regarding why the memory-side bus width
+  verification was required. (Andy)
+- Group sms+dms and smsize+dmsize local variables initializations up. (Andy)
+- Move the zero initializations out to the variables init block
+  in the prepare_ctllo() callbacks. (Andy)
+- Directly refer to dwc_config() in the commit messages. (Andy)
+- Convert dwc_verify_maxburst() to returning zero. (Andy)
+- Add a comment regarding the values utilized in dwc_verify_p_buswidth()
+  being pre-verified before the method is called. (Andy)
+- Add new patches:
+  [PATCH v2 4/6] dmaengine: dw: Define encode_maxburst() above prepare_ctllo() callbacks
+  [PATCH v2 6/6] dmaengine: dw: Unify ret-val local variable naming
+  (Andy)
 
-Cheers,
-P.
+Link: https://lore.kernel.org/dmaengine/20240419175655.25547-1-fancer.lancer@gmail.com/
+Changelog v3:
+- Rebase onto the kernel 6.10-rc4.
+- Just resend.
 
->=20
-> > Signed-off-by: Philipp Stanner <pstanner@redhat.com>
-> > ---
-> > =C2=A0 drivers/tty/serial/rp2.c | 12 +++++++-----
-> > =C2=A0 1 file changed, 7 insertions(+), 5 deletions(-)
->=20
-> thanks,
+Link: https://lore.kernel.org/dmaengine/20240627172231.24856-1-fancer.lancer@gmail.com/
+Changelog v4:
+- Rebase onto the kernel 6.11-rc1.
+- Just resend.
+
+base-commit: 8400291e289ee6b2bf9779ff1c83a291501f017b
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: dmaengine@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (6):
+  dmaengine: dw: Add peripheral bus width verification
+  dmaengine: dw: Add memory bus width verification
+  dmaengine: dw: Simplify prepare CTL_LO methods
+  dmaengine: dw: Define encode_maxburst() above prepare_ctllo()
+    callbacks
+  dmaengine: dw: Simplify max-burst calculation procedure
+  dmaengine: dw: Unify ret-val local variables naming
+
+ drivers/dma/dw/core.c     | 131 +++++++++++++++++++++++++++++++-------
+ drivers/dma/dw/dw.c       |  40 +++++++-----
+ drivers/dma/dw/idma32.c   |  19 +++---
+ drivers/dma/dw/platform.c |  20 +++---
+ drivers/dma/dw/regs.h     |   1 -
+ 5 files changed, 154 insertions(+), 57 deletions(-)
+
+-- 
+2.43.0
 
