@@ -1,176 +1,90 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0297114A0A0;
-	Fri,  2 Aug 2024 13:01:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7C118B48C
+	for <linux-serial@vger.kernel.org>; Fri,  2 Aug 2024 14:09:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722603670; cv=none; b=IhpueghBRJg3SweM4GchKNTPh4AkDDGZ+ApPE3GV1WU73YD7197hmbmJv7SfGbzSd0mNKAcyMcE3J017mdp0EcSThT5aOAGHQeDSviV3TTbSYr2+aoesv+/6Mr60l32/dHWec2QbjwmxF3eIm01SUdCLdXWToqzHI1cUQ3EkRLQ=
+	t=1722607796; cv=none; b=QTgUlJAh2HcXqrMobQN1mIdEtB3DfCOQPtD16+gKDY+rAa/u/2idt3Bnub5h0t2RnRGnEZ1Jifp3Vfyz9EOMnW62+HZG9E1m/8jQVgNcaEYS20AWyS0Do9U0o09birStLjq8BKYcpU/0IaWUQhjrXMuiPVzl3IQeF6uVmHJkCIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722603670; c=relaxed/simple;
-	bh=A2QzoTKTII1WsKG0PH3QuAO0/0n3FuaOu6aOpLAVdNQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DMt0GSEnr4E5r92N8ntnYAtYwTBRsrg1w2ECdKrkWwUUiDiGZMRh4UbkW99fBZOu86D7iD+E0enyKlv081JhS1RRKc55aBxWFLPb+Zjv0yugj0y9ygIoH5k7+9Hb4Y6bkWeikQAv9krj7AtBK7S6Wc26q/+HQf8oPsZ6pwDcn7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=S0uZlbcn; arc=none smtp.client-ip=212.227.17.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	s=arc-20240116; t=1722607796; c=relaxed/simple;
+	bh=jra6L/B4CTlR2NFq72iJu0OwzQ7WlwjqarLHxFb+pDw=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=hLCe47mqIDnsJ7vSp2dCOdcSnhoKa60AI4FG8rOQxDCDadqSCiWWioNUgUibClxXAmak2tlJkNUNENVV/vxYW3vshyx85UInsCK4sk6Ucn7oo+CEfB3i+TjLsRz/s3utkOo+oSOJHzXfybGkjKBER0PW6DIEcRF9PwotLraUy5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=foundries.io; spf=pass smtp.mailfrom=foundries.io; dkim=pass (2048-bit key) header.d=foundries.io header.i=@foundries.io header.b=hvvEoOcw; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=foundries.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foundries.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="S0uZlbcn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1722603610; x=1723208410; i=wahrenst@gmx.net;
-	bh=A2QzoTKTII1WsKG0PH3QuAO0/0n3FuaOu6aOpLAVdNQ=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=S0uZlbcn1w/QQinHP793wsvSDuLscCzWLifIO5Z1tc1YkJuqD1ROvgfz8ZGqzW1F
-	 5vZdnLMyF5DVGARxN0JdvBPeRMvrDyCiV1JpWEfG4inyd68A6EPsSXuaPCjI2IVDE
-	 WRom3o4rqhvTTBOpr7kNH+TtgRdljU870COhJDKQhsXOdQRdTnPmz/JXNTw0xuWCG
-	 yvvj3PCxseJolIa8mb1Jc6WyQyV9MIxeaede1pM40W32wkFcecbw+mjV9cCvMLZyC
-	 uZIn+g3AGZNuLV139xDLK2PEQe7057Nky71so6ZdwF4MmbJoQBf7WdD0Sdbl0w8Tz
-	 d2MUva9YUCX8yyScPw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N2E1G-1s6XwN33GQ-00uTsS; Fri, 02
- Aug 2024 15:00:09 +0200
-Message-ID: <a19767c3-c457-4e52-bc66-8f1898a83193@gmx.net>
-Date: Fri, 2 Aug 2024 15:00:07 +0200
+	dkim=pass (2048-bit key) header.d=foundries.io header.i=@foundries.io header.b="hvvEoOcw"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-1ff4fa918afso14772735ad.1
+        for <linux-serial@vger.kernel.org>; Fri, 02 Aug 2024 07:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=foundries.io; s=google; t=1722607793; x=1723212593; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=onbQXwbvGRZtHxO8bwST8GBr/BQhg0G2IIchYZX1q78=;
+        b=hvvEoOcwX/zdst73gFS59zfoB+WqikNASoQbHtrN+BZUbXurV8eiJNUWhCVa2nFvif
+         cbDZ6uBXelwQEXEZOXmuQPceNZDnO52kbE7OeGnTVTreDZLaNyD/f0CRpSkvOmnVSifw
+         lGFFzSdwAW1xSTJCtsbBkvk50gZs4B88CZxSO4iD8Qip1kfyk3zYMteTU9a4Ej+944rF
+         ptQ5t2Nwki5F4glQo1p2/3Vs3YGneQO7YNJcDeO6ninUKdsRiSnqy4IXypk4TRh4U3LG
+         gUMGxMuivNcEKMymQpIb0yWY+17P3qp7acEn9Bu96YfBkpP4yVd5IHlCKlMaR0X4ab8w
+         NUSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722607793; x=1723212593;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=onbQXwbvGRZtHxO8bwST8GBr/BQhg0G2IIchYZX1q78=;
+        b=uZGddmvfK+kywHyyNWAHy6rB5No3thK4E1eDq1wiR5b5pvhABHH4TuNb0nSDv0uwil
+         CcK2nZWun26samk/2XGeP++AW6q/7NrGQgmi9idI70qbZFbFkFmQiTfdgvJcjmD3Qncz
+         FZq7VQrStW77xerX1tBMZ1ggmBmP0uv8yrqu6F6wuAOn1WQXqpOiEIhEqEiYRXA3QP0O
+         lrEtbZe20iG/Bh7FhezW0D555kavI6/YnkVU8eu+1d7N+cFryeKjHdSTPlx5jpTYR0gb
+         biftZS0sOHkGKyPh19CX9RbrBXkH7Mx6l07sjjI4MDHeq1rpdFNO7clLmCEpUV4u4vKb
+         vQhg==
+X-Forwarded-Encrypted: i=1; AJvYcCWigt6507Rw2vgf1qPbDMnD8SxpJLpkDkFBtq+UzVK+au3fyQfVH1G1gEyfXT5qmOzmrPuknz/TU2Mnr59HHCSu3CYkrb6jHa1H87od
+X-Gm-Message-State: AOJu0YwHZQLvVrJrOa120C1fp04SMvz/0gkTghAfM5xniHmQoe++kPpN
+	Ff3thbfh4PPRhHNGqCIRMawv2RF/ZzlTluykSRFxutTJdAlhwV2M1VkSqEfu1hc=
+X-Google-Smtp-Source: AGHT+IEJePKCgDb4w8BqZv94T5BRKWH09KZwYwkz4+WJxDFtkiMmhdjqhfnHlzdRaLq/4m/TiEmvjQ==
+X-Received: by 2002:a17:902:d505:b0:1ff:49a0:46b1 with SMTP id d9443c01a7336-1ff5722e7abmr49769725ad.6.1722607792834;
+        Fri, 02 Aug 2024 07:09:52 -0700 (PDT)
+Received: from lola.lan ([2804:14c:3beb:8e:e577:62c5:62db:a016])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1ff58f6093fsm17638875ad.114.2024.08.02.07.09.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Aug 2024 07:09:52 -0700 (PDT)
+From: Daiane Angolini <daiane.angolini@foundries.io>
+To: max.oss.09@gmail.com
+Cc: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	max.krummenacher@toradex.com,
+	stable@vger.kernel.org,
+	u.kleine-koenig@pengutronix.de,
+	Daiane Angolini <daiane.angolini@foundries.io>
+Subject: [PATCH] tty: vt: conmakehash: cope with abs_srctree no longer in env
+Date: Fri,  2 Aug 2024 11:09:40 -0300
+Message-Id: <20240802140940.68961-1-daiane.angolini@foundries.io>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240725132056.9151-1-max.oss.09@gmail.com>
+References: <20240725132056.9151-1-max.oss.09@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 09/16] drm/vc4: v3d: simplify clock retrieval
-To: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Ulf Hansson <ulf.hansson@linaro.org>, Jiri Slaby <jirislaby@kernel.org>,
- Minas Harutyunyan <hminas@synopsys.com>
-Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
- Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
-References: <20240728114200.75559-1-wahrenst@gmx.net>
- <20240728130029.78279-1-wahrenst@gmx.net>
- <581726ae-dd9c-476f-817d-4140f7217ec7@igalia.com>
- <b34cc73c-721f-48b6-a7a3-da8190d80dd8@gmx.net>
- <6047643f-e1f5-4be4-b55d-f59576999d91@igalia.com>
-Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <6047643f-e1f5-4be4-b55d-f59576999d91@igalia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rSWdEotFxjzjRcS7FB9Jk7LKsLdKnIul40HzxtW2lF3Y2vSxXrn
- l9xU9sr25E9vtAbxZNcStcQNHNcUatMO2WBm/1/EunVjh6qPZWm5qcBUJfEq7ESbuhtXD30
- gZT3GhXutgYSULEvLRlZzQHSLrsiN9NYe9YcN28icOoCSq4imGrBS7R0XaAACHIgK+jNIO3
- 5QgjbTyaFZYeb6fT4XOZg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:OZcbhCw+rgg=;Wt5r+cNqth9P7BB10FttMMDVdRY
- 780NMXapa0hd8uQjXxsrCLZ9hm4j1eX/XgNtsG9ccq18VlmYPbhGeX1fNtCcuMqeaZGz7oo0C
- XXqT7v8QoQF4obr/q9WMmnz/ZxjyPk87gqs/NVUJ4isHVmmiGCeXo70exafN/BZY/WrCvz6DF
- vMGWV6FcZLEDFbGmbHF+uS/YRgjVEuTR4llOQl+b9U5/mx3vyzbX1Pcffo7HzBF5H1Xb3oFfh
- uuRli8lhw7t/3jDwONcS8w29Ehv71V1ycS8SM1STA6VKMXJGdgTv5IuBb7seDqhk8CZJfUnCa
- Ca06GbcHD98KaxdldYySk6Lb1eVd6oZJUUc84s7AZDNv6Vj4OTSbHOJobS2rmAsFNNfA1z1gj
- 8p3DX+md6vTXjq0eLRrbI7gO1/HkosGH7q1XmyW9Sbjh3zAziUD0Y+UKcJJRURexaerwJoReU
- MTUhvuPF+DPdV5lk9n+VoKZtFpoBKQNLrqqTrgU4K5eclzp4TmQm9DDIObZT+Hz9UU2OtXSfA
- p0JD7yDP6lK0g4T9XcmGeMcZy/Gus3rjPJ7AbnSEqyr6Hf5R5QN3i//ReMfvklr54QW5tn6kY
- NsCnuWH+HLJDvYaoMHrG5c7pN29pK7cUOJ7GgQtwIptDqoqZ/ERjwYcrsZXxOLdsb2iy8ZFzL
- DKUPhoWu3SS9nQDfnHawFg+WElez+aqLEtOz1XVmCwcmSWy43sU2mEIEUcLwHBH5VsgVRRsgZ
- vuW70tcUcLGg31dD57XAwXO0bA/m6yLG50DZvMRV9wBYyoMioqeqnv+wYVimiPbH8TIXiS2Ly
- wAJBrICu5oSXhF5AtupT3qOw==
+Content-Transfer-Encoding: 8bit
 
-Hi Ma=C3=ADra,
+> conmakehash uses getenv("abs_srctree") from the environment to strip
+> the absolute path from the generated sources.
+> However since commit e2bad142bb3d ("kbuild: unexport abs_srctree and
+> abs_objtree") this environment variable no longer gets set.
+> Instead use basename() to indicate the used file in a comment of the
+> generated source file.
+> 
+> Fixes: 3bd85c6c97b2 ("tty: vt: conmakehash: Don't mention the full path of the input in output")
+> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 
-Am 02.08.24 um 14:56 schrieb Ma=C3=ADra Canal:
-> Hi Stefan,
->
-> On 7/31/24 13:41, Stefan Wahren wrote:
->> Hi Ma=C3=ADra,
->>
->> Am 30.07.24 um 13:23 schrieb Ma=C3=ADra Canal:
->>> On 7/28/24 10:00, Stefan Wahren wrote:
->>>> Common pattern of handling deferred probe can be simplified with
->>>> dev_err_probe() and devm_clk_get_optional(). This results in much
->>>> less code.
->>>>
->>>> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
->>>> ---
->>>> =C2=A0 drivers/gpu/drm/vc4/vc4_v3d.c | 13 ++-----------
->>>> =C2=A0 1 file changed, 2 insertions(+), 11 deletions(-)
->>>>
->>>> diff --git a/drivers/gpu/drm/vc4/vc4_v3d.c
->>>> b/drivers/gpu/drm/vc4/vc4_v3d.c
->>>> index 1ede508a67d3..4bf3a8d24770 100644
->>>> --- a/drivers/gpu/drm/vc4/vc4_v3d.c
->>>> +++ b/drivers/gpu/drm/vc4/vc4_v3d.c
->>>> @@ -441,20 +441,11 @@ static int vc4_v3d_bind(struct device *dev,
->>>> struct device *master, void *data)
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vc4->v3d =3D v3d;
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v3d->vc4 =3D vc4;
->>>>
->>>> -=C2=A0=C2=A0=C2=A0 v3d->clk =3D devm_clk_get(dev, NULL);
->>>> +=C2=A0=C2=A0=C2=A0 v3d->clk =3D devm_clk_get_optional(dev, NULL);
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (IS_ERR(v3d->clk)) {
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int ret =3D PT=
-R_ERR(v3d->clk);
->>>>
->>>
->>> Super nit: you could delete this line ^
->> Can you please explain? ret is required for dev_err_probe or do you mea=
-n
->> the empty line after the declaration?
->
-> Just deleting the empty line after the declaration. It is a super small
-> nit indeed.
-AFAIK an empty line after a declaration is part of the coding style. Or
-is different in drm?
-
-Best regards
->
-> Best Regards,
-> - Ma=C3=ADra
->
->>>
->>> Reviewed-by: Ma=C3=ADra Canal <mcanal@igalia.com>
->>>
->>> Best Regards,
->>> - Ma=C3=ADra
->>>
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret =3D=3D -ENOENT) {
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /=
-* bcm2835 didn't have a clock reference in the DT. */
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
-et =3D 0;
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 v=
-3d->clk =3D NULL;
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } else {
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 i=
-f (ret !=3D -EPROBE_DEFER)
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 dev_err(dev, "Failed to get V3D clock: %d\n",
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret);
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 r=
-eturn ret;
->>>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return dev_err_probe(dev,=
- ret, "Failed to get V3D clock\n");
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->>>>
->>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D platform_get_irq(pdev, 0);
->>>> --
->>>> 2.34.1
->>>>
->>>
->>
+Tested-by: Daiane Angolini <daiane.angolini@foundries.io>
 
