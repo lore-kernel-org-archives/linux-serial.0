@@ -1,101 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from intartek.com (intartek.com [185.20.185.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8513B79F4;
-	Fri,  2 Aug 2024 00:44:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1861A1849
+	for <linux-serial@vger.kernel.org>; Fri,  2 Aug 2024 04:21:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.20.185.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722559483; cv=none; b=DrEsc9t/dxAxX+se4K8rUMqkzAGS+B50SwIxLsKDZgSa8ZyIlkNzLEgIWQo+g5XDTb7hcPKvGAmjh+uPAFvRSOOxBY9/kOo5le4LMqUCdtzIqHaz8pOOs3CZm2+VM9rWzw98m4m8i6OHEVZfh5ayavPUm+BZ6CXuMLNg9dohJdM=
+	t=1722572474; cv=none; b=s+Gx9QvvfR54Px62MISHAW7AgQFeYIp9SM+ymgGfKRwHIz+89HFyLEC20sTJjbxLtOWr4mhFUi6EwR88BsZCw88wUuSikrQ2k2hV3t09OjSHXIfVSmwi8OzhbOy6rqDnBQH0JGmIkuUJeN99StNezbDxrXDC9fC7JFRmbUdw13U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722559483; c=relaxed/simple;
-	bh=vviD2XNV3ruNlAaNBhuqEpZMiplNW3m2aWANZWIFIMs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ajNa88b0tDMOecxXYtXAQavU8Wxx7uDPDnn50MhtR0fdjD2AX88Hen69SlDzniFAmgbBgIsIXnguOe/RaY+bxnRDF6/3ZjdpQnmcc5jbMyLCMjQuwoGQTHyqWimZuzAy/Le5Cg9jxfDviK8KzIp/kXbmaTDZp7UzH8dHeh+DdVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mQg3hemQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722572474; c=relaxed/simple;
+	bh=7hgoStDB+QXMebz5dkQSScslIe9abkgs/w4nadd/tME=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=chLg8xkLSOdBFDwCJ/ptjHjuXOllJVt/2zt6M/+8fMW3fGkgx8SUO3FJSA0/DPVpRiBLYKzSscckRMKiX5kRcV8gIHaPAC5u01e2Ox4osbik4Yt85hDJPj+ZL2FaKDoQIDrmg5x1FVjxt7YGbq7Hns+iEp6/uJbGhLyhCOeeUoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=main.intartek.com; spf=pass smtp.mailfrom=main.intartek.com; dkim=pass (2048-bit key) header.d=main.intartek.com header.i=@main.intartek.com header.b=kWOk0ZnK; arc=none smtp.client-ip=185.20.185.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=main.intartek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=main.intartek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mQg3hemQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10163C32786;
-	Fri,  2 Aug 2024 00:44:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722559483;
-	bh=vviD2XNV3ruNlAaNBhuqEpZMiplNW3m2aWANZWIFIMs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mQg3hemQQjFzdnitRjbG7Faui1IIYAqWLwzd4TF6GC1y+yAc21bAvVPcpmluopNqD
-	 8BoSaPGOdRzR+u0xOjRD+V9gc9ZyZRn/20bUaqAXT6bpyMDvevM3rgvW/SwkjsyD4V
-	 eCk37QGd2SJL/5zMfkDSRY1mQXTR2lrxZtErxTqxEa3S1Hse5DCV/QLsjzLlum8ONd
-	 mz6y374bb3jnW7BMtBGWaDiA0+iTeh+EwfhH7NEMb6Koqwf+R9qSaSxTib/QkJoAat
-	 5CQIfj29LnyyopZYLBPP5+pPd3wX230rlbDBmf7fXPgSjz6VyM2ZbsW5WsiJh+tDu6
-	 GqUrWRGsqkP8Q==
-Message-ID: <c1c9ea44-d309-4d02-858e-be70a17050e7@kernel.org>
-Date: Fri, 2 Aug 2024 09:44:36 +0900
+	dkim=pass (2048-bit key) header.d=main.intartek.com header.i=@main.intartek.com header.b="kWOk0ZnK"
+Received: from 239.32.165.34.bc.googleusercontent.com (239.32.165.34.bc.googleusercontent.com [34.165.32.239])
+	by intartek.com (Postfix) with ESMTPA id 21DB38202A
+	for <linux-serial@vger.kernel.org>; Fri,  2 Aug 2024 04:19:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=main.intartek.com;
+	s=202406; t=1722572399;
+	bh=7hgoStDB+QXMebz5dkQSScslIe9abkgs/w4nadd/tME=;
+	h=Reply-To:From:To:Subject:Date:From;
+	b=kWOk0ZnK22tUof9bhWhmruAX6QYFItgn5nFR82JiJQcDiTRQNW6D6k1zuT42OLgmE
+	 e5V1yUFbj5Z54GCjDAF91GBroqa1ZXOWly6jSN6b0dnx2g9N7Fic9MgFhq/XVO+h8r
+	 Q7sLbA98V8tJ7BImENYitJlyVWO1L8qYBFErwlSn7sHqGyLFwMNFly68+hhdrpYy54
+	 mbJHhHc8cc7w/tuA0VRKmYJD9JPfa5IzctYwlMWhyqALAc6Ti1sxyRbSIxuU7zu/tG
+	 gvD0Wp2QtRyTFIFJO2/1YPBiCqfe03ISz92i8odVUE5LfwaTM4WsCN/HeAQnq7rwLL
+	 ju7f2oeWLmcjw==
+Reply-To: "Antonov|DPR" <antonov@neftelensk.su>
+From: "Antonov|DPR" <privateservices@main.intartek.com>
+To: linux-serial@vger.kernel.org
+Subject: Kazakhstan Crude Oil Product Offer REF:thghqo01
+Date: 2 Aug 2024 04:19:58 +0000
+Message-ID: <20240802041958.0445D7398BC3B3B3@main.intartek.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 10/10] PCI: Remove pcim_iomap_regions_request_all()
-To: Philipp Stanner <pstanner@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
- Niklas Cassel <cassel@kernel.org>,
- Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- "David S. Miller" <davem@davemloft.net>,
- Boris Brezillon <bbrezillon@kernel.org>, Arnaud Ebalard <arno@natisbad.org>,
- Srujana Challa <schalla@marvell.com>,
- Alexander Shishkin <alexander.shishkin@linux.intel.com>,
- Miri Korenblit <miriam.rachel.korenblit@intel.com>,
- Kalle Valo <kvalo@kernel.org>, Serge Semin <fancer.lancer@gmail.com>,
- Jon Mason <jdmason@kudzu.us>, Dave Jiang <dave.jiang@intel.com>,
- Allen Hubbe <allenbh@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Kevin Cernekee <cernekee@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
- Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
- David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Jie Wang <jie.wang@intel.com>, Adam Guerin <adam.guerin@intel.com>,
- Shashank Gupta <shashank.gupta@intel.com>,
- Damian Muszynski <damian.muszynski@intel.com>,
- Nithin Dabilpuram <ndabilpuram@marvell.com>,
- Bharat Bhushan <bbhushan2@marvell.com>,
- Johannes Berg <johannes.berg@intel.com>,
- Gregory Greenman <gregory.greenman@intel.com>,
- Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
- Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
- Breno Leitao <leitao@debian.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- John Ogness <john.ogness@linutronix.de>, Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-ide@vger.kernel.org, qat-linux@intel.com,
- linux-crypto@vger.kernel.org, linux-wireless@vger.kernel.org,
- ntb@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
-References: <20240801174608.50592-1-pstanner@redhat.com>
- <20240801174608.50592-11-pstanner@redhat.com>
-From: Damien Le Moal <dlemoal@kernel.org>
-Content-Language: en-US
-Organization: Western Digital Research
-In-Reply-To: <20240801174608.50592-11-pstanner@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 8/2/24 02:46, Philipp Stanner wrote:
-> pcim_iomap_regions_request_all() had been deprecated in
-> commit e354bb84a4c1 ("PCI: Deprecate pcim_iomap_table(),
-> pcim_iomap_regions_request_all()").
-> 
-> All users of this function have been ported to other interfaces by now.
-> 
-> Remove pcim_iomap_regions_request_all().
-> 
-> Signed-off-by: Philipp Stanner <pstanner@redhat.com>
+Dear linux-serial,
 
-Reviewed-by: Damien Le Moal <dlemoal@kernel.org>
+I hope this message finds you well. My name is Antonov, and I am=20
+a sales representative authorized by leading refineries in=20
+Kazakhstan to negotiate the sale of crude oil products worldwide.
 
--- 
-Damien Le Moal
-Western Digital Research
+If you are interested in purchasing crude oil products, we can=20
+facilitate the process. The refinery has sufficient product=20
+allocation to supply to serious buyers.
 
+We currently offer a range of products including Petcoke, Ultra-
+Low Sulphur Diesel, East Siberia-Pacific Ocean (ESPO) Blend,=20
+Russian Light Cycle Oil (LCO), LNG, LPG, Jet Fuel, and more. All=20
+our products meet SGS and GOST-R standards, and we guarantee=20
+timely delivery.
+
+Thank you for your attention. I look forward to your response and=20
+to discussing further details.
+
+Best regards,=20=20
+Antonov
+
+Message REF1: hxcmrjq02Q
+Message Timestamp: 8/2/2024 4:19:58 a.m.
