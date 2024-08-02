@@ -1,232 +1,208 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FCB31C3784;
-	Fri,  2 Aug 2024 07:51:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85FE61EB4B6;
+	Fri,  2 Aug 2024 08:01:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722585095; cv=none; b=NyFsPTnkQ0Ww4BD94BCsOlzQ+yAmMhiGPgWuUO7n56In5s8VzjOCgZPyElIZuwh5aLllVTdEApBW3MI6S8Us+8+50iuEjY8xFJ4iIPiciuOtOvPljPj76/B/6/7/3M6nWH1VxY2t5bBl2z0BpVj7koC6fK/5GKRySFJ4RNq1kn8=
+	t=1722585688; cv=none; b=qZ26qQ2vdPystPMXSfynNlLMK1EGF4MdSQ1ptkak65prsW0Qb8Bj7kCwyRb3bZUkVCPjrIANvMOKYHja9XyvuSxqdNzLneKaQGDXQZ9dl5DHSZO6hAnf0z0RpFKL+0XJyf5m9sbvxORqva0zldNCimF/MD8pbsqa+jm/UfONi6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722585095; c=relaxed/simple;
-	bh=fes4+PALn4aJD0RUIggf2YkD7O8aHh0ck1WvSCbST4Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mSGaXiYIOCS8w1tGPQ4bJ7WTc0EN7rFwajjOupQ9nzCsrB0IG5ZxHDbTg301H3yOpujQS6VfVNbQbXfBX8vVDcJqS+Wap7YtdYc/PpxkvUR5x4xYjdVYgYc71Z/rf6Xs2C1ckWhKQu+tXNbePMHSlbra2XMsAzjDjXDeQ6Sg3dI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HIZ2Xqyj; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722585688; c=relaxed/simple;
+	bh=+RPF19zxpzjlvYCTbY+grIfPZrP90fYFntEOY8xsHMs=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hSZr+tyc8gjXpT50cNqMsM6N2FxDJvJ/pETJnO/+1CTNK2yqEDKuk9LmrpUuSruvdumlKp3kLO95nYWDjN0C7fI3rTkux255h9h1PUW6ku8KT8UneW1TZxgSdMP9hmKG76d61xdQwwW93d0WYV9GlhH0R13VgMlKEiBaxMHvpdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gV+dy6Hb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OBpPn8MH; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gV+dy6Hb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OBpPn8MH; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HIZ2Xqyj"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-52fc4388a64so13002528e87.1;
-        Fri, 02 Aug 2024 00:51:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722585091; x=1723189891; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lHiD9v1JsXXcE41UkTPqhgsLCw9iYgVEo+i0Dc9T+lk=;
-        b=HIZ2XqyjBcrLbc3nMyw1EC1Tw5HxCaJzM8M4wKpyE/nFWZ6/70UDRog+90VYyRV0fS
-         MBlsdzk+Ebo9af+5ElX6TbdHmecK34Zm7BxYhkShyJIe8Sdyfcs/6apgXoOBTKifrOL9
-         1Sdp3quPw6DXVu+hzWuCikO6azgjRE0n/tsV/glbCQYTBL4Uh+NUYMYgXg4IH7yQCYKZ
-         Ba3hSEWHNHYk28GFoCqaKE5BuNmexjiQHEMce7GWFK4UFqyE4TeXg23KCqIamrm/vQMA
-         /S/aCxsH8KF0ciHtq0wiugbuxAYHv9Ea7jjzp5OTaa6hEyiJ4LN33CzJQDWPwnyLZyAz
-         mKmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722585091; x=1723189891;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lHiD9v1JsXXcE41UkTPqhgsLCw9iYgVEo+i0Dc9T+lk=;
-        b=sxQki1E9Tw9oFcqoZl2MvR77lMw8pAnDTJ3AdbhEWW/w/aI2Nh4O/hRAh1rpiLk8XL
-         cXJQulwkJwaP6sOt4dUbFJ8s2xnbwgPACyqtV7cNrjQEyxphERZuxIg4dGIiUuHsAF3/
-         OR5RW5CKnaCp+G8wauy8gp+0y9x4A0ZiSab42RvpFbOrvEZGE6RlFME2241ADxPQsZSB
-         D9o8A9Dz1DzBE82jq9pJc4kYI/Zj7mQN0HAb620Wsvs+XnH5FBcbYzdXsLo5SCAlJUBk
-         ROBPAr/7qc7dGdRiwt6gYoHSiF69yPW91/QgAkCzXJxvTWgaxEBRNWtaEpetjrkvtR0i
-         Ouuw==
-X-Forwarded-Encrypted: i=1; AJvYcCVj7uTfP1h+cwlj2Uip54oCsrWJI67LX0vV3x4ZD8TPW3pFiaNwDglYI1zRkeCWveuUdloQ3G/pY88vOJNpFLbP6mguhim93qfr8qsw56OUhvbbg4I9VbkXUF87gmmfYzgUzmE8050uUAiePl45Gbz+fTZ5SHLbzSwOdgFB7gS/MKP9QB4W
-X-Gm-Message-State: AOJu0YzxrzS+VBenR4cC84ISANeX6wsIe1aIMstw6Y7apsxhi3+ktIvG
-	qgYIDgFMd/0wf9f1sVTIjqDSwJs//+MK1hrvq0QUpUbnxOACKaAB
-X-Google-Smtp-Source: AGHT+IEMxf4N4s3xFraxbRmN9YP31vVSJKb9vVw4lnrxgYP2s4t4P5fTafWSGlWROhVsyRlaGnRdOA==
-X-Received: by 2002:a05:6512:685:b0:52f:c2fa:b213 with SMTP id 2adb3069b0e04-530bb3b1210mr1771229e87.55.1722585091141;
-        Fri, 02 Aug 2024 00:51:31 -0700 (PDT)
-Received: from localhost ([178.176.56.174])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-530bba29fd9sm158725e87.122.2024.08.02.00.51.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Aug 2024 00:51:30 -0700 (PDT)
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Viresh Kumar <vireshk@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Vinod Koul <vkoul@kernel.org>
-Cc: Serge Semin <fancer.lancer@gmail.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v4 6/6] dmaengine: dw: Unify ret-val local variables naming
-Date: Fri,  2 Aug 2024 10:50:51 +0300
-Message-ID: <20240802075100.6475-7-fancer.lancer@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240802075100.6475-1-fancer.lancer@gmail.com>
-References: <20240802075100.6475-1-fancer.lancer@gmail.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gV+dy6Hb";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OBpPn8MH";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gV+dy6Hb";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OBpPn8MH"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id AF21F2193C;
+	Fri,  2 Aug 2024 08:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1722585684; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
+	b=gV+dy6HbW8R3P7OG9uh6RP1bjX0DVZqjFjhTbWkrR9S7VP8Web/ce6ZKRSbjfDx72JBVOi
+	O+1JsszkXDGvbjaVYtwmNaGEGnMe453X7lcUhXPk+FnD3wZY6wl/dUwH++bAS4lBwq+p4y
+	H0/A+sRM7ZNvSD5SVj4y83dWMpROtws=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1722585684;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
+	b=OBpPn8MHCWvKZ7UJR8thx66+D8gmFu9DOUBW6ku1tH5yANcLOexdH1xlHzpMr2HdCc7xco
+	vOrWI2InCG9uByCg==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gV+dy6Hb;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=OBpPn8MH
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1722585684; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
+	b=gV+dy6HbW8R3P7OG9uh6RP1bjX0DVZqjFjhTbWkrR9S7VP8Web/ce6ZKRSbjfDx72JBVOi
+	O+1JsszkXDGvbjaVYtwmNaGEGnMe453X7lcUhXPk+FnD3wZY6wl/dUwH++bAS4lBwq+p4y
+	H0/A+sRM7ZNvSD5SVj4y83dWMpROtws=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1722585684;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
+	b=OBpPn8MHCWvKZ7UJR8thx66+D8gmFu9DOUBW6ku1tH5yANcLOexdH1xlHzpMr2HdCc7xco
+	vOrWI2InCG9uByCg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7C3351388E;
+	Fri,  2 Aug 2024 08:01:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id Wo4KHVOSrGazDwAAD6G6ig
+	(envelope-from <tiwai@suse.de>); Fri, 02 Aug 2024 08:01:23 +0000
+Date: Fri, 02 Aug 2024 10:02:00 +0200
+Message-ID: <87ed77ic93.wl-tiwai@suse.de>
+From: Takashi Iwai <tiwai@suse.de>
+To: Philipp Stanner <pstanner@redhat.com>
+Cc: Jonathan Corbet <corbet@lwn.net>,	Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,	Giovanni Cabiddu
+ <giovanni.cabiddu@intel.com>,	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,	Boris Brezillon
+ <bbrezillon@kernel.org>,	Arnaud Ebalard <arno@natisbad.org>,	Srujana Challa
+ <schalla@marvell.com>,	Alexander Shishkin
+ <alexander.shishkin@linux.intel.com>,	Miri Korenblit
+ <miriam.rachel.korenblit@intel.com>,	Kalle Valo <kvalo@kernel.org>,	Serge
+ Semin <fancer.lancer@gmail.com>,	Jon Mason <jdmason@kudzu.us>,	Dave Jiang
+ <dave.jiang@intel.com>,	Allen Hubbe <allenbh@gmail.com>,	Bjorn Helgaas
+ <bhelgaas@google.com>,	Kevin Cernekee <cernekee@gmail.com>,	Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>,	Jiri Slaby
+ <jirislaby@kernel.org>,	Jaroslav Kysela <perex@perex.cz>,	Takashi Iwai
+ <tiwai@suse.com>,	Mark Brown <broonie@kernel.org>,	David Lechner
+ <dlechner@baylibre.com>,	Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+ <u.kleine-koenig@pengutronix.de>,	Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>,	Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>,	Jie Wang <jie.wang@intel.com>,	Adam
+ Guerin <adam.guerin@intel.com>,	Shashank Gupta <shashank.gupta@intel.com>,
+	Damian Muszynski <damian.muszynski@intel.com>,	Nithin Dabilpuram
+ <ndabilpuram@marvell.com>,	Bharat Bhushan <bbhushan2@marvell.com>,	Johannes
+ Berg <johannes.berg@intel.com>,	Gregory Greenman
+ <gregory.greenman@intel.com>,	Emmanuel Grumbach
+ <emmanuel.grumbach@intel.com>,	Yedidya Benshimol
+ <yedidya.ben.shimol@intel.com>,	Breno Leitao <leitao@debian.org>,	Ilpo
+ =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,	John Ogness
+ <john.ogness@linutronix.de>,	Thomas Gleixner <tglx@linutronix.de>,
+	linux-doc@vger.kernel.org,	linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org,	qat-linux@intel.com,
+	linux-crypto@vger.kernel.org,	linux-wireless@vger.kernel.org,
+	ntb@lists.linux.dev,	linux-pci@vger.kernel.org,
+	linux-serial@vger.kernel.org,	linux-sound@vger.kernel.org
+Subject: Re: [PATCH 09/10] ALSA: korg1212: Replace deprecated PCI functions
+In-Reply-To: <20240801174608.50592-10-pstanner@redhat.com>
+References: <20240801174608.50592-1-pstanner@redhat.com>
+	<20240801174608.50592-10-pstanner@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Rspamd-Queue-Id: AF21F2193C
+X-Spam-Score: -1.81
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-1.81 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_CC(0.00)[lwn.net,kernel.org,intel.com,gondor.apana.org.au,davemloft.net,natisbad.org,marvell.com,linux.intel.com,gmail.com,kudzu.us,google.com,linuxfoundation.org,perex.cz,suse.com,baylibre.com,pengutronix.de,huawei.com,debian.org,linutronix.de,vger.kernel.org,lists.linux.dev];
+	ARC_NA(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	R_RATELIMIT(0.00)[to_ip_from(RLp4wjbahqp9imfp3xd18ktmsn)];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	DWL_DNSWL_BLOCKED(0.00)[suse.de:dkim];
+	RCPT_COUNT_GT_50(0.00)[52];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:dkim]
 
-Currently there are two names utilized in the driver to keep the functions
-call status: ret and err. For the sake of unification convert to using the
-first version only.
+On Thu, 01 Aug 2024 19:46:07 +0200,
+Philipp Stanner wrote:
+> 
+> pcim_iomap_table() and pcim_iomap_regions_request_all() have been
+> deprecated by the PCI subsystem in commit e354bb84a4c1 ("PCI: Deprecate
+> pcim_iomap_table(), pcim_iomap_regions_request_all()").
+> 
+> Replace these functions with their successors, pcim_iomap() and
+> pcim_request_all_regions()
+> 
+> Signed-off-by: Philipp Stanner <pstanner@redhat.com>
 
-Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+Reviewed-by: Takashi Iwai <tiwai@suse.de>
 
----
+And feel free to take my ack to v2 if the further change will be only
+about the description, too :)
 
-Changelog v2:
-- New patch created on v2 review stage. (Andy)
----
- drivers/dma/dw/core.c     | 20 ++++++++++----------
- drivers/dma/dw/platform.c | 20 ++++++++++----------
- 2 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-index c696d79b911a..602f1208ab9b 100644
---- a/drivers/dma/dw/core.c
-+++ b/drivers/dma/dw/core.c
-@@ -1149,7 +1149,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 	bool			autocfg = false;
- 	unsigned int		dw_params;
- 	unsigned int		i;
--	int			err;
-+	int			ret;
- 
- 	dw->pdata = devm_kzalloc(chip->dev, sizeof(*dw->pdata), GFP_KERNEL);
- 	if (!dw->pdata)
-@@ -1165,7 +1165,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 
- 		autocfg = dw_params >> DW_PARAMS_EN & 1;
- 		if (!autocfg) {
--			err = -EINVAL;
-+			ret = -EINVAL;
- 			goto err_pdata;
- 		}
- 
-@@ -1185,7 +1185,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 		pdata->chan_allocation_order = CHAN_ALLOCATION_ASCENDING;
- 		pdata->chan_priority = CHAN_PRIORITY_ASCENDING;
- 	} else if (chip->pdata->nr_channels > DW_DMA_MAX_NR_CHANNELS) {
--		err = -EINVAL;
-+		ret = -EINVAL;
- 		goto err_pdata;
- 	} else {
- 		memcpy(dw->pdata, chip->pdata, sizeof(*dw->pdata));
-@@ -1197,7 +1197,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 	dw->chan = devm_kcalloc(chip->dev, pdata->nr_channels, sizeof(*dw->chan),
- 				GFP_KERNEL);
- 	if (!dw->chan) {
--		err = -ENOMEM;
-+		ret = -ENOMEM;
- 		goto err_pdata;
- 	}
- 
-@@ -1215,15 +1215,15 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 					 sizeof(struct dw_desc), 4, 0);
- 	if (!dw->desc_pool) {
- 		dev_err(chip->dev, "No memory for descriptors dma pool\n");
--		err = -ENOMEM;
-+		ret = -ENOMEM;
- 		goto err_pdata;
- 	}
- 
- 	tasklet_setup(&dw->tasklet, dw_dma_tasklet);
- 
--	err = request_irq(chip->irq, dw_dma_interrupt, IRQF_SHARED,
-+	ret = request_irq(chip->irq, dw_dma_interrupt, IRQF_SHARED,
- 			  dw->name, dw);
--	if (err)
-+	if (ret)
- 		goto err_pdata;
- 
- 	INIT_LIST_HEAD(&dw->dma.channels);
-@@ -1335,8 +1335,8 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 	 */
- 	dma_set_max_seg_size(dw->dma.dev, dw->chan[0].block_size);
- 
--	err = dma_async_device_register(&dw->dma);
--	if (err)
-+	ret = dma_async_device_register(&dw->dma);
-+	if (ret)
- 		goto err_dma_register;
- 
- 	dev_info(chip->dev, "DesignWare DMA Controller, %d channels\n",
-@@ -1350,7 +1350,7 @@ int do_dma_probe(struct dw_dma_chip *chip)
- 	free_irq(chip->irq, dw);
- err_pdata:
- 	pm_runtime_put_sync_suspend(chip->dev);
--	return err;
-+	return ret;
- }
- 
- int do_dma_remove(struct dw_dma_chip *chip)
-diff --git a/drivers/dma/dw/platform.c b/drivers/dma/dw/platform.c
-index 7d9d4c951724..47c58ad468cb 100644
---- a/drivers/dma/dw/platform.c
-+++ b/drivers/dma/dw/platform.c
-@@ -29,7 +29,7 @@ static int dw_probe(struct platform_device *pdev)
- 	struct dw_dma_chip_pdata *data;
- 	struct dw_dma_chip *chip;
- 	struct device *dev = &pdev->dev;
--	int err;
-+	int ret;
- 
- 	match = device_get_match_data(dev);
- 	if (!match)
-@@ -51,9 +51,9 @@ static int dw_probe(struct platform_device *pdev)
- 	if (IS_ERR(chip->regs))
- 		return PTR_ERR(chip->regs);
- 
--	err = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--	if (err)
--		return err;
-+	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	if (ret)
-+		return ret;
- 
- 	if (!data->pdata)
- 		data->pdata = dev_get_platdata(dev);
-@@ -69,14 +69,14 @@ static int dw_probe(struct platform_device *pdev)
- 	chip->clk = devm_clk_get_optional(chip->dev, "hclk");
- 	if (IS_ERR(chip->clk))
- 		return PTR_ERR(chip->clk);
--	err = clk_prepare_enable(chip->clk);
--	if (err)
--		return err;
-+	ret = clk_prepare_enable(chip->clk);
-+	if (ret)
-+		return ret;
- 
- 	pm_runtime_enable(&pdev->dev);
- 
--	err = data->probe(chip);
--	if (err)
-+	ret = data->probe(chip);
-+	if (ret)
- 		goto err_dw_dma_probe;
- 
- 	platform_set_drvdata(pdev, data);
-@@ -90,7 +90,7 @@ static int dw_probe(struct platform_device *pdev)
- err_dw_dma_probe:
- 	pm_runtime_disable(&pdev->dev);
- 	clk_disable_unprepare(chip->clk);
--	return err;
-+	return ret;
- }
- 
- static void dw_remove(struct platform_device *pdev)
--- 
-2.43.0
+thanks,
 
+Takashi
+
+
+> ---
+>  sound/pci/korg1212/korg1212.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/sound/pci/korg1212/korg1212.c b/sound/pci/korg1212/korg1212.c
+> index 5c2cac201a28..b5428ac34d3b 100644
+> --- a/sound/pci/korg1212/korg1212.c
+> +++ b/sound/pci/korg1212/korg1212.c
+> @@ -2106,7 +2106,7 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
+>          for (i=0; i<kAudioChannels; i++)
+>                  korg1212->volumePhase[i] = 0;
+>  
+> -	err = pcim_iomap_regions_request_all(pci, 1 << 0, "korg1212");
+> +	err = pcim_request_all_regions(pci, "korg1212");
+>  	if (err < 0)
+>  		return err;
+>  
+> @@ -2128,7 +2128,9 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
+>  		   korg1212->iomem2, iomem2_size,
+>  		   stateName[korg1212->cardState]);
+>  
+> -	korg1212->iobase = pcim_iomap_table(pci)[0];
+> +	korg1212->iobase = pcim_iomap(pci, 0, 0);
+> +	if (!korg1212->iobase)
+> +		return -ENOMEM;
+>  
+>  	err = devm_request_irq(&pci->dev, pci->irq, snd_korg1212_interrupt,
+>                            IRQF_SHARED,
+> -- 
+> 2.45.2
+> 
