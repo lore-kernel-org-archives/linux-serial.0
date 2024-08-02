@@ -1,208 +1,170 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85FE61EB4B6;
-	Fri,  2 Aug 2024 08:01:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E45971C37BC;
+	Fri,  2 Aug 2024 08:08:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722585688; cv=none; b=qZ26qQ2vdPystPMXSfynNlLMK1EGF4MdSQ1ptkak65prsW0Qb8Bj7kCwyRb3bZUkVCPjrIANvMOKYHja9XyvuSxqdNzLneKaQGDXQZ9dl5DHSZO6hAnf0z0RpFKL+0XJyf5m9sbvxORqva0zldNCimF/MD8pbsqa+jm/UfONi6E=
+	t=1722586085; cv=none; b=KBqX3Gw/R8crYUzSJOPtxQUnzlHiaMyDlCEmwnYffTTUilcynxV7IluF6qGy5+wTiYzUNNKu+DQmjSQORHTWRjtLzlgCVYPf/HEavb9rSIBDi0BsDE2e+r0bxfu7Jlyg8ZtiCITr4DyFc6ZWgSwJZSUV9d8mOVN5nKQmILFLXvc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722585688; c=relaxed/simple;
-	bh=+RPF19zxpzjlvYCTbY+grIfPZrP90fYFntEOY8xsHMs=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hSZr+tyc8gjXpT50cNqMsM6N2FxDJvJ/pETJnO/+1CTNK2yqEDKuk9LmrpUuSruvdumlKp3kLO95nYWDjN0C7fI3rTkux255h9h1PUW6ku8KT8UneW1TZxgSdMP9hmKG76d61xdQwwW93d0WYV9GlhH0R13VgMlKEiBaxMHvpdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gV+dy6Hb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OBpPn8MH; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=gV+dy6Hb; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=OBpPn8MH; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1722586085; c=relaxed/simple;
+	bh=1eIISpZQkPPv2bNTH8sY8k7lXTjpMWMXMPBkf/xtonY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ndPpIsPSPmV0DoO4C8yaYq981oTAB90QnxzqZcx/j9uxoA6KikSn/BL9yLH9djt6+/C707dBM1TNTcFxfoAQyFSmwMFXJvbxj5zTWNHBrJz4NgSICKhaVL9YPC+cQlrnsCRMlUSBBS5CLK6Cky7dLiBxbTY4P3cPUj5S1akHF1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RdpaKsdS; arc=none smtp.client-ip=209.85.208.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gV+dy6Hb";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OBpPn8MH";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="gV+dy6Hb";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="OBpPn8MH"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id AF21F2193C;
-	Fri,  2 Aug 2024 08:01:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1722585684; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
-	b=gV+dy6HbW8R3P7OG9uh6RP1bjX0DVZqjFjhTbWkrR9S7VP8Web/ce6ZKRSbjfDx72JBVOi
-	O+1JsszkXDGvbjaVYtwmNaGEGnMe453X7lcUhXPk+FnD3wZY6wl/dUwH++bAS4lBwq+p4y
-	H0/A+sRM7ZNvSD5SVj4y83dWMpROtws=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1722585684;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
-	b=OBpPn8MHCWvKZ7UJR8thx66+D8gmFu9DOUBW6ku1tH5yANcLOexdH1xlHzpMr2HdCc7xco
-	vOrWI2InCG9uByCg==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gV+dy6Hb;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=OBpPn8MH
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1722585684; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
-	b=gV+dy6HbW8R3P7OG9uh6RP1bjX0DVZqjFjhTbWkrR9S7VP8Web/ce6ZKRSbjfDx72JBVOi
-	O+1JsszkXDGvbjaVYtwmNaGEGnMe453X7lcUhXPk+FnD3wZY6wl/dUwH++bAS4lBwq+p4y
-	H0/A+sRM7ZNvSD5SVj4y83dWMpROtws=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1722585684;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4BS7F6/VnwHnr5d6vmx7l+U580Ch90URY4uXrae65JM=;
-	b=OBpPn8MHCWvKZ7UJR8thx66+D8gmFu9DOUBW6ku1tH5yANcLOexdH1xlHzpMr2HdCc7xco
-	vOrWI2InCG9uByCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7C3351388E;
-	Fri,  2 Aug 2024 08:01:23 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Wo4KHVOSrGazDwAAD6G6ig
-	(envelope-from <tiwai@suse.de>); Fri, 02 Aug 2024 08:01:23 +0000
-Date: Fri, 02 Aug 2024 10:02:00 +0200
-Message-ID: <87ed77ic93.wl-tiwai@suse.de>
-From: Takashi Iwai <tiwai@suse.de>
-To: Philipp Stanner <pstanner@redhat.com>
-Cc: Jonathan Corbet <corbet@lwn.net>,	Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>,	Giovanni Cabiddu
- <giovanni.cabiddu@intel.com>,	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>,	Boris Brezillon
- <bbrezillon@kernel.org>,	Arnaud Ebalard <arno@natisbad.org>,	Srujana Challa
- <schalla@marvell.com>,	Alexander Shishkin
- <alexander.shishkin@linux.intel.com>,	Miri Korenblit
- <miriam.rachel.korenblit@intel.com>,	Kalle Valo <kvalo@kernel.org>,	Serge
- Semin <fancer.lancer@gmail.com>,	Jon Mason <jdmason@kudzu.us>,	Dave Jiang
- <dave.jiang@intel.com>,	Allen Hubbe <allenbh@gmail.com>,	Bjorn Helgaas
- <bhelgaas@google.com>,	Kevin Cernekee <cernekee@gmail.com>,	Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>,	Jiri Slaby
- <jirislaby@kernel.org>,	Jaroslav Kysela <perex@perex.cz>,	Takashi Iwai
- <tiwai@suse.com>,	Mark Brown <broonie@kernel.org>,	David Lechner
- <dlechner@baylibre.com>,	Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
- <u.kleine-koenig@pengutronix.de>,	Jonathan Cameron
- <Jonathan.Cameron@huawei.com>,	Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>,	Jie Wang <jie.wang@intel.com>,	Adam
- Guerin <adam.guerin@intel.com>,	Shashank Gupta <shashank.gupta@intel.com>,
-	Damian Muszynski <damian.muszynski@intel.com>,	Nithin Dabilpuram
- <ndabilpuram@marvell.com>,	Bharat Bhushan <bbhushan2@marvell.com>,	Johannes
- Berg <johannes.berg@intel.com>,	Gregory Greenman
- <gregory.greenman@intel.com>,	Emmanuel Grumbach
- <emmanuel.grumbach@intel.com>,	Yedidya Benshimol
- <yedidya.ben.shimol@intel.com>,	Breno Leitao <leitao@debian.org>,	Ilpo
- =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,	John Ogness
- <john.ogness@linutronix.de>,	Thomas Gleixner <tglx@linutronix.de>,
-	linux-doc@vger.kernel.org,	linux-kernel@vger.kernel.org,
-	linux-ide@vger.kernel.org,	qat-linux@intel.com,
-	linux-crypto@vger.kernel.org,	linux-wireless@vger.kernel.org,
-	ntb@lists.linux.dev,	linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org,	linux-sound@vger.kernel.org
-Subject: Re: [PATCH 09/10] ALSA: korg1212: Replace deprecated PCI functions
-In-Reply-To: <20240801174608.50592-10-pstanner@redhat.com>
-References: <20240801174608.50592-1-pstanner@redhat.com>
-	<20240801174608.50592-10-pstanner@redhat.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RdpaKsdS"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-2eeb1051360so86983121fa.0;
+        Fri, 02 Aug 2024 01:08:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1722586082; x=1723190882; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=jIsZedcHbhSfV0oPWdGCw2Uv/CXrxcxWydVHUH21W4Q=;
+        b=RdpaKsdSpSKf+YSz4+mFpvsmbaILhcmP44bt88HDw2n25nK9xzE9n0u1P3kWVI8xxT
+         H+Y2qSi3zgkbX2ouX1Q6CKH+KFHlluwMqcx1yDHcEK4eXsLwHLvpjrkTehhO++O+q/B8
+         uaqgR1J+XuG4D7Jhofnzv84ZurBRUirHJDfXVqELHQ5BU6sTAk21yeSxKM6Tp1a7g64p
+         NX3BBfZumDjHauu6RPwXlbHnivQQpMrWfkp5T9BFaicMTubIJ4z6NDh04aS5QqbfZeuq
+         azFJDoDunooTh1LBVq8/ySoX+pqQVLERDmwDyhDvu/P3e3F3ql1goXCFSvp7iEQTWzpN
+         Lfdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722586082; x=1723190882;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jIsZedcHbhSfV0oPWdGCw2Uv/CXrxcxWydVHUH21W4Q=;
+        b=fzqKZGWxX2pEQOo3M+ETO7FQK2HqBDzetBmBRQf98bwE6cf6tJ4B+jDYPG0tEJhdz/
+         /QbAMwepbeC66iP1nXbK3BuP0Csfc62yQ8MVIij08VCwB15ZJN4LODPWOPC9bTtdg9Fz
+         e0gWjf1dCeXs6ZG7Gtq/orl6DJ8FkwniustPbpmXUceCZcDWLVSel1xNIs0CkKytr28W
+         LidXM2U/z5Q5yIAWkXYw2vASgiy16KEYy4SgwJvtjcKeOU/1OTbaqg+Ho8vTyNTgp2vm
+         qiGHwdxGSiT7030GlAbA+vUcZagsmfm+k0dd+POhfqoKJkJ2SnISH9goyAre/B5o2axY
+         YB6A==
+X-Forwarded-Encrypted: i=1; AJvYcCVoSXdeLRjLx5hf4eoPYLZbUFmKheP8UsENT6QMUrVJhdyLWJWX3eEAbbiQo1z0zVqi6m5Q+8pftpVZLrDV99oB4wIgY45/hkgm+MP61kp6W6BkRehcPATA6NZsykFQtiu4Bbr4vV7XlG0I/EmxripmGvSa/YYOAa8VDihP22quRAsan43q
+X-Gm-Message-State: AOJu0YzS5bbSik+R/sIewZHcpdMq7Ym+mfeqbQ7hvfKVpaEMd/CdXC/d
+	TkCtEgAc6pwAHI2hpaorMz0cI+/evWMyzuycZGJh7TpovqPwXRNL
+X-Google-Smtp-Source: AGHT+IEr++3k1GJni0e4Zdm7gvqLjSiKEGIIqFnldvWyCljIE9dxKwglw212lsgP5uXjLlcOFhaiBQ==
+X-Received: by 2002:a2e:9805:0:b0:2ef:392e:e45 with SMTP id 38308e7fff4ca-2f15aafdc08mr18299641fa.33.1722586081659;
+        Fri, 02 Aug 2024 01:08:01 -0700 (PDT)
+Received: from localhost ([178.176.56.174])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f15e17e802sm1049511fa.14.2024.08.02.01.08.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Aug 2024 01:08:01 -0700 (PDT)
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	Viresh Kumar <vireshk@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Vinod Koul <vkoul@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RFC] dmaengine: dw: Prevent tx-status calling desc callback (Fix UART deadlock!)
+Date: Fri,  2 Aug 2024 11:07:51 +0300
+Message-ID: <20240802080756.7415-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Rspamd-Queue-Id: AF21F2193C
-X-Spam-Score: -1.81
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-1.81 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	MID_CONTAINS_FROM(1.00)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_CC(0.00)[lwn.net,kernel.org,intel.com,gondor.apana.org.au,davemloft.net,natisbad.org,marvell.com,linux.intel.com,gmail.com,kudzu.us,google.com,linuxfoundation.org,perex.cz,suse.com,baylibre.com,pengutronix.de,huawei.com,debian.org,linutronix.de,vger.kernel.org,lists.linux.dev];
-	ARC_NA(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RCVD_TLS_ALL(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	R_RATELIMIT(0.00)[to_ip_from(RLp4wjbahqp9imfp3xd18ktmsn)];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
-	DWL_DNSWL_BLOCKED(0.00)[suse.de:dkim];
-	RCPT_COUNT_GT_50(0.00)[52];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:dkim]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, 01 Aug 2024 19:46:07 +0200,
-Philipp Stanner wrote:
-> 
-> pcim_iomap_table() and pcim_iomap_regions_request_all() have been
-> deprecated by the PCI subsystem in commit e354bb84a4c1 ("PCI: Deprecate
-> pcim_iomap_table(), pcim_iomap_regions_request_all()").
-> 
-> Replace these functions with their successors, pcim_iomap() and
-> pcim_request_all_regions()
-> 
-> Signed-off-by: Philipp Stanner <pstanner@redhat.com>
+The dmaengine_tx_status() method updating the DMA-descriptors state and
+eventually calling the Tx-descriptors callback may potentially cause
+problems. In particular the deadlock was discovered in DW UART 8250 device
+interacting with DW DMA controller channels. The call-trace causing the
+deadlock is:
 
-Reviewed-by: Takashi Iwai <tiwai@suse.de>
+serial8250_handle_irq()
+  uart_port_lock_irqsave(port); ----------------------+
+  handle_rx_dma()                                     |
+    serial8250_rx_dma_flush()                         |
+      __dma_rx_complete()                             |
+        dmaengine_tx_status()                         |
+          dwc_scan_descriptors()                      |
+            dwc_complete_all()                        |
+              dwc_descriptor_complete()               |
+                dmaengine_desc_callback_invoke()      |
+                  cb->callback(cb->callback_param);   |
+                  ||                                  |
+                  dma_rx_complete();                  |
+                    uart_port_lock_irqsave(port); ----+ <- Deadlock!
 
-And feel free to take my ack to v2 if the further change will be only
-about the description, too :)
+So in case if the DMA-engine finished working at some point before the
+serial8250_rx_dma_flush() invocation and the respective tasklet hasn't
+been executed yet, then calling the dmaengine_tx_status() will cause the
+DMA-descriptors status update and the Tx-descriptor callback invocation.
+Generalizing the case up: if the dmaengine_tx_status() method callee and
+the Tx-descriptor callback refer to the related critical section, then
+calling dmaengine_tx_status() from the Tx-descriptor callback will
+inevitably cause a deadlock around the guarding lock as it happens in the
+Serial 8250 DMA implementation above. (Note the deadlock doesn't happen
+very often, but can be eventually discovered if the being received data
+size is greater than the Rx DMA-buffer size defined in the 8250_dma.c
+driver. In my case reducing the Rx DMA-buffer size increased the deadlock
+probability.)
 
+The easiest way to fix the deadlock was to just remove the Tx-descriptors
+state update from the DW DMA-engine Tx-descriptor status method
+implementation, as the most of the DMA-engine drivers imply. After this
+fix is applied the Tx-descriptors status will be only updated in the
+framework of the dwc_scan_descriptors() method called from the tasklet
+handling the deferred DMA-controller IRQ.
 
-thanks,
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com
 
-Takashi
+---
 
+Note I have doubts whether it's the best possible solution of the problem
+since the client-driver deadlock is resolved here by fixing the DMA-engine
+provider code. But I failed to find any reasonable solution in the 8250
+DMA implementation.
 
-> ---
->  sound/pci/korg1212/korg1212.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/sound/pci/korg1212/korg1212.c b/sound/pci/korg1212/korg1212.c
-> index 5c2cac201a28..b5428ac34d3b 100644
-> --- a/sound/pci/korg1212/korg1212.c
-> +++ b/sound/pci/korg1212/korg1212.c
-> @@ -2106,7 +2106,7 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
->          for (i=0; i<kAudioChannels; i++)
->                  korg1212->volumePhase[i] = 0;
->  
-> -	err = pcim_iomap_regions_request_all(pci, 1 << 0, "korg1212");
-> +	err = pcim_request_all_regions(pci, "korg1212");
->  	if (err < 0)
->  		return err;
->  
-> @@ -2128,7 +2128,9 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
->  		   korg1212->iomem2, iomem2_size,
->  		   stateName[korg1212->cardState]);
->  
-> -	korg1212->iobase = pcim_iomap_table(pci)[0];
-> +	korg1212->iobase = pcim_iomap(pci, 0, 0);
-> +	if (!korg1212->iobase)
-> +		return -ENOMEM;
->  
->  	err = devm_request_irq(&pci->dev, pci->irq, snd_korg1212_interrupt,
->                            IRQF_SHARED,
-> -- 
-> 2.45.2
-> 
+Moreover the suggested fix cause a weird outcome - under the high-speed
+and heavy serial transfers the next error is printed to the log sometimes:
+
+> dma dma0chan0: BUG: XFER bit set, but channel not idle!
+
+That's why the patch submitted as RFC. Do you have any better idea in mind
+to prevent the nested lock?
+
+Cc: Viresh Kumar <vireshk@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC: Andy Shevchenko <andy@kernel.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: dmaengine@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/dma/dw/core.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
+index 5f7d690e3dba..4b3402156eae 100644
+--- a/drivers/dma/dw/core.c
++++ b/drivers/dma/dw/core.c
+@@ -925,12 +925,6 @@ dwc_tx_status(struct dma_chan *chan,
+ 	struct dw_dma_chan	*dwc = to_dw_dma_chan(chan);
+ 	enum dma_status		ret;
+ 
+-	ret = dma_cookie_status(chan, cookie, txstate);
+-	if (ret == DMA_COMPLETE)
+-		return ret;
+-
+-	dwc_scan_descriptors(to_dw_dma(chan->device), dwc);
+-
+ 	ret = dma_cookie_status(chan, cookie, txstate);
+ 	if (ret == DMA_COMPLETE)
+ 		return ret;
+-- 
+2.43.0
+
