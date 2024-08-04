@@ -1,112 +1,98 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1E923FC2;
-	Sun,  4 Aug 2024 06:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D671EB67E;
+	Sun,  4 Aug 2024 06:37:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722752581; cv=none; b=bixVaduZ4Ck7KgPMqMzbaOTDMB22NpOdVinKka/bKOAD77B4gNyLKWyaDjpXrEGZ1/71dtT5V/uG9Lv5Hl2IP5yu7mtP4SiJQO9rSfdrXhL4/leks8jBoNByn2RYEW9rx6QBmY0HFb37q/IaIvn+24FSZTsDuEGI0ge+rPNNL+0=
+	t=1722753435; cv=none; b=m+uB+I5YBbEiWv8MhyJxtmLXhmXSwfgXAIoUGYhi08ZNk7v8W0T3qxGD0PrIKM0/cZY8kxLFLR/kAXB826bRtZRVrNovcnjzE6+bliRUg8bej9cG6M3twqMOV2RWS3tMrL41mw0OOqEbelNoG+Aq2gMEdryLcj6FnM+GUYP35wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722752581; c=relaxed/simple;
-	bh=e2KwdmpAEeu/CxUB955zMwv6k2v7QDlGFFwf4VhPBZA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OQA1AVVV3+kTC6rquFvLPnwDz1UgBcpG2uHAygHh50AE5MqJ6xnkegrzr+jGhtxCVEX7aAHT/+vkUpftgVpFbQpuVMynws+j9kvltaSogrO1oJO51cqo3pbUryG7yoDrJiWXSk0of3fflhAawNv1Pm3WXc4FyLchfhfrJn/sKQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=BAPOxYD2; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="BAPOxYD2"
-Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id AC7A541943;
-	Sun,  4 Aug 2024 08:22:55 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
-	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bfxzql5IWaIV; Sun,  4 Aug 2024 08:22:54 +0200 (CEST)
-Date: Sun, 4 Aug 2024 14:22:28 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1722752574; bh=e2KwdmpAEeu/CxUB955zMwv6k2v7QDlGFFwf4VhPBZA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BAPOxYD2ErIWPwE9V9eroZvbUZjtUETM32iyvVLYXnNJrLwHODsPUGINv5AT46fzy
-	 5hgksWLOaCdHsfYGYpJczmnPTWzptsoQ0KORgHeQ8GUpKMeAaVhD5ootDDjfFtXA++
-	 87E6wFBgI1dehnR8fRZokTKmbc3hPnWmu5z3TK3d0ak2tvlkvPWlJeDgl8/Cd4jGw6
-	 HtCqVwY/zMfkdgix4TGzg6GgNqM6Pt9IXPb28avNrPQPLT2gLUHz/EiLi9gH/nNt7t
-	 cRQ4bGzultoUXW8jfov0BIFWr2l1hxVeJWqB4wO4h+QYbywG80aKtwuQXuRXF17cyf
-	 NJiemnfL4FG/w==
-From: Yao Zi <ziyao@disroot.org>
-To: Dragan Simic <dsimic@manjaro.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
-	Andy Yan <andyshrk@163.com>,
-	Muhammed Efe Cetin <efectn@protonmail.com>,
-	Jagan Teki <jagan@edgeble.ai>, Ondrej Jirman <megi@xff.cz>,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 0/4] Add initial support for Rockchip RK3528 SoC
-Message-ID: <Zq8eJB7zqOvYQvmw@ziyaolaptop.my.domain>
-References: <20240803125510.4699-2-ziyao@disroot.org>
- <0c77f99f4af96807a2a8c3028e3c1d4d@manjaro.org>
+	s=arc-20240116; t=1722753435; c=relaxed/simple;
+	bh=cJIdwziKQqmSeY72vNUrkuCmXVbZJvQADfQ9ksYZzLs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EI0BncPFxmIo7pDCX/XNwN0P+ILK1lCl+WOs45apP4lRKNFzhHcvMls5nxeY3mNTU6NqRKAfz5/zOJGas8VPGiuEcdsctEi2EMbBwLa+fdl7RxPejTi9lkvhNl+/9TvP8kz7S7T0ifSl1727areH2E0acwlkShPLujV+QCOOFKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [10.20.4.132])
+	by gateway (Coremail) with SMTP id _____8AxmOmPIa9mr2sHAA--.24156S3;
+	Sun, 04 Aug 2024 14:37:03 +0800 (CST)
+Received: from haword-linux.loongson.cn (unknown [10.20.4.132])
+	by front1 (Coremail) with SMTP id qMiowMAxouGOIa9m3qYCAA--.15253S2;
+	Sun, 04 Aug 2024 14:37:02 +0800 (CST)
+From: zhenghaowei@loongson.cn
+To: zhenghaowei@loongson.cn,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	p.zabel@pengutronix.de
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	loongarch@lists.linux.dev
+Subject: [PATCH v2 0/3] uart: Introduce uart driver for the Loongson family chips
+Date: Sun,  4 Aug 2024 14:36:07 +0800
+Message-ID: <20240804063610.69873-1-zhenghaowei@loongson.cn>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c77f99f4af96807a2a8c3028e3c1d4d@manjaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qMiowMAxouGOIa9m3qYCAA--.15253S2
+X-CM-SenderInfo: x2kh0w5kdr4v3l6o00pqjv00gofq/1tbiAQETBGauHPMDgQABsz
+X-Coremail-Antispam: 1Uk129KBj9xXoWrKr4xGF1xuFW8ArWktr18WFX_yoWkKwbEka
+	s2kas7Gw1xGF13ta4UXr47Cry3ZF4UZ3Zaka40q34rZ39Iv3y5JFWqv34DGF17WrWUWFn5
+	JrWxGr10yrnFqosvyTuYvTs0mTUanT9S1TB71UUUUUJqnTZGkaVYY2UrUUUUj1kv1TuYvT
+	s0mT0YCTnIWjqI5I8CrVACY4xI64kE6c02F40Ex7xfYxn0WfASr-VFAUDa7-sFnT9fnUUI
+	cSsGvfJTRUUUb6AYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I6I8E6xAIw20EY4v20x
+	vaj40_Wr0E3s1l1IIY67AEw4v_Jrv_JF1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+	WUJVW8JwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8
+	JVW8Jr1ln4kS14v26r1Y6r17M2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12xvs2
+	x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17
+	McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr4
+	1lw4CEc2x0rVAKj4xxMxkF7I0En4kS14v26r126r1DMxAIw28IcxkI7VAKI48JMxC20s02
+	6xCaFVCjc4AY6r1j6r4UMxCIbckI1I0E14v26r1Y6r17MI8I3I0E5I8CrVAFwI0_Jr0_Jr
+	4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
+	rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
+	CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
+	z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8J3kJUUUUU==
 
-On Sun, Aug 04, 2024 at 07:40:43AM +0200, Dragan Simic wrote:
-> Hello all,
-> 
-> On 2024-08-03 14:55, Yao Zi wrote:
-> > Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
-> > multimedia application. This series add a basic device tree with CPU,
-> > interrupts and UART nodes for it and is able to boot into a kernel with
-> > only UART console.
-> > 
-> > Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
-> > booted into initramfs with this log[2].
-> 
-> I wonder will at least the RK3528 datasheet become available publicly?
+From: Haowei Zheng <zhenghaowei@loongson.cn>
 
-I found none for now, and I am not someone from Rockchip, thus don't
-know whether they have a plan to make it public, either. But there has
-been some devices shipping it already and getting them mainlined will
-be a neat thing.
+Hi all:
 
-Just FYI, the vendor kernel is available here[1] on the "develop-5.10"
-branch.
+This patchset introduce a generic UART framework driver for Loongson family.
+It can be found on Loongson3 series cpus, Loongson-2K series cpus and Loongson 
+LS7A bridge chips.
 
-Best regards,
-Yao Zi
+Thanks.
 
-[1]: https://github.com/rockchip-linux/kernel
+Haowei Zheng (3):
+  dt-bindings: serial: Add Loongson UART controller
+  tty: serial: 8250: Add loongson uart driver support
+  LoongArch: dts: Update UART driver to Loongson-2K0500, Loongson-2K1000
+    and Loongson-2K2000.
 
-> 
-> > [1]: https://docs.radxa.com/en/e/e20c
-> > [2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
-> > 
-> > Yao Zi (4):
-> >   dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
-> >   dt-bindings: arm: rockchip: Add Radxa E20C board
-> >   arm64: dts: rockchip: Add base DT for rk3528 SoC
-> >   arm64: dts: rockchip: Add Radxa e20c board
-> > 
-> >  .../devicetree/bindings/arm/rockchip.yaml     |   5 +
-> >  .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
-> >  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
-> >  .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 +++
-> >  arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 182 ++++++++++++++++++
-> >  5 files changed, 211 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-> >  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
-> > 
-> > 
-> > base-commit: 94ede2a3e9135764736221c080ac7c0ad993dc2d
+ .../bindings/serial/loongson,ls7a-uart.yaml   |  74 +++++++
+ MAINTAINERS                                   |   7 +
+ arch/loongarch/boot/dts/loongson-2k0500.dtsi  |   6 +-
+ arch/loongarch/boot/dts/loongson-2k1000.dtsi  |   6 +-
+ arch/loongarch/boot/dts/loongson-2k2000.dtsi  |   5 +-
+ drivers/tty/serial/8250/8250_loongson.c       | 208 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c           |   8 +
+ drivers/tty/serial/8250/Kconfig               |   9 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ include/uapi/linux/serial_core.h              |   1 +
+ 10 files changed, 322 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml
+ create mode 100644 drivers/tty/serial/8250/8250_loongson.c
+
+-- 
+2.43.0
+
