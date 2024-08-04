@@ -1,243 +1,92 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.manjaro.org (mail.manjaro.org [116.203.91.91])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B51F101F7;
-	Sun,  4 Aug 2024 00:51:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50F24AD59;
+	Sun,  4 Aug 2024 05:40:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.91.91
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722732715; cv=none; b=TslB5ML/WtKwAEkxV+8LCXomE+vMH6bYRCr9USOHlT+GOvkElHoHU98Kt2l0ApY3XKWefDt7raGhT5722Ci+LdEURE1U50FA5GG7tcXnGNf0WE797fRQ3mpVRoQ3HA8Ht3KpTYyEGPqTb7Z3pLBmUYuLnd+tZo9gIIpUm8L8Q7o=
+	t=1722750059; cv=none; b=U3YWYgDCDedwj6KPGT0hUQgvpIDPznPy5AGO2AQ+3+HR/h6UAR8D3AdyAXH5nr3YHwPPNhtHuPr7Y3hk02B4L1lMdfQECjMo6oij/qxDMtJorhu4h3vwFBskZX4Ogx/WObwTFlqXVeTLJRdhqJjqnb9dxw57AjxfQJekTEH3Q7Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722732715; c=relaxed/simple;
-	bh=R4TOefOxndRBCPUXtpdDEsXMvKoXT/g+AiM/wcdCOiI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=rYIwxX2Vo1cUd8SVjf2eR9ytMxSeR7SrdSbmBwW8ZcUIKgwuDSL1mYkmMhhoTYjorOg70vwSjuTWwQ+o07LDpkJHRWceDxmB5U6FBDgric0nD0qsD80vh/uwPEZ65WxL0rmhJBaBhXwXuDQGuvaX+oBMcDi+244NTg6E0gX2LuE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=l/fXZS+x; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=dv56lOLv; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1722750059; c=relaxed/simple;
+	bh=0HRhv5yR2GM7y/9QAtXndsutKfzGnscC3iMEPFaBgb8=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=WsVto5AMqlF3X74Tlsbws5F2xM4bb7ckHrJEPMbdaAjjDv9hoti0B7M1/5RFcmNHAePFU0IcoiXhHg/l5SmRNIbPvNaYHKxVHWbIITws2eFJaLR4QJ+ybnShKLA/1t9dPpBq0aiq0/B3U3lUrfco6zedvsD55oBp0/Q5P18VufM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org; spf=pass smtp.mailfrom=manjaro.org; dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b=c6oCsVeP; arc=none smtp.client-ip=116.203.91.91
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=manjaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="l/fXZS+x";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="dv56lOLv"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1722732706;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ElxI59csI9kczE5ClB/S01RcILMnwACUfY2TZOkMQ4U=;
-	b=l/fXZS+x0lNZdVdNF3mHafrcm28dLMexDUad/up+cz844KzgH63zSE6hJuDJrvCGszuSsN
-	VRNUu9HYhxKaDGg+NfOniOXuDuPpQzeoYU3gUiF5mwkdzSJVE9Hd6zyRpQ3jotctYefglB
-	WcX+1xAH6Csh6CqIsNUVuXsdiXfY8R8lvEc/+CIbXtj8BRwYQ6R8n9PbB7RYQUYAhVr3io
-	pb+P12zdxhOW8fNwhlLt/s978Gi3GTj3d4a5n0zoIwXaP0Ptx+ITelip1P0s6/3UtASiaH
-	zbGUam3BqCPHU1ul6uL+rRJSBFnC2+wsAmXtr2BmQ/EAX5b00OMJsRZquTqyYQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1722732706;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ElxI59csI9kczE5ClB/S01RcILMnwACUfY2TZOkMQ4U=;
-	b=dv56lOLvq0mQUvKTp9eZ0uGVOjGWIr1SLxu8RmgIkfxkfSmG3mC7Lm/3+X/odBARzrpDqB
-	YTNN12tEI1Fw5OCQ==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH printk v7 14/35] serial: core: Acquire nbcon context in port->lock wrapper
-Date: Sun,  4 Aug 2024 02:57:17 +0206
-Message-Id: <20240804005138.3722656-15-john.ogness@linutronix.de>
-In-Reply-To: <20240804005138.3722656-1-john.ogness@linutronix.de>
-References: <20240804005138.3722656-1-john.ogness@linutronix.de>
+	dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b="c6oCsVeP"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=manjaro.org; s=2021;
+	t=1722750047;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+tX3JvGIYlx8csPMqWm0u4u7fIhbdLPz4xTLWRhyYx0=;
+	b=c6oCsVeP2bTK+Msyv/P1exnF7+kUkx5p/WsUrZWotPvOa0XmVdPIp8kE072+nTtYRWrryN
+	I06nFgWlycEFyp1DRJIyl2Ldew5Yun727GhOBdSKh7jus5zaB9gMkrmEauZN1Rct+71Q90
+	CeRQ0WK2CEp4YQSGJ+OtEDNmuwlIZwTwzU/6QJCSb07ew5Qz8lcx6FtB/s6Bt0HSFAMZHL
+	R8FZEXa7EDaEkyJJqblMJyphyylrN9yICfB8p1lAYW/vmipoLqsIePcWqYjkqpPaMOtR7L
+	PLqd++Wx/FZhP53R19siZulStRSMqu7B9QVLz3dXxgIR8rNVgpiXTIM62jkQrQ==
+Date: Sun, 04 Aug 2024 07:40:43 +0200
+From: Dragan Simic <dsimic@manjaro.org>
+To: Yao Zi <ziyao@disroot.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, Jonas
+ Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>, Andy Yan
+ <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>, Jagan Teki
+ <jagan@edgeble.ai>, Ondrej Jirman <megi@xff.cz>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 0/4] Add initial support for Rockchip RK3528 SoC
+In-Reply-To: <20240803125510.4699-2-ziyao@disroot.org>
+References: <20240803125510.4699-2-ziyao@disroot.org>
+Message-ID: <0c77f99f4af96807a2a8c3028e3c1d4d@manjaro.org>
+X-Sender: dsimic@manjaro.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Authentication-Results: ORIGINATING;
+	auth=pass smtp.auth=dsimic@manjaro.org smtp.mailfrom=dsimic@manjaro.org
 
-Currently the port->lock wrappers uart_port_lock(),
-uart_port_unlock() (and their variants) only lock/unlock
-the spin_lock.
+Hello all,
 
-If the port is an nbcon console that has implemented the
-write_atomic() callback, the wrappers must also acquire/release
-the console context and mark the region as unsafe. This allows
-general port->lock synchronization to be synchronized against
-the nbcon write_atomic() callback.
+On 2024-08-03 14:55, Yao Zi wrote:
+> Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
+> multimedia application. This series add a basic device tree with CPU,
+> interrupts and UART nodes for it and is able to boot into a kernel with
+> only UART console.
+> 
+> Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
+> booted into initramfs with this log[2].
 
-Note that __uart_port_using_nbcon() relies on the port->lock
-being held while a console is added and removed from the
-console list (i.e. all uart nbcon drivers *must* take the
-port->lock in their device_lock() callbacks).
+I wonder will at least the RK3528 datasheet become available publicly?
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
----
- include/linux/serial_core.h | 82 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 2cf03ff2056a..4ab65874a850 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -11,6 +11,8 @@
- #include <linux/compiler.h>
- #include <linux/console.h>
- #include <linux/interrupt.h>
-+#include <linux/lockdep.h>
-+#include <linux/printk.h>
- #include <linux/spinlock.h>
- #include <linux/sched.h>
- #include <linux/tty.h>
-@@ -625,6 +627,60 @@ static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
- 	up->cons = con;
- 	__uart_port_unlock_irqrestore(up, flags);
- }
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline bool __uart_port_using_nbcon(struct uart_port *up)
-+{
-+	lockdep_assert_held_once(&up->lock);
-+
-+	if (likely(!uart_console(up)))
-+		return false;
-+
-+	/*
-+	 * @up->cons is only modified under the port lock. Therefore it is
-+	 * certain that it cannot disappear here.
-+	 *
-+	 * @up->cons->node is added/removed from the console list under the
-+	 * port lock. Therefore it is certain that the registration status
-+	 * cannot change here, thus @up->cons->flags can be read directly.
-+	 */
-+	if (hlist_unhashed_lockless(&up->cons->node) ||
-+	    !(up->cons->flags & CON_NBCON) ||
-+	    !up->cons->write_atomic) {
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline bool __uart_port_nbcon_try_acquire(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return true;
-+
-+	return nbcon_device_try_acquire(up->cons);
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline void __uart_port_nbcon_acquire(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return;
-+
-+	while (!nbcon_device_try_acquire(up->cons))
-+		cpu_relax();
-+}
-+
-+/* Only for internal port lock wrapper usage. */
-+static inline void __uart_port_nbcon_release(struct uart_port *up)
-+{
-+	if (!__uart_port_using_nbcon(up))
-+		return;
-+
-+	nbcon_device_release(up->cons);
-+}
-+
- /**
-  * uart_port_lock - Lock the UART port
-  * @up:		Pointer to UART port structure
-@@ -632,6 +688,7 @@ static inline void uart_port_set_cons(struct uart_port *up, struct console *con)
- static inline void uart_port_lock(struct uart_port *up)
- {
- 	spin_lock(&up->lock);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -641,6 +698,7 @@ static inline void uart_port_lock(struct uart_port *up)
- static inline void uart_port_lock_irq(struct uart_port *up)
- {
- 	spin_lock_irq(&up->lock);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -651,6 +709,7 @@ static inline void uart_port_lock_irq(struct uart_port *up)
- static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *flags)
- {
- 	spin_lock_irqsave(&up->lock, *flags);
-+	__uart_port_nbcon_acquire(up);
- }
- 
- /**
-@@ -661,7 +720,15 @@ static inline void uart_port_lock_irqsave(struct uart_port *up, unsigned long *f
-  */
- static inline bool uart_port_trylock(struct uart_port *up)
- {
--	return spin_trylock(&up->lock);
-+	if (!spin_trylock(&up->lock))
-+		return false;
-+
-+	if (!__uart_port_nbcon_try_acquire(up)) {
-+		spin_unlock(&up->lock);
-+		return false;
-+	}
-+
-+	return true;
- }
- 
- /**
-@@ -673,7 +740,15 @@ static inline bool uart_port_trylock(struct uart_port *up)
-  */
- static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long *flags)
- {
--	return spin_trylock_irqsave(&up->lock, *flags);
-+	if (!spin_trylock_irqsave(&up->lock, *flags))
-+		return false;
-+
-+	if (!__uart_port_nbcon_try_acquire(up)) {
-+		spin_unlock_irqrestore(&up->lock, *flags);
-+		return false;
-+	}
-+
-+	return true;
- }
- 
- /**
-@@ -682,6 +757,7 @@ static inline bool uart_port_trylock_irqsave(struct uart_port *up, unsigned long
-  */
- static inline void uart_port_unlock(struct uart_port *up)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock(&up->lock);
- }
- 
-@@ -691,6 +767,7 @@ static inline void uart_port_unlock(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irq(struct uart_port *up)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock_irq(&up->lock);
- }
- 
-@@ -701,6 +778,7 @@ static inline void uart_port_unlock_irq(struct uart_port *up)
-  */
- static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned long flags)
- {
-+	__uart_port_nbcon_release(up);
- 	spin_unlock_irqrestore(&up->lock, flags);
- }
- 
--- 
-2.39.2
-
+> [1]: https://docs.radxa.com/en/e/e20c
+> [2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
+> 
+> Yao Zi (4):
+>   dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
+>   dt-bindings: arm: rockchip: Add Radxa E20C board
+>   arm64: dts: rockchip: Add base DT for rk3528 SoC
+>   arm64: dts: rockchip: Add Radxa e20c board
+> 
+>  .../devicetree/bindings/arm/rockchip.yaml     |   5 +
+>  .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
+>  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+>  .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 +++
+>  arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 182 ++++++++++++++++++
+>  5 files changed, 211 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
+> 
+> 
+> base-commit: 94ede2a3e9135764736221c080ac7c0ad993dc2d
