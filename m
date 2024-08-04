@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD2622089;
-	Sun,  4 Aug 2024 08:40:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0EE1CA9E;
+	Sun,  4 Aug 2024 08:41:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722760832; cv=none; b=H3mycIJyx57L8FNXfLX01HODGv3FubJkOsB+XXKRWSVO41/AZ4R8ZClYm0+WQW121FrUR3VIaj05rPGuRu2JYATw1C8h1gQbE1fbB4yzTueHmeCEXWvpxDcrYmYba5Us7NdqbamRT+o67UJFWROq02o1bp0hbtfDWGlua4HcPDg=
+	t=1722760920; cv=none; b=kDIqoEDZ1lUQ9wQ2WUVFhGa+Qb74/TFy8qzdd+RiAD5FFagxU3c1xhtjUIYKSoFHZSzOvLti0yi33Vghnq6Sv8fQ2Rv+gLoRV+xPHk6BgOoF/CKD08oSxOSRCAcfbnv8NkVJdlbKwA5rZlzVnrGrU2lLS0tVHm1FsWsDks321vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722760832; c=relaxed/simple;
-	bh=mfEVLu8lBP2zlustvLgLm/oqAZjT2oZLRRL9j0eTnok=;
+	s=arc-20240116; t=1722760920; c=relaxed/simple;
+	bh=yBGRrcswZ9+EvsYisLcY8wkrWkqHO7ywWmZpz+P1ULM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NhOflPb5Hf/mRx02s4AkxwtNkY2lOgoVsDSYzpfDfAZuM0lx6nkmvRjsp2eN4fGy5LhXEq51LSbROfV5q8DZEfay5wQJZ3tgVAOADWCbXCx24nDTnAzJ1giyywJNuX8A7JFY/ajH5+3G9iJjvVnGkWOPpTy+zZvHolCqlr9+wMw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TpjojAFh; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=YqKkCc0lgzUhalvTQo42gviHCDYys8YLQHFl+YD9OeejwSWn0ovemh8lHSRSCiySh7sec0yWhBeBWz+ySoiZ4Wmhm537oLAuyOXcKKZcIZ3p5xtGlqU1Z5YQqI7MI+ty3GaRG2yoZQr81kVStPkC3phnMRElp2vh2W0Mdu7xTl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qOmSAdT8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TpjojAFh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3338C32786;
-	Sun,  4 Aug 2024 08:40:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qOmSAdT8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8157EC32786;
+	Sun,  4 Aug 2024 08:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722760831;
-	bh=mfEVLu8lBP2zlustvLgLm/oqAZjT2oZLRRL9j0eTnok=;
+	s=k20201202; t=1722760919;
+	bh=yBGRrcswZ9+EvsYisLcY8wkrWkqHO7ywWmZpz+P1ULM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=TpjojAFhBfXLzsBjDnh9BXjvt/lEFdmQuwbUlMvoQkZQx8GxLcKH4mjHFhQ9FyqVf
-	 hcLtexYXOhdkNstH4S1XxjgP8g3DlkZSjoKTTIkWjnAW3OEAKEn1zQXTOH+sMrvZS/
-	 Cj9zmRC1ajaXKRNHQ7NtenwxU5U2jHwNn3MTqMAh4rHqtUtkDv7IhJSaAuSFQyHgoL
-	 VLZ12/N1fK6DqCy+dCocT/P+bPQe77eyKZ/zqAe1zCTOCgHfyp2Ngge4nz/6Pf/f5C
-	 bwbWV5JYwITX4eBYf22kzwz3Ddq1xwVtuU3DdQ9CNnr94u8ZJ+hmZj3Wc8THUc+i/2
-	 LUNjxtLrGDr8A==
-Message-ID: <bf6fbb80-95f5-4c9c-b7d4-dd7f432056c7@kernel.org>
-Date: Sun, 4 Aug 2024 10:40:24 +0200
+	b=qOmSAdT8wQRh0Fev+SKjIy8ZKeNWU+o0jCx38cOjErmIksVeKE+Z7PIRh0Pwi/iPg
+	 In62CtNPyl+CsnejDL6hhtdG+EWpObiH1jq5GJRYymiGs4BTVtiI2imAmX+7+ZPtbo
+	 usDNQnk29Qro2umFPu9Gj3qs7ltML+NMutndnNKFhrni4E92YuSUjbG0/Cra+1XTrb
+	 K6t/YgNASt+gXuPkaCQ339DHc+UaB6hbQ9E8aprKaDmxtJocKhQ2O4zwFl064gk3Mv
+	 8NUgvFcPdiPaoP8x7+4m87iuX4+Ws12grs+ZOFQ83j+S6dOdzONpKZ9LRc10+94qsQ
+	 d/REILg4C627Q==
+Message-ID: <8aeb4071-3609-4f89-abc7-5b8328dc4290@kernel.org>
+Date: Sun, 4 Aug 2024 10:41:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] LoongArch: dts: Update UART driver to
- Loongson-2K0500, Loongson-2K1000 and Loongson-2K2000.
+Subject: Re: [PATCH v2 1/3] dt-bindings: serial: Add Loongson UART controller
 To: zhenghaowei@loongson.cn, gregkh@linuxfoundation.org,
  jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
  conor+dt@kernel.org, chenhuacai@kernel.org, kernel@xen0n.name,
@@ -44,7 +43,6 @@ To: zhenghaowei@loongson.cn, gregkh@linuxfoundation.org,
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, loongarch@lists.linux.dev
 References: <20240804063834.70022-1-zhenghaowei@loongson.cn>
- <20240804063834.70022-3-zhenghaowei@loongson.cn>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,18 +88,18 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240804063834.70022-3-zhenghaowei@loongson.cn>
+In-Reply-To: <20240804063834.70022-1-zhenghaowei@loongson.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 04/08/2024 08:38, zhenghaowei@loongson.cn wrote:
 > From: Haowei Zheng <zhenghaowei@loongson.cn>
 > 
-> Change to use the Loongson UART driver by default.
+> Add Loongson UART controller binding with DT schema format using
+> json-schema.
 > 
-> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
 
-No changelog? Nothing improved?
+Where is the changelog? Are you sending the same patch again?
 
 Best regards,
 Krzysztof
