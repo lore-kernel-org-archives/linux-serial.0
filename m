@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA8F22E633;
-	Sun,  4 Aug 2024 10:01:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B66822095;
+	Sun,  4 Aug 2024 10:02:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722765719; cv=none; b=HLgOCYUmxI8JYlry6ghrebPBGK7f8UBm/UcaC6EraeB3cMHtunEdOKAIkrGXZlIlUx8MvOmAGIS8OoZi/xpFABUzMjCo2oPozjWtvHiU18l21sKhwbEDduStjis8GmZdFiYR2ZuGU2v7YYRePbo5GFPVM/4ucwUqCFc/7/sU688=
+	t=1722765733; cv=none; b=C+Ms3A94nRDcGW1ysahO77j6acTq/MTIw3OIb0sfMayaroyYHGaeXTXen5N3jNWN2XR8x8TNH5ArtzGopOV1WWcsR2CyWOWkZ+0tIonLVLKfCXfWDuAIr3K7j6HnxSVHPWeXI9RUMoxy0xxnNr3qXzD5OgmMbCqW+Zp2RI0npqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722765719; c=relaxed/simple;
-	bh=i6qyUsLnam0YxhCM0p1RR1sn4VEEU9wicB1dBImWJpQ=;
+	s=arc-20240116; t=1722765733; c=relaxed/simple;
+	bh=61gDcWGjSdpN2ExiE+2svTcKti1Ysm2uZk4fjDJNI4Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FU8QDyTXKrPNVMHuc1eyXXQVxGKtw1OUZmECwir+KDbEC/rqBqW7MDAYyvT/hHkmpRa7u/lvak4S8va3GJRU1w6BiGe6zewetaxvr4w3saUnmv/pc/qYoPq8YtdI5h856pUSYFVKkYR6/3dxOaQPr8P0lIMcBqfmjSjDkUlejrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BH9ClIKF; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=X7w9ULt8ZGxBsYYOZkZmM4XBxi53pRvl7QGvONYrUglcQiweudxPA4tORmkpNHWnKr5liXbRj01EDcRwbBfOZgOTlbF/YvAtPp6KTBOvInydRj0P1ONzdLrlZV0p2feE6Vrs4Jiq0PxNKktexQhcWpMO7YjDMgdjKXvFsX/M7eI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N1T8pUgu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BH9ClIKF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904DCC32786;
-	Sun,  4 Aug 2024 10:01:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N1T8pUgu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02339C32786;
+	Sun,  4 Aug 2024 10:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722765718;
-	bh=i6qyUsLnam0YxhCM0p1RR1sn4VEEU9wicB1dBImWJpQ=;
+	s=k20201202; t=1722765733;
+	bh=61gDcWGjSdpN2ExiE+2svTcKti1Ysm2uZk4fjDJNI4Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=BH9ClIKFJNvbqwk/IgUy7IwhefmfRm3HBbia/8AUAUTcrFDlBiCddGwMWKtnmivvs
-	 aDO6lTTfYSpkJsyHb8fbaSJJtWibR+8TaU3pe1sB1jAO3pIkUxDM2NKIGe3s2au8jY
-	 oI4G00sg8Z8MAsSzwU87cCF/8MhplDrxPsFi5HqxtUnMbWdCrbyefnnxQC2p/j5y+c
-	 aXTZjzLlAN3qWsK16ohHkobdOoXoWXnWo0t++sdJ4EO0eeNB1L9sh79qPF9ssd5VEz
-	 LpJIR7MpU4PU3Pp3RFgFGRfB+z/RYl6KwdemtwDYytn+cgzwvJ6xu9vPoXJI4D+Zv5
-	 ebeeeqUuCnz3A==
-Message-ID: <62edbe11-b0e6-4e73-a41d-f21573c5dc88@kernel.org>
-Date: Sun, 4 Aug 2024 12:01:49 +0200
+	b=N1T8pUguIx2/6317PRXOV8RlmCWrN3ri+JAxujePxA/h6UFZoa6CgapF2kb8OZ1u0
+	 HOu5s1HxxnGYYb0BPA0ZsqL89w6Ju38R5QHQhh1mZmmItWu5dBr9uvlaVmxFwyCTUb
+	 7tiMQbXGzwlUHGb8m3jPcEoMHfHSBlCE4cWzVM114JlR5Cv7QwuOtI2F5IIRvvDfwc
+	 r/78Gai14ZBR7wRBGC4fuY9tqv91MC40LGpKyA7+TbntfP5zWYA3hia4ij8Ty5St8/
+	 +HaCFx36nxEQXObvPhFw08bQZiPPJ2GOkZ091YfPtmUnaksnBLL4HJHbXhCYoQ2LbW
+	 Pbj7TjQasiwTQ==
+Message-ID: <b9c1daea-34f6-4099-97e7-e4734b8b3ece@kernel.org>
+Date: Sun, 4 Aug 2024 12:02:04 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: serial: snps-dw-apb-uart: Document
- Rockchip RK3528
+Subject: Re: [PATCH 2/4] dt-bindings: arm: rockchip: Add Radxa E20C board
 To: Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
@@ -50,7 +49,7 @@ Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org
 References: <20240803125510.4699-2-ziyao@disroot.org>
- <20240803125510.4699-3-ziyao@disroot.org>
+ <20240803125510.4699-4-ziyao@disroot.org>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -96,36 +95,15 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240803125510.4699-3-ziyao@disroot.org>
+In-Reply-To: <20240803125510.4699-4-ziyao@disroot.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 03/08/2024 14:55, Yao Zi wrote:
-> Rockchip RK3528 comes with a snps-dw-apb-uart compatible UART. Document
-> it in dt-bindings.
+> Add device tree documentation for Radxa E20C board.
 > 
-> Signed-off-by: Yao Zi <ziyao@disroot.org>
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
----
-
-<form letter>
-This is an automated instruction, just in case, because many review tags
-are being ignored. If you know the process, you can skip it (please do
-not feel offended by me posting it here - no bad intentions intended).
-If you do not know the process, here is a short explanation:
-
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions, under or above your Signed-off-by tag. Tag is "received", when
-provided in a message replied to you on the mailing list. Tools like b4
-can help here. However, there's no need to repost patches *only* to add
-the tags. The upstream maintainer will do that for tags received on the
-version they apply.
-
-https://elixir.bootlin.com/linux/v6.5-rc3/source/Documentation/process/submitting-patches.rst#L577
-</form letter>
 
 Best regards,
 Krzysztof
