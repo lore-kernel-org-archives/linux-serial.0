@@ -1,110 +1,99 @@
-Received: from smtp.smtpout.orange.fr (smtp-30.smtpout.orange.fr [80.12.242.30])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1EFBE47;
-	Sun,  4 Aug 2024 07:13:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.12.242.30
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC4514F98;
+	Sun,  4 Aug 2024 07:23:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722755614; cv=none; b=s3cWdnXI9kkdMZ1uXgUmvTDTTX5698Ea+jtQWtbqoQQp922UpHVv7ge2w+xSENXZuFUEd5y0k2NaOFRCYh3n4qxqXNOvL0lVms9QIW/r0SVltn8hZvn4EuhXYFbpjdOL3FMsChjYiUV+9KFF6O1xa1flrc/eZFn5lJC0D7Xgm58=
+	t=1722756223; cv=none; b=kENEF56iCOjytVqlEUMhrIxsfEwa4bhgmuZp+oJkpe9vduo591QX/Z492v8JMM0ufA0gqQYQiiCxp773N3Pswg+NK3/mWrCxpug85zKL3MLKprQLiIAF1BGqaTd0zlwVfWJLVN4IRJP/mJ7WQp8LGAj3jxFgRiRFLFAeVjxMjOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722755614; c=relaxed/simple;
-	bh=neoQXiAs/eK45+Vn9/FufG/dHbA6k0syvg4que2tmlY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CJz8/8AnUGYtTCmu0ykxw1dZgnAdBstXrP+1LQ+14L2ZdfIRi6VrwWOzUhcrwg9FibQ7BzuYaEC4rfLu7A3+ikUsvhnb8W2GOhBTDTxKIjWpPFPx5oTGw9c/KcDJltsStID2VPBHqrTEtBrvgnBekFFWeizWjewizTDXHoGTGIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wanadoo.fr; spf=pass smtp.mailfrom=wanadoo.fr; dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b=LpO1sbvH; arc=none smtp.client-ip=80.12.242.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wanadoo.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wanadoo.fr
+	s=arc-20240116; t=1722756223; c=relaxed/simple;
+	bh=jQiJOpRAAEffBgCAE+wAqMVZconq0jXGk3ZQfZAVTR4=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=JNDcZ9fkFNyj52+OqEhQYM9SUIz2GqsJliaWkWyq17XCbmWpAj546SZmudh/rYO5iN9Z4chOYnGP0rxwaxyAtNKUWuDpt2uw/7/6MM74Jl8T5PIVtTtG8r8RYrbIqpuGJxvn83tAX1DlFfR+4qcEg9WOvBkpKlsRULNu8E6JdjY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qXYCpmm6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b="LpO1sbvH"
-Received: from [192.168.1.37] ([90.11.132.44])
-	by smtp.orange.fr with ESMTPA
-	id aVQjsd3xlYjQzaVQjs3TcI; Sun, 04 Aug 2024 09:13:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1722755610;
-	bh=o92rgxzS+zv7GuEFU/LDkkgE+jnxQdMRm/w/7tzVkHQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From;
-	b=LpO1sbvHd8k8W3WAsQB9EJPvUR9zVjKEZEmgH8/vwH3rp90LBCcoWMWPPbcmViSc2
-	 t6VaE/dZR+jxaO5MjhtnSVZIymn3GI7B7a8P5CkAKSm+5/Zc551mF6qWi3L7CDXDsV
-	 OSiDA+DBlMeQC1qr3/hHTzueGRClcVOz6/jE+rxxv1gdV2II1lPavU8QoSQQOQgvVv
-	 gt8ELkWtA8JyPEKEsw+LtYjc7VsRtwfPBOaB0+czS46VULj79ziD+j26OoHLWFpAJM
-	 0JMXRt960pHX7NdgDzi1NvvIwgboqwA3DytaH0881Uegcop+jE5kAA2PdJ5OpOWe7p
-	 zo1rc+KridJMw==
-X-ME-Helo: [192.168.1.37]
-X-ME-Auth: bWFyaW9uLmphaWxsZXRAd2FuYWRvby5mcg==
-X-ME-Date: Sun, 04 Aug 2024 09:13:30 +0200
-X-ME-IP: 90.11.132.44
-Message-ID: <685e5225-339c-4d7e-973c-9f0ab421b15e@wanadoo.fr>
-Date: Sun, 4 Aug 2024 09:13:25 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qXYCpmm6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A243C32786;
+	Sun,  4 Aug 2024 07:23:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722756222;
+	bh=jQiJOpRAAEffBgCAE+wAqMVZconq0jXGk3ZQfZAVTR4=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=qXYCpmm6WRM/h5S9iJLmxp8x5LOwr8+0FYoaw8AyydJzVPotwdderP7s7G9oEyyky
+	 QCq8CF/HDqiN9izjuYLkxxLPl2oyh98Mzd+cyEnxl08JINMWju+Un/axwz3tlG+hPE
+	 fonG9U28asGmkcYcPLsL0HIRgYwTLhg6OUD7aVn+O91eR76qX2Vgxo06YDJJxZ63m7
+	 wZzAy5DOMATw4Qz3xUpjlxD0EJEbWFr0xhNIKORLDyY32yhyRHtbrnvZrUPdskxUL+
+	 mU4/Yd0I2S9xFdDF1Rkpco9tQ7emop0G5xajvA3YlGDtleyA+0W1O6blB+cVAt3enj
+	 NoQwM5KUlMgzQ==
+Date: Sun, 04 Aug 2024 01:23:41 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] tty: serial: 8250: Add loongson uart driver
- support
+From: "Rob Herring (Arm)" <robh@kernel.org>
 To: zhenghaowei@loongson.cn
-Cc: chenhuacai@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, kernel@xen0n.name,
- krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, loongarch@lists.linux.dev,
- p.zabel@pengutronix.de, robh@kernel.org
+Cc: kernel@xen0n.name, krzk+dt@kernel.org, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, gregkh@linuxfoundation.org, 
+ devicetree@vger.kernel.org, p.zabel@pengutronix.de, 
+ loongarch@lists.linux.dev, conor+dt@kernel.org, chenhuacai@kernel.org, 
+ jirislaby@kernel.org
+In-Reply-To: <20240804063834.70022-1-zhenghaowei@loongson.cn>
 References: <20240804063834.70022-1-zhenghaowei@loongson.cn>
- <20240804063834.70022-2-zhenghaowei@loongson.cn>
-Content-Language: en-US, fr-FR
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20240804063834.70022-2-zhenghaowei@loongson.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Message-Id: <172275622121.3211162.12520346466286897443.robh@kernel.org>
+Subject: Re: [PATCH v2 1/3] dt-bindings: serial: Add Loongson UART
+ controller
 
-Le 04/08/2024 à 08:38, 
-zhenghaowei-cXZgJK919ebM1kAEIRd3EQ@public.gmane.org a écrit :
-> From: Haowei Zheng <zhenghaowei-cXZgJK919ebM1kAEIRd3EQ@public.gmane.org>
+
+On Sun, 04 Aug 2024 14:38:32 +0800, zhenghaowei@loongson.cn wrote:
+> From: Haowei Zheng <zhenghaowei@loongson.cn>
 > 
-> Due to certain hardware design challenges, we have opted to
-> utilize a dedicated UART driver to probe the UART interface.
+> Add Loongson UART controller binding with DT schema format using
+> json-schema.
 > 
-> Presently, we have defined four parameters — 'fractional-division',
-> 'invert-rts', 'invert-dtr', 'invert-cts', and 'invert-dsr' — which
-> will be employed as needed.
-> 
-> Signed-off-by: Haowei Zheng <zhenghaowei-cXZgJK919ebM1kAEIRd3EQ@public.gmane.org>
+> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
 > ---
+>  .../bindings/serial/loongson,ls7a-uart.yaml   | 74 +++++++++++++++++++
+>  MAINTAINERS                                   |  7 ++
+>  2 files changed, 81 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml
+> 
 
-Hi,
+My bot found errors running 'make dt_binding_check' on your patch:
 
-...
+yamllint warnings/errors:
 
-> +	data->rst = devm_reset_control_get_optional_shared(&pdev->dev, NULL);
-> +	if (IS_ERR(data->rst))
-> +		return PTR_ERR(data->rst);
-> +
-> +	device_property_read_u32(&pdev->dev, "clock-frequency", &port->uartclk);
-> +
-> +	ret = reset_control_deassert(data->rst);
-> +	if (ret)
-> +		goto err_unprepare;
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml: fractional-division: missing type definition
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml: rts-invert: missing type definition
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml: dtr-invert: missing type definition
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml: cts-invert: missing type definition
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml: dsr-invert: missing type definition
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.example.dtb: serial@1fe001e0: reg: [[0, 534774240], [0, 16]] is too long
+	from schema $id: http://devicetree.org/schemas/loongson,ls7a-uart.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.example.dtb: serial@1fe001e0: 'clocks' is a required property
+	from schema $id: http://devicetree.org/schemas/loongson,ls7a-uart.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/loongson,ls7a-uart.example.dtb: serial@1fe001e0: Unevaluated properties are not allowed ('clock-frequency', 'reg' were unexpected)
+	from schema $id: http://devicetree.org/schemas/loongson,ls7a-uart.yaml#
 
-Should reset_control_assert() be called if an error occurs later?
+doc reference errors (make refcheckdocs):
 
-> +
-> +	ret = serial8250_register_8250_port(&uart);
-> +	if (ret < 0)
-> +		goto err_unprepare;
-> +
-> +	platform_set_drvdata(pdev, data);
-> +	data->line = ret;
-> +
-> +	return 0;
-> +
-> +err_unprepare:
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20240804063834.70022-1-zhenghaowei@loongson.cn
 
-What is this label for?
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-> +
-> +	return ret;
-> +}
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-CJ
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
 
