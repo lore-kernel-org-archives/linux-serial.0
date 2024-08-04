@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E0EE1CA9E;
-	Sun,  4 Aug 2024 08:41:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F981CD13;
+	Sun,  4 Aug 2024 08:43:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722760920; cv=none; b=kDIqoEDZ1lUQ9wQ2WUVFhGa+Qb74/TFy8qzdd+RiAD5FFagxU3c1xhtjUIYKSoFHZSzOvLti0yi33Vghnq6Sv8fQ2Rv+gLoRV+xPHk6BgOoF/CKD08oSxOSRCAcfbnv8NkVJdlbKwA5rZlzVnrGrU2lLS0tVHm1FsWsDks321vk=
+	t=1722761005; cv=none; b=VaXO8pfnHn6+ixrKQfyygWuHxdz/jN/RdJORIUP7AEsrvhICNQfmZjBfuGo10z9w3gf4Gpa2zyq0/BlKJxBrCKpMb19ifKMmHexBCdDu9addqQwBlgcjSTzSGFp0iT/qU7BqQGA/lJsRG1CX/jXvb05btTOprJhjv13WklVJv/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722760920; c=relaxed/simple;
-	bh=yBGRrcswZ9+EvsYisLcY8wkrWkqHO7ywWmZpz+P1ULM=;
+	s=arc-20240116; t=1722761005; c=relaxed/simple;
+	bh=yu8JR2r310uHdZfQ80kMnDz/ATjnOx1BnBm1P51VF6Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YqKkCc0lgzUhalvTQo42gviHCDYys8YLQHFl+YD9OeejwSWn0ovemh8lHSRSCiySh7sec0yWhBeBWz+ySoiZ4Wmhm537oLAuyOXcKKZcIZ3p5xtGlqU1Z5YQqI7MI+ty3GaRG2yoZQr81kVStPkC3phnMRElp2vh2W0Mdu7xTl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qOmSAdT8; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=DJf5ARicYHDiF34U76mXCty/+JOPau7/sY0OxPZahX/K7L0awxdnA4wyI3AWQfLkxiqoSRm44aYeJeHF11WnBNpJhb3mvOyqHUObmLsD7fzGLabMBOY7yIDhHPrsdTar7OE1/xA0Onps6fdI7x0V8EGKPz6z3VlZ+Jsy/P/pL0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l/PUAMkN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qOmSAdT8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8157EC32786;
-	Sun,  4 Aug 2024 08:41:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l/PUAMkN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C6FC32786;
+	Sun,  4 Aug 2024 08:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722760919;
-	bh=yBGRrcswZ9+EvsYisLcY8wkrWkqHO7ywWmZpz+P1ULM=;
+	s=k20201202; t=1722761004;
+	bh=yu8JR2r310uHdZfQ80kMnDz/ATjnOx1BnBm1P51VF6Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qOmSAdT8wQRh0Fev+SKjIy8ZKeNWU+o0jCx38cOjErmIksVeKE+Z7PIRh0Pwi/iPg
-	 In62CtNPyl+CsnejDL6hhtdG+EWpObiH1jq5GJRYymiGs4BTVtiI2imAmX+7+ZPtbo
-	 usDNQnk29Qro2umFPu9Gj3qs7ltML+NMutndnNKFhrni4E92YuSUjbG0/Cra+1XTrb
-	 K6t/YgNASt+gXuPkaCQ339DHc+UaB6hbQ9E8aprKaDmxtJocKhQ2O4zwFl064gk3Mv
-	 8NUgvFcPdiPaoP8x7+4m87iuX4+Ws12grs+ZOFQ83j+S6dOdzONpKZ9LRc10+94qsQ
-	 d/REILg4C627Q==
-Message-ID: <8aeb4071-3609-4f89-abc7-5b8328dc4290@kernel.org>
-Date: Sun, 4 Aug 2024 10:41:53 +0200
+	b=l/PUAMkNTce527p75JtliDIMQQMoAnAXKNAJrMhcBllpsGng7p8HDocFwujQryWYb
+	 eWDNcG3BcO4nMofMjJbG18eh4CXGkVxmIlSo1uyNlwnuA6oOjdwOgLTiqD4hAgX2gp
+	 mFpNgU+d0gVSRelJ3DWHaeAKOcu6w4TEXslyDT5u0VoQFkaKF/FVNtYV545SytExNh
+	 H2NjRCcYqtIymVw1hCalAMR1Q+WKzoyo2yFFZuZ40IZxPiJj3cCxdy0acO4x8rXDJI
+	 U+USs+4McTw7ZWG1sASiNjCwS739VCSyxsgN6grL2NMyIGcNJAdXPHSNTE0xuGIwjs
+	 RSnBxdHRg5MbQ==
+Message-ID: <4d1f2426-b43c-4727-8387-f18edf937163@kernel.org>
+Date: Sun, 4 Aug 2024 10:43:18 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -93,13 +93,95 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 04/08/2024 08:38, zhenghaowei@loongson.cn wrote:
-> From: Haowei Zheng <zhenghaowei@loongson.cn>
-> 
-> Add Loongson UART controller binding with DT schema format using
-> json-schema.
-> 
 
-Where is the changelog? Are you sending the same patch again?
+Due to lack of changelog, I assume you send the same patch, so:
+
+<form letter>
+This is a friendly reminder during the review process.
+
+It seems my or other reviewer's previous comments were not fully
+addressed. Maybe the feedback got lost between the quotes, maybe you
+just forgot to apply it. Please go back to the previous discussion and
+either implement all requested changes or keep discussing them.
+
+Thank you.
+</form letter>
+
+Also:
+
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  fractional-division:
+
+Where are this and following defined? In which schema?
+
+> +    description: Enables fractional-N division. Currently,
+> +      only LS2K1500 and LS2K2000 support this feature.
+> +
+> +  rts-invert:
+> +    description: Inverts the RTS value in the MCR register.
+> +      This should be used on Loongson-3 series CPUs, Loongson-2K
+> +      series CPUs, and Loongson LS7A bridge chips.
+> +
+> +  dtr-invert:
+> +    description: Inverts the DTR value in the MCR register.
+> +      This should be used on Loongson-3 series CPUs, Loongson-2K
+> +      series CPUs, and Loongson LS7A bridge chips.
+> +
+> +  cts-invert:
+> +    description: Inverts the CTS value in the MSR register.
+> +      This should be used on Loongson-2K0500, Loongson-2K1000,
+> +      and Loongson LS7A bridge chips.
+> +
+> +  dsr-invert:
+> +    description: Inverts the DSR value in the MSR register.
+> +      This should be used on Loongson-2K0500, Loongson-2K1000,
+> +      and Loongson LS7A bridge chips.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +
+> +allOf:
+> +  - $ref: serial.yaml
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/clock/loongson,ls2k-clk.h>
+> +
+> +    serial@1fe001e0 {
+> +        compatible = "loongson,ls7a-uart";
+> +        reg = <0x0 0x1fe001e0 0x0 0x10>;
+> +        clock-frequency = <100000000>;
+> +        interrupt-parent = <&liointc>;
+> +        interrupts = <10 IRQ_TYPE_LEVEL_HIGH>;
+> +        fractional-division;
+> +        rts-invert;
+> +        dtr-invert;
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 8766f3e5e87e..a6306327dba5 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13189,6 +13189,13 @@ S:	Maintained
+>  F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
+>  F:	drivers/i2c/busses/i2c-ls2x.c
+>  
+> +LOONGSON UART DRIVER
+> +M:	Haowei Zheng <zhenghaowei@loongson.cn>
+> +L:	linux-serial@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml
+> +F:	drivers/tty/serial/8250/8250_loongson.c
+
+There is no such file.
 
 Best regards,
 Krzysztof
