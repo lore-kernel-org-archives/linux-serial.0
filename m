@@ -1,122 +1,90 @@
-Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E96CB2C87C
-	for <linux-serial@vger.kernel.org>; Sun,  4 Aug 2024 11:27:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48D5E1EB27;
+	Sun,  4 Aug 2024 12:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722770871; cv=none; b=ThatWUmDbI1l6tDhZwacrJfqN3CCAYTC/AKIAfpxjYWsMvMx0cvF+DcRoTzttaW47ouAHgM6jbw3htWDmc46YhsXk+IRWdV6Rk2qaojUMppByEMezwuOCXZ82st05JeF/ypd/lys5QOs0Ft4v02z5YWgLD9jZXI+uaaj4zaN9a0=
+	t=1722775803; cv=none; b=AHhEn5ilQ4VKGLEOQbc8VHegKbVqv0bHs5GdpuXGQfZj+llceW17QPaJgL6yDnRzCqo5F7zWifzQ13QZ7EC2nbRoqkzHALVFZxFWwjrUJMZO2fZtDjxWz+m7mI0gLYyKV55x3RNfMkV1UEdg2S20Nr2iBlOcIepwlTM8XMZa23Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722770871; c=relaxed/simple;
-	bh=6WTWTv7xN+Wsf3mjUSvFKRctXZL7CXQtw0vVYnbC+eE=;
+	s=arc-20240116; t=1722775803; c=relaxed/simple;
+	bh=m2UOwOthI9uh4DkJKz10xC9fCuZKNFvcONy4yFh9SDs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dzDAckiWkcZZk+2ItTbvzR5uj+5h8vt+UED6Fa9nNposDvZSmcomyLCEm3HIXU4HUZxMRPNDTWHEEpNI0tE73nRZLm42hM/f2TdzH3HlnTdETg9EWX2EzmtSnb/gzrLBnY0IK9+pJRjN/vwOZ+L6z59nifw5P++VWn/OOTo/WuQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org; spf=pass smtp.mailfrom=cknow.org; dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b=QrLFVnQ9; arc=none smtp.client-ip=95.215.58.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=cknow.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cknow.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=cknow.org header.i=@cknow.org header.b="QrLFVnQ9"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cknow.org; s=key1;
-	t=1722770866;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MJQz41jQBJqqx/MG8xPjrVEqBddVWd1a3QNgEsqP5KI=;
-	b=QrLFVnQ9nxrML1Lv2rIBRIKWhtHtacXtXTTu6r401eRGTwSFkmtvi1WZkXyvqUy3YYVurY
-	TMnZeqPcvh2RegkaD01er2QqM7NCixV6KdIkkN/HdA6eB2tpIRxQtED7B9GL6Lv8Q1K3Jv
-	b9L4maSPSPQexki+f+3kaxqEe3ts6I0ohxGRHx2S/qhINivyTDkUPqFQCCUj8G6Uzh1Fi6
-	4TDZ6J08vBithTygoIsY0NabC1NxVfcJVAGbs3wO6Z/wKctIdza7DNDN9ZulzsgToIdjOn
-	M+8r8+ymfgEQGwyRmeVW7D6+k3HA3ll5UJNyuw+c0+KR25xkIvpOjDwEOGB6yA==
-From: Diederik de Haas <didi.debian@cknow.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+	 MIME-Version:Content-Type; b=nbX2DVMHDz1TdC57Sz/U8MpaDFy9EU+R8tfNN4Dch1rcGAT53VHByRjkZnHNqTb8ipW/6mXCugIT/oUwTX50irmmUEibR7V8k3E5EdrT54hrxzCOYGMOOKYkabGXOEakfXaVZHxVlzpzhbc8UMe2VGUq7CVY3xCHD45KEufymM8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+Received: from i53875a9f.versanet.de ([83.135.90.159] helo=diego.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1saafy-0008En-TS; Sun, 04 Aug 2024 14:49:30 +0200
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
  Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
  Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
  Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
- Ondrej Jirman <megi@xff.cz>, linux-rockchip@lists.infradead.org
+ Ondrej Jirman <megi@xff.cz>, Krzysztof Kozlowski <krzk@kernel.org>
 Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Yao Zi <ziyao@disroot.org>,
- Yao Zi <ziyao@disroot.org>
+ linux-serial@vger.kernel.org
 Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
-Date: Sun, 04 Aug 2024 13:27:35 +0200
-Message-ID: <3483951.iGylCHCCq3@bagend>
-Organization: Connecting Knowledge
-In-Reply-To: <20240803125510.4699-5-ziyao@disroot.org>
+Date: Sun, 04 Aug 2024 14:49:28 +0200
+Message-ID: <10507028.U7f9L36N0a@diego>
+In-Reply-To: <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org>
 References:
  <20240803125510.4699-2-ziyao@disroot.org>
  <20240803125510.4699-5-ziyao@disroot.org>
+ <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2013840.3XhD2mlfif";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
-X-Migadu-Flow: FLOW_OUT
-
---nextPart2013840.3XhD2mlfif
 Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Diederik de Haas <didi.debian@cknow.org>
-Date: Sun, 04 Aug 2024 13:27:35 +0200
-Message-ID: <3483951.iGylCHCCq3@bagend>
-Organization: Connecting Knowledge
-In-Reply-To: <20240803125510.4699-5-ziyao@disroot.org>
-MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 
-On Saturday, 3 August 2024 14:55:10 CEST Yao Zi wrote:
-> +       gic: interrupt-controller@fed01000 {
-> +               compatible = "arm,gic-400";
-> +               #interrupt-cells = <3>;
-> +               #address-cells = <0>;
-> +               interrupt-controller;
-> +               reg = <0x0 0xfed01000 0 0x1000>,
-> +                     <0x0 0xfed02000 0 0x2000>,
-> +                     <0x0 0xfed04000 0 0x2000>,
-> +                     <0x0 0xfed06000 0 0x2000>;
-> +               interrupts = <GIC_PPI 9
-> +                       (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-> +       };
-> +
-> +       uart0: serial@ff9f0000 {
-> +               compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-> +               reg = <0x0 0xff9f0000 0x0 0x100>;
-> +               interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
-> +               reg-shift = <2>;
-> +               reg-io-width = <4>;
-> +               clock-frequency = <24000000>;
-> +               status = "disabled";
-> +       };
+Hi Krzysztof,
 
-The properties should be sorted as follows:
-- compatible
-- reg
-- <other properties sorted alphabetically>
-- status
+Am Sonntag, 4. August 2024, 12:05:11 CEST schrieb Krzysztof Kozlowski:
+> On 03/08/2024 14:55, Yao Zi wrote:
+> > This initial device tree describes CPU, interrupts and UART on the chip
+> > and is able to boot into basic kernel with only UART. Cache information
+> > is omitted for now as there is no precise documentation. Support for
+> > other features will be added later.
+> > 
+> > Signed-off-by: Yao Zi <ziyao@disroot.org>
+> > ---
 
-This also applies to the other blocks which I didn't quote.
+> > +		compatible = "fixed-clock";
+> > +		#clock-cells = <0>;
+> > +		clock-frequency = <24000000>;
+> > +		clock-output-names = "xin24m";
+> > +	};
+> > +
+> > +	gic: interrupt-controller@fed01000 {
+> 
+> Why this all is outside of SoC?
 
-Cheers,
-  Diederik
---nextPart2013840.3XhD2mlfif
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+I guess you mean outside of a "soc {}" node?
 
------BEGIN PGP SIGNATURE-----
+Here the rk3528 simply follows all other Rockchip SoCs :-) .
 
-iHUEABYIAB0WIQT1sUPBYsyGmi4usy/XblvOeH7bbgUCZq9lpwAKCRDXblvOeH7b
-bnHyAQD8wsAMQjsb0Ikzu8H5TXIwKe/0e07lJCrzJlvovJaVzgD/WZBgbVZnTLND
-Y3HfPGfi3UhbL+6yrSDh/M0Qok4/9QU=
-=1NSP
------END PGP SIGNATURE-----
+Digging into the history, the first rk3066a and initial rk3288 submission
+did use a soc {} node, which later got removed as suggested by arm-soc
+maintainers at the time [0].
 
---nextPart2013840.3XhD2mlfif--
+I guess that changed since then?
 
+
+Heiko
+
+
+[0] https://lore.kernel.org/linux-arm-kernel/20140716005528.GA26207@quad.lixom.net/
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c3030d30d9c99c057b5ddfa289cffa637a2775f5
 
 
