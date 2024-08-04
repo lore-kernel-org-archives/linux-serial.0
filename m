@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0390C28377;
-	Sun,  4 Aug 2024 14:05:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127AC28377;
+	Sun,  4 Aug 2024 14:09:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722780332; cv=none; b=OWWRqrfYL2QK4wsm5qoU2dTDFzOC9ge+c84e5AJuBscIvqKU6oH4XDOCuQstQeqXkDoP8lTZWqzHrz92U28O8osxxQzHv+Rb2lUdNCUVD1DFVE4Tt6gV0YQ3Iv7UsPPVb85uCo5NnjXafUnoUQupdkeXjzaos9+5lh+MdFnZZ6Y=
+	t=1722780558; cv=none; b=fXrYDljwdIGo2ieao1zQlVE9omlOGvqhb0p6jaIAOfpU23bLC2lQX1ddiVIgc6A8mnFyRz9TjYYycU/k/21BMO1nM+DEh0yKnceFxXi+7P5YfjN9FdpIrAWFGRHxydheMhy3pnyvOuE5QFdyIzc9x+fj/4yjaVaP5ghuEOyOrII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722780332; c=relaxed/simple;
-	bh=O9c7ewdxfWUyO4aktZqASNxBYVn+2cIu2ESX5kfSl7s=;
+	s=arc-20240116; t=1722780558; c=relaxed/simple;
+	bh=o5+7NJb5+y+0KIXGDx9N7TnkkCwXzwrwVaHM98bw1UU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=J+dxhgowmx1fu/LyDxpFxPKiYJBhdu0mOvhrZzGphTkIIOtesLI18wPe60jhCzlPKC+KfHmkeyJWLCi9f5g5qk1BR1QAm57XcwqxucLvGSfHq+qlRin2Zo0s7DfE+EVRqiDhppMkUFvlu3l65xP+IdpAiPUNH8DHcVf6N+byoyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fViwKJpz; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=NEr6rouaCvbiKzzAkAybjcLjphR14z8luoYnyTZGKn+Nbmy17x2Blrz8kxQwb0YjbP15MiJ8Y8+ShF3f7gS291uF1T9CV6S4UdEJbL/9DUOt6EK7FdgSlA0mJxGDA/1azutz7gvgFyt44bmfgjPZew+MiyVMhgTepAALCuO0eX8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CH3vHGlE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fViwKJpz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C941C32786;
-	Sun,  4 Aug 2024 14:05:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CH3vHGlE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3643EC32786;
+	Sun,  4 Aug 2024 14:09:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722780331;
-	bh=O9c7ewdxfWUyO4aktZqASNxBYVn+2cIu2ESX5kfSl7s=;
+	s=k20201202; t=1722780557;
+	bh=o5+7NJb5+y+0KIXGDx9N7TnkkCwXzwrwVaHM98bw1UU=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fViwKJpzkMB+7D2rhjeAIQO4CFy0ao87LnET6ke53q98HlFqQECHM3a8IZo6mxXSi
-	 oy5jTfg1WBWfZERnCJMK+A6c+kSvoB5eeK6pSUbkpgcq7fBqHVL4Uf0+644QcaSTLK
-	 q8fSWwZ9tchFscm8NOWW9VZdSTs8sos4VicH41q5Si5Ieyqf/jNig6v7sIteIY1qhD
-	 5K728JpICPPOO5wVLgLjZLuJ96XH33RY7KkMJsAQzYdjoZzAl5MpOvLAxX8TZHMmR6
-	 heGUJQVP6yzQN7lt6kqJJU9iLC39uTdiwPNRZAqo5VqjNWQvt1bfFMAbX8BsXxbb+b
-	 3FASdRu9QOvFw==
-Message-ID: <b967ab05-dd0e-4fc5-bee6-ad7639e47bfb@kernel.org>
-Date: Sun, 4 Aug 2024 16:05:24 +0200
+	b=CH3vHGlEeUVaOlJQaJveplm61nbcK06xC6MjpzmyO5+0TtRJXiThmnxmtDerAGDZS
+	 RktoryuLPoBemsRTD4VC8scnx8K96AxZjPFNtbUYSLSOcK/IGFeh858IZ49Si23b/r
+	 6pYE5qH4IZCA7Ltz9Pcj66VmHD9o2kpFMvhsOWfTu2jI+lIlCRk+arx0WLa6sis2EG
+	 Ts4LvA8SNXZyQvo7g63g6ZvH5AfZdqFbulEDBRp33us0bteRy3mD55TjupVMkdkjit
+	 QHYVMsN4IxHn5iFu/Uwy3k9ze6efZJs7GgdnHqK/nrzcB8AX2Um76DNBDN/D39gvuK
+	 qoBwUM5EWJTkA==
+Message-ID: <6bba3607-04c6-4d6d-942c-21859bfa9b74@kernel.org>
+Date: Sun, 4 Aug 2024 16:09:09 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,10 +36,10 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
-To: Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
+To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+ Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
  Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
  Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
@@ -50,8 +50,7 @@ Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-serial@vger.kernel.org
 References: <20240803125510.4699-2-ziyao@disroot.org>
  <20240803125510.4699-5-ziyao@disroot.org>
- <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org>
- <Zq-AFWYaqu7zGuz-@ziyaolaptop.my.domain>
+ <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org> <10507028.U7f9L36N0a@diego>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -97,12 +96,12 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <Zq-AFWYaqu7zGuz-@ziyaolaptop.my.domain>
+In-Reply-To: <10507028.U7f9L36N0a@diego>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 04/08/2024 15:20, Yao Zi wrote:
->>
+On 04/08/2024 14:49, Heiko Stübner wrote:
+> 
 >>> +		compatible = "fixed-clock";
 >>> +		#clock-cells = <0>;
 >>> +		clock-frequency = <24000000>;
@@ -113,13 +112,22 @@ On 04/08/2024 15:20, Yao Zi wrote:
 >>
 >> Why this all is outside of SoC?
 > 
-> Just as Heiko says, device tree for all other Rockchip SoCs don't have
-> a "soc" node. I didn't know why before but just follow the style.
+> I guess you mean outside of a "soc {}" node?
 > 
-> If you prefer add a soc node, I am willing to.
+> Here the rk3528 simply follows all other Rockchip SoCs :-) .
+> 
+> Digging into the history, the first rk3066a and initial rk3288 submission
+> did use a soc {} node, which later got removed as suggested by arm-soc
+> maintainers at the time [0].
+> 
+> I guess that changed since then?
 
-Surprising as usually we expect MMIO nodes being part of SoC to be under
-soc@, but if that's Rockchip preference then fine.
+Well, referenced patch was mixing MMIO with non-MMIO, so Olof's comment
+could be understood that this is not correct approach. Even though DT
+spec shows examples of "soc", it is not required. But then how do you
+implement any ordering? By name or by unit address?
+
+IOW, I think this is the only platform not using "soc" nodes.
 
 Best regards,
 Krzysztof
