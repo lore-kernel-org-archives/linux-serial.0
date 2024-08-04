@@ -1,181 +1,206 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72EF912B6C;
-	Sun,  4 Aug 2024 13:28:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA02381B8;
+	Sun,  4 Aug 2024 13:44:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722778098; cv=none; b=HDwzToXkmou1epzBUJTweo6obmZkWBvgk+qfUS5I7LOf3HXaqWtHkEtbZSRQKYUw8mCURiTQmv3joA4gmG5HFz4e1gSSD5wTwC9OOMWVf0jje58VJ6P+gSjXifszLzr1AROREtIvKxlCbWbS5cHow2ugh6HH2XcIKoaFXw379V4=
+	t=1722779068; cv=none; b=NlvS+wPxckmydpmOn7GHLH4OBRIbOcqO6rTUB+ghfep7n6CefiUU4j50Ws13AFO3TEmMhbkAcNqHVQY5nIGAfdnTl25pBl2nNi0X8+Dzz9OdHog9oDA0MUevmPpFwn3gjKOqRzBrkOVoG8fLtNTEJ9hHdHUGLE/nCmi+x5/J9no=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722778098; c=relaxed/simple;
-	bh=RfCC0Rd2hawHEeBBuBIbGRY7g/EAFFGPxBU/1QuLlsY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dhbw+IUCwamBh2skwwKi1rHnu0HOmA9+2B/PSkb5UzVqEekXubmYjr/aSWsLfBXV2pbWOKmo4kNyJeXSjDAxKA7wpQsf2iHZ3WObDu/RIaPpqq59jSY34Ajz3nstg1cxKxySynI5F0+lE5hwTU/5w4quXSFcRF5lku4WIUSVW4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=aOaTOxoc; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="aOaTOxoc"
-Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 3A4134103C;
-	Sun,  4 Aug 2024 15:28:14 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
-	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fGeTbZQBCPqx; Sun,  4 Aug 2024 15:28:12 +0200 (CEST)
-Date: Sun, 4 Aug 2024 21:27:47 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1722778092; bh=RfCC0Rd2hawHEeBBuBIbGRY7g/EAFFGPxBU/1QuLlsY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=aOaTOxoc7xbi8RoeDfgUdN1RRZ3nZxU1OaftnAR08AkWuc+MpV2Uvu2EqaKvCp+Kl
-	 rwn0WbPO9aDFORnzOfprKAi46k26BxBRFR5dSNnApdJCVb6kxwdXVa3BFgIAQ0a2Iw
-	 HXyZ+rfSfi/pdK3HBuyrKPsh88saq1U7DGV08fxM3JfgFQCqu+x8l/reM1TH8cfb7w
-	 brKd/MWRT4xaZYZ+5/dYHJyGvlT/eaVjapGtrht0qmbYxzFARqPQZkgXeNVjotaZch
-	 3GdooHtVSdYeK1oSAqkPDmwzfbn831t4GgtpwUN2KtrhzzGO5IPdqBaJsY6clG0Pto
-	 pjUUfWwHoJaSQ==
-From: Yao Zi <ziyao@disroot.org>
-To: Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
-Cc: Dragan Simic <dsimic@manjaro.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
-	Andy Yan <andyshrk@163.com>,
-	Muhammed Efe Cetin <efectn@protonmail.com>,
-	Jagan Teki <jagan@edgeble.ai>, Ondrej Jirman <megi@xff.cz>,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	"open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 0/4] Add initial support for Rockchip RK3528 SoC
-Message-ID: <Zq-B07RbFdDTFX3R@ziyaolaptop.my.domain>
-References: <20240803125510.4699-2-ziyao@disroot.org>
- <0c77f99f4af96807a2a8c3028e3c1d4d@manjaro.org>
- <Zq8eJB7zqOvYQvmw@ziyaolaptop.my.domain>
- <3EA59A56-C6E5-40B7-A5C4-C280B001E981@gmail.com>
+	s=arc-20240116; t=1722779068; c=relaxed/simple;
+	bh=ZMf49dbaIG1WCf0/RGIz34vDpT2JfDhgNivmyp1tvWo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aEFBEWzbcRO4GM/K354h4j17svW3n2+p2pgi9wQE7OqKiW1WmDRfjXBXejHlwBNApH8djdbcPqV/COfc18h/lR0cB8RzQFNiottLcxv0ePbQbZHUtB2+Xnz5006IVJW3YYoSX6vCj/8PCjHdVSxm0SeU+gRxoUNhbK4fDGSd5fY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+Received: from i53875a9f.versanet.de ([83.135.90.159] helo=diego.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1sabWj-0000Gv-Os; Sun, 04 Aug 2024 15:44:01 +0200
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Yao Zi <ziyao@disroot.org>, Dragan Simic <dsimic@manjaro.org>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Jagan Teki <jagan@edgeble.ai>, Ondrej Jirman <megi@xff.cz>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
+Date: Sun, 04 Aug 2024 15:44:00 +0200
+Message-ID: <2408413.9XhxPE3A7Q@diego>
+In-Reply-To: <88dd5910904c03280f37ca0051f5de4e@manjaro.org>
+References:
+ <20240803125510.4699-2-ziyao@disroot.org>
+ <Zq-AFWYaqu7zGuz-@ziyaolaptop.my.domain>
+ <88dd5910904c03280f37ca0051f5de4e@manjaro.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3EA59A56-C6E5-40B7-A5C4-C280B001E981@gmail.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On Sun, Aug 04, 2024 at 11:13:59AM +0200, Piotr Oniszczuk wrote:
-> 
-> 
-> > Wiadomość napisana przez Yao Zi <ziyao@disroot.org> w dniu 04.08.2024, o godz. 08:22:
-> > 
-> > On Sun, Aug 04, 2024 at 07:40:43AM +0200, Dragan Simic wrote:
-> >> Hello all,
+Am Sonntag, 4. August 2024, 15:25:47 CEST schrieb Dragan Simic:
+> On 2024-08-04 15:20, Yao Zi wrote:
+> > On Sun, Aug 04, 2024 at 12:05:11PM +0200, Krzysztof Kozlowski wrote:
+> >> On 03/08/2024 14:55, Yao Zi wrote:
+> >> > This initial device tree describes CPU, interrupts and UART on the chip
+> >> > and is able to boot into basic kernel with only UART. Cache information
+> >> > is omitted for now as there is no precise documentation. Support for
+> >> > other features will be added later.
+> >> >
+> >> > Signed-off-by: Yao Zi <ziyao@disroot.org>
+> >> > ---
+> >> >  arch/arm64/boot/dts/rockchip/rk3528.dtsi | 182 +++++++++++++++++++++++
+> >> >  1 file changed, 182 insertions(+)
+> >> >  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
+> >> >
+> >> > diff --git a/arch/arm64/boot/dts/rockchip/rk3528.dtsi b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+> >> > new file mode 100644
+> >> > index 000000000000..77687d9e7e80
+> >> > --- /dev/null
+> >> > +++ b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+> >> > @@ -0,0 +1,182 @@
+> >> > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> >> > +/*
+> >> > + * Copyright (c) 2022 Rockchip Electronics Co., Ltd.
+> >> > + * Copyright (c) 2024 Yao Zi <ziyao@disroot.org>
+> >> > + */
+> >> > +
+> >> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> >> > +#include <dt-bindings/interrupt-controller/irq.h>
+> >> > +
+> >> > +/ {
+> >> > +	compatible = "rockchip,rk3528";
+> >> > +
+> >> > +	interrupt-parent = <&gic>;
+> >> > +	#address-cells = <2>;
+> >> > +	#size-cells = <2>;
+> >> > +
+> >> > +	aliases {
+> >> > +		serial0 = &uart0;
+> >> > +		serial1 = &uart1;
+> >> > +		serial2 = &uart2;
+> >> > +		serial3 = &uart3;
+> >> > +		serial4 = &uart4;
+> >> > +		serial5 = &uart5;
+> >> > +		serial6 = &uart6;
+> >> > +		serial7 = &uart7;
+> >> > +	};
+> >> > +
+> >> > +	cpus {
+> >> > +		#address-cells = <1>;
+> >> > +		#size-cells = <0>;
+> >> > +
+> >> > +		cpu-map {
+> >> > +			cluster0 {
+> >> > +				core0 {
+> >> > +					cpu = <&cpu0>;
+> >> > +				};
+> >> > +				core1 {
+> >> > +					cpu = <&cpu1>;
+> >> > +				};
+> >> > +				core2 {
+> >> > +					cpu = <&cpu2>;
+> >> > +				};
+> >> > +				core3 {
+> >> > +					cpu = <&cpu3>;
+> >> > +				};
+> >> > +			};
+> >> > +		};
+> >> > +
+> >> > +		cpu0: cpu@0 {
+> >> > +			device_type = "cpu";
+> >> > +			compatible = "arm,cortex-a53";
+> >> > +			reg = <0x0>;
+> >> > +			enable-method = "psci";
+> >> > +		};
+> >> > +
+> >> > +		cpu1: cpu@1 {
+> >> > +			device_type = "cpu";
+> >> > +			compatible = "arm,cortex-a53";
+> >> > +			reg = <0x1>;
+> >> > +			enable-method = "psci";
+> >> > +		};
+> >> > +
+> >> > +		cpu2: cpu@2 {
+> >> > +			device_type = "cpu";
+> >> > +			compatible = "arm,cortex-a53";
+> >> > +			reg = <0x2>;
+> >> > +			enable-method = "psci";
+> >> > +		};
+> >> > +
+> >> > +		cpu3: cpu@3 {
+> >> > +			device_type = "cpu";
+> >> > +			compatible = "arm,cortex-a53";
+> >> > +			reg = <0x3>;
+> >> > +			enable-method = "psci";
+> >> > +		};
+> >> > +	};
+> >> > +
+> >> > +	psci {
+> >> > +		compatible = "arm,psci-1.0", "arm,psci-0.2";
+> >> > +		method = "smc";
+> >> > +	};
+> >> > +
+> >> > +	timer {
+> >> > +		compatible = "arm,armv8-timer";
+> >> > +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+> >> > +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+> >> > +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+> >> > +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+> >> > +	};
+> >> > +
+> >> > +	xin24m: xin24m {
 > >> 
-> >> On 2024-08-03 14:55, Yao Zi wrote:
-> >>> Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
-> >>> multimedia application. This series add a basic device tree with CPU,
-> >>> interrupts and UART nodes for it and is able to boot into a kernel with
-> >>> only UART console.
-> >>> 
-> >>> Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
-> >>> booted into initramfs with this log[2].
+> >> Please use name for all fixed clocks which matches current format
+> >> recommendation: 'clock-([0-9]+|[a-z0-9-]+)+'
+> > 
+> > Will be fixed in next revision.
+> 
+> Hmm, why should we apply that rule to the xin24m clock, which is
+> named exactly like that everywhere else in Rockchip SoC dtsi files?
+> It's much better to remain consistent.
+
+bindings or how we write devicetrees evolve over time ... similarly the
+xin24m name comes from more than 10 years ago.
+
+We also name all those regulator nodes regulator-foo now, which in turn
+automatically does enforce a nice sorting rule to keep all the regulators
+around the same area ;-)
+
+So I don't see a problem of going with xin24m: clock-xin24m {}
+
+
+Heiko
+
+> 
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/clock/fixed-clock.yaml?h=v6.11-rc1
 > >> 
-> >> I wonder will at least the RK3528 datasheet become available publicly?
-> > 
-> > I found none for now, and I am not someone from Rockchip, thus don't
-> > know whether they have a plan to make it public, either. But there has
-> > been some devices shipping it already and getting them mainlined will
-> > be a neat thing.
-> > 
-> 
-> Maybe this hight be useful: at some point in time I started to hack with rk3528 support in mainline kernel.
-> HW I’m using is vontar rk3528 tvbox.
-> 
-> So far - on mainline 6.10 kernel - I got working: clocks, pin control, uart, sdcard, eth, usb.
-> 
-> I started to work on dw hdmi and got to stage with correct mode sets by dw-hdmi but I stuck with vop3 support.
-> 
-> Generally - I was back porting code from bsp but rockchip bsp is too divergent from mainline to my back porting skills :-(
-> 
-> If anybody can help with vop3 - then we can have quite good initial support of rk3528 in mainline (the, sdcard, usb, eth, hdmi)
-> gpu, hdmi audio should be probably easy…
-> 
-> My rk3528 enablements:
-> 
-> Bindings: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1100-dt-bindings-clock-add-rk3528-clock-definitions.patch
-> 
-> Clocks: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1101-clk-rockchip-add-clock-controller-for-the-RK3528.patch
-> 
-> Pincontrol: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1102-pinctrl-rockchip-add-rk3528-support.patch
-> 
-> Power domain bindings: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1103-dt-bindings-power-add-RK3528-SoCs-header-for-idle.patch
-> 
-> Ethernet support: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1104-ethernet-stmmac-dwmac-rk3528-add-GMAC-support.patch
-> 
-> Power domains support: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1105-soc-rockchip-power-domain-add-rk3528-support.patch
-> 
-> usb: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1106-phy-rockchip-inno-usb2-add-phy-support-for-rk3528.patch
-> 
-> SoC power domains: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1108-soc-rockchip-power-domain-add-rk3528-support.patch
-> 
-> Thermal: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1108-thermal-rockchip-add-support-for-rk3528.patch
-> 
-> Naneng phy: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1109-phy-rockchip-naneng-combphy-add-support-for-rk3528.patch
-> 
-> dw hdmi: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1110-phy-rockchip-inno-hdmi-add-support-for-rk3528.patch
-> 
-> Inno hdmi: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1111-drm-rockchip-dw_hdmi-add-support-for-rk3528.patch       Nvmem: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1113-nvmem-rockchip-otp-add-support-for-rk3528.patch
-> 
-> Sound soc: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1114-sound-soc-codecs-add-rk3528-support.patch
-> 
-> rk3528 dtsi: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1150-arm64-dtsi-rockchip-add-3528.dtsi.patch: 
-
-FYI, This link is dead.
-
-> Vontar tvbox dts: https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-6.10/files/1151-arm64-dts-rockchip-add-dts-for-vontar_r3.patch
-> 
-> It may happen that above patches will not apply clean on vanilla 6.10 as I’m patching kernel for s905/s912/sm1/g12/rpi3/rpi4/rpi5/3328/3399//3566/3568/3588/3528 and rk3528 patches are after applied s905/s912/sm1/g12/rpi3/rpi4/rpi5/3328/3399/3566/3568/3588 patches.
-> 
-> If anybody is interested in adding vop3 support - pls give me sign - we can work together…
-> 
-> > Just FYI, the vendor kernel is available here[1] on the "develop-5.10"
-> > branch.
-> > 
-> > Best regards,
-> > Yao Zi
-> > 
-> > [1]: https://github.com/rockchip-linux/kernel
-> > 
+> >> > +		compatible = "fixed-clock";
+> >> > +		#clock-cells = <0>;
+> >> > +		clock-frequency = <24000000>;
+> >> > +		clock-output-names = "xin24m";
+> >> > +	};
+> >> > +
+> >> > +	gic: interrupt-controller@fed01000 {
 > >> 
-> >>> [1]: https://docs.radxa.com/en/e/e20c
-> >>> [2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
-> >>> 
-> >>> Yao Zi (4):
-> >>>  dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
-> >>>  dt-bindings: arm: rockchip: Add Radxa E20C board
-> >>>  arm64: dts: rockchip: Add base DT for rk3528 SoC
-> >>>  arm64: dts: rockchip: Add Radxa e20c board
-> >>> 
-> >>> .../devicetree/bindings/arm/rockchip.yaml     |   5 +
-> >>> .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
-> >>> arch/arm64/boot/dts/rockchip/Makefile         |   1 +
-> >>> .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 +++
-> >>> arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 182 ++++++++++++++++++
-> >>> 5 files changed, 211 insertions(+)
-> >>> create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
-> >>> create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
-> >>> 
-> >>> 
-> >>> base-commit: 94ede2a3e9135764736221c080ac7c0ad993dc2d
+> >> Why this all is outside of SoC?
 > > 
-> > _______________________________________________
-> > Linux-rockchip mailing list
-> > Linux-rockchip@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-rockchip
+> > Just as Heiko says, device tree for all other Rockchip SoCs don't have
+> > a "soc" node. I didn't know why before but just follow the style.
+> > 
+> > If you prefer add a soc node, I am willing to.
 > 
 
-Best regards,
-Yao Zi
+
+
+
