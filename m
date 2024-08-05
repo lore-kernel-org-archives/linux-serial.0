@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589A0558BC;
-	Mon,  5 Aug 2024 10:21:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380B615B96C;
+	Mon,  5 Aug 2024 10:21:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722853262; cv=none; b=tOB30/eZmhsHxF8Kar4Kku+aT9jxaqa8UbTHxkzGuSDmOhEfM0D/SstuKD7uFDF50Rqt4k2E8x0DarGs1SC9MJk6DOvavP0sXeRvghc55Y6iiU2e2qwRF5T96o6sTOLZcrvu3QsJ+Qiwvf2Fu9qDVXt5Lq+qQJ4Kp00y8uj2y+4=
+	t=1722853264; cv=none; b=ciDLuO7tXsgCERMM7c56BCp6j1kVywLQCDkV5KrFoQwUnF2dB2fJ5ABQRDOp/RYE/OXrAo1RQk6x3AR9MVj1arN4RXSEmsKWOs92opph7t3SD/o57iH5F8hHrhes6FDivnVXkZ2UZ4e3G5zr28HIB4c380CHp8QCKLT6CgXjBQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722853262; c=relaxed/simple;
-	bh=gJTxTjqmJCVhdU9++PAKLolxpY0IlAQM2n9t5U9kci0=;
+	s=arc-20240116; t=1722853264; c=relaxed/simple;
+	bh=snzCKqe+A40N2hgIp+p7f4DkpzeZjbNgpbd31jwyFAg=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dj0K0ASHfEUpHBkcgUFtui9h1r6cQ58u+lOuKU8g+iDKhshTAJ5S1q8zM6S7rRUYZr6yyWYcsvs5Jv0APZMc5w3WJT1kW/JzHXud93MVcAUJ+ojrFfV2Z+hevOpZKDdjJ1bF3+NbC7bHzkBiYqAIq95r51QFlPGw9OebYEunKjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qieHvDXn; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=ppYmKEEM8i75JHmBcxSZ2HmxHBNKSKpUs+IM+c+U8Dzn9fNmcBWf6mIAQ8VjNgm2sxTRFqVBEv4vzNhALIlHw9RgA0p9SwctPYd2+ekudWdQHy36L9ByIlE3fVQ0MQRkz3W8HYmcs0Z8yiue/n8Gtmk8MGpfLD2gWNAwMVBG6j0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R1v92u9V; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qieHvDXn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E51DC4AF0E;
-	Mon,  5 Aug 2024 10:21:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R1v92u9V"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4866C4AF0F;
+	Mon,  5 Aug 2024 10:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722853262;
-	bh=gJTxTjqmJCVhdU9++PAKLolxpY0IlAQM2n9t5U9kci0=;
+	s=k20201202; t=1722853263;
+	bh=snzCKqe+A40N2hgIp+p7f4DkpzeZjbNgpbd31jwyFAg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qieHvDXntXOUIdPEFDPYTMdoX6TV+wURbFswO9KsIFH4v+qhpHnV15RBARS54g935
-	 kdItlOlQlqbsg1Z0CWlK1oyLlWfrDqIXJQDmOiCEUgOfZ4qbQAe4gUx1g3ew1ck10c
-	 2MjiQ+FlzYZNHekuScDkXtQlQf6YKkzEIvztMbV8kFlFkIoPRFy01CpO33Jty9P15p
-	 9VThE7EZXWLKhYzQYYTWFrYAZBiPSjIixKhVEAWkMaBfp1d+7xVtMGms+ysCYLrLdi
-	 tW18Ocby3DI69wdjevel7k97hhbuiVzLb8XQFmGtFacnCcYwseYNd2A47ArigeOWze
-	 jMyJriybhHWXw==
+	b=R1v92u9VwlFuC9eFlsUaFWPADJR/odGYP1Od8gvaZuoVNmfS/QJy9jdISQ7wq9lbi
+	 /JmMBTBaTqoUM387NAduBK+a3K7HRBaYDgQG5LGu9q8aeqsjXnlW0cdHi8kwRbEv/l
+	 P26HRt4FhZl9mtkYN+u/aMHsBlUw/b+80d11MHqgNFADTNDLt4YW7pIxZ+Q2iVx7wh
+	 ns0Iv7zu97AARFcrsKyMULH864Abc/N3bOnumOY3i5PRDKfvDQDCUfp8UjzFyE8Eim
+	 pxY6G5yS4j5eaJmnR+dW+/HkzGRfBa65R/K4UqCwq3wApSjfn5Qhb7An7U+IqKoI3L
+	 7AeXUYS6x0DtA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 06/13] mxser: remove stale comment
-Date: Mon,  5 Aug 2024 12:20:39 +0200
-Message-ID: <20240805102046.307511-7-jirislaby@kernel.org>
+Subject: [PATCH 07/13] mxser: remove doubled sets of close times
+Date: Mon,  5 Aug 2024 12:20:40 +0200
+Message-ID: <20240805102046.307511-8-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
 References: <20240805102046.307511-1-jirislaby@kernel.org>
@@ -45,30 +45,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The comment mentions ISA removed long time ago. It also comments on
-.driver_data pointing to above structures. That is not true either.
-Remove that.
+tty_port::close_delay and ::closing_wait are set in tty_port_init() few
+lines above already, no need to reset them (to the same values).
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/mxser.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/tty/mxser.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 5b97e420a95f..9a9a67b5afa0 100644
+index 9a9a67b5afa0..6cfef88a18e3 100644
 --- a/drivers/tty/mxser.c
 +++ b/drivers/tty/mxser.c
-@@ -208,9 +208,6 @@ static const struct {
- };
- #define UART_INFO_NUM	ARRAY_SIZE(Gpci_uart_info)
+@@ -1770,8 +1770,6 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
  
--
--/* driver_data correspond to the lines in the structure above
--   see also ISA probe function before you change something */
- static const struct pci_device_id mxser_pcibrds[] = {
- 	{ PCI_DEVICE_DATA(MOXA, C168,		8) },
- 	{ PCI_DEVICE_DATA(MOXA, C104,		4) },
+ 		mxser_process_txrx_fifo(info);
+ 
+-		info->port.close_delay = 5 * HZ / 10;
+-		info->port.closing_wait = 30 * HZ;
+ 		spin_lock_init(&info->slock);
+ 
+ 		/* before set INT ISR, disable all int */
 -- 
 2.46.0
 
