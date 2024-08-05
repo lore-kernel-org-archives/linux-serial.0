@@ -1,40 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B10155735;
-	Mon,  5 Aug 2024 10:20:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84E16155C91;
+	Mon,  5 Aug 2024 10:20:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722853255; cv=none; b=IVS56AuLoeZboETN/0y9Z1vfiq8jhcuLqBW9UzlDE0utjTari8Tc2Jilu4CTP115AHDVOC9Vuzfi9Cj85ysA+9dqIyqoMrH+fGtDAubRFHnrg96ORTRSAeCOlltf3ba8tAWE9Wl3EEv27ATYaiP7i9sf1dsdeW15Pz67uACU+K4=
+	t=1722853257; cv=none; b=gj2gmaW8HkfbrcgMD6awngfGPL9u/fmZekBqt73lCUGOizkt7HF+GY3u/8eIZdflbiZM/p7diu6pD8lCGL9zqDFXPPEq/N6o0rZYSDkHkrAcucocJ8oSRZJ+9axWeFFGxUPhckymgvzo8PHeOCpke+U3YWJkppkxNiP61iNwz8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722853255; c=relaxed/simple;
-	bh=S6/Ai1CdLZDMBoYrAC6nEpen71bLbi3IKrnKG2Sv+Us=;
+	s=arc-20240116; t=1722853257; c=relaxed/simple;
+	bh=n4v5gmWtmqYQInKnJ/Js6GzVrvaIyNCeY/904bJqLK8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C9COlOvqT7SFc7DXWNGepz7mc9HB96Olf6C6/V/I6pMgyVeCokCaAhneG6o5iaZtD/BXpfuS8gfnXnTREVPX3C+qt3afNA5fnEwOahnsUROZ7EFZelKNoCe/1vy/RmuTrjCh9b1lyFHVfNv/wshpBw/kSLSlg8vjpYXPCJiWUPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N/nCnrmd; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=PF6DTOErLTa4RK1UEdzh50Sv4pTG3bM0bdTNiADsjLNjgOUb5YnRozQOkYZiSnwhEbDaxf2LbZi938ebhQO4/E3mSEzkbI8zuv8Qd8phomJHhAgky2bJrTVF7fHAotqo7UHFWdLbwmaXFly7gCB5u+yMvoWdiwZcMEC2bNdFX4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YWsw0LvP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N/nCnrmd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55602C4AF18;
-	Mon,  5 Aug 2024 10:20:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YWsw0LvP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03DEDC4AF0D;
+	Mon,  5 Aug 2024 10:20:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722853255;
-	bh=S6/Ai1CdLZDMBoYrAC6nEpen71bLbi3IKrnKG2Sv+Us=;
+	s=k20201202; t=1722853257;
+	bh=n4v5gmWtmqYQInKnJ/Js6GzVrvaIyNCeY/904bJqLK8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N/nCnrmdNe1qCiCgN25ZOodnz9CAb3fU01mLNXr9Lb9XmB+FEtMEhRCmpOm7v+rW0
-	 OycdSitMYnmrOcGy3nmN3IL4Ze2pPxdRbbCcZudDgDy9UHYYMszha0A8snzXwxAB3R
-	 tRRGduF6/XYkOy0zWgCtYvHHfsQlfEYLjFtC4ksybCeDxljU90QYDRm209ESvFcfqJ
-	 LpkbPDwWFM7tDDbnq0dgl4VAvPyJMCoaCXQaCUbDN4LSeBfsBRwM8DQPY2Jf0hYyrp
-	 ZBKeSXMsZhZhAhZSzwQ/qLB3dwXu8epS4pqc1U4mdTsyEbQ3Wlqpdc68TaQVcY1Q2y
-	 EvmjbbTTDtkGQ==
+	b=YWsw0LvPLdgFkGHOZy8F4Nh7/wtWSTrTPl2QPrRpyGngvna126B98z0g1q3VJvKhV
+	 32pgQUcb4d78RpOvLH1RYkZhrzALxtmnGFvuq0A1/DpVTf+8Z8WaduFkoREIDdrDLQ
+	 WECgYryvu3tNlbkQWL+p2bWF/sDoQPQdUjyR3eafW7rJgGY/CGxY0Gl9q58+xrKjZX
+	 K8v/AaPNpIcFPUkXZIKgsd7dbA712/eR0HPGQU7uojF8XR+I49LB6zzxKpjv6+5Ibu
+	 iZH038xKggv+FZE0W45Kl8BijJFTQ67gwq2QQWs2z1jVU+Ru4FWhAtQIKhEWeegQVv
+	 xQX4NbNKzADxg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 02/13] serial: protect uart_port_dtr_rts() in uart_shutdown() too
-Date: Mon,  5 Aug 2024 12:20:35 +0200
-Message-ID: <20240805102046.307511-3-jirislaby@kernel.org>
+	stable@vger.kernel.org,
+	Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 03/13] serial: don't use uninitialized value in uart_poll_init()
+Date: Mon,  5 Aug 2024 12:20:36 +0200
+Message-ID: <20240805102046.307511-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
 References: <20240805102046.307511-1-jirislaby@kernel.org>
@@ -46,55 +47,59 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Commit af224ca2df29 (serial: core: Prevent unsafe uart port access, part
-3) added few uport == NULL checks. It added one to uart_shutdown(), so
-the commit assumes, uport can be NULL in there. But right after that
-protection, there is an unprotected "uart_port_dtr_rts(uport, false);"
-call. That is invoked only if HUPCL is set, so I assume that is the
-reason why we do not see lots of these reports.
+Coverity reports (as CID 1536978) that uart_poll_init() passes
+uninitialized pm_state to uart_change_pm(). It is in case the first 'if'
+takes the true branch (does "goto out;").
 
-Or it cannot be NULL at this point at all for some reason :P.
-
-Until the above is investigated, stay on the safe side and move this
-dereference to the if too.
-
-I got this inconsistency from Coverity under CID 1585130. Thanks.
+Fix this and simplify the function by simple guard(mutex). The code
+needs no labels after this at all. And it is pretty clear that the code
+has not fiddled with pm_state at that point.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
+Fixes: 5e227ef2aa38 (serial: uart_poll_init() should power on the UART)
+Cc: stable@vger.kernel.org
+Cc: Douglas Anderson <dianders@chromium.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/serial_core.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/serial_core.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 61c7e1268957..3afe77f05abf 100644
+index 3afe77f05abf..d63e9b636e02 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -407,14 +407,16 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 		/*
- 		 * Turn off DTR and RTS early.
- 		 */
--		if (uport && uart_console(uport) && tty) {
--			uport->cons->cflag = tty->termios.c_cflag;
--			uport->cons->ispeed = tty->termios.c_ispeed;
--			uport->cons->ospeed = tty->termios.c_ospeed;
--		}
-+		if (uport) {
-+			if (uart_console(uport) && tty) {
-+				uport->cons->cflag = tty->termios.c_cflag;
-+				uport->cons->ispeed = tty->termios.c_ispeed;
-+				uport->cons->ospeed = tty->termios.c_ospeed;
-+			}
+@@ -2690,14 +2690,13 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+ 	int ret = 0;
  
--		if (!tty || C_HUPCL(tty))
--			uart_port_dtr_rts(uport, false);
-+			if (!tty || C_HUPCL(tty))
-+				uart_port_dtr_rts(uport, false);
-+		}
+ 	tport = &state->port;
+-	mutex_lock(&tport->mutex);
++
++	guard(mutex)(&tport->mutex);
  
- 		uart_port_shutdown(port);
+ 	port = uart_port_check(state);
+ 	if (!port || port->type == PORT_UNKNOWN ||
+-	    !(port->ops->poll_get_char && port->ops->poll_put_char)) {
+-		ret = -1;
+-		goto out;
+-	}
++	    !(port->ops->poll_get_char && port->ops->poll_put_char))
++		return -1;
+ 
+ 	pm_state = state->pm_state;
+ 	uart_change_pm(state, UART_PM_STATE_ON);
+@@ -2717,10 +2716,10 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+ 		ret = uart_set_options(port, NULL, baud, parity, bits, flow);
+ 		console_list_unlock();
  	}
+-out:
++
+ 	if (ret)
+ 		uart_change_pm(state, pm_state);
+-	mutex_unlock(&tport->mutex);
++
+ 	return ret;
+ }
+ 
 -- 
 2.46.0
 
