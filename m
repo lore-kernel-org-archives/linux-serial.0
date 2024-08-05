@@ -1,138 +1,150 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51B7D3EA64;
-	Mon,  5 Aug 2024 14:28:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2EDA15532E;
+	Mon,  5 Aug 2024 15:00:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722868099; cv=none; b=apRCEaBYjWV3bWOUaTXY0JxSQ+T72uZO1qatRlKQpCnOr51MzrzTtpw1E5NtS2FMat/6Lt6bY4EjTBBk2W1BoggrMqo8jtMIpndSoRGQtjjzj2bdsfT3tIjSTwnqTYXSABQirr8vkpyOA89huWUgxo+qFsNgDIS2rjH2orjDHho=
+	t=1722870016; cv=none; b=I7Aw2V2ShFFcMERYANRRkMaZn4CRzCZ7DZz6cQRyS5wHAHouBTooejplonI4NRD6PAuZfcV0pAeimX3+6ciG5eUC5j/+F8s3OM5oDZ1G15DJCaEYZjd91aRod80pjoeKySJbmPMr0FmXObx8Ky9xfUKfluYcDXD6KP/+eW2XOLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722868099; c=relaxed/simple;
-	bh=yKbtl95xINhTP7J1jRhAX6V0rXoLD64gANcmv8E/gsw=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=HROIrX8XtjoUXo+0iEMojhvdrA1kuL2jHG2ZC7XDvcdZXkRFCNPYvTGgLSO9xEXXuFWNuWJbGGF7myUufjMbcYprTmzG3QnJdGhk+QHed8BSowsqeRo6AjzCbt0iTFJHIyiHt9whfJchEu5KDWOgIbF2bBvrxZF4ldWKX58TL3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BJ7rhVVY; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1722870016; c=relaxed/simple;
+	bh=jIaq6vsuhkY+v59gy2RIN65uUrzZIQmOWCABGta2eFA=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=ucChEA2FvUJ89HSq8vF1VkyB/Aoe5fkDoIKniElwO6XTZ+2ZthC3L8StHmi2ZNcpxa0I/Jwt+EU6UOpCd1mZ+oroHacV0yT3qOB8hh1f0cIgHveMRIXcym7aUX3aoT0IFeYSmHYMZndV+RPCQlgEsoVKMGm/71hAsEvNdv/903c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aUNOAheP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BJ7rhVVY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722868098; x=1754404098;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=yKbtl95xINhTP7J1jRhAX6V0rXoLD64gANcmv8E/gsw=;
-  b=BJ7rhVVYY51YFMXoMkRwJ28qoJ/lPLumbUEs0NoZ9bB03cfO6HtNrx9M
-   fP2+rRQUaqwVw6S+C2CrB0CrT2XC2vwv4aNwTUFKISf5YdYF3+CMbfo/q
-   8Y+nqLRXiVAbJPGIl5YRbo40IEUwGt39qNG8/GzukyPg7Sc/K1CHa5URd
-   qGDFNNK8fTBiTJTiOolFjCTJFxWT1QJ+KpofPQfqLkNHShRwXFcMwKeXx
-   E69wXbfLknT3LHaA8yXhjIL6d2G3K45y6AFUAoob+3IzZAIHWez8q6LVh
-   +JfCRChzKXiPKylhcpNnC5HT7N/UfcBnJ+aTWxdB+VhInce/G7xzCaacR
-   Q==;
-X-CSE-ConnectionGUID: UmpTSRWKSSiSNy/80IELHA==
-X-CSE-MsgGUID: P5K+ZroUQQ2oGeQRNr2HVA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="38340355"
-X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
-   d="scan'208";a="38340355"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:28:11 -0700
-X-CSE-ConnectionGUID: Ric531ExQP+mpO47+vxDCg==
-X-CSE-MsgGUID: /6vJNaXKRhipark9yiKOQg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
-   d="scan'208";a="56123772"
-Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:28:09 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 5 Aug 2024 17:28:05 +0300 (EEST)
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org, 
-    Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 03/13] serial: don't use uninitialized value in
- uart_poll_init()
-In-Reply-To: <20240805102046.307511-4-jirislaby@kernel.org>
-Message-ID: <84af065c-b1a1-dc84-4c28-4596c3803fd2@linux.intel.com>
-References: <20240805102046.307511-1-jirislaby@kernel.org> <20240805102046.307511-4-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aUNOAheP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510FBC4AF1B;
+	Mon,  5 Aug 2024 15:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722870015;
+	bh=jIaq6vsuhkY+v59gy2RIN65uUrzZIQmOWCABGta2eFA=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=aUNOAhePbdYRdnQ4NLgBWizO6a2ufDlEftJTpPcnoXscyuQVgQ1SgiTStmZk64xfF
+	 knuG0ypn8Yq6ZrBAA+typSGh76Mx6BryZLQrhkVTqlCwOjXqLGVc+mFSytCRKx1Stb
+	 Y2edYu22uNU3rbJ3dschCb+Qcu3VWLp6spk/S53ER/y9mEk8q6Cc8E+5r53kvMZss3
+	 Kb7+uZSuGJzsZhK3icLmDg6gkWMZJVUScy4nyYXmpL8toq86aVoSRc4jNBfoAQLwwh
+	 9kuup35jodzPQrbI2h3JvLChLYj14yirHAyjyNtvx4n8BgRo2DjUtfjMn8K/vUtvhF
+	 LoqdP6PrIuj9Q==
+Date: Mon, 05 Aug 2024 09:00:14 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-792570173-1722868085=:1238"
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Detlev Casanova <detlev.casanova@collabora.com>
+Cc: Elaine Zhang <zhangqing@rock-chips.com>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Ondrej Jirman <megi@xff.cz>, 
+ Chris Morgan <macromorgan@hotmail.com>, Lee Jones <lee@kernel.org>, 
+ Heiko Stuebner <heiko@sntech.de>, linux-i2c@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, Conor Dooley <conor+dt@kernel.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, 
+ Jagan Teki <jagan@edgeble.ai>, linux-iio@vger.kernel.org, 
+ Liang Chen <cl@rock-chips.com>, Thomas Gleixner <tglx@linutronix.de>, 
+ linux-serial@vger.kernel.org, Finley Xiao <finley.xiao@rock-chips.com>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Jimmy Hon <honyuenkwun@gmail.com>, devicetree@vger.kernel.org, 
+ Muhammed Efe Cetin <efectn@protonmail.com>, 
+ Shresth Prasad <shresthprasad7@gmail.com>, 
+ Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>, 
+ Tim Lunn <tim@feathertop.org>, 
+ Sebastian Reichel <sebastian.reichel@collabora.com>, 
+ linux-rockchip@lists.infradead.org, kernel@collabora.com, 
+ Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org, 
+ Jonas Karlman <jonas@kwiboo.se>, Dragan Simic <dsimic@manjaro.org>, 
+ Yifeng Zhao <yifeng.zhao@rock-chips.com>, 
+ Jonathan Cameron <jic23@kernel.org>, Andy Yan <andyshrk@163.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In-Reply-To: <20240802214612.434179-1-detlev.casanova@collabora.com>
+References: <20240802214612.434179-1-detlev.casanova@collabora.com>
+Message-Id: <172286966767.2709106.17051987571770592906.robh@kernel.org>
+Subject: Re: [PATCH 00/10] Add device tree for ArmSoM Sige 5 board
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-792570173-1722868085=:1238
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+On Fri, 02 Aug 2024 17:45:27 -0400, Detlev Casanova wrote:
+> Add the rk3576-armsom-sige5 device tree as well as its rk3576.dtsi base
+> and pinctrl information in rk3576-pinctrl.dtsi.
+> 
+> The other commits add DT bindings documentation for the devices that
+> already work with the current corresponding drivers.
+> 
+> The other bindings and driver implementations are in other patch sets:
+> - PMIC: https://lore.kernel.org/lkml/20240802134736.283851-1-detlev.casanova@collabora.com/
+> - CRU: https://lore.kernel.org/lkml/20240802214053.433493-1-detlev.casanova@collabora.com/
+> - PINCTRL: https://lore.kernel.org/lkml/20240802145458.291890-1-detlev.casanova@collabora.com/
+> - PM DOMAIN: https://lore.kernel.org/lkml/20240802151647.294307-1-detlev.casanova@collabora.com/
+> - DW-MMC: https://lore.kernel.org/lkml/20240802153609.296197-1-detlev.casanova@collabora.com/
+> - GMAC: https://lore.kernel.org/lkml/20240802173918.301668-1-detlev.casanova@collabora.com/
+> 
+> Detlev Casanova (10):
+>   dt-bindings: arm: rockchip: Add ArmSoM Sige 5
+>   dt-bindings: arm: rockchip: Add rk576 compatible string to pmu.yaml
+>   dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
+>   dt-bindings: iio: adc: Add rockchip,rk3576-saradc string
+>   dt-bindings: mfd: syscon: Add rk3576 QoS register compatible
+>   dt-bindings: serial: snps-dw-apb-uart: Add Rockchip RK3576
+>   dt-bindings: soc: rockchip: Add rk3576 syscon compatibles
+>   dt-bindings: timer: rockchip: Add rk3576 compatible
+>   arm64: dts: rockchip: Add rk3576 SoC base DT
+>   arm64: dts: rockchip: Add rk3576-armsom-sige5 board
+> 
+>  .../devicetree/bindings/arm/rockchip.yaml     |    5 +
+>  .../devicetree/bindings/arm/rockchip/pmu.yaml |    2 +
+>  .../devicetree/bindings/i2c/i2c-rk3x.yaml     |    1 +
+>  .../bindings/iio/adc/rockchip-saradc.yaml     |    3 +
+>  .../devicetree/bindings/mfd/syscon.yaml       |    2 +
+>  .../bindings/serial/snps-dw-apb-uart.yaml     |    1 +
+>  .../devicetree/bindings/soc/rockchip/grf.yaml |   16 +
+>  .../bindings/timer/rockchip,rk-timer.yaml     |    1 +
+>  arch/arm64/boot/dts/rockchip/Makefile         |    1 +
+>  .../boot/dts/rockchip/rk3576-armsom-sige5.dts |  613 ++
+>  .../boot/dts/rockchip/rk3576-pinctrl.dtsi     | 5775 +++++++++++++++++
+>  arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 1635 +++++
+>  12 files changed, 8055 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> 
+> --
+> 2.46.0
+> 
+> 
+> 
 
-On Mon, 5 Aug 2024, Jiri Slaby (SUSE) wrote:
 
-> Coverity reports (as CID 1536978) that uart_poll_init() passes
-> uninitialized pm_state to uart_change_pm(). It is in case the first 'if'
-> takes the true branch (does "goto out;").
->=20
-> Fix this and simplify the function by simple guard(mutex). The code
-> needs no labels after this at all. And it is pretty clear that the code
-> has not fiddled with pm_state at that point.
->=20
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Fixes: 5e227ef2aa38 (serial: uart_poll_init() should power on the UART)
-> Cc: stable@vger.kernel.org
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/tty/serial/serial_core.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
-_core.c
-> index 3afe77f05abf..d63e9b636e02 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2690,14 +2690,13 @@ static int uart_poll_init(struct tty_driver *driv=
-er, int line, char *options)
->  =09int ret =3D 0;
-> =20
->  =09tport =3D &state->port;
-> -=09mutex_lock(&tport->mutex);
-> +
-> +=09guard(mutex)(&tport->mutex);
-> =20
->  =09port =3D uart_port_check(state);
->  =09if (!port || port->type =3D=3D PORT_UNKNOWN ||
-> -=09    !(port->ops->poll_get_char && port->ops->poll_put_char)) {
-> -=09=09ret =3D -1;
-> -=09=09goto out;
-> -=09}
-> +=09    !(port->ops->poll_get_char && port->ops->poll_put_char))
-> +=09=09return -1;
-> =20
->  =09pm_state =3D state->pm_state;
->  =09uart_change_pm(state, UART_PM_STATE_ON);
-> @@ -2717,10 +2716,10 @@ static int uart_poll_init(struct tty_driver *driv=
-er, int line, char *options)
->  =09=09ret =3D uart_set_options(port, NULL, baud, parity, bits, flow);
->  =09=09console_list_unlock();
->  =09}
-> -out:
-> +
->  =09if (ret)
->  =09=09uart_change_pm(state, pm_state);
-> -=09mutex_unlock(&tport->mutex);
-> +
->  =09return ret;
->  }
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
 
-This too needs #include.
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
 
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
 
---=20
- i.
+  pip3 install dtschema --upgrade
 
---8323328-792570173-1722868085=:1238--
+
+New warnings running 'make CHECK_DTBS=y rockchip/rk3576-armsom-sige5.dtb' for 20240802214612.434179-1-detlev.casanova@collabora.com:
+
+In file included from arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts:14:
+arch/arm64/boot/dts/rockchip/rk3576.dtsi:6:10: fatal error: dt-bindings/clock/rockchip,rk3576-cru.h: No such file or directory
+    6 | #include <dt-bindings/clock/rockchip,rk3576-cru.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[3]: *** [scripts/Makefile.lib:434: arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dtb] Error 1
+make[2]: *** [scripts/Makefile.build:485: arch/arm64/boot/dts/rockchip] Error 2
+make[2]: Target 'arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dtb' not remade because of errors.
+make[1]: *** [/home/rob/proj/linux-dt-testing/Makefile:1389: rockchip/rk3576-armsom-sige5.dtb] Error 2
+make: *** [Makefile:224: __sub-make] Error 2
+make: Target 'rockchip/rk3576-armsom-sige5.dtb' not remade because of errors.
+
+
+
+
+
