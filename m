@@ -1,176 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50996165EF1;
-	Mon,  5 Aug 2024 10:21:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA55413AD11;
+	Mon,  5 Aug 2024 11:00:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722853280; cv=none; b=omAPqh3rsTpfD+osO5vgQOYLDQey7OaX3zWQYIMch/eYCCNQpY+aSVg5EoG+9HdIGp7FlfkzBudXiXXOft40AHoMaBDwL166BhRUJlRkd+LRAN/UH007eNHyACBJn5avR2I2iDOgPXCSA/WRoYLlWR06wqTUHXVjIcJ28APQY30=
+	t=1722855632; cv=none; b=HiwOpAluhkE06AnFd8wAxx8ViKLCKXFIiwdjDIdb1I/J8MFMk83q9KVFHuxhEn1fjwhPefw7LrVnwXW53mtrohhpr22zjUPLxDJ2P9tVqIxiFAN3YBW9TTQNGouG+W+EqkUDoL5gkPCn+8mb08x/u5mUnX/QPEjdRrOZO7b0ZmU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722853280; c=relaxed/simple;
-	bh=UTNt9b26mQWZHW0TPCLWfErk9+9NMWIJfFgYZHzW/Wc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=n3m7mr7Lps+nFEQoiyR42x5fJ025oW3EQCktdMoXlkR8mrWqbv/9sNKf5i2uxNBX08TF1OU11B6b0Ca55ySPuBMQfIVjDkwEUXQzjMVaz1Wnwj9HQSBX6Q67D7DZMuCnxWeDvadKo168qEg+1E+ZjPhyhY8aYkFxDnuF12xy+Lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WapI0yCn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722855632; c=relaxed/simple;
+	bh=yWG1ffncRBE4pRq4s7S+wiFWhJWlpLs09+f9rKud/VE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LUclJEq5CULce7yw9V4UhUxhtU9b8C6D+071XaiD9frkTDf2cIlit2leejjh+9OT3rfgSn+FmeSc/pitXZ28cXQegHGms0IfB/3wfGTlPGouHlX4KfaQkzezO+Lu5HhY8nngqj3b6m28R//8IGkzejMFNJWod1IKaeDhOpd73Aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=FDgChoiu; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WapI0yCn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B38C4AF0D;
-	Mon,  5 Aug 2024 10:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722853280;
-	bh=UTNt9b26mQWZHW0TPCLWfErk9+9NMWIJfFgYZHzW/Wc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=WapI0yCngBCE5c2SNP9W/lPrqFLrVQ0ceeV4igrs5u8Semeb5mvQUaLid0mtRX4oP
-	 lct/25I9Dg7wVEF3ElCrvifB+dH+Dv4gG8lpGNIZuL0t81CHJY5H/Z7RpVpJrI1lLj
-	 urQqqML02c3GUVjuLyafJI9AeTeU5jqhxNvbqc9aatqdgeVuElHBNpbQOoOb8vHsYl
-	 FBPfIa0vvDoys4MG4zX0pMh3P8eOxg7oT0Lo6Nz4v97qtRuBLwMNTI2bid76is3nNE
-	 WNYTYTBs6weQiBzqMoTKDvQdgNXjI8XHO45ARk2Z9XQwbeHo6+DKIjgm6HX30u3OLz
-	 Q3d9n91pYrPjg==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	linux-hams@vger.kernel.org,
-	netdev@vger.kernel.org
-Subject: [PATCH 13/13] 6pack: propagage new tty types
-Date: Mon,  5 Aug 2024 12:20:46 +0200
-Message-ID: <20240805102046.307511-14-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
-References: <20240805102046.307511-1-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="FDgChoiu"
+Received: from localhost (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 5C3FD418FA;
+	Mon,  5 Aug 2024 13:00:26 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cSj5y5vJ8qJe; Mon,  5 Aug 2024 13:00:24 +0200 (CEST)
+Date: Mon, 5 Aug 2024 18:59:57 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1722855624; bh=yWG1ffncRBE4pRq4s7S+wiFWhJWlpLs09+f9rKud/VE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=FDgChoiuUO85kHJM0IZ4qjGqc85KQmq6H4+JkylVQiZBK+gVlyoh5x0atGlxizFVf
+	 cTypiefgmtxEIxI91rSTNShf6kv33ApVhNDamIEGsqHw/7PCnlu6dVxj01j4GWCfbY
+	 kK7f47u61jJIMLxI4mP+aMLQHyv0eYe0qirOjJvE2I1OK31i9W5mMYszkHtrxDuiux
+	 2OgjUnLMKOr6/yQ/UsatIXNFvbBTL7hArMhRZ1ClcP+hLmshhn+D8vZkS6ZysBcpwn
+	 ZTpNJ7Xg/U0EHlkK+4JirorUqto4ryCfmsZ9ihdNMzE1EBKqxcfTIWHgioTLrHUz8a
+	 nt0k4zASa4gWA==
+From: Yao Zi <ziyao@disroot.org>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+	Andy Yan <andyshrk@163.com>,
+	Muhammed Efe Cetin <efectn@protonmail.com>,
+	Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+	Ondrej Jirman <megi@xff.cz>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
+Message-ID: <ZrCwrWjRgvE0RS98@ziyaolaptop.my.domain>
+References: <20240803125510.4699-2-ziyao@disroot.org>
+ <20240803125510.4699-5-ziyao@disroot.org>
+ <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org>
+ <Zq-AFWYaqu7zGuz-@ziyaolaptop.my.domain>
+ <b967ab05-dd0e-4fc5-bee6-ad7639e47bfb@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b967ab05-dd0e-4fc5-bee6-ad7639e47bfb@kernel.org>
 
-In tty, u8 is now used for data, ssize_t for sizes (with possible
-negative error codes). Propagate these types to 6pack.
+On Sun, Aug 04, 2024 at 04:05:24PM +0200, Krzysztof Kozlowski wrote:
+> On 04/08/2024 15:20, Yao Zi wrote:
+> >>
+> >>> +		compatible = "fixed-clock";
+> >>> +		#clock-cells = <0>;
+> >>> +		clock-frequency = <24000000>;
+> >>> +		clock-output-names = "xin24m";
+> >>> +	};
+> >>> +
+> >>> +	gic: interrupt-controller@fed01000 {
+> >>
+> >> Why this all is outside of SoC?
+> > 
+> > Just as Heiko says, device tree for all other Rockchip SoCs don't have
+> > a "soc" node. I didn't know why before but just follow the style.
+> > 
+> > If you prefer add a soc node, I am willing to.
+> 
+> Surprising as usually we expect MMIO nodes being part of SoC to be under
+> soc@, but if that's Rockchip preference then fine.
+> 
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andreas Koensgen <ajk@comnets.uni-bremen.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-hams@vger.kernel.org
-Cc: netdev@vger.kernel.org
----
- drivers/net/hamradio/6pack.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+Okay, then I would leave it as is.
 
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index 5c47730f5d58..3bf6785f9057 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -91,8 +91,8 @@ struct sixpack {
- 	unsigned char		*xhead;         /* next byte to XMIT */
- 	int			xleft;          /* bytes left in XMIT queue  */
- 
--	unsigned char		raw_buf[4];
--	unsigned char		cooked_buf[400];
-+	u8			raw_buf[4];
-+	u8			cooked_buf[400];
- 
- 	unsigned int		rx_count;
- 	unsigned int		rx_count_cooked;
-@@ -107,8 +107,8 @@ struct sixpack {
- 	unsigned char		slottime;
- 	unsigned char		duplex;
- 	unsigned char		led_state;
--	unsigned char		status;
--	unsigned char		status1;
-+	u8			status;
-+	u8			status1;
- 	unsigned char		status2;
- 	unsigned char		tx_enable;
- 	unsigned char		tnc_state;
-@@ -122,7 +122,7 @@ struct sixpack {
- 
- #define AX25_6PACK_HEADER_LEN 0
- 
--static void sixpack_decode(struct sixpack *, const unsigned char[], int);
-+static void sixpack_decode(struct sixpack *, const u8 *, size_t);
- static int encode_sixpack(unsigned char *, unsigned char *, int, unsigned char);
- 
- /*
-@@ -327,7 +327,7 @@ static void sp_bump(struct sixpack *sp, char cmd)
- {
- 	struct sk_buff *skb;
- 	int count;
--	unsigned char *ptr;
-+	u8 *ptr;
- 
- 	count = sp->rcount + 1;
- 
-@@ -425,7 +425,7 @@ static void sixpack_receive_buf(struct tty_struct *tty, const u8 *cp,
- 				const u8 *fp, size_t count)
- {
- 	struct sixpack *sp;
--	int count1;
-+	size_t count1;
- 
- 	if (!count)
- 		return;
-@@ -800,9 +800,9 @@ static int encode_sixpack(unsigned char *tx_buf, unsigned char *tx_buf_raw,
- 
- /* decode 4 sixpack-encoded bytes into 3 data bytes */
- 
--static void decode_data(struct sixpack *sp, unsigned char inbyte)
-+static void decode_data(struct sixpack *sp, u8 inbyte)
- {
--	unsigned char *buf;
-+	u8 *buf;
- 
- 	if (sp->rx_count != 3) {
- 		sp->raw_buf[sp->rx_count++] = inbyte;
-@@ -828,9 +828,9 @@ static void decode_data(struct sixpack *sp, unsigned char inbyte)
- 
- /* identify and execute a 6pack priority command byte */
- 
--static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
-+static void decode_prio_command(struct sixpack *sp, u8 cmd)
- {
--	int actual;
-+	ssize_t actual;
- 
- 	if ((cmd & SIXP_PRIO_DATA_MASK) != 0) {     /* idle ? */
- 
-@@ -878,9 +878,9 @@ static void decode_prio_command(struct sixpack *sp, unsigned char cmd)
- 
- /* identify and execute a standard 6pack command byte */
- 
--static void decode_std_command(struct sixpack *sp, unsigned char cmd)
-+static void decode_std_command(struct sixpack *sp, u8 cmd)
- {
--	unsigned char checksum = 0, rest = 0;
-+	u8 checksum = 0, rest = 0;
- 	short i;
- 
- 	switch (cmd & SIXP_CMD_MASK) {     /* normal command */
-@@ -928,10 +928,10 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- /* decode a 6pack packet */
- 
- static void
--sixpack_decode(struct sixpack *sp, const unsigned char *pre_rbuff, int count)
-+sixpack_decode(struct sixpack *sp, const u8 *pre_rbuff, size_t count)
- {
--	unsigned char inbyte;
--	int count1;
-+	size_t count1;
-+	u8 inbyte;
- 
- 	for (count1 = 0; count1 < count; count1++) {
- 		inbyte = pre_rbuff[count1];
--- 
-2.46.0
+For the fixed-clock node, I think "xin24m: clock-24m { }" is okay and
+follows the new rule?
 
+Best regards,
+Yao Zi
