@@ -1,124 +1,183 @@
-Received: from mail.manjaro.org (mail.manjaro.org [116.203.91.91])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8026631;
-	Mon,  5 Aug 2024 05:22:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.91.91
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FA44143C4B
+	for <linux-serial@vger.kernel.org>; Mon,  5 Aug 2024 08:02:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722835366; cv=none; b=ty/i0KVWfPqA5onSAJx++95xCHPdDdM0fFQ4xexVD74UklZf/GOJPDpE7vFUzXPEdnDF0S7OC6jIPi2LqadsND8jpybc4uuCJ73Vbmb8m86I+jytOHlJSCLNwW/w0dWhtBOI8GrMRW5ea2ZsB426QOccMYEYcxXnaZAFa3DitL4=
+	t=1722844929; cv=none; b=RR6e40Ti1hwAmY0Jms/jGAEZYaPOiVEMjNA52Qd/rdTV2rnAFfhU1kI9t5lBn1i0KTat+Sp2u0D9XUWp31iywq1cDgVwZ1M/3pPlBT7I1+eTjZ1Y5aeXLp+rIsfPWUZGq9OXXINb5i+eb/ugC6cn7vdMslQOBYgsrlxGEhMdcfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722835366; c=relaxed/simple;
-	bh=TW26NEDM/mH7w4nfR2+VSs8WSBePmr7ut6r0x2J9gw8=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=pWyaPbwiQwUP5giYHLvNUUV3ZIwlLfvnxlbp++3/41RcY5OcgFtAgaeLbgf0teFx1Fa9+PFOJbiwomMTVWH/Sy0GBDG8GnrINvX0ztrCgBtHEgCEnlam6wfPzmM9M465wtLOO3sDhJQ62PpEQaOTQ5HdeIj/+QL3DzGXg4MaH3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org; spf=pass smtp.mailfrom=manjaro.org; dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b=gu6gyClf; arc=none smtp.client-ip=116.203.91.91
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=manjaro.org
+	s=arc-20240116; t=1722844929; c=relaxed/simple;
+	bh=3SzrIAjNMfo/xyaY6qD0WMNLA83hhVRZkGTby43i1Yw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=i0NhYp0dOasSeDiKcsIfY1bb2oLJy8y4RaU4HZknKUkpj7V1HHhU5KnlJ+fsbIo4yCn4PMY8COlU0pTyyE8/VsQ6aezbdCVLM0/LZjEArmImJ+j7E8d22ukwQmc9eHOlwqPJ06qrKUFRuGLKbNcvxkUqqVk/rsFk9wDIxJpMHH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=NQ5Atke8; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b="gu6gyClf"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NQ5Atke8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1722844925;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=FOOMdJZrThW/VVTNtW/8cjfUGb38v95FiRlM9skachc=;
+	b=NQ5Atke8Np/4gYAi7tk/1AzzPCV6LQeq2jXPLROFmFOJiG/COomxct1MR8EUhhmSSRzQbG
+	dPg/eyzdBhcInFtAa5I1URlbvNljcH2LELFYDcDyRu6OwfJcfaBxL4o90rq2XmEBx+P4Gq
+	PAy7gS/NKqWDApujKO0OUStpc+kvfz0=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-219-vrJeuFaPMUS6BUFRTId4DA-1; Mon, 05 Aug 2024 04:02:04 -0400
+X-MC-Unique: vrJeuFaPMUS6BUFRTId4DA-1
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-a77cd5611c5so79457966b.2
+        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 01:02:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722844923; x=1723449723;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FOOMdJZrThW/VVTNtW/8cjfUGb38v95FiRlM9skachc=;
+        b=Wh53b8ceEaUvLutyLQZZcomU/GPSpOYpTXYAGZBiai0ythqTiOJU9W4Tim6ddwd3ne
+         mME+Zg7VQ0hKJkdVdBjyvX92dWfF8LItfNT5BJdoz3HlFR88M7OHVnVob2qWvZkrP0+n
+         Hg54C1u0VlPUJgKawvBB4BbhKVPiAfMpU7XG66Pg6v/LLSe7VUJ8dFr9xt4cLRwEGZ9p
+         fuyRBsmtTr7+HTu6BnbRESI38yeh+bEsn6SF49rtmXOfJsYjV1AFLFVE861z8K3hNgcm
+         YRF/pnPOABwSjr3+cXPKM1CJqMj8q4qurHNU3La+20AK1HaKipDDLFv9MnRiE6XLBCWV
+         LDHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWWBrTJJ1keI1w/DWxkMWJ4Y2MQ12hCf3l3mCReB72KgChp7p7Fw2+TOhi/j4/keuYY4rurE64U6Qt65uI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzE4j82kp6ZFDk/sLWI3bCj41VPw5wprhp7vUYJNlf5OmvZnxmJ
+	QboYC+/brFl9v2FORwbdrZsnrgDdGDfLXD9GiV2Stjhw5EY0Abktyzs/QLh2tSj3TYKM/jS72cj
+	HldefnHUAAgf3VcdVlBPU2e3GUuZONUqOP8w4Uxua48PvXg+1IvA2JUwGzsW6JA==
+X-Received: by 2002:a17:906:6a0f:b0:a7a:aa35:409c with SMTP id a640c23a62f3a-a7dc512cdc8mr479715766b.9.1722844923327;
+        Mon, 05 Aug 2024 01:02:03 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHTS/SS1ApAhdkVa3Kv54fKJw0UKK+zRKzrvkYAaC1yWAeQnQdQA8voDIcJKUGPudzDl20u8A==
+X-Received: by 2002:a17:906:6a0f:b0:a7a:aa35:409c with SMTP id a640c23a62f3a-a7dc512cdc8mr479712266b.9.1722844922775;
+        Mon, 05 Aug 2024 01:02:02 -0700 (PDT)
+Received: from eisenberg.fritz.box (200116b82df07e000a5f4891a3b0b190.dip.versatel-1u1.de. [2001:16b8:2df0:7e00:a5f:4891:a3b0:b190])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7de8d0868bsm277958966b.143.2024.08.05.01.02.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Aug 2024 01:02:02 -0700 (PDT)
+From: Philipp Stanner <pstanner@redhat.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	Arnaud Ebalard <arno@natisbad.org>,
+	Srujana Challa <schalla@marvell.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Jon Mason <jdmason@kudzu.us>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Allen Hubbe <allenbh@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Cernekee <cernekee@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Mark Brown <broonie@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Philipp Stanner <pstanner@redhat.com>,
+	Jie Wang <jie.wang@intel.com>,
+	Adam Guerin <adam.guerin@intel.com>,
+	Shashank Gupta <shashank.gupta@intel.com>,
+	Damian Muszynski <damian.muszynski@intel.com>,
+	Nithin Dabilpuram <ndabilpuram@marvell.com>,
+	Bharat Bhushan <bbhushan2@marvell.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Gregory Greenman <gregory.greenman@intel.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
+	Breno Leitao <leitao@debian.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	John Ogness <john.ogness@linutronix.de>,
+	Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org,
+	qat-linux@intel.com,
+	linux-crypto@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	ntb@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org
+Subject: [PATCH v2 00/10] Remove pcim_iomap_regions_request_all()
+Date: Mon,  5 Aug 2024 10:01:27 +0200
+Message-ID: <20240805080150.9739-2-pstanner@redhat.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=manjaro.org; s=2021;
-	t=1722835360;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+AOe1X1BK2T9Nhb61hULdxwB8+O9eooFF234E3lK5bc=;
-	b=gu6gyClfqFB4PQ+WxAd5h9p9n4YjVkd+J9VwMd9c2CwEAg18JJ547LmzTGDdhxeKXwKUwe
-	IHWdr43Kqif02h2PBhgyxI3bMsGEuv9PMOTvZLB4bBU8+ca59vRfuZht0b7iDZdEEsgGWk
-	Apy+y47XAEB/JuXSsxmH+9fTjPFYaU+iRO+66bYHqBV9EIjtnwdNDuGevmKuD5r+c3pPw7
-	LJHW23x+jMMn3rKEKswV6A69D2wOdvM4KvF85xQlXU7gJbGlbbzVFn2wta5Ddalv+IvoT+
-	m+eSIbi3oVo/u7+YIyYdHRV3Mk3BXtjsMinyzs7WBit9ZxUIUnqDDkMrLop2rw==
-Date: Mon, 05 Aug 2024 07:22:34 +0200
-From: Dragan Simic <dsimic@manjaro.org>
-To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>
-Cc: Yao Zi <ziyao@disroot.org>, Krzysztof Kozlowski <krzk@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Chris
- Morgan <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>, Tim Lunn
- <tim@feathertop.org>, Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin
- <efectn@protonmail.com>, Jagan Teki <jagan@edgeble.ai>, Ondrej Jirman
- <megi@xff.cz>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
-In-Reply-To: <10256980.nnTZe4vzsl@diego>
-References: <20240803125510.4699-2-ziyao@disroot.org>
- <2408413.9XhxPE3A7Q@diego> <81147f0205c2a9555c9c64e4f7a69b6b@manjaro.org>
- <10256980.nnTZe4vzsl@diego>
-Message-ID: <1da29af645d98be85b422208136e8150@manjaro.org>
-X-Sender: dsimic@manjaro.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Authentication-Results: ORIGINATING;
-	auth=pass smtp.auth=dsimic@manjaro.org smtp.mailfrom=dsimic@manjaro.org
 
-On 2024-08-04 17:51, Heiko Stübner wrote:
-> Am Sonntag, 4. August 2024, 15:59:19 CEST schrieb Dragan Simic:
->> On 2024-08-04 15:44, Heiko Stübner wrote:
->> > Am Sonntag, 4. August 2024, 15:25:47 CEST schrieb Dragan Simic:
->> >> On 2024-08-04 15:20, Yao Zi wrote:
->> >> > On Sun, Aug 04, 2024 at 12:05:11PM +0200, Krzysztof Kozlowski wrote:
->> >> >> On 03/08/2024 14:55, Yao Zi wrote:
->> >> >> > +	xin24m: xin24m {
->> >> >>
->> >> >> Please use name for all fixed clocks which matches current format
->> >> >> recommendation: 'clock-([0-9]+|[a-z0-9-]+)+'
->> >> >
->> >> > Will be fixed in next revision.
->> >>
->> >> Hmm, why should we apply that rule to the xin24m clock, which is
->> >> named exactly like that everywhere else in Rockchip SoC dtsi files?
->> >> It's much better to remain consistent.
->> >
->> > bindings or how we write devicetrees evolve over time ... similarly the
->> > xin24m name comes from more than 10 years ago.
->> >
->> > We also name all those regulator nodes regulator-foo now, which in turn
->> > automatically does enforce a nice sorting rule to keep all the
->> > regulators
->> > around the same area ;-)
->> >
->> > So I don't see a problem of going with xin24m: clock-xin24m {}
->> 
->> I agree that using "clock-xin24m" makes more sense in general, but the
->> trouble is that we can't rename the already existing instances of
->> "xin24m",
->> because that has become part of the ABI.  Thus, I'm not sure that
->> breaking
->> away from the legacy brings benefits in this particular case.
-> 
-> In the regulator case, we have _new_ boards using the new _node_-names
-> but I don't see any renaming of old boards and also don't think we 
-> should.
-> 
-> But that still does not keep us from using the nicer naming convention 
-> in
-> new boards ;-) .
-> 
-> Same with xin24m. We're talking only about the node-name here. The
-> phandle stays the same and also the actual clock name stays the same 
-> and
-> really only the actual node name you need to look for in 
-> /proc/device-tree
-> changes ;-) .
-> 
-> So I don't see the need to go about changing all the old socs, but new
-> additions should use improved naming conventions.
-> 
-> xin24m: clock-xin24m {
-> 	compatible = "fixed-clock";
-> 	#clock-cells = <0>;
-> 	clock-frequency = <24000000>;
-> 	clock-output-names = "xin24m";
-> };
+Changes in v2:
+  - Fix a bug in patch №4 ("crypto: marvell ...") where an error code
+    was not set before printing it. (Me)
+  - Apply Damien's Reviewed- / Acked-by to patches 1, 2 and 10. (Damien)
+  - Apply Serge's Acked-by to patch №7. (Serge)
+  - Apply Jiri's Reviewed-by to patch №8. (Jiri)
+  - Apply Takashi Iwai's Reviewed-by to patch №9. (Takashi)
 
-Makes sense.  Though, updating the dtsi files for older SoCs to follow
-the new rules, if possible, still remains an itch to me. :)
+
+Hi all,
+
+the PCI subsystem is currently working on cleaning up its devres API. To
+do so, a few functions will be replaced with better alternatives.
+
+This series removes pcim_iomap_regions_request_all(), which has been
+deprecated already, and accordingly replaces the calls to
+pcim_iomap_table() (which were only necessary because of
+pcim_iomap_regions_request_all() in the first place) with calls to
+pcim_iomap().
+
+Would be great if you can take a look whether this behaves as you
+intended for your respective component.
+
+Cheers,
+Philipp
+
+Philipp Stanner (10):
+  PCI: Make pcim_request_all_regions() a public function
+  ata: ahci: Replace deprecated PCI functions
+  crypto: qat - replace deprecated PCI functions
+  crypto: marvell - replace deprecated PCI functions
+  intel_th: pci: Replace deprecated PCI functions
+  wifi: iwlwifi: replace deprecated PCI functions
+  ntb: idt: Replace deprecated PCI functions
+  serial: rp2: Replace deprecated PCI functions
+  ALSA: korg1212: Replace deprecated PCI functions
+  PCI: Remove pcim_iomap_regions_request_all()
+
+ .../driver-api/driver-model/devres.rst        |  1 -
+ drivers/ata/acard-ahci.c                      |  6 +-
+ drivers/ata/ahci.c                            |  6 +-
+ drivers/crypto/intel/qat/qat_420xx/adf_drv.c  | 11 +++-
+ drivers/crypto/intel/qat/qat_4xxx/adf_drv.c   | 11 +++-
+ .../marvell/octeontx2/otx2_cptpf_main.c       | 14 +++--
+ .../marvell/octeontx2/otx2_cptvf_main.c       | 13 ++--
+ drivers/hwtracing/intel_th/pci.c              |  9 ++-
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   | 16 ++---
+ drivers/ntb/hw/idt/ntb_hw_idt.c               | 13 ++--
+ drivers/pci/devres.c                          | 59 +------------------
+ drivers/tty/serial/rp2.c                      | 12 ++--
+ include/linux/pci.h                           |  3 +-
+ sound/pci/korg1212/korg1212.c                 |  6 +-
+ 14 files changed, 76 insertions(+), 104 deletions(-)
+
+-- 
+2.45.2
+
