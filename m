@@ -1,62 +1,62 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95342155743
-	for <linux-serial@vger.kernel.org>; Mon,  5 Aug 2024 15:44:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A6CD4CDE0
+	for <linux-serial@vger.kernel.org>; Mon,  5 Aug 2024 15:46:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722872645; cv=none; b=SQeohotg7lFp2s387HKuYE38ereGrqnid9ipZHTDjzrT0yM+xTdBV8fUxXNK+sT/c9gPnvN4zWu6szbwOZDlAn3NrhnxxJ6FcGk0WJQjC3sbPGWEY7YD8ppYV5ecBii0a/jPM1Ss+KMCScInGy1AbXzFLJ6S4uhL9YSovz0F15c=
+	t=1722872781; cv=none; b=bYI+sQpy06dhiS/P/xmTZIvBZ91fX0GHqh2zscAxpUYWqysUqZc+EX4oE8MohflxZsSQs57uVe1nyPmUgnrMaBwT4CbarNC/ZKVKciDpZaUCJKfeRe0G1bpon6BC6wvHBA8zANddR/taioriDkwSoYSSBKguJ/TRSqa0yVuk6lI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722872645; c=relaxed/simple;
-	bh=WJQF1e1lGe1DHP8xXL81uq1JAQ4RrIakU9ICRRYsaow=;
+	s=arc-20240116; t=1722872781; c=relaxed/simple;
+	bh=5wjHU1wKHRRchFX2cqWEk5v6q0TdpGyDqI3gFeTqBiY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LQ0XbFD0iqBTLri1UlmuXyAAtPwmKdJ9gs2Q5ljYPcE3P02c3NV0I4MEAHAuIjAPDrvhUGl+JJ5kgxhIKT7dsGNq1u4n220Nc1njilovCr9tNiLZ4QZ6Pmhcc4B/o0iC+Inij2Pzg0nHeynr2oafM7TrYSP3zi3z+qPtj8ovG7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=og23Hsjg; arc=none smtp.client-ip=209.85.222.178
+	 To:Cc:Content-Type; b=QkBs0N56iCptQ4IxOOc3GMq2bucB7XOTqeG8B32fAMeyNQz6eFVOvMUxxn66vrQjb+lOPKTPLpfPFbo7ySgMvg+hEatuuJAuJh4vTJrVMwqO8uPDCvNQSAv3N0tucwXcYAd06rpznZZEeqsc8sypA2+9AgRSUBZmRifV2qjJmAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=UOxsqe3c; arc=none smtp.client-ip=209.85.167.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="og23Hsjg"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7a1d066a5daso706298285a.3
-        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 08:44:03 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UOxsqe3c"
+Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3db23a60850so5925044b6e.0
+        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 08:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1722872641; x=1723477441; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1722872779; x=1723477579; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=chvXENSfxaRr9pj6GM068Pc8pK4QQqniclzsqJg41Ag=;
-        b=og23HsjgcEU8+Gw4PGnAUjmUSuzeceuk/AtVeyQ9EfrchF99wN6bCXSI5BDbIdRYZ+
-         p8xZazfZjOdPqkzPuHkcS+5BxZ4WSHttr3Rkw84/I1AMNTixDpbuu3ToGMWRyh5xYm3k
-         LTD+fZOkLhuV0CA3UmIVXixRJEf6qW6irnPtg=
+        bh=FqOaptwxc12t3A/k1QIs7JMco9pX/hGJo5YaprxUknE=;
+        b=UOxsqe3cbqludNtOBbYkk/wjzak5Sst16gQvEGUWEK3sclUoWL+DeodBNdSEBlouZK
+         J1uEhdL01XbyWqbCSsZkMy850FTnvcS1oTC7rSFOML/hdXmFl2kkDxgZ1tZFaCMmWe7D
+         RATHh4qapcb4ZPs9bJD9ZKCNAj0a7vS8oHCWU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722872641; x=1723477441;
+        d=1e100.net; s=20230601; t=1722872779; x=1723477579;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=chvXENSfxaRr9pj6GM068Pc8pK4QQqniclzsqJg41Ag=;
-        b=ejkrWPrqcGHTidVhc0Mg9sm5VpzRwUij+htMxq50QaFrcbQiKRbg3qDhKSooWlVlbY
-         HrjhB5wMHgkWmGEhfCQI3maVoCAze3gV6gA+Lo0Q/EHo2SBGoPf5GJGJPTqmcFGc6a0N
-         +tvlBiAMrzcev+xtjpEelDnfXt3Xo/5sR2mPc+fYCrikMUlVySyLoz6nu57IjpGiKwr/
-         pXlnJuiQM+M2Y6lJqH0vmeG8k1ClCR+y8SRVrPnpo8E8kLuf0KurSNnYs98LMnULLj5h
-         y+tLVfLbl4uUyiNKXPfVLjLq0Yn+XR3G2KcWtBvbAE4Ln9zVDpmCpLJoROrlFfSHQLlB
-         xGrw==
-X-Forwarded-Encrypted: i=1; AJvYcCXagkRxV81pB1bf6IuqL9GW2lQTwTGZtwgNdtyguEuqamZMID1U1vEOs6qJ+T/qE1Mq5xJt7k3ym9sQ9yl4XP8bHw3k5BqJl7y86Ni+
-X-Gm-Message-State: AOJu0YwAsWw6HP+Jj7RdNFbU8/fXprXXuTHl9TtWNFiziYJF0gQc/hGm
-	hiJBHkGXKrhZ3gI86MLJDJTpBURsvTrbrXfOJ/6WkMmmAvgGIUZ/CvBhuoH/FpoA8Bcwk6adzyY
+        bh=FqOaptwxc12t3A/k1QIs7JMco9pX/hGJo5YaprxUknE=;
+        b=UJ2Sfo2FMeouN+rbuAjddB1jVtZyJTYTvYmnMETMyC+c04QlqIvByxkISQTLmq/wZD
+         4q/AIRnGsNA7hrPdb72vUl8II4iAz4fYldUXu+QsqoirtRWR2uZnvywGqrVsFjWRG2rl
+         cQacfvWDrnlZYYtBQ818TOLA2X1FwjHiZh1EbedWhBU3jB8dW/zN/i3Bbm5s0SsetShZ
+         G8wQXfMGeJ4D9aR3/7GpGmT1OFIlgyvfVwm+xsTiyrUNAG852S5P382+jAsiKpD/SNsp
+         pZaHmwuYtFajzlvaoQdoJwMO79ZAl7qzGdROerKOANlH4p2MKnhfr9B7EVr6O6ESrdyg
+         AEaw==
+X-Forwarded-Encrypted: i=1; AJvYcCWGNbStwkz11TlT/GOvwkraQN6Rh1vZFnSjE12cB3raPxGs+bL4VVZBlpt97QNBeWhIPBw5h3Af/5N+Ci4HITEbH1f3Jw4+tTorCLjT
+X-Gm-Message-State: AOJu0YyEI8fDVLSF0rKYznQHj/fN7cZa7BNgYyTG2Ormk+DlK6kPaqnG
+	yeD+AMjng+ov04DIj7vTkWdZBZUqX+OOGnNQo5UTJ5MkNXmG587NDKSyJGsCvbi/dTfjSWZpV8A
 	=
-X-Google-Smtp-Source: AGHT+IGYA84C9G/PSAmGjWmRDaRurvIrfoq0jvliV+wbHsfj4vCWWyU7WlTYBzwQE16eHnKeHGoNvw==
-X-Received: by 2002:a05:620a:4548:b0:79f:b34:9edc with SMTP id af79cd13be357-7a34f00b23fmr1577398285a.66.1722872641507;
-        Mon, 05 Aug 2024 08:44:01 -0700 (PDT)
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com. [209.85.160.169])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a34f6e9dd2sm364634185a.39.2024.08.05.08.44.00
+X-Google-Smtp-Source: AGHT+IGaIPqVTpcOKOdiA4ORMOtQM3zdea67qjp11+XWWqwiLTqGlNGWzp+iylQCP/gZA/O6pCK11A==
+X-Received: by 2002:a05:6808:3094:b0:3d9:360a:3a08 with SMTP id 5614622812f47-3db55835400mr17464088b6e.34.1722872778777;
+        Mon, 05 Aug 2024 08:46:18 -0700 (PDT)
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com. [209.85.160.173])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4518a6e98f5sm30519161cf.49.2024.08.05.08.46.17
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Aug 2024 08:44:00 -0700 (PDT)
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4518d9fa2f4so848521cf.0
-        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 08:44:00 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVAcob6TAKecVFQ1a6k+OUA3DJ9zsXga+SvK8273yYabjdELBLPdeM0DcYAPdq7ZRSpZxdd2ew6zqzyGX0MR/PK6DKNy+Se3HQI7sIZ
-X-Received: by 2002:a05:622a:591:b0:44f:ea7a:2119 with SMTP id
- d75a77b69052e-4519ae21848mr5655501cf.18.1722872639887; Mon, 05 Aug 2024
- 08:43:59 -0700 (PDT)
+        Mon, 05 Aug 2024 08:46:18 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4518d9fa2f4so849161cf.0
+        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 08:46:17 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXHsYFjUoAnaKU2wXrJn0ZLqtJlRndSGe4CbG3ryO0u8pdItwm6sjV+v0VXn/2NDjF1xp13iY65Rop7ITx+RH7NDXQa2Y1Opgxhm/y1
+X-Received: by 2002:a05:622a:282:b0:447:e542:93a7 with SMTP id
+ d75a77b69052e-4519ad00ecbmr5909431cf.12.1722872777503; Mon, 05 Aug 2024
+ 08:46:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,51 +64,90 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20240805102046.307511-1-jirislaby@kernel.org> <20240805102046.307511-4-jirislaby@kernel.org>
-In-Reply-To: <20240805102046.307511-4-jirislaby@kernel.org>
+ <84af065c-b1a1-dc84-4c28-4596c3803fd2@linux.intel.com>
+In-Reply-To: <84af065c-b1a1-dc84-4c28-4596c3803fd2@linux.intel.com>
 From: Doug Anderson <dianders@chromium.org>
-Date: Mon, 5 Aug 2024 08:43:48 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=X1a1a=kkJ9bWXWOmu0hz6HqRuK=Vo=bhvFfSzeAWSWyw@mail.gmail.com>
-Message-ID: <CAD=FV=X1a1a=kkJ9bWXWOmu0hz6HqRuK=Vo=bhvFfSzeAWSWyw@mail.gmail.com>
+Date: Mon, 5 Aug 2024 08:46:06 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WeekuQXzjk90K8jn=Evn8dMaT1RyctbT7gwEZYYgA9Aw@mail.gmail.com>
+Message-ID: <CAD=FV=WeekuQXzjk90K8jn=Evn8dMaT1RyctbT7gwEZYYgA9Aw@mail.gmail.com>
 Subject: Re: [PATCH 03/13] serial: don't use uninitialized value in uart_poll_init()
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	linux-serial <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, 
+	stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Mon, Aug 5, 2024 at 3:21=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kernel.=
-org> wrote:
+On Mon, Aug 5, 2024 at 7:28=E2=80=AFAM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
 >
-> Coverity reports (as CID 1536978) that uart_poll_init() passes
-> uninitialized pm_state to uart_change_pm(). It is in case the first 'if'
-> takes the true branch (does "goto out;").
+> On Mon, 5 Aug 2024, Jiri Slaby (SUSE) wrote:
 >
-> Fix this and simplify the function by simple guard(mutex). The code
-> needs no labels after this at all. And it is pretty clear that the code
-> has not fiddled with pm_state at that point.
+> > Coverity reports (as CID 1536978) that uart_poll_init() passes
+> > uninitialized pm_state to uart_change_pm(). It is in case the first 'if=
+'
+> > takes the true branch (does "goto out;").
+> >
+> > Fix this and simplify the function by simple guard(mutex). The code
+> > needs no labels after this at all. And it is pretty clear that the code
+> > has not fiddled with pm_state at that point.
+> >
+> > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> > Fixes: 5e227ef2aa38 (serial: uart_poll_init() should power on the UART)
+> > Cc: stable@vger.kernel.org
+> > Cc: Douglas Anderson <dianders@chromium.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > ---
+> >  drivers/tty/serial/serial_core.c | 13 ++++++-------
+> >  1 file changed, 6 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+> > index 3afe77f05abf..d63e9b636e02 100644
+> > --- a/drivers/tty/serial/serial_core.c
+> > +++ b/drivers/tty/serial/serial_core.c
+> > @@ -2690,14 +2690,13 @@ static int uart_poll_init(struct tty_driver *dr=
+iver, int line, char *options)
+> >       int ret =3D 0;
+> >
+> >       tport =3D &state->port;
+> > -     mutex_lock(&tport->mutex);
+> > +
+> > +     guard(mutex)(&tport->mutex);
+> >
+> >       port =3D uart_port_check(state);
+> >       if (!port || port->type =3D=3D PORT_UNKNOWN ||
+> > -         !(port->ops->poll_get_char && port->ops->poll_put_char)) {
+> > -             ret =3D -1;
+> > -             goto out;
+> > -     }
+> > +         !(port->ops->poll_get_char && port->ops->poll_put_char))
+> > +             return -1;
+> >
+> >       pm_state =3D state->pm_state;
+> >       uart_change_pm(state, UART_PM_STATE_ON);
+> > @@ -2717,10 +2716,10 @@ static int uart_poll_init(struct tty_driver *dr=
+iver, int line, char *options)
+> >               ret =3D uart_set_options(port, NULL, baud, parity, bits, =
+flow);
+> >               console_list_unlock();
+> >       }
+> > -out:
+> > +
+> >       if (ret)
+> >               uart_change_pm(state, pm_state);
+> > -     mutex_unlock(&tport->mutex);
+> > +
+> >       return ret;
+> >  }
 >
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Fixes: 5e227ef2aa38 (serial: uart_poll_init() should power on the UART)
-> Cc: stable@vger.kernel.org
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  drivers/tty/serial/serial_core.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+> This too needs #include.
 
-Thanks for the fix! Looks good.
+Why? I see in "mutex.h" (which is already included by serial_core.c):
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+DEFINE_GUARD(mutex, struct mutex *, mutex_lock(_T), mutex_unlock(_T))
 
-NOTE: I'm happy to defer to others, but personally I'd consider
-breaking this into two changes: one that fixes the problem without
-using guard() (which should be pretty simple) and one that switches to
-guard(). The issue is that at the time the bug was introduced the
-guard() syntax didn't exist and that means backporting will be a bit
-of a pain.
-
-Oh, though I guess maybe it doesn't matter since the bug was
-introduced in 6.4 and that's not an LTS kernel so nobody cares? ...and
-guard() is in 6.6, so maybe things are fine the way you have it.
+...so we're using the mutex guard and including the header file that
+defines the mutex guard. Seems like it's all legit to me.
