@@ -1,114 +1,90 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8AD1547D2;
-	Mon,  5 Aug 2024 10:20:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40415154C0E;
+	Mon,  5 Aug 2024 10:20:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722853253; cv=none; b=KOBOv+/PweexCiLx0ILUc+7Ou2lqRtjGoFHansV98S38g/AerITAHmkMiCG8Uy+8HCK7aKl40B4wJwYiFMIGh0xxBhpyDMpoj2WrD++R2FLYEVAIxHmNLoqrcXncIRwz1zrpcUKwACKV3QvN7nQ6TQsupu6gVOWRNk2QtazNJDo=
+	t=1722853254; cv=none; b=Wsjx5tbqbCg3n2iiFFs3GTsB4X8nYU7v/TfWhpxbs+eswtEboWMhmkAiuSnOrGQ5wnT3tMcYFNYSjCfht5ajioZbvmB23WgZUQT07ZilneaRBlaW9PXoQvsFQFlPlWrJ13/g2kT65oJ9dD5X91nhKXziXgywwZt1ig80knSv+pc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722853253; c=relaxed/simple;
-	bh=sDmmkpl/9Bzr5ouY+9/cCRRGcoKUK/ZE+Geg9qVd8LI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JBEpCpsEUWyjwLWLSD8hliZjnqxMcwosSBIfxSHFPogo6JdRPjmAqXp4k3Gs/lqyzXrE9MIR5kDrZjWJB0jHbxk88BY7EZWxbKd7bmLbhLSLHA4JxKR5tXTiLC3ArdPe4B3Cx5piIPur/bQLADIcvoZCvWpcKQxlNSRZIVtvT4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L0sijGpp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1722853254; c=relaxed/simple;
+	bh=aoNxYDeT+cp1L3QyLm4IuavyGfB6u8ex3oYTREvJU2A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=cBEovwrwkh8htBdatgdR4pe4M8LQbkPBl2OoHrKuhKF4W4wa3AxiXGY+hliwWEByR2MigDE0HkKZMGz8+OHPs3MhD04y69QGT16gPGQh0Lul+QSsvN73cE8YWio42P5qxvIhNommZd+1UoE8eWerJ9KagJlzDIquQggqf1hju3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jo+Yi//b; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L0sijGpp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E85C32782;
-	Mon,  5 Aug 2024 10:20:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jo+Yi//b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE0B9C4AF10;
+	Mon,  5 Aug 2024 10:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722853252;
-	bh=sDmmkpl/9Bzr5ouY+9/cCRRGcoKUK/ZE+Geg9qVd8LI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=L0sijGppizYGFI9FfUa4t4H+US8qJOejsHAUZ6ME7kcr7My0WY97VSlQVMGRoLNzz
-	 XnslQwiY/XoWLIydbaj+DJWuWlf7kal3CKGjs+VYi5x0Hgpj7l44yaVt+G0sVj7Ebs
-	 /I+K1DVtb4jbkkEdePfhAiDBrBs+JXeDrAM3t5d1H/5NxGFgz7QDMCfDkET8zJcHKu
-	 YWb/0kyuWV5XgW+4ma/AZ6uxEyXrM0uh46tatxav0n1qcDitK9CScxhHgQbfpvqfq5
-	 s+0SqsLmq3Vxai8heUN9wxLxxmyolSp6/6FVIhY5PbjZW1OmuSl0WMq1j5yHzWi5uR
-	 Uj5IxNhVzefew==
+	s=k20201202; t=1722853253;
+	bh=aoNxYDeT+cp1L3QyLm4IuavyGfB6u8ex3oYTREvJU2A=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=jo+Yi//brhxZulg7zpoOE7wtkjd57ozIiFfyiXSfksezziyc7HizwDdbOb/0Tk9PK
+	 uWJqeo6NDnomwlMW1TdFka5bSrHU286XZ4zxq3TrgIitXMd3SfzyQqb3l1acR6Nc/a
+	 w6LVOCn45ScTxE1hajFO9CXx9N8OIlTGLAZ83Upt8DOY+mayBulg7A7vGia3AqzBSg
+	 CGuyPfLyXpjGCeQviP0pdWxwi3UWeadBdZ7frU/DvmgtH2NNNLHpXL736PXIKcpWEp
+	 h97eKx3DJayB7rc3w52ghhpggJtd4dIbWe66XWfx3dg1Hby/S5tDoKJStzqOTNfapJ
+	 sTiB+EnyASUGg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Douglas Anderson <dianders@chromium.org>,
-	Eric Dumazet <edumazet@google.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jeremy Kerr <jk@codeconstruct.com.au>,
-	linux-hams@vger.kernel.org,
-	Matt Johnston <matt@codeconstruct.com.au>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Peter Hurley <peter@hurleysoftware.com>
-Subject: [PATCH 00/13] tty: random fixes and cleanups
-Date: Mon,  5 Aug 2024 12:20:33 +0200
-Message-ID: <20240805102046.307511-1-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 01/13] tty: simplify tty_dev_name_to_number() using guard(mutex)
+Date: Mon,  5 Aug 2024 12:20:34 +0200
+Message-ID: <20240805102046.307511-2-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.46.0
+In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
+References: <20240805102046.307511-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi,
+In tty_dev_name_to_number(), a guard can help to make the code easier to
+follow. Especially how 0 is returned in the successful case. So use a
+guard there.
 
-this is a series of locally accumulated patches over past months.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/tty/tty_io.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-The series:
-* makes mctp and 6pack use u8s,
-* cleans up 6pack a bit,
-* fixes two coverity reports,
-* uses guard() to make some of the tty function easier to follow.
-
-Cc: Andreas Koensgen <ajk@comnets.uni-bremen.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jeremy Kerr <jk@codeconstruct.com.au>
-Cc: linux-hams@vger.kernel.org
-Cc: Matt Johnston <matt@codeconstruct.com.au>
-Cc: netdev@vger.kernel.org
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-
-
-Jiri Slaby (SUSE) (13):
-  tty: simplify tty_dev_name_to_number() using guard(mutex)
-  serial: protect uart_port_dtr_rts() in uart_shutdown() too
-  serial: don't use uninitialized value in uart_poll_init()
-  serial: remove quot_frac from serial8250_do_set_divisor()
-  serial: use guards for simple mutex locks
-  mxser: remove stale comment
-  mxser: remove doubled sets of close times
-  mctp: serial: propagage new tty types
-  6pack: remove sixpack::rbuff
-  6pack: drop sixpack::mtu
-  6pack: drop sixpack::buffsize
-  6pack: remove global strings
-  6pack: propagage new tty types
-
- drivers/net/hamradio/6pack.c         |  60 ++++--------
- drivers/net/mctp/mctp-serial.c       |  23 ++---
- drivers/tty/mxser.c                  |   5 -
- drivers/tty/serial/8250/8250_dwlib.c |   2 +-
- drivers/tty/serial/8250/8250_exar.c  |   2 +-
- drivers/tty/serial/8250/8250_pci.c   |   2 +-
- drivers/tty/serial/8250/8250_port.c  |   4 +-
- drivers/tty/serial/serial_core.c     | 140 ++++++++++++---------------
- drivers/tty/tty_io.c                 |  11 +--
- include/linux/serial_8250.h          |   2 +-
- 10 files changed, 103 insertions(+), 148 deletions(-)
-
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index bc9aebcb873f..267682bcfea0 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -350,22 +350,19 @@ int tty_dev_name_to_number(const char *name, dev_t *number)
+ 		return ret;
+ 
+ 	prefix_length = str - name;
+-	mutex_lock(&tty_mutex);
++
++	guard(mutex)(&tty_mutex);
+ 
+ 	list_for_each_entry(p, &tty_drivers, tty_drivers)
+ 		if (prefix_length == strlen(p->name) && strncmp(name,
+ 					p->name, prefix_length) == 0) {
+ 			if (index < p->num) {
+ 				*number = MKDEV(p->major, p->minor_start + index);
+-				goto out;
++				return 0;
+ 			}
+ 		}
+ 
+-	/* if here then driver wasn't found */
+-	ret = -ENODEV;
+-out:
+-	mutex_unlock(&tty_mutex);
+-	return ret;
++	return -ENODEV;
+ }
+ EXPORT_SYMBOL_GPL(tty_dev_name_to_number);
+ 
 -- 
 2.46.0
 
