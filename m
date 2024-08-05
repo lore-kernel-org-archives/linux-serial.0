@@ -1,171 +1,114 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F76158A06
-	for <linux-serial@vger.kernel.org>; Mon,  5 Aug 2024 08:02:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8AD1547D2;
+	Mon,  5 Aug 2024 10:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722844950; cv=none; b=QE7Fyq67OM5EYu3sr8cMgF2mEMug44iasKBSWADeOcq2jsWJcYUmRmLLGxlvvPiVqqC8mq/gIsFeRIYLbE0WoKNOzNpH6ejiLClWgzg3AGadSWWVntWVP6IRaa2QzcGf+Fv5EFPIPozkrGXtfaWPl5s/lQQbPN6QZMfb7kO47JI=
+	t=1722853253; cv=none; b=KOBOv+/PweexCiLx0ILUc+7Ou2lqRtjGoFHansV98S38g/AerITAHmkMiCG8Uy+8HCK7aKl40B4wJwYiFMIGh0xxBhpyDMpoj2WrD++R2FLYEVAIxHmNLoqrcXncIRwz1zrpcUKwACKV3QvN7nQ6TQsupu6gVOWRNk2QtazNJDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722844950; c=relaxed/simple;
-	bh=eDX/oUhvMuTvOdEU35gML3pMZ3bHnmTWwtIB4yn4vRc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aUGqQ3lcHkP2vNkOZygo/fgLYwoAwhxosyFzD1X7whUoc2y2NtbKbcjfy4PdYXwFX4CdB10aETOK/xXlY74Uoryz88xNFQ3ws/zUh7qaNw46ThfDUoqZ5lppq5GoatiAdAAdNrRpna0MKwBKVSkoebnA8/pnDKZotIjkgRhaLZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BQ5nc7Er; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1722853253; c=relaxed/simple;
+	bh=sDmmkpl/9Bzr5ouY+9/cCRRGcoKUK/ZE+Geg9qVd8LI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JBEpCpsEUWyjwLWLSD8hliZjnqxMcwosSBIfxSHFPogo6JdRPjmAqXp4k3Gs/lqyzXrE9MIR5kDrZjWJB0jHbxk88BY7EZWxbKd7bmLbhLSLHA4JxKR5tXTiLC3ArdPe4B3Cx5piIPur/bQLADIcvoZCvWpcKQxlNSRZIVtvT4w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L0sijGpp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BQ5nc7Er"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1722844947;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6elIcVAva6IdGos3xrpBxA061GwStf3eghsSoUI+FxU=;
-	b=BQ5nc7ErKVxAbwEAYewEO63J3A1ZKCtVsoU2kFtFPQ+y32RqLvKq1sbz+f/FlCz2gfO278
-	F7Wy4eUNrxZQ7TiEHjrU5akMEDU0lJHdP10w+bGtjRPEwrVhLVhR1eSsMJzoFLqVdITgwj
-	ppTo8qjfLCF7g+KXIZotwRd/0wEB18k=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-677-rT1Ycai7OyuBH3hYfa2P9Q-1; Mon, 05 Aug 2024 04:02:22 -0400
-X-MC-Unique: rT1Ycai7OyuBH3hYfa2P9Q-1
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-a7aa22266aaso95464966b.1
-        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 01:02:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722844941; x=1723449741;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6elIcVAva6IdGos3xrpBxA061GwStf3eghsSoUI+FxU=;
-        b=KPbbpgz9SrSB8GCR55tZuWAs7NJUpHQwjBy1PDaO1E/odym2BoYcTyE+hWjfdAQX1w
-         4V5cjY3YRDnZDjNw8OA1P6TdoDh7n0iYDOnW09ls1F7Iq2d+95XouYJGIabJMT1x+2v1
-         WsGL3wl77p5ZR5VKoHnZRDuYFFGs6vPOI6cNV0z7O5/GMPQix5halAUEC8KZSrREWLDu
-         iLGmzU7ifR+LiOnDaJ5UIBEECxDez34W6/43K9uHQstXeRHvUmh6K/3VAyVZH9IJwyuf
-         syFnC4B0yudpeUejgCoas03LBNZU9xf682ahGOBvH/TPXw0VYf5M2UYUnKL648IKrDzC
-         RKRg==
-X-Forwarded-Encrypted: i=1; AJvYcCUforB/JfcRR6/cBHzQLX2fPx5l+5sr77kp+8tATyMKkfk7XjhrIkbQHotac8X4tvsQDnz3xJrqDbtM+jY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzFqKIDI+aHeIYv6XOiToB9Sn8a5qL3AHhvv3E7HJ+SVq7DEMN3
-	ZomVzeB1sKKlCX+LyiEBnGtLkO8pBvfGO3+MpnEgS3tEJK92R61jXO9bqKBqzLFOfxPDpGkrum6
-	y2gZJzXQ3gda0Pk0iJyND0hsSs87bqeI2UULcKu3BPbuNQBoyzfoPHKbz22d92Q==
-X-Received: by 2002:a17:906:bc0b:b0:a7a:9a78:4b5e with SMTP id a640c23a62f3a-a7dc50ff341mr387930466b.8.1722844941120;
-        Mon, 05 Aug 2024 01:02:21 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGkK5Lt7n9jXqXSSRLA1PwUtBlM1U1xQiwgfbtLyFZ2DIUDAUIZgCzu48VuDRqWx5Z3WdARVA==
-X-Received: by 2002:a17:906:bc0b:b0:a7a:9a78:4b5e with SMTP id a640c23a62f3a-a7dc50ff341mr387928066b.8.1722844940701;
-        Mon, 05 Aug 2024 01:02:20 -0700 (PDT)
-Received: from eisenberg.fritz.box (200116b82df07e000a5f4891a3b0b190.dip.versatel-1u1.de. [2001:16b8:2df0:7e00:a5f:4891:a3b0:b190])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7de8d0868bsm277958966b.143.2024.08.05.01.02.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Aug 2024 01:02:20 -0700 (PDT)
-From: Philipp Stanner <pstanner@redhat.com>
-To: Jonathan Corbet <corbet@lwn.net>,
-	Damien Le Moal <dlemoal@kernel.org>,
-	Niklas Cassel <cassel@kernel.org>,
-	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	"David S. Miller" <davem@davemloft.net>,
-	Boris Brezillon <bbrezillon@kernel.org>,
-	Arnaud Ebalard <arno@natisbad.org>,
-	Srujana Challa <schalla@marvell.com>,
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-	Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Jon Mason <jdmason@kudzu.us>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Allen Hubbe <allenbh@gmail.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Cernekee <cernekee@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Mark Brown <broonie@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Philipp Stanner <pstanner@redhat.com>,
-	Jie Wang <jie.wang@intel.com>,
-	Adam Guerin <adam.guerin@intel.com>,
-	Shashank Gupta <shashank.gupta@intel.com>,
-	Damian Muszynski <damian.muszynski@intel.com>,
-	Nithin Dabilpuram <ndabilpuram@marvell.com>,
-	Bharat Bhushan <bbhushan2@marvell.com>,
-	Johannes Berg <johannes.berg@intel.com>,
-	Gregory Greenman <gregory.greenman@intel.com>,
-	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-	Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
-	Breno Leitao <leitao@debian.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-doc@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L0sijGpp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3E85C32782;
+	Mon,  5 Aug 2024 10:20:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722853252;
+	bh=sDmmkpl/9Bzr5ouY+9/cCRRGcoKUK/ZE+Geg9qVd8LI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=L0sijGppizYGFI9FfUa4t4H+US8qJOejsHAUZ6ME7kcr7My0WY97VSlQVMGRoLNzz
+	 XnslQwiY/XoWLIydbaj+DJWuWlf7kal3CKGjs+VYi5x0Hgpj7l44yaVt+G0sVj7Ebs
+	 /I+K1DVtb4jbkkEdePfhAiDBrBs+JXeDrAM3t5d1H/5NxGFgz7QDMCfDkET8zJcHKu
+	 YWb/0kyuWV5XgW+4ma/AZ6uxEyXrM0uh46tatxav0n1qcDitK9CScxhHgQbfpvqfq5
+	 s+0SqsLmq3Vxai8heUN9wxLxxmyolSp6/6FVIhY5PbjZW1OmuSl0WMq1j5yHzWi5uR
+	 Uj5IxNhVzefew==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-ide@vger.kernel.org,
-	qat-linux@intel.com,
-	linux-crypto@vger.kernel.org,
-	linux-wireless@vger.kernel.org,
-	ntb@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH v2 09/10] ALSA: korg1212: Replace deprecated PCI functions
-Date: Mon,  5 Aug 2024 10:01:36 +0200
-Message-ID: <20240805080150.9739-11-pstanner@redhat.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20240805080150.9739-2-pstanner@redhat.com>
-References: <20240805080150.9739-2-pstanner@redhat.com>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Andreas Koensgen <ajk@comnets.uni-bremen.de>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Douglas Anderson <dianders@chromium.org>,
+	Eric Dumazet <edumazet@google.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	linux-hams@vger.kernel.org,
+	Matt Johnston <matt@codeconstruct.com.au>,
+	netdev@vger.kernel.org,
+	Paolo Abeni <pabeni@redhat.com>,
+	Peter Hurley <peter@hurleysoftware.com>
+Subject: [PATCH 00/13] tty: random fixes and cleanups
+Date: Mon,  5 Aug 2024 12:20:33 +0200
+Message-ID: <20240805102046.307511-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="US-ASCII"; x-default=true
 
-pcim_iomap_table() and pcim_iomap_regions_request_all() have been
-deprecated by the PCI subsystem in commit e354bb84a4c1 ("PCI: Deprecate
-pcim_iomap_table(), pcim_iomap_regions_request_all()").
+Hi,
 
-Replace these functions with their successors, pcim_iomap() and
-pcim_request_all_regions()
+this is a series of locally accumulated patches over past months.
 
-Signed-off-by: Philipp Stanner <pstanner@redhat.com>
-Reviewed-by: Takashi Iwai <tiwai@suse.de>
----
- sound/pci/korg1212/korg1212.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+The series:
+* makes mctp and 6pack use u8s,
+* cleans up 6pack a bit,
+* fixes two coverity reports,
+* uses guard() to make some of the tty function easier to follow.
 
-diff --git a/sound/pci/korg1212/korg1212.c b/sound/pci/korg1212/korg1212.c
-index 5c2cac201a28..b5428ac34d3b 100644
---- a/sound/pci/korg1212/korg1212.c
-+++ b/sound/pci/korg1212/korg1212.c
-@@ -2106,7 +2106,7 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
-         for (i=0; i<kAudioChannels; i++)
-                 korg1212->volumePhase[i] = 0;
- 
--	err = pcim_iomap_regions_request_all(pci, 1 << 0, "korg1212");
-+	err = pcim_request_all_regions(pci, "korg1212");
- 	if (err < 0)
- 		return err;
- 
-@@ -2128,7 +2128,9 @@ static int snd_korg1212_create(struct snd_card *card, struct pci_dev *pci)
- 		   korg1212->iomem2, iomem2_size,
- 		   stateName[korg1212->cardState]);
- 
--	korg1212->iobase = pcim_iomap_table(pci)[0];
-+	korg1212->iobase = pcim_iomap(pci, 0, 0);
-+	if (!korg1212->iobase)
-+		return -ENOMEM;
- 
- 	err = devm_request_irq(&pci->dev, pci->irq, snd_korg1212_interrupt,
-                           IRQF_SHARED,
+Cc: Andreas Koensgen <ajk@comnets.uni-bremen.de>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jeremy Kerr <jk@codeconstruct.com.au>
+Cc: linux-hams@vger.kernel.org
+Cc: Matt Johnston <matt@codeconstruct.com.au>
+Cc: netdev@vger.kernel.org
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Peter Hurley <peter@hurleysoftware.com>
+
+
+Jiri Slaby (SUSE) (13):
+  tty: simplify tty_dev_name_to_number() using guard(mutex)
+  serial: protect uart_port_dtr_rts() in uart_shutdown() too
+  serial: don't use uninitialized value in uart_poll_init()
+  serial: remove quot_frac from serial8250_do_set_divisor()
+  serial: use guards for simple mutex locks
+  mxser: remove stale comment
+  mxser: remove doubled sets of close times
+  mctp: serial: propagage new tty types
+  6pack: remove sixpack::rbuff
+  6pack: drop sixpack::mtu
+  6pack: drop sixpack::buffsize
+  6pack: remove global strings
+  6pack: propagage new tty types
+
+ drivers/net/hamradio/6pack.c         |  60 ++++--------
+ drivers/net/mctp/mctp-serial.c       |  23 ++---
+ drivers/tty/mxser.c                  |   5 -
+ drivers/tty/serial/8250/8250_dwlib.c |   2 +-
+ drivers/tty/serial/8250/8250_exar.c  |   2 +-
+ drivers/tty/serial/8250/8250_pci.c   |   2 +-
+ drivers/tty/serial/8250/8250_port.c  |   4 +-
+ drivers/tty/serial/serial_core.c     | 140 ++++++++++++---------------
+ drivers/tty/tty_io.c                 |  11 +--
+ include/linux/serial_8250.h          |   2 +-
+ 10 files changed, 103 insertions(+), 148 deletions(-)
+
 -- 
-2.45.2
+2.46.0
 
