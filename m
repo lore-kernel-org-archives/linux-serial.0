@@ -1,118 +1,271 @@
-Received: from sonic308-2.consmr.mail.bf2.yahoo.com (sonic308-2.consmr.mail.bf2.yahoo.com [74.6.130.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B002318046
-	for <linux-serial@vger.kernel.org>; Sun,  4 Aug 2024 22:45:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.130.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3086631;
+	Mon,  5 Aug 2024 05:16:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722811554; cv=none; b=MK6SAK6c3/x+GRP+Gt7/ZuBSfIf+9IlVHr3gNDyyl8hB6KosARQdtAUKQt5TKDT85EPH7Ij2oCgkVovxBRTeiVpjKGjYwsxawQ9kn8tZWbix4QtWjLejqNb4H1uiouHNYYkQdXfbUga10OogkQNKpbUIGOyRlmFaGB9c5h38jgk=
+	t=1722835002; cv=none; b=cUtiNYYdeWykfYru4kqBN6/Oyi1QhcllV0UrIoDbwwUllvPLIJmW+AlAILSAHo45GqmcTfr3iWB7sUaq1nW7an6lb9kd1zxHhBgJIU7dspCLEkBGHLfP5ASR2VJmFJcMYfwY937iMoTTO3ilYex00dpNQi+sPAA2vWDejfQW+kM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722811554; c=relaxed/simple;
-	bh=YwMGglGFVhnxIo6XhPzI+89WXzaUidW0fE4qiEmMTiY=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 References; b=MaOyrorfRtyV25spwRrToCQd9f8qx61x4S96E+Qdu3xADF9OIZA1yeysvAdlZaf0ySRKAPkfSwL8+KE78W8Varp8TjinX6BKxrhtTJo2NVjrwhVfmiOFPGstMYVhRzW1doc7953/u4QkrNvJX36bfk7JOtuC1qI9L5+YLR4tj+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=CJ47tYRC; arc=none smtp.client-ip=74.6.130.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
+	s=arc-20240116; t=1722835002; c=relaxed/simple;
+	bh=m3gU1OlTZ8095LDUuHrD0vdOwEUtiIdxYNOczF0Rm1g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ECy35LquP2JZaivb81E8FaMpkaENT2gFPjMp5Iy0c97pmpuUK1O/I+DsXGYK7sVv19GMPgCij5Fbn+Hae0eUXWPhZs1n6Oi8/qt+RF7AlWahVL9RiezWJWIdTMe3kitXlnHzStiwoo1GsQTCt0BaxdALy6rJpMujllXQ0+zOdMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iZSj1jTc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="CJ47tYRC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1722811551; bh=utlCvYJ/orFptSVZeC1987n886kjjCLOKO6JbcfE/q8=; h=From:To:Subject:Date:References:From:Subject:Reply-To; b=CJ47tYRCeCGCOHkgqYK2b1tj/aaivGhDoVskW3zRVBo8V4qf/Ry9adOLfheh4ceUypG1qrD/y4ecv9eODZCmGMBTl+nosgRZHeXMKMRZeEgz5433sQZRu6OZpYTXD2m25ShhQbOAhEcx9aoMgHi5W/n37ai8PEy1nYS1ZLDy2Z2kz6eiZ52avV8WwoWbAkAz35dc7y+iFb1rZHis4TrKO6OddgnCxP5LAOzc+H+AGSYcFJecKnbt9tvh3pU0q4MH2pqf4j2hGLFSei+zpi5/cpG2Y/7ouVUGO3JUz5ToAFCMZ/VTreWzJU+VXAWzObU1uQkQPPhpmdb9wsuUpi6UFg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1722811551; bh=wMXLdvhfOh3+KQU28PqT1nqqUzZxcnUOTxiDSWeKYkp=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=XiQ49FHtBW8071mJiJ1tsnBp3nWBMcw+LYpuH2jVu3xYfRgl5DJHRaJO16Kf/goOFLJEEqT0kNUDj+ZrccRFgo0hIoSVEKhlKAqbEOOKpufMoehpyvFHScIj+NEi9K6BoUoI/sN8Mh2TalUt5gSptHvQfVkcVAMZ93fD8SDYLTro+caajdo26YBd9uyup1WzUiIRlfa5+VFe99eIVD+dPtRJZrJxhF6880oYKFxBN8CDcypjG3naTzCIAEnb0YIeLeiygfoPe2qK+6R+Iok7elyWo5oaRMkuu5js6NisYsbUlv3sB3CyeU0c/gKPbkLh8D/Tig1MH9Jp1unue9GKWQ==
-X-YMail-OSG: j2xArJYVM1nqP.u2gBLsB.DIGGBiVBP00qKuNeifS7JzoNHca3APzynmwniX.Z6
- W0VcHJ6ujDZSgOkN.TD21OFJr3dbv_0wspH1jeQhKzeMRbhQFSGNrYJci9lHn2eG0JIYNCjIiJYc
- flkL1wpmKIT45nUU6XAXsa5sJI3jks7ZyBtmypfXyQ1K7zI8HOM17VqRUefrx6NzXYayStif5rGR
- ezOrZvtUPhoLUSA3tEVVuaI2RO4.XAL_6wNwu4piQvKYwpToFYddh0.0HEzfCMmVPf9VCLTWYczr
- ..BkhEDnSO9ASa6EKvIhrqmwQiS8_U3BHj_LTD9ai413fCxBhZ72DRyAIrOiIXNRSDGYRaBDH.xf
- o_kF8YQaf0Z_c07tIT2K75tkCAJdyUa0qfMFPIrYpkhGO_0J5dc.VmFfaNef_DC2YOwdt2t7rHkF
- ALpVRjXC1lLj3HBuFqtsQSqGd3NWw4xbm2LqDFbMKB0ObIK...cB4pzD.ngSHFSbKcoc0jxCd_yY
- sRIpnr5CY3sqQ74zCkBmC7Yjsl9QayrmpLXg5lIeU8.f2z5oDx31UrgQu8nMO67auVgcNWQPeqOx
- imzaGJ9bO9bYmDsnVbQRrOn5fXYCFcM1uPogwzDhKQof8En1DOe7h0EILZT_UPEO6IoH9L9B.mrP
- _d_KPV2t_7ynNOEnA7Q20Y1nEkzTXDCrpl1Qw2TsA.sSnTJOqNw8fKm8XY1Yiv8dkAxQv5m0khhh
- C1rBMuJXh_g2hYTjMCrZibZWQ_9ww4UBSkRqsx9zwzvI97QnnmdjEnS3UIEmjxvM9n57tr4GjNpk
- RauUlt75BITW9m1PVj6QxcNeJCEflFNbjUuhyonJ4XNC4ws.QXnUG9eLR1C2wuvb_48Plgg1nPsc
- GXMWe_63Ac73WlDko8p9Wb6tqiQ0IVaiWulOkWRzeF0lIyEP_xbHNer1vGjZqWhKSC_UheakxT6Q
- PWWlfnc7XL7w6zoklnJsXpLimI6yVugpGc7MuymOo76WHFevWYlsEv.Oi2YJ32p0zSwq6w3y5wnv
- 1laDdCHMaD5C.vMaXEcm1GukJ.FDvIAtUAzpi8gC4h_x3NRfRuL4HZcTnaw76SCB_TDQ3F3gyEiG
- DOpwShCjVMR9FF9Ig6Qys0zv4puBrgIjyTdX2EaNOxkJz96Q3lTG1ddiA.giiQ_M_hmK0g9RAHjv
- GMr3Dymf2U8q6K_RHCl6MphJEO5CxPrNgFo8p5R9ptr.cB8XwNfQeWF.lvEccvfKyXAcloAtvenV
- b4d4eZ7CwhMlP8KqwhMfJZt4iPTKuIP5HsGIe5G.hDYPp4knyQK8S81a6bibq93B5nhKnvlKSCTN
- Tp6uA1Inv8LENCtsgnhlrYHYMwPwQSeEH_DyWsfLzjc7TXkJBvNvEOZrirtVPJO9PQVLs57BPLeP
- nB_Dr8jp1JP2sD8RNTC6QrQ_g7uKN8wMrsEiSWJPdJaJ3ycD8DJX1WJeL0dt7pIvKmfdngvRY1mT
- B.eCOC6lqExIFSqZsnyLOIFrdTCvxJXBv.4Lzw848b1LGTZXh41tUAhRovQW9bMbizzptOt09kYA
- 7aRTWZSstyJTAV4VwaA2tbzKlqbS1wr1RQT8z61X03_lJPtm5AnG_9dW6FpyOZMuwEkzQukpjs1g
- dwjAJfadP5OG9HyaQS3B9lTu0v5gvZpEqMyU3BA2QiBD5FV1GxGrxImVmuu3Wcb53TXmefS.GdlL
- oo0DhgKYVQm7AoBUwE2vV4aINZyzXSdWkXMnLPOeCCOdI.fl.j0SwrlQG.dN953Gq9a_mb35Ynk6
- u_wHucimEFokYCdWho4b7VMI9qV8i5JmyNsDiJDqcPi4yYwBzDX4wUOcbk2HJLwYSi2vajLgHA7e
- NtROJKR4JoCGZi4mpIdxaYbuSQ9_0JFZbkBC3MfzucGYwsOFIQF4YL.0L2ggocCSNnhyLv.tQjiD
- A2843QybzRP86qpCLMIKiQgViI3Mt37iZ90zJajKG3gENPa7EO0XWjpS54OWZfSwJUZ18tLZpLJg
- rsm1XUF_OzvJamM6rVFuEfUJ_BCDz.9w6Pvx7qHe1tSuvpkni3fXMwQvOXc_Er9aSg9efjAdWcXE
- xKM3Phk1y6kQy8vYfBkiGopIEUkjlGByoK6Ft7y0itE433_yqpETT9ds2wfludWn_21SEPid_FXJ
- a.5Mf.xCRi0SFYYAxCas.3PT9rwX9nT3t9zoE1w1qfyvCap7NxC6Dn2E3ziIklyE1PXQxOEcPf8t
- cPW7UlRp4KCvOekT2Rnee_Lpos7RKu_aFzXqa2Oe43.g_kzBx
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: adba5347-824c-4415-9c49-80e4efa4778a
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.bf2.yahoo.com with HTTP; Sun, 4 Aug 2024 22:45:51 +0000
-Received: by hermes--production-bf1-774ddfff8-dhfgz (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 1b55274841cb1f8d3d395b8ca3d3322b;
-          Sun, 04 Aug 2024 21:45:07 +0000 (UTC)
-From: nerdopolis <bluescreen_avenger@verizon.net>
-To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org
-Subject: /dev/ttynull and VT-less kernels on Desktop
-Date: Sun, 04 Aug 2024 17:45:07 -0400
-Message-ID: <2708910.X9hSmTKtgW@nerdopolis2>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iZSj1jTc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51298C32782;
+	Mon,  5 Aug 2024 05:16:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722835002;
+	bh=m3gU1OlTZ8095LDUuHrD0vdOwEUtiIdxYNOczF0Rm1g=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=iZSj1jTcCpX4fW/UukuFfXOZRKhombezWVZMsrA6BVpUEemHRdUGAFRJRhjpRZMT8
+	 PC0i352AXbG0C+2rtvmcwuuMrUq0YwvRH/0UDCodzxSFx4bEvBXDnHpxiFEhZWa4av
+	 OBW5dFugr27f7s9kuBCVQ8jKs9Kvs56rywrgVCXAq8MR2GBZfvlgN1SqLhuZ8gPGG6
+	 sS0CPZZvOak27w2kCT2/Pl4fZAYOts3zY3WcYL9ojKQGsgLcEiMRMElODGW5Hs6FKk
+	 IYl8VP3Q7QuNUEWO8eDhR2bAWRH8K7px+C0XGOCBYqa224jgFMkmUjN/B6hBCNHEXA
+	 dFUtVuMDmUaVQ==
+Message-ID: <6fe0d3de-3885-43dd-97f3-b181ef1386d5@kernel.org>
+Date: Mon, 5 Aug 2024 07:16:35 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-References: <2708910.X9hSmTKtgW.ref@nerdopolis2>
-X-Mailer: WebService/1.1.22544 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
+To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+ Dragan Simic <dsimic@manjaro.org>
+Cc: Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Jagan Teki <jagan@edgeble.ai>, Ondrej Jirman <megi@xff.cz>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20240803125510.4699-2-ziyao@disroot.org>
+ <2408413.9XhxPE3A7Q@diego> <81147f0205c2a9555c9c64e4f7a69b6b@manjaro.org>
+ <10256980.nnTZe4vzsl@diego>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
+ QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
+ gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
+ /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
+ iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
+ VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
+ 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
+ xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
+ eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
+ AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
+ MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
+ Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
+ ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
+ vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
+ oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
+ lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
+ t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
+ uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
+ 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
+ 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
+In-Reply-To: <10256980.nnTZe4vzsl@diego>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi
+On 04/08/2024 17:51, Heiko Stübner wrote:
+> Am Sonntag, 4. August 2024, 15:59:19 CEST schrieb Dragan Simic:
+>> On 2024-08-04 15:44, Heiko Stübner wrote:
+>>> Am Sonntag, 4. August 2024, 15:25:47 CEST schrieb Dragan Simic:
+>>>> On 2024-08-04 15:20, Yao Zi wrote:
+>>>>> On Sun, Aug 04, 2024 at 12:05:11PM +0200, Krzysztof Kozlowski wrote:
+>>>>>> On 03/08/2024 14:55, Yao Zi wrote:
+>>>>>>> This initial device tree describes CPU, interrupts and UART on the chip
+>>>>>>> and is able to boot into basic kernel with only UART. Cache information
+>>>>>>> is omitted for now as there is no precise documentation. Support for
+>>>>>>> other features will be added later.
+>>>>>>>
+>>>>>>> Signed-off-by: Yao Zi <ziyao@disroot.org>
+>>>>>>> ---
+>>>>>>>  arch/arm64/boot/dts/rockchip/rk3528.dtsi | 182 +++++++++++++++++++++++
+>>>>>>>  1 file changed, 182 insertions(+)
+>>>>>>>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
+>>>>>>>
+>>>>>>> diff --git a/arch/arm64/boot/dts/rockchip/rk3528.dtsi b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+>>>>>>> new file mode 100644
+>>>>>>> index 000000000000..77687d9e7e80
+>>>>>>> --- /dev/null
+>>>>>>> +++ b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+>>>>>>> @@ -0,0 +1,182 @@
+>>>>>>> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+>>>>>>> +/*
+>>>>>>> + * Copyright (c) 2022 Rockchip Electronics Co., Ltd.
+>>>>>>> + * Copyright (c) 2024 Yao Zi <ziyao@disroot.org>
+>>>>>>> + */
+>>>>>>> +
+>>>>>>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+>>>>>>> +#include <dt-bindings/interrupt-controller/irq.h>
+>>>>>>> +
+>>>>>>> +/ {
+>>>>>>> +	compatible = "rockchip,rk3528";
+>>>>>>> +
+>>>>>>> +	interrupt-parent = <&gic>;
+>>>>>>> +	#address-cells = <2>;
+>>>>>>> +	#size-cells = <2>;
+>>>>>>> +
+>>>>>>> +	aliases {
+>>>>>>> +		serial0 = &uart0;
+>>>>>>> +		serial1 = &uart1;
+>>>>>>> +		serial2 = &uart2;
+>>>>>>> +		serial3 = &uart3;
+>>>>>>> +		serial4 = &uart4;
+>>>>>>> +		serial5 = &uart5;
+>>>>>>> +		serial6 = &uart6;
+>>>>>>> +		serial7 = &uart7;
+>>>>>>> +	};
+>>>>>>> +
+>>>>>>> +	cpus {
+>>>>>>> +		#address-cells = <1>;
+>>>>>>> +		#size-cells = <0>;
+>>>>>>> +
+>>>>>>> +		cpu-map {
+>>>>>>> +			cluster0 {
+>>>>>>> +				core0 {
+>>>>>>> +					cpu = <&cpu0>;
+>>>>>>> +				};
+>>>>>>> +				core1 {
+>>>>>>> +					cpu = <&cpu1>;
+>>>>>>> +				};
+>>>>>>> +				core2 {
+>>>>>>> +					cpu = <&cpu2>;
+>>>>>>> +				};
+>>>>>>> +				core3 {
+>>>>>>> +					cpu = <&cpu3>;
+>>>>>>> +				};
+>>>>>>> +			};
+>>>>>>> +		};
+>>>>>>> +
+>>>>>>> +		cpu0: cpu@0 {
+>>>>>>> +			device_type = "cpu";
+>>>>>>> +			compatible = "arm,cortex-a53";
+>>>>>>> +			reg = <0x0>;
+>>>>>>> +			enable-method = "psci";
+>>>>>>> +		};
+>>>>>>> +
+>>>>>>> +		cpu1: cpu@1 {
+>>>>>>> +			device_type = "cpu";
+>>>>>>> +			compatible = "arm,cortex-a53";
+>>>>>>> +			reg = <0x1>;
+>>>>>>> +			enable-method = "psci";
+>>>>>>> +		};
+>>>>>>> +
+>>>>>>> +		cpu2: cpu@2 {
+>>>>>>> +			device_type = "cpu";
+>>>>>>> +			compatible = "arm,cortex-a53";
+>>>>>>> +			reg = <0x2>;
+>>>>>>> +			enable-method = "psci";
+>>>>>>> +		};
+>>>>>>> +
+>>>>>>> +		cpu3: cpu@3 {
+>>>>>>> +			device_type = "cpu";
+>>>>>>> +			compatible = "arm,cortex-a53";
+>>>>>>> +			reg = <0x3>;
+>>>>>>> +			enable-method = "psci";
+>>>>>>> +		};
+>>>>>>> +	};
+>>>>>>> +
+>>>>>>> +	psci {
+>>>>>>> +		compatible = "arm,psci-1.0", "arm,psci-0.2";
+>>>>>>> +		method = "smc";
+>>>>>>> +	};
+>>>>>>> +
+>>>>>>> +	timer {
+>>>>>>> +		compatible = "arm,armv8-timer";
+>>>>>>> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>>> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>>> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+>>>>>>> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+>>>>>>> +	};
+>>>>>>> +
+>>>>>>> +	xin24m: xin24m {
+>>>>>>
+>>>>>> Please use name for all fixed clocks which matches current format
+>>>>>> recommendation: 'clock-([0-9]+|[a-z0-9-]+)+'
+>>>>>
+>>>>> Will be fixed in next revision.
+>>>>
+>>>> Hmm, why should we apply that rule to the xin24m clock, which is
+>>>> named exactly like that everywhere else in Rockchip SoC dtsi files?
+>>>> It's much better to remain consistent.
+>>>
+>>> bindings or how we write devicetrees evolve over time ... similarly the
+>>> xin24m name comes from more than 10 years ago.
+>>>
+>>> We also name all those regulator nodes regulator-foo now, which in turn
+>>> automatically does enforce a nice sorting rule to keep all the 
+>>> regulators
+>>> around the same area ;-)
+>>>
+>>> So I don't see a problem of going with xin24m: clock-xin24m {}
+>>
+>> I agree that using "clock-xin24m" makes more sense in general, but the
+>> trouble is that we can't rename the already existing instances of 
+>> "xin24m",
+>> because that has become part of the ABI.  Thus, I'm not sure that 
+>> breaking
+>> away from the legacy brings benefits in this particular case.
+> 
+> In the regulator case, we have _new_ boards using the new _node_-names
+> but I don't see any renaming of old boards and also don't think we should.
+> 
+> But that still does not keep us from using the nicer naming convention in
+> new boards ;-) .
+> 
+> 
+> Same with xin24m. We're talking only about the node-name here. The
+> phandle stays the same and also the actual clock name stays the same and
+> really only the actual node name you need to look for in /proc/device-tree
+> changes ;-) .
+> 
+> So I don't see the need to go about changing all the old socs, but new
+> additions should use improved naming conventions.
+> 
+> xin24m: clock-xin24m {
+> 	compatible = "fixed-clock";
+> 	#clock-cells = <0>;
+> 	clock-frequency = <24000000>;
+> 	clock-output-names = "xin24m";
 
-I have been doing some testing on VT-less desktops. I brought up an issue with
-how systemd was not logging to /dev/console because isatty() was failing (in a
-thread last month which I kind of bungled by accidentally sending the first
-message with rich text enabled by accident) I solved that issue though. As
-disabling the VT console causes the default console to /dev/ttyS0 and the 
-isatty() calls on it were returning false.
+Just to make it clear - doc clearly says the preferred name is:
+"clock-frequency".
 
-I have found out that this issue actually already has an existing solution in
-the ttynull driver. After enabling it, and then adding console=ttynull to the
-kernel command line, this allows isatty() to succeed on VT-less systems, and
-now systemd is able to correctly log its status messages to the kernel console
-on VT-less systems, without needing anything connected to /dev/ttyS0
-
-However I have two questions:
-
-1. Is there a build option to make it prioritize /dev/ttynull over /dev/ttyS0 ?
-
-   It would probably be neeed so that distributions don't have to worry about
-   the logistics of adding that to everyone's GRUB_CMDLINE_LINUX_DEFAULT come
-   the eventual day the decide to go VT-less during its upgrade process.
-
-2. Is there a good way for the userspace to know that /dev/ttynull is primary?
-
-   "ttynull" doesn't seem to appear in /sys/devices/virtual/tty/console/active
-   when it is active. Which seems like it could make sense, (as in a check if
-   it is empty) however if I boot with "console=ttyS0 console=ttynull", "ttyS0"
-   appears in the file, but if I boot with say "console=tty0 console=ttyS0",
-   they both appear in the file. It would be nice if in the first case it would
-   report "ttyS0 ttynull".
-
-   With Plymouth, when the primary console is /dev/ttyS0 instead of /dev/tty0
-   it defaults to serial logging instead of showing a graphical splash, so now
-   if you want a graphical splash on a VT-less system, you have to also specify
-   "plymouth.graphical" on the kernel command line. If it could see "ttynull"
-   in the end of the file, distributions that go VT-less can also just enable
-   "ttynull" as the default console, and Plymouth could use that to
-   differentiate between VT-less desktop systems, or systems that actually want
-   serial logging, so they don't have to change GRUB_CMDLINE_LINUX_DEFAULT.
-
-Thanks
-
-
+Best regards,
+Krzysztof
 
