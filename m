@@ -1,39 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 380B615B96C;
-	Mon,  5 Aug 2024 10:21:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE64815B99D;
+	Mon,  5 Aug 2024 10:21:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722853264; cv=none; b=ciDLuO7tXsgCERMM7c56BCp6j1kVywLQCDkV5KrFoQwUnF2dB2fJ5ABQRDOp/RYE/OXrAo1RQk6x3AR9MVj1arN4RXSEmsKWOs92opph7t3SD/o57iH5F8hHrhes6FDivnVXkZ2UZ4e3G5zr28HIB4c380CHp8QCKLT6CgXjBQ8=
+	t=1722853266; cv=none; b=mFHpxzcDFwTCnbv78pMkZZ3FZB4viM5Ud0gcL5EjYN2N8Ex08QVO+EvPd9Vi9WxsDulLoyq6ukTzzz91BextsNxojbGHFMLJApEKRoYOswrcBP41Ij67AYcqW8tYUbFCr1JE5fqopOKUYyxQOP8FbFHfCIbJitflmhtfJOTS9YQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722853264; c=relaxed/simple;
-	bh=snzCKqe+A40N2hgIp+p7f4DkpzeZjbNgpbd31jwyFAg=;
+	s=arc-20240116; t=1722853266; c=relaxed/simple;
+	bh=9Fik8RXRQRa2crOyQlS1nroMylh+Z+5N4egxIxbBjx0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ppYmKEEM8i75JHmBcxSZ2HmxHBNKSKpUs+IM+c+U8Dzn9fNmcBWf6mIAQ8VjNgm2sxTRFqVBEv4vzNhALIlHw9RgA0p9SwctPYd2+ekudWdQHy36L9ByIlE3fVQ0MQRkz3W8HYmcs0Z8yiue/n8Gtmk8MGpfLD2gWNAwMVBG6j0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R1v92u9V; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=klEUddxaW82RF5V5MCaxOGSlNJIxJRs8FwkX065DXaemjPUvzpH7yelKg+qyLAuAXHnzr3r2g7X9pjTpZ7IU6bNk/J6W25+IMFTihWWq9/LsnqRsmY9SUQF1Q4P0oseHfMbBXzCg7+5Yx0Cm7i7RUUcJUcLZ04nWsMfLkRROzec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eUiDXu22; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R1v92u9V"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4866C4AF0F;
-	Mon,  5 Aug 2024 10:21:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eUiDXu22"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB14C32782;
+	Mon,  5 Aug 2024 10:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1722853263;
-	bh=snzCKqe+A40N2hgIp+p7f4DkpzeZjbNgpbd31jwyFAg=;
+	s=k20201202; t=1722853266;
+	bh=9Fik8RXRQRa2crOyQlS1nroMylh+Z+5N4egxIxbBjx0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=R1v92u9VwlFuC9eFlsUaFWPADJR/odGYP1Od8gvaZuoVNmfS/QJy9jdISQ7wq9lbi
-	 /JmMBTBaTqoUM387NAduBK+a3K7HRBaYDgQG5LGu9q8aeqsjXnlW0cdHi8kwRbEv/l
-	 P26HRt4FhZl9mtkYN+u/aMHsBlUw/b+80d11MHqgNFADTNDLt4YW7pIxZ+Q2iVx7wh
-	 ns0Iv7zu97AARFcrsKyMULH864Abc/N3bOnumOY3i5PRDKfvDQDCUfp8UjzFyE8Eim
-	 pxY6G5yS4j5eaJmnR+dW+/HkzGRfBa65R/K4UqCwq3wApSjfn5Qhb7An7U+IqKoI3L
-	 7AeXUYS6x0DtA==
+	b=eUiDXu22uB+jbLMph18hBLd/KCcOpYlxMPBisM53NfJD624xvBT1xw5G0sB7ATIAg
+	 78zkxf2hgsDgGOaRgopFdiJuMsGQJ5l7921xAAnYhmGXQIQiHmExHcncJUw8KGMJaJ
+	 Dk0mRDZIg3RuwZDfBtgyXJrMibNd3Nk3hI5V/Uzspymd8d5sTKncay2pPY1D4374RL
+	 V0j4Tg+tZ516U3PEzWv0t5v2TG2tlPWsTcjRgGXhbhgnFpK1ckm+ZOBELLESiGGjFo
+	 f2NgbJuSLg+OISfrxIQ1j9B+3AR2a0sqE8Dcfsqx4Q87QXz4/j2upBKjTccoCPJnVx
+	 UBXeHhIN/Lc6A==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 07/13] mxser: remove doubled sets of close times
-Date: Mon,  5 Aug 2024 12:20:40 +0200
-Message-ID: <20240805102046.307511-8-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	Matt Johnston <matt@codeconstruct.com.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH 08/13] mctp: serial: propagage new tty types
+Date: Mon,  5 Aug 2024 12:20:41 +0200
+Message-ID: <20240805102046.307511-9-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
 References: <20240805102046.307511-1-jirislaby@kernel.org>
@@ -45,28 +52,108 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-tty_port::close_delay and ::closing_wait are set in tty_port_init() few
-lines above already, no need to reset them (to the same values).
+In tty, u8 is now used for data, ssize_t for sizes (with possible
+negative error codes). Propagate these types (and use unsigned in
+next_chunk_len()) to mctp.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jeremy Kerr <jk@codeconstruct.com.au>
+Cc: Matt Johnston <matt@codeconstruct.com.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
 ---
- drivers/tty/mxser.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/mctp/mctp-serial.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 9a9a67b5afa0..6cfef88a18e3 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1770,8 +1770,6 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
+diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
+index 5bf6fdff701c..78bd59b0930d 100644
+--- a/drivers/net/mctp/mctp-serial.c
++++ b/drivers/net/mctp/mctp-serial.c
+@@ -64,18 +64,18 @@ struct mctp_serial {
+ 	u16			txfcs, rxfcs, rxfcs_rcvd;
+ 	unsigned int		txlen, rxlen;
+ 	unsigned int		txpos, rxpos;
+-	unsigned char		txbuf[BUFSIZE],
++	u8			txbuf[BUFSIZE],
+ 				rxbuf[BUFSIZE];
+ };
  
- 		mxser_process_txrx_fifo(info);
+-static bool needs_escape(unsigned char c)
++static bool needs_escape(u8 c)
+ {
+ 	return c == BYTE_ESC || c == BYTE_FRAME;
+ }
  
--		info->port.close_delay = 5 * HZ / 10;
--		info->port.closing_wait = 30 * HZ;
- 		spin_lock_init(&info->slock);
+-static int next_chunk_len(struct mctp_serial *dev)
++static unsigned int next_chunk_len(struct mctp_serial *dev)
+ {
+-	int i;
++	unsigned int i;
  
- 		/* before set INT ISR, disable all int */
+ 	/* either we have no bytes to send ... */
+ 	if (dev->txpos == dev->txlen)
+@@ -99,7 +99,7 @@ static int next_chunk_len(struct mctp_serial *dev)
+ 	return i;
+ }
+ 
+-static int write_chunk(struct mctp_serial *dev, unsigned char *buf, int len)
++static ssize_t write_chunk(struct mctp_serial *dev, u8 *buf, size_t len)
+ {
+ 	return dev->tty->ops->write(dev->tty, buf, len);
+ }
+@@ -108,9 +108,10 @@ static void mctp_serial_tx_work(struct work_struct *work)
+ {
+ 	struct mctp_serial *dev = container_of(work, struct mctp_serial,
+ 					       tx_work);
+-	unsigned char c, buf[3];
+ 	unsigned long flags;
+-	int len, txlen;
++	ssize_t txlen;
++	unsigned int len;
++	u8 c, buf[3];
+ 
+ 	spin_lock_irqsave(&dev->lock, flags);
+ 
+@@ -293,7 +294,7 @@ static void mctp_serial_rx(struct mctp_serial *dev)
+ 	dev->netdev->stats.rx_bytes += dev->rxlen;
+ }
+ 
+-static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push_header(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxpos) {
+ 	case 0:
+@@ -323,7 +324,7 @@ static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
+ 	}
+ }
+ 
+-static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push_trailer(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxpos) {
+ 	case 0:
+@@ -347,7 +348,7 @@ static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
+ 	}
+ }
+ 
+-static void mctp_serial_push(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxstate) {
+ 	case STATE_IDLE:
+@@ -394,7 +395,7 @@ static void mctp_serial_tty_receive_buf(struct tty_struct *tty, const u8 *c,
+ 					const u8 *f, size_t len)
+ {
+ 	struct mctp_serial *dev = tty->disc_data;
+-	int i;
++	size_t i;
+ 
+ 	if (!netif_running(dev->netdev))
+ 		return;
 -- 
 2.46.0
 
