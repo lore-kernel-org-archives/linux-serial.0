@@ -1,121 +1,138 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365943EA64;
-	Mon,  5 Aug 2024 14:25:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51B7D3EA64;
+	Mon,  5 Aug 2024 14:28:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722867914; cv=none; b=g10oOfVkx7lKrHOroktWFfzf6aA/sc6tU8Y8o9Sp5gZUpAeocYWgWJck5m9zTOAqjsG75PObBEK85HP7A14oK58c/nDm17/UPwVhNgewkpoeXsBH0zEI30zJYuiYtkFqBQdDAb4/yl/W5TQJrAtE0em/pbI7AaJcu8I1rTcTDl4=
+	t=1722868099; cv=none; b=apRCEaBYjWV3bWOUaTXY0JxSQ+T72uZO1qatRlKQpCnOr51MzrzTtpw1E5NtS2FMat/6Lt6bY4EjTBBk2W1BoggrMqo8jtMIpndSoRGQtjjzj2bdsfT3tIjSTwnqTYXSABQirr8vkpyOA89huWUgxo+qFsNgDIS2rjH2orjDHho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722867914; c=relaxed/simple;
-	bh=zloyoov/nCUc6YZRpcaMArHyWBTyzMCFfjVZFTadpcc=;
+	s=arc-20240116; t=1722868099; c=relaxed/simple;
+	bh=yKbtl95xINhTP7J1jRhAX6V0rXoLD64gANcmv8E/gsw=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=inF3H0Js6nrJYGCfudmWuAO3IQaZZrOUqWwGgJJ+J4cxUI+sUXMTeBjuXk0H13QMN6aqqUxHQEn3PbwO/u4/lCwuKQTT7ZzgWd2390NxBQnRE/uDNBtLlvreEQfd8Gv4uiZ1SVfci6PkA2d0xdVjAy6PCZdhV7ifIFTkIOwyvps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gvfxw4qG; arc=none smtp.client-ip=192.198.163.9
+	 MIME-Version:Content-Type; b=HROIrX8XtjoUXo+0iEMojhvdrA1kuL2jHG2ZC7XDvcdZXkRFCNPYvTGgLSO9xEXXuFWNuWJbGGF7myUufjMbcYprTmzG3QnJdGhk+QHed8BSowsqeRo6AjzCbt0iTFJHIyiHt9whfJchEu5KDWOgIbF2bBvrxZF4ldWKX58TL3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BJ7rhVVY; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gvfxw4qG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BJ7rhVVY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1722867912; x=1754403912;
+  t=1722868098; x=1754404098;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=zloyoov/nCUc6YZRpcaMArHyWBTyzMCFfjVZFTadpcc=;
-  b=gvfxw4qG39QlQ1l5QXCDz3EUk+gLErd0Ya64PBnJyrFtTar19xy4eiQO
-   +8+WKxIvi0bTDnLNBWcSw4INd7NDjH/P9+RCJ0Nd+BGTparEfG4eAHMTU
-   rPptfV5R9aYTB/kA3/OTdaG25zduns3q2rwjofgqrIq3DOa01PrLa8EQt
-   +5PenOlxe/S6b5kML/gMeWT+XJTY88JZFXDrD2H6HRzYLa0J3nzSyi/g/
-   KaUPH7Sdgn3Q1oPdO7V/5cwOkB1xkRry1k+XPbTyCORP0e62Kx8PA6QOi
-   51tscEoA069RxxQkifs71y16CxthotRa3Ct6Rozj/o+6IyUjHh1SA4tVY
-   g==;
-X-CSE-ConnectionGUID: TbFShSS2RAGFY2XAjNjIjw==
-X-CSE-MsgGUID: 3HHMOs1oTkyW6fHFTHKLbQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="31494954"
+  bh=yKbtl95xINhTP7J1jRhAX6V0rXoLD64gANcmv8E/gsw=;
+  b=BJ7rhVVYY51YFMXoMkRwJ28qoJ/lPLumbUEs0NoZ9bB03cfO6HtNrx9M
+   fP2+rRQUaqwVw6S+C2CrB0CrT2XC2vwv4aNwTUFKISf5YdYF3+CMbfo/q
+   8Y+nqLRXiVAbJPGIl5YRbo40IEUwGt39qNG8/GzukyPg7Sc/K1CHa5URd
+   qGDFNNK8fTBiTJTiOolFjCTJFxWT1QJ+KpofPQfqLkNHShRwXFcMwKeXx
+   E69wXbfLknT3LHaA8yXhjIL6d2G3K45y6AFUAoob+3IzZAIHWez8q6LVh
+   +JfCRChzKXiPKylhcpNnC5HT7N/UfcBnJ+aTWxdB+VhInce/G7xzCaacR
+   Q==;
+X-CSE-ConnectionGUID: UmpTSRWKSSiSNy/80IELHA==
+X-CSE-MsgGUID: P5K+ZroUQQ2oGeQRNr2HVA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="38340355"
 X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
-   d="scan'208";a="31494954"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:25:12 -0700
-X-CSE-ConnectionGUID: aE42ENqORYadcJBv5iEQcQ==
-X-CSE-MsgGUID: fVg8b/3fR8KMA3xt4KPh2g==
+   d="scan'208";a="38340355"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:28:11 -0700
+X-CSE-ConnectionGUID: Ric531ExQP+mpO47+vxDCg==
+X-CSE-MsgGUID: /6vJNaXKRhipark9yiKOQg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
-   d="scan'208";a="55851614"
+   d="scan'208";a="56123772"
 Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:25:10 -0700
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:28:09 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 5 Aug 2024 17:25:06 +0300 (EEST)
+Date: Mon, 5 Aug 2024 17:28:05 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/13] tty: simplify tty_dev_name_to_number() using
- guard(mutex)
-In-Reply-To: <20240805102046.307511-2-jirislaby@kernel.org>
-Message-ID: <5bafde51-abaf-d367-eb9a-220c1339daca@linux.intel.com>
-References: <20240805102046.307511-1-jirislaby@kernel.org> <20240805102046.307511-2-jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org, 
+    Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH 03/13] serial: don't use uninitialized value in
+ uart_poll_init()
+In-Reply-To: <20240805102046.307511-4-jirislaby@kernel.org>
+Message-ID: <84af065c-b1a1-dc84-4c28-4596c3803fd2@linux.intel.com>
+References: <20240805102046.307511-1-jirislaby@kernel.org> <20240805102046.307511-4-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1197721243-1722867906=:1238"
+Content-Type: multipart/mixed; boundary="8323328-792570173-1722868085=:1238"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-1197721243-1722867906=:1238
+--8323328-792570173-1722868085=:1238
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Mon, 5 Aug 2024, Jiri Slaby (SUSE) wrote:
 
-> In tty_dev_name_to_number(), a guard can help to make the code easier to
-> follow. Especially how 0 is returned in the successful case. So use a
-> guard there.
+> Coverity reports (as CID 1536978) that uart_poll_init() passes
+> uninitialized pm_state to uart_change_pm(). It is in case the first 'if'
+> takes the true branch (does "goto out;").
+>=20
+> Fix this and simplify the function by simple guard(mutex). The code
+> needs no labels after this at all. And it is pretty clear that the code
+> has not fiddled with pm_state at that point.
 >=20
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Fixes: 5e227ef2aa38 (serial: uart_poll_init() should power on the UART)
+> Cc: stable@vger.kernel.org
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
->  drivers/tty/tty_io.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
+>  drivers/tty/serial/serial_core.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 >=20
-> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-> index bc9aebcb873f..267682bcfea0 100644
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -350,22 +350,19 @@ int tty_dev_name_to_number(const char *name, dev_t =
-*number)
->  =09=09return ret;
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial=
+_core.c
+> index 3afe77f05abf..d63e9b636e02 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2690,14 +2690,13 @@ static int uart_poll_init(struct tty_driver *driv=
+er, int line, char *options)
+>  =09int ret =3D 0;
 > =20
->  =09prefix_length =3D str - name;
-> -=09mutex_lock(&tty_mutex);
+>  =09tport =3D &state->port;
+> -=09mutex_lock(&tport->mutex);
 > +
-> +=09guard(mutex)(&tty_mutex);
+> +=09guard(mutex)(&tport->mutex);
 > =20
->  =09list_for_each_entry(p, &tty_drivers, tty_drivers)
->  =09=09if (prefix_length =3D=3D strlen(p->name) && strncmp(name,
->  =09=09=09=09=09p->name, prefix_length) =3D=3D 0) {
->  =09=09=09if (index < p->num) {
->  =09=09=09=09*number =3D MKDEV(p->major, p->minor_start + index);
-> -=09=09=09=09goto out;
-> +=09=09=09=09return 0;
->  =09=09=09}
->  =09=09}
+>  =09port =3D uart_port_check(state);
+>  =09if (!port || port->type =3D=3D PORT_UNKNOWN ||
+> -=09    !(port->ops->poll_get_char && port->ops->poll_put_char)) {
+> -=09=09ret =3D -1;
+> -=09=09goto out;
+> -=09}
+> +=09    !(port->ops->poll_get_char && port->ops->poll_put_char))
+> +=09=09return -1;
 > =20
-> -=09/* if here then driver wasn't found */
-> -=09ret =3D -ENODEV;
+>  =09pm_state =3D state->pm_state;
+>  =09uart_change_pm(state, UART_PM_STATE_ON);
+> @@ -2717,10 +2716,10 @@ static int uart_poll_init(struct tty_driver *driv=
+er, int line, char *options)
+>  =09=09ret =3D uart_set_options(port, NULL, baud, parity, bits, flow);
+>  =09=09console_list_unlock();
+>  =09}
 > -out:
-> -=09mutex_unlock(&tty_mutex);
-> -=09return ret;
-> +=09return -ENODEV;
+> +
+>  =09if (ret)
+>  =09=09uart_change_pm(state, pm_state);
+> -=09mutex_unlock(&tport->mutex);
+> +
+>  =09return ret;
 >  }
->  EXPORT_SYMBOL_GPL(tty_dev_name_to_number);
 
-Should add also #include <linux/cleanup.h>. With that fixed:
+This too needs #include.
 
 Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
 --=20
  i.
 
---8323328-1197721243-1722867906=:1238--
+--8323328-792570173-1722868085=:1238--
