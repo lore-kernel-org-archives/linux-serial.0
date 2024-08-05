@@ -1,114 +1,121 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A24D4158877;
-	Mon,  5 Aug 2024 12:25:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365943EA64;
+	Mon,  5 Aug 2024 14:25:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722860743; cv=none; b=SRRIRuhGUZI8vZim7NGgkgSo0rCyGQ33qJGKdSdzgUP72H/oD78oYWFhAr40l8XU4WYWrxM3nkfoXR5DRanbSQUecrSSswnW4XQZVqXDGxtVKrtHrOHXPP2VdeECOEzMt51Efd4BfqPq387/bQSKobtlVUc6oeldqNTveoGKPDk=
+	t=1722867914; cv=none; b=g10oOfVkx7lKrHOroktWFfzf6aA/sc6tU8Y8o9Sp5gZUpAeocYWgWJck5m9zTOAqjsG75PObBEK85HP7A14oK58c/nDm17/UPwVhNgewkpoeXsBH0zEI30zJYuiYtkFqBQdDAb4/yl/W5TQJrAtE0em/pbI7AaJcu8I1rTcTDl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722860743; c=relaxed/simple;
-	bh=Qdc/hZK/izOikXRxIcKspd4asGIzYcNYPJjK6mYBy2I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qtnrP7EfifGKXa4NnW6AJd8z87qHHXJKRec5tWVpCxc176MH02jgs7ryPEIqANOkw8JMOnYdPGQht/sFdUFXjv7KPf0/uQueA9gtQl5Lx7w3CDJt9Tc/TfRfA+J0d4gmaTnHSYd4TxRmf3Lme3Y3kCZOJ8a04IGBc+FSligqJWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Je+EWFEq; arc=none smtp.client-ip=209.85.167.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722867914; c=relaxed/simple;
+	bh=zloyoov/nCUc6YZRpcaMArHyWBTyzMCFfjVZFTadpcc=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=inF3H0Js6nrJYGCfudmWuAO3IQaZZrOUqWwGgJJ+J4cxUI+sUXMTeBjuXk0H13QMN6aqqUxHQEn3PbwO/u4/lCwuKQTT7ZzgWd2390NxBQnRE/uDNBtLlvreEQfd8Gv4uiZ1SVfci6PkA2d0xdVjAy6PCZdhV7ifIFTkIOwyvps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gvfxw4qG; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Je+EWFEq"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-52f01b8738dso9952533e87.1;
-        Mon, 05 Aug 2024 05:25:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722860740; x=1723465540; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ODibAriCCYBMir2Y+K6rxvL6CWMqoMJ8J2HVzExd6tg=;
-        b=Je+EWFEqZ1MBRPgg9nvlTEy1IY20urHo7YNoerCLRqAmR4tjHFG0De1SLDYthXz9nh
-         EmcU3dmcw6C7MB9PhfrZIcpvttBoUoVlL1tuqjM2yzUQ1mWu8uJzDsvlajhB3TuxqnaI
-         kX6PKpghYUxzkM+DWkUrwcWd/aFxc5ak5tUDcNQcIr3cI4ki2KcXfWZgdwRDdDcS+FQH
-         63TYDJw6XVe3DwjLj1c0cIz2d1Hk69khAS6fU/2NgmgEZelaNfrvuqUrrL6hYwvc36xw
-         0Wx2YXzVXM7vT3yxImWEVwiI/qv4pL+5Sg/1MJEls5h4ts1HYaKOoZ/G6HB2aDlXPR5L
-         8iCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722860740; x=1723465540;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ODibAriCCYBMir2Y+K6rxvL6CWMqoMJ8J2HVzExd6tg=;
-        b=tpCkt5gwZ+CLdpAPV7ptnq1+e1FhzxSbJ2z78TwrnC/co7VbXWLWmSK7K81+W70MsC
-         zkpWM0k2itcJ+ERLJsvfuBNtSUrA7DIYiaWNW3xjkGmuwCCaCT22DH0B/1CxrjsDI7np
-         gkO0sQxz4XRnWFHlHFIzdphIAqLuz13Ed5e6oahXEn39nPQwl9ePmRgPcjyyRvJQ5Plt
-         LpRXeOc+HUP1fStp+aytDlY0Qba3fKU3TkJzbhy9j7a5Frl4lEwbva90s+wkWGt97xqT
-         6KOe22oJr36K+AOLgELNL+BIzQSzjlCG97v227rhbx+Fbc/fVxi6Fwopi8xUrp22Cbnd
-         QXsw==
-X-Forwarded-Encrypted: i=1; AJvYcCUFlY2feO8EIyxpm7vPd9c9SSk5WyddjWnrzWV0CDZBODC5uVRV9ZFYXHKcWFS7LLKLYHg4kKZM8myDrUNqKxddk4gydixCRLLorqs25mRzdrQ0p///48u7fyq9A0Kp7iJzKpfv4m6AQo7ZTaKktPkBkotVa+UvMNob6ig/8sRV+WVIz+kw
-X-Gm-Message-State: AOJu0Ywdxzu12Mi/xn9Yvh/ZNjy9iD3KuiuoT+xr3gv2jwwLII0taCgu
-	tAJ6wHPHK4vFdnjwwRbsm7/eSl0tdybD3TB6tWB0akalrAqyByJQm0upaw==
-X-Google-Smtp-Source: AGHT+IHKYTLyUlq5cKTn+hicB3zQJ94PwanCSK0swvjV1cQHCdeJJsfITovQjZT6HDu+i2BpIfU0MA==
-X-Received: by 2002:a05:6512:3ba9:b0:52e:6d71:e8f1 with SMTP id 2adb3069b0e04-530bb3b434bmr7985979e87.53.1722860739280;
-        Mon, 05 Aug 2024 05:25:39 -0700 (PDT)
-Received: from mobilestation ([178.176.56.174])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-530bba10dedsm1115827e87.79.2024.08.05.05.25.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Aug 2024 05:25:38 -0700 (PDT)
-Date: Mon, 5 Aug 2024 15:25:35 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko <andy@kernel.org>, Vinod Koul <vkoul@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width
- misconfig
-Message-ID: <rsy7z45nhl74nzvq5a2ij4eeqgzu3htje2xpparxgam7jowo6a@6l75wjh2dqll>
-References: <20240802075100.6475-1-fancer.lancer@gmail.com>
- <CAHp75VcnfrOOC610JxAdTwJv8j1i_Abo72E0h1aqRbrYOWRrZw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gvfxw4qG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1722867912; x=1754403912;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=zloyoov/nCUc6YZRpcaMArHyWBTyzMCFfjVZFTadpcc=;
+  b=gvfxw4qG39QlQ1l5QXCDz3EUk+gLErd0Ya64PBnJyrFtTar19xy4eiQO
+   +8+WKxIvi0bTDnLNBWcSw4INd7NDjH/P9+RCJ0Nd+BGTparEfG4eAHMTU
+   rPptfV5R9aYTB/kA3/OTdaG25zduns3q2rwjofgqrIq3DOa01PrLa8EQt
+   +5PenOlxe/S6b5kML/gMeWT+XJTY88JZFXDrD2H6HRzYLa0J3nzSyi/g/
+   KaUPH7Sdgn3Q1oPdO7V/5cwOkB1xkRry1k+XPbTyCORP0e62Kx8PA6QOi
+   51tscEoA069RxxQkifs71y16CxthotRa3Ct6Rozj/o+6IyUjHh1SA4tVY
+   g==;
+X-CSE-ConnectionGUID: TbFShSS2RAGFY2XAjNjIjw==
+X-CSE-MsgGUID: 3HHMOs1oTkyW6fHFTHKLbQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11155"; a="31494954"
+X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
+   d="scan'208";a="31494954"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:25:12 -0700
+X-CSE-ConnectionGUID: aE42ENqORYadcJBv5iEQcQ==
+X-CSE-MsgGUID: fVg8b/3fR8KMA3xt4KPh2g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,264,1716274800"; 
+   d="scan'208";a="55851614"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2024 07:25:10 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 5 Aug 2024 17:25:06 +0300 (EEST)
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/13] tty: simplify tty_dev_name_to_number() using
+ guard(mutex)
+In-Reply-To: <20240805102046.307511-2-jirislaby@kernel.org>
+Message-ID: <5bafde51-abaf-d367-eb9a-220c1339daca@linux.intel.com>
+References: <20240805102046.307511-1-jirislaby@kernel.org> <20240805102046.307511-2-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75VcnfrOOC610JxAdTwJv8j1i_Abo72E0h1aqRbrYOWRrZw@mail.gmail.com>
+Content-Type: multipart/mixed; boundary="8323328-1197721243-1722867906=:1238"
 
-Hi Andy,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Sat, Aug 03, 2024 at 09:29:54PM +0200, Andy Shevchenko wrote:
-> On Fri, Aug 2, 2024 at 9:51 AM Serge Semin <fancer.lancer@gmail.com> wrote:
-> >
-> > The main goal of this series is to fix the data disappearance in case of
-> > the DW UART handled by the DW AHB DMA engine. The problem happens on a
-> > portion of the data received when the pre-initialized DEV_TO_MEM
-> > DMA-transfer is paused and then disabled. The data just hangs up in the
-> > DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
-> > suspension (see the second commit log for details). On a way to find the
-> > denoted problem fix it was discovered that the driver doesn't verify the
-> > peripheral device address width specified by a client driver, which in its
-> > turn if unsupported or undefined value passed may cause DMA-transfer being
-> > misconfigured. It's fixed in the first patch of the series.
-> >
-> > In addition to that three cleanup patches follow the fixes described above
-> > in order to make the DWC-engine configuration procedure more coherent.
-> > First one simplifies the CTL_LO register setup methods. Second and third
-> > patches simplify the max-burst calculation procedure and unify it with the
-> > rest of the verification methods. Please see the patches log for more
-> > details.
-> >
-> > Final patch is another cleanup which unifies the status variables naming
-> > in the driver.
-> 
-> Acked-by: Andy Shevchenko <andy@kernel.org>
+--8323328-1197721243-1722867906=:1238
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Awesome! Thanks.
+On Mon, 5 Aug 2024, Jiri Slaby (SUSE) wrote:
 
--Serge(y)
+> In tty_dev_name_to_number(), a guard can help to make the code easier to
+> follow. Especially how 0 is returned in the successful case. So use a
+> guard there.
+>=20
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> ---
+>  drivers/tty/tty_io.c | 11 ++++-------
+>  1 file changed, 4 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> index bc9aebcb873f..267682bcfea0 100644
+> --- a/drivers/tty/tty_io.c
+> +++ b/drivers/tty/tty_io.c
+> @@ -350,22 +350,19 @@ int tty_dev_name_to_number(const char *name, dev_t =
+*number)
+>  =09=09return ret;
+> =20
+>  =09prefix_length =3D str - name;
+> -=09mutex_lock(&tty_mutex);
+> +
+> +=09guard(mutex)(&tty_mutex);
+> =20
+>  =09list_for_each_entry(p, &tty_drivers, tty_drivers)
+>  =09=09if (prefix_length =3D=3D strlen(p->name) && strncmp(name,
+>  =09=09=09=09=09p->name, prefix_length) =3D=3D 0) {
+>  =09=09=09if (index < p->num) {
+>  =09=09=09=09*number =3D MKDEV(p->major, p->minor_start + index);
+> -=09=09=09=09goto out;
+> +=09=09=09=09return 0;
+>  =09=09=09}
+>  =09=09}
+> =20
+> -=09/* if here then driver wasn't found */
+> -=09ret =3D -ENODEV;
+> -out:
+> -=09mutex_unlock(&tty_mutex);
+> -=09return ret;
+> +=09return -ENODEV;
+>  }
+>  EXPORT_SYMBOL_GPL(tty_dev_name_to_number);
 
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Should add also #include <linux/cleanup.h>. With that fixed:
+
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
+ i.
+
+--8323328-1197721243-1722867906=:1238--
