@@ -1,134 +1,141 @@
-Received: from sonic304-10.consmr.mail.bf2.yahoo.com (sonic304-10.consmr.mail.bf2.yahoo.com [74.6.128.33])
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3DF33F6
-	for <linux-serial@vger.kernel.org>; Tue,  6 Aug 2024 01:16:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.128.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C87D18732B
+	for <linux-serial@vger.kernel.org>; Tue,  6 Aug 2024 03:41:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722906996; cv=none; b=Q3DZvXnMDH07bFTITveWFCROwpUoDbnVR2oiyHdao80j9bCfogf7q76RGr6+9CbKsjr08egcM3c+az+StM2GykJpRCCgTuyHpBBOQbE66P1vl/4kA04RtR+5Ai+95/x34kVb/yTohc6oDmjZicOJuTQWflsjBBRANo1QDUMT5ds=
+	t=1722915694; cv=none; b=l2mmqKrkv5VuVmsWjuDH/Bg8RPehjMV9k7nl4dAA1jQ48Aic31F2BPPrBfp9L6MQsHQHgyR0LVmNug7PY4Wur7pXhLNMjTRHv4gat3T6cG2vAfNBI3RaCcpM46713KmumEfDCVCBm9hc9j3VdQYVrF7GLvL52fUzMyn98uAecWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722906996; c=relaxed/simple;
-	bh=XAAESQ/NRqwOPXEjRDEoy2Z0JG62kTed/CF0P/AwL3k=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rq7I/oS6u29jKMfS2Uh7vePPsNH2SesGcONYnWWAts05cvK1KaiWAtqU7YvO8VoknsVdlx9vGmJ+CzvD/Ee1scnVaWVUCRiCC9eXK3jZTMaWN3wbIJnd1A/X1ybrBdd87tXTfUAWEtcWT971JSd53wCvt9KmQvozfk6Bfh1M3VQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=mc3OHSHp; arc=none smtp.client-ip=74.6.128.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="mc3OHSHp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1722906987; bh=VWEmzil3zLPDoms9iNFGh+/rwUxsuDE25Z+fgVcmYPw=; h=From:To:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=mc3OHSHps3iO5/IYZvHK5bIbNt7R0k/JMcHM01b3lX9cmBGobiuS+S6VPv97oq/P2rMVRJrUg4prMqZQ79LoaTVLMBFQHlbb2He0i85kuLNN9VR7kEoy8QgLhj7OHk2HYor6QViyBTdizENNDDZAKuwLAdADh9+Uz1se8sanoEX76GoSX0uFTWmoSwPGnAGXkiKRtb+nArn1ABwIQTHqVfLF8G5e5xcuZR8xQYflm/+tArkWi+aHxbvwGAEO1kIyqPdpiFeHaeRjRYJLecFb0/DqxoFs6V9Q4vC9akqCUaXfUPp2Mg94xuywU4NeVBC4Ngf8eUD6CMeLILfGxjV+ug==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1722906987; bh=o0fNOQxetYqMBntDXWseA1nPRsopmpPieZMYnfbsA08=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=CL0FlcIfJgo7LdHo92wBACrTxRDJlNgCdIZ9JQmezsnqZmCP+iyjEjGOgymrDPtG6T8sg/fyMRs1dIMEln72mFolW7o196T/7CCAvuSPeStu/HniTqykTDucpkDLqWVaWXBJnYI0rbCbriVxu+cpeLvn258dK3h+YmK7HYZTCH9sCXiBvfDcLim47m1Qc4pO87BoGlQghh9dHtlYKeljwyhb/ElFBIQguL6t/0Pf0m4aRFKLbStQBa1nV9jKeRKjLPveJbJDp1hRI1JdTyU0pfzNNMLuv8g+kqLJNAgXuiAApdXdL+HBryUiAznM+dzWChRJaTmkoVCdxRJe1X00eQ==
-X-YMail-OSG: KBHqTxcVM1mBmsYWNpUM0NLks.5el8fuNqpdzQV_nQJnL3gtbpezm.FnBL9Rhwq
- 2X7fxb_rvIkPGMv2o1pc6HXZF9wHqIuvtsTWMSebLY0eAjo3hx1.NG48CD5jb15ISkqj34slSRLZ
- cCNmoKBKJbS0VfSTeULsRvTBdXcYyP6YTe6yH.qbMcHUck6tRye0pSd9JrCACKrHkxpOh5P2qjKx
- pWRY0JHLHhJ19TFkEsqURsH.3.n5Os3Sksk0Q6BR03_7I8uzeQhys5bopvc1EZNeqALOw6b4Cvvr
- hUtdBl2z4nY31sWpSuJLaoQqNxzSFz72iaAHwX_lB3FLTnAbuDjUjfGC7pbViD2DODlkQr1BVvW1
- PiaGLPMdDbPUlnrXk2Nu7O2kSLfCTn1TQuhfTxpW.ChFirg08M7kydm9ggX9zqFxziwGQUHZnmSw
- 2zH12E.vM_ZbKssVy3H1fRDBl.CwedmMx_msucGvCpG9YUaJ_8lk5Tik7Hcbylvv6zo01TBbe.bD
- 3WEqaExQO2DNyH9xn2UXKLlRX8QxL_8uslccciwstedv56N6Q_IjwHPC74H0MPvtY7n5GcuX4yjd
- GN_4UtsNBRocsRst1TAQjZxmnz.uuX9grwQx5rIc5Gq__lZZpiFCK7kdVV2EyAkZBmtm7xVXgPvJ
- gUxd_MKu6MO0CHSWA.0G_rjScEQayHjS1oBx7O9m9UYpq07FWhB8BDT1Sy1JPaML6KuCkesz32OK
- C0zYkXVZdYwyK0HBq6U5cPEWhCfhuGT3uDxM8YccJHV2ZIh6TmymHB5y0pmO.tpDaOa.N2NW29tD
- q2i606U49eLT4PKQEuieqwS3JuFI7H3hgRj3oxiGvf.EAng5izYdPOwFaoBDf73slFClWDZOhW9M
- 0fuCOL56gKgVnR6vJk_gsIJR8KAWo1ZDWqYwxXZ6epxoBBIJM9QP94YZ_s1M5GCYkJ9GJ_b9KiZQ
- 7eRAluiGHcJBUMOKesS5JAAVTk3In_LUG0W_PnPzSveXCuek83kpSPY7NhjhRD_1PSh1asO4edqr
- HRiEWAHOdfX5VIwy2mY5556vqo12bE_YaNrxiagLN91VtqFNCHgq6LhqKO.GmPIqXwkaSOqcvG3I
- l1Bgf5bF7DqKlt5fOVONUuN7Kz1I9ijkNHa1S0qgOVVZZVUgu8fRCn34BkUph2Y9qx7TcYR9aUIe
- g6FKErZtu_1sbB8w2Hwc9yefnUNWj5nm4MfDUAHpKKL4VFIHITqcD4RgjCrDo_4AIf3lqYS8InV7
- mr5HlFL5t8y.CEs.IDLPgYRkYifKr7YZhXHGkAjoqPaWPqaTACYrahQLhirVZPkazyyUBv9O1jUV
- 2A6RPyVkHVOXyizEtBuvy73UR2El5gQ_HXvpm5L7HK3k5GBERyo8hua5L16IFenTGy4dmB9YsKRu
- AALPWUpK9Hg7yRFoU8Fvrp5FwJVxcpDgd_Zz1EtTvAHUzG0ipCZd381UWAnzwsZwim1k5kxIzUMt
- md8L4m6b7fC1enhudjgz6MgUcqcpUtfrQPj9fpjW0yb4YllFlwp9G3cN_rUH9T0dCSVfChXSLDXB
- p_iUG8847hHWIAmEpY3Nn4Iahgs_LuWfTNeC1IkE9afzRUDCKNqDOVIXOi9indC.4VoECiQIXdiq
- 1JVmFOHCutKEVX4nBEltusivGJ18WP4dCtt9u6MOJ8_d41CkrQdqi5BNEMM6CXp8lxSroZEOm0md
- 1RGry3OdNdeaS55BVK5I4uRzJ_xEZ658DG9v9iUBsRQS992Rtq1GW0nc7PJg7Gon6YBqzU1YpkCw
- Rtq60Wvl57WSzgHV5zBDCci3NQwzA2wn1En60kxcN90EQtVOlYYZQT4fsqdzQT1A_KkAXjjAGb2Z
- Rtx1wVLMoxWJY3TDh4jqe0ll0AIdEVn8xVdOv4UkQGtLzdR2QZjJ3GfmVReFk0bkqVrYvYBd3hzl
- ind79.Hm40dYThnK2ULTfNf_Q17d6N3C4UToLfDneZ0QnGl7ByTe.b8OoWP2Vj3XP8mGgboBsRJx
- U5NvZI3GAl5vsZhUT8nrmntRwHVoC9X5gjr77rEK6yRjzpkGwrB0ADz9t0dZguIa2xHNCIDnfoKM
- EQTYQJ2y8tbEFY9Q35xsaR022LgBhhOSDRtPPFec32VNi3mrjNErG_hJPY_.8LSD2j4uZcvw7HvA
- ZGqnw8Bg707hNGJruRTOxrZ69toXGHSXy_Xi80.FjaSRnLb_kEkDk57dnJFvhkCW6bfDCyj.7h6n
- _dJ5q6_SoJnNngGrhVV_BjWs7r8aaYDRPzHQMFZWgYTyI_ZgZzZptu3L2g.DQfWKC7BI-
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: aeb93577-cee5-4bd8-a652-82803e05b9b8
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.bf2.yahoo.com with HTTP; Tue, 6 Aug 2024 01:16:27 +0000
-Received: by hermes--production-bf1-774ddfff8-6qj8v (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID edb53c5f1941843d2e18f3f890bdd8f5;
-          Tue, 06 Aug 2024 01:16:21 +0000 (UTC)
-From: nerdopolis <bluescreen_avenger@verizon.net>
-To: linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, bluescreen_avenger@verizon.net
-Subject: Re: /dev/ttynull and VT-less kernels on Desktop
-Date: Mon, 05 Aug 2024 21:16:21 -0400
-Message-ID: <24283318.ouqheUzb2q@nerdopolis2>
-In-Reply-To: <2708910.X9hSmTKtgW@nerdopolis2>
-References: <2708910.X9hSmTKtgW.ref@nerdopolis2> <2708910.X9hSmTKtgW@nerdopolis2>
+	s=arc-20240116; t=1722915694; c=relaxed/simple;
+	bh=cfJnQiGRiLNZZXQ0U5w+PwTLBxMbYLy4nYGq0lhTmtA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=pkKyo+OWk3qsUCRPF3tOQWHK4lbmonBfQGVxLKhsnvCl/uTLcQ56Unp6ksLYJ6jRCsyaKppnXyAotdtin/ZKtOFxdO7Wf2Kt+TS33VpUCIIXYZvg5nDx8Qdc/UJ/4WtY6lRzWyqa4eYNPg0cwpDiE9aclkapecPwNoGNUyAGcVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-81fb21a0e41so10231039f.2
+        for <linux-serial@vger.kernel.org>; Mon, 05 Aug 2024 20:41:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722915688; x=1723520488;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+JgjY7BMDnfPKZwhOPFpQUnmBA2Ec1+1za4jsL4wAJQ=;
+        b=aUflgFKdtOczQw0v9zZmRpZrGNBgI9zlQCS9ecvZdBHCqBDoVsu/xJQc9u6aU7dsx4
+         WpfXELfpfqmNrFR0ABzxZgM3MDARwNQFuUUAkvfEdIQPpSz3ZIVIc11rJdcTyXtZs+5R
+         qC9cs41FP0ijVMqLyTqhHRBB3UTYiFzoi/PlIgOPUdeuPSkwDVuwL4gXHD4xCJbASsB4
+         tec+rvachlrNobjohWCP4BktdRLM9JO2vfaGv6V5DkZm21eeOwFaZG0PhTt+rj/Sty71
+         u2BFZsQTzeuFSstoKENTEa+GN33JGojg7DQ4nHHDBP7BKtwvhCCDN1/eMy8+3MiovKU6
+         80sw==
+X-Forwarded-Encrypted: i=1; AJvYcCW6iEL9hf8VKN3Y7aGYIW0t1CxEEGGmo+UzPO1ftszrjlK+fj8LR8NcGhteSfX/5Joem9pvg3N/oNusQADYjm/5kWmyiA3zKeOmwo4w
+X-Gm-Message-State: AOJu0YyszJLdtwnmFsbvtoB1ERH1YHA4jJhLyshQjU25CzsWnkXA5oIB
+	Ysvy3/XelUCNileoXXFXdNGFdmBQhMbDGrPg6CcVFgh9gPm7OlV15wRxBontnnFf0Xv7ngjTA8d
+	nKD/YAX+tCwcWacHf72G9W5jb/7xTWlu+dl9EOzWm03A0V3cVmoedifg=
+X-Google-Smtp-Source: AGHT+IHVoYK2/OVOYfaCo3woMIImP2h9pp6CXglXCHeHvltXb/LLj4+pMMWRpDNkZbvLbobZk6o6fEUrr3wCaF6/0T5/FXmYvXI4
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Mailer: WebService/1.1.22544 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+X-Received: by 2002:a05:6638:8911:b0:4c2:7a26:278b with SMTP id
+ 8926c6da1cb9f-4c8d56af0b0mr362481173.5.1722915688467; Mon, 05 Aug 2024
+ 20:41:28 -0700 (PDT)
+Date: Mon, 05 Aug 2024 20:41:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000096e011061efb915b@google.com>
+Subject: [syzbot] [serial?] KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+From: syzbot <syzbot+290abdcd4f509377a0eb@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Sunday, August 4, 2024 5:45:07 PM EDT nerdopolis wrote:
-> Hi
-> 
-> I have been doing some testing on VT-less desktops. I brought up an issue with
-> how systemd was not logging to /dev/console because isatty() was failing (in a
-> thread last month which I kind of bungled by accidentally sending the first
-> message with rich text enabled by accident) I solved that issue though. As
-> disabling the VT console causes the default console to /dev/ttyS0 and the 
-> isatty() calls on it were returning false.
-> 
-> I have found out that this issue actually already has an existing solution in
-> the ttynull driver. After enabling it, and then adding console=ttynull to the
-> kernel command line, this allows isatty() to succeed on VT-less systems, and
-> now systemd is able to correctly log its status messages to the kernel console
-> on VT-less systems, without needing anything connected to /dev/ttyS0
-> 
-> However I have two questions:
-> 
-> 1. Is there a build option to make it prioritize /dev/ttynull over /dev/ttyS0 ?
-> 
->    It would probably be neeed so that distributions don't have to worry about
->    the logistics of adding that to everyone's GRUB_CMDLINE_LINUX_DEFAULT come
->    the eventual day the decide to go VT-less during its upgrade process.
-> 
-> 2. Is there a good way for the userspace to know that /dev/ttynull is primary?
-> 
-Hi
+Hello,
 
-So I think I figured this part out, while ttynull doesn't make its way into the
-/sys/devices/virtual/tty/console/active file, it is reported in /proc/consoles
-so I will read from there, seems like the primary console is always the first
-line, so this part is solved
+syzbot found the following issue on:
 
-Thanks
->    "ttynull" doesn't seem to appear in /sys/devices/virtual/tty/console/active
->    when it is active. Which seems like it could make sense, (as in a check if
->    it is empty) however if I boot with "console=ttyS0 console=ttynull", "ttyS0"
->    appears in the file, but if I boot with say "console=tty0 console=ttyS0",
->    they both appear in the file. It would be nice if in the first case it would
->    report "ttyS0 ttynull".
-> 
->    With Plymouth, when the primary console is /dev/ttyS0 instead of /dev/tty0
->    it defaults to serial logging instead of showing a graphical splash, so now
->    if you want a graphical splash on a VT-less system, you have to also specify
->    "plymouth.graphical" on the kernel command line. If it could see "ttynull"
->    in the end of the file, distributions that go VT-less can also just enable
->    "ttynull" as the default console, and Plymouth could use that to
->    differentiate between VT-less desktop systems, or systems that actually want
->    serial logging, so they don't have to change GRUB_CMDLINE_LINUX_DEFAULT.
-> 
-> Thanks
-> 
-> 
-> 
-> 
-> 
+HEAD commit:    17712b7ea075 Merge tag 'io_uring-6.11-20240802' of git://g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10bc6e75980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9d6059ad10dde6fd
+dashboard link: https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/8ab4fb08b298/disk-17712b7e.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/22441c38ffc1/vmlinux-17712b7e.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/faf4575a6197/bzImage-17712b7e.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+290abdcd4f509377a0eb@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in n_tty_lookahead_flow_ctrl+0x2cd/0x300 drivers/tty/n_tty.c:1516
+ n_tty_lookahead_flow_ctrl+0x2cd/0x300 drivers/tty/n_tty.c:1516
+ tty_port_default_lookahead_buf+0x144/0x210 drivers/tty/tty_port.c:59
+ lookahead_bufs drivers/tty/tty_buffer.c:428 [inline]
+ flush_to_ldisc+0x8ec/0xdb0 drivers/tty/tty_buffer.c:498
+ process_one_work kernel/workqueue.c:3231 [inline]
+ process_scheduled_works+0xae0/0x1c40 kernel/workqueue.c:3312
+ worker_thread+0xea5/0x1520 kernel/workqueue.c:3390
+ kthread+0x3dd/0x540 kernel/kthread.c:389
+ ret_from_fork+0x6d/0x90 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slub.c:3994 [inline]
+ slab_alloc_node mm/slub.c:4037 [inline]
+ __do_kmalloc_node mm/slub.c:4157 [inline]
+ __kmalloc_noprof+0x661/0xf30 mm/slub.c:4170
+ kmalloc_noprof include/linux/slab.h:685 [inline]
+ tty_buffer_alloc drivers/tty/tty_buffer.c:180 [inline]
+ __tty_buffer_request_room+0x36e/0x6d0 drivers/tty/tty_buffer.c:273
+ __tty_insert_flip_string_flags+0x140/0x570 drivers/tty/tty_buffer.c:309
+ tty_insert_flip_char include/linux/tty_flip.h:77 [inline]
+ uart_insert_char+0x39e/0xa10 drivers/tty/serial/serial_core.c:3560
+ serial8250_read_char+0x1a7/0x5d0 drivers/tty/serial/8250/8250_port.c:1743
+ serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1760 [inline]
+ serial8250_handle_irq+0x77a/0xb80 drivers/tty/serial/8250/8250_port.c:1924
+ serial8250_default_handle_irq+0x120/0x2b0 drivers/tty/serial/8250/8250_port.c:1949
+ serial8250_interrupt+0xc5/0x360 drivers/tty/serial/8250/8250_core.c:86
+ __handle_irq_event_percpu+0x118/0xca0 kernel/irq/handle.c:158
+ handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+ handle_irq_event+0xef/0x2c0 kernel/irq/handle.c:210
+ handle_edge_irq+0x340/0xfb0 kernel/irq/chip.c:831
+ generic_handle_irq_desc include/linux/irqdesc.h:173 [inline]
+ handle_irq arch/x86/kernel/irq.c:247 [inline]
+ call_irq_handler arch/x86/kernel/irq.c:259 [inline]
+ __common_interrupt+0x97/0x1f0 arch/x86/kernel/irq.c:285
+ common_interrupt+0x8f/0xa0 arch/x86/kernel/irq.c:278
+ asm_common_interrupt+0x2b/0x40 arch/x86/include/asm/idtentry.h:693
+
+CPU: 0 UID: 0 PID: 3456 Comm: kworker/u8:20 Not tainted 6.11.0-rc1-syzkaller-00272-g17712b7ea075 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/27/2024
+Workqueue: events_unbound flush_to_ldisc
+=====================================================
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
