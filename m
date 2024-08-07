@@ -1,112 +1,375 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23EDD12C465
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 18:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288B613E409;
+	Wed,  7 Aug 2024 21:32:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723056936; cv=none; b=ExLEV9S8W+yrIna+skkGXY+k4SBrE54+sorOCnMVTwZp73/iyoKy1T+k/ad/nWUkNw56ljqAnb3rzqPqsus8SHPN3N/IiM5w56gN5TwCqjiQYFGA49fdBfxG9RvTEaKBTbtYJy7UKB30PL2EVULEmHKpHj1HmDv8KglgM12A47k=
+	t=1723066329; cv=none; b=U1GmBZJjc9ZMrm4QMGzdGSeYwn9GwtLctdHuKMIsK14aREwUeXl6lmWfYMaKcoNAF5zdDnjGIJT45hw4zdmLPCCLCDt9UreaWDzgN2+NweL3WsSmWOdLb2FhEIXJP1HGUzH/HhSF2ut4lK1e0PckRfcEU6urgh34K3sa6R0gRds=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723056936; c=relaxed/simple;
-	bh=QzhlHFhB1FlhGEk8gZPrNnM4az2SdvOjtcQi634hGIg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ZAadvCTfKMbOhLReDmOU4mSZtGmAi8Wv6qW7kBFbm1C0EiUHw3j8Me1mJ+AFscC/+NoeKhZsLPiMOuyizql6Ff3RVh6g69n59JNkdfZsfBcY681vlsbRitTv1cM0Wetpjw6RJdlCV5Fpb+ZyQjR3f0Lj9L3M3yWMuQg1u8Eu4A0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=K4ybcO5w; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1723066329; c=relaxed/simple;
+	bh=8kJMBGuhbi6C1yRZ2kdW70Ua+3Dz3NGZRCqt9HHLF/s=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:Content-Type:
+	 MIME-Version:References; b=HgCqzUN6yB3fnMdaP23gu8r6em2y7K5HZQw/ATGUbKFJF8t8L6G7Rlxgf9dgnj04EsRrX839qa/RcwgAeQU5fX9mIbS2ZuXC+d0d2Tuc1YZIXRPPKXO9fq7Su/6qS8Fm8ixcyca4Ji8y0YbRtWpDdIoLoWcbZzSz1KHRywbS6bQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=MeWSm2qR; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="K4ybcO5w"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-70d18112b60so107719b3a.1
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 11:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723056934; x=1723661734; darn=vger.kernel.org;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFMK304Cg4PQj4mJQ9LEOTK8TkHQhLXzoojwOreQ/Ok=;
-        b=K4ybcO5wEPjvJSXg2hs3VvuZiX6MvQowzIXetYqdlb1poo3K6RH9nAsVOajDuQwHgX
-         epKi1wdjKD0DG5vpiaxzQ06eqUfJfeSgyC1quEbnSWe6zweSR8z+tdO5KPPe+y9QYbpi
-         0adWKjOaNgagHUivC7i+ujbZ7r0A/c0TFzxAbARARwkj9t9G04DVC94+fPrAdI6GPt7J
-         8gqramJqlZ6R4scpq+rk9+8WWFptzm3fDDF3vGpQzsQ7VB8CVZgQqiuMu7H1nsQvR7gY
-         DJu/1zZwCU+xCN2Rc5eYtyJuUZFAPBWYXb7+kMTWl9LAb+hPVSLBFNpR/wobcZXLYJ3b
-         89zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723056934; x=1723661734;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZFMK304Cg4PQj4mJQ9LEOTK8TkHQhLXzoojwOreQ/Ok=;
-        b=Jh3X3RVqlZUhK1WBaU/fveMFqgz35f35DFx3vb8Kq65GKhevgPQmzjEaQMuLDfikDD
-         E34ly7xE2wQgbk3b9XxMAWj1XoC0kLhPReDDWNIyGOwIvcrvrX9YMIVJVbKA79O731mU
-         09kdY78NjngkjCdf34kF9gy4eYYOZlBm8M7vZKnFIVsWzzRUIANiBiAV0GOMpU14TRKz
-         dcd0PZYnhvMo0565vADk933VNEJ7P54+9g6kRM1iTatsAEDByxnOECTEJ4jg70j+m8v6
-         GJU6ftJ6CJhC+wkI2/1ZAwZxCic2LoD97uKxwV0y4EPnCPodK/e2abSaT9MPeouyHsJv
-         WH9A==
-X-Forwarded-Encrypted: i=1; AJvYcCV7VSr+NdDbJOqOZdiybG7ImmUn8iKtxmNdTME3dpRHX+GPIES7/OjrgIoY4Q8YCDbj3AixcuWL7kX3atg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/oYX3boy3+QwMrgjVqIULTWVOcuNX37e1OaRZ+2Cr0ifBSF/+
-	ceUEw1mqxoUgv0Cts6ylADnPtc0L3bu+BrVbQDjFmy83xk/hGS544ovFPUDCkmQA66kNnHddyMy
-	jKOw=
-X-Google-Smtp-Source: AGHT+IEYK846WIyyA851lwFO0Thrl84W8t0gbyPKmjyyprzOtO6+L8KKdMUAaabzXjldmTOqaK+sQQ==
-X-Received: by 2002:a05:6a00:6f5b:b0:704:2516:8d17 with SMTP id d2e1a72fcca58-710bc85f5e3mr5133969b3a.8.1723056934390;
-        Wed, 07 Aug 2024 11:55:34 -0700 (PDT)
-Received: from localhost ([71.212.170.185])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7106ece4967sm8678435b3a.138.2024.08.07.11.55.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 11:55:33 -0700 (PDT)
-From: Kevin Hilman <khilman@baylibre.com>
-To: Markus Schneider-Pargmann <msp@baylibre.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Markus Schneider-Pargmann
- <msp@baylibre.com>, Tony Lindgren <tony@atomide.com>, Vignesh Raghavendra
- <vigneshr@ti.com>, Ronald Wahl <ronald.wahl@raritan.com>, Uwe =?utf-8?Q?K?=
- =?utf-8?Q?leine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Thomas Richard
- <thomas.richard@bootlin.com>, Thomas Gleixner <tglx@linutronix.de>, Udit
- Kumar <u-kumar1@ti.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>
-Cc: Vibhore Vardhan <vibhore@ti.com>, Dhruva Gole <d-gole@ti.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 0/5] serial: 8250: omap: Add am62 wakeup support
-In-Reply-To: <20240807141227.1093006-1-msp@baylibre.com>
-References: <20240807141227.1093006-1-msp@baylibre.com>
-Date: Wed, 07 Aug 2024 11:55:33 -0700
-Message-ID: <7hed70kvru.fsf@baylibre.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MeWSm2qR"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240807213202euoutp02a148f524a7a657e987c9d24ef212c670~pj7EBSIgj0460004600euoutp02Y;
+	Wed,  7 Aug 2024 21:32:02 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240807213202euoutp02a148f524a7a657e987c9d24ef212c670~pj7EBSIgj0460004600euoutp02Y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1723066322;
+	bh=SFKBfT6GUZl83M60qgQBG2pBPiHhOZwEfwfqr8ok2kY=;
+	h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+	b=MeWSm2qRSd1Fufbn9AwnijqClGM6HYo+ffeudNyv3fE4Z7mAw+ulmlU9Y86fE/CQ4
+	 vROriG+42NxG8zXvz3ZQ/CpNHsakGu2h/GbTdTMWpHqh4VzC+CyOpEOBir2fdshyZX
+	 WoyuA3F/Vp9kAJw4VdEJj1ct+lFej8N+23J0kIbI=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20240807213202eucas1p2f6ac949d7de3743e4ba9217c4664728c~pj7DgXaa60702707027eucas1p2A;
+	Wed,  7 Aug 2024 21:32:02 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id AB.05.09875.1D7E3B66; Wed,  7
+	Aug 2024 22:32:01 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20240807213201eucas1p25a7f59876849cf9b6d3a755ceabd1417~pj7CYYtZQ0702707027eucas1p2-;
+	Wed,  7 Aug 2024 21:32:01 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240807213201eusmtrp19bba0eeb01c32e1eef6345cc65aa1dd3~pj7CWDOwv0518405184eusmtrp1X;
+	Wed,  7 Aug 2024 21:32:01 +0000 (GMT)
+X-AuditID: cbfec7f4-11bff70000002693-19-66b3e7d1e8d9
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id BF.C8.08810.0D7E3B66; Wed,  7
+	Aug 2024 22:32:00 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20240807213200eusmtip2ec18a8f070e49ba131c0975c2e5ac1d0~pj7B8_snM3109031090eusmtip2I;
+	Wed,  7 Aug 2024 21:32:00 +0000 (GMT)
+Received: from CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348) by
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348) with Microsoft SMTP
+	Server (TLS) id 15.0.1497.2; Wed, 7 Aug 2024 22:31:59 +0100
+Received: from CAMSVWEXC02.scsc.local ([::1]) by CAMSVWEXC02.scsc.local
+	([fe80::3c08:6c51:fa0a:6384%13]) with mapi id 15.00.1497.012; Wed, 7 Aug
+	2024 22:31:59 +0100
+From: Daniel Gomez <da.gomez@samsung.com>
+To: Nicolas Schier <nicolas@fjasle.eu>
+CC: Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor
+	<nathan@kernel.org>, Lucas De Marchi <lucas.demarchi@intel.com>,
+	=?iso-8859-1?Q?Thomas_Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, Maarten Lankhorst
+	<maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>, William Hubbs <w.d.hubbs@gmail.com>, "Chris
+ Brannon" <chris@the-brannons.com>, Kirk Reiser <kirk@reisers.ca>, "Samuel
+ Thibault" <samuel.thibault@ens-lyon.org>, Paul Moore <paul@paul-moore.com>,
+	Stephen Smalley <stephen.smalley.work@gmail.com>, Ondrej Mosnacek
+	<omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
+	Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton
+	<oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, Suzuki K
+	Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, "Bill
+ Wendling" <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"speakup@linux-speakup.org" <speakup@linux-speakup.org>,
+	"selinux@vger.kernel.org" <selinux@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "kvmarm@lists.linux.dev"
+	<kvmarm@lists.linux.dev>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "llvm@lists.linux.dev"
+	<llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, "Daniel Gomez
+ (Samsung)" <d+samsung@kruces.com>, "gost.dev@samsung.com"
+	<gost.dev@samsung.com>
+Subject: Re: [PATCH 03/12] file2alias: fix uuid_t definitions for macos
+Thread-Topic: [PATCH 03/12] file2alias: fix uuid_t definitions for macos
+Thread-Index: AQHa6FXabt2jyI9bkUi8lg+DWdZvjrIb3BUAgABk8gA=
+Date: Wed, 7 Aug 2024 21:31:59 +0000
+Message-ID: <w7iwghwyhrad4xkfnf3ljit2apvttnbdcgqe7om6spsc7bgzew@cdqc4mb2r5cr>
+In-Reply-To: <20240807-sexy-roadrunner-of-acceptance-a84bbf@lindesnes>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <F9969BDA2B2AF34C879C0F93942F311A@scsc.local>
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Brightmail-Tracker: H4sIAAAAAAAAA02TazCcZxTH+7y3XdKdvEjrSZrbbKXaCAlpedJpO52p1tuLpOqDkY6pHV5k
+	yq7sEkVnqoJ2o8YqinVdJuuakrWRdVsTYmWbqDaMS5cSNhJ3Ek0QpdZuOr79znPO//8/58PD
+	xW3TOfu454RRrFgoCOdT1kSDbrXH+e6D+pATfYfRrYFSDC0ofwJIV/UQR82bIzjabMjAUd8/
+	CxS6WFZLoZX6hxga1ZZjaL5wP/qluoxCRX/qCTSt7iCQaqKfROtNGgz1NhVQ6E5ZGgcZs9oo
+	dH9CSSHF0jUC3RsbJFFjgZ5ErbW9FFL1PiZRilRJoh8q71NoUbaJocnWWyTKXp2l0Jysk4MM
+	P+cQqE3ez0EVKzkA9XTpOKhB0w3Qg55MgPIMBoBmNFum6tkMEpWmeKCk4bfQ0OU6zvtHmZqi
+	GsC06LoppvVJCcE0tddTTKN8hMOUqKKZpJtzJFPWMoUxqiopxRRJizBmM22MZG5ulnIYRUI2
+	zhTpfZi2whoOM5rahX0Oz1q/E8yGn7vAio+/F2gd1taUiUfWnf2m6sYalQD+9rwErLiQfhNO
+	KOfxS8Caa0tXADgmu2oplgHMl41YiscA9lX3g+eSMXk7ZW6UA9g5mYT9P9WfKrN0bgM4LVXj
+	Jsm28+TQXhNT9BtQq1dxTLyHfg2uLyVuC3BasxuWKFK2BXa0F7zRnoibhxhYpjAAM78NmzVt
+	mIkJ2gGuDa+QJubR3lCTMbD1zuVa0R/Bxj4n0zOgD8DxyrXtLJy2h38ZizHzCTawNL8FN/PL
+	cKPpHmXmY7B7wGg58wS8dllLmJkPCwfzcLOPCxzMzqLMfAr+MaCxsBNUKmZw8zo2UJ9nJEx3
+	QTrxRdiTUUWajTxhX9qihe3gdJeaIwPH5Dv2k+/IkO/IkO/IkO/IKAFkFbBnoyURoazETcjG
+	uEgEEZJoYahLkChCBbb+zO2NrmUNKJ9ecmkHGBe0A8jF+Xt4F/1UIba8YEFsHCsWfSWODmcl
+	7eAVLsG35x0JPsTa0qGCKPZrlo1kxc+7GNdqXwJ2WqovDInP9XOdHzo5tZ4cuNACltVO3W4z
+	OUZfx7lYZbr2uzAmPqa0xLGn47xj8cicNissoHx0UlqjYitlnmlPjbucDtscP+/qLuFHRhGz
+	Y18eWU3x+dQ5teGg6koQjuo8n/B+33XygsHX78on8GpnQG0O7/rUmQm74EH/M6fhbm+yIGLv
+	3X8/8D946l27j4Xuvtqnry8mb+Q1uIocwiM93EdnH7HJNePeHSKv78NFAc9ikxLiGpPi8gU5
+	vw7zxl/67c71lsxiWzdv2hk0Dwm8DrwQFJgu/db/1ZhcTPcsPkPxqDn3CyqiQuQUlmLQKtxH
+	oz5UVyf8uP8zD6FPtc7hkJBPSMIErkdxsUTwH14Ze1KiBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0yTVxiAd75biwnhs8I4I6BLY8xQLJTrwaHOIexzmZvGLSRshHVQQbmU
+	tWVO/wwRkctAqmClSqEgINgNKErKtVLkFmUwYcBAoQIqoow1TEcZowM+lvDvOXnf572c5OXi
+	vKscJ+6JeLlYGi+K5VObiPvLnWO7+57XHvc4Py5AXUPFGJor+xGgjsppHDVaH+PIWqfA0cDr
+	OQqdK6mi0ELtNIbGW8ox9EeBM7pyq4RC6l+7CTRzu41AuslBEi016DHU33CdQg9KsjhoKtdA
+	oaeTZRTSmO8Q6IlpmET117tJ1FzVTyFd/zyJUtPLSHSh4imF/syxYuhZcxeJ8iyvKDSb085B
+	o5eUBDKoBjno5oISoN7ODg6q0/cA9Lz3MkD5o6MAvdSvFL39SkGi4lQ/lPLIB/1eWs35YCej
+	VWsB09TRQzHNb4oIpsFYSzH1qsccpkiXyKTcmyWZkqYXGKOrTKcYdboaY6xZJpK5Zy3mMJqk
+	PJxRdx9lDAVaDjOe2YkdgaGCAKkkUS5+N1oik+/lfylEngKhPxJ4evsLhF5+YXs8ffju+wIi
+	xbEnvhNL3fd9LYg2NFzGE6pDv69sXaSSwNjBDGDDhbQ3NKmMVAbYxOXRpQBq2qcINuAMa/76
+	jWR5C1wazKBWmUebAVywuLLCfQDPDygJ9nETwMEy45pN0a6wpVvHWWV7egdcMievtcBpvR1M
+	+TcTrAa20B/BVmMyziYxsEQzCljeAxv1BmyVCXo7XHy0sDaGLX0Y6hVDGNtNicGHhakrApdr
+	QwfD+oFdqzmAdoETFYtrjXHaEY5MFWLsCjS80dSLs+wAX0wur6/mBnuGpgDLHvBOacv6+nxY
+	MJyPs3UEcDgvl2LZH/YN6dd5FyzTvMTZ2TbD7vwpIgc4qza0Vm3QVRt01QZdtUEvAmQlsBcn
+	yuKi4mRCgUwUJ0uMjxJESOJ0YOVE6jostXqgnjELjADjAiOAXJxvb3suRHecZxspOn1GLJWE
+	SxNjxTIj8Fn5OwXu5BAhWbmxeHm40NfDR+jt6+/h4+/rxXe0PZSQJuLRUSK5OEYsThBL//cw
+	ro1TEnb1gp+5Hck/PqOMnLck+5Zp1fOScL71C7rQvnX6rsZkuJXaln3FxeGHEebDvsPtJ61k
+	MD0ymmBqe5DZOTNW83PMdsGE+wFFaH1n5FsBXnAx2q3oYsexi+npP0VoLMF7Z5bkB/IP+b53
+	yq5mdnDS81qa3evNhZb0XJd2hcdR3udfFeNB5ccCmoK1fW7X2qqdjbaRBU/KBd/M7Q/8JCwQ
+	++xGILl/iDoSpDIndhLu4W93nH6/4OREyXjI1NmY5S7w7O9sVx+LS5bxzadb00xVeo5fW26s
+	SRsoPKujhN9uvWt4J7SR/Cd0XLm74qF3UYZ4RyQRcGpbZdA2ZUjLL1iYY132QT4hixYJd+JS
+	meg/iT7qfqsEAAA=
+X-CMS-MailID: 20240807213201eucas1p25a7f59876849cf9b6d3a755ceabd1417
+X-Msg-Generator: CA
+X-RootMTR: 20240807153106eucas1p1d4933e0313419b343e6de66ea84205f8
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240807153106eucas1p1d4933e0313419b343e6de66ea84205f8
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
+	<20240807-macos-build-support-v1-3-4cd1ded85694@samsung.com>
+	<CGME20240807153106eucas1p1d4933e0313419b343e6de66ea84205f8@eucas1p1.samsung.com>
+	<20240807-sexy-roadrunner-of-acceptance-a84bbf@lindesnes>
 
-Markus Schneider-Pargmann <msp@baylibre.com> writes:
+On Wed, Aug 07, 2024 at 05:30:40PM GMT, Nicolas Schier wrote:
+> On Wed, Aug 07, 2024 at 01:09:17AM +0200, Daniel Gomez via B4 Relay wrote=
+:
+> > From: Daniel Gomez <da.gomez@samsung.com>
+> >=20
+> > The uuid_t struct defined in sys/types.h on macOS hosts conflicts with
+> > the one defined in file2alias, resulting in the typedef redefinition
+> > error below. To resolve this conflict, redefine the uuid_t specifically
+> > for macOS hosts.
+> >=20
+> > Error:
+> >   HOSTCC  scripts/mod/file2alias.o scripts/mod/file2alias.c:45:3:
+> > error: typedef redefinition with different types ('struct uuid_t' vs
+> > '__darwin_uuid_t' (aka 'unsigned char[16]'))    45 | } uuid_t;       |
+> > ^
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    sys/_types/_uuid_t.h:31:25: note: previous definition is here 31 |
+> >    typedef __darwin_uuid_t uuid_t;    |                         ^
+> > scripts/mod/file2alias.c:1354:7: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1354 |
+> >  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1354:19: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1354 |
+> >  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1354:31: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1354 |
+> >  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1354:43: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1354 |
+> >  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1354:55: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1354 |
+> >  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1355:7: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1355 |
+> >  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1355:19: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1355 |
+> >  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1355:31: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1355 |
+> >  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1355:43: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1355 |
+> >  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1355:55: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1355 |
+> >  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1356:7: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1356 |
+> >  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      =
+|
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1356:20: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1356 |
+> >  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      =
+|
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1356:33: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1356 |
+> >  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      =
+|
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1356:46: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1356 |
+> >  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      =
+|
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1356:59: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1356 |
+> >  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      =
+|
+> >  ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > scripts/mod/file2alias.c:1357:7: error: member reference base
+> >  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+> >  'unsigned char[16]') is not a structure or union 1357 |
+> >  uuid->b[15]);      |                 ~~~~^ ~
+> > /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+> >    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+> >    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+> >    |                                                        ^~~~~~~~~~~
+> > 17 errors generated.
+> >=20
+> > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> > ---
+> >  scripts/mod/file2alias.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >=20
+> > diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+> > index 99dce93a4188..ab743f6d60ef 100644
+> > --- a/scripts/mod/file2alias.c
+> > +++ b/scripts/mod/file2alias.c
+> > @@ -11,6 +11,9 @@
+> >   */
+> > =20
+> >  #include "modpost.h"
+> > +#ifdef __APPLE__
+> > +#define uuid_t sys_uuid_t
+> > +#endif
+> >  #include "devicetable-offsets.h"
+> > =20
+> >  /* We use the ELF typedefs for kernel_ulong_t but bite the bullet and
+> >=20
+>=20
+> Have you tried to incorporate something like
+>=20
+>   HOST_EXTRACFLAGS_file2alias.o +=3D -D_UUID_T -D__GETHOSTUUID_H
 
-> v2
-> --
->
-> In Version 2 I removed the Partial-IO specific patches as these can't be
-> tested due to power issues in Partial-IO on am62-lp-sk and similar
-> boards.
->
-> I added a patch to add DT 'wakeup-source' support.
->
-> Series
-> ------
->
-> To support wakeup from several low power modes on am62, don't always
-> enable device wakeup. Instead only set it to wakeup capable. A
-> devicetree property 'wakeup-source' can be used to enable wakeup. The
-> user is also able to control if wakeup is enabled through sysfs.
+Thank you for the suggestion. It worked after including the following line =
+in
+the Makefile:
 
-For my low-power constraints series[1], it's also important to not have
-the UART wakeups unconditionally enabled, so I like the defaults
-proposed in this series.  Thanks!
+HOSTCFLAGS_file2alias.o +=3D -D_UUID_T -D__GETHOSTUUID_H
 
-I tested on k3-am62a7-sk along with my constraints changes and all is well.
-
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Tested-by: Kevin Hilman <khilman@baylibre.com>
-
-Kevin
-
-[1] https://lore.kernel.org/all/20240805-lpm-v6-10-constraints-pmdomain-v1-0-d186b68ded4c@baylibre.com/
+>=20
+> for MacOS-based builds into scripts/mod/Makefile (cp. [1])?
+>=20
+> I think it would be nice to keep cross-os build dependencies in
+> Makefiles as far as possible.
+>=20
+> Kind regards,
+> Nicolas
+>=20
+>=20
+> [1]: https://protect2.fireeye.com/v1/url?k=3D74c95bb1-15424ea8-74c8d0fe-7=
+4fe485cbfec-af6e3e40b0032f68&q=3D1&e=3D42c5b47d-7d52-4aa1-8a1e-9dbc36fa1953=
+&u=3Dhttps%3A%2F%2Fkloenk.eu%2Fposts%2Fbuild-linux-on-m1-macos%2F=
