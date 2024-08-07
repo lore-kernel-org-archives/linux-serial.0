@@ -1,57 +1,57 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2699474058
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58B3577F08
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723039976; cv=none; b=I/oi61Ro2IfCkR+FWNREizHCmSAtPN5O7sp793V2koxe9PSX19ZrQMCAopqx0vIed4uZ2TC8RP4/+qzPgrdLcCrXwN83qoQM39RTXWYbhH8cW7tUuoc3UDtlNlsQSxVui5E9f71Xj92IUBuWpjZk7G4o5iZ7wmVKpkmkbjUrZNQ=
+	t=1723039978; cv=none; b=sn9I4oDvr/v7Uqq7jqb1izwd8ImBe0ifk/b+UHa9phK6Oq48CGHFc9Qsqo6r++EmvUT9hes58ZYXP1LQ0/Ccod/2hhjEW81MzU3pyy0v++Ps+SFJY3Nat0FoH9xFrRed2HW7YuXc1OnwmOgU5LKpTdohp3Ns47BphCuY8Staz6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723039976; c=relaxed/simple;
-	bh=/M7emE/2Qa2RgsvJur8Mg3ojafyx/BbqtMTsB9gWNeE=;
+	s=arc-20240116; t=1723039978; c=relaxed/simple;
+	bh=jJ/dqspqaWeDfyxYIMbjnG33egLfKjvpbKPXZLYU2Y4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KLFUNT49F3rBSYbxdP12F75DYqf3ChnHK8yf2EC6AOCagX7xENxm21i9UFGK2DX/CcYN5sAtM2KHiQAVBEU/NZ5GB29ElAbHKyzQy0EqU5H/gRRmDyNkkwc+jeIfkeIArZhWYQo0hD/6+UkUySogkXHjasVjxfy88Q+Ahtek+WI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=hcHvxlmh; arc=none smtp.client-ip=209.85.208.51
+	 MIME-Version; b=aNkpXnlU60aWrAVqRRosjVByMJKBrT5soJ3sblpDewn4Pn42FF60RnmEPjsyqAp9xj7ezlCYNmwOZzFFEvPEBEaiujzBxfg5t/su7zw53QomHaLAU0/ZqCRzC8x/6JgpKgvl2lXZCYO/iNAKnEz65nH3wtA6KvoCc6I5ke8SGVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=3J9tLpxp; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="hcHvxlmh"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5a10835487fso2891831a12.1
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="3J9tLpxp"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5b8c2a611adso2563337a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039973; x=1723644773; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039975; x=1723644775; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=vj85BiW7OH0vjd00Din4ISdKFXtoAd7NnhKsZDjxWzA=;
-        b=hcHvxlmhGW0B8hjAS2RGGef1QnhgFqQU1v6V3rU7UmCDt8MlCA9ERKp9GhDhkZ6281
-         5hO4L3srugHqaLct9wU62weixLIvxmT9e7QmjqFQOlHlGXYVQ2Pc/vCaWXdpZJcxoT4x
-         MFxUfNlFriwwTXJtXCQGk1PDs3S4JO4suOcXF9jPMUwCpTTSjm4aq2Ls4gPajtTfMfxa
-         i4EywJclY6Q9mIB8o7/gIDwBe9W3cvqulsrmT8lFq7/wQwetXXYxmynsGRbUxavcqnKs
-         THoStBY3qJVJrWhb5xrvgvv7IleUArW7JXoeFgWweYhqBPnxMJPOp2f3PKmIKP4hqqn3
-         HBDg==
+        bh=KWzbHrkvy9hRtxlDmALumwCtMR3F4NOzbURL/XveH2s=;
+        b=3J9tLpxpAQktP/CNTTI9R2YOuNOZ9seuckzPxBGLeAWc3ObioLIZSPGwwitFJdIq75
+         Rvdk8vMG4l3ysDhInNv0TsiunZFNkjPa6oIkwD+dqWAuVU0U2KJ5h06vL+CAFeoPBQaL
+         ASbmu1hDxqC/gsdzEgLienLvA1eWUZbGXRxfQQWuNBsU2Aj+vBITfE7mSaN2q2mM0v/W
+         l4zVUQYUYYPNzDzLZfzPWAWtJ5PlzkYQbU5rQ51CKWYFcJEifIaAn6lPS+WRx/Uat4EO
+         +S6F1jRk4ijw5lu82yXg6tJ0yFDe6syDb9z8O/pdzwt1fuzZSOLxrSEi0yo1R63qYXgI
+         NQ1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723039973; x=1723644773;
+        d=1e100.net; s=20230601; t=1723039975; x=1723644775;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=vj85BiW7OH0vjd00Din4ISdKFXtoAd7NnhKsZDjxWzA=;
-        b=d3BC06xyljnz3fleV1S9OQFNFe4w+/98kQPXyt8+5KVDg66dOIj5YsGGIfQ6aKs7J4
-         iQzbGwrV++CoF3eRyT7ploi2NxxjTVncYPsQUUseuukGfJhJaAo+1ZNX4MoYX94vXPuJ
-         XTemA5K8x2+r+9pJbhml6yf3aj9/6P1uTMvCxqWzSMEEZmjfz6cMfjKLPSzVZ/ySEfy/
-         UGLYfQJ8e+64JM+pDvOu0hySAkUd0qLo4TuW0ULFjZ/XdJNr36EmUQTkx2313bwREIhL
-         6DTD2DnERnFx6Rci38wtaF4/+1PCW70KWKmRZR8v9AnMz9LhENchvouiwBaxc3Z0CIJF
-         OGEA==
-X-Forwarded-Encrypted: i=1; AJvYcCWBqRGBnRZRSOKNlHKI4tq96l+U28NmvmueWvSrCVex8QZhDLuuZReBSQesfNRCWYU3oZCcnz+7tXt81C4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+geSQ2T6HfR7r6BG5yOLE0ppQzS+2YrGl6YnymQEGwQl09W/L
-	IOqbsJC6D3y9rdDd8izbGBJZGRKSneMd5uyJQm2elmjMsBvLdj6au29urK+dNIU=
-X-Google-Smtp-Source: AGHT+IFFeWkyTUn3gXwl17NAH20cD1sXn2wOqFO/iSCy6b44/Rpq7Q6khSChCCoOdtQ8kcv5YttJkA==
-X-Received: by 2002:a05:6402:40c:b0:5a0:c709:aa0b with SMTP id 4fb4d7f45d1cf-5b7f56fd439mr14154527a12.24.1723039973524;
-        Wed, 07 Aug 2024 07:12:53 -0700 (PDT)
+        bh=KWzbHrkvy9hRtxlDmALumwCtMR3F4NOzbURL/XveH2s=;
+        b=NAKmoC6PCXw1My1aZ/cx8LM/rMu5K60xvkyn1dCxYqBVOVuw8j3IMtyY2ytQCUmm7A
+         AZ1LJgCfruYh5iPijTEqQpRF6mPU6KBtyz1hVQixanVVg0Y3uQDT8Z70A838teWZuR+9
+         0twEtzlN4zfW1yhP9iAwPp3D8nbIoXmD1nT9TzrPWr78azA2sldOAKv6wuG8WkYUVnKt
+         AfLl3SyA9UCoWUH1pTmgGsY8XkpdGUcPTlBOsZtfXWpSRxFJlLnx2n0uJSoHH0/1qFMc
+         7BHDQF/85p8XZT/xZ++c+AIZ0ohecgvGy9RoIpSmyglvsb5+h6rLrwHGNPbM3vRtLQRK
+         /52g==
+X-Forwarded-Encrypted: i=1; AJvYcCUhSugiMov9dWFH0Nl/duhCypRCQ0s0MueKLRbN1UNm0IalDGSVfHRtLJBSW3DILaxRmlSkyoqy+MYM+SorICkgd80dN541FX01k4P+
+X-Gm-Message-State: AOJu0YzziuF3a5SxeCtruazzZ96C/8uou/4ez0I12xPdZfkFnJafIz9u
+	Xd/2IxgJ7shLpRj34rkouuPPL5ddRWHW1oWvEKkT8OpqEdUHGU7zFXa7PJ9v33o=
+X-Google-Smtp-Source: AGHT+IGq4cislIJyd0Fi3SNfVx3j+NKux5WeCaTZh0bSfOP0nKaFhK2IzDBaxUc7p5dC22ZqWvPYOg==
+X-Received: by 2002:a05:6402:60f:b0:5a3:a9f8:cf20 with SMTP id 4fb4d7f45d1cf-5b7f58eb70dmr12738369a12.34.1723039974659;
+        Wed, 07 Aug 2024 07:12:54 -0700 (PDT)
 Received: from blmsp.fritz.box ([2001:4091:a245:8609:c1c4:a4f8:94c8:31f2])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.52
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 07:12:52 -0700 (PDT)
+        Wed, 07 Aug 2024 07:12:54 -0700 (PDT)
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -73,9 +73,9 @@ Cc: Vibhore Vardhan <vibhore@ti.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH v2 4/5] serial: 8250: omap: Set wakeup capable, do not enable
-Date: Wed,  7 Aug 2024 16:12:26 +0200
-Message-ID: <20240807141227.1093006-5-msp@baylibre.com>
+Subject: [PATCH v2 5/5] serial: 8250: omap: Parse DT wakeup-source proerty
+Date: Wed,  7 Aug 2024 16:12:27 +0200
+Message-ID: <20240807141227.1093006-6-msp@baylibre.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20240807141227.1093006-1-msp@baylibre.com>
 References: <20240807141227.1093006-1-msp@baylibre.com>
@@ -87,39 +87,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The driver sets wakeup enable by default. But not all UARTs are meant to
-be wakeup enabled. Change the default to be wakeup capable but not
-enabled. The user can enable wakeup when needed.
+If the wakeup-source property is present, enable wakeup from this
+device.
 
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Acked-by: Kevin Hilman <khilman@baylibre.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_omap.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 01d430de9c64..7a6dfd40af9e 100644
+index 7a6dfd40af9e..ccb83c05be20 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1529,7 +1529,7 @@ static int omap8250_probe(struct platform_device *pdev)
- 
+@@ -1530,6 +1530,9 @@ static int omap8250_probe(struct platform_device *pdev)
  	platform_set_drvdata(pdev, priv);
  
--	device_init_wakeup(&pdev->dev, true);
-+	device_set_wakeup_capable(&pdev->dev, true);
+ 	device_set_wakeup_capable(&pdev->dev, true);
++	if (of_property_read_bool(np, "wakeup-source"))
++		device_set_wakeup_enable(&pdev->dev, true);
++
  	pm_runtime_enable(&pdev->dev);
  	pm_runtime_use_autosuspend(&pdev->dev);
  
-@@ -1628,7 +1628,7 @@ static void omap8250_remove(struct platform_device *pdev)
- 	flush_work(&priv->qos_work);
- 	pm_runtime_disable(&pdev->dev);
- 	cpu_latency_qos_remove_request(&priv->pm_qos_request);
--	device_init_wakeup(&pdev->dev, false);
-+	device_set_wakeup_capable(&pdev->dev, false);
- }
- 
- static int omap8250_prepare(struct device *dev)
 -- 
 2.45.2
 
