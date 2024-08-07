@@ -1,120 +1,113 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-oo1-f66.google.com (mail-oo1-f66.google.com [209.85.161.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 428643B7AC
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 05:55:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C52A71B32B1
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 06:28:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723010115; cv=none; b=jB6NW0DauV9weRCeaIRQpIP2QHMSZA8BO4WBr+/Xyddrsm15wbsmt3jCdUBVIDj539VmueST77h9y3Zi6rfXEaErkZzMKPPOo5ehs4T4piQqzr0AjD+m1diYHBYo/ttXkJdQyiapxUnm2t11c1q5aq0K3Tb/0DOTWiQsdA/lQ9w=
+	t=1723012128; cv=none; b=dhJ+1A0dsvFVkVzb4Jx4GGVJXnjp2p8egXXZLF3Tma7WpBODLwO8WUEF+3A1ChT5CXByNTfYF5mkORGH1oedUw2NL8foNkqUqxOe8CmG7w+66BbBgu8KRYr6JqAeRmwnAPr9yHiUVP6Q/t9R6qedKKfmVALW/2bt2k7ydBwuwUQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723010115; c=relaxed/simple;
-	bh=2gw9QvYRqtRBab+OFV4Rp2ouTr5WjKwto8HWoLp1gHE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j+wZ2fF3OdcpToiEQ36oqJhNOWcx/VK5NeHCXYydiHObOBZrfXPKN5D8vr2bLtKdbjL8Jyz7AF0SC6JyVJyg2E/FYMuiotzNSID3SmIM3lfsKVeSy5BuSvq0F7nfxWi1W9SgHJoEldcMGkqIE/vkWYPuwLdegwnufDAjKQj6y+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=gtLS7Kil; arc=none smtp.client-ip=209.85.216.47
+	s=arc-20240116; t=1723012128; c=relaxed/simple;
+	bh=ilBp4mbpWbt8P/is+bSZyTJdtYmg+2K6PWzsUAJQ5pk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iaCI60c9aqtAl/pNiNQDJkYKxRuJbjGn1LY4EH0x6yIjzhrgyFgvOVRJHLYfOkOv7Z8G2sneTBEbFi0JxJPIkCzKHKCZ09O6uZUlVEAWEBtqkYOAwCejVrfOXqexjYin9436PwkFN9Z0lhWELSx3IRggGLVvt8b7fFxXznzB3eI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=B0nU2MyR; arc=none smtp.client-ip=209.85.161.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="gtLS7Kil"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-2cd48ad7f0dso1075933a91.0
-        for <linux-serial@vger.kernel.org>; Tue, 06 Aug 2024 22:55:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="B0nU2MyR"
+Received: by mail-oo1-f66.google.com with SMTP id 006d021491bc7-5d5c8c1006eso870638eaf.3
+        for <linux-serial@vger.kernel.org>; Tue, 06 Aug 2024 23:28:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1723010111; x=1723614911; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=GdVhyQpyLYOhYB5fvYOMRnbsJ+Bwno+rZr/gxKeR4t4=;
-        b=gtLS7KilbwMSVzZAx08WPkJMl53I5MiDgRRR4EqQWaiaVCRbE/3uMj+kYEl65lExsq
-         /a8a2LsOjEbTyU/G6oV1w/Aqi+D1zWsbqplHl+Pxgur5swgRIIwMIOEMbNvNLWGX/wcY
-         +2wtBNx5kUIOGU8s8+moYIn69HT4e5h+shajxb607S6MDf7qeVNRp8gleo63SIXk0Z5C
-         VGCplWAX6LCovlpZn16BMA6CsVECzScf3nQJZmqqK300yEXHr3f9QOWFrqYuwB5pmbFv
-         QN46fbDceuTLNg6jtL0HUOnJGhHPtRqzrLAd0pTZw+g1w8jX7h5TXenuOUrx0aUTjAiP
-         10IA==
+        d=ventanamicro.com; s=google; t=1723012125; x=1723616925; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=L3Cnd6mFtbJSGETFPCDN577bknl11oPzpBdGoJxqsrA=;
+        b=B0nU2MyRN8MH+8mz+VOalxkCqQtFv7AvEjRfgBVgI0QFiLC7rxgb82bTV/LRiUEybt
+         JmuE3mq7RowCETbb7Xw/AmjaGQXFWFXGKQSwZ/kSDtO3l0CgoPPNoSStJLEjP4qwekMm
+         cwsKRW76QC4mUVPLRqsdqZCgE5BdVEkCg6A4LdweHKLSd4w8Aw8x0ICI99O3oQh6GEn6
+         UmEFVWN15+dTypkATrd6L45xZjhzdKBUjUsUWDEhfFXsZoTBp+WUTeikhgtofqRKOofJ
+         7ncv+CgdsLMz/pdP9I/V6T6JiskLz1MqN3VaYNXQxtatRYcHflYINg7D3iXYlk3D/HQ9
+         TvWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723010111; x=1723614911;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GdVhyQpyLYOhYB5fvYOMRnbsJ+Bwno+rZr/gxKeR4t4=;
-        b=NaPEB3Jj4U31g8xRfGO+Dw+uTyv8/00STYCwOiaBnvI5TDSufx5x4TxbP/9Vxb1Rwg
-         V4CAy9rsZwpA5SWAJH2X3PofFd4LW9uJDY43fvx+6WZwUrQKVj+W66Dy34IIYTxaMYRL
-         2TCU0AUrJsef/RiaZIz2xekayBC3S7aM5WZHo8mRum+aDzwSBRC+btqYFiJyIwDx5P0r
-         52yvttRY1/4CnZR77uTg17c+eR971Ku/CVGFQVTfiaYzSB6BRMYV3J3PiyPZX8KzixoJ
-         GVM0A1aBQ2MbczeGLDGXNc6T7OVd+HD4Hx99y0CFYpwgbkHlTsPldYSNn2ZzuvPtHKcH
-         mfWA==
-X-Forwarded-Encrypted: i=1; AJvYcCWn9H17bvS5O1tfDJJz0NU49EeA/VNHYz+4q/1z6k4NsANsPDOWEDbyGbYAuSdVUwgXcQ9Hb+6wJ280/P5bnRup2cXejioDUsNHkMfx
-X-Gm-Message-State: AOJu0Yxg4Gkn6hrA8Pqi7ji/AMEeQx1ub8Xk6lQ2DlOgFxSEWA5/clDF
-	JLxvy5sqWOlqV3oQI60qXW6VFnoJHfGUlVAetq0cJmSque5Ac9qM/EhqFhCMIJU=
-X-Google-Smtp-Source: AGHT+IG5FVREIdIHSi/wo1FCywKpZy8w67yn4WoUxHxc1JlUrnptnI7pZdmoWoIbFBNgDuYFpMEoYw==
-X-Received: by 2002:a17:90a:3fcf:b0:2c9:e0e3:e507 with SMTP id 98e67ed59e1d1-2cff9148c7cmr21053224a91.0.1723010111638;
-        Tue, 06 Aug 2024 22:55:11 -0700 (PDT)
-Received: from sunil-laptop ([106.51.198.16])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2d1b3b1144bsm555615a91.34.2024.08.06.22.55.08
+        d=1e100.net; s=20230601; t=1723012125; x=1723616925;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=L3Cnd6mFtbJSGETFPCDN577bknl11oPzpBdGoJxqsrA=;
+        b=Hc3IqVmko2ECKUCIuAX9iDN1hctp7RxypfmBCCz1fI8aaohv5Fr2QmLMyOGLR779AR
+         VBceguh4nWyZuIV0UzC3SNA+PUy/sdAUeMu1KXD+aKcjcBgmWJzFK0xEJkqtPWYx0HHr
+         orVPOHJEoB6TGGbeRysR00R/JOhYBlLIZ3dxwDxu2ScLHrI43qzvlRn2m/STvtcAkJWO
+         24vQ9y9gmJ+6orwQcNUL2Tq2uWhzr4/URdt4WiAx2BUEIA2M10zDsf+d4paHXub7zY3X
+         skp5Y/XY7MqS3GoTwt8mk/H1GEeMd9jBAHulwVHe/9Hosp6NUnwXcwf/nj+Bcso0QlNW
+         qUTA==
+X-Forwarded-Encrypted: i=1; AJvYcCVjmCUk1lAlf70hi6bpCMewASI7GxiCWi6HaAx8ljfh/3esT96S0lEVPemdM2Za28kVCJb52vBPtZSVpgk/QXpNDKH7CiPONyIDrebD
+X-Gm-Message-State: AOJu0YwnlcMrUaRWOmzbE5o92nhreum4U/Q+fnlBARKrhFVRW+DUMm4h
+	+yXJjxom6mUIL7UeCnWblfX1rM5T2NZf7G9SrmHxpK+XZ8BW2eG2VqTVPkpMICkFjLEtmiIGe1D
+	hA3VJcjXt
+X-Google-Smtp-Source: AGHT+IG3+LYLTW06u/7CE9JfA6rsragN66yfaT4Kj6PNe9WVItBbqMTO8KeQtcDjSJembalV746lYA==
+X-Received: by 2002:a05:6870:fb8d:b0:260:f5c6:e9ec with SMTP id 586e51a60fabf-26891d22d97mr21093052fac.17.1723012125203;
+        Tue, 06 Aug 2024 23:28:45 -0700 (PDT)
+Received: from sunil-pc.tail07344b.ts.net ([106.51.198.16])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7106ec416b5sm7794916b3a.58.2024.08.06.23.28.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Aug 2024 22:55:10 -0700 (PDT)
-Date: Wed, 7 Aug 2024 11:25:05 +0530
+        Tue, 06 Aug 2024 23:28:44 -0700 (PDT)
 From: Sunil V L <sunilvl@ventanamicro.com>
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
+	Stephen Rothwell <sfr@canb.auug.org.au>,
+	Sunil V L <sunilvl@ventanamicro.com>,
 	kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH] serial: 8250_platform: Fix structure initialization
- warning
-Message-ID: <ZrMMOUQai27N-W3T@sunil-laptop>
-References: <20240807042210.1608026-1-sunilvl@ventanamicro.com>
- <20240807151352.3d66afe8@canb.auug.org.au>
+Subject: [PATCH] serial: 8250_platform: Fix unused acpi_platform_serial_table warning
+Date: Wed,  7 Aug 2024 11:58:39 +0530
+Message-ID: <20240807062839.1738705-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240807151352.3d66afe8@canb.auug.org.au>
 
-Hi Stephen,
+The LKP reports below warning.
 
-On Wed, Aug 07, 2024 at 03:13:52PM +1000, Stephen Rothwell wrote:
-> Hi Sunil,
-> 
-> On Wed,  7 Aug 2024 09:52:10 +0530 Sunil V L <sunilvl@ventanamicro.com> wrote:
-> >
-> 
-> > diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-> > index bdfb16bed4f2..d8c3c169a620 100644
-> > --- a/drivers/tty/serial/8250/8250_platform.c
-> > +++ b/drivers/tty/serial/8250/8250_platform.c
-> > @@ -108,11 +108,12 @@ void __init serial8250_isa_init_ports(void)
-> >  static int serial8250_platform_probe(struct platform_device *pdev)
-> >  {
-> >  	struct device *dev = &pdev->dev;
-> > -	struct uart_8250_port uart = { 0 };
-> > +	struct uart_8250_port uart;
-> 
-> Does just using "{ }" as an initialiser work without warning?
-> 
-I tried that and at least on this architecture/compiler combination, the
-warning is gone. However, I was not sure about it since gcc man page
-indicates such initialization is valid for C++.
+>> drivers/tty/serial/8250/8250_platform.c:271:36: warning: 'acpi_platform_serial_table' defined but not used [-Wunused-const-variable=]
 
-Quoting gcc manpage:
+     271 | static const struct acpi_device_id acpi_platform_serial_table[] = {
+         |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
--Wmissing-field-initializers
+This is because some architectures don't define either ACPI or
+MODULE/MODULE_DEVICE_TABLE. So, keep acpi_platform_serial_table under
+CONFIG_ACPI to fix the warning on such architectures.
 
-In C this option does not warn about the universal zero initializer ‘{ 0 }’:
-struct s { int f, g, h; };
-struct s x = { 0 };
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202407310047.PIoWlrZZ-lkp@intel.com/
+Fixes: d9e5a0ce2f16 ("serial: 8250_platform: Enable generic 16550A platform devices")
+Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+---
+ drivers/tty/serial/8250/8250_platform.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Likewise, in C++ this option does not warn about the empty { } initializer, for
-example:
-struct s { int f, g, h; };
-s x = { };
+diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+index bdfb16bed4f2..168e635002aa 100644
+--- a/drivers/tty/serial/8250/8250_platform.c
++++ b/drivers/tty/serial/8250/8250_platform.c
+@@ -268,11 +268,13 @@ static int serial8250_resume(struct platform_device *dev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_ACPI
+ static const struct acpi_device_id acpi_platform_serial_table[] = {
+ 	{ "RSCV0003", 0 }, // RISC-V Generic 16550A UART
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, acpi_platform_serial_table);
++#endif
+ 
+ static struct platform_driver serial8250_isa_driver = {
+ 	.probe		= serial8250_probe,
+-- 
+2.43.0
 
-So, I thought doing memset is probably safer which should work across
-architectures/compiler combinations.
-
-Thanks,
-Sunil
