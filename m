@@ -1,75 +1,60 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D314F1B8EAA;
-	Wed,  7 Aug 2024 11:14:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 701B619006D;
+	Wed,  7 Aug 2024 11:15:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723029257; cv=none; b=MN38R2yItb7lKW+jLqyGaAMKIYZ7uarVEAqA4HBTPqybnYcA7n+VoKWnHMZNmK8Fu3xpPnyxZutpagEVOQB3GkLbfuPyCGRkDeyKBKN1f3fVH9NwyvyfA6s9W0b+tl8BARlA9nlz/44rGJcEhgL1Ptsd6VY+F27M23nip7QMyX8=
+	t=1723029328; cv=none; b=C6G1+0P7VC4mWSf6Jie4yROrpyz7vrhnV+D0/yyOu/YHBHecgQ3zE2JD3UO34440vhRwRSX+KiQXduuDc5sYb9JI0GVwGsfdpykpxDwMXE5Jz2BrE+W7M6bEkbPKHhhl0pn1YQqXii+bc3V73pj7xKUd1MRyqQOuWPNuQdO2T6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723029257; c=relaxed/simple;
-	bh=zqpqUonVOPKz1vwkSnNtCE4Cyy7xTfZIEwVrxcqnQuU=;
+	s=arc-20240116; t=1723029328; c=relaxed/simple;
+	bh=jSsp/HKO95SPmP8lgJ7EwugbwAijmbRwyArXgZS5BKU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GK2DpKNeeTdt/fE+heHAqMkO2vOeeFtkFuMZUF1+UaB2qkF/U30iM2TMg4LyNJbWsFBYGCrHHnXvtl/N9JLEtsTujbQRU07oddno2bpcncyvx/ngNpwJo4AHPY1gKShXfpYWRMaGyePSmrUcvVlpRaKSN1eDhmNERsic8r9Hx88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=cmkx/22q; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pjs3RzseBC/u40Gervxsv/mu6Aw+VI9R8UBmfJRktweCHOqAzHft5EvFSFi3GLtf16KZ1HeFcWlfFCbcSIaAu18fkdbU2rjDe8jDHIJgfWDwbui2zrHFVSzYfJONzIjnl3VbaqBG59d3VYA2ix3b2vMjfmAM3pQ6dPidJDGUY2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BpTCAPF5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="cmkx/22q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3710C32782;
-	Wed,  7 Aug 2024 11:14:15 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BpTCAPF5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC001C32782;
+	Wed,  7 Aug 2024 11:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1723029256;
-	bh=zqpqUonVOPKz1vwkSnNtCE4Cyy7xTfZIEwVrxcqnQuU=;
+	s=korg; t=1723029328;
+	bh=jSsp/HKO95SPmP8lgJ7EwugbwAijmbRwyArXgZS5BKU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cmkx/22q6Yu5iUxqv41dONrmrFFRKEthaWSHnzAx+uJpTFOfy4RBBa3+PwSDXCns6
-	 fTFqgd0F16MHA8hEvMjH//BFp1Rq881m2N0pHW+WiyCFPkPFRq/J63L1YKMUN6uHe3
-	 OQ5XknIG78HfjJifkI/U32Cl7FLeFNkxd+WWfBPE=
-Date: Wed, 7 Aug 2024 13:14:13 +0200
+	b=BpTCAPF5f50WoUmMoMOCeAEXTkjGLdzutv28UoTMIVPUSaNsu/O57O1e/Ef+MS4L4
+	 Y53GL+0kEvs12nq9U6xMVS/DklWK5x7XiPUfhzmq8RYF+q8hFtBF/6ut6UKeLPSYFa
+	 RJciQIqRRpHK5fETH3SveiRiWHr7/gVk2FzN2dRY=
+Date: Wed, 7 Aug 2024 13:15:25 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Andreas Koensgen <ajk@comnets.uni-bremen.de>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Douglas Anderson <dianders@chromium.org>,
-	Eric Dumazet <edumazet@google.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Jeremy Kerr <jk@codeconstruct.com.au>, linux-hams@vger.kernel.org,
-	Matt Johnston <matt@codeconstruct.com.au>, netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Peter Hurley <peter@hurleysoftware.com>
-Subject: Re: [PATCH 00/13] tty: random fixes and cleanups
-Message-ID: <2024080750-percent-tuesday-9dff@gregkh>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 05/13] serial: use guards for simple mutex locks
+Message-ID: <2024080704-attendant-pajamas-d68d@gregkh>
 References: <20240805102046.307511-1-jirislaby@kernel.org>
+ <20240805102046.307511-6-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240805102046.307511-1-jirislaby@kernel.org>
+In-Reply-To: <20240805102046.307511-6-jirislaby@kernel.org>
 
-On Mon, Aug 05, 2024 at 12:20:33PM +0200, Jiri Slaby (SUSE) wrote:
-> Hi,
+On Mon, Aug 05, 2024 at 12:20:38PM +0200, Jiri Slaby (SUSE) wrote:
+> Guards can help to make the code more readable. So use it wherever they
+> do so.
 > 
-> this is a series of locally accumulated patches over past months.
+> On many places labels and 'ret' locals are eliminated completely.
 > 
-> The series:
-> * makes mctp and 6pack use u8s,
-> * cleans up 6pack a bit,
-> * fixes two coverity reports,
-> * uses guard() to make some of the tty function easier to follow.
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> ---
+>  drivers/tty/serial/serial_core.c | 111 +++++++++++++------------------
+>  1 file changed, 46 insertions(+), 65 deletions(-)
 
-This series breaks the build for me:
+Ah, this was the breaking patch.  I applied the first 4 now, will let
+you respin this one and resend the remaining.
 
-drivers/tty/serial/serial_core.c: In function ‘uart_suspend_port’:
-drivers/tty/serial/serial_core.c:2400:17: error: label ‘unlock’ used but not defined
- 2400 |                 goto unlock;
-      |                 ^~~~
-make[5]: *** [scripts/Makefile.build:244: drivers/tty/serial/serial_core.o] Error 1
-make[5]: *** Waiting for unfinished jobs....
+thanks,
 
-
+greg k-h
