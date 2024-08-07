@@ -1,143 +1,88 @@
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D441B12FF72
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 16:21:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 207132209B;
+	Wed,  7 Aug 2024 16:32:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723047664; cv=none; b=TdrypwG8cykJpzzSIcEB+M7zmh8c4JtZ9+w1dmTP4Tq7phrQ/kE2inFuautr6TxpvXixRwG4zp9pE2FqoYPCKP4GFsLKWlXalHmiB7Hub5kqgsrJ6VeSONzahKiqv0SzJdY4RKuw51R/v05tResgSJVLThqLwrsIIR21rtCz6v4=
+	t=1723048323; cv=none; b=nBfBj345nK3cxFT8N7cuWZUJeadfVbS4IClt2fpmVAisTIpN5WlB8Az2Gu9KFUxKUNlvZ0/Xkar8VCeQGBtP6gq4VmP6kVRsG3utTwAlV71u55+Plrj5bE9sKzyibe2kwFTAL1otoy9EyjJw+DhCQssHDUNmYtT3Gtit+fyqhWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723047664; c=relaxed/simple;
-	bh=bnQHhyxtaLGDQyQRpgbmjXhmrP9N64R0hZVoFnzGj0Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=d4EubZ9p4Gll2EKbYvRDKmFirF8ejF/R1JzeELt8ivTtXRqHuNvw4kz7K3ZFLyZe+cHZiTd86GtMKcvh+waTuBH1JrWnQrV9nuLl7A4Tfc/HyBTIYvm26f04vJHO+yOjGQOkeN7agPdPyVchYg3T+Cg0HPSBfXgCEQHu6055hnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=KiY3H1CL; arc=none smtp.client-ip=209.85.219.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
+	s=arc-20240116; t=1723048323; c=relaxed/simple;
+	bh=Pz9LIqA2w9Dm+SFN1If7OeyusUM67h2aCExgxiL84hc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=G5jx+ryszXXx9w2Fbq5OuS6k6Ss9AQ/jH72DDeSoah03K4TUlXKLjTo4pOldYZDRuvszFtIvjExdM01RjbP4PhQgeqkBCo8zwWZ/VyCiCUoUARJYS6KZyoNdKf2V+kE7/SZMF9EcQSV+mwehxiRJAZ60w1j7WQ9j5vZbBiVf4Fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wnr1K6FK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="KiY3H1CL"
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-dfe43dca3bfso7314276.0
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 09:21:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore.com; s=google; t=1723047661; x=1723652461; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gLIeHC32QQFW2KzLfSivT5ewKagCTjZMp/GPtEGBlcs=;
-        b=KiY3H1CLxa5WjqdPU4uhbnkm5BmlRyy0AJ8/BZ5hqNaVYeZbI6FlaBwSh1ajulDsjL
-         /WNhuvm/KDvIFa3UC7RjgQ5RbY2otryVwlwqpYJOcP7EHipYzDKH5sfTWdLAuI0O5qO5
-         A5cg8ASxhKu9FsLQgDBDekK+d7kZz1y8BZ2pSmrUkV7AU2YCTUVlI6MXjcBz+Jb0gThv
-         T/39xm1Ygd4cDFCOiP4jSPuU8SY/xuh16wUOI2XNrvUUfTkAqNROO+W6dfUVt16cTgZf
-         EqS3W62ENFtsd5ZDBCkSbQQpmmXl+vgLdfrfOqbeLpnHUcczEvneZAnvVdGqJ6W5WcW8
-         tuRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723047661; x=1723652461;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gLIeHC32QQFW2KzLfSivT5ewKagCTjZMp/GPtEGBlcs=;
-        b=C6PUXp2oQu7VFbw57ZXbfh/S5uWxPK9IIJART0RdWfmUADajmWefXQ2wXpJJ9ett1i
-         0nWS4hVoM3EwZheFfyxAnDdnJDOoADOkgJty+yD5USfftbIwsRP603CVnoaQYEfVxFi5
-         lGj+4HllFiuMEYXBwJYNC3R7SOLu3fQImYSYU5DfCGZxG91TZCBP/Sm9B58qzpT3zYNW
-         VsEPiTFNEFaTIdEuqKXVSGRXBIdrd7RbBGuctQY7UKKTi7KorQ/o5Jz2dak0xULK40yM
-         x5LoeQHS6gTZSc0zK/M6GF/s1l8Q3lgIFqDx/hGq6v3kE1kGAim1QfUso0ngLebML78s
-         uM0w==
-X-Forwarded-Encrypted: i=1; AJvYcCXHvfs/swobtOgF2R4/aO44ShAyH+GQAR4JxCOT0HRQ9L2NSNEDdn3C4FGZWqn8HXssmxxL1qt0fQtST+iFLv3uS7ViAy+bx+fF2eJF
-X-Gm-Message-State: AOJu0YztaF/6AII6fi4JQtvblK3ZDhJ46BgBvcECNT7k9WlLm1oXs8xW
-	KwZ8xG5qnYXmdKFctb2mDEaB7FYkZXi56NEl7w5VlRPB9hoxpAVK/2dCNBtBSdOFLiZAGHdAd4k
-	Uv9VfoTTOJ8q0dQ3xrrlv+4R9+SFgcNCQCFZ9
-X-Google-Smtp-Source: AGHT+IFlMQZM11eMhKYm88nwqqB//YSwgE91qY+0p4KKcANp0MWW6pOsqJvjDDmdPT/npZIBCFW4JUe0qIrb5ggxQJM=
-X-Received: by 2002:a05:6902:1506:b0:e08:631a:742c with SMTP id
- 3f1490d57ef6-e0bde2cf614mr20513586276.16.1723047660711; Wed, 07 Aug 2024
- 09:21:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wnr1K6FK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7234C4AF13;
+	Wed,  7 Aug 2024 16:31:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723048322;
+	bh=Pz9LIqA2w9Dm+SFN1If7OeyusUM67h2aCExgxiL84hc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Wnr1K6FKtacUSftwUOvIq95lXyXwV4hFiem9fd92XELhHsZMnvJxk66f9x1D0jLj/
+	 jiCV8bBaEMZgblHCbAWGTJg4RXDHBHq/2SDdfTpaYvv4OXLdlNtX5s8+0e7XHbNdp1
+	 xvzSeagEBZI5LgitUpJU803NiQRpO2cPRjaYkOfPLUknSImTGgmLJkMg4JMnKp4aic
+	 x0gCeNnwNwc8KPhbLyxQZ07Fv1U42x2/wWFu0x3dkzr+2Si6ipwgEAH13eo/3kXt1B
+	 GnStFWYHb7qByrd9erKfTPlkMSzDIC9xPKbMPGoyd4YrYZsZ3KOyspVcDbSi6Y0DGm
+	 10BPq+18B34Ow==
+Date: Wed, 7 Aug 2024 17:31:56 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Tony Lindgren <tony@atomide.com>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Ronald Wahl <ronald.wahl@raritan.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Thomas Richard <thomas.richard@bootlin.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Udit Kumar <u-kumar1@ti.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Vibhore Vardhan <vibhore@ti.com>,
+	Kevin Hilman <khilman@baylibre.com>, Dhruva Gole <d-gole@ti.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] dt-bindings: serial: 8250_omap: Add wakeup-source
+ property
+Message-ID: <20240807-daybed-unlocking-6a03de657e2a@spud>
+References: <20240807141227.1093006-1-msp@baylibre.com>
+ <20240807141227.1093006-2-msp@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
- <20240807-macos-build-support-v1-6-4cd1ded85694@samsung.com>
- <20240807-outgoing-charcoal-collie-0ee37e@lindesnes> <CAK7LNAQ21o+cQQaLD1xkwSX0ma8hvB29DMDquy5VjHcBWwhGPw@mail.gmail.com>
-In-Reply-To: <CAK7LNAQ21o+cQQaLD1xkwSX0ma8hvB29DMDquy5VjHcBWwhGPw@mail.gmail.com>
-From: Paul Moore <paul@paul-moore.com>
-Date: Wed, 7 Aug 2024 12:20:49 -0400
-Message-ID: <CAHC9VhS5e4=CK=svEPz=3zGm_FxDXdMoS4M7BUKj8z4sUf17Bw@mail.gmail.com>
-Subject: Re: [PATCH 06/12] selinux/genheaders: include bitsperlong and
- posix_types headers
-To: Masahiro Yamada <masahiroy@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>
-Cc: da.gomez@samsung.com, Nathan Chancellor <nathan@kernel.org>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Stephen Smalley <stephen.smalley.work@gmail.com>, Ondrej Mosnacek <omosnace@redhat.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, 
-	Oliver Upton <oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, 
-	Suzuki K Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
-	Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
-	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="52z39HG9VPnBf+y4"
+Content-Disposition: inline
+In-Reply-To: <20240807141227.1093006-2-msp@baylibre.com>
+
+
+--52z39HG9VPnBf+y4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 7, 2024 at 11:45=E2=80=AFAM Masahiro Yamada <masahiroy@kernel.o=
-rg> wrote:
->
-> On Thu, Aug 8, 2024 at 12:39=E2=80=AFAM Nicolas Schier <nicolas@fjasle.eu=
-> wrote:
-> >
-> > On Wed, Aug 07, 2024 at 01:09:20AM +0200, Daniel Gomez via B4 Relay wro=
-te:
-> > > From: Daniel Gomez <da.gomez@samsung.com>
-> > >
-> > > The genheaders requires the bitsperlong.h and posix_types.h headers.
-> > > To ensure these headers are found during compilation on macOS hosts,
-> > > add usr/include to HOST_EXTRACFLAGS in the genheaders Makefile. This
-> > > adjustment allows the compiler to locate all necessary headers when t=
-hey
-> > > are not available by default on macOS.
-> > >
-> > > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-> > > ---
-> > >  scripts/selinux/genheaders/Makefile | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/scripts/selinux/genheaders/Makefile b/scripts/selinux/ge=
-nheaders/Makefile
-> > > index 1faf7f07e8db..017149c90f8e 100644
-> > > --- a/scripts/selinux/genheaders/Makefile
-> > > +++ b/scripts/selinux/genheaders/Makefile
-> > > @@ -2,4 +2,5 @@
-> > >  hostprogs-always-y +=3D genheaders
-> > >  HOST_EXTRACFLAGS +=3D \
-> > >       -I$(srctree)/include/uapi -I$(srctree)/include \
-> > > -     -I$(srctree)/security/selinux/include
-> > > +     -I$(srctree)/security/selinux/include \
-> > > +     -I$(srctree)/usr/include
-> >
-> > 'make headers' composes the UAPI header tree in $(objtree)/usr/include.
-> > So, if you build out-of-source, -I$(srctree)/usr/include will not match=
-.
-> > Just remove the '$(srctree)/' prefix as '$(objtree)/' is always '.'.
->
-> Right.
->
-> > But I am suspecting that this break cross-building.
->
-> Right.
->
-> We cannot do this.
+On Wed, Aug 07, 2024 at 04:12:23PM +0200, Markus Schneider-Pargmann wrote:
+> Add the wakeup-source to enable this device as a wakeup source if
+> defined in DT.
+>=20
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 
-Thanks for the review and catching this :)
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
---=20
-paul-moore.com
+--52z39HG9VPnBf+y4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZrOhfAAKCRB4tDGHoIJi
+0rlZAQDjLr9nRoERRFl43TvDTHa7ITQSV3Jl2NxS22zdRneStwD/QIvMmlXa+WTJ
+TrIE/mOWXsBHMksg48dvcnnyPFx6VgY=
+=Z5nu
+-----END PGP SIGNATURE-----
+
+--52z39HG9VPnBf+y4--
