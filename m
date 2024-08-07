@@ -1,99 +1,120 @@
-Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A115615CD46;
-	Wed,  7 Aug 2024 05:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 428643B7AC
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 05:55:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723007639; cv=none; b=JiJ2ZrM65cDj2ExIseF5fgjQTK76lbRZSYFpeAu+XEXKJ2P8eSJEZbW8uiWPG+a/tgxky3HpwXiE6ba3cu1RjF+q7iPCFwluM6iC/t0CCksK/Y28nXW5XTfokPsMWwIfs36N4viDgs/DxOabc2cB1JJLX1+uTnvrxY+vwxzP80Q=
+	t=1723010115; cv=none; b=jB6NW0DauV9weRCeaIRQpIP2QHMSZA8BO4WBr+/Xyddrsm15wbsmt3jCdUBVIDj539VmueST77h9y3Zi6rfXEaErkZzMKPPOo5ehs4T4piQqzr0AjD+m1diYHBYo/ttXkJdQyiapxUnm2t11c1q5aq0K3Tb/0DOTWiQsdA/lQ9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723007639; c=relaxed/simple;
-	bh=myfg24QZeMBpr6RDET5k7wik6pAyBkHUktrUl6sTguA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=I6XFjIiyMEwCqjswCk2IQKgic/ls27UCEZ0+8AHvqvxdsB+9nR7+/gt4OPo7pZZ7QzlL09UtDg+aUXEm3F/2nmS60Qyi7aVpPxgvNk5w2iP7+CKnGIAOhj3IJmK1h0bqv//X+rCtYXe3kOEootGlU8w/+TEaxS1NCV0aZClvSeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au; spf=pass smtp.mailfrom=canb.auug.org.au; dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b=QxCWqUAM; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canb.auug.org.au
+	s=arc-20240116; t=1723010115; c=relaxed/simple;
+	bh=2gw9QvYRqtRBab+OFV4Rp2ouTr5WjKwto8HWoLp1gHE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=j+wZ2fF3OdcpToiEQ36oqJhNOWcx/VK5NeHCXYydiHObOBZrfXPKN5D8vr2bLtKdbjL8Jyz7AF0SC6JyVJyg2E/FYMuiotzNSID3SmIM3lfsKVeSy5BuSvq0F7nfxWi1W9SgHJoEldcMGkqIE/vkWYPuwLdegwnufDAjKQj6y+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=gtLS7Kil; arc=none smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b="QxCWqUAM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1723007634;
-	bh=H+XgIFrGX20mY+ynGg23RFuP/1uIR3ib6OltHGdAmlc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QxCWqUAMTNvAb2wI+8f6AXkWEARiu6THFAB0YF0mlzROplM7oOxgvsDg4TmuoaQJA
-	 PIftH72jhb7jKlel2H8FohhIQqGCBmx9CzEIFe+5xRBkBvGwZeQroaXxgPlk6L7YHh
-	 jn1ds5ItaZLYHhEjEKfEhBAAtuBJ4vKL7vKtLS8WS/Kbm6L5UGAkCrHU1oOY9Jaxz2
-	 ZsROVWcZ6+RxAfJQ4r1/SN2X+1nXkUYroneXXJHETsSwyzOcJ6/RB4hLBHN4lNkkRB
-	 HFY6RTfD1YwQxrxj31SFGgNYdC+qS5Ih3VaD81iz9m+b0pfLW5iIv509mm54NOWxah
-	 SaIKivGTqpoqw==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Wdyy95ytrz4wbp;
-	Wed,  7 Aug 2024 15:13:53 +1000 (AEST)
-Date: Wed, 7 Aug 2024 15:13:52 +1000
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: Sunil V L <sunilvl@ventanamicro.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, kernel test robot <lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="gtLS7Kil"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-2cd48ad7f0dso1075933a91.0
+        for <linux-serial@vger.kernel.org>; Tue, 06 Aug 2024 22:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1723010111; x=1723614911; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=GdVhyQpyLYOhYB5fvYOMRnbsJ+Bwno+rZr/gxKeR4t4=;
+        b=gtLS7KilbwMSVzZAx08WPkJMl53I5MiDgRRR4EqQWaiaVCRbE/3uMj+kYEl65lExsq
+         /a8a2LsOjEbTyU/G6oV1w/Aqi+D1zWsbqplHl+Pxgur5swgRIIwMIOEMbNvNLWGX/wcY
+         +2wtBNx5kUIOGU8s8+moYIn69HT4e5h+shajxb607S6MDf7qeVNRp8gleo63SIXk0Z5C
+         VGCplWAX6LCovlpZn16BMA6CsVECzScf3nQJZmqqK300yEXHr3f9QOWFrqYuwB5pmbFv
+         QN46fbDceuTLNg6jtL0HUOnJGhHPtRqzrLAd0pTZw+g1w8jX7h5TXenuOUrx0aUTjAiP
+         10IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723010111; x=1723614911;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GdVhyQpyLYOhYB5fvYOMRnbsJ+Bwno+rZr/gxKeR4t4=;
+        b=NaPEB3Jj4U31g8xRfGO+Dw+uTyv8/00STYCwOiaBnvI5TDSufx5x4TxbP/9Vxb1Rwg
+         V4CAy9rsZwpA5SWAJH2X3PofFd4LW9uJDY43fvx+6WZwUrQKVj+W66Dy34IIYTxaMYRL
+         2TCU0AUrJsef/RiaZIz2xekayBC3S7aM5WZHo8mRum+aDzwSBRC+btqYFiJyIwDx5P0r
+         52yvttRY1/4CnZR77uTg17c+eR971Ku/CVGFQVTfiaYzSB6BRMYV3J3PiyPZX8KzixoJ
+         GVM0A1aBQ2MbczeGLDGXNc6T7OVd+HD4Hx99y0CFYpwgbkHlTsPldYSNn2ZzuvPtHKcH
+         mfWA==
+X-Forwarded-Encrypted: i=1; AJvYcCWn9H17bvS5O1tfDJJz0NU49EeA/VNHYz+4q/1z6k4NsANsPDOWEDbyGbYAuSdVUwgXcQ9Hb+6wJ280/P5bnRup2cXejioDUsNHkMfx
+X-Gm-Message-State: AOJu0Yxg4Gkn6hrA8Pqi7ji/AMEeQx1ub8Xk6lQ2DlOgFxSEWA5/clDF
+	JLxvy5sqWOlqV3oQI60qXW6VFnoJHfGUlVAetq0cJmSque5Ac9qM/EhqFhCMIJU=
+X-Google-Smtp-Source: AGHT+IG5FVREIdIHSi/wo1FCywKpZy8w67yn4WoUxHxc1JlUrnptnI7pZdmoWoIbFBNgDuYFpMEoYw==
+X-Received: by 2002:a17:90a:3fcf:b0:2c9:e0e3:e507 with SMTP id 98e67ed59e1d1-2cff9148c7cmr21053224a91.0.1723010111638;
+        Tue, 06 Aug 2024 22:55:11 -0700 (PDT)
+Received: from sunil-laptop ([106.51.198.16])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2d1b3b1144bsm555615a91.34.2024.08.06.22.55.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Aug 2024 22:55:10 -0700 (PDT)
+Date: Wed, 7 Aug 2024 11:25:05 +0530
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	kernel test robot <lkp@intel.com>
 Subject: Re: [PATCH] serial: 8250_platform: Fix structure initialization
  warning
-Message-ID: <20240807151352.3d66afe8@canb.auug.org.au>
-In-Reply-To: <20240807042210.1608026-1-sunilvl@ventanamicro.com>
+Message-ID: <ZrMMOUQai27N-W3T@sunil-laptop>
 References: <20240807042210.1608026-1-sunilvl@ventanamicro.com>
+ <20240807151352.3d66afe8@canb.auug.org.au>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/UvhuLjtR8tORIn7VjrcEiSE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240807151352.3d66afe8@canb.auug.org.au>
 
---Sig_/UvhuLjtR8tORIn7VjrcEiSE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Stephen,
 
-Hi Sunil,
+On Wed, Aug 07, 2024 at 03:13:52PM +1000, Stephen Rothwell wrote:
+> Hi Sunil,
+> 
+> On Wed,  7 Aug 2024 09:52:10 +0530 Sunil V L <sunilvl@ventanamicro.com> wrote:
+> >
+> 
+> > diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+> > index bdfb16bed4f2..d8c3c169a620 100644
+> > --- a/drivers/tty/serial/8250/8250_platform.c
+> > +++ b/drivers/tty/serial/8250/8250_platform.c
+> > @@ -108,11 +108,12 @@ void __init serial8250_isa_init_ports(void)
+> >  static int serial8250_platform_probe(struct platform_device *pdev)
+> >  {
+> >  	struct device *dev = &pdev->dev;
+> > -	struct uart_8250_port uart = { 0 };
+> > +	struct uart_8250_port uart;
+> 
+> Does just using "{ }" as an initialiser work without warning?
+> 
+I tried that and at least on this architecture/compiler combination, the
+warning is gone. However, I was not sure about it since gcc man page
+indicates such initialization is valid for C++.
 
-On Wed,  7 Aug 2024 09:52:10 +0530 Sunil V L <sunilvl@ventanamicro.com> wro=
-te:
->
+Quoting gcc manpage:
 
-> diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial=
-/8250/8250_platform.c
-> index bdfb16bed4f2..d8c3c169a620 100644
-> --- a/drivers/tty/serial/8250/8250_platform.c
-> +++ b/drivers/tty/serial/8250/8250_platform.c
-> @@ -108,11 +108,12 @@ void __init serial8250_isa_init_ports(void)
->  static int serial8250_platform_probe(struct platform_device *pdev)
->  {
->  	struct device *dev =3D &pdev->dev;
-> -	struct uart_8250_port uart =3D { 0 };
-> +	struct uart_8250_port uart;
+-Wmissing-field-initializers
 
-Does just using "{ }" as an initialiser work without warning?
+In C this option does not warn about the universal zero initializer ‘{ 0 }’:
+struct s { int f, g, h; };
+struct s x = { 0 };
 
---=20
-Cheers,
-Stephen Rothwell
+Likewise, in C++ this option does not warn about the empty { } initializer, for
+example:
+struct s { int f, g, h; };
+s x = { };
 
---Sig_/UvhuLjtR8tORIn7VjrcEiSE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+So, I thought doing memset is probably safer which should work across
+architectures/compiler combinations.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmazApEACgkQAVBC80lX
-0GwYxAf/RWqpE0k4kD8EmJDXJkZ2tZAUbG/OelChMjt7727S89ZspmBw3Oi8y37t
-B7d4Yu1RBA/+M37dIMDXmVkJ8Me05r2Uxl/AwO/iM3JYeMYeE6aO+GvjCafB1FaD
-7szayVIdCZOrQyyJyyI/PqaxDe1gl9QYh0c4E16F9y4eNsDNHDxluksiRtJ6leJ8
-qlx8dsGV0R+g90RoDNKlRPw52E6VMQmWKmx7ti42ZAhPMQK92l4H7/LVTyM5bC76
-yBgsUPwDXEDhKZK6Q8NCfbn1ypSB7am0M3a1R0lUxZtLVH/EB1I2GiVwZ8z6v2mN
-6Ux6wmlLGxCI3xx1uFfsCRosAJH+6g==
-=H5g/
------END PGP SIGNATURE-----
-
---Sig_/UvhuLjtR8tORIn7VjrcEiSE--
+Thanks,
+Sunil
