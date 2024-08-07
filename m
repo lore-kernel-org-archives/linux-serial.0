@@ -1,57 +1,57 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C984E40875
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B155811A
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723039974; cv=none; b=iDSNZpLtvHySXtqDcjDAtcjYPtLyKT4eGYvF1cY1t0nQa0r2S7JjzZGfVObgGx9c5th5dIqPSEPyAHbpm/fwaWdg2Xa7vXt+xi0P0HFL9MvSdKEV/lZPUU+hLz1Gcl56HS0o0UwggdtjlqoQbNeo80uJHPKIGlMpOXQcqJfqrj0=
+	t=1723039976; cv=none; b=GKK4tlEL6T9Ml1Cqb5c3XK/iKTvfSQninKXwHXh7K/nT8DdKHyXJFK32uhBNTgIF8Ge8G6qh0lZXOlJZ5nnZ/JjOz38f1nUDrAp60PRpfe9HZPAGfLyNrG/8D/Bj6tZjM4QPTL6J1+0ln65Vg3JpK/361tCpJp3UFpnKG7zDq1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723039974; c=relaxed/simple;
-	bh=G53h7iK7equCI+YAgbuXL22KeDRVYHM1PGJrRCk2n3A=;
+	s=arc-20240116; t=1723039976; c=relaxed/simple;
+	bh=e9Jc2sCWqNGEQJxc1zAjMLSN7zhY899ZX891bxlRIFA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Sv1+18mnBTbWMAREFeubc7s3VusLApTUuIuMkCJrpqNq1jc4RKN5+YQfHaEy4fL8pN1h5rC8v5x3qevB6ER9ycPqix3A1c6CsLTEFz3LKNwWiwfBJKjxVoiNTiCnATCCLIpIBSIOUQkX5usGNSV+css+pjl/hixzjflL7sGISlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PKt0TU2o; arc=none smtp.client-ip=209.85.167.44
+	 MIME-Version; b=K8cJZsMw/QWLrTCHz2tfOiaj33xhqPxMpwXzOkAsT23poQRUPK7SPn91t6eIFK/VW7BdvKTjoLLlCdVlp0BTbcMei+dVXnmnNs2wIgHTJuwg+9/pVRHW8tsWhvDqzL1UUp58DTeUghhbswg360WqX9E6FqRPNMV5verh5JPJhGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=w1LATSfC; arc=none smtp.client-ip=209.85.208.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PKt0TU2o"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-52f00ad303aso2736855e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="w1LATSfC"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5a156556fb4so2161804a12.3
+        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039971; x=1723644771; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039972; x=1723644772; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=a5C8r3Duyh4k8zPXTMuRthG6AYE+Xab3qX66upD04/4=;
-        b=PKt0TU2oq+4p6tLspbrj9btjzCWn8Wcyz+t8d8wx8JrpLnwcCT/IVQ3ANXxxBaxoG7
-         ImOOqBIx3CAZotrA0xPrPXiiHsVX0ngdsNGj6TRyFhp/KZjkDuFQ+sFu3bl9UiQIUoF6
-         oMDmFd9mo7EswuD5aeaDeDjhbw7TS2VZZoruofRWIntOhuMmt7bP/tr2h/8yvL7MN49y
-         D0pehhghzftlXhP3zsBK3u7e3khtFg4RVVBxueUMQfE6iDPelLbHDVDA7u5lmdn9md7O
-         4qCNkQ3T9kPOdmE3i7JFSlVgmDiW8RiDnC33M6kzRs0T17eQXSYUXxlhPs7/U/ro+WLz
-         rrWw==
+        bh=oKla0TikiRVuhRSfUT0bnjb0mFUM6MzVyHzb7uGiohw=;
+        b=w1LATSfC1cDKgdDqOGwe3eDw9Mp9RG252mLySZfJImFljP1OOFTgA0wxCA6NSTeuET
+         bLyYU2r6iJiEcYLCAaJJK1ISp6OGpqMNFoffi/MsabY6tnOJDdm7N9/2LpEUCvzgkrFJ
+         4efDk6BCnRM2OpgSVkNlqXgJq8zNMNgzG+/PLOvyEwz7dCU8T95PeAaxfElW1f11bDr7
+         IvjkamYeEOZXN3xJnvpu26gxBQ71rjfOOe96MCoDVWFqqkqh0/m5/1MwqIzjKW/CJmpy
+         Ee4RNKc9pCPeinesdVg04djl5zH45vZHYzGvmJufOJuC9FLkE3vizvnLlF+ziFSfpDbn
+         Buig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723039971; x=1723644771;
+        d=1e100.net; s=20230601; t=1723039972; x=1723644772;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=a5C8r3Duyh4k8zPXTMuRthG6AYE+Xab3qX66upD04/4=;
-        b=dVJbyOi75CbR5XaS3XYffbwQJLqfdiEGsviMmjj2++r3fELOTIQQQh0F1JEo2VRIMD
-         eB8hgjU8MIJ7Dwr1GdZn5sa3F6alGSVRHKsVxE7WnKFeRAKogQV8PiuiVnYuHSWnBSCm
-         yJCGyThPFX+tYSU3+/jQp/GVksNYH9FAGE354oMCYyV4UVQz14yXe5DsxYImK4NawQz/
-         /KmsW+0Tu3/71M6ACfOU2CoURCKO+kvQWbyUv88CqQ0uIrpRh/3ebXcib4unHwnozwOR
-         ja7F/nR2+ZUNR3aqKJB7jrNTq29PiZaUS8YueeKqF4rxyvwfhbYaVNcXVYjwav6SwWDm
-         T7HA==
-X-Forwarded-Encrypted: i=1; AJvYcCUlQ/F2K1+KhDMknBaBXU6NjVi1e1h6Gg+YO/naeB7MnHDRlx/4NaTxW0yd/SQHZER9wKWS5QMDuZaZVTHhO2Y+sJ3o/pvU1sw0ju4N
-X-Gm-Message-State: AOJu0Ywbeqd7DC+zYoENJaDpltTS2rTr631dGFiJavo2qvqpyLiimAWf
-	eriOPRxZGGrW9ECjcPFi4l4qSd97mU515/sBqxlF8kM+yOSN2ktNK4AiAmhIYIs=
-X-Google-Smtp-Source: AGHT+IFosTI6Kk9S7vVp+2KFUmR/5pvfyiB5Vr1uhy5ZefdQG7LKhdWRJvxVgUXiBD9CZ+Mjmb+Ybw==
-X-Received: by 2002:a05:6512:3c98:b0:530:b760:92b3 with SMTP id 2adb3069b0e04-530bb3a2247mr9912329e87.31.1723039970563;
-        Wed, 07 Aug 2024 07:12:50 -0700 (PDT)
+        bh=oKla0TikiRVuhRSfUT0bnjb0mFUM6MzVyHzb7uGiohw=;
+        b=s3IXQzB3wKbo9LRQnohCzmF9kMD56gBhogu/f90bh86gYOh7+JEKrK14qu5fXJ+nKI
+         5beTv1E8WPFNVuEyy76tNxvD31wrwtwaNvHLt4k7eotGBGmDcR+mx6Q95ikkVl+w0Q3j
+         GR4V1wez3xwqAmzqLGUxPRacLQPhgFPLXMaI8Dhivgl6zpr4oob3HdU9QiUedBZvQdL5
+         KLvn0Z6xaJlWTn7Z4/1H5le3cgB4vTs3m8oEHpdETG1wxWV6hulPbfOx7kjpMdOcmMMo
+         4iXAi/7ZycipnP5eErRYOq/vipwCm5lE9cce/pQNc7NbfgWi/6ohWmJ4+Zp7NC/jzub5
+         gzaA==
+X-Forwarded-Encrypted: i=1; AJvYcCXuW2LsrJucAYCiub6dR5xKXeQ3TZAAtQJqHM6Ea6A8nTQlNlNlvvJx7ky3xODkCV1tx/nWGi2Gs1YKQiWLmo6n0823tMuabs5u8xeo
+X-Gm-Message-State: AOJu0Yx1pVJV3UwDCxbI/XI/rtvtB+zkL1A5FqclnPkLjcGeO2yaQ3pD
+	bAz/Z2V1rz8YZqMrUW2mcmo+/LR2XVx8LrEUm0C7p/0Cz4R487QJ7Ko3YuY2vdo=
+X-Google-Smtp-Source: AGHT+IFTtDrHzcEyJfrxQSsx9wYYXZfPjxj1fP6zwRtDfyoo6YHEvanfv08xhTEKIkVOKBpqh5fwkA==
+X-Received: by 2002:a05:6402:542:b0:5a2:37e0:1e88 with SMTP id 4fb4d7f45d1cf-5b7f39e0ac1mr12617987a12.9.1723039971875;
+        Wed, 07 Aug 2024 07:12:51 -0700 (PDT)
 Received: from blmsp.fritz.box ([2001:4091:a245:8609:c1c4:a4f8:94c8:31f2])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.49
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 07:12:50 -0700 (PDT)
+        Wed, 07 Aug 2024 07:12:51 -0700 (PDT)
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -73,9 +73,9 @@ Cc: Vibhore Vardhan <vibhore@ti.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH v2 2/5] serial: 8250: omap: Remove unused wakeups_enabled
-Date: Wed,  7 Aug 2024 16:12:24 +0200
-Message-ID: <20240807141227.1093006-3-msp@baylibre.com>
+Subject: [PATCH v2 3/5] serial: 8250: omap: Cleanup on error in request_irq
+Date: Wed,  7 Aug 2024 16:12:25 +0200
+Message-ID: <20240807141227.1093006-4-msp@baylibre.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20240807141227.1093006-1-msp@baylibre.com>
 References: <20240807141227.1093006-1-msp@baylibre.com>
@@ -87,25 +87,29 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This field seems to be unused for quite some time already. Remove it.
+If devm_request_irq fails, the code does not cleanup many things that
+were setup before. Instead of directly returning ret we should jump to
+err.
 
+Fixes: fef4f600319e ("serial: 8250: omap: Fix life cycle issues for interrupt handlers")
 Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 ---
- drivers/tty/serial/8250/8250_omap.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 1af9aed99c65..02d4f3073696 100644
+index 02d4f3073696..01d430de9c64 100644
 --- a/drivers/tty/serial/8250/8250_omap.c
 +++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -144,7 +144,6 @@ struct omap8250_priv {
- 	atomic_t active;
- 	bool is_suspending;
- 	int wakeirq;
--	int wakeups_enabled;
- 	u32 latency;
- 	u32 calc_latency;
- 	struct pm_qos_request pm_qos_request;
+@@ -1587,7 +1587,7 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	ret = devm_request_irq(&pdev->dev, up.port.irq, omap8250_irq, 0,
+ 			       dev_name(&pdev->dev), priv);
+ 	if (ret < 0)
+-		return ret;
++		goto err;
+ 
+ 	priv->wakeirq = irq_of_parse_and_map(np, 1);
+ 
 -- 
 2.45.2
 
