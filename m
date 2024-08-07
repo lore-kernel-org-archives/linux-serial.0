@@ -1,83 +1,86 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053CD1BDA84
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 10:49:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8FB91D174B;
+	Wed,  7 Aug 2024 11:01:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723027796; cv=none; b=ne4k/0cni0XkUVsdzShckrUbd7hdMfK9RvM1wRC0NgdmOSN8JofK67dNweqCYgU9uQTDj96rJKHKqelLDIfGbwnJI0s/hWHqT5pSc6NlqD0SBSZiGqed5rB9fVh0Lb2QivdVjoJS6iJSa6Rc7ogRybxlF8Wz5p0yV9DmBV+QsOI=
+	t=1723028471; cv=none; b=d8ZRe+gXJefduPJRo9U+s3lfNrrm3tUC6CBXdrvEdhFOCmyfjJAiwfLlk0tDwZcYBGEmC6lPjWtkSzu6mlTaDbe/sARBWROcvDJ9LhOtYljCN8nJN/j0W8syT5S/eV9eQYSmf2DSF3x8beQtM63J3lP7/XKAqbqMQXeAapdUMww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723027796; c=relaxed/simple;
-	bh=Yyfk8X7hQAsUD9G+4fe4CzUE4boCyIRsCV8/4Z21Gnc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bI1mATenPyK/+rS1VQtu2057cBYOlipv7M27v+ZDb3oQnqgNnUxr6cyVLhUiHnTPwIgjw0SKGzt18GuPfI0eYdCWbGzm10sG2bveWRHh3ZbgIhx6Q3bQUg+uMlP8lljVQnV5cqDVOXMM31AD/GmWQo+ckidFCLKXVIQIEIv7qMM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=wWfDEtyM; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1723028471; c=relaxed/simple;
+	bh=k6GWvSmzs8fww5dKho7yB+WRfQj5+Coz0kDkKHV5yck=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=F9rg6A2Zrs+ZMtDIDT7AsJNUU/RyZiWTXH/dag0lD9qfJhZimKFJUr9Qr5OuJJKLkCi5X+jbfpvRoBjT9DvbbjUTswYMM6VbfEvX4r4S07TSaA16tMeLHqwV+oZXDIXKm7iwwdlsrX9mKzD+rbf/qrbx0vuw7+JDtxqsb/cxLY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=oKMx0VBf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wWfDEtyM"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5a1337cfbb5so2202005a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 03:49:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1723027793; x=1723632593; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Yyfk8X7hQAsUD9G+4fe4CzUE4boCyIRsCV8/4Z21Gnc=;
-        b=wWfDEtyM/beeCPTbINvS4LR/qV0buUOnoBe/Qe95we9QrBT9LxnKyy9LB3UAi6Nm1q
-         rq9uQq3q8TafQo6UAUJX2twF5mqjs5vuW2rb/w5YX6kZKJdwJLjPknZmC+rav6Lq2g2T
-         Cz4eiZVXy1PCEjH8D07J2R7wCK1Z3c/w1LwEnVjlVvAZahXo0rRF+nb+7FIa5ifgvvMP
-         sk8KoQKLwByVMUMAhu4crfSHGDoT3LIP9egLDkUKCCUv0F7ajeXjNq2MqLqTCNBpLJqr
-         iZ7yEWOEYiJvVzk0l449gHdSwJGx1qf1qx6sMhyvaeMQ+8VlhDKw9DGzXOe0SOLvfPBC
-         0Oig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723027793; x=1723632593;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Yyfk8X7hQAsUD9G+4fe4CzUE4boCyIRsCV8/4Z21Gnc=;
-        b=BtvbSe0/D28XOE9jIfh3niwbfiPaBAEPmhS9pHTZ87FMuqU2+r5swVbO1bL99LNVE4
-         nktRv5jaWmno7FAR+TtqfhCDDN4r6enlLkfXIn2p2fdP6Vzp+ReRLiCB70JXhcHWMC/7
-         gkb2oaiYg+rjg5ePyON7K/uaKhpODirRVgRFiu0q3SvQNoAtXR+fFQUqKsIQ/xIHhgBe
-         o+4zPt6WFiUeNuDGId2CUqI9hR9GPcKOoq6gxl82LNaJ4XYXJBiYqhApnM381c1KJCTi
-         4CGl3/6y0tXbaZ7hkYTcRjA+Excb8SQIBJ4dAPcj6VR05vMSRwuqkgwXbug/kxq/VN8F
-         9KCw==
-X-Forwarded-Encrypted: i=1; AJvYcCVJNXZo+LEHx56MOm2yiSES1LLWf6GW3Ws4+qD2OxtE8My1gThbhPCDRdoJNANA3RvRf0pMKYDOMRYpRG+/K8TvhGiHW9Q8f7F5s+Uu
-X-Gm-Message-State: AOJu0YyZS/6MmlUkvN02kQ7XMV2++y/kZlcCEEnoE6Ng/SzUwFHAXTBv
-	lXs9PZ1Tb0GYKSDY4FZwuih3CSo0gclWGZfo2Ukg2PkogPxbsq3iYTIkEqU8C7s=
-X-Google-Smtp-Source: AGHT+IGNiGCq3xQ9xD/+A6JIjYRH2TLuxM8b00m6SfTS7ooJvqyRwtUE/xU52X3j9tq8YE70TwQltQ==
-X-Received: by 2002:aa7:cc90:0:b0:5a1:a36a:58ba with SMTP id 4fb4d7f45d1cf-5b7f40a92d6mr13263700a12.20.1723027793303;
-        Wed, 07 Aug 2024 03:49:53 -0700 (PDT)
-Received: from [192.168.0.157] ([79.115.63.215])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b839716490sm6940820a12.5.2024.08.07.03.49.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Aug 2024 03:49:52 -0700 (PDT)
-Message-ID: <7e18004d-e721-4223-a0b8-1f7453cc99cd@linaro.org>
-Date: Wed, 7 Aug 2024 11:49:51 +0100
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="oKMx0VBf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 028E6C32782;
+	Wed,  7 Aug 2024 11:01:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1723028470;
+	bh=k6GWvSmzs8fww5dKho7yB+WRfQj5+Coz0kDkKHV5yck=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oKMx0VBfuW0ZbA+q8N88Z8je7UdEVeFR/J7DKZhgUWWtGzsKzmv/2IIIw/MBY5DQ8
+	 9KM/R9OjyiCqg2rMxtzzGjaJfozNrmvFkIqkny5F2S99dF+tg1jAxrLnYhbJCD7EYS
+	 gz/rMkISr6xHiE/WD7KM9ygxBx8JRYFghLRZ1S8w=
+Date: Wed, 7 Aug 2024 13:01:08 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: da.gomez@samsung.com
+Cc: Masahiro Yamada <masahiroy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nicolas@fjasle.eu>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	William Hubbs <w.d.hubbs@gmail.com>,
+	Chris Brannon <chris@the-brannons.com>,
+	Kirk Reiser <kirk@reisers.ca>,
+	Samuel Thibault <samuel.thibault@ens-lyon.org>,
+	Paul Moore <paul@paul-moore.com>,
+	Stephen Smalley <stephen.smalley.work@gmail.com>,
+	Ondrej Mosnacek <omosnace@redhat.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Oliver Upton <oliver.upton@linux.dev>,
+	James Morse <james.morse@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Zenghui Yu <yuzenghui@huawei.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org,
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org,
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org,
+	llvm@lists.linux.dev, Finn Behrens <me@kloenk.dev>,
+	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>,
+	gost.dev@samsung.com, Nick Desaulniers <nick.desaulniers@gmail.com>
+Subject: Re: [PATCH 00/12] Enable build system on macOS hosts
+Message-ID: <2024080753-debug-roulette-8cb1@gregkh>
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] tty: serial: samsung_tty: cast the interrupt's void
- *id just once
-To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Alim Akhtar
- <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Peter Griffin <peter.griffin@linaro.org>,
- Will McVicker <willmcvicker@google.com>, kernel-team@android.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240806-samsung-tty-cleanup-v1-0-a68d3abf31fe@linaro.org>
- <20240806-samsung-tty-cleanup-v1-2-a68d3abf31fe@linaro.org>
-Content-Language: en-US
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <20240806-samsung-tty-cleanup-v1-2-a68d3abf31fe@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
 
+On Wed, Aug 07, 2024 at 01:09:14AM +0200, Daniel Gomez via B4 Relay wrote:
+> This patch set allows for building the Linux kernel for arm64 in macOS with
+> LLVM.
 
-Reviewed-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+Is this a requirement somewhere that this must work?  It seems like an
+odd request, what workflows require cross-operating-system builds like
+this?
+
+thanks,
+
+greg k-h
