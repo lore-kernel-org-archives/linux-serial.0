@@ -1,55 +1,58 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80FCF29D06
-	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC03339B1
+	for <linux-serial@vger.kernel.org>; Wed,  7 Aug 2024 14:12:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723039972; cv=none; b=UHMAECQE3UwH6ob/oKN6u9Dw8EtUi5s2sWdKFWdhSNT6uSBZSQXTTF803GfXchpJ4dMld4w2f4N/9f759QTbVv3k95fP30N4eceGXyYmFu0g0fIM6MWRyB2czvREbkXbQ5omHJLNRHfkjbozS7sNxevG4XpVXyUTvqF9HDC8dvs=
+	t=1723039973; cv=none; b=CV6nrOkdYTa/XYC/SSrktASq7a0FbHzD6FU63ZlmxAqSNniGAQxbuufGTY6g5sRWnFHf3sgFWBgR8RSOKdBK8na0zaCVlhdoUDHxye9JaYDyHLr66EEJkoAowpJRNNNnWj5kNuc0XswAlS/WUL0I3A8wbRH1SaA/Y6eRU7xzMz0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723039972; c=relaxed/simple;
-	bh=MwwwlILPBrJubGFy6q/y6XZ7ELEBOo3CsDbrxodDZtQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GN1WDdwoG5awrD+5H86kwn0PeDQj8Ayodv1X2DHh3Q4l3KW9rqAlR4nIl3r/XkK+r7BlGNvUSYewPxKbCCWmi2IrJTomdRAFohLRcgCaLGBvzcC6Mm2PC5ZJJlUl6xAQk5pjhgnT9CpZIFG35Sa4x0MtWSP6g+IgDLyz4aDuPTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=L5phjNjl; arc=none smtp.client-ip=209.85.167.46
+	s=arc-20240116; t=1723039973; c=relaxed/simple;
+	bh=qaLIhY5a76Z3Df5j4EUrP5Uqp81Mo30nXZU+/Xwg6EU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=PVPsSuZYQA+g0lM9MSsPdebTz2qz9sfGoXXVCMdgUhvdIaJ2PVyat5bsOzDJTcRUJboSQRRzGswOHWj4W54VJJisR0SAxhmigPrabVaHvjeFxHNx/kNYLTHY+I4JAAbR8+zm34KH4UpZGL8WjYw6ubP+27RKZD8vKWHR0/ljgl4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=y47iMReT; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="L5phjNjl"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-530e22878cfso213048e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="y47iMReT"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5b9d48d1456so1109010a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 07 Aug 2024 07:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039968; x=1723644768; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=rhnBrsrtx8JhjXSaZo5MeZvYsFC+QghJ1OF9fPH+ytE=;
-        b=L5phjNjluLI/du9LQX4NRL8zcDidFj1bjJsF67/W7epwNpES3X1/P1oyqBZ8SfcDKB
-         sHQBbIUFybOsPsqRsRXtrUH8H6T+TMcOOO8qn6FzMX1s0KrJaiR3hnzyZvQJ6EHR+N9i
-         ZEPPL4bU9yG0R4igzB8g5sTciptxLkMzVFGiv2EAIDCoVJe2ldAQbdlIEZKe33HbXQid
-         PpkS9J5zrEv8Aq/HwsWjeiUBNTOXxP2rsxXljPoenGO2d0KXiETVVAQBQOoMUSSO5Nd8
-         RBzdZ2iUrRuUbZYZJ0d+FBKTiaD8lLNKz239xjhfcyNDqbaC03rEICcaVevCGX0LxwTP
-         S63w==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1723039970; x=1723644770; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LPc8uL/JW9kq7vTw/l6UlNZzhd8kMKMZECX7hWsn11g=;
+        b=y47iMReTM8VnQbFb+ijO1pi5Hm9vkUEp+WNV/IJ6bfloBBVqjsDsycwi/JxUkG1sLc
+         oRlQHqnEx1KHXqYjTswg6pEJVCK8UW89A3I7TqHxLrLPmiWJROlQ4HwGYwpEUA7vFFhV
+         qTpOHHPSZjmXqLshdqh1N3jXwL9FCR3miDldo+H8MqdS05E1Z3Dk6j9dChueN7Pqu3MA
+         VOBg1kGJ4ofiX2aPXJZ2qkBauR8uEKGl6pXgSJco5tPcMbOykJ8UJvIK15Rp89Bb7sYB
+         LkktYGnoxGepnGYVMVnPrw6wFWNy8h5DPCWCYEIAA5fs/BCapUOtdtyyc/qJ3nkz3Hbx
+         Ht0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723039968; x=1723644768;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rhnBrsrtx8JhjXSaZo5MeZvYsFC+QghJ1OF9fPH+ytE=;
-        b=kI5BxdMobpkWXBcn4Q4cVfTaK3HStiJZVp/0fQceuaKkSjoY6cu0BeWQSJJ4oFTOf6
-         W3jAI7/2i0Sb2yO8CjncYZNXCzYptMNX0xkPQk6xKJzm4g8McTU0mcC7j6sqm9SIv7tx
-         mxOT/YKOE4onKossTB2Fy4tbNlEybApb16UtsKP18rxTtezuszlsfbS2+N1u46n2P9cQ
-         J8uwJDJDWyXxNhq1l4HLRv2xm7YlCd2OBrctW3vzS6hiT2opyNkO3HDZz954btaFjSZJ
-         iOGVT6HZCHGpVFo5dicJFINGgqkfi1azakvY3Xe0XrlPv5G8KcSvGMtnnLnJ8cdHXEIf
-         luiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUmhZ/XMhkEXDW02c1MRky91jf8IPKGkufIVrL9n098ZOa3m30cZGRnqlqapUL/eujhFqS0/WWJ5VwWUk4fpMhGMfPTEsftMBsGVRyi
-X-Gm-Message-State: AOJu0Yz4mneA8kfYhJ9SBrNntGRQjr72o+mmHRfsE1BdWoT57qlb6AMO
-	mulCO2AIUJKDur8AKl8ST4JBQFhJePfxc0RTx8X6q5NpWtiKHizZl0F80WBr984=
-X-Google-Smtp-Source: AGHT+IEJyt0WGEXWzqRXsX8JTktfdH+4TvqQykj+Gjwr32tHfWEz80uMq7FNr1g7QseHu2DJb76PiQ==
-X-Received: by 2002:a05:6512:3d11:b0:52c:d750:bd19 with SMTP id 2adb3069b0e04-530bb39d200mr10835746e87.8.1723039968086;
-        Wed, 07 Aug 2024 07:12:48 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1723039970; x=1723644770;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LPc8uL/JW9kq7vTw/l6UlNZzhd8kMKMZECX7hWsn11g=;
+        b=nzwyl+6KO4x7Jq9UpQpBiiVvDHXyKX7BFddOOVlkAAEynEV+QU+YXMIGgp3f8Khzeh
+         gIq3Vtj3nG3i27RxIaFRHVo+tMvJdA/VFYF/4eWGf2ROSgOfZmZm5OhIpTPkIUvY1LLf
+         +pGAg6wyRGc2lsNDwdTgWaCu0YE4ZUliFMM4fBJOCRCjnxDBwpMmBPtyKM4BgvAhmfqx
+         98wZjNnTzz5zA/MUwPpzB3ju0VbElNQ04/VuIDS6JTfjhBeEzh4flbPDJnNS3HeqReis
+         tujdDWJKJ+sP7mYGey3yNxgzAUx2MdNJyoOhbhj1syW8QmT90MRmr3cKyXUCfz0wJP2E
+         ZNbA==
+X-Forwarded-Encrypted: i=1; AJvYcCUPX4PLuwzkTt85GYXCKCNSaP8r5G3Ay6ATGB/r0qnBATZinFQ8vXp22S82L1Ptbt2QlizoaY07JhOQXnlHWJbWG3wZgGjgrnu0N1jR
+X-Gm-Message-State: AOJu0YwyTSEk8OZYweRkqBW/41QZgcw2fkehQ8lqgQNfftWqij5wwtLp
+	dmAYhSCcUDIqogRfYRktla33bP73KNl5mWSZhGSigh/Gi2jhj4JCUBEuaKVFT7TaCqRiLswVuyj
+	2
+X-Google-Smtp-Source: AGHT+IEsUdOugcFq+1Zh+LgBNPD+cI5u68iHgjax1xg5KbxJ57PrjeQWrdQKQ2V4fRjbRDhrQZGJug==
+X-Received: by 2002:aa7:ccd6:0:b0:59e:a1a6:11b9 with SMTP id 4fb4d7f45d1cf-5bba36774c0mr2032366a12.2.1723039969391;
+        Wed, 07 Aug 2024 07:12:49 -0700 (PDT)
 Received: from blmsp.fritz.box ([2001:4091:a245:8609:c1c4:a4f8:94c8:31f2])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.46
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5b83b92cbccsm7057525a12.68.2024.08.07.07.12.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Aug 2024 07:12:47 -0700 (PDT)
+        Wed, 07 Aug 2024 07:12:48 -0700 (PDT)
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -71,10 +74,12 @@ Cc: Vibhore Vardhan <vibhore@ti.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	devicetree@vger.kernel.org
-Subject: [PATCH v2 0/5] serial: 8250: omap: Add am62 wakeup support
-Date: Wed,  7 Aug 2024 16:12:22 +0200
-Message-ID: <20240807141227.1093006-1-msp@baylibre.com>
+Subject: [PATCH v2 1/5] dt-bindings: serial: 8250_omap: Add wakeup-source property
+Date: Wed,  7 Aug 2024 16:12:23 +0200
+Message-ID: <20240807141227.1093006-2-msp@baylibre.com>
 X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240807141227.1093006-1-msp@baylibre.com>
+References: <20240807141227.1093006-1-msp@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -83,57 +88,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Add the wakeup-source to enable this device as a wakeup source if
+defined in DT.
 
-v2
---
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+---
+ Documentation/devicetree/bindings/serial/8250_omap.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-In Version 2 I removed the Partial-IO specific patches as these can't be
-tested due to power issues in Partial-IO on am62-lp-sk and similar
-boards.
-
-I added a patch to add DT 'wakeup-source' support.
-
-Series
-------
-
-To support wakeup from several low power modes on am62, don't always
-enable device wakeup. Instead only set it to wakeup capable. A
-devicetree property 'wakeup-source' can be used to enable wakeup. The
-user is also able to control if wakeup is enabled through sysfs.
-
-Base
-----
-v6.11-rc1
-
-Tests
------
-I tested these patches on am62-lp-sk.
-
-Previous versions
------------------
-v1: https://lore.kernel.org/lkml/20240523075819.1285554-1-msp@baylibre.com/
-
-Changes in v2
--------------
- - Remove Partial-IO patches
- - Replace device_init_wakeup with device_set_wakeup_capable in
-   omap8250_remove as well
-
-Best,
-Markus
-
-Markus Schneider-Pargmann (5):
-  dt-bindings: serial: 8250_omap: Add wakeup-source property
-  serial: 8250: omap: Remove unused wakeups_enabled
-  serial: 8250: omap: Cleanup on error in request_irq
-  serial: 8250: omap: Set wakeup capable, do not enable
-  serial: 8250: omap: Parse DT wakeup-source proerty
-
- .../devicetree/bindings/serial/8250_omap.yaml          |  1 +
- drivers/tty/serial/8250/8250_omap.c                    | 10 ++++++----
- 2 files changed, 7 insertions(+), 4 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+index 6a7be42da523..4b78de6b46a2 100644
+--- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
++++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+@@ -76,6 +76,7 @@ properties:
+   clock-frequency: true
+   current-speed: true
+   overrun-throttle-ms: true
++  wakeup-source: true
+ 
+ required:
+   - compatible
 -- 
 2.45.2
 
