@@ -1,41 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A179E18C924;
-	Thu,  8 Aug 2024 10:36:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8116718CBEF;
+	Thu,  8 Aug 2024 10:36:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723113363; cv=none; b=LzBZ1ZEEzkqjvDwvpDkKMTTSMjW0kCwdqKH+wl2CnUuwyRb5eImz4gXtgjUa4CFxFJtq6r0Ugx+eaSK44evNrK08YKgD4+7kl6+aoVVBPfOdzcg1ahnLg0CkZk2KUQCX0nNtAPwejYh0WyA7WErNQIdStCRUzMhIHbLlq97pzzQ=
+	t=1723113366; cv=none; b=QHJes9VTvTwFJ19yiSPWZHbudXkW1Ns4VTWptpQkLs+rZsNwHZXoYnvntQ1V2KrDM9SVaJCc4XE0p6Z9n7z9gOg5bNZK2eMLBiqJvWvmeUqur8CUakqCdGgyD/P31kEMCMMTAOQ2uXIl7FWV2AHXOMVe3o6G/8jjbS6KqN5uR1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723113363; c=relaxed/simple;
-	bh=XWddVIUVs64O2VaGFdrKd+syIozG4HiWv3XzURvonsg=;
+	s=arc-20240116; t=1723113366; c=relaxed/simple;
+	bh=XMtS7BNBLhEAuyOCgzkGacTJE3MPL9++t9/+8In/5Vw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sCOfP0Eq2tP+CMdYvnzOsTFC5OnuevdWMnR6Fm3hksURLNPDdolxjDVyiGQELUfJsxppToDkp1uGaIULXaS0v45ljFIcKw3ZTMGHiuKBBQhfX2m3VlOTsWIT6cykRPxhhdzEbL7tDdnsqImMJsH9lOMz5e1IGpcrVqKY3YGjsng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BWt9A5u0; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=VO/l+y0tr4mdN+BEjvfMmjeUWy3z7qKqNCv0EyTWEGAXVD24Sgo40PAOO9kSlRtZWEF780Uinyp8NoRnjHdWtRI/RlxNFhRy0wqDlMHoxA0ShQ+TnMMSsdNQ9tvUtA3oY1to/npvD0GjPRwKjghUJLmJx/7xUd3FxX7s5sCENVY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jT4hN861; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BWt9A5u0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB9E5C4AF09;
-	Thu,  8 Aug 2024 10:36:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jT4hN861"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB0AC4AF0D;
+	Thu,  8 Aug 2024 10:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723113363;
-	bh=XWddVIUVs64O2VaGFdrKd+syIozG4HiWv3XzURvonsg=;
+	s=k20201202; t=1723113366;
+	bh=XMtS7BNBLhEAuyOCgzkGacTJE3MPL9++t9/+8In/5Vw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BWt9A5u05MmzjOnl6yls5dC7en3fGxavqAhc7HUdEHE08sqWWSwWYpmve60+lnxD8
-	 bLNtvyufrtHnY1mKYMGxmHbh28XzpGoYTEZZgRalF0xRx1dK5AF7nlBaVYcUO14yEK
-	 HM5aOC+J+Vaj2EVD4mKKPjmKrpmpdTRI/G1H62hwpLhBJ/W32Ef0rUheP7VrJ13JJm
-	 SbcQ3cJCzpVOxh+SZ3S/8gP8RYugG/m5NLwAnMqMqaZDzNu4zB6cbKu6aUXCup8EMS
-	 VVZ2wayV85ORKh3vGZKl9+AzgjYRl0DLNDZYlzgr76qLpVckCK2MnplsajXjrQ3GPC
-	 kZYC0gtuHrz/A==
+	b=jT4hN8619cQ3Q6bDgfAaSHdLt1SK/2IahR36hh7yUXRPGTTjw/TSwkNoT1+ehi562
+	 iFXRTEJRRtyfxaxYOcDpFiKCtlrF+PcvwYuWLLkbe2U/Ulpze+L+MyZkYUgUpL29oO
+	 o8I+o/OXIwGpcitCHKIiJb9yk237grDSecLBc7AyOp0Ryez3jLVdxeKwHMg+Amly9e
+	 genIxkal3CsuwJPg5HCxIvayLp1CL13RgPK6XEWQ30U4GWc6Sy22QI7/h3Q0tn/q9R
+	 7eoRooIgHPAR6cDKs1hI7eTMy7V110AN3X4JTED6Xu2GTStp23Ajx73sBU1tLcMOYT
+	 XXmY/QVSiefsg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Mathias Nyman <mathias.nyman@intel.com>,
-	linux-usb@vger.kernel.org
-Subject: [PATCH v2 05/11] xhci: dbgtty: use kfifo from tty_port struct
-Date: Thu,  8 Aug 2024 12:35:41 +0200
-Message-ID: <20240808103549.429349-6-jirislaby@kernel.org>
+	Jeremy Kerr <jk@codeconstruct.com.au>,
+	Matt Johnston <matt@codeconstruct.com.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: [PATCH v2 06/11] mctp: serial: propagage new tty types
+Date: Thu,  8 Aug 2024 12:35:42 +0200
+Message-ID: <20240808103549.429349-7-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240808103549.429349-1-jirislaby@kernel.org>
 References: <20240808103549.429349-1-jirislaby@kernel.org>
@@ -47,107 +52,109 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-There is no need to define one in a custom structure. The tty_port one
-is free to use.
+In tty, u8 is now used for data, ssize_t for sizes (with possible
+negative error codes). Propagate these types (and use unsigned in
+next_chunk_len()) to mctp.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Mathias Nyman <mathias.nyman@intel.com>
+Reviewed-by: Jeremy Kerr <jk@codeconstruct.com.au>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-usb@vger.kernel.org
+Cc: Jeremy Kerr <jk@codeconstruct.com.au>
+Cc: Matt Johnston <matt@codeconstruct.com.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
 ---
- drivers/usb/host/xhci-dbgcap.h |  1 -
- drivers/usb/host/xhci-dbgtty.c | 17 +++++++++--------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/mctp/mctp-serial.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/host/xhci-dbgcap.h b/drivers/usb/host/xhci-dbgcap.h
-index 0118c6288a3c..eab59d921e22 100644
---- a/drivers/usb/host/xhci-dbgcap.h
-+++ b/drivers/usb/host/xhci-dbgcap.h
-@@ -110,7 +110,6 @@ struct dbc_port {
- 	struct tasklet_struct		push;
- 
- 	struct list_head		write_pool;
--	struct kfifo			write_fifo;
- 
- 	bool				registered;
+diff --git a/drivers/net/mctp/mctp-serial.c b/drivers/net/mctp/mctp-serial.c
+index 5bf6fdff701c..78bd59b0930d 100644
+--- a/drivers/net/mctp/mctp-serial.c
++++ b/drivers/net/mctp/mctp-serial.c
+@@ -64,18 +64,18 @@ struct mctp_serial {
+ 	u16			txfcs, rxfcs, rxfcs_rcvd;
+ 	unsigned int		txlen, rxlen;
+ 	unsigned int		txpos, rxpos;
+-	unsigned char		txbuf[BUFSIZE],
++	u8			txbuf[BUFSIZE],
+ 				rxbuf[BUFSIZE];
  };
-diff --git a/drivers/usb/host/xhci-dbgtty.c b/drivers/usb/host/xhci-dbgtty.c
-index 64ea96494997..881f5a7e6e0e 100644
---- a/drivers/usb/host/xhci-dbgtty.c
-+++ b/drivers/usb/host/xhci-dbgtty.c
-@@ -36,7 +36,7 @@ static int dbc_start_tx(struct dbc_port *port)
  
- 	while (!list_empty(pool)) {
- 		req = list_entry(pool->next, struct dbc_request, list_pool);
--		len = kfifo_out(&port->write_fifo, req->buf, DBC_MAX_PACKET);
-+		len = kfifo_out(&port->port.xmit_fifo, req->buf, DBC_MAX_PACKET);
- 		if (len == 0)
- 			break;
- 		do_tty_wake = true;
-@@ -203,7 +203,7 @@ static ssize_t dbc_tty_write(struct tty_struct *tty, const u8 *buf,
+-static bool needs_escape(unsigned char c)
++static bool needs_escape(u8 c)
+ {
+ 	return c == BYTE_ESC || c == BYTE_FRAME;
+ }
  
- 	spin_lock_irqsave(&port->port_lock, flags);
- 	if (count)
--		count = kfifo_in(&port->write_fifo, buf, count);
-+		count = kfifo_in(&port->port.xmit_fifo, buf, count);
- 	dbc_start_tx(port);
- 	spin_unlock_irqrestore(&port->port_lock, flags);
+-static int next_chunk_len(struct mctp_serial *dev)
++static unsigned int next_chunk_len(struct mctp_serial *dev)
+ {
+-	int i;
++	unsigned int i;
  
-@@ -217,7 +217,7 @@ static int dbc_tty_put_char(struct tty_struct *tty, u8 ch)
- 	int			status;
+ 	/* either we have no bytes to send ... */
+ 	if (dev->txpos == dev->txlen)
+@@ -99,7 +99,7 @@ static int next_chunk_len(struct mctp_serial *dev)
+ 	return i;
+ }
  
- 	spin_lock_irqsave(&port->port_lock, flags);
--	status = kfifo_put(&port->write_fifo, ch);
-+	status = kfifo_put(&port->port.xmit_fifo, ch);
- 	spin_unlock_irqrestore(&port->port_lock, flags);
+-static int write_chunk(struct mctp_serial *dev, unsigned char *buf, int len)
++static ssize_t write_chunk(struct mctp_serial *dev, u8 *buf, size_t len)
+ {
+ 	return dev->tty->ops->write(dev->tty, buf, len);
+ }
+@@ -108,9 +108,10 @@ static void mctp_serial_tx_work(struct work_struct *work)
+ {
+ 	struct mctp_serial *dev = container_of(work, struct mctp_serial,
+ 					       tx_work);
+-	unsigned char c, buf[3];
+ 	unsigned long flags;
+-	int len, txlen;
++	ssize_t txlen;
++	unsigned int len;
++	u8 c, buf[3];
  
- 	return status;
-@@ -240,7 +240,7 @@ static unsigned int dbc_tty_write_room(struct tty_struct *tty)
- 	unsigned int		room;
+ 	spin_lock_irqsave(&dev->lock, flags);
  
- 	spin_lock_irqsave(&port->port_lock, flags);
--	room = kfifo_avail(&port->write_fifo);
-+	room = kfifo_avail(&port->port.xmit_fifo);
- 	spin_unlock_irqrestore(&port->port_lock, flags);
+@@ -293,7 +294,7 @@ static void mctp_serial_rx(struct mctp_serial *dev)
+ 	dev->netdev->stats.rx_bytes += dev->rxlen;
+ }
  
- 	return room;
-@@ -253,7 +253,7 @@ static unsigned int dbc_tty_chars_in_buffer(struct tty_struct *tty)
- 	unsigned int		chars;
- 
- 	spin_lock_irqsave(&port->port_lock, flags);
--	chars = kfifo_len(&port->write_fifo);
-+	chars = kfifo_len(&port->port.xmit_fifo);
- 	spin_unlock_irqrestore(&port->port_lock, flags);
- 
- 	return chars;
-@@ -411,7 +411,8 @@ static int xhci_dbc_tty_register_device(struct xhci_dbc *dbc)
- 		goto err_idr;
+-static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push_header(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxpos) {
+ 	case 0:
+@@ -323,7 +324,7 @@ static void mctp_serial_push_header(struct mctp_serial *dev, unsigned char c)
  	}
+ }
  
--	ret = kfifo_alloc(&port->write_fifo, DBC_WRITE_BUF_SIZE, GFP_KERNEL);
-+	ret = kfifo_alloc(&port->port.xmit_fifo, DBC_WRITE_BUF_SIZE,
-+			  GFP_KERNEL);
- 	if (ret)
- 		goto err_exit_port;
+-static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push_trailer(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxpos) {
+ 	case 0:
+@@ -347,7 +348,7 @@ static void mctp_serial_push_trailer(struct mctp_serial *dev, unsigned char c)
+ 	}
+ }
  
-@@ -440,7 +441,7 @@ static int xhci_dbc_tty_register_device(struct xhci_dbc *dbc)
- 	xhci_dbc_free_requests(&port->read_pool);
- 	xhci_dbc_free_requests(&port->write_pool);
- err_free_fifo:
--	kfifo_free(&port->write_fifo);
-+	kfifo_free(&port->port.xmit_fifo);
- err_exit_port:
- 	idr_remove(&dbc_tty_minors, port->minor);
- err_idr:
-@@ -465,7 +466,7 @@ static void xhci_dbc_tty_unregister_device(struct xhci_dbc *dbc)
- 	idr_remove(&dbc_tty_minors, port->minor);
- 	mutex_unlock(&dbc_tty_minors_lock);
+-static void mctp_serial_push(struct mctp_serial *dev, unsigned char c)
++static void mctp_serial_push(struct mctp_serial *dev, u8 c)
+ {
+ 	switch (dev->rxstate) {
+ 	case STATE_IDLE:
+@@ -394,7 +395,7 @@ static void mctp_serial_tty_receive_buf(struct tty_struct *tty, const u8 *c,
+ 					const u8 *f, size_t len)
+ {
+ 	struct mctp_serial *dev = tty->disc_data;
+-	int i;
++	size_t i;
  
--	kfifo_free(&port->write_fifo);
-+	kfifo_free(&port->port.xmit_fifo);
- 	xhci_dbc_free_requests(&port->read_pool);
- 	xhci_dbc_free_requests(&port->read_queue);
- 	xhci_dbc_free_requests(&port->write_pool);
+ 	if (!netif_running(dev->netdev))
+ 		return;
 -- 
 2.46.0
 
