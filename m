@@ -1,46 +1,46 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F30242F23;
-	Thu,  8 Aug 2024 07:31:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25EF52F23;
+	Thu,  8 Aug 2024 07:34:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723102290; cv=none; b=rb7pFXSlUxyD9X7TzXtu7s9bGDC8wCMrxSL73ON26zyyRsgsExvVD8cyK1Vv4AzZbXq/P7C26II833/5LZxcmVEqcsha+Vop3Mk6cw196a686jo6V2qDNNdJ0bQOHgEk7JkhL4C9QsA9NmxOwUKXmnta9qURrx0SuXKp5nNHYEE=
+	t=1723102478; cv=none; b=C+Q5rdfTXNfNl5WTfz28Vnf/VeoycBm/f89REoReFOMi1YIl+FM9vnKKFkkGfePMFjdytPC9Nez2Rg2MNJKSpVcAd3ixcFu0A3Ij/0uaXLxoBCxFQJThQA00r7o656B48xSzX0cxH3bpypWAsL7h19439H9x9lrT9aen/V7x+k0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723102290; c=relaxed/simple;
-	bh=bBIpJNc2pO4tu95IBDbY0/YhHLZIFPk+R8FGA5Hud68=;
+	s=arc-20240116; t=1723102478; c=relaxed/simple;
+	bh=j9ovGLKLRbVUHzGl3j99h9JATtcDt806a7C51Xn2VgA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=o9RSepotkXftCELvvZxBLyzyVFlkmFlxJ9FwY2HqnlkUZ6fbc/Drhoy4vofJmRF0+hpM4Y+8t+gD9r6LKMg8LgE5ewYFAgAmQLqQn4QduZVmrHIA5JfXZ7MmlaodUMYl5qSPLQPpL2z8BOooNcJROKDuBMocDZcLMoOBkxvp7xw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.48
+	 In-Reply-To:Content-Type; b=LhWYtmT1P1ek6okbBLqNyB+QJTYUTk1PJ+OK3Vl5GwNvc+E9fV1kMABr+l7FNLSKeMbd32Hq6/to3nHuwwfghbonfIPH2Nw5NjuogylJHuEB/LfdHv0BLl+3gBhJG/UoLV5B50FRYLNRMbvcHTQol4s6AOCWEw/S0BebHbStEA4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-52f04b3cb33so1334655e87.0;
-        Thu, 08 Aug 2024 00:31:28 -0700 (PDT)
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5a10bb7bcd0so773493a12.3;
+        Thu, 08 Aug 2024 00:34:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723102287; x=1723707087;
+        d=1e100.net; s=20230601; t=1723102475; x=1723707275;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=3Gszn4bTEcR0D4FRrJZtWUth+w4ELc3I3pKmXqIK+nY=;
-        b=kO3yRrTJm5ArKv+88Ggpc1GhtdGmRiWMPgUj0+pyO+kKLu6IsTNDqkMO8ciWF6OY7U
-         ZWBnX4Ym5T3DQL55EZ5G64/FGcJr4MRm9OuOcyW7Z5YsC2wyfCSNgSe4rUrDYxgzHW8z
-         qtugQK4XSkfKBashTIdl6/YllVS6ldTPw3VtYckhZxFStyMfi1T/klnt+YnPKbx1zV4v
-         IgDfhRA7kQcGp3kx4HFkEv7QAYMnkVgVL+hKxqCsf6oXbVV3osJHU3n+YN2TYhu8s0I+
-         YTJMPrDaAXa8+C5OtzTRXGeak8R7qrOjHFgt85dXnzM7HL0YVYF+yBEoG1jLKW5d0ifC
-         lstQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV2GBt2KYUQriYlRULVAXiDVi/SosxBKdKpnAxkNsdxKPAxLTNMi5HAMnERJjRKnWlW3ItVa/PE9ha/Alg9TqT7o1KOS/ZaijGhVp9ngtK4eXYeHKPp2UbyQ2k+6HZYxLgLrSHKjHdF01/as2gEFy0ZAXQjDvyciLyDkdMhS2jIulfEVgbGE0EZ0ta+YrI=
-X-Gm-Message-State: AOJu0YztfGNTwKreto0sAHgeLRlLlwU+YtGzK1uZANg4n9UNkgTvTol3
-	QosFIUA1KInSvrS24Lsd91wZbXLkjEIREU2wrf1Z/zbQ1I+0nryg
-X-Google-Smtp-Source: AGHT+IEZy/a/MqdksQQcam9t4oDsMY2JYY1I1etnpQV8uVPdJTZsT4Uvwjk1xr7Td1B0Jh9dvLOFBQ==
-X-Received: by 2002:a05:6512:3e1d:b0:52c:deb9:904b with SMTP id 2adb3069b0e04-530e58769c5mr882431e87.38.1723102286668;
-        Thu, 08 Aug 2024 00:31:26 -0700 (PDT)
+        bh=LANE1F4E7M4VxmxKZ4CBz1EcLRFw15dRl39LaLAGgJI=;
+        b=O5blTkVSyLAq++pba6iQBVeoitQ8BjLhjDqAymZXCnTtPtIJ16J5uLwCN/ahvDFqcI
+         EXEC1XWcNK1FGaQdfFYp5stXvOzIpAeqlzsLR8kiAGZ+8ELF4DfigJQumpIgUTjSp+Ju
+         G9qjngknvWWYaLIaOL+/fDPf5iXhPzBQc8naIDp/uc8Q5l8i98QPkrftxBZB/V9ORnI+
+         z6rTYQ0kEn73E09gsACGX1uXW0nOsbfYKRf0ibaCSBgo/qlET30XYjFl6u/m4xGnJgnC
+         GbRKnO9ValrmuCLAC6If5UUnccB/BDcMoDh2PCidAAqUt2YqZJ/KM4lpTkqayU3BABGF
+         XfyA==
+X-Forwarded-Encrypted: i=1; AJvYcCW+PzmwMSZkkCSwcb+HsLtlDTbkn4u+oXSCfovrvNVbBk//tb09TdV4VjTTFP4SRSU+nbRfa7jMI+L0bGtVQKC/1Pzi3OwbI0yqsVIroPFf3wG05j9B5O3D61Ui0wTyNL3NzF2Khvt3AdoCUoVW6jgEQWaZfyv8N11TkvGtZ4QjrLJ3
+X-Gm-Message-State: AOJu0YyMRyfJjfHeFm8mL07G6aeaAplKY0zEvjMFS4bNKF7pzSTI5WsB
+	BNtC7bdxtnLNAt3cjlOYDZJYplnn2pDxb8npCjuIIZWOl75fC4zb
+X-Google-Smtp-Source: AGHT+IHqpxgFNQLtYa1M+xts7q1ockNFi4t26CIhEU96NCeb5gqqCtpZD+0AqTR0NPuUYQhCFlQawA==
+X-Received: by 2002:a05:6402:d05:b0:5b9:df62:15cd with SMTP id 4fb4d7f45d1cf-5bbb240fcd4mr846488a12.32.1723102475131;
+        Thu, 08 Aug 2024 00:34:35 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9ec285bsm706758666b.188.2024.08.08.00.31.25
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bbb2d34eb0sm358292a12.68.2024.08.08.00.34.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Aug 2024 00:31:26 -0700 (PDT)
-Message-ID: <65ce2214-dad5-4a73-8806-07aab5404cf8@kernel.org>
-Date: Thu, 8 Aug 2024 09:31:24 +0200
+        Thu, 08 Aug 2024 00:34:34 -0700 (PDT)
+Message-ID: <c4c01c01-e926-49fb-8704-90a69662254d@kernel.org>
+Date: Thu, 8 Aug 2024 09:34:33 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,18 +48,17 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] tty: serial: samsung_tty: cast the interrupt's
- void *id just once
-To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, Alim Akhtar
- <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Peter Griffin <peter.griffin@linaro.org>,
- Tudor Ambarus <tudor.ambarus@linaro.org>,
- Will McVicker <willmcvicker@google.com>, kernel-team@android.com,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20240807-samsung-tty-cleanup-v2-0-1db5afc9d41b@linaro.org>
- <20240807-samsung-tty-cleanup-v2-2-1db5afc9d41b@linaro.org>
+Subject: Re: [PATCH 03/13] serial: don't use uninitialized value in
+ uart_poll_init()
+To: Doug Anderson <dianders@chromium.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial <linux-serial@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+References: <20240805102046.307511-1-jirislaby@kernel.org>
+ <20240805102046.307511-4-jirislaby@kernel.org>
+ <84af065c-b1a1-dc84-4c28-4596c3803fd2@linux.intel.com>
+ <CAD=FV=WeekuQXzjk90K8jn=Evn8dMaT1RyctbT7gwEZYYgA9Aw@mail.gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -104,55 +103,36 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240807-samsung-tty-cleanup-v2-2-1db5afc9d41b@linaro.org>
+In-Reply-To: <CAD=FV=WeekuQXzjk90K8jn=Evn8dMaT1RyctbT7gwEZYYgA9Aw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 07. 08. 24, 13:58, André Draszik wrote:
-> The interrupt handler routines and helpers are casting the 'void *'
-> pointer to 'struct exynos_uart_port *' all over the place.
+On 05. 08. 24, 17:46, Doug Anderson wrote:
+>>> @@ -2717,10 +2716,10 @@ static int uart_poll_init(struct tty_driver *driver, int line, char *options)
+>>>                ret = uart_set_options(port, NULL, baud, parity, bits, flow);
+>>>                console_list_unlock();
+>>>        }
+>>> -out:
+>>> +
+>>>        if (ret)
+>>>                uart_change_pm(state, pm_state);
+>>> -     mutex_unlock(&tport->mutex);
+>>> +
+>>>        return ret;
+>>>   }
+>>
+>> This too needs #include.
 > 
-> There is no need for that, we can do the casting once and keep passing
-> the 'struct exynos_uart_port *', simplifying the code and saving a few
-> lines of code.
+> Why? I see in "mutex.h" (which is already included by serial_core.c):
 > 
-> No functional changes.
-...
-> @@ -944,17 +939,17 @@ static irqreturn_t s3c24xx_serial_tx_irq(void *id)
->   /* interrupt handler for s3c64xx and later SoC's.*/
->   static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
->   {
-> -	const struct s3c24xx_uart_port *ourport = id;
-> -	const struct uart_port *port = &ourport->port;
-> +	struct s3c24xx_uart_port *ourport = id;
-> +	struct uart_port *port = &ourport->port;
->   	u32 pend = rd_regl(port, S3C64XX_UINTP);
->   	irqreturn_t ret = IRQ_HANDLED;
->   
->   	if (pend & S3C64XX_UINTM_RXD_MSK) {
-> -		ret = s3c24xx_serial_rx_irq(id);
-> +		ret = s3c24xx_serial_rx_irq(ourport);
->   		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_RXD_MSK);
->   	}
->   	if (pend & S3C64XX_UINTM_TXD_MSK) {
-> -		ret = s3c24xx_serial_tx_irq(id);
-> +		ret = s3c24xx_serial_tx_irq(ourport);
->   		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_TXD_MSK);
->   	}
->   	return ret;
-> @@ -963,19 +958,19 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
->   /* interrupt handler for Apple SoC's.*/
->   static irqreturn_t apple_serial_handle_irq(int irq, void *id)
->   {
-> -	const struct s3c24xx_uart_port *ourport = id;
-> -	const struct uart_port *port = &ourport->port;
-> +	struct s3c24xx_uart_port *ourport = id;
-> +	struct uart_port *port = &ourport->port;
+> DEFINE_GUARD(mutex, struct mutex *, mutex_lock(_T), mutex_unlock(_T))
+> 
+> ...so we're using the mutex guard and including the header file that
+> defines the mutex guard. Seems like it's all legit to me.
 
-No need to remove const from port here and above, right? (Only from 
-ourport.)
-
-Other than that, LGTM.
+The patches got merged. But I can post a fix on top, of course. But, 
+what is the consensus here -- include or not to include? I assume 
+mutex.h includes cleanup.h already due to the above guard definition.
 
 thanks,
 -- 
