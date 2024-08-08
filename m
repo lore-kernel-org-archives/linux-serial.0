@@ -1,46 +1,46 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D949101DE;
-	Thu,  8 Aug 2024 08:34:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3BC186E25;
+	Thu,  8 Aug 2024 08:35:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723106074; cv=none; b=BtzBvUf2AFS97aFrmfuZCsERjfGOG9b94tFbwPVLN5YAe1cn52HAGHnqEqj0MOb8cx5yB4xVQ2uRoc8X95zNmFQONkh24CCjqWGYzew2ZvC/EDE3E1mhhlNc9LL/Clr0CHy1o09mwaIQKOttAbD5uh8xtbyuBmsSeX5XbX68frU=
+	t=1723106131; cv=none; b=TZXT6ZHxD5u0zqwTssNWlQ7Nc7J3yJ5NrTx8KjpQoGZ0t5JZIHMwyo2hkdIctoRGTXBo2ORLBmHEAeqp/4/bEGCACA/9qk9aDTFr/2XCdXHoke9Nk0nSCMMjF3uncRbbDh0I0DNQVwfNskY33hazHXOYJ4iFewR6ZlaDZaC3uoc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723106074; c=relaxed/simple;
-	bh=UIdUQwFoDfyAHpDPmasNQdPLo4k/OipcMMqyvOubLWU=;
+	s=arc-20240116; t=1723106131; c=relaxed/simple;
+	bh=WL4iIRRN715jPLHIegzkLvUCR++i9gQ7KUAjS9a4JPs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BAIAa6Quxpn7e/PPQRTdHAm60y1P2ufdYYD64FvfOCgWz4lvS1b/CcT+YRStYFc1KvrAJX2rAW2mPaXUitGtgXzgUh7siBguYzpsfcMorp6JMP938C8gyLkzpJcy/uZXT6ZUQs8R7nnzZ8l7c69+Y4DaO6sf0mr+qwcpWjAtKXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.48
+	 In-Reply-To:Content-Type; b=N+kN2Mm2eGWOq9FvnYaRS+L3mYITwmkXaKt8keQkTSczjQGX/89dvlqI6DqY2z6LvXnlaS6db1dEVNA5tEw4hZXyJGi8wkNaUjtQXamgiihAWzIOKZYiPDcfWwuHxMtinuI+8E/XG9T+KbMifnKHc+ZQNZHbTKN7DHgh6Vcim6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5a79df5af51so2731122a12.0;
-        Thu, 08 Aug 2024 01:34:32 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5b8c2a6117aso254203a12.0;
+        Thu, 08 Aug 2024 01:35:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723106071; x=1723710871;
+        d=1e100.net; s=20230601; t=1723106128; x=1723710928;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=52QVSpFTr+c1Yj99JowRCyFO1YiJenE5u/kUGXk2t8o=;
-        b=t1bcQHf1wQquCmw0LwVFeuXvS88DRP/tr88CBwZ9tOo3YIxsiafp+llfGBF10IZRw0
-         WsJdm2ZNFuTgpxIUeKkSBiBuwWk1qjbWtHKUhRC4AwRU/BoL4m0KMnwQnNoh3KkI+6Ge
-         zIgtGC0Qzz++VrjVLTek+rz+/UQpx+8FD/Jkz/AR6rq4pIcjyadTl4CZIQLA+SOw06U2
-         0c8UvcgL1vN166GXX3ZMYvq61UBI669Un9PMkDHNVAacmh/wQnueKfSFchdbN7F4WcRI
-         fB0pfctX5ntkbKzUCIOYvgolDzo6zftNDt0Ex8QGTXTv3Ljsn5gZu7qsi02vZR++kIyk
-         Rkww==
-X-Forwarded-Encrypted: i=1; AJvYcCXXEproFullDK3zc4Q1BsnhMPmPuaFFfOBWmfJl+BASa37Heh2kOEZ/HcJ7yADWmp4IBsTfrlBFk2oI/dhnzeq7C10NMFCTZgyS1TMaZJnJbW+K95WHo+By/MKHtUHgNAkf86iPTlFASBamXjtCu6fdnXnLGThFD+Jq4aQ4VL7YDbvTPdu8VOmbzDNUGyE=
-X-Gm-Message-State: AOJu0Yz/UxYbVxnwMa63quA/KMAAWx4iQFc5zYAfr3Zu2mgBnz7PVXgs
-	TWGAvxVQdFOJ6/J/v0cu2Z8hqtTgXdpB94H25oNc7s1IArQokaPk
-X-Google-Smtp-Source: AGHT+IG4Am3i/X9+d18JcWuUEoYbCQYfq3RHu9i8q7Zo0wZxgf6i0QkVappTqMdQFcdX2zJsgEZ2Jg==
-X-Received: by 2002:a17:907:368c:b0:a7a:8dcd:ffb4 with SMTP id a640c23a62f3a-a8091f1998dmr76854066b.17.1723106070607;
-        Thu, 08 Aug 2024 01:34:30 -0700 (PDT)
+        bh=sdYWVuEmycbO2vOTakIM2XMnfgL7Y/edBOmDpUcN5Wo=;
+        b=ETd8A6eHfMweQcU49GdAhxFWyMdFbIJ1QJgv6ysNAufGEFpVyqR2NlZrvhqAEJobED
+         61qouhLkK3RLbDDtybYWaIWSIB5YQhhZpj3qDu2bAhI1N7+ymS6y9TblbQEXoAGvABTr
+         tSbPwjWRdr23tfefk2Z8Wwp3abnaoW55nHAihU+kxhIRy+Evzcn3+Un48KhARmuZvcIK
+         phZ8pAqg1H5kmOQkUVbOCTSBDFwyoGdKZTqHrWMjJrCu6spSRLC2CJrF5581/eIe81Wb
+         Fyig2I8zMHMbapKUe8ORblxqXnX7FuKr49M009tfWoSijppIN+te4/YNH604pX8hLbJR
+         /L8A==
+X-Forwarded-Encrypted: i=1; AJvYcCUX3pMyCt+vG1ikubFQUF/joQS1hZLFEj/UEcq/vLX1ab5OvrvrJdK8UqWve7hPNWTtMhcHaH5YA8kUWzc=@vger.kernel.org, AJvYcCWMhWWr8yFDy4QvS+OFw/XFyG5JIjdczQEiZUvwLsM4zvjV6R6ETch/CANoee8NGOKoTnJ2ot7bzd0CNksML5HjQuk=@vger.kernel.org, AJvYcCX3ez+UphBYWYphswcaIVbtIf1xK//iqmCvz46OnsYV8CIAuqulRen6nXkPupvy/N17XE4qfeKxp65XMmTT@vger.kernel.org
+X-Gm-Message-State: AOJu0YxEi7tPqfnjRM64z6ZUruSLfj5mNUhnDp10Q+HvH/pOK4B56Mzw
+	0Ufquzvj95lmskOudOg4IdZQUdL+dy4L7MpfQ3pQceqCOUdduOl1
+X-Google-Smtp-Source: AGHT+IG2yBZGQoCrRa6isN3rDSiGVzIgqQn+5eZrZDAmUHd1rawM39VifjGbRTrgZJOz0mjPH/n6hg==
+X-Received: by 2002:a05:6402:13d3:b0:5a1:f9bc:7f13 with SMTP id 4fb4d7f45d1cf-5bbb235ae4dmr1375124a12.22.1723106127762;
+        Thu, 08 Aug 2024 01:35:27 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9c0cdddsm712408466b.81.2024.08.08.01.34.29
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bbb2d3473dsm401613a12.63.2024.08.08.01.35.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Aug 2024 01:34:30 -0700 (PDT)
-Message-ID: <ca6853fb-91e8-4f0a-8cf5-349356b2c6f4@kernel.org>
-Date: Thu, 8 Aug 2024 10:34:29 +0200
+        Thu, 08 Aug 2024 01:35:27 -0700 (PDT)
+Message-ID: <6ea8f8fd-97b8-4c47-b042-cb8d64efebad@kernel.org>
+Date: Thu, 8 Aug 2024 10:35:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,8 +48,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] tty: serial: samsung_tty: drop unused argument to
- irq handlers
+Subject: Re: [PATCH v3 2/2] tty: serial: samsung_tty: cast the interrupt's
+ void *id just once
 To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
  Krzysztof Kozlowski <krzk@kernel.org>, Alim Akhtar
  <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -59,7 +59,7 @@ Cc: Peter Griffin <peter.griffin@linaro.org>,
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20240808-samsung-tty-cleanup-v3-0-494412f49f4b@linaro.org>
- <20240808-samsung-tty-cleanup-v3-1-494412f49f4b@linaro.org>
+ <20240808-samsung-tty-cleanup-v3-2-494412f49f4b@linaro.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -104,20 +104,31 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240808-samsung-tty-cleanup-v3-1-494412f49f4b@linaro.org>
+In-Reply-To: <20240808-samsung-tty-cleanup-v3-2-494412f49f4b@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 On 08. 08. 24, 10:11, André Draszik wrote:
-> The 'irq' argument is not used in any of the callees, we can just drop
-> it and simplify the code.
+> The interrupt handler routines and helpers are casting the 'void *'
+> pointer to 'struct exynos_uart_port *' all over the place.
+> 
+> There is no need for that, we can do the casting once and keep passing
+> the 'struct exynos_uart_port *', simplifying the code and saving a few
+> lines of code.
 > 
 > No functional changes.
+> 
+> Reviewed-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> Signed-off-by: André Draszik <andre.draszik@linaro.org>
+> ---
+> v3: undo too eager removal of 'const' where unnecessary (Jiri)
+
+LGTM now
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-> Reviewed-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-> Signed-off-by: André Draszik <andre.draszik@linaro.org>
+> v2: fix -Wdiscarded-qualifiers, sorry
+
 thanks,
 -- 
 js
