@@ -1,202 +1,125 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FDB71898E0
-	for <linux-serial@vger.kernel.org>; Thu,  8 Aug 2024 08:11:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D949101DE;
+	Thu,  8 Aug 2024 08:34:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723104716; cv=none; b=ZD3o4dQQIRJ3X/IVgNF3ArltvzhwVVUMQ+ClmKptWEOPoUiBhTde2ubpsoS5+dw2EKwJuM1Cmm6noBak9cC7XRtxOQETlc9E//w/g55K82Bf6JAnhWv62sL5NFCWE3Nb2vzBDhhEKbaiLyamXlw+jcVYSqrZlSNG2ybvCZ6NTOQ=
+	t=1723106074; cv=none; b=BtzBvUf2AFS97aFrmfuZCsERjfGOG9b94tFbwPVLN5YAe1cn52HAGHnqEqj0MOb8cx5yB4xVQ2uRoc8X95zNmFQONkh24CCjqWGYzew2ZvC/EDE3E1mhhlNc9LL/Clr0CHy1o09mwaIQKOttAbD5uh8xtbyuBmsSeX5XbX68frU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723104716; c=relaxed/simple;
-	bh=XcgZzonM3Zq0QilSSZPQLNCcRAf6MfPi/wZmG15XNl4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ekhwbqbA2ZcvfOp4H79mL62K4G8yFx0zcehOdoqJLg4a65WNocqVEntVBWzJkO5Efajf+mauUdAulYqWUL8v+zjUlwraefWEyOBxuFKaL2n8A6LnWtzBFdvFvHUa00K4MlWWknIbRS3NcG+3G1cuW6vjjqUHdlFYii1V+h1Ohcc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=L+CzX3OQ; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="L+CzX3OQ"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a7ac469e4c4so109109166b.0
-        for <linux-serial@vger.kernel.org>; Thu, 08 Aug 2024 01:11:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1723104713; x=1723709513; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CqxEVbtlJAYIU2G7koLN0SZSQulPINd9bO5ddzhKZmM=;
-        b=L+CzX3OQQXx28qdRo8fS3iI9T4p5BbKM3eJPSLnxh2+JtAFdiCluJADHmLmrLnUbFL
-         ywwB5VEfbrIZJG59z09MOadirqnobuA8JJWPGm2Wq+b1BJhuYrS882CECz1vU7hwBvl+
-         wf9ahukQE6yk+64kygA7Unw5a/9QjdJovSuCZBLsUdRSbbKskWt7DI57Bx1i89L/tFsM
-         jGUsOaYRVifYtdTpB2sUd25evbP3eOEi90ick2POG+7cp7CVzjdycTsHtf+TnPXBT3F5
-         DXKnHjp8t4iYfpDVCJY/WIboAA2v8sl3QPFvIrhVtHzMiTVLOqN9Y+IUntF+AE3LLoib
-         OO3g==
+	s=arc-20240116; t=1723106074; c=relaxed/simple;
+	bh=UIdUQwFoDfyAHpDPmasNQdPLo4k/OipcMMqyvOubLWU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BAIAa6Quxpn7e/PPQRTdHAm60y1P2ufdYYD64FvfOCgWz4lvS1b/CcT+YRStYFc1KvrAJX2rAW2mPaXUitGtgXzgUh7siBguYzpsfcMorp6JMP938C8gyLkzpJcy/uZXT6ZUQs8R7nnzZ8l7c69+Y4DaO6sf0mr+qwcpWjAtKXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5a79df5af51so2731122a12.0;
+        Thu, 08 Aug 2024 01:34:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723104713; x=1723709513;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CqxEVbtlJAYIU2G7koLN0SZSQulPINd9bO5ddzhKZmM=;
-        b=PadlZrTo1oR0BgqkIyXTbgF3925Jr1OcVvu/LSEN630B+Y9JMwb34ZSVWgeJKRcIJE
-         yOxRxJGgHqTttQMD93QRtqYr/EIedG0jpuUVSS/qdhHX2Jms92/TCSuWu0VM2AnPV/Z9
-         IuvjwRss8O6zjuk3Q2+l7UqkdY9SIfdJixreWi9ac0uLrTIgfhugwgB5hvgSHEcX0z8Y
-         rSsEWPKyZWfT0drVaa0cbPRSU5S6cbm5cXEUUgEJv1Lq/bJoXsBG85QJiyXtrug9EMEG
-         4yK1ORGV8n3DxjnW59ptpzg70h+Pp6VKXpBL7WjiZ6Je+IfiKu+ksZBAwDLkGW1dQDzc
-         +4Xg==
-X-Forwarded-Encrypted: i=1; AJvYcCXQSUtDfNZqq/sqh3hHElNdo8exq1ARL7PA7M5CdqxzDooLO4Q8NGRtgABlXVoo2tfj44pKTJuDHUtQW3e54KFyI9VvvcNes6CWbz6x
-X-Gm-Message-State: AOJu0Ywqh9zFDHzl8W1PklUXsMW3gExEXKe/QonW4YGblgdGojBXYFtb
-	RShxFEUe8zA0HeHXKkPoxvTDxjaBM4tDAspmmc0z+iW1I/WPtoGUkceIl/VqZEc=
-X-Google-Smtp-Source: AGHT+IGHGZjdFmV3eFGqC8FJHxVC9D1wSPHpGQgKUM7hRt/4kJ1eWwU/AAaASzthWd/iCBjPMuERUg==
-X-Received: by 2002:a17:906:b15a:b0:a7a:b26d:fb5 with SMTP id a640c23a62f3a-a8091f1eb5dmr68212166b.19.1723104712714;
-        Thu, 08 Aug 2024 01:11:52 -0700 (PDT)
-Received: from puffmais.c.googlers.com (64.227.90.34.bc.googleusercontent.com. [34.90.227.64])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9c0c578sm716931166b.73.2024.08.08.01.11.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Aug 2024 01:11:52 -0700 (PDT)
-From: =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
-Date: Thu, 08 Aug 2024 09:11:52 +0100
-Subject: [PATCH v3 2/2] tty: serial: samsung_tty: cast the interrupt's void
- *id just once
+        d=1e100.net; s=20230601; t=1723106071; x=1723710871;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=52QVSpFTr+c1Yj99JowRCyFO1YiJenE5u/kUGXk2t8o=;
+        b=t1bcQHf1wQquCmw0LwVFeuXvS88DRP/tr88CBwZ9tOo3YIxsiafp+llfGBF10IZRw0
+         WsJdm2ZNFuTgpxIUeKkSBiBuwWk1qjbWtHKUhRC4AwRU/BoL4m0KMnwQnNoh3KkI+6Ge
+         zIgtGC0Qzz++VrjVLTek+rz+/UQpx+8FD/Jkz/AR6rq4pIcjyadTl4CZIQLA+SOw06U2
+         0c8UvcgL1vN166GXX3ZMYvq61UBI669Un9PMkDHNVAacmh/wQnueKfSFchdbN7F4WcRI
+         fB0pfctX5ntkbKzUCIOYvgolDzo6zftNDt0Ex8QGTXTv3Ljsn5gZu7qsi02vZR++kIyk
+         Rkww==
+X-Forwarded-Encrypted: i=1; AJvYcCXXEproFullDK3zc4Q1BsnhMPmPuaFFfOBWmfJl+BASa37Heh2kOEZ/HcJ7yADWmp4IBsTfrlBFk2oI/dhnzeq7C10NMFCTZgyS1TMaZJnJbW+K95WHo+By/MKHtUHgNAkf86iPTlFASBamXjtCu6fdnXnLGThFD+Jq4aQ4VL7YDbvTPdu8VOmbzDNUGyE=
+X-Gm-Message-State: AOJu0Yz/UxYbVxnwMa63quA/KMAAWx4iQFc5zYAfr3Zu2mgBnz7PVXgs
+	TWGAvxVQdFOJ6/J/v0cu2Z8hqtTgXdpB94H25oNc7s1IArQokaPk
+X-Google-Smtp-Source: AGHT+IG4Am3i/X9+d18JcWuUEoYbCQYfq3RHu9i8q7Zo0wZxgf6i0QkVappTqMdQFcdX2zJsgEZ2Jg==
+X-Received: by 2002:a17:907:368c:b0:a7a:8dcd:ffb4 with SMTP id a640c23a62f3a-a8091f1998dmr76854066b.17.1723106070607;
+        Thu, 08 Aug 2024 01:34:30 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9c0cdddsm712408466b.81.2024.08.08.01.34.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Aug 2024 01:34:30 -0700 (PDT)
+Message-ID: <ca6853fb-91e8-4f0a-8cf5-349356b2c6f4@kernel.org>
+Date: Thu, 8 Aug 2024 10:34:29 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20240808-samsung-tty-cleanup-v3-2-494412f49f4b@linaro.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] tty: serial: samsung_tty: drop unused argument to
+ irq handlers
+To: =?UTF-8?Q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Alim Akhtar
+ <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ Tudor Ambarus <tudor.ambarus@linaro.org>,
+ Will McVicker <willmcvicker@google.com>, kernel-team@android.com,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20240808-samsung-tty-cleanup-v3-0-494412f49f4b@linaro.org>
-In-Reply-To: <20240808-samsung-tty-cleanup-v3-0-494412f49f4b@linaro.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>, 
- Alim Akhtar <alim.akhtar@samsung.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Peter Griffin <peter.griffin@linaro.org>, 
- Tudor Ambarus <tudor.ambarus@linaro.org>, 
- Will McVicker <willmcvicker@google.com>, kernel-team@android.com, 
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- =?utf-8?q?Andr=C3=A9_Draszik?= <andre.draszik@linaro.org>
-X-Mailer: b4 0.13.0
+ <20240808-samsung-tty-cleanup-v3-1-494412f49f4b@linaro.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20240808-samsung-tty-cleanup-v3-1-494412f49f4b@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-The interrupt handler routines and helpers are casting the 'void *'
-pointer to 'struct exynos_uart_port *' all over the place.
+On 08. 08. 24, 10:11, André Draszik wrote:
+> The 'irq' argument is not used in any of the callees, we can just drop
+> it and simplify the code.
+> 
+> No functional changes.
 
-There is no need for that, we can do the casting once and keep passing
-the 'struct exynos_uart_port *', simplifying the code and saving a few
-lines of code.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-No functional changes.
-
-Reviewed-by: Tudor Ambarus <tudor.ambarus@linaro.org>
-Signed-off-by: André Draszik <andre.draszik@linaro.org>
----
-v3: undo too eager removal of 'const' where unnecessary (Jiri)
-
-v2: fix -Wdiscarded-qualifiers, sorry
----
- drivers/tty/serial/samsung_tty.c | 29 ++++++++++++-----------------
- 1 file changed, 12 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-index 1c6d0ffe5649..c4f2ac9518aa 100644
---- a/drivers/tty/serial/samsung_tty.c
-+++ b/drivers/tty/serial/samsung_tty.c
-@@ -707,9 +707,8 @@ static void enable_rx_pio(struct s3c24xx_uart_port *ourport)
- 
- static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport);
- 
--static irqreturn_t s3c24xx_serial_rx_chars_dma(void *dev_id)
-+static irqreturn_t s3c24xx_serial_rx_chars_dma(struct s3c24xx_uart_port *ourport)
- {
--	struct s3c24xx_uart_port *ourport = dev_id;
- 	struct uart_port *port = &ourport->port;
- 	struct s3c24xx_uart_dma *dma = ourport->dma;
- 	struct tty_struct *tty = tty_port_tty_get(&ourport->port.state->port);
-@@ -843,9 +842,8 @@ static void s3c24xx_serial_rx_drain_fifo(struct s3c24xx_uart_port *ourport)
- 	tty_flip_buffer_push(&port->state->port);
- }
- 
--static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
-+static irqreturn_t s3c24xx_serial_rx_chars_pio(struct s3c24xx_uart_port *ourport)
- {
--	struct s3c24xx_uart_port *ourport = dev_id;
- 	struct uart_port *port = &ourport->port;
- 
- 	uart_port_lock(port);
-@@ -855,13 +853,11 @@ static irqreturn_t s3c24xx_serial_rx_chars_pio(void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static irqreturn_t s3c24xx_serial_rx_irq(void *dev_id)
-+static irqreturn_t s3c24xx_serial_rx_irq(struct s3c24xx_uart_port *ourport)
- {
--	struct s3c24xx_uart_port *ourport = dev_id;
--
- 	if (ourport->dma && ourport->dma->rx_chan)
--		return s3c24xx_serial_rx_chars_dma(dev_id);
--	return s3c24xx_serial_rx_chars_pio(dev_id);
-+		return s3c24xx_serial_rx_chars_dma(ourport);
-+	return s3c24xx_serial_rx_chars_pio(ourport);
- }
- 
- static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
-@@ -928,9 +924,8 @@ static void s3c24xx_serial_tx_chars(struct s3c24xx_uart_port *ourport)
- 		s3c24xx_serial_stop_tx(port);
- }
- 
--static irqreturn_t s3c24xx_serial_tx_irq(void *id)
-+static irqreturn_t s3c24xx_serial_tx_irq(struct s3c24xx_uart_port *ourport)
- {
--	struct s3c24xx_uart_port *ourport = id;
- 	struct uart_port *port = &ourport->port;
- 
- 	uart_port_lock(port);
-@@ -944,17 +939,17 @@ static irqreturn_t s3c24xx_serial_tx_irq(void *id)
- /* interrupt handler for s3c64xx and later SoC's.*/
- static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
- {
--	const struct s3c24xx_uart_port *ourport = id;
-+	struct s3c24xx_uart_port *ourport = id;
- 	const struct uart_port *port = &ourport->port;
- 	u32 pend = rd_regl(port, S3C64XX_UINTP);
- 	irqreturn_t ret = IRQ_HANDLED;
- 
- 	if (pend & S3C64XX_UINTM_RXD_MSK) {
--		ret = s3c24xx_serial_rx_irq(id);
-+		ret = s3c24xx_serial_rx_irq(ourport);
- 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_RXD_MSK);
- 	}
- 	if (pend & S3C64XX_UINTM_TXD_MSK) {
--		ret = s3c24xx_serial_tx_irq(id);
-+		ret = s3c24xx_serial_tx_irq(ourport);
- 		wr_regl(port, S3C64XX_UINTP, S3C64XX_UINTM_TXD_MSK);
- 	}
- 	return ret;
-@@ -963,7 +958,7 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
- /* interrupt handler for Apple SoC's.*/
- static irqreturn_t apple_serial_handle_irq(int irq, void *id)
- {
--	const struct s3c24xx_uart_port *ourport = id;
-+	struct s3c24xx_uart_port *ourport = id;
- 	const struct uart_port *port = &ourport->port;
- 	u32 pend = rd_regl(port, S3C2410_UTRSTAT);
- 	irqreturn_t ret = IRQ_NONE;
-@@ -971,11 +966,11 @@ static irqreturn_t apple_serial_handle_irq(int irq, void *id)
- 	if (pend & (APPLE_S5L_UTRSTAT_RXTHRESH | APPLE_S5L_UTRSTAT_RXTO)) {
- 		wr_regl(port, S3C2410_UTRSTAT,
- 			APPLE_S5L_UTRSTAT_RXTHRESH | APPLE_S5L_UTRSTAT_RXTO);
--		ret = s3c24xx_serial_rx_irq(id);
-+		ret = s3c24xx_serial_rx_irq(ourport);
- 	}
- 	if (pend & APPLE_S5L_UTRSTAT_TXTHRESH) {
- 		wr_regl(port, S3C2410_UTRSTAT, APPLE_S5L_UTRSTAT_TXTHRESH);
--		ret = s3c24xx_serial_tx_irq(id);
-+		ret = s3c24xx_serial_tx_irq(ourport);
- 	}
- 
- 	return ret;
-
+> Reviewed-by: Tudor Ambarus <tudor.ambarus@linaro.org>
+> Signed-off-by: André Draszik <andre.draszik@linaro.org>
+thanks,
 -- 
-2.46.0.rc2.264.g509ed76dc8-goog
+js
+suse labs
 
