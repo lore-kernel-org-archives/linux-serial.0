@@ -1,140 +1,159 @@
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.85.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AB3D18FC8F;
-	Thu,  8 Aug 2024 15:27:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.104.207.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABBD81DA21
+	for <linux-serial@vger.kernel.org>; Thu,  8 Aug 2024 15:57:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.85.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723130871; cv=none; b=RsMOuh1huSQkVowuh3xLpXIw7I91MesmuYU8v4Ve+ScLCASGvS8XcjOG6UUZ2D0Mf1ciUxp5CbaCkjiQ5KWnX04rZU55cgtmom9EwFpPv+1ID8b0P1e1H2Oc0pWmIMLDNpiR9/pXGM3IbNSRPS+hJgVl+GOsPOUH7vPEaL0Ugmk=
+	t=1723132667; cv=none; b=DagcWvnDaXBpvmlMB5AZJRMsY6iYW4XWICovdlHtB2ZMsRDgWTlEXFu2+8O8/UZDmAyQw6bdkkau6BNQy6lEsbKOc3FkvxTC1MEt8M5P+4aMaSSj+HSoFsWUUWF/Extr46InGQC/JRWvkX+EHmvKg/0IvAlLNumpuvWQLaJEenk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723130871; c=relaxed/simple;
-	bh=pVXT/WpO/Vd+dSlyATMq7jQ1Q/Ms9tqOBgO9J2528xU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FEBESiNipDgP5SROq6sH1QXkbA5IIAdoa+ylbDh5IHb/CdGmZoroZNpzu9Ad0ucQEe2QTcwS6WiL4vgqRE4CjZcp5cmgGiPe3es3+Phj5LQtrzA01dYv5ERaOeKVZkS+GyAKWK4eEDDIToKGaRtdhsmGy35i78vtXaHTh0dyWvY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b=B+w6oTaR; dkim=fail (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=aj8lF0Qk reason="key not found in DNS"; arc=none smtp.client-ip=93.104.207.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
+	s=arc-20240116; t=1723132667; c=relaxed/simple;
+	bh=GVi7K7H1Rr8AxY+eGtaR5qvYQ8R4RmPpxSo4GsEnlps=;
+	h=Message-ID:Date:From:Subject:To:CC:MIME-Version:Content-Type; b=ETdWZIx/IUYIBF1YhmvWd9cJNj/wGJLJ1IYzWSE+3zoIoXvxOR96143hgJQa0yRfy9gKinQNWra7grfgR9YJ1+ewgsaJTsKDS6BYV74a1YnsJzIqHoGRluWQdqXPepO5GjaP5djMAPGJh7tAoQJwnvjl+y7PsHtzH5J9cnHE5C8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com; spf=pass smtp.mailfrom=camlingroup.com; dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b=Fp4Jx/db; arc=none smtp.client-ip=185.58.85.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=camlingroup.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="B+w6oTaR";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="aj8lF0Qk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1723130866; x=1754666866;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=O3S37yAL7py1iqZdhmEM/jnGQrTXFEljfmn4dyezkII=;
-  b=B+w6oTaRhDuMKbTFBk0vX1WS22Fm20j7bpG0ENkrhK8KqGqSJSyQrug2
-   L6Og/VRCQYD/Kb97QtxGmS0jcoUpHytrB4CzuzvjXLnoc2Xz2XRwQdxPM
-   53NRCAOL4FApyNNeHWdxru3YUPRzZ9pcCjBqgPF+D/qFcNWjtSzvz45Cy
-   X73NuZ1bEcuGwo0kzU9SjtSojh46TwR1Rz+0R3KrEuFR1ILs3coG5Flh7
-   atK5UPOs5qWlROtAMKJYhofk7LMscndDauXYqbhIpL43TH5V1WUO2YzRr
-   J6RLIJ6GYXlQYHPbvq3FKfM0WQkenL0mTqUdAvjCTPhsz7tzA9CGegn83
-   A==;
-X-CSE-ConnectionGUID: 0wLTaXIwTD2fd/4FQ+5ajw==
-X-CSE-MsgGUID: 28+Zl++PSV69A5l8RYZXrQ==
-X-IronPort-AV: E=Sophos;i="6.09,273,1716242400"; 
-   d="scan'208";a="38319885"
-Received: from vmailcow01.tq-net.de ([10.150.86.48])
-  by mx1.tq-group.com with ESMTP; 08 Aug 2024 17:27:43 +0200
-X-CheckPoint: {66B4E3EF-12-DD19D171-FBE73682}
-X-MAIL-CPID: 763AB2045628BCB4D3D087BA8D28C6F6_5
-X-Control-Analysis: str=0001.0A782F1D.66B4E3EF.012A,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id F2149160A0C;
-	Thu,  8 Aug 2024 17:27:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ew.tq-group.com;
-	s=dkim; t=1723130859;
-	h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=O3S37yAL7py1iqZdhmEM/jnGQrTXFEljfmn4dyezkII=;
-	b=aj8lF0QkVhsxHv10leLLBYcFFhyNrnFMHCxdO+qRBHqCXF3X9nXJw5yzfJeHI9OTDj+lDF
-	hMxfll7WJabig2mxinq/cY/IPnr8/MYfWNOL5UTLY7mkdzkjkVUM3/cN3kVybuGuvuIiY9
-	GF2UZq2gj55H+GUVwyxaaYd0USFUyCwUrImQRMm6abDkwjBMLc6/vUWFZ1GJctI/Hd2+TD
-	OgJMQ6k6gdwN+WMU1dJ889UL1r29pBntowJbSR3J44ECJKpu1A7qouUFdEx3iMfjGllpeX
-	FbY3yVYBHFLPuKuNzzbTfJGFBCJWSFh09FnHLRkxm1oyADOULe9JP1ebjoNtAA==
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, u.kleine-koenig@pengutronix.de, "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: sherry.sun@nxp.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: mark last busy before uart_add_one_port
-Date: Thu, 08 Aug 2024 17:27:40 +0200
-Message-ID: <3306657.aeNJFYEL58@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20240808140325.580105-1-peng.fan@oss.nxp.com>
-References: <20240808140325.580105-1-peng.fan@oss.nxp.com>
+	dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b="Fp4Jx/db"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
+	s=mimecast20210310; t=1723132663;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=1EfL++nfVws65aGQJGh5/3drEslJWFloKLJjDeyU85E=;
+	b=Fp4Jx/db1TpYuhhN2B3cVLEHdTQ42a35oG17wwh5bsdBm0ziLM9ib6ZMHOU78U1TEqAIri
+	ORxHb+vTLFCkQcSLnf5u/+fTZsRtp3GaaFx2w9ADSUUveUyw4Epeg7Xwy/1EcXoPoAKzTt
+	CIAoYRw4d0dtj07mQhxpABQDfOdsLEI=
+Received: from GBR01-LO4-obe.outbound.protection.outlook.com
+ (mail-lo4gbr01lp2105.outbound.protection.outlook.com [104.47.85.105]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ uk-mta-104--Klr_J2mN3abhW_6I8lKcQ-1; Thu, 08 Aug 2024 16:57:42 +0100
+X-MC-Unique: -Klr_J2mN3abhW_6I8lKcQ-1
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
+ by LOYP123MB2816.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:ef::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.15; Thu, 8 Aug
+ 2024 15:57:40 +0000
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::f866:62f9:716e:ca4f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::f866:62f9:716e:ca4f%6]) with mapi id 15.20.7849.014; Thu, 8 Aug 2024
+ 15:57:40 +0000
+Message-ID: <6bfb7abc-0264-440d-b0d6-6dd6a8b64b5e@camlingroup.com>
+Date: Thu, 8 Aug 2024 17:57:38 +0200
+User-Agent: Mozilla Thunderbird
+From: Lech Perczak <lech.perczak@camlingroup.com>
+Subject: [PATCH 0/2] serial: sc16is7xx: cosmetic cleanup
+To: linux-serial@vger.kernel.org, linux-serial@vger.kernel.org
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>
+X-ClientProxiedBy: BE1P281CA0327.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:87::6) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:142::9)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|LOYP123MB2816:EE_
+X-MS-Office365-Filtering-Correlation-Id: dd9f3c88-0cd9-4511-9b2b-08dcb7c2d4ac
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?0/O3g5fpldcpR9D6yljYmsQPJWuGG7kb8hdLxw/iSwDp61+5V5JEndxped+M?=
+ =?us-ascii?Q?gJFGnrOihiTOyJ1Q3B1y9SiL9szS8MZrMiNuEBfEloTiny4yaZQxUTdB6FAm?=
+ =?us-ascii?Q?VF9hytSQqjcUX0morq1Y53278h2jkQQAu6fZAyU9lmYER2DPWdegcl+b7uxS?=
+ =?us-ascii?Q?9OSWrL/rLCD987q1HK73AeuOXBb2SfmCrQiRdjx505SxksY/KijN79P3ic36?=
+ =?us-ascii?Q?mHDt+dcGyGv9uXZrcSiJF/SKtXPIGt3BFVUTPuf079ktjQYyI1Mqtp17VIOT?=
+ =?us-ascii?Q?ygBVTyVyvjCJQgOezbEP3hO9cmTXiNIIoi4/eJpko9K0kzM0wxy8gwBmfuEZ?=
+ =?us-ascii?Q?XHGjOy+S2Qfarj5zbUgQ+7VL5tCDlVRP6sFR/jpXsUnqRpIro+rbQLtlV0f2?=
+ =?us-ascii?Q?isbJ5mdOArcivMPuGl0lXNb2MT9H+DQRQMv2DgEBqcTAahbaRTzl6wPBD/U5?=
+ =?us-ascii?Q?u38/DAMVrQSloCgXZPS2qBeX8+Oqlk4aXJSLcGs5M2PrXSmgiWAKrsBFMmNW?=
+ =?us-ascii?Q?lPPps0yEs+eJnAYoAMck6DL7LtSWVmd2c7tssEuM83+M+1rIJ2FkHwNO16NI?=
+ =?us-ascii?Q?RWcCVQQhNh93SOSpODVGF8imkvamACzhKBxV2n6Wum477fMzpgxx2Prjr1Q5?=
+ =?us-ascii?Q?LBjmnIqFfnnJnTs2nLGyJmVqON6ave9peverHYLogfM0toK4KPuGP0nk8wLu?=
+ =?us-ascii?Q?fEXcL1Sq7z/S735gul0jyNuoQwdta3ZgJcNK54jnboVXLTpRlB3Cq3i80kmk?=
+ =?us-ascii?Q?OJYWDw00+jVfq+w6tPy0kHbDqWjO21KaBiRxe+lRx45HW7WE1xxvaww6PUJ8?=
+ =?us-ascii?Q?st2dnQSafnCDaOIvh4JunW8AFXuIHtMEiGpn9EhksZESoEHz8wR76Po0MyiK?=
+ =?us-ascii?Q?X0U2QzTVC0OE3v8cwel3EXXfuijrLhrQ6xJ3z85SBRxJrOjBHOBoKrW/Vryp?=
+ =?us-ascii?Q?DiPaBkAU4UbZ2YkzYZnYwyT3f1fR4cLjnBHiPdrYILqTaoRZ+B0F10VHE7At?=
+ =?us-ascii?Q?wcrn0MKz6ALRw9uQapge0QQLr39q+9h+DVFegUEgFHZbDtQ4Mopqx0HXhwVx?=
+ =?us-ascii?Q?I8Lqq2mZGzMpN8XI2AL1rDBTqxoXbHUelHrKwL67ppzKzVLJdeaNYXrabgxH?=
+ =?us-ascii?Q?IwIKK+9Nx1JVQg54u+k9WwwSa/SrOZsP+1+ZjKGhUR3cZ7xV2+DB4PPARr4D?=
+ =?us-ascii?Q?2W7EhEwwpCjfvRjOGUqoXQBBI1KR69K3RjxcAoCSZpXOa5/+ky5Mtkg4R485?=
+ =?us-ascii?Q?qCm3cDAZBQxlss5rXrz+zV1F3hQLM9zZpMTQU2lACtGtSsbBHF27rxYb61OC?=
+ =?us-ascii?Q?ED9w+S2Lax3XeASY0B9NiVu8lsAZ/4EFoY+8TOFev3znyg=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pCP0rJK7kBtzAQ8+nPB4LWRrJ9CNOWk4oMNSDQ6UMkSSFKPzMo45NgmmldrK?=
+ =?us-ascii?Q?QIbGZ1YOedEu5bpaKQWCwL8f9BM9e0JGxIptDVBM9fuPpZN4HpdPeQxqc6hZ?=
+ =?us-ascii?Q?uvkvAtu9MCM+hqMjS2ZGs0XbWt7phV2M5USZWS+PZp7cuSLs0pXGNXx/RSMG?=
+ =?us-ascii?Q?clmVkEdktSEIzaJq2K69rjnOCxP5uewqkG6XsU+33lidS8C1zKWkJhFylhrf?=
+ =?us-ascii?Q?0EBFCmA+mwZOP8yrKO0OHBa/qBRxL98kGkhBe+mbNUr3nd2G/f4qZ6cOUqXP?=
+ =?us-ascii?Q?J0FCqe7zZcAIVMIBPR5TemscZBpboOI2iT5Iu1r6nxwqQh06Q5317vg8GTNe?=
+ =?us-ascii?Q?c23Kjj6bOVMNK7Tolhmup9nXhCwqeF5bePdZ4VPCO6tjT+iNKKgyDgfScb0S?=
+ =?us-ascii?Q?AkGStY2NH8KxftXmH6WdswYUvI028cgLLD5LPGe7FQ9NMX7HDO8xSvY9sfbr?=
+ =?us-ascii?Q?M7ckf8z11tIfrD0A7k37t8aYGINwWW/j2C+SUju2G1n4JbGfZvZ2gTBESTcY?=
+ =?us-ascii?Q?c5MwhVXWa5qUX0KU1kwc0h4B2TWAm7SUCzesX0Pqz7hRmgqDXMwcDkhnzNO6?=
+ =?us-ascii?Q?VQGVCJLkdRDMKs5XBIYxPmFO98PbrtHvarA5DnezR6Fy1dEF+5+aD3w0oKfA?=
+ =?us-ascii?Q?6Y8FqS2OpWm+Xzsk++P5hZ8pFIRcY/fnrxDNNCyI1TJgdu9YKFLQ1WhIaCy+?=
+ =?us-ascii?Q?/TMgytz32Y/hrg1S1lHZfbl5iysNCyzNeVb0WBKepCShfJhljwiJUppcWquV?=
+ =?us-ascii?Q?qHchZsWRmkxTVqyEaOPq4lG6m5l0iRFDykv2FNESDEwklIwqLHs05cixP1ch?=
+ =?us-ascii?Q?QlAM7rESh8ZTQ26nkDlsPub+e6Z66KQRznL8D0r8krtIcpaQ4XATTImSWw/k?=
+ =?us-ascii?Q?UDAPuMkqfQEYzInaYG6Io5U2sD9iEHnENMbsWbwzudh1yXBX6SI2uPa/d89f?=
+ =?us-ascii?Q?660AfRqyVO7AuPEY29DFeDGLTWD5LvPn73Pc7ZQWmEV5iVLKTVcVlu82g7x4?=
+ =?us-ascii?Q?N+5j1S0ieEzQ3ZZrvX4SHkteC282LSSuwGBAquw2VSufcdNudOYoJRYOVzYj?=
+ =?us-ascii?Q?l7NwXUtpKXZLg5Lmey9oO2Ro3XMju9menganj/JDxg7cv12kL+y9Q0cFLbAH?=
+ =?us-ascii?Q?52uuKqFtVMT2q/YykeCcynIXh3P3WtASIu0aGjd6XJMpnPHQjJBefi/PIZmI?=
+ =?us-ascii?Q?As2Vy/ZHsZCMpiHu4jc1gvS/0bAuSHDCVA305j3zuQzCPDHv50PMGzXmR4LQ?=
+ =?us-ascii?Q?/9W+1UmX+EEvL6/xfl04kJKok7wh+3pyl+FKR7sLB94yX5UJhhSeea5S8wMX?=
+ =?us-ascii?Q?XchMLZHF6g2H4pMO8f/74H+16fid3zxCz5qLf3OXjqyQx0Y8onSXByp0E86S?=
+ =?us-ascii?Q?xCvTOZTVjgTwonpxHxShlmygWg4UUeuEU31DVPDbAxkdC7vWa3d+VhLj+T4c?=
+ =?us-ascii?Q?CykAQ+R4rY3XQmXiR2lhh3rTeVrrbOPyt3BaF4GQTwP5VAzyN3bBxZTwltGJ?=
+ =?us-ascii?Q?YMnatkEeWfpTdqaBQ64tr6GnxgrYWg75Eu7T4uKnfU3qaKFyj75tsMSVtxNn?=
+ =?us-ascii?Q?vUZ4IKr9vDS3viBlLSkNwMkh/puBH7BMp7j+XVCiYUzvmH/T+nNXTN2Yewl5?=
+ =?us-ascii?Q?2eCkQHnoSJ2z1Bpn9XXoyp3fKM+PCiuxDDZKlRAyZpKTvgq5uoOOGxLhrSvt?=
+ =?us-ascii?Q?laVPrQ=3D=3D?=
+X-OriginatorOrg: camlingroup.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd9f3c88-0cd9-4511-9b2b-08dcb7c2d4ac
+X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Aug 2024 15:57:40.0860
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3+gOrEUMLPE/QJ/aj0v2q2FpswSCpp+VxyMcVd1rG3zHHZBkBK9jzLy81upUh7P6CgfL/zz2vD+sWy3Lxu9rgzD9vAI4bnwNLUwn2Vyi3iY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LOYP123MB2816
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: camlingroup.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Last-TLS-Session-Version: TLSv1.3
 
-Am Donnerstag, 8. August 2024, 16:03:25 CEST schrieb Peng Fan (OSS):
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> With "earlycon initcall_debug=3D1 loglevel=3D8" in bootargs, kernel
-> sometimes boot hang. It is because normal console still is not ready,
-> but runtime suspend is called, so early console putchar will hang
-> in waiting TRDE set in UARTSTAT.
->=20
-> The lpuart driver has auto suspend delay set to 3000ms, but during
-> uart_add_one_port, a child device serial ctrl will added and probed with
-> its pm runtime enabled(see serial_ctrl.c).
-> The runtime suspend call path is:
-> device_add
->      |-> bus_probe_device
->            |->device_initial_probe
-> 	           |->__device_attach
->                          |-> pm_runtime_get_sync(dev->parent);
-> 			 |-> pm_request_idle(dev);
-> 			 |-> pm_runtime_put(dev->parent);
->=20
-> So in the end, before normal console ready, the lpuart get runtime
-> suspended. And earlycon putchar will hang.
->=20
-> To address the issue, mark last busy just after pm_runtime_enable,
-> three seconds is long enough to switch from bootconsole to normal
-> console.
->=20
-> Fixes: 43543e6f539b ("tty: serial: fsl_lpuart: Add runtime pm support")
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
-art.c
-> index 615291ea9b5e..77efa7ee6eda 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -2923,6 +2923,7 @@ static int lpuart_probe(struct platform_device *pde=
-v)
->  	pm_runtime_set_autosuspend_delay(&pdev->dev, UART_AUTOSUSPEND_TIMEOUT);
->  	pm_runtime_set_active(&pdev->dev);
->  	pm_runtime_enable(&pdev->dev);
-> +	pm_runtime_mark_last_busy(&pdev->dev);
+When submitting previous, functional fixes, Tomasz Mo=C5=84 omitted those
+two cosmetic patches, that kept lurking in our company tree - likely
+by oversight. Let's submit them.
 
-This change looks sensible to me. Is maybe [1] addressing the same issue at=
- a
-different level?
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: Andy Shevchenko <andy@kernel.org>
 
-Best regards,
-Alexander
+Signed-off-by: Lech Perczak <lech.perczak@camlingroup.com>
 
-[1] https://lore.kernel.org/all/20240808-gs101-non-essential-clocks-2-v6-0-=
-e91c537acedc@linaro.org/
+Lech Perczak (2):
+  serial: sc16is7xx: remove SC16IS7XX_MSR_DELTA_MASK
+  serial: sc16is7xx: fix copy-paste errors in EFR_SWFLOWx_BIT macros
 
-> =20
->  	ret =3D lpuart_global_reset(sport);
->  	if (ret)
->=20
+ drivers/tty/serial/sc16is7xx.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 
-=2D-=20
-TQ-Systems GmbH | M=FChlstra=DFe 2, Gut Delling | 82229 Seefeld, Germany
-Amtsgericht M=FCnchen, HRB 105018
-Gesch=E4ftsf=FChrer: Detlef Schneider, R=FCdiger Stahl, Stefan Schneider
-http://www.tq-group.com/
-
+base-commit: 0c3836482481200ead7b416ca80c68a29cfdaabd
+--=20
+2.34.1
 
