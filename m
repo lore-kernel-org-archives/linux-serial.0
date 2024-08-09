@@ -1,16 +1,16 @@
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 606D8193088;
-	Fri,  9 Aug 2024 12:31:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E14A1DFF5;
+	Fri,  9 Aug 2024 12:36:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723206699; cv=none; b=dLPo2/PUE2Oor9HZm9F7191dHGGmAtL7q8Yg9mqM5lpLnpp/rt5/uwX2vwAlhNY+mBmyVWEJz5xPQuNhJmif6VqCBJZdKfhVEXHc5AduYFHtN5cl77xXF8wnmxzVQZJiia++cAChYESWtHl42hHRlAsJ21XK0NGkz8R73NzK0TI=
+	t=1723206977; cv=none; b=PwcEW/JuxWpFLNEz7zDEWA4ZZMhS99s9qSw4ThLJaftfaQzfLdhOc5xyYzYvgixpmb97YiqdavF1gPSOZvv/V6b/SWXYEpcvQF3gS0Fao5ExW2dMkQTRU9b5ekYhxy//F9yTdwdgLOfZuSQUGO/tmkp/O58xAWtpFGYTa8dbLFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723206699; c=relaxed/simple;
-	bh=FhsDg3wPRzapa7Dr+La35JzbETjmwTm+XaR7/Go4q5Q=;
+	s=arc-20240116; t=1723206977; c=relaxed/simple;
+	bh=FWWNxodoUrQMHGfjDm+iomNz8elNmj4w8U94tH1X8xo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fQEDQ6ZVvImalvFN7SbkIoRE/TRO5HwCabetjzY9p9+LGabyyDirr18ELmGNXAm7bhX6oltzQ3c3CFn2Dm7CaItTzkHufDGERb7jrQtbX346rfMDXfGmUuiOQNQQDuPuzNMrWFWJqySxbguLePdBs9MTL6Wqqy37pJfDwyAd4CA=
+	 MIME-Version:Content-Type; b=Hd5wrx7kcpu22FW7/I46aKf9Lp7AFLzBGehQ29RJOBYHU0wwYqS5AyePFcf62dp8mW7Sk/YLt0MDBx/Ypg/Kwan1UaMXRpEWZ+XUc7oxgH0LPdKqWUV9EBib32KLTBsSPo1BbE2oZO+Al1QJ6fqwTT++knKPOYvenPaYDZ0rung=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; arc=none smtp.client-ip=185.11.138.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
@@ -18,7 +18,7 @@ Received: from i53875b02.versanet.de ([83.135.91.2] helo=diego.localnet)
 	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <heiko@sntech.de>)
-	id 1scOm6-0006R2-06; Fri, 09 Aug 2024 14:31:18 +0200
+	id 1scOqX-0006V9-No; Fri, 09 Aug 2024 14:35:53 +0200
 From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
 To: linux-kernel@vger.kernel.org,
  Detlev Casanova <detlev.casanova@collabora.com>
@@ -42,13 +42,15 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
  linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH 08/10] dt-bindings: timer: rockchip: Add rk3576 compatible
-Date: Fri, 09 Aug 2024 14:31:16 +0200
-Message-ID: <7799613.SKYDtnEIZr@diego>
-In-Reply-To: <20240802214612.434179-9-detlev.casanova@collabora.com>
+Subject:
+ Re: [PATCH 05/10] dt-bindings: mfd: syscon: Add rk3576 QoS register
+ compatible
+Date: Fri, 09 Aug 2024 14:35:51 +0200
+Message-ID: <14126945.ov1OQ5z9iq@diego>
+In-Reply-To: <20240802214612.434179-6-detlev.casanova@collabora.com>
 References:
  <20240802214612.434179-1-detlev.casanova@collabora.com>
- <20240802214612.434179-9-detlev.casanova@collabora.com>
+ <20240802214612.434179-6-detlev.casanova@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -58,8 +60,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
 
-Am Freitag, 2. August 2024, 23:45:35 CEST schrieb Detlev Casanova:
-> Add compatible string for Rockchip RK3576 timer.
+Am Freitag, 2. August 2024, 23:45:32 CEST schrieb Detlev Casanova:
+> Document rk3576 compatible for QoS registers.
 > 
 > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
 
