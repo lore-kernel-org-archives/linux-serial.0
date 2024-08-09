@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0C312E7E;
-	Fri,  9 Aug 2024 05:53:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA6616C861;
+	Fri,  9 Aug 2024 05:57:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723182811; cv=none; b=dT8KymI9ZT4F7tDbjEgUF2h0oGbDf7cyXS34B9gnLae7CqWsvgAORf3G4tEBqHxISNKtiAyeVNEKZvDmxfGH4uvQzEIodS4TU/UPXfL3wQ3vUUHfiCe21S6kNS31mPvR1P1VXBdn1pcJqgqa+2iKHIvcY5JPtGd2KbCxb6bBywU=
+	t=1723183036; cv=none; b=PK4qHQMxOnajzZOSnjIDspO6SAb9kRZDpFfd+qZ5Il22Y+MPJ7Jt+3dXPSiuQ9u4g0iqojg9YSsE2Uk1iuIIiC1/n5Av0Ohrge1jc1mDEgyJxmpS58fmuPeEPJuaF1sbPnWynFlumyAEbQ5iNlKA7prujLHohOZcdw173QbqQvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723182811; c=relaxed/simple;
-	bh=WPtOAuV9aswhmETP6KB3Lze/3iFuPjnW3egrPbSzqJQ=;
+	s=arc-20240116; t=1723183036; c=relaxed/simple;
+	bh=/mWCZ3jkN279IwSE5nwXFBrY4GUZ536BaRUa5kC1WKM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=J0CMipgd4FFY+YH2i8fVtmYUVrIoSr2H4Iwqy8B9hk/WzdmhpVwp99rZyykeX7mZxI4enVcLmgeZCh9LpL5LExhZ+dfmZiZvxeYzbXRp68ykQho7zQ6XW/t0fME4bh8V6E2uJxmJEUUS8ZLasPMnOWjypR0hgvAcwoC7E6b9418=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aDmnZlXe; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=piTufU1HSw/lK3otWAItmGoO0/Gdg+Z4cNL+BP8aYLM7BDKeoezXKef3dY/ce7lEjIHv3MIQVM99Yt6RnlrDowNi7nuValcR8UbmRcHp4Di7V8tU3iRepG/mQik41N3OCyl9EOJVRLEtIsV5wlIAycC3APRZEYrQ3IpOYOJmGkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCnPQp6e; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aDmnZlXe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59810C4AF0D;
-	Fri,  9 Aug 2024 05:53:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCnPQp6e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE71C32782;
+	Fri,  9 Aug 2024 05:57:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723182810;
-	bh=WPtOAuV9aswhmETP6KB3Lze/3iFuPjnW3egrPbSzqJQ=;
+	s=k20201202; t=1723183035;
+	bh=/mWCZ3jkN279IwSE5nwXFBrY4GUZ536BaRUa5kC1WKM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=aDmnZlXeCEO3tHifcSQMguhtDDfJ+JF3K9nfD+p4O7uCus75dPUrMZKJbVR9VaktW
-	 dLa8HNIqkFVfbu5f0udFDUhymTSsAiaXWNwHPlxTMhB43oTDx3Odg9NmezTnYCPRF4
-	 7BEu6I/800tTW8D5ve8TcYDsrk1kcl89cRSWcBVJxr5RQHO8Wj29rvP0Nldw4zNgDZ
-	 rEaeGm4TMKTa1Egg7d3ZQAkYVuU736YW6WBxt3k/fcpjuiHTNtg3/zLBskSidKLTAK
-	 SHAi7gmqahvwIKRLMzJbzxQK5WNbnce1FaT8bFnB40ExpKNXcUQQ93x+eGoBhiMM85
-	 cc8Q7v3ltxnxw==
-Message-ID: <601adbfd-fbb6-48c6-b755-da1b5d321d6b@kernel.org>
-Date: Fri, 9 Aug 2024 07:53:22 +0200
+	b=fCnPQp6ebMrRppXFcdm5yHd4Kl0hIbdF17oN1EP5bRGiel62BtwsuKjQXjU50011y
+	 h0SGjvB33A7WNQtIltrGlcUlrT7dRYFTp5ofco6SmvVlKNhpLa0aCyaFRMxj9Defnn
+	 rmxZBk5cnWWTwtW5Va+iuYIj1CX4bJsq9FsxQcrQmVjkXqGLwQzCw/4HvLqVaTJQSS
+	 wdnEk0oxO/EJAjSG79EPZvZ/JsLiHqD7lKVw5qu76lKjVqEJ8QFNMkwItHpMWeG4ej
+	 CbDpQY3af3gBjcn6C4iVqlJYwUsbX48VE47YtVcNrksjxzh7Z+FdIS7KN08H2u5zAF
+	 417cDvZrIqMew==
+Message-ID: <d52861ee-26a3-4673-8aae-9859d435f817@kernel.org>
+Date: Fri, 9 Aug 2024 07:57:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] dt-bindings: serial: Add Loongson UART controller
+Subject: Re: [PATCH v2 2/3] tty: serial: 8250: Add loongson uart driver
+ support
 To: =?UTF-8?B?6YOR6LGq5aiB?= <zhenghaowei@loongson.cn>,
  gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org, chenhuacai@kernel.org,
@@ -43,8 +44,9 @@ To: =?UTF-8?B?6YOR6LGq5aiB?= <zhenghaowei@loongson.cn>,
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  devicetree@vger.kernel.org, loongarch@lists.linux.dev
 References: <20240804063834.70022-1-zhenghaowei@loongson.cn>
- <4d1f2426-b43c-4727-8387-f18edf937163@kernel.org>
- <f31609c4-1e47-49bc-9231-5b0353d35dc9@loongson.cn>
+ <20240804063834.70022-2-zhenghaowei@loongson.cn>
+ <84ff11bd-1d11-4d66-a56b-84bf915af346@kernel.org>
+ <77b249fd-3cf7-4cb4-a2b4-64c0c2ba96fa@loongson.cn>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,129 +92,37 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <f31609c4-1e47-49bc-9231-5b0353d35dc9@loongson.cn>
+In-Reply-To: <77b249fd-3cf7-4cb4-a2b4-64c0c2ba96fa@loongson.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 07/08/2024 10:23, 郑豪威 wrote:
+On 07/08/2024 10:24, 郑豪威 wrote:
+>>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>> +	if (!res)
+>>> +		return -ENODEV;
+>>> +
+>>> +	port->membase = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+>>> +	if (!port->membase)
+>>> +		return -ENOMEM;
+>>> +
+>> Use wrapper combining both calls.
 > 
-> 在 2024/8/4 16:43, Krzysztof Kozlowski 写道:
->> On 04/08/2024 08:38,zhenghaowei@loongson.cn wrote:
->>
->> Due to lack of changelog, I assume you send the same patch, so:
->>
->> <form letter>
->> This is a friendly reminder during the review process.
->>
->> It seems my or other reviewer's previous comments were not fully
->> addressed. Maybe the feedback got lost between the quotes, maybe you
->> just forgot to apply it. Please go back to the previous discussion and
->> either implement all requested changes or keep discussing them.
->>
->> Thank you.
->> </form letter>
->>
->> Also:
->>
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  fractional-division:
->> Where are this and following defined? In which schema?
->>
-> These and the ones below are new definitions, can I use them like this?
+> I got it, did you mean like this?
 > 
-> +  fractional-division:
-> +    description: Enables fractional-N division. Currently,
-> +      only LS2K1500 and LS2K2000 support this feature.
-> +    type: boolean
-> 
+> +    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +    if (!res)
+> +        return -ENODEV;
+> +
+> +    port->mapbase = res->start;
+> +    port->mapsize = resource_size(res);
+> +
+> +    port->membase = devm_ioremap(&pdev->dev, port->mapbase, port->mapsize);
+> +    if (!port->membase)
+>   +       return -ENOMEM;
 
-Missing vendor prefix, but what's more important, why would this be
-property of DT? Just enable it always...
+I still see two calls, so how are they combined? Just open any other
+file and see how it is done there.
 
->>> +    description: Enables fractional-N division. Currently,
->>> +      only LS2K1500 and LS2K2000 support this feature.
->>> +
->>> +  rts-invert:
->>> +    description: Inverts the RTS value in the MCR register.
->>> +      This should be used on Loongson-3 series CPUs, Loongson-2K
->>> +      series CPUs, and Loongson LS7A bridge chips.
->>> +
->>> +  dtr-invert:
->>> +    description: Inverts the DTR value in the MCR register.
->>> +      This should be used on Loongson-3 series CPUs, Loongson-2K
->>> +      series CPUs, and Loongson LS7A bridge chips.
->>> +
->>> +  cts-invert:
->>> +    description: Inverts the CTS value in the MSR register.
->>> +      This should be used on Loongson-2K0500, Loongson-2K1000,
->>> +      and Loongson LS7A bridge chips.
->>> +
->>> +  dsr-invert:
->>> +    description: Inverts the DSR value in the MSR register.
->>> +      This should be used on Loongson-2K0500, Loongson-2K1000,
->>> +      and Loongson LS7A bridge chips.
-
-Same questions for all these. Why choosing invert is a board level
-decision? If it "should be used" then why it is not used always?
-
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - interrupts
->>> +  - clocks
->>> +
->>> +allOf:
->>> +  - $ref: serial.yaml
->>> +
->>> +unevaluatedProperties: false
->>> +
->>> +examples:
->>> +  - |
->>> +    #include <dt-bindings/interrupt-controller/irq.h>
->>> +    #include <dt-bindings/clock/loongson,ls2k-clk.h>
->>> +
->>> +    serial@1fe001e0 {
->>> +        compatible = "loongson,ls7a-uart";
->>> +        reg = <0x0 0x1fe001e0 0x0 0x10>;
->>> +        clock-frequency = <100000000>;
->>> +        interrupt-parent = <&liointc>;
->>> +        interrupts = <10 IRQ_TYPE_LEVEL_HIGH>;
->>> +        fractional-division;
->>> +        rts-invert;
->>> +        dtr-invert;
->>> +    };
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index 8766f3e5e87e..a6306327dba5 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -13189,6 +13189,13 @@ S:	Maintained
->>>   F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
->>>   F:	drivers/i2c/busses/i2c-ls2x.c
->>>   
->>> +LOONGSON UART DRIVER
->>> +M:	Haowei Zheng<zhenghaowei@loongson.cn>
->>> +L:	linux-serial@vger.kernel.org
->>> +S:	Maintained
->>> +F:	Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml
->>> +F:	drivers/tty/serial/8250/8250_loongson.c
->> There is no such file.
->>
->> Best regards,
->> Krzysztof
-> 
-> The file "drivers/tty/serial/8250/8250_loongson.c" will be created in 
-> the patch
-> 
-> "tty: serial: 8250: Add loongson uart driver support". Is it 
-> inappropriate to reference it here?
-
-Apply this patch and run get_maintainers self tests. What do you see?
-
-Of course it is not appropriate here. The file does not exist.
 
 Best regards,
 Krzysztof
