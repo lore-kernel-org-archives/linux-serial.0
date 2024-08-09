@@ -1,33 +1,59 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AA6616C861;
-	Fri,  9 Aug 2024 05:57:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 210E416D307
+	for <linux-serial@vger.kernel.org>; Fri,  9 Aug 2024 06:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723183036; cv=none; b=PK4qHQMxOnajzZOSnjIDspO6SAb9kRZDpFfd+qZ5Il22Y+MPJ7Jt+3dXPSiuQ9u4g0iqojg9YSsE2Uk1iuIIiC1/n5Av0Ohrge1jc1mDEgyJxmpS58fmuPeEPJuaF1sbPnWynFlumyAEbQ5iNlKA7prujLHohOZcdw173QbqQvo=
+	t=1723184678; cv=none; b=NbIIjJ4lOrk/0qCY7BZjtYZndd2ThXhQx6tIaYunjI/t5Ud/KbzrTi/YFZU9fsCIcgVOO1XuPf8vgp+H9Rhys/1tqaF62DL8+c3DJZuFZ4u60tezvg27ysOYTwW8KhUe1ASPQz99Xhbi7Gu4oqcN3LMTz1GZRDZYQgCWybAjNto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723183036; c=relaxed/simple;
-	bh=/mWCZ3jkN279IwSE5nwXFBrY4GUZ536BaRUa5kC1WKM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=piTufU1HSw/lK3otWAItmGoO0/Gdg+Z4cNL+BP8aYLM7BDKeoezXKef3dY/ce7lEjIHv3MIQVM99Yt6RnlrDowNi7nuValcR8UbmRcHp4Di7V8tU3iRepG/mQik41N3OCyl9EOJVRLEtIsV5wlIAycC3APRZEYrQ3IpOYOJmGkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCnPQp6e; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1723184678; c=relaxed/simple;
+	bh=32PvQ3ZwcFq9EVY+VwEjYAa8YvEuHz3rO7T/75OdL3s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=J0QUiLw7/F1gxTv4Fudme4UgisVE2gWhJO0Z4O374XVkIP44EL8p8pf27snSFEggb0p1Me5Ei0nx90Nkvay0uPjbspKglGgN7OMr015H4uC0DPU0hAHuuoOmCJF1RoTMPm6He5jQNwbOZyoLLR7O+WieyEq7Lv7Jvf6LcqLAalU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=fsTqCxjA; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCnPQp6e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE71C32782;
-	Fri,  9 Aug 2024 05:57:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723183035;
-	bh=/mWCZ3jkN279IwSE5nwXFBrY4GUZ536BaRUa5kC1WKM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fCnPQp6ebMrRppXFcdm5yHd4Kl0hIbdF17oN1EP5bRGiel62BtwsuKjQXjU50011y
-	 h0SGjvB33A7WNQtIltrGlcUlrT7dRYFTp5ofco6SmvVlKNhpLa0aCyaFRMxj9Defnn
-	 rmxZBk5cnWWTwtW5Va+iuYIj1CX4bJsq9FsxQcrQmVjkXqGLwQzCw/4HvLqVaTJQSS
-	 wdnEk0oxO/EJAjSG79EPZvZ/JsLiHqD7lKVw5qu76lKjVqEJ8QFNMkwItHpMWeG4ej
-	 CbDpQY3af3gBjcn6C4iVqlJYwUsbX48VE47YtVcNrksjxzh7Z+FdIS7KN08H2u5zAF
-	 417cDvZrIqMew==
-Message-ID: <d52861ee-26a3-4673-8aae-9859d435f817@kernel.org>
-Date: Fri, 9 Aug 2024 07:57:05 +0200
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="fsTqCxjA"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-52efdf02d13so3187769e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 08 Aug 2024 23:24:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1723184675; x=1723789475; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3S0qr9/Jv03AD+fUOeSyuNhsSFPzVg2JMztEACb1ujM=;
+        b=fsTqCxjAokJ43lGYeVfqMFaTKLcojLQO9gN+FOuhjThJ9Ie3rcAvKT4cUCZA5eaOWX
+         8YbL/kmotzN6cBnehLUMqdla/9pfIRjYScgrEsiQbNMzXlgAR6n4CR+rX9ffFUf7UNAB
+         vX8miNNzBxdh9JiO/+Fvnum0lYJtt1DqGU81zN5oqbA8E+57fcIAJh3kgZ71cJevpqFX
+         4XeZvdsX4rqYRijnGH8qiRTN2hJVNXoFDat7Ovol4rBjUpTAevzEUlOp23EUbKm4v+1O
+         CkPbLNJ54E+cqXnN6lAyvN2aIouq9nggtsX6CHTxhgbS14BPUqGC9BGL2RO7oiTOwJ/w
+         jHww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723184675; x=1723789475;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=3S0qr9/Jv03AD+fUOeSyuNhsSFPzVg2JMztEACb1ujM=;
+        b=RaC4u2usWaFK1WOl+mw8ytiXMo1vg7Do05bt3uQFVnU+kQmat1GNYhyS+weuBQp5si
+         XKIMCZLp7jZ+UQ3FqOirl7dAcvuJPshQvUvpfc+LipZ2xiOO2Pibge+pf1OJjodUhk6z
+         v7uQFYTexWDovSr60bPizQWjMjFwLiOcgSX7b2gfkzKe3IyZ9YAURQbyEazjDj0PnuwV
+         Aam8Zj89X2dFzMnkn368OpUQFA9Q6HvfBJa1XVmvdS5n8Ocsu2AhBr6jU2VrqVVKDoPB
+         3Ww6r2kPPioaRdVCZDmIpsQfxtMwRUqK2qMHtaiIB4I7Yk8vZdBozbVtJGSjoOP92I3D
+         T9Uw==
+X-Forwarded-Encrypted: i=1; AJvYcCUGhab6fiBhc5CrGVwaalTBQbpW9wpkvXJUU9T+cj0pNLMn0Aouh4x/apOzlG9i0Jh65llJvuBqqz0zcEYSdSUNVvnjMe+3QkOPioJh
+X-Gm-Message-State: AOJu0YyOMV7n8Y1fxvMly29HzbXJFOIkOy1VT/A4ewcIH55d0iL18eZX
+	dmpAV7N2PliNJ+rllKElO4hdcf4Ebtq8Adim9MAQQUH4OFQ8cbInfUMx5LPB+Y8=
+X-Google-Smtp-Source: AGHT+IFtRJSAy81Ovy9X/JT0lVaScHSB+oACg+nIrM17DzL37eBwuT4MrcU43b5nLMl8P8skePBRZg==
+X-Received: by 2002:a05:6512:1392:b0:52c:dd94:bda9 with SMTP id 2adb3069b0e04-530eea1cf6cmr498847e87.56.1723184674977;
+        Thu, 08 Aug 2024 23:24:34 -0700 (PDT)
+Received: from [192.168.50.4] ([82.78.167.180])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a7dc9c61575sm811830366b.92.2024.08.08.23.24.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Aug 2024 23:24:34 -0700 (PDT)
+Message-ID: <efcb1b43-2098-4490-8d10-b4f887ae862e@tuxon.dev>
+Date: Fri, 9 Aug 2024 09:24:31 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,95 +61,77 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] tty: serial: 8250: Add loongson uart driver
- support
-To: =?UTF-8?B?6YOR6LGq5aiB?= <zhenghaowei@loongson.cn>,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, chenhuacai@kernel.org,
- kernel@xen0n.name, p.zabel@pengutronix.de
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, loongarch@lists.linux.dev
-References: <20240804063834.70022-1-zhenghaowei@loongson.cn>
- <20240804063834.70022-2-zhenghaowei@loongson.cn>
- <84ff11bd-1d11-4d66-a56b-84bf915af346@kernel.org>
- <77b249fd-3cf7-4cb4-a2b4-64c0c2ba96fa@loongson.cn>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v6 00/27] Add support for sam9x7 SoC family
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
- QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
- gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
- /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
- iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
- VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
- 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
- xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
- eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
- AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
- MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
- Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
- ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
- vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
- oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
- lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
- t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
- uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
- 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
- 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <77b249fd-3cf7-4cb4-a2b4-64c0c2ba96fa@loongson.cn>
+To: Varshini Rajendran <varshini.rajendran@microchip.com>, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, mturquette@baylibre.com, sboyd@kernel.org,
+ tglx@linutronix.de, lee@kernel.org, sre@kernel.org, p.zabel@pengutronix.de,
+ richard.genoud@bootlin.com, radu_nicolae.pirea@upb.ro,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, linux@armlinux.org.uk,
+ matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
+ ychuang3@nuvoton.com, schung@nuvoton.com, mihai.sain@microchip.com,
+ andrei.simion@microchip.com, arnd@arndb.de, Jason@zx2c4.com,
+ dharma.b@microchip.com, rdunlap@infradead.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-mediatek@lists.infradead.org
+References: <20240729065603.1986074-1-varshini.rajendran@microchip.com>
+From: claudiu beznea <claudiu.beznea@tuxon.dev>
+In-Reply-To: <20240729065603.1986074-1-varshini.rajendran@microchip.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 07/08/2024 10:24, 郑豪威 wrote:
->>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>> +	if (!res)
->>> +		return -ENODEV;
->>> +
->>> +	port->membase = devm_ioremap(&pdev->dev, res->start, resource_size(res));
->>> +	if (!port->membase)
->>> +		return -ENOMEM;
->>> +
->> Use wrapper combining both calls.
+
+
+On 29.07.2024 09:56, Varshini Rajendran wrote:
+> This patch series adds support for the new SoC family - sam9x7.
+>  - The device tree, configs and drivers are added
+>  - Clock driver for sam9x7 is added
+>  - Support for basic peripherals is added
+>  - Target board SAM9X75 Curiosity is added
+
+[ ... ]
+
 > 
-> I got it, did you mean like this?
+>  Changes in v6:
+>  --------------
 > 
-> +    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +    if (!res)
-> +        return -ENODEV;
-> +
-> +    port->mapbase = res->start;
-> +    port->mapsize = resource_size(res);
-> +
-> +    port->membase = devm_ioremap(&pdev->dev, port->mapbase, port->mapsize);
-> +    if (!port->membase)
->   +       return -ENOMEM;
+>  - Addressed all the review comments in the patches
+>  - Picked up all Acked-by and Reviewed-by tags
+>  - Reverted the IRQ patch to that of version 3 of the same series
+>  - All the specific changes are captured in the corresponding patches
+> 
 
-I still see two calls, so how are they combined? Just open any other
-file and see how it is done there.
+[ ... ]
 
+> 
+> Varshini Rajendran (26):
+>   dt-bindings: atmel-sysreg: add sam9x7
+>   ARM: at91: pm: add support for sam9x7 SoC family
+>   ARM: at91: pm: add sam9x7 SoC init config
+>   ARM: at91: add support in SoC driver for new sam9x7
 
-Best regards,
-Krzysztof
+Applied to at91-soc, thanks!
+
+>   dt-bindings: clocks: atmel,at91sam9x5-sckc: add sam9x7
+>   dt-bindings: clocks: atmel,at91rm9200-pmc: add sam9x7 clock controller
+>   clk: at91: clk-sam9x60-pll: re-factor to support individual core freq
+>     outputs
+>   clk: at91: sam9x7: add support for HW PLL freq dividers
+>   clk: at91: sama7g5: move mux table macros to header file
+>   dt-bindings: clock: at91: Allow PLLs to be exported and referenced in
+>     DT
+>   clk: at91: sam9x7: add sam9x7 pmc driver
+
+Applied to clk-microchip, thanks!
+
+>   ARM: at91: Kconfig: add config flag for SAM9X7 SoC
+
+Applied to at91-soc, thanks!
+
+>   ARM: configs: at91: enable config flags for sam9x7 SoC family
+
+Applied to at91-defconfig, thanks!
 
