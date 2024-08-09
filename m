@@ -1,96 +1,94 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B7DA146588
-	for <linux-serial@vger.kernel.org>; Thu,  8 Aug 2024 22:06:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6648212E4D;
+	Fri,  9 Aug 2024 01:48:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723154818; cv=none; b=HOgVh6D1yuW1S2LvQlay5UT68tVJs0dYCfwxZ77ZtQUMGHvWCiZgfJwZzvyEfuK+vnfxqA7dG96bxTwJ0fzc4ItZopskpKGqyjDHfTBfQ97Va8l069+L5/WtHrYutUVYiZ9uNfTkq0exmrZh8RCo6Dm3S/AYtYdaL0oAJZV1EJI=
+	t=1723168117; cv=none; b=KzryrT8bybqVftnYjLMub2Ivi42R32x0/V5UnsQ4e2QSFqU13wND7mmIqOoYCBWfjo+AHqWg/n4QI0YGiefZnT+C1yYIfAvOnYu5+bMIf93M1QMer9r9issh96bGPEuy9OjdosSy0nla1P4F1hnIWOqSw5vSq+4lcQ2kP8LEZdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723154818; c=relaxed/simple;
-	bh=uKE/q28/42g3RmG0pBS37MUPgGzTSdIM6qisOmOpT+A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=n4BxrJKtXM9Pf3ptGZ+LvRzOHounHT5uzlfzMsHOX+BtRlCXdikVhWGno1xg97wg5epC0NJas67RiwVJaAhrF7vfpNaxsyZvU7dvfSbAv15yv4lyRHsfbUQKLf17M7kuSFJWlkFbO5PfpDY7sksCbAddL4VwXYsAUTTeCML89I4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J7i+eQDJ; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723168117; c=relaxed/simple;
+	bh=PiR+RGT8+T5sbZULWQstEIGiMhDXq6bLUvLaeTPOXMM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=EZAwt+lyUibMy3Ilpi+4uR1ra1Y2WxXOhkmvbpKZ3DDXmbWxVrwFMY4XsJG6Wct+NoN1OeW4FkUPy+ICxJindF19NwOmppyD+v7aMxzPpbKzs+z2qNA/bWLkhNnFsXbsMENm2vIXn+Nz2pCCURoHhK1gqvktkoNlnvsP+jENf/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AseslaAJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J7i+eQDJ"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f032cb782dso15737381fa.3
-        for <linux-serial@vger.kernel.org>; Thu, 08 Aug 2024 15:06:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723154814; x=1723759614; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uKE/q28/42g3RmG0pBS37MUPgGzTSdIM6qisOmOpT+A=;
-        b=J7i+eQDJXsU11IS3y9oMMw0DW4jxOBGHUWLuA9GJKnTJTLfKxUx511tpuDUeI+u9JP
-         PPHB0x3Jf0bZ1RGikSnkwR4NVVQRdRGaykO8oRHma6UObQYG50KZOyJPx0vH7RMLr3Sv
-         vkrkdjh+PenJjdborGORNukndJCxBfu5mwA4j4kwoldP7iVHg4Uvkcoot6/VW6ieynzo
-         FVPcTOgSsBUoT+FLFjUf/U9KiyQb9WLPbTCWzWKKTnwNuypOlh3J8+qoe1yc423Mcasq
-         Cm+DFRh97mjQlyO07RFd4rC96cl6lWGbr96VAbQEk8JqgcgMVAoqerQ3CZ0JLjZLKWEa
-         bbTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723154814; x=1723759614;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uKE/q28/42g3RmG0pBS37MUPgGzTSdIM6qisOmOpT+A=;
-        b=tpO6wKOsNff45t32Wu8/ElswoVO9+pkcUD8QryJ86MptO4CfcYg2h9JsyzbLgUepC/
-         WNO2RDkxH3jT4VVPzSMixhyJVlVRj+1XbUFVMarEnLj9sRexvYUgzgSlC5n5wfi+NfJ7
-         EfMtbvOHFewajIBWp3JEW+kidjC6Ey7Wf7beGmmM8l2b6K/Iig0KfBLyuesnSYqM6zkL
-         Xymlw+3iG3kxs6Tl6gM4YbxNbsmHtplzBsDUCLVDc+Cj0bzbvh+4HDx3eDUjg+p9HUvJ
-         w6AnMlT0FAvaq2ngjeKt1rVHwbUYMH4MTMOQtqVNoFYgglnQjUDUJbw7xpHuHT53xivd
-         0hwA==
-X-Gm-Message-State: AOJu0YzjOSK392JfRDOaNbwakNR2hOu2yYtkjIpaVXCPux0HELCwqgDX
-	lrl7WR118nnHwkHTeloqYGQTY5aCAKehcH2JrAHXqqye1CdYJ2vpPyQ55Pk4fFFtqwG/AvrVl4P
-	sKB+AuYpIxewtcOR4piuWosLthKR/PPq1
-X-Google-Smtp-Source: AGHT+IFGPsYZrYjYv5fQxWonUH6/0so+Y2CYhx8ppYx0iUljD7oYPm15AsThpx2ivALBpgZv+qP2qI4EXNcwmUqqcRQ=
-X-Received: by 2002:a05:6512:230d:b0:52f:3ba9:3bfb with SMTP id
- 2adb3069b0e04-530e5811f97mr2860499e87.6.1723154814006; Thu, 08 Aug 2024
- 15:06:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AseslaAJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 384ABC32782;
+	Fri,  9 Aug 2024 01:48:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723168116;
+	bh=PiR+RGT8+T5sbZULWQstEIGiMhDXq6bLUvLaeTPOXMM=;
+	h=From:Subject:Date:To:Cc:From;
+	b=AseslaAJL/0UvZIlkcu8gjUzK2T2iMyDpMM16CJSJTLXfEHh14FHiXDiV2zcldUlz
+	 LGnudfkhqM7crkAGnSEG97XhUD5Z7Jkzr/6xbehIESOh7dYJwtBdMLF1hJT394ho86
+	 5i9/relWJ1Hz45Ik+cno09kk/jNiR7ZYgwqZW1OJQIQblhd6saXCpPki8MGpp6C3U0
+	 F0rh7x+6zcY1+kDH47OCzx9IlEHBuxOXpkQTxRyqOKwIbC4rtoztc6A4ofXVWdfGSf
+	 1ELUZthUE/SBL1c6mKrHdiYzcgngAzcJ++vjbmV/U8zCaXguuV59y/vHmKuX7F9NdR
+	 g1GKOrkWveRBA==
+From: Konrad Dybcio <konradybcio@kernel.org>
+Subject: [PATCH 0/3] OF support for Surface System Aggregator Module
+Date: Fri, 09 Aug 2024 03:48:27 +0200
+Message-Id: <20240809-topic-sam-v1-0-05bca1932614@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <6bfb7abc-0264-440d-b0d6-6dd6a8b64b5e@camlingroup.com> <b792ee31-6e47-418a-9619-3937a38d3054@camlingroup.com>
-In-Reply-To: <b792ee31-6e47-418a-9619-3937a38d3054@camlingroup.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 9 Aug 2024 01:06:17 +0300
-Message-ID: <CAHp75VdxJ5uS4K5WF8cLWDdKEYXD0RjN1Pv4F3y84T2Da=-8yw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: fix copy-paste errors in
- EFR_SWFLOWx_BIT macros
-To: Lech Perczak <lech.perczak@camlingroup.com>
-Cc: linux-serial@vger.kernel.org, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAGt1tWYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDCwNL3ZL8gsxk3eLEXF3TlFSjNIPUZEtjcwMloPqCotS0zAqwWdGxtbU
+ AoYdHBlsAAAA=
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
+ Maximilian Luz <luzmaximilian@gmail.com>, 
+ Hans de Goede <hdegoede@redhat.com>, 
+ =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org, 
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+X-Mailer: b4 0.14.1
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1723168110; l=1228;
+ i=quic_kdybcio@quicinc.com; s=20230215; h=from:subject:message-id;
+ bh=PiR+RGT8+T5sbZULWQstEIGiMhDXq6bLUvLaeTPOXMM=;
+ b=VF1H9/H6BQh6L+UE5ix2Pgu/7p66FOcS/+04Kk4ILuPcH0WDQzojNBM8oZzrmM0LCXXVz2jMF
+ Bra4x7gB6cSAn8Ea4/P5/m58wbFLc07MCqnMKSYtns0sTay2XHfBUKj
+X-Developer-Key: i=quic_kdybcio@quicinc.com; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-On Thu, Aug 8, 2024 at 7:00=E2=80=AFPM Lech Perczak
-<lech.perczak@camlingroup.com> wrote:
->
-> Comments attached to bits 0 and 1 incorrectly referenced bits 2 and 3,
-> which doesn't match the datasheet. Fix them
+Wire up OF support for SSAM drivers, to use with Surface Laptop 7 and
+other Qualcomm-based devices.
 
-Missing period at the end.
+Patch 3 references compatible strings introduced in [1]
 
+[1] https://lore.kernel.org/linux-arm-msm/20240809-topic-sl7-v1-1-2090433d8dfc@quicinc.com/T/#u
 
->
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> Cc: Andy Shevchenko <andy@kernel.org>
->
-> Signed-off-by: Lech Perczak <lech.perczak@camlingroup.com>
-> ---
+Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
+---
+Konrad Dybcio (3):
+      dt-bindings: serial: Allow embedded-controller as child node
+      dt-bindings: platform: Add Surface System Aggregator Module
+      platform/surface: Add OF support
 
-Same comments as per patch 1.
+ .../bindings/platform/microsoft,surface-sam.yaml   | 50 ++++++++++++++
+ .../devicetree/bindings/serial/serial.yaml         |  2 +-
+ drivers/acpi/scan.c                                |  3 +-
+ drivers/platform/surface/aggregator/bus.c          |  2 +
+ drivers/platform/surface/aggregator/controller.c   | 72 +++++++++++++++----
+ drivers/platform/surface/aggregator/core.c         | 80 ++++++++++++++++++----
+ .../platform/surface/surface_aggregator_registry.c | 44 ++++++++++--
+ 7 files changed, 218 insertions(+), 35 deletions(-)
+---
+base-commit: 1e391b34f6aa043c7afa40a2103163a0ef06d179
+change-id: 20240809-topic-sam-5de2f0ec9370
 
-Otherwise both patches LGTM.
+Best regards,
+-- 
+Konrad Dybcio <quic_kdybcio@quicinc.com>
 
---=20
-With Best Regards,
-Andy Shevchenko
