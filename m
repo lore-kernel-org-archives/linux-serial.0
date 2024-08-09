@@ -1,144 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF24D1870;
-	Fri,  9 Aug 2024 16:09:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D64BD2940D;
+	Fri,  9 Aug 2024 16:46:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723219746; cv=none; b=QiXxpcKfLqiXHdCJePEVw9CUrlwx0o+dMCb+dmgl+64qwtHtLGeaOuMn5dDM8QetOc7olMf1S7zkm7GiZrfNzge2pXvCYb3PCpcDZQgNY7/cw4/2lzFyFEBCm6G/z82EwjCJxgsOdV5e5WcIZtDM+3JNpGJQnrWGZnoTzLdyTLI=
+	t=1723221966; cv=none; b=EvU0wiUqGEhsQmFYa9Jyt/V8063GP1pdegkg0TwzKaJQpsAFG/iz6xtLeTOHmK781Mdim7ZoewhBLfoLrDQnfiNH8HJofKqQpo2+as+Hgw/1VhbmaNFTwir487En+iKlglYouSBWJFAY6M6jySOV5zMpIE+BTbzovTvJzxUNbX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723219746; c=relaxed/simple;
-	bh=omwvjFoS49SAlXYzfzzu4DPijGXZFsgBINHbieSf1VU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KkCkKv9R2bOVliOg8XaBNJ0Atwkof7bi0UCSbZIXthL09ARaZbZMiTaTQzyDxyJfl0xeccmPUprDIVp11weiRPzpjTvjO7qOI/L61YZlU4VwEjETIEeVJtt3oPNZuXyTkcI7P4lGAAl7rgrfk73OfWCmLRTgnv0VpVr2VI/zb2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s8Z5u4+U; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1723221966; c=relaxed/simple;
+	bh=t4l+MwG7NrsXOm2ouLdYt3dA/kbtKWYbztJk+8tBBsA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QiEyTDg37u79BA5O9hbu3labs+zL3YpmPGIUkq+HCOeaBYER7rOm6I7ehXjDxW6lLFMkksrSli/8SjxxfUv8fCPWuns65HZ5eXwDEVGsRGXkmKgItGTaJzbNfP2itJbqprpuKjTj/eUxG6fNK0DlyunbtV+/FX37SplCmyZf3LQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=hLci8FdM; arc=none smtp.client-ip=217.70.183.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s8Z5u4+U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC0FC32782;
-	Fri,  9 Aug 2024 16:09:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723219745;
-	bh=omwvjFoS49SAlXYzfzzu4DPijGXZFsgBINHbieSf1VU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=s8Z5u4+UY/TuJZZY19mD6njpuv3yDwbAWJ3FR4U8BXkpMRiqTYbMCvuwBHV6qPn3X
-	 QSXnORxzMmAX0CyhHylMhwotNePhrRZ3HQohpBvKnBpY8vic6QHlZwG34ZxBexa0IA
-	 5hQ4pxeaZIRIxESvwdizYORaiBdDn1U15Hw3xk4I+iEzUE4BiT7bCCcarY1GaM9Q8V
-	 n1ZHFkwyMOyxoV71Q24CJHWQ4WW8vGt+eDcCOY5vHmMEHC4VTbe/kec0LNrIxIX9v6
-	 9xMk+zq2git1gJZBhIJ7fH8AZzTSl/2MpUAqq6qLgTPg02LkodRfiT/+uCklxKtvOI
-	 8ZzuRBbdlvtkA==
-From: Masahiro Yamada <masahiroy@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kbuild@vger.kernel.org,
-	Max Krummenacher <max.krummenacher@toradex.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Masahiro Yamada <masahiroy@kernel.org>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] tty: vt: conmakehash: remove non-portable code printing comment header
-Date: Sat, 10 Aug 2024 01:07:20 +0900
-Message-ID: <20240809160853.1269466-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="hLci8FdM"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 6A13820002;
+	Fri,  9 Aug 2024 16:45:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1723221955;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ZpE2A/OHON4dZm6Kn/ZhxwJiG215XUnQL6wSsRjpv8w=;
+	b=hLci8FdM+HEs3bG4Dpgy/vdMnHLR7XBmfowZ91jsyz9Dg0aO8nef5m1+hv3NVN6sjD4Et4
+	dfF80l5qbcd2c0Y4kJ0xiEdKvhraQfrICTQjxLn3b5MShyjHsoi/bfgp8wMMqfqV9dVFaT
+	L/TFHhW0JnOCBI//ehkWU2RGxGRCFXVjboBE2ALBVo+fm+mCaPZTOyVf7A4NRg4l1S7nZ6
+	hrTSZDdZuSVN67JbV4BkI/PnoEApagKwZVHJQTxU5Aynsg9Bp5HMj/z9oBczyeWiqKJqkg
+	jYQj4CW60+yusoU9TCxh22Ap+vLFGjWRR27hWtiC+chvgSoAR7QIf8glNjHo6g==
+Message-ID: <f6266cc7-bdf2-413e-929e-1d1c0d7e2786@bootlin.com>
+Date: Fri, 9 Aug 2024 18:45:51 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: atmel_serial: use the correct RTS flag.
+To: Mathieu Othacehe <othacehe@gnu.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Nicolas Ferre <nicolas.ferre@microchip.com>,
+ linux-arm-kernel@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+ Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>
+References: <20240808060637.19886-1-othacehe@gnu.org>
+From: Richard GENOUD <richard.genoud@bootlin.com>
+Content-Language: en-US, fr
+Organization: Bootlin
+In-Reply-To: <20240808060637.19886-1-othacehe@gnu.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-GND-Sasl: richard.genoud@bootlin.com
 
-Commit 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no
-longer in env") included <linux/limits.h>, which invoked another
-(wrong) patch that tried to address a build error on macOS.
+Hi,
 
-According to the specification [1], the correct header to use PATH_MAX
-is <limits.h>.
+Adding Ilpo to the list since he was the author.
 
-The minimal fix would be to replace <linux/limits.h> with <limits.h>.
-
-However, the following commits seem questionable to me:
-
- - 3bd85c6c97b2 ("tty: vt: conmakehash: Don't mention the full path of the input in output")
- - 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no longer in env")
-
-These commits made too many efforts to cope with a comment header in
-drivers/tty/vt/consolemap_deftbl.c:
-
-  /*
-   * Do not edit this file; it was automatically generated by
-   *
-   * conmakehash drivers/tty/vt/cp437.uni > [this file]
-   *
-   */
-
-With this commit, the header part of the generate C file will be
-simplified as follows:
-
-  /*
-   * Automatically generated file; Do not edit.
-   */
-
-BTW, another series of excessive efforts for a comment header can be
-seen in the following:
-
- - 5ef6dc08cfde ("lib/build_OID_registry: don't mention the full path of the script in output")
- - 2fe29fe94563 ("lib/build_OID_registry: avoid non-destructive substitution for Perl < 5.13.2 compat")
-
-[1]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/limits.h.html
-
-Fixes: 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no longer in env")
-Reported-by: Daniel Gomez <da.gomez@samsung.com>
-Closes: https://lore.kernel.org/all/20240807-macos-build-support-v1-11-4cd1ded85694@samsung.com/
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- drivers/tty/vt/conmakehash.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/tty/vt/conmakehash.c b/drivers/tty/vt/conmakehash.c
-index 82d9db68b2ce..a931fcde7ad9 100644
---- a/drivers/tty/vt/conmakehash.c
-+++ b/drivers/tty/vt/conmakehash.c
-@@ -11,8 +11,6 @@
-  * Copyright (C) 1995-1997 H. Peter Anvin
-  */
- 
--#include <libgen.h>
--#include <linux/limits.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <sysexits.h>
-@@ -79,7 +77,6 @@ int main(int argc, char *argv[])
- {
-   FILE *ctbl;
-   const char *tblname;
--  char base_tblname[PATH_MAX];
-   char buffer[65536];
-   int fontlen;
-   int i, nuni, nent;
-@@ -245,20 +242,15 @@ int main(int argc, char *argv[])
-   for ( i = 0 ; i < fontlen ; i++ )
-     nuni += unicount[i];
- 
--  strncpy(base_tblname, tblname, PATH_MAX);
--  base_tblname[PATH_MAX - 1] = 0;
-   printf("\
- /*\n\
-- * Do not edit this file; it was automatically generated by\n\
-- *\n\
-- * conmakehash %s > [this file]\n\
-- *\n\
-+ * Automatically generated file; Do not edit.\n\
-  */\n\
- \n\
- #include <linux/types.h>\n\
- \n\
- u8 dfont_unicount[%d] = \n\
--{\n\t", basename(base_tblname), fontlen);
-+{\n\t", fontlen);
- 
-   for ( i = 0 ; i < fontlen ; i++ )
-     {
--- 
-2.43.0
-
+Le 08/08/2024 à 08:06, Mathieu Othacehe a écrit :
+> In RS485 mode, the RTS pin is driven high by hardware when the transmitter
+> is operating. This behaviour cannot be changed. This means that the driver
+> should claim that it supports SER_RS485_RTS_ON_SEND and not
+> SER_RS485_RTS_AFTER_SEND.
+> 
+> Otherwise, when configuring the port with the SER_RS485_RTS_ON_SEND, one
+> get the following warning:
+> 
+> kern.warning kernel: atmel_usart_serial atmel_usart_serial.2.auto:
+> ttyS1 (1): invalid RTS setting, using RTS_AFTER_SEND instead
+> 
+> which is contradictory with what's really happening.
+> 
+> Signed-off-by: Mathieu Othacehe <othacehe@gnu.org>
+> ---
+>   drivers/tty/serial/atmel_serial.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 0a90964d6d107..09b246c9e389e 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2514,7 +2514,7 @@ static const struct uart_ops atmel_pops = {
+>   };
+>   
+>   static const struct serial_rs485 atmel_rs485_supported = {
+> -	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX,
+> +	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX,
+>   	.delay_rts_before_send = 1,
+>   	.delay_rts_after_send = 1,
+>   };
+Regards,
+Ricahrd
