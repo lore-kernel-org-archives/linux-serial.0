@@ -1,46 +1,33 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A713F2F41
-	for <linux-serial@vger.kernel.org>; Fri,  9 Aug 2024 05:00:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD0C312E7E;
+	Fri,  9 Aug 2024 05:53:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723179645; cv=none; b=YoesBzs/8UgiGbJpQCtzgvz/PNdNNsmSJP6/SzafzMw4zono0F3zbLy/2hMNjAqzazz3ap4DjWfRYS34FOW4Im2zPQyQgCSPynpiE4n68DoWwN5hQvjUikHHCwLOj7uBh6HoyFKlzByNJCNixPlcmLtuvAzo8moRJn38vfvG2sY=
+	t=1723182811; cv=none; b=dT8KymI9ZT4F7tDbjEgUF2h0oGbDf7cyXS34B9gnLae7CqWsvgAORf3G4tEBqHxISNKtiAyeVNEKZvDmxfGH4uvQzEIodS4TU/UPXfL3wQ3vUUHfiCe21S6kNS31mPvR1P1VXBdn1pcJqgqa+2iKHIvcY5JPtGd2KbCxb6bBywU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723179645; c=relaxed/simple;
-	bh=RS2Wisndf1M9xYYGRxVIJ/AZevEHZFxXqEiIIDtcods=;
+	s=arc-20240116; t=1723182811; c=relaxed/simple;
+	bh=WPtOAuV9aswhmETP6KB3Lze/3iFuPjnW3egrPbSzqJQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gEY9N5efPjDc3/jAS1t3+TGGzCDZJhnVQVPtua5lN57B5qDmgAIftZugz5yW13NL6w4Wv/XstxwDeupNyX0SQsp7t8tnnlUc+uHwvZsEhuvBcVdlVQwrwGtH1w/4yMg+KKLZCas+VCmCZKn07WVlPIGxIvkYQ++7/TiIsbcqKWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5b8c2a6135eso2496041a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 08 Aug 2024 22:00:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723179642; x=1723784442;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=l0LFJnbpMLPKGrI45RCTD6mALAQ0UmygCqa7l8GzeYs=;
-        b=Z0yAZJgICIqcnNJODvRdwEj7tZbvimfTCZ+xuqhWpl+S0FwkuLSlIaMpCinJa/Ncqm
-         7Yp2UlCPIT7LS01ciDU4wjJwMF0GWx1+OlpnuhKmkr8i0twTz4NrYy0QcEAbrLTm2IpV
-         bKQjXZdX6HbtxS7Dk7Ylr5JXto8l68mnyYh+UVKdfXu0csqaqCMwjh6Z939dvTqvll0z
-         Uovd6PnGJjDqI3GxzjqPoLs1Ff6LErvjm5m2TMVDWAzNAWHVkrQ5++KUijfRJXhvgWSW
-         IBB5hVx3eOnOaq/vp1zg2LZY26rUSQIUvmMr8am7hortzxpGitNYzmYmo1IhdZyhDYim
-         QIjw==
-X-Forwarded-Encrypted: i=1; AJvYcCVQRtToutB9Q1+RIU53nt4FgNuqClyUIyCq5QhmAeuCwPqEXBMINu14kBo7VfQ1xLxf7LtvlLTs2i9ScAw6KJxp+meTYnFU0LoITapI
-X-Gm-Message-State: AOJu0YyIxCbwSiLszdklbCrjDAS+GoAha3A942lk3say01JKgV6XQlx+
-	zOJipOaBNpR5cR/fYAh99MlnXGvXekUoWBcdwzU2dl6sid60W3Ii
-X-Google-Smtp-Source: AGHT+IFB79hExN6xEFeF4e77P4+CmywiUbT3mGLf4O190JkRjUp0cBj0TUREH63zCB65y91MDQYWSA==
-X-Received: by 2002:a05:6402:90e:b0:5a2:5854:5a2f with SMTP id 4fb4d7f45d1cf-5bd0ab55a6fmr297780a12.10.1723179641607;
-        Thu, 08 Aug 2024 22:00:41 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bbb2d34895sm1199266a12.62.2024.08.08.22.00.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Aug 2024 22:00:41 -0700 (PDT)
-Message-ID: <5c10be62-3114-461f-88f2-c3042d6ba15f@kernel.org>
-Date: Fri, 9 Aug 2024 07:00:40 +0200
+	 In-Reply-To:Content-Type; b=J0CMipgd4FFY+YH2i8fVtmYUVrIoSr2H4Iwqy8B9hk/WzdmhpVwp99rZyykeX7mZxI4enVcLmgeZCh9LpL5LExhZ+dfmZiZvxeYzbXRp68ykQho7zQ6XW/t0fME4bh8V6E2uJxmJEUUS8ZLasPMnOWjypR0hgvAcwoC7E6b9418=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aDmnZlXe; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aDmnZlXe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59810C4AF0D;
+	Fri,  9 Aug 2024 05:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723182810;
+	bh=WPtOAuV9aswhmETP6KB3Lze/3iFuPjnW3egrPbSzqJQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=aDmnZlXeCEO3tHifcSQMguhtDDfJ+JF3K9nfD+p4O7uCus75dPUrMZKJbVR9VaktW
+	 dLa8HNIqkFVfbu5f0udFDUhymTSsAiaXWNwHPlxTMhB43oTDx3Odg9NmezTnYCPRF4
+	 7BEu6I/800tTW8D5ve8TcYDsrk1kcl89cRSWcBVJxr5RQHO8Wj29rvP0Nldw4zNgDZ
+	 rEaeGm4TMKTa1Egg7d3ZQAkYVuU736YW6WBxt3k/fcpjuiHTNtg3/zLBskSidKLTAK
+	 SHAi7gmqahvwIKRLMzJbzxQK5WNbnce1FaT8bFnB40ExpKNXcUQQ93x+eGoBhiMM85
+	 cc8Q7v3ltxnxw==
+Message-ID: <601adbfd-fbb6-48c6-b755-da1b5d321d6b@kernel.org>
+Date: Fri, 9 Aug 2024 07:53:22 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,101 +35,185 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] serial: sc16is7xx: fix copy-paste errors in
- EFR_SWFLOWx_BIT macros
-To: Lech Perczak <lech.perczak@camlingroup.com>, linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>
-References: <6bfb7abc-0264-440d-b0d6-6dd6a8b64b5e@camlingroup.com>
- <b792ee31-6e47-418a-9619-3937a38d3054@camlingroup.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: serial: Add Loongson UART controller
+To: =?UTF-8?B?6YOR6LGq5aiB?= <zhenghaowei@loongson.cn>,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, chenhuacai@kernel.org,
+ kernel@xen0n.name, p.zabel@pengutronix.de
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, loongarch@lists.linux.dev
+References: <20240804063834.70022-1-zhenghaowei@loongson.cn>
+ <4d1f2426-b43c-4727-8387-f18edf937163@kernel.org>
+ <f31609c4-1e47-49bc-9231-5b0353d35dc9@loongson.cn>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <b792ee31-6e47-418a-9619-3937a38d3054@camlingroup.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <f31609c4-1e47-49bc-9231-5b0353d35dc9@loongson.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 08. 08. 24, 18:00, Lech Perczak wrote:
-> Comments attached to bits 0 and 1 incorrectly referenced bits 2 and 3,
-> which doesn't match the datasheet. Fix them
+On 07/08/2024 10:23, 郑豪威 wrote:
 > 
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-> Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> Cc: Andy Shevchenko <andy@kernel.org>
+> 在 2024/8/4 16:43, Krzysztof Kozlowski 写道:
+>> On 04/08/2024 08:38,zhenghaowei@loongson.cn wrote:
+>>
+>> Due to lack of changelog, I assume you send the same patch, so:
+>>
+>> <form letter>
+>> This is a friendly reminder during the review process.
+>>
+>> It seems my or other reviewer's previous comments were not fully
+>> addressed. Maybe the feedback got lost between the quotes, maybe you
+>> just forgot to apply it. Please go back to the previous discussion and
+>> either implement all requested changes or keep discussing them.
+>>
+>> Thank you.
+>> </form letter>
+>>
+>> Also:
+>>
+>>> +
+>>> +  clocks:
+>>> +    maxItems: 1
+>>> +
+>>> +  fractional-division:
+>> Where are this and following defined? In which schema?
+>>
+> These and the ones below are new definitions, can I use them like this?
 > 
-> Signed-off-by: Lech Perczak <lech.perczak@camlingroup.com>
-> ---
->   drivers/tty/serial/sc16is7xx.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
+> +  fractional-division:
+> +    description: Enables fractional-N division. Currently,
+> +      only LS2K1500 and LS2K2000 support this feature.
+> +    type: boolean
 > 
-> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index 8a2020f9930e..c9695a3fd193 100644
-> --- a/drivers/tty/serial/sc16is7xx.c
-> +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -280,10 +280,10 @@
->   						  *       XON1, XON2, XOFF1 and
->   						  *       XOFF2
->   						  */
-> -#define SC16IS7XX_EFR_SWFLOW1_BIT	(1 << 1) /* SWFLOW bit 2 */
-> -#define SC16IS7XX_EFR_SWFLOW0_BIT	(1 << 0) /* SWFLOW bit 3
-> +#define SC16IS7XX_EFR_SWFLOW1_BIT	(1 << 1) /* SWFLOW bit 1 */
-> +#define SC16IS7XX_EFR_SWFLOW0_BIT	(1 << 0) /* SWFLOW bit 0
 
-Are the comments of any benefit here at all? It's clear what the macros 
-are, right?
+Missing vendor prefix, but what's more important, why would this be
+property of DT? Just enable it always...
 
-I'd only switch the macros to BIT() to make them more obvious.
+>>> +    description: Enables fractional-N division. Currently,
+>>> +      only LS2K1500 and LS2K2000 support this feature.
+>>> +
+>>> +  rts-invert:
+>>> +    description: Inverts the RTS value in the MCR register.
+>>> +      This should be used on Loongson-3 series CPUs, Loongson-2K
+>>> +      series CPUs, and Loongson LS7A bridge chips.
+>>> +
+>>> +  dtr-invert:
+>>> +    description: Inverts the DTR value in the MCR register.
+>>> +      This should be used on Loongson-3 series CPUs, Loongson-2K
+>>> +      series CPUs, and Loongson LS7A bridge chips.
+>>> +
+>>> +  cts-invert:
+>>> +    description: Inverts the CTS value in the MSR register.
+>>> +      This should be used on Loongson-2K0500, Loongson-2K1000,
+>>> +      and Loongson LS7A bridge chips.
+>>> +
+>>> +  dsr-invert:
+>>> +    description: Inverts the DSR value in the MSR register.
+>>> +      This should be used on Loongson-2K0500, Loongson-2K1000,
+>>> +      and Loongson LS7A bridge chips.
 
->   						  *
-> -						  * SWFLOW bits 3 & 2 table:
-> +						  * SWFLOW bits 1 & 0 table:
+Same questions for all these. Why choosing invert is a board level
+decision? If it "should be used" then why it is not used always?
 
-This one is good, though.
+>>> +
+>>> +required:
+>>> +  - compatible
+>>> +  - reg
+>>> +  - interrupts
+>>> +  - clocks
+>>> +
+>>> +allOf:
+>>> +  - $ref: serial.yaml
+>>> +
+>>> +unevaluatedProperties: false
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +    #include <dt-bindings/interrupt-controller/irq.h>
+>>> +    #include <dt-bindings/clock/loongson,ls2k-clk.h>
+>>> +
+>>> +    serial@1fe001e0 {
+>>> +        compatible = "loongson,ls7a-uart";
+>>> +        reg = <0x0 0x1fe001e0 0x0 0x10>;
+>>> +        clock-frequency = <100000000>;
+>>> +        interrupt-parent = <&liointc>;
+>>> +        interrupts = <10 IRQ_TYPE_LEVEL_HIGH>;
+>>> +        fractional-division;
+>>> +        rts-invert;
+>>> +        dtr-invert;
+>>> +    };
+>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>> index 8766f3e5e87e..a6306327dba5 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -13189,6 +13189,13 @@ S:	Maintained
+>>>   F:	Documentation/devicetree/bindings/i2c/loongson,ls2x-i2c.yaml
+>>>   F:	drivers/i2c/busses/i2c-ls2x.c
+>>>   
+>>> +LOONGSON UART DRIVER
+>>> +M:	Haowei Zheng<zhenghaowei@loongson.cn>
+>>> +L:	linux-serial@vger.kernel.org
+>>> +S:	Maintained
+>>> +F:	Documentation/devicetree/bindings/serial/loongson,ls7a-uart.yaml
+>>> +F:	drivers/tty/serial/8250/8250_loongson.c
+>> There is no such file.
+>>
+>> Best regards,
+>> Krzysztof
+> 
+> The file "drivers/tty/serial/8250/8250_loongson.c" will be created in 
+> the patch
+> 
+> "tty: serial: 8250: Add loongson uart driver support". Is it 
+> inappropriate to reference it here?
 
-thanks,
--- 
-js
-suse labs
+Apply this patch and run get_maintainers self tests. What do you see?
+
+Of course it is not appropriate here. The file does not exist.
+
+Best regards,
+Krzysztof
 
