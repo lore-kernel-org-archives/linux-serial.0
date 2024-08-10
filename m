@@ -1,91 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A92361D555;
-	Sat, 10 Aug 2024 09:38:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92EC7146D75;
+	Sat, 10 Aug 2024 11:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723282738; cv=none; b=ktjE6bRK+rDfiZCM+voN//jDIUPAAQYLiAYgVLlNi4+uUQlQUpZIlMZOPYLz/HpoSrjaDiKMcNUwK4bTzvkGD8mwzI1iYceGoYxIa/M6jG1oDivi+3pSCy9FqqAcU6DWsMhhBL4MvY78iv15IELxHVFXK1YnUj8BkBwyTNr0/4k=
+	t=1723288909; cv=none; b=YriLNIPkyMwpEp/Sn6LqCP7Axe7qjK6P5L8F18sQA14lfZhSpYnyqkHXp+n/zjJUodjEBDALBWxV+l0qTy0q30HJCd31wwTfUJKUEayQLXLl2sPIi4KcOpEOoBvuu98K3Di4j9/PnWb1HG6EhsTsV/HuWEoqANqy1v/ObpinDs8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723282738; c=relaxed/simple;
-	bh=yGihDf4UPvnVbeBFvypXekjA1yNeJQAtpvjbIlX4CqY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DF3U/QTOEh8h02Mdb3ISpH/iyKPAeiafEonCAz2HAqgIzdxlucdzlw+DETAX7VjsexPyY6QvgIzCvts2RKO2HZqqI4dkxLm4caIheLY6VeFX50Wl3JSl9a+pygALSzdiKQaNz3pXVGB3Ad7pwBuP1zcZ/ou/NffJytXOt5IjLp8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JQ8QQzMg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1723288909; c=relaxed/simple;
+	bh=wLPOcrQJc9FeMQqebv2m9OcS09IY4lRJtR9nrEtBRl4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E4jbsg6DBjmYFnYmmOYFkNCeA+Vn0SxM7D+k9otHvf9fp2aKTTEC2HFjzyH6v0Bn+qkvAtXhUIreifAI5SFyWd6e8pJN4zpNul5DmsCjZzKvKMzLOskFElTVEgdIx0DnXZ881to7L/x9Kq5iuX8ywmpie+eTCXWyYEE4K9OCYag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XxshvrE6; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JQ8QQzMg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7004C32781;
-	Sat, 10 Aug 2024 09:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723282738;
-	bh=yGihDf4UPvnVbeBFvypXekjA1yNeJQAtpvjbIlX4CqY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=JQ8QQzMgM0Uvlfnfy3IDHI0GO+THTPSoCUsfXfJucyG/0X/0em3nRX+L9KNsXXZ9y
-	 8wnRm4nDZzapTf67U24uTTXgedsk8EzUl+EZ+ApduQDyICVmTBxto13YZqc0/Dt9gv
-	 OsN+fut7B13hM9gxcL0Pa6UjZa8rzbeZF9EOM2hrBIkXoh8j22QINgZcdoFDoXdG6C
-	 XiUDJ0m140PfV33fX6virJsn1k8b3xaz2qQcLgn+vJ8gCNSu3gtXPm/0OrGarAwuOJ
-	 WNAXfnpNNH6FAcPRD5L0xI/CFHpCAKocMg0ejq3QGJQiDFxurtE4/RKddRjLUIDPhq
-	 HsS3LhS/n23pA==
-Date: Sat, 10 Aug 2024 10:38:42 +0100
-From: Jonathan Cameron <jic23@kernel.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Detlev Casanova <detlev.casanova@collabora.com>,
- linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Heiko
- Stuebner <heiko@sntech.de>, Andi Shyti <andi.shyti@kernel.org>, Lars-Peter
- Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Daniel
- Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>,
- Chris Morgan <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>,
- Tim Lunn <tim@feathertop.org>, Muhammed Efe Cetin <efectn@protonmail.com>,
- Andy Yan <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>, Dragan Simic
- <dsimic@manjaro.org>, Sebastian Reichel <sebastian.reichel@collabora.com>,
- Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
- Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov
- <alchark@gmail.com>, Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao
- <finley.xiao@rock-chips.com>, Yifeng Zhao <yifeng.zhao@rock-chips.com>,
- Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-serial@vger.kernel.org,
- kernel@collabora.com
-Subject: Re: [PATCH 04/10] dt-bindings: iio: adc: Add rockchip,rk3576-saradc
- string
-Message-ID: <20240810103842.19a60a22@jic23-huawei>
-In-Reply-To: <66118cb8-595a-4149-84c9-0105a2949151@kernel.org>
-References: <20240802214612.434179-1-detlev.casanova@collabora.com>
-	<20240802214612.434179-5-detlev.casanova@collabora.com>
-	<66118cb8-595a-4149-84c9-0105a2949151@kernel.org>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XxshvrE6"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5b8c2a6135dso3564623a12.1;
+        Sat, 10 Aug 2024 04:21:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723288906; x=1723893706; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sF0hj7C/4NCQYLu5xK63NUdOHcybLZHrNwCQSR6snIE=;
+        b=XxshvrE62w04Y/J1P76A4ntyU0IS287a+jMEy6g01DC+F3HxfR91Y6v04ECVM5X1gO
+         dZO81XZ2e3SW3JyITi4e6pPDMgjxBnzg1cHKWKk2bbJ2F6PGvv39qBAeZkhJvQUD61Bw
+         HlnKp5GtmyzG7N094exy2sY4/hXJOAVjtIzVeu6iYcJ/ji6WDiY45kfDp1f52kmViyhb
+         4J+i18Jf+PMYwPMfmcmZ5R0+psq4P1pvUOdbq53XgpXxy0SyDPYK+ESVx9M3mMr+47jT
+         AMtVf4gD7cIUBkcxSZIsIJBewyw1Sio6ARTyCo3g7QSOznESd7Fka2kxfv6NUVR1bOs6
+         BonQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723288906; x=1723893706;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sF0hj7C/4NCQYLu5xK63NUdOHcybLZHrNwCQSR6snIE=;
+        b=h+qdGblTlkdCcoKimuSUIwzGZCTr4w8ij/FavJUeKOgf+t/iTGeUtpVorZFfTfxOBN
+         I1wQL3Z2pY5lzMCpIG1XkrRk+t7XhP7GsMTXVms1gu9y53a4kRBoAFmkkpwVyOaLe9W9
+         NOjNfyf26IhI+b/gPFDZ+RiTjgZ54GJbvTdIH6mijDY2oKpDdq4W2qk2F4NYWCjszUUh
+         zX8Tdo+8FnhNBKLIP2jsesRi95eF3UnN1cRADbud/iO7OvtOjyGtQ95PvrxfpAZFDvif
+         RIW2jzMnBKjz9tcwXIRX1BZtPEBULXjvUta906Lq+Rw2Nr9gzYnNDwYVRsGge5pQlNy+
+         fOzQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWmQCqwUBils4vdZW6SjhCfKm8MK+ULfZqn7j+Z1Uvc/Nl4qps8k0+WO5VyuFsJUoTnVrMY48wmp40eC+x2dyz5N+GuM63IZSi6qTtcdmhDoXLxPklK6ZWqxFVuBgCjA3oiWBdwGrClPQN6iC8ftRN73A3wj5kiBgcS7YpxMPEaAfwFd2lvfumUqqXZzJQDr8QbKMO2OhEmBzpAqSe9ommDm9EIWSVywsY0Lgyjn79F2Vur5wJVfWPrUcWvZC9aIlglV1NXgMy1
+X-Gm-Message-State: AOJu0YzwiBXbVKC9OlpmMVkBTMUYm44wOe72Ulmj3nBfOUqHdSgjPEGg
+	GZCqv9PtXoduv2T7X29wC8CYI1ToDFQdj79B090ZFzEZi1FUFoYH
+X-Google-Smtp-Source: AGHT+IFiMn5l0mYrV3pmmOEjFgDtqUkKKjZO23fLTyfw2nrpYHDA+qyn7nI8r77AsCjGuJgW4dPkEQ==
+X-Received: by 2002:a17:906:bc1a:b0:a7a:b385:37c8 with SMTP id a640c23a62f3a-a80aa54fb24mr316599766b.5.1723288905274;
+        Sat, 10 Aug 2024 04:21:45 -0700 (PDT)
+Received: from [192.168.105.194] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a80bb08fe5dsm61155666b.3.2024.08.10.04.21.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 10 Aug 2024 04:21:44 -0700 (PDT)
+Message-ID: <d01c19a3-dc76-46f5-bca4-f5fdc7bd8798@gmail.com>
+Date: Sat, 10 Aug 2024 13:21:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/3] platform/surface: Add OF support
+To: Maximilian Luz <luzmaximilian@gmail.com>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240810-topic-sam-v2-0-8a8eb368a4f0@quicinc.com>
+ <20240810-topic-sam-v2-3-8a8eb368a4f0@quicinc.com>
+ <c4b23a43-7ff6-450a-bdc8-3348cc935145@gmail.com>
+Content-Language: en-US
+From: Konrad Dybcio <konradybcio@gmail.com>
+In-Reply-To: <c4b23a43-7ff6-450a-bdc8-3348cc935145@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Sun, 4 Aug 2024 11:47:44 +0200
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
-
-> On 02/08/2024 23:45, Detlev Casanova wrote:
-> > Add rockchip,rk3576-saradc compatible string.
-> > The saradc on RK3576 is compatible with the one on RK3588, so they are
-> > used together in an arm of the oneOf.
-> >   
+On 10.08.2024 3:47 AM, Maximilian Luz wrote:
+> On 8/10/24 3:28 AM, Konrad Dybcio wrote:
+>> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
 > 
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> [...]
 > 
-> Best regards,
-> Krzysztof
+>> @@ -299,7 +302,7 @@ static const struct attribute_group ssam_sam_group = {
+>>   };
+>>     -/* -- ACPI based device setup. ---------------------------------------------- */
+>> +/* -- Serial device setup. ------------------------------------------------- */
 > 
+> One more :)
+
+Right, cursor at 80 != 80-long :P
+
+[...]
+
+> Are these two changes required? Surface 3 power and SAN should AFAIK be
+> fairly "legacy" and ACPI-only drivers, which I don't expect to be used
+> on any of the new ARM devices (apart from there probably being other
+> changes required to make them work with DT).
 > 
+> I think with that addressed, it should be fine. I'll give it a spin
+> tomorrow and send in my r-b and t-b (assuming everything goes well).
 
-Applied to the togreg branch of iio.git and pushed out as testing initially
-because otherstuff on that branch needs some build test before I make
-a mess of linux-next.
+No, I went overly defensive here. Will drop for v3 next week.
 
-Thanks,
-
-Jonathan
+Konrad
