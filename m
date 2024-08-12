@@ -1,69 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C724B1804F
-	for <linux-serial@vger.kernel.org>; Mon, 12 Aug 2024 17:10:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C87E1946C7;
+	Mon, 12 Aug 2024 20:40:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723482620; cv=none; b=AFyyNHRaUA6rAA1fl+8f1ey92ccv48viDtxO037GwPiLduMF8nCvA8URgFHG/O/WiAvRx3XhJSbgWZqBhtJMp0YE81Z2LFGerbvyg9WaQqYcppnQ/DWrvV6UYZRhorjEKZWtWzZaY/QRDtLiIHL3EWBuph0kQ5/7P4uNp4zzkUQ=
+	t=1723495235; cv=none; b=J5nnDGW5dbjdIjfQFbIXl5C/oFDrI1bzLzCbwBHkNPRHamsSlTgnukQXxtAZFL/0T2Inas5DvpB6a2PkPZgbj+RsJB/qbOHp7H2AW09j71PkX+Z1oWd+wKevi5Yv6FCMdDWLcT8hNoX6dtcfXvsbaktAJ16bZnZZFkVpnAR9gYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723482620; c=relaxed/simple;
-	bh=9SOdVIArhy7z+5+TXrwTARoAXOw2glHJutebDxJBUrU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FLnc7U4SteQvZAMA6byVs0dzjoVnDd3kKurRN7+HiMhakUEIJc7ZZDVZd1ykAfQ1nzgm4w9SjbKraVkqxEjJyWnaztNJRdWH/CM7MSm5sCeNEj6wI5mXlWdt9bXq8ts258YxrVngw5c8hKZWj4IelNyGiM+Dh3rMgk+3Bm7d+Bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
-X-CSE-ConnectionGUID: F9hFydvHSTuj55VOh94OiQ==
-X-CSE-MsgGUID: 8hx2w7d+TOKzNbKIUe2qbw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="21581205"
-X-IronPort-AV: E=Sophos;i="6.09,283,1716274800"; 
-   d="scan'208";a="21581205"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 10:09:40 -0700
-X-CSE-ConnectionGUID: d/xXgYowRs+kEXYPf8/ghA==
-X-CSE-MsgGUID: iRopz5RcT92BDDdnepWMNA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,283,1716274800"; 
-   d="scan'208";a="57981058"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 10:09:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andy@kernel.org>)
-	id 1sdYY2-0000000EQK5-2Ebk;
-	Mon, 12 Aug 2024 20:09:34 +0300
-Date: Mon, 12 Aug 2024 20:09:34 +0300
-From: Andy Shevchenko <andy@kernel.org>
-To: Lech Perczak <lech.perczak@camlingroup.com>
-Cc: linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Krzysztof =?utf-8?Q?Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>,
-	Pawel Lenkow <p.lenkow@camlintechnologies.com>,
-	Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
-Subject: Re: [PATCH v2 1/3] serial: sc16is7xx: remove SC16IS7XX_MSR_DELTA_MASK
-Message-ID: <ZrpBztQpkSKEI9Kv@smile.fi.intel.com>
-References: <16b7bff3-71ec-4042-a9a8-755f32b85716@camlingroup.com>
- <f1e730eb-1804-4a31-a4a7-1717330d3525@camlingroup.com>
+	s=arc-20240116; t=1723495235; c=relaxed/simple;
+	bh=gqSwB3JabRnTBWr9mDOnoHCcTjPli/nHwfQwHBVTRFc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OPqgkN7XIVHFl9lwlZ8FX8NXi0oq6ygo1q/nnYEuO5BuzYCmM1ozEFN6dYQONso1nVmC3lSUNVAO+Zy5TIpqSIRPh+6a6mu6MWfKPWqtHTU/VlwNjUIiEWW7Kx697Hh08K+az5wFwMHzeP0JMLhW8TAAnEC3F1eWeBZgdhAAMkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=HLPqRBq8; arc=none smtp.client-ip=212.227.15.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="HLPqRBq8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1723495217; x=1724100017; i=wahrenst@gmx.net;
+	bh=wecr4sBy4vz3X+K9p7gOFWA14z8qJG/JWx3qpiWU3L8=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=HLPqRBq8nSlfS1X/mVII7EYm5WEblbN/SgB5gN+F/lblcr+CHQ7AWn88EzX5ESHC
+	 ASF1Xnvcycv9HTcjcTcKeCTKwaRBNW7ffWdQf19hdN3IqFfKETiVdgqMFCgQPLrb7
+	 hOnx2JEUAWuNbettnCUveWIJpTlaCop9f90T4e2uL+r01x7VECWXtY3xByQkumWoL
+	 ZfqzDl6UDGE+uOGrVZxZQQBjU8zY78C8zmJMS54uDV2uu1rxB9h+7AW+pML4b6TGv
+	 JEXPSauHTWq2aAebql9Ng+SOJ9VfG6sXdSychEAP63JD8G1dGEL5ZSpdh8knlRK7a
+	 06flwmesatBU4ZSWaQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MSKuA-1sk7A114I4-00UXXx; Mon, 12
+ Aug 2024 22:40:17 +0200
+Message-ID: <ad11903f-7ded-492f-a680-3ddcfcc7e0b6@gmx.net>
+Date: Mon, 12 Aug 2024 22:40:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1e730eb-1804-4a31-a4a7-1717330d3525@camlingroup.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/1] serial: 8250_bcm2835aux: Switch to
+ DEFINE_SIMPLE_DEV_PM_OPS()
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>
+References: <20240812143514.953612-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Stefan Wahren <wahrenst@gmx.net>
+In-Reply-To: <20240812143514.953612-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Vj49RLtOXMh9VjzIZ/X+tiPKrni3n148+Wbyzg+q9bPGDEhERKZ
+ soeOiGBKec4RyWCzVH3k+7v/Bf7G/jFFLH6VPvMkJENf2BsvOVeZRh2dzQaWgB0ZApbdhQ9
+ v053/1hNqPnHWSNuBM0cNkeUPnzjbW90xDQoTu4WZ8CArow6oR6vG8SdAQxqCcArbji91CG
+ Q4ccmWui35qHIB92VULOQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:+UIjASP9P4w=;23tucjNCnFxLaZNqtALbFMs4bJS
+ g2stW2NdTrMv6CXqXGhzBc0poYkbqwmHjCXUiEBoMeVQzWuP4y9QcZF5V9VrQEexgElKFUpYQ
+ oNFMLHJoKQoD9UBlIb5gQbf1sZADp4KTWjSzy+/zFLkQg38RHWGnmWfnxAJ/dOIrAlpNT6Pkr
+ mHxssjyge6oVUbZBqvOtElRNMVD+veEZFB3JpMuhgDzpBhzuo5al/T6peGOZKhiZB4Dsvjcmo
+ asQjX9VtwVHxICdnXhvwnjUyN6DYTkDM30Yj5NpizEgSitxv8uCXLJG28AqtgWDzmEjjRxrkG
+ bAbaSWUd6cI1tlbNTj/75TJT9wLGCEEwXK3hndHeb2XpnuytF5s0pKdCrf3kYIC9CVQs8S2Oc
+ qD/vXbn2eFoOHye0LCrPg0JTHk0wA/bi4Y/0FA7Nu1cBHu1X+HOv6ftIitkXGcti2IhnyfuYw
+ TM2SDzUAYo/9UxaiZ2GzmL/kzJQg8o6m358hJPgFj6AbtdOq7bZjzx8aPP+myUJf0LQUqIgpm
+ 6nF5DmHW4Y8UEZyE4oOrsrKrptQJOs5MKHqx8kkp0clVQqWtqp4dVFwu2tAQaXxCHGyCQJ1Ls
+ unzcsfBJWvhHVDlYqNskWvVm1dOc5qBeKbHPV0Eqtqs0VoDW1xlnzXyVvIham1t5UmyNtOVA/
+ uPfg03kypHXlRhtaki0IuhQLgAurPAVYGTxG2ylW0F+5UEGHESjIKydL73yhheMJByl17AJ2u
+ 6PqWBVvzufU3Mjk/xiSvsWWqRso7q+CB9iFIP1IKhgguWso9ygDSLpT4wz2o+9ObzlnsNfYhn
+ nDDaZswfCoeG+XgxloAtewBg==
 
-On Mon, Aug 12, 2024 at 06:54:50PM +0200, Lech Perczak wrote:
-> This definition isn't used anywhere anymore, let's delete it.
+Hi Andy,
 
-Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Am 12.08.24 um 16:35 schrieb Andy Shevchenko:
+> The SIMPLE_DEV_PM_OPS() is deprecated, replace it with the
+> DEFINE_SIMPLE_DEV_PM_OPS() for setting the driver's PM routines.
+it's possible the implementation doesn't use the optimal macros here.
+But this sentence is a little bit confusing to me, because the code
+doesn't use SIMPLE_DEV_PM_OPS().
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/tty/serial/8250/8250_bcm2835aux.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/ser=
+ial/8250/8250_bcm2835aux.c
+> index 36e2bb34d82b..829abef2564d 100644
+> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> @@ -245,9 +245,7 @@ static int bcm2835aux_resume(struct device *dev)
+>   	return 0;
+>   }
+>
+> -static const struct dev_pm_ops bcm2835aux_dev_pm_ops =3D {
+> -	SYSTEM_SLEEP_PM_OPS(bcm2835aux_suspend, bcm2835aux_resume)
+> -};
+> +static DEFINE_SIMPLE_DEV_PM_OPS(bcm2835aux_dev_pm_ops, bcm2835aux_suspe=
+nd, bcm2835aux_resume);
+>
+>   static struct platform_driver bcm2835aux_serial_driver =3D {
+>   	.driver =3D {
 
