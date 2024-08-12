@@ -1,41 +1,41 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C87E1946C7;
-	Mon, 12 Aug 2024 20:40:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B110B1953B9;
+	Mon, 12 Aug 2024 20:52:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723495235; cv=none; b=J5nnDGW5dbjdIjfQFbIXl5C/oFDrI1bzLzCbwBHkNPRHamsSlTgnukQXxtAZFL/0T2Inas5DvpB6a2PkPZgbj+RsJB/qbOHp7H2AW09j71PkX+Z1oWd+wKevi5Yv6FCMdDWLcT8hNoX6dtcfXvsbaktAJ16bZnZZFkVpnAR9gYc=
+	t=1723495954; cv=none; b=R+YLDByUQVHGbmAMUvRUtctodGsVRjKBUHPGTtotzs7dB5GBy+r6veGC7y2zW/P1YD4nFkEOL3w1rSsbJ6QWR4CK3o5PeTZIjYnHKYCpFPJtz4tM3brodlB2+wGiLj2gGzJwiF+KSKsoknK0nqCkV6dNM3aS7HZmXYpD88v8qLQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723495235; c=relaxed/simple;
-	bh=gqSwB3JabRnTBWr9mDOnoHCcTjPli/nHwfQwHBVTRFc=;
+	s=arc-20240116; t=1723495954; c=relaxed/simple;
+	bh=5S3wsxJNYF65jYK51oDnSpWPl4BwJZWS6p0vqfXi54U=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OPqgkN7XIVHFl9lwlZ8FX8NXi0oq6ygo1q/nnYEuO5BuzYCmM1ozEFN6dYQONso1nVmC3lSUNVAO+Zy5TIpqSIRPh+6a6mu6MWfKPWqtHTU/VlwNjUIiEWW7Kx697Hh08K+az5wFwMHzeP0JMLhW8TAAnEC3F1eWeBZgdhAAMkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=HLPqRBq8; arc=none smtp.client-ip=212.227.15.18
+	 In-Reply-To:Content-Type; b=RjHSJrWK5ueC8dXGs6IWsV1vv3mdASO4Du3YbGwN670JDeJDK8MxwCwpWiUIBI6eks5WdOxgO2sxmMwBYAs0GrOBPncgKEKrYTB96kpbAybucwrhTRTUvLfkw1W9XNVqpXpWGIkFBY0lKW9T8v5m51EzNpWQKgkG2/voECoYn14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=Sjom9alj; arc=none smtp.client-ip=212.227.15.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="HLPqRBq8"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Sjom9alj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723495217; x=1724100017; i=wahrenst@gmx.net;
-	bh=wecr4sBy4vz3X+K9p7gOFWA14z8qJG/JWx3qpiWU3L8=;
+	s=s31663417; t=1723495921; x=1724100721; i=wahrenst@gmx.net;
+	bh=GvKCeLBsyOIB8oIBg+Q6t3zEGAuc8wQHMxIvLCTbwTI=;
 	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
 	 References:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding:cc:content-transfer-encoding:
 	 content-type:date:from:message-id:mime-version:reply-to:subject:
 	 to;
-	b=HLPqRBq8nSlfS1X/mVII7EYm5WEblbN/SgB5gN+F/lblcr+CHQ7AWn88EzX5ESHC
-	 ASF1Xnvcycv9HTcjcTcKeCTKwaRBNW7ffWdQf19hdN3IqFfKETiVdgqMFCgQPLrb7
-	 hOnx2JEUAWuNbettnCUveWIJpTlaCop9f90T4e2uL+r01x7VECWXtY3xByQkumWoL
-	 ZfqzDl6UDGE+uOGrVZxZQQBjU8zY78C8zmJMS54uDV2uu1rxB9h+7AW+pML4b6TGv
-	 JEXPSauHTWq2aAebql9Ng+SOJ9VfG6sXdSychEAP63JD8G1dGEL5ZSpdh8knlRK7a
-	 06flwmesatBU4ZSWaQ==
+	b=Sjom9aljNiYSXt4/TV7FudxctU39/Tq2W74NPg4PYxF2kDjaU9OI+BC7xOiXlzzV
+	 iWq0FxysnId4FFG9QWFS3sLEphqCHsr5P0z/rK9m+CugtuzzJJ3wdLKrj1pBW2Hcf
+	 Wnf7psK+fYzNjkhxpFoQfCsBBFZ2jhVqOp0YPZ23aYjexU2FAEytCN8yxcoUlKf5H
+	 X5Qog1k1BTvrflXb/Z9fhyJmhzNGBb49cHxfidzHPp+0F3mEGlVmLontiHMwRVfUs
+	 b+D+Zx99UO5+VKpGPXstOevQd64Zod2frROPRigwsxPUDtEdl9HSOjesZzTvyORef
+	 S6SUKDyfIS+4o4RuHg==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MSKuA-1sk7A114I4-00UXXx; Mon, 12
- Aug 2024 22:40:17 +0200
-Message-ID: <ad11903f-7ded-492f-a680-3ddcfcc7e0b6@gmx.net>
-Date: Mon, 12 Aug 2024 22:40:15 +0200
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MD9T1-1sV3IW31Xt-009GBI; Mon, 12
+ Aug 2024 22:52:01 +0200
+Message-ID: <d4f111e2-9695-412d-9993-8f5d31c8a545@gmx.net>
+Date: Mon, 12 Aug 2024 22:51:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,73 +43,88 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/1] serial: 8250_bcm2835aux: Switch to
- DEFINE_SIMPLE_DEV_PM_OPS()
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
-Cc: Jiri Slaby <jirislaby@kernel.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>
-References: <20240812143514.953612-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH V2 01/16] firmware: raspberrypi: Improve timeout warning
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>, =?UTF-8?Q?Ma=C3=ADra_Canal?=
+ <mcanal@igalia.com>, Jiri Slaby <jirislaby@kernel.org>,
+ Minas Harutyunyan <hminas@synopsys.com>
+Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
+ Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+References: <20240728114200.75559-1-wahrenst@gmx.net>
+ <20240728114200.75559-2-wahrenst@gmx.net>
 Content-Language: en-US
 From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <20240812143514.953612-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20240728114200.75559-2-wahrenst@gmx.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Vj49RLtOXMh9VjzIZ/X+tiPKrni3n148+Wbyzg+q9bPGDEhERKZ
- soeOiGBKec4RyWCzVH3k+7v/Bf7G/jFFLH6VPvMkJENf2BsvOVeZRh2dzQaWgB0ZApbdhQ9
- v053/1hNqPnHWSNuBM0cNkeUPnzjbW90xDQoTu4WZ8CArow6oR6vG8SdAQxqCcArbji91CG
- Q4ccmWui35qHIB92VULOQ==
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:ZfNPP2zjk2FxGLvWamEJ65EQOEHr/+kJILjZGfdpf87+gGx5/C3
+ 64V1HtPFKiFRkZVlVx5iVKl9HgMhRU2I9im9qQoG56Af8h70c4JuH5HOWxJGLmSGFl+fCuz
+ 3Oq0mxvwqX/IEB9L2w3qr0bc30x11suNvAUSsPhQGcw3O0Fdjl6x/svM5cPwcfnqLhU0k/C
+ tDwrcWM2zA55RjyVtr1JA==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:+UIjASP9P4w=;23tucjNCnFxLaZNqtALbFMs4bJS
- g2stW2NdTrMv6CXqXGhzBc0poYkbqwmHjCXUiEBoMeVQzWuP4y9QcZF5V9VrQEexgElKFUpYQ
- oNFMLHJoKQoD9UBlIb5gQbf1sZADp4KTWjSzy+/zFLkQg38RHWGnmWfnxAJ/dOIrAlpNT6Pkr
- mHxssjyge6oVUbZBqvOtElRNMVD+veEZFB3JpMuhgDzpBhzuo5al/T6peGOZKhiZB4Dsvjcmo
- asQjX9VtwVHxICdnXhvwnjUyN6DYTkDM30Yj5NpizEgSitxv8uCXLJG28AqtgWDzmEjjRxrkG
- bAbaSWUd6cI1tlbNTj/75TJT9wLGCEEwXK3hndHeb2XpnuytF5s0pKdCrf3kYIC9CVQs8S2Oc
- qD/vXbn2eFoOHye0LCrPg0JTHk0wA/bi4Y/0FA7Nu1cBHu1X+HOv6ftIitkXGcti2IhnyfuYw
- TM2SDzUAYo/9UxaiZ2GzmL/kzJQg8o6m358hJPgFj6AbtdOq7bZjzx8aPP+myUJf0LQUqIgpm
- 6nF5DmHW4Y8UEZyE4oOrsrKrptQJOs5MKHqx8kkp0clVQqWtqp4dVFwu2tAQaXxCHGyCQJ1Ls
- unzcsfBJWvhHVDlYqNskWvVm1dOc5qBeKbHPV0Eqtqs0VoDW1xlnzXyVvIham1t5UmyNtOVA/
- uPfg03kypHXlRhtaki0IuhQLgAurPAVYGTxG2ylW0F+5UEGHESjIKydL73yhheMJByl17AJ2u
- 6PqWBVvzufU3Mjk/xiSvsWWqRso7q+CB9iFIP1IKhgguWso9ygDSLpT4wz2o+9ObzlnsNfYhn
- nDDaZswfCoeG+XgxloAtewBg==
+UI-OutboundReport: notjunk:1;M01:P0:QxCy4izLLjY=;VF0kReEZPhZaLGTrfcaQty/QKj7
+ UifCvvx+SLuDS3BGH/JKVmzvbgxjfYMTuiaoiGK5ryEFzhcYD1W4kxp0xttxQgmwC6L5cECWp
+ YnjEvCvFvuhu0Fpq5G8NtGB+3IFsOiqQ5pz5Abbyvc2B0cRAHxl73b+A8UdKAz//PbdhqoMzi
+ 2UQhPxU3LgqZXXGGwwi6zYlsBsFv67U2ciIUB7iKcBWbwv0WK1XuAfmgIPjdDwS/p9mC48hEH
+ ijEGD6bBKXmtUPUW0VHSMfPF3KcRskrHg5GFaztguP/XKg6lR8PVwhqJwwHwYDi4t0ZXTwc8B
+ /WdDsOKDWrWrD0c8cQUYvghNckD5OTt5OsLZcewSOpQ6CiY80Mcjg8vZpkb/OICg9/z2TaIb7
+ lLx+k/HnJZCG27LHhGw0KSH8ELFD3BsYRzn5/Cf+/2tZlSs0+PcIJBBfGLQACm1yjlmjGuYyU
+ MGPkmbwyxnlHeCTgr9WGN0I2LP5n27BMQzr/nvmxbh6mrFpU6nDTiBiIj7rhOHn2v6E12rJ1H
+ HPCLxP9TC5HfJyKg1nkinWxUuFvzr+FgXHyhV23C0JLw+SGKxF7QTcQVfrHE/yXTjoAMn9wxs
+ 5ehFhzAGR01x91r9GuJzTstArcoTP+uVGcwXxnUXAgpQC6ov14e70lhN5zydwcWo0bhsWiUBN
+ sh8YsNcyrRGliwu3k9TfcgJQlvyFmT6b0viXzPSNIWaBecUWJOkdGXlO8nXq8Wf5SO4zgcqB6
+ B18i0+SNEyXIdyKAPI0PmynEDFo3j7xspJvpav8uRCSm3ttxugQ3IpeCCgEuP9V3Q+9fTsC6y
+ m76aGkNl/8GkkRbtl2mlunOQ==
 
-Hi Andy,
+Hi Florian,
 
-Am 12.08.24 um 16:35 schrieb Andy Shevchenko:
-> The SIMPLE_DEV_PM_OPS() is deprecated, replace it with the
-> DEFINE_SIMPLE_DEV_PM_OPS() for setting the driver's PM routines.
-it's possible the implementation doesn't use the optimal macros here.
-But this sentence is a little bit confusing to me, because the code
-doesn't use SIMPLE_DEV_PM_OPS().
+Am 28.07.24 um 13:41 schrieb Stefan Wahren:
+> Recent work on raspberry-power driver showed that even the
+> stacktrace on firmware property timeout doesn't provide
+> enough information. So add the first tag name to the warning
+> to be in line with a status error.
+>
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+Are there any concerns, because i assumed this patch would go via your tree?
 
 Best regards
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->   drivers/tty/serial/8250/8250_bcm2835aux.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+>   drivers/firmware/raspberrypi.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/ser=
-ial/8250/8250_bcm2835aux.c
-> index 36e2bb34d82b..829abef2564d 100644
-> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
-> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
-> @@ -245,9 +245,7 @@ static int bcm2835aux_resume(struct device *dev)
->   	return 0;
->   }
+> diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+> index ac34876a97f8..18cc34987108 100644
+> --- a/drivers/firmware/raspberrypi.c
+> +++ b/drivers/firmware/raspberrypi.c
+> @@ -62,7 +62,6 @@ rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data)
+>   			ret = 0;
+>   		} else {
+>   			ret = -ETIMEDOUT;
+> -			WARN_ONCE(1, "Firmware transaction timeout");
+>   		}
+>   	} else {
+>   		dev_err(fw->cl.dev, "mbox_send_message returned %d\n", ret);
+> @@ -125,6 +124,8 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
+>   		dev_err(fw->cl.dev, "Request 0x%08x returned status 0x%08x\n",
+>   			buf[2], buf[1]);
+>   		ret = -EINVAL;
+> +	} else if (ret == -ETIMEDOUT) {
+> +		WARN_ONCE(1, "Firmware transaction 0x%08x timeout", buf[2]);
+>   	}
 >
-> -static const struct dev_pm_ops bcm2835aux_dev_pm_ops =3D {
-> -	SYSTEM_SLEEP_PM_OPS(bcm2835aux_suspend, bcm2835aux_resume)
-> -};
-> +static DEFINE_SIMPLE_DEV_PM_OPS(bcm2835aux_dev_pm_ops, bcm2835aux_suspe=
-nd, bcm2835aux_resume);
+>   	dma_free_coherent(fw->chan->mbox->dev, PAGE_ALIGN(size), buf, bus_addr);
+> --
+> 2.34.1
 >
->   static struct platform_driver bcm2835aux_serial_driver =3D {
->   	.driver =3D {
 
