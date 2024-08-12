@@ -1,115 +1,263 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00A44187335;
-	Mon, 12 Aug 2024 15:49:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ACB4186E5A;
+	Mon, 12 Aug 2024 15:58:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723477751; cv=none; b=q8RjZsEGcfeKxQpvryZIt8f6Rjc2/IAinqrTIS9Q6OcYzBfiZuu0R8Inl5il90Z+MBveiYQqhcAQJqfuLe79Div7AcpHaKIHbSn1u9qQxoLXZ7tmRUTfRQ7fTSFFWSJUxL7vQV+Iodog5BntnIahn47nqM0Bq6BY9ZmA0O+TPXQ=
+	t=1723478301; cv=none; b=EATnUb3nSaJxSBtqzqwGF8p0GmPNeQhPqtaEU0pfilgapyL44s3wSih5NM6zwW0U6Qza++PqJkrlkXC6vHgyIn+DyrAGHWJt7oARQ1LqqC2/MgAul3uBwEkPj8t6qcP0zbkYB2NGc4aUhdU2pMrOEIC+rRdIKSsVRmGoBVZRiLg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723477751; c=relaxed/simple;
-	bh=v1aKmaKDjfQ1nkB08b03HKu7SColpuAKnONgllNWMKk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QBjJ9856YjEBfYyQcWM7oqYUYdfH6TugEbY7M7WQVZwsXWfv5JYxBJXiTXPx6gHSZ+ypDgmerBPFoeecDIv5v7bcn4v/mp9VYt5RTW/P3QrqtNappYRnnQbr8yPV2SZXa3MfiIFjJllTS7x5cubjAnQs5yyA0ik5QEmPKga/uhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mUmMqlbU; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1723478301; c=relaxed/simple;
+	bh=gUCjJDEJFDyz+livsnJi5Irrop+hF08mCdxZsNWwFtU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YgbZG3UFHDuhUjhTy+q7RiLWSrS7XIKqWH1n2b671fKxLHeVf9f9QYMILGNje8NqaX+OFW1uHKs1acAoVYEZyyRdaQJWh1gLcKnzTfXGTHw1q3ETl4ARc0uk8A7bStC8OUEYbylyUlGWIdzfWHMkFzq1Yen72vIX+7h9tC719Bk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ied3QKyZ; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mUmMqlbU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723477750; x=1755013750;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v1aKmaKDjfQ1nkB08b03HKu7SColpuAKnONgllNWMKk=;
-  b=mUmMqlbU1gXDKfKtBi23tCe1geUAnxWLUSOj419G/kkn309s2IcJMBox
-   7XLX07lb0kjwdx1Bu0J1G0JacQh28eMh6IeVXgCCWfbbUl5kytbcne8Yx
-   O4IY3XH4DUAJDGcLXrVZIUyKvT+1Vv7N0DYXV9UYGU/EcNsVEBPZZs8p7
-   zqy+t7T6fK3Wd5XS7buwE/85SaCfmmM2mHeHwh6EXy9305IHMl2Z1G2A7
-   SstEA11xgp4Ts8ab7TIcRuPzfXTFV6z4qFGFTE3MPk92mJipvvXWFNv78
-   1spNDxDRvr4M5EeXvGESro/FDQpOhQutY9hlUhGJhK1PDwBQ9rtIU3QEj
-   w==;
-X-CSE-ConnectionGUID: vAGsGFJ1TV2a8fxkb8Olrg==
-X-CSE-MsgGUID: VQh6X89iQWGcWED08+IQng==
-X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="46998258"
-X-IronPort-AV: E=Sophos;i="6.09,283,1716274800"; 
-   d="scan'208";a="46998258"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 08:49:08 -0700
-X-CSE-ConnectionGUID: Ly4jLttLSSi9EMzABno8zw==
-X-CSE-MsgGUID: F5frStfRQe+xFBu2N06K3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,283,1716274800"; 
-   d="scan'208";a="62959181"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa004.fm.intel.com with ESMTP; 12 Aug 2024 08:49:06 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id EF6DD45C; Mon, 12 Aug 2024 18:49:02 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ied3QKyZ"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-426526d30aaso31405965e9.0;
+        Mon, 12 Aug 2024 08:58:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723478298; x=1724083098; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=O8dH5c6euhGkhzqUhg15r5whJ9sGjRiQsrYOxQFbfwQ=;
+        b=ied3QKyZM/19vrnbo9GyXdVZMtA9h85orpTCmas8UX0gIhAHUFejH8hrz2M0jlhwYi
+         Eif5iYWpJ6MIiNZkW9kUovwCl+4q4vHdiGItuvdB473o+KcUKtenOsTl7/al7R8AQSlI
+         tNJxaSD47RALw/Op++NV/VcxRMnYFqJ+3B6qH8MF7q0jnUp6sje1LnBzClpvXf0uF5fC
+         u5Fvj+EQN6t/MA8MeMkmDJqB7jJen8lEinRSajKzasqkb7HA6E+b0RpIUOGpnjeI3djV
+         BPmPhCngr51N0lq2QdiPP50GluQgRJEaBef9+0N+qgq4Siq81X0z3u0vKdwHteROe0Or
+         rNHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723478298; x=1724083098;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=O8dH5c6euhGkhzqUhg15r5whJ9sGjRiQsrYOxQFbfwQ=;
+        b=AvFVxEDV5PZbjsY38apJKTfXXhSV8DXfIcLSqNse6rOWA6ga+09Syg+NAJzLNP24tD
+         gMet1auforSmwkbAcc/8NmHSHHSd8dI67mwkiIslMDqvBfSYd9sLRlkA23swIfm2pPH5
+         3qR2LLLYZsy83yzJZj7EDsvCbeRy2zBvE8QXZ9IljtCwZdmAQm6wY7JG0V6mQBdH+ipX
+         FULBI1jfk4WxRmw1Zo7JjsDAJxHewFxXaXkdX2ooWfGq5POkPvpmC0lAggkOHAePuRN+
+         caPoKht9r54d01MQBqMOypKB4dw3Q6Wy4+OzKDzJaObzE07lHM5eF0HYpn2maNwoiFM9
+         +XmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVyUwxUsXx8bcqJryC3X9Bk05hp6rfu2HojZ+vcXUInw7EKwn5HuZZ8Mc7jI2w6m95yCoJwVc3LCG1OeKZ3@vger.kernel.org, AJvYcCXJOkVwfp3THihft6WUu/g6J1W/qAx5seJIWJTeCULCAQh2kXwffvYJKT4A9yXwRJA76+OCzlph1v1HI6/H@vger.kernel.org, AJvYcCXyPw218zhm+FB9W2ceAFfTZCB7iQ2bRhHt7I9DWZcgrJSX8AAifYlqv7c0ojJ32N1J0ynkkzhaI7hCvP8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzYGFDbI+JuZYAHFsivWEoXMvilr93bcYrbJCsIf0oAHAZJ1dOA
+	We++JsGz0H5DMbjL9RMKKZD9DEWnNqQTn5mU3gyANSDYxFsf9uk4+nzTyw==
+X-Google-Smtp-Source: AGHT+IGmluI+NxRw/DB+Gk5D4DxrNk5HnM/7KxqWahp2ny7w9p8D/538swlQYaWEONiqdjzFcvYnVA==
+X-Received: by 2002:a05:600c:4f0d:b0:426:5cdf:2674 with SMTP id 5b1f17b1804b1-429d47f5c0dmr7033835e9.4.1723478297538;
+        Mon, 12 Aug 2024 08:58:17 -0700 (PDT)
+Received: from toolbox (31-10-206-125.static.upc.ch. [31.10.206.125])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429c750ec0bsm106880045e9.15.2024.08.12.08.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Aug 2024 08:58:17 -0700 (PDT)
+Date: Mon, 12 Aug 2024 17:58:15 +0200
+From: Max Krummenacher <max.oss.09@gmail.com>
+To: Masahiro Yamada <masahiroy@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sunil V L <sunilvl@ventanamicro.com>
-Subject: [PATCH v1 5/7] serial: 8250_platform: Switch to use platform_get_mem_or_io()
-Date: Mon, 12 Aug 2024 18:47:07 +0300
-Message-ID: <20240812154901.1068407-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
-In-Reply-To: <20240812154901.1068407-1-andriy.shevchenko@linux.intel.com>
-References: <20240812154901.1068407-1-andriy.shevchenko@linux.intel.com>
+	linux-kbuild@vger.kernel.org,
+	Max Krummenacher <max.krummenacher@toradex.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] tty: vt: conmakehash: remove non-portable code printing
+ comment header
+Message-ID: <ZroxFwCTr8oOO-tf@toolbox>
+References: <20240809160853.1269466-1-masahiroy@kernel.org>
+ <ZrojDUbr1EvlARXK@toolbox>
+ <CAK7LNARCRQ_K=4vAQxgQiq_w8ss5+uhGnY1L7nre=H3eWeq6zA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAK7LNARCRQ_K=4vAQxgQiq_w8ss5+uhGnY1L7nre=H3eWeq6zA@mail.gmail.com>
 
-Switch to use new platform_get_mem_or_io() instead of home grown analogue.
+On Tue, Aug 13, 2024 at 12:44:40AM +0900, Masahiro Yamada wrote:
+> On Mon, Aug 12, 2024 at 11:58 PM Max Krummenacher <max.oss.09@gmail.com> wrote:
+> >
+> > On Sat, Aug 10, 2024 at 01:07:20AM +0900, Masahiro Yamada wrote:
+> > > Commit 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no
+> > > longer in env") included <linux/limits.h>, which invoked another
+> > > (wrong) patch that tried to address a build error on macOS.
+> > >
+> > > According to the specification [1], the correct header to use PATH_MAX
+> > > is <limits.h>.
+> > >
+> > > The minimal fix would be to replace <linux/limits.h> with <limits.h>.
+> > I can change that in a v2.
+> 
+> 
+> You cannot.
+> 
+> Your buggy commit already landed in Linus' tree:
+> 
+> https://github.com/torvalds/linux/commit/6e20753da6bc651e02378a0cdb78f16c42098c88
+> 
+> 
+> 
+> 
+> 
+> > >
+> > > However, the following commits seem questionable to me:
+> > >
+> > >  - 3bd85c6c97b2 ("tty: vt: conmakehash: Don't mention the full path of the input in output")
+> > >  - 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no longer in env")
+> > >
+> > > These commits made too many efforts to cope with a comment header in
+> > > drivers/tty/vt/consolemap_deftbl.c:
+> > >
+> > >   /*
+> > >    * Do not edit this file; it was automatically generated by
+> > >    *
+> > >    * conmakehash drivers/tty/vt/cp437.uni > [this file]
+> > >    *
+> > >    */
+> >
+> > This is the output you get when keeping the build artifacts within the
+> > linux source tree.
+> > However if you keep the artifacts outside the source tree
+> > (make O=/somepath ...) the output looks like this:
+> >
+> >     /*
+> >      * Do not edit this file; it was automatically generated by
+> >      *
+> >      * conmakehash /path-to-kernel-source-tree/drivers/tty/vt/cp437.uni > [this file]
+> >      *
+> >      */
+> >
+> > i.e. it does keep a reference to where in your filesystem the kernel
+> > source did reside when building which is against the goal of having a
+> > reproducable build.
+> 
+> 
+> 
+> You do not need to educate me.
+> 
+> It is well described in commit 3bd85c6c97b2d232638594bf828de62083fe3389
+> and I know how it works.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/tty/serial/8250/8250_platform.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+Sorry about that. I read your new commit as a comment to mine.
+Thanks for fixing the bug I added.
 
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index 38c083e90a7d..4a26bab8c9bd 100644
---- a/drivers/tty/serial/8250/8250_platform.c
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -113,21 +113,23 @@ static int serial8250_platform_probe(struct platform_device *pdev)
- 	unsigned char iotype;
- 	int ret, line;
- 
--	regs = platform_get_resource(pdev, IORESOURCE_IO, 0);
--	if (regs) {
-+	regs = platform_get_mem_or_io(pdev, 0);
-+	if (!regs)
-+		return dev_err_probe(dev, -EINVAL, "no registers defined\n");
-+
-+	switch (resource_type(regs)) {
-+	case IORESOURCE_IO:
- 		uart.port.iobase = regs->start;
- 		iotype = UPIO_PORT;
--	} else {
--		regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--		if (!regs) {
--			dev_err(dev, "no registers defined\n");
--			return -EINVAL;
--		}
--
-+		break;
-+	case IORESOURCE_MEM:
- 		uart.port.mapbase = regs->start;
- 		uart.port.mapsize = resource_size(regs);
- 		uart.port.flags = UPF_IOREMAP;
- 		iotype = UPIO_MEM;
-+		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	/* Default clock frequency*/
--- 
-2.43.0.rc1.1336.g36b5255a03ac
+Regards
+Max
 
+> 
+> 
+> 
+> > >
+> > > With this commit, the header part of the generate C file will be
+> > > simplified as follows:
+> > >
+> > >   /*
+> > >    * Automatically generated file; Do not edit.
+> > >    */
+> >
+> > This is not what I observed, for me with this proposed commit the
+> > comment becomes with or without the 'O=somepath':
+> >
+> >     /*
+> >      * Do not edit this file; it was automatically generated by
+> >      *
+> >      * conmakehash cp437.uni > [this file]
+> >      *
+> >      */
+> >
+> > i.e. it strips the directory path of the chartable source file used.
+> 
+> 
+> 
+> See my patch closely.
+> 
+> I deleted the line "* conmakehash %s > [this file]\n\"
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> > Regards
+> > Max
+> >
+> > >
+> > > BTW, another series of excessive efforts for a comment header can be
+> > > seen in the following:
+> > >
+> > >  - 5ef6dc08cfde ("lib/build_OID_registry: don't mention the full path of the script in output")
+> > >  - 2fe29fe94563 ("lib/build_OID_registry: avoid non-destructive substitution for Perl < 5.13.2 compat")
+> > >
+> > > [1]: https://pubs.opengroup.org/onlinepubs/009695399/basedefs/limits.h.html
+> > >
+> > > Fixes: 6e20753da6bc ("tty: vt: conmakehash: cope with abs_srctree no longer in env")
+> > > Reported-by: Daniel Gomez <da.gomez@samsung.com>
+> > > Closes: https://lore.kernel.org/all/20240807-macos-build-support-v1-11-4cd1ded85694@samsung.com/
+> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > > ---
+> > >
+> > >  drivers/tty/vt/conmakehash.c | 12 ++----------
+> > >  1 file changed, 2 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/tty/vt/conmakehash.c b/drivers/tty/vt/conmakehash.c
+> > > index 82d9db68b2ce..a931fcde7ad9 100644
+> > > --- a/drivers/tty/vt/conmakehash.c
+> > > +++ b/drivers/tty/vt/conmakehash.c
+> > > @@ -11,8 +11,6 @@
+> > >   * Copyright (C) 1995-1997 H. Peter Anvin
+> > >   */
+> > >
+> > > -#include <libgen.h>
+> > > -#include <linux/limits.h>
+> > >  #include <stdio.h>
+> > >  #include <stdlib.h>
+> > >  #include <sysexits.h>
+> > > @@ -79,7 +77,6 @@ int main(int argc, char *argv[])
+> > >  {
+> > >    FILE *ctbl;
+> > >    const char *tblname;
+> > > -  char base_tblname[PATH_MAX];
+> > >    char buffer[65536];
+> > >    int fontlen;
+> > >    int i, nuni, nent;
+> > > @@ -245,20 +242,15 @@ int main(int argc, char *argv[])
+> > >    for ( i = 0 ; i < fontlen ; i++ )
+> > >      nuni += unicount[i];
+> > >
+> > > -  strncpy(base_tblname, tblname, PATH_MAX);
+> > > -  base_tblname[PATH_MAX - 1] = 0;
+> > >    printf("\
+> > >  /*\n\
+> > > - * Do not edit this file; it was automatically generated by\n\
+> > > - *\n\
+> > > - * conmakehash %s > [this file]\n\
+> > > - *\n\
+> > > + * Automatically generated file; Do not edit.\n\
+> > >   */\n\
+> > >  \n\
+> > >  #include <linux/types.h>\n\
+> > >  \n\
+> > >  u8 dfont_unicount[%d] = \n\
+> > > -{\n\t", basename(base_tblname), fontlen);
+> > > +{\n\t", fontlen);
+> > >
+> > >    for ( i = 0 ; i < fontlen ; i++ )
+> > >      {
+> > > --
+> > > 2.43.0
+> > >
+> 
+> 
+> 
+> --
+> Best Regards
+> 
+> Masahiro Yamada
