@@ -1,41 +1,41 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B518B1537C8;
-	Mon, 12 Aug 2024 21:04:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7B11804F;
+	Mon, 12 Aug 2024 23:48:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723496693; cv=none; b=DbrojENuYAE+Eu5jcbf9NLdG/boE9TJeLIoXE1LZIo9Dvh3Ttj99r7MNdjlUTv95nCQsfwxa4+DVPI8t6aznwFQoFFZ62Wh6RvpxCtQ3E7WpuEoBsVkgzEbM+KhQ1JJU5ACBcwhfQcu3pZDDnNBP00A2PgqyDdJl0Q8zCKg9hgI=
+	t=1723506489; cv=none; b=Hchx7y4Ye3cF0PX9tnG5yLCItXCIXpzseNVdTfjbhZn+XW2mhYiCTohybYGjLYRjU3C7LhS8H82mDvbl1STN98MrccKlc8rsdv4HA6ddIES4IdgOz53y9PfJ9ZK0zlHqYGvnrgx8YjtpybhRJLJnajmdoa6UKWgX0iVQzfqGEe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723496693; c=relaxed/simple;
-	bh=aJjNV6IIn0PKh4LM3C+bQDLs7Rb/XjDKH8mbgLDM39c=;
+	s=arc-20240116; t=1723506489; c=relaxed/simple;
+	bh=kXZZsX+td27pgCbDF8kbMbDkiLniqjeDNhrdH57CMRY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=e1OleRdZiVcigSmNwlYcgNJ6T0xp2LXx8TH/SVlJgFl1DVRuKCtKpTIiNe3D+B+42/QYyfM8ZBaITHRTs/Cp+39woeprDpzFh8Jf+FC6vbczIrnWWwCoqQXpb54dlxyXh85Tvytsaya3ggA6GiJ+Pqe15RAAca0m7BJLRtHkd4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=LmX4tE4j; arc=none smtp.client-ip=212.227.15.18
+	 In-Reply-To:Content-Type; b=HH6NDorzMkMMv87Gl7aUJu6Ywt2ptWPMQp+l78PzPj5jyb14tSCHG5FaBln4tf9LE1c0KbjT/XqZ6t5wJLZUsoD5z7b1RzIdunHrzYkR6UQ/PmQ38HmdHaQlC1ZMiuyQbqDcEmokFXQ60RljiZ1t3AmjHAsmaz8grSAZpKDymL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=t43A0KxR; arc=none smtp.client-ip=212.227.17.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="LmX4tE4j"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="t43A0KxR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723496662; x=1724101462; i=wahrenst@gmx.net;
-	bh=DKtjNhe7+nbF8JHA3vCW5OYYhp8tnoOSo7h0OpUJ9U4=;
+	s=s31663417; t=1723506454; x=1724111254; i=wahrenst@gmx.net;
+	bh=l6OouXenCvAZE1JaCg4HpNacCouIsLa/UOywMg/akPQ=;
 	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
 	 References:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding:cc:content-transfer-encoding:
 	 content-type:date:from:message-id:mime-version:reply-to:subject:
 	 to;
-	b=LmX4tE4jw8yVX9Gap8ZeeTe6AdNlHl6Nw4asL7aV48MtaRxG0Feuk0top0/DB41E
-	 TlicCV75pQQ4rG/s23JXqCIQrf5seUygl2wP/QDgn8vwLLUVTsgItO2AsVOlQRmnV
-	 BeUS1TG0TI8uA5FhgnY6dFx5S3aoRaH3PO4e8gv/YVQkl0vFlHhkYmTq/hxx4CPHD
-	 Z9IMLrHuFR5XWiRGVPCBFlguQzthOYrGlkiNnxdTb5PPrtI6p4MPBo99NxiFY2uOI
-	 X4lu1LSWvrV3qhKVfCXP7gXU58dCG7SVmweWGbT1IMDnRbQz4VLYtX0B4RzxXrAS7
-	 gq6M0rQQvn2MCv5xzg==
+	b=t43A0KxRTShwhq51DmI0Hx9L+gPZrgr8r00BkJx0VDqA+AIo08KkR7JQ0dN6tOrH
+	 qovMsbM5X7bSgi2yOq4xKC/IZxVpLd2xejYCjVJPnC6z+gPltVxGfvgxKrR8gXZUt
+	 1Z0ccgiWaaLB6ANTDP8rFNYS4MJOsPDw85eXzompgU1MK5HzTuZ+jBKdDmoRfFdM2
+	 K4P+5acYr+5/PaN+1ZQ0UMhGiBhnW/i1JqxdLMD93A7MQAaDHqDn/lopnaj9jJo5W
+	 NmX9u90FIMpYEZ++rcIbXTcDe0VVs03SbcCReqheJ0paHtnmddE/hJEtyEAETwbEt
+	 J23elkwHdIEPzPmN1A==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MJmGZ-1stDG30Zuj-00KJ2j; Mon, 12
- Aug 2024 23:04:22 +0200
-Message-ID: <19287be7-3136-4c75-be91-f3fb585954a9@gmx.net>
-Date: Mon, 12 Aug 2024 23:04:19 +0200
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MzQkK-1sHZZ80T5c-00wJPv; Tue, 13
+ Aug 2024 01:47:34 +0200
+Message-ID: <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
+Date: Tue, 13 Aug 2024 01:47:31 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,80 +43,381 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 05/16] pmdomain: raspberrypi-power: set flag
- GENPD_FLAG_ACTIVE_WAKEUP
-To: Florian Fainelli <florian.fainelli@broadcom.com>,
- Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Ulf Hansson <ulf.hansson@linaro.org>, =?UTF-8?Q?Ma=C3=ADra_Canal?=
- <mcanal@igalia.com>, Dave Stevenson <dave.stevenson@raspberrypi.com>
-Cc: Minas Harutyunyan <hminas@synopsys.com>,
+Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
+ domain off
+To: Douglas Anderson <dianders@chromium.org>
+Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
+ Minas Harutyunyan <hminas@synopsys.com>, Ulf Hansson
+ <ulf.hansson@linaro.org>, Dave Stevenson <dave.stevenson@raspberrypi.com>,
  Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
  Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
  Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
  Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
  Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
  bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
  Jiri Slaby <jirislaby@kernel.org>
 References: <20240728114200.75559-1-wahrenst@gmx.net>
- <20240728114200.75559-6-wahrenst@gmx.net>
+ <20240728130029.78279-1-wahrenst@gmx.net>
+ <20240728130029.78279-6-wahrenst@gmx.net>
 Content-Language: en-US
 From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <20240728114200.75559-6-wahrenst@gmx.net>
+In-Reply-To: <20240728130029.78279-6-wahrenst@gmx.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:d1gqw1yiMT8CmYwa+ZALyjX6ZixEUPMZTinZ8wEqTverOYCRAjk
- tFuXt33XZNSJdQi1QK/M0cF2UC3mLRcJL/JrRMAbSQ7Uzs/LLL/OdYdWAjDmR4Or+rlAtxI
- dssQxHgIVPc/JRBVDwR9/wse56Q+OI/5Z5i8s1dHlPCzOH8zKobEQ1lRg30XYJ8rypp1joF
- sURD4BAlt8ElWUsowAb6w==
+X-Provags-ID: V03:K1:Ik08zjVVUi5qEx5fIPQKnKhjJUj59/tBCsiGz1eN2Pm7Quoj1iB
+ SNlD/gQNZC+VslWH4bG/F4WMdl+kUsV+eZR5HGLwXPDSsYua5jSrb0wMxxwJF3fvDSbd6FT
+ HB0bM/UR6ghRTw2R16IKIywSoWG8yUg48pEenKwPKiTxdr6jNEj3vV7Un2zBIDF+c2rtGeE
+ ewOqTvQZHzg7flD1ehlfg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:0WKLVPnD5vU=;a6jv6C6lAtEo32uCXJC7ohdm6Ot
- ChB3zr7zIu++csE/YRwUf+3uzCorTCo+OgeXLt+F/GsOLHYPNmJu93SV61mjCpaKtaCAQ+eHG
- aicWvxs0jgOMHahuqUHjKmp2M5BaJvQfTEaxyWnXSBZUDoQ7meMOV+7zWwbcI7CWguhUY+4jh
- xcElR/IWxRl/x8BQTT4YGMkvKcJvCqmXmjsWAn3B3FQARFbwqp8wgrcpwbArzl1V6//ssp2ZM
- 3Rf368IiVlbbDjL2zANv+xf3QmmwbFWkI6b7l+IFDjWB9S3dovZjNC77uITA8cjEHOg/ACsJX
- KGSh13aXM7xpumVIQFn0FlJ/9JRW9BF1BRBRENcrmV2cZmrmE5uQ4atbOK6PvdeGhk6skpxFf
- VO6U9EWCgaIbwDJfOAiyOEYkt7PsvyhSITyTnaeNfI9lZb6cvb2NNxqzUUHcVfPIBH/Y9DFKy
- DYvzPqxPCjsswEVm6+4A7BoNdxcegQT3r3fxN2RHQAv9CurqGBaJuwdVebNKGTmzVUqmN/oYd
- AU2t0OIWF9750oauBp7wbTyAVCDnzJRNqyJuT1vaP0R1tt0WpXG8Z/ZPivY5R+z3pB7Z6OshO
- 27A9k8SDKU1KDzDpZKIHk9nlfyRgkRuWzlyO5O+y4rntwYGjQ8syNyie2V3drpPM+Beun/iMN
- kSoZbCF7gGYIrKhTrZURpePONGQsqXeUOi9b6VZ6yX5IImqPbIkjqq3WxkyDW9yEr0Vy/1qEw
- jysgE0wJ94YyR9cl6U/9XEKurryPpOOd4jlTpqIueohGuxwQSv/h0oJqWnIg/bGaicqYDp4Kb
- 89MqcEhTmiUQCsAT9a8rk9pA==
+UI-OutboundReport: notjunk:1;M01:P0:NX0Jg3iPZl8=;vEzuC2Ms0J1UDvbMW+dkF3nw9v6
+ QxRDXzBRZ88Xu+UB/MqvguubkOqslla23fyby/q23PArECBFoJWaarYRKhLBMfcQsuWQOmgFO
+ HolMSpEnntoeKW2xxoA3N8xiNTCFhSQRfK7ZTDpvnx2IeUDuGJHNKva99JSE5tGhgrECIAUJn
+ kWoRj+3clw6L+Gjch16MVT14HC3Z3ZxSEqnnjnY4XUaTK61DlkOSbOIBEkRT13XILgGld8geF
+ WIw2kv2mwmLD/mscf0/S8vYoAGMbY9E0GLLiiKcaDqQeJNLYNgiELj3iNEPYGcpPZqcj6pJlP
+ LWJUchihGQf9fccffqoUkmq47mHYsX/BCGUKvgRPvyLp/+7JeyKad0p29iT55Xi2v57bAgz0s
+ MwAxN4f0Kb/YA3RDoF2ZJtc5HPvw89Q1uTnyGrEuCwg4bnL9GG2pwB8lPWPXrg77YMlWNQGTD
+ GLCVlqju1pNSwXxOdUEOEWH6PUP3oGeH2qNInXNkuGhbJAnbK8kg1U9zqk+eW7oS3Fhfnwgmj
+ igtuxme4puuD9cVZJZjHpok5o5HdA3eIk5tICxeB3+cgdNdH3sb02DFmsnByOR3uU3kchJ/Mm
+ ZYj3juRMZawas6N9kBtUmP2CkBqniww9tkOPUtDSq82u58l+puwNazQc4xr9icO3mqDbEoN1K
+ LoNFygfIHNY75rxXJGoUBUJq948Edj0nJG09QpRFCf/4Nrh0BPU6Hrkc7OxWyQ25pmD6uAanJ
+ WWOgvP0dVejplW6rwX9h9gUz3rWxuKnt9HT6cYsZb7W2paYAQs9uf1w7ztYA0wWbCYEbc5oRL
+ +SV9+eiPUC+YpeQ4WL55vhAA==
 
-Hi,
+Hi Doug,
 
-Am 28.07.24 um 13:41 schrieb Stefan Wahren:
-> Set flag GENPD_FLAG_ACTIVE_WAKEUP to rpi_power genpd, then when a device
-> is set as wakeup source using device_set_wakeup_enable, the power
-> domain could be kept on to make sure the device could wakeup the system.
+Am 28.07.24 um 15:00 schrieb Stefan Wahren:
+> DO NOT MERGE
 >
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-I know a lot developer are in holidays, but it would be nice to get a
-review for the new pmdomain parts before i send V3.
+> According to the dt-bindings there are some platforms, which have a
+> dedicated USB power domain for DWC2 IP core supply. If the power domain
+> is switched off during system suspend then all USB register will lose
+> their settings.
+>
+> So use the power on/off notifier in order to save & restore the USB
+> registers during system suspend.
+sorry for bothering you with this DWC2 stuff, but it would great if you
+can gave some feedback about this patch. I was working a lot to get
+suspend to idle working on Raspberry Pi. And this patch is the most
+complex part of the series.
+
+Would you agree with this approach or did i miss something?
+
+The problem is that the power domain driver acts independent from dwc2,
+so we cannot prevent the USB domain power down except declaring a USB
+device as wakeup source. So i decided to use the notifier approach. This
+has been successful tested on some older Raspberry Pi boards.
 
 Best regards
+>
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 > ---
->   drivers/pmdomain/bcm/raspberrypi-power.c | 1 +
->   1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/pmdomain/bcm/raspberrypi-power.c b/drivers/pmdomain=
-/bcm/raspberrypi-power.c
-> index fadedfc9c645..b87ea7adb7be 100644
-> --- a/drivers/pmdomain/bcm/raspberrypi-power.c
-> +++ b/drivers/pmdomain/bcm/raspberrypi-power.c
-> @@ -91,6 +91,7 @@ static void rpi_common_init_power_domain(struct rpi_po=
-wer_domains *rpi_domains,
->   	dom->fw =3D rpi_domains->fw;
+> Any feedback is appreciated.
 >
->   	dom->base.name =3D name;
-> +	dom->base.flags =3D GENPD_FLAG_ACTIVE_WAKEUP;
->   	dom->base.power_on =3D rpi_domain_on;
->   	dom->base.power_off =3D rpi_domain_off;
+>   drivers/usb/dwc2/core.c     | 16 ++++++++++++
+>   drivers/usb/dwc2/core.h     | 17 +++++++++++++
+>   drivers/usb/dwc2/gadget.c   | 49 +++++++++++++++++++++++++++++++++++++
+>   drivers/usb/dwc2/hcd.c      | 49 +++++++++++++++++++++++++++++++++++++
+>   drivers/usb/dwc2/platform.c | 32 ++++++++++++++++++++++++
+>   5 files changed, 163 insertions(+)
 >
+> diff --git a/drivers/usb/dwc2/core.c b/drivers/usb/dwc2/core.c
+> index 9919ab725d54..a3263cfdedac 100644
+> --- a/drivers/usb/dwc2/core.c
+> +++ b/drivers/usb/dwc2/core.c
+> @@ -391,6 +391,22 @@ int dwc2_exit_hibernation(struct dwc2_hsotg *hsotg,=
+ int rem_wakeup,
+>   		return dwc2_gadget_exit_hibernation(hsotg, rem_wakeup, reset);
+>   }
+>
+> +int dwc2_enter_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	if (dwc2_is_host_mode(hsotg))
+> +		return dwc2_host_enter_poweroff(hsotg);
+> +	else
+> +		return dwc2_gadget_enter_poweroff(hsotg);
+> +}
+> +
+> +int dwc2_exit_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	if (dwc2_is_host_mode(hsotg))
+> +		return dwc2_host_exit_poweroff(hsotg);
+> +	else
+> +		return dwc2_gadget_exit_poweroff(hsotg);
+> +}
+> +
+>   /*
+>    * Do core a soft reset of the core.  Be careful with this because it
+>    * resets all the internal state machines of the core.
+> diff --git a/drivers/usb/dwc2/core.h b/drivers/usb/dwc2/core.h
+> index 2bd74f3033ed..9ab755cc3081 100644
+> --- a/drivers/usb/dwc2/core.h
+> +++ b/drivers/usb/dwc2/core.h
+> @@ -9,6 +9,7 @@
+>   #define __DWC2_CORE_H__
+>
+>   #include <linux/acpi.h>
+> +#include <linux/notifier.h>
+>   #include <linux/phy/phy.h>
+>   #include <linux/regulator/consumer.h>
+>   #include <linux/usb/gadget.h>
+> @@ -1080,6 +1081,8 @@ struct dwc2_hsotg {
+>   	struct regulator *vbus_supply;
+>   	struct regulator *usb33d;
+>
+> +	struct notifier_block genpd_nb;
+> +
+>   	spinlock_t lock;
+>   	void *priv;
+>   	int     irq;
+> @@ -1316,6 +1319,8 @@ int dwc2_exit_partial_power_down(struct dwc2_hsotg=
+ *hsotg, int rem_wakeup,
+>   int dwc2_enter_hibernation(struct dwc2_hsotg *hsotg, int is_host);
+>   int dwc2_exit_hibernation(struct dwc2_hsotg *hsotg, int rem_wakeup,
+>   		int reset, int is_host);
+> +int dwc2_enter_poweroff(struct dwc2_hsotg *hsotg);
+> +int dwc2_exit_poweroff(struct dwc2_hsotg *hsotg);
+>   void dwc2_init_fs_ls_pclk_sel(struct dwc2_hsotg *hsotg);
+>   int dwc2_phy_init(struct dwc2_hsotg *hsotg, bool select_phy);
+>
+> @@ -1435,6 +1440,8 @@ int dwc2_hsotg_tx_fifo_total_depth(struct dwc2_hso=
+tg *hsotg);
+>   int dwc2_hsotg_tx_fifo_average_depth(struct dwc2_hsotg *hsotg);
+>   void dwc2_gadget_init_lpm(struct dwc2_hsotg *hsotg);
+>   void dwc2_gadget_program_ref_clk(struct dwc2_hsotg *hsotg);
+> +int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg);
+> +int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg);
+>   static inline void dwc2_clear_fifo_map(struct dwc2_hsotg *hsotg)
+>   { hsotg->fifo_map =3D 0; }
+>   #else
+> @@ -1482,6 +1489,10 @@ static inline int dwc2_hsotg_tx_fifo_average_dept=
+h(struct dwc2_hsotg *hsotg)
+>   { return 0; }
+>   static inline void dwc2_gadget_init_lpm(struct dwc2_hsotg *hsotg) {}
+>   static inline void dwc2_gadget_program_ref_clk(struct dwc2_hsotg *hsot=
+g) {}
+> +static inline int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg)
+> +{ return 0; }
+> +static inline int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg)
+> +{ return 0; }
+>   static inline void dwc2_clear_fifo_map(struct dwc2_hsotg *hsotg) {}
+>   #endif
+>
+> @@ -1505,6 +1516,8 @@ int dwc2_host_exit_partial_power_down(struct dwc2_=
+hsotg *hsotg,
+>   void dwc2_host_enter_clock_gating(struct dwc2_hsotg *hsotg);
+>   void dwc2_host_exit_clock_gating(struct dwc2_hsotg *hsotg, int rem_wak=
+eup);
+>   bool dwc2_host_can_poweroff_phy(struct dwc2_hsotg *dwc2);
+> +int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg);
+> +int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg);
+>   static inline void dwc2_host_schedule_phy_reset(struct dwc2_hsotg *hso=
+tg)
+>   { schedule_work(&hsotg->phy_reset_work); }
+>   #else
+> @@ -1544,6 +1557,10 @@ static inline void dwc2_host_exit_clock_gating(st=
+ruct dwc2_hsotg *hsotg,
+>   					       int rem_wakeup) {}
+>   static inline bool dwc2_host_can_poweroff_phy(struct dwc2_hsotg *dwc2)
+>   { return false; }
+> +static inline int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg)
+> +{ return 0; }
+> +static inline int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg)
+> +{ return 0; }
+>   static inline void dwc2_host_schedule_phy_reset(struct dwc2_hsotg *hso=
+tg) {}
+>
+>   #endif
+> diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+> index e7bf9cc635be..38f0112970fe 100644
+> --- a/drivers/usb/dwc2/gadget.c
+> +++ b/drivers/usb/dwc2/gadget.c
+> @@ -5710,3 +5710,52 @@ void dwc2_gadget_exit_clock_gating(struct dwc2_hs=
+otg *hsotg, int rem_wakeup)
+>   	hsotg->lx_state =3D DWC2_L0;
+>   	hsotg->bus_suspended =3D false;
+>   }
+> +
+> +int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	int ret;
+> +
+> +	dev_dbg(hsotg->dev, "Entering device power off.\n");
+> +
+> +	/* Backup all registers */
+> +	ret =3D dwc2_backup_global_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to backup global registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D dwc2_backup_device_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to backup device registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	dev_dbg(hsotg->dev, "Entering device power off completed.\n");
+> +	return 0;
+> +}
+> +
+> +int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	int ret;
+> +
+> +	dev_dbg(hsotg->dev, "Exiting device power off.\n");
+> +
+> +	ret =3D dwc2_restore_global_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to restore registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D dwc2_restore_device_registers(hsotg, 0);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to restore device registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	dev_dbg(hsotg->dev, "Exiting device power off completed.\n");
+> +	return 0;
+> +}
+> diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
+> index cb54390e7de4..22afdafb474e 100644
+> --- a/drivers/usb/dwc2/hcd.c
+> +++ b/drivers/usb/dwc2/hcd.c
+> @@ -5993,3 +5993,52 @@ void dwc2_host_exit_clock_gating(struct dwc2_hsot=
+g *hsotg, int rem_wakeup)
+>   			  jiffies + msecs_to_jiffies(71));
+>   	}
+>   }
+> +
+> +int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	int ret;
+> +
+> +	dev_dbg(hsotg->dev, "Entering host power off.\n");
+> +
+> +	/* Backup all registers */
+> +	ret =3D dwc2_backup_global_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to backup global registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D dwc2_backup_host_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to backup host registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	dev_dbg(hsotg->dev, "Entering host power off completed.\n");
+> +	return 0;
+> +}
+> +
+> +int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg)
+> +{
+> +	int ret;
+> +
+> +	dev_dbg(hsotg->dev, "Exiting host power off.\n");
+> +
+> +	ret =3D dwc2_restore_global_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to restore registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D dwc2_restore_host_registers(hsotg);
+> +	if (ret) {
+> +		dev_err(hsotg->dev, "%s: failed to restore host registers\n",
+> +			__func__);
+> +		return ret;
+> +	}
+> +
+> +	dev_dbg(hsotg->dev, "Exiting host power off completed.\n");
+> +	return 0;
+> +}
+> diff --git a/drivers/usb/dwc2/platform.c b/drivers/usb/dwc2/platform.c
+> index 7b84416dfc2b..b97eefc18a6b 100644
+> --- a/drivers/usb/dwc2/platform.c
+> +++ b/drivers/usb/dwc2/platform.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/phy/phy.h>
+>   #include <linux/platform_data/s3c-hsotg.h>
+> +#include <linux/pm_domain.h>
+>   #include <linux/reset.h>
+>
+>   #include <linux/usb/of.h>
+> @@ -307,6 +308,8 @@ static void dwc2_driver_remove(struct platform_devic=
+e *dev)
+>   	struct dwc2_gregs_backup *gr;
+>   	int ret =3D 0;
+>
+> +	dev_pm_genpd_remove_notifier(&dev->dev);
+> +
+>   	gr =3D &hsotg->gr_backup;
+>
+>   	/* Exit Hibernation when driver is removed. */
+> @@ -421,6 +424,31 @@ int dwc2_check_core_version(struct dwc2_hsotg *hsot=
+g)
+>   	return 0;
+>   }
+>
+> +static int dwc2_power_notifier(struct notifier_block *nb,
+> +			       unsigned long action, void *data)
+> +{
+> +	struct dwc2_hsotg *hsotg =3D container_of(nb, struct dwc2_hsotg,
+> +						genpd_nb);
+> +	int ret;
+> +
+> +	switch (action) {
+> +	case GENPD_NOTIFY_ON:
+> +		ret =3D dwc2_exit_poweroff(hsotg);
+> +		if (ret)
+> +			dev_err(hsotg->dev, "exit poweroff failed\n");
+> +		break;
+> +	case GENPD_NOTIFY_PRE_OFF:
+> +		ret =3D dwc2_enter_poweroff(hsotg);
+> +		if (ret)
+> +			dev_err(hsotg->dev, "enter poweroff failed\n");
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return NOTIFY_OK;
+> +}
+> +
+>   /**
+>    * dwc2_driver_probe() - Called when the DWC_otg core is bound to the =
+DWC_otg
+>    * driver
+> @@ -620,6 +648,10 @@ static int dwc2_driver_probe(struct platform_device=
+ *dev)
+>   		}
+>   	}
+>   #endif /* CONFIG_USB_DWC2_PERIPHERAL || CONFIG_USB_DWC2_DUAL_ROLE */
+> +
+> +	hsotg->genpd_nb.notifier_call =3D dwc2_power_notifier;
+> +	dev_pm_genpd_add_notifier(&dev->dev, &hsotg->genpd_nb);
+> +
+>   	return 0;
+>
+>   #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
 > --
 > 2.34.1
 >
