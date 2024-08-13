@@ -1,94 +1,158 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A76864206D
-	for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 13:06:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D84B19D07B;
+	Tue, 13 Aug 2024 14:27:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723554384; cv=none; b=qOst4fC/xaFSVGMd9odFPxkaO4RtWtZvZyiZaHC7WPIWCzAQTeq6spKAmxKDE1rGqZ4EDahqGepBdg+dYDx77GF99aMaBGzhSDXx01BNvBR9o8RquitvSiu16uMYw/4p489yvuWyPVygvC83u+RR59PLrSNrfBLWZoXWOSdnb+A=
+	t=1723559241; cv=none; b=oGvxgeH1uVcUtO+9Aoa0b5GyEp2NiCJSckRdBgRSb2nfGbFbg3P8N/NJEjjgzTMECeg3Eqkqmyy8PpE+QutCnkC+UDmvY3aBCgGsIkdXKpe7ZzmX8c6nyjVKeMzbvwE6JAg3UigjVYEO2hTa80HS9Q2NdA+uvksywgkpU+KYoW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723554384; c=relaxed/simple;
-	bh=xH15n4IK7YHFIBZeEUOIUWBrpc5uaLpajkCnjg+UQSc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bcOW3mUDF254LeWMs0cj8oPeJkqfkcJCqgbaCq62K6meEaxpMWgtlDi/Kbgz5ohudXJlFpcMI1rKPRIAuRy64tmMJ6KcAOGwmmEqGaACUESuv0cLIUjdxEkl68vE7+0I6CMdDrfh89jp6BCAdeefxs1HPcXa3l5BMiFipucKAh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=fail smtp.mailfrom=kernel.org; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=kernel.org
-X-CSE-ConnectionGUID: sRdkqvQTQjWnYVvYfASp8A==
-X-CSE-MsgGUID: u8P/yiToRzifohbwxaiuNA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11163"; a="21584577"
-X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
-   d="scan'208";a="21584577"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 06:06:21 -0700
-X-CSE-ConnectionGUID: bYE3AF7CRcatx5g0OeRWdg==
-X-CSE-MsgGUID: QyMDLcqJTr2MQlszNYtrlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
-   d="scan'208";a="58624273"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 06:06:18 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andy@kernel.org>)
-	id 1sdrE7-0000000Ejmd-0OW2;
-	Tue, 13 Aug 2024 16:06:15 +0300
-Date: Tue, 13 Aug 2024 16:06:14 +0300
-From: Andy Shevchenko <andy@kernel.org>
-To: Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Lech Perczak <lech.perczak@camlingroup.com>,
-	linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Krzysztof =?utf-8?Q?Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>,
-	Pawel Lenkow <p.lenkow@camlintechnologies.com>,
-	Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
-Subject: Re: [PATCH v2 3/3] serial: sc16is7xx: convert bitmask definitions to
- use BIT macro
-Message-ID: <ZrtaRjoa3MpOeQR9@smile.fi.intel.com>
-References: <16b7bff3-71ec-4042-a9a8-755f32b85716@camlingroup.com>
- <8cfa1c75-03f8-4071-b277-752006b576ac@camlingroup.com>
- <ZrpBcEVOM78RXQnl@smile.fi.intel.com>
- <231efd2f-e402-06f9-d193-192065c5298d@linux.intel.com>
+	s=arc-20240116; t=1723559241; c=relaxed/simple;
+	bh=7o1ebO6uvNnNS0M2BIyB8SB8taid1I1qAAMAb2zKqbo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cc5qfHO2Fh8rNJPNWZwtHWYoMR0QzUEwz+tRLgkZj9XprCo2nsdUIW4fnOURx+Lox2vI8QTQiPNmkkOxrOiei6ag23a+wELxRGituPzByEfFqBSMvQc8WnYA1d99uHzv7McdvOs5v/DllPFxN0caGYVe61jJgfnDh/RwYVpl1So=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VTdoy3Wj; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VTdoy3Wj"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5a10835487fso7356739a12.1;
+        Tue, 13 Aug 2024 07:27:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723559237; x=1724164037; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0GZ9q735651QGDZf7rgdlCrHxFSRCY3h/YKc3A79Cc0=;
+        b=VTdoy3WjCzQiiS5Ec7e9NVoKcUQq36ZGjs11b11P3msZmfgc45fYJXth5aYQ/kc3uv
+         HPnw/aM34r77ZM+0jUajQOb7UyU4UfT/eiKRd0D9CILV+CEC9YsIFB4W5fzFH8mzRZfY
+         YOLLtarvrjmFi/9PuwxqVU1f9CCbUsNMiCWx2wyRw9LtEBGxS45/Pu8HO6H1kwPnJ8YS
+         PL8hGjhwAaGETH9NuzO4j4mz+pvlPjpl6nZbkTybzvbOKBPWhvJae5Ee4tbm/KILAv5/
+         xRK3q09kE8zd/riXtJ0X8Ueca9WcjsOaHbooTMAxAjStsOaITISU4sfuhdCOFciHN6/9
+         ds2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723559237; x=1724164037;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0GZ9q735651QGDZf7rgdlCrHxFSRCY3h/YKc3A79Cc0=;
+        b=g64BEn9uM2HHqzmSUf1MkD2xQ5E43E8SP3m7WqcfFiXjWIcGLllQY48rGWRjpYP1kC
+         qHAhwNk7C7IqDp7SxZkbGgBbA/ssmdLeCbepAQckm7DWITxNaI2519C7t8XBam2TV0Nr
+         zRgNzB1KkU1Hczid/cawSu4Nyzx7V+jpbVKdWjC4IbwQ+UMYyl1QUb+aRWPfrH0kgZiy
+         wJCQ90yvvq/ZZfTdqimPuA0LYB9r0eDIYg4PHm+VfsS/owf0TtVjFZtWjI//SUlJlZSl
+         7PzqrGtjVvC1r7LK3qKHowAKXGHll1TWgbc3ujib76OW8NLZzu9gcpPL1cJRDQSVd/8m
+         APYw==
+X-Forwarded-Encrypted: i=1; AJvYcCUd2ef4iqyHIzEIdNQcpyFWwXKNBHo03LNPd2FnVyeRSIGiTpfeRijwOaMhocn10ksARhzRJy+n0exTOatWB4bR2MM4tn2cZ7w2sfNLuzpOGwQKIT8fWgD2atVT4Ai0tBqTakk1H3jGWwkd0ryOLSklSr9wEpUSXOuaCKsc58RX95DyW5CE2ea+XznRRvbZ2PXDvGhf5NoqSPB+7OzFA1SXatzxAUof0VuPTh4yEcPDJsdJYkZxMDo5tX48mftxVnC+ROwoIifU
+X-Gm-Message-State: AOJu0YxwAR0WppjZBmFoQozxWqdDdtpcECDVp5j9oKUjAQHpmRfEsGJl
+	kTfHVUmUhBvCHfMzv4pa5+bB19cdYXbZo6iP+zTGDHBgKme5jEJC
+X-Google-Smtp-Source: AGHT+IH6Tmd1OzGRfql2ZCp766sYz9QoQGSXIi39HApJlkOewrKUyajyK555rObaG/0QcWQbujM/0w==
+X-Received: by 2002:a05:6402:848:b0:5a7:448b:4434 with SMTP id 4fb4d7f45d1cf-5bd44c2d6f3mr2725779a12.9.1723559236558;
+        Tue, 13 Aug 2024 07:27:16 -0700 (PDT)
+Received: from [192.168.105.194] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bd196a666fsm2954540a12.46.2024.08.13.07.27.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Aug 2024 07:27:15 -0700 (PDT)
+Message-ID: <36b0ee66-3af3-40c1-86b6-b52cd826298e@gmail.com>
+Date: Tue, 13 Aug 2024 16:27:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <231efd2f-e402-06f9-d193-192065c5298d@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/3] dt-bindings: platform: Add Surface System
+ Aggregator Module
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
+ Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240810-topic-sam-v2-0-8a8eb368a4f0@quicinc.com>
+ <20240810-topic-sam-v2-2-8a8eb368a4f0@quicinc.com>
+ <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
+Content-Language: en-US
+From: Konrad Dybcio <konradybcio@gmail.com>
+In-Reply-To: <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 13, 2024 at 11:30:57AM +0300, Ilpo Järvinen wrote:
-> On Mon, 12 Aug 2024, Andy Shevchenko wrote:
-> > On Mon, Aug 12, 2024 at 06:56:53PM +0200, Lech Perczak wrote:
-
-...
-
-> > >  #define SC16IS7XX_IIR_ID_MASK		0x3e     /* Mask for the interrupt ID */
-> > 
-> > While at it, why not convert the MASK(s) to use GENMASK()?
-> > It's logically coupled change, no need to have a separate patch.
-
-...
-
-> > >  #define SC16IS7XX_LSR_BRK_ERROR_MASK	0x1E     /* BI, FE, PE, OE bits */
-> > 
-> > Ditto.
+On 11.08.2024 4:28 PM, Krzysztof Kozlowski wrote:
+> On 10/08/2024 03:28, Konrad Dybcio wrote:
+>> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+>>
+>> Add bindings for the Surface System Aggregator Module (SAM/SSAM), the
+>> Microsoft Surface-standard Embedded Controller, used on both x86- and
+>> Qualcomm-based devices.
+>>
+>> It provides a plethora of functions, depending on what's wired up to
+>> it. That includes but is not limited to: fan control, keyboard/touchpad
+>> support, thermal sensors, power control, special buttons, tablet mode.
+>>
+>> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
+>> ---
+>>  .../bindings/platform/microsoft,surface-sam.yaml   | 50 ++++++++++++++++++++++
+>>  1 file changed, 50 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
+>> new file mode 100644
+>> index 000000000000..f613738aa31d
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
+>> @@ -0,0 +1,50 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/platform/microsoft,surface-sam.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Surface System Aggregator Module (SAM, SSAM)
+>> +
+>> +maintainers:
+>> +  - Konrad Dybcio <konradybcio@kernel.org>
+>> +
+>> +description: |
 > 
-> No. This is not GENMASK() but combination of other bits. This mask define 
-> should be a combination those bit defines and the comment dropped because 
-> it adds no value after using the bit defines directly.
+> No need for |
 
-I agree with you on this. I'm pretty fine with either approach.
+Apparently it's necessary because I have a :
+> 
+>> +  Surface devices use a standardized embedded controller to let the
+>> +  operating system interface with various hardware functions. The
+>> +  specific functionalities are modeled as subdevices and matched on
+>> +  five levels: domain, category, target, instance and function.
 
-> > (maybe more that are not visible in the context of this patch)
+                 ^ here
 
--- 
-With Best Regards,
-Andy Shevchenko
+Should I e.g. s/:/-/, or keep the |?
 
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: microsoft,surface-sam
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  current-speed:
+>> +    description: The baudrate in bits per second of the device as it comes
+>> +      online, current active speed.
+>> +    $ref: /schemas/types.yaml#/definitions/uint32
+> 
+> This should be just "current-speed: true", because the type will be
+> brought by serial schema. We should however have some schema with
+> peripheral properties for serial devices. I'll come with something.
 
+I suppose I should just include:
+
+https://lore.kernel.org/linux-serial/20240811-dt-bindings-serial-peripheral-props-v1-0-1dba258b7492@linaro.org/
+
+Konrad
