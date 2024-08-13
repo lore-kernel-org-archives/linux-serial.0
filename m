@@ -1,93 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D6813A888;
-	Tue, 13 Aug 2024 08:21:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4B2E13C691
+	for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 08:31:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723537268; cv=none; b=spu6yOZtrUODgnyNQsO+VwXLpwGoDCzWs8KGxB0KFqlHLJPZOcUemY0lv4AeJQkvhWkqcMI2PjGF8vDRc982oAYJekxhI79BCB6AMWpC6BY1WTSc731EW2CRnYiJe9qjUAI2Tjulf8A2a+/DboIbJ6iBXy5Ao/y351KNEYsr7P0=
+	t=1723537866; cv=none; b=upCHe+gtVNeIP9CGqVtKo2wHdz4xyIHPWLLfCBdnto2dGAqDiGNjPsP+KDZPMtqUsJzlXVfh46951xtDcO4RXUgUGg9coaeoL0Tnzlw1zIXvuMrXXz/fdSLlM1xflPNSnTMLK55ORBSkhyoBH2wXPRlM/2ia+3fsT0t9nB7fDqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723537268; c=relaxed/simple;
-	bh=MwR/i54AGq714aniA0FuCdtDeNXlyfbxwYQv9zdJGA4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g3q/O66PSv823HAseyTR843FSZtvhgDzMWg9WGfxLPAmYErGeluZZ7VmTDx/mAbQc/Y5bcP3UrZSDou0mxFiL8TjNMG1/3dOyGMjkPT+bB+9zj4nqPXDXIc9qC+digC3Xx6EJ+HOPfpy4bbKWQb2jWev8qrjS3ZzBY15OZ075FY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g/xKyXyZ; arc=none smtp.client-ip=192.198.163.18
+	s=arc-20240116; t=1723537866; c=relaxed/simple;
+	bh=gYf0CeIvlOavN+tZRFmWznpJOQmhn0zNSKxgb1nXoZQ=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=hoI43W0joM894AoqFvS11YfZZrpRrHtQp+fo+vqSrn4LUqyPug1MittkPz+vwJjRX+pNj/XU8XokWRyZNCuA4O7y+T32p2GSeajhnCl92Mk+3TWPEf/nWqKMZxcY8m8QSCo95OBpUvqxSb4BbOivGdJb4YFzUfazAJEBuE+2/yc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OWS52qnR; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g/xKyXyZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OWS52qnR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1723537265; x=1755073265;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MwR/i54AGq714aniA0FuCdtDeNXlyfbxwYQv9zdJGA4=;
-  b=g/xKyXyZMgCV973aW7PXr7Lb943i4cHxSpU7siuadnQTF8RvJJ9QXmMU
-   7YwWugath/9qBFsagHBm06Pc7sMTDK+C+BydvxGIAvav2fGZ9stLN6QNE
-   P+2ehDTxdNlXbqXfngtTKC2jTaRbSlWZdR2MiBTdEmIVRME2bC/lSchCr
-   UWk1PCmnWZu7zq0tIw/VLZsYEV7smUgo5+WLgCBOPvIjUo0+SvaQjMGFF
-   5RdOqz0ooeoQagntRMUEmTM6j4l/kbXRqkVugriPJ9X81ovtXqLbh+4qy
-   c8XM1UQ9zNPqp9kI6TkhAsG6Dp5JNi8dm3tpbeTfDsbd9iZPKFS07XSFV
+  t=1723537864; x=1755073864;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=gYf0CeIvlOavN+tZRFmWznpJOQmhn0zNSKxgb1nXoZQ=;
+  b=OWS52qnRzDcgIHE9pQMDwWDPg6Nz6W/IipDRAdCLIBm1W4vP/I+i+BMJ
+   1NNMEqGLS/95pgxakZ89PJIXxbdsgIWhs/tCyUiezMwVIM2PA4oYHZTn1
+   nNbL/RoIFj9xjXbMISClzCAu1iEG91ako6ipZSouRIn/OE1uNvUmDYMom
+   IIUm4wXMW7rPC9nwFzQxHRfJ1rJZbJ1RpzPKO3pxSk0c1W88uHjZJGIvy
+   SgcXGkrqRSxy8KhiwtrP5oubxPvPk4JXJngWLJBvKzA6Gc9gTqTaWA/A4
+   NUTGZ+3+MSvrH7DAAnYj9MGiYZ2XRHewBNp+gaSa9MHTWjUwTFpDyMB+b
    A==;
-X-CSE-ConnectionGUID: uBMsUojaRVez0qMDsm6+Ow==
-X-CSE-MsgGUID: ud8/JSiqQE6qbDqtEY2jXA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="21243568"
+X-CSE-ConnectionGUID: 6uywRtBMSwOxKhZAxnXldA==
+X-CSE-MsgGUID: W2t5RCgbTPO5eY73dDFgxg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="21328756"
 X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
-   d="scan'208";a="21243568"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 01:21:05 -0700
-X-CSE-ConnectionGUID: FMN1jIIzS3OkmFQHqXOaqQ==
-X-CSE-MsgGUID: iWydtte/TY2Q80j/6i9U/Q==
+   d="scan'208";a="21328756"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 01:31:04 -0700
+X-CSE-ConnectionGUID: gwRocQKHQNGew5dGz1Tl7w==
+X-CSE-MsgGUID: 0Eg78YCGR+GyJDLK1HbQeg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
-   d="scan'208";a="58665976"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 01:21:02 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1sdmm3-0000000Eeo6-31di;
-	Tue, 13 Aug 2024 11:20:59 +0300
-Date: Tue, 13 Aug 2024 11:20:59 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Stefan Wahren <wahrenst@gmx.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-rpi-kernel@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250_bcm2835aux: Switch to
- DEFINE_SIMPLE_DEV_PM_OPS()
-Message-ID: <ZrsXa-UWUL694hbf@smile.fi.intel.com>
-References: <20240812143514.953612-1-andriy.shevchenko@linux.intel.com>
- <ad11903f-7ded-492f-a680-3ddcfcc7e0b6@gmx.net>
+   d="scan'208";a="81819131"
+Received: from ijarvine-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.153])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2024 01:31:02 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Tue, 13 Aug 2024 11:30:57 +0300 (EEST)
+To: Andy Shevchenko <andy@kernel.org>
+cc: Lech Perczak <lech.perczak@camlingroup.com>, linux-serial@vger.kernel.org, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Hugo Villeneuve <hvilleneuve@dimonoff.com>, 
+    =?ISO-8859-2?Q?Krzysztof_Drobi=F1ski?= <k.drobinski@camlintechnologies.com>, 
+    Pawel Lenkow <p.lenkow@camlintechnologies.com>, 
+    Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
+Subject: Re: [PATCH v2 3/3] serial: sc16is7xx: convert bitmask definitions
+ to use BIT macro
+In-Reply-To: <ZrpBcEVOM78RXQnl@smile.fi.intel.com>
+Message-ID: <231efd2f-e402-06f9-d193-192065c5298d@linux.intel.com>
+References: <16b7bff3-71ec-4042-a9a8-755f32b85716@camlingroup.com> <8cfa1c75-03f8-4071-b277-752006b576ac@camlingroup.com> <ZrpBcEVOM78RXQnl@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ad11903f-7ded-492f-a680-3ddcfcc7e0b6@gmx.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
 
-On Mon, Aug 12, 2024 at 10:40:15PM +0200, Stefan Wahren wrote:
-> Am 12.08.24 um 16:35 schrieb Andy Shevchenko:
+On Mon, 12 Aug 2024, Andy Shevchenko wrote:
 
-> > The SIMPLE_DEV_PM_OPS() is deprecated, replace it with the
-> > DEFINE_SIMPLE_DEV_PM_OPS() for setting the driver's PM routines.
-> it's possible the implementation doesn't use the optimal macros here.
-> But this sentence is a little bit confusing to me, because the code
-> doesn't use SIMPLE_DEV_PM_OPS().
+> On Mon, Aug 12, 2024 at 06:56:53PM +0200, Lech Perczak wrote:
+> > Now that bit definition comments were cleaned up, convert bitmask
+> > definitions to use BIT macro for clarity.
+> 
+> In the Subject and here: BIT()
+> 
+> ...
+> 
+> >  #define SC16IS7XX_IIR_ID_MASK		0x3e     /* Mask for the interrupt ID */
+> 
+> While at it, why not convert the MASK(s) to use GENMASK()?
+> It's logically coupled change, no need to have a separate patch.
+> 
+> ...
+> 
+> >  #define SC16IS7XX_LSR_BRK_ERROR_MASK	0x1E     /* BI, FE, PE, OE bits */
+> 
+> Ditto.
 
-Thanks, fixed in v2:
-https://lore.kernel.org/r/20240813081954.1408792-1-andriy.shevchenko@linux.intel.com.
+No. This is not GENMASK() but combination of other bits. This mask define 
+should be a combination those bit defines and the comment dropped because 
+it adds no value after using the bit defines directly.
+
+> (maybe more that are not visible in the context of this patch)
+
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+ i.
 
