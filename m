@@ -1,59 +1,33 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D84B19D07B;
-	Tue, 13 Aug 2024 14:27:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D4B1A4F1F;
+	Tue, 13 Aug 2024 16:39:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723559241; cv=none; b=oGvxgeH1uVcUtO+9Aoa0b5GyEp2NiCJSckRdBgRSb2nfGbFbg3P8N/NJEjjgzTMECeg3Eqkqmyy8PpE+QutCnkC+UDmvY3aBCgGsIkdXKpe7ZzmX8c6nyjVKeMzbvwE6JAg3UigjVYEO2hTa80HS9Q2NdA+uvksywgkpU+KYoW0=
+	t=1723567144; cv=none; b=VoEoMS5V8Z2nXaGd3OaAuAYnDThKz2UXvMzTTiSRu5/33rV+0nLv9kmstbUgQrZEkIRwbxJ9O+pYq0aNRYnVxMrV33VAorKY1ICnz0NOZceZ+wqx9bBNSQ0zvTgPnOqmbbwBytNlDiFjronZlPLDtpBp/RityHatJ0nc3nDhIgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723559241; c=relaxed/simple;
-	bh=7o1ebO6uvNnNS0M2BIyB8SB8taid1I1qAAMAb2zKqbo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cc5qfHO2Fh8rNJPNWZwtHWYoMR0QzUEwz+tRLgkZj9XprCo2nsdUIW4fnOURx+Lox2vI8QTQiPNmkkOxrOiei6ag23a+wELxRGituPzByEfFqBSMvQc8WnYA1d99uHzv7McdvOs5v/DllPFxN0caGYVe61jJgfnDh/RwYVpl1So=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VTdoy3Wj; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723567144; c=relaxed/simple;
+	bh=jGqGS/+YMG58IJdMF3CHYLoIBgb4NHC7NMoRVjSo+V4=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=MqAXgp3Kf+PjWQGX3iueIAmOH7fPGrcboE1ty+6lc5hQ7H66/Ay31+rDV5We8ojO4EVuEogS7oWLDAwzEp7fR1ylOlOTBAN89edrh3xtAXjuy6K1DQcJyKk5DWVCdxfCI3a1OunnEHRFvxcTIXOq6tOyjzpSLiVjif4O3g8G4t4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DR1AZvqy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VTdoy3Wj"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5a10835487fso7356739a12.1;
-        Tue, 13 Aug 2024 07:27:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723559237; x=1724164037; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0GZ9q735651QGDZf7rgdlCrHxFSRCY3h/YKc3A79Cc0=;
-        b=VTdoy3WjCzQiiS5Ec7e9NVoKcUQq36ZGjs11b11P3msZmfgc45fYJXth5aYQ/kc3uv
-         HPnw/aM34r77ZM+0jUajQOb7UyU4UfT/eiKRd0D9CILV+CEC9YsIFB4W5fzFH8mzRZfY
-         YOLLtarvrjmFi/9PuwxqVU1f9CCbUsNMiCWx2wyRw9LtEBGxS45/Pu8HO6H1kwPnJ8YS
-         PL8hGjhwAaGETH9NuzO4j4mz+pvlPjpl6nZbkTybzvbOKBPWhvJae5Ee4tbm/KILAv5/
-         xRK3q09kE8zd/riXtJ0X8Ueca9WcjsOaHbooTMAxAjStsOaITISU4sfuhdCOFciHN6/9
-         ds2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723559237; x=1724164037;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0GZ9q735651QGDZf7rgdlCrHxFSRCY3h/YKc3A79Cc0=;
-        b=g64BEn9uM2HHqzmSUf1MkD2xQ5E43E8SP3m7WqcfFiXjWIcGLllQY48rGWRjpYP1kC
-         qHAhwNk7C7IqDp7SxZkbGgBbA/ssmdLeCbepAQckm7DWITxNaI2519C7t8XBam2TV0Nr
-         zRgNzB1KkU1Hczid/cawSu4Nyzx7V+jpbVKdWjC4IbwQ+UMYyl1QUb+aRWPfrH0kgZiy
-         wJCQ90yvvq/ZZfTdqimPuA0LYB9r0eDIYg4PHm+VfsS/owf0TtVjFZtWjI//SUlJlZSl
-         7PzqrGtjVvC1r7LK3qKHowAKXGHll1TWgbc3ujib76OW8NLZzu9gcpPL1cJRDQSVd/8m
-         APYw==
-X-Forwarded-Encrypted: i=1; AJvYcCUd2ef4iqyHIzEIdNQcpyFWwXKNBHo03LNPd2FnVyeRSIGiTpfeRijwOaMhocn10ksARhzRJy+n0exTOatWB4bR2MM4tn2cZ7w2sfNLuzpOGwQKIT8fWgD2atVT4Ai0tBqTakk1H3jGWwkd0ryOLSklSr9wEpUSXOuaCKsc58RX95DyW5CE2ea+XznRRvbZ2PXDvGhf5NoqSPB+7OzFA1SXatzxAUof0VuPTh4yEcPDJsdJYkZxMDo5tX48mftxVnC+ROwoIifU
-X-Gm-Message-State: AOJu0YxwAR0WppjZBmFoQozxWqdDdtpcECDVp5j9oKUjAQHpmRfEsGJl
-	kTfHVUmUhBvCHfMzv4pa5+bB19cdYXbZo6iP+zTGDHBgKme5jEJC
-X-Google-Smtp-Source: AGHT+IH6Tmd1OzGRfql2ZCp766sYz9QoQGSXIi39HApJlkOewrKUyajyK555rObaG/0QcWQbujM/0w==
-X-Received: by 2002:a05:6402:848:b0:5a7:448b:4434 with SMTP id 4fb4d7f45d1cf-5bd44c2d6f3mr2725779a12.9.1723559236558;
-        Tue, 13 Aug 2024 07:27:16 -0700 (PDT)
-Received: from [192.168.105.194] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5bd196a666fsm2954540a12.46.2024.08.13.07.27.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Aug 2024 07:27:15 -0700 (PDT)
-Message-ID: <36b0ee66-3af3-40c1-86b6-b52cd826298e@gmail.com>
-Date: Tue, 13 Aug 2024 16:27:12 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DR1AZvqy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4A15C4AF0B;
+	Tue, 13 Aug 2024 16:38:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723567144;
+	bh=jGqGS/+YMG58IJdMF3CHYLoIBgb4NHC7NMoRVjSo+V4=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=DR1AZvqy4Pdt9tz7MMJzuAY3ZG3odaJsUXALOcqP5EoPWlkRblooFHWstoHnwUjoj
+	 98dop0kucQTTTCSD8B7fL337IHJCGUQQrDbBfgFiXiOSLYvpPo/k84kZ0FM3RPCSFN
+	 fDOTrZeviBO6wpq0vw68122nXwwesBry47/9W4Y7tBVMdyBt1JHRhTdQT41M0WfpKY
+	 5mVZd/dHVjnQNJIOu4u9PUnoB2npaIEKK0UEc1PWY6aLJ/Af+WD70hv8gos90wCwms
+	 lrPslC4ZLKKlWgQekt8gS/6Zl5maKM+5WoER80Z8LYnR6idU/Ke3cqDchwpncuJb7j
+	 AAPF5VvNVdwrg==
+Message-ID: <6320e4f3-e737-4787-8a72-7bd314ba883c@kernel.org>
+Date: Tue, 13 Aug 2024 18:38:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,98 +35,98 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] dt-bindings: platform: Add Surface System
- Aggregator Module
-To: Krzysztof Kozlowski <krzk@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Yao Zi <ziyao@disroot.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
- Hans de Goede <hdegoede@redhat.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>
-References: <20240810-topic-sam-v2-0-8a8eb368a4f0@quicinc.com>
- <20240810-topic-sam-v2-2-8a8eb368a4f0@quicinc.com>
- <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
+ Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+ Ondrej Jirman <megi@xff.cz>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20240803125510.4699-2-ziyao@disroot.org>
+ <20240803125510.4699-5-ziyao@disroot.org>
+ <56bd1478-ce8c-4c1d-ab16-afe4ad462bf5@kernel.org>
+ <Zq-AFWYaqu7zGuz-@ziyaolaptop.my.domain>
+ <b967ab05-dd0e-4fc5-bee6-ad7639e47bfb@kernel.org>
 Content-Language: en-US
-From: Konrad Dybcio <konradybcio@gmail.com>
-In-Reply-To: <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <b967ab05-dd0e-4fc5-bee6-ad7639e47bfb@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 11.08.2024 4:28 PM, Krzysztof Kozlowski wrote:
-> On 10/08/2024 03:28, Konrad Dybcio wrote:
->> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+On 04/08/2024 16:05, Krzysztof Kozlowski wrote:
+> On 04/08/2024 15:20, Yao Zi wrote:
+>>>
+>>>> +		compatible = "fixed-clock";
+>>>> +		#clock-cells = <0>;
+>>>> +		clock-frequency = <24000000>;
+>>>> +		clock-output-names = "xin24m";
+>>>> +	};
+>>>> +
+>>>> +	gic: interrupt-controller@fed01000 {
+>>>
+>>> Why this all is outside of SoC?
 >>
->> Add bindings for the Surface System Aggregator Module (SAM/SSAM), the
->> Microsoft Surface-standard Embedded Controller, used on both x86- and
->> Qualcomm-based devices.
+>> Just as Heiko says, device tree for all other Rockchip SoCs don't have
+>> a "soc" node. I didn't know why before but just follow the style.
 >>
->> It provides a plethora of functions, depending on what's wired up to
->> it. That includes but is not limited to: fan control, keyboard/touchpad
->> support, thermal sensors, power control, special buttons, tablet mode.
->>
->> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
->> ---
->>  .../bindings/platform/microsoft,surface-sam.yaml   | 50 ++++++++++++++++++++++
->>  1 file changed, 50 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
->> new file mode 100644
->> index 000000000000..f613738aa31d
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
->> @@ -0,0 +1,50 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/platform/microsoft,surface-sam.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Surface System Aggregator Module (SAM, SSAM)
->> +
->> +maintainers:
->> +  - Konrad Dybcio <konradybcio@kernel.org>
->> +
->> +description: |
+>> If you prefer add a soc node, I am willing to.
 > 
-> No need for |
+> Surprising as usually we expect MMIO nodes being part of SoC to be under
+> soc@, but if that's Rockchip preference then fine.
 
-Apparently it's necessary because I have a :
-> 
->> +  Surface devices use a standardized embedded controller to let the
->> +  operating system interface with various hardware functions. The
->> +  specific functionalities are modeled as subdevices and matched on
->> +  five levels: domain, category, target, instance and function.
+One more comment, I forgot we actually have it documented long time ago:
 
-                 ^ here
+https://elixir.bootlin.com/linux/v6.11-rc1/source/Documentation/devicetree/bindings/writing-bindings.rst#L90
 
-Should I e.g. s/:/-/, or keep the |?
+Best regards,
+Krzysztof
 
->> +
->> +properties:
->> +  compatible:
->> +    const: microsoft,surface-sam
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  current-speed:
->> +    description: The baudrate in bits per second of the device as it comes
->> +      online, current active speed.
->> +    $ref: /schemas/types.yaml#/definitions/uint32
-> 
-> This should be just "current-speed: true", because the type will be
-> brought by serial schema. We should however have some schema with
-> peripheral properties for serial devices. I'll come with something.
-
-I suppose I should just include:
-
-https://lore.kernel.org/linux-serial/20240811-dt-bindings-serial-peripheral-props-v1-0-1dba258b7492@linaro.org/
-
-Konrad
