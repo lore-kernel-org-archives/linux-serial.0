@@ -1,424 +1,216 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC7B11804F;
-	Mon, 12 Aug 2024 23:48:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A80FE41C69
+	for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 06:07:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723506489; cv=none; b=Hchx7y4Ye3cF0PX9tnG5yLCItXCIXpzseNVdTfjbhZn+XW2mhYiCTohybYGjLYRjU3C7LhS8H82mDvbl1STN98MrccKlc8rsdv4HA6ddIES4IdgOz53y9PfJ9ZK0zlHqYGvnrgx8YjtpybhRJLJnajmdoa6UKWgX0iVQzfqGEe4=
+	t=1723529233; cv=none; b=i/V/7jKnq3ZN6sDbrwWcUvlOAjQa+QMWnEddHgp0feVtZyCvtl5sBlqSVtrqPMPiFY0DI+LRbqu1o1DXeqoXCKtZ/t5uRkMC33rGJOYx3svvR+O29HNCb4FCd0xECheGgiauScfI39vE584Y+8RKD/cnDoseFDBsKsMgwRxyy8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723506489; c=relaxed/simple;
-	bh=kXZZsX+td27pgCbDF8kbMbDkiLniqjeDNhrdH57CMRY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HH6NDorzMkMMv87Gl7aUJu6Ywt2ptWPMQp+l78PzPj5jyb14tSCHG5FaBln4tf9LE1c0KbjT/XqZ6t5wJLZUsoD5z7b1RzIdunHrzYkR6UQ/PmQ38HmdHaQlC1ZMiuyQbqDcEmokFXQ60RljiZ1t3AmjHAsmaz8grSAZpKDymL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=t43A0KxR; arc=none smtp.client-ip=212.227.17.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	s=arc-20240116; t=1723529233; c=relaxed/simple;
+	bh=CZL0XmHtS8IRNU2NHlfDBaqiJWgECNbdJNguVAL7fDE=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=UdoOWuczw+f1+amFY1Z4kNsh9yY9sa00R84jZYDcISo3fVEhK5bDx8570ksnGqlJDuBRWZVBgqa/06bFCn7OAU8yUoL4o75JqtCpN2WbSm3n3NlpapAGO46zK8jOmCuQiKCTvYyR4pKMgGrzWjjqNF5wT7MKGOdHdnkCZFatLZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lTNgWWv4; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="t43A0KxR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723506454; x=1724111254; i=wahrenst@gmx.net;
-	bh=l6OouXenCvAZE1JaCg4HpNacCouIsLa/UOywMg/akPQ=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=t43A0KxRTShwhq51DmI0Hx9L+gPZrgr8r00BkJx0VDqA+AIo08KkR7JQ0dN6tOrH
-	 qovMsbM5X7bSgi2yOq4xKC/IZxVpLd2xejYCjVJPnC6z+gPltVxGfvgxKrR8gXZUt
-	 1Z0ccgiWaaLB6ANTDP8rFNYS4MJOsPDw85eXzompgU1MK5HzTuZ+jBKdDmoRfFdM2
-	 K4P+5acYr+5/PaN+1ZQ0UMhGiBhnW/i1JqxdLMD93A7MQAaDHqDn/lopnaj9jJo5W
-	 NmX9u90FIMpYEZ++rcIbXTcDe0VVs03SbcCReqheJ0paHtnmddE/hJEtyEAETwbEt
-	 J23elkwHdIEPzPmN1A==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MzQkK-1sHZZ80T5c-00wJPv; Tue, 13
- Aug 2024 01:47:34 +0200
-Message-ID: <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
-Date: Tue, 13 Aug 2024 01:47:31 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lTNgWWv4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1723529232; x=1755065232;
+  h=date:from:to:cc:subject:message-id;
+  bh=CZL0XmHtS8IRNU2NHlfDBaqiJWgECNbdJNguVAL7fDE=;
+  b=lTNgWWv4B+mHUyfDijXuSGfnHmLsnntm+8XrYI/y+i94R7zXJM8hRB4m
+   ZQWgcnRSW5W51Wk+w00lJQvPcdM7pK3NAKmzLUSYvrwinK/+LWh1Wue/T
+   cTw+YDXP57Avv2GV4YYgcjCnIU08S/1OoCcUkeMJ1EC7XCXOhrVAA9Kxs
+   w9ZI1X29apa1TQ+T9gZgYfovfL13yZFa1QzVr5snPFbZtUgy377sF+dmq
+   +6C7VGs9fKv+DBMGg8H/jnbyYR85Dap/+0mlUzmZfBiLqxIEIsDH4wX4v
+   fjCHm5g7OODESiTBdHzMUl4579TPsv4EsroXMdPjU4ArT/nJnDm8tXEIu
+   Q==;
+X-CSE-ConnectionGUID: l0vcGAoxTKqA17du4+HkGw==
+X-CSE-MsgGUID: QdQcq4CxRwin5bIJh/D3vQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11162"; a="21529290"
+X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
+   d="scan'208";a="21529290"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2024 23:07:11 -0700
+X-CSE-ConnectionGUID: Ae/XiB7wRzWJqLYNcJvsLA==
+X-CSE-MsgGUID: Is5wo4aBRj2a3pGUZp5v9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.09,285,1716274800"; 
+   d="scan'208";a="63242345"
+Received: from lkp-server01.sh.intel.com (HELO 9a732dc145d3) ([10.239.97.150])
+  by fmviesa004.fm.intel.com with ESMTP; 12 Aug 2024 23:07:10 -0700
+Received: from kbuild by 9a732dc145d3 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1sdkgV-0000DE-2U;
+	Tue, 13 Aug 2024 06:07:07 +0000
+Date: Tue, 13 Aug 2024 14:07:00 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 9f3eb413606b259c03ecbd20d61e5f7906681891
+Message-ID: <202408131458.cESWh3dY-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
- domain off
-To: Douglas Anderson <dianders@chromium.org>
-Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
- Minas Harutyunyan <hminas@synopsys.com>, Ulf Hansson
- <ulf.hansson@linaro.org>, Dave Stevenson <dave.stevenson@raspberrypi.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
- Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20240728114200.75559-1-wahrenst@gmx.net>
- <20240728130029.78279-1-wahrenst@gmx.net>
- <20240728130029.78279-6-wahrenst@gmx.net>
-Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <20240728130029.78279-6-wahrenst@gmx.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Ik08zjVVUi5qEx5fIPQKnKhjJUj59/tBCsiGz1eN2Pm7Quoj1iB
- SNlD/gQNZC+VslWH4bG/F4WMdl+kUsV+eZR5HGLwXPDSsYua5jSrb0wMxxwJF3fvDSbd6FT
- HB0bM/UR6ghRTw2R16IKIywSoWG8yUg48pEenKwPKiTxdr6jNEj3vV7Un2zBIDF+c2rtGeE
- ewOqTvQZHzg7flD1ehlfg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:NX0Jg3iPZl8=;vEzuC2Ms0J1UDvbMW+dkF3nw9v6
- QxRDXzBRZ88Xu+UB/MqvguubkOqslla23fyby/q23PArECBFoJWaarYRKhLBMfcQsuWQOmgFO
- HolMSpEnntoeKW2xxoA3N8xiNTCFhSQRfK7ZTDpvnx2IeUDuGJHNKva99JSE5tGhgrECIAUJn
- kWoRj+3clw6L+Gjch16MVT14HC3Z3ZxSEqnnjnY4XUaTK61DlkOSbOIBEkRT13XILgGld8geF
- WIw2kv2mwmLD/mscf0/S8vYoAGMbY9E0GLLiiKcaDqQeJNLYNgiELj3iNEPYGcpPZqcj6pJlP
- LWJUchihGQf9fccffqoUkmq47mHYsX/BCGUKvgRPvyLp/+7JeyKad0p29iT55Xi2v57bAgz0s
- MwAxN4f0Kb/YA3RDoF2ZJtc5HPvw89Q1uTnyGrEuCwg4bnL9GG2pwB8lPWPXrg77YMlWNQGTD
- GLCVlqju1pNSwXxOdUEOEWH6PUP3oGeH2qNInXNkuGhbJAnbK8kg1U9zqk+eW7oS3Fhfnwgmj
- igtuxme4puuD9cVZJZjHpok5o5HdA3eIk5tICxeB3+cgdNdH3sb02DFmsnByOR3uU3kchJ/Mm
- ZYj3juRMZawas6N9kBtUmP2CkBqniww9tkOPUtDSq82u58l+puwNazQc4xr9icO3mqDbEoN1K
- LoNFygfIHNY75rxXJGoUBUJq948Edj0nJG09QpRFCf/4Nrh0BPU6Hrkc7OxWyQ25pmD6uAanJ
- WWOgvP0dVejplW6rwX9h9gUz3rWxuKnt9HT6cYsZb7W2paYAQs9uf1w7ztYA0wWbCYEbc5oRL
- +SV9+eiPUC+YpeQ4WL55vhAA==
 
-Hi Doug,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 9f3eb413606b259c03ecbd20d61e5f7906681891  Merge 6.11-rc3 into tty-next
 
-Am 28.07.24 um 15:00 schrieb Stefan Wahren:
-> DO NOT MERGE
->
-> According to the dt-bindings there are some platforms, which have a
-> dedicated USB power domain for DWC2 IP core supply. If the power domain
-> is switched off during system suspend then all USB register will lose
-> their settings.
->
-> So use the power on/off notifier in order to save & restore the USB
-> registers during system suspend.
-sorry for bothering you with this DWC2 stuff, but it would great if you
-can gave some feedback about this patch. I was working a lot to get
-suspend to idle working on Raspberry Pi. And this patch is the most
-complex part of the series.
+elapsed time: 729m
 
-Would you agree with this approach or did i miss something?
+configs tested: 139
+configs skipped: 4
 
-The problem is that the power domain driver acts independent from dwc2,
-so we cannot prevent the USB domain power down except declaring a USB
-device as wakeup source. So i decided to use the notifier approach. This
-has been successful tested on some older Raspberry Pi boards.
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Best regards
->
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> ---
->
-> Any feedback is appreciated.
->
->   drivers/usb/dwc2/core.c     | 16 ++++++++++++
->   drivers/usb/dwc2/core.h     | 17 +++++++++++++
->   drivers/usb/dwc2/gadget.c   | 49 +++++++++++++++++++++++++++++++++++++
->   drivers/usb/dwc2/hcd.c      | 49 +++++++++++++++++++++++++++++++++++++
->   drivers/usb/dwc2/platform.c | 32 ++++++++++++++++++++++++
->   5 files changed, 163 insertions(+)
->
-> diff --git a/drivers/usb/dwc2/core.c b/drivers/usb/dwc2/core.c
-> index 9919ab725d54..a3263cfdedac 100644
-> --- a/drivers/usb/dwc2/core.c
-> +++ b/drivers/usb/dwc2/core.c
-> @@ -391,6 +391,22 @@ int dwc2_exit_hibernation(struct dwc2_hsotg *hsotg,=
- int rem_wakeup,
->   		return dwc2_gadget_exit_hibernation(hsotg, rem_wakeup, reset);
->   }
->
-> +int dwc2_enter_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	if (dwc2_is_host_mode(hsotg))
-> +		return dwc2_host_enter_poweroff(hsotg);
-> +	else
-> +		return dwc2_gadget_enter_poweroff(hsotg);
-> +}
-> +
-> +int dwc2_exit_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	if (dwc2_is_host_mode(hsotg))
-> +		return dwc2_host_exit_poweroff(hsotg);
-> +	else
-> +		return dwc2_gadget_exit_poweroff(hsotg);
-> +}
-> +
->   /*
->    * Do core a soft reset of the core.  Be careful with this because it
->    * resets all the internal state machines of the core.
-> diff --git a/drivers/usb/dwc2/core.h b/drivers/usb/dwc2/core.h
-> index 2bd74f3033ed..9ab755cc3081 100644
-> --- a/drivers/usb/dwc2/core.h
-> +++ b/drivers/usb/dwc2/core.h
-> @@ -9,6 +9,7 @@
->   #define __DWC2_CORE_H__
->
->   #include <linux/acpi.h>
-> +#include <linux/notifier.h>
->   #include <linux/phy/phy.h>
->   #include <linux/regulator/consumer.h>
->   #include <linux/usb/gadget.h>
-> @@ -1080,6 +1081,8 @@ struct dwc2_hsotg {
->   	struct regulator *vbus_supply;
->   	struct regulator *usb33d;
->
-> +	struct notifier_block genpd_nb;
-> +
->   	spinlock_t lock;
->   	void *priv;
->   	int     irq;
-> @@ -1316,6 +1319,8 @@ int dwc2_exit_partial_power_down(struct dwc2_hsotg=
- *hsotg, int rem_wakeup,
->   int dwc2_enter_hibernation(struct dwc2_hsotg *hsotg, int is_host);
->   int dwc2_exit_hibernation(struct dwc2_hsotg *hsotg, int rem_wakeup,
->   		int reset, int is_host);
-> +int dwc2_enter_poweroff(struct dwc2_hsotg *hsotg);
-> +int dwc2_exit_poweroff(struct dwc2_hsotg *hsotg);
->   void dwc2_init_fs_ls_pclk_sel(struct dwc2_hsotg *hsotg);
->   int dwc2_phy_init(struct dwc2_hsotg *hsotg, bool select_phy);
->
-> @@ -1435,6 +1440,8 @@ int dwc2_hsotg_tx_fifo_total_depth(struct dwc2_hso=
-tg *hsotg);
->   int dwc2_hsotg_tx_fifo_average_depth(struct dwc2_hsotg *hsotg);
->   void dwc2_gadget_init_lpm(struct dwc2_hsotg *hsotg);
->   void dwc2_gadget_program_ref_clk(struct dwc2_hsotg *hsotg);
-> +int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg);
-> +int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg);
->   static inline void dwc2_clear_fifo_map(struct dwc2_hsotg *hsotg)
->   { hsotg->fifo_map =3D 0; }
->   #else
-> @@ -1482,6 +1489,10 @@ static inline int dwc2_hsotg_tx_fifo_average_dept=
-h(struct dwc2_hsotg *hsotg)
->   { return 0; }
->   static inline void dwc2_gadget_init_lpm(struct dwc2_hsotg *hsotg) {}
->   static inline void dwc2_gadget_program_ref_clk(struct dwc2_hsotg *hsot=
-g) {}
-> +static inline int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg)
-> +{ return 0; }
-> +static inline int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg)
-> +{ return 0; }
->   static inline void dwc2_clear_fifo_map(struct dwc2_hsotg *hsotg) {}
->   #endif
->
-> @@ -1505,6 +1516,8 @@ int dwc2_host_exit_partial_power_down(struct dwc2_=
-hsotg *hsotg,
->   void dwc2_host_enter_clock_gating(struct dwc2_hsotg *hsotg);
->   void dwc2_host_exit_clock_gating(struct dwc2_hsotg *hsotg, int rem_wak=
-eup);
->   bool dwc2_host_can_poweroff_phy(struct dwc2_hsotg *dwc2);
-> +int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg);
-> +int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg);
->   static inline void dwc2_host_schedule_phy_reset(struct dwc2_hsotg *hso=
-tg)
->   { schedule_work(&hsotg->phy_reset_work); }
->   #else
-> @@ -1544,6 +1557,10 @@ static inline void dwc2_host_exit_clock_gating(st=
-ruct dwc2_hsotg *hsotg,
->   					       int rem_wakeup) {}
->   static inline bool dwc2_host_can_poweroff_phy(struct dwc2_hsotg *dwc2)
->   { return false; }
-> +static inline int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg)
-> +{ return 0; }
-> +static inline int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg)
-> +{ return 0; }
->   static inline void dwc2_host_schedule_phy_reset(struct dwc2_hsotg *hso=
-tg) {}
->
->   #endif
-> diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-> index e7bf9cc635be..38f0112970fe 100644
-> --- a/drivers/usb/dwc2/gadget.c
-> +++ b/drivers/usb/dwc2/gadget.c
-> @@ -5710,3 +5710,52 @@ void dwc2_gadget_exit_clock_gating(struct dwc2_hs=
-otg *hsotg, int rem_wakeup)
->   	hsotg->lx_state =3D DWC2_L0;
->   	hsotg->bus_suspended =3D false;
->   }
-> +
-> +int dwc2_gadget_enter_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	int ret;
-> +
-> +	dev_dbg(hsotg->dev, "Entering device power off.\n");
-> +
-> +	/* Backup all registers */
-> +	ret =3D dwc2_backup_global_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to backup global registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	ret =3D dwc2_backup_device_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to backup device registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(hsotg->dev, "Entering device power off completed.\n");
-> +	return 0;
-> +}
-> +
-> +int dwc2_gadget_exit_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	int ret;
-> +
-> +	dev_dbg(hsotg->dev, "Exiting device power off.\n");
-> +
-> +	ret =3D dwc2_restore_global_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to restore registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	ret =3D dwc2_restore_device_registers(hsotg, 0);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to restore device registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(hsotg->dev, "Exiting device power off completed.\n");
-> +	return 0;
-> +}
-> diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-> index cb54390e7de4..22afdafb474e 100644
-> --- a/drivers/usb/dwc2/hcd.c
-> +++ b/drivers/usb/dwc2/hcd.c
-> @@ -5993,3 +5993,52 @@ void dwc2_host_exit_clock_gating(struct dwc2_hsot=
-g *hsotg, int rem_wakeup)
->   			  jiffies + msecs_to_jiffies(71));
->   	}
->   }
-> +
-> +int dwc2_host_enter_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	int ret;
-> +
-> +	dev_dbg(hsotg->dev, "Entering host power off.\n");
-> +
-> +	/* Backup all registers */
-> +	ret =3D dwc2_backup_global_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to backup global registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	ret =3D dwc2_backup_host_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to backup host registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(hsotg->dev, "Entering host power off completed.\n");
-> +	return 0;
-> +}
-> +
-> +int dwc2_host_exit_poweroff(struct dwc2_hsotg *hsotg)
-> +{
-> +	int ret;
-> +
-> +	dev_dbg(hsotg->dev, "Exiting host power off.\n");
-> +
-> +	ret =3D dwc2_restore_global_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to restore registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	ret =3D dwc2_restore_host_registers(hsotg);
-> +	if (ret) {
-> +		dev_err(hsotg->dev, "%s: failed to restore host registers\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-> +	dev_dbg(hsotg->dev, "Exiting host power off completed.\n");
-> +	return 0;
-> +}
-> diff --git a/drivers/usb/dwc2/platform.c b/drivers/usb/dwc2/platform.c
-> index 7b84416dfc2b..b97eefc18a6b 100644
-> --- a/drivers/usb/dwc2/platform.c
-> +++ b/drivers/usb/dwc2/platform.c
-> @@ -16,6 +16,7 @@
->   #include <linux/platform_device.h>
->   #include <linux/phy/phy.h>
->   #include <linux/platform_data/s3c-hsotg.h>
-> +#include <linux/pm_domain.h>
->   #include <linux/reset.h>
->
->   #include <linux/usb/of.h>
-> @@ -307,6 +308,8 @@ static void dwc2_driver_remove(struct platform_devic=
-e *dev)
->   	struct dwc2_gregs_backup *gr;
->   	int ret =3D 0;
->
-> +	dev_pm_genpd_remove_notifier(&dev->dev);
-> +
->   	gr =3D &hsotg->gr_backup;
->
->   	/* Exit Hibernation when driver is removed. */
-> @@ -421,6 +424,31 @@ int dwc2_check_core_version(struct dwc2_hsotg *hsot=
-g)
->   	return 0;
->   }
->
-> +static int dwc2_power_notifier(struct notifier_block *nb,
-> +			       unsigned long action, void *data)
-> +{
-> +	struct dwc2_hsotg *hsotg =3D container_of(nb, struct dwc2_hsotg,
-> +						genpd_nb);
-> +	int ret;
-> +
-> +	switch (action) {
-> +	case GENPD_NOTIFY_ON:
-> +		ret =3D dwc2_exit_poweroff(hsotg);
-> +		if (ret)
-> +			dev_err(hsotg->dev, "exit poweroff failed\n");
-> +		break;
-> +	case GENPD_NOTIFY_PRE_OFF:
-> +		ret =3D dwc2_enter_poweroff(hsotg);
-> +		if (ret)
-> +			dev_err(hsotg->dev, "enter poweroff failed\n");
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
->   /**
->    * dwc2_driver_probe() - Called when the DWC_otg core is bound to the =
-DWC_otg
->    * driver
-> @@ -620,6 +648,10 @@ static int dwc2_driver_probe(struct platform_device=
- *dev)
->   		}
->   	}
->   #endif /* CONFIG_USB_DWC2_PERIPHERAL || CONFIG_USB_DWC2_DUAL_ROLE */
-> +
-> +	hsotg->genpd_nb.notifier_call =3D dwc2_power_notifier;
-> +	dev_pm_genpd_add_notifier(&dev->dev, &hsotg->genpd_nb);
-> +
->   	return 0;
->
->   #if IS_ENABLED(CONFIG_USB_DWC2_PERIPHERAL) || \
-> --
-> 2.34.1
->
+tested configs:
+alpha                             allnoconfig   gcc-13.2.0
+alpha                            allyesconfig   gcc-13.3.0
+alpha                               defconfig   gcc-13.2.0
+arc                              allmodconfig   gcc-13.2.0
+arc                               allnoconfig   gcc-13.2.0
+arc                              allyesconfig   gcc-13.2.0
+arc                                 defconfig   gcc-13.2.0
+arm                              allmodconfig   gcc-13.2.0
+arm                              allmodconfig   gcc-14.1.0
+arm                               allnoconfig   gcc-13.2.0
+arm                              allyesconfig   gcc-13.2.0
+arm                              allyesconfig   gcc-14.1.0
+arm                       aspeed_g4_defconfig   clang-20
+arm                         at91_dt_defconfig   clang-20
+arm                         bcm2835_defconfig   clang-20
+arm                                 defconfig   gcc-13.2.0
+arm                      integrator_defconfig   clang-20
+arm                        neponset_defconfig   clang-20
+arm                        shmobile_defconfig   clang-20
+arm                         socfpga_defconfig   clang-20
+arm64                            allmodconfig   clang-20
+arm64                            allmodconfig   gcc-13.2.0
+arm64                             allnoconfig   gcc-13.2.0
+arm64                               defconfig   gcc-13.2.0
+csky                              allnoconfig   gcc-13.2.0
+csky                                defconfig   gcc-13.2.0
+hexagon                          alldefconfig   clang-20
+hexagon                          allmodconfig   clang-20
+hexagon                          allyesconfig   clang-20
+i386                             allmodconfig   clang-18
+i386                             allmodconfig   gcc-12
+i386                              allnoconfig   clang-18
+i386                              allnoconfig   gcc-12
+i386                             allyesconfig   clang-18
+i386                             allyesconfig   gcc-12
+i386         buildonly-randconfig-001-20240813   gcc-12
+i386         buildonly-randconfig-002-20240813   gcc-12
+i386         buildonly-randconfig-003-20240813   gcc-12
+i386         buildonly-randconfig-004-20240813   gcc-12
+i386         buildonly-randconfig-005-20240813   gcc-12
+i386         buildonly-randconfig-006-20240813   gcc-12
+i386                                defconfig   clang-18
+i386                  randconfig-001-20240813   gcc-12
+i386                  randconfig-002-20240813   gcc-12
+i386                  randconfig-003-20240813   gcc-12
+i386                  randconfig-004-20240813   gcc-12
+i386                  randconfig-005-20240813   gcc-12
+i386                  randconfig-006-20240813   gcc-12
+i386                  randconfig-011-20240813   gcc-12
+i386                  randconfig-012-20240813   gcc-12
+i386                  randconfig-013-20240813   gcc-12
+i386                  randconfig-014-20240813   gcc-12
+i386                  randconfig-015-20240813   gcc-12
+i386                  randconfig-016-20240813   gcc-12
+loongarch                        allmodconfig   gcc-14.1.0
+loongarch                         allnoconfig   gcc-13.2.0
+loongarch                           defconfig   gcc-13.2.0
+m68k                             allmodconfig   gcc-14.1.0
+m68k                              allnoconfig   gcc-13.2.0
+m68k                             allyesconfig   gcc-14.1.0
+m68k                                defconfig   gcc-13.2.0
+microblaze                       allmodconfig   gcc-14.1.0
+microblaze                        allnoconfig   gcc-13.2.0
+microblaze                       allyesconfig   gcc-14.1.0
+microblaze                          defconfig   gcc-13.2.0
+mips                              allnoconfig   gcc-13.2.0
+mips                           gcw0_defconfig   clang-20
+nios2                             allnoconfig   gcc-13.2.0
+nios2                               defconfig   gcc-13.2.0
+openrisc                          allnoconfig   gcc-14.1.0
+openrisc                         allyesconfig   gcc-14.1.0
+openrisc                            defconfig   gcc-14.1.0
+parisc                           allmodconfig   gcc-14.1.0
+parisc                            allnoconfig   gcc-14.1.0
+parisc                           allyesconfig   gcc-14.1.0
+parisc                              defconfig   gcc-14.1.0
+parisc64                            defconfig   gcc-13.2.0
+powerpc                          allmodconfig   gcc-14.1.0
+powerpc                           allnoconfig   gcc-14.1.0
+powerpc                          allyesconfig   clang-20
+powerpc                      cm5200_defconfig   clang-20
+powerpc                   currituck_defconfig   clang-20
+powerpc                    gamecube_defconfig   clang-20
+powerpc                     powernv_defconfig   clang-20
+riscv                            allmodconfig   clang-20
+riscv                             allnoconfig   gcc-14.1.0
+riscv                            allyesconfig   clang-20
+riscv                               defconfig   gcc-14.1.0
+s390                             allmodconfig   clang-20
+s390                              allnoconfig   clang-20
+s390                              allnoconfig   gcc-14.1.0
+s390                             allyesconfig   clang-20
+s390                             allyesconfig   gcc-14.1.0
+s390                                defconfig   gcc-14.1.0
+sh                               allmodconfig   gcc-14.1.0
+sh                                allnoconfig   gcc-13.2.0
+sh                               allyesconfig   gcc-14.1.0
+sh                                  defconfig   gcc-14.1.0
+sparc                            allmodconfig   gcc-14.1.0
+sparc64                             defconfig   gcc-14.1.0
+um                               allmodconfig   clang-20
+um                               allmodconfig   gcc-13.3.0
+um                                allnoconfig   clang-17
+um                                allnoconfig   gcc-14.1.0
+um                               allyesconfig   gcc-12
+um                               allyesconfig   gcc-13.3.0
+um                                  defconfig   gcc-14.1.0
+um                             i386_defconfig   gcc-14.1.0
+um                           x86_64_defconfig   gcc-14.1.0
+x86_64                            allnoconfig   clang-18
+x86_64                           allyesconfig   clang-18
+x86_64       buildonly-randconfig-001-20240813   clang-18
+x86_64       buildonly-randconfig-002-20240813   clang-18
+x86_64       buildonly-randconfig-003-20240813   clang-18
+x86_64       buildonly-randconfig-004-20240813   clang-18
+x86_64       buildonly-randconfig-005-20240813   clang-18
+x86_64       buildonly-randconfig-006-20240813   clang-18
+x86_64                              defconfig   clang-18
+x86_64                              defconfig   gcc-11
+x86_64                randconfig-001-20240813   clang-18
+x86_64                randconfig-002-20240813   clang-18
+x86_64                randconfig-003-20240813   clang-18
+x86_64                randconfig-004-20240813   clang-18
+x86_64                randconfig-005-20240813   clang-18
+x86_64                randconfig-006-20240813   clang-18
+x86_64                randconfig-011-20240813   clang-18
+x86_64                randconfig-012-20240813   clang-18
+x86_64                randconfig-013-20240813   clang-18
+x86_64                randconfig-014-20240813   clang-18
+x86_64                randconfig-015-20240813   clang-18
+x86_64                randconfig-016-20240813   clang-18
+x86_64                randconfig-071-20240813   clang-18
+x86_64                randconfig-072-20240813   clang-18
+x86_64                randconfig-073-20240813   clang-18
+x86_64                randconfig-074-20240813   clang-18
+x86_64                randconfig-075-20240813   clang-18
+x86_64                randconfig-076-20240813   clang-18
+x86_64                          rhel-8.3-rust   clang-18
+xtensa                            allnoconfig   gcc-13.2.0
 
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
