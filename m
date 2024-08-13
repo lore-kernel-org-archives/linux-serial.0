@@ -1,73 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADF115B7
-	for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 09:00:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2779C19D060
+	for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 12:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723539631; cv=none; b=Fd7ci+DMybuhEqq508jG9xCKmwSO3ODWn80II8CwMCHil7T2rmYwdwcG5SMtEiN9KgE0TrmyqKrex9K+haP7oTnPq6yIxhJL5MzsO1eg/1VoMvtaK+pyvZt8GaLQFpO0Mw1m07CK98YJvZfGxuQ1MF/1AyOemyXRHvr47450Vdo=
+	t=1723552468; cv=none; b=fli0N8KXlZhsg6rHTjcuzeMGXshyFb95jK8c5jSdTRRZ63bwFRH2p/w9quHkeN03VjuoRl7pfAVhLpM06bsCsTO0t/cXaMvdIFVZu/MJlvpwbja5z3hicgamj0c136FsWDv7gRZdYZqMacaF/IjrVxYJgtZgYXgCFbpuJuiReiM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723539631; c=relaxed/simple;
-	bh=48XnNGZ2NZuoEQWsFmA0utynGlFXtYstHFdCR5YXSsk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BMR+C142kay2z0Z8W+HEDGOpvga8NtcJbNhbGNwmZJcaPiCJTF3F+f9Vu4oJ1yNPz8vzuHZ1yelEbzeVwglQTLXgzomCWoTKmyGDZ8tE9UALqetSGNWboFtQkgl4+8dXCE4H0fQN/k56GcQU/UEaDO0SUzm6zuhrVjn4KKZEgmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=DjypzSWd; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="DjypzSWd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A058CC4AF0B;
-	Tue, 13 Aug 2024 09:00:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1723539631;
-	bh=48XnNGZ2NZuoEQWsFmA0utynGlFXtYstHFdCR5YXSsk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=DjypzSWdBbZt/ctd4dYrCv8Rl6Tq43RrAtVXF7KIoglGT+lwJGF6YkBqffz4+nV6B
-	 ZPIr9KOrFMXDbCdo+1Qjy8B0wYUDZhnkB4LwwK/BeB/AZcTWttO8tvheOrqARjTgxZ
-	 rQ0cmxrIiceQjnoPMD4hvkw/hNSjGa1+QqXfT7lE=
-Date: Tue, 13 Aug 2024 11:00:28 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Kevin Hilman <khilman@kernel.org>
-Cc: Thomas Richard <thomas.richard@bootlin.com>, jirislaby@kernel.org,
-	tony@atomide.com, linux-serial@vger.kernel.org,
-	gregory.clement@bootlin.com, u-kumar1@ti.com, d-gole@ti.com,
-	thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if no
- console suspend
-Message-ID: <2024081318-litigator-slinky-8f0b@gregkh>
-References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
- <7hzfplplfs.fsf@baylibre.com>
+	s=arc-20240116; t=1723552468; c=relaxed/simple;
+	bh=MWYYWzrLBsyhsepfViZZe+n7+XEy4XisBYxo3KCbwNg=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=ppY4VGLO+DrHteswpGgMeE5n6mcgNfnYnnT2A3BdxNse5ABxKsf6OM7TkjZ0ehAbY6puMBMydoIjupG6NCOCIHOCTHVjLvS3nB5fXtUcnEBrm9fBMaRLUTmV5lVKajvWyZ8WVGv4SpWbdDe3PzUiixvwVU+svABRmy/wBACi39w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-81f7fb0103fso670315439f.0
+        for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 05:34:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723552466; x=1724157266;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3+Ln620VT8KH54iQCrLjkomNkv6MG80t0C+1+yo30Yg=;
+        b=DmTAb0I1sbt1FRwpkgcjzl8ejytmoRl9IiY4f3W6OTsNSuiWxJV8XA1tC8p/9H4ABU
+         wIR4D0RMUheNDG6AY+rCbfxLJVl5rGsx5N1iXH6XV2/BVZUU10wCzF95vZJ30udqo3NP
+         b66NDq31mKEXe6msHwfWsOeRzp0GVWRtYqz6h4RdPP6cXx9cudgBrdx1pkQsqLJqUsly
+         33Po1PmVyARsaTHMY8d1xuJR0dRqdc2anWCqCrFlqmETl2OuqmIancxdCfLgYms5b3Ob
+         YsQy87jVS3HpvIz7Fgb0N1SznKWlvi6YiOK8Ix87D02TnoTJ0Wc1KiYoNG5HQBm35bHa
+         emLA==
+X-Forwarded-Encrypted: i=1; AJvYcCXKHj6FhY3EkJJSoH/WxWm9F9lWq9DMPirO69hHi36EhwRUXnIu0PZFf2BX8c6WgqScKJFpVuvswmEoP9idllgNezVVCSwXOC2G1Con
+X-Gm-Message-State: AOJu0Yz3eRJ0stWdUcolG25O22te6YR/+i50Zq/uZbvXx7G7E9T0iUoK
+	eN1aBs8STywTyPn0SDag5nVQYnCVd5SR5QvMs1iFZi11RosAZuP85C0wpZCXf8Uil5eBNSiAPXs
+	Oe/KW1/+SzD5L6yeRTszU9ONotLTaWC7YOCHo3zHzLLpwggdLkvLEu1w=
+X-Google-Smtp-Source: AGHT+IG3UXOsj7iMlJPd1YaGKTgrI5WP18qFBGO56hVK54vUBxVZD+3+WCWnv+apxl+45UkIn8nKCfEWOmoKOaIfDmC4Py0tCjDB
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7hzfplplfs.fsf@baylibre.com>
+X-Received: by 2002:a05:6e02:218b:b0:396:256a:2e01 with SMTP id
+ e9e14a558f8ab-39c48c1647dmr1582815ab.1.1723552466282; Tue, 13 Aug 2024
+ 05:34:26 -0700 (PDT)
+Date: Tue, 13 Aug 2024 05:34:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000813aa7061f8fd478@google.com>
+Subject: [syzbot] Monthly serial report (Aug 2024)
+From: syzbot <syzbot+list6032cdf2de475380d173@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Aug 09, 2024 at 12:04:23PM -0700, Kevin Hilman wrote:
-> Thomas Richard <thomas.richard@bootlin.com> writes:
-> 
-> > If the console suspend is disabled, the genpd of the console shall not
-> > be powered-off during suspend.
-> > Set the flag GENPD_FLAG_ALWAYS_ON to the corresponding genpd during
-> > suspend, and restore the original value during the resume.
-> >
-> > Signed-off-by: Thomas Richard <thomas.richard@bootlin.com>
-> 
-> Hmm, this patch got merged upstream (commit 68e6939ea9ec) even after
-> disagreements about the approach.
-> 
-> Even worse, it actually causes a crash during suspend on platforms that
-> don't use PM domains (like AM335x Beaglebone Black.)
-> 
-> Details on why this crashes below.
-> 
-> Thomas, could you please submit a revert for this (with a Fixes: tag)
-> and then follow up with the approach as discussed later in this thread?
+Hello serial maintainers/developers,
 
-Did this revert happen yet?
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-thanks,
+During the period, 2 new issues were detected and 0 were fixed.
+In total, 16 issues are still open and 42 have been fixed so far.
 
-greg k-h
+Some of the still happening issues:
+
+Ref Crashes Repro Title
+<1> 288     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<2> 141     Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<3> 4       No    KMSAN: uninit-value in gsmld_receive_buf
+                  https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
+<4> 2       No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
