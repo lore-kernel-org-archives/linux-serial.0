@@ -1,184 +1,172 @@
-Received: from fhigh5-smtp.messagingengine.com (fhigh5-smtp.messagingengine.com [103.168.172.156])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF3433D8;
-	Wed, 14 Aug 2024 11:18:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.156
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0A36143C7B
+	for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2024 12:01:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723634292; cv=none; b=d9Fit6KxBgmVr5CDCzgzQjJmCsrv1NZOFV3rg0nOFeukeaKF2YhRrz4qCo90SeJJ1wg6ED285LHjBEK6Kiip6Ch1MYzig+lv0KWlPkpaNbdBuYwaUaGv1dFvgHOkIlj/yux2vbTXSTUGIoXPqFZFKiF7geGpbBLbWhva33cZXoY=
+	t=1723636904; cv=none; b=p9Mtl1+3aloUtFu2A90k4aNTDV0nR7B+zdh6i77wXRp6fDmAohpuHRiD2QgNc2KgHuN4ae8HfKyS5dzV1SWf1kxYOToeBZ9Y68h8BIfe8vGzQrfnH+himx6aDr7efiSIvV0k8gZRE44xH+kNRB56nG0EQ3wOchZ1xoXIWX9iIS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723634292; c=relaxed/simple;
-	bh=m+MoOHkGiXtBn4BvwUlztRdZKfut3VVfRtqAHgJ1Vs0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EUm5Vtb/V03p0TKn3l32dFCioeBuViZcQRJHckDm++KTXq0smTQwNt8cnbavys62Rg+5JgtUqpUrkCsMTusMyofPZ7/I4TR3OjfrRmTQuVEjBXdiV67SNzmyAUYiabji3Qc6rmJACbC7xt5h7VgIH8KG2VwKOP1UyDfuDQwaeec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kroah.com; spf=pass smtp.mailfrom=kroah.com; dkim=pass (2048-bit key) header.d=kroah.com header.i=@kroah.com header.b=gUGiy9+G; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=YhRGp5oa; arc=none smtp.client-ip=103.168.172.156
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kroah.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kroah.com
+	s=arc-20240116; t=1723636904; c=relaxed/simple;
+	bh=8v3FACRVLInU72mQIn8ZRnsPtKqtsflxvY7ocPKv6dM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=D5VxVxKXrAGtwnWb7L1SeGbC6iu4Bf/ZVMa7q9Zg+1/k0yz1VJLaji4H3K4pcXLNxmFxYIL1QYydfmyr1ioRoetrGl2c4dOY+VpDYQRzmdw1LgowkY+WFeIWFzBEyuUkA11kF5uWwKaslTMKIGF3gw9MJH3S3QDXcnDeJzcY4C8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zINyAg13; arc=none smtp.client-ip=209.85.160.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kroah.com header.i=@kroah.com header.b="gUGiy9+G";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="YhRGp5oa"
-Received: from phl-compute-06.internal (phl-compute-06.nyi.internal [10.202.2.46])
-	by mailfhigh.nyi.internal (Postfix) with ESMTP id E7AA81151B58;
-	Wed, 14 Aug 2024 07:18:08 -0400 (EDT)
-Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-06.internal (MEProxy); Wed, 14 Aug 2024 07:18:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-	:cc:content-transfer-encoding:content-type:date:date:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to; s=fm3; t=1723634288; x=1723720688; bh=QYG9wVPSdd8HXxuMVtrKu
-	Sk+0giFp7L5zjG5fxfeEPU=; b=gUGiy9+GltyefK24RffzzGmhltjdZeIrlB63U
-	2g9hVUz7yEUquwkcf8FokT3rFH5ZOmfV9J8hNtS3oI5cueRq5fPzi63FuJqKcSkA
-	gmfaaFZBQhpsJbAmFti3yyGHNDOJ1ITzWBlTqISOmBAPl1boAJLvdx2pZ+/b/4SV
-	qQObA4sLnKRYCW1QPu0wRNPykUrWzT1IZOBC70FcB+HzJjH/po36R3GW3UVye8c0
-	kdo8t5hWeyroIA1l2NJixYS6cGY0guHhiW/DMVJtUW0ZXrbSl6Zy5GiQynM8h9If
-	ATtVun9qZeq6QSbdN4x3NfNd85qRfy99TpiRz0BsdHlFYohxA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm3; t=1723634288; x=1723720688; bh=QYG9wVPSdd8HXxuMVtrKuSk+0giF
-	p7L5zjG5fxfeEPU=; b=YhRGp5oae+wnyFcFzWQYQ5tlB09g5Tb+qWDEzthniHQ8
-	wVEfPLb9N+55aVduBOrnS7M1B7y+5bxYGrm306Gc8Yijl3o/kZRHCKksU3Odkk20
-	vssKQIgG+jaYUqvK3g/Slun6v8cAuW/nihLcpO//S5SjdAvC3En6vq24jmffmYR3
-	DQ7IfsZgxvJWlf0a7Gh8wpmvCr/zhAI4Geklz0NLmWJq2grfSXf15+rkX0j7MLTq
-	da6/IYpmPViIxku2STxMXQOhjwEmUV0CrjYzv8T94YS+odnoVW3Ue5ChLZHPv+xc
-	yEmurOowNvIjqkKceHx/B9tNNITwLY3iGKhkgfsokA==
-X-ME-Sender: <xms:cJK8Zp2gzhYiidbXmPTa_KpBtl9U-NXmuEhnzYIvldszHcmzvb2XhQ>
-    <xme:cJK8ZgGN-dh0AA9Vf-2WL8mc3-yTOMywOOuUuB7EeeuNH7gmWbRICCjrdlKNYFzHm
-    t92MiLYSEwknsQ>
-X-ME-Received: <xmr:cJK8Zp5HPGnwNu7AgR_j7-Zk0dYLp7ngkQVj-iQlWxZjK5sfIsWRFOmnU69eggNmJECTbc52A7ePvJbNIjLpXwV8LJomi0LSU5gAqzo0n3nt3-0r>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddruddtgedgfeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
-    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
-    htshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfh
-    rhhomhepifhrihhffhhinhcumfhrohgrhhdqjfgrrhhtmhgrnhcuoehgrhhifhhfihhnse
-    hkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpefhgeffjeejhfeffeffhefhjedv
-    ffdvgfffudfhgffhudelieefjeeludetvdelieenucffohhmrghinhepkhgvrhhnvghlrd
-    horhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    ghhrihhffhhinheskhhrohgrhhdrtghomhdpnhgspghrtghpthhtohepjedpmhhouggvpe
-    hsmhhtphhouhhtpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhi
-    ohhnrdhorhhgpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpd
-    hrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-    pdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorh
-    hgpdhrtghpthhtohepghhrihhffhhinheskhhrohgrhhdrtghomhdprhgtphhtthhopeht
-    hhhomhgrshdrrhhitghhrghrugessghoohhtlhhinhdrtghomhdprhgtphhtthhopehkhh
-    hilhhmrghnsehkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:cJK8Zm3ejUW4nNlpJ0OkypmJb-AGMNLYW1rpmQV9JVgkivbDUd_tLg>
-    <xmx:cJK8ZsFm_eFxYKqr1380Wu-6gKUYBjGuPo8oyFXD07UJZkCARzs7fw>
-    <xmx:cJK8Zn_CCHxMuXG-MY-vvf_jM5837Ah2UsSwm3MNcxIXh_WpVi4Drw>
-    <xmx:cJK8Zpl7KpCxB6yiwd4WfUOIsCxoUsaDtD10g6S5RR6I1Nk4J-Hsfw>
-    <xmx:cJK8Zn1ZVEHOlXC7oEInKzOKVotr49KFXC7n3fvmMjBFgnLQ5176-T4y>
-Feedback-ID: i1d2843be:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 14 Aug 2024 07:18:07 -0400 (EDT)
-From: Griffin Kroah-Hartman <griffin@kroah.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Griffin Kroah-Hartman <griffin@kroah.com>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	Kevin Hilman <khilman@kernel.org>
-Subject: [PATCH] Revert "serial: 8250_omap: Set the console genpd always on if no console suspend"
-Date: Wed, 14 Aug 2024 13:17:47 +0200
-Message-ID: <20240814111747.82371-1-griffin@kroah.com>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zINyAg13"
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-260209df55dso3662146fac.2
+        for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2024 05:01:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1723636902; x=1724241702; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8v3FACRVLInU72mQIn8ZRnsPtKqtsflxvY7ocPKv6dM=;
+        b=zINyAg13YdK7MglUCLhzDYqw9OjPfxnYEo+sN3/xRW5WBzt0MJvh0NSqKlHAizH0nM
+         WI5o1zlCUFV0IGxOv9cxz4x2Tlu/dmgNNS9Er5qqnm0UljoTH+5V0NTcj+aXQ1DoMqa4
+         DrIpCiVt9kfnpoN/UO4hGF+OaAtcFMhs1gMT9S33BVlKjg9dPu8glO73JSrS9Ox04X+Z
+         voVeb0xzHBiD4J0Kk6SPxukogAPXUx9gPy6wkX8GKw9N4abs1gDC02fTZlbfff76MmtG
+         P39MbfY3Pf24KtbDWwPpJ3GOHWi68wlcFWRyFTXuzjw1oZ8IYb5MavpIBn2fyInKZHhw
+         5H9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723636902; x=1724241702;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8v3FACRVLInU72mQIn8ZRnsPtKqtsflxvY7ocPKv6dM=;
+        b=KdHe9TlI7KKI6VTle/NPKkbNOqgm33Jf1PdP3xc8aRMpIQTDRpT7bMGTxfsAfW9k7J
+         YwLU8Z1SP/hpw5TyCKJfCEO/HT6E7KMYkenj+q200p/4L/hprQaQmSRN8rpna2FWUvqL
+         76a020VpA3kRraZWV/RWeAeLJw48ghhDzZenG9VKaImdpA2lcrmzIStkpzogjTrBFvuc
+         ecMPdsn0E/VJioIF51XnPw/dY7X7hLeq8gLVbAeQK+R/DGlpFPTHKmfcgvzuVRb/yJ1P
+         XUUIYSP4QqhGpvWK2nAYjHi6uDelwIExB9RtSKc4GRGhCsxtuNT1a2aXLlIu8eBVOX2D
+         Un0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU9osb5KGFFKivrm7LTOvTAXmhCNKMSMVUyY4qKCbY41BBxZM1IkJQKRPrgXAk0jGpQ4GhCNKqRKchTUmTYnOKGrEJDFOG04DM4E4le
+X-Gm-Message-State: AOJu0Yw9YoJf834CbU/vKaGQhDEVqBqtha6YX5tMZ0iW21/eiH4tFy02
+	hpo2Q4XhDB5snS1Nt/XlJeh29Q1VR9WoqqjHv1GL/MhJ8HZs8sqyhSLmmswFkqjtdbuTctYtnoR
+	gQBqHpnYS6asA9hzH4hMBAPDBIz1QMKM5OcCr+A==
+X-Google-Smtp-Source: AGHT+IEXSwpG1/ytUAZ81Sed/BezfzFf7vKHrDMjRAM0bw/+RsQs5+LfgEea53duY74tvzqpXFM+Zl+QBtuu66uJRnY=
+X-Received: by 2002:a05:6871:e014:b0:268:79bd:9edb with SMTP id
+ 586e51a60fabf-26fe5c707b0mr2896389fac.47.1723636901739; Wed, 14 Aug 2024
+ 05:01:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240728114200.75559-1-wahrenst@gmx.net> <20240728130029.78279-1-wahrenst@gmx.net>
+ <20240728130029.78279-6-wahrenst@gmx.net> <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
+ <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
+In-Reply-To: <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 14 Aug 2024 14:01:05 +0200
+Message-ID: <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
+Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
+ domain off
+To: Stefan Wahren <wahrenst@gmx.net>, Doug Anderson <dianders@chromium.org>
+Cc: =?UTF-8?B?TWHDrXJhIENhbmFs?= <mcanal@igalia.com>, 
+	Minas Harutyunyan <hminas@synopsys.com>, Dave Stevenson <dave.stevenson@raspberrypi.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>, 
+	Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
+	Artur Petrosyan <Arthur.Petrosyan@synopsys.com>, Peter Robinson <pbrobinson@gmail.com>, 
+	dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com, 
+	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kernel-list@raspberrypi.com, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Florian Fainelli <florian.fainelli@broadcom.com>, Maxime Ripard <mripard@kernel.org>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Jiri Slaby <jirislaby@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This reverts commit 68e6939ea9ec3d6579eadeab16060339cdeaf940.
+On Tue, 13 Aug 2024 at 21:57, Doug Anderson <dianders@chromium.org> wrote:
+>
+> Hi,
+>
+> On Mon, Aug 12, 2024 at 4:48=E2=80=AFPM Stefan Wahren <wahrenst@gmx.net> =
+wrote:
+> >
+> > Hi Doug,
+> >
+> > Am 28.07.24 um 15:00 schrieb Stefan Wahren:
+> > > DO NOT MERGE
+> > >
+> > > According to the dt-bindings there are some platforms, which have a
+> > > dedicated USB power domain for DWC2 IP core supply. If the power doma=
+in
+> > > is switched off during system suspend then all USB register will lose
+> > > their settings.
+> > >
+> > > So use the power on/off notifier in order to save & restore the USB
+> > > registers during system suspend.
+> > sorry for bothering you with this DWC2 stuff, but it would great if you
+> > can gave some feedback about this patch.
+>
+> Boy, it's been _ages_ since I looked at anything to do with dwc2, but
+> I still have some fondness in my heart for the crufty old driver :-P I
+> know I was involved with some of the patches to get
+> wakeup-from-suspend working on dwc2 host controllers in the past but,
+> if I remember correctly, I mostly shepherded / fixed patches from
+> Rockchip. Not sure I can spend the days trawling through the driver
+> and testing things with printk that really answering properly would
+> need, but let's see...
+>
+>
+> > I was working a lot to get
+> > suspend to idle working on Raspberry Pi. And this patch is the most
+> > complex part of the series.
+> >
+> > Would you agree with this approach or did i miss something?
+> >
+> > The problem is that the power domain driver acts independent from dwc2,
+> > so we cannot prevent the USB domain power down except declaring a USB
+> > device as wakeup source. So i decided to use the notifier approach. Thi=
+s
+> > has been successful tested on some older Raspberry Pi boards.
+>
+> My genpd knowledge is probably not as good as it should be. Don't tell
+> anyone (aside from all the people and lists CCed here). ;-)
+>
+> ...so I guess you're relying on the fact that
+> dev_pm_genpd_add_notifier() will return an error if a power-domain
+> wasn't specified for dwc2 in the device tree, then you ignore that
+> error and your callback will never happen. You assume that the power
+> domain isn't specified then the dwc2 registers will be saved?
+>
+> I guess one thing is that I'd wonder if that's really reliable. Maybe
+> some dwc2 controllers lose their registers over system suspend but
+> _don't_ specify a power domain? Maybe the USB controller just gets its
+> power yanked as part of system suspend. Maybe that's why the functions
+> for saving / restoring registers are already there? It looks like
+> there are ways for various platforms to specify that registers are
+> lost in some cases...
+>
+> ...but I guess you can't use the existing ways to say that registers
+> are lost because you're trying to be dynamic. You're saying that your
+> registers get saved _unless_ the power domain gets turned off, right?
+> ...and the device core keeps power domains on for suspended devices if
+> they are wakeup sources, which makes sense.
+>
+> So with that, your patch sounds like a plausible way to do it. I guess
+> one other way to do it would be some sort of "canary" approach. You
+> could _always_ save registers and then, at resume time, you could
+> detect if some "canary" register had reset to its power-on default. If
+> you see this then you can assume power was lost and re-init all the
+> registers. This could be pretty much any register that you know won't
+> be its power on default. In some ways a "canary" approach is uglier
+> but it also might be more reliable across more configurations?
+>
+> I guess those would be my main thoughts on the topic. Is that roughly
+> the feedback you were looking for?
 
-Kevin reported that this causes a crash during suspend on platforms that
-dont use PM domains.
+Thanks Doug for sharing your thoughts. For the record, I agree with
+these suggestions.
 
-Link: https://lore.kernel.org/r/7ha5hgpchq.fsf@baylibre.com
-Cc: Thomas Richard <thomas.richard@bootlin.com>
-Reported-by: Kevin Hilman <khilman@kernel.org>
-Signed-off-by: Griffin Kroah-Hartman <griffin@kroah.com>
----
- drivers/tty/serial/8250/8250_omap.c | 33 +++++------------------------
- 1 file changed, 5 insertions(+), 28 deletions(-)
+Using the genpd on/off notifiers is certainly fine, but doing a
+save/restore unconditionally via some of the PM callbacks is usually
+preferred - if it works.
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 1af9aed99c65..afef1dd4ddf4 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -27,7 +27,6 @@
- #include <linux/pm_wakeirq.h>
- #include <linux/dma-mapping.h>
- #include <linux/sys_soc.h>
--#include <linux/pm_domain.h>
- 
- #include "8250.h"
- 
-@@ -119,12 +118,6 @@
- #define UART_OMAP_TO_L                 0x26
- #define UART_OMAP_TO_H                 0x27
- 
--/*
-- * Copy of the genpd flags for the console.
-- * Only used if console suspend is disabled
-- */
--static unsigned int genpd_flags_console;
--
- struct omap8250_priv {
- 	void __iomem *membase;
- 	int line;
-@@ -1655,7 +1648,6 @@ static int omap8250_suspend(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
--	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
- 	int err = 0;
- 
- 	serial8250_suspend_port(priv->line);
-@@ -1666,19 +1658,8 @@ static int omap8250_suspend(struct device *dev)
- 	if (!device_may_wakeup(dev))
- 		priv->wer = 0;
- 	serial_out(up, UART_OMAP_WER, priv->wer);
--	if (uart_console(&up->port)) {
--		if (console_suspend_enabled)
--			err = pm_runtime_force_suspend(dev);
--		else {
--			/*
--			 * The pd shall not be powered-off (no console suspend).
--			 * Make copy of genpd flags before to set it always on.
--			 * The original value is restored during the resume.
--			 */
--			genpd_flags_console = genpd->flags;
--			genpd->flags |= GENPD_FLAG_ALWAYS_ON;
--		}
--	}
-+	if (uart_console(&up->port) && console_suspend_enabled)
-+		err = pm_runtime_force_suspend(dev);
- 	flush_work(&priv->qos_work);
- 
- 	return err;
-@@ -1688,16 +1669,12 @@ static int omap8250_resume(struct device *dev)
- {
- 	struct omap8250_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
--	struct generic_pm_domain *genpd = pd_to_genpd(dev->pm_domain);
- 	int err;
- 
- 	if (uart_console(&up->port) && console_suspend_enabled) {
--		if (console_suspend_enabled) {
--			err = pm_runtime_force_resume(dev);
--			if (err)
--				return err;
--		} else
--			genpd->flags = genpd_flags_console;
-+		err = pm_runtime_force_resume(dev);
-+		if (err)
-+			return err;
- 	}
- 
- 	serial8250_resume_port(priv->line);
--- 
-2.45.2
-
+Kind regards
+Uffe
