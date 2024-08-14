@@ -1,38 +1,38 @@
 Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CE181B5831;
-	Wed, 14 Aug 2024 15:53:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47ABD1B5831;
+	Wed, 14 Aug 2024 15:53:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723650824; cv=none; b=aG0OEKK94dsmhSw5Dw9F3ZhEYi3F17Im4yG0hCNpNdMNOiK3vctTSVIQAKrnfb5kiZYpX4NWXKPxrVnChgJ964DDsUArFnX+bKkTIdXoxRuVBD1fLM7J/vGcQ08jCyHCIHGVKK6WdumTJoRZ5Unah0yGgMs49dnp2fFhgSfjYN0=
+	t=1723650830; cv=none; b=aNlgAdc1sNH0IixIiIS6sC7/K3M3++p63iKu1qW2vf9foQkL7y35zcHfUmI3QKuuuynDg66auhFazYkgb6xcDJlKFno2SSCy6ymr+BvWJxH4a6qJxXU5+sIdHXGsxEj2T4+C94zSA9NObBe+miIxW3fA76hC9T6hG47dDfO6iVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723650824; c=relaxed/simple;
-	bh=PnXNgkzXdemJEFfcg2DrPY4a9NfSyu7aqMfgh8Tx4YM=;
+	s=arc-20240116; t=1723650830; c=relaxed/simple;
+	bh=cIqSVAB+/UhZd//K3owngicdgqTbJSSxHcKfNZh6dnY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=I6wsV0suQT6hM6SOxxx46wIheeo82+C4NAgsypXX6emHrsYXcgNfi4tSZo2oyaLcELuuWWt9PeH+UbhQarLFg3JfSEUsQ5wmNt5whJsTpEvfB04EXDl0T1EcWnsmSmF0XrTnMvxHnR8Vr3Jrmk3gcJJcMqHObAICJMgAfXVbtIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=jlu/HXe6; arc=none smtp.client-ip=178.21.23.139
+	 MIME-Version; b=SZg/sXzgstSZsSpxsneddtaIjGEfavV+b7fB37cD8SJB2EGJKFMj0AfFdgbBpN1MQoG16gY0E0BD30aWx0GTic8KuEFuyBhiIch0mr4VMEWpT61DCZ7cowJ0l/BeooF8l9ouZ3B4m0fS5rRCL2C1bJ2QNX5+rIIdyre057eVOkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=RffHno+h; arc=none smtp.client-ip=178.21.23.139
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="jlu/HXe6"
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="RffHno+h"
 Received: from localhost (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id AA35D41545;
-	Wed, 14 Aug 2024 17:53:41 +0200 (CEST)
+	by disroot.org (Postfix) with ESMTP id E12A14127B;
+	Wed, 14 Aug 2024 17:53:47 +0200 (CEST)
 X-Virus-Scanned: SPAM Filter at disroot.org
 Received: from layka.disroot.org ([127.0.0.1])
 	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZrL7m5yFe2pz; Wed, 14 Aug 2024 17:53:39 +0200 (CEST)
+	with ESMTP id n0HJBvDps1Nf; Wed, 14 Aug 2024 17:53:46 +0200 (CEST)
 From: Yao Zi <ziyao@disroot.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1723650819; bh=PnXNgkzXdemJEFfcg2DrPY4a9NfSyu7aqMfgh8Tx4YM=;
+	t=1723650826; bh=cIqSVAB+/UhZd//K3owngicdgqTbJSSxHcKfNZh6dnY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=jlu/HXe6WOWMFmTvaRGRXHxszYAkIXZPMLOSpTViD9HxtK67kW8AAiF0W9R32waQK
-	 YF330GK3ZeFFLUGUi5+o7pe6op/apmPUFwNVyRcY4CSdQ9CJwmtmVQyRlyLuXKhTVt
-	 nHpG4FlCdgJ4MQ+njy8fxmaGDR8FQqCGS1lYTMgigleme3nfSDki4DOW3DTlHBevjy
-	 dWXp2DcvOwvxGQcHejJduXohkhOXkheE4ov55x7t+zxxuK/rhYVviSH+WDludveZV/
-	 ZIk8hgnW95oZ2ystBGRemTcdYGfR5/wuA9oJKnn45dSE0EdTYSR+6IcoY6EdoFlp7o
-	 COV+n2MdsVyqQ==
+	b=RffHno+hhvoUiLph2V39hy+3mh0S/fXonWQ8lps1tUFQGCJhT7IDtCQG/kAazPbNy
+	 JQ2o8YKp0ykY0DXTP9vIkakjbKpbXXbZFqGXl7QzUhmNft/j2/6PIVlV2F3ucM4qzl
+	 w7rK6ya/UjNUrsjr+rXy/LLnOinTfxt2XOfJOnrfXCZOxXkxJhy58Yjdx05iJnfq/I
+	 ma0602dii1mv4zKJRw4+kdrJ8AMgn/y3RBrBFQpTxvCXDTYXhX+kJzUA+NTXRyAWBq
+	 5rPKguP1k1lsEjofVKlcXP/3/E1SmoApTfC6/D5szk4/uyFcV+5gJi1HGIALgZIHzw
+	 X+vEcB859KgKw==
 To: Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
@@ -54,9 +54,9 @@ Cc: Celeste Liu <CoelacanthusHex@gmail.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Yao Zi <ziyao@disroot.org>
-Subject: [PATCH v3 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
-Date: Wed, 14 Aug 2024 15:50:13 +0000
-Message-ID: <20240814155014.18097-4-ziyao@disroot.org>
+Subject: [PATCH v3 4/4] arm64: dts: rockchip: Add Radxa e20c board
+Date: Wed, 14 Aug 2024 15:50:14 +0000
+Message-ID: <20240814155014.18097-5-ziyao@disroot.org>
 In-Reply-To: <20240814155014.18097-1-ziyao@disroot.org>
 References: <20240814155014.18097-1-ziyao@disroot.org>
 Precedence: bulk
@@ -67,204 +67,58 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This initial device tree describes CPU, interrupts and UART on the chip
-and is able to boot into basic kernel with only UART. Cache information
-is omitted for now as there is no precise documentation. Support for
-other features will be added later.
+Add board-level device tree for Radxa e20c board[1]. This basic
+implementation supports boot into a kernel with only UART console.
+Other features will be added later.
+
+[1]: https://docs.radxa.com/en/e/e20c
 
 Signed-off-by: Yao Zi <ziyao@disroot.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3528.dtsi | 182 +++++++++++++++++++++++
- 1 file changed, 182 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
+ arch/arm64/boot/dts/rockchip/Makefile         |  1 +
+ .../boot/dts/rockchip/rk3528-radxa-e20c.dts   | 22 +++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3528.dtsi b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
+diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+index fda1b980eb4b..ecdd767d0323 100644
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -74,6 +74,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-rockpro64.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sapphire.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-sapphire-excavator.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399pro-rock-pi-n10.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3528-radxa-e20c.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg-arc-d.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg-arc-s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3566-anbernic-rg353p.dtb
+diff --git a/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
 new file mode 100644
-index 000000000000..816573c5fe9d
+index 000000000000..d2cdb63d4a9d
 --- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3528.dtsi
-@@ -0,0 +1,182 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++++ b/arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * Copyright (c) 2022 Rockchip Electronics Co., Ltd.
++ * Copyright (c) 2020 Rockchip Electronics Co., Ltd
++ * Copyright (c) 2024 Radxa Limited
 + * Copyright (c) 2024 Yao Zi <ziyao@disroot.org>
 + */
 +
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
++/dts-v1/;
++#include "rk3528.dtsi"
 +
 +/ {
-+	compatible = "rockchip,rk3528";
++	model = "Radxa E20C";
++	compatible = "radxa,e20c", "rockchip,rk3528";
 +
-+	interrupt-parent = <&gic>;
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+	aliases {
-+		serial0 = &uart0;
-+		serial1 = &uart1;
-+		serial2 = &uart2;
-+		serial3 = &uart3;
-+		serial4 = &uart4;
-+		serial5 = &uart5;
-+		serial6 = &uart6;
-+		serial7 = &uart7;
++	chosen {
++		stdout-path = "serial0:1500000n8";
 +	};
++};
 +
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu-map {
-+			cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+			};
-+		};
-+
-+		cpu0: cpu@0 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x0>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+		};
-+
-+		cpu1: cpu@1 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x1>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+		};
-+
-+		cpu2: cpu@2 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x2>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+		};
-+
-+		cpu3: cpu@3 {
-+			compatible = "arm,cortex-a53";
-+			reg = <0x3>;
-+			device_type = "cpu";
-+			enable-method = "psci";
-+		};
-+	};
-+
-+	psci {
-+		compatible = "arm,psci-1.0", "arm,psci-0.2";
-+		method = "smc";
-+	};
-+
-+	timer {
-+		compatible = "arm,armv8-timer";
-+		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
-+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+	};
-+
-+	xin24m: clock-xin24m {
-+		compatible = "fixed-clock";
-+		clock-frequency = <24000000>;
-+		clock-output-names = "xin24m";
-+		#clock-cells = <0>;
-+	};
-+
-+	gic: interrupt-controller@fed01000 {
-+		compatible = "arm,gic-400";
-+		reg = <0x0 0xfed01000 0 0x1000>,
-+		      <0x0 0xfed02000 0 0x2000>,
-+		      <0x0 0xfed04000 0 0x2000>,
-+		      <0x0 0xfed06000 0 0x2000>;
-+		interrupts = <GIC_PPI 9
-+			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
-+		interrupt-controller;
-+		#address-cells = <0>;
-+		#interrupt-cells = <3>;
-+	};
-+
-+	uart0: serial@ff9f0000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xff9f0000 0x0 0x100>;
-+		clock-frequency = <24000000>;
-+		interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart1: serial@ff9f8000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xff9f8000 0x0 0x100>;
-+		interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart2: serial@ffa00000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa00000 0x0 0x100>;
-+		interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart3: serial@ffa08000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa08000 0x0 0x100>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart4: serial@ffa10000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa10000 0x0 0x100>;
-+		interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart5: serial@ffa18000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa18000 0x0 0x100>;
-+		interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart6: serial@ffa20000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa20000 0x0 0x100>;
-+		interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
-+
-+	uart7: serial@ffa28000 {
-+		compatible = "rockchip,rk3528-uart", "snps,dw-apb-uart";
-+		reg = <0x0 0xffa28000 0x0 0x100>;
-+		interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-+		reg-io-width = <4>;
-+		reg-shift = <2>;
-+		status = "disabled";
-+	};
++&uart0 {
++	status = "okay";
 +};
 -- 
 2.46.0
