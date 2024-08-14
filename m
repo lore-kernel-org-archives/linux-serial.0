@@ -1,108 +1,104 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33F5C1AE878;
-	Wed, 14 Aug 2024 15:31:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AD128DC3;
+	Wed, 14 Aug 2024 15:52:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723649499; cv=none; b=AaVyc4CrhleRTz7CIiQNX9Js4YuHou6Wm/QLCbkUOEylygeK5T5dApMeVq/1gpiDLR5wnNBFMzw9UbLiXlnHVhx2l9YH56ZNL+zi0ZKJqsxUGi64idJG20FlLXXPt0adIbLkzIQGdRA29VTSzlm1bwjJ0GZa88GwBscqhCHjxsE=
+	t=1723650777; cv=none; b=Nf3HQdiLlRAZOsZI6D39IY+wODmzbKOSZJFXFgRwxOV1k5KiVXIUjY/2dkz+a/07g6ERgs+7ktp38bU3kOzHrWWgAv2rnxKwvSX9ZkzJdYDejVr9PYypdlWcXlHOOzTfPtAhQgygrGGJ+duuvYFrJ3hp33n6aPckZm4K6QBfUso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723649499; c=relaxed/simple;
-	bh=Gdq+sxNPAKr5VDvrrpn/8VAibgBS/bz5Otz1L63H1gM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RuvaMKCg/PF2P7w72Rq7o5TUZXdzK2BqplCtepYoS6l+FYYN49rGCC7Hjhfek1Wn7h7BtDiw1zPCbPIn14x3PvrT1ayhzL06BF4tltvmXnMaMLE6JIcbvVNvhUrxLvlknQjgi/liafyupYoNfV5CFxvIwdV/aInjJ3H2TW5Vz5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=B5nThtTh; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1723650777; c=relaxed/simple;
+	bh=1qewHqlWASIAhVOdfGLDw/liKY4yxKBTes4LCOBtdAw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=H+mUbTnYMfCDXvyC2FB3HHG/ayU3kO0BrKQZKiWDqb3l7RT9Zfeg4LW0hYbhYtBrWbOtbWUaG3mQu7aI/UaEVYNA7hxPP8ebJf1NxU0tP6fL3umlU5/iUpcobxjNEFOxqTC5Egs6rbuyDbHOCJywUnNe0kwtIgc4NffPecjD6Fw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=OJAMElNX; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="B5nThtTh"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=qXXIlCYalPd0zJHCfYqZGX6mxTPUzWj2COHc7ZwifQk=; b=B5nThtThF2LUfANjGlKJrz9dY2
-	cTzRFql02FO86TlExchSzNSkUd1UwSiM7Qi1fJhdk7v+5SUZrzIM6epPUfb056CmvDk+KB+Igadbj
-	By8snZ2548MFEyquPa8UDmlhowl5eXNySKiBFkTDHOn6/IAo/F8pdeCbvwPcmZsxNQUOKe2/oGM8g
-	KmNfJraswHuNhuSampSd9mV6/v7YTeM+PvpJrEIImUwmYqIybouJmP76qymuvvdD5oI6WVVeBuxHp
-	3EmicRn1YXl0QAAlhQqtDDsC3WjNR8USHs0AamcCztKY7o0dpB93qS7BI+olDDBWfB0vBBtKtNyhm
-	qZuULYMg==;
-Received: from i53875a9f.versanet.de ([83.135.90.159] helo=diego.localnet)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1seFxr-00053d-0h; Wed, 14 Aug 2024 17:31:07 +0200
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: linux-kernel@vger.kernel.org,
- Detlev Casanova <detlev.casanova@collabora.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Lee Jones <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>, Chris Morgan <macromorgan@hotmail.com>,
- Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
- Muhammed Efe Cetin <efectn@protonmail.com>, Andy Yan <andyshrk@163.com>,
- Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
- Detlev Casanova <detlev.casanova@collabora.com>,
- Sebastian Reichel <sebastian.reichel@collabora.com>,
- Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
- Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>,
- Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>,
- Yifeng Zhao <yifeng.zhao@rock-chips.com>,
- Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
-Date: Wed, 14 Aug 2024 17:31:04 +0200
-Message-ID: <21547916.mFnZMskM5D@diego>
-In-Reply-To: <20240802214612.434179-10-detlev.casanova@collabora.com>
-References:
- <20240802214612.434179-1-detlev.casanova@collabora.com>
- <20240802214612.434179-10-detlev.casanova@collabora.com>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="OJAMElNX"
+Received: from localhost (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 8FD7A41ABE;
+	Wed, 14 Aug 2024 17:52:46 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+	by localhost (disroot.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WLbjJhDSXSZ9; Wed, 14 Aug 2024 17:52:45 +0200 (CEST)
+From: Yao Zi <ziyao@disroot.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1723650765; bh=1qewHqlWASIAhVOdfGLDw/liKY4yxKBTes4LCOBtdAw=;
+	h=From:To:Cc:Subject:Date;
+	b=OJAMElNXqVlglRAYXLuq0LVQdY6/GlLJY/w3rMG9FTqNoHZCcuJkXuQEAwRMn2913
+	 cmci5SF/O25pSe6TByle42/sYeLD7lQidNBvp6Oum0JgOnyvNxC2Z+5nXw/BnK0aqR
+	 imn5JouvITG8x6EqrVcmAtFVyKCbvnhp86z+7qpxCOrLklSVXZbap9TNSzkKhucVMR
+	 lN/9zZPCUbdDenw47wodAG13Y8MXeVzzHnSjvs5Pq1AaQeIBfvEX/GPvad2X0gTekm
+	 2CXozr8QPDPH/hOiEjqPNasQyttAT+HBVSMZtl8C4gMb6N0/k2Wp49tyu+WmGh+guL
+	 no/uUklLRfXnw==
+To: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Tim Lunn <tim@feathertop.org>,
+	Andy Yan <andyshrk@163.com>,
+	Muhammed Efe Cetin <efectn@protonmail.com>,
+	Jagan Teki <jagan@edgeble.ai>,
+	Dragan Simic <dsimic@manjaro.org>,
+	Ondrej Jirman <megi@xff.cz>
+Cc: Celeste Liu <CoelacanthusHex@gmail.com>,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Yao Zi <ziyao@disroot.org>
+Subject: [PATCH v3 0/4] Add initial support for Rockchip RK3528 SoC
+Date: Wed, 14 Aug 2024 15:50:10 +0000
+Message-ID: <20240814155014.18097-1-ziyao@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 
-Hi Detlev,
+Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
+multimedia application. This series add a basic device tree with CPU,
+interrupts and UART nodes for it and is able to boot into a kernel with
+only UART console.
 
-Am Freitag, 2. August 2024, 23:45:36 CEST schrieb Detlev Casanova:
-> This device tree contains all devices necessary for booting from network
-> or SD Card.
-> 
-> It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
-> SDHCI (everything necessary to boot Linux on this system on chip) as
-> well as Ethernet, I2C, SPI and OTP.
-> 
-> Also add the necessary DT bindings for the SoC.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
-> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
-> Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
-> [rebase, squash and reword commit message]
-> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
+booted into initramfs with this log[2].
 
-looks like (since 2019) there is a strong suggestion for having a soc node.
+[1]: https://docs.radxa.com/en/e/e20c
+[2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
 
-See Krzysztof's mail in
-    https://lore.kernel.org/all/6320e4f3-e737-4787-8a72-7bd314ba883c@kernel.org/
-that references
-    Documentation/devicetree/bindings/writing-bindings.rst [0]
+Changed from v2:
+- fix fixed-clock nodename
+https://lore.kernel.org/all/20240811140725.64866-1-ziyao@disroot.org/
 
-So I guess we should probably follow that - at least for new socs for now.
+Changed from v1:
+- fix stdout-path
+- style improvements
+https://lore.kernel.org/all/20240803125510.4699-2-ziyao@disroot.org/
 
+Yao Zi (4):
+  dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
+  dt-bindings: arm: rockchip: Add Radxa E20C board
+  arm64: dts: rockchip: Add base DT for rk3528 SoC
+  arm64: dts: rockchip: Add Radxa e20c board
 
-Heiko
+ .../devicetree/bindings/arm/rockchip.yaml     |   5 +
+ .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
+ arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+ .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 +++
+ arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 182 ++++++++++++++++++
+ 5 files changed, 211 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
 
-[0] https://elixir.bootlin.com/linux/v6.11-rc1/source/Documentation/devicetree/bindings/writing-bindings.rst#L90
-
+-- 
+2.46.0
 
