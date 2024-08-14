@@ -1,41 +1,41 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 199511BE877;
-	Wed, 14 Aug 2024 20:55:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75E7C7346D;
+	Wed, 14 Aug 2024 21:48:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723668923; cv=none; b=j8FwZk/sknrd98SYFGUKSZYkP0VgtLENfEKA6985s7yc+PIeQZK3fvSg4WY+kXTtPrJHphHxVOXtM69J5PttTtxtpv54DXtx+4uzQ4AYLyfHExHcOBpFyWhdRZdGQS67AAEln2ALaSr9cXFKxOfse4a+M/62KfYbXb/Iap/qFr4=
+	t=1723672131; cv=none; b=jXDHwSOA9ldtuM/T4sDDfECvKDGBLs51fNKhfJF1RTnaLEOsl34tzTl4seEAAwgogkxFbzVLTpnLuSOhWs8byLKrmiwumq8yCLm9kzojk8mEGY48Io/gmV/4IKf+C9Wqmrag57zFyrqgg78UxfIG++IWxAa8LCJKZPviwb/y2o8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723668923; c=relaxed/simple;
-	bh=/Bv3p20GFDeAsBwUDKWPWVBBysKvn9baZiikL++ChNU=;
+	s=arc-20240116; t=1723672131; c=relaxed/simple;
+	bh=a4cwnQHKiu5urDRMftjd63h+pvYkzJCZA4nobLiw/Lg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iNlZ7iwJdQBvMAxYLdLMawR+m/VMYQI1ppvT2gnToKBMgAWsY2fW7bVaQTMDQD7CUhqCSqcnlHXp5+G5EVmcnMTU0SR2dmd49QwnvL+7bpMT8v0sa/9XqmyNNBMwVRX7J6HEu2pOGU8/ZXAoMpM3ytHGHTUFAxfs6t1qcdTETyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=ok7bByok; arc=none smtp.client-ip=212.227.17.21
+	 In-Reply-To:Content-Type; b=aQ7JLp37PHQGH7t959zIoPG1PoSncHHxRoxWmCa1+mgonWw9Q9GAuI2TZQ6tOrYjh9k3fXNHJhhTq7+iwzuE2d2es6QNDmbCf8Ai4rN2cgOmEGl9NRk7dm1SczZ8FhkR0MHQlWVMRQymJKSyUSLGrbH7FVMYmJntLlUF8RYuwQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=Pg+Onfel; arc=none smtp.client-ip=212.227.17.22
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="ok7bByok"
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Pg+Onfel"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723668884; x=1724273684; i=wahrenst@gmx.net;
-	bh=A5HpoTDVSE1dS0ZLEhv9UsGr/Pgabg63vssx9s0dUQw=;
+	s=s31663417; t=1723672090; x=1724276890; i=wahrenst@gmx.net;
+	bh=a4cwnQHKiu5urDRMftjd63h+pvYkzJCZA4nobLiw/Lg=;
 	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
 	 References:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding:cc:content-transfer-encoding:
 	 content-type:date:from:message-id:mime-version:reply-to:subject:
 	 to;
-	b=ok7bByokyabDbFVZUEgsh0wGkoXK6ueGCm5xIT0Bcx9qdv3e2BZ2eEoO4zbFdDZQ
-	 tOyuPYGt8pQefrH8RbqRBAnLqDrYYaZhJqs23LY67Ilep0AtD/x4wJjeWrdO/RUTz
-	 ORbp3KWZs89EWreIjVi7s4czEDr0iPEBF9ZH2atYua1zU6FcFJByNrxvubjykqyBP
-	 ayzsfWgR+3u5cVhLQhJvsmvmNmnytSW021EhA2S+0EQpNXqw1xs/GmQB8KO6K834c
-	 fVxreev0YQBh0nQo7mnmQgWcqXG/bzSXKVCP4pMPFqRsbGziBfRlNu84WcZZWR1la
-	 Un+W0bFpOtwXdadr7g==
+	b=Pg+OnfelHGEfkqnKy6TAobor8t6PaCjZ3il4jk7ebYU8+53PRaoJzFEuuC9s6bbU
+	 3a4hfccjmxENbuSpJnUMEbcTNr8XMlqdZAH892QDvgrcaaRFcp1yB2vFcXin8RANJ
+	 gMzZoC5WMrlyZKVScls9C7HEsO4z0TNRz3Zlw8fRz4m4SSo3whNrl7BC+W3Vc7ixP
+	 4pwHfVEUMnLb0I4tjnKED9c60839RL9gsE2mra0ntDEq4KgbXLZ3q/7epdRYrVym3
+	 Jig93HmJ6crocaZs/ZGLpjpzf3yEAXNSlPsEjq7GgrCo22Dw2jwGXEFOydtXOR739
+	 1Cjz6WUpqjBRSO+iGA==
 X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
 Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N4hvb-1sDMPs47zb-010U3p; Wed, 14
- Aug 2024 22:54:44 +0200
-Message-ID: <462f908d-7df5-4e8f-a15f-53e66459d488@gmx.net>
-Date: Wed, 14 Aug 2024 22:54:41 +0200
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7zBb-1sA1852k9T-015yGh; Wed, 14
+ Aug 2024 23:48:10 +0200
+Message-ID: <51b63ea5-808e-41e4-92a9-50e20afd155b@gmx.net>
+Date: Wed, 14 Aug 2024 23:48:08 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,133 +43,173 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 15/16] serial: 8250_bcm2835aux: add PM suspend/resume
- support
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
- <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
- Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>,
+Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
+ domain off
+To: Ulf Hansson <ulf.hansson@linaro.org>,
+ Doug Anderson <dianders@chromium.org>
+Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
+ Minas Harutyunyan <hminas@synopsys.com>,
  Dave Stevenson <dave.stevenson@raspberrypi.com>,
  Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
  Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
  Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
  Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
  Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
  bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Jiri Slaby <jirislaby@kernel.org>
 References: <20240728114200.75559-1-wahrenst@gmx.net>
  <20240728130029.78279-1-wahrenst@gmx.net>
- <20240728130029.78279-7-wahrenst@gmx.net>
- <CAPDyKFoJh3j8xSeXZ9o031YZLTCDYVA+dgvURuwozjDpU_aauA@mail.gmail.com>
+ <20240728130029.78279-6-wahrenst@gmx.net>
+ <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
+ <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
+ <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
 Content-Language: en-US
 From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <CAPDyKFoJh3j8xSeXZ9o031YZLTCDYVA+dgvURuwozjDpU_aauA@mail.gmail.com>
+In-Reply-To: <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:GWkQ30JTD9xmzJR7P4IsreC0adykqs3k0ETwX0XotEfmlCrcnxI
- MGUBUkwDz8LCP6J8AjbtMm1Q/awqSTaNghR5KlrGCLJ2cLgJckBX5SF/J004XIGbOkJXbCV
- hUq7yrgoPZXrAWPvUEi9kpO+Bp12Bpgu078Px16rIC0/Uy8eHBcSrVY3EGbCv+X9W3F1wVu
- ew5PZASbz/KKWNcS+ULwA==
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Neb90NJDGr022IsDGyukxUd/QvYbRXQYuQNwJx8OVxVcCNc0sL6
+ ZLBkxVMm7gvC293Oy+VeB8xuAM+5LI+Zwg7Vwswer8QGyNfxbHur9N2mA3eJ/liRgEStIqf
+ 35hfSYTyr4AvqXj8wrD/icF+XsXs8xQyRV8NxawG4fSGtgwLShC3XAf+6+GivK3d2Auiirr
+ vev0GzbQspidwZ/qhqFEg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Ctmz0U7Ph4o=;MmV7zzrqdjpwjCOlu26xVqoag1l
- 2KVavzjNJ1nyY/nMexXJ1AbcetoBu1FSftP3vcDGtbAU+6OxleJKDu+1CA/OqpIUdjkAGsKoV
- k7aE5a0+u/hTjKvDHawn/rjeJDsYimqH+cyQKL9qxOuel4qYdxwt3XlzztMEh0/O2wjzMp2aX
- x0HDJFZEpjFM7rA98cqnLtGZYn2msoB39UV1fNxxm97sQpLD/0qDcUfJIk0SDtLdsYKUTrVgA
- fLKp5qJElomV+IF+GuKgyPnyVr3cOnoeyfkVGMm3D1ibw11xaa4BRoVcVgBuXG4V59dUuifcE
- jzoaUVh/e1/v0UAOu6iuE/3ioKIpXoCnTfqamSCSQP4WFIAyXa+JBw+XGTqd2mKZ4zCMv/Qs+
- eQaEZVVMzy2hH47E9PUFD9ewETkgVF0tcEe70yp96oskVhzqz13wM5M3JvtAI7Q925PRnLScY
- Uo3w62VnTSv97OJ6i0cubQQY2NgxZQRXOEdF/LpquY2C6teJaCkTmrBc9ELxNeCvIu38uGL1c
- C4Z6jBlREOw6W7VCF6FQ1rf+IVXwGIaihYhycvSuMyC5eZq/B+poTpkTMH8Y2Bx6sEUh4r+ys
- HS0PXH8rvfdry0srvpTXhqqHJngQXRbFhtTJw//TbKz4K7JvnrQqI5UEQuAra4FOhDg5/BFw8
- SVbTaDA0ZQY8Yvib3o+iiayn9UieV9+lbEOUlJDKOLU2ar8RIzdeU0FDn1r0FeNsNGdUPIvtz
- eGehCQ9SKTSGLPB/4vLKiCAckoOxK05jfF9U0VuRINmifesSCnzA9pcyv9uU+WURbAPKYCgly
- aWpDC4Spt1dimDdYp2DLVABg==
+UI-OutboundReport: notjunk:1;M01:P0:0ECwtENLL7U=;lNFcMDLmmp7vmvfrbe5CVPs28Er
+ Z5RhmLPdSi1ythPp+YGnnrM5sajQK6y+TNsGlxpJf5yWrOBcBfNwPpgQDG1niL2WbQZCj6D/S
+ bWop5Dx8iDrIMscCTnpIPZkuzMGbprK4Emd8NQEAr9ZU12gFRuV6eUDnSCOC1dHy0XTMEkmhm
+ vWxab0ac8TE1L306pCSMpLHdD9k72OHAN9Puj8K8eWt96oLCPjfLXDzbAv01FHwETgMqgywnB
+ Q6QbZNbMbGVp85inx7y0SE1tWnUW+jlqu+Whj4809i5DSF1irkxU4trgmejIR1GqFbZ1brThI
+ u2mDZbS6ID9LL+HnQSksDO1MaOLEJLw32VhT+GpSxz0GbFlXM6APg5myTvUSsrpTWDas+ebT4
+ WzOe33mnF2HFNf7rUxzt4/vurPxPKXj9Jaa/PRHig4a+JorbprB95R7oV1Eunwv3ufqVKt6sp
+ sPEVnE1xWmE27tax7gWyLjdHkxEmRfk27Esz8BN1sUuMpHsi/fB+vlPbK8N3Js3dl87lGHFSV
+ F7LfZx8lEYivx3Eaf/FIwZUce2qqKg9hYe2JulU51OeH5MMUd2vSzzr8ZGKwBDPgEg8KOTp89
+ WqFT4iPtFwItmXo/2kTDSHLWM3846xrpGNvSVHX0kzyXc30q1nViXwZL2v8yzgUfVfPLBvxV3
+ r6POlvhicFYJAYQu3G2JyqowEJ20RR+yk7BnsrHQcIyntSj4lR/UMBUxbpSZGAEGtJP91RHTq
+ GpfcEWhP2YtgFATBAQDPq+NOA/lwchNf9TDHXHpt8RvoFzK+AXiR1DblNtw2npBgGX+r4AYwZ
+ 0OFSm18/a+22vvuvgxMX7fuA==
 
-Am 14.08.24 um 14:18 schrieb Ulf Hansson:
-> On Sun, 28 Jul 2024 at 15:07, Stefan Wahren <wahrenst@gmx.net> wrote:
->> This adds suspend/resume support for the 8250_bcm2835aux
->> driver to provide power management support on attached
->> devices.
+Am 14.08.24 um 14:01 schrieb Ulf Hansson:
+> On Tue, 13 Aug 2024 at 21:57, Doug Anderson <dianders@chromium.org> wrot=
+e:
+>> Hi,
 >>
->> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
->> ---
->>   drivers/tty/serial/8250/8250_bcm2835aux.c | 37 +++++++++++++++++++++++
->>   1 file changed, 37 insertions(+)
+>> On Mon, Aug 12, 2024 at 4:48=E2=80=AFPM Stefan Wahren <wahrenst@gmx.net=
+> wrote:
+>>> Hi Doug,
+>>>
+>>> Am 28.07.24 um 15:00 schrieb Stefan Wahren:
+>>>> DO NOT MERGE
+>>>>
+>>>> According to the dt-bindings there are some platforms, which have a
+>>>> dedicated USB power domain for DWC2 IP core supply. If the power doma=
+in
+>>>> is switched off during system suspend then all USB register will lose
+>>>> their settings.
+>>>>
+>>>> So use the power on/off notifier in order to save & restore the USB
+>>>> registers during system suspend.
+>>> sorry for bothering you with this DWC2 stuff, but it would great if yo=
+u
+>>> can gave some feedback about this patch.
+>> Boy, it's been _ages_ since I looked at anything to do with dwc2, but
+>> I still have some fondness in my heart for the crufty old driver :-P I
+>> know I was involved with some of the patches to get
+>> wakeup-from-suspend working on dwc2 host controllers in the past but,
+>> if I remember correctly, I mostly shepherded / fixed patches from
+>> Rockchip. Not sure I can spend the days trawling through the driver
+>> and testing things with printk that really answering properly would
+>> need, but let's see...
+Yes, this was more a cry for help, because i didn't get much feedback
+yet here [1] [2]. So i searched for the most elegant solution via trial
+& error and this patch is the outcome. One reason why this is still WIP,
+is that i didn't test the gadget role path yet.
 >>
->> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> index 121a5ce86050..36e2bb34d82b 100644
->> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
->> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
->> @@ -13,6 +13,7 @@
->>    */
+>>> I was working a lot to get
+>>> suspend to idle working on Raspberry Pi. And this patch is the most
+>>> complex part of the series.
+>>>
+>>> Would you agree with this approach or did i miss something?
+>>>
+>>> The problem is that the power domain driver acts independent from dwc2=
+,
+>>> so we cannot prevent the USB domain power down except declaring a USB
+>>> device as wakeup source. So i decided to use the notifier approach. Th=
+is
+>>> has been successful tested on some older Raspberry Pi boards.
+>> My genpd knowledge is probably not as good as it should be. Don't tell
+>> anyone (aside from all the people and lists CCed here). ;-)
 >>
->>   #include <linux/clk.h>
->> +#include <linux/console.h>
->>   #include <linux/io.h>
->>   #include <linux/module.h>
->>   #include <linux/of.h>
->> @@ -213,11 +214,47 @@ static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
->>   };
->>   MODULE_DEVICE_TABLE(acpi, bcm2835aux_serial_acpi_match);
+>> ...so I guess you're relying on the fact that
+>> dev_pm_genpd_add_notifier() will return an error if a power-domain
+>> wasn't specified for dwc2 in the device tree, then you ignore that
+>> error and your callback will never happen. You assume that the power
+>> domain isn't specified then the dwc2 registers will be saved?
+Yes, on Raspberry Pi we needed to implement the power domain driver to
+enable USB at the first place.
+>> I guess one thing is that I'd wonder if that's really reliable. Maybe
+>> some dwc2 controllers lose their registers over system suspend but
+>> _don't_ specify a power domain? Maybe the USB controller just gets its
+>> power yanked as part of system suspend. Maybe that's why the functions
+>> for saving / restoring registers are already there? It looks like
+>> there are ways for various platforms to specify that registers are
+>> lost in some cases...
+Yes, the DT property "snps,need-phy-for-wake" is such a case. But the
+PHY on Raspberry Pi is currently modeled as a no-op.
+>> ...but I guess you can't use the existing ways to say that registers
+>> are lost because you're trying to be dynamic.
+Yes, before this patch the DWC2 doesn't know if the USB domain is
+powered down during suspend. So the notifier seems the most elegant
+solution to me.
+>> You're saying that your
+>> registers get saved _unless_ the power domain gets turned off, right?
+On BCM2835 there is no need to store the registers because there is no
+power management supported by USB core except of the power domain. So
+DWC2 don't expect a register loss.
+>> ...and the device core keeps power domains on for suspended devices if
+>> they are wakeup sources, which makes sense.
 >>
->> +static int bcm2835aux_suspend(struct device *dev)
->> +{
->> +       struct bcm2835aux_data *data = dev_get_drvdata(dev);
->> +       struct uart_8250_port *up = serial8250_get_port(data->line);
->> +
->> +       serial8250_suspend_port(data->line);
->> +
->> +       if (device_may_wakeup(dev))
->> +               return 0;
->> +
->> +       if (uart_console(&up->port) && !console_suspend_enabled)
->> +               return 0;
->> +
->> +       clk_disable_unprepare(data->clk);
->> +       return 0;
->> +}
->> +
->> +static int bcm2835aux_resume(struct device *dev)
->> +{
->> +       struct bcm2835aux_data *data = dev_get_drvdata(dev);
->> +       int ret;
->> +
->> +       ret = clk_prepare_enable(data->clk);
-> Doesn't this create clk prepare/enable - unprepare/disable imbalance
-> problem when the uart is configured for system wakeup?
-Thanks, i will send a follow-up
-
-Regards
+>> So with that, your patch sounds like a plausible way to do it. I guess
+>> one other way to do it would be some sort of "canary" approach. You
+>> could _always_ save registers and then, at resume time, you could
+>> detect if some "canary" register had reset to its power-on default. If
+>> you see this then you can assume power was lost and re-init all the
+>> registers. This could be pretty much any register that you know won't
+>> be its power on default. In some ways a "canary" approach is uglier
+>> but it also might be more reliable across more configurations?
+I don't have enough knowledge about DWC2 and i also don't have the
+databook to figure out if there is a magic register which could be used
+for the canary approach. But all these different platforms, host vs
+gadget role, different low modes let me think the resulting solution
+would be also fragile and ugly.
+>> I guess those would be my main thoughts on the topic. Is that roughly
+>> the feedback you were looking for?
+Yes, thank you. This was very helpful.
+> Thanks Doug for sharing your thoughts. For the record, I agree with
+> these suggestions.
 >
->> +       if (ret)
->> +               return ret;
->> +
->> +       serial8250_resume_port(data->line);
->> +
->> +       return 0;
->> +}
->> +
->> +static const struct dev_pm_ops bcm2835aux_dev_pm_ops = {
->> +       SYSTEM_SLEEP_PM_OPS(bcm2835aux_suspend, bcm2835aux_resume)
->> +};
->> +
->>   static struct platform_driver bcm2835aux_serial_driver = {
->>          .driver = {
->>                  .name = "bcm2835-aux-uart",
->>                  .of_match_table = bcm2835aux_serial_match,
->>                  .acpi_match_table = bcm2835aux_serial_acpi_match,
->> +               .pm = pm_ptr(&bcm2835aux_dev_pm_ops),
->>          },
->>          .probe  = bcm2835aux_serial_probe,
->>          .remove_new = bcm2835aux_serial_remove,
->> --
->> 2.34.1
->>
+> Using the genpd on/off notifiers is certainly fine, but doing a
+> save/restore unconditionally via some of the PM callbacks is usually
+> preferred - if it works.
+
+I tried the latter one before without success. Because the DWC2 is aware
+that the BCM2835 IP doesn't support any power saving mode, the USB core
+stays fully functional in suspend and register restoring on resume
+tramples newer registers values.
+
+Best regards
+
+[1] -
+https://lore.kernel.org/linux-usb/3fd0c2fb-4752-45b3-94eb-42352703e1fd@gmx=
+.net/
+[2] -
+https://lore.kernel.org/linux-usb/e4532055-c5d6-4ac9-8bbb-b9df18fa178b@gmx=
+.net/
+>
 > Kind regards
 > Uffe
->
 
