@@ -1,187 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE1D2D030;
-	Wed, 14 Aug 2024 06:16:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1236913D893
+	for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2024 06:29:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723616192; cv=none; b=nOYq+ZJ7OPp/JBsX/vw76okjRGY4ZHH3KP1ffA4TV1SMC4uLLlSVfUlrZoNzubVf/UGt3nqedmaUYim9rbP6vHWlCiNXjMhS5zr6Dr2w6hhOfb0i414+HgblLqx34h8/dw+GUClfCeztDHqhes+jGtlDVGMeqnMZd7bJLTm4C50=
+	t=1723616947; cv=none; b=Dd1y5fGW8NYv4BQK8Jdhuaki+r/4NPl7vt6nGBjq598YZn5IcLegIzVmLNcqsUcsEJ/EhFz4qw1kwTV8qcCBbg6RnRhmxReJ3bIIk5zaERDpHWfmK4TW6QPRIxQRg49vy/3jhLy4JLyZ34rKZSckhckDh/BfwMm+H/LaG39pQjw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723616192; c=relaxed/simple;
-	bh=7J0NaordMkLnaseR0ejiQMBxcas5MlG506PR3I+zC4M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KzaBc5GySY4oS3a8NH698zbYLf3l9vxd10BjyHqq7k5TKyyVfpC+fl91KOYJUCE+e3xOOROBXtqoiED0VHsVkXm2Dta0VaQYWMZPoi2d9EPwoxC4sZRiLDj8SvFmn0RvAC2Yc8so3G9uNHXjEMy5pxEZZRvGs6FZk7XfwoE2FzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LX8e7NGo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1723616947; c=relaxed/simple;
+	bh=O+RcdJC0mkogWcz6CVCMl+sgWIBIY7cgxSBRyr8mlgA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tByHrMUKMPmQujwC3RQpz+1/h+euT21uho7xavQP7Cyz0A2LBXer/zq5+D68Yof0gcTrnCs+/7CZGrNol8S4mIiWGQIB+SipNkYDlW2yGabQy6m8nPSeo6uZtsEYG5K/aq+QlJE9w7e2JQffp2zzuY7zQzaeNW53jsD0vzHkWW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=fDHnUQyT; arc=none smtp.client-ip=209.85.161.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LX8e7NGo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDCCC32786;
-	Wed, 14 Aug 2024 06:16:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1723616191;
-	bh=7J0NaordMkLnaseR0ejiQMBxcas5MlG506PR3I+zC4M=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=LX8e7NGo6PNLJWtC5fkEIQT2YeDxBP546EDRGNlrfCVfn4D1b89qXhPp45wGKw3TD
-	 fSdCZB8JICVB48efGgNCRy1jdPZd49whYSfEZbcL4FVbbM/sQa/kCpGoV2UYTz46Gl
-	 SR0VlRIZdf+nfKw2rjpk/3rtXXp+5bKYeujH9qFyp+6YhCCo8UUYAe9v1+VtTGUuCH
-	 nLnOmKlZCiNsMo9TKxSOqix0RMopBoNi0BsD/xsWyRHmlEn1D49cajE0ezM/fItNhX
-	 wfT29NzWNQgZMz9Lyx2Q41+GUgOSfcuEHNsW0NvBaO7xD6tgyxVSiLcC5Avv2dJEQ5
-	 CvyHfEhBjw/6w==
-Message-ID: <13f254ed-68b7-438e-91a8-9d75c9e9f2a7@kernel.org>
-Date: Wed, 14 Aug 2024 08:16:22 +0200
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="fDHnUQyT"
+Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-5cdf7edddc5so3391949eaf.0
+        for <linux-serial@vger.kernel.org>; Tue, 13 Aug 2024 23:29:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1723616945; x=1724221745; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KY6hpFmE+89V3sOq3p1bZOHhGBKbqrZb35ld0D29Jd4=;
+        b=fDHnUQyTnN/mT77Iuoh6vWaShTGAH2WHKJXJ93dThbcbvgC0ypE0S64MY8koSaDPr9
+         nDKdjA0+BrRG5FZfSwJcyYnxAjBE4gc5cAhljgY0CufhriV1qaoJ9XOHnsZZ5JxA3qev
+         ZZHDL3+SYk6roMtXEbpY+YWZ2e5U/7M1k5Mz+GXSHLKFS+2RyRMC/GlBf5n7Emm5pi22
+         B8FpTkBMtSFFT4iteyZgqAyvFtk8Lgx89TY1xCBHJlnMTMq8Ldif0GJa0XJ4jRELnHBS
+         aZavFvXiaRI1jMgfXlFr/r94d2xpP5hRhDWveftzFlXEStg+HOPdtVsIKVzZiJmCj0VS
+         5NnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723616945; x=1724221745;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KY6hpFmE+89V3sOq3p1bZOHhGBKbqrZb35ld0D29Jd4=;
+        b=h43Bb2ja1itbEN6mJlKy69RnJASWQuTImgJVN7JWcnpp9yLBtxDL1nYQ3nPWqDcsU+
+         e3TVGFBSX64T0y9gpfWrP7DwoZz4jdDjHjIJY7i6a+h5nR5cqkcIHWJ0lwDRecnjXVUl
+         ijqFvwQtuy8mDmczIuodOX3FVaXOAQRWGoZt+d+a+m3ri+wTfQ+ekkOEcERYKXLCHvvG
+         6+ijYeNyR5ta2dhgwbMi6OlnXqO/rICusWGMN+2oP7tnl6q2HSXacaNToUrsCq8pgxri
+         CeHck0rAfEPQ04304wACumkzU49MFE+sh3Oxi4tK1wUqNHpJSZIVVt/fXlv5PtaxJYsS
+         mZyA==
+X-Forwarded-Encrypted: i=1; AJvYcCUchmEe35RkTnlwSXOyJi39X3yiXEXiBOkWEX3cYfWtkZHPNN6jG5oU/xjNxDDl8c+B0SQcJePn6UxylH8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfxyJVvRZhA+kv5EQwF/1cq0jz7F+2XyannJRCnC2BPbf9DHpD
+	UOmIdNht9BzXdW6V97wXgy1iR1u2LgUK23Nte3Qc+tkQYLvZW0itUtvBMAN1D+o=
+X-Google-Smtp-Source: AGHT+IF+40D3XWt34BX3LLvwc+430IjHsHfjuTgtZEU/S7BfUSMyXvXQDDgpmF0Zy7P5FIoiqWBeLQ==
+X-Received: by 2002:a05:6359:4c0c:b0:1aa:a27c:aead with SMTP id e5c5f4694b2df-1b1aab16a30mr167968755d.3.1723616944812;
+        Tue, 13 Aug 2024 23:29:04 -0700 (PDT)
+Received: from sunil-laptop ([106.51.198.16])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-710f65cddd7sm5117935b3a.72.2024.08.13.23.29.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2024 23:29:04 -0700 (PDT)
+Date: Wed, 14 Aug 2024 11:58:59 +0530
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 0/7] serial: 8250_platform: refactor and clean up a bit
+Message-ID: <ZrxOq2177rnZXZ1b@sunil-laptop>
+References: <20240812154901.1068407-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] dt-bindings: platform: Add Surface System
- Aggregator Module
-To: Konrad Dybcio <konradybcio@gmail.com>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
- Hans de Goede <hdegoede@redhat.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>
-References: <20240810-topic-sam-v2-0-8a8eb368a4f0@quicinc.com>
- <20240810-topic-sam-v2-2-8a8eb368a4f0@quicinc.com>
- <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
- <36b0ee66-3af3-40c1-86b6-b52cd826298e@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <36b0ee66-3af3-40c1-86b6-b52cd826298e@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240812154901.1068407-1-andriy.shevchenko@linux.intel.com>
 
-On 13/08/2024 16:27, Konrad Dybcio wrote:
-> On 11.08.2024 4:28 PM, Krzysztof Kozlowski wrote:
->> On 10/08/2024 03:28, Konrad Dybcio wrote:
->>> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
->>>
->>> Add bindings for the Surface System Aggregator Module (SAM/SSAM), the
->>> Microsoft Surface-standard Embedded Controller, used on both x86- and
->>> Qualcomm-based devices.
->>>
->>> It provides a plethora of functions, depending on what's wired up to
->>> it. That includes but is not limited to: fan control, keyboard/touchpad
->>> support, thermal sensors, power control, special buttons, tablet mode.
->>>
->>> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
->>> ---
->>>  .../bindings/platform/microsoft,surface-sam.yaml   | 50 ++++++++++++++++++++++
->>>  1 file changed, 50 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
->>> new file mode 100644
->>> index 000000000000..f613738aa31d
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/platform/microsoft,surface-sam.yaml
->>> @@ -0,0 +1,50 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/platform/microsoft,surface-sam.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Surface System Aggregator Module (SAM, SSAM)
->>> +
->>> +maintainers:
->>> +  - Konrad Dybcio <konradybcio@kernel.org>
->>> +
->>> +description: |
->>
->> No need for |
+On Mon, Aug 12, 2024 at 06:47:02PM +0300, Andy Shevchenko wrote:
+> Recent patch against this driver has been added without my review.
+> It was technically my fault, however I was on long vacation.
+> So, instead of blaming anyone, this small series to tidy up the things
+> as I think would look and be maintainable better.
 > 
-> Apparently it's necessary because I have a :
->>
->>> +  Surface devices use a standardized embedded controller to let the
->>> +  operating system interface with various hardware functions. The
->>> +  specific functionalities are modeled as subdevices and matched on
->>> +  five levels: domain, category, target, instance and function.
+> Andy Shevchenko (7):
+>   serial: 8250_platform: Remove duplicate mapping
+>   serial: 8250_platform: Don't shadow error from
+>     serial8250_register_8250_port()
+>   serial: 8250_platform: Use same check for ACPI in the whole driver
+>   serial: 8250_platform: Tidy up ACPI ID table
+>   serial: 8250_platform: Switch to use platform_get_mem_or_io()
+>   serial: 8250_platform: Refactor serial8250_probe()
+>   serial: 8250_platform: Unify comment style
 > 
->                  ^ here
+>  drivers/tty/serial/8250/8250_platform.c | 107 +++++++++++++-----------
+>  1 file changed, 58 insertions(+), 49 deletions(-)
 > 
-> Should I e.g. s/:/-/, or keep the |?
+Nice!. Thank you very much!.
 
-Keep |
+For the series:
 
-> 
->>> +
->>> +properties:
->>> +  compatible:
->>> +    const: microsoft,surface-sam
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  current-speed:
->>> +    description: The baudrate in bits per second of the device as it comes
->>> +      online, current active speed.
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>
->> This should be just "current-speed: true", because the type will be
->> brought by serial schema. We should however have some schema with
->> peripheral properties for serial devices. I'll come with something.
-> 
-> I suppose I should just include:
-> 
-> https://lore.kernel.org/linux-serial/20240811-dt-bindings-serial-peripheral-props-v1-0-1dba258b7492@linaro.org/
+Reviewed-by: Sunil V L <sunilvl@ventanamicro.com>
+Tested-by: Sunil V L <sunilvl@ventanamicro.com>
 
-
-You could, but then your patchset will depend on mine, so instead I
-propose just "current-speed: true" and later (next release) we will add
-$ref to serial-peripheral-props.
-
-Best regards,
-Krzysztof
-
+Thanks!
+Sunil
