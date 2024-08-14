@@ -1,113 +1,121 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8B51B0113
-	for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2024 12:25:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 439801B29BD;
+	Wed, 14 Aug 2024 14:06:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723638351; cv=none; b=pridkieR6PYH8xDprH7tZU0djU0ViS1rL6dzkjcJBDzQYyEum0v7uMWbFUKEmh+dQWn/zj2GmVVZ6y845CzT96AqA3ZGr+xDNQZRxsCv9FXmbU6d5T4YtC+rNIErk32jklJuka3VCf3oMD+D9qmodJOfpR4UvUR8ax61H1G1TVI=
+	t=1723644398; cv=none; b=l5P2P0r1c2SsP2vORsjM/4N9BMKa0SHu17IqHs2onl5DkVc9UeIwRIo5C4kgHVTCWUXADv+LZSdUoZFhk12fZQvGUVG+Uo26yeHaoz4ZltAYIHXPFQPwW3cMo7LhJZvMfQf0+cRN9EC8qd4ILAV3NVeA5pME0lDcVy02iyrSqj0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723638351; c=relaxed/simple;
-	bh=8tzPFbEsdwK4HI7ixI1tqw/hZg62rldk5tfi9WSp0ek=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tLIFhdiVi0KZIs/ovJgPGu5V1diQD28oL5uQEi3GCXF/0f7Q1V9GwgP3cqJdhWixHctyPMod3ax76tt31XODimuNrj/lAU8PqluTwcbKKqJaau/1BtG1CLb/yRn4r66PqCapR67z5Pdn9i/9g0n5mBgw1o3swRbUZNJ+NSQOdcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mwJ68REh; arc=none smtp.client-ip=209.85.219.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1723644398; c=relaxed/simple;
+	bh=+/gaF3YEZ5Rg+zNdj7tQPt9leIADZ0LAP1MJimY8rac=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=H+d+f+C4wI6YKs+BWwHEjGOkZ0+BjXFWZE1OF1s0T/ZlKhuYYcC5O8412QlsUMfapbMbBUf7H6swUvmVA50L4ZLzt1vxwRCWcgjwQANj4G5pHtCcF991sTRJqa7hAVaITx8sSBR+DJgkpPU0V3MC2JQLOcpv7PKtMcKkoyyK130=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J/nf9JVa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mwJ68REh"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-e0878971aa9so696560276.0
-        for <linux-serial@vger.kernel.org>; Wed, 14 Aug 2024 05:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1723638348; x=1724243148; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=c9W+rcl3/x6n/YcRtLISn/hkiAh/kVAHqezbuzoZlzs=;
-        b=mwJ68REhiGmJUmhReu+GK5KCZ+i+ixC64Tkb/llGgPP7S9owiV3/duxQD4/MhKx47/
-         ccy53nUelVaw50ScPa/qnwshPVqZkxo1C841vHFDZSIW40pNjDa3CqisVuUgsIlsKDp0
-         764bxJAnkPsNB/dq9cp92n/U8rQBdJjNtML+GXqzBpeprlDLnr64woCj/wyxydOjKxdg
-         A+xYGYebmWHGdQlGRRZdSxoCOTuG1Jk7fI2WpB2ANlW7/vHU0OFyGBCo7GjjUsrA5OhP
-         orjyX3Bv/UlQRfke241P76w6xj5Fw7wMgUEwVqTLj+VedkG+QinG5iJWE3J44/vPdWeJ
-         HWDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723638348; x=1724243148;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=c9W+rcl3/x6n/YcRtLISn/hkiAh/kVAHqezbuzoZlzs=;
-        b=GF3C5F0DdLj4KBhv1jCowQ9mLXw52NfZIxQdFvSEx+RiiYkgik/kbM2AVJW9f6SeLP
-         IMPKvbhYA2wSyNDfaifp92fxT4g8KZ83qXwuGB4ZIKwJTo2BA5DjWGk6vDjFQZXDNZsm
-         nZgQbpMsv+fDjPjn8zkvR+V69gt/WdSIafFCYLsHT7kaZcGmh9/6euADMKXL12E3/gTN
-         V3tXXrWTDmzPUKAhZIEzbyh6XdhhQ5L4G7j7YYjECRdDx4gHtZcvvjam+iP4YTUYrBAB
-         YvpFsd0gQ/cmXsTR0jiUqz0nh5oOCOXa6sBbBc/cIk1YiQMjemXV7bxF8JvoN+Spjv8z
-         xtNw==
-X-Forwarded-Encrypted: i=1; AJvYcCXp2FFbkpobaabmsI89Tc0/Z7xz9Fd/FqXOyyAtxloT5eSA1gDZuUIeuwCeUscSLSde/4F7ICojIHF1+UxVPlEHx0+QCmtBTw7U7bfj
-X-Gm-Message-State: AOJu0YymVreTuwbF0R5sXluOc7qlL1cW9jeN6aWLl6lBGcwZuQBcu7G/
-	+J8zz/i0UNm/NfTxQEPojDFASe/pB37zWRD8Rr1gcHEcAIimbUBjtEawz8hy0Qzo+zzp1xJV9Gc
-	C/g/7hHTUb57GGRo3C2qiJhQTU0aQ0sFg6pc+eA==
-X-Google-Smtp-Source: AGHT+IG9s5zKEuElzdmu8nYTv+TuYXsEEzkAtXGAXraUgcr2mrfhNdPpz8+DdeopqaF18UtxfyTI7E1EKXrMGt7AwqI=
-X-Received: by 2002:a25:d685:0:b0:e0b:f963:263e with SMTP id
- 3f1490d57ef6-e1140cd0625mr5768707276.9.1723638348494; Wed, 14 Aug 2024
- 05:25:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J/nf9JVa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6316FC116B1;
+	Wed, 14 Aug 2024 14:06:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723644397;
+	bh=+/gaF3YEZ5Rg+zNdj7tQPt9leIADZ0LAP1MJimY8rac=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=J/nf9JVa+Xjkx5sPwnC10znwjrfTmOOCoqjNdRo4ANX9SWBpjUlX0u8CG6p3UbFoI
+	 OzHhOEfslIzPPBT97HxYjqFHNDSj74LZLznjsHLVrjxUpnL8/H4BXz0Rnvly+o/5/H
+	 /kYefFt/ip1v8L1QM8Sorw2COWy8dApXeOAJHDL7V2nfGCQwXQxRz2CaAHDpalzqfk
+	 CgTW/Ds5s6lR6tA44aANMjB6AcAih7vy8+vecar/YpgOGD+HGhtEyRGXve9603NoIF
+	 hvTiF3dRZyxslrp4pjokRRjbnFOG+h7blTKm+2G2+ULsYUASIXDKDnBCJHFhVey5AY
+	 gVtDQkQXFqy5g==
+Message-ID: <2eb416b1-09b7-411d-8070-883238883403@kernel.org>
+Date: Wed, 14 Aug 2024 16:06:30 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240728114200.75559-1-wahrenst@gmx.net> <20240728114200.75559-6-wahrenst@gmx.net>
-In-Reply-To: <20240728114200.75559-6-wahrenst@gmx.net>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Wed, 14 Aug 2024 14:25:12 +0200
-Message-ID: <CAPDyKFpNbrgLOrtofdR3s0hHvao3gt4+6C0Oj5_phrRYi=enCQ@mail.gmail.com>
-Subject: Re: [PATCH V2 05/16] pmdomain: raspberrypi-power: set flag GENPD_FLAG_ACTIVE_WAKEUP
-To: Stefan Wahren <wahrenst@gmx.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>, 
-	Scott Branden <sbranden@broadcom.com>, Maxime Ripard <mripard@kernel.org>, 
-	Jassi Brar <jassisinghbrar@gmail.com>, =?UTF-8?B?TWHDrXJhIENhbmFs?= <mcanal@igalia.com>, 
-	Jiri Slaby <jirislaby@kernel.org>, Minas Harutyunyan <hminas@synopsys.com>, 
-	Dave Stevenson <dave.stevenson@raspberrypi.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>, 
-	Artur Petrosyan <Arthur.Petrosyan@synopsys.com>, Peter Robinson <pbrobinson@gmail.com>, 
-	dri-devel@lists.freedesktop.org, bcm-kernel-feedback-list@broadcom.com, 
-	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kernel-list@raspberrypi.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 2/3] dt-bindings: platform: Add Surface System
+ Aggregator Module
+To: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
+ Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
+ <20240814-topic-sam-v3-2-a84588aad233@quicinc.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
+ QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
+ gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
+ /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
+ iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
+ VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
+ 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
+ xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
+ eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
+ AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
+ MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
+ Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
+ MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
+ OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
+ GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
+ 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
+ YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
+ 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
+ BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
+ JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
+ 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
+ YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
+ Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
+ ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
+ vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
+ oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
+ lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
+ t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
+ uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
+ 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
+ 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
+In-Reply-To: <20240814-topic-sam-v3-2-a84588aad233@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, 28 Jul 2024 at 13:47, Stefan Wahren <wahrenst@gmx.net> wrote:
->
-> Set flag GENPD_FLAG_ACTIVE_WAKEUP to rpi_power genpd, then when a device
-> is set as wakeup source using device_set_wakeup_enable, the power
-> domain could be kept on to make sure the device could wakeup the system.
->
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-
-Patch 3 -> 5, applied for next to my pmdomain tree, thanks!
-
-Kind regards
-Uffe
-
-
+On 14/08/2024 12:27, Konrad Dybcio wrote:
+> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+> 
+> Add bindings for the Surface System Aggregator Module (SAM/SSAM), the
+> Microsoft Surface-standard Embedded Controller, used on both x86- and
+> Qualcomm-based devices.
+> 
+> It provides a plethora of functions, depending on what's wired up to
+> it. That includes but is not limited to: fan control, keyboard/touchpad
+> support, thermal sensors, power control, special buttons, tablet mode.
+> 
+> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
 > ---
->  drivers/pmdomain/bcm/raspberrypi-power.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/pmdomain/bcm/raspberrypi-power.c b/drivers/pmdomain/bcm/raspberrypi-power.c
-> index fadedfc9c645..b87ea7adb7be 100644
-> --- a/drivers/pmdomain/bcm/raspberrypi-power.c
-> +++ b/drivers/pmdomain/bcm/raspberrypi-power.c
-> @@ -91,6 +91,7 @@ static void rpi_common_init_power_domain(struct rpi_power_domains *rpi_domains,
->         dom->fw = rpi_domains->fw;
->
->         dom->base.name = name;
-> +       dom->base.flags = GENPD_FLAG_ACTIVE_WAKEUP;
->         dom->base.power_on = rpi_domain_on;
->         dom->base.power_off = rpi_domain_off;
->
-> --
-> 2.34.1
->
->
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
+
