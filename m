@@ -1,92 +1,103 @@
-Received: from cstnet.cn (smtp81.cstnet.cn [159.226.251.81])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54290137C37;
-	Wed, 14 Aug 2024 10:15:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F048213C684;
+	Wed, 14 Aug 2024 10:25:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723630559; cv=none; b=Oq488RNaSktk1GonOCjLc+ma67mhPEWUzmB01hjHVGOpEqqWGoIBdu1aIaLzoFEKHZnTM4U6axEa1vVCdfpxegR1xMOV3EM8MRu/VL517IkZ3yq4IBgfRp/rWBbiZHPrrxTmTCz24cqoiQv14HxP7VTJ5M4hGrNC6jL7WhNpaSo=
+	t=1723631155; cv=none; b=iPp3cbEh1uClnO8BdlOnizHWXfEyGLkmfajbqGr9DNusk9klxe0obfDFQQiK+zhF9QIc7YR0kmqU3eyb7fjOj1Wpr/gZ02Se8rNZi4vjhB/lKu3Zs9YvN4Rf9V/S5gFuO7BPZHpKIqYE35B+ZiE4xaUtYRZj8pRHQiVNi69fHns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723630559; c=relaxed/simple;
-	bh=3wgSizC2K7D0EjJTHEAYQtnfII0JD4LxZQRqZo2h+zI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Q3muLQfhf/vWtPy+mC8EvO6sJ13SLz/udD1/yjDDKGAfxnVlUbvn8FspPW1wiCCSDxAaC7UiVLJFxYvhp3u1pp84BjTx4meW+cPsdoOEns+eMlS4ywHGmnQqpboPCt+pyW++JkueqzGcv+k5eS3R9cHUIWvUpqLKbyBUeyQeb2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from icess-ProLiant-DL380-Gen10.. (unknown [183.174.60.14])
-	by APP-03 (Coremail) with SMTP id rQCowAB3nwK5g7xm9DhUBg--.39765S2;
-	Wed, 14 Aug 2024 18:15:29 +0800 (CST)
-From: Ma Ke <make24@iscas.ac.cn>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	make24@iscas.ac.cn,
-	u.kleine-koenig@pengutronix.de,
-	tglx@linutronix.de,
-	zhang_shurong@foxmail.com,
-	B56683@freescale.com,
-	cosmin.stoica@nxp.com,
-	stefan-gabriel.mirea@nxp.com,
-	Larisa.Grigore@nxp.com,
-	matthew.nunez@nxp.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH] tty: serial: Add a NULL check for of_node
-Date: Wed, 14 Aug 2024 18:15:20 +0800
-Message-Id: <20240814101520.17129-1-make24@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1723631155; c=relaxed/simple;
+	bh=ftCBlPiwD1RZ3eQGns2Dn6jHwhtrQA2YnZh+/ZTI/aU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h/5KlyDZdFaa5jQWbgpFsYy9z5BYMVDr++OVKAUGGEeJOe304eMSJd0hpMtMtQroRWMaFgJXw2ucevCQnXjX6R/zO6dnk+64TckVDrEN6SbaKWaRM12PjOUphJT2nAEnljDYd1+N/ZVi3mCnvwe793l6Wb9yLYBVMFgLeBekDAo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NYgUyrMF; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NYgUyrMF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7F39C32786;
+	Wed, 14 Aug 2024 10:25:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1723631154;
+	bh=ftCBlPiwD1RZ3eQGns2Dn6jHwhtrQA2YnZh+/ZTI/aU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=NYgUyrMF/3k9Q0BD6O7NqdaZ194K3HGHVfFYpdayYDUM7OeGGseOyTb0fQqtv2A1Q
+	 lfwyXW7p+q8hPjfmaRTv9JkrmvFULVGqTSZ6uTbphB53x9w2hIdWjPzPrfgJVgpd28
+	 nAsvd0TJsLL0qpo5Z8ZpfA2nH/FTWkZZZFSENVlBmo8aE6uDgSxLQIT9HL2CClkuqz
+	 9nzZHrjSLSwPqpDgwocmDFqew7gjejY1HWZvQgsSR5hxBKvG2E+gXPX9B9PSs3pT7v
+	 vIEuya56BzbEkspWwA4SFZcLCxadwE4rl5ZtzDKVsW6ITeQQK+DFqynXv1NHodpZBv
+	 CiGRJ61xYShSw==
+Message-ID: <ca411247-c640-45d7-ab1b-b595da46e6f3@kernel.org>
+Date: Wed, 14 Aug 2024 12:25:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:rQCowAB3nwK5g7xm9DhUBg--.39765S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw13tFWkKFyUZr1kKFW8Xrb_yoWfArg_CF
-	1q93srWr12kF43tr47AFy7ur9agw4kZF4kXF1vva9aqryDAr4rZFy7Zrs8ury7Ww4UJryD
-	AanrWr1akr17ZjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbfAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-	Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-	0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-	64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-	Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
-	YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14v26r1q6r43MxAIw28IcxkI7V
-	AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-	r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6x
-	IIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAI
-	w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
-	0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbQVy7UUUUU==
-X-CM-SenderInfo: ppdnvj2u6l2u1dvotugofq/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/3] dt-bindings: platform: Add Surface System
+ Aggregator Module
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
+ Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240810-topic-sam-v2-0-8a8eb368a4f0@quicinc.com>
+ <20240810-topic-sam-v2-2-8a8eb368a4f0@quicinc.com>
+ <1a6ebc27-95ca-4f56-9971-b2a8d03f270a@kernel.org>
+ <36b0ee66-3af3-40c1-86b6-b52cd826298e@gmail.com>
+ <13f254ed-68b7-438e-91a8-9d75c9e9f2a7@kernel.org>
+Content-Language: en-US
+From: Konrad Dybcio <konradybcio@kernel.org>
+In-Reply-To: <13f254ed-68b7-438e-91a8-9d75c9e9f2a7@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The pdev->dev.of_node can be NULL if the "serial" node is absent.
-Add a NULL check for np to return an error in such cases.
+On 14.08.2024 8:16 AM, Krzysztof Kozlowski wrote:
+> On 13/08/2024 16:27, Konrad Dybcio wrote:
+>> On 11.08.2024 4:28 PM, Krzysztof Kozlowski wrote:
+>>> On 10/08/2024 03:28, Konrad Dybcio wrote:
+>>>> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+>>>>
+>>>> Add bindings for the Surface System Aggregator Module (SAM/SSAM), the
+>>>> Microsoft Surface-standard Embedded Controller, used on both x86- and
+>>>> Qualcomm-based devices.
+>>>>
+>>>> It provides a plethora of functions, depending on what's wired up to
+>>>> it. That includes but is not limited to: fan control, keyboard/touchpad
+>>>> support, thermal sensors, power control, special buttons, tablet mode.
+>>>>
+>>>> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
+>>>> ---
 
-Found by code review. Compile tested only.
+[...]
 
-Cc: stable@vger.kernel.org
-Fixes: 09864c1cdf5c ("tty: serial: Add linflexuart driver for S32V234")
-Signed-off-by: Ma Ke <make24@iscas.ac.cn>
----
- drivers/tty/serial/fsl_linflexuart.c | 3 +++
- 1 file changed, 3 insertions(+)
+>>>> +  current-speed:
+>>>> +    description: The baudrate in bits per second of the device as it comes
+>>>> +      online, current active speed.
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>
+>>> This should be just "current-speed: true", because the type will be
+>>> brought by serial schema. We should however have some schema with
+>>> peripheral properties for serial devices. I'll come with something.
+>>
+>> I suppose I should just include:
+>>
+>> https://lore.kernel.org/linux-serial/20240811-dt-bindings-serial-peripheral-props-v1-0-1dba258b7492@linaro.org/
+> 
+> 
+> You could, but then your patchset will depend on mine, so instead I
+> propose just "current-speed: true" and later (next release) we will add
+> $ref to serial-peripheral-props.
 
-diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
-index e972df4b188d..f46f3c21ee1b 100644
---- a/drivers/tty/serial/fsl_linflexuart.c
-+++ b/drivers/tty/serial/fsl_linflexuart.c
-@@ -811,6 +811,9 @@ static int linflex_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	int ret;
- 
-+	if (!np)
-+		return -ENODEV;
-+
- 	sport = devm_kzalloc(&pdev->dev, sizeof(*sport), GFP_KERNEL);
- 	if (!sport)
- 		return -ENOMEM;
--- 
-2.25.1
+You got it!
 
+Konrad
