@@ -1,41 +1,36 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+Received: from forward500d.mail.yandex.net (forward500d.mail.yandex.net [178.154.239.208])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75E7C7346D;
-	Wed, 14 Aug 2024 21:48:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 189831714AA;
+	Thu, 15 Aug 2024 09:40:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.154.239.208
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723672131; cv=none; b=jXDHwSOA9ldtuM/T4sDDfECvKDGBLs51fNKhfJF1RTnaLEOsl34tzTl4seEAAwgogkxFbzVLTpnLuSOhWs8byLKrmiwumq8yCLm9kzojk8mEGY48Io/gmV/4IKf+C9Wqmrag57zFyrqgg78UxfIG++IWxAa8LCJKZPviwb/y2o8=
+	t=1723714821; cv=none; b=nx48kP9aoYMLVtog3u8GJrfG934iweyaRJOV8j9yAVQwF+KZ+PCx/r36wGXzmjaGxlPeK+kktIFtlTfHQit9PChu1JMRmv8VOYK8q7OXBXQ5GMxU9m/flmQnvQ6BUyopMtCfJeq92i991upfo2Ira5yCaGlB/hntTscpuRLJJdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723672131; c=relaxed/simple;
-	bh=a4cwnQHKiu5urDRMftjd63h+pvYkzJCZA4nobLiw/Lg=;
+	s=arc-20240116; t=1723714821; c=relaxed/simple;
+	bh=hHRLqBr+54KeYXqLfHR/xpoQz9e9b/mHhS+fZOIXtrg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aQ7JLp37PHQGH7t959zIoPG1PoSncHHxRoxWmCa1+mgonWw9Q9GAuI2TZQ6tOrYjh9k3fXNHJhhTq7+iwzuE2d2es6QNDmbCf8Ai4rN2cgOmEGl9NRk7dm1SczZ8FhkR0MHQlWVMRQymJKSyUSLGrbH7FVMYmJntLlUF8RYuwQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=Pg+Onfel; arc=none smtp.client-ip=212.227.17.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	 In-Reply-To:Content-Type; b=YaH/bfkZcjKrVPSwA4ShVoB9DzhJPo8nCclsROEiYN3x0oQGyF/Ij+WsYVAJ1DJ2lMMrhx/rizLWzxuKoGTv4JRBPtUvIyg80JupaDqiN92lz9sKGTVfJEqlXmTf2vPEPnswhJuQT/vOHkqShXeEKjHYYRHXvq8Qc9msSugKsR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.com; spf=pass smtp.mailfrom=yandex.com; dkim=pass (1024-bit key) header.d=yandex.com header.i=@yandex.com header.b=s7BTOevv; arc=none smtp.client-ip=178.154.239.208
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=yandex.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yandex.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Pg+Onfel"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723672090; x=1724276890; i=wahrenst@gmx.net;
-	bh=a4cwnQHKiu5urDRMftjd63h+pvYkzJCZA4nobLiw/Lg=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=Pg+OnfelHGEfkqnKy6TAobor8t6PaCjZ3il4jk7ebYU8+53PRaoJzFEuuC9s6bbU
-	 3a4hfccjmxENbuSpJnUMEbcTNr8XMlqdZAH892QDvgrcaaRFcp1yB2vFcXin8RANJ
-	 gMzZoC5WMrlyZKVScls9C7HEsO4z0TNRz3Zlw8fRz4m4SSo3whNrl7BC+W3Vc7ixP
-	 4pwHfVEUMnLb0I4tjnKED9c60839RL9gsE2mra0ntDEq4KgbXLZ3q/7epdRYrVym3
-	 Jig93HmJ6crocaZs/ZGLpjpzf3yEAXNSlPsEjq7GgrCo22Dw2jwGXEFOydtXOR739
-	 1Cjz6WUpqjBRSO+iGA==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7zBb-1sA1852k9T-015yGh; Wed, 14
- Aug 2024 23:48:10 +0200
-Message-ID: <51b63ea5-808e-41e4-92a9-50e20afd155b@gmx.net>
-Date: Wed, 14 Aug 2024 23:48:08 +0200
+	dkim=pass (1024-bit key) header.d=yandex.com header.i=@yandex.com header.b="s7BTOevv"
+Received: from mail-nwsmtp-smtp-production-main-77.klg.yp-c.yandex.net (mail-nwsmtp-smtp-production-main-77.klg.yp-c.yandex.net [IPv6:2a02:6b8:c42:ea0:0:640:da19:0])
+	by forward500d.mail.yandex.net (Yandex) with ESMTPS id 1E0406128E;
+	Thu, 15 Aug 2024 12:30:34 +0300 (MSK)
+Received: by mail-nwsmtp-smtp-production-main-77.klg.yp-c.yandex.net (smtp/Yandex) with ESMTPSA id QUEcpv4Hk4Y0-UhkQn8oc;
+	Thu, 15 Aug 2024 12:30:32 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
+	t=1723714232; bh=R4tun9PXUYJLsqC80SlDr16BLkuJJ0cpb+rbUByGWYs=;
+	h=From:In-Reply-To:Cc:Date:References:To:Subject:Message-ID;
+	b=s7BTOevv5CeY5wohdlWoWG/1654k1XE3CDf4kzINoZD4Rc3AiZk++oH0oqDX7GhWu
+	 lzMxmvkKdmMTMHEqAzob1HvtPT5P5SkZCt8khQgEKr7jXm5ncfiLfeabAH1qrhtZ6R
+	 IYh4wW5yIEjoNhV821r07YrwDzGmyLa3QTtNY4Yg=
+Authentication-Results: mail-nwsmtp-smtp-production-main-77.klg.yp-c.yandex.net; dkim=pass header.i=@yandex.com
+Message-ID: <c5014fe3-130b-4ace-a66e-8773a9a4f1dc@yandex.com>
+Date: Thu, 15 Aug 2024 11:30:25 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,173 +38,619 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
- domain off
-To: Ulf Hansson <ulf.hansson@linaro.org>,
- Doug Anderson <dianders@chromium.org>
-Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
- Minas Harutyunyan <hminas@synopsys.com>,
- Dave Stevenson <dave.stevenson@raspberrypi.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
- Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
+Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
+To: Detlev Casanova <detlev.casanova@collabora.com>,
+ linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+ Andi Shyti <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20240728114200.75559-1-wahrenst@gmx.net>
- <20240728130029.78279-1-wahrenst@gmx.net>
- <20240728130029.78279-6-wahrenst@gmx.net>
- <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
- <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
- <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
+ Jiri Slaby <jirislaby@kernel.org>, Daniel Lezcano
+ <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Chris Morgan <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>,
+ Tim Lunn <tim@feathertop.org>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Andy Yan <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>,
+ Dragan Simic <dsimic@manjaro.org>,
+ Sebastian Reichel <sebastian.reichel@collabora.com>,
+ Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
+ Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>,
+ Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>,
+ Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+ Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
+References: <20240802214612.434179-1-detlev.casanova@collabora.com>
+ <20240802214612.434179-10-detlev.casanova@collabora.com>
 Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Neb90NJDGr022IsDGyukxUd/QvYbRXQYuQNwJx8OVxVcCNc0sL6
- ZLBkxVMm7gvC293Oy+VeB8xuAM+5LI+Zwg7Vwswer8QGyNfxbHur9N2mA3eJ/liRgEStIqf
- 35hfSYTyr4AvqXj8wrD/icF+XsXs8xQyRV8NxawG4fSGtgwLShC3XAf+6+GivK3d2Auiirr
- vev0GzbQspidwZ/qhqFEg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:0ECwtENLL7U=;lNFcMDLmmp7vmvfrbe5CVPs28Er
- Z5RhmLPdSi1ythPp+YGnnrM5sajQK6y+TNsGlxpJf5yWrOBcBfNwPpgQDG1niL2WbQZCj6D/S
- bWop5Dx8iDrIMscCTnpIPZkuzMGbprK4Emd8NQEAr9ZU12gFRuV6eUDnSCOC1dHy0XTMEkmhm
- vWxab0ac8TE1L306pCSMpLHdD9k72OHAN9Puj8K8eWt96oLCPjfLXDzbAv01FHwETgMqgywnB
- Q6QbZNbMbGVp85inx7y0SE1tWnUW+jlqu+Whj4809i5DSF1irkxU4trgmejIR1GqFbZ1brThI
- u2mDZbS6ID9LL+HnQSksDO1MaOLEJLw32VhT+GpSxz0GbFlXM6APg5myTvUSsrpTWDas+ebT4
- WzOe33mnF2HFNf7rUxzt4/vurPxPKXj9Jaa/PRHig4a+JorbprB95R7oV1Eunwv3ufqVKt6sp
- sPEVnE1xWmE27tax7gWyLjdHkxEmRfk27Esz8BN1sUuMpHsi/fB+vlPbK8N3Js3dl87lGHFSV
- F7LfZx8lEYivx3Eaf/FIwZUce2qqKg9hYe2JulU51OeH5MMUd2vSzzr8ZGKwBDPgEg8KOTp89
- WqFT4iPtFwItmXo/2kTDSHLWM3846xrpGNvSVHX0kzyXc30q1nViXwZL2v8yzgUfVfPLBvxV3
- r6POlvhicFYJAYQu3G2JyqowEJ20RR+yk7BnsrHQcIyntSj4lR/UMBUxbpSZGAEGtJP91RHTq
- GpfcEWhP2YtgFATBAQDPq+NOA/lwchNf9TDHXHpt8RvoFzK+AXiR1DblNtw2npBgGX+r4AYwZ
- 0OFSm18/a+22vvuvgxMX7fuA==
+From: Johan Jonker <jbx6244@yandex.com>
+In-Reply-To: <20240802214612.434179-10-detlev.casanova@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Am 14.08.24 um 14:01 schrieb Ulf Hansson:
-> On Tue, 13 Aug 2024 at 21:57, Doug Anderson <dianders@chromium.org> wrot=
-e:
->> Hi,
->>
->> On Mon, Aug 12, 2024 at 4:48=E2=80=AFPM Stefan Wahren <wahrenst@gmx.net=
-> wrote:
->>> Hi Doug,
->>>
->>> Am 28.07.24 um 15:00 schrieb Stefan Wahren:
->>>> DO NOT MERGE
->>>>
->>>> According to the dt-bindings there are some platforms, which have a
->>>> dedicated USB power domain for DWC2 IP core supply. If the power doma=
-in
->>>> is switched off during system suspend then all USB register will lose
->>>> their settings.
->>>>
->>>> So use the power on/off notifier in order to save & restore the USB
->>>> registers during system suspend.
->>> sorry for bothering you with this DWC2 stuff, but it would great if yo=
-u
->>> can gave some feedback about this patch.
->> Boy, it's been _ages_ since I looked at anything to do with dwc2, but
->> I still have some fondness in my heart for the crufty old driver :-P I
->> know I was involved with some of the patches to get
->> wakeup-from-suspend working on dwc2 host controllers in the past but,
->> if I remember correctly, I mostly shepherded / fixed patches from
->> Rockchip. Not sure I can spend the days trawling through the driver
->> and testing things with printk that really answering properly would
->> need, but let's see...
-Yes, this was more a cry for help, because i didn't get much feedback
-yet here [1] [2]. So i searched for the most elegant solution via trial
-& error and this patch is the outcome. One reason why this is still WIP,
-is that i didn't test the gadget role path yet.
->>
->>> I was working a lot to get
->>> suspend to idle working on Raspberry Pi. And this patch is the most
->>> complex part of the series.
->>>
->>> Would you agree with this approach or did i miss something?
->>>
->>> The problem is that the power domain driver acts independent from dwc2=
-,
->>> so we cannot prevent the USB domain power down except declaring a USB
->>> device as wakeup source. So i decided to use the notifier approach. Th=
-is
->>> has been successful tested on some older Raspberry Pi boards.
->> My genpd knowledge is probably not as good as it should be. Don't tell
->> anyone (aside from all the people and lists CCed here). ;-)
->>
->> ...so I guess you're relying on the fact that
->> dev_pm_genpd_add_notifier() will return an error if a power-domain
->> wasn't specified for dwc2 in the device tree, then you ignore that
->> error and your callback will never happen. You assume that the power
->> domain isn't specified then the dwc2 registers will be saved?
-Yes, on Raspberry Pi we needed to implement the power domain driver to
-enable USB at the first place.
->> I guess one thing is that I'd wonder if that's really reliable. Maybe
->> some dwc2 controllers lose their registers over system suspend but
->> _don't_ specify a power domain? Maybe the USB controller just gets its
->> power yanked as part of system suspend. Maybe that's why the functions
->> for saving / restoring registers are already there? It looks like
->> there are ways for various platforms to specify that registers are
->> lost in some cases...
-Yes, the DT property "snps,need-phy-for-wake" is such a case. But the
-PHY on Raspberry Pi is currently modeled as a no-op.
->> ...but I guess you can't use the existing ways to say that registers
->> are lost because you're trying to be dynamic.
-Yes, before this patch the DWC2 doesn't know if the USB domain is
-powered down during suspend. So the notifier seems the most elegant
-solution to me.
->> You're saying that your
->> registers get saved _unless_ the power domain gets turned off, right?
-On BCM2835 there is no need to store the registers because there is no
-power management supported by USB core except of the power domain. So
-DWC2 don't expect a register loss.
->> ...and the device core keeps power domains on for suspended devices if
->> they are wakeup sources, which makes sense.
->>
->> So with that, your patch sounds like a plausible way to do it. I guess
->> one other way to do it would be some sort of "canary" approach. You
->> could _always_ save registers and then, at resume time, you could
->> detect if some "canary" register had reset to its power-on default. If
->> you see this then you can assume power was lost and re-init all the
->> registers. This could be pretty much any register that you know won't
->> be its power on default. In some ways a "canary" approach is uglier
->> but it also might be more reliable across more configurations?
-I don't have enough knowledge about DWC2 and i also don't have the
-databook to figure out if there is a magic register which could be used
-for the canary approach. But all these different platforms, host vs
-gadget role, different low modes let me think the resulting solution
-would be also fragile and ugly.
->> I guess those would be my main thoughts on the topic. Is that roughly
->> the feedback you were looking for?
-Yes, thank you. This was very helpful.
-> Thanks Doug for sharing your thoughts. For the record, I agree with
-> these suggestions.
->
-> Using the genpd on/off notifiers is certainly fine, but doing a
-> save/restore unconditionally via some of the PM callbacks is usually
-> preferred - if it works.
+Some comments below. Whenever useful.
 
-I tried the latter one before without success. Because the DWC2 is aware
-that the BCM2835 IP doesn't support any power saving mode, the USB core
-stays fully functional in suspend and register restoring on resume
-tramples newer registers values.
+On 8/2/24 23:45, Detlev Casanova wrote:
+> This device tree contains all devices necessary for booting from network
+> or SD Card.
+> 
+> It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
+> SDHCI (everything necessary to boot Linux on this system on chip) as
+> well as Ethernet, I2C, SPI and OTP.
+> 
+> Also add the necessary DT bindings for the SoC.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
+> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+> [rebase, squash and reword commit message]
+> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> ---
 
-Best regards
+[..]
 
-[1] -
-https://lore.kernel.org/linux-usb/3fd0c2fb-4752-45b3-94eb-42352703e1fd@gmx=
-.net/
-[2] -
-https://lore.kernel.org/linux-usb/e4532055-c5d6-4ac9-8bbb-b9df18fa178b@gmx=
-.net/
->
-> Kind regards
-> Uffe
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3576.dtsi b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> new file mode 100644
+> index 0000000000000..00c4d2a153ced
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> @@ -0,0 +1,1635 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
+> + */
+> +
 
+> +#include <dt-bindings/clock/rockchip,rk3576-cru.h>
+> +#include <dt-bindings/reset/rockchip,rk3576-cru.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/phy/phy.h>
+> +#include <dt-bindings/power/rk3576-power.h>
+> +#include <dt-bindings/pinctrl/rockchip.h>
+> +#include <dt-bindings/soc/rockchip,boot-mode.h>
+
+Sort includes.
+
+> +
+> +/ {
+> +	compatible = "rockchip,rk3576";
+> +
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	aliases {
+> +		ethernet0 = &gmac0;
+> +		ethernet1 = &gmac1;
+> +		gpio0 = &gpio0;
+> +		gpio1 = &gpio1;
+> +		gpio2 = &gpio2;
+> +		gpio3 = &gpio3;
+> +		gpio4 = &gpio4;
+> +		i2c0 = &i2c0;
+> +		i2c1 = &i2c1;
+> +		i2c2 = &i2c2;
+> +		i2c3 = &i2c3;
+> +		i2c4 = &i2c4;
+> +		i2c5 = &i2c5;
+> +		i2c6 = &i2c6;
+> +		i2c7 = &i2c7;
+> +		i2c8 = &i2c8;
+> +		i2c9 = &i2c9;
+> +		serial0 = &uart0;
+> +		serial1 = &uart1;
+> +		serial2 = &uart2;
+> +		serial3 = &uart3;
+> +		serial4 = &uart4;
+> +		serial5 = &uart5;
+> +		serial6 = &uart6;
+> +		serial7 = &uart7;
+> +		serial8 = &uart8;
+> +		serial9 = &uart9;
+> +		serial10 = &uart10;
+> +		serial11 = &uart11;
+> +		spi0 = &spi0;
+> +		spi1 = &spi1;
+> +		spi2 = &spi2;
+> +		spi3 = &spi3;
+> +		spi4 = &spi4;
+> +	};
+> +
+
+[..]
+
+For uart0..uart11:
+
+> +
+> +	uart1: serial@27310000 {
+> +		compatible = "rockchip,rk3576-uart", "snps,dw-apb-uart";
+> +		reg = <0x0 0x27310000 0x0 0x100>;
+
+> +		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
+
+"interrupts" are sort just like other properties. A mix of sort styles exists, so check all nodes.
+
+> +		clocks = <&cru SCLK_UART1>, <&cru PCLK_UART1>;
+> +		clock-names = "baudclk", "apb_pclk";
+
+> +		reg-shift = <2>;
+> +		reg-io-width = <4>;
+
+Move below "reg". 
+
+> +		dmas = <&dmac0 8>, <&dmac0 9>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&uart1m0_xfer>;
+> +		status = "disabled";
+> +	};
+> +
+> +	pmu: power-management@27380000 {
+> +		compatible = "rockchip,rk3576-pmu", "syscon", "simple-mfd";
+> +		reg = <0x0 0x27380000 0x0 0x800>;
+> +
+> +		power: power-controller {
+> +			compatible = "rockchip,rk3576-power-controller";
+> +			#power-domain-cells = <1>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+
+> +			status = "okay";
+
+Remove.
+
+> +
+> +			power-domain@RK3576_PD_NPU {
+> +				reg = <RK3576_PD_NPU>;
+
+> +				#power-domain-cells = <0>;
+
+				#power-domain-cells = <1>;
+
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+          providing multiple PM domains.
+
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +
+> +				power-domain@RK3576_PD_NPUTOP {
+> +					reg = <RK3576_PD_NPUTOP>;
+
+> +					#power-domain-cells = <0>;
+
+
+					#power-domain-cells = <1>;
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+          providing multiple PM domains.
+
+> +					#address-cells = <1>;
+> +					#size-cells = <0>;
+> +					clocks = <&cru ACLK_RKNN0>,
+> +						 <&cru ACLK_RKNN1>,
+> +						 <&cru ACLK_RKNN_CBUF>,
+> +						 <&cru CLK_RKNN_DSU0>,
+> +						 <&cru HCLK_RKNN_CBUF>,
+> +						 <&cru HCLK_RKNN_ROOT>,
+> +						 <&cru HCLK_NPU_CM0_ROOT>,
+> +						 <&cru PCLK_NPUTOP_ROOT>;
+> +					pm_qos = <&qos_npu_mcu>,
+> +						 <&qos_npu_nsp0>,
+> +						 <&qos_npu_nsp1>,
+> +						 <&qos_npu_m0ro>,
+> +						 <&qos_npu_m1ro>;
+> +
+> +					power-domain@RK3576_PD_NPU0 {
+> +						reg = <RK3576_PD_NPU0>;
+> +						#power-domain-cells = <0>;
+> +						clocks = <&cru HCLK_RKNN_ROOT>,
+> +							 <&cru ACLK_RKNN0>;
+> +						pm_qos = <&qos_npu_m0>;
+> +					};
+> +					power-domain@RK3576_PD_NPU1 {
+> +						reg = <RK3576_PD_NPU1>;
+> +						#power-domain-cells = <0>;
+> +						clocks = <&cru HCLK_RKNN_ROOT>,
+> +							 <&cru ACLK_RKNN1>;
+> +						pm_qos = <&qos_npu_m1>;
+> +					};
+> +				};
+> +			};
+> +
+> +			power-domain@RK3576_PD_GPU {
+> +				reg = <RK3576_PD_GPU>;
+> +				#power-domain-cells = <0>;
+> +				clocks = <&cru CLK_GPU>;
+> +				pm_qos = <&qos_gpu>;
+> +			};
+> +
+> +			power-domain@RK3576_PD_NVM {
+> +				reg = <RK3576_PD_NVM>;
+
+> +				#power-domain-cells = <0>;
+
+				#power-domain-cells = <1>;
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+          providing multiple PM domains.
+
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				clocks = <&cru ACLK_EMMC>, <&cru HCLK_EMMC>;
+> +				pm_qos = <&qos_emmc>,
+> +					 <&qos_fspi0>;
+> +
+> +				power-domain@RK3576_PD_SDGMAC {
+> +					reg = <RK3576_PD_SDGMAC>;
+
+> +				#power-domain-cells = <0>;
+
+TAB ??
+
+> +					clocks = <&cru ACLK_HSGPIO>,
+> +						 <&cru ACLK_GMAC0>,
+> +						 <&cru ACLK_GMAC1>,
+> +						 <&cru CCLK_SRC_SDIO>,
+> +						 <&cru CCLK_SRC_SDMMC0>,
+> +						 <&cru HCLK_HSGPIO>,
+> +						 <&cru HCLK_SDIO>,
+> +						 <&cru HCLK_SDMMC0>;
+> +					pm_qos = <&qos_fspi1>,
+> +						 <&qos_gmac0>,
+> +						 <&qos_gmac1>,
+> +						 <&qos_sdio>,
+> +						 <&qos_sdmmc>,
+> +						 <&qos_flexbus>;
+> +				};
+> +			};
+> +			power-domain@RK3576_PD_PHP {
+> +				reg = <RK3576_PD_PHP>;
+
+> +				#power-domain-cells = <0>;
+
+				#power-domain-cells = <1>;
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+          providing multiple PM domains.
+
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				clocks = <&cru ACLK_PHP_ROOT>,
+> +					 <&cru PCLK_PHP_ROOT>,
+> +					 <&cru ACLK_MMU0>,
+> +					 <&cru ACLK_MMU1>;
+> +				pm_qos = <&qos_mmu0>,
+> +					 <&qos_mmu1>;
+> +
+> +				power-domain@RK3576_PD_SUBPHP {
+> +					reg = <RK3576_PD_SUBPHP>;
+
+> +				#power-domain-cells = <0>;
+
+TAB??
+
+> +				};
+> +			};
+> +			power-domain@RK3576_PD_AUDIO {
+> +				reg = <RK3576_PD_AUDIO>;
+> +				#power-domain-cells = <0>;
+> +			};
+> +			power-domain@RK3576_PD_VEPU1 {
+
+> +				clocks = <&cru ACLK_VEPU1>,
+> +					 <&cru HCLK_VEPU1>;
+> +				reg = <RK3576_PD_VEPU1>;
+
+sort
+
+> +				#power-domain-cells = <0>;
+> +				pm_qos = <&qos_vepu1>;
+> +			};
+> +			power-domain@RK3576_PD_VPU {
+> +				reg = <RK3576_PD_VPU>;
+> +				#power-domain-cells = <0>;
+> +				clocks = <&cru ACLK_EBC>,
+> +					 <&cru HCLK_EBC>,
+> +					 <&cru ACLK_RGA2E_0>,
+> +					 <&cru HCLK_RGA2E_0>,
+> +					 <&cru ACLK_RGA2E_1>,
+> +					 <&cru HCLK_RGA2E_1>,
+> +					 <&cru ACLK_JPEG>,
+> +					 <&cru HCLK_JPEG>,
+> +					 <&cru ACLK_VDPP>,
+> +					 <&cru HCLK_VDPP>;
+> +				pm_qos = <&qos_ebc>,
+> +					 <&qos_rga0>,
+> +					 <&qos_rga1>,
+> +					 <&qos_jpeg>,
+> +					 <&qos_vdpp>;
+> +			};
+> +			power-domain@RK3576_PD_VDEC {
+> +				reg = <RK3576_PD_VDEC>;
+> +				#power-domain-cells = <0>;
+> +				clocks = <&cru ACLK_RKVDEC_ROOT>,
+> +					 <&cru HCLK_RKVDEC>;
+> +				pm_qos = <&qos_rkvdec>;
+> +			};
+> +			power-domain@RK3576_PD_VI {
+> +				reg = <RK3576_PD_VI>;
+
+> +				#power-domain-cells = <0>;
+
+				#power-domain-cells = <1>;
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				clocks = <&cru ACLK_VICAP>,
+> +					 <&cru HCLK_VICAP>,
+> +					 <&cru DCLK_VICAP>,
+> +					 <&cru ACLK_VI_ROOT>,
+> +					 <&cru HCLK_VI_ROOT>,
+> +					 <&cru PCLK_VI_ROOT>,
+> +					 <&cru CLK_ISP_CORE>,
+> +					 <&cru ACLK_ISP>,
+> +					 <&cru HCLK_ISP>,
+> +					 <&cru CLK_CORE_VPSS>,
+> +					 <&cru ACLK_VPSS>,
+> +					 <&cru HCLK_VPSS>;
+> +				pm_qos = <&qos_isp_mro>,
+> +					 <&qos_isp_mwo>,
+> +					 <&qos_vicap_m0>,
+> +					 <&qos_vpss_mro>,
+> +					 <&qos_vpss_mwo>;
+> +
+> +				power-domain@RK3576_PD_VEPU0 {
+> +					reg = <RK3576_PD_VEPU0>;
+> +					#power-domain-cells = <0>;
+> +					clocks = <&cru ACLK_VEPU0>,
+> +						 <&cru HCLK_VEPU0>;
+> +					pm_qos = <&qos_vepu0>;
+> +				};
+> +			};
+> +			power-domain@RK3576_PD_VOP {
+> +				reg = <RK3576_PD_VOP>;
+
+> +				#power-domain-cells = <0>;
+
+				#power-domain-cells = <1>;
+      "#power-domain-cells":
+        enum: [0, 1]
+        description:
+          Must be 0 for nodes representing a single PM domain and 1 for nodes
+          providing multiple PM domains.
+
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				clocks = <&cru ACLK_VOP>,
+> +					 <&cru HCLK_VOP>,
+> +					 <&cru HCLK_VOP_ROOT>;
+> +				pm_qos = <&qos_vop_m0>,
+> +					 <&qos_vop_m1ro>;
+> +
+> +				power-domain@RK3576_PD_USB {
+
+Since when is USB part of VOP?
+Recheck?
+
+> +					reg = <RK3576_PD_USB>;
+> +					#power-domain-cells = <0>;
+> +					clocks = <&cru PCLK_PHP_ROOT>,
+> +						 <&cru ACLK_USB_ROOT>,
+> +						 <&cru ACLK_MMU2>,
+> +						 <&cru ACLK_SLV_MMU2>,
+> +						 <&cru ACLK_UFS_SYS>;
+> +					pm_qos = <&qos_mmu2>,
+> +						 <&qos_ufshc>;
+> +				};
+> +				power-domain@RK3576_PD_VO0 {
+> +					reg = <RK3576_PD_VO0>;
+> +					#power-domain-cells = <0>;
+> +					clocks = <&cru ACLK_HDCP0>,
+> +						 <&cru HCLK_HDCP0>,
+> +						 <&cru ACLK_VO0_ROOT>,
+> +						 <&cru PCLK_VO0_ROOT>,
+> +						 <&cru HCLK_VOP_ROOT>;
+> +					pm_qos = <&qos_hdcp0>;
+> +				};
+> +				power-domain@RK3576_PD_VO1 {
+> +					reg = <RK3576_PD_VO1>;
+> +					#power-domain-cells = <0>;
+> +					clocks = <&cru ACLK_HDCP1>,
+> +						 <&cru HCLK_HDCP1>,
+> +						 <&cru ACLK_VO1_ROOT>,
+> +						 <&cru PCLK_VO1_ROOT>,
+> +						 <&cru HCLK_VOP_ROOT>;
+> +					pm_qos = <&qos_hdcp1>;
+> +				};
+> +			};
+> +		};
+> +	};
+> +
+
+[..]
+
+> +
+
+> +	rktimer: timer@2acc0000 {
+
+timer0: .....
+
+> +		compatible = "rockchip,rk3576-timer", "rockchip,rk3288-timer";
+> +		reg = <0x0 0x2acc0000 0x0 0x20>;
+
+> +		interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
+
+sort
+
+> +		clocks = <&cru PCLK_BUSTIMER0>, <&cru CLK_TIMER0>;
+> +		clock-names = "pclk", "timer";
+> +	};
+> +
+> +	wdt: watchdog@2ace0000 {
+
+> +		compatible = "snps,dw-wdt";
+
+Must be SoC related.
+Add something to snps,dw-wdt.yaml
+
+> +		reg = <0x0 0x2ace0000 0x0 0x100>;
+> +		clocks = <&cru TCLK_WDT0>, <&cru PCLK_WDT0>;
+> +		clock-names = "tclk", "pclk";
+> +		interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
+> +		status = "disabled";
+> +	};
+> +
+
+For spi0..spi4:
+
+
+> +	spi0: spi@2acf0000 {
+
+> +		compatible = "rockchip,rk3066-spi";
+
+Must be SoC related.
+Add something to spi-rockchip.yaml
+
+> +		reg = <0x0 0x2acf0000 0x0 0x1000>;
+
+> +		interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+
+sort
+
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+
+Move things that start with # down the list as posible.
+
+> +		clocks = <&cru CLK_SPI0>, <&cru PCLK_SPI0>;
+> +		clock-names = "spiclk", "apb_pclk";
+> +		dmas = <&dmac0 14>, <&dmac0 15>;
+> +		dma-names = "tx", "rx";
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&spi0m0_csn0 &spi0m0_csn1 &spi0m0_pins>;
+> +		num-cs = <2>;
+> +		status = "disabled";
+> +	};
+> +
+> +	spi1: spi@2ad00000 {
+
+> +	spi2: spi@2ad10000 {
+
+> +	spi3: spi@2ad20000 {
+
+> +	spi4: spi@2ad30000 {
+
+> +	uart0: serial@2ad40000 {
+
+> +	uart2: serial@2ad50000 {
+
+> +	uart3: serial@2ad60000 {
+
+> +	uart4: serial@2ad70000 {
+
+> +	uart5: serial@2ad80000 {
+
+> +	uart6: serial@2ad90000 {
+
+> +	uart7: serial@2ada0000 {
+
+> +	uart8: serial@2adb0000 {
+
+> +	uart9: serial@2adc0000 {
+
+> +	saradc: adc@2ae00000 {
+> +		compatible = "rockchip,rk3576-saradc", "rockchip,rk3588-saradc";
+> +		reg = <0x0 0x2ae00000 0x0 0x10000>;
+
+> +		interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>;
+
+sort
+
+> +		#io-channel-cells = <1>;
+
+Things that start with "#" are used to interpreted the DT, so down the list as possible.
+
+> +		clocks = <&cru CLK_SARADC>, <&cru PCLK_SARADC>;
+> +		clock-names = "saradc", "apb_pclk";
+> +		resets = <&cru SRST_P_SARADC>;
+> +		reset-names = "saradc-apb";
+> +		status = "disabled";
+> +	};
+> +
+
+[..]
+
+> +
+> +	uart10: serial@2afc0000 {
+> +
+> +	uart11: serial@2afd0000 {
+> +
+
+[..]
+
+> +
+> +	pinctrl: pinctrl {
+> +		compatible = "rockchip,rk3576-pinctrl";
+> +		rockchip,grf = <&ioc_grf>;
+> +		rockchip,sys-grf = <&sys_grf>;
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+
+> +		gpio0: gpio@27320000 {
+
+The use of gpio nodes as subnode of pinctrl is deprecated.
+
+patternProperties:
+  "gpio@[0-9a-f]+$":
+    type: object
+
+    $ref: /schemas/gpio/rockchip,gpio-bank.yaml#
+    deprecated: true
+
+    unevaluatedProperties: false
+
+> +			compatible = "rockchip,gpio-bank";
+
+When in use as separate node the compatible must be SoC related.
+
+Question for the maintainers: Extra entry to rockchip,gpio-bank.yaml ??
+
+> +			reg = <0x0 0x27320000 0x0 0x200>;
+> +			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
+> +			clocks = <&cru PCLK_GPIO0>, <&cru DBCLK_GPIO0>;
+> +
+> +			gpio-controller;
+> +			#gpio-cells = <2>;
+> +			gpio-ranges = <&pinctrl 0 0 32>;
+> +			interrupt-controller;
+> +			#interrupt-cells = <2>;
+> +		};
+> +
+> +		gpio1: gpio@2ae10000 {
+> +
+> +		gpio2: gpio@2ae20000 {
+> +
+> +		gpio3: gpio@2ae30000 {
+> +
+> +		gpio4: gpio@2ae40000 {
+> +	};
+> +};
+> +
+> +#include "rk3576-pinctrl.dtsi"
