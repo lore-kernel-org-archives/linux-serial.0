@@ -1,41 +1,59 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B641BE85C;
-	Fri, 16 Aug 2024 16:58:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442FC2F43;
+	Fri, 16 Aug 2024 18:23:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723827498; cv=none; b=Xg9L0qgXAbbl9aKCt4UE6NxKdi+XJ2eKUv0MAX2zHfgXHqjukpfj5sWfkKeqAsgQCVIUULpKD16V6SjPgr3kgCBLzT7L3tfhQrtDrYyWkRShUaB7E30DVl7liZN8Z8pSatx8m3iiSsWR31mi7is4OASkzVeiFjRQV0lrduvJfrc=
+	t=1723832598; cv=none; b=jUXJvs8Nna+QdBoNcPDv63nJUh4BSqWGW4pEswlTZaZkopNgW04oQFWmxpNwREfJVIWtt2D+qIggKp+/yBzQR885w8FgSZSN8cm7VZh+YYcpLRsT0CvGbf25XUyf6BCVRsW5ziwwEiPEH1Z3RYPDuOP+/RRQHBnoW/REk7QfAw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723827498; c=relaxed/simple;
-	bh=1n3jBbJPQqCuKXm/cOvjKzuwWNrLdImcAoHrvaKaDeQ=;
+	s=arc-20240116; t=1723832598; c=relaxed/simple;
+	bh=9nBk+OVqT2U6ithIdAtJd6yyta5mV3miRfL5OUOo/Uw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=H39YTAEx7mAboArvPwrr3oZ4kNA1rRuM58O1UoQJCoEhQfwhVylBm+2+Xy+FccKkR25uf/e8ftHAGw+gObn8I9mjb5O2sdoW7WZFVHhllOcFqptR9tSLj6Hm/OwmmNTO2T8RHXGmv/wuGnlDDV0aMdwgSbSvNDjej9RumYsBIcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=GlsQntRR; arc=none smtp.client-ip=212.227.17.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	 In-Reply-To:Content-Type; b=p02zA/QGYjgc4MgCL24CUCERnKL/Hi7MKE7MUZscnXT104Soo69ys1PoNmuyyfMPAYk5oehH0DTLdFRlg2FWjChvXDhyZNw+qIJUrZTtkes8Fnug6BTvADPHxldNwlj+2OeDdhwHjg0C0sITf0B+x7sL5eQvpQpXUS5wP0greK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BXjI6/u/; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="GlsQntRR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1723827463; x=1724432263; i=wahrenst@gmx.net;
-	bh=1n3jBbJPQqCuKXm/cOvjKzuwWNrLdImcAoHrvaKaDeQ=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=GlsQntRRH5E79PQ4ks2ICsCRiLKuJeXQK7YJa2sMH/QWSW32EmHGRBT0tU2I6vSb
-	 MgMI1cj8HCqg4Nw8eH79IIPnidPHuh6gr+N8ZRFkkXhFczBn0edvTwkeuJ8OG81VT
-	 kNPzi/gF4cDTaDSJVlxizvc92xVaJzcBaNYPer79cAa9pw8g6KYWjomqoKKDRhwEa
-	 ed/kEcmcSSol1ej2UZN9BHRlkoHDE64fbxZX/rrnR+napcQVq1Yy5c5QUl1KaFg/4
-	 TtWnKpMEN3+GJOMWv5Y/ranvcJolVv8PdFIoRlwCmbE+lEquKkJQPEdtTkUyw5+ox
-	 txqczpJ/WuOJI2hDzw==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0JM-1ruiEh1M1Q-00ogF8; Fri, 16
- Aug 2024 18:57:43 +0200
-Message-ID: <282f4558-0357-4a8c-983e-b87b50c836a7@gmx.net>
-Date: Fri, 16 Aug 2024 18:57:40 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BXjI6/u/"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-428243f928cso16554225e9.3;
+        Fri, 16 Aug 2024 11:23:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723832595; x=1724437395; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tt1M3N9em0+Z01XyYhLmbINqjYflUEk+VUJQL5UpS3Q=;
+        b=BXjI6/u/B0bv1FsM1LeJkdIypUl8J1D7nm3Yt9p8PwASQ4TJQQSe6lv9E6zhfcvVcS
+         ISR0QkxuU4Ce0R4WYwobdZp2RIKjxxXXTsjLFZ9ZErGZuChKW0p7fB04Orb2zy41YgaO
+         YEXtNc6Cy+4vUWv33XEPUgwDSU0nEVnT8SoJ3ffO1Aq741WFAYXPlQO7bbcjJeqi105Q
+         nX+BpCCDPACMdU/BjifTS5kBRQJBb9zfYkGsnlNOnV0q8n/MdmOCcPuOmNS76JReMvlI
+         byKVik5y7Z+yWrFqYGL3jglGBGJZYO+My6anfUgwOUPG81D3DLhNHuzC8wgedPLMVOVv
+         6sqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723832595; x=1724437395;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tt1M3N9em0+Z01XyYhLmbINqjYflUEk+VUJQL5UpS3Q=;
+        b=ksKvWRz2esc5ivfXMcXX9s4JrDpbOE3TN6NjpVLV46lef1YEOS7bc+a7/2M03kU6t2
+         T8baLvvAZzjnwOpKP/K5SafYoHXTwwjxsmzclH4cEyssXzipFEzkAnR41IxMgcjqb4fJ
+         3+US6/Tm+y0nXpAVX+pwVo3yM57fC9AcJsoc75N+XYgN7gLc/qQpsHOzAwaFI2MUJOoA
+         J6Y7YZs5nv8x3S9NYBRmoS1k4spwFmhryY1I9S3vwf0QSVQicA5rOO04Zu0/ooD2V8vV
+         RNI1XzXind0soats61fU1bwrq0k4l0YZxRhCm67X9a8b0BbOe+pbHXbcKZvaLd1uIxPB
+         KxJQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW0yQdrAJ5pfi3P4Xy7l+wM8EFKBaJcdtAgcd/JPOCGZyge8swI2e7CV/klvrST+TIv9VHNpwVN9kfOuTEpb77s7WtQSG4D/mR2y/NWB6YDG17tFJDCaWFU/ZNHcg8puFVW7h+8kWQ4l8qvIJqJeO52/uJnLvwxxu/OfXbhCk37NQF0sYzbK+W0hlH0KN0zAHIsHg/57JCSPbC4mIyXHY/xCRWqsy27tocg4v24A0BAQkLlvl89HCYvH+cMTkiW0ujQsYGd/iSw
+X-Gm-Message-State: AOJu0YzToEltElSQjxUsh+r4rZTly1PpfGfeh/Bog4yH2HkKAOQorEk8
+	i4fIVuKpL7AurwMDt+6THSASnTNvZ8GbesGwCFbW6a0T5j1FtcsC
+X-Google-Smtp-Source: AGHT+IGe7kGpO1ikYBDLyoCv4FPzIfHwsornnyTjsVTL0wNifZExOmpdSgtf+WuYd8hTh3t/puS2HA==
+X-Received: by 2002:a05:600c:5029:b0:426:59fc:cdec with SMTP id 5b1f17b1804b1-429ed7af8f1mr28923365e9.21.1723832595196;
+        Fri, 16 Aug 2024 11:23:15 -0700 (PDT)
+Received: from ?IPV6:2a02:8071:b783:140:927c:82ba:d32d:99c1? ([2a02:8071:b783:140:927c:82ba:d32d:99c1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ded35991sm82383415e9.21.2024.08.16.11.23.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Aug 2024 11:23:14 -0700 (PDT)
+Message-ID: <03af1025-f946-4eb2-a41e-28f0436e60e6@gmail.com>
+Date: Fri, 16 Aug 2024 20:23:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,149 +61,49 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
- domain off
-To: Doug Anderson <dianders@chromium.org>,
- Ulf Hansson <ulf.hansson@linaro.org>
-Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
- Minas Harutyunyan <hminas@synopsys.com>,
- Dave Stevenson <dave.stevenson@raspberrypi.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
- Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
- bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
+Subject: Re: [PATCH v3 3/3] platform/surface: Add OF support
+To: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Florian Fainelli <florian.fainelli@broadcom.com>,
- Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Jiri Slaby <jirislaby@kernel.org>
-References: <20240728114200.75559-1-wahrenst@gmx.net>
- <20240728130029.78279-1-wahrenst@gmx.net>
- <20240728130029.78279-6-wahrenst@gmx.net>
- <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
- <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
- <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
- <51b63ea5-808e-41e4-92a9-50e20afd155b@gmx.net>
- <CAD=FV=XHnKJT4ubmV8EPRYi-qPFH21tNFzWEWMezY2PGEFEKrw@mail.gmail.com>
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
+ <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
 Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-In-Reply-To: <CAD=FV=XHnKJT4ubmV8EPRYi-qPFH21tNFzWEWMezY2PGEFEKrw@mail.gmail.com>
+From: Maximilian Luz <luzmaximilian@gmail.com>
+In-Reply-To: <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:hQgCYaYLhTBZZ+78rEMu0DvJ/325XlhiOI9tGtnfMaYX52Plshn
- oFdEr5n1FeBjSQmsb8CY2AMCyBZMZp6ejcNwKWE2t/qpqTsbTHL3sEHqHZdM3xLvxnSmZLx
- 60XTyGgKPSZGFFSTotcO5GAZVUwi7R4MEI2kYk074bgLuXqbydhRNGHIJ6mB4+Npg21ZC6G
- baSBrM/5yL2YaHOh6VjvA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:KUrtCUdNtMY=;HUSH2Aztj1GRgt7R0Vx7g4hK+0D
- svWcViDjqj2MZV1EYU/E/E805k0z8FqxhQboa1OBQjcx1koCvPoci5NxK/4abU2mQFO2IdEX1
- e/XAPyCwwijwhei0B1l/pBQ0Sg5k4ObNcLQCgF2je2kJx+h+PNp/lTWxL5TI6WdJFi3OjSKFb
- HB0xc4NUF8tIxTy64nUoLO0ekgFhKqVL6UK4ONJrXq+BYZOk3USpyJix8JGo2kxopFPpvqv/U
- uTy10FS69eyXSaDDBsS6/pI7j6ICJxye6dUg97NYxalOjNWPHnYwvt5uYQWmaPhGnpiDrL8Ro
- HwiBEgIJrTtS7IbFqCTkFMlYPheiQWSaBOcZ4o7t+smMl8uT6Mb2zZtxvFy4m9aFwNujTGjWb
- bh78PZQgw0JI4ddnDZRDrHExMK6/vjwpUtfT8GoJZ2dEK5IFv1MpMnm7Xou7JEQrHN/ru4B+h
- O8iDEX892tZPc8soSPzQyr7xogOUNOKMRY2//EuJatXO4yyPfsP9pCPdEO7PVxW/Bxqb0lqaw
- eAbOHFnvgAtXXBlXdlKUtWD8ee42Q52IoeHVb/WEC+7FUN/G0m6eeZ7dtoUZJc0UnnBMB13AK
- KxAlpMtVnBIQ7VT7T1ZH7E8uB3ovNdkW1sVQNNoY/Qp0S8wkLnG6ZlHvGfAbFawMPb5Vr6WCU
- gukCcC6MRK0mZBp/LiGzYIgs8XLv6MvJg1CnuJgjRyKtZn4+LjSbOmO1aW2Ez5Fkbegkd6nYz
- qNestUoewQBwflkEOoQOKsjPPjORXUMQax2Jt+rHOkAQL1aYHTuX5HD4H8FFJweA25lXRmVpi
- NAOdC93yUH3uMikAgDNOVKdA==
+Content-Transfer-Encoding: 7bit
 
-Hi Doug,
+On 8/14/24 12:27 PM, Konrad Dybcio wrote:
+> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+> 
+> Add basic support for registering the aggregator module on Device Tree-
+> based platforms. These include at least three generations of Qualcomm
+> Snapdragon-based Surface devices:
+> 
+> - SC8180X / SQ1 / SQ2: Pro X,
+> - SC8280XP / SQ3: Devkit 2023, Pro 9
+> - X Elite: Laptop 7 / Pro11
+> 
+> Thankfully, the aggregators on these seem to be configured in an
+> identical way, which allows for using these settings as defaults and
+> no DT properties need to be introduced (until that changes, anyway).
+> 
+> Based on the work done by Maximilian Luz, largely rewritten.
+> 
+> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
+> ---
 
-Am 15.08.24 um 21:37 schrieb Doug Anderson:
-> Hi,
->
-> On Wed, Aug 14, 2024 at 2:48=E2=80=AFPM Stefan Wahren <wahrenst@gmx.net>=
- wrote:
->>>> You're saying that your
->>>> registers get saved _unless_ the power domain gets turned off, right?
->> On BCM2835 there is no need to store the registers because there is no
->> power management supported by USB core except of the power domain. So
->> DWC2 don't expect a register loss.
->>>> ...and the device core keeps power domains on for suspended devices i=
-f
->>>> they are wakeup sources, which makes sense.
->>>>
->>>> So with that, your patch sounds like a plausible way to do it. I gues=
-s
->>>> one other way to do it would be some sort of "canary" approach. You
->>>> could _always_ save registers and then, at resume time, you could
->>>> detect if some "canary" register had reset to its power-on default. I=
-f
->>>> you see this then you can assume power was lost and re-init all the
->>>> registers. This could be pretty much any register that you know won't
->>>> be its power on default. In some ways a "canary" approach is uglier
->>>> but it also might be more reliable across more configurations?
->> I don't have enough knowledge about DWC2 and i also don't have the
->> databook to figure out if there is a magic register which could be used
->> for the canary approach. But all these different platforms, host vs
->> gadget role, different low modes let me think the resulting solution
->> would be also fragile and ugly.
-> I won't admit to having a DWC2 databook. ;-)
-you convinced me of the canary approach. I missed one critical point the
-whole time. The used power domain notifier can/will be called while the
-USB clock is disabled. So this worked for the Raspberry Pi because the
-clock is fixed.
-> ...but don't think it's too hard to find a good canary. What about
-> "GAHBCFG_GLBL_INTR_EN" ? From a quick glance it looks like the driver
-> seems to set that bit during driver startup and then it stays on until
-> driver shutdown. The databook that I definitely won't admit to having
-> almost certainly says that this register resets to 0 on all hardware
-> and it's applicable to both host and device. I think you could say
-> that if the register is 0 at resume time that registers must have been
-> lost and you can restore them.
-There are several reason to not use the GAHBCFG_GLBL_INTR_EN. One is the
-fact that the driver disabled this flag at several places, not just on
-shutdown. Another reason is that the register layout of GAHBCFG on
-BCM2835 is customized ( see last page of datasheet [1]).
+Looks good to me and works without issues on my Surface Pro X.
 
-I dumped the relevant registers with a unmodified dwc2 driver and the
-outcome is a little bit unexpected (0 =3D PRE_POWER_OFF, 3 =3D POWER_ON):
+Thanks again for picking this up!
 
-[=C2=A0 169.101071] dwc2 20980000.usb: dwc2_suspend enter GAHBCFG =3D 0000=
-0031
-[=C2=A0 169.101143] dwc2 20980000.usb: dwc2_suspend enter GUSBCFG =3D 2000=
-1707
-[=C2=A0 169.101172] dwc2 20980000.usb: dwc2_suspend enter GINTMSK =3D f300=
-0806
-[=C2=A0 169.105888] dwc2 20980000.usb: dwc2_power_notifier: 0 GAHBCFG =3D =
-00000031
-[=C2=A0 169.105962] dwc2 20980000.usb: dwc2_power_notifier: 0 GUSBCFG =3D =
-20001707
-[=C2=A0 169.105994] dwc2 20980000.usb: dwc2_power_notifier: 0 GINTMSK =3D =
-f3000806
-[=C2=A0 174.248046] dwc2 20980000.usb: dwc2_power_notifier: 3 GAHBCFG =3D =
-0000001f
-[=C2=A0 174.248118] dwc2 20980000.usb: dwc2_power_notifier: 3 GUSBCFG =3D =
-20402700
-[=C2=A0 174.248148] dwc2 20980000.usb: dwc2_power_notifier: 3 GINTMSK =3D =
-f3000806
-[=C2=A0 174.253086] dwc2 20980000.usb: dwc2_resume enter: GAHBCFG =3D 0000=
-001f
-[=C2=A0 174.253162] dwc2 20980000.usb: dwc2_resume enter: GUSBCFG =3D 2040=
-2700
-[=C2=A0 174.253190] dwc2 20980000.usb: dwc2_resume enter: GINTMSK =3D f300=
-0806
-> I guess if that doesn't work then "GUSBCFG_TOUTCAL" could be used (I
-> think that resets to 0 but must be initted to non-0 by the driver).
-Yes this looks good and match with the trace above. The driver seems to
-initialize this once and a quick test seems to work so far. I will stick
-to this.
-> Yet another register that could probably work as a canary would be
-> "GINTMSK". I believe that inits to all 0 (everything is masked) and
-> obviously to use the device we've got to unmask _some_ interrupts.
-I don't know why but this didn't worked according to trace, but i also
-didn't noticed a interrupt after enabling of the power domain.Thanks [1]
--
-https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pd=
-f
-> I can look for more, if need be.
->
-> -Doug
->
-
+Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
+Tested-by: Maximilian Luz <luzmaximilian@gmail.com>
