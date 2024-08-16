@@ -1,99 +1,191 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90AB084A50;
-	Fri, 16 Aug 2024 06:46:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B641BE85C;
+	Fri, 16 Aug 2024 16:58:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723790777; cv=none; b=eUFcrvnJsBvnJI67lKFt6R+Nf7EjswFC66RyGo4zkh4Nh/5AmgDFfCpsbJCFu6v2Nx/WFXgrAsCE+yJdeAhWISiPmOJyjB/5C9iZbN0E6uqXDUZY6q6tAKNQqMreKAXA4/fxdUJY3Y2s1wMudo4fkqm2fM/ddo7T36QYjRA7uGM=
+	t=1723827498; cv=none; b=Xg9L0qgXAbbl9aKCt4UE6NxKdi+XJ2eKUv0MAX2zHfgXHqjukpfj5sWfkKeqAsgQCVIUULpKD16V6SjPgr3kgCBLzT7L3tfhQrtDrYyWkRShUaB7E30DVl7liZN8Z8pSatx8m3iiSsWR31mi7is4OASkzVeiFjRQV0lrduvJfrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723790777; c=relaxed/simple;
-	bh=To4DwKZdAd1zrbvpD+Ji8ozx8eGEkCykPZqh6w3t1TM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Izmvq07hGGuaw41t7O7Q9TKHpmB1PqlszSK9IArGk7wRZGyOlkYbjs+J0Iulf8eGdVrJMnxEnCyodbrnPRnYavR3GCuCRQ67g/3CwfS5Zyf/84HxFmoTb8JanqU/TiaPOi7LFCuxWwPLeCr01c/YrdtC2d0+YN1/b5FIyhIUJT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=cK+AVozh; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1723827498; c=relaxed/simple;
+	bh=1n3jBbJPQqCuKXm/cOvjKzuwWNrLdImcAoHrvaKaDeQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=H39YTAEx7mAboArvPwrr3oZ4kNA1rRuM58O1UoQJCoEhQfwhVylBm+2+Xy+FccKkR25uf/e8ftHAGw+gObn8I9mjb5O2sdoW7WZFVHhllOcFqptR9tSLj6Hm/OwmmNTO2T8RHXGmv/wuGnlDDV0aMdwgSbSvNDjej9RumYsBIcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=GlsQntRR; arc=none smtp.client-ip=212.227.17.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="cK+AVozh"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=To4DwKZdAd1zrbvpD+Ji8ozx8eGEkCykPZqh6w3t1TM=; b=cK+AVozhS2b0KOClwOoGUpumHo
-	mMnwTsLmwvQ6KswCL88xMi32RjDFQi632p0h8Rq88UG20IPm24SPs29cgn/II3OLzUUv+X5VL1XOT
-	2bfxW6oKfkh9Cn5xSjNOOaDrh4NI3b3miJJKfDbRKNJSOQKR+7NohcOtsxOuhqe+wykMr4ilWLKAq
-	UN7ITgsR+iFNbOkGOpRMSPQunkkR7cbKYKws2rhodnxNJCGIRRJ9bl1JyW032Uu8yckgvVgKnTKU+
-	8uzasY3WO7ODR4N8ogw0gtpREabJav8/aKjf1F1dFLqcK/WstA2kF870ydhTl5fgjxjfA+9VPCxc6
-	uIDz/+Bg==;
-Received: from i53875a9f.versanet.de ([83.135.90.159] helo=diego.localnet)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1seqig-0006nr-A2; Fri, 16 Aug 2024 08:45:54 +0200
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
- Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
- Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
- Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
- Ondrej Jirman <megi@xff.cz>, Yao Zi <ziyao@disroot.org>
-Cc: Celeste Liu <CoelacanthusHex@gmail.com>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] arm64: dts: rockchip: Add base DT for rk3528 SoC
-Date: Fri, 16 Aug 2024 08:45:53 +0200
-Message-ID: <22683755.GTVRSBfYgM@diego>
-In-Reply-To: <Zr7z-SOFIgcuplq-@ziyaolaptop.my.domain>
-References:
- <20240814155014.18097-1-ziyao@disroot.org> <10324095.IZOipudI63@diego>
- <Zr7z-SOFIgcuplq-@ziyaolaptop.my.domain>
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="GlsQntRR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1723827463; x=1724432263; i=wahrenst@gmx.net;
+	bh=1n3jBbJPQqCuKXm/cOvjKzuwWNrLdImcAoHrvaKaDeQ=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=GlsQntRRH5E79PQ4ks2ICsCRiLKuJeXQK7YJa2sMH/QWSW32EmHGRBT0tU2I6vSb
+	 MgMI1cj8HCqg4Nw8eH79IIPnidPHuh6gr+N8ZRFkkXhFczBn0edvTwkeuJ8OG81VT
+	 kNPzi/gF4cDTaDSJVlxizvc92xVaJzcBaNYPer79cAa9pw8g6KYWjomqoKKDRhwEa
+	 ed/kEcmcSSol1ej2UZN9BHRlkoHDE64fbxZX/rrnR+napcQVq1Yy5c5QUl1KaFg/4
+	 TtWnKpMEN3+GJOMWv5Y/ranvcJolVv8PdFIoRlwCmbE+lEquKkJQPEdtTkUyw5+ox
+	 txqczpJ/WuOJI2hDzw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mk0JM-1ruiEh1M1Q-00ogF8; Fri, 16
+ Aug 2024 18:57:43 +0200
+Message-ID: <282f4558-0357-4a8c-983e-b87b50c836a7@gmx.net>
+Date: Fri, 16 Aug 2024 18:57:40 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V2 14/16] WIP: usb: dwc2: Implement recovery after PM
+ domain off
+To: Doug Anderson <dianders@chromium.org>,
+ Ulf Hansson <ulf.hansson@linaro.org>
+Cc: =?UTF-8?Q?Ma=C3=ADra_Canal?= <mcanal@igalia.com>,
+ Minas Harutyunyan <hminas@synopsys.com>,
+ Dave Stevenson <dave.stevenson@raspberrypi.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Scott Branden <sbranden@broadcom.com>, Ray Jui <rjui@broadcom.com>,
+ Artur Petrosyan <Arthur.Petrosyan@synopsys.com>,
+ Peter Robinson <pbrobinson@gmail.com>, dri-devel@lists.freedesktop.org,
+ bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>,
+ Maxime Ripard <mripard@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Jiri Slaby <jirislaby@kernel.org>
+References: <20240728114200.75559-1-wahrenst@gmx.net>
+ <20240728130029.78279-1-wahrenst@gmx.net>
+ <20240728130029.78279-6-wahrenst@gmx.net>
+ <65de7db8-4f81-4c31-be8d-3a03c9aee989@gmx.net>
+ <CAD=FV=W7sdi1+SHfhY6RrjK32r8iAGe4w+O_u5Sp982vgBU6EQ@mail.gmail.com>
+ <CAPDyKFpj0C1Bifmx=4zH3r8YooOrNfn_iDB+1sfRb0gTaKnT2Q@mail.gmail.com>
+ <51b63ea5-808e-41e4-92a9-50e20afd155b@gmx.net>
+ <CAD=FV=XHnKJT4ubmV8EPRYi-qPFH21tNFzWEWMezY2PGEFEKrw@mail.gmail.com>
+Content-Language: en-US
+From: Stefan Wahren <wahrenst@gmx.net>
+In-Reply-To: <CAD=FV=XHnKJT4ubmV8EPRYi-qPFH21tNFzWEWMezY2PGEFEKrw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+X-Provags-ID: V03:K1:hQgCYaYLhTBZZ+78rEMu0DvJ/325XlhiOI9tGtnfMaYX52Plshn
+ oFdEr5n1FeBjSQmsb8CY2AMCyBZMZp6ejcNwKWE2t/qpqTsbTHL3sEHqHZdM3xLvxnSmZLx
+ 60XTyGgKPSZGFFSTotcO5GAZVUwi7R4MEI2kYk074bgLuXqbydhRNGHIJ6mB4+Npg21ZC6G
+ baSBrM/5yL2YaHOh6VjvA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:KUrtCUdNtMY=;HUSH2Aztj1GRgt7R0Vx7g4hK+0D
+ svWcViDjqj2MZV1EYU/E/E805k0z8FqxhQboa1OBQjcx1koCvPoci5NxK/4abU2mQFO2IdEX1
+ e/XAPyCwwijwhei0B1l/pBQ0Sg5k4ObNcLQCgF2je2kJx+h+PNp/lTWxL5TI6WdJFi3OjSKFb
+ HB0xc4NUF8tIxTy64nUoLO0ekgFhKqVL6UK4ONJrXq+BYZOk3USpyJix8JGo2kxopFPpvqv/U
+ uTy10FS69eyXSaDDBsS6/pI7j6ICJxye6dUg97NYxalOjNWPHnYwvt5uYQWmaPhGnpiDrL8Ro
+ HwiBEgIJrTtS7IbFqCTkFMlYPheiQWSaBOcZ4o7t+smMl8uT6Mb2zZtxvFy4m9aFwNujTGjWb
+ bh78PZQgw0JI4ddnDZRDrHExMK6/vjwpUtfT8GoJZ2dEK5IFv1MpMnm7Xou7JEQrHN/ru4B+h
+ O8iDEX892tZPc8soSPzQyr7xogOUNOKMRY2//EuJatXO4yyPfsP9pCPdEO7PVxW/Bxqb0lqaw
+ eAbOHFnvgAtXXBlXdlKUtWD8ee42Q52IoeHVb/WEC+7FUN/G0m6eeZ7dtoUZJc0UnnBMB13AK
+ KxAlpMtVnBIQ7VT7T1ZH7E8uB3ovNdkW1sVQNNoY/Qp0S8wkLnG6ZlHvGfAbFawMPb5Vr6WCU
+ gukCcC6MRK0mZBp/LiGzYIgs8XLv6MvJg1CnuJgjRyKtZn4+LjSbOmO1aW2Ez5Fkbegkd6nYz
+ qNestUoewQBwflkEOoQOKsjPPjORXUMQax2Jt+rHOkAQL1aYHTuX5HD4H8FFJweA25lXRmVpi
+ NAOdC93yUH3uMikAgDNOVKdA==
 
-Am Freitag, 16. August 2024, 08:39:38 CEST schrieb Yao Zi:
-> On Thu, Aug 15, 2024 at 06:43:20PM +0200, Heiko St=FCbner wrote:
-> > Hi,
-> >=20
-> > Am Mittwoch, 14. August 2024, 17:50:13 CEST schrieb Yao Zi:
-> > > This initial device tree describes CPU, interrupts and UART on the ch=
-ip
-> > > and is able to boot into basic kernel with only UART. Cache informati=
-on
-> > > is omitted for now as there is no precise documentation. Support for
-> > > other features will be added later.
-> > >=20
-> > > Signed-off-by: Yao Zi <ziyao@disroot.org>
-> >=20
-> > not sure if you have seen Krzysztof's comment yesterday, that he found
-> > the soc node getting documented in 2019 [0].
->=20
-> Oops, I don't read that before sending the series.
+Hi Doug,
 
-no worries, I think both mails (the linked on and your v3) happened at=20
-nearly the same time on wednesday.
+Am 15.08.24 um 21:37 schrieb Doug Anderson:
+> Hi,
+>
+> On Wed, Aug 14, 2024 at 2:48=E2=80=AFPM Stefan Wahren <wahrenst@gmx.net>=
+ wrote:
+>>>> You're saying that your
+>>>> registers get saved _unless_ the power domain gets turned off, right?
+>> On BCM2835 there is no need to store the registers because there is no
+>> power management supported by USB core except of the power domain. So
+>> DWC2 don't expect a register loss.
+>>>> ...and the device core keeps power domains on for suspended devices i=
+f
+>>>> they are wakeup sources, which makes sense.
+>>>>
+>>>> So with that, your patch sounds like a plausible way to do it. I gues=
+s
+>>>> one other way to do it would be some sort of "canary" approach. You
+>>>> could _always_ save registers and then, at resume time, you could
+>>>> detect if some "canary" register had reset to its power-on default. I=
+f
+>>>> you see this then you can assume power was lost and re-init all the
+>>>> registers. This could be pretty much any register that you know won't
+>>>> be its power on default. In some ways a "canary" approach is uglier
+>>>> but it also might be more reliable across more configurations?
+>> I don't have enough knowledge about DWC2 and i also don't have the
+>> databook to figure out if there is a magic register which could be used
+>> for the canary approach. But all these different platforms, host vs
+>> gadget role, different low modes let me think the resulting solution
+>> would be also fragile and ugly.
+> I won't admit to having a DWC2 databook. ;-)
+you convinced me of the canary approach. I missed one critical point the
+whole time. The used power domain notifier can/will be called while the
+USB clock is disabled. So this worked for the Raspberry Pi because the
+clock is fixed.
+> ...but don't think it's too hard to find a good canary. What about
+> "GAHBCFG_GLBL_INTR_EN" ? From a quick glance it looks like the driver
+> seems to set that bit during driver startup and then it stays on until
+> driver shutdown. The databook that I definitely won't admit to having
+> almost certainly says that this register resets to 0 on all hardware
+> and it's applicable to both host and device. I think you could say
+> that if the register is 0 at resume time that registers must have been
+> lost and you can restore them.
+There are several reason to not use the GAHBCFG_GLBL_INTR_EN. One is the
+fact that the driver disabled this flag at several places, not just on
+shutdown. Another reason is that the register layout of GAHBCFG on
+BCM2835 is customized ( see last page of datasheet [1]).
 
+I dumped the relevant registers with a unmodified dwc2 driver and the
+outcome is a little bit unexpected (0 =3D PRE_POWER_OFF, 3 =3D POWER_ON):
 
-> > I guess that counts as a strong suggestion. Not sure how you're feeling
-> > about that, but I guess we could move to that scheme for new socs.
-> >=20
-> > So would you be willing to move the mmio-devices to a soc node?
-> > (stuff with mmio addresses in the node name)
->=20
-> I'm willing to, there will be patch v4.
-
-thanks a lot :-)
-
-Heiko
-
+[=C2=A0 169.101071] dwc2 20980000.usb: dwc2_suspend enter GAHBCFG =3D 0000=
+0031
+[=C2=A0 169.101143] dwc2 20980000.usb: dwc2_suspend enter GUSBCFG =3D 2000=
+1707
+[=C2=A0 169.101172] dwc2 20980000.usb: dwc2_suspend enter GINTMSK =3D f300=
+0806
+[=C2=A0 169.105888] dwc2 20980000.usb: dwc2_power_notifier: 0 GAHBCFG =3D =
+00000031
+[=C2=A0 169.105962] dwc2 20980000.usb: dwc2_power_notifier: 0 GUSBCFG =3D =
+20001707
+[=C2=A0 169.105994] dwc2 20980000.usb: dwc2_power_notifier: 0 GINTMSK =3D =
+f3000806
+[=C2=A0 174.248046] dwc2 20980000.usb: dwc2_power_notifier: 3 GAHBCFG =3D =
+0000001f
+[=C2=A0 174.248118] dwc2 20980000.usb: dwc2_power_notifier: 3 GUSBCFG =3D =
+20402700
+[=C2=A0 174.248148] dwc2 20980000.usb: dwc2_power_notifier: 3 GINTMSK =3D =
+f3000806
+[=C2=A0 174.253086] dwc2 20980000.usb: dwc2_resume enter: GAHBCFG =3D 0000=
+001f
+[=C2=A0 174.253162] dwc2 20980000.usb: dwc2_resume enter: GUSBCFG =3D 2040=
+2700
+[=C2=A0 174.253190] dwc2 20980000.usb: dwc2_resume enter: GINTMSK =3D f300=
+0806
+> I guess if that doesn't work then "GUSBCFG_TOUTCAL" could be used (I
+> think that resets to 0 but must be initted to non-0 by the driver).
+Yes this looks good and match with the trace above. The driver seems to
+initialize this once and a quick test seems to work so far. I will stick
+to this.
+> Yet another register that could probably work as a canary would be
+> "GINTMSK". I believe that inits to all 0 (everything is masked) and
+> obviously to use the device we've got to unmask _some_ interrupts.
+I don't know why but this didn't worked according to trace, but i also
+didn't noticed a interrupt after enabling of the power domain.Thanks [1]
+-
+https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pd=
+f
+> I can look for more, if need be.
+>
+> -Doug
+>
 
