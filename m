@@ -1,109 +1,140 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442FC2F43;
-	Fri, 16 Aug 2024 18:23:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38251FBA;
+	Sat, 17 Aug 2024 01:11:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723832598; cv=none; b=jUXJvs8Nna+QdBoNcPDv63nJUh4BSqWGW4pEswlTZaZkopNgW04oQFWmxpNwREfJVIWtt2D+qIggKp+/yBzQR885w8FgSZSN8cm7VZh+YYcpLRsT0CvGbf25XUyf6BCVRsW5ziwwEiPEH1Z3RYPDuOP+/RRQHBnoW/REk7QfAw8=
+	t=1723857085; cv=none; b=fdLxDlWUgonciwIk2HBjpVh+NjnxMhjwX51Kc4tMhUH0ziHkx5T365+ZI1NHQA/UooYt8e6XHyZ54HTIi8/mrXL80zHbDRBrFCrNl5isoQrFiqHK4zXbKZTJSPdF3KBm8t9+dQECfoRvdCKEPLQNjG+P0vMbDwhejULdr+kBAjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723832598; c=relaxed/simple;
-	bh=9nBk+OVqT2U6ithIdAtJd6yyta5mV3miRfL5OUOo/Uw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=p02zA/QGYjgc4MgCL24CUCERnKL/Hi7MKE7MUZscnXT104Soo69ys1PoNmuyyfMPAYk5oehH0DTLdFRlg2FWjChvXDhyZNw+qIJUrZTtkes8Fnug6BTvADPHxldNwlj+2OeDdhwHjg0C0sITf0B+x7sL5eQvpQpXUS5wP0greK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BXjI6/u/; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1723857085; c=relaxed/simple;
+	bh=g8Geri2XNbL38pyOWzp7d2MgOy9oPpFutYakSLbV27M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RPS2hwXnXpnG0yi4B4aQ8mYcCQpP1xMdURL7UATKekAlHJtWK0Xk1Gbr4E88HwhG+HbsDWGr2DtJ9i0rSBo62FLtsKFFVGk3lB+Jl3fDyBiJvbM+bUQpDtYuJy1GgrNQdBtEYxYPfme+KAXQIE+UhO8dQdvGGxUE2S7UvfSxAY4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hYv/bv5X; arc=none smtp.client-ip=209.85.219.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BXjI6/u/"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-428243f928cso16554225e9.3;
-        Fri, 16 Aug 2024 11:23:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hYv/bv5X"
+Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-e0ec934a1fdso2421481276.0;
+        Fri, 16 Aug 2024 18:11:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723832595; x=1724437395; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tt1M3N9em0+Z01XyYhLmbINqjYflUEk+VUJQL5UpS3Q=;
-        b=BXjI6/u/B0bv1FsM1LeJkdIypUl8J1D7nm3Yt9p8PwASQ4TJQQSe6lv9E6zhfcvVcS
-         ISR0QkxuU4Ce0R4WYwobdZp2RIKjxxXXTsjLFZ9ZErGZuChKW0p7fB04Orb2zy41YgaO
-         YEXtNc6Cy+4vUWv33XEPUgwDSU0nEVnT8SoJ3ffO1Aq741WFAYXPlQO7bbcjJeqi105Q
-         nX+BpCCDPACMdU/BjifTS5kBRQJBb9zfYkGsnlNOnV0q8n/MdmOCcPuOmNS76JReMvlI
-         byKVik5y7Z+yWrFqYGL3jglGBGJZYO+My6anfUgwOUPG81D3DLhNHuzC8wgedPLMVOVv
-         6sqA==
+        d=gmail.com; s=20230601; t=1723857082; x=1724461882; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ug8rihSZJE889SueAoqTX9ZWSfO/z3Gsu452Tq7F+6A=;
+        b=hYv/bv5Xi2sco/dleOYF1v1u0282L5QSuvtFGPcv6+YQDWSaX32MnURGMD97DP95rH
+         n+zdx68SRMkrny5c8zG9tCQNPdkgPYIe+COD9uN9n/eqhDI2hwjFiOqEqMKd2GDNqZKc
+         tDPGIO2/dkv/PjugX7gwTsEXW8Ehik/LHXDalg0iifwufWIsP40UCjDCoxZoR30p5PxQ
+         k4piSoCF4/WusUh5AFpE/1fXdwXFazg8rirltU2uO7Jg7//7P/s3Lth1ROiemjMq8nM1
+         8uYcibNyYqcbBPE7G+MOOf290YSe6YxovoP5XZMwJfmAOrxTZmMX7Vg0hGVoZrQ8cICc
+         WyxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723832595; x=1724437395;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=tt1M3N9em0+Z01XyYhLmbINqjYflUEk+VUJQL5UpS3Q=;
-        b=ksKvWRz2esc5ivfXMcXX9s4JrDpbOE3TN6NjpVLV46lef1YEOS7bc+a7/2M03kU6t2
-         T8baLvvAZzjnwOpKP/K5SafYoHXTwwjxsmzclH4cEyssXzipFEzkAnR41IxMgcjqb4fJ
-         3+US6/Tm+y0nXpAVX+pwVo3yM57fC9AcJsoc75N+XYgN7gLc/qQpsHOzAwaFI2MUJOoA
-         J6Y7YZs5nv8x3S9NYBRmoS1k4spwFmhryY1I9S3vwf0QSVQicA5rOO04Zu0/ooD2V8vV
-         RNI1XzXind0soats61fU1bwrq0k4l0YZxRhCm67X9a8b0BbOe+pbHXbcKZvaLd1uIxPB
-         KxJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0yQdrAJ5pfi3P4Xy7l+wM8EFKBaJcdtAgcd/JPOCGZyge8swI2e7CV/klvrST+TIv9VHNpwVN9kfOuTEpb77s7WtQSG4D/mR2y/NWB6YDG17tFJDCaWFU/ZNHcg8puFVW7h+8kWQ4l8qvIJqJeO52/uJnLvwxxu/OfXbhCk37NQF0sYzbK+W0hlH0KN0zAHIsHg/57JCSPbC4mIyXHY/xCRWqsy27tocg4v24A0BAQkLlvl89HCYvH+cMTkiW0ujQsYGd/iSw
-X-Gm-Message-State: AOJu0YzToEltElSQjxUsh+r4rZTly1PpfGfeh/Bog4yH2HkKAOQorEk8
-	i4fIVuKpL7AurwMDt+6THSASnTNvZ8GbesGwCFbW6a0T5j1FtcsC
-X-Google-Smtp-Source: AGHT+IGe7kGpO1ikYBDLyoCv4FPzIfHwsornnyTjsVTL0wNifZExOmpdSgtf+WuYd8hTh3t/puS2HA==
-X-Received: by 2002:a05:600c:5029:b0:426:59fc:cdec with SMTP id 5b1f17b1804b1-429ed7af8f1mr28923365e9.21.1723832595196;
-        Fri, 16 Aug 2024 11:23:15 -0700 (PDT)
-Received: from ?IPV6:2a02:8071:b783:140:927c:82ba:d32d:99c1? ([2a02:8071:b783:140:927c:82ba:d32d:99c1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ded35991sm82383415e9.21.2024.08.16.11.23.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Aug 2024 11:23:14 -0700 (PDT)
-Message-ID: <03af1025-f946-4eb2-a41e-28f0436e60e6@gmail.com>
-Date: Fri, 16 Aug 2024 20:23:12 +0200
+        d=1e100.net; s=20230601; t=1723857082; x=1724461882;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ug8rihSZJE889SueAoqTX9ZWSfO/z3Gsu452Tq7F+6A=;
+        b=sY2uDDB0UlCZE/6uZwBSoy+jOOGDQo7iWemmqpIyekM68T23wZJrTzbxezDKIi6ox5
+         g60LAy1s8YzReI40lIzu7Ja5f3lIHhg07uQziMht0M99xTqAQbiSubz5kTfUBck1kSWl
+         3eDita1DNaGEIHGXSXZDCHsyE1mH4q0imC1ExD9p7gCm7if73rqyuCSbgPBjYnHhFZc6
+         8LyzEwY4tNsPNiqHNPd1XeXySzL1KLDDMVE6iothBt5UHFni/FyvZwcghUGK2+4Cfj2Z
+         unk6TDnDecG7YdbVn+vV2nqZoNXq52y04LPYBKRafAxi7IgOnuRKhpMKEhlJFgU23hUc
+         K7mA==
+X-Forwarded-Encrypted: i=1; AJvYcCWBpJjqSzLFRoFVd6q6jY/uSkZNNaoREeIU1/5rblFwUdczqaG7LPAf1lkm8oAiIMv4mnjfJdStqyubXXEe/Y2o6PJo1zfUjbWTwi6s5V73SATStLW83DRJFTD+ZeC8l1/XkWDhPgqP7AEkPEvPmsThC0mqPhZ6NhOod0CcVt99Zekw+Q9RqD4XW0MCsTTFyRTQ3Ejlt1wgRiatqNR+fRNFww==
+X-Gm-Message-State: AOJu0YxpvlFpmF/0fpk6449XAW3hZNNhfci7N6d/noWDk8we8YeOCoMI
+	g/dTEECT5p13DG3LTZ+4FvoAUTj1U+KRKjjj/oKkhcuIshSj/jr8MufUG85wCgFpwitYartesNj
+	FRC5RWLVLogTqq0N7ZxLx3oK/wJ8=
+X-Google-Smtp-Source: AGHT+IEM2mdGVjOsGnMz8WXTnI9118qcDH2jUCIIbDZ4rPiQ10iGBBlTUuDxRR73hnxLfbHp9nYn32+CIgpvlrRB+hI=
+X-Received: by 2002:a05:6902:701:b0:e08:5e73:cdf3 with SMTP id
+ 3f1490d57ef6-e1180e6c54emr4739180276.9.1723857082428; Fri, 16 Aug 2024
+ 18:11:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] platform/surface: Add OF support
-To: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>
-References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
- <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
-Content-Language: en-US
-From: Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
+ <CGME20240807110114eucas1p2e1ca4cbd352c6cd9d60688b1570df8d4@eucas1p2.samsung.com>
+ <2024080753-debug-roulette-8cb1@gregkh> <3jnp6tnkjpvnisefomxagazu2u3uzzt7rcon3r5jssraxzwegb@gsxc7c5sfh7v>
+ <2024080758-dedicator-smoky-44be@gregkh>
+In-Reply-To: <2024080758-dedicator-smoky-44be@gregkh>
+From: Barry Song <21cnbao@gmail.com>
+Date: Sat, 17 Aug 2024 13:11:11 +1200
+Message-ID: <CAGsJ_4zA6=ajoOgAm9kweeiBFKz4TJxxjYFGHHd3HQY8dxHpWA@mail.gmail.com>
+Subject: Re: [PATCH 00/12] Enable build system on macOS hosts
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Daniel Gomez <da.gomez@samsung.com>, Masahiro Yamada <masahiroy@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
+	Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
+	Justin Stitt <justinstitt@google.com>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>, 
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, 
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, 
+	"speakup@linux-speakup.org" <speakup@linux-speakup.org>, 
+	"selinux@vger.kernel.org" <selinux@vger.kernel.org>, 
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>, 
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, 
+	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>, "gost.dev@samsung.com" <gost.dev@samsung.com>, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 8/14/24 12:27 PM, Konrad Dybcio wrote:
-> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
-> 
-> Add basic support for registering the aggregator module on Device Tree-
-> based platforms. These include at least three generations of Qualcomm
-> Snapdragon-based Surface devices:
-> 
-> - SC8180X / SQ1 / SQ2: Pro X,
-> - SC8280XP / SQ3: Devkit 2023, Pro 9
-> - X Elite: Laptop 7 / Pro11
-> 
-> Thankfully, the aggregators on these seem to be configured in an
-> identical way, which allows for using these settings as defaults and
-> no DT properties need to be introduced (until that changes, anyway).
-> 
-> Based on the work done by Maximilian Luz, largely rewritten.
-> 
-> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
-> ---
+On Thu, Aug 8, 2024 at 2:20=E2=80=AFAM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Aug 07, 2024 at 01:56:38PM +0000, Daniel Gomez wrote:
+> > On Wed, Aug 07, 2024 at 01:01:08PM GMT, Greg Kroah-Hartman wrote:
+> > > On Wed, Aug 07, 2024 at 01:09:14AM +0200, Daniel Gomez via B4 Relay w=
+rote:
+> > > > This patch set allows for building the Linux kernel for arm64 in ma=
+cOS with
+> > > > LLVM.
+> > >
+> > > Is this a requirement somewhere that this must work?  It seems like a=
+n
+> > > odd request, what workflows require cross-operating-system builds lik=
+e
+> > > this?
+> >
+> > This isn't a requirement, but it would, for example, support workflows =
+for QEMU
+> > users and developers on macOS. They could build/compile the kernel nati=
+vely and
+> > use it to launch QEMU instances, simplifying their process.
+>
+> But that's not a real workload of anyone?  How often does this ever come
+> up?  Who is going to maintain this cross-build functionality over time?
 
-Looks good to me and works without issues on my Surface Pro X.
+it is a real workload of me,  i was running qemu-system-aarch64 on x86
+and it was
+pretty slow. so got a M3 pro to accelerate my development. frequently chang=
+ing
+kernel's source code, i am using qemu-system-aarch64 to do quick verificati=
+on.
 
-Thanks again for picking this up!
+>
+> thanks,
+>
+> greg k-h
+>
 
-Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
-Tested-by: Maximilian Luz <luzmaximilian@gmail.com>
+Thanks
+Barry
