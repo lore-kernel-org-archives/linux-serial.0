@@ -1,200 +1,109 @@
-Received: from mail.manjaro.org (mail.manjaro.org [116.203.91.91])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtpdh17-su.aruba.it (smtpdh17-su.aruba.it [62.149.155.128])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF64E6FD3;
-	Sat, 17 Aug 2024 03:11:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.91.91
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26AD2824AF
+	for <linux-serial@vger.kernel.org>; Sat, 17 Aug 2024 09:28:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.149.155.128
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723864296; cv=none; b=mqkZqr82oOiU3BTvI4PioJeDPlPD+b9MoQtmaBex4r8NIyQeTqJrWSAYwQppykAu6o76rHE9N4InHVj+ATVoug8p8IAAVhXN32jxnFpPv0OX3tCAkawsc+hrYTSFVRrmtrs46l7SCCSLz9rSkVIrQbT9eDc0WPKVEis2gO3INoo=
+	t=1723886931; cv=none; b=NfP3NlVcK3NpOHBsPZT5oUKbFsz7nZZnzXhIsvH6WFwgphrq9itt5nsnoxaZdV3p3dxWmjbvMz7sIIENO461LaR1vqnYibjtuYCcmvs7k4m8vB3pQmLX7Q36Z/dRf7DRc2CSvDInqR2PpmYpKJD2YlvkrMOUDVXGxy63hGJcyf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723864296; c=relaxed/simple;
-	bh=l38IdzJYOwLZtyjjLa9m/LqkWwtiawxtuHaK2D68IlM=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=KbveEyw27+Qi9cSnJg6+s7S0fbyn6IaZ0ntuNmJPF7CXmrWcezJtE3Usz5cB1jpoGcFsw+2Ezw3gLfChJKEBMbATokZ7rROnhu/4yaqw2EgyuQhinWUteaVJWozLfIwahYfY9rFol13MV7kBPhtgQq51fx40wJpomlpQMt2GTWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org; spf=pass smtp.mailfrom=manjaro.org; dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b=kwQaMqBI; arc=none smtp.client-ip=116.203.91.91
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=manjaro.org
+	s=arc-20240116; t=1723886931; c=relaxed/simple;
+	bh=4SvgcqjQqIApfuzqVr+Pfy0s3dgei0JUM6ZubilOR+c=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=gvzVo1U1rDDyMlFU0fGOTP6tpL6TqJeeA6+gKR3QH7lddqVfypexQMm6CwDWokHksJrlt4yeCUkB6Bp1JwW424Gc1SRWLELFRKfh/sF9a8z5Ww6F9hZl92xGBpa265fhfLEtvJGIei6apotvACAOGRZWGrVuc6fd3XosTXVYCMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xhero.org; spf=pass smtp.mailfrom=xhero.org; dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b=YKYEfoyo; arc=none smtp.client-ip=62.149.155.128
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xhero.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xhero.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b="kwQaMqBI"
+	dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b="YKYEfoyo"
+Received: from xhero.org ([84.74.245.127])
+	by Aruba Outgoing Smtp  with ESMTPSA
+	id fFglstT0CJLbHfFgmsuKXH; Sat, 17 Aug 2024 11:25:38 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
+	t=1723886738; bh=4SvgcqjQqIApfuzqVr+Pfy0s3dgei0JUM6ZubilOR+c=;
+	h=From:To:Subject:Date:MIME-Version;
+	b=YKYEfoyomrbvGK3PRFT7GBW/aP1eMp2d1Fy2JkBNOVuNLN3qRsqRd6MLI08y/1hPK
+	 QJp5eN8XnL9yOBKzcaXXCPwvbpYTuarmk2MFVdGlNCS65OSU15RLDBS9WNurE6W4UF
+	 MOZCjGZB0QOKSntameMU6DCmQssC5gcwuyBkto20O7Cp6MUU1NEyNgT4BWAaAkJ253
+	 wJeqxnJq3BAwY7u387d5xuG3lhph+Q/fVFtMil+ZaQH10+hib3X+uE+tGRzIHoj5K+
+	 CNlx7FbFEBtvT2rgHd/6OuUGKnZX0qozBIyRbnYqMYgTbTBjmjXZu6tBK6gDeqkxYm
+	 /aelEe/HcM2CA==
+From: Rodolfo Zitellini <rwz@xhero.org>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: netdev@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Doug Brown <doug@schmorgal.com>,
+	Rodolfo Zitellini <rwz@xhero.org>
+Subject: [PATCH net-next 0/2] pull-request appletalk 2024-08-17
+Date: Sat, 17 Aug 2024 11:25:20 +0200
+Message-Id: <20240817092522.9193-1-rwz@xhero.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=manjaro.org; s=2021;
-	t=1723864292;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=odkph5w0PVDl1mITUK856/Sf3iEO6l5n47FubRaBVgs=;
-	b=kwQaMqBIuqeUpD8pGTY+4isN7YnsejsZrk80UnjrwBa4yfM0eix0SWYi9q9jZgXWZmY4Zd
-	wWZveORCVtTZekiRupv8yVTqL3d32BHXbsAyI/kMzkgR4JWpE/siLGcT2Mt5yqsN0leVmG
-	w4mYe0H/1XBeYls5sovwqJwxOLtOqU3xSFOPPtN8I7DCyBSXHXvlmACLVimTLvPy7P7yko
-	fwb20S8gKajjtq5/fRdaQA6kUC65LUMdjAGnkQ5/OgtsrgM60u94INCthhybYegg+//ujN
-	BcPscnQadpyHUYJnYlvCA+2vm0ojvV+JK1jltT06cXFKL6ZZkrs3LScAMaxF/g==
-Date: Sat, 17 Aug 2024 05:11:30 +0200
-From: Dragan Simic <dsimic@manjaro.org>
-To: Detlev Casanova <detlev.casanova@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Heiko
- Stuebner <heiko@sntech.de>, Andi Shyti <andi.shyti@kernel.org>, Jonathan
- Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Lee Jones
- <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
- Slaby <jirislaby@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Thomas Gleixner <tglx@linutronix.de>, Chris Morgan
- <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>, Tim Lunn
- <tim@feathertop.org>, Muhammed Efe Cetin <efectn@protonmail.com>, Andy Yan
- <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>, Sebastian Reichel
- <sebastian.reichel@collabora.com>, Shresth Prasad
- <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>, Weizhao Ouyang
- <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>, Jimmy Hon
- <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>, Yifeng
- Zhao <yifeng.zhao@rock-chips.com>, Elaine Zhang <zhangqing@rock-chips.com>,
- Liang Chen <cl@rock-chips.com>, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-serial@vger.kernel.org, kernel@collabora.com
-Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
-In-Reply-To: <20240802214612.434179-10-detlev.casanova@collabora.com>
-References: <20240802214612.434179-1-detlev.casanova@collabora.com>
- <20240802214612.434179-10-detlev.casanova@collabora.com>
-Message-ID: <e794a247b52dd2fc10b470ed7df4d463@manjaro.org>
-X-Sender: dsimic@manjaro.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Authentication-Results: ORIGINATING;
-	auth=pass smtp.auth=dsimic@manjaro.org smtp.mailfrom=dsimic@manjaro.org
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfC0wUgpjHIW+1WgCBy3vFf/B9Zzdd8klNMYrRHRkzBN1ZBVWRqkddqbt7kR68RlyxvvA1Uv7EobfiXNbNntvYOYrJFM9CqHylj5EDNDRQhWN9r6OUe2K
+ 85l17DIbAPrrZVmphvur6mDzGO77Zd/cPA2RGRq9vLKPlDWxSjCBubWbObuJppyZLbsWKZB8aLz2U6iysp8MGgnqHDb1qh9a0Y56V+bUzCmcGoTz6i4WlCBs
+ cIhErSvCpcnuKOrmp/TGgYSnBrf7hB5pFQmyb6X2BXEAaV2JXJI7JdQ4RT8TbBHTou7tiUCLnoZfNP7WpneLOvOUgmtj2QTTT+jn+gT/qYmTeK48dW0Rt0XK
+ ebnzUvdrQQ1XEFnsOacZ9t7sjzPv3W7DknuOOpyaB8SV3FRvueroZMItnIk7SmFzKuzq1n536AbmmkyU1FxevmYJpHRTTRZqyCixwW/6NpPNYj4PZ/Mc8yYY
+ NAxqQJoi3Yw0dia8UNI7afu2NEM0ldTgK9BXsOU5LT1P4Y+A1THoFTIZrNBRG80ckwNwY+5lqU/5FlG6vP7p7eiN/XfmbrcUuDIzGnQsbctXPt51/DUmSHIN
+ tK8=
 
-Hello Detlev,
+Hello,
 
-Please see a few comments below.
+this is a pull request of 2 patches for net-next/master
 
-On 2024-08-02 23:45, Detlev Casanova wrote:
-> This device tree contains all devices necessary for booting from 
-> network
-> or SD Card.
-> 
-> It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
-> SDHCI (everything necessary to boot Linux on this system on chip) as
-> well as Ethernet, I2C, SPI and OTP.
-> 
-> Also add the necessary DT bindings for the SoC.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
-> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
-> Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
-> [rebase, squash and reword commit message]
-> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
-> ---
+The first patch introduces a new line discipline ID for the
+TashTalk line discipline.
 
-[snip]
+The second patch adds an Appletalk driver that serves as a
+drop-in replacement for the old COPS LocalTalk driver. It
+implements a line discipline that interfaces with a TashTalk
+device, an open-source project that provides the proper SDLC
+and FM0 encoding required on the LocalTalk bus. With a minimal
+amount of supporting components, it becomes possible to connect
+a modern PC to older devices (Macintoshes, Apple IIgs) on a
+LocalTalk bus. It is compatibile out of the box with Netatalk
+2.x and will also work with the upcoming 4.0 release which
+re-introduces Appletalk support.
 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-> b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-> new file mode 100644
-> index 0000000000000..00c4d2a153ced
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
-> @@ -0,0 +1,1635 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
-> + */
-> +
-> +#include <dt-bindings/clock/rockchip,rk3576-cru.h>
-> +#include <dt-bindings/reset/rockchip,rk3576-cru.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/phy/phy.h>
-> +#include <dt-bindings/power/rk3576-power.h>
-> +#include <dt-bindings/pinctrl/rockchip.h>
-> +#include <dt-bindings/soc/rockchip,boot-mode.h>
-> +
-> +/ {
-> +	compatible = "rockchip,rk3576";
-> +
-> +	interrupt-parent = <&gic>;
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	aliases {
-> +		ethernet0 = &gmac0;
-> +		ethernet1 = &gmac1;
+Kind Regards,
+Rodolfo
 
-Please remove ethernetX aliases from the SoC dtsi.  The consensus
-is that those aliases need to be defined at the board level instead.
+Rodolfo Zitellini (2):
+  tty: Add N_TASHTALK line discipline for TashTalk Localtalk serial
+    driver
+  appletalk: tashtalk: Add LocalTalk line discipline driver for
+    AppleTalk using a TashTalk adapter
 
-See the commit 5d90cb1edcf7 (arm64: dts: rockchip: Remove ethernet0
-alias from the SoC dtsi for RK3399, 2023-12-12), for example, for
-more details.
+ .../device_drivers/appletalk/index.rst        |   18 +
+ .../device_drivers/appletalk/tashtalk.rst     |  139 +++
+ .../networking/device_drivers/index.rst       |    1 +
+ MAINTAINERS                                   |    7 +
+ drivers/net/Kconfig                           |    2 +
+ drivers/net/Makefile                          |    1 +
+ drivers/net/appletalk/Kconfig                 |   33 +
+ drivers/net/appletalk/Makefile                |    6 +
+ drivers/net/appletalk/tashtalk.c              | 1003 +++++++++++++++++
+ include/uapi/linux/tty.h                      |    3 +-
+ 10 files changed, 1212 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/device_drivers/appletalk/index.rst
+ create mode 100644 Documentation/networking/device_drivers/appletalk/tashtalk.rst
+ create mode 100644 drivers/net/appletalk/Kconfig
+ create mode 100644 drivers/net/appletalk/Makefile
+ create mode 100644 drivers/net/appletalk/tashtalk.c
 
-> +		gpio0 = &gpio0;
-> +		gpio1 = &gpio1;
-> +		gpio2 = &gpio2;
-> +		gpio3 = &gpio3;
-> +		gpio4 = &gpio4;
-> +		i2c0 = &i2c0;
-> +		i2c1 = &i2c1;
-> +		i2c2 = &i2c2;
-> +		i2c3 = &i2c3;
-> +		i2c4 = &i2c4;
-> +		i2c5 = &i2c5;
-> +		i2c6 = &i2c6;
-> +		i2c7 = &i2c7;
-> +		i2c8 = &i2c8;
-> +		i2c9 = &i2c9;
-> +		serial0 = &uart0;
-> +		serial1 = &uart1;
-> +		serial2 = &uart2;
-> +		serial3 = &uart3;
-> +		serial4 = &uart4;
-> +		serial5 = &uart5;
-> +		serial6 = &uart6;
-> +		serial7 = &uart7;
-> +		serial8 = &uart8;
-> +		serial9 = &uart9;
-> +		serial10 = &uart10;
-> +		serial11 = &uart11;
-> +		spi0 = &spi0;
-> +		spi1 = &spi1;
-> +		spi2 = &spi2;
-> +		spi3 = &spi3;
-> +		spi4 = &spi4;
-> +	};
-> +
-> +	xin32k: clock-32k {
+-- 
+2.34.1
 
-Please use "xin32k: clock-xin32k { ... }" instead, because that follows
-the recently established revised pattern for clock names.  We should 
-have
-come consistency in the new SoC dtsi additions.
-
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <32768>;
-> +		clock-output-names = "xin32k";
-> +	};
-> +
-> +	xin24m: clock-24m {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <24000000>;
-> +		clock-output-names = "xin24m";
-> +	};
-
-Please use "xin24m: clock-xin24m { ... }" instead, for the same reasons
-as already described above.
-
-> +	spll: clock-702m {
-> +		compatible = "fixed-clock";
-> +		#clock-cells = <0>;
-> +		clock-frequency = <702000000>;
-> +		clock-output-names = "spll";
-> +	};
-
-Perhaps using "spll: clock-spll { ... }" instead would also be a good
-idea, because it would improve the overall consistency.
