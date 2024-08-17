@@ -1,140 +1,200 @@
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.manjaro.org (mail.manjaro.org [116.203.91.91])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38251FBA;
-	Sat, 17 Aug 2024 01:11:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF64E6FD3;
+	Sat, 17 Aug 2024 03:11:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.91.91
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723857085; cv=none; b=fdLxDlWUgonciwIk2HBjpVh+NjnxMhjwX51Kc4tMhUH0ziHkx5T365+ZI1NHQA/UooYt8e6XHyZ54HTIi8/mrXL80zHbDRBrFCrNl5isoQrFiqHK4zXbKZTJSPdF3KBm8t9+dQECfoRvdCKEPLQNjG+P0vMbDwhejULdr+kBAjU=
+	t=1723864296; cv=none; b=mqkZqr82oOiU3BTvI4PioJeDPlPD+b9MoQtmaBex4r8NIyQeTqJrWSAYwQppykAu6o76rHE9N4InHVj+ATVoug8p8IAAVhXN32jxnFpPv0OX3tCAkawsc+hrYTSFVRrmtrs46l7SCCSLz9rSkVIrQbT9eDc0WPKVEis2gO3INoo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723857085; c=relaxed/simple;
-	bh=g8Geri2XNbL38pyOWzp7d2MgOy9oPpFutYakSLbV27M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RPS2hwXnXpnG0yi4B4aQ8mYcCQpP1xMdURL7UATKekAlHJtWK0Xk1Gbr4E88HwhG+HbsDWGr2DtJ9i0rSBo62FLtsKFFVGk3lB+Jl3fDyBiJvbM+bUQpDtYuJy1GgrNQdBtEYxYPfme+KAXQIE+UhO8dQdvGGxUE2S7UvfSxAY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hYv/bv5X; arc=none smtp.client-ip=209.85.219.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723864296; c=relaxed/simple;
+	bh=l38IdzJYOwLZtyjjLa9m/LqkWwtiawxtuHaK2D68IlM=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=KbveEyw27+Qi9cSnJg6+s7S0fbyn6IaZ0ntuNmJPF7CXmrWcezJtE3Usz5cB1jpoGcFsw+2Ezw3gLfChJKEBMbATokZ7rROnhu/4yaqw2EgyuQhinWUteaVJWozLfIwahYfY9rFol13MV7kBPhtgQq51fx40wJpomlpQMt2GTWE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org; spf=pass smtp.mailfrom=manjaro.org; dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b=kwQaMqBI; arc=none smtp.client-ip=116.203.91.91
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=manjaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=manjaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hYv/bv5X"
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-e0ec934a1fdso2421481276.0;
-        Fri, 16 Aug 2024 18:11:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723857082; x=1724461882; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ug8rihSZJE889SueAoqTX9ZWSfO/z3Gsu452Tq7F+6A=;
-        b=hYv/bv5Xi2sco/dleOYF1v1u0282L5QSuvtFGPcv6+YQDWSaX32MnURGMD97DP95rH
-         n+zdx68SRMkrny5c8zG9tCQNPdkgPYIe+COD9uN9n/eqhDI2hwjFiOqEqMKd2GDNqZKc
-         tDPGIO2/dkv/PjugX7gwTsEXW8Ehik/LHXDalg0iifwufWIsP40UCjDCoxZoR30p5PxQ
-         k4piSoCF4/WusUh5AFpE/1fXdwXFazg8rirltU2uO7Jg7//7P/s3Lth1ROiemjMq8nM1
-         8uYcibNyYqcbBPE7G+MOOf290YSe6YxovoP5XZMwJfmAOrxTZmMX7Vg0hGVoZrQ8cICc
-         WyxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723857082; x=1724461882;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ug8rihSZJE889SueAoqTX9ZWSfO/z3Gsu452Tq7F+6A=;
-        b=sY2uDDB0UlCZE/6uZwBSoy+jOOGDQo7iWemmqpIyekM68T23wZJrTzbxezDKIi6ox5
-         g60LAy1s8YzReI40lIzu7Ja5f3lIHhg07uQziMht0M99xTqAQbiSubz5kTfUBck1kSWl
-         3eDita1DNaGEIHGXSXZDCHsyE1mH4q0imC1ExD9p7gCm7if73rqyuCSbgPBjYnHhFZc6
-         8LyzEwY4tNsPNiqHNPd1XeXySzL1KLDDMVE6iothBt5UHFni/FyvZwcghUGK2+4Cfj2Z
-         unk6TDnDecG7YdbVn+vV2nqZoNXq52y04LPYBKRafAxi7IgOnuRKhpMKEhlJFgU23hUc
-         K7mA==
-X-Forwarded-Encrypted: i=1; AJvYcCWBpJjqSzLFRoFVd6q6jY/uSkZNNaoREeIU1/5rblFwUdczqaG7LPAf1lkm8oAiIMv4mnjfJdStqyubXXEe/Y2o6PJo1zfUjbWTwi6s5V73SATStLW83DRJFTD+ZeC8l1/XkWDhPgqP7AEkPEvPmsThC0mqPhZ6NhOod0CcVt99Zekw+Q9RqD4XW0MCsTTFyRTQ3Ejlt1wgRiatqNR+fRNFww==
-X-Gm-Message-State: AOJu0YxpvlFpmF/0fpk6449XAW3hZNNhfci7N6d/noWDk8we8YeOCoMI
-	g/dTEECT5p13DG3LTZ+4FvoAUTj1U+KRKjjj/oKkhcuIshSj/jr8MufUG85wCgFpwitYartesNj
-	FRC5RWLVLogTqq0N7ZxLx3oK/wJ8=
-X-Google-Smtp-Source: AGHT+IEM2mdGVjOsGnMz8WXTnI9118qcDH2jUCIIbDZ4rPiQ10iGBBlTUuDxRR73hnxLfbHp9nYn32+CIgpvlrRB+hI=
-X-Received: by 2002:a05:6902:701:b0:e08:5e73:cdf3 with SMTP id
- 3f1490d57ef6-e1180e6c54emr4739180276.9.1723857082428; Fri, 16 Aug 2024
- 18:11:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=manjaro.org header.i=@manjaro.org header.b="kwQaMqBI"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
- <CGME20240807110114eucas1p2e1ca4cbd352c6cd9d60688b1570df8d4@eucas1p2.samsung.com>
- <2024080753-debug-roulette-8cb1@gregkh> <3jnp6tnkjpvnisefomxagazu2u3uzzt7rcon3r5jssraxzwegb@gsxc7c5sfh7v>
- <2024080758-dedicator-smoky-44be@gregkh>
-In-Reply-To: <2024080758-dedicator-smoky-44be@gregkh>
-From: Barry Song <21cnbao@gmail.com>
-Date: Sat, 17 Aug 2024 13:11:11 +1200
-Message-ID: <CAGsJ_4zA6=ajoOgAm9kweeiBFKz4TJxxjYFGHHd3HQY8dxHpWA@mail.gmail.com>
-Subject: Re: [PATCH 00/12] Enable build system on macOS hosts
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Daniel Gomez <da.gomez@samsung.com>, Masahiro Yamada <masahiroy@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
-	Justin Stitt <justinstitt@google.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>, 
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, 
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, 
-	"speakup@linux-speakup.org" <speakup@linux-speakup.org>, 
-	"selinux@vger.kernel.org" <selinux@vger.kernel.org>, 
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
-	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, 
-	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>, "gost.dev@samsung.com" <gost.dev@samsung.com>, 
-	Nick Desaulniers <nick.desaulniers@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=manjaro.org; s=2021;
+	t=1723864292;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=odkph5w0PVDl1mITUK856/Sf3iEO6l5n47FubRaBVgs=;
+	b=kwQaMqBIuqeUpD8pGTY+4isN7YnsejsZrk80UnjrwBa4yfM0eix0SWYi9q9jZgXWZmY4Zd
+	wWZveORCVtTZekiRupv8yVTqL3d32BHXbsAyI/kMzkgR4JWpE/siLGcT2Mt5yqsN0leVmG
+	w4mYe0H/1XBeYls5sovwqJwxOLtOqU3xSFOPPtN8I7DCyBSXHXvlmACLVimTLvPy7P7yko
+	fwb20S8gKajjtq5/fRdaQA6kUC65LUMdjAGnkQ5/OgtsrgM60u94INCthhybYegg+//ujN
+	BcPscnQadpyHUYJnYlvCA+2vm0ojvV+JK1jltT06cXFKL6ZZkrs3LScAMaxF/g==
+Date: Sat, 17 Aug 2024 05:11:30 +0200
+From: Dragan Simic <dsimic@manjaro.org>
+To: Detlev Casanova <detlev.casanova@collabora.com>
+Cc: linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Heiko
+ Stuebner <heiko@sntech.de>, Andi Shyti <andi.shyti@kernel.org>, Jonathan
+ Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Lee Jones
+ <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
+ Slaby <jirislaby@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Chris Morgan
+ <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>, Tim Lunn
+ <tim@feathertop.org>, Muhammed Efe Cetin <efectn@protonmail.com>, Andy Yan
+ <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>, Sebastian Reichel
+ <sebastian.reichel@collabora.com>, Shresth Prasad
+ <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>, Weizhao Ouyang
+ <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>, Jimmy Hon
+ <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>, Yifeng
+ Zhao <yifeng.zhao@rock-chips.com>, Elaine Zhang <zhangqing@rock-chips.com>,
+ Liang Chen <cl@rock-chips.com>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-serial@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
+In-Reply-To: <20240802214612.434179-10-detlev.casanova@collabora.com>
+References: <20240802214612.434179-1-detlev.casanova@collabora.com>
+ <20240802214612.434179-10-detlev.casanova@collabora.com>
+Message-ID: <e794a247b52dd2fc10b470ed7df4d463@manjaro.org>
+X-Sender: dsimic@manjaro.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Authentication-Results: ORIGINATING;
+	auth=pass smtp.auth=dsimic@manjaro.org smtp.mailfrom=dsimic@manjaro.org
 
-On Thu, Aug 8, 2024 at 2:20=E2=80=AFAM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Wed, Aug 07, 2024 at 01:56:38PM +0000, Daniel Gomez wrote:
-> > On Wed, Aug 07, 2024 at 01:01:08PM GMT, Greg Kroah-Hartman wrote:
-> > > On Wed, Aug 07, 2024 at 01:09:14AM +0200, Daniel Gomez via B4 Relay w=
-rote:
-> > > > This patch set allows for building the Linux kernel for arm64 in ma=
-cOS with
-> > > > LLVM.
-> > >
-> > > Is this a requirement somewhere that this must work?  It seems like a=
-n
-> > > odd request, what workflows require cross-operating-system builds lik=
-e
-> > > this?
-> >
-> > This isn't a requirement, but it would, for example, support workflows =
-for QEMU
-> > users and developers on macOS. They could build/compile the kernel nati=
-vely and
-> > use it to launch QEMU instances, simplifying their process.
->
-> But that's not a real workload of anyone?  How often does this ever come
-> up?  Who is going to maintain this cross-build functionality over time?
+Hello Detlev,
 
-it is a real workload of me,  i was running qemu-system-aarch64 on x86
-and it was
-pretty slow. so got a M3 pro to accelerate my development. frequently chang=
-ing
-kernel's source code, i am using qemu-system-aarch64 to do quick verificati=
-on.
+Please see a few comments below.
 
->
-> thanks,
->
-> greg k-h
->
+On 2024-08-02 23:45, Detlev Casanova wrote:
+> This device tree contains all devices necessary for booting from 
+> network
+> or SD Card.
+> 
+> It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
+> SDHCI (everything necessary to boot Linux on this system on chip) as
+> well as Ethernet, I2C, SPI and OTP.
+> 
+> Also add the necessary DT bindings for the SoC.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
+> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+> [rebase, squash and reword commit message]
+> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> ---
 
-Thanks
-Barry
+[snip]
+
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> new file mode 100644
+> index 0000000000000..00c4d2a153ced
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+> @@ -0,0 +1,1635 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright (c) 2023 Rockchip Electronics Co., Ltd.
+> + */
+> +
+> +#include <dt-bindings/clock/rockchip,rk3576-cru.h>
+> +#include <dt-bindings/reset/rockchip,rk3576-cru.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/interrupt-controller/irq.h>
+> +#include <dt-bindings/phy/phy.h>
+> +#include <dt-bindings/power/rk3576-power.h>
+> +#include <dt-bindings/pinctrl/rockchip.h>
+> +#include <dt-bindings/soc/rockchip,boot-mode.h>
+> +
+> +/ {
+> +	compatible = "rockchip,rk3576";
+> +
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	aliases {
+> +		ethernet0 = &gmac0;
+> +		ethernet1 = &gmac1;
+
+Please remove ethernetX aliases from the SoC dtsi.  The consensus
+is that those aliases need to be defined at the board level instead.
+
+See the commit 5d90cb1edcf7 (arm64: dts: rockchip: Remove ethernet0
+alias from the SoC dtsi for RK3399, 2023-12-12), for example, for
+more details.
+
+> +		gpio0 = &gpio0;
+> +		gpio1 = &gpio1;
+> +		gpio2 = &gpio2;
+> +		gpio3 = &gpio3;
+> +		gpio4 = &gpio4;
+> +		i2c0 = &i2c0;
+> +		i2c1 = &i2c1;
+> +		i2c2 = &i2c2;
+> +		i2c3 = &i2c3;
+> +		i2c4 = &i2c4;
+> +		i2c5 = &i2c5;
+> +		i2c6 = &i2c6;
+> +		i2c7 = &i2c7;
+> +		i2c8 = &i2c8;
+> +		i2c9 = &i2c9;
+> +		serial0 = &uart0;
+> +		serial1 = &uart1;
+> +		serial2 = &uart2;
+> +		serial3 = &uart3;
+> +		serial4 = &uart4;
+> +		serial5 = &uart5;
+> +		serial6 = &uart6;
+> +		serial7 = &uart7;
+> +		serial8 = &uart8;
+> +		serial9 = &uart9;
+> +		serial10 = &uart10;
+> +		serial11 = &uart11;
+> +		spi0 = &spi0;
+> +		spi1 = &spi1;
+> +		spi2 = &spi2;
+> +		spi3 = &spi3;
+> +		spi4 = &spi4;
+> +	};
+> +
+> +	xin32k: clock-32k {
+
+Please use "xin32k: clock-xin32k { ... }" instead, because that follows
+the recently established revised pattern for clock names.  We should 
+have
+come consistency in the new SoC dtsi additions.
+
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <32768>;
+> +		clock-output-names = "xin32k";
+> +	};
+> +
+> +	xin24m: clock-24m {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <24000000>;
+> +		clock-output-names = "xin24m";
+> +	};
+
+Please use "xin24m: clock-xin24m { ... }" instead, for the same reasons
+as already described above.
+
+> +	spll: clock-702m {
+> +		compatible = "fixed-clock";
+> +		#clock-cells = <0>;
+> +		clock-frequency = <702000000>;
+> +		clock-output-names = "spll";
+> +	};
+
+Perhaps using "spll: clock-spll { ... }" instead would also be a good
+idea, because it would improve the overall consistency.
