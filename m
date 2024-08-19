@@ -1,106 +1,265 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh7-smtp.messagingengine.com (fhigh7-smtp.messagingengine.com [103.168.172.158])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8082E15B0E0
-	for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2024 08:23:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C42C15B986;
+	Mon, 19 Aug 2024 09:44:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724055820; cv=none; b=FxwcLwTEtIVyvV6OP1z+ev90con2e+9pyXAiBEJdZ+/TedWB+2qWixf2BvcEnosl1jUNCo+a4jj+A0wqnX5DDr4Vrwg0qYtb3PsvUaVPngs+TTkihttwFbivSnk5xtrUG+rOJ9llLkl8tq0oMk2CERuIDYC8wmDqfLjf/KJhCbU=
+	t=1724060682; cv=none; b=g69q+RG+yaUSTZ5zA3BJ3M3ottyEOZglDCl0Hc8dB/wR47HVUsOJtFpud5VCyExlBe0T3c9n/+sM6Gl7POhE1y8XIcL5df85TrV8xs1MyyB9DrRru2zbyyGKeV2+2pMCJ4iuO81ND9hZkCTO6vXjbeYxyPjLx6/+rfPdftMLC34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724055820; c=relaxed/simple;
-	bh=kbDNaYfeN638CZB1xcia9reCdJjFXpCYzXtt0dZYcsU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TxdHOL0A5sBSrOybUNYCUyQcr0Ltd5GZpRTKOZ92iMOPKwubewNGEwLuMSAVzsjDvCp+sHeSIRHyBh+zLXXl2490yzW5hRn7IDI8IO98t8Eek7K06g/dXarJc6wu4C2bF8NyETtNdY4sx4tcL4wiKLxBgOGtby0uuENDsDOH1Ng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ChrBTBVZ; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1724060682; c=relaxed/simple;
+	bh=F/lNjJTG8qdpk6McjXu92CkZOWhrTkgX7cioerSEJAk=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=E2fTyvO38AVc2Y/6ib6hKZp7yqPFNp2+KaByT/L273jp3nyWDMumtKgnDVp48NN7B7Jhy6/tdsMvEo4sKY/HTQoJ3O7T/bVM5QSfO5NaQmtyHrn4rV0HZCBR4pNjGUkUBmHRxDXo+ZAq3MAEGrV3C5oTEK4WwTd40wYHC44YKNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=N7cKX30u; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=cZMQWZ3K; arc=none smtp.client-ip=103.168.172.158
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ChrBTBVZ"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3718b5e9c4fso1974854f8f.0
-        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2024 01:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724055817; x=1724660617; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rFFRqaLMAKXLToOtJy9WdY/znvYXwwMfNOAODqDhSMo=;
-        b=ChrBTBVZTdTZXyv1XmRRePFmIGEQYUFDPSsCJVQGLtpSMWndh2ROnqumtaMqt1MwDF
-         oohzdEE9+DTxa/tT/L4pt3eNm3iHIjcdkPdO2G+5p1xaSF/VGij1gdPTCRW5lfFodteH
-         0/4ZDTRPGF7rmITf1lun3t/NFUwhnb06z53iDDKj2GgHEuS3pQ8Vp9vFIuA4NIfc8E42
-         cpaxmSVwSj0eqmyZRhLHkcJr8AiYPOybDh8ipdutEsu8Hi/DSaxo1Ba5mkmXWVovCSM+
-         exG6zcybPD4Jnfo4Ji3dR6ngDfkMFYkFQdEIUqy457a866Nj07u5qFqnqmCGcvUNRgcU
-         EzYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724055817; x=1724660617;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rFFRqaLMAKXLToOtJy9WdY/znvYXwwMfNOAODqDhSMo=;
-        b=aOO6TyuzYz95xR1UIUPMA3Er60xQiz61DIU37z3OI3JNkKktGVPaxcKlE7iQL+19M+
-         zx+p3na7FFksBmFJBv2HHPl6nlqefnt/86KzASg3+zzN2QuDAbGPyyT7eoVyu3bsHKqE
-         +qfEzsXmf6XjRiXDkeYpkHpRATY7KTutQCIeQQ38G+rFNXytl+nGvUKgCRdlnVXL2aDN
-         z4FhGuI6Y4GFJQ9gl3jgxgiMeMzLXi53qz5cqA/1DO/8EQW5arcvNb4uhIs2Kz+ZKX6h
-         fD7m1719AB7Gy98p1B0tv+CMkF9Zs0nwluSnRaaiJHaN+WDMR8LQMwQmtBZk08LNF8D9
-         xjgw==
-X-Forwarded-Encrypted: i=1; AJvYcCXWee2ijaLcXDd0srFbGPrDdAjCjbkt5mk8jFmuVpik9NERHp8NKO+WvDOAJL9LItmJvaSr8/KJsZvkm4vG62xuasGYVd4Dh+gD679P
-X-Gm-Message-State: AOJu0YwHPvIR/W+AYwk9xEPFbCp0USQHD0e0CQt4epcL3IFFoyildvgf
-	I5yEYEFp0QGe9RiFEs6RbXM+zOvBKS6HOU7O3FetPhh9hXwNgK9ZwDPKeFwZJPY=
-X-Google-Smtp-Source: AGHT+IGoPJX5KFTVTFHk/jojp0D2SHIUTsj+jz5BCHm6YGSsPInqjdE4c5SgCunL7XSQeKL6rhKr8w==
-X-Received: by 2002:a5d:5442:0:b0:371:8c79:73c1 with SMTP id ffacd0b85a97d-37194317aa2mr6963984f8f.2.1724055816248;
-        Mon, 19 Aug 2024 01:23:36 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3719485e2b2sm7908066f8f.33.2024.08.19.01.23.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Aug 2024 01:23:35 -0700 (PDT)
-Message-ID: <918bb9e4-02d9-4dca-bed2-28bb123bdc10@linaro.org>
-Date: Mon, 19 Aug 2024 10:23:33 +0200
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="N7cKX30u";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="cZMQWZ3K"
+Received: from phl-compute-04.internal (phl-compute-04.nyi.internal [10.202.2.44])
+	by mailfhigh.nyi.internal (Postfix) with ESMTP id 9D7F211518F9;
+	Mon, 19 Aug 2024 05:44:39 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-04.internal (MEProxy); Mon, 19 Aug 2024 05:44:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1724060679;
+	 x=1724147079; bh=M2Sy9uLZBrijLkKshf5fPTI4uHKT4t3a14A3XFHcLtU=; b=
+	N7cKX30ukkPN2ESX/HM7oFLNlMA2NaZLwpDz/KZH52taVi/ZCQTv46WPXS9dgAZf
+	E88EB2ALNg8niLYqMAYlSHE0T9dNBZUOgzJB05QD7aKcTz7sVOUd279YldcfJ84b
+	XpmCVsZ7kM3L+CxeNL/c8TLv6Xh1oP8t4sCTkks7m0HQ27PA72O8j/Guiu+zajRT
+	FFi2G+D3nq4Xf12Bk9AXUFbhCnHjEjhOOzvcqM98xFavRSLfzZQfUbFRI4rSjAJW
+	bmY0Z465rf7oRY3rZBmVEA2MeI6s+0vaXHaKhRjlCIBTMXfvC2o88mIFT9v4SwQt
+	emRFTNJaKEk70lwmESQbEw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1724060679; x=
+	1724147079; bh=M2Sy9uLZBrijLkKshf5fPTI4uHKT4t3a14A3XFHcLtU=; b=c
+	ZMQWZ3K2bTZz9poh+Ovusx68QJFK5GDVbuHj8sLa94aSODLjeFp/RJ8tW2tW3ifs
+	0NAPqfxsocDm5GtKbKoNO48tOBcjxnsySoWHieS2AOkCem/plan/xVEHNgfi+2eF
+	Vk8vi8T1vteeeHUhmHDclOFBuXcfd7L3McTLPN3Al05l+nRqzJPNfb+cMYQDSzwT
+	byO2AoXibIL1YPX9/lTPx5gX3uhgrelFpcDjYWVmzmitWmrKfPzWXzgePR3pjLen
+	CrpJUr8OJvjThmp+5rBURYrDbJoa4eLYcFzTTFMRSU/itDXNzRKDtQyqppJKu6ZC
+	MqhOC/PYec5shtSgJtpzw==
+X-ME-Sender: <xms:BxTDZjIYlUVg-X8x1OHVnxsmwpKeAwPcr_HTuynCLuNK24UrU_iSVA>
+    <xme:BxTDZnJVRobiXiV2Ta8E09UFkVVicqMU79tZMEZ3YjVc2jvjf2hYxG36HdVy2NxYM
+    uaCCM4to9jkiEKHLCw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddruddugedgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepudef
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopegurghvvghmsegurghvvghmlhhofh
+    htrdhnvghtpdhrtghpthhtohepvgguuhhmrgiivghtsehgohhoghhlvgdrtghomhdprhgt
+    phhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehkuh
+    gsrgeskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhho
+    uhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoheptghorhgsvghtsehlfihnrdhnvghtpd
+    hrtghpthhtohepphgrsggvnhhisehrvgguhhgrthdrtghomhdprhgtphhtthhopeguohhu
+    ghesshgthhhmohhrghgrlhdrtghomhdprhgtphhtthhopehlihhnuhigqdguohgtsehvgh
+    gvrhdrkhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:BxTDZrslL_V5hJof3ZuxaDOdNrSmeebiercenMdR6N7zoWn_fP1vUQ>
+    <xmx:BxTDZsZ-QPhzdKM2doQnxEff-DW1kJNbvkrX67FUTLMexwMFrxGOFg>
+    <xmx:BxTDZqaiJ3Sn-6X3YYPNiOmps9sep1YN3z2F_KYEdWBEYy_gtqWcWA>
+    <xmx:BxTDZgAB8Ha2jzQ7YLVYMp-vwJRmODA9lOkXum8VpTIf3XJBySddEg>
+    <xmx:BxTDZmSsFDSp-_WTffx3LNPSVMYNre3rrJd2N9PGDI6dmI2f8ITYbeKu>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 202D416005E; Mon, 19 Aug 2024 05:44:39 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/10] dt-bindings: timer: rockchip: Add rk3576 compatible
-To: Detlev Casanova <detlev.casanova@collabora.com>,
- linux-kernel@vger.kernel.org
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
- Andi Shyti <andi.shyti@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Chris Morgan <macromorgan@hotmail.com>, Jonas Karlman <jonas@kwiboo.se>,
- Tim Lunn <tim@feathertop.org>, Muhammed Efe Cetin <efectn@protonmail.com>,
- Andy Yan <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>,
- Dragan Simic <dsimic@manjaro.org>,
- Sebastian Reichel <sebastian.reichel@collabora.com>,
- Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
- Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>,
- Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>,
- Yifeng Zhao <yifeng.zhao@rock-chips.com>,
- Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
-References: <20240802214612.434179-1-detlev.casanova@collabora.com>
- <20240802214612.434179-9-detlev.casanova@collabora.com>
-Content-Language: en-US
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20240802214612.434179-9-detlev.casanova@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Date: Mon, 19 Aug 2024 11:44:18 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Rodolfo Zitellini" <rwz@xhero.org>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Eric Dumazet" <edumazet@google.com>, "Jakub Kicinski" <kuba@kernel.org>,
+ "Paolo Abeni" <pabeni@redhat.com>, "Jonathan Corbet" <corbet@lwn.net>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>
+Cc: Netdev <netdev@vger.kernel.org>, linux-doc@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ "Doug Brown" <doug@schmorgal.com>
+Message-Id: <f1c86ed3-9306-459d-acb5-97730bfeb265@app.fastmail.com>
+In-Reply-To: <20240817093316.9239-1-rwz@xhero.org>
+References: <20240817093316.9239-1-rwz@xhero.org>
+Subject: Re: [PATCH net-next 2/2] appletalk: tashtalk: Add LocalTalk line discipline
+ driver for AppleTalk using a TashTalk adapter
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On 02/08/2024 23:45, Detlev Casanova wrote:
-> Add compatible string for Rockchip RK3576 timer.
-> 
-> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+On Sat, Aug 17, 2024, at 11:33, Rodolfo Zitellini wrote:
+> This is the TashTalk driver, it perits for a modern machine to
+> participate in a Apple LocalTalk network and is compatibile with
+> Netatalk.
+>
+> Please see the included documentation for details:
+> Documentation/networking/device_drivers/appletalk/index.rst
+>
+> Signed-off-by: Rodolfo Zitellini <rwz@xhero.org>
 
-Applied, thanks
+Hi Rodolfo,
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+Nice to see you got this into a working state! I vaguely
+remember discussing this in the past, and suggesting you
+try a user space solution, so it would be good if you can
+add in the patch description why you ended up with a kernel
+driver after all.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+My main concern at this point is the usage of .ndo_do_ioctl.
+I had previously sent patches to completely remove that
+from the kernel, but never got around to send a new version
+after the previous review. I still have them in my tree
+and should be able to send them again, but that will obviously
+conflict with your added use.
+
+> +static struct net_device **tashtalk_devs;
+> +
+> +static int tash_maxdev = TASH_MAX_CHAN;
+> +module_param(tash_maxdev, int, 0);
+> +MODULE_PARM_DESC(tash_maxdev, "Maximum number of tashtalk devices");
+
+You should not need to keep a list of the devices
+or a module parameter to limit the number. I'm fairly sure
+the devices are already tracked by the network stack in a
+way that lets you enumerate them later.
+
+> +static void tashtalk_send_ctrl_packet(struct tashtalk *tt, unsigned 
+> char dst,
+> +				      unsigned char src, unsigned char type);
+> +
+> +static unsigned char tt_arbitrate_addr_blocking(struct tashtalk *tt, 
+> unsigned char addr);
+
+Please try to avoid forward declations and instead reorder the
+functions to put the callers after the calles.
+
+> +static void tash_setbits(struct tashtalk *tt, unsigned char addr)
+> +{
+> +	unsigned char bits[33];
+> +	unsigned int byte, pos;
+> +
+> +	/* 0, 255 and anything else are invalid */
+> +	if (addr == 0 || addr >= 255)
+> +		return;
+> +
+> +	memset(bits, 0, sizeof(bits));
+> +
+> +	/* in theory we can respond to many addresses */
+> +	byte = addr / 8 + 1; /* skip initial command byte */
+> +	pos = (addr % 8);
+> +	bits[byte] = (1 << pos);
+
+This is basically set_bit_le(), so you could use that
+for clarity and use an array of 'unsigned long' words.
+
+> +	set_bit(TTY_DO_WRITE_WAKEUP, &tt->tty->flags);
+> +	tt->tty->ops->write(tt->tty, bits, sizeof(bits));
+> +}
+
+> +
+> +static u16 tt_crc_ccitt_update(u16 crc, u8 data)
+> +{
+> +	data ^= (u8)(crc) & (u8)(0xFF);
+> +	data ^= data << 4;
+> +	return ((((u16)data << 8) | ((crc & 0xFF00) >> 8)) ^ (u8)(data >> 4) ^
+> +		((u16)data << 3));
+> +}
+
+Can you use the global crc_ccitt() function instead of implementing
+your own?
+
+> +static int tt_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+> +{
+> +	struct sockaddr_at *sa = (struct sockaddr_at *)&ifr->ifr_addr;
+> +	struct tashtalk *tt = netdev_priv(dev);
+> +	struct atalk_addr *aa = &tt->node_addr;
+> +
+> +	switch (cmd) {
+> +	case SIOCSIFADDR:
+> +
+> +		sa->sat_addr.s_node =
+> +			tt_arbitrate_addr_blocking(tt, sa->sat_addr.s_node);
+> +
+> +		aa->s_net = sa->sat_addr.s_net;
+> +		aa->s_node = sa->sat_addr.s_node;
+> +
+> +		/* Set broadcast address. */
+> +		dev->broadcast[0] = 0xFF;
+> +
+> +		/* Set hardware address. */
+> +		dev->addr_len = 1;
+> +		dev_addr_set(dev, &aa->s_node);
+> +
+> +		/* Setup tashtalk to respond to that addr */
+> +		tash_setbits(tt, aa->s_node);
+> +
+> +		return 0;
+> +
+> +	case SIOCGIFADDR:
+> +		sa->sat_addr.s_net = aa->s_net;
+> +		sa->sat_addr.s_node = aa->s_node;
+> +
+> +		return 0;
+
+As we discussed in the past, I think this really should
+not use ndo_do_ioctl(), which instead should just disappear.
+
+Please change the caller to use some other method of
+setting the address in the driver.
+
+> +static int tashtalk_ioctl(struct tty_struct *tty, unsigned int cmd,
+> +			  unsigned long arg)
+> +{
+> +	struct tashtalk *tt = tty->disc_data;
+> +	int __user *p = (int __user *)arg;
+> +	unsigned int tmp;
+> +
+> +	/* First make sure we're connected. */
+> +	if (!tt || tt->magic != TASH_MAGIC)
+> +		return -EINVAL;
+> +
+> +	switch (cmd) {
+> +	case SIOCGIFNAME:
+> +		tmp = strlen(tt->dev->name) + 1;
+> +		if (copy_to_user((void __user *)arg, tt->dev->name, tmp))
+> +			return -EFAULT;
+> +		return 0;
+> +
+> +	case SIOCGIFENCAP:
+> +		if (put_user(tt->mode, p))
+> +			return -EFAULT;
+> +		return 0;
+> +
+> +	case SIOCSIFENCAP:
+> +		if (get_user(tmp, p))
+> +			return -EFAULT;
+> +		tt->mode = tmp;
+> +		return 0;
+> +
+> +	case SIOCSIFHWADDR:
+> +		return -EINVAL;
+> +
+> +	default:
+> +		return tty_mode_ioctl(tty, cmd, arg);
+> +	}
+
+I'm also not a bit fan of using the SIOC* command codes
+in a tty device with incompatible argument types. I do
+see that slip and x25 do the same, but it would be nice
+to find a better interface for these. I have not looked
+at all the other line disciplines, but maybe you can
+find a better example to copy.
+
+     Arnd
