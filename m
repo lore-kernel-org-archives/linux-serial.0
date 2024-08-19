@@ -1,116 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D6C16D338;
-	Mon, 19 Aug 2024 13:27:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 147E016C847
+	for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2024 13:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724074052; cv=none; b=lqMBv7xI1miZbSCeaL3+YXHdUj6AJSGq/cW3zBBYhvrGitb1zSN+UHf8F5uEaOePwoyC3FQMnG8RqRDaoiETmaP2mNh1XbjZSe+dmDSn5cVeXQNoQIuXh5QbVZaE1j6LkJ0jnDCnWms3WCSM0RvVTwFXbtf59s66/YeSrzMGzOQ=
+	t=1724074953; cv=none; b=tKWDHKf1WuEIvZwcT5L8ZzwT1GZlteiG/JMVhgrsP1/M1ULCIAX5wsTJFiz9vng+4sDLYi1KaDs3KFnPiYHCZWdSsbuBRBq1MNRyoo1itq3K1JrN+bgdy01VHJISn12+Q70CZ9Hq82Y7GTzioBPpOdICPUTF9ge7jsqzjce9nDw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724074052; c=relaxed/simple;
-	bh=zgzzTwzV0BQY6hxtHWFGekrmc1vx8F7yvRK80HBJQrQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZINxj6uJsJ60lf7+wWUfO0bDla8oGhiNUuZmTjalh+WiRGOXdKAfcK1Wt0CHR7WOMXNzCl0N5fG87xK6OU8V71EwkH/EZDot4esiMyxBkkzgr9+WGyJpujlsfk2nVVQ8r8PSA9QssrOBWJttWw197p0p3iBv0nqdWT1zKQDRFZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NcKCEon0; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NcKCEon0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553EEC4AF0F;
-	Mon, 19 Aug 2024 13:27:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724074051;
-	bh=zgzzTwzV0BQY6hxtHWFGekrmc1vx8F7yvRK80HBJQrQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NcKCEon0okn3rFKqjw1KT+EdjKM9uNNBqtsORdLntcwecBj9BUCQdwpKIdu7Cjs4o
-	 vMLd35t7x3feSipMIKbLDHd7YWQLqIivMqAunxzVib4+86J1w6GWEEzupwjcTNgs9V
-	 LrOmwSG4AIY5XEq4ZdPOAy+wcGuluRvnBzhAnol6VCc3Y/PvPuXhf4muXpBUHs6kfK
-	 lGr/t8dvyzH5H4WrG7pIqJxvbmbM0H33wo7vKjtQzYQT7FTd2sQfGY0UB29ysdbial
-	 VAEZrisslXPLoaekPRXBKSq6vLD4vQexdSZ8HBvPNp4aMEibMBmkZScZ71RNaWM0CQ
-	 vVj6KGIE2cC2g==
-Message-ID: <e481e29c-6904-43e9-8148-402b267ecc9e@kernel.org>
-Date: Mon, 19 Aug 2024 15:27:22 +0200
+	s=arc-20240116; t=1724074953; c=relaxed/simple;
+	bh=n055YP4UpwSx4MsWTuk5objkjsFP6bUCrLVCQsPaisA=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=kC/CVV3AOdQpJFRTYRSKpwtXI9q8ZrqdeKI6LLzJoOVRnhtTpGAiNvX54Fnf8mHuB3g66/RC6XkIKVYWKReYZzLDwWdK0rzrExhJbm/bOAKpx6pgry6jBLIWvQ3mN2623W6ivlXekHUmUc2RKISfSMgj5GtULTfA0RgfxJ581aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-81f897b8b56so314175939f.1
+        for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2024 06:42:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724074951; x=1724679751;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=yb2ABfIEAQrnVUVakDimCyPOI0QvhxH1i+Tk0ohSf9w=;
+        b=tGeCndVDM7sA2ExYmOPiJz1pHXQ1Jqiasm7Z34GQGlTmSOXgkOGyYR61V38ugF4RV5
+         sv+i1qv1yeOnfEUrf2fdIKl/xaeQIrS9orSAAjEFOST3apLgjD1YzBXRufvmasv28OXS
+         grV1eTschJjIsZ9xI9XhcaFYyOiesmh9VedywflF/4wa6PkjO5vq9mmRLocAv9X+TtSP
+         HRXMaLQd2v2FcFmY1VSPi2n9hreIq6pqwBJAHsujzXoWmR3iyGLBdT0r+t1siuha7NH0
+         4WyOVhxMoBw48HGyWWxiI934jxa9QuDUBKwyh4QHdvQOLk7hxK1n23hfs1gxlHKIuZS3
+         o5zQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUwuJoXYeIiDCat6KA+zqOYV/03Ka7fffiKutwJAkFEdXXKMQ2xQT68FyF2/aEMzUG2GhUSvwSQDsvaI+qR0Z3MvSv72J0ELqwVGGhU
+X-Gm-Message-State: AOJu0YzpIQzHllecBd4qLzpzuJL2/eHMxn11/65hWs0LzSCVjkYHU8b8
+	9v7nreXqZ2F8IupE3dk8nyVDyDwEfUVzrT9FWbn53b0Xz2YPSH3ZWBfURv0GVWwaOFGht+1UjFS
+	thv/e4oN7DSIfq31B/mJ/eNyp3C1J35lOpgW9WH0uvOoaNaITV+wg1cI=
+X-Google-Smtp-Source: AGHT+IE5rrDf70i/p1FbD9QFwTTP3OA7yraQQQy5xyKeucd1SSix0wNLxYR435ikpe3Pq6IV6eWLI3HP1US1yJpuHQhQ6ZySnb2J
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/3] OF support for Surface System Aggregator Module
-To: Hans de Goede <hdegoede@redhat.com>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>,
- Krzysztof Kozlowski <krzk@kernel.org>
-References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
- <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
-Content-Language: en-US
-From: Konrad Dybcio <konradybcio@kernel.org>
-In-Reply-To: <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6638:8709:b0:4c2:31f5:3137 with SMTP id
+ 8926c6da1cb9f-4cce0d85575mr518009173.0.1724074951314; Mon, 19 Aug 2024
+ 06:42:31 -0700 (PDT)
+Date: Mon, 19 Aug 2024 06:42:31 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000a1b9a0620097bad@google.com>
+Subject: [syzbot] [serial?] KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+From: syzbot <syzbot+dd514b5f0cf048aec256@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 19.08.2024 1:57 PM, Hans de Goede wrote:
-> Hi,
-> 
-> On 8/14/24 12:27 PM, Konrad Dybcio wrote:
->> Wire up OF support for SSAM drivers, to use with Surface Laptop 7 and
->> other Qualcomm-based devices.
->>
->> Patch 3 references compatible strings introduced in [1]
->>
->> [1] https://lore.kernel.org/linux-arm-msm/20240809-topic-sl7-v1-1-2090433d8dfc@quicinc.com/T/#u
->>
->> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
-> 
-> Thank you for your patch-series, I've applied the series to my
-> review-hans branch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
-> 
-> I did notice the following compiler warning when test building:
-> 
-> drivers/platform/surface/surface_aggregator_registry.c:278:36: warning: ‘ssam_node_group_sl7’ defined but not used [-Wunused-variable]
->   278 | static const struct software_node *ssam_node_group_sl7[] = {
->       |                                    ^~~~~~~~~~~~~~~~~~~
-> 
-> One way to fix this would be add #ifdef CONFIG_OF around the definition
-> of ssam_node_group_sl7, but then future devicetree based surface devices
-> would need more #ifdef-s so instead I've solved it by squashing in this fix:
-> 
-> diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
-> index 495cb4300617..ac96e883cb57 100644
-> --- a/drivers/platform/surface/surface_aggregator_registry.c
-> +++ b/drivers/platform/surface/surface_aggregator_registry.c
-> @@ -415,14 +415,12 @@ static const struct acpi_device_id ssam_platform_hub_acpi_match[] = {
->  };
->  MODULE_DEVICE_TABLE(acpi, ssam_platform_hub_acpi_match);
->  
-> -#ifdef CONFIG_OF
-> -static const struct of_device_id ssam_platform_hub_of_match[] = {
-> +static const struct of_device_id ssam_platform_hub_of_match[] __maybe_unused = {
->  	/* Surface Laptop 7 */
->  	{ .compatible = "microsoft,romulus13", (void *)ssam_node_group_sl7 },
->  	{ .compatible = "microsoft,romulus15", (void *)ssam_node_group_sl7 },
->  	{ },
->  };
-> -#endif
->  
->  static int ssam_platform_hub_probe(struct platform_device *pdev)
->  {
-> 
-> Once I've run some tests on this branch the patches there will be
-> added to the platform-drivers-x86/for-next branch and eventually
-> will be included in the pdx86 pull-request to Linus for the next
-> merge-window.
+Hello,
 
-Thanks for pointing this out. Your fix seems to be the best solution
-I can think of, so I'm all for it
+syzbot found the following issue on:
 
-Konrad
+HEAD commit:    1fb918967b56 Merge tag 'for-6.11-rc3-tag' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10383409980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=836be0e882e376f7
+dashboard link: https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/c4ce70611394/disk-1fb91896.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/014bed8fa88a/vmlinux-1fb91896.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/f8aa322233dc/bzImage-1fb91896.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dd514b5f0cf048aec256@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in n_tty_receive_char_closing drivers/tty/n_tty.c:1454 [inline]
+BUG: KMSAN: uninit-value in n_tty_receive_buf_closing+0x539/0xb40 drivers/tty/n_tty.c:1567
+ n_tty_receive_char_closing drivers/tty/n_tty.c:1454 [inline]
+ n_tty_receive_buf_closing+0x539/0xb40 drivers/tty/n_tty.c:1567
+ __receive_buf drivers/tty/n_tty.c:1630 [inline]
+ n_tty_receive_buf_common+0x196b/0x2490 drivers/tty/n_tty.c:1739
+ n_tty_receive_buf2+0x4c/0x60 drivers/tty/n_tty.c:1785
+ tty_ldisc_receive_buf+0xd0/0x290 drivers/tty/tty_buffer.c:387
+ tty_port_default_receive_buf+0xdf/0x190 drivers/tty/tty_port.c:37
+ receive_buf drivers/tty/tty_buffer.c:445 [inline]
+ flush_to_ldisc+0x473/0xdb0 drivers/tty/tty_buffer.c:495
+ process_one_work kernel/workqueue.c:3231 [inline]
+ process_scheduled_works+0xae0/0x1c40 kernel/workqueue.c:3312
+ worker_thread+0xea5/0x1520 kernel/workqueue.c:3390
+ kthread+0x3dd/0x540 kernel/kthread.c:389
+ ret_from_fork+0x6d/0x90 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slub.c:3994 [inline]
+ slab_alloc_node mm/slub.c:4037 [inline]
+ __do_kmalloc_node mm/slub.c:4157 [inline]
+ __kmalloc_noprof+0x661/0xf30 mm/slub.c:4170
+ kmalloc_noprof include/linux/slab.h:685 [inline]
+ tty_buffer_alloc drivers/tty/tty_buffer.c:180 [inline]
+ __tty_buffer_request_room+0x36e/0x6d0 drivers/tty/tty_buffer.c:273
+ __tty_insert_flip_string_flags+0x140/0x570 drivers/tty/tty_buffer.c:309
+ tty_insert_flip_char include/linux/tty_flip.h:77 [inline]
+ uart_insert_char+0x39e/0xa10 drivers/tty/serial/serial_core.c:3568
+ serial8250_read_char+0x1a7/0x5d0 drivers/tty/serial/8250/8250_port.c:1743
+ serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1760 [inline]
+ serial8250_handle_irq+0x77a/0xb80 drivers/tty/serial/8250/8250_port.c:1924
+ serial8250_default_handle_irq+0x120/0x2b0 drivers/tty/serial/8250/8250_port.c:1949
+ serial8250_interrupt+0xc5/0x360 drivers/tty/serial/8250/8250_core.c:86
+ __handle_irq_event_percpu+0x118/0xca0 kernel/irq/handle.c:158
+ handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+ handle_irq_event+0xef/0x2c0 kernel/irq/handle.c:210
+ handle_edge_irq+0x340/0xfb0 kernel/irq/chip.c:831
+ generic_handle_irq_desc include/linux/irqdesc.h:173 [inline]
+ handle_irq arch/x86/kernel/irq.c:247 [inline]
+ call_irq_handler arch/x86/kernel/irq.c:259 [inline]
+ __common_interrupt+0x97/0x1f0 arch/x86/kernel/irq.c:285
+ common_interrupt+0x8f/0xa0 arch/x86/kernel/irq.c:278
+ asm_common_interrupt+0x2b/0x40 arch/x86/include/asm/idtentry.h:693
+
+CPU: 1 UID: 0 PID: 3148 Comm: kworker/u8:16 Not tainted 6.11.0-rc3-syzkaller-00066-g1fb918967b56 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/27/2024
+Workqueue: events_unbound flush_to_ldisc
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
