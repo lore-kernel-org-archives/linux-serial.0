@@ -1,143 +1,115 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94CEE187FF1;
-	Mon, 19 Aug 2024 20:07:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB8B1598F4;
+	Mon, 19 Aug 2024 21:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724098071; cv=none; b=LfbUwGx3IWE27zd31UEP6yLlRNT1LKW+g5yX9ZVB/sg0Z7CiCEw+ubLKIh86J1nQ6sd3FypOkv4GMaW+KsmrIb0wucJGc14lTJaMts0Fg4hQrkhk/Es/jIw2AuSQf9v7NIOsS4r6SneAZskO//Hejnrie/68A/WE14dGpG/+94s=
+	t=1724102833; cv=none; b=a66+hRrSMYzGto8IGj/YxVJ98B16mRr8RHiSYR/pFQIxLp9MnRSKpU4KgrPu3zYBUVahcabH0mb8X6emDOEBmfmkoOGcxOxNYoJEbFUmUM7LDPaBbuGffcZsnscp6E4FfpG87JlPaeJ+BrMATreJi9EeGLWQFnIebXej6Kp7hJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724098071; c=relaxed/simple;
-	bh=rAPCRlcod+pfbPu210SomC+sQBvMBit2CDwdTkZs9WA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=k+xXNaWBF9vTtXdJjnFBhoRvGqNtXHdWLd9FxG7KsaSHdAaXUjnxnUM+S/C2CBBLEXZj10bhY1UWTyk+OfJk+IqfQ8Xgl3aibTKQ1VZ0PoGN5SQsbvBRwnGVzoSxqaZZKdxBtX6HxOsAci4S9kJtkihLfKsURCPcYY2WuuQ63PI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DupjDfdW; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724102833; c=relaxed/simple;
+	bh=+sOmpMxl05XLDPuo4r7/zihYOtpqvtWf8lxC2z/W41A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=I4/kFIYAn/QcoQdIk7PFH8ev4YFjCQsM19CZlHQbvaxSXxCJJI6DoYL024LzyU4g/A72dLgbY7GZ60JmNhHywrW8RWA+oFggpRk7CCP8IKkj9UNuHeyOPs2ryEHRfY8hGH6TY1zI2+0+4gGFm3KolKCb16qnby5fBhPIbO+QfGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=wNRJuV+u; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DupjDfdW"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-5bef295a2b4so922571a12.0;
-        Mon, 19 Aug 2024 13:07:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724098068; x=1724702868; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AXG6IXtrOjPM85KujCO90THzzqzY1pavUqqhKYUalFU=;
-        b=DupjDfdWerMwK5w3VidWTMW/SnbAzPXMPMu5hmhYPukmYW4C0Xp4ouyoiZhdrFr0df
-         3dhYfrh3WJoTWDtLNDoQVo2w5RZJfmdKNwCgEB6jguQ7ItPpkYvZntRcfRnpsTPwhkrg
-         QSBHZ5I3PYDyRPD2AhYLQJMhkwXzbWfgUs5XmMe4JM+tXQ6Vy5nmLKeV/zhoD9TgDRzJ
-         hyT8VhUCWbDCsOMS8SnOmaP3K44TpvMEcHVPwSDDAhFQcRnwKYYkthqDC9G22zSd2khP
-         n8qPOebCEi1x9UdpMvwcILerJaODruxmBj7Mb7pN1EIqau51o6SAeWf6NzOuyT7+Fh7x
-         xkLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724098068; x=1724702868;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AXG6IXtrOjPM85KujCO90THzzqzY1pavUqqhKYUalFU=;
-        b=NxDX3LfcAtRtaQqUuEbtR7fT+ZkJJQsU9Z7lUUAXZxrtNVe7pDbm5UQYYe6khIIMp9
-         BHMzN0VYYyWoVQO9flE3yGvd1gD05M5tbMsCqEmuMr1RXiLJlv3FpFhfNiWw5Jzlb7Ym
-         FIN8Fw1YEE9/EKVgBesfONYBuOXop17mXtqot03/gy5Ll88pPF7498vid2QxeFU1kVvl
-         VwlZUI/H3SeAKKHsddRkJuOrYsz9A7/2JADt8oeC0vOn+znXE6c43kuibdAYs8hvin17
-         la3fzSFURSUhI/8RVPuAkRP7ECATugEsh6RB+Q7Ff4gmajDAdkU2ehYhDkkMAUX0CUXp
-         Yh4g==
-X-Forwarded-Encrypted: i=1; AJvYcCVGyvbbjxIFllUp2yG0gdkVBFsUk+7lQ3EZZ9vUk5fMKb2LOmq0cG6U3cOiPugCJ8LxiRZKdAFIREU3MIc3PLZP3tNTw+OJwtCYDD8irOqDQfzVjCdAoUsV6G4aorX+5jPfKGjtOIV54XBzUPXVr9BWuWbx02unt+srQGMdf2mafeQ9m6+NpKEOO0tq16Qz7cOs+z2wd2pPPdjL2O1V3RfdWbzXSgZ+oSy3z0bRC37nrETzbvmOHz2331+/fA34zRWH2sPmYqdx
-X-Gm-Message-State: AOJu0YxxQNwsMAx5LjX8okw57/NavCixE2jgTv4tSx9OnVzqmsErCZsW
-	MS/VEry/4yr/yf/BM7pr2bKOtyDUYI3+bznBwDfpyOSzAynM9MFD
-X-Google-Smtp-Source: AGHT+IGJ+Gfht/qOvEgwrpTVPJu3XY+E8gChTgsY9fwcJajAIgQx/hjZADakWsaqM4RF1z+rkUv/TQ==
-X-Received: by 2002:a05:6402:51c6:b0:58c:b2b8:31b2 with SMTP id 4fb4d7f45d1cf-5bf0ac5b251mr753759a12.17.1724098067404;
-        Mon, 19 Aug 2024 13:07:47 -0700 (PDT)
-Received: from ?IPV6:2a02:8071:b783:140:927c:82ba:d32d:99c1? ([2a02:8071:b783:140:927c:82ba:d32d:99c1])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5becfc7cc93sm4516920a12.3.2024.08.19.13.07.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Aug 2024 13:07:46 -0700 (PDT)
-Message-ID: <6406891b-e116-4f10-99c7-1d434d7e8410@gmail.com>
-Date: Mon, 19 Aug 2024 22:07:45 +0200
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="wNRJuV+u"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=kT7Kuxp6fbaULbA/LwhMmUWF1CJosjyeQGtqZ9CJp+0=; b=wNRJuV+uiReaCGv60DiKRMQhAm
+	eOMs1pRGa6EHvcjoApT6Mt5LM3b5GpPAKD1+j2Tktv+nGAFu2xbK8PDX9tn25zqFUuGjAMinpkdcZ
+	CJ7+c3rDsJQPC8ZMbyvyVtnQlX7NzhAiLWUHdx1PlvLugrngoXqLffbvyJvrO5IEBY863rGZ30Uvz
+	ArvLeDZnfGgT8JEyzDAE77cHFtE+YnHPG7LtEbxE5OUcyeQl5cGttOfYdRMKOQUAUB1R7pQImU0NT
+	A1V3ZHPCQILEOpmUYokl/tQVOF2JmWyZe3ID0d8PRRxULB7x7tFRETjiKYukjEnC9kC1wfvW2EYOL
+	K37fH8RA==;
+Received: from i53875a9f.versanet.de ([83.135.90.159] helo=diego.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1sg9tR-0003Xv-3A; Mon, 19 Aug 2024 23:26:25 +0200
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: linux-kernel@vger.kernel.org,
+ Detlev Casanova <detlev.casanova@collabora.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Lee Jones <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Muhammed Efe Cetin <efectn@protonmail.com>, Andy Yan <andyshrk@163.com>,
+ Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+ Sebastian Reichel <sebastian.reichel@collabora.com>,
+ Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
+ Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>,
+ Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>,
+ Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+ Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
+Date: Mon, 19 Aug 2024 23:26:44 +0200
+Message-ID: <2553026.Sgy9Pd6rRy@diego>
+In-Reply-To: <23696360.6Emhk5qWAg@trenzalore>
+References:
+ <20240802214612.434179-1-detlev.casanova@collabora.com>
+ <21547916.mFnZMskM5D@diego> <23696360.6Emhk5qWAg@trenzalore>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/3] OF support for Surface System Aggregator Module
-To: Hans de Goede <hdegoede@redhat.com>,
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>,
- Krzysztof Kozlowski <krzk@kernel.org>
-References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
- <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
-Content-Language: en-US
-From: Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 
-On 8/19/24 1:57 PM, Hans de Goede wrote:
-> Hi,
-> 
-> On 8/14/24 12:27 PM, Konrad Dybcio wrote:
->> Wire up OF support for SSAM drivers, to use with Surface Laptop 7 and
->> other Qualcomm-based devices.
->>
->> Patch 3 references compatible strings introduced in [1]
->>
->> [1] https://lore.kernel.org/linux-arm-msm/20240809-topic-sl7-v1-1-2090433d8dfc@quicinc.com/T/#u
->>
->> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
-> 
-> Thank you for your patch-series, I've applied the series to my
-> review-hans branch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
-> 
-> I did notice the following compiler warning when test building:
-> 
-> drivers/platform/surface/surface_aggregator_registry.c:278:36: warning: ‘ssam_node_group_sl7’ defined but not used [-Wunused-variable]
->    278 | static const struct software_node *ssam_node_group_sl7[] = {
->        |                                    ^~~~~~~~~~~~~~~~~~~
-> 
-> One way to fix this would be add #ifdef CONFIG_OF around the definition
-> of ssam_node_group_sl7, but then future devicetree based surface devices
-> would need more #ifdef-s so instead I've solved it by squashing in this fix:
-> 
-> diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
-> index 495cb4300617..ac96e883cb57 100644
-> --- a/drivers/platform/surface/surface_aggregator_registry.c
-> +++ b/drivers/platform/surface/surface_aggregator_registry.c
-> @@ -415,14 +415,12 @@ static const struct acpi_device_id ssam_platform_hub_acpi_match[] = {
->   };
->   MODULE_DEVICE_TABLE(acpi, ssam_platform_hub_acpi_match);
->   
-> -#ifdef CONFIG_OF
-> -static const struct of_device_id ssam_platform_hub_of_match[] = {
-> +static const struct of_device_id ssam_platform_hub_of_match[] __maybe_unused = {
->   	/* Surface Laptop 7 */
->   	{ .compatible = "microsoft,romulus13", (void *)ssam_node_group_sl7 },
->   	{ .compatible = "microsoft,romulus15", (void *)ssam_node_group_sl7 },
->   	{ },
->   };
-> -#endif
->   
->   static int ssam_platform_hub_probe(struct platform_device *pdev)
->   {
-> 
-> Once I've run some tests on this branch the patches there will be
-> added to the platform-drivers-x86/for-next branch and eventually
-> will be included in the pdx86 pull-request to Linus for the next
-> merge-window.
+Am Montag, 19. August 2024, 19:59:45 CEST schrieb Detlev Casanova:
+> On Wednesday, 14 August 2024 11:31:04 EDT Heiko St=FCbner wrote:
+> > Hi Detlev,
+> >=20
+> > Am Freitag, 2. August 2024, 23:45:36 CEST schrieb Detlev Casanova:
+> > > This device tree contains all devices necessary for booting from netw=
+ork
+> > > or SD Card.
+> > >=20
+> > > It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
+> > > SDHCI (everything necessary to boot Linux on this system on chip) as
+> > > well as Ethernet, I2C, SPI and OTP.
+> > >=20
+> > > Also add the necessary DT bindings for the SoC.
+> > >=20
+> > > Signed-off-by: Liang Chen <cl@rock-chips.com>
+> > > Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
+> > > Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> > > Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+> > > [rebase, squash and reword commit message]
+> > > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> >=20
+> > looks like (since 2019) there is a strong suggestion for having a soc n=
+ode.
+> >=20
+> > See Krzysztof's mail in
+> >   =20
+> > https://lore.kernel.org/all/6320e4f3-e737-4787-8a72-7bd314ba883c@kernel=
+=2Eorg
+> > / that references
+> >     Documentation/devicetree/bindings/writing-bindings.rst [0]
+> >=20
+> > So I guess we should probably follow that - at least for new socs for n=
+ow.
+>=20
+> That make sense, but what is exactly covered by MMIO devices ? everything=
+=20
+> except cpus, firmware, psci and timer ?
 
-I agree with Konrad, this looks like the best way to address this.
-Thanks!
+if your node has a foo@mmio-address naming then it goes in there I guess
 
-Best regards,
-Max
+
