@@ -1,46 +1,46 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D66C4594D;
-	Mon, 19 Aug 2024 05:16:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF1B171CD;
+	Mon, 19 Aug 2024 05:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724044600; cv=none; b=FEOf/DS7JR/EagzGO9EBpeO4I/KQexczrWuiLzhBo7jyoheu4SeoE9pK42fgf+LJ/rS5qyIRBlKArTNvtCfh6tgZ1+/Ar2dSFmR3zHzE8vYTgcK6+IHvvEFujLA0+kkPA4PEbCFW/2RQs/C76Z0MavGLBqyRt3ZftliW5POTok8=
+	t=1724045574; cv=none; b=h9Z/4Fn8HBV21V2qZaLkg3gizQrGeTZ0o+zaQQUQhryaELMJ31OGAI+ITO0HBYKdTYyNnVTJN9Fts7T0uje0g/Bb1WqGTn9/fgK2IintiUokH9rFLXWM7LAWTRUwNpl1k9rjdn6EFMB3iwFWJcqyt1qZvjvfPWPf5PXXRDs4NSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724044600; c=relaxed/simple;
-	bh=gq0cFjStxzBeQsciDl3jHF5hObqdTt/pX6H5YAdqG+o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SZ1ABclEJdVe0N+/Mvju0hjaQSz/16RM//S+L8KvOPFBJ6noYtGlOpEbHMWo42n/9lO3CxopbSsPQyr85n6N/BdcxgpaeATSLlYu9RA5FnAkdLivDIMc4biSlu0I0DgjKJifY6bw9k1C8RJaco1lB+4yiMCJnG/FnzOjkXns5MA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1724045574; c=relaxed/simple;
+	bh=gFB+mSRNZo2G+e/subS3Hm+9LhOICBxVnyzpnQpYACU=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=ON88FIZLaTE8Yd5DJu6irC0iOIzorn07uPNY8JFDqWgEF/8Lsm4+Ms9Tj7jHHZrg705dk969odnEAPhGJjjs9C9z3c5MVXC5kk5jcGHshiv+CCmwYlYl3j2Gu6if/2pZM49hMZBEgsVleeHVbptgy8OmYtGmJIXVOMa0nsbLSUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-428085a3ad1so34176995e9.1;
-        Sun, 18 Aug 2024 22:16:38 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-429d2d7be1eso19871355e9.1;
+        Sun, 18 Aug 2024 22:32:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724044597; x=1724649397;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HprnbFTayqz+uqlg8mSPJykFJTiRSC/Vz3kgO0IGUVQ=;
-        b=IGizhJeNBN2OqWHdlbB1/Bo26PODO976xAvdduamyYmP3xuzwLuoRbemtphx4Ilr2h
-         0vvzU0e+htGU9dei9+RUdUzYsaxu0/OijsjlFzB9XQdPi+8i9ZL0FwoijIj9ivuNKvqT
-         qJcjqr4NsPzZobM8AGx2B+h/vom9qdNTDH79+BvecIkmWilzX2Lo0EoDu6lWnU8hJwhk
-         OW/DpdHGzIeOJjZQNFSht8AVNFP1zSZCpVIJ9GqYPU2Y2Zbp9egqr6Z4UuvogQHMeuMy
-         t9Fa8sjkUimEChUV5h+9azVsBiBCu3uOEGU2OZSEIaUXro9QJAEVkpfZKhBMCTzLz6CQ
-         78cA==
-X-Forwarded-Encrypted: i=1; AJvYcCXOYYS4CFjZgAvzRQ/HC8rb6Z1INjjvRPGEKqTxoyRcxP7SRcQY38/A2GXUppwZBs2GZPIoR2ivhFPp7Fr2UBWogfBgzRKtAn+V/R/MkTq8H/lZDT1oNypBzWB/MGi5Ue9XH6jFV4oL82jDaqG2QNvOFPSCiVhCRQyIyS/QVW3N8mU9jDik
-X-Gm-Message-State: AOJu0Yy8gtfZ8v55WAexMi5bzEAwxAaxq1ViOdWF05aqxMWG/hfKUH3p
-	EPyLTNshMAkBL4iKMK8tW51KesSAfqakPN91hodGMbMAhl5K2Xwe
-X-Google-Smtp-Source: AGHT+IEQGXh2paPMFKyW5G+hNAjxADeCnZiExVjQPiP6lFdfiHLIqw4du2ehIwlhYf2Au1SY3h6IFQ==
-X-Received: by 2002:a05:600c:3b27:b0:426:59fe:ac2e with SMTP id 5b1f17b1804b1-429ed7cee39mr78279765e9.29.1724044596475;
-        Sun, 18 Aug 2024 22:16:36 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1724045571; x=1724650371;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :references:cc:to:from:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oqR1a1HiKAAgYWlHks8ofVwGaWEISuz4ja6NXbdxVZg=;
+        b=TjM2W7gVJE7S/XEhIg25vW8vO39F8uL3jBnMjfVnPJu4sExqV2AGqwvuNRmKGM/iHJ
+         4g5aWpgPSErYxycJi6ssGcnTmDKRLKCic5TTjwhMfEyuGa2BYfcQR7zwwwzCT94Lj50v
+         jHfkn1LOKNWvzk8gu6Qjymx0rloBKO6Oyp1NckfISJy/RGdAhGAT749lwOiAEZa/GShR
+         rf/CIVpACgexq0vcsXnsEmI218dQpJh1mRmu/cUBoIoOX4n0gJIbbsOt1wcryPUM+uIM
+         ejSk1L2/W4QkFUj4PM/kVkL4sbMonsh0K7UTwJAAmPsHHjd0aN0tvbSS0ZjHODZg0TQ6
+         HqzQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXP/DDHd5GzYz88ZxD43aPIUHHnJg/ZZdw5y0nBEPggZLA3rDSyXTjrAvsI2kZ8ZjmCqGeuu1XyrSQdaMTnb/w7qXgLdAHdfTIb2vv1TPCG5TeC3Do71ZG2z/HTy4RBfQ/G1eTx2bnVfAF72w9Lk38ZyoVNljOFdGVhRilyu5X05fvi6aeC
+X-Gm-Message-State: AOJu0YwlOpKoqE/NCpONbEukAXMeZ5Y8V2L22ePtu5ZM3b1N+UCHx0oU
+	ndXATk54vyoexlekgSUnGVI63DRAhpz4w26KUOuUYM9KoO0uRC1n
+X-Google-Smtp-Source: AGHT+IHc46Hd7xYUEjHbb/SA+4dkb95sfFevgU5KmMo/m5s+/Or0UoAebrH/zswgvhC5QTOyr1fkyQ==
+X-Received: by 2002:a05:600c:4f52:b0:426:5e32:4857 with SMTP id 5b1f17b1804b1-429ed8a3958mr67251665e9.0.1724045570798;
+        Sun, 18 Aug 2024 22:32:50 -0700 (PDT)
 Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ded180e7sm149187485e9.3.2024.08.18.22.16.35
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ded287d0sm150001565e9.12.2024.08.18.22.32.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Aug 2024 22:16:35 -0700 (PDT)
-Message-ID: <9f0e05fd-1e6b-4474-95e9-64af6ffa030d@kernel.org>
-Date: Mon, 19 Aug 2024 07:16:34 +0200
+        Sun, 18 Aug 2024 22:32:50 -0700 (PDT)
+Message-ID: <e85236f6-ae6a-414d-9a0d-2aceb3311751@kernel.org>
+Date: Mon, 19 Aug 2024 07:32:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,6 +50,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH net-next 1/2] tty: Add N_TASHTALK line discipline for
  TashTalk Localtalk serial driver
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Rodolfo Zitellini <rwz@xhero.org>, "David S. Miller"
  <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -59,8 +60,8 @@ Cc: netdev@vger.kernel.org, linux-doc@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
  Arnd Bergmann <arnd@arndb.de>, Doug Brown <doug@schmorgal.com>
 References: <20240817093258.9220-1-rwz@xhero.org>
+ <9f0e05fd-1e6b-4474-95e9-64af6ffa030d@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -103,40 +104,20 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20240817093258.9220-1-rwz@xhero.org>
+In-Reply-To: <9f0e05fd-1e6b-4474-95e9-64af6ffa030d@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Where is 2/2?
+On 19. 08. 24, 7:16, Jiri Slaby wrote:
+> Where is 2/2?
+> 
+> It cannot be seen:
+> https://lore.kernel.org/all/20240817093258.9220-1-rwz@xhero.org/#r
 
-It cannot be seen:
-https://lore.kernel.org/all/20240817093258.9220-1-rwz@xhero.org/#r
-
-On 17. 08. 24, 11:32, Rodolfo Zitellini wrote:
-> This is the patch for the line discipline
-> 
-> Signed-off-by: Rodolfo Zitellini <rwz@xhero.org>
-> 
-> ---
->   include/uapi/linux/tty.h | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/tty.h b/include/uapi/linux/tty.h
-> index 68aeae2addec..bac4c0af67e6 100644
-> --- a/include/uapi/linux/tty.h
-> +++ b/include/uapi/linux/tty.h
-> @@ -39,8 +39,9 @@
->   #define N_MCTP		28	/* MCTP-over-serial */
->   #define N_DEVELOPMENT	29	/* Manual out-of-tree testing */
->   #define N_CAN327	30	/* ELM327 based OBD-II interfaces */
-> +#define N_TASHTALK	31	/* TashTalk LocalTalk driver */
->   
->   /* Always the newest line discipline + 1 */
-> -#define NR_LDISCS	31
-> +#define NR_LDISCS	32
->   
->   #endif /* _UAPI_LINUX_TTY_H */
+It's a separate <20240817093316.9239-1-rwz@xhero.org>. Please fix 
+threading when sending next time.
 
 -- 
 js
+suse labs
 
