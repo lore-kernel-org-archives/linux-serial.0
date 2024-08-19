@@ -1,106 +1,123 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67BEB173335;
-	Mon, 19 Aug 2024 14:29:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724077749; cv=none; b=oNsatn95AOMRNiAp9pMjjiKhsBT8ZT7oiG8mZ2yQT6fICNv2PR4utbhRqoNakTzoLxqEgCwdIJHvjPBEIJOhN20oBaDL3KF5Z6UzTLm9odaQOOe9sqYcOrFbmvVojkXKFVyriNRhJHIX7ORctQwKrUE8f92oDsbpLm3jE0+pJR0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724077749; c=relaxed/simple;
-	bh=RnUGqsHXjmzPtaPPuX71ueTb0berosZ1ANglk0h5gY0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=OzqKt1u4IeiPkKQqaCX4RF7Rj9K3l+P5AZPFEWqefB2pUBLpvJSOTUaykM9MuxfoJMizs+XgI08WKgaAElEi1r//qm28+Ntd3Mvrr3atqpKtG/9zJE7kp0tiODn8zLGMsWF63xbHeM4N6C+xY53GMtbRBP9lffKefxm2H+QW6Yw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=kgtr1+9s; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D8E7D531;
+	Mon, 19 Aug 2024 17:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724090376; cv=pass; b=XaHsoJYriE1sjcmSYUnjrN6f2q0dpuMlOFdXsLnVcYqaPDCRnrdHasDgo5S402w+f9uPx2584ZPqgHGBQybSXL2VGoiv6Qm06haks/8Adix/GRyseNJjSSadkUI4XLlDtqkBaq5Cw79XXJ5zX7eQW1rIFTvNhRwAXboO1bH8+ko=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724090376; c=relaxed/simple;
+	bh=o6P0nZ14SojOcYFxiCK7txSvI4RmGN+OJHmCKCGY1S8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pw79p/KElsgZ/zJcb7AyDvakGU7Vqx3dVl9sQMJfep2/3YbJkXb8xDNI6Z6QhTB7xxJYAJ4mwLrfq1hqr3cX3PohjNOTcTcV2miwg58LqL3jYZAsryPGLzV4EcGpvXJ0Ghjx0LD4amuOSVzDTTMn7nSuSu8QLzdBqvQGp6An1Yw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b=MM8rOpdc; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kgtr1+9s"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47JBVWxJ006603;
-	Mon, 19 Aug 2024 14:28:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	RnUGqsHXjmzPtaPPuX71ueTb0berosZ1ANglk0h5gY0=; b=kgtr1+9sCei6+Sci
-	zbDjNfv7eGCvb/+lwVPX/ruaO0DMiVRmyDqxG77pXzqDJpjR01/qLUl3GEXn7RY4
-	aiSq9buS1cyzJQMQP6jaVQ7zFRdLi9x1/wO4cFjO+ogbJNE2hzuKTSO+Jhg6E8s7
-	3Rn35cDEOhefJkpe9RYu1mf7Hw/ecDWPwrj2RsLkysDQhgETiNEDJYqxpqx6wz9F
-	hUKrdh2PHiB0KH/U/QzEz78EFNvgKH3NsF8LIJfLZxoB2RwNN1Qmw8X1nz705hqf
-	Z7emNcqO/gZ9XC2KU9dnDOVgobXvnLlzOp1D7j8Ly4U8+pIwCB4vstbBeXagqyYx
-	aX3WtQ==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 412mmemd4b-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Aug 2024 14:28:55 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47JESsfT014355
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Aug 2024 14:28:54 GMT
-Received: from [10.81.24.74] (10.49.16.6) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 19 Aug
- 2024 07:28:53 -0700
-Message-ID: <bbc26eb0-973f-4680-aff1-2be2f598a963@quicinc.com>
-Date: Mon, 19 Aug 2024 07:28:53 -0700
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b="MM8rOpdc"
+ARC-Seal: i=1; a=rsa-sha256; t=1724090294; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=J6r5s7/Z8JeFN/26tvSLxRD9tuH13mCXG//biHkwArz4lxH9bEabeMCfhvwX1Jz6HI+dw6snHomGANxT1hNZ4gmBIBpe1s52pgQDfjLJDsrus4+aGyRLSHZwiI1OK2/btb4jej9p9puqNR4b+OuBMRSzaUI9Cizfk+2ugLtMiTM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1724090294; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=pNG01ooGieLYITjXohGoGYVq/b4PMFucDskno7kh9Yo=; 
+	b=Booe36Q8WD2x0h5CZNUq1hzMG6xAMF+j7zKV9UZBzEgUZVpK2heJBENHFKJBiZ5VchEQOO9xOMfac2H4zjNZ29O+Ta1PtcMbgpD9GzE0e8GO3yc06cHXQorKxx8AcbAjkuNOop7F20t0Y3nLwoNJomZM+it9Ecc2Y4ZP1JOhqJ0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=detlev.casanova@collabora.com;
+	dmarc=pass header.from=<detlev.casanova@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1724090294;
+	s=zohomail; d=collabora.com; i=detlev.casanova@collabora.com;
+	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+	bh=pNG01ooGieLYITjXohGoGYVq/b4PMFucDskno7kh9Yo=;
+	b=MM8rOpdcrt7xe+eScEzW5zHxUcQjxiueHE/FDnRu8/Pe0U3Af0w1LI2u+gCz+/G/
+	975sA/Tg6i+P+y1npppA4SDz/yTTZtVhb8uieAVLaVB2m/QZkDJVs3FboGR/vh1tRmR
+	2i9Gfc92wHxxstL1Gg65syWLiCQzCrdWZmGFAAi8=
+Received: by mx.zohomail.com with SMTPS id 17240902923861007.2839847459757;
+	Mon, 19 Aug 2024 10:58:12 -0700 (PDT)
+From: Detlev Casanova <detlev.casanova@collabora.com>
+To: linux-kernel@vger.kernel.org,
+ Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Lee Jones <lee@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Muhammed Efe Cetin <efectn@protonmail.com>, Andy Yan <andyshrk@163.com>,
+ Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+ Sebastian Reichel <sebastian.reichel@collabora.com>,
+ Shresth Prasad <shresthprasad7@gmail.com>, Ondrej Jirman <megi@xff.cz>,
+ Weizhao Ouyang <weizhao.ouyang@arm.com>, Alexey Charkov <alchark@gmail.com>,
+ Jimmy Hon <honyuenkwun@gmail.com>, Finley Xiao <finley.xiao@rock-chips.com>,
+ Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+ Elaine Zhang <zhangqing@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-i2c@vger.kernel.org,
+ linux-iio@vger.kernel.org, linux-serial@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH 09/10] arm64: dts: rockchip: Add rk3576 SoC base DT
+Date: Mon, 19 Aug 2024 13:59:45 -0400
+Message-ID: <23696360.6Emhk5qWAg@trenzalore>
+In-Reply-To: <21547916.mFnZMskM5D@diego>
+References:
+ <20240802214612.434179-1-detlev.casanova@collabora.com>
+ <20240802214612.434179-10-detlev.casanova@collabora.com>
+ <21547916.mFnZMskM5D@diego>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next 2/2] appletalk: tashtalk: Add LocalTalk line
- discipline driver for AppleTalk using a TashTalk adapter
-Content-Language: en-US
-To: Rodolfo Zitellini <rwz@xhero.org>,
-        "David S. Miller"
-	<davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, Jakub Kicinski
-	<kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet
-	<corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>
-CC: <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann
-	<arnd@arndb.de>, Doug Brown <doug@schmorgal.com>
-References: <20240817093316.9239-1-rwz@xhero.org>
-From: Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20240817093316.9239-1-rwz@xhero.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: IjnG0bMvwOyH1Sk-aXGKU9xGpOvcn6fT
-X-Proofpoint-ORIG-GUID: IjnG0bMvwOyH1Sk-aXGKU9xGpOvcn6fT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-19_12,2024-08-19_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1011
- mlxlogscore=999 priorityscore=1501 bulkscore=0 impostorscore=0
- adultscore=0 mlxscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408190096
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-ZohoMailClient: External
 
-On 8/17/24 02:33, Rodolfo Zitellini wrote:
-...
-> +module_init(tashtalk_init);
-> +module_exit(tashtalk_exit);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS_LDISC(N_TASHTALK);
+On Wednesday, 14 August 2024 11:31:04 EDT Heiko St=C3=BCbner wrote:
+> Hi Detlev,
+>=20
+> Am Freitag, 2. August 2024, 23:45:36 CEST schrieb Detlev Casanova:
+> > This device tree contains all devices necessary for booting from network
+> > or SD Card.
+> >=20
+> > It supports CPU, CRU, PM domains, dma, interrupts, timers, UART and
+> > SDHCI (everything necessary to boot Linux on this system on chip) as
+> > well as Ethernet, I2C, SPI and OTP.
+> >=20
+> > Also add the necessary DT bindings for the SoC.
+> >=20
+> > Signed-off-by: Liang Chen <cl@rock-chips.com>
+> > Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
+> > Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> > Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+> > [rebase, squash and reword commit message]
+> > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+>=20
+> looks like (since 2019) there is a strong suggestion for having a soc nod=
+e.
+>=20
+> See Krzysztof's mail in
+>   =20
+> https://lore.kernel.org/all/6320e4f3-e737-4787-8a72-7bd314ba883c@kernel.o=
+rg
+> / that references
+>     Documentation/devicetree/bindings/writing-bindings.rst [0]
+>=20
+> So I guess we should probably follow that - at least for new socs for now.
 
-missing MODULE_DESCRIPTION()
+That make sense, but what is exactly covered by MMIO devices ? everything=20
+except cpus, firmware, psci and timer ?
 
-Since commit 1fffe7a34c89 ("script: modpost: emit a warning when the
-description is missing"), a module without a MODULE_DESCRIPTION() will
-result in a warning when built with make W=1. Recently, multiple
-developers have been eradicating these warnings treewide, and very few
-are left, so please don't introduce a new one :)
+> Heiko
+>=20
+> [0]
+> https://elixir.bootlin.com/linux/v6.11-rc1/source/Documentation/devicetre=
+e/
+> bindings/writing-bindings.rst#L90
 
-/jeff
+
+
+
