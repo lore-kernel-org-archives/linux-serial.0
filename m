@@ -1,96 +1,116 @@
-Received: from smtpdh19-su.aruba.it (smtpdh19-su.aruba.it [62.149.155.160])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C76CC16B3B8
-	for <linux-serial@vger.kernel.org>; Mon, 19 Aug 2024 12:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.149.155.160
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D6C16D338;
+	Mon, 19 Aug 2024 13:27:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724071393; cv=none; b=pa+60DWETX4xtWTIeLhPRWaP1SDkT8fHJuaF4lQpuRG3byIwN+psGL79Br0TUc1g5Hj3wDQkTyCFo0W3TsSiH4RDrVbpNAq1vR2yrH2IZpBzWtqbALLGZnZ4jdCFRP9HVXFTkSIfxphLjbZJ+zlUOLzP5PdtW5Regfy5cVsExAM=
+	t=1724074052; cv=none; b=lqMBv7xI1miZbSCeaL3+YXHdUj6AJSGq/cW3zBBYhvrGitb1zSN+UHf8F5uEaOePwoyC3FQMnG8RqRDaoiETmaP2mNh1XbjZSe+dmDSn5cVeXQNoQIuXh5QbVZaE1j6LkJ0jnDCnWms3WCSM0RvVTwFXbtf59s66/YeSrzMGzOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724071393; c=relaxed/simple;
-	bh=fCwrGowti2Y9FbC/WSwpnvpRmMD7BY8uWq1ug4s5oc8=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=k8u9vGgJbiJk+mULH5pWur6Djk5G6VOqymnGMK/s4/wQYETzIFXrvejg3TEqyXvc3a1ETRvup7mle+8rzEZUm+bjtp0LeMCbJKK1/7XyxBgzi40NTwCIcX/J0kWlsXnEuX0z+NiXE4P9+RE41Q1cBUWt3R0OYH6pVgO3S0Ds3UY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xhero.org; spf=pass smtp.mailfrom=xhero.org; dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b=nJW55vb7; arc=none smtp.client-ip=62.149.155.160
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xhero.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xhero.org
+	s=arc-20240116; t=1724074052; c=relaxed/simple;
+	bh=zgzzTwzV0BQY6hxtHWFGekrmc1vx8F7yvRK80HBJQrQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZINxj6uJsJ60lf7+wWUfO0bDla8oGhiNUuZmTjalh+WiRGOXdKAfcK1Wt0CHR7WOMXNzCl0N5fG87xK6OU8V71EwkH/EZDot4esiMyxBkkzgr9+WGyJpujlsfk2nVVQ8r8PSA9QssrOBWJttWw197p0p3iBv0nqdWT1zKQDRFZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NcKCEon0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=aruba.it header.i=@aruba.it header.b="nJW55vb7"
-Received: from smtpclient.apple ([84.74.245.127])
-	by Aruba Outgoing Smtp  with ESMTPSA
-	id g1g0s7h89GPpWg1g0sdU1V; Mon, 19 Aug 2024 14:40:02 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-	t=1724071202; bh=fCwrGowti2Y9FbC/WSwpnvpRmMD7BY8uWq1ug4s5oc8=;
-	h=Content-Type:Mime-Version:Subject:From:Date:To;
-	b=nJW55vb7YjZ9SvT5UohbI0ldLpGL7iTCUUl2BFPCDHyHdhx67JckO7U+YIjO9qiqi
-	 1/n4hQ2Io27dp5IktOT6100XMkmiMUSaIpupCH8GgLv5qwu62UNZLJjsmuINMdElg9
-	 QlyRxP02OelucC1HgynnPQPKdym6EQyFQyGcLF8jNueoJsGoKiv8DtsEKI/GFr2sYT
-	 t/QB9CO2RYTQPdABXVPSccdmcKt3GBbHfXbgMrzchnV5vPzlUQr+3KXyjvU2es7l9n
-	 /Vf+HuZPPocMqxz5i8HkkkmT4E6uqJ7SJSgUU7Pza4JxF0WT4TGPZqKdva5Um7EFVi
-	 G8sXyQ/2AWYww==
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NcKCEon0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 553EEC4AF0F;
+	Mon, 19 Aug 2024 13:27:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724074051;
+	bh=zgzzTwzV0BQY6hxtHWFGekrmc1vx8F7yvRK80HBJQrQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=NcKCEon0okn3rFKqjw1KT+EdjKM9uNNBqtsORdLntcwecBj9BUCQdwpKIdu7Cjs4o
+	 vMLd35t7x3feSipMIKbLDHd7YWQLqIivMqAunxzVib4+86J1w6GWEEzupwjcTNgs9V
+	 LrOmwSG4AIY5XEq4ZdPOAy+wcGuluRvnBzhAnol6VCc3Y/PvPuXhf4muXpBUHs6kfK
+	 lGr/t8dvyzH5H4WrG7pIqJxvbmbM0H33wo7vKjtQzYQT7FTd2sQfGY0UB29ysdbial
+	 VAEZrisslXPLoaekPRXBKSq6vLD4vQexdSZ8HBvPNp4aMEibMBmkZScZ71RNaWM0CQ
+	 vVj6KGIE2cC2g==
+Message-ID: <e481e29c-6904-43e9-8148-402b267ecc9e@kernel.org>
+Date: Mon, 19 Aug 2024 15:27:22 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.600.62\))
-Subject: Re: [PATCH net-next 2/2] appletalk: tashtalk: Add LocalTalk line
- discipline driver for AppleTalk using a TashTalk adapter
-From: Rodolfo Zitellini <rwz@xhero.org>
-In-Reply-To: <f1c86ed3-9306-459d-acb5-97730bfeb265@app.fastmail.com>
-Date: Mon, 19 Aug 2024 14:39:49 +0200
-Cc: "David S . Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>,
- Jonathan Corbet <corbet@lwn.net>,
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/3] OF support for Surface System Aggregator Module
+To: Hans de Goede <hdegoede@redhat.com>,
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Netdev <netdev@vger.kernel.org>,
- linux-doc@vger.kernel.org,
- linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Doug Brown <doug@schmorgal.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <66CC3DF2-3877-4E59-924A-FA0B14AD4F46@xhero.org>
-References: <20240817093316.9239-1-rwz@xhero.org>
- <f1c86ed3-9306-459d-acb5-97730bfeb265@app.fastmail.com>
-To: Arnd Bergmann <arnd@arndb.de>
-X-Mailer: Apple Mail (2.3774.600.62)
-X-CMAE-Envelope: MS4xfH4AXYnKIh2BVBscPttom5cXyZiRAjSs4ymV0/+jjynM3I2IRE/1MGshpfSSdbFowrwVfeP4DN6YlOMhpxI+Qi0PL2nobjWLqbHD+k5XaEaUJIN5Hkv/
- r+wriLFaK+M+lRHfpnFyvnmbJwYBKhq+tJ2ZisE16PCdtNdQIBKiE4ACgeUglF1xWI+KABKWZ5EtKnL3Sp/gPyhhu3q1nurJGLf5kyfIm2pCHsOYzWXwJvgI
- mxPfBcCbVQ3ognRSsA/+dIY+PG/+lhqKbdk7wDpDkBNg4cwo+/H9/Bl2mj2d1Hz3gplnytcLLw7VuUn7QeMUmi0TSQvC8pGNs2bCTWBiZdyjMvXTXRscTKBn
- HnncabPcsQHXoxw1a9rEr1YZ0nNDhO8fPU6i+WQd1YNS2PbK3N4t2TR4r3YeB9WLDN+FNquZugPlhCHpr05JPysJOFZb7ZCXRD9BbwyIKIADYJBdz9qOy6BT
- ryPhz6s76O7rUGfiB2DwVZstHElf/BxjxDhdt85QoNMkVV8HquANl9PBL3Rfkv5VOn0+4fNluLdTdgbUPGglUaOOvBDKIlAL6x96GA==
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Maximilian Luz <luzmaximilian@gmail.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>
+References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
+ <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
+Content-Language: en-US
+From: Konrad Dybcio <konradybcio@kernel.org>
+In-Reply-To: <1edadffb-67d9-476e-b0f7-7f3fc34e9592@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-> On August 19, 2024, at 11:44 AM, Arnd Bergmann <arnd@arndb.de =
-<mailto:arnd@arndb.de>> wrote:
-> Nice to see you got this into a working state! I vaguely
-> remember discussing this in the past, and suggesting you
-> try a user space solution,
+On 19.08.2024 1:57 PM, Hans de Goede wrote:
+> Hi,
+> 
+> On 8/14/24 12:27 PM, Konrad Dybcio wrote:
+>> Wire up OF support for SSAM drivers, to use with Surface Laptop 7 and
+>> other Qualcomm-based devices.
+>>
+>> Patch 3 references compatible strings introduced in [1]
+>>
+>> [1] https://lore.kernel.org/linux-arm-msm/20240809-topic-sl7-v1-1-2090433d8dfc@quicinc.com/T/#u
+>>
+>> Signed-off-by: Konrad Dybcio <quic_kdybcio@quicinc.com>
+> 
+> Thank you for your patch-series, I've applied the series to my
+> review-hans branch:
+> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+> 
+> I did notice the following compiler warning when test building:
+> 
+> drivers/platform/surface/surface_aggregator_registry.c:278:36: warning: ‘ssam_node_group_sl7’ defined but not used [-Wunused-variable]
+>   278 | static const struct software_node *ssam_node_group_sl7[] = {
+>       |                                    ^~~~~~~~~~~~~~~~~~~
+> 
+> One way to fix this would be add #ifdef CONFIG_OF around the definition
+> of ssam_node_group_sl7, but then future devicetree based surface devices
+> would need more #ifdef-s so instead I've solved it by squashing in this fix:
+> 
+> diff --git a/drivers/platform/surface/surface_aggregator_registry.c b/drivers/platform/surface/surface_aggregator_registry.c
+> index 495cb4300617..ac96e883cb57 100644
+> --- a/drivers/platform/surface/surface_aggregator_registry.c
+> +++ b/drivers/platform/surface/surface_aggregator_registry.c
+> @@ -415,14 +415,12 @@ static const struct acpi_device_id ssam_platform_hub_acpi_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(acpi, ssam_platform_hub_acpi_match);
+>  
+> -#ifdef CONFIG_OF
+> -static const struct of_device_id ssam_platform_hub_of_match[] = {
+> +static const struct of_device_id ssam_platform_hub_of_match[] __maybe_unused = {
+>  	/* Surface Laptop 7 */
+>  	{ .compatible = "microsoft,romulus13", (void *)ssam_node_group_sl7 },
+>  	{ .compatible = "microsoft,romulus15", (void *)ssam_node_group_sl7 },
+>  	{ },
+>  };
+> -#endif
+>  
+>  static int ssam_platform_hub_probe(struct platform_device *pdev)
+>  {
+> 
+> Once I've run some tests on this branch the patches there will be
+> added to the platform-drivers-x86/for-next branch and eventually
+> will be included in the pdx86 pull-request to Linus for the next
+> merge-window.
 
-Hi Arnd, Simon and Jiri,
-First and foremost, thank you so much for taking the time to review my =
-code
-and for providing your comments.
-I will do my best to address the issues and improve the code for the
-next submission.
+Thanks for pointing this out. Your fix seems to be the best solution
+I can think of, so I'm all for it
 
-I will also add a longer description on why I went this route, it is =
-mostly
-due to compatibility with existing distributions of netatalk 2, which =
-can
-work without modification.
-
-> As we discussed in the past, I think this really should
-> not use ndo_do_ioctl(), which instead should just disappear.
-
-I will fix this in the next revision, I was not sure if I should touch =
-the
-appletalk code for my first submission, but I can add a third patch that
-takes care of this.
-
-Kind Regards,
-Rodolfo=
+Konrad
