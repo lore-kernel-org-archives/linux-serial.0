@@ -1,249 +1,193 @@
-Received: from HK2PR02CU002.outbound.protection.outlook.com (mail-eastasiaazon11010051.outbound.protection.outlook.com [52.101.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from aposti.net (aposti.net [89.234.176.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49BE93BBC0;
-	Thu, 22 Aug 2024 03:42:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.128.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724298122; cv=fail; b=IV/WpRtqTMVz7XrhyB3W+ovCHg/H4XoKJFnSKizISeO71ALEOoaodsx3lDn2phqxgdHVkaee3UIZ3CIYFRrZy/CyvwWoGsMI0AQ4EyT4H2w+xQcH6MWa+p9PrG8e0c5/UURBuNGVMpbrvuFVIs5RYN92xORjnGmb+/nYBEAdrEI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724298122; c=relaxed/simple;
-	bh=FE0BxfoZ1xHlA+SeTZ2BU3seMfNHpkv0m3D0XzgQ6rc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=T1hXwZqcBNWzw22+BnSBGvO+Z5Vl6t4VxRdwrYr5maVgCifofwiTR74tkN8JW+9/kq3zdt5Xae1/LitXm4A0TM6QMYseO+o+PFlZhCee9lZF5YCWCchmDFbnohzjRAWYV4K8raKayPajPpeW9JDMU6GriNklTd65JWV70bioe68=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=cLHV8t2E; arc=fail smtp.client-ip=52.101.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFE871885AC;
+	Thu, 22 Aug 2024 09:40:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=89.234.176.197
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724319653; cv=none; b=P6Z3uKq/Ckr9c7oEQMJGSVKpo5gm7LXTisQsNwY4g1J2yepxWB4j8EUWlpYTHV3KjG820tQwX+4tjsGWKyMsWSbOqwhWHwVIIapZnSM8elSF+3BrH16qDb745+SHUFe1rp2enRLGhREDrXjD3t4zd88eLjbpOT9euL8I1KQDBK8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724319653; c=relaxed/simple;
+	bh=+YzybvjmeCjQmLsAQdmlwRS1Wt1RU9R7fRWOBStbjs0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=S59lPXAVULot2jyetiXE8pENlzltt0tpY96ay1izCRXFowrp0DhsA94gc3JqD/w7ldxXWhyN4eHHfEM1wIXIJUu3aW9WLKstS8DyiT3X0Oq3uvrng/jbi1Vnkb5uYHimUcH89Dhryi1FJKaRUwhTuDiOCc6T7xunZYoxtA4sW4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net; spf=pass smtp.mailfrom=crapouillou.net; dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b=xeXdzUWY; arc=none smtp.client-ip=89.234.176.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=crapouillou.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=crapouillou.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="cLHV8t2E"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=r9mWNQkmUI0LVbteOZ9plxey1ngUcmWyDa6Sj+jWPYUNncK6I4K772S0P9Hh6qwR0fTbkyBAJzJtbMa/RPAfIiR3Vr953f9me3tZQ3X1BO0zDDSqdy0atzt5HQMco8cds95gnENCoyRHni+Jm9kCa2bTyj/xYI7Sq8gFXzN77ikWWVzYWIaGJonCzALzaQeJyKsT8c4YfimdXfwD6+tlouDVD2Z2I6kFcpsfP3+K7ik0WoRVX4kTBcZQnO0JljUzLJ1Abl/tlHxUKIyFlyeCLrrbN2mxzD2I9K7emn7c9XAAkDLi84PzxlIGNUp2JeB4nmj0Bhrz88R3ricsF6c02Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gCneuIT6Rq2rxHSyitUkMuaEIU4QSMLzF/kfR0v556c=;
- b=j6L6OOslpsMYq6SDyqdag2JD21tyjF8VhaophQzTbNa4dLh3rwZyKI0vIQqZ78eNy9hYoZYxGaRbZqn170XtYMtbk1zE0wc7JHQTlNSvVE7hUJnmaI6s1n6ifgmmeviyJD6TA0erPigNGxWN1SxWM8yrUvZ2GH0fTTVSM2rpdUPKl5VJ7cgOn/N+Q+XoocmDG8BjgupJwjTZmsY/7WhgW0kvO5XryHEA4fQ90zl8wfZyZ4p/zdUVGF2RgHzQ7Uuyd+YgV9ipXeX+Zn3e0qhfxDK5FEhM3zE8jVDBn2b2Ef9zvJwZH+IShEBZmcSrcxFFzfN26avXDxOnNocwgBSAOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gCneuIT6Rq2rxHSyitUkMuaEIU4QSMLzF/kfR0v556c=;
- b=cLHV8t2EcDVR0YedssRXWAe7FaRtm/q+IlywdojjJtgdPxRhuTpSymmJeJCd6ivIczubYBG7W5+/fI+QmZM4q03JC3k+WeQbQh6a/qtQiWvpYnSb7U+pspMgld3ZS9dWDfLcILVZs7jk/0AZneHC6H3z3hSQQl+av9oOx+9twxiVF10lw6UFypah/77YBIKOyGQMs3tvg1rFRxGYWvpbBpvkFRngC8EnwN22g8Oh4uxcfnezax9oPnPMXHcGgUPzWQ48paxwqWkqJit3lRlH5qoF/nO635MunI4sylqwFPlb9loNXk7mPHe1Wa8mI2HeEhlCPJZZ9UIqbk11jdeLaA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from PUZPR06MB5620.apcprd06.prod.outlook.com (2603:1096:301:ee::9)
- by SEYPR06MB5892.apcprd06.prod.outlook.com (2603:1096:101:d5::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.18; Thu, 22 Aug
- 2024 03:41:57 +0000
-Received: from PUZPR06MB5620.apcprd06.prod.outlook.com
- ([fe80::b771:8e9f:2fb:ee83]) by PUZPR06MB5620.apcprd06.prod.outlook.com
- ([fe80::b771:8e9f:2fb:ee83%7]) with mapi id 15.20.7897.014; Thu, 22 Aug 2024
- 03:41:57 +0000
-From: Lei Liu <liulei.rjpt@vivo.com>
-To: Paul Cercueil <paul@crapouillou.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Richard Genoud <richard.genoud@bootlin.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Liviu Dudau <liviu.dudau@arm.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?UTF-8?q?Andreas=20F=C3=A4rber?= <afaerber@suse.de>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Patrice Chotard <patrice.chotard@foss.st.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Lei Liu <liulei.rjpt@vivo.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Andi Shyti <andi.shyti@linux.intel.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	John Ogness <john.ogness@linutronix.de>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	Valentin Caron <valentin.caron@foss.st.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Amelie Delaunay <amelie.delaunay@foss.st.com>,
-	linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-actions@lists.infradead.org,
-	linux-stm32@st-md-mailman.stormreply.com
+	dkim=pass (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="xeXdzUWY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+	s=mail; t=1724319649;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=ZY5dFiAJk7yETMHVXjLcWFFsbtAbQnRW4YnkZswVf5s=;
+	b=xeXdzUWYQCtBoEhvS7PBJPR2NvZrR4Ei8sdKFoTX+dZcbnAJnHN/CzxLTBYCDT49IGuXWs
+	aQhsLgy+3PoefZiOk4X4lRCFp0yRLO3rrEu6pGTAIbYmXbV3qEVbnHYOd6qlXXEyZabuEY
+	YxGAOzVrjLMBQUL9HZ9cy7v0yGB4y7Q=
+Message-ID: <09d6a69610ccec161ad8e0f2df64d8264c0a64fe.camel@crapouillou.net>
+Subject: Re: [PATCH 1/8] tty: 8250_ingenic: Use devm_clk_get_enabled()
+ helpers
+From: Paul Cercueil <paul@crapouillou.net>
+To: Lei Liu <liulei.rjpt@vivo.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Thierry
+ Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Kunihiko Hayashi <hayashi.kunihiko@socionext.com>, Masami Hiramatsu
+ <mhiramat@kernel.org>, Richard Genoud <richard.genoud@bootlin.com>, Nicolas
+ Ferre <nicolas.ferre@microchip.com>,  Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Andreas
+ =?ISO-8859-1?Q?F=E4rber?= <afaerber@suse.de>,  Manivannan Sadhasivam
+ <manivannan.sadhasivam@linaro.org>, Patrice Chotard
+ <patrice.chotard@foss.st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,  Geert Uytterhoeven
+ <geert+renesas@glider.be>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Florian Fainelli
+ <florian.fainelli@broadcom.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+ <u.kleine-koenig@pengutronix.de>, Thomas Gleixner <tglx@linutronix.de>,
+ John Ogness <john.ogness@linutronix.de>, Jeff Johnson
+ <quic_jjohnson@quicinc.com>, Sebastian Andrzej Siewior
+ <bigeasy@linutronix.de>, Valentin Caron <valentin.caron@foss.st.com>, Lino
+ Sanfilippo <l.sanfilippo@kunbus.com>, linux-mips@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-actions@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
 Cc: opensource.kernel@vivo.com
-Subject: [PATCH 8/8] tty: stm32-usart: Use devm_clk_get_enabled() helpers
-Date: Thu, 22 Aug 2024 11:39:12 +0800
-Message-Id: <20240822033924.32397-9-liulei.rjpt@vivo.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240822033924.32397-1-liulei.rjpt@vivo.com>
+Date: Thu, 22 Aug 2024 11:40:46 +0200
+In-Reply-To: <20240822033924.32397-2-liulei.rjpt@vivo.com>
 References: <20240822033924.32397-1-liulei.rjpt@vivo.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYAPR01CA0108.jpnprd01.prod.outlook.com
- (2603:1096:404:2a::24) To PUZPR06MB5620.apcprd06.prod.outlook.com
- (2603:1096:301:ee::9)
+	 <20240822033924.32397-2-liulei.rjpt@vivo.com>
+Autocrypt: addr=paul@crapouillou.net; prefer-encrypt=mutual;
+ keydata=mQENBF0KhcEBCADkfmrzdTOp/gFOMQX0QwKE2WgeCJiHPWkpEuPH81/HB2dpjPZNW03ZM
+ LQfECbbaEkdbN4YnPfXgcc1uBe5mwOAPV1MBlaZcEt4M67iYQwSNrP7maPS3IaQJ18ES8JJ5Uf5Uz
+ FZaUawgH+oipYGW+v31cX6L3k+dGsPRM0Pyo0sQt52fsopNPZ9iag0iY7dGNuKenaEqkYNjwEgTtN
+ z8dt6s3hMpHIKZFL3OhAGi88wF/21isv0zkF4J0wlf9gYUTEEY3Eulx80PTVqGIcHZzfavlWIdzhe
+ +rxHTDGVwseR2Y1WjgFGQ2F+vXetAB8NEeygXee+i9nY5qt9c07m8mzjABEBAAG0JFBhdWwgQ2VyY
+ 3VlaWwgPHBhdWxAY3JhcG91aWxsb3UubmV0PokBTgQTAQoAOBYhBNdHYd8OeCBwpMuVxnPua9InSr
+ 1BBQJdCoXBAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEHPua9InSr1BgvIH/0kLyrI3V0f
+ 33a6D3BJwc1grbygPVYGuC5l5eMnAI+rDmLR19E2yvibRpgUc87NmPEQPpbbtAZt8On/2WZoE5OIP
+ dlId/AHNpdgAtGXo0ZX4LGeVPjxjdkbrKVHxbcdcnY+zzaFglpbVSvp76pxqgVg8PgxkAAeeJV+ET
+ 4t0823Gz2HzCL/6JZhvKAEtHVulOWoBh368SYdolp1TSfORWmHzvQiCCCA+j0cMkYVGzIQzEQhX7U
+ rf9N/nhU5/SGLFEi9DcBfXoGzhyQyLXflhJtKm3XGB1K/pPulbKaPcKAl6rIDWPuFpHkSbmZ9r4KF
+ lBwgAhlGy6nqP7O3u7q23hRW5AQ0EXQqFwQEIAMo+MgvYHsyjX3Ja4Oolg1Txzm8woj30ch2nACFC
+ qaO0R/1kLj2VVeLrDyQUOlXx9PD6IQI4M8wy8m0sR4wV2p/g/paw7k65cjzYYLh+FdLNyO7IWYXnd
+ JO+wDPi3aK/YKUYepqlP+QsmaHNYNdXEQDRKqNfJg8t0f5rfzp9ryxd1tCnbV+tG8VHQWiZXNqN70
+ 62DygSNXFUfQ0vZ3J2D4oAcIAEXTymRQ2+hr3Hf7I61KMHWeSkCvCG2decTYsHlw5Erix/jYWqVOt
+ X0roOOLqWkqpQQJWtU+biWrAksmFmCp5fXIg1Nlg39v21xCXBGxJkxyTYuhdWyu1yDQ+LSIUAEQEA
+ AYkBNgQYAQoAIBYhBNdHYd8OeCBwpMuVxnPua9InSr1BBQJdCoXBAhsMAAoJEHPua9InSr1B4wsH/
+ Az767YCT0FSsMNt1jkkdLCBi7nY0GTW+PLP1a4zvVqFMo/vD6uz1ZflVTUAEvcTi3VHYZrlgjcxmc
+ Gu239oruqUS8Qy/xgZBp9KF0NTWQSl1iBfVbIU5VV1vHS6r77W5x0qXgfvAUWOH4gmN3MnF01SH2z
+ McLiaUGF+mcwl15rHbjnT3Nu2399aSE6cep86igfCAyFUOXjYEGlJy+c6UyT+DUylpjQg0nl8MlZ/
+ 7Whg2fAU9+FALIbQYQzGlT4c71SibR9T741jnegHhlmV4WXXUD6roFt54t0MSAFSVxzG8mLcSjR2c
+ LUJ3NIPXixYUSEn3tQhfZj07xIIjWxAYZo=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PUZPR06MB5620:EE_|SEYPR06MB5892:EE_
-X-MS-Office365-Filtering-Correlation-Id: 700f359a-aafb-4e5f-3b73-08dcc25c5f50
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|52116014|7416014|921020|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?rzUc3M9XlvkWLMPt27YHNaosZznXUxIf4mfY9wcgda4Xy4NhC04Wb3eQhDSE?=
- =?us-ascii?Q?43mzBQxMewUGYGJIJKN8ChG/qLbwRHpeZyujlbYXvAMaj72mW7QFHE7KEEB7?=
- =?us-ascii?Q?rkuyK2PfwUT2QhDxrgD6B2hJeZKAW0u6of+cVxw+Wu2vYYWm3MLjDhPQQGGR?=
- =?us-ascii?Q?6GNPP6K0bIQYSUC1mqW+aHpkSGVkomNK8KfsyInnNVig735n6HfaZXd5Sjtk?=
- =?us-ascii?Q?yPSC4IFYbJaFB5kcM4TvNGmirKHYp6xgY6cBYHNj3XXNPH+kFHxBqBjny6Lo?=
- =?us-ascii?Q?PFAbGe1bNE++PPtczEDHeaTqWgyCka1aXGMxsd3AG+ZpVZR7zswlSWlVxnvM?=
- =?us-ascii?Q?F9tNu68SVaCbYnk791mgGSdCPxseiLy9VYyKFuI383O4HGHtqLa9pE/gL2He?=
- =?us-ascii?Q?0h1NGxSorTpx96Qf/dhsMi92cTukzjTyEDKI2dwc5+WdNkOaDqc8Ec5ZYYQL?=
- =?us-ascii?Q?DgiU06ZcGOdx2Mju8Nxqch0lLAzWkC3WIQWyR4TXFychUCN5A7glNmBTZLpk?=
- =?us-ascii?Q?wdg6fnG1yDwDMokVmWMUWI52B8Ftd1GZrNl6yYDUsOhwVNvD+Q4/97SUEs9l?=
- =?us-ascii?Q?BAqzccYb6HsrnGke8JiZT5MwG7CExGqI1GLoXDU2bNKe6Xn+OVW+0IIqdQ1m?=
- =?us-ascii?Q?yc54vBr4d7/KINtKakvtenN32OY6VTy/DLsErnbeMs19IWuXzZlb7QVcrUTi?=
- =?us-ascii?Q?iJpfVUc0n3hMua/GUDPvXJyjuuDfznyAPG1XJmk6y6xrMfTcsGPOtAWvZ21Y?=
- =?us-ascii?Q?tFzVCSeh6l2h/KGcWok02uf98nnXN4g8aSOW+ti6ogpo4zQrV6AL6s8/Ag2O?=
- =?us-ascii?Q?fXNOnC6aalAHOVu0gNutgJVZDCvqIrEncT1VT++yxsfqd1BVzoJYuPugvBdg?=
- =?us-ascii?Q?/ulaHbOR/TRHMQCtsWirdIShX+TICVnP9aAP5zCrm5C9/wjHBzu4kkN/6SD2?=
- =?us-ascii?Q?PIacb5L/o67VlOihNy71SDfnfCUZGFHbEl2MPgjb205ccgHpQ+sbXFw6kM27?=
- =?us-ascii?Q?02nAOqbZKqomxaG9Wk2d1kf3F9U5D44KnMiFvT/mSwGuzaaHEjP4e3THIkT8?=
- =?us-ascii?Q?W1ttfNV8EKSdzvbDGrb730bMZS9lYvivXq3L/Esft2uC1O4/i8aIzILlOUxI?=
- =?us-ascii?Q?3HDf7Q4EFs+o8gPi3T5p6nW30y1aafgWk+f3lbi+0hju2EbLaSkmUVZjlgCl?=
- =?us-ascii?Q?g8dypPebHTCXgI8NUV8GeZWc8lIRJwcCZuFA4NDwZqjsNtheNDeMvmSy3l+z?=
- =?us-ascii?Q?E8le4rR8NEvyGZ6jq5XT4yI7mtdWbYv3qA8Ad5m4V4wFzlT87udDR4csqgQT?=
- =?us-ascii?Q?hg+xdeM1Tm9Xyk4G7TWxgNTPlI0D+LKXS8/s+fFjMprlQB4wCuHfXsxZEtON?=
- =?us-ascii?Q?IB2RW+twVsVPBc+OAJBEhR9CAo8rcEc5biFkGXK/P9bderKanwkK+ToVePsl?=
- =?us-ascii?Q?yhECKced3ZY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PUZPR06MB5620.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(52116014)(7416014)(921020)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yE+y/D5FQBq31sbVrqbrxZlDIWE9mOgmH8X683ABTMRrcvMAcecqW7LQDHGR?=
- =?us-ascii?Q?8nzoIu5puPB9BQP8XAPLqlTSqbu4Od7IsmBUTIGef6+kMGsNzTTcNkmkjJ4x?=
- =?us-ascii?Q?GqWlIk8HAtnA6npRlmn2mpxLgDAFf8RJKKowy4om+F0FEE5JSDnupBvNNoJi?=
- =?us-ascii?Q?v/N1XrsuYUKZkDgWBhtqF9hL9xXhsvMTiqpGrIWBm1P8HQBno9fpHBm2vxUG?=
- =?us-ascii?Q?G3C8IjZw/cq9dG5SfwSFYV4gB4xgb7OStanUGDu2cgc1fJrc6+L8R6KTXpGn?=
- =?us-ascii?Q?1VfT01ksUm88RL2fhwiEoE25wjBAbgwuYXNuybOEqCRvRMSI7dXwNzp9ctDd?=
- =?us-ascii?Q?rZaxAx/u/561UDQGI02zfrXD4x+OGHl5UVjV2MTuz/lFG18MjQw6CApiEztQ?=
- =?us-ascii?Q?F3H1m1x9CCWfmqujjzRV1ctj5z0jutnZtLd0VaId8NzAd7s3W3TXVPKeOImw?=
- =?us-ascii?Q?Cip6BDkYXvsbgZ+xuugE2LB4m3isFkaLUi6cEsSVX9Zv1y9IEHSytZ982jkP?=
- =?us-ascii?Q?NSOnOUjuY0sRgXK7CjqvGNud8SG9QLBHN5FQiW4/YXZiziZyE7JpgvONqM9s?=
- =?us-ascii?Q?+YN+ZdYr0Yy/k5zFGuRtVv5JLoRaBgEeYvj1H+P4U8JxlQkCh/X8UMzIAEtb?=
- =?us-ascii?Q?w5TkPlaChm+tXl8EAaR82yb5zLq78FRZP3edU91CbwFIS/P3lfGz8uL19bA0?=
- =?us-ascii?Q?HslPilNx7j0INcMIvaOldF7xnNw301zOTafaoWspbzZdgcUFxG6mz71MAdk4?=
- =?us-ascii?Q?jTFV6kKO1Xqf+C0X2TgXqMlPJdpgs48WXsrYTOnu5HStWLv9aBFNxImxws/7?=
- =?us-ascii?Q?otIbpdLR8hV9/MFqD8EEsdvocEGKXY7zCtgjamxJjiAGgqASGmmH2jsGNqmy?=
- =?us-ascii?Q?cxRGgQzx26g4EN0VxJLuux3CcR4PGaUUKPGned7YIoISe8Kn6LAKelBcgqVV?=
- =?us-ascii?Q?D+BfR5gevrH3BuB9WkaHrZ+lU+hsVpUjdICfhxfyJXOKfqc4Qth94pMavSKc?=
- =?us-ascii?Q?if4ar8rEaCcULDGiIkPZ62feY7jVO5bIooqvWKG3D5dWZqqzOEx6TllI5qO3?=
- =?us-ascii?Q?N410L3Ov9ZjBTobxql//nOwBQS2JGd1G4FA506SGjcAcWR/ESec2t6EQuEKT?=
- =?us-ascii?Q?wf7LrEgm0WFlyrQ2sg3YMHgaM0l7ZqjrThw3jZs+cwjvF43n76G6pAw8PnS5?=
- =?us-ascii?Q?ut1ePS6Qge6tdpEN6DD0RyqaQXEoeK7FNJeDU035sMcH5UoEwLMZ17t4fxOY?=
- =?us-ascii?Q?G7wgDUXPfe/GGmSK4XpRArq3XexFCCOD08LKzQ9iHROnSbjKPXrvILCAnaLi?=
- =?us-ascii?Q?e64P8E5kKjmtAVucOQ7O11ra9cpU8Fw+vq+O5SYLWEkS2JQbmk8aBRuXt09V?=
- =?us-ascii?Q?3krvdKlxxDBKSkD3YuZkTBDt0jp1sJafWkBURPKq2+O2fsa/ZQJ2wajUxmT/?=
- =?us-ascii?Q?JXM9NxlNeWQuYXIoo8oYzi2sMgPnFlqTj6ZEyQNECs+9r3w8DxyOOxPChMVl?=
- =?us-ascii?Q?vQxTba/Dcoa4Bn4LvB8BWhgfzVxUQjzODZDPDT1Y6Csk4xj6uIG+WCXj7Buy?=
- =?us-ascii?Q?9F7wpv+t8KZ2yGIcZmnUoGxbdIsSpT1v223gabJD?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 700f359a-aafb-4e5f-3b73-08dcc25c5f50
-X-MS-Exchange-CrossTenant-AuthSource: PUZPR06MB5620.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2024 03:41:57.3446
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ruINW/oRR7brO+2/d3lL4uKUES2hNu1ENIn8SyXLK7rmqqY3Pd3KlnyN98vJsE4Jql33OreXv/bYREIYEzbRQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5892
 
-The devm_clk_get_enabled() helpers:
-    - call devm_clk_get()
-    - call clk_prepare_enable() and register what is needed in order to
-     call clk_disable_unprepare() when needed, as a managed resource.
+Hi Lei Liu,
 
-This simplifies the code and avoids calls to clk_disable_unprepare().
-
-Signed-off-by: Lei Liu <liulei.rjpt@vivo.com>
----
- drivers/tty/serial/stm32-usart.c | 16 +---------------
- 1 file changed, 1 insertion(+), 15 deletions(-)
-
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index e1e7bc04c579..9bce3159165a 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1550,11 +1550,6 @@ static int stm32_usart_get_ftcfg(struct platform_device *pdev, struct stm32_port
- 	return fifo_size;
- }
- 
--static void stm32_usart_deinit_port(struct stm32_port *stm32port)
--{
--	clk_disable_unprepare(stm32port->clk);
--}
+Le jeudi 22 ao=C3=BBt 2024 =C3=A0 11:39 +0800, Lei Liu a =C3=A9crit=C2=A0:
+> The devm_clk_get_enabled() helpers:
+> =C2=A0=C2=A0=C2=A0 - call devm_clk_get()
+> =C2=A0=C2=A0=C2=A0 - call clk_prepare_enable() and register what is neede=
+d in order
+> to
+> =C2=A0=C2=A0=C2=A0=C2=A0 call clk_disable_unprepare() when needed, as a m=
+anaged resource.
+>=20
+> This simplifies the code and avoids calls to clk_disable_unprepare().
+>=20
+> Signed-off-by: Lei Liu <liulei.rjpt@vivo.com>
+> ---
+> =C2=A0drivers/tty/serial/8250/8250_ingenic.c | 26 +++--------------------=
 -
- static const struct serial_rs485 stm32_rs485_supported = {
- 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
- 		 SER_RS485_RX_DURING_TX,
-@@ -1599,15 +1594,10 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 
- 	spin_lock_init(&port->lock);
- 
--	stm32port->clk = devm_clk_get(&pdev->dev, NULL);
-+	stm32port->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(stm32port->clk))
- 		return PTR_ERR(stm32port->clk);
- 
--	/* Ensure that clk rate is correct by enabling the clk */
--	ret = clk_prepare_enable(stm32port->clk);
--	if (ret)
--		return ret;
--
- 	stm32port->port.uartclk = clk_get_rate(stm32port->clk);
- 	if (!stm32port->port.uartclk) {
- 		ret = -EINVAL;
-@@ -1645,7 +1635,6 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 	return ret;
- 
- err_clk:
--	clk_disable_unprepare(stm32port->clk);
- 
- 	return ret;
- }
-@@ -1853,8 +1842,6 @@ static int stm32_usart_serial_probe(struct platform_device *pdev)
- 	if (stm32port->wakeup_src)
- 		device_set_wakeup_capable(&pdev->dev, false);
- 
--	stm32_usart_deinit_port(stm32port);
--
- err_dma_tx:
- 	if (stm32port->tx_ch)
- 		dma_release_channel(stm32port->tx_ch);
-@@ -1904,7 +1891,6 @@ static void stm32_usart_serial_remove(struct platform_device *pdev)
- 		device_init_wakeup(&pdev->dev, false);
- 	}
- 
--	stm32_usart_deinit_port(stm32_port);
- }
- 
- static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
--- 
-2.34.1
+> --
+> =C2=A01 file changed, 3 insertions(+), 23 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_ingenic.c
+> b/drivers/tty/serial/8250/8250_ingenic.c
+> index a2783e38a2e3..5f8787309064 100644
+> --- a/drivers/tty/serial/8250/8250_ingenic.c
+> +++ b/drivers/tty/serial/8250/8250_ingenic.c
+> @@ -274,44 +274,26 @@ static int ingenic_uart_probe(struct
+> platform_device *pdev)
+> =C2=A0	if (!uart.port.membase)
+> =C2=A0		return -ENOMEM;
+> =C2=A0
+> -	data->clk_module =3D devm_clk_get(&pdev->dev, "module");
+> +	data->clk_module =3D devm_clk_get_enabled(&pdev->dev,
+> "module");
+> =C2=A0	if (IS_ERR(data->clk_module))
+> =C2=A0		return dev_err_probe(&pdev->dev, PTR_ERR(data-
+> >clk_module),
+> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 "unable to get module
+> clock\n");
+> =C2=A0
+> -	data->clk_baud =3D devm_clk_get(&pdev->dev, "baud");
+> +	data->clk_baud =3D devm_clk_get_enabled(&pdev->dev, "baud");
+> =C2=A0	if (IS_ERR(data->clk_baud))
+> =C2=A0		return dev_err_probe(&pdev->dev, PTR_ERR(data-
+> >clk_baud),
+> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 "unable to get baud clock\n");
+> =C2=A0
+> -	err =3D clk_prepare_enable(data->clk_module);
+> -	if (err) {
+> -		dev_err(&pdev->dev, "could not enable module clock:
+> %d\n", err);
+> -		goto out;
+> -	}
+> -
+> -	err =3D clk_prepare_enable(data->clk_baud);
+> -	if (err) {
+> -		dev_err(&pdev->dev, "could not enable baud clock:
+> %d\n", err);
+> -		goto out_disable_moduleclk;
+> -	}
+> =C2=A0	uart.port.uartclk =3D clk_get_rate(data->clk_baud);
+> =C2=A0
+> =C2=A0	data->line =3D serial8250_register_8250_port(&uart);
+> =C2=A0	if (data->line < 0) {
+> =C2=A0		err =3D data->line;
+> -		goto out_disable_baudclk;
+> +		return err;
+
+Not really worth a V2, but if you make a V2, please "return data-
+>line;" directly.
+
+Acked-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> =C2=A0	}
+> =C2=A0
+> =C2=A0	platform_set_drvdata(pdev, data);
+> =C2=A0	return 0;
+> -
+> -out_disable_baudclk:
+> -	clk_disable_unprepare(data->clk_baud);
+> -out_disable_moduleclk:
+> -	clk_disable_unprepare(data->clk_module);
+> -out:
+> -	return err;
+> =C2=A0}
+> =C2=A0
+> =C2=A0static void ingenic_uart_remove(struct platform_device *pdev)
+> @@ -319,8 +301,6 @@ static void ingenic_uart_remove(struct
+> platform_device *pdev)
+> =C2=A0	struct ingenic_uart_data *data =3D platform_get_drvdata(pdev);
+> =C2=A0
+> =C2=A0	serial8250_unregister_port(data->line);
+> -	clk_disable_unprepare(data->clk_module);
+> -	clk_disable_unprepare(data->clk_baud);
+> =C2=A0}
+> =C2=A0
+> =C2=A0static const struct ingenic_uart_config jz4740_uart_config =3D {
 
