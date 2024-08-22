@@ -1,124 +1,126 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFA4E17D354;
-	Thu, 22 Aug 2024 14:06:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDF11CC170;
+	Thu, 22 Aug 2024 14:33:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724335583; cv=none; b=ijxKbVECFGqW5bCeGY3VydFoahYw0Qwyb7d9Fej353JU39bk2ySDoZHLG3EeI34CSCVCFO+0FSH51eoI3v6hfR9rEyV3eG435lodYjPJC0b3Pb/ki6gmhUgs6h+Ur1U660rgI/i11f6lnhcIVC8Lwag7Qu3jCUQrBRpQrQmMxDI=
+	t=1724337204; cv=none; b=NbujshkLVxrtN12jV0Gjn4dvL17++eDdV8642IAXilzIZHaEONhiFEcUrmIR+4pwRGMTNOil1DW8ijywMD7yMTxUbgg8WXk0hGqXDMu8wTknWLUDIHuv6IbwbJuP96gjamShc3KKn9ggsiy5QhJyv2kY9e7Wda7jkCNf/tfhaWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724335583; c=relaxed/simple;
-	bh=jE7XT2v0u6+qqax75LFSSR4S5gAkgdZaGcEkPZHLlh4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=rTBSV73zWU/g3vSCUqCnkU8KnogXO/Tr9AvFeuXNGMbWFlmOw285K+N/llTd/HsLISfXKdZMlXgLRefVgsoYmXqeHYUuYOJXCakKwsgt8KGF9qX/z+2c+SljdhYXy74ycs7X4pbhmC9Y0OKhX+soard3p69RrAk0W/bdFKewY10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=EKl8FB/3; arc=none smtp.client-ip=217.70.183.200
+	s=arc-20240116; t=1724337204; c=relaxed/simple;
+	bh=ul7PizNZdzC7kUZvz7lhJEslbAa1y6aQFceRLhnnaPw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kOtCMSsT0/KxDgZle3Ply6fhEk7zmBSDV1BxsMeEC1G2XJ+ap3EoJblRk3ehPGlOGaIdqN5PkYP9wtuFOO3i5o7LoCnLqdkoK7AT92INXk2OutniGipNA6NLh9g0kW6Uarmjm4XWlXWX9LfHizACDRmUrrK+DcSn8e/tH8SVgDs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=MmE2IZpm; arc=none smtp.client-ip=217.70.183.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="EKl8FB/3"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id C523B20010;
-	Thu, 22 Aug 2024 14:06:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="MmE2IZpm"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D6BBF1C0002;
+	Thu, 22 Aug 2024 14:33:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1724335572;
+	t=1724337199;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=5jLrdTPqJox7q3LnEDEhorVnWrlGgJLbPOWyHcz1Hts=;
-	b=EKl8FB/31jQrsFx8BSsopX+vnf7OPh/lUTLbIED/qGL7UmdnxbFgTt1M4GWFAGBU5H+WvE
-	9Oc9VdDQnfIBXVSREVxhiAKjTTW4Ar/pWFqvYyohiRUdtc2eJgvhBoBvzME9r+tzBpMzDj
-	ambtg3J+/JeIkxSTi4EYwTlmvi7N2cHND2QMLUJbeTa27Ws1vGQCqO9M5QczivftTlZGVT
-	LOZHLv9w0q/SkwMMBMKCv/WE//SYLxgmB1BgQAxAqyk2w+Tjk0nUY+WsSPhDtwBzU7VKKd
-	dHay4wNPOSnIJkfkZL+HpR1nlBac8ahHuuw2jUVVHmEGy/NwG4rB0c+M6NX50g==
-Message-ID: <d6dedcc9-b4f0-4de4-9d26-ec9c0c9fa4f6@bootlin.com>
-Date: Thu, 22 Aug 2024 16:06:11 +0200
+	bh=28KjxeZ01+p9nDVnGtXx9KfJaHBczSdiwVjl2vmbphI=;
+	b=MmE2IZpmpKFJ4A+9lsXAKU6W/E6Whvpbyy4BTW/u9jMcZ/kVKNoKCfgBmi6FUpl9ngeq2T
+	jY4JhCs28GxODWc7Ckqrhcu9ZytXED4ifDTkMbDd+4INaZ9enWDSxSfPNhlqy/Xmfv5w9X
+	aIXpRI0K3ER1hNzFuCfUbPGXnGLY/nMTaI0chcba5QUSnTcnEeN0SH/GSHVIJ1A9b3mjo0
+	gnPZOYtCJ+fuTZm7aIiPfHP1iKEYzuI6rEUSb5d52Ugs37TTubxvW1Pk36T5hkKzmoRE26
+	sQMCRp4IUvgBMPgmPEnOyQtwlHW4Y7tmuo/RCjTgySkhgK9eJhmohngZfX0Xvw==
+Date: Thu, 22 Aug 2024 16:33:16 +0200
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Richard GENOUD <richard.genoud@bootlin.com>,
+	Lei Liu <liulei.rjpt@vivo.com>,
+	Paul Cercueil <paul@crapouillou.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Liviu Dudau <liviu.dudau@arm.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Patrice Chotard <patrice.chotard@foss.st.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Andi Shyti <andi.shyti@linux.intel.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Jeff Johnson <quic_jjohnson@quicinc.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Valentin Caron <valentin.caron@foss.st.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Erwan Le Ray <erwan.leray@foss.st.com>, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-actions@lists.infradead.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	opensource.kernel@vivo.com
+Subject: Re: [PATCH 4/8] tty: atmel_serial: Use devm_clk_get_enabled() helpers
+Message-ID: <202408221433165841f563@mail.local>
+References: <20240822033924.32397-1-liulei.rjpt@vivo.com>
+ <20240822033924.32397-5-liulei.rjpt@vivo.com>
+ <c54434e3-1fb8-4491-b24f-2167786fe84c@bootlin.com>
+ <Zsc-ZNg_S8uT9gpR@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: atmel_serial: use the correct RTS flag.
-To: Mathieu Othacehe <othacehe@gnu.org>,
- Richard Genoud <richard.genoud@bootlin.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-References: <20240808060637.19886-1-othacehe@gnu.org>
- <20240813-absinthe-plaza-70575e847015@thorsis.com>
-Content-Language: en-US, fr
-From: Richard GENOUD <richard.genoud@bootlin.com>
-Organization: Bootlin
-In-Reply-To: <20240813-absinthe-plaza-70575e847015@thorsis.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-GND-Sasl: richard.genoud@bootlin.com
+In-Reply-To: <Zsc-ZNg_S8uT9gpR@smile.fi.intel.com>
+X-GND-Sasl: alexandre.belloni@bootlin.com
 
+On 22/08/2024 16:34:28+0300, Andy Shevchenko wrote:
+> On Thu, Aug 22, 2024 at 03:28:40PM +0200, Richard GENOUD wrote:
+> > Le 22/08/2024 à 05:39, Lei Liu a écrit :
+> > > The devm_clk_get_enabled() helpers:
+> > >      - call devm_clk_get()
+> > >      - call clk_prepare_enable() and register what is needed in order to
+> > >       call clk_disable_unprepare() when needed, as a managed resource.
+> > > 
+> > > This simplifies the code and avoids calls to clk_disable_unprepare().
+> 
+> ...
+> 
+> > >   	 * The peripheral clock can now safely be disabled till the port
+> > >   	 * is used
+> > >   	 */
+> > > -	clk_disable_unprepare(atmel_port->clk);
+> > > -
+> > Why removing this ?
+> > This is not an error path.
+> 
+> Good point, I wouldn't apply this patch as well as a few others in this series
+> due to this reason.
+> 
+> Instead it might make sense to add a comment on top of devm_clk_get() to
+> explain why _enabled() variant is *not* used.
 
-
-Le 13/08/2024 Ã  09:59, Alexander Dahl a Ã©critÂ :
-> Hello Mathieu,
-> 
-> Am Thu, Aug 08, 2024 at 08:06:37AM +0200 schrieb Mathieu Othacehe:
->> In RS485 mode, the RTS pin is driven high by hardware when the transmitter
->> is operating. This behaviour cannot be changed. This means that the driver
->> should claim that it supports SER_RS485_RTS_ON_SEND and not
->> SER_RS485_RTS_AFTER_SEND.
->>
->> Otherwise, when configuring the port with the SER_RS485_RTS_ON_SEND, one
->> get the following warning:
->>
->> kern.warning kernel: atmel_usart_serial atmel_usart_serial.2.auto:
->> ttyS1 (1): invalid RTS setting, using RTS_AFTER_SEND instead
-> 
-> I've seen this warning already, when migrating a sam9x60 based board
-> from LTS kernel 6.1 to 6.6, so thanks for taking care of this.
-> 
-> I can confirm after applying the patch on top of 6.6.44 the warning is
-> gone, and RS-485 communication still works on our platform, so â€¦
-> 
-> Tested-by: Alexander Dahl <ada@thorsis.com>
-
-Acked-by: Richard Genoud <richard.genoud@bootlin.com>
+Or maybe stop doing brainded conversions to new APIs.
 
 > 
-> Does this deserve a Fixes tag for the change which introduced struct
-> serial_rs485 to the atmel serial driver?  Then it should be this:
+> -- 
+> With Best Regards,
+> Andy Shevchenko
 > 
-> Fixes: af47c491e3c7 ("serial: atmel: Fill in rs485_supported")
-> 
-> Greets
-> Alex
-> 
->> which is contradictory with what's really happening.
->>
->> Signed-off-by: Mathieu Othacehe <othacehe@gnu.org>
->> ---
->>   drivers/tty/serial/atmel_serial.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
->> index 0a90964d6d107..09b246c9e389e 100644
->> --- a/drivers/tty/serial/atmel_serial.c
->> +++ b/drivers/tty/serial/atmel_serial.c
->> @@ -2514,7 +2514,7 @@ static const struct uart_ops atmel_pops = {
->>   };
->>   
->>   static const struct serial_rs485 atmel_rs485_supported = {
->> -	.flags = SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND | SER_RS485_RX_DURING_TX,
->> +	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RX_DURING_TX,
->>   	.delay_rts_before_send = 1,
->>   	.delay_rts_after_send = 1,
->>   };
->> -- 
->> 2.45.2
->>
->>
 > 
 
-Thanks !
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
