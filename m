@@ -1,178 +1,173 @@
-Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.86.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582FE18951C
-	for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2024 17:00:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.86.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16538F6B;
+	Fri, 23 Aug 2024 17:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724432404; cv=none; b=mdqJ8ARNIdIQrjO2ThGa1l54MVOgCJDmYt+G/RKHetMca2OMDnNbCbulUWM6M0JHr/bAS4Bgc9sxzvmjGoFAKVzzQSyIr5gf0XAqra+vCI7d3+U08QyABg0S3D/L8eHv2zi95mOnQT6xWEDK4djvyeenItpAZE34KOHN/Q6+w0E=
+	t=1724435976; cv=none; b=XzmtkjTIYr3oZLxGZZfi7MPpfdjgMg1Dnu5pdRurxXWs9VARXCMLcsWFspeJLbb2NPnx414ugpLuk5KALzItkc5HSjUcrAM3+jujP/n/+CHxn9XUaYfcJkjH6xlA4Cgtg1kM3QOxW1LyQXPWcZ4XAm5ZinZsKIUjP9bME82vD3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724432404; c=relaxed/simple;
-	bh=71aSqMyY+8n4Hsz11U1n1pKQlpKRxMK97gdfHxV8das=;
-	h=Message-ID:Date:From:Subject:To:CC:MIME-Version:Content-Type; b=dDD0L3EAqTVbvUO3NYlvnY1h9tAPmuw6Ekc0dtL+Pe4cSMdpSPRJxcdyK0nVF7tGUxB9Jcoe7pmUnowZFt3b2am5+O48N3YoVzOKqAsTMwjoaAQ/VbwEtV9VJXJ6zJiuRNR+oSqpTZVYmTQ6k13MkzBWMTC2y6k93fbi9u6rmFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com; spf=pass smtp.mailfrom=camlingroup.com; dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b=A70FbLCS; arc=none smtp.client-ip=185.58.86.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=camlingroup.com
+	s=arc-20240116; t=1724435976; c=relaxed/simple;
+	bh=iuIrOXmtyg8nSKD4Cb/rTg5D9ty27V+8hU5rG7y9h4o=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JiT1rvCV95wT81Dx0U0/wHOCGy02yhr+8XECuAe6K4f86p9amtCVNLhJN8WTYE8uShDUtlXcPBJnUvUMV18l2I2tpfcXY1zLlBqEl8NH8jN6taC+nxVd+lMJ98W+8iGytPVg6GKwxv04GbzakOjFwCFNaKj93yeoodEPeVAC84A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XsrySR33; arc=none smtp.client-ip=209.85.218.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b="A70FbLCS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
-	s=mimecast20210310; t=1724432400;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=+7xb2Zyyu8QWyvP6ycd464RZ4gf+jReIhx99MhLGDi4=;
-	b=A70FbLCSN/rFtljzDxbDARnh3H0CzyHsV8Z6ZhhhC4B16A0m8Hypla5oXZRtkz0zBP9Ucf
-	0nKT9ZScxCinJk7waMu6+OrN1ugo/WWeyr8XFDedjePJGLn5fmHE6LEvze3qGoI50E4pRH
-	Jlz6ijzQxS/AZe16imrubCJrw52BB8M=
-Received: from GBR01-CWX-obe.outbound.protection.outlook.com
- (mail-cwxgbr01lp2045.outbound.protection.outlook.com [104.47.85.45]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- uk-mta-248-ahZbjC_pMVybcvxgj-9SYA-1; Fri, 23 Aug 2024 17:53:17 +0100
-X-MC-Unique: ahZbjC_pMVybcvxgj-9SYA-1
-Received: from LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:20b::7)
- by LO2P123MB6200.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:268::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.19; Fri, 23 Aug
- 2024 16:53:15 +0000
-Received: from LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM
- ([fe80::55a9:7dae:8812:f567]) by LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM
- ([fe80::55a9:7dae:8812:f567%5]) with mapi id 15.20.7897.014; Fri, 23 Aug 2024
- 16:53:15 +0000
-Message-ID: <7deb753f-bf86-47ce-89bf-8277aca4293e@camlingroup.com>
-Date: Fri, 23 Aug 2024 18:53:13 +0200
-User-Agent: Mozilla Thunderbird
-From: Lech Perczak <lech.perczak@camlingroup.com>
-Subject: [PATCH v3 0/3] serial: sc16is7xx: cosmetic cleanup
-To: linux-serial@vger.kernel.org,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
- <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
- =?UTF-8?Q?Krzysztof_Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>,
- =?UTF-8?Q?Pawe=C5=82_Lenkow?= <pawel.lenkow@camlingroup.com>,
- Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
-X-ClientProxiedBy: BEXP281CA0001.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::11)
- To LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:20b::7)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XsrySR33"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a7a9cf7d3f3so320009566b.1;
+        Fri, 23 Aug 2024 10:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1724435973; x=1725040773; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fN5FZjGc/Ma9BSW/s6M5/plXev0WIRsR3amu0H9Pa1M=;
+        b=XsrySR33G6DoYpQP0aQ1OodLz2a744lerKP70SGFRIPiB8IThKs9Mw95mMA68I7F2L
+         7rC+5Qy6KEFPPuQQzzXqkKCt6vxJ85TuAYJp5UCRtsPfD+A9x+8eM84DRsDhnbwBSMSg
+         PKYUuFIqicbuE50XOgbzeXXyCV2MMqLOXgTlazhFKM+cZGej+ISCvjL2/MKkhHUMNLYB
+         +NbFbhSYwYrPwwGpMqOzrmCvoL27LDH8i5bGtem09Zeo9kO6eHMqPmnlQZpq7JTWVw7m
+         lFwJWOU5v9yQT5LvgZ/GeOCu3nKl6wjLhsqKUwSGS2iHEcSB5aZABAUok15PZLlwTqJG
+         NlKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724435973; x=1725040773;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fN5FZjGc/Ma9BSW/s6M5/plXev0WIRsR3amu0H9Pa1M=;
+        b=J+Nlt5EgZgw8RQpRHiWSeB6o5kUAH+2yVwC2DPkg0cB91WOOrMeTjVvY0vPVw2lMH0
+         q/CCh8hr7rAZpt//LFeA9+nOUji84MfxIDm/1HM2jCu8Ad/zq347rndPngrwnGCB0D5q
+         3OuFwmBrRTPsNscG18g69lGlwxUFxlpTCA6j0XifCfyKcLrNTjx5Isktf0NYZBTiKDlx
+         Mso2T/6qKRSb34h2NLVJ4DBYoXflZYTweh3GOUDu9U6FdyupqjwQgNhKssO2E8avvOHX
+         VVmFc8KJG3WZeI/tyJVOSKoiK7CkEM0EhC29JHOYZY3H0W1x1BzxUF/+P89zcmijzPm5
+         eFYA==
+X-Forwarded-Encrypted: i=1; AJvYcCWC+ml9HuEXlgR+auUqUQQCM7jH2cIyzn/xikF1uLXq+cnNPyP3JAcaIWHeM0pi8erZMgjZw8eQI/HltYY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxqjqruVGM/0Ho0qLz0r4VsxqjgCWwvsMPCDbtmREpqooqXN5IH
+	e6N6drgl1MXns+sPXpMSOveuhRePStmPI14CJNrV5sn4bGyLSGhA+jkWE6aDCxtgQGJhIYUD399
+	mJmih9fB3LIBep7uFejeI0kS5p6I=
+X-Google-Smtp-Source: AGHT+IFJVh7gDpAqq/5aZUkFu4I1rIGXzIzFh2Ybqb/2YJDfMzVuZIiLUTf7koddK7M3IM3poWcvfrluk40Dv9kQOv8=
+X-Received: by 2002:a17:907:efcb:b0:a86:7adb:b327 with SMTP id
+ a640c23a62f3a-a86a530135dmr212593566b.40.1724435972980; Fri, 23 Aug 2024
+ 10:59:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LO4P123MB5272:EE_|LO2P123MB6200:EE_
-X-MS-Office365-Filtering-Correlation-Id: e94db93d-e480-4da0-ad97-08dcc39414b6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?v+sypVwJ/gZmWOXMNxHiqmZuUkPk3Py3HvlueaB3uYHui3qcOJk15Le5pax/?=
- =?us-ascii?Q?azJgGM902HLDs/7kQ3k5HXz7/P7iPAwxf6TWzsuMHNqGNc66KpYlOkRIH4fq?=
- =?us-ascii?Q?hO2quhuoTwBp/SvEwntouMVhr5DsUXOAM4nVNa6PrBh31cGy+9HYHhoqDtCG?=
- =?us-ascii?Q?WjTvSOclS1DZyydrFCZ+Nd91+rD4I06lLkCBZtKyAev+MGFYRB8dbn22r8au?=
- =?us-ascii?Q?5W88znDXyAAsgdVYiZLMDIt1JuY++WjT6naZlRiAalcPgzP9Lw3kEyD4sueE?=
- =?us-ascii?Q?47RbkmN/NlxlufQ3Rg89wFrUFPp9fiz9QiiYhsOPjglrF1aLteeitove0iHn?=
- =?us-ascii?Q?9z9fIxWepajXyGy4FBME+RTrze0bKtWxHGFJzkInSeHyfUQLLjDu0A+ggH7m?=
- =?us-ascii?Q?6hgJ8KV8gA93SBN5jXO31FVotc9e6OYH54gpFJbXqdFjWfDFnBOKyKpfXmAA?=
- =?us-ascii?Q?FmMg+2mLAVxQ1snrxsPD36u272Y+ZF3Qd5QiqFd3CT9xTSL45ZHl7IGMOJvF?=
- =?us-ascii?Q?6goFMlujVmaqdChXxJDrbgXRMf/Sd69i6jDkCl62KAFwiQa9zVYDXZOffL1B?=
- =?us-ascii?Q?27E2XkHkVK4SK8W1437PHJhSjOpUY+mQ+V1kk5HNgMnA4/2c36QvWg8R/TvO?=
- =?us-ascii?Q?4dLxpAh3q5FtfNlfpDXAhO8HZKwQqPBIOKDt3OMCO4xenrk+ntI8M3DqX5iB?=
- =?us-ascii?Q?jDD2ycRDBJV2f8i6PvwgNA88TnmC8EljFFZ9SMIhAqiP16JNkxV1oqPkn+cn?=
- =?us-ascii?Q?VxPZhyGGAlk2yFOiiLzrmiGNzDxDVhgbwMPgWhydVXZqvQ0ANLumD969CC0b?=
- =?us-ascii?Q?y1dCCIxjW2sI+4I9YPFzj9be+fLOC9RczMi7unVL+vahJoJtI7676992hoZO?=
- =?us-ascii?Q?0U14tJW8MSBapxumQwF1GHqz3ttl6KeQKNMcYZxf0jOtnkh9oKjIEzXgBpX0?=
- =?us-ascii?Q?0nao/rQ2Y4JEvFtO3SJj8iXM4aP0TqqM8NvT7fc3nmNIAK/r/vMSNpPG2oyj?=
- =?us-ascii?Q?QdeKlZ1hv6xozsKfhwHGcHsEiYkYQL5UNLE2HkaaY/WyYmI+mWjC448FBFkp?=
- =?us-ascii?Q?/1cSxxsEildKBA5VS2aQB4Nr6ok7g34IUjxwKkUO2mTFKL+kpKOi04TWKz7N?=
- =?us-ascii?Q?eb7/RzPoA47CZUBGPH41kEKp1UFhQVmQDhBu0nQJZPXxVL7ZWa01n3FNNoG0?=
- =?us-ascii?Q?5KArnFLlqCRMqIGuPXHtllsGh1CEwupmfFb6i3WJEK/8EL+RiOdJ8SZkLmo4?=
- =?us-ascii?Q?ZAfTsfcPNyF0nB22HZkQj6S80A2DS7Pn9FFkkiwrPa2sRIif4uOG+ozelTx4?=
- =?us-ascii?Q?7hHtS55sKJdIOSnMqNTTXiygaczGFg9CcdaIr9iTf4RVAg=3D=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?akPB2H2e+wYacU2KRgmCD10EvZbhU8creXg9BaP1agHALDg9KPGfc99P8N1k?=
- =?us-ascii?Q?R6XjRp97lh4JKES34tI+oHi5DYrqF3Pe5EyJZTZ5yS1bc0Ru0cUCo/f+REG0?=
- =?us-ascii?Q?QLRMLEjSy5H8XpeDVdlyClRGncuI5uw4HmSsHSmThR+V8UkpBiVCV/R3SkX9?=
- =?us-ascii?Q?oYuvNvH5j9sFEY+SwkBB8seRJrysXkvwGe1ES461FrA/CJmNNj2v0LqmEZhI?=
- =?us-ascii?Q?JzGrAtSX6UhMmODhwnA9NLq99CXc1Q48Xide6G9Pi+fgoEZsW95bud7LBNCJ?=
- =?us-ascii?Q?EdrfETIqRhppe0pl+wH5BSRgIwx9wCUD3IfLaUhngU0aawQ5mIQgaaTJ+4/q?=
- =?us-ascii?Q?2A4+8hUvI3H9r4hcHFoDg5zd/uzMM1RKe8lACQ2zfw62T+y93V9a68JQJXIx?=
- =?us-ascii?Q?qt930w2Nh8Na4Tih5jLJpl+f4nvTj/ou+aXIvhSzWCgM2MqtA/Rv8QAOawfO?=
- =?us-ascii?Q?cFjK99ur5agzqKHV4xNvLfCDgUyEZLzCIFKGAgNQVlHmNA75d0drlYsQ99x1?=
- =?us-ascii?Q?+bvai6IzUaqW0i6z9LOhaZr/Dih23xZjwITsoQ+o+jFKP3GAsKbtbJi4ApyU?=
- =?us-ascii?Q?QYC1ETSI3zla7epuL+AqxYjXC2gNP7Mtl0f9uImltqPL3nE9kF0hOyDMUIQE?=
- =?us-ascii?Q?y7KQBN4rCukGI0B2q+/qOoe1a3JWQZg+DJ6W0bzuYrG1nOBvfuJw4A9HTC2b?=
- =?us-ascii?Q?KREWeKZJHZq1Inz+SgPFZrcmIW6LpfR0As2kNdDOM0OpZF5ZOosrkdOz1ZjU?=
- =?us-ascii?Q?ZHMQgayl4Kms9XcqFnXLk/u79m27J0lJM7msnDkfZMEkAEVjtKDXanTRg9ys?=
- =?us-ascii?Q?HMyLJIj72KusfRu/OotmGISkf6iQqATrp9JGoDTKTl0yupsNW6lDzXjmZHs9?=
- =?us-ascii?Q?OQnlCD30uVv1K6UUtZjATpwLRfk3DcienSfjLTgOYGKaCKlJh4W9e31VcuHC?=
- =?us-ascii?Q?pBufZvZ+B9fw5sxy3c6hV132mRgjkjtgYwAbvJHDlA0jWK2Y4K1c68wSm2HQ?=
- =?us-ascii?Q?HYY4+1fHqkiiDn7w21rgLqFAC4KkHi0wZEfldw8wnZeo9TmkuVj7exbETrM4?=
- =?us-ascii?Q?teCRY0Z1ZewvZ8Ml8iAscWdNcGnFdNWwFeH5squkn4Nw52HbMNTnD83KQsZJ?=
- =?us-ascii?Q?4q3KzuH+GTGf3kJx8EOAhYTFIZy3UUpiyFuRSujzo2ADCXH/INqo8CCvv9G/?=
- =?us-ascii?Q?C+riCzZ0A1mWW5Cnj0s/rWrI4aRrk13YdAOVoq++AVf+iVHQtQaHrwRaWuFP?=
- =?us-ascii?Q?FxKqKy6tBa0x3ksL02M5DIBNaGfvqenIpiH4EuXwrSC3qfalXfp1saj2FeHG?=
- =?us-ascii?Q?JDxEoCTGFIL/jBMn7KC8VC4bY5Q7dMBMyteZWxLORk9yQqEbSFzmLajhLgs2?=
- =?us-ascii?Q?udwOC4jN9VOj9boI1RUdrj6vYjtqGI02ZZAsfbqCTcZN//5wX06CPMN3iVve?=
- =?us-ascii?Q?PbH61Lkf+W60UbSc+BrjXxYBrjQfq5UNXWbhGLGF5AkshRmX4Dly0LDeNlED?=
- =?us-ascii?Q?N8F51CbaNIhLxtxBuuW8w6Ni9GpYxuY5oZDJ+TvLMjebubplbU8mdbyTOlQC?=
- =?us-ascii?Q?i6YIXqmRMJJAHTgJooRrMDpJawCFZJhVFKplA5DoxHbVwGmq35atdwhi9ppQ?=
- =?us-ascii?Q?Uh2U+VSH18+UoVtoVJan9hkgoy5WQO0wnkhASmv1a38TqcXUZX8dt4kJI56d?=
- =?us-ascii?Q?TadDQQ=3D=3D?=
-X-OriginatorOrg: camlingroup.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e94db93d-e480-4da0-ad97-08dcc39414b6
-X-MS-Exchange-CrossTenant-AuthSource: LO4P123MB5272.GBRP123.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2024 16:53:15.1805
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4KQYZ+Lygi0SkHyv54gEY3P9AKKWSmEqYYILQnk6lWkDi7eebzDPwYp5D2uiP4lEAZvIeKhBEnLR0MueZ6yPAYhzRjDJAHGzv2cZvPRTmls=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO2P123MB6200
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: camlingroup.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
+References: <7deb753f-bf86-47ce-89bf-8277aca4293e@camlingroup.com> <fbd8debf-46ab-407a-beda-43e083bffee7@camlingroup.com>
+In-Reply-To: <fbd8debf-46ab-407a-beda-43e083bffee7@camlingroup.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 23 Aug 2024 20:58:56 +0300
+Message-ID: <CAHp75VeqOV7GEqMs6fMi2Fax-97zt+ykEXaptng=pi_BDKU5Bg@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] serial: sc16is7xx: convert bitmask definitions to
+ use BIT() macro
+To: Lech Perczak <lech.perczak@camlingroup.com>
+Cc: linux-serial@vger.kernel.org, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>, 
+	=?UTF-8?Q?Krzysztof_Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>, 
+	=?UTF-8?Q?Pawe=C5=82_Lenkow?= <pawel.lenkow@camlingroup.com>, 
+	Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-When submitting previous, functional fixes, Tomasz Mo=C5=84 omitted those
-two cosmetic patches, that kept lurking in our company tree - likely
-by oversight. Let's submit them.
+On Fri, Aug 23, 2024 at 7:55=E2=80=AFPM Lech Perczak
+<lech.perczak@camlingroup.com> wrote:
+>
+> Now that bit definition comments were cleaned up, convert bitmask
+> definitions to use BIT() macro for clarity.
+> Convert SC16IS7XX_IIR_* bitmask constants, to use GENMASK() macro, where
+> applicable - while at that, realign comments.
+> Compose SC16IS7XX_LSR_BRK_ERROR_MASK using aforementioned constants,
+> instead of open-coding it, and remove now unneeded comment.
 
-Signed-off-by: Lech Perczak <lech.perczak@camlingroup.com>
----
-v3:
-No code changes in patches 1 and 2.
-- Pick up Reviewed-by from Andy in patch 1
-- Adjust commit message in patch 2
-- Perform further cleanup in bit constants,
-  use GENMASK for SC16IS7XX_IIR_* and reuse bit definitions in
-  SC16IS7XX_LSR_BRK_ERROR_MASK in patch 3.
+comments
 
-v2:
-- Converted bitmask definitions to use BIT macro
-  (thanks Jiri Slaby for the idea)
-- Removed redundant comments in patch 2 altogether
-- Fixed commit messages (thanks Andy Shevchenko for
-  thorough review)
+...
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Cc: Andy Shevchenko <andy@kernel.org>
+>  /* IIR register bits */
+> -#define SC16IS7XX_IIR_NO_INT_BIT       (1 << 0) /* No interrupts pending=
+ */
+> -#define SC16IS7XX_IIR_ID_MASK          0x3e     /* Mask for the interrup=
+t ID */
+> -#define SC16IS7XX_IIR_THRI_SRC         0x02     /* TX holding register e=
+mpty */
+> -#define SC16IS7XX_IIR_RDI_SRC          0x04     /* RX data interrupt */
+> -#define SC16IS7XX_IIR_RLSE_SRC         0x06     /* RX line status error =
+*/
+> -#define SC16IS7XX_IIR_RTOI_SRC         0x0c     /* RX time-out interrupt=
+ */
+> -#define SC16IS7XX_IIR_MSI_SRC          0x00     /* Modem status interrup=
+t
+> -                                                 * - only on 75x/76x
+> -                                                 */
+> -#define SC16IS7XX_IIR_INPIN_SRC                0x30     /* Input pin cha=
+nge of state
+> -                                                 * - only on 75x/76x
+> -                                                 */
+> -#define SC16IS7XX_IIR_XOFFI_SRC                0x10     /* Received Xoff=
+ */
+> -#define SC16IS7XX_IIR_CTSRTS_SRC       0x20     /* nCTS,nRTS change of s=
+tate
+> -                                                 * from active (LOW)
+> -                                                 * to inactive (HIGH)
+> -                                                 */
+> +#define SC16IS7XX_IIR_NO_INT_BIT       BIT(0)          /* No interrupts =
+pending */
 
-Lech Perczak (3):
-  serial: sc16is7xx: remove SC16IS7XX_MSR_DELTA_MASK
-  serial: sc16is7xx: fix copy-paste errors in EFR_SWFLOWx_BIT constants
-  serial: sc16is7xx: convert bitmask definitions to use BIT() macro
+> +#define SC16IS7XX_IIR_ID_MASK          GENMASK(5,1)    /* Mask for the i=
+nterrupt ID */
 
- drivers/tty/serial/sc16is7xx.c | 181 +++++++++++++++++----------------
- 1 file changed, 92 insertions(+), 89 deletions(-)
+This is okay, but the rest of the bit combinations are better to have
+to be plain numbers as usually they are listed in this way in the
+datasheets. Note as well that 0x00 is a valid value which you can't
+express using BIT() or GENMASK() (and this is usually the main point
+to *not* convert them to these macros).
+
+> +#define SC16IS7XX_IIR_THRI_SRC         BIT(1)          /* TX holding reg=
+ister empty */
+> +#define SC16IS7XX_IIR_RDI_SRC          BIT(2)          /* RX data interr=
+upt */
+> +#define SC16IS7XX_IIR_RLSE_SRC         GENMASK(2,1)    /* RX line status=
+ error */
+> +#define SC16IS7XX_IIR_RTOI_SRC         GENMASK(3,2)    /* RX time-out in=
+terrupt */
+> +#define SC16IS7XX_IIR_MSI_SRC          0x00            /* Modem status i=
+nterrupt
+> +                                                        * - only on 75x/=
+76x
+> +                                                        */
+> +#define SC16IS7XX_IIR_INPIN_SRC                GENMASK(5,4)    /* Input =
+pin change of state
+> +                                                        * - only on 75x/=
+76x
+> +                                                        */
+> +#define SC16IS7XX_IIR_XOFFI_SRC                BIT(4)          /* Receiv=
+ed Xoff */
+> +#define SC16IS7XX_IIR_CTSRTS_SRC       BIT(5)          /* nCTS,nRTS chan=
+ge of state
+> +                                                        * from active (L=
+OW)
+> +                                                        * to inactive (H=
+IGH)
+> +                                                        */
+
+...
+
+> +#define SC16IS7XX_LSR_BRK_ERROR_MASK   (SC16IS7XX_LSR_OE_BIT | \
+> +                                       SC16IS7XX_LSR_PE_BIT | \
+> +                                       SC16IS7XX_LSR_FE_BIT | \
+> +                                       SC16IS7XX_LSR_BI_BIT)
+
+It's better to start from the next line
+
+#define SC16IS7XX_LSR_BRK_ERROR_MASK     \
+        (SC16IS7XX_LSR_OE_BIT | ...
 
 
-base-commit: 0c3836482481200ead7b416ca80c68a29cfdaabd
 --=20
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
