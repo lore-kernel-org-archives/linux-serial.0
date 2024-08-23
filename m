@@ -1,94 +1,189 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A687518562A;
-	Fri, 23 Aug 2024 13:22:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724419329; cv=none; b=bBGl66z0YXsarVFmN7Lg3Z72tn5gqZjbWKBowkg4hYNAuhXvNbUS+S4nmWJhAtj4JYWSYqPuJQ3aU+BihI2ogW7HAnJuw9spSbMOcNF3Jc6+p17Q+OV8/IU9gdlgD97hZ9GRK9gcHgxwwlk1j+s3gkZa8QmnNk2fqcJFc+g41yA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724419329; c=relaxed/simple;
-	bh=rKQeq9bwcqO/L2Pc1fcDLl8VQQ0iK8rcr8CMjfMKesY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Y4G3tl5fzJAmZ+fOcgGeXj5RiLDy+5HiEzGiPf9ISSHkgmvbQl4jnsDzM/D9glXqbZfsEe7uRARbQ6eQicJIQLO9VmH6cFkcLiMGSY7E6dW/MMKBHLieDAXp9AFe4o1vYgpLCsa5wJBdhdRT0ltNhzqZP0fV37eVhKS/qkQHrhs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=As401vIt; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E182B188904;
+	Fri, 23 Aug 2024 15:00:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724425260; cv=pass; b=DXX/Q7rVXd0E/8MVeV9OpUOn8mWNprDfFfkmwrbFuhhnnVp3og1ZaoRHlyOrJhXqSow784QybGiq1+mbVr5RJoVqoziP3CeL1aL+MbvMDWk6iEGT3lU7HSyeC449gScWrnZ2t//5aX76XvbzNvawgo7cmr/hm7XN9pst9WmWUoI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724425260; c=relaxed/simple;
+	bh=JNCrHEnz2TTmX50Fdf5y/m97VRuA1bJpbf1mLzwmkN4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Tdtzj/3gb1m9gYQMAhvowTF5TVaR1ND+PXnaL6QecW6bK5TLdpLXN76TFtcrSQfZkhzHSvbX1pgZSizhpmnVDBT6n0/pi58YuLIT1nZGN8jQQNqu2bZqJMjomboFBFHYKkpONcTnEUbSLLDl0G0srYW+v6t1oy4ld7Ddy88m8yM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b=f02wVC+j; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="As401vIt"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2f4f2cda058so8505871fa.1;
-        Fri, 23 Aug 2024 06:22:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724419326; x=1725024126; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rKQeq9bwcqO/L2Pc1fcDLl8VQQ0iK8rcr8CMjfMKesY=;
-        b=As401vIt6S3cGkGuIo5ksmamF2bihJh0dWesM9lt51/L1YiUEJTO0D+izmnntbkV2G
-         7y70sR7KmPXVqld0PSjJTg5/LBS0apZkEfK3tLA1lImboc7gqxg8/xeBucepONHx7QfJ
-         vL+lJEmDLLHiN3MVd9lp/wTIjvx0GkbhC1noQldqN9wJAzsMY47oZ7bzuzXiDlSOa2QB
-         AiAgJa+kph/Id8vuZ2adIJ1/Fc/mvVWFiYAJV68k+FmoLwzpn2p5hvP0gXaw0eoHSHFW
-         QSWJvPGcluSCdiHJCOgjUWBuhefHXlg8tbRYyteFzsEWohy+VG3TUGqnaq0KGPni/Uqr
-         i7Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724419326; x=1725024126;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rKQeq9bwcqO/L2Pc1fcDLl8VQQ0iK8rcr8CMjfMKesY=;
-        b=k4a5QPXLz7CVR+s4Z9ICs9ivDDA5TPN9OKCkPQuHzikHwxbFjOJgNfQNe6g6zHZIZw
-         atXKn6UuLXr3QKbvXvITgMZBMwZ6lfFmxlSGkauUKuGIS3rqd8emb74kBeJHbc3Tsfpf
-         JlXLSu7LNf2eRY2j34cHu+wq525x/xKts1McxK0oH3pHoNos3LNNxUvu4G5ee0ehEmfD
-         OaHdMBG2PGwSM1HDHRMCq+ETQP3pxMxprDLyVS70OiEmaazdv9tVyJr5XIQBcvwx4II/
-         Pfuof00lY8CvczpIz/UhQn0b8Tw8CF0564Nck2TI3hTDPfcZ7B+9uLXNfR7o2lpp/fUA
-         8lpA==
-X-Forwarded-Encrypted: i=1; AJvYcCVAzl2Jq6IykgBHcTUmQP9oAqSdRxDEbHTCDa4y179lloGBKOE1TAysDjdRVHjrZoAdE1uiZ0F7ktU7rHbv@vger.kernel.org, AJvYcCWTLLyUrnoz5l+Oi26/IGxbwybsf3Z3aZVINhXXCLD7V4u0aRaZcbAFB2gAgxLZfzoZtnLavredAHbu6fIo@vger.kernel.org, AJvYcCXAMeN88oRz8VsWVi2UxCNhN9y/TqXk4//oUn4z6bnbfomE4Ndh3X/etPYhfTlqZGN5De6VID3oy/c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOFf6xgGxSMpMt4ea/rpbcuasjfTNPJaYnAI2BG8NZ44F2R8Fw
-	kuVaeyRpMX+mMCdpPyGcnkfWUNcN3L4e+DmSkjVpPXESHy2RDbweUxyC0pRbqfQzwdAkiMVSc1C
-	xOpMtjMO7YL1XXWYGb/VvPc5gqUA=
-X-Google-Smtp-Source: AGHT+IEzM+VHYtlD/p1yI/jFgtHiWv1VA11NrUMshIJ18cFE55GPaqypnHWhkeG4F3ahbzmUNS+DF7kuUVxSigjUdzk=
-X-Received: by 2002:a2e:d19:0:b0:2f3:f39f:3714 with SMTP id
- 38308e7fff4ca-2f4f491623amr8452071fa.13.1724419325227; Fri, 23 Aug 2024
- 06:22:05 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b="f02wVC+j"
+ARC-Seal: i=1; a=rsa-sha256; t=1724425169; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=no39V9NnxnwNc1WnPDgoT+p7ZUw/z+a8UCFwGESfjxBCX0x5SsSVkOk9X4TFmR1hL+PE+YnwdK75h2b6OfkEtUt154I2/y0YUJ7iiUl139TmSeyE+WOFpKUncU9OT1aZ5j9vgv/+VZGzDXgC0reK6Z0WzzXGZ6dlVDCOMq2GS+o=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1724425169; h=Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=TwlvOdJ7MjOFHk4+IGiyU7dJ6E4gYxvsaSn7FY9AvBU=; 
+	b=Pdj+aCDgE4m2PkeUiGx1NRHxbuHRUmEujM+JMIaSk9iI+XRa4d1L0CGBYZ9HXk8C5vfVY1wT2eaBxd5L3gkDzdVLaagQZXH5pK8fnKYiBXTaRQGzHFUomMwGSau3to/5Us7OCAo2uiDZyngd2GwfzTnMwC0Qf4C7zhD0Ol9llJw=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=detlev.casanova@collabora.com;
+	dmarc=pass header.from=<detlev.casanova@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1724425169;
+	s=zohomail; d=collabora.com; i=detlev.casanova@collabora.com;
+	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=TwlvOdJ7MjOFHk4+IGiyU7dJ6E4gYxvsaSn7FY9AvBU=;
+	b=f02wVC+jsUJd5qWnUikwuktjSRUkeIjtwaq8U702xiDXQJOSNH2RvrYXx/yR2Lts
+	U9nSj0Q+Ar6fGYYuD1bQLxLS/W5Ik06iid5vmf3i1yzjD19MRoHxyLSO/6Y4ORWPl00
+	UDpxVmcQqdgpsgqSVq2pEVKou2AfpFThfHDDD84w=
+Received: by mx.zohomail.com with SMTPS id 1724425168680168.96164896631421;
+	Fri, 23 Aug 2024 07:59:28 -0700 (PDT)
+From: Detlev Casanova <detlev.casanova@collabora.com>
+To: linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Lee Jones <lee@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Mark Brown <broonie@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Tim Lunn <tim@feathertop.org>,
+	Chukun Pan <amadeus@jmu.edu.cn>,
+	Andy Yan <andyshrk@163.com>,
+	Muhammed Efe Cetin <efectn@protonmail.com>,
+	Jagan Teki <jagan@edgeble.ai>,
+	Dragan Simic <dsimic@manjaro.org>,
+	Detlev Casanova <detlev.casanova@collabora.com>,
+	Ondrej Jirman <megi@xff.cz>,
+	Michael Riesch <michael.riesch@wolfvision.net>,
+	Jimmy Hon <honyuenkwun@gmail.com>,
+	Alexey Charkov <alchark@gmail.com>,
+	Elon Zhang <zhangzj@rock-chips.com>,
+	Elaine Zhang <zhangqing@rock-chips.com>,
+	Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+	Finley Xiao <finley.xiao@rock-chips.com>,
+	Liang Chen <cl@rock-chips.com>,
+	Jisheng Zhang <jszhang@kernel.org>,
+	Jamie Iles <jamie@jamieiles.com>,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	dri-devel@lists.freedesktop.org,
+	linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-mmc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-watchdog@vger.kernel.org,
+	kernel@collabora.com
+Subject: [PATCH v2 00/12] Add device tree for ArmSoM Sige 5 board
+Date: Fri, 23 Aug 2024 10:52:27 -0400
+Message-ID: <20240823150057.56141-1-detlev.casanova@collabora.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240802080756.7415-1-fancer.lancer@gmail.com> <n6grskuq722vnogwp5obiwzv4pxs5bbqddadesffezhvba5cjh@d6shcrvpxujg>
-In-Reply-To: <n6grskuq722vnogwp5obiwzv4pxs5bbqddadesffezhvba5cjh@d6shcrvpxujg>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 23 Aug 2024 16:21:24 +0300
-Message-ID: <CAHp75VdXqS6xqdsQCyhaMNLvzwkFn9HU8k9SLcT=KSwF9QPN4Q@mail.gmail.com>
-Subject: Re: [PATCH RFC] dmaengine: dw: Prevent tx-status calling desc
- callback (Fix UART deadlock!)
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andy Shevchenko <andy@kernel.org>, Viresh Kumar <vireshk@kernel.org>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Vinod Koul <vkoul@kernel.org>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	dmaengine@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 
-On Fri, Aug 23, 2024 at 12:48=E2=80=AFPM Serge Semin <fancer.lancer@gmail.c=
-om> wrote:
->
-> Hi folks
->
-> Any comments or suggestion about the change? The kernel occasionally
-> _deadlocks_ without it for the DW UART + DW DMAC hardware setup.
+Add device tree for ArmSoM Sige 5 board
 
-I have no time to look at that, but FWIW with a stress tests on older
-machines I have seen something similar from time to time (less than
-10% reproducibility ration IIRC).
+Add the rk3576-armsom-sige5 device tree as well as its rk3576.dtsi base
+and pinctrl information in rk3576-pinctrl.dtsi.
 
-P.S. Is there is any possibility to have a step-by-step reproducer?
-Also can we utilise (and update if needed) the open source project
-https://github.com/cbrake/linux-serial-test?
+The other commits add DT bindings documentation for the devices that
+already work with the current corresponding drivers.
 
---=20
-With Best Regards,
-Andy Shevchenko
+
+Note that as is, the rockchip gpio driver needs the gpio nodes
+to be children of the pinctrl node, even though this is deprecated.
+
+When the driver supports it, they can be moved out of the pinctrl node.
+
+The power-domain@RK3576_PD_USB is a child of power-domain@RK3576_PD_VOP.
+That looks strange but it seems to be how the hardware is.
+There has been no confirmation from Rockchip yet.
+
+The other bindings and driver implementations are in other patch sets:
+- PMIC: https://lore.kernel.org/all/20240802134736.283851-1-detlev.casanova@collabora.com/ (applied on next)
+- CRU: https://lore.kernel.org/all/20240822194956.918527-1-detlev.casanova@collabora.com/
+- PINCTRL: https://lore.kernel.org/all/20240822195706.920567-1-detlev.casanova@collabora.com/
+- PM DOMAIN: https://lore.kernel.org/all/20240814222824.3170-1-detlev.casanova@collabora.com/ (applied on next)
+- DW-MMC: https://lore.kernel.org/all/20240822212418.982927-1-detlev.casanova@collabora.com/
+- GMAC: https://lore.kernel.org/all/20240823141318.51201-1-detlev.casanova@collabora.com/
+
+Changes since v1:
+- Add eMMC support
+- Add gpu node
+- Add rtc node
+- Add spi compatible dt-bindings
+- Add watchdog support
+- Dropped timer compatible commit (applied in [0])
+- Move ethernet aliases to board dt
+- Move mmio nodes to soc node
+- Removed cru grf phandle
+- Removed gpio aliases
+- Removed grf compatibles (applied in [1])
+- Removed pinctrl php-grf phandle
+- Removed v2-tuning for sdcard
+- Renamed clock nodes
+- Renamed regulators do match regulator-vcc-<voltage>-<name>
+- Renamed the rkvdec_sram node to vdec_sram to match prior generations
+- Reorder fields consistently in nodes
+- Use correct #power-domain-cells values
+
+[0]: https://lore.kernel.org/all/918bb9e4-02d9-4dca-bed2-28bb123bdc10@linaro.org/
+[1]: https://lore.kernel.org/all/172441646605.877570.8075942261050000.b4-ty@sntech.de/
+
+Detlev.
+
+Detlev Casanova (12):
+  dt-bindings: arm: rockchip: Add ArmSoM Sige 5
+  dt-bindings: arm: rockchip: Add rk3576 compatible string to pmu.yaml
+  dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
+  dt-bindings: iio: adc: Add rockchip,rk3576-saradc string
+  dt-bindings: mfd: syscon: Add rk3576 QoS register compatible
+  dt-bindings: serial: snps-dw-apb-uart: Add Rockchip RK3576
+  dt-bindings: mmc: Add support for rk3576 eMMC
+  dt-bindings: gpu: Add rockchip,rk3576-mali compatible
+  dt-bindings: watchdog: Add rockchip,rk3576-wdt compatible
+  dt-bindings: spi: Add rockchip,rk3576-spi compatible
+  arm64: dts: rockchip: Add rk3576 SoC base DT
+  arm64: dts: rockchip: Add rk3576-armsom-sige5 board
+
+ .../devicetree/bindings/arm/rockchip.yaml     |    5 +
+ .../devicetree/bindings/arm/rockchip/pmu.yaml |    2 +
+ .../bindings/gpu/arm,mali-bifrost.yaml        |    1 +
+ .../devicetree/bindings/i2c/i2c-rk3x.yaml     |    1 +
+ .../bindings/iio/adc/rockchip-saradc.yaml     |    3 +
+ .../devicetree/bindings/mfd/syscon.yaml       |    2 +
+ .../bindings/mmc/snps,dwcmshc-sdhci.yaml      |   32 +-
+ .../bindings/serial/snps-dw-apb-uart.yaml     |    1 +
+ .../devicetree/bindings/spi/spi-rockchip.yaml |    1 +
+ .../bindings/watchdog/snps,dw-wdt.yaml        |    1 +
+ arch/arm64/boot/dts/rockchip/Makefile         |    1 +
+ .../boot/dts/rockchip/rk3576-armsom-sige5.dts |  651 ++
+ .../boot/dts/rockchip/rk3576-pinctrl.dtsi     | 5775 +++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 1710 +++++
+ 14 files changed, 8177 insertions(+), 9 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576.dtsi
+
+-- 
+2.46.0
+
