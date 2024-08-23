@@ -1,95 +1,158 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6574194A4B
-	for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2024 16:13:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6227C194C6E;
+	Fri, 23 Aug 2024 16:13:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724429582; cv=none; b=fhC0JagbLyKl/apHHEh4GCYvHT39HTEen6sO+tMLHBc4h+O9qIvIeTsmowJ5AoTm/wCwQybhvZma6/Kk4n+E8ik5jH1xUWKOqsGTHNGGJlsIvcWQeUmPPKmkjkwAevIyHUfE45qUDPEcsX+clmiQNT3J6EGsLj1zA4KS/vo9OwQ=
+	t=1724429586; cv=none; b=Ejc70EMbfX9OM291CzZ4MfusIMPnAKuVHIewWX/Ks+kH2EFvYCqubenuikew5i37XJcbhaBVf5sWHo4Z3kagaIoyv4/AvMJ7VdA81TgAr9xpG9oUtbikzBkkExZivKjg8xV6rvzb7yQo0Xh8eBBbih7elaOc+OnZ7NfVjEi6Q7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724429582; c=relaxed/simple;
-	bh=v3tl121UFcqjaRW1cQWXFFukEED+sZyQ1Hsg/FKSyTw=;
+	s=arc-20240116; t=1724429586; c=relaxed/simple;
+	bh=302mPfppIzV0eIiBLegANXAiB+NF/JryI6zwyAqPKeI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SaWoXbyoSqDJJ+AM7lAa4qWb75NbjlgIgYDum5BJWY3VCKDe4KjXfvve1btlcL5qOA4Qqp2VspB8zwI8sWQrDggtvfgvw15GWkLqVIfZWDO8ghth4PnUlDR1Ww1gj/s75h8p9kwjFoPj++kfUoVL9w+rFUJ/GbJcNVuXTEfIxos=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sdeqLSoS; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 To:Cc:Content-Type; b=oOocNxTBYVq7Th/YAtRJdhTz5eRCGFBMJzNj+HqdfbCHQNi7g9oX7FhjYV4HwQgfXPJnjAAdd0TeM9sxnX/yLYfQ81g+dE+nWJvjoOAQx18yg3yfzSX36DMXhFF0B9Zo8AOqmXdX1d5H8fy6RNKdPCuEsBXLxLAKT4Q4H88plRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gf+WMIRu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sdeqLSoS"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-53351642021so2253815e87.3
-        for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2024 09:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1724429579; x=1725034379; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=v3tl121UFcqjaRW1cQWXFFukEED+sZyQ1Hsg/FKSyTw=;
-        b=sdeqLSoS+cceR6ApQSN6cimmYONbktn16U4f0nXIbhbinKuLz03woTI8WuAR2goGow
-         QVm0m/9uiYxGwUhQHbyekpGFcwzPJhEMqrE6G8d6oHVY/a+Cl5Pfr6reG2t/3oahIjfu
-         dRGTR+3velXi48dsyPAgWclGpqRbnySvY/bxdxBkZW1cyIM/lEIK9Lt+pI06uf9hrxhT
-         QhpW9N6fB5+xwh5qF6P4ht86uVQmw9Snxb0Damnty9Cxhms/6Xr3nIfFtcoSHCwf2d8R
-         b7rDlIskAQUJwLEwNTukRKmtyfH7Ek2tX7fi1eLyFJERo5C6uHp9NGd6pzazFnjAu2It
-         IoRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724429579; x=1725034379;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=v3tl121UFcqjaRW1cQWXFFukEED+sZyQ1Hsg/FKSyTw=;
-        b=Ex1LWrR76DeWjTucshdNlVwA6WZguU5v7nisTbgiyn3EM7W3qX9Y8yw/l0iJf6bTkL
-         oo03qaNnQ9XA360ChJoQOPXA2meJZzUMyrO5dYLhiBNnwfTYY2ZV/gLhQd5oedi7N0/o
-         TSbr4ZVHqTfEFmJ3bGih55hkPXGmWxPVude9BomFP+Aj7IQI5g0mSaWE2lz9itrc4Aec
-         2DFRhQNOMdd7hcRDRkNSa/EPz79DZAjwhYKOMslr4+JrHqMmmGkFthMHMLEcL8peAJnU
-         xGgV3zUGYymzS3Nz1saC3wu/6aksRCaXJAHwTPawD5RvScAtgJiCmEZLApkBNpPGDt9A
-         /bfQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUDFvAp1OVKXfoSCqUynvmcnPsVpTZ8D6yZoCAOy8iY8DNPbRQ4+htrV+S2p2uIw+GZNJjVKa8bYtADHPg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxHbVtRpzVxLTahkYuxO+8Lz6xOni4wFt50AfpQ1mo/Z0gP0Uql
-	2CHLpZLCcqNiJdevpLjRQmaOwqt/3sj6gEnBH/DimALEJ6HxmW5DbskgXJNt0HhpuI8c3LNBPZd
-	FlVtZmOmv4Qw84mgyygqQiYITphOurjDh1g3EdA==
-X-Google-Smtp-Source: AGHT+IH1hynyymLz1ZuEZUhvfWZZ/Hkkj2g0Tl04dlGTeLjC9tjjJISAp+o+SHgwFRjXGoZ1puRhp7iBRORVJcZyH3Q=
-X-Received: by 2002:a05:6512:6cf:b0:52f:c14e:2533 with SMTP id
- 2adb3069b0e04-534387be6d8mr1996904e87.48.1724429578471; Fri, 23 Aug 2024
- 09:12:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gf+WMIRu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECAE1C4AF4D;
+	Fri, 23 Aug 2024 16:13:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724429586;
+	bh=302mPfppIzV0eIiBLegANXAiB+NF/JryI6zwyAqPKeI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=gf+WMIRurTbcCUp5XG/SJqSuNJlC/5jTbjfrtjz9Bke6unn38fmcRN+YM+/H/43FY
+	 lbsc3h6ZC8f35iYEa6UeUssIiTd08RvXwBi0MjdL4zAyp5kjx1JxZ/jC1iaIgqVRiC
+	 ur7OZG2hFz/jXs+MMeV/l8lH7W26g2wD/QYWC2kZo7w7gmoo9/4AMNkWWYGV3JSqVU
+	 VYLEbcUT4YrL0R0e4pLlZFcUYiVRRx3QTP0KTf1NhMoH/d4g/aTw9/BbDf/isvQzr/
+	 EiLGa0gp/ERZgq1t2tqvHzgTKwOtnypPYBaPN7Is/mZCf7pHacg835+FQlJc3L0cNq
+	 yW2ydpGu7UQUg==
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2f4f2868710so14781871fa.1;
+        Fri, 23 Aug 2024 09:13:05 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU4dtKyYllwF4ECh/AEz/nv6RBn3AfXe5jdt7DnwHsEn3hZ7TU7zlRRcpANGS4oMEWM8k57w8l+L+s7cgrg@vger.kernel.org, AJvYcCUB3KLjEX7KA+dYVScl6b9AepdhGtS9gTERvm7GlwcE5mUovMIz6uz51CLguTk3r1chX1OjbeqFGB46PxM5@vger.kernel.org, AJvYcCUf5ApO14XWXf/zYprqgsSiv7+/6XpNea+Qm8e1BQf8AlMJmRu7Egu/Q2BAPNcYGDRHITolJaOKtKJqNeo=@vger.kernel.org, AJvYcCXG5fgHC3NepXiHhjK4wxKPDne+jMK8XXViuXobwQ5RBvYAsU7NZLjpitPl8h1Oj8FrBEkUXcIFIA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLMmPFwTvL7kwvsydF6wh5gWVCJ+NQXuntP22DbnOxFp4vfLNT
+	TZHqHR+hDKfj9bY0mHCPjNvU1KPwVB60MZwSk5uF76qlH+hNt55xLc5JapAj1jXPmtET0UZR8HI
+	NhGUSxOfjzeU8Hd87f+4lnvpI/vk=
+X-Google-Smtp-Source: AGHT+IGLQePVn5RhKmrGdV43WiO6IyDdZ4P8M+JxvZmPPDeIiajBOGYYWmzAWjRdCByIm/YmPmOehjlJ0SdmJRob6wc=
+X-Received: by 2002:a05:651c:1505:b0:2ef:2dfd:15dc with SMTP id
+ 38308e7fff4ca-2f4f48ef636mr23768021fa.9.1724429584330; Fri, 23 Aug 2024
+ 09:13:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240811-dt-bindings-serial-peripheral-props-v1-0-1dba258b7492@linaro.org>
- <20240811-dt-bindings-serial-peripheral-props-v1-5-1dba258b7492@linaro.org>
-In-Reply-To: <20240811-dt-bindings-serial-peripheral-props-v1-5-1dba258b7492@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 23 Aug 2024 18:12:47 +0200
-Message-ID: <CACRpkdagjGv79pJy8Ry2+OM8ShCE8sWNafQtzrPM_-2MJYNzLQ@mail.gmail.com>
-Subject: Re: [PATCH 5/6] dt-bindings: bluetooth: reference serial-peripheral-props.yaml
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Johan Hovold <johan@kernel.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Daniel Kaehn <kaehndan@gmail.com>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-sound@vger.kernel.org
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com> <20240807-macos-build-support-v1-1-4cd1ded85694@samsung.com>
+In-Reply-To: <20240807-macos-build-support-v1-1-4cd1ded85694@samsung.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Sat, 24 Aug 2024 01:12:26 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com>
+Message-ID: <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com>
+Subject: Re: [PATCH 01/12] scripts: subarch.include: fix SUBARCH on MacOS hosts
+To: da.gomez@samsung.com
+Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
+	Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 11, 2024 at 8:17=E2=80=AFPM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-
-> Reference common serial properties schema (for children of UART
-> controllers) to bring common definition of "current-speed" and
-> "max-speed" properties.
+On Wed, Aug 7, 2024 at 8:10=E2=80=AFAM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
 >
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> From: Nick Desaulniers <nick.desaulniers@gmail.com>
+>
+> When building the Linux kernel on an aarch64 MacOS based host, if we don'=
+t
+> specify a value for ARCH when invoking make, we default to arm and thus
+> multi_v7_defconfig rather than the expected arm64 and arm64's defconfig.
+>
+> This is because subarch.include invokes `uname -m` which on MacOS hosts
+> evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
+>
+> This allows us to build ARCH=3Darm64 natively on MacOS (as in ARCH need
+> not be specified on an aarch64-based system).
+>
+> Utilize a negative lookahead regular expression to avoid matching arm64.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Yours,
-Linus Walleij
+Does sed support "negative lookahead regular expression"?
+
+>
+> Add a separate expression to support for armv.* as per error reported by
+> Nicolas Schier [1].
+>
+> [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+>
+> Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
+> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> ---
+>  scripts/subarch.include | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/scripts/subarch.include b/scripts/subarch.include
+> index 4bd327d0ae42..5d84ad8c0dee 100644
+> --- a/scripts/subarch.include
+> +++ b/scripts/subarch.include
+> @@ -6,7 +6,8 @@
+>
+>  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
+>                                   -e s/sun4u/sparc64/ \
+> -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
+> +                                 -e s/armv.*/arm/ \
+> +                                 -e s/arm\(?:\(?!64\).*\)/arm/ -e s/sa11=
+0/arm/ \
+
+
+s/arm\(?:\(?!64\).*\)/arm/
+
+In sed, this expression does not seem to match anything.
+
+(or please give me some matching examples if I miss something)
+
+
+
+
+
+Nocolas already provided correct code:
+
+> [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+
+
+
+
+
+
+>                                   -e s/s390x/s390/ \
+>                                   -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \
+>                                   -e s/sh[234].*/sh/ -e s/aarch64.*/arm64=
+/ \
+>
+> --
+> Git-146)
+>
+>
+
+
+--
+Best Regards
+
+
+Masahiro Yamada
