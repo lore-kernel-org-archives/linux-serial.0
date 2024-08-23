@@ -1,173 +1,310 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16538F6B;
-	Fri, 23 Aug 2024 17:59:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 076821C86F3
+	for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2024 22:14:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724435976; cv=none; b=XzmtkjTIYr3oZLxGZZfi7MPpfdjgMg1Dnu5pdRurxXWs9VARXCMLcsWFspeJLbb2NPnx414ugpLuk5KALzItkc5HSjUcrAM3+jujP/n/+CHxn9XUaYfcJkjH6xlA4Cgtg1kM3QOxW1LyQXPWcZ4XAm5ZinZsKIUjP9bME82vD3w=
+	t=1724451282; cv=none; b=IEKJEhLhlDG5GekQ98G1MEANCBH8yUIaOUVAg8dkrl4KixkXp0+4MRRifuQk938bpZaEErm9iEs7b2wP4DSnXMM1MZ2TJJ3szyFsVq63lZH2zHpTDQCQ/uZ+YIXquplR5IkyRp3+72D4WLm2YV2w8uY9tqHXaejnuVStRhauZJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724435976; c=relaxed/simple;
-	bh=iuIrOXmtyg8nSKD4Cb/rTg5D9ty27V+8hU5rG7y9h4o=;
+	s=arc-20240116; t=1724451282; c=relaxed/simple;
+	bh=ef9BdM7Ru4+vKo57Z5rftWEmSePRQLxRRzy/17lBdrQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JiT1rvCV95wT81Dx0U0/wHOCGy02yhr+8XECuAe6K4f86p9amtCVNLhJN8WTYE8uShDUtlXcPBJnUvUMV18l2I2tpfcXY1zLlBqEl8NH8jN6taC+nxVd+lMJ98W+8iGytPVg6GKwxv04GbzakOjFwCFNaKj93yeoodEPeVAC84A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XsrySR33; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 To:Cc:Content-Type; b=ESMp78L/6oDOH+kBv/QoqySucwObTfT7TGPHdeyaIB5S5qMOJOU4SzL/4WIt9B251X2kYHnkPw0dogsEC8Fi6pspggBeGE2kMzI2LLHlseR6VgaND+XgTzgXPmSgSwC6tg/RW1pHWcezL4VxBOXuoR7mG9bFNHZIFbezhy9sCyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com; spf=pass smtp.mailfrom=kruces.com; dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b=YQxriK00; arc=none smtp.client-ip=209.85.167.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kruces.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XsrySR33"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-a7a9cf7d3f3so320009566b.1;
-        Fri, 23 Aug 2024 10:59:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b="YQxriK00"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5334b0e1a8eso3177330e87.0
+        for <linux-serial@vger.kernel.org>; Fri, 23 Aug 2024 15:14:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724435973; x=1725040773; darn=vger.kernel.org;
+        d=kruces-com.20230601.gappssmtp.com; s=20230601; t=1724451278; x=1725056078; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fN5FZjGc/Ma9BSW/s6M5/plXev0WIRsR3amu0H9Pa1M=;
-        b=XsrySR33G6DoYpQP0aQ1OodLz2a744lerKP70SGFRIPiB8IThKs9Mw95mMA68I7F2L
-         7rC+5Qy6KEFPPuQQzzXqkKCt6vxJ85TuAYJp5UCRtsPfD+A9x+8eM84DRsDhnbwBSMSg
-         PKYUuFIqicbuE50XOgbzeXXyCV2MMqLOXgTlazhFKM+cZGej+ISCvjL2/MKkhHUMNLYB
-         +NbFbhSYwYrPwwGpMqOzrmCvoL27LDH8i5bGtem09Zeo9kO6eHMqPmnlQZpq7JTWVw7m
-         lFwJWOU5v9yQT5LvgZ/GeOCu3nKl6wjLhsqKUwSGS2iHEcSB5aZABAUok15PZLlwTqJG
-         NlKg==
+        bh=mVn7bhcqAuWH/Gc+rMZ1Xor11/SH0tAXV77Rde16lJc=;
+        b=YQxriK00oFhBPi+odLWARkTI3F8J+tsuz4Xq8yfpkBuet2dOyB5zupZfUzSTOtUpbc
+         0y+Tgk86diTl0Dj86S1a0Lg+oKexzTz8WKLldwpnO0Ufli7AJgKxaq1FKoEx7AJskc9/
+         JsUvXTHpANfu5fXTb37iN7G2KcttoU/MtONuTlmMElx+eiDzAtFWKkxF3CGDTgev6JsS
+         r/RkrIA4yuRHgo0U/l7UStFMiyTrDM8REseH89Z5vpoqbOkqa1bxS906VW7rycgXpUkJ
+         2gszazmO3JXeuAI7COHQlfIFgRQJM3wXbJ7zio16niIVyoJjIWVzfYPMXaypFYizTYjJ
+         nwnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724435973; x=1725040773;
+        d=1e100.net; s=20230601; t=1724451278; x=1725056078;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fN5FZjGc/Ma9BSW/s6M5/plXev0WIRsR3amu0H9Pa1M=;
-        b=J+Nlt5EgZgw8RQpRHiWSeB6o5kUAH+2yVwC2DPkg0cB91WOOrMeTjVvY0vPVw2lMH0
-         q/CCh8hr7rAZpt//LFeA9+nOUji84MfxIDm/1HM2jCu8Ad/zq347rndPngrwnGCB0D5q
-         3OuFwmBrRTPsNscG18g69lGlwxUFxlpTCA6j0XifCfyKcLrNTjx5Isktf0NYZBTiKDlx
-         Mso2T/6qKRSb34h2NLVJ4DBYoXflZYTweh3GOUDu9U6FdyupqjwQgNhKssO2E8avvOHX
-         VVmFc8KJG3WZeI/tyJVOSKoiK7CkEM0EhC29JHOYZY3H0W1x1BzxUF/+P89zcmijzPm5
-         eFYA==
-X-Forwarded-Encrypted: i=1; AJvYcCWC+ml9HuEXlgR+auUqUQQCM7jH2cIyzn/xikF1uLXq+cnNPyP3JAcaIWHeM0pi8erZMgjZw8eQI/HltYY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqjqruVGM/0Ho0qLz0r4VsxqjgCWwvsMPCDbtmREpqooqXN5IH
-	e6N6drgl1MXns+sPXpMSOveuhRePStmPI14CJNrV5sn4bGyLSGhA+jkWE6aDCxtgQGJhIYUD399
-	mJmih9fB3LIBep7uFejeI0kS5p6I=
-X-Google-Smtp-Source: AGHT+IFJVh7gDpAqq/5aZUkFu4I1rIGXzIzFh2Ybqb/2YJDfMzVuZIiLUTf7koddK7M3IM3poWcvfrluk40Dv9kQOv8=
-X-Received: by 2002:a17:907:efcb:b0:a86:7adb:b327 with SMTP id
- a640c23a62f3a-a86a530135dmr212593566b.40.1724435972980; Fri, 23 Aug 2024
- 10:59:32 -0700 (PDT)
+        bh=mVn7bhcqAuWH/Gc+rMZ1Xor11/SH0tAXV77Rde16lJc=;
+        b=v4+ztkpi+rYU0c5ncx4vDQziziUZxwX0jmHowsJKCyq7yDv3uB85LU6GGpKyfA9+SS
+         QZe7tO1GoYRNoP85nR8wXbcRzfSNRwRKw9y/5YRILNMXuKBWXWKB7Cg/MaljipecS4x8
+         S8WT6QvLEciSBapfisWwKS3JyRTFJX4cafMsv3MTQ+0m4QObuOIsstBMQabwnLgmUYxn
+         MmcBVb97qRM95ekX6RJsFDD4Wrgw9p4SBiC6J5f9gYOWrXZipw+o8HGDs9/AThKEPvfr
+         5DrnHHZgaNoFH0lt9YHK5JogZ7oQcc3ziJKmKO6IxuhcfZk9hV2jj8dohaAkwMibB7KF
+         txpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVQVQ4wlcL0ZE/X+sfR5azAX6G9u9dX24rIeUlScDS4WX2aARziJSx50YhEAU/Sw6L/NgGHWvEWXk0YpRw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiZjGNIRvTVNZSqLbDHXn7/S925w2rwIbgpYi2gAYwfgqvTJ5J
+	/SQKly086ay+uHi79pTSpxHXV2nhv7kfNOGgWG6i1XeqsKs+wKbKaBPWjHRhb1EsWUBMjhmxOJ5
+	km9Oo0+yx2Hx70WFUq4nAq1EUOjXldowwiamcWw==
+X-Google-Smtp-Source: AGHT+IGDhJMFPFDslCxnxri8S951sJjg3aSvVif7lXNqXGz7kFGS4rZgZs1ZBpw6GOJM88hNjR9zGKziEIDdKGLwVUE=
+X-Received: by 2002:a05:6512:2244:b0:533:4327:b4cc with SMTP id
+ 2adb3069b0e04-534387c175cmr2666989e87.52.1724451277886; Fri, 23 Aug 2024
+ 15:14:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <7deb753f-bf86-47ce-89bf-8277aca4293e@camlingroup.com> <fbd8debf-46ab-407a-beda-43e083bffee7@camlingroup.com>
-In-Reply-To: <fbd8debf-46ab-407a-beda-43e083bffee7@camlingroup.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 23 Aug 2024 20:58:56 +0300
-Message-ID: <CAHp75VeqOV7GEqMs6fMi2Fax-97zt+ykEXaptng=pi_BDKU5Bg@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] serial: sc16is7xx: convert bitmask definitions to
- use BIT() macro
-To: Lech Perczak <lech.perczak@camlingroup.com>
-Cc: linux-serial@vger.kernel.org, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>, 
-	=?UTF-8?Q?Krzysztof_Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>, 
-	=?UTF-8?Q?Pawe=C5=82_Lenkow?= <pawel.lenkow@camlingroup.com>, 
-	Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
+ <20240807-macos-build-support-v1-1-4cd1ded85694@samsung.com> <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com>
+In-Reply-To: <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com>
+From: "Daniel Gomez (Samsung)" <d+samsung@kruces.com>
+Date: Sat, 24 Aug 2024 00:14:11 +0200
+Message-ID: <CABj0suC1atc=iPX4uOL5FYkzYBRtZC1J3Lhruo7hejd-fe9Yuw@mail.gmail.com>
+Subject: Re: [PATCH 01/12] scripts: subarch.include: fix SUBARCH on MacOS hosts
+To: Masahiro Yamada <masahiroy@kernel.org>
+Cc: da.gomez@samsung.com, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, gost.dev@samsung.com, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 23, 2024 at 7:55=E2=80=AFPM Lech Perczak
-<lech.perczak@camlingroup.com> wrote:
+On Fri, Aug 23, 2024 at 6:13=E2=80=AFPM Masahiro Yamada <masahiroy@kernel.o=
+rg> wrote:
 >
-> Now that bit definition comments were cleaned up, convert bitmask
-> definitions to use BIT() macro for clarity.
-> Convert SC16IS7XX_IIR_* bitmask constants, to use GENMASK() macro, where
-> applicable - while at that, realign comments.
-> Compose SC16IS7XX_LSR_BRK_ERROR_MASK using aforementioned constants,
-> instead of open-coding it, and remove now unneeded comment.
+> On Wed, Aug 7, 2024 at 8:10=E2=80=AFAM Daniel Gomez via B4 Relay
+> <devnull+da.gomez.samsung.com@kernel.org> wrote:
+> >
+> > From: Nick Desaulniers <nick.desaulniers@gmail.com>
+> >
+> > When building the Linux kernel on an aarch64 MacOS based host, if we do=
+n't
+> > specify a value for ARCH when invoking make, we default to arm and thus
+> > multi_v7_defconfig rather than the expected arm64 and arm64's defconfig=
+.
+> >
+> > This is because subarch.include invokes `uname -m` which on MacOS hosts
+> > evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
+> >
+> > This allows us to build ARCH=3Darm64 natively on MacOS (as in ARCH need
+> > not be specified on an aarch64-based system).
+> >
+> > Utilize a negative lookahead regular expression to avoid matching arm64=
+.
+>
+>
+> Does sed support "negative lookahead regular expression"?
 
-comments
+I think they removed support for PCRE. I've found this:
 
-...
+commit 261c7f145d015d9acb79dc650d27e4a23b839c23
+Author: Assaf Gordon <assafgordon@gmail.com>
+Date:   Tue Aug 21 14:25:57 2018 -0600
 
->  /* IIR register bits */
-> -#define SC16IS7XX_IIR_NO_INT_BIT       (1 << 0) /* No interrupts pending=
- */
-> -#define SC16IS7XX_IIR_ID_MASK          0x3e     /* Mask for the interrup=
-t ID */
-> -#define SC16IS7XX_IIR_THRI_SRC         0x02     /* TX holding register e=
-mpty */
-> -#define SC16IS7XX_IIR_RDI_SRC          0x04     /* RX data interrupt */
-> -#define SC16IS7XX_IIR_RLSE_SRC         0x06     /* RX line status error =
-*/
-> -#define SC16IS7XX_IIR_RTOI_SRC         0x0c     /* RX time-out interrupt=
- */
-> -#define SC16IS7XX_IIR_MSI_SRC          0x00     /* Modem status interrup=
-t
-> -                                                 * - only on 75x/76x
-> -                                                 */
-> -#define SC16IS7XX_IIR_INPIN_SRC                0x30     /* Input pin cha=
-nge of state
-> -                                                 * - only on 75x/76x
-> -                                                 */
-> -#define SC16IS7XX_IIR_XOFFI_SRC                0x10     /* Received Xoff=
- */
-> -#define SC16IS7XX_IIR_CTSRTS_SRC       0x20     /* nCTS,nRTS change of s=
-tate
-> -                                                 * from active (LOW)
-> -                                                 * to inactive (HIGH)
-> -                                                 */
-> +#define SC16IS7XX_IIR_NO_INT_BIT       BIT(0)          /* No interrupts =
-pending */
+    maint: remove REG_PERL code
 
-> +#define SC16IS7XX_IIR_ID_MASK          GENMASK(5,1)    /* Mask for the i=
-nterrupt ID */
+    Perl-regexp syntax (PCRE) in GNU Sed is shelved indefinitely.
+    See https://bugs.gnu.org/22801 , https://bugs.gnu.org/22647 .
+    Remove all (unused) REG_PERL related code.
 
-This is okay, but the rest of the bit combinations are better to have
-to be plain numbers as usually they are listed in this way in the
-datasheets. Note as well that 0x00 is a valid value which you can't
-express using BIT() or GENMASK() (and this is usually the main point
-to *not* convert them to these macros).
+    * sed/sed.c, sed/sed.h, sed/regexp.c, sed/compile.c: Remove REG_PERL co=
+de.
 
-> +#define SC16IS7XX_IIR_THRI_SRC         BIT(1)          /* TX holding reg=
-ister empty */
-> +#define SC16IS7XX_IIR_RDI_SRC          BIT(2)          /* RX data interr=
-upt */
-> +#define SC16IS7XX_IIR_RLSE_SRC         GENMASK(2,1)    /* RX line status=
- error */
-> +#define SC16IS7XX_IIR_RTOI_SRC         GENMASK(3,2)    /* RX time-out in=
-terrupt */
-> +#define SC16IS7XX_IIR_MSI_SRC          0x00            /* Modem status i=
-nterrupt
-> +                                                        * - only on 75x/=
-76x
-> +                                                        */
-> +#define SC16IS7XX_IIR_INPIN_SRC                GENMASK(5,4)    /* Input =
-pin change of state
-> +                                                        * - only on 75x/=
-76x
-> +                                                        */
-> +#define SC16IS7XX_IIR_XOFFI_SRC                BIT(4)          /* Receiv=
-ed Xoff */
-> +#define SC16IS7XX_IIR_CTSRTS_SRC       BIT(5)          /* nCTS,nRTS chan=
-ge of state
-> +                                                        * from active (L=
-OW)
-> +                                                        * to inactive (H=
-IGH)
-> +                                                        */
+git tag --contains 261c7f145d015d9acb79dc650d27e4a23b839c23
+v4.6
+v4.7
+v4.8
+v4.9
 
-...
+And my sed version is (Debian):
 
-> +#define SC16IS7XX_LSR_BRK_ERROR_MASK   (SC16IS7XX_LSR_OE_BIT | \
-> +                                       SC16IS7XX_LSR_PE_BIT | \
-> +                                       SC16IS7XX_LSR_FE_BIT | \
-> +                                       SC16IS7XX_LSR_BI_BIT)
+sed --version
+sed (GNU sed) 4.9
+Packaged by Debian
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.ht=
+ml>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
 
-It's better to start from the next line
+Written by Jay Fenlason, Tom Lord, Ken Pizzini,
+Paolo Bonzini, Jim Meyering, and Assaf Gordon.
 
-#define SC16IS7XX_LSR_BRK_ERROR_MASK     \
-        (SC16IS7XX_LSR_OE_BIT | ...
+This sed program was built with SELinux support.
+SELinux is disabled on this system.
 
+GNU sed home page: <https://www.gnu.org/software/sed/>.
+General help using GNU software: <https://www.gnu.org/gethelp/>.
+E-mail bug reports to: <bug-sed@gnu.org>.
 
---=20
-With Best Regards,
-Andy Shevchenko
+sed version (Homebrew):
+sed --version
+sed (GNU sed) 4.9
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.ht=
+ml>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Jay Fenlason, Tom Lord, Ken Pizzini,
+Paolo Bonzini, Jim Meyering, and Assaf Gordon.
+
+This sed program was built without SELinux support.
+
+GNU sed home page: <https://www.gnu.org/software/sed/>.
+General help using GNU software: <https://www.gnu.org/gethelp/>.
+E-mail bug reports to: <bug-sed@gnu.org>.
+
+>
+> >
+> > Add a separate expression to support for armv.* as per error reported b=
+y
+> > Nicolas Schier [1].
+> >
+> > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+> >
+> > Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
+> > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> > ---
+> >  scripts/subarch.include | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/scripts/subarch.include b/scripts/subarch.include
+> > index 4bd327d0ae42..5d84ad8c0dee 100644
+> > --- a/scripts/subarch.include
+> > +++ b/scripts/subarch.include
+> > @@ -6,7 +6,8 @@
+> >
+> >  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
+> >                                   -e s/sun4u/sparc64/ \
+> > -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
+> > +                                 -e s/armv.*/arm/ \
+> > +                                 -e s/arm\(?:\(?!64\).*\)/arm/ -e s/sa=
+110/arm/ \
+>
+>
+> s/arm\(?:\(?!64\).*\)/arm/
+>
+> In sed, this expression does not seem to match anything.
+
+You are correct. I've removed the expression and saw no difference.
+See below with my test case:
+>
+> (or please give me some matching examples if I miss something)
+
+cat Makefile
+MACHINE ?=3D "aarch64"
+SUBARCH0 :=3D $(shell echo $(MACHINE) | sed \
+                                  -e s/arm.*/arm/ \
+                                  -e s/aarch64.*/arm64/)
+
+SUBARCH1 :=3D $(shell echo $(MACHINE) | sed \
+                                  -e s/armv.*/arm/ \
+                                  -e s/aarch64.*/arm64/)
+
+SUBARCH2 :=3D $(shell echo $(MACHINE) | sed \
+                                  -e /^arm64$/!s/arm.*/arm/ \
+                                  -e s/aarch64.*/arm64/)
+
+test:
+        @echo "MACHINE=3D$(MACHINE)"
+        @echo "SUBARCH0=3D$(SUBARCH0)"
+        @echo "SUBARCH1=3D$(SUBARCH1)"
+        @echo "SUBARCH2=3D$(SUBARCH2)"
+        @echo "---"
+
+SUBARCH0 represents the current upstream expressions for arm/arm64.
+SUBARCH1 is my proposal in case we need to cover only armv* for 32-bit
+arm (I think that is incomplete?) and SUBARCH2 is Nicolas' proposal
+(which I can't make it work in the test Makefile).
+
+Running the above Makefile, I get:
+
+make test MACHINE=3Darmv4 && make test MACHINE=3Darm7 && make test
+MACHINE=3Darmhf && make test MACHINE=3Daarch64 && make test MACHINE=3Darm64
+MACHINE=3Darmv4
+SUBARCH0=3Darm
+SUBARCH1=3Darm
+SUBARCH2=3Darmv4
+---
+MACHINE=3Darm7
+SUBARCH0=3Darm
+SUBARCH1=3Darm7
+SUBARCH2=3Darm7
+---
+MACHINE=3Darmhf
+SUBARCH0=3Darm
+SUBARCH1=3Darmhf
+SUBARCH2=3Darmhf
+---
+MACHINE=3Daarch64
+SUBARCH0=3Darm64
+SUBARCH1=3Darm64
+SUBARCH2=3Darm64
+---
+MACHINE=3Darm64
+SUBARCH0=3Darm
+SUBARCH1=3Darm64
+SUBARCH2=3Darm64
+---
+>
+>
+>
+>
+>
+> Nocolas already provided correct code:
+>
+> > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+
+I think it is even more simple if we just make this change:
+
+-                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
++                                 -e s/armv.*/arm/ \
+
+Does armv.* cover all arm32 machines? I see armhf, arm7, arm8 and
+armv*, is it correct?
+
+And thanks for checking!
+
+>
+>
+>
+>
+>
+>
+> >                                   -e s/s390x/s390/ \
+> >                                   -e s/ppc.*/powerpc/ -e s/mips.*/mips/=
+ \
+> >                                   -e s/sh[234].*/sh/ -e s/aarch64.*/arm=
+64/ \
+> >
+> > --
+> > Git-146)
+> >
+> >
+>
+>
+> --
+> Best Regards
+>
+>
+> Masahiro Yamada
