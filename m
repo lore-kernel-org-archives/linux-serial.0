@@ -1,135 +1,338 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7EB22BAE5;
-	Sat, 24 Aug 2024 16:44:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3770AD2F
+	for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 19:35:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724517874; cv=none; b=WSAhbJtGOKYhqrwecD+DrmLNG9oN+Hu33UYWJDJ1qKq42KMz8srlN4ZTOHayHNyrnvpVyGhIvYE2ePYQAbwv0v/KXdxkDEThMu1CF5HX0hOzEMe644/XcFWTO8n7eRWW8XUyw6UzWvG9uOQjyrQnNeszyXOnrGpymlFgrncronI=
+	t=1724528129; cv=none; b=RrM0M3Ls63G03SsX7/DkKMOGMCaQx/CJ82F28hw54zO41VkZdfB3dhXMrEuujtT3dVM3/30cx2O5WHo3uua1bULsR1M7VBqCGUDcn2iCFgB/6IvWoWnC1MQpfl8+KgMOwf7jxtbHCiDtfL5R7YFNiCJAy10awEqpMdeUG7aAN1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724517874; c=relaxed/simple;
-	bh=/9gX2XCk9FTMVcv7iiH7Odb5+BLxHlWeobR8KB9NnJk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FTeB2Yk+g787Js6qsy4TTMFMHvZpija5gO3fjOThHMGrsOtVTQ0rGydt8cj1xVyxo0O8KnQXBcbr5iRwguSpeidcujne4OnmO062gS0riqCbmJnYnpUqIUB+QGibFINMjYbF+aE3PYe+gi/7EbjZFG9/zYubHXmYZp0RSFxmlTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B6YJn7IN; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724528129; c=relaxed/simple;
+	bh=bytNnuowzmtyhvFR4SOrAtgSwC0Npg1muBqZ82NtqaQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eToI8HkAejTCmEk44fqEJKMhgPrn//os8ZwghnfWIBrsIoM8SLfQYqGzRnaaMQAk7Be4tvBCyGCauLe2PCDmKqgcw2xKusziMAgWybsyyIxm4yocLsyH+YhPZqvL9SjJC8l0gB1r5T/C9uC6I81rVs3r3m2aKHRhIVR+T0MBbiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com; spf=pass smtp.mailfrom=kruces.com; dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b=0dtm/Kvf; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kruces.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B6YJn7IN"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-202146e93f6so30626765ad.3;
-        Sat, 24 Aug 2024 09:44:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b="0dtm/Kvf"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-53345dcd377so3960568e87.2
+        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 12:35:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724517872; x=1725122672; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rMJqxsXbKdshmWc6Vt4OVDWOFw/ne4JO6chf1aTJxRg=;
-        b=B6YJn7IN4UviFCnyISi5iPjuoFMKZ+XnRFFMeH/D/Lf3eNkM3tU7T3d2G5K0UeIzcf
-         CXf/2Dqdo2c9CHqImVcuasFdu0j6t4porda5YZEFn/zDZfmuvWaCKYu8SJzlUAmRnxpQ
-         Bp3anFm1ACysSXyy+SbJgqQFwteX/O47NUhol7cEHvH3K+6MgEIMV7D5Nj62jjr1BgBh
-         YcZ0lHWqIo6SWQyGy4uXUD4xFQyTwxp+HAukC1LFWSSth8hAry2eO9Tkj7Mj6UIqzURs
-         zZ13KXoUTuZzjvseifOZZKdGjV1y30BIWiKcJ0wQHE+qBgDTwtEMFEGjMPF2rH1nO7HT
-         4Afg==
+        d=kruces-com.20230601.gappssmtp.com; s=20230601; t=1724528125; x=1725132925; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rqUQEx0JW9sRldU4OvC73NB0gIVSnxsis8NsIR8izBY=;
+        b=0dtm/KvfHtwatHw3jl6TB605gCEkbHbsYzf/jvwq+JSzQGaU7RPPQZE52HNRgfDhZe
+         G4yMCeOLznZj/SGesCWeryjjD1rR2509TRguT3/kBfu9XP+aZzELBQC4DoI/jBnMMwZH
+         9zcUK+J0gFLGCjkHYgj4RCubZzK+PcCOY78XQUz2ofv3LWSadb1VxrYYtuX7szUgfrwM
+         wYtJphnH2mgXWjKFpJ95vAGnMbsmjoSBF1gG1n1aqwkTmnClymw2DeeimFHI76Xbr6ba
+         T2XW1ntpk8s3rVBbyN5GwgXTQPt3txvo/UVScV8jHoKp+ys1UVKObU4mYBjWW2YV9vWm
+         KmXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724517872; x=1725122672;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1724528125; x=1725132925;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rMJqxsXbKdshmWc6Vt4OVDWOFw/ne4JO6chf1aTJxRg=;
-        b=G74BI+VIE+wIeEAE07hb3GRa+mRg6oMRSHcPZ1k8yFVt+KQK4R9lIkDva6Cx/cyxX0
-         v3FwtwE1zzEAm44vsYIhnCOrj0JzCMPajG9Ae2FvXgZykfceGcq6MZ09KnZUCjIgiYgF
-         1z60Hg0toYoipxHU/tRPQK2HGm5aw6eMxdM4osJM0O0Hdx1lX473PSmrGMuKi0x9VEIw
-         WbqDxQifFtGL8XRrgTb1zkfikbpjP/TxExig/bsZBysBU2AwsE6c53Ozb10Rjmh+4Llr
-         foOG0EXefG7HjK+8iWscXWg77KlE1yx5vaio9PNPFt9oqq2QetV8ETFUbsM/MPIGFJ12
-         jZUw==
-X-Forwarded-Encrypted: i=1; AJvYcCUiraKJSLhtWa0HT9HbY59HIhdEN4ZOtltkM9PQT6lm9Yt0rqa5FjxespA7nLxHlriAOvhbATlL3T/u@vger.kernel.org, AJvYcCUmhP1RsolNeiSLQzvHnKJrSolKX70nIPTB2I9RuzUbPlXYLHJ6P+5xvskpTYU0aRWl0ji59zIY5kSM@vger.kernel.org, AJvYcCVJQBnivTBV3ZD9grOo24bSxF+N9PAwpM76y4addetLp0cXs4Vm1zdZBFAzf/KCwInpT/ZT2T5ewwVLVfub@vger.kernel.org, AJvYcCViu72jdGZPuojBX6rFQqwBSV2FWHHosTQUeseFNpOleaSHQAj/w2tOoe80cmxgp409FYhKJ5Ej0Nc8@vger.kernel.org, AJvYcCWGcP9jJRfxydDzh8Aj8/zI78eil+sOAyKazNfpe4BT/sLjoBrb7WAIOiga5Eb2zyIBg1tZjq/6x8k9@vger.kernel.org, AJvYcCXBcbgME9M+HE2wup/xF7HVG53cOqE2bhw+XWKzLfP29mqJ5Eje27Arl+N45QLQO7fAxbccKKRQpK99@vger.kernel.org, AJvYcCXzwTjFb5sszF0td5EDIHKKM2l9LO+Me/HVEqMiRk/gV1v/cfoGZIjUBbUuAFK1ycvoRS4Txm7WXH4I9wy9dyc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsJHuFCHP1TRRoPdBgMMmwDhM5ov95yYuD85eM+6meae8Dhjqq
-	Q+79wKL8nuCgi67dJeROvYRQ7EzFiFU2tcdd35K3UqtAu8w2cRxE
-X-Google-Smtp-Source: AGHT+IHcYVQoDXdmHH2kSyn3hjnKQGyb2SXXwv2a+G7g13SX+ywaROxz6n48bYMEHtMXrfqxmEat4A==
-X-Received: by 2002:a17:902:e750:b0:202:401f:ec6c with SMTP id d9443c01a7336-2039e4f1d23mr66486985ad.48.1724517872012;
-        Sat, 24 Aug 2024 09:44:32 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20385bdc5e0sm44114565ad.271.2024.08.24.09.44.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Aug 2024 09:44:31 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Sat, 24 Aug 2024 09:44:29 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Detlev Casanova <detlev.casanova@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Lee Jones <lee@kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
-	Chukun Pan <amadeus@jmu.edu.cn>, Andy Yan <andyshrk@163.com>,
-	Muhammed Efe Cetin <efectn@protonmail.com>,
-	Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
-	Ondrej Jirman <megi@xff.cz>,
-	Michael Riesch <michael.riesch@wolfvision.net>,
-	Jimmy Hon <honyuenkwun@gmail.com>,
-	Alexey Charkov <alchark@gmail.com>,
-	Elon Zhang <zhangzj@rock-chips.com>,
-	Elaine Zhang <zhangqing@rock-chips.com>,
-	Yifeng Zhao <yifeng.zhao@rock-chips.com>,
-	Finley Xiao <finley.xiao@rock-chips.com>,
-	Liang Chen <cl@rock-chips.com>, Jisheng Zhang <jszhang@kernel.org>,
-	Jamie Iles <jamie@jamieiles.com>, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, dri-devel@lists.freedesktop.org,
-	linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
-	kernel@collabora.com
-Subject: Re: [PATCH v2 09/12] dt-bindings: watchdog: Add rockchip,rk3576-wdt
- compatible
-Message-ID: <612a447c-8a74-48c1-8470-280dddca8d19@roeck-us.net>
-References: <20240823150057.56141-1-detlev.casanova@collabora.com>
- <20240823150057.56141-10-detlev.casanova@collabora.com>
+        bh=rqUQEx0JW9sRldU4OvC73NB0gIVSnxsis8NsIR8izBY=;
+        b=qCUaglK2W7dkVMyPTFFk9MLvp4zWtIodNDYFpL8mWEETZfMDb31h5tiHrOmbAm8240
+         9DzBSGc2/bBsLoXMkEchw1AhYrwaKnnXWnFAmh8+4SjswO0PXA36T57/mAXr9FoLvzlj
+         DlKqRBGBcKNSXLnsNkTUys5sljUyrNnWjF168OA7veU7N2Z/FkcIYUcmEJZT/VMobVHs
+         l1xV5nygC9oQ5pg7vmkBLfALHYMlPCSqcvczg5cELAZvAdx8PSk8ZIcT+y18+GiM/Mri
+         qYSJds1Yd+ljPzWLLWGFGYMWPyEU3Z5yHbqX/J6SdFXUvrFjItqsGfOvlapPFrB708DJ
+         rBBg==
+X-Forwarded-Encrypted: i=1; AJvYcCVAxitkvpfzJvwE1MARvTrjBEiAO83Z2DGXkP1Ifx5PEPIm0+4ALzxytMFf/b/Vby8wAJNhIO2t8cw9LIY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwbOrm+QNI2Qh1LZEQNJ0ad8ERmNwRRy85z4xXYFoxgeOsSGoXz
+	67XOHbWg/XHQ6KK1/9UMVEhsXhggwoNC2IDEMtsM7mGt+w74HlXRdRkFOz4maK0nd9bm5c+NqMS
+	WDgfQsdCIks16oYbR8tO9KWIezGsJJjTnFyNMXQ==
+X-Google-Smtp-Source: AGHT+IGPd8NNVY8iNQlItVputHqv0A9NBxIa2qpJxJ9QIyvsMaWXLridmTyEMYCVXko8QGT/5mpgBtUGbv8rSnzMtM4=
+X-Received: by 2002:a05:6512:3195:b0:52e:9f17:841a with SMTP id
+ 2adb3069b0e04-534387558bdmr3980885e87.6.1724528124835; Sat, 24 Aug 2024
+ 12:35:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240823150057.56141-10-detlev.casanova@collabora.com>
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
+ <20240807-macos-build-support-v1-1-4cd1ded85694@samsung.com>
+ <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com> <CABj0suC1atc=iPX4uOL5FYkzYBRtZC1J3Lhruo7hejd-fe9Yuw@mail.gmail.com>
+In-Reply-To: <CABj0suC1atc=iPX4uOL5FYkzYBRtZC1J3Lhruo7hejd-fe9Yuw@mail.gmail.com>
+From: "Daniel Gomez (Samsung)" <d+samsung@kruces.com>
+Date: Sat, 24 Aug 2024 21:34:58 +0200
+Message-ID: <CABj0suDu1XPi7mPdqQWm2J3=XbTMHKGbz85ixM=gMr5VRkU78g@mail.gmail.com>
+Subject: Re: [PATCH 01/12] scripts: subarch.include: fix SUBARCH on MacOS hosts
+To: Masahiro Yamada <masahiroy@kernel.org>
+Cc: da.gomez@samsung.com, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, gost.dev@samsung.com, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 23, 2024 at 10:52:36AM -0400, Detlev Casanova wrote:
-> It is compatible with the other rockchip SoCs.
-> 
-> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+On Sat, Aug 24, 2024 at 12:14=E2=80=AFAM Daniel Gomez (Samsung)
+<d+samsung@kruces.com> wrote:
+>
+> On Fri, Aug 23, 2024 at 6:13=E2=80=AFPM Masahiro Yamada <masahiroy@kernel=
+.org> wrote:
+> >
+> > On Wed, Aug 7, 2024 at 8:10=E2=80=AFAM Daniel Gomez via B4 Relay
+> > <devnull+da.gomez.samsung.com@kernel.org> wrote:
+> > >
+> > > From: Nick Desaulniers <nick.desaulniers@gmail.com>
+> > >
+> > > When building the Linux kernel on an aarch64 MacOS based host, if we =
+don't
+> > > specify a value for ARCH when invoking make, we default to arm and th=
+us
+> > > multi_v7_defconfig rather than the expected arm64 and arm64's defconf=
+ig.
+> > >
+> > > This is because subarch.include invokes `uname -m` which on MacOS hos=
+ts
+> > > evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
+> > >
+> > > This allows us to build ARCH=3Darm64 natively on MacOS (as in ARCH ne=
+ed
+> > > not be specified on an aarch64-based system).
+> > >
+> > > Utilize a negative lookahead regular expression to avoid matching arm=
+64.
+> >
+> >
+> > Does sed support "negative lookahead regular expression"?
+>
+> I think they removed support for PCRE. I've found this:
+>
+> commit 261c7f145d015d9acb79dc650d27e4a23b839c23
+> Author: Assaf Gordon <assafgordon@gmail.com>
+> Date:   Tue Aug 21 14:25:57 2018 -0600
+>
+>     maint: remove REG_PERL code
+>
+>     Perl-regexp syntax (PCRE) in GNU Sed is shelved indefinitely.
+>     See https://bugs.gnu.org/22801 , https://bugs.gnu.org/22647 .
+>     Remove all (unused) REG_PERL related code.
+>
+>     * sed/sed.c, sed/sed.h, sed/regexp.c, sed/compile.c: Remove REG_PERL =
+code.
+>
+> git tag --contains 261c7f145d015d9acb79dc650d27e4a23b839c23
+> v4.6
+> v4.7
+> v4.8
+> v4.9
+>
+> And my sed version is (Debian):
+>
+> sed --version
+> sed (GNU sed) 4.9
+> Packaged by Debian
+> Copyright (C) 2022 Free Software Foundation, Inc.
+> License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.=
+html>.
+> This is free software: you are free to change and redistribute it.
+> There is NO WARRANTY, to the extent permitted by law.
+>
+> Written by Jay Fenlason, Tom Lord, Ken Pizzini,
+> Paolo Bonzini, Jim Meyering, and Assaf Gordon.
+>
+> This sed program was built with SELinux support.
+> SELinux is disabled on this system.
+>
+> GNU sed home page: <https://www.gnu.org/software/sed/>.
+> General help using GNU software: <https://www.gnu.org/gethelp/>.
+> E-mail bug reports to: <bug-sed@gnu.org>.
+>
+> sed version (Homebrew):
+> sed --version
+> sed (GNU sed) 4.9
+> Copyright (C) 2022 Free Software Foundation, Inc.
+> License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.=
+html>.
+> This is free software: you are free to change and redistribute it.
+> There is NO WARRANTY, to the extent permitted by law.
+>
+> Written by Jay Fenlason, Tom Lord, Ken Pizzini,
+> Paolo Bonzini, Jim Meyering, and Assaf Gordon.
+>
+> This sed program was built without SELinux support.
+>
+> GNU sed home page: <https://www.gnu.org/software/sed/>.
+> General help using GNU software: <https://www.gnu.org/gethelp/>.
+> E-mail bug reports to: <bug-sed@gnu.org>.
+>
+> >
+> > >
+> > > Add a separate expression to support for armv.* as per error reported=
+ by
+> > > Nicolas Schier [1].
+> > >
+> > > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+> > >
+> > > Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
+> > > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> > > ---
+> > >  scripts/subarch.include | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/scripts/subarch.include b/scripts/subarch.include
+> > > index 4bd327d0ae42..5d84ad8c0dee 100644
+> > > --- a/scripts/subarch.include
+> > > +++ b/scripts/subarch.include
+> > > @@ -6,7 +6,8 @@
+> > >
+> > >  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ =
+\
+> > >                                   -e s/sun4u/sparc64/ \
+> > > -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
+> > > +                                 -e s/armv.*/arm/ \
+> > > +                                 -e s/arm\(?:\(?!64\).*\)/arm/ -e s/=
+sa110/arm/ \
+> >
+> >
+> > s/arm\(?:\(?!64\).*\)/arm/
+> >
+> > In sed, this expression does not seem to match anything.
+>
+> You are correct. I've removed the expression and saw no difference.
+> See below with my test case:
+> >
+> > (or please give me some matching examples if I miss something)
+>
+> cat Makefile
+> MACHINE ?=3D "aarch64"
+> SUBARCH0 :=3D $(shell echo $(MACHINE) | sed \
+>                                   -e s/arm.*/arm/ \
+>                                   -e s/aarch64.*/arm64/)
+>
+> SUBARCH1 :=3D $(shell echo $(MACHINE) | sed \
+>                                   -e s/armv.*/arm/ \
+>                                   -e s/aarch64.*/arm64/)
+>
+> SUBARCH2 :=3D $(shell echo $(MACHINE) | sed \
+>                                   -e /^arm64$/!s/arm.*/arm/ \
+>                                   -e s/aarch64.*/arm64/)
+>
+> test:
+>         @echo "MACHINE=3D$(MACHINE)"
+>         @echo "SUBARCH0=3D$(SUBARCH0)"
+>         @echo "SUBARCH1=3D$(SUBARCH1)"
+>         @echo "SUBARCH2=3D$(SUBARCH2)"
+>         @echo "---"
+>
+> SUBARCH0 represents the current upstream expressions for arm/arm64.
+> SUBARCH1 is my proposal in case we need to cover only armv* for 32-bit
+> arm (I think that is incomplete?) and SUBARCH2 is Nicolas' proposal
+> (which I can't make it work in the test Makefile).
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+To make Nicolas's expression work in Makefile I just need to pass 2 $ like =
+this:
 
+diff -u Makefile.old Makefile
+--- Makefile.old  2024-08-24 21:25:28.525267566 +0200
++++ Makefile    2024-08-24 21:28:32.640477991 +0200
+@@ -8,7 +8,7 @@
+                                  -e s/aarch64.*/arm64/)
+
+ SUBARCH2 :=3D $(shell echo $(MACHINE) | sed \
+-                                 -e /^arm64$/!s/arm.*/arm/ \
++                                 -e /^arm64$$/!s/arm.*/arm/ \
+                                  -e s/aarch64.*/arm64/)
+
+ test:
+
+And all test cases passed. So, I will include this change for v2.
+
+>
+> Running the above Makefile, I get:
+>
+> make test MACHINE=3Darmv4 && make test MACHINE=3Darm7 && make test
+> MACHINE=3Darmhf && make test MACHINE=3Daarch64 && make test MACHINE=3Darm=
+64
+> MACHINE=3Darmv4
+> SUBARCH0=3Darm
+> SUBARCH1=3Darm
+> SUBARCH2=3Darmv4
 > ---
->  Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml b/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
-> index c7aab0418a320..b5a3dc3770706 100644
-> --- a/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/snps,dw-wdt.yaml
-> @@ -29,6 +29,7 @@ properties:
->                - rockchip,rk3368-wdt
->                - rockchip,rk3399-wdt
->                - rockchip,rk3568-wdt
-> +              - rockchip,rk3576-wdt
->                - rockchip,rk3588-wdt
->                - rockchip,rv1108-wdt
->            - const: snps,dw-wdt
-> -- 
-> 2.46.0
-> 
+> MACHINE=3Darm7
+> SUBARCH0=3Darm
+> SUBARCH1=3Darm7
+> SUBARCH2=3Darm7
+> ---
+> MACHINE=3Darmhf
+> SUBARCH0=3Darm
+> SUBARCH1=3Darmhf
+> SUBARCH2=3Darmhf
+> ---
+> MACHINE=3Daarch64
+> SUBARCH0=3Darm64
+> SUBARCH1=3Darm64
+> SUBARCH2=3Darm64
+> ---
+> MACHINE=3Darm64
+> SUBARCH0=3Darm
+> SUBARCH1=3Darm64
+> SUBARCH2=3Darm64
+> ---
+> >
+> >
+> >
+> >
+> >
+> > Nocolas already provided correct code:
+> >
+> > > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
+>
+> I think it is even more simple if we just make this change:
+>
+> -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
+> +                                 -e s/armv.*/arm/ \
+>
+> Does armv.* cover all arm32 machines? I see armhf, arm7, arm8 and
+> armv*, is it correct?
+>
+> And thanks for checking!
+>
+> >
+> >
+> >
+> >
+> >
+> >
+> > >                                   -e s/s390x/s390/ \
+> > >                                   -e s/ppc.*/powerpc/ -e s/mips.*/mip=
+s/ \
+> > >                                   -e s/sh[234].*/sh/ -e s/aarch64.*/a=
+rm64/ \
+> > >
+> > > --
+> > > Git-146)
+> > >
+> > >
+> >
+> >
+> > --
+> > Best Regards
+> >
+> >
+> > Masahiro Yamada
