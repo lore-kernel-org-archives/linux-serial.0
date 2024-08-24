@@ -1,338 +1,163 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx5.ucr.edu (mx.ucr.edu [138.23.62.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3770AD2F
-	for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 19:35:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75F8F43AB4
+	for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 21:06:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=138.23.62.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724528129; cv=none; b=RrM0M3Ls63G03SsX7/DkKMOGMCaQx/CJ82F28hw54zO41VkZdfB3dhXMrEuujtT3dVM3/30cx2O5WHo3uua1bULsR1M7VBqCGUDcn2iCFgB/6IvWoWnC1MQpfl8+KgMOwf7jxtbHCiDtfL5R7YFNiCJAy10awEqpMdeUG7aAN1Q=
+	t=1724533578; cv=none; b=IEwnC3xiUaOLwX4WsURXqnAjxr21v5ySnuEmSzDACsz4fNIm4WCPlq5p72/5Kk1nJcqc7v8WFjJyZNIQm0NEH95944Mqq1eiTkcihKseE8Hm6S2SY0qODTRtNKS+5Wq4DNsnbEQZgyOQYQfawRvtmXmhUocUwG37Crjx+4lCFAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724528129; c=relaxed/simple;
-	bh=bytNnuowzmtyhvFR4SOrAtgSwC0Npg1muBqZ82NtqaQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=eToI8HkAejTCmEk44fqEJKMhgPrn//os8ZwghnfWIBrsIoM8SLfQYqGzRnaaMQAk7Be4tvBCyGCauLe2PCDmKqgcw2xKusziMAgWybsyyIxm4yocLsyH+YhPZqvL9SjJC8l0gB1r5T/C9uC6I81rVs3r3m2aKHRhIVR+T0MBbiQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com; spf=pass smtp.mailfrom=kruces.com; dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b=0dtm/Kvf; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kruces.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kruces.com
+	s=arc-20240116; t=1724533578; c=relaxed/simple;
+	bh=TA/Cz65zRxAjAfq7MjkUo5qbaN77MjBbibjMgDttlrE=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=oB24/pBYzOIQ36ChWOr3FIoahb9wt1AhB2q/01wbAZABBpogfWTlNZHRabEixG+ekMPcA4WA711tbYBQdIe9s9pgOAV6HscEgvIRu8+GiItvcXoXOx/MNKX1984lgav9BQ8TsKVNvmQ3mFdEQCIVHjtfaf55P3pXgNXDpcmkVyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=PCVZdoF1; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=VvfsJHZH; arc=none smtp.client-ip=138.23.62.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucr.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kruces-com.20230601.gappssmtp.com header.i=@kruces-com.20230601.gappssmtp.com header.b="0dtm/Kvf"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-53345dcd377so3960568e87.2
-        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 12:35:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="PCVZdoF1";
+	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="VvfsJHZH"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1724533576; x=1756069576;
+  h=dkim-signature:x-google-dkim-signature:
+   x-forwarded-encrypted:x-gm-message-state:
+   x-google-smtp-source:mime-version:from:date:message-id:
+   subject:to:content-type:x-cse-connectionguid:
+   x-cse-msgguid;
+  bh=TA/Cz65zRxAjAfq7MjkUo5qbaN77MjBbibjMgDttlrE=;
+  b=PCVZdoF1sBAIyajz1JSaq+SkT6/fAq3qNYAoyw7Cwb21Z3t+REDGmyc4
+   HcK5Cjx9c/biMJeQab7owI8jWxlzc7WaR9WXhSAWyWOHPDUGjr9gwmncB
+   Brx80hVbZh6EblJAvvuD69XT7KyC/VepIso2OiKREWGbNyjUdOC7TBrB6
+   d8hxUyhCT82Wf//dwxSiQZcQIzrr47PDtBAasrq1EioWLijm7NHS2RWx5
+   BOZI9ycrPfeu7j5iIt3AWQ+bydMyoPu6WUMBl9386IFoPuyfiGb0diXSf
+   B38BvlqJUC01nX8nNqwMBqrI/3COY2+ak7bZYRp7I9yNN5EDlcmGWH7OX
+   g==;
+X-CSE-ConnectionGUID: hFnISF3DTMyznx21jGps3g==
+X-CSE-MsgGUID: 3hXTCWCgQpagwVELtjhxEA==
+Received: from mail-io1-f70.google.com ([209.85.166.70])
+  by smtpmx5.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 24 Aug 2024 14:05:08 -0700
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-81faf98703eso342460739f.3
+        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 14:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kruces-com.20230601.gappssmtp.com; s=20230601; t=1724528125; x=1725132925; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rqUQEx0JW9sRldU4OvC73NB0gIVSnxsis8NsIR8izBY=;
-        b=0dtm/KvfHtwatHw3jl6TB605gCEkbHbsYzf/jvwq+JSzQGaU7RPPQZE52HNRgfDhZe
-         G4yMCeOLznZj/SGesCWeryjjD1rR2509TRguT3/kBfu9XP+aZzELBQC4DoI/jBnMMwZH
-         9zcUK+J0gFLGCjkHYgj4RCubZzK+PcCOY78XQUz2ofv3LWSadb1VxrYYtuX7szUgfrwM
-         wYtJphnH2mgXWjKFpJ95vAGnMbsmjoSBF1gG1n1aqwkTmnClymw2DeeimFHI76Xbr6ba
-         T2XW1ntpk8s3rVBbyN5GwgXTQPt3txvo/UVScV8jHoKp+ys1UVKObU4mYBjWW2YV9vWm
-         KmXg==
+        d=ucr.edu; s=rmail; t=1724533507; x=1725138307; darn=vger.kernel.org;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=It2SBHCkREFPrVbJXjBwm2w6igz9uIpTeTCDbfBbJro=;
+        b=VvfsJHZH+FxQyjMD7HX2xkE09ykn1w0rPoKdIUVavFSFW66xG4zUk6D+Hq4/wJ34X+
+         qOBPyGyLf/0oksFtTdmrdYZRPpiRahG9DSs0Q2xxNfLVdsO67AhzM9RyNFG2tJekdu0R
+         TKOKIg+7cOyMJWlbCu4gFHlV/IMmv2vZevyGw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724528125; x=1725132925;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rqUQEx0JW9sRldU4OvC73NB0gIVSnxsis8NsIR8izBY=;
-        b=qCUaglK2W7dkVMyPTFFk9MLvp4zWtIodNDYFpL8mWEETZfMDb31h5tiHrOmbAm8240
-         9DzBSGc2/bBsLoXMkEchw1AhYrwaKnnXWnFAmh8+4SjswO0PXA36T57/mAXr9FoLvzlj
-         DlKqRBGBcKNSXLnsNkTUys5sljUyrNnWjF168OA7veU7N2Z/FkcIYUcmEJZT/VMobVHs
-         l1xV5nygC9oQ5pg7vmkBLfALHYMlPCSqcvczg5cELAZvAdx8PSk8ZIcT+y18+GiM/Mri
-         qYSJds1Yd+ljPzWLLWGFGYMWPyEU3Z5yHbqX/J6SdFXUvrFjItqsGfOvlapPFrB708DJ
-         rBBg==
-X-Forwarded-Encrypted: i=1; AJvYcCVAxitkvpfzJvwE1MARvTrjBEiAO83Z2DGXkP1Ifx5PEPIm0+4ALzxytMFf/b/Vby8wAJNhIO2t8cw9LIY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwbOrm+QNI2Qh1LZEQNJ0ad8ERmNwRRy85z4xXYFoxgeOsSGoXz
-	67XOHbWg/XHQ6KK1/9UMVEhsXhggwoNC2IDEMtsM7mGt+w74HlXRdRkFOz4maK0nd9bm5c+NqMS
-	WDgfQsdCIks16oYbR8tO9KWIezGsJJjTnFyNMXQ==
-X-Google-Smtp-Source: AGHT+IGPd8NNVY8iNQlItVputHqv0A9NBxIa2qpJxJ9QIyvsMaWXLridmTyEMYCVXko8QGT/5mpgBtUGbv8rSnzMtM4=
-X-Received: by 2002:a05:6512:3195:b0:52e:9f17:841a with SMTP id
- 2adb3069b0e04-534387558bdmr3980885e87.6.1724528124835; Sat, 24 Aug 2024
- 12:35:24 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1724533507; x=1725138307;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=It2SBHCkREFPrVbJXjBwm2w6igz9uIpTeTCDbfBbJro=;
+        b=EAVbuizqexRTSZZ/c45JcPdYJWLIK3ApLGVqYOdZxtqXofioiTzn4Ik7jG5egavn2k
+         RJ5fcvd3rVreALwsr48xiyvpf0BHbMSNPduBHUgyWNkhw2rLn11Hg0DLHotbQv+ihw4d
+         d6WkVAGJ2Otxy5qnb28DjTArp3s1VFK5WqdmlppVXbGXjciNp3JoOAXdXs70CBFB29P9
+         xzbvm3w/1Hs2ayHWyn6JkJvWXDStcEYoCDaLTPzak4UngEJFZE5guztSTInCZcKqG0x6
+         m1sOKDeGSo697tkLDt0bFZAvQWxr/we8NvN6bqQj30rKfo0R20dSkqn9bOxB+mXVpwQN
+         MDgA==
+X-Forwarded-Encrypted: i=1; AJvYcCXQRxvTuYe/btYFuO9xG9AFaJpfW4xNPTS6kQwtpEpubzFRXVXuRLFC/xIb9Ztln0xkcoZ81QcrvVhFvaU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw7kTDR8tVTrVxdqPcdiW+iyqn8GEUfKQsO+7U4K1Pw0tq7iEAK
+	A6SzNsRF4VOFT3YTs92lsw68wM4Xogqx3tUnp6Um0AuRstCWijNLZwPbu12KVF1J153zNq/mL/M
+	+AHYagZV74TNpFm7d/PBi5X80mNDTvxVjjM6Nn7BmYezGcYYERRYULD/RkOpznk8qYe0DQjrxyR
+	/rfRmIv19QOZTfKghridWcwYVW112QYVLLGjViOw==
+X-Received: by 2002:a05:6602:3429:b0:805:3d47:19d6 with SMTP id ca18e2360f4ac-8278731d742mr749430239f.6.1724533507534;
+        Sat, 24 Aug 2024 14:05:07 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGh1WytsX9vb6S0Fq6cbm62QwZOTitShDAke3V40ewupwNIw/kzd6cj6GxoWxvouZTrOyU8jo4Rvx1bJ/EnDTQ=
+X-Received: by 2002:a05:6602:3429:b0:805:3d47:19d6 with SMTP id
+ ca18e2360f4ac-8278731d742mr749428939f.6.1724533507230; Sat, 24 Aug 2024
+ 14:05:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
- <20240807-macos-build-support-v1-1-4cd1ded85694@samsung.com>
- <CAK7LNARmy=N+6O87BJGZbodssDw21sHgMf36TXdcxD4=5A_OBA@mail.gmail.com> <CABj0suC1atc=iPX4uOL5FYkzYBRtZC1J3Lhruo7hejd-fe9Yuw@mail.gmail.com>
-In-Reply-To: <CABj0suC1atc=iPX4uOL5FYkzYBRtZC1J3Lhruo7hejd-fe9Yuw@mail.gmail.com>
-From: "Daniel Gomez (Samsung)" <d+samsung@kruces.com>
-Date: Sat, 24 Aug 2024 21:34:58 +0200
-Message-ID: <CABj0suDu1XPi7mPdqQWm2J3=XbTMHKGbz85ixM=gMr5VRkU78g@mail.gmail.com>
-Subject: Re: [PATCH 01/12] scripts: subarch.include: fix SUBARCH on MacOS hosts
-To: Masahiro Yamada <masahiroy@kernel.org>
-Cc: da.gomez@samsung.com, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
-	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, gost.dev@samsung.com, 
-	Nick Desaulniers <nick.desaulniers@gmail.com>
+From: Juefei Pu <juefei.pu@email.ucr.edu>
+Date: Sat, 24 Aug 2024 14:04:55 -0700
+Message-ID: <CANikGpcUOLC06-Mfq296LeXxudpO6732vWM58-Zfv14GqoJE7w@mail.gmail.com>
+Subject: BUG: INFO: task hung in gsm_cleanup_mux
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 24, 2024 at 12:14=E2=80=AFAM Daniel Gomez (Samsung)
-<d+samsung@kruces.com> wrote:
->
-> On Fri, Aug 23, 2024 at 6:13=E2=80=AFPM Masahiro Yamada <masahiroy@kernel=
-.org> wrote:
-> >
-> > On Wed, Aug 7, 2024 at 8:10=E2=80=AFAM Daniel Gomez via B4 Relay
-> > <devnull+da.gomez.samsung.com@kernel.org> wrote:
-> > >
-> > > From: Nick Desaulniers <nick.desaulniers@gmail.com>
-> > >
-> > > When building the Linux kernel on an aarch64 MacOS based host, if we =
-don't
-> > > specify a value for ARCH when invoking make, we default to arm and th=
-us
-> > > multi_v7_defconfig rather than the expected arm64 and arm64's defconf=
-ig.
-> > >
-> > > This is because subarch.include invokes `uname -m` which on MacOS hos=
-ts
-> > > evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
-> > >
-> > > This allows us to build ARCH=3Darm64 natively on MacOS (as in ARCH ne=
-ed
-> > > not be specified on an aarch64-based system).
-> > >
-> > > Utilize a negative lookahead regular expression to avoid matching arm=
-64.
-> >
-> >
-> > Does sed support "negative lookahead regular expression"?
->
-> I think they removed support for PCRE. I've found this:
->
-> commit 261c7f145d015d9acb79dc650d27e4a23b839c23
-> Author: Assaf Gordon <assafgordon@gmail.com>
-> Date:   Tue Aug 21 14:25:57 2018 -0600
->
->     maint: remove REG_PERL code
->
->     Perl-regexp syntax (PCRE) in GNU Sed is shelved indefinitely.
->     See https://bugs.gnu.org/22801 , https://bugs.gnu.org/22647 .
->     Remove all (unused) REG_PERL related code.
->
->     * sed/sed.c, sed/sed.h, sed/regexp.c, sed/compile.c: Remove REG_PERL =
-code.
->
-> git tag --contains 261c7f145d015d9acb79dc650d27e4a23b839c23
-> v4.6
-> v4.7
-> v4.8
-> v4.9
->
-> And my sed version is (Debian):
->
-> sed --version
-> sed (GNU sed) 4.9
-> Packaged by Debian
-> Copyright (C) 2022 Free Software Foundation, Inc.
-> License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.=
-html>.
-> This is free software: you are free to change and redistribute it.
-> There is NO WARRANTY, to the extent permitted by law.
->
-> Written by Jay Fenlason, Tom Lord, Ken Pizzini,
-> Paolo Bonzini, Jim Meyering, and Assaf Gordon.
->
-> This sed program was built with SELinux support.
-> SELinux is disabled on this system.
->
-> GNU sed home page: <https://www.gnu.org/software/sed/>.
-> General help using GNU software: <https://www.gnu.org/gethelp/>.
-> E-mail bug reports to: <bug-sed@gnu.org>.
->
-> sed version (Homebrew):
-> sed --version
-> sed (GNU sed) 4.9
-> Copyright (C) 2022 Free Software Foundation, Inc.
-> License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.=
-html>.
-> This is free software: you are free to change and redistribute it.
-> There is NO WARRANTY, to the extent permitted by law.
->
-> Written by Jay Fenlason, Tom Lord, Ken Pizzini,
-> Paolo Bonzini, Jim Meyering, and Assaf Gordon.
->
-> This sed program was built without SELinux support.
->
-> GNU sed home page: <https://www.gnu.org/software/sed/>.
-> General help using GNU software: <https://www.gnu.org/gethelp/>.
-> E-mail bug reports to: <bug-sed@gnu.org>.
->
-> >
-> > >
-> > > Add a separate expression to support for armv.* as per error reported=
- by
-> > > Nicolas Schier [1].
-> > >
-> > > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
-> > >
-> > > Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
-> > > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-> > > ---
-> > >  scripts/subarch.include | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/scripts/subarch.include b/scripts/subarch.include
-> > > index 4bd327d0ae42..5d84ad8c0dee 100644
-> > > --- a/scripts/subarch.include
-> > > +++ b/scripts/subarch.include
-> > > @@ -6,7 +6,8 @@
-> > >
-> > >  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ =
-\
-> > >                                   -e s/sun4u/sparc64/ \
-> > > -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
-> > > +                                 -e s/armv.*/arm/ \
-> > > +                                 -e s/arm\(?:\(?!64\).*\)/arm/ -e s/=
-sa110/arm/ \
-> >
-> >
-> > s/arm\(?:\(?!64\).*\)/arm/
-> >
-> > In sed, this expression does not seem to match anything.
->
-> You are correct. I've removed the expression and saw no difference.
-> See below with my test case:
-> >
-> > (or please give me some matching examples if I miss something)
->
-> cat Makefile
-> MACHINE ?=3D "aarch64"
-> SUBARCH0 :=3D $(shell echo $(MACHINE) | sed \
->                                   -e s/arm.*/arm/ \
->                                   -e s/aarch64.*/arm64/)
->
-> SUBARCH1 :=3D $(shell echo $(MACHINE) | sed \
->                                   -e s/armv.*/arm/ \
->                                   -e s/aarch64.*/arm64/)
->
-> SUBARCH2 :=3D $(shell echo $(MACHINE) | sed \
->                                   -e /^arm64$/!s/arm.*/arm/ \
->                                   -e s/aarch64.*/arm64/)
->
-> test:
->         @echo "MACHINE=3D$(MACHINE)"
->         @echo "SUBARCH0=3D$(SUBARCH0)"
->         @echo "SUBARCH1=3D$(SUBARCH1)"
->         @echo "SUBARCH2=3D$(SUBARCH2)"
->         @echo "---"
->
-> SUBARCH0 represents the current upstream expressions for arm/arm64.
-> SUBARCH1 is my proposal in case we need to cover only armv* for 32-bit
-> arm (I think that is incomplete?) and SUBARCH2 is Nicolas' proposal
-> (which I can't make it work in the test Makefile).
+Hello,
+We found the following issue using syzkaller on Linux v6.10.
 
-To make Nicolas's expression work in Makefile I just need to pass 2 $ like =
-this:
+In function `gsm_cleanup_mux`,  the kernel hangs when waiting for
+`dlci->state` to become `DLCI_CLOSED`. It seems that
+`gsm_dlci_begin_close` failed to close the dlci.
 
-diff -u Makefile.old Makefile
---- Makefile.old  2024-08-24 21:25:28.525267566 +0200
-+++ Makefile    2024-08-24 21:28:32.640477991 +0200
-@@ -8,7 +8,7 @@
-                                  -e s/aarch64.*/arm64/)
+The full report including the Syzkaller reproducer:
+https://gist.github.com/TomAPU/38bb00292b33d52a6dd2d1b629247146
 
- SUBARCH2 :=3D $(shell echo $(MACHINE) | sed \
--                                 -e /^arm64$/!s/arm.*/arm/ \
-+                                 -e /^arm64$$/!s/arm.*/arm/ \
-                                  -e s/aarch64.*/arm64/)
+The brief report is below:
 
- test:
+INFO: task syz.1.466:13387 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.1.466       state:D stack:27400 pid:13387 tgid:13304
+ppid:8048   flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ gsm_cleanup_mux+0x344/0x930 drivers/tty/n_gsm.c:3136
+ gsm_config drivers/tty/n_gsm.c:3408 [inline]
+ gsmld_ioctl+0x13c4/0x2540 drivers/tty/n_gsm.c:3839
+ tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
+RIP: 0033:0x7fafaef809b9
+RSP: 002b:00007fafafe0a038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007fafaf146130 RCX: 00007fafaef809b9
+RDX: 0000000020000100 RSI: 00000000404c4701 RDI: 0000000000000004
+RBP: 00007fafaeff4f70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000001 R14: 00007fafaf146130 R15: 00007ffd1b6e06a8
+ </TASK>
 
-And all test cases passed. So, I will include this change for v2.
-
->
-> Running the above Makefile, I get:
->
-> make test MACHINE=3Darmv4 && make test MACHINE=3Darm7 && make test
-> MACHINE=3Darmhf && make test MACHINE=3Daarch64 && make test MACHINE=3Darm=
-64
-> MACHINE=3Darmv4
-> SUBARCH0=3Darm
-> SUBARCH1=3Darm
-> SUBARCH2=3Darmv4
-> ---
-> MACHINE=3Darm7
-> SUBARCH0=3Darm
-> SUBARCH1=3Darm7
-> SUBARCH2=3Darm7
-> ---
-> MACHINE=3Darmhf
-> SUBARCH0=3Darm
-> SUBARCH1=3Darmhf
-> SUBARCH2=3Darmhf
-> ---
-> MACHINE=3Daarch64
-> SUBARCH0=3Darm64
-> SUBARCH1=3Darm64
-> SUBARCH2=3Darm64
-> ---
-> MACHINE=3Darm64
-> SUBARCH0=3Darm
-> SUBARCH1=3Darm64
-> SUBARCH2=3Darm64
-> ---
-> >
-> >
-> >
-> >
-> >
-> > Nocolas already provided correct code:
-> >
-> > > [1] https://lore.kernel.org/all/Y3MRvtwdjIwMHvRo@bergen.fjasle.eu/#t
->
-> I think it is even more simple if we just make this change:
->
-> -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
-> +                                 -e s/armv.*/arm/ \
->
-> Does armv.* cover all arm32 machines? I see armhf, arm7, arm8 and
-> armv*, is it correct?
->
-> And thanks for checking!
->
-> >
-> >
-> >
-> >
-> >
-> >
-> > >                                   -e s/s390x/s390/ \
-> > >                                   -e s/ppc.*/powerpc/ -e s/mips.*/mip=
-s/ \
-> > >                                   -e s/sh[234].*/sh/ -e s/aarch64.*/a=
-rm64/ \
-> > >
-> > > --
-> > > Git-146)
-> > >
-> > >
-> >
-> >
-> > --
-> > Best Regards
-> >
-> >
-> > Masahiro Yamada
+Showing all locks held in the system:
+1 lock held by khungtaskd/25:
+ #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at:
+rcu_lock_acquire include/linux/rcupdate.h:329 [inline]
+ #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at: rcu_read_lock
+include/linux/rcupdate.h:781 [inline]
+ #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at:
+debug_show_all_locks+0x54/0x2d0 kernel/locking/lockdep.c:6614
+1 lock held by systemd-journal/4495:
+1 lock held by systemd-udevd/4507:
+1 lock held by in:imklog/7662:
+2 locks held by agetty/7949:
+ #0: ffff88802e7850a0 (&tty->ldisc_sem){++++}-{0:0}, at:
+tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
+ #1: ffffc900040dc2f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
+n_tty_read+0x712/0x1e80 drivers/tty/n_tty.c:2211
+2 locks held by syz-executor/8032:
+2 locks held by syz.1.466/13387:
+ #0: ffff8880285170a0 (&tty->ldisc_sem){++++}-{0:0}, at:
+tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
+ #1: ffff8880193520b0 (&gsm->mutex){+.+.}-{3:3}, at:
+gsm_cleanup_mux+0xb7/0x930 drivers/tty/n_gsm.c:3130
+1 lock held by syz.1.796/18097:
+2 locks held by syz-executor/18310:
+1 lock held by systemd-sysctl/18525:
+1 lock held by syz.0.834/18561:
+ #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
+mmap_read_lock_killable+0x18/0x60 include/linux/mmap_lock.h:153
+2 locks held by syz.0.834/18562:
+ #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
+mmap_write_lock_killable include/linux/mmap_lock.h:122 [inline]
+ #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
+vm_mmap_pgoff+0x173/0x3a0 mm/util.c:571
+ #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
+exp_funnel_lock kernel/rcu/tree_exp.h:291 [inline]
+ #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
+synchronize_rcu_expedited+0x37c/0x810 kernel/rcu/tree_exp.h:939
