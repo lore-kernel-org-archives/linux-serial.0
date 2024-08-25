@@ -1,73 +1,73 @@
-Received: from mx5.ucr.edu (mx.ucr.edu [138.23.62.67])
+Received: from mx6.ucr.edu (mx.ucr.edu [138.23.62.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75F8F43AB4
-	for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 21:06:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=138.23.62.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BAD94A2C
+	for <linux-serial@vger.kernel.org>; Sun, 25 Aug 2024 02:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=138.23.62.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724533578; cv=none; b=IEwnC3xiUaOLwX4WsURXqnAjxr21v5ySnuEmSzDACsz4fNIm4WCPlq5p72/5Kk1nJcqc7v8WFjJyZNIQm0NEH95944Mqq1eiTkcihKseE8Hm6S2SY0qODTRtNKS+5Wq4DNsnbEQZgyOQYQfawRvtmXmhUocUwG37Crjx+4lCFAI=
+	t=1724554752; cv=none; b=YZVArXFX+vp2oaU52DTJO+7sG+evHMftq+S8c+kt06kTpePeqf5uUNLg0YSxYBqpb8fkzkgv7z91O87E5WWLLKmm1fGiorEFpZWVBwH/bVFcr8/+UUyHzd4GVDiIVqMKL4SWD4IXXzvwozlt4yv5gQf3AJrrlJVpWAnQQQ/goaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724533578; c=relaxed/simple;
-	bh=TA/Cz65zRxAjAfq7MjkUo5qbaN77MjBbibjMgDttlrE=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=oB24/pBYzOIQ36ChWOr3FIoahb9wt1AhB2q/01wbAZABBpogfWTlNZHRabEixG+ekMPcA4WA711tbYBQdIe9s9pgOAV6HscEgvIRu8+GiItvcXoXOx/MNKX1984lgav9BQ8TsKVNvmQ3mFdEQCIVHjtfaf55P3pXgNXDpcmkVyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=PCVZdoF1; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=VvfsJHZH; arc=none smtp.client-ip=138.23.62.67
+	s=arc-20240116; t=1724554752; c=relaxed/simple;
+	bh=fZFpUStijfzfp8t+fLKfNFmYpBZ6unBu0C1PNq3NVKc=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=Cx6TVmlCBLps0Zw+9b6yXufjL9/J4YvaLI9AOUg+qJR9wJ88tLksKUKAaHA0P0+erxnZhi9XJCn0tCMFVbW0cF6myx4Ofsz7ZYo7DvRk7/ZDkY9V+4ZEqKyvp4cxwsm6dZI1ZJcxXlZxd2qIOvrF1+0Ni8MZqB44Qc/sRArdvnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=XZtIZ8GY; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=kbaZ9nZY; arc=none smtp.client-ip=138.23.62.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucr.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="PCVZdoF1";
-	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="VvfsJHZH"
+	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="XZtIZ8GY";
+	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="kbaZ9nZY"
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1724533576; x=1756069576;
+  t=1724554750; x=1756090750;
   h=dkim-signature:x-google-dkim-signature:
    x-forwarded-encrypted:x-gm-message-state:
    x-google-smtp-source:mime-version:from:date:message-id:
    subject:to:content-type:x-cse-connectionguid:
    x-cse-msgguid;
-  bh=TA/Cz65zRxAjAfq7MjkUo5qbaN77MjBbibjMgDttlrE=;
-  b=PCVZdoF1sBAIyajz1JSaq+SkT6/fAq3qNYAoyw7Cwb21Z3t+REDGmyc4
-   HcK5Cjx9c/biMJeQab7owI8jWxlzc7WaR9WXhSAWyWOHPDUGjr9gwmncB
-   Brx80hVbZh6EblJAvvuD69XT7KyC/VepIso2OiKREWGbNyjUdOC7TBrB6
-   d8hxUyhCT82Wf//dwxSiQZcQIzrr47PDtBAasrq1EioWLijm7NHS2RWx5
-   BOZI9ycrPfeu7j5iIt3AWQ+bydMyoPu6WUMBl9386IFoPuyfiGb0diXSf
-   B38BvlqJUC01nX8nNqwMBqrI/3COY2+ak7bZYRp7I9yNN5EDlcmGWH7OX
+  bh=fZFpUStijfzfp8t+fLKfNFmYpBZ6unBu0C1PNq3NVKc=;
+  b=XZtIZ8GYqUdmGlONn1pxAJdKcZDn0hYHQSA+3rsw7B5b3FYnVrVvYKBs
+   ErW9VZk83GWw+VZNVTxTaWmTjf2F2TshJipyMYNSAQbfrYdq88SWUfGsy
+   71KqmWjG7vflS5aSAINE6U8R9MkBfu4GyvxI/UwLFluIJlrAbegZdX6zo
+   erO1v9NpExvXVqV3q8IpJCBsNJjcFl1lNGYMVwu2Nt+4VLcKASb+3rmeM
+   eO0zgH7J+hjDJBl2rrCaGuUCWUYkej7evwP0HDmnOjin2NrnXuzGM4Gsx
+   C3+/yqO1FygfyNNnyoQwxXDYghcyRqHbRPp4JhK3apxb2VLsh0OdG7iex
    g==;
-X-CSE-ConnectionGUID: hFnISF3DTMyznx21jGps3g==
-X-CSE-MsgGUID: 3hXTCWCgQpagwVELtjhxEA==
-Received: from mail-io1-f70.google.com ([209.85.166.70])
-  by smtpmx5.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 24 Aug 2024 14:05:08 -0700
-Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-81faf98703eso342460739f.3
-        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 14:05:08 -0700 (PDT)
+X-CSE-ConnectionGUID: 8JlzTBkLRnKW8kGvpVhknQ==
+X-CSE-MsgGUID: aLeOiAqOT6eeKQ6zEe9nfw==
+Received: from mail-io1-f72.google.com ([209.85.166.72])
+  by smtpmx6.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 24 Aug 2024 19:59:09 -0700
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-8252a16781eso342477539f.0
+        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 19:59:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ucr.edu; s=rmail; t=1724533507; x=1725138307; darn=vger.kernel.org;
+        d=ucr.edu; s=rmail; t=1724554748; x=1725159548; darn=vger.kernel.org;
         h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=It2SBHCkREFPrVbJXjBwm2w6igz9uIpTeTCDbfBbJro=;
-        b=VvfsJHZH+FxQyjMD7HX2xkE09ykn1w0rPoKdIUVavFSFW66xG4zUk6D+Hq4/wJ34X+
-         qOBPyGyLf/0oksFtTdmrdYZRPpiRahG9DSs0Q2xxNfLVdsO67AhzM9RyNFG2tJekdu0R
-         TKOKIg+7cOyMJWlbCu4gFHlV/IMmv2vZevyGw=
+        bh=uGG1b6EFOZjuanG9XBctddu6ZSqL4PxjrsDdukn+VgI=;
+        b=kbaZ9nZYY2sc6nhKrzkEV5lSPALPLYchrRFqQwWF0XjGoTMAkPJTH9q6tOIlHLmwXc
+         2zVxF0/NEGCI6qVlvX/iJ4WbVDQ0fa8m+sJQBeXtGzak01F8KqqnUEIytbEA6OB0osHv
+         lkEtAezdmVgPWy/vFx4tYtkCm+Qa0TTgwzYQo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724533507; x=1725138307;
+        d=1e100.net; s=20230601; t=1724554748; x=1725159548;
         h=to:subject:message-id:date:from:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=It2SBHCkREFPrVbJXjBwm2w6igz9uIpTeTCDbfBbJro=;
-        b=EAVbuizqexRTSZZ/c45JcPdYJWLIK3ApLGVqYOdZxtqXofioiTzn4Ik7jG5egavn2k
-         RJ5fcvd3rVreALwsr48xiyvpf0BHbMSNPduBHUgyWNkhw2rLn11Hg0DLHotbQv+ihw4d
-         d6WkVAGJ2Otxy5qnb28DjTArp3s1VFK5WqdmlppVXbGXjciNp3JoOAXdXs70CBFB29P9
-         xzbvm3w/1Hs2ayHWyn6JkJvWXDStcEYoCDaLTPzak4UngEJFZE5guztSTInCZcKqG0x6
-         m1sOKDeGSo697tkLDt0bFZAvQWxr/we8NvN6bqQj30rKfo0R20dSkqn9bOxB+mXVpwQN
-         MDgA==
-X-Forwarded-Encrypted: i=1; AJvYcCXQRxvTuYe/btYFuO9xG9AFaJpfW4xNPTS6kQwtpEpubzFRXVXuRLFC/xIb9Ztln0xkcoZ81QcrvVhFvaU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw7kTDR8tVTrVxdqPcdiW+iyqn8GEUfKQsO+7U4K1Pw0tq7iEAK
-	A6SzNsRF4VOFT3YTs92lsw68wM4Xogqx3tUnp6Um0AuRstCWijNLZwPbu12KVF1J153zNq/mL/M
-	+AHYagZV74TNpFm7d/PBi5X80mNDTvxVjjM6Nn7BmYezGcYYERRYULD/RkOpznk8qYe0DQjrxyR
-	/rfRmIv19QOZTfKghridWcwYVW112QYVLLGjViOw==
-X-Received: by 2002:a05:6602:3429:b0:805:3d47:19d6 with SMTP id ca18e2360f4ac-8278731d742mr749430239f.6.1724533507534;
-        Sat, 24 Aug 2024 14:05:07 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGh1WytsX9vb6S0Fq6cbm62QwZOTitShDAke3V40ewupwNIw/kzd6cj6GxoWxvouZTrOyU8jo4Rvx1bJ/EnDTQ=
-X-Received: by 2002:a05:6602:3429:b0:805:3d47:19d6 with SMTP id
- ca18e2360f4ac-8278731d742mr749428939f.6.1724533507230; Sat, 24 Aug 2024
- 14:05:07 -0700 (PDT)
+        bh=uGG1b6EFOZjuanG9XBctddu6ZSqL4PxjrsDdukn+VgI=;
+        b=gGbsdAIhfrAf7oJNeU298O9JOMhw2vyfWtDORcf0pULUZ9OhbUgBQvm0faiHmy0TA5
+         pwW5DsqCQZKak/2PbVEzMZaxGVC/cdIibykX0TqeaNSx/f4LMp1MCMttzQccfLXLjvmf
+         zq6PVDSf8cXgfFlx/VqGuzHJWKfff35BmtocBiRTO8czKiJz15CBP5W31QQ+Al2dXrJq
+         amL0MFoXNy6m1+6adZuR0lZ8LSpUyWxlN1yafmEGFxs+rCWK9UFqd2b+YnrhmPNSGPqd
+         ajGCk7+lbfnsVG2OYxsApnM5lm2LLeN+BqA4Z04Fr00Az0mtbNAwXg5PHn0Zw86yvVK4
+         sZyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXfjx8rSK9TGDYo1Jt1+0xlo4250WatGlesiJAQaSOWjHKpIIuD1CvCyuXj3Vz6orWN2pW5ImipZ5akyXM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YymqF7kNagDdc/vg0rhVw/gLU54YSMlRPtLLEOFNn8XIiZDhpS8
+	ccjeX//w14Y4/IRj/rMpV08U6QVVxWFE2Zqf2CajoGff/+hxEdk35P7DdNrfFb4mC5Vbki+umXJ
+	E/N2Ao3k9iLbe0/nlwb4rc9/zv8pjd5kH0tngttDeBq/M4Ska2O5Sl+as4mOWeO+GQPz7U2xJzG
+	IRkxAd1FZe6fLCZtZqWorVzGt+42n2hLW9pravgw==
+X-Received: by 2002:a05:6602:6210:b0:81f:75bf:6570 with SMTP id ca18e2360f4ac-8278731c917mr803362339f.5.1724554748122;
+        Sat, 24 Aug 2024 19:59:08 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IENZkR7DacYk8BBrWhezxNQh58licG6jHu2ICL/deecxmVsIPLL+c58Q5sYkIW5KhOoqaa9lXHcfbIudyWKS9E=
+X-Received: by 2002:a05:6602:6210:b0:81f:75bf:6570 with SMTP id
+ ca18e2360f4ac-8278731c917mr803361039f.5.1724554747701; Sat, 24 Aug 2024
+ 19:59:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,89 +75,231 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 From: Juefei Pu <juefei.pu@email.ucr.edu>
-Date: Sat, 24 Aug 2024 14:04:55 -0700
-Message-ID: <CANikGpcUOLC06-Mfq296LeXxudpO6732vWM58-Zfv14GqoJE7w@mail.gmail.com>
-Subject: BUG: INFO: task hung in gsm_cleanup_mux
+Date: Sat, 24 Aug 2024 19:58:55 -0700
+Message-ID: <CANikGpcFAw6DWr0b3c8_s5f+KaMCqUnVv-xvPEnA__OOGENUPQ@mail.gmail.com>
+Subject: BUG: INFO: task hung in tty_buffer_flush
 To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
 Hello,
 We found the following issue using syzkaller on Linux v6.10.
+In `tty_buffer_flush`,  the task hangs when trying to acquire lock
+`buf->lock`.
 
-In function `gsm_cleanup_mux`,  the kernel hangs when waiting for
-`dlci->state` to become `DLCI_CLOSED`. It seems that
-`gsm_dlci_begin_close` failed to close the dlci.
+Unfortunately, the syzkaller failed to generate a reproducer.
+But at least we have the report:
 
-The full report including the Syzkaller reproducer:
-https://gist.github.com/TomAPU/38bb00292b33d52a6dd2d1b629247146
-
-The brief report is below:
-
-INFO: task syz.1.466:13387 blocked for more than 143 seconds.
+INFO: task kworker/0:5:8495 blocked for more than 143 seconds.
       Not tainted 6.10.0 #13
 "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.1.466       state:D stack:27400 pid:13387 tgid:13304
-ppid:8048   flags:0x00004004
+task:kworker/0:5     state:D stack:24400 pid:8495  tgid:8495  ppid:2
+   flags:0x00004000
+Workqueue: events vc_SAK
 Call Trace:
  <TASK>
  context_switch kernel/sched/core.c:5407 [inline]
  __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
  __schedule_loop kernel/sched/core.c:6825 [inline]
  schedule+0x143/0x310 kernel/sched/core.c:6840
- gsm_cleanup_mux+0x344/0x930 drivers/tty/n_gsm.c:3136
- gsm_config drivers/tty/n_gsm.c:3408 [inline]
- gsmld_ioctl+0x13c4/0x2540 drivers/tty/n_gsm.c:3839
- tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6897
+ __mutex_lock_common kernel/locking/mutex.c:684 [inline]
+ __mutex_lock+0x69a/0xd50 kernel/locking/mutex.c:752
+ tty_buffer_flush+0x75/0x3f0 drivers/tty/tty_buffer.c:229
+ tty_ldisc_flush+0x66/0xc0 drivers/tty/tty_ldisc.c:388
+ __do_SAK+0xc4/0x710 drivers/tty/tty_io.c:3038
+ vc_SAK+0x73/0x210 drivers/tty/vt/vt_ioctl.c:993
+ process_one_work kernel/workqueue.c:3248 [inline]
+ process_scheduled_works+0x977/0x1410 kernel/workqueue.c:3329
+ worker_thread+0xaa0/0x1020 kernel/workqueue.c:3409
+ kthread+0x2eb/0x380 kernel/kthread.c:389
+ ret_from_fork+0x49/0x80 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:244
+ </TASK>
+INFO: task kworker/u4:27:17406 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u4:27   state:D stack:20472 pid:17406 tgid:17406 ppid:2
+   flags:0x00004000
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ schedule_timeout+0xac/0x300 kernel/time/timer.c:2557
+ ___down_common kernel/locking/semaphore.c:225 [inline]
+ __down_common+0x31c/0x510 kernel/locking/semaphore.c:246
+ down+0x7e/0xb0 kernel/locking/semaphore.c:63
+ console_lock+0x140/0x1a0 kernel/printk/printk.c:2665
+ con_flush_chars+0x67/0x260 drivers/tty/vt/vt.c:3503
+ __receive_buf drivers/tty/n_tty.c:1644 [inline]
+ n_tty_receive_buf_common+0xd30/0x1370 drivers/tty/n_tty.c:1739
+ tty_port_default_receive_buf+0x69/0x90 drivers/tty/tty_port.c:37
+ receive_buf drivers/tty/tty_buffer.c:445 [inline]
+ flush_to_ldisc+0x2ef/0x850 drivers/tty/tty_buffer.c:495
+ process_one_work kernel/workqueue.c:3248 [inline]
+ process_scheduled_works+0x977/0x1410 kernel/workqueue.c:3329
+ worker_thread+0xaa0/0x1020 kernel/workqueue.c:3409
+ kthread+0x2eb/0x380 kernel/kthread.c:389
+ ret_from_fork+0x49/0x80 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:244
+ </TASK>
+INFO: task syz.0.1346:24748 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.0.1346      state:D stack:24680 pid:24748 tgid:24748
+ppid:22281  flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ schedule_timeout+0xac/0x300 kernel/time/timer.c:2557
+ ___down_common kernel/locking/semaphore.c:225 [inline]
+ __down_common+0x31c/0x510 kernel/locking/semaphore.c:246
+ down+0x7e/0xb0 kernel/locking/semaphore.c:63
+ console_lock+0x140/0x1a0 kernel/printk/printk.c:2665
+ con_shutdown+0x44/0x80 drivers/tty/vt/vt.c:3567
+ release_tty+0xbf/0x560 drivers/tty/tty_io.c:1595
+ tty_release_struct+0xb8/0xd0 drivers/tty/tty_io.c:1707
+ tty_release+0xb66/0xd70 drivers/tty/tty_io.c:1867
+ __fput+0x24a/0x8a0 fs/file_table.c:422
+ task_work_run+0x239/0x2f0 kernel/task_work.c:180
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:114 [inline]
+ exit_to_user_mode_prepare include/linux/entry-common.h:328 [inline]
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:207 [inline]
+ syscall_exit_to_user_mode+0x12d/0x280 kernel/entry/common.c:218
+ do_syscall_64+0x8a/0x150 arch/x86/entry/common.c:89
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
+RIP: 0033:0x7faaf81809b9
+RSP: 002b:00007ffd386bad68 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007faaf8347a80 RCX: 00007faaf81809b9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 00007faaf8347a80 R08: 0000000000000006 R09: 00007ffd386bb04f
+R10: 00000000003ffc40 R11: 0000000000000246 R12: 000000000009e184
+R13: 00007ffd386bae60 R14: 00007ffd386bae80 R15: ffffffffffffffff
+ </TASK>
+INFO: task syz.0.1346:24760 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.0.1346      state:D stack:27400 pid:24760 tgid:24748
+ppid:22281  flags:0x00004006
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6897
+ __mutex_lock_common kernel/locking/mutex.c:684 [inline]
+ __mutex_lock+0x69a/0xd50 kernel/locking/mutex.c:752
+ tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+ tty_release+0xb66/0xd70 drivers/tty/tty_io.c:1867
+ __fput+0x24a/0x8a0 fs/file_table.c:422
+ task_work_run+0x239/0x2f0 kernel/task_work.c:180
+ get_signal+0x15d5/0x1730 kernel/signal.c:2681
+ arch_do_signal_or_restart+0x92/0x7f0 arch/x86/kernel/signal.c:310
+ exit_to_user_mode_loop kernel/entry/common.c:111 [inline]
+ exit_to_user_mode_prepare include/linux/entry-common.h:328 [inline]
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:207 [inline]
+ syscall_exit_to_user_mode+0x95/0x280 kernel/entry/common.c:218
+ do_syscall_64+0x8a/0x150 arch/x86/entry/common.c:89
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
+RIP: 0033:0x7faaf81809b9
+RSP: 002b:00007faaf9013038 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
+RAX: 0000000000000000 RBX: 00007faaf8346058 RCX: 00007faaf81809b9
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 00007faaf81f4f70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 00007faaf8346058 R15: 00007ffd386bac08
+ </TASK>
+INFO: task syz.1.1347:24771 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.1.1347      state:D stack:24680 pid:24771 tgid:24771
+ppid:19241  flags:0x00004004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6897
+ __mutex_lock_common kernel/locking/mutex.c:684 [inline]
+ __mutex_lock+0x69a/0xd50 kernel/locking/mutex.c:752
+ tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+ tty_release+0xb66/0xd70 drivers/tty/tty_io.c:1867
+ __fput+0x24a/0x8a0 fs/file_table.c:422
+ task_work_run+0x239/0x2f0 kernel/task_work.c:180
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:114 [inline]
+ exit_to_user_mode_prepare include/linux/entry-common.h:328 [inline]
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:207 [inline]
+ syscall_exit_to_user_mode+0x12d/0x280 kernel/entry/common.c:218
+ do_syscall_64+0x8a/0x150 arch/x86/entry/common.c:89
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
+RIP: 0033:0x7f80957809b9
+RSP: 002b:00007fff493e0918 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007f8095947a80 RCX: 00007f80957809b9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 00007f8095947a80 R08: 0000000000000006 R09: 00007fff493e0bff
+R10: 00000000003ffc0c R11: 0000000000000246 R12: 000000000009e315
+R13: 00007fff493e0a10 R14: 00007fff493e0a30 R15: ffffffffffffffff
+ </TASK>
+INFO: task syz.1.1347:24776 blocked for more than 143 seconds.
+      Not tainted 6.10.0 #13
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz.1.1347      state:D stack:27400 pid:24776 tgid:24771
+ppid:19241  flags:0x00000004
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5407 [inline]
+ __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
+ __schedule_loop kernel/sched/core.c:6825 [inline]
+ schedule+0x143/0x310 kernel/sched/core.c:6840
+ schedule_timeout+0xac/0x300 kernel/time/timer.c:2557
+ ___down_common kernel/locking/semaphore.c:225 [inline]
+ __down_common+0x31c/0x510 kernel/locking/semaphore.c:246
+ down+0x7e/0xb0 kernel/locking/semaphore.c:63
+ console_lock+0x140/0x1a0 kernel/printk/printk.c:2665
+ do_con_write+0x150/0x4ca0 drivers/tty/vt/vt.c:3056
+ con_write+0x22/0x40 drivers/tty/vt/vt.c:3434
+ process_output_block drivers/tty/n_tty.c:574 [inline]
+ n_tty_write+0xda5/0x12d0 drivers/tty/n_tty.c:2389
+ iterate_tty_write drivers/tty/tty_io.c:1021 [inline]
+ file_tty_write+0x589/0xa00 drivers/tty/tty_io.c:1096
+ new_sync_write fs/read_write.c:497 [inline]
+ vfs_write+0x8a1/0xc70 fs/read_write.c:590
+ ksys_write+0x19b/0x2c0 fs/read_write.c:643
  do_syscall_x64 arch/x86/entry/common.c:52 [inline]
  do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
  entry_SYSCALL_64_after_hwframe+0x67/0x6f
-RIP: 0033:0x7fafaef809b9
-RSP: 002b:00007fafafe0a038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fafaf146130 RCX: 00007fafaef809b9
-RDX: 0000000020000100 RSI: 00000000404c4701 RDI: 0000000000000004
-RBP: 00007fafaeff4f70 R08: 0000000000000000 R09: 0000000000000000
+RIP: 0033:0x7f80957809b9
+RSP: 002b:00007f80951ff038 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f8095946058 RCX: 00007f80957809b9
+RDX: 000000000000fdef RSI: 0000000020000000 RDI: 0000000000000005
+RBP: 00007f80957f4f70 R08: 0000000000000000 R09: 0000000000000000
 R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000001 R14: 00007fafaf146130 R15: 00007ffd1b6e06a8
+R13: 0000000000000000 R14: 00007f8095946058 R15: 00007fff493e07b8
  </TASK>
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/25:
- #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at:
-rcu_lock_acquire include/linux/rcupdate.h:329 [inline]
- #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at: rcu_read_lock
-include/linux/rcupdate.h:781 [inline]
- #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at:
-debug_show_all_locks+0x54/0x2d0 kernel/locking/lockdep.c:6614
-1 lock held by systemd-journal/4495:
-1 lock held by systemd-udevd/4507:
-1 lock held by in:imklog/7662:
-2 locks held by agetty/7949:
- #0: ffff88802e7850a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffffc900040dc2f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
-n_tty_read+0x712/0x1e80 drivers/tty/n_tty.c:2211
-2 locks held by syz-executor/8032:
-2 locks held by syz.1.466/13387:
- #0: ffff8880285170a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffff8880193520b0 (&gsm->mutex){+.+.}-{3:3}, at:
-gsm_cleanup_mux+0xb7/0x930 drivers/tty/n_gsm.c:3130
-1 lock held by syz.1.796/18097:
-2 locks held by syz-executor/18310:
-1 lock held by systemd-sysctl/18525:
-1 lock held by syz.0.834/18561:
- #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
-mmap_read_lock_killable+0x18/0x60 include/linux/mmap_lock.h:153
-2 locks held by syz.0.834/18562:
- #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
-mmap_write_lock_killable include/linux/mmap_lock.h:122 [inline]
- #0: ffff888020337398 (&mm->mmap_lock){++++}-{3:3}, at:
-vm_mmap_pgoff+0x173/0x3a0 mm/util.c:571
- #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
-exp_funnel_lock kernel/rcu/tree_exp.h:291 [inline]
- #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
-synchronize_rcu_expedited+0x37c/0x810 kernel/rcu/tree_exp.h:939
+INFO: lockdep is turned off.
+NMI backtrace for cpu 0
+CPU: 0 PID: 25 Comm: khungtaskd Not tainted 6.10.0 #13
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x23d/0x360 lib/dump_stack.c:114
+ nmi_cpu_backtrace+0x451/0x480 lib/nmi_backtrace.c:113
+ nmi_trigger_cpumask_backtrace+0x181/0x2d0 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:162 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:223 [inline]
+ watchdog+0xdbd/0xe00 kernel/hung_task.c:379
+ kthread+0x2eb/0x380 kernel/kthread.c:389
+ ret_from_fork+0x49/0x80 arch/x86/kernel/process.c:147
+ ret_from_fork_asm+0x11/0x20 arch/x86/entry/entry_64.S:244
+ </TASK>
