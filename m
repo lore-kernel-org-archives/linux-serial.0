@@ -1,73 +1,73 @@
-Received: from mx-lax3-2.ucr.edu (mx-lax3-2.ucr.edu [169.235.156.37])
+Received: from mx-lax3-1.ucr.edu (mx-lax3-1.ucr.edu [169.235.156.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87F5B7462
-	for <linux-serial@vger.kernel.org>; Sun, 25 Aug 2024 03:13:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=169.235.156.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2E6D3D62
+	for <linux-serial@vger.kernel.org>; Sun, 25 Aug 2024 03:20:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=169.235.156.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724555637; cv=none; b=b73LNdghm3xG68mu77kx7gXjbgpvP668bMDZegPLfKi06Zn6tMOOcGilQrsIQ5Pjbi9cq0L9PNpWGGg6bSXuMidcSlFL2+EHq2WBuSSKhqxVPp8xHPqeL6JpZLCn69gWCqqQIn0SGn+QJJOVO7mLdn+SbauS3jV3kbs1+0nR1cA=
+	t=1724556034; cv=none; b=Ue770zpQYBC0cSxVtyza7/QfJgliXc9kQGwpnmPojD/lyzoE8DfPYhHfPXZhb5ukIbU0AjRUB40FtuvKJQPZH7Xqq+qfNiY1hoO2Y+NJRFaBKQ2qQ9Xl4kW+2KlxMIpENv5oGPWlJnF5PzgvliaiEIHQUUQ4G+705XQ3w6NNHTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724555637; c=relaxed/simple;
-	bh=2HcrxrTPpRYy1wiPzdskR2z5hUqngZElV4KLHFlJHbE=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=eFhBYtwAxisqM88b9jPK7AZcx3StNKFc28JAaK3nkYuWpH0DjOSRIFo4hsKS3zq8QEJhDJy4MIebrGUyrjFOpyMtj5bZwjx9FMzfJPhAv0pIMyEVFV6VtgZc1WmMz8791mYRnDiOLEq5+YcVbpGmoRAQf1qYkb06yrfaWRL3f9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=D93QlZTK; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=pU2vT4km; arc=none smtp.client-ip=169.235.156.37
+	s=arc-20240116; t=1724556034; c=relaxed/simple;
+	bh=3yXmNUtk9CJvZ64wC1TNaci2t3TeCujWnpP1OhHR/FI=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=WLwo7flX418qj9mAJkU1xx+YZIyTdnLcc62CrolZ2sos+RhX/kthrMyrJmaPzfY97in19qFYUgeLgY8rAzKpKAGkLKcz87LPTi/zbT32GRcUdGfOcn/z9GSVxQUue1wIy42uyeooNErQtinXihGrn7Pouf124XSnEY7QswcZu4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=QQFitWzj; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=tV/Mj+T4; arc=none smtp.client-ip=169.235.156.35
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucr.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="D93QlZTK";
-	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="pU2vT4km"
+	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="QQFitWzj";
+	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="tV/Mj+T4"
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1724555636; x=1756091636;
+  t=1724556031; x=1756092031;
   h=dkim-signature:x-google-dkim-signature:
    x-forwarded-encrypted:x-gm-message-state:
    x-google-smtp-source:mime-version:from:date:message-id:
    subject:to:content-type:x-cse-connectionguid:
    x-cse-msgguid;
-  bh=2HcrxrTPpRYy1wiPzdskR2z5hUqngZElV4KLHFlJHbE=;
-  b=D93QlZTKCE9iBkuqWnyAj+IGApMiLKmQGGUFSKYo15tHQAF0b3iaMujm
-   WtqdeLuTR7S0qkooJHZVm/Zw+DhBZaFiKQfcsTChKk1oQZcmXp155Q9gA
-   sheXz4GLu4NdSQHpvoE7rMIgJGS7Hh8BYM8yoJAeqXxUl3q2AwEmHTjJA
-   64KTLe4siooGCoW/4YHGMkJOuuqN7TLFtcXIEfQiRjFYGZ+wBAlMeWkge
-   EeVba0nBzsQD1+UeXzsem8w/OU1trb2CPdCnRltaEgTruV5yCc3uId3C8
-   LcnKftJQE8pzRO1gYW5C1Edrr3WQta+PixhOIuqI4H/a33Bb0y+oN1P0g
-   g==;
-X-CSE-ConnectionGUID: NS0EmAXFQEi+nhfTqVdo4g==
-X-CSE-MsgGUID: YhcUKrThRx2YSVJDiEfBXg==
-Received: from mail-il1-f200.google.com ([209.85.166.200])
-  by smtp-lax3-2.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 24 Aug 2024 20:13:55 -0700
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-39d505a087aso25831815ab.1
-        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 20:13:54 -0700 (PDT)
+  bh=3yXmNUtk9CJvZ64wC1TNaci2t3TeCujWnpP1OhHR/FI=;
+  b=QQFitWzj+/9ZLAQAZeQQQFTjwZHLjHsJgF/qwG9yDt+NGR0RO+ZlVBKg
+   TnvPgg8y17t3RYTH3XsVwK6+XdlpE2aeC+ek3SmofMCZL+8ibZYAXl87J
+   uNFVcL1AsM3CdUQgcbDdbneUh+shiFuQnwdJBykUPTBMOJYlUShbmykvq
+   B+JUXzekSV559gokjJsqkfsHxlrzgFoyCF8IjJl/2/KHXwVv6dzAQVk2i
+   sLBzus4VmM89EGe1aPk/++LAhHAiUQc3nJHduYNV5tto/gfyAv07NKgzY
+   R7NloxePc7B47qunX8HQg9H06Ws4LS+V/N8ps1133NOYM8a+vxwfQeIwP
+   w==;
+X-CSE-ConnectionGUID: zsJkrMIET7O96Pt/1IdTTQ==
+X-CSE-MsgGUID: W5gkI5EpTfKSU+5aOzogIA==
+Received: from mail-io1-f71.google.com ([209.85.166.71])
+  by smtp-lax3-1.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 24 Aug 2024 20:20:30 -0700
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-81fa58fbeceso350979539f.2
+        for <linux-serial@vger.kernel.org>; Sat, 24 Aug 2024 20:20:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ucr.edu; s=rmail; t=1724555634; x=1725160434; darn=vger.kernel.org;
+        d=ucr.edu; s=rmail; t=1724556030; x=1725160830; darn=vger.kernel.org;
         h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=dmd79+zPur4h5adj/lU6dhclauG0toHNxgaNJjl4T6Y=;
-        b=pU2vT4kmN9/B+TjfPU+orcvmoFrt8ut8XfP719bQ9EMDnp8mk478LmAo0Wlb+2pb+e
-         GKH6RF7XlhUli/FOR1FuWp39wnXtioJqezWESIIvyi5DNiAwVAawPMS03pv08cCnv5MA
-         PQiWNVQiQbT5o3FwHTdstgw+sP7s0msuKaXfg=
+        bh=UgkgLLbGGEclDIItlhG/kAGqUPgJRxl4aj/Ejz+mD8c=;
+        b=tV/Mj+T4DFPYf/dXanRKKkuRivNiWPygzzwb6rxZ25wbo1iDaPw2yB7QhEe4gOAlAh
+         wxiI3w2iD4EfTLXwAPUqXbhM6YW5zmZ6tVnTDBA8fSHVJMZbrst+TnpL0n54btZIwuHh
+         kF7RJQ/Y6BOb0dxelxG5Rjsc506fDXS81q7GQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724555634; x=1725160434;
+        d=1e100.net; s=20230601; t=1724556030; x=1725160830;
         h=to:subject:message-id:date:from:mime-version:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=dmd79+zPur4h5adj/lU6dhclauG0toHNxgaNJjl4T6Y=;
-        b=FJyDJWGfBhe/ca+SCcqXqT8VvphghCKIMajktM6sOFlysoSxxjn4A8GQ5pkpE5Eso6
-         qD6gA9f8zD1JBCfH068TZePvbKoUIrYrcgiUfPcIjRlB4owa+Wab8foF0gwpNf8riqpj
-         6uHdo1HwS7fUvOrdxkSY/1ki9dx+q/855R1JZeRI/Js0o5g8pI0LdsyggjH4avrdyVZd
-         u6utXSG1mdeMkCTJviJxXK6OxA2CwlbG+UdvbiXpV9wlMZm7TbcC5sYFn/r8KycP2eJt
-         nPTcttuRIL3/ysG7kAjyDlEgH9xZUsGTrAq1MISqO/UTO+tBRR0+sXksKBqOJquGbNCU
-         sZBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUmwyuQDpnXQMJ86wsTp8QfB6i8p7X+y1Fj8H3wp4tY3H62Lr4qjzSP26HQjWU/NvO4QM/7sANkKIGUS10=@vger.kernel.org
-X-Gm-Message-State: AOJu0YysG7pjMNq82A5DPP/Cfyt4qmHYc2qaJ22xlBSuxO+v7Zt/BNNJ
-	mHl3LKqqGPie63w1oGrECZe76mMm1ATRchUW9wdQCC2CA/GXran5GaHUikOscRfBwZ/Wgc6o/4k
-	7gO/kLf2brkslGrcipXtetJ2Yn2Km+PXLhgf6Va+YP6omm4nAysYNq7JtsnfxbYmtdVSuJODUr5
-	4dZr8LwEGPQeFujW/bkN4oNnp8SClDFgYkuK70Mw==
-X-Received: by 2002:a05:6e02:1a45:b0:39d:4b1e:cd82 with SMTP id e9e14a558f8ab-39d728cfdd7mr96016525ab.14.1724555633646;
-        Sat, 24 Aug 2024 20:13:53 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFGgZHq/Se8tOA9DZdl1/0yf87umuwYdDN6FWtcguHA7aB/bSFDofbbs3PnOUQFbjcjVr9CCg8R2rXfKn36lyU=
-X-Received: by 2002:a05:6e02:1a45:b0:39d:4b1e:cd82 with SMTP id
- e9e14a558f8ab-39d728cfdd7mr96016445ab.14.1724555633225; Sat, 24 Aug 2024
- 20:13:53 -0700 (PDT)
+        bh=UgkgLLbGGEclDIItlhG/kAGqUPgJRxl4aj/Ejz+mD8c=;
+        b=BQ5zygfhZB8doF0aIDYZ1SXYyYHTzYrmzmP66kwHdgKY5XFl3VDlFOx1R1/FLM8KUX
+         stklmQmPQ6T6KVpJy8gZ2K4+E1zxdMRFnxSgT2uA7k9oC5vukONgFhEkBSYVi9CTmI+c
+         +F5sUfReJumS2w5Fyvn1e9yawqIef6MLZV+H2PJmT42EkC1MD2f8GvfN3v8DxUQSUoz8
+         mxbAWtaDFnMUxft8154mnqG2hLYiLdgl7sVcj6ORTa+a4K/ETgDUXBDm8XPgjxCDhKuG
+         EDwmbqB0hkibPQO0KTc12/Yz3Q8Vnl238j3UV1m67Tyyk45IjUAa37By9r2bsjq3szft
+         3etA==
+X-Forwarded-Encrypted: i=1; AJvYcCXEtvG2C42IFZGFpAOzpDRK62mQN48UTPdtvUZKTuRcyymiCwq09uQh4uuqp5hwSyo1SWx+GM0LFSfFH7A=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxu0qkxd7WpPY89Y8USMTPYoQPRGXzCVO5VKtSKxHYJLV0KEs8z
+	H3LjWx5oR3OavoAjugQhMQTpklBCHJcH+q6gnR75vGfA/OxmN6B0kDBysekJb2TpSURcGMxxyys
+	D9WICaYfVa2w0m+qkhL8gPekG7k8NXPXnUY98QB+/haxcI4OIV4C9JnF5AktDxGKTsE+lToK7yC
+	VT2bBledaiMuoclGLVHX2G0nUF7mquMXNH9XmdzQ==
+X-Received: by 2002:a05:6602:6d12:b0:827:87c4:363a with SMTP id ca18e2360f4ac-82787c437e9mr613261239f.7.1724556029849;
+        Sat, 24 Aug 2024 20:20:29 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF8XFtq8mM7uy97d/dMK/OkpaRE+9e3VojRNlgd8ODEGtnGVzjt6lI78W8dKmBwHoDII6mrJpEpw2v2n6z/ON4=
+X-Received: by 2002:a05:6602:6d12:b0:827:87c4:363a with SMTP id
+ ca18e2360f4ac-82787c437e9mr613259839f.7.1724556029435; Sat, 24 Aug 2024
+ 20:20:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,83 +75,93 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 From: Juefei Pu <juefei.pu@email.ucr.edu>
-Date: Sat, 24 Aug 2024 20:13:41 -0700
-Message-ID: <CANikGpciuP_rh0KrwcZG=yH1e3FG=31D=XT-F8E3z32docZu8w@mail.gmail.com>
-Subject: BUG: INFO: task hung in tty_ldisc_hangup
+Date: Sat, 24 Aug 2024 20:20:17 -0700
+Message-ID: <CANikGpePfASOV5YnRf6tEUv2=aMTYxHkbXXG5NvJF=Vs0HtNuQ@mail.gmail.com>
+Subject: BUG: INFO: task hung in tty_release_struct
 To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
 Hello,
 We found the following issue using syzkaller on Linux v6.10.
-In `ttty_ldisc_hangup` the task hung when trying to execute the
-`tty_ldisc_lock` function.
+In `tty_release_struct` the task hung when trying to acquire the lock
+`tty_mutex`
+
+Although Syzbot has found a similar bug
+(https://syzkaller.appspot.com/bug?id=032fedbb29b936d9b3f5b03409cee10ad9caee9b)
+, the bug we discovered can be triggered on Linux v6.10. Meanwhile,
+Syzbot failed to trigger the crash for 617 days. Thus, it looks like
+this is a new bug.
 
 Unfortunately, the syzkaller failed to generate a reproducer.
 But at least we have the report:
 
-INFO: task syz.1.1480:25893 blocked for more than 143 seconds.
+INFO: task syz.0.5537:72598 blocked for more than 143 seconds.
       Not tainted 6.10.0 #13
 "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.1.1480      state:D stack:25768 pid:25893 tgid:25892
-ppid:22615  flags:0x00000004
+task:syz.0.5537      state:D stack:24680 pid:72598 tgid:72598
+ppid:66970  flags:0x00004004
 Call Trace:
  <TASK>
  context_switch kernel/sched/core.c:5407 [inline]
  __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
  __schedule_loop kernel/sched/core.c:6825 [inline]
  schedule+0x143/0x310 kernel/sched/core.c:6840
- schedule_timeout+0xac/0x300 kernel/time/timer.c:2557
- down_write_failed drivers/tty/tty_ldsem.c:262 [inline]
- __ldsem_down_write_nested+0x3cb/0x910 drivers/tty/tty_ldsem.c:324
- __tty_ldisc_lock drivers/tty/tty_ldisc.c:289 [inline]
- tty_ldisc_lock+0x6a/0xb0 drivers/tty/tty_ldisc.c:313
- tty_ldisc_hangup+0x23c/0x4c0 drivers/tty/tty_ldisc.c:718
- __tty_hangup+0x407/0x6c0 drivers/tty/tty_io.c:630
- tty_vhangup drivers/tty/tty_io.c:700 [inline]
- tty_ioctl+0x726/0xdb0 drivers/tty/tty_io.c:2743
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6897
+ __mutex_lock_common kernel/locking/mutex.c:684 [inline]
+ __mutex_lock+0x69a/0xd50 kernel/locking/mutex.c:752
+ tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+ tty_release+0xb66/0xd70 drivers/tty/tty_io.c:1867
+ __fput+0x24a/0x8a0 fs/file_table.c:422
+ task_work_run+0x239/0x2f0 kernel/task_work.c:180
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:114 [inline]
+ exit_to_user_mode_prepare include/linux/entry-common.h:328 [inline]
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:207 [inline]
+ syscall_exit_to_user_mode+0x12d/0x280 kernel/entry/common.c:218
+ do_syscall_64+0x8a/0x150 arch/x86/entry/common.c:89
  entry_SYSCALL_64_after_hwframe+0x67/0x6f
-RIP: 0033:0x7fbbaa1809b9
-RSP: 002b:00007fbbaaedc038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fbbaa345f80 RCX: 00007fbbaa1809b9
-RDX: 0000000000000000 RSI: 0000000000005437 RDI: 0000000000000004
-RBP: 00007fbbaa1f4f70 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000000 R14: 00007fbbaa345f80 R15: 00007ffd9f1583d8
+RIP: 0033:0x7fd9a67809b9
+RSP: 002b:00007ffecb0e3b18 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007fd9a6947a80 RCX: 00007fd9a67809b9
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 00007fd9a6947a80 R08: 0000000000000006 R09: 00007ffecb0e3dff
+R10: 00000000003ffcb0 R11: 0000000000000246 R12: 00000000002241f4
+R13: 00007ffecb0e3c10 R14: 00007ffecb0e3c30 R15: ffffffffffffffff
  </TASK>
-INFO: task syz.1.1480:25961 blocked for more than 143 seconds.
+INFO: task syz.0.5537:72599 blocked for more than 143 seconds.
       Not tainted 6.10.0 #13
 "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz.1.1480      state:D stack:27224 pid:25961 tgid:25892
-ppid:22615  flags:0x00004004
+task:syz.0.5537      state:D stack:26536 pid:72599 tgid:72598
+ppid:66970  flags:0x00004006
 Call Trace:
  <TASK>
  context_switch kernel/sched/core.c:5407 [inline]
  __schedule+0xf4a/0x15e0 kernel/sched/core.c:6748
  __schedule_loop kernel/sched/core.c:6825 [inline]
  schedule+0x143/0x310 kernel/sched/core.c:6840
- gsm_cleanup_mux+0x344/0x930 drivers/tty/n_gsm.c:3136
- gsm_config drivers/tty/n_gsm.c:3408 [inline]
- gsmld_ioctl+0x13c4/0x2540 drivers/tty/n_gsm.c:3839
- tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6897
+ __mutex_lock_common kernel/locking/mutex.c:684 [inline]
+ __mutex_lock+0x69a/0xd50 kernel/locking/mutex.c:752
+ tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+ tty_release+0xb66/0xd70 drivers/tty/tty_io.c:1867
+ __fput+0x24a/0x8a0 fs/file_table.c:422
+ task_work_run+0x239/0x2f0 kernel/task_work.c:180
+ get_signal+0x15d5/0x1730 kernel/signal.c:2681
+ arch_do_signal_or_restart+0x92/0x7f0 arch/x86/kernel/signal.c:310
+ exit_to_user_mode_loop kernel/entry/common.c:111 [inline]
+ exit_to_user_mode_prepare include/linux/entry-common.h:328 [inline]
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:207 [inline]
+ syscall_exit_to_user_mode+0x95/0x280 kernel/entry/common.c:218
+ do_syscall_64+0x8a/0x150 arch/x86/entry/common.c:89
  entry_SYSCALL_64_after_hwframe+0x67/0x6f
-RIP: 0033:0x7fbbaa1809b9
-RSP: 002b:00007fbba9bff038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007fbbaa346130 RCX: 00007fbbaa1809b9
-RDX: 0000000020000100 RSI: 00000000404c4701 RDI: 0000000000000004
-RBP: 00007fbbaa1f4f70 R08: 0000000000000000 R09: 0000000000000000
+RIP: 0033:0x7fd9a67809b9
+RSP: 002b:00007fd9a7605038 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: 000000000017c800 RBX: 00007fd9a6945f80 RCX: 00007fd9a67809b9
+RDX: 00000000fffffde3 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 00007fd9a67f4f70 R08: 0000000000000000 R09: 0000000000000000
 R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 0000000000000001 R14: 00007fbbaa346130 R15: 00007ffd9f1583d8
+R13: 0000000000000000 R14: 00007fd9a6945f80 R15: 00007ffecb0e39b8
  </TASK>
 
 Showing all locks held in the system:
@@ -162,107 +172,137 @@ rcu_lock_acquire include/linux/rcupdate.h:329 [inline]
 include/linux/rcupdate.h:781 [inline]
  #0: ffffffff8db32fe0 (rcu_read_lock){....}-{1:2}, at:
 debug_show_all_locks+0x54/0x2d0 kernel/locking/lockdep.c:6614
-1 lock held by in:imklog/7649:
-2 locks held by syz-executor/8034:
-2 locks held by agetty/13559:
- #0: ffff88803d8e50a0 (&tty->ldisc_sem){++++}-{0:0}, at:
+1 lock held by in:imklog/7643:
+2 locks held by agetty/38872:
+ #0: ffff88801b0ac0a0 (&tty->ldisc_sem){++++}-{0:0}, at:
 tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffffc900041d32f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
+ #1: ffff88801b0ac130 (&tty->atomic_write_lock){+.+.}-{3:3}, at:
+tty_write_lock drivers/tty/tty_io.c:954 [inline]
+ #1: ffff88801b0ac130 (&tty->atomic_write_lock){+.+.}-{3:3}, at:
+iterate_tty_write drivers/tty/tty_io.c:973 [inline]
+ #1: ffff88801b0ac130 (&tty->atomic_write_lock){+.+.}-{3:3}, at:
+file_tty_write+0x1e8/0xa00 drivers/tty/tty_io.c:1096
+2 locks held by kworker/u4:22/60168:
+2 locks held by kworker/u4:23/60169:
+ #0: ffff888018d66948 ((wq_completion)iou_exit){+.+.}-{0:0}, at:
+process_one_work kernel/workqueue.c:3223 [inline]
+ #0: ffff888018d66948 ((wq_completion)iou_exit){+.+.}-{0:0}, at:
+process_scheduled_works+0x8fb/0x1410 kernel/workqueue.c:3329
+ #1: ffffc9000971fd20
+((work_completion)(&ctx->exit_work)){+.+.}-{0:0}, at: process_one_work
+kernel/workqueue.c:3224 [inline]
+ #1: ffffc9000971fd20
+((work_completion)(&ctx->exit_work)){+.+.}-{0:0}, at:
+process_scheduled_works+0x922/0x1410 kernel/workqueue.c:3329
+2 locks held by kworker/u4:25/60173:
+ #0: ffff888018d66948 ((wq_completion)iou_exit){+.+.}-{0:0}, at:
+process_one_work kernel/workqueue.c:3223 [inline]
+ #0: ffff888018d66948 ((wq_completion)iou_exit){+.+.}-{0:0}, at:
+process_scheduled_works+0x8fb/0x1410 kernel/workqueue.c:3329
+ #1: ffffc9000973fd20
+((work_completion)(&ctx->exit_work)){+.+.}-{0:0}, at: process_one_work
+kernel/workqueue.c:3224 [inline]
+ #1: ffffc9000973fd20
+((work_completion)(&ctx->exit_work)){+.+.}-{0:0}, at:
+process_scheduled_works+0x922/0x1410 kernel/workqueue.c:3329
+1 lock held by syz.0.4591/61848:
+1 lock held by syz.1.4603/61926:
+2 locks held by agetty/63190:
+ #0: ffff88803c8260a0 (&tty->ldisc_sem){++++}-{0:0}, at:
+tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
+ #1: ffffc90007a8b2f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
 n_tty_read+0x712/0x1e80 drivers/tty/n_tty.c:2211
-2 locks held by systemd-udevd/18316:
-2 locks held by systemd-udevd/18325:
- #0: ffff88801ed3e420 (sb_writers#7){.+.+}-{0:0}, at:
-mnt_want_write+0x3b/0x80 fs/namespace.c:409
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock include/linux/fs.h:791 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3571 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7d8/0x3580 fs/namei.c:3810
-2 locks held by systemd-udevd/18326:
- #0: ffff88801ed3e420 (sb_writers#7){.+.+}-{0:0}, at:
-mnt_want_write+0x3b/0x80 fs/namespace.c:409
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock include/linux/fs.h:791 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3571 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7d8/0x3580 fs/namei.c:3810
-2 locks held by systemd-udevd/18382:
-2 locks held by systemd-udevd/18500:
- #0: ffff88801ed3e420 (sb_writers#7){.+.+}-{0:0}, at:
-mnt_want_write+0x3b/0x80 fs/namespace.c:409
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock include/linux/fs.h:791 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3571 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7d8/0x3580 fs/namei.c:3810
-1 lock held by systemd-udevd/18504:
-2 locks held by systemd-udevd/18505:
- #0: ffff88801ed3e420 (sb_writers#7){.+.+}-{0:0}, at:
-mnt_want_write+0x3b/0x80 fs/namespace.c:409
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock include/linux/fs.h:791 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3571 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7d8/0x3580 fs/namei.c:3810
-1 lock held by systemd-udevd/18822:
-1 lock held by systemd-udevd/18860:
-1 lock held by systemd-udevd/18902:
-1 lock held by systemd-udevd/18908:
-1 lock held by systemd-udevd/18925:
-1 lock held by systemd-udevd/19029:
- #0: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock_shared include/linux/fs.h:801 [inline]
- #0: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3573 [inline]
- #0: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7c9/0x3580 fs/namei.c:3810
-2 locks held by systemd-udevd/19104:
- #0: ffff88801ed3e420 (sb_writers#7){.+.+}-{0:0}, at:
-mnt_want_write+0x3b/0x80 fs/namespace.c:409
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-inode_lock include/linux/fs.h:791 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-open_last_lookups fs/namei.c:3571 [inline]
- #1: ffff888025385d48 (&type->i_mutex_dir_key#5){++++}-{3:3}, at:
-path_openat+0x7d8/0x3580 fs/namei.c:3810
-2 locks held by agetty/20613:
- #0: ffff888042a120a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffffc90002de82f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
-n_tty_read+0x712/0x1e80 drivers/tty/n_tty.c:2211
-2 locks held by agetty/22206:
- #0: ffff8880451e10a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffffc900018482f0 (&ldata->atomic_read_lock){+.+.}-{3:3}, at:
-n_tty_read+0x712/0x1e80 drivers/tty/n_tty.c:2211
-2 locks held by syz.1.1480/25893:
- #0: ffff88803ff751c0 (&tty->legacy_mutex){+.+.}-{3:3}, at:
-__tty_hangup+0xcc/0x6c0 drivers/tty/tty_io.c:590
- #1: ffff88803ff750a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-__tty_ldisc_lock drivers/tty/tty_ldisc.c:289 [inline]
- #1: ffff88803ff750a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_lock+0x6a/0xb0 drivers/tty/tty_ldisc.c:313
-2 locks held by syz.1.1480/25961:
- #0: ffff88803ff750a0 (&tty->ldisc_sem){++++}-{0:0}, at:
-tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:243
- #1: ffff88804484f0b0 (&gsm->mutex){+.+.}-{3:3}, at:
-gsm_cleanup_mux+0xb7/0x930 drivers/tty/n_gsm.c:3130
-1 lock held by syz.1.1868/30326:
-1 lock held by systemd-sysctl/30475:
-2 locks held by systemd-sysctl/30480:
-2 locks held by syz.0.1895/30484:
- #0: ffffffff8e8387a8 (input_mutex){+.+.}-{3:3}, at:
-__input_unregister_device+0x2ff/0x630 drivers/input/input.c:2293
- #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
-exp_funnel_lock kernel/rcu/tree_exp.h:291 [inline]
- #1: ffffffff8db383f8 (rcu_state.exp_mutex){+.+.}-{3:3}, at:
-synchronize_rcu_expedited+0x37c/0x810 kernel/rcu/tree_exp.h:939
-3 locks held by syz.0.1895/30488:
-2 locks held by apt-config/30483:
+1 lock held by syz.1.4836/64293:
+1 lock held by syz.1.5065/66967:
+3 locks held by kworker/0:4/67207:
+ #0: ffff88801307a948 ((wq_completion)events){+.+.}-{0:0}, at:
+process_one_work kernel/workqueue.c:3223 [inline]
+ #0: ffff88801307a948 ((wq_completion)events){+.+.}-{0:0}, at:
+process_scheduled_works+0x8fb/0x1410 kernel/workqueue.c:3329
+ #1: ffffc90004b8fd20
+((work_completion)(&data->fib_event_work)){+.+.}-{0:0}, at:
+process_one_work kernel/workqueue.c:3224 [inline]
+ #1: ffffc90004b8fd20
+((work_completion)(&data->fib_event_work)){+.+.}-{0:0}, at:
+process_scheduled_works+0x922/0x1410 kernel/workqueue.c:3329
+ #2: ffff88802f4a0240 (&data->fib_lock){+.+.}-{3:3}, at:
+nsim_fib_event_work+0x2de/0x4050 drivers/net/netdevsim/fib.c:1489
+2 locks held by syz.1.5398/70778:
+2 locks held by syz.1.5488/71784:
+1 lock held by syz.0.5537/72598:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+1 lock held by syz.0.5537/72599:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_release_struct+0xad/0xd0 drivers/tty/tty_io.c:1706
+4 locks held by syz.1.5536/72606:
+1 lock held by syz.0.5541/73119:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.1.5542/73125:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5543/73605:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+ptmx_open+0xc7/0x2c0 drivers/tty/pty.c:823
+1 lock held by syz.1.5544/73619:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5545/74100:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+ptmx_open+0xc7/0x2c0 drivers/tty/pty.c:823
+1 lock held by syz.1.5547/74121:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+ptmx_open+0xc7/0x2c0 drivers/tty/pty.c:823
+1 lock held by syz.1.5547/74122:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.1.5547/74123:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.1.5547/74124:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5551/74612:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5551/74617:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5551/74621:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5551/74625:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5551/74626:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at: tty_open_by_driver
+drivers/tty/tty_io.c:2052 [inline]
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+tty_open+0x232/0xe20 drivers/tty/tty_io.c:2135
+1 lock held by syz.0.5553/75389:
+ #0: ffffffff8e2aa648 (tty_mutex){+.+.}-{3:3}, at:
+ptmx_open+0xc7/0x2c0 drivers/tty/pty.c:823
 
 =============================================
 
