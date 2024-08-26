@@ -1,73 +1,68 @@
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2060.outbound.protection.outlook.com [40.107.255.60])
+Received: from eu-smtp-delivery-197.mimecast.com (eu-smtp-delivery-197.mimecast.com [185.58.85.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801E11514E1;
-	Mon, 26 Aug 2024 11:33:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.255.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724672034; cv=fail; b=YhqUhgo2z/uKA3+jkafu677YA37TIr82BnSGGiNGcrLNoNw4ytgKjk/oaXYM7PZa7uH4I1pcXwN4gQM6qHL5MsYEJLGFSXwWXvJAZOhoybdUV156q6L7IyeVGBGQFfAMsPBtnsmU9P4BzTWeqtifn0pyty6WRGK7FBPkscmVwH8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724672034; c=relaxed/simple;
-	bh=vNbZKf4U4e+PHAd6+9JrpGKM2iwVFiH+LR5x9gKbluU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=oAon+LI1ybhil6kheL3U01CYS4B+DC44KFMeZHv5yt+T95zWBcNhuF6u3S2yrttCrH15HbCZrlkuyfkBZGTpNPZCiiCKrEd+zVPLlxFPaH9JfgS8x0TTv1NDWCFeREvdqKUnTN6pNLfTRXoi+tVERBv9eFWYfv4twwk6f06s4mU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=ljuFRkeF; arc=fail smtp.client-ip=40.107.255.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27EED13DDD9
+	for <linux-serial@vger.kernel.org>; Mon, 26 Aug 2024 12:35:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.58.85.197
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724675751; cv=none; b=CeLMZ25fboxY/fpRcHAIUj88UdmQsKZBadqPCgXRNkMCYnzf1Nm4dS7UT5uoegbhMM16cZ5RqMDHcq6HA1alPhzgUCEox2QduZzD/KmwpSWuM/pVfzEFsqsmY2tXpedGlsDCwkd/pzkJjVVld9Mu2r23sLdd3zyq3hxYOu/FeMc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724675751; c=relaxed/simple;
+	bh=EQVwB9N+w6vdH0vDgDXf4WFksXc+20mnlpn2jrGswa0=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 MIME-Version:Content-Type; b=uMC9XyyCG6Nkuc0h3ctNbr72xGG89FTo34iZT8ndGPbeR9sDXVmM2O3F7RdIjUkHAq0/RkFKJJles9zDgE4XUJkoSsg7nDam7Clul7A5PSRU+w0YxnrNOwMOA+6xiJyKK/tjRL0ujmCMJj0+I0v5+q3K7IxrHMPlJtOuBzF2HBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com; spf=pass smtp.mailfrom=camlingroup.com; dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b=iya35wF5; arc=none smtp.client-ip=185.58.85.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=camlingroup.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=camlingroup.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="ljuFRkeF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZLaZ00cg0mjTe2t0xrnqih9N/3pmYpgB9CeCk+oWDuQcaz0zmhV9cnhF2mC2q7pBPIlDE+HRk7ClybV2qFk+MYFtOxMwvDGVCBm7PKAlvQA8rDG1jHpFIjMQIcaXOCK6CIpCUL0AfsnBSOp/KzFQatDAqvmY1tzB40kIYSgfqR5XFP/3KMmIUYtVHbKP0TDXvvhwPDaa7DL9gXmCDdo4REHv28e0nHe9DYqSFMsHf2TL+asWklhzQIkSjRcmqQGow7djC35toBul5yww44V4+77ikiYo7+BSuzV4Kyn8GJa9CBAfIlCpEY5hFWkHPqRcAHcqt0WJ1oNBh3/7Yyub+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QsMgzjnnY3ZsB+QmPl0tL0sbVOWt8kUn6YkHnoiFUEQ=;
- b=sSRfQGFVrDpriAtxo/4eabebHMGGx7tuVarnd9kaB531WtkQ198/y9aNceJ3SOEF5Funghj8e43ShLlrduzvVU5hbuEiOJDTEtbyTfyLbjDTfzy+MdXkYxhIB7Df1qIyV/FjUVrEgg74qNVxOIjr0x1TgAXfNaX5KKrakxoBaOHvgqlVVEB02h8xlWW0df1bus7B0f9UQi/EwKAlaioUueYtjMYPDePptnhGuIFlycXHGhsw/lyTgtJDzXbR//qLqJhqZWENvvTtZvvw4oZUhUoFHiOv7qDJHJL0AWACOgmseJeWOAuowkEBSOWcGkMx9TwQFIIfYf8xEFYlrTER9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QsMgzjnnY3ZsB+QmPl0tL0sbVOWt8kUn6YkHnoiFUEQ=;
- b=ljuFRkeFsUGXW1PTkbh4+qRFFDUvgtSItxX5z4c6CIr92H9T8i9txzgYYRRknE+KpxYB73xI46pKXlYQSoZrE2+41Sl9xOqjEaBcN9szs9AhCMXlfLGfwjVF+ZZcIB+vCcg2slVBiDO3bE3GHfF9hZhQzPQBFtrBlBHXDtIWoP/goZEh/J6F/3PvppNCHqWQYhcH4hvJqrKuzgk/hLB4J30062tJQMPou5lHoWni3kiJ5BIRM10MFI/4+8ob0Ojvlk95JeMDIqNY+Uvnlhi32vcAAwE9x3Qe5WVf6bIJpGPfDubcJ9yz0faqtvI0PHft15WTXHK6xctymadglMncfg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SEZPR06MB5624.apcprd06.prod.outlook.com (2603:1096:101:c8::14)
- by TYZPR06MB6466.apcprd06.prod.outlook.com (2603:1096:400:45d::7) with
+	dkim=pass (1024-bit key) header.d=camlingroup.com header.i=@camlingroup.com header.b="iya35wF5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=camlingroup.com;
+	s=mimecast20210310; t=1724675742;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=OgqRTSzt3bTWzQid5H2iYIiMOjzliWxrosTp2hKNVlY=;
+	b=iya35wF5cKDgBfAQjDnVIhcb83aB3z0cnMspHeliumfNHmk+BjhPDQAWfGkBAUHAwFM9+Q
+	I7Zn6UfpFoSUnfDFoduSU3K0AA5hu7BNfFibLyrLGP+r7kXIGctrfOhZ7mYZ+8vaXW3yQ+
+	mqnFAGFTQfcNv+RWNvSeZWpYekaRXqY=
+Received: from GBR01-CWX-obe.outbound.protection.outlook.com
+ (mail-cwxgbr01lp2048.outbound.protection.outlook.com [104.47.85.48]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ uk-mta-60-Em8GJ90vPXmuUH7oIlvTwg-1; Mon, 26 Aug 2024 13:35:41 +0100
+X-MC-Unique: Em8GJ90vPXmuUH7oIlvTwg-1
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM (2603:10a6:400:142::9)
+ by LO0P123MB5968.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:242::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.24; Mon, 26 Aug
- 2024 11:33:49 +0000
-Received: from SEZPR06MB5624.apcprd06.prod.outlook.com
- ([fe80::e837:10e3:818e:bdfd]) by SEZPR06MB5624.apcprd06.prod.outlook.com
- ([fe80::e837:10e3:818e:bdfd%5]) with mapi id 15.20.7897.021; Mon, 26 Aug 2024
- 11:33:49 +0000
-From: Lei Liu <liulei.rjpt@vivo.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Valentin Caron <valentin.caron@foss.st.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Erwan Le Ray <erwan.leray@foss.st.com>,
-	Lei Liu <liulei.rjpt@vivo.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org
-Cc: opensource.kernel@vivo.com
-Subject: [PATCH v2 5/5] tty: stm32-usart: Use devm_clk_get_enabled() helpers
-Date: Mon, 26 Aug 2024 19:33:34 +0800
-Message-Id: <20240826113337.7364-1-liulei.rjpt@vivo.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240826112933.7249-1-liulei.rjpt@vivo.com>
-References: <20240826112933.7249-1-liulei.rjpt@vivo.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0020.apcprd02.prod.outlook.com
- (2603:1096:3:17::32) To SEZPR06MB5624.apcprd06.prod.outlook.com
- (2603:1096:101:c8::14)
+ 2024 12:35:39 +0000
+Received: from CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::f866:62f9:716e:ca4f]) by CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ ([fe80::f866:62f9:716e:ca4f%4]) with mapi id 15.20.7897.021; Mon, 26 Aug 2024
+ 12:35:39 +0000
+Message-ID: <5d1f5d01-c7ab-49f9-b754-1c32043668c5@camlingroup.com>
+Date: Mon, 26 Aug 2024 14:35:37 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/3] serial: sc16is7xx: convert bitmask definitions to
+ use BIT() macro
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+CC: linux-serial@vger.kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>, Andy Shevchenko <andy@kernel.org>,
+ =?UTF-8?Q?Krzysztof_Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>,
+ =?UTF-8?Q?Pawe=C5=82_Lenkow?= <pawel.lenkow@camlingroup.com>,
+ Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
+References: <7deb753f-bf86-47ce-89bf-8277aca4293e@camlingroup.com>
+ <fbd8debf-46ab-407a-beda-43e083bffee7@camlingroup.com>
+ <CAHp75VeqOV7GEqMs6fMi2Fax-97zt+ykEXaptng=pi_BDKU5Bg@mail.gmail.com>
+From: Lech Perczak <lech.perczak@camlingroup.com>
+In-Reply-To: <CAHp75VeqOV7GEqMs6fMi2Fax-97zt+ykEXaptng=pi_BDKU5Bg@mail.gmail.com>
+X-ClientProxiedBy: BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::16) To CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:400:142::9)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,180 +70,199 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SEZPR06MB5624:EE_|TYZPR06MB6466:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa68c48c-b378-451b-cc58-08dcc5c2f455
+X-MS-TrafficTypeDiagnostic: CWXP123MB5267:EE_|LO0P123MB5968:EE_
+X-MS-Office365-Filtering-Correlation-Id: b7ee0871-fa4b-4a10-233c-08dcc5cb97c2
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|7416014|376014|1800799024|366016|921020|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?sDZBrCzfXv03pOXKz5JiKAjlFUHAxq62yofPj1Yvjfub9QAKe4xVZfgLyWiN?=
- =?us-ascii?Q?N1yj3fkXaIxZHN0Mfn8YVBxQMieyq0zk3fqvEPvFLsFzegcAAKzOyGET7juX?=
- =?us-ascii?Q?89lISwj9u3sEQIc1GHywCm8uIms1OHPbBPhbI6qT5rEFcTxJ71bbTmTt3rXO?=
- =?us-ascii?Q?gR4YKB2hb2DR1yQuRtvcVEF+u/49hOouBXpBiAlE5KKS74Ew4PZ6zcqfKKUT?=
- =?us-ascii?Q?S/qaww+PnEYRuT2m9c3zK/0TWSc0s6YfrcLZT95oFosr1wlu4RvbWoTw7hiq?=
- =?us-ascii?Q?pgCk3yPDu0BfXwxsdMiIm4TPfklF3pI6nBbrM4zzT/dKj0cdStNx/3+FnYJl?=
- =?us-ascii?Q?n4kfBweijWRPXDQlLazmSZbq0qp51CWq22RMuRC90dmrNQ3pmwc1ptpBJ0i4?=
- =?us-ascii?Q?n71vrwfdhMcBscoZIdEeQ8Oo34+nH2031fwctk38sPKhmPtRH+yo/jLrHHL5?=
- =?us-ascii?Q?Nz3Kb5tsfpSU0btWYj/sj5BK3uP4/KUvhjKwQ/KOkGBLDJ2fcitfJ3cImUvW?=
- =?us-ascii?Q?a6SBYR7YFMEpQexRqttiQat8HHuPSJH73l3zx+qMgZf9shA8Ip1gbLNHTBiz?=
- =?us-ascii?Q?aTGNqJ7oYZHV7tZ5qKYrs4u0QPoHzFPrSxBkiV3tyd3O4CXOdmLBvz94sCrT?=
- =?us-ascii?Q?I8RYidNHISv+WkLubRW4B6xelQWrN7UcItg+oniIrDJq87eAS+tQtlv2TZVP?=
- =?us-ascii?Q?6oo0HceQD11pUjB1isn9VFVjl6vbtbTFvp0CX+lniGa2EqCt/SJtoGATZ16X?=
- =?us-ascii?Q?Swoq6bRkUNg6EhMPjOAvdfUUMFNcFiPZVchvSyfE00fe2wMiix8sfW0BcdU/?=
- =?us-ascii?Q?gmir340TiAKhYs895b3F6HlK6HYM3F2rR4JMrvpggr60QR48s5GdCpJs+mT7?=
- =?us-ascii?Q?aJGQJMncZZCVDG95JOT5O/yQEAfjzmG1M6VUlOMzH94ufudCnBhMNHJYYb/o?=
- =?us-ascii?Q?TELFEfaWY5Sy7ruWh+KkiojgtnEE020CIfNBhq2/Cu9Faalb/DS3Ti5It2ok?=
- =?us-ascii?Q?YVAG3nYdEt6QYSQFavZf+4FGPj/3RPrl9IWedPSp3JFH69+PJid4k32Bv/9k?=
- =?us-ascii?Q?3ApDnsv1i71uteVUCvw6o7Fp0riv002yKOdLhbtVECEr0we3f+8LiHtTLv8Y?=
- =?us-ascii?Q?nI1Z96QQayflrvrjZo2CrOvXbM5VQ1yr0SVL0hUpyD2lPMgmMaAF0lvFdEcl?=
- =?us-ascii?Q?ZAyO59lQj0iThUQDgPmzdTSEg8CEbhiicWgduFuOOuyfkS0YSP+A7pflIXdO?=
- =?us-ascii?Q?/2SUzmvkMDUgvPKAat+KzjwpA/MKQhr0WuBaRBqBOxsxK8Wi6Qd+RvUINaxk?=
- =?us-ascii?Q?rKBrCQdgZwxRSUgnYdRS0tfErx7lUcH9dxZdhtHZGTpVwKVfn6yxsDbhfvSC?=
- =?us-ascii?Q?CMmVyTNBMP9mX7OE7YJZLRwfEiNEKkghjivHU1qg2AJRUzsLpAbXuHiiaA3g?=
- =?us-ascii?Q?G2deTghmijg=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR06MB5624.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(7416014)(376014)(1800799024)(366016)(921020)(38350700014);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014
+X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?8HQbo+yzXUPnL+YBk0xuEU8uDYZazr/95eKenNun1vEqlu+s/GyynhMkEN5O?=
+ =?us-ascii?Q?JWPAI7OgviI/vb9aSdJYz8j/XjnascJR1TOuf04BZLNn9DDcNnR4XVdcVXET?=
+ =?us-ascii?Q?Iv1EG7guB+2Aq0VqjJKh/ExlwuNlnJfL3I1DHM+LwqS1XhJgu5uYjdizLy6H?=
+ =?us-ascii?Q?NNLFRnlcrsxjIwkWO/xgKNKTSxJ9xayS02iukhczHAcw3KPDlUOsHYYgSKhI?=
+ =?us-ascii?Q?+GwgrB8TcSmHGSUWsy1ge4bIm89ygMa14o4gN/Ru0EdBopMrpEiFP8ZEZbTR?=
+ =?us-ascii?Q?EccIFyfVlVyd08EK87ITbcBh6haYrxFv0IJXpzpicnn+PJ4xItNUUKj+gWfE?=
+ =?us-ascii?Q?d4/vTpz2Kjbo52apv5kNwGNzzCXplW0iAq1XoFMC9XT8oANJQQivyyT8+XaG?=
+ =?us-ascii?Q?Nyt1OaRXbh7Vk4vS7ilfbB76EqXSXdaPWIrXVpr9+MvKTi8JQ3xBUuVTD02Z?=
+ =?us-ascii?Q?x2xnRI8uH5gtQk3nJ0D5h9XJHLil8oEv1Mw3lximW0gHgLVpuC2YAu5nG0FJ?=
+ =?us-ascii?Q?v55IJnUcP56SKnZs1ShMV6CqNunmLtYFitcUkfoKbJlaJgy4jqhQ47YJHkSL?=
+ =?us-ascii?Q?ewfI2WzneQ+8BCf9XRXk3yeehFGfeRLSzWbSs6SnTX4Pcp0PTAiFFlsKJAMG?=
+ =?us-ascii?Q?tlKb8FHvTUzppUnLer0s0J1X1PiWyOHk9BJ67DOYvhKCfi6T1X8y52Aw4dkF?=
+ =?us-ascii?Q?Y4l2ZujHJkS4cNPkBcdxsNHYGVXKIilKVUNiuIa7fdGYERWrJ5Vb990HDSpY?=
+ =?us-ascii?Q?wTPh5TzTHPEj5ZMoWB348eeqpieqs+GQQGGhgVNvrgRSpFvLamdtTHF/7ch0?=
+ =?us-ascii?Q?9QOomc6ny75H0wTYQVENurcCbIbtnM/RCO9sMt7AVerItmip5UKDPSHZBO1x?=
+ =?us-ascii?Q?K7VXOU5lnOpJ/igfFT/Z7yqOj7JnTe80gLReQtLCMyQDXKACileZzFAiZqZh?=
+ =?us-ascii?Q?bAFhCYh6D3LhvLStWM2VP01JCjVHjs1FT4vr+ooOY0gvipPLzC2+FtwljRaE?=
+ =?us-ascii?Q?mQS8gGw39kG84Rcpz3YmRNUOoKk4JpFrf6aLiHdF3H6k+pK1SxZJjIestGE8?=
+ =?us-ascii?Q?aC7NFXFvWG4I2hge1vj6wy8QYdXTouOnLIzJ7F1aATXkevb6khm5HEWp9wIg?=
+ =?us-ascii?Q?QvhmhQ80qxvbV31faN2yw0Z1R14ioOyHTyLf92GtL9LNkFcQFklN7/npTSHl?=
+ =?us-ascii?Q?GywjNn7UHLj6PQgsPMlNn6xPQn207FK0IAxIvAyj4Bb82FVOyvxfgFjQ/bKG?=
+ =?us-ascii?Q?1gkF4wwWqYhVWok0s7WBWsYd+3OrDl1Api7ZdM127qAVGhj9+VcHz/MlEVxJ?=
+ =?us-ascii?Q?9EaZPKRw7U7ctly5/U+itND3yknwvHtOfNZFvdrcGznHNQ=3D=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1102
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?a2/fVkP6LrUQyVu8DpbmXWoEbVX9NR7xldfER5m2W7EdaCfpqXSoNXvEaD/R?=
- =?us-ascii?Q?ASq7eqWLnCphVIVy6p40F069kKMjVcl/dwIOGTjlbHoDg3XTgUDIs22OxZfH?=
- =?us-ascii?Q?hiIb8CSUZasH0bizM+YD/MvaTXWP7YB/sYkM+pTDaIrFlJX6B613DIJsLp1h?=
- =?us-ascii?Q?vbek2ZQeVfs7el18XGk4RlabKk2tVB9auoDQvOb53UXkHzNqXJ6z4bNRZStc?=
- =?us-ascii?Q?MPpLr6NVCukFJfoSMmwAkJ29rKT1vME98tToQ3GtrE7YWIAOvEMyR8bk/SBn?=
- =?us-ascii?Q?iVcH7sydTKEVGH5ZOQ0Exnn35qbwHdkEAjQLjykQhwcJGvXAq+3+PlB4d1te?=
- =?us-ascii?Q?Or3JzBHRK4iKXa5h03rB9WJ41uITEepj8MNr3+0d8kNWk0tCKojL0FlWG37R?=
- =?us-ascii?Q?dkjel/WrEdn6breNHH4w8ZYlxfJOyfOOHU/cIRnleILJ8WiKoYhPJaFoAyZq?=
- =?us-ascii?Q?OBYMwHR6HWRrXCsab4leRQxfDdPBYhQCeH4rjC91sgldNPcEzcZz1EjceQaZ?=
- =?us-ascii?Q?ulClFdhW0+y0nrxSxa34A/BjUXtIc5ZhTLjsgn9c/d+fSE/SN624NWceJMZp?=
- =?us-ascii?Q?iX7NZgULzSWO3hU3oo2LTU2gosCu7Lefv127zBW5AyNOT//cRsntTeL4Pdzr?=
- =?us-ascii?Q?8BpiFfFL2dXIbEzO4GjWWp/Z0DO1T5vY5gkgdKQMPQ7IvCXM0JurnDCCLxVe?=
- =?us-ascii?Q?ZwlDUgNtbJRm2LtreE8tl8axaG806Q6GorUG0natgX8M4hP5xu6TdjjdO/Se?=
- =?us-ascii?Q?ByY6lR+n0Rk64KkWJaw6d4RwrWKe4QnNqM7D3ZmGNuC3PjoYCON/UptxwOR3?=
- =?us-ascii?Q?rfi9wo+gSQR4kKmnujhj86JlOIQkFuunpLfv/hqNS3Ms1MntkegZMsNzowjR?=
- =?us-ascii?Q?B9fSEekcmncg/4nsuYpc3egfvr705rVtg0hX7+tystKgeHmRd5gexJhCi3qk?=
- =?us-ascii?Q?HuTlSNmnLHNfJT+iCYHSzV1gABE9bXJ4Lfm4KYTDiZXpPgtwASJVHCuKjFMb?=
- =?us-ascii?Q?XarwoJvYFcxd1wR8SbUSX6MzrFlS9ou8ZmMywja+p7BKmc4T+jswSobO9I0X?=
- =?us-ascii?Q?lvO4IY3xfYVJIFq3aIZTsdu0OvC54wEVGS2J5nEFWQbUqRES/3X/TwCpVtON?=
- =?us-ascii?Q?ZdZU5fp9g5HlFl/4ANpadQGnROBw3Fc0ydvyyPyf4eINfKRcBRsQ/qM6+YTw?=
- =?us-ascii?Q?3IKCg4cWxHUzo893hRoe/nvIusjo7f24KiVoeyPmUimCAJAMQsQAwB6Euey3?=
- =?us-ascii?Q?f81XRvU/NW6CVbzmKYcgW6wZOe5cs403VYHiBG/cf7TRMU7IKkAZ+DmNYQWl?=
- =?us-ascii?Q?gnFW+shEh9sokeJxCfZDtLk0ri2mqehgLuCmY1FIrOl+4OSTuOpyGBF5Lbtu?=
- =?us-ascii?Q?jHfxS24UUcDgLNJAB2TLY7DgvqpaAq4iTAux45KFR6Y2s/f8hUPtUJ5qB1p0?=
- =?us-ascii?Q?cDaD01RUOj4bkNqfWpqNSPXDcKyW7TzDPvmdLxnGEtl00SlKmfF+1i7gHnOU?=
- =?us-ascii?Q?x17xsHtbt+fwKqkBt5mHvnE4O/ZAIGoC7MRzUjo4AfGqpvqiqZLYJF7TSWH0?=
- =?us-ascii?Q?Y/njCg2oo35dy7ZcV7LA8Jec1v5Lz2f7x50iPbNj?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa68c48c-b378-451b-cc58-08dcc5c2f455
-X-MS-Exchange-CrossTenant-AuthSource: SEZPR06MB5624.apcprd06.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/8NuOxm4KDZO+YimLN/Mg8X4u81Q36KXLS3uv6mk5y3a0vWFZU2AGrBVUtX2?=
+ =?us-ascii?Q?vA+YOn+QyT4bV5rzKBmd+tecYDKOVJVn4yZoXtoMaQNT/PlxGovnB9vU9vX7?=
+ =?us-ascii?Q?+oX38O1rQnHOpzF2L1poCzxHODyqDEe/m9URUtl+qmvdPjZKvaipQ0V3tpNQ?=
+ =?us-ascii?Q?UI1VXT9dubHL2k2RX/+19eIYn7DHnzCCSdpgsVdSyL6EWuyPzIjjhj8W4C2F?=
+ =?us-ascii?Q?g6SksBtx+zg2BiDA4cczk9o418NMZQFUHacO5Vq2Ac2kNJSlXHJ0f3S8r7iP?=
+ =?us-ascii?Q?GXpU/tDSnswwkZ5/YloQgEFyLxT7YN/LUYCYV1ZocUWinv2A2LjIriiRQo0L?=
+ =?us-ascii?Q?LUKaGFhJZM5RO8SGmwsn/uRg3awFS+lA5u3RVvPzXN1aNCTDoDO4SHDKe7Ox?=
+ =?us-ascii?Q?JCQIg5BKDpVb2YxNITXspZ8merb/sgLj9gPVcuVnEiJxNLKMCgk6cqAD6ja0?=
+ =?us-ascii?Q?NLHGt3jVOWo94E/HDThA/I4AMoenKgNU4s+rOTsK6IYNV13FM/DINW5qUncQ?=
+ =?us-ascii?Q?l0etJoNiIoJNk0XbVDkDCF39lmJh0Sv/eY6Xc0rbhCKhTvvYjRQbr69golOt?=
+ =?us-ascii?Q?QWEPK8pMa2wUzQdxU2ImEuDNH625pgqCW17E+4wVfJJctXEBhXowXw+FWa45?=
+ =?us-ascii?Q?RWQ8ZzuAs7aw020VUwTMZf64JPimFK9lhiEVkfMCU9ebGZ0WAzTObl9gdsLx?=
+ =?us-ascii?Q?P0VQBI82Y23rLjEejei7wo/dI3ZJ8vJIR2uvK7ULs+SnJeK/QsDwjPG1+2eJ?=
+ =?us-ascii?Q?dV9KQkhU78XfUHCRymQ4c0xrjiWVKkyFNyV/gk+PI6Xx6faPS9nFxpcSGsAI?=
+ =?us-ascii?Q?QnNXChgPC+SteURntXeE+e8mECB8821m6ORJM5gMnGmT8klBmt/jxz1P+FpO?=
+ =?us-ascii?Q?kxWM8I8vK8fU7jc9UR8jQ4eI2FjEhbZ2th0X/6KacaGANM8/zkOSxFPPhODg?=
+ =?us-ascii?Q?7Tf+fb0tYNIdxL+GpyX/7MjM8DKano0V5J3CwRcW6oEQ9VafqyK+X7hqYkH5?=
+ =?us-ascii?Q?XBPG+RbeqavqVcOLglR1jbPTlwCj8xahhOl1fCnqO9iGPJ1qD1FO9ISMgLI2?=
+ =?us-ascii?Q?sm2Qv2xT8OakSN+gW0oeJDYE+UmzPv9ZKS02haUeJsWyppzMMPmLb1l/b1HI?=
+ =?us-ascii?Q?5nwbWibZPHDoiALsLwb0Jz5qS2iAb9NcpnUEy1ml9xxxqZpOSc9xnQ5D4mSp?=
+ =?us-ascii?Q?SsmHX4REwel7lsU4lC8K6AJhD0pZfWNQLpc5O/OL9HL1KR+jyQ0u3/2361W9?=
+ =?us-ascii?Q?pH+BSZziQrAYJVoN3LK3E/UvfeBa5T1+COV7Lz8FP0zvsQgruVg075loB5FV?=
+ =?us-ascii?Q?MsZtM4qvvsiE6yjOgoi9JR7bKyfxtC9oPn/C/ErYlytxlNjVrQNqN/bG4072?=
+ =?us-ascii?Q?5t+OL+WLjzV0FqsqD29X0Pvrdb/Z/k1IBQQkjNDzZxI85Ay3hUbNLLeTn39C?=
+ =?us-ascii?Q?9dZQi1zR2FCkgaDbWOGlPxCJfI9p+Yhhn7aMnUhG2ahoik1Ed0u7oSmtwg6j?=
+ =?us-ascii?Q?zLOpe6/SY3Do30xSN87k6Sr5ov/9TAZ2bzn8/4qD/lUES1nUavFme1xNO2zH?=
+ =?us-ascii?Q?Det7fzFbddK4INFSKUvVs1dkcDXWPT+EBmrHaNVj21WMnTLDCAXX4sq1JFih?=
+ =?us-ascii?Q?7w=3D=3D?=
+X-OriginatorOrg: camlingroup.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7ee0871-fa4b-4a10-233c-08dcc5cb97c2
+X-MS-Exchange-CrossTenant-AuthSource: CWXP123MB5267.GBRP123.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2024 11:33:49.6173
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2024 12:35:39.7035
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-Id: fd4b1729-b18d-46d2-9ba0-2717b852b252
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pLWwhxL73+glbqItvUKoNNxFDmZfiSRXv5Om8unZxjkLThnDAHxEArmDUP9VLCDhbPqvWAhLEe/oO1wR5O8toQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB6466
+X-MS-Exchange-CrossTenant-UserPrincipalName: LLE7EqKX7gKCFvvFjGBr/U3hvVb4YDlTWjrjVY8eCCaSFA08vtrrCQy54QP/a1AXGUEOFJNUtLpGfwR0m1eTGkXPRdyk50RtqntR8SaSQpQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO0P123MB5968
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: camlingroup.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The devm_clk_get_enabled() helpers:
-    - call devm_clk_get()
-    - call clk_prepare_enable() and register what is needed in order to
-     call clk_disable_unprepare() when needed, as a managed resource.
+Hi Andy,
 
-This simplifies the code and avoids calls to clk_disable_unprepare().
+Thanks for thorough review.
 
----
-v1->V2 changes
-1.stm32-usart modifies the return method and removes unused labels
+W dniu 23.08.2024 o=C2=A019:58, Andy Shevchenko pisze:
+> On Fri, Aug 23, 2024 at 7:55=E2=80=AFPM Lech Perczak
+> <lech.perczak@camlingroup.com> wrote:
+>>
+>> Now that bit definition comments were cleaned up, convert bitmask
+>> definitions to use BIT() macro for clarity.
+>> Convert SC16IS7XX_IIR_* bitmask constants, to use GENMASK() macro, where
+>> applicable - while at that, realign comments.
+>> Compose SC16IS7XX_LSR_BRK_ERROR_MASK using aforementioned constants,
+>> instead of open-coding it, and remove now unneeded comment.
+>=20
+> comments
 
-Signed-off-by: Lei Liu <liulei.rjpt@vivo.com>
----
- drivers/tty/serial/stm32-usart.c | 30 ++++--------------------------
- 1 file changed, 4 insertions(+), 26 deletions(-)
+Noted.
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index e1e7bc04c579..559fcc2659eb 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1550,11 +1550,6 @@ static int stm32_usart_get_ftcfg(struct platform_device *pdev, struct stm32_port
- 	return fifo_size;
- }
- 
--static void stm32_usart_deinit_port(struct stm32_port *stm32port)
--{
--	clk_disable_unprepare(stm32port->clk);
--}
--
- static const struct serial_rs485 stm32_rs485_supported = {
- 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND |
- 		 SER_RS485_RX_DURING_TX,
-@@ -1599,19 +1594,13 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 
- 	spin_lock_init(&port->lock);
- 
--	stm32port->clk = devm_clk_get(&pdev->dev, NULL);
-+	stm32port->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(stm32port->clk))
- 		return PTR_ERR(stm32port->clk);
- 
--	/* Ensure that clk rate is correct by enabling the clk */
--	ret = clk_prepare_enable(stm32port->clk);
--	if (ret)
--		return ret;
--
- 	stm32port->port.uartclk = clk_get_rate(stm32port->clk);
- 	if (!stm32port->port.uartclk) {
--		ret = -EINVAL;
--		goto err_clk;
-+		return -EINVAL;
- 	}
- 
- 	stm32port->fifoen = stm32port->info->cfg.has_fifo;
-@@ -1625,8 +1614,7 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 
- 	stm32port->gpios = mctrl_gpio_init(&stm32port->port, 0);
- 	if (IS_ERR(stm32port->gpios)) {
--		ret = PTR_ERR(stm32port->gpios);
--		goto err_clk;
-+		return PTR_ERR(stm32port->gpios);
- 	}
- 
- 	/*
-@@ -1637,16 +1625,9 @@ static int stm32_usart_init_port(struct stm32_port *stm32port,
- 		if (mctrl_gpio_to_gpiod(stm32port->gpios, UART_GPIO_CTS) ||
- 		    mctrl_gpio_to_gpiod(stm32port->gpios, UART_GPIO_RTS)) {
- 			dev_err(&pdev->dev, "Conflicting RTS/CTS config\n");
--			ret = -EINVAL;
--			goto err_clk;
-+			return -EINVAL;
- 		}
- 	}
--
--	return ret;
--
--err_clk:
--	clk_disable_unprepare(stm32port->clk);
--
- 	return ret;
- }
- 
-@@ -1853,8 +1834,6 @@ static int stm32_usart_serial_probe(struct platform_device *pdev)
- 	if (stm32port->wakeup_src)
- 		device_set_wakeup_capable(&pdev->dev, false);
- 
--	stm32_usart_deinit_port(stm32port);
--
- err_dma_tx:
- 	if (stm32port->tx_ch)
- 		dma_release_channel(stm32port->tx_ch);
-@@ -1904,7 +1883,6 @@ static void stm32_usart_serial_remove(struct platform_device *pdev)
- 		device_init_wakeup(&pdev->dev, false);
- 	}
- 
--	stm32_usart_deinit_port(stm32_port);
- }
- 
- static void __maybe_unused stm32_usart_console_putchar(struct uart_port *port, unsigned char ch)
--- 
-2.34.1
+>=20
+> ...
+>=20
+>>  /* IIR register bits */
+>> -#define SC16IS7XX_IIR_NO_INT_BIT       (1 << 0) /* No interrupts pendin=
+g */
+>> -#define SC16IS7XX_IIR_ID_MASK          0x3e     /* Mask for the interru=
+pt ID */
+>> -#define SC16IS7XX_IIR_THRI_SRC         0x02     /* TX holding register =
+empty */
+>> -#define SC16IS7XX_IIR_RDI_SRC          0x04     /* RX data interrupt */
+>> -#define SC16IS7XX_IIR_RLSE_SRC         0x06     /* RX line status error=
+ */
+>> -#define SC16IS7XX_IIR_RTOI_SRC         0x0c     /* RX time-out interrup=
+t */
+>> -#define SC16IS7XX_IIR_MSI_SRC          0x00     /* Modem status interru=
+pt
+>> -                                                 * - only on 75x/76x
+>> -                                                 */
+>> -#define SC16IS7XX_IIR_INPIN_SRC                0x30     /* Input pin ch=
+ange of state
+>> -                                                 * - only on 75x/76x
+>> -                                                 */
+>> -#define SC16IS7XX_IIR_XOFFI_SRC                0x10     /* Received Xof=
+f */
+>> -#define SC16IS7XX_IIR_CTSRTS_SRC       0x20     /* nCTS,nRTS change of =
+state
+>> -                                                 * from active (LOW)
+>> -                                                 * to inactive (HIGH)
+>> -                                                 */
+>> +#define SC16IS7XX_IIR_NO_INT_BIT       BIT(0)          /* No interrupts=
+ pending */
+>=20
+>> +#define SC16IS7XX_IIR_ID_MASK          GENMASK(5,1)    /* Mask for the =
+interrupt ID */
+>=20
+> This is okay, but the rest of the bit combinations are better to have
+> to be plain numbers as usually they are listed in this way in the
+> datasheets. Note as well that 0x00 is a valid value which you can't
+> express using BIT() or GENMASK() (and this is usually the main point
+> to *not* convert them to these macros).
+>=20
+>> +#define SC16IS7XX_IIR_THRI_SRC         BIT(1)          /* TX holding re=
+gister empty */
+>> +#define SC16IS7XX_IIR_RDI_SRC          BIT(2)          /* RX data inter=
+rupt */
+>> +#define SC16IS7XX_IIR_RLSE_SRC         GENMASK(2,1)    /* RX line statu=
+s error */
+>> +#define SC16IS7XX_IIR_RTOI_SRC         GENMASK(3,2)    /* RX time-out i=
+nterrupt */
+>> +#define SC16IS7XX_IIR_MSI_SRC          0x00            /* Modem status =
+interrupt
+>> +                                                        * - only on 75x=
+/76x
+>> +                                                        */
+>> +#define SC16IS7XX_IIR_INPIN_SRC                GENMASK(5,4)    /* Input=
+ pin change of state
+>> +                                                        * - only on 75x=
+/76x
+>> +                                                        */
+>> +#define SC16IS7XX_IIR_XOFFI_SRC                BIT(4)          /* Recei=
+ved Xoff */
+>> +#define SC16IS7XX_IIR_CTSRTS_SRC       BIT(5)          /* nCTS,nRTS cha=
+nge of state
+>> +                                                        * from active (=
+LOW)
+>> +                                                        * to inactive (=
+HIGH)
+>> +                                                        */
+>
+Before I send out v4, do I get it right, that I should convert back SC16IS7=
+XX_*_SRC
+(i.e. interrupt source constants), and leave the rest as in v3?
+=20
+> ...
+>=20
+>> +#define SC16IS7XX_LSR_BRK_ERROR_MASK   (SC16IS7XX_LSR_OE_BIT | \
+>> +                                       SC16IS7XX_LSR_PE_BIT | \
+>> +                                       SC16IS7XX_LSR_FE_BIT | \
+>> +                                       SC16IS7XX_LSR_BI_BIT)
+>=20
+> It's better to start from the next line
+>=20
+> #define SC16IS7XX_LSR_BRK_ERROR_MASK     \
+>         (SC16IS7XX_LSR_OE_BIT | ...
+
+Makes sense, noted.
+>=20
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
+
+--=20
+Pozdrawiam/With kind regards,
+Lech Perczak
+
+Sr. Software Engineer
+Camlin Technologies Poland Limited Sp. z o.o.
+Strzegomska 54,
+53-611 Wroclaw
 
