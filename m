@@ -1,64 +1,156 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CFE32C1AC;
-	Mon, 26 Aug 2024 06:00:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 18C3C4EB2B;
+	Mon, 26 Aug 2024 06:54:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724652055; cv=none; b=Q9u7rfkjJSc5rK5igAE4jMA8GvIXKVLcOa13O4nty2Sd8GZR9QlsovVHJvQnCZcdMWAmxSaVGl154u5Cmp+XNt3bgzEknSr4ych0Jgotcf28fsq08MCyGGr6I8nc5bL5ntHRjZM+b5wfLeJ6wvgLWnqZr9ID5fGdDJf4npKwxKQ=
+	t=1724655289; cv=none; b=OHyUkDmdgyvGs43dZRnfEOyIwxx25j6pIBH0WBjb2CGd0jHDZ3+b+KHoMRmwdbz111iwBHcsgL98UOkqM/c+kmVgi71T/AGhkpoDSbD4M5p1qhtZWNTuyI103iB76llywZgnm3RzYQc0JMzWKa3zgkxcnztwNIsfCvcJaYiYGeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724652055; c=relaxed/simple;
-	bh=M8PzmzGsKxoxe7APmdLlrOMwSJDjNeWLTNO/ZLQaq+Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FrICi3F19hSWy7DkvIklXwYWu6ubpFVqIHTjfoRuozNgKGDeM4BlX8LJ2tQq2cF1W8if/b8+anpeD0eba+Gtn+h6i9uX/dST4Dqiy7gilFHq05+HPMawYl9W0PBmd1Yw3DPi4UcDmozXDvsGDarRmNNkEWyUionZM01UtxaKfsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R2MOgqYB; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R2MOgqYB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0944EC4DE00;
-	Mon, 26 Aug 2024 06:00:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724652055;
-	bh=M8PzmzGsKxoxe7APmdLlrOMwSJDjNeWLTNO/ZLQaq+Q=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=R2MOgqYB1+c+B3HmKWJNdFq5pWC0ZdwT7maoaxpQAzOQvYnFbW3xTjmtCGrC7fgmj
-	 KsXHARBtpgxhB2hPDZ92VZoL8Dr3Ltd+aYGceYD/69W3P9Zl6W9tkOiSZxjH4AhmVF
-	 D0e3M/gnWktJ723Lk9NyFky8Fur/Y4Hi/KJWQxM271rVAO30/mKQciK4qjBaXy4cUw
-	 JC48WSZC1Jg+RvBuX/D2Ihgh6I4wd+aG9nsdfnt3czoWMKonKyK24VvebTwOGAzqda
-	 aIURyC1PSYrreXtmQyU8VudnW0i4GIfI8Otvtq5E8Uu3nMHDA5wxjK6LmtNey/X7my
-	 68kIPA0WqQt0g==
-Date: Mon, 26 Aug 2024 08:00:51 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: zhenghaowei@loongson.cn
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, chenhuacai@kernel.org, kernel@xen0n.name, 
-	p.zabel@pengutronix.de, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, loongarch@lists.linux.dev
-Subject: Re: [PATCH v3 3/3] LoongArch: Update dts to support Loongson UART
- driver.
-Message-ID: <gtbaqcnk4g3f4achlyiixu2bbb2rxoxoitbltqxavexjoyqxlf@furbr4zsirkz>
-References: <20240826024705.55474-1-zhenghaowei@loongson.cn>
- <20240826024705.55474-4-zhenghaowei@loongson.cn>
+	s=arc-20240116; t=1724655289; c=relaxed/simple;
+	bh=WnelEQkz9msN7SegJG/9eJhWytSzJccHwwXnNHJPbSQ=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=AYFrEWUnImmYZAK3eW/D+jLrtC80+vI6gV46wJ3luE6cIJ5fWox4/3MhhVF5NiD5jLsDfuEeyIXGsU6t83sAvOtfIhEfH31GIdT90L6EvZ6uLhcYoVo+ULegekIizBQ8g45YxZ7GWGr5GRLZTXF0nlzaYPBIFJDJtooLn9+BVZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [10.20.4.132])
+	by gateway (Coremail) with SMTP id _____8AxmOmvJsxmwiMgAA--.64676S3;
+	Mon, 26 Aug 2024 14:54:39 +0800 (CST)
+Received: from [10.20.4.132] (unknown [10.20.4.132])
+	by front1 (Coremail) with SMTP id qMiowMCxTGetJsxmAK8iAA--.12952S2;
+	Mon, 26 Aug 2024 14:54:37 +0800 (CST)
+Message-ID: <e0f40e93-a325-4db2-86af-5d2d29fb0095@loongson.cn>
+Date: Mon, 26 Aug 2024 14:54:37 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240826024705.55474-4-zhenghaowei@loongson.cn>
+User-Agent: Mozilla Thunderbird
+From: =?UTF-8?B?6YOR6LGq5aiB?= <zhenghaowei@loongson.cn>
+Subject: Re: [PATCH v3 1/3] dt-bindings: serial: Add Loongson UART controller
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, chenhuacai@kernel.org,
+ kernel@xen0n.name, p.zabel@pengutronix.de, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ loongarch@lists.linux.dev
+References: <20240826024705.55474-1-zhenghaowei@loongson.cn>
+ <20240826024705.55474-2-zhenghaowei@loongson.cn>
+ <7346m2dmduzdrhzmhlnms24bltoczbajfxfh6wcxxplzydqskc@2xey7pdc24t3>
+Content-Language: en-US
+In-Reply-To: <7346m2dmduzdrhzmhlnms24bltoczbajfxfh6wcxxplzydqskc@2xey7pdc24t3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qMiowMCxTGetJsxmAK8iAA--.12952S2
+X-CM-SenderInfo: x2kh0w5kdr4v3l6o00pqjv00gofq/1tbiAgEBBGbLHpsHKwABsD
+X-Coremail-Antispam: 1Uk129KBj93XoWxAr1DAFyxWr45ur4kuFWUZFc_yoW5Wry8pr
+	13C3ZrCw10qF17u390qFy8Ga1rZrZ5GanIqF47tw12kasYgas3Xr4fKr1UX3y3Ar18Xryj
+	va4FgF47K3WUArXCm3ZEXasCq-sJn29KB7ZKAUJUUUUr529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUUB0b4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+	6r4UJVWxJr1ln4kS14v26r1Y6r17M2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6xkI12
+	xvs2x26I8E6xACxx1l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y
+	6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr4
+	1lc7CjxVAaw2AFwI0_JF0_Jw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_
+	Gr1l4IxYO2xFxVAFwI0_Jrv_JF1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67
+	AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8I
+	cVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI
+	8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v2
+	6r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxUGYDUUUU
 
-On Mon, Aug 26, 2024 at 10:47:05AM +0800, zhenghaowei@loongson.cn wrote:
-> From: Haowei Zheng <zhenghaowei@loongson.cn>
-> 
-> Change to use the Loongson UART driver for Loongson-2K2000,
-> Loongson-2K1000 and Loongson-2K0500.
 
-Why?
+在 2024/8/26 13:59, Krzysztof Kozlowski 写道:
+> On Mon, Aug 26, 2024 at 10:47:03AM +0800,zhenghaowei@loongson.cn wrote:
+>> From: Haowei Zheng<zhenghaowei@loongson.cn>
+>>
+>> Add Loongson UART controller binding with DT schema format using
+>> json-schema.
+>>
+>> Signed-off-by: Haowei Zheng<zhenghaowei@loongson.cn>
+>> ---
+>>   .../bindings/serial/loongson,uart.yaml        | 63 +++++++++++++++++++
+>>   1 file changed, 63 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/serial/loongson,uart.yaml
+>>
+>> Changes in V2:
+>>
+>> - Correct the schema formatting errors.
+>>
+>> - file name changed from 'loongson-uart.yaml' to 'loongson,ls7a-uart.yaml'
+>>
+>> - Replace 'loongson,loongson-uart' with 'loongson,ls7a-uart'.
+>>
+>> Changes in V3:
+>>
+>> - Change the filename from 'loongson,ls7a-uart.yaml' to 'loongson,uart.yaml'.
+>>
+>> - Drop newly defined features: fractional-division, rts-invert, dtr-invert,
+>>    cts-invert and dsr-invert.
+>>
+>> - Add three specific SoC: 'loongson,ls7a-uart', 'loongson,ls3a5000-uart' and
+>>    'loongson,ls2k2000-uart'.
+>>
+>> - Drop 'LOONGSON UART DRIVER' description in MAINTAINERS.
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/loongson,uart.yaml b/Documentation/devicetree/bindings/serial/loongson,uart.yaml
+>> new file mode 100644
+>> index 000000000000..19a65dd5be9f
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/serial/loongson,uart.yaml
+>> @@ -0,0 +1,63 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id:http://devicetree.org/schemas/loongson,uart.yaml#
+>> +$schema:http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Loongson UART
+>> +
+>> +maintainers:
+>> +  - Haowei Zheng<zhenghaowei@loongson.cn>
+>> +
+>> +allOf:
+>> +  - $ref: serial.yaml
+>> +
+>> +properties:
+>> +  compatible:
+>> +    oneOf:
+>> +      - enum:
+>> +          - loongson,ls7a-uart
+> Quick look tells me there is no such soc like ls7a. If there is such,
+> please point me to the DTSI.
+>
+I had a problem with my description of ls7a, it's just a bridge chip, but
 
-That's what commit msg should explain.  This is not bisectable and
-breaks users without any reasonable need/explanation.
+both ls2k0500 and ls2k1000 share the same UART controller as it.
 
-Best regards,
-Krzysztof
+>> +          - loongson,ls3a5000-uart
+>> +          - loongson,ls2k2000-uart
+>> +      - items:
+>> +          - enum:
+>> +              - loongson,ls2k1000-uart
+>> +              - loongson,ls2k0500-uart
+>> +          - const: loongson,ls7a-uart
+> Just use real SoC names.
+
+The ls7a is not an SoC; it is typically used in conjunction with 
+Loongson 3 series
+
+processors and boots via ACPI. Currently, there is no corresponding DTSI 
+provided.
+
+>> +      - items:
+>> +          - enum:
+>> +              - loongson,ls2k1500-uart
+>> +          - const: loongson,ls2k2000-uart
+>> +      - items:
+>> +          - enum:
+>> +              - loongson,ls3a6000-uart
+>> +          - const: loongson,ls3a5000-uart
+> Best regards,
+> Krzysztof
 
