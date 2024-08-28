@@ -1,46 +1,59 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C3061FEB;
-	Wed, 28 Aug 2024 04:35:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7617158543;
+	Wed, 28 Aug 2024 09:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724819754; cv=none; b=l3ekEtZEj9bQXIMDCqcgIGpgUUBNfz7684stFWF86jSjQTY4GdlfW53YE1hnwLdeT8JxdD8AV1hKtKs8D6Qu1zkMma3WrEEI8xHVOfQyANlksSKkoNQn4B/i9n35jvMDEYUeVikaQx7/R5mL1Tyncu2euAad+8/aH9GjnYHiSAY=
+	t=1724836249; cv=none; b=fR6F5oTVpoY5VSdFqGkxpdUG8+u86bOo7/OeKHm6gAg2qIwvP8UcW2kcrryXHifzRtjDeRGOhSMcDCoVjiSPQiv9EIvT47g531ELj+Wqp8KF4Oal0ElpKNc9E8Gvnzl63KH6yWQvO2pJb6BrmA0XSEDUl5cjc3Tm7EvRXasVRfk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724819754; c=relaxed/simple;
-	bh=EMGmSD5ldjCHf+Invd0nZWuWUAs1N2RtvKejZd2Egz0=;
+	s=arc-20240116; t=1724836249; c=relaxed/simple;
+	bh=zSHKO3j33Ria7zyczy79YyyVNqfKsgActvy2LbiGQV4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JI1n0H6AcK5ZGvewAV9DAFvh/UF0w3/8DWAHNV05Q55W+o+3+1HE1ppYvC33t+uuRG6qFsc3wui482c/drqNtZWWQN+PAzfTs5OaHj6dUGzklgQKxPH8JF+/vZIim3nGmTlaUFvq6Cr5wyA4ckr1+MNsFlolEGdHvuJPLiLYPe8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
+	 In-Reply-To:Content-Type; b=CMpFiJ9ARmFaQQGRod258pIEp0GA6yhKfPJi86hnneC0QCon7f2EtRYFeqFk5MD6YMph5XOREDHOtMzCmrDm/rZn13DehMsWZZiCxR/zl0kI4Zup7mSM4JROZYN2htZ35DIwcd5dSOFA95q4qF519Xgh1/K61TbHWYDEgeAv8wU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gdu/dfRV; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4280c55e488so978355e9.0;
-        Tue, 27 Aug 2024 21:35:52 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gdu/dfRV"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3719753d365so3592136f8f.2;
+        Wed, 28 Aug 2024 02:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1724836246; x=1725441046; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=x3niQjXZJR5D3vooE/mqJ9Cy41uU536hIxUZ/GtxSL8=;
+        b=gdu/dfRVZFpumaFqQEvACr+rscBpBbtdHBoaQwGJ3gfV9woODBKLe6CbaPdoyF7gJN
+         Eh4Jkpvd3Mkf1wZG2uwBCzPW1zxiQjDd9BJaO3SpL1PA82Nkf2yThMd7ALIx+pzciDnP
+         WgODzsElulGQ60wU4l6bfGbPEk+SQFHW6ZEg/2MzCb/3SSRfkobb1shXgtvHmSNfd9dY
+         ODarThN/XIg1Xe6KTod/mtI0RoyQsnPxpcbmSUIVp2EvfPFM+317lE6OC6XtDMfsISDw
+         YQAIGtB7J4lsln4ECh14IUhvRm6305pZiW1/EF9LZc+h1UZbvkaCbGwvBAFodAbFB8GA
+         tC9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724819751; x=1725424551;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pILqUcgqpPqet5aWCalyNMkoLZzcaSoPIjuIgho7sGA=;
-        b=E28GGfx3PVOsHa/FwccZW4UB8N9dVReiDSXAoDSi3kaYUgqjrtVHk4fgh/HmDhWRlv
-         rxKwAubTpxiw3zrfntZrxROvL8ocEqU/3wW7rAXPFybeRAsVIyKKbwVDsbPTxET7liww
-         pOxB1R8a1892WyChbTQr4fbr69FT+4lnzCUH8AIDyOWf3SuhBM1x3KZ2lgYZjm5GIY1L
-         gOrqBCKqHMRRHSsHZ1XSy9K9UHQBKCwehHZLFHZrG5E4r+xmTwA5z+/jZHgJ0bD2FvO+
-         kAH59BFRH5d38X4YdPMiZcaLMcbqPSmGStc1NF7GA4b/PNNo4o3TJErSKk5UgpGWIGYx
-         rpDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUvunhk/rycSpwy7m3UMHZBp91CST2N47TnPVWVuETJryw9VqZT+hQW2SZJZtlXbSVJJk+hvw8QiKkxLGyH@vger.kernel.org, AJvYcCVrqT+UpmAgHkuSruXkxeu5CVbaQziOufWl88ESAlTUpY367fLWj0SAH0yiBpzK6iSkhHefHM7URRnwWfw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqUa70hCcVLifYPKl7bFIkrRPLiYQq6igFviLW06oDe5fQjQCJ
-	Ew2N7fxRQ5IJzXe45Zy8fAsy0LlgmNhfvqJDS+xLEpbTjhS5pxEG
-X-Google-Smtp-Source: AGHT+IFaHqIAHK6WsmOesnB6osiQ8KIK6qdiTKzAtA3/4csKa7ONpjwJ1pd20GFs/4cgfygJFg2akw==
-X-Received: by 2002:a05:600c:1ca6:b0:424:8dbe:817d with SMTP id 5b1f17b1804b1-42ba56a9afdmr4493675e9.10.1724819750624;
-        Tue, 27 Aug 2024 21:35:50 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42ba6397dcdsm7843055e9.6.2024.08.27.21.35.48
+        d=1e100.net; s=20230601; t=1724836246; x=1725441046;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=x3niQjXZJR5D3vooE/mqJ9Cy41uU536hIxUZ/GtxSL8=;
+        b=CMnPNaWkK9wHXcUCKfcgokqqQEk7NLICn5FQ4nX8FFc9uxhtP9lEhL/tiMBFu/cwld
+         +mTuFxmw00de13WoyBVh8tloKWRxLdhrulHmxgw3tK/My6MKB6LQEX/EoUlqBmGFirOw
+         PwsuEUu4KStoxh+4Mpchi/VJ+sM7C47SyAMc901HoUxyda82XDnTtPaXdsze2D/U806A
+         1w4VgxxpcjTEjBuFhP/XjKyQt8TbC9QIDXPtWyu9gMvyIPCscD9diDjYE+XOniNuASbH
+         /FY0JHkvDclWTCzbVmKmgjQiFB+kOZp/A7gbglARwgs9opkTt7UmHOtGc4nxUA6QuNvt
+         1I+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVDTbALPawLNrHvu3ewZn3pxdkB7JuSX1rJzcH98llmryizVtqIUC2drVl9nS9K215ep84oYTmScBtTt90utV+/zw1qRA==@vger.kernel.org, AJvYcCVROz0/b0e+dXnIIuLTT43aKWY4hMdGy5IKru6xQWyhwMQ1Mxo7L8SJzdiG60mpJg1zPumdXPD+lhYK@vger.kernel.org, AJvYcCVw8/nRc3KkMpNBA6GZfexs63cg4g9VXvazZuvTm/ow2FaIyYACB1gOhRDduw64JCL6sD68r7PJHlghPOF2@vger.kernel.org, AJvYcCW+kvfZZWH3pOLloutrcddKTdUterGzFVr/NRNaiabK4BQpIR9VAmYFcqwRUXnV+1adIPdmrGeMqFXpYQ==@vger.kernel.org, AJvYcCWqb8IoshiENJD9xaCpSzWpS7kv0hKibMVaZnvZEArEwPHMJj5rNaP9CdPal4g+cGkd3KoQcs3bH7qdXWVi@vger.kernel.org
+X-Gm-Message-State: AOJu0YxKo1W153ioV0ox8JLhZ1KGaCEGSLZli6SYZMb5vNbQr8fj93Ve
+	qma1q31KCod0fjoaayUcri6pvJth4BC8FvMW4/3E2hJ407Ef+b5Q
+X-Google-Smtp-Source: AGHT+IF7uY9ow2G6xujW69BVfU5b4AZOL2v5nnCZbY71qinhm3c0AqkQo9Sucb8izKf3PWV00S2FKQ==
+X-Received: by 2002:adf:a344:0:b0:367:98e6:362b with SMTP id ffacd0b85a97d-37311909018mr10609524f8f.42.1724836245824;
+        Wed, 28 Aug 2024 02:10:45 -0700 (PDT)
+Received: from [10.126.144.131] (ufr-132-230-194-172.eduroam-nat.uni-freiburg.de. [132.230.194.172])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3730810ffb9sm15230364f8f.7.2024.08.28.02.10.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Aug 2024 21:35:49 -0700 (PDT)
-Message-ID: <19c7e2b8-7f74-4138-b366-758b65da998b@kernel.org>
-Date: Wed, 28 Aug 2024 06:35:47 +0200
+        Wed, 28 Aug 2024 02:10:45 -0700 (PDT)
+Message-ID: <d08d41ad-edcb-48ad-a848-53edc45ab8eb@gmail.com>
+Date: Wed, 28 Aug 2024 11:10:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,76 +61,113 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 0/3] serial: sc16is7xx: cosmetic cleanup
-To: Lech Perczak <lech.perczak@camlingroup.com>,
- Andy Shevchenko <andy@kernel.org>, linux-serial@vger.kernel.org,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>,
- =?UTF-8?Q?Krzysztof_Drobi=C5=84ski?= <k.drobinski@camlintechnologies.com>,
- Pawel Lenkow <p.lenkow@camlintechnologies.com>,
- Kirill Yatsenko <kirill.yatsenko@camlingroup.com>
-References: <Zsy998mgOAyJa2xn () smile ! fi ! intel ! com>
- <8e4874bc-893f-44b5-9775-4581d628ba1e@camlingroup.com>
+Subject: Re: [PATCH v3 3/3] platform/surface: Add OF support
+To: Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
+ platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <quic_kdybcio@quicinc.com>
+References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
+ <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
+ <ZszrjQChQ2aS5YjV@surfacebook.localdomain>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <8e4874bc-893f-44b5-9775-4581d628ba1e@camlingroup.com>
+From: Maximilian Luz <luzmaximilian@gmail.com>
+In-Reply-To: <ZszrjQChQ2aS5YjV@surfacebook.localdomain>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 27. 08. 24, 17:38, Lech Perczak wrote:
-> Only the single expansion of GENMASK proves very hard to analyze in the
-> diff - so I double-checked with a calculator,
-> though all BIT() expansions do match, as does the updated definition.
-> of SC16IS7XX_LSR_BRK_ERROR_MASK.
+Hi,
 
-You can diff also the generated .o fed through objdump -d (generated .s 
-usually contains line numbers).
+I thought I should provide some context:
 
-regards,
--- 
-js
-suse labs
+Am 26/08/2024 um 22:54 schrieb Andy Shevchenko:
+> Wed, Aug 14, 2024 at 12:27:27PM +0200, Konrad Dybcio kirjoitti:
+>> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
 
+[...]
+
+>> +	/*
+>> +	 * When using DT, we have to register the platform hub driver manually,
+>> +	 * as it can't be matched based on top-level board compatible (like it
+>> +	 * does the ACPI case).
+>> +	 */
+>> +	if (!ssh) {
+>> +		struct platform_device *ph_pdev =
+>> +			platform_device_register_simple("surface_aggregator_platform_hub",
+>> +							0, NULL, 0);
+>> +		if (IS_ERR(ph_pdev))
+>> +			return dev_err_probe(dev, PTR_ERR(ph_pdev),
+>> +					     "Failed to register the platform hub driver\n"); 
+>> +	}
+
+[...]
+
+>>   static int ssam_platform_hub_probe(struct platform_device *pdev)
+>>   {
+>>   	const struct software_node **nodes;
+>> +	const struct of_device_id *match;
+>> +	struct device_node *fdt_root;
+>>   	struct ssam_controller *ctrl;
+>>   	struct fwnode_handle *root;
+>>   	int status;
+>>   
+>>   	nodes = (const struct software_node **)acpi_device_get_match_data(&pdev->dev);
+> 
+> Hmm... Why this doesn't use simple device_get_match_data()?
+> 
+>> -	if (!nodes)
+>> -		return -ENODEV;
+>> +	if (!nodes) {
+>> +		fdt_root = of_find_node_by_path("/");
+>> +		if (!fdt_root)
+>> +			return -ENODEV;
+>> +
+>> +		match = of_match_node(ssam_platform_hub_of_match, fdt_root);
+>> +		of_node_put(fdt_root);
+>> +		if (!match)
+>> +			return -ENODEV;
+>> +
+>> +		nodes = (const struct software_node **)match->data;
+> 
+> This is quite strange! Where are they being defined?
+
+Essentially, this whole module is a giant workaround because there
+doesn't seem to be a way to auto-discover which functions or subdevices
+the EC actually supports. So this module builds a registry of software
+nodes and matches against a Surface-model-specific ACPI ID (in ACPI
+mode). Based on that ID, we retrieve the tree of software nodes that
+define the EC subdevices and register them using a (virtual) platform
+hub device.
+
+The snippet way above registers the platform hub device for DT,
+because there we don't have an equivalent ACPI device that we can
+use. The code here retrieves the respective nodes.
+
+>> +		if (!nodes)
+>> +			return -ENODEV;
+>> +	}
+> 
+> ...
+> 
+>> +MODULE_ALIAS("platform:surface_aggregator_platform_hub");
+> 
+> Can it be platfrom device ID table instead? But do you really need it?
+> 
+
+I think the explanation above already kind of answers this, but the
+module is named differently than the driver (so that they reflect the
+specific nature of each, registry vs hub device). And the platform hub
+device added in the snippet I left above is named after the driver. So
+for the registry module to load when the platform hub driver is
+requested, it is needed.
+
+Regards,
+Max
