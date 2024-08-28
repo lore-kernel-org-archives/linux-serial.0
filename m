@@ -1,173 +1,173 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from a7-28.smtp-out.eu-west-1.amazonses.com (a7-28.smtp-out.eu-west-1.amazonses.com [54.240.7.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7617158543;
-	Wed, 28 Aug 2024 09:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44939381C2;
+	Wed, 28 Aug 2024 15:10:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.240.7.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724836249; cv=none; b=fR6F5oTVpoY5VSdFqGkxpdUG8+u86bOo7/OeKHm6gAg2qIwvP8UcW2kcrryXHifzRtjDeRGOhSMcDCoVjiSPQiv9EIvT47g531ELj+Wqp8KF4Oal0ElpKNc9E8Gvnzl63KH6yWQvO2pJb6BrmA0XSEDUl5cjc3Tm7EvRXasVRfk=
+	t=1724857841; cv=none; b=aW/0aPmJMSu7X0JBY4eEsGK4IlKRX7G4OMv7Ddn2tv3L5uM2Rzc/djQQc9jvvF4dWzG/g4nli0hiTgwXisQCM8HfXofRNIchSoDb2IioITEqv8gZCfIMHATlxOaTMiyVxPhVRUesilqOC9Qzfp42kqIE55I96XxiuH0kcgad3mE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724836249; c=relaxed/simple;
-	bh=zSHKO3j33Ria7zyczy79YyyVNqfKsgActvy2LbiGQV4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CMpFiJ9ARmFaQQGRod258pIEp0GA6yhKfPJi86hnneC0QCon7f2EtRYFeqFk5MD6YMph5XOREDHOtMzCmrDm/rZn13DehMsWZZiCxR/zl0kI4Zup7mSM4JROZYN2htZ35DIwcd5dSOFA95q4qF519Xgh1/K61TbHWYDEgeAv8wU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gdu/dfRV; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1724857841; c=relaxed/simple;
+	bh=/6xBr387lHpMiwXE06HG6XGKl2MHb0i9Xw/IsslGxeY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=h/VpjMjNsvPYxOSZOy6Elr98917KpkQbF8ubC5DNobI4GVy8poGh8cOMVhO2S7OCzhVG62xcoTKqXHvPTFH2CmdhXs488wCSM1Vi5kJJfh7vLspV7i0aJVZFT/uYwrpg8fOCgPlwO8RjVuCz125eR9MaH7QAzVOMiGRdFDnk2qI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=amazonses.collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=So6GTcbv; dkim=pass (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b=NGAgRuxD; arc=none smtp.client-ip=54.240.7.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazonses.collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gdu/dfRV"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3719753d365so3592136f8f.2;
-        Wed, 28 Aug 2024 02:10:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724836246; x=1725441046; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=x3niQjXZJR5D3vooE/mqJ9Cy41uU536hIxUZ/GtxSL8=;
-        b=gdu/dfRVZFpumaFqQEvACr+rscBpBbtdHBoaQwGJ3gfV9woODBKLe6CbaPdoyF7gJN
-         Eh4Jkpvd3Mkf1wZG2uwBCzPW1zxiQjDd9BJaO3SpL1PA82Nkf2yThMd7ALIx+pzciDnP
-         WgODzsElulGQ60wU4l6bfGbPEk+SQFHW6ZEg/2MzCb/3SSRfkobb1shXgtvHmSNfd9dY
-         ODarThN/XIg1Xe6KTod/mtI0RoyQsnPxpcbmSUIVp2EvfPFM+317lE6OC6XtDMfsISDw
-         YQAIGtB7J4lsln4ECh14IUhvRm6305pZiW1/EF9LZc+h1UZbvkaCbGwvBAFodAbFB8GA
-         tC9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724836246; x=1725441046;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=x3niQjXZJR5D3vooE/mqJ9Cy41uU536hIxUZ/GtxSL8=;
-        b=CMnPNaWkK9wHXcUCKfcgokqqQEk7NLICn5FQ4nX8FFc9uxhtP9lEhL/tiMBFu/cwld
-         +mTuFxmw00de13WoyBVh8tloKWRxLdhrulHmxgw3tK/My6MKB6LQEX/EoUlqBmGFirOw
-         PwsuEUu4KStoxh+4Mpchi/VJ+sM7C47SyAMc901HoUxyda82XDnTtPaXdsze2D/U806A
-         1w4VgxxpcjTEjBuFhP/XjKyQt8TbC9QIDXPtWyu9gMvyIPCscD9diDjYE+XOniNuASbH
-         /FY0JHkvDclWTCzbVmKmgjQiFB+kOZp/A7gbglARwgs9opkTt7UmHOtGc4nxUA6QuNvt
-         1I+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVDTbALPawLNrHvu3ewZn3pxdkB7JuSX1rJzcH98llmryizVtqIUC2drVl9nS9K215ep84oYTmScBtTt90utV+/zw1qRA==@vger.kernel.org, AJvYcCVROz0/b0e+dXnIIuLTT43aKWY4hMdGy5IKru6xQWyhwMQ1Mxo7L8SJzdiG60mpJg1zPumdXPD+lhYK@vger.kernel.org, AJvYcCVw8/nRc3KkMpNBA6GZfexs63cg4g9VXvazZuvTm/ow2FaIyYACB1gOhRDduw64JCL6sD68r7PJHlghPOF2@vger.kernel.org, AJvYcCW+kvfZZWH3pOLloutrcddKTdUterGzFVr/NRNaiabK4BQpIR9VAmYFcqwRUXnV+1adIPdmrGeMqFXpYQ==@vger.kernel.org, AJvYcCWqb8IoshiENJD9xaCpSzWpS7kv0hKibMVaZnvZEArEwPHMJj5rNaP9CdPal4g+cGkd3KoQcs3bH7qdXWVi@vger.kernel.org
-X-Gm-Message-State: AOJu0YxKo1W153ioV0ox8JLhZ1KGaCEGSLZli6SYZMb5vNbQr8fj93Ve
-	qma1q31KCod0fjoaayUcri6pvJth4BC8FvMW4/3E2hJ407Ef+b5Q
-X-Google-Smtp-Source: AGHT+IF7uY9ow2G6xujW69BVfU5b4AZOL2v5nnCZbY71qinhm3c0AqkQo9Sucb8izKf3PWV00S2FKQ==
-X-Received: by 2002:adf:a344:0:b0:367:98e6:362b with SMTP id ffacd0b85a97d-37311909018mr10609524f8f.42.1724836245824;
-        Wed, 28 Aug 2024 02:10:45 -0700 (PDT)
-Received: from [10.126.144.131] (ufr-132-230-194-172.eduroam-nat.uni-freiburg.de. [132.230.194.172])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3730810ffb9sm15230364f8f.7.2024.08.28.02.10.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Aug 2024 02:10:45 -0700 (PDT)
-Message-ID: <d08d41ad-edcb-48ad-a848-53edc45ab8eb@gmail.com>
-Date: Wed, 28 Aug 2024 11:10:42 +0200
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="So6GTcbv";
+	dkim=pass (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="NGAgRuxD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=4232tfv5ebdrjdwkr5zzm7kytdkokgug; d=collabora.com; t=1724857836;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Transfer-Encoding;
+	bh=/6xBr387lHpMiwXE06HG6XGKl2MHb0i9Xw/IsslGxeY=;
+	b=So6GTcbvolSMtNsUCWfb8CsMbmN8o1hLN+EU3OGSCp6G6ggakxwJR+tjfj4tuvmO
+	2iFphPt4sq3whGtEOFUlDZC0XFG7Ocmp3fzDtoj7lhbs4r7BBNudpIFNMLDJqIq7lFu
+	OtHXlEE0J6Tsk6+nt4i25p3SEtO2U7DX6P6MnfnUV/Q38nBG6RNnpIrEVLcj9dSlOEk
+	vZAgwDDjqiMUCl6Ziav3Nn/LyL7rdTuhGrwU2twVByj33MCEbtvHfh3piVEMQqcBnl5
+	5WhtHmiHN9c+mQ1Yhw5bNkyd5W2pncevISM+uTneW/tx1rFB60tC0uNnFAgzibv2z6V
+	C68N1PqD1w==
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=uku4taia5b5tsbglxyj6zym32efj7xqv; d=amazonses.com; t=1724857836;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Transfer-Encoding:Feedback-ID;
+	bh=/6xBr387lHpMiwXE06HG6XGKl2MHb0i9Xw/IsslGxeY=;
+	b=NGAgRuxDN5KLV7xQPZrLjHKHSu36qmbsagTi0A/Jw//EHQPMd3rky8uzhqSPZjzn
+	yW3h6SHcZ11Mi7D0oRMsawVkbWSuPcppzFU7IoxCqmkmivRRZFsS1gsservqYsNPHjE
+	cFeO8N7rwF4vkSpAlc2aIvusOfhoxD3Echpx1ZVU=
+From: Detlev Casanova <detlev.casanova@collabora.com>
+To: linux-kernel@vger.kernel.org
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, 
+	Andi Shyti <andi.shyti@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Ulf Hansson <ulf.hansson@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, 
+	Chris Morgan <macromorgan@hotmail.com>, 
+	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>, 
+	Chukun Pan <amadeus@jmu.edu.cn>, 
+	Muhammed Efe Cetin <efectn@protonmail.com>, 
+	Andy Yan <andyshrk@163.com>, Jagan Teki <jagan@edgeble.ai>, 
+	Dragan Simic <dsimic@manjaro.org>, 
+	Detlev Casanova <detlev.casanova@collabora.com>, 
+	Ondrej Jirman <megi@xff.cz>, Jimmy Hon <honyuenkwun@gmail.com>, 
+	Elon Zhang <zhangzj@rock-chips.com>, 
+	Finley Xiao <finley.xiao@rock-chips.com>, 
+	Elaine Zhang <zhangqing@rock-chips.com>, 
+	Liang Chen <cl@rock-chips.com>, 
+	Yifeng Zhao <yifeng.zhao@rock-chips.com>, 
+	Jisheng Zhang <jszhang@kernel.org>, Jamie Iles <jamie@jamieiles.com>, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-rockchip@lists.infradead.org, dri-devel@lists.freedesktop.org, 
+	linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel@collabora.com
+Subject: [PATCH v3 00/11] Add device tree for ArmSoM Sige 5 board
+Date: Wed, 28 Aug 2024 15:10:36 +0000
+Message-ID: <010201919989e3de-60b56341-85e0-4869-89d1-362407c4f2ec-000000@eu-west-1.amazonses.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] platform/surface: Add OF support
-To: Andy Shevchenko <andy.shevchenko@gmail.com>,
- Konrad Dybcio <konradybcio@kernel.org>
-Cc: Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>
-References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
- <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
- <ZszrjQChQ2aS5YjV@surfacebook.localdomain>
-Content-Language: en-US
-From: Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <ZszrjQChQ2aS5YjV@surfacebook.localdomain>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Feedback-ID: ::1.eu-west-1.YpP9ZbxnARFfy3Cb5pfsLd/pdsXBCNK0KEM7HforL4k=:AmazonSES
+X-SES-Outgoing: 2024.08.28-54.240.7.28
 
-Hi,
+Add the rk3576-armsom-sige5 device tree as well as its rk3576.dtsi base
+and pinctrl information in rk3576-pinctrl.dtsi.
 
-I thought I should provide some context:
+The other commits add DT bindings documentation for the devices that
+already work with the current corresponding drivers.
 
-Am 26/08/2024 um 22:54 schrieb Andy Shevchenko:
-> Wed, Aug 14, 2024 at 12:27:27PM +0200, Konrad Dybcio kirjoitti:
->> From: Konrad Dybcio <quic_kdybcio@quicinc.com>
+Note that as is, the rockchip gpio driver needs the gpio nodes
+to be children of the pinctrl node, even though this is deprecated.
 
-[...]
+When the driver supports it, they can be moved out of the pinctrl node.
 
->> +	/*
->> +	 * When using DT, we have to register the platform hub driver manually,
->> +	 * as it can't be matched based on top-level board compatible (like it
->> +	 * does the ACPI case).
->> +	 */
->> +	if (!ssh) {
->> +		struct platform_device *ph_pdev =
->> +			platform_device_register_simple("surface_aggregator_platform_hub",
->> +							0, NULL, 0);
->> +		if (IS_ERR(ph_pdev))
->> +			return dev_err_probe(dev, PTR_ERR(ph_pdev),
->> +					     "Failed to register the platform hub driver\n"); 
->> +	}
+The power-domain@RK3576_PD_USB is a child of power-domain@RK3576_PD_VOP.
+That looks strange but it is how the hardware is, and confirmed by
+Rockchip: The NOC bus of USB passes through the PD of VOP, so it relies on
+VOP PD.
 
-[...]
+The other bindings and driver implementations are in other patch sets:
+- PMIC: https://lore.kernel.org/all/20240802134736.283851-1-detlev.casanova@collabora.com/ (applied on next)
+- CRU: https://lore.kernel.org/all/20240822194956.918527-1-detlev.casanova@collabora.com/
+- PINCTRL: https://lore.kernel.org/all/20240822195706.920567-1-detlev.casanova@collabora.com/
+- PM DOMAIN: https://lore.kernel.org/all/20240814222824.3170-1-detlev.casanova@collabora.com/ (applied on next)
+- DW-MMC: https://lore.kernel.org/all/20240822212418.982927-1-detlev.casanova@collabora.com/
+- GMAC: https://lore.kernel.org/all/20240823141318.51201-1-detlev.casanova@collabora.com/
 
->>   static int ssam_platform_hub_probe(struct platform_device *pdev)
->>   {
->>   	const struct software_node **nodes;
->> +	const struct of_device_id *match;
->> +	struct device_node *fdt_root;
->>   	struct ssam_controller *ctrl;
->>   	struct fwnode_handle *root;
->>   	int status;
->>   
->>   	nodes = (const struct software_node **)acpi_device_get_match_data(&pdev->dev);
-> 
-> Hmm... Why this doesn't use simple device_get_match_data()?
-> 
->> -	if (!nodes)
->> -		return -ENODEV;
->> +	if (!nodes) {
->> +		fdt_root = of_find_node_by_path("/");
->> +		if (!fdt_root)
->> +			return -ENODEV;
->> +
->> +		match = of_match_node(ssam_platform_hub_of_match, fdt_root);
->> +		of_node_put(fdt_root);
->> +		if (!match)
->> +			return -ENODEV;
->> +
->> +		nodes = (const struct software_node **)match->data;
-> 
-> This is quite strange! Where are they being defined?
+Changes since v2:
+- Fix LEDs in armsom dts
+- mmc: Move allOf after the required block
+- Remove saradc dt-binding commit (already applied)
+- Remove opp-microvolt-L* fields
+- Reword mali commit message
+- Use rgmii-id and remove delays on gmac nodes
 
-Essentially, this whole module is a giant workaround because there
-doesn't seem to be a way to auto-discover which functions or subdevices
-the EC actually supports. So this module builds a registry of software
-nodes and matches against a Surface-model-specific ACPI ID (in ACPI
-mode). Based on that ID, we retrieve the tree of software nodes that
-define the EC subdevices and register them using a (virtual) platform
-hub device.
+Changes since v1:
+- Add eMMC support
+- Add gpu node
+- Add rtc node
+- Add spi compatible dt-bindings
+- Add watchdog support
+- Dropped timer compatible commit (applied in [0])
+- Move ethernet aliases to board dt
+- Move mmio nodes to soc node
+- Removed cru grf phandle
+- Removed gpio aliases
+- Removed grf compatibles (applied in [1])
+- Removed pinctrl php-grf phandle
+- Removed v2-tuning for sdcard
+- Renamed clock nodes
+- Renamed regulators do match regulator-vcc-<voltage>-<name>
+- Renamed the rkvdec_sram node to vdec_sram to match prior generations
+- Reorder fields consistently in nodes
+- Use correct #power-domain-cells values
 
-The snippet way above registers the platform hub device for DT,
-because there we don't have an equivalent ACPI device that we can
-use. The code here retrieves the respective nodes.
+[0]: https://lore.kernel.org/all/918bb9e4-02d9-4dca-bed2-28bb123bdc10@linaro.org/
+[1]: https://lore.kernel.org/all/172441646605.877570.8075942261050000.b4-ty@sntech.de/
 
->> +		if (!nodes)
->> +			return -ENODEV;
->> +	}
-> 
-> ...
-> 
->> +MODULE_ALIAS("platform:surface_aggregator_platform_hub");
-> 
-> Can it be platfrom device ID table instead? But do you really need it?
-> 
+Detlev.
 
-I think the explanation above already kind of answers this, but the
-module is named differently than the driver (so that they reflect the
-specific nature of each, registry vs hub device). And the platform hub
-device added in the snippet I left above is named after the driver. So
-for the registry module to load when the platform hub driver is
-requested, it is needed.
+Detlev Casanova (11):
+  dt-bindings: arm: rockchip: Add ArmSoM Sige 5
+  dt-bindings: arm: rockchip: Add rk3576 compatible string to pmu.yaml
+  dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
+  dt-bindings: mfd: syscon: Add rk3576 QoS register compatible
+  dt-bindings: serial: snps-dw-apb-uart: Add Rockchip RK3576
+  dt-bindings: mmc: Add support for rk3576 eMMC
+  dt-bindings: gpu: Add rockchip,rk3576-mali compatible
+  dt-bindings: watchdog: Add rockchip,rk3576-wdt compatible
+  spi: dt-bindings: Add rockchip,rk3576-spi compatible
+  arm64: dts: rockchip: Add rk3576 SoC base DT
+  arm64: dts: rockchip: Add rk3576-armsom-sige5 board
 
-Regards,
-Max
+ .../devicetree/bindings/arm/rockchip.yaml     |    5 +
+ .../devicetree/bindings/arm/rockchip/pmu.yaml |    2 +
+ .../bindings/gpu/arm,mali-bifrost.yaml        |    1 +
+ .../devicetree/bindings/i2c/i2c-rk3x.yaml     |    1 +
+ .../devicetree/bindings/mfd/syscon.yaml       |    2 +
+ .../bindings/mmc/snps,dwcmshc-sdhci.yaml      |   38 +-
+ .../bindings/serial/snps-dw-apb-uart.yaml     |    1 +
+ .../devicetree/bindings/spi/spi-rockchip.yaml |    1 +
+ .../bindings/watchdog/snps,dw-wdt.yaml        |    1 +
+ arch/arm64/boot/dts/rockchip/Makefile         |    1 +
+ .../boot/dts/rockchip/rk3576-armsom-sige5.dts |  659 ++
+ .../boot/dts/rockchip/rk3576-pinctrl.dtsi     | 5775 +++++++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 1644 +++++
+ 13 files changed, 8119 insertions(+), 12 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-armsom-sige5.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3576.dtsi
+
+-- 
+2.46.0
+
