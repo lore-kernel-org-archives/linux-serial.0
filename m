@@ -1,128 +1,87 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B05251B3733;
-	Thu, 29 Aug 2024 15:39:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9591B8EA8;
+	Thu, 29 Aug 2024 17:30:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724945986; cv=none; b=hNH/4HMq9JM2T/C5CmxLW0bCiy5MV4aOVRXTkvXoWXhkPTph0388r6ambWc7rQHTxiebpsazF6xtLmQhHjNzn5zAh/xgfPnf03qo9vc5XdiIoPUB9GQRrxd+ucLY2pG/RiHXcnek6BCasVkmQ3DgLgbZNDyMjO/LTF/+vTUzj8M=
+	t=1724952650; cv=none; b=aSNDlpzS44uVvSTjbmVLjYK5fAZy3bxgnTe8s01R4fsoX6yn+8je+lJGtrwaAQ2ZlOkAoK4dXw1yknSNefCpJeCpCVQ4oU8DNqkFiy8khQ/mZja66P/yfvIczEejkbwwADvfQZedFMzxvMFG5kcWvkuLNxdN+MWCXsnHSv3lszk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724945986; c=relaxed/simple;
-	bh=irlj6udq+ajkTOZDEaMhoHi3gHxomUq9PIygsVw5x/E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Bvsa4IZr59UdvwpDD0uOjwNRP8xVoV05P1WFdYVDlkmJKglwkd+bZu/vW/dh1G8CahqSnfT1xS1MQX4Zs2osGaiNbesdLuCMh9LzKboxjkyr2awY9vZ/8aj5sBhYZEAEC9rnRYwZFcPHVQ9UlB4ncdmifY90m5ksbMcSODaQDtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cz5wRa62; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1724952650; c=relaxed/simple;
+	bh=0mEvs03hAY2LDMxm7vaf8QmXwQ1HTusedKvM0ivRWvI=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=a/l5N9yzPnZEW1tSSfBSoEtuheFKd+EKMVLORgWG1rfru3moCnTCYyFw0rFEk7uPB7p49fM2+F+p0MqxN3vkINHpfjHSG92Rq7yKWsgEDj3w1SXWkIrd/M95wXHj06VqoiVyLPrnIvr+/ScPkUS6gXwH3GgzE78f6u0o4cFECek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pyFIdP50; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cz5wRa62"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47T8iLKF019432;
-	Thu, 29 Aug 2024 15:39:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	+oZZN423x3H8FcKjymhNN5um5bqyqXeBRwGPv3NzEfU=; b=cz5wRa62qjH8a5jV
-	7KkORyfpxFDnzfftfFP/PECkCs+D//aVBf0ez7mtdGCRq/4bA3izvRuLicMgvraT
-	/pr4/nmcAMeRtgCYgHQ6tQQ3hBLiITAsyGMf3cfewFd/Q4SNWAURhUa0QgJzxrIu
-	5nnCBuY2xq2OcniNEtDhG8efy3lG3OUMjG8hFikG+x46D5jDTbBXb69CccXEReTY
-	LDLB55/ztC0UrTN/3ZwjAac+zWWDeAUrxtJP4kMRB2U4wjWrVg2lOfiw6QNWuA1q
-	TYfbpTsi0NI7wicV6EA3efdjs84QBnVeGjqUy+QUHUOQf8znKuSs14Vy/GTDbNFk
-	+acI+Q==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419putntxy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 15:39:11 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47TFdAdg021485
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Aug 2024 15:39:10 GMT
-Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 29 Aug
- 2024 08:39:06 -0700
-Message-ID: <e8e9cdcf-63c8-4bfa-aacc-d99338c7f8fa@quicinc.com>
-Date: Thu, 29 Aug 2024 08:39:06 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pyFIdP50"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6395C4CEC2;
+	Thu, 29 Aug 2024 17:30:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1724952650;
+	bh=0mEvs03hAY2LDMxm7vaf8QmXwQ1HTusedKvM0ivRWvI=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=pyFIdP50OIr7m01ieZarR3qBj/z9qiQlvCPPYI/tDKt5gtgx5RJQSBNuo8ZtXPyOu
+	 jOBSKSw7AsJsc3Q3+cQ4iOIvNeUEGfphpdmIlac8kaUXoGYNydLIstXIcrYuDGN6yw
+	 H4ZhHwnbnW8fhSozLbpVw/Gc0RZRaRMJpgQS73KYmVLAVBGXyn8hIBi/bFOfNZfICp
+	 kW/2i1QIRVeFl9CVB5L8iA5dCGn++ozRQzHPSMArGKFdAUlTbZMcfONFsIRrJzZ5c2
+	 Nwz0M3ThX1md/CF/VYOEW+sUVpO2RIKBkFj1PxU4oqal3/5CGsr+bIQ/EN90UmwJB1
+	 ujVw7jZMXPM+w==
+From: Vinod Koul <vkoul@kernel.org>
+To: Viresh Kumar <vireshk@kernel.org>, 
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+ Andy Shevchenko <andy@kernel.org>, Serge Semin <fancer.lancer@gmail.com>
+Cc: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, 
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20240802075100.6475-1-fancer.lancer@gmail.com>
+References: <20240802075100.6475-1-fancer.lancer@gmail.com>
+Subject: Re: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width
+ misconfig
+Message-Id: <172495264758.385951.2350573756781126919.b4-ty@kernel.org>
+Date: Thu, 29 Aug 2024 23:00:47 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 14/22] dt-bindings: arm-smmu: document the support on
- SA8255p
-To: Krzysztof Kozlowski <krzk@kernel.org>
-CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
-        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
-        <tglx@linutronix.de>, <will@kernel.org>, <joro@8bytes.org>,
-        <jassisinghbrar@gmail.com>, <lee@kernel.org>,
-        <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <wim@linux-watchdog.org>, <linux@roeck-us.net>, <robin.murphy@arm.com>,
-        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
-        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_shazhuss@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-15-quic_nkela@quicinc.com>
- <ompfueg7civ5spjdumkhd7qgx4cnvjcftznf3z3q5duuxppt5d@fao7zx4oxfm3>
-Content-Language: en-US
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <ompfueg7civ5spjdumkhd7qgx4cnvjcftznf3z3q5duuxppt5d@fao7zx4oxfm3>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: SpEicdg2VgDAFzoy96fzPwPyuZgqW6b8
-X-Proofpoint-ORIG-GUID: SpEicdg2VgDAFzoy96fzPwPyuZgqW6b8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-29_04,2024-08-29_02,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 phishscore=0 adultscore=0 priorityscore=1501
- impostorscore=0 malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408290109
+X-Mailer: b4 0.13.0
 
 
-On 8/29/2024 12:36 AM, Krzysztof Kozlowski wrote:
-> On Wed, Aug 28, 2024 at 01:37:13PM -0700, Nikunj Kela wrote:
->> Add compatible for smmu representing support on SA8255p.
->>
->> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->> ---
->>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 +++
->>  1 file changed, 3 insertions(+)
->>
-> Your subjects contain quite redundant/excessive information. In the same
-> time they lack information about device. 
->
-> 1. s/document the support on/add/
-> 2. s/SA8255p/SA8255p SMMU-or-whatever-device-it-is/
->
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->
-> Best regards,
-> Krzysztof
+On Fri, 02 Aug 2024 10:50:45 +0300, Serge Semin wrote:
+> The main goal of this series is to fix the data disappearance in case of
+> the DW UART handled by the DW AHB DMA engine. The problem happens on a
+> portion of the data received when the pre-initialized DEV_TO_MEM
+> DMA-transfer is paused and then disabled. The data just hangs up in the
+> DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
+> suspension (see the second commit log for details). On a way to find the
+> denoted problem fix it was discovered that the driver doesn't verify the
+> peripheral device address width specified by a client driver, which in its
+> turn if unsupported or undefined value passed may cause DMA-transfer being
+> misconfigured. It's fixed in the first patch of the series.
+> 
+> [...]
 
-Okay. I thought arm-smmu tag already indicate which device this patch is
-for but would put SMMU explicitly in the subject.
+Applied, thanks!
 
-Thanks,
+[1/6] dmaengine: dw: Add peripheral bus width verification
+      commit: e2c97d200ac3558e6c34258c96a01a0b9472292f
+[2/6] dmaengine: dw: Add memory bus width verification
+      commit: 5bb11aedb5309c232967ce490d7b826536f697c0
+[3/6] dmaengine: dw: Simplify prepare CTL_LO methods
+      commit: d34e8466c63389ef250c380cd615826afb2a049c
+[4/6] dmaengine: dw: Define encode_maxburst() above prepare_ctllo() callbacks
+      commit: 2f87a9671ed532fc088ef0b05e350637afdf001a
+[5/6] dmaengine: dw: Simplify max-burst calculation procedure
+      commit: 17d4353413a4d931e89b2c37106acae4a0972ad8
+[6/6] dmaengine: dw: Unify ret-val local variables naming
+      commit: 3f92ee7c4a4e2319d510eb2ddcfdd3105b235f0e
 
--Nikunj
+Best regards,
+-- 
+~Vinod
+
 
