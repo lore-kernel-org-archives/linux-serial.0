@@ -1,87 +1,93 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9591B8EA8;
-	Thu, 29 Aug 2024 17:30:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58ABC1494B2;
+	Thu, 29 Aug 2024 18:52:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724952650; cv=none; b=aSNDlpzS44uVvSTjbmVLjYK5fAZy3bxgnTe8s01R4fsoX6yn+8je+lJGtrwaAQ2ZlOkAoK4dXw1yknSNefCpJeCpCVQ4oU8DNqkFiy8khQ/mZja66P/yfvIczEejkbwwADvfQZedFMzxvMFG5kcWvkuLNxdN+MWCXsnHSv3lszk=
+	t=1724957562; cv=none; b=LZbe/Y7zrWHxddgquZIl8rZZPIqRSuMO392eH1F5SrCPTcemQLLOG9nFB7FVOYKcZ+67asMoUJodlgp8Lvmxw/n0A2XAAuowX6+Ijii2h0QK6QLoRFStoTeZEJl13CipZWbApXt9neQfaweasddOSAB0QHpBRtSkeToJRt02udU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724952650; c=relaxed/simple;
-	bh=0mEvs03hAY2LDMxm7vaf8QmXwQ1HTusedKvM0ivRWvI=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=a/l5N9yzPnZEW1tSSfBSoEtuheFKd+EKMVLORgWG1rfru3moCnTCYyFw0rFEk7uPB7p49fM2+F+p0MqxN3vkINHpfjHSG92Rq7yKWsgEDj3w1SXWkIrd/M95wXHj06VqoiVyLPrnIvr+/ScPkUS6gXwH3GgzE78f6u0o4cFECek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pyFIdP50; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724957562; c=relaxed/simple;
+	bh=sji9qUHLrqHNW9BPEl5XCsnv+ETqRB6bWthNHqjS8ks=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DFdCyrQ4Bf3euJjXvXuE/CyouwzgK3syY0widik7Q/ebjy3tUUUJ9nChWgA1+YJ/1m6igJVs7of7OuMFJ2XMcGqsCWt3AVitRR1050JmaUq+Wwb0ya+QfBcW3SgjIHBCs8JJ9tNr+jXDbil2jQdVcFP9v4HJEXeGKz8kIBZPJ7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b3KbXqaC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pyFIdP50"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6395C4CEC2;
-	Thu, 29 Aug 2024 17:30:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b3KbXqaC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9460BC4CEC1;
+	Thu, 29 Aug 2024 18:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724952650;
-	bh=0mEvs03hAY2LDMxm7vaf8QmXwQ1HTusedKvM0ivRWvI=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=pyFIdP50OIr7m01ieZarR3qBj/z9qiQlvCPPYI/tDKt5gtgx5RJQSBNuo8ZtXPyOu
-	 jOBSKSw7AsJsc3Q3+cQ4iOIvNeUEGfphpdmIlac8kaUXoGYNydLIstXIcrYuDGN6yw
-	 H4ZhHwnbnW8fhSozLbpVw/Gc0RZRaRMJpgQS73KYmVLAVBGXyn8hIBi/bFOfNZfICp
-	 kW/2i1QIRVeFl9CVB5L8iA5dCGn++ozRQzHPSMArGKFdAUlTbZMcfONFsIRrJzZ5c2
-	 Nwz0M3ThX1md/CF/VYOEW+sUVpO2RIKBkFj1PxU4oqal3/5CGsr+bIQ/EN90UmwJB1
-	 ujVw7jZMXPM+w==
-From: Vinod Koul <vkoul@kernel.org>
-To: Viresh Kumar <vireshk@kernel.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Andy Shevchenko <andy@kernel.org>, Serge Semin <fancer.lancer@gmail.com>
-Cc: =?utf-8?q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20240802075100.6475-1-fancer.lancer@gmail.com>
-References: <20240802075100.6475-1-fancer.lancer@gmail.com>
-Subject: Re: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width
- misconfig
-Message-Id: <172495264758.385951.2350573756781126919.b4-ty@kernel.org>
-Date: Thu, 29 Aug 2024 23:00:47 +0530
+	s=k20201202; t=1724957561;
+	bh=sji9qUHLrqHNW9BPEl5XCsnv+ETqRB6bWthNHqjS8ks=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=b3KbXqaCwxgQIesaGWz0wsMeMBDUv0yytXgal8R6jeuHVlZqaBLT7/9XFox2ERjcO
+	 9NVN1CkLl68ZV88Z4sPzema+0lLKi1WA0TmWgzLPOTzGmjZUBvGNn/SWT4SddOhTM/
+	 M9sBWFbm8vqMVWXfc2IyB/nXdMXuukiAfzykL9RE+2IEQYu4Sl60FNcfnXl3jHkDw5
+	 Ocg2HPMWl1idVHFtmWIgFAmHBkn1nmp6dIMj3hy7bcQmvFQjkKk/DDY3fMlWOhTpma
+	 a7pVUtKxtUJPC5laEA4kBh0oL8DdIeF14K4KeeysXWVQTM83Rs8F9Nm1lC9kZ64g5Y
+	 ae33sp3w6Xy9g==
+Date: Thu, 29 Aug 2024 13:52:40 -0500
+From: Rob Herring <robh@kernel.org>
+To: Nikunj Kela <quic_nkela@quicinc.com>
+Cc: andersson@kernel.org, konradybcio@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
+	will@kernel.org, joro@8bytes.org, jassisinghbrar@gmail.com,
+	lee@kernel.org, linus.walleij@linaro.org, amitk@kernel.org,
+	thara.gopinath@gmail.com, broonie@kernel.org,
+	wim@linux-watchdog.org, linux@roeck-us.net, robin.murphy@arm.com,
+	cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
+	vkoul@kernel.org, quic_gurus@quicinc.com, agross@kernel.org,
+	bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com,
+	robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+	arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
+	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+	kernel@quicinc.com, quic_psodagud@quicinc.com,
+	quic_tsoni@quicinc.com, quic_shazhuss@quicinc.com
+Subject: Re: [PATCH 21/22] ARM: dt: GIC: add extended SPI specifier
+Message-ID: <20240829185240.GA914553-robh@kernel.org>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-22-quic_nkela@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240828203721.2751904-22-quic_nkela@quicinc.com>
 
+On Wed, Aug 28, 2024 at 01:37:20PM -0700, Nikunj Kela wrote:
+> Add interrupt specifier for extended SPI interrupts.
 
-On Fri, 02 Aug 2024 10:50:45 +0300, Serge Semin wrote:
-> The main goal of this series is to fix the data disappearance in case of
-> the DW UART handled by the DW AHB DMA engine. The problem happens on a
-> portion of the data received when the pre-initialized DEV_TO_MEM
-> DMA-transfer is paused and then disabled. The data just hangs up in the
-> DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
-> suspension (see the second commit log for details). On a way to find the
-> denoted problem fix it was discovered that the driver doesn't verify the
-> peripheral device address width specified by a client driver, which in its
-> turn if unsupported or undefined value passed may cause DMA-transfer being
-> misconfigured. It's fixed in the first patch of the series.
+What's an "extended SPI"? Is this a GIC spec thing? If so, what version?
+
 > 
-> [...]
-
-Applied, thanks!
-
-[1/6] dmaengine: dw: Add peripheral bus width verification
-      commit: e2c97d200ac3558e6c34258c96a01a0b9472292f
-[2/6] dmaengine: dw: Add memory bus width verification
-      commit: 5bb11aedb5309c232967ce490d7b826536f697c0
-[3/6] dmaengine: dw: Simplify prepare CTL_LO methods
-      commit: d34e8466c63389ef250c380cd615826afb2a049c
-[4/6] dmaengine: dw: Define encode_maxburst() above prepare_ctllo() callbacks
-      commit: 2f87a9671ed532fc088ef0b05e350637afdf001a
-[5/6] dmaengine: dw: Simplify max-burst calculation procedure
-      commit: 17d4353413a4d931e89b2c37106acae4a0972ad8
-[6/6] dmaengine: dw: Unify ret-val local variables naming
-      commit: 3f92ee7c4a4e2319d510eb2ddcfdd3105b235f0e
-
-Best regards,
--- 
-~Vinod
-
-
+> Qualcomm SA8255p platform uses extended SPI for SCMI 'a2p' doorbells.
+> 
+> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+> ---
+>  include/dt-bindings/interrupt-controller/arm-gic.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/dt-bindings/interrupt-controller/arm-gic.h b/include/dt-bindings/interrupt-controller/arm-gic.h
+> index 35b6f69b7db6..9c06248446b7 100644
+> --- a/include/dt-bindings/interrupt-controller/arm-gic.h
+> +++ b/include/dt-bindings/interrupt-controller/arm-gic.h
+> @@ -12,6 +12,7 @@
+>  
+>  #define GIC_SPI 0
+>  #define GIC_PPI 1
+> +#define GIC_ESPI 2
+>  
+>  /*
+>   * Interrupt specifier cell 2.
+> -- 
+> 2.34.1
+> 
