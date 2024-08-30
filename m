@@ -1,193 +1,143 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B695A1917E2;
-	Fri, 30 Aug 2024 14:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95EA71B2EC2;
+	Fri, 30 Aug 2024 15:29:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725029978; cv=none; b=nRhW74K60H1ldr8B+RAl+gUxhCI9/AOWuASXzcBvr/45aIT+nS6nkRZwSNCyk42QB9GPzSebvh98yXt0xk/uXbRaidbHek0grvdVnEIF0cObo6G1pAargzpD2T9HZcy09Wt42hKh+b/r9eNmn5RGQzK3IxBXJle3YHji6CommO4=
+	t=1725031766; cv=none; b=abCDhbGHEQJkYEfELBmSE/DSaxLhCWtc3yy2Jd52U0V4GcJqW/jKUhPGXZEHjJ8hWIYcNLoE6XwH7tR2+th4XsBxhG9UhXqv+ObN3OG9TxMtCXgnzuJcGRGjk8tI+nS5tJ4SuntyIy+mvmOYRK+wdgiRbmlGqexiQy0tbug3POw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725029978; c=relaxed/simple;
-	bh=ZNinG2P8QRlT1ahrPp1CbuKepet2IrmxrveZ7JQJiWw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Wt0JXrLRnlmCSj3rpJfLkuKsXT9b6x4ZC6X2JkEwqkHmeSpJ/sc70WLgb++oNsPhQxeqZ/V/NF9HM9ildOweM9hnNrhZPZjVKOTq5h604F9NMZHakehxFaEgx+8BiYGDwS5vAfuqqHB9ep9hZJbIdG20fsYcytFccZC6PCzhAls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=JW+UgMY0; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1725031766; c=relaxed/simple;
+	bh=L65dIVCQsA3YEQ+epYP0GMz7az8+WBN2eBvhQlPRoEc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=J5685xWVoHowa51dUQ3MKkiSWZG32wtF6e16xc7+lRQy72APk7rcPObxgy77MwZ5UEvj6bzJU6wEf59N013N9CW2ONPNPXvXERDmNDGT9wpvXqEIStF9/10HRFTUhLjDEw0ueVQXK0hE24heiXZ0wzLJteSOVVBH8wZ2aQ/Zllc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OZ5J/hWe; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=GDjSQVuM; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JW+UgMY0"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 47U80U5h017955;
-	Fri, 30 Aug 2024 14:59:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	LgF5ZYD5IR1SwpOQJWoYZ0vhtIBCV/uVX/Uy6jMvB+U=; b=JW+UgMY0WG7cYPxh
-	h5qbUmrcF7dtTxFEkfIeAqxlqBgxYcB+3CZny67trU3LOtF+0U4HIpspMGfzcOhq
-	msC1wvhSlwj8bpmjQ/Tx+Gmc2P2XwrixJ2abHLWGTV2V+mjBVoNI4jPgIB84/6F9
-	25Az8Tx0hT92YLi3vrSd2cTMoSUyzlfR+w7D5Q9y82On5OgO9C4F4VkLGgoi89xc
-	DhYo9p18OVlaEX4o56acMPom2eulqSSvGMtkGCvBAiWSOMs6zao8l0CHKTmVcMyq
-	RHawE0M2mn2qdcjMXxSqmkWQFSpRi6RsTP31Dv58UYgGmZptMM7CpgAhaCGnDrDu
-	e/jQsg==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 419puts9dj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 14:58:59 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 47UEwwPD011056
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Aug 2024 14:58:58 GMT
-Received: from [10.110.28.107] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 30 Aug
- 2024 07:58:55 -0700
-Message-ID: <9befe692-a05d-4fa0-9ff9-8d6030e4cb66@quicinc.com>
-Date: Fri, 30 Aug 2024 07:58:54 -0700
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OZ5J/hWe";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="GDjSQVuM"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1725031756;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=vR1IcGcO4X3GJ9y3yerSnFs54fwhhftvCVldJT0Dsjg=;
+	b=OZ5J/hWeqzI9/J/suXmCtftj2bkJmgZkjDA3MqC//S8rWbw04Gx2hlCGlnowxuAZJKBKDo
+	bRfO76Lv/tMjhSmh1Q/UdLTs2lW4DaU2xB0DTpL0bB/FZJoDL/rrrl5xSFiO34cE2xoI4w
+	GN/ie92RNdNL/F71FtZjFCaKeU/oTIbSaS/nLqESqFFPX/aj2Bzwspdh+LN77qLrdHD9Zy
+	a0HTgs6WAbvvLbvfaPGv6n76Tmu6NHdNLOUx76I9gVozn7tIqVG6yA9hTc92IQJQoqBUm0
+	sEoY05zvnfHTJrzwDHuTskm5bInID+bCSmAqxlclwU1PHgV1rhsBtPB8yFPKvQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1725031756;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=vR1IcGcO4X3GJ9y3yerSnFs54fwhhftvCVldJT0Dsjg=;
+	b=GDjSQVuMlXT6r0Miwt04f1N7brPYutKIY9enj6pwc1BrXCPA8i+Wlqi7PAAw5mPpdF/nAM
+	KdT7U7BmDx/mhvCw==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-fsdevel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org
+Subject: [PATCH printk v5 00/17] add threaded printing + the rest
+Date: Fri, 30 Aug 2024 17:34:59 +0206
+Message-Id: <20240830152916.10136-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 22/22] arm64: dts: qcom: Add reduced functional DT for
- SA8255p Ride platform
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <rafael@kernel.org>, <viresh.kumar@linaro.org>,
-        <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <sudeep.holla@arm.com>, <andi.shyti@kernel.org>, <tglx@linutronix.de>,
-        <will@kernel.org>, <joro@8bytes.org>, <jassisinghbrar@gmail.com>,
-        <lee@kernel.org>, <linus.walleij@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
-        <wim@linux-watchdog.org>, <linux@roeck-us.net>
-CC: <robin.murphy@arm.com>, <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
-        <lukasz.luba@arm.com>, <vkoul@kernel.org>, <quic_gurus@quicinc.com>,
-        <agross@kernel.org>, <bartosz.golaszewski@linaro.org>,
-        <quic_rjendra@quicinc.com>, <robimarko@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
-        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
-        <quic_psodagud@quicinc.com>, <quic_tsoni@quicinc.com>,
-        <quic_shazhuss@quicinc.com>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240828203721.2751904-23-quic_nkela@quicinc.com>
- <746be896-8798-44b0-aa86-e77cf34655e1@kernel.org>
- <57eee144-cdc4-48e7-838b-103cda6ec1dd@quicinc.com>
- <095f5048-5c39-438d-b5a9-7519199a8e9f@kernel.org>
-From: Nikunj Kela <quic_nkela@quicinc.com>
-In-Reply-To: <095f5048-5c39-438d-b5a9-7519199a8e9f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: SkQErJ6yG1XnlEy5h9kGSvc-Bpyu79A9
-X-Proofpoint-ORIG-GUID: SkQErJ6yG1XnlEy5h9kGSvc-Bpyu79A9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.28.16
- definitions=2024-08-30_09,2024-08-30_01,2024-05-17_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 phishscore=0 adultscore=0 priorityscore=1501
- impostorscore=0 malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2407110000 definitions=main-2408300114
+Content-Transfer-Encoding: 8bit
+
+Hi,
+
+This is v5 of a series to implement threaded console printing
+as well as some other minor pieces (such as proc and sysfs
+recognition of nbcon consoles). v4 is here [0].
+
+For information about the motivation of the nbcon consoles,
+please read the cover letter of the original v1 [1].
+
+This series provides the remaining pieces of the printk
+rework. All other components are either already mainline or are
+currently in linux-next. In particular this series does:
+
+- Implement dedicated printing threads per nbcon console.
+
+- Implement forced threading of legacy consoles for PREEMPT_RT.
+
+- Implement nbcon support for proc and sysfs console-related
+  files.
+
+- Provide a new helper function nbcon_reacquire_nobuf() to
+  allow nbcon console drivers to reacquire ownership.
+
+Note that this series does *not* provide an nbcon console
+driver. That will come in a follow-up series.
+
+Here are the changes since v4:
+
+- For nbcon_kthread_create(), add more explanations about the
+  context and rules to the kerneldoc.
+
+- In nbcon_alloc(), clear con->pbufs on failure.
+
+- Remove legacy_kthread_wake() and add its functionality to
+  wake_up_klogd_work_func() since it was the only call site.
+
+- In console_start(), allow triggering the legacy loop if it is
+  an nbcon. There might be a registered boot console.
+
+- In __pr_flush(), add atomic flushing before wait loop.
+
+- In console_try_replay_all(), add atomic flushing.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20240827044333.88596-1-john.ogness@linutronix.de
+
+[1] https://lore.kernel.org/lkml/20230302195618.156940-1-john.ogness@linutronix.de
+
+John Ogness (16):
+  printk: nbcon: Add function for printers to reacquire ownership
+  printk: Fail pr_flush() if before SYSTEM_SCHEDULING
+  printk: Flush console on unregister_console()
+  printk: nbcon: Add context to usable() and emit()
+  printk: nbcon: Init @nbcon_seq to highest possible
+  printk: nbcon: Relocate nbcon_atomic_emit_one()
+  printk: nbcon: Use thread callback if in task context for legacy
+  printk: nbcon: Rely on kthreads for normal operation
+  printk: Provide helper for message prepending
+  printk: nbcon: Show replay message on takeover
+  proc: consoles: Add notation to c_start/c_stop
+  proc: Add nbcon support for /proc/consoles
+  tty: sysfs: Add nbcon support for 'active'
+  printk: Implement legacy printer kthread for PREEMPT_RT
+  printk: nbcon: Assign nice -20 for printing threads
+  printk: Avoid false positive lockdep report for legacy printing
+
+Thomas Gleixner (1):
+  printk: nbcon: Introduce printer kthreads
+
+ drivers/tty/tty_io.c              |   2 +-
+ fs/proc/consoles.c                |   7 +-
+ include/linux/console.h           |  48 +++
+ kernel/printk/internal.h          |  82 ++++-
+ kernel/printk/nbcon.c             | 504 +++++++++++++++++++++++++-----
+ kernel/printk/printk.c            | 465 ++++++++++++++++++++++++---
+ kernel/printk/printk_ringbuffer.h |   2 +
+ kernel/printk/printk_safe.c       |   4 +-
+ 8 files changed, 981 insertions(+), 133 deletions(-)
 
 
-On 8/30/2024 2:51 AM, Krzysztof Kozlowski wrote:
-> On 29/08/2024 21:06, Nikunj Kela wrote:
->> On 8/29/2024 12:49 AM, Krzysztof Kozlowski wrote:
->>> On 28/08/2024 22:37, Nikunj Kela wrote:
->>>> SA8255p Ride platform is an automotive virtual platform. This platform
->>>> abstracts resources such as clocks, regulators etc. in the firmware VM.
->>>> The device drivers request resources operations over SCMI using power,
->>>> performance, reset and sensor protocols.
->>>>
->>>> Multiple virtual SCMI instances are being employed for greater parallelism.
->>>> These instances are tied to devices such that devices can have dedicated
->>>> SCMI channel. Firmware VM (runs SCMI platform stack) is SMP enabled and
->>>> can process requests from agents in parallel. Qualcomm smc transport is
->>>> used for communication between SCMI agent and platform.
->>>>
->>>> Let's add the reduced functional support for SA8255p Ride board.
->>>> Subsequently, the support for PCIe, USB, UFS, Ethernet will be added.
->>>>
->>>> Co-developed-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->>>> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->>>> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->>>> ---
->>>>  arch/arm64/boot/dts/qcom/Makefile           |    1 +
->>>>  arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi |   80 +
->>>>  arch/arm64/boot/dts/qcom/sa8255p-ride.dts   |  149 ++
->>>>  arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi  | 2312 ++++++++++++++++++
->>>>  arch/arm64/boot/dts/qcom/sa8255p.dtsi       | 2405 +++++++++++++++++++
->>>>  5 files changed, 4947 insertions(+)
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-pmics.dtsi
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p-scmi.dtsi
->>>>  create mode 100644 arch/arm64/boot/dts/qcom/sa8255p.dtsi
->>>>
->>> ...
->>>
->>>> diff --git a/arch/arm64/boot/dts/qcom/sa8255p-ride.dts b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>> new file mode 100644
->>>> index 000000000000..1dc03051ad92
->>>> --- /dev/null
->>>> +++ b/arch/arm64/boot/dts/qcom/sa8255p-ride.dts
->>>> @@ -0,0 +1,149 @@
->>>> +// SPDX-License-Identifier: BSD-3-Clause
->>>> +/*
->>>> + * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
->>>> + */
->>>> +
->>>> +/dts-v1/;
->>>> +
->>>> +#include <dt-bindings/gpio/gpio.h>
->>>> +
->>>> +#include "sa8255p.dtsi"
->>>> +#include "sa8255p-pmics.dtsi"
->>>> +#include "sa8255p-scmi.dtsi"
->>>> +
->>>> +/ {
->>>> +	model = "Qualcomm Technologies, Inc. SA8255P Ride";
->>>> +	compatible = "qcom,sa8255p-ride", "qcom,sa8255p";
->>>> +
->>>> +	aliases {
->>>> +		i2c11 = &i2c11;
->>>> +		i2c18 = &i2c18;
->>>> +		serial0 = &uart10;
->>>> +		serial1 = &uart4;
->>>> +		spi16 = &spi16;
->>>> +		scmichannels = &scmichannels;
->>> Nothing parses this.
->>>
->> We are using this alias in bootloader to speed up the parsing. Since we
-> Then please provide link to the bindings in this open-source upstream
-> bootloader.
->
-> Otherwise it is a clear no-go for me. We don't add properties because
-> some downstream wants them. Imagine what would happen if we opened that
-> can of worms...
+base-commit: 59cd94ef80094857f0d0085daa2e32badc4cddf4
+-- 
+2.39.2
 
-Point taken! I will remove this alias and label from DT in next version.
-We can add it back if/once the bootloader changes are upstreamed. Thanks!
-
-
->> are using 64 SCMI instances and SCMI smc transport driver for
->> Qualcomm(drivers/firmware/arm_scmi/transports/smc.c) expects
->> cap-id(created by hypervisor at boot time), our bootloader gets those
->> cap-id for each channel and populate them. This alias is an optimization
->> to save boottime as in automotive, boot KPIs are critical.
-> I will refrain about commenting on KPIs...
->
->
->
-> Best regards,
-> Krzysztof
->
