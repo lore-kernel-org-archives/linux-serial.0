@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 810F915099A;
-	Fri, 30 Aug 2024 08:00:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DE3380;
+	Fri, 30 Aug 2024 08:07:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725004835; cv=none; b=mblaSVAUim8piSE78dntb3D6LZ4cJhPpPCcWaU1vKRDVCfpMxNFkSXBvU4Ch1rh5+X+psuSfi1fR5lbjK5bQpsmfz6P5gv5OS5NegqMWYnHQ5wBsP173pslbRGmrj5tFtdK+mEDXedbZ1u2GFop9gQMAzcJM1TT8YBa3pS2ao4o=
+	t=1725005243; cv=none; b=jL+pPacjc4T8m1ZTVZdzfKnsK7Fn++uotrWROQY7x1nW4C/uNumb7cpCkDeE7u3LGVDL39t0PiphS34OXfVrCpxSzQJE5p7bDQEvMcPgeHt4T2+VatSI+AChKqY0xakiYvPlcre14+ADsbewnmFOR9149I9D7MbHhAhngE1QV9Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725004835; c=relaxed/simple;
-	bh=4QIdKj/jjDL8enlG+3iVroSBAbplJpisOBs7Zp9vrz4=;
+	s=arc-20240116; t=1725005243; c=relaxed/simple;
+	bh=oLHU393aOI74one4bM2/16vkRyntHkVb7AeFOSEhgM0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gMDxq5n4dCNsISDWgpwzno6iWsHf5KGxrMpvbXy+wxB+bApj3NMXjVDTu3NJdPyL4e2Rsdfsh1WCEcRFLlulcjnepVhuNzVWvG1BK5nJBW1IaNHO7rx+QiBRhXOhTpYA+DQSz5onz/ecQqlyoa+QVvTe/QKzTxeUtalERAr3fR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yl9CyNat; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=V1saoaiwptyuzQuvUYe/Ircg6P5bbtjQ0rFredcdBYve9ez8OVL6uNXCAPwIZaWyVG6f5VtwsTDq/49IoDL/K7fI1Lsfw0KYgV/MIh/UhtGDlp3B+dwnK1S+Mja4dW8dey0ejwZBTTe3gaDjubXPyKQqadzht8XhzL0UBjP+Er4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AX3msNia; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yl9CyNat"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFD1C4CEC7;
-	Fri, 30 Aug 2024 08:00:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AX3msNia"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ECE4C4CEC2;
+	Fri, 30 Aug 2024 08:07:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725004835;
-	bh=4QIdKj/jjDL8enlG+3iVroSBAbplJpisOBs7Zp9vrz4=;
+	s=k20201202; t=1725005243;
+	bh=oLHU393aOI74one4bM2/16vkRyntHkVb7AeFOSEhgM0=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Yl9CyNatOWtfPy0eKf6XCsLMjGc3hHVWG7WKGThSBLFKQ+tKM5RvT4H0paRpEdmXE
-	 HkCKChRb02dxVdUTkUMbSxmyhtsT8usHw+ZCNqwSNFr5TKh6grHeb31Yy2DyE6ieln
-	 ZTGDNlK3sFM8IGuWWVruJX98LG+T66i0cR/zaiQ8/uEqGtxUAX3pwcf3+sOST8EdQQ
-	 PnAgwioc4oesw9JjrouGtV7A8XYep+QkFuH93DYjRtJ38iHpSrc1/LH/7oIY6PIz3y
-	 DXKPdros76uIMlkpC9/NASmzrisaXJR87QRhddHAvItSvlY1otCrAGmfbOT4W4u4rB
-	 hxBPcr6Dw1jhw==
-Message-ID: <87b15a0c-4bc0-40ee-9f07-991b2dfb9bff@kernel.org>
-Date: Fri, 30 Aug 2024 10:00:30 +0200
+	b=AX3msNiaJREpa3GNaGSE2/Ap92b3xaKP+PesYvUjG0UVT5v+Va2M4OAt+uszuErH3
+	 LeZ7V181uC1LcGtD/YUvCtxCC7nltsA5aMADF5+znjdIJox6UVmcfzX07SXLjtnn6e
+	 qcO0V7nEzegISJ5dYDhzfOZ8NpA7idzH14RxHrSHhrol9pAUmUlDR64tEgr8a16y/v
+	 XneZIQhpI6jUghQHqYxUH2RDqNjBkUmLcPBPsjBE7OOM/zqIWg/Uv5K7Yvt03O5tbQ
+	 9VV9tNlidrMOO7O7h9JBO6ItE+hZcXpMV2/UPpKcGP7ad6C7WNG9krUValbjShO/it
+	 yi4x0vR8HRCvw==
+Message-ID: <650ec430-715a-41d5-bbac-15dece73c632@kernel.org>
+Date: Fri, 30 Aug 2024 10:07:19 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,14 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] tty: serial: samsung:Simplify with dev_err_probe()
-To: Yu Jiaoliang <yujiaoliang@vivo.com>, Alim Akhtar
- <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH v1] tty: serial: ma35d1: Simplify with dev_err_probe()
+To: Yu Jiaoliang <yujiaoliang@vivo.com>, Jacky Huang <ychuang3@nuvoton.com>,
+ Shan-Chun Hung <schung@nuvoton.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Cc: opensource.kernel@vivo.com
-References: <20240830033251.232992-1-yujiaoliang@vivo.com>
+References: <20240829085316.3144246-1-yujiaoliang@vivo.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -88,40 +88,41 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240830033251.232992-1-yujiaoliang@vivo.com>
+In-Reply-To: <20240829085316.3144246-1-yujiaoliang@vivo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 30/08/2024 05:32, Yu Jiaoliang wrote:
+On 29/08/2024 10:53, Yu Jiaoliang wrote:
 > Error handling in probe() can be a bit simpler with dev_err_probe().
 > 
 > Signed-off-by: Yu Jiaoliang <yujiaoliang@vivo.com>
 > ---
->  drivers/tty/serial/samsung_tty.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  drivers/tty/serial/ma35d1_serial.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index c4f2ac9518aa..3550177010ad 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -1225,10 +1225,8 @@ static int s3c64xx_serial_startup(struct uart_port *port)
+> diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+> index 3b4206e815fe..09d42a4054b3 100644
+> --- a/drivers/tty/serial/ma35d1_serial.c
+> +++ b/drivers/tty/serial/ma35d1_serial.c
+> @@ -692,10 +692,9 @@ static int ma35d1serial_probe(struct platform_device *pdev)
+>  		return -ENODEV;
 >  
->  	ret = request_irq(port->irq, s3c64xx_serial_handle_irq, IRQF_SHARED,
->  			  s3c24xx_serial_portname(port), ourport);
-> -	if (ret) {
-> -		dev_err(port->dev, "cannot get irq %d\n", port->irq);
+>  	ret = of_alias_get_id(pdev->dev.of_node, "serial");
+> -	if (ret < 0) {
+> -		dev_err(&pdev->dev, "failed to get alias/pdev id, errno %d\n", ret);
 > -		return ret;
 > -	}
-> +	if (ret)
-> +		return dev_err_probe(port->dev, port->irq, "cannot get irq\n");
+> +	if (ret < 0)
+> +		return dev_err_probe(&pdev->dev, ret, "failed to get alias/pdev id\n");
 
-I don't think you really thought this through. First, why changing only
-one place, but leaving the rest intact? Are you going to send one patch
-per one dev_err_probe()?
+This is kind of silly... You change part which cannot defer, but you
+leave second dev_err() intact which actually would benefit from handling
+defer and dev_err_probe().
 
-Second, that's not even probe path.
+You either do not understand the function at all or you split patches in
+some artificial, fake way just to generate multiple patches.
 
-NAK
+That's pointless.
 
 Best regards,
 Krzysztof
