@@ -1,125 +1,102 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69B7219ABAA;
-	Fri, 30 Aug 2024 12:58:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627131B252B;
+	Fri, 30 Aug 2024 14:44:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725022684; cv=none; b=EWrQxq49Sr0Js2PDatwq/JWR5pydb0Ynh2GWF6x7yW+nAjeZ6SZ46lTpGX+15GWHoY1x8ec3CzaSVSFnlmFRsqVn8aoovcbhD5a9CID6t7w5onK9geTWVlKT1uA3Hrb31vSUlryjzEq6BLjocKMcBjCxOYxANkbvn877dBjMjKc=
+	t=1725029096; cv=none; b=csvKFWy7+Ba7Lqv2oTQ/ExD4ND9bKlrSWg62sIEnZDjOcqqtXtLRuowDFmb29szoj9dgZv14zYgsX/ArFgNhKt9+2VyJG6jdTLSd0GEV0vIihnV8E2F31RoeNbg4nxpDrED2B8lS+uqtdku3fALjEzwx9iCPJD+DU6FD0Tt6pqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725022684; c=relaxed/simple;
-	bh=pRzr4dw+htikBqyVyR2UfwtO0f/g1Jd6QIJAItLjm9c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Qr/sRhgmyi/ovRzEzPBVAjYY01JWIQcX9oYTVn/DAXKsvrq5u0DuOELZNWmKAaiMY8d1jvP4fkEYeP/lULB6wPts/dzTLo1cziXYzG2ho6oleeOcgNDxBrSu1J+pu6RwIUXKxhSGiRcsuLBLVpaYUMgGJ1YwfLJkKAKUtlQ140Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MgeGhM3S; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725029096; c=relaxed/simple;
+	bh=6f2WgrwM+oBYMEbFA/A5ogXzYsctqgEAAF3bpBkOzoI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=U0+8JWN6f2jlfnE/CKfxCUwLg7427Ll8/09EnwO9VnUlAE6l3Ob0qAT8TdzG3KJ8UqctI97oIjWXiaWO8EQL+TyIs9+OEaXeBy0bsLdt9JAvi1DIfu5IvgAcPljdJBUbcMmJiK5wAzTD7NXoNY0n1PT+FAtmNO4YeJpVe+mSa6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X8hU75Rq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MgeGhM3S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8EB8C4CEC2;
-	Fri, 30 Aug 2024 12:57:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X8hU75Rq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05761C4AF0C;
+	Fri, 30 Aug 2024 14:44:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725022684;
-	bh=pRzr4dw+htikBqyVyR2UfwtO0f/g1Jd6QIJAItLjm9c=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=MgeGhM3S5Skkm3/czz9Sb4Q/cLEXI9TleH0U3Vau8IqpzVb/X/pDF1kqKFqwYbimK
-	 HNtT7qR9MMOBs7/rPoReRuwDBqSWcQub+lzuzCTUiny9hXVbWJWhHcrx+HH46cUU/1
-	 si/G+nON+U61JVnqQY2LTk+1TCnedYwS6voFpwCPblt5H4WNbzBdvDiuyieAjudA46
-	 Y4GZ2CJ4UEZ3bnyJecRQp+T7JwEf4eX840m+PRjzx4gHFPqf1Xfy4RbPHcRc6tmqHM
-	 g62Vw/9VGJ++mllrkCxjUKe30z5fXiRPRJGGguqj9qa1vYUFxElS23O1hbhP/VdoQ0
-	 cPNTshwv7omjA==
-Message-ID: <998609e2-0fa4-43e8-9f72-05af40cf62c2@kernel.org>
-Date: Fri, 30 Aug 2024 14:57:56 +0200
+	s=k20201202; t=1725029096;
+	bh=6f2WgrwM+oBYMEbFA/A5ogXzYsctqgEAAF3bpBkOzoI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=X8hU75RqiVjleNV2CmnO+SkF/2Gn01NxdY0DInl/ArQXvSPxnVAj8dDUcEFMn66zY
+	 +3mmWMmWZuwLV241PoaoXTaVJN6okrGd3xlKS4iiQht/2gZ+1eTIyGBx9wKZXvlFGj
+	 3piz2KI5T5BE8Udz0v/zWytv1bJWYexgTAtDXUMV7dcCSEhWaBr6Ymnh52s7xOCWi/
+	 Rzjurj2cPgwlqVqTjF29w/qxo2ErO2qxkd24o/C9u7tWMTtApIvh7CqiRO5LgTiebA
+	 8qN3SyuOnxabblpMgVOvpH7hOYdVFa/2TWorxZVq+PRS7XYrxC5gzClsWNBrdcaet1
+	 WKbMGJrZBR2WA==
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-53346132348so2451821e87.2;
+        Fri, 30 Aug 2024 07:44:55 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUtHGLGGQWB4NpN8+TFkHv3tKgTwHMCshJBAdYevdzcFRElqDC3thtrdv/4O/cVhMkgkdiA/Gb6ULw4@vger.kernel.org, AJvYcCUvyLGVtg70+qCaIqX8e8tgJjW5aXUKbTBvOD02f7EEorzw9VpKd+VAr6pnKRnHO9ig6BUg2T42MKEfd9imCDs=@vger.kernel.org, AJvYcCV2yfXRoNw9qOYLx6i7NolXZpPiuZRqAaXsFOUfYNv+XaVZoWZOWeuH51kbMmUqnqllONJ/CgXQMNy0KQ==@vger.kernel.org, AJvYcCV7c23bkeml06Z9T03kidlGbx1icDUCo3iw/q6PtS4Emt5F9ZrH2NQIycCkvzcj7Mz8/1JbSJbdq2U=@vger.kernel.org, AJvYcCVj9FYbbAIT/qwUTYwWdKplR5JfFZDyTepXswF7toh9Kogyo6lXQrpPR55auYH/kpgpkgTGycnNJIaR@vger.kernel.org, AJvYcCW1Bty/9LPUwre2I8eSsqkkbVrU+OIaOQYW6AeO5eU72KsPub8Ri3LMFTjIwwLg/nJCjvpqUGypc6kg+NAc@vger.kernel.org, AJvYcCWDvZ+g2Tc0eU32cfS2KZ7gKKiNNQyjJIVdd627HHTnZDXnumsIusG4hO/UDsBvM9OSN7wJwy4P07/QfQ==@vger.kernel.org, AJvYcCWJde+cuo4yUft1e1TJImgMJkKcstpI1+jYOqrYCvNQyEKX4a3ix1DVmOrtbsvM6gxQXpQq1PI07rHHYZZnVA==@vger.kernel.org, AJvYcCWPmZvJo7dz5Lm+3B1YPMT+nJf8wFoFHKuOLrtVNYpneOisOXl+gDNnfiaiOJR8hYjg9QlVC1dZMAwB+0aK@vger.kernel.org, AJvYcCWUYQyeDAWBGcGeVV/ekxnSJMvKmjuEeY5zkri4zwyxEsVpyIXzT0EgDpscv+uO3X1AxNBc8/KFBsm0DkR5@vger.kernel.org, AJvYcCXuNDzqObOPbbapyj+yS64zEkVGxCITQF1cVUXX2lYww86JTMnzmeM1vg0w9lae5MVPmYtXn/UZlQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2/V7vkaptSvwm/nhuzNK3FZiC3W+SsM9b/3OjNDKreR3qx7Lz
+	DojmKY4pqyBsOCmblwmMYtaRqbwHiAtJYZZaTfo9sXVfyNebgJrowoiNly/Nl+n09uyzXZIq+s3
+	CloeRYEOplWbkM/vKwYutQzUIcQ==
+X-Google-Smtp-Source: AGHT+IHNK+9MXGVAZLBYt9qXZDqL92+9Mw4J9z0N2JZfmchRYYjKoFr1fQ6DbSfpa5bXY7t46hBzKKVI680zgd+zxWw=
+X-Received: by 2002:a05:6512:2345:b0:52f:c833:861a with SMTP id
+ 2adb3069b0e04-53546bb06dfmr1793360e87.51.1725029094340; Fri, 30 Aug 2024
+ 07:44:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] platform/surface: Add OF support
-To: Andy Shevchenko <andy.shevchenko@gmail.com>,
- Maximilian Luz <luzmaximilian@gmail.com>
-Cc: Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Len Brown <lenb@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
- platform-driver-x86@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <quic_kdybcio@quicinc.com>
-References: <20240814-topic-sam-v3-0-a84588aad233@quicinc.com>
- <20240814-topic-sam-v3-3-a84588aad233@quicinc.com>
- <ZszrjQChQ2aS5YjV@surfacebook.localdomain>
- <d08d41ad-edcb-48ad-a848-53edc45ab8eb@gmail.com>
- <CAHp75VcbjR8HQqPASLFEGiyYLfTFQDa6Ri+jFy+7Q1xz7gY39Q@mail.gmail.com>
- <53a56539-1d95-42ac-ad07-1b689702b2ed@gmail.com>
- <CAHp75VdsksKPrj-CwmR4QLBrm_FfaG4aZys-_jnee_L=3ZnRPQ@mail.gmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konradybcio@kernel.org>
-In-Reply-To: <CAHp75VdsksKPrj-CwmR4QLBrm_FfaG4aZys-_jnee_L=3ZnRPQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-22-quic_nkela@quicinc.com> <20240829185240.GA914553-robh@kernel.org>
+ <de0c40c2-3627-4c63-9112-4eb13cf75c0a@quicinc.com>
+In-Reply-To: <de0c40c2-3627-4c63-9112-4eb13cf75c0a@quicinc.com>
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 30 Aug 2024 09:44:41 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKS1pB9GMjEwji_XO_DmrKs4J6GkcxpRkUqcAAHwCseQg@mail.gmail.com>
+Message-ID: <CAL_JsqKS1pB9GMjEwji_XO_DmrKs4J6GkcxpRkUqcAAHwCseQg@mail.gmail.com>
+Subject: Re: [PATCH 21/22] ARM: dt: GIC: add extended SPI specifier
+To: Nikunj Kela <quic_nkela@quicinc.com>
+Cc: andersson@kernel.org, konradybcio@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, sudeep.holla@arm.com, 
+	andi.shyti@kernel.org, tglx@linutronix.de, will@kernel.org, joro@8bytes.org, 
+	jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org, 
+	amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org, 
+	wim@linux-watchdog.org, linux@roeck-us.net, robin.murphy@arm.com, 
+	cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com, 
+	vkoul@kernel.org, quic_gurus@quicinc.com, agross@kernel.org, 
+	bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com, robimarko@gmail.com, 
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, arm-scmi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, kernel@quicinc.com, quic_psodagud@quicinc.com, 
+	quic_tsoni@quicinc.com, quic_shazhuss@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 28.08.2024 9:06 PM, Andy Shevchenko wrote:
-> On Wed, Aug 28, 2024 at 8:40 PM Maximilian Luz <luzmaximilian@gmail.com> wrote:
->> On 8/28/24 6:56 PM, Andy Shevchenko wrote:
->>> On Wed, Aug 28, 2024 at 12:10 PM Maximilian Luz <luzmaximilian@gmail.com> wrote:
-> 
-> ...
-> 
->>> Yes, and software nodes for DT are quite strange things! Why can't you
->>> simply fix the DT to begin with?
->>
->> For the ARM/DT variants we could do that. But we still have to deal with
->> the x86/ACPI ones here.
-> 
-> So, then fix it there! Currently it's an abuse of software nodes
-> inside the Linux kernel.
-> 
->> So for me it makes more sense to have it unified
->> and just deal with everything in this module.
-> 
-> I understand the desire, but DT is DT and ACPI is ACPI, they are
-> different despite having some common APIs in the Linux kernel.
-> Moreover, DT has a validation tools and everything, making that being
-> a software nodes has at least these disadvantages:
-> - no official schema that must be supported and users are known of
-> - no validation done
-> - bloating of the Linux kernel binary and hence memory footprint
+On Thu, Aug 29, 2024 at 2:02=E2=80=AFPM Nikunj Kela <quic_nkela@quicinc.com=
+> wrote:
+>
+>
+> On 8/29/2024 11:52 AM, Rob Herring wrote:
+> > On Wed, Aug 28, 2024 at 01:37:20PM -0700, Nikunj Kela wrote:
+> >> Add interrupt specifier for extended SPI interrupts.
+> > What's an "extended SPI"? Is this a GIC spec thing? If so, what version=
+?
+>
+> Extended SPI is an extended range of SPI interrupts supported by GIC.
+>
+> Excerpt below from
+> Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.yaml
+>
+> "The 1st cell is the interrupt type; 0 for SPI interrupts, 1 for PPI
+> interrupts, 2 for interrupts in the Extended SPI range, 3 for the
+> Extended PPI range. Other values are reserved for future use."
+>
+> "The 2nd cell contains the interrupt number for the interrupt type. SPI
+> interrupts are in the range [0-987]. PPI interrupts are in the range
+> [0-15]. Extented SPI interrupts are in the range [0-1023]. Extended PPI
+> interrupts are in the range [0-127]."
 
-Arguably the last point isn't very strong.. DT also has to store some
-strings and pointers to represent devices
+Looks like you should add EPPI define too while you're here.
 
-> 
->> Also, if we consider that at some point we might get ACPI PEP support (I
->> know, far fetched right now): With that, ACPI on ARM might be feasible
->> and then we'd have to manage the same thing in two places...
-> 
-> This (PEP) is something I have no knowledge about. But I think it's
-> still orthogonal to the software nodes usage.
-
-The PEP (Power Engine Plugin) unfortunately is the reason we can't have
-ACPI-based boot on WoA platforms.. This two-or-three-digit megabyte
-Windows driver hardcodes almost everything related to the on-SoC power
-management (buses, clocks, etc.) and only uses the bare minimum ACPI it
-needs to connect devices to a bus or get notifications on standard events..
-
-> 
->> And lastly, the EC subdevices are quite contained and I don't see them
->> interacting with any other components in the DT, so it's more of a
->> stylistic choice where to put them.
-> 
-> They are still part of hardware and DT describes hardware.
-
-Unfortunately the "Surface Aggregator Module" is just a firmware
-exposed on some range of MCUs running MSFT's code..
-
-Given how.. peculiarly the "bus" that it hosts """devices""" on is
-constructed (5-level-deep hierarchy without it making much sense
-beyond maaaybe the first two), it's not really easy to describe in
-DT in a way that would be both true to the bigger picture and make
-enough sense to convince the DT maintainers, I don't think
-
-Konrad
+Rob
