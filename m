@@ -1,158 +1,152 @@
-Received: from e3i12.smtp2go.com (e3i12.smtp2go.com [158.120.84.12])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34EF416DC27
-	for <linux-serial@vger.kernel.org>; Fri, 30 Aug 2024 19:59:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=158.120.84.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA21019BB7
+	for <linux-serial@vger.kernel.org>; Sat, 31 Aug 2024 09:17:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725047963; cv=none; b=AVMOBCe3r7IQvp4e6bzMr1La3Jv2KI2ga5AUmomIyHocDSXaps8rIFcUPVr4b4H5cRyv1g5QMedaR5+mjQAvOJ/iBA2/ejZ8vxZDItVGcDTaLwvDkc3K93aPN3hfyqSnkRq85xkKWTy0kfwcpah6Jeh8ebc1xMJ6CAsLnz+MMvc=
+	t=1725095833; cv=none; b=nouFqO6X4/OijkBjZc6K1fLOeFwT4kxUq7+WJetGKIv2xETC7VFRxl1BiOqeTtL9G6SCt82TADYg89ejRfGFb78x7oZaLigehkxCpZnOoD4sHRws706fk2UX3FzsV+XHkco3kTOlNdBfmss+rYk+d66REChJmSi3lW5D3sEEbxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725047963; c=relaxed/simple;
-	bh=VrcLFN5tqkfWY7mTHOYKMf0e0KvomCFsMPrfJDAaMSY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ehwJP06wA4FHniqo0IHQd9dqIaiZAgHEHldMBTZvnauq5n/piLI9nmJRA+LDJvYITFXCNPQrRX4Z3s2TrOk00PUwZDcooqdjgGe6d0NnYpMQEpQ8eL1COvCc9N/fwyQbyPVoY+ve28/zMNRcdY6VNJ2CG5AN/m0opjUm/RBpxXs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fjasle.eu; spf=pass smtp.mailfrom=em1174286.fjasle.eu; dkim=pass (2048-bit key) header.d=smtpservice.net header.i=@smtpservice.net header.b=nSF+MXJo; dkim=pass (2048-bit key) header.d=fjasle.eu header.i=@fjasle.eu header.b=ZoEh9+mK; dkim=pass (1024-bit key) header.d=fjasle.eu header.i=@fjasle.eu header.b=P7Vd6NkS; arc=none smtp.client-ip=158.120.84.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fjasle.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=em1174286.fjasle.eu
+	s=arc-20240116; t=1725095833; c=relaxed/simple;
+	bh=LvOTrlRBEPwDyI6/Nc6lSz3wa+Iw9Uc6C0EWseKykXU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BN+luGRPx2f63VCCiKd8/ylKxGNlvNZpT21Ojy0YpLYQvy8zm/GbWWFPfW2ianXVRow/tcjiQzBqjP3bCj5IkPlsBZBAZM4trwRZRpm3RrqrHYFnOVD9bEvJyK5UDWQmV+DbZmmh1er471p6t0KUq/ZYL7becJlFA1Ue0MHGE+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=ZoM0svnk; arc=none smtp.client-ip=212.227.15.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smtpservice.net header.i=@smtpservice.net header.b="nSF+MXJo";
-	dkim=pass (2048-bit key) header.d=fjasle.eu header.i=@fjasle.eu header.b="ZoEh9+mK";
-	dkim=pass (1024-bit key) header.d=fjasle.eu header.i=@fjasle.eu header.b="P7Vd6NkS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smtpservice.net;
- i=@smtpservice.net; q=dns/txt; s=a1-4; t=1725047643; h=feedback-id :
- x-smtpcorp-track : date : message-id : to : subject : from : reply-to
- : sender : list-unsubscribe : list-unsubscribe-post;
- bh=8ffM0oj/VoAWiRvIYhx2YzkqNpRjhG4e8iNPq0uer6M=;
- b=nSF+MXJolu7FtC3TQIga2d8B/r9Sm08LTYiDBdORqTQvJ1IM4krN0KktPXcQUryAm+kZ1
- OaW+AV8Vyf6WjMLgaQKurPHDFgzbtrxlkJFdiFveUrAN1zG3ZFBMq7ZxGFhV83GgHnXBXjy
- UKfxx7tOJa5mJJQx+kqTt1+al63G0Fye0MrJ+ApXZ8Lj+6rQWNEsfCHYFxJ9P0FCii2gdXI
- jo7WfInU+sKgS2Z60RH4ZyA5Rsj6PdpfpxrIvFrhELsNaeACx7Fw3pN3MoTh4s2JMD8w6U4
- RpO56p+RKl8TRneD/NBD7EIpHm3Ts1leQtzTJ19TuOjcK+8kFl3UlE0I5JjA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fjasle.eu;
- i=@fjasle.eu; q=dns/txt; s=s1174286; t=1725047643; h=from : subject :
- to : message-id : date;
- bh=8ffM0oj/VoAWiRvIYhx2YzkqNpRjhG4e8iNPq0uer6M=;
- b=ZoEh9+mK79/v8RokkQJ3VmzcjYtU9qTW4elQRnsLrmZ7oi5oJlnD8UH3nXh39U2kX54K0
- Pm+iYVgYWx1KU1RA0XK9G/mbcvsqeXu35qrK6mOByKb/UtZIXhT1Oscapjx44qJLbELXVrB
- AjZpKAuwZxe2fyNhZdG5VwGmuYcXls9gjGjQC12VnZX3JXBymFrbgZqfKu4w/GyZXVH4QfH
- fYiVLjaSsEG1w5MFUYRQ9HyAqZf9y0phc5Rvb0w+KcdpfmgA6SeICXKJOaJjGwjoAG3kW+A
- TF7rr6PY8/6BGPkKEh6bFI9lrSlNBUEGYe/MEXgXH960GAqNSRFwi8WMihKQ==
-Received: from [10.85.249.164] (helo=leknes.fjasle.eu)
-	by smtpcorp.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.97.1-S2G)
-	(envelope-from <nicolas@fjasle.eu>)
-	id 1sk7gj-FnQW0hPpdBf-nWmg;
-	Fri, 30 Aug 2024 19:53:42 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-	t=1725047604; bh=VrcLFN5tqkfWY7mTHOYKMf0e0KvomCFsMPrfJDAaMSY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=P7Vd6NkS50dZUF4ArGNPd4emC0HPqVDT3dc+nak6w/kyFZyIa7wpU0vTqmsiIkRep
-	 lFQ7rFhNaD2Mf9eA7RsNhjnIHPRkgubjb0TmusaqfHzYKQpJgQpvZs4tHW5Z4AT4vC
-	 fDqmIJfHaxoaJYo+8KfLKLIUurdYOyn4DfkqTbOE=
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-	id 423D3449B6; Fri, 30 Aug 2024 21:53:24 +0200 (CEST)
-Date: Fri, 30 Aug 2024 21:53:24 +0200
-From: Nicolas Schier <nicolas@fjasle.eu>
-To: Daniel Gomez <da.gomez@samsung.com>,
-	Masahiro Yamada <masahiroy@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	William Hubbs <w.d.hubbs@gmail.com>,
-	Chris Brannon <chris@the-brannons.com>,
-	Kirk Reiser <kirk@reisers.ca>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Paul Moore <paul@paul-moore.com>,
-	Stephen Smalley <stephen.smalley.work@gmail.com>,
-	Ondrej Mosnacek <omosnace@redhat.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oliver.upton@linux.dev>,
-	James Morse <james.morse@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"speakup@linux-speakup.org" <speakup@linux-speakup.org>,
-	"selinux@vger.kernel.org" <selinux@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-	Finn Behrens <me@kloenk.dev>,
-	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>,
-	"gost.dev@samsung.com" <gost.dev@samsung.com>
-Subject: Re: [PATCH 08/12] include: add elf.h support
-Message-ID: <ZtIjNBhqdxmMBxfM@fjasle.eu>
-References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
- <20240807-macos-build-support-v1-8-4cd1ded85694@samsung.com>
- <CGME20240807110435eucas1p2eca071b0a0122b8686d43c57bd94dc8c@eucas1p2.samsung.com>
- <2024080717-cross-retiree-862e@gregkh>
- <dxkmmrlhlhsrjulnyabfgcr37ojway2dxaypelf3uchkmhw4jn@z54e33jdpxmr>
- <2024080720-skyline-recapture-d80d@gregkh>
- <20240807-mottled-stoic-degu-d1e4cb@lindesnes>
- <20240823225450.spuvjs5b5ruujim4@AALNPWDAGOMEZ1.aal.scsc.local>
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="ZoM0svnk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1725095815; x=1725700615; i=wahrenst@gmx.net;
+	bh=95z+oY7txvjaR/pEdJjsNVU9eKUfNKM/C8Gs7mhXYl8=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=ZoM0svnkXM4kbMzjacd9aoLEe4w6rMTMwOd5+QLtM4bwF5h4jzVrFmV3WuK57sEb
+	 9/Fllw4J4EaAhUlIXH0I9Sktz4ZjvWV0twX3TFthv5+YLh68bIqi0X312lFmr/r7s
+	 vNjKLt/ln8hNn0fSc/FZ/jGEk9bqPryDqFnWRxEkz+xbCYqPxAVL6uiLbAa7OOkq7
+	 5RTjC6uFuS4dqw50ZkGivWLFhfDbgC8j8KkDeUl4u1elCt/ivM0tsuybxCaPVg45q
+	 83TA0x+b9OUKBwYKY2OHTGyFZiBqKC53/C5Vp3yzIRg61MFmRMXFgf3TEgCZJPqk6
+	 e+HX0MyVR7my6E+XjQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.1.127] ([37.4.248.43]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1ML9uK-1sS6cP1Xqk-00IhOE; Sat, 31
+ Aug 2024 11:16:55 +0200
+Message-ID: <b7103011-d1e0-468b-bab3-ae49fac7d848@gmx.net>
+Date: Sat, 31 Aug 2024 11:16:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240823225450.spuvjs5b5ruujim4@AALNPWDAGOMEZ1.aal.scsc.local>
-X-Report-Abuse: Please forward a copy of this message, including all headers, to <abuse-report@smtp2go.com>
-Feedback-ID: 1174286m:1174286a9YXZ7r:1174286sfGQOlJjcl
-X-smtpcorp-track: Y-YfxqZEnvNU.GsNvN8AOvVQE.KBy9Eg8MFQb
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250_bcm2835aux: Fix clock imbalance in PM resume
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Florian Fainelli <florian.fainelli@broadcom.com>, Ray Jui
+ <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: Peter Robinson <pbrobinson@gmail.com>,
+ bcm-kernel-feedback-list@broadcom.com, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, kernel-list@raspberrypi.com
+References: <20240818174936.88372-1-wahrenst@gmx.net>
+Content-Language: en-US
+From: Stefan Wahren <wahrenst@gmx.net>
+In-Reply-To: <20240818174936.88372-1-wahrenst@gmx.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:IFRjJrWXOlqE64WzjrmQCYB7lEd5SLTSb8W3plWlXWSDsumnpG0
+ 5wbvpF8skOZsrLj6EtUeOyB7xWSarEqF6zXLhjRB2Gkd8ZLBrYGs+KRffxPPDVascWtoQyl
+ bFrRJYcE9glKat4lKPExTj4TtH8EBlVo2wWKBy1QsrfcMcrDdKMtmzvLRYALF+oOBDWuW7e
+ l3HubNk4wAG+oBoInP+WA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:yY8fp6PlrBI=;/MSasBIcbk/fqd1lPBTDg1NLsq1
+ pqZRo47gfayXbLuNFlcN2Wd9LBFnllmnJU2trfO8KSitvWKZqWdUDE2xnrVEbkTFR126UxFqi
+ 3Jt0giYfr+1VxMUQr9gSpy8Qud1TFl/L8+OHAQSFIcjWNfEWcdC2gvIg61qEXDOnUKen0TUUW
+ cFPd2Bkqq3xz9F+hmGKqZ52tAtU0GD3IDEo5a2qd243yhp8Rroz9d2I8aKgISt+N+c54V/6nP
+ x6x+olfcdgr4oyFBMKPtDPqSFTH27eU4iQ84apVQqYuN5smSoF4TUm5ngUK2HBf2eofXim/mv
+ mVqLn9VoopDQJcQHVkRvNvDZYSpht9VyzCNJht/m3q4Tyxzc8WoddOo+pltA6YNOjo6ob8cg6
+ aQ8YE3DAGqUjQ/L81bBThZLERlnc5v+eLJUMXpjcAHAo/tFd7ZQSowPcy7Lr++3rv4J6Xx+6d
+ iGwctPuHZYI19YkaoYZKa+pv6HDYS9x1x1sj0ERqIAPTI9/s+o3sJiQuTucDlqJy+n7RiS4h9
+ 2+5Gb+jgYgxEA1X+J5gNopcnZumw3KJs/03W2ie1iWyFmNV5GwLkEU6YzcybkW5wO/gyPQHAU
+ o2kmPGS1fM5b7wSBX9Tjmu2/9Y91wPcA3xFXFAXmGRAjo09EjrxBAPisiFsgnAhsCmCt4FwYP
+ 3az628vCshyUOG5sNln7djN6O9NvAbVEsTnWZDri/c3DUut+cBwnIvtgRZSn7XLocy9e3ZupR
+ 1JXEsyBd2s9ZBKhj7tmVkdKJhFUWTfcKyhRFQIjGto3N87E7gnp6txcf+KnyCg8+lk6dnSdaq
+ KFJ/+wBv4lA/reTx3UhgpjSw==
 
-On Sat, Aug 24, 2024 at 12:54:50AM +0200 Daniel Gomez wrote:
-> On Wed, Aug 07, 2024 at 05:46:03PM +0200, Nicolas Schier wrote:
-> > On Wed, Aug 07, 2024 at 04:18:54PM +0200, Greg Kroah-Hartman wrote:
-> > > On Wed, Aug 07, 2024 at 02:13:57PM +0000, Daniel Gomez wrote:
-> > > > > Also, as this is not internal for the kernel, but rather for userspace
-> > > > > builds, shouldn't the include/ path be different?
-> > > > 
-> > > > Can you suggest an alternative path or provide documentation that could help
-> > > > identify the correct location? Perhaps usr/include?
-> > > 
-> > > That is better than the generic include path as you are attempting to
-> > > mix userspace and kernel headers in the same directory :(
-> > 
-> > Please keep in mind, that usr/include/ currently does not hold a single
-> > header file but is used for dynamically composing the UAPI header tree.
-> > 
-> > In general, I do not like the idea of keeping a elf.h file here that
-> > possibly is out-of-sync with the actual system's version (even though
-> > elf.h should not see that much changes).  Might it be more helpful to
-> > provide a "development kit" for Linux devs that need to build on MacOS
-> > that provides necessary missing system header files, instead of merging
-> > those into upstream?
-> 
-> I took this suggestion and tried pushing a Homebrew formula/package here [1].
-> I think I chose a wrong name and maybe something like "development kit" would
-> have been better. However, would it be possible instead to include the *.rb file
-> in the scripts/ directory? So users of this can generate the development kit in
-> their environments. I would maintain the script to keep it in sync with the
-> required glibc version for the latest kernel version.
-> 
-> [1] https://github.com/Homebrew/homebrew-core/pull/181885
+Hi,
 
-I think it sounds sensible to hold that formula file in the upstream tree.  But
-I am not sure if scripts/ is the best location.
+Am 18.08.24 um 19:49 schrieb Stefan Wahren:
+> During review Ulf Hansson discovered a clock imbalance in the recently
+> introduced PM resume code. The driver should enable the clock only in
+> case it has been disabled in suspend before. In order to make the
+> conditions easier to read, refactor this into a separate function.
+>
+> Reported-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Closes: https://lore.kernel.org/linux-arm-kernel/CAPDyKFoJh3j8xSeXZ9o031YZLTCDYVA+dgvURuwozjDpU_aauA@mail.gmail.com/
+> Fixes: 0e1d8780526f ("serial: 8250_bcm2835aux: add PM suspend/resume support")
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+i missed to mention that this is for tty-next.
 
-Masahiro, what do you think?
+Now i can take the chance for a gentle ping ...
+> ---
+>   drivers/tty/serial/8250/8250_bcm2835aux.c | 26 +++++++++++++++++------
+>   1 file changed, 19 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> index 36e2bb34d82b..e6b42ca6151e 100644
+> --- a/drivers/tty/serial/8250/8250_bcm2835aux.c
+> +++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+> @@ -214,17 +214,27 @@ static const struct acpi_device_id bcm2835aux_serial_acpi_match[] = {
+>   };
+>   MODULE_DEVICE_TABLE(acpi, bcm2835aux_serial_acpi_match);
+>
+> -static int bcm2835aux_suspend(struct device *dev)
+> +static bool bcm2835aux_can_disable_clock(struct device *dev)
+>   {
+>   	struct bcm2835aux_data *data = dev_get_drvdata(dev);
+>   	struct uart_8250_port *up = serial8250_get_port(data->line);
+>
+> -	serial8250_suspend_port(data->line);
+> -
+>   	if (device_may_wakeup(dev))
+> -		return 0;
+> +		return false;
+>
+>   	if (uart_console(&up->port) && !console_suspend_enabled)
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+> +static int bcm2835aux_suspend(struct device *dev)
+> +{
+> +	struct bcm2835aux_data *data = dev_get_drvdata(dev);
+> +
+> +	serial8250_suspend_port(data->line);
+> +
+> +	if (!bcm2835aux_can_disable_clock(dev))
+>   		return 0;
+>
+>   	clk_disable_unprepare(data->clk);
+> @@ -236,9 +246,11 @@ static int bcm2835aux_resume(struct device *dev)
+>   	struct bcm2835aux_data *data = dev_get_drvdata(dev);
+>   	int ret;
+>
+> -	ret = clk_prepare_enable(data->clk);
+> -	if (ret)
+> -		return ret;
+> +	if (bcm2835aux_can_disable_clock(dev)) {
+> +		ret = clk_prepare_enable(data->clk);
+> +		if (ret)
+> +			return ret;
+> +	}
+>
+>   	serial8250_resume_port(data->line);
+>
+> --
+> 2.34.1
+>
 
-Kind regards,
-Nicolas
