@@ -1,154 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51AE817F394;
-	Sun,  1 Sep 2024 16:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B26A13C9C0
+	for <linux-serial@vger.kernel.org>; Mon,  2 Sep 2024 11:13:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725207339; cv=none; b=n4wiyz/xPKN6DQqTSVBxy2Cyd1vYzdgS4CI42c77xQezcVmjeYf7LsS9E169qtGH8aXi5O5uSJX+35i9MIeSrSe6UvFAbnKp6J7teOAMZCa+Zr4cyPH8/V3Wd9lTe3ynYW+9mI2HHitdFcgQx8pjnNRG68kKE0DDYVL/5ADDdXo=
+	t=1725275599; cv=none; b=clBA8JCTknR4Ux5Hs2lEz3HJb51/FNZwB+Q2WcPLtMMxh4k5cIsAuH+pe9bV9ZpaISGardYK0F/d6rBVX8Efjpxr/B0g/A7z1AarBuVMvSc8mg2OesYNOWTKBbmAF3m+fIed5FN73MtkTAy/cvNMpVcJIGwH0koJ/tl7gMRKnDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725207339; c=relaxed/simple;
-	bh=gYIgZOi4sdR4hTdNE3LJJ3LeXGN5BLGNfkofNqnsRBc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=N6qqo20wIkhFTpJlW43OidiwknW60YVmFQQ/2ZN47qOO+nTSh5IRp0EOHOg84KyhTVjQjPaOymrBVRws8KlIDKDO6Vm3N3zddDoosP9lVeOiofyw+Dt9eSr9Fdm4Qsa5IISgmuAnBSVlhDRsc7CLa7QvhG0zjjqvXDQl0NRe1uo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F5h1/eNL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725275599; c=relaxed/simple;
+	bh=DWzn1hYA+MqPVdMdjEmyelcVAh57NyETVCIWQcpDC9k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I3HE2KpklOqTT2mU3a8k4MSul6TTwFymttKPH17ccTiSHfRrK5RgLYz2n5lhMCTGtFSFzLvXmOHRGfk0V5fXwSsOsEDCDg4xM6EGbPyj3FbFzToUSQCBailbhtB6wEV9qBx6KDSUqP9LCz1jxm3TO6+JSP4Yt2SBIZjHCc8odj4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=iJ8ZqelK; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F5h1/eNL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4C0C4AF09;
-	Sun,  1 Sep 2024 16:15:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725207338;
-	bh=gYIgZOi4sdR4hTdNE3LJJ3LeXGN5BLGNfkofNqnsRBc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=F5h1/eNLAut+K9xbInA8o1Vqa2sZpvVnt33i+mDoFpaubGehtbFtkTdZKWa1mvOQU
-	 CSsiRwCvOWvZvMvEO8L0Dsxwyr89B9qMvVFfrWbzq6Z8wKms7E7vADuGZJavaJ+Yq9
-	 ddCRkatwMBI2yP8xVSOJokY6nLAtiaa47fyw12UjAMSKYqFuQqVvxjY3Vk9ZgQzRoc
-	 6bOCtTkFHWjSazc04tEnJCsudAEBR8Pcv/himZ9VWJRdbe++qCe48wzQKqTx7uOX07
-	 J7ewjUPy7qvCfaKAR8hR3puGLgD0egOP9gXsf94jOOO8lGHC7jbxrL/PZ8tNivTSUu
-	 C2srQRHZ3LE7g==
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-53346132348so4320896e87.2;
-        Sun, 01 Sep 2024 09:15:38 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUvUcCBe16O8XgY8+8oc+TCjVfgPmpihcSlmXZ2eWIJh3yJSz+FvODvY0t4JxspluH66Zvq5ZQXc/CFfco=@vger.kernel.org, AJvYcCV7ukIK4vcYbvG2qG4F4imGNNoK9b4A4ddvdiF8EMydJ7YPdUHrLT9thOXhIN6rcEXIBEZ9/2gdp17uafY+@vger.kernel.org, AJvYcCVOwvPO53lZozh/S5b7mDMUMdtFB7K/qdU2xG2U0a1ldYfhVQcJGZX37sHXmJ/CtWVPrqEHOFROyA==@vger.kernel.org, AJvYcCVa5cuMyLQb7TuyfbhcTVlVT+iixhGXmJxDK4y8fjqPc+e0tacHps85X4NcVWLmuksZX5znAAyMa1xsUA15@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZla+F39OjMQMjryPzXjQP8oR07FA+yRoQ9uwkEkOy+8X+/3mw
-	NYe1C6xYS3MYTr25Su77PZMeDSQiqv23MDR4WTsOymFpxecb4s+how8H1wArvGpHPZpl/CFay3b
-	EjBPS+7WEU/+Bm6JKYqL28J8H6iM=
-X-Google-Smtp-Source: AGHT+IEvW4vK5zxx451a7ZmsPELGu2ASm3u0aIbHJUwKBVb/P5sQhkJtI91jLzLi0FROvKEcgj/L3zpZL4SS+3Wibx0=
-X-Received: by 2002:a05:6512:282b:b0:533:d3e:16e9 with SMTP id
- 2adb3069b0e04-53546bb4402mr4892938e87.57.1725207337206; Sun, 01 Sep 2024
- 09:15:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iJ8ZqelK"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4280ca0791bso35627245e9.1
+        for <linux-serial@vger.kernel.org>; Mon, 02 Sep 2024 04:13:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1725275595; x=1725880395; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=t0y66KZsilWy5/q39E1+glqNVuSns5JZhAjLByhViBs=;
+        b=iJ8ZqelKXJymdJWrC2q1XKRPSuI2+MxDVEE6CjA+fjLWqla5YFbXnVmIWbQCAbylI2
+         FIumhjKQ+gJlmKiiezMg/SyqPoDKb6aoIKpOHyIwYyqLt2eyZ7vrn18EvwFt7qaY7eYi
+         33xZkr7vhpE/QY+7gvnj4rOhyIdneZf75T7nv8WfLbhlkxe1FVc+wu/NbrsL1KslhacT
+         yNjyIHwSerKUnMI6wdyntu48ZInsMmdSUm4bk0IgTGC7rfHT008SkKlVANK6Tjz7+2eK
+         EWJXGe7JlGEuFOq2aXPuQkuvykzst+jnKHUS6B5ukPlTQuXpH9Zt8pe47tKjg4TCcTXM
+         r0GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725275595; x=1725880395;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=t0y66KZsilWy5/q39E1+glqNVuSns5JZhAjLByhViBs=;
+        b=IHqGMIecDEgRYBhQK2EvYcyYdV6srRsQucdmnrPp+eP5LDAuBvAxcCv2tcEnE6Mx4z
+         w7aMarAaH/qGKC91mth744E1Ks+GT6Z3t1VZcTBqQrgfe+wn9uJvBCzgXBqsKydrrN/c
+         ugBwNMcJJs6Ymtvo62lfhH1LMC2WhTvj7B24kICDZ38i2PI2ZGzDqaCZPx27YZbR06Kv
+         IQJVMDiky0a+NClIToG8hdTjIXVfR360MuiHHJ+k9HPGpC8WHB0d/eXbxMRXreFaSnJH
+         FdmXkIB775QMez+Hg4ZyEhIAqOByDR6HoXDjXK0VytRTdeSMNx5w3bmOVy9gFMuwxSn1
+         3GJA==
+X-Forwarded-Encrypted: i=1; AJvYcCU2z/IS2PSLroLIlCdsoIvaDf6TpuMBXC6rn9pAO6btXd+hls++GeQ5vmTOvkwlJKPDnKwF95kUnfZfTy8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzW6wwnHW7gdQxhRIzi5lq1vLL4zlcxT9BBtSo69RlnAhO8N/h1
+	dLEXCMzY+nyPXsrh13CsFiiBdfzZNZBXIAeemkJ676M7cL43+rkpHoN7XSA7rbc=
+X-Google-Smtp-Source: AGHT+IFxCzBbJEBnXgmaDcBmR8nMNXjOhCACiDRaC3OZHxGXv/tYXf8mnP+AgdXOfY0pl7t3Hw1Y7g==
+X-Received: by 2002:a05:600c:3b25:b0:426:6320:7ddf with SMTP id 5b1f17b1804b1-42bb01fb0fbmr100596305e9.35.1725275594477;
+        Mon, 02 Sep 2024 04:13:14 -0700 (PDT)
+Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-42bb6e274ccsm136021455e9.37.2024.09.02.04.13.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Sep 2024 04:13:14 -0700 (PDT)
+Message-ID: <ad18f559-b067-4f2b-9bbc-6830bbe2f252@linaro.org>
+Date: Mon, 2 Sep 2024 13:13:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
- <20240807-macos-build-support-v1-8-4cd1ded85694@samsung.com>
- <CGME20240807110435eucas1p2eca071b0a0122b8686d43c57bd94dc8c@eucas1p2.samsung.com>
- <2024080717-cross-retiree-862e@gregkh> <dxkmmrlhlhsrjulnyabfgcr37ojway2dxaypelf3uchkmhw4jn@z54e33jdpxmr>
- <2024080720-skyline-recapture-d80d@gregkh> <20240807-mottled-stoic-degu-d1e4cb@lindesnes>
- <20240823225450.spuvjs5b5ruujim4@AALNPWDAGOMEZ1.aal.scsc.local> <ZtIjNBhqdxmMBxfM@fjasle.eu>
-In-Reply-To: <ZtIjNBhqdxmMBxfM@fjasle.eu>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Mon, 2 Sep 2024 01:15:01 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQhHBi7nSG5SAbqD3HFO3uMR6GHckZHcQXgWao7G8i9gw@mail.gmail.com>
-Message-ID: <CAK7LNAQhHBi7nSG5SAbqD3HFO3uMR6GHckZHcQXgWao7G8i9gw@mail.gmail.com>
-Subject: Re: [PATCH 08/12] include: add elf.h support
-To: Nicolas Schier <nicolas@fjasle.eu>
-Cc: Daniel Gomez <da.gomez@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
-	Justin Stitt <justinstitt@google.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>, 
-	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, 
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, 
-	"speakup@linux-speakup.org" <speakup@linux-speakup.org>, 
-	"selinux@vger.kernel.org" <selinux@vger.kernel.org>, 
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
-	"kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, 
-	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>, "gost.dev@samsung.com" <gost.dev@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 13/22] dt-bindings: thermal: tsens: document support on
+ SA8255p
+To: Nikunj Kela <quic_nkela@quicinc.com>, andersson@kernel.org,
+ konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
+ herbert@gondor.apana.org.au, davem@davemloft.net, sudeep.holla@arm.com,
+ andi.shyti@kernel.org, tglx@linutronix.de, will@kernel.org, joro@8bytes.org,
+ jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
+ amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
+ wim@linux-watchdog.org, linux@roeck-us.net
+Cc: robin.murphy@arm.com, cristian.marussi@arm.com, rui.zhang@intel.com,
+ lukasz.luba@arm.com, vkoul@kernel.org, quic_gurus@quicinc.com,
+ agross@kernel.org, bartosz.golaszewski@linaro.org, quic_rjendra@quicinc.com,
+ robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-i2c@vger.kernel.org, iommu@lists.linux.dev,
+ linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ kernel@quicinc.com, quic_psodagud@quicinc.com, quic_tsoni@quicinc.com,
+ quic_shazhuss@quicinc.com
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240828203721.2751904-14-quic_nkela@quicinc.com>
+Content-Language: en-US
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <20240828203721.2751904-14-quic_nkela@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Sat, Aug 31, 2024 at 4:54=E2=80=AFAM Nicolas Schier <nicolas@fjasle.eu> =
-wrote:
->
-> On Sat, Aug 24, 2024 at 12:54:50AM +0200 Daniel Gomez wrote:
-> > On Wed, Aug 07, 2024 at 05:46:03PM +0200, Nicolas Schier wrote:
-> > > On Wed, Aug 07, 2024 at 04:18:54PM +0200, Greg Kroah-Hartman wrote:
-> > > > On Wed, Aug 07, 2024 at 02:13:57PM +0000, Daniel Gomez wrote:
-> > > > > > Also, as this is not internal for the kernel, but rather for us=
-erspace
-> > > > > > builds, shouldn't the include/ path be different?
-> > > > >
-> > > > > Can you suggest an alternative path or provide documentation that=
- could help
-> > > > > identify the correct location? Perhaps usr/include?
-> > > >
-> > > > That is better than the generic include path as you are attempting =
-to
-> > > > mix userspace and kernel headers in the same directory :(
-> > >
-> > > Please keep in mind, that usr/include/ currently does not hold a sing=
-le
-> > > header file but is used for dynamically composing the UAPI header tre=
-e.
-> > >
-> > > In general, I do not like the idea of keeping a elf.h file here that
-> > > possibly is out-of-sync with the actual system's version (even though
-> > > elf.h should not see that much changes).  Might it be more helpful to
-> > > provide a "development kit" for Linux devs that need to build on MacO=
-S
-> > > that provides necessary missing system header files, instead of mergi=
-ng
-> > > those into upstream?
-> >
-> > I took this suggestion and tried pushing a Homebrew formula/package her=
-e [1].
-> > I think I chose a wrong name and maybe something like "development kit"=
- would
-> > have been better. However, would it be possible instead to include the =
-*.rb file
-> > in the scripts/ directory? So users of this can generate the developmen=
-t kit in
-> > their environments. I would maintain the script to keep it in sync with=
- the
-> > required glibc version for the latest kernel version.
-> >
-> > [1] https://github.com/Homebrew/homebrew-core/pull/181885
->
-> I think it sounds sensible to hold that formula file in the upstream tree=
-.  But
-> I am not sure if scripts/ is the best location.
->
-> Masahiro, what do you think?
+On 28/08/2024 22:37, Nikunj Kela wrote:
+> Add compatible for sensors representing support on SA8255p.
+> 
+> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+> ---
 
+Applied, thanks
 
-I do not know much about the homebrew, but why does the upstream
-kernel need to merge such masOS stuff?
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-
-
->
-> Kind regards,
-> Nicolas
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
