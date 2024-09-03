@@ -1,131 +1,132 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F14E2A1D6
-	for <linux-serial@vger.kernel.org>; Tue,  3 Sep 2024 15:49:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725378602; cv=none; b=RhI89bkws5Bv5zm5PmWYH75zJnbn++ibBcqlRe/U468BsIKF1he4GEkiBOseIZ+c1/TVY2LPNu/7xEyQJPlC5qtPRSsYYt9HAtdntAPXiORF6ae4OmhTx74MpxSZzRaob1Dr3hh7DGqLTUMHqBesFNgN8K1H50ffIn12YcTx3oM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725378602; c=relaxed/simple;
-	bh=bVviEKPveTmpcX7L/OUEFDloCUYNhXrJHYHWwks6MUY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TpnmneHu/NAeY922YJcWeDjTRO44spoTP6vkraT8kY2BWF/+9Pk0yoN4Oyp4Lda9cWdZTTtNeqHw/dfMxkV4zNjmaYrp8sKdLgyx6TcJPDw9AREZvvGC0rYBCMh3WRcxK0IK7RQw0bVxy+OUXcwAF9r8bR3/M7zdhNEFaMU5K50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=I/8BUarG; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F58B189BAE;
+	Tue,  3 Sep 2024 16:00:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725379257; cv=pass; b=TilnlNE6Yo52EIxk04KNlZJxjXzCmRxlyv4jo/zkN5xAbP+VnZ1PdyQGGJxWd/AOLrQ4F6cbGUcTsy+JABEqPq1bHfQJmT6WoNu/SJqIEQGUYbYL4BSjm/tzRLrDs58KKnTUBUZlCiNSJpRUgYCuwUFfMFiNrj36ODo8+IaRzUo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725379257; c=relaxed/simple;
+	bh=DoF5r0u+6KPtzRJ2gCLtOA74hZjZQKMdqLUSJFztaO8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YV7jM/XG2pO896Xs5JIYWH5oZNi30mAQwap4MlDGZp4sN1UWFaz8imcSYC8EzVnXQZwdPj+O+Jmg5Ogy4eVc9tyMsqlCW6ZUZ8tluUZ+DXiKix05GtKthwnf7dZ3HGTvmjKh6XdPnqepchex1Df/PWM3vWwkQM4DaOFJIacTWOU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b=Ac12rxJA; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="I/8BUarG"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a86859e2fc0so618778366b.3
-        for <linux-serial@vger.kernel.org>; Tue, 03 Sep 2024 08:49:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1725378598; x=1725983398; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=aFhHwW1kAAGcV7OaaSbrjXWw+zX1uM2EQ/+cB02HHBY=;
-        b=I/8BUarGh4WW1gmbpJ5o8y+e/K4cOeEA9TVwOLK8BggdSAUQdDiI9OVPk40tOEG7ry
-         KvyGnANdJptjqcftsU+ChdII0/jcRZlkyrn2o5zOgMJ6U6N6wxXpYXN9PveExk13dodI
-         cqtflnNr987AE1WR4Mrqy/wzj1DR0uCH5YyYgbmYY33mR/rfwuMBDJSehTVBhIvwbqDT
-         dpNqST3f8vDXMDTo0TRy9DMdHePTqRbT0BvMFrjRUV9jBrhnM6Vjpi0VZZz/A6vmTokZ
-         u/9nME2iwZoCT/eM9a1oe+0ynQwAeDShNxEnDkEkN5zZJ+CdhO+maWlfLPESUwKjCW/t
-         a4mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725378598; x=1725983398;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=aFhHwW1kAAGcV7OaaSbrjXWw+zX1uM2EQ/+cB02HHBY=;
-        b=ZobG0x5VX4kT6fqRKrE4n5s56m2Uk4Dv0+TkCn+tgN+SHuSOsfjuQuAwbSbOsme5F7
-         iofgs6G4+5KX5kh9BCTAWCmcYmVl2JjTaJ6Y6NOcufctPgkBUCjH6ksiV6ZLEDDWQPJ0
-         vTCNHM55V9bdQUdAatdcSBPbB/8VXRzt6cdScLwQwVsKXGwBEqbB6CyCVtfZU6rekKos
-         2FnUDJrMpl8wqKDE2jhkVOtyg7VBBBkIgGnpGVYuSgACJV8c3ptgWPkA4jud5wgeV2nt
-         uXS0nKJVEgIIIgElr9JhVHiPtd+FsvotWV8khZwrYslvsXlyIXglKzvwdiM2gnTshF3R
-         tT9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWkTBRpr5EACMJF3DpaMpesf4JbwpHDMrRhxGNz+9oq6PIzP/atf+DIeKCoFND7Nwodk48ySynX3YAtdJg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzxPmOGwHMOeNRqkZbT3pxchcNDhaTNPo8wRphF37YLp5P/pZLg
-	gE+BnkKfNS62ue5ueYsGuXFFoBSLDqfhls9/2gz81gYJmqirAAkFFBp+4wVvZ3U=
-X-Google-Smtp-Source: AGHT+IEvdlu/j985eM+/rA5qaBqF1lyB3uR8LKAuX5UqTugImcvkKswP9Kfp18LHlYopPINQZZ8L0g==
-X-Received: by 2002:a17:906:6a05:b0:a7a:a892:8e0b with SMTP id a640c23a62f3a-a8a32e717f8mr105078566b.19.1725378597538;
-        Tue, 03 Sep 2024 08:49:57 -0700 (PDT)
-Received: from localhost (p5dc68f76.dip0.t-ipconnect.de. [93.198.143.118])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a89891daf9dsm695490866b.164.2024.09.03.08.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2024 08:49:55 -0700 (PDT)
-Date: Tue, 3 Sep 2024 17:49:54 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: Liao Chen <liaochen4@huawei.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, joel@jms.id.au, andrew@codeconstruct.com.au, 
-	andi.shyti@linux.intel.com, andriy.shevchenko@linux.intel.com, florian.fainelli@broadcom.com, 
-	tglx@linutronix.de
-Subject: Re: [PATCH -next] serial: 8250_aspeed_vuart: Enable module
- autoloading
-Message-ID: <4nyenalsjnerwjwcuk5zwm52rptnc5jhjhz3yhsmo7qt3gffhs@qadnsjic7p24>
-References: <20240903131503.961178-1-liaochen4@huawei.com>
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=detlev.casanova@collabora.com header.b="Ac12rxJA"
+ARC-Seal: i=1; a=rsa-sha256; t=1725379180; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=j7W+b6AKvTMiIp6zna4Phg0s4BvUKBWwdAFzlwD3yxdkmVUkgV226jpfwFtqSnDngKmtHC+J7XRYl8JW2CIzT+6R75rfSvJcjxQWa1Wq6r4Y072X5au/IhhR2Ns+1JfYil09hrhbCUwbjSryQHWoitBwp9GhbbmGfjbi1rRjXpo=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1725379180; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Y/bWoW06nAsYTfJtM+dT/HctpDxY0caM4f/6npCsav4=; 
+	b=DcW7jXgOcrFG/T624VWQk524Qc6OWhcUZEOuq3jWESy+mGhMRYwyU7e1HN8UpN3SCobwVQfoDwm4wzZjDixTbMdVhXzlT9CIHinwkBQ++b3/CyFL3ixd6ss1EkX4Eg206IxLCgU3rPE4ZtZ0b6sTb12nF+TWspPK08mxkCjwoe0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=detlev.casanova@collabora.com;
+	dmarc=pass header.from=<detlev.casanova@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1725379180;
+	s=zohomail; d=collabora.com; i=detlev.casanova@collabora.com;
+	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
+	bh=Y/bWoW06nAsYTfJtM+dT/HctpDxY0caM4f/6npCsav4=;
+	b=Ac12rxJAuHEgPBTE7VP5gB/POfoA00l1p6G5Zru/RUnCEnF0JMRTpamew0P3lFkd
+	Kmp0V2A6Pr3m+MYabAm8YPJ2kp/8Df8UEX9lknMggWnKDWx5PMLTQ0U7/hKfn9+c9JH
+	EfnVDwwoeFI4x+D5sUdaCgyo0qwqF8W/rMY+FWR0=
+Received: by mx.zohomail.com with SMTPS id 1725379178937833.0492919077691;
+	Tue, 3 Sep 2024 08:59:38 -0700 (PDT)
+From: Detlev Casanova <detlev.casanova@collabora.com>
+To: Andi Shyti <andi.shyti@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Heiko Stuebner <heiko@sntech.de>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Mark Brown <broonie@kernel.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>,
+ Guenter Roeck <linux@roeck-us.net>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+ Ondrej Jirman <megi@xff.cz>, Michael Riesch <michael.riesch@wolfvision.net>,
+ Jimmy Hon <honyuenkwun@gmail.com>, Elon Zhang <zhangzj@rock-chips.com>,
+ Alexey Charkov <alchark@gmail.com>, Elaine Zhang <zhangqing@rock-chips.com>,
+ Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+ Finley Xiao <finley.xiao@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
+ Jamie Iles <jamie@jamieiles.com>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, kernel@collabora.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v4 3/9] dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
+Date: Tue, 03 Sep 2024 11:59:34 -0400
+Message-ID: <12506188.O9o76ZdvQC@bootstrap>
+In-Reply-To: <bnpwnuhikwkqyf3jos67qwywhfge3vm6tfmlfitypd5k62jzdn@fri4swkl2zbq>
+References:
+ <20240903152308.13565-1-detlev.casanova@collabora.com>
+ <20240903152308.13565-4-detlev.casanova@collabora.com>
+ <bnpwnuhikwkqyf3jos67qwywhfge3vm6tfmlfitypd5k62jzdn@fri4swkl2zbq>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="oxnfsshwxceyq7si"
-Content-Disposition: inline
-In-Reply-To: <20240903131503.961178-1-liaochen4@huawei.com>
-
-
---oxnfsshwxceyq7si
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+X-ZohoMailClient: External
 
 Hello,
 
-On Tue, Sep 03, 2024 at 01:15:03PM +0000, Liao Chen wrote:
-> Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded based
-> on the alias from of_device_id table.
->=20
-> Signed-off-by: Liao Chen <liaochen4@huawei.com>
-> ---
->  drivers/tty/serial/8250/8250_aspeed_vuart.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/se=
-rial/8250/8250_aspeed_vuart.c
-> index 53d8eee9b1c8..25c201cfb91e 100644
-> --- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> +++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-> @@ -561,6 +561,7 @@ static const struct of_device_id aspeed_vuart_table[]=
- =3D {
->  	{ .compatible =3D "aspeed,ast2500-vuart" },
->  	{ },
->  };
-> +MODULE_DEVICE_TABLE(of, aspeed_vuart_table);
+On Tuesday, 3 September 2024 11:46:00 EDT Andi Shyti wrote:
+> Hi,
+> 
+> On Tue, Sep 03, 2024 at 11:22:33AM GMT, Detlev Casanova wrote:
+> > Just like RK356x and RK3588, RK3576 is compatible to the existing
+> > rk3399 binding.
+> > 
+> > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+> > Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > Acked-by: Heiko Stuebner <heiko@sntech.de>
+> 
+> I will apply this after 1 and 2 have been merged.
 
-I wonder if you found this entry missing by code review, or if you have
-a machine with that UART and so you actually benefit.
+Sure, although it is not really dependent on 1 and 2.
 
-Otherwise looks right to me.
+> BTW, who is maintaining rockchip.yaml?
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
+Heiko Stuebner is the maintainer of Rockchip SoC support.
 
-Best regards
-Uwe
+> Thanks,
+> Andi
+> 
+> > ---
+> > 
+> >  Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
+> > b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml index
+> > 82b9d6682297..a9dae5b52f28 100644
+> > --- a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
+> > +++ b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
+> > 
+> > @@ -38,6 +38,7 @@ properties:
+> >                - rockchip,rk3308-i2c
+> >                - rockchip,rk3328-i2c
+> >                - rockchip,rk3568-i2c
+> > 
+> > +              - rockchip,rk3576-i2c
+> > 
+> >                - rockchip,rk3588-i2c
+> >                - rockchip,rv1126-i2c
+> >            
+> >            - const: rockchip,rk3399-i2c
 
---oxnfsshwxceyq7si
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmbXMCAACgkQj4D7WH0S
-/k4lmwf7B8rCxzF0mqdiYNNkbNIL3ffkntFrgpHxTr7Sgi7iSyeFIXO7tcZuG+5a
-2cit024915U223OcuPwrk/CSeOWMVzLMcOMeHtcw/45I4oFNOsP30p+0AiDVGrqg
-+iOyyaK2sFMVHfp4yu1NlYaM64Ez2aW+bKrvaNWjI1vK0S1/rpdGvzTcqvxkrW8i
-sKXg+rOE2QPCSliNu0t6goxHQOGMOnhrloktKH/+k/8/FjVpJ6KTNLqdogSmnycn
-qbkruy1osW223l8UfYtw55w8idpmZmJCSePvmRrePJx3j3IMLKrzD8vROhpP2j0Y
-s8lqi37r7SkeGx++B5ny1hfeBp8VJg==
-=dQsN
------END PGP SIGNATURE-----
 
---oxnfsshwxceyq7si--
