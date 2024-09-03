@@ -1,114 +1,118 @@
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F2411EC009;
-	Tue,  3 Sep 2024 22:01:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5137C1A265F;
+	Tue,  3 Sep 2024 22:03:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725400876; cv=none; b=beB3/STIi6GvK/c1bB+oMgGFXe5N6Z79aAXZHOC9tA8jUaALZsmaVaHuQPVv7QmZLN+lNa17VM+pGS4DPxSmcCpp9FKWAJ9Pf2sinq2uhnsFsD4TdckJTcsg4SXp6g5A59tF34AWke5tKAwZSlPreIFxGZHgxGvVao3KpE9LNs0=
+	t=1725401016; cv=none; b=oVo42h82Xf1O90Q2R75VACg7YDL0grIY1onAD+Aw5VoQmHr7cF9dfKpvZMS/n1RRDdulVJg4slpBrUTOSyPxMLfa+Mg0GjkQsGc9b4PtY/A4C+FxZfuB5Obxqv4BTPX/gPfYh2usZ+UKMirrF1CR4BKEkOfRufDzlUhgnHyUSw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725400876; c=relaxed/simple;
-	bh=iKQpi3l2hulm3EI170VUrKcm5ThnpGqa4a+f1KBzIVU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gJ+nsx3U/U1r93hbjEWNR8GKdWThw8je3UFTMLV9pP0WUjaYUrTZftF2YxheAfrpV1RZK8ylYEgsqZB6W+uC5AnQzsc7xyUAGl2kAfopQodQB67TgSquR1WrTArQLGeE8lDjh8mytpdUNtDCRVEiet460H9nkHnNKLZEhtKXHmk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=ynWZOEXX; arc=none smtp.client-ip=185.11.138.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	s=arc-20240116; t=1725401016; c=relaxed/simple;
+	bh=4jo0etztY9ZiEbDcPHegFQ0Z5AeebG5LdAjByqUxQts=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=X2/g0xcEm5JAFu0uHBBytCqxc7wnxqMVbh1ReUF7DOxA/o65ImJmMaFF61lFO3kRIK9EuSgdfOXKDJDjwu7sISyAensy7l6bE7+8CMhaYYB+XYpOI4f4VBHpAzIXOpN9psVU0aPoAfIPTjSeEB0LijgOvtcO13ISvVNwV1TEZLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=U5Xqhr/M; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="ynWZOEXX"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=cP5gkG4poHNhOgTPHW8pS6NlcCd5HhlJQScKycx9I04=; b=ynWZOEXXuI/cTZMXQbpQBTxQS1
-	N+U2v78bHi+x6+pUM7YSUO+M0UxJxsIw4lNo8gB8cJABkeFbIbSRa5AYxYjEcOXoQ0qApY+NqZHw1
-	yczKvbt612cG2P0OfsvSB9ZGB9XyVoqmqhXtLCuhwF9ygTL7gCPKV7sUggXrDyW6gDNbCTX9IUptC
-	GJmRlAoBMs700glxYHix/bxX9oajQKXyPfNOU4QZWIrHmPuuMZwiAcqgvrU+7Xqm+aZaoCEOD390u
-	ZPY8jIDdfL71mpS+HkhKUha2uCqVNtgqEQe3w5D3pEgLA7i41hRMn4WmXAifuyUV3F9b5Ww7wt5fs
-	UH/Wwpzg==;
-Received: from i5e860d0f.versanet.de ([94.134.13.15] helo=phil.lan)
-	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <heiko@sntech.de>)
-	id 1slbZz-000365-3r; Wed, 04 Sep 2024 00:00:51 +0200
-From: Heiko Stuebner <heiko@sntech.de>
-To: Detlev Casanova <detlev.casanova@collabora.com>,
-	linux-kernel@vger.kernel.org
-Cc: Heiko Stuebner <heiko@sntech.de>,
-	Jonas Karlman <jonas@kwiboo.se>,
-	Mark Brown <broonie@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Tim Lunn <tim@feathertop.org>,
-	Maxime Ripard <mripard@kernel.org>,
-	Muhammed Efe Cetin <efectn@protonmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	David Airlie <airlied@gmail.com>,
-	Yifeng Zhao <yifeng.zhao@rock-chips.com>,
-	Jimmy Hon <honyuenkwun@gmail.com>,
-	Elaine Zhang <zhangqing@rock-chips.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Jagan Teki <jagan@edgeble.ai>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Dragan Simic <dsimic@manjaro.org>,
-	dri-devel@lists.freedesktop.org,
-	devicetree@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	linux-watchdog@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Finley Xiao <finley.xiao@rock-chips.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	linux-spi@vger.kernel.org,
-	Michael Riesch <michael.riesch@wolfvision.net>,
-	linux-rockchip@lists.infradead.org,
-	Alexey Charkov <alchark@gmail.com>,
-	Liang Chen <cl@rock-chips.com>,
-	Ondrej Jirman <megi@xff.cz>,
-	Jamie Iles <jamie@jamieiles.com>,
-	kernel@collabora.com,
-	Elon Zhang <zhangzj@rock-chips.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Yan <andyshrk@163.com>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: (subset) [PATCH v4 0/9] Add device tree for ArmSoM Sige 5 board
-Date: Wed,  4 Sep 2024 00:00:46 +0200
-Message-ID: <172540084163.2565171.11096510350978641735.b4-ty@sntech.de>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240903152308.13565-1-detlev.casanova@collabora.com>
-References: <20240903152308.13565-1-detlev.casanova@collabora.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="U5Xqhr/M"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 483GbZoQ020929;
+	Tue, 3 Sep 2024 22:03:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	qCGBVo0I2FrHyKZUqkTIV5m2gU0tB9epLAP6FBdWnB4=; b=U5Xqhr/MZnVDaQC5
+	yDIyTmc3XEJWZF0adXMK3NVyMIFeWAhLGE1wEQZbyJcXiugeSaCdF1yyl70yehLG
+	DSn6GojG+W7xr0JMcdf3ncgMssm4c3Q1/yzS8Oe7GIBvwblZlISIhsi3IOWWp1Ru
+	Tk1DMlZNQGaD8J6DnBqvoTemYYBhurlJOxEzvsJ/+bmXwIpP5s11qGYJxwxV5rNE
+	HI8OfXjifM/2ELQ+Ug4mwE9C+UjD6DElozWuAZ3OJvHqS+Q+z7nJkeA5UJTS/q1j
+	s6Lnp9ASSld+6OH6tD+W/tW9+doOib7umqDIhuQmcllotusK6+Yx9EO4Phqyz0Vk
+	/IBhkQ==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41dxy2284h-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 03 Sep 2024 22:03:07 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 483M36dB020248
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 3 Sep 2024 22:03:06 GMT
+Received: from hu-nkela-lv.qualcomm.com (10.49.16.6) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Tue, 3 Sep 2024 15:03:02 -0700
+From: Nikunj Kela <quic_nkela@quicinc.com>
+To: <quic_nkela@quicinc.com>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 09/21] dt-bindings: soc: qcom: aoss-qmp: document support for SA8255p
+Date: Tue, 3 Sep 2024 15:02:28 -0700
+Message-ID: <20240903220240.2594102-10-quic_nkela@quicinc.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240903220240.2594102-1-quic_nkela@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 5sMhZKxUhpeOzIyP_dmEmcHICo6xOYgD
+X-Proofpoint-ORIG-GUID: 5sMhZKxUhpeOzIyP_dmEmcHICo6xOYgD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-03_10,2024-09-03_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 phishscore=0 suspectscore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409030177
 
-On Tue, 3 Sep 2024 11:22:30 -0400, Detlev Casanova wrote:
-> Add the rk3576-armsom-sige5 device tree as well as its rk3576.dtsi base
-> and pinctrl information in rk3576-pinctrl.dtsi.
-> 
-> The other commits add DT bindings documentation for the devices that
-> already work with the current corresponding drivers.
-> 
-> Note that as is, the rockchip gpio driver needs the gpio nodes
-> to be children of the pinctrl node, even though this is deprecated.
-> 
-> [...]
+Add compatible for AOSS QMP representing support on SA8255p.
 
-Applied, thanks!
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
+---
+ Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-[2/9] dt-bindings: arm: rockchip: Add rk3576 compatible string to pmu.yaml
-      commit: 59420d8ad7809827524824a3891d6a081e735449
-
-Best regards,
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
+index 7afdb60edb22..bd873e7e4ae5 100644
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,aoss-qmp.yaml
+@@ -26,6 +26,7 @@ properties:
+     items:
+       - enum:
+           - qcom,qdu1000-aoss-qmp
++          - qcom,sa8255p-aoss-qmp
+           - qcom,sa8775p-aoss-qmp
+           - qcom,sc7180-aoss-qmp
+           - qcom,sc7280-aoss-qmp
 -- 
-Heiko Stuebner <heiko@sntech.de>
+2.34.1
+
