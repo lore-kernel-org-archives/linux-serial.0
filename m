@@ -1,79 +1,122 @@
-Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EB21CB527;
-	Tue,  3 Sep 2024 06:51:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31C361D54D3;
+	Tue,  3 Sep 2024 08:34:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725346263; cv=none; b=hsObOVdccerY7hsUizCwUQCbulscy8Xdh7IaMVAdak0swjzXkq+Iql+oflVSgH6JgwXREN0yVHFaoXWPDduaRdA7HCL+pVx7CpBHyMaReHoTsjQRJVr9w0iG+UW6w5Crlx1qxfJSKkXGRWp9GHShMClBnHBbY0gBKuslJZrIzkA=
+	t=1725352496; cv=none; b=VQgzwpU0jJLy6qPQYgxy4mKBhK/GSz93rfTUnCVgBI1HtjAcptPXg05v4Ul3Rb8/ss2Ip5WFodYYjE8O4J2fWv1+S5HNWxUStL/qFmUmF7pK6fiA9Kf/frHGjpywWQKL1MnEKaIldDdou3Vae0Jvc9kouCfKZy+H5dojkaQmRTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725346263; c=relaxed/simple;
-	bh=WpumRZm1NHOjiTyV36mpAGsOJJyaAKwLkeRWuW8u4mE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=TR99vX4rbMm/xGrXP6fsnGHbpulCpJh62zB2PkbSZ0s+cyxGe1/xKmsmsxucUgpjkpb5LJn5IdCzTPRV7LoWgF+7cCZpNRvqRKXZbhrvvBXPb1n9i2EQxRXk6MfpuBH/unHlQc/EMpC+6Vc9piVn3JKNyWipg/716iR2a69taWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=TJkkp3Er; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+	s=arc-20240116; t=1725352496; c=relaxed/simple;
+	bh=DcqVGHAbdkZJ7C2Cnme5LXeOG99gJt2c8w9Iy8Jn+z0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mNzQzNyTR4Ec6N8aRL5Vkeo0gkV6MdUDkfxsR5BbSeWCp2jV0gtm+3ChPDw6jIkUzE63dnkGOv4erQrFh9+QQKDdJnVtUfg7jcj6y74qhIjfQquPVxgxjfliDbtQB4ByezNugGuMRKc64LZZsY5kMBbhmAx8gnaerdBJ6Ab4m7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iqIlh8kK; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="TJkkp3Er"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-	s=201909; t=1725346259;
-	bh=CQh0HwbwudB1Ww2VJkCueArmMI0AZXpCTMdiFdJKXpI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=TJkkp3ErSASQvhmMaTnHtityUB+krmJD4Y3zwvw6vlTumSrwmJStye9dB1DwAPiRO
-	 xcdsxaYqL7NAnSy0J7S565BeSD17qUpIFYfb0o83u+kXV/FGFvDZ3VL1FD3sxCbuHm
-	 Vs0hY/tI/8Iu0z92RQH64V156VoHgCkOOiK5Jpo4l+TvolJ26gL9yA0mL7KUOkFc26
-	 oeUaQjbd0lsBh+7y1JmjFfFK3bovuuL4kZ2uRAeSBYOuGmnVJy/nv0VnSd2Hl7H3Lz
-	 kEvjRiVx5UHmnqbu0Svdei7SvKBdhVf0HXjsV6G7u0746zt1QQ/3vnqmG80RI4N/Z/
-	 oY6CKnKhr6exQ==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Wybql3cL7z4w2F;
-	Tue,  3 Sep 2024 16:50:59 +1000 (AEST)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Chen Ni <nichen@iscas.ac.cn>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, Chen Ni <nichen@iscas.ac.cn>
-Subject: Re: [PATCH] tty: hvc: convert comma to semicolon
-In-Reply-To: <20240903023001.491055-1-nichen@iscas.ac.cn>
-References: <20240903023001.491055-1-nichen@iscas.ac.cn>
-Date: Tue, 03 Sep 2024 16:50:58 +1000
-Message-ID: <87y1495iy5.fsf@mail.lhotse>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iqIlh8kK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1725352495; x=1756888495;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DcqVGHAbdkZJ7C2Cnme5LXeOG99gJt2c8w9Iy8Jn+z0=;
+  b=iqIlh8kKSLVl3TWKrIhSoL/Veh+V7Gb3QzcykSQgsr4x+7oVTd3avF63
+   JpLNZ65KdcDe5ChRXA/OKm9+84dBClNZBqFXB3nkvkF54OBWaglqryGPK
+   jbsD8EV2iptWU6WsF2K4vQQsU4vFXLuulQA1/rQA1WcM0qOGlWudz9e+C
+   +pZ1IWc9sPncx2P91ub072WIKcenNnmlJx8HMou8S5SfBloAxdEgrS5ov
+   cVF7eg7A0Cgo0V8FV8voQBDslag1rfm18uF391UDfAriy9EEYsUJlpQpz
+   vYA4qlYZOg94BhbvkbqGBk55hBTRxmoS7OvBEzOuhZETQ0jcXgBGAyF9+
+   A==;
+X-CSE-ConnectionGUID: klY8aux4RD2TMCT4VsT8zA==
+X-CSE-MsgGUID: GAOT8KMiR22934+TfaLC3Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11183"; a="34591477"
+X-IronPort-AV: E=Sophos;i="6.10,198,1719903600"; 
+   d="scan'208";a="34591477"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 01:34:54 -0700
+X-CSE-ConnectionGUID: qMqO0RE1TBOYiHK3mMpRoA==
+X-CSE-MsgGUID: FHA1mpkLQnmg+WEKl/nAqw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,198,1719903600"; 
+   d="scan'208";a="95636522"
+Received: from lkp-server01.sh.intel.com (HELO 9c6b1c7d3b50) ([10.239.97.150])
+  by fmviesa001.fm.intel.com with ESMTP; 03 Sep 2024 01:34:51 -0700
+Received: from kbuild by 9c6b1c7d3b50 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1slOzw-0006Po-2k;
+	Tue, 03 Sep 2024 08:34:48 +0000
+Date: Tue, 3 Sep 2024 16:33:51 +0800
+From: kernel test robot <lkp@intel.com>
+To: Johan Hovold <johan+linaro@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: oe-kbuild-all@lists.linux.dev, Jiri Slaby <jirislaby@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	=?iso-8859-1?Q?'N=EDcolas_F_=2E_R_=2E_A_=2E?= Prado' <nfraprado@collabora.com>,
+	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan+linaro@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH 6/8] serial: qcom-geni: fix console corruption
+Message-ID: <202409031521.hMYVfAjO-lkp@intel.com>
+References: <20240902152451.862-7-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240902152451.862-7-johan+linaro@kernel.org>
 
-Chen Ni <nichen@iscas.ac.cn> writes:
-> Replace a comma between expression statements by a semicolon.
->
-> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
-> ---
->  drivers/tty/hvc/hvsi_lib.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Johan,
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+kernel test robot noticed the following build warnings:
 
-cheers
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus driver-core/driver-core-testing driver-core/driver-core-next driver-core/driver-core-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.11-rc6 next-20240902]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> diff --git a/drivers/tty/hvc/hvsi_lib.c b/drivers/tty/hvc/hvsi_lib.c
-> index 22e1bc4d8a66..b35c44caf3d7 100644
-> --- a/drivers/tty/hvc/hvsi_lib.c
-> +++ b/drivers/tty/hvc/hvsi_lib.c
-> @@ -303,7 +303,7 @@ int hvsilib_write_mctrl(struct hvsi_priv *pv, int dtr)
->  	pr_devel("HVSI@%x: %s DTR...\n", pv->termno,
->  		 dtr ? "Setting" : "Clearing");
->  
-> -	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER,
-> +	ctrl.hdr.type = VS_CONTROL_PACKET_HEADER;
->  	ctrl.hdr.len = sizeof(struct hvsi_control);
->  	ctrl.verb = cpu_to_be16(VSV_SET_MODEM_CTL);
->  	ctrl.mask = cpu_to_be32(HVSI_TSDTR);
-> -- 
-> 2.25.1
+url:    https://github.com/intel-lab-lkp/linux/commits/Johan-Hovold/serial-qcom-geni-fix-fifo-polling-timeout/20240902-232801
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20240902152451.862-7-johan%2Blinaro%40kernel.org
+patch subject: [PATCH 6/8] serial: qcom-geni: fix console corruption
+config: arc-randconfig-001-20240903 (https://download.01.org/0day-ci/archive/20240903/202409031521.hMYVfAjO-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240903/202409031521.hMYVfAjO-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202409031521.hMYVfAjO-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/serial/qcom_geni_serial.c:314:13: warning: 'qcom_geni_serial_drain_fifo' defined but not used [-Wunused-function]
+     314 | static void qcom_geni_serial_drain_fifo(struct uart_port *uport)
+         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/qcom_geni_serial_drain_fifo +314 drivers/tty/serial/qcom_geni_serial.c
+
+   313	
+ > 314	static void qcom_geni_serial_drain_fifo(struct uart_port *uport)
+   315	{
+   316		struct qcom_geni_serial_port *port = to_dev_port(uport);
+   317	
+   318		if (!qcom_geni_serial_main_active(uport))
+   319			return;
+   320	
+   321		qcom_geni_serial_poll_bitfield(uport, SE_GENI_M_GP_LENGTH, GP_LENGTH,
+   322				port->tx_queued);
+   323	}
+   324	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
