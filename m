@@ -1,38 +1,38 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BB33191F80;
-	Tue,  3 Sep 2024 15:23:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D374189BB2;
+	Tue,  3 Sep 2024 15:23:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725377015; cv=none; b=oSJtOAWZULCE/so1SjUWeIOLHaNGslL9Som8qYO7JdgzA/5EdyHdt0sxTuhWwC+LAFZU2VhGjSzduViNELEXZv4BSe98yxzfTgTfVR980eHXWajiBXrXwe9D1VGQMmoTSom2VOtsKAeqCAjXORVyIVEL2t5IvxNTxE7AMYxsQqE=
+	t=1725377018; cv=none; b=e8JXQwzSXBVG969GVg0PckpYNt7lS+r46iYmkCFsvp3j8L1l3A+ZSkVMFahVxikT/goutT5TH3mmZyVMPUr5qmz3y3T4qSp5SZxZFeCfRzOp7NZO8/t+F81/bmRyzmOpGAzU1bTGwZFFiK4Nh1S2bKh/YZgMNM1mozgzzfVv5JE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725377015; c=relaxed/simple;
-	bh=f0D3qZRNJKjZ4ZItDHDKxzlfX2zSfpN5blcJ2RQ0XJo=;
+	s=arc-20240116; t=1725377018; c=relaxed/simple;
+	bh=q91nNqe25vY4zdGQ0jID+lBhXgdVdrS3Q9cXE35aK60=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=L84bJQwHvUEUuV4+3Aha9G9tuNiYWCwtfCgBbg/6TPWMJ3hFagNYTmF2K0QbPdqN8xu+bLBVgq+jrAXSeKBiObUteV0mY8rAuQXhde1KDBfyrTcQXJVSdsxZYY8DZ6Dd6za/lMkXLS/b8IRoklCCktDNSqgew41k81jhSCBM4Ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=AMD9PPu/; arc=none smtp.client-ip=148.251.105.195
+	 MIME-Version; b=XWj74MjNpLWTB0lfn9V5Ot/akwV8mXlQxHDYJV87NpTVu2I7dmUDb9l7o/Wi4C5KcXL+6TNahiKLF16qLwzAMntBtSVTnV5aflB0fz68aVL5KzcRHO13oLH1lWt46ixiMn5jl9EiLlGcBmTu1cHMlw2L0dzY7PTtRJXhCKkjWDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=l7nIu0SG; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="AMD9PPu/"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="l7nIu0SG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1725377004;
-	bh=f0D3qZRNJKjZ4ZItDHDKxzlfX2zSfpN5blcJ2RQ0XJo=;
+	s=mail; t=1725377014;
+	bh=q91nNqe25vY4zdGQ0jID+lBhXgdVdrS3Q9cXE35aK60=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AMD9PPu/OGMlGzKoQ6XXCGTcfrkyWGaHS95Rw5CVsBTegIUzbby8Ffo+rG+dF459O
-	 dK7k1Fd8kicvlJbqaM081WHgiJsVonMxiT4rIc0Yx0i+AqwhaLsjuCMR3wKUvpdqkG
-	 eea8fl9yzULRVEMx0kSJAtjpZ+/HZBIkUjJigVahoWvqZFFMJynS4LRPFNwuV3SId4
-	 cSdlJX2WsqVxLQirQfC/bGWXxcAJ0Ty3JnkO+tipP0Uwf+EwSgNk7EgtAt05mA9DMO
-	 V7NeLT4FbKZ9bA8g9elFCCIENfTF0HvRVSgzAXoeGQulocv+r1TSiieBJJrJ0OkbRt
-	 YfeMbrXj+Jsdg==
+	b=l7nIu0SGrEf082PTCfZQvaCTfjPQsInJgpF0p1HU07ZiiQuo/2ji3dW5bHsh+CBY9
+	 6ws0rxNpDx/+76fqaJlh+mKxR4T9PFEymL+dNmm/p6jIW8JEzpBtU+bEnWHGHfRR94
+	 8kr2Bw54zosa7KwTfsDIp/9wWWQbAVy600Zg6x4sZazN+pFD3eIuTY3yao96pR+xYw
+	 J+ZR46h8zQLvEPRlNvfl1cHk/LCLzBNXizkgfoB4eA1/D4Bnf2H3Irh7ztDsW1G2ft
+	 KP3RPbYgYWqLFDWeijz/h2P/1RvUbTebqkwrOYA52pz1snORt/3DvFWlKewACTg4wR
+	 j3gjfC97XSgNA==
 Received: from bootstrap.mtl.collabora.ca (mtl.collabora.ca [66.171.169.34])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: detlev)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id EA64F17E10C1;
-	Tue,  3 Sep 2024 17:23:19 +0200 (CEST)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id EF4FA17E10CD;
+	Tue,  3 Sep 2024 17:23:29 +0200 (CEST)
 From: Detlev Casanova <detlev.casanova@collabora.com>
 To: linux-kernel@vger.kernel.org
 Cc: Rob Herring <robh@kernel.org>,
@@ -78,9 +78,9 @@ Cc: Rob Herring <robh@kernel.org>,
 	linux-watchdog@vger.kernel.org,
 	kernel@collabora.com,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 1/9] dt-bindings: arm: rockchip: Add ArmSoM Sige 5
-Date: Tue,  3 Sep 2024 11:22:31 -0400
-Message-ID: <20240903152308.13565-2-detlev.casanova@collabora.com>
+Subject: [PATCH v4 3/9] dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
+Date: Tue,  3 Sep 2024 11:22:33 -0400
+Message-ID: <20240903152308.13565-4-detlev.casanova@collabora.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240903152308.13565-1-detlev.casanova@collabora.com>
 References: <20240903152308.13565-1-detlev.casanova@collabora.com>
@@ -92,30 +92,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add devicetree binding for the ArmSoM Sige 5 board.
+Just like RK356x and RK3588, RK3576 is compatible to the existing
+rk3399 binding.
 
 Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Heiko Stuebner <heiko@sntech.de>
 ---
- Documentation/devicetree/bindings/arm/rockchip.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+ Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
-index 1ef09fbfdfaf..c3449d964659 100644
---- a/Documentation/devicetree/bindings/arm/rockchip.yaml
-+++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
-@@ -49,6 +49,11 @@ properties:
-               - anbernic,rg-arc-s
-           - const: rockchip,rk3566
- 
-+      - description: ArmSoM Sige5 board
-+        items:
-+          - const: armsom,sige5
-+          - const: rockchip,rk3576
-+
-       - description: ArmSoM Sige7 board
-         items:
-           - const: armsom,sige7
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
+index 82b9d6682297..a9dae5b52f28 100644
+--- a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
++++ b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
+@@ -38,6 +38,7 @@ properties:
+               - rockchip,rk3308-i2c
+               - rockchip,rk3328-i2c
+               - rockchip,rk3568-i2c
++              - rockchip,rk3576-i2c
+               - rockchip,rk3588-i2c
+               - rockchip,rv1126-i2c
+           - const: rockchip,rk3399-i2c
 -- 
 2.46.0
 
