@@ -1,97 +1,194 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31F92F9DF;
-	Tue,  3 Sep 2024 18:11:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29F0E126BF5
+	for <linux-serial@vger.kernel.org>; Tue,  3 Sep 2024 21:55:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725387119; cv=none; b=Znf2BpRcDLMd2j5Rp+oax28ll0R1YuzJGDe11hZnrSzTT0AhGMRDqTSisdOJ7uRLfQ3dgXrVZrEM5uD9fEBbWhWivkYWeDwtWhsc4JR6VAq2XH4LwPaRvw3mTw8SqM6UyFlTpCnRiybmzR+7wqubZ9L8r2hetUuyrjz8VmP6210=
+	t=1725400538; cv=none; b=HvUfb48MSa5gCb+DU+k0NV1KmJuDmCghYFed0ELKrW8JXxZysRZ9GYbMNY5/Qd4gqZiciAgnzJPfDV40LJEjw89fmHdQdOFAPyqngb94s/3XmxtRprFU2+7X3Hfzz8RgxwECJbzJuVISs6QqScBoxjcrZt/+uhtqeMPJFQqhNLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725387119; c=relaxed/simple;
-	bh=if11Vy5KkDrmjGEflqzJtRJ7Egv1VFzayV75E2P4Iv8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lmaVPWJYc6iIy6wX4y5NEf3g+nIpu0UTuRC3qUY/86G4356oSdHZIPeW0trRo/8Hej/mRP1w3jtKwjBHza8KVDOQmwvdHuxyEy4FBgDHYq7bsab9oYI2IHY6QEV0jahDk52y26Dj4LL4tpKq9x17gm1EzSJP3v5Ev3Tu4wS+goE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a1dC6l8a; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725400538; c=relaxed/simple;
+	bh=eVoQS1qBG45IGev8dxUARAbJiHsk5OoN6AnNLgg78y8=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=DyjeeF8oxTad/3WRQtNcD6Zu5Mt0i0uxTlR6rISM5F78UXko6WROBTXt3FvoYpY7izAYxruR2R4kcvFmVbUIfw2WiNmfk874fpXRqjG4uyns+dQPsO7xpkg/IGdZXk0tq/oTHtZmYX3l5te4wbU2TBrt8Hd7MKYL+b7X3BxJAJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=awiX8iXw; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a1dC6l8a"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C0EC4CEC4;
-	Tue,  3 Sep 2024 18:11:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725387118;
-	bh=if11Vy5KkDrmjGEflqzJtRJ7Egv1VFzayV75E2P4Iv8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=a1dC6l8aPQD5OCJJwQjbcZ8mqfhJ+Nq/wS+UFqq1cNHh9/hwCCT9ttOLwe9zO9V4B
-	 obKom5l+3kjqfPr2YfeW4QdYRTLlayD94yQL8rrE2JxNeg58T7XHE0sJqvD6FRdX5s
-	 +IImDuKXxXvt7kSZWxqGjaqoJAYTy+u1N/8vOWRK3zPh8Xz9rNaW7LYtiZ6MmJuOzU
-	 HbLfsYGMrIg7QXE9BHc8jf0AJnnasvuFPg8Wdj1N2mJh6UTBsrIMx57auQwiTTSTIn
-	 ZjNu9BK41/4HnLjGm5tRimIht2HF5vA01g+C0NyGDRzZf7xbaRX3h+HOMoL7/LqQLn
-	 5aOpFuXQJ4Xkw==
-Date: Tue, 3 Sep 2024 20:11:55 +0200
-From: Andi Shyti <andi.shyti@kernel.org>
-To: Detlev Casanova <detlev.casanova@collabora.com>
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, David Airlie <airlied@gmail.com>, 
-	Daniel Vetter <daniel@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Mark Brown <broonie@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
-	Guenter Roeck <linux@roeck-us.net>, Chris Morgan <macromorgan@hotmail.com>, 
-	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>, Andy Yan <andyshrk@163.com>, 
-	Muhammed Efe Cetin <efectn@protonmail.com>, Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>, 
-	Ondrej Jirman <megi@xff.cz>, Michael Riesch <michael.riesch@wolfvision.net>, 
-	Jimmy Hon <honyuenkwun@gmail.com>, Elon Zhang <zhangzj@rock-chips.com>, 
-	Alexey Charkov <alchark@gmail.com>, Elaine Zhang <zhangqing@rock-chips.com>, 
-	Yifeng Zhao <yifeng.zhao@rock-chips.com>, Finley Xiao <finley.xiao@rock-chips.com>, 
-	Liang Chen <cl@rock-chips.com>, Jamie Iles <jamie@jamieiles.com>, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, 
-	dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-spi@vger.kernel.org, linux-watchdog@vger.kernel.org, kernel@collabora.com, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v4 3/9] dt-bindings: i2c: i2c-rk3x: Add rk3576 compatible
-Message-ID: <4hfdvgvkzt6cvyqbhfy3ttlwip4p4yfnhzbbciq5l3tso25zw2@qty5bsbbtbp4>
-References: <20240903152308.13565-1-detlev.casanova@collabora.com>
- <20240903152308.13565-4-detlev.casanova@collabora.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="awiX8iXw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1725400535; x=1756936535;
+  h=date:from:to:cc:subject:message-id;
+  bh=eVoQS1qBG45IGev8dxUARAbJiHsk5OoN6AnNLgg78y8=;
+  b=awiX8iXwx55dPu/TV+rqM15E4ADUNP7tDFb7Gz2vTThjb8mwe1eQjDUz
+   nNjMuuqttISb1iAJrKFeLUO+bhWI3YVA1D30ZiIpsXB1LdUMTPRAFX59i
+   t4V9wP7pmfzKq7WFY/dFA0eyBWz2OXA5p6z9iYRmHbEIFFuY0S/69485B
+   KD/nbaS6ZsAgcujLPhdbR9D2hh730Ge30SFllIhwqQFqJg0BgRuplRF4W
+   26QRw0JN9m1LEKtuoMUVF8GY17OOEk0aRXVwhUgJ5Mx+uzWObDKGtywVj
+   A94uKQeBcPNcU6BObxkOVvfZEVN+fHS7eruR/tH7bVYWMbqHxWNOtjKSM
+   w==;
+X-CSE-ConnectionGUID: seMAk+asTeyZ7QP4Q1zN0g==
+X-CSE-MsgGUID: qm1uHBTKSC2V1NLswImXhw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11184"; a="24165350"
+X-IronPort-AV: E=Sophos;i="6.10,199,1719903600"; 
+   d="scan'208";a="24165350"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2024 14:55:35 -0700
+X-CSE-ConnectionGUID: N2KbF0dNSq+ssuVBlVjpjQ==
+X-CSE-MsgGUID: nWCZ3/qrSg6+nDna1e/XYg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,199,1719903600"; 
+   d="scan'208";a="102463907"
+Received: from lkp-server01.sh.intel.com (HELO 9c6b1c7d3b50) ([10.239.97.150])
+  by orviesa001.jf.intel.com with ESMTP; 03 Sep 2024 14:55:34 -0700
+Received: from kbuild by 9c6b1c7d3b50 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1slbUp-0007Au-1Q;
+	Tue, 03 Sep 2024 21:55:31 +0000
+Date: Wed, 04 Sep 2024 05:54:38 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ f1ec92a066b2608e7c971dfce28ebe2d2cdb056e
+Message-ID: <202409040535.8VTUm6ZL-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240903152308.13565-4-detlev.casanova@collabora.com>
 
-BTW, just as a self reminder,
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: f1ec92a066b2608e7c971dfce28ebe2d2cdb056e  tty: hvc: convert comma to semicolon
 
-Reviewed-by: Andi Shyti <andi.shyti@kernel.org>
+elapsed time: 739m
 
-Thanks,
-Andi
+configs tested: 117
+configs skipped: 3
 
-On Tue, Sep 03, 2024 at 11:22:33AM GMT, Detlev Casanova wrote:
-> Just like RK356x and RK3588, RK3576 is compatible to the existing
-> rk3399 binding.
-> 
-> Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Acked-by: Heiko Stuebner <heiko@sntech.de>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
-> index 82b9d6682297..a9dae5b52f28 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-rk3x.yaml
-> @@ -38,6 +38,7 @@ properties:
->                - rockchip,rk3308-i2c
->                - rockchip,rk3328-i2c
->                - rockchip,rk3568-i2c
-> +              - rockchip,rk3576-i2c
->                - rockchip,rk3588-i2c
->                - rockchip,rv1126-i2c
->            - const: rockchip,rk3399-i2c
-> -- 
-> 2.46.0
-> 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                             allnoconfig   gcc-14.1.0
+alpha                            allyesconfig   clang-20
+alpha                               defconfig   gcc-14.1.0
+arc                              allmodconfig   clang-20
+arc                               allnoconfig   gcc-14.1.0
+arc                              allyesconfig   clang-20
+arc                                 defconfig   gcc-14.1.0
+arm                              allmodconfig   clang-20
+arm                               allnoconfig   gcc-14.1.0
+arm                              allyesconfig   clang-20
+arm                     am200epdkit_defconfig   clang-20
+arm                         assabet_defconfig   clang-20
+arm                         axm55xx_defconfig   clang-20
+arm                                 defconfig   gcc-14.1.0
+arm                      jornada720_defconfig   clang-20
+arm                        spear3xx_defconfig   clang-20
+arm                        spear6xx_defconfig   clang-20
+arm64                            allmodconfig   clang-20
+arm64                             allnoconfig   gcc-14.1.0
+arm64                               defconfig   gcc-14.1.0
+csky                              allnoconfig   gcc-14.1.0
+csky                                defconfig   gcc-14.1.0
+hexagon                          allmodconfig   clang-20
+hexagon                           allnoconfig   gcc-14.1.0
+hexagon                          allyesconfig   clang-20
+hexagon                             defconfig   gcc-14.1.0
+i386                             allmodconfig   clang-18
+i386                              allnoconfig   clang-18
+i386                             allyesconfig   clang-18
+i386                                defconfig   clang-18
+loongarch                        allmodconfig   gcc-14.1.0
+loongarch                         allnoconfig   gcc-14.1.0
+loongarch                           defconfig   gcc-14.1.0
+m68k                             allmodconfig   gcc-14.1.0
+m68k                              allnoconfig   gcc-14.1.0
+m68k                             allyesconfig   gcc-14.1.0
+m68k                                defconfig   gcc-14.1.0
+m68k                        m5407c3_defconfig   clang-20
+m68k                       m5475evb_defconfig   clang-20
+m68k                           virt_defconfig   clang-20
+microblaze                       allmodconfig   gcc-14.1.0
+microblaze                        allnoconfig   gcc-14.1.0
+microblaze                       allyesconfig   gcc-14.1.0
+microblaze                          defconfig   gcc-14.1.0
+mips                              allnoconfig   gcc-14.1.0
+mips                           ip28_defconfig   clang-20
+mips                     loongson2k_defconfig   clang-20
+mips                      malta_kvm_defconfig   clang-20
+mips                         rt305x_defconfig   clang-20
+nios2                             allnoconfig   gcc-14.1.0
+nios2                               defconfig   gcc-14.1.0
+openrisc                          allnoconfig   clang-20
+openrisc                         allyesconfig   gcc-14.1.0
+openrisc                            defconfig   gcc-12
+parisc                           allmodconfig   gcc-14.1.0
+parisc                            allnoconfig   clang-20
+parisc                           allyesconfig   gcc-14.1.0
+parisc                              defconfig   gcc-12
+parisc64                            defconfig   gcc-14.1.0
+powerpc                          allmodconfig   gcc-14.1.0
+powerpc                           allnoconfig   clang-20
+powerpc                          allyesconfig   gcc-14.1.0
+powerpc                        icon_defconfig   clang-20
+powerpc                  mpc885_ads_defconfig   clang-20
+riscv                            allmodconfig   gcc-14.1.0
+riscv                             allnoconfig   clang-20
+riscv                            allyesconfig   gcc-14.1.0
+riscv                               defconfig   clang-20
+riscv                               defconfig   gcc-12
+s390                             allmodconfig   gcc-14.1.0
+s390                              allnoconfig   clang-20
+s390                             allyesconfig   gcc-14.1.0
+s390                                defconfig   gcc-12
+sh                               allmodconfig   gcc-14.1.0
+sh                                allnoconfig   gcc-14.1.0
+sh                               allyesconfig   gcc-14.1.0
+sh                                  defconfig   gcc-12
+sparc                            allmodconfig   gcc-14.1.0
+sparc64                          alldefconfig   clang-20
+sparc64                             defconfig   gcc-12
+um                               allmodconfig   clang-20
+um                                allnoconfig   clang-20
+um                               allyesconfig   clang-20
+um                                  defconfig   gcc-12
+um                             i386_defconfig   gcc-12
+um                           x86_64_defconfig   gcc-12
+x86_64                            allnoconfig   clang-18
+x86_64                           allyesconfig   clang-18
+x86_64       buildonly-randconfig-001-20240904   clang-18
+x86_64       buildonly-randconfig-002-20240904   clang-18
+x86_64       buildonly-randconfig-003-20240904   clang-18
+x86_64       buildonly-randconfig-004-20240904   clang-18
+x86_64       buildonly-randconfig-005-20240904   clang-18
+x86_64       buildonly-randconfig-006-20240904   clang-18
+x86_64                              defconfig   clang-18
+x86_64                                  kexec   gcc-12
+x86_64                randconfig-001-20240904   clang-18
+x86_64                randconfig-002-20240904   clang-18
+x86_64                randconfig-003-20240904   clang-18
+x86_64                randconfig-004-20240904   clang-18
+x86_64                randconfig-005-20240904   clang-18
+x86_64                randconfig-006-20240904   clang-18
+x86_64                randconfig-011-20240904   clang-18
+x86_64                randconfig-012-20240904   clang-18
+x86_64                randconfig-013-20240904   clang-18
+x86_64                randconfig-014-20240904   clang-18
+x86_64                randconfig-015-20240904   clang-18
+x86_64                randconfig-016-20240904   clang-18
+x86_64                randconfig-071-20240904   clang-18
+x86_64                randconfig-072-20240904   clang-18
+x86_64                randconfig-073-20240904   clang-18
+x86_64                randconfig-074-20240904   clang-18
+x86_64                randconfig-075-20240904   clang-18
+x86_64                randconfig-076-20240904   clang-18
+x86_64                          rhel-8.3-rust   clang-18
+x86_64                               rhel-8.3   gcc-12
+xtensa                            allnoconfig   gcc-14.1.0
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
