@@ -1,83 +1,101 @@
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B8F01E0B99;
-	Wed,  4 Sep 2024 17:05:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 440401E1A18;
+	Wed,  4 Sep 2024 18:08:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725469540; cv=none; b=kX+Zw3LifiW1APVbtcwNlhVGVKVWlFaDjngsOpKlSN2/3qMwiZVMKGqPlrZ+Xi0aTVsDzls/1A1K5CkeN7Z6d1LPHEOmctfboYjVHZzIEPNKPzaiDBeIw5iUJYodh98kEBVybcq6AQ2gsAcMxJT0lO723p/oQGksTNro8ie7RtE=
+	t=1725473342; cv=none; b=MAGAIKGHHsHOLxRGv1ZdUmp7fZf/mu9fz8IVF4B8gH7MF61vbhgDggLMQ94jbWzlZRY7QhmWtahvRsC9oAoRnJBMGNAZOpV4h5JlE0LEJ/iVQxrlJJS68FYlndfdShmFTddPWQwdkkevU7ihaTnRF8VYZQXwNEp0ga+GmnkM//0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725469540; c=relaxed/simple;
-	bh=oy9LV2bQIBQbEAh0NLEId8+z6bJK02DWNYiWELJcdjM=;
+	s=arc-20240116; t=1725473342; c=relaxed/simple;
+	bh=l0DM/F9pT9iRieeb6jTA/2NiCKWy8nvfiUH+NKPnzgs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U5ndEiJfRM8a9Zsk+mhn7kC3gC3Dza3JbAdSnzW6xQtZkI7m5mrPL9JsXDo/zX7yA8wvCN1TSZZoas17eS9XqJjlfGY2BfEu1rWwvK5HE6DnvjZj9ZcrZR7oSNMTodT+g/ZdbyX359+RMao1D6MICYOpVu/FKjk18UaJ0hBORFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=QeHU2VqD; arc=none smtp.client-ip=156.67.10.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	 Content-Type:Content-Disposition:In-Reply-To; b=dVAaW1T7uqZk5VKAHrYi5WozG3LOwFJ086vVWJLDhcNm9OEUMXkFBSOzQm3gmYYmyUPDXluIWpVFScCcNs1gnw/2nbIWFhEFesDdGnkT5ucJP1krYm2E3kUOk3687rO/Y66NSD1ROa3i70CF95snfjZRZ5R01GT1KGA6e/4+lKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=cjO2MaxK; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="QeHU2VqD"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=Tr1Ump1BzzFUw5+xs8DSrxzMIPParfqqW8lY6X5We+Q=; b=QeHU2VqDbToVKqszqHxkK9GQ65
-	AFkGfKdr6dyuxNkguJGSNkWet9YBOBg6m1bA3fbCfyEE/sTM0a3ssp+ql3oRZdRbCTKUSws2rClTJ
-	vwhEsaY4mQDSxuKpxIgeaX5GkP12dIG3E580nmfosg6Dw6r8Ta6fgmszDJxzmBYkEr6s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1sltRa-006aPS-7h; Wed, 04 Sep 2024 19:05:22 +0200
-Date: Wed, 4 Sep 2024 19:05:22 +0200
-From: Andrew Lunn <andrew@lunn.ch>
-To: Nikunj Kela <quic_nkela@quicinc.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, andersson@kernel.org,
-	konradybcio@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org,
-	herbert@gondor.apana.org.au, davem@davemloft.net,
-	sudeep.holla@arm.com, andi.shyti@kernel.org, tglx@linutronix.de,
-	will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	jassisinghbrar@gmail.com, lee@kernel.org, linus.walleij@linaro.org,
-	amitk@kernel.org, thara.gopinath@gmail.com, broonie@kernel.org,
-	cristian.marussi@arm.com, rui.zhang@intel.com, lukasz.luba@arm.com,
-	wim@linux-watchdog.org, linux@roeck-us.net,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-crypto@vger.kernel.org, arm-scmi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-	iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, kernel@quicinc.com,
-	quic_psodagud@quicinc.com,
-	Praveen Talari <quic_ptalari@quicinc.com>
-Subject: Re: [PATCH v2 17/21] dt-bindings: serial: document support for
- SA8255p
-Message-ID: <f42fe73d-1579-4fa1-89ed-9d2a4b7c7f6e@lunn.ch>
-References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-1-quic_nkela@quicinc.com>
- <20240903220240.2594102-18-quic_nkela@quicinc.com>
- <db4cb31f-b219-4ee8-b519-fdec7f7b8760@kernel.org>
- <634ab05e-3b8c-4cc1-bf23-0c68c1d28484@quicinc.com>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="cjO2MaxK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1725473337;
+	bh=l0DM/F9pT9iRieeb6jTA/2NiCKWy8nvfiUH+NKPnzgs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cjO2MaxKRwFea3okgn3X8h+EkZs/+TQRzli8vFDp60TZrqSZj6uu8UnJqHR/x8oOV
+	 TpQ+AEGw80k3VkUOKHvyRX7WQTbwj0Gs2vGwaNVXqRZedw8C2fmIfVrhaKvsbA/agt
+	 yjVnRhx/U90oUEo+OF+9pZcMecUQkjjJBjgkZe3FocKy3Y5C4rtJE7FvxvtDgP7mIr
+	 ptCMfJHQXfYKRNPdECfCX/2MgBfTe+j51wwi42euNB/q8x9YfO6N/WYB/wGF8d+cNl
+	 fdOIJlP+VUAP7VRrucD+1+yfk8WKXVKbk6QmlKYumj46zIENUbPxvOVXxOLjlvVSid
+	 SI7/mGORk72eA==
+Received: from notapiano (pool-100-2-116-133.nycmny.fios.verizon.net [100.2.116.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: nfraprado)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 622E817E35E0;
+	Wed,  4 Sep 2024 20:08:56 +0200 (CEST)
+Date: Wed, 4 Sep 2024 14:08:54 -0400
+From: =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>
+To: Johan Hovold <johan+linaro@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/8] serial: qcom-geni: fix console corruption
+Message-ID: <c47714f0-045d-469a-9edf-e4e4cb5090dc@notapiano>
+References: <20240902152451.862-1-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <634ab05e-3b8c-4cc1-bf23-0c68c1d28484@quicinc.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240902152451.862-1-johan+linaro@kernel.org>
 
-> The driver changes will soon be posted. They are being reviewed
-> internally.
+On Mon, Sep 02, 2024 at 05:24:43PM +0200, Johan Hovold wrote:
+> This series is a follow-on series to the lockup fixes [1] that addresses
+> a number of issues in the Qualcomm GENI console code, including corrupt
+> console output during boot, which is a problem for automated CI testing.
+> 
+> Johan
+> 
+> [1] https://lore.kernel.org/lkml/20240704101805.30612-1-johan+linaro@kernel.org/
+> 
+> 
+> Douglas Anderson (3):
+>   soc: qcom: geni-se: add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
+>   serial: qcom-geni: fix arg types for qcom_geni_serial_poll_bit()
+>   serial: qcom-geni: introduce qcom_geni_serial_poll_bitfield()
+> 
+> Johan Hovold (5):
+>   serial: qcom-geni: fix fifo polling timeout
+>   serial: qcom-geni: fix false console tx restart
+>   serial: qcom-geni: fix console corruption
+>   serial: qcom-geni: disable interrupts during console writes
+>   serial: qcom-geni: fix polled console corruption
+> 
+>  drivers/tty/serial/qcom_geni_serial.c | 133 +++++++++++++++-----------
+>  include/linux/soc/qcom/geni-se.h      |   9 ++
+>  2 files changed, 85 insertions(+), 57 deletions(-)
+> 
+> -- 
+> 2.44.2
+> 
 
-And what do you do when internal reviewers tell you that everything is
-wrong and you need to change the binding? You just wasted a lot of
-peoples time.
+This series fixes the serial issues we're seeing on the sc7180 based
+(sc7180-trogdor-lazor-limozeen and sc7180-trogdor-kingoftown) boards that we
+have hooked up to KernelCI. Out of a 10-job batch of boot tests all succeeded
+after the patch, whereas before most failed (7/10), due to a missing message in
+the serial.
 
-Please don't post patches until you know they are correct, complete,
-build W=1, and pass all the standard static analysers.
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-I suggest you try to find an experience Mainline developer who can
-mentor you.
+Looking forward to see this landed!
 
-	Andrew
+Thanks,
+Nícolas
