@@ -1,106 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B91188CD5;
-	Thu,  5 Sep 2024 19:31:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8800F539A;
+	Thu,  5 Sep 2024 23:19:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725564670; cv=none; b=p2DJMIctv/9VUGBC+4pFWA7b5Z2iGFdLrW0R11lgYei9BqlR3A/TN+zBPqt3hJJFXGhhXVg0mNj1yxaQLMpK1OiXCicVt1qYnD3JYwd2xexXA7yvPa8BQSfNsn1KNn5BJRX0ZREvWaAC0SvHq8hqusgW/SARGGxw6FwJ7+dRGRU=
+	t=1725578400; cv=none; b=ajM1Keg2n4EEu163+sWZ8ak/cFjabx0dxsCQxSXd5zZ5YBsmYXBQ3Kp9EIHrgKe7nzLodhCwBXRaJfQGXBaKnCo8P8EwgsRIR//A7TIZj/bdIRNOyxdKuYHccZbn7VAnycE6q+v7DXmbOrxtNUE7IlHsEiEmUwtZKhgBHTCf3A4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725564670; c=relaxed/simple;
-	bh=iAEhEzvy5tIJDz7skG0Tq7Bm+QgWg4x5so4Hw+5ILJI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=snmUlwdnnaEzOPOH43Iy9inl0pHFZxUl5w5xyPThahLNuHK6WvhPFPHSHd4WrpgC0vaJk9kKbZ0JLHkxtr1ELGKWT+fCw2TIagRquZfiNTXO8JFvoKxITEE6cEkanDL/xn6MIAosYtemW1ui9le/EU721qLL036L00KSs7KFKTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NAg6PVKi; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725578400; c=relaxed/simple;
+	bh=+NunTpkmBYRoBN1XNK2zT4pOpEC19/0ndMRMJ/ku66Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Vnzw4Ded1TjaigqjwV8K3TeuLcmBLgBrlPIh+d57qbuDFdGYf2Zd9M59MOV0XEQm6uRL2AoDMFb3Jzla/DsIRGQCw8UhqHVemYTmgmKOWaP3QsrJZmZ5itVfwKoNs67+akvC+OHWm8+06rxiHyKH2sllYy2FoafkqWY9ZRx23m8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bkkXVr7y; arc=none smtp.client-ip=209.85.215.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NAg6PVKi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725564669; x=1757100669;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iAEhEzvy5tIJDz7skG0Tq7Bm+QgWg4x5so4Hw+5ILJI=;
-  b=NAg6PVKi1kqfgv/ZgdiXCRALBJsmFnb1KqgzRmZIBShKE+OG5qh+wRs0
-   z/ANQhl8oMsgzyBHl9JWqtsCeP2fRT3gBiS0W5gJIhGXCeKqdp+aBJmlb
-   w5zLmRtb70mYl3JdfEps7BU37xzF8C06V/8Wtm9FKqsFqQRLGUPlfxqc+
-   0tV0WQf8wyujEOZ2Ts9qPp/2k6HV6HibJB88R5Sp7Z4SHcx29LJgFd3k6
-   U2f84J46QL7rbSynWF8BVYfVbM+oMPwzNjo8LQkZ+QfQhPFZZrV3wSr80
-   hvzCtItob+IejMP3e11rI1lqiiTxCZpuH3u0W3rEML3xArxF1MviEstKJ
-   w==;
-X-CSE-ConnectionGUID: SXU7xIMcThGmEKcdE4suyA==
-X-CSE-MsgGUID: hyaDXeJ5RK2bGbHXaGXatg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11186"; a="24179015"
-X-IronPort-AV: E=Sophos;i="6.10,205,1719903600"; 
-   d="scan'208";a="24179015"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2024 12:31:06 -0700
-X-CSE-ConnectionGUID: nFMf7UjDT92Az+E/U9y7UA==
-X-CSE-MsgGUID: 7Ho9hBQZTbe8Cug6eUaBow==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,205,1719903600"; 
-   d="scan'208";a="103182845"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa001.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2024 12:30:59 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1smIC0-00000005X00-1JW5;
-	Thu, 05 Sep 2024 22:30:56 +0300
-Date: Thu, 5 Sep 2024 22:30:55 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
-Message-ID: <ZtoG74hR2_bLI4w1@smile.fi.intel.com>
-References: <20240905134719.142554-1-john.ogness@linutronix.de>
- <20240905134719.142554-2-john.ogness@linutronix.de>
- <Ztm85Y_mo5-OJveq@smile.fi.intel.com>
- <877cbp3nxh.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bkkXVr7y"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-7d4c923a3d7so589782a12.3;
+        Thu, 05 Sep 2024 16:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725578399; x=1726183199; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Pc+1NbaEgwk5DVwqgo8n+Ca095xZK1X1lzbgByBHfz0=;
+        b=bkkXVr7yKQFx5W7OZ8/5FzDLU0xdzZJ27ANTlSLkQQIOw59zkR97+SG47rTizFAbvb
+         dvXHh+YTdJ+SLRXUldop8qdPxbjgB04HK6J4tpIwsmFM4CTdKhuX6Wl7QfOw7dfcemT1
+         6Qtl7EK33URmST1HugSBRF0OVjo1phAyTh20YUnffsz9PaYtnoerD2kdiUP6RTT9Sm8x
+         mPGsQaSY8tXmczhlt1knnzGVLF06ABpLO9UtpwiX+SbjxLGn6xyYmUF6/6jnqip/FDUJ
+         yAL854JMC/1WgyVGbpwohVtlIP3IkcvmJBvjVXd/Rivd04QCjDqBKxRSaagGN+vTNzsW
+         BU3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725578399; x=1726183199;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Pc+1NbaEgwk5DVwqgo8n+Ca095xZK1X1lzbgByBHfz0=;
+        b=CI947f63WIAT1HH5yqkAhvR9Spd5lGPujJAEhTj25B4fvSLlbyN9eq6m2tpQuiqD7J
+         1aWta5RrrauNzvDLOQAf2xQVGQH5Ch2XR20A8gT/1a4GVRacO7VDTgqGE6wO5zakGplm
+         tmShhaVikwOVhFkgb6nSjKZG/Q6gV2TQxU8FTmLi1eqSfAPFFKI8o29p41ajgZR3it0R
+         85yOVcpn3egXYJPQ6jzepf34Tueyxot3Srthb9UGQ1gQxKnWCnPhj+9FuajMB33ywDCb
+         uDsgOGbXtQ+1rMEerJKKhqEgBVk6hSDVZRPkxzsYqDIiMnAqF2D6909ojyKcRczv6rvN
+         QhqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVoNpSxEwjp8wjpLs8WU6NZ/rNRAVsz3nXDcMa3HNQ504UWhnHFtliWTpH43xBwccNced+TX60o0a5z7Dw=@vger.kernel.org, AJvYcCWE8Xxnp5AwR3Q7fgC9GFbAT2QRS7oW3M2sezTsTO9NDvIv0o7g8K/aJWETmc5RqwRFk6UwwQf9Ky+GPDG8@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz6G9oLY0G7aAdGY7YwvNjCswz2PD/v5IfHA7wtEMaHarn1prgB
+	k0QFYf5f5XhWMB+bqNhfJ7hdR8ZH4W7AItUSPUNxj4BpXDGxqiL9
+X-Google-Smtp-Source: AGHT+IFqhCSxk5wcCDKYA/04Mtq+TEYkE4BgR41Z/ZkxCK3FeA/LV4tEz4jSZ+yhxBoSq/bzW8Yfeg==
+X-Received: by 2002:a17:903:1211:b0:202:49ea:b6e3 with SMTP id d9443c01a7336-2050c48f8camr244672755ad.58.1725578398819;
+        Thu, 05 Sep 2024 16:19:58 -0700 (PDT)
+Received: from localhost.localdomain (111-240-109-89.dynamic-ip.hinet.net. [111.240.109.89])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-206aea559adsm33375395ad.215.2024.09.05.16.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Sep 2024 16:19:58 -0700 (PDT)
+From: Min-Hua Chen <minhuadotchen@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Michal Simek <michal.simek@amd.com>
+Cc: Min-Hua Chen <minhuadotchen@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] serial: xilinx_uartps: make cdns_rs485_supported static
+Date: Fri,  6 Sep 2024 07:19:28 +0800
+Message-ID: <20240905231930.343759-1-minhuadotchen@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877cbp3nxh.fsf@jogness.linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 05, 2024 at 09:29:06PM +0206, John Ogness wrote:
-> On 2024-09-05, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Thu, Sep 05, 2024 at 03:53:18PM +0206, John Ogness wrote:
+make cdns_rs485_supported static to fix the following sparse
+warning:
 
-...
+drivers/tty/serial/xilinx_uartps.c:222:21: sparse: warning:
+symbol 'cdns_rs485_supported' was not declared. Should it be static?
 
-> >> +#ifdef USE_SERIAL_8250_LEGACY_CONSOLE
-> >
-> > Can it be done at run-time (theoretically or even practically)?
-> > (Note that we have already knob to disable / enable consoles.)
-> 
-> We don't want to maintain the legacy variant and really people should
-> not be using it either. NBCON is the way forward for all console
-> drivers.
-> 
-> I will just remove it for v2. If someone wants to use the old code, they
-> will need to revert the patch.
+Signed-off-by: Min-Hua Chen <minhuadotchen@gmail.com>
+---
+ drivers/tty/serial/xilinx_uartps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is even better!
-
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 2acfcea403ce..777392914819 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -219,7 +219,7 @@ struct cdns_platform_data {
+ 	u32 quirks;
+ };
+ 
+-struct serial_rs485 cdns_rs485_supported = {
++static struct serial_rs485 cdns_rs485_supported = {
+ 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND |
+ 		 SER_RS485_RTS_AFTER_SEND,
+ 	.delay_rts_before_send = 1,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
