@@ -1,163 +1,242 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 013E819538A;
-	Thu,  5 Sep 2024 08:47:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A651119306B;
+	Thu,  5 Sep 2024 08:56:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725526076; cv=none; b=ipabeDNPkuBdoOV4VbRQCBAsQwhaSz/oa2OY/iAE6Ej7Du/RnPG8i1PlzjwwZBFTxw+c4tQpi/hIf4JyVXWXLrL7SW0LOb7mefiJL/h/lFa1tNIZXAnFYk8BalGH7woQCPpfrAujEGot9H9fZhXkcoAK1KEBUgNKXcAbc3/iPl4=
+	t=1725526601; cv=none; b=nLB5slr/V7E54Us744ZRyJtn+Zk1z2YA5/KPteL+5ZxoF/k2fZU+CGmMFLuri6OHpoWDuLtq/x2XgHFigoPLd3RFN7EKLA0gF48GcXF83WLULAPesCr5/T9/B4woKNbL0+zcYW9Iqn3P+0CuVJXUr7aFkOCdRJSbKYVGhbo0gFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725526076; c=relaxed/simple;
-	bh=DnSuif62uCCVhEeRI162fm17cbXet/3kgwd0VQ3vzW0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KAizto+xVmXFxmF0lYq2FipCxvDcZfqr1fKcOo5UOl+opzndpNr29lc9TjOswfrg7v+QppNcLK2SvqrjcAzks0n1EcnmydEqOAqiOcfvykIjVvPmYUhAyfmHQQH89tVNV+aCOYafI2LeW5tzqrzTcPr1WnmyZmx90NAqI9PCvJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a5F9kJBH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725526601; c=relaxed/simple;
+	bh=lR3f9z5+bJOCN16mknr8cSYjqxmDWDdmVojFejJwrK8=;
+	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:References; b=IP7BQxwDp5PJrPogjzoZZsU9BUddiB2wwYGV8mh9dpXfZKx3qkfrI4l7GGFKBedxOxLxliRvqi0SNcI+EeWRN7T0q1SH4RAv7FvJH75MkFYWWGah+b3o5GAgQ3zg1zsS4mrTtm2FO6iaxUR5NxslNq3jpMUoNCZRI7xDo1ra3Vo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=N7HAjZ51; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a5F9kJBH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C041CC4AF09;
-	Thu,  5 Sep 2024 08:47:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725526075;
-	bh=DnSuif62uCCVhEeRI162fm17cbXet/3kgwd0VQ3vzW0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=a5F9kJBHbKVu5NS4eqt9wfG8qyufkBzZopWKazo+jGncJNZ8epN/xCNBaC0hnkoUe
-	 MZLHoAXLXgZoFU9fLTl0ee81NBvd7cQJ+UufyCmpXruMRo57IQTkN/pL2LDrQsB7Rp
-	 XrtL8oh+Hpw8YGr5oDL3iP5MBfyuq5EYRwYl34f9C+qpc2WQxCoAhQaV/QU5SWP5Hh
-	 wwYuXOSRwrT6xh++S/aJjLb0wRjDNlujly5qE0GnVdKEaZBBUrKex3YLdZWgtWDyPQ
-	 YWi4fYo4ZaOu26/3+TAlA3EbW2rxlD4Td6S9R4psU4PawVkACOUXFov+zcNEwqAQfM
-	 MlsN2bs06o+nA==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1sm8A1-000000002xD-3oNJ;
-	Thu, 05 Sep 2024 10:48:13 +0200
-Date: Thu, 5 Sep 2024 10:48:13 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Johan Hovold <johan+linaro@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	=?utf-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4=?= Prado <nfraprado@collabora.com>,
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/8] serial: qcom-geni: fix fifo polling timeout
-Message-ID: <ZtlwTQNZTdyzBChw@hovoldconsulting.com>
-References: <20240902152451.862-1-johan+linaro@kernel.org>
- <20240902152451.862-2-johan+linaro@kernel.org>
- <CAD=FV=WDx69BqK2MmhOMfKdEUtExo1wWFMY_n3edQhSF7RoWzg@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="N7HAjZ51"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240905085629euoutp026d23b874dc2b4c65d9a6a01407115ac4~yTUpf2Xb21854518545euoutp02F;
+	Thu,  5 Sep 2024 08:56:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240905085629euoutp026d23b874dc2b4c65d9a6a01407115ac4~yTUpf2Xb21854518545euoutp02F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1725526589;
+	bh=9a8tFXSZRMxLBmYQzS/kxbNtP1L0MZWsD4TqGlp7igU=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=N7HAjZ51jmxy9BBeyooMEtGJD2xagVExFDlCmdrqM2MzvMQqhnnRdKOvvZk8v66//
+	 VGI8nL3IDBhzn4wA/swMSvnSsTrNPI+i3NhlLHwm4R5sHWyAmGFbbylMFut6lJF9ce
+	 ZqAIqd6NJMp7KvICb3452HHarib2yVtW2tlDZang=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20240905085628eucas1p1ed6920b6eae12d07ae7c9af3cf92d67b~yTUpJA8CL3245732457eucas1p10;
+	Thu,  5 Sep 2024 08:56:28 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id A6.A9.09875.C3279D66; Thu,  5
+	Sep 2024 09:56:28 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20240905085628eucas1p22cae5811f1069426701b93fdc830d15a~yTUojeqiQ2167621676eucas1p28;
+	Thu,  5 Sep 2024 08:56:28 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240905085628eusmtrp1efe21bd6c68924032fa05fae82051942~yTUoh9Mth2800128001eusmtrp1t;
+	Thu,  5 Sep 2024 08:56:28 +0000 (GMT)
+X-AuditID: cbfec7f4-11bff70000002693-f0-66d9723c9f03
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id A7.1D.14621.B3279D66; Thu,  5
+	Sep 2024 09:56:27 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20240905085627eusmtip11ddc5ce1558090a422182326f3629f59~yTUoPhjM90089500895eusmtip1f;
+	Thu,  5 Sep 2024 08:56:27 +0000 (GMT)
+Received: from localhost (106.110.32.87) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Thu, 5 Sep 2024 09:56:26 +0100
+Date: Thu, 5 Sep 2024 10:56:26 +0200
+From: Daniel Gomez <da.gomez@samsung.com>
+To: Masahiro Yamada <masahiroy@kernel.org>
+CC: Nicolas Schier <nicolas@fjasle.eu>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Nathan Chancellor <nathan@kernel.org>, "Lucas
+ De Marchi" <lucas.demarchi@intel.com>, Thomas =?utf-8?Q?Hellstr=C3=B6m?=
+	<thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+	<airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, William Hubbs
+	<w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, Kirk Reiser
+	<kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, Paul
+	Moore <paul@paul-moore.com>, Stephen Smalley
+	<stephen.smalley.work@gmail.com>, Ondrej Mosnacek <omosnace@redhat.com>,
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+	Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, James
+	Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Zenghui Yu <yuzenghui@huawei.com>, Jiri Slaby <jirislaby@kernel.org>, Nick
+	Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-kbuild@vger.kernel.org"
+	<linux-kbuild@vger.kernel.org>, "intel-xe@lists.freedesktop.org"
+	<intel-xe@lists.freedesktop.org>, "dri-devel@lists.freedesktop.org"
+	<dri-devel@lists.freedesktop.org>, "speakup@linux-speakup.org"
+	<speakup@linux-speakup.org>, "selinux@vger.kernel.org"
+	<selinux@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "kvmarm@lists.linux.dev"
+	<kvmarm@lists.linux.dev>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "llvm@lists.linux.dev"
+	<llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, "Daniel Gomez
+ (Samsung)" <d+samsung@kruces.com>, "gost.dev@samsung.com"
+	<gost.dev@samsung.com>
+Subject: Re: [PATCH 08/12] include: add elf.h support
+Message-ID: <20240905085626.ehhc5p7qwi57dagm@AALNPWDAGOMEZ1.aal.scsc.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=WDx69BqK2MmhOMfKdEUtExo1wWFMY_n3edQhSF7RoWzg@mail.gmail.com>
+In-Reply-To: <CAK7LNAQhHBi7nSG5SAbqD3HFO3uMR6GHckZHcQXgWao7G8i9gw@mail.gmail.com>
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0yTVxjGc75bS5fKRyHhTAlMptkgEdyFeKLMTOb0i2ZGR4iZm9EOPqoZ
+	t7TCwExFYNwGDYiKVG2AAtXCuJSLlVsXcIVOGZPKTTDAKHew3CQQHB3lw+h/v/c5z/vkff44
+	fFy0Sm3lnw+7wErDxCHulICoMaz8vctX2hu826xyQ63d+RiyFKUBZNCM46jO+gJH1ppMHD17
+	ZaFQvKqMQsuV4xgaaFRj6OVdF3SzWEUh5VMjgSarmgmkHe4i0etaHYZMtXco9ESVzkPm63oK
+	jQwXUShvrppAQ4M9JHp4x0iihjIThbSmBRIlphSRKOn+CIVmM6wYGm1oJdGNlWkKzWT8yUN9
+	17IJpFd08dC95WyA2lsMPFSjawNorD0LoJy+PoCmdOuhVdOZJMpP3IMS+n1Qb2E570tPpkRZ
+	Aph6QxvFNCzlEkxtUyXFPFS84DG52kgm4dEMyajqJzBGq0mhGGWKEmOs6YMk88iaz2PyYm/g
+	jNJ4gtHfLeExA7+1YMfhKYFvEBtyPoqVeu8/KzjXf3WViChyi5bP1xOxYB6mAjs+pD+HXfJB
+	KhUI+CL6HoC6dgXGDYsAlk0nYzaXiF4AMLbj5JsNg7yT5ExqADVLRsAN66a+2bHNQQug9qae
+	tK0Q9A6o/v3BRhRFe8BGo5ZnYyfaE/YXJm94cFpjD+VJ3jZ2pH3ghGIRTwV8vpA+ClV1HjZZ
+	SDtAY46ZsMn4ekxZrTeH26B6jc+FuMH46tu4je3oE/C5ZYbkbt4Ob2XeJzi+BP+qer5REtKV
+	78FmUwXOPRyEOROdm+wIJ1uqeBy7wMdZaZvLElhQqtjkCFjfpyBtN0B6H5Q/CeHkA7Arrw7n
+	5C2wZ8aBO20LvFaTvSkLYXKiKAPsULxTS/G2luJtLcU7tXIBoQHObKQsVMLKPg1jf/aSiUNl
+	kWESr8DwUC1Y/x+P11oWdUA9OefVBDA+aAKQj7s7CaeceoJFwiBxzEVWGn5GGhnCyprANj7h
+	7izcGeTGimiJ+AL7E8tGsNI3rxjfbmsshieuxk8VLFc/ePWvz+WegNCdK8d8/D/+FRY1r0WO
+	/8f0h+cfIT2C7SVDcd+eLoiKGTgUuFcbZyn2Fcd8JD3wMv3r+mM/fhENBsUyRV5defroyRW/
+	NbNf5txu5qj8SEdAeeVXcxFhs7wrUaXHaZmg82rWM+kfZtXC3v3KS8IC+8A049OSDo9Jk/OE
+	wz/uh5Pc9C3Xl3Sdmu+Ffk0NmKMhhjnk76yvCo8b07sU89kjrt2NrsXffCjx7y4dPay78oHK
+	4mmKen3KMTd2jyAg/IfezLGKyu0Cvwq7NvOuqYWy1l/mb58+M3RZPTJsabRKo/d1XRyt/y7P
+	9f2og76FCYLOzxbPLrkTsnPiTzxxqUz8P7SJ/reOBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xTVxzHc+69vb2YIHelhhMwcyvLJsS1FCgeRMz+MHodms3NLZmTaEcv
+	j0gpa+kytjBYYCi4Gsp4SIcNj1BGh0PKY1BBDGBLtzFY2HgjKlIFeQpsEixdC1v0v8/v/L7n
+	k5Pz+1E4z0D6UglJKawySZooIHcQv25aJ96MUI7EBt1ySFDPUAWGFg3fAmQxPsLRDecEjpzN
+	Whz9ubZIoszKOhI9bXiEocmb1RhauLobFf1YSSL9HzYCzTZ2Ecg0NchBz8wtGBowl5Lot0oN
+	Fz0o6CDR9JSBROXLTQS6d3eYg1pLbRzUXjdAItPACgdl5xg46ELNNImW8pwYsrf3cFDh+hyJ
+	5vNuc9FYfjGBOnSDXPTD02KA+qwWLmpu6QXoYd93AJWMjQH0uMUlbZzTclBF9n6UNS5BI1XX
+	uW8FMrX6WsC0WXpJpv3vMoIxdzaQTKtugsuUmdRMVvc8h6lsm8EYkzGHZPQ5eoxxau5ymG5n
+	BZcpzyjEGb3tJNNxtZbLTF6yYu/C08KDSoU6hX0lXqFKiRR8LEbBQnE4EgaHhgvFIfujDwRL
+	BKJDB2VsYsJnrFJ06JwwfvzrDSLZsOfzy0/aiAzwBOYCDwrSodBy+S9OLthB8egqAJeK57jb
+	jd2wftXdcLM3fDaYS26HlgFcrC4A24UJQMfYylaKoF+D1dd+xtxM0gHwps20ZeLTgXC86uJW
+	BqeNXnB6Kd3N3rQEzuhW8VxAUZ50FKy8EeA+5tG/EzBj2dfNnvRL0FbygHBHcJeyzizaRj9Y
+	vUltC/fAzKbvcTd70Cfh6OL8f09+FV7R1hDbnAZXHHaQB/i6F6S651Ldc6nuBWkZIIyAz6pV
+	8ji5SixUSeUqdVKcMEYhNwHXwjZb1htagH52WdgJMAp0AkjhAr7nY/5wLM9TJk39glUqzirV
+	iayqE0hc36PFfXfFKFwbn5RyVhwWJBGHhoUHScLDQgQ+nkcG+mJ5dJw0hT3Pssms8v97GOXh
+	m+Ea9wfjd9YH/WY31amvC06E9ucqCyaPeY1Eau9lh7HrXaJ3FAp58FHJwjHZeF1N777pj+pF
+	kWux9V2neH4bw9nJ4vO9iRpW6O/9so9PxD9qMzVvDRnql13JiPA/7VhQTrXY+SWrZzi/eFes
+	fNnvNXrq7ayFzA3x+/auCINYNBTVLRM49mYmhPtcr94pbf8kL/2njcKLqTPpH5asfnXpvoPn
+	b6lPyz6wElxUZGeirffLi8226PxvThxP2KnRrF2j7hy2fKqN0qCmxn3WmPYjoVZnR+nQaKsY
+	67w9d0trHJCVU2/Unzu8OuItNObX7BoqjV64cLRHfmbvUul7aQ8DMlm7gFDFS8WBuFIl/Red
+	liuoOQQAAA==
+X-CMS-MailID: 20240905085628eucas1p22cae5811f1069426701b93fdc830d15a
+X-Msg-Generator: CA
+X-RootMTR: 20240807110435eucas1p2eca071b0a0122b8686d43c57bd94dc8c
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240807110435eucas1p2eca071b0a0122b8686d43c57bd94dc8c
+References: <20240807-macos-build-support-v1-0-4cd1ded85694@samsung.com>
+	<20240807-macos-build-support-v1-8-4cd1ded85694@samsung.com>
+	<CGME20240807110435eucas1p2eca071b0a0122b8686d43c57bd94dc8c@eucas1p2.samsung.com>
+	<2024080717-cross-retiree-862e@gregkh>
+	<dxkmmrlhlhsrjulnyabfgcr37ojway2dxaypelf3uchkmhw4jn@z54e33jdpxmr>
+	<2024080720-skyline-recapture-d80d@gregkh>
+	<20240807-mottled-stoic-degu-d1e4cb@lindesnes>
+	<20240823225450.spuvjs5b5ruujim4@AALNPWDAGOMEZ1.aal.scsc.local>
+	<ZtIjNBhqdxmMBxfM@fjasle.eu>
+	<CAK7LNAQhHBi7nSG5SAbqD3HFO3uMR6GHckZHcQXgWao7G8i9gw@mail.gmail.com>
 
-On Wed, Sep 04, 2024 at 02:50:57PM -0700, Doug Anderson wrote:
-> On Mon, Sep 2, 2024 at 8:26 AM Johan Hovold <johan+linaro@kernel.org> wrote:
+On Mon, Sep 02, 2024 at 01:15:01AM +0900, Masahiro Yamada wrote:
+> On Sat, Aug 31, 2024 at 4:54 AM Nicolas Schier <nicolas@fjasle.eu> wrote:
 > >
-> > The qcom_geni_serial_poll_bit() can be used to wait for events like
-> > command completion and is supposed to wait for the time it takes to
-> > clear a full fifo before timing out.
+> > On Sat, Aug 24, 2024 at 12:54:50AM +0200 Daniel Gomez wrote:
+> > > On Wed, Aug 07, 2024 at 05:46:03PM +0200, Nicolas Schier wrote:
+> > > > On Wed, Aug 07, 2024 at 04:18:54PM +0200, Greg Kroah-Hartman wrote:
+> > > > > On Wed, Aug 07, 2024 at 02:13:57PM +0000, Daniel Gomez wrote:
+> > > > > > > Also, as this is not internal for the kernel, but rather for userspace
+> > > > > > > builds, shouldn't the include/ path be different?
+> > > > > >
+> > > > > > Can you suggest an alternative path or provide documentation that could help
+> > > > > > identify the correct location? Perhaps usr/include?
+> > > > >
+> > > > > That is better than the generic include path as you are attempting to
+> > > > > mix userspace and kernel headers in the same directory :(
+> > > >
+> > > > Please keep in mind, that usr/include/ currently does not hold a single
+> > > > header file but is used for dynamically composing the UAPI header tree.
+> > > >
+> > > > In general, I do not like the idea of keeping a elf.h file here that
+> > > > possibly is out-of-sync with the actual system's version (even though
+> > > > elf.h should not see that much changes).  Might it be more helpful to
+> > > > provide a "development kit" for Linux devs that need to build on MacOS
+> > > > that provides necessary missing system header files, instead of merging
+> > > > those into upstream?
+> > >
+> > > I took this suggestion and tried pushing a Homebrew formula/package here [1].
+> > > I think I chose a wrong name and maybe something like "development kit" would
+> > > have been better. However, would it be possible instead to include the *.rb file
+> > > in the scripts/ directory? So users of this can generate the development kit in
+> > > their environments. I would maintain the script to keep it in sync with the
+> > > required glibc version for the latest kernel version.
+> > >
+> > > [1] https://protect2.fireeye.com/v1/url?k=96027706-f7896236-9603fc49-000babffaa23-452f645d7a72e234&q=1&e=343dd31c-5e5b-4b09-8ee5-6c59a1ff826e&u=https%3A%2F%2Fgithub.com%2FHomebrew%2Fhomebrew-core%2Fpull%2F181885
 > >
-> > As noted by Doug, the current implementation does not account for start,
-> > stop and parity bits when determining the timeout. The helper also does
-> > not currently account for the shift register and the two-word
-> > intermediate transfer register.
+> > I think it sounds sensible to hold that formula file in the upstream tree.  But
+> > I am not sure if scripts/ is the best location.
 > >
-> > Instead of determining the fifo timeout on every call, store the timeout
-> > when updating it in set_termios() and wait for up to 19/16 the time it
-> > takes to clear the 16 word fifo to account for the shift and
-> > intermediate registers. Note that serial core has already added a 20 ms
-> > margin to the fifo timeout.
+> > Masahiro, what do you think?
+> 
+> 
+> I do not know much about the homebrew, but why does the upstream
+> kernel need to merge such masOS stuff?
+
+The missing headers (in macOS) need to be provided somehow. One way can be
+having the formula (*.rb file) in-tree, so users of this can install them in
+their systems. This would also require to have a tarball with the missing
+headers either in-tree or somewhere accessible so it can be fetched.
+
+To avoid having the formula and a tarball in-tree, I've created a Homebrew Tap
+(3rd-Party Repository) called 'Bee Headers Project' [1][2][3] that can provision
+the missing headers. The project provides a bee-headers package and formula
+that will install byteswap.h, elf.h and endian.h in the user's system Hombrew
+directory. It also provides a *.pc file so pkg-config can be used to find the
+location of these headers. I have a v2 with this solution ready, perhaps is
+easier to discuss this with the code.
+
+I think we can extend the same package and include extra headers if we need
+more in the future. I see for x86_64 asm/types.h and others might be required.
+The bee-headers package can then be the repository to place and distribute them.
+
+Please, let me know if you think of an alternative solution, I can give a try
+and explore.
+
+[1] Project:
+https://github.com/bee-headers
+[2] Headers repository:
+https://github.com/bee-headers/headers.git
+[3] Homebrew Tap formula:
+https://github.com/bee-headers/homebrew-bee-headers.git
+
+
+> 
+> 
+> 
 > >
-> > Also note that the current uart_fifo_timeout() interface does
-> > unnecessary calculations on every call and also did not exists in
-> > earlier kernels so only store its result once. This also facilitates
-> > backports as earlier kernels can derive the timeout from uport->timeout,
-> > which has since been removed.
-
-> > @@ -270,22 +270,21 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
-> >  {
-> >         u32 reg;
-> >         struct qcom_geni_serial_port *port;
-> > -       unsigned int baud;
-> > -       unsigned int fifo_bits;
-> >         unsigned long timeout_us = 20000;
-> >         struct qcom_geni_private_data *private_data = uport->private_data;
-> >
-> >         if (private_data->drv) {
-> >                 port = to_dev_port(uport);
-> > -               baud = port->baud;
-> > -               if (!baud)
-> > -                       baud = 115200;
-> > -               fifo_bits = port->tx_fifo_depth * port->tx_fifo_width;
-> > +
-> >                 /*
-> > -                * Total polling iterations based on FIFO worth of bytes to be
-> > -                * sent at current baud. Add a little fluff to the wait.
-> > +                * Wait up to 19/16 the time it would take to clear a full
-> > +                * FIFO, which accounts for the three words in the shift and
-> > +                * intermediate registers.
-> > +                *
-> > +                * Note that fifo_timeout_us already has a 20 ms margin.
-> >                  */
-> > -               timeout_us = ((fifo_bits * USEC_PER_SEC) / baud) + 500;
-> > +               if (port->fifo_timeout_us)
-> > +                       timeout_us = 19 * port->fifo_timeout_us / 16;
+> > Kind regards,
+> > Nicolas
 > 
-> It made me giggle a bit that part of the justification for caching
-> "fifo_timeout_us" was to avoid calculations each time through the
-> function. ...but then the code does the "19/16" math here instead of
-> just including it in the cache. ;-) ;-) ;-)
-
-Heh, yeah, but I was really talking about uart_fifo_timeout() doing
-unnecessary calculations on each call (and that value used to be
-calculated once and stored for later use).
-
-I also realised that we need to account for the intermediate register
-after I wrote the initial commit message, and before that this was just
-a shift and add.
-
-> That being said, I'm not really a fan of the "19 / 16" anyway. The 16
-> value is calculated elsewhere in the code as:
 > 
-> port->tx_fifo_depth = geni_se_get_tx_fifo_depth(&port->se);
-> port->tx_fifo_width = geni_se_get_tx_fifo_width(&port->se);
-> port->rx_fifo_depth = geni_se_get_rx_fifo_depth(&port->se);
-> uport->fifosize =
->   (port->tx_fifo_depth * port->tx_fifo_width) / BITS_PER_BYTE;
 > 
-> ...and here you're just hardcoding it to 16. Then there's also the
-> fact that the "19 / 16" will also multiply the 20 ms "slop" added by
-> uart_fifo_timeout() which doesn't seem ideal.
-
-Indeed, and the early console code also hardcodes this to 16.
-
-I don't care about the slop being 20 ms or 23.5, this is just a timeout
-for the error case.
-
-This will over count a bit if there is uart hw with 256 B fifos, but
-could potentially undercount if there is hw with less than 16 words. I'm
-not sure if such hw exists, but I'll see what I can find out.
-
-> How about this: we just change "uport->fifosize" to account for the 3
-> extra words? So it can be:
-> 
-> ((port->tx_fifo_depth + 3) * port->tx_fifo_width) / BITS_PER_BYTE;
-> 
-> ...then the cache will be correct and everything will work out. What
-> do you think?
-
-I don't think uart_fifo_timeout traditionally accounts for the shift
-register and we wait up to *twice* the time it takes to clear to fifo
-anyway (in wait_until_sent). The intermediate register I found here
-could perhaps be considered part of the fifo however.
-
-I'll give this some more thought.
-
-Johan
+> -- 
+> Best Regards
+> Masahiro Yamada
