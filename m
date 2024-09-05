@@ -1,110 +1,149 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7790119DFB9;
-	Thu,  5 Sep 2024 14:17:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3E75CA6B;
+	Thu,  5 Sep 2024 14:21:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725545857; cv=none; b=Wl8/wQfk1F/rJixOwlgeeklOpvn5Mab/KdHpVMMOquTBDb3zhuYWdcJVg4XmwSbsZJNgLoZywVXxytCJ6JOL0rJXsStKIiATSAGvnz13AuiMunK1+767rBzQV2LOagle46xY7lQP2L4Vlwf04cyT+xJER2GntismcpFl9ZefTBA=
+	t=1725546095; cv=none; b=gSUvIJJD+EFhMqjIBtXmE6SJzv+eIqGiD/PMPMmwek+botF8ESlnK1yVuYy+VzA83FF5yvx3sA3Q3MVP76qC9ssxzIfDipkL4hlxw/kdWC3WyIOZ14HJvB5JeqqpFCADf6Cp3RGlKexDUbsYCM1VJq6TQsnGq2L8A3aWxG0JWnY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725545857; c=relaxed/simple;
-	bh=9BBi/Zg7/2x89Qut/E++ANe43rMRcd/lBsTYheptkgs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aL+Nz8ayIIiOkSGBaFD04ORC9jZ+oU6OQFpB4sB2EvG3pqrsk+hfzD5maj8zCkYsaGPbgdOTQA9I8/eTcRQ5+QFSMQaTgcdaocKPazqOJV/Ihex8t+DedETwKsK/lm1qlUhV2CGB4xhmObytTTscKDx2oGddCe6nCGlB9jbD1eE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nOR8sf8A; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725546095; c=relaxed/simple;
+	bh=DXyaYUEdp9Wc5HqoVQv8h4Xdqi2x4QC9WP7/RCMuanY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=oU2i2+feEojsZgVnLw3U4/bG3qAEC3Yg25sMudCwbOCYpYN9ys3E23N5QCLejBJgkaSXezpF56HxHqnCPynSpwhhSanIo0ppDovMEo+hyP3I8nPoRYfYE28Vqw27cOJUzTi1rWYJqDjex1m6cHbtwWlY+JdetJ6Xt9ba3Xn7auI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=WlNkXtMW; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nOR8sf8A"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725545856; x=1757081856;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9BBi/Zg7/2x89Qut/E++ANe43rMRcd/lBsTYheptkgs=;
-  b=nOR8sf8ATwpW1lND5nAiOR081riXR/QoiF46Sq3UwKA5JzK3FAshvSmC
-   PZEtCgcaZPeJJxXXbfrPBizqDUHZTEr5Ej6WpFYAzIgIlS1JdlEqvzXbb
-   vMb3kPI6W4Yn6TFgjMWREb8TUEAMZduthUH2wWZU/YkPiNoVXNwBZyC7V
-   WvedkiawQLi14T/HfnobtR2b0n68mVyKmLpypQghf5O5GnMHCUtRdnbSA
-   sfNe4M5qeEOJhRKmSC2QK3BC9FUaDdmxLZhxoDEN6BG6/1+Whbjgehjtn
-   cFAdyUf+hPSC1RU2VNRKIiUOKxkkEV95aZ6lmFdYHUl0mU+m7XjdnISr+
-   g==;
-X-CSE-ConnectionGUID: k8gV53DwRmG00aQR3d+ScQ==
-X-CSE-MsgGUID: I2ilqzF9SbyS/saFYgGKrA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11186"; a="34932186"
-X-IronPort-AV: E=Sophos;i="6.10,205,1719903600"; 
-   d="scan'208";a="34932186"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2024 07:17:15 -0700
-X-CSE-ConnectionGUID: wiasB9b+Shyr0vLZOviwCA==
-X-CSE-MsgGUID: 7sU8rQyCRvCuEC/eBhflXg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,205,1719903600"; 
-   d="scan'208";a="65872768"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2024 07:17:10 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1smDIH-00000005Q4X-3aq6;
-	Thu, 05 Sep 2024 17:17:05 +0300
-Date: Thu, 5 Sep 2024 17:17:05 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Derek Barbosa <debarbos@redhat.com>
-Subject: Re: [PATCH tty-next v1 0/2] convert 8250 to nbcon
-Message-ID: <Ztm9YYFpCDh18u_Q@smile.fi.intel.com>
-References: <20240905134719.142554-1-john.ogness@linutronix.de>
- <2024090554-mating-humiliate-292b@gregkh>
- <87cyli2nqo.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="WlNkXtMW"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 48597n0o023730;
+	Thu, 5 Sep 2024 14:15:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	PqmjsGtsdH0pPKX2Ec8nWXjou6CnajA32b/jszhvD/A=; b=WlNkXtMWL4A/p4gj
+	eimNBRrtTjZB9Z3WhjPtgq1cOmqEOBOy9PFERhTZm8vBWYo+/y1qbK/qlITSK7AP
+	1MbuDlf18GTjDMQCXuHnyhpELUbgX4LdZr7qIjTb/U2ztsyGxTLPdG+Pn4ldtncz
+	Kjw8NQwKzDlnrwdht/A+gvm85rLbq35s2CTkyrnMMpPB/9Gj8/+Nm3i9vBMLH3Dd
+	XKrZJ+X9mYfuO5svrt9X3UFhMqef5HPpXpOQ+FEUd1cQc3gagvjfUAqANWUPwNdN
+	xc5aJx0QKGkJJe1JmhdkYbgHyUH5sAT9KqFIm/iYS+hJk2KpBry/loFskPu/NKjW
+	h6/sAw==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41f86ks3da-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Sep 2024 14:15:53 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 485EFq25019533
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 5 Sep 2024 14:15:52 GMT
+Received: from [10.110.102.234] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 5 Sep 2024
+ 07:15:48 -0700
+Message-ID: <4896510e-6e97-44e0-b3d7-7a7230f935ec@quicinc.com>
+Date: Thu, 5 Sep 2024 07:15:48 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87cyli2nqo.fsf@jogness.linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
+To: Krzysztof Kozlowski <krzk@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-17-quic_nkela@quicinc.com>
+ <sdxhnqvdbcpmbp3l7hcnsrducpa5zrgbmkykwfluhrthqhznxi@6i4xiqrre3qg>
+ <b369bd73-ce2f-4373-8172-82c0cca53793@quicinc.com>
+ <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+ <516f17e6-b4b4-4f88-a39f-cc47a507716a@quicinc.com>
+ <2f11f622-1a00-4558-bde9-4871cdc3d1a6@lunn.ch>
+ <204f5cfe-d1ed-40dc-9175-d45f72395361@quicinc.com>
+ <70c75241-b6f1-4e61-8451-26839ec71317@kernel.org>
+ <75768451-4c85-41fa-82b0-8847a118ea0a@quicinc.com>
+ <ce4d6ea9-0ba7-4587-b4a7-3dcb2d6bb1a6@kernel.org>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <ce4d6ea9-0ba7-4587-b4a7-3dcb2d6bb1a6@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: mwTkK25Wdk3u_xGDqOaQj7Oc4I2DLIkL
+X-Proofpoint-ORIG-GUID: mwTkK25Wdk3u_xGDqOaQj7Oc4I2DLIkL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-05_09,2024-09-04_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
+ priorityscore=1501 clxscore=1015 bulkscore=0 phishscore=0 impostorscore=0
+ malwarescore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2407110000 definitions=main-2409050106
 
-On Thu, Sep 05, 2024 at 04:18:31PM +0206, John Ogness wrote:
-> On 2024-09-05, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Sep 05, 2024 at 03:53:17PM +0206, John Ogness wrote:
-> >> The recent printk rework introduced a new type of console NBCON
-> >> that will perform printing via a dedicated kthread during
-> >> normal operation. For times when the kthread is not available
-> >> (early boot, panic, reboot/shutdown) the NBCON console will
-> >> print directly from the printk() calling context (even if from
-> >> NMI).
-> >> 
-> >> Futher details about NBCON consoles are available here [0].
-> >
-> > Really?  That link calls them "NOBKL", is that the same thing?
-> 
-> Sorry. Yes, they are the same thing. It was renamed because NOBKL did
-> not look nice.
-> 
-> NBCON stands for "No BKL Console".
 
-New Brave Console :-)
+On 9/5/2024 7:09 AM, Krzysztof Kozlowski wrote:
+> On 05/09/2024 16:03, Nikunj Kela wrote:
+>> On 9/5/2024 1:04 AM, Krzysztof Kozlowski wrote:
+>>> On 04/09/2024 23:06, Nikunj Kela wrote:
+>>>> On 9/4/2024 9:58 AM, Andrew Lunn wrote:
+>>>>>> Sorry, didn't realize SPI uses different subject format than other
+>>>>>> subsystems. Will fix in v3. Thanks
+>>>>> Each subsystem is free to use its own form. e.g for netdev you will
+>>>>> want the prefix [PATCH net-next v42] net: stmmac: dwmac-qcom-ethqos:
+>>>> of course they are! No one is disputing that.
+>>>>> This is another reason why you should be splitting these patches per
+>>>>> subsystem, and submitting both the DT bindings and the code changes as
+>>>>> a two patch patchset. You can then learn how each subsystem names its
+>>>>> patches.
+>>>> Qualcomm QUPs chips have serial engines that can be configured as
+>>>> UART/I2C/SPI so QUPs changes require to be pushed in one series for all
+>>>> 3 subsystems as they all are dependent.
+>>> No, they are not dependent. They have never been. Look how all other
+>>> upstreaming process worked in the past.
+>> Top level QUP node(patch#18) includes i2c,spi,uart nodes.
+>> soc/qcom/qcom,geni-se.yaml validate those subnodes against respective
+>> yaml. The example that is added in YAML file for QUP node will not find
+>> sa8255p compatibles if all 4 yaml(qup, i2c, spi, serial nodes) are not
+>> included in the same series.
+>>
+> So where is the dependency? I don't see it. 
 
--- 
-With Best Regards,
-Andy Shevchenko
+Ok, what is your suggestion on dt-schema check failure in that case as I
+mentioned above? Shall we remove examples from yaml that we added?
 
 
+> Anyway, if you insist,
+> provide reasons why this should be the only one patchset - from all
+> SoCs, all companies, all developers - getting an exception from standard
+> merging practice and from explicit rule about driver change. See
+> submitting bindings.
+>
+> This was re-iterated over and over, but you keep claiming you need some
+> sort of special treatment. If so, please provide arguments WHY this
+> requires special treatment and *all* other contributions are fine with it.
+>
+> Best regards,
+> Krzysztof
+>
