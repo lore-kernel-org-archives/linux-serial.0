@@ -1,138 +1,110 @@
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BB11D174E
-	for <linux-serial@vger.kernel.org>; Fri,  6 Sep 2024 15:47:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF717322A;
+	Fri,  6 Sep 2024 16:38:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725637678; cv=none; b=dYzDvO3rlNUK9ujP3nuu3gcJ2pplWzRMLWQRXtHCg3wZEHV1Z/TBnmFjufJ3MsVnxggFlmvGx44/k7oqF+dS3iiVqhNf6IlNKYbuiVeJPfLgXyywSpCFWjapwxWgi1q8ZcQXZC22mbJmCrTRmTkmsb/rUAhiiuuE3OyxDBAsVZY=
+	t=1725640725; cv=none; b=kCoP8bTPOfsVOUAe+1mSVdjiV9bNTDd++r4zu9CmAtQl6H1hpPQ78TXRFBYQjxhHvasacVYmqdKgdAHJrOMCrEjv//uzpnnknx5f3HHb7lTF1lCk5oxCg8oYdYPDrfLmmk8qK9SAfTy9gzC7NOoa1HlhtvE0klIHRVUS9ozWMEI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725637678; c=relaxed/simple;
-	bh=zp+DRchAoSH6nEhGn8NigH/AGNYz0sJ/vBoXvNGXq6s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DAoPpjC7tbLGFZYw1s07kLhqTprieBOPEKvzOzfL0NBxhUgOzpEyNI+/w1wZcBWWafH2xUhot5SMc/qEWJpe7yQuBRVAu5GoNABvVSgvmIQbPRpd7rHZFKZyRFdl9GHslDT4vJf7UWvWLQsAgHVqB+q10Wmi/5Q0i3SkOLte49g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=BforSi7k; arc=none smtp.client-ip=209.85.222.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
+	s=arc-20240116; t=1725640725; c=relaxed/simple;
+	bh=EVXGKS/uxt51tIPPDnBiy6DdU2jtxhk4BVroQW+5DYg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ejA3uQQBhwXZeWYzCifOoRFOJotOruqQQ4TeX8ba6W3OBnF223GYf31Ob2lzCepg/DrvMUroRsqFNLB1kEdGLgACSVUCECLKXtrGgqOHrhTcPuu1djVrCQnxLc0fieRd6rn+ut19k71TDqVO2L5glNxlTou/7exAmWCBcIvmEsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=igYUXDYw; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=WLS4Dywb; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="BforSi7k"
-Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-846c36009d5so619114241.2
-        for <linux-serial@vger.kernel.org>; Fri, 06 Sep 2024 08:47:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore.com; s=google; t=1725637674; x=1726242474; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bhSj9nfZOKGx2oI8Vgr1Z2YFtbWDQo0OdEcOMXGBUVQ=;
-        b=BforSi7k9socR64Te/cpapTn6yC0bYcbN3Sfzw/xTTMSFDrrNJOrW3NKVtJDXi3VfC
-         Zdp4DusPrRw4KlUACysbWt/CCNZ6TjMUPnYa1x12BMyTMm/M0e7Im6erF9YMbIO2IA13
-         +zBR3l7GHLCtnPQ/ySbCofJUlFWf9djWDIELjC4emJTJq+2ihklhinrQF+lYuRyQ11sl
-         yBfVTnMQ5ffdww5Gf1sAL1NXeKHUZwBkFNHQg6jHXO0kXNNeiOko2Faw6mBoao3LXvWZ
-         PaPWPN8fzjtffqPymGsZ2aanuDpdSkR2i+aF9dkP0WrJVt6qKJUDEWwAzBO/1bBgtT7N
-         Nl/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725637674; x=1726242474;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bhSj9nfZOKGx2oI8Vgr1Z2YFtbWDQo0OdEcOMXGBUVQ=;
-        b=e5Ai7FDSj5gFIZqWSo8MClddBw2F+xkmMA6jWJtFwki9nRGHvmiBzJLAZl5EVPIPPd
-         fYvga9SvbGizu/e+8z1r/oUUz+aL4gf5RbTAooTBXrLdP0BzFD/BeOkhrsVVZihnh6Zr
-         hVeqx+t0w/wm2aTWTLDRk1hsxUJ7cYO3od6+pWFqaTy9TPh2M5zzKlcnoHbVf2PpT5ms
-         lEBVfNhsI20pnMQ7GwdgrecO+BVAwVVgWXnYQOSOcE+iWzdCLbQaloSswqxe0eYAyVq5
-         c285sx6QL+nqWLrVc1+6MJ7mNxAykf4yMi2PuC87wJiXPZhUADe1e19NRvlg1yYQ4a5r
-         AwyQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWFgXtR1qPRg232OsqW5zNtbK66d0aC+2vYYwYYP0UVgURdC/K514xFN7PI3WqyjyffhWs15zke2S3uZLs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx7518uIPrOoJKwpFL5Y9EJKtnZhn3FVlAt217rZpobwCLbWM7i
-	wVF3ARSzsEVCHUefXAWVX0nw8ptdOQ8ALI1n9YMGvzN+1XIpqcptPfeXVslyuWlgm9W5jTGCxDi
-	EQrUlbTyFUgpp9PJ39y4Skai3uG/zY7ngf6Cs
-X-Google-Smtp-Source: AGHT+IF7X3uC600GKPCYXtrk3rXSJ/jRYK/ecUEv0Py5v9ieqTUOC1FYqsUcW+C1Bf7xEBaWosXwVByWGbyAX14C8rg=
-X-Received: by 2002:a05:6122:1e16:b0:501:2a26:8ccf with SMTP id
- 71dfb90a1353d-502141df589mr3197102e0c.6.1725637673925; Fri, 06 Sep 2024
- 08:47:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="igYUXDYw";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="WLS4Dywb"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1725640721;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=CGiT4D1DjJgDJ5qLla1WpeUu1+Lo0Y6C/CY5nSBo2fU=;
+	b=igYUXDYw3SubawcwO3B/0i+ObngZKPllAsHDzG5hzd44EKAZF4PPr9QbbCgKo61MEFZHVo
+	MjJnRkUimLXi1u7+utA6uS+snndQhro/Gt0dID/nO00k+HB4ckFrmAULNDUuRbBI1wANAl
+	0gte0UJ14sCet7dy+5mvfaLgXx/C+eaneJ87VWuOXR+NDzwCrZ8J272Lb6xkbPHOc9hrb5
+	mh7QOmK5aco6n9ejYkRW6d9QCPRsxREP920LmRCSzlyyhYr6QWy3iijhVQI844XbfG2/Ft
+	C2+wnCyyM+zE/43+Tf9ISQ22V/hBTKOE2VtFmqQaZF880tw4yGfsuUYbot/pYA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1725640721;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=CGiT4D1DjJgDJ5qLla1WpeUu1+Lo0Y6C/CY5nSBo2fU=;
+	b=WLS4DywbGrmj+3BtmzxTp9eqLlv60IlDdIsZo0uBjVTj0ZVB5NrBi/1JH0McT28I12/KhM
+	0g6BxowRDisnJaDQ==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
+ <tglx@linutronix.de>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
+ Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
+ <wsa+renesas@sang-engineering.com>
+Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
+In-Reply-To: <87mskkdhwd.fsf@jogness.linutronix.de>
+References: <20240905134719.142554-1-john.ogness@linutronix.de>
+ <20240905134719.142554-2-john.ogness@linutronix.de>
+ <Ztr3f8M2FaT2Rz1c@pathway.suse.cz> <87mskkdhwd.fsf@jogness.linutronix.de>
+Date: Fri, 06 Sep 2024 18:44:41 +0206
+Message-ID: <87jzfod9f2.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
- <20240906-macos-build-support-v2-7-06beff418848@samsung.com>
- <CAHC9VhQkstJ8Ox-T+FLU34s9U0gezRba6bMA-tUPs80u6sVh2g@mail.gmail.com> <CAK7LNAQytsDzaJfAJA0nL=KPjxj3DBCRLeuHUwgGDt8fTJ0fTQ@mail.gmail.com>
-In-Reply-To: <CAK7LNAQytsDzaJfAJA0nL=KPjxj3DBCRLeuHUwgGDt8fTJ0fTQ@mail.gmail.com>
-From: Paul Moore <paul@paul-moore.com>
-Date: Fri, 6 Sep 2024 11:47:43 -0400
-Message-ID: <CAHC9VhS19s9+F2LhagbpxTR6DZPu_A8FADmBw7+BdaFQ6vx=LQ@mail.gmail.com>
-Subject: Re: [PATCH v2 7/8] selinux: move genheaders to security/selinux/
-To: Masahiro Yamada <masahiroy@kernel.org>
-Cc: da.gomez@samsung.com, Nathan Chancellor <nathan@kernel.org>, 
-	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Stephen Smalley <stephen.smalley.work@gmail.com>, Ondrej Mosnacek <omosnace@redhat.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, 
-	Oliver Upton <oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, 
-	Suzuki K Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
-	Justin Stitt <justinstitt@google.com>, Simona Vetter <simona.vetter@ffwll.ch>, 
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
-	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
-	speakup@linux-speakup.org, selinux@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
-	linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Fri, Sep 6, 2024 at 11:37=E2=80=AFAM Masahiro Yamada <masahiroy@kernel.o=
-rg> wrote:
+On 2024-09-06, John Ogness <john.ogness@linutronix.de> wrote:
+>> Wait! This makes the rs485 consoles much less usable for debugging.
+>> They might have troubles to see the emergency and panic messages.
+>>
+>> Is this acceptable? Why?
 >
-> On Fri, Sep 6, 2024 at 11:54=E2=80=AFPM Paul Moore <paul@paul-moore.com> =
-wrote:
-> >
-> > On Fri, Sep 6, 2024 at 7:01=E2=80=AFAM Daniel Gomez via B4 Relay
-> > <devnull+da.gomez.samsung.com@kernel.org> wrote:
-> > >
-> > > From: Masahiro Yamada <masahiroy@kernel.org>
-> > >
-> > > This tool is only used in security/selinux/Makefile.
-> > >
-> > > There is no reason to keep it under scripts/.
-> > >
-> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > > ---
-> > >  scripts/remove-stale-files                                    | 3 ++=
-+
-> > >  scripts/selinux/Makefile                                      | 2 +-
-> > >  scripts/selinux/genheaders/.gitignore                         | 2 --
-> > >  scripts/selinux/genheaders/Makefile                           | 3 --=
--
-> > >  security/selinux/.gitignore                                   | 1 +
-> > >  security/selinux/Makefile                                     | 7 ++=
-+++--
-> > >  {scripts/selinux/genheaders =3D> security/selinux}/genheaders.c | 0
-> > >  7 files changed, 10 insertions(+), 8 deletions(-)
-> >
-> > Did you read my comments on your previous posting of this patch?  Here
-> > is a lore link in case you missed it or it was swallowed by your
-> > inbox:
-> >
-> > https://lore.kernel.org/selinux/3447459d08dd7ebb58972129cddf1c44@paul-m=
-oore.com
-> >
-> > Unless there is an serious need for this relocation, and I don't see
-> > one explicitly documented either in this patchset or the previous, I
-> > don't want to see this patch go upstream.
->
->
-> I commented on the previous thread.
+> It is not acceptable. I am looking into making the atomic part work for
+> RS485 as well.
 
-I already responded there.
+So there are 2 things _not_ supported by the write_atomic() callback:
 
---=20
-paul-moore.com
+1. RS485 mode. This is due to the need to start up TX for the
+write, which can lead to:
+
+up->rs485_start_tx()
+  serial8250_em485_start_tx()
+    serial8250_stop_rx()
+      serial8250_rpm_get()
+        pm_runtime_get_sync()
+          __pm_runtime_resume()
+            spin_lock_irqsave()
+
+Taking a spin lock is not safe from NMI and thus disqualifies this call
+chain for write_atomic().
+
+If UART_CAP_RPM is not set, the pm_runtime_get_sync() is avoided. So I
+could only disable atomic RS485 if UART_CAP_RPM is set. But the OMAP
+variant of the 8250 does set this capability.
+
+2. Modem control. This is due to waiting for inputs, which can lead to:
+
+serial8250_modem_status()
+  wake_up_interruptible()
+
+Performing wakes is not safe from scheduler or NMI and thus disqualifies
+this call chain for write_atomic().
+
+It would probably be acceptable to move serial8250_modem_status() into
+an irq_work.
+
+I would be grateful for any insights on how best to handle these 2
+issues if we want full write_atomic() support for all 8250 variants.
+
+John
