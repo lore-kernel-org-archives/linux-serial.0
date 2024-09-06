@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9A311CBE83;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E32531CC8B7;
 	Fri,  6 Sep 2024 11:01:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725620500; cv=none; b=INnRUU5XIr9yXyU4bxz04xFaZ67nhN8XeOvmn7Okw5PaTaI5tmJ0SW9XSKkO53d2IIvDsypdIpbT59O/+8MmSPVYLBWRatKa7fPeJadAjJF1TqlAcFrZxvTzgsXZVlIBNmSd6Wqcfsb+ZbplJA7zwXP0Ffplh9Hx8gwiP3Pv524=
+	t=1725620501; cv=none; b=BOQ5TRJRZxGG+Q1guW2J1c/uUaytfH4lJJFereYq1eRCW6O/b0O/HSUm0PqV2jZM7JceXlOX3aHWN/AKhIrUBc2s125gs4WOyjmOWuGt65Nhole52qQ/wfOCsYmRDaSOYS+HvsCo+ObA2xLVfRokqdMV+ZivprJoLJvktpDhhZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725620500; c=relaxed/simple;
-	bh=c3x0bnHapZyCsRyRYyC+LIZeB+J3ImlDAXTdLaX80xs=;
+	s=arc-20240116; t=1725620501; c=relaxed/simple;
+	bh=j5NLnKfLikKaiGUo55GPDDGSIhsaNwRaLqF2L4zGDA4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Tj+DNr+dJoezLT0glcqvtW5rqHppOnNLYiDWnOz7pngLnb5ehxP+2zbxvFZ11buqMuOvYHDMrrYB4tb3t702ySFQCO3Gdfkm3d27Z/0tfjT14sNekc2QnIlqXT6Tuo7B1/a0As9OvRbve3lWx9IqKrN2q9vj7UrrQMTM+1k3PoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=btJcAfy2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=MYw06OrS9uXW6ehxLFW4qHdT+kEEfuSFe9shsR2pFJp8ykek1ns9IxzdgWZ3CIiKrrbT1bIj/aPhL8P15wwT+v/2hkjK6waJA52bLL1Es1x8JO0yTEB9CmYMtt9lbaU/DdNjAI1b8X+7qET1gLxPXdsKCZ76EbYBrBkNQaINf0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ofC2lUFC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="btJcAfy2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3DFD2C4CED7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ofC2lUFC"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 77582C4CEC9;
 	Fri,  6 Sep 2024 11:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725620500;
-	bh=c3x0bnHapZyCsRyRYyC+LIZeB+J3ImlDAXTdLaX80xs=;
+	bh=j5NLnKfLikKaiGUo55GPDDGSIhsaNwRaLqF2L4zGDA4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=btJcAfy2qgqbbzAjf01oYt2H2oCyEH+vlSb9AqgkhlNPrxpmns232Sx4cuPfLwwjM
-	 hHbkAWRN13hCR7wXpO++PMYCsV5cAmp2hKrfplof8dSKh7FoKXzAG6WWDLti13Vfcz
-	 rmWqzNmPtFb7k3trfzp+b4JT4aoeWBJOSQ3Z5fM1b6PgHfTOLg5kT+IyYSup1Z4UgI
-	 uqKbdZwzV7o66NMqvBqHKW0NBqoXm1QoY7dHM4kzkuhX1aPkGPoSjT6F7dHGu+wOUT
-	 87PrKn1vC+Hq2JXEgbfPHChyYNK3Z19nJuPDZVUGAo4mBzIo6ScQ+HRTPA3L0AkgNQ
-	 N6bYnBjieudmQ==
+	b=ofC2lUFCD8SQtLyfB7aJIjTwQ6ja5bwved9nuqgSpT79j5V0G6XUrEwhu9truM66F
+	 nqsbT/i3hFYZhqoMi3e/ySHl7QjU4/8urc4JGoihR/NDAnDCAr2mnW3AlcSONXITaT
+	 +SOHHjXgj29mc5xaoOWm7MH2yyFX1yl/xKfduJHln0pDPsCu7Gd4o+dAq/WJlRLKC3
+	 b2I4DBReFYcqVAbG/EmPRM/SPLKpS5cBcUQx5L3KbnNuj/PQbLcsMFtT/ZBdKGbH5M
+	 L60B/guW873cfc6OHQU9pheA9ancfcDt6wu5AOju/SSMVxX64YAe2lOdrKvNvKcLSX
+	 UQSmNNUI50XPw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CA2CE7AFB;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDF6CE7AFB;
 	Fri,  6 Sep 2024 11:01:40 +0000 (UTC)
 From: Daniel Gomez via B4 Relay <devnull+da.gomez.samsung.com@kernel.org>
-Date: Fri, 06 Sep 2024 13:01:30 +0200
-Subject: [PATCH v2 3/8] drm/xe: xe_gen_wa_oob: fix
- program_invocation_short_name for macos
+Date: Fri, 06 Sep 2024 13:01:32 +0200
+Subject: [PATCH v2 5/8] scripts: add bee-headers support
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240906-macos-build-support-v2-3-06beff418848@samsung.com>
+Message-Id: <20240906-macos-build-support-v2-5-06beff418848@samsung.com>
 References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
 In-Reply-To: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
 To: Masahiro Yamada <masahiroy@kernel.org>, 
@@ -76,11 +75,11 @@ Cc: linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
  "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com, 
  Daniel Gomez <da.gomez@samsung.com>
 X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1725620498; l=1428;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1725620498; l=2346;
  i=da.gomez@samsung.com; s=20240621; h=from:subject:message-id;
- bh=x6LVlKYatdZUIjJiYp2s+9CbUoAxRcL8dRJGWqQIBj4=;
- b=BH4HpeG8hB04KMzAeLGkcCFK3N10hMq/U4+Vzh7fajdBsdql7CZEFfKmy7OI6MFwP2a4PKqq6
- h6W1X3yzs24B7Hn3G4bxlap2pj1Vdv/+pm0/KH5H8aSiskiYjxDyb27
+ bh=rO0S7maRhdJSc9tMl+lVEiGJtiOKRJnj+HrU4cPgHCc=;
+ b=al9Ec0NojpTaSaRwAcb8OIVZLwyagRzcfEeZfqwPN8DMD52+Ne1gNpwPCnObnF9pgxs9wkUwP
+ NXqHeNxIaZfBHXqgwlwsU3AuElhprb0HUA+oNzt4mxAdkffpup52ZyT
 X-Developer-Key: i=da.gomez@samsung.com; a=ed25519;
  pk=BqYk31UHkmv0WZShES6pIZcdmPPGay5LbzifAdZ2Ia4=
 X-Endpoint-Received: by B4 Relay for da.gomez@samsung.com/20240621 with
@@ -90,52 +89,56 @@ Reply-To: da.gomez@samsung.com
 
 From: Daniel Gomez <da.gomez@samsung.com>
 
-Use getprogname() [1] instead of program_invocation_short_name() [2]
-for macOS hosts.
+endian.h header is not provided by default in macOS. Use pkg-config with
+the new development package 'bee-headers' [1] to find the path where the
+headers are installed.
 
-[1]:
-https://www.gnu.org/software/gnulib/manual/html_node/
-program_005finvocation_005fshort_005fname.html
+[1] Bee Headers Project links:
+https://github.com/bee-headers/headers
+https://github.com/bee-headers/homebrew-bee-headers
 
-[2]:
-https://developer.apple.com/library/archive/documentation/System/
-Conceptual/ManPages_iPhoneOS/man3/getprogname.3.html
-
-Fixes build error for macOS hosts:
-
-drivers/gpu/drm/xe/xe_gen_wa_oob.c:34:3: error: use of
-undeclared identifier 'program_invocation_short_name'    34 |
-program_invocation_short_name);       |                 ^ 1 error
-generated.
+It requires to install bee-headers Homebrew Tap:
+  brew tap bee-headers/bee-headers
+  brew install bee-headers/bee-headers/bee-headers
 
 Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
 ---
- drivers/gpu/drm/xe/xe_gen_wa_oob.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ scripts/Makefile     | 4 +++-
+ scripts/mod/Makefile | 5 +++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-index 904cf47925aa..0d933644d8a0 100644
---- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-+++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-@@ -8,6 +8,7 @@
- #include <errno.h>
- #include <stdbool.h>
- #include <stdio.h>
-+#include <stdlib.h>
- #include <string.h>
+diff --git a/scripts/Makefile b/scripts/Makefile
+index 6bcda4b9d054..40f6a9159f8c 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -25,8 +25,10 @@ generate_rust_target-rust := y
+ rustdoc_test_builder-rust := y
+ rustdoc_test_gen-rust := y
  
- #define HEADER \
-@@ -30,6 +31,9 @@
+-HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
++HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include \
++	$(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
+ HOSTLDLIBS_sorttable = -lpthread
++HOSTCFLAGS_insert-sys-cert.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
+ HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+ HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
+ HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
+index 75c12c045f21..33bb032039ba 100644
+--- a/scripts/mod/Makefile
++++ b/scripts/mod/Makefile
+@@ -9,6 +9,11 @@ modpost-objs	:= modpost.o file2alias.o sumversion.o symsearch.o
+ devicetable-offsets-file := devicetable-offsets.h
  
- static void print_usage(FILE *f)
- {
-+#ifdef __APPLE__
-+	const char *program_invocation_short_name = getprogname();
-+#endif
- 	fprintf(f, "usage: %s <input-rule-file> <generated-c-source-file> <generated-c-header-file>\n",
- 		program_invocation_short_name);
- }
+ HOSTCFLAGS_file2alias.o += -D_UUID_T -D__GETHOSTUUID_H
++HOSTCFLAGS_modpost.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
++HOSTCFLAGS_file2alias.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
++HOSTCFLAGS_sumversion.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
++HOSTCFLAGS_symsearch.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
++HOSTCFLAGS_mk_elfconfig.o = $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
+ 
+ $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
+ 	$(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
 
 -- 
 2.46.0
