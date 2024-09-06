@@ -1,129 +1,179 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 406551D27B5;
-	Fri,  6 Sep 2024 13:35:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6914B1DFEF;
+	Fri,  6 Sep 2024 14:03:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725629735; cv=none; b=eOP5DohnyxiBvXqAmx3AtU3h/vWt32+95dvvUQsqyfVm7U1V6pVAgNusxmttZMc0AwWaPfkCvvm9X/ihFpCTnbdvcJtddvjuugAqZ04s2Guy8eGZWnyBFPGBZ09JgKwb96Tbcit0pO9CJR5A3VnQP3r19NS6vmZ4iIxIPgtDDd4=
+	t=1725631380; cv=none; b=ioo9vOuQOeA02TJIZlkRAybA5W8qxnNju0QwYOLBlx1ErzpMWW5j9skbf2DEubG2M2kVStw4xTgeRjFJb4YKQ8GEBCS5z12SMfyIC8S9ltx90H6cI65X+Zemi31aAanWZnSyFR2BHjc6rnsKXKvkFt/32+o3Kw3chXZ5Ds6uaV4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725629735; c=relaxed/simple;
-	bh=KT1UWBeJCZyaYe1ARP8SSElfIfCgLk9cDNxklEkXu6A=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Ih8hVtXdQZKYpD8JTsj6X8sh9OBy4ffJnMs/z1FJm+IKZwB9BWeEM/BvyDgjpwr2/HTZlzPaaZbKChejBIn1kHaKm5+VmJaF1IJw2RCLcnmz+2DV13ZSFEs0qiUPUm/KwtSqGtMZ6yB3hlyNip/be2Sok63kslog47E3gFyAhO0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OpCDsoBo; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0H2W7ryt; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1725631380; c=relaxed/simple;
+	bh=OO0AElYeEOI3GYdUWGdnaZhtFPRBNB1P+5L7lTeyPbM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=c8kHObeHvRJwYlW/zcZOo8hSdYE5ziiCfAJHcK/OwTEFSaJlBtNLpjP/Z5VzojSVD2PrdXFGtBETCfHV6n0Wa1mOgUPs00kIAbwFqhkp7tJa5F6owdY46EsuaoDf14M+JH03DSikNHVRpQs0EX8o5YgrjYdZXYC7Cd+sVzfJReY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Sz4aCJLw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OpCDsoBo";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0H2W7ryt"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1725629731;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EBQ/CG5T/049lQPrktYqvc/FJ3lMexeBJgDccAp6KNk=;
-	b=OpCDsoBo7YYpL+uxCtzQjJQC9fHihaAbASwRudn4yjC4drrzJSf+12yCoIqQJPHva+yArb
-	Z/PD2xNatC3LTXohIrWejYsYz7z0rUve7XyTLSu65Ddh4ZZjlb1Cp3Y6lOKNZNGfbFzmRs
-	8pc3fmVttwzDoCGypizA257fWnYHEVAuTX48+oiDCQevKxZ+IhBFjEs7+P8CCTC8jVBHDQ
-	0VkLB7QIkiXDifTCpDBrjCKSEQuUDS16ZqGENFDjKu55BlntODKgfaA9P0bF0GOMLU0Mj2
-	q2V5ns27UCmP9H+VxeGUQuEr8hIWiHdnkr7VqO8/N2QOJDEBq3YBL5GLmO8RuQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1725629731;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EBQ/CG5T/049lQPrktYqvc/FJ3lMexeBJgDccAp6KNk=;
-	b=0H2W7rytLzilnNweNYsu8IV9YkKkmobeGnpzXj9d7v6s0RawvIaipIxE3mIQkED1Yv4yZh
-	tIkf/FmVyxC/azAA==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
- <tglx@linutronix.de>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
- "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
- Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
- <wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
-In-Reply-To: <Ztr3f8M2FaT2Rz1c@pathway.suse.cz>
-References: <20240905134719.142554-1-john.ogness@linutronix.de>
- <20240905134719.142554-2-john.ogness@linutronix.de>
- <Ztr3f8M2FaT2Rz1c@pathway.suse.cz>
-Date: Fri, 06 Sep 2024 15:41:30 +0206
-Message-ID: <87mskkdhwd.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Sz4aCJLw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC0B3C4CEDB;
+	Fri,  6 Sep 2024 14:02:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725631380;
+	bh=OO0AElYeEOI3GYdUWGdnaZhtFPRBNB1P+5L7lTeyPbM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=Sz4aCJLwKJW66WNHMDkSza870NQ+KuHtMUB6RKXaaLIyT1PzUcCXiU4mzUpny79nU
+	 9RplbKUfrE1rlSxsF91T3RDlDEHJHNzGEpu+bq8dJHmOg/KE1E7688DmmhB6r/d36v
+	 Po+T5dBXJSOte9a79XlrkMOnEIOkGVa/4SzIpjKS8DJP1jPgBpD5vxmRcWOET8glIH
+	 umA7qiJHYVFd9YlqX/PGB7Tc0duXENcecSQ7L5Iq1npTo1hNfbj8DQ/b3R1/wOu8/1
+	 oGn7Eql155UsBU542uxU8a6MmTKRggu3qO8gtRyI4zdZGy/jXPqRpD8LyQ/XuTWiD+
+	 iFqto7iQINTvA==
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2f64cc05564so23203451fa.2;
+        Fri, 06 Sep 2024 07:02:59 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUcyTjr4qcJExDR15b8kdJqoqiba+iHMn6vwkUejq7g2sh0F3QPrhC5hlTpljiQhga50SPd14H7ayXniUK6@vger.kernel.org, AJvYcCVyyJXzrVf+fH41mJ3McGYMY0qn8lLC8phzdl+hKy0Ygmf5u2064QvY/ZZkn+NM9C2RPLC20KiKEkBCWDI=@vger.kernel.org, AJvYcCWFQ2jQOkdCTdzIEchYzQ0UWnf/LLGQ0ZaBGc/jKYN2B0C+OavprhBwlOei7OOFX6vFNZO/Zu1+Rw==@vger.kernel.org, AJvYcCWLFYqI8o152ddt4ZQvaAWTOt3DMlIe/po5ZeiLjesfxK78pnYZqOmEX/PXzr7pVPfdeSuBiePnzscT5a2j@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx7aDJWYuSHihe15ou+V3MTX9ZkjxxttV3396aXYqJA0ZJXjlls
+	A2TcmEhDYCGunZA1LJri78R1xB6OiPikm96qlw5I5QFTK7O+N6htQS3cKE4TtFb+D/8lDcWQzu+
+	tbD2M8UMbONvjF3DIayreTlEk8tI=
+X-Google-Smtp-Source: AGHT+IHDPemzgtRgtIK3pe/WquzDZM64UIne/QjVdYwQNSINL5RkN2+H+MExlIZPV5kHOwbjtPDmzO7x05c0KOYPFxo=
+X-Received: by 2002:a2e:868d:0:b0:2f7:4df2:6a13 with SMTP id
+ 38308e7fff4ca-2f751f33229mr16214701fa.25.1725631378202; Fri, 06 Sep 2024
+ 07:02:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-4-06beff418848@samsung.com>
+In-Reply-To: <20240906-macos-build-support-v2-4-06beff418848@samsung.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Fri, 6 Sep 2024 23:02:21 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARTnJ10ABuD96U-MaYitnX3AF=GD+N-skH7VBfAmOw9RQ@mail.gmail.com>
+Message-ID: <CAK7LNARTnJ10ABuD96U-MaYitnX3AF=GD+N-skH7VBfAmOw9RQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/8] arm64: nvhe: add bee-headers support
+To: da.gomez@samsung.com
+Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
+	Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2024-09-06, Petr Mladek <pmladek@suse.com> wrote:
->> +#ifdef USE_SERIAL_8250_LEGACY_CONSOLE
+On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
 >
-> Just for record. I agree that it is better to simply remove the
-> obsolete legacy code.
-
-Agreed. I will be removing it for v2.
-
->> +#ifndef USE_SERIAL_8250_LEGACY_CONSOLE
->> +	if (uart_console(&p->port)) {
->> +		dev_warn(p->port.dev, "no atomic printing for rs485 consoles\n");
->> +		p->port.cons->write_atomic = NULL;
->> +	}
+> From: Daniel Gomez <da.gomez@samsung.com>
 >
-> Wait! This makes the rs485 consoles much less usable for debugging.
-> They might have troubles to see the emergency and panic messages.
-> Or do I miss anything, please?
+> endian.h header is not provided by default in macOS. Use pkg-config with
+> the new development package 'bee-headers' [1] to find the path where the
+> headers are installed.
 >
-> Is this acceptable? Why?
-
-It is not acceptable. I am looking into making the atomic part work for
-RS485 as well. My main problem is testing since I will need to get my
-hands or real RS485 hardware.
-
->>  	wait_for_xmitr(up, UART_LSR_THRE);
->>  	serial_port_out(port, UART_TX, ch);
->> +
->> +	if (ch == '\n')
->> +		up->console_newline_needed = false;
->> +	else
->> +		up->console_newline_needed = true;
+> [1] Bee Headers Project links:
+> https://github.com/bee-headers/headers
+> https://github.com/bee-headers/homebrew-bee-headers
 >
-> I might be just dumb but this code confused me. I missed that the
-> variable was actually set after printing the character. I inverted
-> the logic in my head and it did not make sense.
+> It requires to install bee-headers Homebrew Tap:
 >
-> I vote for adding a comment. Or better make the code more
-> straightforward by renaming the variable and inverting the logic:
+>   brew tap bee-headers/bee-headers
+>   brew install bee-headers/bee-headers/bee-headers
 >
-> 	if (ch == '\n')
-> 		up->console_line_ended = true;
-> 	else
-> 		up->console_line_ended = false;
-
-OK. I will add a comment, rename the variable, and invert the logic.
-
->> +void serial8250_console_write_thread(struct uart_8250_port *up,
->> +				     struct nbcon_write_context *wctxt)
->> +{
->> +	struct uart_8250_em485 *em485 = up->em485;
->> +	struct uart_port *port = &up->port;
->> +	unsigned int ier;
->> +
->> +	touch_nmi_watchdog();
+> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> ---
+>  arch/arm64/kernel/pi/Makefile     | 1 +
+>  arch/arm64/kernel/vdso32/Makefile | 1 +
+>  arch/arm64/kvm/hyp/nvhe/Makefile  | 3 ++-
+>  3 files changed, 4 insertions(+), 1 deletion(-)
 >
-> This should not be needed in the write_thread() variant because
-> it allows to schedule after emitting one record.
+> diff --git a/arch/arm64/kernel/pi/Makefile b/arch/arm64/kernel/pi/Makefil=
+e
+> index 4d11a8c29181..259c9a45fba0 100644
+> --- a/arch/arm64/kernel/pi/Makefile
+> +++ b/arch/arm64/kernel/pi/Makefile
+> @@ -20,6 +20,7 @@ KBUILD_CFLAGS :=3D $(filter-out $(CC_FLAGS_SCS), $(KBUI=
+LD_CFLAGS))
+>  KBUILD_CFLAGS  :=3D $(filter-out $(CC_FLAGS_LTO), $(KBUILD_CFLAGS))
+>
+>  hostprogs      :=3D relacheck
+> +HOSTCFLAGS_relacheck.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-header=
+s 2> /dev/null)
+>
+>  quiet_cmd_piobjcopy =3D $(quiet_cmd_objcopy)
+>        cmd_piobjcopy =3D $(cmd_objcopy) && $(obj)/relacheck $(@) $(<)
+> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32=
+/Makefile
+> index 25a2cb6317f3..6cb8a04bd829 100644
+> --- a/arch/arm64/kernel/vdso32/Makefile
+> +++ b/arch/arm64/kernel/vdso32/Makefile
+> @@ -107,6 +107,7 @@ VDSO_LDFLAGS +=3D --orphan-handling=3D$(CONFIG_LD_ORP=
+HAN_WARN_LEVEL)
+>  # $(hostprogs) with $(obj)
+>  munge :=3D ../../../arm/vdso/vdsomunge
+>  hostprogs :=3D $(munge)
+> +HOSTCFLAGS_$(munge).o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-headers=
+ 2> /dev/null)
+>
+>  c-obj-vdso :=3D note.o
+>  c-obj-vdso-gettimeofday :=3D vgettimeofday.o
+> diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/M=
+akefile
+> index b43426a493df..d20a440b6964 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/Makefile
+> +++ b/arch/arm64/kvm/hyp/nvhe/Makefile
+> @@ -15,7 +15,8 @@ ccflags-y +=3D -fno-stack-protector     \
+>              $(DISABLE_STACKLEAK_PLUGIN)
+>
+>  hostprogs :=3D gen-hyprel
+> -HOST_EXTRACFLAGS +=3D -I$(objtree)/include
+> +HOST_EXTRACFLAGS +=3D -I$(objtree)/include \
+> +       $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
+>
+>  lib-objs :=3D clear_page.o copy_page.o memcpy.o memset.o
+>  lib-objs :=3D $(addprefix ../../../lib/, $(lib-objs))
+>
+> --
+> 2.46.0
+>
+>
 
-Agreed.
+NACK.
 
-Thanks.
+Developers working on Linux distributions have no interest
+in your homebrew setup.
 
-John
+For 99% of users, pkg-config does not do anything good.
+It is a waste of process forks.
+
+
+
+You need to do it outside.
+
+
+ $ HOSTCFLAGS=3D$(pkg-config --cflags bee-headers) make
+
+or
+
+ $ export HOSTCFLAGS=3D$(pkg-config --cflags bee-headers)
+ $ make
+
+
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
