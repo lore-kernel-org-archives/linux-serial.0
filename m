@@ -1,110 +1,140 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF717322A;
-	Fri,  6 Sep 2024 16:38:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475AE1B85CA;
+	Fri,  6 Sep 2024 18:39:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725640725; cv=none; b=kCoP8bTPOfsVOUAe+1mSVdjiV9bNTDd++r4zu9CmAtQl6H1hpPQ78TXRFBYQjxhHvasacVYmqdKgdAHJrOMCrEjv//uzpnnknx5f3HHb7lTF1lCk5oxCg8oYdYPDrfLmmk8qK9SAfTy9gzC7NOoa1HlhtvE0klIHRVUS9ozWMEI=
+	t=1725647944; cv=none; b=g7pP+3Ko4jnPkfwCcFiJ7HnLvdOoLyGPqNwXUNd1vU+s90i/DUC3a+RQT92kTxYAeg1PcfLIb7CQ9zAdV0AW+7j+0XsEePigFXSZkTAhVA6RdrOnT+gFEAjkCY1ld/OpMGFEUgUcyBpfQZO6Rqew3xhIh5cdUVEmQgEyXwPWwOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725640725; c=relaxed/simple;
-	bh=EVXGKS/uxt51tIPPDnBiy6DdU2jtxhk4BVroQW+5DYg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ejA3uQQBhwXZeWYzCifOoRFOJotOruqQQ4TeX8ba6W3OBnF223GYf31Ob2lzCepg/DrvMUroRsqFNLB1kEdGLgACSVUCECLKXtrGgqOHrhTcPuu1djVrCQnxLc0fieRd6rn+ut19k71TDqVO2L5glNxlTou/7exAmWCBcIvmEsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=igYUXDYw; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=WLS4Dywb; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1725647944; c=relaxed/simple;
+	bh=yPsiablW7v2+Y/1/4kVxtqn8UUHXMty+93REfIQpSBQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MM6DvaGP8S7lPGeBFO9tsSUkSd/UuAhi2RH71t7SHHzuY2qJ7KdmJT/XSp27h4Yc8eoCvkPst1dNi8efCfvPgPlBT4xFBPnPcTvsE96bBcqC8nexo1leYLcLAv7lxpoB0u3/HA9ZViBMGRvjJtTQ75e+pzjI0zWjv3LAgMzWSGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=xLzbyESs; arc=none smtp.client-ip=74.208.4.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="igYUXDYw";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="WLS4Dywb"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1725640721;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CGiT4D1DjJgDJ5qLla1WpeUu1+Lo0Y6C/CY5nSBo2fU=;
-	b=igYUXDYw3SubawcwO3B/0i+ObngZKPllAsHDzG5hzd44EKAZF4PPr9QbbCgKo61MEFZHVo
-	MjJnRkUimLXi1u7+utA6uS+snndQhro/Gt0dID/nO00k+HB4ckFrmAULNDUuRbBI1wANAl
-	0gte0UJ14sCet7dy+5mvfaLgXx/C+eaneJ87VWuOXR+NDzwCrZ8J272Lb6xkbPHOc9hrb5
-	mh7QOmK5aco6n9ejYkRW6d9QCPRsxREP920LmRCSzlyyhYr6QWy3iijhVQI844XbfG2/Ft
-	C2+wnCyyM+zE/43+Tf9ISQ22V/hBTKOE2VtFmqQaZF880tw4yGfsuUYbot/pYA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1725640721;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=CGiT4D1DjJgDJ5qLla1WpeUu1+Lo0Y6C/CY5nSBo2fU=;
-	b=WLS4DywbGrmj+3BtmzxTp9eqLlv60IlDdIsZo0uBjVTj0ZVB5NrBi/1JH0McT28I12/KhM
-	0g6BxowRDisnJaDQ==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
- <tglx@linutronix.de>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
- "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
- Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
- <wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
-In-Reply-To: <87mskkdhwd.fsf@jogness.linutronix.de>
-References: <20240905134719.142554-1-john.ogness@linutronix.de>
- <20240905134719.142554-2-john.ogness@linutronix.de>
- <Ztr3f8M2FaT2Rz1c@pathway.suse.cz> <87mskkdhwd.fsf@jogness.linutronix.de>
-Date: Fri, 06 Sep 2024 18:44:41 +0206
-Message-ID: <87jzfod9f2.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="xLzbyESs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1725647933; x=1726252733; i=parker@finest.io;
+	bh=XRDSTIIsV2NZmDdeOuh3im7vzjDEzcqFnqtO/PSkD5I=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=xLzbyESsukgkXcie6Q+n7AxrzZ3UgL9kAUfhFWoVj9VYaMe+MnCd4Rwhyayed2fI
+	 pCJx3QDGt4GAQlGtpYr3PejS/+jD2/tcg6vvCIF2ZW+eilu1YgqWGr7No1DegbZzm
+	 +6FX9duJP2oO1MO8LVNmtt6giGz0+79TVBwS+xFs1ZpUXt5LHQy7isUHyNTCb0RdH
+	 rqhas3p7wqsnPNmyPXGljKwRtUKwFxKs/PQS5jgOy4Sx+ARVJbSgzsxWdySbbsq7J
+	 XoAAM/qQlQibjA7mFM/BlBZjf9TtEv4Fres5hznxOrynp4nveAT16xo8XMg/zIpmK
+	 drn7vHJxW4nw6+M/ZQ==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MAxJS-1swZTN1Vi8-002Clm; Fri, 06 Sep 2024 20:38:53 +0200
+Date: Fri, 6 Sep 2024 14:38:51 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240906143851.21c97ef9@SWDEV2.connecttech.local>
+In-Reply-To: <ZtsU0nfAFssevmmz@smile.fi.intel.com>
+References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+	<20240503143303.15bf82bc@SWDEV2.connecttech.local>
+	<Ztr5u2wEt8VF1IdI@black.fi.intel.com>
+	<20240906095141.021318c8@SWDEV2.connecttech.local>
+	<ZtsQrFgH86AkKgPp@smile.fi.intel.com>
+	<20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
+	<ZtsU0nfAFssevmmz@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:iQB6M/+7TyKL2ZDIrzuiacTNDI+h/vhjuz60c6EJtZ0f11tHZRx
+ e6IHVpX0BKKu9uJOeMr2+6AbT/WiXWyz+A5aQGjzpgjLguJcLhBt7nxFOTpOXUEzc8Naq53
+ lB99kaG15QNNUnUDX2Y1hb3pWqOAy/JHyI9H+Hla++MtOaOk5oMEAlSrtqtMFHr+VDHjHb5
+ 6tF/SsDQ9g5Z6xZW0nJqA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:crcRF3cpUJY=;EC2i0H+YJ512p8UG9eiHglZOkoi
+ SNZYMtSpZS1oUA38Wq0GfHP8Y9+77E+1TUnZO8vOXkrEK9zvvj4ITr0TPyV+JBnNN1Necfw+r
+ RdjwKl8aNxwTftDBaMADCa7j3vKrGalAfM+s/O82fgI9wTuBQbT13ij1V5D9ambPELw8Vnxix
+ vRjXSnrqg+6L2X9kkPOxZgsnqrU8hCd2Hhx2YuS4yxxcbd+97Q6Vs1t7+/Y81KUqqKV7nsP+r
+ UYEPGBEzfgOshs0RfauoZXOj55uQKG0ziYRNysN4kx2X8iCO34ZRpYE9BkeSZXXDDjZ0OBYXd
+ KvxOV5VNs+bi8eaSNFIdlOAVGVfv/z1kEkbhU+YsnSe9Kw4XUftUUTYFod9CHmvliVSISkRi0
+ jKR43MejQW6g+ZzWG0KRgmdq3UCX6gfWbMbJxUYX5D28pY1rZ4lsf9TE8X8GuIu0PrcaQwV0i
+ fQWVnU3UqOyXo4bQuDagt2LF3Ay75/1n/gf9bQBNdpf4zUkMZoe9urEnrI1UdUM4OuaJf+u4u
+ F29ypmZX1lCHsqj1vtp2Wv/bVZw3RJthm0VTPwwgL1hBlkKyS2roYC2H1h7HKAuoIaqfV4MtY
+ vBAB6LPjNs3rqBDfoW+qgp7H9fDih0oFY3jtAQzjp5lcQcgpNkIoEgfHbf6n1QPV3RASDCXuZ
+ QgSZFSQ3Licp11gYB4+y2Qd1da+DrIyiys/5D6jv0iSiOrGx/AS+PzvDyermmzt+V6feEbrj+
+ tauLumOmUaIWA0Nw9zQj6PTe8hbePKxUQ==
 
-On 2024-09-06, John Ogness <john.ogness@linutronix.de> wrote:
->> Wait! This makes the rs485 consoles much less usable for debugging.
->> They might have troubles to see the emergency and panic messages.
->>
->> Is this acceptable? Why?
+On Fri, 6 Sep 2024 17:42:26 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> On Fri, Sep 06, 2024 at 10:33:54AM -0400, Parker Newman wrote:
+> > On Fri, 6 Sep 2024 17:24:44 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Fri, Sep 06, 2024 at 09:51:41AM -0400, Parker Newman wrote:
+> > > > On Fri, 6 Sep 2024 15:46:51 +0300
+> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrote:
 >
-> It is not acceptable. I am looking into making the atomic part work for
-> RS485 as well.
+> ...
+>
+> > > > > Sorry for blast from the past, but I have some instersting infor=
+mation
+> > > > > for you. We now have spi-gpio and 93c46 eeprom drivers available=
+ to be
+> > > > > used from others via software nodes, can you consider updating y=
+our code
+> > > > > to replace custom bitbanging along with r/w ops by the instantia=
+ting the
+> > > > > respective drivers?
+> > > >
+> > > > Hi Andy,
+> > > > The Exar UARTs don't actually use MPIO/GPIO for the EEPROM.
+> > > > They have a dedicated "EEPROM interface" which is accessed by the
+> > > > REGB (0x8E) register. It is a very simple bit-bang interface thoug=
+h,
+> > > > one bit per signal.
+> > > >
+> > > > I guess in theory I could either add  GPIO wrapper to toggle these=
+ bits
+> > > > and use the spi-gpio driver but I am not sure if that really impro=
+ves things?
+> > > > Maybe using the spi-bitbang driver directly is more appropriate?
+> > > > What do you think?
+> > >
+> > > Yes, spi-bitbang seems better in this case.
+> >
+> > I will try to make some time to implement this... Or if someone else f=
+rom the
+> > community wants to take this on in the mean time I am certainly happy =
+to test
+> > and help out!
+>
+> Sure, I shared this thought due to having lack of time to look myself,
+> but I prepared the above mentioned drivers to make them work in this cas=
+e.
+> (If you are curios, see the Git history for the last few releases with
+>  --author=3D"Andy Shevchenko")
+>
 
-So there are 2 things _not_ supported by the write_atomic() callback:
+Looking into it a bit more I think we could just use the eeprom_93cx6
+driver without any SPI layer. Just need to add simple register_read()
+and register_write() functions to read/write the REB register.
 
-1. RS485 mode. This is due to the need to start up TX for the
-write, which can lead to:
+That should be a pretty easy change to make, I can try to make that
+change soon unless anyone has any objections to that method?
 
-up->rs485_start_tx()
-  serial8250_em485_start_tx()
-    serial8250_stop_rx()
-      serial8250_rpm_get()
-        pm_runtime_get_sync()
-          __pm_runtime_resume()
-            spin_lock_irqsave()
-
-Taking a spin lock is not safe from NMI and thus disqualifies this call
-chain for write_atomic().
-
-If UART_CAP_RPM is not set, the pm_runtime_get_sync() is avoided. So I
-could only disable atomic RS485 if UART_CAP_RPM is set. But the OMAP
-variant of the 8250 does set this capability.
-
-2. Modem control. This is due to waiting for inputs, which can lead to:
-
-serial8250_modem_status()
-  wake_up_interruptible()
-
-Performing wakes is not safe from scheduler or NMI and thus disqualifies
-this call chain for write_atomic().
-
-It would probably be acceptable to move serial8250_modem_status() into
-an irq_work.
-
-I would be grateful for any insights on how best to handle these 2
-issues if we want full write_atomic() support for all 8250 variants.
-
-John
+Thanks,
+Parker
