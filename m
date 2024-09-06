@@ -1,83 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A41CD1CB152;
-	Fri,  6 Sep 2024 13:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 406551D27B5;
+	Fri,  6 Sep 2024 13:35:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725628973; cv=none; b=khT4RwTA6iKQVQO3DGz1evaUd9DktNDrcLSDLMZSuCVcWsosipYqLB7E+guiuSgnliKkFPBhfMOxw4q6zUZs1ri0AEt2imBgJw/yEKmZZOvuHAJVQOcR5Hqw5LlLBX809YxiTW7sqXP3ueB6jc1tl9+/aWyATjKDBrvG0lSiTA8=
+	t=1725629735; cv=none; b=eOP5DohnyxiBvXqAmx3AtU3h/vWt32+95dvvUQsqyfVm7U1V6pVAgNusxmttZMc0AwWaPfkCvvm9X/ihFpCTnbdvcJtddvjuugAqZ04s2Guy8eGZWnyBFPGBZ09JgKwb96Tbcit0pO9CJR5A3VnQP3r19NS6vmZ4iIxIPgtDDd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725628973; c=relaxed/simple;
-	bh=JDmBHPj1HrviHpsBth47Mh3SpMcphfBrini6DQfLS5g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SxmKcsrv36XJPBuIIFQvTMDNX/74Z+0EaduPWBjnT9n4Up51ulJv3cxIDFQKGoPTzGp0ZiGQYJtVAZ2EgtfraY6XKh3Ch/+uNrI/Z//nV+tRlre5i9QlDB8EmnoC/7c+6g4COyWTqqc55CLdwDKkuLGGgEOzAKeTwUfjsQtzI0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Epd3SEJr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725629735; c=relaxed/simple;
+	bh=KT1UWBeJCZyaYe1ARP8SSElfIfCgLk9cDNxklEkXu6A=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Ih8hVtXdQZKYpD8JTsj6X8sh9OBy4ffJnMs/z1FJm+IKZwB9BWeEM/BvyDgjpwr2/HTZlzPaaZbKChejBIn1kHaKm5+VmJaF1IJw2RCLcnmz+2DV13ZSFEs0qiUPUm/KwtSqGtMZ6yB3hlyNip/be2Sok63kslog47E3gFyAhO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OpCDsoBo; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0H2W7ryt; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Epd3SEJr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18811C4CEC5;
-	Fri,  6 Sep 2024 13:22:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725628973;
-	bh=JDmBHPj1HrviHpsBth47Mh3SpMcphfBrini6DQfLS5g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Epd3SEJrAmPTNU7JgpsG4qMf3SvOOVKQCYIzJd2v8fHp/7Pv427Q2IKQIwBnEXcsn
-	 GXBw8OpUrglc2cQ9xakivYLs0TbfopWWzeVo43yaR2UIiplTZorW7q6HhOOBF9qQDg
-	 9l5c4OYFqRV24EK/lj9rZ9D+psCqSkdOgCTRy7Qlxbua37EWAzRH9vMvlBIfDUqhw+
-	 /3hCOgPdFqxS0lizq6chMeWGIqB9tHaDroLYMGlTaj5M5Mr5WsFx/jwKea1fqzbWYl
-	 R3O7vlM/SYp79aeHUpBzX+uCv4s0z8EKQvzF5+xkZeRkBywKAN+f/84om1bfSEsx/R
-	 B1j6G7cwUNU8Q==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1smYvg-000000006Gj-45eo;
-	Fri, 06 Sep 2024 15:23:13 +0200
-Date: Fri, 6 Sep 2024 15:23:12 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Johan Hovold <johan+linaro@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	=?utf-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4=?= Prado <nfraprado@collabora.com>,
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/8] serial: qcom-geni: fix fifo polling timeout
-Message-ID: <ZtsCQL_-SzmSo6ik@hovoldconsulting.com>
-References: <20240902152451.862-1-johan+linaro@kernel.org>
- <20240902152451.862-2-johan+linaro@kernel.org>
- <CAD=FV=WDx69BqK2MmhOMfKdEUtExo1wWFMY_n3edQhSF7RoWzg@mail.gmail.com>
- <ZtlwTQNZTdyzBChw@hovoldconsulting.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OpCDsoBo";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0H2W7ryt"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1725629731;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=EBQ/CG5T/049lQPrktYqvc/FJ3lMexeBJgDccAp6KNk=;
+	b=OpCDsoBo7YYpL+uxCtzQjJQC9fHihaAbASwRudn4yjC4drrzJSf+12yCoIqQJPHva+yArb
+	Z/PD2xNatC3LTXohIrWejYsYz7z0rUve7XyTLSu65Ddh4ZZjlb1Cp3Y6lOKNZNGfbFzmRs
+	8pc3fmVttwzDoCGypizA257fWnYHEVAuTX48+oiDCQevKxZ+IhBFjEs7+P8CCTC8jVBHDQ
+	0VkLB7QIkiXDifTCpDBrjCKSEQuUDS16ZqGENFDjKu55BlntODKgfaA9P0bF0GOMLU0Mj2
+	q2V5ns27UCmP9H+VxeGUQuEr8hIWiHdnkr7VqO8/N2QOJDEBq3YBL5GLmO8RuQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1725629731;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=EBQ/CG5T/049lQPrktYqvc/FJ3lMexeBJgDccAp6KNk=;
+	b=0H2W7rytLzilnNweNYsu8IV9YkKkmobeGnpzXj9d7v6s0RawvIaipIxE3mIQkED1Yv4yZh
+	tIkf/FmVyxC/azAA==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
+ <tglx@linutronix.de>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
+ Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
+ <wsa+renesas@sang-engineering.com>
+Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
+In-Reply-To: <Ztr3f8M2FaT2Rz1c@pathway.suse.cz>
+References: <20240905134719.142554-1-john.ogness@linutronix.de>
+ <20240905134719.142554-2-john.ogness@linutronix.de>
+ <Ztr3f8M2FaT2Rz1c@pathway.suse.cz>
+Date: Fri, 06 Sep 2024 15:41:30 +0206
+Message-ID: <87mskkdhwd.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZtlwTQNZTdyzBChw@hovoldconsulting.com>
+Content-Type: text/plain
 
-On Thu, Sep 05, 2024 at 10:48:13AM +0200, Johan Hovold wrote:
-> On Wed, Sep 04, 2024 at 02:50:57PM -0700, Doug Anderson wrote:
+On 2024-09-06, Petr Mladek <pmladek@suse.com> wrote:
+>> +#ifdef USE_SERIAL_8250_LEGACY_CONSOLE
+>
+> Just for record. I agree that it is better to simply remove the
+> obsolete legacy code.
 
-> > How about this: we just change "uport->fifosize" to account for the 3
-> > extra words? So it can be:
-> > 
-> > ((port->tx_fifo_depth + 3) * port->tx_fifo_width) / BITS_PER_BYTE;
-> > 
-> > ...then the cache will be correct and everything will work out. What
-> > do you think?
-> 
-> I don't think uart_fifo_timeout traditionally accounts for the shift
-> register and we wait up to *twice* the time it takes to clear to fifo
-> anyway (in wait_until_sent). The intermediate register I found here
-> could perhaps be considered part of the fifo however.
-> 
-> I'll give this some more thought.
+Agreed. I will be removing it for v2.
 
-I decided to keep the fifo size as-is (e.g. as it is exported to user
-space) and only account for the shift and intermediate registers in the
-driver. I'm using the fifo size reported by the hardware to determine
-the timeout in v2.
+>> +#ifndef USE_SERIAL_8250_LEGACY_CONSOLE
+>> +	if (uart_console(&p->port)) {
+>> +		dev_warn(p->port.dev, "no atomic printing for rs485 consoles\n");
+>> +		p->port.cons->write_atomic = NULL;
+>> +	}
+>
+> Wait! This makes the rs485 consoles much less usable for debugging.
+> They might have troubles to see the emergency and panic messages.
+> Or do I miss anything, please?
+>
+> Is this acceptable? Why?
 
-Johan
+It is not acceptable. I am looking into making the atomic part work for
+RS485 as well. My main problem is testing since I will need to get my
+hands or real RS485 hardware.
+
+>>  	wait_for_xmitr(up, UART_LSR_THRE);
+>>  	serial_port_out(port, UART_TX, ch);
+>> +
+>> +	if (ch == '\n')
+>> +		up->console_newline_needed = false;
+>> +	else
+>> +		up->console_newline_needed = true;
+>
+> I might be just dumb but this code confused me. I missed that the
+> variable was actually set after printing the character. I inverted
+> the logic in my head and it did not make sense.
+>
+> I vote for adding a comment. Or better make the code more
+> straightforward by renaming the variable and inverting the logic:
+>
+> 	if (ch == '\n')
+> 		up->console_line_ended = true;
+> 	else
+> 		up->console_line_ended = false;
+
+OK. I will add a comment, rename the variable, and invert the logic.
+
+>> +void serial8250_console_write_thread(struct uart_8250_port *up,
+>> +				     struct nbcon_write_context *wctxt)
+>> +{
+>> +	struct uart_8250_em485 *em485 = up->em485;
+>> +	struct uart_port *port = &up->port;
+>> +	unsigned int ier;
+>> +
+>> +	touch_nmi_watchdog();
+>
+> This should not be needed in the write_thread() variant because
+> it allows to schedule after emitting one record.
+
+Agreed.
+
+Thanks.
+
+John
