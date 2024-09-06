@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42DD1CB338;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 132D71CBEBC;
 	Fri,  6 Sep 2024 13:14:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725628499; cv=none; b=ev13X39/l8iCJsmj+E8tcSWljffAHdH+Aps6hQ2DFJrP2R3YiCWGNjVbB7IqMFCt+8eYVkuLA7zsZxYNKnmGfSkFT9263/yDnQK68mAzVvZb+wLUe/0y68c5aeppe8LUCzDVKLM2+6P9IWkAT/CR3HYJzIBmBusNj2+Y3Dcbi6o=
+	t=1725628499; cv=none; b=b1eup7Gkl+eJ+IcAvNVbIldWyLkphcp/RN9hARYsSlkaVOaaew+RotiAnHwaF8N+I983hfCbSF0BD9b/0FVBkhJCHMISAvOnIVCJZtpETr23GOiMGi1BKunAVhOUi9KNbZd9KfRzTRD3NePu7Tf0TKsmqdqb/3lzu52gT1U8Yug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1725628499; c=relaxed/simple;
-	bh=jzmzh221r7xiN35RPxU6yR+iMWICSstY5MB6EHCIg1s=;
+	bh=uETuHjFu0CoXVLoeHxFZ1qxPWkCWtwZT2Bq3e+jgwPY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RB0kcOmmYU3fyxvdu7CiY3vtz4tyNaUBxMvPAZvAcBZbcqyrT6oqdJkmwfS3JScZMeJvCn3WW24VoccVHsMocrTHibAl6wTtybHiaVubNIEhCVWwAmaSm0+MNJUGua8hX9oh/kodsGHQZCUTulpCFUZHhs98MQp/7jKTI+Bt7lM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OSRA41e+; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=H5FHOeLGDWYDeEbt/3UaUuacvdrcK+WTwXiu47ONSLeGGt1brXACcHNFE7d9MGkT/nKuleB96jB8W88hjCr++st/Aj2wq7ZXZjTRUMa+bUQG0MpF9u5Cci0dH+EmMfjp0qK8vMcxwyK59hPleNTlCr1plnXPjXF0CiyxZNyyIyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iRUcpMXB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OSRA41e+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917B3C4AF0B;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iRUcpMXB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 964CEC4CEC8;
 	Fri,  6 Sep 2024 13:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725628498;
-	bh=jzmzh221r7xiN35RPxU6yR+iMWICSstY5MB6EHCIg1s=;
+	bh=uETuHjFu0CoXVLoeHxFZ1qxPWkCWtwZT2Bq3e+jgwPY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=OSRA41e+WdFeL9aqDxJ+XnYFBMHABYbz0raWr94PYVrYSA6Nmh2tOpAq8KdrjN049
-	 MuDZNv7S2PgLJ9nPBxralDLwTc9NL+8HPU606W61atOaY0z58UKf4+N4PLEAU00F7g
-	 EVVg7a/X0tScD8lZyoiBOgSGxHa6bho6lCAGNDKjj4AER/ftZsh9OO34Uo3gCb7cbZ
-	 R6E6KBHLuCb+eV+pkcIdCj/qphsiCgx4A8TB/4j5ZfwZch0t5ikWLPN7oE7W0uK93D
-	 cTls5JgMOpYlUFRnhutmFpP7MKzzzjP9VCsm+jrGNxgWj76fy8wY/JV0Xh1fji/kfY
-	 3zv0Q9WArHW0Q==
+	b=iRUcpMXBkDcFKCPXlsR5GkNyvCI+N3fqALSfXBIjJlfW2G098nyZXtKNkqD6d9VD0
+	 VmH81reDQYG0DhsaybwOuRweMn4s05sq+pxSY2GTwLyHmZSdsYDcJ+4MeddGOjDM55
+	 4SxHipI7VouaQnn5+oiSzkHb+YMlgUUVj1J8fZnRa5tp7PCjRkgHVn2lDvTTzHRO/X
+	 qjS98xS54X/aYH2eWbv898bNYDoTyw4MvFhs4BSB0sagTgfrG/Sr4UeTDjpVptI1jb
+	 kW2HmTelG4aW5BPod9WgYrxtWF+v7EMHa6HUKU9qVsEDqVZ0ZAOewdsrqN9wGAZlF4
+	 V8cPqtTC4xdTQ==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan+linaro@kernel.org>)
-	id 1smYo3-000000006Ac-0egf;
+	id 1smYo3-000000006Ak-20vh;
 	Fri, 06 Sep 2024 15:15:19 +0200
 From: Johan Hovold <johan+linaro@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -40,11 +40,11 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	linux-arm-msm@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan+linaro@kernel.org>,
-	stable@vger.kernel.org
-Subject: [PATCH v2 1/8] serial: qcom-geni: fix fifo polling timeout
-Date: Fri,  6 Sep 2024 15:13:29 +0200
-Message-ID: <20240906131336.23625-2-johan+linaro@kernel.org>
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH v2 5/8] serial: qcom-geni: introduce qcom_geni_serial_poll_bitfield()
+Date: Fri,  6 Sep 2024 15:13:33 +0200
+Message-ID: <20240906131336.23625-6-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.44.2
 In-Reply-To: <20240906131336.23625-1-johan+linaro@kernel.org>
 References: <20240906131336.23625-1-johan+linaro@kernel.org>
@@ -57,113 +57,59 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The qcom_geni_serial_poll_bit() can be used to wait for events like
-command completion and is supposed to wait for the time it takes to
-clear a full fifo before timing out.
+From: Douglas Anderson <dianders@chromium.org>
 
-As noted by Doug, the current implementation does not account for start,
-stop and parity bits when determining the timeout. The helper also does
-not currently account for the shift register and the two-word
-intermediate transfer register.
+With a small modification the qcom_geni_serial_poll_bit() function
+could be used to poll more than just a single bit. Let's generalize
+it. We'll make the qcom_geni_serial_poll_bit() into just a wrapper of
+the general function.
 
-A too short timeout can specifically lead to lost characters when
-waiting for a transfer to complete as the transfer is cancelled on
-timeout.
-
-Instead of determining the poll timeout on every call, store the fifo
-timeout when updating it in set_termios() and make sure to take the
-shift and intermediate registers into account. Note that serial core has
-already added a 20 ms margin to the fifo timeout.
-
-Also note that the current uart_fifo_timeout() interface does
-unnecessary calculations on every call and did not exist in earlier
-kernels so only store its result once. This facilitates backports too as
-earlier kernels can derive the timeout from uport->timeout, which has
-since been removed.
-
-Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
-Cc: stable@vger.kernel.org	# 4.17
-Reported-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Link: https://lore.kernel.org/r/20240610152420.v4.5.Ic6411eab8d9d37acc451705f583fb535cd6dadb2@changeid
 Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 31 +++++++++++++++------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ drivers/tty/serial/qcom_geni_serial.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 69a632fefc41..309c0bddf26a 100644
+index 54052c68555d..7bbd70c30620 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -124,7 +124,7 @@ struct qcom_geni_serial_port {
- 	dma_addr_t tx_dma_addr;
- 	dma_addr_t rx_dma_addr;
- 	bool setup;
--	unsigned int baud;
-+	unsigned long poll_timeout_us;
- 	unsigned long clk_rate;
- 	void *rx_buf;
- 	u32 loopback;
-@@ -270,22 +270,13 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+@@ -265,8 +265,8 @@ static bool qcom_geni_serial_secondary_active(struct uart_port *uport)
+ 	return readl(uport->membase + SE_GENI_STATUS) & S_GENI_CMD_ACTIVE;
+ }
+ 
+-static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+-				      unsigned int offset, u32 field, bool set)
++static bool qcom_geni_serial_poll_bitfield(struct uart_port *uport,
++					   unsigned int offset, u32 field, u32 val)
  {
  	u32 reg;
  	struct qcom_geni_serial_port *port;
--	unsigned int baud;
--	unsigned int fifo_bits;
- 	unsigned long timeout_us = 20000;
- 	struct qcom_geni_private_data *private_data = uport->private_data;
+@@ -286,7 +286,7 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+ 	timeout_us = DIV_ROUND_UP(timeout_us, 10) * 10;
+ 	while (timeout_us) {
+ 		reg = readl(uport->membase + offset);
+-		if ((bool)(reg & field) == set)
++		if ((reg & field) == val)
+ 			return true;
+ 		udelay(10);
+ 		timeout_us -= 10;
+@@ -294,6 +294,12 @@ static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
+ 	return false;
+ }
  
- 	if (private_data->drv) {
- 		port = to_dev_port(uport);
--		baud = port->baud;
--		if (!baud)
--			baud = 115200;
--		fifo_bits = port->tx_fifo_depth * port->tx_fifo_width;
--		/*
--		 * Total polling iterations based on FIFO worth of bytes to be
--		 * sent at current baud. Add a little fluff to the wait.
--		 */
--		timeout_us = ((fifo_bits * USEC_PER_SEC) / baud) + 500;
-+		if (port->poll_timeout_us)
-+			timeout_us = port->poll_timeout_us;
- 	}
- 
- 	/*
-@@ -1244,11 +1235,11 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	unsigned long clk_rate;
- 	u32 ver, sampling_rate;
- 	unsigned int avg_bw_core;
-+	unsigned long timeout;
- 
- 	qcom_geni_serial_stop_rx(uport);
- 	/* baud rate */
- 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
--	port->baud = baud;
- 
- 	sampling_rate = UART_OVERSAMPLING;
- 	/* Sampling rate is halved for IP versions >= 2.5 */
-@@ -1326,9 +1317,21 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	else
- 		tx_trans_cfg |= UART_CTS_MASK;
- 
--	if (baud)
-+	if (baud) {
- 		uart_update_timeout(uport, termios->c_cflag, baud);
- 
-+		/*
-+		 * Make sure that qcom_geni_serial_poll_bitfield() waits for
-+		 * the FIFO, two-word intermediate transfer register and shift
-+		 * register to clear.
-+		 *
-+		 * Note that uart_fifo_timeout() also adds a 20 ms margin.
-+		 */
-+		timeout = jiffies_to_usecs(uart_fifo_timeout(uport));
-+		timeout += 3 * timeout / port->tx_fifo_depth;
-+		WRITE_ONCE(port->poll_timeout_us, timeout);
-+	}
++static bool qcom_geni_serial_poll_bit(struct uart_port *uport,
++				      unsigned int offset, u32 field, bool set)
++{
++	return qcom_geni_serial_poll_bitfield(uport, offset, field, set ? field : 0);
++}
 +
- 	if (!uart_console(uport))
- 		writel(port->loopback,
- 				uport->membase + SE_UART_LOOPBACK_CFG);
+ static void qcom_geni_serial_setup_tx(struct uart_port *uport, u32 xmit_size)
+ {
+ 	u32 m_cmd;
 -- 
 2.44.2
 
