@@ -1,118 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01501156880;
-	Fri,  6 Sep 2024 14:42:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E6801D1F4E
+	for <linux-serial@vger.kernel.org>; Fri,  6 Sep 2024 14:54:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725633753; cv=none; b=KzM7vm6f9tV5bMP/3bri5v7bEgmC93MA1OoL2y2U/IKwnKHbnWPGg1eO4/e7clTRNNAUaxQo9nim3c5DnmDKjRC0vr7MWtjBJZVXH1LE40u/F9JytSinonmsbNzn6ssBrJcP5BCAMz9/Zm8Q7vZyPqepYkwqUhIOu2F4Uetj2EY=
+	t=1725634471; cv=none; b=qklcFOkzEJJC8fNY+a6pzgift7iNMHCH8D5TrwrODIR8hTQE0iZ/JdFR+3sCU+gXZvOroRdJ0/ZGEZWrrSlW6AiWfibOTtn2jx2fy39BfqLbx1Yt1MTzzUt3o0YPmWe1WSPBwdrzoyrZZ+7jtou7IjmEm88y/NcDpWScPGTiNSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725633753; c=relaxed/simple;
-	bh=E/O01DYIOb9W9GaxJ+Y+3+N4ZJwxnWvEDblOXl2trIQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bkMXT3pCZg/TIGHon+4Cfp4ea0/UeY9IKwLzv/tspmRPKIRxXYRo6MuGeIiFqvC+CfOQ0KOClELSlNPimcr8GAzD6Agze0YHK3EMPgAGp1koE4Du3wxF13lZAJoSOky6oQ2JP9i2ex78Im5G9NmM6vPNTTDuMx6Rn/A+QuH28To=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DUesnVBa; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725634471; c=relaxed/simple;
+	bh=ClKhqxGbstKanb0/jRi/QInpRewdF+k/fJjdYaHj2XQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sQ6IAC+WBVdKWGI8aTqplNmawfKxCkFs2ESlnGX5azmcT3OdSHpJcumXoq4aGdhPexlw3TVF23IS0db9peS6SLFAoxKwcEzIkjQstxLG5oi82UAoU0Y7VdDWxa0xE6DurKmK/6OJehwo9ui5XABxMLpmKWaVogTq/6Hi4iUT6wc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=fyTRKZDd; arc=none smtp.client-ip=209.85.222.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DUesnVBa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725633752; x=1757169752;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=E/O01DYIOb9W9GaxJ+Y+3+N4ZJwxnWvEDblOXl2trIQ=;
-  b=DUesnVBapj+HxkVE9yFmtSjkTDb7CK4rgNDPaa/sMN5o4qEV2lcsfgrd
-   t2THZcJCf5I/q2Ls1CZH9rbW+3RBuA72UwwOvbZZFI2LaxIM+2sz3GL15
-   BdnnaYRnDsmpyq3NYmbAjosyNuMvwH+bK01NaGwL/pfO0TjcMFTZ4UHX8
-   VK5jWEbzqkfmSAOtG1KCqLERKAqBgyC7flUL24EJBo8emLkxjAmSewPxe
-   qM6VafO79QGdMch0b8rX43e5zeqAe3lNVlWEow1QBwY/2suSJyVFAlLwl
-   EReXW24HwvGy6ypG1BCDrACnarYnKXF/vg5kPzcgCA9i3qdjMigpeq2oU
-   w==;
-X-CSE-ConnectionGUID: 3ZlC6zpsQaSrSuQU2w85ig==
-X-CSE-MsgGUID: gmTkuDYNSeCOjqRCJmHuHA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11187"; a="24195842"
-X-IronPort-AV: E=Sophos;i="6.10,208,1719903600"; 
-   d="scan'208";a="24195842"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2024 07:42:31 -0700
-X-CSE-ConnectionGUID: +TavGMlyQtOrLMLAOCTpuQ==
-X-CSE-MsgGUID: 5eJj58oKRe2mkcdKtxrYng==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,208,1719903600"; 
-   d="scan'208";a="65787484"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2024 07:42:30 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1smaAN-00000005pdW-0nay;
-	Fri, 06 Sep 2024 17:42:27 +0300
-Date: Fri, 6 Sep 2024 17:42:26 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <ZtsU0nfAFssevmmz@smile.fi.intel.com>
-References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
- <20240503143303.15bf82bc@SWDEV2.connecttech.local>
- <Ztr5u2wEt8VF1IdI@black.fi.intel.com>
- <20240906095141.021318c8@SWDEV2.connecttech.local>
- <ZtsQrFgH86AkKgPp@smile.fi.intel.com>
- <20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
+	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="fyTRKZDd"
+Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-846c5c2a8e9so508969241.1
+        for <linux-serial@vger.kernel.org>; Fri, 06 Sep 2024 07:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore.com; s=google; t=1725634468; x=1726239268; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MsXB+HsGxSbnX/oa3Y2+uGuA8knOAtnaTuSxqQBTqAQ=;
+        b=fyTRKZDdogcCghBgrr3L2QcVm2pjXXgMB/bFbo5J+e75W8IXYV4QQYssaNn78zCVe2
+         wk5YDbQMQBfTgCHGDr9bVtJMobBYAyVrw0yOOzD7TzeVcylOspfYGxnYZPudGxraDKkG
+         MWvorXgrGeY+OFGVsfHeyvNGQQyCwoKvL07m5SgJDlSG1z12bU/77Qq4Idyj1n0H/kj4
+         hacGZ4R2R6PvnqGRDiJCq2/ozRFXeZoSD/SR3In+6deyYpln/B6YPqwF9fBG/84AOsDI
+         aHwC5Voca+x6s/0pI5Q1y9DiJuvRH3X/cI78g7gGdnWOIkuyRy3rbXuUNlrtrL4qq6ga
+         VV9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725634468; x=1726239268;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MsXB+HsGxSbnX/oa3Y2+uGuA8knOAtnaTuSxqQBTqAQ=;
+        b=lUp4ISP/08GTqqYBznea1ZTO7s/HRO7rt+5WrjVVpNEqIjKzLR4ShX7oftUOwraAhS
+         iFzJaTM2by7HOkFGPG69n5zgVYNvAhaYe1rqcy+GW7Eu4dGsXpgLT2OeYQIFNvPywlGg
+         kzx3QD6wTOuXDogangDWF5r+UprQSzDRiFPBQYoCQq5jb0f4hP2WsE05O8xAYSUxVlCy
+         avmVIXQqLBzNYvNkIk3WFGlF/u5HGkAEwGcr4cNL2mEkf+1DskjlxvRlMXrRPJGFxLfk
+         Zdf/nrRtPjIbTsAbrzYiRIe7Vu/AbbiYijimrxwb3XRrYvTe9/huFByzjdyCcHdYBIEc
+         RzLw==
+X-Forwarded-Encrypted: i=1; AJvYcCW62pPQSwU26UEvzsJCMI5iuWeAvKFhcvYurafPLBVnlDvd3vHMnWFjLYUSqQTYhgwcJJ9j5CHcf9+sMtI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzY4xTxbtkONBSuG7Deg7/aF+YGdASeQ+POJSIGB84cqO7+uhq0
+	m2ZWtI5DluYOuN1mibZRX8DoDlZ2g39sEobZ0juh1UV+Jelget+V3IwuPn7BahSiYFZbwoRZwLl
+	4AZKJKtvyRTqUUSPX2XrodTBzcGjSlDlngSpi
+X-Google-Smtp-Source: AGHT+IE2ETqS8j5INGhOJuEC0LfB5JoY7mno+WUbnlfQDVox+nEHO2zDE8qlvEGgTlm1b5qEJlJi4b2dA1AvozrG+1Y=
+X-Received: by 2002:a05:6122:318d:b0:4f6:c44b:2504 with SMTP id
+ 71dfb90a1353d-502143c9c06mr2840417e0c.10.1725634467954; Fri, 06 Sep 2024
+ 07:54:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-7-06beff418848@samsung.com>
+In-Reply-To: <20240906-macos-build-support-v2-7-06beff418848@samsung.com>
+From: Paul Moore <paul@paul-moore.com>
+Date: Fri, 6 Sep 2024 10:54:16 -0400
+Message-ID: <CAHC9VhQkstJ8Ox-T+FLU34s9U0gezRba6bMA-tUPs80u6sVh2g@mail.gmail.com>
+Subject: Re: [PATCH v2 7/8] selinux: move genheaders to security/selinux/
+To: da.gomez@samsung.com
+Cc: Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Stephen Smalley <stephen.smalley.work@gmail.com>, Ondrej Mosnacek <omosnace@redhat.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, 
+	Oliver Upton <oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, 
+	Suzuki K Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Nick Desaulniers <ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, 
+	Justin Stitt <justinstitt@google.com>, Simona Vetter <simona.vetter@ffwll.ch>, 
+	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
+	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org, 
+	speakup@linux-speakup.org, selinux@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 06, 2024 at 10:33:54AM -0400, Parker Newman wrote:
-> On Fri, 6 Sep 2024 17:24:44 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Fri, Sep 06, 2024 at 09:51:41AM -0400, Parker Newman wrote:
-> > > On Fri, 6 Sep 2024 15:46:51 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrote:
+On Fri, Sep 6, 2024 at 7:01=E2=80=AFAM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
+>
+> From: Masahiro Yamada <masahiroy@kernel.org>
+>
+> This tool is only used in security/selinux/Makefile.
+>
+> There is no reason to keep it under scripts/.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+>  scripts/remove-stale-files                                    | 3 +++
+>  scripts/selinux/Makefile                                      | 2 +-
+>  scripts/selinux/genheaders/.gitignore                         | 2 --
+>  scripts/selinux/genheaders/Makefile                           | 3 ---
+>  security/selinux/.gitignore                                   | 1 +
+>  security/selinux/Makefile                                     | 7 +++++-=
+-
+>  {scripts/selinux/genheaders =3D> security/selinux}/genheaders.c | 0
+>  7 files changed, 10 insertions(+), 8 deletions(-)
 
-...
+Did you read my comments on your previous posting of this patch?  Here
+is a lore link in case you missed it or it was swallowed by your
+inbox:
 
-> > > > Sorry for blast from the past, but I have some instersting information
-> > > > for you. We now have spi-gpio and 93c46 eeprom drivers available to be
-> > > > used from others via software nodes, can you consider updating your code
-> > > > to replace custom bitbanging along with r/w ops by the instantiating the
-> > > > respective drivers?
-> > >
-> > > Hi Andy,
-> > > The Exar UARTs don't actually use MPIO/GPIO for the EEPROM.
-> > > They have a dedicated "EEPROM interface" which is accessed by the
-> > > REGB (0x8E) register. It is a very simple bit-bang interface though,
-> > > one bit per signal.
-> > >
-> > > I guess in theory I could either add  GPIO wrapper to toggle these bits
-> > > and use the spi-gpio driver but I am not sure if that really improves things?
-> > > Maybe using the spi-bitbang driver directly is more appropriate?
-> > > What do you think?
-> >
-> > Yes, spi-bitbang seems better in this case.
-> 
-> I will try to make some time to implement this... Or if someone else from the
-> community wants to take this on in the mean time I am certainly happy to test
-> and help out!
+https://lore.kernel.org/selinux/3447459d08dd7ebb58972129cddf1c44@paul-moore=
+.com
 
-Sure, I shared this thought due to having lack of time to look myself,
-but I prepared the above mentioned drivers to make them work in this case.
-(If you are curios, see the Git history for the last few releases with
- --author="Andy Shevchenko")
+Unless there is an serious need for this relocation, and I don't see
+one explicitly documented either in this patchset or the previous, I
+don't want to see this patch go upstream.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=20
+paul-moore.com
