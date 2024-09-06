@@ -1,217 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F232156880;
-	Fri,  6 Sep 2024 14:39:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01501156880;
+	Fri,  6 Sep 2024 14:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725633599; cv=none; b=XgQOpy5dqZ5S/+ppwt0ynN0dy5hWMKCnnrYzmFoV5x+CemuRPJoyTEb6QnX+YtX9MberwZMPTYC6Bbxe2g1siHwbe1D6uEFTfLvE4Gs5V28p4udXIxRhASyNgSPJc9Rty5kvZEbhW2a9H6QswnhJZwIQhOl7bQBJ9wM9S0KO5Cc=
+	t=1725633753; cv=none; b=KzM7vm6f9tV5bMP/3bri5v7bEgmC93MA1OoL2y2U/IKwnKHbnWPGg1eO4/e7clTRNNAUaxQo9nim3c5DnmDKjRC0vr7MWtjBJZVXH1LE40u/F9JytSinonmsbNzn6ssBrJcP5BCAMz9/Zm8Q7vZyPqepYkwqUhIOu2F4Uetj2EY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725633599; c=relaxed/simple;
-	bh=rkekp7kqM0gCAalrU8ea199BED7ngZhFWZ9ZDGtHx3k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tqkrb2oRhk299QLIcN0C+sk+6TBbU6Qlx2DBGOUJr7URtHT0eQFAxstVbdkSuKRM2EiLQYAExM2rJj0EeGdWyiwPiwfkqWGU1d+9hp/r+yjUgcq1YnGjKn4/wZkAZrUeacCqtoSCnz6V2I+UraY6arBQk9m7izfcsy2A3cQi4l8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I7cl6zvY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725633753; c=relaxed/simple;
+	bh=E/O01DYIOb9W9GaxJ+Y+3+N4ZJwxnWvEDblOXl2trIQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bkMXT3pCZg/TIGHon+4Cfp4ea0/UeY9IKwLzv/tspmRPKIRxXYRo6MuGeIiFqvC+CfOQ0KOClELSlNPimcr8GAzD6Agze0YHK3EMPgAGp1koE4Du3wxF13lZAJoSOky6oQ2JP9i2ex78Im5G9NmM6vPNTTDuMx6Rn/A+QuH28To=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DUesnVBa; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I7cl6zvY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D26C4CEDA;
-	Fri,  6 Sep 2024 14:39:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725633596;
-	bh=rkekp7kqM0gCAalrU8ea199BED7ngZhFWZ9ZDGtHx3k=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=I7cl6zvYFJlUme26uJsip2QA6i0I+jgUU8x1ZBpuFST7iADtX6k0Y5N3HgonMY7N7
-	 6X7bCN3MU33QFTXdj5bjsEiDxoUIb1rbIz9WGvfiqjxFpe9Kl39vZFECdx/Uz2vD2B
-	 u5VTZWBu32j/gMhZvIDzDGNYQYzX5vI6vkta+HWWaTMF+98VNhaYIwqp06PqNEQOo1
-	 jv3EiVBU1vU3WZyl6atkTXR+tq9C8vpyhGXkPnjnqWVXySMfkJI1bSfwskMZYmUzGC
-	 Jzoj4DaWHtefTTcpdDUIeJr1JKVqkj77cgAxHoygdqw8uF1ihuAeHovIp0BQNS9xHO
-	 62WX0rTj2ctDQ==
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2f7528f4658so8436701fa.3;
-        Fri, 06 Sep 2024 07:39:56 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUlrXCeAauAasHPvwpVZJ/oe/pLOpBWJWQCjUGYuLNS5KBpJAkJhTIQmVN080HKwdOo/aap/nObCIC1WsfV@vger.kernel.org, AJvYcCVA/2N8EB9t6BZdaM9tLLJsWV2NNVq4fHSUmXYM+0DMtS7KYHOF+xS6KARZ28BBOcPwkEhZk2ZISQ==@vger.kernel.org, AJvYcCW5cfYUm5Lz+hsMmvLLtgK2GP/3aNSqzrlvh+iIAsolEGuDLYBexTynell3lageGYx4zw6bsbcEDw29WgWV@vger.kernel.org, AJvYcCWn07Dco3J4uTkJYnpi1wEvMWyLBmjc0ogMierwmSTyn+6j5XvxDaEt9CzaD8zdBtxf3WIF7D0A55NY9Lo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwIcgFixUqEjROnbRKTZZ+L2x3PcVprL0xNSsD8y+wreP1l41DY
-	hRAeF4i1GJw9D9rX2QM+2/QSz8J6J0ohW2ygFKxQ4N67ijDJAc6DhrRtq1b26+ytDbz1/RgLem5
-	3BrGtSpvZwiFhEXKUMRJSSKelctU=
-X-Google-Smtp-Source: AGHT+IGL4aTm6msajUBLkGuh4MV69E6msRZnTsKTajf+VgcUyXlt6LjNklxij0DqQwf4v9zWQkEvfMasw6vxEqRUj9Q=
-X-Received: by 2002:a05:6512:39ce:b0:536:54df:bff2 with SMTP id
- 2adb3069b0e04-53658812f84mr1931952e87.54.1725633595218; Fri, 06 Sep 2024
- 07:39:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DUesnVBa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1725633752; x=1757169752;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E/O01DYIOb9W9GaxJ+Y+3+N4ZJwxnWvEDblOXl2trIQ=;
+  b=DUesnVBapj+HxkVE9yFmtSjkTDb7CK4rgNDPaa/sMN5o4qEV2lcsfgrd
+   t2THZcJCf5I/q2Ls1CZH9rbW+3RBuA72UwwOvbZZFI2LaxIM+2sz3GL15
+   BdnnaYRnDsmpyq3NYmbAjosyNuMvwH+bK01NaGwL/pfO0TjcMFTZ4UHX8
+   VK5jWEbzqkfmSAOtG1KCqLERKAqBgyC7flUL24EJBo8emLkxjAmSewPxe
+   qM6VafO79QGdMch0b8rX43e5zeqAe3lNVlWEow1QBwY/2suSJyVFAlLwl
+   EReXW24HwvGy6ypG1BCDrACnarYnKXF/vg5kPzcgCA9i3qdjMigpeq2oU
+   w==;
+X-CSE-ConnectionGUID: 3ZlC6zpsQaSrSuQU2w85ig==
+X-CSE-MsgGUID: gmTkuDYNSeCOjqRCJmHuHA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11187"; a="24195842"
+X-IronPort-AV: E=Sophos;i="6.10,208,1719903600"; 
+   d="scan'208";a="24195842"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2024 07:42:31 -0700
+X-CSE-ConnectionGUID: +TavGMlyQtOrLMLAOCTpuQ==
+X-CSE-MsgGUID: 5eJj58oKRe2mkcdKtxrYng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,208,1719903600"; 
+   d="scan'208";a="65787484"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2024 07:42:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1smaAN-00000005pdW-0nay;
+	Fri, 06 Sep 2024 17:42:27 +0300
+Date: Fri, 6 Sep 2024 17:42:26 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Parker Newman <parker@finest.io>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <ZtsU0nfAFssevmmz@smile.fi.intel.com>
+References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+ <20240503143303.15bf82bc@SWDEV2.connecttech.local>
+ <Ztr5u2wEt8VF1IdI@black.fi.intel.com>
+ <20240906095141.021318c8@SWDEV2.connecttech.local>
+ <ZtsQrFgH86AkKgPp@smile.fi.intel.com>
+ <20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-3-06beff418848@samsung.com>
-In-Reply-To: <20240906-macos-build-support-v2-3-06beff418848@samsung.com>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Fri, 6 Sep 2024 23:39:18 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
-Message-ID: <CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
-Subject: Re: [PATCH v2 3/8] drm/xe: xe_gen_wa_oob: fix program_invocation_short_name
- for macos
-To: da.gomez@samsung.com
-Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
-	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
-<devnull+da.gomez.samsung.com@kernel.org> wrote:
->
-> From: Daniel Gomez <da.gomez@samsung.com>
->
-> Use getprogname() [1] instead of program_invocation_short_name() [2]
-> for macOS hosts.
->
-> [1]:
-> https://www.gnu.org/software/gnulib/manual/html_node/
-> program_005finvocation_005fshort_005fname.html
->
-> [2]:
-> https://developer.apple.com/library/archive/documentation/System/
-> Conceptual/ManPages_iPhoneOS/man3/getprogname.3.html
->
-> Fixes build error for macOS hosts:
->
-> drivers/gpu/drm/xe/xe_gen_wa_oob.c:34:3: error: use of
-> undeclared identifier 'program_invocation_short_name'    34 |
-> program_invocation_short_name);       |                 ^ 1 error
-> generated.
->
-> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-> Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
-> ---
->  drivers/gpu/drm/xe/xe_gen_wa_oob.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c b/drivers/gpu/drm/xe/xe_g=
-en_wa_oob.c
-> index 904cf47925aa..0d933644d8a0 100644
-> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> @@ -8,6 +8,7 @@
->  #include <errno.h>
->  #include <stdbool.h>
->  #include <stdio.h>
-> +#include <stdlib.h>
->  #include <string.h>
->
->  #define HEADER \
-> @@ -30,6 +31,9 @@
->
->  static void print_usage(FILE *f)
->  {
-> +#ifdef __APPLE__
-> +       const char *program_invocation_short_name =3D getprogname();
-> +#endif
->         fprintf(f, "usage: %s <input-rule-file> <generated-c-source-file>=
- <generated-c-header-file>\n",
->                 program_invocation_short_name);
->  }
->
-> --
-> 2.46.0
->
->
+On Fri, Sep 06, 2024 at 10:33:54AM -0400, Parker Newman wrote:
+> On Fri, 6 Sep 2024 17:24:44 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Fri, Sep 06, 2024 at 09:51:41AM -0400, Parker Newman wrote:
+> > > On Fri, 6 Sep 2024 15:46:51 +0300
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrote:
+
+...
+
+> > > > Sorry for blast from the past, but I have some instersting information
+> > > > for you. We now have spi-gpio and 93c46 eeprom drivers available to be
+> > > > used from others via software nodes, can you consider updating your code
+> > > > to replace custom bitbanging along with r/w ops by the instantiating the
+> > > > respective drivers?
+> > >
+> > > Hi Andy,
+> > > The Exar UARTs don't actually use MPIO/GPIO for the EEPROM.
+> > > They have a dedicated "EEPROM interface" which is accessed by the
+> > > REGB (0x8E) register. It is a very simple bit-bang interface though,
+> > > one bit per signal.
+> > >
+> > > I guess in theory I could either add  GPIO wrapper to toggle these bits
+> > > and use the spi-gpio driver but I am not sure if that really improves things?
+> > > Maybe using the spi-bitbang driver directly is more appropriate?
+> > > What do you think?
+> >
+> > Yes, spi-bitbang seems better in this case.
+> 
+> I will try to make some time to implement this... Or if someone else from the
+> community wants to take this on in the mean time I am certainly happy to test
+> and help out!
+
+Sure, I shared this thought due to having lack of time to look myself,
+but I prepared the above mentioned drivers to make them work in this case.
+(If you are curios, see the Git history for the last few releases with
+ --author="Andy Shevchenko")
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-
-Before adding such #ifdef, you should check how other programs do.
-
-
-
-
-
-
-
-
-
-Solution 1 : hard-code the program name
-
-
-diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-index 106ee2b027f0..9e9a29e2cecf 100644
---- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-+++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-@@ -30,8 +30,7 @@
-
- static void print_usage(FILE *f)
- {
--       fprintf(f, "usage: %s <input-rule-file>
-<generated-c-source-file> <generated-c-header-file>\n",
--               program_invocation_short_name);
-+       fprintf(f, "usage: xe_gen_wa_oob <input-rule-file>
-<generated-c-source-file> <generated-c-header-file>\n");
- }
-
- static void print_parse_error(const char *err_msg, const char *line,
-
-
-
-
-
-
-
-
-Solution 2: use argv[0]
-
-
-diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-index 106ee2b027f0..600c63e88e46 100644
---- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-+++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-@@ -28,10 +28,10 @@
-        "\n" \
-        "#endif\n"
-
--static void print_usage(FILE *f)
-+static void print_usage(FILE *f, const char *progname)
- {
-        fprintf(f, "usage: %s <input-rule-file>
-<generated-c-source-file> <generated-c-header-file>\n",
--               program_invocation_short_name);
-+               progname);
- }
-
- static void print_parse_error(const char *err_msg, const char *line,
-@@ -136,7 +136,7 @@ int main(int argc, const char *argv[])
-
-        if (argc < 3) {
-                fprintf(stderr, "ERROR: wrong arguments\n");
--               print_usage(stderr);
-+               print_usage(stderr, argv[0]);
-                return 1;
-        }
-
-
-
-
-
-
-
-
---=20
-Best Regards
-Masahiro Yamada
