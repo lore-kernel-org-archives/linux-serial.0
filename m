@@ -1,33 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48CE01CEAB5;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A2B1CEABC;
 	Fri,  6 Sep 2024 13:14:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725628499; cv=none; b=V2+7dsUlN9gWMHfXKANyFZErucg4s4eFqbbkWjynktt6jvabDUgmL4b0QMD5qxohfAUP/y/O58VInAyVkrL+lmzjahNoiZkcJBz4kuIkl/oFMiALJv/WL8Fgs8suDeAEFtCdatoFq04kzJown0VhTMLEDseue4M2RIGHEtcuU8Y=
+	t=1725628499; cv=none; b=U3wblq7D5gb470Ahko7jWNWV+ze0MMq6/o8dOi+z/UNCfo8lzbcukACgDBtQy7xoVL8fl+MA9DgEi3CT3uVJMmI/5A1JnTdXS8I1v3x0ThGoVXI5ZEuBN/43/CHd3VeMpu0AgsL+cNzjOmTxcW76V6v8O72HcsaRaEqXWkW/0Hc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1725628499; c=relaxed/simple;
-	bh=/MSmBe/YFSZf6t5Cgd2TYXBoOQQtu13KM1KOhOLJX7k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=aN0Wt8LCEqwa8LK2ABYvRSWgdzxzibBGxpT8G6/VEKql8vummb2EpHDX5TLWsQFoTE416/IVsI7XmF9OckwBP3j4ZubzkCCjErnRfeIEWXbELl/P+ACQCyfszwe/bALcYTS540auLwLbSuglE3Amha74/gONhhSL45NzbaVrtrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iVexM4QK; arc=none smtp.client-ip=10.30.226.201
+	bh=GDQOGSpitpZi51yoXPlIy1fHyV3RNsflRSIpWdUHojs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SU33NqEg6ms3u5r4amLYXxiF3N6MhQxcZg4JGv4kIU54Bs661+Gs5AmF82v20R7NvNTXG+28wvUwsjBAyBxKJRIJp10z1V4siHPQ+YTwfJOLmQv7gOXsmsYTFTagnsSXnEfgcSNLQaFy4AOptyUyTc0SK6GAffIeLAsOwGYSm+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bq5Cmu35; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iVexM4QK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E69C4CEC9;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bq5Cmu35"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4392C4CECD;
 	Fri,  6 Sep 2024 13:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1725628498;
-	bh=/MSmBe/YFSZf6t5Cgd2TYXBoOQQtu13KM1KOhOLJX7k=;
-	h=From:To:Cc:Subject:Date:From;
-	b=iVexM4QKRBgesXubBEfxNA5k2qdQ9HW7mdZ9xk3hGNoRZNCYb5VgGdRgR2zjfjTJT
-	 MBt/We3EIxVXnZEyzAaQL/29ZlBoxKulgd/hJ/vQuNmqaiFDRAjzpQekFuaOgNi4hK
-	 MPcbFfJdcZN7n+6kVJkczvAurYdGbLvZPRRl5yH5C9wWl9UChUCtuLQsiF9eQwfoyq
-	 kNoX7wsMVzMM988N7fk/IuA4jFdKZDzv4qgJw5CUVsT7j7m0d1iE/sdvnbAu6F8EWR
-	 Lacxf9YYNgoas7+yIuNYzcja1jXhHj/jYxVT3w0ibiyG4rVC5Nk3YzvT/haTo15AEk
-	 5icGBizZzfqYA==
+	bh=GDQOGSpitpZi51yoXPlIy1fHyV3RNsflRSIpWdUHojs=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Bq5Cmu35bzqwbyQCRRWRLSgGUGnBgwr874RRvmSLZGhDBKqEaMqpnjeZe+mngvDdl
+	 UwZ322fG3ET1JUWYspzmvU90Qi7jLoKcvE02ezvogUP7Zmr8KESzcewY2sQoXbgg35
+	 5QjSv9+ouXWZqacpXBBTz4uAPHjc2uS6HqG+/arq+Foi1LAOCFNgPkEfAuILvwlA6M
+	 f+hSiVDQiqC+Dwjth4qg3ycSILvPWjX8IXnj3XMOxhFDZIHfwr8XzHWhIchROANmZe
+	 rnnvmShP6fWzmltkwcdb7oxEhuV8Kc6NKPU9SqMGd3TUKOk2WGvF472iVKflWDmqL4
+	 Pjan+iRqL2zqw==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan+linaro@kernel.org>)
-	id 1smYo3-000000006Aa-0ABJ;
+	id 1smYo3-000000006Aq-2lPx;
 	Fri, 06 Sep 2024 15:15:19 +0200
 From: Johan Hovold <johan+linaro@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -40,10 +41,12 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v2 0/8] serial: qcom-geni: fix console corruption
-Date: Fri,  6 Sep 2024 15:13:28 +0200
-Message-ID: <20240906131336.23625-1-johan+linaro@kernel.org>
+Subject: [PATCH v2 7/8] serial: qcom-geni: disable interrupts during console writes
+Date: Fri,  6 Sep 2024 15:13:35 +0200
+Message-ID: <20240906131336.23625-8-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.44.2
+In-Reply-To: <20240906131336.23625-1-johan+linaro@kernel.org>
+References: <20240906131336.23625-1-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,38 +56,57 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This series is a follow-on series to the lockup fixes [1] that addresses
-a number of issues in the Qualcomm GENI console code, including corrupt
-console output during boot, which is a problem for automated CI testing.
+Disable the GENI interrupts during console writes to reduce the risk of
+having interrupt handlers spinning on the port lock on other cores for
+extended periods of time.
 
-Johan
+This can, for example, reduce the total amount of time spent in the
+interrupt handler during boot of the x1e80100 CRD by up to a factor nine
+(e.g. from 274 ms to 30 ms) while the worst case processing time drops
+from 19 ms to 8 ms.
 
-[1] https://lore.kernel.org/lkml/20240704101805.30612-1-johan+linaro@kernel.org/
+Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Changes in v2
- - determine poll timeout in set_termios() and avoid hard coding fifo
-   size in calculation
- - move fifo drain helper under console ifdef to avoid an unused function
-   warning as reported by the kernel test robot
- - drop a redundant active check from fifo drain helper
-
-
-Douglas Anderson (3):
-  soc: qcom: geni-se: add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
-  serial: qcom-geni: fix arg types for qcom_geni_serial_poll_bit()
-  serial: qcom-geni: introduce qcom_geni_serial_poll_bitfield()
-
-Johan Hovold (5):
-  serial: qcom-geni: fix fifo polling timeout
-  serial: qcom-geni: fix false console tx restart
-  serial: qcom-geni: fix console corruption
-  serial: qcom-geni: disable interrupts during console writes
-  serial: qcom-geni: fix polled console corruption
-
- drivers/tty/serial/qcom_geni_serial.c | 137 +++++++++++++++-----------
- include/linux/soc/qcom/geni-se.h      |   9 ++
- 2 files changed, 87 insertions(+), 59 deletions(-)
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index f8f6e9466b40..f23fd0ac3cfd 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -477,6 +477,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ {
+ 	struct uart_port *uport;
+ 	struct qcom_geni_serial_port *port;
++	u32 m_irq_en, s_irq_en;
+ 	bool locked = true;
+ 	unsigned long flags;
+ 
+@@ -492,6 +493,11 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 	else
+ 		uart_port_lock_irqsave(uport, &flags);
+ 
++	m_irq_en = readl(uport->membase + SE_GENI_M_IRQ_EN);
++	s_irq_en = readl(uport->membase + SE_GENI_S_IRQ_EN);
++	writel(0, uport->membase + SE_GENI_M_IRQ_EN);
++	writel(0, uport->membase + SE_GENI_S_IRQ_EN);
++
+ 	if (qcom_geni_serial_main_active(uport)) {
+ 		/* Wait for completion or drain FIFO */
+ 		if (!locked || port->tx_remaining == 0)
+@@ -504,6 +510,9 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 
+ 	__qcom_geni_serial_console_write(uport, s, count);
+ 
++	writel(m_irq_en, uport->membase + SE_GENI_M_IRQ_EN);
++	writel(s_irq_en, uport->membase + SE_GENI_S_IRQ_EN);
++
+ 	if (locked)
+ 		uart_port_unlock_irqrestore(uport, flags);
+ }
 -- 
 2.44.2
 
