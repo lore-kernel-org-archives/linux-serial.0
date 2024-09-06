@@ -1,103 +1,119 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202262745B;
-	Fri,  6 Sep 2024 12:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E428D1552FA;
+	Fri,  6 Sep 2024 13:14:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725626817; cv=none; b=CS3vbSR/w6kYPBARYTU6ySqHjKETenR8wuGBzv8//wnWoXg+g18Xn8Spu8gU92ExLPMeLbuxKjNUJvWnUu+U7hcSHPjaV49e/EBcNrzBcAw3/I4BT3RTYKxqueV9O0RY3DCfk7Zh5TOwsWFGb13qgqMK82RN5vH3TXUoGOnDkwU=
+	t=1725628499; cv=none; b=L/vlu+7RfrcQt4szig1uA5whmGFNc0o4RmHxIM3ljR1yKDmaJfodS+tgo+Jhl78e4oc/wF4bXaHxk+PhympfmRY43U5UJbN8C+dnYq0oW6WGFu980SV+Q3TCxkc4XabS+H+yd9WtrE0dboRn9CTdlSkuNU2Jg2UPf552lD++E7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725626817; c=relaxed/simple;
-	bh=/XZTcQNtG+IZxyO6e2tb51gbAtM2zivjLfErdoGLLDs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tTP4UdO9VdqXa6Ct5lBAd1kpBIaBe0mTrGLRLAUjak6eXYMrlKWz0cMHQynzMhrD8afxkIMqv2T50TXOFcjdcA/ckACCDMsrPrihKF62KltF/k8FG2i+2s0DfBazJdJmDNAnUmrIdOd/ba2cXfSPlEurp1zeaaag8EjSmNU6BjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZyqBRwd2; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1725628499; c=relaxed/simple;
+	bh=5fUaH2KILQJGIGQcOFDUoLlj/mM8Dq86b5IxB3kE0zo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F/tDZgRIzHIjylmzuQKDb9I72Z17df7T2d8oBUgXjM9QkYmoF+Xwtn2t/OFdxoMFSZ5pJUQ7Szwd3lowGxqmdyxtRemGmwYmcbScHcQSnIglcD0qep4hPzcCgI/S10lD4cIwYQ1itqSjkKjfiYzzm/dFG7EhT+6zmQNccRr/KDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AYAI+WSV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZyqBRwd2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1725626816; x=1757162816;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/XZTcQNtG+IZxyO6e2tb51gbAtM2zivjLfErdoGLLDs=;
-  b=ZyqBRwd2A+eMcIpyExrX5KBBdVLNBSEk0kz1qHUcNvSOwXB4/tZSYgiS
-   qjeB5ipcmhirPnlhCL32dKxzWSj5MFtxuWDYTXaN5sij+ii2V0Sqain1b
-   tD3Yllr4o2DLwuwqRxgM/LG33uYDP3N2CbP+qpsoTuMztt/3jMxnvPHlp
-   MyMIUDxIvZbfYcwaOAi+WViyDnmlbjcn7jlMEMCbotE3c9BMz+eBh7K44
-   6EYujfXUw0HiVLiojq1PUU2lNNCrqt9pkO/mdu/KXtUDHVNwEXDRXsRnN
-   55CU5FSppf3CFlj9pjC9i2MRe/6F+R08OUlJD2jcBYay5kWYrcG7ocRtD
-   A==;
-X-CSE-ConnectionGUID: Z6Kl5V7GQw+L3t9lqn7wqA==
-X-CSE-MsgGUID: mZZkp+vwQS6qMOqaBUmILg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11187"; a="34958716"
-X-IronPort-AV: E=Sophos;i="6.10,207,1719903600"; 
-   d="scan'208";a="34958716"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2024 05:46:55 -0700
-X-CSE-ConnectionGUID: SA/+jLtOTHK2rAbFnu0Jrg==
-X-CSE-MsgGUID: HFN8Du0ZQwKZZMAoDKWMiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,207,1719903600"; 
-   d="scan'208";a="65926319"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa009.jf.intel.com with ESMTP; 06 Sep 2024 05:46:53 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id BB76C1BE; Fri, 06 Sep 2024 15:46:51 +0300 (EEST)
-Date: Fri, 6 Sep 2024 15:46:51 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AYAI+WSV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DAA9C4CEC4;
+	Fri,  6 Sep 2024 13:14:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725628498;
+	bh=5fUaH2KILQJGIGQcOFDUoLlj/mM8Dq86b5IxB3kE0zo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=AYAI+WSVWf/7374y+wuTTM4G4aVA0YmqBWdZAhkJZBsqM/q97g8z5aFK0KZpll3Wd
+	 4F4VTKV6r9JliGfjiaALWZw/TjlXfeYeQnsxpSN8S7vLBLGwcfnYxqVHLrANvzGBmg
+	 1vP2hjYigawxTCyl9tuOWRa6x5wTjIoqRjhgK2l48FRaWIuImyFuCth/rzbdFi+HqF
+	 LWrK/QPw1zR7X8//QdeiTk6tlWDZ3Qk99hEQznT2Y4qDg4/cfsWI5d9PXHn5xm0CnB
+	 em44e1+BOgy/gdphqTUDRdEDFgrh3tdPU163Irn+akFxuTQ+oQ5Y7YK75tn3x9uZ83
+	 ycEj5MmHerOrQ==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan+linaro@kernel.org>)
+	id 1smYo3-000000006Ag-1JEG;
+	Fri, 06 Sep 2024 15:15:19 +0200
+From: Johan Hovold <johan+linaro@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	=?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= <nfraprado@collabora.com>,
+	linux-arm-msm@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
-Message-ID: <Ztr5u2wEt8VF1IdI@black.fi.intel.com>
-References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
- <20240503143303.15bf82bc@SWDEV2.connecttech.local>
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH v2 3/8] soc: qcom: geni-se: add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
+Date: Fri,  6 Sep 2024 15:13:31 +0200
+Message-ID: <20240906131336.23625-4-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.44.2
+In-Reply-To: <20240906131336.23625-1-johan+linaro@kernel.org>
+References: <20240906131336.23625-1-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240503143303.15bf82bc@SWDEV2.connecttech.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrote:
-> On Fri,  3 May 2024 20:15:52 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > After a rework for CONNTECH was done, the driver may need a bit of
-> > love in order to become less verbose (in terms of indentation and
-> > code duplication) and hence easier to read.
-> >
-> > This clean up series fixes a couple of (not so critical) issues and
-> > cleans up the recently added code. No functional change indented by
-> > the cleaning up part.
-> >
-> > Parker, please test this and give your formal Tested-by tag
-> > (you may do it by replying to this message if all patches are
-> >  successfully tested; more details about tags are available in
-> >  the Submitting Patches documentation).
-> 
-> I was able to test the Connect Tech related code and everything is
-> work as expected. I can't test the non-CTI related changes but they
-> are pretty minor.
-> 
-> Tested-by: Parker Newman <pnewman@connecttech.com>
+From: Douglas Anderson <dianders@chromium.org>
 
-Sorry for blast from the past, but I have some instersting information
-for you. We now have spi-gpio and 93c46 eeprom drivers available to be
-used from others via software nodes, can you consider updating your code
-to replace custom bitbanging along with r/w ops by the instantiating the
-respective drivers?
+For UART devices the M_GP_LENGTH is the TX word count. For other
+devices this is the transaction word count.
 
+For UART devices the S_GP_LENGTH is the RX word count.
+
+The IRQ_EN set/clear registers allow you to set or clear bits in the
+IRQ_EN register without needing a read-modify-write.
+
+Acked-by: Bjorn Andersson <andersson@kernel.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20240610152420.v4.1.Ife7ced506aef1be3158712aa3ff34a006b973559@changeid
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ include/linux/soc/qcom/geni-se.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
+index 0f038a1a0330..c3bca9c0bf2c 100644
+--- a/include/linux/soc/qcom/geni-se.h
++++ b/include/linux/soc/qcom/geni-se.h
+@@ -88,11 +88,15 @@ struct geni_se {
+ #define SE_GENI_M_IRQ_STATUS		0x610
+ #define SE_GENI_M_IRQ_EN		0x614
+ #define SE_GENI_M_IRQ_CLEAR		0x618
++#define SE_GENI_M_IRQ_EN_SET		0x61c
++#define SE_GENI_M_IRQ_EN_CLEAR		0x620
+ #define SE_GENI_S_CMD0			0x630
+ #define SE_GENI_S_CMD_CTRL_REG		0x634
+ #define SE_GENI_S_IRQ_STATUS		0x640
+ #define SE_GENI_S_IRQ_EN		0x644
+ #define SE_GENI_S_IRQ_CLEAR		0x648
++#define SE_GENI_S_IRQ_EN_SET		0x64c
++#define SE_GENI_S_IRQ_EN_CLEAR		0x650
+ #define SE_GENI_TX_FIFOn		0x700
+ #define SE_GENI_RX_FIFOn		0x780
+ #define SE_GENI_TX_FIFO_STATUS		0x800
+@@ -101,6 +105,8 @@ struct geni_se {
+ #define SE_GENI_RX_WATERMARK_REG	0x810
+ #define SE_GENI_RX_RFR_WATERMARK_REG	0x814
+ #define SE_GENI_IOS			0x908
++#define SE_GENI_M_GP_LENGTH		0x910
++#define SE_GENI_S_GP_LENGTH		0x914
+ #define SE_DMA_TX_IRQ_STAT		0xc40
+ #define SE_DMA_TX_IRQ_CLR		0xc44
+ #define SE_DMA_TX_FSM_RST		0xc58
+@@ -234,6 +240,9 @@ struct geni_se {
+ #define IO2_DATA_IN			BIT(1)
+ #define RX_DATA_IN			BIT(0)
+ 
++/* SE_GENI_M_GP_LENGTH and SE_GENI_S_GP_LENGTH fields */
++#define GP_LENGTH			GENMASK(31, 0)
++
+ /* SE_DMA_TX_IRQ_STAT Register fields */
+ #define TX_DMA_DONE			BIT(0)
+ #define TX_EOT				BIT(1)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.44.2
 
