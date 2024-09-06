@@ -1,154 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42EF91CE710;
-	Fri,  6 Sep 2024 14:03:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48699156F5F;
+	Fri,  6 Sep 2024 14:05:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725631400; cv=none; b=lipExuMDc8F+9uWwRie6TbU1zgfHqw5FbNq5nrSKAUU6//EvgMd0yM5AIAfRWyyjoSVovy5umS6sEgiYTWNN+Z9xlJbsXEqSHU1pSFcdkiGUU5aBlAKPFGcG9AxFEHFAt2FqtynRU+Ogc688XSJKsuCOHQ4quJrC/xrUbQFb9KQ=
+	t=1725631512; cv=none; b=QMMrtgx554trOeKGyxSsUD2HKWw3uFvI2pBtjRIH9+2/qL8nmO70psZhiW6XjIAeB+9yFIzIXBq7ml4DgGy0QIph6e5u3jRm8BcWghdcV8ZFD/d/9sMK13/jRLPudjaJhwna5PR3UAdTyQcsMt4A3CtDB6f3js1txuhaD/lCvFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725631400; c=relaxed/simple;
-	bh=cCvVFVarD948ikan+/2TaJVbsKjZAcxCYUNJAassXuo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OWd1PtOIHBGAnVjXZkqX/yTHbq4qk6YMIQDLl2d9dIxgejiMunr7oa2CFdF6KSNmHDZUZUyGRD8lp0ckbNNVBEhFgWDOxxqbvatNO85mncgwdAiJQob/NI7nUAdFeBEpYYQCjmGN3icHdX4A127mQYwWR9YhPDnsuLW0idaaa+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dyMY9vi+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725631512; c=relaxed/simple;
+	bh=qY3+B14GBIIFJBGWDvhJ6U35yjbaHf2wTguFXuxr7SI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Cfezocmev+TnAeVAn5BLZ3fcg3PNu4yc1M66ol8RDbnyDfhlenMI/O93OM7XUX9H9W8DKOug1K+VyOTOGamzYfQQiClGuGQxi1Mq7ZuLZaAoK0MXXk7C69a7ZEfiqisDHG5iCb/uRMbcCaKZvGpCsFUH51/cOFus3tiFRnLG4yk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=MKR5WGhj; arc=none smtp.client-ip=74.208.4.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dyMY9vi+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21929C4CED1;
-	Fri,  6 Sep 2024 14:03:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725631400;
-	bh=cCvVFVarD948ikan+/2TaJVbsKjZAcxCYUNJAassXuo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=dyMY9vi+Iv/1EE4rQ5BwnYhfwk66+LJ4z96MdbykYSppKKoQ6y3a0sNfUu/b88uyD
-	 CnMZ+ONw74z6CdB7oB6DTdO6H33Yg0CqFxIeKoXjlAeH7r+IeYZBwiBhKopg0VRDv1
-	 gzpGPqLViAnfIcvPs8ONYWfyESePiuh7ufuvViitOGQLxvTFW462hGXk6bbFU2yUaH
-	 L9ypC5UisZq5so1J2EZ4Zsx2oDa8QzGHtDF2R5KDWuQbRupAZrdUcRbDK0gOWrBwUd
-	 QfmUhasthbSt1k+8xvJ7JF5Ifym3SEZdnZdQXjE4OvCP9je+KurLddBgNN2nspGq59
-	 NazYJG1NuiiDw==
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5353cd2fa28so2454042e87.3;
-        Fri, 06 Sep 2024 07:03:20 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU9Ztj0X90dyL2yOZ5gj/wvCM65BvxCpNwyOknReamq75SMC2NkdqpJz56gX9j4NHxzZH+r7bge2MdgJasK@vger.kernel.org, AJvYcCVQ8UKofh5or87mhXLGx6p/fn9B/cNsUV7Ywbfsl5cwQ9krl2d9E1PeqmneWw+2fWv+TBULLAo1fzckXoQ=@vger.kernel.org, AJvYcCWSvbQVsS1kM+a+nQNiq5IN1aPl11nYq68EM11GPInmyu9cOYE1+WWXlIYKftPuH40OCXFZ/phmDQ==@vger.kernel.org, AJvYcCWwgkqSt084qNDp0FC7B1jEbyfM8OrWri/fU8DH47qjvcS3TIxg9b8nH0MN7dvMDcbYyrUMF23xodXeFVAT@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8eI12/qluUNH9CvjhpwrrPKz+LAUqXJ5FCymIGaDswDejbzpg
-	x4WpKNcTusFvZ9BkUQrTSYVvKM6Nu4uWr9KfYiVJv7yhawpGOKFVjKfqtbBt4tbw0v6Da2PFg5l
-	sCgt+U0XvogxbzofSD4wsElwkaH0=
-X-Google-Smtp-Source: AGHT+IEwm1OihzyduuH3GdpU3yiLq9gm3KuXayVrsg5BxQSVxVXk/rmKiVyZVYISmyKuN7IvBRI5rMb23e03P34iqD4=
-X-Received: by 2002:a05:6512:39ce:b0:536:54df:bff2 with SMTP id
- 2adb3069b0e04-53658812f84mr1830079e87.54.1725631398698; Fri, 06 Sep 2024
- 07:03:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="MKR5WGhj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1725631509; x=1726236309; i=parker@finest.io;
+	bh=FvEIc1kd/SLBsjKUr8msz1hzEsJdR3MUWGjJ7Yf9v9g=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=MKR5WGhjL9Nf8jW2jyUnJAzBz+tpt1akzFMjbHrBLnk/Ep9kJ1G7RxMPJTC3E9r8
+	 jEQctUcst3VPJDz+RvLpFdDgl0+T/6gmVkZzEZMekLEmNjXarFhRH2iPFQpVI9+H2
+	 Z9LMmlf9GKB8GV8QDlArYF9q819AwvBFujgfyKXjcmq5XqpTS12QmutTZYVuBBFXA
+	 WGr2SKXcsHsuzoffKE4pidCNQnBFcNOu1G61WXCIktcSQQKB2gyNRVowC6y+gULJm
+	 knIoogyhZ+el773Wb+jUc4apGo+PBqBLojCgyshx4UEA66DT1zO2umahxoD7Onk0b
+	 A5Bna6DLLE5YPtdTrA==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 1MVMmB-1se9gu3BLz-00WCPS; Fri, 06 Sep 2024 15:51:43 +0200
+Date: Fri, 6 Sep 2024 09:51:41 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240906095141.021318c8@SWDEV2.connecttech.local>
+In-Reply-To: <Ztr5u2wEt8VF1IdI@black.fi.intel.com>
+References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+	<20240503143303.15bf82bc@SWDEV2.connecttech.local>
+	<Ztr5u2wEt8VF1IdI@black.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-5-06beff418848@samsung.com>
-In-Reply-To: <20240906-macos-build-support-v2-5-06beff418848@samsung.com>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Fri, 6 Sep 2024 23:02:42 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQGuXzuA5tNSv0q_AMAy8Zw5MtG2RFRW0nQOwCO8Z5FLw@mail.gmail.com>
-Message-ID: <CAK7LNAQGuXzuA5tNSv0q_AMAy8Zw5MtG2RFRW0nQOwCO8Z5FLw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/8] scripts: add bee-headers support
-To: da.gomez@samsung.com
-Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
-	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:jbuEN7qYhKL+u2Q5zfcb9gO+afvs4U+drzVioJxQfRdsRZMzZty
+ D7SF1ssEeOrIpyKr8gnqKmh69Ia7D3CEeTEbNN2kqsJPmuBe03SD/imiKE6A+zDXwX4oTBF
+ XgQMiYtGYFvuDrRVepuDDkZisDroq6fuqMOzKyJmIUHmA0z/WxOC3G3p8fTKVcsgYdtmX/m
+ m8OhqiAtjuXNAV5iRLGfQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:Ff+vd29p42U=;IB2LxpD7UNZa4e86g5pLeO4pf0n
+ RewUk4kCCjf6U1bw6VgJS4MZhWy/RFAKia8hkkktbY5xZN6i2/5p3wNM+gcklurAvBxkQfhun
+ KgO5mu3PuEpQwRrCilZQYdBGbFTnn+pOL7cNjcjjPyzwhMkSKwXUwCF2AHCtQ9WsLpYw/wqDs
+ hqkzRpfvTajMYexm+bQ4lHA6Jcg36/42H3IsdYkB9uzX4cixI1jGkcskQyr03gwQKWrGOTVlD
+ nr42MucdiYBYaxLv6/uI5gv7hII+yC/QLRRoaXhi4vJq+66px7x9hHNyXAtnlaDCLYrfSSkTK
+ dAkYi+T7T699Si+NjImY/Ton3pzPgYzq2bXd88JKyq7hQT0h7EWdbyAIl1Jf/GxTI/uy2706I
+ ZrX4lUGytmCECbfWAq6jtkv8h23XZC4KbmT1srbCFlkezw2Iz5VACZkyoPvLvK9tHjYpq6tdL
+ RVzWmiqU/KeBgnj5xBYWLph9jzMGnjXIp3BrMn7N6XEfFwoKXozQvLyXVDqiAxQvSZCyuldzT
+ meVixa3/mvqUMn7kVIXrXh4Z0OFwpyCBOqUFsUZ0wSnPwWZ6ZRpcHp8/nuOhVCn8MlcRPB+R1
+ Y+IDfPUvuOsQp8mY4UqWcEeTWsVxLlDsurSp6oyOXe6ciLoSud46QudifgxGZlm8E2VuG9ieh
+ ARQ0fO8xgM/s1a/EmXV7UT9nNlV42bz97LSU6lcSDTYcnIX4NJN+EZ6BPhg9+p0ogKsnd3rAd
+ Qn9c+koHVweJKjnOlBs+qa+NQaSuL+A2g==
 
-On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
-<devnull+da.gomez.samsung.com@kernel.org> wrote:
+On Fri, 6 Sep 2024 15:46:51 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrote:
+> > On Fri,  3 May 2024 20:15:52 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > > After a rework for CONNTECH was done, the driver may need a bit of
+> > > love in order to become less verbose (in terms of indentation and
+> > > code duplication) and hence easier to read.
+> > >
+> > > This clean up series fixes a couple of (not so critical) issues and
+> > > cleans up the recently added code. No functional change indented by
+> > > the cleaning up part.
+> > >
+> > > Parker, please test this and give your formal Tested-by tag
+> > > (you may do it by replying to this message if all patches are
+> > >  successfully tested; more details about tags are available in
+> > >  the Submitting Patches documentation).
+> >
+> > I was able to test the Connect Tech related code and everything is
+> > work as expected. I can't test the non-CTI related changes but they
+> > are pretty minor.
+> >
+> > Tested-by: Parker Newman <pnewman@connecttech.com>
 >
-> From: Daniel Gomez <da.gomez@samsung.com>
+> Sorry for blast from the past, but I have some instersting information
+> for you. We now have spi-gpio and 93c46 eeprom drivers available to be
+> used from others via software nodes, can you consider updating your code
+> to replace custom bitbanging along with r/w ops by the instantiating the
+> respective drivers?
 >
-> endian.h header is not provided by default in macOS. Use pkg-config with
-> the new development package 'bee-headers' [1] to find the path where the
-> headers are installed.
->
-> [1] Bee Headers Project links:
-> https://github.com/bee-headers/headers
-> https://github.com/bee-headers/homebrew-bee-headers
->
-> It requires to install bee-headers Homebrew Tap:
->   brew tap bee-headers/bee-headers
->   brew install bee-headers/bee-headers/bee-headers
->
-> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-> ---
->  scripts/Makefile     | 4 +++-
->  scripts/mod/Makefile | 5 +++++
->  2 files changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/scripts/Makefile b/scripts/Makefile
-> index 6bcda4b9d054..40f6a9159f8c 100644
-> --- a/scripts/Makefile
-> +++ b/scripts/Makefile
-> @@ -25,8 +25,10 @@ generate_rust_target-rust :=3D y
->  rustdoc_test_builder-rust :=3D y
->  rustdoc_test_gen-rust :=3D y
->
-> -HOSTCFLAGS_sorttable.o =3D -I$(srctree)/tools/include
-> +HOSTCFLAGS_sorttable.o =3D -I$(srctree)/tools/include \
-> +       $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
->  HOSTLDLIBS_sorttable =3D -lpthread
-> +HOSTCFLAGS_insert-sys-cert.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-=
-headers 2> /dev/null)
->  HOSTCFLAGS_asn1_compiler.o =3D -I$(srctree)/include
->  HOSTCFLAGS_sign-file.o =3D $(shell $(HOSTPKG_CONFIG) --cflags libcrypto =
-2> /dev/null)
->  HOSTLDLIBS_sign-file =3D $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /=
-dev/null || echo -lcrypto)
-> diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
-> index 75c12c045f21..33bb032039ba 100644
-> --- a/scripts/mod/Makefile
-> +++ b/scripts/mod/Makefile
-> @@ -9,6 +9,11 @@ modpost-objs   :=3D modpost.o file2alias.o sumversion.o =
-symsearch.o
->  devicetable-offsets-file :=3D devicetable-offsets.h
->
->  HOSTCFLAGS_file2alias.o +=3D -D_UUID_T -D__GETHOSTUUID_H
-> +HOSTCFLAGS_modpost.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-headers =
-2> /dev/null)
-> +HOSTCFLAGS_file2alias.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-heade=
-rs 2> /dev/null)
-> +HOSTCFLAGS_sumversion.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-heade=
-rs 2> /dev/null)
-> +HOSTCFLAGS_symsearch.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-header=
-s 2> /dev/null)
-> +HOSTCFLAGS_mk_elfconfig.o =3D $(shell $(HOSTPKG_CONFIG) --cflags bee-hea=
-ders 2> /dev/null)
->
->  $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
->         $(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
 
+Hi Andy,
+The Exar UARTs don't actually use MPIO/GPIO for the EEPROM.
+They have a dedicated "EEPROM interface" which is accessed by the
+REGB (0x8E) register. It is a very simple bit-bang interface though,
+one bit per signal.
 
+I guess in theory I could either add  GPIO wrapper to toggle these bits
+and use the spi-gpio driver but I am not sure if that really improves thin=
+gs?
+Maybe using the spi-bitbang driver directly is more appropriate?
+What do you think?
 
-Same as 4/8.
-
-NACK.
-
-
-
-
---
-Best Regards
-
-Masahiro Yamada
+Thanks,
+Parker
