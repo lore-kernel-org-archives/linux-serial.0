@@ -1,160 +1,307 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB544166F1B;
-	Sat,  7 Sep 2024 20:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441F21684A8;
+	Sat,  7 Sep 2024 23:56:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725741550; cv=none; b=OgVFz7VK7IUj5e42dYd6tUqq0u5dzN1s6VsfSwTKT8oc2bQL0pYffeGNY6w8imhsbDhQKBSr90e7oPhCm9vEyvd0VLF7YXiebh+jDm9lTBV8e27TKS24RJjCzq6vL0L1ksBqQ/lx9rSb/qviIIoFK6VkQiFUI0qrVeipxUpmgs8=
+	t=1725753407; cv=none; b=JC13Dl0k3s/5+6luuK6GmxQMeieVQyG7b0YF9uHbYrs01aRORqwYArRTcp+0Zy50tBNQJIVm3xp9yL0k2Llx1dVh1gS+L2SAxcI09EaShrvDiR4qvk28zH+3hWJmtcwOXIORS92t48T13KEaXW1HcnU9w94BYvmY93rd+8PXj4k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725741550; c=relaxed/simple;
-	bh=+N1+FUrRZa71sZafK5gbpc6Aa+Nz4p1MbssVaSaRgRY=;
-	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
-	 Content-Type; b=cHKKwgT4pu/g1X15onuQ1IGlrgy1X/2TtCuH0ckZFrWbcFvSpMI+E5Gi0zCfJ3K60bCsDEqBUatKTQmp0XW9+c5swh0jVLzuU8umTOYAe3TKCbJlTno+S3eSkjLKurd8WoOcg3e7Efon25teQa2+Q7jkTkSQD2SWxySAb/tYj2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=DM7r0k9x; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=EREHzoYV; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1725753407; c=relaxed/simple;
+	bh=3+fttz6gFjJyl43MzULvKEFzXvtQ0BnzO8vK0ypOgmk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qC9YQGKvk8GTrRJhaluh2cSreXHBQ6ctZY8xho6iYiho77g9v/sm2BD71vqnBVOH2vpDBtqrRp/ggRoI2J0ljepUP7lD7Uup5G6Usj1r5VFZCSZ6zA9evD8vcA5LM+c76CBlJoNG9oq9tCJ2VhZZOQ4jYe9anbIsQHddKLeE64I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SibNPPI7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DM7r0k9x";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="EREHzoYV"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1725741540;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=Jxh1drwwzS4C1cbz9nF6aHf3luVAOBDNpQwoAG7I7c4=;
-	b=DM7r0k9x3tf8lSySlNhpsR7Z20SstxJQvsA1I8ztyyCtayKhwMpMVle3mfpx34vbk6l3I4
-	/pWMQq4EmfvZKkhePbDgxX//71JqjkelFgWX7SwUTqn0yCGm+h4Azj691o3VXgNYYq5Ftg
-	d8Nv3lU02j5B+tqvqbMABPIXT/ycgxdpZrPytglXSPgSa6R5TRbRYJFwDhf+n+T6GAT3ZO
-	T3hyQ7H4WQxPVv3mpBeSVgOajr0eCOrFfvFmMTyunOXFU4wVh4e4lIWjTWKtnBuHkYD28A
-	Axz2+9jdtwsmqmDf+qBlXts0m5NsnicmuiK/lj5jBi5bItw2a4EtZ5Kayk7/8w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1725741540;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=Jxh1drwwzS4C1cbz9nF6aHf3luVAOBDNpQwoAG7I7c4=;
-	b=EREHzoYVqrp07ut5+fQlDAXm2PTjZqXGWlzV0fWSP9LrtqJDuJ23b3xeYt6XrT587jPMgM
-	r400dpNZj9YIHzAg==
-To: John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Steven Rostedt <rostedt@goodmis.org>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
- "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
- Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
- <wsa+renesas@sang-engineering.com>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>
-Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
-In-Reply-To: <87jzfod9f2.fsf@jogness.linutronix.de>
-Date: Sat, 07 Sep 2024 22:39:00 +0200
-Message-ID: <8734mbdwrf.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SibNPPI7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977ECC4CED1;
+	Sat,  7 Sep 2024 23:56:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725753406;
+	bh=3+fttz6gFjJyl43MzULvKEFzXvtQ0BnzO8vK0ypOgmk=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=SibNPPI71xjK1aVr++eeCD/2bazAy/iYBPyysb5rRC2mHLZw3R/PX//k9Up/biD0L
+	 Sdl6BjlfU8OszbMxnPH927/wP+r8Pzdevh7mZYumlT0Wv1/hzTYZOAKH1kU3vxngaz
+	 bNK5UG2LrqHTNDxHsj/OpBB7iLGFwyhLPVm6voHKPa9KQnsPJyKubDU/llolAE8tyd
+	 qnzqPVgqd6JJD5C4Bhy4hwTHF8ZqiMDWJ7WyrC8zUj6qZyyY7+umgeB83vaqzDj5oq
+	 N+uMOqKu1EaTUnOrf/gSOdbWOMBGHj4R3WwDXjffhLDYaNh7THJSXkkpaurSw3OV3G
+	 Bq/I6AT6oSfSA==
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2f75f116d11so5657071fa.1;
+        Sat, 07 Sep 2024 16:56:46 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU7V2wcjYqJn+lP9dRH4KZ/CSO91qS5v6MchZc9pENBb8m95X+iK5+bSHUwkqN7kVIw6CDW5ZXxQFnEyoom@vger.kernel.org, AJvYcCVpuYj+UfxqT2XVxKw9bhq4xjOHRzEoYyNBQywNmWa+TvtUdALVjKAL2NExApf1cHaHTx6EEMvPWzZGFKtr@vger.kernel.org, AJvYcCVzyNKJPAibf96pRYDeESGb4j4BjinmZ38R6/AGaNkWgkqqXn90Fk/BfK5hMDSoRgIPHBJMvWFdrYTNOPE=@vger.kernel.org, AJvYcCXKMAgOcjGc40YAXLl17Kv7yDV8JdX5b2NGYpuTIsrjJQVENFJAPvo91MrOg02wRJyYRvkt+d6zJw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz4TPhlEKH5CBPZZsXpi5zyAKltoLVDvOytiqmAPpgck3CMZn44
+	qZyIec1jW8Nx8MTGm1WSFpIbw2TFEBI4xbypLZLCZtp9+zaf15cutUyDxr4caZXX5eoMwUVZrYU
+	KHyHLmkOZIvBYxIahiwx7OsKqQTs=
+X-Google-Smtp-Source: AGHT+IGCmAdPpT4vaY5j7bydBqEJCnII/COJ3M97NOQpUWntN39srlx/IA0p5Ib/mdHX9fQOiWsnGPDPPro7thKEoqs=
+X-Received: by 2002:a05:6512:234e:b0:52e:9d6b:2691 with SMTP id
+ 2adb3069b0e04-536587b07ebmr4813104e87.20.1725753405079; Sat, 07 Sep 2024
+ 16:56:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-2-06beff418848@samsung.com>
+In-Reply-To: <20240906-macos-build-support-v2-2-06beff418848@samsung.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Sun, 8 Sep 2024 08:56:08 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARw-7uwJB7ibmSYE5nYUtPXcr4J9cHBQqm9BnNS=SRUhQ@mail.gmail.com>
+Message-ID: <CAK7LNARw-7uwJB7ibmSYE5nYUtPXcr4J9cHBQqm9BnNS=SRUhQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/8] file2alias: fix uuid_t definitions for macos
+To: da.gomez@samsung.com
+Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
+	Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 06 2024 at 18:44, John Ogness wrote:
-> So there are 2 things _not_ supported by the write_atomic() callback:
+On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
 >
-> 1. RS485 mode. This is due to the need to start up TX for the
-> write, which can lead to:
+> From: Daniel Gomez <da.gomez@samsung.com>
 >
-> up->rs485_start_tx()
->   serial8250_em485_start_tx()
->     serial8250_stop_rx()
->       serial8250_rpm_get()
->         pm_runtime_get_sync()
->           __pm_runtime_resume()
->             spin_lock_irqsave()
+> The uuid_t struct defined in sys/types.h on macOS hosts conflicts with
+> the one defined in file2alias, resulting in the typedef redefinition
+> error below. To resolve this conflict, define the _UUID_T and
+> __GETHOSTUUID_ in file2alias HOSTCFLAGS.
 >
-> Taking a spin lock is not safe from NMI and thus disqualifies this call
-> chain for write_atomic().
-
-Correct. __pm_runtime_resume() can sleep as well :)
-
-> If UART_CAP_RPM is not set, the pm_runtime_get_sync() is avoided. So I
-> could only disable atomic RS485 if UART_CAP_RPM is set. But the OMAP
-> variant of the 8250 does set this capability.
-
-Sure, but none of this makes sense. What's so special about that em485
-muck that serial8250_stop_rx() needs to do that PM dance?
-
-It writes the IER register, which serial8250_console_write() just wrote
-to in serial8250_clear_IER() without doing this PM dance. So for the
-console write path this stop part is not required at all.  That said,
-serial8250_em485_stop_tx() doesn't have this PM dance either.
-
-I'm 100% that this is just a problem of blindly sharing this with the
-regular uart code and not because there is a requirement. See what
-serial8250_console_setup() does at the end:
-
-        if (port->dev)
-                pm_runtime_get_sync(port->dev);
-
-The corresponding put() is in serial8250_console_exit(). So there is
-absolutely zero reason for power management in the console write
-functions. It's the usual voodoo programming which nobody noticed
-because it did not immediately blow up in their face.
-
-There is another minor issue in that em485 muck. One code path arms a
-hrtimer, which does not work from NMI like contexts, but that is only
-taken when the transmitter is not empty, so probably a non-issue
-because the console write code waits for it to be drained.
-
-There are also a few lockdep_assert_held_once(port->lock) in that code
-which will trigger when called from the nbcon write functions. They are
-already broken today when oops_in_progress is set and the trylock of
-port::lock fails...
-
-So splitting this up into a clean and lean set for the console write
-functions will make all these horrors just go away. The current sharing
-is just fragile as hell and makes no sense at all.
-
-> 2. Modem control. This is due to waiting for inputs, which can lead to:
+> Error:
+>   HOSTCC  scripts/mod/file2alias.o scripts/mod/file2alias.c:45:3:
+> error: typedef redefinition with different types ('struct uuid_t' vs
+> '__darwin_uuid_t' (aka 'unsigned char[16]'))    45 | } uuid_t;       |
+> ^
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    sys/_types/_uuid_t.h:31:25: note: previous definition is here 31 |
+>    typedef __darwin_uuid_t uuid_t;    |                         ^
+> scripts/mod/file2alias.c:1354:7: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1354 |
+>  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1354:19: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1354 |
+>  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1354:31: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1354 |
+>  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1354:43: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1354 |
+>  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1354:55: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1354 |
+>  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1355:7: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1355 |
+>  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1355:19: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1355 |
+>  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1355:31: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1355 |
+>  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1355:43: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1355 |
+>  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1355:55: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1355 |
+>  uuid->b[5], uuid->b[6], uuid->b[7], uuid->b[8], uuid->b[9],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1356:7: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1356 |
+>  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1356:20: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1356 |
+>  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1356:33: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1356 |
+>  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1356:46: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1356 |
+>  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1356:59: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1356 |
+>  uuid->b[10], uuid->b[11], uuid->b[12], uuid->b[13], uuid->b[14],      |
+>  ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> scripts/mod/file2alias.c:1357:7: error: member reference base
+>  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
+>  'unsigned char[16]') is not a structure or union 1357 |
+>  uuid->b[15]);      |                 ~~~~^ ~
+> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
+>    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
+>    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
+>    |                                                        ^~~~~~~~~~~
+> 17 errors generated.
 >
-> serial8250_modem_status()
->   wake_up_interruptible()
+> Suggested-by: Nicolas Schier <nicolas@fjasle.eu>
+> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> ---
+>  scripts/mod/Makefile     | 2 ++
+>  scripts/mod/file2alias.c | 3 +++
+>  2 files changed, 5 insertions(+)
 >
-> Performing wakes is not safe from scheduler or NMI and thus disqualifies
-> this call chain for write_atomic().
+> diff --git a/scripts/mod/Makefile b/scripts/mod/Makefile
+> index c729bc936bae..75c12c045f21 100644
+> --- a/scripts/mod/Makefile
+> +++ b/scripts/mod/Makefile
+> @@ -8,6 +8,8 @@ modpost-objs    :=3D modpost.o file2alias.o sumversion.o =
+symsearch.o
 >
-> It would probably be acceptable to move serial8250_modem_status() into
-> an irq_work.
+>  devicetable-offsets-file :=3D devicetable-offsets.h
+>
+> +HOSTCFLAGS_file2alias.o +=3D -D_UUID_T -D__GETHOSTUUID_H
+> +
+>  $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
+>         $(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)
+>
+> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+> index 99dce93a4188..ab743f6d60ef 100644
+> --- a/scripts/mod/file2alias.c
+> +++ b/scripts/mod/file2alias.c
+> @@ -11,6 +11,9 @@
+>   */
+>
+>  #include "modpost.h"
+> +#ifdef __APPLE__
+> +#define uuid_t sys_uuid_t
+> +#endif
+>  #include "devicetable-offsets.h"
 
-Yes, but serial8250_modem_status() has more problems than that:
 
-See uart_handle_dcd_change() and uart_handle_cts_change(). They call
-into the tty layer and do their own wakeups.
 
-So no, serial8250_modem_status() cannot be invoked there at all.
 
-You have to defer this whole status dance to irq work and this really
-needs to be done inside the write_atomic() callback. Otherwise a status
-change could get lost, which is bad in non-panic situations.
+Is this what Nicolas suggested?
+https://lore.kernel.org/lkml/20240807-sexy-roadrunner-of-acceptance-a84bbf@=
+lindesnes/
 
-That needs a bit of thought vs. port->msr_saved_flags, because in a
-hostile takeover situation that needs to take into account that the
-interrupted context might be fiddling with msr_saved_flags too, which
-might on resume overwrite the write_atomic() modifications due to RMW.
-Shouldn't be hard.
 
-That brings me to that USE_SERIAL_8250_LEGACY_CONSOLE #ifdeffery, which
-started this conversation.
+I thought he suggested replacing #ifdef __APPLE__
+with -D_UUID_T -D__GETHOSTUUID_H.
 
-The nbcon conversion does not make things worse than they are today. Any
-problem which happens in the atomic_write() callback has existed before
-already. So just get rid of the legacy code and be done with it.
 
-At some point you have to bite the bullet and deal with the fallout when
-it's reported. Remember, perfect is the enemy of good and you will never
-reach perfect.
+You added -D_UUID_T -D__GETHOSTUUID_H,
+keeping #ifdef __APPLE__.
 
-Thanks,
 
-        tglx
+
+
+
+
+
+
+
+>  /* We use the ELF typedefs for kernel_ulong_t but bite the bullet and
+>
+> --
+> 2.46.0
+>
+>
+
+
+--=20
+Best Regards
+Masahiro Yamada
