@@ -1,123 +1,160 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B6FF15884A;
-	Sat,  7 Sep 2024 13:36:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB544166F1B;
+	Sat,  7 Sep 2024 20:39:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725716205; cv=none; b=rpkdsIWeQbxcVToa7xTcmAsScLSjeprlkCdhjkVtmwfD/Sboovhi1wUNUj1ywzQql8dOSQKUWuIu/0hxRQ/sYlP7MIaLPoDPBjreM+74AIjKGg67JGzuqoSSogfaD+J+2TEsh1QDAefudy84admTvx424G8ws6NplORUuW6UXec=
+	t=1725741550; cv=none; b=OgVFz7VK7IUj5e42dYd6tUqq0u5dzN1s6VsfSwTKT8oc2bQL0pYffeGNY6w8imhsbDhQKBSr90e7oPhCm9vEyvd0VLF7YXiebh+jDm9lTBV8e27TKS24RJjCzq6vL0L1ksBqQ/lx9rSb/qviIIoFK6VkQiFUI0qrVeipxUpmgs8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725716205; c=relaxed/simple;
-	bh=QDAeMKDXx+8hSe+M0x6iS7yh4oBXpRy19ch8PrVqUUs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=B3Jual4//VbrmzwR8zk1x+E36yaXYZz9wSWoTb8oghwyAs58/nPnoRT7oC01X624MrIqg40lUu6/WbQr6OkZ1YwUZB0bOSSLgAkmiOf0P+KYgR5lMzWpFFR5wU0UHvYwD/4PjT/4JEQ67HeDcQrRBgCrk7QUrANjeJLYCU4fZBs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lxdBIR/g; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1725741550; c=relaxed/simple;
+	bh=+N1+FUrRZa71sZafK5gbpc6Aa+Nz4p1MbssVaSaRgRY=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
+	 Content-Type; b=cHKKwgT4pu/g1X15onuQ1IGlrgy1X/2TtCuH0ckZFrWbcFvSpMI+E5Gi0zCfJ3K60bCsDEqBUatKTQmp0XW9+c5swh0jVLzuU8umTOYAe3TKCbJlTno+S3eSkjLKurd8WoOcg3e7Efon25teQa2+Q7jkTkSQD2SWxySAb/tYj2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=DM7r0k9x; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=EREHzoYV; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lxdBIR/g"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2d873dc644dso2195863a91.3;
-        Sat, 07 Sep 2024 06:36:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725716202; x=1726321002; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YUTavBQ5qrHlQPm4dvfhw3yJpsNd8pyOFUFPgqrOJVE=;
-        b=lxdBIR/gHrT6/47FnqnBS1210EFMhPL9wLE1Wgql589fQ5/S3Q34YMt5R76a0TmLcK
-         hRp2gCeK9bjAqPH59yHfgF07xLkQcfqU7nsOmoHZRTm1j/pkgSi6HUaziCJCqWeCb9y6
-         54bpVM80DdncokM3egUXsQwMJqrK7ICQgg3iyE6HZjsZTmMMbcyazO6Vd5R8mL+OE9S3
-         lUQ25WZKOV4rsSMBOqijhiV+12dsDSD0vT1v8INxxM/RODwJz5beAZvdOIYix6n2HR6k
-         ozZx0NZv4gJ+pyzvv6vzCgde6IHpBGrOEC2ab/ULTB/M5pzj+Dc478WKedExpsS806CK
-         CcUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725716202; x=1726321002;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YUTavBQ5qrHlQPm4dvfhw3yJpsNd8pyOFUFPgqrOJVE=;
-        b=wGT+8E1K1bETru4FL/1S/JFotOXroaiNwbAbZERTABHdSay8e63THTnSldI60JQV/g
-         yn4SFpDzzIrp2QuK7aRU2yZUqwgYRGsSinGJ/XmBjfj0jjU0wg0gK7REcIIhd1RELlen
-         9/2Z8AEzSlhudyJW7Mewgwkc1S7RgKzZEc8X/80drmIC4EnZIn37zOyjG4tTYzIPdK5f
-         AR5Z/yhi3A4VH2rcu07qTiDJYg9K9CbNFe25OaLVr0s3B5subIE9suGtezNhWzzQCjm2
-         6xtkmPMl0A1CLZJ/CDSBe7mxx2v39el6VuzjUDWRSV63w4WPs+gUO0x1MOcTL1/Fp9qe
-         LOwA==
-X-Forwarded-Encrypted: i=1; AJvYcCULpP3BJRQCBsWdaqVvACkeOxAsgJTq+He5eebPeRFosBEb9xwt/hZtMSBZtLssUnGQhZkWNWzV3eXoLL0k@vger.kernel.org, AJvYcCWyzG/fdNVpTXDrvieM+N6KzSPWD9fAqQPr9NX7dissxpRY/ZGLajDSfv9W8CuHSHr+9BxH9sWc9SwF9b6yFVg4mDY=@vger.kernel.org, AJvYcCXS6aMOL1kIFFFrktzDD3Vbgmp+qqhL3NQHSa9FHLde0C414ligaCir0DxLM/wFyodLIneUcocP3lktSXA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywmua+y+BUusUGIuZcbGpaqiE8BVSFq+H5vKX0Weu4xd+eNNFNj
-	AA1qsWPjxQv9M5PpjtjTwkHMKDd1biWHnicXeJBq2RAuoN9KEz9hu3UdUG0Uvw8=
-X-Google-Smtp-Source: AGHT+IHDd6iQwUYAcG/97d9xepIXpXTiP9NBsHNofcF74jxr+3FjbR3kilNRA1s6jBVgx9qHN1vkwg==
-X-Received: by 2002:a17:90b:4b4a:b0:2d8:d098:4f31 with SMTP id 98e67ed59e1d1-2dafcf1c7f5mr2670367a91.17.1725716201718;
-        Sat, 07 Sep 2024 06:36:41 -0700 (PDT)
-Received: from [192.168.0.122] ([59.188.211.160])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2db04136b71sm1251865a91.12.2024.09.07.06.36.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Sep 2024 06:36:41 -0700 (PDT)
-Message-ID: <d5d06aaa-ab93-47c3-b7c5-ad8dd3ca66f2@gmail.com>
-Date: Sat, 7 Sep 2024 21:36:38 +0800
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="DM7r0k9x";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="EREHzoYV"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1725741540;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=Jxh1drwwzS4C1cbz9nF6aHf3luVAOBDNpQwoAG7I7c4=;
+	b=DM7r0k9x3tf8lSySlNhpsR7Z20SstxJQvsA1I8ztyyCtayKhwMpMVle3mfpx34vbk6l3I4
+	/pWMQq4EmfvZKkhePbDgxX//71JqjkelFgWX7SwUTqn0yCGm+h4Azj691o3VXgNYYq5Ftg
+	d8Nv3lU02j5B+tqvqbMABPIXT/ycgxdpZrPytglXSPgSa6R5TRbRYJFwDhf+n+T6GAT3ZO
+	T3hyQ7H4WQxPVv3mpBeSVgOajr0eCOrFfvFmMTyunOXFU4wVh4e4lIWjTWKtnBuHkYD28A
+	Axz2+9jdtwsmqmDf+qBlXts0m5NsnicmuiK/lj5jBi5bItw2a4EtZ5Kayk7/8w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1725741540;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=Jxh1drwwzS4C1cbz9nF6aHf3luVAOBDNpQwoAG7I7c4=;
+	b=EREHzoYVqrp07ut5+fQlDAXm2PTjZqXGWlzV0fWSP9LrtqJDuJ23b3xeYt6XrT587jPMgM
+	r400dpNZj9YIHzAg==
+To: John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Steven Rostedt <rostedt@goodmis.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Tony Lindgren <tony@atomide.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
+ Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
+ <wsa+renesas@sang-engineering.com>, Sebastian Andrzej Siewior
+ <bigeasy@linutronix.de>
+Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
+In-Reply-To: <87jzfod9f2.fsf@jogness.linutronix.de>
+Date: Sat, 07 Sep 2024 22:39:00 +0200
+Message-ID: <8734mbdwrf.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] tty: serial: samsung: Fix serial rx on Apple A7-A9
- SoCs
-Content-Language: en-MW
-To: Krzysztof Kozlowski <krzk@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: asahi@lists.linux.dev
-References: <20240907111431.2970-1-towinchenmi@gmail.com>
- <20240907111431.2970-3-towinchenmi@gmail.com>
- <3596ef82-b2a4-40a0-8a66-575e26c386d9@kernel.org>
-From: Nick Chan <towinchenmi@gmail.com>
-In-Reply-To: <3596ef82-b2a4-40a0-8a66-575e26c386d9@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
+On Fri, Sep 06 2024 at 18:44, John Ogness wrote:
+> So there are 2 things _not_ supported by the write_atomic() callback:
+>
+> 1. RS485 mode. This is due to the need to start up TX for the
+> write, which can lead to:
+>
+> up->rs485_start_tx()
+>   serial8250_em485_start_tx()
+>     serial8250_stop_rx()
+>       serial8250_rpm_get()
+>         pm_runtime_get_sync()
+>           __pm_runtime_resume()
+>             spin_lock_irqsave()
+>
+> Taking a spin lock is not safe from NMI and thus disqualifies this call
+> chain for write_atomic().
 
+Correct. __pm_runtime_resume() can sleep as well :)
 
-On 7/9/2024 20:55, Krzysztof Kozlowski wrote:
-> On 07/09/2024 13:06, Nick Chan wrote:
->>  
->> diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
->> index 1672cf0810ef..849d502d348d 100644
->> --- a/include/linux/serial_s3c.h
->> +++ b/include/linux/serial_s3c.h
->> @@ -246,24 +246,28 @@
->>  				 S5PV210_UFCON_TXTRIG4 |	\
->>  				 S5PV210_UFCON_RXTRIG4)
->>  
->> -#define APPLE_S5L_UCON_RXTO_ENA		9
->> -#define APPLE_S5L_UCON_RXTHRESH_ENA	12
->> -#define APPLE_S5L_UCON_TXTHRESH_ENA	13
->> -#define APPLE_S5L_UCON_RXTO_ENA_MSK	(1 << APPLE_S5L_UCON_RXTO_ENA)
->> -#define APPLE_S5L_UCON_RXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_RXTHRESH_ENA)
->> -#define APPLE_S5L_UCON_TXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_TXTHRESH_ENA)
->> +#define APPLE_S5L_UCON_RXTO_ENA			9
->> +#define APPLE_S5L_UCON_RXTO_LEGACY_ENA		11
->> +#define APPLE_S5L_UCON_RXTHRESH_ENA		12
->> +#define APPLE_S5L_UCON_TXTHRESH_ENA		13
->> +#define APPLE_S5L_UCON_RXTO_ENA_MSK		(1 << APPLE_S5L_UCON_RXTO_ENA)
->> +#define APPLE_S5L_UCON_RXTO_LEGACY_ENA_MSK	(1 << APPLE_S5L_UCON_RXTO_LEGACY_ENA)
->> +#define APPLE_S5L_UCON_RXTHRESH_ENA_MSK		(1 << APPLE_S5L_UCON_RXTHRESH_ENA)
->> +#define APPLE_S5L_UCON_TXTHRESH_ENA_MSK		(1 << APPLE_S5L_UCON_TXTHRESH_ENA)
-> 
-> Use BIT() for new entries. You can also convert the earlier defines to
-> BIT() in separate patches.
-Acked. Version 2 will change APPLE_S5L_* entries to use BIT(), and then
-add the new
-entries with BIT().
+> If UART_CAP_RPM is not set, the pm_runtime_get_sync() is avoided. So I
+> could only disable atomic RS485 if UART_CAP_RPM is set. But the OMAP
+> variant of the 8250 does set this capability.
 
-> 
->>  
-> 
-> Best regards,
-> Krzysztof
-> 
+Sure, but none of this makes sense. What's so special about that em485
+muck that serial8250_stop_rx() needs to do that PM dance?
 
-Nick Chan
+It writes the IER register, which serial8250_console_write() just wrote
+to in serial8250_clear_IER() without doing this PM dance. So for the
+console write path this stop part is not required at all.  That said,
+serial8250_em485_stop_tx() doesn't have this PM dance either.
+
+I'm 100% that this is just a problem of blindly sharing this with the
+regular uart code and not because there is a requirement. See what
+serial8250_console_setup() does at the end:
+
+        if (port->dev)
+                pm_runtime_get_sync(port->dev);
+
+The corresponding put() is in serial8250_console_exit(). So there is
+absolutely zero reason for power management in the console write
+functions. It's the usual voodoo programming which nobody noticed
+because it did not immediately blow up in their face.
+
+There is another minor issue in that em485 muck. One code path arms a
+hrtimer, which does not work from NMI like contexts, but that is only
+taken when the transmitter is not empty, so probably a non-issue
+because the console write code waits for it to be drained.
+
+There are also a few lockdep_assert_held_once(port->lock) in that code
+which will trigger when called from the nbcon write functions. They are
+already broken today when oops_in_progress is set and the trylock of
+port::lock fails...
+
+So splitting this up into a clean and lean set for the console write
+functions will make all these horrors just go away. The current sharing
+is just fragile as hell and makes no sense at all.
+
+> 2. Modem control. This is due to waiting for inputs, which can lead to:
+>
+> serial8250_modem_status()
+>   wake_up_interruptible()
+>
+> Performing wakes is not safe from scheduler or NMI and thus disqualifies
+> this call chain for write_atomic().
+>
+> It would probably be acceptable to move serial8250_modem_status() into
+> an irq_work.
+
+Yes, but serial8250_modem_status() has more problems than that:
+
+See uart_handle_dcd_change() and uart_handle_cts_change(). They call
+into the tty layer and do their own wakeups.
+
+So no, serial8250_modem_status() cannot be invoked there at all.
+
+You have to defer this whole status dance to irq work and this really
+needs to be done inside the write_atomic() callback. Otherwise a status
+change could get lost, which is bad in non-panic situations.
+
+That needs a bit of thought vs. port->msr_saved_flags, because in a
+hostile takeover situation that needs to take into account that the
+interrupted context might be fiddling with msr_saved_flags too, which
+might on resume overwrite the write_atomic() modifications due to RMW.
+Shouldn't be hard.
+
+That brings me to that USE_SERIAL_8250_LEGACY_CONSOLE #ifdeffery, which
+started this conversation.
+
+The nbcon conversion does not make things worse than they are today. Any
+problem which happens in the atomic_write() callback has existed before
+already. So just get rid of the legacy code and be done with it.
+
+At some point you have to bite the bullet and deal with the fallout when
+it's reported. Remember, perfect is the enemy of good and you will never
+reach perfect.
+
+Thanks,
+
+        tglx
