@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B3343AB7;
-	Sat,  7 Sep 2024 12:54:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E23A55;
+	Sat,  7 Sep 2024 12:55:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725713679; cv=none; b=KJfkT8ZLR/QKD/UbNifI65EANo4mBub7YmloaEA8DnN1n7HWBPxQJ1cmEJQXwUtwRP1jMgufYa4Y/lU89TpfVe9pdx60mrAtqDVUnmvGHavESmRBhAWYNenx8DQguj+CkaHrj/EAKHFPSElN3ljuVdT363etDTH0S4hjaNya914=
+	t=1725713747; cv=none; b=EnGt3DfmV48nWfd5fkvwqNUsLIqiXhb2bfVeF8piCzSIUuNAHJYAu96F3KMk4ONo9lORt5Ii0c+90C0FGoWOP6JXqW9gti0+njkau1zkiYAkXMspHzP58Gru5/XYI+S7URevBWaAEr4K9YdWZSUMM103DlyXaswtgieQu9ciGmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725713679; c=relaxed/simple;
-	bh=WLQm6GMzc7zXEGBNwh3DO1Hpv+5L6uoCI396K2z90Ow=;
+	s=arc-20240116; t=1725713747; c=relaxed/simple;
+	bh=SqR7ith6GYF6iCSf8NtD30YB3WJDA9/jtNn0GGcdvZo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YsL/cadk+VSxL4bsv3ayQbx6fDGIuG4sxJ0sivUl88z3UW3cqFLn/075H1bmQizsB4p+/nI9uxnLAirnVJkSCpJJwN87juPtcLDmrN1ov3y1k9IDAVfIfFd2jcCXmrzfjGP41vOCZFJPYf3jDuUxXR228VA/kDYhJsanL045sIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hMof9psU; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=inxXHYli2svX6vBlzDoSmzb0ySs3TLQVR+dKLKEI+3nJqUq3u71eU6HVY0uU/FtUvJ5qeEai5iLf4nltClBHeq3H1fU6qf39ZFDV/9Cml+qkCnwCMnWrDxIVyTgvhG2SToXp82jjp1iAxIM7WKGJvcU51bXo3i8FlfeuIBSOdVo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MQqc0Tfd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hMof9psU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBDB6C4CEC2;
-	Sat,  7 Sep 2024 12:54:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MQqc0Tfd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C00C4CEC2;
+	Sat,  7 Sep 2024 12:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725713678;
-	bh=WLQm6GMzc7zXEGBNwh3DO1Hpv+5L6uoCI396K2z90Ow=;
+	s=k20201202; t=1725713746;
+	bh=SqR7ith6GYF6iCSf8NtD30YB3WJDA9/jtNn0GGcdvZo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=hMof9psUQTAc+ZWNpYRDlXUpKyevrdtAxtY48NEGpI42DtcoOvKYgUUwPOYO/qxZz
-	 v03fgNrEWscoj6y4D/heqeh2cH1zeSNLOGc2KXTvhi4kG9cvU2zsnOa7fAJFQwnPik
-	 H5qPYM/fUlJhfk78up329DGmUxbDMwDraHlGMitQm2LAFzQVVGVrqNlYkITZjZTdSO
-	 7hkbSiAKjkErf93r5EnyEGMp9z4mvEIeIqJSADXym/Z+8xdg20znTY8bXGW+9wCpJo
-	 G47GssiJe7nn/58sXpudBJSu5JykOoUd58UEQ4rQflQM0Onp4sGDxSRbgR6THm077d
-	 xXdkNvB8gm/eg==
-Message-ID: <440be61d-b60e-4179-8481-b9a7a0dabae5@kernel.org>
-Date: Sat, 7 Sep 2024 14:54:33 +0200
+	b=MQqc0TfdQFRrEdBG/38Q0urZnn9P0eSPPXf4FwbyKEUd+1pEc5ahIeh7i0mwgx0dV
+	 Tq9Eoj1W7zX7Qglbtjf7W1hCUzfqt1ehpb75VV0lNwM5ol9ExFbd2pc0xilfQhjm5J
+	 w8tKsV5XrjQnWIuAT5M1apQsLOWzLN2H6zFRXcNxMufarf21vUVSKld7fxpg0hOPd0
+	 7kQnFQYrhJzHSB4IX+YZv3Rws0dONc57W6lYelxNG0+1HtHwxmK8URSINHOZvinMzW
+	 sfUeAtSsvQ7srOrZqeU9oUtFP/qEHgr0wOt/Z28zYM1fwwJSM+HTwstLupsahH1Vsw
+	 sECK2IWN7YO2A==
+Message-ID: <3596ef82-b2a4-40a0-8a66-575e26c386d9@kernel.org>
+Date: Sat, 7 Sep 2024 14:55:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] tty: serial: samsung: Fix A7-A11 serial earlycon
- SError
+Subject: Re: [PATCH 2/2] tty: serial: samsung: Fix serial rx on Apple A7-A9
+ SoCs
 To: Nick Chan <towinchenmi@gmail.com>, Alim Akhtar <alim.akhtar@samsung.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
@@ -44,7 +44,7 @@ To: Nick Chan <towinchenmi@gmail.com>, Alim Akhtar <alim.akhtar@samsung.com>,
  linux-serial@vger.kernel.org
 Cc: asahi@lists.linux.dev
 References: <20240907111431.2970-1-towinchenmi@gmail.com>
- <20240907111431.2970-2-towinchenmi@gmail.com>
+ <20240907111431.2970-3-towinchenmi@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,54 +90,39 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240907111431.2970-2-towinchenmi@gmail.com>
+In-Reply-To: <20240907111431.2970-3-towinchenmi@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 07/09/2024 13:06, Nick Chan wrote:
-> Apple's earlier SoCs, like A7-A11, requires 32-bit writes for the serial
-> port. Otherwise, a SError happens when writing to UTXH (+0x20). This only
-> manifested in earlycon as reg-io-width in the device tree is consulted
-> for normal serial writes.
-> 
-> Change the iotype of the port to UPIO_MEM32, to allow the serial port to
-> function on A7-A11 SoCs. This change does not appear to affect Apple M1 and
-> above.
-> 
-> Signed-off-by: Nick Chan <towinchenmi@gmail.com>
-> ---
->  drivers/tty/serial/samsung_tty.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
-> index c4f2ac9518aa..27b8a50bd3e7 100644
-> --- a/drivers/tty/serial/samsung_tty.c
-> +++ b/drivers/tty/serial/samsung_tty.c
-> @@ -2536,7 +2536,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
->  		.name		= "Apple S5L UART",
->  		.type		= TYPE_APPLE_S5L,
->  		.port_type	= PORT_8250,
-> -		.iotype		= UPIO_MEM,
-> +		.iotype		= UPIO_MEM32,
->  		.fifosize	= 16,
->  		.rx_fifomask	= S3C2410_UFSTAT_RXMASK,
->  		.rx_fifoshift	= S3C2410_UFSTAT_RXSHIFT,
-> @@ -2825,8 +2825,10 @@ static int __init apple_s5l_early_console_setup(struct earlycon_device *device,
->  	/* Close enough to S3C2410 for earlycon... */
->  	device->port.private_data = &s3c2410_early_console_data;
 >  
-> +	/* ... however, we need to change the port iotype */
-> +	device->port.iotype = UPIO_MEM32;
+> diff --git a/include/linux/serial_s3c.h b/include/linux/serial_s3c.h
+> index 1672cf0810ef..849d502d348d 100644
+> --- a/include/linux/serial_s3c.h
+> +++ b/include/linux/serial_s3c.h
+> @@ -246,24 +246,28 @@
+>  				 S5PV210_UFCON_TXTRIG4 |	\
+>  				 S5PV210_UFCON_RXTRIG4)
+>  
+> -#define APPLE_S5L_UCON_RXTO_ENA		9
+> -#define APPLE_S5L_UCON_RXTHRESH_ENA	12
+> -#define APPLE_S5L_UCON_TXTHRESH_ENA	13
+> -#define APPLE_S5L_UCON_RXTO_ENA_MSK	(1 << APPLE_S5L_UCON_RXTO_ENA)
+> -#define APPLE_S5L_UCON_RXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_RXTHRESH_ENA)
+> -#define APPLE_S5L_UCON_TXTHRESH_ENA_MSK	(1 << APPLE_S5L_UCON_TXTHRESH_ENA)
+> +#define APPLE_S5L_UCON_RXTO_ENA			9
+> +#define APPLE_S5L_UCON_RXTO_LEGACY_ENA		11
+> +#define APPLE_S5L_UCON_RXTHRESH_ENA		12
+> +#define APPLE_S5L_UCON_TXTHRESH_ENA		13
+> +#define APPLE_S5L_UCON_RXTO_ENA_MSK		(1 << APPLE_S5L_UCON_RXTO_ENA)
+> +#define APPLE_S5L_UCON_RXTO_LEGACY_ENA_MSK	(1 << APPLE_S5L_UCON_RXTO_LEGACY_ENA)
+> +#define APPLE_S5L_UCON_RXTHRESH_ENA_MSK		(1 << APPLE_S5L_UCON_RXTHRESH_ENA)
+> +#define APPLE_S5L_UCON_TXTHRESH_ENA_MSK		(1 << APPLE_S5L_UCON_TXTHRESH_ENA)
 
-If there is going to be resend, then this comment is redundant and can
-be dropped - repeats the code and does not provide any explanation why.
+Use BIT() for new entries. You can also convert the earlier defines to
+BIT() in separate patches.
 
-Which would also make the patch smaller and easier to read. See GS101
-earlycon.
-
-
-
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+>  
 
 Best regards,
 Krzysztof
