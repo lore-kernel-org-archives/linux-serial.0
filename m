@@ -1,55 +1,57 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14CBF155316;
-	Sat,  7 Sep 2024 11:14:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 922F815A842;
+	Sat,  7 Sep 2024 11:14:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725707691; cv=none; b=duaU0+pg1L8eZBSJ4n8rRldxTfpHa9KaLkYzWHj8jua9orBms/xYmf3+YaYlbPsLcglbzwwvANQ//kFu37p2omvAli64xuXdV06D8X9OFzg6IufzxlNZDne8C6PbyTIdpmB2i8IbhwxY/cTJK7dm5LEEZF82jQBF/xfgIIGKJA4=
+	t=1725707696; cv=none; b=JBdx+dJPYYeIFk26OqBpjrCTM1JSAVwC55g6lZCCLCuodRB7o3ofLlaSVf8X+6phPMhMEmBcZS2sCoSBp5Kk1N54XoHOzVxjg5dGwXWDlNenTpYkoBKJCne6tIvng7dVbgCHRqJ1Rs7ZlH8o0DpMFqPeUXo0i0aM/43S6krrkm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725707691; c=relaxed/simple;
-	bh=CMbPPbLNgy/m8UF1G8Q+fRyhtoggVjJ/GN50xwDHbGM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mab9wN6w9PuzTWNDcVM0HLpRtikZBOuie5B/m3HS9EzAVPzscG7jSWnDKjsSd1ZFgYyjaUKz5+xQY/UGVYf3KWfvbckFM8kxzX61NJYkdyNigyLOCVlbTtJy6zNPaBLlfI/KokpaaPs5djeaayj/8+Q1wepP0qpxcT7cWI3K8pM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iRr8CeNa; arc=none smtp.client-ip=209.85.210.177
+	s=arc-20240116; t=1725707696; c=relaxed/simple;
+	bh=yQn4IrX2y1gGE9tp496wGGts2OgOvzhAvr+Mlat6+5w=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=UpJ1mXkNIyuEUD45dB5PR15aZceq0n8XClFojPJ9XgXlqirGVtndtHdHdv0utRIdqUL9BYuB3TzflAm5rUJ3YNr/skqM+Zaqa4s2vDMCmQqV/1DsoE7KuqOVRBpjBL3i0mpriFWoEsZM64+3uYeeyLxGB0iQov1FPTJF1XRWLjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FdowAtO+; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iRr8CeNa"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-718d8d6af8fso1367577b3a.3;
-        Sat, 07 Sep 2024 04:14:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FdowAtO+"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-20696938f86so26490295ad.3;
+        Sat, 07 Sep 2024 04:14:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1725707689; x=1726312489; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MKR2MN+/NUaZxZIfTkNVZ56kkqFXX80mnZeMHh4iTEs=;
-        b=iRr8CeNaoOR8dj3HzgQyZByGs2A7so0F9rRToCZrxoZtXxVoix0xSTGAkWPHtsRnyK
-         bWtsh6Zsjm5RtNUuHjClw6rMHOvQn+hfNUjhOQH0I1n4mFzMK9ABOeiLgR+acsJ51FZr
-         iKjutqpM6kOOpEoBfoGvMdcT8M12BFU+jdj2V4jO/oLo/LEYE71TxdD9Lm8YcVuXjvsw
-         EGv01EPOb6/tf5ex6F+FF3eiUj6+U1SGEUKhP/JdYvG2IyZWldXRRDu++QXfaUDG4ptS
-         xIQVsP5Sd7sOB7W0PzbkuReO6ACwUJ3wkcuPNqd5kteBURgN60L2fuPFNJT/AWE5hD4N
-         OolQ==
+        d=gmail.com; s=20230601; t=1725707694; x=1726312494; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=A3+BuB4FjLqD9bjbDGs2bz07cEq00t/CZQx8ir7y0gU=;
+        b=FdowAtO+kBpI51UtrwVs8V6GfiMfQpiQB0EmCE0zyllnfh592K1ecGLqJO3fKyvcej
+         QdQWDw18XTnI+gp+6uYqBO6f4NZ6OlvhpOvresPvz6fnzPbYNBROXbWimNiJq7jSPZwQ
+         Y7hvB0Xi6Fw0AxrPFkypmHbiyAs3OCaXRB+oGqOD/pxbJyxd8ivMW7TEa1niGI5zA0kD
+         GVXhiKDMj1D7HkaEGrkLDAocaXPCvuu38/IxQKaxRDQF+Nq831CgNjinzVpgRPMGtzir
+         /z0aiABoLGnj797VZCrngSk+51xpB2xw+GF/tpGhCVn3m9nqnjmT1EL3l50fCdBu3bde
+         1j1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725707689; x=1726312489;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MKR2MN+/NUaZxZIfTkNVZ56kkqFXX80mnZeMHh4iTEs=;
-        b=HIyZJDGHUsGnqo7QvxM9YPnEK4Ts8KK6Piit89DHemb8kp9BrHQrNTSXaCfK7ZTuD1
-         WP4yb33vzOTtroPq7sJT20Pz2fhHp+RURLpEA3icOAz5Zsz/c3ctBxp7ESgr5zXzU3aU
-         oB5pIqqsTkAEUWWMaTbD5m8SBhK9oyiQOKT34yQFK2aqXieLEVth1xK94YmtWk9uQ0b+
-         1iagdgHcBWVN+5dQsPsLCPWUpkZY8W2gsp4wuQZhIs7wEr1KGW/ffzKhaQsTKOnGwbMS
-         cj9nicOgE9b6DW3zJi6BRTHwuDreIwRATwqSFSoOpP33D+pNsNWgX4MS9Xm4j0/1Uv5/
-         og4A==
-X-Forwarded-Encrypted: i=1; AJvYcCUWr41Oz1QWZ6HKW8eiV9BY9H/Pv3pLcKxgDn7YD24mKrrEcaQiPyOZOUhrFFxaMvmdfwV77NE+1/HNdci5@vger.kernel.org, AJvYcCWiXPLmwQpmEEZVyi8ia/OjgkjREEiuamC2qXdZfWry8SNBmj3as7ZE4eBbg1pCQvVpcYOWflQ+mWV9Gi4=@vger.kernel.org, AJvYcCWudk2k/oQC2Ph79nhVSMiiKkT+8frYt5wAHro5tRTRe8tCTLCXTskpruKzy7MyQsE/1oGhWtagnTRLzpPVRh3LMJ8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+KdGF3W0nd1bvJJqSxGCljGHz2JUcNC/6OmnTs8Wi/fdxOKGq
-	61mbUEcZBpUs/JsACbzPd1P3cU/KIqTW+U292XQ7CPMdhwVZwzoQ
-X-Google-Smtp-Source: AGHT+IEVgpMhIznnZffwI8DGtxdM5a4u1Tgb2XXQnWibOIoCrdJztBLvI3V7Zkjt9HqU+ZMPtzePiQ==
-X-Received: by 2002:a17:903:124d:b0:206:99a8:526c with SMTP id d9443c01a7336-2070c196865mr33981715ad.41.1725707689216;
-        Sat, 07 Sep 2024 04:14:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1725707694; x=1726312494;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=A3+BuB4FjLqD9bjbDGs2bz07cEq00t/CZQx8ir7y0gU=;
+        b=dURTUUxSwknj/R8eqB1NN/tqB8UVvFayBcABlwGb+ENughj68IG/0Rr+YzMonL48cv
+         o8rZTBL29vSeABon+6rOqUDIBaUKxonFFrSeSBnSeNRPv1POZjJgH37P6WfbBhvpAZvd
+         ZawKITIhP/5RiQwYV2WA3V9al3uLcmzh2k4zyk9/1NM5GfGVEKzI1TkuhSD3teJ8AmZi
+         V1U7YqBvWBCgpbtpydHkty401y8dDrHfOafXgIbmhbDWg/PSxiPoJLSv+iQnt3gANXaF
+         Rv0jI3th6d/4q4j1QwrFqDbjlUCSZ7GCr2VNyfoNENbbe+9qgvf4F96d4tzijIpV5XNl
+         E5Qw==
+X-Forwarded-Encrypted: i=1; AJvYcCVTFHI6ElPjsVCD62qbW6DJRqq2DGxC5P3sPy1EOlYOmNCAW1z64PlGCCUA5b8+jPvv1ZgTHuntZ/uWeha2Bt1rDHo=@vger.kernel.org, AJvYcCXbF2BcWbIp1JbTj3PtWVHAj0r1TEVYcRGIJrwirMweLgVECMGUOpjitdYUYdRK4WKrDoxWxePvERYJNWs=@vger.kernel.org, AJvYcCXjuWYmHbCmePVwUJC079b3nvCIgn/+mqTUAdWpV0S9aVgmtBkoHKK2YkuMHKNVBHo9Ull1e60gspqC0+5o@vger.kernel.org
+X-Gm-Message-State: AOJu0YxpkxZblbmAv8ajHIRIFHc1f/0EdVgqY+f+f1+BL2qhdFBCuNVI
+	Ix9mARnTru2gC2gSNJLkSgNi1l+pSx4ADUhk0gbP5VIZn0YSSCjv
+X-Google-Smtp-Source: AGHT+IG+d/Ja+M6I/KKbLW1L9kR7tYcT+FpvaTcOzSQ8w/aHxuNDIEwCeGvjU3MYj7ZC8/xGYSOn0A==
+X-Received: by 2002:a17:902:ccce:b0:205:8bad:171c with SMTP id d9443c01a7336-206f04e1a7bmr65926405ad.12.1725707693732;
+        Sat, 07 Sep 2024 04:14:53 -0700 (PDT)
 Received: from localhost.localdomain ([59.188.211.160])
-        by smtp.googlemail.com with ESMTPSA id d9443c01a7336-20710e1addbsm7186955ad.58.2024.09.07.04.14.46
+        by smtp.googlemail.com with ESMTPSA id d9443c01a7336-20710e1addbsm7186955ad.58.2024.09.07.04.14.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Sep 2024 04:14:48 -0700 (PDT)
+        Sat, 07 Sep 2024 04:14:53 -0700 (PDT)
 From: Nick Chan <towinchenmi@gmail.com>
 To: Krzysztof Kozlowski <krzk@kernel.org>,
 	Alim Akhtar <alim.akhtar@samsung.com>,
@@ -61,10 +63,12 @@ To: Krzysztof Kozlowski <krzk@kernel.org>,
 	linux-serial@vger.kernel.org
 Cc: asahi@lists.linux.dev,
 	Nick Chan <towinchenmi@gmail.com>
-Subject: [PATCH 0/2] tty: serial: samsung: Serial fixes for Apple A7-A11 SoCs
-Date: Sat,  7 Sep 2024 19:06:43 +0800
-Message-ID: <20240907111431.2970-1-towinchenmi@gmail.com>
+Subject: [PATCH 1/2] tty: serial: samsung: Fix A7-A11 serial earlycon SError
+Date: Sat,  7 Sep 2024 19:06:44 +0800
+Message-ID: <20240907111431.2970-2-towinchenmi@gmail.com>
 X-Mailer: git-send-email 2.46.0
+In-Reply-To: <20240907111431.2970-1-towinchenmi@gmail.com>
+References: <20240907111431.2970-1-towinchenmi@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -73,34 +77,45 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Apple's earlier SoCs, like A7-A11, requires 32-bit writes for the serial
+port. Otherwise, a SError happens when writing to UTXH (+0x20). This only
+manifested in earlycon as reg-io-width in the device tree is consulted
+for normal serial writes.
 
-This series fixes issues with serial on A7-A11 SoCs. The changes do not
-seem to affect existing M1 and up users so they can be applied
-unconditionally.
+Change the iotype of the port to UPIO_MEM32, to allow the serial port to
+function on A7-A11 SoCs. This change does not appear to affect Apple M1 and
+above.
 
-Firstly, these SoCs require 32-bit writes on the serial port. This only
-manifested in earlycon as reg-io-width in device tree is consulted for
-normal serial writes.
-
-Secondly, A7-A9 SoCs seems to use different bits for RXTO and RXTO
-enable. Accessing these bits in addition to the original RXTO and RXTO
-enable bits will allow serial rx to work correctly on those SoCs.
-
-Nick Chan
-
+Signed-off-by: Nick Chan <towinchenmi@gmail.com>
 ---
+ drivers/tty/serial/samsung_tty.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Nick Chan (2):
-  tty: serial: samsung: Fix A7-A11 serial earlycon SError
-  tty: serial: samsung: Fix serial rx on Apple A7-A9
-
- drivers/tty/serial/samsung_tty.c | 23 ++++++++++++++++-------
- include/linux/serial_s3c.h       | 18 +++++++++++-------
- 2 files changed, 27 insertions(+), 14 deletions(-)
-
-
-base-commit: 9aaeb87ce1e966169a57f53a02ba05b30880ffb8
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index c4f2ac9518aa..27b8a50bd3e7 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2536,7 +2536,7 @@ static const struct s3c24xx_serial_drv_data s5l_serial_drv_data = {
+ 		.name		= "Apple S5L UART",
+ 		.type		= TYPE_APPLE_S5L,
+ 		.port_type	= PORT_8250,
+-		.iotype		= UPIO_MEM,
++		.iotype		= UPIO_MEM32,
+ 		.fifosize	= 16,
+ 		.rx_fifomask	= S3C2410_UFSTAT_RXMASK,
+ 		.rx_fifoshift	= S3C2410_UFSTAT_RXSHIFT,
+@@ -2825,8 +2825,10 @@ static int __init apple_s5l_early_console_setup(struct earlycon_device *device,
+ 	/* Close enough to S3C2410 for earlycon... */
+ 	device->port.private_data = &s3c2410_early_console_data;
+ 
++	/* ... however, we need to change the port iotype */
++	device->port.iotype = UPIO_MEM32;
+ #ifdef CONFIG_ARM64
+-	/* ... but we need to override the existing fixmap entry as nGnRnE */
++	/* ... and also override the existing fixmap entry as nGnRnE */
+ 	__set_fixmap(FIX_EARLYCON_MEM_BASE, device->port.mapbase,
+ 		     __pgprot(PROT_DEVICE_nGnRnE));
+ #endif
 -- 
 2.46.0
 
