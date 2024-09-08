@@ -1,135 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 864C516FF37;
-	Sun,  8 Sep 2024 14:06:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7A92EACD;
+	Sun,  8 Sep 2024 15:49:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725804362; cv=none; b=au6LsIJAP9/khXXpnS7bekc2yRBpz9nqd6hANDsRHcJVtLU6v9pH98v1xUqbB+CGrIkgMuUYvc0c7U3Ds9/kex7/EzAReqksWuJnjDIOytITHxajaLWnkSluf2XVQo4MHU9J7xKHA2AlcYyGETK+qjttzlsF5H3KimJSXQ5SAkg=
+	t=1725810556; cv=none; b=LRQ5cCp0RigbGxphuOGcg33OSrNWc0cTIeQN15Ri4du5YopOgiSDCh+t5dGsyW+/NrYGqw9vhImyEEc73DY4+/g1Wa3nfUrWWhx5kE+AzkbryXqBpEqxsjY6Mn2QH2cWoBsc//Yo6Al2l8tYGQgtNR21kkpD3q9dVDkbYfdB0fc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725804362; c=relaxed/simple;
-	bh=Ad4/7XPxi3RBCcpnHNdup/IntXAmdAiFzCqV31ZrC8E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DbUbZXCUUo5FZ/tCOxArufr3hxIGiqNx/8yS1mb75PIMG3yZfudatw41zHro3Gy8ixt/Hs+J0myaUGN7m49bsyH8F2DtmHHeIPqUpJHMSqzp857Ni/uuFeKj7HgBDeuE+SqkVDegfrgcThyC74BlwL5UNhzgbTZ2AMf/S3h3a/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AcHlyBuY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725810556; c=relaxed/simple;
+	bh=Ej/MFl0U2grPzl6++vWZajsco3EirVz0KDFILRpbV9o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sWBWwFysmoJdD6gZgLxpsuwdePO2juI5QJR3i5mTnKe261K745U6k5+ssgkZuWBlDGnmiDOLcvrAjqQFZfaxKt67z+VIwLzdFngJyOY2K5FLsVTjluIajPTWSJsguZuaQWh15dUrn/Q4SauB2Yagl013EMd/sIxmXRIVTs+FKiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fZ8GvTNL; arc=none smtp.client-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AcHlyBuY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDA7C4CECF;
-	Sun,  8 Sep 2024 14:06:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725804362;
-	bh=Ad4/7XPxi3RBCcpnHNdup/IntXAmdAiFzCqV31ZrC8E=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=AcHlyBuYBPCOQ7jIB2rntkKpQdPTJ/l7pcHdzNcGFkTWTjYHnFM6WJ5nTP0MW6Caa
-	 Zt1ox1IDu3uaP3//4TeYKuDih3pmV8U8zAjj2LN9kHSvhu7Ky/HxAxH61fOdiEzhP6
-	 sHgCRPF0qzcgHokT3S6LiNsJko5TbcQWTLxoVP+jp5ddJgH6gx/p4T4ZpzV0sAxAHC
-	 1aj4cTK1GRUM95sVNf+RtsMbnQv9lHcE3eQPkpEXfh1bppFpjnQhY3S5iMKvAe0fAU
-	 88/sCANnEpsaLV1/cQgcuGTU1kEml3J60TeVpU2uRsvi2qwExQvCPXOQIU7UQ4+1ea
-	 4fGxipFZjEfDA==
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f75aa08a96so16773401fa.1;
-        Sun, 08 Sep 2024 07:06:02 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCV/u4p9eE5uMCnho9N3tqGVPYazH2MDmSOFFKZBo5+wLDhwbbNdigLhzRYkEPH/yVN7+Z5uKyVC7ij947Q=@vger.kernel.org, AJvYcCV7Qazy1+cDsYyjZyIVUyzC1hmlEp9v2ScODv962i7QwB3nn0EJtU69FGsYLmYOqxxS+BcISs956flhegga@vger.kernel.org, AJvYcCVVEDAARc0smmBZw6Fd0xneKTKrVlXkIsBJIUdz1bcpBtyAYvugKTFzmm1x9HdgXZts+0+XT3LMMLaXhCTx@vger.kernel.org, AJvYcCX1HYWJ/XMD9tzg73aEbX7jTwLQYLK8pVJX0z0uEycSvHKpZNMpKh6GKW0X6YKJgQlRYvJDiETt8Q==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzVSDWGb12isV5PQeOReP9asxG+KODmDtmkSahfqzxfXehbPt0d
-	9ewk9lRdoN3s+5Bfq3ltyQMIcWoinVhYfLgpolCTyverKfLs/unfA5K2Jm/bGTGW4Z6C0jWS+Ci
-	57PvXqQ1L8KeqRrGb9PaGQV4WJjY=
-X-Google-Smtp-Source: AGHT+IEekyXzzy8xWmAgDNhgqelhya4e5VFx9Ykjsgx5+vTZUqkhDQk7X/hDch9ahgJlF6RSlE5QnOyvMXW2LHKx9EA=
-X-Received: by 2002:a05:6512:138f:b0:536:53f0:2f8e with SMTP id
- 2adb3069b0e04-536587fcc5fmr4978005e87.37.1725804360702; Sun, 08 Sep 2024
- 07:06:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fZ8GvTNL"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-718d704704aso1972104b3a.3;
+        Sun, 08 Sep 2024 08:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1725810554; x=1726415354; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SAgWa81lHt3+8vspOTElzUpWSVFWjeBPjKGz1uM25hg=;
+        b=fZ8GvTNL5thcj5d6mYrR9gmw9iDLa2YM+AIgtgCF3FCFrllz2DwODgonZj34n+tX6E
+         lwkX4A6uhuHnMLTnjAsYEWdHAcZG4DhOeRBp1Dj5jvGX3fOT/XPTTEw889m2qQWgpkBK
+         Nla5kR5Us+xUegsGd/gTRF2U0ycK2Sgg7riFRznbiBatNmBWhcfK9oOluSf2iMDrZYAM
+         L3n2mGZ97K0boyaKq4HVMEvF3pW1qCmkzZ5YFwkSLYhi6t41pkFePUxnwscS1psexrom
+         H9t/B8Z+uUyhqPs6e4R5o5okwxFFK6LzdPaLub2MzKWv5BqL+S7k2lIjiLltFCdILZ1Q
+         flSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1725810554; x=1726415354;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SAgWa81lHt3+8vspOTElzUpWSVFWjeBPjKGz1uM25hg=;
+        b=UFaOvLZp2WgP/OINVWDUSptmTsB6J59F9sjRyLiIKFEvXuQoNaSrUcfhBtIU45kURx
+         Wznv8cdwhJirIDpeY8PKakMpHpYP/MfLSllDDzSl0fBwOxCTh9fjHrS+MDHWxtIo1ar1
+         VqNVwVdlF8LVnPMpsvtL0sao+B6C9n25Er2M1TcfndimOye3D2XWjJKxaDsXhOfH+OWF
+         Vx59P9WOH5XyHPss1wbzntvK+JHQt46xTb6CYsRyWqQaNMgiYfNz762VyquMe0FBpQha
+         cB9m4lPNqvu5AGiz3xXBsWgdeIIzBhhrSqpqel5KF35tdaaZ1NHrBRfiZViI5ozLYqtC
+         5lKQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVRhzy2yn30AXSdYcSxvYHRR26b130yshsIDZ5jsGwP5d1WyBZDJMw+egf3tZgCDbRazfBg9+f8ntSak/pVdqftcX4=@vger.kernel.org, AJvYcCW7Dqn3sT0imp++5sgnGPx2ifRmzVoRxR2mdVh72VZV0kYuNvV3jJzBWwvy2f/Xopbrf+HB/WlbHUhOtI8=@vger.kernel.org, AJvYcCXk7qZ10bCZuIgz0KBqhdbdQFhZDcpwd7f159TyGBMv1EdgVk5xrsRSCZJGQzYzlzNtc8xGDrDGPJDc3dir@vger.kernel.org
+X-Gm-Message-State: AOJu0YwQYx0vpAyspQi0yB/eHvVGZL2wdiBl23cvAnUIOYo4bX6+qi+3
+	gm3EL85j/T7qlLftIaPUz9g1DfYtHMtCC6z6GITaSRghBiBm6MaO
+X-Google-Smtp-Source: AGHT+IFFrn46ubbqFuvUo4a8LlVSDErVxtVEIX8+YBhSiGmjRd6iFtQgAdWXG9qXP5Fm0bTGW9ZC8Q==
+X-Received: by 2002:a05:6a00:21cb:b0:717:8aaf:43be with SMTP id d2e1a72fcca58-718e3108dcamr8126650b3a.0.1725810553973;
+        Sun, 08 Sep 2024 08:49:13 -0700 (PDT)
+Received: from [172.20.10.2] ([49.130.9.157])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-718e599135csm2162442b3a.193.2024.09.08.08.49.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Sep 2024 08:49:13 -0700 (PDT)
+Message-ID: <13a98caf-80f0-477d-b276-249e3fb20e83@gmail.com>
+Date: Sun, 8 Sep 2024 23:49:09 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-1-06beff418848@samsung.com>
-In-Reply-To: <20240906-macos-build-support-v2-1-06beff418848@samsung.com>
-From: Masahiro Yamada <masahiroy@kernel.org>
-Date: Sun, 8 Sep 2024 23:05:24 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASdvtkSgTGip=Q5gmx5x8X_EYarjkEum+HMtFC83sSnXg@mail.gmail.com>
-Message-ID: <CAK7LNASdvtkSgTGip=Q5gmx5x8X_EYarjkEum+HMtFC83sSnXg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/8] scripts: subarch.include: fix SUBARCH on macOS hosts
-To: da.gomez@samsung.com
-Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
-	Lucas De Marchi <lucas.demarchi@intel.com>, 
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
-	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
-	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
-	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
-	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com, 
-	Nick Desaulniers <nick.desaulniers@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
-<devnull+da.gomez.samsung.com@kernel.org> wrote:
->
-> From: Nick Desaulniers <nick.desaulniers@gmail.com>
->
-> When building the Linux kernel on an aarch64 macOS based host, if we don'=
-t
-> specify a value for ARCH when invoking make, we default to arm and thus
-> multi_v7_defconfig rather than the expected arm64 and arm64's defconfig.
->
-> This is because subarch.include invokes `uname -m` which on MacOS hosts
-> evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
->
-> This allows us to build ARCH=3Darm64 natively on macOS (as in ARCH need
-> not be specified on an aarch64-based system).
->
-> Avoid matching arm64 by excluding it from the arm.* sed expression.
->
-> Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
-> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
-> ---
-
-
-Applied to linux-kbuild with
-Suggested-by: Nicolas Schier <nicolas@fjasle.eu>
-
-Thanks.
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/3] tty: serial: samsung: Fix serial rx on Apple A7-A9
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Cc: asahi@lists.linux.dev
+References: <20240908090939.2745-1-towinchenmi@gmail.com>
+ <20240908090939.2745-4-towinchenmi@gmail.com>
+ <215fde01-0e04-4445-9620-b0dba3232a92@kernel.org>
+Content-Language: en-MW
+From: Nick Chan <towinchenmi@gmail.com>
+In-Reply-To: <215fde01-0e04-4445-9620-b0dba3232a92@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
 
->  scripts/subarch.include | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/subarch.include b/scripts/subarch.include
-> index 4bd327d0ae42..c4592d59d69b 100644
-> --- a/scripts/subarch.include
-> +++ b/scripts/subarch.include
-> @@ -6,7 +6,7 @@
->
->  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
->                                   -e s/sun4u/sparc64/ \
-> -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
-> +                                 -e /^arm64$$/!s/arm.*/arm/ -e s/sa110/a=
-rm/ \
->                                   -e s/s390x/s390/ \
->                                   -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \
->                                   -e s/sh[234].*/sh/ -e s/aarch64.*/arm64=
-/ \
->
-> --
-> 2.46.0
->
->
+On 8/9/2024 17:14, Krzysztof Kozlowski wrote:
+> On 08/09/2024 11:05, Nick Chan wrote:
+>> Apple's older A7-A9 SoCs seems to use bit 3 in UTRSTAT as RXTO, which is
+>> enabled by bit 11 in UCON.
+>>
+>> Access these bits in addition to the original RXTO and RXTO enable bits,
+>> to allow serial rx to function on A7-A9 SoCs. This change does not
+>> appear to affect the A10 SoC and up.
+>>
+>> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+> 
+> This never happened. Please do not add fake tags.
+Sorry, this happened by mistake, and tags are added to both commits present
+in previous versions by accident. I can send a v4 tomorrow, though I think
+it is the best if this version is to be reviewed, since the mistake does
+not make a difference in the patch submitted further upstream, and it saves
+everyone's time.
 
+> 
+> Best regards,
+> Krzysztof
+> 
 
---=20
-Best Regards
-Masahiro Yamada
+Nick Chan
