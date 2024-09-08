@@ -1,77 +1,138 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AEBB4D8CE;
-	Sun,  8 Sep 2024 09:01:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025D856B8C;
+	Sun,  8 Sep 2024 09:03:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725786092; cv=none; b=GXqgwJW3Y/EmBTlL2klPzuL7/WTbIO3pRpP4uM0Gh9mDzY3kh0ASb3RSl/9Bbl0tJKEvKFA0BHrnkSfGhe7dq1ZjP7FZVk27ZALVFtKckoY46jydRhs3oIAfCWt0vHa03RmbCcwZl4Uv63kL5LpG03q42IP80aogjwP0i4fuplg=
+	t=1725786224; cv=none; b=Zl0/zGtOOZV6f+w0lzqSKlD8QPIrVKeOXuKhoXhxjo7Oh+6FjKkyWRFBDlGqc+47lnAmw9YXDWm6r7NrgoTGHyG08UGmOE8KcaZRIvNBWZ89+bcp0zmKjhSIpWwnQJHsrjmQKN6NNu2IeX74SASjacyitgogwdbvVnJ7zXmBPPE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725786092; c=relaxed/simple;
-	bh=xToZsQTiEUaatVECmcZa2xZMNMgV1GnA3jFUHS95k1w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=atLIYxNb1SlaIm7egdKXw2yuDqvpBDXcwcN8a8lTFXVP81/U7Zk3cbRwijIAwqKq45d3NBj8r3D8qPTUzMW7Rj/T+shTHOmkYE3U6yD4aYJlDvbczvdSw2AUdqdvfLb2sjH0Nsj0rOE/dS4W2JkhFU5rLfFyvEVYv+xwchRoUJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=me50i/jK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725786224; c=relaxed/simple;
+	bh=iaWBGRY0Ga/QyUiWnGcCNwe6GvY+ter/ioZNDc3NI98=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=asbCa9rj+5t3QscoLXMTgRUWigwXTWnVEz5yeecmAmfNEy33HPqvzryUaKmanS2XuqkPsPSFEAFaF5WveGiJshWnAGZ/6MjtVHL7sAKqCWoSV/s8vENKJ5D8JewDglzw3QtXCPiALTnW142SRp7x079sTRKRVoEHEwIzY9mV3wY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=msrOKWhQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="me50i/jK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66BB9C4CEC3;
-	Sun,  8 Sep 2024 09:01:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1725786092;
-	bh=xToZsQTiEUaatVECmcZa2xZMNMgV1GnA3jFUHS95k1w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=me50i/jKYs2q5kBltc2pV4CuxsX/kV/etOvcVWKHIqK1pIw+ZLj+AhC3Kc5CNQN6V
-	 9kQaE/qAxBtF+unG8ULStYZvqUTpFVspnR0wCqFdAlc/KNKsWkdj8XdQUCdPwNFCCB
-	 1re15PnJrZT0nreHlExRZnTZj25k2wx18jgqjkLA=
-Date: Sun, 8 Sep 2024 11:01:28 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Nick Chan <towinchenmi@gmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, asahi@lists.linux.dev
-Subject: Re: [PATCH 0/3] tty: serial: samsung: Serial fixes for Apple A7-A11
- SoCs
-Message-ID: <2024090809-crusher-overact-8dcd@gregkh>
-References: <20240908075904.12133-1-towinchenmi@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="msrOKWhQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B215C4CEC3;
+	Sun,  8 Sep 2024 09:03:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1725786223;
+	bh=iaWBGRY0Ga/QyUiWnGcCNwe6GvY+ter/ioZNDc3NI98=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=msrOKWhQM0NPDWGVtAJ5zBEdnKCnebFP9yaFEL1mSerelkJzG94ySzSfD6m0E4ojc
+	 kjMQh/ag+VyC/d780XoBD3PFZknFPAaFuYrxlcv/7ehW/GnvHaXFX6vSxvK6izDxeT
+	 1aT8e43zs2q3ex2vaR4U5q7VCLRR17De16EZEcUEMrm6e/Ihnzg7IC+Z3iUYdB/LSl
+	 oDcnllCDJdMTn71NrJDIl+KUsuiipPjrCpjpyr+ARjQTJ57aC6uYZR+FfbtZC+MKA/
+	 lRKaWi8C3AchITgoKamTtMqoTINB1JW/Ckv5nWk919r8jMsGBxedp0p7u2Dy37tp1T
+	 Gwnf0KlvbKv3Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1snDpa-00AcmB-1V;
+	Sun, 08 Sep 2024 10:03:38 +0100
+Date: Sun, 08 Sep 2024 10:03:36 +0100
+Message-ID: <86cylev7o7.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: "Daniel Gomez (Samsung)" <d+samsung@kruces.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>,	da.gomez@samsung.com,	Nathan
+ Chancellor <nathan@kernel.org>,	Nicolas Schier <nicolas@fjasle.eu>,	Lucas
+ De Marchi <lucas.demarchi@intel.com>,	Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?=
+ <thomas.hellstrom@linux.intel.com>,	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,	Maxime Ripard
+ <mripard@kernel.org>,	Thomas Zimmermann <tzimmermann@suse.de>,	David Airlie
+ <airlied@gmail.com>,	William Hubbs <w.d.hubbs@gmail.com>,	Chris Brannon
+ <chris@the-brannons.com>,	Kirk Reiser <kirk@reisers.ca>,	Samuel Thibault
+ <samuel.thibault@ens-lyon.org>,	Paul Moore <paul@paul-moore.com>,	Stephen
+ Smalley <stephen.smalley.work@gmail.com>,	Ondrej Mosnacek
+ <omosnace@redhat.com>,	Catalin Marinas <catalin.marinas@arm.com>,	Will
+ Deacon <will@kernel.org>,	Oliver Upton <oliver.upton@linux.dev>,	James
+ Morse <james.morse@arm.com>,	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Zenghui Yu <yuzenghui@huawei.com>,	Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>,	Jiri Slaby <jirislaby@kernel.org>,	Nick
+ Desaulniers <ndesaulniers@google.com>,	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,	Simona Vetter
+ <simona.vetter@ffwll.ch>,	linux-kernel@vger.kernel.org,
+	linux-kbuild@vger.kernel.org,	intel-xe@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org,	speakup@linux-speakup.org,
+	selinux@vger.kernel.org,	linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev,	linux-serial@vger.kernel.org,	llvm@lists.linux.dev,
+	Finn Behrens <me@kloenk.dev>,	gost.dev@samsung.com
+Subject: Re: [PATCH v2 8/8] Documentation: add howto build in macos
+In-Reply-To: <CABj0suBQCc8=0tLng=OWW=K1hjFuLFZWhbjsqHtz2FzZt4i0sw@mail.gmail.com>
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
+	<20240906-macos-build-support-v2-8-06beff418848@samsung.com>
+	<CAK7LNASpWSXbjF_7n0MhosNism=BpvHOnKsa344RPM_wmC9dGA@mail.gmail.com>
+	<CABj0suBQCc8=0tLng=OWW=K1hjFuLFZWhbjsqHtz2FzZt4i0sw@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/29.4
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240908075904.12133-1-towinchenmi@gmail.com>
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: d+samsung@kruces.com, masahiroy@kernel.org, da.gomez@samsung.com, nathan@kernel.org, nicolas@fjasle.eu, lucas.demarchi@intel.com, thomas.hellstrom@linux.intel.com, rodrigo.vivi@intel.com, maarten.lankhorst@linux.intel.com, mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com, w.d.hubbs@gmail.com, chris@the-brannons.com, kirk@reisers.ca, samuel.thibault@ens-lyon.org, paul@paul-moore.com, stephen.smalley.work@gmail.com, omosnace@redhat.com, catalin.marinas@arm.com, will@kernel.org, oliver.upton@linux.dev, james.morse@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com, gregkh@linuxfoundation.org, jirislaby@kernel.org, ndesaulniers@google.com, morbo@google.com, justinstitt@google.com, simona.vetter@ffwll.ch, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, me@kloenk.dev, gost.dev@samsung.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Sun, Sep 08, 2024 at 03:50:47PM +0800, Nick Chan wrote:
-> Hi,
-> 
-> This series fixes issues with serial on A7-A11 SoCs. The changes do not
-> seem to affect existing M1 and up users so they can be applied
-> unconditionally.
-> 
-> Firstly, these SoCs require 32-bit writes on the serial port. This only
-> manifested in earlycon as reg-io-width in device tree is consulted for
-> normal serial writes.
-> 
-> Secondly, A7-A9 SoCs seems to use different bits for RXTO and RXTO
-> enable. Accessing these bits in addition to the original RXTO and RXTO
-> enable bits will allow serial rx to work correctly on those SoCs.
-> 
-> Changes in v2:
->   - Mention A7-A11 in the comment about changing register accesses to
->     MMIO32.
-> 
->   - Use BIT() macro for new entries, and change the existing APPLE_S5L_*
->     entries for consistency.
+On Sat, 07 Sep 2024 10:32:20 +0100,
+"Daniel Gomez (Samsung)" <d+samsung@kruces.com> wrote:
+>=20
+> On Sat, Sep 7, 2024 at 10:33=E2=80=AFAM Masahiro Yamada <masahiroy@kernel=
+.org> wrote:
+> >
+> > On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
+> > <devnull+da.gomez.samsung.com@kernel.org> wrote:
+> > >
+> > > From: Daniel Gomez <da.gomez@samsung.com>
+> > >
+> > > Add documentation under kbuild/llvm to inform about the experimental
+> > > support for building the Linux kernel in macOS hosts environments.
+> > >
+> > > Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> >
+> >
+> > Instead, you can add this instruction to:
+> >
+> > https://github.com/bee-headers/homebrew-bee-headers/blob/main/README.md
+>=20
+> Sure, that can be done as well. But the effort here is to have this
+> integrated. So, I think documentation should be in-tree.
 
-Your subject line does not say "v2" :(
+I think this ship sailed the moment you ended-up with an external
+dependency.
 
-Can you resend this as a v3?
+Having looked at this series (and in particular patch #4 which falls
+under my remit), I can't help but think that the whole thing should
+simply live as a wrapper around the pristine build system instead of
+hacking things inside of it. You already pull external dependencies
+(the include files). Just add a script that sets things up
+(environment variables that already exist) and calls 'make' in the
+kernel tree.
 
-thanks,
+I also dislike that this is forcing "native" developers to cater for
+an operating system they are unlikely to have access to. If I break
+this hack tomorrow by adding a new dependency that MacOS doesn't
+provide, how do I fix it? Should I drop my changes on the floor?
 
-greg k-h
+As an alternative, and since you already have to create a special
+file-system to contain your kernel tree, you may as well run Linux in
+a VM, which I am told works pretty well (QEMU supports HVF, and there
+are plenty of corporate-friendly alternatives). This would solve your
+problem once and for all.
+
+Please don't take the above the wrong way. I'm sympathetic to what you
+are trying to do. But this is IMO going in the wrong direction.
+
+Thanks,
+
+	M.
+
+--=20
+Without deviation from the norm, progress is not possible.
