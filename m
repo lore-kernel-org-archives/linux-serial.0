@@ -1,110 +1,135 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6D48248D;
-	Sun,  8 Sep 2024 09:14:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 864C516FF37;
+	Sun,  8 Sep 2024 14:06:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725786860; cv=none; b=Jfb9jAGpAsEk+v64DviB8Y+0OletRBJwNyfQy92hJC2hxbflipkUf4u8DBJi0rnN4dBlWGefEKrdeUcS8mWMHVLhOLogue03IVgi+/tRTvGabbuV8JUBH5jm9t709qRO5Oo5WxDikK6s/ApSxGj1rJH8gUgQeKypukVNnGoCT7Y=
+	t=1725804362; cv=none; b=au6LsIJAP9/khXXpnS7bekc2yRBpz9nqd6hANDsRHcJVtLU6v9pH98v1xUqbB+CGrIkgMuUYvc0c7U3Ds9/kex7/EzAReqksWuJnjDIOytITHxajaLWnkSluf2XVQo4MHU9J7xKHA2AlcYyGETK+qjttzlsF5H3KimJSXQ5SAkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725786860; c=relaxed/simple;
-	bh=GIiJncmx9YRzt+paLQq293vsIrLvqJJ17noHm9CoX38=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QSR72Q2bJDKKInlGz6a4Q1ME3XCm24510UdhT4l7RXdzDEGG3/mibbcWbISFHiOHC5ZNouoP65Kett4Z8HJFWAz2Eae3ADLF5u0su29MS2wugxuj/Pe6Wl8sSw3NiGUdPYmgRGLTfmXJeXUrvffCgfbeamUWYbLPNsiWlyb1fY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AAAToyKV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725804362; c=relaxed/simple;
+	bh=Ad4/7XPxi3RBCcpnHNdup/IntXAmdAiFzCqV31ZrC8E=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DbUbZXCUUo5FZ/tCOxArufr3hxIGiqNx/8yS1mb75PIMG3yZfudatw41zHro3Gy8ixt/Hs+J0myaUGN7m49bsyH8F2DtmHHeIPqUpJHMSqzp857Ni/uuFeKj7HgBDeuE+SqkVDegfrgcThyC74BlwL5UNhzgbTZ2AMf/S3h3a/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AcHlyBuY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AAAToyKV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3362C4CEC3;
-	Sun,  8 Sep 2024 09:14:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AcHlyBuY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDA7C4CECF;
+	Sun,  8 Sep 2024 14:06:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725786859;
-	bh=GIiJncmx9YRzt+paLQq293vsIrLvqJJ17noHm9CoX38=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=AAAToyKVv6ClZHsqRBt0hpmcIVyrfac8HLcsU84o4BYCIVG6zbg2UW+4VuDCwYt+q
-	 htOfZOl9ItnNJrTKI79VNXxhRJG54E3xTaguRXKZCjjYe2cjIxa4w5tFXDobPZbYVv
-	 deuJ6s30+s55yY2HpewfaGx/BBdJW2r4P/lmtsc6fQLfg+MgxtULKQXpGAa3JKSHti
-	 Wr6orxWPgx9arZ755Aqh19NbEoDjI0rvkVhdkCF8jaUS5ejmJB/8hUTF88nWK6J2Er
-	 87Y1unwZ4HUlVre7KMRuxZLeMYgogvXJa4iXIPTQZr/uI3jVFzpMriOHetIN49clRs
-	 tKGCMAil5iyOQ==
-Message-ID: <215fde01-0e04-4445-9620-b0dba3232a92@kernel.org>
-Date: Sun, 8 Sep 2024 11:14:14 +0200
+	s=k20201202; t=1725804362;
+	bh=Ad4/7XPxi3RBCcpnHNdup/IntXAmdAiFzCqV31ZrC8E=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=AcHlyBuYBPCOQ7jIB2rntkKpQdPTJ/l7pcHdzNcGFkTWTjYHnFM6WJ5nTP0MW6Caa
+	 Zt1ox1IDu3uaP3//4TeYKuDih3pmV8U8zAjj2LN9kHSvhu7Ky/HxAxH61fOdiEzhP6
+	 sHgCRPF0qzcgHokT3S6LiNsJko5TbcQWTLxoVP+jp5ddJgH6gx/p4T4ZpzV0sAxAHC
+	 1aj4cTK1GRUM95sVNf+RtsMbnQv9lHcE3eQPkpEXfh1bppFpjnQhY3S5iMKvAe0fAU
+	 88/sCANnEpsaLV1/cQgcuGTU1kEml3J60TeVpU2uRsvi2qwExQvCPXOQIU7UQ4+1ea
+	 4fGxipFZjEfDA==
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f75aa08a96so16773401fa.1;
+        Sun, 08 Sep 2024 07:06:02 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCV/u4p9eE5uMCnho9N3tqGVPYazH2MDmSOFFKZBo5+wLDhwbbNdigLhzRYkEPH/yVN7+Z5uKyVC7ij947Q=@vger.kernel.org, AJvYcCV7Qazy1+cDsYyjZyIVUyzC1hmlEp9v2ScODv962i7QwB3nn0EJtU69FGsYLmYOqxxS+BcISs956flhegga@vger.kernel.org, AJvYcCVVEDAARc0smmBZw6Fd0xneKTKrVlXkIsBJIUdz1bcpBtyAYvugKTFzmm1x9HdgXZts+0+XT3LMMLaXhCTx@vger.kernel.org, AJvYcCX1HYWJ/XMD9tzg73aEbX7jTwLQYLK8pVJX0z0uEycSvHKpZNMpKh6GKW0X6YKJgQlRYvJDiETt8Q==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVSDWGb12isV5PQeOReP9asxG+KODmDtmkSahfqzxfXehbPt0d
+	9ewk9lRdoN3s+5Bfq3ltyQMIcWoinVhYfLgpolCTyverKfLs/unfA5K2Jm/bGTGW4Z6C0jWS+Ci
+	57PvXqQ1L8KeqRrGb9PaGQV4WJjY=
+X-Google-Smtp-Source: AGHT+IEekyXzzy8xWmAgDNhgqelhya4e5VFx9Ykjsgx5+vTZUqkhDQk7X/hDch9ahgJlF6RSlE5QnOyvMXW2LHKx9EA=
+X-Received: by 2002:a05:6512:138f:b0:536:53f0:2f8e with SMTP id
+ 2adb3069b0e04-536587fcc5fmr4978005e87.37.1725804360702; Sun, 08 Sep 2024
+ 07:06:00 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/3] tty: serial: samsung: Fix serial rx on Apple A7-A9
-To: Nick Chan <towinchenmi@gmail.com>, Alim Akhtar <alim.akhtar@samsung.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: asahi@lists.linux.dev
-References: <20240908090939.2745-1-towinchenmi@gmail.com>
- <20240908090939.2745-4-towinchenmi@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240908090939.2745-4-towinchenmi@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com> <20240906-macos-build-support-v2-1-06beff418848@samsung.com>
+In-Reply-To: <20240906-macos-build-support-v2-1-06beff418848@samsung.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Sun, 8 Sep 2024 23:05:24 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASdvtkSgTGip=Q5gmx5x8X_EYarjkEum+HMtFC83sSnXg@mail.gmail.com>
+Message-ID: <CAK7LNASdvtkSgTGip=Q5gmx5x8X_EYarjkEum+HMtFC83sSnXg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] scripts: subarch.include: fix SUBARCH on macOS hosts
+To: da.gomez@samsung.com
+Cc: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, 
+	Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 08/09/2024 11:05, Nick Chan wrote:
-> Apple's older A7-A9 SoCs seems to use bit 3 in UTRSTAT as RXTO, which is
-> enabled by bit 11 in UCON.
-> 
-> Access these bits in addition to the original RXTO and RXTO enable bits,
-> to allow serial rx to function on A7-A9 SoCs. This change does not
-> appear to affect the A10 SoC and up.
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Fri, Sep 6, 2024 at 8:01=E2=80=AFPM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
+>
+> From: Nick Desaulniers <nick.desaulniers@gmail.com>
+>
+> When building the Linux kernel on an aarch64 macOS based host, if we don'=
+t
+> specify a value for ARCH when invoking make, we default to arm and thus
+> multi_v7_defconfig rather than the expected arm64 and arm64's defconfig.
+>
+> This is because subarch.include invokes `uname -m` which on MacOS hosts
+> evaluates to `arm64` but on Linux hosts evaluates to `aarch64`,
+>
+> This allows us to build ARCH=3Darm64 natively on macOS (as in ARCH need
+> not be specified on an aarch64-based system).
+>
+> Avoid matching arm64 by excluding it from the arm.* sed expression.
+>
+> Signed-off-by: Nick Desaulniers <nick.desaulniers@gmail.com>
+> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+> ---
 
-This never happened. Please do not add fake tags.
 
-Best regards,
-Krzysztof
+Applied to linux-kbuild with
+Suggested-by: Nicolas Schier <nicolas@fjasle.eu>
 
+Thanks.
+
+
+
+>  scripts/subarch.include | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/subarch.include b/scripts/subarch.include
+> index 4bd327d0ae42..c4592d59d69b 100644
+> --- a/scripts/subarch.include
+> +++ b/scripts/subarch.include
+> @@ -6,7 +6,7 @@
+>
+>  SUBARCH :=3D $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
+>                                   -e s/sun4u/sparc64/ \
+> -                                 -e s/arm.*/arm/ -e s/sa110/arm/ \
+> +                                 -e /^arm64$$/!s/arm.*/arm/ -e s/sa110/a=
+rm/ \
+>                                   -e s/s390x/s390/ \
+>                                   -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \
+>                                   -e s/sh[234].*/sh/ -e s/aarch64.*/arm64=
+/ \
+>
+> --
+> 2.46.0
+>
+>
+
+
+--=20
+Best Regards
+Masahiro Yamada
