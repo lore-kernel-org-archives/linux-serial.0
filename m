@@ -1,158 +1,137 @@
-Received: from fout7-smtp.messagingengine.com (fout7-smtp.messagingengine.com [103.168.172.150])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C501B9B24;
-	Mon,  9 Sep 2024 13:10:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 830114428;
+	Mon,  9 Sep 2024 20:30:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725887428; cv=none; b=lvdHr3qoXsPlW42GtWl4tdwpvOJZ4gK+w37XmGIwKpnJTPmNA1W/jb10L0pUAfAtjR19dkAbX58mu8XJGn+ivgbdwN4LH0at4u6Q/xbHM8HW6EC3vERFziZsFB2fSU9U+BdqOd4euNh5ngeRpZ6seKtjMJgHzFqvpF9HVi34bjI=
+	t=1725913835; cv=none; b=qPEMwCzuPt5WPrCaI1mLHz1W2hoQi08GI3TRklGooGhw9nvYaK3klPGaKcJPHcSgLMNIb7P+DX8f8V1o1LU0nyS9/pGIM8Knr8nQosixtmO0DjsXuqyDsUNcnEx7Ux2JLlADBY1lEo8ZTagFcnC1jcIBmE4JQvOjMMgYarmDs5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725887428; c=relaxed/simple;
-	bh=FOb9cDj+LeGDsiMg28ppP3KCfoC0waIPwBP00Op7h7I=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=alhgLLAXlM5i4ME0l0o+yVPOK8eeXjE0/9MRJLI07QISmgWTyGkRqaPqgApo5h5Yrt50e4FwxPqQY6AlfHxqtuVOtz5kSWyo4xfz47QvEEMd5hwge9Yb4WDfI835wyhMqESAgJHY35MZPHZkf0cYw92d3AEjJejZF+fn/OpEF6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=iwaqh3Vb; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=lVioyOQP; arc=none smtp.client-ip=103.168.172.150
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
+	s=arc-20240116; t=1725913835; c=relaxed/simple;
+	bh=e/lXweERor0ETtdzLqqAZlCy9RlOEBK030OaDQWeOhs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=bLHVAeUVXvtP5kaZoMfBk71FCBKnaaDWpn7WQ7COhCPDsVd1H2Uh9UOaTuhFpYgOE5pjGhQEsOaKZKaAlEjxrKBMJkvbHHMPNi7hSlTr71c4ghkfzeoygDdoz3Pi5Y7eUsFd0M4T6ha2DII3VTYqCSQjVbmIeRGVGLI5iQ3IJ6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Yz6uNCpy; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="iwaqh3Vb";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="lVioyOQP"
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailfout.phl.internal (Postfix) with ESMTP id AE6311380188;
-	Mon,  9 Sep 2024 09:10:25 -0400 (EDT)
-Received: from phl-imap-13 ([10.202.2.103])
-  by phl-compute-07.internal (MEProxy); Mon, 09 Sep 2024 09:10:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1725887425;
-	 x=1725973825; bh=hZmFB4zZqsK/lqmaZT6pZoo+wceOfyxthIa1HVadf+Y=; b=
-	iwaqh3Vbcq58OuQaQSBvCXnuaPO69yL+rbF6X1Vt6CeonoomrDaAL3Cz+KtOC303
-	glVVO0D2EUj1klePj8h5sQ52SBe7ejzOYBm0mazavBmDxMY3J9VkRPyBDIj2nTwC
-	wS3BMz30Wsw37mvNyUeA6AkQRqGZRvkihcI1XaFU0yN8R0GCCzHYk9oztQHt+RUM
-	w+uprG2zyz0vShXPC5Y5llMhazvo9hpFnmfgQVBKrh4u1RPqqEirq7qMmwZqSyTu
-	750vlH/VNeUkeUdfotfLSWEZ9JobGZYAgUORGlz6OMhwivJFVMKY4reCzQlg4QF0
-	Z4KFxk4DPnm6t/ULlHIH/A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1725887425; x=
-	1725973825; bh=hZmFB4zZqsK/lqmaZT6pZoo+wceOfyxthIa1HVadf+Y=; b=l
-	VioyOQP42MXQxqXbCMj7fp3PTTeQ1R7FETY5rdSVPo/jXrC7l2S6zRWwVFpQ5xYS
-	Y+4Qp9PF4Xo4+HgesfwP49RRSkAiyQQkP/204rOBK3cOazwJL1GjXcUZl7XiEtXG
-	XyjCUIs64cCj++lcgH/tJjIvzA+vCN8NbzOXR6E+vrOH7O92DqmADe3dsVE/nveK
-	P8aD6N700Qaf+xu18NNYcGjlZdieRBuB57lwycz3MgP+CtLGceMr7IUREkQFBwSf
-	3abCFNBxOambv9Yecvf5HNA7hJFJVVEnuAqMqnnzL/tQQmmzKQb/VzBwpTY7bzbO
-	HkqvErpZ4kVQ7Nu6290Tg==
-X-ME-Sender: <xms:wfPeZp_KlBfGdgbKnue9xuMPSs6vXzOXPLbsmuhi60qGWLC048-6Sw>
-    <xme:wfPeZts776ysby-xTITgx-Ml3TL9BrCARzwFLxpNmEN5dUlo512Dr6gm2xPOr0Oay
-    hvB-lFaW-0q6dctNYE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrudeijedggeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
-    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
-    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
-    necuhfhrohhmpedflfgrnhhnvgcuifhruhhnrghufdcuoehjsehjrghnnhgruhdrnhgvth
-    eqnecuggftrfgrthhtvghrnhephfeuuedtteeigeekieffjedvgfetvdelgffhkeettedv
-    veehieegfeffgfeiffetnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjsehjrghnnhgruhdr
-    nhgvthdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhuthdprhgtphhtth
-    hopehtohifihhntghhvghnmhhisehgmhgrihhlrdgtohhmpdhrtghpthhtohepjhhirhhi
-    shhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepkhhriihksehkvghrnhgvlh
-    drohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdr
-    ohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhishhtshdrih
-    hnfhhrrgguvggrugdrohhrghdprhgtphhtthhopegrshgrhhhisehlihhsthhsrdhlihhn
-    uhigrdguvghvpdhrtghpthhtoheprghlihhmrdgrkhhhthgrrhesshgrmhhsuhhnghdrtg
-    homhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopehlihhnuhigqdhsrghmshhunhhgqdhsohgtsehvghgvrhdrkh
-    gvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:wfPeZnCW56APoNKMia-eB44-4XJLrEWwOMaIWZRMQz27II4eFc2pjw>
-    <xmx:wfPeZtcZ56e8XyEKz3_R-gfyk1UfLYKxumZYJ6wemzthZik7aEpTgg>
-    <xmx:wfPeZuPuFJ_L1SCUzdo78KP74XZvuHUnR22OJVkiy6BM1l8dr0y-fw>
-    <xmx:wfPeZvlEtB6d6IhLxLuZgrWlwc0x4WAAv5doPT6GZInS9zMwCFAhSw>
-    <xmx:wfPeZlpeYuIYyn2ApEWOGwT3322zXzYJk7fTAS1UHDvZZ7TY4q_yEuu5>
-Feedback-ID: i47b949f6:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 5B4241F00083; Mon,  9 Sep 2024 09:10:25 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Yz6uNCpy"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 489DRTrg026720;
+	Mon, 9 Sep 2024 20:29:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	1C+dV5dIn4U4sQGXBEilezGsLj0xJ9FofhsWLX08yM0=; b=Yz6uNCpyk2hOa6sn
+	jOi5b3vGjCaNsePo4yzmO0aN9UClUScbNyNvblb3w6qXJAlED4GfrWlufNKupHDJ
+	S5CjgOk++kkx+J/XNElYXWxqZOKD2DrS/c+Oh7XRkf3xFlPeYPKo7w3N+jEDlQkU
+	jjPiyW1riTQ7ToAZEg9Ifw0KQPeyl/TbwvaLsB/QifYID1FwPb7NrOgwmDeXRQVI
+	NXe319XNNSE95I+NLaVfQ1C5sD5/F19syXePY9MgbhiAq8HdF5wN8YPbvvfqLFGb
+	u3j/TLWYEBpZBnvVrYQyQn1HrZFzdM2oP+8q74grZHxWvp5KUjiSjdsnNfbrKhqu
+	haI0wQ==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41gy6e3x6g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Sep 2024 20:29:42 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 489KTfoQ002368
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 9 Sep 2024 20:29:41 GMT
+Received: from [10.110.76.134] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 9 Sep 2024
+ 13:29:37 -0700
+Message-ID: <d206e315-3324-4814-b98d-027c3af6ebb6@quicinc.com>
+Date: Mon, 9 Sep 2024 13:29:37 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 09 Sep 2024 15:10:04 +0200
-From: "Janne Grunau" <j@jannau.net>
-To: "Nick Chan" <towinchenmi@gmail.com>,
- "Krzysztof Kozlowski" <krzk@kernel.org>,
- "Alim Akhtar" <alim.akhtar@samsung.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
- linux-serial@vger.kernel.org
-Cc: asahi@lists.linux.dev
-Message-Id: <d7c611c3-f2da-40a7-9b47-ebbdf6ddf321@app.fastmail.com>
-In-Reply-To: <20240909084222.3209-1-towinchenmi@gmail.com>
-References: <20240909084222.3209-1-towinchenmi@gmail.com>
-Subject: Re: [PATCH v4 0/3] tty: serial: samsung: Serial fixes for Apple A7-A11 SoCs
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 16/21] dt-bindings: spi: document support for SA8255p
+To: Krzysztof Kozlowski <krzk@kernel.org>
+CC: <andersson@kernel.org>, <konradybcio@kernel.org>, <robh@kernel.org>,
+        <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <rafael@kernel.org>,
+        <viresh.kumar@linaro.org>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <sudeep.holla@arm.com>, <andi.shyti@kernel.org>,
+        <tglx@linutronix.de>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <jassisinghbrar@gmail.com>, <lee@kernel.org>,
+        <linus.walleij@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <broonie@kernel.org>,
+        <cristian.marussi@arm.com>, <rui.zhang@intel.com>,
+        <lukasz.luba@arm.com>, <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <arm-scmi@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-i2c@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <linux-gpio@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>, <kernel@quicinc.com>,
+        <quic_psodagud@quicinc.com>, Praveen Talari <quic_ptalari@quicinc.com>
+References: <20240828203721.2751904-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-1-quic_nkela@quicinc.com>
+ <20240903220240.2594102-17-quic_nkela@quicinc.com>
+ <sdxhnqvdbcpmbp3l7hcnsrducpa5zrgbmkykwfluhrthqhznxi@6i4xiqrre3qg>
+ <b369bd73-ce2f-4373-8172-82c0cca53793@quicinc.com>
+ <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+Content-Language: en-US
+From: Nikunj Kela <quic_nkela@quicinc.com>
+In-Reply-To: <9a655c1c-97f6-4606-8400-b3ce1ed3c8bf@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 7fCK6lhX7moA3Z0_YwrAyh39NPgkf4B7
+X-Proofpoint-ORIG-GUID: 7fCK6lhX7moA3Z0_YwrAyh39NPgkf4B7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ bulkscore=0 clxscore=1015 mlxscore=0 lowpriorityscore=0 impostorscore=0
+ mlxlogscore=999 spamscore=0 adultscore=0 priorityscore=1501 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2408220000
+ definitions=main-2409090161
 
-Hej,
 
-On Mon, Sep 9, 2024, at 10:37, Nick Chan wrote:
-> Hi,
->
-> This series fixes issues with serial on A7-A11 SoCs. The changes do not
-> seem to affect existing M1 and up users so they can be applied
-> unconditionally.
->
-> Firstly, these SoCs require 32-bit writes on the serial port. This only
-> manifested in earlycon as reg-io-width in device tree is consulted for
-> normal serial writes.
->
-> Secondly, A7-A9 SoCs seems to use different bits for RXTO and RXTO
-> enable. Accessing these bits in addition to the original RXTO and RXTO
-> enable bits will allow serial rx to work correctly on those SoCs.
->
-> Changes in v4:
->   - Removed fake Reviewed-by tag added by accident... need to stop
->     making stupid mistakes that wastes everyone's time. The remaining
->     Reviewed-by is real as far as I am aware.
->
-> Changes in v3:
->   - v2 did not declare itself as v2 in subject line... resend as v3.
->
-> Changes in v2:
->   - Mention A7-A11 in the comment about changing register accesses to
->     MMIO32.
->
->   - Use BIT() macro for new entries, and change the existing APPLE_S5L_*
->     entries for consistency.
->
-> v1: 
-> https://lore.kernel.org/linux-samsung-soc/20240907111431.2970-1-towinchenmi@gmail.com
-> v2: 
-> https://lore.kernel.org/linux-samsung-soc/20240908075904.12133-1-towinchenmi@gmail.com
-> v3: 
-> https://lore.kernel.org/linux-samsung-soc/20240908090939.2745-1-towinchenmi@gmail.com
->
-> Nick Chan
-> ---
->
-> Nick Chan (3):
->   tty: serial: samsung: Use BIT() macro for APPLE_S5L_*
->   tty: serial: samsung: Fix A7-A11 serial earlycon SError
->   tty: serial: samsung: Fix serial rx on Apple A7-A9
->
->  drivers/tty/serial/samsung_tty.c | 22 ++++++++++++++++------
->  include/linux/serial_s3c.h       | 24 ++++++++++++++----------
->  2 files changed, 30 insertions(+), 16 deletions(-)
+On 9/4/2024 6:21 AM, Krzysztof Kozlowski wrote:
+> On 04/09/2024 14:48, Nikunj Kela wrote:
+>> On 9/3/2024 11:34 PM, Krzysztof Kozlowski wrote:
+>>> On Tue, Sep 03, 2024 at 03:02:35PM -0700, Nikunj Kela wrote:
+>>>> Add compatible representing spi support on SA8255p.
+>>>>
+>>>> Clocks and interconnects are being configured in firmware VM
+>>>> on SA8255p platform, therefore making them optional.
+>>>>
+>>> Please use standard email subjects, so with the PATCH keyword in the
+>>> title.  helps here to create proper versioned patches.
+>> Where did I miss PATCH keyword in the subject here? It says "[PATCH v2
+>> 16/21] dt-bindings: spi: document support for SA8255p"
+> Oh, wrong template. It was about spi prefix, 
 
-whole series tested on M1 Max and M2 Pro
+These are the latest 4 commits in linux-next for spi:
 
-Tested-by: Janne Grunau <j@jannau.net>
+12736adc43b7 dt-bindings: spi: nxp-fspi: add imx8ulp support
+b0cdf9cc0895 spi: dt-bindings: Add rockchip,rk3576-spi compatible
+d6d0af1b9eff dt-bindings: spi: add PIC64GX SPI/QSPI compatibility to
+MPFS SPI/QSPI bindings
+1c4d834e4e81 spi: dt-bindings: convert spi-sc18is602.txt to yaml format
 
-best regards
-janne
+Now I am confused which prefix format shall I use? first spi or first
+dt-bindings?
+
+
+> should be this one:
+>
+> Please use subject prefixes matching the subsystem. You can get them for
+> example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+> your patch is touching. For bindings, the preferred subjects are
+> explained here:
+> https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
+>
+> Best regards,
+> Krzysztof
+>
