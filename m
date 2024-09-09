@@ -1,97 +1,158 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from fout7-smtp.messagingengine.com (fout7-smtp.messagingengine.com [103.168.172.150])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A20A682481;
-	Mon,  9 Sep 2024 12:13:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91C501B9B24;
+	Mon,  9 Sep 2024 13:10:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.150
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725884026; cv=none; b=iTsGObX5Nqf0M6T2/elu+gYlxGAvG4i8HDStnPoppyf3m4xfHZg8kdy71nei+mOZx2draRh1tJF8Hns+Yut4EpRuTK/nYqwWKuu6s2aQKwgP8wxCUT1EglUAUNEOkX9V2THLcBjCzY7ho6gK0wdbMMpWrVFsLYdNNNFEIWR+6Ik=
+	t=1725887428; cv=none; b=lvdHr3qoXsPlW42GtWl4tdwpvOJZ4gK+w37XmGIwKpnJTPmNA1W/jb10L0pUAfAtjR19dkAbX58mu8XJGn+ivgbdwN4LH0at4u6Q/xbHM8HW6EC3vERFziZsFB2fSU9U+BdqOd4euNh5ngeRpZ6seKtjMJgHzFqvpF9HVi34bjI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725884026; c=relaxed/simple;
-	bh=t47CccqHr/DHgoJgcqrfHM5zObVL3KmsSeDr4bAPynY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Kos8Bt+PF1Gtq9VcTFLSq1XrFy78PS1kPvTjLd5aVoN5Y+HjMiPkhhbpAx/AG/n/9gcb7/LzMtvIsls1+zsvXHPTI9sJVGWXwpTV2cuR/TB2SaZeQ9Q4Ml/hLU4n545efqP4XpTLqN+cgLFtTqWW5aNt96k7oHLqm1cz2Ah7QK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=FECj/lhO; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NrBI3X9G; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1725887428; c=relaxed/simple;
+	bh=FOb9cDj+LeGDsiMg28ppP3KCfoC0waIPwBP00Op7h7I=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=alhgLLAXlM5i4ME0l0o+yVPOK8eeXjE0/9MRJLI07QISmgWTyGkRqaPqgApo5h5Yrt50e4FwxPqQY6AlfHxqtuVOtz5kSWyo4xfz47QvEEMd5hwge9Yb4WDfI835wyhMqESAgJHY35MZPHZkf0cYw92d3AEjJejZF+fn/OpEF6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=iwaqh3Vb; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=lVioyOQP; arc=none smtp.client-ip=103.168.172.150
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="FECj/lhO";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NrBI3X9G"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1725884022;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XIG1cGBt+ym2uX13tn/UdRrvQEpGjYbA+c7n0ENDLNw=;
-	b=FECj/lhOKYjJ6flkqb6lvQGG4FSgAGDozv7YgLU8C2Fs/Gbwev3mn6AZdzjAqHloa2ENCB
-	Mj2l9w15Vy30RGNjW92SaF3jeEHKZdZqGupdMWGTubdO1SwL4kTfSnFpfoJVsJracAdFOx
-	mvXMPlMg4XONErwnu544+EsOvcVRLgaGkjfFY4tVcWvOgQ0hqaf0YPzLu9EKyIydMiZl1w
-	lkGhatT2/RwJ0MkNViuLjsgOQ0mBzTjJy9dhTl3ubOgelotSg78Ll5xxSf1Wapgb2Rytak
-	D+khITwGpVHGO3xt6YpxQ7LNFklTAgYs81w8yHAPBISQFXUzlGvMkhWAL2NW0Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1725884022;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XIG1cGBt+ym2uX13tn/UdRrvQEpGjYbA+c7n0ENDLNw=;
-	b=NrBI3X9Gq7AlZJarU8wsCJQBFozXbVZWtkmSh2xG/z2fW9y9izo1R0eIthUyg+D5ZQIDWj
-	q2uT+u4Hhx0rdUBA==
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Steven Rostedt <rostedt@goodmis.org>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>, "Paul E.
- McKenney" <paulmck@kernel.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Ilpo =?utf-8?Q?J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>, Serge Semin <fancer.lancer@gmail.com>,
- Rengarajan S <rengarajan.s@microchip.com>, Wolfram Sang
- <wsa+renesas@sang-engineering.com>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>
-Subject: Re: [PATCH next v1 1/2] serial: 8250: Switch to nbcon console
-In-Reply-To: <Zt7FstSsthuxtpEz@smile.fi.intel.com>
-References: <87jzfod9f2.fsf@jogness.linutronix.de> <8734mbdwrf.ffs@tglx>
- <Zt7FstSsthuxtpEz@smile.fi.intel.com>
-Date: Mon, 09 Sep 2024 14:13:42 +0200
-Message-ID: <875xr5c9e1.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="iwaqh3Vb";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="lVioyOQP"
+Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
+	by mailfout.phl.internal (Postfix) with ESMTP id AE6311380188;
+	Mon,  9 Sep 2024 09:10:25 -0400 (EDT)
+Received: from phl-imap-13 ([10.202.2.103])
+  by phl-compute-07.internal (MEProxy); Mon, 09 Sep 2024 09:10:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1725887425;
+	 x=1725973825; bh=hZmFB4zZqsK/lqmaZT6pZoo+wceOfyxthIa1HVadf+Y=; b=
+	iwaqh3Vbcq58OuQaQSBvCXnuaPO69yL+rbF6X1Vt6CeonoomrDaAL3Cz+KtOC303
+	glVVO0D2EUj1klePj8h5sQ52SBe7ejzOYBm0mazavBmDxMY3J9VkRPyBDIj2nTwC
+	wS3BMz30Wsw37mvNyUeA6AkQRqGZRvkihcI1XaFU0yN8R0GCCzHYk9oztQHt+RUM
+	w+uprG2zyz0vShXPC5Y5llMhazvo9hpFnmfgQVBKrh4u1RPqqEirq7qMmwZqSyTu
+	750vlH/VNeUkeUdfotfLSWEZ9JobGZYAgUORGlz6OMhwivJFVMKY4reCzQlg4QF0
+	Z4KFxk4DPnm6t/ULlHIH/A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1725887425; x=
+	1725973825; bh=hZmFB4zZqsK/lqmaZT6pZoo+wceOfyxthIa1HVadf+Y=; b=l
+	VioyOQP42MXQxqXbCMj7fp3PTTeQ1R7FETY5rdSVPo/jXrC7l2S6zRWwVFpQ5xYS
+	Y+4Qp9PF4Xo4+HgesfwP49RRSkAiyQQkP/204rOBK3cOazwJL1GjXcUZl7XiEtXG
+	XyjCUIs64cCj++lcgH/tJjIvzA+vCN8NbzOXR6E+vrOH7O92DqmADe3dsVE/nveK
+	P8aD6N700Qaf+xu18NNYcGjlZdieRBuB57lwycz3MgP+CtLGceMr7IUREkQFBwSf
+	3abCFNBxOambv9Yecvf5HNA7hJFJVVEnuAqMqnnzL/tQQmmzKQb/VzBwpTY7bzbO
+	HkqvErpZ4kVQ7Nu6290Tg==
+X-ME-Sender: <xms:wfPeZp_KlBfGdgbKnue9xuMPSs6vXzOXPLbsmuhi60qGWLC048-6Sw>
+    <xme:wfPeZts776ysby-xTITgx-Ml3TL9BrCARzwFLxpNmEN5dUlo512Dr6gm2xPOr0Oay
+    hvB-lFaW-0q6dctNYE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrudeijedggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedflfgrnhhnvgcuifhruhhnrghufdcuoehjsehjrghnnhgruhdrnhgvth
+    eqnecuggftrfgrthhtvghrnhephfeuuedtteeigeekieffjedvgfetvdelgffhkeettedv
+    veehieegfeffgfeiffetnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhush
+    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjsehjrghnnhgruhdr
+    nhgvthdpnhgspghrtghpthhtohepuddtpdhmohguvgepshhmthhpohhuthdprhgtphhtth
+    hopehtohifihhntghhvghnmhhisehgmhgrihhlrdgtohhmpdhrtghpthhtohepjhhirhhi
+    shhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepkhhriihksehkvghrnhgvlh
+    drohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdr
+    ohhrghdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhishhtshdrih
+    hnfhhrrgguvggrugdrohhrghdprhgtphhtthhopegrshgrhhhisehlihhsthhsrdhlihhn
+    uhigrdguvghvpdhrtghpthhtoheprghlihhmrdgrkhhhthgrrhesshgrmhhsuhhnghdrtg
+    homhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdr
+    ohhrghdprhgtphhtthhopehlihhnuhigqdhsrghmshhunhhgqdhsohgtsehvghgvrhdrkh
+    gvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:wfPeZnCW56APoNKMia-eB44-4XJLrEWwOMaIWZRMQz27II4eFc2pjw>
+    <xmx:wfPeZtcZ56e8XyEKz3_R-gfyk1UfLYKxumZYJ6wemzthZik7aEpTgg>
+    <xmx:wfPeZuPuFJ_L1SCUzdo78KP74XZvuHUnR22OJVkiy6BM1l8dr0y-fw>
+    <xmx:wfPeZvlEtB6d6IhLxLuZgrWlwc0x4WAAv5doPT6GZInS9zMwCFAhSw>
+    <xmx:wfPeZlpeYuIYyn2ApEWOGwT3322zXzYJk7fTAS1UHDvZZ7TY4q_yEuu5>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 5B4241F00083; Mon,  9 Sep 2024 09:10:25 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Date: Mon, 09 Sep 2024 15:10:04 +0200
+From: "Janne Grunau" <j@jannau.net>
+To: "Nick Chan" <towinchenmi@gmail.com>,
+ "Krzysztof Kozlowski" <krzk@kernel.org>,
+ "Alim Akhtar" <alim.akhtar@samsung.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ linux-serial@vger.kernel.org
+Cc: asahi@lists.linux.dev
+Message-Id: <d7c611c3-f2da-40a7-9b47-ebbdf6ddf321@app.fastmail.com>
+In-Reply-To: <20240909084222.3209-1-towinchenmi@gmail.com>
+References: <20240909084222.3209-1-towinchenmi@gmail.com>
+Subject: Re: [PATCH v4 0/3] tty: serial: samsung: Serial fixes for Apple A7-A11 SoCs
 Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 09 2024 at 12:53, Andy Shevchenko wrote:
-> On Sat, Sep 07, 2024 at 10:39:00PM +0200, Thomas Gleixner wrote:
->> On Fri, Sep 06 2024 at 18:44, John Ogness wrote:
+Hej,
+
+On Mon, Sep 9, 2024, at 10:37, Nick Chan wrote:
+> Hi,
 >
-> ...
+> This series fixes issues with serial on A7-A11 SoCs. The changes do not
+> seem to affect existing M1 and up users so they can be applied
+> unconditionally.
 >
->> I'm 100% that this is just a problem of blindly sharing this with the
->> regular uart code and not because there is a requirement. See what
->> serial8250_console_setup() does at the end:
->> 
->>         if (port->dev)
->>                 pm_runtime_get_sync(port->dev);
->> 
->> The corresponding put() is in serial8250_console_exit(). So there is
->> absolutely zero reason for power management in the console write
->> functions. It's the usual voodoo programming which nobody noticed
->> because it did not immediately blow up in their face.
+> Firstly, these SoCs require 32-bit writes on the serial port. This only
+> manifested in earlycon as reg-io-width in device tree is consulted for
+> normal serial writes.
 >
-> It might be historical, but yes, the above is for a reason.
-> And if somebody needs a kernel console to be shutdown, they should remove
-> it from the active consoles.
+> Secondly, A7-A9 SoCs seems to use different bits for RXTO and RXTO
+> enable. Accessing these bits in addition to the original RXTO and RXTO
+> enable bits will allow serial rx to work correctly on those SoCs.
+>
+> Changes in v4:
+>   - Removed fake Reviewed-by tag added by accident... need to stop
+>     making stupid mistakes that wastes everyone's time. The remaining
+>     Reviewed-by is real as far as I am aware.
+>
+> Changes in v3:
+>   - v2 did not declare itself as v2 in subject line... resend as v3.
+>
+> Changes in v2:
+>   - Mention A7-A11 in the comment about changing register accesses to
+>     MMIO32.
+>
+>   - Use BIT() macro for new entries, and change the existing APPLE_S5L_*
+>     entries for consistency.
+>
+> v1: 
+> https://lore.kernel.org/linux-samsung-soc/20240907111431.2970-1-towinchenmi@gmail.com
+> v2: 
+> https://lore.kernel.org/linux-samsung-soc/20240908075904.12133-1-towinchenmi@gmail.com
+> v3: 
+> https://lore.kernel.org/linux-samsung-soc/20240908090939.2745-1-towinchenmi@gmail.com
+>
+> Nick Chan
+> ---
+>
+> Nick Chan (3):
+>   tty: serial: samsung: Use BIT() macro for APPLE_S5L_*
+>   tty: serial: samsung: Fix A7-A11 serial earlycon SError
+>   tty: serial: samsung: Fix serial rx on Apple A7-A9
+>
+>  drivers/tty/serial/samsung_tty.c | 22 ++++++++++++++++------
+>  include/linux/serial_s3c.h       | 24 ++++++++++++++----------
+>  2 files changed, 30 insertions(+), 16 deletions(-)
 
-Correct, because you cant do PM from arbitrary contexts.
+whole series tested on M1 Max and M2 Pro
 
-Ergo the code which does PM in the context of the console write function
-is bogus.
+Tested-by: Janne Grunau <j@jannau.net>
 
-Thanks,
-
-        tglx
-
-
+best regards
+janne
