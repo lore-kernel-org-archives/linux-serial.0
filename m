@@ -1,191 +1,114 @@
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29B4117DFFC
-	for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 18:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 688C71A304A;
+	Wed, 11 Sep 2024 18:47:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726079884; cv=none; b=CiaMqnRTAvq/hxpCEthCMQsVAKF3qCSlhWErDQaiLpHQVxMKh7WFAYns8qa6KBUXEY7/rtPKPoyCeoD9dnd8lnYCfu9zg+79j6SDCJ3DvhWIDb+NYvduRLb6F3zaXHNHa79frWgdHOECyu9/16SdEWciGAxZcRtLVx509RB33jU=
+	t=1726080444; cv=none; b=VEeSN2VOJdK+vUw/BszGME4KETOP4Ym6V+oh/Eb5lw9Gg+niHwu2Y5iwof6X9yQmCJP4HV2vGnr/EdCDrdwgzDwZP6s+tNIfTj5L6MlMs+qsMUeknAYrJdp2TXDiXAF4lEDlkIawDRNtuITWAvkolJL1459+uD7vCvC/crrGj4Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726079884; c=relaxed/simple;
-	bh=720WqB0vXqiR7KaqW8XuBZZ/YnrreteG3lQDChgZIGM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DMc00PCP4iHtb2oZ7pzem+Zdiyc6lVEkLQpXO7ZzulDi8QBSjNqZDecMACs7IA/jPt2KnvnzQlLPoJhjkt3CPSSwgvbY7ZG5V/+KWS9sEzDeV0+3vaU8jMZrMEMTzMKY4O6a/YQLM4/4Gp5GtKsCh5r8n1pKC94X4TxzvF17mwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=hPTNJj2P; arc=none smtp.client-ip=209.85.166.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1726080444; c=relaxed/simple;
+	bh=XR5bzqdsJrDGK0v+QIt30Cp8anjKu0R3ZiJNTyZu2i0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sPlYbelvej1+4vLQ2ILiLT7i+8dQqrXwvYngWWuGD6DOaq9kbxjq5j+ma5A5VGN/GMaok/YN2I2Y6h9uqshR+DAYGtwuH040TfkHWGhfeNCfzTbbocMrPMRXTlZLaW2H67LLUV0Bn6dz4XsbZwA1WHBwTkxq0R3tQslTkW7d1UU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R+1Q7FJ/; arc=none smtp.client-ip=209.85.208.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="hPTNJj2P"
-Received: by mail-io1-f48.google.com with SMTP id ca18e2360f4ac-82cdb749598so4849939f.1
-        for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 11:38:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R+1Q7FJ/"
+Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2f763e9e759so1750791fa.3;
+        Wed, 11 Sep 2024 11:47:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1726079882; x=1726684682; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1726080440; x=1726685240; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jD/fWH7izbc9nv5tphOU+iUvULm3JKen0/o1NQcnxpE=;
-        b=hPTNJj2P64RmpaEuvooZKdFpA4I3Kd7hGkkZ5R9VmW0yLAKSDKI7qz0FMo1lpZvWaV
-         q1ijiQkm6gC0NHJ/IdwrVZDwmYZ8NXTH3W+RWFQwzHiG1JyW/hZyvZbkAJqvYDQYnGo9
-         EWk1PvSPQd14hsIiu8UA1u4z4s7oZAT1uKKqI=
+        bh=WUguyS99D1KssLyBrohTuPk7R4iOV771bg153OXzj+0=;
+        b=R+1Q7FJ/tZnVIP3IsK65r5adSVzYVJWHLzhhU4pyxH9su+6biYs4t18PRMK2FCXJY4
+         uJSoR2eVzQYBntdoBcwwPYqzd0MpOk9k8eo8GJR0/fYI+wUmvr+45+BtdBz2KwCQOe9U
+         UxUmm6BXqIM8UP6PTYYRdCD/mB2a9qNAEAyEe2Q836aATHdaDyBo6yqHNfOnVtASESmu
+         HTSqMKfpCVbSqKAtl8efb28AzNjzqHWwA0jP0kJVYrJ6QJ0PJducw5BYKNA083v9g1Zq
+         +igNV2haAKC0uk8fjGIP0egX5bMsYFPtit16mGndgbkjYJUI316zbvvdCOQDLBYBW7eV
+         b5Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726079882; x=1726684682;
+        d=1e100.net; s=20230601; t=1726080440; x=1726685240;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jD/fWH7izbc9nv5tphOU+iUvULm3JKen0/o1NQcnxpE=;
-        b=l8Z7G2q6XAIZULz68auWh2dTJl4bIy9Ijcutx6qAZozs/Qsu86PGSCZmnrJm0UpuDy
-         0lZVNH3YxZ/9ep7HAYlCUA6giEgt8I6w7C5Z/ZA3NpqgN91x4amwZxigETLElbq8Rqc6
-         qFqMS6by/j0qGveNb0Fq2nV3g6uAxTH0acurvPGqzA5xv8BSFFbzAw5IkmjQpVaoJT7Z
-         q4fY+h2XUbXa1F7GVL9hZkCWTa+8EGJ8Dx9xO3OAhSoSM3enMLb7+Dl40pFWIk9bbg1X
-         FHWoxz5wVR+PWAPlaz9g9x+sYcAMNFppexOJS+eZApf29Qv9u5HMhDj7pkM6cACG6J/i
-         carw==
-X-Forwarded-Encrypted: i=1; AJvYcCXP/y9wImWNTPQB0HouJYb1tF6FJ9c03TdJgt99v1wlLT3jWsWu/NRGA27kI1c/qVm+2wUpvkqbhSqed0Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4UfzdzSHtdXXWSbgIMy2Gp86nqwa5zHbbsuvfxUz7PyPF9J9P
-	tE7kmaZoZHEa2We1Uox2fJWDr+bcjSiv+qhTWSvWEu9JPn+BVm7JJQ46m2TrpQ==
-X-Google-Smtp-Source: AGHT+IFQn6XSvFm/TXyC2OLFo1OPMiJEq6iSd/tIUWNYHgJdMLX0o8SEBQxSSCkUTPbJbh4+IvJlYQ==
-X-Received: by 2002:a05:6602:27c8:b0:82c:f2f5:388d with SMTP id ca18e2360f4ac-82d1f8fbe4amr86518939f.7.1726079881979;
-        Wed, 11 Sep 2024 11:38:01 -0700 (PDT)
-Received: from rrangel920.bld.corp.google.com (h24-56-189-226.arvdco.broadband.dynamic.tds.net. [24.56.189.226])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4d35f89aa5dsm127466173.89.2024.09.11.11.38.00
+        bh=WUguyS99D1KssLyBrohTuPk7R4iOV771bg153OXzj+0=;
+        b=wDwEG/OYh1GLCF4GohDPcKZOFIh0i01h67DP7IUAo0i1WqGlnnAjhemQTB8uGC6DVX
+         VWZ1wZMzGh38wJfmR5pUq3iEkEp+Humbpc58BJ0YEN2Cx8g6FnyenZJwg7Bel7+OoGe7
+         D1MKy2UZ8nM430bBkZre769btzRATfhTaN9C1ZOhGpDK3venW+QzcoVwI1CIHxyB+0MA
+         h3FCzAylreFPqS9uEpw19eCd9aI+ARbsFxvdGBtuRq+abXvooP6EH3Gy7rTZISDp6BRx
+         XtAs1MXl/o9dD2EkPQK6itV6MK8qvljPoozM5HmDbN+Fx6ugBdpIERAid6BzzZnU+/nW
+         vmYw==
+X-Forwarded-Encrypted: i=1; AJvYcCU4/rJT1uDiGVUUrf7y87T1nrhJTSqhzGBwI0y5MnZ6Qyi4G4MvppuUS9y61cHvUBECyDdIPHx1XEMg+aea@vger.kernel.org, AJvYcCVOGDrnX6W0Rrz8FhqsxgNnpzZasSdNJd3Auj+Q1oxRNhk525GuQShEcvv8yFc2wv1fK60vNb9LbzM=@vger.kernel.org, AJvYcCVjEiaV4T0PrXmjuHxN83PyXy4CV9WrA1Fz27TloFCiQJnRiVPx28aKei/uigD2imvHrDJX/zJZ95teAb1T@vger.kernel.org
+X-Gm-Message-State: AOJu0YwIpX46g3JJYMB/SVlQyWT2ExSOb3lX/BMjPDGvtrbCfdjMonyC
+	tB8OqpAqQOi+dMAVUUloaKHw5n4eCzGLzQQu1SascqqweAuKyU7QCwCpvQ==
+X-Google-Smtp-Source: AGHT+IEN8qOWgpIUkneWFcMdaZkuGXDQ1bjzD47XBVL43ns9lB6yuwQOtgmGbuGBgCf463X68Y3xuA==
+X-Received: by 2002:a05:651c:547:b0:2f5:a29:5a42 with SMTP id 38308e7fff4ca-2f787dc3dc3mr1298031fa.14.1726080439438;
+        Wed, 11 Sep 2024 11:47:19 -0700 (PDT)
+Received: from localhost ([185.195.191.165])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2f75bffc9edsm16547671fa.39.2024.09.11.11.47.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Sep 2024 11:38:01 -0700 (PDT)
-From: Raul E Rangel <rrangel@chromium.org>
-X-Google-Original-From: Raul E Rangel <rrangel@google.com>
-To: linux-kernel@vger.kernel.org
-Cc: pmladek@suse.com,
-	Raul E Rangel <rrangel@google.com>,
-	Raul E Rangel <rrangel@chromium.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wed, 11 Sep 2024 11:47:18 -0700 (PDT)
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Viresh Kumar <vireshk@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Vinod Koul <vkoul@kernel.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Huang Shijie <shijie@os.amperecomputing.com>,
-	Ingo Molnar <mingo@kernel.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Yuntao Wang <ytcoode@gmail.com>,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2] init: Don't proxy `console=` to earlycon
-Date: Wed, 11 Sep 2024 12:35:14 -0600
-Message-ID: <20240911123507.v2.1.Id08823b2f848237ae90ce5c5fa7e027e97c33ad3@changeid>
-X-Mailer: git-send-email 2.46.0.598.g6f2099f65c-goog
+	dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] dmaengine: dw: Fix sys freeze and XFER-bit set error for UARTs
+Date: Wed, 11 Sep 2024 21:46:08 +0300
+Message-ID: <20240911184710.4207-1-fancer.lancer@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Today we are proxying the `console=` command line args to the
-`param_setup_earlycon()` handler. This is done because the following are
-equivalent:
+The main goal of the series is to fix the DW DMAC driver to be working
+better with the serial 8250 device driver implementation. In particular it
+was discovered that there is a random system freeze (caused by a
+deadlock) and an occasional "BUG: XFER bit set, but channel not idle"
+error printed to the log when the DW APB UART interface is used in
+conjunction with the DW DMA controller. Although I guess the problem can
+be found for any 8250 device using DW DMAC for the Tx/Rx-transfers
+execution. Anyway this short series contains two patches fixing these
+bugs. Please see the respective patches log for details.
 
-    console=uart[8250],mmio,<addr>[,options]
-    earlycon=uart[8250],mmio,<addr>[,options]
+Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+Changelog RFC:
+- Add a new patch:
+  [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+  fixing the "XFER bit set, but channel not idle" error.
+- Instead of just dropping the dwc_scan_descriptors() method invocation
+  calculate the residue in the Tx-status getter.
 
-Both invocations enable an early `bootconsole`. `console=uartXXXX` is
-just an alias for `earlycon=uartXXXX`.
+base-commit: 8400291e289ee6b2bf9779ff1c83a291501f017b
+Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: dmaengine@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-In addition, when `earlycon=` (empty value) or just `earlycon`
-(no value) is specified on the command line, we enable the earlycon
-`bootconsole` specified by the SPCR table or the DT.
+Serge Semin (2):
+  dmaengine: dw: Prevent tx-status calling DMA-desc callback
+  dmaengine: dw: Fix XFER bit set, but channel not idle error
 
-The problem arises when `console=` (empty value) is specified on the
-command line. It's intention is to disable the `console`, but what
-happens instead is that the SPRC/DT console gets enabled.
+ drivers/dma/dw/core.c | 144 ++++++++++++++++++++++--------------------
+ 1 file changed, 75 insertions(+), 69 deletions(-)
 
-This happens because we are proxying the `console=` (empty value)
-parameter to the `earlycon` handler. The `earlycon` handler then sees
-that the parameter value is empty, so it enables the SPCR/DT
-`bootconsole`.
-
-This change makes it so that the `console` or `console=` parameters no
-longer enable the SPCR/DT `bootconsole`. I also cleans up the hack in
-`main.c` that would forward the `console` parameter to the `earlycon`
-handler.
-
-Signed-off-by: Raul E Rangel <rrangel@chromium.org>
----
-I tested this patch with the following permutations:
-* console=
-* console
-* console=ttyS0,115200
-* earlycon
-* earlycon=uart,mmio32,0xfedc9000
-* earlycon=
-* console=uart,mmio32,0xfedc9000,115200n8
-
-One unfortunate thing (unrelated to this patch) is that the
-`univ8250_console` registers as a real console (regardless if the legacy
-0x3F8 UARTs are present) early on. This causes the `bootconsole` to get
-disabled and replaced with the non functional `univ8250_console`.
-
-[    0.000000] earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '')
-[    0.000000] printk: legacy bootconsole [uart0] enabled
-...
-[    1.141835] printk: legacy console [ttyS0] enabled <-- Booo!
-[    1.156500] printk: legacy bootconsole [uart0] disabled
-
-Changes in v2:
-- Switched to defining an early console parameter
-- Removed hack in main.c
-
- drivers/tty/serial/earlycon.c | 23 +++++++++++++++++++++++
- init/main.c                   |  5 +----
- 2 files changed, 24 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index a5fbb6ed38aed6..ab9af37f6cda35 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -248,6 +248,29 @@ static int __init param_setup_earlycon(char *buf)
- }
- early_param("earlycon", param_setup_earlycon);
- 
-+/*
-+ * The `console` parameter is overloaded. It's handled here as an early param
-+ * and in `printk.c` as a late param. It's possible to specify an early
-+ * `bootconsole` using `earlycon=uartXXXX` (handled above), or via
-+ * the `console=uartXXX` alias. See the comment in `8250_early.c`.
-+ */
-+static int __init param_setup_earlycon_console_alias(char *buf)
-+{
-+	/*
-+	 * A plain `console` parameter must not enable the SPCR `bootconsole`
-+	 * like a plain `earlycon` does.
-+	 *
-+	 * A `console=` parameter that specifies an empty value is used to
-+	 * disable the `console`, not the `earlycon` `bootconsole`. The
-+	 * disabling of the `console` is handled by `printk.c`.
-+	 */
-+	if (!buf || !buf[0])
-+		return 0;
-+
-+	return param_setup_earlycon(buf);
-+}
-+early_param("console", param_setup_earlycon_console_alias);
-+
- #ifdef CONFIG_OF_EARLY_FLATTREE
- 
- int __init of_setup_earlycon(const struct earlycon_id *match,
-diff --git a/init/main.c b/init/main.c
-index 206acdde51f5a9..e668dda1c68f3f 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -754,10 +754,7 @@ static int __init do_early_param(char *param, char *val,
- 	const struct obs_kernel_param *p;
- 
- 	for (p = __setup_start; p < __setup_end; p++) {
--		if ((p->early && parameq(param, p->str)) ||
--		    (strcmp(param, "console") == 0 &&
--		     strcmp(p->str, "earlycon") == 0)
--		) {
-+		if (p->early && parameq(param, p->str)) {
- 			if (p->setup_func(val) != 0)
- 				pr_warn("Malformed early option '%s'\n", param);
- 		}
 -- 
-2.46.0.598.g6f2099f65c-goog
+2.43.0
 
