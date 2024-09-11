@@ -1,48 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D78A1537FF;
-	Wed, 11 Sep 2024 06:18:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4225A80604;
+	Wed, 11 Sep 2024 06:57:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726035529; cv=none; b=NFu9FESMV3w4nl7Ct7+VmlQJkjPdQcoMygKEG5rufwNYVDQFRoab6wsjehkrwZfhdWGKlzAeGLgaQzc1K4hO3RrtOSHJAeCYyv+rnaNIP75bP05L066KjSMPqqydqYyEm1azl91FB1pVFpss3K6pydjLiC/f5MIjnzxXAznjGfo=
+	t=1726037832; cv=none; b=i6U8Mug0hoX+eIcyt05JIn9lxDg6Dphx5u74DCziw5Q8t1N48pmBzEmNfGrixHbWVG7VJZYRQKZSzGNGGIAB/O+2tgMmK6Mc0Kz67glhqZB7MVgTr9HBn+mf8uFwiPFfGRWodKtOKI+Urnyva3fjLhWgsFVJ9BguZhmDMClk5MY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726035529; c=relaxed/simple;
-	bh=FgncPijHWGaOcb5Rv2z5lQnokUUiFiUNYC4AMcv8WyU=;
+	s=arc-20240116; t=1726037832; c=relaxed/simple;
+	bh=DkDSZHo3tLoBfS9FNDpX3nhDBdTeMRElINKQNI2ypm0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=po6dDP5dSdDqhCjwravaEhAfv6zkz6GH9Slt8RZjQk4y0XEsNGii7AErZaC6d8n20LV4oRx9EAdDNk/SnoQxGxE8hSVMkxSd49+rUVaOYggLb0HmeX6u9OSjcrlv3ZnxsZSiVa01WPuoNHz2U4zTfVAGG8YjBOkY74rGt0XES0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LsW4wBYa; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=j/6GZc/epRavpik5BH8DSuPUO9aiTv26Jabn4EgUBNInVEfIgfdRJSyUaMdPaB1RGAgDtY/xD6btVT3KtXjG7lZ/m0QcuQsF3VmUALpGS2HHaaa8LMtH4Jacr/GVeWlHPyQz+qS5Yg6INSRNoCV9tWmBPjJ5ETg2uAVMsrGOJN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i+53XkKN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LsW4wBYa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D320C4CEC6;
-	Wed, 11 Sep 2024 06:18:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i+53XkKN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC58C4CEC6;
+	Wed, 11 Sep 2024 06:57:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726035528;
-	bh=FgncPijHWGaOcb5Rv2z5lQnokUUiFiUNYC4AMcv8WyU=;
+	s=k20201202; t=1726037831;
+	bh=DkDSZHo3tLoBfS9FNDpX3nhDBdTeMRElINKQNI2ypm0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LsW4wBYasptu3KFd3WYsZJBgZrTiRbK2o7mvL4DqS5Isly+eNLtZGqYtG7PHoVajb
-	 PZarYu5gNg1HEs+//Oirr6FQUxkwp4Fq9Zi5ziPwN8AdrUadJJKOfRCoZaOKhJ8L/v
-	 T0taEBJotJhGZzm0uGWfDM/l1Z/K7nz4rE6lg3jJHYy62+KrieeMqnQqa1aqcA5bB5
-	 IDilWqtCYCKyFB6TsmCTbhbAufXRZzA8de1tiXjFO/KhPsrc8INLFohllly/4JUJCk
-	 trnpzux2+UxacXQUjyz83IEhzkrgOP6AzuygGXjPqakiQS61ZB6K1hX7gR6qywNRRr
-	 p4RXv5Xu4B1Aw==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1soGh0-000000005jl-2E7A;
-	Wed, 11 Sep 2024 08:19:06 +0200
-Date: Wed, 11 Sep 2024 08:19:06 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	=?utf-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4=?= Prado <nfraprado@collabora.com>,
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/8] serial: qcom-geni: fix console corruption
-Message-ID: <ZuE2WkMMkdRDzRFQ@hovoldconsulting.com>
-References: <20240906131336.23625-1-johan+linaro@kernel.org>
+	b=i+53XkKNHncC8E89jh0RORS1w5btlh4IRLXrX487pAtvMDg/izK/M3kfKPEnSQXJO
+	 vgKF/5S0SqaNd4cECqkuAsZUbuyI0cEZ/Cy/AAPAOm4edmXZmyN1gIyAAMIqElHvtK
+	 zRV127JBqiX23oL8zRCksEriiy/+QNrMv62Mbp25ILtbsh5wcKDRKVdKZlVHLSYk9n
+	 NUQ3INiix+B2HttUyumNce3D8d2561Rtl7oKL7SSJg04mBYWfvlp8mpeQiA2rC/f+B
+	 bOu6zB1AQrVfCpm1K7an98D/PKLi0Uch3GCZaWE/BuHCt5392nvy/aT3w+Dz/PpYfM
+	 O2xPlSqijNYww==
+Date: Wed, 11 Sep 2024 08:57:07 +0200
+From: Andi Shyti <andi.shyti@kernel.org>
+To: Nick Chan <towinchenmi@gmail.com>
+Cc: Krzysztof Kozlowski <krzk@kernel.org>, 
+	Alim Akhtar <alim.akhtar@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	asahi@lists.linux.dev, Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>
+Subject: Re: [PATCH v5 1/3] tty: serial: samsung: Use bit manipulation macros
+ for APPLE_S5L_*
+Message-ID: <7pzwy6ubvcld6zv2amt5s6cctup4du62ysxki5xzfqpys35arc@zbuv4uoht2xm>
+References: <20240911050741.14477-1-towinchenmi@gmail.com>
+ <20240911050741.14477-2-towinchenmi@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -51,35 +47,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240906131336.23625-1-johan+linaro@kernel.org>
+In-Reply-To: <20240911050741.14477-2-towinchenmi@gmail.com>
 
-On Fri, Sep 06, 2024 at 03:13:28PM +0200, Johan Hovold wrote:
-> This series is a follow-on series to the lockup fixes [1] that addresses
-> a number of issues in the Qualcomm GENI console code, including corrupt
-> console output during boot, which is a problem for automated CI testing.
+Hi Nick,
 
-> [1] https://lore.kernel.org/lkml/20240704101805.30612-1-johan+linaro@kernel.org/
+On Wed, Sep 11, 2024 at 01:02:11PM GMT, Nick Chan wrote:
+> New entries using BIT() will be added soon, so change the existing ones to
+> use bit manipulation macros including BIT() and GENMASK() for
+> consistency.
 > 
-> Changes in v2
->  - determine poll timeout in set_termios() and avoid hard coding fifo
->    size in calculation
->  - move fifo drain helper under console ifdef to avoid an unused function
->    warning as reported by the kernel test robot
->  - drop a redundant active check from fifo drain helper
-> 
-> 
-> Douglas Anderson (3):
->   soc: qcom: geni-se: add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
->   serial: qcom-geni: fix arg types for qcom_geni_serial_poll_bit()
->   serial: qcom-geni: introduce qcom_geni_serial_poll_bitfield()
-> 
-> Johan Hovold (5):
->   serial: qcom-geni: fix fifo polling timeout
->   serial: qcom-geni: fix false console tx restart
->   serial: qcom-geni: fix console corruption
->   serial: qcom-geni: disable interrupts during console writes
->   serial: qcom-geni: fix polled console corruption
+> Suggested-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Tested-by: Janne Grunau <j@jannau.net>
+> Reviewed-by: Neal Gompa <neal@gompa.dev>
+> Signed-off-by: Nick Chan <towinchenmi@gmail.com>
 
-Any chance we could these fixes into 6.12-rc1? 
+Thanks for the cleanup!
 
-Johan
+Reviewed-by: Andi Shyti <andi.shyti@kernel.org>
+
+Andi
