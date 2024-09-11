@@ -1,98 +1,185 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F127410F1;
-	Wed, 11 Sep 2024 13:46:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 183361B3F20;
+	Wed, 11 Sep 2024 17:39:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726062381; cv=none; b=AU0CCm7JJNMh6Dpd5XwT/vUvg2ZiuucG0IFqJ3LnVHStdk6g2oq4Nili8Cyudh4BS4odLAkeoTR99Xdzq3ANAiDXiHl4MKhRAJVD+ljVgt7WRIJ2Ar19QoNUjyAbvxCVwM41eOfJUn4WQfwXpfyhjOtTN8DN1XsrO44SJyIaUtI=
+	t=1726076355; cv=none; b=n+t5dajZZOFvF40rZb0lZD8BBaNArHu/bQWlZOI+tR5FfFqKODeGHiwKq8ELpN7O7mIAtMEVkS4jcKuhebCBEx4R3GAYJrD780AykKJGqUPx0UO7oQsBikxVNrttA16FbuQkXFMwy3r2N/IdDIT2Wg+/8EYBE17+vYt1ORKcK+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726062381; c=relaxed/simple;
-	bh=70bensbxCy5JRKuyg5YPbmfoLrwN243SafFT09DfP10=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lE27ImwgNHt+kGJUh4g1u3q2cr4K9DqLSDJyPjILhxMsTqszGDKwYJrxVtoD0yQQky+Z76fBtlZHKyl1M7wJRP2EYpABIAJHvUOZ5tGJo2mwh7kqXdmi3NjynV8SbGANnjB6VqggZTF2qymNQ9uqJJKqQFbhGuUfye4AsYwBv40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qfdaEA/A; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726076355; c=relaxed/simple;
+	bh=Scii2Yzkx59cHnmvGP/H9UyzpKy5qG1xLT5aa12Bj4s=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XDYuujU5PWrV75cmL83ksVrnqJKNVQBenjkJtJuG+NNd9dX3YJO1rdMEX8/WGJ3kRRFIWcNsvYgmFulLIdz9HmH9tbJEPvgdEgZZkD20GWS47MQqFylHXyM4u2EOjOJOaYmpHcekXBeo0sxZbxBrDzTiy/RNe2UOvlINIHdzjpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=g3KE8wEe; arc=none smtp.client-ip=74.208.4.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qfdaEA/A"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C45EC4CEC0;
-	Wed, 11 Sep 2024 13:46:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1726062380;
-	bh=70bensbxCy5JRKuyg5YPbmfoLrwN243SafFT09DfP10=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qfdaEA/AfrqEkSgHwf3zYvZoslbT2P7QS7t3/I/e99ykbx00dHVx8uV9sWaN/nWqk
-	 Dq36uacCasvBq/D1yzA0nCi+1YSzlbJVdEqqNTkOqFfqpGyZcXbTKo3xlK6osfAXbu
-	 j7se9wReTzLGTcdRAS5+mDq0VLFoj3nT3d5rC28E=
-Date: Wed, 11 Sep 2024 15:46:17 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: linux-serial@vger.kernel.org, Jim Quinlan <james.quinlan@broadcom.com>,
-	Kevin Cernekee <cernekee@gmail.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tty: rp2: Fix reset with non forgiving PCIe host bridges
-Message-ID: <2024091106-rearview-most-5dcf@gregkh>
-References: <20240906225435.707837-1-florian.fainelli@broadcom.com>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="g3KE8wEe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1726076331; x=1726681131; i=parker@finest.io;
+	bh=JAqi3FAEelUovWOJbiJfCJ5PxAvtAyLyW/hgk034KZ0=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=g3KE8wEeWxBisDPEX690zEbYZz87BGrCGHXyPGcuD2LcVmcOddUoIRygfr4eVkvV
+	 TXWT5bZPS1QkyeZQM4N0VYNzZ0A7evGnBJT236IsbyyYLHk1Px4+1lIWYD1PFZ8V0
+	 ulv8Jzn24IutJ/FUk/onruDTslw2klMPo+lIxvT7z0mcG3as9FpSIZhQU0LO77Axv
+	 Z90rrDHaUzvKYcw3Qwsf/B9gzooWXHF2hc58jU3CxJyJ1+BOIGk5atvcF26mN++YK
+	 XoCjtD0mY7fx74tt7dkFhYMczOgeeW9YFs/le0p+S/ZMkxn5CG3fCHRdu77plqjp8
+	 9itAazs090jxeaNHvA==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MBEUl-1sgUfu14fl-008DER; Wed, 11 Sep 2024 19:38:51 +0200
+Date: Wed, 11 Sep 2024 13:38:48 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Parker Newman <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 00/13] serial: 8250_exar: Clean up the driver
+Message-ID: <20240911133848.2cbb1834@SWDEV2.connecttech.local>
+In-Reply-To: <Zt7IonZIYgBqjvy7@smile.fi.intel.com>
+References: <20240503171917.2921250-1-andriy.shevchenko@linux.intel.com>
+	<20240503143303.15bf82bc@SWDEV2.connecttech.local>
+	<Ztr5u2wEt8VF1IdI@black.fi.intel.com>
+	<20240906095141.021318c8@SWDEV2.connecttech.local>
+	<ZtsQrFgH86AkKgPp@smile.fi.intel.com>
+	<20240906103354.0bf5f3b7@SWDEV2.connecttech.local>
+	<ZtsU0nfAFssevmmz@smile.fi.intel.com>
+	<20240906143851.21c97ef9@SWDEV2.connecttech.local>
+	<Zt7IonZIYgBqjvy7@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240906225435.707837-1-florian.fainelli@broadcom.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:U6SRYEOUmb/3u1J0Ceq63VSbOIo5wZzwJIxBSMRwfxKl2mFaaTv
+ zMyd7kORUmgQRwhF09fP3lzh7VuGnlVR0alZ7m0nvnQbvhK88ZMxYZN5mlNFufS5AqeTSh/
+ QzJor/Pb/n3LtElG85mUX5ORa0nFyaHQRR43a63yfVaHtMJFUmCcH4B8hG58PF/h0hRTDjz
+ 4nz/lL3GgHx1jOmk3SAHg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:1MzBG57hndE=;JTQUd8g0VFi5bY/wzB8aPru5QLB
+ xR1e30FlvbHNOSvNPwU1IzA8TMUeKQ+DkRH2/jjiIC6lMnI/5i3y6HSQv7f53WoQmoQK2fLxo
+ jlGj0kcndifT2L/4XZCf9dp9yaRa2piIu3KoncDdHgZg2skiX7PKfEseEUHgfu3BEV+sDouGw
+ biqmFnHBJlw1j7K7lotGMSzz457HOHx1euXLIwWBnfx0OXc47SaRlXagGZrh6wqluvqq+4WXM
+ 9RAms4EYAWD5LHDEFZI2Qm3ARiesrR5/iYwngIQX6dfmt6SeLSSz0ZtbeATUiiGLT/1SXDAph
+ euLlNB2bKodylnZqlBv5Lt6PDS2eu8SFLdMIcIyYOKEbx95zHdZwdn/Ja/cpbVq/c07+ywGIS
+ pQLuaRFYfe9dPM4wHk5ah4uAKlxVKKTv3kgY0HvxQ+oT1CCEty9SfbrTlPkLsSrwPnZ4SgCt/
+ U6opYx+1qgqO6Cu2QWqz6kb+JeaT8Myduw5hvnHwiODUZ3fdAXmdXPQSmug0Uh8/cYIdJ4wRk
+ hflHFuGBo869Uo/hTso8aV6bteNBbhCvGE/eep8o7ylN1g0UjabzxqmtEfZfujwqW7S028KCo
+ WD/WS2sCUq3a/AOYMwrGS/sNsPRCXKtqQ2js4Bv8tozYuwhyF8WErPGnshr/GTeoEpvZ9pWfy
+ 3Jpg7JigLVJ8OZXRbq24To03gohaDb8FnJpsq3FcfI2KNpFbPS5ymVNvQ8AloYyTWR+WR6OaW
+ 2s2taSaIsbpme4ePuQwG8m/e6GS/xNebQ==
 
-On Fri, Sep 06, 2024 at 03:54:33PM -0700, Florian Fainelli wrote:
-> The write to RP2_GLOBAL_CMD followed by an immediate read of
-> RP2_GLOBAL_CMD in rp2_reset_asic() is intented to flush out the write,
-> however by then the device is already in reset and cannot respond to a
-> memory cycle access.
-> 
-> On platforms such as the Raspberry Pi 4 and others using the
-> pcie-brcmstb.c driver, any memory access to a device that cannot respond
-> is met with a fatal system error, rather than being substituted with all
-> 1s as is usually the case on PC platforms.
-> 
-> Swapping the delay and the read ensures that the device has finished
-> resetting before we attempt to read from it.
-> 
-> Fixes: 7d9f49afa451 ("serial: rp2: New driver for Comtrol RocketPort 2 cards")
-> Suggested-by: Jim Quinlan <james.quinlan@broadcom.com>
-> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
-> ---
->  drivers/tty/serial/rp2.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, 9 Sep 2024 13:06:26 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Hi,
+> On Fri, Sep 06, 2024 at 02:38:51PM -0400, Parker Newman wrote:
+> > On Fri, 6 Sep 2024 17:42:26 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Fri, Sep 06, 2024 at 10:33:54AM -0400, Parker Newman wrote:
+> > > > On Fri, 6 Sep 2024 17:24:44 +0300
+> > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > On Fri, Sep 06, 2024 at 09:51:41AM -0400, Parker Newman wrote:
+> > > > > > On Fri, 6 Sep 2024 15:46:51 +0300
+> > > > > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > > > > On Fri, May 03, 2024 at 02:33:03PM -0400, Parker Newman wrot=
+e:
+>
+> ...
+>
+> > > > > > > Sorry for blast from the past, but I have some instersting i=
+nformation
+> > > > > > > for you. We now have spi-gpio and 93c46 eeprom drivers avail=
+able to be
+> > > > > > > used from others via software nodes, can you consider updati=
+ng your code
+> > > > > > > to replace custom bitbanging along with r/w ops by the insta=
+ntiating the
+> > > > > > > respective drivers?
+> > > > > >
+> > > > > > Hi Andy,
+> > > > > > The Exar UARTs don't actually use MPIO/GPIO for the EEPROM.
+> > > > > > They have a dedicated "EEPROM interface" which is accessed by =
+the
+> > > > > > REGB (0x8E) register. It is a very simple bit-bang interface t=
+hough,
+> > > > > > one bit per signal.
+> > > > > >
+> > > > > > I guess in theory I could either add  GPIO wrapper to toggle t=
+hese bits
+> > > > > > and use the spi-gpio driver but I am not sure if that really i=
+mproves things?
+> > > > > > Maybe using the spi-bitbang driver directly is more appropriat=
+e?
+> > > > > > What do you think?
+> > > > >
+> > > > > Yes, spi-bitbang seems better in this case.
+> > > >
+> > > > I will try to make some time to implement this... Or if someone el=
+se from the
+> > > > community wants to take this on in the mean time I am certainly ha=
+ppy to test
+> > > > and help out!
+> > >
+> > > Sure, I shared this thought due to having lack of time to look mysel=
+f,
+> > > but I prepared the above mentioned drivers to make them work in this=
+ case.
+> > > (If you are curios, see the Git history for the last few releases wi=
+th
+> > >  --author=3D"Andy Shevchenko")
+> > >
+> >
+> > Looking into it a bit more I think we could just use the eeprom_93cx6
+> > driver without any SPI layer. Just need to add simple register_read()
+> > and register_write() functions to read/write the REB register.
+> >
+> > That should be a pretty easy change to make, I can try to make that
+> > change soon unless anyone has any objections to that method?
+>
+> Thank you, this is pretty wonderful news!
+>
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+I have this mostly working however there is one issue. The eeprom_93cx6
+driver doesn't seem to discard the "dummy bit" the 93C46 EEPROM outputs
+between the writing of the op-code/address to the EEPROM and the reading
+of the data from the EEPROM.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+More info can be found on page 6 of the AT93C46 datasheet. I see similar
+notes in other 93C46/93C56/93C66 datasheets.
+Link: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-5193-SEEPROM-=
+AT93C46D-Datasheet.pdf
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
+In summary the read operation for the AT93C46 EEPROM is:
+Write to EEPROM :	110[A5-A0]	(9 bits)
+Read from EEPROM: 	0[D15-D0]	(17 bits)
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+Where 110 is the READ OpCode, [A5-A0] is the address to read from,
+0 is a "dummy bit" and then [D15-D0] is the actual data.
 
-thanks,
+I am seeing the "correct" values being read from the EEPROM when using the
+eeprom_93cx6 driver but they are all shifted right by one because the
+dummy 0 bit is not being discarded.
 
-greg k-h's patch email bot
+The confusing part is the eeprom_93cx6 driver has behaved the same since
+at least 2009 and half a dozen or so other drivers use it. I am not sure
+if they just work around and/or live with this bug or if they have
+different HW that handles the extra dummy bit?
+
+I am hesitant to "fix" the eeprom_93cx6 driver and potentially break the
+other users of it. I could add a flag to the eeprom_93cx6 struct to work
+around this issue... Unless anyone else has some ideas or input?
+
+Thanks,
+Parker
+
+
