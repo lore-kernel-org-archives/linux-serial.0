@@ -1,42 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F5D13AD06;
-	Wed, 11 Sep 2024 07:46:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F127410F1;
+	Wed, 11 Sep 2024 13:46:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726040760; cv=none; b=hD90Uh47KRp23G/k0FqcXk5KhCitFcV8++FV34JTRoIle2GFxiJxXyjEQtsSMKDsJ+LYz2njpnOaqwuf7cL4dL5Ei0fUFO95nvhAA8jF6ihjy7hAHTWbueSdllQEK7956sRnNXSXFer4sOf/KmscJ4W2IFzAA2OIG5JRzjTzNoA=
+	t=1726062381; cv=none; b=AU0CCm7JJNMh6Dpd5XwT/vUvg2ZiuucG0IFqJ3LnVHStdk6g2oq4Nili8Cyudh4BS4odLAkeoTR99Xdzq3ANAiDXiHl4MKhRAJVD+ljVgt7WRIJ2Ar19QoNUjyAbvxCVwM41eOfJUn4WQfwXpfyhjOtTN8DN1XsrO44SJyIaUtI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726040760; c=relaxed/simple;
-	bh=E2t7Y8fUs8iygI4qmp0zAEqA/uoNNumg4kKQJC2Ab7w=;
+	s=arc-20240116; t=1726062381; c=relaxed/simple;
+	bh=70bensbxCy5JRKuyg5YPbmfoLrwN243SafFT09DfP10=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UDXmzTpQD2VCXkGoDL9cfKqc0nSueP74xF4HaX3nXBE8NcLx+VQKR0EL8fwIyBcuoqVH/PUKz/XNOZdKWHdIcZD7sfRKd8n1pC9sY1RTthbOTeuusmrOJpC4qvQiAG5YS8tna6PHAnBLAkTTSPiytp4XUK4vD5RsGf2Eo0Or/3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=iwYCyZRw; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=lE27ImwgNHt+kGJUh4g1u3q2cr4K9DqLSDJyPjILhxMsTqszGDKwYJrxVtoD0yQQky+Z76fBtlZHKyl1M7wJRP2EYpABIAJHvUOZ5tGJo2mwh7kqXdmi3NjynV8SbGANnjB6VqggZTF2qymNQ9uqJJKqQFbhGuUfye4AsYwBv40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qfdaEA/A; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="iwYCyZRw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761C2C4CEC5;
-	Wed, 11 Sep 2024 07:45:59 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qfdaEA/A"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C45EC4CEC0;
+	Wed, 11 Sep 2024 13:46:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1726040760;
-	bh=E2t7Y8fUs8iygI4qmp0zAEqA/uoNNumg4kKQJC2Ab7w=;
+	s=korg; t=1726062380;
+	bh=70bensbxCy5JRKuyg5YPbmfoLrwN243SafFT09DfP10=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iwYCyZRwilrza2g+V5FcYcrKPo3jN/mf/4RilI8HiRPIBD/3KFpvrXt6ogwTOr7Xm
-	 s0ESu6W2YHkVJ4ip9y2a0cVswjspdsSK72iIXD/FDhCakAdZr4z3Yq2RiiqxB+W61+
-	 m/oHGaoX7rS6gLStZKWNPktLSYmgBm/+RSjoyyn8=
-Date: Wed, 11 Sep 2024 09:45:57 +0200
+	b=qfdaEA/AfrqEkSgHwf3zYvZoslbT2P7QS7t3/I/e99ykbx00dHVx8uV9sWaN/nWqk
+	 Dq36uacCasvBq/D1yzA0nCi+1YSzlbJVdEqqNTkOqFfqpGyZcXbTKo3xlK6osfAXbu
+	 j7se9wReTzLGTcdRAS5+mDq0VLFoj3nT3d5rC28E=
+Date: Wed, 11 Sep 2024 15:46:17 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Johan Hovold <johan@kernel.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	=?iso-8859-1?Q?N=EDcolas_F_=2E_R_=2E_A_=2E?= Prado <nfraprado@collabora.com>,
-	linux-arm-msm@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/8] serial: qcom-geni: fix console corruption
-Message-ID: <2024091129-mayday-credible-c891@gregkh>
-References: <20240906131336.23625-1-johan+linaro@kernel.org>
- <ZuE2WkMMkdRDzRFQ@hovoldconsulting.com>
+To: Florian Fainelli <florian.fainelli@broadcom.com>
+Cc: linux-serial@vger.kernel.org, Jim Quinlan <james.quinlan@broadcom.com>,
+	Kevin Cernekee <cernekee@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] tty: rp2: Fix reset with non forgiving PCIe host bridges
+Message-ID: <2024091106-rearview-most-5dcf@gregkh>
+References: <20240906225435.707837-1-florian.fainelli@broadcom.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -45,41 +44,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZuE2WkMMkdRDzRFQ@hovoldconsulting.com>
+In-Reply-To: <20240906225435.707837-1-florian.fainelli@broadcom.com>
 
-On Wed, Sep 11, 2024 at 08:19:06AM +0200, Johan Hovold wrote:
-> On Fri, Sep 06, 2024 at 03:13:28PM +0200, Johan Hovold wrote:
-> > This series is a follow-on series to the lockup fixes [1] that addresses
-> > a number of issues in the Qualcomm GENI console code, including corrupt
-> > console output during boot, which is a problem for automated CI testing.
+On Fri, Sep 06, 2024 at 03:54:33PM -0700, Florian Fainelli wrote:
+> The write to RP2_GLOBAL_CMD followed by an immediate read of
+> RP2_GLOBAL_CMD in rp2_reset_asic() is intented to flush out the write,
+> however by then the device is already in reset and cannot respond to a
+> memory cycle access.
 > 
-> > [1] https://lore.kernel.org/lkml/20240704101805.30612-1-johan+linaro@kernel.org/
-> > 
-> > Changes in v2
-> >  - determine poll timeout in set_termios() and avoid hard coding fifo
-> >    size in calculation
-> >  - move fifo drain helper under console ifdef to avoid an unused function
-> >    warning as reported by the kernel test robot
-> >  - drop a redundant active check from fifo drain helper
-> > 
-> > 
-> > Douglas Anderson (3):
-> >   soc: qcom: geni-se: add GP_LENGTH/IRQ_EN_SET/IRQ_EN_CLEAR registers
-> >   serial: qcom-geni: fix arg types for qcom_geni_serial_poll_bit()
-> >   serial: qcom-geni: introduce qcom_geni_serial_poll_bitfield()
-> > 
-> > Johan Hovold (5):
-> >   serial: qcom-geni: fix fifo polling timeout
-> >   serial: qcom-geni: fix false console tx restart
-> >   serial: qcom-geni: fix console corruption
-> >   serial: qcom-geni: disable interrupts during console writes
-> >   serial: qcom-geni: fix polled console corruption
+> On platforms such as the Raspberry Pi 4 and others using the
+> pcie-brcmstb.c driver, any memory access to a device that cannot respond
+> is met with a fatal system error, rather than being substituted with all
+> 1s as is usually the case on PC platforms.
 > 
-> Any chance we could these fixes into 6.12-rc1? 
+> Swapping the delay and the read ensures that the device has finished
+> resetting before we attempt to read from it.
+> 
+> Fixes: 7d9f49afa451 ("serial: rp2: New driver for Comtrol RocketPort 2 cards")
+> Suggested-by: Jim Quinlan <james.quinlan@broadcom.com>
+> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+> ---
+>  drivers/tty/serial/rp2.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes, let me catch up on patches today and tomorrow, have been traveling
-for conferences and have a few days reprieve before the next rounds...
+Hi,
+
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
 thanks,
 
-greg k-h
+greg k-h's patch email bot
