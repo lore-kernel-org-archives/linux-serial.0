@@ -1,205 +1,152 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B7914389F
-	for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 21:47:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974AF273FC
+	for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 22:01:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726091259; cv=none; b=V/j+tJg22uQkpisHpfsag7/vutZBgOolNxwewh5bgxdSTFCeRYbWITAzmFgn2k7VExaXJsBeLoCKEFu/PEAzm3Da/8vw58h3h/9rzX32EvrBBGKmAMiMSK8Y6/Og7DmBY6rZwt/stRC7DeGapd9llsHmPkTAoRQ9vFE5xvUnSc8=
+	t=1726092080; cv=none; b=Dn3OgdsLZVqJEGeG0jba8aSaRJYD2mQSCoXyrkj+Len0xA8sc0MNtjwVDsx1aphBEXS72qtk0Sse0GcrqaHGrQ8guW/V2XU9fNUiBeOdDghcQ/aNOSGH3nFTMpZMsE1Ye8iu3kIL+hdLUeSRHLd7BYHuYXjz3JIh5PQHf94Ld2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726091259; c=relaxed/simple;
-	bh=ExsL8a0Sj0hHa2Ili/XrrqHExDCuNh8e+ckkCAvOVio=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BvheFnhVChQNvMISPV+KpWexP+PnBIMSdSQA/nh2w34Qt/s2IbU58NBw9UQ7WKT2qrPkO+YX70Zlk+sjtXXZEqVtRLuoRLYo4GkCmgfd+1WJtiwhjV4q8ABBo7xpu1lsdj4+FO98qWkvgiYsNkYQLNFD5ei1K0jLUul+o8ThUdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=J92rBJIw; arc=none smtp.client-ip=209.85.167.43
+	s=arc-20240116; t=1726092080; c=relaxed/simple;
+	bh=WHWAxhL/sOi76XZ+st7kSN1TPk8HaONO076qZDSjwi0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DzGlvJjulLaxp/ScXgDLl0eBIu3VFERK4UQzrcQO5xNukaV7FTXmnhTz7I1lj0WtgvSiYd7P5KqygwgLxeXkJdbDWhFajD3ZFSLHRY/J+lrV488kssMcd0qyU0JzMCdoRad4Km9AxSJdA/LcrTKuawDiao+o43UEj+yV69+mYxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=CypJFGqa; arc=none smtp.client-ip=209.85.210.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="J92rBJIw"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5365c060f47so299616e87.2
-        for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 14:47:37 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="CypJFGqa"
+Received: by mail-ot1-f41.google.com with SMTP id 46e09a7af769-710f388621fso140931a34.1
+        for <linux-serial@vger.kernel.org>; Wed, 11 Sep 2024 15:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google; t=1726091256; x=1726696056; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xTRfABBH9OHvDlAgWLsb8mIIYFnqcT8Gc033RV0Z9p0=;
-        b=J92rBJIwBopfCL9KSTeRYLEwZi61Fc2BJR9SLRUYLLfqbaJswCzNIkxMFmnIDPJLDV
-         eEfwYnBNnVlW00IU1BRGIUcGAJdDtaKC63dWvElqmJsv1WLjlkNPu6tBpXoSevxuk8zY
-         QIqAQDdPs+xelLb2h/Ws3zzOlA60Lcaps1w2Y=
+        d=broadcom.com; s=google; t=1726092076; x=1726696876; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=wpTO1ZtWohsTUam39DUlK/kEZKoTBomHvwfluVfCVWE=;
+        b=CypJFGqa8ULqjF2FVgqcabPPi4E6PO4Sp3VODwFkFgotKLt442ytbkWkfCxAI/VdIm
+         aaWPTi4otuSszGExuKl4/sD/gQfFGYiVVIuyuirJHCo2C7PkisZk2sd6rjpIYLfdLocf
+         7saBlwN99wLbTanTSyTzh4vo652PJqTIBKBcI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726091256; x=1726696056;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xTRfABBH9OHvDlAgWLsb8mIIYFnqcT8Gc033RV0Z9p0=;
-        b=lF1ocnTgMKkSe6iR2LQPcR8Dx+K5ssZvguXO3WRHH9OlIE0miV7NKIgcsexR0IU8iV
-         O7cDty+oaFbK9pGQn01KdL26GBncjansdjMD+O4EhWrEa88sW7V5DxYIF73HghwNQ0m2
-         c5rqE2hY7Za+yu4NyUktxaawHfMZhFUnhap1pXub9WpFmpQAKPzWmndDp7CmENdBAlCr
-         W9OT7S1OOouZ8JHVIYykcCkNPTLi+MhtjH8bMFqV8qcl48U2c3n4PlWDkUOyBMvshB33
-         dcAfq1OHCGbHT118t0qjvomqzZCFbxqxZLNh3ma2e6FNuYP3sSI1CaRDS+R7pLJsfhzj
-         QbCg==
-X-Gm-Message-State: AOJu0YwnFP5ZxfkjCY5XWTaT1EAKKB9WqhvHX98QvpHZbybyWzMPs9Gd
-	PU3K2jS4MKSbccu+aZlC65d9YgojH0SLdMMdkXRhBWYS2f5OjhMpI8UkaskH7syBtY1rTnOibBu
-	zjWJBKMcR4VMt4+eVtPd/5zS5eDMtVkQclbAI
-X-Google-Smtp-Source: AGHT+IFPNBpsSFvxXXQsJ+xVic2Tv4+sg27DDAEt3qkAFhhh/JGG71toq2mjUwSUXxr5/XTJhB1P90oLg1HgDU46gu0=
-X-Received: by 2002:a05:6512:3ca9:b0:536:5522:3ca9 with SMTP id
- 2adb3069b0e04-53678fb752fmr372403e87.10.1726091255422; Wed, 11 Sep 2024
- 14:47:35 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1726092076; x=1726696876;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wpTO1ZtWohsTUam39DUlK/kEZKoTBomHvwfluVfCVWE=;
+        b=NOOKHaL2+No226dUsP702hbRRnQl1huNc9l6ECZA+ECJMiLwoj9CAj+7GOjZzn+3c/
+         QhKQRpG6I35Xg9uqTQeegZof1iJpTXZdGtolx5NMmEsQIgCwQLTqPHMG2fXT1M1qes4O
+         clktkIw2xu5tmaDdnGvytWANMFd3k4twfD4T15qZvM2Uf9mPys6VSccpd3LFbw2Yhrd8
+         zsLZimiPQyPIbv5qWGX/sFG+SUcTFMxdRNhHKpcbaSSttN9kC5Ixyj8qnKDtfjFpphJM
+         DftBsrwsiT1stNNlAttohoqZBpg2wLUt0naNWaWR3cpXi/IYDjexFrl2Hdus7TeWkvvz
+         rppg==
+X-Gm-Message-State: AOJu0YzIsYWAMX/yRG7aDUPvl8OZ1CIC3M1Js7aoyJlO4sgJLexJiJsj
+	vJCr4R/zztlWuVTIFA0umv7IuAtlHe1KUS9/9UhgppiwPB7UJueoB7AsfkFOAg==
+X-Google-Smtp-Source: AGHT+IGcq0VLXlxF61pCe/n1Slm7dUYAjtelbS+SsQ2Mv7wAQkXWRDY1eZrlYz7NXhQ5SOoB6bkZ5g==
+X-Received: by 2002:a05:6830:280d:b0:710:eb9a:f8e3 with SMTP id 46e09a7af769-7110950299dmr972474a34.5.1726092076456;
+        Wed, 11 Sep 2024 15:01:16 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6c53477c9c2sm46777986d6.130.2024.09.11.15.01.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Sep 2024 15:01:15 -0700 (PDT)
+Message-ID: <2bb3a405-cb6b-4033-99f4-ecd25ffc095d@broadcom.com>
+Date: Wed, 11 Sep 2024 15:01:13 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240906225435.707837-1-florian.fainelli@broadcom.com>
-In-Reply-To: <20240906225435.707837-1-florian.fainelli@broadcom.com>
-From: Jim Quinlan <james.quinlan@broadcom.com>
-Date: Wed, 11 Sep 2024 17:47:23 -0400
-Message-ID: <CA+-6iNxYwyfATMUq+nJfH_a08tdx_HT3k_d0fNS8f8-khghTfQ@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty: rp2: Fix reset with non forgiving PCIe host bridges
-To: Florian Fainelli <florian.fainelli@broadcom.com>
-Cc: linux-serial@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	John Ogness <john.ogness@linutronix.de>, 
-	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-	boundary="0000000000003131bc0621def073"
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Cc: linux-serial@vger.kernel.org, Kevin Cernekee <cernekee@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, John Ogness <john.ogness@linutronix.de>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ "open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
+References: <20240906225435.707837-1-florian.fainelli@broadcom.com>
+ <CA+-6iNxYwyfATMUq+nJfH_a08tdx_HT3k_d0fNS8f8-khghTfQ@mail.gmail.com>
+Content-Language: en-US
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <CA+-6iNxYwyfATMUq+nJfH_a08tdx_HT3k_d0fNS8f8-khghTfQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
---0000000000003131bc0621def073
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 9/11/24 14:47, Jim Quinlan wrote:
+> On Fri, Sep 6, 2024 at 6:54 PM Florian Fainelli
+> <florian.fainelli@broadcom.com> wrote:
+>>
+>> The write to RP2_GLOBAL_CMD followed by an immediate read of
+>> RP2_GLOBAL_CMD in rp2_reset_asic() is intented to flush out the write,
+>> however by then the device is already in reset and cannot respond to a
+>> memory cycle access.
+>>
+>> On platforms such as the Raspberry Pi 4 and others using the
+>> pcie-brcmstb.c driver, any memory access to a device that cannot respond
+>> is met with a fatal system error, rather than being substituted with all
+>> 1s as is usually the case on PC platforms.
+>>
+>> Swapping the delay and the read ensures that the device has finished
+>> resetting before we attempt to read from it.
+>>
+>> Fixes: 7d9f49afa451 ("serial: rp2: New driver for Comtrol RocketPort 2 cards")
+>> Suggested-by: Jim Quinlan <james.quinlan@broadcom.com>
+>> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
+>> ---
+>>   drivers/tty/serial/rp2.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
+>> index 4132fcff7d4e..8bab2aedc499 100644
+>> --- a/drivers/tty/serial/rp2.c
+>> +++ b/drivers/tty/serial/rp2.c
+>> @@ -577,8 +577,8 @@ static void rp2_reset_asic(struct rp2_card *card, unsigned int asic_id)
+>>          u32 clk_cfg;
+>>
+>>          writew(1, base + RP2_GLOBAL_CMD);
+>> -       readw(base + RP2_GLOBAL_CMD);
+>>          msleep(100);
+>> +       readw(base + RP2_GLOBAL_CMD);
+> 
+> Since the assumed purpose of the readw() was to flush the writew(),
+> would it make sense to add a barrier after the writew()?
 
-On Fri, Sep 6, 2024 at 6:54=E2=80=AFPM Florian Fainelli
-<florian.fainelli@broadcom.com> wrote:
->
-> The write to RP2_GLOBAL_CMD followed by an immediate read of
-> RP2_GLOBAL_CMD in rp2_reset_asic() is intented to flush out the write,
-> however by then the device is already in reset and cannot respond to a
-> memory cycle access.
->
-> On platforms such as the Raspberry Pi 4 and others using the
-> pcie-brcmstb.c driver, any memory access to a device that cannot respond
-> is met with a fatal system error, rather than being substituted with all
-> 1s as is usually the case on PC platforms.
->
-> Swapping the delay and the read ensures that the device has finished
-> resetting before we attempt to read from it.
->
-> Fixes: 7d9f49afa451 ("serial: rp2: New driver for Comtrol RocketPort 2 ca=
-rds")
-> Suggested-by: Jim Quinlan <james.quinlan@broadcom.com>
-> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
-> ---
->  drivers/tty/serial/rp2.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
-> index 4132fcff7d4e..8bab2aedc499 100644
-> --- a/drivers/tty/serial/rp2.c
-> +++ b/drivers/tty/serial/rp2.c
-> @@ -577,8 +577,8 @@ static void rp2_reset_asic(struct rp2_card *card, uns=
-igned int asic_id)
->         u32 clk_cfg;
->
->         writew(1, base + RP2_GLOBAL_CMD);
-> -       readw(base + RP2_GLOBAL_CMD);
->         msleep(100);
-> +       readw(base + RP2_GLOBAL_CMD);
+AFAICT there is one which is implied within the name, as it is not a 
+_relaxed() variant. Did you mean a different sort of barrier to be used?
+-- 
+Florian
 
-Since the assumed purpose of the readw() was to flush the writew(),
-would it make sense to add a barrier after the writew()?
-
-Regards,
-Jim Quinlan
-Broadcom STB/CM
-
->         writel(0, base + RP2_CLK_PRESCALER);
->
->         /* TDM clock configuration */
-> --
-> 2.43.0
->
-
---0000000000003131bc0621def073
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-mOAplh6h3nMZUZxBguxG3g2p3iD4EgibUYneEzqOQafIQB/naf2uetKb8y9jKgWJxq2Y4y8Jqg2u
-uVIO1AyOJjWwqdgN+QhuIlat+qZd03P48Gim9ZPEMDUCAwEAAaOCAdswggHXMA4GA1UdDwEB/wQE
-AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
-c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
-AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
-TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
-bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
-L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJQYDVR0R
-BB4wHIEaamFtZXMucXVpbmxhbkBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYBBQUHAwQwHwYD
-VR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFGx/E27aeGBP2eJktrILxlhK
-z8f6MA0GCSqGSIb3DQEBCwUAA4IBAQBdQQukiELsPfse49X4QNy/UN43dPUw0I1asiQ8wye3nAuD
-b3GFmf3SZKlgxBTdWJoaNmmUFW2H3HWOoQBnTeedLtV9M2Tb9vOKMncQD1f9hvWZR6LnZpjBIlKe
-+R+v6CLF07qYmBI6olvOY/Rsv9QpW9W8qZYk+2RkWHz/fR5N5YldKlJHP0NDT4Wjc5fEzV+mZC8A
-AlT80qiuCVv+IQP08ovEVSLPhUp8i1pwsHT9atbWOfXQjbq1B/ditFIbPzwmwJPuGUc7n7vpmtxB
-75sSFMj27j4JXl5W9vORgHR2YzuPBzfzDJU1ul0DIofSWVF6E1dx4tZohRED1Yl/T/ZGMYICbTCC
-AmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UE
-AxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMSO43VW7D5NP1X/KD
-MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDK7fJMncldKIi/cGWxv8zx7CiydCfw
-+ODBOREvMb9WezAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yNDA5
-MTEyMTQ3MzZaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjALBglg
-hkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzALBglghkgBZQME
-AgEwDQYJKoZIhvcNAQEBBQAEggEAAOJrWP9PtqC6Rhb/2Fbvn+vYqRnz7yDWCC69UtTkI1zxfah3
-5cb4fh2FW2Qi8GFhLeWyczbha54gOr3Aop8h+5S+AEUMOdYPulD47iFw0PN/26gRWVVKUxwXRpFj
-ruW5JYy1h3EMIwIsemElZ2e3w+psl7EH0+3xmGHMBcZq+ymLsCqPszi5iiReE9U3LGd98wPfHWHQ
-RSHPjfmbOEVS5txyx6tdUheAgxJcCfsRbancxhq7y16UE+qHu1/CipexTz8T1YondA5IqSjJGNt5
-G04aQpwY6NTtUVJUmKZajfEx1W9a9Cplw2c9DIYQLKEc1JyVAQXFpev0ZyciXCVTcg==
---0000000000003131bc0621def073--
