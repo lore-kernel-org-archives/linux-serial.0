@@ -1,298 +1,275 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C88B228F4;
-	Thu, 12 Sep 2024 05:27:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E7919CC33;
+	Thu, 12 Sep 2024 12:02:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726118846; cv=none; b=XNTOvJOBrUNRHv2O/swFYe9q7A1m6iDv36xAhfAzFa6rX5LyW4l6Mfo7vuL7WtnU9e963HW4SR6tHY04MUgUO2tQjbdpnx8LJAsVMQzEg8mdnwCb25JLynZRhDHX9DC0yBJOK79fiYbHuyORtBNfXx1WFCrJcmlRSAkfWlgE110=
+	t=1726142539; cv=none; b=IlMR6FO1nAV2nYDPdDUdxmu7V4CTRzN/Wa7zzPsH7CMsLhiD0xYFCtVaBSXiEjt5ANB1TmY83xFTJOupgC2lF54aBjcDTp6ajHg+O7lcPO3woBujoYWXvYtHY+PwdvzvuD+k6f2/KqOz6mL/be3V5yEdIANSy5lBHLjWL5R2XhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726118846; c=relaxed/simple;
-	bh=FBoKZW8go4jR8d468STNkw8a4R5bxPadQKoaIPJ6Lto=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nbatRMJbNfpVgxhPO9p6m2UfajEVCgz2OjHsL03d6YzR6KHFiTZ1asgpyiGBC9SMZHPb8JLUwsQGHKUAbduKbjDW9LL77F+BNfiMltXZosQ+YSPzkivC7BdnKn4IxOGPlwJiXuAffPec1rr35/Cr96y8BkT0O/AzEOoW4CnX/Bs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0ROEZC7K; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726142539; c=relaxed/simple;
+	bh=NisE6b5jBkIYG8cahohTY3odH/OlkvvqfpDW2Y9e3CU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Sae3zmXWZDUxDC2wiToT6C+YMs2oyzjTTi8pdhc8zg08KIgFvgCqxeAci0pLkttcyTmLx1Q0diVoecQNDefZUuAYKAE8IdPO718+Ta1GxnBYFEjWu7m9nl5f+eFbH+6VSooK4yw3Jd3rtn6jtpWxniWj/76wplIRIRzOXkyjfEE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MJEX2Zjo; arc=none smtp.client-ip=209.85.167.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0ROEZC7K"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D011CC4CEC3;
-	Thu, 12 Sep 2024 05:27:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1726118845;
-	bh=FBoKZW8go4jR8d468STNkw8a4R5bxPadQKoaIPJ6Lto=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0ROEZC7KnK0p3MCfhRsJQdBQ5pM7kguH/EZPbFusSLn5FegiImEfW00oL8AYBk5Rq
-	 ZrcSafNiHxyEcC9fpIz6/S0NH2OhYbPH1jid+cUzp0yjUFPM/lSVqcwJ3EFfw2zriX
-	 q8iuR+TXHCnzrdd9tMQq9uIjSDZ12tFa+zM8t8JM=
-Date: Thu, 12 Sep 2024 07:27:22 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Serge Semin <fancer.lancer@gmail.com>
-Cc: Viresh Kumar <vireshk@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Andy Shevchenko <andy@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Maciej Sosnowski <maciej.sosnowski@intel.com>,
-	Haavard Skinnemoen <haavard.skinnemoen@atmel.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dmaengine: dw: Prevent tx-status calling DMA-desc
- callback
-Message-ID: <2024091215-appraisal-rocket-45d6@gregkh>
-References: <20240911184710.4207-1-fancer.lancer@gmail.com>
- <20240911184710.4207-2-fancer.lancer@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MJEX2Zjo"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3e039f22274so383795b6e.2;
+        Thu, 12 Sep 2024 05:02:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1726142535; x=1726747335; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RhlE/sT3sXQgkwTWsPGrGAWEL/QnHXai566ohH4s0z0=;
+        b=MJEX2ZjoHKoBCKakJ/9n6J+vM6l96Wpod4d8ZKivU2M8uKtRUbK+9L6Z19bSsrTfRD
+         ACKkT6dYU/iLAEpQkP6t1iR/LmkHL7NdTDuI23UWe+xIO7a9/cB601a7FWbAY1c1w88H
+         aQU7kj1QiGb+ywpZZUvOsl3u09J68HNabWlt3/v47gwJNQQ86zetXzIAzSDxxVC3Dv6l
+         eVu5Xlwqzr/V7LqHrYJrJRPARles/cP0q5bVBAO1ou2JdWJ8OfXPGXmmXKj2yNcgKKUm
+         ET+K1UApTmk987qxPj4AGv1BrW7CiJFBZdWpVkL8jsI05N6Tv9T6mGDyEXzQQ6YjTV/V
+         pIVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726142535; x=1726747335;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RhlE/sT3sXQgkwTWsPGrGAWEL/QnHXai566ohH4s0z0=;
+        b=RHhEevm1J48Nt446TICPKtju/QMxBCHRS73Y3LzZPwCziT/dd06lC7+eCRzwmwcCma
+         Knjh7GG38ruepJnzuuAmRiYlDrhc9m4ThfrxzCSHaa7ub+H1mb2LA2EsqCbe3I9aEbg3
+         VvddTYmtibUEnAiM2/tVdzYWXF+RMlfnOmq+LycOXGKyfzw7MDv/pji5/pElbIEqLjmV
+         u3Xl9yQOeset6R/3Euz92Pt+ALaZUqYt3+kZzlbYTHUez2NMqUdXQjf/FothX89M1zfJ
+         LPltaKhMT1ndTusMAIAMBaUPaqBvCwwMrQ1KL5KUNpnz/RzImkNElcQSBwXrU/eaNaZ8
+         40Ug==
+X-Forwarded-Encrypted: i=1; AJvYcCVtNr0oFwyTBWQcnbJwF0sjegjD3o7kFcc2HXuTTn3k5W2m/+UDn9K16y8pzSEVPZdME3wDcCWOED5sxsvl@vger.kernel.org, AJvYcCWGco7YptuhB/7WrseEoeNwe+OBvtPmLjRlb0Eu9SiTNKob5oP26PSUwmjkmp6MXzJHX3/cBoH/w6aelFU=@vger.kernel.org, AJvYcCXJCVo8U5VhRM722fLB0IkD85Zq1wcxywa0wHaYwBW5c7iEX3pnirG9KkzSIdEkcIM7TB752GdieFMSaoXJ@vger.kernel.org, AJvYcCXeG5DLbD5FzINOUkRz2gC6caS9ZE58bqMJHGfL67KqY44aEeuoPSJH8F+2po1D7a8/AZ9BCJGf6g==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxjwAS31EMvQXhCP5Vg2zzDGrHqFIbypAvKKsmmZxDnh2nmtXDB
+	VUCEOBQqVR0h4HgRxsm/heK1HmtUFBhMeqaEaEzbEbXmgqIn//+8PBTvzLgIB7DTgypQDrPeZsv
+	qKfADE0RRelzyZ90ZOFp36uSp+sA=
+X-Google-Smtp-Source: AGHT+IFDEn0YDYeD/9jctAipL6iMdSyGrxKEkVhZltDVHssnsNZVCgDM2BbSFzNex8/uLR3y/m0Zd6KEYQB/81KqoJU=
+X-Received: by 2002:a05:6808:1897:b0:3e0:422e:f05b with SMTP id
+ 5614622812f47-3e071ae3bdamr1684193b6e.29.1726142534514; Thu, 12 Sep 2024
+ 05:02:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240911184710.4207-2-fancer.lancer@gmail.com>
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
+In-Reply-To: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
+From: Jeff Xie <xiehuan09@gmail.com>
+Date: Thu, 12 Sep 2024 20:02:03 +0800
+Message-ID: <CAEr6+EAcwq5n7R8BmsKg8B46TkrSvEL9hDmjZeD3ek_1rKg_hQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/8] Enable build system on macOS hosts
+To: da.gomez@samsung.com
+Cc: Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>, 
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>, 
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault <samuel.thibault@ens-lyon.org>, 
+	Paul Moore <paul@paul-moore.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
+	Ondrej Mosnacek <omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	James Morse <james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	Simona Vetter <simona.vetter@ffwll.ch>, linux-kernel@vger.kernel.org, 
+	linux-kbuild@vger.kernel.org, intel-xe@lists.freedesktop.org, 
+	dri-devel@lists.freedesktop.org, speakup@linux-speakup.org, 
+	selinux@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-serial@vger.kernel.org, llvm@lists.linux.dev, 
+	Finn Behrens <me@kloenk.dev>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>, gost.dev@samsung.com, 
+	Nick Desaulniers <nick.desaulniers@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 11, 2024 at 09:46:09PM +0300, Serge Semin wrote:
-> The dmaengine_tx_status() method implemented in the DW DMAC driver is
-> responsible for not just DMA-transfer status getting, but may also cause
-> the transfer finalization with the Tx-descriptors callback invocation.
-> This makes the simple DMA-transfer status getting being much more complex
-> than it seems with a wider room for possible bugs.
-> 
-> In particular a deadlock has been discovered in the DW 8250 UART device
-> driver interacting with the DW DMA controller channels. Here is the
-> call-trace causing the deadlock:
-> 
-> serial8250_handle_irq()
->   uart_port_lock_irqsave(port); ----------------------+
->   handle_rx_dma()                                     |
->     serial8250_rx_dma_flush()                         |
->       __dma_rx_complete()                             |
->         dmaengine_tx_status()                         |
->           dwc_scan_descriptors()                      |
->             dwc_complete_all()                        |
->               dwc_descriptor_complete()               |
->                 dmaengine_desc_callback_invoke()      |
->                   cb->callback(cb->callback_param);   |
->                   ||                                  |
->                   dma_rx_complete();                  |
->                     uart_port_lock_irqsave(port); ----+ <- Deadlock!
-> 
-> So in case if the DMA-engine finished working at some point before the
-> serial8250_rx_dma_flush() invocation and the respective tasklet hasn't
-> been executed yet to finalize the DMA transfer, then calling the
-> dmaengine_tx_status() will cause the DMA-descriptors status update and the
-> Tx-descriptor callback invocation.
-> 
-> Generalizing the case up: if the dmaengine_tx_status() method callee and
-> the Tx-descriptor callback refer to the related critical section, then
-> calling dmaengine_tx_status() from the Tx-descriptor callback will
-> inevitably cause a deadlock around the guarding lock as it happens in the
-> Serial 8250 DMA implementation above. (Note the deadlock doesn't happen
-> very often, but can be eventually discovered if the being received data
-> size is greater than the Rx DMA-buffer size defined in the 8250_dma.c
-> driver. In my case reducing the Rx DMA-buffer size increased the deadlock
-> probability.)
-> 
-> Alas there is no obvious way to prevent the deadlock by fixing the
-> 8250-port drivers because the UART-port lock must be held for the entire
-> port IRQ handling procedure. Thus the best way to fix the discovered
-> problem (and prevent similar ones in the drivers using the DW DMAC device
-> channels) is to simplify the DMA-transfer status getter by removing the
-> Tx-descriptors state update from there and making the function to serve
-> just one purpose - calculate the DMA-transfer residue and return the
-> transfer status. The DMA-transfer status update will be performed in the
-> bottom-half procedure only.
-> 
-> Fixes: 3bfb1d20b547 ("dmaengine: Driver for the Synopsys DesignWare DMA controller")
-> Signed-off-by: Serge Semin <fancer.lancer@gmail.com>
-> 
+Thank you for submitting this patchset. This problem has troubled me
+for two years.
+I have always built the kernel in the docker container. I have tested
+this patchset and it is very good.
+Tested-by: Jeff Xie <xiehuan09@gmail.com>
+
+On Fri, Sep 6, 2024 at 7:04=E2=80=AFPM Daniel Gomez via B4 Relay
+<devnull+da.gomez.samsung.com@kernel.org> wrote:
+>
+> This patch set allows for building the Linux kernel for arm64 in macOS
+> with LLVM.
+>
+> Patches are based on previous Nick's work and suggestions [1][2][3] to
+> enable the Linux kernel build system on macOS hosts.
+>
+> macOS does not provide certain headers that are available in a GNU/Linux
+> distribution with development headers installed, usually provided by
+> the GNU C Library (glibc) and/or other projects. These missing headers
+> are needed as build dependencies. To address this, the patches depend
+> on a new Bee Headers Homebrew Tap formula [6][7][8] that provides them
+> together with a pkg-config file to locate the include directory.
+>
+> To locate them, Makefiles include something like:
+>         $(shell $(HOSTPKG_CONFIG) --cflags bee-headers 2> /dev/null)
+>
+> [6] Project:
+> https://github.com/bee-headers
+> [7] Headers repository:
+> https://github.com/bee-headers/headers.git
+> [8] Homebrew Tap formula:
+> https://github.com/bee-headers/homebrew-bee-headers.git
+>
+> To set up the environment, documentation is provided via last patch in
+> this series.
+>
+> More configurations and architectures as well as support for Rust
+> (from Finn Behrens [4] [5]) can be added in the future to extend build
+> support.
+>
+> [1]: WIP: build Linux on MacOS
+> https://github.com/ClangBuiltLinux/linux/commit/f06333e29addbc3d714adb340=
+355f471c1dfe95a
+>
+> [2] Subject: [PATCH] scripts: subarch.include: fix SUBARCH on MacOS hosts
+> https://lore.kernel.org/all/20221113233812.36784-1-nick.desaulniers@gmail=
+.com/
+>
+> [3] Subject: Any interest in building the Linux kernel from a MacOS host?
+> https://lore.kernel.org/all/CAH7mPvj64Scp6_Nbaj8KOfkoV5f7_N5L=3DTv5Z9zGyn=
+5SS+gsUw@mail.gmail.com/
+>
+> [4] https://github.com/kloenk/linux/commits/rust-project_macos-dylib/
+>
+> [5] https://kloenk.eu/posts/build-linux-on-m1-macos/
+>
+> To: Masahiro Yamada <masahiroy@kernel.org>
+> To: Nathan Chancellor <nathan@kernel.org>
+> To: Nicolas Schier <nicolas@fjasle.eu>
+> To: Lucas De Marchi <lucas.demarchi@intel.com>
+> To: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
+> To: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> To: Maxime Ripard <mripard@kernel.org>
+> To: Thomas Zimmermann <tzimmermann@suse.de>
+> To: David Airlie <airlied@gmail.com>
+> To: Daniel Vetter <daniel@ffwll.ch>
+> To: William Hubbs <w.d.hubbs@gmail.com>
+> To: Chris Brannon <chris@the-brannons.com>
+> To: Kirk Reiser <kirk@reisers.ca>
+> To: Samuel Thibault <samuel.thibault@ens-lyon.org>
+> To: Paul Moore <paul@paul-moore.com>
+> To: Stephen Smalley <stephen.smalley.work@gmail.com>
+> To: Ondrej Mosnacek <omosnace@redhat.com>
+> To: Catalin Marinas <catalin.marinas@arm.com>
+> To: Will Deacon <will@kernel.org>
+> To: Marc Zyngier <maz@kernel.org>
+> To: Oliver Upton <oliver.upton@linux.dev>
+> To: James Morse <james.morse@arm.com>
+> To: Suzuki K Poulose <suzuki.poulose@arm.com>
+> To: Zenghui Yu <yuzenghui@huawei.com>
+> To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> To: Jiri Slaby <jirislaby@kernel.org>
+> To: Nick Desaulniers <ndesaulniers@google.com>
+> To: Bill Wendling <morbo@google.com>
+> To: Justin Stitt <justinstitt@google.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-kbuild@vger.kernel.org
+> Cc: intel-xe@lists.freedesktop.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: speakup@linux-speakup.org
+> Cc: selinux@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: kvmarm@lists.linux.dev
+> Cc: linux-serial@vger.kernel.org
+> Cc: llvm@lists.linux.dev
+> Cc: Finn Behrens <me@kloenk.dev>
+> Cc: Daniel Gomez (Samsung) <d+samsung@kruces.com>
+> Cc: gost.dev@samsung.com
+>
+> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
 > ---
-> 
-> Changelog RFC:
-> - Instead of just dropping the dwc_scan_descriptors() method invocation
->   calculate the residue in the Tx-status getter.
+> Changes in v2:
+> - Add documentation and set this 'feature' as experimental.
+> - Update cover letter.
+> - Drop unnecessary changes. Patches removed:
+>         - kbuild: add header_install dependency to scripts
+>         - include: add endian.h support
+>         - include: add elf.h support
+> - Update Makefiles to find Bee Headers with pkg-config.
+> - Update file2alias to solve uuid_t conflicts inside Makefile as
+> suggested by Nicolas Schier.
+> - Adapt xe_gen_wa_oob to solve getprogname()/
+> program_invocation_short_name in runtime. as suggested by Lucas De
+> Marchi.
+> - Remove linux/version.h in accessibility/speakup as suggested by
+> Masahiro Yamada.
+> - Replace selinux patches with new Masahiro Yamada's patches:
+>         Message-id: 20240809122007.1220219-1-masahiroy@kernel.org
+>         Link: https://lore.kernel.org/all/20240809122007.1220219-1-masahi=
+roy@kernel.org/
+> - Replace tty/vt with new Masahiro Yamada's patch:
+>         Message-id: 20240809160853.1269466-1-masahiroy@kernel.org
+>         Link: https://lore.kernel.org/all/20240809160853.1269466-1-masahi=
+roy@kernel.org/
+>         (Already merged in the linux-next tag used)
+> - Replace scripts/kallsyms patch with Masahiro Yamada's patch:
+>         Message-id: 20240807181148.660157-1-masahiroy@kernel.org
+>         Link: https://lore.kernel.org/all/20240807181148.660157-1-masahir=
+oy@kernel.org/
+>         (Already merged in the linux-next tag used)
+> - Link to v1: https://lore.kernel.org/r/20240807-macos-build-support-v1-0=
+-4cd1ded85694@samsung.com
+>
 > ---
->  drivers/dma/dw/core.c | 90 ++++++++++++++++++++++++-------------------
->  1 file changed, 50 insertions(+), 40 deletions(-)
-> 
-> diff --git a/drivers/dma/dw/core.c b/drivers/dma/dw/core.c
-> index dd75f97a33b3..af1871646eb9 100644
-> --- a/drivers/dma/dw/core.c
-> +++ b/drivers/dma/dw/core.c
-> @@ -39,6 +39,8 @@
->  	BIT(DMA_SLAVE_BUSWIDTH_2_BYTES)		| \
->  	BIT(DMA_SLAVE_BUSWIDTH_4_BYTES)
->  
-> +static u32 dwc_get_hard_llp_desc_residue(struct dw_dma_chan *dwc, struct dw_desc *desc);
-> +
->  /*----------------------------------------------------------------------*/
->  
->  static struct device *chan2dev(struct dma_chan *chan)
-> @@ -297,14 +299,12 @@ static inline u32 dwc_get_sent(struct dw_dma_chan *dwc)
->  
->  static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  {
-> -	dma_addr_t llp;
->  	struct dw_desc *desc, *_desc;
->  	struct dw_desc *child;
->  	u32 status_xfer;
->  	unsigned long flags;
->  
->  	spin_lock_irqsave(&dwc->lock, flags);
-> -	llp = channel_readl(dwc, LLP);
->  	status_xfer = dma_readl(dw, RAW.XFER);
->  
->  	if (status_xfer & dwc->mask) {
-> @@ -358,41 +358,16 @@ static void dwc_scan_descriptors(struct dw_dma *dw, struct dw_dma_chan *dwc)
->  		return;
->  	}
->  
-> -	dev_vdbg(chan2dev(&dwc->chan), "%s: llp=%pad\n", __func__, &llp);
-> +	dev_vdbg(chan2dev(&dwc->chan), "%s: hard LLP mode\n", __func__);
->  
->  	list_for_each_entry_safe(desc, _desc, &dwc->active_list, desc_node) {
-> -		/* Initial residue value */
-> -		desc->residue = desc->total_len;
-> -
-> -		/* Check first descriptors addr */
-> -		if (desc->txd.phys == DWC_LLP_LOC(llp)) {
-> -			spin_unlock_irqrestore(&dwc->lock, flags);
-> -			return;
-> -		}
-> -
-> -		/* Check first descriptors llp */
-> -		if (lli_read(desc, llp) == llp) {
-> -			/* This one is currently in progress */
-> -			desc->residue -= dwc_get_sent(dwc);
-> +		desc->residue = dwc_get_hard_llp_desc_residue(dwc, desc);
-> +		if (desc->residue) {
->  			spin_unlock_irqrestore(&dwc->lock, flags);
->  			return;
->  		}
->  
-> -		desc->residue -= desc->len;
-> -		list_for_each_entry(child, &desc->tx_list, desc_node) {
-> -			if (lli_read(child, llp) == llp) {
-> -				/* Currently in progress */
-> -				desc->residue -= dwc_get_sent(dwc);
-> -				spin_unlock_irqrestore(&dwc->lock, flags);
-> -				return;
-> -			}
-> -			desc->residue -= child->len;
-> -		}
-> -
-> -		/*
-> -		 * No descriptors so far seem to be in progress, i.e.
-> -		 * this one must be done.
-> -		 */
-> +		/* No data left to be send. Finalize the transfer then */
->  		spin_unlock_irqrestore(&dwc->lock, flags);
->  		dwc_descriptor_complete(dwc, desc, true);
->  		spin_lock_irqsave(&dwc->lock, flags);
-> @@ -976,6 +951,45 @@ static struct dw_desc *dwc_find_desc(struct dw_dma_chan *dwc, dma_cookie_t c)
->  	return NULL;
->  }
->  
-> +static u32 dwc_get_soft_llp_desc_residue(struct dw_dma_chan *dwc, struct dw_desc *desc)
-> +{
-> +	u32 residue = desc->residue;
-> +
-> +	if (residue)
-> +		residue -= dwc_get_sent(dwc);
-> +
-> +	return residue;
-> +}
-> +
-> +static u32 dwc_get_hard_llp_desc_residue(struct dw_dma_chan *dwc, struct dw_desc *desc)
-> +{
-> +	u32 residue = desc->total_len;
-> +	struct dw_desc *child;
-> +	dma_addr_t llp;
-> +
-> +	llp = channel_readl(dwc, LLP);
-> +
-> +	/* Check first descriptor for been pending to be fetched by DMAC */
-> +	if (desc->txd.phys == DWC_LLP_LOC(llp))
-> +		return residue;
-> +
-> +	/* Check first descriptor LLP to see if it's currently in-progress */
-> +	if (lli_read(desc, llp) == llp)
-> +		return residue - dwc_get_sent(dwc);
-> +
-> +	/* Check subordinate LLPs to find the currently in-progress desc */
-> +	residue -= desc->len;
-> +	list_for_each_entry(child, &desc->tx_list, desc_node) {
-> +		if (lli_read(child, llp) == llp)
-> +			return residue - dwc_get_sent(dwc);
-> +
-> +		residue -= child->len;
-> +	}
-> +
-> +	/* Shall return zero if no in-progress desc found */
-> +	return residue;
-> +}
-> +
->  static u32 dwc_get_residue_and_status(struct dw_dma_chan *dwc, dma_cookie_t cookie,
->  				      enum dma_status *status)
->  {
-> @@ -988,9 +1002,11 @@ static u32 dwc_get_residue_and_status(struct dw_dma_chan *dwc, dma_cookie_t cook
->  	desc = dwc_find_desc(dwc, cookie);
->  	if (desc) {
->  		if (desc == dwc_first_active(dwc)) {
-> -			residue = desc->residue;
-> -			if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags) && residue)
-> -				residue -= dwc_get_sent(dwc);
-> +			if (test_bit(DW_DMA_IS_SOFT_LLP, &dwc->flags))
-> +				residue = dwc_get_soft_llp_desc_residue(dwc, desc);
-> +			else
-> +				residue = dwc_get_hard_llp_desc_residue(dwc, desc);
-> +
->  			if (test_bit(DW_DMA_IS_PAUSED, &dwc->flags))
->  				*status = DMA_PAUSED;
->  		} else {
-> @@ -1012,12 +1028,6 @@ dwc_tx_status(struct dma_chan *chan,
->  	struct dw_dma_chan	*dwc = to_dw_dma_chan(chan);
->  	enum dma_status		ret;
->  
-> -	ret = dma_cookie_status(chan, cookie, txstate);
-> -	if (ret == DMA_COMPLETE)
-> -		return ret;
-> -
-> -	dwc_scan_descriptors(to_dw_dma(chan->device), dwc);
-> -
->  	ret = dma_cookie_status(chan, cookie, txstate);
->  	if (ret == DMA_COMPLETE)
->  		return ret;
-> -- 
-> 2.43.0
-> 
-> 
+> Daniel Gomez (5):
+>       file2alias: fix uuid_t definitions for macos
+>       drm/xe: xe_gen_wa_oob: fix program_invocation_short_name for macos
+>       arm64: nvhe: add bee-headers support
+>       scripts: add bee-headers support
+>       Documentation: add howto build in macos
+>
+> Masahiro Yamada (2):
+>       selinux: do not include <linux/*.h> headers from host programs
+>       selinux: move genheaders to security/selinux/
+>
+> Nick Desaulniers (1):
+>       scripts: subarch.include: fix SUBARCH on macOS hosts
+>
+>  Documentation/kbuild/llvm.rst                      | 78 ++++++++++++++++=
+++++++
+>  arch/arm64/kernel/pi/Makefile                      |  1 +
+>  arch/arm64/kernel/vdso32/Makefile                  |  1 +
+>  arch/arm64/kvm/hyp/nvhe/Makefile                   |  3 +-
+>  drivers/gpu/drm/xe/xe_gen_wa_oob.c                 |  4 ++
+>  scripts/Makefile                                   |  4 +-
+>  scripts/mod/Makefile                               |  7 ++
+>  scripts/mod/file2alias.c                           |  3 +
+>  scripts/remove-stale-files                         |  3 +
+>  scripts/selinux/Makefile                           |  2 +-
+>  scripts/selinux/genheaders/.gitignore              |  2 -
+>  scripts/selinux/genheaders/Makefile                |  5 --
+>  scripts/selinux/mdp/Makefile                       |  2 +-
+>  scripts/selinux/mdp/mdp.c                          |  4 --
+>  scripts/subarch.include                            |  2 +-
+>  security/selinux/.gitignore                        |  1 +
+>  security/selinux/Makefile                          |  7 +-
+>  .../genheaders =3D> security/selinux}/genheaders.c   |  3 -
+>  security/selinux/include/classmap.h                | 19 ++++--
+>  security/selinux/include/initial_sid_to_string.h   |  2 -
+>  20 files changed, 123 insertions(+), 30 deletions(-)
+> ---
+> base-commit: ad40aff1edffeccc412cde93894196dca7bc739e
+> change-id: 20240807-macos-build-support-9ca0d77adb17
+>
+> Best regards,
+> --
+> Daniel Gomez <da.gomez@samsung.com>
+>
+>
+>
 
-Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+--=20
+Thanks,
+JeffXie
