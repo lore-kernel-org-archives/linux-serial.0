@@ -1,39 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 562741BE25C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71EBE1BF81D;
 	Thu, 12 Sep 2024 18:20:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726165215; cv=none; b=cXT0T4OdeSwlVbC9/AfrKtpr6p/2Su6kajpZtH9uILH0M8+PU3mpC0kiPz3DbRH4W6ojSnpCGmPdyynht3ovlXByHuhC+5mijGpApiXqhj2Kc/wJhOdxQjv2EK1KpCWq1Y5OP86jtSfk6WacQtrDpjyejArCUakeHRjf+6Mat7I=
+	t=1726165215; cv=none; b=NmaMlITp6AkVaz4rqq7JSmY6EsII9eIOfMBPYbttmR/g2GbTDaKMcSfZEAVFoi/55HjeZZ/Pqv5cqgZhS0TQQuhVexNbJo9hbG6S3rkUId6RwM2b1ESspdwP+Migs/jvvZa7FdOrTXu+7JhxyyeqSQT0zYxXaGVIlBpl5f2FAJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1726165215; c=relaxed/simple;
-	bh=8dLWDvRZuiv72Q6TAOn6fVt/7YqsuabBUo+o+OGlMyU=;
+	bh=WvuwUE3VkVrJz1HbbjLyC5fbTxNBjf8aLWKIvGiS8ZI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nwP09Pkwg91UiBpEMs8XNakYvJHIA2Lk3C1mKOSRQnNlhUnjg/pNFifKq0cZnanDfFAm6CvZR48X+ukLBo+PJqgwbUfPV0CiGqOmDrCV5Gbp4Lw0SvFneVh4lotmaA35E7p7jxv5axmZZZi6e0+nF8JAhbN2szqVEsgk1+lpg0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VqbMc3sS; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EW5eWXp0syqFGbLuQD5mYCf5p2QVKIIQZrcvpXWPIThRipgra60Tq0rK8YntVTH47641ksq3CfFJT5nj/X768wXUCEwDEB0qaYF7OcasRaQ8Xch8w68lvNMLT9OIbp24KoaIjujytt7i1KUYvviEdZDdXkXJTQKc5ttcotcKzpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b+YSqrPx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VqbMc3sS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DCB0CC4CECC;
-	Thu, 12 Sep 2024 18:20:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b+YSqrPx"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1BC91C4CEDA;
+	Thu, 12 Sep 2024 18:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726165214;
-	bh=8dLWDvRZuiv72Q6TAOn6fVt/7YqsuabBUo+o+OGlMyU=;
+	s=k20201202; t=1726165215;
+	bh=WvuwUE3VkVrJz1HbbjLyC5fbTxNBjf8aLWKIvGiS8ZI=;
 	h=From:Date:Subject:References:In-Reply-To:List-Id:To:Cc:Reply-To:
 	 From;
-	b=VqbMc3sSe8XPTG4aKjwtiE7Ni38ETDWMg2YaoyQj7Ap+AW4yBW3ayi7HRhFroDntm
-	 UUj2V4/FktWKGOjQwHeJCWz045YFBknAMWUsHrn/XnjE0+HsDdz7rzHJd9/OLCgXtr
-	 q90ZrDsheE67UQeZrZ9jWZivro2/1ud8zeRFV993OPZShptIbUWs4qbHRhcFycZRup
-	 q/YRQxYfdk0Gyv3lVZyuHI6KXM5NigLBVeitSvHP/5iY/2QVFvTeOkUOvfrs2RbwWq
-	 zfO51uwg4F+NWYmvAVexw2j+KGwoxWb2nsoJUptPgbbd3LWfBoDI6XuV58xMFwHy1x
-	 UFg7epqSnfPfg==
+	b=b+YSqrPxZMaWAWsU7bwfST26nLi93Ml85js3T7Ir1g2oMK7q33Lmw8NbN/YkR1fLv
+	 S3Ajsi1PYZH22+NgsRDq13/lFT4WEzn1cPZIF1oukpRfpwHp+uDk5HkhC4bLQ3p0tb
+	 8aL3QRCQaZ1U30kHN2FjT7GSIZyzjSvvWSH9u+5mwpWRLEu3HWLkl4qLBNQs+hzYr0
+	 xkOLjgIUp7P5MqZh8C2Jk+dhmHPMwaII8ibWBMwesssmZEpzs01+Tk1RGpPJHGpTtD
+	 +jErwxUBqSZVALuJlGvl/Y6xojm3IObwvs5v6HlzvDThMHw0lXZD6E41BYCKXNVyVL
+	 GVH5SLLgTFMnw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2E4EED63C;
-	Thu, 12 Sep 2024 18:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1369DEEE240;
+	Thu, 12 Sep 2024 18:20:15 +0000 (UTC)
 From: Arturs Artamonovs via B4 Relay <devnull+arturs.artamonovs.analog.com@kernel.org>
-Date: Thu, 12 Sep 2024 19:24:47 +0100
-Subject: [PATCH 02/21] reset: Add driver for ADI ADSP-SC5xx reset
- controller
+Date: Thu, 12 Sep 2024 19:24:50 +0100
+Subject: [PATCH 05/21] clock:Add driver for ADI ADSP-SC5xx PLL
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,7 +41,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240912-test-v1-2-458fa57c8ccf@analog.com>
+Message-Id: <20240912-test-v1-5-458fa57c8ccf@analog.com>
 References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
 In-Reply-To: <20240912-test-v1-0-458fa57c8ccf@analog.com>
 To: Catalin Marinas <catalin.marinas@arm.com>, 
@@ -66,11 +65,11 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  Arturs Artamonovs <Arturs.Artamonovs@analog.com>, 
  Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 X-Mailer: b4 0.15-dev-7be4f
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1726165513; l=1107;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1726165513; l=7757;
  i=arturs.artamonovs@analog.com; s=20240909; h=from:subject:message-id;
- bh=6HpYjgEvmaMOI/Jb3fHri0mjaXqIkqikV6XKYOwo4UI=;
- b=IH2NvBCHpRs5VQkod2iVyDR1RXm8CLNExn4siWAW8bwa8goIT5CiqggFT6fdO8v5CDutT0SE6
- WCDnOQOeLYoANdKpXf80tUdcgMKb+KnMrk8RHqJ8/Q6xePGfmRj1xJJ
+ bh=kKwWyaM2Blr339gT53LjtoBsxg/6T1Q1BsxHjj63Pk0=;
+ b=J7Br682QHi9UgPDIRSCY68wh2/Zg7TIwYyngp7ewWcshD/o13+AQ7Ebd+zKvBFcOqD1LLjSHb
+ obWccR+jIskA5qWU4GP7vAE8q8I9icPmqNtPJy6OZA0E52BtDddhgpK
 X-Developer-Key: i=arturs.artamonovs@analog.com; a=ed25519;
  pk=UXODIid/MrmBXvqkX4PeEfetDaNAw9xKMINHIc5oZCk=
 X-Endpoint-Received: by B4 Relay for arturs.artamonovs@analog.com/20240909
@@ -80,32 +79,280 @@ Reply-To: arturs.artamonovs@analog.com
 
 From: Arturs Artamonovs <arturs.artamonovs@analog.com>
 
-Adding support for ADI ADSP reset controller. This driver allows
-trigger a software reset.
+Implements clock tree, no dynamic pll rate change.
 
 Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
-Co-developed-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
-Signed-off-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
 Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
 Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
 ---
- drivers/reset/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/adi/clk-adi-pll.c | 151 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/clk/adi/clk.h         |  99 +++++++++++++++++++++++++++
+ 2 files changed, 250 insertions(+)
 
-diff --git a/drivers/reset/Makefile b/drivers/reset/Makefile
-index 27b0bbdfcc044ba58de9df09725ddef7b601c3ea..4d9e83b7ab38287336175d3804f9d2d4d2894595 100644
---- a/drivers/reset/Makefile
-+++ b/drivers/reset/Makefile
-@@ -4,6 +4,7 @@ obj-y += hisilicon/
- obj-y += starfive/
- obj-y += sti/
- obj-y += tegra/
-+obj-$(CONFIG_RESET_SC5XX) += reset-sc5xx.o
- obj-$(CONFIG_RESET_A10SR) += reset-a10sr.o
- obj-$(CONFIG_RESET_ATH79) += reset-ath79.o
- obj-$(CONFIG_RESET_AXS10X) += reset-axs10x.o
+diff --git a/drivers/clk/adi/clk-adi-pll.c b/drivers/clk/adi/clk-adi-pll.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..39fcc78b3170c0aa5962af5268f499082efb3686
+--- /dev/null
++++ b/drivers/clk/adi/clk-adi-pll.c
+@@ -0,0 +1,151 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * CGU PLL driver for ADI SC59X processors
++ *
++ * Copyright 2022-2024 - Analog Devices Inc.
++ */
++
++#include <linux/clk-provider.h>
++#include <linux/io.h>
++#include <linux/slab.h>
++#include <linux/device.h>
++
++#include "clk.h"
++
++struct clk_sc5xx_cgu_pll {
++	struct clk_hw hw;
++	void __iomem *base;
++	spinlock_t *lock;
++	int prepared;
++	u32 mask;
++	u32 msel;
++	u32 m_offset;
++	u8 shift;
++};
++
++struct clk_sc5xx_cgu_pll *to_clk_sc5xx_cgu_pll(struct clk_hw *hw)
++{
++	return container_of(hw, struct clk_sc5xx_cgu_pll, hw);
++}
++
++static long sc5xx_cgu_pll_round_rate(struct clk_hw *hw, unsigned long rate,
++	unsigned long *parent_rate)
++{
++	struct clk_sc5xx_cgu_pll *pll = to_clk_sc5xx_cgu_pll(hw);
++	unsigned long m, m2, new_rate, nr2, prate2;
++	unsigned long prate = *parent_rate;
++	struct clk_hw *parent_hw;
++	int parent_inc;
++
++	parent_hw = clk_hw_get_parent(hw);
++
++	m = rate / prate;
++
++	if (m > pll->msel) {
++		/* cannot scale this far, need bigger input */
++		parent_inc = m / pll->msel;
++		prate = clk_hw_round_rate(parent_hw, prate * (parent_inc + 1));
++	} else if (m == 0) {
++		pr_err("%s: Cannot use VCO to reduce parent clock rate, requested %lu, clamping to %lu\n",
++			__func__, rate, prate);
++		return prate;
++	}
++
++	new_rate = prate * m;
++
++	if (new_rate != rate) {
++		/*
++		 * Check if we could get an integer match by halving parent rate since we
++		 * know at least about the DF bit before the VCO, although we don't know
++		 * if we're already using it or not
++		 */
++		prate2 = clk_hw_round_rate(parent_hw, prate / 2);
++		m2 = rate / prate2;
++		nr2 = prate * m2;
++		if (m2 <= pll->msel && nr2 == rate) {
++			m = m2;
++			new_rate = nr2;
++			prate = prate2;
++		}
++	}
++
++	*parent_rate = prate;
++	return new_rate;
++}
++
++static unsigned long sc5xx_cgu_pll_recalc_rate(struct clk_hw *hw,
++	unsigned long parent_rate)
++{
++	struct clk_sc5xx_cgu_pll *pll = to_clk_sc5xx_cgu_pll(hw);
++	u32 reg = readl(pll->base);
++	u32 m = ((reg & pll->mask) >> pll->shift) + pll->m_offset;
++
++	if (m == 0)
++		m = pll->msel;
++
++	return parent_rate * m;
++
++}
++
++static int sc5xx_cgu_pll_set_rate(struct clk_hw *hw, unsigned long rate,
++	unsigned long parent_rate)
++{
++	struct clk_sc5xx_cgu_pll *pll = to_clk_sc5xx_cgu_pll(hw);
++	u32 m;
++
++	m = (rate / parent_rate) - pll->m_offset;
++
++	if (m >= pll->msel)
++		m = 0;
++
++	/* reminder for implementation: lock around read/modify to control reg */
++	pr_err("%s: set_rate not permitted yet, but we would write %d to m\n", __func__,
++		m);
++	return -ENOENT;
++}
++
++static const struct clk_ops clk_sc5xx_cgu_pll_ops = {
++	.recalc_rate = sc5xx_cgu_pll_recalc_rate,
++	.round_rate = sc5xx_cgu_pll_round_rate,
++	.set_rate = sc5xx_cgu_pll_set_rate,
++};
++
++struct clk *sc5xx_cgu_pll(const char *name, const char *parent_name,
++	void __iomem *base, u8 shift, u8 width, u32 m_offset,
++		spinlock_t *lock)
++{
++	struct clk_sc5xx_cgu_pll *pll;
++	struct clk *clk;
++	struct clk_init_data init;
++
++	pll = kzalloc(sizeof(*pll), GFP_KERNEL);
++	if (!pll)
++		return ERR_PTR(-ENOMEM);
++
++	init.name = name;
++	init.flags = CLK_SET_RATE_PARENT;
++	init.parent_names = &parent_name;
++	init.num_parents = 1;
++	init.ops = &clk_sc5xx_cgu_pll_ops;
++
++	pll->base = base;
++	pll->hw.init = &init;
++	pll->lock = lock;
++	pll->shift = shift;
++	pll->mask = GENMASK(width-1, 0) << shift;
++	pll->msel = pll->mask + 1;
++	pll->m_offset = m_offset;
++
++	clk = clk_register(NULL, &pll->hw);
++	if (IS_ERR(clk)) {
++		pr_err("%s: Failed to register, code %lu\n", __func__,
++			PTR_ERR(clk));
++	}
++
++	return clk;
++}
++
++MODULE_DESCRIPTION("Analog Devices CLock PLL driver");
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Greg Malysa <greg.malysa@timesys.com>");
++
+diff --git a/drivers/clk/adi/clk.h b/drivers/clk/adi/clk.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..e17aa719c2170149a6a1a60dd4390a29f06e7296
+--- /dev/null
++++ b/drivers/clk/adi/clk.h
+@@ -0,0 +1,99 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Clock support for ADI processors
++ *
++ * Copyright 2022-2024 - Analog Devices Inc.
++ */
++
++#ifndef CLK_ADI_CLK_H
++#define CLK_ADI_CLK_H
++
++#include <linux/clk.h>
++
++#define CGU_CTL         0x00
++#define CGU_PLLCTL      0x04
++#define CGU_STAT        0x08
++#define CGU_DIV         0x0C
++#define CGU_CLKOUTSEL   0x10
++#define CGU_OSCWDCTL    0x14
++#define CGU_TSCTL       0x18
++#define CGU_TSVALUE0    0x1C
++#define CGU_TSVALUE1    0x20
++#define CGU_TSCOUNT0    0x24
++#define CGU_TSCOUNT1    0x28
++#define CGU_CCBF_DIS    0x2C
++#define CGU_CCBF_STAT   0x30
++#define CGU_SCBF_DIS    0x38
++#define CGU_SCBF_STAT   0x3C
++#define CGU_DIVEX       0x40
++#define CGU_REVID       0x48
++
++#define CDU_CFG0     0x00
++#define CDU_CFG1     0x04
++#define CDU_CFG2     0x08
++#define CDU_CFG3     0x0C
++#define CDU_CFG4     0x10
++#define CDU_CFG5     0x14
++#define CDU_CFG6     0x18
++#define CDU_CFG7     0x1C
++#define CDU_CFG8     0x20
++#define CDU_CFG9     0x24
++#define CDU_CFG10    0x28
++#define CDU_CFG11    0x2C
++#define CDU_CFG12    0x30
++#define CDU_CFG13    0x34
++#define CDU_CFG14    0x38
++
++#define PLL3_OFFSET 0x2c
++
++#define CDU_CLKINSEL 0x44
++
++#define CGU_MSEL_SHIFT 8
++#define CGU_MSEL_WIDTH 7
++
++#define PLL3_MSEL_SHIFT 4
++#define PLL3_MSEL_WIDTH 7
++
++#define CDU_MUX_SIZE 4
++#define CDU_MUX_SHIFT 1
++#define CDU_MUX_WIDTH 2
++#define CDU_EN_BIT 0
++
++struct clk_sc5xx_cgu_pll *to_clk_sc5xx_cgu_pll(struct clk_hw *hw);
++
++struct clk *sc5xx_cgu_pll(const char *name, const char *parent_name,
++	void __iomem *base, u8 shift, u8 width, u32 m_offset, spinlock_t *lock);
++
++/**
++ * All CDU clock muxes are the same size
++ */
++static inline struct clk *cdu_mux(const char *name, void __iomem *reg,
++	const char * const *parents, spinlock_t *cdu_lock)
++{
++	return clk_register_mux(NULL, name, parents, CDU_MUX_SIZE,
++		CLK_SET_RATE_PARENT, reg, CDU_MUX_SHIFT, CDU_MUX_WIDTH, 0,
++		cdu_lock);
++}
++
++static inline struct clk *cgu_divider(const char *name, const char *parent,
++	void __iomem *reg, u8 shift, u8 width, u8 extra_flags, spinlock_t *cdu_lock)
++{
++	return clk_register_divider(NULL, name, parent, CLK_SET_RATE_PARENT,
++		reg, shift, width, CLK_DIVIDER_MAX_AT_ZERO | extra_flags, cdu_lock);
++}
++
++static inline struct clk *cdu_gate(const char *name, const char *parent,
++	void __iomem *reg, u32 flags, spinlock_t *cdu_lock)
++{
++	return clk_register_gate(NULL, name, parent, CLK_SET_RATE_PARENT | flags,
++		reg, CDU_EN_BIT, 0, cdu_lock);
++}
++
++static inline struct clk *cgu_gate(const char *name, const char *parent,
++	void __iomem *reg, u8 bit, spinlock_t *cdu_lock)
++{
++	return clk_register_gate(NULL, name, parent, CLK_SET_RATE_PARENT, reg, bit,
++		CLK_GATE_SET_TO_DISABLE, cdu_lock);
++}
++
++#endif
 
 -- 
 2.25.1
