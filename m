@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D08156F44;
-	Thu, 12 Sep 2024 18:20:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 561D01898F9;
+	Thu, 12 Sep 2024 18:20:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726165215; cv=none; b=ZNEKBiFfRkqaizsiQhkCCdLOm7UASt4bPtmFUpLoid63ZK3HA7xYs0wC4pvuixtx0TX7J9JUmo7NGcgfReionkTjrfh4JmBUhC0xLgMnczuiFUZq5GsBvKZDbOYF/obEGzgR2fg+w0olCGyYqGtZxu9ccsjUr2yATV2C/wtXA7k=
+	t=1726165215; cv=none; b=LYIcHykWciJTMZvGoE8f76DkXn+AEC0F548FKZI8DNP5mhdW91RTpOK7hsTwu0PDn2dthNHNodbz8q8M/JyEs7tdH2mkMkIKrHBIcRpmlz+niiV4fmnXwqOCqHo0+ycbbMOcBs59C9zeq1QIONv9dioP2k6uRpWzsGgkRi/1cUg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1726165215; c=relaxed/simple;
-	bh=w0yUEeGO5zWa5Zok2P2rOyXgtDKvVgmOUJ+a/Az1hj4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IjQ4CC9l+6npKfeG9EA6qDO0rYNXR+VP71G/IbfS2rQ+MbBjVBIc0X5Mdb19EyUEO/mlV3O9U1vJQxYhjBydjEG0MnT7rWGNeXgTwoYyI6Ta7V17qhdSdbponnvU9R782VRkDhMxDmKjNcAQzRO2dVOYrv5u75n7fT08u5lKtxw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CPsmgtEM; arc=none smtp.client-ip=10.30.226.201
+	bh=v/JKn3gZXUVsA3y1aAYS1Zs+qQ+FmLETkgfXkSxZq4w=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=dpi5rQVhsSiLVVj5jHHsp5VN6br/PPJLDmWd5mervYASMcujUxXjlcX4tCdQS9zvmFqNQMER/dybCBmBgx/9OzmpmD4wZ+4qHpl9DG9cB63xicaWnYuTNXqDhne21DW0oIStCpVlwHhPfSOBNa0+5ZiC9vN6caH6eJS0rhbmWD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lAwr0nJH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CPsmgtEM"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B1314C4CEC3;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lAwr0nJH"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDEFFC4CECF;
 	Thu, 12 Sep 2024 18:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726165214;
-	bh=w0yUEeGO5zWa5Zok2P2rOyXgtDKvVgmOUJ+a/Az1hj4=;
-	h=From:Subject:Date:List-Id:To:Cc:Reply-To:From;
-	b=CPsmgtEMMAtyNjuTtYzJv2ymvFQzEQ0PP4IxrBdr25a91/xfA+vLhNsSL+sUbEenZ
-	 pnswG6UKzPGA3YNk0qQSUQCjyTyrSSHYiRpO5q6F/kJ4uTcf4RAHSqE1IviTh391YH
-	 LKwVAYm+pHsrWoYTohF3ihvZtSMZZl2stoW3B9u1nAmd+ymbmPPmHRjZ2ixy5YTA5g
-	 29/F5vNMp75kXNPU1jh5NV0QUUrwuLjW4nf/0ah2QpS+z28d2jKOzGh8ljkpwWfo+Z
-	 okGMUadVfBH17b24RjwzDTPHAc88HGbAbD3zk/VmYj0a/3gErJdJXm9vc/gOPciRmZ
-	 DM5sYzwjSuwLg==
+	s=k20201202; t=1726165215;
+	bh=v/JKn3gZXUVsA3y1aAYS1Zs+qQ+FmLETkgfXkSxZq4w=;
+	h=From:Date:Subject:References:In-Reply-To:List-Id:To:Cc:Reply-To:
+	 From;
+	b=lAwr0nJHscmkQPKJFkZwmbN3d58Z6g5GSxtJRwwW/TxBZFI1xAMWh2ov8FDk/XffI
+	 RuDyKAj7NFEa7l3Eq4KoKeaArG8RnocBC91iGMguqeWKiH7h+MGeS249SfJcl1ge4G
+	 Ygoi+ujwlnFX0CV6wkda4ppVAyasryIb7y15YxCSpknniVcYTYcBSgnJCTNKF6S9dQ
+	 RxL/Mk2iBvaeYc06sn9q4Y30+hpgPDsljUd/s7Ek6SBpVeOsY/vZY10/Dk9wJN/ipd
+	 8kVmULd5wOQVinP8KQ2aMacAUtQAqZf4HYKwmAmquM10yyk1NjVCDR0j8HO3WOzZsH
+	 tPTzaQ94s4ojA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9552CEED61F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFB1EED63F;
 	Thu, 12 Sep 2024 18:20:14 +0000 (UTC)
 From: Arturs Artamonovs via B4 Relay <devnull+arturs.artamonovs.analog.com@kernel.org>
-Subject: [PATCH 00/21] Adding support of ADI ARMv8 ADSP-SC598 SoC.
-Date: Thu, 12 Sep 2024 19:24:45 +0100
-Message-Id: <20240912-test-v1-0-458fa57c8ccf@analog.com>
+Date: Thu, 12 Sep 2024 19:24:48 +0100
+Subject: [PATCH 03/21] dt-bindigs: arm64: adi,sc598 bindings
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,10 +41,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAO0x42YC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIxMDSwNL3ZLU4hJdi9Rk0zRzs7RUsxQjJaDSgqLUtMwKsDHRsbW1ACfUB0l
- WAAAA
-X-Change-ID: 20240909-test-8ec5f76fe6d2
+Message-Id: <20240912-test-v1-3-458fa57c8ccf@analog.com>
+References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
+In-Reply-To: <20240912-test-v1-0-458fa57c8ccf@analog.com>
 To: Catalin Marinas <catalin.marinas@arm.com>, 
  Will Deacon <will@kernel.org>, Greg Malysa <greg.malysa@timesys.com>, 
  Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>, 
@@ -65,11 +65,11 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  Arturs Artamonovs <Arturs.Artamonovs@analog.com>, 
  Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 X-Mailer: b4 0.15-dev-7be4f
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1726165513; l=5160;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1726165513; l=1844;
  i=arturs.artamonovs@analog.com; s=20240909; h=from:subject:message-id;
- bh=w0yUEeGO5zWa5Zok2P2rOyXgtDKvVgmOUJ+a/Az1hj4=;
- b=zbt6V9124O55F0SjvPefnGSMeoqnQ6n0nQAX5r5d9ePtZmwiyfZElo/Gxg9IU9a3CrDXAI7ll
- FFhs3bUdzCqBvTjA8ZWx3jPfHROQJaT88gsBroCxlNiuQ/0z7ZsVUF8
+ bh=Oi5xgxW+vpOrfKsaRdGPlzsPaJn9xUo9SU1Q4oMSXZ8=;
+ b=n14btFQRrorCCXsLphS1xj8VeFGWTdUV7UquRTRapHFoqbQL0L1h3/qkuUAr68TwMJSpzM7OS
+ oeNnb/6FXwVDmqU7DayurCAzLZ1F5Xt2iNmuE/jKV0Ixq7kYAB18b49
 X-Developer-Key: i=arturs.artamonovs@analog.com; a=ed25519;
  pk=UXODIid/MrmBXvqkX4PeEfetDaNAw9xKMINHIc5oZCk=
 X-Endpoint-Received: by B4 Relay for arturs.artamonovs@analog.com/20240909
@@ -77,97 +77,67 @@ X-Endpoint-Received: by B4 Relay for arturs.artamonovs@analog.com/20240909
 X-Original-From: Arturs Artamonovs <arturs.artamonovs@analog.com>
 Reply-To: arturs.artamonovs@analog.com
 
-This set of patches based on ADI fork of Linux Kerenl that support family of ADSP-SC5xx
-SoC's and used by customers for some time . Patch series contains minimal set
-of changes to add ADSP-SC598 support to upstream kernel. This series include
-UART,I2C,IRQCHIP,RCU drivers and device-tree to be able boot on EV-SC598-SOM
-board into serial shell and able to reset the board. Current SOM board
-requires I2C expander to enable UART output.
+From: Arturs Artamonovs <arturs.artamonovs@analog.com>
 
-UART,I2C and PINCTRL drivers are based on old Blackfin drivers with
-ADSP-SC5xx related bug fixes and improvments.
+Bindigs for ADI ADSP-SC5xx reset controller
 
-Signed-off-by: Arturs Artamonovs <arturs.artamonovs@analog.com>
+Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
+Co-developed-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+Signed-off-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
+Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
 ---
-Arturs Artamonovs (21):
-      arm64: Add ADI ADSP-SC598 SoC
-      reset: Add driver for ADI ADSP-SC5xx reset controller
-      dt-bindigs: arm64: adi,sc598 bindings
-      dt-bindings: arm64: adi,sc598: Add ADSP-SC598 SoC bindings
-      clock:Add driver for ADI ADSP-SC5xx PLL
-      include: dt-binding: clock: add adi clock header file
-      clock: Add driver for ADI ADSP-SC5xx clock
-      dt-bindings: clock: adi,sc5xx-clocks: add bindings
-      gpio: add driver for ADI ADSP-SC5xx platform
-      dt-bindings: gpio: adi,adsp-port-gpio: add bindings
-      irqchip: Add irqchip for ADI ADSP-SC5xx platform
-      dt-bindings: irqchip: adi,adsp-pint: add binding
-      pinctrl: Add drivers for ADI ADSP-SC5xx platform
-      dt-bindings: pinctrl: adi,adsp-pinctrl: add bindings
-      i2c: Add driver for ADI ADSP-SC5xx platforms
-      dt-bindings: i2c: add i2c/twi driver documentation
-      serial: adi,uart: Add driver for ADI ADSP-SC5xx
-      dt-bindings: serial: adi,uart4: add adi,uart4 driver documentation
-      arm64: dts: adi: sc598: add device tree
-      arm64: defconfig: sc598 add minimal changes
-      MAINTAINERS: add adi sc5xx maintainers
+ .../bindings/soc/adi/adi,reset-controller.yaml     | 38 ++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
- .../devicetree/bindings/arm/analog/adi,sc5xx.yaml  |   24 +
- .../bindings/clock/adi,sc5xx-clocks.yaml           |   65 ++
- .../bindings/gpio/adi,adsp-port-gpio.yaml          |   69 ++
- Documentation/devicetree/bindings/i2c/adi,twi.yaml |   71 ++
- .../interrupt-controller/adi,adsp-pint.yaml        |   51 +
- .../bindings/pinctrl/adi,adsp-pinctrl.yaml         |   83 ++
- .../devicetree/bindings/serial/adi,uart.yaml       |   85 ++
- .../bindings/soc/adi/adi,reset-controller.yaml     |   38 +
- MAINTAINERS                                        |   22 +
- arch/arm64/Kconfig.platforms                       |   13 +
- arch/arm64/boot/dts/Makefile                       |    1 +
- arch/arm64/boot/dts/adi/Makefile                   |    2 +
- arch/arm64/boot/dts/adi/sc598-som-ezkit.dts        |   14 +
- arch/arm64/boot/dts/adi/sc598-som.dtsi             |   58 ++
- arch/arm64/boot/dts/adi/sc59x-64.dtsi              |  367 +++++++
- arch/arm64/configs/defconfig                       |    6 +
- drivers/clk/Kconfig                                |    9 +
- drivers/clk/Makefile                               |    1 +
- drivers/clk/adi/Makefile                           |    4 +
- drivers/clk/adi/clk-adi-pll.c                      |  151 +++
- drivers/clk/adi/clk-adi-sc598.c                    |  329 ++++++
- drivers/clk/adi/clk.h                              |   99 ++
- drivers/gpio/Kconfig                               |    8 +
- drivers/gpio/Makefile                              |    1 +
- drivers/gpio/gpio-adi-adsp-port.c                  |  145 +++
- drivers/i2c/busses/Kconfig                         |   17 +
- drivers/i2c/busses/Makefile                        |    1 +
- drivers/i2c/busses/i2c-adi-twi.c                   |  940 ++++++++++++++++++
- drivers/irqchip/Kconfig                            |    9 +
- drivers/irqchip/Makefile                           |    2 +
- drivers/irqchip/irq-adi-adsp.c                     |  310 ++++++
- drivers/pinctrl/Kconfig                            |   12 +
- drivers/pinctrl/Makefile                           |    1 +
- drivers/pinctrl/pinctrl-adsp.c                     |  919 +++++++++++++++++
- drivers/reset/Makefile                             |    1 +
- drivers/soc/Makefile                               |    1 +
- drivers/soc/adi/Makefile                           |    5 +
- drivers/soc/adi/system.c                           |  257 +++++
- drivers/tty/serial/Kconfig                         |   19 +-
- drivers/tty/serial/Makefile                        |    1 +
- drivers/tty/serial/adi_uart.c                      | 1045 ++++++++++++++++++++
- include/dt-bindings/clock/adi-sc5xx-clock.h        |   93 ++
- include/dt-bindings/pinctrl/adi-adsp.h             |   19 +
- include/linux/soc/adi/adsp-gpio-port.h             |   85 ++
- include/linux/soc/adi/cpu.h                        |  107 ++
- include/linux/soc/adi/rcu.h                        |   55 ++
- include/linux/soc/adi/sc59x.h                      |  147 +++
- include/linux/soc/adi/system_config.h              |   65 ++
- include/uapi/linux/serial_core.h                   |    3 +
- 49 files changed, 5829 insertions(+), 1 deletion(-)
----
-base-commit: da3ea35007d0af457a0afc87e84fddaebc4e0b63
-change-id: 20240909-test-8ec5f76fe6d2
+diff --git a/Documentation/devicetree/bindings/soc/adi/adi,reset-controller.yaml b/Documentation/devicetree/bindings/soc/adi/adi,reset-controller.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..7a6df1cfb709d818d5e3dbcd202938d6aaaaaa9b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/adi/adi,reset-controller.yaml
+@@ -0,0 +1,38 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/adi/adi,reset-controller.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices Reset Controller for SC5XX processor family
++
++maintainers:
++  - Arturs Artamonovs <arturs.artamonovs@analog.com>
++  - Utsav Agarwal <Utsav.Agarwal@analog.com>
++
++description: |
++  SHARC and ARM core reset control unit for starting/stopping/resetting
++  processors
++
++properties:
++  compatible:
++    enum:
++      - adi,reset-controller
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    rcu: rcu@3108c000 {
++      compatible = "adi,reset-controller";
++      reg = <0x3108c000 0x1000>;
++      status = "okay";
++    };
++
 
-Best regards,
 -- 
-Arturs Artamonovs <arturs.artamonovs@analog.com>
+2.25.1
 
 
