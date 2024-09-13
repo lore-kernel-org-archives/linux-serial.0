@@ -1,215 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49DDD43144;
-	Fri, 13 Sep 2024 14:06:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9BD7EED6;
+	Fri, 13 Sep 2024 14:56:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726236418; cv=none; b=Jtzb/mBoKeOXtwp3Ujkp9uOhFV08ehVqZPYkpWvvCC71WKBdfe8P2HuSPvAeu74Cw+KiPUB1chOKd32A+vfJjoEE0SpHIl/8DshucwqKRBMJxzbdr1pBZL793oWeu8flqa2aJCaE8GbO8TfAXTOioz5P9oT9VW+dFt8d0mCGIc8=
+	t=1726239410; cv=none; b=I80pkynWsocCl7VM8tjrttFcuDUNtQZXocHR2BqfYC0y6A1Qjzo+wrA4iye1mKVfNP8Pf7xKLBtIPfymZbm2gvFP8ZhVqtVpodWccd/AfUBDh2tZiiC4fWmM84vBMhB4JzHx59UEbGJRb7QT5TrnfhkOJqugXaBf8DVGZ0aJKvI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726236418; c=relaxed/simple;
-	bh=UXwyPH+Uj+G+0UKGaXTyXocMgN54SL5IhIJD9U6CYYY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UzsLVT6wV/JFSqXDnCbzX6glwOAUSaVKsiPfALfzXVANM5HzDOcrPPkePizKxZlRlG0Jyixe4R8t2fO+uWPYddpiF5J0X+b8QHMDUZZQA9Iiovgyqhyzkj+bOgEsRlOtn3GkC1F9nLlSpBvmnhKZWNTb2KsshjUIRWYt0Tza6C8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nyf84WlN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726239410; c=relaxed/simple;
+	bh=2S5EjdohUtafJVN0LclLZOeaa5BwcEKgqmTqIaUCLXc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Z5x2LBWVweBSCI/l8nDmoxJ0+O6/QWgrFpVNa+VGNAxWpxMgBSUd43erDOrxsLJC0eaFcxdFLfzQ/vAIZEsqNFA+N/a36QoBJOF8S9iIsOqmuma8el3PBCQKWufankoIygYewRL67sF5e6gQB5hyqDCZy0segHRUMvZlGGcnyhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=S6+8schn; arc=none smtp.client-ip=74.208.4.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nyf84WlN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88EB9C4CEC0;
-	Fri, 13 Sep 2024 14:06:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726236417;
-	bh=UXwyPH+Uj+G+0UKGaXTyXocMgN54SL5IhIJD9U6CYYY=;
-	h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To:From;
-	b=Nyf84WlNh7ncSAZOfCMWFIolG1UOZsIbD1p4oW6HX5wj8jDtDZUHqANNrjTC3zEGe
-	 SIpn/62Gaj7r6WCehzGD6DZMUyEIpK2irKXY0QO4WPH+/UYIrszeaAqpNyyM1HDP7S
-	 XiRBEBDqRNXQyBvNM/FaJO3sQJ150fnr68tUuqoMTFKpT6QfjxYMnQgubZQUPavzBT
-	 SCt+C5zBID2FIXmzGTk5V2TBftlNdTA4XwPqYjKJY+vtALxdEf8TpNdiGftd0gJvWJ
-	 BhsK28Tbr22uNFkxhQ13fdRf5U2LkfEVH+F4MZlmD6L2dwIShrGm8If9+bbJWQTDD/
-	 Zd6c/kesseV5g==
-Date: Fri, 13 Sep 2024 09:06:56 -0500
-From: Rob Herring <robh@kernel.org>
-To: Arturs Artamonovs <arturs.artamonovs@analog.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Greg Malysa <greg.malysa@timesys.com>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Utsav Agarwal <Utsav.Agarwal@analog.com>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Olof Johansson <olof@lixom.net>, soc@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-serial@vger.kernel.org, adsp-linux@analog.com,
-	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-Subject: Re: [PATCH 18/21] dt-bindings: serial: adi,uart4: add adi,uart4
- driver documentation
-Message-ID: <20240913140656.GA3835385-robh@kernel.org>
-References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
- <20240912-test-v1-18-458fa57c8ccf@analog.com>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="S6+8schn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1726239389; x=1726844189; i=parker@finest.io;
+	bh=u5dwxRXFP0sPzsc3PAhsuP1tz7y0KsCKMmM5JoZ61c0=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=S6+8schnQyYE9E1UzQ0d2WibxsyuUHFfaNNaEaAqYNZlcDegNsMd6p3fck+ZUCR+
+	 jTiaL1yFJG/UJKZEmik7MGGr3EyzFe+JskAEtzzou8mPD4vu0JpQmTOWv+EE7zh2x
+	 irbGXdw/7CgEq0jejOm8iwYWFGPGNGcJJUDDjPTYog7+m3VO3DktFk1IcPSfVZIcM
+	 MGTjL7JnsozcQq2xrCg0aXzq1KMMxtczYWnUDJqy68ktcNx/Qs7QrxfqB7jnRAvpF
+	 /jXrCJpOiNv7TgiTpkmr9GWQ/h4vqqpG7w0no+a+JI+2u/r5sdJBLpGjj49rCq+1H
+	 bozUG8kq1Y60jrnUXQ==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus004
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 1MS4SF-1sRivG1Kbj-00XIwz; Fri, 13 Sep
+ 2024 16:56:29 +0200
+From: Parker Newman <parker@finest.io>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Parker Newman <pnewman@connecttech.com>
+Subject: [PATCH v1 2/6] misc: eeprom: eeprom_93cx6: Switch to BIT() macro
+Date: Fri, 13 Sep 2024 10:55:39 -0400
+Message-ID: <ef318e16db5c0743c792950d0f2504d80b52a106.1726237379.git.pnewman@connecttech.com>
+X-Mailer: git-send-email 2.46.0
+In-Reply-To: <cover.1726237379.git.pnewman@connecttech.com>
+References: <cover.1726237379.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240912-test-v1-18-458fa57c8ccf@analog.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:7Ukjgtuaq5ajxqwDz4KN63U3de7irQDKJlYjSATh7lgk4iC8Nk5
+ gV+YfHiij48dGxQzvmy1BiSEjRJjR4T29agpIp8ZFm8dJe7prEeh3mpyz6oRLA6cz6tKonj
+ hVhkeeu7NJlTCbIcpjgdVjEQONU2fDnVDEllzINn+tqsb1wZ5q+9IYC5xuFhtcTWBCiz7va
+ fVB152x/pwjb29yHZehxQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:AmqoMiT8DMo=;2rLNuGc/xbAutWzEOqKdaNbc/+K
+ 7wi1nJjKW4JAVN4gcZdiJEUVD9fv7qQ68gFbGfiFs0XtbVWI7VcZ0y3Km1ouvCkHxTLo2SJ7g
+ 2h+E96oedng6jGdzA5az7jGdINjLQON0U9U3mMbzApNxkCLwceoMG6a119qD0PMe0q9n15WPR
+ jG7qkgzS+QGpP1qNyhn97BzZFjY841AuuRw+es+YVLK/GP6yEZuh1vu3iWEYuQOa+MMRmC0fb
+ JeYscpUmM2X9JsYzj1ah/DqXKnRR3PhDwucM0yM++COuK1TzmlQKvA26QGVyVMjosbgsgvtvU
+ UqSBPaRamXaiTs7DvqVFgZXmakTHFGAFC7/yJdXPs387QZ5EwBW9BofugegHYgO+Tvq3HXPuJ
+ PWwDYvtkW/a1w9/3MWmY7X3kT8QAVCHSGUhCXcra2o9512I+VZpbDjKbZXECiHM+fPOm+Xfue
+ yu1HaqR3kC/QMZjnKXaEzAi7yIo52VIYTb6jpsC+4/c5u+bcEctbCPTV1MU8npLp0MupL+Tld
+ KmbspvORxmLwauvKYF3PDGRzEhGl5d5A9XiYn+0GavzheIz1tRoVlowfon2ntpf3Z2CGibT75
+ mMAK2dvKQxBkJOX7jJ6ISdFdVeFWPOERSPv7EQuM9rR+Efk1PVrX/UM6HJB9EP5yT+A9sGx5R
+ NiD7/Vzto0Imeolew0UIXujXfQBvq1JZhceU5T4mXKdPJVzXumqdrMZMclLWmwMQcO3PjTMEU
+ x/08Jwuy1rK8aD/rQsGVtKI8Ugi0UYj2w==
 
-On Thu, Sep 12, 2024 at 07:25:03PM +0100, Arturs Artamonovs wrote:
-> Add serial driver bindings.
+From: Parker Newman <pnewman@connecttech.com>
 
-Don''t need 'documentation' in the the subject. That's redundant with 
-'dt-bindings'.
+Use the BIT() macro rather than (1 << (i - 1))
 
+Signed-off-by: Parker Newman <pnewman@connecttech.com>
+=2D--
+ drivers/misc/eeprom/eeprom_93cx6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> 
-> Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
+diff --git a/drivers/misc/eeprom/eeprom_93cx6.c b/drivers/misc/eeprom/eepr=
+om_93cx6.c
+index 0f52d3c4bc1d..64da22edefa4 100644
+=2D-- a/drivers/misc/eeprom/eeprom_93cx6.c
++++ b/drivers/misc/eeprom/eeprom_93cx6.c
+@@ -8,6 +8,7 @@
+  * Supported chipsets: 93c46 & 93c66.
+  */
 
-Your S-o-b goes last since you are sending the patch.
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
+@@ -107,7 +108,7 @@ static void eeprom_93cx6_write_bits(struct eeprom_93cx=
+6 *eeprom,
+ 		/*
+ 		 * Check if this bit needs to be set.
+ 		 */
+-		eeprom->reg_data_in =3D !!(data & (1 << (i - 1)));
++		eeprom->reg_data_in =3D !!(data & BIT(i - 1));
 
-> Signed-off-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+ 		/*
+ 		 * Write the bit to the eeprom register.
+@@ -157,7 +158,7 @@ static void eeprom_93cx6_read_bits(struct eeprom_93cx6=
+ *eeprom,
+ 		 * Read if the bit has been set.
+ 		 */
+ 		if (eeprom->reg_data_out)
+-			buf |=3D (1 << (i - 1));
++			buf |=3D BIT(i - 1);
 
-Not clear what Utsav's role was. Needs Co-developed-by?
+ 		eeprom_93cx6_pulse_low(eeprom);
+ 	}
+=2D-
+2.46.0
 
-> Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
-> Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
-> ---
->  .../devicetree/bindings/serial/adi,uart.yaml       | 85 ++++++++++++++++++++++
->  1 file changed, 85 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/adi,uart.yaml b/Documentation/devicetree/bindings/serial/adi,uart.yaml
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..de58059efa7e21acaa5b7f4984ffadca18f7f53a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/adi,uart.yaml
-> @@ -0,0 +1,85 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/adi,uart4.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices UART Driver for SC5XX-family processors
-
-Bindings aren't a driver.
-
-> +
-> +maintainers:
-> +  - Arturs Artamonovs <arturs.artamonovs@analog.com>
-> +  - Utsav Agarwal <Utsav.Agarwal@analog.com>
-> +
-> +description: |
-
-Don't need '|'.
-
-> +  Analog Devices UART Driver for SC59X-family processors
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,uart
-
-Only 1 UART implementation for all of Analog Devices ever.
-
-compatibles should be specific to SoC.
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  dmas:
-> +    maxItems: 2
-> +    minItems: 2
-> +    description: TX and RX DMA cluster numbers
-> +
-> +  dma-names:
-> +    maxItems: 2
-> +    minItems: 2
-> +    description: DMA channel names (tx and rx)
-
-Names need to be constraints, not freeform text. Plenty of examples to 
-look at...
-
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Clock being used for UART
-
-That's obvious. Drop description or say something unique to this device.
-
-> +
-> +  clock-names:
-> +    maxItems: 1
-> +    description: Clock name (sclk0)
-> +
-> +  interrupt-names:
-> +    minItems: 3
-> +    maxItems: 3
-> +    description: Interrupt names (tx + rx + status)
-> +
-> +  interrupts:
-> +    minItems: 3
-> +    maxItems: 3
-> +    description: GIC interrupt numbers
-> +
-> +  adi,use-edbo:
-> +    type: boolean
-> +    description: Enable divide by one in divisor
-
-Versus divide by ???
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - interrupt-names
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/clock/adi-sc5xx-clock.h>
-> +
-> +    uart0: uart@31003000 {
-
-serial@...
-
-Drop unused labels.
-
-> +      compatible = "adi,uart";
-> +      reg = <0x31003000 0x40>;
-> +      clocks = <&clk ADSP_SC598_CLK_CGU0_SCLK0>;
-> +      clock-names = "sclk0";
-> +      interrupt-parent = <&gic>;
-> +      interrupt-names = "tx", "rx", "status";
-> +      interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
-> +                   <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
-> +                   <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
-> +      adi,use-edbo;
-> +      status = "disabled";
-
-Examples should be enabled. Drop.
-
-> +    };
-> +
-> 
-> -- 
-> 2.25.1
-> 
