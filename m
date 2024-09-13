@@ -1,118 +1,179 @@
-Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2059.outbound.protection.outlook.com [40.107.102.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C239D1D6C6E;
-	Fri, 13 Sep 2024 10:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726221791; cv=none; b=L03OVaVwomuoVee6kU7cRT4Yj+srQG7XcWbMDCDHwqGr1Mgzg1QGpguzjwnF12cZn1C7reB9xLqiq0626W0KxeQYtbeU1ErFKrJLA9asI9cgcH9MfMQEQzX5QMZQmlAKY82ikJ54QT12TxD5pHEyVDGg7QxVBlzcA/m3orUrStw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726221791; c=relaxed/simple;
-	bh=v77vG3R2aQwdctrT7b5cLJzwQds5ti5P3NnSbJlI2b8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FbQR/TlbtoUyKrHyeUkvtd9K+y2ukQ6mzkp6OQqDFjo5dLhSfu5IZvZ98Xw3ukToeN1XyJUIVAorX4QJA/Gogh/mWMGNxqgV95nkRqczhvPjKFnIaeY6ibaNGGeGDm+xOmgg/GL4Nu6KopSBbs2ZPnGflezTFUznSFa3h/4c5PY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=0IryVpN4; arc=none smtp.client-ip=188.40.30.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A973533C8;
+	Fri, 13 Sep 2024 10:55:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726224936; cv=fail; b=sNuQGwfux4jnjeQp9KSLJhR7mb9BBfpWXRi4vvqTFzKsj/kWRuu3do/nYydJrxuJ8uEmI1xZAEIn/g/uEVSlhS4o4539vuR80X4jdfzt9Y7xI2WBffKx6u+jtvLn1LW8oppqezSRLi5YvjxpmAi890Tc/UzOtxoC8EKr1lt11Rs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726224936; c=relaxed/simple;
+	bh=QylGNLablQfr3gXMb+17pyvDhVX9JCav3jMXTa+VDfg=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CgPGTWvwOCpNqqBHeGz0wjEWbUgIqIlv4f+p0PkqQXSyXmpCE0JXm6CfDt0lozZKgTjBptdJCpMMq/4JpF8oiUcIgzT29fhRhUf6nqumjfyqo0aByMukRNCCPDxWd6Umf/n91x2Hku21scgSIv1R4pHgopje3VOK7rseMUXjPnk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=TEOdKZD9; arc=fail smtp.client-ip=40.107.102.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="0IryVpN4"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
-	s=default2211; h=Content-Type:MIME-Version:Message-ID:Date:References:
-	In-Reply-To:Subject:Cc:To:From:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=rlPvbEnZ5WQngyesq81myBzkHs5Lcelfd34b25m5ANQ=; b=0IryVpN4MTLdCo88llTCADA7Vx
-	RY2gmXVOOIupVG6SYex0ZlRMeQjiZkJxTu0WzU2/zcf0zWvVB88FY8MUJiAHN9nTFWHwgJl65EWvg
-	JZDD/tFkt8f6SgQ10z1FnwMP+c/v5tMLt6ZGakcSxQjllNzfFKLVv/spzS3rywxp5C/ZT+KVYgLIU
-	6jCTPsx/nUM0bAj+6HXmOkyJ9652ShqGf1FAuNHlTd8jQZaTkQ9VmEOqB7v+K0mfGxlepXw/I4GJ+
-	UBUpfiZmgkT7l16YnDq55gK0764gmm95gmLqZFgfbv1tcidEd2+NL7JIDo3dc6U9zo1x0E+OE5FV2
-	ZlGz7F8Q==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <esben@geanix.com>)
-	id 1sp38l-0001ta-BP; Fri, 13 Sep 2024 12:02:59 +0200
-Received: from [80.62.117.18] (helo=localhost)
-	by sslproxy03.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <esben@geanix.com>)
-	id 1sp38k-0009i8-05;
-	Fri, 13 Sep 2024 12:02:58 +0200
-From: Esben Haabendal <esben@geanix.com>
-To: Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,  Jiri Slaby
- <jirislaby@kernel.org>,  Shawn Guo <shawnguo@kernel.org>,  Sascha Hauer
- <s.hauer@pengutronix.de>,  Pengutronix Kernel Team
- <kernel@pengutronix.de>,  Fabio Estevam <festevam@gmail.com>,  John Ogness
- <john.ogness@linuxtronix.de>,  linux-arm-kernel@lists.infradead.org,
-  linux-kernel@vger.kernel.org,  linux-serial@vger.kernel.org,
-  imx@lists.linux.dev
-Subject: Re: [PATCH 2/2] serial: imx: Add more comments on port lock status
-In-Reply-To: <2200890.irdbgypaU6@steina-w> (Alexander Stein's message of "Fri,
-	13 Sep 2024 11:17:04 +0200")
-References: <20240913-serial-imx-lockfix-v1-0-4d102746c89d@geanix.com>
-	<20240913-serial-imx-lockfix-v1-2-4d102746c89d@geanix.com>
-	<2200890.irdbgypaU6@steina-w>
-Date: Fri, 13 Sep 2024 12:02:57 +0200
-Message-ID: <87v7yz50ry.fsf@geanix.com>
-User-Agent: Gnus/5.13 (Gnus v5.13)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="TEOdKZD9"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=AnrhuZ+HQP4xBx4fUzl081j0gPvrH4c8qpFa2fPyjNBO9sgN0cyPzpUPAI/iCrm6shHSTXyUqEU3tYAs4h+2oUulzKN06ltqPuRAgkJdPGycmJn7czrn+e9BivDQumQ9qCwX7Ju+/B4sFG0uTNj8gEw7DB3EMlxDoA4PynfQsWFmsVI3gXrSJQiu3BDHSbru6DYIVk4Tp37r/67z0VkV1rHLzgyrhZll4vfircJ1k1YPlufyXMcWcB6G2v1TcTEBuTk3CBqaWpEtJKLG/KYp59qEGqgdltfbWOAOiyLltdzm/qVzafTLO8GYqG/+w+jl/UhZksED4tBWI1DaIXw7kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4eo1znd6lWL9yQN7KhhyLBKgAkuEnCXjCKIWw8CUGF0=;
+ b=ivR5byDMfkJ4h/1oYVEA6cgj3FaDzgcXZzBB7pvdotPARhF56ryXbV36+rxZQGfaqQfTbAbsUzGqxhPvy4+ytbO0c5ypcHpcbs3wRoXWp0VVMnEv4Pzzf5ur2EB0fmGrPuQF7eKdnEa73T92Sfeu6Ubz75orPdErpPMs5AwR+hzOz0DZeBA0EC9DHzE5lS0Oe3lC4sEjF/v7gmfY3YuVhXKW69tNxO9BJpb2657dxzfB2Jk2ZDSB+mO9SVnhWLuyskNPqsTQhvLcvBRVVYACiRRIjZ3WUl+qUh6QUKzUPdEM9B/jizVNanx5rKefpbvnsD+nDcmeYZ4Crpzc5/Cauw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4eo1znd6lWL9yQN7KhhyLBKgAkuEnCXjCKIWw8CUGF0=;
+ b=TEOdKZD9vHMmPCPcOcKJmonv2GaCs/8AnNv66IRA9HLvolzoUe1QrvegadpHqG68XbhHgpcIHIyiWR4f7LU+14KEVyJNKn9w3G3y5cgybnjX2KWEeGdWQQn4aiIQov601KRc7mm5YNdg1F2TupB3ibZgRw+a+6X7sCLPVpM7I9U=
+Received: from BN9PR03CA0198.namprd03.prod.outlook.com (2603:10b6:408:f9::23)
+ by PH0PR12MB7929.namprd12.prod.outlook.com (2603:10b6:510:284::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.25; Fri, 13 Sep
+ 2024 10:55:31 +0000
+Received: from BL02EPF0001A101.namprd05.prod.outlook.com
+ (2603:10b6:408:f9:cafe::de) by BN9PR03CA0198.outlook.office365.com
+ (2603:10b6:408:f9::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.27 via Frontend
+ Transport; Fri, 13 Sep 2024 10:55:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL02EPF0001A101.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7918.13 via Frontend Transport; Fri, 13 Sep 2024 10:55:30 +0000
+Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 13 Sep
+ 2024 05:55:27 -0500
+From: Michal Simek <michal.simek@amd.com>
+To: <linux-kernel@vger.kernel.org>, <monstr@monstr.eu>,
+	<michal.simek@xilinx.com>, <git@xilinx.com>
+CC: <stable@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@st.com>,
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, "open
+ list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+	<devicetree@vger.kernel.org>, "open list:TTY LAYER AND SERIAL DRIVERS"
+	<linux-serial@vger.kernel.org>
+Subject: [PATCH v2] dt-bindings: serial: rs485: Fix rs485-rts-delay property
+Date: Fri, 13 Sep 2024 12:55:23 +0200
+Message-ID: <1b60e457c2f1bfa2284291ad58af02c982936ac8.1726224922.git.michal.simek@amd.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1988; i=michal.simek@amd.com; h=from:subject:message-id; bh=QylGNLablQfr3gXMb+17pyvDhVX9JCav3jMXTa+VDfg=; b=owGbwMvMwCR4yjP1tKYXjyLjabUkhrQnUjJZ39bf4RVqPml7Jjsrb2H7XuPl9Qe12t/Ify1d+ X39o02fOmJZGASZGGTFFFmkba6c2Vs5Y4rwxcNyMHNYmUCGMHBxCsBEdtUyzK/MN798u3hj85Js k6/bQ13Xv/olkcgwP1L3D68j1/VZl34wdW7bnZnZrDhHAQA=
+X-Developer-Key: i=michal.simek@amd.com; a=openpgp; fpr=67350C9BF5CCEE9B5364356A377C7F21FE3D1F91
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Authenticated-Sender: esben@geanix.com
-X-Virus-Scanned: Clear (ClamAV 0.103.10/27397/Fri Sep 13 10:48:01 2024)
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0001A101:EE_|PH0PR12MB7929:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d24bf4f-a935-4add-0f12-08dcd3e29604
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|7416014|376014|1800799024|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?IDKSojHV3i2tF/Oc5DbEKxXs49H5+J4nRH/cn28ENCiPMa5gwG+1eRqBbqCo?=
+ =?us-ascii?Q?YBAW/2XhWpBqhkM31mauRqk7ReOMPmM9C+WuCwu0tOiXXI5yWO7KA5fxEG59?=
+ =?us-ascii?Q?11sJMQyHBLLdb9gq5gbqr3maAwN8O/filp3iR7757yaeTRwtXYD2nA0sc6vl?=
+ =?us-ascii?Q?V5xy9S6hC8iJZ+EjRgnFxCUI0TQUpTuVP/JIdrVqCXDW4DD3Hy5HaVX9LQ8B?=
+ =?us-ascii?Q?vqpT3yfADhV8yXiIXd5DIcjzvW8l1gvtLZtX29chriUTnzxbp8uftUvZHl3L?=
+ =?us-ascii?Q?BxxZzisk5t2Q7taccDcCZmkjSKDlL7WPmDw5qknTPjJEeUshLZdMej+3/qdd?=
+ =?us-ascii?Q?gn/BvLSKF9+hZMc7rsrB2+kOLoxx+13q9ygekhyikwofTRakPNiB0NQgWCqZ?=
+ =?us-ascii?Q?ofneextXvm4fH2GdKHLE5rxazFqMawNk0IiNysauxg8KQsx+8RHUCUHfyu4e?=
+ =?us-ascii?Q?T+w+mBAGIj4DxGz1NyeQ4AF7IiUacFqdd867/P9pwAMKEBXBEnpytpnSs8/Y?=
+ =?us-ascii?Q?Ked74AC0qEYI4py/Sco4Bz56nkV17OuqSfudyoRWW1DYF11RkUZgG0MKwEo+?=
+ =?us-ascii?Q?uqO42w6eh6dIts7HbGGG41+vZ7G9oJvdBnSckYvHLJdYtYXIDQ9BRMDXIJN2?=
+ =?us-ascii?Q?4Lkm129McgnE7kqR10E4RIBd/3YcN3TFE346yZnbLhg+/ILgifccBJlHYTWl?=
+ =?us-ascii?Q?LvPR130hE/JvD/vNp3lUFSuVASm+atY2taml4l22uDp5n7NjSPu/+QDAuGoa?=
+ =?us-ascii?Q?IA3Hrroxu4PggP9+HJKf6/6wvVq58Bfbiuogw9hSePYzOW23HR5wTVdyO09l?=
+ =?us-ascii?Q?CA9YMV/Iz6Q3oNAY/9/soW6O3x6eQCgAxdN2TiAG5rW3v/RYjhnSutfVgIq2?=
+ =?us-ascii?Q?qQxu6yDC8uFmHj20DeQrianwAK5OGJd3nmempipb19TWuKU/pyuVptEVX1cb?=
+ =?us-ascii?Q?6BEqo1MzP5xkqI7Y7yb/Hy3l6ZUuA9DJBTBboMElhnt8wBTRD8RuO2Np+szE?=
+ =?us-ascii?Q?mif/i95BGFJXB55FFsEZ78cyqVwsrRxhmFswHJ2Ifp10Bd9NjQuIFvtE5CDB?=
+ =?us-ascii?Q?85c846QwPrKqJ/Vq+6OB4qUsss+nPFYbymhCftF+/pZszThoufdYzQHIQeOF?=
+ =?us-ascii?Q?Dca/s+QQfbRbSUGMCJOqfSLTLWupfl4Gtww4v/QfJtTVapJjjrkaFCKlFaym?=
+ =?us-ascii?Q?b5KxsRYbDWGDXpR7us8T5bCuW4W64Mdl+ePpjek9bV3eJ0hr/YQ1OJl0aYWF?=
+ =?us-ascii?Q?BbcCSkB7czPEyjZlfW193q9HDfTZWm0uOzbivI9n7n8xu4r9si163ukZu+SA?=
+ =?us-ascii?Q?pskQ5wzIYkupDVK6AEHQVeeByoKmkH7jEFWfxq0dfYeV62dXWd/CXMUixr3E?=
+ =?us-ascii?Q?t5W5BrHRkeCUFADRVOZJgYLkEj6Fu8KWibP7qOx2ogR0CssCLgAWbFf7JKde?=
+ =?us-ascii?Q?oqlsQA4OdyLNy94H7CpnanIygPOu+Hca?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2024 10:55:30.8623
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d24bf4f-a935-4add-0f12-08dcd3e29604
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0001A101.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7929
 
-Alexander Stein <alexander.stein@ew.tq-group.com> writes:
+Code expects array only with 2 items which should be checked.
+But also item checking is not working as it should likely because of
+incorrect items description.
 
-> Hi,
->
-> Am Freitag, 13. September 2024, 10:39:50 CEST schrieb Esben Haabendal:
->> Comments regarding status of port.lock on internal functions is useful when
->> reviewing correct handling of registers that must be protected by this
->> lock.
->> 
->> Signed-off-by: Esben Haabendal <esben@geanix.com>
->> ---
->>  drivers/tty/serial/imx.c | 10 ++++++++++
->>  1 file changed, 10 insertions(+)
->> 
->> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->> index efa3eb3a2c57..bea4510743ef 100644
->> --- a/drivers/tty/serial/imx.c
->> +++ b/drivers/tty/serial/imx.c
->> @@ -370,6 +370,7 @@ static void imx_uart_soft_reset(struct imx_port *sport)
->>  	sport->idle_counter = 0;
->>  }
->>  
->> +/* called with port.lock taken and irqs off */
->>  static void imx_uart_disable_loopback_rs485(struct imx_port *sport)
->>  {
->>  	unsigned int uts;
->
-> I think you are referring to sport.lock.
+Fixes: d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings to json-schema")
+Signed-off-by: Michal Simek <michal.simek@amd.com>
+Cc: <stable@vger.kernel.org>
+---
 
-Yes.
+Changes in v2:
+- Remove maxItems properties which are not needed
+- Add stable ML to CC
 
-> On the other hand, instead of just adding comments, wouldn't it be
-> better to make it explicit?
-> Adding
->> lockdep_assert_held(&sport->port->lock);
-> and/or sparse annoations
->> __must_hold(&sport->port->lock)
->
-> seems more reasonable to me than adding non-enforcing comments.
+ .../devicetree/bindings/serial/rs485.yaml     | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-I fear that due to the way that legacy console works, assertations might
-trigger in special situations, such as printk during panic.
+diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
+index 9418fd66a8e9..9665de41762e 100644
+--- a/Documentation/devicetree/bindings/serial/rs485.yaml
++++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+@@ -18,16 +18,15 @@ properties:
+     description: prop-encoded-array <a b>
+     $ref: /schemas/types.yaml#/definitions/uint32-array
+     items:
+-      items:
+-        - description: Delay between rts signal and beginning of data sent in
+-            milliseconds. It corresponds to the delay before sending data.
+-          default: 0
+-          maximum: 100
+-        - description: Delay between end of data sent and rts signal in milliseconds.
+-            It corresponds to the delay after sending data and actual release
+-            of the line.
+-          default: 0
+-          maximum: 100
++      - description: Delay between rts signal and beginning of data sent in
++          milliseconds. It corresponds to the delay before sending data.
++        default: 0
++        maximum: 50
++      - description: Delay between end of data sent and rts signal in milliseconds.
++          It corresponds to the delay after sending data and actual release
++          of the line.
++        default: 0
++        maximum: 100
+ 
+   rs485-rts-active-high:
+     description: drive RTS high when sending (this is the default).
+-- 
+2.43.0
 
-Converting comments to assertations could definitely be a good idea, but
-I think it might be better to wait with that until the driver has been
-converted to NBCON (in progress, see
-https://lore.kernel.org/all/20240913-serial-imx-nbcon-v3-1-4c627302335b@geanix.com/),
-as that will change the code paths this code will be used in.
-
-/Esben
