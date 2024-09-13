@@ -1,101 +1,138 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C03C29CE7
-	for <linux-serial@vger.kernel.org>; Fri, 13 Sep 2024 15:43:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 102B66F31E;
+	Fri, 13 Sep 2024 17:24:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726242234; cv=none; b=JplOMDmjOBmbH78FvMXih44GTsq6tr+3lMTyc71RRsKyGUfrtA3wGmZLUx9WXYbAkcxa0mgWAZQVgjZVMvZNtRsz8FBXG/Ntd4RIUhddY7lWgRYH02Q98i6AcHX2Q2Ug15i/Utibue2uPUUgqzpHmdbHO3lYoUmmj2YgODHVOhQ=
+	t=1726248293; cv=none; b=uMRc6mle90BxKnOw0O4n3ryYoWzvWPjCSc4LHOVvwrRMXBE5DUsuG8GClsv9eEZhpJl/c738gx0m4qi1FyxlNzobNau+ulGkFmOLMjReSrUA4BSUr8nSYTXAq7q6yrLSUzPKTaiA3m9IXhzK7rBUedXHV5rEMPw7k5QJuLQaG84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726242234; c=relaxed/simple;
-	bh=UgejVN/99nwt2N3xq1SPwRkr/wpZolJE3Mk9WmbBWgo=;
+	s=arc-20240116; t=1726248293; c=relaxed/simple;
+	bh=PnxiBuLP2r+FlaRXWWuCH9SooIjCuVke4h/VjCYOCNU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U+7MoHE88RuxbWiBrqWJMaH+vEtWwqL4+ory/jRds2WPCxJraa6wISzAShuPpisRBCNoM+mohVuS84HU7mMDOcYMTYb4goLPn3TteBFGMEMMObKlnb3Ope6L+P6jGH2w2mzzA4uH26SPZYMO9hv7syR4gY/jRmy66wUBAJhUHFc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fd0RA/iw; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=pV85O2NWqOUvPHmsUC5rGQ8O5mvSb7gjQ4J5HD+5Cu1/ANTklcxKwifrwMSZw2AWpyJ/37FKWjzn2ssJarWDa/3Qeo2e+LCBZiw2yE1tpAqsmXU/gOZJmkszCpFfuu3BIl4eFTVBtX+ZQ30eMt3PgCtu8acVIahMGqW86QN+gPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UKf16Lsy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fd0RA/iw"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2f74e468baeso14752941fa.2
-        for <linux-serial@vger.kernel.org>; Fri, 13 Sep 2024 08:43:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726242231; x=1726847031; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=d1zLfAygLCX5nindDhcisFbkr71lDlDKqH7T8AVgiyk=;
-        b=fd0RA/iwySWKcdKG0GBkNSN1nCZxkmwLUEDOHY2opUOG0T3sgR8bStoBtqIzviXcdO
-         unjr5rtsTTomY6eimjXFd6F1/CrCcAggd0qPavRzNdjJS1Of4dQGgPddQr/jPJg7F1QN
-         A4tZXl+abo+TMt8aZliSxl+QOvYyNL5HwTFbbkbHCX4cJbmSIJAJTJ4HJ0DOXgnWgjaL
-         qL1S6DzLev0ClICUbSY5OUEQk4SfuZLiVRk046EAtzBIxkeiFTtGnhMb/E0dnJkuW5g1
-         kRmwArCUBrt4awCDDz61anRWB11o9Cq/97mCXZYx/ZTwb3TyQV5VFMjPIJRZiw4LdRWT
-         Bw6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726242231; x=1726847031;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d1zLfAygLCX5nindDhcisFbkr71lDlDKqH7T8AVgiyk=;
-        b=i3lA/muI+vfjlBwXsPY30edtloyniZsKZRSp1glt2lft43ZG/GLSJZ+3ro96zOXjNW
-         QG6+sB22YrEmfAdkysAXrzKM8ZdY5K1BfqG7utPRXoakBF9IFFdDrik1xaFGRcPWWSn+
-         m7s6ERrSusC0ikm4I3MeNHx95qgiMa84B2UacHUoLLhEwPbb1yNzo+lp81+1zHePGSP3
-         SpYjwVcgS3nvAWxv8Vwq1F/1gmTvmHmcrINuVY1wRQhSDa+8nSXyDi8HXfbd8ErD/m/S
-         LLhBgNyy4v4YGbU8KKSY9Nz3+xXF/89xDi+s93q8MuqSwQsvOAknUMytGdhw3y/QLrNy
-         or2A==
-X-Gm-Message-State: AOJu0Yx2lERE/Tkvd1Hw5ijQdHntbvmL1Re+lQ7Nide07dMp3AIwUEph
-	wn8RZFf0ZnNXVm3E1qf0FR0zHmnad3CFX39+6BALmLJsf6+DafKctCXCM9wTYgg=
-X-Google-Smtp-Source: AGHT+IHjEojEFl9I+KdlNdjvlxdqRp6uQW0BMPVHLr049XIwfxrFRE+znIjnvIhA2A3Ivu37qd1QSQ==
-X-Received: by 2002:a05:651c:b0f:b0:2f7:5914:c22e with SMTP id 38308e7fff4ca-2f7918e09e0mr20801991fa.6.1726242230552;
-        Fri, 13 Sep 2024 08:43:50 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5c3ebd76efbsm7768944a12.67.2024.09.13.08.43.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Sep 2024 08:43:50 -0700 (PDT)
-Date: Fri, 13 Sep 2024 17:43:48 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Raul E Rangel <rrangel@chromium.org>
-Cc: linux-serial@vger.kernel.org, rafael.j.wysocki@intel.com,
-	ribalda@chromium.org, Len Brown <lenb@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robert Moore <robert.moore@intel.com>, acpica-devel@lists.linux.dev,
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] ACPI: SPCR: Add support for rev 3
-Message-ID: <ZuRdtFNjFr1_-VEw@pathway.suse.cz>
-References: <20240912173901.3969597-1-rrangel@chromium.org>
- <20240912113616.3.I1b7a5033a2191cb0cdbadc2d51666a97f16cc663@changeid>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UKf16Lsy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC2AC4CEC0;
+	Fri, 13 Sep 2024 17:24:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726248292;
+	bh=PnxiBuLP2r+FlaRXWWuCH9SooIjCuVke4h/VjCYOCNU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=UKf16Lsyktzjkf9OKskVaxOsM9QAx34cF8UO+z9ZcgTKgzFyeaXHCe1SzRaYRE0wh
+	 /MwiPJ7GzibU49760jGEkOMElo2e+r15+1oDNLoR2uXQLLnh0Iqme0YFzA2eQL0NGM
+	 PSMC63H7SuUeQ6cy5LiQWrkW0trozSOMn8RZei6o2IZI+IKfDW1nCqQ/K7BWBLkdpP
+	 vlJxKiDvEq3XZjnlnatu0PTdN39GDS7Pa8qw1hOZGo1MQ0EVj4WXsp4OUaRpKd0XMo
+	 PF4AMM5pR35WguMKcHn61BLEbNu+YJDYYyUJ96LEFuX5hqvM8fnOE+ird31npSIGt/
+	 9O4VEju03b0xg==
+Date: Fri, 13 Sep 2024 18:24:47 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Michal Simek <michal.simek@amd.com>
+Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, michal.simek@xilinx.com,
+	git@xilinx.com, stable@vger.kernel.org,
+	Benjamin Gaignard <benjamin.gaignard@st.com>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>,
+	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH v2] dt-bindings: serial: rs485: Fix rs485-rts-delay
+ property
+Message-ID: <20240913-sulk-threaten-79448edf988a@spud>
+References: <1b60e457c2f1bfa2284291ad58af02c982936ac8.1726224922.git.michal.simek@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="rqNS0kyIGTMLDBX1"
+Content-Disposition: inline
+In-Reply-To: <1b60e457c2f1bfa2284291ad58af02c982936ac8.1726224922.git.michal.simek@amd.com>
+
+
+--rqNS0kyIGTMLDBX1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240912113616.3.I1b7a5033a2191cb0cdbadc2d51666a97f16cc663@changeid>
+Content-Transfer-Encoding: quoted-printable
 
-On Thu 2024-09-12 11:36:21, Raul E Rangel wrote:
-> Revision 3 supports specifying the UART input clock. This allows for
-> proper computation of the UART divisor when the baud rate is specified.
-> 
-> The earlycon code can accept the following format (See `parse_options`
-> in `earlycon.c`.):
-> * <name>,io|mmio|mmio32|mmio32be,<addr>,<baud>,<uartclk>,<options>
-> 
-> This change makes it so the uartclk is passed along if it's defined in
-> the SPCR table.
-> 
-> Booting with `earlycon` and a SPCR v3 table that has the uartclk and
-> baud defined:
-> [    0.028251] ACPI: SPCR: console: uart,mmio32,0xfedc9000,115200,48000000
-> [    0.028267] earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '115200,48000000')
-> [    0.028272] printk: legacy bootconsole [uart0] enabled
-> 
-> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports/serial-port-console-redirection-table
-> 
-> Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+On Fri, Sep 13, 2024 at 12:55:23PM +0200, Michal Simek wrote:
+> Code expects array only with 2 items which should be checked.
+> But also item checking is not working as it should likely because of
+> incorrect items description.
+>=20
+> Fixes: d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings to json=
+-schema")
+> Signed-off-by: Michal Simek <michal.simek@amd.com>
+> Cc: <stable@vger.kernel.org>
+> ---
+>=20
+> Changes in v2:
+> - Remove maxItems properties which are not needed
+> - Add stable ML to CC
+>=20
+>  .../devicetree/bindings/serial/rs485.yaml     | 19 +++++++++----------
+>  1 file changed, 9 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Docume=
+ntation/devicetree/bindings/serial/rs485.yaml
+> index 9418fd66a8e9..9665de41762e 100644
+> --- a/Documentation/devicetree/bindings/serial/rs485.yaml
+> +++ b/Documentation/devicetree/bindings/serial/rs485.yaml
+> @@ -18,16 +18,15 @@ properties:
+>      description: prop-encoded-array <a b>
+>      $ref: /schemas/types.yaml#/definitions/uint32-array
+>      items:
+> -      items:
+> -        - description: Delay between rts signal and beginning of data se=
+nt in
+> -            milliseconds. It corresponds to the delay before sending dat=
+a.
+> -          default: 0
+> -          maximum: 100
+> -        - description: Delay between end of data sent and rts signal in =
+milliseconds.
+> -            It corresponds to the delay after sending data and actual re=
+lease
+> -            of the line.
+> -          default: 0
+> -          maximum: 100
+> +      - description: Delay between rts signal and beginning of data sent=
+ in
+> +          milliseconds. It corresponds to the delay before sending data.
+> +        default: 0
+> +        maximum: 50
 
-Looks good to me:
+I would expect to see some mention in the commit message as to why the
+maximum has changed from 100 to 50 milliseconds.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+> +      - description: Delay between end of data sent and rts signal in mi=
+lliseconds.
+> +          It corresponds to the delay after sending data and actual rele=
+ase
+> +          of the line.
+> +        default: 0
+> +        maximum: 100
+> =20
+>    rs485-rts-active-high:
+>      description: drive RTS high when sending (this is the default).
+> --=20
+> 2.43.0
+>=20
 
-Best Regards,
-Petr
+--rqNS0kyIGTMLDBX1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZuR1XwAKCRB4tDGHoIJi
+0vfwAP0TfUUdDtg6AO2HGHUxJaYOIeAhds57L3Zm/Cdtut8DIwEA1zocxXYyK33w
+6LSjDjUNRjqlKfpC0Rgmq7fgwoE4KgY=
+=vUf3
+-----END PGP SIGNATURE-----
+
+--rqNS0kyIGTMLDBX1--
