@@ -1,353 +1,189 @@
-Received: from www530.your-server.de (www530.your-server.de [188.40.30.78])
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3A7F188A21;
-	Fri, 13 Sep 2024 08:52:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.30.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C82E17BED3;
+	Fri, 13 Sep 2024 09:17:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.104.207.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726217547; cv=none; b=hZ1o3kZC1ROp+W/Dz2fwzocMJzmnU+vz1qYOAcTe4tk9j+hjhU/pAHbNCnS14SPvfRX/UFZXnKzPjLHOclDSEfKcdxo2PHy3qWd0NYY5/n5bvmv/+L3pqtSJ9TpyebDkq/PpRs6ptROt0VVQKlRLYCJnGXOpGiCDBVHow75vyKU=
+	t=1726219038; cv=none; b=ZFFhMKtQ29a+/UbJ0WjHek+s2Ff3s7WKgUAMvVJx/nRLzldRRZPuaqeOzMUZvIhCy5SoiCcLXP6bxsBf6/f6IbaTqzi1S6CY+RBitm8D9z7/h9FJWcSoyi+OY/m5fmoPz/6uh7k+cmLPTI5luVM+fqiqhu3te4hVbZrVHTmXOAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726217547; c=relaxed/simple;
-	bh=BV246ObWi9nh2lKEuPpmuyNRlDkYmnW6Hfc4HO8X8mA=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ocWQjsSK0RbjgONpMhkoyKrUACskaKIBUh3OakJVuLLJ0a+ibZMVXB7bn2AyIxnmyUnRF1wFj4RQD7NBcGtq5LqpCJ5d3yTIrrtIKV21bxrA6GAn0ejEJx2hYJvPLMDR5CzVdewEtKsZpIMAQZqpKFZmIgMtVbxdPaeHGJe2riU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=uBTZe1sz; arc=none smtp.client-ip=188.40.30.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1726219038; c=relaxed/simple;
+	bh=hMrF5SdlF17xoZq+/VZGpcQOWFrPq9ZfR0YLyh5OhxY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ES9CTA4KE89yA/Snb55AwkC1J3expthpAzRAx7hP6N+B/a0z2mY05sIZTsS7zRIDJst4bqq2+9OC8fHxon1/NiRPwhEjaJNaqxA1es5ZAJZyggUnWRj3PfD+t6xNv/lgRQoq/i17qAnMk4ROJgW7zkHpyujQL2lEDrueO8ovHZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b=ifQfiAOG; dkim=fail (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=EAnQmZSI reason="key not found in DNS"; arc=none smtp.client-ip=93.104.207.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="uBTZe1sz"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=geanix.com;
-	s=default2211; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Subject:Date:From:Sender:Reply-To:Content-ID:Content-Description
-	:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	In-Reply-To:References; bh=8fPtszLx5YXcXZRLXTlBT9KYalg3KhBwObue5cmzP+s=; b=uB
-	TZe1szVFaBNHgqAs9Nzsq/zg1yQbCFAoWwgXQxb5vhGF+aIDSR8Z236o1BMoSKayFg69/q6B6Jhnc
-	Gj38hCbGxedRUHjn0Yg1GtLHFCPj564QTZ76AE6r36CchsrKx+NQunrpnmL0SgJq0J8ku1/C9TiP6
-	qM+Tp3DKk2lCgNmVGScxK23vMTJHADDgQMiJiiXwmnrtpuCR0rDO5VvgAS77H8DM+NNj5835OjpmS
-	eRdt0QtkJLtd9ItO1UGN1kWUU9ibCh6/6JQIeyHmbTLfImKno0EsdnsZ1OlQl4IDUST0aEpz0NRBb
-	a0nTL9y2lGhwPo8Z4YJs86i9W+8rifNg==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-	by www530.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <esben@geanix.com>)
-	id 1sp22Q-000GDC-OY; Fri, 13 Sep 2024 10:52:22 +0200
-Received: from [80.62.117.18] (helo=localhost)
-	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <esben@geanix.com>)
-	id 1sp22P-000PqN-2w;
-	Fri, 13 Sep 2024 10:52:22 +0200
-From: Esben Haabendal <esben@geanix.com>
-Date: Fri, 13 Sep 2024 10:52:19 +0200
-Subject: [PATCH v3] serial: imx: Switch to nbcon console
+	dkim=pass (2048-bit key) header.d=tq-group.com header.i=@tq-group.com header.b="ifQfiAOG";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="EAnQmZSI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1726219034; x=1757755034;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5nyRXAZtZaPgsiU9hSdOI+jFy3OJbheXoiy71LlZp5k=;
+  b=ifQfiAOGMXQzFKFawuLMUdgqcSAwoaJbhomjZ0Ere9sAltj26uyJOCCZ
+   1c9Im0F4bxvaZbGLDEsXfXVU3vxlyNnEIwJeMxT6sfrlidmFe+XDF6dKf
+   VWUS1si2lz7CWAb21gcmQ9Rd42gUigXPOZWB7ru4BNzHnBoOWF7WTFBYY
+   LkGJTVo/jlUvjw9vUhb6My7sxIYROX4pyeeQ4MzeZOaxDcfYHgDoJI4D5
+   lRFQuTyAs8TFS1pjmsrwE/76J3AnkYbjyZjyO5thLRbMb5jXTcX8hsPS2
+   vEEbMJGOPNNF13FX7oGCkali0Kx40sM9km7s0T6evs0wwf4b9ErmLvPmq
+   g==;
+X-CSE-ConnectionGUID: p+R67PyMQLOUJgOdcEoSbQ==
+X-CSE-MsgGUID: XvVlXnRDRI6dXMCAF3adjg==
+X-IronPort-AV: E=Sophos;i="6.10,225,1719871200"; 
+   d="scan'208";a="38929837"
+Received: from vmailcow01.tq-net.de ([10.150.86.48])
+  by mx1.tq-group.com with ESMTP; 13 Sep 2024 11:17:10 +0200
+X-CheckPoint: {66E40316-20-5FF8EC80-F6CEE9F8}
+X-MAIL-CPID: 74791384B45C96BF1AA1857C48273692_0
+X-Control-Analysis: str=0001.0A782F1D.66E40317.0096,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 76CBA167CB0;
+	Fri, 13 Sep 2024 11:17:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ew.tq-group.com;
+	s=dkim; t=1726219026;
+	h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=5nyRXAZtZaPgsiU9hSdOI+jFy3OJbheXoiy71LlZp5k=;
+	b=EAnQmZSII4QJyrFQEhdzwtL9szLD0RYPMLcU4Q/LY4fcWXEfOzariAmcCYgUfGM9JQeKDZ
+	2j2Ap9VUdwJYLTfL6DuZu2932doAJUwzCuF0B0lZPZJ2zd/RzfjD7a/1Y9XY+YVdW8ShtW
+	vltqnbGcxVnuvBYvydqEir6CO5HinkmwGXUccMbpUJSG+e70HkTxwgVI/WpNw6+8Y6cZaH
+	Hlkv6Ync38Phss+7eDwPe3w3CbLVTCq9rusbSxGWI1k8PdR0Uw5E2LZM6ZNhy+pnW0q7rW
+	0Hy1KbF56hSS/EkGSX9g0JVL+i4c8ia0sGTZE87mxI9A16F952cTBPBTb/+5zA==
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, John Ogness <john.ogness@linuxtronix.de>, linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, Esben Haabendal <esben@geanix.com>, Esben Haabendal <esben@geanix.com>
+Subject: Re: [PATCH 2/2] serial: imx: Add more comments on port lock status
+Date: Fri, 13 Sep 2024 11:17:04 +0200
+Message-ID: <2200890.irdbgypaU6@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20240913-serial-imx-lockfix-v1-2-4d102746c89d@geanix.com>
+References: <20240913-serial-imx-lockfix-v1-0-4d102746c89d@geanix.com> <20240913-serial-imx-lockfix-v1-2-4d102746c89d@geanix.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240913-serial-imx-nbcon-v3-1-4c627302335b@geanix.com>
-X-B4-Tracking: v=1; b=H4sIAEL942YC/x3MSwrDIBSF4a2EO67iq9h01H2UDoy9mguNFg1BC
- Nl7bYYfnPPvULEQVrgPOxTcqFJOHfoygJ9disjo3Q1KKCNGqdh/7z6MlsbS5HNiRhhnR+ulCR7
- 67VswUDuTz1d3KHlh61zQnSGfNyxcWqm00Pp645FWjnXC9IjoEjXu8wLH8QPyne09mgAAAA==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>, 
- Sascha Hauer <s.hauer@pengutronix.de>, 
- Pengutronix Kernel Team <kernel@pengutronix.de>, 
- Fabio Estevam <festevam@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- Esben Haabendal <esben@geanix.com>
-X-Mailer: b4 0.14.1
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1726217541; l=10439;
- i=esben@geanix.com; s=20240523; h=from:subject:message-id;
- bh=BV246ObWi9nh2lKEuPpmuyNRlDkYmnW6Hfc4HO8X8mA=;
- b=cSbkgCWUV/BNxNGHXwqa92oFV3hPUh8Qi09uGq/ROTn30WTDVPVUt/WnO7/4YqbG2g0yuN18g
- SJ/TOgc1w9tBOisd+8iFaTt4i7AdI509RbEoF7G1MjOWMAQt+3aLIzQ
-X-Developer-Key: i=esben@geanix.com; a=ed25519;
- pk=PbXoezm+CERhtgVeF/QAgXtEzSkDIahcWfC7RIXNdEk=
-X-Authenticated-Sender: esben@geanix.com
-X-Virus-Scanned: Clear (ClamAV 0.103.10/27396/Thu Sep 12 10:46:40 2024)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Last-TLS-Session-Version: TLSv1.3
 
-Implements the necessary callbacks to switch the imx console driver to
-perform as an nbcon console.
+Hi,
 
-Add implementations for the nbcon consoles (write_atomic, write_thread,
-driver_enter, driver_exit) and add CON_NBCON to the initial flags.
+Am Freitag, 13. September 2024, 10:39:50 CEST schrieb Esben Haabendal:
+> Comments regarding status of port.lock on internal functions is useful wh=
+en
+> reviewing correct handling of registers that must be protected by this
+> lock.
+>=20
+> Signed-off-by: Esben Haabendal <esben@geanix.com>
+> ---
+>  drivers/tty/serial/imx.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>=20
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index efa3eb3a2c57..bea4510743ef 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -370,6 +370,7 @@ static void imx_uart_soft_reset(struct imx_port *spor=
+t)
+>  	sport->idle_counter =3D 0;
+>  }
+> =20
+> +/* called with port.lock taken and irqs off */
+>  static void imx_uart_disable_loopback_rs485(struct imx_port *sport)
+>  {
+>  	unsigned int uts;
 
-The legacy code is kept in order to easily switch back to legacy mode
-by defining CONFIG_SERIAL_IMX_LEGACY_CONSOLE.
+I think you are referring to sport.lock. On the other hand, instead of
+just adding comments, wouldn't it be better to make it explicit?
+Adding=20
+> lockdep_assert_held(&sport->port->lock);
+and/or sparse annoations
+> __must_hold(&sport->port->lock)
 
-Signed-off-by: Esben Haabendal <esben@geanix.com>
----
-Implement the necessary callbacks to allow the imx console driver to be
-used as an nbcon console.
-
-This is based on the work done on converting the 8250 driver to NBCON
-console [0], adapted to the imx driver.
-
-The _write_atomic() and _write_thread() functions access the following
-registers: ucr1, ucr2, ucr3 and uts, which all needs to be protected by
-the port lock. The driver has been reviewed for correct handling of
-these registers, and except for a single missing lock in in
-_enable_wakeup(), the driver was found sound. The registers are accessed
-initially in _probe() without lock held, but I assume that is all good
-and normal, as it before the uart port have been added.
-
-A fix for the missing lock have been submitted for mainline [1].
-
-The read_poll_timeout() call in _write_thread() have been changed to run
-as a tight loop. If allowed to sleep (4th argument >0), a kernel warning
-such as this one is triggered:
-
-[    0.322860] ------------[ cut here ]------------
-[    0.322870] Voluntary context switch within RCU read-side critical section!
-[    0.322885] WARNING: CPU: 2 PID: 75 at kernel/rcu/tree_plugin.h:331 rcu_note_context_switch+0x454/0x52c
-[    0.322907] Modules linked in:
-[    0.322916] CPU: 2 UID: 0 PID: 75 Comm: pr/ttymxc1 Not tainted 6.11.0-rc7-next-20240912-g3d12610ae2ac #1
-[    0.322925] Hardware name: DEIF PCM3.3 board (DT)
-[    0.322929] pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[    0.322937] pc : rcu_note_context_switch+0x454/0x52c
-[    0.322944] lr : rcu_note_context_switch+0x454/0x52c
-[    0.322950] sp : ffff800082a3bb60
-[    0.322953] x29: ffff800082a3bb60 x28: ffff0000029f5280 x27: 0000000000000000
-[    0.322964] x26: ffff0000029f5280 x25: 0000000000000001 x24: ffff800081885270
-[    0.322975] x23: 0000000000000000 x22: ffff0000029f5280 x21: ffff800081a6afe0
-[    0.322985] x20: ffff00007fb6d880 x19: ffff00007fb6e6c0 x18: fffffffffffe3140
-[    0.322996] x17: 1fffe000007a7421 x16: ffff000003d3a180 x15: 0000000000000048
-[    0.323007] x14: fffffffffffe3188 x13: 216e6f6974636573 x12: 206c616369746972
-[    0.323018] x11: 6320656469732d64 x10: 6165722055435220 x9 : 206e696874697720
-[    0.323029] x8 : 6863746977732074 x7 : ffff8000818a0d80 x6 : ffff800082a3b920
-[    0.323039] x5 : 0000000000000004 x4 : 0000000000000000 x3 : 0000000000000001
-[    0.323049] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff0000029f5280
-[    0.323060] Call trace:
-[    0.323064]  rcu_note_context_switch+0x454/0x52c
-[    0.323071]  __schedule+0x9c/0x854
-[    0.323080]  schedule+0x34/0x104
-[    0.323086]  usleep_range_state+0xf8/0x128
-[    0.323096]  imx_uart_console_write_thread+0x1d4/0x248
-[    0.323105]  nbcon_emit_next_record+0x25c/0x2a4
-[    0.323118]  nbcon_emit_one+0xc0/0x108
-[    0.323127]  nbcon_kthread_func+0x154/0x200
-[    0.323138]  kthread+0x114/0x118
-[    0.323147]  ret_from_fork+0x10/0x20
-[    0.323156] ---[ end trace 0000000000000000 ]---
-
-Is this as intended?
-
-I have tried a different logic instead of the console_newline_needed. I
-hope it might be found more intuitive.
-
-[0] https://lore.kernel.org/linux-serial/20240905134719.142554-1-john.ogness@linutronix.de/
-[1] https://lore.kernel.org/all/20240913-serial-imx-lockfix-v1-0-4d102746c89d@geanix.com/
-
-v3:
-- Patch 1/2 dropped as it has been merged to mainline.
-- Use USEC_PER_SEC macro instead of 1000000 number.
-- Fix kernel warning "Voluntary context switch within RCU read-side
-  critical section!" caused by usleep_range() in read_poll_timeout().
-- Remove legacy console implementation.
-- Adapt to rename of driver_enter/driver_exit renamed to
-  device_lock/device_unlock.
-- Change _write_atomic() and write_thread() to return void.
-- Change console_newline_needed logic to a simpler and (hopefully) more
-  readable last_putchar_was_newline logic.
-- Link to v2: https://lore.kernel.org/all/cover.1712303358.git.esben@geanix.com/
-
-v2:
-- Switch to tight loop (no udelay()) in atomic context.
-- Increase timeout to 1 second.
-- Add note in commit message about (no) error handling on timeout.
-- Link to v1: https://lore.kernel.org/all/cover.1712156846.git.esben@geanix.com/
----
- drivers/tty/serial/imx.c | 120 +++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 101 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 67d4a72eda77..b043ac3cd2cd 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -230,6 +230,8 @@ struct imx_port {
- 	unsigned int            saved_reg[10];
- 	bool			context_saved;
- 
-+	bool			last_putchar_was_newline;
-+
- 	enum imx_tx_state	tx_state;
- 	struct hrtimer		trigger_start_tx;
- 	struct hrtimer		trigger_stop_tx;
-@@ -2054,26 +2056,34 @@ static void imx_uart_console_putchar(struct uart_port *port, unsigned char ch)
- 		barrier();
- 
- 	imx_uart_writel(sport, ch, URTX0);
-+
-+	sport->last_putchar_was_newline = (ch == '\n');
- }
- 
--/*
-- * Interrupts are disabled on entering
-- */
--static void
--imx_uart_console_write(struct console *co, const char *s, unsigned int count)
-+static void imx_uart_console_device_lock(struct console *co, unsigned long *flags)
-+{
-+	struct uart_port *up = &imx_uart_ports[co->index]->port;
-+
-+	return __uart_port_lock_irqsave(up, flags);
-+}
-+
-+static void imx_uart_console_device_unlock(struct console *co, unsigned long flags)
-+{
-+	struct uart_port *up = &imx_uart_ports[co->index]->port;
-+
-+	return __uart_port_unlock_irqrestore(up, flags);
-+}
-+
-+static void imx_uart_console_write_atomic(struct console *co,
-+					  struct nbcon_write_context *wctxt)
- {
- 	struct imx_port *sport = imx_uart_ports[co->index];
-+	struct uart_port *port = &sport->port;
- 	struct imx_port_ucrs old_ucr;
--	unsigned long flags;
- 	unsigned int ucr1, usr2;
--	int locked = 1;
- 
--	if (sport->port.sysrq)
--		locked = 0;
--	else if (oops_in_progress)
--		locked = uart_port_trylock_irqsave(&sport->port, &flags);
--	else
--		uart_port_lock_irqsave(&sport->port, &flags);
-+	if (!nbcon_enter_unsafe(wctxt))
-+		return;
- 
- 	/*
- 	 *	First, save UCR1/2/3 and then disable interrupts
-@@ -2087,10 +2097,12 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
- 	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN);
- 
- 	imx_uart_writel(sport, ucr1, UCR1);
--
- 	imx_uart_writel(sport, old_ucr.ucr2 | UCR2_TXEN, UCR2);
- 
--	uart_console_write(&sport->port, s, count, imx_uart_console_putchar);
-+	if (!sport->last_putchar_was_newline)
-+		uart_console_write(port, "\n", 1, imx_uart_console_putchar);
-+	uart_console_write(port, wctxt->outbuf, wctxt->len,
-+			   imx_uart_console_putchar);
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
-@@ -2100,8 +2112,73 @@ imx_uart_console_write(struct console *co, const char *s, unsigned int count)
- 				 0, USEC_PER_SEC, false, sport, USR2);
- 	imx_uart_ucrs_restore(sport, &old_ucr);
- 
--	if (locked)
--		uart_port_unlock_irqrestore(&sport->port, flags);
-+	nbcon_exit_unsafe(wctxt);
-+}
-+
-+static void imx_uart_console_write_thread(struct console *co,
-+					  struct nbcon_write_context *wctxt)
-+{
-+	struct imx_port *sport = imx_uart_ports[co->index];
-+	struct uart_port *port = &sport->port;
-+	struct imx_port_ucrs old_ucr;
-+	unsigned int ucr1, usr2;
-+
-+	if (!nbcon_enter_unsafe(wctxt))
-+		return;
-+
-+	/*
-+	 *	First, save UCR1/2/3 and then disable interrupts
-+	 */
-+	imx_uart_ucrs_save(sport, &old_ucr);
-+	ucr1 = old_ucr.ucr1;
-+
-+	if (imx_uart_is_imx1(sport))
-+		ucr1 |= IMX1_UCR1_UARTCLKEN;
-+	ucr1 |= UCR1_UARTEN;
-+	ucr1 &= ~(UCR1_TRDYEN | UCR1_RRDYEN | UCR1_RTSDEN);
-+
-+	imx_uart_writel(sport, ucr1, UCR1);
-+	imx_uart_writel(sport, old_ucr.ucr2 | UCR2_TXEN, UCR2);
-+
-+	if (nbcon_exit_unsafe(wctxt)) {
-+		int len = READ_ONCE(wctxt->len);
-+		int i;
-+
-+		/*
-+		 * Write out the message. Toggle unsafe for each byte in order
-+		 * to give another (higher priority) context the opportunity
-+		 * for a friendly takeover. If such a takeover occurs, this
-+		 * context must reacquire ownership in order to perform final
-+		 * actions (such as re-enabling the interrupts).
-+		 *
-+		 * IMPORTANT: wctxt->outbuf and wctxt->len are no longer valid
-+		 *	      after a reacquire so writing the message must be
-+		 *	      aborted.
-+		 */
-+		for (i = 0; i < len; i++) {
-+			if (!nbcon_enter_unsafe(wctxt))
-+				break;
-+
-+			uart_console_write(port, wctxt->outbuf + i, 1,
-+					   imx_uart_console_putchar);
-+
-+			if (!nbcon_exit_unsafe(wctxt))
-+				break;
-+		}
-+	}
-+
-+	while (!nbcon_enter_unsafe(wctxt))
-+		nbcon_reacquire_nobuf(wctxt);
-+
-+	/*
-+	 *	Finally, wait for transmitter to become empty
-+	 *	and restore UCR1/2/3
-+	 */
-+	read_poll_timeout(imx_uart_readl, usr2, usr2 & USR2_TXDC,
-+			  0, USEC_PER_SEC, false, sport, USR2);
-+	imx_uart_ucrs_restore(sport, &old_ucr);
-+
-+	nbcon_exit_unsafe(wctxt);
- }
- 
- /*
-@@ -2193,6 +2270,8 @@ imx_uart_console_setup(struct console *co, char *options)
- 	if (retval)
- 		goto error_console;
- 
-+	sport->last_putchar_was_newline = true;
-+
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else
-@@ -2229,11 +2308,14 @@ imx_uart_console_exit(struct console *co)
- static struct uart_driver imx_uart_uart_driver;
- static struct console imx_uart_console = {
- 	.name		= DEV_NAME,
--	.write		= imx_uart_console_write,
-+	.write_atomic	= imx_uart_console_write_atomic,
-+	.write_thread	= imx_uart_console_write_thread,
-+	.device_lock	= imx_uart_console_device_lock,
-+	.device_unlock	= imx_uart_console_device_unlock,
-+	.flags		= CON_PRINTBUFFER | CON_NBCON,
- 	.device		= uart_console_device,
- 	.setup		= imx_uart_console_setup,
- 	.exit		= imx_uart_console_exit,
--	.flags		= CON_PRINTBUFFER,
- 	.index		= -1,
- 	.data		= &imx_uart_uart_driver,
- };
-
----
-base-commit: da3ea35007d0af457a0afc87e84fddaebc4e0b63
-change-id: 20240912-serial-imx-nbcon-404a797c14fc
+seems more reasonable to me than adding non-enforcing comments.
 
 Best regards,
--- 
-Esben Haabendal <esben@geanix.com>
+Alexander
+
+> @@ -470,6 +471,7 @@ static void imx_uart_stop_tx(struct uart_port *port)
+>  	}
+>  }
+> =20
+> +/* called with port.lock taken and irqs off */
+>  static void imx_uart_stop_rx_with_loopback_ctrl(struct uart_port *port, =
+bool loopback)
+>  {
+>  	struct imx_port *sport =3D to_imx_port(port);
+> @@ -803,6 +805,8 @@ static irqreturn_t imx_uart_txint(int irq, void *dev_=
+id)
+>   * issuing soft reset to the UART (just stop/start of RX does not help).=
+ Note
+>   * that what we do here is sending isolated start bit about 2.4 times sh=
+orter
+>   * than it is to be on UART configured baud rate.
+> + *
+> + * Called with port.lock taken and irqs off.
+>   */
+>  static void imx_uart_check_flood(struct imx_port *sport, u32 usr2)
+>  {
+> @@ -838,6 +842,7 @@ static void imx_uart_check_flood(struct imx_port *spo=
+rt, u32 usr2)
+>  	}
+>  }
+> =20
+> +/* called with port.lock taken and irqs off */
+>  static irqreturn_t __imx_uart_rxint(int irq, void *dev_id)
+>  {
+>  	struct imx_port *sport =3D dev_id;
+> @@ -916,6 +921,7 @@ static void imx_uart_clear_rx_errors(struct imx_port =
+*sport);
+>  /*
+>   * We have a modem side uart, so the meanings of RTS and CTS are inverte=
+d.
+>   */
+> +/* called with port.lock taken and irqs off */
+>  static unsigned int imx_uart_get_hwmctrl(struct imx_port *sport)
+>  {
+>  	unsigned int tmp =3D TIOCM_DSR;
+> @@ -938,6 +944,8 @@ static unsigned int imx_uart_get_hwmctrl(struct imx_p=
+ort *sport)
+> =20
+>  /*
+>   * Handle any change of modem status signal since we were last called.
+> + *
+> + * Called with port.lock taken and irqs off.
+>   */
+>  static void imx_uart_mctrl_check(struct imx_port *sport)
+>  {
+> @@ -1277,6 +1285,7 @@ static int imx_uart_start_rx_dma(struct imx_port *s=
+port)
+>  	return 0;
+>  }
+> =20
+> +/* called with port.lock taken and irqs off */
+>  static void imx_uart_clear_rx_errors(struct imx_port *sport)
+>  {
+>  	struct tty_port *port =3D &sport->port.state->port;
+> @@ -1407,6 +1416,7 @@ static int imx_uart_dma_init(struct imx_port *sport)
+>  	return ret;
+>  }
+> =20
+> +/* called with port.lock taken and irqs off */
+>  static void imx_uart_enable_dma(struct imx_port *sport)
+>  {
+>  	u32 ucr1;
+>=20
+>=20
+
+
+=2D-=20
+TQ-Systems GmbH | M=FChlstra=DFe 2, Gut Delling | 82229 Seefeld, Germany
+Amtsgericht M=FCnchen, HRB 105018
+Gesch=E4ftsf=FChrer: Detlef Schneider, R=FCdiger Stahl, Stefan Schneider
+http://www.tq-group.com/
+
 
