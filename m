@@ -1,179 +1,163 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2059.outbound.protection.outlook.com [40.107.102.59])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A973533C8;
-	Fri, 13 Sep 2024 10:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726224936; cv=fail; b=sNuQGwfux4jnjeQp9KSLJhR7mb9BBfpWXRi4vvqTFzKsj/kWRuu3do/nYydJrxuJ8uEmI1xZAEIn/g/uEVSlhS4o4539vuR80X4jdfzt9Y7xI2WBffKx6u+jtvLn1LW8oppqezSRLi5YvjxpmAi890Tc/UzOtxoC8EKr1lt11Rs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726224936; c=relaxed/simple;
-	bh=QylGNLablQfr3gXMb+17pyvDhVX9JCav3jMXTa+VDfg=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CgPGTWvwOCpNqqBHeGz0wjEWbUgIqIlv4f+p0PkqQXSyXmpCE0JXm6CfDt0lozZKgTjBptdJCpMMq/4JpF8oiUcIgzT29fhRhUf6nqumjfyqo0aByMukRNCCPDxWd6Umf/n91x2Hku21scgSIv1R4pHgopje3VOK7rseMUXjPnk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=TEOdKZD9; arc=fail smtp.client-ip=40.107.102.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8153743144;
+	Fri, 13 Sep 2024 14:05:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726236344; cv=none; b=cqDFoGbKB5rjuDxuI2Qb7PD7cmalx4BLbWxjTk2QBz7AiRvirg/MWFaps9UQUlG4nT5I7I0Jq43xXX1iZmOMLUANakcZ2mRXY8f7hsvKB+Syhuw30NghaRkBBB4vfQ24BjvDBADDViopMUeEoxoG/DgxIoRv+8nCzwXXDvSfbxs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726236344; c=relaxed/simple;
+	bh=S5uPkoT9yo7idV+N+2sbJKMsKlKO8GaUe/m9ysT6lvY=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=cYVlZofsl4CTa1bH983p+cOQ2Y7DoE8/EqHhWHJ3zJ5qFOXIkf+V/aNl4UYgl4uEd3fi7d8Tt9a+wtD34Z2dedx7vO2V9gw7Fm2FqI6tPJlMgjrnUcDR/PYFBYPnyECzuMxNByJmH7ve6MnVVqer7MnGnkpTE5HKWeSa0UhPgO4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YO3EBjdY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=9lYq6idM; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="TEOdKZD9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AnrhuZ+HQP4xBx4fUzl081j0gPvrH4c8qpFa2fPyjNBO9sgN0cyPzpUPAI/iCrm6shHSTXyUqEU3tYAs4h+2oUulzKN06ltqPuRAgkJdPGycmJn7czrn+e9BivDQumQ9qCwX7Ju+/B4sFG0uTNj8gEw7DB3EMlxDoA4PynfQsWFmsVI3gXrSJQiu3BDHSbru6DYIVk4Tp37r/67z0VkV1rHLzgyrhZll4vfircJ1k1YPlufyXMcWcB6G2v1TcTEBuTk3CBqaWpEtJKLG/KYp59qEGqgdltfbWOAOiyLltdzm/qVzafTLO8GYqG/+w+jl/UhZksED4tBWI1DaIXw7kA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4eo1znd6lWL9yQN7KhhyLBKgAkuEnCXjCKIWw8CUGF0=;
- b=ivR5byDMfkJ4h/1oYVEA6cgj3FaDzgcXZzBB7pvdotPARhF56ryXbV36+rxZQGfaqQfTbAbsUzGqxhPvy4+ytbO0c5ypcHpcbs3wRoXWp0VVMnEv4Pzzf5ur2EB0fmGrPuQF7eKdnEa73T92Sfeu6Ubz75orPdErpPMs5AwR+hzOz0DZeBA0EC9DHzE5lS0Oe3lC4sEjF/v7gmfY3YuVhXKW69tNxO9BJpb2657dxzfB2Jk2ZDSB+mO9SVnhWLuyskNPqsTQhvLcvBRVVYACiRRIjZ3WUl+qUh6QUKzUPdEM9B/jizVNanx5rKefpbvnsD+nDcmeYZ4Crpzc5/Cauw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4eo1znd6lWL9yQN7KhhyLBKgAkuEnCXjCKIWw8CUGF0=;
- b=TEOdKZD9vHMmPCPcOcKJmonv2GaCs/8AnNv66IRA9HLvolzoUe1QrvegadpHqG68XbhHgpcIHIyiWR4f7LU+14KEVyJNKn9w3G3y5cgybnjX2KWEeGdWQQn4aiIQov601KRc7mm5YNdg1F2TupB3ibZgRw+a+6X7sCLPVpM7I9U=
-Received: from BN9PR03CA0198.namprd03.prod.outlook.com (2603:10b6:408:f9::23)
- by PH0PR12MB7929.namprd12.prod.outlook.com (2603:10b6:510:284::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.25; Fri, 13 Sep
- 2024 10:55:31 +0000
-Received: from BL02EPF0001A101.namprd05.prod.outlook.com
- (2603:10b6:408:f9:cafe::de) by BN9PR03CA0198.outlook.office365.com
- (2603:10b6:408:f9::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.27 via Frontend
- Transport; Fri, 13 Sep 2024 10:55:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF0001A101.mail.protection.outlook.com (10.167.241.132) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7918.13 via Frontend Transport; Fri, 13 Sep 2024 10:55:30 +0000
-Received: from localhost (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 13 Sep
- 2024 05:55:27 -0500
-From: Michal Simek <michal.simek@amd.com>
-To: <linux-kernel@vger.kernel.org>, <monstr@monstr.eu>,
-	<michal.simek@xilinx.com>, <git@xilinx.com>
-CC: <stable@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@st.com>,
-	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, "open
- list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
-	<devicetree@vger.kernel.org>, "open list:TTY LAYER AND SERIAL DRIVERS"
-	<linux-serial@vger.kernel.org>
-Subject: [PATCH v2] dt-bindings: serial: rs485: Fix rs485-rts-delay property
-Date: Fri, 13 Sep 2024 12:55:23 +0200
-Message-ID: <1b60e457c2f1bfa2284291ad58af02c982936ac8.1726224922.git.michal.simek@amd.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YO3EBjdY";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="9lYq6idM"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1726236340;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rYB7nNBL+zvMdCuk+woBwavomuKxjvWKg5JZQriJJBA=;
+	b=YO3EBjdYG4KJDNN/HlxajsvfsOdF47cI4yzlWKG4VIQk/MOQeoxB/PmtwiLv2UPaEBWyp3
+	kTWVt4gMPR0NNgH4kwv2RAMD9JqfmjQn2R6O5xAu1mUj9yFflzeUww13cAzsh7JcvonWBj
+	Z+fDESke4Q1YRVuPdQc8jvl4/8k/+TUtWbNN4AH07rGIbHYprSxtCpHkWTpMUvTaTtKy5V
+	bq28tRbq4eVt8J4rWwjLW3A1M2qRUPysEB/4Jw12hsNY2WmNpdBwGdsWlKpfieApUZr1oB
+	LJ99D8lW+/p/tjhBFF1k/M3QVjcVF7zfk0BPWOkZa+UCqLTvNQ193EqCI7bNhg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1726236340;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=rYB7nNBL+zvMdCuk+woBwavomuKxjvWKg5JZQriJJBA=;
+	b=9lYq6idML3UQwt4B0sMBRzIpLEgcec9pkloDjQkY0Sr+qc6p2zOPyDTfsSZcXzy9WsgIL5
+	r92mMqE95aCvLPAg==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Rengarajan S <rengarajan.s@microchip.com>,
+	Serge Semin <fancer.lancer@gmail.com>
+Subject: [PATCH next v2 1/4] serial: 8250: Split out IER from rs485_start_tx()
+Date: Fri, 13 Sep 2024 16:11:35 +0206
+Message-Id: <20240913140538.221708-2-john.ogness@linutronix.de>
+In-Reply-To: <20240913140538.221708-1-john.ogness@linutronix.de>
+References: <20240913140538.221708-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1988; i=michal.simek@amd.com; h=from:subject:message-id; bh=QylGNLablQfr3gXMb+17pyvDhVX9JCav3jMXTa+VDfg=; b=owGbwMvMwCR4yjP1tKYXjyLjabUkhrQnUjJZ39bf4RVqPml7Jjsrb2H7XuPl9Qe12t/Ify1d+ X39o02fOmJZGASZGGTFFFmkba6c2Vs5Y4rwxcNyMHNYmUCGMHBxCsBEdtUyzK/MN798u3hj85Js k6/bQ13Xv/olkcgwP1L3D68j1/VZl34wdW7bnZnZrDhHAQA=
-X-Developer-Key: i=michal.simek@amd.com; a=openpgp; fpr=67350C9BF5CCEE9B5364356A377C7F21FE3D1F91
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0001A101:EE_|PH0PR12MB7929:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9d24bf4f-a935-4add-0f12-08dcd3e29604
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?IDKSojHV3i2tF/Oc5DbEKxXs49H5+J4nRH/cn28ENCiPMa5gwG+1eRqBbqCo?=
- =?us-ascii?Q?YBAW/2XhWpBqhkM31mauRqk7ReOMPmM9C+WuCwu0tOiXXI5yWO7KA5fxEG59?=
- =?us-ascii?Q?11sJMQyHBLLdb9gq5gbqr3maAwN8O/filp3iR7757yaeTRwtXYD2nA0sc6vl?=
- =?us-ascii?Q?V5xy9S6hC8iJZ+EjRgnFxCUI0TQUpTuVP/JIdrVqCXDW4DD3Hy5HaVX9LQ8B?=
- =?us-ascii?Q?vqpT3yfADhV8yXiIXd5DIcjzvW8l1gvtLZtX29chriUTnzxbp8uftUvZHl3L?=
- =?us-ascii?Q?BxxZzisk5t2Q7taccDcCZmkjSKDlL7WPmDw5qknTPjJEeUshLZdMej+3/qdd?=
- =?us-ascii?Q?gn/BvLSKF9+hZMc7rsrB2+kOLoxx+13q9ygekhyikwofTRakPNiB0NQgWCqZ?=
- =?us-ascii?Q?ofneextXvm4fH2GdKHLE5rxazFqMawNk0IiNysauxg8KQsx+8RHUCUHfyu4e?=
- =?us-ascii?Q?T+w+mBAGIj4DxGz1NyeQ4AF7IiUacFqdd867/P9pwAMKEBXBEnpytpnSs8/Y?=
- =?us-ascii?Q?Ked74AC0qEYI4py/Sco4Bz56nkV17OuqSfudyoRWW1DYF11RkUZgG0MKwEo+?=
- =?us-ascii?Q?uqO42w6eh6dIts7HbGGG41+vZ7G9oJvdBnSckYvHLJdYtYXIDQ9BRMDXIJN2?=
- =?us-ascii?Q?4Lkm129McgnE7kqR10E4RIBd/3YcN3TFE346yZnbLhg+/ILgifccBJlHYTWl?=
- =?us-ascii?Q?LvPR130hE/JvD/vNp3lUFSuVASm+atY2taml4l22uDp5n7NjSPu/+QDAuGoa?=
- =?us-ascii?Q?IA3Hrroxu4PggP9+HJKf6/6wvVq58Bfbiuogw9hSePYzOW23HR5wTVdyO09l?=
- =?us-ascii?Q?CA9YMV/Iz6Q3oNAY/9/soW6O3x6eQCgAxdN2TiAG5rW3v/RYjhnSutfVgIq2?=
- =?us-ascii?Q?qQxu6yDC8uFmHj20DeQrianwAK5OGJd3nmempipb19TWuKU/pyuVptEVX1cb?=
- =?us-ascii?Q?6BEqo1MzP5xkqI7Y7yb/Hy3l6ZUuA9DJBTBboMElhnt8wBTRD8RuO2Np+szE?=
- =?us-ascii?Q?mif/i95BGFJXB55FFsEZ78cyqVwsrRxhmFswHJ2Ifp10Bd9NjQuIFvtE5CDB?=
- =?us-ascii?Q?85c846QwPrKqJ/Vq+6OB4qUsss+nPFYbymhCftF+/pZszThoufdYzQHIQeOF?=
- =?us-ascii?Q?Dca/s+QQfbRbSUGMCJOqfSLTLWupfl4Gtww4v/QfJtTVapJjjrkaFCKlFaym?=
- =?us-ascii?Q?b5KxsRYbDWGDXpR7us8T5bCuW4W64Mdl+ePpjek9bV3eJ0hr/YQ1OJl0aYWF?=
- =?us-ascii?Q?BbcCSkB7czPEyjZlfW193q9HDfTZWm0uOzbivI9n7n8xu4r9si163ukZu+SA?=
- =?us-ascii?Q?pskQ5wzIYkupDVK6AEHQVeeByoKmkH7jEFWfxq0dfYeV62dXWd/CXMUixr3E?=
- =?us-ascii?Q?t5W5BrHRkeCUFADRVOZJgYLkEj6Fu8KWibP7qOx2ogR0CssCLgAWbFf7JKde?=
- =?us-ascii?Q?oqlsQA4OdyLNy94H7CpnanIygPOu+Hca?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2024 10:55:30.8623
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d24bf4f-a935-4add-0f12-08dcd3e29604
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0001A101.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7929
 
-Code expects array only with 2 items which should be checked.
-But also item checking is not working as it should likely because of
-incorrect items description.
+Move IER handling out of rs485_start_tx() callback and into a new
+wrapper serial8250_rs485_start_tx(). Replace all callback call sites
+with wrapper, except for the console write() callback, where it is
+inappropriate to modify IER.
 
-Fixes: d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings to json-schema")
-Signed-off-by: Michal Simek <michal.simek@amd.com>
-Cc: <stable@vger.kernel.org>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
 ---
+ drivers/tty/serial/8250/8250.h      |  2 ++
+ drivers/tty/serial/8250/8250_port.c | 27 +++++++++++++++++++++------
+ 2 files changed, 23 insertions(+), 6 deletions(-)
 
-Changes in v2:
-- Remove maxItems properties which are not needed
-- Add stable ML to CC
-
- .../devicetree/bindings/serial/rs485.yaml     | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/rs485.yaml b/Documentation/devicetree/bindings/serial/rs485.yaml
-index 9418fd66a8e9..9665de41762e 100644
---- a/Documentation/devicetree/bindings/serial/rs485.yaml
-+++ b/Documentation/devicetree/bindings/serial/rs485.yaml
-@@ -18,16 +18,15 @@ properties:
-     description: prop-encoded-array <a b>
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-     items:
--      items:
--        - description: Delay between rts signal and beginning of data sent in
--            milliseconds. It corresponds to the delay before sending data.
--          default: 0
--          maximum: 100
--        - description: Delay between end of data sent and rts signal in milliseconds.
--            It corresponds to the delay after sending data and actual release
--            of the line.
--          default: 0
--          maximum: 100
-+      - description: Delay between rts signal and beginning of data sent in
-+          milliseconds. It corresponds to the delay before sending data.
-+        default: 0
-+        maximum: 50
-+      - description: Delay between end of data sent and rts signal in milliseconds.
-+          It corresponds to the delay after sending data and actual release
-+          of the line.
-+        default: 0
-+        maximum: 100
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index e5310c65cf52..6e90223ba1d6 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -236,6 +236,8 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p);
+ void serial8250_em485_destroy(struct uart_8250_port *p);
+ extern struct serial_rs485 serial8250_em485_supported;
  
-   rs485-rts-active-high:
-     description: drive RTS high when sending (this is the default).
++void serial8250_rs485_start_tx(struct uart_8250_port *up);
++
+ /* MCR <-> TIOCM conversion */
+ static inline int serial8250_TIOCM_to_MCR(int tiocm)
+ {
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 2786918aea98..ba8d9cefc451 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1370,7 +1370,6 @@ static void serial8250_stop_rx(struct uart_port *port)
+ 	serial8250_rpm_get(up);
+ 
+ 	up->ier &= ~(UART_IER_RLSI | UART_IER_RDI);
+-	up->port.read_status_mask &= ~UART_LSR_DR;
+ 	serial_port_out(port, UART_IER, up->ier);
+ 
+ 	serial8250_rpm_put(up);
+@@ -1543,16 +1542,20 @@ static inline void __start_tx(struct uart_port *port)
+  *
+  * Generic callback usable by 8250 uart drivers to start rs485 transmission.
+  * Assumes that setting the RTS bit in the MCR register means RTS is high.
+- * (Some chips use inverse semantics.)  Further assumes that reception is
+- * stoppable by disabling the UART_IER_RDI interrupt.  (Some chips set the
+- * UART_LSR_DR bit even when UART_IER_RDI is disabled, foiling this approach.)
++ * (Some chips use inverse semantics.)
++ * It does not disable RX interrupts. Use the wrapper function
++ * serial8250_rs485_start_tx() if that is also needed.
+  */
+ void serial8250_em485_start_tx(struct uart_8250_port *up)
+ {
+ 	unsigned char mcr = serial8250_in_MCR(up);
+ 
++	/*
++	 * Some chips set the UART_LSR_DR bit even when UART_IER_RDI is
++	 * disabled, so explicitly mask it.
++	 */
+ 	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
+-		serial8250_stop_rx(&up->port);
++		up->port.read_status_mask &= ~UART_LSR_DR;
+ 
+ 	if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+ 		mcr |= UART_MCR_RTS;
+@@ -1562,6 +1565,18 @@ void serial8250_em485_start_tx(struct uart_8250_port *up)
+ }
+ EXPORT_SYMBOL_GPL(serial8250_em485_start_tx);
+ 
++/**
++ * serial8250_rs485_start_tx() - stop rs485 reception, enable transmission
++ * @up: uart 8250 port
++ */
++void serial8250_rs485_start_tx(struct uart_8250_port *up)
++{
++	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
++		serial8250_stop_rx(&up->port);
++
++	up->rs485_start_tx(up);
++}
++
+ /* Returns false, if start_tx_timer was setup to defer TX start */
+ static bool start_tx_rs485(struct uart_port *port)
+ {
+@@ -1585,7 +1600,7 @@ static bool start_tx_rs485(struct uart_port *port)
+ 	if (em485->tx_stopped) {
+ 		em485->tx_stopped = false;
+ 
+-		up->rs485_start_tx(up);
++		serial8250_rs485_start_tx(up);
+ 
+ 		if (up->port.rs485.delay_rts_before_send > 0) {
+ 			em485->active_timer = &em485->start_tx_timer;
 -- 
-2.43.0
+2.39.2
 
